@@ -12,6 +12,11 @@ Rules for this file:
 - **Nothing here is decided.** The plan as authored is the plan. This is the menu.
 - Deltas are against the 2026-08-08 estimate (construction total $284,966 – $586,391).
   They are material-basis like the rest of prices.toml, so a real bid moves them.
+- **The tree moved on 2026-08-18** and every row above the concrete one is still measured
+  against the old baseline. `concrete:slab` was pricing the suspended main-floor deck at the
+  slab-on-grade rate; giving it its own key took the construction total from
+  $274,206 – $562,712 to **$307,330 – $627,774**. That is a correction to what the house
+  already costs, not a change to the house — no geometry moved.
 - A swap that changes what the house *does* — not just what it costs — says so under
   **Cost of the cut**. Those are not free money.
 
@@ -27,6 +32,87 @@ expect to stay wet.
 
 **Cost of the cut:** service life at the one detail nobody re-does without jacking the
 structure. This is the wrong $1,000 to save unless everything else has already been cut.
+
+### Basement ceiling: 9" suspended concrete deck → 11-7/8" I-joists at 16" o.c.
+`concrete:slab:CATLIN_DECK_9_INT`, 34.26 cy / 1,233 SF, plus the main floor's finish —
+**point estimate ~$21,300 saved, likely $16,100 – $27,700.**
+
+Researched 2026-08-18. The largest single downgrade on this list by a factor of four, and
+the only one that changes the structural system rather than a product selection.
+
+| | concrete deck | I-joist floor |
+|---|---|---|
+| structure, all-in installed | $31,862 – $60,298 (~$26 – $49/SF) | $13,045 – $25,819 ($10.58 – $20.94/SF) |
+| main-floor finish, 996 SF | sealer $996 – $2,989 | LVP $3,487 – $9,963 |
+| **total** | **$32,858 – $63,287** | **$16,532 – $35,782** |
+| point estimate | $46,381 ($36/SF deck, $2 sealer) | $25,089 ($15.50/SF system, $6 LVP) |
+
+**Why the concrete number is so much larger than the estimate used to say.** Until today
+`concrete:slab` priced this deck at $175 – $280/cy — the slab-on-grade rate, which is
+ready-mix plus placement and nothing else. SL-M-DECK is not poured on the ground. It is
+cast 9'-0" in the air and carries formwork, ~10' shoring on a one-month rental minimum
+(ACI 347 keeps the shores until strength is verified), 2.0 – 2.7 tons of reinforcing, a
+boom pump, a polish-ready trowel finish, a small-job/commercial-sub mobilization premium,
+and a structural engineer's stamp. The old rate worked out to $4.86 – $7.78/SF for a
+suspended structural deck against a published range of $20 – $40 and $25 – $50/SF. It was
+low by 3-5x. The joist side needs none of that: the layout comes free with the EWP package
+from the supplier, and there is no formwork, no shoring, no cure and no crane.
+
+**The three bearing lines already exist.** `W-B-CN` / `W-B-CS` / `W-B-CS2` at x=18' plus the
+east and west foundation walls are what the concrete deck bears on now, so the joists bear
+on the same lines at the same 18' clear span the second and attic floors already run. This
+is a like-for-like swap of FS-SECOND onto the basement, not a new structural scheme.
+
+**Spec note, and it matters.** At 11-7/8" and 16" o.c. over 18'-0" clear, a **TJI 110 fails
+outright** — 17'-8" max, short of the span even at code's L/360. **TJI 210 is the minimum
+that works** (19'-3" at L/480). Spec the **230** anyway: it is ~$650 more over this deck and
+buys real margin on a floor with finished rooms below. Do not let a supplier value-engineer
+this to a 110.
+
+**Two things that are NOT extra cost, and are commonly over-budgeted:**
+- *Fire protection.* IRC/MN R501.3 wants a 1/2" gypsum membrane under I-joists. The 5/8"
+  basement ceiling in the build-up above already exceeds it by a thickness step. No Flak
+  Jacket, no intumescent coating, **$0**.
+- *Bridging.* Weyerhaeuser: "TJI joist floor framing does not require bridging or mid-span
+  blocking." Web stiffeners are not triggered at this span either. **$0.**
+
+**What the range means.** The two ends are like-for-like — both options lean, then both
+options rich. The full envelope is −$3,100 (the swap costs slightly *more*) to $46,900, but
+the losing end needs the concrete to land at $25.68/SF *and* the joist floor to take union
+labor, TJI-brand stock, sound batts and resilient channel all at once. The concrete low end
+is the shakier of the two: most residential concrete subs will not bid a suspended deck at
+all, and a commercial sub's job minimum is in the $25k – $50k range, so $32,660 may simply
+not be obtainable. Treat the downside as unlikely and the upside as real.
+
+**Sensitivity — polish, not sealer.** The table prices the concrete floor as a penetrating
+densifier/sealer on the trowel finish ($1 – $3/SF), which is what `floor_finishes`
+`sealed-concrete` actually is. If the intent was ever a genuinely *polished* floor, that is
+a separate specialty contract at $4 – $8/SF for a Level 1-2 finish on a job this small, and
+the saving grows by a further **$3,000 – $5,000**.
+
+**Not priced, and a real further upside:** the deck is 112.5 psf of dead load before live
+load. Losing it may let the foundation walls and footings shed reinforcement. Nobody has
+asked the engineer, so it is not in the number.
+
+**Cost of the cut** — this is the row with the most non-dollar consequence on the list:
+- **Acoustics.** A 9" slab between the basement and the main floor is a level of impact and
+  airborne isolation a wood floor does not reach. The $0 – $2,950 of batts and resilient
+  channel at the high end of the joist column narrows the gap and does not close it.
+- **Thermal mass.** 34 cy of concrete inside the thermal envelope, under the south glazing
+  the whole facade is composed around. Deleting it changes how the house rides a sunny
+  January day, and no line in prices.toml sees that.
+- **Basement head height.** 9'-0" floor-to-floor less a 9" deck is 8'-3" clear today. Less
+  11-7/8" of joist, 3/4" of subfloor and 5/8" of ceiling it is **7'-10 3/4"** — 5 1/4" gone.
+  Still well over R305.1's minimum, and the duct soffits that a joist bay would make
+  unnecessary are deliberately *not* credited here, so the real loss under the ducts is
+  smaller than this. But the general ceiling does drop.
+- **The in-slab radiant embed.** `FH-M-DINING` (232 LF) and `FH-M-BATH2` (37 LF) carry
+  `embed=in_slab(0.5)`. There is no slab to embed in; both become mat-under-LVP and have to
+  be re-authored. Roughly a wash in dollars.
+- **The sauna liner extent comes off.** `assemblies.py` already anticipates this in prose:
+  `_SAUNA_CEILING_EXTENT` bounds the liner at WALL_TOP − 1'-6" and says "if the basement
+  ever goes to a joist ceiling running the full width, the liner would run the wall's whole
+  height and this extent should come back off."
 
 ### Exterior guards: Trex Signature → builder-grade aluminium
 `railings:RAILING-EXT-ALUMINUM-FASCIA`, 74.6 LF — **$2,835 – $5,222 → ~$1,492 – $2,611 at

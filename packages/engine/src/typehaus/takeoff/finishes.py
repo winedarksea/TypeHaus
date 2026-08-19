@@ -38,6 +38,10 @@ _WASTE: dict[str, float] = {
     "rubber": 0.10,
     "tile": 0.15,
     "sealed-concrete": 0.0,
+    # Sheet vinyl is rolled goods with heat-welded seams and, in the plant room, a 6"
+    # integral flash cove up every wall. 0.12 rather than plank's 0.10: the cove is
+    # material cut off the roll's edge and formed, and a welded seam is scribed twice.
+    "vinyl-sheet": 0.12,
 }
 _DEFAULT_WASTE = 0.10
 

@@ -20,7 +20,8 @@ from typehaus.emit.draw.palette import material_color
 
 # Every finish string authored anywhere in houses/catlin. Kept explicit rather than derived
 # so that adding a finish to a storey without adding its material trips this file.
-_CATLIN_FINISHES = {"oak", "lvp", "carpet", "tile", "sealed-concrete", "rubber"}
+_CATLIN_FINISHES = {"oak", "lvp", "carpet", "tile", "sealed-concrete", "rubber",
+                    "vinyl-sheet"}
 
 
 def _library(catlin_model):
@@ -102,8 +103,10 @@ def test_the_second_storey_circulation_and_baths_run_one_lvp_floor(catlin_model)
     # Both walk-ins are carpet, continuing out of the bedrooms they open off.
     assert finishes["RM-S-CLOSET"] == "carpet"
     assert finishes["RM-S-NCLOSET"] == "carpet"
-    # Everything else on the storey is untouched.
-    assert finishes["RM-S-PLANT"] == "tile"
+    # Everything else on the storey is untouched. RM-S-PLANT left tile for heat-welded
+    # sheet vinyl on 2026-08-18 — the plant room's floor and walls are now one coved tray
+    # (notes/plant_room.md), which tile cannot be.
+    assert finishes["RM-S-PLANT"] == "vinyl-sheet"
     assert finishes["RM-S-STUDY2"] == "oak"
 
 

@@ -78,6 +78,46 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              vapor_permeance_perms=54.0, hatch="membrane", color="#4a4a4a",
              source="DuPont Tyvek HomeWrap physical-properties data sheet: 54 perm by "
                     "ASTM E96-05 Method B (56 perm Method A) — a sheet rating, not perm-in"),
+    # Closed-cell (2 lb) spray polyurethane foam — what fills a rim cavity that no sheet
+    # membrane can reach. It is the insulation, the air barrier AND the vapour retarder in
+    # one bonded, seamless application, which is exactly why it is specified where a floor
+    # band interrupts a wall's control layers: 3" runs about 0.53 perm, a Class II retarder,
+    # with no seam to fail. `resolve/construction_rim.py` bills it by the lineal foot of rim.
+    Material(tag="closed-cell-spray-foam", name="Closed-cell spray polyurethane foam (2 lb)",
+             r_per_inch=6.5, density=32.0, perm_rating=1.6, hatch="batt", color="#e8d9b5",
+             source="published ccSPF range R-5.9 to R-7.0 per inch and ASTM E96 permeance 1.2-2.0 perm at 1 in.; midpoints of the published ranges, per this file's convention"),
+    # The wet/humid-room air+vapour barrier: the layer a room run at 55-70% RH depends on,
+    # and the one `building_science.humid_room_liner` keys on. Authored as a
+    # **specification**, not a datasheet reading — 0.05 perm is the loosest a submitted
+    # product may test at and still be IRC R702.7.1 Class I (<= 0.1 perm) with margin. That
+    # is a different kind of number from the rest of this file and the `source` says so;
+    # replace it with the selected product's own ASTM E96 result when one is chosen.
+    #
+    # It exists as a separate material from `air-barrier` (54 perm) precisely because those
+    # two are opposites: one is a vapour-open weather barrier for the cold side, this is a
+    # vapour-closed barrier for the warm side, and confusing them is the classic way to
+    # build a wall that cannot dry in either direction.
+    Material(tag="humid-room-membrane",
+             name="Self-adhered air/vapour barrier membrane (Class I)",
+             r_per_inch=0.0, density=1000.0, vapor_permeance_perms=0.05, hatch="membrane",
+             color="#3f4a52",
+             source="specification, not a product datasheet: a fully-adhered sheet air/vapour barrier tested to ASTM E96 desiccant method at 0.05 perm or tighter, i.e. Class I per IRC R702.7.1 with margin"),
+    # Solid PVC tongue-and-groove wall/ceiling panel (Trusscore-class): concealed screw
+    # flange, mounts direct to furring, no cellulose substrate anywhere in it, third-party
+    # mould-tested to ISO 846. The lining of choice for a room that is deliberately wet.
+    #
+    # `vapor_permeance_perms` is deliberately UNSET and that is the finding, not a gap: no
+    # manufacturer in this product class — Crane, Marlite, Nudo, Trusscore, Extrutech —
+    # publishes an ASTM E96 number, so an assembly using it reports UNKNOWN naming this
+    # material rather than crediting a panel nobody measured as vapour control. The barrier
+    # is `humid-room-membrane` above, behind it.
+    #
+    # Chosen over FRP, which is disqualified rather than merely worse: FRP's own published
+    # product limitations require 60-75 F and 35-55% RH and forbid installing it over studs,
+    # and non-compliance voids the warranty.
+    Material(tag="pvc-panel", name="Solid PVC T&G wall/ceiling panel (1/2\")",
+             r_per_inch=1.0, density=700.0, hatch="rigid", color="#f2f4f3",
+             source="Trusscore-class 1/2\" T&G interlocking PVC panel, concealed screw flange, ISO 846 mould-tested; no ASTM E96 permeance published in this product class, so none is authored"),
     # No published ASTM E96 rating located for modern fibre-cement lap siding; the closest
     # published entry is asbestos-cement board, a different binder/fibre system, so the
     # field is left unset rather than substituted.
@@ -195,4 +235,14 @@ STARTER_MATERIALS: tuple[Material, ...] = (
     Material(tag="rubber", name="Rolled rubber athletic flooring", hatch="membrane",
              color="#54585c",
              source="finish covering, not an assembly layer; thermal/vapour fields unset"),
+    # Homogeneous sheet vinyl with heat-welded seams — the wet-room floor. Ordered with a
+    # 6" integral flash cove where it laps up the wall, which is what makes floor and wall
+    # one tray with no base joint; the cove is the waterproofing, so nothing impermeable
+    # goes *under* the sheet (a second Class I layer there sandwiches the subfloor with no
+    # drying path either way). Like the PVC panel above, no maker in this class publishes an
+    # ASTM E96 number — and unlike the panel, nothing needs one, because a floor finish is
+    # never a layer in a rated assembly.
+    Material(tag="vinyl-sheet", name="Heat-welded sheet vinyl, integral flash cove",
+             hatch="membrane", color="#8a9a86",
+             source="finish covering, not an assembly layer; thermal/vapour fields unset. Heat-welded seams and a 6\" integral flash cove lapped behind the wall membrane — see houses/catlin/notes/plant_room.md for why the cove replaces a separate waterproofing layer"),
 )

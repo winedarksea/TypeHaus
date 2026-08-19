@@ -105,7 +105,7 @@ def test_every_finish_row_resolved_a_real_material(bom):
     unknown = [row for row in bom["floor_finishes"] if not row["known"]]
     assert unknown == [], unknown
     assert {row["finish"] for row in bom["floor_finishes"] if "under" not in row} == {
-        "carpet", "lvp", "oak", "tile", "sealed-concrete", "rubber"}
+        "carpet", "lvp", "oak", "tile", "sealed-concrete", "rubber", "vinyl-sheet"}
 
 
 def test_the_second_storey_lvp_and_carpet_rows_match_what_was_authored(catlin_model, bom):

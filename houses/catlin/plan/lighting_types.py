@@ -117,18 +117,26 @@ LUMINAIRE_TYPES = (
                          "(here the shared ED-T-LT-PSU-60 in the ceiling above)."),
 
     # --- F: the plant-room tubes ------------------------------------------------------
-    # Damp rated and growth-spectrum, hung on a cable suspension kit over the plants at the
-    # south windows. Multi-watt selectable; specified at the 50 W setting because the point
-    # of putting them here is supplementing a north-of-45 winter.
-    LuminaireType(tag="ED-T-LT-TUBE6", name="6' suspended linear tube, damp, growth spectrum",
+    # Growth-spectrum, hung on a cable suspension kit over the plants at the south windows.
+    # Multi-watt selectable; specified at the 50 W setting because the point of putting them
+    # here is supplementing a north-of-45 winter.
+    #
+    # WET rated and UL 8800 listed, not merely damp (2026-08-18). Both are requirements, not
+    # upgrades: NEC Article 410 Part XVI (added in the 2020 cycle) requires horticultural
+    # lighting equipment to be *listed*, and UL 8800 is that listing — it admits only damp-
+    # or wet-rated horticultural luminaires. RM-S-PLANT is held at 70% RH and is misted, so
+    # these take the wet end of it.
+    LuminaireType(tag="ED-T-LT-TUBE6",
+                  name="6' suspended linear tube, wet, UL 8800 horticultural",
                   form=LuminaireForm.LINEAR_TUBE, type_mark="F",
                   footprint=(ft(6), inch(3)), height=ft(2, 3),
                   plan_symbol="suspended-linear-light",
                   lamp="T8 LED, multi-watt selectable 25/40/50 W", watts=50.0,
                   lumens=6000.0, cct_k=3500, cri=90, dimmable=True, damp_rated=True,
-                  load_va=50.0, ports=_POWER_120,
-                  source="superiorlighting.com decorative linear LED tube, 6', black, "
-                         "120-277V, on a T8 harness + cable suspension kit"),
+                  wet_rated=True, load_va=50.0, ports=_POWER_120,
+                  source="6' linear LED grow tube, black, 120-277V, on a T8 harness + cable "
+                         "suspension kit; specified UL 8800 listed and wet-location rated "
+                         "per NEC 410 Part XVI (notes/plant_room.md)"),
 
     # --- G: the suite's over-bed wall lamp --------------------------------------------
     LuminaireType(tag="ED-T-LT-WALL-LINEAR", name="36\" linear LED wall lamp",
@@ -156,6 +164,18 @@ LUMINAIRE_TYPES = (
     # Same fixture with the switch on it. RM-A-DEN is a 43 ft2 attic nook reached by a
     # hatch — there is no wall on the way in to put a switch on, so the fixture carries it.
     # ``integral_switch`` is what exempts it from ``electrical.lighting_controls``.
+    # J2: the plant room's spot. Same adjustable down-spot as J, wet-location listed with a
+    # gasketed lens and a corrosion-resistant housing — RM-S-PLANT is a damp location
+    # throughout and a wet one where it is misted, and this one is 6'-0" up a wall the room
+    # condenses against.
+    LuminaireType(tag="ED-T-LT-SCONCE-SPOT-WET",
+                  name="Adjustable down-spot wall sconce, wet location",
+                  form=LuminaireForm.SCONCE, type_mark="J2",
+                  footprint=(inch(5), inch(5)), height=inch(7), plan_symbol="sconce-spot",
+                  lamp="LED integrated", watts=9.0, lumens=700.0, cct_k=3000, cri=90,
+                  dimmable=True, damp_rated=True, wet_rated=True, load_va=9.0,
+                  ports=_POWER_120,
+                  source="ED-T-LT-SCONCE-SPOT in a wet-location housing (notes/plant_room.md)"),
     LuminaireType(tag="ED-T-LT-SPOT-SW", name="Down-spot wall sconce, switch on fixture",
                   form=LuminaireForm.SCONCE, type_mark="J1",
                   footprint=(inch(5), inch(4)), height=inch(9), plan_symbol="sconce-spot",
@@ -193,6 +213,20 @@ LUMINAIRE_TYPES = (
                   plan_symbol="ceiling-fan-light",
                   lamp="LED integrated light kit", watts=17.0, lumens=1400.0, cct_k=3000,
                   cri=90, dimmable=True, load_va=60.0, ports=_POWER_120),
+    # The plant room's fan. Same 52" fan as N, in a wet-location listed housing with a
+    # corrosion-resistant (sealed, non-ferrous) motor and gasketed light kit. N2 rather than
+    # a retype of N: this is a different product on the quote, and the reason it is here —
+    # a room that runs at 70% RH and condenses on its own glass — is not a reason the
+    # bedrooms' fans should cost more.
+    LuminaireType(tag="ED-T-LT-FAN52-WET",
+                  name='52" ceiling fan with LED light kit, wet location',
+                  form=LuminaireForm.CEILING_FAN_LIGHT, type_mark="N2",
+                  footprint=(inch(52), inch(52)), height=ft(1, 6),
+                  plan_symbol="ceiling-fan-light",
+                  lamp="LED integrated light kit", watts=17.0, lumens=1400.0, cct_k=3000,
+                  cri=90, dimmable=True, damp_rated=True, wet_rated=True, load_va=60.0,
+                  ports=_POWER_120,
+                  source="NEC 2023 damp/wet location; RM-S-PLANT is a damp location throughout and wet where it is misted (notes/plant_room.md)"),
     # The porch fan. Damp rated because it lives under the balcony deck, open on three
     # sides — not wet rated: nothing lands on it, the deck above is the roof.
     LuminaireType(tag="ED-T-LT-FAN60", name='60" porch ceiling fan with LED light kit, damp',

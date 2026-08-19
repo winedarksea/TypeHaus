@@ -252,12 +252,98 @@ the future.
 ## Questions:
 - Do we want floor drains in kitchen/laundry room (deferred 2026-07-30: neither, for now)
 - Pantry (deferred by decision 2026-08-02)
-- Add the plant room wall types (deferred by decision 2026-08-02)
+- ~~Add the plant room wall types (deferred by decision 2026-08-02)~~ — **done 2026-08-18.**
+  `PLANT_EXT_2X6_HUMID` / `PLANT_INT_2X6_BRG_HUMID` / `PLANT_INT_2X4_HUMID`, a shared
+  `HumidityClass` axis on `Room` and four rules that read it, the U-0.14 glazing retype, the
+  sheet-vinyl coved floor, the dedicated dampered extract off `EQ-B-ERV`, and wet-location /
+  UL 8800 electrical. The whole argument and the numbers are in
+  `houses/catlin/notes/plant_room.md`; decisions #55 and #56. What it deliberately did NOT
+  close, each for a stated reason:
+  - **The plant room's ceiling is specified but unmodelled.** PVC panel on furring over the
+    same membrane, continuous with the wall membrane at the perimeter, and explicitly *not*
+    a suspended/tile ceiling. `FS-ATTIC` carries no `ceiling_below`, and that field is one
+    `DeckLayer` for the whole storey below — there is no room-scoped ceiling construction in
+    the schema, so authoring it would give every second-storey room a PVC ceiling. Needs
+    either a `CeilingPaneling` element (the `WallPaneling` shape, one surface up) or a
+    per-room override on `FloorSystem`.
+  - ~~**`RM-B-SAUNA` is still `humidity_class=NORMAL`, and that is a finding.**~~ — **closed
+    2026-08-18, same day.** The axis surfaced a real gap (`W-B-S2`, the sauna's whole south
+    side, was bare 12" concrete on the room face while
+    `notes/sauna_basement_wall_detail.md` says the liner runs "walls + ceiling"), and
+    `SAUNA_LINER_ON_BASEMENT_12_GARDEN` closed it: the liner variant on that wall, the room
+    marked `WET`, and all four faces now passing `humid_room_liner` and `humid_room_finish`
+    on the foil-faced polyiso at 0.015 perm. `glazing_dew_point` clears `WIN-B-SAUNA` by
+    2.5 F at centre-of-glass with the frame accepted as condensing — recorded on the Room
+    rather than hidden. Two details worth carrying forward: the liner's three layers carry a
+    `LayerExtent` off `WALL_TOP` so a 7'-6" room does not bill 9'-0" of basswood off a
+    foundation wall (and `takeoff/wood_surfaces.py` had to start honouring that band, which
+    it was ignoring), and the 3 1/2" the liner grows inward moved `FURN-B-SAUNA-BENCH-S`,
+    `FURN-B-SAUNA-BENCH-E` and `REG-B-EXH2` north with it — no check fires on
+    furniture-vs-wall overlap, so those were hand edits the gate could not have caught.
+  - **The showers are still unclassified.** Same axis, same rules, same question to answer
+    first: what is actually behind the tile. The sauna is the worked example of what
+    answering it costs — a liner variant on the wall that turned out not to have one.
+  - **`FX-S-BALC-HYD`'s sleeve.** A freeze-proof wall hydrant passes through the plant room's
+    liner into a −15 °F wall — a vapour leak and a cold surface at once. Needs a sealed,
+    insulated sleeve detail; `SleevePenetration` exists but not for this condition.
+  - **Cavity "canary" RH sensors** in a south and a west stud bay. The liner has no
+    redundancy, and this is how a failure is caught in month three rather than year five.
+    There is no sensor element kind.
+  - **The humidifier.** An ERV loses ~16 % of the moisture in every air change; at this flow
+    against −15 °F outdoor air that is 1.5–2 gal/day unrecovered. Not modelled — it wants an
+    `Equipment` with a water supply and a drain.
+  - **The room's clear face does not know about the liner.** `RM-S-PLANT` still resolves at
+    159.15 sf; the 1 1/4" liner should take it to about 152. `resolve/rooms.py::_lining_inset`
+    insets a claimed face by a single uniform figure derived from `Room.wall_lining` (0.635",
+    the painted-gypsum stack) rather than by each bounding wall's own resolved lining, so the
+    face sits on the node lines less that constant — which is why the sauna's 3 1/2" liner
+    does not move its room polygon either. Systemic and pre-existing; fixing it moves every
+    room's area and every `clear_face`-derived check at once, so it is its own change. Until
+    then R303.1, the clear-floor checks and the finishes takeoff all grade RM-S-PLANT on a
+    floor slightly larger than the one that gets built (which is the conservative direction
+    for the glazing ratio, and the wrong one for clear floor).
+  - **A floor drain in RM-S-PLANT** (the room should be hoseable): implies a drain line, a
+    trap primer — the trap *will* dry — and slope in `FS-SECOND`. See the Questions list.
+- **Wood solids still bill as concrete, and two deck planks now bill nowhere** (2026-08-19).
+  `structural_solids` keys on solid CATEGORY, and a category is not a material.
+  `cli/prices.MATERIAL_ONLY` now stops `[concrete]` pricing a row whose assembly's
+  STRUCTURE layer is not concrete, and records the suppression in the unpriced list rather
+  than dropping it silently. Three things are still open:
+  - `beam` (1.06 cy, $276 – $445) and four of the nine `column` solids carry **no
+    assembly**, so the model never states a material and the guard cannot fire. Every
+    `Beam` in the house is LVL or dimensional (`SPEC.back_beam` = 2-1.75x11.25 LVL,
+    `BM-M-HALL`/`BM-S-HALL` are LVL flitches, `BM-BW-*` is breezeway KDAT), and they bill
+    **nowhere else** — a standalone `Beam` resolves to a solid, not a framed member, so
+    this is a mis-price, not a double-count. Fix by authoring assemblies, not by widening
+    the guard. `PR-BW-1..4` and `PT-SG-COL` are 12" sonotube piers that genuinely ARE
+    concrete and also carry no assembly, so they must gain one before the wood ones can be
+    excluded by default.
+  - `ELM_TIMBER` (0.34 cy) and `POST_WHITE_PAINT` (0.40 cy) were reaching the estimate
+    *through* `[concrete]` on purpose — `ESTIMATE_PLANS` says timber rows "price as 0 here
+    — they bill via structural_solids". They are now honestly unpriced instead of priced
+    as ready-mix. **There is no price section that bills a wood solid by volume**; that
+    gap is the real fix.
+  - `SL-SG-DECK` (balcony, aluminium plank) and `SL-BW-DECK` (breezeway, composite plank)
+    are wood-framed walking surfaces modelled as `Slab`. Their concrete billing is gone,
+    but `aluminum-deck` bills in no section at all and the breezeway's `composite-deck`
+    only billed through that slab, so both planks are now unbilled. The fix is the one
+    `SL-SG-PORCH` already had: delete the `Slab` and move the plank into its
+    `FloorSystem`'s `subfloor=DeckLayer(...)`, where it bills as sheet goods. Trim
+    `host_ref` is metadata only — never resolved or validated — so `TR-SG-FASCIA` and
+    `TR-SG-WRB-FLASH` do not block it; the cost is rewriting the ~6 tests that assert on
+    those two slabs (test_site_earth, test_detail_vocabulary, test_accessories x2,
+    test_catlin_contract_m3 x2).
 - basement ceiling, some of this wood joists maybe (deferred by decision 2026-08-02)
+  — **priced 2026-08-18**, see `plans/cost-options.md`: ~$21,300 saved, likely
+  $16,100 – $27,700. Still deferred; it is now a decision about dollars.
 - study on first floor location adjustments (deferred by decision 2026-08-02)
 - Nest/loft design
-- House being a bit higher, cladding detail
-- Window sealing detail
+- Window sealing detail (RM-S-PLANT's is drawn — TR-CATLIN-PLANT-OPENING, 2026-08-18 — and
+  is the strictest case in the house; the rest of the envelope still rides
+  TR-CATLIN-FRAMED-OPENING)
+- Does balcony access have to pass through the plant room? `D-S-DECK-W` is a 60" exterior
+  French door in a 70 %-RH room and its threshold will condense (raised 2026-08-18)
+- Floor drain in RM-S-PLANT — confirm, with the trap primer it implies (raised 2026-08-18)
 - Make sure all desired access panels are in
 - ~~Any rooms with fancy ceilings? ... "Resilient channels on ceiling perpendicular to
   joists, hat channels maybe better, or sound isolation clips. Whichever the drywall guy
@@ -276,9 +362,7 @@ the future.
   **Gap worth knowing:** `construction_returns` is not in `cli/prices.py::_SECTIONS`, so
   those 523.7 LF reach the BOM and never the cost estimate. Verified empirically, noted on
   the rule, not fixed here.
-- Possibly moving house and sunken garden up (not garage), accounting for split layer
 - Small windows on corners?
-- Balcony railing?
 - Do "drain tile" and "french drain" duplicate at all here?
 - ~~We are thinking of switching W-SG-ARCH to be a column and beams like PT-SG-COL and BM-SG-BKE, then replacing the masonry railing right above it with a metal railing more like RL-SG-BALCONY~~ — **done 2026-08-18.**
   `PT-SG-FCOL` (16" square cast concrete, chamfered, on its own spread footing) carries

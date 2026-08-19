@@ -81,10 +81,33 @@ REGISTERS_HVAC_SECOND = [
     # the study, at the far east end, so the supply is diagonally opposite it and the room's
     # air crosses the glazing on the way out. (placeables.py still describes the chairs as
     # straddling a floor register at (9', 4') — that was REG-S-SUP1, retired 2026-07-29;
-    # this terminal is in the ceiling, so nothing straddles it.)
+    # this terminal is in the ceiling, so nothing straddles it — and placeables.py says so
+    # itself now.)
+    # Retyped to REG-T-HP-SUP-DAMPERED 2026-08-18: same grille in the same place doing the
+    # same glass wash, with a motorised isolation damper behind it. Two things it now has to
+    # be able to do that a plain terminal cannot — shut System 1 out of a 70% RH room so the
+    # branch does not carry its moisture to every other room on DU-S-HP-SOUTH, and stop
+    # pressurising a room whose vapour barrier has no redundancy. It is interlocked with
+    # REG-S-ERV-PLANT-EXH below, which is what makes the pair balanced rather than merely
+    # present. (mep.humid_room_pressure is the rule that says so out loud.)
     Register(uid="CXDCYN7YQ2", tag="REG-S-HP-PLANT", kind=DuctSystem.SUPPLY, room="RM-S-PLANT",
              position=pt(ft(6, 8), ft(3, 4)), duct_ref="DU-S-HP-SOUTH",
-             type_ref="REG-T-HP-SUP",
+             type_ref="REG-T-HP-SUP-DAMPERED",
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+    # The plant room's extract (2026-08-18) — the terminal the room did not have, and the
+    # single biggest thing wrong with it before. RM-S-PLANT was supply-only, so its own
+    # ventilation pushed 70%-RH air into every crack in the envelope it is now lined to
+    # protect; slightly negative is the only pressure a continuously humid room may be held
+    # at, and that takes an extract, not a better barrier.
+    #
+    # At (14'-0", 4'-8"): the far east end of the room, 7'-5" from the supply and across
+    # the room from it, so conditioned air lands on the south glass, crosses the planting
+    # and leaves at the far end rather than short-circuiting. Ceiling at 9'-0" because
+    # humid air stratifies — the wettest air in the room is the air at the ceiling, which is
+    # also the air directly under FS-ATTIC's I-joists.
+    Register(uid="C7LM4KAP2X", tag="REG-S-ERV-PLANT-EXH", kind=DuctSystem.EXHAUST,
+             room="RM-S-PLANT", position=pt(ft(14), ft(4, 8)), duct_ref="DU-S-PLANT-EXH",
+             type_ref="REG-T-ERV-PLANT-EXH", design_cfm=25,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # The one return, at the hall's south end right AT EQ-S-HP1-AH (2026-07-30), 1" north
     # of the unit's rear face, feeding its bottom-return through DU-S-HP-RET's plenum stub.
@@ -290,7 +313,7 @@ REGISTERS_BASEMENT = [
     # EXHAUST at 20 cfm since 2026-08-01: the room is Occupancy.BATHROOM and its window's
     # openable area (1.2 sf) falls short of R303.3's 1.5 sf, so mechanical exhaust governs.
     Register(uid="CBRV04AAAA", tag="REG-B-EXH2", kind=DuctSystem.EXHAUST, room="RM-B-SAUNA",
-            position=pt(ft(11, 5.5), ft(1)), duct_ref="DU-B-ERV-RET",
+            position=pt(ft(11, 5.5), ft(1, 3.5)), duct_ref="DU-B-ERV-RET",
             type_ref="REG-T-ERV-SAUNA-EXH", design_cfm=20,
             mount=Mount(kind=MountKind.WALL, elevation=inch(4))),
     # Fresh air in high, over the stones, directly above EQ-B-SAUNA-HTR (west liner,

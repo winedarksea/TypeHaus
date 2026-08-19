@@ -9,7 +9,9 @@ applied there depends on the wall the opening pierces:
 * a **concrete** opening takes a treated buck (the lumber a frame can actually fasten to)
   sealed to the concrete at both faces;
 * the **sauna liner** opening returns the foil vapour-control face into the head reveal and
-  seals it, because a butt joint there is a hole in the hot side's vapour control.
+  seals it, because a butt joint there is a hole in the hot side's vapour control;
+* a **humid-room liner** opening (the plant room) does the same for its Class I membrane and
+  adds the drained sill pan that a room at 70% RH needs under every unit.
 
 Everything self-gates on its subject genuinely being in the cut: the head vocabulary only
 draws when the head elevation is inside the crop, a windowless-weather-wall recipe on an
@@ -161,4 +163,49 @@ def sauna_liner_opening_return(model, wall, opening, crop, direction,
         nodes += rect_region(lo, sill_z, hi, sill_z + SAUNA_MEMBRANE_IN,
                              "sauna-foil-return", "air-barrier", "membrane",
                              lineweight=0.3)
+    return nodes
+
+
+# The plant-room liner's three layer *names* (plan/assemblies.py::_HUMID_LINER). Named rather
+# than found by function, unlike the sauna's return above: this liner's control layer is a
+# MEMBRANE and its host wall carries another one outboard (the WRB), so
+# ``outermost_with_function`` would pick the wrong one and draw a return spanning the whole
+# wall depth.
+_HUMID_LINER_LAYERS = ("pvc-panel", "liner-furring", "humid-membrane")
+
+
+def humid_liner_opening_return(model, wall, opening, crop, direction,
+                               station) -> list[IRNode]:
+    """Class I membrane returned into the head and sill reveals, plus a drained sill pan.
+
+    A continuously humid room's vapour barrier has no redundancy — there is no thickness of
+    exterior insulation that would keep the sheathing above that room's dew point — so an
+    opening is a hole in the only thing preventing rot. The membrane is therefore returned
+    across the reveal and sealed to the frame, never butted at the panel edge.
+
+    The sill gets a pan as well as a return. It drains *into the room*, which is the whole
+    point of it: water that gets past a frame here has to be given somewhere to go that is
+    not framing, and the room below the sill is a coved vinyl tray with a floor drain.
+    """
+    intervals = layer_intervals(wall, direction, station)
+    bands = [intervals[name] for name in _HUMID_LINER_LAYERS if name in intervals]
+    if not bands:
+        return []
+    lo = min(min(iv[0], iv[1]) for iv in bands)
+    hi = max(max(iv[0], iv[1]) for iv in bands)
+    sill_z, head_z = opening_z_in(wall, opening)
+
+    nodes: list[IRNode] = []
+    if _in_crop_z(head_z, crop):
+        nodes += rect_region(lo, head_z - SAUNA_MEMBRANE_IN, hi, head_z,
+                             "humid-membrane-return", "air-barrier", "membrane",
+                             lineweight=0.3)
+    if _in_crop_z(sill_z, crop):
+        nodes += rect_region(lo, sill_z, hi, sill_z + SAUNA_MEMBRANE_IN,
+                             "humid-membrane-return", "air-barrier", "membrane",
+                             lineweight=0.3)
+        nodes += rect_region(lo, sill_z + SAUNA_MEMBRANE_IN, hi,
+                             sill_z + SAUNA_MEMBRANE_IN + OPENING_DETAIL.sill_pan_lip_in,
+                             "humid-sill-pan", "metal-dark-exterior", "flashing",
+                             lineweight=0.35)
     return nodes

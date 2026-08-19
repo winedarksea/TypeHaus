@@ -138,8 +138,16 @@ _TRUSS_KINDS = frozenset({"top_chord", "bottom_chord", "truss_web", "truss_heel"
 # "ridge_cap" is the vented ridge cap riding the roofing at the peak; "corner_trim" is the
 # formed angle capping a wrapped standing-seam edge; "gutter" is the three-band hung
 # channel outboard of the fascia — all pure trim.
-_ENVELOPE_SKIN_KINDS = frozenset({"sheathing", "furring", "cladding", "fascia", "soffit",
-                                  "insulation", "membrane", "gutter", "ridge_cap",
+# "strapping" is the member category ``resolve/framing/furring.py`` actually mints for a
+# FURRING layer's batten grid ("furring" beside it is the layer *function*, and was the
+# category before that module existed). It belongs here for the reason the paragraph above
+# gives and no other: a batten is a nailer fastened over whatever it lands on — including,
+# at a junction, the top plate of the wall the lined wall tees into — and it carries no
+# load, so it cannot be the elevation-arithmetic bug this check exists to catch. Without it
+# the plant room's liner strapping read as three clashes against neighbouring plates, each
+# about 0.3 square inches in plan (2026-08-18).
+_ENVELOPE_SKIN_KINDS = frozenset({"sheathing", "furring", "strapping", "cladding", "fascia",
+                                  "soffit", "insulation", "membrane", "gutter", "ridge_cap",
                                   "corner_trim"})
 # Rake framing (resolve/framing/roof_gable.py): outlookers run *over* the dropped gable
 # truss and land on the barge rafter. Interpenetration there is the joint the drop creates.

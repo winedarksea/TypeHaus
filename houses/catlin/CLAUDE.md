@@ -225,9 +225,14 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   `CATLIN_BASEMENT_12` (N/E/W: `W-B-E1/E2`, `W-B-N1/N2/N3`, `W-B-W1/W2`) covers its exterior
   XPS with a 1/2" `foundation-protection-panel` banded from 6" below grade to the top of the
   wall — 2'-6" of exposure the 2026-08-18 lift created, 324 SF, authored as a
-  `Layer.extent` off the `GRADE` datum. `CATLIN_BASEMENT_12_GARDEN` (south: `W-B-S1/S2/S3`)
+  `Layer.extent` off the `GRADE` datum. `CATLIN_BASEMENT_12_GARDEN` (south: `W-B-S1/S3`)
   keeps the full-height parge coat, because the sunken garden exposes that face from -9'-0"
-  to 0'-0" and a grade-datum band cannot describe that. Both carry exactly 4.55" outboard of
+  to 0'-0" and a grade-datum band cannot describe that. `W-B-S2` is the same stack under a
+  third tag, `SAUNA_LINER_ON_BASEMENT_12_GARDEN` (2026-08-18): it is the sauna's south face,
+  so it carries the hot-side liner *inboard* of the pour, banded to the room's 7'-6" ceiling.
+  Its outboard five layers are the shared `_GARDEN_CONCRETE_STACK` tuple, so the two tags
+  cannot drift; it aligns on `face("concrete-ext")` with **no** offset, so the pour sits
+  exactly where W-B-S1/S3 leave it. Both carry exactly 4.55" outboard of
   the concrete face — the panel is the same 1/2" as the parge it replaces — which is what
   `N-B-BRICK-W`/`-E`'s `inch(-4.55)` stand-off is measured from; changing either thickness
   moves the brick veneer. See `notes/basement_to_framed_wall_detail.md`.

@@ -65,6 +65,20 @@ ELECTRICAL_DEVICE_TYPES = (
                           footprint=(inch(4), inch(2)), height=inch(2),
                           ports=(ServicePort(tag="power", service=Service.POWER_120,
                                              position=(ft(0), ft(0), ft(0))),)),
+    # The plant room's outlets (2026-08-18). NEC 2023 makes RM-S-PLANT a damp location
+    # throughout and a wet one anywhere it is misted or hosed, which changes three things at
+    # once about an ordinary duplex: WR listing (the receptacle body itself), a GFCI device
+    # (E3902/210.8 — and at the device, not the breaker, per the circuit convention in
+    # plan/circuits.py), and an in-use "bubble" cover rather than a flip lid, because pumps,
+    # heat mats and humidifiers stay plugged in permanently and a flip lid is only weather-
+    # tight with nothing in it. Non-metallic gasketed box: bare steel and standard EMT rust
+    # at 70% RH.
+    ElectricalDeviceType(tag="ED-T-RECEPTACLE-WR-GFCI",
+                          name="WR GFCI receptacle, in-use cover, non-metallic gasketed box",
+                          footprint=(inch(4.5), inch(3)), height=inch(3), nema="5-20R",
+                          source="NEC 2023 406.9(B)/210.8 for a damp-to-wet interior location; notes/plant_room.md",
+                          ports=(ServicePort(tag="power", service=Service.POWER_120,
+                                             position=(ft(0), ft(0), ft(0))),)),
     ElectricalDeviceType(tag="ED-T-RECEPTACLE-240", name="240V appliance receptacle, NEMA 14-50",
                           footprint=(inch(4), inch(4)), height=inch(4),
                           ports=(ServicePort(tag="power", service=Service.POWER_240,
@@ -202,13 +216,16 @@ MAIN_DEVICES = [
 # None carry `room=`, so a stale-coordinate device still matches by tag suffix and passes —
 # that's how these got stranded inside partitions in the first place.
 SECOND_DEVICES = [
+    # Retyped to the wet-location fan 2026-08-18: a standard "damp-rated" bath-and-porch
+    # fixture is inadequate in a room that condenses on purpose, and this one hangs at the
+    # ceiling where the wettest air in the room collects.
     ElectricalDevice(uid="CED004K1AA", tag="ED-S-PLANT-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(9), ft(6)), type_ref="ED-T-LT-FAN52", circuit="CKT-LT-UPPER",
+                     position=pt(ft(9), ft(6)), type_ref="ED-T-LT-FAN52-WET", circuit="CKT-LT-UPPER",
                      room="RM-S-PLANT", controlled_by=("ED-S-PLANT-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(1, 6))),
     # Beside D-S-PLANT, the door through the centre bearing wall at y=4'-5 1/2".
     ElectricalDevice(uid="CED004K2AA", tag="ED-S-PLANT-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(17, 7.625), ft(6, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     position=pt(ft(17, 7), ft(6, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(270)),
     ElectricalDevice(uid="CED005K1AA", tag="ED-S-STUDY2-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(24), ft(3)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",

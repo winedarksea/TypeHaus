@@ -73,6 +73,40 @@ class Occupancy(Enum):
 SLEEPING_OCCUPANCIES = frozenset({Occupancy.BEDROOM})
 
 
+class HumidityClass(Enum):
+    """How wet a room's air is *run*, as a separate axis from :class:`Occupancy`.
+
+    Occupancy describes use; this describes the vapour drive the room's own bounding
+    assemblies have to survive. They are genuinely independent — a plant room held at 70%
+    RH is an ``Occupancy.LIVING`` room and a sauna is an ``Occupancy.BATHROOM``, and it is
+    this axis, not that one, that the showers, the sauna and the plant room share.
+
+    ``WET`` is intermittent (a shower or a sauna session wets the room, then it dries);
+    ``HUMID`` is continuous, which is the case with no drying window and so no forgiveness
+    in the assembly behind the finish.
+    """
+
+    NORMAL = "normal"
+    WET = "wet"
+    HUMID = "humid"
+
+
+# The design interior relative humidity each class is analysed at. ``NORMAL`` is absent on
+# purpose: an ordinary room is analysed at the house's own
+# ``Preferences.interior_relative_humidity``, which is a house-level decision, while these
+# two are properties of how the room is operated. A room may still override its own number
+# with ``Room.design_relative_humidity``.
+#
+# 0.55 for WET: a bathroom or a sauna spikes far above that during a session, but a Glaser
+# walk is a steady-state screening tool and the steady state of an intermittently wet room
+# is its daily mean, not its peak. 0.70 for HUMID is the plant-room setpoint itself,
+# because there the peak *is* the steady state.
+HUMIDITY_CLASS_DESIGN_RH: dict[HumidityClass, float] = {
+    HumidityClass.WET: 0.55,
+    HumidityClass.HUMID: 0.70,
+}
+
+
 class Service(Enum):
     """Services a fixture/furniture type may require (→ 10 §Element model)."""
 

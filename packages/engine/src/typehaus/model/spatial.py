@@ -5,10 +5,16 @@ from __future__ import annotations
 
 from typehaus.model.assembly import Layer
 from typehaus.model.base import Element
-from typehaus.model.enums import AlarmKind, Occupancy, RoofForm
+from typehaus.model.enums import (
+    HUMIDITY_CLASS_DESIGN_RH,
+    AlarmKind,
+    HumidityClass,
+    Occupancy,
+    RoofForm,
+)
 from typehaus.model.floors import FinishZone
-from typehaus.model.refs import FollowRoof
 from typehaus.model.placeables import Location, Mount
+from typehaus.model.refs import FollowRoof
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.model.trim import EaveTrim
 from typehaus.quantities import Length, Pitch, Point2D
@@ -34,6 +40,30 @@ class Room(Element):
     finish_zones: tuple[FinishZone, ...] = ()
     wall_lining: tuple[Layer, ...] = ()  # overrides assembly default_lining on all faces
     wall_lining_exceptions: tuple[WallLiningException, ...] = ()
+    # How wet this room is run — a separate axis from `occupancy` (see HumidityClass).
+    # It is what scopes the condensation walk and the humid-room checks to the RH a
+    # bounding assembly actually faces, instead of the whole-house design figure.
+    humidity_class: HumidityClass = HumidityClass.NORMAL
+    # An explicit override of the class's design RH, for a room whose setpoint is its own
+    # decision rather than the class default. Authored as a fraction (0.70 == 70%).
+    design_relative_humidity: float | None = None
+    # This room's own dry-bulb setpoint, where it is not the house's. Dew point is a
+    # function of both numbers, so a room held warmer *and* wetter than the house — the
+    # tropical case — cannot state only one of them and be analysed honestly. None means
+    # the house's ``Preferences.interior_setpoint_f``.
+    design_temperature_f: float | None = None
+
+    @property
+    def interior_design_relative_humidity(self) -> float | None:
+        """The RH this room's bounding assemblies are analysed at, or None for house-wide.
+
+        None is not "unknown": it means the room carries no humidity decision of its own,
+        so the house's ``Preferences.interior_relative_humidity`` is the right number and
+        the caller supplies it. Only a room that is deliberately run wet answers here.
+        """
+        if self.design_relative_humidity is not None:
+            return self.design_relative_humidity
+        return HUMIDITY_CLASS_DESIGN_RH.get(self.humidity_class)
 
 
 @register_element

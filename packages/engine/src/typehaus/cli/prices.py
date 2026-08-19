@@ -35,8 +35,9 @@ from typehaus.cli.price_file import (  # noqa: F401  (re-exported: this is the p
 #: here keeps that path a declared contract rather than an implicit one.
 __all__ = [
     "BASES", "INSTALLED", "LABOUR", "MATERIAL", "PRICES_FILENAME", "Adjustments",
-    "ESTIMATE_PLANS", "EXCLUDED_FROM_TOTAL", "PriceRange", "Prices", "UnitPrice",
-    "WASTE_IN_QUANTITY", "ZERO", "estimate_costs", "load_prices", "waste_in_quantity",
+    "ESTIMATE_PLANS", "EXCLUDED_FROM_TOTAL", "MATERIAL_ONLY", "PriceRange", "Prices", "UnitPrice",
+    "QUALIFIED_KEY_FIELD", "WASTE_IN_QUANTITY", "ZERO", "estimate_costs", "load_prices",
+    "waste_in_quantity",
 ]
 
 #: BOM fields that read as a human description, most specific first. A CSV row that says
@@ -97,10 +98,40 @@ ESTIMATE_PLANS = (
     # Placed by the yard, keyed on the assembly — see the field comment on ``Prices``.
     ("wall_structure", "wall_structure", "assembly", "volume_cubic_yards", "cy"),
     ("railings", "railings", "type", "length_ft", "LF"),
+    # Pre-framing returns by the foot, keyed on ``takeoff_category`` (2026-08-18).
+    ("construction_returns", "construction_returns", "category", "length_ft", "LF"),
     ("drainage", "drainage", "category", "length_ft", "LF"),
     # Reads the *same* BOM rows as ``placeables`` — see ``EXCLUDED_FROM_TOTAL``.
     ("furnishings", "placeables", "type", "count", "ea"),
 )
+
+#: Sections that may only bill a BOM row made of a particular material, and the material
+#: that row's ``structure_material`` must name. A row whose ``structure_material`` is
+#: ``None`` — no assembly, so the model never said — is billed as before; this suppresses
+#: only what is *positively known* to be something else.
+#:
+#: ``concrete`` needs it because ``structural_solids`` keys on solid CATEGORY, and a
+#: category is not a material. "slab" covers SL-M-DECK (9" of cast concrete) *and*
+#: SL-SG-DECK (Wahoo aluminium plank on 2x8 wood joists) and SL-BW-DECK (composite plank
+#: on wood joists); "column" covers a concrete pier and four solid elm timbers. Without
+#: this guard the wood ones bill at the ready-mix $/cy on top of billing as lumber in
+#: ``sheet_goods``/``framing`` — a double-count, not just a mis-price.
+MATERIAL_ONLY = {"concrete": "concrete"}
+
+
+#: Sections whose price table may key a row more narrowly than its ``key_field`` alone,
+#: by appending a second BOM field as ``"<key>:<qualifier>"``. The qualified key is used
+#: ONLY when the house's table actually carries it, so a bare-category row keeps pricing
+#: exactly as before and no existing ``prices.toml`` changes meaning.
+#:
+#: ``concrete`` needs this because ``structural_solids`` keys on ``category``, and
+#: "slab" is one category covering things that cost wildly different amounts per yard: a
+#: slab-on-grade is poured on the ground, while a *suspended* deck carries formwork,
+#: shoring, rebar and an engineer's stamp — 3-5x the $/cy. The category taxonomy itself
+#: must not be split to say so (``ResolvedSolid.category`` is read by a dozen checks and
+#: printed in the 3D Inspector), so the price table qualifies by assembly instead.
+QUALIFIED_KEY_FIELD = {"concrete": "assembly"}
+
 
 #: Sections priced and reported but held out of the construction total. They stay in
 #: ``sections`` (with ``in_total: False``) and roll up into ``excluded_total`` /
@@ -162,8 +193,30 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
         rows = []
         buckets = empty_buckets()
         waste_sum = ZERO
+        required_material = MATERIAL_ONLY.get(name)
         for row in bom.get(bom_key, []) or []:
+            if required_material is not None:
+                material = row.get("structure_material")
+                if material is not None and material != required_material:
+                    # Recorded, never silent. This section may not price the row (a wood
+                    # deck is not ready-mix), but dropping it without a word would hide
+                    # real scope — the same reason a blank row here stays UNPRICED rather
+                    # than being priced at zero. The key names the assembly that fell out.
+                    quantity = float(row.get(quantity_field) or 0.0)
+                    if quantity:
+                        misses.append((bom_key, {
+                            "section": name,
+                            "key": f"{row.get(key_field)}:{row.get(qualifier_field)}"
+                                   if (qualifier_field := QUALIFIED_KEY_FIELD.get(name))
+                                   else str(row.get(key_field)),
+                            "quantity": round(quantity, 2), "unit": unit}))
+                    continue
             key = str(row.get(key_field))
+            qualifier_field = QUALIFIED_KEY_FIELD.get(name)
+            if qualifier_field:
+                qualifier = row.get(qualifier_field)
+                if qualifier and table.get(f"{key}:{qualifier}") is not None:
+                    key = f"{key}:{qualifier}"
             quantity = float(row.get(quantity_field) or 0.0)
             price = table.get(key)
             if price is None:

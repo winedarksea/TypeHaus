@@ -15,21 +15,24 @@ from typehaus.model import DeviceKind, deg, ft, inch, m, pt
 # water flow the way an air gap wants and a bathroom lavatory does not.
 #
 # Sauna benches are dimensioned to *liner faces* (what the joiner scribes to), not node
-# lines: west liner x=9'-1 13/16", east liner x=17'-2 1/2", south concrete y=1'-0", north
-# liner y=13'-6 1/8" — an 8'-0 11/16" x 12'-6 1/8" clear box. Stops at y=9'-6" to leave the
-# north 4' for the shower (notes/sauna_shower_basement_detail.md).
+# lines: west liner x=9'-1 13/16", east liner x=17'-2 1/2", south liner y=1'-3 1/2", north
+# liner y=13'-6 1/8" — an 8'-0 11/16" x 12'-2 5/8" clear box. The south face gained 3 1/2"
+# of liner (SAUNA_LINER_ON_BASEMENT_12_GARDEN on W-B-S2) on 2026-08-18, so both benches
+# moved north with it. The east bench stops at y=9'-9 1/2" to leave the north end for the
+# shower (notes/sauna_shower_basement_detail.md).
 BASEMENT_PLACEABLES = [
     # The long two-tier run takes the east wall: it is the only unbroken face in the room —
     # the west wall has D-B-SAUNA, the south wall WIN-B-SAUNA — so the bench lands as one
     # 8'-6" carcass with no scribes around an opening. rotation -90 puts its back (+y local)
-    # against that face, giving x 13'-8 1/2"..17'-2 1/2" and y 1'-0"..9'-6".
+    # against that face, giving x 13'-8 1/2"..17'-2 1/2" and
+    # y 1'-3 1/2"..9'-9 1/2" — still clearing FX-B-SAUNA-SH's pan by 8 11/16" at its north end.
     Furniture(uid="CBF601AAAA", tag="FURN-B-SAUNA-BENCH-E", type_ref="FURN-SAUNA-BENCH-2T-102",
-              room="RM-B-SAUNA", position=pt(ft(15, 5.5), ft(5, 3)), rotation=deg(-90)),
+              room="RM-B-SAUNA", position=pt(ft(15, 5.5), ft(5, 6.5)), rotation=deg(-90)),
     # The foot bench returns along the south wall, butted into the two-tier run's west face
     # at 13'-8 1/2" with an 11/16" scribe left at the west liner. rotation 180 puts its back
     # to the south. Its top is 18", well clear of WIN-B-SAUNA's 3'-0" sill above it.
     Furniture(uid="CBF602AAAA", tag="FURN-B-SAUNA-BENCH-S", type_ref="FURN-SAUNA-BENCH-54",
-              room="RM-B-SAUNA", position=pt(ft(11, 5.5), ft(1, 10)), rotation=deg(180)),
+              room="RM-B-SAUNA", position=pt(ft(11, 5.5), ft(2, 1.5)), rotation=deg(180)),
 ]
 MAIN_PLACEABLES = [
     Furniture(uid="XV5MXV43QJ", tag="FURN-M-SOFA", type_ref="FURN-SOFA-84", room="RM-M-LIVING",
@@ -416,8 +419,9 @@ SECOND_PLACEABLES = [
               rotation=deg(180)),
     # RM-S-PLANT: a place to sit among the plants, program divides along y — plants on the
     # south glass, seating behind. Plants sit directly under ED-S-PLANT-TUBE1/2 (x=3'-4"/8'-8",
-    # 2'-3" below ceiling, on a photoperiod timer) and under WIN-S-PLANT1/2 (same x, WT-3048
-    # pair) so each gets daylight plus the tube.
+    # 2'-3" below ceiling, on a photoperiod timer) and under WIN-S-PLANT1/2 (same x, the
+    # WT-3048-HP/-HP-T pair since the 2026-08-18 glazing retype — same 30" of glass, better
+    # U) so each gets daylight plus the tube.
     # Chairs face south from y 4'-0"..7'-0", 1'-3" clear of the plants' north edge. The 1'-3"
     # gap between them used to straddle REG-S-SUP1 (9', 4'), a floor register; that terminal
     # went with the ERV's second-storey supply side on 2026-07-29 and the room's supply is a
@@ -433,8 +437,12 @@ SECOND_PLACEABLES = [
               room="RM-S-PLANT", position=pt(m(1.13772), m(1.8808)), rotation=deg(45)),
     Furniture(uid="RCK702AAAA", tag="FURN-S-PLANT-ROCKER", type_ref="FURN-ROCKING-CHAIR-30",
               room="RM-S-PLANT", position=pt(m(4.06734), m(1.93971)), rotation=deg(-45)),
+    # Moved y 8'-7 5/8" -> 8'-6 3/8" and retyped to the wet-location spot (2026-08-18): the
+    # north partition took the plant room's humid liner, so its face came 1 1/4" south, and
+    # a fixture in a room that condenses on purpose has to be wet-location listed rather
+    # than the ordinary interior sconce this shared with the study.
     ElectricalDevice(uid="QTS0020AAA", tag="ED-S-PLANT-SPOT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(4, 2.125), ft(8, 7.625)), type_ref="ED-T-LT-SCONCE-SPOT",
+                     position=pt(ft(4, 2.125), ft(8, 6.375)), type_ref="ED-T-LT-SCONCE-SPOT-WET",
                      circuit="CKT-LT-UPPER", room="RM-S-PLANT",
                      controlled_by=("ED-S-PLANT-SW-TIMER",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6))),

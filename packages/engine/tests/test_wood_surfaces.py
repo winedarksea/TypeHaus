@@ -36,6 +36,27 @@ def _wall_net_ft2(catlin_model, wall) -> float:
     return max(0.0, run * (mean_top - wall.z0_m) - openings) * _M2_TO_FT2
 
 
+def _liner_net_ft2(catlin_model, wall, material_ref="sauna-tg") -> float:
+    """The same convention for a *banded* liner layer: run x band height, net of the
+    openings inside the band. W-B-S2's liner stops at the sauna's 7'-6" ceiling while its
+    host foundation wall runs 9'-0", so billing the wall's face would buy 13.7 sf of
+    basswood for concrete nobody sees."""
+    layer = next(ly for ly in wall.layers if ly.material_ref == material_ref)
+    if not layer.is_banded:
+        return _wall_net_ft2(catlin_model, wall)
+    band_z0, band_z1 = layer.band(wall)
+    run = length(sub(wall.axis[1], wall.axis[0]))
+    area = run * (band_z1 - band_z0)
+    for opening in catlin_model.openings:
+        if opening.host_wall != wall.tag:
+            continue
+        overlap = (min(band_z1, wall.z0_m + opening.sill_m + opening.height_m)
+                   - max(band_z0, wall.z0_m + opening.sill_m))
+        if overlap > 0.0:
+            area -= opening.width_m * overlap
+    return max(0.0, area) * _M2_TO_FT2
+
+
 # --- the sauna liner and its tile splash ---------------------------------------------------
 
 def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
@@ -46,8 +67,10 @@ def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
     liner_walls = [w for w in catlin_model.walls
                    if any(ly.function == LayerFunction.FINISH.value
                           and ly.material_ref == "sauna-tg" for ly in w.layers)]
-    assert {w.tag for w in liner_walls} == {"W-B-SA-W", "W-B-SA-N", "W-B-CS"}
-    gross = sum(_wall_net_ft2(catlin_model, w) for w in liner_walls)
+    # W-B-S2, the sauna's south face, joined the set on 2026-08-18 — a liner variant of the
+    # sunken-garden foundation wall, banded to the room's 7'-6" ceiling.
+    assert {w.tag for w in liner_walls} == {"W-B-SA-W", "W-B-SA-N", "W-B-CS", "W-B-S2"}
+    gross = sum(_liner_net_ft2(catlin_model, w) for w in liner_walls)
     splash = sum(p.area_m2 for p in catlin_model.panelings
                  if p.replaces_wall_finish) * _M2_TO_FT2
     assert splash == pytest.approx(2 * 3.0 * 7.5, rel=1e-3)  # two 3' bands x 7'-6"
@@ -78,7 +101,7 @@ def test_envelope_layers_stays_gross_of_the_splash(catlin_model, bom):
     liner_walls = [w for w in catlin_model.walls
                    if any(ly.function == LayerFunction.FINISH.value
                           and ly.material_ref == "sauna-tg" for ly in w.layers)]
-    gross = sum(_wall_net_ft2(catlin_model, w) for w in liner_walls)
+    gross = sum(_liner_net_ft2(catlin_model, w) for w in liner_walls)
     assert sum(float(r["net_area_sqft"]) for r in liner_rows) == pytest.approx(
         gross, abs=0.1)
 

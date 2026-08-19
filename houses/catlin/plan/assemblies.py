@@ -188,27 +188,35 @@ CATLIN_BASEMENT_12 = Assembly(
     source="catlin-house basement N/E/W: 12\" wall + 2x2\" exterior XPS + above-grade protection panel",
 )
 
+# The south wall's stack, hoisted so the bare garden wall and the sauna-liner variant of it
+# (SAUNA_LINER_ON_BASEMENT_12_GARDEN, below) share one source of truth rather than two
+# hand-kept copies — the shape _SAUNA_LINER / _HUMID_LINER already use. Interior→exterior,
+# starting at the concrete: whatever is inboard of the pour is the variant's business.
+_GARDEN_CONCRETE_STACK = (
+    Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
+          function=LayerFunction.STRUCTURE),
+    Layer(name="damp-proof", material_ref="air-barrier", thickness=inch(0.05),
+          function=LayerFunction.MEMBRANE,
+          control={ControlLayer.AIR, ControlLayer.WATER}),
+    Layer(name="xps-a", material_ref="xps", thickness=inch(2.0),
+          function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+    Layer(name="xps-b", material_ref="xps", thickness=inch(2.0),
+          function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+    # Parge coat over mesh (2026-08-01): exposed XPS degrades under UV/impact, and here
+    # the exposure runs the full south wall from the sunken garden floor to the
+    # main-storey siding — bare pink foam was reading as the wall's finish. Reuses the
+    # porch railing's Portland-cement stucco; rides outboard of everything so the
+    # concrete face (the footings/damp-proofing/drain-tile datum) is untouched. Full
+    # height and staying that way: this face has no grade line on it to band against.
+    Layer(name="parge", material_ref="stucco", thickness=inch(0.5),
+          function=LayerFunction.FINISH),
+)
+
 # The south wall, which the sunken garden opens to the air over its whole 9'.
 CATLIN_BASEMENT_12_GARDEN = Assembly(
     tag="CATLIN_BASEMENT_12_GARDEN",
     layers=(
-        Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
-              function=LayerFunction.STRUCTURE),
-        Layer(name="damp-proof", material_ref="air-barrier", thickness=inch(0.05),
-              function=LayerFunction.MEMBRANE,
-              control={ControlLayer.AIR, ControlLayer.WATER}),
-        Layer(name="xps-a", material_ref="xps", thickness=inch(2.0),
-              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        Layer(name="xps-b", material_ref="xps", thickness=inch(2.0),
-              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        # Parge coat over mesh (2026-08-01): exposed XPS degrades under UV/impact, and here
-        # the exposure runs the full south wall from the sunken garden floor to the
-        # main-storey siding — bare pink foam was reading as the wall's finish. Reuses the
-        # porch railing's Portland-cement stucco; rides outboard of everything so the
-        # concrete face (the footings/damp-proofing/drain-tile datum) is untouched. Full
-        # height and staying that way: this face has no grade line on it to band against.
-        Layer(name="parge", material_ref="stucco", thickness=inch(0.5),
-              function=LayerFunction.FINISH),
+        *_GARDEN_CONCRETE_STACK,
     ),
     interfaces=(_CONCRETE_BEARING,),
     source="catlin-house basement south: 12\" wall + 2x2\" exterior XPS + full-height parge over the sunken garden",
@@ -643,6 +651,41 @@ SAUNA_LINER_ON_CONCRETE = Assembly(
     source="catlin-house sauna_basement_wall_detail.py (liner on the center bearing wall)",
 )
 
+# W-B-S2 only: the sauna's south side is a segment of the sunken-garden foundation wall,
+# whose every non-structural layer sits *outboard* of the pour — so without this variant the
+# room's fourth face is bare concrete while the other three carry the liner. Same liner, same
+# order, on concrete instead of studs: the furring is fastened to the pour, not to framing.
+#
+# The three liner layers are restated here rather than splatted from _SAUNA_LINER because
+# they carry a vertical extent that is specific to this wall and must not leak onto the
+# partitions: the sauna's ceiling is at 7'-6" (W-B-SA-W/-N are `top=ft(7, 6)`) while the
+# foundation wall runs the full 9'-0" from bottom_elevation=ft(-9) to top_elevation=ft(0).
+# Bounding the liner at WALL_TOP - 1'-6" keeps the takeoff from billing basswood T&G, furring
+# and foil-faced polyiso over the 1'-6" of concrete above the sauna's ceiling.
+# PROVISIONAL: if the basement ever goes to a joist ceiling running the full width, the liner
+# would run the wall's whole height and this extent should come back off.
+_SAUNA_CEILING_EXTENT = LayerExtent(
+    top=LayerBound(datum=LayerDatum.WALL_TOP, offset=inch(-18.0)))
+
+SAUNA_LINER_ON_BASEMENT_12_GARDEN = Assembly(
+    tag="SAUNA_LINER_ON_BASEMENT_12_GARDEN",
+    layers=(
+        Layer(name="tg-liner", material_ref="sauna-tg", thickness=inch(1.0),
+              function=LayerFunction.FINISH, extent=_SAUNA_CEILING_EXTENT),
+        Layer(name="liner-furring", material_ref="struct-1-plywood", thickness=inch(0.5),
+              function=LayerFunction.FURRING,
+              framing=FramingSpec(member="1x4", direction="horizontal"),
+              extent=_SAUNA_CEILING_EXTENT),
+        Layer(name="foil-polyiso", material_ref="polyiso-foil", thickness=inch(2.0),
+              function=LayerFunction.INSULATION,
+              control={ControlLayer.THERMAL, ControlLayer.VAPOR, ControlLayer.AIR},
+              extent=_SAUNA_CEILING_EXTENT),
+        *_GARDEN_CONCRETE_STACK,
+    ),
+    interfaces=(_CONCRETE_BEARING,),
+    source="catlin-house sauna_basement_wall_detail.py + CATLIN_BASEMENT_12_GARDEN (liner on the sunken-garden foundation wall)",
+)
+
 # --- mudroom exposed-stud wall ---------------------------------------------------
 # W-M-STRW only. No default_lining, deliberately (like SAUNA_2X4): the mudroom face is a
 # finished face made of the framing itself, not drywall left off. The open 2x6 bays are the
@@ -710,7 +753,15 @@ MATERIALS = [
     Material(tag="polyiso-foil", name="Foil-faced polyisocyanurate", r_per_inch=6.0,
              perm_rating=0.03, hatch="rigid", color="#d9d2a8",
              source="foil facer is the sauna's vapour retarder as well as its CI"),
-    # --- porch / balcony masonry + decking -------------------------------------
+    # The plant room's three materials — `pvc-panel`, `humid-room-membrane` and
+    # `vinyl-sheet` — were authored here first and promoted to `library/materials.py`
+    # (CONTRIBUTING §Promotion flow) on 2026-08-18: none of them carries a project
+    # coordinate, an owner choice or a house-specific dimension, all three are ordinary
+    # catalog products with stable tags, and `takeoff/finishes.py::_WASTE` (engine code)
+    # names `vinyl-sheet` — an engine table may not depend on a material only one house
+    # defines. They arrive through `STARTER_MATERIALS` above. See notes/plant_room.md for
+    # why the panel deliberately carries no permeance and the membrane carries a
+    # specification value.
     Material(tag="brick", name="Face brick", r_per_inch=0.20, density=1920.0,
              perm_rating=1.0, hatch="concrete", color="#9c5a4a", finish="brick",
              source="red face brick — the catalog default wythe"),
@@ -803,6 +854,114 @@ MATERIALS = [
              source="breezeway glazing trim — mill-finish 6063-T5 extrusion"),
 ]
 
+# --- plant room (RM-S-PLANT) ------------------------------------------------------
+# A room held at ~75 F / 70% RH year-round against a -15 F design temperature is a
+# natatorium-class vapour drive in a residential shell, and the failure mode is invisible:
+# rot inside the stud bays, found years later. The whole design is one idea — no
+# moisture-sensitive material ever sees moist room air — and it is authored the way the
+# sauna's hot side is authored, as its own wall TYPE rather than a `Room.wall_lining`
+# override. That is deliberate three times over: the liner changes the wall's thickness (a
+# lining override may not), an asymmetric wall needs `interior_room` to say which face it
+# lands on, and only a type is a thing `building_science.humid_room_liner` can see.
+#
+# The panel is NOT the vapour barrier — no PVC or FRP maker publishes a perm rating, so the
+# control layer is a separate, continuous, sealed membrane behind it, chosen because it has
+# a published ASTM E96 number. The furring between them is a drainage and drying gap: any
+# water that gets behind the panel runs down it to the floor tray instead of standing on
+# the membrane. See notes/plant_room.md for the full argument and the numbers.
+_HUMID_LINER = (
+    Layer(name="pvc-panel", material_ref="pvc-panel", thickness=inch(0.5),
+          function=LayerFunction.FINISH),
+    # 1x4 laid flat and running horizontally, like the sauna's: T&G PVC runs vertically, so
+    # its concealed screw flange lands on strapping across the studs rather than with them.
+    # The gap it makes is the point of it — anything that gets behind the panel drains down
+    # it to the floor tray instead of standing on the membrane.
+    Layer(name="liner-furring", material_ref="spf", thickness=inch(0.75),
+          function=LayerFunction.FURRING,
+          framing=FramingSpec(member="1x4", direction="horizontal")),
+    Layer(name="humid-membrane", material_ref="humid-room-membrane", thickness=inch(0.04),
+          function=LayerFunction.MEMBRANE,
+          control={ControlLayer.VAPOR, ControlLayer.AIR}),
+)
+
+# The two exterior walls, W-S-S1 and W-S-W4. Everything outboard of the liner is
+# CATLIN_EXT_2X6 verbatim, restated rather than composed because the editable dialect has
+# no way to splice one assembly's layers into another. Keep the two in step by hand.
+#
+# CATLIN_EXT_2X6 needs no re-engineering for this room and deliberately gets none: the
+# model's `polyiso` is 1.0 perm-in and `eps` 3.9, so the exterior CI stack runs about
+# 0.4 perm — Class II, slow but real outward drying. THE POLYISO MUST BE GLASS-FACED OR
+# UNFACED, NEVER FOIL-FACED. Foil-faced (the house's own `polyiso-foil`, 0.03 perm) would
+# sandwich the stud bay between two vapour barriers with wet-prone wood at 25 F in between,
+# and the model would not catch it because it carries the permeable number.
+PLANT_EXT_2X6_HUMID = Assembly(
+    tag="PLANT_EXT_2X6_HUMID",
+    layers=(
+        *_HUMID_LINER,
+        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x6", sill_gasket=inch(0.25)),
+              cavity=CavityFill(material_ref="mineral-wool")),
+        Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
+              function=LayerFunction.SHEATHING),
+        Layer(name="wrb", material_ref="air-barrier", thickness=inch(0.02),
+              function=LayerFunction.MEMBRANE,
+              control={ControlLayer.AIR, ControlLayer.WATER}),
+        Layer(name="polyiso", material_ref="polyiso", thickness=inch(2.0),
+              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+        Layer(name="eps", material_ref="eps", thickness=inch(2.0),
+              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+        Layer(name="furring", material_ref="spf", thickness=inch(0.5),
+              function=LayerFunction.FURRING,
+              framing=FramingSpec(member="1x4", direction="vertical")),
+        Layer(name="cladding", material_ref="standing-seam", thickness=inch(0.5),
+              function=LayerFunction.CLADDING),
+    ),
+    interfaces=(_STUD_BEARING,),
+    source="notes/plant_room.md — CATLIN_EXT_2X6 outboard of a sealed PVC/membrane liner; the sheathing datum does not move (decision #43), the liner grows inward",
+)
+
+# W-S-C1, the x=18' bearing line. Liner on the plant-room face, ordinary painted gypsum on
+# the study side — the same asymmetry SAUNA_2X4 has, and the same reason `interior_room` is
+# not optional on the wall that uses it.
+#
+# "INT" is a whole `_`-delimited token on purpose: `mn_energy.py` splits the tag on `_` to
+# decide whether a wall is interior, and PLANT_INT2X6 or PLANTINT_2X6 would be graded
+# against R-21 as though this partition faced the weather.
+PLANT_INT_2X6_BRG_HUMID = Assembly(
+    tag="PLANT_INT_2X6_BRG_HUMID",
+    layers=(
+        *_HUMID_LINER,
+        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6"),
+              cavity=CavityFill(material_ref="mineral-wool")),
+        Layer(name="gwb-cold", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        _PAINT_FINISH_B,
+    ),
+    interfaces=(_STUD_BEARING,),
+    source="notes/plant_room.md — plant room / RM-S-STUDY2 bearing line; humid liner one face, painted gypsum the other",
+)
+
+# W-S-PS1 and W-S-PS2, the two north partitions onto RM-S-STUDY2. Same idea one stud size
+# down. The cavity is insulated even though both sides are conditioned: it is a 75 F room
+# against a 70 F one, and the batt is there for the temperature difference and the noise of
+# a fan running continuously, not for an energy code.
+PLANT_INT_2X4_HUMID = Assembly(
+    tag="PLANT_INT_2X4_HUMID",
+    layers=(
+        *_HUMID_LINER,
+        Layer(name="stud", material_ref="spf", thickness=inch(3.5),
+              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x4"),
+              cavity=CavityFill(material_ref="mineral-wool")),
+        Layer(name="gwb-cold", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        _PAINT_FINISH_B,
+    ),
+    interfaces=(_STUD_BEARING,),
+    source="notes/plant_room.md — plant room north partitions; humid liner one face, painted gypsum the other",
+)
+
 # --- construction rules: pre-resolve returns at mixed-assembly junctions (#45) ----------
 # Typed declarations of the physical returns the junction solver leaves for framing/takeoff
 # (documented via a Transition overlay, never drawn; none mutate construction geometry):
@@ -842,13 +1001,37 @@ CONSTRUCTION_RULES = [
         dimension=inch(7.625),
         takeoff_category="masonry-corner-return",
     ),
+    # The plant room's rim bands (2026-08-18). FS-SECOND and FS-ATTIC both run their joists
+    # in x, so their ends bear on W-S-W4 and a parallel rim bay sits against W-S-S1 — two
+    # direct paths from a floor cavity into the coldest part of an exterior wall, and neither
+    # can take a sheet membrane, because there is no continuous plane to lap one onto between
+    # joist ends. Closed-cell foam is the only product that is the insulation, the air
+    # barrier and the vapour retarder at once in a cavity that shape.
+    #
+    # It is a ConstructionRule and not just a Transition because a Transition documents and
+    # cannot bill (#45): TR-CATLIN-PLANT-RIM draws the detail, this puts the foam in the
+    # takeoff. 3" is the specified depth — deep enough to be the retarder (about 0.53 perm)
+    # rather than only the air seal.
+    #
+    # `scope_ref` because which rooms are run wet is a room decision, not a property of the
+    # deck or the wall type — the same reasoning CR-LIVING-CEIL-RC's scope carries.
+    ConstructionRule(
+        tag="CR-PLANT-RIM-FOAM",
+        applies_to="wall:rim_cavity_foam",
+        kind="blocking",
+        dimension=inch(3.0),
+        takeoff_category="rim-spray-foam",
+        scope_ref="RM-S-PLANT",
+    ),
     # Resilient channel under the living room only: bedrooms sit directly over it, and 5/8"
     # gypsum screwed straight to the I-joists would carry footfall as impact noise. Scoped to
     # RM-M-LIVING (a room decision, not FS-SECOND's) — the rest of that ceiling is screwed
     # direct. A full layered-ceiling assembly is deliberately deferred; this just bills the
     # channel (gypsum comes via FS-SECOND's `ceiling_below`).
-    # KNOWN GAP: `construction_returns` isn't priced by `cli/prices.py::_SECTIONS`, so these
-    # lineal feet show up in the BOM but never the cost estimate (true of every rule above too).
+    # (That gap is closed as of 2026-08-18: `construction_returns` is a priced section now.
+    # This rule's own channel is still left unpriced in houses/catlin/prices.toml, on purpose
+    # and with the reason written there — it is the same "is this a second count of material
+    # another table already bought" question the sill plate raises.)
     ConstructionRule(
         tag="CR-LIVING-CEIL-RC",
         applies_to="floor:ceiling_channel",
@@ -891,5 +1074,9 @@ ASSEMBLIES = [
     INT_ESS_CLOSET_STEEL,
     SAUNA_2X4,
     SAUNA_LINER_ON_CONCRETE,
+    SAUNA_LINER_ON_BASEMENT_12_GARDEN,
+    PLANT_EXT_2X6_HUMID,
+    PLANT_INT_2X6_BRG_HUMID,
+    PLANT_INT_2X4_HUMID,
     CATLIN_MUDROOM_INT_2X6_EXPOSED,
 ]

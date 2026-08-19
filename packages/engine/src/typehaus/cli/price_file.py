@@ -71,6 +71,8 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "pl
              # Sheet-metal families the yard is the wrong unit for (2026-08-08): guards and
              # gutter/leader runs by the foot.
              "railings", "drainage",
+             # Pre-framing construction-rule returns (2026-08-18), by the lineal foot.
+             "construction_returns",
              # Loose furnishings (2026-08-08) — priced, reported, and deliberately *not*
              # summed into the construction total. See ``EXCLUDED_FROM_TOTAL``.
              "furnishings")
@@ -189,6 +191,17 @@ class Prices:
     # cubic yard of sheet metal — price them here, and leave `gutter`/`downspout` blank in
     # [concrete]. The drywell rows carry length 0 and bill their aggregate there instead.
     drainage: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Construction-rule returns by the lineal foot (2026-08-18), keyed on the row's
+    # ``takeoff_category`` — "pt-sill-plate", "rim-spray-foam", "sauna-liner-return", ...
+    #
+    # This table was the last section of the BOM with no price join at all, which was
+    # tolerable while every return was a *lap* of material some other table already bought
+    # (the sauna liner turning a corner is more of the polyiso already in [envelope_layers]).
+    # ``rim-spray-foam`` broke that: closed-cell foam in a rim cavity is in no assembly and
+    # no other table, so it is material nobody was paying for. Mind the same mirror the
+    # drainage note describes — price a return here only where it is a *separate purchase*,
+    # and leave the pure laps blank rather than billing the same material twice.
+    construction_returns: Mapping[str, PriceRange] = field(default_factory=dict)
     # Loose furnishings (2026-08-08), keyed on the same catalog type tag as [placeables]
     # and read against the same BOM rows. A sofa is not a construction cost, and rolling
     # one into the build number makes the build number wrong in both directions — it is

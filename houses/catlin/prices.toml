@@ -267,7 +267,42 @@
 # "dowel" =    # 0 cy
 "footing" = { low = 190, high = 300 }  # 38.63 cy
 "pad" = { low = 220, high = 350 }  # 0.59 cy
-"slab" = { low = 175, high = 280 }  # 60.63 cy
+"slab" = { low = 175, high = 280 }  # 26.37 cy — SLAB-ON-GRADE ONLY, see the row below
+# RESEARCHED 2026-08-18 — the suspended main-floor deck, priced apart from every other
+# slab in the house. `structural_solids` keys on solid CATEGORY, and "slab" is one
+# category covering two completely different jobs: a slab-on-grade is screeded on the
+# ground, while SL-M-DECK is a 9" structural deck cast 9'-0" in the air over the basement.
+# It carries formwork, ~10' shoring on a one-month rental minimum, ~2.0-2.7 tons of
+# reinforcing, a boom pump, a polish-ready trowel finish and a structural engineer's
+# stamp. None of that is in the $175-280/cy above, which is why this deck read as
+# $4.86-7.78/SF until today — a slab-on-grade number for a suspended deck, low by 3-5x.
+#
+# The category taxonomy is NOT split to say so: `ResolvedSolid.category` is read by a
+# dozen checks and printed in the 3D Inspector. `cli/prices.QUALIFIED_KEY_FIELD` lets
+# [concrete] key "category:assembly" instead, and only when this file carries that key.
+#
+# Build-up, 1,233 SF net / 34.26 cy = 36 SF per cy, so $/cy = $/SF x 36:
+#   formwork + shoring, single use, no reuse credit   $8.00-14.00/SF
+#   reinforcing furnished + placed, 100-160 lb/cy     $3.60- 7.70/SF
+#   ready-mix, 37-38 cy ordered @ $180-200/cy         $5.40- 6.20/SF
+#   boom pump (mob + hours + yardage)                 $1.15- 1.80/SF
+#   place, screed, multi-pass power trowel, cure      $3.50- 6.50/SF
+#   cold-weather protection (Nov-Mar in MN)           $0.00- 0.75/SF
+#   small-job premium / commercial-sub mobilization   $2.00- 6.00/SF
+#   structural + shoring engineering, stamped         $2.03- 6.08/SF
+#                                                    ------------------
+#                                                    $25.68-49.03/SF
+# The engineering IS in this rate on purpose. It is a soft cost that does not scale with
+# volume, but the joist alternative gets its layout free from the supplier, so leaving it
+# out here would make the two options look closer than they are. Most-likely landing zone
+# is $34-38/SF; the range below is the full low-high.
+#
+# Sources: evensonconcrete.com slab-on-grade vs elevated, wagcoconstruction.com 2026
+# commercial concrete $/SF, projul.com elevated-slab formwork guide, homeblue.com
+# Minneapolis $/cy, angi.com concrete pumping 2026, homeguide.com rebar prices 2026,
+# civilsir.com rebar lb/cy, concretetoolkit.com concrete labour calculator,
+# homeguide.com structural engineer cost 2026.
+"slab:CATLIN_DECK_9_INT" = { low = 930, high = 1760 }  # 34.26 cy — SUSPENDED deck
 "sump" = { low = 700, high = 2100 }  # 0.19 cy
 "thermal_break" = { low = 300, high = 500 }  # 0.03 cy
 # Mirrors and markers — billed in their own sections, or in no section at all:
@@ -326,7 +361,7 @@
 #            $50-400.
 #   REG-*    engineeringair.com / hvacwholesaledirect.com grille listings, $19-78 by size.
 #
-# FURNITURE SPLIT, 2026-08-08b. The loose furniture moved to [furnishings], which is priced
+# FURNITURE SPLIT, 2026-08-08b. The loose furniture moved to furnishings, which is priced
 # and reported BESIDE the construction total rather than inside it. The line the owner drew
 # is fixed-and-price-stable vs loose-and-volatile, not the FURN- tag: what stays here is the
 # eight FURN-* rows that are effectively built in — the nine BESTA wall units, both sauna
@@ -378,6 +413,10 @@
 "ED-T-LT-CAN4-WET" = { low = 35, high = 95 }  # 9 ea
 "ED-T-LT-CHANDELIER" = { low = 300, high = 1500 }  # 1 ea
 "ED-T-LT-FAN52" = { low = 150, high = 500 }  # 2 ea
+# 2026-08-18: the same 52" fan in a wet-location listed housing — sealed non-ferrous
+# motor, gasketed light kit. A ~30-40% adder over the damp-rated version, which is the
+# spread the outdoor-rated fan listings carry over their indoor twins.
+"ED-T-LT-FAN52-WET" = { low = 200, high = 700 }  # 1 ea
 "ED-T-LT-FAN60" = { low = 200, high = 600 }  # 1 ea
 "ED-T-LT-FLOOD-NARROW" = { low = 80, high = 250 }  # 1 ea
 "ED-T-LT-MIRROR" = { low = 120, high = 450 }  # 5 ea
@@ -388,6 +427,9 @@
 "ED-T-LT-PSU-60" = { low = 30, high = 90 }  # 3 ea
 "ED-T-LT-SCONCE-EXT" = { low = 70, high = 250 }  # 1 ea
 "ED-T-LT-SCONCE-SPOT" = { low = 70, high = 250 }  # 5 ea
+# 2026-08-18: the same down-spot, wet-location listed with a gasketed lens and a
+# corrosion-resistant housing. Same ~30-40% adder as the fan above.
+"ED-T-LT-SCONCE-SPOT-WET" = { low = 95, high = 340 }  # 1 ea
 "ED-T-LT-SCONCE-STAIR" = { low = 60, high = 220 }  # 3 ea
 "ED-T-LT-SCONCE-UD" = { low = 70, high = 240 }  # 2 ea
 "ED-T-LT-SHOP4" = { low = 30, high = 80 }  # 2 ea
@@ -405,6 +447,11 @@
 "ED-T-RECEPTACLE-520S" = { low = 4, high = 14 }  # 1 ea
 "ED-T-RECEPTACLE-620" = { low = 12, high = 35 }  # 1 ea
 "ED-T-RECEPTACLE-GFCI" = { low = 18, high = 45 }  # 17 ea
+# 2026-08-18, RM-S-PLANT. A GFCI device with a WR-listed body, plus the two things that
+# make it right for a room that condenses: an in-use ("bubble") cover ($12-25) and a
+# non-metallic gasketed box ($4-9). Priced as the assembly, because buying the GFCI
+# without the cover would be buying the wrong thing.
+"ED-T-RECEPTACLE-WR-GFCI" = { low = 38, high = 85 }  # 5 ea
 "ED-T-SAUNA-JB" = { low = 12, high = 40 }  # 1 ea
 "ED-T-SWITCH" = { low = 3, high = 10 }  # 36 ea
 "ED-T-SWITCH-DIM" = { low = 20, high = 60 }  # 6 ea
@@ -461,10 +508,16 @@
 "FX-TUBSHOWER-60" = { low = 400, high = 1400 }  # 2 ea
 "REG-T-ERV-EXH" = { low = 25, high = 80 }  # 15 ea
 "REG-T-ERV-SAUNA-EXH" = { low = 15, high = 60 }  # 1 ea
+# 2026-08-18, RM-S-PLANT. Both carry a MOTORISED damper rather than a manual face damper,
+# which is most of the price: a 6" motorised zone damper with an actuator is $90-220, and
+# the grille itself is the $15-50 the plain terminals cost. The RH controller that drives
+# the pair is not modelled and so is not in this file.
+"REG-T-ERV-PLANT-EXH" = { low = 110, high = 280 }  # 1 ea
 "REG-T-ERV-SAUNA-SUP" = { low = 15, high = 60 }  # 1 ea
 "REG-T-ERV-SUP" = { low = 25, high = 80 }  # 5 ea
 "REG-T-HP-RET" = { low = 30, high = 90 }  # 1 ea
 "REG-T-HP-SUP" = { low = 15, high = 50 }  # 8 ea
+"REG-T-HP-SUP-DAMPERED" = { low = 120, high = 300 }  # 1 ea — 8" motorised zone damper
 # The passive transfer louver. Cheapest terminal in the house and it should be: a stamped
 # door/wall grille with no damper, no boot and no duct behind it. Bracketed against
 # REG-T-HP-SUP above, which is the same kind of stamped face with a duct collar on it.
@@ -489,6 +542,14 @@
 "rubber" = { low = 3, high = 8 }  # 357 SF
 "sealed-concrete" = { low = 0.35, high = 1.2 }  # 1155 SF — densifier + sealer only
 "tile" = { low = 3, high = 9 }  # 495 SF
+# 2026-08-18: RM-S-PLANT. Sheet vinyl itself is cheap — commercial homogeneous sheet runs
+# $2.50-5/SF — but this floor is not just the goods: the seams are heat-welded and it turns
+# a 6" integral flash cove up every wall, which is a specialist install and roughly doubles
+# the material-side number a plank floor carries. Priced at the top of the sheet range
+# accordingly; the welding rod and cove stick are in it.
+# Sources: homeguide.com 2026 sheet-vinyl chart, commercial resilient-flooring surveys for
+# the heat-weld/flash-cove adder.
+"vinyl-sheet" = { low = 4, high = 8 }  # 179 SF
 
 [envelope_layers]
 # RESEARCHED 2026-08-07 — [low, high] $/SF net, material only. IMPORTANT: this section is
@@ -515,6 +576,19 @@
 # Sources: homewyse.com 2026 foundation insulation protection board, and the same range
 # the trade quotes for aluminium foundation coving.
 "gwb" = { low = 0.45, high = 0.75 }  # 11078.9 SF
+# 2026-08-18, the plant room's liner (notes/plant_room.md). Both are $/SF of NET wall area,
+# material only, at the thickness the assembly uses.
+#   humid-room-membrane — a fully-adhered sheet air/vapour barrier, the class of product
+#   sold as a self-adhered "smart"/Class I membrane in 200-SF rolls at $110-190 a roll,
+#   i.e. $0.55-0.95/SF. It sits above `air-barrier` (a mechanically-fastened housewrap)
+#   because it is adhesive-backed and is the barrier, not a drainage plane.
+#   pvc-panel — 1/2" T&G interlocking PVC wall panel, quoted per 16" x 8' plank (10.7 SF)
+#   at $45-80, i.e. $4.20-7.50/SF. Comparable per SF to the sauna's basswood T&G, which is
+#   the right sanity check: both are a finished, jointed, non-cellulose liner rather than a
+#   sheet of board. Sources: Trusscore/Extrutech published plank pricing, and the same
+#   sheet-membrane surveys behind the `air-barrier` row above.
+"humid-room-membrane" = { low = 0.55, high = 0.95 }  # 445.2 SF
+"pvc-panel" = { low = 4.2, high = 7.5 }  # 445.2 SF
 "gwb-x" = { low = 0.6, high = 1 }  # 92.3 SF
 "icf-eps" = { low = 2.2, high = 3.8 }  # 952.5 SF
 "latex-paint" = { low = 0.35, high = 0.8 }  # 7004.9 SF
@@ -561,6 +635,11 @@
 # three took an above-grade panel instead. Identical 12" pour, identical formwork, so
 # identical basis — the assemblies differ only outboard of the concrete.
 "CATLIN_BASEMENT_12_GARDEN" = { low = 320, high = 600 }
+# 2026-08-18: the same 12" pour with the sauna's liner inboard of it (W-B-S2). Priced
+# identically to its parent above, because this table prices PLACED CONCRETE by the yard and
+# the concrete is the same concrete — the liner it gained is basswood, furring and
+# foil-polyiso, and all three are already bought by the square foot in [envelope_layers].
+"SAUNA_LINER_ON_BASEMENT_12_GARDEN" = { low = 320, high = 600 }
 "CATLIN_CONC_12_INT" = { low = 320, high = 600 }  # 22.18 CY
 "GARAGE_ICF_6" = { low = 480, high = 1000 }  # 8.82 CY
 "RETAINING_BLOCK_12" = { low = 500, high = 1200 }  # 9.07 CY
@@ -624,6 +703,15 @@
 "WT-3036-T" = { low = 630, high = 1100 }  # 1 ea
 "WT-3048" = { low = 560, high = 1050 }  # 7 ea
 "WT-3048-T" = { low = 720, high = 1300 }  # 3 ea
+# 2026-08-18, the plant room's high-performance twins. Same dimensions as their parents and
+# a different glass package: triple/low-e at U-0.14 with a warm-edge spacer and a thermally
+# broken frame. A triple-glazed unit runs 40-60% over its double-glazed equivalent, and
+# `-HP-T` carries the same tempered adder over `-HP` that `-T` carries over its parent.
+# Not an upgrade the owner may decline: `building_science.glazing_dew_point` FAILs these
+# three openings at U-0.25 — the glass condenses below about +13 F outdoors.
+"WT-2736-HP" = { low = 680, high = 1300 }  # 1 ea
+"WT-3048-HP" = { low = 840, high = 1600 }  # 1 ea
+"WT-3048-HP-T" = { low = 1080, high = 1950 }  # 1 ea
 
 [footing_bedding]
 # RESEARCHED 2026-08-08 — [low, high] $/cy delivered, by aggregate spec. Basis: #57 washed
@@ -813,6 +901,40 @@
 "downspout" = { low = 5, high = 12 }  # 76.4 LF
 "gutter" = { low = 4, high = 12 }  # 121.5 LF
 
+[construction_returns]
+# NEW SECTION 2026-08-18 — [low, high] $/LF of return, material only, keyed on the rule's
+# `takeoff_category`. This table exists because `rim-spray-foam` arrived: closed-cell foam
+# in a rim cavity is in no assembly and in no other table, so before this it was material
+# nobody was paying for.
+#
+# MIND THE MIRROR (the same one [drainage] carries): most returns in this section are a
+# *lap* of material another table already bought, and pricing those here would bill the same
+# product twice. Those rows are left out deliberately, each with its reason — a blank here is
+# a decision, not an oversight, and `haus takeoff` will list them as unpriced either way.
+#   foundation-foam-return  — the XPS/EPS turning an L; already in [envelope_layers].
+#   masonry-corner-return   — retaining block; already in [concrete]/[wall_structure].
+#   sauna-liner-return      — the foil-polyiso wrapping onto concrete; already in
+#                             [envelope_layers] as `polyiso-foil`.
+#   pt-sill-plate           — 306.6 LF, and genuinely uncertain: the wall's own plates are
+#                             framed members in [framing], and whether this return is the
+#                             *pressure-treated* plate under them (a separate purchase) or a
+#                             second count of the same lumber is a question for whoever
+#                             authored CR-CONC-TO-FRAMED-SILL. Left unpriced rather than
+#                             guessed in either direction.
+#   resilient-channel       — 522.2 LF of hat/RC channel at roughly $0.45-0.90/LF; not
+#                             priced here only because it is the same open question one step
+#                             on, and it is not this pass's to answer.
+#
+# rim-spray-foam: 3" of closed-cell foam in an 11-7/8" rim cavity is about 3.0 board-feet of
+# foam per lineal foot (11.875" x 3"), and 2 lb ccSPF runs $1.00-1.50/board-foot installed
+# by a sprayer with a minimum-charge floor. That is $3.00-4.50/LF of rim, and the range below
+# widens the top end because 54 LF is well under any sprayer's minimum — the mobilisation, not
+# the foam, is what this line actually costs.
+# Sources: 2026 published ccSPF $/board-foot surveys (homeguide.com, retrofoamofmichigan);
+# the board-foot-per-foot figure is the cavity's own geometry, not a quote.
+# $/LF of return, by takeoff_category
+"rim-spray-foam" = { low = 3, high = 9 }  # 54 LF
+
 [furnishings]
 # RESEARCHED 2026-08-08a, split out of [placeables] 2026-08-08b — [low, high] $ each, same
 # catalog type tags and the same BOM rows. THIS SECTION IS NOT IN THE CONSTRUCTION TOTAL:
@@ -873,6 +995,7 @@ edge_trim            = "material"
 wall_structure       = "installed"
 railings             = "material"
 drainage             = "material"
+construction_returns = "material"
 furnishings          = "material"
 
 # The provenance that used to live in this file's prose header. A derived number is still

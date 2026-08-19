@@ -51,6 +51,13 @@ TRANSITIONS = (
                    "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|INT_2X6_STAGGERED_PLUMBING",
                    "storey_stack:rim:INT_2X4_PARTITION",
                    "storey_stack:rim:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",
+                   # The plant room's two rim conditions are drawn by TR-CATLIN-PLANT-RIM
+                   # below instead — same plane, a different detail (closed-cell foam
+                   # carrying a Class I barrier across the joist ends, not an air seal).
+                   # Both transitions match these keys, which is legal; unstarring them here
+                   # is what keeps ONE sheet per condition in the primary set.
+                   "storey_stack:rim:CATLIN_EXT_2X6|PLANT_EXT_2X6_HUMID",
+                   "storey_stack:rim:CATLIN_INT_2X6_BRG|PLANT_INT_2X6_BRG_HUMID",
                )),
     Transition(uid="CATR004AAAA", tag="TR-CATLIN-STACK-SHELF",
                condition_pattern="stack_width_change:*", overlay="stack-width-shelf",
@@ -114,6 +121,50 @@ TRANSITIONS = (
                                       to_face="foil-polyiso"),
                            Continuity(control="air", from_face="foil-polyiso",
                                       to_face="foil-polyiso")),
+               star=True),
+    # The plant room's rim band, and the hardest detail in the room. FS-SECOND and FS-ATTIC
+    # both run their joists in x, so the ends bear on W-S-W4 and a parallel rim bay sits
+    # against W-S-S1: two direct paths from a floor cavity into the coldest part of an
+    # exterior wall, and neither can take a sheet membrane — there is no continuous plane to
+    # lap it onto between the joist ends. Closed-cell spray foam at the rim in BOTH floor
+    # systems along both walls is the answer: bonded, monolithic, no seams, and its own
+    # vapour retarder, which is the only product that is simultaneously the air barrier, the
+    # vapour barrier and the insulation in a cavity shaped like that one.
+    #
+    # Its own sheet rather than a note on TR-CATLIN-RIM-BAND: everywhere else in this house
+    # the rim band is an air-seal detail at 35% RH, and here it is the continuity of a
+    # Class I barrier at 70%.
+    Transition(uid="CATR017AAAA", tag="TR-CATLIN-PLANT-RIM",
+               condition_pattern="storey_stack:rim:*PLANT_*",
+               # Same drawn vocabulary as TR-CATLIN-RIM-BAND (membrane strip, plate-line
+               # sealant, rim cavity foam), so it reuses that recipe rather than inventing a
+               # near-identical one; what differs here is the SPEC on it — closed-cell,
+               # full-depth, and doing the vapour barrier's job — which is what the notes
+               # page and this transition's continuity carry.
+               notes="notes/plant_room.md", overlay="rim-band-air-seal",
+               continuity=(Continuity(control="vapor", from_face="humid-membrane",
+                                      to_face="rim-foam"),
+                           Continuity(control="air", from_face="humid-membrane",
+                                      to_face="rim-foam")),
+               star=True),
+    # The plant room's openings. Cloned from TR-CATLIN-SAUNA-OPENING above for the same
+    # reason and with the same shape: an opening is a hole in the only thing keeping moist
+    # room air out of the stud bays, so the membrane is *returned into the jamb* and sealed
+    # to the window/door frame, not butted at the panel edge. `PLANT_*` catches all three
+    # assemblies at once — the exterior wall, the bearing line and the two partitions all
+    # carry the same liner, so the head/jamb/sill detail is the same sheet on each.
+    #
+    # Starred: this is the detail the room lives or dies by, and the one a glazier and a
+    # framer have to read together. It also carries the drained sill pan under every unit —
+    # sloped, flashed into the wall membrane, draining to the room and never into framing —
+    # which no other opening detail in this house needs.
+    Transition(uid="CATR016AAAA", tag="TR-CATLIN-PLANT-OPENING",
+               condition_pattern="opening_perimeter:PLANT_*",
+               notes="notes/plant_room.md", overlay="humid-liner-opening",
+               continuity=(Continuity(control="vapor", from_face="humid-membrane",
+                                      to_face="humid-membrane"),
+                           Continuity(control="air", from_face="humid-membrane",
+                                      to_face="humid-membrane")),
                star=True),
     Transition(uid="CATR013AAAA", tag="TR-CATLIN-RIDGE-BEAM",
                condition_pattern="roof_ridge:*", overlay="lvl-ridge-hanger"),

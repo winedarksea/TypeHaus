@@ -671,6 +671,9 @@ SECOND_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-S-BATH1",
                      mount=Mount(kind=MountKind.CEILING)),
 
+    # Both switches moved x 17'-7 5/8" -> 17'-6 3/4" with the humid liner on W-S-C1
+    # (2026-08-18): the wall's plant-room face came 1 1/4" west, and a switch authored to
+    # the old face resolves inside the panel.
     # RM-S-PLANT: two suspended tubes over the plants at the south windows, on a timer so
     # they run a photoperiod rather than whenever somebody remembers. The fan-light
     # (ED-S-PLANT-LT, re-typed) moves the humid air a plant room makes.
@@ -685,7 +688,7 @@ SECOND_LIGHTING = [
                      controlled_by=("ED-S-PLANT-SW-TIMER",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(2, 3))),
     ElectricalDevice(uid="QTS000RAAA", tag="ED-S-PLANT-SW-TIMER", kind=DeviceKind.SWITCH,
-                     position=pt(ft(17, 7.625), ft(2)), type_ref="ED-T-SWITCH-TIMER",
+                     position=pt(ft(17, 7), ft(2)), type_ref="ED-T-SWITCH-TIMER",
                      circuit="CKT-LT-UPPER", room="RM-S-PLANT", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 

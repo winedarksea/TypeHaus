@@ -16,6 +16,9 @@ its square feet into board feet. Neither is ever guessed from a tag substring.
 Known approximation, inherited for reconcilability: a FINISH liner on a foundation wall
 bills at the wall's full height (the same gross ``envelope_layers`` uses), though the
 physical liner may stop at a drop ceiling — the sauna's east wall carries ~20 sf of that.
+An *authored* ``Layer.extent`` is not that approximation and is honoured: it goes through
+the same ``wall_layer_net_area_m2`` ``envelope_layers`` uses, so the two sections agree on
+a banded liner rather than drifting apart on it.
 """
 
 from __future__ import annotations
@@ -45,6 +48,7 @@ def _order_area(net_ft2: float, waste: float) -> float:
 
 def wood_surfaces_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """One row per (species, material, kind): the species-split wood order."""
+    from typehaus.takeoff.envelope import wall_layer_net_area_m2
     from typehaus.takeoff.framing import _board_feet_per_ft, _order_length_ft
 
     materials = {material.tag: material for material in model.plan.library.materials}
@@ -75,8 +79,9 @@ def wood_surfaces_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             if (layer.function != LayerFunction.FINISH.value or material is None
                     or material.species is None):
                 continue
+            layer_net = wall_layer_net_area_m2(model, wall, layer, net)
             liner_area[layer.material_ref] += max(
-                0.0, net - override_by_wall[wall.tag])
+                0.0, layer_net - override_by_wall[wall.tag])
             liner_tags[layer.material_ref].append(wall.tag)
     for ref in sorted(liner_area):
         rows.append(_area_row(materials, ref, liner_area[ref],

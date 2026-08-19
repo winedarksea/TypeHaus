@@ -10,6 +10,7 @@ from typehaus import (
     Door,
     FloorOpening,
     FoundationWall,
+    HumidityClass,
     Layer,
     LayerFunction,
     Node,
@@ -97,9 +98,21 @@ WALLS = [
                    alignment=face("concrete-ext"),
                    top_elevation=ft(0), bottom_elevation=ft(-9),
                    lateral_support="top_and_bottom"),
+    # The sauna's south side. W-B-S1 and W-B-S3 stay on the bare garden wall deliberately —
+    # they bound the workshop and the patio side — but this one segment is a room face in a
+    # WET room, so it carries the liner variant of the same stack
+    # (SAUNA_LINER_ON_BASEMENT_12_GARDEN): the vapour control has to be continuous on all
+    # four faces or it is not vapour control. The liner grows 3 1/2" inward and mitres to
+    # W-B-CS's at N-B-S2 — same assembly family, so no derived return there.
+    # Alignment stays `face("concrete-ext")` with NO offset, unlike W-B-CS's inch(-6):
+    # `_face_offset_from_interior` falls through the three liner layers (no name match) and
+    # returns the concrete's outboard face, which on this wall *is* the datum, so the
+    # concrete band stays at y 0"-12" exactly as the bare garden segments do. W-B-CS needs
+    # its offset only to re-centre the concrete on the 18' bearing grid.
     FoundationWall(uid="CBW102AAAA", tag="W-B-S2", start_node="N-B-S1",
-                   end_node="N-B-S2", assembly="CATLIN_BASEMENT_12_GARDEN",
+                   end_node="N-B-S2", assembly="SAUNA_LINER_ON_BASEMENT_12_GARDEN",
                    alignment=face("concrete-ext"),
+                   interior_room="RM-B-SAUNA",
                    top_elevation=ft(0), bottom_elevation=ft(-9),
                    lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW103AAAA", tag="W-B-S3", start_node="N-B-S2",
@@ -334,9 +347,20 @@ ROOMS = [
          occupancy=Occupancy.BATHROOM, floor_finish="tile"),
     Room(uid="CBR402AAAA", tag="RM-B-WORKSHOP", seed=pt(ft(5), ft(8)),
          occupancy=Occupancy.UTILITY, floor_finish="sealed-concrete"),
-    # No wall_lining override: the liner is part of SAUNA_2X4 / SAUNA_LINER_ON_CONCRETE.
+    # No wall_lining override: the liner is part of SAUNA_2X4 / SAUNA_LINER_ON_CONCRETE /
+    # SAUNA_LINER_ON_BASEMENT_12_GARDEN. WET as of 2026-08-18, once W-B-S2 got the liner
+    # variant and the vapour control became continuous on all four faces.
+    # `design_temperature_f` stays unset on purpose — it defaults to the 70 F setpoint, which
+    # is what HumidityClass prescribes: a Glaser walk screens the daily mean, not the löyly
+    # peak, and authoring 175 F would turn four passing rules into noise.
+    # Honest about the margin: `glazing_dew_point` clears WIN-B-SAUNA by 2.5 F at
+    # centre-of-glass (55.5 F inner glass vs a 53.1 F dew point at 70 F / 55% RH), and the
+    # frame runs 5-8 F colder than that, so the frame does condense at design. That is an
+    # accepted condition over a tiled, drained floor in a room that dries between sessions,
+    # not a hidden failure.
     Room(uid="CBR403AAAA", tag="RM-B-SAUNA", seed=pt(ft(14), ft(6)),
-         occupancy=Occupancy.BATHROOM, floor_finish="tile"),
+         occupancy=Occupancy.BATHROOM, humidity_class=HumidityClass.WET,
+         floor_finish="tile"),
     Room(uid="CBR404AAAA", tag="RM-B-PLAY-N", seed=pt(ft(27), ft(27)),
          occupancy=Occupancy.MEDIA, floor_finish="carpet"),
     Room(uid="CBR405AAAA", tag="RM-B-GYM", seed=pt(ft(27), ft(9)),

@@ -73,6 +73,13 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     ("pipe_runs", "water_*", CostCode("3100", "22 11 00", "plumbing")),
     ("pipe_runs", "gas", CostCode("3300", "22 11 00", "plumbing")),
     ("pipe_runs", "radon", CostCode("3200", "23 05 00", "mechanical")),
+    # Construction returns are one BOM section and several trades — that is the nature of a
+    # "return": it is named by what it closes, not by who buys it. The section default files
+    # them as rough carpentry; these four go where the trade actually is.
+    ("construction_returns", "*spray-foam*", CostCode("2100", "07 21 00", "walls")),
+    ("construction_returns", "*foam-return*", CostCode("2100", "07 21 00", "walls")),
+    ("construction_returns", "*masonry*", CostCode("1200", "04 20 00", "concrete")),
+    ("construction_returns", "resilient-channel", CostCode("4300", "09 22 00", "walls")),
 )
 
 #: The default code for every section in ``cli.prices.ESTIMATE_PLANS``. Every section must
@@ -102,6 +109,10 @@ SECTION_CODES: dict[str, CostCode] = {
     "railings": CostCode("2700", "05 52 00", "stairs"),
     "drainage": CostCode("2600", "07 71 00", "drainage"),
     "furnishings": CostCode("4200", "12 50 00", "furniture"),
+    # Pre-framing returns (2026-08-18). The default is rough carpentry — the sill plate and
+    # the liner laps are a framer's work; KEY_PATTERNS above re-files the insulation, the
+    # masonry and the channel rows onto their own trades.
+    "construction_returns": CostCode("2000", "06 11 00", "framing"),
 }
 
 

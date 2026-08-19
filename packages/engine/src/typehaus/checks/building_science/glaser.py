@@ -89,6 +89,22 @@ def _f_to_c(temperature_f: float) -> float:
     return (temperature_f - _FAHRENHEIT_FREEZING) / _FAHRENHEIT_PER_CELSIUS
 
 
+def _c_to_f(temperature_c: float) -> float:
+    return temperature_c * _FAHRENHEIT_PER_CELSIUS + _FAHRENHEIT_FREEZING
+
+
+def dew_point_f(temperature_f: float, relative_humidity: float) -> float:
+    """Dew point of air at ``temperature_f`` and ``relative_humidity`` (0..1), in F.
+
+    The Magnus curve above, inverted. This is the number every wet-room decision turns on:
+    at 75 F / 70% RH it is 64.4 F, and every surface in the room colder than that is wet.
+    """
+    gamma = math.log(max(relative_humidity, 1e-6)) + (
+        _MAGNUS_BETA * _f_to_c(temperature_f) / (_f_to_c(temperature_f) + _MAGNUS_LAMBDA_C)
+    )
+    return _c_to_f(_MAGNUS_LAMBDA_C * gamma / (_MAGNUS_BETA - gamma))
+
+
 def glaser_layers(layers: list[Layer]) -> list[Layer]:
     """Truncate the stack at an exterior ventilated rainscreen cavity.
 
@@ -98,6 +114,16 @@ def glaser_layers(layers: list[Layer]) -> list[Layer]:
     part of the interior-to-exterior vapor drive. Standard Glaser practice terminates the
     analysis there rather than modeling the cladding as a cold-side vapor trap. Assemblies
     with no such cavity (concrete, direct-applied finishes) walk their full depth.
+
+    An *interior* service cavity — a furring/airgap layer with no wettable layer inboard of
+    it — is deliberately NOT truncated, and the plant room's PVC liner gap is the case that
+    tests the rule. It is tempting to call that gap "at room conditions" and start the walk
+    at the membrane behind it, which would let the walk run without a permeance for the PVC
+    panel. But a gap behind a tongue-and-groove liner is a closed cavity, not a vented one:
+    nothing declares where it is open to, and the difference between "drains to the floor
+    tray" and "communicates freely with room air" is the whole question. So the walk keeps
+    the panel, and reports UNKNOWN naming it — which is the honest answer while no
+    manufacturer in that product class publishes an ASTM E96 number.
     """
     for index, layer in enumerate(layers):
         if layer.function in _VENTED and any(
@@ -264,6 +290,24 @@ def _layer_path(layer: Layer, library: Library) -> tuple[_LayerPath | None, list
 
     resistance = math.inf if permeance <= 0.0 else 1.0 / permeance
     return _LayerPath(r_us, resistance), []
+
+
+def layer_permeance_perms(layer: Layer, library: Library) -> float | None:
+    """Installed permeance of one layer, in perms — or None when an input is missing.
+
+    The public face of the same parallel-path walk :func:`_layer_path` does for the Glaser
+    profile, so a rule about "is there a Class I layer here" and the profile that crosses
+    it can never disagree about what a layer's permeance is. ``0.0`` means a sourced vapour
+    barrier (infinite resistance); ``inf`` means a layer with no vapour resistance at all.
+    """
+    path, missing = _layer_path(layer, library)
+    if path is None or missing:
+        return None
+    if math.isinf(path.vapor_resistance_rep):
+        return 0.0
+    if path.vapor_resistance_rep <= 0.0:
+        return math.inf
+    return 1.0 / path.vapor_resistance_rep
 
 
 def _interior_retarder(layers: list[Layer],

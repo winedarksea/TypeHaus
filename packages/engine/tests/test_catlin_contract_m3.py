@@ -203,7 +203,11 @@ def test_centerline_bearing_wall_runs_full_length_on_both_framed_storeys(catlin_
     for storey in ("main", "second"):
         segments = [
             w for w in catlin_model.walls
-            if w.storey == storey and w.assembly == "CATLIN_INT_2X6_BRG"
+            # PLANT_INT_2X6_BRG_HUMID is the same 2x6 bearing line with the plant room's
+            # humid liner on its west face (2026-08-18) — a finish decision on one segment,
+            # not a break in the stack, so it counts toward the run like any other segment.
+            if w.storey == storey
+            and w.assembly in ("CATLIN_INT_2X6_BRG", "PLANT_INT_2X6_BRG_HUMID")
             and abs(w.axis[0][0] - center_x) < 1e-6 and abs(w.axis[1][0] - center_x) < 1e-6
         ]
         assert segments, storey
@@ -933,16 +937,19 @@ def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
     """Old: 4 perimeter segments x 2 XPS layers; new: every perimeter segment
     carries both 2" XPS layers in its resolved stack.
 
-    Ten segments across two assemblies since 2026-08-18: seven on N/E/W with an above-grade
-    protection band, three on the south with a full-height parge into the sunken garden. The
-    concrete and the foam are identical on both — the split is only about what covers it.
+    Ten segments across three assemblies since 2026-08-18: seven on N/E/W with an above-grade
+    protection band, three on the south with a full-height parge into the sunken garden — of
+    which W-B-S2 also carries the sauna's liner inboard of the pour. The concrete and the
+    foam are identical on all of them; the split is only about what covers the foam outside
+    and what, if anything, lines the room inside.
     """
     perimeter = [w for w in catlin_model.walls
                  if w.storey == "basement"
-                 and w.assembly in ("CATLIN_BASEMENT_12", "CATLIN_BASEMENT_12_GARDEN")]
+                 and w.assembly in ("CATLIN_BASEMENT_12", "CATLIN_BASEMENT_12_GARDEN",
+                                    "SAUNA_LINER_ON_BASEMENT_12_GARDEN")]
     assert len(perimeter) == 10  # same wall line, split at grid/tee nodes
-    assert len([w for w in perimeter
-                if w.assembly == "CATLIN_BASEMENT_12_GARDEN"]) == 3
+    garden = [w for w in perimeter if w.assembly.endswith("BASEMENT_12_GARDEN")]
+    assert len(garden) == 2 + 1  # W-B-S1/W-B-S3 bare + W-B-S2 on the liner variant
     for wall in perimeter:
         xps = [l for l in wall.layers if l.name.startswith("xps")]
         assert len(xps) == 2

@@ -22,6 +22,10 @@ source:
 
 - Wall/ceiling junction: detail as continuous layers (insulation meets insulation, wood meets wood). Tape/flash seams as required for vapor control and durability.
 
+- Concrete-substrate case (`SAUNA_LINER_ON_CONCRETE`, `SAUNA_LINER_ON_BASEMENT_12_GARDEN`): on the east face (the center bearing wall) and the south face (the sunken-garden foundation wall) there is no stud bay behind the liner — the 1/2" plywood furring is fastened to the pour itself, so use masonry fasteners with an embedment verified for the substrate rather than the R703.15.2 table cited above, which is written for framing. Layer order, thickness and taping are otherwise identical to the framed case. Consequences to draw: the south wall's rough jamb is now 15 1/2" deep, not 12", so the window buck deepens with it, and the foil facing returns into that jamb per `TR-CATLIN-SAUNA-OPENING` rather than dying at the opening. The liner stops at the room's 7'-6" ceiling on the south face (authored as a `LayerExtent` off the wall top) because the foundation wall runs 9'-0" — revisit if the basement ever gets a full-width joist ceiling.
+
+- **Stale, flagged not corrected:** the "Foundation: 10" concrete wall" line below predates the model, which carries 12" on every basement perimeter segment. Reconcile the note to the model (or the model to a re-checked footing design) before this detail goes to a drawing set.
+
 - Support framing: 2x4 wall framed against concrete supports the dropped 2x4 ceiling. Primary structure above may be joists or concrete deck; hang drop framing accordingly.
 
 - Benches + heater (Law of Löyly): show two-tier bench (≈18" + ≈36" heights). Heater low and near airflow path; maintain clearances per manufacturer.

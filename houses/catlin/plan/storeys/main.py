@@ -149,6 +149,36 @@ WINDOW_TYPES = [
                shgc=0.35, vt=0.5, operation="casement", tempered=True),
     WindowType(tag="WT-3048-T", width=inch(30), height=ft(4), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement", tempered=True),
+    # --- high-performance twins (2026-08-18, building_science.glazing_dew_point) -------
+    # Three types for the plant room, identical in every dimension to their parents and
+    # differing only in the glass package: triple/low-e at U-0.14 with a warm-edge spacer
+    # and a thermally broken frame. Exactly the `-T` precedent one line up — adding a
+    # better unit is a RETYPE, never a move, so no facade column, no header, no framing
+    # module and no stud line changes.
+    #
+    # This is not gold-plating, it is the room's only way to have glass at all. At 75 F /
+    # 70% RH the dew point is 64.4 F. A U-0.25 unit's centre of glass sits at 59.7 F at the
+    # -15 F design temperature and condenses below about +13 F outdoors — most of a
+    # Minnesota winter. U-0.14 puts it at 66.4 F, dry to roughly -35 F, which narrows the
+    # residual problem to the frame and the edge of glass (5-8 F colder than centre) —
+    # which is what the warm-edge spacer, the glass-wash throw off REG-S-HP-PLANT and the
+    # drained sill pans are there to handle.
+    #
+    # SHGC is deliberately unchanged at 0.35: this room is south-glazed for plants, and a
+    # triple unit that bought its U with a low SHGC would take the light the room exists
+    # for. VT likewise.
+    WindowType(tag="WT-2736-HP", width=inch(27), height=ft(3), u_factor=u_us(0.14),
+               shgc=0.35, vt=0.5, operation="casement",
+               source="notes/plant_room.md — WT-2736 dimensions, triple/low-e warm-edge thermally broken frame at U-0.14 for RM-S-PLANT"),
+    WindowType(tag="WT-3048-HP", width=inch(30), height=ft(4), u_factor=u_us(0.14),
+               shgc=0.35, vt=0.5, operation="casement",
+               source="notes/plant_room.md — WT-3048 dimensions at U-0.14 for RM-S-PLANT"),
+    # WIN-S-PLANT2 sits within 24" of D-S-DECK-W, so R308.4 makes its location hazardous
+    # regardless of what the glass costs: it needs the tempered pane AND the U-0.14 package,
+    # which is a fourth product, not a choice between the two.
+    WindowType(tag="WT-3048-HP-T", width=inch(30), height=ft(4), u_factor=u_us(0.14),
+               shgc=0.35, vt=0.5, operation="casement", tempered=True,
+               source="notes/plant_room.md — WT-3048-HP with tempered glazing for WIN-S-PLANT2 (R308.4, within 24\" of D-S-DECK-W)"),
 ]
 
 NODES = [

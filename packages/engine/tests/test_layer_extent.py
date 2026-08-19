@@ -38,15 +38,38 @@ def test_the_panel_band_runs_from_six_inches_under_grade_to_the_wall_top(catlin_
         assert (z1 - z0) * _M_TO_FT == pytest.approx(3.0, abs=1e-6)
 
 
+# W-B-S2 carries the sauna's liner variant of the same outboard stack since 2026-08-18, so
+# the assembly tag differs per segment; everything the parge assertions say is unchanged.
+_SOUTH_ASSEMBLIES = {
+    "W-B-S1": "CATLIN_BASEMENT_12_GARDEN",
+    "W-B-S2": "SAUNA_LINER_ON_BASEMENT_12_GARDEN",
+    "W-B-S3": "CATLIN_BASEMENT_12_GARDEN",
+}
+
+
 def test_the_south_wall_keeps_a_full_height_parge_and_no_band(catlin_model):
     """The sunken garden exposes W-B-S* from -9'-0" to 0'-0", which is not a grade band."""
-    for tag in ("W-B-S1", "W-B-S2", "W-B-S3"):
+    for tag, assembly in _SOUTH_ASSEMBLIES.items():
         wall = catlin_model.wall(tag)
-        assert wall.assembly == "CATLIN_BASEMENT_12_GARDEN"
+        assert wall.assembly == assembly
         parge = next(ly for ly in wall.layers if ly.name == "parge")
         assert not parge.is_banded
         assert parge.band(wall) == (wall.z0_m, wall.z1_m)
         assert not any(ly.name == _PANEL for ly in wall.layers)
+
+
+def test_the_sauna_liner_stops_at_the_room_ceiling_not_the_wall_top(catlin_model):
+    """W-B-S2 is a 9'-0" foundation wall bounding a 7'-6" room. The liner is banded off
+    WALL_TOP so the takeoff does not buy basswood, furring and foil-faced polyiso for the
+    1'-6" of concrete above the sauna's ceiling."""
+    wall = catlin_model.wall("W-B-S2")
+    for name in ("tg-liner", "liner-furring", "foil-polyiso"):
+        layer = next(ly for ly in wall.layers if ly.name == name)
+        assert layer.is_banded
+        z0, z1 = layer.band(wall)
+        assert z0 == pytest.approx(wall.z0_m)
+        assert z1 == pytest.approx(wall.z1_m - inch(18).meters)
+        assert (z1 - z0) * _M_TO_FT == pytest.approx(7.5, abs=1e-6)
 
 
 def test_both_basement_assemblies_stand_the_same_distance_off_the_concrete(catlin_model):
@@ -104,7 +127,12 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_model, tmp_path
 
     parts = {p.Name: p for p in model.by_type("IfcBuildingElementPart")}
     assert f"W-B-N1:{_PANEL}" in parts
-    assert not any(name.startswith("W-B-S") for name in parts)
+    # No south segment gets a protection panel — the sunken garden is not a grade band.
+    assert not any(name.endswith(_PANEL) for name in parts if name.startswith("W-B-S"))
+    # W-B-S2's sauna liner is the other banded stack in the house, and it exports the same
+    # way: three parts stopping at the sauna's 7'-6" ceiling, not at the wall's 9'-0" top.
+    assert {n for n in parts if n.startswith("W-B-S")} == {
+        "W-B-S2:tg-liner", "W-B-S2:liner-furring", "W-B-S2:foil-polyiso"}
 
     part = parts[f"W-B-N1:{_PANEL}"]
     parents = [rel.RelatingObject for rel in model.by_type("IfcRelAggregates")

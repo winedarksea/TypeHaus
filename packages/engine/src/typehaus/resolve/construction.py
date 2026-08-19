@@ -45,6 +45,7 @@ from typehaus.resolve.construction_corners import (
     _find_porch_masonry_return,
     _find_sauna_liner_return,
 )
+from typehaus.resolve.construction_rim import _find_rim_cavity_foam
 from typehaus.resolve.construction_sills import (
     _find_floor_on_concrete,
     _find_framed_on_concrete,
@@ -60,6 +61,7 @@ _FINDERS = {
     "wall:porch_masonry_return": _find_porch_masonry_return,
     "wall:sauna_liner_return": _find_sauna_liner_return,
     "floor:ceiling_channel": _find_ceiling_channel,
+    "wall:rim_cavity_foam": _find_rim_cavity_foam,
 }
 
 
@@ -90,5 +92,6 @@ __all__ = [
     "_find_foundation_foam_return",
     "_find_framed_on_concrete",
     "_find_porch_masonry_return",
+    "_find_rim_cavity_foam",
     "_find_sauna_liner_return",
 ]

@@ -1057,28 +1057,45 @@ NEC_FILL_MAIN = [
 # face: none of these devices carries `room=`, so a stale coordinate more than 19 5/8"
 # (`_NEAR_WALL_M`) off simply stops counting toward the room and nothing reports it.
 NEC_FILL_SECOND = [
+    # RM-S-PLANT's five outlets are all ED-T-RECEPTACLE-WR-GFCI (2026-08-18): WR-listed
+    # bodies, GFCI at the device, in-use covers, non-metallic gasketed boxes. NEC 2023 makes
+    # the room a damp location throughout and a wet one wherever it is misted or hosed, and
+    # everything that plugs in here — pumps, heat mats, the humidifier — stays plugged in,
+    # which is what makes an in-use cover the right one rather than a flip lid.
+    #
+    # All five moved off the old finished face at the same time: the liner is 1 1/4" thicker
+    # than the painted gypsum it replaced, so the south and west faces came in to y/x 7 9/32"
+    # and the north partitions' faces went out to y 8'-9 9/32". Each device sits ~1 1/2"
+    # inside its new face, the same station `electrical.receptacle_spacing` measures, and
+    # `test_wall_mounted_devices_resolve_against_a_wall_face` is what caught them buried.
+    #
+    # GFCI at the DEVICE and not at CKT-RC-SECOND's breaker, per the convention in
+    # plan/circuits.py, and that is also what keeps the plants alive: the grow tubes are on
+    # CKT-LT-UPPER, a separate, non-GFCI lighting circuit, so a nuisance trip from a pump
+    # cannot take the photoperiod down with it — and grow-light drivers' own leakage current
+    # is exactly why the lighting side must not sit behind a 5 mA trip either.
     # Moved x=15.89' -> 17.0' (2026-07-31): the old station was inside D-S-DECK-W's rough
     # opening (x 11'-2"..16'-2"). 17'-0" centres the 1'-10" of wall left, under the 2'-0"
     # 210.52(A)(2) counts as wall space — kept anyway since the south wall is where the
     # plant gear plugs in.
-    ElectricalDevice(uid="NEC021AAAA", tag="ED-S-PLANT-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(17), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
+    ElectricalDevice(uid="NEC021AAAA", tag="ED-S-PLANT-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(17), ft(0, 8.75)), type_ref="ED-T-RECEPTACLE-WR-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    ElectricalDevice(uid="NEC022AAAA", tag="ED-S-PLANT-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(5, 10.25), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
+    ElectricalDevice(uid="NEC022AAAA", tag="ED-S-PLANT-RC2", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(5, 10.25), ft(0, 8.75)), type_ref="ED-T-RECEPTACLE-WR-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    ElectricalDevice(uid="NEC023AAAA", tag="ED-S-PLANT-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(0, 7.625), ft(4, 7.625)), type_ref="ED-T-RECEPTACLE",
+    ElectricalDevice(uid="NEC023AAAA", tag="ED-S-PLANT-RC3", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(0, 8.75), ft(4, 7.625)), type_ref="ED-T-RECEPTACLE-WR-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), room="RM-S-PLANT", rotation=deg(90)),
-    ElectricalDevice(uid="NEC024AAAA", tag="ED-S-PLANT-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(5, 11.125), ft(8, 8.625)), type_ref="ED-T-RECEPTACLE",
+    ElectricalDevice(uid="NEC024AAAA", tag="ED-S-PLANT-RC4", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(5, 11.125), ft(8, 7.375)), type_ref="ED-T-RECEPTACLE-WR-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    ElectricalDevice(uid="NEC025AAAA", tag="ED-S-PLANT-RC5", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(15, 11.625), ft(8, 8.625)), type_ref="ED-T-RECEPTACLE",
+    ElectricalDevice(uid="NEC025AAAA", tag="ED-S-PLANT-RC5", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(15, 11.625), ft(8, 7.375)), type_ref="ED-T-RECEPTACLE-WR-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC026AAAA", tag="ED-S-STUDY2-RC1", kind=DeviceKind.RECEPTACLE,

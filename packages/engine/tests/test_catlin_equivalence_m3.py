@@ -342,8 +342,16 @@ def test_house_walls_gain_layers_rather_than_lose_them(equivalence):
         assert item.current_layer_count >= item.reference_layer_count, item.as_dict()
     exterior = [item for item in house_walls if item.reference_layer_count == 7]
     assert exterior, [item.reference_name for item in house_walls]
-    assert all(item.current_layer_count == 9 for item in exterior), [
-        item.as_dict() for item in exterior if item.current_layer_count != 9]
+    # The plant room's two exterior walls carry PLANT_EXT_2X6_HUMID (2026-08-18): the same
+    # seven layers outboard of the studs, with a three-layer sealed liner (PVC panel /
+    # drainage strapping / Class I membrane) in place of the two-layer painted-gypsum
+    # lining. Ten, not nine — and still strictly gaining, which is what this test is about.
+    _HUMID_LINED = {"House Second Stud Wall 1", "House Second Stud Wall 4"}
+    expected = {name: 10 for name in _HUMID_LINED}
+    assert all(item.current_layer_count == expected.get(item.reference_name, 9)
+               for item in exterior), [
+        item.as_dict() for item in exterior
+        if item.current_layer_count != expected.get(item.reference_name, 9)]
 
 
 def test_house_footprint_still_measures_thirty_six_feet(reference_model, current_model):

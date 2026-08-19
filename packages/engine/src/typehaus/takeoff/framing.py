@@ -8,6 +8,7 @@ from collections import Counter, defaultdict
 
 from typehaus.model.enums import LayerFunction
 from typehaus.model.floors import FloorOpening, FloorSystem
+from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.model import ResolvedModel
 
@@ -131,7 +132,14 @@ def structural_solids_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         key = (solid.category, solid.assembly or "")
         row = groups.get(key)
         if row is None:
+            # What the assembly's STRUCTURE layer is made of, so a price table can tell a
+            # concrete solid from one that merely shares its category. "slab" covers both
+            # SL-M-DECK (9" of cast concrete) and SL-SG-DECK (aluminium plank on wood
+            # joists); "beam"/"column" cover LVL girders and 12" sonotube piers alike.
+            # ``None`` for a solid with no assembly — that is "unknown", not "not concrete".
             row = groups[key] = {"category": solid.category, "assembly": solid.assembly,
+                                 "structure_material": assembly_structure_material(
+                                     model.plan, solid.assembly),
                                  "count": 0, "plan_area_sqft": 0.0, "volume_cuft": 0.0,
                                  "tags": []}
         row["count"] = int(row["count"]) + 1

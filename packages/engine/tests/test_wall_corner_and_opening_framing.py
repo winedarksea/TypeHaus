@@ -283,11 +283,17 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
              if not o.is_door and o.width_m <= inch(14).meters + 1e-9]
     # This is a stud-framing rule, so it only applies to windows in framed walls. A 14" RO
     # in a poured wall has no bay to fit between and no stud to avoid breaking: WIN-B-SAUNA
-    # took WT-1424 on 2026-07-30 for its *size*, and its host W-B-S2 is 12" concrete with no
-    # members at all. Split rather than filtered so a framed wall can never quietly drop out
-    # of the checks below by losing its framing.
-    concrete = [o for o in small if not walls[o.host_wall].members]
-    framed = [o for o in small if walls[o.host_wall].members]
+    # took WT-1424 on 2026-07-30 for its *size*, and its host W-B-S2 is 12" concrete.
+    # The split is on *stud-bearing* members, not on having any member at all: since
+    # 2026-08-18 W-B-S2 carries the sauna liner's horizontal 1x4 furring strapping, which is
+    # fastened to the pour and frames nothing — a wall can have members and still have no bay
+    # to fit a window between. Split rather than filtered so a framed wall can never quietly
+    # drop out of the checks below by losing its framing.
+    def _is_framed(wall):
+        return any(member.category in _VERTICAL_CATEGORIES for member in wall.members)
+
+    concrete = [o for o in small if not _is_framed(walls[o.host_wall])]
+    framed = [o for o in small if _is_framed(walls[o.host_wall])]
     # AO-B-BRICK-WIN joined it on 2026-08-03: the reveal through the glazed-brick veneer in
     # front of WIN-B-SAUNA. Same 14", same reason — a single brick wythe has no members
     # either, so there is no bay to fit between and no stud to break.

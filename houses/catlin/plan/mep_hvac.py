@@ -64,6 +64,42 @@ REGISTER_TYPES = (
                  source="plans/TODO.md §HVAC: sauna terminals small, adjustable/closable damper",
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
+    # The plant room's pair (2026-08-18, notes/plant_room.md). The room is held at ~75 F /
+    # 70% RH year-round, which makes its ventilation a pressure question before it is an air
+    # question: natatorium practice holds such a room 0.05-0.15 in. w.g. NEGATIVE to the
+    # spaces around it, so house air leaks in (harmless) and room air never leaks into a
+    # stud bay (the failure this whole room is built to prevent).
+    #
+    # A dedicated, dampered branch off EQ-B-ERV rather than a separate machine — the house
+    # already owns a proper ERV in a mechanical room with a condensate drain and real frost
+    # control, and "separate from the house ERV" is best had with an independent DAMPER, not
+    # an independent unit. (The alternative considered and rejected was a through-wall
+    # ERV: the class of unit available here is single-core and alternates supply and exhaust
+    # on 75-second half-cycles, i.e. it cyclically pressurises the room, and the one on the
+    # table is out of spec below -4 F against a -15 F design temperature.)
+    #
+    # RH-driven, not schedule-driven: no terminal and no ERV self-regulates humidity, and
+    # the setpoint resets from 70% down to ~55% as outdoor air falls to -15 F.
+    RegisterType(tag="REG-T-ERV-PLANT-EXH",
+                 name="Plant-room stale-air extract, 6x4, motorised RH-controlled damper",
+                 footprint=(inch(6), inch(4)), height=inch(1),
+                 plan_symbol="register", ventilation_terminal=True,
+                 source="notes/plant_room.md — dedicated dampered extract off EQ-B-ERV; holds RM-S-PLANT neutral-to-slightly-negative and is the room's only moisture removal path",
+                 ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
+                                    position=(ft(0), ft(0), ft(0))),)),
+    # System 1's terminal in the plant room needs to be shuttable, which the plain
+    # REG-T-HP-SUP is not. Two reasons, both fatal without it: DU-S-HP-SOUTH ties the room's
+    # air to the whole-house air handler and every other room on the branch, so an open
+    # damper carries the plant room's moisture house-wide; and a supply-only terminal in a
+    # closed room pressurises it. Motorised so the RH controller owns it, interlocked with
+    # REG-S-ERV-PLANT-EXH.
+    RegisterType(tag="REG-T-HP-SUP-DAMPERED",
+                 name="Heat-pump supply register, 12x6, motorised isolation damper",
+                 footprint=(inch(12), inch(6)), height=inch(1),
+                 plan_symbol="register",
+                 source="notes/plant_room.md — REG-T-HP-SUP with a motorised zone damper so System 1 can be isolated from a 70% RH room",
+                 ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
+                                    position=(ft(0), ft(0), ft(0))),)),
     RegisterType(tag="REG-T-HP-SUP", name="Heat-pump supply register, 12x6",
                  footprint=(inch(12), inch(6)), height=inch(1),
                  plan_symbol="register",
@@ -306,6 +342,28 @@ DUCTS_HVAC_SECOND = [
     DuctRun(uid="CSDV02AAAA", tag="DU-S-ERV-HP-FEED", system=DuctSystem.SUPPLY,
             path=(pt(ft(20, 8), ft(12, 8)), pt(ft(20, 8), ft(10))),
             width=inch(6), depth=inch(6), routing=DuctRouting.CHASE, design_cfm=100),
+    # The plant room's dedicated extract (2026-08-18). Rides the FS-ATTIC joist bay centred
+    # at y=4'-8" (8" + 3*16") — the next bay north of DU-S-HP-SOUTH's at 3'-4", so the
+    # room's supply and its extract are in different bays and different halves of the room.
+    # (Not the 6'-0" bay: FS-ATTIC carries trimmers at 5'-7" and 5'-9 5/8" there, and a 6"
+    # duct centred at 6'-0" straddles one — mep.duct_joist_bay.)
+    # Runs east from the terminal to x=19'-4", the same riser lane out of the trunk head
+    # that DU-S-HP-SOUTH and DU-A-HP-STUDY leave from, and drops through SF-S-DUCT to
+    # EQ-B-ERV's stale side. The vertical leg is undrawn — DuctRun carries no elevation —
+    # exactly as DU-S-ERV-HP-FEED's rise and EQ-S-HP1-AH's condensate drop are (plans/TODO.md).
+    #
+    # 25 cfm against ~20 of makeup: extract-biased on purpose, which is what "slightly
+    # negative" means in air rather than in inches of water. 6x4 fits the 11 7/8" I-joist bay
+    # with room to spare and runs ~150 fpm, quiet enough for a room somebody sits in.
+    #
+    # An ERV is damage limitation, not humidity control. Even an 84%-latent core loses ~16%
+    # of the moisture in every air change; at this flow against -15 F outdoor air the
+    # unrecovered loss is on the order of 1.5-2 gal/day, so a humidifier is required
+    # regardless — see notes/plant_room.md, and plans/TODO.md for the unmodelled item.
+    DuctRun(uid="RVGWJXKPZ7", tag="DU-S-PLANT-EXH", system=DuctSystem.EXHAUST,
+            path=(pt(ft(14), ft(4, 8)), pt(ft(19, 4), ft(4, 8))),
+            width=inch(6), depth=inch(4), routing=DuctRouting.JOIST_BAY,
+            floor_ref="FS-ATTIC", design_cfm=25),
 ]
 
 # One attic branch left (2026-07-30): RM-A-STUDY's, which genuinely needs a horizontal run

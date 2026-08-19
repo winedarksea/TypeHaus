@@ -84,6 +84,7 @@ from typehaus.emit.draw.detail_components.geometry import (
 )
 from typehaus.emit.draw.detail_components.opening import (
     concrete_opening_bucks,
+    humid_liner_opening_return,
     sauna_liner_opening_return,
     window_head_jamb_sill,
 )
@@ -186,6 +187,7 @@ __all__ = [
     "sauna_floor_slope",
     "sauna_heater_clearance",
     "sauna_liner_base",
+    "humid_liner_opening_return",
     "sauna_liner_opening_return",
     "sauna_overlay_for_slice",
     "shower_components",

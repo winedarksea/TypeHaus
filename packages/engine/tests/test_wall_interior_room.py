@@ -18,7 +18,7 @@ from shapely.geometry import Polygon
 # The sauna's hot-side liner package (houses/catlin/plan/assemblies.py _SAUNA_LINER). Every
 # one of these must land inside the sauna; the studs and the cold-side gwb must not.
 _LINER_LAYERS = {"tg-liner", "liner-furring", "foil-polyiso"}
-_SAUNA_WALLS = {"W-B-SA-W", "W-B-SA-N", "W-B-CS"}
+_SAUNA_WALLS = {"W-B-SA-W", "W-B-SA-N", "W-B-CS", "W-B-S2"}
 
 
 def _sauna(catlin_model) -> Polygon:
@@ -27,11 +27,12 @@ def _sauna(catlin_model) -> Polygon:
 
 
 def test_sauna_liner_lands_inside_the_sauna(catlin_model) -> None:
-    """Every liner layer of the three sauna-facing walls lies inside RM-B-SAUNA.
+    """Every liner layer of the four sauna-facing walls lies inside RM-B-SAUNA.
 
     Before ``interior_room``, all of them landed on the far side: ``W-B-SA-W``'s ``tg-liner``
     west of its studs, ``W-B-SA-N``'s north of them, and ``W-B-CS``'s east of the concrete,
-    in the gym.
+    in the gym. ``W-B-S2``, the south face, joined them on 2026-08-18 — the same question
+    asked of a foundation wall whose finish layers all sit outboard of the pour.
     """
     sauna = _sauna(catlin_model).buffer(1e-6)  # absorb the shared-edge tolerance
     checked = 0
@@ -79,3 +80,19 @@ def test_center_wall_concrete_stays_on_the_bearing_grid(catlin_model) -> None:
         return (round(minx, 6), round(maxx, 6))
 
     assert concrete_bounds("W-B-CS") == concrete_bounds("W-B-CS2")
+
+
+def test_south_wall_concrete_stays_on_the_garden_wall_line(catlin_model) -> None:
+    """The twin invariant for ``W-B-S2``, and the one thing the 2026-08-18 liner must not
+    break: the south face is aligned on ``face("concrete-ext")`` with *no* offset, because
+    on that wall the concrete's outboard face is the datum. So the pour stays exactly where
+    W-B-S1 and W-B-S3 leave it and only the liner grows inward, into the sauna.
+    """
+    def concrete_bounds(tag: str) -> tuple[float, ...]:
+        wall = next(w for w in catlin_model.walls if w.tag == tag)
+        layer = next(ly for ly in wall.layers if ly.name == "concrete")
+        _minx, miny, _maxx, maxy = Polygon(layer.polygon).bounds
+        return (round(miny, 6), round(maxy, 6))
+
+    assert concrete_bounds("W-B-S2") == concrete_bounds("W-B-S1")
+    assert concrete_bounds("W-B-S2") == concrete_bounds("W-B-S3")

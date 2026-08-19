@@ -22,6 +22,7 @@ from typehaus.emit.draw.detail_components.eave import zero_overhang_eave
 from typehaus.emit.draw.detail_components.geometry import condition_opening, condition_walls
 from typehaus.emit.draw.detail_components.opening import (
     concrete_opening_bucks,
+    humid_liner_opening_return,
     sauna_liner_opening_return,
     window_head_jamb_sill,
 )
@@ -90,6 +91,13 @@ def _recipe_sauna_liner_opening(model, context) -> list[IRNode]:
                                       context.crop, context.direction, context.station)
 
 
+def _recipe_humid_liner_opening(model, context) -> list[IRNode]:
+    if context.opening is None or not context.walls:
+        return []
+    return humid_liner_opening_return(model, context.walls[0], context.opening,
+                                      context.crop, context.direction, context.station)
+
+
 def _recipe_lvl_ridge_hanger(model, context) -> list[IRNode]:
     return lvl_ridge_hanger(model, context.roof, context.crop, context.direction,
                             context.station)
@@ -106,6 +114,7 @@ OVERLAY_RECIPES = {
     "concrete-opening": _recipe_concrete_opening,
     "foundation-window": _recipe_concrete_opening,
     "sauna-liner-opening": _recipe_sauna_liner_opening,
+    "humid-liner-opening": _recipe_humid_liner_opening,
     "lvl-ridge-hanger": _recipe_lvl_ridge_hanger,
 }
 

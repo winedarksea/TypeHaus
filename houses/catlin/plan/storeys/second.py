@@ -31,6 +31,7 @@ from typehaus import (
     FloorOpening,
     FloorSystem,
     FramingSpec,
+    HumidityClass,
     JoistSpec,
     Layer,
     LayerFunction,
@@ -116,8 +117,16 @@ NODES = [
 
 WALLS = [
     # --- exterior loop (2x6, same stack as main) -------------------------------
+    # The plant room's two exterior walls carry PLANT_EXT_2X6_HUMID, not CATLIN_EXT_2X6:
+    # same stack outboard of the sheathing, a sealed PVC/membrane liner inboard of the
+    # studs (plan/assemblies.py, notes/plant_room.md). `alignment=face("sheathing-ext")` is
+    # unchanged on purpose — the sheathing datum does not move (decision #43) and the liner
+    # grows into the room, exactly as W-B-CS does for the sauna. `interior_room` is what
+    # names which face the liner lands on; without it an asymmetric wall would take the
+    # component's outward sign and could line the wrong side.
     Wall(uid="CSW101AAAA", tag="W-S-S1", start_node="N-S-SW", end_node="N-S-S1",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="PLANT_EXT_2X6_HUMID", alignment=face("sheathing-ext"), top=ft(9),
+         interior_room="RM-S-PLANT",
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-S1"),
     Wall(uid="CSW102AAAA", tag="W-S-S2", start_node="N-S-S1", end_node="N-S-SE",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
@@ -166,13 +175,24 @@ WALLS = [
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-W3"),
     Wall(uid="CSW113AAAA", tag="W-S-W4", start_node="N-S-W3", end_node="N-S-SW",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="PLANT_EXT_2X6_HUMID", alignment=face("sheathing-ext"), top=ft(9),
+         interior_room="RM-S-PLANT",
          structural_role=StructuralRole.BEARING, stacks_on="W-M-W4"),
     # --- center bearing wall (2x6 carries the attic floor) ---------------------
     # Continuous from gable to gable — the attic's structural ridge bears on the stack this
     # line belongs to. The three source breaks are doors/cased openings, not gaps.
+    # The plant room's east boundary. Same 2x6 bearing line as the rest of W-S-C*, with the
+    # humid liner on the plant-room face and painted gypsum on RM-S-STUDY2's — the sauna's
+    # asymmetry one storey up.
+    # `alignment` keeps the 2x6 STUDS centred on the x=18' grid, exactly as W-B-CS keeps
+    # the sauna's concrete centred (`face("concrete-ext", offset=inch(-6))`, basement.py):
+    # 2.75" back off the stud's outboard face is its centreline. Without it the wall centres
+    # on its own new total and the whole bearing line — which W-M-C1 stacks under and the
+    # attic ridge stacks over — slides 5/16" east, taking RM-S-STUDY2's face and two of its
+    # receptacles with it. The liner is what grows; the grid does not move.
     Wall(uid="CSW114AAAA", tag="W-S-C1", start_node="N-S-S1", end_node="N-S-C1",
-         assembly="CATLIN_INT_2X6_BRG", top=ft(9),
+         assembly="PLANT_INT_2X6_BRG_HUMID", top=ft(9), interior_room="RM-S-PLANT",
+         alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C1"),
     Wall(uid="CSW115AAAA", tag="W-S-C2", start_node="N-S-C1", end_node="N-S-C2",
          assembly="CATLIN_INT_2X6_BRG", top=ft(9),
@@ -191,10 +211,18 @@ WALLS = [
          assembly="CATLIN_INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C5"),
     # --- south band north wall, y=9'-0" (source 9.035): plant room | study2 ------
+    # These two are the plant room's north side, so they leave INT_2X4_PARTITION for
+    # PLANT_INT_2X4_HUMID: the room's membrane has to be continuous on all six surfaces or
+    # it is not a barrier at all, and a partition is the easiest place to forget that.
+    # Same alignment idiom as W-S-C1 above, half a 2x4 instead of half a 2x6: the studs stay
+    # on the survey's y=9'-0" line and the liner grows south into the plant room, so
+    # RM-S-STUDY2 keeps its face and its dimensions.
     Wall(uid="CSW118AAAA", tag="W-S-PS1", start_node="N-S-W3", end_node="N-S-D1",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="PLANT_INT_2X4_HUMID", top=ft(9), interior_room="RM-S-PLANT",
+         alignment=face("stud-ext", offset=inch(-1.75))),
     Wall(uid="CSW119AAAA", tag="W-S-PS2", start_node="N-S-D1", end_node="N-S-C1",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="PLANT_INT_2X4_HUMID", top=ft(9), interior_room="RM-S-PLANT",
+         alignment=face("stud-ext", offset=inch(-1.75))),
     Wall(uid="CSW120AAAA", tag="W-S-SS1", start_node="N-S-C1", end_node="N-S-B1",
          assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CSW121AAAA", tag="W-S-SS2", start_node="N-S-B1", end_node="N-S-E1",
@@ -280,7 +308,8 @@ OPENINGS = [
                  height=ft(6, 8)),                                       # x 20'-3 5/8"
     # Three doors through the centre bearing line, on the source's own gaps. Each takes a
     # header exactly like O-M-HALL / O-M-DRESS one storey down; the wall itself is unbroken.
-    # Full-lite glass leaf admits daylight from the south-facing plant room into the hall.
+    # Full-lite glass leaf admits daylight from the south-facing plant room into
+    # RM-S-STUDY2 — this door opens on the study, not the hall (corrected 2026-08-18).
     Door(uid="CSD212AAAA", tag="D-S-PLANT", host="W-S-C1", type_ref="DT-INT-SWING30-GLAZED",
          position=from_node("N-S-S1", ft(3, 2.5))),                      # y 4'-5 1/2"
     Door(uid="CSD206AAAA", tag="D-S-SUITE", host="W-S-C2B", type_ref="DT-INT-SWING32",
@@ -370,9 +399,13 @@ OPENINGS = [
     # Narrowed 42" -> 30" and moved 8" east off the old bay centres (WT-3048, 2026-08-01,
     # see WIN-M-BED-S1/2). Grow pots/LED tubes (placeables.py/lighting.py) stay at
     # x 3'-4"/8'-8", still inside each window's 30" of glass.
-    Window(uid="CSX306AAAA", tag="WIN-S-PLANT1", host="W-S-S1", type_ref="WT-3048",
+    # Retyped to the U-0.14 twins 2026-08-18 (WT-*-HP in main.py): at 75 F / 70% RH the
+    # room's dew point is 64.4 F and a U-0.25 unit's inner glass runs 59.7 F at design —
+    # these windows ran wet below about +13 F outdoors, which is most of the winter. Same
+    # width, same height, same sill, same centres: a retype moves nothing.
+    Window(uid="CSX306AAAA", tag="WIN-S-PLANT1", host="W-S-S1", type_ref="WT-3048-HP",
            position=from_node("N-S-SW", ft(2, 9)), sill_height=ft(2, 8)),     # x 4'-0"
-    Window(uid="CSX307AAAA", tag="WIN-S-PLANT2", host="W-S-S1", type_ref="WT-3048-T",
+    Window(uid="CSX307AAAA", tag="WIN-S-PLANT2", host="W-S-S1", type_ref="WT-3048-HP-T",
            position=from_node("N-S-SW", ft(8, 1)), sill_height=ft(2, 8)),     # x 9'-4"
     # The plant room's west window is on W-S-W4, a bearing wall, so it takes the 27" bearing
     # type, not the 30" south-glazing one ("resize windows to fit the grid", CLAUDE.md).
@@ -380,7 +413,7 @@ OPENINGS = [
     # 2026-08-15 column pass — W-S-W4 starts at N-S-W3 (y=9'-0"), which can't move without
     # dragging the whole east row off its mirror — so WIN-M-BED-W1 came up to meet it
     # instead.
-    Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2736",
+    Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2736-HP",
            position=from_node("N-S-W3", ft(2, 10.5)), sill_height=ft(3)),     # y 5'-0"
     # Study 2's south pair: centres 27'-4" and 32'-8" are stud lines on W-S-S2's grid,
     # stacking exactly over WIN-M-LIV-S2/S1. Moved 8" west off the old bay centres with the
@@ -420,8 +453,26 @@ OPENINGS = [
 ]
 
 ROOMS = [
+    # The tropical room: held at ~75 F / 70% RH year-round, including at the site's -15 F
+    # heating design temperature. `humidity_class` is a separate axis from `occupancy`
+    # deliberately — this genuinely is a LIVING room, and it is the humidity, not the use,
+    # that governs every assembly bounding it. The explicit pair of setpoints is authored
+    # because dew point is a function of both: 75 F / 70% RH is 64.4 F, and every surface
+    # in the room colder than that is wet.
+    #
+    # RH strategy on the equipment side (notes/plant_room.md): hold 70% whenever outdoors
+    # is >= +10 F and reset down to about 55% at -15 F. The model carries the design
+    # figure, which is the one the assemblies have to survive.
+    #
+    # `floor_finish` leaves "tile" for heat-welded sheet vinyl with a 6" integral flash
+    # cove that laps up the wall and dies behind the wall membrane, so floor and wall are
+    # one tray with no base joint. Nothing impermeable goes under it — a second Class I
+    # layer beneath sheet vinyl sandwiches the plywood subfloor with no drying path either
+    # way. The cove IS the waterproofing.
     Room(uid="CSR401AAAA", tag="RM-S-PLANT", seed=pt(ft(9), ft(4)),
-         occupancy=Occupancy.LIVING, floor_finish="tile"),
+         occupancy=Occupancy.LIVING, humidity_class=HumidityClass.HUMID,
+         design_relative_humidity=0.70, design_temperature_f=75.0,
+         floor_finish="vinyl-sheet"),
     Room(uid="CSR402AAAA", tag="RM-S-STUDY2", seed=pt(ft(27), ft(4)),
          occupancy=Occupancy.OFFICE, floor_finish="oak"),
     # BED1's east wall is the house's one painted accent (spruce green-blue): swaps the
