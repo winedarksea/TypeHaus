@@ -426,6 +426,21 @@ The sunken garden's 16" arch wall and three free retaining walls remain UNKNOWN 
     true description of an exterior hose bib hosted by an interior room's wall rather than a
     defect. The model has no outdoor-room concept to file them under.
 
+## Basement Ceiling
+We are going to plan a major overhaul of the basement. We are reducing the number of poured concrete (suspended deck) ceilings. We are switching those that remain to LiteDeck/BuildDeck EPS forms. The goal with the EPS formed decks is to make the total depth the same as the installed deck depth on wooden joist floors (the wooden joist floors are the same as the upper stories, nominal 12" joists, subfloor, + finish).
+
+All the floors on the western portion (sauna, workshop, stairs) become joists.
+
+Because the deck forms can span 18' with a one way span, poured concrete walls W-B-CE, W-B-CW*, and W-B-STR2 can be removed along with their respective footings.
+Wall W-B-CE becomes a staggered stud wall (still with the double door).
+
+Use subagents and web searches as useful to research this plan.
+
+# Project Management
+* Track to inspection
+* Report final costs (but also reusable plan)
+* Upload pictures/notes/voice notes
+
 ### Other visual ideas (just ideas, not a TODO)
 Dark base to the house
 Dark panel along the panel of the corner most panels
