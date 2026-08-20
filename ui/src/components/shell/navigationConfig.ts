@@ -26,6 +26,8 @@ export const REPORTS: ReportSpec[] = [
     hint: "Transitions, resolved conditions, layer stacks" },
   { id: "bom", label: "Bill of materials", icon: "report",
     hint: "Every part in the model" },
+  { id: "estimate", label: "Estimate", icon: "report",
+    hint: "Priced rows, bid ladder, $/sf" },
   { id: "circuits", label: "Circuits", icon: "report",
     hint: "Panel schedule, service load, conduit, PV" },
   { id: "hvac", label: "HVAC", icon: "report",

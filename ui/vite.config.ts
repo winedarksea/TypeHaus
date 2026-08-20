@@ -28,6 +28,12 @@ export default defineConfig({
       "/redo": ENGINE,
       "/model.ifc": ENGINE,
       "/macro": ENGINE,
+      // The three takeoff reads. Omitted until 2026-08-20, which meant the BOM and
+      // Estimate readers fetched the SPA fallback under `npm run dev` — index.html with
+      // status 200, dying in res.json() as "Unexpected token '<'".
+      "/bom": ENGINE,
+      "/costs": ENGINE,
+      "/tasks": ENGINE,
       "/preview": ENGINE,
       "/asset": ENGINE,
       "/underlay": ENGINE,

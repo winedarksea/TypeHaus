@@ -27,6 +27,11 @@ export const STATES = [
   { id: "inspector", pose: `selectFirstWall();` },
   { id: "reader-circuits", pose: `s.getState().setDetailView("circuits");`,
     settled: `return !!document.querySelector(".workbench");` },
+  // The estimate reader fetches /costs before it can draw anything, so "the workbench
+  // exists" is not enough here — the shot would catch the empty shell. Wait for a group
+  // header, which only exists once the payload has been ranked.
+  { id: "reader-estimate", pose: `s.getState().setDetailView("estimate");`,
+    settled: `return !!document.querySelector(".estimate-group-head, .estimate-warn");` },
   // Split does not exist at compact — the app coerces it to 2D, because two ~195px panes
   // render the plan illegibly. Photographing it there would just capture the 2D state under
   // a misleading name, and its digest would drift with whatever 2D happened to be doing.

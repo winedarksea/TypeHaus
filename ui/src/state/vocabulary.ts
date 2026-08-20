@@ -51,7 +51,10 @@ export const ALL_TRADES: Trade[] = [
 // "lighting", for the same reason those two are separate: an electrician sizing a breaker, a
 // designer choosing a colour temperature and a low-voltage tech pulling CAT6 are not looking
 // for the same page — and comms may not even share a raceway with the other two.
-export type DetailView = "none" | "assembly" | "bom" | "circuits" | "lighting" | "hvac" | "plumbing" | "data";
+// "estimate" is a fifth reader over the takeoff payload, beside "bom": the BOM says what
+// is in the house, the estimate ranks what it costs. Read-only — prices.toml is
+// hand-authored and stays that way.
+export type DetailView = "none" | "assembly" | "bom" | "circuits" | "lighting" | "hvac" | "plumbing" | "data" | "estimate";
 
 // Every kind of model record the UI can hold selected. The first five are authored elements a
 // patch can edit or delete; the rest are *derived* geometry the resolver computes (a post

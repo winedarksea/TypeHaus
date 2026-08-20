@@ -32,6 +32,8 @@ const CircuitsView = lazy(() => import("./components/CircuitsView")
   .then((m) => ({ default: m.CircuitsView })));
 const DataView = lazy(() => import("./components/DataView")
   .then((m) => ({ default: m.DataView })));
+const EstimateView = lazy(() => import("./components/EstimateView")
+  .then((m) => ({ default: m.EstimateView })));
 const HvacView = lazy(() => import("./components/HvacView")
   .then((m) => ({ default: m.HvacView })));
 const PlumbingView = lazy(() => import("./components/PlumbingView")
@@ -198,6 +200,7 @@ export function App() {
         {detailView === "hvac" && <HvacView />}
         {detailView === "plumbing" && <PlumbingView />}
         {detailView === "data" && <DataView />}
+        {detailView === "estimate" && <EstimateView />}
       </Suspense>
       <Workbench />
       <CommandPalette />

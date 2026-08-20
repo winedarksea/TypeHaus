@@ -441,7 +441,11 @@ Use subagents and web searches as useful to research this plan.
 * Report final costs (but also reusable plan)
 * Upload pictures/notes/voice notes
 * system for collecting bids as a GC (bidders should see estimates for materials for their job but not the estimate cost already, that would give them numbers to aim at)
-* local first or Cloudflare workers
+* local first (with drive, S3 bucket, or such for backup) or Cloudflare workers
+
+Firstly design a house (with permit checks, building science review, floorplan editing in the 2d UI, 3d review, cost reduction and BOM review).
+Secondly gather bids, organize the timeline (inspection gates, etc), then track completed progress.
+Thirdly use the house design as a reference (ie home assistant)
 
 ### Other visual ideas (just ideas, not a TODO)
 Dark base to the house

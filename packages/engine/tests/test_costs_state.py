@@ -12,6 +12,7 @@ from pathlib import Path
 
 import pytest
 
+from _helpers import CATLIN
 from typehaus.cli.prices import (ALLOWANCE_KEY_FIELD, ALLOWANCES, ESTIMATE_PLANS,
                                   PriceRange, _SECTIONS)
 from typehaus.takeoff.bom import bill_of_materials
@@ -195,6 +196,24 @@ def test_payload_totals_include_extras_and_actuals(bom):
     # Without prices there is no estimate and no combined total — absent, not $0.
     assert payload["prices_loaded"] is False and payload["estimate"] is None
     assert "combined" not in totals
+
+
+def test_payload_per_sf_needs_areas(bom):
+    """$/sf is opt-in on the payload, exactly as it is on ``estimate_costs``: supplied
+    denominators produce it, absent ones omit it. The browser reads the same estimate the
+    terminal prints, so a payload without ``areas`` was the reason ``/costs`` had no $/sf
+    while ``haus takeoff`` did."""
+    from typehaus.cli.prices import load_prices
+
+    prices = load_prices(CATLIN)
+    assert prices is not None, "the reference house carries prices.toml"
+    areas = {"conditioned": 4000.0, "gross": 5000.0}
+    with_areas = costs_payload(bom, prices, CostsState(), areas)["estimate"]
+    assert with_areas["areas"] == areas
+    assert with_areas["per_sf"]["total"]["conditioned"]["high"] > 0
+    # And absent — never zero — when the caller has no honest denominator.
+    without = costs_payload(bom, prices, CostsState())["estimate"]
+    assert "per_sf" not in without and "areas" not in without
 
 
 def test_payload_join_mirrors_estimate_plans(bom):

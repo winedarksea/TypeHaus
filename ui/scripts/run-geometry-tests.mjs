@@ -14,6 +14,7 @@ try {
   const { runVisibilityTests } = await server.ssrLoadModule("/src/model/visibility.test.ts");
   const { runEngineBomTests } = await server.ssrLoadModule("/src/model/engineBom.test.ts");
   const { runEngineCostsTests } = await server.ssrLoadModule("/src/model/engineCosts.test.ts");
+  const { runEngineEstimateTests } = await server.ssrLoadModule("/src/model/engineEstimate.test.ts");
   const { runPlanWarningTests, runSpaceLabelTests } = await server.ssrLoadModule("/src/model/planWarnings.test.ts");
   const { runTransitionTests } = await server.ssrLoadModule("/src/model/transitions.test.ts");
   const { runTagIndexTests } = await server.ssrLoadModule("/src/model/tagIndex.test.ts");
@@ -43,6 +44,7 @@ try {
   runVisibilityTests();
   runEngineBomTests();
   runEngineCostsTests();
+  runEngineEstimateTests();
   runPlanWarningTests();
   runSpaceLabelTests();
   runTransitionTests();

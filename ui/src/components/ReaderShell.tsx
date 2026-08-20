@@ -186,6 +186,21 @@ export interface ReaderColumn<Row> {
   num?: boolean;
   cellClass?: string;
   cell: (row: Row) => ReactNode;
+  /**
+   * The sort this column's header selects, when the table is given a `sort`. Named
+   * separately from `key` because several columns can read the same measure (a cost column
+   * and the bar drawn from it both sort by "cost") and because a column with no sortKey is
+   * simply not clickable.
+   */
+  sortKey?: string;
+}
+
+/** A ReaderTable's sort state, owned by the view so a toolbar control and the headers
+ *  can never disagree about what the table is currently ordered by. */
+export interface ReaderSort {
+  key: string;
+  descending: boolean;
+  onSort: (key: string) => void;
 }
 
 /**
@@ -197,12 +212,15 @@ export interface ReaderColumn<Row> {
  * its twin. Complex tables (an expandable panel schedule, a table with colspan detail rows)
  * still build their own markup; this is for the plain ones, which is most of them.
  */
-export function ReaderTable<Row>({ columns, rows, rowKey, empty }: {
+export function ReaderTable<Row>({ columns, rows, rowKey, empty, sort }: {
   columns: ReaderColumn<Row>[];
   rows: readonly Row[];
   rowKey: (row: Row, index: number) => string;
   /** Rendered instead of an empty table body. Omit to render the empty table. */
   empty?: ReactNode;
+  /** Makes every column that declares a `sortKey` a button, and marks the active one with
+   *  `aria-sort`. Omit for the tables that are in payload order and mean to stay there. */
+  sort?: ReaderSort;
 }) {
   if (empty !== undefined && rows.length === 0) return <>{empty}</>;
   return (
@@ -210,11 +228,35 @@ export function ReaderTable<Row>({ columns, rows, rowKey, empty }: {
       <table className="reader-table">
         <thead>
           <tr>
-            {columns.map((column) => (
-              <th key={column.key} className={column.num ? "num-col" : undefined}>
-                {column.header}
-              </th>
-            ))}
+            {columns.map((column, index) => {
+              const sortable = sort && column.sortKey;
+              const active = sortable && sort.key === column.sortKey;
+              // Two columns may select the same sort (a cost column and the bar drawn from
+              // it), and both are clickable — but only one may carry aria-sort, or a
+              // screen reader is told the table is sorted by two different columns at once.
+              const announced = active
+                && columns.findIndex((other) => other.sortKey === sort!.key) === index;
+              return (
+                <th
+                  key={column.key}
+                  className={column.num ? "num-col" : undefined}
+                  aria-sort={announced
+                    ? (sort!.descending ? "descending" : "ascending") : undefined}
+                >
+                  {sortable ? (
+                    <button
+                      className={active ? "reader-sort is-active" : "reader-sort"}
+                      onClick={() => sort!.onSort(column.sortKey!)}
+                    >
+                      {column.header}
+                      <span aria-hidden="true" className="reader-sort-caret">
+                        {active ? (sort!.descending ? "▾" : "▴") : ""}
+                      </span>
+                    </button>
+                  ) : column.header}
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <tbody>

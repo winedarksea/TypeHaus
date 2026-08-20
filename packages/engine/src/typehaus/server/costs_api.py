@@ -13,7 +13,7 @@ here would show yesterday's check-offs beside today's plan.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from typehaus.takeoff.costs import apply_costs_op, costs_payload, load_costs, write_costs
 
@@ -23,8 +23,15 @@ class CostsRequestError(ValueError):
 
 
 def build_costs_payload(model: Any, house_dir: Path) -> dict:
-    """The full costs payload for the resolved ``model``: BOM join, estimate, state."""
+    """The full costs payload for the resolved ``model``: BOM join, estimate, state.
+
+    The $/sf denominators are computed here exactly as ``cli/cmd_takeoff`` computes them —
+    conditioned area is what the energy code grades, gross is what a builder means by
+    "$/sf", and both come from the model rather than from a constant. Without them the
+    browser had no $/sf at all while the terminal printed it.
+    """
     from typehaus.cli.prices import load_prices
+    from typehaus.server.space_summary import build_space_summary
     from typehaus.takeoff.bom import bill_of_materials
 
     try:
@@ -32,7 +39,11 @@ def build_costs_payload(model: Any, house_dir: Path) -> dict:
         state = load_costs(house_dir)
     except ValueError as exc:
         raise CostsRequestError(str(exc)) from exc
-    return costs_payload(bill_of_materials(model), prices, state)
+    # Cast rather than index straight into the payload: `build_space_summary` is typed as a
+    # plain JSON dict, so its "overall" block reads as `object` under mypy --strict.
+    summary = cast("dict[str, float]", build_space_summary(model)["overall"])
+    areas = {"conditioned": summary["conditioned_sf"], "gross": summary["gross_sf"]}
+    return costs_payload(bill_of_materials(model), prices, state, areas)
 
 
 def apply_costs_ops(house_dir: Path, ops: Any) -> None:

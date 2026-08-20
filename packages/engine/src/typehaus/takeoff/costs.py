@@ -300,7 +300,8 @@ def apply_costs_op(state: CostsState, op: Mapping[str, Any]) -> CostsState:
 
 # --- payload ------------------------------------------------------------------------------
 
-def costs_payload(bom: dict, prices: Optional[Prices], state: CostsState) -> dict:
+def costs_payload(bom: dict, prices: Optional[Prices], state: CostsState,
+                  areas: Optional[Mapping[str, float]] = None) -> dict:
     """Everything the costs view needs in one JSON-ready dict.
 
     ``join`` tells the client how each estimate section maps onto BOM rows (bom key, key
@@ -308,8 +309,14 @@ def costs_payload(bom: dict, prices: Optional[Prices], state: CostsState) -> dic
     re-guesses the join. ``stale`` lists entries whose ``(section, key)`` matches no
     current BOM row: the plan moved on under a check-off, which is a fact the owner must
     see, never silently discard.
+
+    ``areas`` is the $/sf denominator pair (``conditioned`` / ``gross``, from
+    ``server/space_summary.build_space_summary``), passed straight through to
+    :func:`typehaus.cli.prices.estimate_costs`. Optional because a caller that has no
+    resolved model has no honest denominator, and $/sf against a guessed area is worse
+    than no $/sf at all — omitted, never zero.
     """
-    estimate = estimate_costs(bom, prices) if prices is not None else None
+    estimate = estimate_costs(bom, prices, areas) if prices is not None else None
     join = {name: {"bom_key": bom_key, "key_field": key_field,
                    "quantity_field": quantity_field, "unit": unit,
                    # False for a section reported beside the construction total

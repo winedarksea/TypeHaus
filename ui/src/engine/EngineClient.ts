@@ -207,18 +207,58 @@ export interface EngineExtraItem {
 }
 export interface EngineEstimateRow {
   key: string;
+  // Absent on a row the price table names but the BOM does not describe (an allowance).
+  description?: string | null;
   quantity: number;
   unit: string;
   unit_price: EnginePriceRange;
   cost: EnginePriceRange;
   cost_fmt: string;
+  // "material" | "labour" | "installed" — how the authored unit price is meant. An
+  // `installed` price with no declared split lands wholly in `merged`, and a merged number
+  // is never divided (→ takeoff/cost_model.py).
+  basis?: string;
+  material?: EnginePriceRange;
+  labour?: EnginePriceRange;
+  merged?: EnginePriceRange;
+  waste_pct?: number;
+  tax_included?: boolean;
+  // True for a section whose BOM quantity already carries its waste, so `order_quantity`
+  // equals `quantity` rather than growing by `waste_pct`.
+  waste_in_quantity?: boolean;
+  order_quantity?: number;
+  // Cost codes (takeoff/cost_codes.py): the NAHB account, the CSI division where one
+  // applies, and the viewer trade — the same 13-value vocabulary as `Trade`.
+  nahb_code?: string;
+  csi_code?: string | null;
+  trade?: string;
 }
+/** One rung of the `net → waste → ordered → contingency → overhead → profit → tax → total`
+ *  ladder. `rate` is present only on the stages that are a percentage of something. */
+export interface EngineBidStage {
+  label: string;
+  low: number;
+  high: number;
+  fmt: string;
+  rate?: number;
+}
+export interface EngineEstimateSection {
+  rows: EngineEstimateRow[];
+  subtotal: EnginePriceRange;
+  subtotal_fmt: string;
+  // False for a section reported beside the construction total (furnishings).
+  in_total?: boolean;
+  basis?: string;
+  basis_note?: string | null;
+  basis_subtotals?: Record<string, EnginePriceRange>;
+  waste?: EnginePriceRange;
+  material_tax_already_paid?: EnginePriceRange;
+  waste_in_quantity?: boolean;
+}
+/** `{low, high}` per named denominator ("conditioned", "gross"). */
+export type EnginePerSf = Record<string, EnginePriceRange>;
 export interface EngineEstimate {
-  sections: Record<string, {
-    rows: EngineEstimateRow[]; subtotal: EnginePriceRange; subtotal_fmt: string;
-    // False for a section reported beside the construction total (furnishings).
-    in_total?: boolean;
-  }>;
+  sections: Record<string, EngineEstimateSection>;
   // The *construction* total: sections with in_total false are not in it.
   total: EnginePriceRange;
   total_fmt: string;
@@ -227,6 +267,33 @@ export interface EngineEstimate {
   excluded_total_fmt?: string;
   grand_total?: EnginePriceRange;
   grand_total_fmt?: string;
+  // False when prices.toml declares no [basis] at all — the material/labour split is then
+  // a default, not a statement, and the page says so rather than implying precision.
+  basis_declared?: boolean;
+  basis?: Record<string, string>;
+  basis_notes?: Record<string, string | null>;
+  bid?: {
+    // material / labour / merged, plus a parallel `fmt` map of the same three as strings —
+    // hence the union: a consumer reads the three names it knows and ignores the rest.
+    net: Record<string, EnginePriceRange | Record<string, string>>;
+    stages: EngineBidStage[];
+    subtotal_net: EnginePriceRange;
+    subtotal_ordered: EnginePriceRange;
+    total: EnginePriceRange;
+    total_fmt: string;
+    // Material+labour the tax stage could not see, because the price is merged.
+    untaxed_merged: EnginePriceRange;
+    // Material the tax stage skipped because its authored price already carries tax.
+    material_tax_already_paid: EnginePriceRange;
+    taxable_material: EnginePriceRange;
+  };
+  // Both present only when the caller supplied denominators (server/costs_api.py does).
+  areas?: Record<string, number>;
+  per_sf?: {
+    total: EnginePerSf;
+    bid_total: EnginePerSf;
+    sections: Record<string, EnginePerSf>;
+  };
   unpriced: { section: string; key: string; quantity: number; unit: string }[];
 }
 export interface EngineCostsJoin {

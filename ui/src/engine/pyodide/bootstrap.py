@@ -225,6 +225,7 @@ class OfflineEngine:
         the offline view shows the same join/estimate/check-off state. Read-only: edits go
         through the server (``PyodideEngineClient.patchCosts`` rejects)."""
         from typehaus.cli.prices import load_prices
+        from typehaus.server.space_summary import build_space_summary
         from typehaus.takeoff.bom import bill_of_materials
         from typehaus.takeoff.costs import CostsState, costs_payload, load_costs
 
@@ -237,7 +238,11 @@ class OfflineEngine:
             # A malformed hand-edited file degrades to the empty state offline; the server
             # path is where the loud 400 with the offending key lives.
             prices, state = None, CostsState()
-        return costs_payload(bill_of_materials(self.model), prices, state)
+        # Same $/sf denominators as the served path (server/costs_api.py) — the offline
+        # surface must not show a different estimate from the same house.
+        summary = build_space_summary(self.model)["overall"]
+        areas = {"conditioned": summary["conditioned_sf"], "gross": summary["gross_sf"]}
+        return costs_payload(bill_of_materials(self.model), prices, state, areas)
 
     def detail_index(self) -> list[dict[str, Any]]:
         from typehaus.emit.draw.details import detail_index
