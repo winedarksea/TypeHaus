@@ -437,9 +437,11 @@ Wall W-B-CE becomes a staggered stud wall (still with the double door).
 Use subagents and web searches as useful to research this plan.
 
 # Project Management
-* Track to inspection
+* Track to inspection (list of inspections, calendar, pass registration). Likely includes Kanban somehow
 * Report final costs (but also reusable plan)
 * Upload pictures/notes/voice notes
+* system for collecting bids as a GC (bidders should see estimates for materials for their job but not the estimate cost already, that would give them numbers to aim at)
+* local first or Cloudflare workers
 
 ### Other visual ideas (just ideas, not a TODO)
 Dark base to the house

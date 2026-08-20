@@ -9,8 +9,18 @@ the house directory and versioned with the plan:
   :func:`typehaus.cli.prices.estimate_costs` uses (``ESTIMATE_PLANS``), so a paid check-off
   points at the same row the estimate prices. A BOM row that later disappears (the plan
   changed) leaves its entry *stale* — surfaced by :func:`costs_payload`, never dropped.
-* **extra** — real spend the model does not bill (permit fees, dumpster, delivery), so the
-  running total is the project's, not just the modelled material's.
+* **extra** — real spend that is on no estimate line at all, so the running total is the
+  project's rather than just the modelled material's.
+
+  Its scope NARROWED on 2026-08-20 and the old examples here were stale within a day. Permit
+  fees, the dumpster and site delivery used to be the canonical ``extra`` — they are now
+  ``[allowances]`` rows in ``prices.toml``, which means they are estimated, cost-coded,
+  scheduled by trade, and joined here like any other line. Checking one off as ``extra`` today
+  would double it against its own allowance.
+
+  What still belongs in ``extra`` is spend nobody forecast in any form: the change order, the
+  replacement for the thing that was damaged, the trip charge for the second visit. If a cost
+  is foreseeable, it wants an allowance; ``extra`` is for the ones that were not.
 
 Deliberately outside the PatchOp/undo journal: paying a bill is not a plan edit, and
 un-paying one by pressing undo would be a lie about the bank account.

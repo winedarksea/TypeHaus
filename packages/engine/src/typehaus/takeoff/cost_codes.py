@@ -80,6 +80,34 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     ("construction_returns", "*foam-return*", CostCode("2100", "07 21 00", "walls")),
     ("construction_returns", "*masonry*", CostCode("1200", "04 20 00", "concrete")),
     ("construction_returns", "resilient-channel", CostCode("4300", "09 22 00", "walls")),
+    # Allowances (2026-08-20). ** THE KEY PREFIX IS THE TRADE DECLARATION. ** These match on a
+    # leading segment rather than a substring, and that is a correctness requirement, not a
+    # style choice: the first draft used substrings and filed "waterproofing" under ROOF,
+    # because "p-r-o-o-f" contains "roof", and "egress-window-wells" under PLUMBING via
+    # "*well*". A trade is not a decoration — `haus tasks` builds work packages at
+    # (trade x storey), so a mis-filed allowance lands the excavator's number in the
+    # plumber's package. Prefixes are unambiguous and a new key declares its own trade by
+    # being named for it. Ordered specific-first, as everywhere in this table.
+    ("allowances", "permits-*", CostCode("1000", "01 41 00", "earth")),
+    ("allowances", "site-general-conditions", CostCode("9000", "01 50 00", "earth")),
+    ("allowances", "site-drain-tile-*", CostCode("2600", "33 46 00", "drainage")),
+    ("allowances", "site-*", CostCode("1000", "31 20 00", "earth")),
+    ("allowances", "foundation-*", CostCode("1200", "07 10 00", "concrete")),
+    ("allowances", "concrete-*", CostCode("1300", "03 30 00", "concrete")),
+    ("allowances", "radon-*", CostCode("1100", "31 21 00", "concrete")),
+    ("allowances", "roof-*", CostCode("2500", "07 60 00", "roof")),
+    ("allowances", "envelope-*", CostCode("2100", "07 20 00", "walls")),
+    ("allowances", "electrical-*", CostCode("3300", "26 00 00", "electrical")),
+    ("allowances", "plumbing-*", CostCode("3100", "22 00 00", "plumbing")),
+    ("allowances", "hvac-*", CostCode("3200", "23 00 00", "mechanical")),
+    ("allowances", "paint-*", CostCode("4400", "09 90 00", "walls")),
+    ("allowances", "cabinet-*", CostCode("4200", "12 30 00", "furniture")),
+    ("allowances", "finish-floor-*", CostCode("4000", "09 60 00", "floors")),
+    ("allowances", "finish-transitions-*", CostCode("4000", "09 60 00", "floors")),
+    ("allowances", "finish-door-*", CostCode("2400", "08 71 00", "openings")),
+    ("allowances", "finish-garage-door-*", CostCode("2400", "08 36 00", "openings")),
+    ("allowances", "finish-tile-*", CostCode("4000", "09 30 00", "floors")),
+    ("allowances", "finish-*", CostCode("4100", "06 20 00", "walls")),
 )
 
 #: The default code for every section in ``cli.prices.ESTIMATE_PLANS``. Every section must
@@ -113,6 +141,11 @@ SECTION_CODES: dict[str, CostCode] = {
     # the liner laps are a framer's work; KEY_PATTERNS above re-files the insulation, the
     # masonry and the channel rows onto their own trades.
     "construction_returns": CostCode("2000", "06 11 00", "framing"),
+    # Lump sums (2026-08-20). NAHB 1000 is Land and Site Work and CSI 01 21 00 is literally
+    # "Allowances", so the pair is the honest default for scope the model cannot resolve.
+    # A key that lands HERE rather than on a KEY_PATTERNS prefix above is an unclassified
+    # one: readable, but it will be scheduled as earthwork. Name it for its trade instead.
+    "allowances": CostCode("1000", "01 21 00", "earth"),
 }
 
 

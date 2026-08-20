@@ -13,6 +13,7 @@ from typing import Any, Optional
 
 from typehaus.cli.price_file import (  # noqa: F401  (re-exported: this is the public name)
     _SECTIONS,
+    ALTERNATE_UNITS,
     BASES,
     INSTALLED,
     LABOUR,
@@ -34,7 +35,8 @@ from typehaus.cli.price_file import (  # noqa: F401  (re-exported: this is the p
 #: but every existing caller says ``from typehaus.cli.prices import ...`` — naming the names
 #: here keeps that path a declared contract rather than an implicit one.
 __all__ = [
-    "BASES", "INSTALLED", "LABOUR", "MATERIAL", "PRICES_FILENAME", "Adjustments",
+    "ALTERNATE_UNITS", "BASES", "INSTALLED", "LABOUR", "MATERIAL", "PRICES_FILENAME",
+    "ALLOWANCE_KEY_FIELD", "ALLOWANCES", "Adjustments",
     "ESTIMATE_PLANS", "EXCLUDED_FROM_TOTAL", "MATERIAL_ONLY", "PriceRange", "Prices", "UnitPrice",
     "QUALIFIED_KEY_FIELD", "WASTE_IN_QUANTITY", "ZERO", "estimate_costs", "load_prices",
     "waste_in_quantity",
@@ -103,7 +105,27 @@ ESTIMATE_PLANS = (
     ("drainage", "drainage", "category", "length_ft", "LF"),
     # Reads the *same* BOM rows as ``placeables`` — see ``EXCLUDED_FROM_TOTAL``.
     ("furnishings", "placeables", "type", "count", "ea"),
+    # Lump sums (2026-08-20). The BOM table this names does not come from the model — see
+    # ``ALLOWANCES`` and ``_allowance_rows``.
+    ("allowances", "allowances", "item", "count", "ls"),
 )
+
+#: The one estimate section whose "BOM" is synthesised from the price table rather than read
+#: from the model, and the field its synthetic rows key on.
+#:
+#: Everything else in :data:`ESTIMATE_PLANS` is a rate joined to a quantity the model
+#: resolved, which is the whole discipline of the estimate: a price with nothing to multiply
+#: cannot appear. But that discipline also means the total silently omits every real cost the
+#: model does not resolve — excavation, the water and sewer connections, permits, the general
+#: contractor — and a total that omits the excavator is not a total, it is a subtotal wearing
+#: the wrong label.
+#:
+#: So an allowance is a row at quantity 1 whose "unit price" is the lump sum. Synthesising it
+#: here rather than special-casing it downstream is what keeps it honest: it flows through the
+#: identical basis split, waste, cost-code, CSV, contingency, markup and tax path as a stick of
+#: 2x6, and it is visible on its own line with its own basis rather than folded into a total.
+ALLOWANCES = "allowances"
+ALLOWANCE_KEY_FIELD = "item"
 
 #: Sections that may only bill a BOM row made of a particular material, and the material
 #: that row's ``structure_material`` must name. A row whose ``structure_material`` is
@@ -116,6 +138,13 @@ ESTIMATE_PLANS = (
 #: on wood joists); "column" covers a concrete pier and four solid elm timbers. Without
 #: this guard the wood ones bill at the ready-mix $/cy on top of billing as lumber in
 #: ``sheet_goods``/``framing`` — a double-count, not just a mis-price.
+#:
+#: The guard is a *default*, not a wall. A house that authors the QUALIFIED key for one of
+#: these rows (``"slab:BALCONY_DECK_ALUMINUM"``, see :data:`QUALIFIED_KEY_FIELD`) has said
+#: which assembly it means and at what rate, so ``estimate_costs`` prices it. That is the
+#: escape hatch for a solid no other table bills — the aluminium balcony deck, the elm
+#: posts, the breezeway polycarbonate — none of which are lumber and so none of which are
+#: double-counted. A bare-category row is still filtered.
 MATERIAL_ONLY = {"concrete": "concrete"}
 
 
@@ -130,7 +159,14 @@ MATERIAL_ONLY = {"concrete": "concrete"}
 #: shoring, rebar and an engineer's stamp — 3-5x the $/cy. The category taxonomy itself
 #: must not be split to say so (``ResolvedSolid.category`` is read by a dozen checks and
 #: printed in the 3D Inspector), so the price table qualifies by assembly instead.
-QUALIFIED_KEY_FIELD = {"concrete": "assembly"}
+#: ``drainage`` needs it for the same reason one step down: ``gutter`` is one category over
+#: 47.8 LF of seamless aluminium K-style and 73.7 LF of fabricated dark box gutter, which
+#: differ by about 3x per foot, and ``downspout`` is one category over 3" aluminium and 4"
+#: dark formed. A single blended rate is weighted correctly only for today's mix and becomes
+#: wrong the moment one run changes length. ``takeoff/drainage.py`` already reports the
+#: product per row, so qualifying by it costs nothing and makes the box-gutter downgrade in
+#: ``plans/cost-options.md`` a checkable number instead of an argument about an average.
+QUALIFIED_KEY_FIELD = {"concrete": "assembly", "drainage": "product"}
 
 
 #: Sections priced and reported but held out of the construction total. They stay in
@@ -142,6 +178,16 @@ EXCLUDED_FROM_TOTAL = frozenset({"furnishings"})
 #: the ``structural_solids`` rows) shares its table's name.
 _PLAN_TABLE = {name: name for name, *_ in ESTIMATE_PLANS}
 
+
+
+def _allowance_rows(prices: Prices) -> list[dict[str, Any]]:
+    """One synthetic BOM row per authored allowance, at quantity 1.
+
+    Sorted so the estimate, the CSV and the task export list them in the same order run to
+    run; a lump-sum block that reshuffles between exports is one no reviewer can diff.
+    """
+    return [{ALLOWANCE_KEY_FIELD: key, "count": 1, "description": key}
+            for key in sorted(prices.allowances)]
 
 
 def estimate_costs(bom: dict[str, Any], prices: Prices,
@@ -187,38 +233,61 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
     misses: list[tuple[str, dict[str, Any]]] = []
     section_buckets: dict[str, dict[str, PriceRange]] = {}
     section_waste: dict[str, PriceRange] = {}
+    # Material whose authored price ALREADY carries sales tax — tracked beside the buckets
+    # rather than as a fourth bucket, so ``basis_subtotals`` keeps the shape every consumer
+    # and test already reads. See ``Adjustments.tax_included``.
+    section_tax_paid: dict[str, PriceRange] = {}
     adjustments = prices.adjustments
-    for name, bom_key, key_field, quantity_field, unit in ESTIMATE_PLANS:
+    # The allowances "BOM" is the price table itself — see ``ALLOWANCES``. Written into a
+    # local copy so a caller's payload is never mutated by having been priced.
+    if prices.allowances:
+        bom = {**bom, ALLOWANCES: _allowance_rows(prices)}
+    for name, bom_key, key_field, section_quantity_field, section_unit in ESTIMATE_PLANS:
         table = getattr(prices, _PLAN_TABLE[name])
+        alternates = ALTERNATE_UNITS.get(name) or {}
         rows = []
         buckets = empty_buckets()
         waste_sum = ZERO
+        tax_paid_sum = ZERO
         required_material = MATERIAL_ONLY.get(name)
         for row in bom.get(bom_key, []) or []:
             if required_material is not None:
                 material = row.get("structure_material")
                 if material is not None and material != required_material:
-                    # Recorded, never silent. This section may not price the row (a wood
-                    # deck is not ready-mix), but dropping it without a word would hide
-                    # real scope — the same reason a blank row here stays UNPRICED rather
-                    # than being priced at zero. The key names the assembly that fell out.
-                    quantity = float(row.get(quantity_field) or 0.0)
-                    if quantity:
-                        misses.append((bom_key, {
-                            "section": name,
-                            "key": f"{row.get(key_field)}:{row.get(qualifier_field)}"
-                                   if (qualifier_field := QUALIFIED_KEY_FIELD.get(name))
-                                   else str(row.get(key_field)),
-                            "quantity": round(quantity, 2), "unit": unit}))
-                    continue
+                    # A wood deck is not ready-mix, so this section does not price the row
+                    # *by default*. But a QUALIFIED key names one assembly and nothing else,
+                    # so authoring `slab:BALCONY_DECK_ALUMINUM` in [concrete] is an explicit
+                    # statement that the house wants this row priced here — the only table
+                    # that bills `structural_solids` at all. Honour that; skip only when the
+                    # house has stayed silent.
+                    qualifier_field = QUALIFIED_KEY_FIELD.get(name)
+                    qualified = (f"{row.get(key_field)}:{row.get(qualifier_field)}"
+                                 if qualifier_field else str(row.get(key_field)))
+                    if not (qualifier_field and table.get(qualified) is not None):
+                        # Recorded, never silent. Dropping it without a word would hide real
+                        # scope — the same reason a blank row stays UNPRICED rather than
+                        # being priced at zero. The key names the assembly that fell out.
+                        quantity = float(row.get(section_quantity_field) or 0.0)
+                        if quantity:
+                            misses.append((bom_key, {
+                                "section": name, "key": qualified,
+                                "quantity": round(quantity, 2), "unit": section_unit}))
+                        continue
             key = str(row.get(key_field))
             qualifier_field = QUALIFIED_KEY_FIELD.get(name)
             if qualifier_field:
                 qualifier = row.get(qualifier_field)
                 if qualifier and table.get(f"{key}:{qualifier}") is not None:
                     key = f"{key}:{qualifier}"
-            quantity = float(row.get(quantity_field) or 0.0)
             price = table.get(key)
+            # A row that names its own unit is read against a DIFFERENT field of the same BOM
+            # row — see ``ALTERNATE_UNITS``. Resolved per row rather than per section, because
+            # `sump` is priced each while `footing` beside it is still priced by the yard.
+            quantity_field, unit = section_quantity_field, section_unit
+            if price is not None and getattr(price, "unit", None):
+                unit = price.unit
+                quantity_field = alternates[unit]
+            quantity = float(row.get(quantity_field) or 0.0)
             if price is None:
                 if quantity:
                     misses.append((bom_key, {"section": name, "key": key,
@@ -233,8 +302,11 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
             parts = split_by_basis(cost, price)
             for bucket, value in parts.items():
                 buckets[bucket] = buckets[bucket].plus(value)
-            waste = apply_waste(name, key, cost, adjustments)
+            waste = apply_waste(name, key, parts, adjustments)
             waste_sum = waste_sum.plus(waste)
+            tax_included = adjustments.tax_is_included(name, key)
+            if tax_included:
+                tax_paid_sum = tax_paid_sum.plus(parts[MATERIAL])
             code = cost_code(name, key, dict(prices.codes))
             rows.append({"key": key, "description": _describe(row, name, key),
                          "quantity": round(quantity, 2), "unit": unit,
@@ -245,6 +317,7 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
                          "labour": parts[LABOUR].as_dict(),
                          "merged": parts["merged"].as_dict(),
                          "waste_pct": round(adjustments.waste_rate(name, key), 4),
+                         "tax_included": tax_included,
                          "waste_in_quantity": waste_in_quantity(name),
                          "order_quantity": round(quantity * (1.0 + (
                              0.0 if waste_in_quantity(name)
@@ -259,9 +332,11 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
                               "basis_note": prices.basis_notes.get(name),
                               "basis_subtotals": buckets_as_dict(buckets),
                               "waste": waste_sum.as_dict(),
+                              "material_tax_already_paid": tax_paid_sum.as_dict(),
                               "waste_in_quantity": waste_in_quantity(name)}
             section_buckets[name] = buckets
             section_waste[name] = waste_sum
+            section_tax_paid[name] = tax_paid_sum
             if in_total:
                 total = total.plus(subtotal)
             else:
@@ -269,7 +344,8 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
     unpriced = [row for bom_key, row in misses
                 if row["key"] not in priced.get(bom_key, ())]
     grand_total = total.plus(excluded_total)
-    bid = roll_up(section_buckets, section_waste, adjustments, EXCLUDED_FROM_TOTAL)
+    bid = roll_up(section_buckets, section_waste, adjustments, EXCLUDED_FROM_TOTAL,
+                  section_tax_paid)
     payload = {"sections": sections, "total": total.as_dict(), "total_fmt": total.fmt(),
                "excluded_sections": sorted(n for n in sections
                                            if n in EXCLUDED_FROM_TOTAL),

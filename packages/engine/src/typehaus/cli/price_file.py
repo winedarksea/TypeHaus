@@ -75,7 +75,11 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "pl
              "construction_returns",
              # Loose furnishings (2026-08-08) — priced, reported, and deliberately *not*
              # summed into the construction total. See ``EXCLUDED_FROM_TOTAL``.
-             "furnishings")
+             "furnishings",
+             # Lump sums the model cannot resolve (2026-08-20). The only section with no BOM
+             # table behind it: ``estimate_costs`` synthesises one row per authored key, at
+             # quantity 1. See ``Prices.allowances``.
+             "allowances")
 
 
 def _dollars(value: float) -> str:
@@ -119,6 +123,36 @@ ZERO = PriceRange(0.0, 0.0)
 MATERIAL, LABOUR, INSTALLED = "material", "labour", "installed"
 BASES = (MATERIAL, LABOUR, INSTALLED)
 
+#: Units a price row may name *instead of* its section's default, and the BOM field each one
+#: reads. Section -> {unit label: BOM field}.
+#:
+#: The problem this solves: a section joins the BOM on ONE quantity field, chosen for the
+#: section as a whole, and for two of them that field is a volume. ``structural_solids`` bills
+#: cubic yards because most of what it holds is a pour — but it also holds a sump (one object),
+#: a run of drain tile (a length), three foam thermal breaks (three objects) and eighteen bug
+#: screens. Pricing those by the yard is not merely awkward, it is *unauditable*: the bug-screen
+#: rows are 18 screens against 0.04 cy, so the multiplier is 6,000 and a 25-cent error in the
+#: real per-screen price moves the printed $/cy by $1,500. The line total can be right while the
+#: rate is a number no estimator, and no future reader, can sanity-check.
+#:
+#: Splitting the solid taxonomy to fix that is not available: ``ResolvedSolid.category`` is read
+#: by a dozen checks and printed in the 3D Inspector, so it is a *label*, not a price axis (the
+#: same constraint that produced :data:`~typehaus.cli.prices.QUALIFIED_KEY_FIELD`). So the price
+#: row names its own unit instead, and the engine reads a different field of the same row.
+#:
+#: Only fields the BOM row already carries are offered — this converts nothing and derives
+#: nothing. A unit a section does not list is a hard load-time error, because the alternative is
+#: pricing 3.13 cubic yards at a per-foot rate and printing the answer with a dollar sign.
+ALTERNATE_UNITS: dict[str, dict[str, str]] = {
+    # ``structural_solids``: every row carries all four, so any of them is honest.
+    "concrete": {"ea": "count", "SF": "plan_area_sqft", "cuft": "volume_cuft"},
+    # A retaining wall and a brick veneer are sold by the square foot of FACE, and neither is
+    # ready-mix; ``net_area_sqft`` is the face the takeoff already measured.
+    "wall_structure": {"SF": "net_area_sqft", "ea": "count"},
+    # A downspout is quoted per DROP, not per foot of leader — ``count`` is the drop count.
+    "drainage": {"ea": "count", "cy": "aggregate_cubic_yards"},
+}
+
 
 @dataclass(frozen=True)
 class UnitPrice(PriceRange):
@@ -137,6 +171,9 @@ class UnitPrice(PriceRange):
     basis: str = MATERIAL
     material: PriceRange | None = None
     labour: PriceRange | None = None
+    #: The unit this rate is *per*, when the row overrides its section's default — a key of
+    #: :data:`ALTERNATE_UNITS` for the section. ``None`` means the section's own unit.
+    unit: str | None = None
 
     @property
     def is_split(self) -> bool:
@@ -209,6 +246,23 @@ class Prices:
     # estimate still prices and reports it, beside the total instead of inside it.
     # ``load_prices`` rejects a type priced in both tables.
     furnishings: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Lump sums, keyed on a slug the house invents (2026-08-20). THE ONE SECTION WITH NO
+    # QUANTITY BEHIND IT — every other table is a $/unit rate joined to a BOM row the model
+    # resolved, and this one is a flat dollar figure for scope the model does not resolve at
+    # all: excavation, the utility connections, permits, the general contractor.
+    #
+    # This is not a hole in decision #28, it is the decision working. The engine still ships
+    # no numbers; the *house* says what its site work costs, in its own file, the same way it
+    # says what a yard of concrete costs. What changes is only that an allowance has no
+    # quantity to multiply, so ``estimate_costs`` synthesises a row at count 1 and the value
+    # written here is the line total. Unit is "ls" (lump sum) in every output.
+    #
+    # Mind the boundary this table makes easy to blur: an allowance must be scope NO OTHER
+    # SECTION PRICES. Writing "roofing" here while [envelope_layers] prices standing-seam
+    # double-counts the roof, and nothing in the loader can catch it — the BOM join that
+    # protects every other table from a mirror does not exist here. Keep each key to
+    # something the model provably cannot see, and say in a comment why it cannot.
+    allowances: Mapping[str, PriceRange] = field(default_factory=dict)
 
     # --- what the numbers above include, and what to do with them ------------------------
     #: Section -> "material" | "labour" | "installed". Always complete over ``_SECTIONS``.
@@ -232,8 +286,26 @@ _VALUE_SHAPES = (
     '   "2x6"  = 1.10                                       # exact, section-default basis\n'
     '   "2x6"  = { low = 1.10, high = 1.40 }                 # a range, section-default basis\n'
     '   "2x10" = { low = 2.8, high = 3.4, basis = "installed" }   # a real merged quote\n'
-    '   "LVL"  = { material = { low = 7, high = 9 }, labour = { low = 3, high = 5 } }'
+    '   "LVL"  = { material = { low = 7, high = 9 }, labour = { low = 3, high = 5 } }\n'
+    '   "sump" = { low = 900, high = 2200, unit = "ea" }     # priced per object, not per yard'
 )
+
+
+def _unit(section: str, key: str, raw: object, path: Path) -> str:
+    """Validate a row's ``unit =`` override against :data:`ALTERNATE_UNITS`."""
+    offered = ALTERNATE_UNITS.get(section) or {}
+    unit = str(raw)
+    if unit not in offered:
+        if not offered:
+            raise ValueError(
+                f"{path}: [{section}] {key!r} sets unit = {unit!r}, but [{section}] prices "
+                f"every row on its section unit and offers no alternatives. Only "
+                f"{sorted(ALTERNATE_UNITS)} do.")
+        raise ValueError(
+            f"{path}: [{section}] {key!r} sets unit = {unit!r}; [{section}] offers "
+            f"{sorted(offered)}. A unit is only offered where the BOM row already carries "
+            f"the field — nothing here converts or derives a quantity.")
+    return unit
 
 
 def _range(section: str, key: str, raw: object, path: Path, what: str = "") -> PriceRange:
@@ -260,6 +332,12 @@ def _price(section: str, key: str, raw: object, path: Path,
     shapes — a ``basis =`` override and an explicit ``material``/``labour`` split — say
     anything the old file could not.
     """
+    unit: str | None = None
+    if isinstance(raw, dict) and "unit" in raw:
+        # Stripped before every other shape check, so `unit` composes with all of them rather
+        # than being a fifth shape of its own.
+        unit = _unit(section, key, raw["unit"], path)
+        raw = {k: v for k, v in raw.items() if k != "unit"}
     if isinstance(raw, dict) and ("material" in raw or "labour" in raw):
         missing = {"material", "labour"} - set(raw)
         extra = set(raw) - {"material", "labour"}
@@ -270,7 +348,7 @@ def _price(section: str, key: str, raw: object, path: Path,
         material = _range(section, key, raw["material"], path, " material")
         labour = _range(section, key, raw["labour"], path, " labour")
         merged = material.plus(labour)
-        return UnitPrice(merged.low, merged.high, INSTALLED, material, labour)
+        return UnitPrice(merged.low, merged.high, INSTALLED, material, labour, unit)
     basis = default_basis
     if isinstance(raw, dict) and "basis" in raw:
         basis = str(raw["basis"])
@@ -283,12 +361,13 @@ def _price(section: str, key: str, raw: object, path: Path,
                          f"{sorted(set(raw) - {'low', 'high'})}; accepted shapes are:\n"
                          f"{_VALUE_SHAPES}")
     value = _range(section, key, raw, path)
-    return UnitPrice(value.low, value.high, basis)
+    return UnitPrice(value.low, value.high, basis, None, None, unit)
 
 
 #: Tables that are *not* price sections: they describe the file rather than price a row.
 #: Split out so an unknown-section error still names real typos.
-_META_SECTIONS = ("basis", "basis_notes", "waste", "contingency", "markup", "tax", "codes")
+_META_SECTIONS = ("basis", "basis_notes", "waste", "contingency", "markup", "tax",
+                  "tax_included", "codes")
 
 
 @dataclass(frozen=True)
@@ -308,10 +387,32 @@ class Adjustments:
     profit: float = 0.0
     #: Applied to the material portion only — which is the whole reason ``[basis]`` exists.
     material_tax_rate: float = 0.0
+    #: ``"section"`` / ``"section:key"`` -> True where the authored MATERIAL price already has
+    #: sales tax inside it, so the tax stage must not charge it a second time.
+    #:
+    #: This exists because of where residential price data comes from. A shelf price (Menards,
+    #: Home Depot, a lumber yard's $/LF) is quoted PRE-TAX and is the clean case. But a great
+    #: deal of published residential cost data is an *installed* figure from a homeowner-facing
+    #: cost guide — and that is a contractor's price to a homeowner, which in a
+    #: materials-taxing state has the tax embedded. Any material rate back-derived from one of
+    #: those already contains tax, and taxing it again is a straight double-count.
+    #:
+    #: Deliberately a BOOLEAN and not a rate. "Does this number already have tax in it" is a
+    #: fact about the source and someone can answer it; "what effective rate is buried in this
+    #: national average" is not answerable, and offering a field for it would invite a guess
+    #: dressed as a measurement. Same key shape as :attr:`waste` — section, or section:key —
+    #: because tax-inclusiveness varies row by row inside a section exactly as waste does.
+    tax_included: Mapping[str, bool] = field(default_factory=dict)
 
     def waste_rate(self, section: str, key: str) -> float:
         override = self.waste.get(f"{section}:{key}")
         return float(override if override is not None else self.waste.get(section, 0.0))
+
+    def tax_is_included(self, section: str, key: str) -> bool:
+        """True when this row's material price already carries sales tax."""
+        override = self.tax_included.get(f"{section}:{key}")
+        return bool(override if override is not None else
+                    self.tax_included.get(section, False))
 
 
 def _rate(path: Path, table: str, key: str, raw: object) -> float:
@@ -375,8 +476,19 @@ def _load_adjustments(data: dict[str, Any], path: Path) -> Adjustments:
     unknown = sorted(set(contingency) - {"rate"})
     if unknown:
         raise ValueError(f"{path}: [contingency] has unexpected key(s) {unknown}; expected rate")
+    tax_included: dict[str, bool] = {}
+    for key, raw in (data.get("tax_included") or {}).items():
+        section = str(key).split(":", 1)[0]
+        if section not in _SECTIONS:
+            raise ValueError(f"{path}: [tax_included] {key!r} names unknown section {section!r}")
+        if not isinstance(raw, bool):
+            raise ValueError(f"{path}: [tax_included] {key!r} must be true or false, not "
+                             f"{raw!r}. It is a fact about where the price came from, not a "
+                             f"rate — see Adjustments.tax_included.")
+        tax_included[str(key)] = raw
     return Adjustments(
         waste=waste,
+        tax_included=tax_included,
         contingency=_rate(path, "contingency", "rate", contingency.get("rate", 0.0)),
         overhead=_rate(path, "markup", "overhead", markup.get("overhead", 0.0)),
         profit=_rate(path, "markup", "profit", markup.get("profit", 0.0)),

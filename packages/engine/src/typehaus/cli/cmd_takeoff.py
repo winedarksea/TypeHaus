@@ -323,6 +323,12 @@ def _print_bid_ladder(estimate: dict) -> None:
     if untaxed["high"]:
         console.print(f"    [dim]sales tax could not reach ${untaxed['low']:,.0f}–"
                       f"${untaxed['high']:,.0f} of merged material+labour[/dim]")
+    # Said out loud for the same reason: a tax stage that skips a third of the material base
+    # is one nobody can check unless it names what it skipped and why.
+    paid = estimate["bid"].get("material_tax_already_paid") or {}
+    if paid.get("high"):
+        console.print(f"    [dim]sales tax skipped ${paid['low']:,.0f}–${paid['high']:,.0f} of "
+                      f"material already priced tax-inclusive[/dim]")
 
 
 def _print_per_sf(estimate: dict) -> None:

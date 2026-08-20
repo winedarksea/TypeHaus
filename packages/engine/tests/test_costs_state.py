@@ -12,7 +12,8 @@ from pathlib import Path
 
 import pytest
 
-from typehaus.cli.prices import ESTIMATE_PLANS, PriceRange, _SECTIONS
+from typehaus.cli.prices import (ALLOWANCE_KEY_FIELD, ALLOWANCES, ESTIMATE_PLANS,
+                                  PriceRange, _SECTIONS)
 from typehaus.takeoff.bom import bill_of_materials
 from typehaus.takeoff.costs import (COSTS_FILENAME, CostEntry, CostsState, ExtraItem,
                                     apply_costs_op, costs_payload, load_costs, write_costs)
@@ -30,6 +31,14 @@ def test_every_estimate_plan_joins_a_real_bom_section(bom):
     whose bom_key names nothing would make every entry under it permanently stale."""
     for name, bom_key, key_field, quantity_field, _unit in ESTIMATE_PLANS:
         assert name in _SECTIONS, name
+        if name == ALLOWANCES:
+            # The one plan with no model-side table: its rows are synthesised from the price
+            # table (``_allowance_rows``), because an allowance exists precisely where the
+            # model resolves no quantity. Pinned by name so a *typo* in some other plan's
+            # bom_key still fails here rather than quietly joining nothing.
+            assert bom_key == ALLOWANCES and key_field == ALLOWANCE_KEY_FIELD
+            assert bom_key not in bom
+            continue
         assert bom_key in bom, f"{name} joins missing BOM section {bom_key!r}"
         rows = bom[bom_key]
         assert isinstance(rows, list)

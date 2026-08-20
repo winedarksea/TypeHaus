@@ -115,6 +115,51 @@ def test_a_declared_split_scales_with_the_quantity(tmp_path) -> None:
     assert buckets[LABOUR]["low"] == pytest.approx(30.0)
 
 
+# --- 2C: the ready-mix guard, and the qualified key that opens it -------------------------
+# `structural_solids` keys on solid CATEGORY, and a category is not a material: "slab" covers
+# a 9" cast deck *and* an aluminium balcony plank. MATERIAL_ONLY stops the wood/metal ones
+# billing at the ready-mix $/cy. But those solids are billed by no other table, so a house
+# that names one explicitly — by its qualified `category:assembly` key — has to be able to
+# price it, or the estimate can only ever report it as a hole.
+
+_MIXED_SOLIDS = {"structural_solids": [
+    {"category": "slab", "assembly": "CATLIN_DECK_9_INT",
+     "structure_material": "concrete", "volume_cubic_yards": 10.0},
+    {"category": "slab", "assembly": "BALCONY_DECK_ALUMINUM",
+     "structure_material": "aluminum-deck", "volume_cubic_yards": 2.0},
+]}
+
+
+def test_a_non_concrete_solid_stays_unpriced_when_the_house_says_nothing(tmp_path) -> None:
+    prices = _prices(tmp_path, '[basis]\nconcrete = "installed"\n[concrete]\nslab = 200\n')
+    estimate = estimate_costs(_MIXED_SOLIDS, prices)
+    unpriced = {row["key"] for row in estimate["unpriced"]}
+    assert "slab:BALCONY_DECK_ALUMINUM" in unpriced
+    # ...and it is a hole, not a zero: only the concrete yardage reaches the subtotal.
+    assert estimate["sections"]["concrete"]["subtotal"]["low"] == 2000.0
+
+
+def test_a_bare_category_rate_never_reaches_the_aluminium_deck(tmp_path) -> None:
+    """The double-count the guard exists to stop. `slab = 200` must not pick up 2 cy of
+    aluminium plank just because the plank's category happens to be "slab"."""
+    prices = _prices(tmp_path, '[basis]\nconcrete = "installed"\n[concrete]\nslab = 200\n')
+    keys = {row["key"] for row in estimate_costs(_MIXED_SOLIDS, prices)["sections"]
+            ["concrete"]["rows"]}
+    assert keys == {"slab"}
+
+
+def test_an_explicit_qualified_key_prices_a_non_concrete_solid(tmp_path) -> None:
+    prices = _prices(tmp_path, '[basis]\nconcrete = "installed"\n[concrete]\nslab = 200\n'
+                               '"slab:BALCONY_DECK_ALUMINUM" = 3900\n')
+    estimate = estimate_costs(_MIXED_SOLIDS, prices)
+    rows = {row["key"]: row for row in estimate["sections"]["concrete"]["rows"]}
+    assert rows["slab:BALCONY_DECK_ALUMINUM"]["cost"]["low"] == 7800.0
+    assert not [r for r in estimate["unpriced"] if r["key"].startswith("slab:BALCONY")]
+    # The concrete deck still bills on the bare-category rate; opening the hatch for one
+    # assembly must not change what the others do.
+    assert rows["slab"]["cost"]["low"] == 2000.0
+
+
 # --- 2B: waste, contingency, markup, tax --------------------------------------------------
 
 @pytest.mark.parametrize("section, module_hint", [
@@ -232,3 +277,273 @@ def catlin_dir():
     from _helpers import CATLIN
 
     return CATLIN
+
+
+# --- 2D: a row that names its own unit ------------------------------------------------------
+#
+# ``[concrete]`` prices ``structural_solids`` by the cubic yard because most of what that table
+# holds is a pour. A sump is not: it is one object, and pricing it by the yard makes the LINE
+# right and the RATE unauditable. ``ALTERNATE_UNITS`` lets one row read a different field of the
+# same BOM row, and these pin that it reads the field it says and errors when it cannot.
+
+_UNIT_SOLIDS = {
+    "structural_solids": [
+        {"category": "footing", "structure_material": "concrete",
+         "volume_cubic_yards": 10.0, "count": 4, "plan_area_sqft": 300.0},
+        {"category": "sump", "structure_material": None,
+         "volume_cubic_yards": 0.19, "count": 1, "plan_area_sqft": 2.2},
+    ],
+}
+
+
+def test_a_row_without_a_unit_still_prices_on_the_section_quantity(tmp_path) -> None:
+    """The whole point of the default: no existing prices.toml changes meaning."""
+    prices = _prices(tmp_path, '[concrete]\nfooting = 100\n')
+    row = estimate_costs(_UNIT_SOLIDS, prices)["sections"]["concrete"]["rows"][0]
+    assert (row["quantity"], row["unit"]) == (10.0, "cy")
+    assert row["cost"] == {"low": 1000.0, "high": 1000.0}
+
+
+def test_a_unit_override_reads_a_different_field_of_the_same_row(tmp_path) -> None:
+    prices = _prices(tmp_path, '[concrete]\nsump = { low = 900, high = 2200, unit = "ea" }\n')
+    row = estimate_costs(_UNIT_SOLIDS, prices)["sections"]["concrete"]["rows"][0]
+    assert (row["quantity"], row["unit"]) == (1.0, "ea")
+    assert row["cost"] == {"low": 900.0, "high": 2200.0}
+
+
+def test_the_unit_is_resolved_per_row_not_per_section(tmp_path) -> None:
+    """`sump` priced each and `footing` priced by the yard, in the same table, same estimate."""
+    prices = _prices(tmp_path, '[concrete]\nfooting = 100\n'
+                               'sump = { low = 900, high = 2200, unit = "ea" }\n')
+    priced = estimate_costs(_UNIT_SOLIDS, prices)["sections"]["concrete"]["rows"]
+    rows = {r["key"]: r for r in priced}
+    assert (rows["footing"]["quantity"], rows["footing"]["unit"]) == (10.0, "cy")
+    assert (rows["sump"]["quantity"], rows["sump"]["unit"]) == (1.0, "ea")
+
+
+def test_a_unit_override_composes_with_a_material_labour_split(tmp_path) -> None:
+    prices = _prices(tmp_path, '[concrete]\nsump = { unit = "ea", '
+                               'material = { low = 400, high = 900 }, '
+                               'labour = { low = 500, high = 1300 } }\n')
+    row = estimate_costs(_UNIT_SOLIDS, prices)["sections"]["concrete"]["rows"][0]
+    assert row["unit"] == "ea" and row["basis"] == INSTALLED
+    assert row["material"] == {"low": 400.0, "high": 900.0}
+    assert row["labour"] == {"low": 500.0, "high": 1300.0}
+
+
+def test_a_unit_the_section_does_not_offer_is_a_load_error(tmp_path) -> None:
+    with pytest.raises(ValueError, match="offers"):
+        _prices(tmp_path, '[concrete]\nsump = { low = 1, high = 2, unit = "LF" }\n')
+
+
+def test_a_section_with_no_alternates_refuses_a_unit_at_all(tmp_path) -> None:
+    with pytest.raises(ValueError, match="no alternatives"):
+        _prices(tmp_path, '[framing]\n"2x6" = { low = 1, high = 2, unit = "ea" }\n')
+
+
+# --- 2E: the drainage product qualifier -----------------------------------------------------
+
+_DRAINAGE = {
+    "drainage": [
+        {"category": "gutter", "product": "aluminum", "length_ft": 47.8},
+        {"category": "gutter", "product": "metal-dark-exterior", "length_ft": 73.7},
+    ],
+}
+
+
+def test_a_bare_drainage_category_still_prices_every_product(tmp_path) -> None:
+    prices = _prices(tmp_path, '[drainage]\ngutter = 10\n')
+    section = estimate_costs(_DRAINAGE, prices)["sections"]["drainage"]
+    assert section["subtotal"] == {"low": 1215.0, "high": 1215.0}
+
+
+def test_a_qualified_product_key_beats_the_bare_category(tmp_path) -> None:
+    """47.8 LF of K-style at $10 and 73.7 LF of fabricated box at $30 — the 3x the blended
+    rate was hiding."""
+    prices = _prices(tmp_path, '[drainage]\ngutter = 10\n'
+                               '"gutter:metal-dark-exterior" = 30\n')
+    rows = {r["key"]: r for r in estimate_costs(_DRAINAGE, prices)["sections"]["drainage"]["rows"]}
+    assert rows["gutter"]["cost"] == {"low": 478.0, "high": 478.0}
+    assert rows["gutter:metal-dark-exterior"]["cost"] == {"low": 2211.0, "high": 2211.0}
+
+
+# --- 2F: allowances -------------------------------------------------------------------------
+#
+# The one section with no model-side quantity. It exists because a total that omits the
+# excavator is not a total, and it is a *section* rather than a fudge factor so that every
+# lump sum is on its own line, with its own basis, inside the same ladder as a stick of 2x6.
+
+def test_an_allowance_is_a_row_at_quantity_one(tmp_path) -> None:
+    prices = _prices(tmp_path, '[allowances]\nsite-excavation = { low = 20000, high = 45000 }\n')
+    section = estimate_costs({}, prices)["sections"]["allowances"]
+    assert section["rows"][0]["quantity"] == 1.0
+    assert section["rows"][0]["unit"] == "ls"
+    assert section["subtotal"] == {"low": 20000.0, "high": 45000.0}
+
+
+def test_allowances_are_inside_the_construction_total(tmp_path) -> None:
+    """Unlike furnishings. A sofa is not a construction cost; an excavator is."""
+    prices = _prices(tmp_path, '[basis]\nframing = "material"\nallowances = "installed"\n'
+                               '[framing]\n"2x6" = 1.0\n'
+                               '[allowances]\nsite-excavation = 20000\n')
+    estimate = estimate_costs(_BOM, prices)
+    assert estimate["sections"]["allowances"]["in_total"] is True
+    assert estimate["total"]["low"] == 20100.0
+
+
+def test_an_allowance_flows_through_the_bid_ladder(tmp_path) -> None:
+    prices = _prices(tmp_path, '[contingency]\nrate = 0.10\n'
+                               '[allowances]\nsite-excavation = 20000\n')
+    bid = estimate_costs({}, prices)["bid"]
+    assert bid["subtotal_net"] == {"low": 20000.0, "high": 20000.0}
+    assert bid["total"] == {"low": 22000.0, "high": 22000.0}
+
+
+def test_an_allowance_may_declare_a_material_labour_split(tmp_path) -> None:
+    """Excavation is mostly labour and machine time; a lump sum that says so lets MN's
+    material-only sales tax find the right base instead of taxing the whole thing."""
+    prices = _prices(tmp_path, '[allowances]\nsite-excavation = { '
+                               'material = { low = 4000, high = 9000 }, '
+                               'labour = { low = 16000, high = 36000 } }\n')
+    section = estimate_costs({}, prices)["sections"]["allowances"]
+    assert section["basis_subtotals"]["material"] == {"low": 4000.0, "high": 9000.0}
+    assert section["basis_subtotals"]["labour"] == {"low": 16000.0, "high": 36000.0}
+    assert section["basis_subtotals"]["merged"] == {"low": 0.0, "high": 0.0}
+
+
+def test_allowances_are_sorted_so_two_exports_diff(tmp_path) -> None:
+    prices = _prices(tmp_path, '[allowances]\nzoning = 1\npermits = 2\nexcavation = 3\n')
+    keys = [r["key"] for r in estimate_costs({}, prices)["sections"]["allowances"]["rows"]]
+    assert keys == ["excavation", "permits", "zoning"]
+
+
+def test_a_house_with_no_allowances_reports_no_allowances_section(tmp_path) -> None:
+    prices = _prices(tmp_path, '[framing]\n"2x6" = 1.0\n')
+    assert "allowances" not in estimate_costs(_BOM, prices)["sections"]
+
+
+# --- 2G: an allowance is scheduled by its key prefix -----------------------------------------
+
+def test_an_allowance_key_prefix_picks_its_trade() -> None:
+    """`haus tasks` builds work packages at (trade x storey), so a mis-filed allowance puts
+    the excavator's number in the plumber's package. The first draft of these patterns matched
+    on substrings and filed "waterproofing" under ROOF (because "proof" contains "roof") and
+    "egress-window-wells" under PLUMBING (via "*well*"). Prefixes, and this test."""
+    from typehaus.takeoff.cost_codes import cost_code
+
+    assert cost_code("allowances", "site-excavation-backfill-grading").trade == "earth"
+    assert cost_code("allowances", "hvac-refrigerant-line-sets").trade == "mechanical"
+    assert cost_code("allowances", "electrical-pv-array-modules").trade == "electrical"
+    assert cost_code("allowances", "finish-door-hardware").trade == "openings"
+    # The two the substring version got wrong.
+    assert cost_code("allowances", "foundation-damp-or-waterproofing").trade == "concrete"
+    assert cost_code("allowances", "radon-roughin-and-egress-window-wells").trade == "concrete"
+    # General conditions is direct job cost (NAHB 9000), not the 1000 site-work default.
+    assert cost_code("allowances", "site-general-conditions").nahb == "9000"
+
+
+def test_every_catlin_allowance_declares_its_trade(catlin_dir) -> None:
+    """A key that falls through to the section default is an unclassified one — readable, but
+    it will be scheduled as earthwork. The reference house should have none."""
+    from typehaus.takeoff.cost_codes import SECTION_CODES, cost_code
+
+    prices = load_prices(catlin_dir)
+    assert prices is not None and prices.allowances
+    fell_through = [key for key in prices.allowances
+                    if cost_code("allowances", key) == SECTION_CODES["allowances"]]
+    assert not fell_through, f"unclassified allowance key(s): {fell_through}"
+
+
+def test_catlin_does_not_pay_the_gc_twice(catlin_dir) -> None:
+    """[markup] is deliberately zero AND general contractor overhead/profit is deliberately
+    absent from [allowances]. Turning one on without noticing the other is the six-figure
+    mistake this file's comments exist to prevent."""
+    prices = load_prices(catlin_dir)
+    assert prices is not None
+    assert prices.adjustments.overhead == 0.0 and prices.adjustments.profit == 0.0
+    assert not [key for key in prices.allowances if "overhead" in key or "profit" in key]
+
+
+# --- 2H: waste is a material fact ------------------------------------------------------------
+
+def test_waste_never_rides_on_declared_labour(tmp_path) -> None:
+    """You buy 110 SF of board to install 100 SF; you do not pay the installer 10% more for
+    it. Before this rule, 41% of catlin's waste was being added to labour, which made waste
+    and contingency read as the same stage twice."""
+    prices = _prices(tmp_path, '[envelope_layers]\nrockwool = { material = { low = 3, high = 3 }, '
+                               'labour = { low = 7, high = 7 } }\n'
+                               '[waste]\nenvelope_layers = 0.10\n')
+    estimate = estimate_costs(_BOM, prices)          # 200 SF -> $600 material, $1,400 labour
+    section = estimate["sections"]["envelope_layers"]
+    assert section["basis_subtotals"]["material"] == {"low": 600.0, "high": 600.0}
+    # 10% of the $600 material, NOT of the $2,000 row.
+    assert section["waste"] == {"low": 60.0, "high": 60.0}
+
+
+def test_waste_on_a_merged_row_rides_on_the_whole_number(tmp_path) -> None:
+    """The admitted exception: an installed price with no declared split cannot have its
+    material half identified, so the factor applies to all of it. Waste over-applies on a
+    merged row exactly where tax under-applies — declaring a split fixes both."""
+    prices = _prices(tmp_path, '[basis]\nconcrete = "installed"\n'
+                               '[concrete]\nslab = 100\n[waste]\nconcrete = 0.05\n')
+    section = estimate_costs(_BOM, prices)["sections"]["concrete"]   # 10 cy -> $1,000 merged
+    assert section["basis_subtotals"]["merged"] == {"low": 1000.0, "high": 1000.0}
+    assert section["waste"] == {"low": 50.0, "high": 50.0}
+
+
+# --- 2I: material whose price already carries tax --------------------------------------------
+#
+# A shelf price is pre-tax. A material rate back-derived from a published *installed* cost is
+# not: that figure is a contractor's price to a homeowner and, in a materials-taxing state, has
+# the tax inside it. Taxing it again is a straight double-count, and it is invisible without a
+# way to say which rows are which.
+
+def test_tax_skips_material_whose_price_already_includes_it(tmp_path) -> None:
+    prices = _prices(tmp_path, '[framing]\n"2x6" = 1.0\n'
+                               '[tax]\nmaterial_rate = 0.10\n'
+                               '[tax_included]\nframing = true\n')
+    bid = estimate_costs(_BOM, prices)["bid"]          # 100 LF x $1 = $100 material
+    assert bid["material_tax_already_paid"] == {"low": 100.0, "high": 100.0}
+    assert bid["taxable_material"] == {"low": 0.0, "high": 0.0}
+    stages = {row["label"]: row for row in bid["stages"]}
+    assert stages["tax"]["low"] == 0.0
+    # The money is still in the estimate — only the tax base changed.
+    assert bid["subtotal_net"] == {"low": 100.0, "high": 100.0}
+
+
+def test_tax_inclusiveness_is_per_key_as_well_as_per_section(tmp_path) -> None:
+    """It varies row by row inside a section: one rate off a shelf, the next backed out of a
+    cost guide. Same key shape as [waste] for exactly that reason."""
+    prices = _prices(tmp_path, '[framing]\n"2x6" = 1.0\n'
+                               '[envelope_layers]\nrockwool = 2.0\n'
+                               '[tax]\nmaterial_rate = 0.10\n'
+                               '[tax_included]\n"framing:2x6" = true\n')
+    bid = estimate_costs(_BOM, prices)["bid"]   # framing $100 (exempt) + rockwool $400
+    assert bid["material_tax_already_paid"] == {"low": 100.0, "high": 100.0}
+    assert bid["taxable_material"] == {"low": 400.0, "high": 400.0}
+
+
+def test_a_row_reports_whether_its_price_carries_tax(tmp_path) -> None:
+    prices = _prices(tmp_path, '[framing]\n"2x6" = 1.0\n[tax_included]\nframing = true\n')
+    row = estimate_costs(_BOM, prices)["sections"]["framing"]["rows"][0]
+    assert row["tax_included"] is True
+
+
+def test_tax_included_must_be_a_boolean_not_a_rate(tmp_path) -> None:
+    """"Does this number already have tax in it" is answerable; "what effective rate is buried
+    in this national average" is not, and a float field would invite a guess dressed as one."""
+    with pytest.raises(ValueError, match="true or false"):
+        _prices(tmp_path, '[framing]\n"2x6" = 1.0\n[tax_included]\nframing = 0.06\n')
+
+
+def test_tax_included_rejects_an_unknown_section(tmp_path) -> None:
+    with pytest.raises(ValueError, match="unknown section"):
+        _prices(tmp_path, '[tax_included]\nnot_a_section = true\n')
+
+
+def test_nothing_changes_when_no_house_declares_tax_inclusiveness(tmp_path) -> None:
+    """The default: every material rate is assumed pre-tax, which is what a shelf price is."""
+    prices = _prices(tmp_path, '[framing]\n"2x6" = 1.0\n[tax]\nmaterial_rate = 0.10\n')
+    bid = estimate_costs(_BOM, prices)["bid"]
+    assert bid["material_tax_already_paid"] == {"low": 0.0, "high": 0.0}
+    assert bid["taxable_material"] == {"low": 100.0, "high": 100.0}
