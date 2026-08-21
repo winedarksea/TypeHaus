@@ -107,6 +107,16 @@ class SunkenGardenSpec:
     # but the engineered member was the decision).
     back_beam: str = "2-1.75x11.25 LVL"
     porch_deck_thickness_in: float = 1.0  # composite plank
+    # The two side walls run this far PAST the porch's front edge before handing off to the
+    # retaining run. Without it the W1/W2 (and E1/E2) junction node landed exactly on
+    # `_y_ax_front`, which is also the balcony's front pillar line — so PT-SG-BF1/BF3
+    # straddled the joint, half over each wall, and the bearing map had to pick one. It
+    # picked the retaining wall, which put those two pillars up on the +6" curb rather than
+    # on the porch walls carrying the rest of the frame. 6" clears the 5 1/2" pillar's south
+    # face by 3 3/8" — the side cover a square post base wants — and leaves the front-beam
+    # pockets (CN-SG-HGR-FW/FE, on `_y_ax_front`) 6" in from the end of the wall instead of
+    # right at it.
+    side_wall_south_extension_in: float = 6.0
     # The porch's two joist ends are not alike, so it cannot share the balcony's symmetric
     # cantilever: the south end hangs flush *in* the front beams (nothing to oversail) and
     # the north end runs the column's south-offset out to the deck edge. This is the *south*
@@ -155,6 +165,12 @@ _y_in_n = _y_out_n  # porch deck north edge (back beams + column sit a SPEC offs
 # column's half-width rather than the retired wall's, so the number is still owned by the
 # thing that makes it.
 _y_ax_front = _y_in_n - SPEC.porch_clear_depth_ft - _front_half
+# Where the porch side walls stop and the free retaining walls take over. NOT the porch's
+# front edge: the side walls carry on past it so the balcony's front pillars land on them
+# (see ``side_wall_south_extension_in``). Everything else that used to read `_y_ax_front`
+# for this — the front column, its beams, the pillar row, the guard, the deck outline —
+# still does; only the four wall nodes moved.
+_y_ax_mid = _y_ax_front - SPEC.side_wall_south_extension_in / 12.0
 _y_in_s = _y_in_n - SPEC.clear_length_ft
 _y_ax_s = _y_in_s - _half
 
@@ -175,8 +191,8 @@ NODES = [
          open_end=True),  # north wall removed — side wall terminates here (freestanding)
     Node(uid="SGN002AAAA", tag="N-SG-NE", position=pt(ft(_x_ax_e), ft(_y_ax_n)),
          open_end=True),
-    Node(uid="SGN003AAAA", tag="N-SG-MW", position=pt(ft(_x_ax_w), ft(_y_ax_front))),
-    Node(uid="SGN004AAAA", tag="N-SG-ME", position=pt(ft(_x_ax_e), ft(_y_ax_front))),
+    Node(uid="SGN003AAAA", tag="N-SG-MW", position=pt(ft(_x_ax_w), ft(_y_ax_mid))),
+    Node(uid="SGN004AAAA", tag="N-SG-ME", position=pt(ft(_x_ax_e), ft(_y_ax_mid))),
     Node(uid="SGN005AAAA", tag="N-SG-SW", position=pt(ft(_x_ax_w), ft(_y_ax_s))),
     Node(uid="SGN006AAAA", tag="N-SG-SE", position=pt(ft(_x_ax_e), ft(_y_ax_s))),
 ]
@@ -429,8 +445,11 @@ _PORCH_OUTLINE = (pt(ft(_x_in_w), ft(_y_ax_front)), pt(ft(_x_in_e), ft(_y_ax_fro
 #
 # West / south / east only — the north edge is the 5" house gap. ``base_elevation`` is the
 # walking surface, not the joist tops: the 42" is measured from what a person stands on.
-# The guard returns against the 6" step at the two front corners, where W-SG-W2/E2 stand
-# proud of the deck; that curb was always there, hidden behind 42" of brick.
+# The front corners are flush now, not stepped: W-SG-W1/E1 run 6" past this line at the
+# porch top so the balcony's front pillars bear on them, so the +6" curb that used to meet
+# the guard here (W-SG-W2/E2 standing proud of the deck, hidden behind 42" of brick before
+# the parapet was retired) starts 6" further south and the guard runs out over the side
+# walls' own tops.
 _PORCH_GUARD_PATH = (pt(ft(_x_in_w), ft(_y_in_n)), pt(ft(_x_in_w), ft(_y_ax_front)),
                      pt(ft(_x_in_e), ft(_y_ax_front)), pt(ft(_x_in_e), ft(_y_in_n)))
 PORCH_GUARD = Railing(
@@ -472,9 +491,17 @@ _girt_top = _balcony_beam_soffit + ft(_girt_depth_ft)  # 9.396' — flush with t
 _PILLAR_X = (_x_ax_w, _cx, _x_ax_e)
 # (row, x index) -> (the concrete wall top that pillar bears on, its elevation). Anything
 # not in the map bears on the porch decking instead.
+#
+# All four outer pillars now bear on the two porch side walls at `_porch_top`. The front
+# pair used to be handed to W-SG-W2/E2 at the retaining top, 6" higher, because the wall
+# junction sat on their own axis and they overhung it — a pillar half on a wall whose head
+# is unbraced (R404.4) and half on one the porch frames into. `side_wall_south_extension_in`
+# runs W1/E1 past the pillars so the map can say the true thing; the two front pillars are
+# 6" longer for it and their ABU66SS bases came down with them, but the beam soffit they
+# rise to has not moved.
 _WALL_UNDER_PILLAR = {
     ("R", 1): ("W-SG-W1", _porch_top), ("R", 3): ("W-SG-E1", _porch_top),
-    ("F", 1): ("W-SG-W2", _ret_top), ("F", 3): ("W-SG-E2", _ret_top),
+    ("F", 1): ("W-SG-W1", _porch_top), ("F", 3): ("W-SG-E1", _porch_top),
 }
 _PILLAR_ROWS = (("R", _y_in_n, inch(SPEC.rear_pillar_rise_in)), ("F", _y_ax_front, ft(0)))
 PILLARS = []
@@ -674,36 +701,56 @@ for _i, _x in enumerate(_PILLAR_X, start=1):
             size="ABU66SS", connects=(f"PT-SG-B{_row}{_i}", _bearing_tag)))
 # Porch beam pockets, back and front: a hanger into each side wall + a hurricane tie over
 # each column.
+#
+# Every one of these used to author ``elevation=_porch_top``, the storey datum. A Connector
+# resolves to a marker box centred on its elevation (accessories.py::_resolve_connector,
+# +/-3"), so at the datum a back-beam hanger drew ~11" above the beam it hangs — floating in
+# the joist band and poking up through the 1" composite plank, which is what made these read
+# as deck-level objects rather than the under-deck hardware they are. Each now sits at its
+# own joint: a hanger on the mid-depth of the beam whose end it carries, a tie on the
+# bearing plane it holds down (the beam soffit = the column top).
+#
+# The back pair hang from the bearing stack — no authored ``top_elevation``, so the resolver
+# drops them a porch-joist depth below the datum — while the front pair are flush-framed and
+# pinned at the datum itself. Two different soffits, so two derivations.
+_porch_joist_depth_ft = cross_section(SPEC.porch_joist).depth_m / 0.3048
+_back_beam_soffit = _porch_top - ft(_porch_joist_depth_ft + _back_beam_depth_ft)
+_back_beam_mid = _porch_top - ft(_porch_joist_depth_ft + _back_beam_depth_ft / 2.0)
+_front_beam_soffit = _porch_top - ft(_front_beam_depth_ft)
+_front_beam_mid = _porch_top - ft(_front_beam_depth_ft / 2.0)
 CONNECTORS += [
     Connector(uid="SGCH01AAAA", tag="CN-SG-HGR-W", kind=ConnectorKind.JOIST_HANGER,
-              position=pt(ft(_x_ax_w), ft(_y_col)), elevation=_porch_top, size="LUS210",
+              position=pt(ft(_x_ax_w), ft(_y_col)), elevation=_back_beam_mid, size="LUS210",
               connects=("BM-SG-BKW", "W-SG-W1")),
     Connector(uid="SGCH02AAAA", tag="CN-SG-HGR-E", kind=ConnectorKind.JOIST_HANGER,
-              position=pt(ft(_x_ax_e), ft(_y_col)), elevation=_porch_top, size="LUS210",
+              position=pt(ft(_x_ax_e), ft(_y_col)), elevation=_back_beam_mid, size="LUS210",
               connects=("BM-SG-BKE", "W-SG-E1")),
     Connector(uid="SGCT01AAAA", tag="CN-SG-TIE-COL", kind=ConnectorKind.HURRICANE_TIE,
-              position=pt(ft(_cx), ft(_y_col)), elevation=_porch_top, size="H2.5A",
+              position=pt(ft(_cx), ft(_y_col)), elevation=_back_beam_soffit, size="H2.5A",
               connects=("BM-SG-BKW", "BM-SG-BKE", "PT-SG-COL")),
     # Uplift tie at the *front* bearing of the sistered joist line. Loading the cantilever
     # tip (PT-SG-BR2) pries the far end of that joist up out of its front-beam hanger;
     # nothing but its own weight holds it there. H2.5A is ~455 lb of uplift against a
     # ~0.45 kip demand — the same part already used over the column, so no new hardware.
     # It shares the reinforced line's x, at the south bearing rather than the north edge.
+    # Same datum correction as its neighbours: this one holds a *joist* into a beam, so it
+    # rides the joist's mid-depth rather than a beam soffit.
     Connector(uid="J6XRAXQG5T", tag="CN-SG-TIE-BR2", kind=ConnectorKind.HURRICANE_TIE,
-              position=pt(_BR2_AT.x, ft(_y_ax_front)), elevation=_porch_top, size="H2.5A",
+              position=pt(_BR2_AT.x, ft(_y_ax_front)),
+              elevation=_porch_top - ft(_porch_joist_depth_ft / 2.0), size="H2.5A",
               connects=("FS-SG-PORCH", "BM-SG-FRW", "BM-SG-FRE")),
     # Front-beam pockets. HUCQ is the concealed-flange hanger Simpson publishes for a wood
     # member landing on concrete or masonry (library/hardware.py,
     # ROLE_CONCRETE_FACE_MOUNT_HANGER) — the right part where LUS210, a wood-to-wood hanger,
     # is what the back pair still carries (see plans/TODO.md).
     Connector(uid="SGCH03AAAA", tag="CN-SG-HGR-FW", kind=ConnectorKind.JOIST_HANGER,
-              position=pt(ft(_x_ax_w), ft(_y_ax_front)), elevation=_porch_top,
+              position=pt(ft(_x_ax_w), ft(_y_ax_front)), elevation=_front_beam_mid,
               size="HUCQ410-SDS", connects=("BM-SG-FRW", "W-SG-W1")),
     Connector(uid="SGCH04AAAA", tag="CN-SG-HGR-FE", kind=ConnectorKind.JOIST_HANGER,
-              position=pt(ft(_x_ax_e), ft(_y_ax_front)), elevation=_porch_top,
+              position=pt(ft(_x_ax_e), ft(_y_ax_front)), elevation=_front_beam_mid,
               size="HUCQ410-SDS", connects=("BM-SG-FRE", "W-SG-E1")),
     Connector(uid="SGCT02AAAA", tag="CN-SG-TIE-FCOL", kind=ConnectorKind.HURRICANE_TIE,
-              position=pt(ft(_cx), ft(_y_ax_front)), elevation=_porch_top, size="H2.5A",
+              position=pt(ft(_cx), ft(_y_ax_front)), elevation=_front_beam_soffit, size="H2.5A",
               connects=("BM-SG-FRW", "BM-SG-FRE", "PT-SG-FCOL")),
 ]
 
