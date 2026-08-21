@@ -143,11 +143,40 @@ _LEADER_TEXT_H = 1.6
 _MAX_PT = 14.0
 
 
-def _scene_bounds(scene: Scene) -> tuple[float, float, float, float] | None:
-    """Model-space bbox of the scene, allowing for the width labels occupy.
+def geometry_bounds(scene: Scene) -> tuple[float, float, float, float] | None:
+    """Model-space bbox of the **drawing** — points and boundaries, nothing else.
 
-    Text is placed by its anchor, so a bbox over anchors alone crops the lettering off the
-    sheet — a detail's callout column would run past the right edge every time.
+    The rule the whole paper-space arrangement rests on: *text never enters the drawing's
+    bbox*. A bbox that grows on lettering makes the drawing's scale a function of how much
+    prose is attached to it, which is how a 40" junction cut ended up at 1/8" = 1'-0" on a
+    card whose right half was notes. Annotation is placed **into** a frame the geometry
+    chose; it does not get a vote on what that frame is.
+
+    Paper-space nodes are skipped for the same reason — they are not in this coordinate
+    system at all.
+    """
+    us: list[float] = []
+    zs: list[float] = []
+    for node in scene.nodes:
+        if getattr(node, "space", "model") != "model":
+            continue
+        points = getattr(node, "points", None) or getattr(node, "boundary", None)
+        if points:
+            us.extend(p[0] for p in points)
+            zs.extend(p[1] for p in points)
+    if not us or not zs:
+        return None
+    return min(us), min(zs), max(us), max(zs)
+
+
+def _scene_bounds(scene: Scene) -> tuple[float, float, float, float] | None:
+    """Model-space bbox including the room lettering occupies — the **frameless** fit.
+
+    What every caller did before a :class:`~typehaus.emit.draw.scene.Frame` existed: with no
+    paper decided, the figure is fitted to the content, and text placed by its anchor would
+    be cropped off the edge unless the fit allows for its width. Correct for that world and
+    wrong for a framed one, which is why it survives beside :func:`geometry_bounds` rather
+    than being repaired.
     """
     us: list[float] = []
     zs: list[float] = []

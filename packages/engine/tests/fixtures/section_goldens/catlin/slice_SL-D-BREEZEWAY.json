@@ -3,6 +3,7 @@
   "units": "in",
   "nodes": [
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -30,6 +31,7 @@
       "tag": "SL-BW-DECK"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -57,6 +59,7 @@
       "material": "composite-deck"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -84,6 +87,7 @@
       "tag": "GL-BW-ROOF"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -111,6 +115,7 @@
       "material": "polycarbonate-multiwall"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -138,6 +143,7 @@
       "tag": "GL-BW-WALL-W"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -165,6 +171,7 @@
       "material": "polycarbonate-multiwall"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -192,6 +199,7 @@
       "tag": "PR-BW-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -219,6 +227,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -246,6 +255,7 @@
       "tag": "PT-BW-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -273,6 +283,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -300,6 +311,7 @@
       "tag": "BM-BW-FW"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -327,6 +339,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -354,6 +367,7 @@
       "tag": "BM-BW-RW"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -381,6 +395,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -408,6 +423,7 @@
       "tag": "BM-BW-R1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -435,6 +451,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -462,6 +479,7 @@
       "tag": "TR-BW-HCH-W-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -489,6 +507,7 @@
       "material": "aluminum-extrusion"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -516,6 +535,7 @@
       "tag": "TR-BW-SILL-W-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -543,6 +563,7 @@
       "material": "aluminum-extrusion"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -570,6 +591,7 @@
       "tag": "CN-BW-BASE-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -597,6 +619,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -624,6 +647,7 @@
       "tag": "CN-BW-KBS-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -651,6 +675,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -678,6 +703,7 @@
       "tag": "joist-0-000-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -705,6 +731,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -732,6 +759,7 @@
       "tag": "rim-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -759,6 +787,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         18.0,
@@ -766,6 +795,7 @@
       ],
       "content": "SL-D-BREEZEWAY",
       "height": 4.0,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -773,5 +803,6 @@
       "uid": null
     }
   ],
-  "notes": []
+  "notes": [],
+  "frame": null
 }

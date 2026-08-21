@@ -3,6 +3,7 @@
   "units": "in",
   "nodes": [
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -30,6 +31,7 @@
       "tag": "W-B-SA-W/tg-liner"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -57,6 +59,7 @@
       "material": "sauna-tg"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -84,6 +87,7 @@
       "tag": "W-B-SA-W/liner-furring"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -111,6 +115,7 @@
       "material": "struct-1-plywood"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -138,6 +143,7 @@
       "tag": "W-B-SA-W/foil-polyiso"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -165,6 +171,7 @@
       "material": "polyiso-foil"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -192,6 +199,7 @@
       "tag": "W-B-SA-W/stud"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -219,6 +227,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -246,6 +255,7 @@
       "tag": "W-B-SA-W/gwb-cold"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -273,6 +283,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -300,6 +311,7 @@
       "material": "mineral-wool"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -319,6 +331,7 @@
       "tag": "W-B-SA-W-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -338,6 +351,7 @@
       "tag": "W-B-SA-W-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -357,6 +371,7 @@
       "tag": "W-B-SA-W-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -376,6 +391,7 @@
       "tag": "W-B-SA-W-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -395,6 +411,7 @@
       "tag": "W-B-SA-W-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -422,6 +439,7 @@
       "tag": "SL-B-FLOOR"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -449,6 +467,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -476,6 +495,7 @@
       "tag": "plate-bottom"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -503,6 +523,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -530,6 +551,7 @@
       "tag": "plate-top-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -557,6 +579,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -584,6 +607,7 @@
       "tag": "plate-top-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -611,6 +635,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -638,6 +663,7 @@
       "tag": "header-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -665,6 +691,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -692,6 +719,7 @@
       "tag": "strapping-liner-furring-010"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -719,6 +747,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -746,6 +775,7 @@
       "tag": "strapping-liner-furring-011"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -773,6 +803,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -792,10 +823,12 @@
       ],
       "text": "gwb-cold 0.625\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -815,10 +848,12 @@
       ],
       "text": "stud 3.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -838,10 +873,12 @@
       ],
       "text": "foil-polyiso 2\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -861,10 +898,12 @@
       ],
       "text": "liner-furring 0.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -884,10 +923,12 @@
       ],
       "text": "tg-liner 1\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -915,6 +956,7 @@
       "material": "air-barrier"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -942,6 +984,7 @@
       "tag": "detail-component:sauna-foil-return"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -969,6 +1012,7 @@
       "material": "fiber-cement"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -996,6 +1040,7 @@
       "tag": "detail-component:sauna-baseboard"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1031,6 +1076,7 @@
       "material": "metal"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1066,6 +1112,7 @@
       "tag": "detail-component:sauna-baseboard-flashing"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1093,6 +1140,7 @@
       "material": "air-barrier"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1120,6 +1168,7 @@
       "tag": "detail-component:sauna-membrane"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1147,6 +1196,7 @@
       "material": "xps"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1174,6 +1224,7 @@
       "tag": "detail-component:thermal-break"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1201,6 +1252,7 @@
       "material": "sealant"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1228,6 +1280,7 @@
       "tag": "detail-component:thermal-break-sealant"
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1247,10 +1300,12 @@
       ],
       "text": "vapor continuity — foil-polyiso → foil-\npolyiso",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1270,10 +1325,12 @@
       ],
       "text": "air continuity — foil-polyiso → foil-\npolyiso",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         92.34498031496064,
@@ -1281,6 +1338,7 @@
       ],
       "content": "TR-CATLIN-SAUNA-OPENING  ·  sauna-liner-opening",
       "height": 1.6,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1288,6 +1346,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "dimension",
       "kind": "linear",
       "ends": [
@@ -1317,11 +1376,13 @@
         -32.000000000000014
       ],
       "offset": 3.0,
+      "height_pt": 6.5,
       "layer": "A-ANNO-DIMS",
       "text": "80\" R.O.",
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         73.48898031496063,
@@ -1329,6 +1390,7 @@
       ],
       "content": "Type:Haus — derived transition detail",
       "height": 1.4,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1336,6 +1398,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         73.48898031496063,
@@ -1343,6 +1406,7 @@
       ],
       "content": "TR-CATLIN-SAUNA-OPENING  ·  sauna-liner-opening",
       "height": 2.0,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1350,6 +1414,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         73.48898031496063,
@@ -1357,6 +1422,7 @@
       ],
       "content": "Catlin House",
       "height": 3.2,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1364,6 +1430,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         73.48898031496063,
@@ -1371,6 +1438,7 @@
       ],
       "content": "MATERIALS",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1378,6 +1446,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1405,6 +1474,7 @@
       "material": "sauna-tg"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1432,6 +1502,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         77.58898031496062,
@@ -1439,6 +1510,7 @@
       ],
       "content": "sauna-tg  1\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1446,6 +1518,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1473,6 +1546,7 @@
       "material": "struct-1-plywood"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1500,6 +1574,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         77.58898031496062,
@@ -1507,6 +1582,7 @@
       ],
       "content": "struct-1-plywood  0.5\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1514,6 +1590,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1541,6 +1618,7 @@
       "material": "polyiso-foil"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1568,6 +1646,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         77.58898031496062,
@@ -1575,6 +1654,7 @@
       ],
       "content": "polyiso-foil  2\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1582,6 +1662,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1609,6 +1690,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1636,6 +1718,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         77.58898031496062,
@@ -1643,6 +1726,7 @@
       ],
       "content": "spf  3.5\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1650,6 +1734,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1677,6 +1762,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1704,6 +1790,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         77.58898031496062,
@@ -1711,6 +1798,7 @@
       ],
       "content": "gwb  0.625\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1845,5 +1933,6 @@
     "  compacted washed stone aggregate (wider",
     "  than footing) with French drain located in",
     "  the wider area, not under the footing."
-  ]
+  ],
+  "frame": null
 }

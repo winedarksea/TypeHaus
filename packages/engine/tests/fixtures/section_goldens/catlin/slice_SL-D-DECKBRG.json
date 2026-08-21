@@ -3,6 +3,7 @@
   "units": "in",
   "nodes": [
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -30,6 +31,7 @@
       "tag": "W-B-CW2/stud"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -57,6 +59,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -84,6 +87,7 @@
       "material": "mineral-wool"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -111,6 +115,7 @@
       "tag": "W-B-CE/staggered-studs"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -138,6 +143,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -165,6 +171,7 @@
       "material": "fiberglass"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -192,6 +199,7 @@
       "tag": "W-M-C2/paint-a"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -219,6 +227,7 @@
       "tag": "W-M-C2/gwb-a"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -246,6 +255,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -273,6 +283,7 @@
       "tag": "W-M-C2/stud"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -300,6 +311,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -327,6 +339,7 @@
       "tag": "W-M-C2/gwb-b"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -354,6 +367,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -381,6 +395,7 @@
       "tag": "W-M-C2/paint-b"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -408,6 +423,7 @@
       "tag": "W-M-C3/paint-a"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -435,6 +451,7 @@
       "tag": "W-M-C3/gwb-a"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -462,6 +479,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -489,6 +507,7 @@
       "tag": "W-M-C3/stud"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -516,6 +535,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -543,6 +563,7 @@
       "tag": "W-M-C3/gwb-b"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -570,6 +591,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -597,6 +619,7 @@
       "tag": "W-M-C3/paint-b"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -624,6 +647,7 @@
       "tag": "W-M-CLN2/stud"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -651,6 +675,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -678,6 +703,7 @@
       "material": "mineral-wool"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -705,6 +731,7 @@
       "tag": "SL-M-DECK"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -732,6 +759,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -759,6 +787,7 @@
       "tag": "rim-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -786,6 +815,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -813,6 +843,7 @@
       "tag": "plate-top-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -840,6 +871,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -867,6 +899,7 @@
       "tag": "plate-top-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -894,6 +927,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -921,6 +955,7 @@
       "tag": "stud-004"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -948,6 +983,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -975,6 +1011,7 @@
       "tag": "stud-005"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1002,6 +1039,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1029,6 +1067,7 @@
       "tag": "stud-006"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1056,6 +1095,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1083,6 +1123,7 @@
       "tag": "plate-top-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1110,6 +1151,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1137,6 +1179,7 @@
       "tag": "plate-top-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1164,6 +1207,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1191,6 +1235,7 @@
       "tag": "stud-000"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1218,6 +1263,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1245,6 +1291,7 @@
       "tag": "stud-001"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1272,6 +1319,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1299,6 +1347,7 @@
       "tag": "stud-002"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1326,6 +1375,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1353,6 +1403,7 @@
       "tag": "stud-003"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1380,6 +1431,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1407,6 +1459,7 @@
       "tag": "stud-004"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1434,6 +1487,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1461,6 +1515,7 @@
       "tag": "plate-bottom"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1488,6 +1543,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1515,6 +1571,7 @@
       "tag": "stud-004"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1542,6 +1599,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1569,6 +1627,7 @@
       "tag": "plate-bottom"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1596,6 +1655,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1623,6 +1683,7 @@
       "tag": "stud-000"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1650,6 +1711,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1677,6 +1739,7 @@
       "tag": "plate-bottom"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1704,6 +1767,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1731,6 +1795,7 @@
       "tag": "stud-002"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1758,6 +1823,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1785,6 +1851,7 @@
       "tag": "stud-003"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1812,6 +1879,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1839,6 +1907,7 @@
       "tag": "stud-004"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1866,6 +1935,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1885,10 +1955,12 @@
       ],
       "text": "stud 36\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1908,10 +1980,12 @@
       ],
       "text": "staggered-studs 36\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1931,10 +2005,12 @@
       ],
       "text": "paint-a 0.01\" (NTS)",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1954,10 +2030,12 @@
       ],
       "text": "gwb-a 0.625\" (NTS)",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1977,10 +2055,12 @@
       ],
       "text": "stud 5.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -2000,10 +2080,12 @@
       ],
       "text": "gwb-b 0.625\" (NTS)",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -2023,10 +2105,12 @@
       ],
       "text": "paint-b 0.01\" (NTS)",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -2046,10 +2130,12 @@
       ],
       "text": "paint-a 0.01\" (NTS)",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -2069,10 +2155,12 @@
       ],
       "text": "gwb-a 0.625\" (NTS)",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -2092,10 +2180,12 @@
       ],
       "text": "stud 5.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -2115,10 +2205,12 @@
       ],
       "text": "gwb-b 0.625\" (NTS)",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -2138,10 +2230,12 @@
       ],
       "text": "paint-b 0.01\" (NTS)",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -2161,10 +2255,12 @@
       ],
       "text": "stud 32.6\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         180.0,
@@ -2172,6 +2268,7 @@
       ],
       "content": "SL-D-DECKBRG",
       "height": 4.0,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -2179,5 +2276,6 @@
       "uid": null
     }
   ],
-  "notes": []
+  "notes": [],
+  "frame": null
 }

@@ -3,6 +3,7 @@
   "units": "in",
   "nodes": [
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -30,6 +31,7 @@
       "tag": "W-B-CN2/concrete"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -57,6 +59,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -84,6 +87,7 @@
       "tag": "W-M-C3/paint-a"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -111,6 +115,7 @@
       "tag": "W-M-C3/gwb-a"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -138,6 +143,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -165,6 +171,7 @@
       "tag": "W-M-C3/stud"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -192,6 +199,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -219,6 +227,7 @@
       "tag": "W-M-C3/gwb-b"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -246,6 +255,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -273,6 +283,7 @@
       "tag": "W-M-C3/paint-b"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -292,6 +303,7 @@
       "tag": "W-M-C3-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -311,6 +323,7 @@
       "tag": "W-M-C3-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -330,6 +343,7 @@
       "tag": "W-M-C3-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -349,6 +363,7 @@
       "tag": "W-M-C3-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -368,6 +383,7 @@
       "tag": "W-M-C3-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -395,6 +411,7 @@
       "tag": "SL-M-DECK"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -422,6 +439,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -449,6 +467,7 @@
       "tag": "rim-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -476,6 +495,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -503,6 +523,7 @@
       "tag": "plate-bottom"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -530,6 +551,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -557,6 +579,7 @@
       "tag": "header-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -584,6 +607,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -603,10 +627,12 @@
       ],
       "text": "concrete 12\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -626,10 +652,12 @@
       ],
       "text": "paint-a 0.01\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -649,10 +677,12 @@
       ],
       "text": "gwb-a 0.625\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -672,10 +702,12 @@
       ],
       "text": "stud 5.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -695,10 +727,12 @@
       ],
       "text": "gwb-b 0.625\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -718,10 +752,12 @@
       ],
       "text": "paint-b 0.01\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         202.77248031496066,
@@ -729,6 +765,7 @@
       ],
       "content": "TR-CATLIN-CENTER-OPENING  ·  bearing-partition-opening",
       "height": 1.6,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -736,6 +773,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "dimension",
       "kind": "linear",
       "ends": [
@@ -765,11 +803,13 @@
         80.0
       ],
       "offset": 3.0,
+      "height_pt": 6.5,
       "layer": "A-ANNO-DIMS",
       "text": "80\" R.O.",
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         188.87648031496065,
@@ -777,6 +817,7 @@
       ],
       "content": "Type:Haus — derived transition detail",
       "height": 1.4,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -784,6 +825,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         188.87648031496065,
@@ -791,6 +833,7 @@
       ],
       "content": "TR-CATLIN-CENTER-OPENING  ·  bearing-partition-opening",
       "height": 2.0,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -798,6 +841,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         188.87648031496065,
@@ -805,6 +849,7 @@
       ],
       "content": "Catlin House",
       "height": 3.2,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -812,6 +857,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         188.87648031496065,
@@ -819,6 +865,7 @@
       ],
       "content": "MATERIALS",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -826,6 +873,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -853,6 +901,7 @@
       "material": "latex-paint"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -880,6 +929,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         192.97648031496064,
@@ -887,6 +937,7 @@
       ],
       "content": "latex-paint  0.01\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -894,6 +945,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -921,6 +973,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -948,6 +1001,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         192.97648031496064,
@@ -955,6 +1009,7 @@
       ],
       "content": "gwb  0.625\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -962,6 +1017,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -989,6 +1045,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1016,6 +1073,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         192.97648031496064,
@@ -1023,6 +1081,7 @@
       ],
       "content": "spf  5.5\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1030,5 +1089,6 @@
       "uid": null
     }
   ],
-  "notes": []
+  "notes": [],
+  "frame": null
 }

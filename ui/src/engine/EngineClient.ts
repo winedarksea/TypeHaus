@@ -153,12 +153,31 @@ export interface DetailAnnotationSpec {
   offset: [number, number] | null;
   state: string;
 }
+export interface DetailFrame {
+  paper: [number, number];
+  viewport: [number, number, number, number];
+  center: [number, number];
+  /** ARCH_SCALES' number: paper inches per model foot (1.5 for 1-1/2" = 1'-0"). */
+  scale: number;
+  scale_label: string;
+  bands: Record<string, [number, number, number, number]>;
+}
+
 export interface DetailPayload {
   key: string;
   // The drawing IR scene (emit/draw/scene.py Scene.model_dump) — DetailCanvas renders it.
   // scene.notes carries pre-wrapped note lines that live OUTSIDE the drawing's coordinate
   // space; the UI shows the richer notes_markdown in its panel instead and never draws them.
-  scene: { name: string; units: "in" | "mm"; nodes: Record<string, unknown>[]; notes?: string[] };
+  scene: {
+    name: string;
+    units: "in" | "mm";
+    nodes: Record<string, unknown>[];
+    notes?: string[];
+    // The paper the drawing was laid out on (emit/draw/scene.py Frame). Present once the
+    // engine has chosen a sheet and a scale; null means the frameless fit-to-content path,
+    // which is what every detail was before paper space.
+    frame?: DetailFrame | null;
+  };
   annotations: DetailAnnotationSpec[];
   // House-relative path of the Transition.notes markdown file (identity, not content)…
   notes: string | null;

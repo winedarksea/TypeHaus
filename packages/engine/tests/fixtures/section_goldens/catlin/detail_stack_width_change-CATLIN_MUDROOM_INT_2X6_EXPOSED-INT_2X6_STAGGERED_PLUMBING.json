@@ -3,6 +3,7 @@
   "units": "in",
   "nodes": [
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -30,6 +31,7 @@
       "tag": "W-M-STRW/stud"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -57,6 +59,7 @@
       "material": "df-select-s4s"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -84,6 +87,7 @@
       "tag": "W-M-STRW/ply-stair"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -111,6 +115,7 @@
       "tag": "W-S-BA-E1B/paint-a"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -138,6 +143,7 @@
       "tag": "W-S-BA-E1B/gwb-a"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -165,6 +171,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -192,6 +199,7 @@
       "tag": "W-S-BA-E1B/staggered-studs"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -219,6 +227,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -246,6 +255,7 @@
       "tag": "W-S-BA-E1B/gwb-b"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -273,6 +283,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -300,6 +311,7 @@
       "tag": "W-S-BA-E1B/paint-b"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -327,6 +339,7 @@
       "material": "fiberglass"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -354,6 +367,7 @@
       "tag": "RL-S-HANDRAIL-W-RAIL1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -381,6 +395,7 @@
       "material": "metal-dark-exterior"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -408,6 +423,7 @@
       "tag": "plate-top-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -435,6 +451,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -462,6 +479,7 @@
       "tag": "plate-top-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -489,6 +507,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -516,6 +535,7 @@
       "tag": "plate-bottom"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -543,6 +563,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -562,10 +583,12 @@
       ],
       "text": "stud 5.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -585,10 +608,12 @@
       ],
       "text": "ply-stair 0.75\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -608,10 +633,12 @@
       ],
       "text": "paint-b 0.01\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -631,10 +658,12 @@
       ],
       "text": "gwb-b 0.625\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -654,10 +683,12 @@
       ],
       "text": "staggered-studs 5.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -677,10 +708,12 @@
       ],
       "text": "gwb-a 0.625\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -700,10 +733,12 @@
       ],
       "text": "paint-a 0.01\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         128.375,
@@ -711,6 +746,7 @@
       ],
       "content": "air continuity — sheathing-ext →\nsheathing-ext",
       "height": 1.6,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -718,6 +754,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         128.375,
@@ -725,6 +762,7 @@
       ],
       "content": "water continuity — wrb-ext → wrb-ext",
       "height": 1.6,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -732,6 +770,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         128.375,
@@ -739,6 +778,7 @@
       ],
       "content": "thermal continuity — ci-ext → ci-ext",
       "height": 1.6,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -746,6 +786,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         107.28248031496064,
@@ -753,6 +794,7 @@
       ],
       "content": "TR-CATLIN-STACK-SHELF  ·  stack-width-shelf",
       "height": 1.6,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -760,6 +802,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "dimension",
       "kind": "linear",
       "ends": [
@@ -789,11 +832,13 @@
         122.0
       ],
       "offset": 3.0,
+      "height_pt": 6.5,
       "layer": "A-ANNO-DIMS",
       "text": "5.5\" stud",
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         86.44248031496063,
@@ -801,6 +846,7 @@
       ],
       "content": "Type:Haus — derived transition detail",
       "height": 1.4,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -808,6 +854,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         86.44248031496063,
@@ -815,6 +862,7 @@
       ],
       "content": "TR-CATLIN-STACK-SHELF  ·  stack-width-shelf",
       "height": 2.0,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -822,6 +870,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         86.44248031496063,
@@ -829,6 +878,7 @@
       ],
       "content": "Catlin House",
       "height": 3.2,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -836,6 +886,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         86.44248031496063,
@@ -843,6 +894,7 @@
       ],
       "content": "MATERIALS",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -850,6 +902,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -877,6 +930,7 @@
       "material": "df-select-s4s"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -904,6 +958,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         90.54248031496063,
@@ -911,6 +966,7 @@
       ],
       "content": "df-select-s4s  5.5\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -918,6 +974,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -945,6 +1002,7 @@
       "material": "cabinet-plywood"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -972,6 +1030,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         90.54248031496063,
@@ -979,6 +1038,7 @@
       ],
       "content": "cabinet-plywood  0.75\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -986,6 +1046,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1013,6 +1074,7 @@
       "material": "latex-paint"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1040,6 +1102,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         90.54248031496063,
@@ -1047,6 +1110,7 @@
       ],
       "content": "latex-paint  0.01\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1054,6 +1118,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1081,6 +1146,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1108,6 +1174,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         90.54248031496063,
@@ -1115,6 +1182,7 @@
       ],
       "content": "gwb  0.625\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1122,6 +1190,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1149,6 +1218,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1176,6 +1246,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         90.54248031496063,
@@ -1183,6 +1254,7 @@
       ],
       "content": "spf  5.5\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1190,5 +1262,6 @@
       "uid": null
     }
   ],
-  "notes": []
+  "notes": [],
+  "frame": null
 }

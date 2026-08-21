@@ -3,6 +3,7 @@
   "units": "in",
   "nodes": [
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -30,6 +31,7 @@
       "tag": "W-M-C1/paint-a"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -57,6 +59,7 @@
       "tag": "W-M-C1/gwb-a"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -84,6 +87,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -111,6 +115,7 @@
       "tag": "W-M-C1/stud"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -138,6 +143,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -165,6 +171,7 @@
       "tag": "W-M-C1/gwb-b"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -192,6 +199,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -219,6 +227,7 @@
       "tag": "W-M-C1/paint-b"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -246,6 +255,7 @@
       "tag": "W-S-C1/pvc-panel"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -273,6 +283,7 @@
       "tag": "W-S-C1/liner-furring"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -300,6 +311,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -327,6 +339,7 @@
       "tag": "W-S-C1/humid-membrane"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -354,6 +367,7 @@
       "material": "humid-room-membrane"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -381,6 +395,7 @@
       "tag": "W-S-C1/stud"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -408,6 +423,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -435,6 +451,7 @@
       "tag": "W-S-C1/gwb-cold"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -462,6 +479,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -489,6 +507,7 @@
       "tag": "W-S-C1/paint-b"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -516,6 +535,7 @@
       "material": "mineral-wool"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -543,6 +563,7 @@
       "tag": "CD-M-DATA-PORCH-S2B1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -570,6 +591,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -597,6 +619,7 @@
       "tag": "CD-M-DATA-PORCH-S2B2"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -624,6 +647,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -651,6 +675,7 @@
       "tag": "CD-M-DATA-PORCH-S2B3"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -678,6 +703,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -705,6 +731,7 @@
       "tag": "CD-M-DATA-PORCH-S2B4"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -732,6 +759,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -759,6 +787,7 @@
       "tag": "CD-M-DATA-PORCH-S2B5"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -786,6 +815,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -813,6 +843,7 @@
       "tag": "CD-M-DATA-PORCH-S2B6"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -840,6 +871,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -867,6 +899,7 @@
       "tag": "plate-top-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -894,6 +927,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -921,6 +955,7 @@
       "tag": "plate-top-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -948,6 +983,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -975,6 +1011,7 @@
       "tag": "plate-bottom"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1002,6 +1039,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1029,6 +1067,7 @@
       "tag": "strapping-liner-furring-001"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1056,6 +1095,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1083,6 +1123,7 @@
       "tag": "strapping-liner-furring-003"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1110,6 +1151,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1129,10 +1171,12 @@
       ],
       "text": "paint-a 0.01\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1152,10 +1196,12 @@
       ],
       "text": "gwb-a 0.625\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1175,10 +1221,12 @@
       ],
       "text": "stud 5.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1198,10 +1246,12 @@
       ],
       "text": "gwb-b 0.625\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1221,10 +1271,12 @@
       ],
       "text": "paint-b 0.01\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1244,10 +1296,12 @@
       ],
       "text": "pvc-panel 0.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1267,10 +1321,12 @@
       ],
       "text": "liner-furring 0.75\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1290,10 +1346,12 @@
       ],
       "text": "humid-membrane 0.04\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1313,10 +1371,12 @@
       ],
       "text": "stud 5.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1336,10 +1396,12 @@
       ],
       "text": "gwb-cold 0.625\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1359,10 +1421,12 @@
       ],
       "text": "paint-b 0.01\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         224.38500000000005,
@@ -1370,6 +1434,7 @@
       ],
       "content": "air continuity — sheathing-ext →\nsheathing-ext",
       "height": 1.6,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1377,6 +1442,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         224.38500000000005,
@@ -1384,6 +1450,7 @@
       ],
       "content": "water continuity — wrb-ext → wrb-ext",
       "height": 1.6,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1391,6 +1458,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         224.38500000000005,
@@ -1398,6 +1466,7 @@
       ],
       "content": "thermal continuity — ci-ext → ci-ext",
       "height": 1.6,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1405,6 +1474,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         202.77248031496066,
@@ -1412,6 +1482,7 @@
       ],
       "content": "TR-CATLIN-STACK-SHELF  ·  stack-width-shelf",
       "height": 1.6,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1419,6 +1490,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "dimension",
       "kind": "linear",
       "ends": [
@@ -1448,11 +1520,13 @@
         122.0
       ],
       "offset": 3.0,
+      "height_pt": 6.5,
       "layer": "A-ANNO-DIMS",
       "text": "5.5\" stud",
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         181.93248031496066,
@@ -1460,6 +1534,7 @@
       ],
       "content": "Type:Haus — derived transition detail",
       "height": 1.4,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1467,6 +1542,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         181.93248031496066,
@@ -1474,6 +1550,7 @@
       ],
       "content": "TR-CATLIN-STACK-SHELF  ·  stack-width-shelf",
       "height": 2.0,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1481,6 +1558,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         181.93248031496066,
@@ -1488,6 +1566,7 @@
       ],
       "content": "Catlin House",
       "height": 3.2,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1495,6 +1574,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         181.93248031496066,
@@ -1502,6 +1582,7 @@
       ],
       "content": "MATERIALS",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1509,6 +1590,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1536,6 +1618,7 @@
       "material": "latex-paint"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1563,6 +1646,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         186.03248031496065,
@@ -1570,6 +1654,7 @@
       ],
       "content": "latex-paint  0.01\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1577,6 +1662,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1604,6 +1690,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1631,6 +1718,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         186.03248031496065,
@@ -1638,6 +1726,7 @@
       ],
       "content": "gwb  0.625\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1645,6 +1734,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1672,6 +1762,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1699,6 +1790,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         186.03248031496065,
@@ -1706,6 +1798,7 @@
       ],
       "content": "spf  5.5\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1713,6 +1806,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1740,6 +1834,7 @@
       "material": "pvc-panel"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1767,6 +1862,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         186.03248031496065,
@@ -1774,6 +1870,7 @@
       ],
       "content": "pvc-panel  0.5\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1781,6 +1878,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1808,6 +1906,7 @@
       "material": "humid-room-membrane"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1835,6 +1934,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         186.03248031496065,
@@ -1842,6 +1942,7 @@
       ],
       "content": "humid-room-membrane  0.04\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1849,5 +1950,6 @@
       "uid": null
     }
   ],
-  "notes": []
+  "notes": [],
+  "frame": null
 }

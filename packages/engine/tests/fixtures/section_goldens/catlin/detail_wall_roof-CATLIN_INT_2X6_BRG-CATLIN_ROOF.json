@@ -3,6 +3,7 @@
   "units": "in",
   "nodes": [
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -30,6 +31,7 @@
       "tag": "W-A-C1/paint-a"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -57,6 +59,7 @@
       "tag": "W-A-C1/gwb-a"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -84,6 +87,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -111,6 +115,7 @@
       "tag": "W-A-C1/stud"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -138,6 +143,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -165,6 +171,7 @@
       "tag": "W-A-C1/gwb-b"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -192,6 +199,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -219,6 +227,7 @@
       "tag": "W-A-C1/paint-b"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -262,6 +271,7 @@
       "tag": "RF-HOUSE/zip"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -305,6 +315,7 @@
       "material": "zip-sheathing"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -348,6 +359,7 @@
       "tag": "RF-HOUSE/deck-vb"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -391,6 +403,7 @@
       "material": "roof-deck-vapor-barrier"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -426,6 +439,7 @@
       "tag": "RF-HOUSE/polyiso-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -461,6 +475,7 @@
       "material": "polyiso"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -496,6 +511,7 @@
       "tag": "RF-HOUSE/polyiso-2"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -531,6 +547,7 @@
       "material": "polyiso"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -566,6 +583,7 @@
       "tag": "RF-HOUSE/top-deck"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -601,6 +619,7 @@
       "material": "osb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -636,6 +655,7 @@
       "tag": "RF-HOUSE/underlayment"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -671,6 +691,7 @@
       "material": "roof-underlayment-synthetic"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -706,6 +727,7 @@
       "tag": "RF-HOUSE/vent-mat"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -741,6 +763,7 @@
       "material": "roof-vent-mat"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -776,6 +799,7 @@
       "tag": "RF-HOUSE/roofing"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -811,6 +835,7 @@
       "material": "standing-seam"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -846,6 +871,7 @@
       "material": "fiberglass-r19"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -873,6 +899,7 @@
       "tag": "plate-top-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -900,6 +927,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -927,6 +955,7 @@
       "tag": "plate-top-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -954,6 +983,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -981,6 +1011,7 @@
       "tag": "ridge-beam"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1008,6 +1039,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1035,6 +1067,7 @@
       "tag": "ridge-vent-cap"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1062,6 +1095,7 @@
       "material": "metal-dark-exterior"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1089,6 +1123,7 @@
       "tag": "rafter-004"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1116,6 +1151,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1135,6 +1171,7 @@
       "tag": "rafter-004/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1154,6 +1191,7 @@
       "tag": "rafter-004/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1181,6 +1219,7 @@
       "tag": "rafter-005"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1208,6 +1247,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1227,6 +1267,7 @@
       "tag": "rafter-005/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1246,6 +1287,7 @@
       "tag": "rafter-005/flange"
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1265,10 +1307,12 @@
       ],
       "text": "paint-a 0.01\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1288,10 +1332,12 @@
       ],
       "text": "gwb-a 0.625\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1311,10 +1357,12 @@
       ],
       "text": "stud 5.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1334,10 +1382,12 @@
       ],
       "text": "gwb-b 0.625\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1357,10 +1407,12 @@
       ],
       "text": "paint-b 0.01\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1380,10 +1432,12 @@
       ],
       "text": "rafter fill 6.25\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1403,10 +1457,12 @@
       ],
       "text": "rafter 11.9\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1426,10 +1482,12 @@
       ],
       "text": "zip 0.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1449,10 +1507,12 @@
       ],
       "text": "deck-vb 0.04\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1472,10 +1532,12 @@
       ],
       "text": "polyiso-1 3\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1495,10 +1557,12 @@
       ],
       "text": "polyiso-2 3\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1518,10 +1582,12 @@
       ],
       "text": "top-deck 0.625\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1541,10 +1607,12 @@
       ],
       "text": "underlayment 0.06\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1564,10 +1632,12 @@
       ],
       "text": "vent-mat 0.25\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1587,10 +1657,12 @@
       ],
       "text": "roofing 0.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         224.38500000000005,
@@ -1598,6 +1670,7 @@
       ],
       "content": "air continuity — sheathing-ext →\nsheathing-ext",
       "height": 1.6,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1605,6 +1678,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         224.38500000000005,
@@ -1612,6 +1686,7 @@
       ],
       "content": "water continuity — wrb-ext → wrb-ext",
       "height": 1.6,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1619,6 +1694,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         224.38500000000005,
@@ -1626,6 +1702,7 @@
       ],
       "content": "thermal continuity — ci-ext → ci-ext",
       "height": 1.6,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1633,6 +1710,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         200.8039763779528,
@@ -1640,6 +1718,7 @@
       ],
       "content": "TR-CATLIN-EAVE  ·  zero-overhang-eave",
       "height": 1.6,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1647,6 +1726,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "dimension",
       "kind": "linear",
       "ends": [
@@ -1676,11 +1756,13 @@
         375.71500000000003
       ],
       "offset": 3.0,
+      "height_pt": 6.5,
       "layer": "A-ANNO-DIMS",
       "text": "5.5\" stud",
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         181.9479763779528,
@@ -1688,6 +1770,7 @@
       ],
       "content": "Type:Haus — derived transition detail",
       "height": 1.4,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1695,6 +1778,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         181.9479763779528,
@@ -1702,6 +1786,7 @@
       ],
       "content": "TR-CATLIN-EAVE  ·  zero-overhang-eave",
       "height": 2.0,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1709,6 +1794,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         181.9479763779528,
@@ -1716,6 +1802,7 @@
       ],
       "content": "Catlin House",
       "height": 3.2,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1723,6 +1810,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         181.9479763779528,
@@ -1730,6 +1818,7 @@
       ],
       "content": "MATERIALS",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1737,6 +1826,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1764,6 +1854,7 @@
       "material": "latex-paint"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1791,6 +1882,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         186.0479763779528,
@@ -1798,6 +1890,7 @@
       ],
       "content": "latex-paint  0.01\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1805,6 +1898,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1832,6 +1926,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1859,6 +1954,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         186.0479763779528,
@@ -1866,6 +1962,7 @@
       ],
       "content": "gwb  0.625\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1873,6 +1970,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1900,6 +1998,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1927,6 +2026,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         186.0479763779528,
@@ -1934,6 +2034,7 @@
       ],
       "content": "spf  5.5\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1941,6 +2042,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1968,6 +2070,7 @@
       "material": "zip-sheathing"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1995,6 +2098,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         186.0479763779528,
@@ -2002,6 +2106,7 @@
       ],
       "content": "zip-sheathing  0.5\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -2009,6 +2114,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2036,6 +2142,7 @@
       "material": "roof-deck-vapor-barrier"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2063,6 +2170,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         186.0479763779528,
@@ -2070,6 +2178,7 @@
       ],
       "content": "roof-deck-vapor-barrier  0.04\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -2077,6 +2186,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2104,6 +2214,7 @@
       "material": "polyiso"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2131,6 +2242,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         186.0479763779528,
@@ -2138,6 +2250,7 @@
       ],
       "content": "polyiso  3\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -2145,6 +2258,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2172,6 +2286,7 @@
       "material": "osb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2199,6 +2314,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         186.0479763779528,
@@ -2206,6 +2322,7 @@
       ],
       "content": "osb  0.625\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -2213,6 +2330,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2240,6 +2358,7 @@
       "material": "roof-underlayment-synthetic"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2267,6 +2386,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         186.0479763779528,
@@ -2274,6 +2394,7 @@
       ],
       "content": "roof-underlayment-synthetic  0.06\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -2281,6 +2402,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2308,6 +2430,7 @@
       "material": "roof-vent-mat"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2335,6 +2458,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         186.0479763779528,
@@ -2342,6 +2466,7 @@
       ],
       "content": "roof-vent-mat  0.25\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -2349,6 +2474,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2376,6 +2502,7 @@
       "material": "standing-seam"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2403,6 +2530,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         186.0479763779528,
@@ -2410,6 +2538,7 @@
       ],
       "content": "standing-seam  0.5\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -2526,5 +2655,6 @@
     "  mat -> standing seam -> gutter, back sheet",
     "  behind the trim. The drip edge goes on",
     "  before the field underlayment, not after."
-  ]
+  ],
+  "frame": null
 }

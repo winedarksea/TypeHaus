@@ -3,6 +3,7 @@
   "units": "in",
   "nodes": [
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -30,6 +31,7 @@
       "tag": "W-B-CS/tg-liner"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -57,6 +59,7 @@
       "material": "sauna-tg"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -84,6 +87,7 @@
       "tag": "W-B-CS/liner-furring"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -111,6 +115,7 @@
       "material": "struct-1-plywood"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -138,6 +143,7 @@
       "tag": "W-B-CS/foil-polyiso"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -165,6 +171,7 @@
       "material": "polyiso-foil"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -192,6 +199,7 @@
       "tag": "W-B-CS/concrete"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -219,6 +227,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -246,6 +255,7 @@
       "tag": "W-B-SA-W/tg-liner"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -273,6 +283,7 @@
       "material": "sauna-tg"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -300,6 +311,7 @@
       "tag": "W-B-SA-W/liner-furring"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -327,6 +339,7 @@
       "material": "struct-1-plywood"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -354,6 +367,7 @@
       "tag": "W-B-SA-W/foil-polyiso"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -381,6 +395,7 @@
       "material": "polyiso-foil"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -408,6 +423,7 @@
       "tag": "SL-B-FLOOR"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -435,6 +451,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -462,6 +479,7 @@
       "tag": "FT-B-CS"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -489,6 +507,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -516,6 +535,7 @@
       "tag": "rim-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -543,6 +563,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -570,6 +591,7 @@
       "tag": "rim-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -597,6 +619,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -624,6 +647,7 @@
       "tag": "strapping-liner-furring-000"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -651,6 +675,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -678,6 +703,7 @@
       "tag": "strapping-liner-furring-001"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -705,6 +731,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -732,6 +759,7 @@
       "tag": "strapping-liner-furring-002"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -759,6 +787,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -786,6 +815,7 @@
       "tag": "strapping-liner-furring-003"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -813,6 +843,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -840,6 +871,7 @@
       "tag": "strapping-liner-furring-004"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -867,6 +899,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -894,6 +927,7 @@
       "tag": "strapping-liner-furring-005"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -921,6 +955,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -948,6 +983,7 @@
       "tag": "strapping-liner-furring-006"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -975,6 +1011,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1002,6 +1039,7 @@
       "tag": "strapping-liner-furring-007"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1029,6 +1067,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1056,6 +1095,7 @@
       "tag": "strapping-liner-furring-000"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1083,6 +1123,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1110,6 +1151,7 @@
       "tag": "strapping-liner-furring-002"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1137,6 +1179,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1164,6 +1207,7 @@
       "tag": "strapping-liner-furring-004"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1191,6 +1235,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1218,6 +1263,7 @@
       "tag": "strapping-liner-furring-006"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1245,6 +1291,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1272,6 +1319,7 @@
       "tag": "strapping-liner-furring-008"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1299,6 +1347,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1326,6 +1375,7 @@
       "tag": "strapping-liner-furring-010"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1353,6 +1403,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1380,6 +1431,7 @@
       "tag": "strapping-liner-furring-011"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1407,6 +1459,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1434,6 +1487,7 @@
       "tag": "plate-bottom"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1461,6 +1515,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1480,10 +1535,12 @@
       ],
       "text": "tg-liner 1\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1503,10 +1560,12 @@
       ],
       "text": "liner-furring 0.5\" (NTS)",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1526,10 +1585,12 @@
       ],
       "text": "foil-polyiso 2\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1549,10 +1610,12 @@
       ],
       "text": "concrete 12\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1572,10 +1635,12 @@
       ],
       "text": "foil-polyiso 0.312\" (NTS)",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1595,10 +1660,12 @@
       ],
       "text": "liner-furring 0.5\" (NTS)",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1618,10 +1685,12 @@
       ],
       "text": "tg-liner 1\" (NTS)",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         108.00000000000001,
@@ -1629,6 +1698,7 @@
       ],
       "content": "SL-D-SAUNA",
       "height": 4.0,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1636,5 +1706,6 @@
       "uid": null
     }
   ],
-  "notes": []
+  "notes": [],
+  "frame": null
 }

@@ -3,6 +3,7 @@
   "units": "in",
   "nodes": [
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -30,6 +31,7 @@
       "tag": "W-B-CS2/concrete"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -57,6 +59,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -76,6 +79,7 @@
       "tag": "W-B-CS2-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -103,6 +107,7 @@
       "tag": "SL-B-FLOOR"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -130,6 +135,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -157,6 +163,7 @@
       "tag": "FT-B-CS2"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -184,6 +191,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -211,6 +219,7 @@
       "tag": "FB-B-CS2-DT-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -238,6 +247,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -265,6 +275,7 @@
       "tag": "FB-B-CS2-DT-3"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -292,6 +303,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -319,6 +331,7 @@
       "tag": "PR-B-CW-SAUNA-S1B1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -346,6 +359,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -373,6 +387,7 @@
       "tag": "PR-B-CW-SAUNA-S1B2"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -400,6 +415,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -427,6 +443,7 @@
       "tag": "PR-B-CW-SAUNA-S1B3"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -454,6 +471,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -481,6 +499,7 @@
       "tag": "PR-B-CW-SAUNA-S1B4"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -508,6 +527,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -535,6 +555,7 @@
       "tag": "PR-B-CW-SAUNA-S1B5"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -562,6 +583,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -589,6 +611,7 @@
       "tag": "PR-B-CW-SAUNA-S1B6"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -616,6 +639,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -643,6 +667,7 @@
       "tag": "PA-B-BFP-SAUNA"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -670,6 +695,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -689,10 +715,12 @@
       ],
       "text": "concrete 12\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -720,6 +748,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -747,6 +776,7 @@
       "tag": "detail-component:opening-buck"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -774,6 +804,7 @@
       "material": "sealant"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -801,6 +832,7 @@
       "tag": "detail-component:opening-sealant"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -828,6 +860,7 @@
       "material": "sealant"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -855,6 +888,7 @@
       "tag": "detail-component:opening-sealant"
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         200.15748031496065,
@@ -862,6 +896,7 @@
       ],
       "content": "TR-CATLIN-CONCRETE-OPENING  ·  concrete-opening",
       "height": 1.6,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -869,6 +904,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "dimension",
       "kind": "linear",
       "ends": [
@@ -898,11 +934,13 @@
         -32.000000000000014
       ],
       "offset": 3.0,
+      "height_pt": 6.5,
       "layer": "A-ANNO-DIMS",
       "text": "80\" R.O.",
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         187.25348031496065,
@@ -910,6 +948,7 @@
       ],
       "content": "Type:Haus — derived transition detail",
       "height": 1.4,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -917,6 +956,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         187.25348031496065,
@@ -924,6 +964,7 @@
       ],
       "content": "TR-CATLIN-CONCRETE-OPENING  ·  concrete-opening",
       "height": 2.0,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -931,6 +972,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         187.25348031496065,
@@ -938,6 +980,7 @@
       ],
       "content": "Catlin House",
       "height": 3.2,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -945,6 +988,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         187.25348031496065,
@@ -952,6 +996,7 @@
       ],
       "content": "MATERIALS",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -959,6 +1004,7 @@
       "uid": null
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -986,6 +1032,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1013,6 +1060,7 @@
       "tag": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         191.35348031496065,
@@ -1020,6 +1068,7 @@
       ],
       "content": "concrete  12\"",
       "height": 1.5,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1154,5 +1203,6 @@
     "  compacted washed stone aggregate (wider",
     "  than footing) with French drain located in",
     "  the wider area, not under the footing."
-  ]
+  ],
+  "frame": null
 }

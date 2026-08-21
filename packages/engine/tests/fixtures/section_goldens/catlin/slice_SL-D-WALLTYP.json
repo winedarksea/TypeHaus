@@ -3,6 +3,7 @@
   "units": "in",
   "nodes": [
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -30,6 +31,7 @@
       "tag": "W-B-S2/tg-liner"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -57,6 +59,7 @@
       "material": "sauna-tg"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -84,6 +87,7 @@
       "tag": "W-B-S2/liner-furring"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -111,6 +115,7 @@
       "material": "struct-1-plywood"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -138,6 +143,7 @@
       "tag": "W-B-S2/foil-polyiso"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -165,6 +171,7 @@
       "material": "polyiso-foil"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -192,6 +199,7 @@
       "tag": "W-B-S2/concrete"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -219,6 +227,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -246,6 +255,7 @@
       "tag": "W-B-S2/damp-proof"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -273,6 +283,7 @@
       "material": "air-barrier"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -300,6 +311,7 @@
       "tag": "W-B-S2/xps-a"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -327,6 +339,7 @@
       "material": "xps"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -354,6 +367,7 @@
       "tag": "W-B-S2/xps-b"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -381,6 +395,7 @@
       "material": "xps"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -408,6 +423,7 @@
       "tag": "W-B-S2/parge"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -435,6 +451,7 @@
       "tag": "W-B-SA-W/foil-polyiso"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -462,6 +479,7 @@
       "material": "polyiso-foil"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -489,6 +507,7 @@
       "tag": "W-B-BRICK/air-gap"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -516,6 +535,7 @@
       "material": "air-barrier"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -543,6 +563,7 @@
       "tag": "W-B-BRICK/brick-plinth"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -570,6 +591,7 @@
       "material": "brown-brick"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -597,6 +619,7 @@
       "tag": "W-B-BRICK/brick-band-lo"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -624,6 +647,7 @@
       "material": "glazed-gold-brick"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -651,6 +675,7 @@
       "tag": "W-B-BRICK/brick-field-lo"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -678,6 +703,7 @@
       "material": "glazed-lapis-brick"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -705,6 +731,7 @@
       "tag": "W-B-BRICK/brick-band-hi"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -732,6 +759,7 @@
       "material": "glazed-gold-brick"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -759,6 +787,7 @@
       "tag": "W-B-BRICK/brick-field-hi"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -786,6 +815,7 @@
       "material": "glazed-lapis-brick"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -813,6 +843,7 @@
       "tag": "W-M-S1/paint"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -840,6 +871,7 @@
       "tag": "W-M-S1/paint"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -867,6 +899,7 @@
       "tag": "W-M-S1/gwb-int"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -894,6 +927,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -921,6 +955,7 @@
       "tag": "W-M-S1/gwb-int"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -948,6 +983,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -975,6 +1011,7 @@
       "tag": "W-M-S1/stud"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1002,6 +1039,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1029,6 +1067,7 @@
       "tag": "W-M-S1/stud"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1056,6 +1095,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1083,6 +1123,7 @@
       "tag": "W-M-S1/sheathing"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1110,6 +1151,7 @@
       "material": "struct-1-plywood"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1137,6 +1179,7 @@
       "tag": "W-M-S1/sheathing"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1164,6 +1207,7 @@
       "material": "struct-1-plywood"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1191,6 +1235,7 @@
       "tag": "W-M-S1/wrb"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1218,6 +1263,7 @@
       "material": "air-barrier"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1245,6 +1291,7 @@
       "tag": "W-M-S1/wrb"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1272,6 +1319,7 @@
       "material": "air-barrier"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1299,6 +1347,7 @@
       "tag": "W-M-S1/polyiso"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1326,6 +1375,7 @@
       "material": "polyiso"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1353,6 +1403,7 @@
       "tag": "W-M-S1/polyiso"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1380,6 +1431,7 @@
       "material": "polyiso"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1407,6 +1459,7 @@
       "tag": "W-M-S1/eps"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1434,6 +1487,7 @@
       "material": "eps"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1461,6 +1515,7 @@
       "tag": "W-M-S1/eps"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1488,6 +1543,7 @@
       "material": "eps"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1515,6 +1571,7 @@
       "tag": "W-M-S1/furring"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1542,6 +1599,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1569,6 +1627,7 @@
       "tag": "W-M-S1/furring"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1596,6 +1655,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1623,6 +1683,7 @@
       "tag": "W-M-S1/cladding"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1650,6 +1711,7 @@
       "material": "standing-seam-snaplock"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1677,6 +1739,7 @@
       "tag": "W-M-S1/cladding"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1704,6 +1767,7 @@
       "material": "standing-seam-snaplock"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1731,6 +1795,7 @@
       "material": "mineral-wool"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1758,6 +1823,7 @@
       "material": "mineral-wool"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1777,6 +1843,7 @@
       "tag": "W-M-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1796,6 +1863,7 @@
       "tag": "W-M-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1815,6 +1883,7 @@
       "tag": "W-M-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1834,6 +1903,7 @@
       "tag": "W-M-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1853,6 +1923,7 @@
       "tag": "W-M-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1872,6 +1943,7 @@
       "tag": "W-M-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1891,6 +1963,7 @@
       "tag": "W-M-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1910,6 +1983,7 @@
       "tag": "W-M-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1929,6 +2003,7 @@
       "tag": "W-M-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1956,6 +2031,7 @@
       "tag": "W-S-S1/pvc-panel"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1983,6 +2059,7 @@
       "tag": "W-S-S1/pvc-panel"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2010,6 +2087,7 @@
       "tag": "W-S-S1/liner-furring"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2037,6 +2115,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2064,6 +2143,7 @@
       "tag": "W-S-S1/liner-furring"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2091,6 +2171,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2118,6 +2199,7 @@
       "tag": "W-S-S1/humid-membrane"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2145,6 +2227,7 @@
       "material": "humid-room-membrane"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2172,6 +2255,7 @@
       "tag": "W-S-S1/humid-membrane"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2199,6 +2283,7 @@
       "material": "humid-room-membrane"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2226,6 +2311,7 @@
       "tag": "W-S-S1/stud"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2253,6 +2339,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2280,6 +2367,7 @@
       "tag": "W-S-S1/stud"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2307,6 +2395,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2334,6 +2423,7 @@
       "tag": "W-S-S1/sheathing"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2361,6 +2451,7 @@
       "material": "struct-1-plywood"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2388,6 +2479,7 @@
       "tag": "W-S-S1/sheathing"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2415,6 +2507,7 @@
       "material": "struct-1-plywood"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2442,6 +2535,7 @@
       "tag": "W-S-S1/wrb"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2469,6 +2563,7 @@
       "material": "air-barrier"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2496,6 +2591,7 @@
       "tag": "W-S-S1/wrb"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2523,6 +2619,7 @@
       "material": "air-barrier"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2550,6 +2647,7 @@
       "tag": "W-S-S1/polyiso"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2577,6 +2675,7 @@
       "material": "polyiso"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2604,6 +2703,7 @@
       "tag": "W-S-S1/polyiso"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2631,6 +2731,7 @@
       "material": "polyiso"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2658,6 +2759,7 @@
       "tag": "W-S-S1/eps"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2685,6 +2787,7 @@
       "material": "eps"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2712,6 +2815,7 @@
       "tag": "W-S-S1/eps"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2739,6 +2843,7 @@
       "material": "eps"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2766,6 +2871,7 @@
       "tag": "W-S-S1/furring"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2793,6 +2899,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2820,6 +2927,7 @@
       "tag": "W-S-S1/furring"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2847,6 +2955,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2874,6 +2983,7 @@
       "tag": "W-S-S1/cladding"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2901,6 +3011,7 @@
       "material": "standing-seam-snaplock"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2928,6 +3039,7 @@
       "tag": "W-S-S1/cladding"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2955,6 +3067,7 @@
       "material": "standing-seam-snaplock"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -2982,6 +3095,7 @@
       "material": "mineral-wool"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -3009,6 +3123,7 @@
       "material": "mineral-wool"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3028,6 +3143,7 @@
       "tag": "W-S-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3047,6 +3163,7 @@
       "tag": "W-S-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3066,6 +3183,7 @@
       "tag": "W-S-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3085,6 +3203,7 @@
       "tag": "W-S-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3104,6 +3223,7 @@
       "tag": "W-S-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3123,6 +3243,7 @@
       "tag": "W-S-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3142,6 +3263,7 @@
       "tag": "W-S-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3161,6 +3283,7 @@
       "tag": "W-S-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3180,6 +3303,7 @@
       "tag": "W-S-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3199,6 +3323,7 @@
       "tag": "W-S-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3226,6 +3351,7 @@
       "tag": "W-A-S1/paint"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3253,6 +3379,7 @@
       "tag": "W-A-S1/paint"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3280,6 +3407,7 @@
       "tag": "W-A-S1/gwb-int"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -3307,6 +3435,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3334,6 +3463,7 @@
       "tag": "W-A-S1/gwb-int"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -3361,6 +3491,7 @@
       "material": "gwb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3388,6 +3519,7 @@
       "tag": "W-A-S1/stud"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -3415,6 +3547,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3442,6 +3575,7 @@
       "tag": "W-A-S1/stud"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -3469,6 +3603,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3496,6 +3631,7 @@
       "tag": "W-A-S1/sheathing"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -3523,6 +3659,7 @@
       "material": "struct-1-plywood"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3550,6 +3687,7 @@
       "tag": "W-A-S1/sheathing"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -3577,6 +3715,7 @@
       "material": "struct-1-plywood"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3604,6 +3743,7 @@
       "tag": "W-A-S1/wrb"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -3631,6 +3771,7 @@
       "material": "air-barrier"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3658,6 +3799,7 @@
       "tag": "W-A-S1/wrb"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -3685,6 +3827,7 @@
       "material": "air-barrier"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3712,6 +3855,7 @@
       "tag": "W-A-S1/polyiso"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -3739,6 +3883,7 @@
       "material": "polyiso"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3766,6 +3911,7 @@
       "tag": "W-A-S1/polyiso"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -3793,6 +3939,7 @@
       "material": "polyiso"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3820,6 +3967,7 @@
       "tag": "W-A-S1/eps"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -3847,6 +3995,7 @@
       "material": "eps"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3874,6 +4023,7 @@
       "tag": "W-A-S1/eps"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -3901,6 +4051,7 @@
       "material": "eps"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3928,6 +4079,7 @@
       "tag": "W-A-S1/furring"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -3955,6 +4107,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3982,6 +4135,7 @@
       "tag": "W-A-S1/furring"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -4009,6 +4163,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4036,6 +4191,7 @@
       "tag": "W-A-S1/cladding"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -4063,6 +4219,7 @@
       "material": "standing-seam-snaplock"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4090,6 +4247,7 @@
       "tag": "W-A-S1/cladding"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -4117,6 +4275,7 @@
       "material": "standing-seam-snaplock"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -4144,6 +4303,7 @@
       "material": "mineral-wool"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -4171,6 +4331,7 @@
       "material": "mineral-wool"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4190,6 +4351,7 @@
       "tag": "W-A-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4209,6 +4371,7 @@
       "tag": "W-A-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4228,6 +4391,7 @@
       "tag": "W-A-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4247,6 +4411,7 @@
       "tag": "W-A-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4266,6 +4431,7 @@
       "tag": "W-A-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4285,6 +4451,7 @@
       "tag": "W-A-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4304,6 +4471,7 @@
       "tag": "W-A-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4323,6 +4491,7 @@
       "tag": "W-A-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4342,6 +4511,7 @@
       "tag": "W-A-S1-void"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4369,6 +4539,7 @@
       "tag": "SL-B-FLOOR"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -4396,6 +4567,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4423,6 +4595,7 @@
       "tag": "FT-B-S2"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -4450,6 +4623,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4477,6 +4651,7 @@
       "tag": "FT-B-BRICK"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -4504,6 +4679,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4531,6 +4707,7 @@
       "tag": "PR-M-CW-HYD-DIST-S2B1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -4558,6 +4735,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4585,6 +4763,7 @@
       "tag": "PR-M-CW-HYD-DIST-S2B2"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -4612,6 +4791,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4639,6 +4819,7 @@
       "tag": "PR-M-CW-HYD-DIST-S2B3"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -4666,6 +4847,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4693,6 +4875,7 @@
       "tag": "PR-M-CW-HYD-DIST-S2B4"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -4720,6 +4903,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4747,6 +4931,7 @@
       "tag": "PR-M-CW-HYD-DIST-S2B5"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -4774,6 +4959,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4801,6 +4987,7 @@
       "tag": "PR-M-CW-HYD-DIST-S2B6"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -4828,6 +5015,7 @@
       "material": "concrete"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4855,6 +5043,7 @@
       "tag": "W-M-S1-BUGSCREEN"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -4882,6 +5071,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4913,6 +5103,7 @@
       "tag": "RF-HOUSE/zip"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -4944,6 +5135,7 @@
       "material": "zip-sheathing"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -4975,6 +5167,7 @@
       "tag": "RF-HOUSE/deck-vb"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -5006,6 +5199,7 @@
       "material": "roof-deck-vapor-barrier"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5037,6 +5231,7 @@
       "tag": "RF-HOUSE/polyiso-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -5068,6 +5263,7 @@
       "material": "polyiso"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5099,6 +5295,7 @@
       "tag": "RF-HOUSE/polyiso-2"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -5130,6 +5327,7 @@
       "material": "polyiso"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5161,6 +5359,7 @@
       "tag": "RF-HOUSE/top-deck"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -5192,6 +5391,7 @@
       "material": "osb"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5223,6 +5423,7 @@
       "tag": "RF-HOUSE/underlayment"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -5254,6 +5455,7 @@
       "material": "roof-underlayment-synthetic"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5285,6 +5487,7 @@
       "tag": "RF-HOUSE/vent-mat"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -5316,6 +5519,7 @@
       "material": "roof-vent-mat"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5347,6 +5551,7 @@
       "tag": "RF-HOUSE/roofing"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -5378,6 +5583,7 @@
       "material": "standing-seam"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -5405,6 +5611,7 @@
       "material": "fiberglass-r19"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5432,6 +5639,7 @@
       "tag": "joist-0-000-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -5459,6 +5667,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5478,6 +5687,7 @@
       "tag": "joist-0-000-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5497,6 +5707,7 @@
       "tag": "joist-0-000-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5524,6 +5735,7 @@
       "tag": "joist-0-001-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -5551,6 +5763,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5570,6 +5783,7 @@
       "tag": "joist-0-001-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5589,6 +5803,7 @@
       "tag": "joist-0-001-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5616,6 +5831,7 @@
       "tag": "joist-0-002-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -5643,6 +5859,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5662,6 +5879,7 @@
       "tag": "joist-0-002-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5681,6 +5899,7 @@
       "tag": "joist-0-002-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5708,6 +5927,7 @@
       "tag": "joist-0-003-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -5735,6 +5955,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5754,6 +5975,7 @@
       "tag": "joist-0-003-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5773,6 +5995,7 @@
       "tag": "joist-0-003-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5800,6 +6023,7 @@
       "tag": "joist-0-004-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -5827,6 +6051,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5846,6 +6071,7 @@
       "tag": "joist-0-004-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5865,6 +6091,7 @@
       "tag": "joist-0-004-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5892,6 +6119,7 @@
       "tag": "joist-0-000-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -5919,6 +6147,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5938,6 +6167,7 @@
       "tag": "joist-0-000-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5957,6 +6187,7 @@
       "tag": "joist-0-000-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -5984,6 +6215,7 @@
       "tag": "joist-0-001-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -6011,6 +6243,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6030,6 +6263,7 @@
       "tag": "joist-0-001-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6049,6 +6283,7 @@
       "tag": "joist-0-001-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6076,6 +6311,7 @@
       "tag": "joist-0-002-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -6103,6 +6339,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6122,6 +6359,7 @@
       "tag": "joist-0-002-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6141,6 +6379,7 @@
       "tag": "joist-0-002-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6168,6 +6407,7 @@
       "tag": "joist-0-003-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -6195,6 +6435,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6214,6 +6455,7 @@
       "tag": "joist-0-003-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6233,6 +6475,7 @@
       "tag": "joist-0-003-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6260,6 +6503,7 @@
       "tag": "joist-0-004-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -6287,6 +6531,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6306,6 +6551,7 @@
       "tag": "joist-0-004-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6325,6 +6571,7 @@
       "tag": "joist-0-004-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6352,6 +6599,7 @@
       "tag": "joist-0-000-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -6379,6 +6627,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6398,6 +6647,7 @@
       "tag": "joist-0-000-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6417,6 +6667,7 @@
       "tag": "joist-0-000-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6444,6 +6695,7 @@
       "tag": "joist-0-001-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -6471,6 +6723,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6490,6 +6743,7 @@
       "tag": "joist-0-001-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6509,6 +6763,7 @@
       "tag": "joist-0-001-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6536,6 +6791,7 @@
       "tag": "joist-0-002-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -6563,6 +6819,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6582,6 +6839,7 @@
       "tag": "joist-0-002-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6601,6 +6859,7 @@
       "tag": "joist-0-002-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6628,6 +6887,7 @@
       "tag": "joist-0-003-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -6655,6 +6915,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6674,6 +6935,7 @@
       "tag": "joist-0-003-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6693,6 +6955,7 @@
       "tag": "joist-0-003-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6720,6 +6983,7 @@
       "tag": "joist-0-004-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -6747,6 +7011,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6766,6 +7031,7 @@
       "tag": "joist-0-004-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6785,6 +7051,7 @@
       "tag": "joist-0-004-0/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6812,6 +7079,7 @@
       "tag": "strapping-liner-furring-000"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -6839,6 +7107,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6866,6 +7135,7 @@
       "tag": "strapping-liner-furring-001"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -6893,6 +7163,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6920,6 +7191,7 @@
       "tag": "strapping-liner-furring-002"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -6947,6 +7219,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -6974,6 +7247,7 @@
       "tag": "strapping-liner-furring-003"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -7001,6 +7275,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -7028,6 +7303,7 @@
       "tag": "strapping-liner-furring-005"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -7055,6 +7331,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -7082,6 +7359,7 @@
       "tag": "strapping-liner-furring-007"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -7109,6 +7387,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -7136,6 +7415,7 @@
       "tag": "strapping-liner-furring-008"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -7163,6 +7443,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -7190,6 +7471,7 @@
       "tag": "strapping-liner-furring-009"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -7217,6 +7499,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -7244,6 +7527,7 @@
       "tag": "plate-bottom"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -7271,6 +7555,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -7298,6 +7583,7 @@
       "tag": "plate-top-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -7325,6 +7611,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -7352,6 +7639,7 @@
       "tag": "plate-top-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -7379,6 +7667,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -7406,6 +7695,7 @@
       "tag": "header-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -7433,6 +7723,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -7460,6 +7751,7 @@
       "tag": "sill-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -7487,6 +7779,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -7514,6 +7807,7 @@
       "tag": "plate-bottom"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -7541,6 +7835,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -7568,6 +7863,7 @@
       "tag": "plate-top-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -7595,6 +7891,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -7622,6 +7919,7 @@
       "tag": "plate-top-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -7649,6 +7947,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -7676,6 +7975,7 @@
       "tag": "header-2"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -7703,6 +8003,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -7730,6 +8031,7 @@
       "tag": "sill-2"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -7757,6 +8059,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -7784,6 +8087,7 @@
       "tag": "strapping-liner-furring-000"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -7811,6 +8115,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -7838,6 +8143,7 @@
       "tag": "strapping-liner-furring-002"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -7865,6 +8171,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -7892,6 +8199,7 @@
       "tag": "strapping-liner-furring-016"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -7919,6 +8227,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -7946,6 +8255,7 @@
       "tag": "strapping-liner-furring-017"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -7973,6 +8283,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8000,6 +8311,7 @@
       "tag": "strapping-liner-furring-018"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -8027,6 +8339,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8054,6 +8367,7 @@
       "tag": "plate-bottom"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -8081,6 +8395,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8108,6 +8423,7 @@
       "tag": "plate-raked-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -8135,6 +8451,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8162,6 +8479,7 @@
       "tag": "plate-raked-1"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -8189,6 +8507,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8216,6 +8535,7 @@
       "tag": "sill-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -8243,6 +8563,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8270,6 +8591,7 @@
       "tag": "roughhead-0"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -8297,6 +8619,7 @@
       "material": null
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8340,6 +8663,7 @@
       "tag": "rafter-000"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -8383,6 +8707,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8402,6 +8727,7 @@
       "tag": "rafter-000/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8421,6 +8747,7 @@
       "tag": "rafter-000/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8464,6 +8791,7 @@
       "tag": "rafter-002"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -8507,6 +8835,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8526,6 +8855,7 @@
       "tag": "rafter-002/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8545,6 +8875,7 @@
       "tag": "rafter-002/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8588,6 +8919,7 @@
       "tag": "rafter-004"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -8631,6 +8963,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8650,6 +8983,7 @@
       "tag": "rafter-004/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8669,6 +9003,7 @@
       "tag": "rafter-004/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8712,6 +9047,7 @@
       "tag": "rafter-006"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -8755,6 +9091,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8774,6 +9111,7 @@
       "tag": "rafter-006/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8793,6 +9131,7 @@
       "tag": "rafter-006/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8836,6 +9175,7 @@
       "tag": "rafter-008"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -8879,6 +9219,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8898,6 +9239,7 @@
       "tag": "rafter-008/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8917,6 +9259,7 @@
       "tag": "rafter-008/flange"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8944,6 +9287,7 @@
       "tag": "W-A-S1-closure-0-polyiso"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -8971,6 +9315,7 @@
       "material": "polyiso"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -8998,6 +9343,7 @@
       "tag": "W-A-S1-closure-0-eps"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -9025,6 +9371,7 @@
       "material": "eps"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -9052,6 +9399,7 @@
       "tag": "W-A-S1-closure-0-furring"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -9079,6 +9427,7 @@
       "material": "spf"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -9106,6 +9455,7 @@
       "tag": "W-A-S1-closure-0-cladding"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -9133,6 +9483,7 @@
       "material": "standing-seam-snaplock"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -9160,6 +9511,7 @@
       "tag": "rake-lo-0-corner-trim-cleat"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -9187,6 +9539,7 @@
       "material": "metal-dark-exterior"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -9214,6 +9567,7 @@
       "tag": "rake-lo-0-corner-trim-face"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -9241,6 +9595,7 @@
       "material": "metal-dark-exterior"
     },
     {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -9268,6 +9623,7 @@
       "tag": "rake-lo-0-corner-trim-hem"
     },
     {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -9295,6 +9651,7 @@
       "material": "metal-dark-exterior"
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9314,10 +9671,12 @@
       ],
       "text": "parge 0.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9337,10 +9696,12 @@
       ],
       "text": "xps-b 2\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9360,10 +9721,12 @@
       ],
       "text": "xps-a 2\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9383,10 +9746,12 @@
       ],
       "text": "damp-proof 0.05\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9406,10 +9771,12 @@
       ],
       "text": "concrete 12\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9429,10 +9796,12 @@
       ],
       "text": "foil-polyiso 2\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9452,10 +9821,12 @@
       ],
       "text": "liner-furring 0.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9475,10 +9846,12 @@
       ],
       "text": "tg-liner 1\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9498,10 +9871,12 @@
       ],
       "text": "foil-polyiso 56.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9521,10 +9896,12 @@
       ],
       "text": "brick-plinth 0.45\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9544,10 +9921,12 @@
       ],
       "text": "brick-band-lo 0.45\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9567,10 +9946,12 @@
       ],
       "text": "brick-field-lo 0.45\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9590,10 +9971,12 @@
       ],
       "text": "brick-band-hi 0.45\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9613,10 +9996,12 @@
       ],
       "text": "brick-field-hi 0.45\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9636,10 +10021,12 @@
       ],
       "text": "air-gap 1\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9659,10 +10046,12 @@
       ],
       "text": "cladding 0.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9682,10 +10071,12 @@
       ],
       "text": "furring 0.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9705,10 +10096,12 @@
       ],
       "text": "eps 2\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9728,10 +10121,12 @@
       ],
       "text": "polyiso 2\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9751,10 +10146,12 @@
       ],
       "text": "wrb 0.02\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9774,10 +10171,12 @@
       ],
       "text": "sheathing 0.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9797,10 +10196,12 @@
       ],
       "text": "stud 5.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9820,10 +10221,12 @@
       ],
       "text": "gwb-int 0.625\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9843,10 +10246,12 @@
       ],
       "text": "paint 0.01\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9866,10 +10271,12 @@
       ],
       "text": "cladding 0.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9889,10 +10296,12 @@
       ],
       "text": "furring 0.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9912,10 +10321,12 @@
       ],
       "text": "eps 2\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9935,10 +10346,12 @@
       ],
       "text": "polyiso 2\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9958,10 +10371,12 @@
       ],
       "text": "wrb 0.02\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -9981,10 +10396,12 @@
       ],
       "text": "sheathing 0.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -10004,10 +10421,12 @@
       ],
       "text": "stud 5.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -10027,10 +10446,12 @@
       ],
       "text": "humid-membrane 0.04\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -10050,10 +10471,12 @@
       ],
       "text": "liner-furring 0.75\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -10073,10 +10496,12 @@
       ],
       "text": "pvc-panel 0.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -10096,10 +10521,12 @@
       ],
       "text": "cladding 0.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -10119,10 +10546,12 @@
       ],
       "text": "furring 0.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -10142,10 +10571,12 @@
       ],
       "text": "eps 2\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -10165,10 +10596,12 @@
       ],
       "text": "polyiso 2\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -10188,10 +10621,12 @@
       ],
       "text": "wrb 0.02\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -10211,10 +10646,12 @@
       ],
       "text": "sheathing 0.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -10234,10 +10671,12 @@
       ],
       "text": "stud 5.5\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -10257,10 +10696,12 @@
       ],
       "text": "gwb-int 0.625\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -10280,10 +10721,12 @@
       ],
       "text": "paint 0.01\"",
       "height": 1.6,
+      "height_pt": null,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
+      "space": "model",
       "node": "text",
       "anchor": [
         -5.999999999999999,
@@ -10291,6 +10734,7 @@
       ],
       "content": "SL-D-WALLTYP",
       "height": 4.0,
+      "height_pt": null,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -10298,5 +10742,6 @@
       "uid": null
     }
   ],
-  "notes": []
+  "notes": [],
+  "frame": null
 }
