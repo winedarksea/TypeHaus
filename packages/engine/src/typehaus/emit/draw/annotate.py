@@ -16,26 +16,43 @@ from __future__ import annotations
 import textwrap
 from dataclasses import dataclass, replace
 
+from typehaus.emit.draw import typography
 from typehaus.emit.draw.typography import (
     CHAR_ASPECT as _CHAR_ASPECT,
 )
 from typehaus.emit.draw.typography import (
     LEADER_WRAP_COLUMNS,
+    TEXT_PT,
 )
 from typehaus.emit.draw.typography import (
     LINE_SPACING as _LINE_SPACING,
 )
 
-__all__ = ["DODGE_GAP", "LEADER_WRAP_COLUMNS", "LabelSpec", "PlacedLabel", "dodge",
-           "label_box", "leader_box", "place_column", "text_extent", "wrap_label"]
+__all__ = ["COLUMN_PAD_PT", "DODGE_GAP_PT", "LEADER_WRAP_COLUMNS", "LabelSpec",
+           "PlacedLabel", "dodge", "label_box", "leader_box", "model_in_per_pt",
+           "place_column", "text_extent", "wrap_label"]
 
-# Vertical air kept between two label boxes after dodging, model inches.
-DODGE_GAP = 0.5
+# What a point was worth in model inches before paper space: the ladder authored 1.6"
+# lettering and meant TEXT_PT. Every frameless caller (a plain building section, a plan)
+# still measures in this, so its drawings are unchanged; only a scene that has *chosen* a
+# sheet converts through the real scale, and there the same label comes out about half the
+# size, which is the oversize lettering being fixed.
+LEGACY_IN_PER_PT = 1.6 / TEXT_PT
 
-# Minimum air between successive rows *within* a placed column, model inches. Smaller
-# than DODGE_GAP so a single-line ladder keeps its authored uniform rung step (2.6" at
-# height 1.6) instead of every rung being pushed apart by the estimate's padding.
-_COLUMN_PAD = 0.3
+
+def model_in_per_pt(scale: float | None) -> float:
+    """Model inches per printed point, or the frameless convention when ``scale`` is None."""
+    return LEGACY_IN_PER_PT if scale is None else typography.model_in_per_pt(scale)
+
+# Vertical air kept between two label boxes after dodging, **points**. It was 0.5 model
+# inches, which is the same thing at the frameless conversion — a gap is a property of the
+# lettering it separates, not of the building.
+DODGE_GAP_PT = 0.5 / LEGACY_IN_PER_PT
+
+# Minimum air between successive rows *within* a placed column, points. Smaller than
+# DODGE_GAP_PT so a single-line ladder keeps its authored uniform rung step instead of every
+# rung being pushed apart by the estimate's padding.
+COLUMN_PAD_PT = 0.3 / LEGACY_IN_PER_PT
 
 
 def wrap_label(text: str, columns: int = LEADER_WRAP_COLUMNS) -> str:
@@ -71,21 +88,34 @@ class PlacedLabel:
     spec: LabelSpec
     at: tuple[float, float]
     align: str  # "left" | "right"
-    height: float
-    box: tuple[float, float, float, float]
+    height_pt: float
+    box: tuple[float, float, float, float]  # model inches
 
 
-def text_extent(text: str, height: float) -> tuple[float, float]:
-    """Estimated (width, height) of a text block, model inches."""
+def text_extent(text: str, height_pt: float) -> tuple[float, float]:
+    """Estimated (width, height) of a text block, **points** — what it prints as.
+
+    This is the line the whole paper-space change turns on. Lettering is a printed size, so
+    its extent is a paper measurement; converting to model inches is the caller's problem
+    and depends on the scale the sheet chose. Estimating in model inches instead is what let
+    the ladder reserve room for a 1.6" label and then print a 3" one.
+    """
     lines = text.split("\n")
-    width = max(len(line) for line in lines) * height * _CHAR_ASPECT
-    return width, height * _LINE_SPACING * len(lines)
+    width = max(len(line) for line in lines) * height_pt * _CHAR_ASPECT
+    return width, height_pt * _LINE_SPACING * len(lines)
 
 
-def label_box(at: tuple[float, float], text: str, height: float,
-              align: str) -> tuple[float, float, float, float]:
-    """Estimated bbox of a text block anchored at ``at`` (va=center convention)."""
-    width, block_h = text_extent(text, height)
+def label_box(at: tuple[float, float], text: str, height_pt: float,
+              align: str, scale: float | None = None) -> tuple[float, float, float, float]:
+    """Estimated bbox of a text block anchored at ``at`` (va=center convention).
+
+    Returns **model inches**, because that is what the ladder and :func:`dodge` place in —
+    but sized from ``height_pt`` at ``scale``. Reservation equals reality only if the two
+    are the same number, and this is where they meet.
+    """
+    per_pt = model_in_per_pt(scale)
+    width_pt, block_pt = text_extent(text, height_pt)
+    width, block_h = width_pt * per_pt, block_pt * per_pt
     if align == "right":
         u0 = at[0] - width
     elif align == "center":
@@ -95,7 +125,7 @@ def label_box(at: tuple[float, float], text: str, height: float,
     return (u0, at[1] - block_h / 2, u0 + width, at[1] + block_h / 2)
 
 
-def leader_box(node) -> tuple[float, float, float, float]:
+def leader_box(node, scale: float | None = None) -> tuple[float, float, float, float]:
     """Estimated bbox of an existing ``Leader``/``Text`` IR node.
 
     Mirrors ``pdf_writer._leader_align``: a note left of its target grows leftward.
@@ -108,11 +138,18 @@ def leader_box(node) -> tuple[float, float, float, float]:
         align = "right" if at[0] < to[0] else "left"
     else:
         align = getattr(node, "align", "left")
-    return label_box(at, text, getattr(node, "height", 1.6), align)
+    height_pt = getattr(node, "height_pt", None)
+    if height_pt is not None:
+        return label_box(at, text, height_pt, align, scale)
+    # A node that never took a printed size: its ``height`` is model inches, so convert it
+    # back into points through the same scale rather than mixing the two units.
+    return label_box(at, text, getattr(node, "height", 1.6) / model_in_per_pt(scale),
+                     align, scale)
 
 
-def place_column(entries: list[LabelSpec], x: float, z_top: float, step: float,
-                 height: float = 1.6, align: str = "left") -> list[PlacedLabel]:
+def place_column(entries: list[LabelSpec], x: float, z_top: float, step_pt: float,
+                 height_pt: float = TEXT_PT, align: str = "left",
+                 scale: float | None = None) -> list[PlacedLabel]:
     """Stack labels down a column at ``x``, first row anchored at ``z_top``.
 
     Each row advances by at least ``step``, growing whenever two adjacent text blocks
@@ -120,22 +157,23 @@ def place_column(entries: list[LabelSpec], x: float, z_top: float, step: float,
     while a single-line ladder keeps the uniform ``step``. Deterministic: order in =
     order down the column.
     """
-    halves = [text_extent(spec.text, height)[1] / 2 for spec in entries]
+    per_pt = model_in_per_pt(scale)
+    halves = [text_extent(spec.text, height_pt)[1] / 2 for spec in entries]
     out: list[PlacedLabel] = []
     z = None
     for index, spec in enumerate(entries):
         if z is None:
-            z = z_top - halves[0]  # first block's top sits at z_top
+            z = z_top - halves[0] * per_pt  # first block's top sits at z_top
         else:
-            z -= max(step, halves[index - 1] + _COLUMN_PAD + halves[index])
+            z -= max(step_pt, halves[index - 1] + COLUMN_PAD_PT + halves[index]) * per_pt
         at = (x, z)
-        out.append(PlacedLabel(spec=spec, at=at, align=align, height=height,
-                               box=label_box(at, spec.text, height, align)))
+        out.append(PlacedLabel(spec=spec, at=at, align=align, height_pt=height_pt,
+                               box=label_box(at, spec.text, height_pt, align, scale)))
     return out
 
 
 def dodge(placed: list[PlacedLabel], fixed: tuple = (),
-          gap: float = DODGE_GAP) -> list[PlacedLabel]:
+          gap_pt: float = DODGE_GAP_PT, scale: float | None = None) -> list[PlacedLabel]:
     """Cheap one-pass vertical-overlap resolver over estimated label boxes.
 
     Boxes are visited top-down (sorted by box top, descending); a box that intersects an
@@ -144,6 +182,7 @@ def dodge(placed: list[PlacedLabel], fixed: tuple = (),
     (u0, text) so the same scene always dodges the same way. The returned list preserves
     the input order (only anchors/boxes move).
     """
+    gap = gap_pt * model_in_per_pt(scale)
     order = sorted(range(len(placed)),
                    key=lambda i: (-placed[i].box[3], placed[i].box[0],
                                   placed[i].spec.text))

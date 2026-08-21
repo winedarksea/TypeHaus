@@ -10,6 +10,7 @@ Neither reads in the drawing unless they are drawn, because neither is a model e
 from __future__ import annotations
 
 from typehaus.emit.draw.annotate import LabelSpec, dodge, place_column, wrap_label
+from typehaus.emit.draw.typography import TEXT_PT
 from typehaus.emit.draw.detail_components.config import SHEET_METAL
 from typehaus.emit.draw.detail_components.geometry import (
     face_of,
@@ -29,7 +30,8 @@ from typehaus.resolve.roof_layer_setbacks import (
 )
 
 
-def zero_overhang_eave(model, wall, crop, direction, station) -> list[IRNode]:
+def zero_overhang_eave(model, wall, crop, direction, station,
+                       scale=None) -> list[IRNode]:
     """Box gutter + drip edge + apron + screened eave vent at the wall→roof junction.
 
     Derived from the wall's outermost weather face at the junction elevation, so the whole
@@ -77,7 +79,7 @@ def zero_overhang_eave(model, wall, crop, direction, station) -> list[IRNode]:
 
     nodes += eave_vent_intake(model, roof, clad_out, junction_z, out_sign, cz0 / M_PER_IN)
     nodes += eave_labels(model, roof, clad_out, junction_z, out_sign,
-                         direction, station)
+                         direction, station, scale)
     return nodes
 
 
@@ -235,7 +237,7 @@ def _water_anchor(model, direction: str, station: float, clad_out: float,
 
 
 def eave_labels(model, roof, clad_out: float, junction_z: float, out_sign: float,
-                direction: str, station: float) -> list[IRNode]:
+                direction: str, station: float, scale=None) -> list[IRNode]:
     """Name the eave water chain on the drawing, not only in the notes.
 
     The chain is a *lap order* — deck, drip edge, underlayment over the drip, metal, gutter
@@ -284,7 +286,8 @@ def eave_labels(model, roof, clad_out: float, junction_z: float, out_sign: float
     ]
     specs = [LabelSpec(text=wrap_label(text), target=target) for (target, text) in entries]
     placed = place_column(specs, x=clad_out + out_sign * 15.0, z_top=deck_top + 1.0,
-                          step=3.2, height=1.5, align="left" if out_sign > 0 else "right")
+                          step_pt=14.0, height_pt=TEXT_PT, scale=scale,
+                          align="left" if out_sign > 0 else "right")
     return [Leader(anchor=NamedPoint(xy=label.spec.target), at=label.at,
-                   to=label.spec.target, text=label.spec.text, height=label.height)
-            for label in dodge(placed)]
+                   to=label.spec.target, text=label.spec.text, height_pt=label.height_pt)
+            for label in dodge(placed, scale=scale)]

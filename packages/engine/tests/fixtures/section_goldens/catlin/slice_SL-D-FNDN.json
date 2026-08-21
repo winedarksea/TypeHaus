@@ -2935,7 +2935,7 @@
       ],
       "text": "protection-panel 0.5\" (NTS)",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -2960,7 +2960,7 @@
       ],
       "text": "xps-b 2\"",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -2985,7 +2985,7 @@
       ],
       "text": "xps-a 2\"",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -3010,7 +3010,7 @@
       ],
       "text": "damp-proof 0.05\" (NTS)",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -3035,7 +3035,7 @@
       ],
       "text": "concrete 12\"",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -3060,7 +3060,7 @@
       ],
       "text": "protection-panel 0.5\" (NTS)",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -3085,7 +3085,7 @@
       ],
       "text": "xps-b 2\"",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -3110,7 +3110,7 @@
       ],
       "text": "xps-a 2\"",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -3135,7 +3135,7 @@
       ],
       "text": "damp-proof 0.05\" (NTS)",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -3160,7 +3160,7 @@
       ],
       "text": "concrete 12\"",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -3185,7 +3185,7 @@
       ],
       "text": "stud 24\"",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -3210,7 +3210,7 @@
       ],
       "text": "cladding 0.5\" (NTS)",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -3235,7 +3235,7 @@
       ],
       "text": "furring 0.5\" (NTS)",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -3260,7 +3260,7 @@
       ],
       "text": "eps 2\"",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -3285,7 +3285,7 @@
       ],
       "text": "polyiso 2\"",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -3310,7 +3310,7 @@
       ],
       "text": "wrb 0.02\" (NTS)",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -3335,7 +3335,7 @@
       ],
       "text": "sheathing 0.5\" (NTS)",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -3360,7 +3360,7 @@
       ],
       "text": "stud 5.5\"",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -3385,7 +3385,7 @@
       ],
       "text": "gwb-int 0.625\" (NTS)",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -3410,7 +3410,7 @@
       ],
       "text": "paint 0.01\" (NTS)",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },

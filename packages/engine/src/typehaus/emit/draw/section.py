@@ -14,7 +14,7 @@ and opening voids. Thin layers honor ``ExaggerationSpec`` with true-dimension la
 from __future__ import annotations
 
 from typehaus.emit.draw.palette import aia_layer, detail_hatch
-from typehaus.emit.draw.scene import Hatch, Polyline, Scene, SceneBuilder, Text
+from typehaus.emit.draw.scene import Frame, Hatch, Polyline, Scene, SceneBuilder, Text
 from typehaus.emit.draw.section_cavity import (
     emit_roof_cavity,
     emit_wall_cavity,
@@ -53,12 +53,18 @@ __all__ = [
 ]
 
 
-def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
+def build_section(model: ResolvedModel, view: Slice, joints=None,
+                  frame: Frame | None = None) -> Scene:
     """Build the section/detail IR scene for one authored Slice.
 
     ``joints`` (a :class:`~typehaus.emit.draw.joints.JointPlan`) is detail-mode only; when
     given, per-layer terminations, sloped roof bands, cut framing members, and treatment
     fills are honored. ``None`` preserves plain-section behaviour (existing callers/goldens).
+
+    ``frame`` is the paper the drawing will be laid out on. It reaches the cut for one
+    reason: annotation is sized in *points*, and turning a printed size into the model
+    inches a ladder places in needs the scale. ``None`` keeps the frameless convention, so a
+    plain building section letters exactly as it did.
     """
     direction = view.cut_direction or "x"
     origin = view.cut_origin
@@ -73,6 +79,7 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
                 if view.exaggeration is not None else 0.0)
 
     b = SceneBuilder(name=f"{view.kind.value}-{view.tag}", units="in")
+    scale = frame.scale if frame is not None else None
 
     # Layer-label ladders are collected per wall and emitted once, after every wall has
     # been cut, so ladders from different walls (and later the seed-callout column) can be
@@ -81,13 +88,13 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
     ladder_labels: list = []
     for wall in model.walls:
         _emit_wall_cut(b, model, wall, plane, crop, is_detail, min_draw,
-                       joints, ladder_labels)
+                       joints, ladder_labels, scale)
 
     for solid in model.solids:
         _emit_solid_cut(b, model, solid, plane, crop)
 
     for roof in model.roofs:
-        _emit_roof_cut(b, model, roof, plane, crop, joints, ladder_labels)
+        _emit_roof_cut(b, model, roof, plane, crop, joints, ladder_labels, scale)
 
     emit_framing_cuts(b, model, model.floors, plane, crop)
 
@@ -106,13 +113,13 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
     if joints is not None:
         b.extend(list(joints.treatments))
 
-    emit_ladders(b, ladder_labels)
+    emit_ladders(b, ladder_labels, scale)
 
     if crop is not None:
         (cu0, cz0), (cu1, cz1) = crop
         b.add(Text(anchor=((cu0 / M_PER_IN), (cz1 / M_PER_IN) + 6.0),
                    content=view.tag, height=4.0, align="left"))
-    return b.build()
+    return b.build().model_copy(update={"frame": frame})
 
 
 def build_center_section(model: ResolvedModel) -> Scene:
@@ -127,7 +134,8 @@ def build_center_section(model: ResolvedModel) -> Scene:
 
 
 def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,
-                   is_detail, min_draw, joints=None, ladder_labels=None) -> None:
+                   is_detail, min_draw, joints=None, ladder_labels=None,
+                   scale=None) -> None:
     """One wall's cut, sliced out of the geometry IR.
 
     The IR's wall body is already jamb-split into piers, sill bands and headers, already
@@ -200,7 +208,7 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,
 
     emit_wall_cavity(b, model, wall, plane, crop, is_detail, min_draw, wall_top, joints)
     _emit_glazing_lines(b, model, wall, plane, crop, is_detail)
-    wall_layer_ladder(wall, label_entries, wall_top, crop, ladder_labels)
+    wall_layer_ladder(wall, label_entries, wall_top, crop, ladder_labels, scale)
 
 
 def _emit_glazing_lines(b, model, wall, plane: CutPlane, crop, is_detail) -> None:
@@ -301,7 +309,7 @@ def _roof_layer_offsets(asm):
 
 
 def _emit_roof_cut(b, model, roof, plane: CutPlane, crop, joints=None,
-                   ladder_labels=None) -> None:
+                   ladder_labels=None, scale=None) -> None:
     """One roof's cut: the above-structure stack sliced out of the IR, plus the bay fill.
 
     ``geometry_roofs.roof_parts`` builds exactly the layers the sky sees, each already
@@ -344,4 +352,4 @@ def _emit_roof_cut(b, model, roof, plane: CutPlane, crop, joints=None,
         rungs = sorted(_roof_layer_offsets(asm) + roof_cavity_bands(asm),
                        key=lambda entry: entry[1])
         roof_layer_ladder(roof, rungs, crop,
-                          lambda u: roof_plane_z(roof, u), ladder_labels)
+                          lambda u: roof_plane_z(roof, u), ladder_labels, scale)

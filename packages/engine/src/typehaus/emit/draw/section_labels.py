@@ -9,19 +9,23 @@ lives here rather than inside the per-family cut handlers.
 
 from __future__ import annotations
 
-from typehaus.emit.draw.annotate import LabelSpec, dodge, place_column
+from typehaus.emit.draw.annotate import LEGACY_IN_PER_PT, LabelSpec, dodge, place_column
 from typehaus.emit.draw.scene import Leader, NamedPoint
+from typehaus.emit.draw.typography import TEXT_PT
 from typehaus.quantities import M_PER_IN
 
-# Vertical step between successive layer labels in a detail, model inches.
-LABEL_RUNG_IN = 2.6
+# Vertical step between successive layer labels, **points**. A rung step is a property of
+# the lettering it separates, not of the building, which is why it stopped being the 2.6
+# model inches it was authored as — that number is this one at the frameless conversion.
+LABEL_RUNG_PT = 2.6 / LEGACY_IN_PER_PT
 
 
-def wall_layer_ladder(wall, label_entries, wall_top, crop, ladder_labels) -> None:
+def wall_layer_ladder(wall, label_entries, wall_top, crop, ladder_labels,
+                      scale: float | None = None) -> None:
     """Name every layer of a wall's assembly, hung from a single anchor at its top.
 
     The whole ladder hangs from one anchor: the wall's top as seen in the crop. Rungs step
-    down at a uniform ``LABEL_RUNG_IN`` so a sloped/eave cut, where each layer terminates at
+    down at a uniform ``LABEL_RUNG_PT`` so a sloped/eave cut, where each layer terminates at
     its own height, cannot interleave rungs from different layers. Stacked vertically
     because at detail scale a membrane and its neighbours are hundredths of an inch apart —
     labels sharing one baseline overprint into a smear.
@@ -41,10 +45,12 @@ def wall_layer_ladder(wall, label_entries, wall_top, crop, ladder_labels) -> Non
                for name, (label, mid_u) in
                sorted(label_entries.items(), key=lambda item: item[1][1])]
     ladder_labels.extend(place_column(entries, x=text_u, z_top=z_top / M_PER_IN - 1.0,
-                                      step=LABEL_RUNG_IN, height=1.6, align="right"))
+                                      step_pt=LABEL_RUNG_PT, height_pt=TEXT_PT,
+                                      align="right", scale=scale))
 
 
-def roof_layer_ladder(roof, detail_layers, crop, z_at, ladder_labels) -> None:
+def roof_layer_ladder(roof, detail_layers, crop, z_at, ladder_labels,
+                      scale: float | None = None) -> None:
     """Name every band of a roof's assembly, the way ``wall_layer_ladder`` names a wall's.
 
     Without this the one drawing whose subject is the roof-to-wall junction labelled the
@@ -84,16 +90,16 @@ def roof_layer_ladder(roof, detail_layers, crop, z_at, ladder_labels) -> None:
     entries.reverse()
     ladder_labels.extend(place_column(
         entries, x=u_lo / M_PER_IN - 1.0, z_top=z_hi / M_PER_IN - 1.0,
-        step=LABEL_RUNG_IN, height=1.6, align="right"))
+        step_pt=LABEL_RUNG_PT, height_pt=TEXT_PT, align="right", scale=scale))
 
 
-def emit_ladders(b, ladder_labels) -> None:
+def emit_ladders(b, ladder_labels, scale: float | None = None) -> None:
     """Draw the collected ladders last, over the cut geometry and dodged against each other.
 
     Two walls' ladders share the text column at the crop's left edge and would otherwise
     interleave.
     """
-    for placed in dodge(ladder_labels):
+    for placed in dodge(ladder_labels, scale=scale):
         mid_u, target_z = placed.spec.target
         rung_z = placed.at[1]
         if target_z:
@@ -103,10 +109,10 @@ def emit_ladders(b, ladder_labels) -> None:
             # it, which keeps the text column aligned while the pointers fan.
             b.add(Leader(anchor=NamedPoint(xy=(mid_u, target_z)), at=placed.at,
                          to=(mid_u, rung_z), text=placed.spec.text,
-                         height=placed.height, layer="A-ANNO-TEXT"))
+                         height_pt=placed.height_pt, layer="A-ANNO-TEXT"))
             continue
         # Horizontal, leadered back to the layer at the rung's own height — the rung moves
         # with the label when dodged, so the leader line stays flat and never crosses text.
         b.add(Leader(anchor=NamedPoint(xy=(mid_u, rung_z)), at=placed.at,
                      to=(mid_u, rung_z), text=placed.spec.text,
-                     height=placed.height, layer="A-ANNO-TEXT"))
+                     height_pt=placed.height_pt, layer="A-ANNO-TEXT"))

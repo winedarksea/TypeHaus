@@ -23,7 +23,13 @@ from typehaus.emit.draw.scene import (
     Symbol,
     Text,
 )
-from typehaus.emit.draw.typography import CHAR_ASPECT, MIN_PT, NOTES_PT
+from typehaus.emit.draw.typography import (
+    CHAR_ASPECT,
+    LINE_SPACING,
+    MIN_PT,
+    NOTES_PT,
+    wrap_columns_for,
+)
 from typehaus.quantities import M_PER_IN
 
 # Drawing-IR linetype → matplotlib linestyle. Anything unlisted draws solid, which is what
@@ -267,7 +273,12 @@ _NOTES_MIN_W = _NOTES_WRAP * _NOTES_PT * CHAR_ASPECT / 72.0 + 0.6  # inches
 
 
 def _rewrap_notes(lines) -> list[str]:
-    """Re-wrap IR note lines (42-char column) to the wider print column.
+    """``_wrap_notes`` at the frameless path's own fixed column width."""
+    return _wrap_notes(lines, _NOTES_WRAP)
+
+
+def _wrap_notes(lines, columns: int) -> list[str]:
+    """Re-wrap IR note lines (42-char column) to a print column of ``columns``.
 
     ``Scene.notes`` arrives pre-wrapped for a narrow column: bullets start with "• " and
     their continuation lines with two spaces (→ details._load_markdown_notes). Joining each
@@ -285,18 +296,128 @@ def _rewrap_notes(lines) -> list[str]:
     wrapped: list[str] = []
     for line in out:
         if line.startswith("• "):
-            wrapped.extend(textwrap.wrap(line, width=_NOTES_WRAP,
+            wrapped.extend(textwrap.wrap(line, width=columns,
                                          subsequent_indent="  ") or [line])
         else:
             wrapped.append(line)
     return wrapped
 
 
-def _fig(scene: Scene, title: str | None, underlays=()):
+def _framed_fig(scene: Scene, title: str | None, underlays=()):
+    """Lay the scene onto the paper it chose — the card path.
+
+    The inversion. ``_fig`` below sizes the figure from the *content*, so the drawn scale is
+    whatever fell out of how much there was to draw (lettering included). Here the sheet is
+    fixed, the viewport is fixed, and the axis limits come from the frame's centre and its
+    chosen scale — so the drawing prints at 1-1/2" = 1'-0" because that is what it says, and
+    a note column of any length cannot touch it.
+
+    ``fig.tight_layout()`` is deliberately absent: it re-fits axes to their contents, which
+    is the other half of the bug, and it is meaningless once the layout is authored in paper
+    inches.
+    """
     import matplotlib
 
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+
+    frame = scene.frame
+    assert frame is not None
+    paper_w, paper_h = frame.paper
+    fig = plt.figure(figsize=frame.paper)
+    vx, vy, vw, vh = frame.viewport
+    ax = fig.add_axes([vx / paper_w, vy / paper_h, vw / paper_w, vh / paper_h])
+    ax.set_aspect("equal")
+    ax.axis("off")
+    if underlays:
+        _draw_underlays(ax, underlays)
+    model_nodes = tuple(n for n in scene.nodes if getattr(n, "space", "model") == "model")
+    paper_nodes = tuple(n for n in scene.nodes if getattr(n, "space", "model") == "paper")
+    scaled_text = _render_nodes(ax, scene.model_copy(update={"nodes": model_nodes}))
+
+    # Model inches across the viewport at the chosen scale (paper inches per model foot).
+    half_u = vw * 12.0 / frame.scale / 2.0
+    half_z = vh * 12.0 / frame.scale / 2.0
+    ax.set_xlim(frame.center[0] - half_u, frame.center[0] + half_u)
+    ax.set_ylim(frame.center[1] - half_z, frame.center[1] + half_z)
+
+    if paper_nodes:
+        # A second axes over the whole sheet, in paper inches. Nothing about it moves when
+        # the drawing's scale changes — that is what "paper space" means, and it is why the
+        # title block and legend can no longer be pushed around by the cut.
+        ax_paper = fig.add_axes([0.0, 0.0, 1.0, 1.0], zorder=5)
+        ax_paper.set_aspect("equal")
+        ax_paper.axis("off")
+        ax_paper.set_xlim(0.0, paper_w)
+        ax_paper.set_ylim(0.0, paper_h)
+        ax_paper.patch.set_alpha(0.0)
+        _apply_text_scale(
+            fig, ax_paper,
+            _render_nodes(ax_paper, scene.model_copy(update={"nodes": paper_nodes})))
+
+    notes_band = frame.bands.get("notes")
+    if scene.notes and notes_band is not None:
+        _draw_notes_band(fig, frame, scene.notes, notes_band)
+    title_band = frame.bands.get("title")
+    if title and title_band is not None and not any(
+            getattr(n, "space", "model") == "paper"
+            and _in_band(getattr(n, "anchor", None), title_band) for n in paper_nodes):
+        # Only when the scene has not brought a title block of its own. A card that has
+        # one says more than "detail · <key>", and printing both overprints the two.
+        tx, ty, _tw, th = title_band
+        fig.text(tx / paper_w, (ty + th * 0.5) / paper_h, title,
+                 fontsize=9, family="monospace", va="center", ha="left")
+    # Off the viewport's own right edge, so it needs no knowledge of the card's margins —
+    # importing detail_card here would close a cycle (it reads sheet_writer's scale ladder,
+    # and sheet_writer reads this module).
+    fig.text((vx + vw) / paper_w, (vy - 0.16) / paper_h, frame.scale_label,
+             fontsize=7, family="monospace", ha="right", va="top", color="#555")
+    _apply_text_scale(fig, ax, scaled_text)
+    return fig
+
+
+def _in_band(anchor, band) -> bool:
+    if not isinstance(anchor, tuple):
+        return False
+    x, y, w, h = band
+    return x - 0.01 <= anchor[0] <= x + w + 0.01 and y - 0.01 <= anchor[1] <= y + h + 0.01
+
+
+def _draw_notes_band(fig, frame, notes, band) -> None:
+    """The notes column, wrapped **once**, here, at the width it is actually printing into.
+
+    Wrapping earlier — in the note loader, at a guessed column count — is what made the same
+    note ragged on a card and square on a sheet.
+
+    Overflow is truncated with an explicit marker for now. That is a stopgap and it is
+    visible on purpose: silently dropping the tail of a permit set's construction notes is
+    the failure this whole arrangement is meant to stop, and the real answer is a second
+    page.
+    """
+    paper_w, paper_h = frame.paper
+    nx, ny, nw, nh = band
+    lines = _wrap_notes(notes, wrap_columns_for(nw, NOTES_PT))
+    capacity = max(1, int(nh * 72.0 / (NOTES_PT * LINE_SPACING)))
+    if len(lines) > capacity:
+        lines = lines[:capacity - 1] + [f"… {len(lines) - capacity + 1} more lines"]
+    fig.text(nx / paper_w, (ny + nh) / paper_h, "\n".join(lines),
+             fontsize=NOTES_PT, family="monospace", va="top", ha="left", color="#222",
+             linespacing=LINE_SPACING)
+
+
+def _fig(scene: Scene, title: str | None, underlays=()):
+    """Fit the figure to its content — the frameless path, for a scene with no paper.
+
+    Every plan, elevation and schedule still comes through here. A detail that has chosen a
+    card goes to :func:`_framed_fig` instead.
+    """
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    if scene.frame is not None:
+        return _framed_fig(scene, title, underlays)
 
     bounds = _scene_bounds(scene)
     figsize = (11.0, 8.5)
@@ -529,7 +650,13 @@ def write_raster(scene: Scene, path: Path, title: str | None = None, dpi: int = 
     """
     fig = _fig(scene, title or scene.name, underlays)
     path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(path, dpi=dpi, bbox_inches="tight", pad_inches=0.1)
+    if scene.frame is not None:
+        # ``bbox_inches="tight"`` re-crops the figure to whatever it happens to contain —
+        # the same re-fit that made content the independent variable, in raster form. A
+        # card has chosen its paper; save that paper.
+        fig.savefig(path, dpi=dpi)
+    else:
+        fig.savefig(path, dpi=dpi, bbox_inches="tight", pad_inches=0.1)
     _close(fig)
     return path
 

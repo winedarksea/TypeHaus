@@ -817,21 +817,21 @@
         "kind": "point",
         "xy": [
           213.9375,
-          -2.12
+          -1.8166666666666664
         ],
         "name": ""
       },
       "at": [
         202.78248031496068,
-        -2.12
+        -1.8166666666666664
       ],
       "to": [
         213.9375,
-        -2.12
+        -1.8166666666666664
       ],
       "text": "gwb-b 0.625\"",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -842,21 +842,21 @@
         "kind": "point",
         "xy": [
           216.0,
-          -4.720000000000001
+          -3.7124999999999995
         ],
         "name": ""
       },
       "at": [
         202.78248031496068,
-        -4.720000000000001
+        -3.7124999999999995
       ],
       "to": [
         216.0,
-        -4.720000000000001
+        -3.7124999999999995
       ],
       "text": "stud 3.5\"",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -867,21 +867,21 @@
         "kind": "point",
         "xy": [
           218.0625,
-          -7.32
+          -5.6083333333333325
         ],
         "name": ""
       },
       "at": [
         202.78248031496068,
-        -7.32
+        -5.6083333333333325
       ],
       "to": [
         218.0625,
-        -7.32
+        -5.6083333333333325
       ],
       "text": "gwb-a 0.625\"",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -892,21 +892,21 @@
         "kind": "point",
         "xy": [
           213.9375,
-          19.533543307086617
+          19.836876640419952
         ],
         "name": ""
       },
       "at": [
         202.78248031496068,
-        19.533543307086617
+        19.836876640419952
       ],
       "to": [
         213.9375,
-        19.533543307086617
+        19.836876640419952
       ],
       "text": "gwb-b 0.625\"",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -917,21 +917,21 @@
         "kind": "point",
         "xy": [
           216.0,
-          16.933543307086616
+          17.94104330708662
         ],
         "name": ""
       },
       "at": [
         202.78248031496068,
-        16.933543307086616
+        17.94104330708662
       ],
       "to": [
         216.0,
-        16.933543307086616
+        17.94104330708662
       ],
       "text": "stud 3.5\"",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -942,21 +942,21 @@
         "kind": "point",
         "xy": [
           218.0625,
-          14.333543307086616
+          16.045209973753288
         ],
         "name": ""
       },
       "at": [
         202.78248031496068,
-        14.333543307086616
+        16.045209973753288
       ],
       "to": [
         218.0625,
-        14.333543307086616
+        16.045209973753288
       ],
       "text": "gwb-a 0.625\"",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -965,11 +965,11 @@
       "node": "text",
       "anchor": [
         223.37500000000003,
-        17.41354330708662
+        18.020209973753285
       ],
       "content": "air continuity — sheathing-ext →\nsheathing-ext",
-      "height": 1.6,
-      "height_pt": null,
+      "height": 3.0,
+      "height_pt": 7.0,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -981,11 +981,11 @@
       "node": "text",
       "anchor": [
         223.37500000000003,
-        13.57354330708662
+        15.220209973753285
       ],
       "content": "water continuity — wrb-ext → wrb-ext",
-      "height": 1.6,
-      "height_pt": null,
+      "height": 3.0,
+      "height_pt": 7.0,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -997,11 +997,11 @@
       "node": "text",
       "anchor": [
         223.37500000000003,
-        9.73354330708662
+        12.420209973753284
       ],
       "content": "thermal continuity — ci-ext → ci-ext",
-      "height": 1.6,
-      "height_pt": null,
+      "height": 3.0,
+      "height_pt": 7.0,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1016,8 +1016,8 @@
         -25.65354330708662
       ],
       "content": "TR-CATLIN-RIM-BAND  ·  rim-band-air-seal",
-      "height": 1.6,
-      "height_pt": null,
+      "height": 3.0,
+      "height_pt": 7.0,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1061,47 +1061,15 @@
       "uid": null
     },
     {
-      "space": "model",
+      "space": "paper",
       "node": "text",
       "anchor": [
-        190.87848031496068,
-        25.65354330708662
-      ],
-      "content": "Type:Haus — derived transition detail",
-      "height": 1.4,
-      "height_pt": null,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
-        190.87848031496068,
-        29.013543307086618
-      ],
-      "content": "TR-CATLIN-RIM-BAND  ·  rim-band-air-seal",
-      "height": 2.0,
-      "height_pt": null,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
-        190.87848031496068,
-        33.81354330708662
+        0.5,
+        7.763888888888889
       ],
       "content": "Catlin House",
-      "height": 3.2,
-      "height_pt": null,
+      "height": 3.0,
+      "height_pt": 13.0,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1109,15 +1077,15 @@
       "uid": null
     },
     {
-      "space": "model",
+      "space": "paper",
       "node": "text",
       "anchor": [
-        190.87848031496068,
-        -28.25354330708662
+        0.5,
+        7.597222222222222
       ],
-      "content": "MATERIALS",
-      "height": 1.5,
-      "height_pt": null,
+      "content": "TR-CATLIN-RIM-BAND  ·  rim-band-air-seal",
+      "height": 3.0,
+      "height_pt": 8.0,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1125,24 +1093,56 @@
       "uid": null
     },
     {
-      "space": "model",
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        0.5,
+        7.451388888888889
+      ],
+      "content": "Type:Haus — derived transition detail",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        0.5,
+        1.42
+      ],
+      "content": "MATERIALS",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
       "node": "hatch",
       "boundary": [
         [
-          190.87848031496068,
-          -33.85354330708662
+          0.5,
+          1.18
         ],
         [
-          193.47848031496068,
-          -33.85354330708662
+          0.64,
+          1.18
         ],
         [
-          193.47848031496068,
-          -31.25354330708662
+          0.64,
+          1.3199999999999998
         ],
         [
-          190.87848031496068,
-          -31.25354330708662
+          0.5,
+          1.3199999999999998
         ]
       ],
       "pattern": "gypsum",
@@ -1153,24 +1153,24 @@
       "material": "gwb"
     },
     {
-      "space": "model",
+      "space": "paper",
       "node": "polyline",
       "points": [
         [
-          190.87848031496068,
-          -33.85354330708662
+          0.5,
+          1.18
         ],
         [
-          193.47848031496068,
-          -33.85354330708662
+          0.64,
+          1.18
         ],
         [
-          193.47848031496068,
-          -31.25354330708662
+          0.64,
+          1.3199999999999998
         ],
         [
-          190.87848031496068,
-          -31.25354330708662
+          0.5,
+          1.3199999999999998
         ]
       ],
       "layer": "A-DETL-CMPT",
@@ -1181,15 +1181,15 @@
       "tag": null
     },
     {
-      "space": "model",
+      "space": "paper",
       "node": "text",
       "anchor": [
-        194.97848031496068,
-        -32.55354330708662
+        0.7,
+        1.25
       ],
       "content": "gwb  0.625\"",
-      "height": 1.5,
-      "height_pt": null,
+      "height": 3.0,
+      "height_pt": 6.5,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1197,24 +1197,24 @@
       "uid": null
     },
     {
-      "space": "model",
+      "space": "paper",
       "node": "hatch",
       "boundary": [
         [
-          190.87848031496068,
-          -37.45354330708662
+          0.5,
+          0.98
         ],
         [
-          193.47848031496068,
-          -37.45354330708662
+          0.64,
+          0.98
         ],
         [
-          193.47848031496068,
-          -34.85354330708662
+          0.64,
+          1.12
         ],
         [
-          190.87848031496068,
-          -34.85354330708662
+          0.5,
+          1.12
         ]
       ],
       "pattern": "lumber",
@@ -1225,24 +1225,24 @@
       "material": "spf"
     },
     {
-      "space": "model",
+      "space": "paper",
       "node": "polyline",
       "points": [
         [
-          190.87848031496068,
-          -37.45354330708662
+          0.5,
+          0.98
         ],
         [
-          193.47848031496068,
-          -37.45354330708662
+          0.64,
+          0.98
         ],
         [
-          193.47848031496068,
-          -34.85354330708662
+          0.64,
+          1.12
         ],
         [
-          190.87848031496068,
-          -34.85354330708662
+          0.5,
+          1.12
         ]
       ],
       "layer": "A-DETL-CMPT",
@@ -1253,15 +1253,15 @@
       "tag": null
     },
     {
-      "space": "model",
+      "space": "paper",
       "node": "text",
       "anchor": [
-        194.97848031496068,
-        -36.15354330708662
+        0.7,
+        1.05
       ],
       "content": "spf  3.5\"",
-      "height": 1.5,
-      "height_pt": null,
+      "height": 3.0,
+      "height_pt": 6.5,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
@@ -1270,5 +1270,42 @@
     }
   ],
   "notes": [],
-  "frame": null
+  "frame": {
+    "paper": [
+      11.0,
+      8.5
+    ],
+    "viewport": [
+      0.5,
+      1.65,
+      6.45,
+      5.299999999999999
+    ],
+    "center": [
+      223.50000000000006,
+      0.0
+    ],
+    "scale": 1.0,
+    "scale_label": "1\" = 1'-0\"",
+    "bands": {
+      "title": [
+        0.5,
+        7.1,
+        10.0,
+        0.9
+      ],
+      "legend": [
+        0.5,
+        0.5,
+        6.45,
+        1.0
+      ],
+      "notes": [
+        7.1,
+        0.5,
+        3.4,
+        6.449999999999999
+      ]
+    }
+  }
 }

@@ -236,3 +236,107 @@ def test_a_dxf_leader_puts_its_note_at_the_label_end(tmp_path):
     assert text.dxf.height == pytest.approx(1.6)
     placement = text.get_placement()[1]
     assert (placement.x, placement.y) == pytest.approx((40.0, 30.0))
+
+
+# --- the card ---------------------------------------------------------------------------
+
+def test_a_detail_chooses_a_real_architectural_scale(catlin_model):
+    from typehaus.emit.draw.details import build_detail, derive_detail_slices
+    from typehaus.emit.draw.sheet_writer import ARCH_SCALES
+
+    derived = next(d for d in derive_detail_slices(catlin_model)
+                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+    scene, _ = build_detail(catlin_model, derived)
+    assert scene.frame is not None, "a rendered detail has no paper"
+    assert scene.frame.scale in {s for s, _label in ARCH_SCALES}, \
+        "the scale fell out of a fit instead of coming off the ladder"
+    assert scene.frame.paper in {(8.5, 11.0), (11.0, 8.5)}
+
+
+def test_notes_cannot_change_the_chosen_scale(catlin_model):
+    """Catlin's eave carries 108 note lines. The drawing is 40 inches across.
+
+    Before paper space the notes won: ``_fig`` sized the figure from a bbox that grew on
+    text, so the detail printed at whatever scale the prose left room for.
+    """
+    from typehaus.emit.draw.details import build_detail, derive_detail_slices
+
+    derived = next(d for d in derive_detail_slices(catlin_model)
+                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+    scene, _ = build_detail(catlin_model, derived)
+    assert scene.notes, "this detail is the two-page notes case"
+    loud = scene.model_copy(update={
+        "notes": scene.notes + tuple(f"and another thing {i}" for i in range(500))})
+    assert loud.frame == scene.frame
+
+
+def test_the_bands_tile_without_overlapping():
+    """A legend that ran the full width printed its third column through the notes."""
+    from typehaus.emit.draw.detail_card import bands, viewport
+
+    for paper in ((8.5, 11.0), (11.0, 8.5)):
+        boxes = dict(bands(paper))
+        boxes["viewport"] = viewport(paper)
+        names = sorted(boxes)
+        for i, a in enumerate(names):
+            for b in names[i + 1:]:
+                ax, ay, aw, ah = boxes[a]
+                bx, by, bw, bh = boxes[b]
+                assert not (ax < bx + bw - 1e-9 and bx < ax + aw - 1e-9
+                            and ay < by + bh - 1e-9 and by < ay + ah - 1e-9), \
+                    f"{paper}: {a} overlaps {b}"
+        for name, (x, y, w, h) in boxes.items():
+            assert x >= -1e-9 and y >= -1e-9
+            assert x + w <= paper[0] + 1e-9 and y + h <= paper[1] + 1e-9, name
+
+
+def test_the_chrome_is_paper_and_the_cut_is_model(catlin_model):
+    """The title block and legend stopped being measured off the drawing's own bounds."""
+    from typehaus.emit.draw.details import build_detail, derive_detail_slices
+
+    derived = next(d for d in derive_detail_slices(catlin_model)
+                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+    scene, _ = build_detail(catlin_model, derived)
+    paper = [n for n in scene.nodes if n.space == "paper"]
+    assert paper, "no chrome reached paper space"
+    titles = [n for n in paper if isinstance(n, Text)]
+    assert any(n.content == catlin_model.plan.project.name for n in titles)
+    assert any(n.content == "MATERIALS" for n in titles)
+    band = scene.frame.bands["title"]
+    project = next(n for n in titles if n.content == catlin_model.plan.project.name)
+    assert band[1] <= project.anchor[1] <= band[1] + band[3]
+    # And every paper node letters at a printed size — there is no scale to be relative to.
+    assert all(n.height_pt is not None for n in paper if isinstance(n, Text))
+
+
+def test_the_orientation_is_whichever_admits_the_larger_scale():
+    """Not "tall crop → tall page" — the scale is what a reader gets out of a detail.
+
+    Checked with no notes column, where both orientations are genuinely viable. *With* one,
+    landscape wins nearly always, and that is the honest consequence of reserving 3.4" of an
+    8.5"-wide page for prose plus two annotation gutters: portrait leaves the drawing almost
+    nothing. A card that has to carry construction notes is a landscape card.
+    """
+    from typehaus.emit.draw.detail_card import card_for_crop
+
+    assert card_for_crop(96.0, 24.0, (0.0, 0.0), notes=False).paper == (11.0, 8.5)
+    assert card_for_crop(24.0, 96.0, (0.0, 0.0), notes=False).paper == (8.5, 11.0)
+    # A small junction gets a big scale; a long one does not.
+    small = card_for_crop(24.0, 30.0, (0.0, 0.0), notes=False)
+    assert small.scale > card_for_crop(96.0, 24.0, (0.0, 0.0), notes=False).scale
+
+
+def test_the_gutters_leave_the_drawing_real_room():
+    """The failure mode the gutters can cause: reserve more page than the page has."""
+    from typehaus.emit.draw.detail_card import (
+        CALLOUT_GUTTER_IN,
+        LADDER_GUTTER_IN,
+        drawing_box,
+        viewport,
+    )
+
+    view = viewport((11.0, 8.5), notes=True)
+    width, height = drawing_box(view)
+    assert width > 2.0, "a landscape card must leave the cut a usable column"
+    assert height > 5.0
+    assert view[2] > LADDER_GUTTER_IN + CALLOUT_GUTTER_IN

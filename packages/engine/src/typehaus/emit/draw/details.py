@@ -23,6 +23,7 @@ from typehaus.emit.draw.detail_derive import (
 from typehaus.emit.draw.joints import build_joint_plan
 from typehaus.emit.draw.scene import Leader, Scene, Text
 from typehaus.emit.draw.section import build_section
+from typehaus.emit.draw.typography import TEXT_PT
 from typehaus.findings import Finding
 from typehaus.model.views import Slice
 from typehaus.quantities import M_PER_IN
@@ -63,7 +64,8 @@ def build_detail(model: ResolvedModel, derived: DerivedDetail) -> tuple[Scene, l
     """
     joints = build_joint_plan(model, derived.condition, derived.transition,
                               derived.direction, derived.station)
-    scene = build_section(model, derived.view, joints=joints)
+    frame = _detail_frame(model, derived, joints)
+    scene = build_section(model, derived.view, joints=joints, frame=frame)
 
     # ``build_section`` stamps an oversized slice tag above the crop; the derived
     # detail's own title block (below) carries the identity, so drop the duplicate
@@ -81,7 +83,7 @@ def build_detail(model: ResolvedModel, derived: DerivedDetail) -> tuple[Scene, l
 
     # Overlay-driven flashings/gutter/gaskets go *over* the cut — they are sheet metal
     # and sealant applied at the junction, not context behind it.
-    overlay = _overlay_components(model, derived)
+    overlay = _overlay_components(model, derived, scene.frame)
     if overlay:
         scene = scene.model_copy(update={"nodes": scene.nodes + tuple(overlay)})
 
@@ -104,6 +106,32 @@ def build_detail(model: ResolvedModel, derived: DerivedDetail) -> tuple[Scene, l
     if notes:
         scene = scene.model_copy(update={"notes": tuple(notes)})
     return scene, findings
+
+
+def _detail_frame(model: ResolvedModel, derived: DerivedDetail, joints):
+    """Choose the card before anything is cut, from ``derived.view.crop``.
+
+    The crop is exactly what the geometry will be clipped to, so it is the drawing's size —
+    known without drawing anything, which is what keeps this a single pass.
+
+    A view with no crop has nothing to measure, so it takes the two-pass the module docstring
+    describes: cut frameless, measure the *geometry* (never the lettering — that is the whole
+    rule), choose, and the caller cuts again with the frame. Deliberate, not an oversight.
+    """
+    from typehaus.emit.draw.detail_card import card_for_crop
+    from typehaus.emit.draw.pdf_writer import geometry_bounds
+
+    crop = derived.view.crop
+    if crop is not None:
+        (cu0, cz0), (cu1, cz1) = (crop[0].xy_m, crop[1].xy_m)
+        u0, z0 = min(cu0, cu1) / M_PER_IN, min(cz0, cz1) / M_PER_IN
+        u1, z1 = max(cu0, cu1) / M_PER_IN, max(cz0, cz1) / M_PER_IN
+    else:
+        bounds = geometry_bounds(build_section(model, derived.view, joints=joints))
+        if bounds is None:
+            return None
+        u0, z0, u1, z1 = bounds
+    return card_for_crop(u1 - u0, z1 - z0, ((u0 + u1) / 2.0, (z0 + z1) / 2.0))
 
 
 def build_authored_detail_scene(model: ResolvedModel, view: Slice) -> Scene:
@@ -151,11 +179,12 @@ def _detail_components(model: ResolvedModel, derived: DerivedDetail) -> list:
     return out
 
 
-def _overlay_components(model: ResolvedModel, derived: DerivedDetail) -> list:
+def _overlay_components(model: ResolvedModel, derived: DerivedDetail, frame=None) -> list:
     """Per-detail vocabulary dispatched off ``Transition.overlay`` (recipe id)."""
     from typehaus.emit.draw.detail_components import build_overlay_components
 
-    return build_overlay_components(model, derived)
+    return build_overlay_components(
+        model, derived, frame.scale if frame is not None else None)
 
 
 def _dimension_nodes(model: ResolvedModel, derived: DerivedDetail) -> list:
@@ -169,13 +198,30 @@ def _dimension_nodes(model: ResolvedModel, derived: DerivedDetail) -> list:
 
 
 def _chrome(model: ResolvedModel, derived: DerivedDetail, scene: Scene) -> list:
-    """Material legend (below), notes column (right), title block (above).
+    """Title block and material legend — in **paper space**, in the card's own bands.
 
-    Placement is measured off the current scene bounds — including the width text
-    occupies — so the legend, notes and title each clear the cut and its callouts
-    instead of overprinting them.
+    They used to be measured off the current scene bounds, *including the width text
+    occupies*, so that each could be placed clear of the cut and its callouts. That is a
+    layering violation with a real cost: it imported the private ``pdf_writer._scene_bounds``
+    into the detail builder, and it made the drawing's extent depend on its own annotation,
+    which then depended on the extent. Bands cut the loop — a title strip is 0.9 paper inches
+    tall because the card says so, and no drawing can argue with it.
+
+    A frameless scene keeps the old model-space placement, because it has no bands to use.
     """
     from typehaus.emit.draw.detail_components import material_legend
+
+    frame = scene.frame
+    if frame is not None:
+        out: list = []
+        title_band = frame.bands.get("title")
+        if title_band is not None:
+            out.extend(_paper_title_block(model, derived, title_band))
+        legend_band = frame.bands.get("legend")
+        if legend_band is not None:
+            out.extend(material_legend(model, derived, 0.0, 0.0, band=legend_band))
+        return out
+
     from typehaus.emit.draw.pdf_writer import _scene_bounds
 
     crop = derived.view.crop
@@ -189,24 +235,46 @@ def _chrome(model: ResolvedModel, derived: DerivedDetail, scene: Scene) -> list:
     span = max(max_u - min_u, max_z - min_z)
     margin = max(4.0, span * 0.03)
 
-    out: list = []
+    out = []
     out.extend(_title_block(model, derived, min_u, max_z + margin))
     out.extend(material_legend(model, derived, min_u, min_z - margin))
+    return out
+
+
+def _detail_title(model: ResolvedModel, derived: DerivedDetail) -> tuple[str, str]:
+    tr = derived.transition
+    title = (tr.tag if tr is not None else derived.view.title) or derived.key
+    overlay = getattr(tr, "overlay", "") or ""
+    return title, overlay
+
+
+def _paper_title_block(model: ResolvedModel, derived: DerivedDetail, band) -> list:
+    """Project, detail identity and attribution, stacked in the title strip."""
+    x, y, _w, h = band
+    title, overlay = _detail_title(model, derived)
+    lines = [
+        (model.plan.project.name, 13.0),
+        (f"{title}  ·  {overlay}".strip().rstrip(" ·"), 8.0),
+        ("Type:Haus — derived transition detail", 6.5),
+    ]
+    out: list = []
+    z = y + h
+    for content, size_pt in lines:
+        z -= (size_pt + 4.0) / 72.0
+        out.append(Text(anchor=(x, z), content=content, height_pt=size_pt,
+                        layer="A-ANNO-TEXT", space="paper"))
     return out
 
 
 def _title_block(model: ResolvedModel, derived: DerivedDetail, u: float,
                  z: float) -> list:
     """Project/attribution title, stacked upward from ``z`` so it clears the drawing."""
-    project = model.plan.project
-    tr = derived.transition
-    title = (tr.tag if tr is not None else derived.view.title) or derived.key
-    overlay = getattr(tr, "overlay", "") or ""
+    title, overlay = _detail_title(model, derived)
     # bottom → top; anchors advance upward so every line sits above the cut.
     lines = [
         ("Type:Haus — derived transition detail", 1.4),
         (f"{title}  ·  {overlay}".strip().rstrip(" ·"), 2.0),
-        (project.name, 3.2),
+        (model.plan.project.name, 3.2),
     ]
     out: list = []
     y = z
@@ -327,7 +395,10 @@ def _point_anchor(point):
     return NamedPoint(xy=point)
 
 
-ANNOTATION_TEXT_H = 1.6  # model inches; the writer converts to points at the drawn scale
+#: Seed-callout lettering, **points**. It was 1.6 model inches, which is this size at the
+#: frameless conversion — the number stopped meaning "1.6 inches of building" the moment the
+#: drawing knew what paper it was on.
+ANNOTATION_TEXT_PT = TEXT_PT
 
 
 def _face_role(face: str) -> str:
@@ -381,7 +452,8 @@ def _seed_nodes(model: ResolvedModel, derived: DerivedDetail,
         wall_u_hi = (cu0 + cu1) / 2.0
     text_x = wall_u_hi / M_PER_IN + 5.0
     top_y = cz1 / M_PER_IN - 2.0
-    step = ANNOTATION_TEXT_H * 2.4
+    scale = scene.frame.scale if scene is not None and scene.frame is not None else None
+    step_pt = ANNOTATION_TEXT_PT * 2.4
 
     # A layer anchor resolves at its wall's mid-height, which for a storey-tall wall is far
     # outside a junction crop. What the callout is about is the layer *at the junction*, so
@@ -407,23 +479,23 @@ def _seed_nodes(model: ResolvedModel, derived: DerivedDetail,
         content = wrap_label(
             f"{cont.control} continuity — {cont.from_face} → {cont.to_face}")
         entries.append(LabelSpec(text=content, target=_anchor(cont.from_face)))
-    placed = place_column(entries, x=text_x, z_top=top_y, step=step,
-                          height=ANNOTATION_TEXT_H, align="left")
-    fixed = tuple(leader_box(n) for n in (scene.nodes if scene is not None else ())
+    placed = place_column(entries, x=text_x, z_top=top_y, step_pt=step_pt,
+                          height_pt=ANNOTATION_TEXT_PT, align="left", scale=scale)
+    fixed = tuple(leader_box(n, scale) for n in (scene.nodes if scene is not None else ())
                   if isinstance(n, Leader))
     nodes: list = []
-    for label in dodge(placed, fixed=fixed):
+    for label in dodge(placed, fixed=fixed, scale=scale):
         if label.spec.target is None:
             nodes.append(Text(anchor=label.at, content=label.spec.text,
-                              height=label.height, layer="A-ANNO-TEXT", uid=None))
+                              height_pt=label.height_pt, layer="A-ANNO-TEXT", uid=None))
         else:
             nodes.append(Leader(anchor=_point_anchor(label.spec.target), at=label.at,
                                 to=label.spec.target, text=label.spec.text,
-                                height=label.height, uid=None))
+                                height_pt=label.height_pt, uid=None))
     if getattr(tr, "overlay", None):
         nodes.append(Text(anchor=(cu0 / M_PER_IN, cz0 / M_PER_IN - 4.0),
-                          content=f"{tr.tag}  ·  {tr.overlay}", height=ANNOTATION_TEXT_H,
-                          layer="A-ANNO-TEXT", uid=None))
+                          content=f"{tr.tag}  ·  {tr.overlay}",
+                          height_pt=ANNOTATION_TEXT_PT, layer="A-ANNO-TEXT", uid=None))
     return nodes
 
 

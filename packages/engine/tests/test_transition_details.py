@@ -110,8 +110,12 @@ def test_layer_label_ladder_is_deduped_and_non_overlapping(catlin_model, pick):
     # deduplicated: no two leaders repeat the same note at the same target
     keys = [(n.text, n.to) for n in leaders]
     assert len(keys) == len(set(keys)), "duplicate layer labels"
-    # non-overlapping: estimated text boxes are pairwise disjoint
-    boxes = [leader_box(n) for n in leaders]
+    # Non-overlapping: estimated text boxes are pairwise disjoint. Measured **in the
+    # drawing's own frame** — a label carries a printed size, so how much of the model it
+    # covers is a fact about the sheet, and asking at the wrong scale reports collisions
+    # that do not happen on paper.
+    scale = scene.frame.scale if scene.frame is not None else None
+    boxes = [leader_box(n, scale) for n in leaders]
     for i, a in enumerate(boxes):
         for b in boxes[i + 1:]:
             assert not (a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]), \

@@ -1535,7 +1535,7 @@
       ],
       "text": "tg-liner 1\"",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -1560,7 +1560,7 @@
       ],
       "text": "liner-furring 0.5\" (NTS)",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -1585,7 +1585,7 @@
       ],
       "text": "foil-polyiso 2\"",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -1610,7 +1610,7 @@
       ],
       "text": "concrete 12\"",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -1635,7 +1635,7 @@
       ],
       "text": "foil-polyiso 0.312\" (NTS)",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -1660,7 +1660,7 @@
       ],
       "text": "liner-furring 0.5\" (NTS)",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },
@@ -1685,7 +1685,7 @@
       ],
       "text": "tg-liner 1\" (NTS)",
       "height": 1.6,
-      "height_pt": null,
+      "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
     },

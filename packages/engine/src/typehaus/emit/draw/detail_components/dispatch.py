@@ -39,7 +39,8 @@ def _recipe_zero_overhang_eave(model, context) -> list[IRNode]:
     wall = next((w for w in context.walls if not w.is_foundation), None)
     if wall is None:
         return []
-    return zero_overhang_eave(model, wall, context.crop, context.direction, context.station)
+    return zero_overhang_eave(model, wall, context.crop, context.direction, context.station,
+                              context.scale)
 
 
 def _recipe_basement_framed_wall(model, context) -> list[IRNode]:
@@ -140,10 +141,11 @@ UNDRAWN_RECIPES = {
 class _RecipeContext:
     """The resolved inputs every recipe reads: the crop, the cut, and what is in it."""
 
-    __slots__ = ("crop", "direction", "station", "walls", "condition", "opening", "roof")
+    __slots__ = ("crop", "direction", "station", "walls", "condition", "opening", "roof",
+                 "scale")
 
     def __init__(self, crop, direction, station, walls, condition, opening=None,
-                 roof=None):
+                 roof=None, scale=None):
         self.crop = crop
         self.direction = direction
         self.station = station
@@ -151,9 +153,12 @@ class _RecipeContext:
         self.condition = condition
         self.opening = opening
         self.roof = roof
+        # The chosen sheet's scale, for recipes that place *lettering* — annotation is
+        # sized in points, so turning that into model inches needs it. None = frameless.
+        self.scale = scale
 
 
-def build_overlay_components(model, derived) -> list[IRNode]:
+def build_overlay_components(model, derived, scale=None) -> list[IRNode]:
     """Dispatch this detail's overlay recipe, then the assembly/fixture-driven vocabulary.
 
     Sauna components are not keyed on an overlay id: the liner rides on whichever junction
@@ -172,7 +177,7 @@ def build_overlay_components(model, derived) -> list[IRNode]:
     opening = condition_opening(model, derived.condition)
     roof = next((r for r in model.roofs if r.tag in derived.condition.element_tags), None)
     context = _RecipeContext(crop, derived.direction, derived.station, walls,
-                             derived.condition, opening=opening, roof=roof)
+                             derived.condition, opening=opening, roof=roof, scale=scale)
 
     nodes: list[IRNode] = []
     overlay = getattr(transition, "overlay", None) if transition is not None else None

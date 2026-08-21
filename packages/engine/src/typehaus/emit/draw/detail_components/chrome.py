@@ -47,8 +47,17 @@ def _participating_layers(model, derived):
     return out
 
 
-def material_legend(model, derived, u_left: float, z_top: float) -> list[IRNode]:
-    """One swatch + label per distinct material in the cut, with its resolved thickness."""
+def material_legend(model, derived, u_left: float, z_top: float,
+                    band=None) -> list[IRNode]:
+    """One swatch + label per distinct material in the cut, with its resolved thickness.
+
+    With a ``band`` — ``(x, y, w, h)`` paper inches out of ``Frame.bands`` — the legend is
+    laid out **in paper space**, in a strip whose size is a property of the card. It runs in
+    columns across the strip rather than down a single tall list, because a legend that grew
+    downward was the thing measuring itself against the drawing.
+    """
+    if band is not None:
+        return _paper_legend(model, derived, band)
     seen: dict[str, float] = {}
     order: list[str] = []
     for material, thickness, _function in _participating_layers(model, derived):
@@ -76,6 +85,45 @@ def material_legend(model, derived, u_left: float, z_top: float) -> list[IRNode]
         nodes.append(Text(anchor=(u_left + LEGEND_SWATCH_IN + 1.5, (y0 + y1) / 2),
                           content=f'{material}  {seen[material]:.3g}"',
                           height=TEXT_HEIGHT_IN, layer="A-ANNO-TEXT"))
+    return nodes
+
+
+#: Paper-space legend metrics, inches.
+_SWATCH_IN = 0.14
+_ROW_PITCH_IN = 0.20
+_COL_W_IN = 2.3
+_LEGEND_PT = 6.5
+
+
+def _paper_legend(model, derived, band) -> list[IRNode]:
+    from typehaus.emit.draw.palette import detail_hatch
+
+    seen: dict[str, float] = {}
+    for material, thickness, _function in _participating_layers(model, derived):
+        if material and material not in seen:
+            seen[material] = thickness
+    if not seen:
+        return []
+    x, y, w, h = band
+    rows = max(1, int(h / _ROW_PITCH_IN) - 1)
+    nodes: list[IRNode] = [
+        Text(anchor=(x, y + h - _ROW_PITCH_IN * 0.4), content="MATERIALS",
+             height_pt=_LEGEND_PT, layer="A-ANNO-TEXT", space="paper")
+    ]
+    for index, (material, thickness) in enumerate(seen.items()):
+        column, row = divmod(index, rows)
+        cx = x + column * _COL_W_IN
+        if cx + _COL_W_IN > x + w + 1e-9:
+            break  # the strip is full; a legend may not push the drawing off its own card
+        cy = y + h - _ROW_PITCH_IN * (row + 1.6)
+        boundary = rect_points(cx, cy, cx + _SWATCH_IN, cy + _SWATCH_IN)
+        nodes.append(Hatch(boundary=boundary, pattern=detail_hatch(material) or "metal",
+                           layer=LAYER, material=material, space="paper"))
+        nodes.append(Polyline(points=boundary, layer=LAYER, closed=True, lineweight=0.2,
+                              space="paper"))
+        nodes.append(Text(anchor=(cx + _SWATCH_IN + 0.06, cy + _SWATCH_IN / 2),
+                          content=f'{material}  {thickness:.3g}"',
+                          height_pt=_LEGEND_PT, layer="A-ANNO-TEXT", space="paper"))
     return nodes
 
 
