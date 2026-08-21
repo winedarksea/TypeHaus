@@ -34,6 +34,12 @@ from typehaus.emit.draw.section_members import (
 from typehaus.model.enums import LayerFunction, SliceKind
 from typehaus.model.views import Slice
 from typehaus.quantities import M_PER_IN, m, pt
+from typehaus.resolve.geometry_slice import (
+    CutPlane,
+    SectionProfile,
+    ring_cut_intervals,
+    slice_part,
+)
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 from typehaus.resolve.roof_geometry import roof_plane_z, roof_ridge_coordinate
 from typehaus.resolve.roof_layer_setbacks import (
@@ -61,24 +67,9 @@ _FUNCTION_LAYER = {
     "furring": "A-WALL",
 }
 
-def ring_cut_intervals(ring, direction: str, station: float) -> list[tuple[float, float]]:
-    """Intersect a plan-frame ring with the cut line -> sorted u-intervals (even-odd)."""
-    if len(ring) < 3:
-        return []
-    crossings: list[float] = []
-    n = len(ring)
-    for i in range(n):
-        x0, y0 = ring[i]
-        x1, y1 = ring[(i + 1) % n]
-        # coordinate perpendicular to the cut line
-        a0, a1 = (y0, y1) if direction == "x" else (x0, x1)
-        u0, u1 = (x0, x1) if direction == "x" else (y0, y1)
-        if (a0 - station) * (a1 - station) > 0 or a0 == a1:
-            continue
-        t = (station - a0) / (a1 - a0)
-        crossings.append(u0 + t * (u1 - u0))
-    crossings.sort()
-    return [(crossings[i], crossings[i + 1]) for i in range(0, len(crossings) - 1, 2)]
+# ``ring_cut_intervals`` is the pre-IR cut: a plan ring intersected with the cut line, even-odd
+# paired. It now lives in the slice kernel (bug-for-bug, old crossing rule and all) and is
+# re-exported here for the seven detail modules that import it from this name.
 
 
 def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
@@ -105,19 +96,14 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
     # Layer-label ladders are collected per wall and emitted once, after every wall has
     # been cut, so ladders from different walls (and later the seed-callout column) can be
     # dodged against each other instead of overprinting.
+    plane = CutPlane(axis=direction, station_m=station)
     ladder_labels: list = []
     for wall in model.walls:
-        _emit_wall_cut(b, model, wall, direction, station, crop, is_detail, min_draw,
+        _emit_wall_cut(b, model, wall, plane, crop, is_detail, min_draw,
                        joints, ladder_labels)
 
     for solid in model.solids:
-        material = _solid_material(model, solid)
-        for (u0, u1) in ring_cut_intervals(solid.outline, direction, station):
-            rect = clip_rect(u0, u1, solid.z0_m, solid.z1_m, crop)
-            if rect is None:
-                continue
-            b.extend(rect_nodes(*rect, "S-FNDN" if solid.category != "slab" else "A-SLAB",
-                                 material, solid.uid, solid.tag, material=material))
+        _emit_solid_cut(b, model, solid, plane, crop)
 
     for roof in model.roofs:
         _emit_roof_cut(b, model, roof, direction, station, crop, joints,
@@ -193,27 +179,76 @@ def build_center_section(model: ResolvedModel) -> Scene:
     return build_section(model, view)
 
 
-def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
+def profile_band(profile: SectionProfile):
+    """A cut profile as ``(u0, u1, z_bottom, z_top_left, z_top_right)``, or ``None``.
+
+    Every prism-derived profile is a quad with a flat bottom and a possibly-raked top, which
+    is the shape the band drawing conventions — exaggeration, the label's true thickness, the
+    sloped termination — are all written against. A profile that is *not* that shape (an arch
+    spandrel's cut, a mesh ring) says so by returning ``None`` and gets drawn as the polygon
+    it is.
+    """
+    outline = profile.outline
+    if len(outline) != 4 or profile.voids:
+        return None
+    us = sorted({round(u, 9) for (u, _z) in outline})
+    if len(us) != 2:
+        return None
+    u0, u1 = us
+    left = sorted(z for (u, z) in outline if round(u, 9) == u0)
+    right = sorted(z for (u, z) in outline if round(u, 9) == u1)
+    if len(left) != 2 or len(right) != 2 or abs(left[0] - right[0]) > 1e-9:
+        return None
+    return (u0, u1, left[0], left[1], right[1])
+
+
+def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,
                    is_detail, min_draw, joints=None, ladder_labels=None) -> None:
-    openings = [op for op in model.openings if op.host_wall == wall.tag]
-    # One ladder entry per (wall, layer name) — a layer cut into several (u0, u1)
-    # intervals used to re-emit its label per interval ("5.5 stud" twice), and each
-    # interval's own crop-clipped top made the rungs interleave between layers. Labels
-    # are collected here and laddered after the layer loop from a single anchor.
+    """One wall's cut, sliced out of the geometry IR.
+
+    The IR's wall body is already jamb-split into piers, sill bands and headers, already
+    banded (``Layer.extent``), already raked under a gable and already arched at a curved
+    head — five things this function used to re-derive, each with its own idea of where a
+    layer stops. What stays here is what genuinely belongs on the drawing side: the crop,
+    thin-layer exaggeration (#36), the true-dimension label, the authored joint termination
+    and the glazing line.
+    """
+    element = model.geometry.by_uid(wall.uid)
+    # One ladder entry per (wall, layer name) — a layer cut into several profiles must not
+    # re-emit its label per profile ("5.5 stud" twice), and each profile's own crop-clipped
+    # top made the rungs interleave between layers. Labels are collected here and laddered
+    # after the layer loop from a single anchor.
     label_entries: dict[str, tuple[str, float]] = {}
-    wall_top = _wall_top_at_cut(wall, direction, station)
-    for layer in wall.layers:
-        term = joints.termination(wall.uid, layer.name) if joints is not None else None
-        # A banded layer (``Layer.extent``) states its own bottom and top. A ``LayerJoin``
-        # termination is the drawing-only extension of a layer past the wall top and still
-        # wins where it is authored; the band is the second plane, at the bottom, and it
-        # caps the top too for a layer that stops short of the wall (a protection panel
-        # dying under the Z-flashing).
-        band_z0, band_z1 = layer.band(wall)
-        for (u0, u1) in ring_cut_intervals(layer.polygon, direction, station):
-            layer_top_l = term.z(u0) if term is not None else min(wall_top, band_z1)
-            layer_top_r = term.z(u1) if term is not None else min(wall_top, band_z1)
-            rect = clip_rect(u0, u1, band_z0, max(layer_top_l, layer_top_r), crop)
+    wall_top = _wall_top_at_cut(wall, plane.axis, plane.station_m)
+
+    for part in (element.parts if element is not None else ()):
+        catalog = part.catalog
+        if catalog is None:
+            continue
+        name, function = catalog.name, catalog.role
+        term = joints.termination(wall.uid, name) if joints is not None else None
+        aia = _FUNCTION_LAYER.get(function, "A-WALL")
+        pattern = detail_hatch(catalog.material_ref, function)
+        tag = f"{wall.tag}/{name}"
+        for profile in slice_part(part, plane):
+            band = profile_band(profile)
+            if band is None:
+                # An arch head's cut is a real polygon, not a band — draw it as one.
+                clipped = clip_polygon(profile.outline, crop)
+                if len(clipped) >= 3:
+                    points = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
+                    b.add(Polyline(points=points, layer=aia, closed=True, lineweight=0.18,
+                                   uid=wall.uid, tag=tag))
+                    if pattern:
+                        b.add(Hatch(boundary=points, pattern=pattern, layer="A-WALL-PATT",
+                                    material=catalog.material_ref))
+                continue
+            u0, u1, z0, top_left, top_right = band
+            if term is not None:
+                # An authored ``LayerJoin`` is a drawing-only extension of a layer past the
+                # wall top — the one thing on this path the model does not know about.
+                top_left, top_right = term.z(u0), term.z(u1)
+            rect = clip_rect(u0, u1, z0, max(top_left, top_right), crop)
             if rect is None:
                 continue
             ru0, ru1, rz0, rz1 = rect
@@ -223,49 +258,139 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
                 grow = (min_draw - true_thickness) / 2.0
                 ru0, ru1 = ru0 - grow, ru1 + grow
                 exaggerated = True
-            aia = _FUNCTION_LAYER.get(layer.function, "A-WALL")
-            pattern = detail_hatch(layer.material_ref, layer.function)
-            if is_detail and not layer.is_cavity and layer.name not in label_entries:
+            if is_detail and name not in label_entries:
                 # True-dimension label per layer (exaggeration labels true size, #36).
-                thickness_in = true_thickness / M_PER_IN
-                label = f"{layer.name} {thickness_in:.3g}\""
+                label = f'{name} {true_thickness / M_PER_IN:.3g}"'
                 if exaggerated:
                     label += " (NTS)"
-                label_entries[layer.name] = (label, ((ru0 + ru1) / 2) / M_PER_IN)
-            sloped = term is not None and abs(layer_top_l - layer_top_r) > 1e-6
-            if sloped:
-                # Raked layer termination against the interface plane — single sloped quad,
-                # clipped to the crop's z-window (rz0/rz1 already crop-clipped).
-                tl = min(layer_top_l, rz1)
-                tr = min(layer_top_r, rz1)
-                b.extend(quad_nodes(ru0, ru1, rz0, tl, tr,
-                                     aia, pattern, wall.uid, f"{wall.tag}/{layer.name}",
-                                     material=layer.material_ref))
+                label_entries[name] = (label, ((ru0 + ru1) / 2) / M_PER_IN)
+            if abs(top_left - top_right) > 1e-6:
+                # Raked termination against the interface plane — a single sloped quad,
+                # clipped to the crop's z-window (rz0/rz1 are already crop-clipped).
+                b.extend(quad_nodes(ru0, ru1, rz0, min(top_left, rz1), min(top_right, rz1),
+                                    aia, pattern, wall.uid, tag,
+                                    material=catalog.material_ref))
                 continue
-            zs = _opening_splits(wall, openings, direction, station, rz0, rz1)
-            for (z0, z1, void) in zs:
-                if void:
-                    # A full-height glazing line that spans the whole crop reads as a
-                    # mistake in a junction detail — the cut is passing through pure
-                    # glass with neither head nor sill in frame. Drop it and let the
-                    # neighbouring solid bands' edges show the actual head/sill of the
-                    # cut instead (#opening-void). Keep the line where a real jamb edge
-                    # is in frame (an opening genuinely cut in a plan/elevation).
-                    full_span = (crop is not None and z0 <= rz0 + 1e-9
-                                 and z1 >= rz1 - 1e-9)
-                    if is_detail and full_span:
-                        continue
-                    # glazing/void line at the opening
-                    b.add(Polyline(points=(((ru0 + ru1) / 2 / M_PER_IN, z0 / M_PER_IN),
-                                           ((ru0 + ru1) / 2 / M_PER_IN, z1 / M_PER_IN)),
-                                   layer="A-GLAZ", lineweight=0.18,
-                                   uid=wall.uid, tag=f"{wall.tag}-void"))
-                    continue
-                b.extend(rect_nodes(ru0, ru1, z0, z1, aia, pattern, wall.uid,
-                                     f"{wall.tag}/{layer.name}",
-                                     outline=not layer.is_cavity,
-                                     material=layer.material_ref))
+            b.extend(rect_nodes(ru0, ru1, rz0, rz1, aia, pattern, wall.uid, tag,
+                                material=catalog.material_ref))
+
+    _emit_cavity_cut(b, model, wall, plane, crop, is_detail, min_draw, wall_top, joints)
+    _emit_glazing_lines(b, model, wall, plane, crop, is_detail)
     wall_layer_ladder(wall, label_entries, wall_top, crop, ladder_labels)
+
+
+def _emit_cavity_cut(b, model, wall, plane: CutPlane, crop, is_detail, min_draw,
+                     wall_top, joints=None) -> None:
+    """The batt between the studs, which the IR deliberately does not carry.
+
+    ``geometry_build._wall_geometry`` skips cavity layers because a second solid on the
+    structure layer's own polygon would z-fight it in 3D. For a section that omission is
+    wrong — a batt between studs is exactly what the drawing is cut to show — so the fill is
+    drawn here from the resolved layer, **unoutlined**, the way the roof's ``_CavityBand``
+    is. The real fix is to emit the cavity as a solid *inset to the framing bay*, which does
+    not z-fight; that is its own geometry change with its own risk.
+    """
+    openings = [op for op in model.openings if op.host_wall == wall.tag]
+    for layer in wall.layers:
+        if not layer.is_cavity or not layer.polygon:
+            continue
+        term = joints.termination(wall.uid, layer.name) if joints is not None else None
+        band_z0, band_z1 = layer.band(wall)
+        pattern = detail_hatch(layer.material_ref, layer.function)
+        aia = _FUNCTION_LAYER.get(layer.function, "A-WALL")
+        tag = f"{wall.tag}/{layer.name}"
+        for (u0, u1) in ring_cut_intervals(layer.polygon, plane.axis, plane.station_m):
+            top_left = term.z(u0) if term is not None else min(wall_top, band_z1)
+            top_right = term.z(u1) if term is not None else min(wall_top, band_z1)
+            rect = clip_rect(u0, u1, band_z0, max(top_left, top_right), crop)
+            if rect is None:
+                continue
+            ru0, ru1, rz0, rz1 = rect
+            if is_detail and 0 < (ru1 - ru0) < min_draw:
+                grow = (min_draw - (ru1 - ru0)) / 2.0
+                ru0, ru1 = ru0 - grow, ru1 + grow
+            if abs(top_left - top_right) > 1e-6:
+                b.extend(quad_nodes(ru0, ru1, rz0, min(top_left, rz1), min(top_right, rz1),
+                                    aia, pattern, wall.uid, tag,
+                                    material=layer.material_ref, outline=False))
+                continue
+            # The IR jamb-splits every depth layer; a cavity has no IR solid, so the split
+            # around an opening has to happen here or the batt draws across the window.
+            for (z0, z1, void) in _opening_splits(wall, openings, plane.axis,
+                                                  plane.station_m, rz0, rz1):
+                if void:
+                    continue
+                b.extend(rect_nodes(ru0, ru1, z0, z1, aia, pattern, wall.uid, tag,
+                                    outline=False, material=layer.material_ref))
+
+
+def _emit_glazing_lines(b, model, wall, plane: CutPlane, crop, is_detail) -> None:
+    """The A-GLAZ line where the cut passes through an opening.
+
+    All the *solid* bands around an opening now come out of the IR's jamb split; what has no
+    solid, and so has to be drawn, is the glazing plane itself.
+    """
+    openings = [op for op in model.openings if op.host_wall == wall.tag]
+    if not openings:
+        return
+    for layer in wall.layers:
+        if layer.is_cavity or not layer.polygon:
+            continue
+        band_z0, band_z1 = layer.band(wall)
+        for (u0, u1) in ring_cut_intervals(layer.polygon, plane.axis, plane.station_m):
+            rect = clip_rect(u0, u1, band_z0, band_z1, crop)
+            if rect is None:
+                continue
+            ru0, ru1, rz0, rz1 = rect
+            for (z0, z1, void) in _opening_splits(wall, openings, plane.axis,
+                                                  plane.station_m, rz0, rz1):
+                if not void:
+                    continue
+                # A full-height glazing line spanning the whole crop reads as a mistake in a
+                # junction detail — the cut is passing through pure glass with neither head
+                # nor sill in frame. Drop it and let the neighbouring bands' edges show the
+                # head/sill instead (#opening-void). Keep it where a real jamb edge is in
+                # frame (an opening genuinely cut in a plan/elevation).
+                if is_detail and crop is not None and z0 <= rz0 + 1e-9 and z1 >= rz1 - 1e-9:
+                    continue
+                mid = (ru0 + ru1) / 2 / M_PER_IN
+                b.add(Polyline(points=((mid, z0 / M_PER_IN), (mid, z1 / M_PER_IN)),
+                               layer="A-GLAZ", lineweight=0.18,
+                               uid=wall.uid, tag=f"{wall.tag}-void"))
+
+
+def _emit_solid_cut(b, model, solid, plane: CutPlane, crop) -> None:
+    """A pour, footing, pad, pipe run or trim run, sliced out of its IR prism.
+
+    Two things come free with the IR that the hand-rolled cut never had: the solid's
+    ``voids`` now *split* the cut span (a section across a stair well stops drawing a slab
+    straight through it), and the material is the resolver's ``catalog.material_ref``
+    instead of a blanket "concrete".
+    """
+    element = model.geometry.by_uid(solid.uid)
+    if element is None:
+        return
+    layer = "S-FNDN" if solid.category != "slab" else "A-SLAB"
+    for part in element.parts:
+        material = part.catalog.material_ref if part.catalog is not None else None
+        for profile in slice_part(part, plane):
+            band = profile_band(profile)
+            if band is None:
+                clipped = clip_polygon(profile.outline, crop)
+                if len(clipped) >= 3:
+                    points = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
+                    b.add(Polyline(points=points, layer=layer, closed=True, lineweight=0.18,
+                                   uid=solid.uid, tag=solid.tag))
+                    if material:
+                        b.add(Hatch(boundary=points, pattern=material,
+                                    layer="A-WALL-PATT", material=material))
+                continue
+            u0, u1, z0, top_left, top_right = band
+            rect = clip_rect(u0, u1, z0, max(top_left, top_right), crop)
+            if rect is None:
+                continue
+            b.extend(rect_nodes(*rect, layer, material, solid.uid, solid.tag,
+                                material=material))
 
 
 def _opening_splits(wall, openings, direction, station, z0, z1):

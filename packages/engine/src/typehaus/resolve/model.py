@@ -186,15 +186,27 @@ class ResolvedWall:
         """
         seen: set[str] = set()
         out: list[ResolvedLayer] = []
-        for layer in self.layers:
-            if layer.is_cavity:
-                continue
+        for layer in self.body_layers():
             if layer.slot is not None:
                 if layer.slot in seen:
                     continue
                 seen.add(layer.slot)
             out.append(layer)
         return tuple(out)
+
+    def body_layers(self) -> tuple[ResolvedLayer, ...]:
+        """Every layer with a solid of its own, interior→exterior.
+
+        The sibling of :meth:`depth_layers`, and the distinction matters. *Depth* counts a
+        ``Layer.slot``'s regions once, because a brown plinth and a lapis field are one
+        3 5/8" wythe. *Bodies* counts them all, because they sit at different elevations and
+        each is a real course of brick: dropping them left the plinth standing alone with
+        nothing above it, in the GLB, in IFC and in every section.
+
+        Cavity fill is excluded from both — it shares its host's polygon, so a solid there
+        would only z-fight (→ ``geometry_walls.layer_solids``).
+        """
+        return tuple(layer for layer in self.layers if not layer.is_cavity)
 
 
 @dataclass(frozen=True)

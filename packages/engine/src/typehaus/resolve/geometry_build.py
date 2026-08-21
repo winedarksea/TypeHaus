@@ -91,11 +91,14 @@ def _member_parts(members: tuple[FramedMember, ...] | list[FramedMember],
 def _wall_geometry(wall: ResolvedWall, openings) -> ElementGeometry:
     """A wall's body: one part per depth-bearing layer, jamb-split around its openings.
 
-    Only depth-bearing layers get a part — cavity fill shares the structure layer's polygon,
-    so a second solid there would only z-fight it.
+    Every layer with a body of its own gets a part — which is ``body_layers()``, not
+    ``depth_layers()``: the latter counts a ``Layer.slot``'s regions once for *depth*
+    accounting, and building from it left a brick plinth standing with its own field and
+    bands missing above it. Cavity fill shares the structure layer's polygon, so a second
+    solid there would only z-fight it, and neither list carries it.
     """
     parts: list[GPart] = []
-    for layer in wall.depth_layers():
+    for layer in wall.body_layers():
         if not layer.polygon:
             continue
         solids = layer_solids(wall, layer.polygon, openings,

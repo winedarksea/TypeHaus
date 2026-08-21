@@ -115,7 +115,7 @@ def rect_nodes(u0, u1, z0, z1, layer, pattern, uid, tag, outline: bool = True,
 
 
 def quad_nodes(u0, u1, z0, z1_left, z1_right, layer, pattern, uid, tag,
-               material: str | None = None) -> list:
+               material: str | None = None, outline: bool = True) -> list:
     """Like ``rect_nodes`` but with a sloped top: left/right top elevations differ.
 
     Sibling of ``rect_nodes`` for per-layer sloped terminations (Revit layer extension
@@ -123,9 +123,11 @@ def quad_nodes(u0, u1, z0, z1_left, z1_right, layer, pattern, uid, tag,
     """
     pts = tuple((u / M_PER_IN, z / M_PER_IN) for u, z in
                 ((u0, z0), (u1, z0), (u1, z1_right), (u0, z1_left)))
-    nodes: list = [Polyline(points=pts, layer=layer, closed=True,
-                            lineweight=0.35 if layer == "A-WALL" else 0.18,
-                            uid=uid, tag=tag)]
+    nodes: list = []
+    if outline:
+        nodes.append(Polyline(points=pts, layer=layer, closed=True,
+                              lineweight=0.35 if layer == "A-WALL" else 0.18,
+                              uid=uid, tag=tag))
     if pattern:
         nodes.append(Hatch(boundary=pts, pattern=pattern, layer="A-WALL-PATT",
                            material=material))

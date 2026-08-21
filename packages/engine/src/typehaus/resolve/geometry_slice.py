@@ -82,14 +82,24 @@ class CutPlane:
         Called per solid rather than once per drawing: a station nudged clear of one wall's
         face may sit exactly on another's, and the whole point is that no ring is ever cut
         at one of its own vertices.
+
+        The step goes **inward**, toward the middle of the solid's own perpendicular span.
+        A cut landing exactly on an end face is common and deliberate — an authored
+        foundation detail cut at the end of the wall it is about — and nudging outward there
+        would silently drop the very element the drawing exists for. Inward, the plane
+        grazes the end face and draws its cross-section, which is what the reader expects.
         """
+        lo, hi = solid_perp_span(solid, self)
+        if lo > hi:
+            return self
+        step = NUDGE_M if self.station_m <= (lo + hi) / 2.0 else -NUDGE_M
         station = self.station_m
         for _ in range(4):
             near = min((abs(self.perp_of(p) - station) for p in _perp_points(solid)),
                        default=math.inf)
-            if near > NUDGE_M:
+            if near > NUDGE_M / 2.0:
                 break
-            station += NUDGE_M
+            station += step
         return CutPlane(axis=self.axis, station_m=station)
 
 

@@ -292,13 +292,19 @@ def test_a_member_box_is_still_twelve_triangles(model) -> None:
 
 # --- walls ------------------------------------------------------------------------------
 
-def test_every_wall_becomes_one_element_with_a_part_per_depth_layer(model, geometry) -> None:
-    """Cavity fill shares the structure layer's polygon, so a part for it would only
-    z-fight — depth-bearing layers alone earn one."""
+def test_every_wall_becomes_one_element_with_a_part_per_body_layer(model, geometry) -> None:
+    """One part per layer with a *body*, which is not one part per layer with *depth*.
+
+    Cavity fill shares the structure layer's polygon, so a part for it would only z-fight
+    and neither list carries it. A ``Layer.slot``'s later regions are a different matter:
+    they are counted once for depth (a plinth and a field are one 3 5/8" wythe) but each is
+    a real course of brick at its own elevation, and building from ``depth_layers()`` left
+    the plinth standing alone with nothing above it — in the GLB, in IFC and in section.
+    """
     for wall in model.walls:
         element = geometry.by_uid(wall.uid)
         assert element is not None, wall.tag
-        expected = [ly for ly in wall.depth_layers() if ly.polygon]
+        expected = [ly for ly in wall.body_layers() if ly.polygon]
         assert len(element.parts) == len(expected), wall.tag
 
 

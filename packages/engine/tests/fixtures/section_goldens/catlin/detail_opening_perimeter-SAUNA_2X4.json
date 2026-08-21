@@ -6,25 +6,6 @@
       "node": "polyline",
       "points": [
         [
-          109.3125,
-          -112.00000000000001
-        ],
-        [
-          109.3125,
-          -32.00000000000001
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CBW117AAAA",
-      "tag": "W-B-SA-W-void"
-    },
-    {
-      "node": "polyline",
-      "points": [
-        [
           108.81250000000001,
           -32.00000000000001
         ],
@@ -74,25 +55,6 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "sauna-tg"
-    },
-    {
-      "node": "polyline",
-      "points": [
-        [
-          108.5625,
-          -112.00000000000001
-        ],
-        [
-          108.5625,
-          -32.00000000000001
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CBW117AAAA",
-      "tag": "W-B-SA-W-void"
     },
     {
       "node": "polyline",
@@ -152,26 +114,7 @@
       "node": "polyline",
       "points": [
         [
-          107.31250000000001,
-          -112.00000000000001
-        ],
-        [
-          107.31250000000001,
-          -32.00000000000001
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CBW117AAAA",
-      "tag": "W-B-SA-W-void"
-    },
-    {
-      "node": "polyline",
-      "points": [
-        [
-          106.31250000000001,
+          106.3125,
           -32.00000000000001
         ],
         [
@@ -183,7 +126,7 @@
           -22.000000000000007
         ],
         [
-          106.31250000000001,
+          106.3125,
           -22.000000000000007
         ]
       ],
@@ -198,7 +141,7 @@
       "node": "hatch",
       "boundary": [
         [
-          106.31250000000001,
+          106.3125,
           -32.00000000000001
         ],
         [
@@ -210,7 +153,7 @@
           -22.000000000000007
         ],
         [
-          106.31250000000001,
+          106.3125,
           -22.000000000000007
         ]
       ],
@@ -225,34 +168,15 @@
       "node": "polyline",
       "points": [
         [
-          104.56250000000001,
-          -112.00000000000001
-        ],
-        [
-          104.56250000000001,
-          -32.00000000000001
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CBW117AAAA",
-      "tag": "W-B-SA-W-void"
-    },
-    {
-      "node": "polyline",
-      "points": [
-        [
           102.81250000000001,
           -32.00000000000001
         ],
         [
-          106.31250000000001,
+          106.3125,
           -32.00000000000001
         ],
         [
-          106.31250000000001,
+          106.3125,
           -22.000000000000007
         ],
         [
@@ -275,11 +199,11 @@
           -32.00000000000001
         ],
         [
-          106.31250000000001,
+          106.3125,
           -32.00000000000001
         ],
         [
-          106.31250000000001,
+          106.3125,
           -22.000000000000007
         ],
         [
@@ -293,71 +217,6 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "spf"
-    },
-    {
-      "node": "polyline",
-      "points": [
-        [
-          104.56250000000001,
-          -112.00000000000001
-        ],
-        [
-          104.56250000000001,
-          -32.00000000000001
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CBW117AAAA",
-      "tag": "W-B-SA-W-void"
-    },
-    {
-      "node": "hatch",
-      "boundary": [
-        [
-          102.81250000000001,
-          -32.00000000000001
-        ],
-        [
-          106.31250000000001,
-          -32.00000000000001
-        ],
-        [
-          106.31250000000001,
-          -22.000000000000007
-        ],
-        [
-          102.81250000000001,
-          -22.000000000000007
-        ]
-      ],
-      "pattern": "batt",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "mineral-wool"
-    },
-    {
-      "node": "polyline",
-      "points": [
-        [
-          102.50000000000001,
-          -112.00000000000001
-        ],
-        [
-          102.50000000000001,
-          -32.00000000000001
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CBW117AAAA",
-      "tag": "W-B-SA-W-void"
     },
     {
       "node": "polyline",
@@ -412,6 +271,128 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "gwb"
+    },
+    {
+      "node": "hatch",
+      "boundary": [
+        [
+          102.81250000000001,
+          -32.00000000000001
+        ],
+        [
+          106.31250000000001,
+          -32.00000000000001
+        ],
+        [
+          106.31250000000001,
+          -22.000000000000007
+        ],
+        [
+          102.81250000000001,
+          -22.000000000000007
+        ]
+      ],
+      "pattern": "batt",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "mineral-wool"
+    },
+    {
+      "node": "polyline",
+      "points": [
+        [
+          109.3125,
+          -112.00000000000001
+        ],
+        [
+          109.3125,
+          -32.00000000000001
+        ]
+      ],
+      "layer": "A-GLAZ",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CBW117AAAA",
+      "tag": "W-B-SA-W-void"
+    },
+    {
+      "node": "polyline",
+      "points": [
+        [
+          108.5625,
+          -112.00000000000001
+        ],
+        [
+          108.5625,
+          -32.00000000000001
+        ]
+      ],
+      "layer": "A-GLAZ",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CBW117AAAA",
+      "tag": "W-B-SA-W-void"
+    },
+    {
+      "node": "polyline",
+      "points": [
+        [
+          107.31250000000001,
+          -112.00000000000001
+        ],
+        [
+          107.31250000000001,
+          -32.00000000000001
+        ]
+      ],
+      "layer": "A-GLAZ",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CBW117AAAA",
+      "tag": "W-B-SA-W-void"
+    },
+    {
+      "node": "polyline",
+      "points": [
+        [
+          104.56250000000001,
+          -112.00000000000001
+        ],
+        [
+          104.56250000000001,
+          -32.00000000000001
+        ]
+      ],
+      "layer": "A-GLAZ",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CBW117AAAA",
+      "tag": "W-B-SA-W-void"
+    },
+    {
+      "node": "polyline",
+      "points": [
+        [
+          102.50000000000001,
+          -112.00000000000001
+        ],
+        [
+          102.50000000000001,
+          -32.00000000000001
+        ]
+      ],
+      "layer": "A-GLAZ",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CBW117AAAA",
+      "tag": "W-B-SA-W-void"
     },
     {
       "node": "polyline",
@@ -819,7 +800,7 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          104.56250000000001,
+          104.5625,
           -26.72000000000001
         ],
         "name": ""
@@ -829,7 +810,7 @@
         -26.72000000000001
       ],
       "to": [
-        104.56250000000001,
+        104.5625,
         -26.72000000000001
       ],
       "text": "stud 3.5\"",
