@@ -51,6 +51,37 @@ def above_structure_layers(assembly) -> list:
     return list(assembly.layers[last + 1:])
 
 
+def assembly_layer_spans(assembly) -> list[tuple[object, float, float]]:
+    """``(layer, c0_m, c1_m)`` for every layer, cumulative depth interior → exterior.
+
+    The companion to :func:`above_structure_layers`: where that answers *which* layers the
+    sky sees, this answers *where each one is*. Four modules ran their own cumulative walk
+    over ``assembly.layers`` — the section cut, the joint plan, the eave detail's band
+    finder and the vent intake — and each one then re-derived the structure datum from it
+    with its own sign convention. Three of the four disagreed at some point in their life.
+    """
+    if assembly is None:
+        return []
+    spans: list[tuple[object, float, float]] = []
+    cumulative = 0.0
+    for layer in assembly.layers:
+        thickness = layer.thickness.meters
+        spans.append((layer, cumulative, cumulative + thickness))
+        cumulative += thickness
+    return spans
+
+
+def structure_datum_m(assembly) -> float:
+    """Depth from the assembly's interior face to the *outboard* face of its structure.
+
+    This is the plane ``ResolvedRoof.eave_z_m`` and ``roof_geometry.roof_height_at`` sit on:
+    the structure hangs below it, the above-structure stack rises above it. ``0.0`` for an
+    assembly with no STRUCTURE layer, which is all such a roof ever had.
+    """
+    return next((c1 for (layer, _c0, c1) in reversed(assembly_layer_spans(assembly))
+                 if layer.function is LayerFunction.STRUCTURE), 0.0)
+
+
 def deck_rise_m(roof_assembly, bearing_wall_assembly, pitch) -> float | None:
     """Deck-plane rise above the bearing plate top for a rafter-framed roof.
 

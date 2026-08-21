@@ -26,6 +26,7 @@ import math
 
 from typehaus.emit.finishes import layer_material_key, layer_visibility_group
 from typehaus.resolve.geometry_ir import GMesh, GPart, Vec3
+from typehaus.resolve.roof_geometry import roof_plane_z, roof_slope_coordinate
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 from typehaus.resolve.model import ResolvedRoof
 
@@ -37,20 +38,9 @@ _FALLBACK_FUNCTION = "cladding"
 
 
 def _plane_z(roof: ResolvedRoof, x: float, y: float) -> float:
-    """Base roof-plane elevation at a plan point — ``roof_geometry.roof_height_at`` but
-    *unclamped*, so a slightly-outset layer edge lands just below the eave plane."""
-    xs = [p[0] for p in roof.footprint]
-    ys = [p[1] for p in roof.footprint]
-    coordinate = y if roof.ridge_direction == "x" else x
-    low, high = (min(ys), max(ys)) if roof.ridge_direction == "x" else (min(xs), max(xs))
-    span = high - low
-    if span <= 1e-9:
-        return roof.eave_z_m
-    if roof.form == "shed":
-        return roof.eave_z_m + (coordinate - low) / span * (roof.ridge_z_m - roof.eave_z_m)
-    midpoint = (low + high) / 2.0
-    ratio = 1.0 - abs(coordinate - midpoint) / (span / 2.0)
-    return roof.eave_z_m + ratio * (roof.ridge_z_m - roof.eave_z_m)
+    """Base roof-plane elevation at a plan point, *unclamped*, so a slightly-outset layer
+    edge lands just below the eave plane rather than kinking flat."""
+    return roof_plane_z(roof, roof_slope_coordinate(roof, (x, y)))
 
 
 def plane_triangles(roof: ResolvedRoof,

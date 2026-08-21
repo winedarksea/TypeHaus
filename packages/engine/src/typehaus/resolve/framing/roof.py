@@ -214,7 +214,10 @@ def _bearing_stiffeners(rafters: tuple[FramedMember, ...]) -> tuple[FramedMember
     """
     stiffeners: list[FramedMember] = []
     for rafter in rafters:
-        if "I-joist" not in rafter.profile:
+        # The profile *string* was matched here while the drawing's flange lines gate on
+        # ``cross_section(profile).shape == "i_joist"``. Two spellings of one question can
+        # disagree; ask the profile table, which is the answer both sides want.
+        if cross_section(rafter.profile).shape != "i_joist":
             continue
         stiffeners.append(FramedMember(
             rafter.parent_uid, f"{rafter.child_key}-eave-stiffener", "bearing_stiffener",

@@ -18,6 +18,7 @@ from typehaus.emit.draw.scene import Hatch, IRNode, Polyline
 from typehaus.model.patterns import matches
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel, ResolvedRoof, ResolvedWall
+from typehaus.resolve.roof_layer_setbacks import structure_datum_m
 
 
 @dataclass(frozen=True)
@@ -136,13 +137,7 @@ def _default_roof_joins(plan: JointPlan, model, wall: ResolvedWall, roof: Resolv
     # was run down instead of up to the roof, and the spray-foam wedge that fills the
     # roof-foam/wall-foam mismatch was drawn inside the wall beneath the plate rather than
     # in the mismatch. It reads as "gaps in the exterior foam near the roof intersection".
-    roof_thickness = 0.3
-    if asm is not None:
-        cumulative = 0.0
-        for layer in asm.layers:
-            cumulative += layer.thickness.meters
-            if layer.function.value == "structure":
-                roof_thickness = cumulative
+    roof_thickness = structure_datum_m(asm) if asm is not None else 0.3
     # Junction u = the wall's in-section position (world x for "x" cut, world y for "y").
     (x0, y0), (x1, y1) = wall.axis
     junction_u = (x0 + x1) / 2.0 if direction == "x" else (y0 + y1) / 2.0

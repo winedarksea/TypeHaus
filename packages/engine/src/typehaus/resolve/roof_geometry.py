@@ -25,20 +25,60 @@ from typehaus.resolve.model import ResolvedModel, ResolvedRoof, ResolvedWall
 DEFAULT_TRUSS_HEEL_M = inch(9.25).meters
 
 
-def roof_height_at(roof: ResolvedRoof, point: tuple[float, float]) -> float:
-    """Return the exterior roof-plane elevation at a plan-frame point."""
-    xs = [item[0] for item in roof.footprint]
-    ys = [item[1] for item in roof.footprint]
-    coordinate = point[1] if roof.ridge_direction == "x" else point[0]
-    low, high = (min(ys), max(ys)) if roof.ridge_direction == "x" else (min(xs), max(xs))
+def roof_slope_coordinate(roof: ResolvedRoof, point: tuple[float, float]) -> float:
+    """The plan coordinate the roof's slope runs along — perpendicular to the ridge."""
+    return point[1] if roof.ridge_direction == "x" else point[0]
+
+
+def roof_slope_extent(roof: ResolvedRoof) -> tuple[float, float]:
+    """The footprint's ``(low, high)`` along the slope axis — the plane's own domain."""
+    axis = 1 if roof.ridge_direction == "x" else 0
+    values = [item[axis] for item in roof.footprint]
+    return (min(values), max(values))
+
+
+def roof_ridge_coordinate(roof: ResolvedRoof) -> float | None:
+    """Where the ridge falls on the slope axis, or ``None`` for a shed (it has no fold).
+
+    A section that crosses the ridge has to break its band lines there or the polygon
+    short-cuts the peak.
+    """
+    if roof.form == "shed":
+        return None
+    low, high = roof_slope_extent(roof)
+    return (low + high) / 2.0
+
+
+def roof_plane_z(roof: ResolvedRoof, coordinate: float, *, clamp: bool = False) -> float:
+    """Roof-plane elevation at a slope-axis ``coordinate`` (see :func:`roof_slope_coordinate`).
+
+    The single copy of the roof plane's equation. ``clamp`` decides what happens *outside*
+    the footprint on a gable: clamped, the plane flattens at the eave elevation (what a
+    headroom or vent-termination query wants — there is no roof out there); unclamped, it
+    keeps falling, which is what a layer band offset proud of the eave needs so its drip
+    edge stays on the slope instead of kinking flat. A shed extrapolates either way; it has
+    only one plane, so there is no ridge to fold about.
+
+    Three modules had their own transcription of this: ``geometry_roofs._plane_z`` (the
+    unclamped one), ``section._emit_roof_cut``'s ``z_at`` closure and
+    ``joints._roof_underside_line``'s ``z_top``. They agreed by luck, not by construction.
+    """
+    low, high = roof_slope_extent(roof)
     span = high - low
     if span <= 1e-9:
         return roof.eave_z_m
     if roof.form == "shed":
         return roof.eave_z_m + (coordinate - low) / span * (roof.ridge_z_m - roof.eave_z_m)
     midpoint = (low + high) / 2.0
-    ratio = max(0.0, 1.0 - abs(coordinate - midpoint) / (span / 2.0))
+    ratio = 1.0 - abs(coordinate - midpoint) / (span / 2.0)
+    if clamp:
+        ratio = max(0.0, ratio)
     return roof.eave_z_m + ratio * (roof.ridge_z_m - roof.eave_z_m)
+
+
+def roof_height_at(roof: ResolvedRoof, point: tuple[float, float]) -> float:
+    """Return the exterior roof-plane elevation at a plan-frame point."""
+    return roof_plane_z(roof, roof_slope_coordinate(roof, point), clamp=True)
 
 
 def roof_structure_framing(model: ResolvedModel, roof: ResolvedRoof) -> FramingSpec | None:

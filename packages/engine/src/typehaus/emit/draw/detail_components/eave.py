@@ -23,6 +23,10 @@ from typehaus.emit.draw.detail_components.geometry import (
 from typehaus.emit.draw.scene import IRNode, Leader, NamedPoint
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.roof_geometry import roof_height_at
+from typehaus.resolve.roof_layer_setbacks import (
+    assembly_layer_spans,
+    structure_datum_m,
+)
 
 
 def zero_overhang_eave(model, wall, crop, direction, station) -> list[IRNode]:
@@ -163,18 +167,12 @@ def _above_structure_bands(model, roof) -> list:
     if roof is None:
         return []
     asm = model.plan.library.resolve_assembly(roof.assembly)
-    if asm is None:
+    spans = assembly_layer_spans(asm)
+    if not any(layer.function.value == "structure" for (layer, _lo, _hi) in spans):
         return []
-    spans, cumulative = [], 0.0
-    for layer in asm.layers:
-        t = layer.thickness.meters / M_PER_IN
-        spans.append((layer, cumulative, cumulative + t))
-        cumulative += t
-    base = next((hi for (layer, _lo, hi) in reversed(spans)
-                 if layer.function.value == "structure"), None)
-    if base is None:
-        return []
-    return [(layer, lo - base, hi - base) for (layer, lo, hi) in spans if lo >= base - 1e-9]
+    base = structure_datum_m(asm)
+    return [(layer, (lo - base) / M_PER_IN, (hi - base) / M_PER_IN)
+            for (layer, lo, hi) in spans if lo >= base - 1e-9]
 
 
 def eave_vent_intake(model, roof, clad_out: float, junction_z: float, out_sign: float,

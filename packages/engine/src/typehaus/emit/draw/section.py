@@ -13,23 +13,42 @@ and opening voids. Thin layers honor ``ExaggerationSpec`` with true-dimension la
 
 from __future__ import annotations
 
-import math
-
-from typehaus.emit.draw.annotate import LabelSpec, dodge, place_column
 from typehaus.emit.draw.palette import detail_hatch
-from typehaus.emit.draw.scene import (
-    Hatch,
-    Leader,
-    NamedPoint,
-    Polyline,
-    Scene,
-    SceneBuilder,
-    Text,
+from typehaus.emit.draw.scene import Hatch, Polyline, Scene, SceneBuilder, Text
+from typehaus.emit.draw.section_clip import (
+    clip_polygon,
+    clip_rect,
+    quad_nodes,
+    rect_nodes,
+)
+from typehaus.emit.draw.section_labels import (
+    emit_ladders,
+    roof_layer_ladder,
+    wall_layer_ladder,
+)
+from typehaus.emit.draw.section_members import (
+    _birdsmouth_depth_in,
+    _emit_floor_cut,
+    _emit_member_cuts,
 )
 from typehaus.model.enums import LayerFunction, SliceKind
 from typehaus.model.views import Slice
 from typehaus.quantities import M_PER_IN, m, pt
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
+from typehaus.resolve.roof_geometry import roof_plane_z, roof_ridge_coordinate
+from typehaus.resolve.roof_layer_setbacks import (
+    assembly_layer_spans,
+    structure_datum_m,
+)
+
+# ``section.py`` is the name every caller — the CLI, the server, the detail package and the
+# tests — imports a cut from, so the pieces split out of it stay reachable here.
+__all__ = [
+    "_birdsmouth_depth_in",
+    "build_center_section",
+    "build_section",
+    "ring_cut_intervals",
+]
 
 _FUNCTION_LAYER = {
     "structure": "A-WALL",
@@ -60,126 +79,6 @@ def ring_cut_intervals(ring, direction: str, station: float) -> list[tuple[float
         crossings.append(u0 + t * (u1 - u0))
     crossings.sort()
     return [(crossings[i], crossings[i + 1]) for i in range(0, len(crossings) - 1, 2)]
-
-
-def _clip_rect(u0, u1, z0, z1, crop) -> tuple[float, float, float, float] | None:
-    if crop is None:
-        return (u0, u1, z0, z1)
-    (cu0, cz0), (cu1, cz1) = crop
-    u0, u1 = max(u0, min(cu0, cu1)), min(u1, max(cu0, cu1))
-    z0, z1 = max(z0, min(cz0, cz1)), min(z1, max(cz0, cz1))
-    if u0 >= u1 or z0 >= z1:
-        return None
-    return (u0, u1, z0, z1)
-
-
-# Vertical step between successive layer labels in a detail, model inches.
-_LABEL_RUNG_IN = 2.6
-
-
-def _clip_segment(p0, p1, crop):
-    """Liang–Barsky clip of a (u, z) segment to the crop rectangle, or None if outside."""
-    if crop is None:
-        return (p0, p1)
-    (cu0, cz0), (cu1, cz1) = crop
-    u_lo, u_hi = min(cu0, cu1), max(cu0, cu1)
-    z_lo, z_hi = min(cz0, cz1), max(cz0, cz1)
-    du, dz = p1[0] - p0[0], p1[1] - p0[1]
-    t0, t1 = 0.0, 1.0
-    for p, q in ((-du, p0[0] - u_lo), (du, u_hi - p0[0]),
-                 (-dz, p0[1] - z_lo), (dz, z_hi - p0[1])):
-        if abs(p) < 1e-12:
-            if q < 0:
-                return None
-            continue
-        r = q / p
-        if p < 0:
-            t0 = max(t0, r)
-        else:
-            t1 = min(t1, r)
-    if t0 > t1:
-        return None
-    return ((p0[0] + t0 * du, p0[1] + t0 * dz),
-            (p0[0] + t1 * du, p0[1] + t1 * dz))
-
-
-def _clip_polygon(points, crop):
-    """Sutherland–Hodgman clip of a (u, z) polygon to the crop rectangle.
-
-    ``_clip_rect`` only handles axis-aligned bands; a sloped roof band needs a real
-    polygon clip or it runs straight off the detail's crop window.
-    """
-    if crop is None:
-        return list(points)
-    (cu0, cz0), (cu1, cz1) = crop
-    u_lo, u_hi = min(cu0, cu1), max(cu0, cu1)
-    z_lo, z_hi = min(cz0, cz1), max(cz0, cz1)
-
-    def clip(poly, inside, intersect):
-        out = []
-        for index, current in enumerate(poly):
-            previous = poly[index - 1]
-            cur_in, prev_in = inside(current), inside(previous)
-            if cur_in:
-                if not prev_in:
-                    out.append(intersect(previous, current))
-                out.append(current)
-            elif prev_in:
-                out.append(intersect(previous, current))
-        return out
-
-    def cut(poly, axis, bound, keep_greater):
-        def inside(p):
-            return p[axis] >= bound if keep_greater else p[axis] <= bound
-
-        def intersect(a, b):
-            span = b[axis] - a[axis]
-            t = 0.0 if abs(span) < 1e-12 else (bound - a[axis]) / span
-            return (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
-
-        return clip(poly, inside, intersect)
-
-    poly = list(points)
-    for axis, bound, keep_greater in (
-        (0, u_lo, True), (0, u_hi, False), (1, z_lo, True), (1, z_hi, False),
-    ):
-        if not poly:
-            return []
-        poly = cut(poly, axis, bound, keep_greater)
-    return poly
-
-
-def _rect_nodes(u0, u1, z0, z1, layer, pattern, uid, tag, outline: bool = True,
-                material: str | None = None) -> list:
-    pts = tuple((u / M_PER_IN, z / M_PER_IN) for u, z in
-                ((u0, z0), (u1, z0), (u1, z1), (u0, z1)))
-    nodes: list = []
-    if outline:
-        nodes.append(Polyline(points=pts, layer=layer, closed=True,
-                              lineweight=0.35 if layer == "A-WALL" else 0.18,
-                              uid=uid, tag=tag))
-    if pattern:
-        nodes.append(Hatch(boundary=pts, pattern=pattern, layer="A-WALL-PATT",
-                           material=material))
-    return nodes
-
-
-def _quad_nodes(u0, u1, z0, z1_left, z1_right, layer, pattern, uid, tag,
-                material: str | None = None) -> list:
-    """Like ``_rect_nodes`` but with a sloped top: left/right top elevations differ.
-
-    Sibling of ``_rect_nodes`` for per-layer sloped terminations (Revit layer extension
-    distances against a raked interface plane) — threads through detail cuts only.
-    """
-    pts = tuple((u / M_PER_IN, z / M_PER_IN) for u, z in
-                ((u0, z0), (u1, z0), (u1, z1_right), (u0, z1_left)))
-    nodes: list = [Polyline(points=pts, layer=layer, closed=True,
-                            lineweight=0.35 if layer == "A-WALL" else 0.18,
-                            uid=uid, tag=tag)]
-    if pattern:
-        nodes.append(Hatch(boundary=pts, pattern=pattern, layer="A-WALL-PATT",
-                           material=material))
-    return nodes
 
 
 def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
@@ -214,10 +113,10 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
     for solid in model.solids:
         material = _solid_material(model, solid)
         for (u0, u1) in ring_cut_intervals(solid.outline, direction, station):
-            rect = _clip_rect(u0, u1, solid.z0_m, solid.z1_m, crop)
+            rect = clip_rect(u0, u1, solid.z0_m, solid.z1_m, crop)
             if rect is None:
                 continue
-            b.extend(_rect_nodes(*rect, "S-FNDN" if solid.category != "slab" else "A-SLAB",
+            b.extend(rect_nodes(*rect, "S-FNDN" if solid.category != "slab" else "A-SLAB",
                                  material, solid.uid, solid.tag, material=material))
 
     for roof in model.roofs:
@@ -237,26 +136,7 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
     if joints is not None:
         b.extend(list(joints.treatments))
 
-    # Emit the collected layer-label ladders last so they draw over the cut geometry,
-    # dodged against each other (two walls' ladders share the text column at the crop's
-    # left edge and would otherwise interleave).
-    for placed in dodge(ladder_labels):
-        mid_u, target_z = placed.spec.target
-        rung_z = placed.at[1]
-        if target_z:
-            # A roof layer is a sloped band: its layers separate in *z* at a given u, so a
-            # flat rung cannot tell them apart the way it can a wall's vertical layers. The
-            # rung stays horizontal out to the band's own u and then elbows to the point on
-            # it, which keeps the text column aligned while the pointers fan.
-            b.add(Leader(anchor=NamedPoint(xy=(mid_u, target_z)), at=placed.at,
-                         to=(mid_u, rung_z), text=placed.spec.text,
-                         height=placed.height, layer="A-ANNO-TEXT"))
-            continue
-        # Horizontal, leadered back to the layer at the rung's own height — the rung moves
-        # with the label when dodged, so the leader line stays flat and never crosses text.
-        b.add(Leader(anchor=NamedPoint(xy=(mid_u, rung_z)), at=placed.at,
-                     to=(mid_u, rung_z), text=placed.spec.text,
-                     height=placed.height, layer="A-ANNO-TEXT"))
+    emit_ladders(b, ladder_labels)
 
     if crop is not None:
         (cu0, cz0), (cu1, cz1) = crop
@@ -333,7 +213,7 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
         for (u0, u1) in ring_cut_intervals(layer.polygon, direction, station):
             layer_top_l = term.z(u0) if term is not None else min(wall_top, band_z1)
             layer_top_r = term.z(u1) if term is not None else min(wall_top, band_z1)
-            rect = _clip_rect(u0, u1, band_z0, max(layer_top_l, layer_top_r), crop)
+            rect = clip_rect(u0, u1, band_z0, max(layer_top_l, layer_top_r), crop)
             if rect is None:
                 continue
             ru0, ru1, rz0, rz1 = rect
@@ -358,7 +238,7 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
                 # clipped to the crop's z-window (rz0/rz1 already crop-clipped).
                 tl = min(layer_top_l, rz1)
                 tr = min(layer_top_r, rz1)
-                b.extend(_quad_nodes(ru0, ru1, rz0, tl, tr,
+                b.extend(quad_nodes(ru0, ru1, rz0, tl, tr,
                                      aia, pattern, wall.uid, f"{wall.tag}/{layer.name}",
                                      material=layer.material_ref))
                 continue
@@ -381,31 +261,11 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
                                    layer="A-GLAZ", lineweight=0.18,
                                    uid=wall.uid, tag=f"{wall.tag}-void"))
                     continue
-                b.extend(_rect_nodes(ru0, ru1, z0, z1, aia, pattern, wall.uid,
+                b.extend(rect_nodes(ru0, ru1, z0, z1, aia, pattern, wall.uid,
                                      f"{wall.tag}/{layer.name}",
                                      outline=not layer.is_cavity,
                                      material=layer.material_ref))
-    if not label_entries or ladder_labels is None:
-        return
-    # The whole ladder hangs from a single anchor: the wall's top as seen in the crop.
-    # Rungs step down at a uniform _LABEL_RUNG_IN so a sloped/eave cut, where each layer
-    # terminates at its own height, cannot interleave rungs from different layers.
-    # Stacked vertically because at detail scale a membrane and its neighbours are
-    # hundredths of an inch apart — labels sharing one baseline overprint into a smear.
-    if crop is not None:
-        (cu0, cz0), (cu1, cz1) = crop
-        z_top = min(wall_top, max(cz0, cz1))
-        text_u = min(cu0, cu1) / M_PER_IN - 1.0
-    else:
-        z_top = wall_top
-        text_u = min(mid_u for (_lab, mid_u) in label_entries.values()) - 14.0
-    # Sorted by mid_u (innermost layer first): the text column sits left of the cut, so
-    # ascending targets top-to-bottom keep the horizontal leader lines nested, not crossed.
-    entries = [LabelSpec(text=label, target=(mid_u, 0.0), key=(wall.uid, name))
-               for name, (label, mid_u) in
-               sorted(label_entries.items(), key=lambda item: item[1][1])]
-    ladder_labels.extend(place_column(entries, x=text_u, z_top=z_top / M_PER_IN - 1.0,
-                                      step=_LABEL_RUNG_IN, height=1.6, align="right"))
+    wall_layer_ladder(wall, label_entries, wall_top, crop, ladder_labels)
 
 
 def _opening_splits(wall, openings, direction, station, z0, z1):
@@ -469,49 +329,6 @@ def _rafter_plan_span(roof, direction: str) -> tuple[float, float] | None:
     return min(coords), max(coords)
 
 
-def _roof_layer_ladder(roof, detail_layers, crop, z_at, ladder_labels) -> None:
-    """Name every band of a roof's assembly, the way ``_emit_wall_cut`` names a wall's.
-
-    Without this the one drawing whose subject is the roof-to-wall junction labelled the
-    wall's nine layers and none of the roof's — the reader could see that something six
-    inches thick sat above the rafters but not that it was two staggered courses of
-    polyiso, nor which of the three thin dark bands above it was the vapour barrier and
-    which the underlayment. On a nailbase roof that distinction is the whole assembly.
-
-    Probed at one station up-slope of the eave rather than at the cut's own edge: the eave
-    end is where the water chain, the corner trim and the wall head all crowd into two
-    inches of drawing, and a fan of nine leaders into that is unreadable. Up-slope the
-    bands are clear of everything.
-    """
-    if ladder_labels is None or crop is None or not detail_layers:
-        return
-    (cu0, cz0), (cu1, cz1) = crop
-    u_lo, u_hi = min(cu0, cu1), max(cu0, cu1)
-    # The up-slope end of the crop is the higher one; probe a fifth of the way in from it.
-    up_is_hi = z_at(u_hi) >= z_at(u_lo)
-    probe = (u_hi - 0.2 * (u_hi - u_lo)) if up_is_hi else (u_lo + 0.2 * (u_hi - u_lo))
-    z_probe = z_at(probe)
-    z_lo, z_hi = min(cz0, cz1), max(cz0, cz1)
-
-    entries = []
-    for (layer, d0, d1) in detail_layers:
-        mid_z = z_probe - (d0 + d1) / 2.0
-        if not (z_lo <= mid_z <= z_hi):  # band off the sheet — labelling it points at nothing
-            continue
-        inches = (d1 - d0) / M_PER_IN
-        entries.append(LabelSpec(
-            text=f'{layer.name} {inches:.3g}"',
-            target=(probe / M_PER_IN, mid_z / M_PER_IN),
-            key=(roof.uid, layer.name)))
-    if not entries:
-        return
-    # Outermost first, so the column reads top-down in the same order as the drawing.
-    entries.reverse()
-    ladder_labels.extend(place_column(
-        entries, x=u_lo / M_PER_IN - 1.0, z_top=z_hi / M_PER_IN - 1.0,
-        step=_LABEL_RUNG_IN, height=1.6, align="right"))
-
-
 class _CavityBand:
     """A cavity fill dressed as a ``Layer`` so one band loop draws both.
 
@@ -550,44 +367,30 @@ def _emit_roof_cut(b, model, roof, direction, station, crop, joints=None,
     # `roof_trim.py` calls eave_z_m "the deck plane" and `test_accessories` derives a vent
     # termination as roof_height_at + skin; both say the same thing this does.
     spans = []
-    if asm is not None:
-        cumulative = 0.0
-        for layer in asm.layers:
-            t = layer.thickness.meters
-            spans.append((layer, cumulative, cumulative + t))
-            # A cavity fill is not a layer of its own — it shares the joist bay's depth, so
-            # it adds nothing to ``cumulative``. Drawn as a sub-band it is the difference
-            # between a roof that reads as 11-7/8" of solid timber and one that reads as a
-            # batt between rafters, which is what the section is cut to show.
-            cavity = getattr(layer, "cavity", None)
-            if cavity is not None:
-                fill = (cavity.thickness.meters
-                        if cavity.thickness is not None else t)
-                # ``cumulative`` runs interior→exterior, so a batt held to the ceiling side
-                # starts at the bay's inboard face and the remaining depth stays open.
-                spans.append((_CavityBand(layer, cavity), cumulative, cumulative + fill))
-            cumulative += t
-    # The datum is the outboard face of the outermost structure layer. A roof with no framed
-    # structure layer keeps the old zero datum, which is all it ever had.
-    struct_below = next((c1 for (layer, _c0, c1) in reversed(spans)
-                         if layer.function is LayerFunction.STRUCTURE), 0.0)
+    for (layer, c0, c1) in assembly_layer_spans(asm):
+        spans.append((layer, c0, c1))
+        # A cavity fill is not a layer of its own — it shares the joist bay's depth, so it
+        # occupies no cumulative depth. Drawn as a sub-band it is the difference between a
+        # roof that reads as 11-7/8" of solid timber and one that reads as a batt between
+        # rafters, which is what the section is cut to show.
+        cavity = getattr(layer, "cavity", None)
+        if cavity is not None:
+            fill = (cavity.thickness.meters
+                    if cavity.thickness is not None else c1 - c0)
+            # ``c0`` runs interior→exterior, so a batt held to the ceiling side starts at
+            # the bay's inboard face and the remaining depth stays open.
+            spans.append((_CavityBand(layer, cavity), c0, c0 + fill))
+    # The datum is the outboard face of the outermost structure layer.
+    struct_below = structure_datum_m(asm)
     detail_layers = None
     if joints is not None and asm is not None:
         # (top offset, bottom offset), both positive-downward from the datum.
         detail_layers = [(layer, struct_below - c1, struct_below - c0)
                          for (layer, c0, c1) in spans]
-    xs = [p[0] for p in roof.footprint]
-    ys = [p[1] for p in roof.footprint]
-    lo, hi = (min(xs), max(xs)) if roof.ridge_direction == "y" else (min(ys), max(ys))
-    mid = (lo + hi) / 2.0
-
     def z_at(u: float) -> float:
-        # Slope runs perpendicular to the ridge.
-        span = (hi - lo) / 2.0 or 1e-9
-        if roof.form == "shed":
-            return roof.eave_z_m + (u - lo) / (hi - lo) * (roof.ridge_z_m - roof.eave_z_m)
-        frac = 1.0 - abs(u - mid) / span
-        return roof.eave_z_m + frac * (roof.ridge_z_m - roof.eave_z_m)
+        # The roof plane at a slope-axis coordinate — unclamped, so a band offset proud of
+        # the eave (the metal roofing's drip) stays on the slope instead of kinking flat.
+        return roof_plane_z(roof, u)
 
     slope_along_cut = (
         (roof.ridge_direction == "y" and direction == "x")
@@ -603,9 +406,12 @@ def _emit_roof_cut(b, model, roof, direction, station, crop, joints=None,
                 for entry in (getattr(roof, "layer_edge_setbacks", None) or ())}
     structure_span = _rafter_plan_span(roof, direction)
 
+    ridge_u = roof_ridge_coordinate(roof)
+
     def _top_line(a: float, b_: float) -> list[tuple[float, float]]:
         if slope_along_cut:
-            stations_u = [a] + ([mid] if a < mid < b_ else []) + [b_]
+            fold = [ridge_u] if ridge_u is not None and a < ridge_u < b_ else []
+            stations_u = [a] + fold + [b_]
             return [(u, z_at(u)) for u in stations_u]
         z = z_at(station)
         return [(a, z), (b_, z)]
@@ -636,7 +442,7 @@ def _emit_roof_cut(b, model, roof, direction, station, crop, joints=None,
                 top = _top_line(a, b_)
                 band_top = [(u, z - d0) for (u, z) in top]
                 band_bot = [(u, z - d1) for (u, z) in reversed(top)]
-                clipped = _clip_polygon(band_top + band_bot, crop)
+                clipped = clip_polygon(band_top + band_bot, crop)
                 if len(clipped) < 3:
                     continue
                 pts = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
@@ -645,7 +451,7 @@ def _emit_roof_cut(b, model, roof, direction, station, crop, joints=None,
                 pat = detail_hatch(layer.material_ref, layer.function.value)
                 b.add(Hatch(boundary=pts, pattern=pat or "batt", layer="A-WALL-PATT",
                             uid=roof.uid, material=layer.material_ref))
-            _roof_layer_ladder(roof, detail_layers, crop, z_at, ladder_labels)
+            roof_layer_ladder(roof, detail_layers, crop, z_at, ladder_labels)
             continue
         # Same datum as the per-layer bands above: ``z_at`` sits at the top of the
         # structure, not the top of the roofing, so the single coarse band runs from
@@ -655,257 +461,10 @@ def _emit_roof_cut(b, model, roof, direction, station, crop, joints=None,
         deck_line = _top_line(u0c, u1c)
         top = [(u, z + (thickness - struct_below)) for (u, z) in deck_line]
         bottom = [(u, z - struct_below) for (u, z) in reversed(deck_line)]
-        clipped = _clip_polygon(top + bottom, crop)
+        clipped = clip_polygon(top + bottom, crop)
         if len(clipped) < 3:
             continue
         pts = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
         b.add(Polyline(points=pts, layer="A-ROOF", closed=True, lineweight=0.35,
                        uid=roof.uid, tag=roof.tag))
         b.add(Hatch(boundary=pts, pattern="batt", layer="A-WALL-PATT"))
-
-
-def _emit_floor_cut(b, floor, direction, station, crop) -> None:
-    for member in floor.members:
-        (x0, y0), (x1, y1) = member.p0, member.p1
-        a0, a1 = (y0, y1) if direction == "x" else (x0, x1)
-        u0, u1 = (x0, x1) if direction == "x" else (y0, y1)
-        if a0 == a1:
-            # member perpendicular to cut? p runs along the cut axis at a station
-            if abs(a0 - station) > 1e-9:
-                continue
-            rect = _clip_rect(min(u0, u1), max(u0, u1), member.z0_m, member.z1_m, crop)
-            if rect is None:
-                continue
-            b.extend(_rect_nodes(*rect, "S-FRAM", None, member.parent_uid,
-                                 member.child_key))
-            b.extend(_member_flange_nodes(*rect, member.profile, member.parent_uid,
-                                          member.child_key))
-            continue
-        if (a0 - station) * (a1 - station) > 0:
-            continue
-        # member crosses the cut: draw its section (1.5" wide x depth)
-        t = (station - a0) / ((a1 - a0) or 1e-12)
-        u = u0 + t * (u1 - u0)
-        half = 0.75 * M_PER_IN
-        rect = _clip_rect(u - half, u + half, member.z0_m, member.z1_m, crop)
-        if rect is None:
-            continue
-        b.extend(_rect_nodes(*rect, "S-FRAM", "lumber", member.parent_uid,
-                             member.child_key))
-        b.extend(_member_flange_nodes(*rect, member.profile, member.parent_uid,
-                                      member.child_key))
-
-
-def _emit_member_cuts(b, model, direction, station, crop) -> None:
-    """Detail-mode: draw wall + roof framing members crossing the cut (top plates, rafters).
-
-    Generalizes the floor crossing math to raked members — a member with ``z0_end_m`` /
-    ``z1_end_m`` set interpolates its elevation at the crossing station."""
-    for wall in model.walls:
-        for member in wall.members:
-            _emit_one_member(b, member, direction, station, crop)
-    for roof in model.roofs:
-        # A birdsmouth rafter runs *along* the cut plane, so it only draws when a rafter
-        # lands exactly on the station — which a wall-midpoint cut rarely does. Show the
-        # single nearest one as the representative rafter so the eave detail carries its
-        # seat cut, and let all other members follow the ordinary crossing/parallel rules.
-        parallel_rafters = []
-        for member in roof.members:
-            if (_birdsmouth_depth_in(member.connection) is not None
-                    and _member_is_parallel(member, direction)
-                    and _member_u_overlaps_crop(member, direction, crop)):
-                parallel_rafters.append(member)
-            else:
-                _emit_one_member(b, member, direction, station, crop)
-        if parallel_rafters and not any(
-                abs(_member_perp(m, direction) - station) < 1e-9 for m in parallel_rafters):
-            nearest = min(parallel_rafters,
-                          key=lambda m: abs(_member_perp(m, direction) - station))
-            _emit_one_member(b, nearest, direction, _member_perp(nearest, direction), crop)
-
-
-def _member_u_overlaps_crop(member, direction: str, crop) -> bool:
-    """Whether the member's in-section (u) span overlaps the crop's u-window.
-
-    Two rafters share every y at a gable (one per roof plane); only the one whose run is
-    actually under the crop is the eave the detail is about.
-    """
-    if crop is None:
-        return True
-    (x0, y0), (x1, y1) = member.p0, member.p1
-    u0, u1 = (x0, x1) if direction == "x" else (y0, y1)
-    (cu0, _), (cu1, _) = crop
-    lo, hi = min(cu0, cu1), max(cu0, cu1)
-    return min(u0, u1) <= hi and max(u0, u1) >= lo
-
-
-def _member_is_parallel(member, direction: str) -> bool:
-    (x0, y0), (x1, y1) = member.p0, member.p1
-    a0, a1 = (y0, y1) if direction == "x" else (x0, x1)
-    return abs(a0 - a1) < 1e-12
-
-
-def _member_perp(member, direction: str) -> float:
-    """The member's coordinate perpendicular to the cut (its station if parallel)."""
-    (x0, y0), _ = member.p0, member.p1
-    return y0 if direction == "x" else x0
-
-
-def _birdsmouth_depth_in(connection: str | None) -> float | None:
-    """Seat-cut depth (inches) parsed off a rafter's ``eave:birdsmouth-<d>in`` tag.
-
-    The connection string is the only carrier of the notch depth (``resolve.model`` keeps
-    the member a plain box — no seat cut in the solid), so the 2D section is where the
-    birdsmouth becomes drawn linework.
-    """
-    if not connection:
-        return None
-    for token in connection.split(";"):
-        token = token.strip()
-        if "birdsmouth-" in token:
-            tail = token.split("birdsmouth-", 1)[1]
-            digits = tail[:-2] if tail.endswith("in") else tail
-            try:
-                return float(digits)
-            except ValueError:
-                return None
-    return None
-
-
-def _member_flange_nodes(u0, u1, z0, z1, profile, uid, tag) -> list:
-    """Two thin flange-delineation lines so an I-joist reads as an I, not a solid bar.
-
-    A cut I-joist member is otherwise a plain rectangle; the flange lines (offset from the
-    top and bottom edges by the real flange thickness) are what tell it apart from sawn
-    lumber at detail scale. Coordinates in metres, converted to inches like ``_rect_nodes``.
-    """
-    from typehaus.resolve.framing.profiles import cross_section
-
-    section = cross_section(profile)
-    if section.shape != "i_joist" or section.flange_thickness_m is None:
-        return []
-    ft = section.flange_thickness_m
-    if (z1 - z0) <= 2.2 * ft:
-        return []
-    nodes: list = []
-    for z in (z0 + ft, z1 - ft):
-        nodes.append(Polyline(points=((u0 / M_PER_IN, z / M_PER_IN), (u1 / M_PER_IN, z / M_PER_IN)),
-                              layer="S-FRAM", lineweight=0.13, uid=uid,
-                              tag=f"{tag}/flange"))
-    return nodes
-
-
-def _emit_raked_rafter(b, member, u0, u1, z0_a, z0_b, z1_a, z1_b, crop,
-                       depth_in) -> None:
-    """A raked rafter drawn as its true sloped profile with a birdsmouth seat-cut notch.
-
-    Replaces the bounding-box rectangle the parallel-member path would draw (which loses the
-    rake entirely) with the actual parallelogram, then notches the underside at the eave
-    (low) end so the rafter reads as a seated, notched member. The notch is a plumb heel cut
-    of ``depth_in`` plus a horizontal seat bearing on the plate.
-    """
-    d = depth_in * M_PER_IN
-    eave_at_u0 = z1_a <= z1_b  # eave = lower-top end (zero-overhang tail bears here)
-    span_u = abs(u1 - u0) or 1e-9
-    slope_bot = (z0_b - z0_a) / (u1 - u0)
-    run = min(3.5 * M_PER_IN, span_u * 0.35)  # seat run ~ a 2x4 plate bearing
-    # The seat runs *inboard* (toward the ridge end) from the eave's plumb cut. The
-    # endpoints carry no ordering guarantee — an east-half rafter's eave end is the
-    # larger u — so the step direction comes from where the ridge end actually is.
-    # The heel drops BELOW the member's underside, it does not raise it. The resolver
-    # already seats the rafter: its eave-end ``z0`` IS the plate top, and it models the
-    # notch as a separate ``seat_cut`` member spanning plate_top-d .. plate_top. Adding d
-    # here as well applied the birdsmouth twice and floated the rafter a notch-depth clear
-    # of the plate it is supposed to bear on — which is exactly what the drawing showed.
-    # Dropping instead puts the plumb tail over the same span the seat_cut occupies.
-    if eave_at_u0:
-        step = math.copysign(run, u1 - u0)
-        heel = (u0, z0_a - d)
-        toe = (u0 + step, z0_a + slope_bot * step)
-        poly = [(u0, z1_a), (u1, z1_b), (u1, z0_b), toe, heel]
-    else:
-        step = math.copysign(run, u0 - u1)
-        heel = (u1, z0_b - d)
-        toe = (u1 + step, z0_b + slope_bot * step)
-        poly = [(u1, z1_b), (u0, z1_a), (u0, z0_a), toe, heel]
-    clipped = _clip_polygon(poly, crop)
-    if len(clipped) < 3:
-        return
-    pts = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
-    b.add(Polyline(points=pts, layer="S-FRAM", closed=True, lineweight=0.35,
-                   uid=member.parent_uid, tag=member.child_key))
-    b.add(Hatch(boundary=pts, pattern="lumber", layer="A-WALL-PATT",
-                uid=member.parent_uid, material="spf"))
-    # An I-joist rafter carries flange lines along its raked top/bottom edges so it reads
-    # as an I-joist, not a solid rafter — offset inward from each edge by the flange depth.
-    from typehaus.resolve.framing.profiles import cross_section
-
-    section = cross_section(member.profile)
-    if section.shape == "i_joist" and section.flange_thickness_m is not None:
-        ft = section.flange_thickness_m
-        for (za, zb) in ((z0_a + ft, z0_b + ft), (z1_a - ft, z1_b - ft)):
-            seg = _clip_segment((u0, za), (u1, zb), crop)
-            if seg is not None:
-                (su0, sz0), (su1, sz1) = seg
-                b.add(Polyline(points=((su0 / M_PER_IN, sz0 / M_PER_IN),
-                                       (su1 / M_PER_IN, sz1 / M_PER_IN)),
-                               layer="S-FRAM", lineweight=0.13,
-                               uid=member.parent_uid, tag=f"{member.child_key}/flange"))
-
-
-def _emit_one_member(b, member, direction, station, crop) -> None:
-    (x0, y0), (x1, y1) = member.p0, member.p1
-    a0, a1 = (y0, y1) if direction == "x" else (x0, x1)
-    u0, u1 = (x0, x1) if direction == "x" else (y0, y1)
-    z0_a, z1_a = member.z0_m, member.z1_m
-    z0_b = member.z0_end_m if member.z0_end_m is not None else member.z0_m
-    z1_b = member.z1_end_m if member.z1_end_m is not None else member.z1_m
-    if abs(a0 - a1) < 1e-12:
-        # member runs along the cut axis at a station (e.g. a top plate parallel to the cut)
-        if abs(a0 - station) > 1e-9:
-            return
-        raked = member.z0_end_m is not None or member.z1_end_m is not None
-        birdsmouth = _birdsmouth_depth_in(member.connection)
-        if raked and birdsmouth is not None and abs(u1 - u0) > 1e-9:
-            _emit_raked_rafter(b, member, u0, u1, z0_a, z0_b, z1_a, z1_b, crop,
-                               birdsmouth)
-            return
-        rect = _clip_rect(min(u0, u1), max(u0, u1), min(z0_a, z0_b), max(z1_a, z1_b), crop)
-        if rect is not None:
-            b.extend(_member_rect_nodes(rect, member))
-            b.extend(_member_flange_nodes(*rect, member.profile, member.parent_uid,
-                                          member.child_key))
-        return
-    if (a0 - station) * (a1 - station) > 0:
-        return
-    t = (station - a0) / ((a1 - a0) or 1e-12)
-    u = u0 + t * (u1 - u0)
-    z0 = z0_a + t * (z0_b - z0_a)
-    z1 = z1_a + t * (z1_b - z1_a)
-    # The cut is across the member's run, so it shows the section face the plan shows: the
-    # wide `depth_m` for a flat-laid plate/sill/block, the thin `width_m` for one on edge.
-    # A flat 1.5" was drawn here regardless of profile, which was right only by accident for
-    # the on-edge 2x sticks and drew every plate a quarter of its real width.
-    from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
-
-    half = plan_cross_section_m(cross_section(member.profile), z1_a - z0_a) / 2.0
-    rect = _clip_rect(u - half, u + half, min(z0, z1), max(z0, z1), crop)
-    if rect is not None:
-        b.extend(_member_rect_nodes(rect, member))
-        b.extend(_member_flange_nodes(*rect, member.profile, member.parent_uid,
-                                      member.child_key))
-
-
-def _member_rect_nodes(rect, member) -> list:
-    """A cut member's rectangle, hatched as what it is made of.
-
-    A member that names a material is a *skin* band (the wall→roof closure, roof-edge
-    cladding, derived trim), not lumber — hatch and fill it like the layer stacks hatch
-    the same material, so a closure EPS band reads as foam, not as a stack of studs.
-    Plain framing keeps the lumber hatch.
-    """
-    if member.material:
-        pattern = detail_hatch(member.material) or "metal"
-        return _rect_nodes(*rect, "S-FRAM", pattern, member.parent_uid,
-                           member.child_key, material=member.material)
-    return _rect_nodes(*rect, "S-FRAM", "lumber", member.parent_uid, member.child_key)
