@@ -108,7 +108,60 @@ def render_views(
             slug = derived.view.tag.replace("/", "_")
             written.append(write_raster(scene, out_dir / f"detail_{slug}.{fmt}",
                                         title=f"detail · {derived.key}", dpi=300))
+            written.extend(_note_continuations(scene, out_dir, slug, fmt,
+                                               f"detail · {derived.key}"))
     else:
         raise ValueError(
             f"unknown view {view!r} (plan|site|section|elevation|3d|details)")
     return written
+
+
+def _note_continuations(scene, out_dir, slug: str, fmt: str, title: str) -> list:
+    """``detail_<slug>-2.png`` … for notes that outrun one card's band.
+
+    Paginate, don't truncate. With lettering fixed by definition, a note column that does
+    not fit has only two honest outcomes and shrinking the type is not one of them. The
+    continuation carries the notes alone — the drawing is on page 1 and repeating it would
+    make a reader compare two copies of the same cut.
+    """
+    from typehaus.emit.draw.pdf_writer import note_pages, write_raster
+
+    frame = getattr(scene, "frame", None)
+    if frame is None or not scene.notes:
+        return []
+    band = frame.bands.get("notes")
+    if band is None:
+        return []
+    # A notes-only card: same paper, no geometry, the band grown across the whole sheet
+    # because there is no drawing beside it to make room for. Pagination is done against
+    # *both* bands at once, so a continuation's wider column is what its share of the notes
+    # is measured into rather than the first page's narrow one.
+    wide = _notes_only_frame(frame)
+    pages = note_pages(scene.notes, band, wide.bands["notes"])
+    out = []
+    for index, columns in enumerate(pages[1:], start=2):
+        page = scene.model_copy(update={
+            "nodes": (),
+            "notes": tuple(line for column in columns for line in column),
+            "frame": wide})
+        out.append(write_raster(page, out_dir / f"detail_{slug}-{index}.{fmt}",
+                                title=f"{title} — notes {index}/{len(pages)}", dpi=300))
+    # Notes shrink as well as grow. A continuation left over from a longer run reads as a
+    # page of the current set, so the ones this render did not write are removed.
+    for stale in out_dir.glob(f"detail_{slug}-*.{fmt}"):
+        if stale not in out:
+            stale.unlink()
+    return out
+
+
+def _notes_only_frame(frame):
+    """``frame`` with its notes band grown across the whole sheet, geometry removed."""
+    from typehaus.emit.draw.detail_card import MARGIN_IN, TITLE_H_IN
+
+    paper_w, paper_h = frame.paper
+    band = (MARGIN_IN, MARGIN_IN, paper_w - 2 * MARGIN_IN,
+            paper_h - 2 * MARGIN_IN - TITLE_H_IN)
+    return frame.model_copy(update={
+        "viewport": (MARGIN_IN, MARGIN_IN, 0.01, 0.01),
+        "bands": {**frame.bands, "notes": band, "legend": (0.0, 0.0, 0.0, 0.0)},
+    })

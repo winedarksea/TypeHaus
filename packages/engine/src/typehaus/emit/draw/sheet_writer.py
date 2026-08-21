@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING
 
 from typehaus.emit.draw.pdf_writer import _apply_text_scale, _render_nodes, _scene_bounds
 from typehaus.emit.draw.scene import Scene
-from typehaus.emit.draw.typography import NOTES_PT
+from typehaus.emit.draw.typography import NOTES_PT, wrap_columns_for
 
 if TYPE_CHECKING:  # pragma: no cover — SheetSpec lives in sheets.py (which imports us)
     from typehaus.resolve.model import ResolvedModel
@@ -392,20 +392,21 @@ def _draw_north_arrow(fig, model: "ResolvedModel", view, size) -> None:
 
 # --- notes panel --------------------------------------------------------------
 
-# 9pt monospace advance ≈ 9 * 0.6 / 72 = 0.075"; wrap to fit the reserved panel width.
-_NOTES_WRAP = 40
-
-
 def _scene_note_lines(scene: Scene) -> "list[str]":
     """Wrapped lines for ``Scene.notes`` (str or iterable of str); [] when absent.
 
     Scene-level notes are optional sheet text authored beside the drawing; the composer
     reserves a right-hand panel for them at fixed lettering size rather than letting them
     inflate the drawing's model-space bounds.
+
+    The wrap width is computed from ``_NOTES_W`` and ``NOTES_PT`` rather than being the
+    hand-tuned 40 it was, so the panel's width and the column it wraps to cannot drift
+    apart — the same ``wrap_columns_for`` the card path uses.
     """
     notes = getattr(scene, "notes", None)
     if not notes:
         return []
+    columns = wrap_columns_for(_NOTES_W, NOTES_PT)
     blocks = [notes] if isinstance(notes, str) else list(notes)
     lines: "list[str]" = []
     for block in blocks:
@@ -414,7 +415,9 @@ def _scene_note_lines(scene: Scene) -> "list[str]":
             if not stripped:
                 lines.append("")
                 continue
-            lines.extend(textwrap.wrap(stripped, width=_NOTES_WRAP) or [stripped])
+            indent = "  " if stripped.startswith("• ") else ""
+            lines.extend(textwrap.wrap(stripped, width=columns,
+                                       subsequent_indent=indent) or [stripped])
     return lines
 
 

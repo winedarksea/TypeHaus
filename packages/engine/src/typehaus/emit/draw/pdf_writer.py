@@ -278,28 +278,22 @@ def _rewrap_notes(lines) -> list[str]:
 
 
 def _wrap_notes(lines, columns: int) -> list[str]:
-    """Re-wrap IR note lines (42-char column) to a print column of ``columns``.
+    """Wrap ``Scene.notes`` to a print column of ``columns`` characters.
 
-    ``Scene.notes`` arrives pre-wrapped for a narrow column: bullets start with "• " and
-    their continuation lines with two spaces (→ details._load_markdown_notes). Joining each
-    bullet back together and re-wrapping preserves that structure while filling the panel.
-    Standalone lines (the "NOTES:" header, plain paragraphs) already fit and pass through.
+    ``Scene.notes`` is *logical* lines — one string per bullet or paragraph (→
+    ``details._load_markdown_notes``). Wrapping happens here, once, at the width actually
+    being printed into. Bullets keep a hanging indent so a wrapped continuation lines up
+    under its own text rather than under the bullet.
     """
     import textwrap
 
-    out: list[str] = []
-    for line in lines:
-        if line.startswith("  ") and out and out[-1].startswith(("• ", "  ")):
-            out[-1] += " " + line.strip()
-        else:
-            out.append(line)
     wrapped: list[str] = []
-    for line in out:
+    for line in lines:
         if line.startswith("• "):
             wrapped.extend(textwrap.wrap(line, width=columns,
                                          subsequent_indent="  ") or [line])
         else:
-            wrapped.append(line)
+            wrapped.extend(textwrap.wrap(line, width=columns) or [line])
     return wrapped
 
 
@@ -357,7 +351,7 @@ def _framed_fig(scene: Scene, title: str | None, underlays=()):
 
     notes_band = frame.bands.get("notes")
     if scene.notes and notes_band is not None:
-        _draw_notes_band(fig, frame, scene.notes, notes_band)
+        _draw_notes_band(fig, frame, note_pages(scene.notes, notes_band)[0], notes_band)
     title_band = frame.bands.get("title")
     if title and title_band is not None and not any(
             getattr(n, "space", "model") == "paper"
@@ -367,11 +361,14 @@ def _framed_fig(scene: Scene, title: str | None, underlays=()):
         tx, ty, _tw, th = title_band
         fig.text(tx / paper_w, (ty + th * 0.5) / paper_h, title,
                  fontsize=9, family="monospace", va="center", ha="left")
-    # Off the viewport's own right edge, so it needs no knowledge of the card's margins —
-    # importing detail_card here would close a cycle (it reads sheet_writer's scale ladder,
-    # and sheet_writer reads this module).
-    fig.text((vx + vw) / paper_w, (vy - 0.16) / paper_h, frame.scale_label,
-             fontsize=7, family="monospace", ha="right", va="top", color="#555")
+    if vw > 0.5 and vh > 0.5:
+        # Off the viewport's own right edge, so it needs no knowledge of the card's margins
+        # — importing detail_card here would close a cycle (it reads sheet_writer's scale
+        # ladder, and sheet_writer reads this module). A notes-continuation page has a
+        # degenerate viewport and no drawing, so it gets no scale label: labelling a sheet
+        # with no geometry on it is a claim about nothing.
+        fig.text((vx + vw) / paper_w, (vy - 0.16) / paper_h, frame.scale_label,
+                 fontsize=7, family="monospace", ha="right", va="top", color="#555")
     _apply_text_scale(fig, ax, scaled_text)
     return fig
 
@@ -383,26 +380,72 @@ def _in_band(anchor, band) -> bool:
     return x - 0.01 <= anchor[0] <= x + w + 0.01 and y - 0.01 <= anchor[1] <= y + h + 0.01
 
 
-def _draw_notes_band(fig, frame, notes, band) -> None:
-    """The notes column, wrapped **once**, here, at the width it is actually printing into.
+#: Air between two note columns on the same band, paper inches.
+NOTES_COLUMN_GAP_IN = 0.25
+#: The column width a notes band is divided into — the same 3.4" ``sheet_writer`` reserves,
+#: because a note column that varies per drawing is worse than one that does not.
+NOTES_COLUMN_W_IN = 3.4
 
-    Wrapping earlier — in the note loader, at a guessed column count — is what made the same
-    note ragged on a card and square on a sheet.
 
-    Overflow is truncated with an explicit marker for now. That is a stopgap and it is
-    visible on purpose: silently dropping the tail of a permit set's construction notes is
-    the failure this whole arrangement is meant to stop, and the real answer is a second
-    page.
+def _band_grid(band) -> tuple[int, float, int]:
+    """``(columns, column_width_in, rows_per_column)`` for a notes band."""
+    _x, _y, w, h = band
+    columns = max(1, int((w + NOTES_COLUMN_GAP_IN)
+                         / (NOTES_COLUMN_W_IN + NOTES_COLUMN_GAP_IN)))
+    col_w = (w - (columns - 1) * NOTES_COLUMN_GAP_IN) / columns
+    rows = max(1, int(h * 72.0 / (NOTES_PT * LINE_SPACING)))
+    return columns, col_w, rows
+
+
+def note_pages(notes, band, later_band=None) -> list[list[list[str]]]:
+    """Split ``Scene.notes`` into pages of columns of wrapped lines. Never truncate.
+
+    With the lettering fixed by definition, overflow has exactly two honest outcomes:
+    shrink the type until nobody can read it, or print another page. The old behaviour was a
+    third — silently drop the tail — and dropping the tail of a permit set's construction
+    notes is a defect, not a layout. Catlin's eave is a live two-page case.
+
+    ``notes`` is *logical* lines (one string per bullet), and pages break **between** them:
+    a bullet is never split across a page, and every page re-wraps to its own band, so a
+    continuation sheet with a wider band gets wider lines rather than the first page's.
+    That is only possible because wrapping happens here, once, and not in the note loader.
     """
+    import textwrap
+
+    remaining = [line for line in notes]
+    pages: list[list[list[str]]] = []
+    while remaining:
+        target = band if not pages or later_band is None else later_band
+        columns, col_w, rows = _band_grid(target)
+        capacity = columns * rows
+        wrap_at = wrap_columns_for(col_w, NOTES_PT)
+        taken: list[str] = []
+        lines: list[str] = []
+        for logical in remaining:
+            piece = _wrap_one(logical, wrap_at, textwrap)
+            if lines and len(lines) + len(piece) > capacity:
+                break
+            lines.extend(piece)
+            taken.append(logical)
+        remaining = remaining[len(taken):]
+        pages.append([lines[i:i + rows] for i in range(0, len(lines), rows)] or [[]])
+    return pages
+
+
+def _wrap_one(line: str, columns: int, textwrap) -> list[str]:
+    indent = "  " if line.startswith("• ") else ""
+    return textwrap.wrap(line, width=columns, subsequent_indent=indent) or [line]
+
+
+def _draw_notes_band(fig, frame, columns_of_lines, band) -> None:
     paper_w, paper_h = frame.paper
-    nx, ny, nw, nh = band
-    lines = _wrap_notes(notes, wrap_columns_for(nw, NOTES_PT))
-    capacity = max(1, int(nh * 72.0 / (NOTES_PT * LINE_SPACING)))
-    if len(lines) > capacity:
-        lines = lines[:capacity - 1] + [f"… {len(lines) - capacity + 1} more lines"]
-    fig.text(nx / paper_w, (ny + nh) / paper_h, "\n".join(lines),
-             fontsize=NOTES_PT, family="monospace", va="top", ha="left", color="#222",
-             linespacing=LINE_SPACING)
+    x, y, _w, h = band
+    _columns, col_w, _rows = _band_grid(band)
+    for index, lines in enumerate(columns_of_lines):
+        cx = x + index * (col_w + NOTES_COLUMN_GAP_IN)
+        fig.text(cx / paper_w, (y + h) / paper_h, "\n".join(lines),
+                 fontsize=NOTES_PT, family="monospace", va="top", ha="left",
+                 color="#222", linespacing=LINE_SPACING)
 
 
 def _fig(scene: Scene, title: str | None, underlays=()):

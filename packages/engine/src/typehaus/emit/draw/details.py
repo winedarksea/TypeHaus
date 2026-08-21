@@ -285,9 +285,6 @@ def _title_block(model: ResolvedModel, derived: DerivedDetail, u: float,
     return out
 
 
-_NOTES_WRAP = 42
-
-
 def _notes_path(model: ResolvedModel, derived: DerivedDetail):
     """Absolute path of the detail's ``Transition.notes`` markdown, or None."""
     tr = derived.transition
@@ -304,15 +301,19 @@ def _notes_path(model: ResolvedModel, derived: DerivedDetail):
 
 
 def _notes_lines(model: ResolvedModel, derived: DerivedDetail) -> list[str]:
-    """Wrapped note lines for ``Scene.notes`` — outside the drawing's coordinate space."""
+    """Logical note lines for ``Scene.notes`` — outside the drawing's coordinate space."""
     path = _notes_path(model, derived)
     return _load_markdown_notes(path) if path is not None else []
 
 
 def _load_markdown_notes(path) -> list[str]:
-    """Front-matter-stripped, bulleted, wrapped note lines (port of detail_utils)."""
-    import textwrap
+    """Front-matter-stripped, bulleted note lines — **one string per bullet**.
 
+    Deliberately *not* wrapped. Wrapping here meant guessing a column count (42) that no
+    writer actually prints into, and then every writer re-joined the pieces and re-wrapped
+    them to its own width — ``pdf_writer._rewrap_notes`` existed for exactly that. Wrapping
+    once, at the writer, from the band it is printing into, is the whole of B6.
+    """
     raw = path.read_text(encoding="utf-8").splitlines()
     i = 0
     if raw and raw[0].strip() == "---":
@@ -331,12 +332,9 @@ def _load_markdown_notes(path) -> list[str]:
             # only duplicate it.
             continue
         if stripped.startswith(("- ", "* ")):
-            body = stripped[2:].strip()
-            wrapped = textwrap.wrap(body, width=_NOTES_WRAP) or [body]
-            out.append(f"• {wrapped[0]}")
-            out.extend(f"  {w}" for w in wrapped[1:])
+            out.append(f"• {stripped[2:].strip()}")
             continue
-        out.extend(textwrap.wrap(stripped, width=_NOTES_WRAP) or [stripped])
+        out.append(stripped)
     return out
 
 

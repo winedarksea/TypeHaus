@@ -47,7 +47,14 @@ export function leaderTextAlign(at: Pt, to: Pt): "start" | "end" {
 
 // Text metrics live in ./detailTypography, which the engine's typography.py is checked
 // against by test_typography_parity.py. Re-exported here so existing imports resolve.
-import { CHAR_ASPECT, DIM_TEXT_H, LEADER_TEXT_H } from "./detailTypography";
+import {
+  CHAR_ASPECT,
+  DIM_TEXT_H,
+  DIM_TEXT_PT,
+  LEADER_TEXT_H,
+  modelInPerPt,
+} from "./detailTypography";
+import type { DetailFrame } from "../engine/EngineClient";
 export { CHAR_ASPECT, DIM_TEXT_H, LEADER_TEXT_H };
 
 // Halo behind annotation lettering so it stays legible over hatch fills — the SVG analogue
@@ -136,19 +143,21 @@ interface Bounds {
   maxY: number;
 }
 
-function scenePoints(node: Node): Pt[] {
-  if (Array.isArray(node.points)) return node.points as Pt[];
-  if (Array.isArray(node.boundary)) return node.boundary as Pt[];
-  if (Array.isArray(node.anchor)) return [node.anchor as Pt];
-  if (Array.isArray(node.insert)) return [node.insert as Pt];
-  const pts: Pt[] = [];
-  for (const key of ["at", "to", "p0", "p1"]) if (Array.isArray(node[key])) pts.push(node[key] as Pt);
-  return pts;
+
+// A node's lettering height in *scene units* (model inches). `height_pt` wins when set —
+// the annotative rule from emit/draw/scene.py — and is converted through the frame's scale.
+// Without a frame there is nothing to convert through, so the model-space `height` stands,
+// which is exactly what every drawing did before paper space.
+export function textHeight(node: Node, frame?: DetailFrame | null): number {
+  const isText = node.node === "text";
+  const pt = node.height_pt as number | null | undefined;
+  if (pt != null && frame) return pt * modelInPerPt(frame.scale);
+  return (node.height as number) ?? (isText ? 3 : LEADER_TEXT_H);
 }
 
-// Estimated bbox of a text/leader node's lettering (port of pdf_writer._scene_bounds' text
-// branch). Text is placed by its anchor, so bounds over anchors alone crop the lettering off
-// the panel — a detail's callout column would clip at the right edge every time.
+// Estimated bbox of a text/leader node's lettering. Used to keep a callout column on screen
+// when the panel frames a frameless scene — never to size the *drawing*, which is
+// computeBounds' rule below.
 export function textExtents(node: Node): { xs: [number, number]; ys: [number, number] } | null {
   const isText = node.node === "text";
   const isLeader = node.node === "leader";
@@ -170,7 +179,11 @@ export function textExtents(node: Node): { xs: [number, number]; ys: [number, nu
   };
 }
 
-function computeBounds(nodes: Node[]): Bounds {
+// The drawing's bbox: points and boundaries, nothing else — the mirror of
+// pdf_writer.geometry_bounds. **Text never enters it.** A bbox that grew on lettering makes
+// the drawing's scale a function of how much prose is attached to it, and the same rule has
+// to hold in the viewer or the panel and the print disagree about what the detail is.
+export function computeBounds(nodes: Node[]): Bounds {
   let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
   const grow = (x: number, y: number) => {
     if (x < minX) minX = x;
@@ -179,12 +192,13 @@ function computeBounds(nodes: Node[]): Bounds {
     if (y > maxY) maxY = y;
   };
   for (const n of nodes) {
-    for (const [x, y] of scenePoints(n)) grow(x, y);
-    const ext = textExtents(n);
-    if (ext) {
-      grow(ext.xs[0], ext.ys[0]);
-      grow(ext.xs[1], ext.ys[1]);
-    }
+    if ((n.space as string | undefined) === "paper") continue;
+    // Points and boundaries only — exactly pdf_writer.geometry_bounds. A leader's `to` and a
+    // dimension's `p0`/`p1` are on the geometry, but they are *annotation*, and letting them
+    // vote reopens the loop this rule closes.
+    const pts = (n.points ?? n.boundary) as Pt[] | undefined;
+    if (!Array.isArray(pts)) continue;
+    for (const [x, y] of pts) grow(x, y);
   }
   if (!isFinite(minX)) return { minX: 0, minY: 0, maxX: 100, maxY: 100 };
   return { minX, minY, maxX, maxY };
@@ -222,7 +236,15 @@ export function DetailCanvas({
   // write was rejected (revision conflict / error) so the optimistic drag can snap back.
   onMoveAnnotation?: (tag: string, offsetMeters: Pt) => Promise<boolean>;
 }) {
-  const nodes = (payload.scene.nodes ?? []) as Node[];
+  const allNodes = (payload.scene.nodes ?? []) as Node[];
+  const frame = payload.scene.frame ?? null;
+  // Paper nodes render in their own <g> *outside* the pan/zoom group, so the title block and
+  // legend hold still while the drawing zooms — which is both what paper space means and
+  // better to use than chrome that slides off the panel at 3x.
+  const nodes = useMemo(
+    () => allNodes.filter((n) => (n.space as string | undefined) !== "paper"), [allNodes]);
+  const paperNodes = useMemo(
+    () => allNodes.filter((n) => (n.space as string | undefined) === "paper"), [allNodes]);
   const bounds = useMemo(() => computeBounds(nodes), [nodes]);
   const editable = useMemo(() => editableMap(payload.annotations), [payload.annotations]);
   const pad = Math.max(6, (bounds.maxX - bounds.minX) * 0.08);
@@ -373,6 +395,7 @@ export function DetailCanvas({
               key={i}
               node={n}
               bounds={bounds}
+              frame={frame}
               onPickUid={onPickUid}
               editable={ed}
               drag={delta ?? null}
@@ -381,8 +404,21 @@ export function DetailCanvas({
           );
         })}
       </g>
+      {paperNodes.length > 0 && frame ? (
+        <g>
+          {paperNodes.map((n, i) => (
+            <SceneNode key={`paper-${i}`} node={n} bounds={paperBounds(frame)} frame={frame} />
+          ))}
+        </g>
+      ) : null}
     </svg>
   );
+}
+
+// Paper-space nodes are in paper inches from the sheet's lower-left; `fy` flips them the same
+// way it flips the model, so the bounds handed to it are the sheet itself.
+function paperBounds(frame: DetailFrame): Bounds {
+  return { minX: 0, minY: 0, maxX: frame.paper[0], maxY: frame.paper[1] };
 }
 
 // Render possibly-multi-line content inside an <text>: SVG has no automatic line breaking,
@@ -404,6 +440,7 @@ function TextLines({ content, x, lineHeight }: { content: string; x: number; lin
 function SceneNode({
   node,
   bounds,
+  frame,
   onPickUid,
   editable,
   drag,
@@ -411,6 +448,7 @@ function SceneNode({
 }: {
   node: Node;
   bounds: Bounds;
+  frame?: DetailFrame | null;
   onPickUid?: (uid: string | null) => void;
   editable?: Editable;
   drag?: DragDelta | null;
@@ -460,7 +498,7 @@ function SceneNode({
       const xS = x + dx;
       const yS = fy(y, bounds) + dy;
       const anchor = node.align === "center" ? "middle" : node.align === "right" ? "end" : "start";
-      const h = (node.height as number) ?? 3;
+      const h = textHeight(node, frame);
       return (
         <text
           x={xS}
@@ -489,7 +527,7 @@ function SceneNode({
       const ayS = fy(ay, bounds) + dy;
       const txS = tx;
       const tyS = fy(ty, bounds);
-      const lh = (node.height as number) ?? LEADER_TEXT_H;
+      const lh = textHeight(node, frame);
       const tx0 = axS + (leaderTextAlign(node.at as Pt, node.to as Pt) === "end" ? -1 : 1);
       return (
         <g onMouseDown={down} onClick={pick}
@@ -519,7 +557,9 @@ function SceneNode({
       return (
         <g {...dataUid}>
           <line x1={x0} y1={fy(y0, bounds)} x2={x1} y2={fy(y1, bounds)} stroke="var(--detail-muted)" strokeWidth={0.3} />
-          <text x={mx} y={my - 1} fontSize={DIM_TEXT_H} textAnchor="middle" fill="var(--detail-ink)" {...TEXT_HALO}>
+          <text x={mx} y={my - 1}
+            fontSize={frame ? (node.height_pt as number ?? DIM_TEXT_PT) * modelInPerPt(frame.scale) : DIM_TEXT_H}
+            textAnchor="middle" fill="var(--detail-ink)" {...TEXT_HALO}>
             {label}
           </text>
         </g>

@@ -1,5 +1,6 @@
 import {
-  CHAR_ASPECT, LEADER_TEXT_H, M_TO_IN, draggedOffsetMeters, leaderTextAlign, textExtents,
+  CHAR_ASPECT, LEADER_TEXT_H, M_TO_IN, computeBounds, draggedOffsetMeters, leaderTextAlign,
+  textExtents, textHeight,
 } from "./DetailCanvas";
 import type { Model } from "../model/types";
 import {
@@ -52,11 +53,13 @@ export function runDetailAnnotationTests() {
 
   checkNewAnnotationAnchoring();
   checkTextExtents();
+  checkBoundsIgnoreText();
+  checkAnnotativeTextHeight();
 }
 
-// The viewBox must reserve the room lettering occupies (port of pdf_writer._scene_bounds'
-// text branch) — bounds over anchors alone crop the callout column off the panel's right
-// edge, which is exactly how the notes/labels clipped in the v1 viewer.
+// `textExtents` still measures lettering — the panel uses it to keep a callout column on
+// screen — but it no longer feeds the *drawing's* bbox. See `checkBoundsIgnoreText` below
+// for the rule that replaced that, and computeBounds for where it is enforced.
 function checkTextExtents() {
   const approx = (a: number, b: number) => Math.abs(a - b) < 1e-9;
 
@@ -136,3 +139,55 @@ function checkNewAnnotationAnchoring() {
     throw new Error(`the macro spec must carry kind/text/anchor, got ${JSON.stringify(spec)}`);
   }
 }
+
+
+// The rule the whole paper-space arrangement rests on, and the half of it that lives here:
+// **text never enters the drawing's bbox**. A viewBox that grew on lettering makes the
+// drawing's scale a function of how much prose is attached to it, and the panel and the
+// print would then disagree about what the detail is.
+function checkBoundsIgnoreText() {
+  const square = { node: "polyline", points: [[0, 0], [10, 0], [10, 10], [0, 10]] };
+  const bare = computeBounds([square] as never);
+  const lettered = computeBounds([
+    square,
+    { node: "text", anchor: [400, 400], content: "a very long note indeed" },
+    { node: "leader", at: [-300, -50], to: [5, 5], text: "off the sheet" },
+  ] as never);
+  if (JSON.stringify(bare) !== JSON.stringify(lettered)) {
+    throw new Error(`text moved the drawing bbox: ${JSON.stringify(lettered)}`);
+  }
+  // A paper node is not in this coordinate system at all.
+  const withPaper = computeBounds([
+    square, { node: "polyline", points: [[0, 0], [8.5, 11]], space: "paper" },
+  ] as never);
+  if (JSON.stringify(withPaper) !== JSON.stringify(bare)) {
+    throw new Error(`a paper node entered the model bbox: ${JSON.stringify(withPaper)}`);
+  }
+}
+
+// height_pt wins when set, converted through the frame — the annotative rule. Without a
+// frame there is nothing to convert through, so the model-space height stands.
+function checkAnnotativeTextHeight() {
+  const frame = {
+    paper: [11, 8.5] as [number, number],
+    viewport: [0.5, 1.65, 6.45, 5.3] as [number, number, number, number],
+    center: [0, 0] as [number, number],
+    scale: 1.5,
+    scale_label: "1-1/2\" = 1'-0\"",
+    bands: {},
+  };
+  const node = { node: "text", anchor: [0, 0], content: "x", height: 1.6, height_pt: 7 };
+  const framed = textHeight(node as never, frame);
+  if (Math.abs(framed - 7 * (12 / 1.5 / 72)) > 1e-9) {
+    throw new Error(`annotative height must convert through the scale, got ${framed}`);
+  }
+  if (Math.abs(framed - 0.7777777) > 1e-4) {
+    throw new Error(`7 pt at 1-1/2" = 1'-0" is 0.778 model inches, got ${framed}`);
+  }
+  if (textHeight(node as never, null) !== 1.6) {
+    throw new Error("with no frame the model-space height stands");
+  }
+  // And the same label is half the size it was: the ladder authored 1.6" and meant 7 pt.
+  if (!(framed < 1.6 * 0.6)) throw new Error("the lettering did not actually shrink");
+}
+
