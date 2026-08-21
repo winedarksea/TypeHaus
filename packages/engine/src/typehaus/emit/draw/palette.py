@@ -100,6 +100,20 @@ DETAIL_FILL: dict[str, str] = {
     "struct-1-plywood": "#d9c8a0",
     "plywood-subfloor": "#d9c8a0",
     "zip-r": "#3f6d3a",
+    # The roof rebuild's six new tags (2026-08-20). Every one of them was drawing as the
+    # #e8e4da fallback with no hatch — six near-white bands stacked on each other in the
+    # one detail whose whole job is to tell the roof's layers apart. These tables are
+    # explicit by tag on purpose (a substring guess would colour "roof-vent-mat" as metal),
+    # so a new material has to be entered here or it renders as nothing.
+    "zip-sheathing": "#3f6d3a",
+    "roof-deck-vapor-barrier": "#1e3a5f",
+    # Deliberately NOT the deck barrier's navy, though both are self-adhered sheets: the
+    # whole point of this roof is that one is vapour-tight and the other must not be, and
+    # the drawing is where a roofer sees that. Warm grey against the barrier's navy.
+    "roof-underlayment-synthetic": "#8f8578",
+    "roof-vent-mat": "#dfe6ea",
+    "fiberglass-r19": "#ddecc8",
+    "blown-fiberglass": "#e7f2d8",
     "gwb": "#e6e6e6",
     "polyiso": "#f4e6b1",
     "polyiso-foil": "#efdf9e",
@@ -110,6 +124,9 @@ DETAIL_FILL: dict[str, str] = {
     "fiberglass": "#ddecc8",
     "air-barrier": "#1e3a5f",
     "standing-seam": "#2f2f2f",
+    "standing-seam-snaplock": "#2f2f2f",
+    "standing-seam-nailstrip": "#2f2f2f",
+    "standing-seam-nailstrip-26": "#2f2f2f",
     "fiber-cement": "#e6e6e6",
     "cedar-tg": "#c8a26a",
     "sauna-tg": "#e6d4ae",
@@ -145,6 +162,7 @@ DETAIL_HATCH: dict[str, str] = {
     "struct-1-plywood": "osb",
     "plywood-subfloor": "osb",
     "zip-r": "osb",
+    "zip-sheathing": "osb",
     "gwb": "gypsum",
     "polyiso": "rigid",
     "polyiso-foil": "rigid",
@@ -153,8 +171,18 @@ DETAIL_HATCH: dict[str, str] = {
     "xps": "rigid",
     "mineral-wool": "batt",
     "fiberglass": "batt",
+    "fiberglass-r19": "batt",
+    "blown-fiberglass": "batt",
     "air-barrier": "membrane",
+    "roof-deck-vapor-barrier": "membrane",
+    "roof-underlayment-synthetic": "membrane",
+    # The vent mat is an air gap that happens to be a product: hatching it as a membrane
+    # would draw the one layer in this roof that is mostly air as a solid sheet.
+    "roof-vent-mat": "airgap",
     "standing-seam": "metal",
+    "standing-seam-snaplock": "metal",
+    "standing-seam-nailstrip": "metal",
+    "standing-seam-nailstrip-26": "metal",
     "aggregate": "gravel",
     "river-rock": "gravel",
     "soil": "soil",

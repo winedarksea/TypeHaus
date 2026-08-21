@@ -175,6 +175,49 @@ export function runArchGeometryTests() {
   assert(soffitVertices > archSoffitSegmentCount(1.2),
     "The soffit ring was actually found and smoothed");
 
+  // A banded layer (`Layer.extent` / `Layer.slot`) must be swept over its OWN z-range, not the
+  // wall's. Until 2026-08-20 this path ignored the band, so the sunken garden's five-region
+  // Ishtar wythe — arched door, arched window, therefore swept — built five coincident
+  // full-height solids in five colours and rendered as z-fighting noise instead of bands.
+  const yRange = (geo: THREE.BufferGeometry | null) => {
+    assert(geo !== null, "The banded region still takes the swept-arch path");
+    const bounds = new THREE.Box3().setFromBufferAttribute(
+      geo.getAttribute("position") as THREE.BufferAttribute);
+    return [bounds.min.y, bounds.max.y] as const;
+  };
+  const banded = (z0: number | null, z1: number | null) => createSmoothArchedWallLayerGeometry(
+    archWall, paddedThinRect, [arch], [0, 0], { z0_m: z0, z1_m: z1 });
+
+  const unbanded = yRange(createSmoothArchedWallLayerGeometry(archWall, paddedThinRect, [arch], [0, 0]));
+  assert(Math.abs(unbanded[0]) < 1e-6 && Math.abs(unbanded[1] - 3) < 1e-6,
+    "A layer with no band still sweeps the whole wall, exactly as before");
+
+  const plinth = yRange(banded(null, 0.05));
+  assert(Math.abs(plinth[0]) < 1e-6 && Math.abs(plinth[1] - 0.05) < 1e-6,
+    "A band below the opening's sill sweeps only its own courses");
+  assert(plinth[1] < unbanded[1] - 1e-6,
+    "Two regions of one split row no longer sweep the same full-height solid");
+
+  const cutByArch = yRange(banded(null, 2.0));
+  assert(Math.abs(cutByArch[1] - 2.0) < 1e-6,
+    "A band whose top cuts through the arch head stops at the band, not the crown");
+
+  const above = yRange(banded(2.6, null));
+  assert(Math.abs(above[0] - 2.6) < 1e-6 && Math.abs(above[1] - 3) < 1e-6,
+    "A band clear above the arch crown runs to the wall top");
+  // The field above a door is solid brick. With the hole suppressed the swept solid is a plain
+  // box: eight distinct corners, which an opening-punched outline can never reduce to.
+  const aboveCorners = new Set<string>();
+  const abovePosition = banded(2.6, null)!.getAttribute("position");
+  for (let index = 0; index < abovePosition.count; index++) {
+    aboveCorners.add([abovePosition.getX(index), abovePosition.getY(index), abovePosition.getZ(index)]
+      .map((value) => value.toFixed(4)).join(","));
+  }
+  assert(aboveCorners.size === 8, "An opening entirely below a band punches no hole in it");
+
+  assert(banded(2.6, 2.6) === null,
+    "A zero-height band builds nothing rather than an inverted shape");
+
   assert(createSmoothArchedWallLayerGeometry(archWall, paddedThinRect, [opening(3)], [0, 0]) === null,
     "A wall with no arched opening keeps the ordinary extrusion path");
   assert(createSmoothArchedWallLayerGeometry(

@@ -221,7 +221,8 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
                                  material, solid.uid, solid.tag, material=material))
 
     for roof in model.roofs:
-        _emit_roof_cut(b, model, roof, direction, station, crop, joints)
+        _emit_roof_cut(b, model, roof, direction, station, crop, joints,
+                       ladder_labels)
 
     for floor in model.floors:
         _emit_floor_cut(b, floor, direction, station, crop)
@@ -240,8 +241,17 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
     # dodged against each other (two walls' ladders share the text column at the crop's
     # left edge and would otherwise interleave).
     for placed in dodge(ladder_labels):
-        mid_u = placed.spec.target[0]
+        mid_u, target_z = placed.spec.target
         rung_z = placed.at[1]
+        if target_z:
+            # A roof layer is a sloped band: its layers separate in *z* at a given u, so a
+            # flat rung cannot tell them apart the way it can a wall's vertical layers. The
+            # rung stays horizontal out to the band's own u and then elbows to the point on
+            # it, which keeps the text column aligned while the pointers fan.
+            b.add(Leader(anchor=NamedPoint(xy=(mid_u, target_z)), at=placed.at,
+                         to=(mid_u, rung_z), text=placed.spec.text,
+                         height=placed.height, layer="A-ANNO-TEXT"))
+            continue
         # Horizontal, leadered back to the layer at the rung's own height — the rung moves
         # with the label when dodged, so the leader line stays flat and never crosses text.
         b.add(Leader(anchor=NamedPoint(xy=(mid_u, rung_z)), at=placed.at,
@@ -459,21 +469,113 @@ def _rafter_plan_span(roof, direction: str) -> tuple[float, float] | None:
     return min(coords), max(coords)
 
 
-def _emit_roof_cut(b, model, roof, direction, station, crop, joints=None) -> None:
+def _roof_layer_ladder(roof, detail_layers, crop, z_at, ladder_labels) -> None:
+    """Name every band of a roof's assembly, the way ``_emit_wall_cut`` names a wall's.
+
+    Without this the one drawing whose subject is the roof-to-wall junction labelled the
+    wall's nine layers and none of the roof's — the reader could see that something six
+    inches thick sat above the rafters but not that it was two staggered courses of
+    polyiso, nor which of the three thin dark bands above it was the vapour barrier and
+    which the underlayment. On a nailbase roof that distinction is the whole assembly.
+
+    Probed at one station up-slope of the eave rather than at the cut's own edge: the eave
+    end is where the water chain, the corner trim and the wall head all crowd into two
+    inches of drawing, and a fan of nine leaders into that is unreadable. Up-slope the
+    bands are clear of everything.
+    """
+    if ladder_labels is None or crop is None or not detail_layers:
+        return
+    (cu0, cz0), (cu1, cz1) = crop
+    u_lo, u_hi = min(cu0, cu1), max(cu0, cu1)
+    # The up-slope end of the crop is the higher one; probe a fifth of the way in from it.
+    up_is_hi = z_at(u_hi) >= z_at(u_lo)
+    probe = (u_hi - 0.2 * (u_hi - u_lo)) if up_is_hi else (u_lo + 0.2 * (u_hi - u_lo))
+    z_probe = z_at(probe)
+    z_lo, z_hi = min(cz0, cz1), max(cz0, cz1)
+
+    entries = []
+    for (layer, d0, d1) in detail_layers:
+        mid_z = z_probe - (d0 + d1) / 2.0
+        if not (z_lo <= mid_z <= z_hi):  # band off the sheet — labelling it points at nothing
+            continue
+        inches = (d1 - d0) / M_PER_IN
+        entries.append(LabelSpec(
+            text=f'{layer.name} {inches:.3g}"',
+            target=(probe / M_PER_IN, mid_z / M_PER_IN),
+            key=(roof.uid, layer.name)))
+    if not entries:
+        return
+    # Outermost first, so the column reads top-down in the same order as the drawing.
+    entries.reverse()
+    ladder_labels.extend(place_column(
+        entries, x=u_lo / M_PER_IN - 1.0, z_top=z_hi / M_PER_IN - 1.0,
+        step=_LABEL_RUNG_IN, height=1.6, align="right"))
+
+
+class _CavityBand:
+    """A cavity fill dressed as a ``Layer`` so one band loop draws both.
+
+    It borrows the host structure layer's function on purpose: the fill is clipped by the
+    rafter plan span, exactly as its bay is, and carries no edge setback of its own.
+    """
+
+    __slots__ = ("name", "material_ref", "function", "_cavity")
+
+    def __init__(self, host, cavity) -> None:
+        self.name = f"{host.name} fill"
+        self.material_ref = cavity.material_ref
+        self.function = host.function
+        self._cavity = cavity
+
+
+def _emit_roof_cut(b, model, roof, direction, station, crop, joints=None,
+                   ladder_labels=None) -> None:
     intervals = ring_cut_intervals(roof.footprint, direction, station)
     if not intervals:
         return
     asm = model.plan.library.resolve_assembly(roof.assembly)
     thickness = sum(l.thickness.meters for l in asm.layers) if asm is not None else 0.3
-    detail_layers = None
-    if joints is not None and asm is not None:
-        # Per-layer sloped bands (cumulative offsets from the deck top downward).
-        detail_layers = []
-        depth = 0.0
+    # ``z_at`` is ``roof_height_at``, which is the top of the structure layer (the underside
+    # of the sheathing), not the top of the roofing — so the structure hangs BELOW it and
+    # everything outboard stacks ABOVE it. Both the per-layer detail band and the coarse
+    # single band below are offset from that same datum: ``struct_below`` is how far the
+    # structure's underside sits below it, ``struct_below - thickness`` is how far the
+    # roofing's top sits above it.
+    #
+    # This used to run one cumulative depth downward from the first layer, which drew the
+    # whole above-structure stack *under* the rafters: on catlin's nailbase roof the section
+    # showed metal, vent mat, underlayment, OSB and 6" of polyiso hanging below the I-joists
+    # and nothing at all above them. It read as a plausible drawing, which is why it
+    # survived — the bands were in the right order, just mirrored about the wrong plane.
+    # `roof_trim.py` calls eave_z_m "the deck plane" and `test_accessories` derives a vent
+    # termination as roof_height_at + skin; both say the same thing this does.
+    spans = []
+    if asm is not None:
+        cumulative = 0.0
         for layer in asm.layers:
             t = layer.thickness.meters
-            detail_layers.append((layer, depth, depth + t))
-            depth += t
+            spans.append((layer, cumulative, cumulative + t))
+            # A cavity fill is not a layer of its own — it shares the joist bay's depth, so
+            # it adds nothing to ``cumulative``. Drawn as a sub-band it is the difference
+            # between a roof that reads as 11-7/8" of solid timber and one that reads as a
+            # batt between rafters, which is what the section is cut to show.
+            cavity = getattr(layer, "cavity", None)
+            if cavity is not None:
+                fill = (cavity.thickness.meters
+                        if cavity.thickness is not None else t)
+                # ``cumulative`` runs interior→exterior, so a batt held to the ceiling side
+                # starts at the bay's inboard face and the remaining depth stays open.
+                spans.append((_CavityBand(layer, cavity), cumulative, cumulative + fill))
+            cumulative += t
+    # The datum is the outboard face of the outermost structure layer. A roof with no framed
+    # structure layer keeps the old zero datum, which is all it ever had.
+    struct_below = next((c1 for (layer, _c0, c1) in reversed(spans)
+                         if layer.function is LayerFunction.STRUCTURE), 0.0)
+    detail_layers = None
+    if joints is not None and asm is not None:
+        # (top offset, bottom offset), both positive-downward from the datum.
+        detail_layers = [(layer, struct_below - c1, struct_below - c0)
+                         for (layer, c0, c1) in spans]
     xs = [p[0] for p in roof.footprint]
     ys = [p[1] for p in roof.footprint]
     lo, hi = (min(xs), max(xs)) if roof.ridge_direction == "y" else (min(ys), max(ys))
@@ -543,9 +645,16 @@ def _emit_roof_cut(b, model, roof, direction, station, crop, joints=None) -> Non
                 pat = detail_hatch(layer.material_ref, layer.function.value)
                 b.add(Hatch(boundary=pts, pattern=pat or "batt", layer="A-WALL-PATT",
                             uid=roof.uid, material=layer.material_ref))
+            _roof_layer_ladder(roof, detail_layers, crop, z_at, ladder_labels)
             continue
-        top = _top_line(u0c, u1c)
-        bottom = [(u, z - thickness) for (u, z) in reversed(top)]
+        # Same datum as the per-layer bands above: ``z_at`` sits at the top of the
+        # structure, not the top of the roofing, so the single coarse band runs from
+        # ``struct_below`` under that datum to the rest of the stack's thickness above it —
+        # not straight down by the full thickness, which would bury the whole above-structure
+        # stack under the rafters the way the per-layer bands used to.
+        deck_line = _top_line(u0c, u1c)
+        top = [(u, z + (thickness - struct_below)) for (u, z) in deck_line]
+        bottom = [(u, z - struct_below) for (u, z) in reversed(deck_line)]
         clipped = _clip_polygon(top + bottom, crop)
         if len(clipped) < 3:
             continue
@@ -703,15 +812,21 @@ def _emit_raked_rafter(b, member, u0, u1, z0_a, z0_b, z1_a, z1_b, crop,
     # The seat runs *inboard* (toward the ridge end) from the eave's plumb cut. The
     # endpoints carry no ordering guarantee — an east-half rafter's eave end is the
     # larger u — so the step direction comes from where the ridge end actually is.
+    # The heel drops BELOW the member's underside, it does not raise it. The resolver
+    # already seats the rafter: its eave-end ``z0`` IS the plate top, and it models the
+    # notch as a separate ``seat_cut`` member spanning plate_top-d .. plate_top. Adding d
+    # here as well applied the birdsmouth twice and floated the rafter a notch-depth clear
+    # of the plate it is supposed to bear on — which is exactly what the drawing showed.
+    # Dropping instead puts the plumb tail over the same span the seat_cut occupies.
     if eave_at_u0:
         step = math.copysign(run, u1 - u0)
-        heel = (u0, z0_a + d)
-        toe = (u0 + step, z0_a + slope_bot * step + d)
+        heel = (u0, z0_a - d)
+        toe = (u0 + step, z0_a + slope_bot * step)
         poly = [(u0, z1_a), (u1, z1_b), (u1, z0_b), toe, heel]
     else:
         step = math.copysign(run, u0 - u1)
-        heel = (u1, z0_b + d)
-        toe = (u1 + step, z0_b + slope_bot * step + d)
+        heel = (u1, z0_b - d)
+        toe = (u1 + step, z0_b + slope_bot * step)
         poly = [(u1, z1_b), (u0, z1_a), (u0, z0_a), toe, heel]
     clipped = _clip_polygon(poly, crop)
     if len(clipped) < 3:

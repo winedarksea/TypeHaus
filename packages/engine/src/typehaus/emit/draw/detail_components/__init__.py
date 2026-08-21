@@ -72,7 +72,8 @@ from typehaus.emit.draw.detail_components.dispatch import (
 )
 from typehaus.emit.draw.detail_components.eave import (
     box_gutter,
-    eave_vent_screen,
+    eave_labels,
+    eave_vent_intake,
     zero_overhang_eave,
 )
 from typehaus.emit.draw.detail_components.geometry import (
@@ -169,7 +170,8 @@ __all__ = [
     "condition_opening",
     "condition_walls",
     "dimension_strings",
-    "eave_vent_screen",
+    "eave_labels",
+    "eave_vent_intake",
     "faces_soil",
     "flashing_nodes",
     "foam_protection_board",

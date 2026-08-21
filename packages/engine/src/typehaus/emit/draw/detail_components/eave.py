@@ -9,6 +9,7 @@ Neither reads in the drawing unless they are drawn, because neither is a model e
 
 from __future__ import annotations
 
+from typehaus.emit.draw.annotate import LabelSpec, dodge, place_column, wrap_label
 from typehaus.emit.draw.detail_components.config import SHEET_METAL
 from typehaus.emit.draw.detail_components.geometry import (
     face_of,
@@ -19,7 +20,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     path_from_steps,
     rect_region,
 )
-from typehaus.emit.draw.scene import IRNode
+from typehaus.emit.draw.scene import IRNode, Leader, NamedPoint
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.roof_geometry import roof_height_at
 
@@ -70,7 +71,9 @@ def zero_overhang_eave(model, wall, crop, direction, station) -> list[IRNode]:
         nodes += flashing_nodes(drip, tag="drip-edge")
         nodes += box_gutter(clad_out, junction_z, out_sign)
 
-    nodes += eave_vent_screen(clad_out, junction_z, out_sign, cz0 / M_PER_IN)
+    nodes += eave_vent_intake(model, roof, clad_out, junction_z, out_sign, cz0 / M_PER_IN)
+    nodes += eave_labels(model, roof, clad_out, junction_z, out_sign,
+                         direction, station)
     return nodes
 
 
@@ -153,18 +156,137 @@ def box_gutter(clad_out: float, junction_z: float, out_sign: float) -> list[IRNo
                           material="gutter", tag="box-gutter")
 
 
-def eave_vent_screen(clad_out: float, junction_z: float, out_sign: float,
-                     crop_bottom_z: float) -> list[IRNode]:
-    """The wall→eave→ridge ventilation path, screened where it enters at the eave.
+def _above_structure_bands(model, roof) -> list:
+    """``(layer, z_lo_in, z_hi_in)`` for every layer outboard of the roof's structure,
+    measured up from ``roof_height_at`` — which is the top of the structure, not the top of
+    the roofing. Empty when the roof has no framed structure layer to measure from."""
+    if roof is None:
+        return []
+    asm = model.plan.library.resolve_assembly(roof.assembly)
+    if asm is None:
+        return []
+    spans, cumulative = [], 0.0
+    for layer in asm.layers:
+        t = layer.thickness.meters / M_PER_IN
+        spans.append((layer, cumulative, cumulative + t))
+        cumulative += t
+    base = next((hi for (layer, _lo, hi) in reversed(spans)
+                 if layer.function.value == "structure"), None)
+    if base is None:
+        return []
+    return [(layer, lo - base, hi - base) for (layer, lo, hi) in spans if lo >= base - 1e-9]
 
-    Zero overhang means the intake is a slot in the wall plane, not a vented soffit. The
-    screen band is what tells a builder the slot is an intended opening rather than a gap.
+
+def eave_vent_intake(model, roof, clad_out: float, junction_z: float, out_sign: float,
+                     crop_bottom_z: float) -> list[IRNode]:
+    """The screened intake for whatever air gap the roof assembly actually carries.
+
+    This used to be a slot in the *wall* plane, which is where a vented-batten roof takes its
+    intake: the air came up behind the cladding and into a gap sitting straight on the foam.
+    Catlin's roof no longer vents there. Its only gap is a ~1/4" mat rolled *above* the top
+    deck, under the standing seam, so the intake is a screened opening at the eave edge of
+    that band and the wall plane below it is continuous air barrier. Drawing the old wall
+    slot on this assembly told a builder to leave a hole through the air barrier.
+
+    A roof with no air gap at all is unvented by design and gets no screen, rather than a
+    screen over an opening that does not exist.
     """
     cfg = SHEET_METAL
-    inboard = clad_out - out_sign * 3.0
-    band_z = junction_z - 3.0
+    gaps = [(lo, hi) for (layer, lo, hi) in _above_structure_bands(model, roof)
+            if layer.function.value == "airgap"]
+    if not gaps:
+        return []
+    lo, hi = gaps[-1]
+    band_z = junction_z + lo
     if band_z <= crop_bottom_z:  # slot below the crop — drawing it would float off the sheet
         return []
+    inboard = clad_out - out_sign * 2.0
+    height = max(hi - lo, cfg.screen_band_in)
     return rect_region(min(clad_out, inboard), band_z, max(clad_out, inboard),
-                       band_z + cfg.screen_band_in,
-                       "insect-screen", None, "rigid", lineweight=0.3)
+                       band_z + height, "insect-screen", None, "rigid", lineweight=0.3)
+
+
+def _water_anchor(model, direction: str, station: float, clad_out: float,
+                  category: str, fallback: tuple[float, float]) -> tuple[float, float]:
+    """Centre of the resolved gutter/drip solids this cut passes through, or ``fallback``.
+
+    The eave water chain is authored where the house has one (``params/roof_trim.py`` derives
+    the gutter and drip off the deck datum) and drawn schematically where it does not. Both
+    end up on the sheet, but at different elevations — the authored gutter's rim sits *above*
+    the deck datum, while the schematic trough hangs below the roof plane. A label anchored on
+    a guessed offset therefore points at the right piece on one eave and at empty paper on the
+    other, so the anchor is read back off the geometry that was actually drawn.
+    """
+    axis, cross = (0, 1) if direction == "x" else (1, 0)
+    us: list[float] = []
+    zs: list[float] = []
+    for solid in model.solids:
+        if solid.category != category:
+            continue
+        along = [p[cross] / M_PER_IN for p in solid.outline]
+        across = [p[axis] / M_PER_IN for p in solid.outline]
+        if not (min(along) <= station / M_PER_IN <= max(along)):
+            continue
+        if min(abs(min(across) - clad_out), abs(max(across) - clad_out)) > 24.0:
+            continue
+        us += across
+        zs += [solid.z0_m / M_PER_IN, solid.z1_m / M_PER_IN]
+    if not us:
+        return fallback
+    return ((min(us) + max(us)) / 2.0, (min(zs) + max(zs)) / 2.0)
+
+
+def eave_labels(model, roof, clad_out: float, junction_z: float, out_sign: float,
+                direction: str, station: float) -> list[IRNode]:
+    """Name the eave water chain on the drawing, not only in the notes.
+
+    The chain is a *lap order* — deck, drip edge, underlayment over the drip, metal, gutter
+    back behind the trim — and a lap order that is not written on the piece it applies to is
+    the thing that gets built backwards.
+    """
+    bands = {layer.function.value: (lo, hi)
+             for (layer, lo, hi) in _above_structure_bands(model, roof)}
+
+    def mid(function: str) -> float:
+        lo, hi = bands.get(function, (0.0, 0.0))
+        return junction_z + (lo + hi) / 2.0
+
+    cfg = SHEET_METAL
+    deck_top = junction_z + max((hi for (_lo, hi) in bands.values()), default=0.0)
+    # Each anchor sits ON the piece it names. Anchoring them all at the eave corner — the
+    # obvious thing, since that is where the chain is — collapses five leaders into one
+    # unreadable blob, because the whole stack is under 8" deep at a scale where 8" is a
+    # couple of millimetres of paper.
+    gutter = _water_anchor(
+        model, direction, station, clad_out, "gutter",
+        (clad_out + out_sign * (cfg.gutter_standoff_in + cfg.gutter_depth_in / 2.0),
+         junction_z - 1.5 - cfg.gutter_height_in / 2.0))
+    drip = _water_anchor(
+        model, direction, station, clad_out, "flashing",
+        (clad_out + out_sign * cfg.drip_edge_run_in / 2.0, deck_top - 0.3))
+    # A label for a layer the assembly does not have is worse than no label: the garage roof
+    # is a plain vented-attic deck with no rain-screen gap, and an inherited "vent mat intake"
+    # leader on it points at nothing and contradicts its own section.
+    entries = []
+    if "cladding" in bands:
+        entries.append(((clad_out - out_sign * 6.0, mid("cladding")),
+                        "standing seam on concealed floating clips"))
+    if "airgap" in bands:
+        entries.append(((clad_out - out_sign * 3.0, mid("airgap")),
+                        "vent mat intake, insect screened — the roof's only outward "
+                        "drying path"))
+    entries += [
+        (drip, "drip edge lies ON the top deck; underlayment laps OVER it"),
+        (gutter, "box gutter, back edge tucked BEHIND the trim face"),
+        # The apron is drawn from its own back/run/drop legs, so its mid-height is derived
+        # the same way rather than guessed off the roof plane.
+        ((clad_out + out_sign * cfg.apron_run_in / 2.0,
+          junction_z + cfg.apron_run_in - 0.2 - cfg.apron_drop_in / 2.0),
+         "apron flashing over the cladding head, behind the drip"),
+    ]
+    specs = [LabelSpec(text=wrap_label(text), target=target) for (target, text) in entries]
+    placed = place_column(specs, x=clad_out + out_sign * 15.0, z_top=deck_top + 1.0,
+                          step=3.2, height=1.5, align="left" if out_sign > 0 else "right")
+    return [Leader(anchor=NamedPoint(xy=label.spec.target), at=label.at,
+                   to=label.spec.target, text=label.spec.text, height=label.height)
+            for label in dodge(placed)]

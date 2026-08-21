@@ -125,7 +125,24 @@ _DRIP_M = 0.04       # cladding/furring run long past the interface.
 def _default_roof_joins(plan: JointPlan, model, wall: ResolvedWall, roof: ResolvedRoof,
                         direction: str, station: float) -> None:
     asm = model.plan.library.resolve_assembly(roof.assembly)
-    roof_thickness = sum(l.thickness.meters for l in asm.layers) if asm is not None else 0.3
+    # Depth from the roof's *datum* to the underside its wall dies into. The datum
+    # (``roof_height_at``, which ``_roof_underside_line`` walks) is the top of the STRUCTURE
+    # layer, not the top of the roofing — so only the structure hangs below it and only the
+    # structure may be subtracted here.
+    #
+    # This summed the whole assembly, which on catlin's 19.86"-deep nailbase roof put the
+    # "underside" 8" below the top plate. Every consequence followed from that one number:
+    # the wall's continuous insulation was terminated below its own plate, the air barrier
+    # was run down instead of up to the roof, and the spray-foam wedge that fills the
+    # roof-foam/wall-foam mismatch was drawn inside the wall beneath the plate rather than
+    # in the mismatch. It reads as "gaps in the exterior foam near the roof intersection".
+    roof_thickness = 0.3
+    if asm is not None:
+        cumulative = 0.0
+        for layer in asm.layers:
+            cumulative += layer.thickness.meters
+            if layer.function.value == "structure":
+                roof_thickness = cumulative
     # Junction u = the wall's in-section position (world x for "x" cut, world y for "y").
     (x0, y0), (x1, y1) = wall.axis
     junction_u = (x0 + x1) / 2.0 if direction == "x" else (y0 + y1) / 2.0

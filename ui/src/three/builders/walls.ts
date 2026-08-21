@@ -97,12 +97,14 @@ export function buildWall(
         : standardMaterial(new THREE.Color(materialColor(ly.material, palette, materials)), mode);
     mats.push(mat);
     // A banded layer (`Layer.extent`, or one region of a split row via `Layer.slot`) covers
-    // only part of the wall's height. Clamping the pieces here rather than inside
-    // `wallLayerPieces` keeps the jamb/arch clipping it does unchanged and simply trims the
-    // result: the arch soffit of a five-colour wythe still comes from the opening, and each
-    // colour then shows only where its own band puts it. The smooth-arch path opts out —
-    // it builds one swept solid for the whole layer, and no band on this house crosses one.
-    const smoothArchGeometry = createSmoothArchedWallLayerGeometry(w, ly.polygon, openings, center);
+    // only part of the wall's height, and BOTH geometry paths have to honour that. Clamping
+    // the strip path here rather than inside `wallLayerPieces` keeps the jamb/arch clipping
+    // it does unchanged and simply trims the result; the swept path takes the band itself,
+    // because its outline is built from the wall's own z-range and would otherwise hand back
+    // a full-height solid per region — five coincident wythes z-fighting for the same face,
+    // which is what the sunken garden's Ishtar wall showed until 2026-08-20. Its arched door
+    // and window are what put it on the swept path in the first place.
+    const smoothArchGeometry = createSmoothArchedWallLayerGeometry(w, ly.polygon, openings, center, ly);
     const geometries: (THREE.BufferGeometry | null)[] = smoothArchGeometry
       ? [smoothArchGeometry]
       : clampPiecesToBand(wallLayerPieces(w, ly.polygon, openings), ly).map((piece) => piece.topIsRaked
@@ -294,6 +296,7 @@ function applySmoothArchSoffitNormals(
 // and junction-mitered wall layers whose non-rectangular plan footprint cannot be swept safely.
 export function createSmoothArchedWallLayerGeometry(
   wall: Wall, polygon: readonly [number, number][], openings: Opening[], center: PlanCenter,
+  band?: { z0_m?: number | null; z1_m?: number | null },
 ): THREE.BufferGeometry | null {
   if (!openings.some((opening) => (opening.arch_rise_m ?? 0) > 1e-9) ||
       wall.top_z0_m != null || wall.top_z1_m != null) return null;
@@ -317,11 +320,20 @@ export function createSmoothArchedWallLayerGeometry(
     [minAlong, minAcross], [minAlong, maxAcross], [maxAlong, minAcross], [maxAlong, maxAcross],
   ].every(([along, across]) => corners.has(`${along.toFixed(8)},${across.toFixed(8)}`))) return null;
 
+  // The layer's own vertical extent, intersected with the wall's. An unbanded layer gets the
+  // wall back unchanged, so nothing authored before `Layer.extent` moves. Every elevation
+  // below is then run through `clampY`, which is what keeps a hole — and the arch samples
+  // that shape its head — inside the region actually being built.
+  const bandBottom = Math.max(wall.z0_m, band?.z0_m ?? -Infinity);
+  const bandTop = Math.min(wall.z1_m, band?.z1_m ?? Infinity);
+  if (bandTop - bandBottom <= 1e-9) return null;
+  const clampY = (elevation: number) => Math.min(bandTop, Math.max(bandBottom, elevation));
+
   const shape = new THREE.Shape();
-  shape.moveTo(minAlong, wall.z0_m);
-  shape.lineTo(maxAlong, wall.z0_m);
-  shape.lineTo(maxAlong, wall.z1_m);
-  shape.lineTo(minAlong, wall.z1_m);
+  shape.moveTo(minAlong, bandBottom);
+  shape.lineTo(maxAlong, bandBottom);
+  shape.lineTo(maxAlong, bandTop);
+  shape.lineTo(minAlong, bandTop);
   shape.closePath();
   const soffits: ArchSoffitCylinder[] = [];
   for (const opening of openings) {
@@ -334,22 +346,25 @@ export function createSmoothArchedWallLayerGeometry(
     // negative, and disagree with the wall solids (resolve/geometry_walls.py, and
     // wallLayerPieces below, which both measure from the threshold).
     const threshold = wall.z0_m + opening.sill_m;
-    const bottom = Math.max(wall.z0_m, threshold);
-    if (end - start <= 1e-9 || bottom >= wall.z1_m - 1e-9) continue;
+    const bottom = clampY(threshold);
+    // An opening that misses this band entirely punches no hole in it: the plinth course
+    // under a door's threshold is solid brick, and so is the field above its arch.
+    if (end - start <= 1e-9 || bottom >= bandTop - 1e-9 ||
+        threshold + opening.height_m <= bandBottom + 1e-9) continue;
     const hole = new THREE.Path();
     const archRise = opening.arch_rise_m ?? 0;
     if (archRise <= 1e-9) {
-      const top = Math.min(wall.z1_m, threshold + opening.height_m);
+      const top = clampY(threshold + opening.height_m);
       hole.moveTo(start, bottom); hole.lineTo(start, top); hole.lineTo(end, top); hole.lineTo(end, bottom);
     } else {
       const { radiusM, halfAngleRad, depthM } = archSoffitCircle(opening.width_m / 2, archRise);
       const springlineM = threshold + Math.max(0, opening.height_m - archRise);
       const segmentCount = archSoffitSegmentCount(radiusM, halfAngleRad);
       hole.moveTo(start, bottom);
-      hole.lineTo(start, Math.min(wall.z1_m, springlineM));
+      hole.lineTo(start, clampY(springlineM));
       for (let segment = 0; segment <= segmentCount; segment++) {
         const { offsetM, heightM } = archSoffitSample(segment, segmentCount, radiusM, halfAngleRad);
-        hole.lineTo(opening.center_along_m + offsetM, Math.min(wall.z1_m, springlineM + heightM));
+        hole.lineTo(opening.center_along_m + offsetM, clampY(springlineM + heightM));
       }
       hole.lineTo(end, bottom);
       soffits.push({

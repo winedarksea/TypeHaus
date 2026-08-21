@@ -426,13 +426,15 @@ The sunken garden's 16" arch wall and three free retaining walls remain UNKNOWN 
     true description of an exterior hose bib hosted by an interior room's wall rather than a
     defect. The model has no outdoor-room concept to file them under.
 
-## Basement Ceiling
-We are going to plan a major overhaul of the basement. We are reducing the number of poured concrete (suspended deck) ceilings. We are switching those that remain to LiteDeck/BuildDeck EPS forms. The goal with the EPS formed decks is to make the total depth the same as the installed deck depth on wooden joist floors (the wooden joist floors are the same as the upper stories, nominal 12" joists, subfloor, + finish).
+Make sure the basement door keeps the 7" step threshold (reduces flood risk)
 
-All the floors on the western portion (sauna, workshop, stairs) become joists.
+## Basement Ceiling
+We are going to plan a major overhaul of the basement ceiling. We are reducing the number of poured concrete (suspended deck) ceilings. We are switching those that remain to LiteDeck/BuildDeck/etc EPS forms. The goal with the EPS formed decks is to make the total depth the same as the installed deck depth on wooden joist floors (the wooden joist floors are the same as the upper stories, nominal 12" joists, subfloor, + lvp finish). This should allow us to reduce the costs of the concrete ceiling, while still being able to easily change how much of the basement is covered by concrete and how much by wood as they will be very similar (18' spans to the center wall, same depth). This will probably add arouond 3" to the height of the house.
+
+All the floors on the western portion (sauna, workshop, stairs) become joists. Half of the east half also becomes joist, with the heat mat under the dining table still in concrete (the master bathroom heatmap might become tile). 
 
 Because the deck forms can span 18' with a one way span, poured concrete walls W-B-CE, W-B-CW*, and W-B-STR2 can be removed along with their respective footings. The removal of these footings should simplify the footing drains as well.
-Wall W-B-CE becomes a staggered stud wall (still with the double door).
+Wall W-B-CE becomes a staggered stud wall (still with the double door) or a steel stud wall if cheap enough. W-B-STR likely becomes a load bearing 2x6 wall (it's the only one that supports a floor and joists above). Wood on concrete needs a pressure treated sill (and maybe anchor bolts?).
 
 Use subagents and web searches as useful to research this plan.
 

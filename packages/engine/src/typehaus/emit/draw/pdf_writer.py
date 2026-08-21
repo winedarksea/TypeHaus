@@ -103,6 +103,9 @@ _HATCH_MPL = {
     "batt": "....", "osb": "//", "lumber": "\\\\", "concrete": "..", "SOLID": None,
     "rigid": "xx", "gypsum": None, "membrane": None, "metal": None,
     "gravel": "oo", "soil": "..", "foam": "**", "glass": None,
+    # The ventilated mat under the standing seam — an open mesh, hatched as a crosshatch
+    # so it reads as the mostly-air layer it is rather than as another membrane.
+    "airgap": "xxxx",
 }
 
 # name -> (marker, color) for the simple device/register/equipment symbol vocabulary.

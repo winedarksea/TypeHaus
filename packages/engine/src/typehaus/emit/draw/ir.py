@@ -112,6 +112,10 @@ def _hatch_defs() -> str:
                     '<circle cx="6" cy="6" r="0.6" fill="#888"/>',
         "osb": '<line x1="0" y1="8" x2="8" y2="0" stroke="#b0904a" stroke-width="0.5"/>',
         "metal": '<line x1="4" y1="0" x2="4" y2="8" stroke="#586066" stroke-width="0.8"/>',
+        # An open nylon-matrix vent mat: mostly air, and drawn as such. Neither a membrane
+        # (a solid sheet) nor an empty air gap (nothing to draw) — the mesh is the product.
+        "airgap": '<path d="M0,8 L8,0 M0,0 L8,8" stroke="#9fb4bf" stroke-width="0.35" '
+                  'fill="none"/>',
     }
     defs = ['<defs>']
     for name, body in patterns.items():
