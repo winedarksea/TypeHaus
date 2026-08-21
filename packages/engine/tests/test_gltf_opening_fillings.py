@@ -257,9 +257,15 @@ def test_catlin_trimless_bedroom_door_ships_a_leaf_and_no_frame(catlin_model):
 
 # --- French / double-swing door ----------------------------------------------------------
 
-def test_a_double_swing_door_ships_two_leaves_split_by_a_center_mullion(catlin_model):
+@pytest.mark.parametrize("glazed", [True, False])
+def test_a_double_swing_door_ships_two_leaves_split_by_a_center_mullion(catlin_model, glazed):
+    # Catlin hangs both kinds of pair: the glazed DT-EXT-FRENCH60 exterior doors, and
+    # D-B-PLAY's opaque solid-core DT-INT-DOUBLE60. Only the leaf material differs — the
+    # frame, the mullion and the two-leaf split are the operation's, not the glazing's.
     double_swing_types = {door_type.tag for door_type in catlin_model.plan.library.door_types
-                          if door_type.operation == "double_swing"}
+                          if door_type.operation == "double_swing"
+                          and door_type.glazed is glazed}
+    assert double_swing_types, "fixture regression: catlin lost a double-swing door type"
     opening = next((op for op in catlin_model.openings if op.type_ref in double_swing_types), None)
     assert opening is not None, "fixture regression: catlin lost its French doors"
     wall = _host_wall(catlin_model, opening)
@@ -272,12 +278,15 @@ def test_a_double_swing_door_ships_two_leaves_split_by_a_center_mullion(catlin_m
     mullion_width = min(frame_width, clear_width / _DOUBLE_SWING_MULLION_CLEAR_WIDTH_DIVISOR)
     leaf_width = (clear_width - mullion_width) / 2
 
-    leaves = [s for s in solids if s.has_thickness(_WINDOW_GLAZING_THICKNESS_M)]
+    leaf_thickness = _WINDOW_GLAZING_THICKNESS_M if glazed else _DOOR_LEAF_THICKNESS_M
+    leaves = [s for s in solids if s.has_thickness(leaf_thickness)]
     full_height = [s for s in solids
                    if s.height_m == pytest.approx(available_height, abs=_DIMENSION_TOLERANCE_M)]
     assert len(solids) == _FRAME_PIECE_COUNT + 3, "four frame pieces, a mullion and two leaves"
-    assert len(leaves) == 2, "a double_swing door is two glazed leaves"
+    assert len(leaves) == 2, "a double_swing door is two leaves"
     for leaf in leaves:
+        assert (gltf["materials"][leaf.material_index]["alphaMode"]
+                == ("BLEND" if glazed else "OPAQUE"))
         assert leaf.plan_dimensions_m[1] == pytest.approx(leaf_width, abs=_DIMENSION_TOLERANCE_M)
         assert leaf.height_m == pytest.approx(available_height - 2 * frame_width,
                                               abs=_DIMENSION_TOLERANCE_M)

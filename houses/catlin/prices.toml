@@ -1315,7 +1315,7 @@
 "DT-INT-SWING30" = { material = { low = 150, high = 520 }, labour = { low = 145, high = 305 } }  # 12 ea — high end is solid-core paint-grade
 "DT-INT-SWING32" = { material = { low = 155, high = 540 }, labour = { low = 145, high = 305 } }  # 9 ea
 "DT-INT-SWING30-GLAZED" = { material = { low = 350, high = 900 }, labour = { low = 165, high = 350 } }  # 1 ea — was 38% low; a solid-core divided-lite is a real door
-"DT-INT-FRENCH60" = { material = { low = 450, high = 1300 }, labour = { low = 255, high = 500 } }  # 1 ea — hollow-core pair to solid-core glazed pair
+"DT-INT-DOUBLE60" = { material = { low = 400, high = 1000 }, labour = { low = 255, high = 500 } }  # 1 ea — flush solid-core pair, paint-grade to stain-grade
 # 56" needs a FOUR-panel bifold, not a two-panel — doornmore prices a 4-door at $302.40 against
 # $103.50-206.50 for a 2-door, which is why the old $150 floor was wrong.
 "DT-INT-BIFOLD56" = { material = { low = 175, high = 500 }, labour = { low = 105, high = 225 } }  # 2 ea

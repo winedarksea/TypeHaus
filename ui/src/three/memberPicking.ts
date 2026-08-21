@@ -7,7 +7,13 @@
 // list of the member uids it drew, in the exact order it drew them:
 //
 //   • InstancedMesh  → `memberUidByInstance[intersection.instanceId]`
-//   • merged mesh    → `memberUidByBox[floor(intersection.faceIndex / TRIANGLES_PER_BOX)]`
+//   • merged mesh    → `memberUidByBox[upperBound(triangleStarts, faceIndex) - 1]`
+//
+// The merged lookup used to divide by a constant 12 triangles per box, which silently assumed
+// every member in a merge is a box. A birdsmouthed rafter is not (its profile has six points,
+// so its solid has more faces), and neither is a winder tread — which is why members.ts had to
+// filter treads out of the merge entirely. A prefix-sum table costs one array and a binary
+// search and holds for any mix of shapes.
 //
 // Both are recorded at build time by the builders in three/members.ts, so the index a raycast
 // hands back resolves to an engine-authored `<owner uid>::<child key>` identity (→
@@ -16,21 +22,31 @@ import * as THREE from "three";
 import type { Member } from "../model/types";
 import { memberUid } from "../model/memberIdentity";
 import {
-  composeMemberBoxMatrix, isRakedMember, rakedBoxGeometry, TRIANGLES_PER_MEMBER_BOX, UNIT_BOX,
+  composeMemberBoxMatrix, isRakedMember, rakedBoxGeometry, UNIT_BOX,
 } from "./memberBox";
 import type { PlanCenter } from "./planGeometry";
 
 const MEMBER_UID_BY_INSTANCE = "memberUidByInstance";
 const MEMBER_UID_BY_BOX = "memberUidByBox";
+const TRIANGLE_STARTS = "triangleStarts";
 
 /** Tag an InstancedMesh so instance `i` resolves to `memberUids[i]`. */
 export function tagInstancedMemberIdentity(mesh: THREE.InstancedMesh, memberUids: string[]) {
   mesh.userData[MEMBER_UID_BY_INSTANCE] = memberUids;
 }
 
-/** Tag a merged mesh so its i-th 12-triangle box resolves to `memberUids[i]`. */
-export function tagMergedMemberIdentity(mesh: THREE.Mesh, memberUids: string[]) {
+/**
+ * Tag a merged mesh so a raycast faceIndex resolves to the member that drew it.
+ *
+ * `triangleStarts[i]` is the index of the first triangle member `i` contributed, and the
+ * array carries one extra entry for the total — so a faceIndex past the merge resolves to
+ * nothing rather than to the last member. Members may contribute different triangle counts.
+ */
+export function tagMergedMemberIdentity(
+  mesh: THREE.Mesh, memberUids: string[], triangleStarts: number[],
+) {
   mesh.userData[MEMBER_UID_BY_BOX] = memberUids;
+  mesh.userData[TRIANGLE_STARTS] = triangleStarts;
 }
 
 /** Whether this object draws framing members and therefore owns its own per-member identity. */
@@ -54,11 +70,29 @@ export function resolveMemberPickUid(
     return instanceId == null ? null : byInstance[instanceId] ?? null;
   }
   const byBox = object.userData[MEMBER_UID_BY_BOX] as string[] | undefined;
-  if (Array.isArray(byBox)) {
+  const starts = object.userData[TRIANGLE_STARTS] as number[] | undefined;
+  if (Array.isArray(byBox) && Array.isArray(starts)) {
     if (faceIndex == null) return null;
-    return byBox[Math.floor(faceIndex / TRIANGLES_PER_MEMBER_BOX)] ?? null;
+    const index = memberIndexForTriangle(starts, faceIndex);
+    return index == null ? null : byBox[index] ?? null;
   }
   return null;
+}
+
+/**
+ * Which member drew triangle `faceIndex`, by binary search over the prefix sums, or null when
+ * the index falls outside the merge.
+ */
+export function memberIndexForTriangle(starts: number[], faceIndex: number): number | null {
+  if (faceIndex < 0 || starts.length < 2 || faceIndex >= starts[starts.length - 1]) return null;
+  let low = 0;
+  let high = starts.length - 1;
+  while (low + 1 < high) {
+    const mid = (low + high) >> 1;
+    if (starts[mid] <= faceIndex) low = mid;
+    else high = mid;
+  }
+  return low;
 }
 
 /** The uids a bucket will draw, in draw order — what the two tag functions record. */

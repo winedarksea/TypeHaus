@@ -123,14 +123,77 @@ export function rakedBoxVertices(m: Member, center: PlanCenter): [number, number
 // that project-to-scene preserves handedness.
 const BOX_FACES = [[0, 1, 2, 3], [4, 7, 6, 5], [0, 4, 5, 1], [1, 5, 6, 2], [2, 6, 7, 3], [3, 7, 4, 0]];
 
-// Two triangles per quad, six quads per box. The merged member meshes lay their triangles out
-// in exactly this order, which is what lets a raycast faceIndex divide back to a member.
+// Two triangles per quad, six quads per box. Kept for the box case; picking no longer divides
+// by it (→ memberPicking.ts), because a merge may now hold members of different shapes.
 export const TRIANGLES_PER_MEMBER_BOX = BOX_FACES.length * 2;
 
 export function pushBoxIndices(indices: number[], base: number) {
   for (const [a, b, c, d] of BOX_FACES) {
     indices.push(base + a, base + c, base + b, base + a, base + d, base + c);
   }
+}
+
+/**
+ * The corners of a birdsmouthed member: its six-point profile, twice, across its own width.
+ *
+ * Mirrors `resolve/geometry_members.py::_seated_sweep` — the profile is end-top, far-top,
+ * far-bottom, the plumb heel's head, the heel's foot, and the seat's outboard end, and the
+ * underside is the straight line between the member's two `z0` elevations. Null when the
+ * member carries no seat, has no plan run, or its underside never rises clear of the seat.
+ */
+export function seatedProfileVertices(
+  m: Member, center: PlanCenter,
+): [number, number, number][] | null {
+  const seat = m.seat;
+  if (!seat) return null;
+  const a = projectPointToScene(m.p0, 0, center);
+  const b = projectPointToScene(m.p1, 0, center);
+  const run = Math.hypot(m.p1[0] - m.p0[0], m.p1[1] - m.p0[1]);
+  if (run < MIN_PLAN_RUN_M) return null;
+  // Which end bears: the one the heel sits nearer to, in the plan frame.
+  const d0 = Math.hypot(seat.heel[0] - m.p0[0], seat.heel[1] - m.p0[1]);
+  const d1 = Math.hypot(seat.heel[0] - m.p1[0], seat.heel[1] - m.p1[1]);
+  const nearP0 = d0 <= d1;
+  const near = nearP0 ? a : b;
+  const far = nearP0 ? b : a;
+  const z0Near = nearP0 ? m.z0_m : (m.z0_end_m ?? m.z0_m);
+  const z1Near = nearP0 ? m.z1_m : (m.z1_end_m ?? m.z1_m);
+  const z0Far = nearP0 ? (m.z0_end_m ?? m.z0_m) : m.z0_m;
+  const z1Far = nearP0 ? (m.z1_end_m ?? m.z1_m) : m.z1_m;
+  const ux = (far.x - near.x) / run, uz = (far.z - near.z) / run;
+  const heelX = near.x + ux * seat.seat_run_m, heelZ = near.z + uz * seat.seat_run_m;
+  const underside = z0Near + ((z0Far - z0Near) / run) * seat.seat_run_m;
+  if (underside <= seat.plate_top_z_m + MIN_EXTENT_M) return null;
+  const half = crossWidth(m) / 2;
+  const nx = -uz * half, nz = ux * half;
+  const profile: [number, number, number][] = [
+    [near.x, z1Near, near.z], [far.x, z1Far, far.z], [far.x, z0Far, far.z],
+    [heelX, underside, heelZ], [heelX, seat.plate_top_z_m, heelZ],
+    [near.x, seat.plate_top_z_m, near.z],
+  ];
+  return [
+    ...profile.map(([x, y, z]) => [x + nx, y, z + nz] as [number, number, number]),
+    ...profile.map(([x, y, z]) => [x - nx, y, z - nz] as [number, number, number]),
+  ];
+}
+
+/**
+ * Triangles for a swept profile laid out as [near ring, far ring]: two fan caps plus one quad
+ * per profile edge. Returns how many triangles it pushed, which is what the picking table
+ * needs — a seated member is not a 12-triangle box.
+ */
+export function pushSweepIndices(indices: number[], base: number, profileCount: number): number {
+  const before = indices.length;
+  for (let i = 1; i < profileCount - 1; i++) {
+    indices.push(base, base + i + 1, base + i);
+    indices.push(base + profileCount, base + profileCount + i, base + profileCount + i + 1);
+  }
+  for (let i = 0; i < profileCount; i++) {
+    const next = (i + 1) % profileCount;
+    indices.push(base + i, base + next, base + profileCount + next);
+    indices.push(base + i, base + profileCount + next, base + profileCount + i);
+  }
+  return (indices.length - before) / 3;
 }
 
 /** A standalone BufferGeometry for one raked box — the pick highlight's outline source. */

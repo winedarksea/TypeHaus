@@ -93,6 +93,27 @@ class ResolvedJunction:
 
 
 @dataclass(frozen=True)
+class SeatCut:
+    """A birdsmouth: where a rafter's underside is cut flat to bear on a plate.
+
+    Replaces the string carrier ``"eave:birdsmouth-1.17in"``, which the 2D section had to
+    re-parse, and the separate ``seat_cut`` member, which occupied the same volume a second
+    time — the reason ``checks/structural/interference.py`` needed a clause to excuse a block
+    overlapping its own rafter, and the reason the takeoff carried 56 pieces of 11-7/8"
+    I-joist at 3.5" that nobody ever buys.
+
+    ``heel`` is the plan point of the plumb heel cut; the seat runs ``seat_run_m`` from there
+    toward the member's nearer end, flat at ``plate_top_z_m``. The notch depth is not a field
+    because it is not independent: it is ``seat_run_m`` times the rafter's slope, which is
+    why the reference's 3.5" seat and 1.17" birdsmouth are one fact written twice.
+    """
+
+    plate_top_z_m: float
+    heel: tuple[float, float]
+    seat_run_m: float
+
+
+@dataclass(frozen=True)
 class FramedMember:
     """A framing member as a lightweight record (no geometry kernel) until emit (risk 6)."""
 
@@ -141,6 +162,9 @@ class FramedMember:
     # at the other against full-going interiors: uniform steps that read as non-uniform.
     # ``None`` for anything that is not a straight tread (a winder's axis IS its fan line).
     riser_line: tuple[tuple[float, float], tuple[float, float]] | None = None
+    # The birdsmouth, when this member has one. ``geometry_members.member_solid`` reads it and
+    # nothing else does: its guard is a single attribute read, because it sits on the hot path.
+    seat: SeatCut | None = None
 
 
 @dataclass(frozen=True)

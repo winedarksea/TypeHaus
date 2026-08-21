@@ -399,8 +399,13 @@ SUNKEN_GARDEN_COLUMN_16 = Assembly(
 # the opening rather than floating above it. The brick reveal AO-B-BRICK-DOOR crowns 10" under
 # that band (2026-08-21): it was first cut to 88" so the band sprang straight off the crown,
 # and with no course between them the arch read as sawn off. The lower register caps the
-# plinth and crosses the door's foot. AO-B-BRICK-WIN (sill 29", head 55") sits wholly inside
-# `brick-field-lo` and is untouched by any band edge.
+# plinth and crosses the door's foot.
+#
+# The plinth grew from 9 courses to 12 on 2026-08-21 and the lower register rode up 8" with
+# it, out of the lapis field's 22 courses (now 19). The upper register and the door head do
+# not move. The whole shift is three courses exactly, so AO-B-BRICK-WIN went up 8" too
+# (sill 29" -> 37", head 49" -> 57") and keeps the same 1/3" foot in the register and the
+# same clear run of lapis above it; the sauna window it reveals moved with it.
 #
 # STRUCTURE, not CLADDING, on every region: this wythe has nothing behind it in this
 # assembly (the backer is a *different wall*), so it has to be the structure layer or
@@ -411,25 +416,28 @@ BASEMENT_BRICK_VENEER = Assembly(
     layers=(
         Layer(name="air-gap", material_ref="air-barrier", thickness=inch(1.0),
               function=LayerFunction.AIRGAP),
-        # 9 courses of ordinary unglazed brown brick — the cheapest face on the wall, and
-        # the one the wall stands out of the ground on.
+        # 12 courses of ordinary unglazed brown brick — the cheapest face on the wall, and
+        # the one the wall stands out of the ground on. Was 9 courses / 24" until
+        # 2026-08-21, when the plinth took three courses off the lapis field above it:
+        # brown is the cheap brick, so the cheap band is the one that grows.
         Layer(name="brick-plinth", material_ref="brown-brick", thickness=_VENEER_WYTHE,
               function=LayerFunction.STRUCTURE, slot="wythe",
               extent=LayerExtent(
                   bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(0.0)),
-                  top=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(24.0)))),
-        # 2 courses of gold capping the plinth.
+                  top=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(32.0)))),
+        # 2 courses of gold capping the plinth — the same two courses, carried up 8" with it.
         Layer(name="brick-band-lo", material_ref="glazed-gold-brick", thickness=_VENEER_WYTHE,
               function=LayerFunction.STRUCTURE, slot="wythe",
               extent=LayerExtent(
-                  bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(24.0)),
-                  top=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(29.333)))),
-        # The field: 22 courses of lapis, plinth cap to door head.
+                  bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(32.0)),
+                  top=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(37.333)))),
+        # The field: 19 courses of lapis, plinth cap to door head. It gives up the three
+        # courses the plinth gained; the door head at 88" does not move.
         Layer(name="brick-field-lo", material_ref="glazed-lapis-brick",
               thickness=_VENEER_WYTHE,
               function=LayerFunction.STRUCTURE, slot="wythe",
               extent=LayerExtent(
-                  bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(29.333)),
+                  bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(37.333)),
                   top=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(88.0)))),
         # 2 courses of gold on the door head line, springing off the arch crown.
         Layer(name="brick-band-hi", material_ref="glazed-gold-brick", thickness=_VENEER_WYTHE,

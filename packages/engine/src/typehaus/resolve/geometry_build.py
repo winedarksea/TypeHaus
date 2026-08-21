@@ -40,7 +40,7 @@ from typehaus.resolve.geometry_ir import (
     GPrism,
     PartCatalogRef,
 )
-from typehaus.resolve.geometry_members import member_box, member_part_key, member_uid
+from typehaus.resolve.geometry_members import member_part_key, member_solid, member_uid
 from typehaus.resolve.geometry_openings import opening_parts
 from typehaus.resolve.geometry_roofs import roof_parts
 from typehaus.resolve.geometry_walls import layer_solids
@@ -69,7 +69,7 @@ def _member_parts(members: tuple[FramedMember, ...] | list[FramedMember],
             # silently dropped.
             solid = GPrism(ring=member.plan_outline, z0_m=member.z0_m, z1_m=member.z1_m)
         else:
-            solid = member_box(member)
+            solid = member_solid(member)
         if solid is None:  # too degenerate to draw at all
             continue
         parts.append(GPart(

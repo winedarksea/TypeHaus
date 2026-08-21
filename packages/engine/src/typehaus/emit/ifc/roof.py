@@ -25,6 +25,8 @@ from typehaus._meta import PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
+from typehaus.resolve.geometry_ir import GSweep
+from typehaus.resolve.geometry_members import member_solid
 from typehaus.resolve.geometry_roofs import roof_parts
 from typehaus.resolve.model import FramedMember, ResolvedRoof
 
@@ -179,6 +181,10 @@ def member_representation(f: Any, body: Any, member: FramedMember) -> Any | None
     bands grow from the heel to the ridge — and gets a faceted solid instead of a section
     stretched to a wrong constant depth.
     """
+    if member.seat is not None:
+        seated = _seated_representation(f, body, member)
+        if seated is not None:
+            return seated
     section = cross_section(member.profile)
     height = max(member.z1_m - member.z0_m, _MINIMUM_EXTENT_M)
     # A horizontal member's swept section is `height` tall, so the dimension across its run is
@@ -213,6 +219,37 @@ def member_representation(f: Any, body: Any, member: FramedMember) -> Any | None
         ref_direction=(-dy / run, dx / run, 0.0),
         length_m=length, width_m=width, depth_m=max(height * run / length,
                                                     _MINIMUM_EXTENT_M),
+    )
+
+
+def _seated_representation(f: Any, body: Any, member: FramedMember) -> Any | None:
+    """A birdsmouthed rafter as its true notched profile, swept across its own width.
+
+    The IR already holds the shape (``geometry_members.member_solid`` returns a ``GSweep``
+    for a member with a ``SeatCut``); this maps it onto the entity IFC has for exactly that —
+    ``IfcExtrudedAreaSolid`` over an ``IfcArbitraryClosedProfileDef``. The notch is *more*
+    idiomatic in IFC than the box it replaces, not less.
+    """
+    solid = member_solid(member)
+    if not isinstance(solid, GSweep):
+        return None
+    ox, oy, oz = solid.profile[0]
+    ex, ey, ez = solid.extrude
+    depth = math.sqrt(ex * ex + ey * ey + ez * ez)
+    if depth < _MINIMUM_EXTENT_M:
+        return None
+    # The profile stands in a vertical plane: its local X runs along the member's plan axis
+    # and its local Y is world z, so the extrusion axis is the profile's own normal.
+    ax, ay, _az = solid.profile[1]
+    run = math.hypot(ax - ox, ay - oy)
+    if run < 1e-9:
+        return None
+    ref = ((ax - ox) / run, (ay - oy) / run, 0.0)
+    points = [((x - ox) * ref[0] + (y - oy) * ref[1], z - oz)
+              for (x, y, z) in solid.profile]
+    return ll.add_swept_profile(
+        f, body, profile_points=points, origin_m=(ox, oy, oz),
+        axis=(ex / depth, ey / depth, ez / depth), ref_direction=ref, depth_m=depth,
     )
 
 

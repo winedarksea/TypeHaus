@@ -134,15 +134,30 @@ def test_every_roof_member_carries_a_swept_solid(catlin_model, ifc_file):
     assert swept and all(item.Depth > 0.0 for item in swept)
 
 
-def test_a_raked_member_sweeps_along_its_own_axis(ifc_file):
-    """A rafter is a section on a sloped line, not a bounding prism: its extrusion axis has
-    to leave the vertical, or the export cannot express a pitched member at all."""
+def test_a_birdsmouthed_rafter_exports_its_notch(ifc_file):
+    """A notched rafter is a *shaped* profile swept across its own width.
+
+    ``IfcExtrudedAreaSolid`` over an ``IfcArbitraryClosedProfileDef`` is the entity IFC has
+    for exactly this, so the notch survives the export instead of being flattened back into a
+    bounding section on a sloped axis. The profile stands in a vertical plane — which is why
+    the extrusion axis is horizontal here and not up the roof's pitch.
+    """
     rafter = _children(ifc_file, _roof_product(ifc_file))["rafter-000"]
     solid = rafter.Representation.Representations[0].Items[0]
+    assert solid.is_a("IfcExtrudedAreaSolid")
+    assert solid.SweptArea.is_a("IfcArbitraryClosedProfileDef")
+    points = solid.SweptArea.OuterCurve.Points
+    # Six distinct corners (the polyline repeats the first to close): end-top, far-top,
+    # far-bottom, the plumb heel's head, its foot, and the seat's outboard end.
+    assert len(points) == 7
+    assert points[0].Coordinates == points[-1].Coordinates
     axis = solid.Position.Axis.DirectionRatios
-    assert 1e-6 < abs(axis[2]) < 1.0 - 1e-6
-    # The catlin roof is 4:12, so the axis climbs one in three of its horizontal run.
-    assert abs(axis[2]) / (axis[0] ** 2 + axis[1] ** 2) ** 0.5 == pytest.approx(4 / 12, abs=1e-6)
+    assert abs(axis[2]) < 1e-9, "the profile plane is vertical, so its normal is horizontal"
+    assert solid.Depth > 0.0
+
+    # The seat is flat: two profile corners share the lowest elevation, one seat run apart.
+    heights = sorted(point.Coordinates[1] for point in points[:-1])
+    assert heights[0] == pytest.approx(heights[1], abs=1e-9)
 
 
 def test_members_land_in_the_ifc_class_their_trade_calls_for(ifc_file):

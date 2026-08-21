@@ -493,7 +493,8 @@ Left open, and worth doing next:
 * Track to inspection (list of inspections, calendar, pass registration). Likely includes Kanban somehow
 * Report final costs (but also reusable plan)
 * Upload pictures/notes/voice notes
-* system for collecting bids as a GC (bidders should see estimates for materials for their job but not the estimate cost already, that would give them numbers to aim at)
+* system for collecting bids as a GC (bidders should see estimates for materials for their job but not the estimate cost already, that would give them numbers to aim at).
+* Show for bids as the main image the backside of the house (so the design looks cheaper, for lower bids)
 * local first (with drive, S3 bucket, or such for backup) or Cloudflare workers
 
 Firstly design a house (with permit checks, building science review, floorplan editing in the 2d UI, 3d review, cost reduction and BOM review).

@@ -108,9 +108,37 @@ class GMesh:
                 raise ValueError(f"GMesh triangle {tri} indexes past {count} positions")
 
 
+@dataclass(frozen=True)
+class GSweep:
+    """A planar profile swept along a vector — a member with a shape cut out of it.
+
+    Exists for the birdsmouth. A notched rafter is not a box, and the alternatives were
+    worse: a ``GMesh`` routes the hot path (15,160 member solids per resolve) through the
+    fragile chaining branch, costs several times a box's allocation, loses IFC's swept-solid
+    idiom and has no ``memberBox.ts`` counterpart.
+
+    This *is* ``IfcExtrudedAreaSolid(IfcArbitraryClosedProfileDef)``, so IFC gets more
+    idiomatic rather than less; glTF's ``add_sweep`` is ``add_gbox``'s shape; and in the
+    slice kernel the common case — extruded perpendicular to the cut plane — makes the cut
+    face the profile itself, projected.
+
+    ``profile`` is closed implicitly and may be non-convex (the birdsmouth's reflex vertex is
+    the whole point). ``extrude`` must not lie in the profile's plane.
+    """
+
+    profile: Ring3
+    extrude: Vec3
+
+    def __post_init__(self) -> None:
+        if len(self.profile) < 3:
+            raise ValueError("GSweep needs at least three profile points")
+        if all(abs(component) < 1e-12 for component in self.extrude):
+            raise ValueError("GSweep.extrude must not be the zero vector")
+
+
 # `Union` rather than `X | Y`: this alias is evaluated at import time, and the engine still
 # runs on the interpreters the test venv uses.
-GSolid = Union[GPrism, GBox, GMesh]
+GSolid = Union[GPrism, GBox, GMesh, GSweep]
 
 
 @dataclass(frozen=True)

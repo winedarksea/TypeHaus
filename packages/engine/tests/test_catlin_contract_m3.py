@@ -24,6 +24,7 @@ import pytest
 from typehaus.quantities import ft, inch
 from typehaus.resolve import resolve
 from typehaus.resolve.framing.profiles import RIDGE_BEAM_DEFAULT, cross_section
+from typehaus.resolve.geometry_members import member_solid
 from typehaus.source import load_plan
 from typehaus.checks import run
 from typehaus.findings import Result
@@ -291,8 +292,11 @@ def test_roof_matches_old_pitch_knee_and_ridge(catlin_model):
     beam_width_m = cross_section(RIDGE_BEAM_DEFAULT).width_m
     expected_z1_end = roof.ridge_z_m - (4.0 / 12.0) * (beam_width_m / 2.0)
     assert all(member.z1_end_m == pytest.approx(expected_z1_end) for member in rafters)
-    assert all(member.connection == "ridge:adjustable-slope-hanger;eave:birdsmouth-1.17in"
+    assert all(member.connection == "ridge:adjustable-slope-hanger;eave:birdsmouth"
               for member in rafters)
+    # The depth is no longer spelled into the connection string: it is the seat's run times
+    # the rafter's slope, and the notch is part of the rafter's own solid.
+    assert all(member.seat is not None for member in rafters)
 
 
 def test_ridge_beam_member_and_condition(catlin_model):
@@ -308,9 +312,9 @@ def test_ridge_beam_member_and_condition(catlin_model):
 
 
 def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
-    """Step 1/3 acceptance (golden eave detail): bearing_z_m is the plate top, seat cuts
-    notch the rafter at the bearing (not above the deck), and every above-structure roof
-    layer carries a per-edge setback stepping deck >= foam >= batten >= metal."""
+    """Step 1/3 acceptance (golden eave detail): bearing_z_m is the plate top, the rafter is
+    notched at the bearing (not above the deck), and every above-structure roof layer carries
+    a per-edge setback stepping deck >= foam >= batten >= metal."""
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
     authored = catlin_model.plan.by_tag("RF-HOUSE")
     plate_top = max(catlin_model.wall(tag).z1_m for tag in authored.bearing_refs)
@@ -319,18 +323,29 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
     assert roof.eave_z_m - roof.bearing_z_m == pytest.approx(ft(DECK_RISE_FT).meters)
 
     birdsmouth = inch(1.17).meters
-    seats = [m for m in roof.members if m.category == "seat_cut"]
     rafters = [m for m in roof.members if m.category == "rafter"]
-    assert len(seats) == len(rafters)
+    assert not [m for m in roof.members if m.category == "seat_cut"], \
+        "the seat is part of the rafter's own solid now, not a block beside it"
     bearing_x = sorted({catlin_model.wall(tag).axis[0][0] for tag in authored.bearing_refs})
-    for seat in seats:
-        assert seat.z1_m == pytest.approx(plate_top)
-        assert seat.z0_m == pytest.approx(plate_top - birdsmouth)
-        # Anchored at the rafter's plumb-cut tail — the bearing wall's stud exterior
-        # face, one sheathing thickness inboard of the sheathing-ext axis (the reference
-        # seat spans exactly the stud depth from there) — not out in the cladding lap.
-        assert min(abs(seat.p0[0] - x) for x in bearing_x) == pytest.approx(
-            inch(0.5).meters, abs=1e-6)
+    for rafter in rafters:
+        seat = rafter.seat
+        assert seat is not None
+        assert seat.plate_top_z_m == pytest.approx(plate_top)
+        # Anchored at the rafter's plumb-cut tail — the bearing wall's stud exterior face,
+        # one sheathing thickness inboard of the sheathing-ext axis (the reference seat spans
+        # exactly the stud depth from there) — not out in the cladding lap. The heel sits one
+        # seat run inboard of that.
+        heel_offset = min(abs(seat.heel[0] - x) for x in bearing_x)
+        assert abs(heel_offset - inch(0.5).meters) <= seat.seat_run_m + 1e-6
+
+        # The notch: the rafter's solid has a flat seat at the plate top over the run, and a
+        # plumb heel rising to the underside — one birdsmouth's worth, once.
+        solid = member_solid(rafter)
+        zs = sorted(round(z, 9) for (_x, _y, z) in solid.profile)
+        assert zs[0] == pytest.approx(plate_top)
+        assert zs[1] == pytest.approx(plate_top)
+        heel_height = zs[2] - plate_top
+        assert heel_height == pytest.approx(birdsmouth, abs=1e-3)
 
     setbacks = {entry["layer"]: entry for entry in roof.layer_edge_setbacks}
     assert set(setbacks) == {"zip", "deck-vb", "polyiso-1", "polyiso-2",

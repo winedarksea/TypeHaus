@@ -313,7 +313,9 @@ OPENINGS = [
     # Interior circulation
     Door(uid="CBD201AAAA", tag="D-B-FURN", host="W-B-CW", type_ref="DT-INT-SWING32",
          position=from_node("N-B-W1", ft(3))),
-    Door(uid="CBD202AAAA", tag="D-B-PLAY", host="W-B-CE", type_ref="DT-INT-FRENCH60",
+    # Solid-core pair since 2026-08-21 (was DT-INT-FRENCH60): the play room keeps the
+    # 5'-0" double opening, but flush solid leaves instead of full glazing.
+    Door(uid="CBD202AAAA", tag="D-B-PLAY", host="W-B-CE", type_ref="DT-INT-DOUBLE60",
          position=from_node("N-B-C", ft(6))),
     # Centred in the 3'-4" aisle the sauna's north wall leaves against the center wall.
     # ``from_node`` offsets the opening's near *edge*, so 8" leaves ~4" of concrete jamb
@@ -348,12 +350,16 @@ OPENINGS = [
          position=from_node("N-B-S2", ft(1, 4)), sill_height=inch(7), flip_swing=True),
     # WT-1424, down from WT-3660 (2026-07-30): a sauna wants a small window, less glass to
     # lose heat through. The 14" family's one appearance in a concrete wall, where the usual
-    # 16" stud-module reason for that width doesn't apply — size is the point here. Sill
-    # stays 3'-0" (head 8'-0" -> 5'-0"), well above the 18" bench top (placeables.py). Retires
+    # 16" stud-module reason for that width doesn't apply — size is the point here. Retires
     # the last WT-3660 instance; the type and WT-3660-FIX stay in the catalog.
+    # Sill 3'-8" (head 5'-8") as of 2026-08-21, up three 2 2/3" brick courses from 3'-0":
+    # the veneer in front of it grew its cheap brown plinth from 9 courses to 12
+    # (assemblies.py BASEMENT_BRICK_VENEER), and the window goes up with its reveal rather
+    # than let the register band cut across the glass. Still well above the 18" bench top
+    # (placeables.py).
     Window(uid="CBX301AAAA", tag="WIN-B-SAUNA", host="W-B-S2",
            type_ref="WT-1424-T", position=from_node("N-B-S1", ft(2, 6)),
-           sill_height=ft(3)),
+           sill_height=ft(3, 8)),
     # --- reveals through the brick veneer -------------------------------------------
     # WIN-B-SAUNA and D-B-PATIO stay on the concrete walls; these are RoughOpenings for the
     # holes the wythe in front of them needs, each with its own segmental brick arch — not a
@@ -361,10 +367,10 @@ OPENINGS = [
     # Positioned off N-B-BRICK-W (shares N-B-S1's x). Segmental, not semicircular: the
     # rise is ~1/7 of clear width, and ``height`` includes it, so the springline is
     # ``height - rise``. ``sill_height`` is re-datumed off W-B-BRICK's own base
-    # (-8'-5", not -9'): the window's 3'-0" becomes 2'-5", the door's 7" threshold becomes 0.
+    # (-8'-5", not -9'): the window's 3'-8" becomes 3'-1", the door's 7" threshold becomes 0.
     RoughOpening(uid="CBO601AAAA", tag="AO-B-BRICK-WIN", host="W-B-BRICK",
                  position=from_node("N-B-BRICK-W", ft(2, 6)),
-                 width=inch(14), height=inch(20), sill_height=inch(29),
+                 width=inch(14), height=inch(20), sill_height=inch(37),
                  arch=Arch(rise=inch(2))),
     # Both reveals were taken down 6" at the head on 2026-08-21, on the eye rather than on a
     # rule: the door read 88" -> 84" -> 78", the window 26" -> 20". At 88" the door's crown

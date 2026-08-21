@@ -188,9 +188,11 @@ def test_the_veneer_bands_tile_the_wall_without_overlap(catlin_model):
     assert bands[-1][1] == pytest.approx(wall.z1_m)
     for (_lower, top), (bottom, _upper) in zip(bands, bands[1:], strict=False):
         assert bottom == pytest.approx(top), "a gap or an overlap in the wythe"
-    # The registers are two courses; the plinth is 2'-0". Course = 2 2/3" nominal.
+    # The registers are two courses; the plinth is 12 courses, 2'-8". Course = 2 2/3"
+    # nominal. The plinth was 9 courses until 2026-08-21, when it took three off the
+    # lapis field above it and carried the lower register up with it.
     heights_in = [(z1 - z0) * 39.3700787 for z0, z1 in bands]
-    assert heights_in[0] == pytest.approx(24.0, abs=1e-3)
+    assert heights_in[0] == pytest.approx(32.0, abs=1e-3)
     assert heights_in[1] == pytest.approx(5.333, abs=1e-2)
     assert heights_in[3] == pytest.approx(5.333, abs=1e-2)
 

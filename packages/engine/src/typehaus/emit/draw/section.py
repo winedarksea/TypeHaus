@@ -27,11 +27,7 @@ from typehaus.emit.draw.section_labels import (
     roof_layer_ladder,
     wall_layer_ladder,
 )
-from typehaus.emit.draw.section_members import (
-    _birdsmouth_depth_in,
-    _emit_member_cuts,
-    emit_framing_cuts,
-)
+from typehaus.emit.draw.section_members import _emit_member_cuts, emit_framing_cuts
 from typehaus.model.enums import SliceKind
 from typehaus.model.views import Slice
 from typehaus.quantities import M_PER_IN, m, pt
@@ -51,7 +47,6 @@ from typehaus.resolve.roof_layer_setbacks import (
 # ``section.py`` is the name every caller — the CLI, the server, the detail package and the
 # tests — imports a cut from, so the pieces split out of it stay reachable here.
 __all__ = [
-    "_birdsmouth_depth_in",
     "build_center_section",
     "build_section",
     "ring_cut_intervals",

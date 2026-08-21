@@ -211,6 +211,29 @@ def add_swept_member(f: Any, body_ctx: Any, *, origin_m: Vec3, axis: Vec3,
     return f.createIfcShapeRepresentation(body_ctx, "Body", "SweptSolid", [solid])
 
 
+def add_swept_profile(f: Any, body_ctx: Any, *, profile_points: list[tuple[float, float]],
+                      origin_m: Vec3, axis: Vec3, ref_direction: Vec3,
+                      depth_m: float) -> Any:
+    """An arbitrary planar profile extruded along a vector — the birdsmouth's idiom.
+
+    ``IfcExtrudedAreaSolid(IfcArbitraryClosedProfileDef)`` is how any notched or shaped
+    member is carried in IFC, so a rafter with a seat cut arrives as a real profile on a real
+    axis rather than as a bounding box with the notch lost. ``profile_points`` are 2D in the
+    profile's own plane, whose local X is ``ref_direction`` and whose normal is ``axis``.
+    """
+    points = [f.createIfcCartesianPoint(point) for point in profile_points]
+    polyline = f.createIfcPolyline(points + [points[0]])
+    profile = f.createIfcArbitraryClosedProfileDef("AREA", None, polyline)
+    placement = f.createIfcAxis2Placement3D(
+        f.createIfcCartesianPoint(origin_m),
+        f.createIfcDirection(axis), f.createIfcDirection(ref_direction),
+    )
+    solid = f.createIfcExtrudedAreaSolid(
+        profile, placement, f.createIfcDirection((0.0, 0.0, 1.0)), depth_m,
+    )
+    return f.createIfcShapeRepresentation(body_ctx, "Body", "SweptSolid", [solid])
+
+
 def add_axis_representation(f: Any, body_ctx: Any,
                             points_m: tuple[tuple[float, float], tuple[float, float]]) -> Any:
     points = [f.createIfcCartesianPoint(point) for point in points_m]

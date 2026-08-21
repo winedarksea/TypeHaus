@@ -30,7 +30,7 @@ BASEMENT_PLACEABLES = [
               room="RM-B-SAUNA", position=pt(ft(15, 5.5), ft(5, 6.5)), rotation=deg(-90)),
     # The foot bench returns along the south wall, butted into the two-tier run's west face
     # at 13'-8 1/2" with an 11/16" scribe left at the west liner. rotation 180 puts its back
-    # to the south. Its top is 18", well clear of WIN-B-SAUNA's 3'-0" sill above it.
+    # to the south. Its top is 18", well clear of WIN-B-SAUNA's 3'-8" sill above it.
     Furniture(uid="CBF602AAAA", tag="FURN-B-SAUNA-BENCH-S", type_ref="FURN-SAUNA-BENCH-54",
               room="RM-B-SAUNA", position=pt(ft(11, 5.5), ft(2, 1.5)), rotation=deg(180)),
 ]

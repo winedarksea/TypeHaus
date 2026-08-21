@@ -44,7 +44,7 @@ DOOR_TYPES = [
     # Every glazed door in the house is tempered (2026-08-01, code.R308_4_safety_glazing).
     # R308.4.1 has no location test to fail: glazing *in a door* is a hazardous location by
     # definition, so this is a property of the product wherever it is hung — which is why it
-    # is set on the four glazed types below and needs no tempered variant of any of them.
+    # is set on the three glazed types below and needs no tempered variant of any of them.
     DoorType(tag="DT-EXT-FRENCH60", width=ft(5), height=ft(6, 8), exterior=True,
              operation="double_swing", glazed=True, tempered=True, u_factor=u_us(0.20)),
     DoorType(tag="DT-EXT-SLIDE60", width=ft(5), height=ft(6, 8), exterior=True,
@@ -62,8 +62,12 @@ DOOR_TYPES = [
     # FURN-WARDROBE-48. 48" is the largest standard bypass whose RO (50") still fits the
     # partition's 63 1/8" framed span with jamb packs to spare — 60" would leave 1 1/8" total.
     DoorType(tag="DT-INT-BYPASS48", width=ft(4), height=ft(6, 8), operation="slide"),
-    DoorType(tag="DT-INT-FRENCH60", width=ft(5), height=ft(6, 8),
-             operation="double_swing", glazed=True, tempered=True),
+    # D-B-PLAY's pair. Solid-core, unglazed (2026-08-21): the play room wanted the acoustic
+    # separation a solid leaf gives more than it wanted borrowed light, so this is a flush
+    # double-swing pair rather than a French pair — hence DOUBLE60, not FRENCH60. With no
+    # glazing there is no R308.4.1 tempering to state.
+    DoorType(tag="DT-INT-DOUBLE60", width=ft(5), height=ft(6, 8),
+             operation="double_swing", core="solid"),
     DoorType(tag="DT-EXT-OVERHEAD192", width=ft(16), height=ft(7), exterior=True,
              operation="overhead"),
 ]

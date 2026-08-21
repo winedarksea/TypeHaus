@@ -162,25 +162,35 @@ def test_garage_foundation_draws_slab_thermal_break(catlin_model):
 
 
 def test_birdsmouth_rafter_reads_as_a_notched_member(catlin_model):
-    # The eave detail's representative rafter is drawn as a raked, notched profile (a 5-point
-    # polygon: eave-top, ridge-top, ridge-bottom, seat toe, heel), not a straight bar.
+    """The eave rafter is a notched member seated on the plate — six points, not five.
+
+    Six because the notch has a real corner: eave-top, ridge-top, ridge-bottom, the plumb
+    heel's head, the heel's foot, and the seat's outboard end. The 2D version was five
+    because it dropped the ``(u_heel, plate_top)`` corner and ran a slanted line instead —
+    one of the *three* birdsmouths that used to exist (the rafter's own elevation, an
+    additive ``seat_cut`` block, and this drawing).
+    """
     scene, _ = build_detail(catlin_model, _eave(catlin_model))
     rafters = [n for n in scene.nodes if isinstance(n, Polyline) and n.layer == "S-FRAM"
                and (n.tag or "").startswith("rafter") and "/flange" not in (n.tag or "")]
     assert rafters, "the eave detail should carry a representative rafter"
-    assert any(len(r.points) == 5 for r in rafters), "rafter should be a notched profile"
+    notched = [r for r in rafters if len(r.points) == 6]
+    assert notched, "rafter should be a notched profile"
+
+    roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
+    plate_top = roof.bearing_z_m / 0.0254
+    for rafter in notched:
+        # Its bottom sits *on* the plate over the seat run, rather than a notch-depth clear
+        # of it or a notch-depth into it.
+        seat = sorted(u for (u, z) in rafter.points if abs(z - plate_top) < 1e-6)
+        assert len(seat) == 2, rafter.points
+        member = next(m for m in roof.members if m.child_key == rafter.tag)
+        assert seat[1] - seat[0] == pytest.approx(member.seat.seat_run_m / 0.0254, abs=1e-3)
+
     # I-joist rafters carry flange delineation lines.
     flanges = [n for n in scene.nodes if isinstance(n, Polyline)
                and (n.tag or "").endswith("/flange")]
     assert flanges, "I-joist rafter should carry flange lines"
-
-
-def test_birdsmouth_depth_parsed_from_connection():
-    from typehaus.emit.draw.section import _birdsmouth_depth_in
-
-    assert _birdsmouth_depth_in("ridge:adjustable-slope-hanger;eave:birdsmouth-1.17in") == 1.17
-    assert _birdsmouth_depth_in("eave:beveled-web-stiffener") is None
-    assert _birdsmouth_depth_in(None) is None
 
 
 def _sauna_slice(model):

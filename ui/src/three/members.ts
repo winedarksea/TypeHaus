@@ -20,7 +20,8 @@ import { materialColor, type ResolvedNordicPalette } from "../nordic/palette";
 import { createStandingSeamMaterial, isStandingSeam, SEAM_TILE_SIZE_M } from "./materials";
 import {
   composeCenteredBoxMatrix, composeMemberBoxMatrix, isRakedMember, isVerticalMember,
-  MIN_EXTENT_M, pushBoxIndices, rakedBoxVertices, UNIT_BOX,
+  MIN_EXTENT_M, pushBoxIndices, pushSweepIndices, rakedBoxVertices, seatedProfileVertices,
+  TRIANGLES_PER_MEMBER_BOX, UNIT_BOX,
 } from "./memberBox";
 import {
   memberUidsFor, tagInstancedMemberIdentity, tagMergedMemberIdentity,
@@ -182,12 +183,14 @@ function buildSeamMesh(group: THREE.Group, members: Member[], center: PlanCenter
   const indices: number[] = [];
   const uvs: number[] = [];
   const drawn: Member[] = [];
+  const triangleStarts: number[] = [0];
   for (const m of members) {
     const verts = rakedBoxVertices(m, center);
     if (!verts) continue;
     const base = positions.length / 3;
     for (const v of verts) positions.push(v[0], v[1], v[2]);
     pushBoxIndices(indices, base);
+    triangleStarts.push(triangleStarts[triangleStarts.length - 1] + TRIANGLES_PER_MEMBER_BOX);
     drawn.push(m);
     // Per-member UVs, not one shared axis: eave bands run one way and rake bands the other,
     // so a single frame would smear the pans on half of them. u runs along the band (its two
@@ -206,7 +209,7 @@ function buildSeamMesh(group: THREE.Group, members: Member[], center: PlanCenter
   geo.setIndex(indices);
   geo.computeVertexNormals();
   const mesh = new THREE.Mesh(geo, createStandingSeamMaterial(mode, [1, 1], 0xE8E8E2, true));
-  tagMergedMemberIdentity(mesh, memberUidsFor(ownerUid, drawn));
+  tagMergedMemberIdentity(mesh, memberUidsFor(ownerUid, drawn), triangleStarts);
   group.add(mesh);
 }
 
@@ -235,8 +238,12 @@ function buildRakedMesh(group: THREE.Group, members: Member[], center: PlanCente
   const indices: number[] = [];
   const colors: number[] = [];
   const drawn: Member[] = [];
+  // Prefix sums of the triangles each member contributed. A birdsmouthed rafter is not a
+  // 12-triangle box, so picking cannot divide by a constant (→ memberPicking.ts).
+  const triangleStarts: number[] = [0];
   for (const m of members) {
-    const verts = rakedBoxVertices(m, center);
+    const seated = seatedProfileVertices(m, center);
+    const verts = seated ?? rakedBoxVertices(m, center);
     if (!verts) continue;
     const base = positions.length / 3;
     const col = new THREE.Color(memberColor(m, palette));
@@ -244,7 +251,10 @@ function buildRakedMesh(group: THREE.Group, members: Member[], center: PlanCente
       positions.push(v[0], v[1], v[2]);
       colors.push(col.r, col.g, col.b);
     }
-    pushBoxIndices(indices, base);
+    const triangles = seated
+      ? pushSweepIndices(indices, base, verts.length / 2)
+      : (pushBoxIndices(indices, base), TRIANGLES_PER_MEMBER_BOX);
+    triangleStarts.push(triangleStarts[triangleStarts.length - 1] + triangles);
     drawn.push(m);
   }
   if (!positions.length) return;
@@ -255,7 +265,7 @@ function buildRakedMesh(group: THREE.Group, members: Member[], center: PlanCente
   geo.computeVertexNormals();
   const material = standardMaterial(undefined, mode, { vertexColors: true });
   const mesh = new THREE.Mesh(geo, material);
-  tagMergedMemberIdentity(mesh, memberUidsFor(ownerUid, drawn));
+  tagMergedMemberIdentity(mesh, memberUidsFor(ownerUid, drawn), triangleStarts);
   group.add(mesh);
 }
 

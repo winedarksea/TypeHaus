@@ -9,8 +9,6 @@ assembly ones.
 
 from __future__ import annotations
 
-import math
-
 from typehaus.emit.draw.palette import detail_hatch
 from typehaus.emit.draw.scene import Hatch, Polyline
 from typehaus.emit.draw.section_clip import (
@@ -21,33 +19,120 @@ from typehaus.emit.draw.section_clip import (
     rect_nodes,
 )
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.geometry_slice import CutPlane
 
 
-def emit_framing_cuts(b, model, hosts, plane, crop) -> None:
+def emit_framing_cuts(b, model, hosts, plane, crop, representative_roles=()) -> None:
     """Slice each host's ``<uid>::framing`` element — one loop for every family of stick.
 
     The hand-rolled crossing math this replaces got the *section face* from a guess: a flat
     1.5" for every floor joist regardless of profile, and a bounding rectangle for a raked
-    member, which loses the rake entirely. ``member_box`` is the one member solid every
+    member, which loses the rake entirely. ``member_solid`` is the one member solid every
     emitter already shares, so the cut face is now the same shape IFC sweeps and glTF draws
-    — orient and all. A winder tread, whose plan outline is a trapezoid no box can express,
-    rides through as its prism instead of being silently squared off.
+    — orient, rake, birdsmouth and all. A winder tread, whose plan outline is a trapezoid no
+    box can express, rides through as its prism instead of being silently squared off.
+
+    ``representative_roles`` names the roles that get the *nearest member* when none is cut.
+    A rafter runs along the cut plane, so it draws only when one lands on the station — which
+    a wall-midpoint cut rarely does, and an eave detail with no rafter in it is not an eave
+    detail. ``nearest_station`` names and tests what ``section.py`` used to do by hand.
     """
-    from typehaus.resolve.geometry_slice import slice_part
+    from typehaus.resolve.geometry_slice import nearest_station, slice_part
 
     for host in hosts:
         element = model.geometry.by_uid(f"{host.uid}::framing")
-        if element is None:
+        if element is None or _host_is_far(host, plane, crop):
             continue
+        missed: dict[str, list] = {}
+        cut: set[str] = set()
         for part in element.parts:
             catalog = part.catalog
             if catalog is None:
                 continue
-            material = catalog.material_ref
-            pattern = (detail_hatch(material) or "metal") if material else "lumber"
-            for profile in slice_part(part, plane):
-                _emit_member_profile(b, profile, crop, host.uid, catalog.name,
-                                     catalog.profile, pattern, material)
+            profiles = slice_part(part, plane)
+            if not profiles and catalog.role in representative_roles:
+                if _u_span_overlaps_crop(part, plane, crop):
+                    missed.setdefault(catalog.role, []).append(part)
+                continue
+            if profiles:
+                cut.add(catalog.role)
+            _emit_part_profiles(b, profiles, crop, host.uid, catalog)
+        for role, parts in missed.items():
+            if role in cut:
+                continue  # something of this role was cut; no stand-in needed
+            solids = [solid for part in parts for solid in part.solids]
+            station = nearest_station(solids, plane)
+            if station is None:
+                continue
+            stand_in = CutPlane(axis=plane.axis, station_m=station)
+            for part in parts:
+                _emit_part_profiles(b, slice_part(part, stand_in), crop, host.uid,
+                                    part.catalog)
+
+
+# How far a framing member may reach past its host's own plan outline: the wall→roof closure
+# bands and the derived trim stand outboard of the wall they continue, and a rafter tail past
+# the roof footprint. Generous on purpose — this is a *reject*, and a wrong reject silently
+# deletes geometry from a drawing.
+_HOST_MARGIN_M = 1.0
+
+
+def _host_is_far(host, plane, crop) -> bool:
+    """Whether every member of ``host`` is certainly outside this cut and its crop.
+
+    One bbox test per host instead of a slice attempt per member. A detail's crop is a
+    two-foot window on a sixty-foot building, so nearly every wall in the model is rejected
+    here — which is what keeps the drawing stage from scaling with (details x members).
+    """
+    points = _host_plan_points(host)
+    if not points:
+        return False
+    perps = [point[plane.perp_index] for point in points]
+    if not (min(perps) - _HOST_MARGIN_M <= plane.station_m <= max(perps) + _HOST_MARGIN_M):
+        return True
+    if crop is None:
+        return False
+    (cu0, _z0), (cu1, _z1) = crop
+    us = [point[plane.u_index] for point in points]
+    return (max(us) + _HOST_MARGIN_M < min(cu0, cu1)
+            or min(us) - _HOST_MARGIN_M > max(cu0, cu1))
+
+
+def _host_plan_points(host):
+    """The host's own plan outline: a wall's axis, a roof's footprint, a floor's deck."""
+    axis = getattr(host, "axis", None)
+    if axis is not None:
+        return list(axis)
+    for attribute in ("footprint", "deck_outline"):
+        outline = getattr(host, attribute, None)
+        if outline:
+            return list(outline)
+    return []
+
+
+def _u_span_overlaps_crop(part, plane, crop) -> bool:
+    """Whether the part's in-section span reaches the crop at all.
+
+    Two rafters share every station at a gable (one per roof plane); only the one whose run
+    is actually under the crop is the eave the detail is about.
+    """
+    if crop is None:
+        return True
+    (cu0, _z0), (cu1, _z1) = crop
+    lo, hi = min(cu0, cu1), max(cu0, cu1)
+    from typehaus.resolve.geometry_slice import perp_values
+
+    us = [value for solid in part.solids
+          for value in perp_values(solid, plane.u_index)]
+    return bool(us) and min(us) <= hi and max(us) >= lo
+
+
+def _emit_part_profiles(b, profiles, crop, uid, catalog) -> None:
+    material = catalog.material_ref
+    pattern = (detail_hatch(material) or "metal") if material else "lumber"
+    for profile in profiles:
+        _emit_member_profile(b, profile, crop, uid, catalog.name, catalog.profile,
+                             pattern, material)
 
 
 def _emit_member_profile(b, profile, crop, uid, tag, member_profile, pattern,
@@ -76,29 +161,33 @@ def _emit_member_profile(b, profile, crop, uid, tag, member_profile, pattern,
 def _emit_raked_flanges(b, profile, crop, uid, tag, member_profile) -> None:
     """Flange datums along a raked member's own top and bottom edges.
 
-    An I-joist rafter is otherwise a plain parallelogram; the two lines offset inward by the
-    real flange thickness are what tell it apart from a solid sawn rafter at detail scale.
+    An I-joist rafter is otherwise a plain outline; the two lines offset inward by the real
+    flange thickness are what tell it apart from a solid sawn rafter at detail scale. The
+    edges are read off the cut face itself — the highest and lowest point at each end — which
+    keeps working now that a notched rafter's profile has six points rather than four.
     """
     from typehaus.resolve.framing.profiles import cross_section
 
-    if not member_profile or len(profile.outline) != 4:
+    if not member_profile or len(profile.outline) < 4:
         return
     section = cross_section(member_profile)
     if section.shape != "i_joist" or section.flange_thickness_m is None:
         return
-    thickness = section.flange_thickness_m
-    ordered = sorted(profile.outline)
-    (u0, za), (u0b, zb) = ordered[0], ordered[1]
-    (u1, zc), (u1b, zd) = ordered[2], ordered[3]
-    if abs(u0 - u0b) > 1e-9 or abs(u1 - u1b) > 1e-9:
+    us = sorted({round(u, 9) for (u, _z) in profile.outline})
+    if len(us) < 2:
         return
-    bottom = (min(za, zb), min(zc, zd))
-    top = (max(za, zb), max(zc, zd))
+    u0, u1 = us[0], us[-1]
+    left = [z for (u, z) in profile.outline if round(u, 9) == u0]
+    right = [z for (u, z) in profile.outline if round(u, 9) == u1]
+    if len(left) < 2 or len(right) < 2:
+        return
+    thickness = section.flange_thickness_m
+    bottom, top = (min(left), min(right)), (max(left), max(right))
     if min(top[0] - bottom[0], top[1] - bottom[1]) <= 2.2 * thickness:
         return
-    for (left, right) in ((bottom[0] + thickness, bottom[1] + thickness),
-                          (top[0] - thickness, top[1] - thickness)):
-        segment = clip_segment((u0, left), (u1, right), crop)
+    for (left_z, right_z) in ((bottom[0] + thickness, bottom[1] + thickness),
+                              (top[0] - thickness, top[1] - thickness)):
+        segment = clip_segment((u0, left_z), (u1, right_z), crop)
         if segment is None:
             continue
         (su0, sz0), (su1, sz1) = segment
@@ -107,117 +196,17 @@ def _emit_raked_flanges(b, profile, crop, uid, tag, member_profile) -> None:
                        layer="S-FRAM", lineweight=0.13, uid=uid, tag=f"{tag}/flange"))
 
 
-def _emit_floor_cut(b, floor, direction, station, crop) -> None:
-    for member in floor.members:
-        (x0, y0), (x1, y1) = member.p0, member.p1
-        a0, a1 = (y0, y1) if direction == "x" else (x0, x1)
-        u0, u1 = (x0, x1) if direction == "x" else (y0, y1)
-        if a0 == a1:
-            # member perpendicular to cut? p runs along the cut axis at a station
-            if abs(a0 - station) > 1e-9:
-                continue
-            rect = clip_rect(min(u0, u1), max(u0, u1), member.z0_m, member.z1_m, crop)
-            if rect is None:
-                continue
-            b.extend(rect_nodes(*rect, "S-FRAM", None, member.parent_uid,
-                                 member.child_key))
-            b.extend(_member_flange_nodes(*rect, member.profile, member.parent_uid,
-                                          member.child_key))
-            continue
-        if (a0 - station) * (a1 - station) > 0:
-            continue
-        # member crosses the cut: draw its section (1.5" wide x depth)
-        t = (station - a0) / ((a1 - a0) or 1e-12)
-        u = u0 + t * (u1 - u0)
-        half = 0.75 * M_PER_IN
-        rect = clip_rect(u - half, u + half, member.z0_m, member.z1_m, crop)
-        if rect is None:
-            continue
-        b.extend(rect_nodes(*rect, "S-FRAM", "lumber", member.parent_uid,
-                             member.child_key))
-        b.extend(_member_flange_nodes(*rect, member.profile, member.parent_uid,
-                                      member.child_key))
-
-
 def _emit_member_cuts(b, model, plane, crop, walls_and_floors=True) -> None:
     """Draw the framing members crossing the cut (top plates, rafters, joists).
 
-    Generalizes the floor crossing math to raked members — a member with ``z0_end_m`` /
-    ``z1_end_m`` set interpolates its elevation at the crossing station.
-
     ``walls_and_floors`` is the detail-mode gate. Roof members are outside it: the roof's
-    assembly bands stop at the structure (``roof_parts`` builds only the layers above it),
-    so the rafters *are* the roof's structure in every mode, not an extra.
+    assembly bands stop at the structure (``roof_parts`` builds only the layers above it), so
+    the rafters *are* the roof's structure in every mode, not an extra.
     """
     if walls_and_floors:
         emit_framing_cuts(b, model, model.walls, plane, crop)
-    for roof in model.roofs:
-        # A birdsmouth rafter runs *along* the cut plane, so it only draws when a rafter
-        # lands exactly on the station — which a wall-midpoint cut rarely does. Show the
-        # single nearest one as the representative rafter so the eave detail carries its
-        # seat cut, and let all other members follow the ordinary crossing/parallel rules.
-        direction, station = plane.axis, plane.station_m
-        parallel_rafters = []
-        for member in roof.members:
-            if (_birdsmouth_depth_in(member.connection) is not None
-                    and _member_is_parallel(member, direction)
-                    and _member_u_overlaps_crop(member, direction, crop)):
-                parallel_rafters.append(member)
-            else:
-                _emit_one_member(b, member, direction, station, crop)
-        if parallel_rafters and not any(
-                abs(_member_perp(m, direction) - station) < 1e-9 for m in parallel_rafters):
-            nearest = min(parallel_rafters,
-                          key=lambda m: abs(_member_perp(m, direction) - station))
-            _emit_one_member(b, nearest, direction, _member_perp(nearest, direction), crop)
-
-
-def _member_u_overlaps_crop(member, direction: str, crop) -> bool:
-    """Whether the member's in-section (u) span overlaps the crop's u-window.
-
-    Two rafters share every y at a gable (one per roof plane); only the one whose run is
-    actually under the crop is the eave the detail is about.
-    """
-    if crop is None:
-        return True
-    (x0, y0), (x1, y1) = member.p0, member.p1
-    u0, u1 = (x0, x1) if direction == "x" else (y0, y1)
-    (cu0, _), (cu1, _) = crop
-    lo, hi = min(cu0, cu1), max(cu0, cu1)
-    return min(u0, u1) <= hi and max(u0, u1) >= lo
-
-
-def _member_is_parallel(member, direction: str) -> bool:
-    (x0, y0), (x1, y1) = member.p0, member.p1
-    a0, a1 = (y0, y1) if direction == "x" else (x0, x1)
-    return abs(a0 - a1) < 1e-12
-
-
-def _member_perp(member, direction: str) -> float:
-    """The member's coordinate perpendicular to the cut (its station if parallel)."""
-    (x0, y0), _ = member.p0, member.p1
-    return y0 if direction == "x" else x0
-
-
-def _birdsmouth_depth_in(connection: str | None) -> float | None:
-    """Seat-cut depth (inches) parsed off a rafter's ``eave:birdsmouth-<d>in`` tag.
-
-    The connection string is the only carrier of the notch depth (``resolve.model`` keeps
-    the member a plain box — no seat cut in the solid), so the 2D section is where the
-    birdsmouth becomes drawn linework.
-    """
-    if not connection:
-        return None
-    for token in connection.split(";"):
-        token = token.strip()
-        if "birdsmouth-" in token:
-            tail = token.split("birdsmouth-", 1)[1]
-            digits = tail[:-2] if tail.endswith("in") else tail
-            try:
-                return float(digits)
-            except ValueError:
-                return None
-    return None
+    emit_framing_cuts(b, model, model.roofs, plane, crop,
+                      representative_roles=("rafter",))
 
 
 def _member_flange_nodes(u0, u1, z0, z1, profile, uid, tag) -> list:
@@ -241,119 +230,3 @@ def _member_flange_nodes(u0, u1, z0, z1, profile, uid, tag) -> list:
                               layer="S-FRAM", lineweight=0.13, uid=uid,
                               tag=f"{tag}/flange"))
     return nodes
-
-
-def _emit_raked_rafter(b, member, u0, u1, z0_a, z0_b, z1_a, z1_b, crop,
-                       depth_in) -> None:
-    """A raked rafter drawn as its true sloped profile with a birdsmouth seat-cut notch.
-
-    Replaces the bounding-box rectangle the parallel-member path would draw (which loses the
-    rake entirely) with the actual parallelogram, then notches the underside at the eave
-    (low) end so the rafter reads as a seated, notched member. The notch is a plumb heel cut
-    of ``depth_in`` plus a horizontal seat bearing on the plate.
-    """
-    d = depth_in * M_PER_IN
-    eave_at_u0 = z1_a <= z1_b  # eave = lower-top end (zero-overhang tail bears here)
-    span_u = abs(u1 - u0) or 1e-9
-    slope_bot = (z0_b - z0_a) / (u1 - u0)
-    run = min(3.5 * M_PER_IN, span_u * 0.35)  # seat run ~ a 2x4 plate bearing
-    # The seat runs *inboard* (toward the ridge end) from the eave's plumb cut. The
-    # endpoints carry no ordering guarantee — an east-half rafter's eave end is the
-    # larger u — so the step direction comes from where the ridge end actually is.
-    # The heel drops BELOW the member's underside, it does not raise it. The resolver
-    # already seats the rafter: its eave-end ``z0`` IS the plate top, and it models the
-    # notch as a separate ``seat_cut`` member spanning plate_top-d .. plate_top. Adding d
-    # here as well applied the birdsmouth twice and floated the rafter a notch-depth clear
-    # of the plate it is supposed to bear on — which is exactly what the drawing showed.
-    # Dropping instead puts the plumb tail over the same span the seat_cut occupies.
-    if eave_at_u0:
-        step = math.copysign(run, u1 - u0)
-        heel = (u0, z0_a - d)
-        toe = (u0 + step, z0_a + slope_bot * step)
-        poly = [(u0, z1_a), (u1, z1_b), (u1, z0_b), toe, heel]
-    else:
-        step = math.copysign(run, u0 - u1)
-        heel = (u1, z0_b - d)
-        toe = (u1 + step, z0_b + slope_bot * step)
-        poly = [(u1, z1_b), (u0, z1_a), (u0, z0_a), toe, heel]
-    clipped = clip_polygon(poly, crop)
-    if len(clipped) < 3:
-        return
-    pts = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
-    b.add(Polyline(points=pts, layer="S-FRAM", closed=True, lineweight=0.35,
-                   uid=member.parent_uid, tag=member.child_key))
-    b.add(Hatch(boundary=pts, pattern="lumber", layer="A-WALL-PATT",
-                uid=member.parent_uid, material="spf"))
-    # An I-joist rafter carries flange lines along its raked top/bottom edges so it reads
-    # as an I-joist, not a solid rafter — offset inward from each edge by the flange depth.
-    from typehaus.resolve.framing.profiles import cross_section
-
-    section = cross_section(member.profile)
-    if section.shape == "i_joist" and section.flange_thickness_m is not None:
-        ft = section.flange_thickness_m
-        for (za, zb) in ((z0_a + ft, z0_b + ft), (z1_a - ft, z1_b - ft)):
-            seg = clip_segment((u0, za), (u1, zb), crop)
-            if seg is not None:
-                (su0, sz0), (su1, sz1) = seg
-                b.add(Polyline(points=((su0 / M_PER_IN, sz0 / M_PER_IN),
-                                       (su1 / M_PER_IN, sz1 / M_PER_IN)),
-                               layer="S-FRAM", lineweight=0.13,
-                               uid=member.parent_uid, tag=f"{member.child_key}/flange"))
-
-
-def _emit_one_member(b, member, direction, station, crop) -> None:
-    (x0, y0), (x1, y1) = member.p0, member.p1
-    a0, a1 = (y0, y1) if direction == "x" else (x0, x1)
-    u0, u1 = (x0, x1) if direction == "x" else (y0, y1)
-    z0_a, z1_a = member.z0_m, member.z1_m
-    z0_b = member.z0_end_m if member.z0_end_m is not None else member.z0_m
-    z1_b = member.z1_end_m if member.z1_end_m is not None else member.z1_m
-    if abs(a0 - a1) < 1e-12:
-        # member runs along the cut axis at a station (e.g. a top plate parallel to the cut)
-        if abs(a0 - station) > 1e-9:
-            return
-        raked = member.z0_end_m is not None or member.z1_end_m is not None
-        birdsmouth = _birdsmouth_depth_in(member.connection)
-        if raked and birdsmouth is not None and abs(u1 - u0) > 1e-9:
-            _emit_raked_rafter(b, member, u0, u1, z0_a, z0_b, z1_a, z1_b, crop,
-                               birdsmouth)
-            return
-        rect = clip_rect(min(u0, u1), max(u0, u1), min(z0_a, z0_b), max(z1_a, z1_b), crop)
-        if rect is not None:
-            b.extend(_member_rect_nodes(rect, member))
-            b.extend(_member_flange_nodes(*rect, member.profile, member.parent_uid,
-                                          member.child_key))
-        return
-    if (a0 - station) * (a1 - station) > 0:
-        return
-    t = (station - a0) / ((a1 - a0) or 1e-12)
-    u = u0 + t * (u1 - u0)
-    z0 = z0_a + t * (z0_b - z0_a)
-    z1 = z1_a + t * (z1_b - z1_a)
-    # The cut is across the member's run, so it shows the section face the plan shows: the
-    # wide `depth_m` for a flat-laid plate/sill/block, the thin `width_m` for one on edge.
-    # A flat 1.5" was drawn here regardless of profile, which was right only by accident for
-    # the on-edge 2x sticks and drew every plate a quarter of its real width.
-    from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
-
-    half = plan_cross_section_m(cross_section(member.profile), z1_a - z0_a) / 2.0
-    rect = clip_rect(u - half, u + half, min(z0, z1), max(z0, z1), crop)
-    if rect is not None:
-        b.extend(_member_rect_nodes(rect, member))
-        b.extend(_member_flange_nodes(*rect, member.profile, member.parent_uid,
-                                      member.child_key))
-
-
-def _member_rect_nodes(rect, member) -> list:
-    """A cut member's rectangle, hatched as what it is made of.
-
-    A member that names a material is a *skin* band (the wall→roof closure, roof-edge
-    cladding, derived trim), not lumber — hatch and fill it like the layer stacks hatch
-    the same material, so a closure EPS band reads as foam, not as a stack of studs.
-    Plain framing keeps the lumber hatch.
-    """
-    if member.material:
-        pattern = detail_hatch(member.material) or "metal"
-        return rect_nodes(*rect, "S-FRAM", pattern, member.parent_uid,
-                           member.child_key, material=member.material)
-    return rect_nodes(*rect, "S-FRAM", "lumber", member.parent_uid, member.child_key)

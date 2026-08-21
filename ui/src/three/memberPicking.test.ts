@@ -3,8 +3,10 @@ import type { Member, Model } from "../model/types";
 import { isMemberUid, locateMember, memberUid, parseMemberUid } from "../model/memberIdentity";
 import { buildMembers } from "./members";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
-import { TRIANGLES_PER_MEMBER_BOX } from "./memberBox";
-import { buildMemberHighlight, carriesMemberIdentity, resolveMemberPickUid } from "./memberPicking";
+import { seatedProfileVertices, TRIANGLES_PER_MEMBER_BOX } from "./memberBox";
+import {
+  buildMemberHighlight, carriesMemberIdentity, memberIndexForTriangle, resolveMemberPickUid,
+} from "./memberPicking";
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -55,8 +57,9 @@ function checkInstancedBucketResolvesPerStud() {
     "An instanced bucket ignores faceIndex — a missing instanceId is not a pick");
 }
 
-// A raked bucket is one merged geometry; TRIANGLES_PER_MEMBER_BOX triangles per member, in
-// member order. A faceIndex anywhere inside a box must resolve to that box's member.
+// A raked bucket is one merged geometry. Members are laid out in member order, but NOT with a
+// fixed triangle count each: a birdsmouthed rafter's profile has six points, so its solid is
+// not a 12-triangle box. Picking reads a prefix-sum table rather than dividing by a constant.
 function checkMergedBucketResolvesPerBox() {
   const group = new THREE.Group();
   const rafters = [
@@ -77,6 +80,48 @@ function checkMergedBucketResolvesPerBox() {
     "The next box is the next rafter");
   assert(resolveMemberPickUid(merged, null, TRIANGLES_PER_MEMBER_BOX * 9) === null,
     "A faceIndex past the merge resolves to nothing");
+}
+
+// The prefix-sum table itself: a merge of members with *different* triangle counts. Dividing
+// by 12 gets every one of these wrong after the first, silently, in the browser.
+function checkPrefixSumHandlesMixedShapes() {
+  const starts = [0, 12, 32, 44];
+  assert(memberIndexForTriangle(starts, 0) === 0, "The first triangle is the first member");
+  assert(memberIndexForTriangle(starts, 11) === 0, "The last of member 0 is still member 0");
+  assert(memberIndexForTriangle(starts, 12) === 1, "The boundary starts the next member");
+  assert(memberIndexForTriangle(starts, 31) === 1, "A 20-triangle member holds its whole span");
+  assert(memberIndexForTriangle(starts, 32) === 2, "And hands over at its own end");
+  assert(memberIndexForTriangle(starts, 44) === null, "One past the merge resolves to nothing");
+  assert(memberIndexForTriangle(starts, -1) === null, "A negative faceIndex is not a pick");
+}
+
+// A birdsmouthed rafter draws its notch, and still resolves to itself when picked.
+function checkSeatedRafterIsNotchedAndPickable() {
+  const group = new THREE.Group();
+  const seated = member({
+    key: "rafter-000", category: "rafter", p0: [0, 0], p1: [3, 0],
+    z0_m: 3, z1_m: 3.3, z0_end_m: 4, z1_end_m: 4.3, orient: null,
+    seat: { plate_top_z_m: 3, heel: [0.3, 0], seat_run_m: 0.3 },
+  });
+  const plain = member({ key: "rafter-001", category: "rafter", p0: [0, 0.6], p1: [3, 0.6],
+    z0_m: 3, z1_m: 3.3, z0_end_m: 4, z1_end_m: 4.3, orient: null });
+  buildMembers(group, [seated, plain], CENTER, "schematic", RESOLVED_NORDIC_PALETTE.light, "RF1");
+  const merged = group.children.find(
+    (child) => child instanceof THREE.Mesh && carriesMemberIdentity(child)) as THREE.Mesh;
+  assert(merged, "Seated and plain rafters merge together");
+  const starts = merged.userData.triangleStarts as number[];
+  assert(starts[1] !== TRIANGLES_PER_MEMBER_BOX,
+    "A notched rafter contributes a different triangle count than a box");
+  assert(resolveMemberPickUid(merged, null, starts[1] - 1) === "RF1::rafter-000",
+    "The notched rafter's last triangle is still its own");
+  assert(resolveMemberPickUid(merged, null, starts[1]) === "RF1::rafter-001",
+    "And the plain rafter starts exactly where the table says");
+
+  // The notch itself: a flat seat at the plate top, one seat run long.
+  const verts = seatedProfileVertices(seated, CENTER);
+  assert(verts && verts.length === 12, "A seated member is a six-point profile, twice");
+  const onSeat = verts!.filter(([, y]) => Math.abs(y - 3) < 1e-9);
+  assert(onSeat.length === 4, "Two profile corners sit on the plate, on each face");
 }
 
 // All three i-joist plies share one instance index per member, so clicking a flange and
@@ -164,6 +209,8 @@ export function runMemberPickingTests() {
   checkMemberUidScheme();
   checkInstancedBucketResolvesPerStud();
   checkMergedBucketResolvesPerBox();
+  checkPrefixSumHandlesMixedShapes();
+  checkSeatedRafterIsNotchedAndPickable();
   checkIJoistPliesShareOneIdentity();
   checkSkippedMemberDoesNotShiftIdentities();
   checkHighlightOutlineMatchesTheMember();

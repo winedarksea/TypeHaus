@@ -35,13 +35,19 @@ from typehaus.resolve.framing.roof_gable import (
     is_gable_end_position,
 )
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
-from typehaus.resolve.model import BoundaryCondition, FramedMember, ResolvedModel, ResolvedRoof
+from typehaus.resolve.model import (
+    BoundaryCondition,
+    FramedMember,
+    ResolvedModel,
+    ResolvedRoof,
+    SeatCut,
+)
 from typehaus.resolve.roof_geometry import roof_structure_framing
 
-_RAFTER_CONNECTION = "ridge:adjustable-slope-hanger;eave:birdsmouth-1.17in"
-# Reference birdsmouth seat cut (roof_wall_eave_detail_ifc.py): a 1.17" notch depth, seated
-# over the width of the top plate the rafter bears on.
-_BIRDSMOUTH_DEPTH_M = inch(1.17).meters
+_RAFTER_CONNECTION = "ridge:adjustable-slope-hanger;eave:birdsmouth"
+# Reference birdsmouth seat (roof_wall_eave_detail_ifc.py): seated over the width of the top
+# plate the rafter bears on. The reference's 1.17" notch depth is not a second constant —
+# it is this run times the rafter's slope, and stating it twice is how the two drifted.
 _SEAT_LEN_M = inch(3.5).meters
 
 
@@ -61,9 +67,9 @@ def frame_roofs(model: ResolvedModel) -> list[Finding]:
             beam_width_m = cross_section(beam_member.profile).width_m
             rafters = tuple(_trim_rafter_to_beam(r, roof, beam_width_m) for r in rafters)
             model.conditions.append(_ridge_condition(roof, beam_member))
-        seat_cuts = _eave_seat_cuts(model, roof, rafters)
+        rafters = _seat_rafters(model, roof, rafters)
         rafters = tuple(replace(r, connection=_RAFTER_CONNECTION) for r in rafters)
-        members = (rafters + _bearing_stiffeners(rafters) + seat_cuts
+        members = (rafters + _bearing_stiffeners(rafters)
                    + ((beam_member,) if beam_member is not None else ()))
         # ``replace`` (not reconstruction) so bearing_z_m / layer_edge_setbacks survive.
         framed.append(replace(roof, members=members))
@@ -209,7 +215,7 @@ def _bearing_along_extent(model: ResolvedModel, roof: ResolvedRoof) -> tuple[flo
 def _bearing_stiffeners(rafters: tuple[FramedMember, ...]) -> tuple[FramedMember, ...]:
     """Model the I-joist eave web stiffener as a distinct bearing member.
 
-    The seat itself is now a real ``seat_cut`` solid (see ``_eave_seat_cuts``); this solid
+    The seat itself is part of the rafter's own solid (see ``_seat_rafters``); this member
     makes the required beveled bearing reinforcement visible and countable in every emitter.
     """
     stiffeners: list[FramedMember] = []
@@ -227,20 +233,23 @@ def _bearing_stiffeners(rafters: tuple[FramedMember, ...]) -> tuple[FramedMember
     return tuple(stiffeners)
 
 
-def _eave_seat_cuts(
+def _seat_rafters(
     model: ResolvedModel, roof: ResolvedRoof, rafters: tuple[FramedMember, ...]
 ) -> tuple[FramedMember, ...]:
-    """A real birdsmouth SEAT-CUT solid at every rafter's bearing.
+    """Give every rafter its birdsmouth, as part of its own solid.
 
-    The lightweight member IR cannot subtract a notch from the raked rafter box, so the
-    seat cut is emitted as a distinct clipped member — a short block spanning the
-    birdsmouth depth *below* the plate top over the seat length, anchored at the bearing
-    line, so the rafter reads as a notched member seated on the wall rather than an
-    exposed raked bar. Upgrades the former ``connection`` annotation.
+    This used to emit a separate ``seat_cut`` member — a short block occupying the same
+    volume the rafter already claims — which is why ``checks/structural/interference.py``
+    needed a clause to excuse a block overlapping its own rafter, why the takeoff carried 56
+    pieces of 11-7/8" I-joist at 3.5" that nobody buys, and why the 2D section drew a third
+    version of the notch by re-parsing its depth out of a string.
+
+    A ``SeatCut`` on the rafter says the same thing once, and
+    ``geometry_members.member_solid`` turns it into a real notched solid every emitter reads.
     """
     plate_top = _bearing_plate_top(model, roof)
     if plate_top is None or not rafters:
-        return ()
+        return rafters
     # Bearing-wall span coordinates: the seat starts where the rafter crosses its bearing
     # line, not at ``rafter.p0`` (which sits out at the footprint edge in the cladding lap).
     span_ax = 1 if roof.ridge_direction == "x" else 0
@@ -251,12 +260,13 @@ def _eave_seat_cuts(
             wall = model.wall(tag)
             if wall is not None:
                 bearing_coords.append(wall.axis[0][span_ax])
-    seats: list[FramedMember] = []
+    seated: list[FramedMember] = []
     for rafter in rafters:
         (ex, ey), (rx, ry) = rafter.p0, rafter.p1
         dx, dy = rx - ex, ry - ey
         run = math.hypot(dx, dy)
         if run < 1e-9:
+            seated.append(rafter)
             continue
         start = rafter.p0
         if bearing_coords:
@@ -267,15 +277,10 @@ def _eave_seat_cuts(
                 fraction = min(max(fraction, 0.0), 0.9)
                 start = (ex + dx * fraction, ey + dy * fraction)
         seat = min(_SEAT_LEN_M, run * 0.5)
-        inboard = (start[0] + dx / run * seat, start[1] + dy / run * seat)
-        # The seat notches the rafter *at* the bearing: it spans down from the plate top
-        # by the birdsmouth depth (the only part of the rafter below the plate).
-        seats.append(FramedMember(
-            rafter.parent_uid, f"{rafter.child_key}-seat", "seat_cut", rafter.profile,
-            start, inboard, plate_top - _BIRDSMOUTH_DEPTH_M, plate_top, seat,
-            connection="eave:birdsmouth-seat",
-        ))
-    return tuple(seats)
+        heel = (start[0] + dx / run * seat, start[1] + dy / run * seat)
+        seated.append(replace(rafter, seat=SeatCut(
+            plate_top_z_m=plate_top, heel=heel, seat_run_m=seat)))
+    return tuple(seated)
 
 
 def _bearing_plate_top(model: ResolvedModel, roof: ResolvedRoof) -> float | None:

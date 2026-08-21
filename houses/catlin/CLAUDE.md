@@ -255,7 +255,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     are their parents in every dimension and differ only in the glass, for the ten units
     R308.4 puts in a hazardous location (a wet room, within 24" of a door, within 60" of a
     stair). They are **not** width families and no facade or framing rule sees them: adding
-    a tempered unit is a retype, never a move. All four glazed *door* types are tempered
+    a tempered unit is a retype, never a move. All three glazed *door* types are tempered
     outright — R308.4.1 has no location test to fail.
   - **The east bearing wall now takes a 30" RO** (2026-08-01): `WIN-S-BED1`/`BED2` had 6.75
     sf of glass against R303.1's 9.95 sf, and 27" cannot reach it at any height that fits

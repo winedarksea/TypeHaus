@@ -73,7 +73,7 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
         # RM-M-MUD-CLOSET's bypass slider (2026-08-02): the framed replacement for
         # FURN-M-MUD-CLOSET-S keeps the furniture's sliding-door intent.
         "DT-INT-BYPASS48": (48.0, DoorOperation.SLIDE, False, False),
-        "DT-INT-FRENCH60": (60.0, DoorOperation.DOUBLE_SWING, False, True),
+        "DT-INT-DOUBLE60": (60.0, DoorOperation.DOUBLE_SWING, False, False),
         "DT-EXT-OVERHEAD192": (192.0, DoorOperation.OVERHEAD, True, False),
     }
     assert set(types) == set(expected)

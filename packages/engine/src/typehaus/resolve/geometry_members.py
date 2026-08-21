@@ -17,8 +17,8 @@ from __future__ import annotations
 import math
 
 from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
-from typehaus.resolve.geometry_ir import GBox, Vec3
-from typehaus.resolve.model import FramedMember
+from typehaus.resolve.geometry_ir import GBox, GSolid, GSweep, Vec3
+from typehaus.resolve.model import FramedMember, SeatCut
 
 # Degenerate members (a zero-length blocking, a band running out to nothing at a gable) would
 # close a shell on a zero-area face, which no importer can tessellate. Matches the IFC
@@ -98,6 +98,72 @@ def member_box(member: FramedMember) -> GBox | None:
     top: tuple[Vec3, ...] = ((slx, sly, z1_start), (elx, ely, z1_end),
                              (erx, ery, z1_end), (srx, sry, z1_start))
     return GBox(corners_bottom=bottom, corners_top=top)
+
+
+def member_solid(member: FramedMember) -> GSolid | None:
+    """The member's solid — a box, or a swept profile when it carries a birdsmouth.
+
+    The guard is ``member.seat is not None`` and **nothing else**. No ``cross_section()``
+    call may precede it: this runs 15,160 times per resolve, and ``member_box`` stays
+    untouched below (the parity test pins it, and it is the hot path).
+    """
+    if member.seat is None:
+        return member_box(member)
+    return _seated_sweep(member, member.seat)
+
+
+def _seated_sweep(member: FramedMember, seat: SeatCut) -> GSolid | None:
+    """The notched rafter as a profile in its own vertical plane, swept across its width.
+
+    Six points: end-top, far-top, far-bottom, the plumb heel up from the seat to the
+    underside, the heel's foot, and the seat's far end. The underside is the straight line
+    from ``z0_m`` to ``z0_end_m``, and ``z0_m`` at the bearing end already *is* the seat
+    elevation — which is why nothing about the member's elevations has to change for the
+    notch to become real.
+    """
+    (ax, ay), (bx, by) = member.p0, member.p1
+    dx, dy = bx - ax, by - ay
+    run = math.hypot(dx, dy)
+    if run < 1e-9:
+        return member_box(member)
+    section = cross_section(member.profile)
+    half = max(section.width_m, MINIMUM_EXTENT_M) / 2.0
+    # Which end bears: the one the heel sits nearer to.
+    hx, hy = seat.heel
+    near_p0 = math.hypot(hx - ax, hy - ay) <= math.hypot(hx - bx, hy - by)
+    near = (ax, ay) if near_p0 else (bx, by)
+    far = (bx, by) if near_p0 else (ax, ay)
+    z0_near = member.z0_m if near_p0 else (member.z0_end_m
+                                           if member.z0_end_m is not None else member.z0_m)
+    z1_near = member.z1_m if near_p0 else (member.z1_end_m
+                                           if member.z1_end_m is not None else member.z1_m)
+    z0_far = (member.z0_end_m if member.z0_end_m is not None else member.z0_m) if near_p0 \
+        else member.z0_m
+    z1_far = (member.z1_end_m if member.z1_end_m is not None else member.z1_m) if near_p0 \
+        else member.z1_m
+    # Unit vector from the bearing end toward the far end, and the underside's rise along it.
+    ux, uy = (far[0] - near[0]) / run, (far[1] - near[1]) / run
+    slope = (z0_far - z0_near) / run
+    heel_point = (near[0] + ux * seat.seat_run_m, near[1] + uy * seat.seat_run_m)
+    z_underside_at_heel = z0_near + slope * seat.seat_run_m
+    z_seat = seat.plate_top_z_m
+    if z_underside_at_heel <= z_seat + MINIMUM_EXTENT_M:
+        # The underside never rises clear of the seat over the run — no notch to cut.
+        return member_box(member)
+    # The profile stands on one face of the member, not on its centreline, so that sweeping
+    # it the full width lands the solid symmetrically about the axis.
+    ox, oy = uy * half, -ux * half
+    profile = tuple(
+        (x + ox, y + oy, z) for (x, y, z) in (
+            (near[0], near[1], z1_near),
+            (far[0], far[1], z1_far),
+            (far[0], far[1], z0_far),
+            (heel_point[0], heel_point[1], z_underside_at_heel),
+            (heel_point[0], heel_point[1], z_seat),
+            (near[0], near[1], z_seat),
+        )
+    )
+    return GSweep(profile=profile, extrude=(-2.0 * ox, -2.0 * oy, 0.0))
 
 
 def member_part_key(member: FramedMember) -> str:

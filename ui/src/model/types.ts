@@ -59,6 +59,12 @@ export interface Layer {
 // of the member's plan orientation, including "i_joist" (there width_m is flange width).
 export type MemberShape = "rect" | "i_joist";
 
+export interface MemberSeat {
+  plate_top_z_m: number;
+  heel: Vec2;
+  seat_run_m: number;
+}
+
 export interface Member {
   // Semantic, resolver-minted, unique within the parent wall/roof/floor/stair ("stud-007",
   // "plate-bottom"). Joined to the parent uid it is the member's stable identity — see
@@ -81,6 +87,10 @@ export interface Member {
   // p0/p1 is the board centreline, half a going past it (drawing the axis made uniform
   // flights read as unevenly stepped). Absent on winders: their axis IS the fan line.
   riser_line?: [Vec2, Vec2] | null;
+  // A birdsmouth: the member's underside is cut flat to bear on a plate at `plate_top_z_m`,
+  // over `seat_run_m` from the plumb `heel` toward the member's nearer end. Its depth is not
+  // carried because it is not independent — it is the run times the member's own slope.
+  seat?: MemberSeat | null;
   shape: MemberShape;
   width_m: number;
   depth_m: number;

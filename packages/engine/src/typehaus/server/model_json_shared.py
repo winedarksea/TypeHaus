@@ -50,6 +50,10 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
         "z0_end_m": m.z0_end_m, "z1_end_m": m.z1_end_m,
         "plan_outline": [list(point) for point in m.plan_outline] if m.plan_outline else None,
         "riser_line": [list(point) for point in m.riser_line] if m.riser_line else None,
+        # The birdsmouth, when this member has one, so the viewer can draw the notch rather
+        # than a bounding box across the plate it bears on.
+        "seat": ({"plate_top_z_m": m.seat.plate_top_z_m, "heel": list(m.seat.heel),
+                  "seat_run_m": m.seat.seat_run_m} if m.seat is not None else None),
         "shape": section.shape, "width_m": section.width_m, "depth_m": section.depth_m,
         "flange_width_m": section.flange_width_m,
         "flange_thickness_m": section.flange_thickness_m,

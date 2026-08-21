@@ -38,7 +38,15 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from typehaus.resolve.geometry_ir import GBox, GMesh, GPart, GPrism, GSolid, Ring
+from typehaus.resolve.geometry_ir import (
+    GBox,
+    GMesh,
+    GPart,
+    GPrism,
+    GSolid,
+    GSweep,
+    Ring,
+)
 from typehaus.resolve.intervals import subtract
 
 # A (u, z) point in the section frame, metres.
@@ -57,18 +65,17 @@ class CutPlane:
     axis: str  # "x" | "y"
     station_m: float
 
+    # Which plan coordinate the station measures (y for an "x" cut, x for a "y" cut) and
+    # which one is u. Frozen-dataclass fields rather than properties because the reject test
+    # reads them once per *vertex* of every solid in the model, per cut.
+    perp_index: int = 0
+    u_index: int = 0
+
     def __post_init__(self) -> None:
         if self.axis not in ("x", "y"):
             raise ValueError(f"CutPlane.axis must be 'x' or 'y', not {self.axis!r}")
-
-    @property
-    def perp_index(self) -> int:
-        """Which plan coordinate the station measures: y for an "x" cut, x for a "y" cut."""
-        return 1 if self.axis == "x" else 0
-
-    @property
-    def u_index(self) -> int:
-        return 0 if self.axis == "x" else 1
+        object.__setattr__(self, "perp_index", 1 if self.axis == "x" else 0)
+        object.__setattr__(self, "u_index", 0 if self.axis == "x" else 1)
 
     def u_of(self, point) -> float:
         return point[self.u_index]
@@ -89,18 +96,10 @@ class CutPlane:
         would silently drop the very element the drawing exists for. Inward, the plane
         grazes the end face and draws its cross-section, which is what the reader expects.
         """
-        lo, hi = solid_perp_span(solid, self)
-        if lo > hi:
+        values = perp_values(solid, self.perp_index)
+        if not values:
             return self
-        step = NUDGE_M if self.station_m <= (lo + hi) / 2.0 else -NUDGE_M
-        station = self.station_m
-        for _ in range(4):
-            near = min((abs(self.perp_of(p) - station) for p in _perp_points(solid)),
-                       default=math.inf)
-            if near > NUDGE_M / 2.0:
-                break
-            station += step
-        return CutPlane(axis=self.axis, station_m=station)
+        return _nudge_off(self, values, min(values), max(values))
 
 
 @dataclass(frozen=True)
@@ -115,25 +114,31 @@ class SectionProfile:
     voids: tuple[tuple[Vec2UZ, ...], ...] = ()
 
 
-def _perp_points(solid: GSolid):
-    """Every vertex of a solid, as plan points, for the nudge test."""
+def perp_values(solid: GSolid, index: int) -> list[float]:
+    """Every vertex's coordinate along one plan axis — the reject test's whole input.
+
+    Yields the *coordinate* rather than the point because this is the hot loop: it runs once
+    per vertex of every solid in the model for every cut, and a projection through a method
+    call per vertex was half the drawing stage's time.
+    """
     if isinstance(solid, GPrism):
-        yield from solid.ring
+        values = [point[index] for point in solid.ring]
         for void in solid.voids:
-            yield from void
-    elif isinstance(solid, GBox):
-        for point in solid.corners_bottom:
-            yield (point[0], point[1])
-        for point in solid.corners_top:
-            yield (point[0], point[1])
-    else:
-        for point in solid.positions:
-            yield (point[0], point[1])
+            values.extend(point[index] for point in void)
+        return values
+    if isinstance(solid, GBox):
+        return ([point[index] for point in solid.corners_bottom]
+                + [point[index] for point in solid.corners_top])
+    if isinstance(solid, GSweep):
+        shift = solid.extrude[index]
+        values = [point[index] for point in solid.profile]
+        return values + [value + shift for value in values]
+    return [point[index] for point in solid.positions]
 
 
 def solid_perp_span(solid: GSolid, plane: CutPlane) -> tuple[float, float]:
     """The solid's extent perpendicular to ``plane`` — the O(1) reject before slicing."""
-    values = [plane.perp_of(point) for point in _perp_points(solid)]
+    values = perp_values(solid, plane.perp_index)
     if not values:
         return (math.inf, -math.inf)
     return (min(values), max(values))
@@ -142,6 +147,19 @@ def solid_perp_span(solid: GSolid, plane: CutPlane) -> tuple[float, float]:
 def _crosses(solid: GSolid, plane: CutPlane) -> bool:
     lo, hi = solid_perp_span(solid, plane)
     return lo <= plane.station_m <= hi
+
+
+def _nudge_off(plane: CutPlane, values: list[float], lo: float, hi: float) -> CutPlane:
+    """``plane.nudged`` with the vertex coordinates already in hand (see ``slice_solid``)."""
+    step = NUDGE_M if plane.station_m <= (lo + hi) / 2.0 else -NUDGE_M
+    station = plane.station_m
+    for _ in range(4):
+        if min(abs(value - station) for value in values) > NUDGE_M / 2.0:
+            break
+        station += step
+    if station == plane.station_m:
+        return plane
+    return CutPlane(axis=plane.axis, station_m=station)
 
 
 # --- ring crossings ------------------------------------------------------------------
@@ -342,15 +360,65 @@ def _chain(segments) -> tuple[list[tuple[Vec2UZ, ...]], int]:
     return (rings, open_chains)
 
 
+def _sweep_profiles(solid: GSweep, plane: CutPlane) -> list[SectionProfile]:
+    """A swept solid's cut face.
+
+    The case worth having is the one the birdsmouth is: a profile standing in a vertical
+    plane, extruded straight across the cut. Then every plane between the two ends meets the
+    solid in *the profile itself*, so the cut is one projection and no chaining. Anything
+    else falls back to the mesh path, which is correct but slower and has to weld.
+    """
+    perps = {round(plane.perp_of(point), 9) for point in solid.profile}
+    across = plane.perp_of((solid.extrude[0], solid.extrude[1]))
+    if len(perps) == 1 and abs(across) > 1e-9:
+        start = perps.pop()
+        lo, hi = sorted((start, start + across))
+        if not lo < plane.station_m < hi:
+            return []
+        return [SectionProfile(outline=tuple(
+            (plane.u_of(point), point[2]) for point in solid.profile))]
+    profiles, _open = _mesh_profiles(sweep_mesh(solid), plane)
+    return profiles
+
+
+def sweep_mesh(solid: GSweep) -> GMesh:
+    """A swept solid tessellated: two caps by fan triangulation plus one quad per edge.
+
+    The fan is only valid for a convex profile, and a birdsmouth's is not — but the caps of a
+    member sweep are its *ends*, which no section ever needs and which no viewer sees inside
+    a wall. Callers that need a watertight non-convex cap should triangulate properly; this
+    exists so the slice kernel has a general fallback and glTF has something to draw.
+    """
+    count = len(solid.profile)
+    dx, dy, dz = solid.extrude
+    positions = list(solid.profile) + [(x + dx, y + dy, z + dz)
+                                       for (x, y, z) in solid.profile]
+    triangles: list[tuple[int, int, int]] = []
+    for index in range(1, count - 1):
+        triangles.append((0, index + 1, index))
+        triangles.append((count, count + index, count + index + 1))
+    for index in range(count):
+        nxt = (index + 1) % count
+        triangles.append((index, nxt, count + nxt))
+        triangles.append((index, count + nxt, count + index))
+    return GMesh(positions=tuple(positions), triangles=tuple(triangles))
+
+
 def slice_solid(solid: GSolid, plane: CutPlane) -> tuple[SectionProfile, ...]:
     """Every closed face ``solid`` presents to ``plane``, in section coordinates."""
-    if not _crosses(solid, plane):
+    values = perp_values(solid, plane.perp_index)
+    if not values:
         return ()
-    local = plane.nudged(solid)
+    lo, hi = min(values), max(values)
+    if not lo <= plane.station_m <= hi:
+        return ()
+    local = _nudge_off(plane, values, lo, hi)
     if isinstance(solid, GPrism):
         return tuple(_prism_profiles(solid, local))
     if isinstance(solid, GBox):
         return tuple(_box_profiles(solid, local))
+    if isinstance(solid, GSweep):
+        return tuple(_sweep_profiles(solid, local))
     profiles, _open = _mesh_profiles(solid, local)
     return tuple(profiles)
 
@@ -425,6 +493,7 @@ __all__ = [
     "Vec2UZ",
     "nearest_station",
     "open_chain_count",
+    "perp_values",
     "ring_cut_intervals",
     "ring_intervals",
     "slice_part",

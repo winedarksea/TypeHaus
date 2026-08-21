@@ -195,22 +195,23 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     if kinds & _RAKE_KINDS and kinds <= (_RAKE_KINDS | _TRUSS_KINDS | _STUD_KINDS):
         return True
     # A roof member bearing on the wall top it lands on — the birdsmouthed rafter seat, or
-    # a ridge beam pocketed into a gable wall. The box IR has no seat cut, so the rafter/
-    # ridge dips into the plate or the top of the stud/king it bears on.
+    # a ridge beam pocketed into a gable wall.
+    #
+    # The rafter's notch *is* real geometry now (``FramedMember.seat`` →
+    # ``geometry_members.member_solid``), but this check does not read it: it builds its
+    # candidates from ``FramedMember`` records rather than from the geometry IR, so it still
+    # sees a plain box dipping into the plate. Moving interference onto the IR is a separate
+    # and larger job; until then this clause stays, and it is the honest reason why.
     wall_top_kinds = _PLATE_KINDS | _STUD_KINDS
     if kinds & {"rafter", "ridge_beam"} and kinds & wall_top_kinds:
         return True
     # A fabricated truss: its own chords/webs/heel meet at panel points (same roof parent),
-    # and the whole truss (or a rafter's seat cut) bears down onto the wall top plate it
-    # lands on. The box IR carries no gusset plate or heel seat, so those reads as shared
-    # volume — all intended joinery, never an elevation bug.
+    # and the whole truss bears down onto the wall top plate it lands on. The box IR carries
+    # no gusset plate or heel seat, so those read as shared volume — all intended joinery,
+    # never an elevation bug.
     if kinds <= _TRUSS_KINDS and same_parent:
         return True
-    if kinds & (_TRUSS_KINDS | {"seat_cut"}) and kinds & wall_top_kinds:
-        return True
-    # The birdsmouth seat-cut solid is bonded to the rafter it seats and to the truss chord
-    # it caps; shared volume with its own roof's members is the point.
-    if "seat_cut" in kinds and same_parent:
+    if kinds & _TRUSS_KINDS and kinds & wall_top_kinds:
         return True
     # eave web stiffener bonded to its own rafter.
     if "bearing_stiffener" in kinds and "rafter" in kinds and same_parent:

@@ -20,7 +20,7 @@ from typehaus.emit.gltf.geometry import (
 
 if TYPE_CHECKING:  # the IR types are annotations only — importing them at runtime would
     # make the glTF emitter depend on the resolver package it is fed from.
-    from typehaus.resolve.geometry_ir import GBox, GMesh
+    from typehaus.resolve.geometry_ir import GBox, GMesh, GSweep
 
 
 _Rect = tuple[float, float, float, float]  # (x0, x1, y0, y1), axis-aligned
@@ -230,6 +230,29 @@ class _MeshBuilder:
             indices.extend((base, base + index + 1, base + index))
             indices.extend((base + count, base + count + index, base + count + index + 1))
         # Sides: one quad per bottom edge, closing the ring.
+        for index in range(count):
+            nxt = (index + 1) % count
+            a, b = base + index, base + nxt
+            c, d = base + count + nxt, base + count + index
+            indices.extend((a, b, c, a, c, d))
+
+    def add_sweep(self, sweep: "GSweep", color: tuple[float, float, float, float]) -> None:
+        """Add an IR swept solid: a planar profile plus the vector it runs along.
+
+        ``add_gbox``'s shape, with the two rings related by a translation instead of stated
+        separately. The caps are fan-triangulated, which is exact for a convex profile and
+        adequate for the birdsmouth's single reflex vertex — its caps are the member's *ends*,
+        buried in a wall and never seen.
+        """
+        positions, indices = self._bucket(color)
+        base = len(positions)
+        count = len(sweep.profile)
+        dx, dy, dz = sweep.extrude
+        positions.extend(_to_gltf(*point) for point in sweep.profile)
+        positions.extend(_to_gltf(x + dx, y + dy, z + dz) for (x, y, z) in sweep.profile)
+        for index in range(1, count - 1):
+            indices.extend((base, base + index + 1, base + index))
+            indices.extend((base + count, base + count + index, base + count + index + 1))
         for index in range(count):
             nxt = (index + 1) % count
             a, b = base + index, base + nxt
