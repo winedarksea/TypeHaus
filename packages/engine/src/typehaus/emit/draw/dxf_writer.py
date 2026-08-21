@@ -122,6 +122,26 @@ _LAYER_STYLE = {
 }
 
 
+def model_text_height(height_in: float, height_pt: float | None, scene: Scene) -> float:
+    """The height to bake into a model-space DXF entity, in model inches.
+
+    DXF has no annotative-at-render-time concept the way matplotlib does — a ``TEXT`` entity
+    carries a height in drawing units and that is that. But it has the *other* half: with
+    ``doc.units = 1`` the paper units are inches too, so a printed size converts exactly,
+    once the sheet's scale is known.
+
+    ``height_pt / 72`` is the size on paper; multiplying by ``12 / frame.scale`` (model
+    inches per paper inch, since ``scale`` is paper inches per model foot) puts it in the
+    model. At 1-1/2" = 1'-0" a 7 pt label bakes to 0.778" against the 1.6" the ladder
+    authored — the 2x oversize the rendered details showed, arrived at independently.
+
+    With no frame there is no scale to convert through, so the model-space height stands.
+    """
+    if height_pt is None or scene.frame is None or scene.frame.scale <= 0.0:
+        return height_in
+    return height_pt / 72.0 * (12.0 / scene.frame.scale)
+
+
 def write_dxf(scene: Scene, path: Path) -> Path:
     import ezdxf
 
@@ -138,13 +158,13 @@ def write_dxf(scene: Scene, path: Path) -> Path:
         elif isinstance(node, Hatch):
             _add_hatch(msp, node)
         elif isinstance(node, Text):
-            _add_text(msp, node)
+            _add_text(msp, node, scene)
         elif isinstance(node, ArchDimension):
-            _add_dimension(msp, node)
+            _add_dimension(msp, node, scene)
         elif isinstance(node, Symbol):
             _add_symbol(msp, node)
         elif isinstance(node, Leader):
-            _add_leader(msp, node)
+            _add_leader(msp, node, scene)
         elif isinstance(node, Viewport):
             continue  # paperspace composition is M3 (§Sheets)
 
@@ -201,16 +221,17 @@ def _add_hatch(msp: object, node: Hatch) -> None:
     h.paths.add_polyline_path(list(node.boundary), is_closed=True)
 
 
-def _add_text(msp: object, node: Text) -> None:
+def _add_text(msp: object, node: Text, scene: Scene) -> None:
     align = {"left": "LEFT", "center": "MIDDLE_CENTER", "right": "RIGHT"}[node.align]
+    height = model_text_height(node.height, node.height_pt, scene)
     e = msp.add_text(  # type: ignore[attr-defined]
         node.content,
-        dxfattribs={"layer": node.layer, "height": node.height, "rotation": node.rotation},
+        dxfattribs={"layer": node.layer, "height": height, "rotation": node.rotation},
     )
     e.set_placement(node.anchor, align=getattr(__import__("ezdxf").enums.TextEntityAlignment, align))
 
 
-def _add_dimension(msp: object, node: ArchDimension) -> None:
+def _add_dimension(msp: object, node: ArchDimension, scene: Scene) -> None:
     dx, dy = node.p1[0] - node.p0[0], node.p1[1] - node.p0[1]
     if abs(dx) < abs(dy):  # vertical dimension (→ elevation vertical dim string)
         base = (node.p0[0] + node.offset, node.p0[1])
@@ -221,7 +242,7 @@ def _add_dimension(msp: object, node: ArchDimension) -> None:
     dim = msp.add_linear_dim(  # type: ignore[attr-defined]
         base=base, p1=node.p0, p2=node.p1, angle=angle,
         dimstyle="ARCH",
-        override={"dimtxt": 3.0},
+        override={"dimtxt": model_text_height(3.0, node.height_pt, scene)},
         dxfattribs={"layer": node.layer},
     )
     dim.render()
@@ -279,8 +300,20 @@ def _add_symbol(msp: object, node: Symbol) -> None:
                      dxfattribs={"layer": node.layer})  # type: ignore[attr-defined]
 
 
-def _add_leader(msp: object, node: Leader) -> None:
+def _add_leader(msp: object, node: Leader, scene: Scene) -> None:
+    """The leader line, plus its note at the **label** end.
+
+    Two long-standing bugs, both here. The height was hardcoded at 3.0, so ``scene.py``'s
+    claim that "both writers honor ``Leader.height``" was simply false — every DXF leader
+    lettered the same size whatever the IR said. And ``set_placement(node.to)`` put the text
+    at the *arrow tip*, inside the thing the leader points at, where both other renderers put
+    it at ``node.at``. A note printed over the hatch it labels is not a note.
+    """
     msp.add_leader([node.at, node.to], dxfattribs={"layer": node.layer})  # type: ignore[attr-defined]
-    msp.add_text(  # type: ignore[attr-defined]
-        node.text, dxfattribs={"layer": node.layer, "height": 3.0},
-    ).set_placement(node.to)
+    height = model_text_height(node.height, node.height_pt, scene)
+    align = "RIGHT" if node.at[0] < node.to[0] else "LEFT"
+    e = msp.add_text(  # type: ignore[attr-defined]
+        node.text, dxfattribs={"layer": node.layer, "height": height},
+    )
+    e.set_placement(node.at,
+                    align=getattr(__import__("ezdxf").enums.TextEntityAlignment, align))

@@ -138,9 +138,6 @@ SYMBOL_NAMES_WITH_DEDICATED_GLYPH = (
 
 # Fallback model-space size (inches) for leader notes whose ``Leader.height`` is unset/zero.
 _LEADER_TEXT_H = 1.6
-# Clamps in points, so a sheet-scale plan's labels stay readable and a tight detail's
-# lettering cannot swallow the drawing. 4 pt is the legibility floor at 300 dpi output.
-_MAX_PT = 14.0
 
 
 def geometry_bounds(scene: Scene) -> tuple[float, float, float, float] | None:
@@ -347,7 +344,20 @@ def _fig(scene: Scene, title: str | None, underlays=()):
 
 
 def _apply_text_scale(fig, ax, scaled_text) -> None:
-    """Convert each label's model-space height into a point size at the drawn scale."""
+    """Give every label its point size, once the data limits are known.
+
+    Two kinds of label, per ``scene.py``'s rule. An **annotative** one carries ``height_pt``
+    and simply gets it: that is the whole point — a 7 pt note is 7 pt whatever the drawing's
+    scale. A plain one carries a model-space ``height``, which has to be converted through
+    the axes' own transform, because only matplotlib knows how the figure ended up fitted.
+
+    ``MIN_PT`` is a real floor — a note nobody can read is not a smaller note, it is a
+    missing one. There is deliberately **no ceiling**: the 14 pt clamp that used to be here
+    was a symptom, not a fix. It existed because a tight detail's lettering could swallow the
+    drawing, and it "solved" that by silently drawing labels at the wrong relative size. The
+    fix is that annotation is sized in points against a chosen sheet, which is what
+    ``height_pt`` is for; with that available, a clamp only hides a scale mistake.
+    """
     if not scaled_text:
         return
     origin = ax.transData.transform((0.0, 0.0))
@@ -356,19 +366,21 @@ def _apply_text_scale(fig, ax, scaled_text) -> None:
     if pixels_per_unit <= 0.0:
         return
     points_per_unit = pixels_per_unit * 72.0 / fig.dpi
-    for artist, height in scaled_text:
-        artist.set_fontsize(min(_MAX_PT, max(MIN_PT, height * points_per_unit)))
+    for artist, height, height_pt in scaled_text:
+        size = height_pt if height_pt is not None else height * points_per_unit
+        artist.set_fontsize(max(MIN_PT, size))
 
 
 def _render_nodes(ax: object, scene: Scene) -> None:
     from matplotlib.patches import Arc, PathPatch, Polygon
     from matplotlib.path import Path as MplPath
 
-    # (artist, model-space height in inches) — resized once the data limits are known.
-    # ``Text.height`` is model space (→ scene.py), so it cannot be handed to matplotlib as
-    # a point size: a detail cropped to 3 ft and a plan spanning 40 ft would otherwise get
-    # identical, and in the detail's case invisible, lettering.
-    scaled_text: list[tuple[object, float]] = []
+    # (artist, model-space height in inches, height_pt or None) — sized once the data
+    # limits are known. ``Text.height`` is model space (→ scene.py), so it cannot be handed
+    # to matplotlib as a point size: a detail cropped to 3 ft and a plan spanning 40 ft
+    # would otherwise get identical, and in the detail's case invisible, lettering.
+    # ``height_pt`` is the annotative case and needs no conversion at all.
+    scaled_text: list[tuple[object, float, float | None]] = []
 
     for node in scene.nodes:
         if isinstance(node, Polyline):
@@ -402,7 +414,7 @@ def _render_nodes(ax: object, scene: Scene) -> None:
                 ax.text(node.anchor[0], node.anchor[1], node.content,
                         ha=ha, va="center", rotation=node.rotation, family="monospace",
                         color="#222"),
-                node.height,
+                node.height, node.height_pt,
             ))
         elif isinstance(node, ArchDimension):
             _draw_dimension(ax, node)
@@ -421,7 +433,7 @@ def _render_nodes(ax: object, scene: Scene) -> None:
                         ha=_leader_align(node), va="center", color="#222",
                         bbox=dict(facecolor="white", edgecolor="none", alpha=0.75,
                                   pad=0.5)),
-                node.height or _LEADER_TEXT_H,
+                node.height or _LEADER_TEXT_H, node.height_pt,
             ))
     _ = (PathPatch, MplPath)  # imported for parity with richer node kinds
     return scaled_text
@@ -431,6 +443,7 @@ def _draw_dimension(ax: object, node: ArchDimension) -> None:
     dx, dy = node.p1[0] - node.p0[0], node.p1[1] - node.p0[1]
     dist_in = math.hypot(dx, dy)
     label = node.text or _feet_inches(dist_in)
+    size = max(MIN_PT, node.height_pt)
     # Dimensions land on the geometry they measure, which in a detail is solid hatch —
     # a translucent backing keeps the figure legible without masking the linework.
     backing = dict(facecolor="white", edgecolor="none", alpha=0.75, pad=0.6)
@@ -438,13 +451,13 @@ def _draw_dimension(ax: object, node: ArchDimension) -> None:
         x = node.p0[0] + node.offset
         ax.annotate("", xy=(x, node.p1[1]), xytext=(x, node.p0[1]),
                     arrowprops=dict(arrowstyle="<->", color="#204070", lw=0.6))
-        ax.text(x + 2, (node.p0[1] + node.p1[1]) / 2, label, fontsize=6.5, va="center",
+        ax.text(x + 2, (node.p0[1] + node.p1[1]) / 2, label, fontsize=size, va="center",
                 family="monospace", color="#204070", rotation=90, bbox=backing)
     else:
         y = node.p0[1] + node.offset
         ax.annotate("", xy=(node.p1[0], y), xytext=(node.p0[0], y),
                     arrowprops=dict(arrowstyle="<->", color="#204070", lw=0.6))
-        ax.text((node.p0[0] + node.p1[0]) / 2, y + 2, label, fontsize=6.5, ha="center",
+        ax.text((node.p0[0] + node.p1[0]) / 2, y + 2, label, fontsize=size, ha="center",
                 family="monospace", color="#204070", bbox=backing)
 
 
