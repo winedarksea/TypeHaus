@@ -18,6 +18,16 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 
+def pytest_addoption(parser) -> None:
+    """``--bless`` rewrites stored goldens instead of asserting against them.
+
+    Only ``test_section_goldens.py`` reads it. Deliberately a flag rather than an env var
+    so it shows up in ``pytest --help`` next to the other options a contributor sees.
+    """
+    parser.addoption("--bless", action="store_true", default=False,
+                     help="rewrite stored goldens from the current build")
+
+
 
 @pytest.fixture(scope="session")
 def starter_dir() -> Path:
