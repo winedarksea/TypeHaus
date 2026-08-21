@@ -186,3 +186,47 @@ def test_a_roof_off_the_sheet_does_not_label_its_layers(catlin_model):
     labelled = {node.text.split(" ")[0] for node in scene.nodes
                 if isinstance(node, Leader)}
     assert not (labelled & names), labelled & names
+
+
+# --- members -------------------------------------------------------------------------
+
+def test_a_stud_the_cut_passes_through_is_drawn(catlin_model):
+    """The old crossing math only drew a parallel member whose *centreline* landed within
+    1e-9 of the station, so a cut anywhere inside a 1.5" stud drew the cavity instead.
+
+    ``member_box`` is the one member solid every emitter shares, so the plane meets the
+    stick's real width.
+    """
+    scene = build_section(catlin_model, _slice(catlin_model, "SL-D-DECKBRG"))
+    studs = {tag for tag in _tags(scene, "S-FRAM") if tag.startswith("stud-")}
+    assert studs, "the deck-bearing detail passes through no stud at all"
+
+
+def test_a_cut_member_shows_its_real_section_face(catlin_model):
+    """A floor joist was drawn a flat 1.5" wide whatever its profile.
+
+    Only members the cut crosses *square on* are checked — a member the plane runs along
+    shows its length, which is the point of a rafter in an eave detail.
+    """
+    from typehaus.emit.draw.details import build_detail, derive_detail_slices
+    from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
+
+    by_key = {m.child_key: m for floor in catlin_model.floors for m in floor.members}
+    checked = 0
+    for derived in derive_detail_slices(catlin_model):
+        scene, _findings = build_detail(catlin_model, derived)
+        u_index = 0 if derived.direction == "x" else 1
+        for node in scene.nodes:
+            if not isinstance(node, Polyline) or node.layer != "S-FRAM":
+                continue
+            member = by_key.get(node.tag or "")
+            if member is None:
+                continue
+            if abs(member.p0[u_index] - member.p1[u_index]) > 1e-9:
+                continue  # the plane runs along it, so the face is its elevation
+            section = cross_section(member.profile)
+            expected = plan_cross_section_m(section, member.z1_m - member.z0_m) / 0.0254
+            us = [u for (u, _z) in node.points]
+            assert max(us) - min(us) <= expected + 1e-6, node.tag
+            checked += 1
+    assert checked, "no floor member was cut across in any derived detail"

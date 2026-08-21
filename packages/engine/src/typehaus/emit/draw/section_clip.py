@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from typehaus.emit.draw.scene import Hatch, Polyline
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.geometry_slice import SectionProfile
 
 
 def clip_rect(u0, u1, z0, z1, crop) -> tuple[float, float, float, float] | None:
@@ -132,3 +133,26 @@ def quad_nodes(u0, u1, z0, z1_left, z1_right, layer, pattern, uid, tag,
         nodes.append(Hatch(boundary=pts, pattern=pattern, layer="A-WALL-PATT",
                            material=material))
     return nodes
+
+
+def profile_band(profile: SectionProfile):
+    """A cut profile as ``(u0, u1, z_bottom, z_top_left, z_top_right)``, or ``None``.
+
+    Every prism-derived profile is a quad with a flat bottom and a possibly-raked top, which
+    is the shape the band drawing conventions — exaggeration, the label's true thickness, the
+    sloped termination — are all written against. A profile that is *not* that shape (an arch
+    spandrel's cut, a mesh ring) says so by returning ``None`` and gets drawn as the polygon
+    it is.
+    """
+    outline = profile.outline
+    if len(outline) != 4 or profile.voids:
+        return None
+    us = sorted({round(u, 9) for (u, _z) in outline})
+    if len(us) != 2:
+        return None
+    u0, u1 = us
+    left = sorted(z for (u, z) in outline if round(u, 9) == u0)
+    right = sorted(z for (u, z) in outline if round(u, 9) == u1)
+    if len(left) != 2 or len(right) != 2 or abs(left[0] - right[0]) > 1e-9:
+        return None
+    return (u0, u1, left[0], left[1], right[1])

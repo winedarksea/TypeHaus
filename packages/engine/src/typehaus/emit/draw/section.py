@@ -18,6 +18,7 @@ from typehaus.emit.draw.scene import Hatch, Polyline, Scene, SceneBuilder, Text
 from typehaus.emit.draw.section_clip import (
     clip_polygon,
     clip_rect,
+    profile_band,
     quad_nodes,
     rect_nodes,
 )
@@ -28,15 +29,14 @@ from typehaus.emit.draw.section_labels import (
 )
 from typehaus.emit.draw.section_members import (
     _birdsmouth_depth_in,
-    _emit_floor_cut,
     _emit_member_cuts,
+    emit_framing_cuts,
 )
 from typehaus.model.enums import SliceKind
 from typehaus.model.views import Slice
 from typehaus.quantities import M_PER_IN, m, pt
 from typehaus.resolve.geometry_slice import (
     CutPlane,
-    SectionProfile,
     ring_cut_intervals,
     ring_intervals,
     slice_part,
@@ -109,8 +109,7 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
     for roof in model.roofs:
         _emit_roof_cut(b, model, roof, plane, crop, joints, ladder_labels)
 
-    for floor in model.floors:
-        _emit_floor_cut(b, floor, direction, station, crop)
+    emit_framing_cuts(b, model, model.floors, plane, crop)
 
     # Framing members are the whole content of some details — every post, beam, rafter and
     # joist of a freestanding structure. Gating them on a JointPlan meant an *authored*
@@ -122,7 +121,7 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
     # carry its structure: ``roof_parts`` builds only the layers above it, exactly so the
     # structure is not drawn twice. Without the rafters a plain building section would show
     # a roof stack floating over nothing.
-    _emit_member_cuts(b, model, direction, station, crop,
+    _emit_member_cuts(b, model, plane, crop,
                       walls_and_floors=joints is not None or is_detail)
     if joints is not None:
         b.extend(list(joints.treatments))
@@ -182,29 +181,6 @@ def build_center_section(model: ResolvedModel) -> Scene:
     view = Slice(uid="RNDSEC00001", tag="SECTION-HOUSE-CENTER", kind=SliceKind.SECTION,
                  cut_origin=pt(m(0), m(station)), cut_direction="x")
     return build_section(model, view)
-
-
-def profile_band(profile: SectionProfile):
-    """A cut profile as ``(u0, u1, z_bottom, z_top_left, z_top_right)``, or ``None``.
-
-    Every prism-derived profile is a quad with a flat bottom and a possibly-raked top, which
-    is the shape the band drawing conventions — exaggeration, the label's true thickness, the
-    sloped termination — are all written against. A profile that is *not* that shape (an arch
-    spandrel's cut, a mesh ring) says so by returning ``None`` and gets drawn as the polygon
-    it is.
-    """
-    outline = profile.outline
-    if len(outline) != 4 or profile.voids:
-        return None
-    us = sorted({round(u, 9) for (u, _z) in outline})
-    if len(us) != 2:
-        return None
-    u0, u1 = us
-    left = sorted(z for (u, z) in outline if round(u, 9) == u0)
-    right = sorted(z for (u, z) in outline if round(u, 9) == u1)
-    if len(left) != 2 or len(right) != 2 or abs(left[0] - right[0]) > 1e-9:
-        return None
-    return (u0, u1, left[0], left[1], right[1])
 
 
 def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,

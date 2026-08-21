@@ -13,8 +13,98 @@ import math
 
 from typehaus.emit.draw.palette import detail_hatch
 from typehaus.emit.draw.scene import Hatch, Polyline
-from typehaus.emit.draw.section_clip import clip_polygon, clip_rect, clip_segment, rect_nodes
+from typehaus.emit.draw.section_clip import (
+    clip_polygon,
+    clip_rect,
+    clip_segment,
+    profile_band,
+    rect_nodes,
+)
 from typehaus.quantities import M_PER_IN
+
+
+def emit_framing_cuts(b, model, hosts, plane, crop) -> None:
+    """Slice each host's ``<uid>::framing`` element — one loop for every family of stick.
+
+    The hand-rolled crossing math this replaces got the *section face* from a guess: a flat
+    1.5" for every floor joist regardless of profile, and a bounding rectangle for a raked
+    member, which loses the rake entirely. ``member_box`` is the one member solid every
+    emitter already shares, so the cut face is now the same shape IFC sweeps and glTF draws
+    — orient and all. A winder tread, whose plan outline is a trapezoid no box can express,
+    rides through as its prism instead of being silently squared off.
+    """
+    from typehaus.resolve.geometry_slice import slice_part
+
+    for host in hosts:
+        element = model.geometry.by_uid(f"{host.uid}::framing")
+        if element is None:
+            continue
+        for part in element.parts:
+            catalog = part.catalog
+            if catalog is None:
+                continue
+            material = catalog.material_ref
+            pattern = (detail_hatch(material) or "metal") if material else "lumber"
+            for profile in slice_part(part, plane):
+                _emit_member_profile(b, profile, crop, host.uid, catalog.name,
+                                     catalog.profile, pattern, material)
+
+
+def _emit_member_profile(b, profile, crop, uid, tag, member_profile, pattern,
+                         material) -> None:
+    """One cut face of one member: its outline, its hatch and its flange datums."""
+    band = profile_band(profile)
+    if band is not None:
+        u0, u1, z0, top_left, top_right = band
+        rect = clip_rect(u0, u1, z0, max(top_left, top_right), crop)
+        if rect is None:
+            return
+        b.extend(rect_nodes(*rect, "S-FRAM", pattern, uid, tag, material=material))
+        b.extend(_member_flange_nodes(*rect, member_profile, uid, tag))
+        return
+    clipped = clip_polygon(profile.outline, crop)
+    if len(clipped) < 3:
+        return
+    points = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
+    b.add(Polyline(points=points, layer="S-FRAM", closed=True, lineweight=0.35,
+                   uid=uid, tag=tag))
+    b.add(Hatch(boundary=points, pattern=pattern, layer="A-WALL-PATT",
+                uid=uid, material=material or "spf"))
+    _emit_raked_flanges(b, profile, crop, uid, tag, member_profile)
+
+
+def _emit_raked_flanges(b, profile, crop, uid, tag, member_profile) -> None:
+    """Flange datums along a raked member's own top and bottom edges.
+
+    An I-joist rafter is otherwise a plain parallelogram; the two lines offset inward by the
+    real flange thickness are what tell it apart from a solid sawn rafter at detail scale.
+    """
+    from typehaus.resolve.framing.profiles import cross_section
+
+    if not member_profile or len(profile.outline) != 4:
+        return
+    section = cross_section(member_profile)
+    if section.shape != "i_joist" or section.flange_thickness_m is None:
+        return
+    thickness = section.flange_thickness_m
+    ordered = sorted(profile.outline)
+    (u0, za), (u0b, zb) = ordered[0], ordered[1]
+    (u1, zc), (u1b, zd) = ordered[2], ordered[3]
+    if abs(u0 - u0b) > 1e-9 or abs(u1 - u1b) > 1e-9:
+        return
+    bottom = (min(za, zb), min(zc, zd))
+    top = (max(za, zb), max(zc, zd))
+    if min(top[0] - bottom[0], top[1] - bottom[1]) <= 2.2 * thickness:
+        return
+    for (left, right) in ((bottom[0] + thickness, bottom[1] + thickness),
+                          (top[0] - thickness, top[1] - thickness)):
+        segment = clip_segment((u0, left), (u1, right), crop)
+        if segment is None:
+            continue
+        (su0, sz0), (su1, sz1) = segment
+        b.add(Polyline(points=((su0 / M_PER_IN, sz0 / M_PER_IN),
+                               (su1 / M_PER_IN, sz1 / M_PER_IN)),
+                       layer="S-FRAM", lineweight=0.13, uid=uid, tag=f"{tag}/flange"))
 
 
 def _emit_floor_cut(b, floor, direction, station, crop) -> None:
@@ -49,7 +139,7 @@ def _emit_floor_cut(b, floor, direction, station, crop) -> None:
                                       member.child_key))
 
 
-def _emit_member_cuts(b, model, direction, station, crop, walls_and_floors=True) -> None:
+def _emit_member_cuts(b, model, plane, crop, walls_and_floors=True) -> None:
     """Draw the framing members crossing the cut (top plates, rafters, joists).
 
     Generalizes the floor crossing math to raked members — a member with ``z0_end_m`` /
@@ -60,14 +150,13 @@ def _emit_member_cuts(b, model, direction, station, crop, walls_and_floors=True)
     so the rafters *are* the roof's structure in every mode, not an extra.
     """
     if walls_and_floors:
-        for wall in model.walls:
-            for member in wall.members:
-                _emit_one_member(b, member, direction, station, crop)
+        emit_framing_cuts(b, model, model.walls, plane, crop)
     for roof in model.roofs:
         # A birdsmouth rafter runs *along* the cut plane, so it only draws when a rafter
         # lands exactly on the station — which a wall-midpoint cut rarely does. Show the
         # single nearest one as the representative rafter so the eave detail carries its
         # seat cut, and let all other members follow the ordinary crossing/parallel rules.
+        direction, station = plane.axis, plane.station_m
         parallel_rafters = []
         for member in roof.members:
             if (_birdsmouth_depth_in(member.connection) is not None
