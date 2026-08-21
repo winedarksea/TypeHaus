@@ -3,9 +3,10 @@
 Two declarative framing modes, chosen per roof assembly's STRUCTURE ``FramingSpec``:
 
 * **rafter** (default) — plain sloped members spanning eave→ridge. The eave birdsmouth is
-  now emitted as a real ``seat_cut`` solid seated on the top plate (previously only a
-  ``connection`` annotation string): the box member IR cannot subtract the notch, so the
-  seat is a distinct clipped member that reads in the 3D model, section, and BOM.
+  part of the rafter's own solid: a :class:`~typehaus.resolve.model.SeatCut` on the member,
+  which ``geometry_members.member_solid`` turns into a notched ``GSweep`` every emitter
+  reads. It was an annotation string, then a separate ``seat_cut`` block occupying the same
+  volume twice; it is now geometry, stated once.
 * **truss** — a fabricated top-chord + bottom-chord + web assembly with a *raised heel* at
   the eave bearing, so full insulation depth carries over the top plate. The heel lift of the
   roof surface is applied during the envelope stage (``roof_geometry.apply_truss_heel_lift``),

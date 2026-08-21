@@ -1426,7 +1426,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CBW102AAAA",
-      "tag": "strapping-liner-furring-007"
+      "tag": "strapping-liner-furring-008"
     },
     {
       "node": "hatch",
@@ -1480,7 +1480,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CBW102AAAA",
-      "tag": "strapping-liner-furring-008"
+      "tag": "strapping-liner-furring-009"
     },
     {
       "node": "hatch",
