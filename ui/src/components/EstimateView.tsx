@@ -30,6 +30,7 @@ import {
   type SortKey,
 } from "../model/engineEstimate";
 import { BasisBlock, LadderBlock, TotalsBlock, UnpricedBlock } from "./EstimateSummary";
+import { EstimateRowDetail } from "./EstimateRowDetail";
 import {
   ReaderColumn,
   ReaderFilter,
@@ -176,6 +177,16 @@ export function EstimateView() {
   // the table is ordered by.
   const [view, setView] = useState<{ group: GroupKey; sort: SortKey }>(
     { group: "trade", sort: "cost" });
+  // Open detail panels, keyed by `section:key` rather than by table index: the row order
+  // changes under every sort and grouping control on this page, and a panel that jumped to a
+  // different line when the reader re-sorted would be worse than no panel. A Set because
+  // several may be open at once — comparing two rows' splits is the whole point.
+  const [opened, setOpened] = useState<ReadonlySet<string>>(() => new Set());
+  const toggleRow = (id: string) => setOpened((prev) => {
+    const next = new Set(prev);
+    if (!next.delete(id)) next.add(id);
+    return next;
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -263,7 +274,8 @@ export function EstimateView() {
           <ReaderSection
             title="Rows"
             note="Every priced row, ranked. The bar's position is what a row costs; its width
-              is how much of that is still unknown."
+              is how much of that is still unknown. Open a row for its material/labour split,
+              its waste treatment, and the accounts it books to."
             count={filtered.length}
           >
             {groups.map((group) => (
@@ -275,6 +287,18 @@ export function EstimateView() {
                 <ReaderTable
                   columns={columns}
                   rows={group.rows}
+                  expand={{
+                    isOpen: (row) => opened.has(`${row.section}:${row.key}`),
+                    onToggle: (row) => toggleRow(`${row.section}:${row.key}`),
+                    label: (row) => row.key,
+                    render: (row) => (
+                      <EstimateRowDetail
+                        row={row}
+                        section={estimate.sections[row.section]}
+                        sectionName={row.section}
+                      />
+                    ),
+                  }}
                   // Index-suffixed: (section, key) is NOT unique here. One prices.toml key
                   // can price several BOM rows (`standing-seam-nailstrip` bills the garage
                   // roof and, until 2026-08-20, `standing-seam` billed wall and roof out of

@@ -211,7 +211,14 @@ def test_a_cut_member_shows_its_real_section_face(catlin_model):
     from typehaus.emit.draw.details import build_detail, derive_detail_slices
     from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
 
-    by_key = {m.child_key: m for floor in catlin_model.floors for m in floor.members}
+    # Keyed by (host uid, child_key): the child_key naming scheme ("joist-0-005-0") is
+    # shared across every floor system, so a bare child_key collides once two decks split
+    # from one storey (FS-M-WEST/FS-M-EAST, FS-S-WEST/FS-S-EAST) — a lookup that ignored
+    # the host uid could silently grab the wrong deck's member (and, since 2026-08-21,
+    # the wrong deck's *profile*: a floor truss's chord is a different width than an
+    # I-joist's flange at the same depth).
+    by_key = {(m.parent_uid, m.child_key): m
+             for floor in catlin_model.floors for m in floor.members}
     checked = 0
     for derived in derive_detail_slices(catlin_model):
         scene, _findings = build_detail(catlin_model, derived)
@@ -219,7 +226,7 @@ def test_a_cut_member_shows_its_real_section_face(catlin_model):
         for node in scene.nodes:
             if not isinstance(node, Polyline) or node.layer != "S-FRAM":
                 continue
-            member = by_key.get(node.tag or "")
+            member = by_key.get((node.uid, node.tag or ""))
             if member is None:
                 continue
             if abs(member.p0[u_index] - member.p1[u_index]) > 1e-9:

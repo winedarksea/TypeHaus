@@ -27,19 +27,21 @@ def test_starter_wires_floor_system(starter_model):
 
 
 def test_catlin_second_floor_joist_count_matches_resolved(catlin_model):
-    floor = next(f for f in catlin_model.floors if f.tag == "FS-SECOND")
-    scene = build_framing_plan(catlin_model, "FS-SECOND")
+    floor = next(f for f in catlin_model.floors if f.tag == "FS-S-EAST")
+    scene = build_framing_plan(catlin_model, "FS-S-EAST")
     joist_nodes = [n for n in scene.by_layer()["S-FRAM"] if isinstance(n, Polyline)]
     assert len(joist_nodes) == len(floor.members)
 
 
 def test_framing_plan_ghosts_bearing_storey_and_marks_bearing_walls(catlin_model):
-    scene = build_framing_plan(catlin_model, "FS-SECOND")
+    scene = build_framing_plan(catlin_model, "FS-S-EAST")
     layers = scene.by_layer()
     assert "S-WALL" in layers and "S-WALL-BELW" in layers
     bearing_tags = {n.tag for n in layers["S-WALL"] if isinstance(n, Polyline)}
     # The deck's declared bearing refs plus every wall below authored StructuralRole.BEARING
-    # are drawn heavy; the S-101 schedule keeps the two apart.
+    # are drawn heavy; the S-101 schedule keeps the two apart. role_bearing_walls covers
+    # every bearing wall on the storey regardless of which half's own refs name it, so all
+    # three show up even though FS-S-EAST's own bearing_refs are W-M-C2/W-M-E1/BM-M-HALL.
     assert {"W-M-W2", "W-M-C2", "W-M-E1"} <= bearing_tags
     assert all(catlin_model.wall(tag).storey == "main" for tag in bearing_tags)
     # every non-bearing wall of the same (main) storey is ghosted, not omitted
@@ -48,13 +50,13 @@ def test_framing_plan_ghosts_bearing_storey_and_marks_bearing_walls(catlin_model
 
 
 def test_framing_plan_has_span_callout(catlin_model):
-    scene = build_framing_plan(catlin_model, "FS-SECOND")
+    scene = build_framing_plan(catlin_model, "FS-S-EAST")
     texts = [n.content for n in scene.nodes if isinstance(n, Text) and n.layer == "S-FRAM"]
     assert any("I-JOIST" in t and "O.C." in t for t in texts)
 
 
 def test_framing_plan_draws_stair_opening(catlin_model):
-    scene = build_framing_plan(catlin_model, "FS-SECOND")
+    scene = build_framing_plan(catlin_model, "FS-S-WEST")
     layers = scene.by_layer()
     assert "S-FRAM-OPEN" in layers
     opening_tags = {n.tag for n in layers["S-FRAM-OPEN"] if isinstance(n, Polyline)}
@@ -62,7 +64,7 @@ def test_framing_plan_draws_stair_opening(catlin_model):
 
 
 def test_stair_opening_clips_joists_and_uses_declared_west_bearing(catlin_model):
-    floor = next(floor for floor in catlin_model.floors if floor.tag == "FS-SECOND")
+    floor = next(floor for floor in catlin_model.floors if floor.tag == "FS-S-WEST")
     opening = catlin_model.plan.by_tag("FO-S-STAIR")
     ys = [point.xy_m[1] for point in opening.outline]
     west_face = min(point.xy_m[0] for point in opening.outline)
@@ -84,8 +86,8 @@ def test_stair_opening_clips_joists_and_uses_declared_west_bearing(catlin_model)
 
 
 def test_framing_plan_scene_snapshot_is_deterministic(catlin_model):
-    a = build_framing_plan(catlin_model, "FS-SECOND")
-    b = build_framing_plan(catlin_model, "FS-SECOND")
+    a = build_framing_plan(catlin_model, "FS-S-EAST")
+    b = build_framing_plan(catlin_model, "FS-S-EAST")
     assert a.to_json() == b.to_json()
 
 
@@ -94,7 +96,7 @@ def test_framing_plan_dxf_round_trips(catlin_model, tmp_path: Path):
 
     from typehaus.emit.draw.dxf_writer import write_dxf
 
-    scene = build_framing_plan(catlin_model, "FS-SECOND")
+    scene = build_framing_plan(catlin_model, "FS-S-EAST")
     path = write_dxf(scene, tmp_path / "framing.dxf")
     doc = ezdxf.readfile(path)
     assert doc.units == 1

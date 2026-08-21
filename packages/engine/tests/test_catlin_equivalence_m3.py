@@ -83,7 +83,8 @@ DECLARED_DIVERGENCES = {
     "House Centerline Wall (Main)": (
         "the same decision one storey down (2026-07-28): 4'-2\" of that line "
         "(y 21'-8\"..25'-10\") is BM-M-HALL now — a flush 3-ply 11-7/8\" LVL over the open "
-        "hall/living room, carrying FS-SECOND either side and BM-S-HALL's south reaction 8\" "
+        "hall/living room, carrying the second floor (FS-S-WEST/FS-S-EAST since "
+        "2026-08-21) either side and BM-S-HALL's south reaction 8\" "
         "off its own bearing — so no single wall run spans the storey and the reference's "
         "one-piece centerline no longer pairs; the bearing stack itself is unbroken"
     ),

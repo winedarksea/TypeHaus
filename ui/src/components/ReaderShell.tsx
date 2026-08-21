@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState, type ReactNode } from "react";
+import { Fragment, useCallback, useMemo, useRef, useState, type ReactNode } from "react";
 import { Icon } from "../icons/Icon";
 import { useStore } from "../state/store";
 import { uidByTag } from "../model/tagIndex";
@@ -208,16 +208,26 @@ export interface ReaderSort {
   onSort: (key: string) => void;
 }
 
+/** A ReaderTable's per-row disclosure, owned by the view for the same reason `sort` is. */
+export interface ReaderExpand<Row> {
+  isOpen: (row: Row, index: number) => boolean;
+  onToggle: (row: Row, index: number) => void;
+  /** The panel's contents. Called only for an open row, so it may be expensive. */
+  render: (row: Row) => ReactNode;
+  /** Screen-reader name for the toggle, e.g. `(row) => row.key`. */
+  label: (row: Row) => string;
+}
+
 /**
  * The readers' scrollable table, declared as columns instead of hand-rolled markup.
  *
  * The four trade readers between them wrote out `<div className="reader-table-scroll"><table
  * className="reader-table"><thead>…` a dozen times, each with its own `<th>`/`<td>` class
  * spellings — which is how a numeric column ended up right-aligned in one reader and not in
- * its twin. Complex tables (an expandable panel schedule, a table with colspan detail rows)
- * still build their own markup; this is for the plain ones, which is most of them.
+ * its twin. Complex tables still build their own markup; this is for the plain ones, which is
+ * most of them — and since `expand`, for the ones with a per-row detail panel too.
  */
-export function ReaderTable<Row>({ columns, rows, rowKey, empty, sort }: {
+export function ReaderTable<Row>({ columns, rows, rowKey, empty, sort, expand }: {
   columns: ReaderColumn<Row>[];
   rows: readonly Row[];
   rowKey: (row: Row, index: number) => string;
@@ -226,6 +236,11 @@ export function ReaderTable<Row>({ columns, rows, rowKey, empty, sort }: {
   /** Makes every column that declares a `sortKey` a button, and marks the active one with
    *  `aria-sort`. Omit for the tables that are in payload order and mean to stay there. */
   sort?: ReaderSort;
+  /** Per-row disclosure. Adds a leading toggle column and, for an open row, one full-width
+   *  detail row beneath it. Open state is the caller's: a table that owned it would reset
+   *  every time its rows re-sorted, which is exactly when a reader wants a panel to stay
+   *  put. Omit for a table with nothing more to say about a row. */
+  expand?: ReaderExpand<Row>;
 }) {
   if (empty !== undefined && rows.length === 0) return <>{empty}</>;
   return (
@@ -233,6 +248,7 @@ export function ReaderTable<Row>({ columns, rows, rowKey, empty, sort }: {
       <table className="reader-table">
         <thead>
           <tr>
+            {expand && <th className="reader-expand-col" aria-label="Detail" />}
             {columns.map((column, index) => {
               const sortable = sort && column.sortKey;
               const active = sortable && sort.key === column.sortKey;
@@ -265,15 +281,38 @@ export function ReaderTable<Row>({ columns, rows, rowKey, empty, sort }: {
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, rowIndex) => (
-            <tr key={rowKey(row, rowIndex)}>
-              {columns.map((column) => (
-                <td key={column.key} className={column.num ? "num-col" : column.cellClass}>
-                  {column.cell(row)}
-                </td>
-              ))}
-            </tr>
-          ))}
+          {rows.map((row, rowIndex) => {
+            const open = expand ? expand.isOpen(row, rowIndex) : false;
+            const key = rowKey(row, rowIndex);
+            return (
+              <Fragment key={key}>
+                <tr className={open ? "is-expanded" : undefined}>
+                  {expand && (
+                    <td className="reader-expand-col">
+                      <button
+                        className="reader-expand-btn"
+                        aria-expanded={open}
+                        aria-label={`${open ? "Hide" : "Show"} detail for ${expand.label(row)}`}
+                        onClick={() => expand.onToggle(row, rowIndex)}
+                      >
+                        <span aria-hidden="true">{open ? "▾" : "▸"}</span>
+                      </button>
+                    </td>
+                  )}
+                  {columns.map((column) => (
+                    <td key={column.key} className={column.num ? "num-col" : column.cellClass}>
+                      {column.cell(row)}
+                    </td>
+                  ))}
+                </tr>
+                {expand && open && (
+                  <tr className="reader-detail-row">
+                    <td colSpan={columns.length + 1}>{expand.render(row)}</td>
+                  </tr>
+                )}
+              </Fragment>
+            );
+          })}
         </tbody>
       </table>
     </div>

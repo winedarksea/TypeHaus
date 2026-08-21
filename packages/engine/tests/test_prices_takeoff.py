@@ -144,3 +144,67 @@ def test_cli_variants_compare_still_works_without_prices(starter_dir: Path) -> N
                   "--house", str(starter_dir), "--no-checks")
     assert result.exit_code == 0, result.output
     assert "$" not in result.output
+
+
+# --- every BOM table is priced, declared a view, or listed unpriced -------------------------
+# The estimate refuses to price a rate with nothing to multiply. The mirror of that rule is
+# what `unpriced` reports — and until 2026-08-21 it could only report a miss inside a table
+# some ESTIMATE_PLAN already read, so a table no plan named at all fell through both. That is
+# how catlin's LED run materials came to be resolved, exported and invisible to every cost
+# surface. These three pin the sweep that closed it.
+
+def test_a_bom_table_no_plan_reads_surfaces_as_unpriced(tmp_path) -> None:
+    """The hole itself: an undeclared table is listed, summed by (key, unit)."""
+    (tmp_path / "prices.toml").write_text(_SAMPLE)
+    estimate = estimate_costs({
+        "framing_by_size": [{"profile": "2x4", "order_length_ft": 100}],
+        "light_run_materials": [
+            {"item": "tape", "unit": "LF", "quantity": 3.3},
+            {"item": "tape", "unit": "LF", "quantity": 6.7},
+            {"item": "end_cap", "unit": "EA", "quantity": 4},
+        ],
+    }, load_prices(tmp_path))
+    assert [row for row in estimate["unpriced"] if row["section"] == "light_run_materials"] == [
+        {"section": "light_run_materials", "key": "end_cap", "quantity": 4.0, "unit": "EA"},
+        {"section": "light_run_materials", "key": "tape", "quantity": 10.0, "unit": "LF"},
+    ]
+    # Listed, never priced at zero: the total is the framing and nothing else.
+    assert estimate["total"] == {"low": pytest.approx(72.0), "high": pytest.approx(72.0)}
+
+
+def test_a_declared_view_is_not_reported_as_a_hole(tmp_path) -> None:
+    """`electrical_devices` is the same objects [placeables] already prices per type."""
+    from typehaus.cli.prices import UNPRICED_VIEWS
+
+    (tmp_path / "prices.toml").write_text(_SAMPLE)
+    estimate = estimate_costs({
+        "placeables": [{"type": "dishwasher-24", "count": 1}],
+        "electrical_devices": [{"kind": "receptacle", "type": "ED-T-RECEP", "count": 40}],
+    }, load_prices(tmp_path))
+    assert "electrical_devices" in UNPRICED_VIEWS
+    assert not [row for row in estimate["unpriced"] if row["section"] == "electrical_devices"]
+
+
+def test_every_catlin_bom_table_is_priced_declared_or_unpriced(catlin_model) -> None:
+    """The completeness guarantee, against the real house.
+
+    This is the test a *new* takeoff table trips: it will be neither read by a plan nor
+    named in UNPRICED_VIEWS, so it has to show up in `unpriced` — loud by default, which is
+    the whole point of the sweep. Fixing it is a one-line decision, not a silent omission.
+    """
+    from typehaus.cli.prices import ESTIMATE_PLANS, UNPRICED_VIEWS, estimate_costs
+    from typehaus.takeoff import bill_of_materials
+
+    bom = bill_of_materials(catlin_model)
+    prices = load_prices(Path("houses/catlin"))
+    estimate = estimate_costs(bom, prices)
+    read = {bom_key for _, bom_key, *_ in ESTIMATE_PLANS}
+    listed = {row["section"] for row in estimate["unpriced"]}
+    orphans = {
+        name for name, table in bom.items()
+        if name not in read and name not in UNPRICED_VIEWS
+        and isinstance(table, list) and table and name not in listed
+    }
+    assert not orphans, f"BOM tables reaching no cost surface at all: {sorted(orphans)}"
+    # And the table that motivated the sweep is really there, not merely not-an-orphan.
+    assert "light_run_materials" in listed

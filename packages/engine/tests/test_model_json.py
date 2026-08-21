@@ -48,7 +48,7 @@ def test_every_member_carries_shape_width_depth(catlin_payload):
     members = list(_all_members(catlin_payload))
     assert members
     for member in members:
-        assert member["shape"] in ("rect", "i_joist")
+        assert member["shape"] in ("rect", "i_joist", "floor_truss")
         assert member["width_m"] > 0
         assert member["depth_m"] > 0
 
@@ -144,11 +144,19 @@ def test_construction_returns_serialize_with_their_overlay_metadata(catlin_paylo
 
 
 def test_second_floor_joists_are_i_joists(catlin_payload):
-    floor = next(f for f in catlin_payload["floors"] if f["tag"] == "FS-SECOND")
-    joists = [m for m in floor["members"] if m["category"] == "joist"]
-    assert joists
-    assert all(m["shape"] == "i_joist" for m in joists)
-    assert all(m["flange_width_m"] is not None for m in joists)
+    """Since 2026-08-21 only the east half kept the I-joist; the west half is a
+    floor_truss, which shares the same "flange" fields as an I-joist deliberately."""
+    east = next(f for f in catlin_payload["floors"] if f["tag"] == "FS-S-EAST")
+    east_joists = [m for m in east["members"] if m["category"] == "joist"]
+    assert east_joists
+    assert all(m["shape"] == "i_joist" for m in east_joists)
+    assert all(m["flange_width_m"] is not None for m in east_joists)
+
+    west = next(f for f in catlin_payload["floors"] if f["tag"] == "FS-S-WEST")
+    west_joists = [m for m in west["members"] if m["category"] == "joist"]
+    assert west_joists
+    assert all(m["shape"] == "floor_truss" for m in west_joists)
+    assert all(m["flange_width_m"] is not None for m in west_joists)
 
 
 def test_stud_carries_orient(catlin_payload):

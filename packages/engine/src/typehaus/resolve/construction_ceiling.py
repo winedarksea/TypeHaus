@@ -118,10 +118,38 @@ def _find_ceiling_channel(model: ResolvedModel, rule: ConstructionRule) \
         # The ceiling over that room is the LOWEST membraned deck above it, which is not
         # the same thing as "the next storey up": catlin wedges its garage storey between
         # main and second by elevation, and the garage decks nothing over the living room.
-        pair = next(((storey, system) for storey, system in decks
-                     if storey.elevation.meters > room_storey.elevation.meters), None)
-        if pair is not None:
-            fields.append((pair[0], pair[1], face, (pair[1].tag, rule.scope_ref)))
+        lowest_storey = next((storey for storey, _system in decks
+                             if storey.elevation.meters > room_storey.elevation.meters), None)
+        if lowest_storey is not None:
+            # That storey may itself carry more than one FloorSystem (a split deck, like
+            # the second floor's truss/I-joist halves): a room can sit under just one, or —
+            # an open-plan great room — straddle the split and sit under both. Either way
+            # it bills as one continuous field (the trades run one channel field regardless
+            # of the deck boundary above it), so every system the room's polygon actually
+            # overlaps contributes its openings as holes and its tag to the one return.
+            # A candidate with no authored outline can't be tested against the room and is
+            # kept as the fallback, matching the single-deck-per-storey behaviour this
+            # replaces (safe only when it is the storey's one deck).
+            candidates = [(storey, system) for storey, system in decks
+                         if storey.tag == lowest_storey.tag]
+            overlapping = [
+                (storey, system) for storey, system in candidates
+                if not system.outline or (
+                    # Area, not ``intersects()``: two split-deck halves share a boundary
+                    # edge, and a boundary touch alone satisfies ``intersects()`` for
+                    # both — real coverage needs an actual overlap, not a shared line.
+                    Polygon([p.xy_m for p in system.outline]).intersection(face).area
+                    > _EPS)
+            ] if len(candidates) > 1 else candidates
+            if overlapping:
+                combined_field = face
+                for storey, system in overlapping:
+                    for hole in _deck_holes(plan, storey.tag, system):
+                        combined_field = combined_field.difference(hole)
+                rep_storey, rep_system = overlapping[0]
+                tags = (*sorted({system.tag for _storey, system in overlapping}),
+                       rule.scope_ref)
+                fields.append((rep_storey, rep_system, combined_field, tags))
     else:
         fields.extend((storey, system, Polygon([p.xy_m for p in system.outline]),
                        (system.tag,))

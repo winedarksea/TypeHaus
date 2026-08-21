@@ -117,13 +117,13 @@ def test_a_declared_split_scales_with_the_quantity(tmp_path) -> None:
 
 # --- 2C: the ready-mix guard, and the qualified key that opens it -------------------------
 # `structural_solids` keys on solid CATEGORY, and a category is not a material: "slab" covers
-# a 9" cast deck *and* an aluminium balcony plank. MATERIAL_ONLY stops the wood/metal ones
-# billing at the ready-mix $/cy. But those solids are billed by no other table, so a house
-# that names one explicitly — by its qualified `category:assembly` key — has to be able to
-# price it, or the estimate can only ever report it as a hole.
+# an EPS-formed concrete deck *and* an aluminium balcony plank. MATERIAL_ONLY stops the
+# wood/metal ones billing at the ready-mix $/cy. But those solids are billed by no other
+# table, so a house that names one explicitly — by its qualified `category:assembly` key —
+# has to be able to price it, or the estimate can only ever report it as a hole.
 
 _MIXED_SOLIDS = {"structural_solids": [
-    {"category": "slab", "assembly": "CATLIN_DECK_9_INT",
+    {"category": "slab", "assembly": "CATLIN_DECK_EPS_INT",
      "structure_material": "concrete", "volume_cubic_yards": 10.0},
     {"category": "slab", "assembly": "BALCONY_DECK_ALUMINUM",
      "structure_material": "aluminum-deck", "volume_cubic_yards": 2.0},

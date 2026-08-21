@@ -146,15 +146,15 @@ def test_s100_is_not_a_floor_plan(catlin_model):
 
 
 def test_s101_carries_joist_direction_size_and_spacing(catlin_model):
-    scene = build_framing_plan(catlin_model, "FS-SECOND")
+    scene = build_framing_plan(catlin_model, "FS-S-EAST")
     arrows = [node for node in scene.nodes if getattr(node, "name", "") == "span-arrow"]
-    assert arrows and arrows[0].rotation == 0.0  # FS-SECOND spans x
+    assert arrows and arrows[0].rotation == 0.0  # FS-S-EAST spans x
     text = _joined(scene)
     assert 'I-JOIST @ 16" O.C.' in text and "MAX SPAN" in text
 
 
 def test_s101_schedules_headers_over_their_openings(catlin_model):
-    level = framed_level(catlin_model, "FS-SECOND")
+    level = framed_level(catlin_model, "FS-S-EAST")
     headers = {table.title: table for table in build_framing_schedules(level)}
     table = headers["HEADER SCHEDULE — BEARING WALLS BELOW"]
     assert table.rows
@@ -178,7 +178,7 @@ def test_s101_draws_the_load_path_beam_to_post_to_support(catlin_model):
 
 
 def test_s101_marks_bearing_walls_below(catlin_model):
-    scene = build_framing_plan(catlin_model, "FS-SECOND")
+    scene = build_framing_plan(catlin_model, "FS-S-EAST")
     text = _joined(scene)
     assert "BRG: W-M-C2" in text          # declared deck bearing
     assert "BEARING" in text              # authored StructuralRole.BEARING walls below
@@ -186,7 +186,7 @@ def test_s101_marks_bearing_walls_below(catlin_model):
 
 
 def test_s101_member_schedule_counts_match_the_resolved_deck(catlin_model):
-    level = framed_level(catlin_model, "FS-SECOND")
+    level = framed_level(catlin_model, "FS-S-EAST")
     table = next(t for t in build_framing_schedules(level) if t.title.endswith("MEMBER SCHEDULE"))
     joists = [m for m in level.floor.members if m.category == "joist"]
     joist_row = next(row for row in table.rows if row[1] == "FLOOR JOIST")
@@ -195,15 +195,15 @@ def test_s101_member_schedule_counts_match_the_resolved_deck(catlin_model):
 
 
 def test_s101_names_braced_wall_lines_as_a_missing_input(catlin_model):
-    level = framed_level(catlin_model, "FS-SECOND")
+    level = framed_level(catlin_model, "FS-S-EAST")
     ids = {finding.check_id for finding in framing_sheet_findings(catlin_model, level)}
     assert "sheet.framing.braced_wall_lines" in ids
     assert "sheet.framing.braced_wall_lines" in _joined(
-        build_framing_plan(catlin_model, "FS-SECOND"))
+        build_framing_plan(catlin_model, "FS-S-EAST"))
 
 
 def test_s101_is_not_a_floor_plan_or_an_energy_view(catlin_model):
-    framing = build_framing_plan(catlin_model, "FS-SECOND")
+    framing = build_framing_plan(catlin_model, "FS-S-EAST")
     assert framing.to_json() != build_floorplan(catlin_model, "second").to_json()
     layers = framing.by_layer()
     assert "S-FRAM" in layers and "A-FURN" not in layers
@@ -249,8 +249,8 @@ def test_sheet_index_keeps_one_structural_series(catlin_model):
 def test_structural_scenes_are_deterministic(catlin_model):
     for scene_a, scene_b in (
         (build_foundation_plan(catlin_model), build_foundation_plan(catlin_model)),
-        (build_framing_plan(catlin_model, "FS-SECOND"),
-         build_framing_plan(catlin_model, "FS-SECOND")),
+        (build_framing_plan(catlin_model, "FS-S-EAST"),
+         build_framing_plan(catlin_model, "FS-S-EAST")),
         (build_roof_framing_plan(catlin_model, "RF-HOUSE"),
          build_roof_framing_plan(catlin_model, "RF-HOUSE")),
     ):
@@ -263,7 +263,7 @@ def test_structural_sheets_round_trip_to_dxf(catlin_model, tmp_path: Path):
     from typehaus.emit.draw.dxf_writer import write_dxf
 
     for name, scene in (("s100", build_foundation_plan(catlin_model)),
-                        ("s101", build_framing_plan(catlin_model, "FS-SECOND")),
+                        ("s101", build_framing_plan(catlin_model, "FS-S-EAST")),
                         ("s102", build_roof_framing_plan(catlin_model, "RF-HOUSE"))):
         document = ezdxf.readfile(write_dxf(scene, tmp_path / f"{name}.dxf"))
         assert document.units == 1

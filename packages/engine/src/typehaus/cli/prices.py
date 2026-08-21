@@ -38,7 +38,8 @@ __all__ = [
     "ALTERNATE_UNITS", "BASES", "INSTALLED", "LABOUR", "MATERIAL", "PRICES_FILENAME",
     "ALLOWANCE_KEY_FIELD", "ALLOWANCES", "Adjustments",
     "ESTIMATE_PLANS", "EXCLUDED_FROM_TOTAL", "MATERIAL_ONLY", "PriceRange", "Prices", "UnitPrice",
-    "QUALIFIED_KEY_FIELD", "WASTE_IN_QUANTITY", "ZERO", "estimate_costs", "load_prices",
+    "QUALIFIED_KEY_FIELD", "UNPRICED_VIEWS", "WASTE_IN_QUANTITY", "ZERO",
+    "estimate_costs", "load_prices",
     "waste_in_quantity",
 ]
 
@@ -187,6 +188,80 @@ EXCLUDED_FROM_TOTAL = frozenset({"furnishings"})
 #: The price table an estimate section reads: every section except concrete (which prices
 #: the ``structural_solids`` rows) shares its table's name.
 _PLAN_TABLE = {name: name for name, *_ in ESTIMATE_PLANS}
+
+
+#: BOM tables no :data:`ESTIMATE_PLANS` entry reads, and why each is not a hole.
+#:
+#: The estimate's discipline is that a price with nothing to multiply cannot appear. The
+#: mirror of that — a *quantity* with no price — is what ``unpriced`` reports, and until
+#: 2026-08-21 it could only report a miss inside a table some plan already read. A table no
+#: plan named at all fell through both: not priced, and not listed as unpriced either. That
+#: is how ``light_run_materials`` (LED tape, extrusion channel, end caps and corner
+#: connectors) came to be resolved, exported, and invisible to every cost surface.
+#:
+#: So the sweep at the end of :func:`estimate_costs` is now the other way round: every BOM
+#: table is either priced by a plan, **declared here with a reason**, or listed in
+#: ``unpriced``. A new takeoff table added upstream surfaces as unpriced until somebody
+#: decides which of the three it is — loud by default, which is the point.
+#:
+#: A "view" is a table whose scope is genuinely billed somewhere else. Each value says
+#: where, and each was checked against the catlin estimate rather than assumed.
+UNPRICED_VIEWS: dict[str, str] = {
+    # Same sticks, aggregated differently — `framing_by_size` is the priced view.
+    "framing": "priced as framing_by_size",
+    # Solid categories, so they reach [concrete] by qualified key (`glazing:<assembly>`,
+    # `bug_screen:<assembly>`) rather than through a table of their own.
+    "glazing_panels": "priced in [concrete] as glazing:<assembly> (structural_solids)",
+    "glazing_trim": "priced in [concrete] as glazing_trim (structural_solids)",
+    "bug_screens": "priced in [concrete] as bug_screen:<assembly> (structural_solids)",
+    # Tread and riser stock is lumber; the nosings and transitions are an allowance.
+    "stair_finish": "treads bill in [framing]; nosings in the finish-transitions allowance",
+    # Every one of these is a schedule *view* of ElectricalDevice placeables, which price
+    # per type in [placeables] (the ED-T-* families). Pricing them again would double-count.
+    "electrical_devices": "priced in [placeables] as the ED-T-* types",
+    "data_devices": "priced in [placeables] as the ED-T-* types",
+    "luminaire_schedule": "priced in [placeables] as the ED-T-LT-* types",
+    "lighting_controls": "priced in [placeables] as the ED-T-* types",
+    # Schedule and engineering summaries — a panel schedule is not a thing you buy. The
+    # breakers behind it are the electrical-afci-gfci-breakers allowance.
+    "panel_schedule": "schedule data; breakers are the electrical-afci-gfci allowance",
+    "service_load": "engineering summary, not a purchase",
+    "lighting_load": "engineering summary, not a purchase",
+    "poe_budget": "engineering summary, not a purchase",
+    "light_runs": "run geometry; its materials are light_run_materials",
+    # Covered by a named allowance, because the model resolves the route but not the wire.
+    "conductors": "the electrical-branch-circuit-conductors allowance",
+    "data_raceways": "the electrical-structured-low-voltage-drops allowance",
+    "solar": "the electrical-pv-array-modules-and-racking allowance",
+    "backup_power": "priced in [placeables] as the EQ-T-* types",
+}
+
+#: Fields to read an unread table's row key from, most identifying first. A generic reader
+#: cannot know a new table's shape, and a coarse "channel / 31.4 LF" line is worth far more
+#: than the silence it replaces.
+_UNREAD_KEY_FIELDS = ("item", "part", "kind", "category", "material", "spec", "system",
+                      "type", "profile", "mark", "tag")
+
+
+def _unread_table_rows(bom_key: str, table: list[Any]) -> list[dict[str, Any]]:
+    """One ``unpriced`` entry per distinct (key, unit) in a table no price plan reads.
+
+    Summed rather than listed row by row, for the same reason the CSV aggregates on
+    ``(section, key)``: the reader wants "how much of this is unpriced", not the raw table.
+    """
+    groups: dict[tuple[str, str], float] = {}
+    for row in table:
+        if not isinstance(row, Mapping):
+            continue
+        key = next((str(row[field]) for field in _UNREAD_KEY_FIELDS
+                    if isinstance(row.get(field), str) and row[field]), bom_key)
+        unit_value = row.get("unit")
+        unit = unit_value if isinstance(unit_value, str) and unit_value else "ea"
+        quantity = row.get("quantity")
+        amount = float(quantity) if isinstance(quantity, (int, float)) else 1.0
+        groups[(key, unit)] = groups.get((key, unit), 0.0) + amount
+    return [{"section": bom_key, "key": key, "quantity": round(amount, 2), "unit": unit}
+            for (key, unit), amount in sorted(groups.items())]
 
 
 
@@ -353,6 +428,13 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
                 excluded_total = excluded_total.plus(subtotal)
     unpriced = [row for bom_key, row in misses
                 if row["key"] not in priced.get(bom_key, ())]
+    # Every BOM table is priced, declared a view, or listed here — see ``UNPRICED_VIEWS``.
+    read_tables = {bom_key for _, bom_key, *_ in ESTIMATE_PLANS}
+    for bom_key, table in bom.items():
+        if bom_key in read_tables or bom_key in UNPRICED_VIEWS:
+            continue
+        if isinstance(table, list) and table:
+            unpriced.extend(_unread_table_rows(bom_key, table))
     grand_total = total.plus(excluded_total)
     bid = roll_up(section_buckets, section_waste, adjustments, EXCLUDED_FROM_TOTAL,
                   section_tax_paid)

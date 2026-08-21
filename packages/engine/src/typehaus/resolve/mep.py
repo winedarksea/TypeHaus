@@ -414,7 +414,7 @@ def _resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey_tag: str) -> l
         # same joist direction) contains its midpoint, so a duct spanning a split deck
         # (e.g. the ERV trunks crossing the truss/I-joist boundary) resolves against
         # both halves instead of reporting UNKNOWN past the named floor_ref's edge.
-        for a, b in zip(path, path[1:]):
+        for a, b in zip(path, path[1:], strict=False):
             midpoint = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
             seg_floor = _duct_containing_floor(model, storey_tag, floor.direction, midpoint, floor)
             system = model.plan.by_tag(seg_floor.tag)

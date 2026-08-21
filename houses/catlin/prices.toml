@@ -385,9 +385,28 @@
 # $/cy placed, by solid category
 # 2026-08-20 RESEARCH PASS 4 raised every rate below. The old numbers were ready-mix plus a
 # thin placement allowance; a formed pour is bought by the FOOT OF FORM, not the yard of mud.
-# CAVEAT worth chasing: if this beam is cast monolithically with CATLIN_DECK_9_INT it is
-# already inside that deck rate and should be zeroed here rather than repriced.
-"beam" = { low = 900, high = 2000 }  # 0.86 cy — forming-dominated, was $260-420
+# 2026-08-21: THIS ROW BILLS WOOD, NOT CONCRETE. It sits in a $/cy concrete table only
+# because `structural_solids` keys on solid CATEGORY. Nine of the twenty Beam elements are
+# LVL — BM-M-HALL / BM-S-HALL at 3-1.75x11.875, the garden's back and front beams at
+# 2-1.75x11.25, its balcony beams at 2-1.75x9.25 — and the other eleven are sawn, on
+# purpose: the garden's four E-W girts are 2x10, the breezeway's four floor beams 2-2x8
+# (flush with its joists) and its three rafters 2x6. Not one is concrete, and none was on
+# 2026-08-20 either — so the caveat this line used to carry ("if this beam is cast
+# monolithically with CATLIN_DECK_9_INT it is already inside that deck rate") described a
+# pour that never existed, not one the EPS deck swap retired.
+#
+# The row still cannot be zeroed: these twenty solids bill NOWHERE else. RB-HOUSE is the
+# only Beam that does — the ridge resolves as a framing member and shows up as 36 LF of
+# lumber — and it is not one of the twenty.
+#
+# So the rate is wrong in kind, and probably in size. Left as researched rather than
+# guessed at: 1 cy of framing is 27 cf, and against this file's own [framing] rows a 2-2x8
+# at $3.20-5.10/LF is $572-912/cy while a 3-ply 1.75x11.875 LVL at $36-69/LF is
+# $2,246-4,306/cy. The volume is 77% LVL by the yard, which blends to ~$1,860-3,530/cy —
+# roughly double what the row carries. The real fix is to bill these by the FOOT in
+# [framing] like every other stick, and keep this row for a concrete beam the house does
+# not have yet.
+"beam" = { low = 900, high = 2000 }  # 1.06 cy of LVL/sawn — read as wood, NOT a formed pour
 # A 16"x16" column 9' tall is 0.593 cy, so this is $530-1,480 each. Column forms, plumbing,
 # bracing and rubbing/patching after strip dominate; ready-mix is under 15% of the cost.
 "column" = { low = 900, high = 2500 }  # 1.78 cy — was $260-420
@@ -485,18 +504,24 @@
 # 1 5/8" of cap):
 #   ready-mix, 7.35 cy + waste @ $180-200/cy            $3.20- 3.55/SF
 #   reinforcing: rib bars + cap mesh, furnished/placed  $1.50- 3.00/SF
-#   boom pump (mob + hours + yardage)                   $1.15- 1.80/SF
 #   place, screed, power trowel, cure                   $3.00- 5.50/SF
 #   cold-weather protection (Nov-Mar in MN)             $0.00- 0.75/SF
 #   structural engineering, stamped                     $1.00- 3.00/SF
 #   small-job premium                                   $0.15- 2.40/SF
 #                                                      -----------------
-#                                                      $10.00-20.00/SF
-# No shoring line and no formwork line: that is the whole point of a stay-in-place form, and
-# it is where the $25-40k mobilisation floor went. Engineering stays — the form supplier
-# gives a layout, not a stamp — but it is a third of what a shored deck's was because there
-# is no shoring design in it.
-"slab:CATLIN_DECK_EPS_INT" = { low = 10, high = 20, unit = "SF" }  # 414 SF — EPS-formed deck, concrete only
+#                                                      $ 8.85-18.20/SF
+# **No pump line here, on purpose (corrected 2026-08-21).** The build-up carried
+# "boom pump (mob + hours + yardage) $1.15-1.80/SF" until today, which double-booked the
+# `concrete-pumping` lump sum in [allowances] — this file's single house-wide home for
+# pumping, and the reason its own note says flatwork subs quote "pump by others". One home
+# or the other; the lump sum is the one every other pour already relies on. Dropping the
+# line takes the rate from $10.00-20.00 to $8.85-18.20/SF, i.e. -$476 to -$745 on 414 SF.
+#
+# No shoring line and no formwork line either: that is the whole point of a stay-in-place
+# form, and it is where the $25-40k mobilisation floor went. Engineering stays — the form
+# supplier gives a layout, not a stamp — but it is a third of what a shored deck's was
+# because there is no shoring design in it.
+"slab:CATLIN_DECK_EPS_INT" = { low = 8.85, high = 18.20, unit = "SF" }  # 414 SF — EPS-formed deck, concrete only, pump in [allowances]
 # $400-1,200 each — basin, gasketed sealed lid, 4" riser, sub-slab connection, slab patch.
 # Minnesota has required radon-resistant new construction since June 2009, so this is code
 # scope, not an option. 2026-08-20: RE-UNITED — `unit = "ea"` reads the row's `count`, so the
@@ -1787,7 +1812,19 @@ concrete-driveway-apron-and-walks = { material = { low = 7200, high = 17600 }, l
 site-drain-tile-labour-and-outlet = { low = 9000, high = 19000 }
 # ** THE SINGLE MOST-FORGOTTEN LINE IN RESIDENTIAL CONCRETE. ** Ready-mix suppliers never
 # include it and flatwork subs quote "pump by others". Two live 2026 rate sheets agree at
-# $200-225/hr + $4/cy on a 4-hour minimum. A suspended 9" deck cannot be poured without it.
+# $200-225/hr + $4/cy on a 4-hour minimum.
+#
+# **This is the whole house's pumping, and the only place it is carried (2026-08-21).** The
+# line used to be justified by "a suspended 9\" deck cannot be poured without it"; that deck
+# is gone, and the [concrete] "slab:CATLIN_DECK_EPS_INT" row that replaced it briefly
+# carried a pump allowance of its own — see the note there for why it no longer does. The
+# pours that draw on this number now are the footings, the basement and garage walls, the
+# basement slab, and the EPS deck's cap 9'-0" in the air. That is still several pump days,
+# each with its own mobilisation and 4-hour minimum, which is what $4,600-7,800 buys.
+#
+# WORTH A REQUOTE, not a guess: the deck's pour fell from 37-38 cy to 7.35 cy on 2026-08-21,
+# which is maybe $200-450 of hours and yardage off the top of this range. Left in — it is
+# well inside the spread, and the pour count did not change.
 concrete-pumping = { low = 4600, high = 7800 }
 # MN code minimum is DAMP-proofing only (IRC R406.1) at $1,200-3,200; +dimple board is
 # $3,500-7,000; a full membrane is $8,000-16,000. The range spans all three deliberately —

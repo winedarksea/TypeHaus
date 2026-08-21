@@ -11911,7 +11911,7 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CSF603AAAA",
+      "uid": "1JXQ975X9E",
       "tag": "rim-0"
     },
     {
@@ -11932,6 +11932,118 @@
         ],
         [
           -0.625,
+          120.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          215.37500000000003,
+          108.125
+        ],
+        [
+          216.625,
+          108.125
+        ],
+        [
+          216.625,
+          120.0
+        ],
+        [
+          215.37500000000003,
+          120.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "1JXQ975X9E",
+      "tag": "rim-1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          215.37500000000003,
+          108.125
+        ],
+        [
+          216.625,
+          108.125
+        ],
+        [
+          216.625,
+          120.0
+        ],
+        [
+          215.37500000000003,
+          120.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          215.37500000000003,
+          108.125
+        ],
+        [
+          216.625,
+          108.125
+        ],
+        [
+          216.625,
+          120.0
+        ],
+        [
+          215.37500000000003,
+          120.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSF603AAAA",
+      "tag": "rim-0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          215.37500000000003,
+          108.125
+        ],
+        [
+          216.625,
+          108.125
+        ],
+        [
+          216.625,
+          120.0
+        ],
+        [
+          215.37500000000003,
           120.0
         ]
       ],

@@ -143,8 +143,9 @@ def test_the_wall_sills_bill_as_pt_sill_plate(catlin_model) -> None:
 
 
 # --- resilient channel under a ceiling ----------------------------------------
-# The living room's ceiling gypsum hangs on channel instead of straight off FS-SECOND's
-# I-joists, so footfall from the bedrooms above does not arrive as impact noise. It is the
+# The living room's ceiling gypsum hangs on channel instead of straight off the second
+# floor's joists (FS-S-WEST/FS-S-EAST, the great room straddles both), so footfall from
+# the bedrooms above does not arrive as impact noise. It is the
 # one return billed from an *area*: the runs cross the joists at 16" o.c., so the total run
 # is the ceiling field over that spacing (the same derivation radiant-wire length uses).
 # The rule is scoped to RM-M-LIVING — the rest of that deck's ceiling is screwed direct.
@@ -169,13 +170,16 @@ def _stair_hole(model) -> Polygon:
 
 
 def test_the_ceiling_channel_is_scoped_to_one_room(catlin_model) -> None:
-    """FS-SECOND decks the whole storey; the channel covers one room of it. The field is
-    the room's clear face itself — the same polygon the rooms stage publishes, re-derived
-    here because this pass runs long before that stage fills ``model.rooms``."""
+    """RM-M-LIVING is a great room that straddles the second floor's x=18' split, so its
+    ceiling channel is one continuous field billed against both halves — FS-S-WEST (the
+    truss half) and FS-S-EAST (I-joist, unchanged) — rather than either alone. The field
+    is the room's clear face itself — the same polygon the rooms stage publishes,
+    re-derived here because this pass runs long before that stage fills ``model.rooms``.
+    """
     rc = _rc(catlin_model)
     assert rc.kind == "furring"
     assert rc.takeoff_category == "resilient-channel"
-    assert set(rc.element_tags) == {"FS-SECOND", "RM-M-LIVING"}
+    assert set(rc.element_tags) == {"FS-S-WEST", "FS-S-EAST", "RM-M-LIVING"}
     assert rc.returning_layer == "gwb"  # the membrane it carries, authored on the deck
     assert Polygon(rc.outline).area == pytest.approx(_living_room(catlin_model).area_m2)
     # A field, not a junction lap: there is no boundary condition for an overlay to join on.
@@ -241,14 +245,14 @@ def test_a_ceiling_channel_rule_naming_no_room_is_inert(catlin_model) -> None:
 
 def test_an_unscoped_ceiling_channel_rule_needs_an_authored_deck_outline(catlin_model) -> None:
     """Documented limitation: an unscoped rule bills the deck's own ``outline``, and the
-    pass runs before the framing stage that would otherwise derive one. FS-SECOND and
-    FS-ATTIC author no outline, so an unscoped rule finds nothing on them — scope it, or
-    author the outline.
+    pass runs before the framing stage that would otherwise derive one. FS-ATTIC authors
+    no outline, so an unscoped rule finds nothing on it — scope it, or author the outline.
 
-    FS-M-WEST and FS-M-EAST *do* author one (2026-08-21: they have to, since they split one
-    storey's deck between them), so an unscoped rule does reach those two. That is the same
-    statement from the other side, and it is asserted here so the limitation stays a
-    limitation of missing outlines rather than of decks."""
+    FS-M-WEST/FS-M-EAST and FS-S-WEST/FS-S-EAST *do* author one (each splits a whole
+    storey's deck between two systems, so each needs its own outline to scope its half),
+    so an unscoped rule does reach those four. That is the same statement from the other
+    side, and it is asserted here so the limitation stays a limitation of missing outlines
+    rather than of decks."""
     from typehaus.model.assembly import ConstructionRule
     from typehaus.quantities import inch
     from typehaus.resolve.construction import _find_ceiling_channel
@@ -257,5 +261,6 @@ def test_an_unscoped_ceiling_channel_rule_needs_an_authored_deck_outline(catlin_
                             kind="furring", dimension=inch(16),
                             takeoff_category="resilient-channel")
     found = list(_find_ceiling_channel(catlin_model, rule))
-    assert sorted({tag for tag in ("FS-M-WEST", "FS-M-EAST", "FS-SECOND", "FS-ATTIC")
-                   if any(tag in item.uid for item in found)}) == ["FS-M-EAST", "FS-M-WEST"]
+    assert sorted({tag for tag in ("FS-M-WEST", "FS-M-EAST", "FS-S-WEST", "FS-S-EAST", "FS-ATTIC")
+                   if any(tag in item.uid for item in found)}) == [
+        "FS-M-EAST", "FS-M-WEST", "FS-S-EAST", "FS-S-WEST"]
