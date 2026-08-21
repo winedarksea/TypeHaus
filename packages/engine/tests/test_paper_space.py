@@ -340,3 +340,38 @@ def test_the_gutters_leave_the_drawing_real_room():
     assert width > 2.0, "a landscape card must leave the cut a usable column"
     assert height > 5.0
     assert view[2] > LADDER_GUTTER_IN + CALLOUT_GUTTER_IN
+
+
+def test_the_dxf_gets_a_real_paper_layout(catlin_model, tmp_path):
+    """Where the ``Viewport`` node kind — defined in M2, never emitted — finally lands.
+
+    DXF is better placed for this than either raster writer: ``doc.units = 1`` makes paper
+    units inches too, so the sheet, the window and the lettering heights are all one unit
+    system and the layout needs no conversion at all.
+    """
+    pytest.importorskip("ezdxf")
+    import ezdxf
+
+    from typehaus.emit.draw.details import build_detail, derive_detail_slices
+    from typehaus.emit.draw.dxf_writer import write_dxf
+
+    derived = next(d for d in derive_detail_slices(catlin_model)
+                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+    scene, _ = build_detail(catlin_model, derived)
+    doc = ezdxf.readfile(str(write_dxf(scene, tmp_path / "eave.dxf")))
+
+    layout = doc.layouts.get("Detail")
+    frame = scene.frame
+    window = next(v for v in layout if v.dxftype() == "VIEWPORT"
+                  and abs(v.dxf.width - frame.viewport[2]) < 1e-6)
+    assert window.dxf.height == pytest.approx(frame.viewport[3])
+    # The window shows exactly as much model as the chosen scale says it should.
+    assert window.dxf.view_height == pytest.approx(
+        frame.viewport[3] * 12.0 / frame.scale)
+
+    texts = {t.dxf.text: t.dxf.height for t in layout if t.dxftype() == "TEXT"}
+    assert catlin_model.plan.project.name in texts
+    # Paper space is 1:1, so a printed size goes straight to inches — no scale involved.
+    assert texts["MATERIALS"] == pytest.approx(6.5 / 72.0)
+    # And nothing in the layout is a model-space size that leaked through.
+    assert all(height < 0.5 for height in texts.values()), texts

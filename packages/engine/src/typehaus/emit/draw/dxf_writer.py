@@ -152,7 +152,10 @@ def write_dxf(scene: Scene, path: Path) -> Path:
     _ensure_arch_dimstyle(doc)
     msp = doc.modelspace()
 
+    paper = [n for n in scene.nodes if getattr(n, "space", "model") == "paper"]
     for node in scene.nodes:
+        if getattr(node, "space", "model") == "paper":
+            continue  # drawn into Layout1 below, in paper inches
         if isinstance(node, Polyline):
             _add_polyline(msp, node)
         elif isinstance(node, Hatch):
@@ -166,11 +169,60 @@ def write_dxf(scene: Scene, path: Path) -> Path:
         elif isinstance(node, Leader):
             _add_leader(msp, node, scene)
         elif isinstance(node, Viewport):
-            continue  # paperspace composition is M3 (§Sheets)
+            continue  # a Viewport node describes a sheet; the frame below is what we honour
+
+    if scene.frame is not None:
+        _compose_layout(doc, scene, paper)
 
     path.parent.mkdir(parents=True, exist_ok=True)
     doc.saveas(path)
     return path
+
+
+def _compose_layout(doc, scene: Scene, paper_nodes) -> None:
+    """Put the drawing in a real paper-space layout, at the scale the scene chose.
+
+    This is where DXF is *better* placed than either raster writer: ``doc.units = 1`` makes
+    paper units inches too, so the sheet, the viewport window and the annotation heights are
+    all in one unit system and the layout needs no conversion at all. It is also, finally,
+    where the ``Viewport`` node kind defined in ``scene.py`` and handled here since M2 —
+    and never once emitted — actually lands.
+    """
+    frame = scene.frame
+    paper_w, paper_h = frame.paper
+    layout = (doc.layouts.get("Detail") if "Detail" in doc.layouts
+              else doc.layouts.new("Detail"))
+    layout.page_setup(size=(paper_w * 25.4, paper_h * 25.4), margins=(0, 0, 0, 0),
+                      units="mm")
+    vx, vy, vw, vh = frame.viewport
+    if vw > 0.01 and vh > 0.01:
+        layout.add_viewport(
+            center=(vx + vw / 2.0, vy + vh / 2.0), size=(vw, vh),
+            view_center_point=frame.center,
+            # Model height the window shows: paper height x model inches per paper inch.
+            view_height=vh * 12.0 / frame.scale)
+    for node in paper_nodes:
+        if isinstance(node, Polyline):
+            _add_polyline(layout, node)
+        elif isinstance(node, Hatch):
+            _add_hatch(layout, node)
+        elif isinstance(node, Text):
+            _add_paper_text(layout, node)
+
+
+def _add_paper_text(msp, node: Text) -> None:
+    """Paper-space lettering: ``height_pt`` straight to inches, no scale to convert through.
+
+    That is the definition of paper space — the sheet is 1:1, so 7 points is 7/72".
+    """
+    align = {"left": "LEFT", "center": "MIDDLE_CENTER", "right": "RIGHT"}[node.align]
+    height = (node.height_pt / 72.0) if node.height_pt is not None else node.height
+    e = msp.add_text(
+        node.content,
+        dxfattribs={"layer": node.layer, "height": height, "rotation": node.rotation},
+    )
+    e.set_placement(node.anchor,
+                    align=getattr(__import__("ezdxf").enums.TextEntityAlignment, align))
 
 
 def _ensure_layers(doc: object, scene: Scene) -> None:
