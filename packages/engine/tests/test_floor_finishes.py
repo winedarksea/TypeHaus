@@ -18,10 +18,12 @@ from shapely.geometry import Polygon
 from typehaus.emit.gltf.palette import _color, _room_floor_color, _hex_rgba
 from typehaus.emit.draw.palette import material_color
 
-# Every finish string authored anywhere in houses/catlin. Kept explicit rather than derived
-# so that adding a finish to a storey without adding its material trips this file.
+# Every finish string that reaches a floor anywhere in houses/catlin — the field finishes
+# authored on Rooms plus the zone finishes, which since 2026-08-21 include one taken from a
+# Slab (SL-M-DECK's polished cap) rather than authored on a room at all. Kept explicit rather
+# than derived so that adding a finish to a storey without adding its material trips here.
 _CATLIN_FINISHES = {"oak", "lvp", "carpet", "tile", "sealed-concrete", "rubber",
-                    "vinyl-sheet"}
+                    "vinyl-sheet", "polished-concrete"}
 
 
 def _library(catlin_model):
@@ -39,6 +41,8 @@ def test_every_authored_floor_finish_names_a_library_material(catlin_model):
     bare deck, exports as flat grey, and bills as an UNKNOWN row — all silently, which is
     why this is asserted over the *authored* set rather than over the material list."""
     authored = {room.floor_finish for room in catlin_model.rooms if room.floor_finish}
+    authored |= {zone.material_ref for room in catlin_model.rooms
+                 for zone in room.finish_zones}
     assert authored == _CATLIN_FINISHES
     missing = sorted(tag for tag in authored if _material(catlin_model, tag) is None)
     assert missing == []
@@ -163,11 +167,14 @@ def test_finish_zones_survive_resolve(catlin_model, project):
 # --- 5. the advisory ----------------------------------------------------------------------
 
 def test_radiant_under_a_limited_finish_is_advised(catlin_model):
-    """LVP over FH-S-BATH1 is legal but surface-temperature limited, and the loop under
-    the dining table is under oak. Both are commissioning decisions, so both are advised.
+    """LVP over FH-S-BATH1 is legal but surface-temperature limited, which is a
+    commissioning decision and so is advised.
 
-    FH-M-DINING is the case the polygon match exists for: it carries no ``room_ref`` at all,
-    so a ref lookup would have missed it entirely.
+    FH-M-DINING is the case the polygon match exists for — it carries no ``room_ref`` at
+    all, so a ref lookup would miss it entirely — and it is also why the check reads
+    ``finish_zones`` rather than ``Room.floor_finish``. The loop sits wholly inside
+    SL-M-DECK's band, where the finish is the polished cap, not RM-M-LIVING's field LVP.
+    Polished concrete is exactly what radiant wants, so there is nothing to advise.
     """
     from typehaus.checks.advisory.checks import floor_finish_over_radiant
     from typehaus.checks.code.mn_residential.profile import MN_2024
@@ -177,9 +184,154 @@ def test_radiant_under_a_limited_finish_is_advised(catlin_model):
         plan=catlin_model.plan, model=catlin_model, preferences=Preferences(),
         profile=MN_2024))
     assert {tuple(sorted(f.element_tags)) for f in findings} == {
-        ("FH-M-DINING", "RM-M-LIVING"),
         ("FH-S-BATH1", "RM-S-BATH1"),
     }
     assert all(f.severity.value == "warn" for f in findings)
     # FH-M-BATH2 is under tile, which is what radiant wants — no advisory for it.
     assert not any("FH-M-BATH2" in f.element_tags for f in findings)
+
+
+# A loop from x 23' to 30', y 11' to 16', wholly inside RM-M-LIVING and straddling
+# _BAND_Y (13'): 40% of it is over FS-M-EAST's plywood, 60% over SL-M-DECK's cap.
+_STRADDLING_LOOP = [(7.0104, 3.3528), (9.144, 3.3528), (9.144, 4.8768), (7.0104, 4.8768)]
+
+
+def test_a_radiant_loop_that_crosses_a_finish_boundary_reports_the_limited_half(catlin_model):
+    """The half-and-half case the polygon test exists to catch.
+
+    A loop spanning the concrete/wood boundary in RM-M-LIVING runs under polished concrete
+    for part of its length and under plank for the rest. The plank half is still surface-
+    temperature limited, and reading either the field finish alone or the zone alone would
+    report exactly one of the two wrongly.
+    """
+    from dataclasses import replace
+
+    from typehaus.checks.advisory.checks import floor_finish_over_radiant
+    from typehaus.checks.code.mn_residential.profile import MN_2024
+    from typehaus.checks.registry import CheckContext, Preferences
+
+    dining = next(zone for zone in catlin_model.floor_heat if zone.tag == "FH-M-DINING")
+    straddle = replace(dining, zone=_STRADDLING_LOOP)  # 40% plank, 60% cap
+    model = replace(catlin_model, floor_heat=[straddle])
+    findings = floor_finish_over_radiant(CheckContext(
+        plan=model.plan, model=model, preferences=Preferences(), profile=MN_2024))
+    messages = [f.message for f in findings if "RM-M-LIVING" in f.element_tags]
+    assert len(messages) == 1, messages
+    assert "lvp floor" in messages[0]
+
+
+# --- 4. the finish follows the deck ------------------------------------------------------
+#
+# RM-M-LIVING is one 766 SF claim over two structures: SL-M-DECK's EPS-formed cap north of
+# y=13' east of x=18', and FS-M-EAST / FS-M-WEST's I-joists and plywood everywhere else.
+# ``Room.floor_finish`` is one string, so before ``Slab.floor_finish`` existed the room
+# billed 766 SF of LVP — 411 of it over a polished concrete cap nobody was going to cover.
+
+_M2_TO_FT2 = 10.7639104
+
+
+def test_the_living_room_splits_its_floor_where_its_structure_splits(catlin_model):
+    """One derived zone, taken from the slab, and the field LVP is the room minus it."""
+    living = next(room for room in catlin_model.rooms if room.tag == "RM-M-LIVING")
+    assert living.floor_finish == "lvp", "the room's own string stays the FIELD finish"
+    assert len(living.finish_zones) == 1
+    zone = living.finish_zones[0]
+    assert zone.material_ref == "polished-concrete"
+    # Derived, not authored — and it names the slab, which is the answer to "why is this
+    # band different" in the Inspector and in the takeoff.
+    assert zone.source_ref == "SL-M-DECK"
+    assert zone.area_m2 * _M2_TO_FT2 == pytest.approx(411.3, abs=0.5)
+    field = (living.area_m2 - zone.area_m2) * _M2_TO_FT2
+    assert field == pytest.approx(355.1, abs=0.5)
+
+
+def test_a_derived_zone_is_clipped_to_the_room_not_drawn_as_the_slab(catlin_model):
+    """An authored zone draws as authored and bills clipped; a derived one has no reason to
+    be drawn proud of the room, so its outline IS the clipped ring. Here that is an L —
+    the slab runs to x=36' and y=36', the room's clear face stops short of both."""
+    from shapely.geometry import Polygon
+
+    living = next(room for room in catlin_model.rooms if room.tag == "RM-M-LIVING")
+    ring = Polygon(living.finish_zones[0].outline)
+    face = Polygon(living.clear_face)
+    assert face.buffer(1e-6).contains(ring), "the drawn ring never leaves the room"
+    assert ring.area == pytest.approx(living.finish_zones[0].area_m2, rel=1e-9)
+
+
+def test_the_billed_finishes_move_with_the_split(catlin_model):
+    """The whole point, in the takeoff: LVP drops by the band and the band bills as its own
+    material, at its own rate, with no waste on a process measured by coverage."""
+    from typehaus.takeoff.finishes import floor_finish_rows
+
+    rows = {row["finish"]: row for row in floor_finish_rows(catlin_model)}
+    assert rows["polished-concrete"]["rooms"] == ["RM-M-LIVING"]
+    assert rows["polished-concrete"]["coating"] is True
+    assert rows["polished-concrete"]["waste_pct"] == 0.0
+    assert float(rows["polished-concrete"]["net_area_sqft"]) == pytest.approx(411.3, abs=0.5)
+    # LVP and the underlayment that follows it both bill the reduced field.
+    assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(743.1, abs=0.5)
+    assert rows["lvp-underlayment"]["net_area_sqft"] == rows["lvp"]["net_area_sqft"]
+
+
+# --- 5. a sealer needs a slab to seal ----------------------------------------------------
+#
+# The drift this catches is not a typo. RM-M-MUDROOM, RM-M-MECH and RM-M-MUD-CLOSET read
+# "sealed-concrete" from the day they were authored until 2026-08-21, when the basement-
+# ceiling overhaul put FS-M-WEST's I-joists and 3/4" plywood under all three. The string
+# still resolved, still rendered and still billed a sealer over a wood deck.
+
+def _concrete_finish_findings(model):
+    from _helpers import check_context
+
+    from typehaus.checks.integrity.checks import concrete_finish_needs_concrete_deck
+
+    return concrete_finish_needs_concrete_deck(check_context(model=model))
+
+
+def test_no_room_claims_a_concrete_finish_over_a_deck_that_is_not_concrete(catlin_model):
+    """House-wide, after the retype. ``haus check`` exits 1 on any FAIL, so this is the
+    assertion that says §5's edits and the check that guards them landed together."""
+    assert _concrete_finish_findings(catlin_model) == []
+
+
+def test_the_three_retyped_mudroom_rooms_are_sheet_vinyl_over_their_wood_deck(catlin_model):
+    """vinyl-sheet is already the house's answer for a wet floor with no slab under it —
+    RM-S-PLANT's spec, welded seams and a 6" integral flash cove."""
+    retyped = {"RM-M-MUDROOM", "RM-M-MECH", "RM-M-MUD-CLOSET"}
+    finishes = {room.tag: room.floor_finish for room in catlin_model.rooms
+                if room.tag in retyped}
+    assert finishes == {tag: "vinyl-sheet" for tag in retyped}
+
+
+def test_a_sealer_over_a_wood_deck_fails(catlin_model):
+    """The regression itself: put "sealed-concrete" back on the mudroom and the build stops."""
+    from dataclasses import replace
+
+    rooms = [replace(room, floor_finish="sealed-concrete")
+             if room.tag == "RM-M-MUDROOM" else room
+             for room in catlin_model.rooms]
+    findings = _concrete_finish_findings(replace(catlin_model, rooms=rooms))
+    assert [f.element_tags for f in findings] == [("RM-M-MUDROOM",)]
+    assert findings[0].result.value == "fail"
+    assert findings[0].severity.value == "error"
+    # The message carries the measured fraction, so the reader can tell "no slab at all"
+    # from "the slab moved a little".
+    assert "0% of that area sits over a slab" in findings[0].message
+
+
+def test_the_garage_slab_is_not_reported_though_it_is_not_fully_covered(catlin_model):
+    """The threshold is calibrated, not arbitrary. RM-GARAGE is a legitimate sealed slab
+    that measures ~86%: its clear face is taken at the wood-wall lining while SL-G-FLOOR is
+    poured inside the ICF stem. Exact containment would call that a defect."""
+    from shapely.geometry import Polygon
+    from shapely.ops import unary_union
+
+    garage = next(room for room in catlin_model.rooms if room.tag == "RM-GARAGE")
+    assert garage.floor_finish == "sealed-concrete"
+    face = Polygon(garage.clear_face)
+    slabs = unary_union([Polygon(solid.outline) for solid in catlin_model.solids
+                         if solid.category == "slab" and solid.storey == garage.storey])
+    fraction = face.intersection(slabs).area / face.area
+    assert 0.8 < fraction < 0.95, fraction
+    assert not any("RM-GARAGE" in f.element_tags
+                   for f in _concrete_finish_findings(catlin_model))

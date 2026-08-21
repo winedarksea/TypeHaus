@@ -105,7 +105,8 @@ def test_every_finish_row_resolved_a_real_material(bom):
     unknown = [row for row in bom["floor_finishes"] if not row["known"]]
     assert unknown == [], unknown
     assert {row["finish"] for row in bom["floor_finishes"] if "under" not in row} == {
-        "carpet", "lvp", "oak", "tile", "sealed-concrete", "rubber", "vinyl-sheet"}
+        "carpet", "lvp", "oak", "tile", "sealed-concrete", "polished-concrete", "rubber",
+        "vinyl-sheet"}
 
 
 def test_the_second_storey_lvp_and_carpet_rows_match_what_was_authored(catlin_model, bom):
@@ -118,7 +119,11 @@ def test_the_second_storey_lvp_and_carpet_rows_match_what_was_authored(catlin_mo
     assert set(lvp["rooms"]) == {"RM-S-HALL", "RM-S-SUITEBATH",
                                  "RM-S-VANITY", "RM-S-BATH1",
                                  "RM-M-LIVING", "RM-M-STUDY"}
-    lvp_area = sum(room.area_m2 for room in catlin_model.rooms
+    # NET of in-room finish zones. RM-M-LIVING is the reason: 411 SF of it sits on
+    # SL-M-DECK, whose polished cap is the finished floor there, so the plank stops at the
+    # band. Summing room areas alone would order LVP for a floor nobody covers.
+    lvp_area = sum(room.area_m2 - sum(zone.area_m2 for zone in room.finish_zones)
+                   for room in catlin_model.rooms
                    if room.floor_finish == "lvp") * _M2_TO_FT2
     # Rows round to a tenth of a square foot, which is the tolerance here.
     assert float(lvp["net_area_sqft"]) == pytest.approx(lvp_area, abs=0.05)

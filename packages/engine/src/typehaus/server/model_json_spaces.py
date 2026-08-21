@@ -28,7 +28,19 @@ def spaces_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str
             {"uid": r.uid, "tag": r.tag, "storey": r.storey, "occupancy": r.occupancy,
              "provenance": _provenance(provenance, r.tag),
              "conditioned": r.conditioned, "area_m2": r.area_m2,
-             "clear_face": [list(p) for p in r.clear_face], "floor_finish": r.floor_finish}
+             "clear_face": [list(p) for p in r.clear_face], "floor_finish": r.floor_finish,
+             # In-room finish overrides — a hearth pad authored on the room, or the band a
+             # slab whose own top face is the finished floor claims back from it. Resolved
+             # since the FinishZone work and carried into the .glb, but never exported here,
+             # so the viewer painted the room's field finish over the whole clear face and
+             # the Inspector could not say the floor changed. ``source_ref`` is the slab a
+             # derived zone came from, null for an authored one.
+             "finish_zones": [
+                 {"outline": [list(p) for p in z.outline],
+                  "material_ref": z.material_ref, "area_m2": z.area_m2,
+                  "source_ref": z.source_ref}
+                 for z in r.finish_zones
+             ]}
             for r in model.rooms
         ],
         "space_summary": build_space_summary(model),

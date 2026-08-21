@@ -7,7 +7,7 @@
 // second table that can drift; and four flat fills of similar value are hard to tell apart
 // under one light, so the surface has to differ too.
 import * as THREE from "three";
-import type { Floor, Member, Room, Vec2 } from "../../model/types";
+import type { FinishZone, Floor, Member, Room, Vec2 } from "../../model/types";
 import {
   buildRoomFloor, ROOM_FINISH_THICKNESS_M, storeyFloorTopM,
 } from "./structure";
@@ -36,11 +36,20 @@ const MATERIALS: MaterialAppearance[] = [
 // The coverings — everything the builder is expected to draw a plane for.
 const COVERINGS = MATERIALS.filter((material) => !material.coating);
 
-function room(finish: string | null, storey = "second"): Room {
+function room(finish: string | null, storey = "second", zones: FinishZone[] = []): Room {
   return {
     uid: `RM-${finish ?? "none"}`, tag: `RM-${finish ?? "none"}`, storey,
     occupancy: "living", provenance: null, conditioned: true, area_m2: 16,
     clear_face: [[0, 0], [4, 0], [4, 4], [0, 4]] as Vec2[], floor_finish: finish,
+    finish_zones: zones,
+  };
+}
+
+// A band along one edge of the room, the shape a zone taken off a slab edge always has.
+function zone(material: string, source: string | null = null): FinishZone {
+  return {
+    outline: [[0, 0], [4, 0], [4, 1.5], [0, 1.5]] as Vec2[],
+    material_ref: material, area_m2: 6, source_ref: source,
   };
 }
 
@@ -160,6 +169,39 @@ export function runRoomFloorTests() {
   // falling back to 0 instead would drop every upper-storey finish onto the ground plane.
   assert(storeyFloorTopM([floor("second", 3.1)], "garage", 1.5) === 1.5,
     "A storey with no framed floor falls back to its own elevation");
+
+  // --- 6. in-room finish zones: the field is CUT, not covered ---------------------------
+  //
+  // RM-M-LIVING is one room over two structures — 411 sf of polished cap and 355 of plank —
+  // and `Room.floor_finish` is one string. A zone is the override that says so, and it has
+  // to take its area OUT of the field: painting plank across the concrete band and then
+  // laying a second plane over part of it is two wrong floors, not one right one.
+
+  const plain = build(room("lvp")).group.children[0] as THREE.Mesh;
+
+  // A COATING zone draws nothing at all. The hole IS the drawing: polished concrete has no
+  // plane of its own, so what shows through the cut is the slab solid, which is the real
+  // condition. Same rule the emitter follows (→ glb-emitter-parity).
+  const coated = build(room("lvp", "second", [zone("sealed-concrete", "SL-M-DECK")]));
+  assert(coated.group.children.length === 1,
+    "A coating zone adds no mesh — the field, cut, is the whole drawing");
+  assert(count(coated.group.children[0] as THREE.Mesh) > count(plain),
+    "…and the field really is cut: the hole adds vertices the uncut room does not have");
+
+  // A COVERING zone (a tile inlay, a hearth pad) fills its own hole in its own material.
+  const inlaid = build(room("lvp", "second", [zone("tile")]));
+  assert(inlaid.group.children.length === 2,
+    "A covering zone draws its own plane in the hole the field left for it");
+  const inlayMaterial = (inlaid.group.children[1] as THREE.Mesh).material as THREE.MeshStandardMaterial;
+  assert("#" + inlayMaterial.color.getHexString() === "#dfe3e5",
+    "The zone takes its OWN material's colour, not the room's");
+  assert(inlaid.reg.picks.every((mesh) => mesh.userData.uid === "RM-lvp"),
+    "Clicking a zone selects the room it is in, not a nameless plane");
+
+  // A zone under a room whose field finish is itself a coating still draws: the early
+  // return used to give up on the whole room before it ever looked at the zones.
+  assert(build(room("sealed-concrete", "second", [zone("tile")])).group.children.length === 1,
+    "A covering zone in a sealed-slab room draws, even though the field does not");
 
   console.log("Room floor finish tests passed.");
 }

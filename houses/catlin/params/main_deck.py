@@ -139,6 +139,12 @@ DECK = Slab(
     uid="CMS501AAAA", tag="SL-M-DECK",
     outline=_rect(_CENTRE_X, _BAND_Y, _HOUSE, _HOUSE),
     thickness=DECK_DEPTH, assembly="CATLIN_DECK_EPS_INT",
+    # The cap's own top is the finished floor: a cream polish, no covering, no subfloor.
+    # Every room that sits on this outline resolves a derived finish zone from it
+    # (``resolve/rooms.py``), so RM-M-LIVING keeps LVP as its FIELD finish over the wood
+    # bays and the band bills as polished concrete. Move _BAND_Y and the finish moves too —
+    # the boundary is stated once, here. Spec in notes/mixed_deck_movement_joint.md.
+    floor_finish="polished-concrete",
 )
 
 MAIN_ELEMENTS = [WEST_FLOOR, EAST_FLOOR, DECK]

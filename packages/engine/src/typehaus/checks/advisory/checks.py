@@ -192,6 +192,13 @@ def floor_finish_over_radiant(ctx: CheckContext) -> list[Finding]:
     house's FH-M-DINING, a loop in the middle of the living room with no room ref on it)
     would silently escape a ref lookup. One zone can also cross a doorway into a second
     finish, and the polygon test reports both.
+
+    And a room is not one finish. ``Room.finish_zones`` overrides the field over part of the
+    floor — a hearth pad, or the band where the room sits on a slab whose polished cap IS the
+    finished floor — so the finish a loop actually runs under is decided per polygon, not per
+    room. FH-M-DINING is the case that forced this: it lies wholly inside SL-M-DECK's band, so
+    reading RM-M-LIVING's field ``lvp`` would report a plank constraint over what is bare
+    concrete, which is the one substrate radiant wants.
     """
     from shapely.geometry import Polygon
 
@@ -205,18 +212,48 @@ def floor_finish_over_radiant(ctx: CheckContext) -> list[Finding]:
         for room, face in rooms:
             if room.storey != zone.storey or not zone_polygon.intersects(face):
                 continue
-            reason = _RADIANT_LIMITED_FINISHES.get(room.floor_finish or "")
-            if reason is None:
-                continue
-            # A note, not a verdict — the docstring above says every one of these pairings
-            # is a legal one people build, and a commissioning constraint is not a defect.
-            out.append(_note(
-                "advisory.floor_finish_over_radiant",
-                f"floor-heat zone {zone.tag} runs under {room.tag}'s "
-                f"{room.floor_finish} floor: {reason}",
-                (zone.tag, room.tag),
-            ))
+            for finish in _finishes_under(zone_polygon, room, face):
+                reason = _RADIANT_LIMITED_FINISHES.get(finish)
+                if reason is None:
+                    continue
+                # A note, not a verdict — the docstring above says every one of these pairings
+                # is a legal one people build, and a commissioning constraint is not a defect.
+                out.append(_note(
+                    "advisory.floor_finish_over_radiant",
+                    f"floor-heat zone {zone.tag} runs under {room.tag}'s "
+                    f"{finish} floor: {reason}",
+                    (zone.tag, room.tag),
+                ))
     return out
+
+
+def _finishes_under(zone_polygon, room, face) -> list[str]:
+    """Every floor finish the radiant zone actually lies under, inside this room.
+
+    In order: each ``FinishZone`` the loop reaches, then the room's field finish if any part
+    of the loop is still on it. A loop that crosses the boundary reports both, which is the
+    real condition — the surface-temperature limit applies to the half that is plank.
+    """
+    from shapely.geometry import Polygon
+    from shapely.ops import unary_union
+
+    reached = zone_polygon.intersection(face)
+    if reached.is_empty:
+        return []
+    finishes: list[str] = []
+    overrides = []
+    for override in room.finish_zones:
+        if len(override.outline) < 3:
+            continue
+        outline = Polygon(override.outline).buffer(0)
+        overrides.append(outline)
+        if (reached.intersection(outline).area > 0.0
+                and override.material_ref not in finishes):
+            finishes.append(override.material_ref)
+    field = reached.difference(unary_union(overrides)) if overrides else reached
+    if room.floor_finish and not field.is_empty and field.area > 0.0:
+        finishes.append(room.floor_finish)
+    return finishes
 
 
 @check(Tier.ADVISORY, "advisory.fixture_overlap")

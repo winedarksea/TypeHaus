@@ -241,6 +241,12 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              color="#b3b1ad", coating=True,
              source="a sealer on the slab rather than a covering over it — it adds no "
                     "thickness, so it is billed by area and carries no thermal fields"),
+    Material(tag="polished-concrete", name="Polished concrete floor", hatch="concrete",
+             color="#c2c0bb", coating=True,
+             source="a mechanical grind (4-6 passes) plus densifier and guard on the cast "
+                    "cap itself, not a covering over it — no thickness, so no thermal or "
+                    "vapour fields; distinct from `sealed-concrete`, which is a roll-on "
+                    "sealer over a trowel finish at roughly half the rate"),
     Material(tag="rubber", name="Rolled rubber athletic flooring", hatch="membrane",
              color="#54585c",
              source="finish covering, not an assembly layer; thermal/vapour fields unset"),

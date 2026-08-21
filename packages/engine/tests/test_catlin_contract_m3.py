@@ -1375,3 +1375,39 @@ def test_ifc_emission_when_available(catlin_model, tmp_path):
     logger = ifcopenshell.validate.json_logger()
     ifcopenshell.validate.validate(str(path), logger, express_rules=True)
     assert not logger.statements, logger.statements
+
+
+def test_the_main_floor_finish_follows_the_deck_boundary(tmp_path):
+    """The contract that makes DERIVING the finish split worth it rather than authoring it.
+
+    ``_BAND_Y`` in ``params/main_deck.py`` is the one place the concrete/wood boundary lives:
+    the two FloorSystem outlines and the Slab outline are all cut from it. Because
+    ``RM-M-LIVING``'s polished-concrete zone is intersected out of ``SL-M-DECK`` rather than
+    written as a polygon on the room, moving that one line moves the finish with it. An
+    authored zone would have gone stale silently — which is exactly how the three
+    sealed-concrete rooms ended up over a wood deck.
+    """
+    from _helpers import copy_house
+
+    house = copy_house(CATLIN_DIR, tmp_path / "catlin")
+    params = house / "params" / "main_deck.py"
+    source = params.read_text()
+    assert "_BAND_Y = ft(13)" in source
+    params.write_text(source.replace("_BAND_Y = ft(13)", "_BAND_Y = ft(20)"))
+
+    def band_sqft(house_dir: Path) -> float:
+        result = load_plan(house_dir)
+        assert result.plan is not None, [f.message for f in result.findings]
+        model, findings = resolve(result.plan)
+        assert not [f for f in findings if f.severity.value == "error"]
+        living = next(room for room in model.rooms if room.tag == "RM-M-LIVING")
+        zones = [z for z in living.finish_zones if z.material_ref == "polished-concrete"]
+        assert len(zones) == 1 and zones[0].source_ref == "SL-M-DECK"
+        return zones[0].area_m2 * 10.7639104
+
+    before = band_sqft(CATLIN_DIR)
+    after = band_sqft(house)
+    # The band lost 7' of its 23' north-south run over the 18' east half, and the zone is
+    # clipped to the room, so the drop is the room's share of 7' x 18' — not the whole of it.
+    assert before == pytest.approx(411.3, abs=0.5)
+    assert before - after == pytest.approx(7.0 * 17.9, rel=0.05)

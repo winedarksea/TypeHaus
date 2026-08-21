@@ -603,20 +603,27 @@ ROOMS = [
     # now, not bulk storage, but still Occupancy.STORAGE — there is no MUDROOM occupancy in
     # the closed enum and STORAGE is the closer fit of what exists (unheated-adjacent,
     # hard-finish floor) than LIVING or HALLWAY would be.
+    #
+    # 2026-08-21, the floor: this and the two closets below read "sealed-concrete" until the
+    # basement-ceiling overhaul put FS-M-WEST's I-joists and 3/4" plywood under all three.
+    # A sealer needs a slab to seal. vinyl-sheet is already the house's answer for exactly
+    # this condition (RM-S-PLANT) — homogeneous sheet, heat-welded seams, 6" integral flash
+    # cove — and it is the right one for a wet entry over a wood deck.
+    # integrity.concrete_finish_needs_concrete_deck fails the build if this drifts again.
     Room(uid="CMR409AAAA", tag="RM-M-MUDROOM", seed=pt(ft(5), ft(31)),
-         occupancy=Occupancy.STORAGE, floor_finish="sealed-concrete"),
+         occupancy=Occupancy.STORAGE, floor_finish="vinyl-sheet"),
     # Framed MEP shaft closet, replacing FURN-M-MUD-CLOSET-N (2026-07-28): the
     # radon+plumbing riser rides its SW corner. STORAGE is the closed enum's closest fit
     # for a mechanical closet, same reasoning as RM-M-MUDROOM above.
     Room(uid="CMR411AAAA", tag="RM-M-MECH", seed=pt(ft(3), ft(34, 6)),
-         occupancy=Occupancy.STORAGE, floor_finish="sealed-concrete"),
+         occupancy=Occupancy.STORAGE, floor_finish="vinyl-sheet"),
     # Framed south mudroom closet, replacing FURN-M-MUD-CLOSET-S (2026-08-02): the last
     # furniture closet becomes a real reach-in — 34 3/4" deep clear, bypass slider in its
     # north partition. Tagged RM-M-MUD-CLOSET because RM-M-CLOSET (CMR407AAAA) already
-    # names the dressing corridor. STORAGE + sealed-concrete match its parent mudroom,
-    # the same closed-enum reasoning as RM-M-MUDROOM/RM-M-MECH above.
+    # names the dressing corridor. STORAGE + the mudroom's own floor, the same closed-enum
+    # reasoning as RM-M-MUDROOM/RM-M-MECH above — and the same wood deck under it.
     Room(uid="G01HFSH967", tag="RM-M-MUD-CLOSET", seed=pt(ft(3), ft(28)),
-         occupancy=Occupancy.STORAGE, floor_finish="sealed-concrete"),
+         occupancy=Occupancy.STORAGE, floor_finish="vinyl-sheet"),
 ]
 
 ALARMS = [

@@ -123,7 +123,12 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   so the boundary between them is a line on a drawing rather than a structural decision, and
   moving it is a one-line edit in `params/main_deck.py` (which is also where the two depth
   constants live, and why they are not in the editable storey file). Ceiling is 5/8" gypsum
-  end to end — IRC R316.4 over the EPS, `ceiling_below` on the two joist fields.
+  end to end — IRC R316.4 over the EPS, `ceiling_below` on the two joist fields. **The floor
+  finish follows the deck**: `SL-M-DECK.floor_finish` is `polished-concrete` (the cap's top
+  *is* the finished floor), `RM-M-LIVING.floor_finish="lvp"` is the field finish over the
+  wood bays only, and the split is derived — moving `_BAND_Y` moves the finish with it.
+  `notes/mixed_deck_movement_joint.md` has the reducer, the L-shaped transition and the
+  cream-polish spec.
 - Attic is a habitable hot-roofed cathedral space: 5' knee walls E/W, gables N/S,
   ridge N-S, 4:12, **zero overhang**.
 - **The roof is a screwed nailbase, and three of its layers exist only because the

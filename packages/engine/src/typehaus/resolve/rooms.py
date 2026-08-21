@@ -154,22 +154,32 @@ def resolve_rooms(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                     uid=room.uid, tag=room.tag, storey=storey.tag,
                     occupancy=room.occupancy.value, conditioned=room.conditioned,
                     clear_face=ring, area_m2=clear.area, floor_finish=room.floor_finish,
-                    finish_zones=_finish_zones(room, clear),
+                    finish_zones=_finish_zones(plan, storey.tag, room, clear),
                 )
             )
     return findings
 
 
-def _finish_zones(room, clear: Polygon) -> tuple[ResolvedFinishZone, ...]:
-    """Authored in-room finish overrides, clipped to the room's clear face.
+def _finish_zones(plan: PlanModel, storey_tag: str, room,
+                  clear: Polygon) -> tuple[ResolvedFinishZone, ...]:
+    """In-room finish overrides — authored on the room, then derived from the floor under it.
 
     ``Room.finish_zones`` used to stop here: ``ResolvedRoom`` had no field for it, so a
     ``FinishZone`` written in plan source was accepted by the loader and then silently
     dropped, reaching no viewer, emitter or takeoff. Clipping is what makes the areas
     subtractable — a hearth pad drawn a little proud of the wall must not bill more tile
     than the room has floor.
+
+    The derived half answers a room that spans two structures. ``Room.floor_finish`` is one
+    string, so a room half over a joisted deck and half over a slab whose cap *is* the
+    finished floor bills the covering across both. A ``Slab`` carrying ``floor_finish``
+    claims its own footprint back: the intersection with the room's clear face becomes a
+    zone, and the room's string stays the field finish over everything else. Authored zones
+    win — a hearth pad laid on the band is still a hearth pad — so the derived rings are cut
+    against them.
     """
     zones: list[ResolvedFinishZone] = []
+    authored: list[Polygon] = []
     for zone in room.finish_zones:
         outline = Polygon([point.xy_m for point in zone.outline])
         if not outline.is_valid:
@@ -177,11 +187,53 @@ def _finish_zones(room, clear: Polygon) -> tuple[ResolvedFinishZone, ...]:
         clipped = outline.intersection(clear)
         if clipped.is_empty or clipped.area <= 0.0:
             continue
+        authored.append(outline)
         zones.append(ResolvedFinishZone(
             outline=[(x, y) for x, y in outline.exterior.coords[:-1]],
             material_ref=zone.material_ref, area_m2=clipped.area,
         ))
+    zones.extend(_derived_finish_zones(plan, storey_tag, room, clear, authored))
     return tuple(zones)
+
+
+# A derived zone whose remnant is a sliver — a slab edge crossing a room by a millimetre of
+# floating-point overlap — is not a finish change anyone builds. 1 cm2, comfortably below
+# any authored geometry and far above shapely's noise on these coordinates.
+_DERIVED_ZONE_MIN_AREA_M2 = 1e-4
+
+
+def _derived_finish_zones(plan: PlanModel, storey_tag: str, room, clear: Polygon,
+                          authored: list[Polygon]) -> list[ResolvedFinishZone]:
+    """Zones taken from the slabs under the room whose own top face is the finished floor.
+
+    Unlike the authored path — which draws as authored and bills clipped — a derived zone's
+    outline is the *clipped* ring. It has no reason to be drawn proud of the room: it is not
+    a thing someone laid out, it is the part of the room that sits on that slab.
+    """
+    out: list[ResolvedFinishZone] = []
+    blocked = unary_union(authored) if authored else None
+    for slab in plan.storey_elements(storey_tag):
+        if slab.element_kind != "Slab" or not slab.floor_finish:
+            continue
+        if slab.floor_finish == room.floor_finish:
+            continue  # the field finish already says it; a zone here would be a duplicate
+        footprint = Polygon([point.xy_m for point in slab.outline])
+        if not footprint.is_valid:
+            footprint = footprint.buffer(0)
+        part = footprint.intersection(clear)
+        if blocked is not None and not part.is_empty:
+            part = part.difference(blocked)
+        if part.is_empty:
+            continue
+        for piece in getattr(part, "geoms", (part,)):
+            if piece.geom_type != "Polygon" or piece.area <= _DERIVED_ZONE_MIN_AREA_M2:
+                continue
+            out.append(ResolvedFinishZone(
+                outline=[(x, y) for x, y in piece.exterior.coords[:-1]],
+                material_ref=slab.floor_finish, area_m2=piece.area,
+                source_ref=slab.tag,
+            ))
+    return out
 
 
 def _lining_inset(plan: PlanModel, room) -> float:

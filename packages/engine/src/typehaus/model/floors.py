@@ -139,6 +139,14 @@ class Slab(Element):
     # Slab-on-grade only: rigid-insulation edge break against the abutting stem/foundation
     # wall. None = slab edge pours directly against the concrete it meets.
     perimeter_thermal_break: SlabThermalBreak | None = None
+    # This slab's own top face is the finished floor wherever a room sits on it — a
+    # polished or sealed cap, not a deck waiting for a covering. Where set, `resolve/rooms.py`
+    # intersects this outline with each room's clear face and emits the result as a
+    # ResolvedFinishZone, so the room's own `floor_finish` stays the FIELD finish and the
+    # concrete bills, draws and prices as its own area. Leave it None (the norm) and a slab
+    # is structure only. Not on FloorSystem: a joisted deck's top is a subfloor sheet, and
+    # what goes over it is the room's decision, never the deck's.
+    floor_finish: str | None = None
 
 
 @register_element

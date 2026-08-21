@@ -484,6 +484,28 @@ Left open, and worth doing next:
   `deck_change:<assembly>|<assembly>` deriving on the shared edge of two floor elements, and
   a `ConstructionRule` bills along a wall or a ceiling rather than along a line between two
   floors. Nothing in `haus check` will notice if the finish is run straight through.
+  **The *finish* half is derived as of 2026-08-21** — `Slab.floor_finish` on `SL-M-DECK`
+  resolves the band as a `FinishZone` inside `RM-M-LIVING`, so the polish and the plank bill,
+  draw and price separately and the split tracks `_BAND_Y`. What is still missing is the
+  **joint**: the derived condition a `Transition` could bind to bill the 31.5 lf of reducer
+  and the soft joint along the y=13' leg of it.
+- **`SL-M-DECK` sits 3/4" low, top and bottom** (found 2026-08-21 while checking the finish
+  plane; **not** fixed, because it moves geometry). `params/main_deck.py` and
+  `notes/mixed_deck_movement_joint.md` both claim the mixed deck has "the same soffit plane,
+  same finished-floor plane" as the wood bays. The resolver does not produce that. The storey
+  datum is the *top of joists* — walls bear there and the subfloor rides above it
+  (`Slab.datum`'s docstring says so, and `FS-SECOND`'s joists top out at exactly 10'-0" with
+  `W-S-E2` starting at 10'-0"). So the wood bay's walking surface is +3/4" (plywood top) and
+  the cap's is 0'-0"; the wood structure bottoms at −11 7/8" and the slab at −12 5/8". Both
+  planes are 3/4" out. `datum="structure"` pins the cap top to the datum regardless of
+  thickness, so the depth-matching arithmetic — which is correct — never reaches the
+  elevation. The polish is what makes it visible: as modelled the exposed concrete sits a
+  full **1"** below the LVP surface rather than the 1/4" a reducer handles. The fix is one
+  line, `top_elevation=inch(0.75)` on `DECK`, mirroring `SL-G-FLOOR`; it lands the cap top on
+  the plywood top and the slab bottom on the joist bottom at −11 7/8", making both documented
+  claims true. Look at the cascade before committing it: `FH-M-DINING`'s `in_slab` embed, the
+  ceiling gypsum plane below (the assembly's 1/2" furring rib would still leave the two gypsum
+  faces 1/2" apart), and anything measured off the band.
 - **Basement HVAC could ride the new joist bays.** `DU-B-ERV-SUP`/`-RET` are
   `DuctRouting.CHASE` because the ceiling had no bays at all; two thirds of it does now, and
   the west half's run east-west the way the trunk does. Left as chase because the runs also

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { useStore } from "../state/store";
 import type { Model, Opening, Stair, Wall } from "../model/types";
 import { formatFtIn, openingHostWall, openingStartFromCenter, parseFtIn, wallLength } from "../model/geometry";
@@ -180,6 +180,13 @@ function SelectionInspector({
     const r = model.rooms.find((x) => x.uid === uid);
     if (!r) return null;
     const sf = (r.area_m2 * 10.7639).toFixed(0);
+    // A room's floor is not always one finish. Zones cut their own area out of the field, so
+    // the field row reads NET of them — otherwise the panel says "lvp" over a room where 411
+    // of 766 sf is polished concrete. `source_ref` names the slab a derived zone came from,
+    // which is the answer to "why is this band different".
+    const zones = r.finish_zones ?? [];
+    const zoneSf = zones.reduce((total, zone) => total + zone.area_m2, 0) * 10.7639;
+    const fieldSf = Math.max(r.area_m2 * 10.7639 - zoneSf, 0);
     return (
       <div>
         <h3>Room · {r.tag}</h3>
@@ -191,7 +198,19 @@ function SelectionInspector({
           <span className="k">Conditioned</span>
           <span>{r.conditioned ? "yes" : "no"}</span>
           <span className="k">Floor</span>
-          <span>{r.floor_finish ?? "—"}</span>
+          <span>
+            {r.floor_finish ?? "—"}
+            {zones.length > 0 && r.floor_finish ? ` · ${fieldSf.toFixed(0)} sf field` : ""}
+          </span>
+          {zones.map((zone, index) => (
+            <Fragment key={`${zone.material_ref}-${index}`}>
+              <span className="k">↳ zone</span>
+              <span>
+                {zone.material_ref} · {(zone.area_m2 * 10.7639).toFixed(0)} sf
+                {zone.source_ref ? ` · from ${zone.source_ref}` : ""}
+              </span>
+            </Fragment>
+          ))}
         </div>
         <Provenance p={r.provenance} />
       </div>

@@ -355,3 +355,83 @@ def slab_thickness_matches_assembly(ctx: CheckContext) -> list[Finding]:
             "move the slab thickness to a layer boundary, or restate the layer that moved",
         ))
     return out
+
+
+# The finishes that are a treatment OF a concrete surface rather than a covering laid over
+# whatever is underneath. Kept here beside the rule that needs it, the way
+# ``takeoff/finishes.py::_WASTE`` keeps its own table: ``Material`` has no substrate field,
+# and adding one would be a schema change carrying a fact only this check reads.
+_CONCRETE_FINISHES = {"sealed-concrete", "polished-concrete"}
+
+# How much of the finished area has to sit over a slab. Not 100%, and the slack is measured
+# rather than guessed: RM-GARAGE is a legitimate sealed slab that covers only ~85%, because
+# its clear face is taken at the wood-wall lining while SL-G-FLOOR is poured inside the ICF
+# stem below it. Exact containment would report that as a defect. Half is the line between
+# "this room is floored in concrete" and "this finish was left behind by a structure change".
+_CONCRETE_FINISH_MIN_COVERAGE = 0.5
+
+
+@check(Tier.INTEGRITY, "integrity.concrete_finish_needs_concrete_deck")
+def concrete_finish_needs_concrete_deck(ctx: CheckContext) -> list[Finding]:
+    """A sealed or polished floor needs concrete under it to seal or polish.
+
+    This is drift, not a typo, and drift is what makes it worth a check. The catlin main
+    floor was one 1,233 SF cast deck until the 2026-08-21 EPS/wood overhaul replaced most of
+    it with I-joists and plywood. The rooms above kept their authored ``sealed-concrete``,
+    which still resolved, still rendered, and still billed a sealer — over a wood deck that
+    has no slab to seal. Nothing else notices: ``floor_finish`` is a free string joined to a
+    library material, and the join was never wrong.
+
+    Covers the room's FIELD finish and any AUTHORED zone. A DERIVED zone is exempt by
+    construction — it exists only because a ``Slab`` with a ``floor_finish`` is under it,
+    which is precisely what this measures.
+    """
+    from shapely.geometry import Polygon
+    from shapely.ops import unary_union
+
+    slabs_by_storey: dict[str, list[Polygon]] = {}
+    for solid in ctx.model.solids:
+        if solid.category != "slab" or len(solid.outline) < 3:
+            continue
+        footprint = Polygon(solid.outline)
+        if not footprint.is_valid:
+            footprint = footprint.buffer(0)
+        slabs_by_storey.setdefault(solid.storey, []).append(footprint)
+    concrete_by_storey = {storey: unary_union(parts)
+                          for storey, parts in slabs_by_storey.items()}
+
+    out: list[Finding] = []
+    for room in ctx.model.rooms:
+        if len(room.clear_face) < 3:
+            continue
+        face = Polygon(room.clear_face)
+        if not face.is_valid:
+            face = face.buffer(0)
+        claims: list[tuple[str, str, Polygon]] = []
+        if room.floor_finish in _CONCRETE_FINISHES:
+            claims.append((room.floor_finish, "floor_finish", face))
+        for zone in room.finish_zones:
+            if zone.source_ref is not None or zone.material_ref not in _CONCRETE_FINISHES:
+                continue
+            zone_face = Polygon(zone.outline)
+            if not zone_face.is_valid:
+                zone_face = zone_face.buffer(0)
+            claims.append((zone.material_ref, "finish zone", zone_face.intersection(face)))
+        concrete = concrete_by_storey.get(room.storey)
+        for finish, where, area in claims:
+            if area.is_empty or area.area <= 0.0:
+                continue
+            covered = 0.0 if concrete is None else area.intersection(concrete).area
+            fraction = covered / area.area
+            if fraction >= _CONCRETE_FINISH_MIN_COVERAGE:
+                continue
+            out.append(_err(
+                "integrity.concrete_finish_needs_concrete_deck",
+                f"room {room.tag} {where} is {finish!r} but only {fraction * 100:.0f}% of "
+                f"that area sits over a slab on storey {room.storey} — a sealer or a polish "
+                "is a treatment of concrete, not a covering that can be laid over a deck",
+                (room.tag,),
+                "give the room a covering finish (vinyl-sheet, lvp, tile) if the concrete "
+                "under it went away, or set floor_finish on the Slab that is actually there",
+            ))
+    return out

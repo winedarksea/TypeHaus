@@ -29,7 +29,7 @@ from typehaus.emit.gltf.walls import _add_wall_body
 from typehaus.resolve.geometry import light_run_band_profiles
 from typehaus.resolve.room_floor import room_floor_elevation
 from typehaus.emit.trades import solid_trade
-from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.model import ResolvedModel, ResolvedRoom, Ring
 
 # Re-exported for callers that reach past the entry point (tests pinning palette parity, the
 # arch-soffit tessellation, the wall/roof builders). Import them from their own modules in new
@@ -119,11 +119,18 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         if room.clear_face:
             storey_z = room_floor_elevation(model, room)
             mb = _MeshBuilder()
-            mb.add_prism(room.clear_face, storey_z, storey_z + 0.02,
-                         _room_floor_color(model, room.floor_finish))
-            # An authored in-room override (tile inlay, hearth pad) sits a hair proud of the
-            # field finish so it wins the depth test instead of z-fighting with it.
+            # The field finish is CUT by its zones rather than covered by them, matching
+            # ``buildRoomFloor`` in the viewer (→ ``glb-emitter-parity``). Cutting is what
+            # makes a coating zone right: polished concrete has no plane of its own, so the
+            # hole is the whole drawing and the slab solid below shows through it.
+            for ring in _field_finish_rings(room):
+                mb.add_prism(ring, storey_z, storey_z + 0.02,
+                             _room_floor_color(model, room.floor_finish))
+            # A covering zone (a tile inlay, a hearth pad) fills its own hole, a hair proud
+            # of the field so it wins the depth test instead of z-fighting with it.
             for zone in room.finish_zones:
+                if _is_coating(model, zone.material_ref):
+                    continue
                 zb = _MeshBuilder()
                 zb.add_prism(zone.outline, storey_z, storey_z + 0.021,
                              _room_floor_color(model, zone.material_ref))
@@ -211,6 +218,43 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         mb.add_prism([(0, 0), (0.001, 0), (0.001, 0.001)], 0.0, 0.001, _FALLBACK)
         scene.add_object(mb, trade="earth")
     return scene.build()
+
+
+def _is_coating(model: ResolvedModel, material_ref: str) -> bool:
+    """Is this finish a coating — a sealer or a polish ON the deck rather than a covering
+    over it? A coating has no plane of its own, so nothing draws one for it."""
+    material = next((m for m in model.plan.library.materials if m.tag == material_ref), None)
+    return bool(material is not None and material.coating)
+
+
+def _field_finish_rings(room: ResolvedRoom) -> list[Ring]:
+    """The room's clear face minus its finish zones, as exterior rings.
+
+    ``_MeshBuilder`` extrudes a simple ring and has no general polygon triangulator, so a
+    difference that leaves a hole in the middle of the field — a zone floating clear of every
+    wall — cannot be drawn here. That case falls back to the uncut clear face: a field finish
+    over-drawn under an inlay reads as z-fighting at worst, where a dropped ring reads as a
+    room with no floor. The catlin band is an L-shaped difference with no interior ring, which
+    is the shape a zone taken from a slab edge always has.
+    """
+    if not room.finish_zones:
+        return [room.clear_face]
+    from shapely.geometry import Polygon
+    from shapely.ops import unary_union
+
+    face = Polygon(room.clear_face)
+    if not face.is_valid:
+        face = face.buffer(0)
+    zones = unary_union([Polygon(zone.outline).buffer(0) for zone in room.finish_zones
+                         if len(zone.outline) >= 3])
+    remainder = face.difference(zones)
+    if remainder.is_empty:
+        return []
+    parts = list(getattr(remainder, "geoms", (remainder,)))
+    if any(part.geom_type != "Polygon" or part.interiors for part in parts):
+        return [room.clear_face]
+    return [[(x, y) for x, y in part.exterior.coords[:-1]] for part in parts
+            if part.area > 1e-6]
 
 
 def _ir_part(model: ResolvedModel, uid: str, key: str):

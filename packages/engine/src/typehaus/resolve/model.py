@@ -460,6 +460,11 @@ class ResolvedFinishZone:
     outline: Ring
     material_ref: str
     area_m2: float
+    # The tag of the element the zone was DERIVED from — a slab whose own top face is the
+    # finished floor (``Slab.floor_finish``). None for a zone authored on the room, which is
+    # its own reason. Carried so the Inspector and the takeoff can say *why* a band of a room
+    # is a different finish than the room is.
+    source_ref: str | None = None
 
 
 @dataclass(frozen=True)

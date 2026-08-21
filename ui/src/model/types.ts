@@ -195,6 +195,22 @@ export interface Room {
   area_m2: number;
   clear_face: Vec2[];
   floor_finish: string | null;
+  /**
+   * In-room floor-finish overrides. Each cuts its own area out of the field finish rather
+   * than covering it: an authored zone (a hearth pad) draws in its own material, and a
+   * derived one — the part of the room sitting on a slab whose cap IS the finished floor —
+   * names that slab in `source_ref`. A coating zone draws nothing at all, because the slab
+   * under the hole is already the surface.
+   */
+  finish_zones?: FinishZone[];
+}
+
+export interface FinishZone {
+  outline: Vec2[];
+  material_ref: string;
+  area_m2: number;
+  /** Tag of the slab this zone was derived from; null when authored on the room. */
+  source_ref: string | null;
 }
 
 export interface Alarm {

@@ -897,6 +897,18 @@
 # plank at almost no marginal time. Resolve the spec before ordering.
 "lvp-underlayment" = { material = { low = 0.25, high = 0.75 }, labour = { low = 0, high = 0.25 } }  # 1272 SF
 "oak" = { material = { low = 4, high = 8 }, labour = { low = 7.5, high = 12.5 } }  # 351 SF — labour INCLUDES sand and finish (nail-down $4.00-6.50 + 3-coat site finish $3.50-6.00). ** 351 SF is UNDER most Twin Cities sand-and-finish minimums ($1,200-1,800 mobilisation plus a trip per coat) — carry the HIGH end or take it as a lump **
+# 2026-08-21: SL-M-DECK's cap. A polish is not a covering and not the sealer above it —
+# it is a mechanical grind, 4-6 passes on progressively finer diamonds, with a lithium
+# densifier between passes and a guard coat at the end. The slab itself is billed in
+# [concrete], exactly as `sealed-concrete`'s note says, so this is the polishing scope only.
+# Material is the consumables the owner buys — densifier and guard; the diamond tooling is
+# the contractor's and lives in the labour rate. The `sealed-concrete` row's own note prices
+# a real polish at "$3-7/SF more" than a $0.75-2.00 seal, which is where this lands.
+# ** 411 SF is a mobilisation-dominated scope: a grinder, a slurry vac and a propane burnisher
+# arrive for a day either way. Expect a LUMP of $2,000-3,500 rather than the $/SF arithmetic. **
+# Sources: concretenetwork.com polished-concrete cost guide 2026, homeguide.com polished
+# concrete chart, CPAA cream-polish class specifications.
+"polished-concrete" = { material = { low = 0.75, high = 2 }, labour = { low = 3.5, high = 7 } }  # 411 SF — cream polish over the EPS-deck cap; grinding only, the cap is in [concrete]
 "rubber" = { material = { low = 3, high = 8 }, labour = { low = 1.5, high = 3.5 } }  # 357 SF — adhesive-set; substrate prep is NOT in this number
 "sealed-concrete" = { material = { low = 0.35, high = 1.2 }, labour = { low = 0.75, high = 2 } }  # 1155 SF — densifier + 2 coats, NO grinding. A real polish is a separate specialty contract at $3-7/SF more
 "tile" = { material = { low = 3, high = 9 }, labour = { low = 7, high = 14 } }  # 495 SF — labour INCLUDES thinset and grout, which is the trade convention. Backer board and waterproofing are NOT included and are not in this file at all

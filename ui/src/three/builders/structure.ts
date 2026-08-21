@@ -231,29 +231,55 @@ export function storeyFloorTopM(floors: readonly Floor[], storeyTag: string,
  *
  * Openings in the storey's deck are cut out of the finish too — otherwise the finish caps
  * the stair well the subfloor correctly leaves open.
+ *
+ * `Room.finish_zones` are cut out the same way, and for the same reason. A zone is an *override*
+ * — a hearth pad, or the band of a room sitting on a slab whose cap is itself the finished floor
+ * — so the field finish stops at its edge rather than running under it. Cutting rather than
+ * covering is what makes a COATING zone right: polished concrete has no plane of its own, so the
+ * hole alone is the drawing, and the slab solid below shows through it, which is the real
+ * condition. A covering zone draws its own slab in the hole.
  */
 export function buildRoomFloor(parent: THREE.Group, room: Room, floorTopM: number,
   openings: readonly Vec2[][], center: PlanCenter, mode: "nordic" | "schematic",
   palette: ResolvedNordicPalette, materials: readonly MaterialAppearance[] | undefined,
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
-  if (!room.floor_finish || room.clear_face.length < 3) return;
+  if (room.clear_face.length < 3) return;
+  const zones = (room.finish_zones ?? []).filter((zone) => zone.outline.length >= 3);
+  const holes = zones.length ? [...openings, ...zones.map((zone) => zone.outline)] : openings;
   // A coating (sealed concrete) is a sealer on the deck, not a covering over it: it has no
   // thickness of its own, so drawing a plane for it would put a second floor a hair above
   // the slab that already carries the colour. It still bills — takeoff/finishes.py.
-  if (authoredAppearance(room.floor_finish, materials)?.coating) return;
+  if (room.floor_finish && !authoredAppearance(room.floor_finish, materials)?.coating) {
+    addFinishPlane(parent, room, room.floor_finish, room.clear_face, holes, floorTopM,
+      center, mode, palette, materials, picks, byUid);
+  }
+  for (const zone of zones) {
+    if (authoredAppearance(zone.material_ref, materials)?.coating) continue;
+    addFinishPlane(parent, room, zone.material_ref, zone.outline, openings, floorTopM,
+      center, mode, palette, materials, picks, byUid);
+  }
+}
+
+/** One finish plane — the room's field, or one of its zones — over the deck at `floorTopM`. */
+function addFinishPlane(parent: THREE.Group, room: Room, finish: string,
+  outline: readonly Vec2[], holes: readonly (readonly Vec2[])[], floorTopM: number,
+  center: PlanCenter, mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
+  materials: readonly MaterialAppearance[] | undefined,
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
   const geometry = createPlanPrismGeometry(
-    room.clear_face, floorTopM, floorTopM + ROOM_FINISH_THICKNESS_M, openings, center);
+    outline, floorTopM, floorTopM + ROOM_FINISH_THICKNESS_M, holes, center);
   if (!geometry) return;
   const firstChildIndex = parent.children.length;
-  const surface = floorSurface(room.floor_finish);
+  const surface = floorSurface(finish);
   const mesh = new THREE.Mesh(geometry,
-    standardMaterial(new THREE.Color(materialColor(room.floor_finish, palette, materials)), mode, {
+    standardMaterial(new THREE.Color(materialColor(finish, palette, materials)), mode, {
       roughness: mode === "nordic" ? surface.roughness : 1,
       metalness: mode === "nordic" ? surface.metalness : 0,
     }));
   // Receives but does not cast: a 20 mm finish laid on the deck has nothing to cast onto.
   mesh.receiveShadow = true;
   parent.add(mesh);
+  // A zone belongs to its room: clicking the band selects RM-M-LIVING, not a nameless plane.
   registerSelectable(parent, firstChildIndex, room.uid, "room", picks, byUid);
 }
 
