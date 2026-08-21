@@ -9,7 +9,6 @@ from typehaus import (
     PipeAccessory,
     PipeAccessoryKind,
     ft,
-    inch,
     pt,
 )
 
@@ -113,17 +112,19 @@ SUPPLY_DEVICES_GARAGE = [
                   serves=("FX-G-HYDRANT",)),
 ]
 
-# The porch hydrant's three, and the RO provision. All on ``main``.
+# The porch hydrant's two, and the RO provision. All on ``main``.
+#
+# No PA-M-PORCH-HYD-VB: FX-HYDRANT-SD34 (a Woodford Model 19) ships its anti-siphon vacuum
+# breaker integral to the faucet body — `mep.backflow_prevention` reads that off the
+# fixture type's `integral_vacuum_breaker` flag (library/placeables/fixtures.py). Authoring
+# a second, screw-on vacuum breaker as an accessory here would double-bill a part the
+# hydrant's own price already includes; contrast the garage yard hydrant (FX-HYDRANT-Y34SS,
+# bare thread), whose PA-G-HYD-VB is a real, separately-bought device.
 SUPPLY_DEVICES_MAIN = [
     PipeAccessory(uid="A5VK7BND3T", tag="PA-M-PORCH-HYD-SEAT",
                   kind=PipeAccessoryKind.SHUTOFF, pipe_ref="PR-M-CW-PORCH-HYD",
                   position=pt(ft(12), ft(0, 3.25)), room="RM-M-BED",
                   model="hydrant's own compression seat, inboard end of the barrel",
-                  serves=("FX-M-PORCH-HYD",)),
-    PipeAccessory(uid="E2QH9LCW6Y", tag="PA-M-PORCH-HYD-VB",
-                  kind=PipeAccessoryKind.VACUUM_BREAKER, pipe_ref="PR-M-CW-PORCH-HYD-CU",
-                  position=pt(ft(12), inch(-5)),
-                  model="integral anti-siphon vacuum breaker, ASSE 1052",
                   serves=("FX-M-PORCH-HYD",)),
     # The penetration itself: says "protected by the envelope, not bury depth", which
     # exempts it from `mep.hydrant_freeze_depth` and hands it to
@@ -146,17 +147,13 @@ SUPPLY_DEVICES_MAIN = [
                   model='1/4" compression stop on a capped tee, in the sink base'),
 ]
 
-# The balcony hydrant's three, on ``second``.
+# The balcony hydrant's two, on ``second``. No PA-S-BALC-HYD-VB, same reason as the porch's
+# — see the note above SUPPLY_DEVICES_MAIN.
 SUPPLY_DEVICES_SECOND = [
     PipeAccessory(uid="S6BN1JXV7Q", tag="PA-S-BALC-HYD-SEAT",
                   kind=PipeAccessoryKind.SHUTOFF, pipe_ref="PR-M-CW-BALC-HYD",
                   position=pt(ft(16, 8), ft(0, 3.25)), room="RM-S-PLANT",
                   model="hydrant's own compression seat, inboard end of the barrel",
-                  serves=("FX-S-BALC-HYD",)),
-    PipeAccessory(uid="P0GZ5DKF9W", tag="PA-S-BALC-HYD-VB",
-                  kind=PipeAccessoryKind.VACUUM_BREAKER, pipe_ref="PR-S-CW-BALC-HYD-CU",
-                  position=pt(ft(16, 8), inch(-5)),
-                  model="integral anti-siphon vacuum breaker, ASSE 1052",
                   serves=("FX-S-BALC-HYD",)),
     PipeAccessory(uid="M4TQ8HRC1Z", tag="PA-S-BALC-HYD-SEAL",
                   kind=PipeAccessoryKind.PENETRATION_SEAL, pipe_ref="PR-S-CW-BALC-HYD-CU",

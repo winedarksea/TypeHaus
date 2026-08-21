@@ -120,14 +120,36 @@ def test_two_main_shutoffs_fail_because_the_main_is_singular(catlin_plan):
 
 
 def test_a_hydrant_without_its_vacuum_breaker_fails(catlin_plan):
-    """Per hydrant, not per house: three hydrants and one breaker protects one hydrant."""
-    plan = _without(catlin_plan, "PA-S-BALC-HYD-VB")
+    """Per hydrant, not per house: one breaker protects one hydrant.
+
+    The garage yard hydrant (FX-HYDRANT-Y34SS) is the one family whose thread is bare and
+    depends on a real, separately-bought ``PipeAccessory`` — the two wall hydrants carry
+    their vacuum breaker integral to the fixture (see the next test) and have no such
+    accessory to remove.
+    """
+    plan = _without(catlin_plan, "PA-G-HYD-VB")
     findings = backflow_prevention(_context(plan, _resolved(plan)))
     failed = _fails(findings)
-    assert [f.element_tags[0] for f in failed] == ["FX-S-BALC-HYD"]
+    assert [f.element_tags[0] for f in failed] == ["FX-G-HYDRANT"]
     # And the other two hydrants still pass, which is what makes it per-hydrant.
     passed = {f.element_tags[0] for f in findings if f.result is Result.PASS}
-    assert {"FX-M-PORCH-HYD", "FX-G-HYDRANT"} <= passed
+    assert {"FX-M-PORCH-HYD", "FX-S-BALC-HYD"} <= passed
+
+
+def test_a_wall_hydrant_needs_no_accessory_for_its_integral_vacuum_breaker(
+        catlin_plan, catlin_model):
+    """FX-HYDRANT-SD34 (Woodford Model 19) ships its anti-siphon breaker on the faucet body.
+
+    The plan authors no ``PipeAccessory(VACUUM_BREAKER)`` for either wall hydrant — doing so
+    would double-bill a part the fixture's own price already includes — so the check has to
+    read the fixture *type*'s ``integral_vacuum_breaker`` flag instead of an accessory.
+    """
+    findings = backflow_prevention(_context(catlin_plan, catlin_model))
+    assert not _fails(findings), [f.message for f in _fails(findings)]
+    for tag in ("FX-M-PORCH-HYD", "FX-S-BALC-HYD"):
+        message = next(f.message for f in findings if f.element_tags[0] == tag)
+        assert "integral" in message
+        assert "PA-" not in message  # no accessory tag to name — there is none
 
 
 def test_a_branch_device_is_part_of_the_hydrant_it_protects(catlin_plan, catlin_model):

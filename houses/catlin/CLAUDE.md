@@ -308,24 +308,51 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   field of `glazed-green-brick` (`#1b4332`); the green was liked on its own but did not sit
   with white standing seam and `#1c1f24` trim. It now reads after the Ishtar Gate of
   Babylon — a lapis field with golden-yellow register bands over an unglazed brown plinth:
-  - `glazed-lapis-brick` `#10386a`, `glazed-gold-brick` `#c08a12`, `brown-brick` `#654c3a`.
+  - `glazed-lapis-brick` `#10386a`, `glazed-gold-brick` `#c08a12`, `brown-brick` `#a07c5c`.
     Each is a three-place change like every other material appearance here — the `Material`
     in `plan/assemblies.py`, a `MasonryStyle` in `ui/src/three/materials.ts`, and a
     `_FINISH_BASE` entry in `emit/gltf/palette.py`. The lapis and the brown are both authored
     a step darker than their reference colour, for the albedo reason above: the first pass at
-    `#144a86`/`#7a5340` arrived on screen as cobalt and rust.
+    `#144a86`/`#7a5340` arrived on screen as cobalt and rust. The plinth went the other way
+    on 2026-08-21: it was authored dark AND at the red brick's full `jitterHSL`, on the
+    argument that an unglazed body beside a glaze is what makes the glaze read as a glaze,
+    and on the wall that came out as a plinth laid from mixed pallets with near-black units
+    through it. **The plinth is ONE light brick** — the jitter is now the glazes' near-zero,
+    and the no-glaze contrast is carried by sheen and the tan mortar joint instead.
   - **`glazed-green-brick` is still in the catalog, referenced by nothing.** Reverting the
     wall to one flat forest-green field is a one-word `material_ref` swap. Do not delete it.
   - Band heights off `WALL_BASE`, on the 2 2/3" course: brown 0"–24", gold 24"–29 1/3",
-    lapis 29 1/3"–88", gold 88"–93 1/3", lapis 93 1/3"–top. The upper register sits **on the
-    door head line** — `AO-B-BRICK-DOOR` is 88" tall including its 8" arch rise — so it
-    springs off the arch crown. Move the door's head and that band goes with it.
+    lapis 29 1/3"–88", gold 88"–93 1/3", lapis 93 1/3"–top. Every one of those is a whole
+    number of courses off `WALL_BASE` (9 / 11 / 33 / 35), which is what makes each band land
+    on a bed joint now that the viewer courses masonry from the wall's own base rather than
+    from project zero (2026-08-21, `applyMasonryWallUv`). Keep any new band on the module or
+    it will render cut. The upper register sits **on
+    D-B-PATIO's head line** at 88", so the band runs across the top of the opening rather
+    than floating above it. Move that line and the band goes with it.
+  - **Both brick reveals are shorter than the openings they front** (2026-08-21).
+    `AO-B-BRICK-DOOR` went 88" -> 84" -> 78" and `AO-B-BRICK-WIN` 26" -> 20", all by eye. At
+    88" the door's crown landed exactly on the gold register and its springline exactly on
+    D-B-PATIO's 80 1/4" head: no course above the arch, no haunch below it, and it read as an
+    arch someone had sawn off. At 78" there is 10" of lapis between crown and register. The
+    consequence is deliberate: the door's head is covered across its full width and the sauna
+    window loses its top 6", because a masonry reveal in front of a rectangular hole is
+    *meant* to overlap it. Neither opening is a daylight or egress subject.
   - **All five are ONE row**, `slot="wythe"` (`Layer.slot`, new with this): they share a
     single 3 5/8" depth position instead of taking one each. Without the slot the assembly
     resolves to an 18 1/8" wythe. Every region must keep the same thickness and its own
     non-overlapping `extent`; `integrity.assembly_layers` refuses the rest.
   - Each colour bills its own band area on its own BOM row, priced by a material-qualified
-    key in `prices.toml` (`BASEMENT_BRICK_VENEER:brown-brick`, …). 28.3 / 79.0 / 14.8 SF.
+    key in `prices.toml` (`BASEMENT_BRICK_VENEER:brown-brick`, …). 28.3 / 90.1 / 14.8 SF — the lapis grew from
+    79.0 when the two reveals were shortened on 2026-08-21.
+  - **Both arched reveals turn a voussoir ring** (2026-08-21),
+    `ui/src/three/builders/archRing.ts`. Masonry here is a texture, so the arch heads were
+    running bond sliced by a curve; the ring is an annulus with *polar* UVs into that same
+    tile, which turns its rectangular bricks into wedges. One header deep (3 5/8") and 3/16"
+    proud on every face (the proud offset is what exposes the skewback end caps, and at 3/8"
+    each one read as a black shard off the springline). The door's extrados crowns at
+    81 5/8", the window's at 52 5/8". The depth is not free: the door crowns at 84", so 3 5/8" puts the
+    extrados at 87 5/8", 3/8" under the gold register — a full 7 5/8" ring would punch
+    through it. **Viewer-only**; an exported `.glb` still shows the plain spandrel.
 
 ## The loop: edit → build → check → *look* → fix
 ```

@@ -177,12 +177,15 @@ WALL_HYDRANT_SELF_DRAINING = FixtureType(
     footprint=(inch(6), inch(6)), height=inch(8), plan_symbol="hydrant",
     needs=frozenset({Service.WATER_COLD}),
     mount=Mount(kind=MountKind.WALL, elevation=inch(24)),
+    integral_vacuum_breaker=True,
     source="Woodford Model 19 self-draining frost-free wall faucet, 3/4\" NPT inlet, MHT "
-           "outlet, integral anti-siphon vacuum breaker, barrel length chosen for the wall "
-           "stack it passes (here 2x6 + 4\" continuous exterior insulation + rainscreen "
-           "~= 10\"). The seat sits inside the conditioned envelope and the barrel pitches "
-           "outward to drain; specify the PEX transition at the seat, a sleeve over the "
-           "barrel, and the manufacturer's gasketed escutcheon over a foamed penetration.",
+           "outlet, integral anti-siphon vacuum breaker (ASSE 1052), barrel length chosen "
+           "for the wall stack it passes (here 2x6 + 4\" continuous exterior insulation + "
+           "rainscreen ~= 10\"). The breaker ships on the faucet body — do not schedule a "
+           "second, screw-on one. The seat sits inside the conditioned envelope and the "
+           "barrel pitches outward to drain; specify the PEX transition at the seat, a "
+           "sleeve over the barrel, and the manufacturer's gasketed escutcheon over a "
+           "foamed penetration.",
 )
 
 # --- laundry ------------------------------------------------------------------------

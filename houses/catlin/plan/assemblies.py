@@ -396,7 +396,7 @@ SUNKEN_GARDEN_COLUMN_16 = Assembly(
 # (-8'-5", not -9'-0" — see the note on W-B-BRICK in plan/storeys/basement.py). The wall is
 # 8'-5" tall, so `brick-field-hi` takes the partial top course. The upper register sits ON
 # D-B-PATIO's head line at 88", which is the Ishtar reading — the band runs across the top of
-# the opening rather than floating above it. The brick reveal AO-B-BRICK-DOOR crowns 4" under
+# the opening rather than floating above it. The brick reveal AO-B-BRICK-DOOR crowns 10" under
 # that band (2026-08-21): it was first cut to 88" so the band sprang straight off the crown,
 # and with no course between them the arch read as sawn off. The lower register caps the
 # plinth and crosses the door's foot. AO-B-BRICK-WIN (sill 29", head 55") sits wholly inside

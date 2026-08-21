@@ -359,23 +359,29 @@ OPENINGS = [
     # holes the wythe in front of them needs, each with its own segmental brick arch — not a
     # duplicate Window/Door, which would double the schedule and takeoff.
     # Positioned off N-B-BRICK-W (shares N-B-S1's x). Segmental, not semicircular: the
-    # rise is ~1/7 of clear width; ``height`` includes that rise so the springline
-    # lands on the real head. ``sill_height`` is re-datumed off W-B-BRICK's own base
+    # rise is ~1/7 of clear width, and ``height`` includes it, so the springline is
+    # ``height - rise``. ``sill_height`` is re-datumed off W-B-BRICK's own base
     # (-8'-5", not -9'): the window's 3'-0" becomes 2'-5", the door's 7" threshold becomes 0.
     RoughOpening(uid="CBO601AAAA", tag="AO-B-BRICK-WIN", host="W-B-BRICK",
                  position=from_node("N-B-BRICK-W", ft(2, 6)),
-                 width=inch(14), height=inch(26), sill_height=inch(29),
+                 width=inch(14), height=inch(20), sill_height=inch(29),
                  arch=Arch(rise=inch(2))),
-    # 84", not the 88" this was authored at (2026-08-21). At 88" the crown landed exactly on
-    # the gold register at 88" and the springline exactly on D-B-PATIO's 80 1/4" head, so the
-    # arch had no brick above it and no haunch below it and read as an arch someone had sawn
-    # off. Dropping 4" puts the crown 4" (1 1/2 courses) clear under the register and springs
-    # the arch at 76", which does cross D-B-PATIO's top corners — accepted: a masonry reveal
-    # in front of a rectangular door is meant to overlap it, and the alternative is either a
-    # flattened arch or a register band that no longer sits on the door head line.
+    # Both reveals were taken down 6" at the head on 2026-08-21, on the eye rather than on a
+    # rule: the door read 88" -> 84" -> 78", the window 26" -> 20". At 88" the door's crown
+    # landed exactly on the gold register and its springline exactly on D-B-PATIO's 80 1/4"
+    # head, so the arch had no brick above it and no haunch below it and read as one someone
+    # had sawn off. 78" leaves 10" — nearly four courses — of lapis between crown and
+    # register, and springs the arch at 70".
+    #
+    # Both reveals are therefore now SHORTER than the openings they front, and that is the
+    # point, not a defect: a masonry reveal in front of a rectangular hole is meant to overlap
+    # it. The door's head is covered across its full width and the sauna window loses its top
+    # 6". Neither is a daylight or egress subject — WIN-B-SAUNA is not an emergency escape
+    # opening and `egress.py` already excludes these arches by name — but if the sauna ever
+    # wants that glass back, this height is the line to move, not the window.
     RoughOpening(uid="CBO602AAAA", tag="AO-B-BRICK-DOOR", host="W-B-BRICK",
                  position=from_node("N-B-BRICK-W", ft(10, 6)),
-                 width=ft(5), height=inch(84), sill_height=ft(0),
+                 width=ft(5), height=inch(78), sill_height=ft(0),
                  arch=Arch(rise=inch(8))),
 ]
 

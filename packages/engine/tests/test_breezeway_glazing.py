@@ -128,22 +128,28 @@ def test_the_eave_u_and_the_wall_head_are_gone(catlin_model):
 def test_every_sheet_that_can_hold_water_sits_in_a_weeping_channel(catlin_model):
     """The eave U-channel's weep holes went with it, so a U at the foot of each sheet is all
     the drainage this assembly has. A breezeway whose only vented channel lost its weeps
-    drains nowhere — and a *skirt* sheet standing in an unweeped channel at the soil line is
-    the same failure one storey down."""
+    drains nowhere."""
     weeping = [e for e in catlin_model.plan.all_elements()
                if getattr(e, "tag", "").startswith("TR-BW-") and getattr(e, "weep_holes", False)]
-    assert {e.tag for e in weeping} == {"TR-BW-SILL-W", "TR-BW-SILL-E",
-                                        "TR-BW-SKIRT-SILL-W", "TR-BW-SKIRT-SILL-E"}
+    assert {e.tag for e in weeping} == {"TR-BW-SILL-W", "TR-BW-SILL-E"}
     # The wall sill sits at the deck surface, which the sheet passes rather than starts at.
     sill = _solid(catlin_model, "TR-BW-SILL-W-1")
     sheet = _solid(catlin_model, "GL-BW-WALL-W")
     assert sheet.z0_m < sill.z0_m, "the sheet runs below the sill, down to the beam soffit"
-    # The skirt's does start at its sheet's foot, at grade — it is the bottom of the assembly
-    # and there is nothing under it to drain onto but soil.
+
+
+def test_nothing_glazes_below_the_deck(catlin_model):
+    """The 1'-10 3/4" the 2026-08-18 lift opened under the deck is open air (2026-08-21).
+    The retired skirt was a half-sheet plus six channels, and the standing sheet's foot at
+    the floor-beam soffit is the bottom of the glazed assembly again."""
+    tags = {getattr(e, "tag", None) for e in catlin_model.plan.all_elements()}
+    assert not [t for t in tags if t and "SKIRT" in t]
+    soffit = min(s.z0_m for s in _solids(catlin_model, "GL-BW-WALL-W"))
     grade_m = catlin_model.plan.project.site.grade.meters
-    skirt = _solid(catlin_model, "GL-BW-SKIRT-W")
-    assert skirt.z0_m == pytest.approx(grade_m)
-    assert skirt.z1_m == pytest.approx(sheet.z0_m), "skirt head meets the standing sheet's foot"
+    below = [s for s in catlin_model.solids
+             if (s.tag or "").startswith("GL-BW-") and s.z0_m < soffit - 1e-9]
+    assert not below, "no breezeway glazing reaches down toward grade"
+    assert soffit > grade_m, "the deck bridges over open ground, it does not sit on it"
 
 
 # --- 3. the takeoff ------------------------------------------------------------------------

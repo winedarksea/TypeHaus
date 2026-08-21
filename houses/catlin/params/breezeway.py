@@ -26,9 +26,8 @@ That reading falls straight out of the sheet:
 The bill is therefore three sheets for the enclosure itself, and only one cut among them:
 two 8'x4' sheets standing whole, one 8'x4' halved for the roof. (The "10' stock" era — when
 the standing sheet ran 9'-10 3/4" — is retired; it existed only because the enclosure was
-8'-0" clear *above the decking* rather than 8'-0" of sheet.) A fourth sheet, halved, skirts
-the gap the 2026-08-18 lift opened under the deck — below the enclosure, so it costs the
-brief's three dimensions nothing.
+8'-0" clear *above the decking* rather than 8'-0" of sheet.) Three sheets is the whole bill:
+the gap the 2026-08-18 lift opened under the deck is left open rather than skirted.
 
 The two sheets meet, so one ``profile="H"`` channel per side receives both — the wall sheet
 in its lower slot, the roof sheet in its upper — replacing the eave U and the wall F-head
@@ -62,14 +61,13 @@ Framing directions (the brief's "opposite rotation"):
 **What the 2026-08-18 lift did to it.** Grade dropped 2'-6" to bring the house out of the
 ground. The breezeway's *foundations* went with the soil — the pads still bear at 42" below
 grade, so the piers grew 2'-6" — and nothing above ``_FLOOR_BEAM_TOP`` moved at all, because
-this is a bridge between two doors and both thresholds are still at 0'-0". Two consequences,
-both answered rather than left:
+this is a bridge between two doors and both thresholds are still at 0'-0". Two consequences:
 
-* **The 1'-10 3/4" that opened up under the deck is skirted** (``SKIRT_GLAZING`` below),
-  in the same 16mm multiwall and the same channels. Nobody uses that space — the enclosure's
-  only two openings are the two buildings' doors — but it is a 4'-wide slot between two
-  buildings at the house's own entry, and an open crawl there packs with drifted snow and
-  houses whatever wants to live under a vestibule. It is the assembly's only other cut.
+* **The 1'-10 3/4" that opened up under the deck stays open.** A half-sheet skirt in the
+  same multiwall stood there briefly and is retired (2026-08-21): the deck is a bridge
+  between two doors, nothing under it is enclosed space, and everything down there —
+  ground-contact posts on isolated piers, PT beams and joists — is detailed to be exposed
+  and to dry. The enclosure is the 8'-0" of sheet above the deck; below it is open air.
 * **No guard is required, and none is authored.** The walking surface is 2'-6" above grade,
   right at IRC R312.1's trigger, and ``structural.deck_guard`` grades it a PASS at exactly
   30". The question the number raises is answered by the enclosure rather than by the
@@ -505,69 +503,6 @@ for _i, (_tag, _x, _ref) in enumerate(
             thickness=_CHANNEL_THICK, material="aluminum-extrusion"))
 
 # ============================================================================
-# Skirt: the 1'-10 3/4" the 2026-08-18 lift opened up under the deck.
-# ============================================================================
-# The standing sheets start at the floor-beam soffit (-0'-7 1/4") because that is where an
-# uncut 4'x8' sheet's foot lands, and until 2026-08-18 the ground was 7 1/4" below it. Then
-# grade went to -2'-6" and the breezeway did not go with it — it is a bridge between two
-# doors, and both thresholds stayed at 0'-0" — so the slot between the house and the garage
-# opened up under the deck.
-#
-# That gap is closed rather than accepted. Nobody uses the space (the enclosure has no
-# exterior door; its only two openings are the two buildings' doors), so it is not a room —
-# but it is a 4'-wide slot between two buildings at the house's own entry, which is where
-# snow drifts pack, and an open crawl under a vestibule door is where a skunk lives.
-#
-# Same 16mm multiwall as the walls above, same channels, same trade, and the elevation
-# reads as one glazed side to the ground rather than a glass box on stilts. It is the
-# assembly's only other cut: one 4'x8' sheet halved gives both strips with a foot to spare.
-# The sill U weeps, as the one above the deck does, and the head F-channel caps the cut top
-# edge under the standing sheet's own uncapped foot.
-_SKIRT_BOTTOM = _GRADE_FT            # -2'-6", in a weeping U at the soil line
-_SKIRT_TOP = _PIER_TOP               # -0'-7 1/4", the floor-beam soffit
-_SKIRT_HEIGHT = ft(_SKIRT_TOP - _SKIRT_BOTTOM)   # 1'-10 3/4"
-
-SKIRT_GLAZING = [
-    GlazingPanel(
-        uid="BWGP05AAAA", tag="GL-BW-SKIRT-W",
-        outline=(pt(ft(_GLAZING_X0), ft(_GLAZING_Y0)), pt(ft(_GLAZING_X0), ft(_GLAZING_Y1))),
-        thickness=inch(_GLAZING_THICKNESS_IN), plane="vertical",
-        base_elevation=ft(_SKIRT_BOTTOM), top_elevation=ft(_SKIRT_TOP),
-        assembly="BREEZEWAY_GLAZED_WALL", film=_BIRD_FILM),
-    GlazingPanel(
-        uid="BWGP06AAAA", tag="GL-BW-SKIRT-E",
-        outline=(pt(ft(_GLAZING_X1), ft(_GLAZING_Y0)), pt(ft(_GLAZING_X1), ft(_GLAZING_Y1))),
-        thickness=inch(_GLAZING_THICKNESS_IN), plane="vertical",
-        base_elevation=ft(_SKIRT_BOTTOM), top_elevation=ft(_SKIRT_TOP),
-        assembly="BREEZEWAY_GLAZED_WALL", film=_BIRD_FILM),
-]
-
-SKIRT_TRIM = []
-for _i, (_tag, _x, _ref) in enumerate(
-        (("W", _GLAZING_X0, "GL-BW-SKIRT-W"), ("E", _GLAZING_X1, "GL-BW-SKIRT-E")), start=1):
-    _run = (pt(ft(_x), ft(_GLAZING_Y0)), pt(ft(_x), ft(_GLAZING_Y1)))
-    SKIRT_TRIM += [
-        GlazingTrim(uid=f"BWGS{_i}AAAAA", tag=f"TR-BW-SKIRT-SILL-{_tag}",
-                    kind=TrimKind.GLAZING_CHANNEL, profile="U", weep_holes=True,
-                    glazing_ref=_ref, path=_run,
-                    top_elevation=ft(_SKIRT_BOTTOM) + _CHANNEL_DEPTH, depth=_CHANNEL_DEPTH,
-                    thickness=_CHANNEL_THICK, material="aluminum-extrusion"),
-        GlazingTrim(uid=f"BWGH{_i}AAAAA", tag=f"TR-BW-SKIRT-HEAD-{_tag}",
-                    kind=TrimKind.GLAZING_CHANNEL, profile="F",
-                    glazing_ref=_ref, path=_run,
-                    top_elevation=ft(_SKIRT_TOP), depth=_CHANNEL_DEPTH,
-                    thickness=_CHANNEL_THICK, material="aluminum-extrusion"),
-    ]
-    for _side, _y in (("S", _GLAZING_Y0), ("N", _GLAZING_Y1)):
-        _half = _GLAZING_THICKNESS_IN / 24.0
-        SKIRT_TRIM.append(GlazingTrim(
-            uid=f"BWSJ{_side}{_i}AAAA", tag=f"TR-BW-SKIRT-JAMB-{_tag}{_side}",
-            kind=TrimKind.GLAZING_CHANNEL, profile="F", glazing_ref=_ref, vertical=True,
-            path=(pt(ft(_x - _half), ft(_y)), pt(ft(_x + _half), ft(_y))),
-            top_elevation=ft(_SKIRT_TOP), depth=_SKIRT_HEIGHT,
-            thickness=_CHANNEL_THICK, material="aluminum-extrusion"))
-
-# ============================================================================
 # Hardware.
 # ============================================================================
 # ABU66SS stainless standoff bases hold the 6x6 clear of the pier top so end grain never
@@ -586,5 +521,5 @@ CONNECTORS = [
 ]
 
 MAIN_ELEMENTS = [*NODES, *PADS, *PIERS, *POSTS, *FLOOR_BEAMS, FLOOR, DECK,
-                 *ROOF_BEAMS, *RAFTERS, *ROOF_GLAZING, *WALL_GLAZING, *SKIRT_GLAZING,
-                 *ROOF_TRIM, *WALL_TRIM, *SKIRT_TRIM, *CONNECTORS]
+                 *ROOF_BEAMS, *RAFTERS, *ROOF_GLAZING, *WALL_GLAZING,
+                 *ROOF_TRIM, *WALL_TRIM, *CONNECTORS]

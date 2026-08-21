@@ -416,12 +416,23 @@ export function createMasonryMaterial(
  * World-scaled UVs for a masonry wall layer: courses run true-height up the wall and units
  * run true-length along it, so the bond stays put as walls change direction (same coordinate
  * frame idea as the standing-seam wall UV). `tileSizeM` is the chosen style's repeat extent.
+ *
+ * `baseZM` is the elevation the coursing is laid FROM, and it matters more than it looks.
+ * Until 2026-08-21 the course line was `elevation / tileHeight` — measured from project zero,
+ * which no wall in the house is founded on. Every masonry wall therefore started mid-brick:
+ * the sunken garden's veneer sits with its base at -101", six and a third tiles below zero, so
+ * its bottom course rendered as a third of a brick and every band above it was cut too. A
+ * bricklayer starts at the bottom and only cuts at the top, so this measures from the wall's
+ * own `z0_m`. The reference house's register bands are all whole multiples of the 2⅔" course
+ * off `WALL_BASE`, so once the wall courses from its base every band lands on a bed joint by
+ * construction — nothing else had to move.
  */
 export function applyMasonryWallUv(
   geometry: THREE.BufferGeometry,
   wallAxis: readonly [readonly [number, number], readonly [number, number]],
   center: PlanCenter,
   tileSizeM: readonly [number, number] = MASONRY_TILE_SIZE_M,
+  baseZM = 0,
 ): void {
   const [[x0, y0], [x1, y1]] = wallAxis;
   const dx = x1 - x0;
@@ -439,7 +450,7 @@ export function applyMasonryWallUv(
     const elevation = positions.getY(index);
     const along = (projectX - x0) * directionX + (projectY - y0) * directionY;
     uv[index * 2] = along / tileSizeM[0];
-    uv[index * 2 + 1] = elevation / tileSizeM[1];
+    uv[index * 2 + 1] = (elevation - baseZM) / tileSizeM[1];
   }
   geometry.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
 }

@@ -105,6 +105,12 @@ def backflow_prevention(ctx: CheckContext) -> list[Finding]:
 
     Still per hydrant, not per house — three hydrants and one breaker protects one hydrant.
 
+    A hydrant whose *type* declares ``integral_vacuum_breaker`` (a Woodford Model 19 wall
+    hydrant, unlike the garage's bare-thread yard hydrant) needs no accessory of its own:
+    the device is built into the faucet body, already inside the fixture's own price, and
+    authoring a second ``PipeAccessory(VACUUM_BREAKER)`` for it would both misstate the
+    installation and double-bill a part that was never separately bought.
+
     Devices that guard no hydrant are graded on whether they are attached to anything real.
     ``pipe_ref`` is already the resolver's business (an accessory with no host run is an
     integrity error before a check ever runs), but ``serves`` is nobody's: a tag that names
@@ -132,14 +138,21 @@ def backflow_prevention(ctx: CheckContext) -> list[Finding]:
                 if hydrant.tag in g.serves or (g.pipe_ref in feeds and not g.serves)]
         counted.update(g.tag for g in mine)
         threads = [g for g in mine if g.kind == PipeAccessoryKind.VACUUM_BREAKER.value]
-        if not threads:
+        hydrant_type = types.get(hydrant.type_ref)
+        integral = bool(hydrant_type and hydrant_type.integral_vacuum_breaker)
+        if not threads and not integral:
             out.append(_fail(
                 cid, f"hose connection {hydrant.tag} has no vacuum breaker — P2902.3.1 "
                      "requires backflow protection at every hose thread on a potable line",
                 (hydrant.tag,)))
             continue
         branch = [g for g in mine if g.kind == PipeAccessoryKind.BACKFLOW_PREVENTER.value]
-        message = f"{hydrant.tag}'s hose thread is protected by {_named(threads[0])}"
+        if threads:
+            message = f"{hydrant.tag}'s hose thread is protected by {_named(threads[0])}"
+        else:
+            message = (f"{hydrant.tag}'s hose thread is protected by its own integral "
+                       f"vacuum breaker ({hydrant_type.name}) — no separate accessory to "
+                       "schedule or bill")
         if branch:
             message += (f", and its branch ({', '.join(sorted(feeds)) or 'its feed'}) "
                         f"carries {' and '.join(_named(g) for g in branch)}")

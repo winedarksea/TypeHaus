@@ -1,4 +1,6 @@
+import * as THREE from "three";
 import {
+  applyMasonryWallUv,
   BRICK_UNIT_M,
   CMU_UNIT_M,
   isCmu,
@@ -111,6 +113,8 @@ export function runMaterialGeometryTests() {
     "Lightness jitter is what showed as mixed pallets, so it stays at the glazes' near-zero");
   assert(masonryStyleFor("glazed-lapis-brick").key === "brick",
     "Without the authored finish the ref alone still cannot tell lapis from red — hence Material.finish");
+
+  assertCoursingStartsAtTheWallBase();
 }
 
 // --- member colour: no category the engine emits may reach the grey fallback --------------
@@ -122,6 +126,29 @@ export function runMaterialGeometryTests() {
 // here we pin the behaviour those keys exist for.
 function member(category: string, material: string | null = null): Member {
   return { category, material } as Member;
+}
+
+// A brick wall is laid from the bottom up: the bricklayer starts on a full course at the base
+// and only ever cuts at the top. The UV course line used to be measured from project zero, so
+// every wall in the house started mid-brick — the sunken garden veneer, founded at -101",
+// rendered its bottom course as a third of a brick and cut every register band above it too.
+function assertCoursingStartsAtTheWallBase() {
+  const tile = masonryTileSizeM(masonryStyleFor("brick-red"));
+  const baseZ = -2.5654; // -101", the Ishtar wall's base: deliberately NOT a whole tile.
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(
+    [0, baseZ, 0, 1, baseZ, 0, 1, baseZ + tile[1], 0], 3));
+  applyMasonryWallUv(geometry, [[0, 0], [6, 0]], [0, 0], tile, baseZ);
+  const uv = geometry.getAttribute("uv");
+  assert(Math.abs(uv.getY(0)) < 1e-6 && Math.abs(uv.getY(1)) < 1e-6,
+    "The wall's base sits exactly on a bed joint, so the bottom course is a whole brick");
+  assert(Math.abs(uv.getY(2) - 1) < 1e-6, "One tile up the wall is exactly one tile up the map");
+
+  const fromZero = new THREE.BufferGeometry();
+  fromZero.setAttribute("position", new THREE.Float32BufferAttribute([0, baseZ, 0], 3));
+  applyMasonryWallUv(fromZero, [[0, 0], [6, 0]], [0, 0], tile);
+  assert(Math.abs(fromZero.getAttribute("uv").getY(0) % 1) > 1e-3,
+    "Measuring from project zero is what cut the bottom course — the regression this pins");
 }
 
 export function runMemberColorTests() {

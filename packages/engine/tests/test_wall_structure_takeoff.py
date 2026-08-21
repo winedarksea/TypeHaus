@@ -59,7 +59,8 @@ def test_the_sunken_garden_brick_wythe_is_billed(catlin_model) -> None:
     Since the Ishtar scheme (2026-08-20) it bills as three rows, one per brick colour, and
     that is the second thing this pins. The wythe is a split row (`Layer.slot`): five banded
     regions sharing one 3 5/8" depth position. Billing it by "the" structure layer — the
-    first one — would have put all 122 SF on the brown plinth and never mentioned the glaze,
+    first one — would have put the whole net face on the brown plinth and never mentioned the
+    glaze,
     which is the modern version of the hole this test was written for.
     """
     rows = [row for row in wall_structure_takeoff(catlin_model)
@@ -72,8 +73,11 @@ def test_the_sunken_garden_brick_wythe_is_billed(catlin_model) -> None:
         assert row["tags"] == ["W-B-BRICK"]
         assert float(row["net_area_sqft"]) > 0
         assert float(row["volume_cuft"]) > 0
-    # The bands partition the same net face the one-colour wall billed, no more and no less.
-    assert 124 < sum(float(row["net_area_sqft"]) for row in rows) < 132
+    # The bands partition the wall's whole net face, no more and no less: 19'-2" x 8'-9" is
+    # 167.7 SF gross, less the two reveals (5'-0" x 78" and 14" x 20") is 133.2. The window
+    # was 132 until 2026-08-21, when both reveals were taken down 6" at the head and the
+    # deduction shrank with them — a reminder that this bound moves whenever those do.
+    assert 130 < sum(float(row["net_area_sqft"]) for row in rows) < 136
     # And they are in the right proportions: the field is most of the wall, the plinth is
     # the bottom 2'-0", and the two 2-course registers are the least of it.
     assert (float(by_material["glazed-lapis-brick"]["net_area_sqft"])

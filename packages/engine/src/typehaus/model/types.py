@@ -160,6 +160,15 @@ class FixtureType(HausModel):
     model_representation: ModelRepresentation | None = None
     mount: Mount = Mount()
     plan_symbol: str | None = None
+    # True when the product's own hardware already satisfies P2902.3.1's hose-thread
+    # backflow protection (a wall hydrant with a built-in anti-siphon vacuum breaker, e.g.
+    # a Woodford Model 19) — as opposed to a hydrant whose thread is bare and needs a
+    # separate screw-on `PipeAccessory(kind=VACUUM_BREAKER)` (a Y-pattern yard hydrant).
+    # Declared rather than inferred, same reason as `ApplianceType.quick_closing`: nothing
+    # in a hydrant's geometry says which kind it is. Checks that key on it must stop the
+    # plan from also authoring a redundant accessory for the same device, which would bill
+    # a part the fixture's own price already includes.
+    integral_vacuum_breaker: bool = False
 
 
 class ApplianceType(FurnitureType):

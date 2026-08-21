@@ -1121,7 +1121,7 @@
 #                           installed is the standard-veneer market, at the low end of it
 #                           because this band is 24" off the ground — no scaffold, and the
 #                           easiest 28 SF on the wall to lay.
-#   glazed-lapis  79.0 SF   the field. Unchanged from the green it replaces: a GLAZED
+#   glazed-lapis  90.1 SF   the field. Unchanged from the green it replaces: a GLAZED
 #                           specialty face brick is a special order at 1.5-2x the body price.
 #   glazed-gold   14.8 SF   the register bands. Dearer than the lapis and not because the
 #                           brick is: it is a SECOND colour on a 122 SF job. Its own pallet,
@@ -1140,7 +1140,7 @@
 # wall this veneers, priced on its own row.
 "BASEMENT_BRICK_VENEER" = { low = 20, high = 45, unit = "SF" }  # fallback; 122.1 SF of face
 "BASEMENT_BRICK_VENEER:brown-brick" = { low = 15, high = 28, unit = "SF" }  # 28.3 SF, the plinth
-"BASEMENT_BRICK_VENEER:glazed-lapis-brick" = { low = 20, high = 45, unit = "SF" }  # 79.0 SF, the field
+"BASEMENT_BRICK_VENEER:glazed-lapis-brick" = { low = 20, high = 45, unit = "SF" }  # 90.1 SF, the field
 "BASEMENT_BRICK_VENEER:glazed-gold-brick" = { low = 32, high = 65, unit = "SF" }  # 14.8 SF, the registers
 # 2026-08-20 RESEARCH PASS 4. Conversion chain for a 12" wall 9' tall: 0.3333 cy/LF, 9.0 SF
 # of face per LF, 27 SF of face per cy. The old $320-600/cy was $107-200/LF = $11.85-22.22/SF
@@ -1458,7 +1458,7 @@
 "penetration_seal" = { material = { low = 25, high = 90 }, labour = { low = 25, high = 70 } }  # 2 ea
 "ro_stub" = { material = { low = 15, high = 45 }, labour = { low = 25, high = 70 } }  # 1 ea
 "shutoff" = { material = { low = 8, high = 25 }, labour = { low = 25, high = 70 } }  # 4 ea
-"vacuum_breaker" = { material = { low = 10, high = 35 }, labour = { low = 25, high = 70 } }  # 3 ea
+"vacuum_breaker" = { material = { low = 10, high = 35 }, labour = { low = 25, high = 70 } }  # 1 ea
 "water_hammer_arrestor" = { material = { low = 12, high = 35 }, labour = { low = 25, high = 70 } }  # 3 ea
 
 [install_parts]
