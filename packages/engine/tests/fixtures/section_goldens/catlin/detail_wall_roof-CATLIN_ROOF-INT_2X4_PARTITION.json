@@ -165,6 +165,33 @@
       "material": "gwb"
     },
     {
+      "node": "hatch",
+      "boundary": [
+        [
+          65.25,
+          354.1874409448819
+        ],
+        [
+          68.75,
+          354.1874409448819
+        ],
+        [
+          68.75,
+          367.71500000000003
+        ],
+        [
+          65.25,
+          367.71500000000003
+        ]
+      ],
+      "pattern": "batt",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "mineral-wool"
+    },
+    {
       "node": "polyline",
       "points": [
         [

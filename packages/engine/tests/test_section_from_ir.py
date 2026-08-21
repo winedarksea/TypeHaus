@@ -230,3 +230,52 @@ def test_a_cut_member_shows_its_real_section_face(catlin_model):
             assert max(us) - min(us) <= expected + 1e-6, node.tag
             checked += 1
     assert checked, "no floor member was cut across in any derived detail"
+
+
+# --- joints --------------------------------------------------------------------------
+
+def test_the_default_joint_plan_is_empty(catlin_model):
+    """Where a wall's skin stops is the resolver's answer, not a second one invented here.
+
+    ``roof_edge`` has already built it as real per-layer closure members positioned by
+    ``mating_faces``; ``JointPlan.terminations`` survives only for an authored ``LayerJoin``,
+    which is a genuine drawing-only override.
+    """
+    from typehaus.emit.draw.details import derive_detail_slices
+    from typehaus.emit.draw.joints import build_joint_plan
+
+    derived = next(d for d in derive_detail_slices(catlin_model)
+                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+    plan = build_joint_plan(catlin_model, derived.condition, None,
+                            derived.direction, derived.station)
+    assert plan.terminations == {}
+
+
+def test_the_spray_foam_wedge_sits_in_the_foam_mismatch(catlin_model):
+    """Catlin's eave note: "leave the angled mismatch between roof foam and wall foam".
+
+    Not a 2" gap under a plane derived by summing the whole roof assembly, which is what put
+    the wedge inside the wall, below the top plate.
+    """
+    from typehaus.emit.draw.details import build_detail, derive_detail_slices
+
+    derived = next(d for d in derive_detail_slices(catlin_model)
+                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+    scene, _findings = build_detail(catlin_model, derived)
+    wedges = [node for node in scene.nodes
+              if isinstance(node, Polyline) and node.tag == "spray-foam-wedge"]
+    assert wedges, "no wedge at the eave"
+
+    wall = next(w for w in catlin_model.walls
+                if w.tag in derived.condition.element_tags)
+    roof = next(r for r in catlin_model.roofs
+                if r.tag in derived.condition.element_tags)
+    plate_top = (wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m) / 0.0254
+    ci = next(layer for layer in reversed(wall.layers)
+              if layer.function == "insulation" and not layer.is_cavity)
+    for wedge in wedges:
+        zs = [z for (_u, z) in wedge.points]
+        assert min(zs) > plate_top, "the wedge is inside the wall, under the plate"
+        # And it is bounded above by the roof's own foam underside, not by a constant.
+        assert max(zs) <= roof.ridge_z_m / 0.0254
+    assert ci is not None

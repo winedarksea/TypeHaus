@@ -1,10 +1,18 @@
 """Joint resolution — per-layer terminations + treatment geometry at a transition (→ 11b).
 
-A junction detail is a live section cut whose per-layer laps are *derived*, never authored:
-a ``JointPlan`` maps each participating layer to a termination plane (Revit "layer extension
-distance") and carries the treatment fills (spray-foam wedge, sealant, tape) computed from the
-same interface planes. Default joins come from layer function/control; authored ``LayerJoin``
-entries on the matched ``Transition`` override by fnmatch glob.
+A junction detail is a live section cut. Where a wall's skin stops is **not** decided here —
+``resolve/roof_edge.py`` has already built the answer as real per-layer closure members,
+positioned by ``roof_edge_geometry.mating_faces`` and ``roof_height_at``, and the section
+slices them like any other geometry. This module used to invent a second answer (a
+``_WEDGE_GAP_M`` of 0.05 m, a ``_DRIP_M`` of 0.04, and its own transcription of the roof
+plane), and the drawing believed the wrong one: the wall's continuous insulation was
+terminated below its own plate and the spray-foam wedge landed inside the wall.
+
+So the default joint plan is **empty**. ``terminations`` survives for ``_apply_authored_join``
+alone, because an authored ``LayerJoin`` on a matched ``Transition`` is a genuine
+drawing-only override of what the model says. What remains derived is the treatment fill —
+the spray-foam wedge — and its three bounds are read off the geometry rather than off a
+convention.
 
 Engine-internal IR (plain dataclasses, never serialized as source), consumed by the cutter.
 Section coordinates: ``u`` = world x (cut_direction "x") or world y ("y"); ``z`` = world z.
@@ -12,13 +20,15 @@ Section coordinates: ``u`` = world x (cut_direction "x") or world y ("y"); ``z``
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 
 from typehaus.emit.draw.scene import Hatch, IRNode, Polyline
 from typehaus.model.patterns import matches
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.geometry_slice import CutPlane, ring_cut_intervals, slice_part
 from typehaus.resolve.model import ResolvedModel, ResolvedRoof, ResolvedWall
-from typehaus.resolve.roof_layer_setbacks import structure_datum_m
+from typehaus.resolve.roof_geometry import roof_height_at
 
 
 @dataclass(frozen=True)
@@ -44,47 +54,6 @@ class JointPlan:
         return self.terminations.get((uid, layer))
 
 
-def _roof_underside_line(roof: ResolvedRoof, direction: str, junction_u: float,
-                         thickness_m: float) -> TerminationPlane:
-    """The roof deck underside as a section (u, z) line at the junction, minus its thickness.
-
-    ``u`` is the in-section coordinate (world x for a "x" cut, world y for a "y" cut). The
-    roof slopes perpendicular to its ridge; the plane is anchored at ``junction_u`` so the
-    derived wedge stays local to the junction instead of extrapolating across the roof.
-    """
-    xs = [p[0] for p in roof.footprint]
-    ys = [p[1] for p in roof.footprint]
-    # The coordinate the roof slope runs along (perpendicular to the ridge).
-    slope_axis_is_u = (
-        (roof.ridge_direction == "y" and direction == "x")
-        or (roof.ridge_direction == "x" and direction == "y")
-    )
-    lo, hi = (min(xs), max(xs)) if roof.ridge_direction == "y" else (min(ys), max(ys))
-    mid = (lo + hi) / 2.0
-    span = (hi - lo) / 2.0 or 1e-9
-    rise = roof.ridge_z_m - roof.eave_z_m
-
-    def z_top(u: float) -> float:
-        if roof.form == "shed":
-            return roof.eave_z_m + (u - lo) / (hi - lo or 1e-9) * rise
-        return roof.eave_z_m + rise * (1.0 - abs(u - mid) / span)
-
-    if not slope_axis_is_u:
-        slope = 0.0
-        z_here = roof.eave_z_m  # flat in u; nearest eave elevation
-    elif roof.form == "shed":
-        slope = rise / (hi - lo or 1e-9)
-        z_here = z_top(junction_u)
-    else:
-        slope = -rise / span if junction_u >= mid else rise / span
-        z_here = z_top(junction_u)
-    return TerminationPlane(u0=junction_u, z0=z_here - thickness_m, slope=slope)
-
-
-def _layer_control(layer) -> frozenset:
-    return getattr(layer, "control", frozenset())
-
-
 def build_joint_plan(model: ResolvedModel, condition, transition,
                      direction: str, station: float) -> JointPlan:
     """Derive the joint plan for one bound (condition, transition) at a section cut.
@@ -97,7 +66,7 @@ def build_joint_plan(model: ResolvedModel, condition, transition,
     roof = _representative_roof(model, condition)
 
     if wall is not None and roof is not None:
-        _default_roof_joins(plan, model, wall, roof, direction, station)
+        _spray_foam_wedge(plan, model, wall, roof, direction, station)
 
     # Authored overrides (LayerJoin) — glob over layer name/function on the wall's side.
     if wall is not None and transition is not None:
@@ -119,72 +88,118 @@ def _representative_roof(model, condition) -> ResolvedRoof | None:
     return next((r for r in model.roofs if r.tag in tags), None)
 
 
-_WEDGE_GAP_M = 0.05  # CI stops ~2" short of the deck underside; wedge fills the gap.
-_DRIP_M = 0.04       # cladding/furring run long past the interface.
+def _spray_foam_wedge(plan: JointPlan, model, wall: ResolvedWall, roof: ResolvedRoof,
+                      direction: str, station: float) -> None:
+    """Fill the angled mismatch between the roof's foam and the wall's.
 
+    Catlin's eave note asks for exactly this: *"leave the angled mismatch between roof foam
+    and wall foam; fill with closed-cell spray polyurethane foam."* Sprayed foam is the one
+    thing at this junction with no solid anywhere in the model, so it is genuinely 2D-only
+    linework — but its bounds are not, and they are what the old version got wrong.
 
-def _default_roof_joins(plan: JointPlan, model, wall: ResolvedWall, roof: ResolvedRoof,
-                        direction: str, station: float) -> None:
-    asm = model.plan.library.resolve_assembly(roof.assembly)
-    # Depth from the roof's *datum* to the underside its wall dies into. The datum
-    # (``roof_height_at``, which ``_roof_underside_line`` walks) is the top of the STRUCTURE
-    # layer, not the top of the roofing — so only the structure hangs below it and only the
-    # structure may be subtracted here.
-    #
-    # This summed the whole assembly, which on catlin's 19.86"-deep nailbase roof put the
-    # "underside" 8" below the top plate. Every consequence followed from that one number:
-    # the wall's continuous insulation was terminated below its own plate, the air barrier
-    # was run down instead of up to the roof, and the spray-foam wedge that fills the
-    # roof-foam/wall-foam mismatch was drawn inside the wall beneath the plate rather than
-    # in the mismatch. It reads as "gaps in the exterior foam near the roof intersection".
-    roof_thickness = structure_datum_m(asm) if asm is not None else 0.3
-    # Junction u = the wall's in-section position (world x for "x" cut, world y for "y").
-    (x0, y0), (x1, y1) = wall.axis
-    junction_u = (x0 + x1) / 2.0 if direction == "x" else (y0 + y1) / 2.0
-    underside = _roof_underside_line(roof, direction, junction_u, roof_thickness)
-    wall_top = wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m
+    ``roof_edge`` carries each wall skin layer up to *its own* face in the roof stack, at
+    that layer's own plan offset. The roof plane falls as it runs outboard, so the closure
+    bands' tops step down while the plane between them slopes: the void is the sawtooth
+    between the two. That is the mismatch, and it is a consequence of the resolver's own
+    geometry rather than of a convention.
 
-    ci_top_u: tuple[float, float] | None = None
-    sheath_face_u: tuple[float, float] | None = None
-    for layer in wall.layers:
-        key = (wall.uid, layer.name)
-        control = _layer_control(layer)
-        func = layer.function
-        if "air" in control:
-            # Air barrier runs to the far structure plane (roof underside).
-            plan.terminations[key] = underside
-        elif func == "insulation":
-            # Continuous exterior insulation stops short of the deck; wedge fills the gap.
-            plan.terminations[key] = TerminationPlane(
-                u0=underside.u0, z0=underside.z0 - _WEDGE_GAP_M, slope=underside.slope)
-            u_iv = _layer_u_interval(layer, direction, station)
-            if u_iv is not None:
-                ci_top_u = (max(u_iv), underside.z0 - _WEDGE_GAP_M)
-        elif func in ("cladding", "furring"):
-            # Cladding/furring run long past the interface (drip gap).
-            plan.terminations[key] = TerminationPlane(
-                u0=underside.u0, z0=underside.z0 + _DRIP_M, slope=underside.slope)
-        elif func in ("sheathing", "structure"):
-            u_iv = _layer_u_interval(layer, direction, station)
-            if u_iv is not None and func == "sheathing":
-                sheath_face_u = (max(u_iv), wall_top)
-
-    # Spray-foam wedge = quad bounded by CI top, roof underside, wall sheathing face.
-    if ci_top_u is not None and sheath_face_u is not None:
-        u_ci, z_ci = ci_top_u
-        u_sh, _ = sheath_face_u
-        poly = (
-            (u_ci / M_PER_IN, z_ci / M_PER_IN),
-            (u_ci / M_PER_IN, underside.z(u_ci) / M_PER_IN),
-            (u_sh / M_PER_IN, underside.z(u_sh) / M_PER_IN),
-            (u_sh / M_PER_IN, wall_top / M_PER_IN),
-        )
+    The old version invented a 2" gap under a "roof underside" it computed by summing the
+    *whole* assembly, which on catlin's 19.86"-deep nailbase roof put that plane 8" below
+    the top plate — and the wedge with it, inside the wall, under the plate.
+    """
+    bands = _closure_band_tops(model, roof, wall,
+                               CutPlane(axis=direction, station_m=station), "insulation")
+    foam_plane = _roof_foam_underside(model, roof, direction, station)
+    if not bands or foam_plane is None:
+        return
+    for index, polygon in enumerate(_mismatch_polygons(sorted(bands), foam_plane)):
+        points = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in polygon)
         plan.treatments.append(
-            Hatch(boundary=poly, pattern="spray-foam", layer="A-DETL-TRMT",
-                  uid=f"trmt:{wall.uid}:wedge"))
+            Hatch(boundary=points, pattern="spray-foam", layer="A-DETL-TRMT",
+                  uid=f"trmt:{wall.uid}:wedge-{index}"))
         plan.treatments.append(
-            Polyline(points=poly, layer="A-DETL-TRMT", closed=True, lineweight=0.18,
+            Polyline(points=points, layer="A-DETL-TRMT", closed=True, lineweight=0.18,
                      tag="spray-foam-wedge"))
+
+
+def _mismatch_polygons(bands, foam_plane):
+    """The void over each closure band: where the sloping foam plane runs above its flat top.
+
+    Each band was carried up to the plane evaluated at *its own* plan offset, so its square
+    top sits on the plane at its midpoint and the plane runs above it over one half and below
+    it over the other. The half below is where the wall foam is trimmed; the half above is
+    the void, and it is what gets sprayed. A band that already meets the plane along its
+    whole width contributes nothing.
+    """
+    for (u0, u1, z) in bands:
+        z0, z1 = foam_plane(u0), foam_plane(u1)
+        above0, above1 = z0 > z + 1e-9, z1 > z + 1e-9
+        if not above0 and not above1:
+            continue
+        if above0 and above1:
+            yield ((u0, z), (u1, z), (u1, z1), (u0, z0))
+            continue
+        crossing = u0 + (z - z0) / (z1 - z0) * (u1 - u0)
+        yield (((u0, z), (crossing, z), (u0, z0)) if above0
+               else ((crossing, z), (u1, z), (u1, z1)))
+
+
+def _roof_foam_underside(model, roof: ResolvedRoof, direction: str, station: float):
+    """``u -> z`` of the plane the wall's insulation dies into: the roof foam's underside.
+
+    The same ``mating_faces`` offset ``roof_edge`` positioned the closure bands against, so
+    the wedge's top edge and the bands' tops are answers to one question rather than two.
+    """
+    from typehaus.resolve.roof_edge_geometry import mating_faces, roof_slope
+    from typehaus.resolve.roof_layer_setbacks import above_structure_layers
+
+    assembly = model.plan.library.resolve_assembly(roof.assembly) if roof.assembly else None
+    layers = above_structure_layers(assembly)
+    if not layers:
+        return None
+    faces = mating_faces(layers)
+    if faces.foam_under is None:
+        return None
+    perpendicular = faces.foam_under * math.hypot(1.0, roof_slope(roof))
+
+    def at(u: float) -> float:
+        point = (u, station) if direction == "x" else (station, u)
+        return roof_height_at(roof, point) + perpendicular
+
+    return at
+
+
+def _named_layer(wall: ResolvedWall, function: str):
+    """The outermost layer of ``wall`` with this function, or ``None``."""
+    return next((layer for layer in reversed(wall.layers)
+                 if layer.function == function and not layer.is_cavity), None)
+
+
+def _closure_band_tops(model, roof: ResolvedRoof, wall: ResolvedWall, plane: CutPlane,
+                       role: str) -> list[tuple[float, float, float]]:
+    """``(u0, u1, z_top)`` per closure band carrying this wall layer up to its roof face.
+
+    ``roof_edge._closure_members`` emits one per skin layer at that layer's own plan offset,
+    so the band's sliced top *is* the elevation the wall's insulation actually reaches. The
+    bands hang off the **roof** (they are emitted during the roof-edge stage) while naming
+    the wall they continue, which is why the lookup goes through the roof's framing element
+    and matches on the wall's tag.
+    """
+    element = model.geometry.by_uid(f"{roof.uid}::framing")
+    if element is None:
+        return []
+    prefix = f"{wall.tag}-closure-"
+    bands: list[tuple[float, float, float]] = []
+    for part in element.parts:
+        catalog = part.catalog
+        if catalog is None or catalog.role != role:
+            continue
+        if not (catalog.name or "").startswith(prefix):
+            continue
+        for profile in slice_part(part, plane):
+            us = [u for (u, _z) in profile.outline]
+            bands.append((min(us), max(us), max(z for (_u, z) in profile.outline)))
+    return bands
 
 
 def _apply_authored_join(plan: JointPlan, wall: ResolvedWall, join, direction, station) -> None:
@@ -198,7 +213,7 @@ def _apply_authored_join(plan: JointPlan, wall: ResolvedWall, join, direction, s
 
 
 def _layer_u_interval(layer, direction: str, station: float) -> tuple[float, float] | None:
-    from typehaus.emit.draw.section import ring_cut_intervals
-
+    if layer is None:
+        return None
     ivs = ring_cut_intervals(layer.polygon, direction, station)
     return ivs[0] if ivs else None
