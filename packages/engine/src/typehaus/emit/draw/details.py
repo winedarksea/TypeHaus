@@ -210,6 +210,7 @@ def _chrome(model: ResolvedModel, derived: DerivedDetail, scene: Scene) -> list:
     A frameless scene keeps the old model-space placement, because it has no bands to use.
     """
     from typehaus.emit.draw.detail_components import material_legend
+    from typehaus.emit.draw.detail_components.chrome import drawn_materials
 
     frame = scene.frame
     if frame is not None:
@@ -219,7 +220,8 @@ def _chrome(model: ResolvedModel, derived: DerivedDetail, scene: Scene) -> list:
             out.extend(_paper_title_block(model, derived, title_band))
         legend_band = frame.bands.get("legend")
         if legend_band is not None:
-            out.extend(material_legend(model, derived, 0.0, 0.0, band=legend_band))
+            out.extend(material_legend(model, derived, 0.0, 0.0, band=legend_band,
+                                       drawn=drawn_materials(scene)))
         return out
 
     from typehaus.emit.draw.pdf_writer import _scene_bounds

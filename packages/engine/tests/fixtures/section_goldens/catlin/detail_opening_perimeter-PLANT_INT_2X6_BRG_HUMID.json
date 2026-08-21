@@ -1956,12 +1956,12 @@
           1.3199999999999998
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "pvc-panel"
+      "material": "spf"
     },
     {
       "space": "paper",
@@ -1998,7 +1998,7 @@
         0.7,
         1.25
       ],
-      "content": "pvc-panel  0.5\"",
+      "content": "spf  0.75\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2028,12 +2028,12 @@
           1.12
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "metal",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "spf"
+      "material": "humid-room-membrane"
     },
     {
       "space": "paper",
@@ -2070,7 +2070,7 @@
         0.7,
         1.05
       ],
-      "content": "spf  0.75\"",
+      "content": "humid-room-membrane  0.04\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2100,12 +2100,12 @@
           0.9199999999999999
         ]
       ],
-      "pattern": "metal",
+      "pattern": "gypsum",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "humid-room-membrane"
+      "material": "gwb"
     },
     {
       "space": "paper",
@@ -2142,151 +2142,7 @@
         0.7,
         0.8499999999999999
       ],
-      "content": "humid-room-membrane  0.04\"",
-      "height": 3.0,
-      "height_pt": 6.5,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "paper",
-      "node": "hatch",
-      "boundary": [
-        [
-          0.5,
-          0.5800000000000001
-        ],
-        [
-          0.64,
-          0.5800000000000001
-        ],
-        [
-          0.64,
-          0.7200000000000001
-        ],
-        [
-          0.5,
-          0.7200000000000001
-        ]
-      ],
-      "pattern": "gypsum",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "gwb"
-    },
-    {
-      "space": "paper",
-      "node": "polyline",
-      "points": [
-        [
-          0.5,
-          0.5800000000000001
-        ],
-        [
-          0.64,
-          0.5800000000000001
-        ],
-        [
-          0.64,
-          0.7200000000000001
-        ],
-        [
-          0.5,
-          0.7200000000000001
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.2,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": null
-    },
-    {
-      "space": "paper",
-      "node": "text",
-      "anchor": [
-        0.7,
-        0.6500000000000001
-      ],
       "content": "gwb  0.625\"",
-      "height": 3.0,
-      "height_pt": 6.5,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "paper",
-      "node": "hatch",
-      "boundary": [
-        [
-          2.8,
-          1.18
-        ],
-        [
-          2.94,
-          1.18
-        ],
-        [
-          2.94,
-          1.3199999999999998
-        ],
-        [
-          2.8,
-          1.3199999999999998
-        ]
-      ],
-      "pattern": "metal",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "latex-paint"
-    },
-    {
-      "space": "paper",
-      "node": "polyline",
-      "points": [
-        [
-          2.8,
-          1.18
-        ],
-        [
-          2.94,
-          1.18
-        ],
-        [
-          2.94,
-          1.3199999999999998
-        ],
-        [
-          2.8,
-          1.3199999999999998
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.2,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": null
-    },
-    {
-      "space": "paper",
-      "node": "text",
-      "anchor": [
-        3.0,
-        1.25
-      ],
-      "content": "latex-paint  0.01\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

@@ -1730,12 +1730,12 @@
           1.3199999999999998
         ]
       ],
-      "pattern": "metal",
+      "pattern": "gypsum",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "latex-paint"
+      "material": "gwb"
     },
     {
       "space": "paper",
@@ -1771,78 +1771,6 @@
       "anchor": [
         0.7,
         1.25
-      ],
-      "content": "latex-paint  0.01\"",
-      "height": 3.0,
-      "height_pt": 6.5,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "paper",
-      "node": "hatch",
-      "boundary": [
-        [
-          0.5,
-          0.98
-        ],
-        [
-          0.64,
-          0.98
-        ],
-        [
-          0.64,
-          1.12
-        ],
-        [
-          0.5,
-          1.12
-        ]
-      ],
-      "pattern": "gypsum",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "gwb"
-    },
-    {
-      "space": "paper",
-      "node": "polyline",
-      "points": [
-        [
-          0.5,
-          0.98
-        ],
-        [
-          0.64,
-          0.98
-        ],
-        [
-          0.64,
-          1.12
-        ],
-        [
-          0.5,
-          1.12
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.2,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": null
-    },
-    {
-      "space": "paper",
-      "node": "text",
-      "anchor": [
-        0.7,
-        1.05
       ],
       "content": "gwb  0.625\"",
       "height": 3.0,
@@ -1859,6 +1787,78 @@
       "boundary": [
         [
           0.5,
+          0.98
+        ],
+        [
+          0.64,
+          0.98
+        ],
+        [
+          0.64,
+          1.12
+        ],
+        [
+          0.5,
+          1.12
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "paper",
+      "node": "polyline",
+      "points": [
+        [
+          0.5,
+          0.98
+        ],
+        [
+          0.64,
+          0.98
+        ],
+        [
+          0.64,
+          1.12
+        ],
+        [
+          0.5,
+          1.12
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.2,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        0.7,
+        1.05
+      ],
+      "content": "spf  5.5\"",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.5,
           0.7799999999999999
         ],
         [
@@ -1874,12 +1874,12 @@
           0.9199999999999999
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "osb",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "spf"
+      "material": "zip-r"
     },
     {
       "space": "paper",
@@ -1916,7 +1916,7 @@
         0.7,
         0.8499999999999999
       ],
-      "content": "spf  5.5\"",
+      "content": "zip-r  1.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1946,12 +1946,12 @@
           0.7200000000000001
         ]
       ],
-      "pattern": "osb",
+      "pattern": "metal",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "zip-r"
+      "material": "standing-seam-nailstrip-26"
     },
     {
       "space": "paper",
@@ -1988,7 +1988,7 @@
         0.7,
         0.6500000000000001
       ],
-      "content": "zip-r  1.5\"",
+      "content": "standing-seam-nailstrip-26  0.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2018,12 +2018,12 @@
           1.3199999999999998
         ]
       ],
-      "pattern": "metal",
+      "pattern": "osb",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "standing-seam-nailstrip-26"
+      "material": "struct-1-plywood"
     },
     {
       "space": "paper",
@@ -2060,7 +2060,7 @@
         3.0,
         1.25
       ],
-      "content": "standing-seam-nailstrip-26  0.5\"",
+      "content": "struct-1-plywood  0.75\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2090,12 +2090,12 @@
           1.12
         ]
       ],
-      "pattern": "osb",
+      "pattern": "membrane",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "struct-1-plywood"
+      "material": "air-barrier"
     },
     {
       "space": "paper",
@@ -2132,7 +2132,7 @@
         3.0,
         1.05
       ],
-      "content": "struct-1-plywood  0.75\"",
+      "content": "air-barrier  0.02\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2162,12 +2162,12 @@
           0.9199999999999999
         ]
       ],
-      "pattern": "membrane",
+      "pattern": "metal",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "air-barrier"
+      "material": "standing-seam-nailstrip"
     },
     {
       "space": "paper",
@@ -2203,78 +2203,6 @@
       "anchor": [
         3.0,
         0.8499999999999999
-      ],
-      "content": "air-barrier  0.02\"",
-      "height": 3.0,
-      "height_pt": 6.5,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "paper",
-      "node": "hatch",
-      "boundary": [
-        [
-          2.8,
-          0.5800000000000001
-        ],
-        [
-          2.94,
-          0.5800000000000001
-        ],
-        [
-          2.94,
-          0.7200000000000001
-        ],
-        [
-          2.8,
-          0.7200000000000001
-        ]
-      ],
-      "pattern": "metal",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "standing-seam-nailstrip"
-    },
-    {
-      "space": "paper",
-      "node": "polyline",
-      "points": [
-        [
-          2.8,
-          0.5800000000000001
-        ],
-        [
-          2.94,
-          0.5800000000000001
-        ],
-        [
-          2.94,
-          0.7200000000000001
-        ],
-        [
-          2.8,
-          0.7200000000000001
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.2,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": null
-    },
-    {
-      "space": "paper",
-      "node": "text",
-      "anchor": [
-        3.0,
-        0.6500000000000001
       ],
       "content": "standing-seam-nailstrip  0.5\"",
       "height": 3.0,

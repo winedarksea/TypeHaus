@@ -134,7 +134,21 @@ def compose_sheet(scene: Scene, spec: object, model: "ResolvedModel",
 
     scale_in: "float | None" = None
     scale_label = NTS_LABEL
-    bounds = _scene_bounds(scene)
+    frame = getattr(scene, "frame", None)
+    if frame is not None:
+        # The scene has already chosen a scale — honour it rather than choosing a second
+        # one from a bbox. This is what makes "a rendered detail and a sheeted detail agree"
+        # true by construction instead of by coincidence: the same Frame drives both.
+        scale_in, scale_label = frame.scale, frame.scale_label
+        per_paper_in = 12.0 / scale_in
+        cu, cz = frame.center
+        ax.set_xlim(cu - view[2] * per_paper_in / 2.0, cu + view[2] * per_paper_in / 2.0)
+        ax.set_ylim(cz - view[3] * per_paper_in / 2.0, cz + view[3] * per_paper_in / 2.0)
+        ax.set_aspect("equal", adjustable="box")
+        _draw_scale_bar(fig, scale_in, scale_label, view, size)
+        bounds = None
+    else:
+        bounds = _scene_bounds(scene)
     if bounds is not None:
         u0, z0, u1, z1 = bounds
         span_u, span_z = max(u1 - u0, 1e-6), max(z1 - z0, 1e-6)

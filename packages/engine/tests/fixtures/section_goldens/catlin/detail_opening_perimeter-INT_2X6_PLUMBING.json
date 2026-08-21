@@ -1204,12 +1204,12 @@
           1.3199999999999998
         ]
       ],
-      "pattern": "metal",
+      "pattern": "gypsum",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "latex-paint"
+      "material": "gwb"
     },
     {
       "space": "paper",
@@ -1246,7 +1246,7 @@
         0.7,
         1.25
       ],
-      "content": "latex-paint  0.01\"",
+      "content": "gwb  0.625\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1276,12 +1276,12 @@
           1.12
         ]
       ],
-      "pattern": "gypsum",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "gwb"
+      "material": "spf"
     },
     {
       "space": "paper",
@@ -1317,78 +1317,6 @@
       "anchor": [
         0.7,
         1.05
-      ],
-      "content": "gwb  0.625\"",
-      "height": 3.0,
-      "height_pt": 6.5,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "paper",
-      "node": "hatch",
-      "boundary": [
-        [
-          0.5,
-          0.7799999999999999
-        ],
-        [
-          0.64,
-          0.7799999999999999
-        ],
-        [
-          0.64,
-          0.9199999999999999
-        ],
-        [
-          0.5,
-          0.9199999999999999
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "spf"
-    },
-    {
-      "space": "paper",
-      "node": "polyline",
-      "points": [
-        [
-          0.5,
-          0.7799999999999999
-        ],
-        [
-          0.64,
-          0.7799999999999999
-        ],
-        [
-          0.64,
-          0.9199999999999999
-        ],
-        [
-          0.5,
-          0.9199999999999999
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.2,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": null
-    },
-    {
-      "space": "paper",
-      "node": "text",
-      "anchor": [
-        0.7,
-        0.8499999999999999
       ],
       "content": "spf  5.5\"",
       "height": 3.0,

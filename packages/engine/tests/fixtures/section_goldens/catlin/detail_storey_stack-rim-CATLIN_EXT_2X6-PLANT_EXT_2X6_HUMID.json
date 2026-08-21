@@ -3045,12 +3045,12 @@
           1.3199999999999998
         ]
       ],
-      "pattern": "metal",
+      "pattern": "gypsum",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "latex-paint"
+      "material": "gwb"
     },
     {
       "space": "paper",
@@ -3086,78 +3086,6 @@
       "anchor": [
         0.7,
         1.25
-      ],
-      "content": "latex-paint  0.01\"",
-      "height": 3.0,
-      "height_pt": 6.5,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "paper",
-      "node": "hatch",
-      "boundary": [
-        [
-          0.5,
-          0.98
-        ],
-        [
-          0.64,
-          0.98
-        ],
-        [
-          0.64,
-          1.12
-        ],
-        [
-          0.5,
-          1.12
-        ]
-      ],
-      "pattern": "gypsum",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "gwb"
-    },
-    {
-      "space": "paper",
-      "node": "polyline",
-      "points": [
-        [
-          0.5,
-          0.98
-        ],
-        [
-          0.64,
-          0.98
-        ],
-        [
-          0.64,
-          1.12
-        ],
-        [
-          0.5,
-          1.12
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.2,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": null
-    },
-    {
-      "space": "paper",
-      "node": "text",
-      "anchor": [
-        0.7,
-        1.05
       ],
       "content": "gwb  0.625\"",
       "height": 3.0,
@@ -3174,6 +3102,78 @@
       "boundary": [
         [
           0.5,
+          0.98
+        ],
+        [
+          0.64,
+          0.98
+        ],
+        [
+          0.64,
+          1.12
+        ],
+        [
+          0.5,
+          1.12
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "paper",
+      "node": "polyline",
+      "points": [
+        [
+          0.5,
+          0.98
+        ],
+        [
+          0.64,
+          0.98
+        ],
+        [
+          0.64,
+          1.12
+        ],
+        [
+          0.5,
+          1.12
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.2,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        0.7,
+        1.05
+      ],
+      "content": "spf  5.5\"",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.5,
           0.7799999999999999
         ],
         [
@@ -3189,12 +3189,12 @@
           0.9199999999999999
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "osb",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "spf"
+      "material": "struct-1-plywood"
     },
     {
       "space": "paper",
@@ -3231,7 +3231,7 @@
         0.7,
         0.8499999999999999
       ],
-      "content": "spf  5.5\"",
+      "content": "struct-1-plywood  0.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3261,12 +3261,12 @@
           0.7200000000000001
         ]
       ],
-      "pattern": "osb",
+      "pattern": "membrane",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "struct-1-plywood"
+      "material": "air-barrier"
     },
     {
       "space": "paper",
@@ -3303,7 +3303,7 @@
         0.7,
         0.6500000000000001
       ],
-      "content": "struct-1-plywood  0.5\"",
+      "content": "air-barrier  0.02\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3333,12 +3333,12 @@
           1.3199999999999998
         ]
       ],
-      "pattern": "membrane",
+      "pattern": "rigid",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "air-barrier"
+      "material": "polyiso"
     },
     {
       "space": "paper",
@@ -3375,7 +3375,7 @@
         3.0,
         1.25
       ],
-      "content": "air-barrier  0.02\"",
+      "content": "polyiso  2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3410,7 +3410,7 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "polyiso"
+      "material": "eps"
     },
     {
       "space": "paper",
@@ -3447,7 +3447,7 @@
         3.0,
         1.05
       ],
-      "content": "polyiso  2\"",
+      "content": "eps  2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3477,12 +3477,12 @@
           0.9199999999999999
         ]
       ],
-      "pattern": "rigid",
+      "pattern": "metal",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "eps"
+      "material": "standing-seam-snaplock"
     },
     {
       "space": "paper",
@@ -3519,7 +3519,7 @@
         3.0,
         0.8499999999999999
       ],
-      "content": "eps  2\"",
+      "content": "standing-seam-snaplock  0.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3554,7 +3554,7 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "standing-seam-snaplock"
+      "material": "humid-room-membrane"
     },
     {
       "space": "paper",
@@ -3591,7 +3591,7 @@
         3.0,
         0.6500000000000001
       ],
-      "content": "standing-seam-snaplock  0.5\"",
+      "content": "humid-room-membrane  0.04\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

@@ -47,8 +47,22 @@ def _participating_layers(model, derived):
     return out
 
 
+def drawn_materials(scene) -> set[str]:
+    """Every material that actually reaches the page, off the ``Hatch`` nodes themselves.
+
+    ``_participating_layers`` reads the *assemblies* in the condition, which is not the same
+    question: a layer whose band falls outside the crop, or which the cut misses entirely,
+    is in the assembly and not in the drawing. Legending it invites a reader to look for
+    something that is not there, and it is why the band ran a third longer than it needed to.
+    """
+    from typehaus.emit.draw.scene import Hatch
+
+    return {node.material for node in getattr(scene, "nodes", ())
+            if isinstance(node, Hatch) and node.material}
+
+
 def material_legend(model, derived, u_left: float, z_top: float,
-                    band=None) -> list[IRNode]:
+                    band=None, drawn: "set[str] | None" = None) -> list[IRNode]:
     """One swatch + label per distinct material in the cut, with its resolved thickness.
 
     With a ``band`` — ``(x, y, w, h)`` paper inches out of ``Frame.bands`` — the legend is
@@ -57,7 +71,7 @@ def material_legend(model, derived, u_left: float, z_top: float,
     downward was the thing measuring itself against the drawing.
     """
     if band is not None:
-        return _paper_legend(model, derived, band)
+        return _paper_legend(model, derived, band, drawn)
     seen: dict[str, float] = {}
     order: list[str] = []
     for material, thickness, _function in _participating_layers(model, derived):
@@ -95,12 +109,12 @@ _COL_W_IN = 2.3
 _LEGEND_PT = 6.5
 
 
-def _paper_legend(model, derived, band) -> list[IRNode]:
+def _paper_legend(model, derived, band, drawn=None) -> list[IRNode]:
     from typehaus.emit.draw.palette import detail_hatch
 
     seen: dict[str, float] = {}
     for material, thickness, _function in _participating_layers(model, derived):
-        if material and material not in seen:
+        if material and material not in seen and (drawn is None or material in drawn):
             seen[material] = thickness
     if not seen:
         return []

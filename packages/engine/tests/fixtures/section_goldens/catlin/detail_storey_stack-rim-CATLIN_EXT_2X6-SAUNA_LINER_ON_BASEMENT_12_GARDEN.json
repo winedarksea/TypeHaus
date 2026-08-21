@@ -3143,12 +3143,12 @@
           0.9199999999999999
         ]
       ],
-      "pattern": "metal",
+      "pattern": "gypsum",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "stucco"
+      "material": "gwb"
     },
     {
       "space": "paper",
@@ -3185,7 +3185,7 @@
         3.0,
         0.8499999999999999
       ],
-      "content": "stucco  0.5\"",
+      "content": "gwb  0.625\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3215,12 +3215,12 @@
           0.7200000000000001
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "latex-paint"
+      "material": "spf"
     },
     {
       "space": "paper",
@@ -3257,7 +3257,7 @@
         3.0,
         0.6500000000000001
       ],
-      "content": "latex-paint  0.01\"",
+      "content": "spf  5.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

@@ -1776,12 +1776,12 @@
           0.7200000000000001
         ]
       ],
-      "pattern": "metal",
+      "pattern": "gypsum",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "foundation-protection-panel"
+      "material": "gwb"
     },
     {
       "space": "paper",
@@ -1818,7 +1818,7 @@
         0.7,
         0.6500000000000001
       ],
-      "content": "foundation-protection-panel  0.5\"",
+      "content": "gwb  0.625\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1848,12 +1848,12 @@
           1.3199999999999998
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "latex-paint"
+      "material": "spf"
     },
     {
       "space": "paper",
@@ -1890,7 +1890,7 @@
         3.0,
         1.25
       ],
-      "content": "latex-paint  0.01\"",
+      "content": "spf  5.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1920,12 +1920,12 @@
           1.12
         ]
       ],
-      "pattern": "gypsum",
+      "pattern": "osb",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "gwb"
+      "material": "struct-1-plywood"
     },
     {
       "space": "paper",
@@ -1962,7 +1962,7 @@
         3.0,
         1.05
       ],
-      "content": "gwb  0.625\"",
+      "content": "struct-1-plywood  0.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1992,12 +1992,12 @@
           0.9199999999999999
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "rigid",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "spf"
+      "material": "polyiso"
     },
     {
       "space": "paper",
@@ -2034,7 +2034,7 @@
         3.0,
         0.8499999999999999
       ],
-      "content": "spf  5.5\"",
+      "content": "polyiso  2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2064,12 +2064,12 @@
           0.7200000000000001
         ]
       ],
-      "pattern": "osb",
+      "pattern": "rigid",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "struct-1-plywood"
+      "material": "eps"
     },
     {
       "space": "paper",
@@ -2106,7 +2106,7 @@
         3.0,
         0.6500000000000001
       ],
-      "content": "struct-1-plywood  0.5\"",
+      "content": "eps  2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
