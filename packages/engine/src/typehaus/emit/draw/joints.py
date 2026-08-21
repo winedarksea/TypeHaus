@@ -26,7 +26,7 @@ from dataclasses import dataclass, field
 from typehaus.emit.draw.scene import Hatch, IRNode, Polyline
 from typehaus.model.patterns import matches
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.geometry_slice import CutPlane, ring_cut_intervals, slice_part
+from typehaus.resolve.geometry_slice import CutPlane, ring_intervals, slice_part
 from typehaus.resolve.model import ResolvedModel, ResolvedRoof, ResolvedWall
 from typehaus.resolve.roof_geometry import roof_height_at
 
@@ -215,5 +215,5 @@ def _apply_authored_join(plan: JointPlan, wall: ResolvedWall, join, direction, s
 def _layer_u_interval(layer, direction: str, station: float) -> tuple[float, float] | None:
     if layer is None:
         return None
-    ivs = ring_cut_intervals(layer.polygon, direction, station)
+    ivs = ring_intervals(layer.polygon, CutPlane(axis=direction, station_m=station))
     return ivs[0] if ivs else None

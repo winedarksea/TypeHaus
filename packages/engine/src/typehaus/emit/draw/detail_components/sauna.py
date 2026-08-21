@@ -35,6 +35,7 @@ from typehaus.emit.draw.detail_components.geometry import (
 )
 from typehaus.emit.draw.scene import IRNode, Polyline
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.geometry_slice import CutPlane, ring_intervals
 
 
 def sauna_liner_base(model, wall, crop, direction, station) -> list[IRNode]:
@@ -113,8 +114,7 @@ def ceiling_underside_over(model, crop, direction, station, u_lo_in, u_hi_in):
     ``None`` only when nothing at all is over the room, and then the drop ceiling draws
     nothing rather than guessing an elevation.
     """
-    from typehaus.emit.draw.section import ring_cut_intervals
-
+    plane = CutPlane(axis=direction, station_m=station)
     (_cu0, cz0), (_cu1, cz1) = crop
     lo_z, hi_z = min(cz0, cz1), max(cz0, cz1)
     mid_z = (lo_z + hi_z) / 2.0
@@ -124,7 +124,7 @@ def ceiling_underside_over(model, crop, direction, station, u_lo_in, u_hi_in):
         nonlocal best
         if not (mid_z < z0_m <= hi_z + 0.05):
             return
-        for (a, b) in ring_cut_intervals(ring, direction, station):
+        for (a, b) in ring_intervals(ring, plane):
             lo, hi = min(a, b) / M_PER_IN, max(a, b) / M_PER_IN
             if lo <= u_hi_in and hi >= u_lo_in:
                 if best is None or z0_m < best:

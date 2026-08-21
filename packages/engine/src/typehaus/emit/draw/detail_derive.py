@@ -16,6 +16,7 @@ from typehaus.model.enums import SliceKind
 from typehaus.model.patterns import matches
 from typehaus.model.views import Slice
 from typehaus.quantities import m, pt
+from typehaus.resolve.geometry_slice import CutPlane, ring_intervals
 from typehaus.resolve.model import BoundaryCondition, ResolvedModel
 
 
@@ -124,11 +125,10 @@ _DEFAULT_WINDOW = (0.50, 0.50, 0.25, 0.25)
 def _wall_u_extent(wall, direction: str, station: float,
                    fallback_center: float) -> tuple[float, float]:
     """The wall's inboard/outboard face positions in section coordinates."""
-    from typehaus.emit.draw.section import ring_cut_intervals
-
+    plane = CutPlane(axis=direction, station_m=station)
     bounds: list[float] = []
     for layer in wall.layers:
-        for (u0, u1) in ring_cut_intervals(layer.polygon, direction, station):
+        for (u0, u1) in ring_intervals(layer.polygon, plane):
             bounds.extend((u0, u1))
     if not bounds:
         half = wall.thickness_m / 2.0

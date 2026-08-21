@@ -31,12 +31,7 @@ from typehaus.emit.draw.section_members import _emit_member_cuts, emit_framing_c
 from typehaus.model.enums import SliceKind
 from typehaus.model.views import Slice
 from typehaus.quantities import M_PER_IN, m, pt
-from typehaus.resolve.geometry_slice import (
-    CutPlane,
-    ring_cut_intervals,
-    ring_intervals,
-    slice_part,
-)
+from typehaus.resolve.geometry_slice import CutPlane, ring_intervals, slice_part
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 from typehaus.resolve.roof_geometry import roof_plane_z, roof_ridge_coordinate
 from typehaus.resolve.roof_layer_setbacks import (
@@ -49,7 +44,6 @@ from typehaus.resolve.roof_layer_setbacks import (
 __all__ = [
     "build_center_section",
     "build_section",
-    "ring_cut_intervals",
 ]
 
 _FUNCTION_LAYER = {
@@ -62,10 +56,6 @@ _FUNCTION_LAYER = {
     "airgap": "A-WALL-PATT",
     "furring": "A-WALL",
 }
-
-# ``ring_cut_intervals`` is the pre-IR cut: a plan ring intersected with the cut line, even-odd
-# paired. It now lives in the slice kernel (bug-for-bug, old crossing rule and all) and is
-# re-exported here for the seven detail modules that import it from this name.
 
 
 def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
@@ -275,7 +265,7 @@ def _emit_cavity_cut(b, model, wall, plane: CutPlane, crop, is_detail, min_draw,
         pattern = detail_hatch(layer.material_ref, layer.function)
         aia = _FUNCTION_LAYER.get(layer.function, "A-WALL")
         tag = f"{wall.tag}/{layer.name}"
-        for (u0, u1) in ring_cut_intervals(layer.polygon, plane.axis, plane.station_m):
+        for (u0, u1) in ring_intervals(layer.polygon, plane):
             top_left = term.z(u0) if term is not None else min(wall_top, band_z1)
             top_right = term.z(u1) if term is not None else min(wall_top, band_z1)
             rect = clip_rect(u0, u1, band_z0, max(top_left, top_right), crop)
@@ -313,7 +303,7 @@ def _emit_glazing_lines(b, model, wall, plane: CutPlane, crop, is_detail) -> Non
         if layer.is_cavity or not layer.polygon:
             continue
         band_z0, band_z1 = layer.band(wall)
-        for (u0, u1) in ring_cut_intervals(layer.polygon, plane.axis, plane.station_m):
+        for (u0, u1) in ring_intervals(layer.polygon, plane):
             rect = clip_rect(u0, u1, band_z0, band_z1, crop)
             if rect is None:
                 continue

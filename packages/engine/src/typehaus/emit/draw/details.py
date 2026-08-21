@@ -275,7 +275,7 @@ def _load_markdown_notes(path) -> list[str]:
 def _frame(derived: DerivedDetail):
     """Return a (world_xy) -> (u_in, z_in) mapper for the detail's cut frame.
 
-    Must match the cutter's convention (``section.ring_cut_intervals``): for a cut plane at
+    Must match the cutter's convention (``geometry_slice.CutPlane``): for a cut plane at
     x = const (``direction == "y"``) the in-section coordinate is world **y**, and vice
     versa. Getting this backwards puts every annotation anchor on the wrong axis.
     """

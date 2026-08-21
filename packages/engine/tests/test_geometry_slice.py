@@ -10,7 +10,6 @@ from typehaus.resolve.geometry_slice import (
     CutPlane,
     nearest_station,
     open_chain_count,
-    ring_cut_intervals,
     ring_intervals,
     slice_part,
     slice_solid,
@@ -192,44 +191,46 @@ def test_nearest_station_is_none_when_something_already_crosses():
     assert nearest_station(solids, plane) is None
 
 
-# --- the shim -------------------------------------------------------------------------
+# --- the half-open crossing rule ------------------------------------------------------
 
-def test_shim_matches_the_kernel_on_every_catlin_wall_layer(catlin_model):
-    """The seven detail callers must not move underneath the migration.
+def test_a_vertex_on_the_plane_is_given_to_exactly_one_of_its_edges(catlin_model):
+    """Every ring the detail callers cut yields an *even* number of crossings.
 
-    Equivalence holds everywhere *except* a ring with a vertex exactly on the plane, which
-    is the one case the half-open rule deliberately changes (see ``_crosses_edge``) — those
-    are asserted separately below rather than swept under a tolerance.
+    That is the whole content of the half-open rule (``_crosses_edge``), and it is what the
+    strict-sign rule this kernel replaced could not promise: a vertex sitting exactly on the
+    plane whose neighbours straddle it counted twice, the total went odd, and even-odd
+    pairing then paired the doubled vertex with itself and silently dropped the rest of the
+    span. An authored cut lands on a wall corner often enough that this was not theoretical.
     """
-    checked = 0
+    from typehaus.resolve.geometry_slice import ring_crossings
+
+    on_plane = checked = 0
     for wall in catlin_model.walls:
         (x0, y0), (x1, y1) = wall.axis
         for direction in ("x", "y"):
             station = ((y0 + y1) / 2.0) if direction == "x" else ((x0 + x1) / 2.0)
             plane = CutPlane(axis=direction, station_m=station)
             for layer in wall.layers:
+                if not layer.polygon:
+                    continue
                 if any(abs(plane.perp_of(p) - station) < 1e-12 for p in layer.polygon):
-                    continue  # on-plane vertex: the documented divergence
-                old = ring_cut_intervals(layer.polygon, direction, station)
-                new = ring_intervals(layer.polygon, plane)
-                assert [(round(a, 9), round(b, 9)) for a, b in old] == \
-                       [(round(a, 9), round(b, 9)) for a, b in new], \
-                    f"{wall.tag}/{layer.name} at {direction}={station}"
+                    on_plane += 1
+                count = len(ring_crossings(layer.polygon, plane))
+                assert count % 2 == 0, f"{wall.tag}/{layer.name} at {direction}={station}"
                 checked += 1
     assert checked > 100
+    assert on_plane, "no ring in this house has a vertex on its own cut — widen the sweep"
 
 
-def test_the_half_open_rule_is_where_the_two_disagree():
-    """A vertex on the plane whose neighbours straddle it: the old rule counts it twice.
+def test_the_dropped_span_the_old_rule_lost():
+    """The exact shape the retired ``ring_cut_intervals`` shim got wrong.
 
-    Two crossings at the same u make the total odd, and even-odd pairing then pairs the
-    doubled vertex with itself and **silently drops the rest of the span**. The half-open
-    rule gives the vertex to exactly one of its edges, so the count is provably even.
-    Nudging keeps IR callers away from the case entirely; the shim keeps the old answer for
-    the seven detail callers until they move.
+    Its strict-sign test (``(a0 - station) * (a1 - station) > 0``) admitted both edges at the
+    apex, returned ``[(2.0, 2.0)]`` — a zero-width span where a 2 m one belongs — and the
+    drawing showed nothing at all. Kept as a test rather than a comment because it is the one
+    behaviour change the seven detail callers took when they moved.
     """
     ring = ((0.0, -1.0), (2.0, 0.0), (4.0, 1.0), (4.0, -1.0))
-    assert ring_cut_intervals(ring, "x", 0.0) == [(2.0, 2.0)]           # a span lost
     assert ring_intervals(ring, CutPlane(axis="x", station_m=0.0)) == [(2.0, 4.0)]
 
 

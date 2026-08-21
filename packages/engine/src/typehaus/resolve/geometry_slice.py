@@ -13,9 +13,10 @@ Why it lives in ``resolve/`` rather than ``emit/draw/``
 * ``emit/draw/`` already imports shapely (``siteplan``, ``detail_components/wall_base``), so
   a kernel there would be one careless import from breaking Pyodide with no test to catch it.
   **This module imports ``math``, ``dataclasses`` and ``resolve.*`` — nothing else.**
-* It breaks the ``detail_components/* → section.py`` import cycle: seven modules import
-  ``ring_cut_intervals`` from ``section``, which made the biggest file in the engine an
-  import hub for the whole detail package.
+* It breaks the ``detail_components/* → section.py`` import cycle: seven modules used to
+  import ``ring_cut_intervals`` from ``section``, which made the biggest file in the engine
+  an import hub for the whole detail package. They import :func:`ring_intervals` from here
+  now, and ``section`` is a consumer like any other.
 
 Section coordinates
 -------------------
@@ -462,31 +463,6 @@ def nearest_station(solids, plane: CutPlane) -> float | None:
     return best
 
 
-def ring_cut_intervals(ring, direction: str, station: float) -> list[tuple[float, float]]:
-    """Legacy shim for the seven detail callers — the *old* strict-sign crossing rule.
-
-    Kept bug-for-bug on purpose while the section migrates: the half-open rule above
-    changes behaviour for rings with a vertex exactly on the plane, and moving seven
-    callers underneath a migration is how a migration stops being reviewable. Retired in
-    one commit once ``section.py`` reads the IR.
-    """
-    if len(ring) < 3:
-        return []
-    crossings: list[float] = []
-    count = len(ring)
-    for index in range(count):
-        x0, y0 = ring[index]
-        x1, y1 = ring[(index + 1) % count]
-        a0, a1 = (y0, y1) if direction == "x" else (x0, x1)
-        u0, u1 = (x0, x1) if direction == "x" else (y0, y1)
-        if (a0 - station) * (a1 - station) > 0 or a0 == a1:
-            continue
-        t = (station - a0) / (a1 - a0)
-        crossings.append(u0 + t * (u1 - u0))
-    crossings.sort()
-    return [(crossings[i], crossings[i + 1]) for i in range(0, len(crossings) - 1, 2)]
-
-
 __all__ = [
     "CutPlane",
     "SectionProfile",
@@ -494,7 +470,6 @@ __all__ = [
     "nearest_station",
     "open_chain_count",
     "perp_values",
-    "ring_cut_intervals",
     "ring_intervals",
     "slice_part",
     "slice_solid",
