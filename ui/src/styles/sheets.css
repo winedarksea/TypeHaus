@@ -113,14 +113,35 @@
 /* A grid's `auto` track sizes to its content's max-content width, so max-width:100% on
    the <select> inside it changes nothing — the track itself has to be allowed to shrink.
    This is what let the assembly picker push the inspector's content past the panel edge
-   and off the viewport entirely. */
+   and off the viewport entirely.
+
+   The key track keeps a min-content floor. Letting it flex all the way to zero traded the
+   overflow for a worse bug: a value wide enough to claim the row (a control, a long tag)
+   collapsed the label column to 0px, and every key then painted on top of its own value. */
 .inspector .kv,
 .project-drawer .kv {
-  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+  grid-template-columns: minmax(min-content, 1fr) minmax(0, auto);
+  align-items: baseline;
 }
 .inspector .kv > *,
 .inspector .field-label {
   min-width: 0;
+}
+/* A fact list that follows a field keeps the field's rhythm rather than butting up
+   against the control above it. */
+.field-label + .kv {
+  margin-top: 10px;
+}
+/* Long tags wrap inside their cell instead of running under the neighbouring column. */
+.inspector .kv > *:not(.k) {
+  overflow-wrap: anywhere;
+}
+
+/* Field header: the label, plus any status chip that belongs to that field, on one
+   baseline with the chip trailing at the field's right edge. */
+.field-label-head {
+  align-items: center;
+  justify-content: space-between;
 }
 
 

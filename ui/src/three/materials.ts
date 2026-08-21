@@ -232,14 +232,17 @@ const GLAZED_GOLD_BRICK_STYLE: MasonryStyle = {
   jointFraction: 0.06, halfLap: 0.5, mortar: "#3c4756", base: "#c08a12",
   jitterHSL: [0.004, 0.015, 0.04],
 };
-// The plinth under them: unglazed brown clay over tan mortar, at the red brick's FULL
-// jitter. The variegation is the point — an unglazed body next to a fired glaze is what
-// makes the glaze above it read as a glaze instead of as paint. Mortar is the plain brick
-// tan, the same joint the red brick takes — it is ordinary brick and should be laid like it.
+// The plinth under them: a light, uniform brown over tan mortar. It was authored at the red
+// brick's FULL jitter on 2026-08-20, on the argument that an unglazed body next to a fired
+// glaze is what makes the glaze read as a glaze — but at this wall's scale that jitter did not
+// read as clay variegation, it read as a plinth laid from mixed pallets, with near-black units
+// scattered through it. A single light body is the specification (2026-08-21), so the jitter
+// drops to the glazes' near-zero and the base lightens: the plinth now reads as one brick,
+// and the glaze/no-glaze contrast is carried by the sheen and the tan mortar joint instead.
 const BROWN_BRICK_STYLE: MasonryStyle = {
   key: "brown-brick", unitM: BRICK_UNIT_M, unitsPerTile: 3, coursesPerTile: 6,
-  jointFraction: 0.05, halfLap: 0.5, mortar: "#cfc8ba", base: "#654c3a",
-  jitterHSL: [0.02, 0.08, 0.16],
+  jointFraction: 0.05, halfLap: 0.5, mortar: "#cfc8ba", base: "#a07c5c",
+  jitterHSL: [0.004, 0.015, 0.04],
 };
 // Concrete block: the large face module, a fixed neutral grey, tighter joints and very low
 // jitter so it reads as cast block rather than laid brick.

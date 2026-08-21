@@ -100,8 +100,15 @@ export function runMaterialGeometryTests() {
     "The gold registers sit inside the lapis field, so they share its joint colour");
   assert(brown.mortar === defaultBrick.mortar,
     "The unglazed plinth keeps the tan mortar of ordinary brick");
-  assert(brown.jitterHSL[2] > lapis.jitterHSL[2] * 3,
-    "Unglazed clay is variegated where a fired glaze is uniform — that contrast is the plinth's job");
+  // The plinth is specified as ONE light brick, not a blend (2026-08-21). It was authored the
+  // other way — full red-brick jitter, on the argument that variegation is what makes the
+  // glaze above it read as a glaze — and on the wall that came out as mixed pallets with
+  // near-black units through it. This pins the correction, since the jitter is invisible in
+  // any test that only checks the base colour.
+  assert(brown.jitterHSL.every((amount, index) => amount <= defaultBrick.jitterHSL[index] / 3),
+    "The plinth is one light brick: nowhere near the red brick's blend");
+  assert(brown.jitterHSL[2] <= 0.05,
+    "Lightness jitter is what showed as mixed pallets, so it stays at the glazes' near-zero");
   assert(masonryStyleFor("glazed-lapis-brick").key === "brick",
     "Without the authored finish the ref alone still cannot tell lapis from red — hence Material.finish");
 }

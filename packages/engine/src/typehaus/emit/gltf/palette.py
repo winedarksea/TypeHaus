@@ -218,7 +218,7 @@ _GLAZED_GREEN_BRICK_BASE = "#1b4332"  # materials.ts GLAZED_GREEN_BRICK_STYLE.ba
 # GLAZED_LAPIS_BRICK_STYLE / GLAZED_GOLD_BRICK_STYLE / BROWN_BRICK_STYLE .base.
 _GLAZED_LAPIS_BRICK_BASE = "#10386a"
 _GLAZED_GOLD_BRICK_BASE = "#c08a12"
-_BROWN_BRICK_BASE = "#654c3a"
+_BROWN_BRICK_BASE = "#a07c5c"  # lightened + de-jittered 2026-08-21; see materials.ts
 _DECK_BOARD_BASE = "#b9bcc0"    # materials.ts ALUMINUM_DECK_BASE_COLOR (0xb9bcc0)
 
 _EXTERIOR_DARK = "#1c1f24"      # the house's one exterior dark; see window_trim above

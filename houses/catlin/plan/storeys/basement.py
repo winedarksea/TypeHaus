@@ -366,9 +366,16 @@ OPENINGS = [
                  position=from_node("N-B-BRICK-W", ft(2, 6)),
                  width=inch(14), height=inch(26), sill_height=inch(29),
                  arch=Arch(rise=inch(2))),
+    # 84", not the 88" this was authored at (2026-08-21). At 88" the crown landed exactly on
+    # the gold register at 88" and the springline exactly on D-B-PATIO's 80 1/4" head, so the
+    # arch had no brick above it and no haunch below it and read as an arch someone had sawn
+    # off. Dropping 4" puts the crown 4" (1 1/2 courses) clear under the register and springs
+    # the arch at 76", which does cross D-B-PATIO's top corners — accepted: a masonry reveal
+    # in front of a rectangular door is meant to overlap it, and the alternative is either a
+    # flattened arch or a register band that no longer sits on the door head line.
     RoughOpening(uid="CBO602AAAA", tag="AO-B-BRICK-DOOR", host="W-B-BRICK",
                  position=from_node("N-B-BRICK-W", ft(10, 6)),
-                 width=ft(5), height=inch(88), sill_height=ft(0),
+                 width=ft(5), height=inch(84), sill_height=ft(0),
                  arch=Arch(rise=inch(8))),
 ]
 

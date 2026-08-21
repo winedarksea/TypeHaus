@@ -102,6 +102,10 @@
 
 .field-label {
   display: grid;
+  /* An implicit `auto` column sizes to its widest content, so a <select> holding a long
+     assembly tag made the field wider than the panel and hung its control (and any
+     trailing chip) over the panel edge. One track that is allowed to shrink instead. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 4px;
   margin-top: 10px;
   color: var(--muted);

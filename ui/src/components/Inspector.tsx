@@ -467,9 +467,13 @@ function OpeningInspector({ model, opening }: { model: Model; opening: Opening }
         Flip swing
       </button>
     </div>}
-    <button className="btn" style={{ marginTop: 8, color: "var(--error)" }} onClick={() => void remove()}>
-      Delete {rough ? "rough opening" : opening.is_door ? "door" : "window"}
-    </button>
+    {/* The delete action owns its row: <Provenance> is an inline span, so a bare button
+        before it left the source path sitting alongside "Delete door". */}
+    <div style={{ marginTop: 8 }}>
+      <button className="btn" style={{ color: "var(--error)" }} onClick={() => void remove()}>
+        Delete {rough ? "rough opening" : opening.is_door ? "door" : "window"}
+      </button>
+    </div>
     <Provenance p={opening.provenance} />
   </div>;
 }
@@ -504,17 +508,31 @@ function WallInspector({ model, w, onShowDetails }: { model: Model; w: Wall; onS
   return (
     <div>
       <h3>Wall · {w.tag}</h3>
-      <div className="kv">
-        <span className="k">Assembly</span>
-        <span>
-          {assemblies.length > 0 ? (
+      {/* The assembly picker is a control, not a fact, so it gets a labelled field of its
+          own rather than a cell in the kv grid: a <select> cannot shrink below its widest
+          option, and inside a grid cell that starved the key column to 0px and painted
+          every label underneath its own value. */}
+      {assemblies.length > 0 ? (
+        <label className="field-label">
+          <span className="field-label-head">
+            Assembly
+            {!confirmed && <span className="badge confirm">confirm</span>}
+          </span>
+          <span>
             <select value={w.assembly || ""} onChange={(e) => void assignAssembly(e.target.value)}>
               {!w.assembly && <option value="">—</option>}
               {assemblies.map((a) => <option key={a.tag} value={a.tag}>{a.tag}</option>)}
             </select>
-          ) : (w.assembly || "—")}{" "}
-          {!confirmed && <span className="badge confirm">confirm</span>}
-        </span>
+          </span>
+        </label>
+      ) : (
+        <div className="kv">
+          <span className="k">Assembly</span>
+          <span>{w.assembly || "—"}{" "}
+            {!confirmed && <span className="badge confirm">confirm</span>}</span>
+        </div>
+      )}
+      <div className="kv">
         <span className="k">Length</span>
         <span>{formatFtIn(wallLength(w))}</span>
         <span className="k">Height</span>

@@ -395,8 +395,10 @@ SUNKEN_GARDEN_COLUMN_16 = Assembly(
 # Band heights are on the 2 2/3" modular course, measured off the wall's own base
 # (-8'-5", not -9'-0" — see the note on W-B-BRICK in plan/storeys/basement.py). The wall is
 # 8'-5" tall, so `brick-field-hi` takes the partial top course. The upper register sits ON
-# the door head line: AO-B-BRICK-DOOR is 88" tall including its 8" arch rise, so the band
-# springs off the arch crown, which is the whole Ishtar reading. The lower register caps the
+# D-B-PATIO's head line at 88", which is the Ishtar reading — the band runs across the top of
+# the opening rather than floating above it. The brick reveal AO-B-BRICK-DOOR crowns 4" under
+# that band (2026-08-21): it was first cut to 88" so the band sprang straight off the crown,
+# and with no course between them the arch read as sawn off. The lower register caps the
 # plinth and crosses the door's foot. AO-B-BRICK-WIN (sill 29", head 55") sits wholly inside
 # `brick-field-lo` and is untouched by any band edge.
 #
@@ -1107,12 +1109,16 @@ MATERIALS = [
              color="#c08a12", finish="glazed-gold-brick",
              source="basement south veneer, the Ishtar register bands (2026-08-20) — glazed brick, 1\" airgap off the existing concrete wall"),
     # The plinth: ordinary unglazed brown face brick, the cheapest brick on the wall and the
-    # only one a Twin Cities yard carries off the shelf. Its variegation is the point — an
-    # unglazed clay body next to a fired glaze is what makes the glaze read as a glaze rather
-    # than as paint, so its MasonryStyle keeps the red brick's full jitter and tan mortar.
+    # only one a Twin Cities yard carries off the shelf. Specify it as a SINGLE light body,
+    # not a blend (2026-08-21). It was first authored dark and at the red brick's full
+    # variegation, on the argument that an unglazed body beside a fired glaze is what makes
+    # the glaze read as a glaze; on the wall that came out as a plinth laid from mixed
+    # pallets with near-black units through it, which is a different building. One light
+    # brown reads as one brick, and the glaze contrast is carried by sheen and joint colour
+    # instead — see BROWN_BRICK_STYLE in ui/src/three/materials.ts, kept in step by hand.
     Material(tag="brown-brick", name="Brown face brick (unglazed)",
              r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
-             color="#654c3a", finish="brown-brick",
+             color="#a07c5c", finish="brown-brick",
              source="basement south veneer, the Ishtar plinth (2026-08-20) — standard unglazed face brick, no special order"),
     Material(tag="cmu", name="Grouted CMU (8\")", r_per_inch=0.11, density=2000.0,
              perm_rating=2.5, hatch="concrete", color="#b8b3ab", finish="cmu",
