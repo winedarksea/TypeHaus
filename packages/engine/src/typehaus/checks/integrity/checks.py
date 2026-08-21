@@ -311,3 +311,47 @@ def condition_star_override(ctx: CheckContext) -> list[Finding]:
                                      f"pattern {tr.condition_pattern!r} does not match",
                                      (tr.tag,)))
     return out
+
+
+@check(Tier.INTEGRITY, "integrity.slab_thickness")
+def slab_thickness_matches_assembly(ctx: CheckContext) -> list[Finding]:
+    """A slab's authored ``thickness`` has to end on one of its assembly's layer boundaries.
+
+    A wall has no such check because it needs none: a wall's thickness *is* its layer sum,
+    derived. A :class:`~typehaus.model.floors.Slab` authors ``thickness`` independently of
+    the assembly it names, because the two measure different things — ``CATLIN_SLAB_FLOOR``
+    is a 3.5" pour over 3" of XPS that is *under* the slab, not part of it, and a deck
+    assembly carries a gypsum thermal barrier hanging below its soffit. So the rule cannot
+    be "thickness == sum of layers".
+
+    What it can be, and what this asserts, is that the slab body stops at a layer boundary:
+    reading the stack top-down, some prefix of it adds up to ``thickness`` exactly. Nothing
+    is half in the pour and half out of it. That is what keeps a tuned build-up true —
+    catlin's 12 5/8" EPS-formed deck is a 4 5/8" cap on an 8" form, and dropping the cap to
+    4" without moving ``thickness`` would otherwise pass silently while the finished floor
+    plane no longer met the wood bays beside it.
+    """
+    out: list[Finding] = []
+    for el in ctx.plan.all_elements():
+        if el.element_kind != "Slab" or getattr(el, "assembly", None) is None:
+            continue
+        resolved = ctx.plan.library.resolve_assembly(el.assembly)
+        if resolved is None:
+            continue  # integrity.slab_assembly territory; not this check's complaint
+        thickness_in = el.thickness.inches
+        prefixes: list[float] = []
+        running = 0.0
+        for layer in resolved.layers:
+            running += layer.thickness.inches
+            prefixes.append(running)
+        if any(abs(prefix - thickness_in) < 1e-6 for prefix in prefixes):
+            continue
+        out.append(_err(
+            "integrity.slab_thickness",
+            f"slab {el.tag} is authored {thickness_in:g}\" thick but assembly "
+            f"{el.assembly} has no layer boundary there — its stack reads "
+            + ", ".join(f"{prefix:g}\"" for prefix in prefixes),
+            (el.tag,),
+            "move the slab thickness to a layer boundary, or restate the layer that moved",
+        ))
+    return out

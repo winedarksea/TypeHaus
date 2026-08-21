@@ -85,7 +85,7 @@ def test_s100_schedules_size_bearing_elevation_and_thickness(catlin_model):
     # but is 10"x5" cast on the house footing's toe (params/foundations.py).
     strip = next(row for row in footings.rows
                  if row[5].startswith("W-B-") and row[5] != "W-B-BRICK")
-    assert strip[2] == '20" W × 8" D' and strip[3] == "-9.67'"
+    assert strip[2] == '20" W × 8" D' and strip[3] == "-10.00'"
     walls = tables["FOUNDATION WALL SCHEDULE"]
     # A whole-inch monolithic pour, thickness and run both stated. This used to read the
     # sunken garden's 16" arched cross-wall; it reads the 12" side/retaining walls that

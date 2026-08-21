@@ -24,11 +24,11 @@ from typehaus.model import m
 # elevations read straight off the drawing set; on ``basement`` (-9' datum) they would
 # resolve nine feet lower.
 #
-# **The bury is 6' below *grade*, and grade is -2'-6" (2026-08-18), so the run sits at
-# -8'-6".** It dropped with the soil it is buried in, exactly as the garage foundation it
-# passes under did: FT-GF-S-DR's bearing plane went from -4'-2" to -6'-8", and this run from
-# -6'-0" to -8'-6", so the 22" of cover between them is unchanged. The terminal rise ends
-# 4 4/5" above the garage slab, which is also 2'-6" lower than it was.
+# **The bury is 6' below *grade*, and grade is -2'-10" (2026-08-21), so the run sits at
+# -8'-10".** It dropped with the soil it is buried in, exactly as the garage foundation it
+# passes under did: FT-GF-S-DR's bearing plane went from -4'-2" to -7'-0", and this run from
+# -6'-0" to -8'-10", so the 22" of cover between them is unchanged. The terminal rise ends
+# 4 4/5" above the garage slab, which is also 2'-10" lower than it was.
 #
 # Straightened 2026-07-29 through 2026-08-15 into a straight line from entry to hydrant at
 # x=5', touching only FT-GF-S-DR — earlier routes jogged around the garage footing and
@@ -38,7 +38,7 @@ WATER_SUPPLY = [
     PipeRun(uid="CMP920AAAA", tag="PR-G-HYDRANT-CW", system=PipeSystem.WATER_COLD,
             path=(pt(ft(5), ft(0)), pt(ft(5), ft(59, 6)), pt(ft(5), ft(59, 6))),
             diameter=inch(0.75), material="pex",
-            elevations=(ft(-8, -6), ft(-8, -6), ft(-2, -1.2)),
+            elevations=(ft(-8, -10), ft(-8, -10), ft(-2, -5.2)),
             serves=("FX-G-HYDRANT",)),
 ]
 
@@ -60,7 +60,7 @@ SUPPLY = [
                   pt(ft(29, 0.6), ft(34, 1.2)), pt(ft(29, 0.6), ft(34, 1.2))),
             diameter=inch(1.25), material="copper", finish="lacquered",
             elevations=(ft(3), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2),
-                        ft(8, 1.2), ft(12, 6)),
+                        ft(8, 1.2), ft(12, 10)),
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV", "FX-M-BATH2-WC",
                     "FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-SINK",
                     "FX-M-LAUNDRY", "FX-M-KITCH-SINK",
@@ -102,28 +102,28 @@ SUPPLY = [
                   pt(ft(7, 4.8), ft(19, 2.4)), pt(ft(6), ft(23, 7.2)),
                   pt(ft(6), ft(23, 7.2)), pt(ft(6), ft(23, 7.2))),
             diameter=inch(0.75), material="copper", finish="lacquered",
-            elevations=(ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(9), ft(12, 6)),
+            elevations=(ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(9, 4), ft(12, 10)),
             wall_refs=(None, None, None, None, "W-M-BAE"),
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV")),
     PipeRun(uid="CBPW34AAAA", tag="PR-B-HW-BATH1", system=PipeSystem.WATER_HOT,
             path=(pt(m(1.88684), m(10.0015)), pt(ft(6), ft(24)), pt(ft(6), ft(24)),
                   pt(ft(6), ft(24))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(8), ft(8), ft(9), ft(12, 6)),
+            elevations=(ft(8), ft(8), ft(9, 4), ft(12, 10)),
             wall_refs=(None, None, "W-M-BAE"),
             serves=("FX-M-BATH1-LAV",)),
     PipeRun(uid="CBPW35AAAA", tag="PR-B-CW-BATH2", system=PipeSystem.WATER_COLD,
             path=(pt(ft(5), ft(16)), pt(ft(2, 3), ft(16)),
                   pt(ft(2, 3), ft(17, 2.4)), pt(ft(2, 3), ft(17, 2.4))),
             diameter=inch(0.75), material="copper", finish="lacquered",
-            elevations=(ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(12)),
+            elevations=(ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(12, 4)),
             serves=("FX-M-BATH2-WC", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
                     "FX-M-BATH2-SINK")),
     PipeRun(uid="CBPW36AAAA", tag="PR-B-HW-BATH2", system=PipeSystem.WATER_HOT,
             path=(pt(ft(6, 6), ft(15, 6)), pt(ft(2, 3), ft(15, 6)),
                   pt(ft(2, 3), ft(16, 9.6)), pt(ft(2, 3), ft(16, 9.6))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(8), ft(8), ft(8), ft(12)),
+            elevations=(ft(8), ft(8), ft(8), ft(12, 4)),
             serves=("FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-SINK")),
     # The laundry pair riser splits at the deck top (ft(9) basement-relative = 0'-0"
     # project), like the BATH1 pair above: sleeved concrete crossing below, stud cavity
@@ -133,21 +133,21 @@ SUPPLY = [
             path=(pt(ft(8), ft(16)), pt(ft(8), ft(20, 7.2)),
                   pt(ft(8), ft(20, 7.2)), pt(ft(8), ft(20, 7.2))),
             diameter=inch(0.75), material="copper", finish="lacquered",
-            elevations=(ft(8, 1.2), ft(8, 1.2), ft(9), ft(12)),
+            elevations=(ft(8, 1.2), ft(8, 1.2), ft(9, 4), ft(12, 4)),
             wall_refs=(None, None, "W-M-BA2E"),
             serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
     PipeRun(uid="CBPW38AAAA", tag="PR-B-HW-WASH", system=PipeSystem.WATER_HOT,
             path=(pt(m(1.88684), m(10.0015)), pt(ft(8), ft(21, 2.4)),
                   pt(ft(8), ft(21, 2.4)), pt(ft(8), ft(21, 2.4))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(8), ft(8), ft(9), ft(12)),
+            elevations=(ft(8), ft(8), ft(9, 4), ft(12, 4)),
             wall_refs=(None, None, "W-M-BA2E"),
             serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
     PipeRun(uid="CBPW39AAAA", tag="PR-B-HW-KITCH", system=PipeSystem.WATER_HOT,
             path=(pt(ft(6, 6), ft(15, 6)), pt(ft(29, 6.6), ft(15, 6)),
                   pt(ft(29, 6.6), ft(33, 7.2)), pt(ft(29, 6.6), ft(33, 7.2))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(8), ft(8), ft(8), ft(12, 6)),
+            elevations=(ft(8), ft(8), ft(8), ft(12, 10)),
             serves=("FX-M-KITCH-SINK", "APPL-M-DW")),
     # Second-storey groups: risers climb two storeys to the hall bath, split at both deck
     # top (ft(9) basement-rel = 0'-0" project) and second floor (ft(19) = 10'-0" project),
@@ -158,8 +158,8 @@ SUPPLY = [
                   pt(ft(5, 7.2), ft(26, 4)), pt(ft(5, 7.2), ft(26, 4)),
                   pt(ft(5, 7.2), ft(26, 4)), pt(ft(5, 7.2), ft(26, 4))),
             diameter=inch(0.75), material="copper", finish="lacquered",
-            elevations=(ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(9), ft(19),
-                        ft(21, 6)),
+            elevations=(ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(9, 4), ft(19, 4),
+                        ft(21, 10)),
             wall_refs=(None, None, None, None, "W-M-STOS", "W-S-BD-N"),
             serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
@@ -172,7 +172,7 @@ SUPPLY = [
                   pt(ft(6, 4), ft(26, 4)), pt(ft(6, 4), ft(26, 4)),
                   pt(ft(6, 4), ft(26, 4))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(8), ft(8), ft(9), ft(19), ft(21, 6)),
+            elevations=(ft(8), ft(8), ft(9, 4), ft(19, 4), ft(21, 10)),
             wall_refs=(None, None, "W-M-STOS2", "W-S-BD-N1B"),
             serves=("FX-S-BATH1-LAV", "FX-S-BATH1-SH", "FX-S-VANITY-LAV1",
                     "FX-S-VANITY-LAV2")),
@@ -180,14 +180,14 @@ SUPPLY = [
             path=(pt(ft(8), ft(16)), pt(ft(13, 7.2), ft(16, 10.8)),
                   pt(ft(13, 7.2), ft(16, 10.8))),
             diameter=inch(0.75), material="copper", finish="lacquered",
-            elevations=(ft(8, 1.2), ft(8, 1.2), ft(21, 6)),
+            elevations=(ft(8, 1.2), ft(8, 1.2), ft(21, 10)),
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
     PipeRun(uid="CBPW43AAAA", tag="PR-B-HW-SUITE", system=PipeSystem.WATER_HOT,
             path=(pt(ft(6, 6), ft(15, 6)), pt(ft(14, 2.4), ft(16, 10.8)),
                   pt(ft(14, 2.4), ft(16, 10.8))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(8), ft(8), ft(21, 6)),
+            elevations=(ft(8), ft(8), ft(21, 10)),
             serves=("FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH")),
     # Stair-foot bathroom, fed off the same pair of runs (same uids) that fed FX-1 until
     # 2026-07-30, now turned east through W-B-STR's two sleeves at their own y (cold 20'-3",
@@ -256,7 +256,7 @@ HYDRANT_BRANCH_BASEMENT = [
             # (9'-3") inside the joist space (11 7/8" joists hang 9'-0 1/8" to 10'-0"). Split
             # at the plate because `mep.wet_wall_occupancy` grades an in-wall segment against
             # the wall's own z-extent; a straight riser would escape it by 3".
-            elevations=(ft(8, 1.2), ft(9), ft(18), ft(18, 3)),
+            elevations=(ft(8, 1.2), ft(9, 4), ft(18, 4), ft(18, 7)),
             wall_refs=(None, "W-M-BDN1", None),
             serves=("FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
 ]

@@ -1048,8 +1048,9 @@ def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_m
     doors, not a thing standing on soil — stayed. The deck is still this door's landing
     (code.R311_3_exterior_landing, and houses/catlin/CLAUDE.md's rule that both breezeway
     doors open onto it at one level), so the threshold stays at 0'-0" and the sill turns
-    positive: +0'-8" over a garage storey at -0'-8". The 2'-6" is taken inside instead, by
-    SL-G-STEP-0..4.
+    positive. Grade went down another 4" on 2026-08-21 for the basement-ceiling overhaul,
+    so it is now +1'-0" over a garage storey at -1'-0", and the 2'-10" is taken inside
+    instead, by SL-G-STEP-0..4.
     """
     wall = catlin_model.wall("W-G-S")
     door = next(o for o in catlin_model.openings if o.tag == "D-G-SERVICE")
@@ -1058,19 +1059,19 @@ def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_m
 
     threshold = wall.z0_m + door.sill_m
     # The landing outside, not the floor inside: within R311.3.1's 1 1/2" of the deck, and a
-    # full 2'-6" above the slab.
+    # full 2'-10" above the slab.
     assert abs(deck.z1_m - threshold) <= inch(1.5).meters
-    assert threshold - slab.z1_m == pytest.approx(inch(30.0).meters)
+    assert threshold - slab.z1_m == pytest.approx(inch(34.0).meters)
 
-    # Five 6" risers inside close that 2'-6", top step level with the threshold and bottom
-    # step one riser above the slab.
+    # Five 6.8" risers inside close that 2'-10", top step level with the threshold and
+    # bottom step one riser above the slab. (Six-inch risers while grade was -2'-6".)
     steps = sorted((s for s in catlin_model.solids if s.tag.startswith("SL-G-STEP-")),
                    key=lambda s: -s.z1_m)
     assert len(steps) == 5
     assert steps[0].z1_m == pytest.approx(threshold)
-    assert steps[-1].z1_m - slab.z1_m == pytest.approx(inch(6.0).meters)
+    assert steps[-1].z1_m - slab.z1_m == pytest.approx(inch(34.0 / 5).meters)
     for upper, lower in zip(steps, steps[1:]):
-        assert upper.z1_m - lower.z1_m == pytest.approx(inch(6.0).meters)
+        assert upper.z1_m - lower.z1_m == pytest.approx(inch(34.0 / 5).meters)
 
 
 def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
@@ -1231,7 +1232,9 @@ def test_stairs_resolve_with_code_risers(catlin_model):
     stairs = {s.tag: s for s in catlin_model.stairs}
     assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A"}
     for stair in stairs.values():
-        assert stair.riser_count in {14, 16}
+        # ST-B2M gained a riser (14 -> 15) on 2026-08-21: the basement storey went down
+        # 4" so the house could carry a 12 5/8" deck over it and keep its headroom.
+        assert stair.riser_count in {14, 15, 16}
         assert stair.riser_height_m <= inch(7.75).meters + 1e-9
         assert stair.tread_depth_m >= inch(10.0).meters - 1e-9
     # Ordinary stairs stay compact by default: 11" boards with a 1" nose yield the 10"

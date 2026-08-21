@@ -96,7 +96,7 @@ WALLS = [
     FoundationWall(uid="CBW101AAAA", tag="W-B-S1", start_node="N-B-SW",
                    end_node="N-B-S1", assembly="CATLIN_BASEMENT_12_GARDEN",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
                    lateral_support="top_and_bottom"),
     # The sauna's south side. W-B-S1 and W-B-S3 stay on the bare garden wall deliberately —
     # they bound the workshop and the patio side — but this one segment is a room face in a
@@ -113,47 +113,47 @@ WALLS = [
                    end_node="N-B-S2", assembly="SAUNA_LINER_ON_BASEMENT_12_GARDEN",
                    alignment=face("concrete-ext"),
                    interior_room="RM-B-SAUNA",
-                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
                    lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW103AAAA", tag="W-B-S3", start_node="N-B-S2",
                    end_node="N-B-SE", assembly="CATLIN_BASEMENT_12_GARDEN",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
                    lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW104AAAA", tag="W-B-E1", start_node="N-B-SE",
                    end_node="N-B-E1", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
                    lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW105AAAA", tag="W-B-E2", start_node="N-B-E1",
                    end_node="N-B-NE", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
                    lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW106AAAA", tag="W-B-N1", start_node="N-B-NE",
                    end_node="N-B-N1", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
                    lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW107AAAA", tag="W-B-N2", start_node="N-B-N1",
                    end_node="N-B-N2", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
                    lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW108AAAA", tag="W-B-N3", start_node="N-B-N2",
                    end_node="N-B-NW", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
                    lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW109AAAA", tag="W-B-W1", start_node="N-B-NW",
                    end_node="N-B-W1", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
                    lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW110AAAA", tag="W-B-W2", start_node="N-B-W1",
                    end_node="N-B-SW", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
                    lateral_support="top_and_bottom"),
     # Center cross walls (12" concrete) — the 18' bearing grid. Every wall from here down is
     # an *interior* cross wall with soil on neither side, so `unbalanced_fill=ft(0)` says so
@@ -167,48 +167,89 @@ WALLS = [
                    end_node="N-B-S2", assembly="SAUNA_LINER_ON_CONCRETE", unbalanced_fill=ft(0),
                    alignment=face("concrete-ext", offset=inch(-6)),
                    interior_room="RM-B-SAUNA",
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
+                   top_elevation=ft(0), bottom_elevation=ft(-9, -4)),
     FoundationWall(uid="CBW112AAAA", tag="W-B-CS2", start_node="N-B-C1",
                    end_node="N-B-C", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
+                   top_elevation=ft(0), bottom_elevation=ft(-9, -4)),
     # Split at N-B-BA-E (2026-07-30) so the bathroom's north partition tees onto a shared
     # node — else `integrity.wall_loop_open` reads it as a free end. W-B-CN keeps the tag,
     # uid, and the north 14'-2 5/8" that W-M-C5 stacks on, so the bearing stack is untouched.
     FoundationWall(uid="CBW113AAAA", tag="W-B-CN", start_node="N-B-BA-E",
                    end_node="N-B-N1", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
+                   top_elevation=ft(0), bottom_elevation=ft(-9, -4)),
     FoundationWall(uid="CBW121AAAA", tag="W-B-CN2", start_node="N-B-C",
                    end_node="N-B-BA-E", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
+                   top_elevation=ft(0), bottom_elevation=ft(-9, -4)),
+    # **The y=18' cross line is framed now (2026-08-21).** All four of these were 12" cast
+    # concrete for one reason: the 9" suspended deck over the basement was designed to span
+    # between them. The deck is joists and an EPS-formed band since the basement-ceiling
+    # overhaul, spanning 18'-0" east-west to the x=18' line like every storey above, so
+    # nothing on this line carries a floor any more. Each keeps its tag and its uid — the
+    # IFC GlobalIds are unchanged (decision #16) — and each picks up the assembly its own
+    # use asks for rather than one thickness for all four. Their strip footings, footing
+    # bedding and drain tile went with them (params/foundations.py): a stud wall stands on
+    # the slab, and four runs of socked tile under an interior wall collected nothing.
+    #
+    # Centrelines stay on the node lines, so each room gains symmetrically — 2 5/8" a side
+    # off the 2x6 walls, 3 5/8" a side off the 2x4 and steel ones.
+    #
+    # Tops are the basement's own 8'-2 3/4" clear, not the 0'-0" the concrete ran to: a stud
+    # wall that reaches the floor datum stands *inside* the joists, which is what
+    # `structural.member_interference` reported on W-B-STR2 the moment it was framed. Where
+    # a wall above stacks on one of these, `resolve/platform.py` grows the wall solid up to
+    # meet it and leaves the double top plate here, which is what platform framing is.
+    #
     # Split at the stair shaft's west wall so the shaft is a real tee, not a wall end. Also
     # split at N-B-ESS-S (2026-08-02) for the ESS closet's west partition, the same move
-    # W-B-STR made for the bathroom. W-B-CW keeps tag/uid and the west 6'-9" (D-B-FURN and
-    # six sleeves unchanged); W-B-CW3 is the 3'-3" stub forming the closet's south wall,
-    # with three sleeves re-hosted to it in plan/mep.py.
-    FoundationWall(uid="CBW114AAAA", tag="W-B-CW", start_node="N-B-W1",
-                   end_node="N-B-ESS-S", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
-    FoundationWall(uid="CBW123AAAA", tag="W-B-CW3", start_node="N-B-ESS-S",
-                   end_node="N-B-STR", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
-    FoundationWall(uid="CBW119AAAA", tag="W-B-CW2", start_node="N-B-STR",
-                   end_node="N-B-C", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
-    FoundationWall(uid="CBW115AAAA", tag="W-B-CE", start_node="N-B-C",
-                   end_node="N-B-E1", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
+    # W-B-STR made for the bathroom. W-B-CW keeps tag/uid and the west 6'-9" (D-B-FURN
+    # unchanged); W-B-CW3 is the 3'-3" stub forming the closet's south wall.
+    #
+    # W-B-CW is the furnace room's south wall and carries the 4" building drain, so it takes
+    # the wet-wall 2x6 rather than a 2x4.
+    Wall(uid="CBW114AAAA", tag="W-B-CW", start_node="N-B-W1",
+         end_node="N-B-ESS-S", assembly="INT_2X6_PLUMBING", top=ft(8, 2.75)),
+    # Matched to the ESS closet's other two walls (W-B-ESS-N/W-B-ESS-W), which are the
+    # steel-stud, type-X box the battery enclosure asks for.
+    Wall(uid="CBW123AAAA", tag="W-B-CW3", start_node="N-B-ESS-S",
+         end_node="N-B-STR", assembly="INT_ESS_CLOSET_STEEL", top=ft(8)),
+    # Nothing runs in this one and nothing bears on it — a plain 2x4 partition. Keep the
+    # tag: W-M-CLN and W-M-CLN2 name it in `stacks_on`.
+    Wall(uid="CBW119AAAA", tag="W-B-CW2", start_node="N-B-STR",
+         end_node="N-B-C", assembly="INT_2X4_PARTITION", top=ft(8, 2.75)),
+    # The playroom's south wall, 18'-0" of it, and the one that keeps D-B-PLAY (the 5'-0"
+    # glazed double). Staggered studs: it is the long wall between the playroom and the gym,
+    # and it also runs under the concrete band, so it wants the sound break.
+    Wall(uid="CBW115AAAA", tag="W-B-CE", start_node="N-B-C",
+         end_node="N-B-E1", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(8, 2.75)),
     # Stair shaft's west wall — 12" concrete on x=10', full north-row depth (reference:
     # "Stairway 7' x 16' 6 1/2""). 12" (not 8") puts the shaft's west face at 9'-6", giving
     # both the furnace room's 8'-6" clear and the shaft's 7'-0" off the same wall.
     # Split at N-B-BA-W (2026-07-30): W-B-STR keeps tag/uid and the north 14'-2 5/8" that
-    # W-M-STRW/W-M-STRW2 stack on; W-B-STR2 is the 3'-3 3/8" stub alongside the bathroom,
+    # W-M-STRW/W-M-STRW2 stack on; W-B-STR2 is the 3'-9 3/8" stub alongside the bathroom,
     # carrying its three ceiling-level service crossings (plan/mep.py's WALL_SLEEVES).
+    #
+    # **This one stayed concrete through the 2026-08-21 overhaul**, alone on the interior.
+    # Three things are measured off its east face at x=10'-6" and all three break if the
+    # wall narrows to a 6 3/4" stud line on the same node: the shaft's 7'-0" (two 3'-3 3/4"
+    # flights plus the 4 1/2" well partition, exactly), ST-B2M's own flight width, and
+    # FO-M-STAIR's west edge — which since the deck became joists is a real bearing edge,
+    # and off this wall would take a 9'-0" engineered header instead
+    # (structural.floor_opening_header). It is also a two-storey bearing line
+    # (W-M-STRW/W-M-STRW2 stack on it) and keeps FT-B-STR either way, so framing it would
+    # have bought only its own ~4.9 cy and cost the stair its dimensions.
     FoundationWall(uid="CBW116AAAA", tag="W-B-STR", start_node="N-B-N2",
                    end_node="N-B-BA-W", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
-    FoundationWall(uid="CBW122AAAA", tag="W-B-STR2", start_node="N-B-BA-W",
-                   end_node="N-B-STR", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
+                   top_elevation=ft(0), bottom_elevation=ft(-9, -4)),
+    # The stub south of it is a different job: RM-B-BATH's west enclosure, nothing bearing
+    # on it, nothing dimensioned off it. It is *also* the ESS closet's east wall, and that
+    # is what picks the assembly — `advisory.ess_enclosure` wants 5/8" Type X on the closet
+    # face, which 12" of concrete satisfied by being concrete and a staggered-stud wet wall
+    # would not. So it joins its two neighbours (W-B-ESS-W/W-B-ESS-N) in the steel-stud
+    # Type X box instead of matching W-B-BA-N: a battery closet's rating beats a sound break
+    # between a bathroom and an unoccupied cupboard. Its three ceiling-level crossings
+    # (vent, hot, cold) are bored, not cast, now that there is no pour to cast into.
+    Wall(uid="CBW122AAAA", tag="W-B-STR2", start_node="N-B-BA-W",
+         end_node="N-B-STR", assembly="INT_ESS_CLOSET_STEEL", top=ft(8)),
     # Sauna partitions — SAUNA_2X4 carries the hot-side liner (T&G/furring/foil-faced
     # polyiso) as part of the wall type, not a room finish override; the east wall (center
     # concrete) takes it via SAUNA_LINER_ON_CONCRETE. Both are interior partitions, so
@@ -265,7 +306,7 @@ WALLS = [
                    end_node="N-B-BRICK-W", assembly="BASEMENT_BRICK_VENEER",
                    alignment=face("air-gap-int"),
                    unbalanced_fill=ft(0),
-                   top_elevation=ft(0), bottom_elevation=ft(-8, -5)),
+                   top_elevation=ft(0), bottom_elevation=ft(-8, -9)),
 ]
 
 OPENINGS = [

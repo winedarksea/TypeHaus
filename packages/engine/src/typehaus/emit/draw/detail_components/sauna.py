@@ -99,24 +99,50 @@ def sauna_room_interval(walls, direction: str, station: float):
     return u_lo, u_hi
 
 
-def ceiling_slab_over(model, crop, direction, station, u_lo_in, u_hi_in):
-    """The slab forming the sauna ceiling: the lowest-underside slab above the crop midpoint
-    whose cut edge overlaps the room interior, or None (the drop ceiling then draws nothing)."""
+def ceiling_underside_over(model, crop, direction, station, u_lo_in, u_hi_in):
+    """The elevation of whatever forms the sauna's ceiling, in metres, or ``None``.
+
+    Two structures can be over this room and the drop ceiling hangs the same way under
+    either: a concrete deck's soffit, or a framed floor's joist soffit. Catlin's sauna sat
+    under the 9" cast deck until 2026-08-21, and under FS-M-WEST's I-joists since — asking
+    only about slabs, which is all this did, silently drew no drop ceiling at all the moment
+    the deck over it became wood. The room's own detail note says it in as many words:
+    "primary structure above may be joists or concrete deck; hang drop framing accordingly".
+
+    Whichever is lowest wins, so a room straddling a boundary reads its own ceiling plane.
+    ``None`` only when nothing at all is over the room, and then the drop ceiling draws
+    nothing rather than guessing an elevation.
+    """
     from typehaus.emit.draw.section import ring_cut_intervals
 
     (_cu0, cz0), (_cu1, cz1) = crop
     lo_z, hi_z = min(cz0, cz1), max(cz0, cz1)
     mid_z = (lo_z + hi_z) / 2.0
-    best = None
-    for solid in model.solids:
-        if solid.category != "slab" or not (mid_z < solid.z0_m <= hi_z + 0.05):
-            continue
-        for (a, b) in ring_cut_intervals(solid.outline, direction, station):
+    best: float | None = None
+
+    def _consider(z0_m: float, ring) -> None:
+        nonlocal best
+        if not (mid_z < z0_m <= hi_z + 0.05):
+            return
+        for (a, b) in ring_cut_intervals(ring, direction, station):
             lo, hi = min(a, b) / M_PER_IN, max(a, b) / M_PER_IN
             if lo <= u_hi_in and hi >= u_lo_in:
-                if best is None or solid.z0_m < best.z0_m:
-                    best = solid
-                break
+                if best is None or z0_m < best:
+                    best = z0_m
+                return
+
+    for solid in model.solids:
+        if solid.category == "slab":
+            _consider(solid.z0_m, solid.outline)
+    for floor in model.floors:
+        joists = [m for m in floor.members if m.category == "joist"]
+        if not joists:
+            continue
+        points = [p for m in joists for p in (m.p0, m.p1)]
+        x_lo, x_hi = min(p[0] for p in points), max(p[0] for p in points)
+        y_lo, y_hi = min(p[1] for p in points), max(p[1] for p in points)
+        ring = ((x_lo, y_lo), (x_hi, y_lo), (x_hi, y_hi), (x_lo, y_hi))
+        _consider(min(m.z0_m for m in joists), ring)
     return best
 
 
@@ -207,9 +233,9 @@ def build_sauna_room_components(model, walls, crop, direction, station) -> list[
     nodes += sauna_floor_slope(u_lo, u_hi, floor_z)
     nodes += sauna_benches(u_lo, u_hi, floor_z)
     nodes += sauna_heater_clearance(u_lo, u_hi, floor_z)
-    ceiling = ceiling_slab_over(model, crop, direction, station, u_lo, u_hi)
-    if ceiling is not None:
-        nodes += sauna_drop_ceiling(u_lo, u_hi, ceiling.z0_m / M_PER_IN)
+    ceiling_z = ceiling_underside_over(model, crop, direction, station, u_lo, u_hi)
+    if ceiling_z is not None:
+        nodes += sauna_drop_ceiling(u_lo, u_hi, ceiling_z / M_PER_IN)
     return nodes
 
 

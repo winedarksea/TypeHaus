@@ -261,13 +261,32 @@ def test_hot_runs_at_or_over_three_quarter_inch_are_insulated(catlin_plan, catli
     assert "PR-B-HW-SAUNA" not in graded
 
 
+def _copper_prefs(base):
+    """``base`` with the visible-copper rule restated.
+
+    catlin retired it on 2026-08-21 — see ``test_the_house_no_longer_states_the_rule``
+    below — so these two tests state it themselves rather than reading the house's file.
+    The rule is what is under test; whether this particular house still wants it is a
+    different question, and the test below is the one that asks it.
+    """
+    import dataclasses
+
+    return dataclasses.replace(
+        base, plumbing=dataclasses.replace(
+            base.plumbing, visible_basement_material="copper",
+            visible_basement_finish="lacquered"))
+
+
 def test_supply_on_concrete_is_lacquered_copper(catlin_plan, catlin_model, catlin_prefs):
-    findings = pipe_material_preference(_context(catlin_plan, catlin_model, catlin_prefs))
-    assert findings, "the house states a rule; the check must grade something"
+    findings = pipe_material_preference(
+        _context(catlin_plan, catlin_model, _copper_prefs(catlin_prefs)))
+    assert findings, "the rule is stated; the check must grade something"
     assert not _fails(findings), [f.message for f in _fails(findings)]
     graded = {f.element_tags[0] for f in findings}
-    # The trunks hung under the cast deck are exactly what the rule is about.
-    assert {"PR-B-CW-TRUNK", "PR-B-HW-TRUNK", "PR-B-CW-WH"} <= graded
+    # The trunks hung under the surviving concrete band are what the rule is about. The
+    # band is x 18'-36', y 13'-36' since the 2026-08-21 deck overhaul, so the trunks that
+    # still qualify are the ones whose east ends reach it.
+    assert {"PR-B-CW-TRUNK", "PR-B-HW-KITCH"} <= graded
     # A run that never leaves a wall or a joist bay is not visible pipe and is not asked.
     assert "PR-M-CW-HYD-DIST" not in graded
     assert "PR-B-CW-HYD-RISER" not in graded
@@ -275,22 +294,42 @@ def test_supply_on_concrete_is_lacquered_copper(catlin_plan, catlin_model, catli
 
 def test_the_rule_re_derives_from_what_is_overhead_not_from_a_tag_list(
         catlin_plan, catlin_model, catlin_prefs):
-    """The claim preferences.toml makes: swap the cast deck for wood joists and the rule
-    stops applying by itself. Proved the cheap way round — a new PEX trunk on the same
-    ceiling inherits the rule with nothing authored to say so."""
+    """The claim preferences.toml made: swap the cast deck for wood joists and the rule
+    stops applying by itself. Both halves are proved here — a new PEX trunk under the
+    concrete band inherits the rule with nothing authored to say so, and the identical
+    trunk under FS-M-WEST's joists is never asked."""
     from typehaus.model.enums import PipeSystem
     from typehaus.model.mep import PipeRun
     from typehaus.quantities import ft, inch, pt
 
-    intruder = PipeRun(
+    prefs = _copper_prefs(catlin_prefs)
+    # (12', 6') is under FS-M-EAST/FS-M-WEST joists; (24', 24') is under the concrete band.
+    under_joists = PipeRun(
         uid="TSTPM00001", tag="PR-B-CW-NEW", system=PipeSystem.WATER_COLD,
         path=(pt(ft(12), ft(6)), pt(ft(16), ft(6))), diameter=inch(0.75),
         elevations=(ft(8), ft(8)), material="pex")
+    under_concrete = PipeRun(
+        uid="TSTPM00002", tag="PR-B-CW-NEW2", system=PipeSystem.WATER_COLD,
+        path=(pt(ft(22), ft(24)), pt(ft(30), ft(24))), diameter=inch(0.75),
+        elevations=(ft(8), ft(8)), material="pex")
     plan = catlin_plan.with_elements(
-        "basement", (*catlin_plan.storey_elements("basement"), intruder))
-    findings = pipe_material_preference(_context(plan, _resolved(plan), catlin_prefs))
-    failed = _fails(findings)
-    assert [f.element_tags[0] for f in failed] == ["PR-B-CW-NEW"]
+        "basement", (*catlin_plan.storey_elements("basement"),
+                     under_joists, under_concrete))
+    findings = pipe_material_preference(_context(plan, _resolved(plan), prefs))
+    assert [f.element_tags[0] for f in _fails(findings)] == ["PR-B-CW-NEW2"]
+    assert "PR-B-CW-NEW" not in {f.element_tags[0] for f in findings}
+
+
+def test_the_house_no_longer_states_the_rule(catlin_plan, catlin_model, catlin_prefs):
+    """catlin retired visible_basement_material/-_finish on 2026-08-21 and the check went
+    quiet on its own, which is the behaviour ``test_no_rule_no_findings`` pins in the
+    abstract. Here it is pinned against the real file: the basement ceiling is drywalled
+    end to end now (I-joists over two thirds of it, gypsum over the EPS for IRC R316.4 on
+    the rest), so there is no visible supply pipe left to have a rule about."""
+    assert catlin_prefs.plumbing.visible_basement_material is None
+    assert catlin_prefs.plumbing.visible_basement_finish is None
+    assert pipe_material_preference(
+        _context(catlin_plan, catlin_model, catlin_prefs)) == []
 
 
 def test_no_rule_no_findings(catlin_plan, catlin_model):

@@ -126,7 +126,7 @@ BASEMENT_DEVICES = [
                      room="RM-B-GYM", controlled_by=("ED-B-GYM-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(1, 6))),
     ElectricalDevice(uid="CED010K2AA", tag="ED-B-GYM-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(23, 6.5), ft(17, 5)), type_ref="ED-T-SWITCH", circuit="CKT-LT-BACKUP",
+                     position=pt(ft(23, 6.5), ft(17, 7.615)), type_ref="ED-T-SWITCH", circuit="CKT-LT-BACKUP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
 ]
 

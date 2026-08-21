@@ -17,11 +17,11 @@ from typehaus import (
     FloorOpening,
     Node,
     Occupancy,
+    Post,
     RadiantSystem,
     Railing,
     RailingKind,
     Room,
-    Slab,
     Stair,
     StructuralRole,
     Wall,
@@ -629,10 +629,19 @@ ALARMS = [
 # Electric radiant floor — the two main-storey comfort zones (2026-07-25). Not a heating
 # system (the heat pumps carry the house); these just warm two barefoot floors. Mat at
 # 12 W/ft2 (the working rate for a 3" serpentine 120V cable); `in_slab(1/2")` is the setting
-# bed in the thinset above SL-M-DECK's cured 9" concrete, not cast structure. Zones are drawn
+# bed in the thinset, not cast structure — over SL-M-DECK's cured concrete cap under the
+# dining zone, and over FS-M-WEST's plywood subfloor under the bathroom, where the same 1/2"
+# is an uncoupling membrane and its bed rather than thinset straight onto a slab. The two
+# substrates differ; the mat, its depth and its output do not. Zones are drawn
 # 4" off every clear face since mat can't run to a wall. `stat` is the slab sensor point;
 # line-voltage thermostats are ED-M-BATH2-FH-STAT / ED-M-DINING-FH-STAT (plan/electrical.py).
 FLOOR_HEAT = [
+    # RM-M-BATH2's floor is over FS-M-WEST's I-joists since 2026-08-21, not over concrete:
+    # the tile wants an uncoupling membrane over the 3/4" subfloor, and `embed` still reads
+    # 1/2" because that membrane plus its bed is the same half inch the thinset was.
+    # Deflection is the real difference — L/360 under an 18'-0" joist span against a slab
+    # that barely moves — and `advisory.floor_finish_over_radiant` grades what sits on it.
+    #
     # RM-M-BATH2's floor: an L around WC/shower/tub with >=1" clearance at each fixture
     # footprint, so `advisory.floor_heat_fixture_keepout` can verify the actual loop
     # geometry. Polygon tightened 2026-07-29 with the BATH2 wall move — the old one ran
@@ -660,13 +669,12 @@ FLOOR_HEAT = [
               stat=pt(ft(26, 11), ft(17, 4))),
 ]
 
-# Structural deck of the main floor: 9" concrete over the basement.
-SLABS = [
-    Slab(uid="CMS501AAAA", tag="SL-M-DECK",
-         outline=(pt(ft(0), ft(0)), pt(ft(36), ft(0)), pt(ft(36), ft(36)),
-                  pt(ft(0), ft(36))),
-         thickness=inch(9), openings=("FO-M-STAIR",), assembly="CATLIN_DECK_9_INT"),
-]
+# The main floor's structure — two wood bays and one concrete band — lives in
+# ``params/main_deck.py``, not here. It has to: the deck's depth is arithmetic (the EPS
+# form plus its cap has to equal the I-joist plus its subfloor), and an editable file may
+# hold only literals. Nothing about it is UI-movable, so nothing is lost by the move.
+# SL-M-DECK keeps its tag and uid there; FO-M-STAIR below is now an opening in
+# FS-M-WEST's joists rather than a hole in a pour.
 
 # Drawn to the *finished* well, not the wall centrelines — the shaft the stair actually
 # climbs; the u-split resolver anchors flights to its near corner. West/east are the
@@ -679,7 +687,14 @@ FLOOR_OPENINGS = [
     FloorOpening(uid="CMF601AAAA", tag="FO-M-STAIR",
                  outline=(pt(ft(10, 6), ft(26, 0.375)), pt(ft(17, 6), ft(26, 0.375)),
                           pt(ft(17, 6), ft(35)), pt(ft(10, 6), ft(35))),
-                 bearing_refs=("W-M-STRW", "W-M-STRW2")),
+                 # The basement walls *under* the two long edges, not the main-storey walls
+                 # that stand on them. W-M-STRW/W-M-STRW2 were named here while this hole
+                 # was cut in a concrete pour and nothing framed it, so the wrong tags were
+                 # harmless; since 2026-08-21 the hole is in FS-M-WEST's joists and these
+                 # refs decide whether the edges are carried or get a 9'-0" LVL header
+                 # (structural.floor_opening_header). W-B-STR's east face and W-B-CN's west
+                 # face are the shaft's own 7'-0" faces, which is what the well is drawn to.
+                 bearing_refs=("W-B-STR", "W-B-CN")),
 ]
 
 # 7'-0" well = 3'-3 3/4" + 4 1/2" well partition + 3'-3 3/4", each flight clearing IRC
@@ -707,7 +722,7 @@ STAIR_HANDRAILS = [
             pt(ft(17, 4), ft(31, 0.375)),
         ),
         kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
-        base_elevation=ft(-9), post_spacing=inch(48), post_size="2x2", rail_count=1,
+        base_elevation=ft(-9, -4), post_spacing=inch(48), post_size="2x2", rail_count=1,
         mount="wall", assembly="RAILING_DARK_METAL",
         role="handrail", serves_stair="ST-B2M", top_height=inch(36),
         graspable_profile="1.5in round — Type I",
@@ -788,6 +803,40 @@ CONNECTORS = [
               size="STHD", connects=("W-M-S2", "W-B-S3")),
 ]
 
-ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT, *SLABS,
+# **The two columns under ST-M2S's half-landing (2026-08-21).**
+#
+# ST-M2S's landing is a pair of half-width platforms half a step apart, each ledgered to
+# the shaft wall on its outer edge (W-M-STRW at x=10', W-M-C5 at x=18') and closed by a rim
+# on the well line at x=14'-0". Those two inner rims meet no wall, so the stair resolver
+# stands a 4x4 under each of their four ends — and the deck it stands them on, at the head
+# of the basement stairwell, is FO-M-STAIR's hole. They were in mid-air.
+#
+# That was true while the deck was a 9" pour too; nobody saw it because
+# `structural.landing_post_bearing` read the slab's *outline*, which does not carry its
+# floor openings, as their bearing. Framing the shaft's ceiling in joists took the outline
+# away and the finding surfaced.
+#
+# These carry them properly: two 4x4 columns on the well-partition line, top at the main
+# floor and standing the basement's full height to the slab, inside the 4 1/2" the shaft's
+# 7'-0" has always reserved between the two flights (see plan/storeys/basement.py's header
+# note). They are hidden in the partition and clear both 3'-3 3/4" walking lanes.
+#
+# The y-positions are the landing rims' own ends, which the u-split resolver derives from
+# the stair's start point and going. Moving ST-B2M or ST-M2S moves those ends and these
+# have to move with them — `structural.landing_post_bearing` is what will say so.
+#
+# The north one is pulled 1 1/2" south of its rim end, to 34'-8.9": at the end itself its
+# 3 1/2" section runs into the trimmer closing FO-M-STAIR's north edge (y 34'-10 3/4" to
+# 35'-1 1/4"). Shifted, its north face clears that trimmer by 1/10" and the rim end is
+# still 1/4" inside the post — the column carries the corner and the trimmer stays a
+# separate member, which is what the framer would build.
+POSTS = [
+    Post(uid="A9J80KK6AE", tag="P-M-STRWELL-S", position=pt(ft(14), ft(31, 10.374)), size="4x4",
+         height=ft(9, 4), assembly="POST_WHITE_PAINT"),
+    Post(uid="CZE3N5C14R", tag="P-M-STRWELL-N", position=pt(ft(14), ft(34, 8.9)), size="4x4",
+         height=ft(9, 4), assembly="POST_WHITE_PAINT"),
+]
+
+ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT,
             *FLOOR_OPENINGS, *STAIRS, *STAIR_HANDRAILS, *BEAMS, *PANELING,
-            *CONNECTORS]
+            *POSTS, *CONNECTORS]

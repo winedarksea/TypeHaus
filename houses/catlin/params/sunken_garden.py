@@ -81,7 +81,10 @@ class SunkenGardenSpec:
     aggregate_bedding_depth_in: float = 42.0
     house_size_ft: float = 36.0
     house_ext_layers_in: float = 5.0  # polyiso+EPS+furring+cladding beyond sheathing
-    basement_depth_ft: float = 9.0
+    # 9'-4" since 2026-08-21, not 9'-0": the house rose 4" for the deeper basement ceiling
+    # and grade went down with it, so the garden floor stayed exactly where it was in the
+    # soil — 6'-6" below grade — and moved 4" in the project frame to say so.
+    basement_depth_ft: float = 9.0 + 1.0 / 3.0
     slab_thickness_in: float = 3.5
     porch_top_ft: float = 0.0  # top of the porch concrete walls = porch floor / railing base
     railing_height_ft: float = 3.5  # 42" guard above the porch walking surface

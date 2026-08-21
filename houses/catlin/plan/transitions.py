@@ -33,7 +33,6 @@ TRANSITIONS = (
                unstarred_conditions=(
                    "wall_foundation:CATLIN_CONC_12_INT|CATLIN_INT_2X6_BRG",
                    "wall_foundation:CATLIN_CONC_12_INT|CATLIN_MUDROOM_INT_2X6_EXPOSED",
-                   "wall_foundation:CATLIN_CONC_12_INT|INT_2X4_PARTITION",
                    "wall_foundation:CATLIN_INT_2X6_BRG|SAUNA_LINER_ON_CONCRETE",
                )),
     # Same curation as the foundation above: the rim band is a sheet because it is where
@@ -45,7 +44,6 @@ TRANSITIONS = (
                unstarred_conditions=(
                    "storey_stack:rim:CATLIN_CONC_12_INT|CATLIN_INT_2X6_BRG",
                    "storey_stack:rim:CATLIN_CONC_12_INT|CATLIN_MUDROOM_INT_2X6_EXPOSED",
-                   "storey_stack:rim:CATLIN_CONC_12_INT|INT_2X4_PARTITION",
                    "storey_stack:rim:CATLIN_INT_2X6_BRG",
                    "storey_stack:rim:CATLIN_INT_2X6_BRG|SAUNA_LINER_ON_CONCRETE",
                    "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|INT_2X6_STAGGERED_PLUMBING",

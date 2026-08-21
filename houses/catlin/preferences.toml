@@ -35,22 +35,24 @@ max_guard_dead_load_on_wood_plf = 50
 
 [plumbing]
 drain_stack_required_structure_in = 5.5
-# Supply pipe you can see is lacquered copper; everywhere else it is PEX. A style rule, not
-# a code one — both are listed for potable water — which is why `mep.pipe_material_preference`
-# is ADVISORY.
+# **The visible-copper rule retired on 2026-08-21, and it retired the way it was built to.**
 #
-# "Where you can see it" is not a list of run tags, and deliberately so. The check asks what
-# is *directly above* each basement supply segment: a cast concrete deck means the pipe is
-# hung in the open and reads as part of the room, a framed floor means it will be covered.
-# So the rule re-derives itself. Change SL-M-DECK to wood joists and everything under it
-# stops being visible pipe with nothing here to edit; reroute a trunk along the same ceiling
-# and the new route inherits the rule. Runs inside a stud cavity, and runs buried under the
-# slab, are never visible and are never asked.
+# It read: supply pipe you can see is lacquered copper, everywhere else PEX. "Where you can
+# see it" was never a list of run tags — `mep.pipe_material_preference` asks what is
+# *directly above* each basement supply segment, because a cast concrete deck means the pipe
+# hangs in the open and reads as part of the room, while a framed floor means it will be
+# covered. The note here said so in as many words: "Change SL-M-DECK to wood joists and
+# everything under it stops being visible pipe with nothing here to edit."
 #
-# The finish half applies only to bare pipe: an insulated hot line is inside its jacket, so
-# it owes the copper and not the lacquer.
-visible_basement_material = "copper"
-visible_basement_finish = "lacquered"
+# That is what happened. Two thirds of the basement ceiling is I-joists now, and the owner's
+# call on the other third was gypsum over the EPS anyway — IRC R316.4 wants a thermal barrier
+# there, and stopping the board at the boundary to expose 414 SF of soffit was not worth it.
+# With drywall on the whole ceiling there is no visible pipe left to have a rule about, so
+# both keys are deleted rather than restated, and basement supply reverts to the default
+# (PEX, unfinished). Deleting them is the edit; the rule needed no other change.
+#
+# visible_basement_material = "copper"
+# visible_basement_finish = "lacquered"
 
 [units]
 system = "imperial"

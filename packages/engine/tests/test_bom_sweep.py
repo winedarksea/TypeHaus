@@ -366,7 +366,12 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     """``FloorSystem.ceiling_below`` was read by nothing — a whole storey of ceiling drywall
     absent from the order. FS-SECOND authors 5/8" gypsum under its deck (that deck's
     underside *is* the main storey's ceiling), and it has to bill over exactly the surface
-    its own subfloor covers: the same gross rectangle, less the same stair opening."""
+    its own subfloor covers: the same gross rectangle, less the same stair opening.
+
+    Three decks author one since 2026-08-21 (FS-M-WEST and FS-M-EAST joined when the
+    basement got a framed ceiling), and they group into one ``ceiling`` row because they are
+    the same board at the same thickness. So the deck-by-deck arithmetic is checked against
+    FS-SECOND's *share* of that row, not against the whole of it."""
     from typehaus.resolve.geometry import polygon_area
     from typehaus.takeoff.framing import sheet_goods_takeoff
 
@@ -383,7 +388,18 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     opening = next(element for element in catlin_model.plan.all_elements()
                    if getattr(element, "tag", None) == "FO-S-STAIR")
     net_sqft = (gross - abs(polygon_area([p.xy_m for p in opening.outline]))) * 10.7639
-    assert float(ceiling[0]["net_area_sqft"]) == pytest.approx(net_sqft, abs=0.2)
+    assert float(ceiling[0]["net_area_sqft"]) > net_sqft
+    others = sum(
+        (max(p[0] for p in pts) - min(p[0] for p in pts))
+        * (max(p[1] for p in pts) - min(p[1] for p in pts)) * 10.7639
+        for pts in (
+            [point for member in item.members for point in (member.p0, member.p1)]
+            for item in catlin_model.floors if item.tag in ("FS-M-WEST", "FS-M-EAST")))
+    # FS-M-WEST carries FO-M-STAIR, the same hole one storey down.
+    others -= abs(polygon_area(
+        [p.xy_m for p in next(e for e in catlin_model.plan.all_elements()
+                              if getattr(e, "tag", None) == "FO-M-STAIR").outline])) * 10.7639
+    assert float(ceiling[0]["net_area_sqft"]) == pytest.approx(net_sqft + others, abs=0.5)
 
     # One deck of several: the house's subfloor area is larger than this one ceiling.
     subfloor_area = sum(float(row["net_area_sqft"]) for row in rows

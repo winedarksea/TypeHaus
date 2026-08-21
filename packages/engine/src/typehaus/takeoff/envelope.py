@@ -29,7 +29,7 @@ from typehaus.resolve.accessories import (
     rainscreen_cavity_m,
     screens_rainscreen_base,
 )
-from typehaus.resolve.geometry import length, sub
+from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
 from typehaus.resolve.roof_geometry import roof_ceiling_area_m2
 
@@ -115,7 +115,10 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Net square feet per (scope, layer function, material, thickness).
 
     Wall areas are net of their openings, the same deduction ``sheet_goods_takeoff`` makes,
-    so a wall that is mostly glass does not order a wall's worth of drywall.
+    so a wall that is mostly glass does not order a wall's worth of drywall. Scopes are
+    ``wall`` / ``foundation wall``, the roof's two planes (``roof`` the sloped deck,
+    ``roof ceiling`` the plane under it), and ``slab`` — the horizontal equivalent, net of
+    its floor openings.
     """
     areas: dict[tuple[str, str, str, float], float] = defaultdict(float)
     net_areas = wall_net_areas_m2(model)
@@ -175,6 +178,36 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                     areas[("roof ceiling", lining_layer.function.value,
                            lining_layer.material_ref,
                            lining_layer.thickness.meters)] += ceiling_m2
+
+    # Slabs had the identical hole ``wall_structure.py`` names in so many words: a slab is a
+    # ``ResolvedSolid``, ``structural_solids_takeoff`` bills its gross volume as concrete, and
+    # every *other* layer of its assembly — below-slab XPS, an EPS stay-in-place deck form,
+    # the furring rib, the gypsum thermal barrier under it — reached no order at all. Billed
+    # on the plan outline net of its floor openings, which is the same net area
+    # ``structural_solids_takeoff`` extrudes, so the covering and the pour cannot disagree
+    # about how big the slab is. STRUCTURE stays out for the wall path's reason: concrete is
+    # bought by the yard, and ``structural_solids`` already bills it.
+    for solid in model.solids:
+        if solid.category != "slab" or solid.assembly is None:
+            continue
+        assembly = model.plan.library.resolve_assembly(solid.assembly)
+        if assembly is None:
+            continue
+        net_m2 = max(0.0, abs(polygon_area(list(solid.outline)))
+                     - sum(abs(polygon_area(list(void))) for void in solid.voids))
+        for slab_layer in assembly.layers:
+            if slab_layer.function in _BILLABLE:
+                areas[("slab", slab_layer.function.value, slab_layer.material_ref,
+                       slab_layer.thickness.meters)] += net_m2
+            fill = slab_layer.cavity
+            if fill is not None:
+                depth = fill.thickness if fill.thickness is not None else slab_layer.thickness
+                areas[("slab", "insulation (cavity)", fill.material_ref,
+                       depth.meters)] += net_m2
+        for lining_layer in assembly.default_lining:
+            if lining_layer.function in _BILLABLE:
+                areas[("slab", lining_layer.function.value, lining_layer.material_ref,
+                       lining_layer.thickness.meters)] += net_m2
 
     return [
         {"scope": scope, "function": function, "material": material,

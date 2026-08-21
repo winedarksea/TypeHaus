@@ -267,12 +267,23 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
     of the sunken-garden wall while W-B-S1/W-B-S3 stayed bare, so the garden wall line changes
     construction at N-B-S1. It derives once, and TR-CATLIN-ASSEMBLY-JOG binds and suppresses
     it like the rest.
+
+    The 2026-08-21 basement-ceiling overhaul framed the four 12" concrete walls on the y=18'
+    cross line, and each of the three splits along it became a real assembly change where it
+    used to be one continuous pour: the furnace room's wet wall meeting the ESS closet's
+    steel box at N-B-ESS-S, the closet meeting the plain playroom partition at N-B-STR, and
+    the whole line meeting the surviving x=18' concrete at N-B-C. The ESS/bathroom entry at
+    N-B-BA-W picked up W-B-STR2's new steel-stud assembly for the same reason. All four are
+    changes of construction along a wall line a builder has to be told about — which is the
+    definition this test exists to hold.
     """
     keys = sorted({c.key for c in catlin_model.conditions
                    if c.key.startswith("assembly_change:")})
     assert keys == [
         ("assembly_change:CATLIN_BASEMENT_12_GARDEN|"
          "SAUNA_LINER_ON_BASEMENT_12_GARDEN"),
+        ("assembly_change:CATLIN_CONC_12_INT|INT_2X6_STAGGERED_PLUMBING|"
+         "INT_ESS_CLOSET_STEEL"),
         "assembly_change:CATLIN_CONC_12_INT|SAUNA_LINER_ON_CONCRETE",
         # The plant room's liner, 2026-08-18, and the same kind of transition as the sauna's
         # one line up: a humid-side wall type starting partway along a wall line. On the
@@ -284,5 +295,6 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         ("assembly_change:CATLIN_INT_2X6_BRG|INT_2X4_PARTITION|"
          "PLANT_INT_2X4_HUMID|PLANT_INT_2X6_BRG_HUMID"),
         "assembly_change:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",
-        "assembly_change:INT_2X6_STAGGERED_PLUMBING|INT_ESS_CLOSET_STEEL",
+        "assembly_change:INT_2X4_PARTITION|INT_ESS_CLOSET_STEEL",
+        "assembly_change:INT_2X6_PLUMBING|INT_ESS_CLOSET_STEEL",
     ]

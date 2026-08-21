@@ -24,7 +24,8 @@ from typehaus import Building, Library, PlanModel, Project, Storey, ft, load_bas
 from library import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES, STARTER_FIXTURE_TYPES,
                      STARTER_FURNITURE_TYPES, STARTER_RAILING_TYPES)
 
-from params import breezeway, foundations, raised_garden, roof_trim, solar, sunken_garden
+from params import (breezeway, foundations, main_deck, raised_garden, roof_trim, solar,
+                    sunken_garden)
 from plan import (assemblies, circuits, electrical, fixtures, furniture_types,
                   lighting, lighting_types, mep, placeables, site, transitions,
                   views, wind_clamps)
@@ -87,7 +88,7 @@ _project = Project(
 )
 
 _storeys = (
-    Storey(uid="STBASEAAAA", tag="basement", elevation=ft(-9),
+    Storey(uid="STBASEAAAA", tag="basement", elevation=ft(-9, -4),
            default_ceiling_height=ft(9)),
     Storey(uid="STMAINAAAA", tag="main", elevation=ft(0),
            default_ceiling_height=ft(9)),
@@ -95,10 +96,12 @@ _storeys = (
     # GARAGE_STEM_REVEAL above *grade*, not above the house datum, because the garage is
     # driven into off the ground and the ground is 2'-6" below the main floor. The slab it
     # floors stays down at grade, one GARAGE_STEM_REVEAL below this storey — which is why
-    # the overhead door carries a negative sill (plan/storeys/garage.py).
+    # the overhead door carries a negative sill (plan/storeys/garage.py). Plates grew to
+    # 8'-4" on 2026-08-21 so the garage roof stayed put when grade took the storey down 4";
+    # see the note on WALLS there.
     Storey(uid="STGARAAAAA", tag="garage",
            elevation=ft(foundations.SITE_GRADE.feet + garage.GARAGE_STEM_REVEAL.feet),
-           default_ceiling_height=ft(8)),
+           default_ceiling_height=ft(8, 4)),
     # Platform framing: 9' stud wall plus the nominal 12" floor system above it.
     Storey(uid="STSECDAAAA", tag="second", elevation=ft(10),
            default_ceiling_height=ft(9)),
@@ -121,7 +124,7 @@ PLAN = (
         "main",
         [*main.ELEMENTS, *fixtures.MAIN_FIXTURES, *fixtures.PORCH_HYDRANT,
          *sunken_garden.MAIN_ELEMENTS,
-         *breezeway.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS,
+         *breezeway.MAIN_ELEMENTS, *main_deck.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS,
          *electrical.MAIN_ELEMENTS, *lighting.MAIN_LIGHTING,
          *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES,
          *wind_clamps.MAIN_WIND_CLAMPS],

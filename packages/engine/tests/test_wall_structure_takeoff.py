@@ -14,14 +14,20 @@ from typehaus.takeoff.wall_structure import wall_structure_takeoff
 def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     rows = wall_structure_takeoff(catlin_model)
     assert rows, "catlin's basement, garage and garden walls are all monolithic"
-    # 39 since 2026-08-18: the sunken garden's 16" arched cross-wall and the three
+    # 34 since 2026-08-21: the basement-ceiling overhaul framed W-B-CW, W-B-CW2, W-B-CW3,
+    # W-B-CE and W-B-STR2, which were 12" cast concrete only because the old suspended deck
+    # spanned between them. They bill studs in `framing` now and no longer appear here — the
+    # partition the two sections make is exactly ``frames_as_members``, so a wall leaving one
+    # arrives in the other.
+    #
+    # It was 39 from 2026-08-18, when the sunken garden's 16" arched cross-wall and the three
     # W-SG-RAIL-* masonry parapets over it went, and with them the last `cmu` in the house.
     #
     # Counted as DISTINCT WALLS, not as the sum of the rows' counts. Since the Ishtar scheme
     # (2026-08-20) one wall can reach several rows: W-B-BRICK's wythe is a split row
     # (`Layer.slot`) of three brick colours, and each colour bills its own band. Summing the
     # counts would say 41 walls and be counting brick, not walls.
-    assert len({tag for row in rows for tag in row["tags"]}) == 39
+    assert len({tag for row in rows for tag in row["tags"]}) == 34
     assert {row["material"] for row in rows} == {
         "concrete", "retaining-block", "brown-brick",
         "glazed-lapis-brick", "glazed-gold-brick"}
@@ -67,7 +73,7 @@ def test_the_sunken_garden_brick_wythe_is_billed(catlin_model) -> None:
         assert float(row["net_area_sqft"]) > 0
         assert float(row["volume_cuft"]) > 0
     # The bands partition the same net face the one-colour wall billed, no more and no less.
-    assert 118 < sum(float(row["net_area_sqft"]) for row in rows) < 126
+    assert 124 < sum(float(row["net_area_sqft"]) for row in rows) < 132
     # And they are in the right proportions: the field is most of the wall, the plinth is
     # the bottom 2'-0", and the two 2-course registers are the least of it.
     assert (float(by_material["glazed-lapis-brick"]["net_area_sqft"])

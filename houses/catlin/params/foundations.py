@@ -50,43 +50,56 @@ from plan.storeys.garage import (
 # --- the site datum ---------------------------------------------------------------
 #
 # Finished grade, in the project frame. The vertical datum of this model is the main floor
-# (FFE = 0'-0"), so "raising the house 2'-6" out of the ground" is authored the way a
+# (FFE = 0'-0"), so "raising the house 2'-10" out of the ground" is authored the way a
 # drawing set states it: the floor stays at 0'-0" and grade goes down. Everything pinned to
 # soil rather than to the house — the garage that is still driven into at grade, its stem
 # reveal, the breezeway's frost pads, the hydrant's bury — derives from here.
 #
+# 2'-6" on 2026-08-18, then 2'-10" on 2026-08-21: the mixed I-joist / EPS-formed deck over
+# the basement is 12 5/8" deep where the cast slab was 9", so the house rose 4" and the
+# basement floor stayed where it was rather than surrendering the headroom.
+#
 # ``plan/site.py`` is ``# haus: editable`` and may hold only literals, so it repeats this
 # number as ``Site.grade``. ``plan/manifest.py`` asserts the two agree; do not edit one
 # without the other.
-SITE_GRADE = ft(-2, -6)
+SITE_GRADE = ft(-2, -10)
 
 # --- house strip footings --------------------------------------------------------
-_HOUSE_WALL_TAGS = [
-    "W-B-S1", "W-B-S2", "W-B-S3", "W-B-E1", "W-B-E2", "W-B-N1", "W-B-N2",
-    "W-B-N3", "W-B-W1", "W-B-W2", "W-B-CS", "W-B-CS2", "W-B-CN", "W-B-CN2", "W-B-CW",
-    "W-B-CE", "W-B-STR", "W-B-STR2",
-    # Appended, not inserted: the uid is enumerate()'d over this list, so a new tag goes on
-    # the end or every footing after it silently renumbers. W-B-CW3 is the 2026-08-02 split
-    # of W-B-CW at the ESS closet (plan/storeys/basement.py) — same 12" concrete, so the
-    # same 20"x8" strip runs under it.
-    "W-B-CW3",
-]
+#
+# **The index is authored, not counted.** Each uid is ``CF{index:03d}AAAAA``, and the index
+# used to come from ``enumerate()`` over a bare tag list — so removing a tag renumbered
+# every footing after it and changed their IFC GlobalIds, against decision #16. Writing the
+# pairs out makes the number what it always meant to be: this footing's permanent name.
+# Add a footing with the next unused index; retire one by deleting its row and never
+# reusing the number.
+#
+# 15, 16, 18 and 19 are retired (2026-08-21). W-B-CW, W-B-CE, W-B-STR2 and W-B-CW3 became
+# framed partitions in the basement-ceiling overhaul — a stud wall on the slab needs no
+# 20"x8" strip, no bedding and no drain tile, and those four runs of tile had nothing to
+# collect. FT-B-STR stays: W-B-STR is still a bearing wall, framed or not.
+_HOUSE_WALL_TAGS = (
+    (1, "W-B-S1"), (2, "W-B-S2"), (3, "W-B-S3"), (4, "W-B-E1"), (5, "W-B-E2"),
+    (6, "W-B-N1"), (7, "W-B-N2"), (8, "W-B-N3"), (9, "W-B-W1"), (10, "W-B-W2"),
+    (11, "W-B-CS"), (12, "W-B-CS2"), (13, "W-B-CN"), (14, "W-B-CN2"),
+    (17, "W-B-STR"),
+)
 
 HOUSE_FOOTINGS = [
     Footing(uid=f"CF{i:03d}AAAAA", tag=f"FT-{t[2:]}", under=t,
             width=inch(20), depth=inch(8))
-    for i, t in enumerate(_HOUSE_WALL_TAGS, start=1)
+    for i, t in _HOUSE_WALL_TAGS
 ]
 
 # Bearing prep below every house footing: 7" undercut, geotextile, drain tile, compacted
 # washed stone — a drained bearing surface that also breaks footing-to-wet-clay thermal
 # contact. 4" perimeter foam matches CATLIN_BASEMENT_12's exterior XPS.
+# One bedding per footing, sharing the footing's own permanent index for the same reason.
 HOUSE_FOOTING_BEDDING = [
-    FootingBedding(uid=f"CFB{i:03d}AAAA", tag=f"FB-{f.tag[3:]}", host_ref=f.tag,
+    FootingBedding(uid=f"CFB{i:03d}AAAA", tag=f"FB-{t[2:]}", host_ref=f"FT-{t[2:]}",
                    undercut=inch(7), perimeter_insulation=inch(4),
                    drain_tile_spec=DrainTile(diameter=inch(4), sock=True,
                                              discharge="daylight"))
-    for i, f in enumerate(HOUSE_FOOTINGS, start=1)
+    for i, t in _HOUSE_WALL_TAGS
 ]
 
 # --- glazed-brick veneer plinth (W-B-BRICK) ---------------------------------------
@@ -122,8 +135,9 @@ VENEER_PLINTH_BEDDING = [
 # --- garage ICF stem (basement storey; absolute elevations) -----------------------
 #
 # Every elevation in this block is measured from ``SITE_GRADE``, not from the project datum.
-# The garage is driven into at grade and stays there; when grade moved 2'-6" down, the whole
-# garage foundation went with it, while the house it stands beside did not move at all.
+# The garage is driven into at grade and stays there; when grade moved 2'-6" down — and
+# again 4" on 2026-08-21 — the whole garage foundation went with it, while the house it
+# stands beside did not move at all.
 _GRADE_FT = SITE_GRADE.feet
 _FROST = 42.0 / 12.0  # frost depth below grade
 # Exposed above grade, and the garage storey datum besides — ``GARAGE_STEM_REVEAL`` is the
@@ -239,10 +253,11 @@ GARAGE_SLAB = Slab(
 # --- garage service-door step-down -------------------------------------------------
 #
 # D-G-SERVICE's threshold is at 0'-0", level with the breezeway deck outside it (that pairing
-# is a house rule — see houses/catlin/CLAUDE.md). The garage slab is at grade, -2'-6". So
-# from 2026-08-18 there are five 6" risers between the two, inside the garage, and this is
+# is a house rule — see houses/catlin/CLAUDE.md). The garage slab is at grade, -2'-10". So
+# from 2026-08-18 there are five risers between the two, inside the garage, and this is
 # them: a 3'-0"-wide straight run north out of the door, a 3'-0" landing at the threshold
-# and four 11" treads below it, 6'-8" of floor in all out of the garage's 576 sf.
+# and four 11" treads below it, 6'-8" of floor in all out of the garage's 576 sf. They were
+# 6" each while grade sat at -2'-6"; they are 6.8" each now that it sits at -2'-10".
 #
 # It lands in the south-west corner, on the door's own 5'-0"..8'-0" band. The 16' overhead
 # door is in the *east* wall between y=45' and y=61', so the drive path never crosses this;
@@ -254,16 +269,22 @@ GARAGE_SLAB = Slab(
 # this run is a step-down *within* one storey with no floor to open.
 _STEP_X0 = SERVICE_DOOR_OFFSET
 _STEP_X1 = SERVICE_DOOR_OFFSET + SERVICE_DOOR_WIDTH
-_STEP_RISER_FT = 0.5           # 5 risers x 6" = the full 2'-6"
+# Five uniform risers over whatever the threshold-to-slab drop happens to be, rather than
+# the 6" the 2'-6" grade of 2026-08-18 made exact. The 2026-08-21 deck overhaul raised the
+# house 4" and left the slab in the ground, so the drop is 2'-10" and each riser is 6.8" —
+# still inside R311.7.5.1's 7 3/4" maximum, still five of them, so the run keeps its 6'-8"
+# footprint inside the garage. ``structural.stair_riser_uniformity`` grades the result.
+_STEP_RISERS = 5
+_STEP_RISER_FT = -SITE_GRADE.feet / _STEP_RISERS
 _STEP_TREAD_FT = 11.0 / 12.0   # 11" board, 10" going past a 1" nose — R311.7.5.2
 _STEP_LANDING_FT = 3.0         # R311.7.6: a landing at least as deep as the run is wide
 _STEP_THICKNESS = inch(6)
 _step_y = GARAGE_Y_SOUTH.feet
 _GARAGE_STEPS_SPEC = []
-for _index in range(5):
+for _index in range(_STEP_RISERS):
     _depth = _STEP_LANDING_FT if _index == 0 else _STEP_TREAD_FT
     _GARAGE_STEPS_SPEC.append((_index, _step_y, _step_y + _depth,
-                               SITE_GRADE.feet + (5 - _index) * _STEP_RISER_FT))
+                               SITE_GRADE.feet + (_STEP_RISERS - _index) * _STEP_RISER_FT))
     _step_y += _depth
 
 GARAGE_STEPS = [

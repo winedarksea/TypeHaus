@@ -109,9 +109,12 @@ _STAIR_HOUSED = frozenset({"tread", "winder"})
 # in a stair-adjacent wall reads as a clash for the same D3 offset that clears every stud
 # and plate here. Catlin has no such wall today, so the gap was invisible — see
 # tests/test_member_interference.py::test_stair_past_a_rough_opening_sill_is_not_a_clash.
+# ``column`` is here for the same reason ``newel`` is: a post authored under a landing
+# corner carries it, and the landing rims/joists it carries are laid out to the corner
+# point, so the post's 3 1/2" section and the rim that lands on it necessarily share plan.
 _STAIR_SUPPORT = frozenset({"stringer", "landing", "landing_framing", "plate",
                             "raked_plate", "joist", "blocking", "trimmer", "header", "sill",
-                            "partition", "newel", "hanger"}) | _STUD_KINDS
+                            "partition", "newel", "hanger", "column"}) | _STUD_KINDS
 # The stair members that are *carried* rather than carrying. Kept as its own set (instead
 # of a literal beside the rule) so ``{"newel", "header"}`` — the newel/header lap at the
 # turn corners, which overlap in z by design — resolves here rather than falling through
@@ -177,6 +180,10 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
       the *same* element; the box IR renders that nailing as a small shared volume.
     * **stair treads bearing on their stringers** — a tread is housed in / cleated to the
       stringers it spans between; the notch/bearing is intended joinery, not a clash.
+    * **a stair's wall ledger at the head of its flight** — the flight lands on the floor
+      opening's edge, so the hanger let into the shaft wall and the trimmer closing that
+      edge occupy the same corner. Invisible while catlin's main deck was a concrete pour
+      with no framing in it at all; the 2026-08-21 mixed deck put joists there.
     """
     kinds = {a.kind, b.kind}
     same_parent = a.parent == b.parent
@@ -231,6 +238,14 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     # Two ledger/hanger bands of the same stair lapping at a landing-platform corner
     # (e.g. a rim ledger meeting an edge-joist ledger on perpendicular concrete walls).
     if kinds == {"hanger"} and same_parent:
+        return True
+    # A stair's wall ledger meeting the floor-opening framing at the head of its flight.
+    # The flight arrives *at* the opening edge, so the ledger let into the shaft wall and
+    # the trimmer/header closing that edge share the corner by construction — they are one
+    # fastened joint, and the box IR carries neither the let-in nor the hanger's flange.
+    # Only ``hanger`` triggers it, and only against opening/deck framing: a stringer or a
+    # landing left too tall against a trimmer is still reported, by the rules above.
+    if "hanger" in kinds and (kinds - {"hanger"}) <= {"trimmer", "header", "joist", "rim"}:
         return True
     # Cut joists / trimmers bearing on a floor-opening header (the header carries them).
     if "header" in kinds and (kinds - {"header"}) <= {"joist", "trimmer", "plate", "raked_plate"}:

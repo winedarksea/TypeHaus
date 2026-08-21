@@ -79,7 +79,7 @@ BASEMENT_LIGHTING = [
                      controlled_by=("ED-B-WORKSHOP-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(1.5))),
     ElectricalDevice(uid="QTB0007AAA", tag="ED-B-WORKSHOP-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(16), ft(17, 5)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(16), ft(17, 8.626)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-BACKUP", room="RM-B-WORKSHOP", rotation=deg(0),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 

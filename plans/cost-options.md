@@ -118,10 +118,48 @@ roof are the same material and whose edge details are all formed metal. Shinglin
 alone would break that, and shingling the walls is not an option. If the metal roof goes,
 the elevations want revisiting, which is not a $/SF question.
 
-### Basement ceiling: 9" suspended concrete deck → 11-7/8" I-joists at 16" o.c.
-`concrete:slab:CATLIN_DECK_9_INT`, 34.26 cy / 1,233 SF — **$31,862 – $60,298 today.**
-Still the second-largest structural swap on the list. **The full entry is below under its
-2026-08-18 heading and its numbers still stand**, with two 2026-08-20 amendments:
+### ~~Basement ceiling: 9" suspended concrete deck → 11-7/8" I-joists at 16" o.c.~~ — TAKEN 2026-08-21
+
+**Superseded. This option was exercised, and in a better form than either column below.**
+The house does not choose between a concrete deck and a wood one: it has both, and their
+depths are equal so the boundary can move later.
+
+- 819 SF became `FS-M-WEST` / `FS-M-EAST` — 11 7/8" I-joists at 16" o.c., the same 18'-0"
+  span as `FS-SECOND`, priced through `[framing]` and `[sheet_goods]` like any other floor.
+- 414 SF stayed concrete over the dining radiant zone, but not as a shored pour: `SL-M-DECK`
+  is an 8" BuildDeck/LiteDeck EPS stay-in-place form with a 4 5/8" cast cap, 12 5/8" total,
+  which is exactly the joist-plus-subfloor depth beside it. `prices.toml` carries it as
+  `concrete:"slab:CATLIN_DECK_EPS_INT"` at **$10 – $20/SF, `unit = "SF"`** (ready-mix,
+  reinforcing, pump, place and finish) plus `envelope_layers:"eps-deck-form"` at **$9 –
+  $14.50/SF** for the forms — call it **$7,900 – $14,300 for the 414 SF**, against the
+  $10,600 – $20,300 the old $25.68 – $49.03/SF rate wanted for the same area.
+- The `unit = "SF"` is not cosmetic. `structural_solids` bills a slab's gross prism, so this
+  deck reads as 16.13 cy — eight inches of which is foam. On a $/cy rate that would buy 16
+  yards of concrete for a deck that pours 7.35.
+
+**Where the saving actually came from.** No shoring and no formwork: that is the $25,000 –
+$40,000 commercial mobilisation floor the amendment below identified, and a stay-in-place
+form does not incur it. Engineering stays but is a third of what a shored deck's was,
+because there is no shoring design in it. Downstream, four interior 12" concrete cross walls
+became stud partitions and took four 20"x8" strip footings, four `FootingBedding`s and four
+socked drain-tile runs with them.
+
+**What it cost.** The house rose 4" (the deck is 12 5/8" against the slab's 9", and the
+basement kept its headroom), which grew the exposed-foundation protection panel by ~50 SF
+and put another 4" on the zoning-height question in `plans/TODO.md`. Two things the
+all-joists column below would have saved and this does not: the dining zone keeps its
+thermal mass, and R-25 of EPS sits between two conditioned storeys where it buys nothing
+thermally — it is there because it is the formwork.
+
+**The 10" form + 3" cap alternative is still on the table** and is the next cut here if one
+is wanted: same depth class (13", 3/8" proud of the wood bays), ~21% less concrete
+(0.01396 cy/SF against 0.01774), R-31. It is one line in `houses/catlin/params/main_deck.py`.
+
+---
+
+The 2026-08-18/-20 entry that priced the all-joists version is kept below because it is the
+comparison this decision was made against, not because anything still bills at it. Its two
+2026-08-20 amendments:
 
 - **The low end of the concrete side is not obtainable, for a reason the old entry only
   guessed at.** A Twin Cities sub that owns deck shoring is a *commercial* contractor, and the
@@ -337,9 +375,12 @@ expect to stay wet.
 **Cost of the cut:** service life at the one detail nobody re-does without jacking the
 structure. This is the wrong $1,000 to save unless everything else has already been cut.
 
-### Basement ceiling: 9" suspended concrete deck → 11-7/8" I-joists at 16" o.c.
+### Basement ceiling: 9" suspended concrete deck → 11-7/8" I-joists at 16" o.c. (historical — superseded 2026-08-21)
 `concrete:slab:CATLIN_DECK_9_INT`, 34.26 cy / 1,233 SF, plus the main floor's finish —
 **point estimate ~$21,300 saved, likely $16,100 – $27,700.**
+
+*Superseded by the mixed EPS-form/joist deck actually built — see the entry near the top of
+this file. Kept verbatim because the decision was made against these numbers.*
 
 Researched 2026-08-18. The largest single downgrade on this list by a factor of four, and
 the only one that changes the structural system rather than a product selection.

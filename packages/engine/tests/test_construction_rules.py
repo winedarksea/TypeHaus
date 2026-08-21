@@ -81,7 +81,14 @@ def test_returns_contribute_takeoff_rows(catlin_model) -> None:
 
 def test_sill_plate_is_pt_bearing_and_carries_overlay_metadata(catlin_model) -> None:
     """The concrete-to-framed sill is a PT bearing plate landing on the concrete top, with
-    the lap/sealant/element-tag data an overlay recipe needs."""
+    the lap/sealant/element-tag data an overlay recipe needs.
+
+    Two cases share the rule and the plate. A wall on a *wall* also carries the
+    ``wall_foundation:`` boundary condition the detail sheet binds to; a wall on a *slab*
+    (every basement partition, and five more of them since the 2026-08-21 deck overhaul)
+    carries none, because a slab-to-partition junction is not a wall stack and the condition
+    deriver has nothing to name. It is still the same IRC R317.1 plate and still has to be
+    ordered."""
     sills = [r for r in catlin_model.construction_returns
              if r.tag == "CR-CONC-TO-FRAMED-SILL"]
     assert sills
@@ -90,8 +97,12 @@ def test_sill_plate_is_pt_bearing_and_carries_overlay_metadata(catlin_model) -> 
         assert sill.material_ref == "spf"
         assert sill.lap_m > 0.0
         assert sill.sealant is not None
-        assert len(sill.element_tags) >= 2  # the concrete wall + the framed wall
-        assert sill.condition_key and sill.condition_key.startswith("wall_foundation:")
+        assert len(sill.element_tags) >= 2  # the concrete element + the framed wall
+    on_walls = [s for s in sills if s.condition_key is not None]
+    on_slabs = [s for s in sills if s.condition_key is None]
+    assert on_walls and on_slabs, "both cases are live on this house"
+    assert all(s.condition_key.startswith("wall_foundation:") for s in on_walls)
+    assert {s.element_tags[0] for s in on_slabs} == {"SL-B-FLOOR"}
 
 
 def test_sauna_liner_return_declares_air_vapor_continuity(catlin_model) -> None:
@@ -230,8 +241,14 @@ def test_a_ceiling_channel_rule_naming_no_room_is_inert(catlin_model) -> None:
 
 def test_an_unscoped_ceiling_channel_rule_needs_an_authored_deck_outline(catlin_model) -> None:
     """Documented limitation: an unscoped rule bills the deck's own ``outline``, and the
-    pass runs before the framing stage that would otherwise derive one. FS-SECOND authors
-    no outline, so an unscoped rule finds nothing here — scope it, or author the outline."""
+    pass runs before the framing stage that would otherwise derive one. FS-SECOND and
+    FS-ATTIC author no outline, so an unscoped rule finds nothing on them — scope it, or
+    author the outline.
+
+    FS-M-WEST and FS-M-EAST *do* author one (2026-08-21: they have to, since they split one
+    storey's deck between them), so an unscoped rule does reach those two. That is the same
+    statement from the other side, and it is asserted here so the limitation stays a
+    limitation of missing outlines rather than of decks."""
     from typehaus.model.assembly import ConstructionRule
     from typehaus.quantities import inch
     from typehaus.resolve.construction import _find_ceiling_channel
@@ -239,4 +256,6 @@ def test_an_unscoped_ceiling_channel_rule_needs_an_authored_deck_outline(catlin_
     rule = ConstructionRule(tag="CR-WHOLE-DECK", applies_to="floor:ceiling_channel",
                             kind="furring", dimension=inch(16),
                             takeoff_category="resilient-channel")
-    assert list(_find_ceiling_channel(catlin_model, rule)) == []
+    found = list(_find_ceiling_channel(catlin_model, rule))
+    assert sorted({tag for tag in ("FS-M-WEST", "FS-M-EAST", "FS-SECOND", "FS-ATTIC")
+                   if any(tag in item.uid for item in found)}) == ["FS-M-EAST", "FS-M-WEST"]

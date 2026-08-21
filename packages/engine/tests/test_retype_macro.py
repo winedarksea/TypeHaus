@@ -70,11 +70,21 @@ def test_retype_warns_about_every_authored_reference(catlin_plan):
     result = retype_placeable(catlin_plan, "main", tag="FX-M-BATH2-SH",
                               type_ref="FX-TUBSHOWER-60")
     text = "\n".join(result.warnings)
-    # The DFU-bearing serves lists and the cast slab stub were authored against the 36"
-    # shower — they keep pointing at the tag (no rename), but their sizing is up for
-    # review, which is exactly what the warnings say.
+    # The DFU-bearing serves lists were authored against the 36" shower — they keep pointing
+    # at the tag (no rename), but their sizing is up for review, which is what the warnings
+    # say.
     assert "PR-B-MAIN-DRAIN" in text
-    assert "SP-" in text  # the slab stub via serves_fixture
+
+
+def test_retype_warns_about_the_cast_sleeve_that_serves_the_fixture(catlin_plan):
+    """A ``serves_fixture`` sleeve is a hole set before a pour: resize the fixture and the
+    hole is a decision, not a detail. Read on a *basement* shower since 2026-08-21 — the
+    main floor's cast sleeves went with the deck overhaul (its ceiling is I-joists over two
+    thirds of the floor now), so FX-M-BATH2-SH no longer has one to warn about."""
+    result = retype_placeable(catlin_plan, "basement", tag="FX-B-SAUNA-SH",
+                              type_ref="FX-TUBSHOWER-60")
+    text = "\n".join(result.warnings)
+    assert "SP-B-SAUNA-SH" in text
 
 
 def test_same_footprint_retype_moves_nothing(catlin_plan):

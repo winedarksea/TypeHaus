@@ -88,6 +88,12 @@ DECLARED_DIVERGENCES = {
         "one-piece centerline no longer pairs; the bearing stack itself is unbroken"
     ),
     "House Main Floor Ceiling Drywall": "ceiling finishes are IfcCovering now, not IfcSlab",
+    "House Main Floor Concrete Slab": (
+        "the 2026-08-21 basement-ceiling overhaul: the 1,233 SF x 9\" cast suspended deck "
+        "became two I-joist FloorSystems (FS-M-WEST, FS-M-EAST, 819 SF) plus a 414 SF "
+        "EPS-formed concrete band that keeps SL-M-DECK's tag and uid. Nothing pairs with a "
+        "whole-floor slab any more because there is not one"
+    ),
     "House Second Floor Ceiling Drywall": "ceiling finishes are IfcCovering now, not IfcSlab",
     "Deck Railing East": "railings are IfcRailing now, not wall solids",
     "Deck Railing South": "railings are IfcRailing now, not wall solids",
@@ -239,12 +245,17 @@ def test_spatial_hierarchy_carries_every_reference_storey(equivalence):
 DECLARED_STOREY_ELEVATION_MOVES = {
     "second": (3.048, "the main storey grew from 9' to 10' floor-to-floor"),
     "attic": (6.096, "rides the taller stack: 10' + 10' instead of 9' + 9'"),
-    "garage": (-0.2032, "the garage storey sits at its ICF stem top, which is 1'-10\" above "
-                        "*grade* — and grade is 2'-6\" below the main floor since the "
-                        "2026-08-18 lift, so the stem top is -0'-8\". The reference model "
-                        "put the garage at the house datum because it had the house at "
-                        "grade; the garage has not moved relative to the ground it is "
-                        "driven into, the ground moved relative to the house"),
+    "garage": (-0.3048, "the garage storey sits at its ICF stem top, which is 1'-10\" above "
+                        "*grade* — and grade is 2'-10\" below the main floor since the "
+                        "2026-08-18 lift and the 2026-08-21 deck overhaul, so the stem top "
+                        "is -1'-0\". The reference model put the garage at the house datum "
+                        "because it had the house at grade; the garage has not moved "
+                        "relative to the ground it is driven into, the ground moved "
+                        "relative to the house"),
+    "basement": (-2.8448, "the 2026-08-21 basement-ceiling overhaul: the mixed I-joist / "
+                          "EPS-formed deck over the basement is 12 5/8\" deep where the "
+                          "cast slab was 9\", so the house rose 4\" and the basement floor "
+                          "stayed in the ground — -9'-4\" instead of the reference's -9'-0\""),
 }
 
 

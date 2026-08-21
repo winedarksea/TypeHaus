@@ -34,8 +34,9 @@ def test_the_panel_band_runs_from_six_inches_under_grade_to_the_wall_top(catlin_
         z0, z1 = layer.band(wall)
         assert z0 == pytest.approx(grade_m - inch(6).meters)
         assert z1 == pytest.approx(wall.z1_m)
-        # 3'-0" of panel over a 9'-0" wall — the point of banding it.
-        assert (z1 - z0) * _M_TO_FT == pytest.approx(3.0, abs=1e-6)
+        # 3'-4" of panel over a 9'-4" wall — the point of banding it. (Grade is -2'-10"
+        # since the 2026-08-21 deck overhaul, and the band is 6" under it.)
+        assert (z1 - z0) * _M_TO_FT == pytest.approx(3.0 + 1.0 / 3.0, abs=1e-6)
 
 
 # W-B-S2 carries the sauna's liner variant of the same outboard stack since 2026-08-18, so
@@ -59,7 +60,7 @@ def test_the_south_wall_keeps_a_full_height_parge_and_no_band(catlin_model):
 
 
 def test_the_sauna_liner_stops_at_the_room_ceiling_not_the_wall_top(catlin_model):
-    """W-B-S2 is a 9'-0" foundation wall bounding a 7'-6" room. The liner is banded off
+    """W-B-S2 is a 9'-4" foundation wall bounding a 7'-6" room. The liner is banded off
     WALL_TOP so the takeoff does not buy basswood, furring and foil-faced polyiso for the
     1'-6" of concrete above the sauna's ceiling."""
     wall = catlin_model.wall("W-B-S2")
@@ -69,7 +70,7 @@ def test_the_sauna_liner_stops_at_the_room_ceiling_not_the_wall_top(catlin_model
         z0, z1 = layer.band(wall)
         assert z0 == pytest.approx(wall.z0_m)
         assert z1 == pytest.approx(wall.z1_m - inch(18).meters)
-        assert (z1 - z0) * _M_TO_FT == pytest.approx(7.5, abs=1e-6)
+        assert (z1 - z0) * _M_TO_FT == pytest.approx(7.5 + 1.0 / 3.0, abs=1e-6)
 
 
 def test_both_basement_assemblies_stand_the_same_distance_off_the_concrete(catlin_model):
@@ -104,14 +105,14 @@ def test_the_solid_is_cut_to_the_band_not_to_the_wall(catlin_model):
 
 
 def test_the_takeoff_bills_the_band_and_not_the_wall(catlin_model):
-    """324 SF: 108 LF of N/E/W perimeter x 3'-0". Billing the wall's face instead would
+    """360 SF: 108 LF of N/E/W perimeter x 3'-4". Billing the wall's face instead would
     order the panel for every buried foot of foam it never reaches — which is exactly what
     the parge coat it replaced was doing, over 1,394 SF house-wide."""
     from typehaus.takeoff.envelope import envelope_layer_takeoff
 
     rows = {row["material"]: row for row in envelope_layer_takeoff(catlin_model)}
     panel = rows["foundation-protection-panel"]
-    assert panel["net_area_sqft"] == pytest.approx(324.0, abs=1.0)
+    assert panel["net_area_sqft"] == pytest.approx(360.0, abs=1.0)
     # The parge survives only on the south wall (and the porch railing's CMU back face).
     assert rows["stucco"]["net_area_sqft"] < 500.0
 

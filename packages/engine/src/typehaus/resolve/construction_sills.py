@@ -90,6 +90,83 @@ def _find_framed_on_concrete(model: ResolvedModel, rule: ConstructionRule) \
                         "wall_foundation", lower.assembly, upper.assembly),
                 )
             break  # first storey above with a stack owns this concrete wall
+    yield from _framed_on_slab(model, rule, lap)
+
+
+def _framed_on_slab(model: ResolvedModel, rule: ConstructionRule,
+                    lap: float) -> Iterator[ResolvedConstructionReturn]:
+    """The same PT sill where a framed wall stands on a concrete *slab* rather than a wall.
+
+    IRC R317.1(2)/(3) does not care which pour it is: wood in direct contact with concrete
+    or resting on a slab in contact with the ground is preservative-treated, over a sill
+    gasket, over a capillary break. Every basement partition in a house with a slab floor is
+    this detail, and until 2026-08-21 the finder above looked only for a framed wall
+    *stacked on a concrete wall* — so catlin's sauna, ESS-closet and bathroom partitions
+    stood on 3 1/2" of slab and ordered no treated plate at all. The 2026-08-21 deck
+    overhaul framed five more walls on that slab, and its plan predicted the return would
+    grow with them; it did not, which is what surfaced this.
+
+    Matched geometrically, not by tag: the wall's base sits at the slab's top face within a
+    plate's thickness, and its axis midpoint falls inside the slab's outline. Nothing here
+    fires for a wall on a wall — that is the case above, which owns the storey-stack
+    condition key and would otherwise bill the same plate twice.
+    """
+    from shapely.geometry import Point, Polygon
+
+    slabs = [solid for solid in model.solids
+             if solid.category == "slab" and len(solid.outline) >= 3
+             and _is_concrete_ref(model, solid.assembly)]
+    if not slabs:
+        return
+    stacked_on_concrete = set()
+    for wall in model.walls:
+        lower_asm = model.plan.library.resolve_assembly(wall.assembly)
+        if lower_asm is not None and _is_concrete(lower_asm):
+            for other in model.walls:
+                if other is not wall and _stack_overlap(wall, other) is not None:
+                    stacked_on_concrete.add(other.tag)
+    for wall in model.walls:
+        if wall.tag in stacked_on_concrete or wall.is_foundation:
+            continue
+        asm = model.plan.library.resolve_assembly(wall.assembly)
+        if asm is None or _is_concrete(asm):
+            continue
+        bearing = _framed_wood_layer(asm)
+        if bearing is None:
+            continue
+        a0, a1 = wall.axis
+        run = length(sub(a1, a0))
+        if run < _MIN_STACK_OVERLAP_M:
+            continue
+        mid = ((a0[0] + a1[0]) / 2.0, (a0[1] + a1[1]) / 2.0)
+        slab = next((s for s in slabs
+                     if abs(s.z1_m - wall.z0_m) <= lap + _EPS
+                     and Polygon(s.outline).buffer(_EPS).contains(Point(mid))), None)
+        if slab is None:
+            continue
+        width = bearing.thickness.meters
+        direction = unit(sub(a1, a0))
+        anchor = add(a0, sub(band_axis(wall.axis, _structure_polygon(wall))[0],
+                             wall.axis[0]))
+        yield ResolvedConstructionReturn(
+            uid=f"CR-{slab.uid}-{wall.uid}-sill",
+            tag=rule.tag, storey=wall.storey, kind=rule.kind,
+            applies_to=rule.applies_to, takeoff_category=rule.takeoff_category,
+            material_ref="spf",
+            element_tags=(slab.tag, wall.tag),
+            outline=_strip(anchor, direction, run, -width / 2.0, width / 2.0),
+            z0_m=wall.z0_m, z1_m=wall.z0_m + lap, thickness_m=width, length_m=run,
+            lap_m=lap, thermal_continuity=False, sealant="sill-gasket",
+            flashing="capillary-break", returning_layer=bearing.name,
+            condition_key=None,
+        )
+
+
+def _is_concrete_ref(model: ResolvedModel, assembly: str | None) -> bool:
+    if assembly is None:
+        return False
+    asm = model.plan.library.resolve_assembly(assembly)
+    return asm is not None and _is_concrete(asm)
 
 
 # The plate a joisted deck lands on where it bears on concrete. Laid *flat* — its bearing

@@ -190,12 +190,14 @@ CATLIN_ROOF = Assembly(
 # and the same 4" of exterior XPS; they differ only in what covers that foam, and they
 # differ because what exposes it is different.
 #
-# On N/E/W the foam is buried except for the 2'-6" band the 2026-08-18 lift raised out of
-# the ground, so it gets a protection panel *over that band only* — below grade the backfill
-# protects the XPS and above grade the panel does, and nothing is bought for the 6'-6" in
-# between. That band is authored, not derived: ``Layer.extent`` off the GRADE datum.
+# On N/E/W the foam is buried except for the 2'-10" band the 2026-08-18 lift and the
+# 2026-08-21 deck overhaul raised out of the ground, so it gets a protection panel *over that
+# band only* — below grade the backfill protects the XPS and above grade the panel does, and
+# nothing is bought for the 6'-6" in between. That band is not a number in this file: the
+# extent is authored off the GRADE datum, so the two lifts grew it (and its ~50 SF of panel)
+# without anything here being edited.
 #
-# On the south the sunken garden exposes the foam from -9'-0" to 0'-0", which is not a band
+# On the south the sunken garden exposes the foam from -9'-4" to 0'-0", which is not a band
 # off grade at all — grade is above the garden floor by nine feet there — so that wall keeps
 # the full-height parge coat, and keeps CATLIN_BASEMENT_12_GARDEN to say so.
 #
@@ -214,13 +216,13 @@ CATLIN_BASEMENT_12 = Assembly(
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
         Layer(name="xps-b", material_ref="xps", thickness=inch(2.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        # The exposed-foundation band (2026-08-18). Runs from 6" *below* grade — so no foam
-        # edge shows at the soil line, and so the panel is what the shovel hits rather than
-        # the XPS — up to the top of the wall at 0'-0", where its head tucks under the
-        # rainscreen's Z-flashing with the bug screen above it. It replaces the full-height
-        # parge this wall used to claim over nine feet of buried foam: the parge was added
-        # 2026-08-01 for the *south* wall's exposure and applied to all four sides because a
-        # layer had no way to say "only here".
+        # The exposed-foundation band (2026-08-18, deeper since 2026-08-21). Runs from 6"
+        # *below* grade — so no foam edge shows at the soil line, and so the panel is what
+        # the shovel hits rather than the XPS — up to the top of the wall at 0'-0", where
+        # its head tucks under the rainscreen's Z-flashing with the bug screen above it. It
+        # replaces the full-height parge this wall used to claim over nine feet of buried
+        # foam: the parge was added 2026-08-01 for the *south* wall's exposure and applied
+        # to all four sides because a layer had no way to say "only here".
         Layer(name="protection-panel", material_ref="foundation-protection-panel",
               thickness=inch(0.5), function=LayerFunction.CLADDING,
               extent=LayerExtent(
@@ -277,18 +279,50 @@ CATLIN_SLAB_FLOOR = Assembly(
     source="catlin-house basement slab: 3\" below-slab XPS, R-15 @ 40 psi compressive",
 )
 
-# Main-floor structural deck: 9" cast concrete over the (conditioned) basement, so it is an
-# interior floor, not an envelope slab, and carries no insulation. The "INT" tag token is
-# the codebase's signal for that (see CATLIN_CONC_12_INT, INT_2X6_PLUMBING) — it tells the
-# prescriptive-energy table to skip this deck instead of holding it to the R-10 slab minimum.
-CATLIN_DECK_9_INT = Assembly(
-    tag="CATLIN_DECK_9_INT",
+# Main-floor structural deck: an EPS stay-in-place form with a cast concrete cap, over the
+# (conditioned) basement — so it is an interior floor, not an envelope slab. The "INT" tag
+# token is the codebase's signal for that (see CATLIN_CONC_12_INT, INT_2X6_PLUMBING) — it
+# tells the prescriptive-energy table to skip this deck instead of holding it to the R-10
+# slab minimum. Keep the token underscore-delimited: ``mn_energy._is_interior_assembly``
+# keys on it and would otherwise grade a deck between two conditioned storeys against MN
+# Zone 6's R-21.
+#
+# **This replaced a 1,233 SF x 9" cast suspended slab on 2026-08-21.** That slab was the
+# single most expensive line in the model — 34.26 cy of concrete on shored plywood formwork
+# whose commercial mobilisation floor alone was $25-40k — and it forced eight interior 12"
+# concrete cross walls with strip footings under them, because it was designed to span
+# between them. Concrete now goes only where it is wanted, under the dining radiant zone
+# (x 18'-36', y 13'-36', 414 SF); the other 819 SF is wood I-joists on the same 18' span,
+# and the two systems are interchangeable bay by bay because their depths match.
+#
+# The depth is the whole point. 4 5/8" cap + 8" form = 12 5/8", which is exactly
+# FS-SECOND's 11 7/8" I-joist plus its 3/4" plywood subfloor: same soffit plane, same
+# finished-floor plane, same 18' span to the x=18' bearing line. Both numbers are owned by
+# ``params/main_deck.py`` (EPS_CAP / EPS_FORM_DEPTH), and the 10" form + 3" cap alternative
+# — same depth class, ~21% less concrete, R-31 — is a one-line swap there.
+#
+# BuildDeck's published table takes an 8" form to a 20' clear span at a 4" cap with 4,000
+# psi concrete and 60 ksi rebar under 15 psf dead + 40 psf live; the span here is 18'-0".
+#
+# Layers read top-down like CATLIN_SLAB_FLOOR. The gypsum is not optional trim: IRC R316.4
+# requires a thermal barrier over foam plastic on the room side, and this is it.
+CATLIN_DECK_EPS_INT = Assembly(
+    tag="CATLIN_DECK_EPS_INT",
     layers=(
-        Layer(name="concrete", material_ref="concrete", thickness=inch(9.0),
+        Layer(name="concrete-cap", material_ref="concrete", thickness=inch(4.625),
               function=LayerFunction.STRUCTURE),
+        Layer(name="eps-form", material_ref="eps-deck-form", thickness=inch(8.0),
+              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+        # The form's own integral steel rib, which is what the ceiling screws to — the same
+        # "the vapour path is the air between the sections" reading `steel-stud` carries.
+        Layer(name="furring-rib", material_ref="steel-stud", thickness=inch(0.5),
+              function=LayerFunction.FURRING,
+              framing=FramingSpec(member="1x4", direction="horizontal")),
+        Layer(name="gwb", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="catlin-house main-floor deck — 9\" cast structural slab over the basement",
+    source="catlin-house main-floor deck — BuildDeck/LiteDeck 8\" EPS stay-in-place form with a 4 5/8\" cast cap (12 5/8\" total, matching FS-SECOND's joist + subfloor), steel furring rib and a 5/8\" gypsum R316.4 thermal barrier under it; replaced CATLIN_DECK_9_INT 2026-08-21",
 )
 
 CATLIN_CONC_12_INT = Assembly(
@@ -403,7 +437,7 @@ BASEMENT_BRICK_VENEER = Assembly(
                   top=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(93.333)))),
         # The lapis cap above the upper register. Open top on purpose: `top=None` is the
         # wall's own top, which is the only way to say "run it out" without writing this
-        # wall's 8'-5" into an assembly type that any wall may use.
+        # wall's 8'-9" into an assembly type that any wall may use.
         Layer(name="brick-field-hi", material_ref="glazed-lapis-brick",
               thickness=_VENEER_WYTHE,
               function=LayerFunction.STRUCTURE, slot="wythe",
@@ -799,7 +833,7 @@ SAUNA_LINER_ON_CONCRETE = Assembly(
 # The three liner layers are restated here rather than splatted from _SAUNA_LINER because
 # they carry a vertical extent that is specific to this wall and must not leak onto the
 # partitions: the sauna's ceiling is at 7'-6" (W-B-SA-W/-N are `top=ft(7, 6)`) while the
-# foundation wall runs the full 9'-0" from bottom_elevation=ft(-9) to top_elevation=ft(0).
+# foundation wall runs the full 9'-4" from bottom_elevation=ft(-9, -4) to top_elevation=ft(0).
 # Bounding the liner at WALL_TOP - 1'-6" keeps the takeoff from billing basswood T&G, furring
 # and foil-faced polyiso over the 1'-6" of concrete above the sauna's ceiling.
 # PROVISIONAL: if the basement ever goes to a joist ceiling running the full width, the liner
@@ -848,6 +882,14 @@ CATLIN_MUDROOM_INT_2X6_EXPOSED = Assembly(
 
 MATERIALS = [
     *STARTER_MATERIALS,
+    # The EPS stay-in-place deck form (CATLIN_DECK_EPS_INT). Deliberately *not* `icf-eps`,
+    # whose R-4.0/inch is the bead EPS on its own: this section is ribbed, and the concrete
+    # that fills the ribs bridges it. BuildDeck publishes R-25 for the 8" section as
+    # installed, which is R-3.125/inch through the finished deck — the number that belongs
+    # in a thermal model of this floor, and 22% below the bare-foam figure.
+    Material(tag="eps-deck-form", name="EPS stay-in-place deck form", r_per_inch=3.125,
+             perm_rating=3.9, hatch="rigid", color="#f0f0e6",
+             source="BuildDeck brochure: R-25 at the 8\" base section as installed (ribs bridged by the pour), i.e. R-3.125/inch; permeance from ASHRAE UAF 'Expanded polystyrene, bead' 2.0-5.8 perm-in, midpoint, as `icf-eps`"),
     # --- accent wall paint -------------------------------------------------------
     # The house's one interior accent: deep spruce green-blue on RM-S-BED1's feature wall
     # (storeys/second.py). Physically identical to `latex-paint` (same film, same Class III
@@ -1258,6 +1300,13 @@ PLANT_INT_2X4_HUMID = Assembly(
 # (documented via a Transition overlay, never drawn; none mutate construction geometry):
 # a PT sill where framed walls land on concrete, the sauna liner wrapping the center wall,
 # foundation foam turning the corner, the masonry guard's corner return.
+#
+# ``wall:framed_on_concrete`` means what it says and not "on a concrete wall": since
+# 2026-08-21 it also finds a framed wall standing on a concrete *slab*, which is every
+# basement partition in this house and is the same IRC R317.1 detail — treated plate, sill
+# gasket, capillary break. It used to find only wall-on-wall, so the sauna, ESS-closet and
+# bathroom partitions ordered no treated plate at all, and the five walls the deck overhaul
+# framed on the slab would have joined them.
 CONSTRUCTION_RULES = [
     ConstructionRule(
         tag="CR-CONC-TO-FRAMED-SILL",
@@ -1339,7 +1388,7 @@ ASSEMBLIES = [
     CATLIN_BASEMENT_12,
     CATLIN_BASEMENT_12_GARDEN,
     CATLIN_SLAB_FLOOR,
-    CATLIN_DECK_9_INT,
+    CATLIN_DECK_EPS_INT,
     CATLIN_CONC_12_INT,
     CATLIN_CONC_8_INT,
     SUNKEN_GARDEN_WALL,

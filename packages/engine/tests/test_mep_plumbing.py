@@ -11,24 +11,29 @@ from typehaus.checks import run_from_model
 from typehaus.checks.registry import Tier
 
 
-def test_wc_expected_drain_point_is_authored_carrier_outlet(catlin_model):
-    """BATH1's WC is wall-hung: its waste drops through the in-wall carrier, so the
-    fixture authors ``drain_position`` on the wet-wall centerline and that override —
-    not the bowl's own footprint center — is what the sleeve must sit under."""
-    sleeve = next(s for s in catlin_model.sleeves if s.tag == "SP-M-WC1")
-    fixture = catlin_model.plan.by_tag("FX-M-BATH1-WC")
+def test_expected_drain_point_is_the_authored_outlet_when_there_is_one(catlin_model):
+    """A fixture whose waste does not drop under its own footprint authors
+    ``drain_position``, and that override — not the fixture's footprint center — is what the
+    sleeve must sit under. The kitchen sink's drain leaves at the wall behind the cabinet.
+
+    (This used to read SP-M-WC1, BATH1's wall-hung carrier. That sleeve went with the
+    2026-08-21 deck overhaul: the main floor over BATH1 is I-joists now and a joist bay is
+    bored on the day, not cast before a pour. SP-M-KITCH is in the surviving concrete band
+    and makes the identical point.)"""
+    sleeve = next(s for s in catlin_model.sleeves if s.tag == "SP-M-KITCH")
+    fixture = catlin_model.plan.by_tag("FX-M-KITCH-SINK")
     assert fixture.drain_position is not None
     assert sleeve.expected_center == fixture.drain_position.xy_m
     assert sleeve.expected_center != fixture.position.xy_m
 
 
 def test_floor_wc_drains_under_its_own_bowl(catlin_model):
-    """BATH2's WC is floor-mounted, so the closet flange is under the bowl and the
-    convention needs no override. It carried one — parked at the old (3', 18') main-drain
-    corner while the fixture moved to the wet wall — until the plumbing pass re-pointed
-    SP-M-WC2 and PR-B-WC2-DRAIN at the real flange and the override came out."""
-    sleeve = next(s for s in catlin_model.sleeves if s.tag == "SP-M-WC2")
-    fixture = catlin_model.plan.by_tag("FX-M-BATH2-WC")
+    """A floor-mounted WC puts the closet flange under the bowl, so the convention needs no
+    override and the sleeve sits on the fixture's own position. RM-B-BATH's WC is the one
+    left on a slab since the 2026-08-21 deck overhaul took the main floor's cast sleeves
+    away (it used to be SP-M-WC2 in BATH2)."""
+    sleeve = next(s for s in catlin_model.sleeves if s.tag == "SP-B-BATH-WC")
+    fixture = catlin_model.plan.by_tag("FX-B-BATH-WC")
     assert fixture.drain_position is None
     assert sleeve.expected_center == fixture.position.xy_m
     assert sleeve.offset_m == pytest.approx(0.0, abs=1e-9)
@@ -36,14 +41,14 @@ def test_floor_wc_drains_under_its_own_bowl(catlin_model):
 
 def test_catlin_sleeve_expectation_sources_agree(catlin_model):
     """On this house the three expectation sources are not in conflict, and that is the
-    point: SP-M-WC1's authored carrier outlet, the vertex of the run serving it, and the
+    point: SP-M-KITCH's authored outlet, the vertex of the run serving it, and the
     sleeve's own position are one point. Precedence only ever decides a disagreement, so if
     this test starts needing it, something drifted."""
     from typehaus.resolve.mep import _pipe_expected_point
 
     sleeve = next(el for el in catlin_model.plan.all_elements()
-                  if el.element_kind == "SleevePenetration" and el.tag == "SP-M-WC1")
-    fixture = catlin_model.plan.by_tag("FX-M-BATH1-WC")
+                  if el.element_kind == "SleevePenetration" and el.tag == "SP-M-KITCH")
+    fixture = catlin_model.plan.by_tag("FX-M-KITCH-SINK")
     assert _pipe_expected_point(catlin_model, sleeve) == fixture.drain_position.xy_m
 
 
@@ -99,10 +104,35 @@ def test_authored_drain_position_outranks_the_routed_run():
 
 
 def test_lav_expected_drain_point_projects_onto_wet_wall(catlin_model):
-    sleeve = next(s for s in catlin_model.sleeves if s.tag == "SP-M-LAV1")
-    wall = catlin_model.wall("W-M-BAE")
-    # The projected point lies on the infinite line through the wall axis (x is constant).
-    assert sleeve.expected_center[0] == pytest.approx(wall.axis[0][0], abs=1e-6)
+    """A hot-water fixture with no authored override drains back to its wet wall, so the
+    expectation is its footprint centre *projected onto that wall's axis*.
+
+    Built from the real house's own library rather than read off a sleeve: catlin has no
+    unoverridden lavatory left over concrete since the 2026-08-21 deck overhaul framed the
+    main floor (it was SP-M-LAV1 in BATH1), and RM-B-BATH's lav authors a
+    ``drain_position``, which by decision 4 short-circuits the projection this measures."""
+    from typehaus.model.spatial import Fixture
+    from typehaus.quantities import ft, pt
+    from typehaus.resolve.mep import _expected_drain_point
+
+    lav = catlin_model.plan.by_tag("FX-B-BATH-LAV")
+    wall = catlin_model.wall("W-B-BA-N")  # runs in x, so the projection fixes y
+    stand_off = Fixture(uid="FXTESTLAV1", tag="FX-T-LAV", type_ref=lav.type_ref,
+                        room=lav.room, position=pt(ft(15), ft(19)),
+                        wall_ref="W-B-BA-N")
+    class _Plan:
+        library = catlin_model.plan.library
+
+        def by_tag(self, tag):
+            return stand_off if tag == stand_off.tag else catlin_model.plan.by_tag(tag)
+
+    model = copy.copy(catlin_model)
+    model.plan = _Plan()
+
+    point = _expected_drain_point(model, stand_off.tag)
+    assert point is not None
+    assert point[0] == pytest.approx(ft(15).meters, abs=1e-6)
+    assert point[1] == pytest.approx(wall.axis[0][1], abs=1e-6)
 
 
 def test_drain_position_override_wins():
@@ -135,12 +165,12 @@ def test_sleeve_alignment_fails_at_one_inch_offset(catlin_model):
     model.sleeves = [
         dataclasses.replace(s, center=(s.center[0] + 0.0254, s.center[1]),
                             offset_m=0.0254)
-        if s.tag == "SP-M-WC1" else s
+        if s.tag == "SP-M-KITCH" else s
         for s in catlin_model.sleeves
     ]
     report = run_from_model(model, [], tier=Tier.CODE)
     fails = [f for f in report.findings
-             if f.check_id == "mep.sleeve_alignment" and "SP-M-WC1" in f.element_tags
+             if f.check_id == "mep.sleeve_alignment" and "SP-M-KITCH" in f.element_tags
              and f.result.value == "fail"]
     assert fails, [f.message for f in report.findings if f.check_id == "mep.sleeve_alignment"]
 

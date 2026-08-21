@@ -226,7 +226,15 @@ DUCTS_MAIN = [
 ]
 
 # Basement trunks leave EQ-B-ERV in the furnace room and run exposed-in-chase under the
-# SL-M-DECK concrete — no joist bays to ride, so CHASE routing and no floor_ref.
+# main floor. CHASE routing, no floor_ref, and that is now a *choice* rather than the only
+# option it was: until 2026-08-21 the whole ceiling was SL-M-DECK's 9" pour with no joist
+# bays to ride at all. Two thirds of it is FS-M-WEST/FS-M-EAST joists now, and the west
+# half's bays run east-west — the same direction the trunk's long leg does at y=18'. Moving
+# these into the bays (routing=JOIST_BAY, floor_ref="FS-M-WEST") would buy back the 6" of
+# headroom the chases cost along that run. Left as chase because the runs also cross the
+# x=18' bearing line and the concrete band, so they cannot be bays end to end, and splitting
+# a trunk into bay and chase segments is a routing pass of its own — recorded in
+# plans/TODO.md rather than half-done here.
 DUCTS_BASEMENT = [
     DuctRun(uid="CBDV01AAAA", tag="DU-B-ERV-SUP", system=DuctSystem.SUPPLY,
            path=(pt(ft(5), ft(29)), pt(ft(5), ft(18)), pt(ft(27), ft(18)), pt(ft(27), ft(9))),
@@ -235,9 +243,10 @@ DUCTS_BASEMENT = [
            path=(pt(ft(5), ft(29)), pt(ft(5), ft(8)), pt(ft(16), ft(8))),
            width=inch(8), depth=inch(6), routing=DuctRouting.CHASE),
     # Stair-foot bathroom branch (2026-07-30): 6"x4" for one 50 cfm terminal, teed off at
-    # y=20' through a cast opening in W-B-STR2's 12" concrete ceiling, set with the room's
-    # three service sleeves before the pour. Ducts carry no SleevePenetration in this model,
-    # so the opening lives here and on the concrete crew's drawing, not as an element.
+    # y=20' and crossing W-B-STR2. That crossing used to be a cast opening in 12" concrete,
+    # set with the room's three service sleeves before the pour; W-B-STR2 is a steel-stud
+    # partition since 2026-08-21, so it is a boxed-out stud bay the framer cuts, and the
+    # three sleeves beside it are gone (plan/mep_sleeves.py).
     DuctRun(uid="CBDV03AAAA", tag="DU-B-ERV-BATH", system=DuctSystem.EXHAUST,
            path=(pt(ft(5), ft(20)), pt(ft(11, 8), ft(20))),
            width=inch(6), depth=inch(4), routing=DuctRouting.CHASE),

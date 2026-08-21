@@ -386,32 +386,36 @@ def test_placeable_drag_updates_the_explicit_containing_room_assignment() -> Non
 def test_dragging_a_floor_drained_wc_carries_its_sleeve_and_drain_run() -> None:
     """The flange is not a symbol: a cast-in sleeve and a routed drop sit under it.
 
-    FX-M-BATH2-WC drains under its own bowl (no ``drain_position`` override, no hot-water
-    connection), so a drag has to re-point SP-M-WC2 and the head of PR-B-WC2-DRAIN with it.
-    The run lives on the *basement* storey, one below the fixture, which is why followers
-    are searched across the whole plan; and its riser is authored as the same plan point
-    twice (two inverts), so BOTH leading vertices have to move or the drop becomes a slope.
-    Leaving them behind is exactly the 76c1871 defect: a 6.46" nudge that built cleanly and
-    only showed up in `mep.sleeve_alignment`.
+    FX-B-BATH-WC drains under its own bowl (no ``drain_position`` override, no hot-water
+    connection), so a drag has to re-point SP-B-BATH-WC and the head of PR-B-BATH-DRAIN with
+    it. Its riser is authored as the same plan point twice (two inverts), so BOTH leading
+    vertices have to move or the drop becomes a slope. Leaving them behind is exactly the
+    76c1871 defect: a 6.46" nudge that built cleanly and only showed up in
+    `mep.sleeve_alignment`.
+
+    Read on the basement's WC since 2026-08-21: this was FX-M-BATH2-WC until the deck
+    overhaul framed the main floor and its cast sleeve went with the pour.
     """
     house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
     plan = load_plan(house).plan
     assert plan is not None
-    fixture = next(item for item in plan.storey_elements("main") if item.tag == "FX-M-BATH2-WC")
+    fixture = next(item for item in plan.storey_elements("basement")
+                   if item.tag == "FX-B-BATH-WC")
     old_x, old_y = fixture.position.xy_m
-    result = move_placeable(plan, "main", tag="FX-M-BATH2-WC", position=(old_x + 0.1, old_y - 0.05))
+    result = move_placeable(plan, "basement", tag="FX-B-BATH-WC",
+                            position=(old_x + 0.1, old_y - 0.05))
 
     assert [(op.type, op.tag) for op in result.ops] == [
-        ("Fixture", "FX-M-BATH2-WC"),
-        ("SleevePenetration", "SP-M-WC2"),
-        ("PipeRun", "PR-B-WC2-DRAIN"),
+        ("Fixture", "FX-B-BATH-WC"),
+        ("SleevePenetration", "SP-B-BATH-WC"),
+        ("PipeRun", "PR-B-BATH-DRAIN"),
     ]
-    sleeve = next(item for item in plan.all_elements() if item.tag == "SP-M-WC2")
+    sleeve = next(item for item in plan.all_elements() if item.tag == "SP-B-BATH-WC")
     sleeve_x, sleeve_y = sleeve.position.xy_m
     assert _expr_point(result.ops[1].fields["position"]) == pytest.approx(
         (sleeve_x + 0.1, sleeve_y - 0.05), abs=1e-3)
 
-    run = next(item for item in plan.all_elements() if item.tag == "PR-B-WC2-DRAIN")
+    run = next(item for item in plan.all_elements() if item.tag == "PR-B-BATH-DRAIN")
     assert run.path[0] == run.path[1], "the riser's duplicated vertex pair is the point of this test"
     moved_path = _expr_path(result.ops[2].fields["path"])
     assert len(moved_path) == len(run.path)
@@ -423,22 +427,22 @@ def test_dragging_a_floor_drained_wc_carries_its_sleeve_and_drain_run() -> None:
         assert moved_path[index] == pytest.approx(vertex.xy_m, abs=1e-9)
 
     joined = " | ".join(result.warnings)
-    assert "SP-M-WC2" in joined and "PR-B-WC2-DRAIN" in joined
+    assert "SP-B-BATH-WC" in joined and "PR-B-BATH-DRAIN" in joined
     # …and the runs that merely *serve* the WC (its supply, its vent, the house collector)
     # are reported as left behind rather than silently dragged twenty feet across the plan.
-    assert "PR-B-MAIN-DRAIN" in joined and "left as routed" in joined
+    assert "PR-B-BATH-VENT" in joined and "left as routed" in joined
 
 
 def test_an_authored_drain_position_pins_the_drain_while_the_fixture_moves() -> None:
     """``drain_position`` is the author saying where the waste leaves, independently of the
-    bowl — FX-M-BATH1-WC is wall-hung on a carrier inside W-M-BAE and its waste drops in the
-    wall. Moving the bowl says nothing about the carrier, so the macro emits its one op and
-    keeps its hands off SP-M-WC1 and PR-B-LAV1-DRAIN."""
+    bowl — FX-B-BATH-LAV authors one on W-B-BA-N's centreline and its waste leaves there,
+    not under the basin. Moving the basin says nothing about that outlet, so the macro emits
+    its one op and keeps its hands off SP-B-BATH-LAV."""
     house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
     plan = load_plan(house).plan
     assert plan is not None
-    result = move_placeable(plan, "main", tag="FX-M-BATH1-WC", position=(0.75, 7.2))
-    assert [(op.type, op.tag) for op in result.ops] == [("Fixture", "FX-M-BATH1-WC")]
+    result = move_placeable(plan, "basement", tag="FX-B-BATH-LAV", position=(5.1, 6.2))
+    assert [(op.type, op.tag) for op in result.ops] == [("Fixture", "FX-B-BATH-LAV")]
     assert result.warnings == ()
 
 
@@ -451,9 +455,10 @@ def test_coupled_drain_move_writes_source_that_reloads(tmp_path: Path) -> None:
     copy_house(CATLIN, house)
     plan = load_plan(house).plan
     assert plan is not None
-    fixture = next(item for item in plan.storey_elements("main") if item.tag == "FX-M-BATH2-WC")
+    fixture = next(item for item in plan.storey_elements("basement")
+                   if item.tag == "FX-B-BATH-WC")
     old_x, old_y = fixture.position.xy_m
-    ops = move_placeable(plan, "main", tag="FX-M-BATH2-WC",
+    ops = move_placeable(plan, "basement", tag="FX-B-BATH-WC",
                          position=(old_x + 0.1, old_y - 0.05)).ops
     coordinator = ProjectCoordinator(house)
     coordinator.apply_patch(ops, coordinator.revision())
@@ -461,8 +466,9 @@ def test_coupled_drain_move_writes_source_that_reloads(tmp_path: Path) -> None:
     reloaded = load_plan(house)
     assert reloaded.plan is not None, [finding.message for finding in reloaded.findings]
     moved = {item.tag: item for item in reloaded.plan.all_elements()}
-    assert moved["SP-M-WC2"].position.xy_m == pytest.approx((old_x + 0.1, old_y - 0.05), abs=1e-3)
-    run = moved["PR-B-WC2-DRAIN"]
+    assert moved["SP-B-BATH-WC"].position.xy_m == pytest.approx(
+        (old_x + 0.1, old_y - 0.05), abs=1e-3)
+    run = moved["PR-B-BATH-DRAIN"]
     assert run.path[0].xy_m == pytest.approx((old_x + 0.1, old_y - 0.05), abs=1e-3)
     assert run.path[0] == run.path[1]
     # The rewrite replaces vertices in place, so the per-vertex invert list still lines up.

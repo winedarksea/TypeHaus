@@ -280,10 +280,12 @@ def test_catlin_stair_wells_are_guarded(catlin_ctx):
     findings = stairwell_guard(catlin_ctx)
     assert {f.result for f in findings} == {Result.PASS}, [f.message for f in findings]
     by_msg = {f.message.split(":")[0]: f.message for f in findings}
-    # Both wells adjudicated, and the pass names the members actually doing the guarding —
-    # the second-storey well's east edge is RL-S-STAIR plus wall W-S-C4B beyond y=30'-10",
-    # which is exactly the split this check exists to measure.
-    assert set(by_msg) == {"FO-S-STAIR", "FO-A-STAIR"}
+    # All three wells adjudicated, and each pass names the members actually doing the
+    # guarding — the second-storey well's east edge is RL-S-STAIR plus wall W-S-C4B beyond
+    # y=30'-10", which is exactly the split this check exists to measure. FO-M-STAIR joined
+    # the list on 2026-08-21: the main floor's hole used to be cut in a concrete pour and is
+    # framed in FS-M-WEST's joists now, which is what makes it a well this rule can see.
+    assert set(by_msg) == {"FO-M-STAIR", "FO-S-STAIR", "FO-A-STAIR"}
     assert "RL-S-STAIR" in by_msg["FO-S-STAIR"]
     assert "RL-A-STAIR" in by_msg["FO-A-STAIR"]
 

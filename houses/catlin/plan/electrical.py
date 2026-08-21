@@ -704,7 +704,12 @@ CONDUIT_TRUNKS = [
     # and then with the range/N3 flip.
     ConduitRun(uid="CDT003AAAA", tag="CD-B-KITCHEN", trade_size=inch(0.75),
                path=(pt(ft(2), ft(29)), pt(ft(35), ft(29)), pt(ft(35), ft(28, 11))),
-               start_elevation=ft(-1), end_elevation=ft(3, 6),
+               # -1'-6", not the -1'-0" it held until 2026-08-21: the basement ceiling
+               # dropped when the 9" deck became the 12 5/8" EPS deck with 5/8" gypsum
+               # under it, and a raceway at -1'-0" was then lying *inside* the pour
+               # (mep.sleeve_coverage caught it as an unsleeved crossing at 26'-6").
+               # 4 3/4" clear under the -1'-1 1/4" soffit. Its two wall crossings go with it.
+               start_elevation=ft(-1, -6), end_elevation=ft(3, 6),
                from_ref="ED-B-PANEL", to_ref="ED-M-LIVING-KGF3"),
     # South out of the basement to the hot tub disconnect under the porch. Same 2026-08-02
     # correction as CD-B-GARAGE above: the east leg was on the y=0 sheathing line, i.e.
@@ -817,18 +822,6 @@ ATTIC_DATA_DEVICES = [
 # (`mep.sleeve_coverage` matches on them). Wall/footing crossings are horizontal, carry the
 # run's elevation; deck/slab crossings are vertical.
 CONDUIT_SLEEVES = [
-    # The three risers through SL-M-DECK inside RM-M-MECH, 6" apart on the y=34'-6" line.
-    SleevePenetration(uid="CNS002AAAA", tag="SP-M-CD-PV", host_ref="SL-M-DECK",
-                      position=pt(ft(1, 6), ft(34, 6)), pipe_diameter=inch(1.5),
-                      sleeve_diameter=inch(2.5), purpose=Service.POWER_240),
-    SleevePenetration(uid="CNS003AAAA", tag="SP-M-CD-DATA", host_ref="SL-M-DECK",
-                      position=pt(ft(2), ft(34, 6)), pipe_diameter=inch(1.25),
-                      sleeve_diameter=inch(2), purpose=Service.DATA),
-    # The spare's sleeve is as unassigned as the pipe in it; POWER_120 is the field's
-    # default, not a claim about what gets pulled.
-    SleevePenetration(uid="CNS004AAAA", tag="SP-M-CD-SPARE", host_ref="SL-M-DECK",
-                      position=pt(ft(2, 6), ft(34, 6)), pipe_diameter=inch(2),
-                      sleeve_diameter=inch(3), purpose=Service.POWER_120),
     # CD-B-GARAGE: west to east across the basement at -4', then north under the house/
     # garage gap and up through the garage slab.
     SleevePenetration(uid="CNS005AAAA", tag="SP-B-N3-CD-GAR", host_ref="W-B-N3",
@@ -869,24 +862,14 @@ CONDUIT_SLEEVES = [
     SleevePenetration(uid="CNS012AAAA", tag="SP-B-CN-CD-KITCH", host_ref="W-B-CN",
                       position=pt(ft(18), ft(29)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.POWER_120,
-                      axis="horizontal", center_elevation=ft(-1)),
+                      axis="horizontal", center_elevation=ft(-1, -6)),
     SleevePenetration(uid="CNS013AAAA", tag="SP-B-E2-CD-KITCH", host_ref="W-B-E2",
                       position=pt(ft(35), ft(28, 11.5)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.POWER_120,
-                      axis="horizontal", center_elevation=ft(-1)),
+                      axis="horizontal", center_elevation=ft(-1, -6)),
     SleevePenetration(uid="CNS014AAAA", tag="SP-M-CD-KITCH", host_ref="SL-M-DECK",
                       position=pt(ft(35), ft(28, 11)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.POWER_120),
-    # CD-B-SPA: south out of the basement and under the sunken garden to the hot tub
-    # disconnect.
-    # Invisible until the sleeve matcher learned to check purpose: this run passes 2" from
-    # SP-B-CW-WC2 (the WC2 drain's sleeve), and proximity alone let this power raceway claim
-    # the plumbing sleeve — a false PASS that also made mep.sewer_exit_invert grade CD-B-SPA
-    # as a drain.
-    SleevePenetration(uid="CNS017AAAA", tag="SP-B-CW-CD-SPA", host_ref="W-B-CW",
-                      position=pt(ft(2), ft(18)), pipe_diameter=inch(1),
-                      sleeve_diameter=inch(1.75), purpose=Service.POWER_240,
-                      axis="horizontal", center_elevation=ft(-4)),
     SleevePenetration(uid="CNS015AAAA", tag="SP-B-S1-CD-SPA", host_ref="W-B-S1",
                       position=pt(ft(8, 6), ft(0, 6)), pipe_diameter=inch(1),
                       sleeve_diameter=inch(1.75), purpose=Service.POWER_240,
@@ -911,11 +894,11 @@ NEC_FILL_BASEMENT = [
                      circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC003AAAA", tag="ED-B-GYM-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(20, 7), ft(18, 7)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(20, 7), ft(18, 4.385)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC004AAAA", tag="ED-B-GYM-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(33, 3.5), ft(18, 7)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(33, 3.5), ft(18, 4.385)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC005AAAA", tag="ED-B-GYM-RC5", kind=DeviceKind.RECEPTACLE,

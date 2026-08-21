@@ -101,7 +101,7 @@ VENT_BRANCHES_SECOND = [
 VENT_RISERS = [
     VentRun(uid="CMVR01AAAA", tag="VR-M-RADON-VENT",
             systems=(PipeSystem.RADON, PipeSystem.VENT), diameter=inch(3),
-            chase_position=pt(ft(1), ft(34, 6)), start_elevation=ft(-8.5),
+            chase_position=pt(ft(1), ft(34, 6)), start_elevation=ft(-8, -10),
             exit_elevation=ft(23, 10), exit_offset=pt(ft(0), ft(2, 6)),
             wall_ref="W-A-N2", attachment="standing_seam_clamp"),
 ]

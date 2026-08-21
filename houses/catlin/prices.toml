@@ -31,7 +31,7 @@
 # low, and the ceiling gypsum row was pricing 1/2" board against a 5/8" quantity.
 #
 # Three structural findings are recorded where they belong rather than here: the suspended
-# deck's low end is commercially unobtainable (see slab:CATLIN_DECK_9_INT), drain_tile was
+# deck's low end is commercially unobtainable (see slab:CATLIN_DECK_EPS_INT), drain_tile was
 # ~5x low, and slab-on-grade was ~2.5x low. And the single 55-65% "back out material from an
 # installed price" factor used by [openings] is gone — the real material share runs 40% to
 # 82% depending on the article, so labour is now carried as its own explicit quantity.
@@ -182,7 +182,7 @@
 "1.5x1.5 panel" = { material = { low = 0.35, high = 0.6 }, labour = { low = 0.5, high = 1 } }  # 96 LF — sheathing blocking, priced as 2x2
 # "1.5x5.5 panel" =    # 112 LF — SPF fascia, billed in [edge_trim]
 "1.5x6 rim" = { material = { low = 0.95, high = 1.55 }, labour = { low = 0.9, high = 1.7 } }  # 80 LF
-"11.875 I-joist" = { material = { low = 3.5, high = 5.5 }, labour = { low = 0.9, high = 1.9 } }  # 3824 LF
+"11.875 I-joist" = { material = { low = 3.5, high = 5.5 }, labour = { low = 0.9, high = 1.9 } }  # 4580 LF — grew ~756 LF on 2026-08-21 with FS-M-WEST/FS-M-EAST
 # "12x4 panel" =    # 66 LF — ridge_cap, billed in [edge_trim]
 # "13.625x0.5 panel" =    # 112 LF — PVC soffit, billed in [edge_trim]
 # 1x4 furring/strapping is not in the 2026-08-07 sweep above — it had no members to
@@ -249,8 +249,8 @@
 "composite-deck" = { material = { low = 130, high = 320 }, labour = { low = 128, high = 288 } }  # 6 sheets
 # Ceiling gypsum (FS-SECOND's `ceiling_below`), by the sheet. Distinct from the
 # `[envelope_layers]` "gwb" row, which is wall lining priced by the net SF.
-"gwb" = { material = { low = 17, high = 26 }, labour = { low = 48, high = 85 } }  # 39 sheets
-"plywood-subfloor" = { material = { low = 42, high = 62 }, labour = { low = 18, high = 32 } }  # 78 sheets
+"gwb" = { material = { low = 17, high = 26 }, labour = { low = 48, high = 85 } }  # 64 sheets — +25 with the basement ceiling (2026-08-21)
+"plywood-subfloor" = { material = { low = 42, high = 62 }, labour = { low = 18, high = 32 } }  # 104 sheets — +26 with the two new decks (2026-08-21)
 # The nailbase top deck (CATLIN_ROOF). Labour is well above the plywood row below it and
 # that is not padding: every sheet is set on 6" of foam with nothing under it but the screw
 # being driven, so it is a two-man lay-and-hold operation with a 10" screw on a 16 x 24 grid.
@@ -454,7 +454,42 @@
 # Minneapolis $/cy, angi.com concrete pumping 2026, homeguide.com rebar prices 2026,
 # civilsir.com rebar lb/cy, concretetoolkit.com concrete labour calculator,
 # homeguide.com structural engineer cost 2026.
-"slab:CATLIN_DECK_9_INT" = { low = 930, high = 1760 }  # 34.26 cy — SUSPENDED deck
+# **Retired 2026-08-21 with the deck it priced.** ``slab:CATLIN_DECK_9_INT`` was
+# $930-1,760/cy on 34.26 cy — $32,000-60,000, the single largest line in the model, and
+# ``plans/cost-options.md`` recorded that its low end was commercially unobtainable because a
+# shoring sub will not mobilise for less than $25-40k. The build-up above is kept as written
+# because it is the comparison the replacement is judged against, not because anything
+# still bills at it.
+#
+# What replaced it: 414 SF of BuildDeck/LiteDeck 8" EPS stay-in-place form with a 4 5/8"
+# cast cap, and 819 SF of I-joists. Two rows carry it, and they must not overlap.
+#
+# **This row is the concrete only** — ready-mix, reinforcing, pump, place and finish. The
+# forms are a separate ``[envelope_layers]`` row ("eps-deck-form"), exactly as ``icf-eps``
+# is forms-only with its ready-mix in ``[wall_structure]``.
+#
+# **`unit = "SF"` is load-bearing.** ``structural_solids`` bills a slab's *gross* prism, so
+# this deck reads as 16.13 cy — the whole 12 5/8" depth, 8" of which is foam. Priced per cy
+# that would buy 16 yards of concrete for a deck that pours 7.35. ``unit = "SF"`` reads the
+# row's ``plan_area_sqft`` instead (cli/price_file.py), so the rate below is literally the
+# per-square-foot price the build-up quotes.
+#
+# Build-up, per SF of deck, at 0.01774 cy/SF (BuildDeck's 3"-cap consumption plus the extra
+# 1 5/8" of cap):
+#   ready-mix, 7.35 cy + waste @ $180-200/cy            $3.20- 3.55/SF
+#   reinforcing: rib bars + cap mesh, furnished/placed  $1.50- 3.00/SF
+#   boom pump (mob + hours + yardage)                   $1.15- 1.80/SF
+#   place, screed, power trowel, cure                   $3.00- 5.50/SF
+#   cold-weather protection (Nov-Mar in MN)             $0.00- 0.75/SF
+#   structural engineering, stamped                     $1.00- 3.00/SF
+#   small-job premium                                   $0.15- 2.40/SF
+#                                                      -----------------
+#                                                      $10.00-20.00/SF
+# No shoring line and no formwork line: that is the whole point of a stay-in-place form, and
+# it is where the $25-40k mobilisation floor went. Engineering stays — the form supplier
+# gives a layout, not a stamp — but it is a third of what a shored deck's was because there
+# is no shoring design in it.
+"slab:CATLIN_DECK_EPS_INT" = { low = 10, high = 20, unit = "SF" }  # 414 SF — EPS-formed deck, concrete only
 # $400-1,200 each — basin, gasketed sealed lid, 4" riser, sub-slab connection, slab patch.
 # Minnesota has required radon-resistant new construction since June 2009, so this is code
 # scope, not an option. 2026-08-20: RE-UNITED — `unit = "ea"` reads the row's `count`, so the
@@ -920,7 +955,7 @@
 # area, because the parge was claimed over 9' of wall that is backfilled.
 # Sources: homewyse.com 2026 foundation insulation protection board, and the same range
 # the trade quotes for aluminium foundation coving.
-"gwb" = { material = { low = 0.45, high = 0.75 }, labour = { low = 1.1, high = 1.9 } }  # 11078.9 SF — hang + tape + Level 4
+"gwb" = { material = { low = 0.45, high = 0.75 }, labour = { low = 1.1, high = 1.9 } }  # 13577.3 SF — hang + tape + Level 4; +2,498 SF with the drywalled basement ceiling (2026-08-21)
 # 2026-08-18, the plant room's liner (notes/plant_room.md). Both are $/SF of NET wall area,
 # material only, at the thickness the assembly uses.
 #   humid-room-membrane — a fully-adhered sheet air/vapour barrier, the class of product
@@ -936,6 +971,13 @@
 "pvc-panel" = { material = { low = 3.5, high = 7 }, labour = { low = 3, high = 5.5 } }  # 445.2 SF
 "gwb-x" = { material = { low = 0.6, high = 1 }, labour = { low = 1.3, high = 2.2 } }  # 92.3 SF
 "icf-eps" = { material = { low = 3, high = 5 }, labour = { low = 3.5, high = 6.5 } }  # 952.5 SF — forms only; ready-mix is in [wall_structure]
+# The main floor's EPS deck forms (2026-08-21), the horizontal cousin of the row above and
+# split the same way: **forms only**, with the ready-mix, reinforcing, pump and finish in
+# [concrete] under "slab:CATLIN_DECK_EPS_INT". LiteDeck/BuildDeck base sections list around
+# $5-7/SF for the 8" panel with its steel ribs. Labour is a step over icf-eps's because this
+# one is set overhead on temporary bearers rather than stacked on a footing: set panels,
+# level and brace the intermediate bearer line, close the ends, strip the bearers.
+"eps-deck-form" = { material = { low = 5, high = 7 }, labour = { low = 4, high = 7.5 } }  # 414 SF — forms only; ready-mix is in [concrete]
 "latex-paint" = { material = { low = 0.35, high = 0.8 }, labour = { low = 1.2, high = 2.2 } }  # 7004.9 SF — ~75/25 LABOUR to material
 # 2026-08-08: the accent colour, 80 SF. A deep/custom base runs above a builder white and
 # the coverage per gallon is worse, so it sits a step over the `latex-paint` row.
@@ -1616,7 +1658,7 @@
 # wet-set in the pour (Titen HD 1/2"x4" at $2.40 zinc / $4.60 mechanically galvanised).
 # The full-assembly figures above are kept only as a cross-check on the delta; do NOT add the
 # 2x6 itself at $1.30-2.20/LF on top — per (1) and (2), [framing] has already bought it.
-"pt-sill-plate" = { material = { low = 1.07, high = 2.13 }, labour = { low = 2, high = 4 } }  # 306.6 LF — the PT/sealer/anchor DELTA only
+"pt-sill-plate" = { material = { low = 1.07, high = 2.13 }, labour = { low = 2, high = 4 } }  # 358.6 LF — the PT/sealer/anchor DELTA only
 
 # resilient-channel, 522.2 LF. The 2026-08-18 guess of $0.45-0.90/LF material is CONFIRMED and
 # tightened: single-leg RC-1 in 12' sticks clusters at $0.499-0.566/LF across three independent

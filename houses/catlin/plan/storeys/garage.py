@@ -56,18 +56,25 @@ NODES = [
     Node(uid="CGN004AAAA", tag="N-G-NW", position=pt(ft(0), GARAGE_Y_NORTH)),
 ]
 
+# 8'-4" plates, not 8'-0" (2026-08-21). The garage went down 4" with grade while
+# D-G-SERVICE's threshold stayed pinned to the breezeway deck at 0'-0" — so the door climbed
+# 4" inside its own wall and its 3-ply LVL header pushed straight through the top plate into
+# the truss heels (structural.member_interference caught it). Growing the plates by the same
+# 4" puts the garage roof back at the absolute elevation it had before the lift and restores
+# the 8" the header needs above the rough head. The slab went down with grade too, so the
+# interior clear height is unchanged.
 WALLS = [
     Wall(uid="CGW101AAAA", tag="W-G-S", start_node="N-G-SW", end_node="N-G-SE",
-         assembly="GARAGE_WALL_2X6", alignment=face("zip-r-ext"), top=ft(8),
+         assembly="GARAGE_WALL_2X6", alignment=face("zip-r-ext"), top=ft(8, 4),
          structural_role=StructuralRole.BEARING),
     Wall(uid="CGW102AAAA", tag="W-G-E", start_node="N-G-SE", end_node="N-G-NE",
-         assembly="GARAGE_WALL_2X6", alignment=face("zip-r-ext"), top=ft(8),
+         assembly="GARAGE_WALL_2X6", alignment=face("zip-r-ext"), top=ft(8, 4),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="CGW103AAAA", tag="W-G-N", start_node="N-G-NE", end_node="N-G-NW",
-         assembly="GARAGE_WALL_2X6", alignment=face("zip-r-ext"), top=ft(8),
+         assembly="GARAGE_WALL_2X6", alignment=face("zip-r-ext"), top=ft(8, 4),
          structural_role=StructuralRole.BEARING),
     Wall(uid="CGW104AAAA", tag="W-G-W", start_node="N-G-NW", end_node="N-G-SW",
-         assembly="GARAGE_WALL_2X6", alignment=face("zip-r-ext"), top=ft(8),
+         assembly="GARAGE_WALL_2X6", alignment=face("zip-r-ext"), top=ft(8, 4),
          structural_role=StructuralRole.NONBEARING),
 ]
 
@@ -107,8 +114,9 @@ OPENINGS = [
     # and took the garage with it while the house and the breezeway deck stayed. The deck is
     # still the landing outside this door (code.R311_3_exterior_landing, and the house rule
     # that both breezeway doors open onto it at one level), so the threshold has to stay at
-    # 0'-0" absolute: +0'-8" over a garage storey that now sits at -0'-8". Inside, ST-G-STEPS
-    # takes the 2'-6" down to the slab.
+    # 0'-0" absolute: +1'-0" over a garage storey that now sits at -1'-0" (it was +0'-8"
+    # over -0'-8" until the house rose 4" on 2026-08-21 and the garage went down with grade).
+    # Inside, ST-G-STEPS takes the 2'-10" down to the slab.
     #
     # The head lands 8" under the top plate — 6'-8" of door in a wall whose plate is at
     # +7'-4" — which is why this opening now names a header the way the overhead door does.
@@ -120,7 +128,7 @@ OPENINGS = [
     # opening in a garage wall: a continuous header carried at the plate line rather than
     # dropped below it (IRC R602.7.2 lets the header take the top plate's place).
     Door(uid="CGD202AAAA", tag="D-G-SERVICE", host="W-G-S", type_ref="DT-EXT-SWING36",
-         position=from_node("N-G-SW", SERVICE_DOOR_OFFSET), sill_height=ft(0, 8),
+         position=from_node("N-G-SW", SERVICE_DOOR_OFFSET), sill_height=ft(1),
          header_spec='3-ply 5.5" LVL'),
     # This 8' wall (vs. the house's 10') is why the 27" family is 36" tall: a 60" height at
     # this 42" sill would push the header above the top plate. Nudged to 1'-5" (2026-07-29):

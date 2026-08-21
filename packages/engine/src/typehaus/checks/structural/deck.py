@@ -36,7 +36,7 @@ from typehaus.checks.structural.deck_tables import (
 )
 from typehaus.findings import Finding, Result
 from typehaus.model.floors import FloorSystem
-from typehaus.model.structure import Beam, Pad, Post, Railing
+from typehaus.model.structure import Beam, GlazingPanel, Pad, Post, Railing
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedFloor
 
@@ -378,6 +378,109 @@ def deck_footing_size(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+# --- Enclosure ---------------------------------------------------------------------
+#
+# R312.1 asks for a guard at an *open* side. A side that is closed floor-to-head by the
+# building's own construction is not an open side, and a rail inside a glazed wall is not
+# a code requirement — it is a rail inside a wall. Until this existed the rule measured
+# nothing but height, so catlin's breezeway vestibule — 30" up, four sides closed by two
+# buildings and two 8' glazed walls — sat one inch of grade away from a FAIL that no
+# amount of correct design could clear.
+#
+# What counts as closing an edge is deliberately narrow: a ``Wall`` (its own layers, its
+# own height) or a vertical ``GlazingPanel`` (the free-standing sheet idiom, which is what
+# a post-and-beam enclosure is actually built from). Both have to stand *on the edge line*
+# and *through the walking surface*, which is what the two tolerances below mean.
+_ENCLOSURE_LATERAL_TOL_FT = 1.0
+# How far off the edge's line a closing element may stand and still be that edge's
+# enclosure. A wall closes the edge from behind its cladding, and a glazed wall stands
+# just outside the deck it sits on, so the two planes are never exactly coincident:
+# catlin's are 2 3/4" (the glazing) and 7 3/4" (the house wall, measured to its axis)
+# away. A foot is generous enough for a thick wall read to its centreline and tight
+# enough that a wall in the next room cannot close anything.
+_ENCLOSURE_END_TOL_FT = 0.25
+# Slack at each end of an edge before the remainder reads as an open gap. Three inches:
+# smaller than any opening a person falls through, larger than the corner rounding a
+# post-to-cladding joint leaves behind.
+
+
+def _seg_encloses_edge(seg: tuple[tuple[float, float], tuple[float, float]],
+                       edge: tuple[tuple[float, float], tuple[float, float]],
+                       ) -> tuple[float, float] | None:
+    """The stretch of ``edge`` that ``seg`` stands along, as a 0..1 parameter interval.
+
+    ``None`` when ``seg`` is not on this edge at all — either it runs across the edge
+    rather than along it, or it stands further off than ``_ENCLOSURE_LATERAL_TOL_FT``.
+    """
+    (ex0, ey0), (ex1, ey1) = edge
+    dx, dy = ex1 - ex0, ey1 - ey0
+    edge_len = (dx * dx + dy * dy) ** 0.5
+    if edge_len <= 1e-9:
+        return None
+    ux, uy = dx / edge_len, dy / edge_len
+    lateral_tol = _ENCLOSURE_LATERAL_TOL_FT * _M_PER_FT
+    span: list[float] = []
+    for px, py in seg:
+        rx, ry = px - ex0, py - ey0
+        if abs(-uy * rx + ux * ry) > lateral_tol:
+            return None  # off the edge's line, or crossing it
+        span.append((rx * ux + ry * uy) / edge_len)
+    lo, hi = min(span), max(span)
+    lo, hi = max(0.0, lo), min(1.0, hi)
+    return (lo, hi) if hi > lo else None
+
+
+def _open_edges(ctx: CheckContext, deck: _Deck, surface_m: float) -> list[int] | None:
+    """Indices of the deck outline's edges that nothing closes.
+
+    ``None`` when the deck authors no outline — its footprint is then the storey's wall
+    bbox, which is not a set of edges anyone can reason about, so enclosure is simply not
+    knowable and the caller falls back to the height rule alone.
+    """
+    outline = [point.xy_m for point in deck.authored.outline]
+    if len(outline) < 3:
+        return None
+    # A closer has to stand through the walking surface and reach guard height above it:
+    # a skirt below the deck closes nothing you can fall over, and neither does a parapet
+    # whose top is at your ankle. Segments are plan runs, paired with (base, top).
+    closers: list[tuple[tuple[tuple[float, float], tuple[float, float]], float, float]] = []
+    for wall in ctx.model.walls:
+        top = max(wall.top_z0_m or wall.z1_m, wall.top_z1_m or wall.z1_m)
+        closers.append(((wall.axis[0], wall.axis[1]), wall.z0_m, top))
+    for element in ctx.plan.all_elements():
+        if not isinstance(element, GlazingPanel) or element.plane != "vertical":
+            continue
+        if element.base_elevation is None or len(element.outline) < 2:
+            continue
+        run = [point.xy_m for point in element.outline]
+        closers.append(((run[0], run[-1]), element.base_elevation.meters,
+                        element.top_elevation.meters))
+    guard_top_m = surface_m + GUARD_MIN_HEIGHT_IN * M_PER_IN
+    standing = [seg for seg, base, top in closers
+                if base <= surface_m + 1e-6 and top + 1e-6 >= guard_top_m]
+
+    open_edges: list[int] = []
+    for index in range(len(outline)):
+        edge = (outline[index], outline[(index + 1) % len(outline)])
+        edge_len = (((edge[1][0] - edge[0][0]) ** 2
+                     + (edge[1][1] - edge[0][1]) ** 2) ** 0.5)
+        if edge_len <= 1e-9:
+            continue
+        # Union the covered stretches before measuring the gap: catlin's south edge is
+        # closed by two house walls that meet mid-edge, and neither one covers it alone.
+        spans = sorted(span for seg in standing
+                       if (span := _seg_encloses_edge(seg, edge)) is not None)
+        end_tol = _ENCLOSURE_END_TOL_FT * _M_PER_FT / edge_len
+        cursor = 0.0
+        for lo, hi in spans:
+            if lo > cursor + end_tol:
+                break
+            cursor = max(cursor, hi)
+        if cursor < 1.0 - end_tol:
+            open_edges.append(index)
+    return open_edges
+
+
 @check(Tier.STRUCTURAL, "structural.deck_guard")
 def deck_guard(ctx: CheckContext) -> list[Finding]:
     """IRC R312.1 — a walking surface more than 30" above the surface below needs a guard,
@@ -420,10 +523,25 @@ def deck_guard(ctx: CheckContext) -> list[Finding]:
                    if abs(r.base_elevation.meters - surface_m) < 0.15]
         walls_on_deck = [w for w in guard_walls if abs(w.z0_m - surface_m) < 0.15]
         if not on_deck and not walls_on_deck:
+            # Before failing it for having no guard, ask whether it has an open edge at
+            # all. R312.1 guards *open* sides; a fully enclosed walking surface has none.
+            open_edges = _open_edges(ctx, deck, surface_m)
+            if open_edges is not None and not open_edges:
+                out.append(_advisory(
+                    "structural.deck_guard",
+                    f"deck {deck.tag} walking surface is {drop_in:.1f}\" above grade but "
+                    f"every edge of its outline is closed to at least "
+                    f"{GUARD_MIN_HEIGHT_IN:.0f}\" by a wall or a vertical glazing panel, "
+                    f"so IRC R312.1 has no open side to guard",
+                    (deck.tag,), Result.PASS,
+                ))
+                continue
+            where = ("" if not open_edges
+                     else f" ({len(open_edges)} of its outline edges stand open)")
             out.append(_advisory(
                 "structural.deck_guard",
                 f"deck {deck.tag} walking surface is {drop_in:.1f}\" above grade and has no "
-                f"Railing at that elevation; IRC R312.1 requires a guard over "
+                f"Railing at that elevation{where}; IRC R312.1 requires a guard over "
                 f"{GUARD_REQUIRED_ABOVE_IN:.0f}\"", (deck.tag,), Result.FAIL,
                 fix_hint="author a Railing along the deck's open edges",
             ))

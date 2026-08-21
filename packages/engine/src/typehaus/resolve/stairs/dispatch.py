@@ -46,11 +46,14 @@ def _resolve_stair(
     if stair.to_storey != _element_storey(model, opening.tag):
         return None, [_error("integrity.stair_opening", f"stair {stair.tag} must use an "
                              "opening on its destination storey", stair.tag)]
-    # The destination deck (wood FloorSystem or concrete Slab) must own the opening.
-    destination_floor = next(
-        (element for element in model.plan.storey_elements(stair.to_storey)
-         if isinstance(element, (FloorSystem, Slab))), None)
-    if destination_floor is None or opening.tag not in destination_floor.openings:
+    # The destination deck (wood FloorSystem or concrete Slab) must own the opening. Asked
+    # of *any* deck on that storey, not of the first one found: a storey may carry several —
+    # catlin's main floor is two I-joist bays and a concrete band since 2026-08-21, and its
+    # breezeway deck is filed there too — and "the first element that is a FloorSystem or a
+    # Slab" then depends on authoring order rather than on which deck the hole is in.
+    if not any(isinstance(element, (FloorSystem, Slab))
+               and opening.tag in element.openings
+               for element in model.plan.storey_elements(stair.to_storey)):
         return None, [_error("integrity.stair_opening", f"stair {stair.tag} opening must be "
                              "owned by the destination FloorSystem/Slab", stair.tag)]
     rise = target.elevation.meters - source.elevation.meters

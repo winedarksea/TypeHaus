@@ -3,14 +3,17 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Needs your decision
 
-- **Zoning height, after the 2'-6" lift (raised 2026-08-18).** Grade moved to -2'-6" so the
-  house stands out of the ground; the building's peak above average grade grew by exactly
-  that much with it (`building_height_summary.peak_above_grade_m`, and the north/south
-  elevations' ridge dimension). Nothing in the engine enforces a height limit — `SetbackSpec`
-  is plan-only, and there is no `height_limit` on a jurisdiction profile — so this is a note
-  rather than a check, but it is a real 2'-6" against whatever the Minneapolis limit for this
-  district is. Worth confirming against the zoning code before the lift is committed to; if a
-  limit is close, the levers are the attic's 11' ceiling and the 4:12 ridge, not the lift.
+- **Zoning height, after the lift — now 2'-10" (raised 2026-08-18, grew 2026-08-21).**
+  Grade moved to -2'-6" so the house stands out of the ground, and to -2'-10" when the
+  basement-ceiling overhaul put a 12 5/8" deck where a 9" slab had been and the house rose
+  4" to keep the basement's headroom. The building's peak above average grade grew by
+  exactly that much both times (`building_height_summary.peak_above_grade_m`, and the
+  north/south elevations' ridge dimension). Nothing in the engine enforces a height limit —
+  `SetbackSpec` is plan-only, and there is no `height_limit` on a jurisdiction profile — so
+  this is a note rather than a check, but it is a real 2'-10" against whatever the
+  Minneapolis limit for this district is. Worth confirming against the zoning code before
+  the lift is committed to; if a limit is close, the levers are the attic's 11' ceiling and
+  the 4:12 ridge, not the lift.
 
 - **What braces the porch and balcony east-west, now that the arch is gone?**
   (raised 2026-08-18, and the one item on this list that the arch swap *created*.) Removing
@@ -333,9 +336,9 @@ the future.
     `TR-SG-WRB-FLASH` do not block it; the cost is rewriting the ~6 tests that assert on
     those two slabs (test_site_earth, test_detail_vocabulary, test_accessories x2,
     test_catlin_contract_m3 x2).
-- basement ceiling, some of this wood joists maybe (deferred by decision 2026-08-02)
-  — **priced 2026-08-18**, see `plans/cost-options.md`: ~$21,300 saved, likely
-  $16,100 – $27,700. Still deferred; it is now a decision about dollars.
+- ~~basement ceiling, some of this wood joists maybe (deferred by decision 2026-08-02)~~
+  — priced 2026-08-18, **decided and built 2026-08-21**. See `## Basement Ceiling` below
+  for what was done, and `plans/cost-options.md` for the money.
 - study on first floor location adjustments (deferred by decision 2026-08-02)
 - Nest/loft design
 - Window sealing detail (RM-S-PLANT's is drawn — TR-CATLIN-PLANT-OPENING, 2026-08-18 — and
@@ -428,15 +431,63 @@ The sunken garden's 16" arch wall and three free retaining walls remain UNKNOWN 
 
 Make sure the basement door keeps the 7" step threshold (reduces flood risk)
 
-## Basement Ceiling
-We are going to plan a major overhaul of the basement ceiling. We are reducing the number of poured concrete (suspended deck) ceilings. We are switching those that remain to LiteDeck/BuildDeck/etc EPS forms. The goal with the EPS formed decks is to make the total depth the same as the installed deck depth on wooden joist floors (the wooden joist floors are the same as the upper stories, nominal 12" joists, subfloor, + lvp finish). This should allow us to reduce the costs of the concrete ceiling, while still being able to easily change how much of the basement is covered by concrete and how much by wood as they will be very similar (18' spans to the center wall, same depth). This will probably add arouond 3" to the height of the house.
+## Basement Ceiling — done 2026-08-21
 
-All the floors on the western portion (sauna, workshop, stairs) become joists. Half of the east half also becomes joist, with the heat mat under the dining table still in concrete (the master bathroom heatmap might become tile). 
+The brief that stood here is built. What it asked for and what was actually done:
 
-Because the deck forms can span 18' with a one way span, poured concrete walls W-B-CE, W-B-CW*, and W-B-STR2 can be removed along with their respective footings. The removal of these footings should simplify the footing drains as well.
-Wall W-B-CE becomes a staggered stud wall (still with the double door) or a steel stud wall if cheap enough. W-B-STR likely becomes a load bearing 2x6 wall (it's the only one that supports a floor and joists above). Wood on concrete needs a pressure treated sill (and maybe anchor bolts?).
+- **Mixed deck.** `SL-M-DECK` was 1,233 SF x 9" of cast suspended concrete, the largest
+  single line in the model (34.26 cy at $930-1,760/cy). It is now 414 SF — the band over
+  the dining end, x 18'-36' / y 13'-36' — as an 8" BuildDeck/LiteDeck EPS stay-in-place form
+  with a 4 5/8" cast cap. The other 819 SF is `FS-M-WEST` and `FS-M-EAST`, 11 7/8" I-joists
+  at 16" o.c. on the same 18'-0" span to the x=18' line. The two systems are 12 5/8" deep
+  each, matching `FS-SECOND`'s joist + subfloor, so re-apportioning the ceiling later is a
+  matter of moving one boundary line. Both numbers live in `houses/catlin/params/main_deck.py`
+  as `EPS_FORM_DEPTH` / `EPS_CAP`, with the 10" + 3" alternative (same depth class, ~21%
+  less concrete, R-31) documented beside them as a one-line swap.
+- **The lift was 4", not the 3" the brief guessed.** The soffit dropped 4 1/4" (9" of slab
+  to 12 5/8" of deck plus 5/8" of gypsum), so grade went to -2'-10" and the basement storey
+  to -9'-4"; the basement holds ~8'-2 3/4" clear. The main, second and attic datums did not
+  move at all.
+- **Walls.** `W-B-CW`, `W-B-CW2`, `W-B-CW3`, `W-B-CE` and `W-B-STR2` are framed — 2x6
+  plumbing, 2x4 partition, steel-stud Type X, 2x6 staggered and steel-stud Type X
+  respectively — each keeping its tag and uid. Four strip footings, four `FootingBedding`s
+  and four socked drain-tile runs went with them.
+- **`W-B-STR` stayed 12" concrete**, against the brief's guess that it would become a
+  bearing 2x6. Three things are measured off its east face at x=10'-6": the stair shaft's
+  7'-0", ST-B2M's flight width, and `FO-M-STAIR`'s west bearing edge — which is a real
+  edge now that the hole is cut in joists rather than in a pour, and off this wall would
+  take a 9'-0" engineered header. It keeps `FT-B-STR` either way, so framing it would have
+  bought only its own ~4.9 cy.
+- **Ceiling.** Drywall everywhere — IRC R316.4 wants a thermal barrier over the EPS, and
+  stopping the board at the boundary was not worth 414 SF of exposed soffit. That retired
+  `visible_basement_material` / `visible_basement_finish` from `preferences.toml`: the rule
+  was written to re-derive from what is overhead, and with a covered ceiling there is no
+  visible pipe left to have a rule about.
+- **The bathroom heat mat did become tile over wood** — `FH-M-BATH2` is over `FS-M-WEST`'s
+  subfloor now, on an uncoupling membrane rather than in thinset on a slab.
 
-Use subagents and web searches as useful to research this plan.
+Left open, and worth doing next:
+
+- **No check enforces IRC R316.4.** The gypsum thermal barrier over the EPS deck is
+  authored (`CATLIN_DECK_EPS_INT`'s FINISH layer, and `ceiling_below` on both
+  `FloorSystem`s) and nothing would notice if it were deleted. A `code.R316_4` reading foam
+  plastic exposed to a room's interior would.
+- **`code.R305_ceiling_height` reads `Storey.default_ceiling_height`, never the real clear
+  height.** The basement's is authored 9'-0" and its actual clear is 8'-2 3/4"; the check
+  did not notice the change in either direction, which means it would not notice a real
+  violation either.
+- **No boundary condition for "two decks meet in plan".** The mixed deck's wood/concrete
+  line at y=13'-0" is a real movement joint — matched depths, unmatched stiffness — and the
+  finish, the ceiling board and any tile field have to break on it
+  (`houses/catlin/notes/mixed_deck_movement_joint.md`). It is a note and a drawing
+  instruction only: a `Transition` binds to a derived boundary condition and there is no
+  `deck_change:<assembly>|<assembly>` deriving on the shared edge of two floor elements, and
+  a `ConstructionRule` bills along a wall or a ceiling rather than along a line between two
+  floors. Nothing in `haus check` will notice if the finish is run straight through.
+- **Basement HVAC could ride the new joist bays.** `DU-B-ERV-SUP`/`-RET` are
+  `DuctRouting.CHASE` because the ceiling had no bays at all; two thirds of it does now, and
+  the west half's run east-west the way the trunk does. Left as chase because the runs also
+  cross the concrete band, and splitting a trunk between bay and chase is its own pass.
 
 # Project Management
 * Track to inspection (list of inspections, calendar, pass registration). Likely includes Kanban somehow

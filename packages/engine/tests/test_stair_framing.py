@@ -212,7 +212,8 @@ def test_basement_lower_hanger_bears_at_the_landing(catlin_model, basement_stair
         assert hanger.connection.startswith("concrete-wall-hanger:")
         # A framed-wall bearing is annotation-only; a hanger band is concrete-only.
         assert not hanger.connection.startswith("framed-wall-ledger:")
-        assert hanger.z1_end_m == pytest.approx(-1.410, abs=0.01)
+        # -1.555 m, not -1.410: the basement went down 4" with its storey on 2026-08-21.
+        assert hanger.z1_end_m == pytest.approx(-1.555, abs=0.01)
     # The annotated stringer carries the same connection tag.
     tagged = [m for m in stair.members if m.category == "stringer"
               and m.connection is not None]
