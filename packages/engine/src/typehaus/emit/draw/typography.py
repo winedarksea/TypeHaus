@@ -1,0 +1,71 @@
+"""Lettering constants and the two unit conversions every writer needs (→ 30 §Details).
+
+A drawing has two coordinate systems and the difference between them is the whole subject of
+this module. **Model space** is the building, in inches, at whatever scale the sheet chose.
+**Paper space** is the printed page, in inches, at 1:1 — where a title block, a legend and a
+notes column live, and where lettering has to end up whatever the drawing's scale is.
+
+Text is the one thing that crosses. A note is not 1.6" *of building*; it is 7 points *of
+paper*, and the only reason it was ever written in model inches is that the writers had no
+way to say otherwise. That is what ``height_pt`` on the IR text nodes fixes, and this module
+is where the sizes it takes come from.
+
+Before this there were four copies of ``CHAR_ASPECT`` (``pdf_writer``, ``annotate``, and two
+wrap-column constants that had to match it), each with a comment saying "keep in sync with"
+the others. A constant that three modules have to agree on is not three constants.
+
+Conversions
+-----------
+``scale`` throughout is the architectural denominator the sheet chose, expressed the way
+``sheet_writer.ARCH_SCALES`` does: *model inches per paper inch*. 1-1/2" = 1'-0" is a scale
+of 8 (12 model inches print in 1.5 paper inches); 1/4" = 1'-0" is 48.
+"""
+
+from __future__ import annotations
+
+#: Monospace advance width as a fraction of cap height. Only ever used to *reserve* room —
+#: matplotlib measures the real thing at draw time, and DXF has its own font metrics.
+CHAR_ASPECT = 0.62
+
+#: Vertical advance per text line, in multiples of the text height. matplotlib's default is
+#: 1.2; the extra air covers descenders and the leader shoulder.
+LINE_SPACING = 1.4
+
+#: The legibility floor at 300 dpi. A label that would print smaller than this is drawn at
+#: this size instead — a note nobody can read is not a smaller note, it is a missing one.
+MIN_PT = 4.0
+
+#: Default printed sizes, points.
+TEXT_PT = 7.0          #: general annotation (layer ladders, seed callouts, eave labels)
+LEADER_TEXT_PT = 7.0   #: leader notes
+DIM_TEXT_PT = 6.5      #: dimension strings — the literal `_draw_dimension` hardcoded
+NOTES_PT = 9.0         #: the paper-space notes column
+
+#: Columns a long leader note wraps at.
+LEADER_WRAP_COLUMNS = 40
+
+
+def model_in_per_pt(scale: float) -> float:
+    """How many *model* inches one printed point covers at ``scale``.
+
+    The conversion the ladder and ``dodge`` need: they reserve space in model inches, and
+    what they are really reserving is room for lettering of a fixed printed size.
+    """
+    return scale / 72.0
+
+
+def paper_in_per_model_in(scale: float) -> float:
+    """The reciprocal — how much paper one model inch takes up."""
+    return 1.0 / scale
+
+
+def wrap_columns_for(band_in: float, size_pt: float) -> int:
+    """How many monospace characters fit across a ``band_in``-wide paper band at ``size_pt``.
+
+    Wrapping belongs to the writer, at the width it is actually printing into — wrapping
+    earlier (in the note loader, at a guessed column count) is what makes the same note
+    ragged on a card and square on a sheet.
+    """
+    if size_pt <= 0.0:
+        return 1
+    return max(1, int(band_in * 72.0 / (size_pt * CHAR_ASPECT)))

@@ -16,18 +16,18 @@ from __future__ import annotations
 import textwrap
 from dataclasses import dataclass, replace
 
-# Monospace advance width as a fraction of cap height. Duplicates
-# ``pdf_writer._CHAR_ASPECT`` on purpose: the constant is a shared drawing convention and
-# pdf_writer is not this module's dependency (keep the two values in sync).
-_CHAR_ASPECT = 0.62
+from typehaus.emit.draw.typography import (
+    CHAR_ASPECT as _CHAR_ASPECT,
+)
+from typehaus.emit.draw.typography import (
+    LEADER_WRAP_COLUMNS,
+)
+from typehaus.emit.draw.typography import (
+    LINE_SPACING as _LINE_SPACING,
+)
 
-# Vertical advance per text line, in multiples of the text height (matplotlib's default
-# line spacing is 1.2; the extra air covers descenders and the leader shoulder).
-_LINE_SPACING = 1.4
-
-# Columns long leader note text wraps at. Same convention as
-# ``schedule_block.LEADER_WRAP_COLUMNS`` (duplicated deliberately — see _CHAR_ASPECT).
-LEADER_WRAP_COLUMNS = 40
+__all__ = ["DODGE_GAP", "LEADER_WRAP_COLUMNS", "LabelSpec", "PlacedLabel", "dodge",
+           "label_box", "leader_box", "place_column", "text_extent", "wrap_label"]
 
 # Vertical air kept between two label boxes after dodging, model inches.
 DODGE_GAP = 0.5

@@ -21,6 +21,7 @@ import textwrap
 from dataclasses import dataclass
 
 from typehaus.emit.draw.scene import Polyline, SceneBuilder, Text
+from typehaus.emit.draw.typography import CHAR_ASPECT, LEADER_WRAP_COLUMNS
 
 # Lettering and rhythm of a schedule block, model-space inches at the scale of a plan whose
 # longest side is REFERENCE_PLAN_EXTENT_IN. A bigger building is drawn smaller on the same
@@ -34,13 +35,12 @@ SCHEDULE_TITLE_PITCH_IN = 14.0
 SCHEDULE_BLOCK_GAP_IN = 30.0  # vertical air between two stacked blocks
 SCHEDULE_COLUMN_GAP_SPACES = 2
 REFERENCE_PLAN_EXTENT_IN = 360.0  # a 30-foot plan: the scale these constants are drawn at
-# Monospace advance width as a fraction of cap height — the same ratio the PDF writer
-# reserves room with, used here only to size the table's underscore rules.
-CHARACTER_WIDTH_RATIO = 0.62
+# Used here only to size the table's underscore rules; ``typography`` owns the ratio, and
+# ``LEADER_WRAP_COLUMNS`` (a leader note is read beside the thing it points at, so it wraps
+# much narrower than a sheet note) comes from there too.
+CHARACTER_WIDTH_RATIO = CHAR_ASPECT
 # Long notes wrap at a sheet-note measure rather than running off the drawing.
 NOTE_WRAP_COLUMNS = 96
-# A leader note is read next to the thing it points at, so it wraps much narrower.
-LEADER_WRAP_COLUMNS = 40
 
 # AIA annotation layers: the table rules are a table, the lettering is text.
 SCHEDULE_GRID_LAYER = "A-ANNO-TABL"

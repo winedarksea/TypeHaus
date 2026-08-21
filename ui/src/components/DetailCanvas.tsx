@@ -45,13 +45,10 @@ export function leaderTextAlign(at: Pt, to: Pt): "start" | "end" {
   return at[0] < to[0] ? "end" : "start";
 }
 
-// Mirrors of pdf_writer's text-metric conventions, so both renderers reserve the same room
-// and letter at the same model-space size. CHAR_ASPECT is the monospace advance width as a
-// fraction of cap height; LEADER_TEXT_H matches scene.py Leader.height's default.
-export const CHAR_ASPECT = 0.62;
-export const LEADER_TEXT_H = 1.6;
-// Dimension lettering carries no IR height; one shared model-space size here.
-export const DIM_TEXT_H = 2.0;
+// Text metrics live in ./detailTypography, which the engine's typography.py is checked
+// against by test_typography_parity.py. Re-exported here so existing imports resolve.
+import { CHAR_ASPECT, DIM_TEXT_H, LEADER_TEXT_H } from "./detailTypography";
+export { CHAR_ASPECT, DIM_TEXT_H, LEADER_TEXT_H };
 
 // Halo behind annotation lettering so it stays legible over hatch fills — the SVG analogue
 // of the raster writer's translucent white bbox. Paint-order strokes the page colour behind

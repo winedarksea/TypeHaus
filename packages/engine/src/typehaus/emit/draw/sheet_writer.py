@@ -25,6 +25,7 @@ from typing import TYPE_CHECKING
 
 from typehaus.emit.draw.pdf_writer import _apply_text_scale, _render_nodes, _scene_bounds
 from typehaus.emit.draw.scene import Scene
+from typehaus.emit.draw.typography import NOTES_PT
 
 if TYPE_CHECKING:  # pragma: no cover — SheetSpec lives in sheets.py (which imports us)
     from typehaus.resolve.model import ResolvedModel
@@ -44,7 +45,7 @@ _TITLE_H = 0.75      # title-block strip height above the bottom border line, in
 _VIEW_PAD = 0.10     # air between chrome and the drawing viewport, inches
 _BAR_LANE = 0.30     # reserved strip below the viewport for the graphic scale bar
 _NOTES_W = 3.4       # reserved right-hand notes panel width, inches
-_NOTES_PT = 9.0      # fixed notes lettering size, points (monospace)
+_NOTES_PT = NOTES_PT  # fixed notes lettering size, points (monospace)
 _INK = "#1a1a1a"
 
 # Standard architectural scales as (sheet inches per model foot, printed label),

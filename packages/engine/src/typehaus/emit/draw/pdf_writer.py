@@ -23,6 +23,7 @@ from typehaus.emit.draw.scene import (
     Symbol,
     Text,
 )
+from typehaus.emit.draw.typography import CHAR_ASPECT, MIN_PT, NOTES_PT
 from typehaus.quantities import M_PER_IN
 
 # Drawing-IR linetype → matplotlib linestyle. Anything unlisted draws solid, which is what
@@ -139,7 +140,7 @@ SYMBOL_NAMES_WITH_DEDICATED_GLYPH = (
 _LEADER_TEXT_H = 1.6
 # Clamps in points, so a sheet-scale plan's labels stay readable and a tight detail's
 # lettering cannot swallow the drawing. 4 pt is the legibility floor at 300 dpi output.
-_MIN_PT, _MAX_PT = 4.0, 14.0
+_MAX_PT = 14.0
 
 
 def _scene_bounds(scene: Scene) -> tuple[float, float, float, float] | None:
@@ -161,7 +162,7 @@ def _scene_bounds(scene: Scene) -> tuple[float, float, float, float] | None:
             anchor = node.anchor if isinstance(node, Text) else node.at
             if not isinstance(anchor, tuple):
                 continue
-            width = max(len(line) for line in content.split("\n")) * height * _CHAR_ASPECT
+            width = max(len(line) for line in content.split("\n")) * height * CHAR_ASPECT
             lines = content.count("\n") + 1
             align = (_leader_align(node) if isinstance(node, Leader)
                      else getattr(node, "align", "left"))
@@ -174,8 +175,6 @@ def _scene_bounds(scene: Scene) -> tuple[float, float, float, float] | None:
     return min(us), min(zs), max(us), max(zs)
 
 
-# Monospace advance width as a fraction of cap height — used only to reserve room.
-_CHAR_ASPECT = 0.62
 
 
 def _leader_align(node: Leader) -> str:
@@ -236,9 +235,9 @@ def _draw_underlays(ax: object, underlays) -> None:
 # gridspec width_ratios=[2.9, 1.1]). The panel never drops below the width _NOTES_WRAP
 # monospace characters need at _NOTES_PT points, so a small detail still prints legible notes.
 _NOTES_RATIO = 1.1 / 2.9
-_NOTES_PT = 9.0
+_NOTES_PT = NOTES_PT
 _NOTES_WRAP = 58
-_NOTES_MIN_W = _NOTES_WRAP * _NOTES_PT * _CHAR_ASPECT / 72.0 + 0.6  # inches
+_NOTES_MIN_W = _NOTES_WRAP * _NOTES_PT * CHAR_ASPECT / 72.0 + 0.6  # inches
 
 
 def _rewrap_notes(lines) -> list[str]:
@@ -329,7 +328,7 @@ def _apply_text_scale(fig, ax, scaled_text) -> None:
         return
     points_per_unit = pixels_per_unit * 72.0 / fig.dpi
     for artist, height in scaled_text:
-        artist.set_fontsize(min(_MAX_PT, max(_MIN_PT, height * points_per_unit)))
+        artist.set_fontsize(min(_MAX_PT, max(MIN_PT, height * points_per_unit)))
 
 
 def _render_nodes(ax: object, scene: Scene) -> None:
