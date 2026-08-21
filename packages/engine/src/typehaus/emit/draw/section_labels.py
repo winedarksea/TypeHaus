@@ -9,6 +9,8 @@ lives here rather than inside the per-family cut handlers.
 
 from __future__ import annotations
 
+from typing import NamedTuple
+
 from typehaus.emit.draw.annotate import LEGACY_IN_PER_PT, LabelSpec, dodge, place_column
 from typehaus.emit.draw.scene import Leader, NamedPoint
 from typehaus.emit.draw.typography import TEXT_PT
@@ -49,7 +51,57 @@ def wall_layer_ladder(wall, label_entries, wall_top, crop, ladder_labels,
                                       align="right", scale=scale))
 
 
-def roof_layer_ladder(roof, detail_layers, crop, z_at, ladder_labels,
+class DrawnBand(NamedTuple):
+    """One assembly band exactly as it reached the sheet.
+
+    ``points`` is the outline in model **inches**, already sliced and cropped — the same
+    tuple handed to the ``Polyline``/``Hatch`` node. ``thickness_in`` is the assembly's
+    spec thickness, which is what the label says; it is deliberately *not* what the label
+    points at, because a layer of a sloped roof is offset perpendicular to the slope and
+    so occupies more than its own thickness of a plumb section.
+    """
+
+    name: str
+    thickness_in: float
+    points: tuple[tuple[float, float], ...]
+
+
+def _span_at(points, u: float) -> tuple[float, float] | None:
+    """Where the plumb line at ``u`` enters and leaves a band, or ``None`` if it misses."""
+    zs: list[float] = []
+    count = len(points)
+    for index in range(count):
+        (u0, z0), (u1, z1) = points[index], points[(index + 1) % count]
+        if u0 == u1:
+            if u0 == u:
+                zs.extend((z0, z1))
+        elif min(u0, u1) <= u <= max(u0, u1):
+            zs.append(z0 + (z1 - z0) * (u - u0) / (u1 - u0))
+    return (min(zs), max(zs)) if zs else None
+
+
+def _point_on_band(outlines, probe: float) -> tuple[float, float] | None:
+    """The point the leader lands on: mid-band, on the plumb line nearest ``probe``.
+
+    A layer can reach the sheet as more than one outline — both planes of a gable, or a
+    band the crop cut in two — so the nearest one to the shared probe station wins, and a
+    band that stops short of the probe is pointed at inside its own u-range rather than
+    somewhere off its end.
+    """
+    best = None
+    for points in outlines:
+        us = [u for (u, _z) in points]
+        u = min(max(probe, min(us)), max(us))
+        span = _span_at(points, u)
+        if span is None:
+            continue
+        candidate = (abs(u - probe), u, (span[0] + span[1]) / 2.0)
+        if best is None or candidate < best:
+            best = candidate
+    return None if best is None else (best[1], best[2])
+
+
+def roof_layer_ladder(roof, bands, crop, z_at, ladder_labels,
                       scale: float | None = None) -> None:
     """Name every band of a roof's assembly, the way ``wall_layer_ladder`` names a wall's.
 
@@ -63,38 +115,53 @@ def roof_layer_ladder(roof, detail_layers, crop, z_at, ladder_labels,
     end is where the water chain, the corner trim and the wall head all crowd into two
     inches of drawing, and a fan of nine leaders into that is unreadable. Up-slope the
     bands are clear of everything.
+
+    ``bands`` are :class:`DrawnBand` records — the outlines the caller actually drew — and every
+    leader is aimed by measuring one, never by re-deriving where it ought to be. That is
+    the point of taking them: the first version walked the assembly's own layer spans and
+    stepped down from the roof plane by each layer's thickness, which is a *perpendicular*
+    offset being spent as a vertical one. On catlin's 4:12 the two disagree by 5.4%, so the
+    stack's labels drifted a growing fraction of an inch down into their neighbours: the
+    roofing pointed at the vent mat, the vent mat and the underlayment both at the deck,
+    the deck at the polyiso, and the vapour barrier at the ZIP below it. Five of nine named
+    the wrong band, and none of them looked wrong — every leader landed cleanly on *a*
+    layer. Measuring the drawn outline cannot drift, because there is nothing left to
+    disagree with.
     """
-    if ladder_labels is None or crop is None or not detail_layers:
+    if ladder_labels is None or crop is None or not bands:
         return
     (cu0, cz0), (cu1, cz1) = crop
     u_lo, u_hi = min(cu0, cu1), max(cu0, cu1)
     # The up-slope end of the crop is the higher one; probe a fifth of the way in from it.
     up_is_hi = z_at(u_hi) >= z_at(u_lo)
     probe = (u_hi - 0.2 * (u_hi - u_lo)) if up_is_hi else (u_lo + 0.2 * (u_hi - u_lo))
-    z_probe = z_at(probe)
-    z_lo, z_hi = min(cz0, cz1), max(cz0, cz1)
+    probe_in = probe / M_PER_IN
+    z_hi = max(cz0, cz1)
+
+    outlines: dict[str, list] = {}
+    thickness: dict[str, float] = {}
+    for band in bands:
+        outlines.setdefault(band.name, []).append(band.points)
+        thickness.setdefault(band.name, band.thickness_in)
 
     entries = []
-    for (layer, d0, d1) in detail_layers:
-        mid_z = z_probe - (d0 + d1) / 2.0
-        if not (z_lo <= mid_z <= z_hi):  # band off the sheet — labelling it points at nothing
+    for name, band_outlines in outlines.items():
+        point = _point_on_band(band_outlines, probe_in)
+        if point is None:
             continue
-        inches = (d1 - d0) / M_PER_IN
-        entries.append(LabelSpec(
-            text=f'{layer.name} {inches:.3g}"',
-            target=(probe / M_PER_IN, mid_z / M_PER_IN),
-            key=(roof.uid, layer.name)))
+        entries.append(LabelSpec(text=f'{name} {thickness[name]:.3g}"',
+                                 target=point, key=(roof.uid, name)))
     if not entries:
         return
     # **Highest band first**, off the targets themselves. ``place_column`` fills top-down, so
     # this is what makes rung order and band order the same order — and it is the whole
     # difference between a ladder and a cat's cradle. This used to reverse whatever the
-    # caller passed, on the belief that ``detail_layers`` arrived innermost-first; the
-    # section sorts them by their offset from the *structure datum*, which is a different
-    # question from where they land on a sloped cut, and the two answers stopped agreeing
-    # once the cavity fill joined the list. The ladder came out rafter-at-the-top over a roof
-    # drawn roofing-at-the-top, so all ten leaders crossed all ten others on the way in.
-    # Sorting on the drawn elevation cannot be wrong about the drawn order.
+    # caller passed, on the belief that the layers arrived innermost-first; the section
+    # sorted them by their offset from the *structure datum*, which is a different question
+    # from where they land on a sloped cut, and the two answers stopped agreeing once the
+    # cavity fill joined the list. The ladder came out rafter-at-the-top over a roof drawn
+    # roofing-at-the-top, so all ten leaders crossed all ten others on the way in. Sorting
+    # on the elevation the band was measured at cannot be wrong about the drawn order.
     entries.sort(key=lambda entry: -entry.target[1])
     ladder_labels.extend(place_column(
         entries, x=u_lo / M_PER_IN - 1.0, z_top=z_hi / M_PER_IN - 1.0,
@@ -106,21 +173,28 @@ def emit_ladders(b, ladder_labels, scale: float | None = None) -> None:
 
     Two walls' ladders share the text column at the crop's left edge and would otherwise
     interleave.
+
+    **``to`` is where the arrowhead goes, and it is the only end any renderer draws.** All
+    three back ends — matplotlib's ``annotate`` in ``pdf_writer``, ``add_leader`` in
+    ``dxf_writer``, and the viewer's ``DetailCanvas`` — draw the single segment ``at → to``
+    and never read ``anchor``, which is provenance for hit-testing. A roof rung used to be
+    written here as an elbow: horizontal out to the band's u at the *rung's* own height,
+    with the point on the band carried in ``anchor``. No renderer has ever drawn that second
+    leg, so the arrow stopped at the shoulder — at the label's row, on whatever band happens
+    to lie at that elevation. The eave's rungs span 22" of column against 21" of roof, so
+    every arrow landed three or four inches high of the layer it named and the whole ladder
+    read as if it were pointing one band up. The fix is to aim ``to`` at the band itself and
+    let the leader run as one diagonal. It cannot tangle: ``roof_layer_ladder`` sorts by
+    target elevation and ``place_column`` steps rungs down in that same order, so the two
+    sequences descend together and order-preserving lines do not cross.
     """
     for placed in dodge(ladder_labels, scale=scale):
         mid_u, target_z = placed.spec.target
         rung_z = placed.at[1]
-        if target_z:
-            # A roof layer is a sloped band: its layers separate in *z* at a given u, so a
-            # flat rung cannot tell them apart the way it can a wall's vertical layers. The
-            # rung stays horizontal out to the band's own u and then elbows to the point on
-            # it, which keeps the text column aligned while the pointers fan.
-            b.add(Leader(anchor=NamedPoint(xy=(mid_u, target_z)), at=placed.at,
-                         to=(mid_u, rung_z), text=placed.spec.text,
-                         height_pt=placed.height_pt, layer="A-ANNO-TEXT"))
-            continue
-        # Horizontal, leadered back to the layer at the rung's own height — the rung moves
-        # with the label when dodged, so the leader line stays flat and never crosses text.
-        b.add(Leader(anchor=NamedPoint(xy=(mid_u, rung_z)), at=placed.at,
-                     to=(mid_u, rung_z), text=placed.spec.text,
-                     height_pt=placed.height_pt, layer="A-ANNO-TEXT"))
+        # A wall's layers separate in *u* and run the full height of the cut, so a flat rung
+        # at the label's own elevation already lands inside the band; ``target_z`` is 0 to
+        # say so. A roof's separate in *z*, and nothing but the band's own elevation will do.
+        tip = (mid_u, target_z if target_z else rung_z)
+        b.add(Leader(anchor=NamedPoint(xy=tip), at=placed.at, to=tip,
+                     text=placed.spec.text, height_pt=placed.height_pt,
+                     layer="A-ANNO-TEXT"))

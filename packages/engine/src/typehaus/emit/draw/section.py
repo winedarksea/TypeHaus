@@ -19,7 +19,6 @@ from typehaus.emit.draw.section_cavity import (
     emit_roof_cavity,
     emit_wall_cavity,
     opening_splits,
-    roof_cavity_bands,
 )
 from typehaus.emit.draw.section_clip import (
     clip_polygon,
@@ -29,6 +28,7 @@ from typehaus.emit.draw.section_clip import (
     rect_nodes,
 )
 from typehaus.emit.draw.section_labels import (
+    DrawnBand,
     emit_ladders,
     roof_layer_ladder,
     wall_layer_ladder,
@@ -40,10 +40,6 @@ from typehaus.quantities import M_PER_IN, m, pt
 from typehaus.resolve.geometry_slice import CutPlane, ring_intervals, slice_part
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 from typehaus.resolve.roof_geometry import roof_plane_z
-from typehaus.resolve.roof_layer_setbacks import (
-    assembly_layer_spans,
-    structure_datum_m,
-)
 
 # ``section.py`` is the name every caller — the CLI, the server, the detail package and the
 # tests — imports a cut from, so the pieces split out of it stay reachable here.
@@ -292,22 +288,6 @@ def _wall_top_at_cut(wall: ResolvedWall, direction: str, station: float) -> floa
     return start_top + (end_top - start_top) * fraction
 
 
-def _roof_layer_offsets(asm):
-    """``(layer, d0, d1)`` per assembly layer, measured *down* from the structure datum.
-
-    Positive is below the datum (the structure and anything inboard of it); negative is
-    above (the whole outboard stack). The datum is ``roof_height_at`` — the top of the
-    structure, which is what ``eave_z_m`` means. This used to run one cumulative depth
-    downward from the first layer, which drew the entire above-structure stack *under* the
-    rafters: on catlin's nailbase roof the section showed metal, vent mat, underlayment, OSB
-    and 6" of polyiso hanging below the I-joists and nothing at all above them. It read as a
-    plausible drawing, which is why it survived — the bands were in the right order, just
-    mirrored about the wrong plane.
-    """
-    datum = structure_datum_m(asm)
-    return [(layer, datum - c1, datum - c0) for (layer, c0, c1) in assembly_layer_spans(asm)]
-
-
 def _emit_roof_cut(b, model, roof, plane: CutPlane, crop, joints=None,
                    ladder_labels=None, scale=None) -> None:
     """One roof's cut: the above-structure stack sliced out of the IR, plus the bay fill.
@@ -323,7 +303,7 @@ def _emit_roof_cut(b, model, roof, plane: CutPlane, crop, joints=None,
         return
     asm = model.plan.library.resolve_assembly(roof.assembly)
     detail = joints is not None
-    drawn = False
+    bands: list[DrawnBand] = []
     for part in element.parts:
         catalog = part.catalog
         if catalog is None:
@@ -334,22 +314,21 @@ def _emit_roof_cut(b, model, roof, plane: CutPlane, crop, joints=None,
             if len(clipped) < 3:
                 continue
             pts = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
-            drawn = True
             b.add(Polyline(points=pts, layer="A-ROOF", closed=True,
                            lineweight=0.18 if detail else 0.35,
                            uid=roof.uid, tag=f"{roof.tag}/{catalog.name}"))
             b.add(Hatch(boundary=pts, pattern=pattern, layer="A-WALL-PATT",
                         uid=roof.uid, material=catalog.material_ref))
+            bands.append(DrawnBand(catalog.name,
+                                   (catalog.thickness_m or 0.0) / M_PER_IN, pts))
 
     if asm is None:
         return
-    emit_roof_cavity(b, roof, asm, plane, crop)
+    bands += emit_roof_cavity(b, roof, asm, plane, crop)
     # No band of this roof reached the sheet: naming its layers would point at nothing.
     # Half the derived details are cut at a wall a long way from any roof.
-    if detail and drawn:
-        # The ladder names every band of the assembly, the drawn cavity fill included —
-        # sorted outboard-first so the column reads in the order the drawing stacks.
-        rungs = sorted(_roof_layer_offsets(asm) + roof_cavity_bands(asm),
-                       key=lambda entry: entry[1])
-        roof_layer_ladder(roof, rungs, crop,
+    if detail and bands:
+        # The ladder names every band that was drawn, the cavity fill included, and aims
+        # each leader by measuring that band's own outline — see ``roof_layer_ladder``.
+        roof_layer_ladder(roof, bands, crop,
                           lambda u: roof_plane_z(roof, u), ladder_labels, scale)

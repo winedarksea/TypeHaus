@@ -21,6 +21,8 @@ from __future__ import annotations
 from typehaus.emit.draw.palette import aia_layer, detail_hatch
 from typehaus.emit.draw.scene import Hatch
 from typehaus.emit.draw.section_clip import clip_polygon, clip_rect, quad_nodes, rect_nodes
+from typehaus.emit.draw.section_labels import DrawnBand
+from typehaus.model.enums import LayerFunction
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry_slice import CutPlane, ring_intervals
 from typehaus.resolve.roof_geometry import roof_plane_z, roof_ridge_coordinate
@@ -154,20 +156,42 @@ class _CavityBand:
         self.function = host.function
         self._cavity = cavity
 
-def emit_roof_cavity(b, roof, asm, plane: CutPlane, crop) -> None:
-    """The bay fill, as a sloped band under the structure datum, clipped to the rafters."""
-    bands = roof_cavity_bands(asm)
+def roof_structure_band(asm):
+    """``(layer, d0, d1)`` for the structure itself, in the same datum-down frame.
+
+    Not drawn here — the rafters are drawn as *members*, which is the whole reason
+    ``roof_parts`` stops at the structure. It is measured here anyway because the ladder
+    still has to name the joist depth, and the bay outline this yields is the outline those
+    members were cut to: the drawn rafter and this band coincide at every station.
+    """
+    datum = structure_datum_m(asm)
+    return [(layer, datum - c1, datum - c0)
+            for (layer, c0, c1) in assembly_layer_spans(asm)
+            if layer.function is LayerFunction.STRUCTURE]
+
+
+def emit_roof_cavity(b, roof, asm, plane: CutPlane, crop) -> list[DrawnBand]:
+    """The bay fill, as a sloped band under the structure datum, clipped to the rafters.
+
+    Returns what it drew, so the ladder can aim at the outlines rather than at a second
+    derivation of where they ought to be.
+    """
+    # ``False`` = measure the outline for the ladder but draw no fill: see
+    # ``roof_structure_band``.
+    bands = ([(entry, True) for entry in roof_cavity_bands(asm)]
+             + [(entry, False) for entry in roof_structure_band(asm)])
     if not bands:
-        return
+        return []
     intervals = ring_intervals(tuple(roof.footprint), plane)
     if not intervals:
-        return
+        return []
     ridge_u = roof_ridge_coordinate(roof)
     slope_along_cut = (
         (roof.ridge_direction == "y" and plane.axis == "x")
         or (roof.ridge_direction == "x" and plane.axis == "y")
     )
     structure_span = _rafter_plan_span(roof, plane.axis)
+    drawn: list[DrawnBand] = []
 
     def top_line(a: float, b_: float) -> list[tuple[float, float]]:
         if slope_along_cut:
@@ -177,7 +201,7 @@ def emit_roof_cavity(b, roof, asm, plane: CutPlane, crop) -> None:
         return [(a, z), (b_, z)]
 
     for (u0, u1) in intervals:
-        for (layer, d0, d1) in bands:
+        for ((layer, d0, d1), fill) in bands:
             a, b_ = u0, u1
             if structure_span is not None:
                 a, b_ = max(a, structure_span[0]), min(b_, structure_span[1])
@@ -190,7 +214,10 @@ def emit_roof_cavity(b, roof, asm, plane: CutPlane, crop) -> None:
             if len(clipped) < 3:
                 continue
             pts = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
-            b.add(Hatch(boundary=pts,
-                        pattern=detail_hatch(layer.material_ref, layer.function.value)
-                        or "batt",
-                        layer="A-WALL-PATT", uid=roof.uid, material=layer.material_ref))
+            if fill:
+                b.add(Hatch(boundary=pts,
+                            pattern=detail_hatch(layer.material_ref, layer.function.value)
+                            or "batt",
+                            layer="A-WALL-PATT", uid=roof.uid, material=layer.material_ref))
+            drawn.append(DrawnBand(layer.name, (d1 - d0) / M_PER_IN, pts))
+    return drawn
