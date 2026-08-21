@@ -264,12 +264,17 @@ def _add_polyline(msp: object, node: Polyline) -> None:
 
 
 def _add_hatch(msp: object, node: Hatch) -> None:
-    pattern = "ANSI31" if node.pattern in ("lumber", "structure") else "ANSI37"
     h = msp.add_hatch(color=252, dxfattribs={"layer": node.layer})  # type: ignore[attr-defined]
-    try:
-        h.set_pattern_fill(pattern, scale=max(node.scale, 0.5) * 6.0, angle=node.angle)
-    except Exception:  # noqa: BLE001 - pattern table variance across ezdxf builds
+    if node.pattern in ("none", "SOLID"):
+        # A band the palette draws as its colour alone (the rigid boards) — a pattern here
+        # would put back exactly the crosshatch the colour replaced.
         h.set_solid_fill(color=252)
+    else:
+        pattern = "ANSI31" if node.pattern in ("lumber", "structure") else "ANSI37"
+        try:
+            h.set_pattern_fill(pattern, scale=max(node.scale, 0.5) * 6.0, angle=node.angle)
+        except Exception:  # noqa: BLE001 - pattern table variance across ezdxf builds
+            h.set_solid_fill(color=252)
     h.paths.add_polyline_path(list(node.boundary), is_closed=True)
 
 
@@ -280,7 +285,10 @@ def _add_text(msp: object, node: Text, scene: Scene) -> None:
         node.content,
         dxfattribs={"layer": node.layer, "height": height, "rotation": node.rotation},
     )
-    e.set_placement(node.anchor, align=getattr(__import__("ezdxf").enums.TextEntityAlignment, align))
+    import ezdxf
+
+    e.set_placement(node.anchor,
+                    align=getattr(ezdxf.enums.TextEntityAlignment, align))
 
 
 def _add_dimension(msp: object, node: ArchDimension, scene: Scene) -> None:

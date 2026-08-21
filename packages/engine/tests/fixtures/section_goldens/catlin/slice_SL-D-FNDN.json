@@ -163,7 +163,7 @@
           0.0
         ]
       ],
-      "pattern": "rigid",
+      "pattern": "none",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -219,7 +219,7 @@
           0.0
         ]
       ],
-      "pattern": "rigid",
+      "pattern": "none",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -415,7 +415,7 @@
           0.0
         ]
       ],
-      "pattern": "rigid",
+      "pattern": "none",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -471,7 +471,7 @@
           0.0
         ]
       ],
-      "pattern": "rigid",
+      "pattern": "none",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -863,7 +863,7 @@
           12.000000000000002
         ]
       ],
-      "pattern": "rigid",
+      "pattern": "none",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -919,7 +919,7 @@
           12.000000000000002
         ]
       ],
-      "pattern": "rigid",
+      "pattern": "none",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",

@@ -471,7 +471,7 @@
           368.2842099788303
         ]
       ],
-      "pattern": "rigid",
+      "pattern": "none",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -527,7 +527,7 @@
           371.44648763899875
         ]
       ],
-      "pattern": "rigid",
+      "pattern": "none",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -1438,7 +1438,7 @@
       "node": "text",
       "anchor": [
         0.5,
-        1.42
+        1.532
       ],
       "content": "MATERIALS",
       "height": 3.0,
@@ -1455,19 +1455,19 @@
       "boundary": [
         [
           0.5,
-          1.18
+          1.328
         ],
         [
           0.64,
-          1.18
+          1.328
         ],
         [
           0.64,
-          1.3199999999999998
+          1.468
         ],
         [
           0.5,
-          1.3199999999999998
+          1.468
         ]
       ],
       "pattern": "gypsum",
@@ -1483,19 +1483,19 @@
       "points": [
         [
           0.5,
-          1.18
+          1.328
         ],
         [
           0.64,
-          1.18
+          1.328
         ],
         [
           0.64,
-          1.3199999999999998
+          1.468
         ],
         [
           0.5,
-          1.3199999999999998
+          1.468
         ]
       ],
       "layer": "A-DETL-CMPT",
@@ -1510,7 +1510,7 @@
       "node": "text",
       "anchor": [
         0.7,
-        1.25
+        1.3980000000000001
       ],
       "content": "gwb  0.625\"",
       "height": 3.0,
@@ -1527,19 +1527,19 @@
       "boundary": [
         [
           0.5,
-          0.98
+          1.158
         ],
         [
           0.64,
-          0.98
+          1.158
         ],
         [
           0.64,
-          1.12
+          1.298
         ],
         [
           0.5,
-          1.12
+          1.298
         ]
       ],
       "pattern": "lumber",
@@ -1555,19 +1555,19 @@
       "points": [
         [
           0.5,
-          0.98
+          1.158
         ],
         [
           0.64,
-          0.98
+          1.158
         ],
         [
           0.64,
-          1.12
+          1.298
         ],
         [
           0.5,
-          1.12
+          1.298
         ]
       ],
       "layer": "A-DETL-CMPT",
@@ -1582,7 +1582,7 @@
       "node": "text",
       "anchor": [
         0.7,
-        1.05
+        1.228
       ],
       "content": "spf  3.5\"",
       "height": 3.0,
@@ -1599,19 +1599,19 @@
       "boundary": [
         [
           0.5,
-          0.7799999999999999
+          0.988
         ],
         [
           0.64,
-          0.7799999999999999
+          0.988
         ],
         [
           0.64,
-          0.9199999999999999
+          1.1280000000000001
         ],
         [
           0.5,
-          0.9199999999999999
+          1.1280000000000001
         ]
       ],
       "pattern": "osb",
@@ -1627,19 +1627,19 @@
       "points": [
         [
           0.5,
-          0.7799999999999999
+          0.988
         ],
         [
           0.64,
-          0.7799999999999999
+          0.988
         ],
         [
           0.64,
-          0.9199999999999999
+          1.1280000000000001
         ],
         [
           0.5,
-          0.9199999999999999
+          1.1280000000000001
         ]
       ],
       "layer": "A-DETL-CMPT",
@@ -1654,7 +1654,7 @@
       "node": "text",
       "anchor": [
         0.7,
-        0.8499999999999999
+        1.058
       ],
       "content": "zip-sheathing  0.5\"",
       "height": 3.0,
@@ -1671,19 +1671,19 @@
       "boundary": [
         [
           0.5,
-          0.5800000000000001
+          0.8180000000000001
         ],
         [
           0.64,
-          0.5800000000000001
+          0.8180000000000001
         ],
         [
           0.64,
-          0.7200000000000001
+          0.9580000000000001
         ],
         [
           0.5,
-          0.7200000000000001
+          0.9580000000000001
         ]
       ],
       "pattern": "membrane",
@@ -1699,19 +1699,19 @@
       "points": [
         [
           0.5,
-          0.5800000000000001
+          0.8180000000000001
         ],
         [
           0.64,
-          0.5800000000000001
+          0.8180000000000001
         ],
         [
           0.64,
-          0.7200000000000001
+          0.9580000000000001
         ],
         [
           0.5,
-          0.7200000000000001
+          0.9580000000000001
         ]
       ],
       "layer": "A-DETL-CMPT",
@@ -1726,7 +1726,7 @@
       "node": "text",
       "anchor": [
         0.7,
-        0.6500000000000001
+        0.8880000000000001
       ],
       "content": "roof-deck-vapor-barrier  0.04\"",
       "height": 3.0,
@@ -1742,23 +1742,23 @@
       "node": "hatch",
       "boundary": [
         [
-          2.8,
-          1.18
+          0.5,
+          0.6480000000000001
         ],
         [
-          2.94,
-          1.18
+          0.64,
+          0.6480000000000001
         ],
         [
-          2.94,
-          1.3199999999999998
+          0.64,
+          0.7880000000000001
         ],
         [
-          2.8,
-          1.3199999999999998
+          0.5,
+          0.7880000000000001
         ]
       ],
-      "pattern": "rigid",
+      "pattern": "none",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
@@ -1770,20 +1770,20 @@
       "node": "polyline",
       "points": [
         [
-          2.8,
-          1.18
+          0.5,
+          0.6480000000000001
         ],
         [
-          2.94,
-          1.18
+          0.64,
+          0.6480000000000001
         ],
         [
-          2.94,
-          1.3199999999999998
+          0.64,
+          0.7880000000000001
         ],
         [
-          2.8,
-          1.3199999999999998
+          0.5,
+          0.7880000000000001
         ]
       ],
       "layer": "A-DETL-CMPT",
@@ -1797,8 +1797,8 @@
       "space": "paper",
       "node": "text",
       "anchor": [
-        3.0,
-        1.25
+        0.7,
+        0.7180000000000002
       ],
       "content": "polyiso  3\"",
       "height": 3.0,
@@ -1814,20 +1814,20 @@
       "node": "hatch",
       "boundary": [
         [
-          2.8,
-          0.98
+          2.65,
+          1.328
         ],
         [
-          2.94,
-          0.98
+          2.79,
+          1.328
         ],
         [
-          2.94,
-          1.12
+          2.79,
+          1.468
         ],
         [
-          2.8,
-          1.12
+          2.65,
+          1.468
         ]
       ],
       "pattern": "osb",
@@ -1842,20 +1842,20 @@
       "node": "polyline",
       "points": [
         [
-          2.8,
-          0.98
+          2.65,
+          1.328
         ],
         [
-          2.94,
-          0.98
+          2.79,
+          1.328
         ],
         [
-          2.94,
-          1.12
+          2.79,
+          1.468
         ],
         [
-          2.8,
-          1.12
+          2.65,
+          1.468
         ]
       ],
       "layer": "A-DETL-CMPT",
@@ -1869,8 +1869,8 @@
       "space": "paper",
       "node": "text",
       "anchor": [
-        3.0,
-        1.05
+        2.85,
+        1.3980000000000001
       ],
       "content": "osb  0.625\"",
       "height": 3.0,
@@ -1886,20 +1886,20 @@
       "node": "hatch",
       "boundary": [
         [
-          2.8,
-          0.7799999999999999
+          2.65,
+          1.158
         ],
         [
-          2.94,
-          0.7799999999999999
+          2.79,
+          1.158
         ],
         [
-          2.94,
-          0.9199999999999999
+          2.79,
+          1.298
         ],
         [
-          2.8,
-          0.9199999999999999
+          2.65,
+          1.298
         ]
       ],
       "pattern": "membrane",
@@ -1914,20 +1914,20 @@
       "node": "polyline",
       "points": [
         [
-          2.8,
-          0.7799999999999999
+          2.65,
+          1.158
         ],
         [
-          2.94,
-          0.7799999999999999
+          2.79,
+          1.158
         ],
         [
-          2.94,
-          0.9199999999999999
+          2.79,
+          1.298
         ],
         [
-          2.8,
-          0.9199999999999999
+          2.65,
+          1.298
         ]
       ],
       "layer": "A-DETL-CMPT",
@@ -1941,8 +1941,8 @@
       "space": "paper",
       "node": "text",
       "anchor": [
-        3.0,
-        0.8499999999999999
+        2.85,
+        1.228
       ],
       "content": "roof-underlayment-synthetic  0.06\"",
       "height": 3.0,
@@ -1958,20 +1958,20 @@
       "node": "hatch",
       "boundary": [
         [
-          2.8,
-          0.5800000000000001
+          2.65,
+          0.988
         ],
         [
-          2.94,
-          0.5800000000000001
+          2.79,
+          0.988
         ],
         [
-          2.94,
-          0.7200000000000001
+          2.79,
+          1.1280000000000001
         ],
         [
-          2.8,
-          0.7200000000000001
+          2.65,
+          1.1280000000000001
         ]
       ],
       "pattern": "airgap",
@@ -1986,20 +1986,20 @@
       "node": "polyline",
       "points": [
         [
-          2.8,
-          0.5800000000000001
+          2.65,
+          0.988
         ],
         [
-          2.94,
-          0.5800000000000001
+          2.79,
+          0.988
         ],
         [
-          2.94,
-          0.7200000000000001
+          2.79,
+          1.1280000000000001
         ],
         [
-          2.8,
-          0.7200000000000001
+          2.65,
+          1.1280000000000001
         ]
       ],
       "layer": "A-DETL-CMPT",
@@ -2013,10 +2013,82 @@
       "space": "paper",
       "node": "text",
       "anchor": [
-        3.0,
-        0.6500000000000001
+        2.85,
+        1.058
       ],
       "content": "roof-vent-mat  0.25\"",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "hatch",
+      "boundary": [
+        [
+          2.65,
+          0.8180000000000001
+        ],
+        [
+          2.79,
+          0.8180000000000001
+        ],
+        [
+          2.79,
+          0.9580000000000001
+        ],
+        [
+          2.65,
+          0.9580000000000001
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "standing-seam"
+    },
+    {
+      "space": "paper",
+      "node": "polyline",
+      "points": [
+        [
+          2.65,
+          0.8180000000000001
+        ],
+        [
+          2.79,
+          0.8180000000000001
+        ],
+        [
+          2.79,
+          0.9580000000000001
+        ],
+        [
+          2.65,
+          0.9580000000000001
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.2,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        2.85,
+        0.8880000000000001
+      ],
+      "content": "standing-seam  0.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2040,8 +2112,8 @@
     "• Eave bay blocking: close every rafter bay over the top plate with rigid foam blocking set in the plane of the wall sheathing, sealed to the joist webs and the plate with canned foam. This is what carries the air barrier across the eave from the wall sheathing up to the roof ZIP. With a paint-only interior there is no second line of defence inboard of it, so an unblocked bay vents the ceiling straight into the vent mat.",
     "• Wall: 2x6 studs (LSL on the main storey), 1/2\" sheathing taped over a liquid membrane air barrier, continuous CI 2\" polyiso + 2\" EPS (outer layer taped), 1/2\" furring, standing-seam cladding. Class III interior paint on drywall.",
     "• Foam interface: leave the angled mismatch between roof foam and wall foam; fill with closed-cell spray polyurethane foam. Avoid high-expansion foams — they lift the roof foam off the deck barrier.",
-    "• Drip edge: lies ON the top deck with the underlayment lapped OVER it, so nothing in the eave chain may stand above the top-deck plane (7.55\" vertical above the deck datum). Its turn-down hangs at the trough mid-width, throwing runoff into the middle of the gutter rather than down the wall behind it.",
-    "• Gutter: 6\" box gutter, back sheet tucked a lap BEHIND the derived corner trim's outer face so the trim sheds onto it. Rim 6.38\" above the deck datum. Downspout steadied with conduit pipe clamps (not primary support).",
+    "• Drip edge: its flange lies ON the top deck (underside at 7.55\" vertical above the deck datum), running 1-1/2\" back onto the deck from the roof edge, with the field underlayment lapped OVER it. Nothing ELSE in the eave chain may reach that plane — the underlayment has to ride over exactly one thing to bond to the deck. The turn-down hangs at the trough mid-width, throwing runoff into the middle of the gutter rather than down the wall behind it.",
+    "• Gutter: 6\" box gutter, back sheet tucked a lap BEHIND the corner trim's formed face — behind the sheet itself, not merely inboard of the 1.25\" of plan depth it hangs at the end of. Rim 4.38\" above the deck datum, a lap under the trim's lower edge (the trim's leg is 4\", not the 2\" this chain was first derived from). Downspout steadied with conduit pipe clamps (not primary support).",
     "• No fascia and no soffit: roof and wall are one continuous standing-seam skin over a flush zero-overhang edge, so the resolver draws a corner trim angle instead. Every eave offset is measured off that trim's face.",
     "• Build order (water laps downhill, so the eave chain is the part that gets built backwards): frame and block the eave bays -> ZIP, taped -> deck vapour barrier -> polyiso course 1, taped -> polyiso course 2, staggered and taped -> OSB top deck on the 10\" screws -> ice barrier at eaves and valleys only -> DRIP EDGE -> field underlayment lapped OVER the drip -> vent mat -> standing seam -> gutter, back sheet behind the trim. The drip edge goes on before the field underlayment, not after."
   ],
@@ -2052,9 +2124,9 @@
     ],
     "viewport": [
       0.5,
-      1.65,
+      1.75,
       6.45,
-      5.299999999999999
+      5.199999999999999
     ],
     "center": [
       77.98425196850394,
@@ -2073,7 +2145,7 @@
         0.5,
         0.5,
         6.45,
-        1.0
+        1.1
       ],
       "notes": [
         7.1,

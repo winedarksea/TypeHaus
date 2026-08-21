@@ -37,6 +37,27 @@ def roof_slope_extent(roof: ResolvedRoof) -> tuple[float, float]:
     return (min(values), max(values))
 
 
+def roof_slope_factor(roof: ResolvedRoof) -> float:
+    """``hypot(1, pitch)`` — what turns a *perpendicular* offset into a *vertical* one.
+
+    An assembly's layers are stacked perpendicular to the plane they clad; an elevation is
+    measured straight up. On a 4:12 the two differ by 5.4%, which is nothing on a wall and
+    most of a layer on a roof: the whole stack over catlin's deck is 7.9" deep, so drawing
+    its bands at their perpendicular offsets lands the vent-mat intake a third of an inch
+    low — on the underlayment below it. ``houses/catlin/params/roof_trim.py`` has carried a
+    hand-written copy of this number since the eave water chain was authored; this is the
+    one the drawing side reads.
+    """
+    low, high = roof_slope_extent(roof)
+    span = high - low
+    if span <= 1e-9:
+        return 1.0
+    run = span if roof.form == "shed" else span / 2.0
+    if run <= 1e-9:
+        return 1.0
+    return math.hypot(1.0, (roof.ridge_z_m - roof.eave_z_m) / run)
+
+
 def roof_ridge_coordinate(roof: ResolvedRoof) -> float | None:
     """Where the ridge falls on the slope axis, or ``None`` for a shed (it has no fold).
 

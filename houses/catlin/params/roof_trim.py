@@ -19,10 +19,10 @@ get behind the siding:
 
     roofing → corner trim (derived) → drip edge → box gutter → downspout
 
-- a DRIP EDGE whose flat leg rests on the gutter's rim under the corner trim's lower leg,
-  and whose turn-down hangs at the trough's mid-width, so the roof's runoff is thrown into
-  the middle of the gutter instead of down the wall behind it ("drip edge nailed to roof
-  furring and empties into gutter");
+- a DRIP EDGE whose flange lies ON the top deck, under the field underlayment, and whose
+  turn-down hangs at the trough's mid-width, so the roof's runoff is thrown into the middle
+  of the gutter instead of down the wall behind it ("drip edge nailed to roof furring and
+  empties into gutter");
 - a 6" BOX GUTTER hung **tight to the wall plane** — its back sheet tucked *behind* the
   corner trim's outer face rather than standing off in mid-air, which is what closes the
   open slot that used to run the length of the eave;
@@ -62,8 +62,8 @@ vented batten roof and the drip edge's ceiling used to be the batten cavity's un
 the chain existed partly to avoid damming that slot. The metal now clips through a thin
 ventilated mat to a top deck screwed straight through the foam, and the ceiling is the top
 deck's own surface instead: the drip flashing lies ON that deck and the underlayment laps
-OVER it, so anything standing proud of it would lift the underlayment off the deck it has
-to bond to. Same chain, a different plane, ~0.55" lower.
+OVER it, so nothing *else* in the chain may reach that plane — a second thing under the
+underlayment is what lifts it off the deck it has to bond to. Same chain, a different plane.
 """
 
 from __future__ import annotations
@@ -91,11 +91,24 @@ _SLOPE_FACTOR = math.hypot(1.0, 4.0 / 12.0)  # 4:12 -> 1.0541
 _DRIP_CEILING_IN = 7.165 * _SLOPE_FACTOR     # 7.55" — top-deck surface, vertical
 _CLADDING_HEAD_IN = 7.475 * _SLOPE_FACTOR    # 7.88" — roofing underside == wall panel heads
 
-# The derived corner trim (resolve/roof_trim.py::_corner_trim_members): 1.25" thick, hung
-# outboard of the footprint edge, with a 2" leg down over the wall panel heads. Its outer
-# face and its lower edge are the two faces everything below registers against.
+# The derived corner trim (resolve/roof_trim.py::_corner_trim_members): a formed angle 1.25"
+# deep in plan, hung outboard of the footprint edge, with a leg down over the wall panel
+# heads. Its sheet's *inner* face and its lower edge are the two faces everything below
+# registers against.
+#
+# **Both numbers are transcriptions of the resolver's, and both were wrong.** The leg was
+# read as 2" — it went to 4" when the rake trim had to double as a barge board — so every
+# piece hung below it sat 2" high, and the trough's rim ended up above the trim's lower edge
+# instead of a lap under it. And the trim was read as a solid 1.25" billet, when
+# ``trim_bands.formed_edge_bands`` makes it sheet metal: the face is one shell thick at the
+# *outboard* side of that 1.25", which left the whole 0.42" of it for the gutter's back sheet
+# to be drawn inside of. Two pieces of metal, one place.
 _TRIM_FACE_IN = 1.25
-_TRIM_BOTTOM_IN = _CLADDING_HEAD_IN - 2.0    # 5.88" above the deck plane
+_TRIM_LEG_IN = 4.0                           # resolve/roof_trim.py::_CORNER_TRIM_LEG_M
+#: The formed face's own thickness — ``trim_bands``' shell rule, which at a 4" leg is only
+#: ever bounded by the plan depth.
+_TRIM_SHEET_IN = min(0.5, _TRIM_FACE_IN / 3.0)          # 0.42"
+_TRIM_BOTTOM_IN = _CLADDING_HEAD_IN - _TRIM_LEG_IN      # 3.88" above the deck plane
 
 #: The coil the whole chain is ordered in (2026-08-01). The derived corner trim above it is
 #: already `RF-HOUSE.edge_trim_material` — the house's one exterior dark — and the gutter hangs
@@ -118,23 +131,35 @@ _LAP_IN = 0.5
 # the underlayment off the deck it has to bond to).
 _GUTTER_THICK_IN = 6.0                       # channel width, out from the back sheet's face
 _GUTTER_DEPTH = inch(5)                      # channel height
-_GUTTER_BACK_IN = _TRIM_FACE_IN - _LAP_IN    # 0.75" — inner face of the back sheet
-_GUTTER_RIM_IN = _TRIM_BOTTOM_IN + _LAP_IN   # 6.38" above the deck plane
+#: Inner face of the back sheet. A lap *behind* the trim's face means behind the face's own
+#: sheet, not behind the plan depth that sheet hangs at the end of.
+_GUTTER_BACK_IN = _TRIM_FACE_IN - _TRIM_SHEET_IN - _LAP_IN   # 0.33"
+_GUTTER_RIM_IN = _TRIM_BOTTOM_IN + _LAP_IN                   # 4.38" above the deck plane
 
 #: Mid-width of the trough — where a drip wants to land, being the furthest it can be from
 #: both the back sheet and the front lip. The shell closes a half-shell at each side.
 _TROUGH_MID_IN = _GUTTER_BACK_IN + _LAP_IN + (_GUTTER_THICK_IN - 2.0 * _LAP_IN) / 2.0
 
 # --- Drip edge ----------------------------------------------------------------------------
-# A bent angle (resolve/trim_bands.py::drip_edge_bands): a flat leg spanning from the gutter's
-# back sheet out over the trough, and a turn-down at its outboard end. It runs from the back
-# sheet's inner face to a half-shell past the trough's mid-width, which puts the turn-down
-# centred on the middle of the channel. Its top is a lap above the gutter rim, so the corner
-# trim laps over the drip and the drip laps over the gutter — three pieces, two clean laps.
-_DRIP_INNER_IN = _GUTTER_BACK_IN
+# A bent angle (resolve/trim_bands.py::drip_edge_bands): a flat leg lying **on the top deck**
+# and running out over the trough, with a turn-down at its outboard end.
+#
+# It used to be derived upward from the gutter's rim — a lap above it — which put a drip edge
+# in mid-air 0.7" clear of the roof it drains, its inboard end a whole inch *outboard* of the
+# deck's own edge. That is backwards. A drip edge is a roof-plane piece: it is nailed to the
+# deck, the field underlayment is lapped over its flange, and only then does its turn-down
+# reach down into the trough. So the flange lands on ``_DRIP_CEILING_IN`` and everything else
+# follows from where the deck is, not from where the gutter ended up.
+#: How far the flange runs back onto the deck from the roof edge — ordinary drip-edge stock.
+_DRIP_DECK_BEARING_IN = 1.5
+_DRIP_INNER_IN = -_DRIP_DECK_BEARING_IN
 _DRIP_THICK_IN = _TROUGH_MID_IN + _LAP_IN / 2.0 - _DRIP_INNER_IN
-_DRIP_TOP_IN = _GUTTER_RIM_IN + _LAP_IN
-_DRIP_DEPTH = inch(3)                        # turn-down ends well inside the trough
+#: The flange's *underside* is the deck surface; the drawn shell is a lap thick, so the top
+#: face — the one the underlayment bonds over — stands exactly one nominal sheet above it.
+_DRIP_TOP_IN = _DRIP_CEILING_IN + _LAP_IN
+#: Deep enough to reach a lap below the trough's rim from a flange that now starts three
+#: inches higher up, and still stop well above the floor.
+_DRIP_DEPTH = inch(5.5)
 
 
 def _above_deck(vertical_in: float):

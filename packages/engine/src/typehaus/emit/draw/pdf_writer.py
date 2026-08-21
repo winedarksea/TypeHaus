@@ -28,6 +28,7 @@ from typehaus.emit.draw.typography import (
     LINE_SPACING,
     MIN_PT,
     NOTES_PT,
+    paper_in_per_model_in,
     wrap_columns_for,
 )
 from typehaus.quantities import M_PER_IN
@@ -108,7 +109,7 @@ _LAYER_STYLE = {
 }
 _HATCH_MPL = {
     "batt": "....", "osb": "//", "lumber": "\\\\", "concrete": "..", "SOLID": None,
-    "rigid": "xx", "gypsum": None, "membrane": None, "metal": None,
+    "rigid": "xx", "gypsum": None, "membrane": None, "metal": None, "none": None,
     "gravel": "oo", "soil": "..", "foam": "**", "glass": None,
     # The ventilated mat under the standing seam — an open mesh, hatched as a crosshatch
     # so it reads as the mostly-air layer it is rather than as another membrane.
@@ -351,7 +352,17 @@ def _framed_fig(scene: Scene, title: str | None, underlays=()):
 
     notes_band = frame.bands.get("notes")
     if scene.notes and notes_band is not None:
-        _draw_notes_band(fig, frame, note_pages(scene.notes, notes_band)[0], notes_band)
+        pages = note_pages(scene.notes, notes_band)
+        _draw_notes_band(fig, frame, pages[0], notes_band)
+        if len(pages) > 1:
+            # A reader holding one sheet cannot tell a note column that ended from one that
+            # ran out of paper. Pagination without a pointer to the next sheet reads exactly
+            # like the truncation it replaced, so the card says so, in the band's own margin
+            # rather than inside the column (which would cost a line of the notes to say it).
+            nx, ny, _nw, _nh = notes_band
+            fig.text(nx / paper_w, (ny - 0.20) / paper_h,
+                     "notes continue on sheet 2 →", fontsize=NOTES_PT - 1.5,
+                     family="monospace", va="top", ha="left", color="#555")
     title_band = frame.bands.get("title")
     if title and title_band is not None and not any(
             getattr(n, "space", "model") == "paper"
@@ -535,6 +546,56 @@ def _apply_text_scale(fig, ax, scaled_text) -> None:
         artist.set_fontsize(max(MIN_PT, size))
 
 
+#: The thinnest a band outline is ever allowed to get. Below this a stroke stops being a
+#: line and starts being a smudge, and a band drawn as a smudge is no clearer than a band
+#: drawn as a bar.
+_HAIRLINE_PT = 0.15
+
+
+def _min_printed_width_pt(points, scale: float) -> float:
+    """The narrowest dimension of a closed band, in printed points on a sheet at ``scale``.
+
+    Rotating calipers, one turn: for a convex band the narrowest direction is always
+    perpendicular to one of its own edges, so projecting every vertex onto each edge normal
+    and keeping the smallest spread is exact. A non-convex outline under-reports, which is
+    the safe way to be wrong here — it thins the stroke rather than letting it swallow the
+    band.
+    """
+    best = float("inf")
+    n = len(points)
+    for i in range(n):
+        (x0, y0), (x1, y1) = points[i], points[(i + 1) % n]
+        dx, dy = x1 - x0, y1 - y0
+        length = (dx * dx + dy * dy) ** 0.5
+        if length < 1e-9:
+            continue
+        nx, ny = -dy / length, dx / length
+        spread = [px * nx + py * ny for (px, py) in points]
+        best = min(best, max(spread) - min(spread))
+    if best == float("inf"):
+        return 0.0
+    return best * paper_in_per_model_in(scale) * 72.0
+
+
+def _band_linewidth(points, lw: float, scale: float | None) -> float:
+    """Cap a cut band's outline at half its own printed width.
+
+    **A band's outline may never be thicker than the band.** The roof taught this one: at
+    3/4" = 1'-0" the A-ROOF stroke is 1.2 pt and the ventilated mat is 1.1 pt of printed
+    thickness, so the two edge strokes met in the middle and the mat, the underlayment and
+    the drip below them came out as one navy smear where the drawing's whole job was to say
+    which sheet lies on which. This is a paper-space rule and needs a sheet to be true
+    against, so a frameless scene is left alone: without a chosen scale there is no printed
+    width to compare a stroke to.
+    """
+    if scale is None or len(points) < 3:
+        return lw
+    width_pt = _min_printed_width_pt(points, scale)
+    if width_pt <= 0.0:
+        return lw
+    return max(_HAIRLINE_PT, min(lw, width_pt * 0.5))
+
+
 def _render_nodes(ax: object, scene: Scene) -> None:
     from matplotlib.patches import Arc, PathPatch, Polygon
     from matplotlib.path import Path as MplPath
@@ -556,6 +617,8 @@ def _render_nodes(ax: object, scene: Scene) -> None:
             # indistinguishable from a raceway. Same IR, same drawing — read it here too.
             style = _LINETYPE_MPL.get(node.linetype, "-")
             if node.closed and len(node.points) >= 3:
+                lw = _band_linewidth(node.points, lw,
+                                     scene.frame.scale if scene.frame else None)
                 ax.add_patch(Polygon(list(node.points), closed=True, fill=False,
                                      edgecolor=color, linewidth=lw, linestyle=style))
             else:

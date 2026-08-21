@@ -303,7 +303,7 @@
           120.0
         ]
       ],
-      "pattern": "rigid",
+      "pattern": "none",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -359,7 +359,7 @@
           120.0
         ]
       ],
-      "pattern": "rigid",
+      "pattern": "none",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -1199,7 +1199,7 @@
           228.3464566929134
         ]
       ],
-      "pattern": "rigid",
+      "pattern": "none",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -1255,7 +1255,7 @@
           228.3464566929134
         ]
       ],
-      "pattern": "rigid",
+      "pattern": "none",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",

@@ -152,6 +152,19 @@ DETAIL_FILL: dict[str, str] = {
 }
 
 # Material tag → hatch family (the writers map families to their own pattern syntax).
+# ``"none"`` is a family in its own right: *fill me, pattern me not*. It has to be a real
+# value rather than a missing one, because a band with no hatch node at all loses its
+# **fill** too (``section_clip.rect_nodes`` only emits the Hatch when there is a pattern),
+# and a colourless band is exactly what this is trying to avoid.
+#
+# **The rigid boards are the ``None`` case, deliberately.** A hatch answers the question
+# "what is this?" for a drawing printed in one colour, and a *coloured* cut band has already
+# answered it: the polyiso is straw, the EPS is ice blue, the XPS is green, and nothing else
+# in the palette is close to any of them. Laying the "xx" crosshatch over the top of that put
+# a grey grid across the two widest bands in the roof — the eye read the grid before it read
+# the colour, and two boards of different foam became one hatched field. Every foam here is a
+# board, so they go bare together; the batts and the spray foam keep their patterns, because
+# what tells a batt from a board *is* the texture.
 DETAIL_HATCH: dict[str, str] = {
     "concrete": "concrete",
     "spf": "lumber",
@@ -164,11 +177,11 @@ DETAIL_HATCH: dict[str, str] = {
     "zip-r": "osb",
     "zip-sheathing": "osb",
     "gwb": "gypsum",
-    "polyiso": "rigid",
-    "polyiso-foil": "rigid",
-    "eps": "rigid",
-    "icf-eps": "rigid",
-    "xps": "rigid",
+    "polyiso": "none",
+    "polyiso-foil": "none",
+    "eps": "none",
+    "icf-eps": "none",
+    "xps": "none",
     "mineral-wool": "batt",
     "fiberglass": "batt",
     "fiberglass-r19": "batt",
@@ -209,7 +222,12 @@ def detail_fill(material_ref: str | None, function: str | None = None) -> str:
 
 
 def detail_hatch(material_ref: str | None, function: str | None = None) -> str | None:
-    """Hatch family for a cut layer, by material tag, falling back to its layer function."""
+    """Hatch family for a cut layer, by material tag, falling back to its layer function.
+
+    An entry of ``"none"`` is a deliberate *no hatch*, not a missing one, and wins over the
+    function fallback below — otherwise a bare-by-design rigid board would go straight back
+    to the ``insulation`` default and pick up the batt stipple instead.
+    """
     if material_ref and material_ref in DETAIL_HATCH:
         return DETAIL_HATCH[material_ref]
     return {

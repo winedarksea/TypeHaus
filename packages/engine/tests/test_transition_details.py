@@ -154,6 +154,37 @@ def test_eave_overlay_emits_apron_flashing(catlin_model):
         "apron flashing is a named component distinct from the drip/Z/L flashings")
 
 
+def test_the_overlay_hangs_off_the_cladding_head_not_the_structural_deck(catlin_model):
+    """A roof's elevation is quoted at the top of its *structure*; its metal is not there.
+
+    ``roof_height_at`` returns the deck plane, and the eave overlay registered everything on
+    it — so on catlin the apron flashing, the piece whose whole name is "over the head of the
+    wall cladding", was drawn 7.9" lower than that head, floating inside the wall's exterior
+    foam with its leader pointing into the middle of a foam board. The vent screen had the
+    same disease in miniature: the band offsets are perpendicular to a 4:12 plane and were
+    being read as vertical, which is a third of an inch — most of a layer, on a stack whose
+    layers are a quarter-inch thick.
+    """
+    scene, _ = build_detail(catlin_model, _eave(catlin_model))
+    apron = next(n for n in scene.nodes
+                 if isinstance(n, Polyline) and n.tag == "detail-component:apron-flashing")
+    screen = next(n for n in scene.nodes
+                  if isinstance(n, Polyline) and n.tag == "detail-component:insect-screen")
+    # The cladding's own head, straight off the band the section drew for it.
+    cladding = next(n for n in scene.nodes if isinstance(n, Polyline)
+                    and (n.tag or "").endswith("closure-0-cladding"))
+    head = max(z for (_u, z) in cladding.points)
+
+    top = max(z for (_u, z) in apron.points)
+    assert head - 0.5 <= top <= head + 0.5, \
+        f"the apron caps the cladding head at {head:.2f}, not {top:.2f}"
+    assert min(z for (_u, z) in apron.points) < head, "and it laps DOWN over that head"
+
+    # The screen sits on the vent mat, the one air gap in the stack — which is above the
+    # cladding head's own plane only by the roofing that laps it.
+    assert min(z for (_u, z) in screen.points) > head - 1.0
+
+
 def test_garage_foundation_draws_slab_thermal_break(catlin_model):
     # The 1" thermal break is its own labelled component (xps + sealant cap), drawn where a
     # slab-on-grade edge meets the foundation wall — the garage ICF stem.

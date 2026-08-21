@@ -40,9 +40,9 @@ source:
 
 - Foam interface: leave the angled mismatch between roof foam and wall foam; fill with closed-cell spray polyurethane foam. Avoid high-expansion foams — they lift the roof foam off the deck barrier.
 
-- Drip edge: lies ON the top deck with the underlayment lapped OVER it, so nothing in the eave chain may stand above the top-deck plane (7.55" vertical above the deck datum). Its turn-down hangs at the trough mid-width, throwing runoff into the middle of the gutter rather than down the wall behind it.
+- Drip edge: its flange lies ON the top deck (underside at 7.55" vertical above the deck datum), running 1-1/2" back onto the deck from the roof edge, with the field underlayment lapped OVER it. Nothing ELSE in the eave chain may reach that plane — the underlayment has to ride over exactly one thing to bond to the deck. The turn-down hangs at the trough mid-width, throwing runoff into the middle of the gutter rather than down the wall behind it.
 
-- Gutter: 6" box gutter, back sheet tucked a lap BEHIND the derived corner trim's outer face so the trim sheds onto it. Rim 6.38" above the deck datum. Downspout steadied with conduit pipe clamps (not primary support).
+- Gutter: 6" box gutter, back sheet tucked a lap BEHIND the corner trim's formed face — behind the sheet itself, not merely inboard of the 1.25" of plan depth it hangs at the end of. Rim 4.38" above the deck datum, a lap under the trim's lower edge (the trim's leg is 4", not the 2" this chain was first derived from). Downspout steadied with conduit pipe clamps (not primary support).
 
 - No fascia and no soffit: roof and wall are one continuous standing-seam skin over a flush zero-overhang edge, so the resolver draws a corner trim angle instead. Every eave offset is measured off that trim's face.
 

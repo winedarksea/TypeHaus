@@ -35,8 +35,14 @@ def _participating_layers(model, derived):
             if layer.is_cavity:
                 continue
             out.append((layer.material_ref, layer.thickness_m / M_PER_IN, layer.function))
+    tags = derived.condition.element_tags
     for roof in model.roofs:
-        if roof.tag not in derived.condition.element_tags:
+        # By **assembly** as well as by element tag. A wall/roof condition is keyed on the
+        # two assemblies it joins (``CATLIN_EXT_2X6|CATLIN_ROOF``), never on the roof
+        # element's own tag (``RF-HOUSE``), so this loop matched nothing on the one detail
+        # that is mostly roof: the eave legended its wall and left every roof layer out,
+        # including the underlayment and the vent mat the notes spend a paragraph each on.
+        if roof.tag not in tags and roof.assembly not in tags:
             continue
         asm = model.plan.library.resolve_assembly(roof.assembly)
         if asm is None:
@@ -62,7 +68,7 @@ def drawn_materials(scene) -> set[str]:
 
 
 def material_legend(model, derived, u_left: float, z_top: float,
-                    band=None, drawn: "set[str] | None" = None) -> list[IRNode]:
+                    band=None, drawn: set[str] | None = None) -> list[IRNode]:
     """One swatch + label per distinct material in the cut, with its resolved thickness.
 
     With a ``band`` — ``(x, y, w, h)`` paper inches out of ``Frame.bands`` — the legend is
@@ -104,8 +110,11 @@ def material_legend(model, derived, u_left: float, z_top: float,
 
 #: Paper-space legend metrics, inches.
 _SWATCH_IN = 0.14
-_ROW_PITCH_IN = 0.20
-_COL_W_IN = 2.3
+_ROW_PITCH_IN = 0.17
+#: Three columns across a 6.45" strip. The widest label the catalog produces is
+#: ``roof-underlayment-synthetic  0.06"`` — 33 monospace characters, 1.85" at _LEGEND_PT,
+#: which clears this with the swatch and its gap.
+_COL_W_IN = 2.15
 _LEGEND_PT = 6.5
 
 
@@ -128,7 +137,14 @@ def _paper_legend(model, derived, band, drawn=None) -> list[IRNode]:
         column, row = divmod(index, rows)
         cx = x + column * _COL_W_IN
         if cx + _COL_W_IN > x + w + 1e-9:
-            break  # the strip is full; a legend may not push the drawing off its own card
+            # The strip is full — a legend may not push the drawing off its own card. Say so
+            # rather than stopping mid-list: a legend that quietly ends is read as complete,
+            # and a reader then goes looking for a material the drawing never named.
+            nodes.append(Text(
+                anchor=(x + w, y + h - _ROW_PITCH_IN * 0.4), align="right",
+                content=f"+{len(seen) - index} more (see notes)",
+                height_pt=_LEGEND_PT, layer="A-ANNO-TEXT", space="paper"))
+            break
         cy = y + h - _ROW_PITCH_IN * (row + 1.6)
         boundary = rect_points(cx, cy, cx + _SWATCH_IN, cy + _SWATCH_IN)
         nodes.append(Hatch(boundary=boundary, pattern=detail_hatch(material) or "metal",

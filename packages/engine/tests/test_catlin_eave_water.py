@@ -163,17 +163,28 @@ def test_the_drip_throws_water_into_the_middle_of_the_trough(eave) -> None:
     assert turn_down[2] > bottom[3], "but stops above the floor, so it cannot dam the flow"
 
 
-def test_nothing_in_the_chain_stands_proud_of_the_roofs_top_deck(eave) -> None:
+def test_the_drip_flange_lies_on_the_top_deck_and_nothing_else_reaches_it(eave) -> None:
     """The drip flashing lies ON the top deck and the underlayment laps OVER it.
 
     This is the constraint that stops the gutter simply being raised until every lap is
     comfortable: the rim has a ceiling. Until 2026-08-20 that ceiling was the batten
     cavity's underside and the rule was "do not dam the vent slot"; the roof is a screwed
-    nailbase now, and the ceiling is the top deck's own surface. Anything standing above it
-    lifts the underlayment off the deck it has to bond to, which is the same failure wearing
-    different clothes.
+    nailbase now, and the ceiling is the top deck's own surface.
+
+    Which makes the drip edge the *exception* the rule exists to protect, not an instance of
+    it — and reading it as an instance is what put the drip a whole inch under the deck it is
+    nailed to, hanging off the gutter's rim in mid-air with nothing above it to lap. The
+    underlayment has to ride over exactly one thing to reach the deck, so: the drip's flange
+    sits on the plane, and everything else in the chain stays below it.
     """
-    for tag in ("TR-RF-GUTTER-E-1-BACK", "TR-RF-DRIP-E-1-LAP"):
+    flange = eave.solid("TR-RF-DRIP-E-1-LAP")
+    assert flange[2] == pytest.approx(DRIP_CEILING_IN), \
+        "the flange's underside IS the deck surface — it is nailed to it, not hung near it"
+    assert flange[0] < 0.0, "and it reaches back ONTO the deck, inboard of the roof edge"
+    # The turn-down is the drip's own second leg, so it is allowed to reach the flange it is
+    # folded from — but no higher, or the fold points back up the slope.
+    assert eave.solid("TR-RF-DRIP-E-1-DRIP")[3] <= flange[2] + 1e-9
+    for tag in ("TR-RF-GUTTER-E-1-BACK", "TR-RF-GUTTER-E-1-FRONT"):
         assert eave.solid(tag)[3] < DRIP_CEILING_IN, f"{tag} stands proud of the top deck"
 
 

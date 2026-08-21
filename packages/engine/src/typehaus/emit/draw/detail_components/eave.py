@@ -10,7 +10,6 @@ Neither reads in the drawing unless they are drawn, because neither is a model e
 from __future__ import annotations
 
 from typehaus.emit.draw.annotate import LabelSpec, dodge, place_column, wrap_label
-from typehaus.emit.draw.typography import TEXT_PT
 from typehaus.emit.draw.detail_components.config import SHEET_METAL
 from typehaus.emit.draw.detail_components.geometry import (
     face_of,
@@ -22,8 +21,9 @@ from typehaus.emit.draw.detail_components.geometry import (
     rect_region,
 )
 from typehaus.emit.draw.scene import IRNode, Leader, NamedPoint
+from typehaus.emit.draw.typography import TEXT_PT
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.roof_geometry import roof_height_at
+from typehaus.resolve.roof_geometry import roof_height_at, roof_slope_factor
 from typehaus.resolve.roof_layer_setbacks import (
     assembly_layer_spans,
     structure_datum_m,
@@ -50,6 +50,8 @@ def zero_overhang_eave(model, wall, crop, direction, station,
     clad_out = face_of(weather_face, is_outboard_high, outer=True)
     roof = _roof_over(model, direction, station, clad_out)
     junction_z = _junction_z_in(roof, wall, direction, station, clad_out)
+    slope = roof_slope_factor(roof) if roof is not None else 1.0
+    head_z = _cladding_head_z(model, roof, junction_z, slope)
     cfg = SHEET_METAL
 
     nodes: list[IRNode] = []
@@ -59,8 +61,13 @@ def zero_overhang_eave(model, wall, crop, direction, station,
     # continuous-cladding case, resolve/roof_trim.py::_corner_trim_members): the trim is cut
     # into the drawing as a plain rectangle of roof member, and this is the piece that
     # carries the *name* and the lap direction a builder reads the detail for.
+    #
+    # It hangs off ``head_z``, the head of the cladding it caps — **not** ``junction_z``,
+    # which is the top of the roof *structure*, a whole roof stack below. On catlin that is
+    # 7.9" of difference: the apron was drawn floating inside the wall's exterior foam, six
+    # inches under the panel head it is named for, with the leader pointing at it.
     apron = path_from_steps(
-        (clad_out - out_sign * cfg.apron_back_in, junction_z + cfg.apron_run_in - 0.2),
+        (clad_out - out_sign * cfg.apron_back_in, head_z),
         [(out_sign * cfg.apron_run_in, 0.0), (0.0, -cfg.apron_drop_in)])
     nodes += flashing_nodes(apron, tag="apron-flashing")
 
@@ -72,15 +79,31 @@ def zero_overhang_eave(model, wall, crop, direction, station,
         # Drip edge: turns down off the roof deck edge onto the fascia, so run-off leaves
         # the deck clear of the wall instead of tracking back under the roofing.
         drip = path_from_steps(
-            (clad_out - out_sign * cfg.drip_edge_back_in, junction_z + 1.0),
+            (clad_out - out_sign * cfg.drip_edge_back_in, head_z),
             [(out_sign * cfg.drip_edge_run_in, 0.0), (0.0, -cfg.drip_edge_drop_in)])
         nodes += flashing_nodes(drip, tag="drip-edge")
-        nodes += box_gutter(clad_out, junction_z, out_sign)
+        nodes += box_gutter(clad_out, head_z, out_sign)
 
-    nodes += eave_vent_intake(model, roof, clad_out, junction_z, out_sign, cz0 / M_PER_IN)
+    nodes += eave_vent_intake(model, roof, clad_out, junction_z, out_sign, cz0 / M_PER_IN,
+                              slope)
     nodes += eave_labels(model, roof, clad_out, junction_z, out_sign,
-                         direction, station, scale)
+                         direction, station, scale, slope, head_z)
     return nodes
+
+
+def _cladding_head_z(model, roof, junction_z: float, slope: float) -> float:
+    """Elevation of the roofing's underside — which on a wrapped edge *is* the cladding head.
+
+    The eave's sheet metal registers against this plane, not against the structural deck the
+    roof's elevation is quoted at. It is the same plane ``params/roof_trim.py`` calls
+    ``_CLADDING_HEAD_IN``, derived here rather than transcribed.
+    """
+    bands = _above_structure_bands(model, roof)
+    if not bands:
+        return junction_z
+    cladding = [lo for (layer, lo, _hi) in bands if layer.function.value == "cladding"]
+    top = max(lo for (_layer, lo, _hi) in bands)
+    return junction_z + (min(cladding) if cladding else top) * slope
 
 
 def _cut_point(direction: str, station: float, u_in: float) -> tuple[float, float]:
@@ -178,7 +201,7 @@ def _above_structure_bands(model, roof) -> list:
 
 
 def eave_vent_intake(model, roof, clad_out: float, junction_z: float, out_sign: float,
-                     crop_bottom_z: float) -> list[IRNode]:
+                     crop_bottom_z: float, slope: float = 1.0) -> list[IRNode]:
     """The screened intake for whatever air gap the roof assembly actually carries.
 
     This used to be a slot in the *wall* plane, which is where a vented-batten roof takes its
@@ -197,11 +220,14 @@ def eave_vent_intake(model, roof, clad_out: float, junction_z: float, out_sign: 
     if not gaps:
         return []
     lo, hi = gaps[-1]
-    band_z = junction_z + lo
+    # Perpendicular offsets, vertical elevations: ``slope`` is what converts between them
+    # (roof_geometry.roof_slope_factor). Without it the screen lands a third of an inch low
+    # on catlin's 4:12 — off the mat and onto the underlayment under it.
+    band_z = junction_z + lo * slope
     if band_z <= crop_bottom_z:  # slot below the crop — drawing it would float off the sheet
         return []
     inboard = clad_out - out_sign * 2.0
-    height = max(hi - lo, cfg.screen_band_in)
+    height = max((hi - lo) * slope, cfg.screen_band_in)
     return rect_region(min(clad_out, inboard), band_z, max(clad_out, inboard),
                        band_z + height, "insect-screen", None, "rigid", lineweight=0.3)
 
@@ -237,7 +263,8 @@ def _water_anchor(model, direction: str, station: float, clad_out: float,
 
 
 def eave_labels(model, roof, clad_out: float, junction_z: float, out_sign: float,
-                direction: str, station: float, scale=None) -> list[IRNode]:
+                direction: str, station: float, scale=None, slope: float = 1.0,
+                head_z: float | None = None) -> list[IRNode]:
     """Name the eave water chain on the drawing, not only in the notes.
 
     The chain is a *lap order* — deck, drip edge, underlayment over the drip, metal, gutter
@@ -249,10 +276,12 @@ def eave_labels(model, roof, clad_out: float, junction_z: float, out_sign: float
 
     def mid(function: str) -> float:
         lo, hi = bands.get(function, (0.0, 0.0))
-        return junction_z + (lo + hi) / 2.0
+        return junction_z + (lo + hi) / 2.0 * slope
 
     cfg = SHEET_METAL
-    deck_top = junction_z + max((hi for (_lo, hi) in bands.values()), default=0.0)
+    deck_top = junction_z + max((hi for (_lo, hi) in bands.values()), default=0.0) * slope
+    if head_z is None:
+        head_z = _cladding_head_z(model, roof, junction_z, slope)
     # Each anchor sits ON the piece it names. Anchoring them all at the eave corner — the
     # obvious thing, since that is where the chain is — collapses five leaders into one
     # unreadable blob, because the whole stack is under 8" deep at a scale where 8" is a
@@ -260,7 +289,7 @@ def eave_labels(model, roof, clad_out: float, junction_z: float, out_sign: float
     gutter = _water_anchor(
         model, direction, station, clad_out, "gutter",
         (clad_out + out_sign * (cfg.gutter_standoff_in + cfg.gutter_depth_in / 2.0),
-         junction_z - 1.5 - cfg.gutter_height_in / 2.0))
+         head_z - 1.5 - cfg.gutter_height_in / 2.0))
     drip = _water_anchor(
         model, direction, station, clad_out, "flashing",
         (clad_out + out_sign * cfg.drip_edge_run_in / 2.0, deck_top - 0.3))
@@ -278,10 +307,9 @@ def eave_labels(model, roof, clad_out: float, junction_z: float, out_sign: float
     entries += [
         (drip, "drip edge lies ON the top deck; underlayment laps OVER it"),
         (gutter, "box gutter, back edge tucked BEHIND the trim face"),
-        # The apron is drawn from its own back/run/drop legs, so its mid-height is derived
-        # the same way rather than guessed off the roof plane.
-        ((clad_out + out_sign * cfg.apron_run_in / 2.0,
-          junction_z + cfg.apron_run_in - 0.2 - cfg.apron_drop_in / 2.0),
+        # The apron is drawn from its own back/run/drop legs off the cladding head, so its
+        # mid-height is derived the same way rather than guessed off the roof plane.
+        ((clad_out + out_sign * cfg.apron_run_in / 2.0, head_z - cfg.apron_drop_in / 2.0),
          "apron flashing over the cladding head, behind the drip"),
     ]
     specs = [LabelSpec(text=wrap_label(text), target=target) for (target, text) in entries]

@@ -163,7 +163,7 @@
           0.0
         ]
       ],
-      "pattern": "rigid",
+      "pattern": "none",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -387,7 +387,7 @@
           -22.000000000000007
         ]
       ],
-      "pattern": "rigid",
+      "pattern": "none",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",

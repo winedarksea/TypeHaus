@@ -34,7 +34,7 @@ LANDSCAPE = (11.0, 8.5)
 
 MARGIN_IN = 0.5      #: border inset from the paper edge
 TITLE_H_IN = 0.9     #: title strip along the top
-LEGEND_H_IN = 1.0    #: material legend strip along the bottom
+LEGEND_H_IN = 1.1    #: material legend strip along the bottom — five rows of three
 NOTES_W_IN = 3.4     #: notes column down the right — the width sheet_writer already uses
 PAD_IN = 0.15        #: air between a band and the drawing
 
