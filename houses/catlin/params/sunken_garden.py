@@ -361,8 +361,9 @@ FOOTING_BEDDING = [
 
 # The sunken garden's own soakaway — a hole dug to take water and give it to the soil,
 # below (not part of) the 42" bearing bed. The garden floor sits 9' down with no downhill
-# side, so everything landing here (balcony leader, perimeter tile, the slab itself) has
-# nowhere to go but down. Top of stone sits at the bearing bed's underside so the two stack
+# side, so everything landing here (perimeter tile, the slab itself) has nowhere to go but
+# down. The balcony leader used to be on that list; it hangs outside the east wall now and
+# discharges to the terrace, so the well is left carrying only the water it cannot avoid. Top of stone sits at the bearing bed's underside so the two stack
 # rather than intersect; 6' of fabric-wrapped stone below (unwrapped, this clay silts its
 # voids shut in a season). Tagged DRW-, not DW-, because DW- is the dowel prefix and the
 # two collided.
@@ -374,7 +375,7 @@ GARDEN_DRYWELL = Drywell(
     position=pt(ft(_cx), ft((_y_in_s + _y_in_n) / 2.0)),
     diameter=ft(5), depth=ft(6), geotextile=True,
     top_elevation=_SG_DRYWELL_TOP,
-    inlet_refs=("TR-SG-LEADER-SE", *(b.tag for b in FOOTING_BEDDING)),
+    inlet_refs=tuple(b.tag for b in FOOTING_BEDDING),
 )
 
 # --- garden slab (basement floor of the sunken garden) ---------------------------
@@ -830,16 +831,32 @@ BALCONY_FASCIA = Fascia(
     uid="SGFC01AAAA", tag="TR-SG-FASCIA", kind=TrimKind.FASCIA, path=_GUARD_PATH,
     top_elevation=_deck_top, depth=inch(9), thickness=inch(1), material="PVC",
     host_ref="SL-SG-DECK")
-# Front (south, low) edge only.
+# Front (south, low) edge only — the drip flashing follows the deck edge itself.
 _FRONT_PATH = (pt(ft(_deck_x_w), ft(_y_ax_front)), pt(ft(_deck_x_e), ft(_y_ax_front)))
+# Where the leader hangs is what sets the trough's east end, so it is decided here. The
+# leader has to hang *outside* the structure. Its old position (`_deck_x_e - 0.5`, which is
+# the east beam axis) put a 3" pipe dead centre in two solids at once: the 6x6 pillar
+# PT-SG-BF3 stands on that axis, and W-SG-E1's 12" band (x 27.5-28.5) runs the whole drop
+# below it. There is no room inboard either — the front girt and the front beam both sit on
+# the trough line, and SL-SG-FLOOR stops at the wall's inner face. So the trough oversails
+# the deck edge and the pipe drops just clear of the wall's *outer* face, into the 6" slot
+# between that face and the raised garden's east return (raised_garden.py stands that leg
+# 3' out, at x = 29.0). 1.5" of clearance each side, about what a leader strap wants anyway.
+_SG_LEADER_OUTSET = 0.25   # ft outboard of the deck edge, which IS the east wall's face
+_SG_GUTTER_OVERSAIL = 0.5  # ft of trough past that edge, to carry the outlet
+_SG_LEADER_X = _deck_x_e + _SG_LEADER_OUTSET
+_GUTTER_PATH = (pt(ft(_deck_x_w), ft(_y_ax_front)),
+                pt(ft(_deck_x_e + _SG_GUTTER_OVERSAIL), ft(_y_ax_front)))
 # Gutter rim meets the drip flashing's lower edge, so water shedding off the drip lands in
 # the trough. Hung 9" down (an earlier value) it cleared the drip by 6" and overshot it.
 _drip_depth_in = 3.0
 BALCONY_GUTTER = Gutter(
-    uid="SGGT01AAAA", tag="TR-SG-GUTTER", kind=TrimKind.GUTTER, path=_FRONT_PATH,
+    uid="SGGT01AAAA", tag="TR-SG-GUTTER", kind=TrimKind.GUTTER, path=_GUTTER_PATH,
     top_elevation=_deck_top - inch(_drip_depth_in), depth=inch(4), thickness=inch(5),
     material="aluminum", host_ref="TR-SG-FASCIA", slope="1/16 in/ft to SE downspout",
     downspout_ref="TR-SG-LEADER-SE",
+    # The last 6" oversails TR-SG-FASCIA (and the drip above it): that bay exists only to
+    # put the outlet outboard of the pillar and the wall, and it hangs off the end hanger.
     # The run goes west→east, so its left-hand normal (resolve/geometry.py::normal) points
     # north (+y) — the porch/house side. The channel's back sheet rides the fascia there.
     back_side="left")
@@ -847,14 +864,16 @@ BALCONY_GUTTER = Gutter(
 # authored downspout and just stopped at the east end.
 #
 # 3" round, not the roof's 4": catches only the balcony deck (~200 sf) vs. 648 sf per house
-# eave. Sits just inboard of the deck's east edge on the trough centreline and drops the
-# full storey into the sunken garden, discharging above the garden slab where DRW-SG-MAIN
-# takes it — the garden floor is 9' down with no other way out.
-_SG_LEADER_INSET = 0.5   # ft inboard of the deck edge, so the drop clears the fascia return
-_SG_LEADER_BOTTOM = ft(-SPEC.basement_depth_ft) + ft(1)
+# eave. It no longer drops into the sunken garden — hanging outboard of the east wall there
+# is no garden underneath it — so it discharges 6" above the raised terrace, whose surface
+# is level with that wall top at +0'-6" (raised_garden.TOP). DRW-SG-MAIN stops naming it as
+# an inlet for the same reason, and that is the better half of the trade: the soakaway
+# serves a 9'-deep pit with no outlet of its own, and 200 sf of balcony runoff is the one
+# contribution it does not have to swallow.
+_SG_LEADER_BOTTOM = _ret_top + inch(6)
 BALCONY_LEADER = Downspout(
     uid="SGDS01AAAA", tag="TR-SG-LEADER-SE",
-    position=pt(ft(_deck_x_e - _SG_LEADER_INSET), ft(_y_ax_front)),
+    position=pt(ft(_SG_LEADER_X), ft(_y_ax_front)),
     top_elevation=_deck_top - inch(_drip_depth_in) - inch(4),  # the trough floor
     bottom_elevation=_SG_LEADER_BOTTOM,
     diameter=inch(3), material="aluminum", gutter_ref="TR-SG-GUTTER",

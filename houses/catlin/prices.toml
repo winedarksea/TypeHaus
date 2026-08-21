@@ -1566,8 +1566,8 @@
 # Basis: aluminium gutter material $1-6/LF and downspout material $5-10/LF; the ranges here
 # sit above those because half the run is not K-style stock but formed dark box gutter and
 # 4" leaders (`metal-dark-exterior`), which is fabricated, not off the shelf.
-#   gutter    121.5 LF — 47.8 LF plain aluminium (4" and 5") + 73.7 LF dark box gutter.
-#   downspout  76.4 LF over FOUR drops — 26.4 LF 3" aluminium + 50.0 LF 4" dark.
+#   gutter    122.0 LF — 48.3 LF plain aluminium (4" and 5") + 73.7 LF dark box gutter.
+#   downspout  67.0 LF over FOUR drops — 17.4 LF 3" aluminium + 49.6 LF 4" dark.
 # Both are now priced per product rather than blended; see the block below.
 # `drywell` is deliberately absent, and STILL should be: those rows carry length_ft 0, and a
 # [drainage] rate would join to that zero and price nothing at all — silently, because a
@@ -1598,7 +1598,7 @@
 # here would read exactly like a real one. It costs a little tax base (see [tax]) and that is
 # the correct trade — `haus takeoff` prints how much of the total sits in `merged` for this
 # reason. Hangers, end caps, mitres and outlets are in the rate.
-"gutter:aluminum" = { low = 8, high = 15, basis = "installed" }  # 47.8 LF
+"gutter:aluminum" = { low = 8, high = 15, basis = "installed" }  # 48.3 LF
 
 # Fabricated dark box gutter — 73.7 LF, the house's east and west eaves. Genuinely split,
 # because this one IS two purchases: heavier prefinished gauge brake-formed and mitred in a
@@ -1606,16 +1606,18 @@
 # because a box profile shows every wave along its face.
 "gutter:metal-dark-exterior" = { material = { low = 10, high = 25 }, labour = { low = 12, high = 22 } }  # 73.7 LF
 
-# 3" stock aluminium leaders — 2 drops, 26.4 LF (TR-G-LEADER-E, TR-SG-LEADER-SE).
-"downspout:aluminum" = { material = { low = 5, high = 9 }, labour = { low = 2, high = 4 } }  # 26.4 LF / 2 drops
+# 3" stock aluminium leaders — 2 drops, 17.4 LF (TR-G-LEADER-E, TR-SG-LEADER-SE). It was
+# 26.4 LF until 2026-08-21: TR-SG-LEADER-SE used to drop the full storey to the sunken
+# garden floor, and now hangs outside the east retaining wall and stops at the terrace.
+"downspout:aluminum" = { material = { low = 5, high = 9 }, labour = { low = 2, high = 4 } }  # 17.4 LF / 2 drops
 
-# 4" dark formed leaders — 2 drops, 50.0 LF (TR-RF-LEADER-E/W), so 25 ft each.
+# 4" dark formed leaders — 2 drops, 49.6 LF (TR-RF-LEADER-E/W), so ~25 ft each.
 # The "downspouts are quoted PER DROP at $30-75" note that used to sit here has been WITHDRAWN,
 # not just moved: `drainage` reports `count` explicitly and it is 4 drops, not the 5-7 that note
 # guessed. Per-drop pricing describes a 10-ft leader off a one-storey eave; these average 19 ft
 # down a two-storey walk-out and are formed to match the box gutter, so the foot is the right
 # unit and $30-75 a drop would understate them by 4x.
-"downspout:metal-dark-exterior" = { material = { low = 10, high = 20 }, labour = { low = 4, high = 8 } }  # 50.0 LF / 2 drops
+"downspout:metal-dark-exterior" = { material = { low = 10, high = 20 }, labour = { low = 4, high = 8 } }  # 49.6 LF / 2 drops
 
 [construction_returns]
 # NEW SECTION 2026-08-18 — [low, high] $/LF of return, material only, keyed on the rule's

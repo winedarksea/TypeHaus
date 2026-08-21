@@ -69,11 +69,14 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   between two doors, and only its pads and piers followed the soil down.
 - **Grade is 2'-10" below the main floor, and the house is what stands out of the ground.**
   The model's vertical datum is the main floor, so both lifts are authored as `Site.grade`
-  going down with FFE fixed at 0'-0": -2'-6" on 2026-08-18, then -2'-10" on 2026-08-21 when
-  the basement-ceiling overhaul put a 12 5/8" deck where a 9" slab had been and the house
-  rose 4" rather than surrender the headroom under it. The `main`, `second` and `attic`
-  datums have never moved; the basement storey went to -9'-4" with the soil, so it holds
-  ~8'-2 3/4" clear. What follows the soil down is everything pinned to it: the garage and
+  going down with the datum fixed at 0'-0": -2'-6" on 2026-08-18, then -2'-10" on 2026-08-21
+  when the basement-ceiling overhaul put a 12 5/8" deck where a 9" slab had been and the
+  house rose 4" rather than surrender the headroom under it. **The datum is the top of
+  joists, not the finished floor** — walls bear there and the subfloor rides above it, so
+  main-floor FFE is +3/4" and every slab meant to land on it needs an explicit
+  `top_elevation` (`params/main_deck.py`). The `main`, `second` and `attic` datums have
+  never moved; the basement storey went to -9'-4" with the soil, so it holds 8'-3" clear to
+  the lower of its two ceiling planes. What follows the soil down is everything pinned to it: the garage and
   its whole foundation, the breezeway's frost pads and piers, the hydrant's bury, the sunken
   garden's floor, the site's nine house-perimeter spot elevations and both impervious
   surfaces. The number lives in `params/foundations.py::SITE_GRADE`, is repeated as a
@@ -123,8 +126,9 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   so the boundary between them is a line on a drawing rather than a structural decision, and
   moving it is a one-line edit in `params/main_deck.py` (which is also where the two depth
   constants live, and why they are not in the editable storey file). Ceiling is 5/8" gypsum
-  end to end — IRC R316.4 over the EPS, `ceiling_below` on the two joist fields. **The floor
-  finish follows the deck**: `SL-M-DECK.floor_finish` is `polished-concrete` (the cap's top
+  end to end — IRC R316.4 over the EPS, `ceiling_below` on the two joist fields, though the
+  two gypsum faces step 1/2" at the boundary because the board screws to the form's steel
+  rib on one side and to joists on the other. **The floor finish follows the deck**: `SL-M-DECK.floor_finish` is `polished-concrete` (the cap's top
   *is* the finished floor), `RM-M-LIVING.floor_finish="lvp"` is the field finish over the
   wood bays only, and the split is derived — moving `_BAND_Y` moves the finish with it.
   `notes/mixed_deck_movement_joint.md` has the reducer, the L-shaped transition and the

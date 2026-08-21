@@ -489,8 +489,19 @@ Left open, and worth doing next:
   draw and price separately and the split tracks `_BAND_Y`. What is still missing is the
   **joint**: the derived condition a `Transition` could bind to bill the 31.5 lf of reducer
   and the soft joint along the y=13' leg of it.
-- **`SL-M-DECK` sits 3/4" low, top and bottom** (found 2026-08-21 while checking the finish
-  plane; **not** fixed, because it moves geometry). `params/main_deck.py` and
+- ~~**`SL-M-DECK` sits 3/4" low, top and bottom**~~ — **fixed 2026-08-21.** `DECK` now
+  carries `top_elevation=MAIN_FINISHED_FLOOR`, derived from the wood bays' subfloor
+  constant rather than written as a literal 0.75, and `DECK_DEPTH` derives from
+  `_JOIST_DEPTH + _SUBFLOOR` so the concrete follows the wood if either is re-specced. The
+  form/cap split is a rule now, not a snapshot: >= 13" total takes the 10" form + the
+  remainder as cap, below 13" stays on the 8" LiteDeck section. Cascade, measured: both
+  planes land (walking +3/4", structure bottom -11 7/8"); `PR-B-KITCH-DRAIN`'s first
+  elevation moved to the finished floor or its drop stopped crossing the band
+  (`mep.sleeve_coverage` caught it); six section goldens moved by exactly those two
+  coordinates and nothing else; basement clear went to 8'-3"; the two basement-ceiling
+  gypsum faces are now 1/2" apart rather than 1 1/4", which is the form's steel rib and is
+  irreducible. The original finding, kept for the reasoning:
+  `params/main_deck.py` and
   `notes/mixed_deck_movement_joint.md` both claim the mixed deck has "the same soffit plane,
   same finished-floor plane" as the wood bays. The resolver does not produce that. The storey
   datum is the *top of joists* — walls bear there and the subfloor rides above it
@@ -506,6 +517,19 @@ Left open, and worth doing next:
   claims true. Look at the cascade before committing it: `FH-M-DINING`'s `in_slab` embed, the
   ceiling gypsum plane below (the assembly's 1/2" furring rib would still leave the two gypsum
   faces 1/2" apart), and anything measured off the band.
+- **`room_floor_elevation` never adds a FloorSystem's subfloor**, so a room over joists
+  resolves its floor 3/4" below the surface people stand on. It prefers a slab top under the
+  room and otherwise falls back to the wall base — which is the storey datum, i.e. the top
+  of the joists, with the plywood still above it. Placeables are measured off that
+  (`resolve/placeables.py`), so every switch, receptacle, pendant and register in a
+  wood-floored room sits 3/4" low. Invisible until 2026-08-21, because every main-storey
+  room agreed with every other; now `RM-M-LIVING` reads +3/4" (it is over `SL-M-DECK`,
+  whose cap is pinned to the finished floor) and its nine neighbours still read 0'-0". The
+  living room is the one that is right. Fixing it means adding the subfloor to the wall-base
+  fallback, which moves every placeable in every wood-floored room in the house by the
+  subfloor thickness — a real cascade, worth its own pass with the goldens re-blessed
+  deliberately. `test_canvas_placeables.py` derives the offset rather than asserting it, so
+  it stays honest either way.
 - **Basement HVAC could ride the new joist bays.** `DU-B-ERV-SUP`/`-RET` are
   `DuctRouting.CHASE` because the ceiling had no bays at all; two thirds of it does now, and
   the west half's run east-west the way the trunk does. Left as chase because the runs also

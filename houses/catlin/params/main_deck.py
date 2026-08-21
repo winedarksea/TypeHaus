@@ -14,16 +14,31 @@ bay: same soffit plane, same finished-floor plane, same 18' span to the x=18' be
 Concrete then goes only where it is actually wanted.
 
     WOOD BAY                              EPS DECK BAY
-      finish (LVP / tile)                   finish (or the cap itself)
-      3/4" plywood subfloor      0'-0" FFE  4 5/8" concrete cap
+      finish (LVP)                          the cap itself, polished
+   +3/4" ------------- FINISHED FLOOR ---------------------------------
+      3/4" plywood subfloor                 4 5/8" concrete cap
+    0'-0" ------------- STOREY DATUM (top of joists) --------------------
       11 7/8" I-joist @ 16" o.c.            8" EPS form, ribs @ 24" o.c.
-      ---------------- 12 5/8" ------------------------------------------
-      5/8" gypsum on joists                 5/8" gypsum on the steel rib
-      ---------------- 13 1/4" to the basement ceiling -------------------
+ -11 7/8" ------------- STRUCTURE BOTTOM ----------------------------------
+      5/8" gypsum on joists                 1/2" steel rib + 5/8" gypsum
+      -12 1/2" ceiling                      -13" ceiling  (the rib's 1/2" step)
 
-Both planes land together. Against the old 9" slab the soffit drops 4 1/4", which is why
-the house rose 4" the same day (``params/foundations.py::SITE_GRADE``, and the basement
-storey with it) and the basement kept its headroom at ~8'-2 3/4".
+**The datum is the top of joists, not the walking surface.** Walls bear there and the
+subfloor rides above it, so a wood bay's finished floor is +3/4" while the datum is 0'-0".
+That is why ``DECK`` carries an explicit ``top_elevation``: a ``datum="structure"`` slab
+pins its TOP to the datum whatever its thickness, so the depth-matching arithmetic below —
+which is right — never reached the elevation on its own. Until 2026-08-21 it did not, and
+both planes resolved 3/4" low against a paragraph claiming they matched. They match now:
+walking surface +3/4" on both, structure bottom -11 7/8" on both.
+
+The one plane that does NOT match is the basement ceiling, and it cannot: the board screws
+to the form's integral steel rib on the concrete side and straight to the joists on the
+wood side, so the two gypsum faces sit 1/2" apart at the boundary. That is a real step in a
+real ceiling, and ``notes/mixed_deck_movement_joint.md`` carries how it is trimmed.
+
+Against the old 9" slab the soffit drops 3 1/2", which is why the house rose 4" the same
+day (``params/foundations.py::SITE_GRADE``, and the basement storey with it) and the
+basement kept its headroom — 8'-3" clear to the lower of the two ceiling planes.
 
 **Why this is a params module and not ``plan/storeys/main.py``.** The depth wants to be one
 constant, so that swapping the 8"+4 5/8" build-up for the 10"+3" one — same depth class,
@@ -65,20 +80,46 @@ from typehaus import (
     pt,
 )
 
+# --- the wood bay this deck has to match, top and bottom --------------------------
+#
+# FS-SECOND's build-up, repeated on this storey. Both numbers are stated HERE and nowhere
+# else in this file, because the concrete deck's entire design is "be exactly this, in
+# concrete" — everything below derives from them rather than restating them.
+_JOIST = "11.875 I-joist"
+_JOIST_DEPTH = inch(11.875)
+_JOIST_OC = inch(16)
+_SUBFLOOR = inch(0.75)          # plywood, laid ON TOP of the joists
+
+# The storey datum is the TOP OF JOISTS, not the walking surface — walls bear there and the
+# subfloor rides above it (``Slab.datum``'s own docstring, and W-S-E2 starting at exactly
+# 10'-0" on FS-SECOND's joist tops). So the finished floor of a wood bay is _SUBFLOOR
+# *above* the datum, and anything claiming to share that plane has to be pinned there
+# explicitly. ``plan/manifest.py`` takes the main storey's elevation from MAIN_DATUM, so
+# the two cannot disagree.
+MAIN_DATUM = ft(0)
+MAIN_FINISHED_FLOOR = inch(MAIN_DATUM.inches + _SUBFLOOR.inches)
+
 # --- the one number the whole exercise turns on -----------------------------------
 #
-# 8" + 4 5/8" = 12 5/8", which is FS-SECOND's 11 7/8" I-joist plus its 3/4" plywood. The
-# documented alternative is EPS_FORM_DEPTH = inch(10.0) / EPS_CAP = inch(3.0): 13" exactly,
-# 3/8" proud of the wood bays, ~21% less concrete (0.01396 cy/SF) and R-31. Changing these
-# two lines means changing CATLIN_DECK_EPS_INT's two structural layers to match —
-# ``integrity.slab_thickness`` fails the build if they drift apart.
-EPS_FORM_DEPTH = inch(8.0)      # BuildDeck / LiteDeck base section
-EPS_CAP = inch(4.625)           # the cast structural topping
-DECK_DEPTH = inch(EPS_FORM_DEPTH.inches + EPS_CAP.inches)
+# The deck's total depth is not a free choice: it is the wood bay's, or the soffit steps and
+# the floor steps with it. 11 7/8" + 3/4" = 12 5/8". Derived rather than authored, so
+# re-speccing the joist or the subfloor takes the concrete with it instead of silently
+# leaving a step — which is exactly the failure this file spent 2026-08-21 fixing.
+DECK_DEPTH = inch(_JOIST_DEPTH.inches + _SUBFLOOR.inches)
 
-# The wood bays' build-up, matched to FS-SECOND so the two storeys frame alike.
-_JOIST = "11.875 I-joist"
-_JOIST_OC = inch(16)
+# How that depth splits between stay-in-place form and cast cap. The rule, not a snapshot:
+# at 13" or more take the 10" form (~21% less concrete — 0.01396 cy/SF — and R-31); below
+# 13" stay on the 8" LiteDeck/BuildDeck section and let the cap make up the difference.
+# Today that is 8" + 4 5/8"; at 13" it would be 10" + 3" exactly.
+#
+# Two constraints this arithmetic does NOT enforce, and a human must:
+#   * BuildDeck's table wants at least a 4" cap on the 8" form at this 18'-0" clear span, so
+#     a total under 12" needs the span re-checked rather than just a thinner pour.
+#   * ``plan/assemblies.py`` is editable-dialect — literals only, no imports from params —
+#     so CATLIN_DECK_EPS_INT's two structural layers cannot read these and must be edited to
+#     match. ``integrity.slab_thickness`` fails the build if they drift apart.
+EPS_FORM_DEPTH = inch(10.0) if DECK_DEPTH.inches >= 13.0 else inch(8.0)
+EPS_CAP = inch(DECK_DEPTH.inches - EPS_FORM_DEPTH.inches)
 
 # The concrete/wood boundary. Concrete keeps the east half north of y=13' — the dining
 # radiant zone (FH-M-DINING, x 22'-11"..30'-11", y 13'-9"..21'-0") sits wholly inside it,
@@ -109,7 +150,7 @@ WEST_FLOOR = FloorSystem(
     uid="CMFS01AAAA", tag="FS-M-WEST",
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
                      bearing_refs=("W-B-W2", "W-B-CS2")),
-    subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=inch(0.75)),
+    subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     # The basement's ceiling. R316.4 wants gypsum over the EPS in the concrete band; the
     # owner's decision was to drywall the whole ceiling rather than stop the board at the
     # boundary, which is also what retires the old "visible copper in the basement"
@@ -126,7 +167,7 @@ EAST_FLOOR = FloorSystem(
     uid="CMFS02AAAA", tag="FS-M-EAST",
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
                      bearing_refs=("W-B-CS2", "W-B-E1")),
-    subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=inch(0.75)),
+    subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     ceiling_below=DeckLayer(material_ref="gwb", thickness=inch(0.625)),
     outline=_rect(_CENTRE_X, _ZERO, _HOUSE, _BAND_Y),
     source="catlin main floor, east half south of y=13' — same joists as FS-M-WEST, "
@@ -145,6 +186,16 @@ DECK = Slab(
     # bays and the band bills as polished concrete. Move _BAND_Y and the finish moves too —
     # the boundary is stated once, here. Spec in notes/mixed_deck_movement_joint.md.
     floor_finish="polished-concrete",
+    # And the cap top has to BE that plane, which is _SUBFLOOR above the storey datum, not
+    # the datum itself. ``top_elevation`` is absolute and wins over ``datum`` outright
+    # (``resolve/envelope.py::_slab_elevations``), which is the only way to say it: a
+    # ``datum="structure"`` slab hangs its thickness below the datum whatever its thickness
+    # is, so the depth-matching arithmetic above never reached the elevation. Until
+    # 2026-08-21 it did not, and BOTH planes resolved 3/4" low — the polish 3/4" under the
+    # plank it is supposed to meet, and the soffit 3/4" under the joists beside it — against
+    # a module docstring claiming they matched. Derived, never a literal 0.75: a thicker
+    # subfloor lifts the cap with it. SL-G-FLOOR pins itself the same way.
+    top_elevation=MAIN_FINISHED_FLOOR,
 )
 
 MAIN_ELEMENTS = [WEST_FLOOR, EAST_FLOOR, DECK]

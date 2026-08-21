@@ -73,6 +73,22 @@ a soft joint.
 polished cap. Use a **reducer** on the whole 31.5 lf, not a flat T-moulding — a T presumes
 two surfaces at one height and there are not two here.
 
+This is 1/4" and not 1" because the cap top is pinned to the plywood top rather than to the
+storey datum (`params/main_deck.py`, `top_elevation=MAIN_FINISHED_FLOOR`). The datum is the
+top of joists; a `datum="structure"` slab hangs its thickness below it whatever that
+thickness is, so until 2026-08-21 the resolver put the cap 3/4" low and the real step would
+have been 1" — past what any reducer is made for. Check that pin before ordering the
+moulding.
+
+**And a second step, in the ceiling below.** The gypsum is continuous across the boundary
+but the two faces are not coplanar: on the wood side the board screws straight to the
+joists at -12 1/2", on the concrete side to the EPS form's integral steel rib at -13". The
+1/2" is the rib, and nothing can remove it — furring the wood bays down to meet it would
+cost the basement 1/2" everywhere to fix a line. Detail it the way the finish above is
+detailed: break the board on y = 13'-0" with a control joint (which this note already asks
+for, since the joint has to be there anyway) and let the reveal absorb the offset, rather
+than floating a feathered transition over a moving line.
+
 **The polish spec.** A **cream polish** — grind the surface paste only, about 1/16" — not
 aggregate exposure. The cap is 4 5/8" over EPS form and its reinforcement cover is not there
 to survive a salt-and-pepper grind. That implies the pour itself: hard steel trowel finish,

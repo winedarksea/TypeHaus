@@ -59,11 +59,20 @@ DRAINS = [
     # straight down the deck sleeve's own column, through the same W-B-CE/W-B-CS2 crossings,
     # west to the main tie-in — the route is fixed by basement framing, not sink position.
     # Elevations re-solved onto both sleeves' cast centerlines at >= 0.25"/ft.
+    #
+    # These are BASEMENT-relative, so ft(9, 4.75) is project +3/4" — the main floor's
+    # finished surface, which is the plywood top of the wood bays and, since 2026-08-21, the
+    # cap top of SL-M-DECK with it (params/main_deck.py::MAIN_FINISHED_FLOOR). It read
+    # ft(9, 4) while the resolver put the cap top on the datum itself; at that value the trap
+    # arm now starts 3/4" INSIDE the concrete, and the drop stops being a through-crossing of
+    # the band, so SP-M-KITCH goes unclaimed. This file is editable-dialect and cannot import
+    # the constant, but nothing here can drift quietly: `mep.sleeve_coverage` fails the build
+    # the moment this run stops passing through its sleeve.
     PipeRun(uid="S0Y00EZNNG", tag="PR-B-KITCH-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(28, 7), ft(35)), pt(ft(28, 7), ft(35)),
                   pt(ft(28, 7), ft(16, 6)), pt(ft(6), ft(16, 6))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(9, 4), ft(8, 2.9), ft(7, 8.44), ft(6, 11.57)),
+            elevations=(ft(9, 4.75), ft(8, 2.9), ft(7, 8.44), ft(6, 11.57)),
             serves=("FX-M-KITCH-SINK",)),
     # BATH2's WC, at its re-pointed flange on the wet wall (→ SP-M-WC2).
     PipeRun(uid="CBPD01AAAA", tag="PR-B-WC2-DRAIN", system=PipeSystem.DRAIN,

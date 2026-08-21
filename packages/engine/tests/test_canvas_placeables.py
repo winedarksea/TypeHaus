@@ -5,6 +5,8 @@ from pathlib import Path
 import pytest
 from library.placeables.fixtures import TOILET, TOILET_WALL_HUNG
 
+from typehaus.resolve.room_floor import room_floor_elevation
+
 from typehaus.model import (
     Appliance,
     ApplianceType,
@@ -364,15 +366,34 @@ def test_catlin_ceiling_lights_resolve_to_their_authored_mount_height() -> None:
     assert len(placed) > 50
     assert all(item.z_m - storey_elevation[item.storey] > 0.5 for item in placed)
 
+    # A placeable is measured off the floor it STANDS on, not off the storey datum
+    # (``resolve/room_floor.py``) — and on this storey those are not the same plane. The
+    # datum is top-of-joists; RM-M-LIVING sits on SL-M-DECK, whose polished cap has been
+    # pinned to the wood bays' plywood top since 2026-08-21
+    # (``params/main_deck.py::MAIN_FINISHED_FLOOR``). So everything in the living room stands
+    # 3/4" above everything in RM-M-BED next door.
+    #
+    # ** That step is the other rooms being wrong, not this one. ** ``room_floor_elevation``
+    # prefers a slab top under the room and otherwise falls back to the wall base, never
+    # adding a FloorSystem's subfloor — so a room over joists resolves its floor 3/4" low.
+    # RM-M-LIVING is simply the only main-storey room with a slab under it. Recorded in
+    # plans/TODO.md; deriving it here rather than writing 0.75 twice keeps this test honest
+    # either way.
+    living = next(room for room in model.rooms if room.tag == "RM-M-LIVING")
+    living_floor = room_floor_elevation(model, living) - storey_elevation["main"]
+
     # A recessed can hangs off the ceiling plane; its housing goes up into the bay.
+    # RM-M-BED is over joists, so its floor IS the datum and there is no offset to add.
     assert above_floor("ED-M-BED-CAN2") == pytest.approx(ceiling["main"])
-    # A hanging fixture sits its whole assembly below the ceiling.
-    assert above_floor("ED-M-DINING-PEND") == pytest.approx(ceiling["main"] - ft(3, 6).meters)
+    # A hanging fixture sits its whole assembly below the ceiling — measured from the
+    # living room's own floor, and so from its own ceiling plane.
+    assert above_floor("ED-M-DINING-PEND") == pytest.approx(
+        living_floor + ceiling["main"] - ft(3, 6).meters)
     # A stated elevation wins: the attic ceiling is a 4:12 rake, not the storey default.
     assert above_floor("ED-A-EAST-CAN3") == pytest.approx(ft(8).meters)
 
     switch = next(item for item in model.canvas_objects if item.tag == "ED-M-LIVING-SW")
-    assert switch.z_m == pytest.approx(inch(48).meters)
+    assert switch.z_m == pytest.approx(living_floor + inch(48).meters)
 
 
 def test_placeable_drag_updates_the_explicit_containing_room_assignment() -> None:

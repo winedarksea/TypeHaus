@@ -65,13 +65,39 @@ def test_the_garage_leader_takes_its_water_from_the_resolved_trough(catlin_model
         "the garage stands on and which is 2'-6\" below the house datum since 2026-08-18"
 
 
-def test_the_balcony_leader_drops_the_full_storey_into_the_garden(catlin_model):
+def _x0(solid) -> float:
+    return min(point[0] for point in solid.outline)
+
+
+def _x1(solid) -> float:
+    return max(point[0] for point in solid.outline)
+
+
+def test_the_balcony_leader_hangs_outside_the_east_retaining_wall(catlin_model):
+    """It used to be authored at the east beam axis, which is dead centre of *both* the 6x6
+    pillar PT-SG-BF3 and the 12" band of W-SG-E1 — a leader run down the inside of a column
+    and a wall. It hangs outboard of them now, which is also why it discharges to the raised
+    terrace (level with the retaining top) instead of nine feet down into the garden."""
     leader = next(s for s in catlin_model.solids if s.tag == "TR-SG-LEADER-SE")
     gutter_bands = [s for s in catlin_model.solids
                     if s.tag.startswith("TR-SG-GUTTER-") and s.category == "gutter"]
     assert gutter_bands
     assert leader.z1_m <= min(band.z1_m for band in gutter_bands)
-    assert leader.z0_m < 0.0, "it discharges down in the sunken garden, not at main level"
+    # The outlet still sits under the trough it drains. The run oversails the deck edge
+    # precisely so it can, so this is the tie that catches the two drifting apart.
+    assert _x1(leader) <= max(_x1(band) for band in gutter_bands)
+
+    pillar = next(s for s in catlin_model.solids if s.tag == "PT-SG-BF3")
+    assert _x0(leader) >= _x1(pillar), "the pipe is east of the column, not inside it"
+    # The deck's east edge is flush with W-SG-E1's *outer* face by construction (the joists
+    # cantilever 6" off the axis and the wall is 12" thick), so clearing the deck is the
+    # same statement as clearing the wall the whole drop would otherwise pass through.
+    deck = next(s for s in catlin_model.solids if s.tag == "SL-SG-DECK")
+    assert _x0(leader) >= _x1(deck)
+
+    terrace_m = next(w for w in catlin_model.walls if w.tag == "W-SG-E2").z1_m
+    assert terrace_m < leader.z0_m < terrace_m + 0.3, \
+        "and it stops just above the terrace, whose surface is level with the retaining top"
 
 
 def test_the_hydrant_pit_is_a_drywell_and_no_longer_bills_phantom_tile(catlin_model):
@@ -100,8 +126,12 @@ def test_the_garden_drywell_sits_below_the_bearing_bed_it_is_not_part_of(catlin_
 
     # The garden's tile falls to the well, not to a daylight outlet it does not have.
     assert {bed.drain_tile_spec.discharge for bed in beds} == {"DRW-SG-MAIN"}
+    # The balcony leader is NOT an inlet: it hangs outside the east wall and discharges to
+    # the terrace, so the only water this well is asked to take is the water with no other
+    # way out. See test_the_balcony_leader_hangs_outside_the_east_retaining_wall.
     plan_well = catlin_model.plan.by_tag("DRW-SG-MAIN")
-    assert "TR-SG-LEADER-SE" in plan_well.inlet_refs
+    assert "TR-SG-LEADER-SE" not in plan_well.inlet_refs
+    assert plan_well.inlet_refs, "the perimeter bedding still drains here"
 
 
 def test_the_radon_sump_carries_its_pump(catlin_plan):

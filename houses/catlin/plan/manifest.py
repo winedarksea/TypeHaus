@@ -90,7 +90,11 @@ _project = Project(
 _storeys = (
     Storey(uid="STBASEAAAA", tag="basement", elevation=ft(-9, -4),
            default_ceiling_height=ft(9)),
-    Storey(uid="STMAINAAAA", tag="main", elevation=ft(0),
+    # The datum every other elevation in the house is measured from, and the plane
+    # SL-M-DECK pins its cap to — so it lives beside that arithmetic in params/main_deck.py
+    # rather than as a second literal here. Note it is the TOP OF JOISTS, not the walking
+    # surface: the subfloor rides 3/4" above it.
+    Storey(uid="STMAINAAAA", tag="main", elevation=main_deck.MAIN_DATUM,
            default_ceiling_height=ft(9)),
     # The garage storey *is* the stem top: its wood walls bear there. The stem tops out
     # GARAGE_STEM_REVEAL above *grade*, not above the house datum, because the garage is
