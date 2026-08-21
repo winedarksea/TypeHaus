@@ -33,14 +33,15 @@ export const LEADER_WRAP_COLUMNS = 40;
 export const LEADER_TEXT_H = 1.6;
 export const DIM_TEXT_H = 2.0;
 
-// How many model inches one printed point covers at `scale` (model inches per paper inch).
+// `scale` is what sheet_writer.ARCH_SCALES carries: paper inches per model foot (1.5 for
+// 1-1/2" = 1'-0"). How many model inches one printed point covers at that scale:
 export function modelInPerPt(scale: number): number {
-  return scale / 72.0;
+  return 12.0 / scale / 72.0;
 }
 
 // How much paper one model inch takes up.
 export function paperInPerModelIn(scale: number): number {
-  return 1.0 / scale;
+  return scale / 12.0;
 }
 
 // How many monospace characters fit across a `bandIn`-wide paper band at `sizePt`.

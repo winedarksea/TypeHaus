@@ -16,11 +16,15 @@ INCH = 0.0254
 
 # Pillar -> the concrete wall top it bears on. Until 2026-08-18 five of the six were
 # grouted into a 42"-tall masonry parapet; retiring that guard dropped each of them onto
-# whatever concrete it was standing over — the two rear outer pillars onto the porch side
-# walls at 0'-0", the two front outer ones onto the retaining walls' +0'-6" step. What is
-# left over is the *pair* of centre pillars, which miss every wall and bear on the decking.
+# whatever concrete it was standing over. That left the two front outer pillars on the
+# retaining walls' +0'-6" step — but only because the W1/W2 junction node sat on their own
+# axis, so each of them straddled the joint and the bearing map had to pick a side. Since
+# 2026-08-21 `SunkenGardenSpec.side_wall_south_extension_in` runs the two porch side walls
+# 6" past the front pillar line, so all four outer pillars bear on those two walls, at one
+# elevation. What is left over is the *pair* of centre pillars, which miss every wall and
+# bear on the decking.
 PILLAR_BEARING_WALL = {"PT-SG-BR1": "W-SG-W1", "PT-SG-BR3": "W-SG-E1",
-                       "PT-SG-BF1": "W-SG-W2", "PT-SG-BF3": "W-SG-E2"}
+                       "PT-SG-BF1": "W-SG-W1", "PT-SG-BF3": "W-SG-E1"}
 DECK_BORNE_PILLAR_TAGS = ("PT-SG-BR2", "PT-SG-BF2")
 DECK_BORNE_PILLAR_TAG = "PT-SG-BR2"  # the one on the *cantilever*, not merely on the deck
 
@@ -56,12 +60,32 @@ def test_pillars_start_at_the_top_of_the_wall_they_bear_on(catlin_model) -> None
     for tag, wall_tag in PILLAR_BEARING_WALL.items():
         wall_top = _wall(catlin_model, wall_tag).z1_m
         assert abs(_solid(catlin_model, tag).z0_m - wall_top) < 1e-9, tag
-    # Two distinct wall tops, not one: the side walls stop at the porch floor and the
-    # retaining walls stand 6" proud of it. That 6" step at the two front corners is real,
-    # and RL-SG-PORCH returns against it.
+    # One wall top, not two: every outer pillar lands on a porch side wall at the porch
+    # floor. The +0'-6" retaining step still exists — it is what W-SG-W2/E2 stand at — but
+    # it now begins 6" south of the front pillar line rather than under it, so the guard
+    # runs out over the side walls' own tops at the front corners instead of returning
+    # against a curb there.
     tops = {round(_wall(catlin_model, w).z1_m, 9) for w in PILLAR_BEARING_WALL.values()}
-    assert len(tops) == 2
-    assert abs(max(tops) - min(tops) - 6 * INCH) < 1e-9
+    assert tops == {0.0}
+    step = {round(_wall(catlin_model, w).z1_m, 9) for w in ("W-SG-W2", "W-SG-E2")}
+    assert len(step) == 1
+    assert abs(step.pop() - 6 * INCH) < 1e-9
+
+
+def test_the_side_walls_run_past_the_front_pillars_they_carry(catlin_model) -> None:
+    """The reason the map above can name one wall per side.
+
+    A 6x6 centred on the porch's front edge overhangs a wall that stops on that same line by
+    half its width. Both side walls now end south of the pillar's own south face, so the
+    bearing is real and not a rounding of which side of a node the post sits on.
+    """
+    for wall_tag, pillar_tag in (("W-SG-W1", "PT-SG-BF1"), ("W-SG-E1", "PT-SG-BF3")):
+        wall_y = [p[1] for p in _wall(catlin_model, wall_tag).axis]
+        pillar_y = [p[1] for p in _solid(catlin_model, pillar_tag).outline]
+        assert min(wall_y) < min(pillar_y), wall_tag
+        # 6" of extension past a 5 1/2" post centred on the edge leaves 3 1/4" of concrete
+        # beyond its face — the side cover a square post base wants.
+        assert min(pillar_y) - min(wall_y) > 3 * INCH, wall_tag
 
 
 def test_the_centre_pillars_bear_on_the_decking(catlin_model) -> None:

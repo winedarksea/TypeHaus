@@ -16,9 +16,10 @@ the others. A constant that three modules have to agree on is not three constant
 
 Conversions
 -----------
-``scale`` throughout is the architectural denominator the sheet chose, expressed the way
-``sheet_writer.ARCH_SCALES`` does: *model inches per paper inch*. 1-1/2" = 1'-0" is a scale
-of 8 (12 model inches print in 1.5 paper inches); 1/4" = 1'-0" is 48.
+``scale`` throughout is the number ``sheet_writer.ARCH_SCALES`` carries: **paper inches per
+model foot**. 1-1/2" = 1'-0" is ``1.5``; 1/4" = 1'-0" is ``0.25``. Not the ratio-denominator
+form (8, 48) — one convention, and it is the one the scale ladder and ``select_scale``
+already speak.
 """
 
 from __future__ import annotations
@@ -49,14 +50,16 @@ def model_in_per_pt(scale: float) -> float:
     """How many *model* inches one printed point covers at ``scale``.
 
     The conversion the ladder and ``dodge`` need: they reserve space in model inches, and
-    what they are really reserving is room for lettering of a fixed printed size.
+    what they are really reserving is room for lettering of a fixed printed size. At
+    1-1/2" = 1'-0" a 7 pt label is 0.778 model inches — against the 1.6" the ladder
+    hardcoded, which is the 2x oversize the details showed.
     """
-    return scale / 72.0
+    return 12.0 / scale / 72.0
 
 
 def paper_in_per_model_in(scale: float) -> float:
     """The reciprocal — how much paper one model inch takes up."""
-    return 1.0 / scale
+    return scale / 12.0
 
 
 def wrap_columns_for(band_in: float, size_pt: float) -> int:

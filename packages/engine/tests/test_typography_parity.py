@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import re
 
+import pytest
 from _helpers import REPO_ROOT
 
 from typehaus.emit.draw import typography
@@ -60,12 +61,14 @@ def test_the_conversions_agree_line_for_line():
     them produces the right answer at the one scale anybody happens to test.
     """
     source = TS.read_text()
-    assert "return scale / 72.0;" in source
-    assert "return 1.0 / scale;" in source
+    assert "return 12.0 / scale / 72.0;" in source
+    assert "return scale / 12.0;" in source
     assert "Math.floor((bandIn * 72.0) / (sizePt * CHAR_ASPECT))" in source
-    # And the Python side still says the same thing.
-    assert typography.model_in_per_pt(48.0) == 48.0 / 72.0
-    assert typography.paper_in_per_model_in(48.0) == 1.0 / 48.0
+    # And the Python side still says the same thing. ``scale`` is ARCH_SCALES' number —
+    # paper inches per model foot — so 1-1/2" = 1'-0" is 1.5, not 8.
+    assert typography.model_in_per_pt(1.5) == 12.0 / 1.5 / 72.0
+    assert typography.model_in_per_pt(1.5) * typography.TEXT_PT == pytest.approx(0.7778, abs=1e-4)
+    assert typography.paper_in_per_model_in(0.25) == 0.25 / 12.0
     assert typography.wrap_columns_for(3.4, typography.NOTES_PT) == \
         int(3.4 * 72.0 / (typography.NOTES_PT * typography.CHAR_ASPECT))
 
