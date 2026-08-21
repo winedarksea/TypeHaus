@@ -114,6 +114,28 @@ GSolid = Union[GPrism, GBox, GMesh]
 
 
 @dataclass(frozen=True)
+class PartCatalogRef:
+    """What the catalog called this part — the provenance ``material_key`` throws away.
+
+    ``material_key`` is deliberately lossy: ``emit/finishes.layer_material_key`` folds
+    through ``family_of``, so polyiso, XPS and EPS all become ``"rigid"``. That is right for
+    a viewer material and wrong for a detail, whose whole job is telling XPS from polyiso —
+    ``palette.DETAIL_HATCH`` and ``Hatch.material`` both key on the *raw* ref.
+
+    One nested record rather than five flat fields: ``GPart``'s constructor stays legible,
+    and ``None`` states "no catalog provenance" once. Deliberately **not** mirrored into
+    ``model.json`` — that would demand a TS type for it and a fifth surface to keep in sync,
+    for no viewer benefit.
+    """
+
+    material_ref: str | None = None   # "polyiso", "standing-seam"; None for plain lumber
+    role: str | None = None           # a LayerFunction value, or FramedMember.category
+    name: str | None = None           # "CI", "stud-007" — the layer ladder's label
+    thickness_m: float | None = None  # layers only
+    profile: str | None = None        # members only
+
+
+@dataclass(frozen=True)
 class GPart:
     """One addressable piece of an element: a layer band, a member, a leaf, a deck.
 
@@ -134,6 +156,10 @@ class GPart:
     # ``"<ownerUid>::<childKey>"`` for framing, so a merged member mesh can resolve a pick
     # back to one stick.
     member_uid: str | None = None
+    # What the catalog called this part, for consumers that need the raw ref rather than the
+    # folded finish key. Trailing and defaulted: every ``GPart(...)`` in the tree is
+    # keyword-only, so nothing downstream moves.
+    catalog: PartCatalogRef | None = None
 
 
 @dataclass(frozen=True)

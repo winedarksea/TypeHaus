@@ -31,12 +31,14 @@ from typehaus.emit.finishes import (
     normalize,
 )
 from typehaus.emit.trades import solid_trade
+from typehaus.resolve.assembly_material import solid_material_ref
 from typehaus.resolve.geometry_ir import (
     ElementGeometry,
     GBox,
     GeometryModel,
     GPart,
     GPrism,
+    PartCatalogRef,
 )
 from typehaus.resolve.geometry_members import member_box, member_part_key, member_uid
 from typehaus.resolve.geometry_openings import opening_parts
@@ -80,6 +82,8 @@ def _member_parts(members: tuple[FramedMember, ...] | list[FramedMember],
             layer_group=(layer_visibility_group(member.category)
                          if member.material else "structure"),
             member_uid=member_uid(member),
+            catalog=PartCatalogRef(material_ref=member.material, role=member.category,
+                                   name=member.child_key, profile=member.profile),
         ))
     return tuple(parts)
 
@@ -105,11 +109,14 @@ def _wall_geometry(wall: ResolvedWall, openings) -> ElementGeometry:
             solids=solids,
             material_key=normalize(function),
             layer_group=layer_visibility_group(function),
+            catalog=PartCatalogRef(material_ref=layer.material_ref, role=function,
+                                   name=layer.name,
+                                   thickness_m=layer.thickness_m),
         ))
     return ElementGeometry(uid=wall.uid, kind="wall", trade="walls", parts=tuple(parts))
 
 
-def _solid_geometry(solid: ResolvedSolid) -> ElementGeometry:
+def _solid_geometry(solid: ResolvedSolid, plan) -> ElementGeometry:
     """Any solid — pour, beam, post, pipe run, trim: its plan outline extruded between its
     two elevations.
 
@@ -123,7 +130,9 @@ def _solid_geometry(solid: ResolvedSolid) -> ElementGeometry:
         uid=solid.uid, kind=solid.category, trade=solid_trade(solid.category),
         parts=(GPart(key="body", solids=(prism,),
                      material_key=normalize(solid.category),
-                     layer_group="structure"),),
+                     layer_group="structure",
+                     catalog=PartCatalogRef(material_ref=solid_material_ref(plan, solid),
+                                            role=solid.category, name=solid.tag)),),
     )
 
 
@@ -160,7 +169,10 @@ def _floor_deck_geometry(floor: ResolvedFloor) -> ElementGeometry | None:
         uid=floor.uid, kind="floor", trade="floors",
         parts=(GPart(key="deck", solids=(prism,),
                      material_key=layer_material_key(floor.deck_material_ref, "sheathing"),
-                     layer_group="sheathing"),),
+                     layer_group="sheathing",
+                     catalog=PartCatalogRef(material_ref=floor.deck_material_ref,
+                                            role="sheathing", name="deck",
+                                            thickness_m=floor.deck_z1_m - floor.deck_z0_m)),),
     )
 
 
@@ -234,7 +246,7 @@ def build_geometry(model: ResolvedModel) -> GeometryModel:
             elements.append(deck)
 
     for solid in model.solids:
-        elements.append(_solid_geometry(solid))
+        elements.append(_solid_geometry(solid, model.plan))
     for panel in getattr(model, "solar_panels", ()):
         elements.append(_solar_geometry(panel))
 

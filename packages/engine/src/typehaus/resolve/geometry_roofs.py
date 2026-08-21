@@ -25,7 +25,7 @@ from __future__ import annotations
 import math
 
 from typehaus.emit.finishes import layer_material_key, layer_visibility_group
-from typehaus.resolve.geometry_ir import GMesh, GPart, Vec3
+from typehaus.resolve.geometry_ir import GMesh, GPart, PartCatalogRef, Vec3
 from typehaus.resolve.roof_geometry import roof_plane_z, roof_slope_coordinate
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 from typehaus.resolve.model import ResolvedRoof
@@ -221,6 +221,8 @@ def roof_parts(roof: ResolvedRoof, assembly) -> tuple[GPart, ...]:
             band = _band_mesh(triangles, offset_at, perimeter, base, base + thickness)
         parts.append(GPart(key=f"layer:{name}", solids=(band,),
                            material_key=layer_material_key(material_ref, function),
-                           layer_group=layer_visibility_group(function)))
+                           layer_group=layer_visibility_group(function),
+                           catalog=PartCatalogRef(material_ref=material_ref, role=function,
+                                                  name=name, thickness_m=thickness)))
         base += thickness
     return tuple(parts)

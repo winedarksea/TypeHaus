@@ -8,8 +8,8 @@ that changes here has to change there too, or the .glb and the live viewer disag
 from __future__ import annotations
 
 from typehaus.emit.draw.palette import family_of, material_color, material_family_color
+from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.resolve.model import ResolvedModel
-
 
 # function/category → RGBA color (linear, 0..1). Keys are lowercased layer functions and
 # member categories; anything unmatched falls back to a neutral gray.
@@ -365,15 +365,13 @@ def _solid_color(model: ResolvedModel, solid) -> tuple[float, float, float, floa
                          if m.tag == solid.material and m.color), None)
         if authored is not None:
             return _hex_rgba(material_color(authored.hatch, authored.color))
-    if solid.assembly:
-        assembly = model.plan.library.resolve_assembly(solid.assembly)
-        if assembly is not None and assembly.layers:
-            idx = assembly.structure_index()
-            layer = assembly.layers[idx if idx is not None else 0]
-            if _is_aluminum_deck_board(layer.material_ref):
-                return _hex_rgba(_DECK_BOARD_BASE)
-            material = next((m for m in model.plan.library.materials
-                             if m.tag == layer.material_ref), None)
-            if material is not None:
-                return _hex_rgba(material_color(material.hatch, material.color))
+    # Which layer speaks for an assembly is ``assembly_material``'s rule, not a second copy
+    # of it here — the resolver reads the same one when it stamps ``GPart.catalog``.
+    layer_ref = assembly_structure_material(model.plan, solid.assembly)
+    if layer_ref:
+        if _is_aluminum_deck_board(layer_ref):
+            return _hex_rgba(_DECK_BOARD_BASE)
+        material = next((m for m in model.plan.library.materials if m.tag == layer_ref), None)
+        if material is not None:
+            return _hex_rgba(material_color(material.hatch, material.color))
     return _color(solid.category)
