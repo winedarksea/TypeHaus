@@ -47,6 +47,8 @@ def main() -> None:
     ap.add_argument("--iters", type=int, default=15)
     ap.add_argument("--storey", default="main")
     ap.add_argument("--node", default="N-M-S1")
+    ap.add_argument("--skip-draw", action="store_true",
+                    help="skip the detail-drawing stage")
     ap.add_argument("--skip-macro", action="store_true",
                     help="only run the plain rebuilds — the macro paths dominate wall time "
                          "and a perf guard does not need them")
@@ -79,6 +81,15 @@ def main() -> None:
           f"(min {min(wall_times):.1f}, max {max(wall_times):.1f})")
     stage_medians = _median_timings(rebuild_runs)
     _print_table("rebuild stage medians", stage_medians)
+
+    # --- the drawing stage ---------------------------------------------------------
+    # ``resolve`` and ``resolve.junctions`` are the only stages the perf guard budgets, so
+    # a section-drawing regression is invisible to it. Every detail is a full cut of the
+    # model; this is the number that moves when the cut changes.
+    if state.model is not None and not args.skip_draw:
+        draw_medians = _draw_timings(state.model, args.iters)
+        stage_medians.update(draw_medians)
+        _print_table("draw stage medians", draw_medians)
 
     breaches = _budget_breaches(rebuild_median, stage_medians, args.assert_under, budgets)
 
@@ -121,6 +132,28 @@ def main() -> None:
         raise SystemExit(1)
     if args.assert_under is not None or budgets:
         print("\nall budgets met")
+
+
+def _draw_timings(model, iters: int) -> dict[str, float]:
+    """Median ms for one center section and for the whole derived-detail set."""
+    from typehaus.emit.draw.details import build_detail, derive_detail_slices
+    from typehaus.emit.draw.section import build_center_section
+
+    derived = derive_detail_slices(model)
+    section_times, detail_times = [], []
+    for _ in range(max(1, min(iters, 5))):
+        t0 = time.perf_counter()
+        build_center_section(model)
+        section_times.append((time.perf_counter() - t0) * 1000.0)
+        t0 = time.perf_counter()
+        for entry in derived:
+            build_detail(model, entry)
+        detail_times.append((time.perf_counter() - t0) * 1000.0)
+    print(f"\ndrawing {len(derived)} derived details")
+    return {
+        "draw.center_section": statistics.median(section_times),
+        "draw.details": statistics.median(detail_times),
+    }
 
 
 def _parse_stage_budgets(raw: list[str]) -> dict[str, float]:

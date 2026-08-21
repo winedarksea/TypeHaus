@@ -22,8 +22,13 @@ BENCH = REPO_ROOT / "packages" / "engine" / "scripts" / "bench_rebuild.py"
 
 # Measured medians on the development machine after the Phase 1.5 work: full rebuild
 # ~360 ms, resolve ~220 ms, junctions ~90 ms, placeables ~28 ms. See PERF.md.
+#
+# ``draw.details`` is the whole derived-detail set (~50 full cuts of the model, ~240 ms
+# measured). It is budgeted because nothing else here watches the drawing stage, and the
+# section migration is exactly the kind of change that could quietly make every detail a
+# full geometry walk.
 REBUILD_BUDGET_MS = 2500
-STAGE_BUDGETS_MS = {"resolve": 1500, "resolve.junctions": 700}
+STAGE_BUDGETS_MS = {"resolve": 1500, "resolve.junctions": 700, "draw.details": 1200}
 
 
 def test_rebuild_stays_inside_its_order_of_magnitude() -> None:
