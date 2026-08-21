@@ -86,8 +86,16 @@ def roof_layer_ladder(roof, detail_layers, crop, z_at, ladder_labels,
             key=(roof.uid, layer.name)))
     if not entries:
         return
-    # Outermost first, so the column reads top-down in the same order as the drawing.
-    entries.reverse()
+    # **Highest band first**, off the targets themselves. ``place_column`` fills top-down, so
+    # this is what makes rung order and band order the same order — and it is the whole
+    # difference between a ladder and a cat's cradle. This used to reverse whatever the
+    # caller passed, on the belief that ``detail_layers`` arrived innermost-first; the
+    # section sorts them by their offset from the *structure datum*, which is a different
+    # question from where they land on a sloped cut, and the two answers stopped agreeing
+    # once the cavity fill joined the list. The ladder came out rafter-at-the-top over a roof
+    # drawn roofing-at-the-top, so all ten leaders crossed all ten others on the way in.
+    # Sorting on the drawn elevation cannot be wrong about the drawn order.
+    entries.sort(key=lambda entry: -entry.target[1])
     ladder_labels.extend(place_column(
         entries, x=u_lo / M_PER_IN - 1.0, z_top=z_hi / M_PER_IN - 1.0,
         step_pt=LABEL_RUNG_PT, height_pt=TEXT_PT, align="right", scale=scale))

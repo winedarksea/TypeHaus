@@ -12,10 +12,12 @@ module is only about what survives the trip to paper.
 
 from __future__ import annotations
 
+import re
+
 from typehaus.emit.draw.details import build_detail, derive_detail_slices
 from typehaus.emit.draw.palette import detail_hatch
 from typehaus.emit.draw.pdf_writer import _band_linewidth, _min_printed_width_pt
-from typehaus.emit.draw.scene import Hatch, Text
+from typehaus.emit.draw.scene import Hatch, Leader, Text
 
 
 def _eave(model):
@@ -106,3 +108,31 @@ def test_the_legend_only_names_materials_the_cut_actually_reached(catlin_model):
     legended = {t.content.rsplit("  ", 1)[0] for t in scene.nodes
                 if isinstance(t, Text) and t.space == "paper" and '"' in t.content}
     assert legended <= drawn, f"legended but never drawn: {sorted(legended - drawn)}"
+
+
+# --- the ladder reads in the drawing's order ---------------------------------------------
+
+def test_the_roof_ladder_steps_the_same_way_the_roof_stacks(catlin_model):
+    """A ladder whose rungs run one way and whose targets run the other is a cat's cradle.
+
+    The eave's ten roof labels stepped DOWN from the roofing while their targets climbed UP
+    from the rafter, so every leader crossed every other one and the column read
+    rafter-at-the-top over a roof drawn roofing-at-the-top. Rung order and band order are the
+    same order, and the only way to be sure of that is to sort on the elevation the band was
+    actually drawn at.
+    """
+    scene = _eave(catlin_model)
+    # A ladder rung says `<layer> <n>"` and nothing else — the continuity callouts share the
+    # layer and the elbow shape but point at control planes, not at bands. A roof rung then
+    # carries its band's own elevation in the anchor and its rung height in `at`; a wall
+    # rung's two are equal, which is what tells the two ladders apart.
+    rung_text = re.compile(r'^\S+ [\d.]+"$')
+    rungs = [(n.at[1], n.anchor.xy[1]) for n in scene.nodes
+             if isinstance(n, Leader) and n.layer == "A-ANNO-TEXT"
+             and rung_text.match(n.text) and abs(n.at[1] - n.anchor.xy[1]) > 1e-9]
+    assert len(rungs) >= 8, f"the eave should ladder its whole roof stack, got {len(rungs)}"
+    rungs.sort(key=lambda pair: -pair[0])          # top rung down
+    targets = [target for (_rung, target) in rungs]
+    assert targets == sorted(targets, reverse=True), (
+        "rungs descend, so their targets must descend too — otherwise the leaders cross: "
+        f"{targets}")

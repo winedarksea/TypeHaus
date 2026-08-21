@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Type:Haus M2 editor — SVG 2D editor + three.js 3D panel over model.json (→ 21).",
+  "description": "Type:Haus M2 editor \u2014 SVG 2D editor + three.js 3D panel over model.json (\u2192 21).",
   "scripts": {
     "dev": "node scripts/build-pwa-assets.mjs && node scripts/build-house-asset.mjs && vite",
     "prebuild": "node scripts/build-pwa-assets.mjs && node scripts/build-house-asset.mjs",
@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "test": "node scripts/run-geometry-tests.mjs",
-    "shots": "npm run build && node scripts/shoot.mjs"
+    "shots": "npm run build && node scripts/shoot.mjs",
+    "pick-check": "node scripts/pick-check.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
