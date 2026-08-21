@@ -107,3 +107,82 @@ def test_a_cut_landing_on_an_end_face_still_shows_that_element(catlin_model, tag
     """
     scene = build_section(catlin_model, _slice(catlin_model, tag))
     assert _tags(scene, "A-WALL"), f"{tag} drew no wall at all"
+
+
+# --- the roof ------------------------------------------------------------------------
+
+def _roof_bands(scene, roof_tag: str) -> list[str]:
+    return [node.tag.split("/", 1)[1] for node in scene.nodes
+            if isinstance(node, Polyline) and node.layer == "A-ROOF"
+            and node.tag and node.tag.startswith(f"{roof_tag}/")]
+
+
+def test_the_roof_structure_is_drawn_once(catlin_model):
+    """It used to be drawn twice: as an assembly band *and* as the rafters.
+
+    ``roof_parts`` emits only the layers above the structure, which is the whole point —
+    the structure is framing, and framing is drawn as members.
+    """
+    from typehaus.emit.draw.details import build_detail, derive_detail_slices
+    from typehaus.resolve.roof_layer_setbacks import above_structure_layers
+
+    derived = next(d for d in derive_detail_slices(catlin_model)
+                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+    scene, _findings = build_detail(catlin_model, derived)
+    roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
+    assembly = catlin_model.plan.library.resolve_assembly(roof.assembly)
+    structure = [layer.name for layer in assembly.layers
+                 if layer.function.value == "structure"]
+
+    bands = _roof_bands(scene, "RF-HOUSE")
+    assert bands, "the eave detail drew no roof at all"
+    assert not [name for name in bands if name in structure], \
+        f"A-ROOF band names the structure layer: {bands}"
+    above = {layer.name for layer in above_structure_layers(assembly)}
+    assert set(bands) <= above
+    # The rafter is there — as a member.
+    assert [node for node in scene.nodes
+            if isinstance(node, Polyline) and node.layer == "S-FRAM"
+            and node.tag and node.tag.startswith("rafter-")]
+
+
+def test_a_plain_section_shows_the_roof_as_its_real_stack(catlin_model):
+    """The coarse single band is gone: a building section reads the assembly it is cut
+    through, and the band count is exactly the above-structure layer count."""
+    from typehaus.emit.draw.section import build_center_section
+    from typehaus.resolve.roof_layer_setbacks import above_structure_layers
+
+    scene = build_center_section(catlin_model)
+    roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
+    assembly = catlin_model.plan.library.resolve_assembly(roof.assembly)
+    assert sorted(_roof_bands(scene, "RF-HOUSE")) == \
+        sorted(layer.name for layer in above_structure_layers(assembly))
+
+
+def test_the_bay_fill_still_draws_under_the_rafters(catlin_model):
+    """The batt shares the bay's depth, so the IR gives it no solid — and a roof that reads
+    as 11-7/8" of solid timber is not what the section is cut to show."""
+    from typehaus.emit.draw.details import build_detail, derive_detail_slices
+
+    derived = next(d for d in derive_detail_slices(catlin_model)
+                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+    scene, _findings = build_detail(catlin_model, derived)
+    assert [node for node in scene.nodes
+            if isinstance(node, Hatch) and node.material == "fiberglass-r19"]
+
+
+def test_a_roof_off_the_sheet_does_not_label_its_layers(catlin_model):
+    """Half the derived details are cut at a wall a long way from any roof."""
+    from typehaus.emit.draw.details import build_detail, derive_detail_slices
+    from typehaus.emit.draw.scene import Leader
+
+    derived = next(d for d in derive_detail_slices(catlin_model)
+                   if d.key == "opening_perimeter:GARAGE_WALL_2X6")
+    scene, _findings = build_detail(catlin_model, derived)
+    assert not _roof_bands(scene, "RF-GARAGE")
+    roof = next(r for r in catlin_model.roofs if r.tag == "RF-GARAGE")
+    assembly = catlin_model.plan.library.resolve_assembly(roof.assembly)
+    names = {layer.name for layer in assembly.layers}
+    labelled = {node.text.split(" ")[0] for node in scene.nodes
+                if isinstance(node, Leader)}
+    assert not (labelled & names), labelled & names

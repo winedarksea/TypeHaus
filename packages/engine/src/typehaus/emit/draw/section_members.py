@@ -49,14 +49,20 @@ def _emit_floor_cut(b, floor, direction, station, crop) -> None:
                                       member.child_key))
 
 
-def _emit_member_cuts(b, model, direction, station, crop) -> None:
-    """Detail-mode: draw wall + roof framing members crossing the cut (top plates, rafters).
+def _emit_member_cuts(b, model, direction, station, crop, walls_and_floors=True) -> None:
+    """Draw the framing members crossing the cut (top plates, rafters, joists).
 
     Generalizes the floor crossing math to raked members — a member with ``z0_end_m`` /
-    ``z1_end_m`` set interpolates its elevation at the crossing station."""
-    for wall in model.walls:
-        for member in wall.members:
-            _emit_one_member(b, member, direction, station, crop)
+    ``z1_end_m`` set interpolates its elevation at the crossing station.
+
+    ``walls_and_floors`` is the detail-mode gate. Roof members are outside it: the roof's
+    assembly bands stop at the structure (``roof_parts`` builds only the layers above it),
+    so the rafters *are* the roof's structure in every mode, not an extra.
+    """
+    if walls_and_floors:
+        for wall in model.walls:
+            for member in wall.members:
+                _emit_one_member(b, member, direction, station, crop)
     for roof in model.roofs:
         # A birdsmouth rafter runs *along* the cut plane, so it only draws when a rafter
         # lands exactly on the station — which a wall-midpoint cut rarely does. Show the

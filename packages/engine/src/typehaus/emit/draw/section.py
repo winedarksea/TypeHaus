@@ -31,13 +31,14 @@ from typehaus.emit.draw.section_members import (
     _emit_floor_cut,
     _emit_member_cuts,
 )
-from typehaus.model.enums import LayerFunction, SliceKind
+from typehaus.model.enums import SliceKind
 from typehaus.model.views import Slice
 from typehaus.quantities import M_PER_IN, m, pt
 from typehaus.resolve.geometry_slice import (
     CutPlane,
     SectionProfile,
     ring_cut_intervals,
+    ring_intervals,
     slice_part,
 )
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
@@ -106,8 +107,7 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
         _emit_solid_cut(b, model, solid, plane, crop)
 
     for roof in model.roofs:
-        _emit_roof_cut(b, model, roof, direction, station, crop, joints,
-                       ladder_labels)
+        _emit_roof_cut(b, model, roof, plane, crop, joints, ladder_labels)
 
     for floor in model.floors:
         _emit_floor_cut(b, floor, direction, station, crop)
@@ -117,8 +117,13 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
     # detail (which is built with no joints) came out with the framing missing, drawing an
     # empty box where the frame should be. Joints add per-layer terminations and treatment
     # fills on top; they are not what makes a member visible.
-    if joints is not None or is_detail:
-        _emit_member_cuts(b, model, direction, station, crop)
+    #
+    # A roof's members are drawn whatever the mode, because the roof's own bands no longer
+    # carry its structure: ``roof_parts`` builds only the layers above it, exactly so the
+    # structure is not drawn twice. Without the rafters a plain building section would show
+    # a roof stack floating over nothing.
+    _emit_member_cuts(b, model, direction, station, crop,
+                      walls_and_floors=joints is not None or is_detail)
     if joints is not None:
         b.extend(list(joints.treatments))
 
@@ -454,6 +459,43 @@ def _rafter_plan_span(roof, direction: str) -> tuple[float, float] | None:
     return min(coords), max(coords)
 
 
+def _roof_layer_offsets(asm):
+    """``(layer, d0, d1)`` per assembly layer, measured *down* from the structure datum.
+
+    Positive is below the datum (the structure and anything inboard of it); negative is
+    above (the whole outboard stack). The datum is ``roof_height_at`` — the top of the
+    structure, which is what ``eave_z_m`` means. This used to run one cumulative depth
+    downward from the first layer, which drew the entire above-structure stack *under* the
+    rafters: on catlin's nailbase roof the section showed metal, vent mat, underlayment, OSB
+    and 6" of polyiso hanging below the I-joists and nothing at all above them. It read as a
+    plausible drawing, which is why it survived — the bands were in the right order, just
+    mirrored about the wrong plane.
+    """
+    datum = structure_datum_m(asm)
+    return [(layer, datum - c1, datum - c0) for (layer, c0, c1) in assembly_layer_spans(asm)]
+
+
+def _roof_cavity_bands(asm):
+    """``(layer, d0, d1)`` for each cavity fill, in the same datum frame.
+
+    The batt between the rafters is not a layer of its own — it shares the bay's depth — so
+    ``geometry_build`` does not give it a solid (it would z-fight the structure) and the IR
+    cannot answer for it. It is the difference between a roof that reads as 11-7/8" of solid
+    timber and one that reads as a batt between rafters, which is what the section is cut to
+    show, so it is drawn here from the assembly. Held to the ceiling side: the remaining bay
+    depth stays open.
+    """
+    datum = structure_datum_m(asm)
+    bands = []
+    for (layer, c0, c1) in assembly_layer_spans(asm):
+        cavity = getattr(layer, "cavity", None)
+        if cavity is None:
+            continue
+        fill = cavity.thickness.meters if cavity.thickness is not None else c1 - c0
+        bands.append((_CavityBand(layer, cavity), datum - (c0 + fill), datum - c0))
+    return bands
+
+
 class _CavityBand:
     """A cavity fill dressed as a ``Layer`` so one band loop draws both.
 
@@ -470,126 +512,92 @@ class _CavityBand:
         self._cavity = cavity
 
 
-def _emit_roof_cut(b, model, roof, direction, station, crop, joints=None,
+def _emit_roof_cut(b, model, roof, plane: CutPlane, crop, joints=None,
                    ladder_labels=None) -> None:
-    intervals = ring_cut_intervals(roof.footprint, direction, station)
-    if not intervals:
+    """One roof's cut: the above-structure stack sliced out of the IR, plus the bay fill.
+
+    ``geometry_roofs.roof_parts`` builds exactly the layers the sky sees, each already
+    offset perpendicular to the slope with a mitered ridge and already clipped to its own
+    edge setback. The structure is **not** among them, and must not be: it is framing, and
+    ``_emit_member_cuts`` draws it as members. Drawing it here as well is what made the roof
+    structure appear twice in every detail — once as an assembly band, once as rafters.
+    """
+    element = model.geometry.by_uid(roof.uid)
+    if element is None:
         return
     asm = model.plan.library.resolve_assembly(roof.assembly)
-    thickness = sum(l.thickness.meters for l in asm.layers) if asm is not None else 0.3
-    # ``z_at`` is ``roof_height_at``, which is the top of the structure layer (the underside
-    # of the sheathing), not the top of the roofing — so the structure hangs BELOW it and
-    # everything outboard stacks ABOVE it. Both the per-layer detail band and the coarse
-    # single band below are offset from that same datum: ``struct_below`` is how far the
-    # structure's underside sits below it, ``struct_below - thickness`` is how far the
-    # roofing's top sits above it.
-    #
-    # This used to run one cumulative depth downward from the first layer, which drew the
-    # whole above-structure stack *under* the rafters: on catlin's nailbase roof the section
-    # showed metal, vent mat, underlayment, OSB and 6" of polyiso hanging below the I-joists
-    # and nothing at all above them. It read as a plausible drawing, which is why it
-    # survived — the bands were in the right order, just mirrored about the wrong plane.
-    # `roof_trim.py` calls eave_z_m "the deck plane" and `test_accessories` derives a vent
-    # termination as roof_height_at + skin; both say the same thing this does.
-    spans = []
-    for (layer, c0, c1) in assembly_layer_spans(asm):
-        spans.append((layer, c0, c1))
-        # A cavity fill is not a layer of its own — it shares the joist bay's depth, so it
-        # occupies no cumulative depth. Drawn as a sub-band it is the difference between a
-        # roof that reads as 11-7/8" of solid timber and one that reads as a batt between
-        # rafters, which is what the section is cut to show.
-        cavity = getattr(layer, "cavity", None)
-        if cavity is not None:
-            fill = (cavity.thickness.meters
-                    if cavity.thickness is not None else c1 - c0)
-            # ``c0`` runs interior→exterior, so a batt held to the ceiling side starts at
-            # the bay's inboard face and the remaining depth stays open.
-            spans.append((_CavityBand(layer, cavity), c0, c0 + fill))
-    # The datum is the outboard face of the outermost structure layer.
-    struct_below = structure_datum_m(asm)
-    detail_layers = None
-    if joints is not None and asm is not None:
-        # (top offset, bottom offset), both positive-downward from the datum.
-        detail_layers = [(layer, struct_below - c1, struct_below - c0)
-                         for (layer, c0, c1) in spans]
-    def z_at(u: float) -> float:
-        # The roof plane at a slope-axis coordinate — unclamped, so a band offset proud of
-        # the eave (the metal roofing's drip) stays on the slope instead of kinking flat.
-        return roof_plane_z(roof, u)
+    detail = joints is not None
+    drawn = False
+    for part in element.parts:
+        catalog = part.catalog
+        if catalog is None:
+            continue
+        pattern = detail_hatch(catalog.material_ref, catalog.role) or "batt"
+        for profile in slice_part(part, plane):
+            clipped = clip_polygon(profile.outline, crop)
+            if len(clipped) < 3:
+                continue
+            pts = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
+            drawn = True
+            b.add(Polyline(points=pts, layer="A-ROOF", closed=True,
+                           lineweight=0.18 if detail else 0.35,
+                           uid=roof.uid, tag=f"{roof.tag}/{catalog.name}"))
+            b.add(Hatch(boundary=pts, pattern=pattern, layer="A-WALL-PATT",
+                        uid=roof.uid, material=catalog.material_ref))
 
-    slope_along_cut = (
-        (roof.ridge_direction == "y" and direction == "x")
-        or (roof.ridge_direction == "x" and direction == "y")
-    )
-    # Per-layer eave/rake clips, mirroring the 3D emitters: the resolver's serialized
-    # setbacks pull each above-structure band in to its own wall-stack face (deck at the
-    # wall sheathing, foam at the furring, metal proud), and the structure band stops at
-    # the rafters' plumb-cut tails instead of running out to the footprint edge — the
-    # zero-overhang reference's stepped stack, in section.
-    edge_lo, edge_hi = ("west", "east") if direction == "x" else ("south", "north")
-    setbacks = {entry["layer"]: entry
-                for entry in (getattr(roof, "layer_edge_setbacks", None) or ())}
-    structure_span = _rafter_plan_span(roof, direction)
+    if asm is None:
+        return
+    _emit_roof_cavity(b, roof, asm, plane, crop)
+    # No band of this roof reached the sheet: naming its layers would point at nothing.
+    # Half the derived details are cut at a wall a long way from any roof.
+    if detail and drawn:
+        # The ladder names every band of the assembly, the drawn cavity fill included —
+        # sorted outboard-first so the column reads in the order the drawing stacks.
+        rungs = sorted(_roof_layer_offsets(asm) + _roof_cavity_bands(asm),
+                       key=lambda entry: entry[1])
+        roof_layer_ladder(roof, rungs, crop,
+                          lambda u: roof_plane_z(roof, u), ladder_labels)
 
+
+def _emit_roof_cavity(b, roof, asm, plane: CutPlane, crop) -> None:
+    """The bay fill, as a sloped band under the structure datum, clipped to the rafters."""
+    bands = _roof_cavity_bands(asm)
+    if not bands:
+        return
+    intervals = ring_intervals(tuple(roof.footprint), plane)
+    if not intervals:
+        return
     ridge_u = roof_ridge_coordinate(roof)
+    slope_along_cut = (
+        (roof.ridge_direction == "y" and plane.axis == "x")
+        or (roof.ridge_direction == "x" and plane.axis == "y")
+    )
+    structure_span = _rafter_plan_span(roof, plane.axis)
 
-    def _top_line(a: float, b_: float) -> list[tuple[float, float]]:
+    def top_line(a: float, b_: float) -> list[tuple[float, float]]:
         if slope_along_cut:
             fold = [ridge_u] if ridge_u is not None and a < ridge_u < b_ else []
-            stations_u = [a] + fold + [b_]
-            return [(u, z_at(u)) for u in stations_u]
-        z = z_at(station)
+            return [(u, roof_plane_z(roof, u)) for u in ([a] + fold + [b_])]
+        z = roof_plane_z(roof, plane.station_m)
         return [(a, z), (b_, z)]
 
     for (u0, u1) in intervals:
-        u0c, u1c = u0, u1
-        if crop is not None:
-            (cu0, _), (cu1, _) = crop
-            u0c, u1c = max(u0, min(cu0, cu1)), min(u1, max(cu0, cu1))
-            if u0c >= u1c:
+        for (layer, d0, d1) in bands:
+            a, b_ = u0, u1
+            if structure_span is not None:
+                a, b_ = max(a, structure_span[0]), min(b_, structure_span[1])
+            if b_ - a < 1e-9:
                 continue
-        if detail_layers is not None:
-            # Per-layer sloped bands: each band offset down from the deck top by its
-            # cumulative depth, so the roof reads as its real assembly in the detail.
-            # Edge insets apply off the *footprint* interval (u0/u1), then the crop
-            # clips — insetting an already-cropped edge would double-shift the band.
-            for (layer, d0, d1) in detail_layers:
-                a, b_ = u0, u1
-                entry = setbacks.get(layer.name)
-                if entry is not None:
-                    a += float(entry.get(edge_lo, 0.0))
-                    b_ -= float(entry.get(edge_hi, 0.0))
-                elif (layer.function is LayerFunction.STRUCTURE
-                      and structure_span is not None):
-                    a, b_ = max(a, structure_span[0]), min(b_, structure_span[1])
-                if b_ - a < 1e-9:
-                    continue
-                top = _top_line(a, b_)
-                band_top = [(u, z - d0) for (u, z) in top]
-                band_bot = [(u, z - d1) for (u, z) in reversed(top)]
-                clipped = clip_polygon(band_top + band_bot, crop)
-                if len(clipped) < 3:
-                    continue
-                pts = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
-                b.add(Polyline(points=pts, layer="A-ROOF", closed=True, lineweight=0.18,
-                               uid=roof.uid, tag=f"{roof.tag}/{layer.name}"))
-                pat = detail_hatch(layer.material_ref, layer.function.value)
-                b.add(Hatch(boundary=pts, pattern=pat or "batt", layer="A-WALL-PATT",
-                            uid=roof.uid, material=layer.material_ref))
-            roof_layer_ladder(roof, detail_layers, crop, z_at, ladder_labels)
-            continue
-        # Same datum as the per-layer bands above: ``z_at`` sits at the top of the
-        # structure, not the top of the roofing, so the single coarse band runs from
-        # ``struct_below`` under that datum to the rest of the stack's thickness above it —
-        # not straight down by the full thickness, which would bury the whole above-structure
-        # stack under the rafters the way the per-layer bands used to.
-        deck_line = _top_line(u0c, u1c)
-        top = [(u, z + (thickness - struct_below)) for (u, z) in deck_line]
-        bottom = [(u, z - struct_below) for (u, z) in reversed(deck_line)]
-        clipped = clip_polygon(top + bottom, crop)
-        if len(clipped) < 3:
-            continue
-        pts = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
-        b.add(Polyline(points=pts, layer="A-ROOF", closed=True, lineweight=0.35,
-                       uid=roof.uid, tag=roof.tag))
-        b.add(Hatch(boundary=pts, pattern="batt", layer="A-WALL-PATT"))
+            top = top_line(a, b_)
+            polygon = ([(u, z - d0) for (u, z) in top]
+                       + [(u, z - d1) for (u, z) in reversed(top)])
+            clipped = clip_polygon(polygon, crop)
+            if len(clipped) < 3:
+                continue
+            pts = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
+            b.add(Hatch(boundary=pts,
+                        pattern=detail_hatch(layer.material_ref, layer.function.value)
+                        or "batt",
+                        layer="A-WALL-PATT", uid=roof.uid, material=layer.material_ref))
+
+
