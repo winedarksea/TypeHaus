@@ -80,15 +80,18 @@ from typehaus import (
     pt,
 )
 
+from params.second_deck import _DEPTH as _JOIST_DEPTH
+from params.second_deck import _SUBFLOOR
+
 # --- the wood bay this deck has to match, top and bottom --------------------------
 #
-# FS-SECOND's build-up, repeated on this storey. Both numbers are stated HERE and nowhere
-# else in this file, because the concrete deck's entire design is "be exactly this, in
-# concrete" — everything below derives from them rather than restating them.
+# The second floor's build-up, repeated on this storey. The depth and subfloor thickness
+# are imported from ``params/second_deck.py`` rather than restated: since 2026-08-21 that
+# deck is split truss/I-joist at x=18', and both members share this one depth precisely so
+# the concrete band below can keep matching a single number instead of two. Everything
+# below derives from them rather than restating them.
 _JOIST = "11.875 I-joist"
-_JOIST_DEPTH = inch(11.875)
 _JOIST_OC = inch(16)
-_SUBFLOOR = inch(0.75)          # plywood, laid ON TOP of the joists
 
 # The storey datum is the TOP OF JOISTS, not the walking surface — walls bear there and the
 # subfloor rides above it (``Slab.datum``'s own docstring, and W-S-E2 starting at exactly

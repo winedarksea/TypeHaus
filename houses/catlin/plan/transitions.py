@@ -120,8 +120,9 @@ TRANSITIONS = (
                            Continuity(control="air", from_face="foil-polyiso",
                                       to_face="foil-polyiso")),
                star=True),
-    # The plant room's rim band, and the hardest detail in the room. FS-SECOND and FS-ATTIC
-    # both run their joists in x, so the ends bear on W-S-W4 and a parallel rim bay sits
+    # The plant room's rim band, and the hardest detail in the room. FS-S-WEST (the truss
+    # half since 2026-08-21) and FS-ATTIC both run their joists in x, so the ends bear on
+    # W-S-W4 and a parallel rim bay sits
     # against W-S-S1: two direct paths from a floor cavity into the coldest part of an
     # exterior wall, and neither can take a sheet membrane — there is no continuous plane to
     # lap it onto between the joist ends. Closed-cell spray foam at the rim in BOTH floor

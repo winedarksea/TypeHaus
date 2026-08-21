@@ -9,6 +9,7 @@ from collections import Counter, defaultdict
 from typehaus.model.enums import LayerFunction
 from typehaus.model.floors import FloorOpening, FloorSystem
 from typehaus.resolve.assembly_material import assembly_structure_material
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.model import ResolvedModel
 
@@ -21,13 +22,28 @@ _FT3_PER_CUBIC_YARD = 27.0
 # Stock lengths a dimensional-lumber order is placed in; a member is charged to the shortest
 # stock it can be cut from, and anything past the longest stock rounds up to the next 2 ft.
 _STOCK_LENGTHS_FT = (8, 10, 12, 14, 16, 20)
+# Trimmable floor-truss stock: 18' and 20', each trimmable up to 6" from each end (12"
+# total), so an 18' truss covers 17'-0"-18'-0" and a 20' covers 19'-0"-20'-0".
+_TRUSS_STOCK_FT = (18, 20)
+_TRUSS_TRIM_ALLOWANCE_FT = 1.0
 # ``[plies-]TxW`` — a leading built-up ply count is optional; a trailing name (LVL, rim,
 # I-joist) is ignored. Board-foot rollup is only reported when this matches.
 _PROFILE_RE = re.compile(r"^(?:(\d+)-)?(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)")
 
 
-def _order_length_ft(length_ft: float) -> int:
-    """Round a cut length up to the stock length it would be purchased in."""
+def _order_length_ft(length_ft: float, profile: str | None = None) -> int:
+    """Round a cut length up to the stock length it would be purchased in.
+
+    A ``floor_truss`` is fabricated, not milled dimensional lumber: it charges to the
+    18'/20' trimmable ladder only within each stock's trim window; a length outside both
+    windows (or a member clipped short by an opening) is fabricated to its own length and
+    buckets at its own whole-foot ceiling rather than the next stock size up.
+    """
+    if profile is not None and cross_section(profile).shape == "floor_truss":
+        for stock in _TRUSS_STOCK_FT:
+            if stock - _TRUSS_TRIM_ALLOWANCE_FT - 1e-6 <= length_ft <= stock + 1e-6:
+                return stock
+        return int(math.ceil(length_ft - 1e-9))
     for stock in _STOCK_LENGTHS_FT:
         if length_ft <= stock + 1e-6:
             return stock
@@ -57,7 +73,7 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     groups: dict[tuple[str, str], Group] = {}
     for member in model.all_members():
         cut_ft = member.length_m * _M_TO_FT
-        order_ft = _order_length_ft(cut_ft)
+        order_ft = _order_length_ft(cut_ft, member.profile)
         key = (member.profile, member.category)
         group = groups.get(key)
         if group is None:

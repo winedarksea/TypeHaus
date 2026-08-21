@@ -133,6 +133,28 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   wood bays only, and the split is derived — moving `_BAND_Y` moves the finish with it.
   `notes/mixed_deck_movement_joint.md` has the reducer, the L-shaped transition and the
   cream-polish spec.
+- **The second floor's deck is mixed too, and for a different reason than the basement's:
+  services, not a concrete/wood boundary.** `FS-S-WEST` (x 0'-18') is 11 7/8" open-web
+  trimmable floor trusses at 16" o.c.; `FS-S-EAST` (x 18'-36') is 11 7/8" I-joists,
+  unchanged from the old whole-floor `FS-SECOND`. West is where nearly every second-floor
+  plumbing/HVAC crossing lives — both drain stacks, all four supply risers, the
+  radon/plumbing chase, the hydrant distribution and the data conduits — so it is the half
+  where a service can cross *through* the webs (8 7/8" clear chord-to-chord opening,
+  `resolve/framing/profiles.py::open_web_opening_m`) instead of being bored, soffited or
+  chased; east is bedrooms and a study with only incidental crossings, so it keeps the
+  cheaper I-joist. Both are the same 11 7/8" depth, deliberately — the deck plane, the
+  finished floor and the ceiling below all stay flat across the split, and unlike the
+  basement's boundary this one needs **no movement joint and no finish break** (same
+  depth, same stiffness class). Trimmable stock is 18' and 20', trimmable up to 6" from
+  each end; the west field's spans are exactly 18'-0", the 18' truss untrimmed
+  (`takeoff/framing.py::_order_length_ft`). `FO-S-STAIR` falls in the west half, so seven
+  joist lines there clip to ~10'-3⅜" and fall outside the trimmable range — fabricated to
+  length instead. Moving the split is a one-line edit in `params/second_deck.py` (which is
+  also where the shared depth constant lives, and which `params/main_deck.py` imports
+  rather than restating). The truss price row in `prices.toml` is a placeholder pending a
+  fabricator quote, and the span-table row it borrows from the I-joist
+  (`checks/structural/checks.py::_IJOIST_SPAN_FT`) is explicitly advisory at this 18'-0"
+  span — the fabricator's own table governs.
 - Attic is a habitable hot-roofed cathedral space: 5' knee walls E/W, gables N/S,
   ridge N-S, 4:12, **zero overhang**.
 - **The roof is a screwed nailbase, and three of its layers exist only because the

@@ -146,8 +146,10 @@ REGISTERS_HVAC_ATTIC = [
 # mechanical-room sink (keeps a trapped condensate line out of the sanitary system), but that
 # sink has no drain of its own yet (plans/TODO.md).
 
-# Every register here drops into a boot in the FS-SECOND joist bay, flush with the finished
-# floor — the type's 1" height is the frame below it, not a kerb on top, so it still counts
+# Every register here drops into a boot in the second floor's joist bay (FS-S-EAST's
+# I-joists for the three east bedroom boots at x=29'; FS-S-WEST's open-web trusses for the
+# suite's REG-S-RET2 at x=9', since 2026-08-21), flush with the finished floor — the
+# type's 1" height is the frame below it, not a kerb on top, so it still counts
 # against a neighbour's clear floor space.
 #
 # The second storey went supply-less on the ERV on 2026-07-29: the three bedroom boots kept

@@ -210,7 +210,7 @@ MN_2024 = JurisdictionProfile(
         # plumbing sheets rather than described in a note.
         PermitItemSpec("Passive radon control system", ("code.MN_1303_2402_radon",),
                        ("MN Rules 1303.2400-.2402",)),
-        PermitItemSpec("I-joist span table", ("structural.ijoist_span",),
+        PermitItemSpec("Floor joist span table", ("structural.ijoist_span",),
                        ("manufacturer span table",)),
         PermitItemSpec("Plumbing sleeve alignment", ("mep.sleeve_alignment",), ()),
         PermitItemSpec("Plumbing drain slope", ("mep.drain_slope",), ("IRC P3005.3",)),

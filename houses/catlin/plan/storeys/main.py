@@ -755,7 +755,9 @@ STAIR_HANDRAILS = [
 # (2026-07-28) — twin of BM-S-HALL one storey up. Per CLAUDE.md, x=18' is a bearing line
 # footings-to-ridge; this LVL *is* that bearing line for its 4'-2" span, not a break in it.
 #
-# Load: FS-SECOND's 18' tributary (~990 plf) plus a point load — BM-S-HALL above has no
+# Load: the second floor's 18' tributary (~990 plf, FS-S-WEST/FS-S-EAST since 2026-08-21,
+# unchanged: both still span 18' either side of this line at the same depth) plus a point
+# load — BM-S-HALL above has no
 # centre wall either, so everything above (attic floor, RB-HOUSE, second-storey plate)
 # arrives as that beam's end reaction (~8.1 k) landing 8" north of this beam's own south
 # bearing. Over the 4'-2" clear span: M = 5.7 ft-k, V = 8.9 k. Three plies of 1.75x11.875
@@ -763,8 +765,9 @@ STAIR_HANDRAILS = [
 # governs. Same section/ply count as BM-S-HALL and RB-HOUSE (one LVL depth on the job).
 #
 # Bears on the ends of the walls it replaced (W-M-C3/W-M-C5), each stacking onto W-B-CN and
-# the footings. Framed FLUSH (`top_elevation` at the joist datum) so FS-SECOND hangs off it
-# and the 9' ceiling stays unbroken — a dropped beam would hang its full 11-7/8" into it.
+# the footings. Framed FLUSH (`top_elevation` at the joist datum) so FS-S-WEST and
+# FS-S-EAST both hang off it and the 9' ceiling stays unbroken — a dropped beam would hang
+# its full 11-7/8" into it.
 BEAMS = [
     Beam(uid="CMBM01AAAA", tag="BM-M-HALL", start_node="N-M-C2", end_node="N-M-C3",
          size="3-1.75x11.875 LVL", bearing_refs=("W-M-C3", "W-M-C5"),

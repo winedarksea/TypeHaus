@@ -27,7 +27,7 @@ from typehaus.model.mep import (
     SleevePenetration,
 )
 from typehaus.quantities import inch
-from typehaus.resolve.geometry import circle_outline, length, sub
+from typehaus.resolve.geometry import bbox, circle_outline, length, sub
 from typehaus.resolve.mep_queries import (  # noqa: F401 - re-exported query API
     _CONCRETE_SOLID_CATEGORIES,
     _conduit_vertical_profile,
@@ -377,6 +377,24 @@ def _host_z_at(host: ResolvedPipeRun, point: tuple[float, float]) -> float | Non
     return host.z_m[best]
 
 
+def _duct_containing_floor(model: ResolvedModel, storey_tag: str, direction: str,
+                           point: tuple[float, float], fallback):
+    """Whichever FloorSystem on this storey shares ``direction`` and contains ``point``.
+
+    Siblings from the same x-spanning deck split share a joist ``direction``; a duct that
+    crosses the split boundary needs the floor under each segment, not the one named by
+    ``floor_ref`` alone. Falls back to ``fallback`` (the named ``floor_ref``'s floor) when
+    no sibling's deck outline contains the point — e.g. a duct that briefly runs outside
+    any deck footprint."""
+    for f in model.floors:
+        if f.storey != storey_tag or f.direction != direction or not f.deck_outline:
+            continue
+        (x0, y0), (x1, y1) = bbox(list(f.deck_outline))
+        if x0 - 1e-6 <= point[0] <= x1 + 1e-6 and y0 - 1e-6 <= point[1] <= y1 + 1e-6:
+            return f
+    return fallback
+
+
 def _resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey_tag: str) -> list[Finding]:
     path = [p.xy_m for p in duct.path]
     if len(path) < 2:
@@ -388,19 +406,29 @@ def _resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey_tag: str) -> l
     width_m, depth_m = duct.width.meters, duct.depth.meters
     floor = (next((f for f in model.floors if f.tag == duct.floor_ref), None)
             if duct.floor_ref else None)
-    conflicts: tuple[str, ...] = ()
-    crossings: tuple[tuple[float, float], ...] = ()
+    conflicts_list: list[str] = []
+    crossings_list: list[tuple[float, float]] = []
     depth_ok = True
     if floor is not None:
-        system = model.plan.by_tag(floor.tag)
-        bearing_walls = [model.wall(tag) for tag in getattr(system.joists, "bearing_refs", ())]
-        bearing_walls = [w for w in bearing_walls if w is not None]
-        spacing_m = (system.joists.spacing.meters if system.joists.spacing is not None
-                    else _DEFAULT_SPACING_M)
-        conflict_list, crossing_list, depth_ok = duct_bay_occupancy(
-            path, width_m, depth_m, duct.routing, floor, bearing_walls, spacing_m,
-        )
-        conflicts, crossings = tuple(conflict_list), tuple(crossing_list)
+        # Each segment validates against whichever sibling FloorSystem (same storey,
+        # same joist direction) contains its midpoint, so a duct spanning a split deck
+        # (e.g. the ERV trunks crossing the truss/I-joist boundary) resolves against
+        # both halves instead of reporting UNKNOWN past the named floor_ref's edge.
+        for a, b in zip(path, path[1:]):
+            midpoint = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
+            seg_floor = _duct_containing_floor(model, storey_tag, floor.direction, midpoint, floor)
+            system = model.plan.by_tag(seg_floor.tag)
+            bearing_walls = [model.wall(tag) for tag in getattr(system.joists, "bearing_refs", ())]
+            bearing_walls = [w for w in bearing_walls if w is not None]
+            spacing_m = (system.joists.spacing.meters if system.joists.spacing is not None
+                        else _DEFAULT_SPACING_M)
+            seg_conflicts, seg_crossings, seg_depth_ok = duct_bay_occupancy(
+                [a, b], width_m, depth_m, duct.routing, seg_floor, bearing_walls, spacing_m,
+            )
+            conflicts_list.extend(seg_conflicts)
+            crossings_list.extend(seg_crossings)
+            depth_ok = depth_ok and seg_depth_ok
+    conflicts, crossings = tuple(conflicts_list), tuple(crossings_list)
     model.ducts.append(ResolvedDuct(
         uid=duct.uid, tag=duct.tag, storey=storey_tag, system=duct.system.value,
         path=path, width_m=width_m, depth_m=depth_m, routing=duct.routing.value,

@@ -295,8 +295,9 @@ CATLIN_SLAB_FLOOR = Assembly(
 # (x 18'-36', y 13'-36', 414 SF); the other 819 SF is wood I-joists on the same 18' span,
 # and the two systems are interchangeable bay by bay because their depths match.
 #
-# The depth is the whole point. 4 5/8" cap + 8" form = 12 5/8", which is exactly
-# FS-SECOND's 11 7/8" I-joist plus its 3/4" plywood subfloor: same soffit plane, same
+# The depth is the whole point. 4 5/8" cap + 8" form = 12 5/8", which is exactly the
+# second floor's 11 7/8" joist (truss west of x=18', I-joist east — same depth either
+# way) plus its 3/4" plywood subfloor: same soffit plane, same
 # finished-floor plane, same 18' span to the x=18' bearing line. Both numbers are owned by
 # ``params/main_deck.py`` (EPS_CAP / EPS_FORM_DEPTH), and the 10" form + 3" cap alternative
 # — same depth class, ~21% less concrete, R-31 — is a one-line swap there.
@@ -322,7 +323,7 @@ CATLIN_DECK_EPS_INT = Assembly(
               function=LayerFunction.FINISH),
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="catlin-house main-floor deck — BuildDeck/LiteDeck 8\" EPS stay-in-place form with a 4 5/8\" cast cap (12 5/8\" total, matching FS-SECOND's joist + subfloor), steel furring rib and a 5/8\" gypsum R316.4 thermal barrier under it; replaced CATLIN_DECK_9_INT 2026-08-21",
+    source="catlin-house main-floor deck — BuildDeck/LiteDeck 8\" EPS stay-in-place form with a 4 5/8\" cast cap (12 5/8\" total, matching the second floor's joist + subfloor), steel furring rib and a 5/8\" gypsum R316.4 thermal barrier under it; replaced CATLIN_DECK_9_INT 2026-08-21",
 )
 
 CATLIN_CONC_12_INT = Assembly(
@@ -1355,8 +1356,9 @@ CONSTRUCTION_RULES = [
         dimension=inch(7.625),
         takeoff_category="masonry-corner-return",
     ),
-    # The plant room's rim bands (2026-08-18). FS-SECOND and FS-ATTIC both run their joists
-    # in x, so their ends bear on W-S-W4 and a parallel rim bay sits against W-S-S1 — two
+    # The plant room's rim bands (2026-08-18). FS-S-WEST (the truss half since 2026-08-21)
+    # and FS-ATTIC both run their joists in x, so their ends bear on W-S-W4 and a parallel
+    # rim bay sits against W-S-S1 — two
     # direct paths from a floor cavity into the coldest part of an exterior wall, and neither
     # can take a sheet membrane, because there is no continuous plane to lap one onto between
     # joist ends. Closed-cell foam is the only product that is the insulation, the air
@@ -1379,9 +1381,10 @@ CONSTRUCTION_RULES = [
     ),
     # Resilient channel under the living room only: bedrooms sit directly over it, and 5/8"
     # gypsum screwed straight to the I-joists would carry footfall as impact noise. Scoped to
-    # RM-M-LIVING (a room decision, not FS-SECOND's) — the rest of that ceiling is screwed
-    # direct. A full layered-ceiling assembly is deliberately deferred; this just bills the
-    # channel (gypsum comes via FS-SECOND's `ceiling_below`).
+    # RM-M-LIVING (a room decision, not FS-S-EAST's, the half above it since 2026-08-21) —
+    # the rest of that ceiling is screwed direct. A full layered-ceiling assembly is
+    # deliberately deferred; this just bills the channel (gypsum comes via FS-S-EAST's
+    # `ceiling_below`).
     # (That gap is closed as of 2026-08-18: `construction_returns` is a priced section now.
     # This rule's own channel is still left unpriced in houses/catlin/prices.toml, on purpose
     # and with the reason written there — it is the same "is this a second count of material

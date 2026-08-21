@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from typehaus.model.enums import DuctRouting
 from typehaus.quantities import M_PER_IN, inch
+from typehaus.resolve.framing.profiles import cross_section, open_web_opening_m
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.model import (
     ResolvedConduitRun,
@@ -395,6 +396,8 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
     joist_lines = sorted({(m.p0[1] if along_x else m.p0[0]) for m in floor.members})
     member_depth = max((m.z1_m - m.z0_m for m in floor.members), default=depth_m)
     depth_ok = depth_m <= member_depth + 1e-9
+    opening_m = (open_web_opening_m(cross_section(floor.members[0].profile))
+                if floor.members else None)
 
     conflicts: list[str] = []
     crossings: list[tuple[float, float]] = []
@@ -420,10 +423,25 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
         else:
             crossed = [jl for jl in joist_lines if min(pa, pb) < jl < max(pa, pb)]
             if crossed and routing not in (DuctRouting.SOFFIT, DuctRouting.CHASE):
-                conflicts.append(
-                    f"segment {i} runs perpendicular/oblique across joist line(s) "
-                    f"{[round(v, 3) for v in crossed]} — route in a soffit or chase"
-                )
+                if opening_m is not None and depth_m <= opening_m + 1e-9:
+                    # Legal: the run passes through the truss webs, same as a
+                    # bearing-line crossing — a note, not a conflict.
+                    for jl in crossed:
+                        t = 0.0 if abs(pb - pa) < 1e-12 else (jl - pa) / (pb - pa)
+                        along_at = aa + t * (ab - aa)
+                        crossings.append((along_at, jl) if along_x else (jl, along_at))
+                elif opening_m is not None:
+                    conflicts.append(
+                        f"segment {i} runs perpendicular/oblique across joist line(s) "
+                        f"{[round(v, 3) for v in crossed]} — depth "
+                        f"{depth_m / M_PER_IN:.1f}\" exceeds the {opening_m / M_PER_IN:.1f}\" "
+                        "chord-to-chord opening"
+                    )
+                else:
+                    conflicts.append(
+                        f"segment {i} runs perpendicular/oblique across joist line(s) "
+                        f"{[round(v, 3) for v in crossed]} — route in a soffit or chase"
+                    )
         for wall in bearing_walls:
             (wx0, wy0), (wx1, wy1) = wall.axis
             wc = ((wx0 + wx1) / 2) if along_x else ((wy0 + wy1) / 2)

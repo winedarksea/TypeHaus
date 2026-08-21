@@ -9,6 +9,7 @@ from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.framing.profiles import cross_section, open_web_opening_m
 from typehaus.resolve.mep import is_parallel_to_floor
 
 
@@ -154,7 +155,13 @@ def duct_direction_hint(ctx: CheckContext) -> list[Finding]:
     for duct in ctx.model.ducts:
         if duct.routing != "joist_bay" or duct.floor_ref not in floors:
             continue
-        if not is_parallel_to_floor(list(duct.path), floors[duct.floor_ref]):
+        floor = floors[duct.floor_ref]
+        if not is_parallel_to_floor(list(duct.path), floor):
+            opening_m = (open_web_opening_m(cross_section(floor.members[0].profile))
+                        if floor.members else None)
+            if opening_m is not None and duct.depth_m <= opening_m + 1e-9:
+                # A truss-floor run through the open webs needs no soffit hint.
+                continue
             out.append(_advisory_fail(
                 "mep.duct_direction_hint",
                 f"duct {duct.tag} runs across joists in JOIST_BAY routing — "

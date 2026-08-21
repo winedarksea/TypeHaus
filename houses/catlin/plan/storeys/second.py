@@ -26,13 +26,10 @@ from typehaus import (
     Beam,
     ControlLayer,
     Door,
-    DeckLayer,
     FloorHeat,
     FloorOpening,
-    FloorSystem,
     FramingSpec,
     HumidityClass,
-    JoistSpec,
     Layer,
     LayerFunction,
     Node,
@@ -707,26 +704,11 @@ STAIR_HANDRAILS = [
     ),
 ]
 
-# Structural deck: 11-7/8" I-joists spanning E-W on the three bearing lines.
-FLOOR = [
-    FloorSystem(uid="CSF603AAAA", tag="FS-SECOND",
-                joists=JoistSpec(member="11.875 I-joist", spacing=inch(16),
-                                 direction="x",
-                                 # BM-M-HALL is the centre line for its 4'-2"; the joists
-                                 # either side of the hall opening hang off it, exactly as
-                                 # FS-ATTIC's do off BM-S-HALL one storey up.
-                                 bearing_refs=("W-M-W2", "W-M-C2", "W-M-E1",
-                                               "BM-M-HALL")),
-                subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=inch(0.75)),
-                # The main floor's ceiling: this deck's underside *is* that ceiling. Until
-                # authored, a whole storey of ceiling gypsum was missing from the order —
-                # nothing else in the plan says a ceiling exists. Plain board, not type X:
-                # R302.13 doesn't reach this floor. Layered ceiling assemblies stay
-                # deferred; the living room's resilient channel rides on it separately as
-                # CR-LIVING-CEIL-RC (plan/assemblies.py).
-                ceiling_below=DeckLayer(material_ref="gwb", thickness=inch(0.625)),
-                openings=("FO-S-STAIR",)),
-]
+# Structural deck: since 2026-08-21 split west/east at x=18' — open-web trusses west
+# (services cross the webs), I-joists east — in params/second_deck.py (SECOND_ELEMENTS,
+# tags FS-S-WEST/FS-S-EAST). Kept empty here rather than deleted so ELEMENTS below is
+# unchanged. Precedent: STACK_SLEEVES in plan/mep_sleeves.py.
+FLOOR = []
 
 # The suite bedroom's four "tudor" posts (plans/TODO.md §Hardwood): custom 6-1/8" square
 # elm timbers standing in W-S-W3's stud line, flush with the drywall plane. Deliberately
@@ -735,16 +717,16 @@ FLOOR = [
 # to top out flush with the 9' plate. y-positions keep >6" clear of both WT-2736 ROs.
 POSTS = [
     Post(uid="CSK901AAAA", tag="P-S-TUDOR1", position=pt(inch(3.5625), ft(10, 8)),
-         size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-SECOND",
+         size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-S-WEST",
          within_wall="W-S-W3", assembly="ELM_TIMBER"),
     Post(uid="CSK902AAAA", tag="P-S-TUDOR2", position=pt(inch(3.5625), ft(15, 4)),
-         size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-SECOND",
+         size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-S-WEST",
          within_wall="W-S-W3", assembly="ELM_TIMBER"),
     Post(uid="CSK903AAAA", tag="P-S-TUDOR3", position=pt(inch(3.5625), ft(17, 4)),
-         size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-SECOND",
+         size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-S-WEST",
          within_wall="W-S-W3", assembly="ELM_TIMBER"),
     Post(uid="CSK904AAAA", tag="P-S-TUDOR4", position=pt(inch(3.5625), ft(21, 4)),
-         size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-SECOND",
+         size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-S-WEST",
          within_wall="W-S-W3", assembly="ELM_TIMBER"),
 ]
 

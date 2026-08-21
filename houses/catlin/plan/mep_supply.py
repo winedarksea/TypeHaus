@@ -228,8 +228,9 @@ SUPPLY = [
 
 # --- The two south-face wall hydrants (2026-08-01) -----------------------------------
 #
-# Both fed from above, out of the second floor's joist space (FS-SECOND, 11 7/8" I-joists),
-# rather than from below: the main-storey exterior wall's stud cavity sits directly over
+# Both fed from above, out of the second floor's joist space (FS-S-WEST since 2026-08-21,
+# 11 7/8" open-web floor trusses), rather than from below: the main-storey exterior wall's
+# stud cavity sits directly over
 # W-B-S1 (12" cast concrete, and W-M-C1/W-B-CS on the centre line), so a riser through
 # SL-M-DECK would surface through the top of a bearing wall. One riser leaves the basement
 # and splits upstairs — one leg into W-M-S1 to the porch hydrant, one into W-S-S1 to the

@@ -109,6 +109,12 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     depth = _member_depth_m(spec.member)
     z1 = storey.elevation.meters
     z0 = z1 - depth
+    # Width of a regular joist AND of one trimmer ply — both are ``spec.member``, so a
+    # doubled trimmer pair's outboard face reaches ``_TRIMMER_PLIES * trimmer_ply_width``
+    # past the opening edge (see the trim_specs loop below). A narrow-flange I-joist never
+    # reaches the next regular joist line; a wide-chord floor truss can (see the position
+    # loop's opening-band check).
+    trimmer_ply_width = cross_section(spec.member).width_m
 
     opening_boxes: list[tuple[FloorOpening, float, float, float, float]] = []
     for opening_tag in system.openings:
@@ -156,7 +162,18 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
             for _opening, minx, maxx, miny, maxy in opening_boxes:
                 opening_perp0, opening_perp1 = (miny, maxy) if along_x else (minx, maxx)
                 opening_axis0, opening_axis1 = (minx, maxx) if along_x else (miny, maxy)
-                if opening_perp0 - 1e-9 <= perp <= opening_perp1 + 1e-9:
+                # A doubled-trimmer band, one on each parallel edge, reaches
+                # ``_TRIMMER_PLIES * trimmer_ply_width`` past the opening edge (trim_specs
+                # below) — a wide-chord member (e.g. a floor truss) can put that band's
+                # outboard face past the *next* regular joist line's centre, which is a real
+                # plan clash (structural.member_interference) rather than a drafting one.
+                # The nearest regular line the band would reach is absorbed into the
+                # trimmer pair instead of being drawn twice.
+                trim_band = _TRIMMER_PLIES * trimmer_ply_width
+                in_opening = opening_perp0 - 1e-9 <= perp <= opening_perp1 + 1e-9
+                in_trim_band = (opening_perp0 - trim_band - 1e-9 <= perp < opening_perp0 - 1e-9
+                               or opening_perp1 + 1e-9 < perp <= opening_perp1 + trim_band + 1e-9)
+                if in_opening or in_trim_band:
                     segments = _subtract_interval(segments, opening_axis0, opening_axis1)
             for segment_index, (segment_a, segment_b) in enumerate(segments):
                 if segment_b - segment_a <= min_segment_m:
@@ -184,7 +201,6 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     # Headers stay *on* the authored opening line: the cut joists are clipped to that line
     # and land on the header, and the trimmer pair's first ply retains its ends there.
     # Only the second trimmer ply moves, and it moves outboard — away from the hole.
-    trimmer_ply_width = cross_section(spec.member).width_m
     for opening, minx, maxx, miny, maxy in opening_boxes:
         edge_specs = (((minx, miny), (minx, maxy)), ((maxx, miny), (maxx, maxy))) if along_x else (
             ((minx, miny), (maxx, miny)), ((minx, maxy), (maxx, maxy)))

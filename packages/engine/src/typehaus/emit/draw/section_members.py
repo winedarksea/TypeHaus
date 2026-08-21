@@ -171,7 +171,7 @@ def _emit_raked_flanges(b, profile, crop, uid, tag, member_profile) -> None:
     if not member_profile or len(profile.outline) < 4:
         return
     section = cross_section(member_profile)
-    if section.shape != "i_joist" or section.flange_thickness_m is None:
+    if section.shape not in ("i_joist", "floor_truss") or section.flange_thickness_m is None:
         return
     us = sorted({round(u, 9) for (u, _z) in profile.outline})
     if len(us) < 2:
@@ -219,7 +219,7 @@ def _member_flange_nodes(u0, u1, z0, z1, profile, uid, tag) -> list:
     from typehaus.resolve.framing.profiles import cross_section
 
     section = cross_section(profile)
-    if section.shape != "i_joist" or section.flange_thickness_m is None:
+    if section.shape not in ("i_joist", "floor_truss") or section.flange_thickness_m is None:
         return []
     ft = section.flange_thickness_m
     if (z1 - z0) <= 2.2 * ft:

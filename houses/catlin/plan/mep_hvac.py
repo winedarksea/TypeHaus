@@ -4,11 +4,15 @@
 # Split out of the old 2,515-line plan/mep.py (AGENTS.md §1.1). Every element below moved
 # verbatim; plan/mep.py still re-exports the storey lists, so the manifest is unchanged.
 #
-# The second-floor ERV trunks run in the FS-SECOND joist bays (11.875" I-joist, 16" o.c.,
-# direction "x"). Bay centers are `8" + n*16"` from the joist-line math in resolve/floors.py; bay
-# 15 (y=20'-8") and bay 17 (y=23'-4") are both clear of the stair FloorOpening (x:11'-18',
-# y:25'-36') and both cross the central bearing wall at x=18'. The terminals on these trunks are
-# in plan/mep_registers.py.
+# The second-floor ERV trunks run in the second floor's joist bays — since 2026-08-21 that
+# deck is split at x=18' (FS-S-WEST: 11.875" floor truss; FS-S-EAST: 11.875" I-joist, same
+# depth, both 16" o.c., direction "x"), and each trunk's `floor_ref` names FS-S-WEST since
+# every trunk starts at x=4' — the resolver validates each segment against whichever half
+# its midpoint falls in, so the crossing at x=18' still resolves. Bay centers are
+# `8" + n*16"` from the joist-line math in resolve/floors.py; bay 15 (y=20'-8") and bay 17
+# (y=23'-4") are both clear of the stair FloorOpening (x:11'-18', y:25'-36') and both cross
+# the central bearing wall at x=18'. The terminals on these trunks are in
+# plan/mep_registers.py.
 
 from typehaus import (
     ClearancePolicy,
@@ -189,13 +193,13 @@ EQUIPMENT_TYPES = (
                   source="EG4 PowerPro WallMount Indoor 14.3 kWh (LFP), UL 9540 listed. Capacity is nameplate; the autonomy calc applies its own depth of discharge (takeoff/backup_calc.py)."),
 )
 
-# --- Ventilation: ERV fresh-air / stale-air trunks in the FS-SECOND joist bays -------
+# --- Ventilation: ERV fresh-air / stale-air trunks in the second-floor joist bays ----
 # Ventilation trunks (EQ-B-ERV), not heating ducts. Sized to ASHRAE 62.2, not furnace CFM:
 # 0.03 x 5,115 ft2 + 7.5 x 6 = 198 cfm required, 210 cfm on the machine (2026-08-01) — at
 # 10"x6" that's ~505 fpm, quiet enough to run continuously (vs. the ~4x oversized 12"x8"/
 # 14"x8" furnace trunks they replaced). Balanced pair = ERV SUPPLY/RETURN; dedicated stale
 # pulls (hall-bath shower) use EXHAUST. Reaches all four storeys via joist-bay routing
-# (FS-SECOND, FS-ATTIC) dropping to CHASE routing in the basement under SL-M-DECK.
+# (FS-S-WEST/FS-S-EAST, FS-ATTIC) dropping to CHASE routing in the basement under SL-M-DECK.
 DUCTS = [
     # DU-M-ERV-SUP is gone (2026-07-29): the second storey now takes fresh air off System 1's
     # chase (REG-S-HP-BED1/2/3 on DU-S-HP-SUP, suite on DU-S-HP-SUITE) and returns stale air
@@ -203,7 +207,7 @@ DUCTS = [
     # is deleted, not stubbed. Main storey's own pair is DU-M1-ERV-SUP/RET below.
     DuctRun(uid="CMD902AAAA", tag="DU-M-ERV-RET", system=DuctSystem.RETURN,
            path=(pt(ft(4), ft(23, 4)), pt(ft(32), ft(23, 4))), width=inch(10), depth=inch(6),
-           routing=DuctRouting.JOIST_BAY, floor_ref="FS-SECOND"),
+           routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST"),
     # Hall bath shower exhaust: a dedicated stale pull in the FS-ATTIC joist bay centred at
     # y=32'-8" (8" + 24*16"), right over FX-S-BATH1-SH at (5', 33'). It crosses the
     # SL-D-SHOWER cut plane (x=5', plan/views.py) inside the shower's reach, which is what
@@ -219,10 +223,10 @@ DUCTS = [
 DUCTS_MAIN = [
     DuctRun(uid="CMDV01AAAA", tag="DU-M1-ERV-SUP", system=DuctSystem.SUPPLY,
            path=(pt(ft(4), ft(12, 8)), pt(ft(32), ft(12, 8))), width=inch(8), depth=inch(6),
-           routing=DuctRouting.JOIST_BAY, floor_ref="FS-SECOND"),
+           routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST"),
     DuctRun(uid="CMDV02AAAA", tag="DU-M1-ERV-RET", system=DuctSystem.RETURN,
            path=(pt(ft(4), ft(15, 4)), pt(ft(32), ft(15, 4))), width=inch(8), depth=inch(6),
-           routing=DuctRouting.JOIST_BAY, floor_ref="FS-SECOND"),
+           routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST"),
 ]
 
 # Basement trunks leave EQ-B-ERV in the furnace room and run exposed-in-chase under the

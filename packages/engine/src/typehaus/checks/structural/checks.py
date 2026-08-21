@@ -16,6 +16,11 @@ from typehaus.resolve.site_earth import site_grade_elevation_m
 _IJOIST_SPAN_FT: dict[str, float] = {
     "9.5 I-joist": 15.0,
     "11.875 I-joist": 18.5,
+    # Same-depth open-web truss, same row: the fabricator's own span table governs at
+    # 18'-0" (near the edge of published 11 7/8" open-web tables at L/480 vs the
+    # I-joist's L/360), but this table is explicitly advisory, so borrowing the
+    # I-joist number here is the honest placeholder until a fabricator table replaces it.
+    "11.875 floor truss": 18.5,
     "14 I-joist": 22.0,
     "16 I-joist": 25.0,
     "2x6": 9.9,

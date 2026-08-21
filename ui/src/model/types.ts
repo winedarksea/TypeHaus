@@ -57,7 +57,10 @@ export interface Layer {
 // narrow face of a joist/rafter along its span. depth_m is always the "wide" face —
 // 3.5"+ through a wall, or the vertical depth of a joist/rafter/beam. Holds regardless
 // of the member's plan orientation, including "i_joist" (there width_m is flange width).
-export type MemberShape = "rect" | "i_joist";
+// "floor_truss" is an open-web member: it reuses the same flange_*/web_thickness_m
+// fields for its chords deliberately, so every "two lines inboard of the edges"
+// consumer (2D section, this inspector) works unchanged.
+export type MemberShape = "rect" | "i_joist" | "floor_truss";
 
 export interface MemberSeat {
   plate_top_z_m: number;
@@ -94,9 +97,9 @@ export interface Member {
   shape: MemberShape;
   width_m: number;
   depth_m: number;
-  flange_width_m: number | null; // i_joist only
-  flange_thickness_m: number | null; // i_joist only
-  web_thickness_m: number | null; // i_joist only
+  flange_width_m: number | null; // i_joist / floor_truss only
+  flange_thickness_m: number | null; // i_joist / floor_truss only
+  web_thickness_m: number | null; // i_joist / floor_truss only
   plies: number;
   // Plan-frame axis a vertical member (p0 == p1) is oriented along, e.g. a stud's wall
   // direction — null for horizontal/sloped members, which carry their own axis in p0->p1.

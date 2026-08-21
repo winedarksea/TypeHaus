@@ -61,7 +61,7 @@ def test_floor_joist_counts_match_old_model(catlin_model):
     """Old: positions = size/spacing + 1 (both ends), two 18' spans per floor."""
     expected_positions = int(round(HOUSE_SIZE_FT * 12.0 / FRAMING_SPACING_IN)) + 1
     expected_pair_count = expected_positions * 2
-    for tag in ("FS-SECOND", "FS-ATTIC"):
+    for tag in ("FS-ATTIC",):
         floor = next(f for f in catlin_model.floors if f.tag == tag)
         joists = [m for m in floor.members if m.category == "joist"]
         assert len(joists) == expected_pair_count, tag
@@ -69,10 +69,30 @@ def test_floor_joist_counts_match_old_model(catlin_model):
         # clipped at its framed edge rather than running through the stairwell.
         spans = {round(m.length_m / ft(1).meters, 3) for m in joists}
         assert GRID_FT in spans
-        if tag == "FS-SECOND":
-            # FO-S-STAIR is drawn to the finished well, so the clip lands on W-M-STRW's
-            # stair-side face at x=10'-3 3/8" rather than on its centreline.
-            assert 10.281 in spans
+
+    # Since 2026-08-21 the second floor is FS-S-WEST/FS-S-EAST, not one whole-floor
+    # FS-SECOND: each half spans only 18' (one bearing pair, not two), so each has
+    # ``expected_positions`` joists rather than ``expected_pair_count`` of them.
+    west = next(f for f in catlin_model.floors if f.tag == "FS-S-WEST")
+    east = next(f for f in catlin_model.floors if f.tag == "FS-S-EAST")
+    west_joists = [m for m in west.members if m.category == "joist"]
+    east_joists = [m for m in east.members if m.category == "joist"]
+    assert len(west_joists) == expected_positions
+    assert len(east_joists) == expected_positions
+    east_spans = {round(m.length_m / ft(1).meters, 3) for m in east_joists}
+    assert east_spans == {GRID_FT}
+    west_spans = {round(m.length_m / ft(1).meters, 3) for m in west_joists}
+    assert GRID_FT in west_spans
+    # FO-S-STAIR is drawn to the finished well, so the clip lands on W-M-STRW's
+    # stair-side face at x=10'-3 3/8" rather than on its centreline. 8 lines clip here,
+    # not the 7 that only cross the opening's own y-range: the doubled trimmer pair
+    # along the opening's long edge (a floor truss's 3 1/2" chord is wider than an
+    # I-joist's 2 1/2" flange at this depth) reaches past the opening into the next
+    # regular joist line's own footprint, so that line is clipped too rather than left
+    # to interpenetrate the trimmer (structural.member_interference).
+    assert 10.281 in west_spans
+    assert sum(1 for s in (round(m.length_m / ft(1).meters, 3) for m in west_joists)
+              if s == 10.281) == 8
 
 
 def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables():
@@ -427,8 +447,12 @@ def test_attic_to_roof_walls_frame_with_raked_studs_and_plates(catlin_model):
 
 
 def test_floors_get_two_rim_boards_at_the_outer_bearing_lines(catlin_model):
-    """WP3: rim (band) joists cap the deck ends, one per outermost bearing line."""
-    for tag in ("FS-SECOND", "FS-ATTIC"):
+    """WP3: rim (band) joists cap the deck ends, one per outermost bearing line.
+
+    Since 2026-08-21 the second floor is two systems (FS-S-WEST/FS-S-EAST), so it
+    carries four rims across the storey rather than FS-SECOND's two.
+    """
+    for tag in ("FS-S-WEST", "FS-S-EAST", "FS-ATTIC"):
         floor = next(f for f in catlin_model.floors if f.tag == tag)
         rims = [m for m in floor.members if m.category == "rim"]
         assert len(rims) == 2, tag

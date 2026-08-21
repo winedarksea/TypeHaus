@@ -183,6 +183,12 @@
 # "1.5x5.5 panel" =    # 112 LF — SPF fascia, billed in [edge_trim]
 "1.5x6 rim" = { material = { low = 0.95, high = 1.55 }, labour = { low = 0.9, high = 1.7 } }  # 80 LF
 "11.875 I-joist" = { material = { low = 3.5, high = 5.5 }, labour = { low = 0.9, high = 1.9 } }  # 4580 LF — grew ~756 LF on 2026-08-21 with FS-M-WEST/FS-M-EAST
+# PLACEHOLDER, 2026-08-21 — no fabricator quote yet, confirm before treating the takeoff
+# delta as meaningful. FS-S-WEST's open-web trimmable trusses, same 11 7/8" depth as the
+# I-joist row above. Material above the I-joist's $3.50-5.50 (fabricated open-web at this
+# depth costs more per foot); labour *below* it (no web-hole layout on site, faster to
+# hang than an I-joist that still needs blocking/hole-boring for services).
+"11.875 floor truss" = { material = { low = 6.0, high = 9.0 }, labour = { low = 0.8, high = 1.6 } }
 # "12x4 panel" =    # 66 LF — ridge_cap, billed in [edge_trim]
 # "13.625x0.5 panel" =    # 112 LF — PVC soffit, billed in [edge_trim]
 # 1x4 furring/strapping is not in the 2026-08-07 sweep above — it had no members to
@@ -247,7 +253,8 @@
 # it blank a second time, this is the sheet-EQUIVALENT — 32 SF at the $4-10/SF material
 # price of capped composite board. It is a unit conversion, not a product you can order.
 "composite-deck" = { material = { low = 130, high = 320 }, labour = { low = 128, high = 288 } }  # 6 sheets
-# Ceiling gypsum (FS-SECOND's `ceiling_below`), by the sheet. Distinct from the
+# Ceiling gypsum (FS-S-WEST/FS-S-EAST's `ceiling_below`, since 2026-08-21's truss/I-joist
+# split — FS-SECOND before that), by the sheet. Distinct from the
 # `[envelope_layers]` "gwb" row, which is wall lining priced by the net SF.
 "gwb" = { material = { low = 17, high = 26 }, labour = { low = 48, high = 85 } }  # 64 sheets — +25 with the basement ceiling (2026-08-21)
 "plywood-subfloor" = { material = { low = 42, high = 62 }, labour = { low = 18, high = 32 } }  # 104 sheets — +26 with the two new decks (2026-08-21)

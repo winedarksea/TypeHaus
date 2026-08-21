@@ -45,6 +45,8 @@ _RE_RIM = re.compile(r"^(?P<width>\d+(?:\.\d+)?)x(?P<depth>\d+(?:\.\d+)?)\s+rim$
 # ``width_m`` is the platform width (so it renders full-width, not as a 1.5" strip).
 _RE_DECK = re.compile(r"^deck\s+(?P<width>\d+(?:\.\d+)?)x(?P<depth>\d+(?:\.\d+)?)$")
 _RE_IJOIST = re.compile(r"^(?P<depth>\d+(?:\.\d+)?)\s+I-joist$")
+# Open-web trimmable floor truss, fabricated to depth: "11.875 floor truss".
+_RE_FLOOR_TRUSS = re.compile(r"^(?P<depth>\d+(?:\.\d+)?)\s+floor truss$")
 _RE_MULTI_NOMINAL = re.compile(r"^(?P<plies>\d+)-(?P<nominal>\d+x\d+)$")
 _RE_NOMINAL = re.compile(r"^\d+x\d+$")
 # Actual (already-milled) rectangular dimensions, e.g. a custom 6.125x6.125 timber post.
@@ -161,6 +163,19 @@ def cross_section(profile: str) -> CrossSection:
             flange_thickness_m=inch(1.375).meters, web_thickness_m=inch(0.375).meters,
         )
 
+    if match := _RE_FLOOR_TRUSS.match(text):
+        depth_in = float(match["depth"])
+        # Chords reuse the i_joist "flange_*" fields deliberately: every existing
+        # consumer of "two lines inboard of the edges" (section drawing, the UI
+        # inspector) works unchanged. width_m/flange_width_m are the 2x4-flat chord's
+        # 3 1/2" wide face; flange_thickness_m/web_thickness_m are the chord's 1 1/2"
+        # depth, which is also what open_web_opening_m subtracts twice.
+        return CrossSection(
+            shape="floor_truss", width_m=inch(3.5).meters,
+            depth_m=inch(depth_in).meters, flange_width_m=inch(3.5).meters,
+            flange_thickness_m=inch(1.5).meters, web_thickness_m=inch(1.5).meters,
+        )
+
     if match := _RE_MULTI_NOMINAL.match(text):
         plies = int(match["plies"])
         thickness_in, depth_in = LUMBER_ACTUAL.get(match["nominal"], _FALLBACK_ACTUAL_IN)
@@ -204,3 +219,14 @@ def truss_chord_depth_m(spec: FramingSpec) -> float:
     one — hosting it there put a cycle between them one import-order change away.
     """
     return cross_section(spec.chord_member or spec.member).depth_m
+
+
+def open_web_opening_m(section: CrossSection) -> float | None:
+    """Clear chord-to-chord opening of an open-web member; None if it has no web space.
+
+    The single place the 8 7/8" number (11 7/8" depth minus two 1 1/2" chords) is
+    derived. Nothing else may restate it.
+    """
+    if section.shape != "floor_truss" or section.flange_thickness_m is None:
+        return None
+    return section.depth_m - 2 * section.flange_thickness_m

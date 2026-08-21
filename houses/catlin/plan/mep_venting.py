@@ -61,7 +61,8 @@ VENT_BRANCHES_MAIN = [
     # (33'-5".."34'-7") and, one storey up, WIN-S-HALL-N's RO (26'-9".."29'-3" since the
     # 2026-07-30 facade pass stacked it on WIN-M-KITCH's column) — rather than
     # x=30'-7" under the sink itself, which sits inside two stacked window ROs. From there it
-    # turns west in the same FS-SECOND joist bay as before, y=24'-8" (bays are 8"+n*16"; this
+    # turns west in the same joist bay as before (FS-S-EAST here, FS-S-WEST once it crosses
+    # x=18'), y=24'-8" (bays are 8"+n*16"; this
     # one passes south of FO-S-STAIR, which starts at y=25'-2 3/8", and north of both trunk
     # ducts at 20'-8" and 23'-4"), then north to the shared radon/vent chase at (1', 34'-6").
     # It rises 6" over its length so condensate drains back to the fixture.

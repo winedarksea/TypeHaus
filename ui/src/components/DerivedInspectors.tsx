@@ -145,6 +145,10 @@ function sectionSummary(located: LocatedMember): string {
   if (member.shape === "i_joist" && member.flange_width_m != null) {
     return `I-joist ${formatFtIn(member.flange_width_m)} flange × ${formatFtIn(member.z1_m - member.z0_m)}`;
   }
+  if (member.shape === "floor_truss" && member.flange_thickness_m != null) {
+    const opening = member.depth_m - 2 * member.flange_thickness_m;
+    return `Floor truss ${formatFtIn(member.depth_m)} deep, ${formatFtIn(opening)} chord-to-chord opening`;
+  }
   const plies = member.plies > 1 ? ` (${member.plies} ply)` : "";
   return `${formatFtIn(member.width_m)} × ${formatFtIn(member.depth_m)}${plies}`;
 }
