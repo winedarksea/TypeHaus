@@ -64,10 +64,19 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
 
 
 def _layer_json(layer) -> dict[str, Any]:
+    """One resolved layer, including its band when it has one.
+
+    ``z0_m``/``z1_m`` are ``Layer.extent`` resolved to absolute elevations — null on the
+    full-height layers that are almost all of them. The viewer needs them for the same
+    reason the glTF emitter and the takeoff do: a banded layer covers part of the wall,
+    and drawing it full height puts a protection panel over nine feet of buried foam, or
+    stacks three brick colours on top of each other in one place.
+    """
     return {"name": layer.name, "material": layer.material_ref, "function": layer.function,
             "thickness_m": layer.thickness_m, "polygon": [list(point) for point in layer.polygon],
             "control": sorted(layer.control),
-            "is_cavity": layer.is_cavity, "cavity_host": layer.cavity_host}
+            "is_cavity": layer.is_cavity, "cavity_host": layer.cavity_host,
+            "z0_m": layer.z0_m, "z1_m": layer.z1_m}
 
 
 def _findings_json(findings: list[Finding] | None) -> list[dict[str, Any]]:

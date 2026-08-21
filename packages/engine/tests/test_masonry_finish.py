@@ -119,13 +119,21 @@ def test_basement_veneer_brick_faces_the_garden() -> None:
     model, _ = resolve(load_plan(CATLIN).plan)
     wall = model.wall("W-B-BRICK")
     assert wall is not None, "W-B-BRICK missing from the resolved model"
-    layers = {ly.name: ly for ly in wall.depth_layers()}
-    assert set(layers) == {"air-gap", "brick"}
-    gap_y = _centroid(layers["air-gap"].polygon)[1]
-    brick_y = _centroid(layers["brick"].polygon)[1]
-    assert brick_y < gap_y, "the brick must sit outboard (south) of the cavity"
-    # And clear of the wall it faces: CATLIN_BASEMENT_12's parge ends at -4.55".
-    assert max(p[1] for p in layers["brick"].polygon) <= inch(-4.55).meters + 1e-9
+    # Five brick regions since the Ishtar scheme (2026-08-20), but ONE wythe: they share a
+    # `Layer.slot`, so `depth_layers()` returns the air gap and the first region only, and
+    # every region sits on that region's strip. Direction is what this test is about, so it
+    # checks all of them — a slot that resolved its regions to different strips would build
+    # the plinth into the concrete and the field into the garden.
+    depth = {ly.name: ly for ly in wall.depth_layers()}
+    assert set(depth) == {"air-gap", "brick-plinth"}
+    gap_y = _centroid(depth["air-gap"].polygon)[1]
+    bricks = [ly for ly in wall.layers if ly.name.startswith("brick-")]
+    assert len(bricks) == 5, "plinth, two registers and the field in two parts"
+    for brick in bricks:
+        assert _centroid(brick.polygon)[1] < gap_y, \
+            f"{brick.name} must sit outboard (south) of the cavity"
+        # And clear of the wall it faces: CATLIN_BASEMENT_12's parge ends at -4.55".
+        assert max(p[1] for p in brick.polygon) <= inch(-4.55).meters + 1e-9
 
 
 # --- the guard itself, on a minimal two-wall corner -----------------------------------

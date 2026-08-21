@@ -25,6 +25,14 @@ ROLE_COIL_STRAP = "coil_strap"
 ROLE_POST_BASE = "post_base"
 ROLE_HURRICANE_TIE = "hurricane_tie"
 ROLE_STANDING_SEAM_CLAMP = "standing_seam_clamp"
+# The two profile-specific seam clamps. Their own roles, and keyed on the PANEL PROFILE
+# rather than on what they are for, because the profile is what decides the part: an S-5-S
+# will not close on a nail-strip bulb and an S-5-N will not close on a snap-lock leg. A house
+# clad in more than one profile therefore needs more than one clamp on the shelf, and
+# ``hardware_for_role`` holds exactly one product per role — which is the same reason
+# ROLE_PV_SEAM_CLAMP exists below.
+ROLE_SNAP_LOCK_SEAM_CLAMP = "snap_lock_seam_clamp"
+ROLE_NAIL_STRIP_SEAM_CLAMP = "nail_strip_seam_clamp"
 # The PV mounting kit is its own role: hardware_for_role demands one product per role,
 # and the plain S-5! clamp (vent riser, exterior boxes) must keep serving its own.
 ROLE_PV_SEAM_CLAMP = "pv_seam_clamp"

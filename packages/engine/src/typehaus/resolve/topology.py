@@ -53,16 +53,40 @@ def _cavity_host(layers: list, index: int) -> int | None:
     return None
 
 
+def _slot_host(layers: list, index: int) -> int | None:
+    """Index of the first layer of this layer's split row, or None if it is that layer.
+
+    Layers naming the same ``Layer.slot`` are the regions of one row of the stack (a brick
+    plinth under a different brick field, a parge below grade under a panel above it). They
+    occupy ONE depth position between them, so every member after the first adds no depth
+    and borrows the first's strip — mechanically the same trick ``_cavity_host`` plays, for
+    a different reason. Returns None for an unslotted layer and for the slot's own first
+    member, both of which pay their thickness normally.
+    """
+    slot = getattr(layers[index], "slot", None)
+    if slot is None:
+        return None
+    for j in range(index):
+        if getattr(layers[j], "slot", None) == slot:
+            return j
+    return None
+
+
 def _added_thicknesses(layers: list) -> list[tuple[object, float, bool]]:
     """Per layer: (layer, added_thickness_m, is_cavity).
 
     Cavity insulation — whether the modern ``Layer.cavity`` (which is not a list entry at
     all) or a legacy sibling batt layer — occupies the framing bays and adds no wall depth.
+    Neither does a non-first member of a ``Layer.slot``: it is another region of a row the
+    first member already paid for. It is not flagged as a cavity, because it is not one —
+    ``ResolvedLayer.cavity_of`` means "fills that layer's framing bays" and a split row
+    fills nothing.
     """
     out: list[tuple[object, float, bool]] = []
     for i, layer in enumerate(layers):
         cavity = _cavity_host(layers, i) is not None
-        out.append((layer, 0.0 if cavity else layer.thickness.meters, cavity))
+        shares = cavity or _slot_host(layers, i) is not None
+        out.append((layer, 0.0 if shares else layer.thickness.meters, cavity))
     return out
 
 
@@ -206,10 +230,15 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
     layers: list[ResolvedLayer] = []
     for index, (layer, _add_t, cavity) in enumerate(added):
         host_index = _cavity_host(stack, index) if cavity else None
+        slot_index = None if cavity else _slot_host(stack, index)
         if host_index is not None:
             # Share the host structure layer's strip, inset from its interior face.
             host_in, _host_out = spans[host_index]
             span_in, span_out = host_in, host_in + layer.thickness.meters
+        elif slot_index is not None:
+            # Another region of the same row: the identical strip, at a different elevation.
+            # ``spans[index]`` is zero-width for it, because it added no depth.
+            span_in, span_out = spans[slot_index]
         else:
             span_in, span_out = spans[index]
         host_name = stack[host_index].name if host_index is not None else None
@@ -226,6 +255,7 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                 cavity_host=host_name,
                 z0_m=band_z0,
                 z1_m=band_z1,
+                slot=getattr(layer, "slot", None),
             )
         )
         fill = getattr(layer, "cavity", None)

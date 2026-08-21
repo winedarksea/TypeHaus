@@ -24,10 +24,10 @@ from typehaus.resolve.framing.profiles import cross_section
 
 # 4:12. Roof-stack offsets are perpendicular to the slope; elevations are vertical.
 SLOPE_FACTOR = math.hypot(1.0, 4.0 / 12.0)
-#: Roof furring underside, the bottom of the eave-to-ridge vent channel.
-VENT_SLOT_IN = 7.25 * SLOPE_FACTOR
+#: Top-deck surface — the plane the drip flashing lies on and the underlayment laps over.
+DRIP_CEILING_IN = 7.165 * SLOPE_FACTOR
 #: Roofing underside == the head of the wall cladding on a continuous-skin edge.
-CLADDING_HEAD_IN = 8.0 * SLOPE_FACTOR
+CLADDING_HEAD_IN = 7.475 * SLOPE_FACTOR
 
 
 @pytest.fixture(scope="module")
@@ -163,14 +163,18 @@ def test_the_drip_throws_water_into_the_middle_of_the_trough(eave) -> None:
     assert turn_down[2] > bottom[3], "but stops above the floor, so it cannot dam the flow"
 
 
-def test_nothing_dams_the_eave_end_of_the_roofs_vent_channel(eave) -> None:
-    """The roof breathes eave→ridge through its batten gap; the trim below must stay clear.
+def test_nothing_in_the_chain_stands_proud_of_the_roofs_top_deck(eave) -> None:
+    """The drip flashing lies ON the top deck and the underlayment laps OVER it.
 
     This is the constraint that stops the gutter simply being raised until every lap is
-    comfortable: the rim has a ceiling, and it is the furring underside.
+    comfortable: the rim has a ceiling. Until 2026-08-20 that ceiling was the batten
+    cavity's underside and the rule was "do not dam the vent slot"; the roof is a screwed
+    nailbase now, and the ceiling is the top deck's own surface. Anything standing above it
+    lifts the underlayment off the deck it has to bond to, which is the same failure wearing
+    different clothes.
     """
     for tag in ("TR-RF-GUTTER-E-1-BACK", "TR-RF-DRIP-E-1-LAP"):
-        assert eave.solid(tag)[3] < VENT_SLOT_IN, f"{tag} blocks the eave vent slot"
+        assert eave.solid(tag)[3] < DRIP_CEILING_IN, f"{tag} stands proud of the top deck"
 
 
 def test_each_eave_drains_to_a_leader_that_reaches_grade(catlin_model, eave) -> None:

@@ -214,6 +214,11 @@ _SEAM_BASE = "#e8e8e2"          # Panel3D.tsx createStandingSeamMaterial base (0
 _CMU_BASE = "#9c988f"           # materials.ts CMU_STYLE.base
 _WHITE_BRICK_BASE = "#e9e6df"   # materials.ts WHITE_BRICK_STYLE.base
 _GLAZED_GREEN_BRICK_BASE = "#1b4332"  # materials.ts GLAZED_GREEN_BRICK_STYLE.base
+# The Ishtar scheme on the sunken garden's veneer (2026-08-20) — materials.ts
+# GLAZED_LAPIS_BRICK_STYLE / GLAZED_GOLD_BRICK_STYLE / BROWN_BRICK_STYLE .base.
+_GLAZED_LAPIS_BRICK_BASE = "#10386a"
+_GLAZED_GOLD_BRICK_BASE = "#c08a12"
+_BROWN_BRICK_BASE = "#654c3a"
 _DECK_BOARD_BASE = "#b9bcc0"    # materials.ts ALUMINUM_DECK_BASE_COLOR (0xb9bcc0)
 
 _EXTERIOR_DARK = "#1c1f24"      # the house's one exterior dark; see window_trim above
@@ -223,6 +228,9 @@ _FINISH_BASE: dict[str, str] = {
     "cmu": _CMU_BASE,
     "white-brick": _WHITE_BRICK_BASE,
     "glazed-green-brick": _GLAZED_GREEN_BRICK_BASE,
+    "glazed-lapis-brick": _GLAZED_LAPIS_BRICK_BASE,
+    "glazed-gold-brick": _GLAZED_GOLD_BRICK_BASE,
+    "brown-brick": _BROWN_BRICK_BASE,
     # Formed edge trim ordered in a second coil colour (Roof.edge_trim_material). Without an
     # entry it falls to the "metal" family's blue-grey, and the accent that makes a
     # zero-overhang rake legible would differ between the .glb and the viewer.

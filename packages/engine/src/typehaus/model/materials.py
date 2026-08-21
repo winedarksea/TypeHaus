@@ -45,6 +45,19 @@ class Material(HausModel):
     # Drawing one is how a sealed slab reads as two floors: the slab, plus a finish plane
     # sitting on the same face (→ TODO "the garage seems to have two floors").
     coating: bool = False
+    # The continuous-skin family this cladding belongs to, where a building wears one skin in
+    # more than one specification. ``resolve.roof_edge_geometry.continuous_skin_cladding`` asks
+    # "do the walls and the roofing read as one unbroken material over a flush edge?", and it
+    # used to answer by comparing material TAGS. That is right until a house splits one skin
+    # into several tags for a reason that has nothing to do with appearance — seam profile,
+    # gauge, coating — at which point tag equality says "mixed cladding" about panels that a
+    # roofer runs unbroken from grade to ridge, and the flush edge silently reverts to a
+    # fascia-and-drip-edge detail nobody drew.
+    #
+    # Two materials sharing a ``skin_family`` are one skin for that purpose and no other: it
+    # changes no quantity, no price and no building-science number. Leave it None and the old
+    # tag comparison is exactly what happens, so no existing house moves.
+    skin_family: str | None = None
     # Gypsum board grade, where the material *is* gypsum board. Not a general fire-rating
     # field: residential construction has exactly two rated assemblies (the garage/dwelling
     # separation and a dwelling-unit separation), and putting a fire-resistance rating on

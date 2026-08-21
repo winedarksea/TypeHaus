@@ -100,14 +100,47 @@ def test_batten_over_sheathing_is_not_a_structural_screw_condition() -> None:
     assert exterior_insulation_fastening(_RAINSCREEN_OVER_SHEATHING_STACK, FASTENERS) is None
 
 
+def test_a_vented_mat_over_a_nailbase_deck_does_not_steal_the_screw() -> None:
+    """The screws stop at the deck they fasten; the mat above it rides the cladding clips.
+
+    A nailbase roof puts a SHEATHING layer where a vented roof puts its battens, and then
+    rolls a ventilated mat on top of that. Both qualify as fastened layers by function, so
+    the outermost-match rule alone would pick the mat and over-size the screw by the
+    underlayment and the mat. The deck is the last layer whose path back to the foam crosses
+    nothing but membranes, and that is what makes it the screwed one.
+    """
+    stack = [
+        ("structure", 11.875 * M_PER_IN, "rafter"),
+        ("sheathing", 0.5 * M_PER_IN, "zip"),
+        ("membrane", 0.04 * M_PER_IN, "deck-vb"),
+        ("insulation", 3.0 * M_PER_IN, "polyiso-1"),
+        ("insulation", 3.0 * M_PER_IN, "polyiso-2"),
+        ("sheathing", 0.625 * M_PER_IN, "top-deck"),
+        ("membrane", 0.06 * M_PER_IN, "underlayment"),
+        ("airgap", 0.25 * M_PER_IN, "vent-mat"),
+        ("cladding", 0.5 * M_PER_IN, "roofing"),
+    ]
+    roof = exterior_insulation_fastening(stack, FASTENERS)
+    assert roof is not None and roof.fastened_layer == "top-deck"
+    assert roof.required_screw_length_in(FASTENERS) == pytest.approx(7.165 + 1.5, abs=1e-6)
+    _, length_in, part_number = screw_for_required_length(
+        ROLE_EXTERIOR_INSULATION_SCREW, roof.required_screw_length_in(FASTENERS))
+    assert (length_in, part_number) == (10.0, "SDWH191000DB")
+
+
 def test_catlin_bills_wall_and_roof_screws_as_separate_longer_line(catlin_model) -> None:
     rows = [row for row in hardware_takeoff(catlin_model)
             if row["role"] == ROLE_EXTERIOR_INSULATION_SCREW]
     wall = next(row for row in rows if row["scope"] == "exterior wall furring")
-    roof = next(row for row in rows if row["scope"] == "roof battens")
+    roof = next(row for row in rows if row["scope"] == "roof top deck")
 
-    # Same grid, longer screw: the roof carries 6 in of foam to the wall's 4 in.
+    # Same grid, longer screw: the roof carries 6 in of foam to the wall's 4 in, and since
+    # 2026-08-20 the screw also has to reach through the 5/8" nailbase deck it fastens —
+    # 0.625 + 6 + 0.54 = 7.165 in of penetration + 1.5 in of embedment = 8.665 in, so the
+    # 8 in SDWS is short and only the 10 in SDWH reaches. An under-length structural screw
+    # here is the whole roof hanging on 1 in less thread than it was designed for.
     assert wall["size"] == "8 in" and roof["size"] == "10 in"
+    assert roof["part_number"] == "SDWH191000DB"
     assert wall["part_number"] != roof["part_number"]
     assert "16 in o.c." in wall["basis"] and "24 in o.c." in wall["basis"]
     assert "16 in o.c." in roof["basis"] and "24 in o.c." in roof["basis"]

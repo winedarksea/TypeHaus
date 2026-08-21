@@ -44,6 +44,11 @@ class ResolvedLayer:
     # fields, so the fallback lives in exactly one place.
     z0_m: float | None = None
     z1_m: float | None = None
+    # The split row this layer is one region of (``Layer.slot``). Layers sharing a slot are
+    # regions of ONE row: they occupy a single slice of the wall depth between them, so only
+    # the first of them may be counted toward the wall's thickness. ``None`` — every layer
+    # in every assembly authored before slots existed — is a row of its own.
+    slot: str | None = None
 
     def band(self, wall: ResolvedWall) -> tuple[float, float]:
         """This layer's absolute (z0, z1), falling back to the wall's where unbanded."""
@@ -167,11 +172,29 @@ class ResolvedWall:
     @property
     def thickness_m(self) -> float:
         """Total wall depth. Cavity layers sit inside their host and add nothing."""
-        return sum(ly.thickness_m for ly in self.layers if not ly.is_cavity)
+        return sum(ly.thickness_m for ly in self.depth_layers())
 
     def depth_layers(self) -> tuple[ResolvedLayer, ...]:
-        """The layers that occupy their own slice of the wall depth, interior→exterior."""
-        return tuple(ly for ly in self.layers if not ly.is_cavity)
+        """The layers that occupy their own slice of the wall depth, interior→exterior.
+
+        A cavity layer sits inside its host's bays. The second and later regions of a
+        ``Layer.slot`` sit at a different *elevation* in a slice the first region already
+        holds — a brown plinth and a lapis field are one 3 5/8" wythe, not two. Counting
+        them was worth 19" of brick veneer where 3 5/8" stands, which reached far enough
+        past the basement wall for ``code.energy_prescriptive`` to grade the garden's
+        veneer as though it enclosed the sauna.
+        """
+        seen: set[str] = set()
+        out: list[ResolvedLayer] = []
+        for layer in self.layers:
+            if layer.is_cavity:
+                continue
+            if layer.slot is not None:
+                if layer.slot in seen:
+                    continue
+                seen.add(layer.slot)
+            out.append(layer)
+        return tuple(out)
 
 
 @dataclass(frozen=True)

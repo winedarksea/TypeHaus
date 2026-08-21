@@ -7,16 +7,21 @@ import type { Model } from "../model/types";
 // The chrome the two full-width readers share (assembly details, bill of materials). Same
 // focus-mode treatment as the Workbench — canvas dims behind a breadcrumb back — because both
 // are read-and-return surfaces, not inspectors you keep open while editing.
-export function ReaderShell({ title, subtitle, onClose, toolbar, children }: {
+export function ReaderShell({ title, subtitle, onClose, toolbar, children, wide }: {
   title: string;
   subtitle: string;
   onClose: () => void;
   toolbar?: ReactNode;
   children: ReactNode;
+  /** For a reader whose table is wide enough that the shared 1100px cap forces most of its
+   *  columns into a horizontal scroll (the Estimate page's item/trade/block/qty/price/range/
+   *  cost/spread row). Other readers keep the shared width — this is per-reader, not global,
+   *  so a page with fewer columns is not stretched thin for no reason. */
+  wide?: boolean;
 }) {
   return (
     <div className="workbench-backdrop">
-      <div className="workbench" role="dialog" aria-label={title}>
+      <div className={wide ? "workbench workbench-wide" : "workbench"} role="dialog" aria-label={title}>
         <div className="workbench-bread">
           <button className="btn" onClick={onClose} title="Back to canvas"><Icon name="arrow-left" size={18} /> Back</button>
           <span className="workbench-title">{title}</span>

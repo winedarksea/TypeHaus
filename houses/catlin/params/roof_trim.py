@@ -50,12 +50,20 @@ Geometry facts this module derives from (see plan/storeys/attic.py + plan/assemb
   face in **y** as well, which is how far the eave runs have to reach to close the corner;
 - knee-wall plate top at 25'; deck plane (eave_z_m) rides the I-joist rise above it:
   11.875" - 5.5" x 4/12 seat drop (2x6 knee walls) = 10.0417";
-- roof stack above the deck (perpendicular): deck 0.75" + membrane 0.25" -> foam 6" ->
-  roof membrane 0.25" (furring underside at 7.25") -> batten 0.75" -> metal 0.5"; the 4:12
-  slope factor turns those perpendicular offsets into the vertical ones an authored
-  elevation is measured in;
+- roof stack above the deck (perpendicular): zip 0.5" + deck vapour barrier 0.04" -> foam
+  3" + 3" -> top deck 0.625" (top-deck surface at 7.165") -> underlayment 0.06" -> vent mat
+  0.25" -> metal 0.5"; the 4:12 slope factor turns those perpendicular offsets into the
+  vertical ones an authored elevation is measured in;
 - the wall cladding's head lands at the roofing's own underside (MatingFaces with a
-  continuous skin), 8.0" perpendicular above the deck plane.
+  continuous skin), 7.475" perpendicular above the deck plane.
+
+**The batten cavity is gone; a 1/4" vent mat replaced it** (2026-08-20). The roof was a
+vented batten roof and the drip edge's ceiling used to be the batten cavity's underside —
+the chain existed partly to avoid damming that slot. The metal now clips through a thin
+ventilated mat to a top deck screwed straight through the foam, and the ceiling is the top
+deck's own surface instead: the drip flashing lies ON that deck and the underlayment laps
+OVER it, so anything standing proud of it would lift the underlayment off the deck it has
+to bond to. Same chain, a different plane, ~0.55" lower.
 """
 
 from __future__ import annotations
@@ -77,14 +85,17 @@ _EAVE_DECK = _PLATE_TOP + inch(_DECK_RISE_IN)  # deck plane at the eave edge (ea
 
 # The roof stack is offset perpendicular to the slope; an authored elevation is vertical.
 _SLOPE_FACTOR = math.hypot(1.0, 4.0 / 12.0)  # 4:12 -> 1.0541
-_VENT_SLOT_IN = 7.25 * _SLOPE_FACTOR         # 7.64" — roof furring underside, vertical
-_CLADDING_HEAD_IN = 8.0 * _SLOPE_FACTOR      # 8.43" — roofing underside == wall panel heads
+# The top deck's upper surface: the drip flashing lies on it and the underlayment laps over
+# the flashing, so nothing in the chain may stand above this plane or the underlayment
+# cannot bond to the deck it is sealing.
+_DRIP_CEILING_IN = 7.165 * _SLOPE_FACTOR     # 7.55" — top-deck surface, vertical
+_CLADDING_HEAD_IN = 7.475 * _SLOPE_FACTOR    # 7.88" — roofing underside == wall panel heads
 
 # The derived corner trim (resolve/roof_trim.py::_corner_trim_members): 1.25" thick, hung
 # outboard of the footprint edge, with a 2" leg down over the wall panel heads. Its outer
 # face and its lower edge are the two faces everything below registers against.
 _TRIM_FACE_IN = 1.25
-_TRIM_BOTTOM_IN = _CLADDING_HEAD_IN - 2.0    # 6.43" above the deck plane
+_TRIM_BOTTOM_IN = _CLADDING_HEAD_IN - 2.0    # 5.88" above the deck plane
 
 #: The coil the whole chain is ordered in (2026-08-01). The derived corner trim above it is
 #: already `RF-HOUSE.edge_trim_material` — the house's one exterior dark — and the gutter hangs
@@ -103,12 +114,12 @@ _LAP_IN = 0.5
 # 6" of trough, hung with its back sheet tucked a lap *behind* the corner trim's outer face,
 # so the trim's lower leg sheds onto the back sheet rather than past it into the gap. The rim
 # rides a lap above the trim's bottom edge — high enough to make that lap, low enough to
-# leave the eave end of the roof's vent channel open (the rim must stay under _VENT_SLOT_IN,
-# or the gutter dams the channel it is supposed to sit below).
+# stay clear of the top deck (the rim must stay under _DRIP_CEILING_IN, or the gutter lifts
+# the underlayment off the deck it has to bond to).
 _GUTTER_THICK_IN = 6.0                       # channel width, out from the back sheet's face
 _GUTTER_DEPTH = inch(5)                      # channel height
 _GUTTER_BACK_IN = _TRIM_FACE_IN - _LAP_IN    # 0.75" — inner face of the back sheet
-_GUTTER_RIM_IN = _TRIM_BOTTOM_IN + _LAP_IN   # 6.93" above the deck plane
+_GUTTER_RIM_IN = _TRIM_BOTTOM_IN + _LAP_IN   # 6.38" above the deck plane
 
 #: Mid-width of the trough — where a drip wants to land, being the furthest it can be from
 #: both the back sheet and the front lip. The shell closes a half-shell at each side.

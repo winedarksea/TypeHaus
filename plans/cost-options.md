@@ -65,31 +65,45 @@ Rules for this file:
 ## Downgrades (money back)
 
 ### Standing-seam metal roof → architectural asphalt shingle
-`envelope_layers:standing-seam`, 6,322 SF over two rows — **$60,064 – $116,966 → roughly
-$34,800 – $56,900. Saves ~$25,000 – $60,000.**
+The four `envelope_layers` metal rows, 6,322 SF — **$54,777 – $99,331 → roughly
+$34,800 – $56,900. Saves ~$20,000 – $42,400.**
+
+> **Re-based 2026-08-20.** This row used to read $60,064 – $116,966, because one
+> `standing-seam` key billed all 6,322 SF at the mechanically-seamed roof's rate. The skin is
+> now four keys — `standing-seam` (mech seam, house roof), `standing-seam-snaplock` (house
+> walls), `standing-seam-nailstrip` (garage roof) and `standing-seam-nailstrip-26` (garage
+> walls) — and the metal is $5,300 – $17,600 cheaper than the file used to say. **The saving
+> from shingling therefore shrank by the same amount.** See "Metal skin: one rate to four"
+> under *Taken*.
 
 Researched 2026-08-20, and with labour in the file this is now **the largest single lever on
 the list by a wide margin** — bigger than the basement deck. It was in "Not yet priced" until
 this pass; it is priced now.
 
 Standing seam is $12 – $22/SF installed in Minnesota, and the split is **60 – 70% labour**,
-which is why adding labour tripled this line rather than doubling it: panels are often
-roll-formed on site, every clip is placed individually, and the seams are mechanically
-crimped in a separate pass. Architectural asphalt is the opposite — a fast, deeply
+which is why adding labour tripled this line rather than doubling it. But only the house roof
+is mechanically seamed; the walls are snap-lock and the whole garage is nail strip, and those
+are $2 – $6/SF cheaper installed. Architectural asphalt is cheaper again — a fast, deeply
 competitive trade with far more crews bidding it.
 
-| | standing seam | architectural asphalt |
+| | metal skin, as now priced | architectural asphalt |
 |---|---|---|
-| material | $3.50 – $7.50/SF | $1.50 – $3.00/SF |
-| labour | $6.00 – $11.00/SF | $3.50 – $6.00/SF |
-| installed | **$9.50 – $18.50/SF** | **$5.00 – $9.00/SF** |
-| 6,322 SF | **$60,064 – $116,966** | **$31,600 – $56,900** |
+| house roof, mech seam, 1,430 SF | $10.50 – $18.50/SF | |
+| house walls, snap lock, 3,511 SF | $8.75 – $16.00/SF | *(not shinglable)* |
+| garage roof, nail strip, 750 SF | $7.00 – $13.00/SF | |
+| garage walls, 26 ga nail strip, 631 SF | $6.00 – $11.00/SF | *(not shinglable)* |
+| **6,322 SF** | **$54,777 – $99,331** | **$31,600 – $56,900** |
+
+Asphalt is $1.50 – $3.00/SF material and $3.50 – $6.00/SF labour, $5.00 – $9.00 installed.
+Note what the row really compares: only the 2,180 SF of ROOF could ever take a shingle, so
+"shingle the house" is really "shingle 2,180 SF and find a different wall cladding for the
+other 4,143," which is the point the *Cost of the cut* paragraph closes on.
 
 **Three things that move with it and are not in the table:**
-- **The snow-retention hardware goes away.** `hardware:S-5!`, `S-5! ColorGard`, `S-5! CanDuit`
-  and `SS-GASKET-12` are all seam-clamp products that only exist because the roof has seams —
-  roughly **$1,000 – $2,200** of the hardware section. Asphalt needs pad-style guards instead
-  if it needs any, which is cheaper but not free.
+- **The snow-retention and wind hardware goes away.** `hardware:S-5!`, `S-5! ColorGard`,
+  `S-5! CanDuit`, `S-5-S`, `S-5-N` and `SS-GASKET-12` are all seam-clamp products that only
+  exist because the panel has seams — roughly **$1,500 – $3,000** of the hardware section.
+  Asphalt needs pad-style guards instead if it needs any, which is cheaper but not free.
 - **`edge_trim:ridge_cap` and `edge_cladding` change product**, from formed metal to shingle
   ridge. Shingle ridge is $1.50 – $3.50/LF to lay against $4 – $8 for metal.
 - **The PV mounting method changes.** `hardware:S-5-PVKIT` (48 ea) is a *seam* clamp: it
@@ -182,31 +196,45 @@ decision on the list to reverse later — except that you cannot reverse it late
 frame has to go in before the drywall.
 
 ### Standing-seam metal roof → architectural asphalt shingle
-`envelope_layers:standing-seam`, 6,322 SF over two rows — **$60,064 – $116,966 → roughly
-$34,800 – $56,900. Saves ~$25,000 – $60,000.**
+The four `envelope_layers` metal rows, 6,322 SF — **$54,777 – $99,331 → roughly
+$34,800 – $56,900. Saves ~$20,000 – $42,400.**
+
+> **Re-based 2026-08-20.** This row used to read $60,064 – $116,966, because one
+> `standing-seam` key billed all 6,322 SF at the mechanically-seamed roof's rate. The skin is
+> now four keys — `standing-seam` (mech seam, house roof), `standing-seam-snaplock` (house
+> walls), `standing-seam-nailstrip` (garage roof) and `standing-seam-nailstrip-26` (garage
+> walls) — and the metal is $5,300 – $17,600 cheaper than the file used to say. **The saving
+> from shingling therefore shrank by the same amount.** See "Metal skin: one rate to four"
+> under *Taken*.
 
 Researched 2026-08-20, and with labour in the file this is now **the largest single lever on
 the list by a wide margin** — bigger than the basement deck. It was in "Not yet priced" until
 this pass; it is priced now.
 
 Standing seam is $12 – $22/SF installed in Minnesota, and the split is **60 – 70% labour**,
-which is why adding labour tripled this line rather than doubling it: panels are often
-roll-formed on site, every clip is placed individually, and the seams are mechanically
-crimped in a separate pass. Architectural asphalt is the opposite — a fast, deeply
+which is why adding labour tripled this line rather than doubling it. But only the house roof
+is mechanically seamed; the walls are snap-lock and the whole garage is nail strip, and those
+are $2 – $6/SF cheaper installed. Architectural asphalt is cheaper again — a fast, deeply
 competitive trade with far more crews bidding it.
 
-| | standing seam | architectural asphalt |
+| | metal skin, as now priced | architectural asphalt |
 |---|---|---|
-| material | $3.50 – $7.50/SF | $1.50 – $3.00/SF |
-| labour | $6.00 – $11.00/SF | $3.50 – $6.00/SF |
-| installed | **$9.50 – $18.50/SF** | **$5.00 – $9.00/SF** |
-| 6,322 SF | **$60,064 – $116,966** | **$31,600 – $56,900** |
+| house roof, mech seam, 1,430 SF | $10.50 – $18.50/SF | |
+| house walls, snap lock, 3,511 SF | $8.75 – $16.00/SF | *(not shinglable)* |
+| garage roof, nail strip, 750 SF | $7.00 – $13.00/SF | |
+| garage walls, 26 ga nail strip, 631 SF | $6.00 – $11.00/SF | *(not shinglable)* |
+| **6,322 SF** | **$54,777 – $99,331** | **$31,600 – $56,900** |
+
+Asphalt is $1.50 – $3.00/SF material and $3.50 – $6.00/SF labour, $5.00 – $9.00 installed.
+Note what the row really compares: only the 2,180 SF of ROOF could ever take a shingle, so
+"shingle the house" is really "shingle 2,180 SF and find a different wall cladding for the
+other 4,143," which is the point the *Cost of the cut* paragraph closes on.
 
 **Three things that move with it and are not in the table:**
-- **The snow-retention hardware goes away.** `hardware:S-5!`, `S-5! ColorGard`, `S-5! CanDuit`
-  and `SS-GASKET-12` are all seam-clamp products that only exist because the roof has seams —
-  roughly **$1,000 – $2,200** of the hardware section. Asphalt needs pad-style guards instead
-  if it needs any, which is cheaper but not free.
+- **The snow-retention and wind hardware goes away.** `hardware:S-5!`, `S-5! ColorGard`,
+  `S-5! CanDuit`, `S-5-S`, `S-5-N` and `SS-GASKET-12` are all seam-clamp products that only
+  exist because the panel has seams — roughly **$1,500 – $3,000** of the hardware section.
+  Asphalt needs pad-style guards instead if it needs any, which is cheaper but not free.
 - **`edge_trim:ridge_cap` and `edge_cladding` change product**, from formed metal to shingle
   ridge. Shingle ridge is $1.50 – $3.50/LF to lay against $4 – $8 for metal.
 - **The PV mounting method changes.** `hardware:S-5-PVKIT` (48 ea) is a *seam* clamp: it
@@ -415,15 +443,11 @@ ST-S2A is the cheapest finish change in the house per dollar.
 
 **Cost of the cut:** oak treads are a main-stair item you look at every day.
 
-### Garage: rainscreen-drop downgrade (superseded below if full ICF is taken)
-Remove rain screen from cladding (snap lock directly to Zip-R)
-Use snap lock rather than mechanically seamed standing seam for the roof of garage (house roof must remain mechanically seamed)
-
-This is a downgrade of the *current* wood-wall assembly (drops the 0.375" 1x4 rainscreen
-furring under `GARAGE_WALL_2X6`'s standing-seam cladding). It is moot under the full-ICF
-upgrade below — an ICF wall has no furring layer to remove, and the wall cladding changes
-to stucco anyway. The garage roof's snap-lock-vs-mechanically-seamed question is unaffected
-either way and remains open.
+### ~~Garage: rainscreen-drop downgrade~~ — **taken 2026-08-20, see *Taken***
+Both halves of this row were taken: the rainscreen furring is out of `GARAGE_WALL_2X6`, and
+the garage roof left mechanical seaming — for nail strip rather than the snap lock this row
+proposed. It is still moot under the full-ICF upgrade below, which has no furring layer to
+remove and re-clads the wall in stucco anyway.
 
 ### System 3: Gree Sapphire → Vireo/Livo single-zone
 `placeables:EQ-T-GREE-SAPPHIRE-9` + `-OD` — **$2,600 – $3,450 → ~$1,600 – $2,200. Saves
@@ -436,6 +460,57 @@ means giving up backup heat on that zone, or resizing the inverter. Do not treat
 like-for-like $1,000.
 
 ## Taken
+
+### Metal skin: one rate to four, and the garage rainscreen dropped — **done 2026-08-20**
+Measured against the tree immediately before the change:
+**$969,191 – $2,043,414 → $963,261 – $2,022,366. Saved $5,930 – $21,049 at the printed
+total**, of which the metal itself is $5,287 – $17,635 net and the bid ladder multiplies the
+rest.
+
+Two things happened at once and they are separable.
+
+**1. The metal skin was one price key and is now four.** No geometry moved. `standing-seam`
+billed all 6,322 SF at $9.50 – $18.50/SF, which is the mechanically-seamed rate, and only
+1,430 SF of the house is mechanically seamed.
+
+| key | what | SF | installed $/SF | before | after |
+|---|---|---|---|---|---|
+| `standing-seam` | house roof, mech seam, 24 ga | 1,430.3 | $10.50 – $18.50 | $13,588 – $26,461 | **$15,018 – $26,461** |
+| `standing-seam-snaplock` | house walls, 24 ga | 3,511.3 | $8.75 – $16.00 | $33,357 – $64,959 | **$30,724 – $56,181** |
+| `standing-seam-nailstrip` | garage roof, 24 ga | 749.6 | $7.00 – $13.00 | $7,121 – $13,868 | **$5,247 – $9,745** |
+| `standing-seam-nailstrip-26` | garage walls, 26 ga | 631.3 | $6.00 – $11.00 | $5,997 – $11,679 | **$3,788 – $6,944** |
+| | | **6,322.5** | | **$60,064 – $116,966** | **$54,777 – $99,331** |
+
+The house roof went *up* at the low end, and that is the honest half of the correction: the
+old low was under-pricing a seamed roof. Everything else came down.
+
+**What actually differs between the four is LABOUR, not looks** — same white 24 ga PVDF steel
+on three of the four. Mechanical seaming makes a second powered pass down every seam
+(+$1.50 – $3.00/SF, ~+50% crew hours, plus $350 – $650/week for a seamer and $250 – $450
+freight each way). Snap-lock engages by hand. Nail strip has no clips at all — an integral
+flange is face-fastened and the next panel's leg snaps over it — which is the fastest and
+cheapest standing seam there is, and is confined to the garage because face-fastening
+restricts thermal movement and wants short runs.
+
+**2. The garage lost its rainscreen and dropped a gauge.** Nail strip face-fastens straight
+onto Zip-R's taped drainable face, so the 0.375" 1x4 vertical furring is gone
+(`framing:0.375x0.375 panel`, 108 LF, now zero — the price row is commented out rather than
+deleted). The garage wall panel also went 24 ga → 26 ga, a published $0.80 – $1.10/SF off
+material with labour modelled gauge-neutral.
+
+**Bought back, and it is small:** 76 modeled S-5! wind-mitigation clamps
+(`plan/wind_clamps.py`) at the house wall corners, the garage wall corners and the garage
+roof corners — 48 `S-5-S` and 28 `S-5-N`, **$468 – $772**. They are *not* the S-5! WindClamp
+at $3 a piece; that line fits commercial trapezoidal profiles only and will not go on a
+residential snap-lock or nail-strip seam. The main house roof gets none: a mechanically
+folded seam is already the strongest uplift connection in the catalogue.
+
+**Cost of the cut:** on the garage, three real ones and all confined to a detached
+outbuilding — 26 ga oil-cans more visibly than 24 ga on a flat wall (specify a striated pan),
+a nail-strip panel is face-fastened so it is a shorter-lived and less movement-tolerant
+system than a clipped one, and dropping the rainscreen means the wall's drying now depends
+entirely on Zip-R's taped face being detailed correctly. None of the three is proposed for
+the house.
 
 ### Sunken-garden arch → column, beams and a metal railing — **done 2026-08-18**
 Measured against the tree immediately before the change, not estimated:
@@ -638,9 +713,15 @@ them yet; adjust when it does) — net wall face ≈ **600 SF**.
 | **Removed** | | | | | |
 | `envelope_layers` | `zip-r` sheathing | 600 SF | $2.2–4.2/SF | $1,320 | $2,520 |
 | `envelope_layers` | `mineral-wool` cavity fill | 600 SF | $1.1–2/SF | $660 | $1,200 |
-| `envelope_layers` | `standing-seam` wall cladding | 600 SF | $2.5–6/SF | $1,500 | $3,600 |
-| **Removed subtotal** | | | | **$3,480** | **$7,320** |
-| **Net delta (envelope + structure)** | | | | **$5,640** | **$10,940** |
+| `envelope_layers` | `standing-seam-nailstrip-26` wall cladding | 600 SF | $6–11/SF installed | $3,600 | $6,600 |
+| **Removed subtotal** | | | | **$5,580** | **$10,320** |
+| **Net delta (envelope + structure)** | | | | **$3,540** | **$7,940** |
+
+*(Re-based 2026-08-20: the cladding row was on the old materials-only `standing-seam` rate.
+It is now the garage's own `standing-seam-nailstrip-26` key at an installed rate, which is
+what makes the ICF swap $2,100 – $3,000 cheaper than this table used to say. The garage's
+rainscreen furring was also dropped that day, so the "unquantified framing-removal saving"
+noted below is now smaller than it was — the furring half of it is already banked.)*
 
 The 2x6 stud framing and the 1x4 rainscreen furring being removed have no dedicated
 $/SF rate in `prices.toml` (framing is billed by member/BF elsewhere in the house, not
@@ -693,7 +774,7 @@ strips, a labor detail with no sourced $/SF delta (see below).
   regardless of what the wall below is built from) and clad by the wall→roof closure in
   `resolve/roof_edge.py`, which needs its own small cladding source — OSB + snap-lock
   standing seam — once the wall below has no sheathing/cladding layers of its own to extend
-  upward. This is exactly why the gable ends keep standing-seam cladding under full ICF: it
+  upward. This is exactly why the gable ends keep nail-strip cladding under full ICF: it
   was never derived from the wall, only from the truss.
 
 **What you get, not captured in the dollar figures above:** meaningfully better fire
@@ -707,7 +788,7 @@ energy, say so; it changes which end of the range is worth paying for.
 ### Garage: CMU block wall with exterior Zip-R (third wall-system option)
 `wall_structure:GARAGE_CMU_8` (new key, replaces `GARAGE_WALL_2X6`'s 8'-0" tier only — the
 existing ICF stem stays, same reasoning as below), plus unchanged `envelope_layers:zip-r`/
-`standing-seam` and a new `furring` line for the interior lining — **net delta ≈ $11,200 –
+`standing-seam-nailstrip-26` and a new `furring` line for the interior lining — **net delta ≈ $11,200 –
 $15,600 more**, before the same unquantified framing-removal saving noted for the ICF
 option. Counterintuitively **the more expensive of the two masonry options**, and it carries
 a real engine gap the ICF option doesn't. Read "Why this one's a harder sell" before treating
@@ -718,7 +799,7 @@ Researched 2026-08-19, same session as the ICF entry above — same 600 SF net w
 since that's the tier doing the moisture/thermal-break job at grade and CMU is a poor
 substitute for it there — converting the stem too is a different, bigger, unpriced option).
 The appeal of this option over full ICF is that it keeps the garage's *existing* exterior
-skin — Zip-R sheathing, rainscreen, standing-seam cladding — unchanged, rather than swapping
+skin — Zip-R sheathing and nail-strip cladding (the rainscreen went 2026-08-20) — unchanged, rather than swapping
 to stucco. Two things work against it:
 
 **Basis note, same as the ICF entry.** The `wall_structure` CMU line ($10,800–14,360) is
@@ -726,7 +807,7 @@ to stucco. Two things work against it:
 furring line below ($1,614–1,926) is sourced from an *installed* homewyse figure, which is
 actually richer than the house's own `framing` convention (materials only) — call that line
 the one exception where labor happens to already be included, not a gap. Everything else
-that carries over unchanged (zip-r, standing-seam) stays on the house's materials-only
+that carries over unchanged (zip-r, standing-seam-nailstrip-26) stays on the house's
 `envelope_layers` basis, same caveat as the ICF entry: real installed cost for those is
 higher than shown, and — new in this option — so is the CMU-specific Tapcon-attachment labor
 premium flagged below, which has no dollar figure at all.
@@ -764,7 +845,7 @@ entry — 16'×7' overhead door, 3'×6'-8" service door, ~30 SF window allowance
 | **Removed subtotal** | | | | **$660** | **$1,200** |
 | **Net delta** | | | | **$11,214** | **$15,626** |
 
-`zip-r` sheathing and `standing-seam` wall cladding are **unchanged, zero net delta** — they
+`zip-r` sheathing and `standing-seam-nailstrip-26` wall cladding are **unchanged, zero net delta** — they
 carry over from the current wood-wall assembly onto the CMU face essentially as-is (the
 resolver doesn't care what's under a SHEATHING-function layer; a `zip-r` layer sitting on a
 CMU structure layer bills identically to one sitting on studs). That's the whole appeal of
@@ -1182,7 +1263,8 @@ six-figure double-count in one direction or a six-figure hole in the other. Ther
 (`test_catlin_does_not_pay_the_gc_twice`) that pins both halves together.
 
 ### The roof is priced as bare panel, and the boundary is now guessed in two places
-`envelope_layers:standing-seam` is panel and clips. Underlayment, the code ice-and-water,
+The four `envelope_layers` metal rows are panel and clips (and nail strip has no clips).
+Underlayment, the code ice-and-water,
 flashings, boots and snow retention are now `[allowances]` rows; drip edge and closure are in
 `edge_trim`; seam clamps are in `hardware`. That is four tables describing one roof, and the
 split between them is an assumption nobody has checked against a roofer.
@@ -1191,23 +1273,22 @@ split between them is an assumption nobody has checked against a roofer.
 is inside the roofer's number and what is not, and it touches the largest line in the house
 (standing seam at $60k – $117k) plus three allowance rows worth $15,500 – $34,000. It is also
 the one place where the new `[allowances]` table can double-count without anything catching it:
-if the roofer's price includes underlayment, `roof-underlayment-full-field` has to come out the
-same day. See the "one rule" note at the head of that table.
+if the roofer's price includes underlayment, the modelled
+`envelope_layers."roof-underlayment-synthetic"` row has to come out the same day. (That row
+replaced the `roof-underlayment-full-field` allowance on 2026-08-20, when the roof rebuild made
+the underlayment's *permeance* a structural fact about the assembly rather than a line of scope
+— it is vapour-open by necessity now, and substituting peel-and-stick into the field to save
+money fails the condensation gate. Ask the roofer for a permeable synthetic by name.) See the
+"one rule" note at the head of that table.
 
-## Open questions for the owner
+### Basement Steel Framing
+Interior walls of the basement as steel stud framing
 
-Everything else in this file is either decided, priced, or a documented mirror. These are not.
+## Open questions
 
 | # | question | what it moves |
 |---|---|---|
-| 1 | **Is the GC fee in or out?** `[markup]` is at zero today, so the printed $980k – $2.13M is a subcontractor sum. | +$130,000 – $375,000, and it is the single largest undecided number |
+| 1 | **Is the GC fee in or out?** `[markup]` (remains at zero for now, may be added later)
 | 2 | **Is rebar inside the concrete $/cy rates, or its own line?** The file assumes inside and the allowance is omitted on that basis. Reversing it means editing both places at once, or paying for ~5 tons of steel twice. | $10,000 – $18,000 if the assumption is wrong |
 | 3 | **Is 761 LF the right length of drain tile?** The model rings each of 26 footing beddings separately rather than running one perimeter. | $3,000 – $7,200 |
 | 4 | **One roofing quote** — see immediately above. Four tables describe one roof and the split between them is unchecked. | resolves ~$15,500 – $34,000 of boundary |
-
-Question 1 is a choice. Questions 2 – 4 are facts somebody can go and find.
-
-**Answered 2026-08-20** and no longer open: closet shelving (wire), ice barrier (code minimum,
-as a strategy rather than a saving), pour season (summer, so cold-weather protection is zero)
-and tax jurisdiction (suburban Hennepin, 8.525%). All four are recorded in the decision table
-in the allowance-register section above, with their reasoning, in `prices.toml` as well as here.

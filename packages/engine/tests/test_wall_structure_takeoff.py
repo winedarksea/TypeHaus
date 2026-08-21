@@ -16,9 +16,15 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     assert rows, "catlin's basement, garage and garden walls are all monolithic"
     # 39 since 2026-08-18: the sunken garden's 16" arched cross-wall and the three
     # W-SG-RAIL-* masonry parapets over it went, and with them the last `cmu` in the house.
-    assert sum(int(row["count"]) for row in rows) == 39
+    #
+    # Counted as DISTINCT WALLS, not as the sum of the rows' counts. Since the Ishtar scheme
+    # (2026-08-20) one wall can reach several rows: W-B-BRICK's wythe is a split row
+    # (`Layer.slot`) of three brick colours, and each colour bills its own band. Summing the
+    # counts would say 41 walls and be counting brick, not walls.
+    assert len({tag for row in rows for tag in row["tags"]}) == 39
     assert {row["material"] for row in rows} == {
-        "concrete", "retaining-block", "glazed-green-brick"}
+        "concrete", "retaining-block", "brown-brick",
+        "glazed-lapis-brick", "glazed-gold-brick"}
     # Bigger than the entire priced concrete order (footings + slab) the estimate used to
     # know about, which is the measure of what was missing.
     assert sum(float(row["volume_cubic_yards"]) for row in rows) > 100
@@ -42,16 +48,31 @@ def test_every_wall_bills_its_structure_exactly_once(catlin_model) -> None:
 
 def test_the_sunken_garden_brick_wythe_is_billed(catlin_model) -> None:
     """W-B-BRICK — the glazed-brick veneer over the exposed basement wall at the sunken
-    garden, added in 76c1871 — is the wall whose absence from the BOM surfaced this hole."""
+    garden, added in 76c1871 — is the wall whose absence from the BOM surfaced this hole.
+
+    Since the Ishtar scheme (2026-08-20) it bills as three rows, one per brick colour, and
+    that is the second thing this pins. The wythe is a split row (`Layer.slot`): five banded
+    regions sharing one 3 5/8" depth position. Billing it by "the" structure layer — the
+    first one — would have put all 122 SF on the brown plinth and never mentioned the glaze,
+    which is the modern version of the hole this test was written for.
+    """
     rows = [row for row in wall_structure_takeoff(catlin_model)
             if "W-B-BRICK" in row["tags"]]
-    assert len(rows) == 1, "the brick wythe is one row of its own"
-    row = rows[0]
-    assert row["material"] == "glazed-green-brick"
-    assert row["assembly"] == "BASEMENT_BRICK_VENEER"
-    assert row["tags"] == ["W-B-BRICK"]
-    assert 118 < float(row["net_area_sqft"]) < 126
-    assert float(row["volume_cuft"]) > 0
+    assert len(rows) == 3, "one row per brick colour on the wythe"
+    by_material = {row["material"]: row for row in rows}
+    assert set(by_material) == {"brown-brick", "glazed-lapis-brick", "glazed-gold-brick"}
+    for row in rows:
+        assert row["assembly"] == "BASEMENT_BRICK_VENEER"
+        assert row["tags"] == ["W-B-BRICK"]
+        assert float(row["net_area_sqft"]) > 0
+        assert float(row["volume_cuft"]) > 0
+    # The bands partition the same net face the one-colour wall billed, no more and no less.
+    assert 118 < sum(float(row["net_area_sqft"]) for row in rows) < 126
+    # And they are in the right proportions: the field is most of the wall, the plinth is
+    # the bottom 2'-0", and the two 2-course registers are the least of it.
+    assert (float(by_material["glazed-lapis-brick"]["net_area_sqft"])
+            > float(by_material["brown-brick"]["net_area_sqft"])
+            > float(by_material["glazed-gold-brick"]["net_area_sqft"]))
 
 
 def test_the_garden_walls_are_distinguishable_from_house_concrete(catlin_model) -> None:

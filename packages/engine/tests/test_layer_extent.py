@@ -147,3 +147,136 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_model, tmp_path
     layer_set = next(s for s in model.by_type("IfcMaterialLayerSet")
                      if s.LayerSetName == "CATLIN_BASEMENT_12")
     assert _PANEL not in [ly.Name for ly in layer_set.MaterialLayers]
+
+
+# --- Layer.slot: the regions of ONE row ------------------------------------------------
+#
+# A band alone says "this layer covers only part of the wall". A *slot* says the further
+# thing that two bands are the same row of the stack and share one slice of the wall's
+# depth. Without it the only spelling for a split row was several layers, and the stack walk
+# charged the wall for every one: catlin's four-colour brick wythe would stand 18 1/8" out
+# of the sunken garden where 3 5/8" of brick does.
+
+_WYTHE_IN = 3.625
+_VENEER_REGIONS = ("brick-plinth", "brick-band-lo", "brick-field-lo",
+                   "brick-band-hi", "brick-field-hi")
+
+
+def test_a_split_row_is_one_slice_of_the_wall_depth(catlin_model):
+    """The bug the slot exists for: five brick regions, one wythe."""
+    wall = catlin_model.wall("W-B-BRICK")
+    regions = [ly for ly in wall.layers if ly.name in _VENEER_REGIONS]
+    assert [ly.name for ly in regions] == list(_VENEER_REGIONS)
+    assert all(ly.slot == "wythe" for ly in regions)
+
+    # One depth position between them: the wall is the 1" air gap plus ONE 3 5/8" wythe.
+    assert wall.thickness_m * 39.3700787 == pytest.approx(1.0 + _WYTHE_IN, abs=1e-6)
+    assert [ly.name for ly in wall.depth_layers()] == ["air-gap", "brick-plinth"]
+
+    # And they resolve onto the identical strip in plan — same polygon, different elevations.
+    first = regions[0].polygon
+    for region in regions[1:]:
+        assert region.polygon == first, f"{region.name} left the wythe's strip"
+
+
+def test_the_veneer_bands_tile_the_wall_without_overlap(catlin_model):
+    """Bottom to top, each region starts where the last one stopped."""
+    wall = catlin_model.wall("W-B-BRICK")
+    bands = [ly.band(wall) for ly in wall.layers if ly.name in _VENEER_REGIONS]
+    assert bands[0][0] == pytest.approx(wall.z0_m)
+    assert bands[-1][1] == pytest.approx(wall.z1_m)
+    for (_lower, top), (bottom, _upper) in zip(bands, bands[1:], strict=False):
+        assert bottom == pytest.approx(top), "a gap or an overlap in the wythe"
+    # The registers are two courses; the plinth is 2'-0". Course = 2 2/3" nominal.
+    heights_in = [(z1 - z0) * 39.3700787 for z0, z1 in bands]
+    assert heights_in[0] == pytest.approx(24.0, abs=1e-3)
+    assert heights_in[1] == pytest.approx(5.333, abs=1e-2)
+    assert heights_in[3] == pytest.approx(5.333, abs=1e-2)
+
+
+def _assembly_findings(assembly):
+    """``integrity.assembly_layers`` over a one-assembly plan built round ``assembly``."""
+    import typehaus.checks.integrity  # noqa: F401 - registers the integrity checks
+    from typehaus.checks.registry import (
+        CheckContext,
+        JurisdictionProfile,
+        Preferences,
+        registered,
+    )
+
+    class _Library:
+        assemblies = (assembly,)
+
+        @staticmethod
+        def resolve_assembly(tag):
+            return assembly if tag == assembly.tag else None
+
+    class _Plan:
+        library = _Library()
+
+    fn = next(fn for cid, fn in registered() if cid == "integrity.assembly_layers")
+    return fn(CheckContext(
+        plan=_Plan(), model=None, preferences=Preferences(),
+        profile=JurisdictionProfile(name="t", edition="t", effective_date="t",
+                                    irc_base="t", coverage_statement="t")))
+
+
+#: The one depth every region of the test slot shares, unless a test deliberately differs.
+_SLOT_THICKNESS = inch(4.0)
+
+
+def _slot_assembly(*, second_thickness=None, second_extent="above", tag="SPLIT"):
+    second_thickness = _SLOT_THICKNESS if second_thickness is None else second_thickness
+    from typehaus.model.assembly import Assembly, Layer, LayerBound, LayerExtent
+    from typehaus.model.enums import LayerDatum, LayerFunction
+
+    def band(bottom_in, top_in=None):
+        return LayerExtent(
+            bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(bottom_in)),
+            top=None if top_in is None
+            else LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(top_in)))
+
+    second = {"above": band(24.0), "overlapping": band(12.0, 30.0),
+              "overlapping-open": band(12.0), "none": None}[second_extent]
+    return Assembly(tag=tag, layers=(
+        Layer(name="lower", material_ref="brick", thickness=_SLOT_THICKNESS,
+              function=LayerFunction.STRUCTURE, slot="wythe", extent=band(0.0, 24.0)),
+        Layer(name="upper", material_ref="white-brick", thickness=second_thickness,
+              function=LayerFunction.STRUCTURE, slot="wythe", extent=second),
+    ))
+
+
+def test_a_well_formed_slot_reports_nothing():
+    assert _assembly_findings(_slot_assembly()) == []
+
+
+def test_a_slot_whose_regions_disagree_about_thickness_is_an_error():
+    """The first region is the one that pays, so a thicker sibling is silently clipped."""
+    findings = _assembly_findings(_slot_assembly(second_thickness=inch(6.0)))
+    assert [f.check_id for f in findings] == ["integrity.assembly_layers"]
+    assert "one row has one depth" in findings[0].message
+
+
+def test_a_slot_region_with_no_extent_is_an_error():
+    """It would claim the whole wall and draw over every sibling."""
+    findings = _assembly_findings(_slot_assembly(second_extent="none"))
+    assert [f.check_id for f in findings] == ["integrity.assembly_layers"]
+    assert "claims the whole wall" in findings[0].message
+
+
+def test_two_regions_of_a_slot_may_not_overlap():
+    """Different materials, so the older same-material band rule cannot catch this — and
+    differing materials is the entire point of splitting a row."""
+    findings = _assembly_findings(_slot_assembly(second_extent="overlapping"))
+    assert [f.check_id for f in findings] == ["integrity.assembly_layers"]
+    assert "overlapping bands" in findings[0].message
+
+
+def test_an_open_topped_region_still_refuses_to_overlap():
+    """The top region of a row is naturally authored `top=None` — "run it out to the wall
+    top" — which is the only way to say it on a type that many walls share. Reading that as
+    "no comparable band" would let the one overlap most likely to be authored straight
+    through."""
+    findings = _assembly_findings(_slot_assembly(second_extent="overlapping-open"))
+    assert [f.check_id for f in findings] == ["integrity.assembly_layers"]
+    assert "overlapping bands" in findings[0].message

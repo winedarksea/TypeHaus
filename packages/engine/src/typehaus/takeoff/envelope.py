@@ -11,6 +11,12 @@ mineral wool, and folding them together would force one unit onto products that 
 bought that way. Sheathing therefore appears in both, once as sheets and once as area, and
 the sheathing rows here carry ``also_in_sheet_goods`` so a total cannot double-count it by
 accident.
+
+A roof contributes rows on **two** planes and they are not interchangeable. Scope ``roof``
+is the deck: sloped, and run out to the fascia, which is how roofing and underlayment are
+bought. Scope ``roof ceiling`` is the plane under it — the assembly's ``default_lining``
+and any layer's ``CavityFill`` — which stops at the bearing wall and, on a truss, lies flat.
+Billing the second off the first is a 30% overstatement on catlin's garage alone.
 """
 
 from __future__ import annotations
@@ -25,6 +31,7 @@ from typehaus.resolve.accessories import (
 )
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
+from typehaus.resolve.roof_geometry import roof_ceiling_area_m2
 
 _M2_TO_FT2 = 10.7639104
 _M_TO_FT = 3.280839895
@@ -136,10 +143,38 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         assembly = model.plan.library.resolve_assembly(roof.assembly)
         if assembly is None:
             continue
-        for layer in assembly.layers:
-            if layer.function in _BILLABLE:
-                areas[("roof", layer.function.value, layer.material_ref,
-                       layer.thickness.meters)] += roof.surface_area_m2
+        # Two planes, two areas. ``surface_area_m2`` is the sloped deck out to the fascia,
+        # which is what the roofing, the deck and the underlayment are bought by. The
+        # ceiling and its insulation stop at the bearing wall and, on a truss, lie flat —
+        # that is ``roof_ceiling_area_m2``. None only when the roof resolves no bearing
+        # line, which ``resolve_roof`` already rejects as an integrity ERROR, so a roof
+        # that reaches this loop has one.
+        ceiling_m2 = roof_ceiling_area_m2(model, roof)
+        for roof_layer in assembly.layers:
+            if roof_layer.function in _BILLABLE:
+                areas[("roof", roof_layer.function.value, roof_layer.material_ref,
+                       roof_layer.thickness.meters)] += roof.surface_area_m2
+            # Cavity fill hangs off the STRUCTURE layer, which is never ``_BILLABLE`` — so
+            # this cannot live inside the branch above, and for months it lived nowhere at
+            # all: every rafter batt and every blown attic in the model reached no order.
+            # Billed on the ceiling plane, not the deck, and with the wall path's exact
+            # ``insulation (cavity)`` function so one material reads the same in both.
+            fill = roof_layer.cavity
+            if fill is not None and ceiling_m2 is not None:
+                depth = fill.thickness if fill.thickness is not None else roof_layer.thickness
+                areas[("roof ceiling", "insulation (cavity)", fill.material_ref,
+                       depth.meters)] += ceiling_m2
+        # ``default_lining`` is the ceiling: the gypsum under the chords, and whatever
+        # finish is authored over it. Walls have picked their lining up since
+        # ``resolve_wall`` began stacking ``default_lining + layers`` (resolve/topology.py);
+        # roofs never went through that path, so a roof's lining was thermally modelled,
+        # drawn in section, graded by the Glaser walk — and ordered by nobody.
+        if ceiling_m2 is not None:
+            for lining_layer in assembly.default_lining:
+                if lining_layer.function in _BILLABLE:
+                    areas[("roof ceiling", lining_layer.function.value,
+                           lining_layer.material_ref,
+                           lining_layer.thickness.meters)] += ceiling_m2
 
     return [
         {"scope": scope, "function": function, "material": material,

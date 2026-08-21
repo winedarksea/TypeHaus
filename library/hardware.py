@@ -24,6 +24,8 @@ from typehaus.takeoff.hardware_catalog import (
     ROLE_PV_SEAM_CLAMP,
     ROLE_SLOPED_JOIST_HANGER,
     ROLE_SNOW_RETENTION,
+    ROLE_NAIL_STRIP_SEAM_CLAMP,
+    ROLE_SNAP_LOCK_SEAM_CLAMP,
     ROLE_STANDING_SEAM_CLAMP,
     ROLE_STUD_PLATE_TIE,
     StructuralHardware,
@@ -196,6 +198,42 @@ S5_SEAM_CLAMP = StructuralHardware(
            "a standing-seam panel rib without piercing the panel",
 )
 
+# --- wind mitigation (2026-08-20) --------------------------------------------------------
+# A seam clamp set on the seam purely to resist UPLIFT, rather than to carry an accessory.
+# S-5! is explicit that "any of our seam clamps will improve wind resistance of the roof and
+# can be used for that purpose"; the dedicated WindClamp line (DL/UD/2X) fits commercial
+# trapezoidal profiles only, so on residential snap-lock and nail-strip the wind clamp IS the
+# ordinary catalog clamp matched to the profile. These are separate records from
+# ``S5_SEAM_CLAMP`` because the profile decides the part and the parts are not interchangeable
+# — an S-5-S will not close on a nail-strip bulb, and an S-5-N will not close on a snap-lock
+# leg. Both are non-penetrating: stainless setscrews (Torx T-30) dimple the seam without
+# piercing it, so no sealant, no flashing and no effect on the panel warranty.
+#
+# S-5! publishes NO prescriptive layout — the install sheet puts spacing and configuration on
+# "the user and/or installer". The one prescriptive standard is FM Global DS 1-31 Table 2,
+# which places clamps at CORNER zone clip positions above 90 psf and adds the perimeter above
+# 135 psf. The governing rule of thumb, from S-5!'s own PV guidance, is that clamp spacing
+# must never EXCEED the panel's own clip spacing.
+S5_S_SNAP_LOCK_CLAMP = StructuralHardware(
+    tag="s5-s-snap-lock-clamp",
+    role=ROLE_SNAP_LOCK_SEAM_CLAMP,
+    name="S-5-S snap-lock seam clamp",
+    manufacturer="S-5!",
+    model="S-5-S",
+    source="S-5! S-5-S clamp (s-5.com/s-5-s-clamps) — two-setscrew non-penetrating clamp "
+           "for 1.5\"-1.75\" snap-lock/snap-together vertical seams",
+)
+
+S5_N_NAIL_STRIP_CLAMP = StructuralHardware(
+    tag="s5-n-nail-strip-clamp",
+    role=ROLE_NAIL_STRIP_SEAM_CLAMP,
+    name="S-5-N nail-strip seam clamp",
+    manufacturer="S-5!",
+    model="S-5-N",
+    source="S-5! S-5-N clamp (s-5.com/s-5-n-clamps) — two-setscrew non-penetrating clamp "
+           "for nail-strip / bulb-and-lip seam profiles",
+)
+
 # The ring that actually holds a round pipe — a downspout leader, a vent riser, conduit —
 # against the standing seam. It is *not* the same part as the clamp above: the CanDuit is an
 # electro-zinc strap with an EPDM liner pad, and its M8 threaded shaft mounts to any S-5!
@@ -288,6 +326,8 @@ STRUCTURAL_HARDWARE: tuple = (
     ABU_POST_BASE,
     H25A_HURRICANE_TIE,
     S5_SEAM_CLAMP,
+    S5_S_SNAP_LOCK_CLAMP,
+    S5_N_NAIL_STRIP_CLAMP,
     S5_CANDUIT_PIPE_CLAMP,
     S5_PV_KIT,
     S5_COLORGARD_SNOW_RETENTION,

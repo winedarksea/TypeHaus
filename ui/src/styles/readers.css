@@ -23,6 +23,12 @@
   box-shadow: var(--shadow-3);
   overflow: hidden;
 }
+/* Estimate's table (item/trade/block/qty/unit price/range/cost/spread) has more to say per
+   row than the shared reader width has room for. Opt-in per reader via ReaderShell's `wide`
+   prop, so BOM/Circuits/etc keep the width every other reader was designed at. */
+.workbench-wide {
+  width: min(1500px, 100%);
+}
 .workbench-bread {
   display: flex;
   align-items: center;
@@ -450,6 +456,22 @@
   min-width: 2px;
   border-radius: var(--md-shape-full);
   background: var(--md-primary);
+}
+
+/* The expected-cost cell: the mid figure the "Expected" sort ranks by, leading; the basis
+   badge beside it; the low-high range underneath in muted text, still visible but no longer
+   the only number on the row. Right-aligned like every other num-col, so it reads as a
+   single stack rather than three loose lines. */
+.estimate-cost {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.estimate-cost-mid {
+  font-variant-numeric: tabular-nums;
+}
+.estimate-cost-range {
+  font-size: var(--text-xs);
 }
 
 .estimate-basis-badge {

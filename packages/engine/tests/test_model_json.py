@@ -108,11 +108,16 @@ def test_skin_members_carry_a_material_and_lumber_does_not(catlin_payload):
     house_cap = [m for m in house["members"] if m["category"] == "ridge_cap"]
     assert house_cap and all(m["material"] == "metal-dark-exterior" for m in house_cap)
     garage = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-GARAGE")
+    # The garage's gable closure carries the GARAGE WALL's own metal, not the house's. Since
+    # 2026-08-20 the catlin skin is four material tags in one `skin_family` (mechanically
+    # seamed house roof, snap-lock house walls, 24 ga nail-strip garage roof, 26 ga nail-strip
+    # garage walls), so what this asserts is the closure naming a real seam material rather
+    # than a specific one — name the tag and this test breaks every time a gauge changes.
     gable = [m for m in garage["members"]
              if "W-G-E-closure-" in m["key"] and m["category"] == "cladding"]
-    assert gable and all(m["material"] == "standing-seam" for m in gable)
+    assert gable and all(m["material"].startswith("standing-seam") for m in gable)
     garage_cap = [m for m in garage["members"] if m["category"] == "ridge_cap"]
-    assert garage_cap and all(m["material"] == "standing-seam" for m in garage_cap)
+    assert garage_cap and all(m["material"].startswith("standing-seam") for m in garage_cap)
     studs = [m for m in house["members"] if m["category"] == "rafter"]
     assert studs and all(m["material"] is None for m in studs)
 
@@ -168,8 +173,8 @@ def test_roofs_carry_bearing_datum_and_layer_edge_setbacks(catlin_payload):
     entries = {entry["layer"]: entry for entry in house["layer_edge_setbacks"]}
     assert entries
     for edge in ("west", "east", "south", "north"):
-        assert (entries["deck"][edge] >= entries["polyiso"][edge]
-                >= entries["batten-gap"][edge] >= entries["roofing"][edge])
+        assert (entries["zip"][edge] >= entries["polyiso-1"][edge]
+                >= entries["top-deck"][edge] >= entries["roofing"][edge])
     garage = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-GARAGE")
     assert garage["layer_edge_setbacks"] == []  # truss roof deferred
 

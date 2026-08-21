@@ -912,7 +912,10 @@ GARAGE_LIGHTING = [
     # storey-relative (garage datum = stem top at 1'-10" over slab), so it sits 8'-10"
     # over the apron and its 9" housing still clears the 8'-0" top plate.
     ElectricalDevice(uid="QTG0004AAA", tag="ED-G-EXT-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(24, 3.375), ft(43)), type_ref="ED-T-LT-SCONCE-EXT",
+                     # 2026-08-20: was 24'-3 3/8". The garage wall lost its 3/8" rainscreen
+                     # furring that day, so the cladding face — which is what a surface-mounted
+                     # sconce screws to — came in 3/8" with it.
+                     position=pt(ft(24, 3), ft(43)), type_ref="ED-T-LT-SCONCE-EXT",
                      circuit="CKT-LT-MAIN", rotation=deg(90),
                      controlled_by=("ED-G-EXT-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(7))),

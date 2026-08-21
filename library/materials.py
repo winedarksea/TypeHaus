@@ -44,6 +44,14 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              vapor_permeance_perms=0.95, hatch="osb", color="#3f6d3a",
              source="Huber ZIP System R-sheathing published ASTM E96 Procedure B (wet cup) "
                     "assembly permeance 0.8-1.1 perm; midpoint of the published range"),
+    # Plain ZIP — OSB with a bonded WRB facer, no foam. Unlike ZIP-R it *is* a depth of one
+    # substance (the facer is a film), so it carries an R per inch like the OSB it is, and
+    # its rating is authored as a panel permeance because the facer, not the wood, governs.
+    # The taped seams are what make it the air barrier; the panel is the vapour retarder.
+    Material(tag="zip-sheathing", name="ZIP System sheathing", r_per_inch=1.25,
+             density=650.0, vapor_permeance_perms=2.0, hatch="osb", color="#3f6d3a",
+             source="Huber ZIP System sheathing published ASTM E96 Procedure A (dry cup) "
+                    "panel permeance 2-3 perm at 7/16-1/2\"; low end of the published range"),
     Material(tag="polyiso", name="Polyisocyanurate CI", r_per_inch=5.6, perm_rating=1.0,
              hatch="rigid", color="#e8d64f",
              source=f"{_UAF}: 'Expanded polyurethane, R-11, board stock' 0.4-1.6 perm-in; "
@@ -136,6 +144,7 @@ STARTER_MATERIALS: tuple[Material, ...] = (
                     "metal section is the air between the sections, not the steel"),
     Material(tag="standing-seam", name="Standing-seam steel", r_per_inch=0.0,
              density=7800.0, vapor_permeance_perms=0.0, hatch="metal", color="#6b7076",
+             skin_family="standing-seam",
              source=f"{_UAF}: metal foil at 0.001\" reads 0 perm; continuous sheet steel is "
                     "vapour-impermeable. Normally installed over a vented rainscreen, which "
                     "truncates the Glaser walk before it"),

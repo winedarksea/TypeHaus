@@ -167,7 +167,11 @@
 #   and keeps its 2x2 solid-stock rate.
 # $/LF of ordered stock, by lumber profile
 "0.02x0.02 panel" = { low = 0.35, high = 1 }  # 76 LF — membrane/flashing strip
-"0.375x0.375 panel" = { low = 0.05, high = 0.1 }  # 108 LF — 3/8" furring, plywood rip
+# 2026-08-20: QUANTITY IS NOW ZERO. This was the garage wall's 3/8" rainscreen furring, and
+# the garage dropped its rainscreen the same day (nail strip face-fastens straight to the
+# Zip-R). The row is kept rather than deleted so the rate survives if the furring ever comes
+# back, and so nobody re-derives it from scratch: it is a plywood rip, not milled batten.
+# "0.375x0.375 panel" = { low = 0.05, high = 0.1 }  # was 108 LF — 3/8" furring, plywood rip
 # "0.416667x0.416667 panel" =    # 156 LF — corner_trim, billed in [edge_trim]
 # "0.416667x4.11038 panel" =    # 156 LF — corner_trim, billed in [edge_trim]
 "0.5x0.5 panel" = { low = 0.022, high = 0.04 }  # 498 LF — plywood-rip share only; see above
@@ -247,7 +251,14 @@
 # `[envelope_layers]` "gwb" row, which is wall lining priced by the net SF.
 "gwb" = { material = { low = 17, high = 26 }, labour = { low = 48, high = 85 } }  # 39 sheets
 "plywood-subfloor" = { material = { low = 42, high = 62 }, labour = { low = 18, high = 32 } }  # 78 sheets
+# The nailbase top deck (CATLIN_ROOF). Labour is well above the plywood row below it and
+# that is not padding: every sheet is set on 6" of foam with nothing under it but the screw
+# being driven, so it is a two-man lay-and-hold operation with a 10" screw on a 16 x 24 grid.
+"osb" = { material = { low = 24, high = 38 }, labour = { low = 30, high = 58 } }  # 45 sheets
 "struct-1-plywood" = { material = { low = 27, high = 42 }, labour = { low = 16, high = 34 } }  # 179 sheets
+# Plain ZIP (not ZIP-R) — the roof's structural deck and air-barrier plane. Cheaper than the
+# ZIP-R row below by the whole cost of the foam laminated to it, which this roof buys loose.
+"zip-sheathing" = { material = { low = 36, high = 58 }, labour = { low = 22, high = 44 } }  # 45 sheets
 "zip-r" = { material = { low = 78, high = 105 }, labour = { low = 25, high = 50 } }  # 20 sheets
 
 [hardware]
@@ -303,6 +314,30 @@
 # includes its own seam clamp (which this one must, since no separate PV clamp is billed)
 # costs materially more than the bare grab.
 "S-5-PVKIT" = { low = 14, high = 35 }  # 48 ea
+# 2026-08-20 — the wind-mitigation clamps (plan/wind_clamps.py). Two part numbers because
+# the PANEL PROFILE decides the part: an S-5-S will not close on a nail-strip bulb and an
+# S-5-N will not close on a snap-lock leg. Priced per SKU rather than as a family:
+#   S-5-S  MSRP $7.34; street $7.85 (RapidMaterials) to $9.75 (Best Buy Metals)
+#   S-5-N  MSRP $7.11; street $7.62 to $9.50
+# The range widens downward from street for contractor-carton pricing, the same 25-40%
+# adjustment this whole section carries.
+#
+# ** NOT the S-5! WindClamp. ** The WindClamp line (DL/UD/2X) is $2.73-3.52 a piece and would
+# be the obvious answer to "which clamp for wind" — but all three fit COMMERCIAL trapezoidal
+# double-folded profiles (Double-Lok, Ultra-Dek, MR-24, SSR) and none of them will go on a
+# residential snap-lock or nail-strip seam. S-5! is explicit that any of its seam clamps
+# improves wind resistance and may be used for the purpose; the WindClamp is simply the
+# cheaper part where it fits, and here it does not. Budget the $8-10 clamp, not the $3 one.
+#
+# Setscrews (stainless, Torx T-30) ship in the box, so there is no separate fastener row and
+# nothing penetrates the panel — no sealant, no flashing, no warranty impact. Labour follows
+# this section's convention and is inside the [envelope_layers] cladding rate: a clamp is a
+# screw-gun pass, ~30-60 seconds each, 40-60 an hour. The one thing that is NOT free is the
+# QA: S-5! requires a DIAL-calibrated torque wrench (explicitly not a clicking one) to verify
+# the setscrews where published load values are relied on, and nothing in this file pays for
+# that pass.
+"S-5-N" = { low = 6, high = 10 }  # 28 ea — garage roof and garage walls, nail strip
+"S-5-S" = { low = 6.25, high = 10.25 }  # 48 ea — house wall corners, snap lock
 "SDWH191000DB" = { low = 1.05, high = 1.95 }  # 537 ea
 "SDWS22800DB" = { low = 1.15, high = 1.75 }  # 1865 ea
 "SP6" = { low = 1.5, high = 2.75 }  # 424 ea
@@ -858,9 +893,25 @@
 # OSB-vs-plywood 2026 charts.
 # $/SF net, by material tag
 "air-barrier" = { material = { low = 0.25, high = 0.6 }, labour = { low = 0.35, high = 0.75 } }  # 8386.3 SF
+# RESEARCHED 2026-08-20 — GARAGE_ROOF's attic fill, 576 SF at 14.5" settled (R-38). A
+# separate key from "fiberglass" above because that row is a 5.5" stud-bay BATT and this is
+# loose fill three times as deep: same fibre, different product, different trade, and this
+# table's keys carry no thickness, so one key cannot honestly serve both. Material from
+# published loose-fill coverage — $400-650 per 1,000 SF at R-49, i.e. $0.40-0.65/SF, scaled
+# to R-38 and lifted at the top for retail bag pricing on a job too small to buy by the
+# pallet. Labour is a blowing crew's fastest work per SF and its worst per JOB: 576 SF over
+# one detached garage carries a machine rental and a mobilisation that never amortise,
+# which is what the high end is. Sources: homeguide.com 2026 blown-in insulation costs
+# (fiberglass to R-38 $2.00-3.50/SF installed, i.e. inclusive of the markup this file
+# applies separately in [markup]), Owens Corning AttiCat published bag coverage at Home
+# Depot, and craftedcalcs.com's R-value depth chart for the R-2.5/in that sets the 14.5".
+"blown-fiberglass" = { material = { low = 0.35, high = 0.7 }, labour = { low = 0.55, high = 1.5 } }  # 576 SF — loose fill, 14.5" at R-2.5/in
 "cabinet-plywood" = { material = { low = 2.5, high = 4.5 }, labour = { low = 4, high = 8 } }  # 101.2 SF — casework fabrication hours, not a sheet-goods rate
 "eps" = { material = { low = 0.7, high = 1.4 }, labour = { low = 0.7, high = 1.35 } }  # 3515.7 SF
 "fiberglass" = { material = { low = 0.45, high = 0.9 }, labour = { low = 0.45, high = 0.85 } }  # 438.8 SF — fastest batt to install, bottom of the $0.50-1.30 band
+# The roof cavity batt. Dearer per SF than the wall row above only because it is thicker
+# (6-1/4" against 3-1/2"); it is the same product at the same rate per inch.
+"fiberglass-r19" = { material = { low = 0.6, high = 1.15 }, labour = { low = 0.5, high = 0.95 } }  # 1430.3 SF — R-19, 6-1/4" in an 11-7/8" bay
 "foundation-protection-panel" = { material = { low = 3.5, high = 7.5 }, labour = { low = 1.5, high = 3 } }  # 324 SF
 # 2026-08-18: the above-grade foundation band on the N/E/W basement walls, 324 SF
 # (108 LF of perimeter x the 3'-0" the panel runs, 6" of it below grade). Aluminium-faced
@@ -891,10 +942,82 @@
 # homeguide.com 2026: $15-50/gal at 350-400 SF per gallon per coat.
 "latex-paint-accent" = { material = { low = 0.45, high = 1.1 }, labour = { low = 1.4, high = 2.6 } }  # 80 SF
 "mineral-wool" = { material = { low = 1.5, high = 2.3 }, labour = { low = 0.6, high = 1.15 } }  # 6316.6 SF
+# The nailbase top deck, by the SF. Same panels as the [sheet_goods] "osb" row.
+"osb" = { material = { low = 0.75, high = 1.2 }, labour = { low = 0.95, high = 1.85 } }  # 1430.3 SF — 5/8", screwed through 6" of foam
 "polyiso" = { material = { low = 1.5, high = 2.3 }, labour = { low = 1.1, high = 2.1 } }  # 4946 SF — exterior CI, ~2x the labour of cavity batt
 "polyiso-foil" = { material = { low = 1.3, high = 2.4 }, labour = { low = 1.3, high = 2.3 } }  # 297.4 SF
 "sauna-tg" = { material = { low = 4.5, high = 9 }, labour = { low = 6, high = 11 } }  # 297.4 SF
-"standing-seam" = { material = { low = 3.5, high = 7.5 }, labour = { low = 6, high = 11 } }  # 6326.9 SF — THE BIGGEST LINE IN THE HOUSE
+# ** THE BIGGEST LINE IN THE HOUSE, and as of 2026-08-20 it is FOUR lines. ** One
+# `standing-seam` row used to carry all 6,322 SF at one rate. That was wrong in a specific,
+# expensive way: it billed the whole house at the mechanically-seamed roof's labour, and
+# mechanical seaming is the dearest metal install there is. The house wears the same white
+# 24 ga PVDF steel almost everywhere; what differs is the SEAM PROFILE, and the profile is
+# almost entirely a LABOUR fact.
+#
+#   mechanically seamed  a powered seamer makes a second pass down every seam, folding it
+#                        180 degrees over the clip. +$1.50-3.00/SF of labour, ~+50% crew
+#                        hours (6-9 man-hr/SQ against 4-6), plus a seamer: $90-150/day or
+#                        $350-650/week to rent in the Midwest, $250-450 freight each way,
+#                        $8,000-15,000 to buy. On a roof this size the rental alone is
+#                        $0.60-0.90/SF, which is why the premium is real at house scale and
+#                        vanishes at commercial scale.
+#   snap-lock            the same concealed floating clips, but the male and female legs
+#                        engage under hand pressure. No seamer, no second pass.
+#   nail strip           NO CLIPS AT ALL — an integral flange face-fastened to the deck,
+#                        the next panel's leg snapping over it. Drops the clip material AND
+#                        the clip-setting labour; the fastest standing seam to install.
+#
+# MATERIAL is the smaller half of the story and is not ordered the way intuition says:
+# Steeldash's published list has 24 ga PVDF snap-lock and 24 ga PVDF nail strip at the same
+# $4.60/SF, and FoxHaven states plainly that mechanical-seam panel stock runs at or BELOW
+# snap-lock (a snap-lock's interlock geometry is the more complex roll-form; a seamed panel
+# is a simpler open leg folded in the field). So DO NOT budget a material premium for the
+# seamed roof. The material spread below is gauge and trim load, not seam type.
+#
+# Sources: Western States Metal Roofing (snap-lock vs mechanically seamed; nail strip vs
+# snap lock; 24 vs 26 gauge; metal siding cost), Sheffield Metals learning centre (nail strip
+# $5-11/SF installed, snap-lock $6-14, mechanically seamed $7.50-17), Steeldash published
+# panel list, McElroy Metal seamer rental, Owl Roofing / Ascension / Earth Friendly Builders
+# for Twin Cities installed rates, Fixr and HomeGuide metal siding 2026.
+#
+# ** WALL LABOUR IS NOT LESS THAN ROOF LABOUR, and the intuition that it should be is the
+# trap here. ** A wall has no slope, no fall-arrest and no valleys, but it is trim- and
+# opening-dominated: every window and door takes a head flashing, a sill pan, jamb trim and
+# returns, and an elevation has far more of those per 100 SF than a roof plane has of
+# anything. Add corners, base trim with weeps, the top termination, staging, and the fact
+# that oil-canning is unforgiving on a vertical surface at eye level. On a blank elevation
+# wall labour runs below roof labour; on a fenestrated one it meets or beats it.
+#
+# 1,430.3 SF — RF-HOUSE, CATLIN_ROOF. Installed $10.50-18.50/SF, against $10-18 national and
+# $12-22 Minnesota for mechanically seamed. This is the roof that carries the PV array and
+# sheds onto occupied ground; the seam is the reason it is not being re-roofed in 25 years.
+"standing-seam" = { material = { low = 3.5, high = 6.5 }, labour = { low = 7, high = 12 } }
+# 3,511.3 SF — the house walls, CATLIN_EXT_2X6 and PLANT_EXT_2X6_HUMID. Installed
+# $8.75-16.00/SF against $10-16 published for standing-seam siding. Material is ABOVE the
+# seamed roof's despite being the cheaper profile, and that is the wall trim load: 20-35% on
+# top of field panel is normal on a concealed-fastener wall, and this wall has 45 openings.
+"standing-seam-snaplock" = { material = { low = 3.75, high = 7 }, labour = { low = 5, high = 9 } }
+# 749.6 SF — RF-GARAGE. Installed $7.00-13.00/SF against Sheffield's $5-11 for nail strip,
+# lifted for the Twin Cities and for a 749 SF roof being a minimum-mobilisation job for any
+# metal crew. Expect a floor of roughly $4,000-6,000 whatever the $/SF arithmetic says.
+"standing-seam-nailstrip" = { material = { low = 3, high = 5.5 }, labour = { low = 4, high = 7.5 } }
+# 631.3 SF — GARAGE_WALL_2X6. 26 ga is 0.0179" base metal against 24 ga's 0.0239", ~25% less
+# steel, and the published gauge delta is $0.80-1.10/SF or 20-35% off material. Labour is
+# modelled GAUGE-NEUTRAL: every cost guide tabulates metal labour by profile and never by
+# gauge. The one claim found for a 26 ga labour saving is ~10% on handling weight, and it is
+# offset by the extra care a thinner pan needs to lay flat — treat -5 to -10% as a
+# sensitivity, not a rate. It is under the seamed roof's labour anyway because a garage box
+# with one overhead door, one service door and one window is the least trim-heavy elevation
+# on the property.
+"standing-seam-nailstrip-26" = { material = { low = 2.5, high = 4.5 }, labour = { low = 3.5, high = 6.5 } }
+# The roof's two membranes, and they are NOT interchangeable — see plan/assemblies.py. The
+# deck barrier is the vapour control (0.04 perm, self-adhered to the ZIP under the foam);
+# the field underlayment above the top deck must stay vapour-OPEN (20 perm) or the foam is
+# sealed on both faces and the condensation gate fails. Do not substitute peel-and-stick
+# into the field row to save the price difference — it is the cheaper product AND the one
+# that breaks the assembly.
+"roof-deck-vapor-barrier" = { material = { low = 1.1, high = 2.2 }, labour = { low = 0.8, high = 1.6 } }  # 1430.3 SF — self-adhered, under the polyiso
+"roof-underlayment-synthetic" = { material = { low = 0.4, high = 0.95 }, labour = { low = 0.45, high = 0.95 } }  # 1430.3 SF — vapour-permeable synthetic, field only
 "struct-1-plywood" = { material = { low = 0.9, high = 1.7 }, labour = { low = 1, high = 1.9 } }  # 5695.6 SF
 # 2026-08-20: the MATERIAL rate was an installed rate that had crept into the material column.
 # A parge/skim coat is $0.60-1.50/SF in material; 3-coat stucco over lath is $1.50-2.50/SF.
@@ -906,6 +1029,7 @@
 # replaced 2026-08-18 by `foundation-protection-panel` over the exposed band only)
 "white-brick" = { material = { low = 6, high = 12 }, labour = { low = 15, high = 26 } }  # 133.8 SF — labour is really a $2,000-3,500 minimum-mobilisation lump
 "xps" = { material = { low = 0.9, high = 1.8 }, labour = { low = 0.75, high = 1.45 } }  # 2520.7 SF
+"zip-sheathing" = { material = { low = 1.1, high = 1.85 }, labour = { low = 1.0, high = 1.9 } }  # 1430.3 SF — 1/2" plain ZIP, taped; the roof's air-barrier plane
 "zip-r" = { material = { low = 2.2, high = 4.2 }, labour = { low = 1.3, high = 2.4 } }  # 631.3 SF
 
 [wall_structure]
@@ -941,7 +1065,41 @@
 # specialty face brick is a special order at 1.5-2x the body price with longer lead time and
 # no local substitute if a pallet arrives short. Ties, flashing, weeps and the shelf angle are
 # in this rate; the CMU or concrete backup is the wall it veneers, priced on its own row.
-"BASEMENT_BRICK_VENEER" = { low = 20, high = 45, unit = "SF" }  # 122.1 SF of face
+#
+# 2026-08-20, second pass: the veneer became the ISHTAR SCHEME and is now three brick colours
+# on one wythe, so it is three rows. A single blended rate would be weighted right only for
+# today's band heights and would quietly become wrong the moment a band moved — the same
+# argument that split the gutters by product. The keys are qualified by MATERIAL
+# (`<assembly>:<material>`, cli/prices.py QUALIFIED_KEY_FIELD); the bare assembly key below
+# stays as the fallback for any brick region a future band adds without its own rate.
+#
+#   brown-brick   28.3 SF   the plinth. ORDINARY unglazed face brick, which is the point of
+#                           it: a Twin Cities yard stocks brown/buff body brick, so there is
+#                           no special order, no lead time and no short-pallet risk. $15-28/SF
+#                           installed is the standard-veneer market, at the low end of it
+#                           because this band is 24" off the ground — no scaffold, and the
+#                           easiest 28 SF on the wall to lay.
+#   glazed-lapis  79.0 SF   the field. Unchanged from the green it replaces: a GLAZED
+#                           specialty face brick is a special order at 1.5-2x the body price.
+#   glazed-gold   14.8 SF   the register bands. Dearer than the lapis and not because the
+#                           brick is: it is a SECOND colour on a 122 SF job. Its own pallet,
+#                           its own lead time, a full pallet minimum against 15 SF of need,
+#                           and a mason laying two colours to a line rather than running one
+#                           up the wall. $32-65/SF is the small-quantity accent rate; the
+#                           high end is where the pallet minimum dominates outright.
+#
+# NET vs. the one-colour wall: roughly a wash. The plinth saves a few hundred dollars and the
+# gold gives most of it back. The plinth's argument is compositional first — an unglazed clay
+# body under a fired glaze is what makes the glaze read as glaze — and economic second. The
+# line that actually holds money here is still plans/cost-options.md "Basement brick veneer:
+# delete".
+#
+# Ties, flashing, weeps and the shelf angle are in all three rates; the concrete backup is the
+# wall this veneers, priced on its own row.
+"BASEMENT_BRICK_VENEER" = { low = 20, high = 45, unit = "SF" }  # fallback; 122.1 SF of face
+"BASEMENT_BRICK_VENEER:brown-brick" = { low = 15, high = 28, unit = "SF" }  # 28.3 SF, the plinth
+"BASEMENT_BRICK_VENEER:glazed-lapis-brick" = { low = 20, high = 45, unit = "SF" }  # 79.0 SF, the field
+"BASEMENT_BRICK_VENEER:glazed-gold-brick" = { low = 32, high = 65, unit = "SF" }  # 14.8 SF, the registers
 # 2026-08-20 RESEARCH PASS 4. Conversion chain for a 12" wall 9' tall: 0.3333 cy/LF, 9.0 SF
 # of face per LF, 27 SF of face per cy. The old $320-600/cy was $107-200/LF = $11.85-22.22/SF
 # of face; $420-700 is $140-233/LF = $15.56-25.93/SF.
@@ -1588,19 +1746,36 @@ concrete-cold-weather-protection = { low = 0, high = 0 }
 site-survey-staking-and-erosion-control = { low = 2000, high = 6000 }
 
 # --- envelope -------------------------------------------------------------------------------
-# [envelope_layers] `standing-seam` is panel and clips only.
-roof-underlayment-full-field = { low = 4500, high = 9000 }
+# 2026-08-20: `roof-underlayment-full-field` was REMOVED from this section, not
+# value-engineered out. The field underlayment is now a modelled layer
+# (`envelope_layers."roof-underlayment-synthetic"`, 1,430.3 SF) because the roof rebuild made
+# its permeance a structural fact about the assembly rather than a line of scope, and it
+# cannot be both a layer and a lump without double-billing. The strategy the row below
+# describes is unchanged and so is the money; read "full-field underlayment" there as that
+# layer.
+#
+# The ventilated mat under the standing seam has the opposite problem: it IS modelled
+# (CATLIN_ROOF's `vent-mat`), but an AIRGAP layer is deliberately excluded from the envelope
+# takeoff — the engine assumes a gap is framing and bills it through the cut list, which is
+# true of a 1x4 batten and false of a rolled mat. So it is carried here, priced off the same
+# 1,430.3 SF at roughly $1.00-1.85/SF installed. It is not optional: it is the assembly's
+# only drying path, and without it the condensation gate cannot pass at any foam thickness.
+roof-ventilated-underlayment-mat = { low = 1450, high = 2650 }
 # THE CODE MINIMUM ONLY — eaves to 24" inside the wall line, plus valleys, per MN. CONFIRMED
 # AS BASE SCOPE by the owner 2026-08-20, and for a stated reason rather than to save money:
 # this roof is a highly insulated assembly under a low-friction standing seam over a quality
-# full-field underlayment (see roof-underlayment-full-field), which is the combination that
+# full-field underlayment (now the modelled synthetic layer, see above), which is the combination that
 # stops an ice dam FORMING — little heat reaching the deck to melt snow, and a slick surface
 # that sheds what does melt. Full-deck membrane is insurance against a dam that has already
 # formed; the assembly is the primary defence and it is the one being paid for.
 # The full-deck high-temp alternative is $17,400-38,300 and stays an UPGRADE entry in
-# plans/cost-options.md. ** DO NOT let the full-field underlayment above be value-engineered
-# out while this row stays at the minimum — together they are the strategy, and dropping one
-# of the two leaves the roof with neither defence. **
+# plans/cost-options.md — and note it is now an upgrade this assembly CANNOT TAKE in the
+# field: high-temp peel-and-stick over the whole deck is 0.05 perm, which seals the polyiso
+# against the 0.04-perm deck barrier below it and fails the condensation gate at 1.50. The
+# eave and valley band stays self-adhered; the field cannot.
+# ** DO NOT let the modelled synthetic field underlayment be value-engineered out while this
+# row stays at the minimum — together they are the strategy, and dropping one of the two
+# leaves the roof with neither defence. **
 roof-ice-and-water-barrier-code-minimum = { low = 5000, high = 11000 }
 # Partly overlaps [edge_trim]; this is the balance — valley metal, boots, custom flashings
 # and snow retention over a walking surface.
@@ -1613,9 +1788,14 @@ envelope-opening-flashing-and-sill-pans = { low = 5100, high = 11800 }
 envelope-air-sealing-and-blower-door = { low = 3100, high = 7200 }
 # Poly at the low end, a smart membrane at the high — see the upgrade entry in cost-options.
 envelope-interior-vapour-retarder = { low = 2200, high = 10700 }
-# The batt quantities in [envelope_layers] read as WALLS ONLY; the attic is blown and is in
-# no key today.
-envelope-attic-blown-insulation = { low = 2700, high = 4700 }
+# REMOVED 2026-08-20: envelope-attic-blown-insulation, $2,700-4,700. It existed because
+# "the batt quantities in [envelope_layers] read as WALLS ONLY; the attic is blown and is in
+# no key today" — a true statement about a takeoff bug, not about this house. The roof loop
+# in takeoff/envelope.py walked only `assembly.layers`, so no roof's CavityFill and no roof's
+# `default_lining` ever reached the BOM. It walks the ceiling plane now, GARAGE_ROOF's blown
+# fill is a real 576 SF line under the "blown-fiberglass" key in [envelope_layers], and
+# CATLIN_ROOF's rafter batts and gypsum ceiling arrived with it. Keeping the allowance would
+# pay for the same insulation twice.
 envelope-exterior-sealants-and-caulking = { low = 1800, high = 4500 }
 envelope-subslab-vapour-barrier-and-capillary-break = { low = 1255, high = 2760 }
 site-scaffolding-and-lift-rental = { low = 3000, high = 8000 }
@@ -1864,7 +2044,7 @@ allowances           = "installed"
 
 [basis_notes]
 concrete        = "$/cy PLACED and MERGED — ready-mix plus placement, rebar and forming; never divided into a guessed split. Raised across the board 2026-08-20; slab-on-grade was ~2.5x low and drain_tile ~5x"
-wall_structure  = "$/cy PLACED and MERGED, same reason as [concrete]. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and BASEMENT_BRICK_VENEER contain no ready-mix at all and must not be escalated with a concrete index"
+wall_structure  = "$/cy PLACED and MERGED, same reason as [concrete]. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and BASEMENT_BRICK_VENEER (including its per-material rows BASEMENT_BRICK_VENEER:brown-brick / :glazed-lapis-brick / :glazed-gold-brick) contain no ready-mix at all and must not be escalated with a concrete index"
 footing_bedding = "$/cy delivered — material only. Spreading and compacting is in the excavator's number, which is not in this file. Confirmed 2026-08-20 against MnDOT 2025 average bid prices"
 openings        = "material and labour are now SEPARATE quantities. The old single 55-65% back-out factor is gone: the real material share runs 70-85% for windows, 60-70% for exterior doors, 40-55% for interior doors and 10-25% for a cased opening"
 hardware        = "material only, and deliberately so — the labour to drive a screw or set a hanger is inside the [framing] labour rate. HUCQ410-SDS is the exception and says why"
@@ -1875,5 +2055,5 @@ drainage        = "material plus installed labour, BLENDED over two products tha
 floor_heat      = "material plus installed labour, backed out of published $/SF-of-floor prices. The 3 floor sensors are not in it"
 floor_finishes  = "material plus installed labour on the ORDER quantity. carpet-pad carries labour = 0 on purpose: laying the pad is inside the carpet rate"
 placeables      = "unit price plus INSTALL labour. Rough-in is billed by the foot in [pipe_runs], [ducts] and [conduit]; branch-circuit conductors are in neither and are the largest single omission in the file"
-envelope_layers = "material plus installed labour, $/SF net. Labour is ~60% of this section — standing-seam roofing, drywall finishing and painting are all labour-dominated trades"
+envelope_layers = "material plus installed labour, $/SF net. Labour is ~60% of this section — standing-seam roofing, drywall finishing and painting are all labour-dominated trades. The metal skin is FOUR rows keyed on seam profile and gauge, not one: mechanical seam, snap lock, nail strip and 26 ga nail strip differ by up to $2.50/SF of LABOUR and must never be re-merged"
 framing         = "material plus installed labour, $/LF of ordered stock. Add 10-15% for framing general conditions (mobilisation, bracing, layout, hardware, punch-out), which no per-unit rate captures"

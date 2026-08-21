@@ -7,6 +7,7 @@ raised heel, and that lift has to happen before anything reads the plane — see
 
 from __future__ import annotations
 
+import math
 from dataclasses import replace
 
 from shapely.geometry import Polygon
@@ -17,6 +18,7 @@ from typehaus.model.refs import ToRoof
 from typehaus.model.spatial import Roof
 from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section, truss_chord_depth_m
+from typehaus.resolve.geometry import polygon_area
 from typehaus.resolve.model import ResolvedModel, ResolvedRoof, ResolvedWall
 
 # A standard raised ("energy") heel when a truss assembly does not declare its own.
@@ -76,6 +78,72 @@ def roof_bearing_walls(model: ResolvedModel, roof: ResolvedRoof) -> tuple[Resolv
         return ()
     return tuple(wall for tag in element.bearing_refs
                  if (wall := model.wall(tag)) is not None)
+
+
+def roof_is_trussed(model: ResolvedModel, roof: ResolvedRoof) -> bool:
+    """True when the roof's STRUCTURE layer is framed as a truss rather than as rafters.
+
+    The one fact that decides whether a roof has a *ceiling plane* distinct from its deck:
+    a truss's bottom chord is flat, so the finish and the insulation below it lie in a
+    horizontal plane, while a rafter roof's lining follows the slope. Do not substitute
+    ``deck_rise_m() is None`` for this — that returns None for an unframed roof too.
+    """
+    spec = roof_structure_framing(model, roof)
+    return spec is not None and spec.roof_frame == "truss"
+
+
+def roof_bearing_footprint(model: ResolvedModel,
+                           roof: ResolvedRoof) -> tuple[tuple[float, float], ...] | None:
+    """The roof's plan rectangle at the BEARING WALLS — the overhangs taken back off.
+
+    ``ResolvedRoof.footprint`` is deliberately the *overhang-expanded* rectangle: it is the
+    edge the deck, the roofing and the fascia run to, and it is also lapped out to clear the
+    bearing wall's cladding (resolve/envelope.py). That is the right extent for everything
+    bought by the roof surface — and the wrong one for anything that stops at the wall.
+    A ceiling and its insulation stop at the wall. On catlin's garage the difference is not
+    a rounding error: 26'-8" square with the 1'-4" eaves against 24'-0" square without, so
+    billing a ceiling off the footprint orders 30% too much of it.
+
+    Rebuilt from the bearing walls' axes rather than by subtracting the authored overhangs
+    from ``footprint``, because the footprint also carries the cladding lap, and undoing two
+    adjustments to recover a number the resolver already had is how the two drift apart.
+    Returns None when the roof does not resolve two bearing walls — never a guess.
+    """
+    walls = roof_bearing_walls(model, roof)
+    if len(walls) < 2:
+        return None
+    points = [point for wall in walls for point in wall.axis]
+    xs, ys = [point[0] for point in points], [point[1] for point in points]
+    minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
+    if maxx - minx < 1e-6 or maxy - miny < 1e-6:
+        return None
+    return ((minx, miny), (maxx, miny), (maxx, maxy), (minx, maxy))
+
+
+def roof_ceiling_area_m2(model: ResolvedModel, roof: ResolvedRoof) -> float | None:
+    """Area of the plane a roof's ceiling finish and cavity insulation actually cover.
+
+    Two different planes, decided by :func:`roof_is_trussed`:
+
+    - a TRUSS roof ceilings out flat on the bottom chord, so the area is the bearing
+      footprint as-is and the pitch never enters it;
+    - a RAFTER roof carries its lining and its cavity up the slope, so the same footprint
+      is multiplied by the slope factor — the identical ``sqrt(1 + (rise/run)^2)`` the
+      resolver applies to the deck (resolve/envelope.py), just over the smaller rectangle.
+
+    Neither is ``ResolvedRoof.surface_area_m2``, which is sloped *and* overhung and belongs
+    to the deck. Returns None when the bearing footprint or the authored pitch is unknown.
+    """
+    footprint = roof_bearing_footprint(model, roof)
+    if footprint is None:
+        return None
+    area = abs(polygon_area(list(footprint)))
+    if roof_is_trussed(model, roof):
+        return area
+    element = model.plan.by_tag(roof.tag)
+    if not isinstance(element, Roof):
+        return None
+    return area * math.sqrt(1.0 + (element.pitch.rise / element.pitch.run) ** 2)
 
 
 def truss_heel_lift_m(model: ResolvedModel, roof: ResolvedRoof) -> float:

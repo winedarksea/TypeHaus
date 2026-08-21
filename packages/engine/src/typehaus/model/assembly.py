@@ -98,8 +98,8 @@ class LayerExtent(HausModel):
     This is the "vertically compound wall" of a BIM authoring tool — a layer row split into
     regions at a height — expressed on the *type* rather than on each wall, which is the only
     place it can live: an ``Assembly`` is shared by many walls and knows none of their
-    elevations. Two layers occupying the same slot in the stack with non-overlapping extents
-    are the two regions of one split row.
+    elevations. Two layers with non-overlapping extents that name the same ``Layer.slot``
+    are the two regions of one split row, and share one depth position in the stack.
 
     ``None`` on either end means the wall's own end, which is what every layer written before
     this existed still says by carrying no ``extent`` at all.
@@ -123,12 +123,25 @@ class Layer(HausModel):
     cavity: CavityFill | None = None
     # Vertical extent, when this layer does not run the wall's full height — a protection
     # panel above grade, a splash course at the base, a water table. ``None`` is full height,
-    # and is what the whole catalog said before this field existed. A banded layer still
-    # occupies its full depth in the stack: it displaces the layers outboard of it over the
-    # whole wall, exactly as a full-height layer of the same thickness would, because the
-    # alternative — a stack whose total thickness varies with elevation — is not something
-    # ``Wall.alignment`` or any junction rule can answer.
+    # and is what the whole catalog said before this field existed. A banded layer with no
+    # ``slot`` still occupies its full depth in the stack: it displaces the layers outboard
+    # of it over the whole wall, exactly as a full-height layer of the same thickness would,
+    # because the alternative — a stack whose total thickness varies with elevation — is not
+    # something ``Wall.alignment`` or any junction rule can answer.
     extent: LayerExtent | None = None
+    # The regions of ONE row of the stack, named. Layers sharing a ``slot`` occupy a single
+    # depth position between them rather than one each — a brick plinth under a different
+    # brick field, a parge below grade under a protection panel above it. Without it the
+    # only way to spell a split row was to author the regions as separate layers, and the
+    # stack walk then charged the wall for every one of them: four 3 5/8" brick regions
+    # resolved to a 14 1/2" wythe.
+    #
+    # The rules, enforced by ``integrity.assembly_layers``: every member carries the same
+    # ``thickness`` (a slot with no single depth is not a depth position), every member
+    # carries an ``extent`` (one that did not would claim the whole wall and hide its
+    # siblings), and no two members' bands overlap. Elevations not claimed by any member
+    # are simply not built — a row may have a gap, and that is what a reveal is.
+    slot: str | None = None
 
 
 class AssemblyInterface(HausModel):
@@ -173,6 +186,28 @@ class Assembly(HausModel):
     # Acoustics (#50): empirical lab-test lookup, never computed.
     stc: int | None = None
     source: str | None = None
+
+    def depth_layers(self) -> tuple[Layer, ...]:
+        """The layers that occupy their own slice of the stack depth, interior→exterior.
+
+        The regions of one ``Layer.slot`` share a slice: they sit at different elevations in
+        the same row, so only the first of them counts toward how deep the assembly is. Any
+        caller measuring or rolling up the STACK — total thickness, an R-value walk — wants
+        this rather than ``layers``, which is every authored region and would report a
+        four-region brick wythe as four wythes deep.
+
+        A caller that wants each region, because it is billing area or drawing a band, wants
+        ``layers`` and is right to.
+        """
+        seen: set[str] = set()
+        out: list[Layer] = []
+        for layer in self.layers:
+            if layer.slot is not None:
+                if layer.slot in seen:
+                    continue
+                seen.add(layer.slot)
+            out.append(layer)
+        return tuple(out)
 
     def structure_index(self) -> int | None:
         for i, layer in enumerate(self.layers):

@@ -25,6 +25,10 @@ from typehaus.takeoff.hardware_config import ExteriorInsulationFastenerRules
 # Float slack when a run divides evenly into its spacing (an 18 ft wall at 16 in o.c.).
 _GRID_EPSILON = 1e-9
 
+# Layers a screw passes through without anything of it bearing on them, so they never break
+# the contact between a screwed strip/deck and the foam it is held off the framing by.
+_MEMBRANE_FUNCTIONS = frozenset({"membrane"})
+
 
 @dataclass(frozen=True)
 class ExteriorInsulationFastening:
@@ -54,11 +58,26 @@ def exterior_insulation_fastening(
         return None
     structure_index = structure_indices[-1]  # outermost structural layer carries the screw
     outboard = list(enumerate(layer_stack))[structure_index + 1:]
-    fastened = [index for index, (function, _, _) in outboard
-                if function in rules.fastened_layer_functions]
-    if not fastened:
+    # A layer is only *the screwed one* when it bears on the foam: a wall's furring and a
+    # vented roof's battens sit straight on the insulation, and a nailbase roof's top deck
+    # does too. A ventilated mat rolled OVER that top deck does not — the mat is held by the
+    # cladding's own clips, and the long screws already stopped at the deck beneath it. So
+    # the screwed layer is the outermost candidate whose path back to the outermost
+    # insulation crosses nothing but membranes.
+    insulation_indices = [index for index, (function, _, _) in outboard
+                          if function in rules.insulation_layer_functions]
+    if not insulation_indices:
         return None
-    fastened_index = fastened[-1]  # the outermost strip layer is the one screwed through
+    insulation_index = insulation_indices[-1]
+    fastened_index = next(
+        (index for index, (function, _, _) in reversed(outboard)
+         if function in rules.fastened_layer_functions and index > insulation_index
+         and all(between_function in _MEMBRANE_FUNCTIONS
+                 for between_function, _, _ in layer_stack[insulation_index + 1:index])),
+        None,
+    )
+    if fastened_index is None:
+        return None
     between = layer_stack[structure_index + 1:fastened_index + 1]
     insulation_m = sum(thickness for function, thickness, _ in between
                        if function in rules.insulation_layer_functions)
@@ -149,7 +168,7 @@ def exterior_insulation_screw_rows(model: ResolvedModel,
         # A roof plane is billed by grid density: the resolved roof carries its true sloped
         # surface area, but not a per-plane run/rise to walk a grid across.
         cell_m2 = strip_spacing_m * pitch_m
-        add("roof battens", roof.storey, fastening,
+        add("roof top deck", roof.storey, fastening,
             int(math.ceil(roof.surface_area_m2 / cell_m2)))
 
     rows = []

@@ -166,7 +166,17 @@ MATERIAL_ONLY = {"concrete": "concrete"}
 #: wrong the moment one run changes length. ``takeoff/drainage.py`` already reports the
 #: product per row, so qualifying by it costs nothing and makes the box-gutter downgrade in
 #: ``plans/cost-options.md`` a checkable number instead of an argument about an average.
-QUALIFIED_KEY_FIELD = {"concrete": "assembly", "drainage": "product"}
+#: ``wall_structure`` needs it a third time, and for the sharpest version of the same
+#: problem: one assembly can now be more than one material. ``Layer.slot`` splits a row of
+#: the stack into regions at a height, and catlin's ``BASEMENT_BRICK_VENEER`` is a brown
+#: unglazed plinth under a lapis glazed field with two golden-yellow registers in it —
+#: three brick colours whose delivered prices differ by 2-3x, since a second glaze colour is
+#: its own special-order pallet with its own lead time. One rate on the assembly would be
+#: weighted right only for today's band heights and would silently become wrong the moment a
+#: band moved. ``wall_structure_takeoff`` already reports the material per row, so
+#: qualifying by it costs nothing.
+QUALIFIED_KEY_FIELD = {"concrete": "assembly", "drainage": "product",
+                       "wall_structure": "material"}
 
 
 #: Sections priced and reported but held out of the construction total. They stay in

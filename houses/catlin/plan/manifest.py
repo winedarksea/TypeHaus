@@ -27,7 +27,7 @@ from library import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES, STARTER_FI
 from params import breezeway, foundations, raised_garden, roof_trim, solar, sunken_garden
 from plan import (assemblies, circuits, electrical, fixtures, furniture_types,
                   lighting, lighting_types, mep, placeables, site, transitions,
-                  views)
+                  views, wind_clamps)
 from plan.storeys import attic, basement, garage, main, second
 
 format_version = 1
@@ -123,20 +123,25 @@ PLAN = (
          *sunken_garden.MAIN_ELEMENTS,
          *breezeway.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS,
          *electrical.MAIN_ELEMENTS, *lighting.MAIN_LIGHTING,
-         *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES],
+         *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES,
+         *wind_clamps.MAIN_WIND_CLAMPS],
     )
     .with_elements("garage", [*garage.ELEMENTS, *foundations.GARAGE_ELEMENTS,
                               *electrical.GARAGE_ELEMENTS,
                               *fixtures.GARAGE_FIXTURES,
                               *lighting.GARAGE_LIGHTING,
-                              *placeables.GARAGE_PLACEABLES])
+                              *placeables.GARAGE_PLACEABLES,
+                              *wind_clamps.GARAGE_WALL_WIND_CLAMPS,
+                              *wind_clamps.GARAGE_ROOF_WIND_CLAMPS])
     .with_elements("second", [*second.ELEMENTS, *fixtures.SECOND_FIXTURES,
                                 *fixtures.BALCONY_HYDRANT,
                                 *sunken_garden.SECOND_ELEMENTS, *mep.SECOND_ELEMENTS,
                                 *electrical.SECOND_ELEMENTS, *lighting.SECOND_LIGHTING,
-                                *placeables.SECOND_PLACEABLES])
+                                *placeables.SECOND_PLACEABLES,
+                                *wind_clamps.SECOND_WIND_CLAMPS])
     .with_elements("attic", [*attic.ELEMENTS, *roof_trim.ATTIC_ELEMENTS,
                              *mep.ATTIC_ELEMENTS, *electrical.ATTIC_ELEMENTS,
                              *solar.ATTIC_ELEMENTS, *lighting.ATTIC_LIGHTING,
-                             *placeables.ATTIC_PLACEABLES])
+                             *placeables.ATTIC_PLACEABLES,
+                             *wind_clamps.ATTIC_WIND_CLAMPS])
 )

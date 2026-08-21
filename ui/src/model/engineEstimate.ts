@@ -87,7 +87,11 @@ export interface SortSpec {
 
 export const SORTS: Record<SortKey, SortSpec> = {
   cost: {
-    key: "cost", label: "Cost", descending: true,
+    // The measure is the midpoint of low/high — the closest thing the payload carries to a
+    // "most likely" figure, since prices.toml authors a range rather than a third point
+    // estimate. Labelled "Expected" rather than "Cost" so the sort's own name says what
+    // number it orders by, matching the column that now prints that number.
+    key: "cost", label: "Expected", descending: true,
     rowValue: (row) => row.mid,
     groupValue: (group) => group.mid,
   },

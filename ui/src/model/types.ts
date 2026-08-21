@@ -44,6 +44,12 @@ export interface Layer {
   // adds no wall depth, so consumers must not treat it as a band of its own.
   is_cavity?: boolean;
   cavity_host?: string | null;
+  // Absolute vertical band, when the assembly bands this layer (`Layer.extent`) or splits
+  // its row into regions at a height (`Layer.slot`). Null/absent is full height, which is
+  // almost every layer. A consumer that ignores these draws a protection panel over nine
+  // feet of buried foam, and stacks a brick wythe's three colours in the same place.
+  z0_m?: number | null;
+  z1_m?: number | null;
 }
 
 // Orientation convention (defined once, engine side: resolve/framing/profiles.py):

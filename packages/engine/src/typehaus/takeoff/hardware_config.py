@@ -28,9 +28,15 @@ class ExteriorInsulationFastenerRules:
     fastener_pitch_along_strip_in: float = 24.0
     # Minimum penetration into the structural member past the sheathing/foam sandwich.
     minimum_structural_embedment_in: float = 1.5
-    # Layer functions a fastened furring/batten layer can carry (roof battens resolve as an
-    # air gap, wall furring as furring — the same screwed strip either way).
-    fastened_layer_functions: frozenset = frozenset({"furring", "airgap"})
+    # Layer functions a screwed-through-the-foam layer can carry: wall furring resolves as
+    # furring, a vented roof batten as an air gap, and a nailbase top deck as sheathing —
+    # the same structural screw through the same foam in all three cases. Which one of
+    # several matches is THE screwed layer is not decided here — see
+    # `fasteners.exterior_insulation_fastening`, which takes the outermost candidate whose
+    # path back to the foam crosses only membranes. That is what keeps a roof's inboard ZIP
+    # and a wall's inboard sheathing out of it, and stops a vent mat rolled over a nailbase
+    # deck from stealing the screw the deck below it is actually held by.
+    fastened_layer_functions: frozenset = frozenset({"furring", "airgap", "sheathing"})
     # A strip is only *structurally* screwed when it is held off the framing by continuous
     # insulation; a rainscreen batten straight over sheathing takes ordinary siding nails.
     insulation_layer_functions: frozenset = frozenset({"insulation"})

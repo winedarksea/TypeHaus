@@ -98,7 +98,7 @@ CATLIN_EXT_2X6 = Assembly(
         Layer(name="furring", material_ref="spf", thickness=inch(0.5),
               function=LayerFunction.FURRING,
               framing=FramingSpec(member="1x4", direction="vertical")),
-        Layer(name="cladding", material_ref="standing-seam", thickness=inch(0.5),
+        Layer(name="cladding", material_ref="standing-seam-snaplock", thickness=inch(0.5),
               function=LayerFunction.CLADDING),
     ),
     interfaces=(_STUD_BEARING,),
@@ -107,28 +107,70 @@ CATLIN_EXT_2X6 = Assembly(
 )
 
 # --- hot roof (unvented; no batten framing grows — → 30 §WP3.11) --------------
+#
+# **A screwed-down nailbase, not a vented batten roof** (2026-08-20). Until this date the
+# metal landed on a 3/4" batten air gap over the foam. It now lands on a second structural
+# deck screwed straight through the foam into the rafters, and there is no vent channel at
+# all. Three consequences worth stating, because each is load-bearing somewhere else:
+#
+#   1. ONE sheathing layer became TWO, on opposite sides of the insulation. The lower
+#      (1/2" ZIP, taped) is the air/vapour/water control plane and replaces the old
+#      plywood-plus-WRB pair — one taped panel doing what two layers did. The upper
+#      (5/8" OSB) is a fastening substrate: it exists so the standing seam's concealed
+#      floating clips have something to bite that is not foam.
+#   2. The polyiso is authored as TWO 3" layers rather than one 6". That is not bookkeeping
+#      — it is the spec. The seams of the two courses are staggered and each course taped,
+#      so no joint runs unbroken from deck to deck and there is no straight air or thermal
+#      path through 6" of foam. One 6" layer cannot say that.
+#   3. The screws through the whole sandwich are 0.625 + 6.0 + 0.54 = 7.165" of penetration
+#      plus 1.5" of embedment = 8.665", which is why they are the 10" SDWH and not the 8"
+#      SDWS. `takeoff/fasteners.py` derives that from this stack; do not hand-size it.
+#
+# Two layers here exist only because the monthly condensation gate said so, and both are
+# cheap answers to expensive problems — see their materials below for the full argument:
+#
+#   * `deck-vb`, the self-adhered vapour barrier over the taped ZIP. ZIP is an air and water
+#     barrier but only Class III for vapour, and the nailbase deck above is three times
+#     tighter than it. The control layers all still live outboard of the structure, which is
+#     the point: THE INTERIOR IS PAINT AND NOTHING ELSE, no ceiling poly, no smart membrane.
+#   * `vent-mat`, the 1/4" ventilated underlayment mat under the metal. Not a furring strip
+#     and not framing — the clips screw through it into the top deck. It is the only outward
+#     drying path this roof has, and a roof under 0-perm metal with no drying path cannot
+#     pass the gate at any foam thickness.
+#
+# The metal itself is unchanged: 24 ga mechanically field-seamed, hidden floating clips.
 CATLIN_ROOF = Assembly(
     tag="CATLIN_ROOF",
     layers=(
         Layer(name="rafter", material_ref="spf", thickness=inch(11.875),
               function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="11.875 I-joist"),
-              # Target R-60 total, carried mostly by the 6" continuous exterior polyiso, not
-              # the cavity batt. 5.5" batt tight to the ceiling side leaves 6.375" unfilled
-              # against the deck deliberately — the continuous polyiso keeps the deck above
-              # dew point, so that unfilled depth is the condensation margin, not a shortfall.
-              cavity=CavityFill(material_ref="mineral-wool", thickness=inch(5.5),
+              framing=FramingSpec(member="11.875 I-joist", spacing=inch(16)),
+              # ~R-55 whole-assembly, carried mostly by the 6" continuous exterior polyiso,
+              # not the cavity batt. This is honestly R-55 and not the R-60 the target names:
+              # the library rates polyiso at 5.6/in (a de-rated cold-climate value, not the
+              # 6.0 on the label) and an R-19 batt is thinner and weaker than the 5.5"
+              # mineral wool it replaced. Accepted on 2026-08-20 rather than papered over by
+              # bumping the batt or re-rating the foam — the number that governs here is the
+              # CI-to-total RATIO, and that went UP, which is what keeps the deck above dew
+              # point. The 6.25" batt tight to the ceiling side leaves ~5.6" unfilled against
+              # the ZIP deliberately: that unfilled depth is the condensation margin.
+              cavity=CavityFill(material_ref="fiberglass-r19", thickness=inch(6.25),
                                 framing_factor=0.07)),
-        Layer(name="deck", material_ref="struct-1-plywood", thickness=inch(0.75),
-              function=LayerFunction.SHEATHING),
-        Layer(name="membrane", material_ref="air-barrier", thickness=inch(0.25),
-              function=LayerFunction.MEMBRANE,
+        Layer(name="zip", material_ref="zip-sheathing", thickness=inch(0.5),
+              function=LayerFunction.SHEATHING,
               control={ControlLayer.AIR, ControlLayer.WATER}),
-        Layer(name="polyiso", material_ref="polyiso", thickness=inch(6.0),
+        Layer(name="deck-vb", material_ref="roof-deck-vapor-barrier", thickness=inch(0.04),
+              function=LayerFunction.MEMBRANE,
+              control={ControlLayer.AIR, ControlLayer.VAPOR}),
+        Layer(name="polyiso-1", material_ref="polyiso", thickness=inch(3.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        Layer(name="roof-membrane", material_ref="air-barrier", thickness=inch(0.25),
+        Layer(name="polyiso-2", material_ref="polyiso", thickness=inch(3.0),
+              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+        Layer(name="top-deck", material_ref="osb", thickness=inch(0.625),
+              function=LayerFunction.SHEATHING),
+        Layer(name="underlayment", material_ref="roof-underlayment-synthetic", thickness=inch(0.06),
               function=LayerFunction.MEMBRANE, control={ControlLayer.WATER}),
-        Layer(name="batten-gap", material_ref="spf", thickness=inch(0.75),
+        Layer(name="vent-mat", material_ref="roof-vent-mat", thickness=inch(0.25),
               function=LayerFunction.AIRGAP),
         Layer(name="roofing", material_ref="standing-seam", thickness=inch(0.5),
               function=LayerFunction.CLADDING),
@@ -138,7 +180,7 @@ CATLIN_ROOF = Assembly(
         Layer(name="gwb-ceil", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
     ),
-    source="catlin-house ifcplot/assemblies.py HOUSE_ROOF (hot roof, 4:12)",
+    source="catlin-house ifcplot/assemblies.py HOUSE_ROOF (hot roof, 4:12); vented batten cavity replaced by a screwed-down 5/8\" OSB top deck over two staggered 3\" polyiso courses 2026-08-20",
 )
 
 # --- concrete family -----------------------------------------------------------
@@ -298,23 +340,77 @@ SUNKEN_GARDEN_COLUMN_16 = Assembly(
 )
 
 # Glazed-brick veneer over the exposed basement wall (sunken garden excavated against it).
-# Two layers only, on purpose: there is no CMU backer wythe here,
-# because the existing CATLIN_BASEMENT_12 concrete (damp-proofing + 4" XPS + parge already
-# outboard) IS the backer — this wall stands 1" off it on masonry ties. No STRUCTURE layer
-# either (`structure_index()` returns None, not an error) — a fictional backer would
-# double-count concrete already modeled by W-B-S2/W-B-S3. No `interfaces`: non-bearing.
+# There is no CMU backer wythe here, because the existing CATLIN_BASEMENT_12 concrete
+# (damp-proofing + 4" XPS + parge already outboard) IS the backer — this wall stands 1" off
+# it on masonry ties. A fictional backer would double-count concrete already modeled by
+# W-B-S2/W-B-S3. No `interfaces`: non-bearing.
+#
+# **The Ishtar scheme (2026-08-20).** The wythe was one flat field of glazed-green-brick
+# until the green — liked on its own — was judged not to sit with a house of white standing
+# seam, #1c1f24 trim and arched concrete garden walls. It now reads as the Ishtar Gate of
+# Babylon: a lapis field with golden-yellow register bands over an unglazed brown plinth.
+# `glazed-green-brick` is still in the catalog, unreferenced, so reverting is one word.
+#
+# All five brick regions are ONE row of the stack — `slot="wythe"` — so they share a single
+# 3 5/8" depth position between them instead of taking one each. Without the slot this
+# assembly would resolve to a 18 1/8" wythe and shove the whole wall into the garden.
+# Every region carries the same thickness and its own band off WALL_BASE (one datum
+# throughout, so `integrity.assembly_layers` can actually compare them), and the bands do
+# not overlap.
+#
+# Band heights are on the 2 2/3" modular course, measured off the wall's own base
+# (-8'-5", not -9'-0" — see the note on W-B-BRICK in plan/storeys/basement.py). The wall is
+# 8'-5" tall, so `brick-field-hi` takes the partial top course. The upper register sits ON
+# the door head line: AO-B-BRICK-DOOR is 88" tall including its 8" arch rise, so the band
+# springs off the arch crown, which is the whole Ishtar reading. The lower register caps the
+# plinth and crosses the door's foot. AO-B-BRICK-WIN (sill 29", head 55") sits wholly inside
+# `brick-field-lo` and is untouched by any band edge.
+#
+# STRUCTURE, not CLADDING, on every region: this wythe has nothing behind it in this
+# assembly (the backer is a *different wall*), so it has to be the structure layer or
+# integrity.assembly_layers finds none. Same precedent as RETAINING_BLOCK_12.
+_VENEER_WYTHE = inch(3.625)
 BASEMENT_BRICK_VENEER = Assembly(
     tag="BASEMENT_BRICK_VENEER",
     layers=(
         Layer(name="air-gap", material_ref="air-barrier", thickness=inch(1.0),
               function=LayerFunction.AIRGAP),
-        # STRUCTURE, not CLADDING: this wythe has nothing behind it in this assembly (the
-        # backer is a *different wall*), so it has to be the structure layer or
-        # integrity.assembly_layers finds none. Same precedent as RETAINING_BLOCK_12.
-        Layer(name="brick", material_ref="glazed-green-brick", thickness=inch(3.625),
-              function=LayerFunction.STRUCTURE),
+        # 9 courses of ordinary unglazed brown brick — the cheapest face on the wall, and
+        # the one the wall stands out of the ground on.
+        Layer(name="brick-plinth", material_ref="brown-brick", thickness=_VENEER_WYTHE,
+              function=LayerFunction.STRUCTURE, slot="wythe",
+              extent=LayerExtent(
+                  bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(0.0)),
+                  top=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(24.0)))),
+        # 2 courses of gold capping the plinth.
+        Layer(name="brick-band-lo", material_ref="glazed-gold-brick", thickness=_VENEER_WYTHE,
+              function=LayerFunction.STRUCTURE, slot="wythe",
+              extent=LayerExtent(
+                  bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(24.0)),
+                  top=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(29.333)))),
+        # The field: 22 courses of lapis, plinth cap to door head.
+        Layer(name="brick-field-lo", material_ref="glazed-lapis-brick",
+              thickness=_VENEER_WYTHE,
+              function=LayerFunction.STRUCTURE, slot="wythe",
+              extent=LayerExtent(
+                  bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(29.333)),
+                  top=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(88.0)))),
+        # 2 courses of gold on the door head line, springing off the arch crown.
+        Layer(name="brick-band-hi", material_ref="glazed-gold-brick", thickness=_VENEER_WYTHE,
+              function=LayerFunction.STRUCTURE, slot="wythe",
+              extent=LayerExtent(
+                  bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(88.0)),
+                  top=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(93.333)))),
+        # The lapis cap above the upper register. Open top on purpose: `top=None` is the
+        # wall's own top, which is the only way to say "run it out" without writing this
+        # wall's 8'-5" into an assembly type that any wall may use.
+        Layer(name="brick-field-hi", material_ref="glazed-lapis-brick",
+              thickness=_VENEER_WYTHE,
+              function=LayerFunction.STRUCTURE, slot="wythe",
+              extent=LayerExtent(
+                  bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(93.333)))),
     ),
-    source="basement south veneer over the sunken garden — glazed green brick, 1\" airgap, corrugated masonry ties back to the existing CATLIN_BASEMENT_12 wall (no CMU backer: the basement concrete is the backer)",
+    source="basement south veneer over the sunken garden — the Ishtar scheme (2026-08-20): lapis glazed field with golden-yellow register bands over an unglazed brown plinth, one 3 5/8\" wythe banded by Layer.slot, 1\" airgap, corrugated masonry ties back to the existing CATLIN_BASEMENT_12 wall (no CMU backer: the basement concrete is the backer). Was one flat field of glazed-green-brick, which is still in the catalog for a one-word revert",
 )
 
 # Raised-garden outer face: dry-stacked segmental retaining-wall block, one unit deep. No
@@ -449,21 +545,30 @@ GARAGE_ICF_6 = Assembly(
 GARAGE_WALL_2X6 = Assembly(
     tag="GARAGE_WALL_2X6",
     layers=(
+        # NO CAVITY INSULATION, and that is a decision rather than an omission (owner,
+        # 2026-08-20). The garage is detached and unheated; the 1.5" Zip-R's continuous
+        # R-6.6 is all the thermal layer the walls get, and the empty 2x6 bays are left
+        # open. Walls only: the garage ceiling is insulated separately and is untouched
+        # by this.
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x6", sill_gasket=inch(0.25)),
-              cavity=CavityFill(material_ref="mineral-wool")),
+              framing=FramingSpec(member="2x6", sill_gasket=inch(0.25))),
         Layer(name="zip-r", material_ref="zip-r", thickness=inch(1.5),
               function=LayerFunction.SHEATHING,
               control={ControlLayer.AIR, ControlLayer.WATER, ControlLayer.THERMAL}),
-        Layer(name="rainscreen", material_ref="spf", thickness=inch(0.375),
-              function=LayerFunction.FURRING,
-              framing=FramingSpec(member="1x4", direction="vertical")),
-        Layer(name="cladding", material_ref="standing-seam", thickness=inch(0.5),
+        # NO RAINSCREEN FURRING, and that is a decision rather than an omission
+        # (owner, 2026-08-20). Nail strip is face-fastened through an integral flange, and
+        # Zip-R's integrated WRB is a taped, drainable face rated for direct cladding
+        # attachment — so the panel goes straight onto the sheathing and the 3/8" 1x4
+        # vertical furring that used to sit here is gone. This is the cost-options
+        # "Garage: rainscreen-drop downgrade" entry, taken. It is a GARAGE-only move:
+        # CATLIN_EXT_2X6 keeps its furring, because there the cladding has to be held off
+        # 4" of exterior foam and has no sheathing face to bear on.
+        Layer(name="cladding", material_ref="standing-seam-nailstrip-26", thickness=inch(0.5),
               function=LayerFunction.CLADDING),
     ),
     default_lining=_GWB_LINING,
-    source="catlin-house ifcplot/assemblies.py GARAGE_WALL",
+    source="catlin-house ifcplot/assemblies.py GARAGE_WALL; rainscreen furring dropped and cavity batts dropped 2026-08-20 (Zip-R is the whole wall thermal layer)",
 )
 
 # Garage slab-on-grade. It now carries the same 3" of below-slab XPS as CATLIN_SLAB_FLOOR —
@@ -502,19 +607,54 @@ GARAGE_ROOF = Assembly(
         # Raised-heel trusses (2x4 chords + webs) with a 9.25" energy heel so full
         # insulation depth carries over the top plate; the truss carries the ridge, so no
         # ridge beam is required. `haus` frames the chords/webs/heel as first-class members.
+        #
+        # The fill is loose-fill fiberglass blown onto the ceiling plane, 14.5" settled —
+        # R-38 nominal (owner, 2026-08-20). The 9.25" energy heel is the FLOOR of that
+        # depth, not the ceiling: the heel is what guarantees full depth survives over the
+        # top plate instead of pinching to nothing at the eave, and the blow runs deeper
+        # than the heel across the field, tapering into it at the last bay. That is why
+        # 14.5" is thicker than this layer's own 11.875" — the fill lies on the bottom
+        # chord in a vented attic void that is far deeper than 14.5" anywhere but the very
+        # eave, so it is not bounded by the structural depth the way a stud-bay batt is.
+        # Nothing moves geometrically: a CavityFill adds no thickness to the stack
+        # (→ CavityFill), it is a parallel thermal path with the chords, not a series one.
+        # The attic above it is the vent void the PVC soffit feeds (ROOFS in
+        # storeys/garage.py). framing_factor is the 2x4 bottom chord at the solver's 16"
+        # o.c. (1.5/16); the blow buries the chords, so this is the conservative reading
+        # of the bridge.
         Layer(name="truss", material_ref="spf", thickness=inch(11.875),
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member="2x4", roof_frame="truss",
                                   heel_height=inch(9.25),
-                                  chord_member="2x4", web_member="2x4")),
+                                  chord_member="2x4", web_member="2x4"),
+              cavity=CavityFill(material_ref="blown-fiberglass", thickness=inch(14.5),
+                                framing_factor=0.09)),
         Layer(name="deck", material_ref="struct-1-plywood", thickness=inch(0.75),
               function=LayerFunction.SHEATHING),
         Layer(name="membrane", material_ref="air-barrier", thickness=inch(0.02),
               function=LayerFunction.MEMBRANE,
               control={ControlLayer.AIR, ControlLayer.WATER}),
-        Layer(name="roofing", material_ref="standing-seam", thickness=inch(0.5),
+        Layer(name="roofing", material_ref="standing-seam-nailstrip", thickness=inch(0.5),
               function=LayerFunction.CLADDING),
     ),
+    # Gypsum ceiling on the bottom chord — the air barrier the loose fill sits on. 5/8"
+    # and not 1/2" for two reasons: nothing in the code forces a thickness here (RM-GARAGE
+    # shares no wall with a dwelling room, so R302.5/R302.6 do not reach a detached garage
+    # — code.R302_5_garage_separation says exactly that), and 5/8" is the sag-resistant
+    # board for a ceiling. It is also what GARAGE_WALL_2X6's lining already uses, so the
+    # garage is one board thickness throughout.
+    #
+    # NO PAINT LAYER, and that is a decision rather than an omission (owner, 2026-08-20):
+    # the ceiling is taped and primed, not finished. GARAGE_WALL_2X6 keeps its paint, so
+    # the garage is board-and-paint on the walls and board-and-primer overhead. A
+    # `latex-paint` layer here would bill a finish coat nobody is applying; the primer
+    # coat itself is not a modelled layer, so it rides in whatever the `gwb` row's
+    # hang-tape-finish labour is taken to cover — the one thing this stack under-bills.
+    default_lining=(
+        Layer(name="gwb-ceil", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+    ),
+    source="catlin-house detached garage roof (vented 4:12 truss attic); gypsum ceiling + 9.25\" blown fiberglass added 2026-08-20",
 )
 
 # --- interior ------------------------------------------------------------------
@@ -718,6 +858,33 @@ MATERIALS = [
              r_per_inch=0.0, vapor_permeance_perms=5.0, color="#2e4a44",
              finish="matte-latex", coating=True,
              source="same film as latex-paint (IRC R702.7.1 Class III over gypsum); only the colour differs — a second Material tag is how a wall says it is a different colour, since Layer has no colour slot"),
+    # The roof's DECK vapour barrier (CATLIN_ROOF), over the taped ZIP and under the foam.
+    # This is the layer that makes the roof a "perfect wall": all four control layers land
+    # outboard of the structure, so the interior is paint and nothing else.
+    #
+    # The taped ZIP alone is not enough, and the reason is worth writing down. ZIP is an air
+    # and water barrier, but 2 perm is IRC Class III — it is not a vapour barrier. That was
+    # survivable while the layer outboard of the foam was a 54-perm membrane, because
+    # whatever crossed the ZIP left again. It stopped being survivable when the nailbase
+    # deck went on: 5/8" OSB is 0.64 perm, THREE TIMES TIGHTER than the ZIP under it. The
+    # stack was inverted — vapour entered the foam more easily than it could leave — and it
+    # piled up on the foam's cold face at 127% of saturation. Thinning the OSB does not fix
+    # it (7/16" only reaches 1.21, and APA's own data has 1/2" at 0.70 perm against 5/8" at
+    # 0.72, so the thickness lever is nearly flat in reality too). Making the sheathing-plane
+    # control layer a real Class I barrier does: 0.89, with the interior left as paint.
+    Material(tag="roof-deck-vapor-barrier", name="Self-adhered roof deck vapour barrier",
+             r_per_inch=0.0, vapor_permeance_perms=0.04, hatch="membrane", color="#4a4a4a",
+             source="published SBS self-adhered deck vapour barriers (Soprema Sopravap'r, Carlisle VapAir Seal 725TR) ASTM E96 permeance 0.03-0.05 perm; midpoint of the published range — a sheet rating, not perm-in"),
+    # The ventilated underlayment mat under the standing seam. NOT a furring strip: a ~1/4"
+    # nylon-matrix mat rolled over the underlayment, which the panel clips screw straight
+    # through into the top deck below. It is the assembly's only outward drying path, and
+    # without it the walk runs to the standing seam itself — which is rated 0 perm, so every
+    # plane inboard of it sits at interior vapour pressure and NO unvented stack under a
+    # metal roof can pass the gate at all, at any foam thickness. Metal manufacturers now
+    # ask for one over self-adhered underlayment for this exact reason.
+    Material(tag="roof-vent-mat", name="Ventilated underlayment mat (nylon matrix)",
+             r_per_inch=0.0, perm_rating=120.0, hatch="membrane", color="#8a8f94",
+             source="the vapour path through an open nylon-matrix mat is the air in it, so it is rated as `resilient-channel` above is: UAF 'Air, still' 120 perm-in"),
     # --- mudroom exposed-stud wall ---------------------------------------------
     # Appearance-grade framing, because in W-M-STRW the studs ARE the finish. Select
     # Structural S4S with eased corners: the grade buys straightness and a clean face, the
@@ -750,9 +917,94 @@ MATERIALS = [
              density=560.0, hatch="lumber", color="#b08d5e",
              finish="clear-satin-hardwax-oil", species="elm",
              source="plans/TODO.md — suite bedroom tudor posts, 10' sections cut to fit"),
+    # --- the four metal skins (2026-08-20) --------------------------------------
+    # The house is clad in metal in FOUR specifications. They are all the same white PVDF
+    # steel to look at; what separates them is SEAM PROFILE and GAUGE, and both are labour
+    # and material facts rather than architectural ones. Splitting them into four tags is
+    # what lets `prices.toml` bill each at its own rate — before this date a single tag
+    # carried all 6,300 SF at the dearest of the four, which overstated the biggest line in
+    # the house by roughly $5,000-18,000.
+    #
+    #   `standing-seam` (library/materials.py) — 24 ga, MECHANICALLY FIELD-SEAMED.
+    #       CATLIN_ROOF and nothing else. Every seam takes a separate powered-seamer pass:
+    #       +$1.50-3.00/SF of labour and ~50% more crew-hours than a hand-closed profile,
+    #       plus a seamer rental. It is on the main house roof on purpose — this is the roof
+    #       that carries the PV array, sheds onto occupied ground, and must not be re-roofed
+    #       in 25 years.
+    #   `standing-seam-snaplock` — 24 ga, SNAP-LOCK. The house walls, CATLIN_EXT_2X6 and
+    #       PLANT_EXT_2X6_HUMID. Concealed floating clips like the seamed roof, but the male
+    #       and female legs engage under hand pressure, so there is no seaming pass. Roughly
+    #       $2-4/SF cheaper installed than mechanical seam.
+    #   `standing-seam-nailstrip` — 24 ga, NAIL-STRIP. GARAGE_ROOF only. Nail strip has NO
+    #       concealed clips at all: an integral flange is face-fastened to the deck and the
+    #       next panel's leg snaps over it, dropping both the clip material and the
+    #       clip-setting labour. The trade-off is that face-fastening restricts thermal
+    #       movement, so it wants SHORT runs — which is exactly what a garage is, and is why
+    #       it stops at the garage and does not come onto the house.
+    #   `standing-seam-nailstrip-26` — 26 ga, nail strip, same white paint.
+    #       GARAGE_WALL_2X6 only. One gauge thinner (0.0179" vs 0.0239" base metal, ~25%
+    #       less steel) for 20-35% less material. It oil-cans more visibly than 24 ga on a
+    #       flat wall, which is acceptable on a detached garage and would not be on the
+    #       house; specify a striated pan rather than a flat one.
+    #
+    # Every building-science number on all four is `standing-seam`'s verbatim — continuous
+    # sheet steel is vapour-impermeable and carries no R whatever its gauge or seam — so
+    # nothing here changes an energy or a Glaser result. Keep them in step by hand.
+    #
+    # The tags keep the substring "seam" ON PURPOSE: `ui/src/three/materials.isStandingSeam`
+    # and `nordic/palette.familyOf` both key the ribbed metal finish off it, and a tag like
+    # "nail-strip-steel" would render this house's walls as flat grey.
+    Material(tag="standing-seam-snaplock", name="Snap-lock standing-seam steel, 24 ga.",
+             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
+             color="#6b7076",
+             skin_family="standing-seam",
+             source="same 24 ga. PVDF-coated steel as library `standing-seam`, snap-lock seam profile (concealed floating clips, seam engaged by hand); continuous sheet steel is vapour-impermeable and is installed over a vented rainscreen"),
+    Material(tag="standing-seam-nailstrip", name="Nail-strip standing-seam steel, 24 ga.",
+             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
+             color="#6b7076",
+             skin_family="standing-seam",
+             source="same 24 ga. PVDF-coated steel, nail-strip seam profile (integral face-fastened flange, no concealed clips); short runs only, since face-fastening restricts thermal movement"),
+    Material(tag="standing-seam-nailstrip-26", name="Nail-strip standing-seam steel, 26 ga.",
+             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
+             color="#6b7076",
+             skin_family="standing-seam",
+             source="26 ga. PVDF-coated steel, nail-strip seam profile — the detached garage's wall spec; same white as the house, one gauge thinner"),
     Material(tag="polyiso-foil", name="Foil-faced polyisocyanurate", r_per_inch=6.0,
              perm_rating=0.03, hatch="rigid", color="#d9d2a8",
              source="foil facer is the sauna's vapour retarder as well as its CI"),
+    # Loose-fill for the garage attic (GARAGE_ROOF). A separate tag from `fiberglass`
+    # because blown wool is installed at roughly half batt density and rates R-2.5/in
+    # rather than R-3.7 — reusing the batt tag would overstate the ceiling by ~48%.
+    # House-local rather than library: only this roof uses it, so it stays here until a
+    # second house wants it (CONTRIBUTING §Promotion flow).
+    Material(tag="blown-fiberglass", name="Blown (loose-fill) fiberglass", r_per_inch=2.5,
+             perm_rating=116.0, hatch="batt", color="#f6d9e1",
+             source="NAIMA/manufacturer published loose-fill glass wool R-2.2-2.7 per inch at attic settled density; midpoint. Permeance as `fiberglass` above — loose-fill glass wool is air-permeable at any density"),
+    # The roof cavity batt (CATLIN_ROOF). A separate tag from `fiberglass` because the
+    # library's 3.7/in is a HIGH-DENSITY value — right for an R-21 batt squeezed into 5.5",
+    # wrong for a standard R-19 that reaches R-19 only by lofting to 6.25". Reusing the
+    # library tag at 6.25" would read R-23 and overstate this roof by R-4. House-local until
+    # a second house wants it (CONTRIBUTING §Promotion flow).
+    Material(tag="fiberglass-r19", name="Fiberglass batt, R-19 (6-1/4\")", r_per_inch=3.04,
+             perm_rating=116.0, hatch="batt", color="#f3c6d0",
+             source="R-19 nominal over the 6.25\" lofted thickness the rating is declared at = 3.04/in. Permeance as library `fiberglass` — glass wool is air-permeable at any density"),
+    # The roof's field underlayment (CATLIN_ROOF), over the nailbase top deck.
+    #
+    # **Vapour-PERMEABLE synthetic, and that is not a preference.** High-temp peel-and-stick
+    # over the whole field is the obvious choice under metal and it fails the condensation
+    # gate outright (1.50 against 1.00): at 0.05 perm it is as tight as the deck vapour
+    # barrier under the foam, so the polyiso and the OSB deck end up sealed on BOTH faces
+    # with no way to dry in either direction. The synthetic is what turns the vent mat above
+    # it into an actual drying path — with it the same stack runs at 0.80.
+    #
+    # The eaves and valleys still get the self-adhered ice barrier code requires; that is an
+    # edge band a couple of feet wide, not a field layer, so it is priced as an allowance
+    # (`roof-ice-and-water-barrier-code-minimum` in prices.toml) rather than modelled here.
+    # It is small enough that sealing it does not close the field's drying path.
+    Material(tag="roof-underlayment-synthetic",
+             name="Vapour-permeable synthetic roof underlayment",
+             r_per_inch=0.0, vapor_permeance_perms=20.0, hatch="membrane", color="#3b3b3b",
+             source="published vapour-permeable synthetic roof underlayments (VaproShield SlopeShield, Cosella-Dorken DELTA-MAXX) ASTM E96 permeance 15-50 perm; low end of the published range — a sheet rating, not perm-in"),
     # The plant room's three materials — `pvc-panel`, `humid-room-membrane` and
     # `vinyl-sheet` — were authored here first and promoted to `library/materials.py`
     # (CONTRIBUTING §Promotion flow) on 2026-08-18: none of them carries a project
@@ -777,10 +1029,49 @@ MATERIALS = [
     # differs. Named explicitly so no renderer has to infer "green" from the tag: the glaze
     # is a ceramic coat, which is why it reads uniform and low-jitter like the white brick
     # rather than variegated like the red.
+    #
+    # RETIRED as the veneer's field on 2026-08-20, when BASEMENT_BRICK_VENEER became the
+    # Ishtar scheme below, and kept alive here on purpose: the colour was liked, it just did
+    # not sit with a house of white standing seam and #1c1f24 trim. Nothing references it, so
+    # restoring the wall to one flat forest-green field is a one-word `material_ref` swap in
+    # BASEMENT_BRICK_VENEER — the Material, its MasonryStyle and its _FINISH_BASE entry are
+    # all still there. Do not delete it to tidy up.
     Material(tag="glazed-green-brick", name="Glazed forest-green face brick",
              r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
              color="#1b4332", finish="glazed-green-brick",
-             source="basement south veneer over the sunken garden — glazed brick, 1\" airgap off the existing concrete wall"),
+             source="basement south veneer over the sunken garden until 2026-08-20 — glazed brick, 1\" airgap off the existing concrete wall; kept in the catalog as the revert target for the Ishtar scheme"),
+    # --- the Ishtar scheme (2026-08-20) ------------------------------------------------
+    # Three faces on one wythe, banded by Layer.slot in BASEMENT_BRICK_VENEER: a lapis field
+    # with golden-yellow registers over an unglazed brown plinth, after the Ishtar Gate of
+    # Babylon. Same clay unit, R-value, density and permeance as every other brick here —
+    # a brick is a brick and only the face differs, which is the whole reason `finish` and
+    # `color` are separate fields from the physics.
+    #
+    # All three hexes are authored a step DARKER than their reference colour, deliberately.
+    # An authored colour is an albedo, and the viewer lights with 0.8 hemisphere + 0.9 key +
+    # 0.6 IBL over unit irradiance, so a saturated surface arrives on screen well above what
+    # is written here — the same lesson #1c1f24 records below. Author under the tone you
+    # want to see, and re-check against `haus render --view elevation`.
+    Material(tag="glazed-lapis-brick", name="Glazed lapis-blue face brick",
+             r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
+             color="#10386a", finish="glazed-lapis-brick",
+             source="basement south veneer, the Ishtar field (2026-08-20) — glazed brick, 1\" airgap off the existing concrete wall"),
+    # The registers. Same glaze technology as the lapis and so the same low jitter, but it is
+    # a SECOND colour on the same job: its own special-order pallet, its own lead time, and a
+    # mason laying two colours to a line rather than one. That is a price fact, not a
+    # rendering one — see [wall_structure] in prices.toml.
+    Material(tag="glazed-gold-brick", name="Glazed golden-yellow face brick",
+             r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
+             color="#c08a12", finish="glazed-gold-brick",
+             source="basement south veneer, the Ishtar register bands (2026-08-20) — glazed brick, 1\" airgap off the existing concrete wall"),
+    # The plinth: ordinary unglazed brown face brick, the cheapest brick on the wall and the
+    # only one a Twin Cities yard carries off the shelf. Its variegation is the point — an
+    # unglazed clay body next to a fired glaze is what makes the glaze read as a glaze rather
+    # than as paint, so its MasonryStyle keeps the red brick's full jitter and tan mortar.
+    Material(tag="brown-brick", name="Brown face brick (unglazed)",
+             r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
+             color="#654c3a", finish="brown-brick",
+             source="basement south veneer, the Ishtar plinth (2026-08-20) — standard unglazed face brick, no special order"),
     Material(tag="cmu", name="Grouted CMU (8\")", r_per_inch=0.11, density=2000.0,
              perm_rating=2.5, hatch="concrete", color="#b8b3ab", finish="cmu",
              source="porch railing inner wythe (grouted cores); concrete masonry ~2-3 perm-in"),
@@ -914,7 +1205,7 @@ PLANT_EXT_2X6_HUMID = Assembly(
         Layer(name="furring", material_ref="spf", thickness=inch(0.5),
               function=LayerFunction.FURRING,
               framing=FramingSpec(member="1x4", direction="vertical")),
-        Layer(name="cladding", material_ref="standing-seam", thickness=inch(0.5),
+        Layer(name="cladding", material_ref="standing-seam-snaplock", thickness=inch(0.5),
               function=LayerFunction.CLADDING),
     ),
     interfaces=(_STUD_BEARING,),

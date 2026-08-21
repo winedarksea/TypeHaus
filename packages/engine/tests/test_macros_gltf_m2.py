@@ -425,15 +425,19 @@ def test_arched_wall_layer_exports_its_authored_thickness(catlin_model):
 
     W-B-BRICK carries this now: the glazed-brick veneer over the exposed south basement wall,
     whose two reveals (AO-B-BRICK-WIN/DOOR) are segmental arches. It took over from
-    W-SG-ARCH when the sunken garden's arched cross-wall was retired (2026-08-18). Two layers
-    rather than one, so the assertion is against the *thick* layer (3 5/8" of brick) rather
-    than the wall — which is the sharper test anyway: a half-thickness pick on the brick would
+    W-SG-ARCH when the sunken garden's arched cross-wall was retired (2026-08-18). More than
+    one layer, so the assertion is against the *thick* layer (3 5/8" of brick) rather than
+    the wall — which is the sharper test anyway: a half-thickness pick on the brick would
     land at 1 13/16", indistinguishable from nothing in particular, while the 1" air gap
-    beside it proves the per-layer depths are not being merged."""
+    beside it proves the per-layer depths are not being merged.
+
+    Since the Ishtar scheme (2026-08-20) the brick is five banded regions of one `Layer.slot`
+    rather than one layer, which makes the max-depth assertion do double duty: five regions
+    sharing a slot must still export 3 5/8" of depth between them, not 18 1/8"."""
     from typehaus.emit.gltf import emit_gltf_dict
 
     wall = next(w for w in catlin_model.walls if w.tag == "W-B-BRICK")
-    brick = next(layer for layer in wall.layers if layer.name == "brick")
+    brick = next(layer for layer in wall.layers if layer.name == "brick-field-lo")
     assert [o.tag for o in catlin_model.openings if o.host_wall == wall.tag] == [
         "AO-B-BRICK-WIN", "AO-B-BRICK-DOOR"]
     gltf, blob = emit_gltf_dict(catlin_model)

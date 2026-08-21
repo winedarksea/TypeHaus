@@ -83,6 +83,27 @@ export function runMaterialGeometryTests() {
   assert(authoredAppearance("white-brick", catalog)?.finish === "white-brick"
     && authoredAppearance("missing", catalog) === undefined,
     "authoredAppearance finds a catalog entry by tag and reports absence as undefined");
+
+  // The Ishtar scheme (2026-08-20): three more brick faces on the sunken garden's wythe.
+  // Every one of them is a tag substring inference CANNOT reach — "glazed-lapis-brick" and
+  // "brown-brick" say nothing the old CMU/white/red ladder recognises, so all three would
+  // fall through to red brick without their authored finish. That is the whole case for
+  // Material.finish and it is what these pin.
+  const lapis = masonryStyleFor("glazed-lapis-brick", "glazed-lapis-brick");
+  const gold = masonryStyleFor("glazed-gold-brick", "glazed-gold-brick");
+  const brown = masonryStyleFor("brown-brick", "brown-brick");
+  assert(lapis.unitM === BRICK_UNIT_M && gold.unitM === BRICK_UNIT_M && brown.unitM === BRICK_UNIT_M,
+    "The Ishtar faces are all brick, so all three keep the brick module");
+  assert(lapis.base !== null && gold.base !== null && brown.base !== null,
+    "A glaze is a ceramic coat and brown clay is not red clay — none may take the family colour");
+  assert(lapis.mortar === gold.mortar,
+    "The gold registers sit inside the lapis field, so they share its joint colour");
+  assert(brown.mortar === defaultBrick.mortar,
+    "The unglazed plinth keeps the tan mortar of ordinary brick");
+  assert(brown.jitterHSL[2] > lapis.jitterHSL[2] * 3,
+    "Unglazed clay is variegated where a fired glaze is uniform — that contrast is the plinth's job");
+  assert(masonryStyleFor("glazed-lapis-brick").key === "brick",
+    "Without the authored finish the ref alone still cannot tell lapis from red — hence Material.finish");
 }
 
 // --- member colour: no category the engine emits may reach the grey fallback --------------

@@ -111,6 +111,33 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
 - Bearing lines: west wall, center N-S wall (x=18'), east wall; 18' I-joist spans E-W.
 - Attic is a habitable hot-roofed cathedral space: 5' knee walls E/W, gables N/S,
   ridge N-S, 4:12, **zero overhang**.
+- **The roof is a screwed nailbase, and three of its layers exist only because the
+  condensation gate says so** (2026-08-20; it was a vented batten roof before). Stack above
+  the rafters: 1/2" taped ZIP -> self-adhered deck vapour barrier -> 3" + 3" polyiso
+  (staggered seams) -> 5/8" OSB top deck on 10" SDWH screws -> vapour-PERMEABLE synthetic
+  underlayment -> 1/4" ventilated mat -> 24 ga standing seam. R-55.1, and that is the honest
+  number, not the R-60 the brief asks for: the library de-rates polyiso to 5.6/in and the
+  cavity is an R-19 batt. **The interior is paint and nothing else** — every control layer
+  is outboard of the structure, which is the whole point of the arrangement.
+  Three things will silently break it, and each has cost a rebuild already:
+  - **The field underlayment must stay vapour-open.** High-temp peel-and-stick over the
+    whole deck is the obvious spec and it fails the gate at 1.50 — at 0.05 perm it is as
+    tight as the deck barrier under the foam, so the polyiso and the OSB are sealed on both
+    faces with no way to dry either direction. Self-adhered ice barrier at the eaves and
+    valleys only; that band is priced as an allowance, not modelled.
+  - **The vent mat is not optional and is not a furring strip.** It is the assembly's only
+    drying path. Without it the Glaser walk runs to the standing seam, which is rated 0
+    perm, so every plane sits at interior vapour pressure and **no unvented stack under a
+    metal roof can pass at any foam thickness**. It is an AIRGAP layer, so the envelope
+    takeoff skips it — it is carried in `prices.toml [allowances]` instead.
+  - **The taped ZIP is the air barrier, not the vapour barrier.** At 2 perm it is Class III.
+    It was survivable while the layer outboard of the foam was a 54-perm membrane and
+    stopped being survivable when the nailbase deck went on, because 5/8" OSB is 0.64 perm —
+    three times tighter than the ZIP under it, so vapour entered the foam more easily than
+    it left. Thinning the OSB is not the lever it looks like (7/16" only reaches 1.21, and
+    APA has 1/2" at 0.70 perm against 5/8" at 0.72). The deck vapour barrier is.
+  The stack depth is transcribed by hand into `params/roof_trim.py` (`_DRIP_CEILING_IN`,
+  `_CLADDING_HEAD_IN`) and into `test_catlin_eave_water.py`; move a layer and those move.
 - **Structural ridge, not a rafter-tie roof.** `RB-HOUSE` bears continuously on the
   `W-A-C1/C2` bearing wall, which stacks unbroken to the footings. That is what makes the
   rafters simple spans and keeps thrust off the 5' knee walls. Opening that center line up
@@ -262,6 +289,28 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   - Guards are `RAILING_DARK_METAL`, split off `POST_WHITE_PAINT` for this. The balcony's
     six 6x6 pillars and its knee braces still use `POST_WHITE_PAINT` and stay white — that
     shared assembly is why they must not be recoloured together.
+- **The sunken garden's veneer is the Ishtar Gate** (2026-08-20). `W-B-BRICK` was one flat
+  field of `glazed-green-brick` (`#1b4332`); the green was liked on its own but did not sit
+  with white standing seam and `#1c1f24` trim. It now reads after the Ishtar Gate of
+  Babylon — a lapis field with golden-yellow register bands over an unglazed brown plinth:
+  - `glazed-lapis-brick` `#10386a`, `glazed-gold-brick` `#c08a12`, `brown-brick` `#654c3a`.
+    Each is a three-place change like every other material appearance here — the `Material`
+    in `plan/assemblies.py`, a `MasonryStyle` in `ui/src/three/materials.ts`, and a
+    `_FINISH_BASE` entry in `emit/gltf/palette.py`. The lapis and the brown are both authored
+    a step darker than their reference colour, for the albedo reason above: the first pass at
+    `#144a86`/`#7a5340` arrived on screen as cobalt and rust.
+  - **`glazed-green-brick` is still in the catalog, referenced by nothing.** Reverting the
+    wall to one flat forest-green field is a one-word `material_ref` swap. Do not delete it.
+  - Band heights off `WALL_BASE`, on the 2 2/3" course: brown 0"–24", gold 24"–29 1/3",
+    lapis 29 1/3"–88", gold 88"–93 1/3", lapis 93 1/3"–top. The upper register sits **on the
+    door head line** — `AO-B-BRICK-DOOR` is 88" tall including its 8" arch rise — so it
+    springs off the arch crown. Move the door's head and that band goes with it.
+  - **All five are ONE row**, `slot="wythe"` (`Layer.slot`, new with this): they share a
+    single 3 5/8" depth position instead of taking one each. Without the slot the assembly
+    resolves to an 18 1/8" wythe. Every region must keep the same thickness and its own
+    non-overlapping `extent`; `integrity.assembly_layers` refuses the rest.
+  - Each colour bills its own band area on its own BOM row, priced by a material-qualified
+    key in `prices.toml` (`BASEMENT_BRICK_VENEER:brown-brick`, …). 28.3 / 79.0 / 14.8 SF.
 
 ## The loop: edit → build → check → *look* → fix
 ```

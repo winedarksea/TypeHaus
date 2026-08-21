@@ -431,7 +431,7 @@ We are going to plan a major overhaul of the basement. We are reducing the numbe
 
 All the floors on the western portion (sauna, workshop, stairs) become joists.
 
-Because the deck forms can span 18' with a one way span, poured concrete walls W-B-CE, W-B-CW*, and W-B-STR2 can be removed along with their respective footings.
+Because the deck forms can span 18' with a one way span, poured concrete walls W-B-CE, W-B-CW*, and W-B-STR2 can be removed along with their respective footings. The removal of these footings should simplify the footing drains as well.
 Wall W-B-CE becomes a staggered stud wall (still with the double door).
 
 Use subagents and web searches as useful to research this plan.
@@ -445,7 +445,7 @@ Use subagents and web searches as useful to research this plan.
 
 Firstly design a house (with permit checks, building science review, floorplan editing in the 2d UI, 3d review, cost reduction and BOM review).
 Secondly gather bids, organize the timeline (inspection gates, etc), then track completed progress.
-Thirdly use the house design as a reference (ie home assistant)
+Thirdly use the house design as a reference (ie for agents understanding live data on home assistant in context), potentially with feedback loop of updating the design or later running a remodel
 
 ### Other visual ideas (just ideas, not a TODO)
 Dark base to the house

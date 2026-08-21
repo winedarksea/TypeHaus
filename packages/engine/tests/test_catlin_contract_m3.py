@@ -333,11 +333,11 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
             inch(0.5).meters, abs=1e-6)
 
     setbacks = {entry["layer"]: entry for entry in roof.layer_edge_setbacks}
-    assert set(setbacks) == {"deck", "membrane", "polyiso", "roof-membrane",
-                             "batten-gap", "roofing"}
+    assert set(setbacks) == {"zip", "deck-vb", "polyiso-1", "polyiso-2",
+                             "top-deck", "underlayment", "vent-mat", "roofing"}
     for edge in ("west", "east", "south", "north"):
-        deck, foam = setbacks["deck"][edge], setbacks["polyiso"][edge]
-        batten, metal = setbacks["batten-gap"][edge], setbacks["roofing"][edge]
+        deck, foam = setbacks["zip"][edge], setbacks["polyiso-1"][edge]
+        batten, metal = setbacks["top-deck"][edge], setbacks["roofing"][edge]
         assert deck >= foam >= batten >= metal
         # Wall stack per the reference: deck clips at the wall-sheathing face (wrb +
         # polyiso + eps + furring + cladding), metal runs 0.6" proud of the furring.
@@ -345,6 +345,17 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
         assert foam == pytest.approx(inch(1.0).meters)
         assert batten == pytest.approx(inch(0.5).meters)
         assert metal == pytest.approx(inch(-0.1).meters)
+        # The nailbase deck is the case that made _layer_group position-aware (2026-08-20).
+        # It is a SHEATHING layer like the ZIP below the foam, but it stands where a vented
+        # roof's battens stood, so it must clip with the battens and not inherit the deck's
+        # 5.02" — which would leave the top deck standing proud of its own roofing.
+        assert setbacks["top-deck"][edge] == setbacks["vent-mat"][edge]
+        assert setbacks["top-deck"][edge] < setbacks["zip"][edge]
+        # Both foam courses are one plane: they are two layers to say the seams stagger,
+        # not two positions.
+        assert setbacks["polyiso-1"][edge] == setbacks["polyiso-2"][edge]
+        # The deck vapour barrier is under the foam, so it rides the ZIP, not the top deck.
+        assert setbacks["deck-vb"][edge] == setbacks["zip"][edge]
     # The garage/truss roof is deferred: no setbacks, geometry unchanged.
     garage = next(r for r in catlin_model.roofs if r.tag == "RF-GARAGE")
     assert garage.layer_edge_setbacks == ()
@@ -1095,14 +1106,20 @@ def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
             ) / len(layer.polygon)
 
         # Every member is on the centreline of the band it belongs to — the studs on the
-        # structure layer's, and the rainscreen strapping on the FURRING layer's, 4-7/16"
-        # outboard of it (resolve/framing/furring.py). Asserting one offset for all of them
-        # would put the battens inside the ZIP-R they are fastened over.
-        expected = {"strapping": band_offset("furring")}
+        # structure layer's, and the rainscreen strapping, where there is any, on the FURRING
+        # layer's, outboard of it (resolve/framing/furring.py). Asserting one offset for all
+        # of them would put the battens inside the ZIP-R they are fastened over.
+        #
+        # GARAGE_WALL_2X6 has had NO furring layer since 2026-08-20 (nail strip face-fastens
+        # straight to the Zip-R), so on this house the strapping branch is currently dead. It
+        # stays coded rather than deleted because the offset rule is what the test is about,
+        # and the furring comes straight back if the garage ever re-clads.
+        has_furring = any(ly.function == "furring" for ly in wall.layers)
+        expected = {"strapping": band_offset("furring")} if has_furring else {}
         default_offset = band_offset("structure")
 
         assert wall.members
-        assert any(member.category == "strapping" for member in wall.members)
+        assert has_furring == any(member.category == "strapping" for member in wall.members)
         for member in wall.members:
             center_offset = expected.get(member.category, default_offset)
             for point in (member.p0, member.p1):

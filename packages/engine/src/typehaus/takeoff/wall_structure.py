@@ -20,6 +20,14 @@ branches on, so the two sections partition the walls exactly and cannot drift ap
 
 Deliberately out of scope, so a reader does not assume they were forgotten:
 
+* **Only the takeoff reads every structure layer.** The other consumers of
+  ``structure_layer`` / ``Assembly.structure_index`` still take the first one, and that was
+  checked when ``Layer.slot`` arrived rather than assumed:
+  ``resolve/assembly_material.py`` and ``emit/gltf/palette.py`` want a fallback colour for a
+  *solid*, ``emit/draw/foundation_schedule.py`` and ``emit/draw/section.py`` want a
+  thickness. Every region of a slot carries the same thickness by rule, so the schedule and
+  the section are unaffected; the two colour fallbacks pick the first region's material,
+  which for a split row is a presentation choice and not a quantity.
 * **No masonry unit counts.** ``MasonrySpec.unit_size`` stays unread; area and volume only.
   For hollow CMU and SRW block the volume here is therefore *gross* wall volume, not net
   material — right for pricing a wall by the face, wrong for counting block.
@@ -38,9 +46,10 @@ Deliberately out of scope, so a reader does not assume they were forgotten:
 
 from __future__ import annotations
 
-from typehaus.resolve.framing.solver import frames_as_members, structure_layer
+from typehaus.model.enums import LayerFunction
+from typehaus.resolve.framing.solver import frames_as_members
 from typehaus.resolve.model import ResolvedModel
-from typehaus.takeoff.envelope import wall_net_areas_m2
+from typehaus.takeoff.envelope import wall_layer_net_area_m2, wall_net_areas_m2
 from typehaus.takeoff.framing import _FT3_PER_CUBIC_YARD, _M2_TO_FT2, _M3_TO_FT3
 
 
@@ -52,32 +61,54 @@ def wall_structure_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     keep their own row instead of merging into the house's foundation concrete. Areas are
     net of openings — the same face ``envelope_layers`` bills the coverings on — and volume
     is that net area times the structure layer's thickness.
+
+    **Every** monolithic STRUCTURE layer bills, not just the first one. An assembly may
+    split one row of its stack into regions at a height (``Layer.slot``), and those regions
+    are different materials at different prices — catlin's brick wythe is a brown plinth
+    under a lapis field with two gold registers in it. Asking
+    :func:`~typehaus.resolve.framing.solver.structure_layer` for "the" structure layer, as
+    this did until 2026-08-20, billed all 122 SF of that wall as the plinth's brown brick
+    and never mentioned the glaze. A banded region takes its own band area from
+    :func:`~typehaus.takeoff.envelope.wall_layer_net_area_m2` — the same helper
+    ``envelope_layers`` uses, so a covering and the thing it covers cannot disagree about
+    how tall a band is. An unbanded layer still gets the whole wall face, so no existing
+    row moved.
     """
     Row = dict[str, object]
     groups: dict[tuple[str, str, str, float], Row] = {}
     net_areas = wall_net_areas_m2(model)
 
     for wall in model.walls:
-        layer = structure_layer(model.plan, wall.assembly)
-        if layer is None or frames_as_members(layer):
+        asm = model.plan.library.resolve_assembly(wall.assembly)
+        if asm is None:
             continue
-        net_m2 = net_areas[wall.tag]
-        thickness_m = layer.thickness.meters
+        authored = {layer.name: layer for layer in asm.layers}
         scope = "foundation wall" if wall.is_foundation else "wall"
-        key = (scope, wall.assembly, layer.material_ref, thickness_m)
-        row = groups.get(key)
-        if row is None:
-            row = groups[key] = {"scope": scope, "assembly": wall.assembly,
-                                 "material": layer.material_ref,
-                                 "thickness_in": round(thickness_m / 0.0254, 3),
-                                 "count": 0, "net_area_m2": 0.0, "volume_m3": 0.0,
-                                 "tags": []}
-        row["count"] = int(row["count"]) + 1
-        row["net_area_m2"] = float(row["net_area_m2"]) + net_m2
-        row["volume_m3"] = float(row["volume_m3"]) + net_m2 * thickness_m
-        tags = row["tags"]
-        assert isinstance(tags, list)
-        tags.append(wall.tag)
+        for resolved in wall.layers:
+            if resolved.function != LayerFunction.STRUCTURE.value:
+                continue
+            layer = authored.get(resolved.name)
+            if layer is None or frames_as_members(layer):
+                continue
+            net_m2 = wall_layer_net_area_m2(model, wall, resolved, net_areas[wall.tag])
+            if net_m2 <= 0.0:
+                continue
+            thickness_m = layer.thickness.meters
+            key = (scope, wall.assembly, layer.material_ref, thickness_m)
+            row = groups.get(key)
+            if row is None:
+                row = groups[key] = {"scope": scope, "assembly": wall.assembly,
+                                     "material": layer.material_ref,
+                                     "thickness_in": round(thickness_m / 0.0254, 3),
+                                     "count": 0, "net_area_m2": 0.0, "volume_m3": 0.0,
+                                     "tags": []}
+            row["count"] = int(row["count"]) + 1
+            row["net_area_m2"] = float(row["net_area_m2"]) + net_m2
+            row["volume_m3"] = float(row["volume_m3"]) + net_m2 * thickness_m
+            tags = row["tags"]
+            assert isinstance(tags, list)
+            if wall.tag not in tags:
+                tags.append(wall.tag)
 
     rows: list[dict[str, object]] = []
     for key in sorted(groups):

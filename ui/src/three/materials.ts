@@ -215,6 +215,32 @@ const GLAZED_GREEN_BRICK_STYLE: MasonryStyle = {
   jointFraction: 0.06, halfLap: 0.5, mortar: "#4a4f49", base: "#1b4332",
   jitterHSL: [0.004, 0.015, 0.04],
 };
+// The Ishtar scheme on the sunken garden's veneer (2026-08-20). Lapis field and gold
+// registers are the same fired glaze as the green above, so they take the same near-zero
+// jitter and a dark mortar; they differ only in the unit colour, which is fixed for the same
+// reason the green's is — a ceramic glaze is not a clay body and must not take the
+// brick-red family colour.
+const GLAZED_LAPIS_BRICK_STYLE: MasonryStyle = {
+  key: "glazed-lapis-brick", unitM: BRICK_UNIT_M, unitsPerTile: 3, coursesPerTile: 6,
+  jointFraction: 0.06, halfLap: 0.5, mortar: "#3c4756", base: "#10386a",
+  jitterHSL: [0.004, 0.015, 0.04],
+};
+// The register bands sit inside the lapis field, so they share its mortar — a band that
+// changed the joint colour too would read as a separate wall rather than a course of this one.
+const GLAZED_GOLD_BRICK_STYLE: MasonryStyle = {
+  key: "glazed-gold-brick", unitM: BRICK_UNIT_M, unitsPerTile: 3, coursesPerTile: 6,
+  jointFraction: 0.06, halfLap: 0.5, mortar: "#3c4756", base: "#c08a12",
+  jitterHSL: [0.004, 0.015, 0.04],
+};
+// The plinth under them: unglazed brown clay over tan mortar, at the red brick's FULL
+// jitter. The variegation is the point — an unglazed body next to a fired glaze is what
+// makes the glaze above it read as a glaze instead of as paint. Mortar is the plain brick
+// tan, the same joint the red brick takes — it is ordinary brick and should be laid like it.
+const BROWN_BRICK_STYLE: MasonryStyle = {
+  key: "brown-brick", unitM: BRICK_UNIT_M, unitsPerTile: 3, coursesPerTile: 6,
+  jointFraction: 0.05, halfLap: 0.5, mortar: "#cfc8ba", base: "#654c3a",
+  jitterHSL: [0.02, 0.08, 0.16],
+};
 // Concrete block: the large face module, a fixed neutral grey, tighter joints and very low
 // jitter so it reads as cast block rather than laid brick.
 const CMU_STYLE: MasonryStyle = {
@@ -249,6 +275,9 @@ export const MASONRY_STYLES: Readonly<Record<string, MasonryStyle>> = {
   brick: BRICK_STYLE,
   "white-brick": WHITE_BRICK_STYLE,
   "glazed-green-brick": GLAZED_GREEN_BRICK_STYLE,
+  "glazed-lapis-brick": GLAZED_LAPIS_BRICK_STYLE,
+  "glazed-gold-brick": GLAZED_GOLD_BRICK_STYLE,
+  "brown-brick": BROWN_BRICK_STYLE,
   cmu: CMU_STYLE,
 };
 

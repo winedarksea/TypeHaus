@@ -309,6 +309,43 @@ def test_envelope_bills_more_than_the_sheathing(bom):
                    if row["function"] != "sheathing")
 
 
+def test_a_roof_ceiling_bills_off_the_bearing_plane_not_the_deck(catlin_model, bom):
+    """A roof's ``default_lining`` and its layers' ``CavityFill`` were read by nothing.
+
+    The roof loop walked bare ``assembly.layers``, so the gypsum ceiling under CATLIN_ROOF's
+    rafters, its 5.5" cavity batts, and the garage attic's blown fill all reached no order —
+    the same class of miss as ``ceiling_below`` above, one plane further up.
+
+    The plane matters as much as the fact. ``surface_area_m2`` is sloped AND runs out to the
+    fascia; a ceiling stops at the bearing wall, and on a truss it lies flat. The garage is
+    the clean case: 24'-0" square inside its bearings, 26'-8" square once the 1'-4" eaves are
+    on, so billing the ceiling off the deck would order 30% too much of it."""
+    from typehaus.resolve.roof_geometry import roof_ceiling_area_m2
+
+    rows = [row for row in bom["envelope_layers"] if row["scope"] == "roof ceiling"]
+    assert rows, "roof default_lining and cavity fill reached no order"
+
+    garage = next(roof for roof in catlin_model.roofs if roof.tag == "RF-GARAGE")
+    # Trussed: flat bottom chord, so the pitch never enters the ceiling area.
+    assert roof_ceiling_area_m2(catlin_model, garage) * 10.7639 == pytest.approx(576.0, abs=0.5)
+    assert garage.surface_area_m2 > roof_ceiling_area_m2(catlin_model, garage)
+
+    blown = [row for row in rows if row["material"] == "blown-fiberglass"]
+    assert len(blown) == 1, "the garage attic fill is a cavity, not a layer"
+    assert blown[0]["function"] == "insulation (cavity)", "must read as the wall path does"
+    assert float(blown[0]["net_area_sqft"]) == pytest.approx(576.0, abs=0.5)
+
+    house = next(roof for roof in catlin_model.roofs if roof.tag == "RF-HOUSE")
+    # Rafter-framed: the lining follows the slope, so the same bearing rectangle is lifted
+    # by the slope factor — but it still stops short of the deck's overhung area.
+    house_ceiling = roof_ceiling_area_m2(catlin_model, house)
+    assert house_ceiling > 0.0
+    assert house_ceiling < house.surface_area_m2
+
+    # A ceiling is never billed as sheet goods: that scope belongs to FloorSystem decks.
+    assert not any(row["also_in_sheet_goods"] for row in rows)
+
+
 def test_stair_finish_bills_treads_risers_and_landings(catlin_model, bom):
     """Stringers bill as lumber through `framing`; a milled tread is a different order from
     a different supplier, counted by the piece."""
@@ -372,8 +409,9 @@ def test_bug_screens_bill_the_exterior_perimeter_once_not_once_per_storey(catlin
     screened base — billing per wall would order three times the strip that is installed.
 
     Reconciled against the walls themselves: the total is the run of exactly the walls whose
-    cavity starts at their own base, which on catlin is the main-storey perimeter plus the
-    garage's.
+    cavity starts at their own base, which on catlin is the main-storey perimeter. The garage
+    dropped out on 2026-08-20 when GARAGE_WALL_2X6 lost its rainscreen furring — nail strip
+    face-fastens straight to the Zip-R, so there is no cavity there to close.
     """
     from typehaus.resolve.accessories import screens_rainscreen_base
     from typehaus.resolve.geometry import length, sub
@@ -386,16 +424,21 @@ def test_bug_screens_bill_the_exterior_perimeter_once_not_once_per_storey(catlin
     expected = sum(length(sub(wall.axis[1], wall.axis[0])) for wall in screened) * 3.280839895
     assert billed == pytest.approx(expected, abs=0.2)
     # Every screened wall is a ground-tier one; nothing stacked on a rainscreen qualifies.
-    assert {wall.storey for wall in screened} == {"main", "garage"}
+    assert {wall.storey for wall in screened} == {"main"}
     assert all(row["material"] == "corrugated-vent-strip" for row in rows)
 
 
 def test_bug_screen_rows_are_grouped_by_the_cavity_they_are_cut_to(bom):
     """The strip is bought in the section that fills the cavity, so a house with two
-    different batten depths is two different orders — catlin's 1/2" house battens and the
-    garage's 3/8" ones."""
-    depths = {float(row["cavity_depth_in"]) for row in bom["bug_screens"]}
-    assert len(depths) == len(bom["bug_screens"]) > 1
+    different batten depths is two different orders.
+
+    Catlin is down to ONE depth since 2026-08-20 — the garage's 3/8" battens went with its
+    rainscreen, leaving only the house's 1/2" — so what this can still prove is the grouping
+    itself: one row per distinct depth, never one row per wall.
+    """
+    rows = bom["bug_screens"]
+    depths = {float(row["cavity_depth_in"]) for row in rows}
+    assert rows and len(depths) == len(rows)
     assert all(depth > 0 for depth in depths)
 
 

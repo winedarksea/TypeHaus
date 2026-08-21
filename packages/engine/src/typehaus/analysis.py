@@ -71,10 +71,18 @@ def _layer_rsi(layer, library: Library, unknown: list[str]) -> float:
 
 def assembly_r_value(asm: Assembly, library: Library, include_lining: bool = True,
                      include_films: bool = True) -> RValueResult:
-    """Compute core (+ default_lining) R-value from material r_per_inch (#34)."""
+    """Compute core (+ default_lining) R-value from material r_per_inch (#34).
+
+    Walks ``Assembly.depth_layers()``, not every authored layer: the regions of a split row
+    (``Layer.slot``) are side by side up the wall, not in series through it, so adding all of
+    them would report a four-colour brick wythe at four wythes' worth of R. What this reports
+    for such a row is the FIRST region's — a split row's R genuinely varies with elevation,
+    and a single number for the assembly can only be one of them. Same simplification a
+    banded layer has always had here.
+    """
     total_rsi = _FILM_RSI if include_films else 0.0
     unknown: list[str] = []
-    layers = list(asm.layers)
+    layers = list(asm.depth_layers())
     if include_lining:
         layers = list(asm.default_lining) + layers
     for layer in layers:
@@ -130,7 +138,8 @@ def assembly_metrics(asm: Assembly, library: Library) -> AssemblyMetrics:
     hallway loses; cavity fill is deliberately excluded — it lives *inside* its host layer's
     depth (→ :class:`CavityFill`) and adding it would double-count the wall.
     """
-    stack = list(asm.default_lining) + list(asm.layers)
+    # depth_layers(), so a split row (`Layer.slot`) counts once — see assembly_r_value.
+    stack = list(asm.default_lining) + list(asm.depth_layers())
     structure = next((ly for ly in stack if ly.function is LayerFunction.STRUCTURE), None)
     spec = structure.framing if structure is not None else None
     spacing_in = None

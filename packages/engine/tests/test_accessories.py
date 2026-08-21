@@ -228,9 +228,11 @@ def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
     assembly = catlin_model.plan.library.resolve_assembly(roof.assembly)
     skin = sum(layer.thickness.meters for layer in above_structure_layers(assembly))
     expected = roof_height_at(roof, (ft(1).meters, ft(37).meters)) + skin + inch(12).meters
-    # ~27.9': eave_z_m is the deck plane, and the CATLIN_ROOF skin (foam+furring+
-    # standing-seam) adds another 8.5" above that deck plane, so the derived termination
-    # rides that much higher than the bare-plate datum.
+    # ~27.9': eave_z_m is the deck plane, and the CATLIN_ROOF skin (zip + vapour barrier +
+    # foam + nailbase deck + underlayment + vent mat + standing seam) adds another 7.975"
+    # above that deck plane, so the derived termination rides that much higher than the
+    # bare-plate datum. The skin is summed here rather than written down, so a roof rebuild
+    # moves the vent with it — 2026-08-20 took it from 8.5" to 7.975" and nothing broke.
     assert expected < 29 * FT
     for t in terms:
         assert abs(t.z0_m - exit_z) < 0.05
@@ -572,8 +574,12 @@ def test_every_rainscreen_wall_base_is_screened(catlin_model) -> None:
     expected = {wall.tag for wall in catlin_model.walls
                 if screens_rainscreen_base(catlin_model, wall)}
     assert set(screens) == expected
-    # Both rainscreen families are covered: the house wall and the garage wall.
-    assert {"W-M-S1", "W-G-S"} <= expected
+    # The house wall is screened; the GARAGE wall deliberately is not, and that is the point
+    # of deriving this rather than authoring it. GARAGE_WALL_2X6 dropped its rainscreen furring
+    # on 2026-08-20 (nail strip face-fastens straight to the Zip-R), so there is no cavity left
+    # to close — and the rule noticed without anyone editing a screen.
+    assert "W-M-S1" in expected
+    assert "W-G-S" not in expected
 
 
 def test_a_screen_sits_in_the_cavity_it_closes_at_the_cladding_start(catlin_model) -> None:

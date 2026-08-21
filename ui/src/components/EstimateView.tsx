@@ -113,16 +113,23 @@ function rowColumns(widest: number): ReaderColumn<EstimateRow>[] {
       },
     },
     {
-      key: "cost", header: "cost", num: true, sortKey: "cost",
+      // Leads with the single number the "Expected" sort actually ranks by — a bare
+      // low-high range gave no way to tell, on a wide-spread row, what value put it where
+      // it landed in the order. The range moves to a muted line underneath, still there for
+      // the reader who wants both ends.
+      key: "cost", header: "expected", num: true, sortKey: "cost",
       cell: (row) => (
-        <>
-          <span>{formatRange(row.cost)}</span>
+        <div className="estimate-cost">
+          <span className="estimate-cost-mid">
+            {formatRange({ low: row.mid, high: row.mid })}
+          </span>
           {row.basis && (
             <span className={`estimate-basis-badge is-${row.basis}`}>
               {BASIS_BADGE[row.basis] ?? row.basis}
             </span>
           )}
-        </>
+          <span className="muted estimate-cost-range">{formatRange(row.cost)}</span>
+        </div>
       ),
     },
     {
@@ -144,7 +151,10 @@ function GroupHeader({ group, showLabel }: { group: EstimateGroup; showLabel: bo
   return (
     <div className="estimate-group-head">
       <span className="estimate-group-label">{group.label}</span>
-      <span className="reader-mono">{formatRange(group.subtotal)}</span>
+      <span className="reader-mono">
+        {formatRange({ low: group.mid, high: group.mid })}
+        <span className="muted"> ({formatRange(group.subtotal)})</span>
+      </span>
       <span className="muted">
         {group.inTotal ? `${(group.share * 100).toFixed(1)}% of total`
           : "beside the total"}
@@ -234,7 +244,7 @@ export function EstimateView() {
   };
 
   return (
-    <ReaderShell title="Estimate" subtitle={subtitle} onClose={close} toolbar={toolbar}>
+    <ReaderShell title="Estimate" subtitle={subtitle} onClose={close} toolbar={toolbar} wide>
       {error !== null && (
         <p className="estimate-warn">Could not load the estimate: {error}</p>
       )}
@@ -266,8 +276,9 @@ export function EstimateView() {
                   columns={columns}
                   rows={group.rows}
                   // Index-suffixed: (section, key) is NOT unique here. One prices.toml key
-                  // can price several BOM rows (`standing-seam` bills the wall and the
-                  // roof out of the same [envelope_layers] line), and the colliding React
+                  // can price several BOM rows (`standing-seam-nailstrip` bills the garage
+                  // roof and, until 2026-08-20, `standing-seam` billed wall and roof out of
+                  // one [envelope_layers] line), and the colliding React
                   // keys rendered one of them twice.
                   rowKey={(row, index) => `${row.section}:${row.key}:${index}`}
                   sort={sort}

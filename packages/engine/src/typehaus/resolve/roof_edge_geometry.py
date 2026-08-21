@@ -237,8 +237,24 @@ def continuous_skin_cladding(
         cladding = next((layer for layer in reversed(skin_layers(wall))
                          if layer.function == LayerFunction.CLADDING.value), None)
         if cladding is not None:
-            materials.add(cladding.material_ref)
-    return bool(materials) and materials == {roofing.material_ref}
+            materials.add(_skin_key(model, cladding.material_ref))
+    return bool(materials) and materials == {_skin_key(model, roofing.material_ref)}
+
+
+def _skin_key(model: ResolvedModel, material_ref: str | None) -> str | None:
+    """What a cladding material counts AS when asking whether a skin is continuous.
+
+    A material may declare a ``skin_family`` when a building wears one skin in more than one
+    specification — the catlin house runs the same white steel as a mechanically-seamed roof,
+    snap-lock walls and nail-strip garage, four tags so the estimate can bill four labour
+    rates. Those are one skin to a roofer and must stay one skin here. Without the field this
+    is the tag comparison it has always been.
+    """
+    if material_ref is None:
+        return None
+    material = model.plan.library.material(material_ref)
+    return (material.skin_family if material is not None and material.skin_family
+            else material_ref)
 
 
 class MitredSpan(NamedTuple):

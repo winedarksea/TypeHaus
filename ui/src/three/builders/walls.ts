@@ -96,10 +96,16 @@ export function buildWall(
           materialColor(ly.material, palette, materials), appearance?.color)
         : standardMaterial(new THREE.Color(materialColor(ly.material, palette, materials)), mode);
     mats.push(mat);
+    // A banded layer (`Layer.extent`, or one region of a split row via `Layer.slot`) covers
+    // only part of the wall's height. Clamping the pieces here rather than inside
+    // `wallLayerPieces` keeps the jamb/arch clipping it does unchanged and simply trims the
+    // result: the arch soffit of a five-colour wythe still comes from the opening, and each
+    // colour then shows only where its own band puts it. The smooth-arch path opts out —
+    // it builds one swept solid for the whole layer, and no band on this house crosses one.
     const smoothArchGeometry = createSmoothArchedWallLayerGeometry(w, ly.polygon, openings, center);
     const geometries: (THREE.BufferGeometry | null)[] = smoothArchGeometry
       ? [smoothArchGeometry]
-      : wallLayerPieces(w, ly.polygon, openings).map((piece) => piece.topIsRaked
+      : clampPiecesToBand(wallLayerPieces(w, ly.polygon, openings), ly).map((piece) => piece.topIsRaked
         ? createRakedPlanPrismGeometry(piece.polygon, piece.z0_m,
           (point) => rakedTopAt(w, point[0], point[1]), center)
         : createPlanPrismGeometry(piece.polygon, piece.z0_m, piece.z1_m, [], center));
@@ -366,6 +372,26 @@ export function createSmoothArchedWallLayerGeometry(
     0, 0, 0, 1,
   ));
   return geometry;
+}
+
+// Trim wall-layer pieces to a layer's own band, dropping the ones outside it entirely.
+// `wallLayerPieces` works in the wall's full height because that is what a layer normally
+// occupies; a banded layer is the exception, and this is where the exception is applied.
+// A piece whose raked top is cut off by the band is no longer raked — its top is the band.
+export function clampPiecesToBand(
+  pieces: WallLayerPiece[], layer: { z0_m?: number | null; z1_m?: number | null },
+): WallLayerPiece[] {
+  const bandBottom = layer.z0_m ?? null;
+  const bandTop = layer.z1_m ?? null;
+  if (bandBottom == null && bandTop == null) return pieces;
+  const out: WallLayerPiece[] = [];
+  for (const piece of pieces) {
+    const z0 = bandBottom == null ? piece.z0_m : Math.max(piece.z0_m, bandBottom);
+    const z1 = bandTop == null ? piece.z1_m : Math.min(piece.z1_m, bandTop);
+    if (z1 - z0 <= 1e-9) continue;
+    out.push({ ...piece, z0_m: z0, z1_m: z1, topIsRaked: piece.topIsRaked && z1 >= piece.z1_m });
+  }
+  return out;
 }
 
 // Split an arbitrary junction-solved layer polygon at opening jamb stations. Clipping the

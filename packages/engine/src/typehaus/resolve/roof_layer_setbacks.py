@@ -101,9 +101,18 @@ def _wall_clip_setbacks(wall) -> dict[str, float]:
 
 
 def _layer_group(function: LayerFunction, previous: str | None) -> str | None:
-    """Clip-rule group of one above-structure layer (membranes ride the layer below)."""
+    """Clip-rule group of one above-structure layer (membranes ride the layer below).
+
+    ``previous`` is the group the layer inboard of this one landed in, which is what makes
+    the SHEATHING rule position-aware. A nailbase roof has TWO sheathing layers on opposite
+    sides of the foam: the inboard one is the deck proper, the outboard one is the top deck
+    the metal is clipped to, and it occupies the slot a vented roof's battens occupied. So
+    a sheathing layer that appears once the stack has already reached the foam clips as a
+    batten, not as a deck — without that it would inherit the deck's much larger setback and
+    the top deck would stand proud of its own roofing at every edge.
+    """
     if function is LayerFunction.SHEATHING:
-        return "deck"
+        return "batten" if previous in ("foam", "batten") else "deck"
     if function is LayerFunction.INSULATION:
         return "foam"
     if function in (LayerFunction.AIRGAP, LayerFunction.FURRING):
