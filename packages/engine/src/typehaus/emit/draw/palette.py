@@ -216,3 +216,25 @@ def detail_hatch(material_ref: str | None, function: str | None = None) -> str |
         "structure": "lumber", "sheathing": "osb", "insulation": "batt",
         "membrane": "membrane",
     }.get(function or "")
+
+
+_FUNCTION_AIA = {
+    "structure": "A-WALL",
+    "sheathing": "A-WALL",
+    "cladding": "A-WALL",
+    "finish": "A-WALL-FINI",
+    "insulation": "A-WALL-INSU",
+    "membrane": "A-WALL-PATT",
+    "airgap": "A-WALL-PATT",
+    "furring": "A-WALL",
+}
+
+
+def aia_layer(function: str | None) -> str:
+    """The AIA layer a cut band of this layer function belongs on.
+
+    Beside :func:`detail_hatch` because it is the same decision from the other side: what a
+    band is *drawn as* (pattern) and what it is *filed under* (layer) are both properties of
+    the layer's function, and two modules answering one of each is how they drift apart.
+    """
+    return _FUNCTION_AIA.get(function or "", "A-WALL")
