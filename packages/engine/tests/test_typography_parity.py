@@ -1,57 +1,49 @@
 """The engine and the viewer must letter a detail the same (→ 30 §Details).
 
-``DetailCanvas`` draws the same ``Scene`` the PDF/DXF writers do, from its own copy of the
-text metrics. Nothing made the two agree: ``CHAR_ASPECT`` was written out four times on the
-Python side and once more in TypeScript, each with a comment asking the next person to keep
-it in sync. This is that comment, enforced.
+``DetailCanvas`` draws the same ``Scene`` the PDF/DXF writers do. Its sizing constants
+(``CHAR_ASPECT``, ``TEXT_PT``, and friends) used to be a second, hand-authored copy in
+``ui/src/components/detailTypography.ts`` — ``CHAR_ASPECT`` alone was written out four times
+on the Python side before this module existed, each copy asking the next person to keep it in
+sync by comment.
 
-A *Python* test reading the TypeScript as text, following ``test_palette_parity.py``: it
-fails in the engine suite, where an engine change is made, rather than only in a browser.
+The TypeScript copy is gone: ``detailTypography.ts`` now imports
+``ui/src/generated/vocabulary.json`` (generated from ``emit/draw/typography.py`` by
+``emit/vocabulary_manifest.py``) for its eight sizing constants, so a value can no longer
+drift or be invented independently on the TypeScript side. What remains possible is the
+checked-in JSON going stale relative to ``typography.py``, which
+``test_the_checked_in_manifest_matches_a_fresh_build`` below catches.
+
+The two tests below that are about *logic*, not data — ``modelInPerPt``/
+``paperInPerModelIn``/``wrapColumnsFor`` are hand-written once per language on purpose — are
+untouched.
 """
 
 from __future__ import annotations
 
-import re
+import json
 
 import pytest
 from _helpers import REPO_ROOT
 
 from typehaus.emit.draw import typography
+from typehaus.emit.vocabulary_manifest import build_vocabulary_manifest
 
 TS = REPO_ROOT / "ui" / "src" / "components" / "detailTypography.ts"
-
-#: Model-inch fallbacks the TS side needs and the engine expresses elsewhere (``scene.py``'s
-#: ``Leader.height`` default, the dimension size that has no IR field yet). Not typography
-#: constants, so they are named here rather than silently tolerated.
-_TS_ONLY = {"LEADER_TEXT_H", "DIM_TEXT_H"}
+VOCABULARY_JSON = REPO_ROOT / "ui" / "src" / "generated" / "vocabulary.json"
 
 
-def _ts_numbers() -> dict[str, float]:
-    source = TS.read_text()
-    return {name: float(value) for name, value in
-            re.findall(r"^export const ([A-Z][A-Z0-9_]*) = ([0-9.]+);$", source, re.M)}
-
-
-def _py_numbers() -> dict[str, float]:
-    return {name: getattr(typography, name) for name in dir(typography)
-            if name.isupper() and isinstance(getattr(typography, name), (int, float))}
-
-
-def test_every_engine_constant_is_present_and_equal_in_the_viewer():
-    ts = _ts_numbers()
-    for name, value in _py_numbers().items():
-        assert name in ts, f"{name} is missing from detailTypography.ts"
-        assert ts[name] == value, f"{name}: engine {value}, viewer {ts[name]}"
-
-
-def test_the_viewer_invents_no_typography_of_its_own():
-    """The direction that actually rots: a constant added on the TS side only.
-
-    Nothing else reads it, so nothing else disagrees with it — until an engine change lands
-    beside it and the two renderers quietly draw different drawings.
-    """
-    extra = set(_ts_numbers()) - set(_py_numbers()) - _TS_ONLY
-    assert not extra, f"detailTypography.ts declares {sorted(extra)} with no engine source"
+def test_the_checked_in_manifest_matches_a_fresh_build():
+    """ui/src/generated/vocabulary.json is checked into git and is what
+    ui/src/components/detailTypography.ts actually imports for its eight sizing constants —
+    there is no longer a second, independently authored TypeScript copy to compare against.
+    Regenerate the manifest in memory and diff it against the file on disk, to catch the
+    checked-in copy going stale relative to ``emit/draw/typography.py``."""
+    fresh = build_vocabulary_manifest()["typography"]
+    checked_in = json.loads(VOCABULARY_JSON.read_text())["typography"]
+    assert fresh == checked_in, (
+        "ui/src/generated/vocabulary.json is stale — regenerate it "
+        "(typehaus.emit.vocabulary_manifest.write_vocabulary_manifest) after this change to "
+        "emit/draw/typography.py")
 
 
 def test_the_conversions_agree_line_for_line():

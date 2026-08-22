@@ -79,11 +79,6 @@ class TrussLayout:
         """Plan axis a truss-plane vertical member (heel block, king post) follows."""
         return (1.0, 0.0) if self.ridge_direction == "x" else (0.0, 1.0)
 
-    @property
-    def gable_orient(self) -> tuple[float, float]:
-        """Plan axis a gable stud follows — the gable wall runs along the span axis."""
-        return (0.0, 1.0) if self.ridge_direction == "x" else (1.0, 0.0)
-
     def plan_pt(self, along: float, span: float) -> tuple[float, float]:
         return (along, span) if self.ridge_direction == "x" else (span, along)
 

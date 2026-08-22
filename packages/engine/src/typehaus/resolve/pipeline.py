@@ -247,7 +247,6 @@ def _opening_center(plan: PlanModel, el, rw, axis_len: float, width: float) -> f
     if pos.mode == "centered":
         return axis_len / 2.0
     # from_node: offset measured from the named node along the axis to opening start
-    start_tag = rw.tag  # resolve node ordering
     wall = plan.by_tag(rw.tag)
     off = pos.offset.meters if pos.offset else 0.0
     if wall is not None and pos.node == wall.end_node:

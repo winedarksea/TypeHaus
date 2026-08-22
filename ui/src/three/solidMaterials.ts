@@ -5,9 +5,16 @@
 // rendered as one concrete grey, which made a painted post, an aluminium gutter and a footing
 // visually indistinguishable.
 //
-// Two parallel palettes are the known duplication here (same as three/members.ts CATEGORY_COLOR
-// for framing members): these colours mirror emit/gltf/emitter.py `_PALETTE`, whose linear 0..1
-// RGB values are the source of truth for the export. Change one, change the other.
+// These colours and the trade grouping below are generated, not authored here — see
+// packages/engine/src/typehaus/emit/vocabulary_manifest.py. `emit/gltf/palette.py`'s
+// `_PALETTE` is the one Python source for both this table and three/members.ts
+// CATEGORY_COLOR (the same dict; a slab and a stud just happen to live in the same
+// authored table). `emit/trades.py`'s `SOLID_CATEGORY_TRADE` is the source for the trade
+// grouping. The per-category rationale (why a guard's infill is split from its frame, why
+// a sleeve rides plumbing, why the whole stormwater run is one toggle, and so on) lives as
+// comments on those two Python tables now — this file has no literal left to hang a comment
+// on. Change a colour or a trade there and regenerate ui/src/generated/vocabulary.json; do
+// not hand-edit this file or the JSON.
 import * as THREE from "three";
 import type { Catalog, Solid } from "../model/types";
 import {
@@ -15,159 +22,19 @@ import {
 } from "../nordic/palette";
 import type { Trade } from "../state/vocabulary";
 import { NORDIC_ROUGHNESS, standardMaterial } from "./surfaces";
+import vocabulary from "../generated/vocabulary.json";
 
-// solid category → sRGB hex, mirroring emit/gltf/emitter.py `_PALETTE` (the same keys, its
-// linear triples rounded to 8-bit). Categories with no entry fall back to the theme's concrete
+// solid category → sRGB hex. Categories with no entry fall back to the theme's concrete
 // grey, matching the emitter's `_FALLBACK`.
-export const SOLID_CATEGORY_COLOR: Record<string, number> = {
-  slab: 0x8c8f91,
-  footing: 0x7a7d80,
-  pad: 0x808285,
-  column: 0x99999e, // concrete/wood posts (sonotube, 6x6 pillars)
-  beam: 0x9e7547, // PT / built-up wood beams — wood, never concrete
-  railing: 0xcccfd4, // aluminium guard — posts + rails, the frame
-  // Guard infill, split from the frame (engine resolve/railings/parts.py). Opaque infill —
-  // pickets, cable, mesh, a solid sheet — reads as the frame's mill aluminium; a translucent
-  // lite gets the opening glazing's blue-grey and is kept OUT of METALLIC_SOLID_CATEGORIES
-  // below, where it would render as dark metal. Both are fallbacks a real guard rarely
-  // reaches: `railing_glass` exists because a material declared itself see-through, and that
-  // material's own colour wins over this table.
-  railing_infill: 0xcccfd4,
-  railing_glass: 0x8fb7c9,
-  dowel: 0x338c59, // GFRP rebar (green)
-  thermal_break: 0xf28c26, // XPS foam block (orange)
-  connector: 0x595c61, // galvanized structural hardware
-  // Roof/skin hardware, split off `connector` (engine resolve/accessories.py). Mill aluminium
-  // on the standing-seam skin rather than hot-dip galvanized steel, so a shade lighter.
-  snow_guard: 0xb8babf,
-  seam_clamp: 0xb8babf,
-  sump: 0x4d5257, // pit
-  vent: 0xe0e0db, // painted vent pipe
-  // routed plumbing runs (engine resolve/mep.py _emit_run_solids), riser-diagram colors —
-  // mirrors emit/gltf/palette.py, change one change the other.
-  pipe_drain: 0x333338, // ABS/PVC waste, near-black
-  pipe_vent: 0xe0e0db, // same as the vent risers
-  pipe_water_hot: 0xcc4038, // red PEX
-  pipe_water_cold: 0x3366bf, // blue PEX
-  pipe_gas: 0xd9bf33, // yellow CSST
-  pipe_radon: 0x8c9499, // bare gray
-  // In-line supply devices, one category per PipeAccessoryKind. Brass for anything with a
-  // body you turn; the arrestor is a sealed steel chamber and the seal is not metal at all.
-  main_shutoff: 0xb89447, // brass
-  shutoff: 0xb89447,
-  backflow_preventer: 0xb89447,
-  vacuum_breaker: 0xb89447,
-  ro_stub: 0xb89447,
-  water_hammer_arrestor: 0x9ea3a8,
-  penetration_seal: 0xf2b859,
-  // Raceways, one colour per side of the NEC 800.133/725 power-vs-comms line. Kept off the
-  // riser-diagram hues above on purpose: a raceway in red or blue reads as a supply line in
-  // the basement ceiling, which is exactly where CD-B-KITCHEN runs beside the hot and cold
-  // trunks and where telling them apart is the whole point.
-  conduit_power: 0x8b4db3, // violet
-  conduit_data: 0x2ea89b, // teal
-  // The cast-in block-out. Not the grey of the pour it sits in — that would defeat drawing it
-  // — and not pipe metal: the cream is the fibre void former the concrete crew sets.
-  pipe_sleeve: 0xd9c9a3,
-  fascia: 0xebebe6, // PVC fascia
-  gutter: 0xd9dbde, // metal gutter
-  flashing: 0xbfc4cc, // metal flashing
-  // Stormwater below the gutter — the leader is the gutter's own aluminium, the buried three
-  // read as perforated tile and washed rock so a drainage view is not one grey.
-  downspout: 0xd9dbde, // leader, same aluminium as the gutter it drains
-  drain_tile: 0x292624, // corrugated HDPE tile — warmer than the ABS `pipe_drain` beside it
-  french_drain: 0x9e998f, // washed-rock trench
-  drywell: 0x857f78, // soakaway aggregate
-  // A dropped soffit is painted gwb, like the ceiling it hangs under — not concrete, which
-  // is what the fallback would have made the second-floor HVAC chase. Same triple the glTF
-  // palette's "soffit" carries (0.88, 0.88, 0.85), so the viewer and the export agree.
-  soffit: 0xe0e0d9,
-};
+export const SOLID_CATEGORY_COLOR: Record<string, number> = vocabulary.solidColors;
 
-// solid category → visibility trade, mirroring packages/engine/src/typehaus/emit/trades.py
-// `SOLID_CATEGORY_TRADE` (change one, change the other — tests/test_solid_trade_parity.py checks
-// both directions). Every solid used to be handed to the `concrete` group regardless of what it
-// was, which filed the standalone beams and posts away from the studs and rafters they carry,
-// and put all 791 routed pipe solids behind the Concrete toggle instead of Plumbing.
-//
-// Categories absent here take the `concrete` fallback, which now means only what it says: the
-// pours, and the dowels and thermal-break blocks cast into them. Guards and connection hardware
-// used to ride it for want of a better home — see the engine table for where they went.
-export const SOLID_CATEGORY_TRADE: Record<string, Trade> = {
-  // Standalone structure: an authored Beam/Post is the same lumber as the members it carries,
-  // and an authored ridge beam already appears under framing (the engine re-types it as a
-  // FramedMember owned by the roof).
-  beam: "framing",
-  column: "framing",
-  // Routed plumbing runs, one category per system (engine resolve/mep.py).
-  pipe_drain: "plumbing",
-  pipe_vent: "plumbing",
-  pipe_water_hot: "plumbing",
-  pipe_water_cold: "plumbing",
-  pipe_gas: "plumbing",
-  pipe_radon: "plumbing",
-  // In-line supply devices (engine resolve/mep.py::_resolve_pipe_accessory), one category
-  // per PipeAccessoryKind — a solid's category is what the inspector labels it with, and
-  // "pipe accessory" tells a reader nothing about which device they clicked.
-  main_shutoff: "plumbing",
-  shutoff: "plumbing",
-  backflow_preventer: "plumbing",
-  vacuum_breaker: "plumbing",
-  water_hammer_arrestor: "plumbing",
-  ro_stub: "plumbing",
-  penetration_seal: "plumbing",
-  // The cast-in block-outs. Plumbing even for the dozen that carry raceways: a sleeve is a
-  // pre-pour operation graded by the plumbing rough-in rules, and splitting the family by
-  // what eventually threads it would hide half the pour-day list behind another toggle.
-  pipe_sleeve: "plumbing",
-  // Raceway trunks, one category per side of the NEC 800.133/725 power-vs-comms line. Both
-  // are the electrician's work; the split is for the colour and the inspector heading.
-  conduit_power: "electrical",
-  conduit_data: "electrical",
-  // Bath/dryer exhaust and the radon riser.
-  vent: "mechanical",
-  // Fenestration and the extrusions that hold it, plus the rainscreen base closure — envelope
-  // detail, hidden with the openings rather than with the concrete.
-  glazing: "openings",
-  glazing_trim: "openings",
-  bug_screen: "openings",
-  // Roof edge trim.
-  fascia: "roof",
-  flashing: "roof",
-  // Stormwater. A gutter hangs on the roof edge but *is* the head of a run that continues
-  // down the leader, through the perimeter tile and out to daylight, so the whole run rides
-  // one toggle instead of being split between roof and concrete. The last three have no
-  // instances yet — declared so the first one authored is routed, not poured into concrete.
-  gutter: "drainage",
-  downspout: "drainage",
-  sump: "drainage",
-  drain_tile: "drainage",
-  french_drain: "drainage",
-  drywell: "drainage",
-  // Guards and handrails, frame and infill together. "stairs" rather than "framing": a guard
-  // is the safety fitting of the circulation it protects, and most of them guard a stair well.
-  // The plan viewer's RailingOutlines gate (components/Canvas2D.tsx) moves with this row —
-  // the two have to agree or a railing appears in one viewer and not the other.
-  railing: "stairs",
-  railing_infill: "stairs",
-  railing_glass: "stairs",
-  // Connection hardware, by what kind of connection it is. Hangers, ties, post bases,
-  // hold-downs and knee-brace straps are the carpenter's work and ride with the members they
-  // join — a post base anchored into a pour is still framing hardware. Snow rails and seam
-  // clamps sit ON the standing-seam skin, so they ride the roof they penetrate rather than
-  // following their payload (a PV rail, a leader, a vent riser) into three more trades.
-  connector: "framing",
-  snow_guard: "roof",
-  seam_clamp: "roof",
-  // A dropped soffit is framed and finished like the ceiling it hangs under.
-  soffit: "floors",
-  // Equal to the fallback, named so the parity test's "unclassified" list stays meaningful.
-  slab: "concrete",
-  footing: "concrete",
-  pad: "concrete",
-  dowel: "concrete",
-  thermal_break: "concrete",
-};
+// solid category → visibility trade. Every solid used to be handed to the `concrete` group
+// regardless of what it was, which filed the standalone beams and posts away from the studs
+// and rafters they carry, and put all 791 routed pipe solids behind the Concrete toggle
+// instead of Plumbing (→ emit/trades.py). Categories absent here take the `concrete`
+// fallback, which now means only what it says: the pours, and the dowels and thermal-break
+// blocks cast into them.
+export const SOLID_CATEGORY_TRADE: Record<string, Trade> = vocabulary.solidTrades as Record<string, Trade>;
 
 /** The trade group a resolved solid belongs to (engine: emit/trades.py::solid_trade). */
 export function solidTrade(solid: Pick<Solid, "category">): Trade {

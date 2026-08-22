@@ -16,12 +16,9 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import TypeVar
 
 from typehaus.model.base import Element
 from typehaus.source.ops import PatchOp
-
-ElementT = TypeVar("ElementT", bound=Element)
 
 
 @dataclass(frozen=True)

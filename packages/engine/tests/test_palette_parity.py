@@ -1,29 +1,34 @@
 """Member-colour parity between the glTF emitter and the three.js viewer.
 
-Two tables name the same thing: ``_PALETTE`` in ``emit/gltf/emitter.py`` and
-``CATEGORY_COLOR`` in ``ui/src/three/members.ts``. Nothing linked them, so they drifted —
-``rafter``/``blocking``/``outlooker``/``barge_rafter`` were missing from *both* (the "garage
-truss should visualize as wood" report) and the truss keys existed engine-side only. That
-was ~470 framing members rendering as the neutral grey fallback.
+``_PALETTE`` (``emit/gltf/palette.py``) used to be mirrored by a second, hand-authored table
+in TypeScript — ``CATEGORY_COLOR`` in ``ui/src/three/members.ts`` — linked only by a test that
+read the TypeScript as text. That drifted: ``rafter``/``blocking``/``outlooker``/
+``barge_rafter`` were missing from *both* (the "garage truss should visualize as wood" report)
+and the truss keys existed engine-side only. That was ~470 framing members rendering as the
+neutral grey fallback.
 
-This test is the link: every member category the Catlin model actually emits has to resolve
-in both tables. It reads the TypeScript as text on purpose — the point is to fail here, in
-the suite that runs on every engine change, rather than only in the browser.
+The second table is gone. ``members.ts`` now imports ``ui/src/generated/vocabulary.json`` —
+generated from ``_PALETTE`` by ``emit/vocabulary_manifest.py`` — directly, so a TypeScript
+table with its own typo or its own stale entry is no longer a thing that can exist. What is
+still possible is the checked-in JSON going stale relative to ``_PALETTE`` because nobody
+regenerated it; that is what ``test_the_checked_in_manifest_matches_a_fresh_build`` below
+catches, by rebuilding the manifest in memory and diffing it against the file on disk, rather
+than trusting either language's copy.
 """
 
 from __future__ import annotations
 
-import re
-from pathlib import Path
+import json
 
 import pytest
 
 from typehaus.emit.gltf.emitter import _PALETTE
+from typehaus.emit.vocabulary_manifest import build_vocabulary_manifest
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
 from _helpers import CATLIN as CATLIN_DIR, REPO_ROOT
 
-MEMBERS_TS = REPO_ROOT / "ui" / "src" / "three" / "members.ts"
+VOCABULARY_JSON = REPO_ROOT / "ui" / "src" / "generated" / "vocabulary.json"
 
 
 @pytest.fixture(scope="module")
@@ -38,42 +43,21 @@ def catlin_member_categories() -> set[str]:
     return categories
 
 
-def _category_color_keys() -> set[str]:
-    """The keys of ``CATEGORY_COLOR`` in members.ts, read out of the source."""
-    source = MEMBERS_TS.read_text()
-    block = re.search(
-        r"const CATEGORY_COLOR: Record<string, number> = \{(.*?)\n\};", source, re.S)
-    assert block is not None, "CATEGORY_COLOR literal not found in members.ts"
-    return set(re.findall(r"^\s{2}([A-Za-z_][A-Za-z0-9_]*):\s*0x", block.group(1), re.M))
-
-
-# Categories added by an engine stream whose *viewer* colour entry lives in ui/src, which
-# that stream does not own. Recorded as a coordinator escape; REMOVE an entry when the ui
-# side lands. The engine half (`_PALETTE`) is never escaped — that table is engine-owned, so
-# the first test below still covers every category.
-#
-# Empty as of 2026-08-07. WP1's sistered plies were the one entry; they landed in
-# members.ts as `sister_joist` the same day. The category was renamed off the hyphen it
-# was first written with (`sister-joist`) because `_category_color_keys()` reads bare TS
-# identifiers — a hyphenated category could never satisfy this test, and every other
-# member category in the model already uses underscores.
-VIEWER_COLOR_ESCAPES: set = set()
-
-
 def test_every_emitted_member_category_has_an_engine_color(catlin_member_categories) -> None:
     missing = sorted(c for c in catlin_member_categories
                      if c not in _PALETTE)
-    assert not missing, f"_PALETTE (emit/gltf/emitter.py) has no entry for: {missing}"
+    assert not missing, f"_PALETTE (emit/gltf/palette.py) has no entry for: {missing}"
 
 
-def test_every_emitted_member_category_has_a_viewer_color(catlin_member_categories) -> None:
-    missing = sorted(c for c in catlin_member_categories
-                     if c not in _category_color_keys()
-                     and c not in VIEWER_COLOR_ESCAPES)
-    assert not missing, f"CATEGORY_COLOR (ui/src/three/members.ts) has no entry for: {missing}"
-
-
-def test_the_viewer_table_invents_no_categories_of_its_own() -> None:
-    """members.ts mirrors the engine — a key it holds alone is a typo or a stale category."""
-    extra = sorted(k for k in _category_color_keys() if k not in _PALETTE)
-    assert not extra, f"CATEGORY_COLOR keys with no _PALETTE counterpart: {extra}"
+def test_the_checked_in_manifest_matches_a_fresh_build() -> None:
+    """ui/src/generated/vocabulary.json is checked into git and is what
+    ui/src/three/members.ts actually imports — there is no longer a second, independently
+    authored TypeScript table to compare against. The only remaining drift is the checked-in
+    copy going stale relative to ``_PALETTE``, so regenerate the manifest in memory and diff
+    it against the file on disk rather than trusting either side."""
+    fresh = build_vocabulary_manifest()["memberColors"]
+    checked_in = json.loads(VOCABULARY_JSON.read_text())["memberColors"]
+    assert fresh == checked_in, (
+        "ui/src/generated/vocabulary.json is stale — regenerate it "
+        "(typehaus.emit.vocabulary_manifest.write_vocabulary_manifest) after this change to "
+        "emit/gltf/palette.py")

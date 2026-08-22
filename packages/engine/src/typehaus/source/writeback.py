@@ -40,10 +40,6 @@ def set_backend(name: str) -> None:
     _BACKEND = name
 
 
-def backend() -> str:
-    return _BACKEND
-
-
 def _use_py() -> bool:
     return _BACKEND == "py"
 

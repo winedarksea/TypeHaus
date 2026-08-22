@@ -7,11 +7,6 @@ enforced by test, not by ``match`` statements scattered across the code.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol, runtime_checkable
-
-if TYPE_CHECKING:
-    from typehaus.quantities import Point2D
-
 # --- element-kind registry ---------------------------------------------------
 _ELEMENT_KINDS: dict[str, type] = {}
 
@@ -56,37 +51,3 @@ def constructor_namespace() -> dict[str, object]:
     Used by the in-memory op applicator to build a pydantic element from the exact source
     text the libcst writeback would emit, so there is one value-encoding path, not two."""
     return dict(_CONSTRUCTORS)
-
-
-# --- capability protocols (drawing IR / checks consume these, not concretes) -----
-@runtime_checkable
-class HasAxis(Protocol):
-    """An element defined by a node-to-node axis (walls, beams)."""
-
-    start_node: str
-    end_node: str
-
-
-@runtime_checkable
-class HasFootprint(Protocol):
-    """An element with a plan polygon (rooms, slabs, soffits, pads)."""
-
-    def footprint_m(self) -> list[tuple[float, float]]: ...
-
-
-@runtime_checkable
-class HasProfile(Protocol):
-    """An element with a layered cross-section profile (assemblies)."""
-
-    def profile_thickness_m(self) -> float: ...
-
-
-@runtime_checkable
-class Positioned(Protocol):
-    position: Point2D
-
-
-@runtime_checkable
-class Tagged(Protocol):
-    uid: str
-    tag: str

@@ -1,11 +1,15 @@
 """Solid-trade parity between the engine table and the three.js viewer.
 
-Two tables name the same thing: ``SOLID_CATEGORY_TRADE`` in ``emit/trades.py`` and the mirror in
-``ui/src/three/solidMaterials.ts``. The viewer's render path is deliberately not on the geometry
-IR (→ ``WHOLE_HOUSE_GLB_PRIMARY``), so nothing but a test can hold the two in agreement — the
-same arrangement ``test_palette_parity.py`` makes for the two colour tables, and it reads the
-TypeScript as text for the same reason: the point is to fail in the suite that runs on every
-engine change rather than only in the browser.
+``SOLID_CATEGORY_TRADE`` in ``emit/trades.py`` used to be mirrored by a second, hand-authored
+table inlined in ``ui/src/three/solidMaterials.ts``, linked only by a test reading the
+TypeScript as text — the same arrangement ``test_palette_parity.py`` used for the colour
+tables. That second table is gone: ``solidMaterials.ts`` now imports
+``ui/src/generated/vocabulary.json`` (generated from ``SOLID_CATEGORY_TRADE`` by
+``emit/vocabulary_manifest.py``) directly, so a TypeScript-only entry or a disagreement
+between the two is no longer possible — there is nothing left on the TypeScript side to
+disagree. What remains possible is the checked-in JSON going stale relative to
+``SOLID_CATEGORY_TRADE``, which ``test_the_checked_in_manifest_matches_a_fresh_build`` below
+catches.
 
 The bug behind the table: every ``ResolvedSolid`` was handed to the ``concrete`` trade whatever
 its category, which filed the standalone ``Beam``/``Post`` solids away from the studs and rafters
@@ -16,15 +20,16 @@ instead of Plumbing.
 
 from __future__ import annotations
 
-import re
+import json
 
 import pytest
 
 from typehaus.emit.trades import (
     DRAINAGE_CATEGORIES, FALLBACK_TRADE, SOLID_CATEGORY_TRADE, TRADES, solid_trade)
+from typehaus.emit.vocabulary_manifest import build_vocabulary_manifest
 from _helpers import REPO_ROOT
 
-SOLID_MATERIALS_TS = REPO_ROOT / "ui" / "src" / "three" / "solidMaterials.ts"
+VOCABULARY_JSON = REPO_ROOT / "ui" / "src" / "generated" / "vocabulary.json"
 
 # Categories that ride the fallback on purpose, so "unclassified" stays a meaningful signal.
 # Keep the reasons in emit/trades.py, next to the table.
@@ -42,36 +47,24 @@ def catlin_solid_categories(catlin_model) -> set[str]:
     return {solid.category.lower() for solid in catlin_model.solids}
 
 
-def _viewer_trades() -> dict[str, str]:
-    """The ``SOLID_CATEGORY_TRADE`` literal in solidMaterials.ts, read out of the source."""
-    source = SOLID_MATERIALS_TS.read_text()
-    block = re.search(
-        r"export const SOLID_CATEGORY_TRADE: Record<string, Trade> = \{(.*?)\n\};",
-        source, re.S)
-    assert block is not None, "SOLID_CATEGORY_TRADE literal not found in solidMaterials.ts"
-    return dict(re.findall(r'^\s{2}([A-Za-z_][A-Za-z0-9_]*):\s*"([a-z]+)"',
-                           block.group(1), re.M))
-
-
 def test_every_trade_in_the_table_is_one_the_ui_honours() -> None:
     unknown = sorted(set(SOLID_CATEGORY_TRADE.values()) - TRADES)
     assert not unknown, f"SOLID_CATEGORY_TRADE names trades the UI has no group for: {unknown}"
     assert FALLBACK_TRADE in TRADES
 
 
-def test_the_two_tables_agree(catlin_solid_categories) -> None:
-    viewer = _viewer_trades()
-    disagreements = sorted(
-        (category, engine, viewer[category])
-        for category, engine in SOLID_CATEGORY_TRADE.items()
-        if category in viewer and viewer[category] != engine)
-    assert not disagreements, (
-        "engine/viewer trade disagreement (category, engine, viewer): "
-        f"{disagreements}")
-    missing = sorted(set(SOLID_CATEGORY_TRADE) - set(viewer))
-    assert not missing, f"solidMaterials.ts SOLID_CATEGORY_TRADE has no entry for: {missing}"
-    extra = sorted(set(viewer) - set(SOLID_CATEGORY_TRADE))
-    assert not extra, f"viewer table keys with no engine counterpart: {extra}"
+def test_the_checked_in_manifest_matches_a_fresh_build() -> None:
+    """ui/src/generated/vocabulary.json is checked into git and is what
+    ui/src/three/solidMaterials.ts actually imports for ``SOLID_CATEGORY_TRADE`` — there is
+    no longer a second, independently authored TypeScript table to compare against.
+    Regenerate the manifest in memory and diff it against the file on disk, to catch the
+    checked-in copy going stale relative to ``SOLID_CATEGORY_TRADE``."""
+    fresh = build_vocabulary_manifest()["solidTrades"]
+    checked_in = json.loads(VOCABULARY_JSON.read_text())["solidTrades"]
+    assert fresh == checked_in, (
+        "ui/src/generated/vocabulary.json is stale — regenerate it "
+        "(typehaus.emit.vocabulary_manifest.write_vocabulary_manifest) after this change to "
+        "emit/trades.py")
 
 
 def test_every_emitted_solid_category_is_classified(catlin_solid_categories) -> None:

@@ -43,9 +43,6 @@ class RValue:
     def __hash__(self) -> int:
         return hash(round(self._rsi, 9))
 
-    def to_ufactor(self) -> UFactor:
-        return UFactor(1.0 / self._rsi) if self._rsi else UFactor(0.0)
-
     def fmt(self, system: UnitSystem = UnitSystem.IMPERIAL) -> str:
         if system is UnitSystem.METRIC:
             return f"RSI-{self._rsi:.2f}"

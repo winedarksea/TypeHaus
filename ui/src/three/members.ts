@@ -28,75 +28,17 @@ import {
 } from "./memberPicking";
 import { projectPlanDirectionToScene, projectPointToScene, type PlanCenter } from "./planGeometry";
 import { standardMaterial } from "./surfaces";
+import vocabulary from "../generated/vocabulary.json";
 
-// Mirrors emit/gltf/emitter.py's _PALETTE (member-category keys only; layer-function
-// colors live in nordic/palette.ts for wall fills).
-const CATEGORY_COLOR: Record<string, number> = {
-  ridge_cap: 0xd9dbde,
-  corner_trim: 0xd9dbde,
-  stud: 0xb3854f,
-  plate: 0xa87a4c,
-  header: 0x996b41,
-  raked_plate: 0xa87a4c,
-  corner: 0xa3763f,
-  stringer: 0x996b41,
-  tread: 0xb3854f,
-  joist: 0xb88c5c,
-  // A sistered ply is the same lumber as the joist it doubles, a shade darker so a
-  // reinforced line reads as reinforced rather than as a joist drawn twice.
-  sister_joist: 0xa87a4d,
-  rim: 0xa87a4c,
-  // Furring strapping over the sheathing — paler than the studs behind it, so a
-  // rainscreen grid reads as its own layer. Mirrors the engine _PALETTE entry.
-  strapping: 0xc1986a,
-  ridge_beam: 0x8c6238,
-  brace: 0xa3763f, // = blocking, as engine-side: the diagonal knee brace is framing lumber
-  king: 0xb3854f,
-  jack: 0xb3854f,
-  cripple: 0xb3854f,
-  sill: 0xa87a4c,
-  winder: 0xb3854f,
-  bearing_stiffener: 0x996b41,
-  // Stair carriage framing (→ resolve/envelope.py _stair_members). Without these the
-  // U-stair well partition fell through to the grey fallback and read as a wall.
-  // Landing platforms + the well partition read as framing lumber; the concrete-wall
-  // hanger/ledger band is galvanized grey like the engine's "connector".
-  partition: 0xb3854f,
-  trimmer: 0xa87a4c,
-  landing: 0xb88c5c,
-  landing_framing: 0xa3763f, // joists/rims/posts under a landing deck — as blocking
-  newel: 0x996b41, // = header, as engine-side: the winder newel is a post, not tread lumber
-  hanger: 0x595c61,
-  // Roof sticks. `rafter`/`blocking`/`outlooker`/`barge_rafter` had no entry in either
-  // table; the truss keys existed engine-side only. Together that was ~470 members reading
-  // as the neutral gray fallback (the "garage truss should visualize as wood" report).
-  rafter: 0xad7f4f,
-  blocking: 0xa3763f,
-  outlooker: 0xb88c5c,
-  barge_rafter: 0x8c6238,
-  top_chord: 0xb3854f, // = stud, as engine-side
-  bottom_chord: 0xa87a4c, // = plate
-  truss_web: 0xbd9161,
-  truss_heel: 0x996b41, // = header
-  seat_cut: 0x94663d,
-  // Layer-function keys. A skin member normally colours by its *material*
-  // (`memberColor`), but a derived band that names none must not drop to the fallback —
-  // these mirror the same keys in the engine's _PALETTE.
-  structure: 0x9e7347,
-  sheathing: 0xb8b8b3,
-  insulation: 0xedbd5c,
-  cladding: 0x8c9499,
-  membrane: 0x4d738c,
-  furring: 0xad8557,
-  lining: 0xe6e3db,
-  finish: 0xe6e3db,
-  fascia: 0xebebe6,
-  soffit: 0xe0e0d9,
-  gutter: 0xd9dbde,
-  // Exterior window casing (charcoal), drawn by builders/walls.ts buildOpening. The
-  // design colour of the day: change it here and in emit/gltf/palette.py together.
-  window_trim: 0x1c1f24,
-};
+// Generated from emit/gltf/palette.py's `_PALETTE` (member-category keys; layer-function
+// colors live in nordic/palette.ts for wall fills) — see
+// packages/engine/src/typehaus/emit/vocabulary_manifest.py. The per-category rationale
+// (why a sistered ply is a shade darker than the joist it doubles, why the roof-stick
+// categories exist at all, why a skin member falls back to its layer-function color) lives
+// as comments on `_PALETTE` in that file now, not here: this table has no literal of its own
+// left to comment on. Change a color there and regenerate
+// ui/src/generated/vocabulary.json — do not hand-edit this file or the JSON.
+const CATEGORY_COLOR: Record<string, number> = vocabulary.memberColors;
 export const CATEGORY_FALLBACK = 0xb0b0b0;
 
 export function categoryColor(category: string): number {

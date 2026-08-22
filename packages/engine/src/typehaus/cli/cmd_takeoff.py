@@ -114,10 +114,10 @@ def takeoff(
         # by "$/sf". Both come from the model, neither from a constant.
         from typehaus.server.space_summary import build_space_summary
 
-        summary = build_space_summary(model)["overall"]
-        areas = {"conditioned": summary["conditioned_sf"], "gross": summary["gross_sf"]}
+        space_summary = build_space_summary(model)["overall"]
+        areas = {"conditioned": space_summary["conditioned_sf"], "gross": space_summary["gross_sf"]}
         payload["cost_estimate"] = estimate_costs(bom, prices, areas)
-        payload["space_summary"] = summary
+        payload["space_summary"] = space_summary
     if csv is not None:
         if prices is None:
             console.print("[red]--csv needs prices: this house has no prices.toml[/red]")

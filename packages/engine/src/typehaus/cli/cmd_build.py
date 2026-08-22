@@ -120,6 +120,17 @@ def build(
     out = d / "out"
     out.mkdir(exist_ok=True)
 
+    # The vocabulary manifest (member/solid colours, solid trades, layer visibility groups,
+    # typography constants — emit/vocabulary_manifest.py) is derived from engine source alone,
+    # never from this house's model, so it is written unconditionally rather than gated by
+    # `only`: it is the regenerable half of the ui/src/generated/vocabulary.json the viewer
+    # imports directly, and there is no house-specific reason to skip it.
+    from typehaus.emit.vocabulary_manifest import write_vocabulary_manifest
+
+    vocab_path = out / "vocabulary.json"
+    write_vocabulary_manifest(vocab_path)
+    console.print(f"wrote {vocab_path}")
+
     if only in (None, "json"):
         from typehaus.checks import load_preferences
         from typehaus.server.model_json import load_variant_catalog, write_model_json

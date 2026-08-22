@@ -2,56 +2,44 @@
 
 Per-layer visibility rides plain node visibility in the 3D viewer, keyed by the
 ``layerGroup`` the engine puts on each part. A group name the UI does not know is a band the
-user can never toggle off — and it fails silently, in the browser, not here.
+user can never toggle off — and it used to fail silently, in the browser, not here, because
+``LAYER_VISIBILITY_GROUPS``/``LAYER_GROUP_ALIASES`` (``emit/finishes.py``) were mirrored by a
+second, hand-authored copy in ``ui/src/model/visibility.ts``, linked only by a test reading
+the TypeScript as text.
 
-Same grep-the-TypeScript technique as `test_palette_parity.py`: the point is to fail in the
-suite that runs on every engine change.
+That second copy is gone: ``visibility.ts`` now imports ``ui/src/generated/vocabulary.json``
+(generated from the engine tables by ``emit/vocabulary_manifest.py``) directly, so the two
+vocabularies can no longer independently drift. What remains possible is the checked-in JSON
+going stale relative to the engine tables, which
+``test_the_checked_in_manifest_matches_a_fresh_build`` below catches.
 """
 
 from __future__ import annotations
 
-import re
-from pathlib import Path
+import json
 
 import pytest
 
 from typehaus.emit.finishes import LAYER_VISIBILITY_GROUPS, layer_visibility_group
+from typehaus.emit.vocabulary_manifest import build_vocabulary_manifest
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
 from _helpers import HOUSES, REPO_ROOT
 
-VISIBILITY_TS = REPO_ROOT / "ui" / "src" / "model" / "visibility.ts"
+VOCABULARY_JSON = REPO_ROOT / "ui" / "src" / "generated" / "vocabulary.json"
 
 
-def _ts_groups() -> list[str]:
-    text = VISIBILITY_TS.read_text()
-    block = re.search(
-        r"ALL_LAYER_VISIBILITY_GROUPS:\s*LayerVisibilityGroup\[\]\s*=\s*\[(.*?)\]",
-        text, re.S,
-    )
-    assert block, "could not find ALL_LAYER_VISIBILITY_GROUPS in visibility.ts"
-    return re.findall(r'"([^"]+)"', block.group(1))
-
-
-def _ts_aliases() -> dict[str, str]:
-    text = VISIBILITY_TS.read_text()
-    block = re.search(
-        r"LAYER_FUNCTION_ALIASES:\s*Record<string,\s*LayerVisibilityGroup>\s*=\s*\{(.*?)\}",
-        text, re.S,
-    )
-    assert block, "could not find LAYER_FUNCTION_ALIASES in visibility.ts"
-    return dict(re.findall(r"(\w+):\s*\"([^\"]+)\"", block.group(1)))
-
-
-def test_the_group_vocabularies_are_identical() -> None:
-    assert list(LAYER_VISIBILITY_GROUPS) == _ts_groups()
-
-
-def test_the_alias_tables_agree() -> None:
-    """An alias only one side knows sends a band to `other` in one renderer and to its real
-    group in the other, so the same toggle hides different things."""
-    for key, group in _ts_aliases().items():
-        assert layer_visibility_group(key) == group, key
+def test_the_checked_in_manifest_matches_a_fresh_build() -> None:
+    """ui/src/generated/vocabulary.json is checked into git and is what
+    ui/src/model/visibility.ts actually imports for both ``ALL_LAYER_VISIBILITY_GROUPS`` and
+    ``LAYER_FUNCTION_ALIASES`` — there is no longer a second, independently authored
+    TypeScript table to compare against. Regenerate the manifest in memory and diff it
+    against the file on disk, to catch the checked-in copy going stale relative to
+    ``emit/finishes.py``."""
+    fresh = build_vocabulary_manifest()
+    checked_in = json.loads(VOCABULARY_JSON.read_text())
+    assert fresh["layerVisibilityGroups"] == checked_in["layerVisibilityGroups"]
+    assert fresh["layerGroupAliases"] == checked_in["layerGroupAliases"]
 
 
 def test_an_unknown_function_buckets_to_other_on_both_sides() -> None:

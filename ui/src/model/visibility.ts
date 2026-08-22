@@ -8,6 +8,7 @@
 
 import type { Trade } from "../state/vocabulary";
 import type { CanvasObject, Layer, Member } from "./types";
+import vocabulary from "../generated/vocabulary.json";
 
 // Layer *function* buckets, i.e. the engine's `Layer.function` vocabulary (model_json.py
 // `_layer_json`) collapsed to the set a person would toggle. Roof/wall skin members reuse the
@@ -17,10 +18,11 @@ export type LayerVisibilityGroup =
   | "structure" | "sheathing" | "membrane" | "insulation"
   | "airgap" | "furring" | "cladding" | "finish" | "other";
 
-export const ALL_LAYER_VISIBILITY_GROUPS: LayerVisibilityGroup[] = [
-  "structure", "sheathing", "membrane", "insulation",
-  "airgap", "furring", "cladding", "finish", "other",
-];
+// Generated from emit/finishes.py's `LAYER_VISIBILITY_GROUPS` — see
+// packages/engine/src/typehaus/emit/vocabulary_manifest.py. Change the group list there and
+// regenerate ui/src/generated/vocabulary.json; do not hand-edit this array or the JSON.
+export const ALL_LAYER_VISIBILITY_GROUPS: LayerVisibilityGroup[] =
+  vocabulary.layerVisibilityGroups as LayerVisibilityGroup[];
 
 export const LAYER_VISIBILITY_GROUP_LABEL: Record<LayerVisibilityGroup, string> = {
   structure: "Structure", sheathing: "Sheathing", membrane: "Membrane",
@@ -28,15 +30,12 @@ export const LAYER_VISIBILITY_GROUP_LABEL: Record<LayerVisibilityGroup, string> 
   cladding: "Cladding", finish: "Finish", other: "Other",
 };
 
-// Synonyms the engine emits for the same bucket. `lining` is an interior finish stack, and
-// `fascia`/`soffit` are the derived eave trim that continues the cladding plane.
-const LAYER_FUNCTION_ALIASES: Record<string, LayerVisibilityGroup> = {
-  air_gap: "airgap",
-  lining: "finish",
-  fascia: "cladding",
-  soffit: "cladding",
-  roofing: "cladding",
-};
+// Synonyms the engine emits for the same bucket, generated from emit/finishes.py's
+// `LAYER_GROUP_ALIASES` (`lining` is an interior finish stack, `fascia`/`soffit` are the
+// derived eave trim that continues the cladding plane — the rationale lives as a comment on
+// that table now). Change it there and regenerate; do not hand-edit this object or the JSON.
+const LAYER_FUNCTION_ALIASES: Record<string, LayerVisibilityGroup> =
+  vocabulary.layerGroupAliases as Record<string, LayerVisibilityGroup>;
 
 /** Bucket a `Layer.function` (or a skin `Member.category`) into a togglable group. */
 export function layerVisibilityGroupOf(layerFunction: string | null | undefined): LayerVisibilityGroup {

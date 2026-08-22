@@ -518,11 +518,9 @@ def backup_component_rows(model: ResolvedModel) -> list[dict[str, object]]:
             "basis": (f"{element.tag}"
                       + (f" — {kw:g} kW continuous AC" if kw else "")),
         })
-    battery_kwh = 0.0
     for element in sorted(placed["batteries"], key=lambda e: e.tag):
         product = types.get(element.type_ref or "")
         kwh = getattr(product, "storage_kwh", None) if product else None
-        battery_kwh += float(kwh or 0.0)
         rows.append({
             "component": (product.name if product is not None else "battery module"),
             "count": 1,

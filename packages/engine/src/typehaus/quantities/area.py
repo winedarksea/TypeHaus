@@ -24,10 +24,6 @@ class Area:
         object.__setattr__(self, "_m2", float(sq_meters))
 
     @property
-    def sq_m(self) -> float:
-        return self._m2
-
-    @property
     def sq_ft(self) -> float:
         return self._m2 * _SQFT_PER_SQM
 

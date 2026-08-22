@@ -698,11 +698,6 @@ class ResolvedDrainTile:
     rock_width_m: float | None
     rock_depth_m: float | None
 
-    @property
-    def order_key(self) -> tuple[float, str, bool, str]:
-        """What makes two runs the same order: size, product, sock, where it lets go."""
-        return (round(self.diameter_m, 6), self.material, self.sock, self.discharge or "")
-
 
 @dataclass(frozen=True)
 class ResolvedFootingBedding:

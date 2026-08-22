@@ -127,8 +127,10 @@ LAYER_VISIBILITY_GROUPS = (
 )
 
 # Synonyms the engine emits for the same bucket. `lining` is an interior finish stack, and
-# `fascia`/`soffit` are the derived eave trim that continues the cladding plane.
-_LAYER_GROUP_ALIASES = {
+# `fascia`/`soffit` are the derived eave trim that continues the cladding plane. Public (no
+# leading underscore): `emit/vocabulary_manifest.py` imports this alongside
+# LAYER_VISIBILITY_GROUPS to build the generated table ui/src/model/visibility.ts consumes.
+LAYER_GROUP_ALIASES = {
     "air_gap": "airgap",
     "lining": "finish",
     "fascia": "cladding",
@@ -144,4 +146,4 @@ def layer_visibility_group(layer_function: str | None) -> str:
         return "other"
     if key in LAYER_VISIBILITY_GROUPS:
         return key
-    return _LAYER_GROUP_ALIASES.get(key, "other")
+    return LAYER_GROUP_ALIASES.get(key, "other")
