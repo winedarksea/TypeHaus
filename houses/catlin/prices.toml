@@ -1125,7 +1125,7 @@
 # divided by the wall's own thickness, because that is how walls are actually quoted:
 #   poured 12" wall   $90-280/LF of a ~9' wall = 0.333 cy/LF -> $270-840/cy. Formwork, not
 #                     concrete, is the cost, which is why this is 2x the [concrete] footing
-#                     rate. CATLIN_BASEMENT_12, CATLIN_CONC_12_INT, SAUNA_LINER_ON_CONCRETE
+#                     rate. CATLIN_BASEMENT_12, FOUNDATION_WALL_12_INT, SAUNA_LINER_ON_CONCRETE
 #                     (the concrete backing only — its sauna-tg liner bills in
 #                     [envelope_layers]) and SUNKEN_GARDEN_WALL sit on this basis.
 #   8" ICF            $12-25/SF of face installed; 1 SF of 8" wall = 0.0247 cy -> $486-1012/cy.
@@ -1211,7 +1211,9 @@
 # Interior bearing walls carry a 10-20% premium over the perimeter: both faces need forming
 # AND stripping in a confined excavation, there is no backfill to brace against, pump and
 # crane access is tighter, and a face that will be visible often gets rubbed or patched.
-"CATLIN_CONC_12_INT" = { low = 470, high = 780 }  # 22.18 CY — was $320-600
+# 2026-08-21: was "CATLIN_CONC_12_INT". Same 12" interior pour, now drawn from library
+# FOUNDATION_WALL_12_INT rather than minted a second time here; the rate is untouched.
+"FOUNDATION_WALL_12_INT" = { low = 470, high = 780 }  # 22.18 CY — was $320-600
 # 6" core is 0.01852 cy/SF = 54 SF of wall per cy, so 8.82 cy is 476 SF of wall. The old
 # $480-1,000/cy was $8.89-18.52/SF; $756-1,296 is $14-24/SF. Market is $13-25/SF typical with
 # the cheapest published Midwest band at $8.50-14 — the old LOW sat on the absolute floor of

@@ -590,7 +590,7 @@ def test_interior_opening_gets_no_applied_vocabulary(catlin_model):
 
 def test_concrete_opening_draws_a_sealed_buck(catlin_model):
     _derived, scene = _exact_detail_scene(catlin_model,
-                                          "opening_perimeter:CATLIN_CONC_12_INT")
+                                          "opening_perimeter:FOUNDATION_WALL_12_INT")
     tags = _component_tags(scene)
     assert {"opening-buck", "opening-sealant"} <= tags
 

@@ -31,8 +31,8 @@ TRANSITIONS = (
                documents_rules=("CR-CONC-TO-FRAMED-SILL", "CR-FOUNDATION-FOAM-RETURN"),
                star=True,
                unstarred_conditions=(
-                   "wall_foundation:CATLIN_CONC_12_INT|CATLIN_INT_2X6_BRG",
-                   "wall_foundation:CATLIN_CONC_12_INT|CATLIN_MUDROOM_INT_2X6_EXPOSED",
+                   "wall_foundation:CATLIN_INT_2X6_BRG|FOUNDATION_WALL_12_INT",
+                   "wall_foundation:CATLIN_MUDROOM_INT_2X6_EXPOSED|FOUNDATION_WALL_12_INT",
                    "wall_foundation:CATLIN_INT_2X6_BRG|SAUNA_LINER_ON_CONCRETE",
                )),
     # Same curation as the foundation above: the rim band is a sheet because it is where
@@ -42,8 +42,8 @@ TRANSITIONS = (
                condition_pattern="storey_stack:rim:*", overlay="rim-band-air-seal",
                continuity=AIR_WATER_THERMAL, star=True,
                unstarred_conditions=(
-                   "storey_stack:rim:CATLIN_CONC_12_INT|CATLIN_INT_2X6_BRG",
-                   "storey_stack:rim:CATLIN_CONC_12_INT|CATLIN_MUDROOM_INT_2X6_EXPOSED",
+                   "storey_stack:rim:CATLIN_INT_2X6_BRG|FOUNDATION_WALL_12_INT",
+                   "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|FOUNDATION_WALL_12_INT",
                    "storey_stack:rim:CATLIN_INT_2X6_BRG",
                    "storey_stack:rim:CATLIN_INT_2X6_BRG|SAUNA_LINER_ON_CONCRETE",
                    "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|INT_2X6_STAGGERED_PLUMBING",
@@ -65,7 +65,7 @@ TRANSITIONS = (
                notes="notes/roof_wall_eave_detail.md", overlay="window-head-jamb-sill",
                continuity=AIR_WATER_THERMAL, star=True),
     Transition(uid="CATR006AAAA", tag="TR-CATLIN-CONCRETE-OPENING",
-               condition_pattern="opening_perimeter:CATLIN_CONC_*",
+               condition_pattern="opening_perimeter:FOUNDATION_WALL_*_INT",
                notes="notes/sauna_basement_wall_detail.md", overlay="concrete-opening"),
     # ``CATLIN_BASEMENT_12*`` covers both basement assemblies: the N/E/W wall with its
     # above-grade protection band and the south wall with its full-height parge over the

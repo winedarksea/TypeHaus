@@ -169,16 +169,16 @@ WALLS = [
                    interior_room="RM-B-SAUNA",
                    top_elevation=ft(0), bottom_elevation=ft(-9, -4)),
     FoundationWall(uid="CBW112AAAA", tag="W-B-CS2", start_node="N-B-C1",
-                   end_node="N-B-C", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
+                   end_node="N-B-C", assembly="FOUNDATION_WALL_12_INT", unbalanced_fill=ft(0),
                    top_elevation=ft(0), bottom_elevation=ft(-9, -4)),
     # Split at N-B-BA-E (2026-07-30) so the bathroom's north partition tees onto a shared
     # node — else `integrity.wall_loop_open` reads it as a free end. W-B-CN keeps the tag,
     # uid, and the north 14'-2 5/8" that W-M-C5 stacks on, so the bearing stack is untouched.
     FoundationWall(uid="CBW113AAAA", tag="W-B-CN", start_node="N-B-BA-E",
-                   end_node="N-B-N1", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
+                   end_node="N-B-N1", assembly="FOUNDATION_WALL_12_INT", unbalanced_fill=ft(0),
                    top_elevation=ft(0), bottom_elevation=ft(-9, -4)),
     FoundationWall(uid="CBW121AAAA", tag="W-B-CN2", start_node="N-B-C",
-                   end_node="N-B-BA-E", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
+                   end_node="N-B-BA-E", assembly="FOUNDATION_WALL_12_INT", unbalanced_fill=ft(0),
                    top_elevation=ft(0), bottom_elevation=ft(-9, -4)),
     # **The y=18' cross line is framed now (2026-08-21).** All four of these were 12" cast
     # concrete for one reason: the 9" suspended deck over the basement was designed to span
@@ -238,7 +238,7 @@ WALLS = [
     # (W-M-STRW/W-M-STRW2 stack on it) and keeps FT-B-STR either way, so framing it would
     # have bought only its own ~4.9 cy and cost the stair its dimensions.
     FoundationWall(uid="CBW116AAAA", tag="W-B-STR", start_node="N-B-N2",
-                   end_node="N-B-BA-W", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
+                   end_node="N-B-BA-W", assembly="FOUNDATION_WALL_12_INT", unbalanced_fill=ft(0),
                    top_elevation=ft(0), bottom_elevation=ft(-9, -4)),
     # The stub south of it is a different job: RM-B-BATH's west enclosure, nothing bearing
     # on it, nothing dimensioned off it. It is *also* the ESS closet's east wall, and that

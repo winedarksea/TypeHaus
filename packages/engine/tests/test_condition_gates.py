@@ -282,11 +282,8 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
     assert keys == [
         ("assembly_change:CATLIN_BASEMENT_12_GARDEN|"
          "SAUNA_LINER_ON_BASEMENT_12_GARDEN"),
-        ("assembly_change:CATLIN_CONC_12_INT|INT_2X6_STAGGERED_PLUMBING|"
-         "INT_ESS_CLOSET_STEEL"),
-        "assembly_change:CATLIN_CONC_12_INT|SAUNA_LINER_ON_CONCRETE",
         # The plant room's liner, 2026-08-18, and the same kind of transition as the sauna's
-        # one line up: a humid-side wall type starting partway along a wall line. On the
+        # two lines down: a humid-side wall type starting partway along a wall line. On the
         # south wall it is CATLIN_EXT_2X6 handing off to PLANT_EXT_2X6_HUMID at x=18'; at
         # N-S-C1 the bearing line, the two partitions and both plant assemblies meet at once,
         # which is one node and therefore one key. Real changes of construction, and the
@@ -294,6 +291,9 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         "assembly_change:CATLIN_EXT_2X6|PLANT_EXT_2X6_HUMID",
         ("assembly_change:CATLIN_INT_2X6_BRG|INT_2X4_PARTITION|"
          "PLANT_INT_2X4_HUMID|PLANT_INT_2X6_BRG_HUMID"),
+        ("assembly_change:FOUNDATION_WALL_12_INT|INT_2X6_STAGGERED_PLUMBING|"
+         "INT_ESS_CLOSET_STEEL"),
+        "assembly_change:FOUNDATION_WALL_12_INT|SAUNA_LINER_ON_CONCRETE",
         "assembly_change:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",
         "assembly_change:INT_2X4_PARTITION|INT_ESS_CLOSET_STEEL",
         "assembly_change:INT_2X6_PLUMBING|INT_ESS_CLOSET_STEEL",

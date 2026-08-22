@@ -248,4 +248,4 @@ def test_catlin_basement_passes_and_the_free_garden_walls_stay_engineered(catlin
     # Nothing in this house is off the table on *thickness* any more.
     assert "thicker than the table's 12\" maximum" not in unknowns
     # The interior cross walls author unbalanced_fill=0, so they are not screened at all.
-    assert "CATLIN_CONC_12_INT" not in fails + passes + unknowns
+    assert "FOUNDATION_WALL_12_INT" not in fails + passes + unknowns

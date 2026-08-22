@@ -112,7 +112,7 @@ def _is_freestanding_exterior_slab(tag: str) -> bool:
 def _is_interior_assembly(tag: str) -> bool:
     """Interior partitions/cross-walls carry no prescriptive R-value requirement — they
     aren't part of the thermal envelope. This codebase's own naming convention already
-    marks them with an "INT" token (CATLIN_CONC_12_INT, INT_2X6_PLUMBING, ...); the IFC
+    marks them with an "INT" token (FOUNDATION_WALL_12_INT, INT_2X6_PLUMBING, ...); the IFC
     emitter's ``Pset_WallCommon.IsExternal`` uses the same signal on the wall tag."""
     return "INT" in tag.split("_")
 

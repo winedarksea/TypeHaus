@@ -20,7 +20,7 @@ from typehaus import (
     inch,
 )
 from typehaus.model import PartitionLayout
-from library import INT_2X4_PARTITION, STARTER_MATERIALS
+from library import FOUNDATION_WALL_12_INT, FOUNDATION_WALL_12_XPS4_CORE, INT_2X4_PARTITION, STARTER_MATERIALS
 
 # Named face roles the junction solver binds mixed-assembly corners/tees to (#44). The
 # ``bearing`` role names the load-bearing layer whose face carries structural continuity
@@ -185,10 +185,17 @@ CATLIN_ROOF = Assembly(
 
 # --- concrete family -----------------------------------------------------------
 #
+# **The pour is not this house's to own.** It comes from library
+# `FOUNDATION_WALL_12_XPS4_CORE` — 12" concrete, damp-proofing, two staggered 2" XPS
+# courses, R-21.8 — and each wall below splats that core and appends the one skin that
+# covers the foam. What stays house-local is exactly that skin, because it is a colour and
+# exposure decision: neither `foundation-protection-panel` nor `stucco` resolves in
+# STARTER_MATERIALS, and the panel's #1c1f24 is the house's one exterior dark, which is a
+# palette call that has no business going upstream.
+#
 # **Two basement assemblies, because the north/east/west walls and the south wall are two
-# genuinely different conditions.** Both are the same 12" pour with the same damp-proofing
-# and the same 4" of exterior XPS; they differ only in what covers that foam, and they
-# differ because what exposes it is different.
+# genuinely different conditions.** Both are the same core; they differ only in what covers
+# the foam, and they differ because what exposes it is different.
 #
 # On N/E/W the foam is buried except for the 2'-10" band the 2026-08-18 lift and the
 # 2026-08-21 deck overhaul raised out of the ground, so it gets a protection panel *over that
@@ -201,69 +208,53 @@ CATLIN_ROOF = Assembly(
 # off grade at all — grade is above the garden floor by nine feet there — so that wall keeps
 # the full-height parge coat, and keeps CATLIN_BASEMENT_12_GARDEN to say so.
 #
-# Both carry the same 4.55" outboard of the concrete face (damp-proof + 2x XPS + a 1/2"
-# outer skin), which is what N-B-BRICK-W/-E's inch(-4.55) stand-off is measured from — the
-# panel is deliberately the same 1/2" as the parge it replaces so that number never moves.
+# Both carry the same 4.55" outboard of the concrete face, which is what N-B-BRICK-W/-E's
+# inch(-4.55) stand-off is measured from. That number now decomposes as 4.05" of library
+# core outboard of the pour (0.05" damp-proof + 2x 2" XPS) plus 0.5" of house skin — the
+# panel is deliberately the same 1/2" as the parge it replaces, so the stand-off never moves,
+# and it is independent of the pour's thickness.
+
+# The exposed-foundation band (2026-08-18, deeper since 2026-08-21). Runs from 6" *below*
+# grade — so no foam edge shows at the soil line, and so the panel is what the shovel hits
+# rather than the XPS — up to the top of the wall at 0'-0", where its head tucks under the
+# rainscreen's Z-flashing with the bug screen above it. It replaces the full-height parge
+# the N/E/W walls used to claim over nine feet of buried foam: the parge was added
+# 2026-08-01 for the *south* wall's exposure and applied to all four sides because a layer
+# had no way to say "only here".
+_PROTECTION_PANEL = Layer(name="protection-panel",
+                          material_ref="foundation-protection-panel",
+                          thickness=inch(0.5), function=LayerFunction.CLADDING,
+                          extent=LayerExtent(
+                              bottom=LayerBound(datum=LayerDatum.GRADE, offset=inch(-6))))
+
+# Parge coat over mesh (2026-08-01): exposed XPS degrades under UV/impact, and on the south
+# the exposure runs the full wall from the sunken garden floor to the main-storey siding —
+# bare pink foam was reading as the wall's finish. Reuses the porch railing's Portland-cement
+# stucco; rides outboard of everything so the concrete face (the footings/damp-proofing/
+# drain-tile datum) is untouched. Full height and staying that way: this face has no grade
+# line on it to band against.
+_GARDEN_PARGE = Layer(name="parge", material_ref="stucco", thickness=inch(0.5),
+                      function=LayerFunction.FINISH)
+
 CATLIN_BASEMENT_12 = Assembly(
     tag="CATLIN_BASEMENT_12",
     layers=(
-        Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
-              function=LayerFunction.STRUCTURE),
-        Layer(name="damp-proof", material_ref="air-barrier", thickness=inch(0.05),
-              function=LayerFunction.MEMBRANE,
-              control={ControlLayer.AIR, ControlLayer.WATER}),
-        Layer(name="xps-a", material_ref="xps", thickness=inch(2.0),
-              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        Layer(name="xps-b", material_ref="xps", thickness=inch(2.0),
-              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        # The exposed-foundation band (2026-08-18, deeper since 2026-08-21). Runs from 6"
-        # *below* grade — so no foam edge shows at the soil line, and so the panel is what
-        # the shovel hits rather than the XPS — up to the top of the wall at 0'-0", where
-        # its head tucks under the rainscreen's Z-flashing with the bug screen above it. It
-        # replaces the full-height parge this wall used to claim over nine feet of buried
-        # foam: the parge was added 2026-08-01 for the *south* wall's exposure and applied
-        # to all four sides because a layer had no way to say "only here".
-        Layer(name="protection-panel", material_ref="foundation-protection-panel",
-              thickness=inch(0.5), function=LayerFunction.CLADDING,
-              extent=LayerExtent(
-                  bottom=LayerBound(datum=LayerDatum.GRADE, offset=inch(-6)))),
+        *FOUNDATION_WALL_12_XPS4_CORE,
+        _PROTECTION_PANEL,
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="catlin-house basement N/E/W: 12\" wall + 2x2\" exterior XPS + above-grade protection panel",
-)
-
-# The south wall's stack, hoisted so the bare garden wall and the sauna-liner variant of it
-# (SAUNA_LINER_ON_BASEMENT_12_GARDEN, below) share one source of truth rather than two
-# hand-kept copies — the shape _SAUNA_LINER / _HUMID_LINER already use. Interior→exterior,
-# starting at the concrete: whatever is inboard of the pour is the variant's business.
-_GARDEN_CONCRETE_STACK = (
-    Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
-          function=LayerFunction.STRUCTURE),
-    Layer(name="damp-proof", material_ref="air-barrier", thickness=inch(0.05),
-          function=LayerFunction.MEMBRANE,
-          control={ControlLayer.AIR, ControlLayer.WATER}),
-    Layer(name="xps-a", material_ref="xps", thickness=inch(2.0),
-          function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-    Layer(name="xps-b", material_ref="xps", thickness=inch(2.0),
-          function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-    # Parge coat over mesh (2026-08-01): exposed XPS degrades under UV/impact, and here
-    # the exposure runs the full south wall from the sunken garden floor to the
-    # main-storey siding — bare pink foam was reading as the wall's finish. Reuses the
-    # porch railing's Portland-cement stucco; rides outboard of everything so the
-    # concrete face (the footings/damp-proofing/drain-tile datum) is untouched. Full
-    # height and staying that way: this face has no grade line on it to band against.
-    Layer(name="parge", material_ref="stucco", thickness=inch(0.5),
-          function=LayerFunction.FINISH),
+    source="library FOUNDATION_WALL_12_XPS4 + the house's above-grade protection panel (catlin basement N/E/W)",
 )
 
 # The south wall, which the sunken garden opens to the air over its whole 9'.
 CATLIN_BASEMENT_12_GARDEN = Assembly(
     tag="CATLIN_BASEMENT_12_GARDEN",
     layers=(
-        *_GARDEN_CONCRETE_STACK,
+        *FOUNDATION_WALL_12_XPS4_CORE,
+        _GARDEN_PARGE,
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="catlin-house basement south: 12\" wall + 2x2\" exterior XPS + full-height parge over the sunken garden",
+    source="library FOUNDATION_WALL_12_XPS4 + the house's full-height parge over the sunken garden (catlin basement south)",
 )
 
 # Basement slab-on-grade: 3" XPS below the slab (R-15 @ 40 psi compressive — rated for
@@ -281,7 +272,7 @@ CATLIN_SLAB_FLOOR = Assembly(
 
 # Main-floor structural deck: an EPS stay-in-place form with a cast concrete cap, over the
 # (conditioned) basement — so it is an interior floor, not an envelope slab. The "INT" tag
-# token is the codebase's signal for that (see CATLIN_CONC_12_INT, INT_2X6_PLUMBING) — it
+# token is the codebase's signal for that (see FOUNDATION_WALL_12_INT, INT_2X6_PLUMBING) — it
 # tells the prescriptive-energy table to skip this deck instead of holding it to the R-10
 # slab minimum. Keep the token underscore-delimited: ``mn_energy._is_interior_assembly``
 # keys on it and would otherwise grade a deck between two conditioned storeys against MN
@@ -324,24 +315,6 @@ CATLIN_DECK_EPS_INT = Assembly(
     ),
     interfaces=(_CONCRETE_BEARING,),
     source="catlin-house main-floor deck — BuildDeck/LiteDeck 8\" EPS stay-in-place form with a 4 5/8\" cast cap (12 5/8\" total, matching the second floor's joist + subfloor), steel furring rib and a 5/8\" gypsum R316.4 thermal barrier under it; replaced CATLIN_DECK_9_INT 2026-08-21",
-)
-
-CATLIN_CONC_12_INT = Assembly(
-    tag="CATLIN_CONC_12_INT",
-    layers=(
-        Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
-              function=LayerFunction.STRUCTURE),
-    ),
-    interfaces=(_CONCRETE_BEARING,),
-)
-
-CATLIN_CONC_8_INT = Assembly(
-    tag="CATLIN_CONC_8_INT",
-    layers=(
-        Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
-              function=LayerFunction.STRUCTURE),
-    ),
-    interfaces=(_CONCRETE_BEARING,),
 )
 
 # Freestanding sunken-garden / porch / balcony structure — exposed concrete.
@@ -865,7 +838,8 @@ SAUNA_LINER_ON_BASEMENT_12_GARDEN = Assembly(
               function=LayerFunction.INSULATION,
               control={ControlLayer.THERMAL, ControlLayer.VAPOR, ControlLayer.AIR},
               extent=_SAUNA_CEILING_EXTENT),
-        *_GARDEN_CONCRETE_STACK,
+        *FOUNDATION_WALL_12_XPS4_CORE,
+        _GARDEN_PARGE,
     ),
     interfaces=(_CONCRETE_BEARING,),
     source="catlin-house sauna_basement_wall_detail.py + CATLIN_BASEMENT_12_GARDEN (liner on the sunken-garden foundation wall)",
@@ -877,7 +851,7 @@ SAUNA_LINER_ON_BASEMENT_12_GARDEN = Assembly(
 # coat nooks, so no cavity fill either — insulating them would fill the nooks, and both
 # sides are conditioned anyway. Stair side closes with 3/4" cabinet plywood: stair finish
 # and screw-anywhere hook backing at once. "INT" in the tag is load-bearing (see
-# CATLIN_CONC_12_INT, INT_2X6_PLUMBING, _is_interior_assembly in mn_energy.py) — without it
+# FOUNDATION_WALL_12_INT, INT_2X6_PLUMBING, _is_interior_assembly in mn_energy.py) — without it
 # the uninsulated bays would fail as an exterior wall against R-21.
 CATLIN_MUDROOM_INT_2X6_EXPOSED = Assembly(
     tag="CATLIN_MUDROOM_INT_2X6_EXPOSED",
@@ -1406,8 +1380,7 @@ ASSEMBLIES = [
     CATLIN_BASEMENT_12_GARDEN,
     CATLIN_SLAB_FLOOR,
     CATLIN_DECK_EPS_INT,
-    CATLIN_CONC_12_INT,
-    CATLIN_CONC_8_INT,
+    FOUNDATION_WALL_12_INT,
     SUNKEN_GARDEN_WALL,
     SUNKEN_GARDEN_COLUMN_16,
     BASEMENT_BRICK_VENEER,

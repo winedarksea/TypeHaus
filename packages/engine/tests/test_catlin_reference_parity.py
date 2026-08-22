@@ -237,7 +237,7 @@ def test_below_grade_detail_draws_the_reference_context(catlin_model):
 
 def test_interior_foundation_walls_get_no_soil(catlin_model):
     """An interior basement bearing wall has slab on both sides — drawing earth would lie."""
-    _, scene = _detail(catlin_model, "wall_foundation:CATLIN_CONC_12_INT")
+    _, scene = _detail(catlin_model, "wall_foundation:CATLIN_INT_2X6_BRG|FOUNDATION_WALL_12_INT")
     assert not _component_tags(scene) & {"grade-line", "soil", "french-drain"}
 
 
