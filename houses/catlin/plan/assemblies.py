@@ -20,7 +20,7 @@ from typehaus import (
     inch,
 )
 from typehaus.model import PartitionLayout
-from library import FOUNDATION_WALL_12_INT, FOUNDATION_WALL_12_XPS4_CORE, INT_2X4_PARTITION, STARTER_MATERIALS
+from library import FOUNDATION_WALL_8_XPS4_CORE, FOUNDATION_WALL_12_INT, FOUNDATION_WALL_12_XPS4_CORE, INT_2X4_PARTITION, STARTER_MATERIALS
 
 # Named face roles the junction solver binds mixed-assembly corners/tees to (#44). The
 # ``bearing`` role names the load-bearing layer whose face carries structural continuity
@@ -186,16 +186,38 @@ CATLIN_ROOF = Assembly(
 # --- concrete family -----------------------------------------------------------
 #
 # **The pour is not this house's to own.** It comes from library
-# `FOUNDATION_WALL_12_XPS4_CORE` — 12" concrete, damp-proofing, two staggered 2" XPS
-# courses, R-21.8 — and each wall below splats that core and appends the one skin that
-# covers the foam. What stays house-local is exactly that skin, because it is a colour and
+# `FOUNDATION_WALL_8_XPS4_CORE` / `_12_XPS4_CORE` — the pour, damp-proofing and two
+# staggered 2" XPS courses (R-21.8 either way; the concrete's R-0.08/in is noise) — and each
+# wall below splats one of those cores and appends the one skin that covers the foam. What stays house-local is exactly that skin, because it is a colour and
 # exposure decision: neither `foundation-protection-panel` nor `stucco` resolves in
 # STARTER_MATERIALS, and the panel's #1c1f24 is the house's one exterior dark, which is a
 # palette call that has no business going upstream.
 #
-# **Two basement assemblies, because the north/east/west walls and the south wall are two
-# genuinely different conditions.** Both are the same core; they differ only in what covers
-# the foam, and they differ because what exposes it is different.
+# **The perimeter is two thicknesses and one rule, not one default.** 8" is earned only
+# where a *cast concrete deck* lands on the wall top beside the sill plate and needs its own
+# bearing seat inboard of it. A wood floor buys no extra width: the I-joists and their rim
+# bear on the same 2x6 mudsill the framed wall above stands on, and an 8" wall carries that
+# sill with 2" to spare — the conventional Minnesota wall. Since the 2026-08-21
+# basement-ceiling overhaul the only cast deck left is SL-M-DECK (x 18'-36', y 13'-36',
+# spanning east-west), which bears on the EAST wall and the centre line and nowhere else.
+# So W-B-E1/E2 stay 12" and the west, north and south perimeter goes to 8".
+#
+# IRC Table R404.1.2(8) permits it and says what it costs: at GM soil's 45 psf/ft, on the
+# 10' wall row (9'-4" actual, footnote f forbids interpolating) retaining the 7' row (6'-6"
+# actual, grade at -2'-10"), 12" reads NR and 8" reads #6 @ 48" o.c. vertical. That steel is
+# authored on each wall in storeys/basement.py — without it
+# `structural.foundation_unbalanced_fill` FAILs, which is the intended behaviour.
+#
+# 8" and not 10", which also reads NR: 8" is the standard residential form module, and the
+# market rate quoted for a poured foundation "is for a typical 8" wall" (see prices.toml).
+# Thickness above that adds concrete without adding forming, so 10" would keep an
+# odd-thickness forming premium and hand back half the yardage saving to avoid ~245 LF of
+# #6 bar. Thinning also seats the wall properly: at 12" the pour overhung the inside edge of
+# its own 20" strip footing by 2", and at 8" it sits entirely on it with a 2" inboard toe.
+#
+# **Within each thickness, two assemblies, because the north/east/west walls and the south
+# wall are two genuinely different conditions.** Both are the same core; they differ only in
+# what covers the foam, and they differ because what exposes it is different.
 #
 # On N/E/W the foam is buried except for the 2'-10" band the 2026-08-18 lift and the
 # 2026-08-21 deck overhaul raised out of the ground, so it gets a protection panel *over that
@@ -206,7 +228,7 @@ CATLIN_ROOF = Assembly(
 #
 # On the south the sunken garden exposes the foam from -9'-4" to 0'-0", which is not a band
 # off grade at all — grade is above the garden floor by nine feet there — so that wall keeps
-# the full-height parge coat, and keeps CATLIN_BASEMENT_12_GARDEN to say so.
+# the full-height parge coat, and keeps CATLIN_BASEMENT_8_GARDEN to say so.
 #
 # Both carry the same 4.55" outboard of the concrete face, which is what N-B-BRICK-W/-E's
 # inch(-4.55) stand-off is measured from. That number now decomposes as 4.05" of library
@@ -236,6 +258,7 @@ _PROTECTION_PANEL = Layer(name="protection-panel",
 _GARDEN_PARGE = Layer(name="parge", material_ref="stucco", thickness=inch(0.5),
                       function=LayerFunction.FINISH)
 
+# The east wall (W-B-E1/E2), the only perimeter run SL-M-DECK bears on.
 CATLIN_BASEMENT_12 = Assembly(
     tag="CATLIN_BASEMENT_12",
     layers=(
@@ -243,18 +266,29 @@ CATLIN_BASEMENT_12 = Assembly(
         _PROTECTION_PANEL,
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="library FOUNDATION_WALL_12_XPS4 + the house's above-grade protection panel (catlin basement N/E/W)",
+    source="library FOUNDATION_WALL_12_XPS4 + the house's above-grade protection panel (catlin basement east, where SL-M-DECK bears)",
+)
+
+# The west and north walls (W-B-W1/W2, W-B-N1/N2/N3) — wood floor only, so 8" reinforced.
+CATLIN_BASEMENT_8 = Assembly(
+    tag="CATLIN_BASEMENT_8",
+    layers=(
+        *FOUNDATION_WALL_8_XPS4_CORE,
+        _PROTECTION_PANEL,
+    ),
+    interfaces=(_CONCRETE_BEARING,),
+    source="library FOUNDATION_WALL_8_XPS4 + the house's above-grade protection panel (catlin basement west/north, wood floor only)",
 )
 
 # The south wall, which the sunken garden opens to the air over its whole 9'.
-CATLIN_BASEMENT_12_GARDEN = Assembly(
-    tag="CATLIN_BASEMENT_12_GARDEN",
+CATLIN_BASEMENT_8_GARDEN = Assembly(
+    tag="CATLIN_BASEMENT_8_GARDEN",
     layers=(
-        *FOUNDATION_WALL_12_XPS4_CORE,
+        *FOUNDATION_WALL_8_XPS4_CORE,
         _GARDEN_PARGE,
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="library FOUNDATION_WALL_12_XPS4 + the house's full-height parge over the sunken garden (catlin basement south)",
+    source="library FOUNDATION_WALL_8_XPS4 + the house's full-height parge over the sunken garden (catlin basement south)",
 )
 
 # Basement slab-on-grade: 3" XPS below the slab (R-15 @ 40 psi compressive — rated for
@@ -348,7 +382,7 @@ SUNKEN_GARDEN_COLUMN_16 = Assembly(
 )
 
 # Glazed-brick veneer over the exposed basement wall (sunken garden excavated against it).
-# There is no CMU backer wythe here, because the existing CATLIN_BASEMENT_12 concrete
+# There is no CMU backer wythe here, because the existing CATLIN_BASEMENT_8_GARDEN concrete
 # (damp-proofing + 4" XPS + parge already outboard) IS the backer — this wall stands 1" off
 # it on masonry ties. A fictional backer would double-count concrete already modeled by
 # W-B-S2/W-B-S3. No `interfaces`: non-bearing.
@@ -428,7 +462,7 @@ BASEMENT_BRICK_VENEER = Assembly(
               extent=LayerExtent(
                   bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(93.333)))),
     ),
-    source="basement south veneer over the sunken garden — the Ishtar scheme (2026-08-20): lapis glazed field with golden-yellow register bands over an unglazed brown plinth, one 3 5/8\" wythe banded by Layer.slot, 1\" airgap, corrugated masonry ties back to the existing CATLIN_BASEMENT_12 wall (no CMU backer: the basement concrete is the backer). Was one flat field of glazed-green-brick, which is still in the catalog for a one-word revert",
+    source="basement south veneer over the sunken garden — the Ishtar scheme (2026-08-20): lapis glazed field with golden-yellow register bands over an unglazed brown plinth, one 3 5/8\" wythe banded by Layer.slot, 1\" airgap, corrugated masonry ties back to the existing CATLIN_BASEMENT_8_GARDEN wall (no CMU backer: the basement concrete is the backer). Was one flat field of glazed-green-brick, which is still in the catalog for a one-word revert",
 )
 
 # Raised-garden outer face: dry-stacked segmental retaining-wall block, one unit deep. No
@@ -825,8 +859,8 @@ SAUNA_LINER_ON_CONCRETE = Assembly(
 _SAUNA_CEILING_EXTENT = LayerExtent(
     top=LayerBound(datum=LayerDatum.WALL_TOP, offset=inch(-18.0)))
 
-SAUNA_LINER_ON_BASEMENT_12_GARDEN = Assembly(
-    tag="SAUNA_LINER_ON_BASEMENT_12_GARDEN",
+SAUNA_LINER_ON_BASEMENT_8_GARDEN = Assembly(
+    tag="SAUNA_LINER_ON_BASEMENT_8_GARDEN",
     layers=(
         Layer(name="tg-liner", material_ref="sauna-tg", thickness=inch(1.0),
               function=LayerFunction.FINISH, extent=_SAUNA_CEILING_EXTENT),
@@ -838,11 +872,11 @@ SAUNA_LINER_ON_BASEMENT_12_GARDEN = Assembly(
               function=LayerFunction.INSULATION,
               control={ControlLayer.THERMAL, ControlLayer.VAPOR, ControlLayer.AIR},
               extent=_SAUNA_CEILING_EXTENT),
-        *FOUNDATION_WALL_12_XPS4_CORE,
+        *FOUNDATION_WALL_8_XPS4_CORE,
         _GARDEN_PARGE,
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="catlin-house sauna_basement_wall_detail.py + CATLIN_BASEMENT_12_GARDEN (liner on the sunken-garden foundation wall)",
+    source="catlin-house sauna_basement_wall_detail.py + CATLIN_BASEMENT_8_GARDEN (liner on the sunken-garden foundation wall)",
 )
 
 # --- mudroom exposed-stud wall ---------------------------------------------------
@@ -1121,7 +1155,7 @@ MATERIALS = [
              r_per_inch=0.0, density=7850.0, perm_rating=0.0, hatch="metal",
              color="#1c1f24",
              source="RF-HOUSE rake/eave/ridge trim coil, opening casings, exterior guards"),
-    # The above-grade foundation band on CATLIN_BASEMENT_12 (2026-08-18). Aluminium-faced
+    # The above-grade foundation band on CATLIN_BASEMENT_8/_12 (2026-08-18). Aluminium-faced
     # rigid protection panel — the trade product for exactly this, and what
     # notes/basement_to_framed_wall_detail.md already called for in prose ("rigid metal/PVC
     # trim") and what the detail sheet has always drawn here in "metal-dark". 1/2" so it
@@ -1132,11 +1166,11 @@ MATERIALS = [
              name="Aluminium-faced foundation protection panel (1/2\")",
              r_per_inch=0.0, density=1100.0, perm_rating=0.0, hatch="metal",
              color="#1c1f24",
-             source="above-grade band over basement exterior XPS, N/E/W (CATLIN_BASEMENT_12)"),
+             source="above-grade band over basement exterior XPS, N/E/W (CATLIN_BASEMENT_8, CATLIN_BASEMENT_12)"),
     Material(tag="stucco", name="Portland-cement stucco", r_per_inch=0.20, density=1900.0,
              perm_rating=10.0, hatch="concrete", color="#d9d2c4",
              # Two jobs, one product: the porch railing's CMU back-face finish, and the
-             # basement wall's parge coat over its exterior XPS (CATLIN_BASEMENT_12).
+             # basement wall's parge coat over its exterior XPS (CATLIN_BASEMENT_8_GARDEN).
              source="porch railing CMU back face; basement exterior-XPS parge coat"),
     Material(tag="composite-deck", name="Composite decking (capped PVC/wood)",
              r_per_inch=1.0, density=1000.0, perm_rating=0.5, hatch="lumber", color="#8a7f70",
@@ -1377,7 +1411,8 @@ ASSEMBLIES = [
     CATLIN_EXT_2X6,
     CATLIN_ROOF,
     CATLIN_BASEMENT_12,
-    CATLIN_BASEMENT_12_GARDEN,
+    CATLIN_BASEMENT_8,
+    CATLIN_BASEMENT_8_GARDEN,
     CATLIN_SLAB_FLOOR,
     CATLIN_DECK_EPS_INT,
     FOUNDATION_WALL_12_INT,
@@ -1404,7 +1439,7 @@ ASSEMBLIES = [
     INT_ESS_CLOSET_STEEL,
     SAUNA_2X4,
     SAUNA_LINER_ON_CONCRETE,
-    SAUNA_LINER_ON_BASEMENT_12_GARDEN,
+    SAUNA_LINER_ON_BASEMENT_8_GARDEN,
     PLANT_EXT_2X6_HUMID,
     PLANT_INT_2X6_BRG_HUMID,
     PLANT_INT_2X4_HUMID,

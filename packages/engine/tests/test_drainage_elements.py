@@ -242,3 +242,36 @@ def test_a_pump_on_a_circuit_the_panel_does_not_carry_fails(catlin_plan):
     model, _ = resolve(plan)
     failures = _failures(discharge_consistency(_context(plan, model)))
     assert [f for f in failures if "CKT-NOT-A-CIRCUIT" in f.message]
+
+
+def test_a_soakaway_is_stone_not_concrete(catlin_model):
+    """``solid_material_ref``'s last-resort default is "concrete", which is right for a
+    footing and wrong for a hole full of washed rock. A drywell that named no material at
+    all hatched 4.35 cy of #57 stone as a pour in every section it was cut in, and told the
+    estimate's material guard that the soakaway was ready-mix."""
+    from typehaus.resolve.assembly_material import solid_material_ref
+
+    wells = [s for s in catlin_model.solids if s.category == "drywell"]
+    assert wells, "the house has soakaways to get wrong"
+    for well in wells:
+        assert solid_material_ref(catlin_model.plan, well) == "aggregate"
+
+
+def test_the_radon_sump_is_a_basin_not_a_second_pour(catlin_model):
+    """The pit interrupts the slab; it is not made of it."""
+    from typehaus.resolve.assembly_material import solid_material_ref
+
+    sumps = [s for s in catlin_model.solids if s.category == "sump"]
+    assert sumps
+    for sump in sumps:
+        assert solid_material_ref(catlin_model.plan, sump) == "polyethylene"
+
+
+def test_a_thermal_break_is_foam_not_the_concrete_it_breaks(catlin_model):
+    """The one block whose whole job is to *not* be the pour on either side of it."""
+    from typehaus.resolve.assembly_material import solid_material_ref
+
+    blocks = [s for s in catlin_model.solids if s.category == "thermal_break"]
+    assert blocks
+    for block in blocks:
+        assert solid_material_ref(catlin_model.plan, block) == "xps"

@@ -1,8 +1,10 @@
 # haus: editable
-# Basement — 12" concrete walkout box, 18' center grid, sauna, stair (WP3.1).
-# South wall is the walkout side facing the sunken garden. Perimeter walls align on the
-# concrete exterior face so the 4" of exterior XPS stacks directly under the framed
-# wall's 4" polyiso+EPS (#43 control-layer continuity).
+# Basement — cast concrete walkout box, 18' center grid, sauna, stair (WP3.1).
+# The perimeter is 8" except the east wall, which is 12" because SL-M-DECK lands on it
+# (see the WALLS header below). South wall is the walkout side facing the sunken garden.
+# Perimeter walls align on the concrete exterior face so the 4" of exterior XPS stacks
+# directly under the framed wall's 4" polyiso+EPS (#43 control-layer continuity) — which
+# is also why thinning the pour moves only the INSIDE face.
 from typehaus import (
     Alarm,
     AlarmKind,
@@ -72,8 +74,10 @@ NODES = [
     # the concrete, both ends ``open_end`` like the sunken garden's N-SG-NW/NE (not part of
     # any wall loop). x runs only as far as the excavation in front of it: N-B-S1's x (8'-10")
     # to 28'-0" (params/sunken_garden.py's ``_x_ax_e``, where grade comes back up).
-    # y is NOT 0'-0": the south walls' node line is the concrete face, and CATLIN_BASEMENT_12
-    # carries 4.55" outboard of it (damp-proofing + 2" XPS + parge); the veneer stands off
+    # y is NOT 0'-0": the south walls' node line is the concrete face, and
+    # CATLIN_BASEMENT_8_GARDEN carries 4.55" outboard of it (damp-proofing + 2x 2" XPS +
+    # parge) — a tail that is independent of the pour, which is why thinning the wall to 8"
+    # in 2026-08-21 did not move this number; the veneer stands off
     # that finished face, hence the -4.55". Wall aligns on face("air-gap-int") so the 1"
     # cavity begins exactly on the parge.
     Node(uid="CBN019AAAA", tag="N-B-BRICK-W", position=pt(ft(8, 10), inch(-4.55)),
@@ -83,43 +87,71 @@ NODES = [
 ]
 
 WALLS = [
-    # Perimeter foundation walls (12" + exterior XPS), CCW from SW corner.
+    # Perimeter foundation walls (8" or 12" + exterior XPS), CCW from SW corner.
     #
     # `lateral_support="top_and_bottom"` is the precondition for the prescriptive path, not a
     # detail: SL-B bears against the inside face at the bottom and FS-MAIN's diaphragm ties
     # the top, so IRC Table R404.1.2(8) applies (its footnote g presumes exactly this) rather
     # than R404.1.1 sending a wall retaining more than 48" to an engineered design. Stated on
     # each wall because the check refuses to assume it — assuming bracing is the unsafe
-    # direction. With it, 12" at 45 psf/ft on a 9' storey retaining 9' reads NR: no vertical
-    # reinforcement required at all. (Horizontal steel is a separate table, R404.1.2(1) —
-    # one #4 within 12" of the top and one at third points above 8' — not screened here.)
+    # direction. (Horizontal steel is a separate table, R404.1.2(1) — one #4 within 12" of
+    # the top and one at third points above 8' — not screened here.)
+    #
+    # **The row, spelled out.** GM soil is 45 psf/ft (mn-2024 profile). The wall runs
+    # 0'-0" to -9'-4", so 9.33' unsupported -> the 10' row; grade is at -2'-10"
+    # (params/site.py), so 6.5' of unbalanced fill -> the 7' row. Footnote f forbids
+    # interpolating, so both round UP. At (45, 10', 7'): 12" reads NR, 10" reads NR,
+    # 8" reads #6 @ 48" o.c., 6" reads #6 @ 34".
+    #
+    # **Which wall gets which is one physical rule: 12" is earned only where a cast
+    # concrete deck lands on the wall top beside the sill plate** and needs its own bearing
+    # seat inboard of that sill. A wood floor needs no extra width — the I-joists and rim
+    # bear on the same 2x6 mudsill the framed wall above stands on, and an 8" wall carries
+    # that sill with 2" to spare. Since the 2026-08-21 basement-ceiling overhaul the only
+    # cast deck left is SL-M-DECK (x 18'-36', y 13'-36', spanning east-west), which bears
+    # on the east wall and the centre line and nowhere else. So W-B-E1/E2 stay 12" and the
+    # other eight segments — 108 LF, ~12.4 cy — are 8" carrying #6 @ 48" o.c. vertical,
+    # authored on each of them below. Drop that string and the check FAILs, correctly.
+    #
+    # 8" and not 10" (which also reads NR): 8" is the standard residential form module and
+    # the market rate is quoted for it, whereas thickness above 8" adds concrete without
+    # adding forming — so 10" would keep an odd-thickness forming premium and hand back
+    # half the yardage to save ~245 LF of #6 bar. See prices.toml's [wall_structure].
+    #
+    # The 8" walls also sit better than the 12" ones did: FT-B-* is a 20" strip on
+    # `center_on="axis"`, so a 12" pour overhung its inside edge by 2" and an 8" one has a
+    # 2" inboard toe. The footings do not move — the brick plinth FT-B-BRICK is dimensioned
+    # off the strip's -10" edge.
     FoundationWall(uid="CBW101AAAA", tag="W-B-S1", start_node="N-B-SW",
-                   end_node="N-B-S1", assembly="CATLIN_BASEMENT_12_GARDEN",
+                   end_node="N-B-S1", assembly="CATLIN_BASEMENT_8_GARDEN",
                    alignment=face("concrete-ext"),
                    top_elevation=ft(0), bottom_elevation=ft(-9, -4),
-                   lateral_support="top_and_bottom"),
+                   lateral_support="top_and_bottom",
+                   vertical_reinforcement='#6 @ 48" o.c.'),
     # The sauna's south side. W-B-S1 and W-B-S3 stay on the bare garden wall deliberately —
     # they bound the workshop and the patio side — but this one segment is a room face in a
     # WET room, so it carries the liner variant of the same stack
-    # (SAUNA_LINER_ON_BASEMENT_12_GARDEN): the vapour control has to be continuous on all
+    # (SAUNA_LINER_ON_BASEMENT_8_GARDEN): the vapour control has to be continuous on all
     # four faces or it is not vapour control. The liner grows 3 1/2" inward and mitres to
     # W-B-CS's at N-B-S2 — same assembly family, so no derived return there.
     # Alignment stays `face("concrete-ext")` with NO offset, unlike W-B-CS's inch(-6):
     # `_face_offset_from_interior` falls through the three liner layers (no name match) and
     # returns the concrete's outboard face, which on this wall *is* the datum, so the
-    # concrete band stays at y 0"-12" exactly as the bare garden segments do. W-B-CS needs
+    # concrete band stays at y 0"-8" exactly as the bare garden segments do. W-B-CS needs
     # its offset only to re-centre the concrete on the 18' bearing grid.
     FoundationWall(uid="CBW102AAAA", tag="W-B-S2", start_node="N-B-S1",
-                   end_node="N-B-S2", assembly="SAUNA_LINER_ON_BASEMENT_12_GARDEN",
+                   end_node="N-B-S2", assembly="SAUNA_LINER_ON_BASEMENT_8_GARDEN",
                    alignment=face("concrete-ext"),
                    interior_room="RM-B-SAUNA",
                    top_elevation=ft(0), bottom_elevation=ft(-9, -4),
-                   lateral_support="top_and_bottom"),
+                   lateral_support="top_and_bottom",
+                   vertical_reinforcement='#6 @ 48" o.c.'),
     FoundationWall(uid="CBW103AAAA", tag="W-B-S3", start_node="N-B-S2",
-                   end_node="N-B-SE", assembly="CATLIN_BASEMENT_12_GARDEN",
+                   end_node="N-B-SE", assembly="CATLIN_BASEMENT_8_GARDEN",
                    alignment=face("concrete-ext"),
                    top_elevation=ft(0), bottom_elevation=ft(-9, -4),
-                   lateral_support="top_and_bottom"),
+                   lateral_support="top_and_bottom",
+                   vertical_reinforcement='#6 @ 48" o.c.'),
     FoundationWall(uid="CBW104AAAA", tag="W-B-E1", start_node="N-B-SE",
                    end_node="N-B-E1", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
@@ -131,34 +163,50 @@ WALLS = [
                    top_elevation=ft(0), bottom_elevation=ft(-9, -4),
                    lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW106AAAA", tag="W-B-N1", start_node="N-B-NE",
-                   end_node="N-B-N1", assembly="CATLIN_BASEMENT_12",
+                   end_node="N-B-N1", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
                    top_elevation=ft(0), bottom_elevation=ft(-9, -4),
-                   lateral_support="top_and_bottom"),
+                   lateral_support="top_and_bottom",
+                   vertical_reinforcement='#6 @ 48" o.c.'),
     FoundationWall(uid="CBW107AAAA", tag="W-B-N2", start_node="N-B-N1",
-                   end_node="N-B-N2", assembly="CATLIN_BASEMENT_12",
+                   end_node="N-B-N2", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
                    top_elevation=ft(0), bottom_elevation=ft(-9, -4),
-                   lateral_support="top_and_bottom"),
+                   lateral_support="top_and_bottom",
+                   vertical_reinforcement='#6 @ 48" o.c.'),
     FoundationWall(uid="CBW108AAAA", tag="W-B-N3", start_node="N-B-N2",
-                   end_node="N-B-NW", assembly="CATLIN_BASEMENT_12",
+                   end_node="N-B-NW", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
                    top_elevation=ft(0), bottom_elevation=ft(-9, -4),
-                   lateral_support="top_and_bottom"),
+                   lateral_support="top_and_bottom",
+                   vertical_reinforcement='#6 @ 48" o.c.'),
     FoundationWall(uid="CBW109AAAA", tag="W-B-W1", start_node="N-B-NW",
-                   end_node="N-B-W1", assembly="CATLIN_BASEMENT_12",
+                   end_node="N-B-W1", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
                    top_elevation=ft(0), bottom_elevation=ft(-9, -4),
-                   lateral_support="top_and_bottom"),
+                   lateral_support="top_and_bottom",
+                   vertical_reinforcement='#6 @ 48" o.c.'),
     FoundationWall(uid="CBW110AAAA", tag="W-B-W2", start_node="N-B-W1",
-                   end_node="N-B-SW", assembly="CATLIN_BASEMENT_12",
+                   end_node="N-B-SW", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
                    top_elevation=ft(0), bottom_elevation=ft(-9, -4),
-                   lateral_support="top_and_bottom"),
+                   lateral_support="top_and_bottom",
+                   vertical_reinforcement='#6 @ 48" o.c.'),
     # Center cross walls (12" concrete) — the 18' bearing grid. Every wall from here down is
     # an *interior* cross wall with soil on neither side, so `unbalanced_fill=ft(0)` says so
     # explicitly — without it `structural.foundation_unbalanced_fill` would read these eight
-    # as retaining 9' of backfill apiece.
+    # as retaining 9' of backfill apiece. R404.1.2(8) therefore decides nothing here; these
+    # are 12" for their own reasons, and the reasons are worth stating since the perimeter
+    # went to 8" on 2026-08-21:
+    #
+    #   W-B-CS2, W-B-CN2, W-B-CN — SL-M-DECK, the 414 SF cast remnant, lands on one face of
+    #     each with wood joists on the other. A cast deck needs its own bearing seat.
+    #   W-B-CS — carries wood on both faces and COULD go to 8". Left at 12" deliberately:
+    #     it is 13'-10" (~1.5 cy), it is the sauna's east face with a tile splash on it, and
+    #     its alignment `face("concrete-ext", offset=inch(-6))` is a hardcoded HALF of the
+    #     thickness — thinning it silently moves the bearing grid unless that number moves
+    #     with it. Not worth 1.5 cy.
+    #   W-B-STR — three dimensions are measured off its east face (see its own note below).
     #
     # This segment is the sauna's east boundary, carrying the liner stack directly on the
     # concrete. Aligned on the concrete's far face so the bearing grid stays put and the
@@ -408,7 +456,7 @@ ROOMS = [
     Room(uid="CBR402AAAA", tag="RM-B-WORKSHOP", seed=pt(ft(5), ft(8)),
          occupancy=Occupancy.UTILITY, floor_finish="sealed-concrete"),
     # No wall_lining override: the liner is part of SAUNA_2X4 / SAUNA_LINER_ON_CONCRETE /
-    # SAUNA_LINER_ON_BASEMENT_12_GARDEN. WET as of 2026-08-18, once W-B-S2 got the liner
+    # SAUNA_LINER_ON_BASEMENT_8_GARDEN. WET as of 2026-08-18, once W-B-S2 got the liner
     # variant and the vapour control became continuous on all four faces.
     # `design_temperature_f` stays unset on purpose — it defaults to the 70 F setpoint, which
     # is what HumidityClass prescribes: a Glaser walk screens the daily mean, not the löyly

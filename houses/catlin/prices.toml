@@ -1198,16 +1198,26 @@
 # which is why $320-600 was defensible ONLY IF those were modelled separately. THEY ARE NOT IN
 # THE MODEL AT ALL, so the all-in rate is the honest one. See plans/cost-options.md for the
 # rebar question, which is the largest single thing this file still does not name.
-"CATLIN_BASEMENT_12" = { low = 420, high = 700 }  # 46.68 CY — was $320-600
-# The south wall, split out 2026-08-18 so its full-height parge could stay while the other
-# three took an above-grade panel instead. Identical 12" pour, identical formwork, so
-# identical basis — the assemblies differ only outboard of the concrete.
-"CATLIN_BASEMENT_12_GARDEN" = { low = 420, high = 700 }
-# 2026-08-18: the same 12" pour with the sauna's liner inboard of it (W-B-S2). Priced
-# identically to its parent above, because this table prices PLACED CONCRETE by the yard and
-# the concrete is the same concrete — the liner it gained is basswood, furring and
-# foil-polyiso, and all three are already bought by the square foot in [envelope_layers].
-"SAUNA_LINER_ON_BASEMENT_12_GARDEN" = { low = 420, high = 700 }
+"CATLIN_BASEMENT_12" = { low = 420, high = 700 }  # W-B-E1/E2 only since 2026-08-21
+# 2026-08-21: the eight non-deck-bearing perimeter segments went 12" -> 8" (108 LF, -12.4 cy).
+# ** DO NOT price these off the 12" row. ** $420-700/cy was derived per-CY at 12"; applied to
+# an 8" volume it books the saving as ~$5,200-8,700, when the trade only gives back ~$25-45/LF
+# — the paragraph above says why: forming, stripping, bracing and crew time do not change
+# with thickness, only the concrete does. Re-derived from the same market anchor, which is
+# quoted for an 8" wall in the first place, so this is the LESS extrapolated of the two rows:
+#   8" x 9'-4" = 0.2305 cy/LF;  $110-180/LF at 9'-0" -> $114-187/LF at 9'-4" -> ~$495-810/cy
+# Vertical steel (#6 @ 48" o.c., ~27 bars / ~245 LF, which 12" did not need) has no line item
+# of its own — the same all-in rate that already absorbs the 12" wall's rebar absorbs this.
+"CATLIN_BASEMENT_8" = { low = 495, high = 810 }  # W-B-N1/N2/N3, W-B-W1/W2
+# The south wall, split out 2026-08-18 so its full-height parge could stay while the others
+# took an above-grade panel instead. Identical pour, identical formwork, so identical basis —
+# the assemblies differ only outboard of the concrete.
+"CATLIN_BASEMENT_8_GARDEN" = { low = 495, high = 810 }
+# 2026-08-18: the same pour with the sauna's liner inboard of it (W-B-S2). Priced identically
+# to its parent above, because this table prices PLACED CONCRETE by the yard and the concrete
+# is the same concrete — the liner it gained is basswood, furring and foil-polyiso, and all
+# three are already bought by the square foot in [envelope_layers].
+"SAUNA_LINER_ON_BASEMENT_8_GARDEN" = { low = 495, high = 810 }
 # Interior bearing walls carry a 10-20% premium over the perimeter: both faces need forming
 # AND stripping in a confined excavation, there is no backfill to brace against, pump and
 # crane access is tighter, and a face that will be visible often gets rubbed or patched.

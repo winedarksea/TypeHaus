@@ -824,16 +824,15 @@ ATTIC_DATA_DEVICES = [
 CONDUIT_SLEEVES = [
     # CD-B-GARAGE: west to east across the basement at -4', then north under the house/
     # garage gap and up through the garage slab.
-    SleevePenetration(uid="CNS005AAAA", tag="SP-B-N3-CD-GAR", host_ref="W-B-N3",
-                      position=pt(ft(6), ft(35)), pipe_diameter=inch(1.25),
-                      sleeve_diameter=inch(2), purpose=Service.POWER_240,
-                      axis="horizontal", center_elevation=ft(-4)),
+    # SP-B-N3-CD-GAR and SP-B-N2-CD-GAR were here until 2026-08-21 and are gone with the
+    # 12" -> 8" thinning, which is the one place that change deleted work rather than
+    # shrinking it. The east leg runs at y=35'-0", which was *exactly* the 12" wall's inside
+    # face, so the resolver read the run as inside W-B-N3 (x 0'-10') and W-B-N2 (x 10'-18')
+    # and the two grazing crossings needed sleeves. At 8" the inside face is 35'-4" and the
+    # raceway is 4" clear of both walls: no crossing, no hole. Only the genuine north punch
+    # at x=16' (SP-B-N2-CD-GAR2) and the stair wall at x=10' remain.
     SleevePenetration(uid="CNS006AAAA", tag="SP-B-STR-CD-GAR", host_ref="W-B-STR",
                       position=pt(ft(10), ft(35)), pipe_diameter=inch(1.25),
-                      sleeve_diameter=inch(2), purpose=Service.POWER_240,
-                      axis="horizontal", center_elevation=ft(-4)),
-    SleevePenetration(uid="CNS007AAAA", tag="SP-B-N2-CD-GAR", host_ref="W-B-N2",
-                      position=pt(ft(13), ft(35)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(2), purpose=Service.POWER_240,
                       axis="horizontal", center_elevation=ft(-4)),
     SleevePenetration(uid="CNS008AAAA", tag="SP-B-N2-CD-GAR2", host_ref="W-B-N2",

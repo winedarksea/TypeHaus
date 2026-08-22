@@ -105,3 +105,86 @@ def test_an_enclosure_with_no_room_in_it_is_not_floor_area(catlin_model) -> None
     which the first draft of this metric did."""
     gross = gross_area_sf(catlin_model)["storeys"]
     assert gross["basement"] == pytest.approx(gross["main"], rel=0.05)
+
+
+# --- the section name is not the trade ---------------------------------------------------
+#
+# ``[concrete]`` in a prices.toml prices the whole ``structural_solids`` scope, not "the
+# concrete". Until ``cost_codes._solid_code`` existed, every row in it inherited
+# ``SECTION_CODES["concrete"]``, so four solid elm timbers, six painted 6x6 pillars, the
+# breezeway's multiwall polycarbonate, 4.35 cy of #57 washed stone and two framed-and-taped
+# duct soffits all exported under NAHB 1300 / CSI 03 30 00 CAST-IN-PLACE CONCRETE — and
+# ``haus tasks`` scheduled them into the concrete sub's work package.
+
+
+@pytest.mark.parametrize("key,trade", [
+    ("column:ELM_TIMBER", "framing"),
+    ("column:POST_WHITE_PAINT", "framing"),
+    ("glazing:BREEZEWAY_GLAZED_WALL", "openings"),
+    ("glazing:BREEZEWAY_ROOF_GLAZING", "openings"),
+    ("bug_screen:CATLIN_EXT_2X6", "openings"),
+    ("drywell", "drainage"),
+    ("drain_tile", "drainage"),
+    ("sump", "drainage"),
+    ("soffit", "floors"),
+    ("beam", "framing"),
+])
+def test_a_solid_that_is_not_a_pour_is_not_filed_as_concrete(key, trade) -> None:
+    code = cost_code("concrete", key)
+    assert code.trade == trade
+    assert code.csi != "03 30 00"
+
+
+@pytest.mark.parametrize("key", ["footing", "slab", "pad", "slab:CATLIN_DECK_EPS_INT",
+                                 "thermal_break"])
+def test_an_actual_pour_still_files_as_concrete(key) -> None:
+    assert cost_code("concrete", key).trade == "concrete"
+
+
+def test_a_laid_deck_in_a_slab_row_needs_its_material_to_say_so() -> None:
+    """The one thing a solid's CATEGORY cannot say. "slab" covers 9" of cast concrete and a
+    composite plank on 2x8 joists alike, so this is the only case the trade table cannot
+    settle on its own — and silence is not evidence, so a row with no assembly stays a
+    pour."""
+    assert cost_code("concrete", "slab:PORCH_DECK_COMPOSITE",
+                     material="composite-deck").trade == "floors"
+    assert cost_code("concrete", "slab:BALCONY_DECK_ALUMINUM",
+                     material="aluminum-deck").trade == "floors"
+    assert cost_code("concrete", "slab:CATLIN_DECK_EPS_INT",
+                     material="concrete").trade == "concrete"
+    assert cost_code("concrete", "slab", material=None).trade == "concrete"
+
+
+def test_the_footing_account_survives_the_derivation() -> None:
+    """``KEY_PATTERNS`` runs first and carries refinements the category cannot know: a
+    footing is NAHB 1200 against flatwork's 1300, two accounts and often two subs."""
+    assert cost_code("concrete", "footing").nahb == "1200"
+    assert cost_code("concrete", "slab").nahb == "1300"
+
+
+def test_every_trade_a_solid_category_can_name_has_an_account() -> None:
+    """The derivation is keyed on the trade table, so a solid category added there must not
+    fall back to the concrete default just because nobody added an account for its trade."""
+    from typehaus.emit.trades import SOLID_CATEGORY_TRADE
+    from typehaus.takeoff.cost_codes import _SOLID_TRADE_CODES
+
+    assert set(SOLID_CATEGORY_TRADE.values()) <= set(_SOLID_TRADE_CODES)
+
+
+def test_no_catlin_solid_reaches_the_concrete_sub_unless_it_is_concrete(catlin_model) -> None:
+    """End to end, against the real house: every priced solid filed under the concrete trade
+    is either a pour or a row that never said what it was made of."""
+    from typehaus.cli.prices import estimate_costs, load_prices
+    from typehaus.takeoff.bom import bill_of_materials
+
+    prices = load_prices(catlin_model.plan.source_root)
+    bom = bill_of_materials(catlin_model)
+    material_of = {(row["category"], row.get("assembly")): row.get("structure_material")
+                   for row in bom["structural_solids"]}
+    concrete_keys = {row["key"] for row in
+                     estimate_costs(bom, prices)["sections"]["concrete"]["rows"]
+                     if row["trade"] == "concrete"}
+    for key in concrete_keys:
+        category, _, assembly = key.partition(":")
+        material = material_of.get((category, assembly or None))
+        assert material in (None, "concrete"), f"{key} bills as concrete but is {material}"

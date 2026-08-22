@@ -67,21 +67,22 @@ TRANSITIONS = (
     Transition(uid="CATR006AAAA", tag="TR-CATLIN-CONCRETE-OPENING",
                condition_pattern="opening_perimeter:FOUNDATION_WALL_*_INT",
                notes="notes/sauna_basement_wall_detail.md", overlay="concrete-opening"),
-    # ``CATLIN_BASEMENT_12*`` covers both basement assemblies: the N/E/W wall with its
-    # above-grade protection band and the south wall with its full-height parge over the
-    # sunken garden (2026-08-18). The two differ in what covers the exterior XPS, which is a
-    # field condition well outside an opening's perimeter — the buck, the frame and the
-    # flashing at a window in 12" of concrete are the same detail on either wall, and one
-    # sheet is what draws them.
+    # ``CATLIN_BASEMENT_*`` covers every perimeter foundation assembly: the N/W wall with
+    # its above-grade protection band, the 12" east wall, and the south wall with its
+    # full-height parge over the sunken garden (2026-08-18). They differ in what covers the
+    # exterior XPS, which is a field condition well outside an opening's perimeter, and
+    # since 2026-08-21 they differ in the pour too — but the buck, the frame and the
+    # flashing at a window in cast concrete are the same detail at 8" as at 12" (only the
+    # jamb gets 4" shallower), and one sheet is what draws them.
     Transition(uid="CATR007AAAA", tag="TR-CATLIN-BASEMENT-OPENING",
-               condition_pattern="opening_perimeter:CATLIN_BASEMENT_12*",
+               condition_pattern="opening_perimeter:CATLIN_BASEMENT_*",
                notes="notes/basement_to_framed_wall_detail.md", overlay="foundation-window"),
     # Starred: the garage/breezeway threshold condition — both doors open onto the slab
     # at grade, with the ICF stem dropped to a grade beam under them, so the perimeter
     # flashing here is nothing like a standard framed opening.
     # Same reasoning as the garden arch above, one wall further north: the reveals through
     # W-B-BRICK are open arched holes in a freestanding wythe, and the flashed, bucked,
-    # sealed opening is the one in the CATLIN_BASEMENT_12 wall behind them (TR-CATLIN-
+    # sealed opening is the one in the CATLIN_BASEMENT_8_GARDEN wall behind them (TR-CATLIN-
     # BASEMENT-OPENING already draws that). A second sheet here would detail a perimeter
     # that has no perimeter work.
     Transition(uid="CATR015AAAA", tag="TR-CATLIN-VENEER-OPENING",

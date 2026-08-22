@@ -983,30 +983,70 @@ def test_catlin_is_all_electric_with_no_gas_appliance(catlin_model):
     assert air == {"EQ-T-ERV", "EQ-T-GREE-SLIM24"}
 
 
+_PERIMETER_ASSEMBLIES = ("CATLIN_BASEMENT_12", "CATLIN_BASEMENT_8",
+                         "CATLIN_BASEMENT_8_GARDEN", "SAUNA_LINER_ON_BASEMENT_8_GARDEN")
+
+
 def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
     """Old: 4 perimeter segments x 2 XPS layers; new: every perimeter segment
     carries both 2" XPS layers in its resolved stack.
 
-    Ten segments across three assemblies since 2026-08-18: seven on N/E/W with an above-grade
+    Ten segments across four assemblies since 2026-08-21: seven on N/E/W with an above-grade
     protection band, three on the south with a full-height parge into the sunken garden — of
-    which W-B-S2 also carries the sauna's liner inboard of the pour. The concrete and the
-    foam are identical on all of them; the split is only about what covers the foam outside
-    and what, if anything, lines the room inside.
+    which W-B-S2 also carries the sauna's liner inboard of the pour. The foam is identical on
+    all of them and so is the 4.05" it puts outboard of the pour; the splits are about what
+    covers the foam outside, what (if anything) lines the room inside, and — since the
+    thinning — how thick the pour behind it is.
     """
     perimeter = [w for w in catlin_model.walls
-                 if w.storey == "basement"
-                 and w.assembly in ("CATLIN_BASEMENT_12", "CATLIN_BASEMENT_12_GARDEN",
-                                    "SAUNA_LINER_ON_BASEMENT_12_GARDEN")]
+                 if w.storey == "basement" and w.assembly in _PERIMETER_ASSEMBLIES]
     assert len(perimeter) == 10  # same wall line, split at grid/tee nodes
-    garden = [w for w in perimeter if w.assembly.endswith("BASEMENT_12_GARDEN")]
+    garden = [w for w in perimeter if w.assembly.endswith("BASEMENT_8_GARDEN")]
     assert len(garden) == 2 + 1  # W-B-S1/W-B-S3 bare + W-B-S2 on the liner variant
     for wall in perimeter:
         xps = [l for l in wall.layers if l.name.startswith("xps")]
         assert len(xps) == 2
         for layer in xps:
             assert layer.thickness_m == pytest.approx(inch(2.0).meters)
+
+
+def test_only_the_deck_bearing_perimeter_stays_twelve_inches(catlin_model):
+    """12" is earned where a *cast* deck lands on the wall top beside the sill, and nowhere
+    else (2026-08-21). SL-M-DECK spans east-west onto the east wall and the centre line, so
+    W-B-E1/E2 keep the 12" pour and the other eight segments are 8" — which IRC Table
+    R404.1.2(8) allows at 45 psf/ft on the 10' x 7' row only with vertical steel, so each of
+    the eight must declare it or ``structural.foundation_unbalanced_fill`` FAILs."""
+    from typehaus.model.structure import FoundationWall
+
+    perimeter = {w.tag: w for w in catlin_model.walls
+                 if w.storey == "basement" and w.assembly in _PERIMETER_ASSEMBLIES}
+    thick = {tag for tag, w in perimeter.items()
+             if next(l for l in w.layers if l.name == "concrete").thickness_m
+             == pytest.approx(inch(12.0).meters)}
+    assert thick == {"W-B-E1", "W-B-E2"}
+    for tag, wall in perimeter.items():
+        if tag in thick:
+            continue
         concrete = next(l for l in wall.layers if l.name == "concrete")
-        assert concrete.thickness_m == pytest.approx(inch(12.0).meters)
+        assert concrete.thickness_m == pytest.approx(inch(8.0).meters)
+        source = next(w for w in catlin_model.plan.all_elements()
+                      if isinstance(w, FoundationWall) and w.tag == tag)
+        assert source.vertical_reinforcement == '#6 @ 48" o.c.', tag
+
+
+def test_the_brick_standoff_is_independent_of_the_pour(catlin_model):
+    """N-B-BRICK-W/-E stand off ``inch(-4.55)`` from the concrete face. That number is the
+    library core's tail (0.05" damp-proofing + 2 x 2" XPS = 4.05") plus a 1/2" house skin,
+    and it must survive a change of pour thickness — the veneer, the excavation, the XPS
+    plane and the drain tile are all measured off the *exterior* face, which is the datum
+    the walls align on, so only the inside face moved on 2026-08-21."""
+    for tag in _PERIMETER_ASSEMBLIES:
+        asm = catlin_model.plan.library.resolve_assembly(tag)
+        after_pour = [l for l in asm.layers
+                      if l.name in ("damp-proof", "xps-a", "xps-b", "parge",
+                                    "protection-panel")]
+        outboard = sum(l.thickness.inches for l in after_pour)
+        assert outboard == pytest.approx(4.55), tag
 
 
 def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):
