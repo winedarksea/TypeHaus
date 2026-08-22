@@ -3,12 +3,6 @@ viewer, the SVG editor, and 2D detail hatches (#24, → 21 §Nordic preset)."""
 
 from __future__ import annotations
 
-# Muted Nordic palette; material colors fall back to these hatch-family defaults.
-NORDIC_BG = "#f4f2ed"
-NORDIC_INK = "#33312c"
-NORDIC_LINE = "#5b574f"
-NORDIC_ACCENT = "#6d8a96"
-
 HATCH_FAMILY_COLOR: dict[str, str] = {
     "lumber": "#d8c9a6",
     "osb": "#c9a86a",

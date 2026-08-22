@@ -14,7 +14,7 @@ import pytest
 from typer.testing import CliRunner
 
 from typehaus.cli.app import app, main  # `main` is the packaging entry point — keep it here
-from _helpers import copy_house
+from _helpers import CATLIN, copy_house
 
 EXPECTED_COMMANDS = {
     "build", "check", "compare", "diff", "doctor", "energy", "explain", "export", "fmt",
@@ -80,3 +80,23 @@ def test_ls_runs_over_the_starter_house(starter_dir: Path) -> None:
 def test_takeoff_runs_over_the_starter_house(starter_dir: Path) -> None:
     result = runner.invoke(app, ["takeoff", str(starter_dir), "--json"])
     assert result.exit_code == 0, result.output
+
+
+def test_takeoff_summary_runs_over_the_starter_house(starter_dir: Path) -> None:
+    """`haus takeoff --summary` (#52): a per-section rollup, not the full per-row dump."""
+    result = runner.invoke(app, ["takeoff", str(starter_dir), "--summary"])
+    assert result.exit_code == 0, result.output
+    assert "Bill of materials summary" in result.output
+    assert "sections," in result.output
+
+
+def test_takeoff_summary_is_an_order_of_magnitude_smaller_than_json() -> None:
+    """catlin's full ``--json`` is the ~860KB / ~1,363-line per-row dump; ``--summary``
+    replaces it with a rows/keys-per-section rollup for the same house."""
+    full = runner.invoke(app, ["takeoff", str(CATLIN), "--json"])
+    summary = runner.invoke(app, ["takeoff", str(CATLIN), "--summary"])
+    assert full.exit_code == 0 and summary.exit_code == 0
+    assert len(summary.output) < len(full.output) / 10
+    assert "cost_estimate" not in summary.output
+    # The escape hatch is unaffected: --json still carries every row.
+    assert '"cost_estimate"' in full.output

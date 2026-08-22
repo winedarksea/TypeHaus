@@ -82,6 +82,10 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
     f = ll.new_file(IFC_APP_NAME)
     project_uuid = model.plan.project.project_uuid
     ifc_project = ll.create_entity(f, "IfcProject", name=model.plan.project.name)
+    # Length/area/volume/plane-angle units, explicit and metric (→ lowlevel.assign_project_units):
+    # left unset, Revit/SketchUp import against the IFC4 Reference View MVD's assumed default
+    # rather than this file's actual (metre) coordinates.
+    ll.assign_project_units(f)
     # IfcOpenShell attaches representation contexts to IfcProject; creating this first is
     # required by current 0.8.x APIs and keeps the output portable to Blender/Bonsai.
     body = ll.add_context(f)

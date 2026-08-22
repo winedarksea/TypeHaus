@@ -23,6 +23,12 @@ _SELECTION_KINDS = frozenset({
 })
 
 
+def _color_name(color: tuple[float, float, float, float]) -> str:
+    """"color_rrggbbaa" — a stable, collision-free label for a deduplicated material."""
+    r, g, b, a = (round(max(0.0, min(1.0, c)) * 255) for c in color)
+    return f"color_{r:02x}{g:02x}{b:02x}{a:02x}"
+
+
 class _SceneBuilder:
     """Assembles per-object glTF nodes into one document + shared binary buffer.
 
@@ -49,6 +55,13 @@ class _SceneBuilder:
             self._material_index[color] = index
             translucent = color[3] < 1.0
             self._materials.append({
+                # A name gives Revit/SketchUp's material browser something other than an
+                # anonymous "Material_0" to show — cosmetic, but it is what a human continuing
+                # the import sees first (→ #48's "continue the model rather than redraw it").
+                # Hex-of-the-colour rather than the semantic category name (e.g. "stud"): many
+                # categories collapse onto the same RGBA (§_PALETTE), so a colour is the only
+                # key this dedup table actually has.
+                "name": _color_name(color),
                 "pbrMetallicRoughness": {
                     "baseColorFactor": list(color), "metallicFactor": 0.0,
                     "roughnessFactor": 0.9,

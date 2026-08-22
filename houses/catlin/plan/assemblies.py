@@ -20,7 +20,16 @@ from typehaus import (
     inch,
 )
 from typehaus.model import PartitionLayout
-from library import FOUNDATION_WALL_8_XPS4_CORE, FOUNDATION_WALL_12_INT, FOUNDATION_WALL_12_XPS4_CORE, INT_2X4_PARTITION, INT_2X4_STAGGERED_DOUBLE_GWB, STARTER_MATERIALS
+from library import (
+    FOUNDATION_WALL_8_XPS4_CORE,
+    FOUNDATION_WALL_12_INT,
+    FOUNDATION_WALL_12_XPS4_CORE,
+    INT_2X4_PARTITION,
+    INT_2X4_STAGGERED_DOUBLE_GWB,
+    INT_2X6_PLUMBING,
+    INT_2X6_STAGGERED_PLUMBING,
+    STARTER_MATERIALS,
+)
 
 # Named face roles the junction solver binds mixed-assembly corners/tees to (#44). The
 # ``bearing`` role names the load-bearing layer whose face carries structural continuity
@@ -646,6 +655,20 @@ RAILING_DARK_METAL = Assembly(
 # stack: params/foundations.py aligns the stem off the EPS thickness (the exterior foam
 # face has to land on the same node line the wood wall's zip-R face uses) and insets the
 # slab off the whole 11" section. Repeating either number there would let the two drift.
+#
+# Reconciled against library GARAGE_ICF on 2026-08-22 (CONTRIBUTING "do NOT duplicate" —
+# the two used to restate the same "ICF-6" masonry spec independently). The 6" concrete
+# core matches library's exactly, so GARAGE_ICF_CORE is authored as the same literal
+# rather than as a coincidence. GARAGE_ICF_EPS stays 2.5" and NOT library's 2.625"
+# generic default: this garage's ICF-6 form genuinely has a thinner EPS facing, a real
+# product difference rather than authoring drift. The editable-plan dialect forbids
+# subscripting or comprehensions, so there is no way to splice *only* library's concrete
+# Layer out of its `layers` tuple here without also pulling its 2.625" EPS along with
+# it — doing that would silently thicken this stem by 1/4" and break every section
+# golden keyed on "2.5\"" (see fixtures/section_goldens/catlin/*GARAGE_ICF_6*). The
+# concrete Layer below is restated with library's own numbers instead, which is as
+# close to "pointing at" the library assembly as one Assembly's `layers` letting
+# another's masonry spec drift is possible to get in this dialect.
 GARAGE_ICF_EPS = inch(2.5)
 GARAGE_ICF_CORE = inch(6.0)
 
@@ -679,7 +702,7 @@ GARAGE_ICF_6 = Assembly(
         Layer(name="eps-ext", material_ref="icf-eps", thickness=GARAGE_ICF_EPS,
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
     ),
-    source="catlin-house ifcplot/assemblies.py GARAGE_ICF (6\" core)",
+    source="library GARAGE_ICF's 6\" concrete core (ICF-6, matching masonry spec) + this house's 2.5\" EPS facing (thinner than library's 2.625\" generic default) and gwb-stem interior banding above grade (code.R316_4)",
 )
 
 GARAGE_WALL_2X6 = Assembly(
@@ -822,45 +845,12 @@ CATLIN_INT_2X6_BRG = Assembly(
     source="catlin-house centerline bearing wall (2x6)",
 )
 
-INT_2X6_PLUMBING = Assembly(
-    tag="INT_2X6_PLUMBING",
-    layers=(
-        _PAINT_FINISH_A,
-        Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
-              function=LayerFunction.FINISH),
-        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6")),
-        Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
-              function=LayerFunction.FINISH),
-        _PAINT_FINISH_B,
-    ),
-    interfaces=(_STUD_BEARING,),
-    source="wet wall — depth for 3\" stacks",
-)
-
-# Non-bearing wet walls: 2x4 studs staggered on 2x6 plates — same 5.5" pipe cavity as
-# INT_2X6_PLUMBING (which stays for any *bearing* wet wall, needing continuous studs),
-# but the staggered studs decouple the two faces for noise and leave a continuous
-# cavity that never needs a stud bored on the way through.
-INT_2X6_STAGGERED_PLUMBING = Assembly(
-    tag="INT_2X6_STAGGERED_PLUMBING",
-    layers=(
-        _PAINT_FINISH_A,
-        Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
-              function=LayerFunction.FINISH),
-        Layer(name="staggered-studs", material_ref="spf", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x4", plate_member="2x6", spacing=inch(16),
-                                  layout=PartitionLayout.STAGGERED,
-                                  stagger_gap=inch(1.5)),
-              cavity=CavityFill(material_ref="fiberglass", thickness=inch(3.5))),
-        Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
-              function=LayerFunction.FINISH),
-        _PAINT_FINISH_B,
-    ),
-    interfaces=(_STUD_BEARING,),
-    source="wet wall, non-bearing — 2x4 staggered on 2x6 plates per USG/GA WP 5530 (16\" o.c. per face, 8\" combined), 3.5\" fiberglass sound batt",
-)
+# INT_2X6_PLUMBING and INT_2X6_STAGGERED_PLUMBING (generic wet-wall partitions, no
+# house-specific geometry or owner data) were promoted to library/assemblies.py on
+# 2026-08-22 (CONTRIBUTING §Promotion flow) and are imported above. The staggered
+# variant's non-bearing rationale — same 5.5" pipe cavity as the bearing wall above, but
+# decoupled staggered studs so a stack never needs a stud bored on the way through —
+# lives with it there now.
 
 # --- energy storage closet -------------------------------------------------------
 # The ESS closet's partitions (notes/backup_power.md, 2026-08-02), an owner decision not a
@@ -1225,12 +1215,9 @@ MATERIALS = [
              r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
              color="#a07c5c", finish="brown-brick",
              source="basement south veneer, the Ishtar plinth (2026-08-20) — standard unglazed face brick, no special order"),
-    Material(tag="cmu", name="Grouted CMU (8\")", r_per_inch=0.11, density=2000.0,
-             perm_rating=2.5, hatch="concrete", color="#b8b3ab", finish="cmu",
-             source="porch railing inner wythe (grouted cores); concrete masonry ~2-3 perm-in"),
-    Material(tag="grout", name="Masonry grout", r_per_inch=0.08, density=2240.0,
-             perm_rating=2.5, hatch="concrete", color="#9a958c",
-             source="fills the CMU cores for balcony post bases; cementitious grout ~2-3 perm-in"),
+    # cmu, grout (porch railing wythe/balcony post bases) were promoted to
+    # library/materials.py on 2026-08-22 (CONTRIBUTING §Promotion flow); they arrive here
+    # through STARTER_MATERIALS above.
     # The house's one exterior dark (2026-08-01): every dark metal element on the
     # envelope — rake/eave/ridge trim coil, opening casings, guards — shares this value.
     # #1c1f24, not the #3a3d40 it started at: colour here is an albedo, and the viewer's
@@ -1255,47 +1242,17 @@ MATERIALS = [
              r_per_inch=0.0, density=1100.0, perm_rating=0.0, hatch="metal",
              color="#1c1f24",
              source="above-grade band over basement exterior XPS, N/E/W (CATLIN_BASEMENT_8, CATLIN_BASEMENT_12)"),
-    Material(tag="stucco", name="Portland-cement stucco", r_per_inch=0.20, density=1900.0,
-             perm_rating=10.0, hatch="concrete", color="#d9d2c4",
-             # Two jobs, one product: the porch railing's CMU back-face finish, and the
-             # basement wall's parge coat over its exterior XPS (CATLIN_BASEMENT_8_GARDEN).
-             source="porch railing CMU back face; basement exterior-XPS parge coat"),
-    Material(tag="composite-deck", name="Composite decking (capped PVC/wood)",
-             r_per_inch=1.0, density=1000.0, perm_rating=0.5, hatch="lumber", color="#8a7f70",
-             source="porch floor walking surface; PVC-capped composite ~0.5 perm-in (low)"),
-    Material(tag="aluminum-deck", name="Aluminum deck board (Wahoo AridDeck-style)",
-             r_per_inch=0.0, density=2700.0, perm_rating=0.05, hatch="metal", color="#b9bcc0",
-             source="balcony waterproof aluminum plank; metal is effectively vapor-impermeable"),
+    # stucco (porch railing CMU back face + basement parge coat), composite-deck (porch
+    # floor) and aluminum-deck (balcony plank) were promoted to library/materials.py on
+    # 2026-08-22 (CONTRIBUTING §Promotion flow); they arrive here through
+    # STARTER_MATERIALS above.
     Material(tag="post-paint-white", name="White-painted PT lumber", r_per_inch=1.24,
              density=500.0, perm_rating=1.0, hatch="lumber", color="#f4f2ee",
              source="balcony 6x6 pillars, exterior white paint; painted softwood ~1 perm-in"),
-    # --- raised garden ---------------------------------------------------------
-    # Dry-stacked segmental retaining-wall (SRW) block. A precast concrete masonry unit, so
-    # it renders on the existing "cmu" finish recipe rather than inventing a new one; the
-    # split-face grey is a shade darker than the porch railing's grouted CMU.
-    Material(tag="retaining-block", name="Segmental concrete retaining-wall block",
-             r_per_inch=0.08, density=2200.0, perm_rating=2.5, hatch="concrete",
-             color="#a8a49c", finish="cmu",
-             source="raised garden outer face — dry-stacked SRW units, no mortar"),
-    # --- breezeway glazing -----------------------------------------------------
-    # 16mm five-wall polycarbonate. `color` is authored, not inferred: the palette's
-    # substring-ordered family inference matches ("poly","rigid") first and would render this
-    # as bright-yellow rigid foam otherwise. The alpha byte is what reads as glazing rather
-    # than a solid panel (alphaMode BLEND below 1.0 in emit/gltf/scene.py).
-    # Permeance ~0.012 perms, from EN 16153's 3.8e-5 mg/(m·h·Pa) converted and stored as
-    # product permeance across the 16mm sheet (not divided again by thickness) — Class I.
-    Material(tag="polycarbonate-multiwall", name="Multiwall polycarbonate glazing (16mm)",
-             r_per_inch=1.54, density=1200.0, vapor_permeance_perms=0.012,
-             hatch="glass", color="#cfe3e8b0",
-             finish="polycarbonate",
-             source="SABIC LEXAN THERMOCLEAR multiwall declaration EN 16153:2013+A1:2015 https://ff.sabic.eu/uploads/resources/DoP%20LT2UV329X38%20-%202023.pdf"),
-    # Mill-finish extruded aluminium: the U/H/F channels, the glazing bars, and the panel
-    # fasteners' washers. "alum" matches no needle in the family inference at all, so this
-    # colour is authored for the same reason the polycarbonate's is.
-    Material(tag="aluminum-extrusion", name="Extruded aluminium glazing bar / channel",
-             r_per_inch=0.0007, density=2700.0, perm_rating=0.0, hatch="metal",
-             color="#b6bac0",
-             source="breezeway glazing trim — mill-finish 6063-T5 extrusion"),
+    # retaining-block (raised garden outer face), polycarbonate-multiwall (breezeway
+    # glazing) and aluminum-extrusion (breezeway glazing trim) were promoted to
+    # library/materials.py on 2026-08-22 (CONTRIBUTING §Promotion flow); they arrive here
+    # through STARTER_MATERIALS above.
 ]
 
 # --- plant room (RM-S-PLANT) ------------------------------------------------------

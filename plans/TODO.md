@@ -1,5 +1,5 @@
 # TODO
-Reminder: all items should design around clean export to Revit/Sketchup/IFC (follow industry standards where practical), and also be coded in accessible, "vibe code friendly" library configs.
+Reminder: all items should design around clean export to Revit/Sketchup/IFC (follow industry standards where practical), and also be coded in accessible, "vibe code friendly" library configs. Revit/SketchUp import-readiness research, fixes, and open items: `plans/revit-sketchup-readiness.md`.
 
 ## Needs your decision
 
@@ -177,6 +177,9 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 - Render transition/detail overlays from the resolved junctions (membrane laps, sealants,
   flashing, thermal-control continuity). `Transition` stays post-resolve documentation.
 - Add `Node.junction_override` only if the audit proves a rule cannot express a condition.
+- `model/views.py::ConditionKey` (plus `Continuity`/`LayerJoin` alongside it) is schema-only,
+  unreferenced until WP1.4 condition derivation lands (→ 11b §Transitions, decision #37) —
+  keep it in place, don't flag it dead.
 
 ## Breezeway
 

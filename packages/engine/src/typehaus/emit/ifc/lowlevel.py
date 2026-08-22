@@ -41,6 +41,28 @@ def new_file(app_name: str) -> Any:
     return f
 
 
+def assign_project_units(f: Any) -> None:
+    """Assign metre / square metre / cubic metre / radian as the project's default units.
+
+    Without this, ``IfcProject.UnitsInContext`` stays null forever — legal per the EXPRESS
+    schema (``UnitsInContext`` is ``OPTIONAL``) but not per the IFC4 Reference View MVD that
+    Revit and SketchUp certify their importers against, which requires Length/Area/Volume/
+    PlaneAngle units on every project. ``ifcopenshell.api.unit.assign_unit`` called with no
+    arguments defaults to *millimetre* length — exactly the mm-units gotcha this module's
+    own docstring warns about — so the units are built explicitly here to match the metres
+    every other emitter in this package already writes.
+    """
+    import ifcopenshell.api
+
+    units = [
+        ifcopenshell.api.run("unit.add_si_unit", f, unit_type="LENGTHUNIT"),
+        ifcopenshell.api.run("unit.add_si_unit", f, unit_type="AREAUNIT"),
+        ifcopenshell.api.run("unit.add_si_unit", f, unit_type="VOLUMEUNIT"),
+        ifcopenshell.api.run("unit.add_si_unit", f, unit_type="PLANEANGLEUNIT"),
+    ]
+    ifcopenshell.api.run("unit.assign_unit", f, units=units)
+
+
 def add_context(f: Any) -> Any:
     import ifcopenshell.api
 

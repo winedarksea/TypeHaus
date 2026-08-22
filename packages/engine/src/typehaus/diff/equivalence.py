@@ -159,10 +159,6 @@ class EquivalenceReport(JsonReport):
         equivalent = sum(1 for item in rows if item.status == STATUS_EQUIVALENT)
         return equivalent / len(rows)
 
-    def census_row(self, storey: str, category: str) -> CensusRow | None:
-        return next((row for row in self.census
-                     if row.storey == storey and row.category == category), None)
-
     def as_dict(self) -> dict:
         return {
             "models": {"reference": self.reference_label, "current": self.current_label},

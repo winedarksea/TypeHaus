@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Optional
 
 import typer
+from rich.console import Console
 
 from typehaus.cli._shared import _print_findings, _resolve_house, app, console
 from typehaus.findings import Severity
@@ -19,6 +20,9 @@ from typehaus.findings import Severity
 def takeoff(
     house: Optional[Path] = typer.Argument(None),
     as_json: bool = typer.Option(False, "--json"),
+    summary: bool = typer.Option(False, "--summary",
+                                 help="compact per-section counts + $ rollup (#52), instead "
+                                      "of the full per-row dump"),
     csv: Optional[Path] = typer.Option(
         None, "--csv", help="Also write the priced estimate as a CSV at this path "
                             "(the RSMeans / Craftsman / Buildertrend intake artifact)."),
@@ -127,6 +131,9 @@ def takeoff(
         console.print(f"wrote {written} ({len(rows)} rows)", soft_wrap=True)
     if as_json:
         console.print_json(json.dumps(payload))
+        return
+    if summary:
+        _print_takeoff_summary(payload, console)
         return
     console.print("[bold]Framing bill of materials[/bold]  (size · type: pieces / lineal ft)")
     for row in framing_bom:
@@ -291,6 +298,52 @@ def takeoff(
             missing = ", ".join(f"{row['section']}:{row['key']}"
                                 for row in estimate["unpriced"])
             console.print(f"  [yellow]not priced (add to prices.toml): {missing}[/yellow]")
+
+
+# Sections whose full-detail rows this rollup never speaks for — the giant nested payloads
+# (`cost_estimate`, `space_summary`) get their own compact treatment below rather than a
+# meaningless "N keys" line.
+_SUMMARY_SKIP = {"cost_estimate", "space_summary"}
+
+
+def _print_takeoff_summary(payload: dict, console: Console) -> None:
+    """`haus takeoff --summary` — a compact, context-window-sized BOM rollup for agents (#52).
+
+    Same argument as ``cli/digest.py``'s ``print_summary`` (``haus ls --summary``): the full
+    per-row dump is ~1,363 lines / ~860KB on catlin, and most agent workflows only need "how
+    many, and how much" per section, not every row. Sourced straight from the same payload
+    the full/--json modes print, so it can never disagree with them about a count or a total.
+    """
+    console.print("[bold]Bill of materials summary[/bold]  (rows/keys per section)")
+    total_rows = 0
+    section_count = 0
+    for name, value in payload.items():
+        if name in _SUMMARY_SKIP:
+            continue
+        if isinstance(value, list):
+            count, unit = len(value), "rows"
+        elif isinstance(value, dict):
+            count, unit = len(value), "keys"
+        else:
+            continue
+        total_rows += count
+        section_count += 1
+        console.print(f"  {name:<22} {count:>5} {unit}")
+    console.print(f"  [dim]{section_count} sections, {total_rows} rows/keys total[/dim]")
+    estimate = payload.get("cost_estimate")
+    if estimate is None:
+        return
+    console.print("[bold]Cost sections[/bold]  (from prices.toml; rows priced · subtotal)")
+    for name, section in estimate["sections"].items():
+        aside = "" if section.get("in_total", True) else "  [dim](beside the total)[/dim]"
+        console.print(f"  {name:<22} {len(section['rows']):>5} rows  "
+                      f"{section['subtotal_fmt']}{aside}")
+    console.print(f"  [bold]construction total: {estimate['total_fmt']}[/bold]")
+    if estimate.get("excluded_sections"):
+        console.print(f"  [bold]with furnishings: {estimate['grand_total_fmt']}[/bold]")
+    if estimate["unpriced"]:
+        console.print(f"  [yellow]{len(estimate['unpriced'])} unpriced row group(s) "
+                      "(add to prices.toml)[/yellow]")
 
 
 def _print_basis(estimate: dict) -> None:

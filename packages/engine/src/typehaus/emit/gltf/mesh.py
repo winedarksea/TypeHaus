@@ -170,19 +170,6 @@ class _MeshBuilder:
         for x0, x1, y0, y1 in rects:
             self.add_prism([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], z0, z1, color)
 
-    def add_box(self, p0: Vec3, p1: Vec3, size: float,
-                color: tuple[float, float, float, float]) -> None:
-        """A member segment as a box of half-width ``size`` around the p0→p1 axis (xy)."""
-        (ax, ay, az), (bx, by, bz) = p0, p1
-        dx, dy = bx - ax, by - ay
-        length = (dx * dx + dy * dy) ** 0.5
-        if length == 0:
-            return
-        nx, ny = -dy / length * size, dx / length * size
-        ring = [(ax + nx, ay + ny), (bx + nx, by + ny),
-                (bx - nx, by - ny), (ax - nx, ay - ny)]
-        self.add_prism(ring, az, bz, color)
-
     def add_member_box(self, p0: Vec3, p1: Vec3, half_width: float,
                        color: tuple[float, float, float, float],
                        z0_end: float | None = None, z1_end: float | None = None) -> None:

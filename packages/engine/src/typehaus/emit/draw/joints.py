@@ -169,12 +169,6 @@ def _roof_foam_underside(model, roof: ResolvedRoof, direction: str, station: flo
     return at
 
 
-def _named_layer(wall: ResolvedWall, function: str):
-    """The outermost layer of ``wall`` with this function, or ``None``."""
-    return next((layer for layer in reversed(wall.layers)
-                 if layer.function == function and not layer.is_cavity), None)
-
-
 def _closure_band_tops(model, roof: ResolvedRoof, wall: ResolvedWall, plane: CutPlane,
                        role: str) -> list[tuple[float, float, float]]:
     """``(u0, u1, z_top)`` per closure band carrying this wall layer up to its roof face.

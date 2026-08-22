@@ -50,6 +50,37 @@ def _parse_only(only: str) -> frozenset[Result] | None:
         raise typer.Exit(2) from None
 
 
+def _check_json_summary(p: int, f: int, u: int, findings: list) -> dict:
+    """`haus check --json-summary` payload: counts by category/severity, not every finding.
+
+    ``--json`` dumps every ``Finding`` in full (~230KB on catlin) — the honest machine
+    surface a diff or a report generator needs. Most agent callers only ask "did anything
+    fail, and where" — this is that answer, an order of magnitude smaller. The top-level
+    ``pass``/``fail``/``unknown`` keys are the same ones ``--json`` and the tests already
+    assert on, kept identical here on purpose.
+
+    Category is the ``check_id`` namespace before its first dot (``structural.foo`` ->
+    ``structural``) — the same grouping every check module already encodes into its ids.
+    """
+    from collections import Counter
+
+    categories: dict[str, dict[str, int]] = {}
+    for finding in findings:
+        category = finding.check_id.split(".", 1)[0]
+        bucket = categories.setdefault(category, {"pass": 0, "fail": 0, "unknown": 0})
+        bucket[finding.result.value] += 1
+    failing = sorted({x.check_id for x in findings if x.result is Result.FAIL})
+    unknown = sorted({x.check_id for x in findings if x.result is Result.UNKNOWN})
+    fail_severity = Counter(x.severity.value for x in findings if x.result is Result.FAIL)
+    return {
+        "pass": p, "fail": f, "unknown": u,
+        "categories": dict(sorted(categories.items())),
+        "fail_severity": dict(sorted(fail_severity.items())),
+        "failing_check_ids": failing,
+        "unknown_check_ids": unknown,
+    }
+
+
 @app.command()
 def version() -> None:
     """Print the engine version."""
@@ -115,6 +146,10 @@ def check(
     profile: str = typer.Option("mn-2024"),
     tier: Optional[TierName] = typer.Option(None, help="Restrict to one checks tier."),
     as_json: bool = typer.Option(False, "--json"),
+    json_summary: bool = typer.Option(
+        False, "--json-summary",
+        help="Compact JSON: pass/fail/unknown counts by category, not every finding's "
+             "full model_dump() (#52). --json stays the complete machine surface."),
     only: str = typer.Option(_ONLY_DEFAULT, "--only",
                              help=f"Results to print: `{_ONLY_ALL}`, or a comma-separated "
                                   "subset of pass,fail,unknown."),
@@ -152,6 +187,10 @@ def check(
             "pass": p, "fail": f, "unknown": u,
             "findings": [x.model_dump(mode="json") for x in report.findings],
         }))
+    elif json_summary:
+        import json
+
+        console.print_json(json.dumps(_check_json_summary(p, f, u, report.findings)))
     else:
         shown = report.findings if keep is None else [
             x for x in report.findings if x.result in keep]

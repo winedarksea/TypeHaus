@@ -21,6 +21,11 @@ from typehaus.model import (
 # without invalidating the transition.
 _CONCRETE_BEARING = AssemblyInterface(role="bearing", layer_name="concrete", outboard=False)
 
+# The same mechanism for a stud wall: two framed walls are "continuous" through a
+# corner/tee when they publish the same bearing material (SPF↔SPF), regardless of the
+# finish either side of it.
+_STUD_BEARING = AssemblyInterface(role="bearing", layer_name="stud", outboard=False)
+
 # Painted gypsum lining. Layer order is interior → exterior everywhere the lining is
 # consumed (``list(default_lining) + list(layers)``), so the paint is *first*: it is the
 # room-side face, and that position is what makes it the assembly's warm-side vapour
@@ -347,6 +352,60 @@ INT_2X4_DOUBLE_STUD_MINERAL_WOOL = Assembly(
             "commercial/acoustic-wall-assemblies-catalog-techincal-guide.pdf"),
 )
 
+# --- wet-wall partitions ---------------------------------------------------------
+#
+# Generic plumbing-chase partitions: 2x6-deep (5.5") so a 3" stack fits the cavity with
+# clearance either side of the pipe, gypsum carried in ``layers`` (not a lining) because
+# each carries paint face-by-face rather than a shared finish. No STC rating is claimed
+# for either — that is what separates them from the STC family above, which transcribes
+# a single published lab build end to end. ``INT_2X6_STAGGERED_PLUMBING`` shares its stud
+# layout (2x4 studs staggered on 2x6 plates, 16 in. o.c. per face) with
+# ``INT_2X4_STAGGERED_DOUBLE_GWB`` above and cites the same USG/GA WP 5530 test for that
+# framing geometry, but carries a single layer of gypsum per face rather than a double
+# layer, so it does not inherit that assembly's STC 52 rating.
+_PAINT_FINISH_A = Layer(name="paint-a", material_ref="latex-paint", thickness=inch(0.01),
+                        function=LayerFunction.FINISH,
+                        control={ControlLayer.VAPOR})
+_PAINT_FINISH_B = Layer(name="paint-b", material_ref="latex-paint", thickness=inch(0.01),
+                        function=LayerFunction.FINISH,
+                        control={ControlLayer.VAPOR})
+
+INT_2X6_PLUMBING = Assembly(
+    tag="INT_2X6_PLUMBING",
+    layers=(
+        _PAINT_FINISH_A,
+        Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6")),
+        Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        _PAINT_FINISH_B,
+    ),
+    interfaces=(_STUD_BEARING,),
+    source="wet wall — 2x6 depth for a 3 in. stack",
+)
+
+INT_2X6_STAGGERED_PLUMBING = Assembly(
+    tag="INT_2X6_STAGGERED_PLUMBING",
+    layers=(
+        _PAINT_FINISH_A,
+        Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        Layer(name="staggered-studs", material_ref="spf", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x4", plate_member="2x6", spacing=inch(16),
+                                  layout=PartitionLayout.STAGGERED,
+                                  stagger_gap=inch(1.5)),
+              cavity=CavityFill(material_ref="fiberglass", thickness=inch(3.5))),
+        Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        _PAINT_FINISH_B,
+    ),
+    interfaces=(_STUD_BEARING,),
+    source="wet wall, non-bearing — 2x4 staggered on 2x6 plates per USG/GA WP 5530 (16 in. o.c. per face, 8 in. combined), 3.5 in. fiberglass sound batt; the framing geometry is the tested one, the single-layer gypsum face is not, so no STC is claimed",
+)
+
 STARTER_FLOOR = {"subfloor": "plywood-subfloor", "joist": "11.875 I-joist"}
 
 # Assemblies whose R-value / card should render for M1 acceptance.
@@ -364,4 +423,6 @@ ALL_ASSEMBLIES: tuple[Assembly, ...] = (
     INT_2X4_RC_DOUBLE_GWB,
     INT_2X4_STAGGERED_DOUBLE_GWB,
     INT_2X4_DOUBLE_STUD_MINERAL_WOOL,
+    INT_2X6_PLUMBING,
+    INT_2X6_STAGGERED_PLUMBING,
 )

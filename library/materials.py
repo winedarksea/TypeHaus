@@ -210,6 +210,49 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              source=f"{_UAF}: 'Wood, sugar pine' permeability 0.4-5.4 perm-in (the table's "
                     "softwood entry); midpoint of the published range"),
 
+    # --- masonry and concrete commodities ------------------------------------------------
+    Material(tag="cmu", name="Grouted CMU (8\")", r_per_inch=0.11, density=2000.0,
+             perm_rating=2.5, hatch="concrete", color="#b8b3ab", finish="cmu",
+             source="grouted 8 in. concrete masonry unit wythe; concrete masonry ~2-3 perm-in"),
+    Material(tag="grout", name="Masonry grout", r_per_inch=0.08, density=2240.0,
+             perm_rating=2.5, hatch="concrete", color="#9a958c",
+             source="fills CMU cores; cementitious grout ~2-3 perm-in"),
+    Material(tag="stucco", name="Portland-cement stucco", r_per_inch=0.20, density=1900.0,
+             perm_rating=10.0, hatch="concrete", color="#d9d2c4",
+             source="Portland-cement stucco / parge coat over mesh, a standard exterior "
+                    "masonry finish"),
+    Material(tag="retaining-block", name="Segmental concrete retaining-wall block",
+             r_per_inch=0.08, density=2200.0, perm_rating=2.5, hatch="concrete",
+             color="#a8a49c", finish="cmu",
+             source="dry-stacked segmental retaining-wall (SRW) unit, no mortar"),
+    Material(tag="composite-deck", name="Composite decking (capped PVC/wood)",
+             r_per_inch=1.0, density=1000.0, perm_rating=0.5, hatch="lumber", color="#8a7f70",
+             source="capped composite decking walking surface; PVC-capped composite "
+                    "~0.5 perm-in (low)"),
+    Material(tag="aluminum-deck", name="Aluminum deck board (Wahoo AridDeck-style)",
+             r_per_inch=0.0, density=2700.0, perm_rating=0.05, hatch="metal", color="#b9bcc0",
+             source="waterproof aluminum plank decking; metal is effectively "
+                    "vapor-impermeable"),
+    # 16mm five-wall polycarbonate. `color` is authored, not inferred: the palette's
+    # substring-ordered family inference matches ("poly","rigid") first and would render this
+    # as bright-yellow rigid foam otherwise. The alpha byte is what reads as glazing rather
+    # than a solid panel (alphaMode BLEND below 1.0 in emit/gltf/scene.py).
+    # Permeance ~0.012 perms, from EN 16153's 3.8e-5 mg/(m·h·Pa) converted and stored as
+    # product permeance across the 16mm sheet (not divided again by thickness) — Class I.
+    Material(tag="polycarbonate-multiwall", name="Multiwall polycarbonate glazing (16mm)",
+             r_per_inch=1.54, density=1200.0, vapor_permeance_perms=0.012,
+             hatch="glass", color="#cfe3e8b0",
+             finish="polycarbonate",
+             source="SABIC LEXAN THERMOCLEAR multiwall declaration EN 16153:2013+A1:2015 "
+                    "https://ff.sabic.eu/uploads/resources/DoP%20LT2UV329X38%20-%202023.pdf"),
+    # Mill-finish extruded aluminium: U/H/F channels, glazing bars, panel fasteners' washers.
+    # "alum" matches no needle in the family inference at all, so this colour is authored
+    # for the same reason the polycarbonate's is.
+    Material(tag="aluminum-extrusion", name="Extruded aluminium glazing bar / channel",
+             r_per_inch=0.0007, density=2700.0, perm_rating=0.0, hatch="metal",
+             color="#b6bac0",
+             source="mill-finish 6063-T5 extruded aluminium glazing trim"),
+
     # --- interior paint ---------------------------------------------------------------------
     #
     # Latex paint on gypsum board is not decoration the model can skip: IRC R702.7 counts it as

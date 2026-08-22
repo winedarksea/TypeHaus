@@ -195,14 +195,14 @@ def split_wall(plan: PlanModel, storey: str, wall_tag: str, at: XY) -> MutationR
         PatchOp("add", "Wall", new_wall_tag, seg_fields, hint_list="WALLS"),
     ]
     remap, refit_ops, warnings = _rehost_openings(
-        plan, storey, wall, wall_tag, new_wall_tag, t
+        plan, storey, wall, new_wall_tag, t
     )
     ops.extend(refit_ops)
     return MutationResult(ops=ops, remap=remap, warnings=warnings)
 
 
 def _rehost_openings(
-    plan: PlanModel, storey: str, wall: Wall, keep_tag: str, new_tag: str, split_t: float
+    plan: PlanModel, storey: str, wall: Wall, new_tag: str, split_t: float
 ) -> tuple[ReferenceRemap, list[PatchOp], tuple[str, ...]]:
     """Re-host openings on the split wall onto the segment their position falls in."""
     rehost: dict[str, str] = {}

@@ -59,8 +59,7 @@ from typehaus.resolve.site_earth import earth_plane_void_rings, site_grade_eleva
 EARTH_SHEET_THICKNESS_M = 0.05
 
 
-def _member_parts(members: tuple[FramedMember, ...] | list[FramedMember],
-                  owner_uid: str) -> tuple[GPart, ...]:
+def _member_parts(members: tuple[FramedMember, ...] | list[FramedMember]) -> tuple[GPart, ...]:
     parts: list[GPart] = []
     for member in members:
         if member.plan_outline is not None:
@@ -221,7 +220,7 @@ def build_geometry(model: ResolvedModel) -> GeometryModel:
     for owner, trade in ((model.walls, "walls"), (model.floors, "floors"),
                          (model.roofs, "roof"), (getattr(model, "stairs", ()), "stairs")):
         for host in owner:
-            parts = _member_parts(getattr(host, "members", ()), host.uid)
+            parts = _member_parts(getattr(host, "members", ()))
             if parts:
                 elements.append(ElementGeometry(
                     uid=f"{host.uid}::framing", kind="framing", trade="framing", parts=parts,

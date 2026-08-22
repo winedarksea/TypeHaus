@@ -135,3 +135,51 @@ def test_json_output_is_complete_regardless_of_only() -> None:
     payload = json.loads(result.output)
     assert len(payload["findings"]) == payload["pass"] + payload["fail"] + payload["unknown"]
     assert payload["pass"] > 0
+
+
+def test_json_summary_agrees_with_json_on_the_counts_but_is_far_smaller() -> None:
+    """`--json-summary` is the compact agent surface (#52): same pass/fail/unknown as
+    `--json` (other tests, and callers, already assert on those three keys), but without a
+    full `model_dump()` per finding — an order of magnitude smaller on catlin's ~700
+    findings."""
+    import json
+
+    full = runner.invoke(app, ["check", str(CATLIN), "--json"])
+    summary = runner.invoke(app, ["check", str(CATLIN), "--json-summary"])
+    assert full.exit_code == 0 and summary.exit_code == 0
+    full_payload = json.loads(full.output)
+    summary_payload = json.loads(summary.output)
+    assert summary_payload["pass"] == full_payload["pass"]
+    assert summary_payload["fail"] == full_payload["fail"]
+    assert summary_payload["unknown"] == full_payload["unknown"]
+    assert "findings" not in summary_payload
+    assert len(summary.output) < len(full.output) / 10
+
+
+def test_json_summary_categories_sum_to_the_totals() -> None:
+    """Each category is a check_id namespace (`structural.foo` -> `structural`); the
+    per-category counts must reconcile with the top-level pass/fail/unknown exactly, since
+    every finding lands in exactly one category."""
+    import json
+
+    result = runner.invoke(app, ["check", str(CATLIN), "--json-summary"])
+    payload = json.loads(result.output)
+    categories = payload["categories"]
+    assert categories, payload
+    assert sum(c["pass"] for c in categories.values()) == payload["pass"]
+    assert sum(c["fail"] for c in categories.values()) == payload["fail"]
+    assert sum(c["unknown"] for c in categories.values()) == payload["unknown"]
+    assert isinstance(payload["failing_check_ids"], list)
+    assert isinstance(payload["unknown_check_ids"], list)
+
+
+def test_json_summary_surfaces_a_fail_on_the_starter_house() -> None:
+    """starter carries real advisory FAILs (see test_check_exits_1_on_a_fail) — the summary
+    must show them in `fail`/`fail_severity`, not only in the full `--json` dump."""
+    import json
+
+    result = runner.invoke(app, ["check", str(STARTER), "--json-summary"])
+    payload = json.loads(result.output)
+    assert payload["fail"] > 0
+    assert payload["failing_check_ids"]
+    assert sum(payload["fail_severity"].values()) == payload["fail"]
