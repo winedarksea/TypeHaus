@@ -123,11 +123,12 @@ def build_work_items(model: Any, bom: dict[str, Any], estimate: dict[str, Any] |
 
     storey_of = _storey_of_tag(model)
     tags_by_row = _tags_by_row(bom)
+    material_by_row = _solid_material_by_row(bom)
     entries = getattr(costs_state, "entries", {}) or {}
 
     buckets: dict[tuple[str, str], _Bucket] = {}
     for section, key, cost in _priced_or_bare_rows(bom, estimate):
-        trade = cost_code(section, key).trade
+        trade = cost_code(section, key, material=material_by_row.get((section, key))).trade
         tags = tags_by_row.get((section, key), ())
         slot = (trade, _row_storey(tags, storey_of))
         bucket = buckets.setdefault(slot, _Bucket())
@@ -157,7 +158,8 @@ def build_work_items(model: Any, bom: dict[str, Any], estimate: dict[str, Any] |
             storey=storey,
             # The trade's own account, from the same table the CSV export uses. A package
             # spanning several sections takes the first row's code rather than none.
-            cost_code=(cost_code(rows[0][0], rows[0][1]).nahb if rows else ""),
+            cost_code=(cost_code(rows[0][0], rows[0][1],
+                                 material=material_by_row.get(rows[0])).nahb if rows else ""),
             rows=rows,
             element_tags=tuple(sorted(bucket.tags)),
             estimate=bucket.estimate,
@@ -223,3 +225,37 @@ def _tags_by_row(bom: dict[str, Any]) -> dict[tuple[str, str], tuple[str, ...]]:
             out.setdefault((section, str(row.get(key_field))), []).extend(
                 str(tag) for tag in tags)
     return {slot: tuple(sorted(set(tags))) for slot, tags in out.items()}
+
+
+def _solid_material_by_row(bom: dict[str, Any]) -> dict[tuple[str, str], str]:
+    """``(section, key)`` -> ``structure_material``, for the solids section only.
+
+    The trade a solid belongs to is a question about the *solid*, not about the price table
+    it happens to be billed in — a composite deck in a ``slab`` row is the carpenter's work
+    whichever section carries its $/cy. ``cost_code`` needs the material to say so, and this
+    is the estimate's own join re-made against the BOM, keyed under BOTH the bare category
+    and the qualified ``category:assembly`` form because which one a priced row carries
+    depends on what the house's table authored (``cli/prices.QUALIFIED_KEY_FIELD``).
+    """
+    from typehaus.cli.prices import ESTIMATE_PLANS, QUALIFIED_KEY_FIELD
+
+    out: dict[tuple[str, str], str] = {}
+    bare: dict[tuple[str, str], set[str]] = {}
+    for section, bom_key, key_field, _quantity_field, _unit in ESTIMATE_PLANS:
+        qualifier_field = QUALIFIED_KEY_FIELD.get(section)
+        for row in bom.get(bom_key, []) or []:
+            material = row.get("structure_material")
+            if not material:
+                continue
+            key = str(row.get(key_field))
+            bare.setdefault((section, key), set()).add(str(material))
+            qualifier = row.get(qualifier_field) if qualifier_field else None
+            if qualifier:
+                out[(section, f"{key}:{qualifier}")] = str(material)
+    # A BARE key is several assemblies rolled into one category, and it may name several
+    # materials — "slab" covers 25 cy of cast floor *and* a composite deck. Only an
+    # unambiguous one may speak: reporting either material for a mixed key would file the
+    # whole category on the strength of whichever row happened to be read last.
+    out.update({slot: materials.pop() for slot, materials in bare.items()
+                if len(materials) == 1})
+    return out

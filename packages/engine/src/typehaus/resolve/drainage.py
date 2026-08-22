@@ -19,6 +19,15 @@ from typehaus.resolve.model import ResolvedModel, ResolvedSolid
 #: Matched to the vent/downspout risers so round things read alike in the viewer.
 _DRYWELL_FACETS = 16
 
+#: A soakaway is a hole full of STONE — ``Drywell.aggregate`` says which stone in prose, and
+#: the modelled volume is the void the stone fills. Without this the solid names no material
+#: at all, and ``resolve/assembly_material.solid_material_ref``'s last-resort default hatched
+#: 4.35 cy of #57 washed rock as cast-in-place concrete in every section it was cut in. The
+#: ref is the one the drawing palette already carries for below-grade stone
+#: (``emit/draw/palette.py``: ``aggregate`` → gravel hatch, #7f7f7f), not a catalog
+#: ``Material``: washed rock is bought by the yard, not specified by an R-value.
+_AGGREGATE = "aggregate"
+
 
 def resolve_drainage(model: ResolvedModel) -> list[Finding]:
     """Append french-drain and drywell solids. Findings report unresolvable references."""
@@ -49,7 +58,7 @@ def _resolve_french_drain(model: ResolvedModel, el: FrenchDrain,
         model.solids.append(ResolvedSolid(
             uid=f"{el.uid}-{index:02d}", tag=f"{el.tag}-{index + 1}", storey=storey,
             category="french_drain", outline=rect_between(start, end, -half, half),
-            z0_m=z0, z1_m=z1,
+            z0_m=z0, z1_m=z1, material=_AGGREGATE,
         ))
     # The pipe is not the trench: the trench is the excavation and the stone, and the tile
     # is the product inside it — billed separately, and the thing that actually carries.
@@ -70,7 +79,7 @@ def _resolve_drywell(model: ResolvedModel, el: Drywell, storey: str) -> list[Fin
     model.solids.append(ResolvedSolid(
         uid=f"{el.uid}-00", tag=el.tag, storey=storey, category="drywell",
         outline=circle_outline(el.position.xy_m, radius, _DRYWELL_FACETS),
-        z0_m=z1 - depth, z1_m=z1,
+        z0_m=z1 - depth, z1_m=z1, material=_AGGREGATE,
     ))
     return []
 

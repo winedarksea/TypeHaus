@@ -135,6 +135,9 @@ DETAIL_FILL: dict[str, str] = {
     "aggregate": "#7f7f7f",
     "river-rock": "#a9a9a9",
     "soil": "#d2b48c",
+    # The radon sump's moulded basin (→ resolve/accessories.py::_resolve_sump). Black
+    # polyethylene, so it reads as the void it is against the flatwork it sits in.
+    "polyethylene": "#3f4246",
     "spray-foam": "#ffd966",
     "sealant": "#6e4f2a",
     "flashing": "#7a0c0c",
@@ -199,6 +202,9 @@ DETAIL_HATCH: dict[str, str] = {
     "aggregate": "gravel",
     "river-rock": "gravel",
     "soil": "soil",
+    # A moulded basin is one wall thickness of plastic, not a field of anything: the dark
+    # fill says what it is and a pattern over it would only read as a second material.
+    "polyethylene": "none",
     "spray-foam": "foam",
     # Glazing draws as a plain tinted fill: a hatch pattern over a translucent sheet reads
     # as a solid, which is the one thing the material is not.

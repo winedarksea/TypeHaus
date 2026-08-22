@@ -206,6 +206,9 @@ def _resolve_dowel(model: ResolvedModel, el: Dowel, storey: str) -> None:
     # dimension is the dowel axis (the direction the bars cross it) and its long dimension
     # runs along the joint line, spanning the row of bars. Swapping those two turns the block
     # 90° and it stops separating the two structures it is breaking the bridge between.
+    # ...and it is FOAM. Named here rather than left to ``solid_material_ref``'s
+    # concrete default, which drew the one block whose job is to interrupt the pour in the
+    # same grey stipple as the pour on either side of it.
     if el.foam_thickness is not None:
         ft_m = el.foam_thickness.meters
         fh = (el.foam_height.meters if el.foam_height is not None else inch(12).meters)
@@ -216,7 +219,7 @@ def _resolve_dowel(model: ResolvedModel, el: Dowel, storey: str) -> None:
             uid=f"{el.uid}-foam", tag=f"{el.tag}-FOAM", storey=storey,
             category="thermal_break",
             outline=square(cx, cy, half_x, half_y),
-            z0_m=z - fh / 2.0, z1_m=z + fh / 2.0,
+            z0_m=z - fh / 2.0, z1_m=z + fh / 2.0, material="xps",
         ))
     # Individual dowel bars, spaced across the joint.
     for i in range(max(el.count, 1)):
@@ -323,6 +326,10 @@ def _resolve_sump(model: ResolvedModel, el: Sump, storey) -> None:
     model.solids.append(ResolvedSolid(
         uid=el.uid or f"{el.tag}-sump", tag=el.tag, storey=storey.tag,
         category="sump", outline=square(cx, cy, half, half), z0_m=z0, z1_m=z1,
+        # A radon sump is a moulded basin set in the slab, not a second pour inside it: the
+        # solid is the pit, and without a ref it fell to ``solid_material_ref``'s concrete
+        # default and hatched as the flatwork it interrupts.
+        material="polyethylene",
     ))
 
 

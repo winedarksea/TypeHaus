@@ -392,7 +392,10 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
             tax_included = adjustments.tax_is_included(name, key)
             if tax_included:
                 tax_paid_sum = tax_paid_sum.plus(parts[MATERIAL])
-            code = cost_code(name, key, dict(prices.codes))
+            # ``structure_material`` is absent on every BOM row but a solid's, and
+            # only the solids section reads it — see ``cost_codes._solid_code``.
+            code = cost_code(name, key, dict(prices.codes),
+                             material=row.get("structure_material"))
             rows.append({"key": key, "description": _describe(row, name, key),
                          "quantity": round(quantity, 2), "unit": unit,
                          "unit_price": price.as_dict(), "cost": cost.as_dict(),

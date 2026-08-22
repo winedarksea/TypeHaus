@@ -27,7 +27,7 @@ from __future__ import annotations
 import fnmatch
 from dataclasses import dataclass
 
-from typehaus.emit.trades import TRADES
+from typehaus.emit.trades import TRADES, solid_trade
 
 
 @dataclass(frozen=True)
@@ -52,10 +52,14 @@ class CostCode:
 KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     # Concrete solids: the category *is* the account. Footings and flatwork are separate
     # NAHB accounts and separate subs, and lumping them loses the distinction the
-    # estimator most wants.
+    # estimator most wants. Only the refinements live here — everything else in the section
+    # is derived from the category by :func:`_solid_code` below, so a `slab*` pattern that
+    # merely restated the section default has been removed: it was shadowing the derivation
+    # and filing composite decking as cast-in-place concrete.
     ("concrete", "footing*", CostCode("1200", "03 30 00", "concrete")),
-    ("concrete", "slab*", CostCode("1300", "03 30 00", "concrete")),
     ("concrete", "pier*", CostCode("1200", "03 30 00", "concrete")),
+    # Gutters and leaders are 07 71 00 Roof Specialties, not the 33 46 00 subdrainage the
+    # trade derivation would reach for; the pattern keeps the sharper CSI division.
     ("concrete", "gutter", CostCode("2600", "07 71 00", "drainage")),
     ("concrete", "downspout", CostCode("2600", "07 71 00", "drainage")),
     # Framing profiles that are not lumber.
@@ -149,19 +153,90 @@ SECTION_CODES: dict[str, CostCode] = {
 }
 
 
-def cost_code(section: str, key: str, overrides: dict[str, str] | None = None) -> CostCode:
+#: The estimate section that prices ``structural_solids``. Named because it is the one
+#: section whose *table* name and whose *content* disagree: ``[concrete]`` in a
+#: ``prices.toml`` bills every resolved solid there is a $/cy for — the elm timbers, the
+#: breezeway polycarbonate, the composite deck, the soakaway stone — and only some of them
+#: are pours.
+SOLID_SECTION = "concrete"
+
+#: Where a ``structural_solids`` row files once its solid *category* has named the trade
+#: that owns it (:func:`typehaus.emit.trades.solid_trade`).
+#:
+#: ** THE SECTION NAME IS NOT THE TRADE. ** Until this table existed, every row in
+#: ``[concrete]`` inherited ``SECTION_CODES["concrete"]``, so ``column:ELM_TIMBER`` (four
+#: solid elm timbers), ``column:POST_WHITE_PAINT`` (painted 6x6 pillars),
+#: ``glazing:BREEZEWAY_GLAZED_WALL`` (multiwall polycarbonate), ``drywell`` (#57 washed
+#: stone) and ``soffit`` (2x framing with gypsum on three sides) were all exported under
+#: NAHB 1300 / CSI 03 30 00 CAST-IN-PLACE CONCRETE and scheduled into the concrete sub's
+#: work package. ``emit/trades.SOLID_CATEGORY_TRADE`` already knew better for every one of
+#: them; the two tables simply never spoke. This is where they speak.
+#:
+#: Keyed by trade rather than by category so it cannot drift from that table: a new solid
+#: category files itself the moment ``SOLID_CATEGORY_TRADE`` names its trade.
+_SOLID_TRADE_CODES: dict[str, CostCode] = {
+    "concrete": CostCode("1300", "03 30 00", "concrete"),
+    "framing": CostCode("2000", "06 11 00", "framing"),        # beams, posts, timbers
+    "floors": CostCode("2000", "06 15 00", "floors"),          # decking, dropped soffits
+    "roof": CostCode("2500", "07 62 00", "roof"),              # fascia, flashing, clamps
+    "openings": CostCode("2400", "08 80 00", "openings"),      # glazing, trim, bug screen
+    "drainage": CostCode("2600", "33 46 00", "drainage"),      # tile, drywell, sump
+    "plumbing": CostCode("3100", "22 10 00", "plumbing"),      # routed pipe, sleeves, valves
+    "electrical": CostCode("3300", "26 05 33", "electrical"),  # raceways
+    "mechanical": CostCode("3200", "23 31 00", "mechanical"),  # vent runs
+    "stairs": CostCode("2700", "05 52 00", "stairs"),          # guards and handrails
+}
+
+#: The one thing a solid's *category* cannot say: whether a flat horizontal solid was cast
+#: or laid. "slab" covers SL-M-DECK (9" of cast concrete), SL-SG-DECK (aluminium plank on
+#: 2x8 joists) and SL-BW-DECK (composite plank on joists), and only the first is a pour.
+#: Consulted only when the row's ``structure_material`` *positively* says it is not
+#: concrete — a row with no assembly has said nothing, and silence is not evidence.
+_NOT_A_POUR: dict[str, CostCode] = {
+    "slab": CostCode("2000", "06 15 00", "floors"),  # deck boards laid on framing
+    "pad": CostCode("2000", "06 15 00", "floors"),
+}
+
+
+def _solid_code(key: str, material: str | None) -> CostCode | None:
+    """The code for one ``structural_solids`` row, or ``None`` for "it really is concrete".
+
+    ``None`` rather than the concrete code so the caller falls through to ``KEY_PATTERNS``
+    and ``SECTION_CODES``, which carry refinements this cannot know — a footing's 1200
+    account against flatwork's 1300, and a house's own ``[codes]`` override.
+    """
+    category = key.split(":", 1)[0]
+    trade = solid_trade(category)
+    if trade == "concrete":
+        # A category the trade table calls concrete, on a solid whose material says
+        # otherwise: the deck that is planks, not mud.
+        if material and material != "concrete":
+            return _NOT_A_POUR.get(category)
+        return None
+    return _SOLID_TRADE_CODES.get(trade)
+
+
+def cost_code(section: str, key: str, overrides: dict[str, str] | None = None,
+              material: str | None = None) -> CostCode:
     """The code for one BOM row: house override, then key pattern, then section default.
 
     ``overrides`` is ``prices.toml``'s ``[codes]`` table, keyed ``"section"`` or
     ``"section:key"``. It supplies the NAHB code only — the CSI code and the trade come
     from the built-in table either way, because a builder overriding their chart of
     accounts is not thereby renaming MasterFormat.
+
+    ``material`` is the BOM row's ``structure_material``, and only the
+    :data:`SOLID_SECTION` reads it. See :func:`_solid_code`: the section prices solids by
+    CATEGORY, and a category is not a material. Callers that cannot supply it get the
+    category-only answer, which is right for everything but a laid deck in a ``slab`` row.
     """
     base = None
     for plan_section, pattern, code in KEY_PATTERNS:
         if plan_section == section and fnmatch.fnmatchcase(key.lower(), pattern):
             base = code
             break
+    if base is None and section == SOLID_SECTION:
+        base = _solid_code(key, material)
     if base is None:
         base = SECTION_CODES.get(section)
     if base is None:
@@ -177,6 +252,8 @@ def _validate() -> None:
     """Import-time guard: every trade named here must be one the viewer actually has."""
     named = {code.trade for code in SECTION_CODES.values()}
     named |= {code.trade for _, _, code in KEY_PATTERNS}
+    named |= {code.trade for code in _SOLID_TRADE_CODES.values()}
+    named |= {code.trade for code in _NOT_A_POUR.values()}
     unknown = sorted(named - TRADES)
     if unknown:
         raise ValueError(f"cost_codes names trades the viewer does not have: {unknown}")
