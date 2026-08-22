@@ -276,12 +276,20 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
     N-B-BA-W picked up W-B-STR2's new steel-stud assembly for the same reason. All four are
     changes of construction along a wall line a builder has to be told about — which is the
     definition this test exists to hold.
+
+    The 2026-08-21 12" -> 8" thinning of the eight non-deck-bearing perimeter segments adds
+    nothing to this list even though it splits one pour into three tags. Every meeting
+    between them is a box corner (E to N3, E to S3, N1 to W2, W1 to S1), and the
+    collinearity gate two sections up drops those; the 12"-to-8" pairs are also
+    thickness-only variants of one material sequence, which the layer-equivalence gate
+    drops independently. The list stays eight, and only the sauna key's two tags were
+    renamed.
     """
     keys = sorted({c.key for c in catlin_model.conditions
                    if c.key.startswith("assembly_change:")})
     assert keys == [
-        ("assembly_change:CATLIN_BASEMENT_12_GARDEN|"
-         "SAUNA_LINER_ON_BASEMENT_12_GARDEN"),
+        ("assembly_change:CATLIN_BASEMENT_8_GARDEN|"
+         "SAUNA_LINER_ON_BASEMENT_8_GARDEN"),
         # The plant room's liner, 2026-08-18, and the same kind of transition as the sauna's
         # two lines down: a humid-side wall type starting partway along a wall line. On the
         # south wall it is CATLIN_EXT_2X6 handing off to PLANT_EXT_2X6_HUMID at x=18'; at

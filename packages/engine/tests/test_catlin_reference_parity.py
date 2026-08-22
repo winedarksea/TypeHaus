@@ -112,7 +112,8 @@ def test_basement_wall_layers_run_interior_to_exterior(catlin_model):
     # they are outboard of everything, and both are 1/2", which is why neither moved anything
     # (these walls align on face("concrete-ext")).
     for tag, outermost in (("CATLIN_BASEMENT_12", "protection-panel"),
-                           ("CATLIN_BASEMENT_12_GARDEN", "parge")):
+                           ("CATLIN_BASEMENT_8", "protection-panel"),
+                           ("CATLIN_BASEMENT_8_GARDEN", "parge")):
         asm = catlin_model.plan.library.resolve_assembly(tag)
         assert [layer.name for layer in asm.layers] == [
             "concrete", "damp-proof", "xps-a", "xps-b", outermost

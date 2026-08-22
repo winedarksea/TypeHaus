@@ -253,10 +253,17 @@ WALLS = [
          assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CSW144AAAA", tag="W-S-SBS", start_node="N-S-D3", end_node="N-S-C2B",
          assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
+    # The suite's north wall: RM-S-SUITE (sleeping) on one face, the vanity alcove and the
+    # suite bath on the other. Both runs are the library's tested staggered-stud partition
+    # (2x4 studs alternating on 2x6 plates, 3.5" fiberglass, two 5/8" gypsum layers each
+    # face) rather than the house's default single-stud INT_2X4_PARTITION: STC 52 against
+    # 36 (#50 — the number is the transcribed lab value, never computed), because a wall
+    # whose far face carries a vanity and a bath is the one the sleeper hears through.
+    # It is 8" wide against the partition's 4.75", which the suite and the vanity split.
     Wall(uid="CSW145AAAA", tag="W-S-SN1", start_node="N-S-W2", end_node="N-S-V1",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_STAGGERED_DOUBLE_GWB", top=ft(9)),
     Wall(uid="CSW146AAAA", tag="W-S-SN2", start_node="N-S-V1", end_node="N-S-D4",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_STAGGERED_DOUBLE_GWB", top=ft(9)),
     Wall(uid="CSW147AAAA", tag="W-S-SN3", start_node="N-S-D4", end_node="N-S-C2C",
          assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CSW148AAAA", tag="W-S-VE", start_node="N-S-V1", end_node="N-S-V2",

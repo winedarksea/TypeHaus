@@ -89,6 +89,45 @@ movable later.** Supersedes the all-joists vs. all-concrete debate below.
 - **Next cut available:** 10" form + 3" cap, same depth class, ~21% less concrete, R-31 —
   one line in `houses/catlin/params/main_deck.py`.
 
+## Basement perimeter pour, 12" → 8" — TAKEN 2026-08-21
+
+**The follow-on the ceiling decision left on the table.** 12" was chosen to seat a cast
+deck; once only `SL-M-DECK` was still cast, the eight perimeter segments it does *not* land
+on were carrying 4" of concrete that bought nothing.
+
+- The rule is physical and narrow: 12" is earned only where a cast concrete deck lands on
+  the wall top **beside** the sill plate and needs its own bearing seat inboard of it. A
+  wood floor needs no extra width — the I-joists and rim bear on the same 2x6 mudsill the
+  framed wall above stands on. `SL-M-DECK` (x 18'–36', y 13'–36', one-way E–W) bears on the
+  east wall and the centre line, and nowhere else.
+- So `W-B-E1/E2` stay 12" (`CATLIN_BASEMENT_12`) and the other eight — 108 LF of west,
+  north and south perimeter — went to 8": `CATLIN_BASEMENT_8`, `CATLIN_BASEMENT_8_GARDEN`,
+  `SAUNA_LINER_ON_BASEMENT_8_GARDEN`. The five interior walls that still meet a pour
+  (`W-B-CS/CS2/CN/CN2/STR`) also stay 12".
+- **Not free:** IRC Table R404.1.2(8) at 45 psf/ft GM soil, 10' unsupported, 7' unbalanced
+  fill reads NR at 12" and 10" but **#6 @ 48" o.c. vertical at 8"** — ~27 bars, authored on
+  each wall and gated by `structural.foundation_unbalanced_fill`.
+- **8" and not 10"** (which also reads NR): 8" is the standard residential form module and
+  the market rate is quoted for it. Thickness above 8" adds concrete without adding forming,
+  so 10" would pay an odd-thickness forming premium and hand back half the yardage to save
+  the bar.
+- **The saving, measured:** −12.0 cy (48.5 → 36.5 cy across the perimeter rows),
+  **−$3,239 to −$5,759** on `[wall_structure]`. Re-derived rates, not the 12" row: the 12"
+  $420–700/cy is $110–180/LF of forming, crew and pour at that height, and forming does not
+  get cheaper because the wall got thinner. 8" × 9'-4" is 0.2305 cy/LF, so the same
+  $114–187/LF is **~$495–810/cy**. Pricing the 8" wall at the 12" rate would have claimed
+  −$8,700, which is the whole trap here.
+- **What else moved:** the walls align on `face("concrete-ext")`, so only the inside face
+  came in. Furnace room 8'-6" → 8'-10" clear, workshop 7'-6" → 7'-10", playroom unchanged at
+  16'-6" (bounded by the two walls that stayed 12"). ~36 SF more usable basement floor. Two
+  spurious conduit sleeves stopped crossing anything and were deleted; seven face-mounted
+  devices on the west/north/south concrete moved 4" with the face. Gross floor area and the
+  brick veneer stand-off are both unmoved, by construction — the exterior face did not move,
+  and the 4.55" outboard tail is not part of the pour.
+- **Rode along:** the 8"/12" cast foundation family was promoted to `library/`
+  (`FOUNDATION_WALL_{8,12}_{INT,XPS4}` + the `_CORE` layer tuples), so the catlin walls now
+  compose off a shared, reviewed core plus a house-local skin.
+
 <details><summary>Historical comparison this decision was made against (concrete vs. all-joists, researched 08-18/08-20)</summary>
 
 | | concrete deck | I-joist floor |

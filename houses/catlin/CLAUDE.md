@@ -294,21 +294,35 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     them; the jack/king/header pack is what pays for it. The margin is 0.05 sf — growing
     either room's clear face fails R303.1 again, and the answer then is a taller unit, not
     a wider one.
-- **Two basement assemblies, and the split is a condition, not a preference.**
-  `CATLIN_BASEMENT_12` (N/E/W: `W-B-E1/E2`, `W-B-N1/N2/N3`, `W-B-W1/W2`) covers its exterior
-  XPS with a 1/2" `foundation-protection-panel` banded from 6" below grade to the top of the
-  wall — 2'-10" of exposure the two lifts created, ~360 SF, authored as a
-  `Layer.extent` off the `GRADE` datum. `CATLIN_BASEMENT_12_GARDEN` (south: `W-B-S1/S3`)
-  keeps the full-height parge coat, because the sunken garden exposes that face from -9'-0"
-  to 0'-0" and a grade-datum band cannot describe that. `W-B-S2` is the same stack under a
-  third tag, `SAUNA_LINER_ON_BASEMENT_12_GARDEN` (2026-08-18): it is the sauna's south face,
-  so it carries the hot-side liner *inboard* of the pour, banded to the room's 7'-6" ceiling.
-  Its outboard five layers are the shared `_GARDEN_CONCRETE_STACK` tuple, so the two tags
-  cannot drift; it aligns on `face("concrete-ext")` with **no** offset, so the pour sits
-  exactly where W-B-S1/S3 leave it. Both carry exactly 4.55" outboard of
-  the concrete face — the panel is the same 1/2" as the parge it replaces — which is what
-  `N-B-BRICK-W`/`-E`'s `inch(-4.55)` stand-off is measured from; changing either thickness
-  moves the brick veneer. See `notes/basement_to_framed_wall_detail.md`.
+- **Four basement assemblies, and every split is a condition, not a preference.** Two
+  independent axes cross here: what covers the exterior XPS, and how thick the pour is.
+  All four compose off `library/`'s `FOUNDATION_WALL_{8,12}_XPS4_CORE` plus a house-local
+  skin layer, so the core cannot drift between them.
+  - *The skin.* `CATLIN_BASEMENT_12`/`_8` (N/E/W) cover the XPS with a 1/2"
+    `foundation-protection-panel` banded from 6" below grade to the top of the wall —
+    2'-10" of exposure the two lifts created, ~360 SF, authored as a `Layer.extent` off the
+    `GRADE` datum. `CATLIN_BASEMENT_8_GARDEN` (south: `W-B-S1/S3`) keeps the full-height
+    parge coat, because the sunken garden exposes that face from -9'-0" to 0'-0" and a
+    grade-datum band cannot describe that. `W-B-S2` is that same stack under a fourth tag,
+    `SAUNA_LINER_ON_BASEMENT_8_GARDEN` (2026-08-18): the sauna's south face, carrying the
+    hot-side liner *inboard* of the pour, banded to the room's 7'-6" ceiling. It aligns on
+    `face("concrete-ext")` with **no** offset, so the pour sits exactly where W-B-S1/S3
+    leave it.
+  - *The pour* (2026-08-21). 12" is earned only where a cast concrete deck lands on the
+    wall top beside the sill plate and needs a bearing seat inboard of it. After the
+    basement-ceiling overhaul the only cast deck left is `SL-M-DECK`, which bears on the
+    east wall and the centre line — so `W-B-E1/E2` stay `CATLIN_BASEMENT_12` and the other
+    eight segments are 8" carrying `#6 @ 48" o.c.` vertical steel, which IRC Table
+    R404.1.2(8) requires at 8" where 12" reads NR. Drop that string on any of the eight and
+    `structural.foundation_unbalanced_fill` FAILs, correctly.
+  Every one of the four carries exactly 4.55" outboard of the concrete face — the panel is
+  the same 1/2" as the parge it replaces, and neither is part of the pour — which is what
+  `N-B-BRICK-W`/`-E`'s `inch(-4.55)` stand-off is measured from. That is why thinning the
+  wall did not move the brick veneer, and why changing a *skin* thickness would. Because
+  the walls align on `face("concrete-ext")`, the 4" came off the INSIDE face: the furnace
+  room and the workshop each gained 4" of clear (the model still reports the old number —
+  `clear_face` is inset from the wall axis, which did not move). See
+  `notes/basement_to_framed_wall_detail.md`.
 - **One exterior dark, `#1c1f24`** (2026-08-01), carried by every dark metal element on the
   envelope so they read at one weight: the opening casings, the roof's rake/eave/ridge trim
   coil, the eave water chain (drip edge, box gutter, downspouts), and the guards.

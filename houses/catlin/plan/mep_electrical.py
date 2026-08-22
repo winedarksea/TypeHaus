@@ -104,7 +104,10 @@ ELECTRICAL_DEVICE_TYPES = (
 # --- Electrical: symbols-only (decision 1 — panel/circuit schedule deferred) -------
 PANEL = [
     ElectricalDevice(uid="CEP901AAAA", tag="ED-B-PANEL", kind=DeviceKind.PANEL,
-                     position=pt(ft(1, 2), ft(29)), type_ref="ED-T-PANEL",
+                     # x moved 1'-2" -> 0'-10" with the 2026-08-21 12" -> 8" thinning of
+                     # W-B-W1/W2: these are face-mounted, and the west wall's inside face
+                     # went from x=1'-0" to x=0'-8".
+                     position=pt(inch(10), ft(29)), type_ref="ED-T-PANEL",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5)), rotation=deg(90)),
 ]
 

@@ -90,11 +90,20 @@ def test_the_garden_walls_are_distinguishable_from_house_concrete(catlin_model) 
     are both `concrete` and they are not the same order or the same price."""
     by_assembly = {row["assembly"]: row for row in wall_structure_takeoff(catlin_model)}
     for assembly in ("SUNKEN_GARDEN_WALL", "RETAINING_BLOCK_12",
-                     "BASEMENT_BRICK_VENEER", "CATLIN_BASEMENT_12"):
+                     "BASEMENT_BRICK_VENEER", "CATLIN_BASEMENT_12",
+                     "CATLIN_BASEMENT_8", "CATLIN_BASEMENT_8_GARDEN"):
         assert assembly in by_assembly, f"{assembly} lost its own row"
     house = by_assembly["CATLIN_BASEMENT_12"]
     garden = by_assembly["SUNKEN_GARDEN_WALL"]
     assert set(house["tags"]).isdisjoint(garden["tags"])
+    # And the 2026-08-21 pour split bills separately too, which is the whole point of it:
+    # the 12" row is the deck-bearing east wall alone, and the eight thinned segments order
+    # their own 8" concrete at their own rate (houses/catlin/prices.toml).
+    assert set(house["tags"]) == {"W-B-E1", "W-B-E2"}
+    thinned = (set(by_assembly["CATLIN_BASEMENT_8"]["tags"])
+               | set(by_assembly["CATLIN_BASEMENT_8_GARDEN"]["tags"]))
+    assert thinned == {"W-B-N1", "W-B-N2", "W-B-N3", "W-B-W1", "W-B-W2",
+                       "W-B-S1", "W-B-S3"}
 
 
 def test_openings_are_deducted_from_area_and_volume(catlin_model) -> None:

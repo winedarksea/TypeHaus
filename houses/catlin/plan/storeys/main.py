@@ -689,9 +689,13 @@ FLOOR_HEAT = [
 
 # Drawn to the *finished* well, not the wall centrelines — the shaft the stair actually
 # climbs; the u-split resolver anchors flights to its near corner. West/east are the
-# basement's 12" concrete faces (narrower than the 2x6 walls above, so they size the
-# flights). North (2026-07-28) is W-B-N2's inside face at y=35'-0", which the main deck
-# bears on. South (26'-0 3/8") is fixed by FO-S-STAIR's south edge one storey up — ST-M2S's
+# basement's 12" concrete faces (W-B-STR at x=10'-6" and W-B-CW/CW2 at x=17'-6", both of
+# which stayed 12" through the 2026-08-21 thinning precisely because things are dimensioned
+# off them; narrower than the 2x6 walls above, so they size the flights). North
+# (2026-07-28) is y=35'-0" — it *was* W-B-N2's inside face, and the 12" -> 8" thinning moved
+# that face to 35'-4". The opening deliberately stays at 35'-0": a 4" strip of deck against
+# the wall is ordinary framing, and chasing the face would perturb a stair tuned to
+# 11 15/16" treads and R311.7.6's landing for no gain. South (26'-0 3/8") is fixed by FO-S-STAIR's south edge one storey up — ST-M2S's
 # springing point — so both wells share that same south edge. Run here is 8'-11 5/8": IRC
 # R311.7.6's 36" landing plus six 11 15/16" treads, well inside R311.7.5.2's 10" minimum.
 FLOOR_OPENINGS = [

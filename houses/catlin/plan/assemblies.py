@@ -20,7 +20,7 @@ from typehaus import (
     inch,
 )
 from typehaus.model import PartitionLayout
-from library import FOUNDATION_WALL_8_XPS4_CORE, FOUNDATION_WALL_12_INT, FOUNDATION_WALL_12_XPS4_CORE, INT_2X4_PARTITION, STARTER_MATERIALS
+from library import FOUNDATION_WALL_8_XPS4_CORE, FOUNDATION_WALL_12_INT, FOUNDATION_WALL_12_XPS4_CORE, INT_2X4_PARTITION, INT_2X4_STAGGERED_DOUBLE_GWB, STARTER_MATERIALS
 
 # Named face roles the junction solver binds mixed-assembly corners/tees to (#44). The
 # ``bearing`` role names the load-bearing layer whose face carries structural continuity
@@ -1436,6 +1436,7 @@ ASSEMBLIES = [
     INT_2X6_PLUMBING,
     INT_2X6_STAGGERED_PLUMBING,
     INT_2X4_PARTITION,
+    INT_2X4_STAGGERED_DOUBLE_GWB,
     INT_ESS_CLOSET_STEEL,
     SAUNA_2X4,
     SAUNA_LINER_ON_CONCRETE,

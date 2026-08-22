@@ -42,9 +42,9 @@ def test_the_panel_band_runs_from_six_inches_under_grade_to_the_wall_top(catlin_
 # W-B-S2 carries the sauna's liner variant of the same outboard stack since 2026-08-18, so
 # the assembly tag differs per segment; everything the parge assertions say is unchanged.
 _SOUTH_ASSEMBLIES = {
-    "W-B-S1": "CATLIN_BASEMENT_12_GARDEN",
-    "W-B-S2": "SAUNA_LINER_ON_BASEMENT_12_GARDEN",
-    "W-B-S3": "CATLIN_BASEMENT_12_GARDEN",
+    "W-B-S1": "CATLIN_BASEMENT_8_GARDEN",
+    "W-B-S2": "SAUNA_LINER_ON_BASEMENT_8_GARDEN",
+    "W-B-S3": "CATLIN_BASEMENT_8_GARDEN",
 }
 
 
@@ -146,7 +146,7 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_model, tmp_path
     # And it is *not* also a layer of the wall type's set, which would double-describe it
     # and make the set thicker than the geometry it belongs to.
     layer_set = next(s for s in model.by_type("IfcMaterialLayerSet")
-                     if s.LayerSetName == "CATLIN_BASEMENT_12")
+                     if s.LayerSetName == "CATLIN_BASEMENT_8")
     assert _PANEL not in [ly.Name for ly in layer_set.MaterialLayers]
 
 

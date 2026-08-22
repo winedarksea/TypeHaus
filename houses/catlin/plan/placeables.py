@@ -15,24 +15,27 @@ from typehaus.model import DeviceKind, deg, ft, inch, m, pt
 # water flow the way an air gap wants and a bathroom lavatory does not.
 #
 # Sauna benches are dimensioned to *liner faces* (what the joiner scribes to), not node
-# lines: west liner x=9'-1 13/16", east liner x=17'-2 1/2", south liner y=1'-3 1/2", north
-# liner y=13'-6 1/8" — an 8'-0 11/16" x 12'-2 5/8" clear box. The south face gained 3 1/2"
-# of liner (SAUNA_LINER_ON_BASEMENT_12_GARDEN on W-B-S2) on 2026-08-18, so both benches
-# moved north with it. The east bench stops at y=9'-9 1/2" to leave the north end for the
-# shower (notes/sauna_shower_basement_detail.md).
+# lines: west liner x=9'-1 13/16", east liner x=17'-2 1/2", south liner y=0'-11 1/2", north
+# liner y=13'-6 1/8" — an 8'-0 11/16" x 12'-6 5/8" clear box. The south face gained 3 1/2"
+# of liner (SAUNA_LINER_ON_BASEMENT_8_GARDEN on W-B-S2) on 2026-08-18, so both benches
+# moved north with it; on 2026-08-21 they went back 4" south, because thinning that wall's
+# pour from 12" to 8" (it aligns on face("concrete-ext"), so only the inside face moved)
+# took the liner face with it — 1'-3 1/2" to 0'-11 1/2". The east liner is W-B-CS, which
+# stayed 12", so x did not move. The east bench stops at y=9'-5 1/2" to leave the north end
+# for the shower (notes/sauna_shower_basement_detail.md).
 BASEMENT_PLACEABLES = [
     # The long two-tier run takes the east wall: it is the only unbroken face in the room —
     # the west wall has D-B-SAUNA, the south wall WIN-B-SAUNA — so the bench lands as one
     # 8'-6" carcass with no scribes around an opening. rotation -90 puts its back (+y local)
     # against that face, giving x 13'-8 1/2"..17'-2 1/2" and
-    # y 1'-3 1/2"..9'-9 1/2" — still clearing FX-B-SAUNA-SH's pan by 8 11/16" at its north end.
+    # y 0'-11 1/2"..9'-5 1/2" — clearing FX-B-SAUNA-SH's pan by 12 11/16" at its north end.
     Furniture(uid="CBF601AAAA", tag="FURN-B-SAUNA-BENCH-E", type_ref="FURN-SAUNA-BENCH-2T-102",
-              room="RM-B-SAUNA", position=pt(ft(15, 5.5), ft(5, 6.5)), rotation=deg(-90)),
+              room="RM-B-SAUNA", position=pt(ft(15, 5.5), ft(5, 2.5)), rotation=deg(-90)),
     # The foot bench returns along the south wall, butted into the two-tier run's west face
     # at 13'-8 1/2" with an 11/16" scribe left at the west liner. rotation 180 puts its back
     # to the south. Its top is 18", well clear of WIN-B-SAUNA's 3'-8" sill above it.
     Furniture(uid="CBF602AAAA", tag="FURN-B-SAUNA-BENCH-S", type_ref="FURN-SAUNA-BENCH-54",
-              room="RM-B-SAUNA", position=pt(ft(11, 5.5), ft(2, 1.5)), rotation=deg(180)),
+              room="RM-B-SAUNA", position=pt(ft(11, 5.5), ft(1, 9.5)), rotation=deg(180)),
 ]
 MAIN_PLACEABLES = [
     Furniture(uid="XV5MXV43QJ", tag="FURN-M-SOFA", type_ref="FURN-SOFA-84", room="RM-M-LIVING",
@@ -325,7 +328,7 @@ GARAGE_PLACEABLES = [
     # The 60"-wide work surface runs along the west wall directly below the infrared
     # heater lamp. Rotation 90° turns the 30" depth into the wall-to-room dimension.
     Furniture(uid="CGF601AAAA", tag="FURN-G-WORKBENCH", type_ref="FURN-G-WORKBENCH",
-              room="RM-GARAGE", position=pt(m(0.596858), m(14.4756)), rotation=deg(90)),
+              room="RM-GARAGE", position=pt(m(0.621183), m(18.6321)), rotation=deg(90)),
 ]
 # The three east bedrooms are the same 13'-11 3/4" x 8'-10 3/4" clear box: queen, head
 # north, 2' side-access zones running the long (14') way. Head-against-east-wall (under the
@@ -402,7 +405,7 @@ SECOND_PLACEABLES = [
     # BED1's and BED2's wardrobes sit over ED-S-BED1-RC1 / ED-S-BED2-RC1 (north-wall general
     # receptacles, 16"-18" AFF) — not a code problem, but worth knowing before boxes are set.
     Furniture(uid="CSB704AAAA", tag="FURN-S-BED1-WARD", type_ref="FURN-WARDROBE-48",
-              room="RM-S-BED1", position=pt(m(7.74443), m(5.16525)), rotation=deg(0)),
+              room="RM-S-BED1", position=pt(m(8.12003), m(5.03458)), rotation=deg(0)),
     Furniture(uid="CSB705AAAA", tag="FURN-S-BED2-WARD", type_ref="FURN-WARDROBE-48",
               room="RM-S-BED2", position=pt(m(7.36477), m(7.8429)), rotation=deg(0)),
     Furniture(uid="CSB706AAAA", tag="FURN-S-BED3-WARD", type_ref="FURN-WARDROBE-48",

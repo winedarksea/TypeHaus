@@ -333,18 +333,21 @@ BACKUP_ENCLOSURE = [
     # downstream of the inverter's load output now, and naming a grid-side branch circuit on
     # it said the opposite.
     ElectricalDevice(uid="CEE002AAAA", tag="ED-B-BACKUP-ENCL", kind=DeviceKind.PANEL,
-                     position=pt(ft(1, 3), ft(32, 6)), type_ref="ED-T-BACKUP-ENCL",
+                     position=pt(inch(11), ft(32, 6)), type_ref="ED-T-BACKUP-ENCL",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room="RM-B-FURNACE", rotation=deg(90)),
     # The subpanel the two backup tiers are homed to (plan/circuits.py). On the west wall
     # 2'-0" south of ED-B-PANEL, so the inverter's grid conductors and its load conductors
     # run to two enclosures a person can stand between.
     ElectricalDevice(uid="CEE060AAAA", tag="ED-B-BACKUP-PANEL", kind=DeviceKind.PANEL,
-                     position=pt(ft(1, 2), ft(27)), type_ref="ED-T-BACKUP-PANEL",
+                     position=pt(inch(10), ft(27)), type_ref="ED-T-BACKUP-PANEL",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room="RM-B-FURNACE", rotation=deg(90)),
 ]
 
 ESS_EQUIPMENT = [
-    # On the ESS closet's east face — 12" concrete (W-B-STR2), the one wall rated for 300 lb.
+    # On the ESS closet's east face (W-B-STR2). That wall was 12" concrete when this
+    # 300 lb battery was hung on it; the 2026-08-21 overhaul reframed the stub as
+    # INT_ESS_CLOSET_STEEL, so the load now wants blocking or a backing plate spanning the
+    # steel studs rather than a concrete anchor — a detail to draw, not a position to move.
     # (8'-4", 20'-3") clears both framed partitions and the door swing.
     # `code.R327_ess_capacity` reads `room="RM-B-ESS"` to count this as indoor storage
     # (14.3 of the 40 kWh article limit) — a future garage relocation is just this one line.
@@ -364,14 +367,20 @@ ESS_EQUIPMENT = [
 ]
 
 # --- Basement: backup outlets, sauna, spa (sunken garden files on this storey) --------
+# Face-mounted devices on the perimeter concrete moved 4" with the 2026-08-21 12" -> 8"
+# thinning (see storeys/basement.py): the walls align on their EXTERIOR face, so the inside
+# face is what moved — west from x=1'-0" to 0'-8", north from y=35'-0" to 35'-4", south from
+# y=1'-0" to 0'-8". Every position here that used to sit 1"-3" off one of those faces was
+# shifted by the same 4", which is what `test_wall_mounted_devices_resolve_against_a_wall_face`
+# reads.
 BASEMENT_DEVICES = [
     # HA server + router (backup). Beside the panel in the furnace room.
     ElectricalDevice(uid="CEE003AAAA", tag="ED-B-UTIL-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(1, 1), ft(28)), type_ref="ED-T-RECEPTACLE", circuit="CKT-HA",
+                     position=pt(inch(9), ft(28)), type_ref="ED-T-RECEPTACLE", circuit="CKT-HA",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
     # Sump pump (backup; ~1000W start). GFCI lives at the breaker, not the outlet.
     ElectricalDevice(uid="CEE004AAAA", tag="ED-B-SUMP-RC", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(4, 6), ft(34, 11)), type_ref="ED-T-RECEPTACLE", circuit="CKT-SUMP",
+                     position=pt(ft(4, 6), ft(35, 3)), type_ref="ED-T-RECEPTACLE", circuit="CKT-SUMP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     # On the sauna's west liner wall immediately south of EQ-B-SAUNA-HTR (footprint y
     # 8'-0"..9'-6"), low like the heater terminals. Old (15', 7') position was off-wall and
@@ -638,7 +647,7 @@ GARAGE_EQUIPMENT = [
     # Hard-wired, not cord-and-plug: NEC 210.8(A)(2) GFCI applies to garage *receptacles*
     # only, so CKT-GAR-HEAT carries none — a plug-in unit would need CKT-RC-GARAGE instead.
     Equipment(uid="CEE023AAAA", tag="EQ-G-HEATER", kind=EquipmentKind.SPACE_HEATER,
-              position=pt(m(0.227899), m(14.595)), footprint=(inch(14), inch(9)),
+              position=pt(m(0.213454), m(18.1628)), footprint=(inch(14), inch(9)),
               room="RM-GARAGE", type_ref="EQ-T-GARAGE-HEATER", rotation=deg(90),
               circuit="CKT-GAR-HEAT",
               mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
@@ -692,7 +701,9 @@ CONDUIT_TRUNKS = [
                from_ref="EQ-B-ESS-INV", to_ref="ED-B-BACKUP-PANEL"),
     # North under the house/garage gap to the EV receptacles on W-G-S. East leg runs y=35',
     # not y=36' (2026-08-02): the old line ran 14' inside W-B-N2/W-B-N3 as three wall
-    # crossings; pulled 1' south it punches the wall once.
+    # crossings; pulled 1' south it punched the wall once. Since the 2026-08-21 thinning it
+    # runs 4" clear of that wall instead of grazing its face — see CONDUIT_SLEEVES below,
+    # where two sleeves went away because of it.
     ConduitRun(uid="CDT002AAAA", tag="CD-B-GARAGE", trade_size=inch(1.25),
                path=(pt(ft(2), ft(29)), pt(ft(2), ft(35)), pt(ft(16), ft(35)),
                      pt(ft(16), ft(41, 6))),
@@ -734,7 +745,7 @@ DATA_HEAD_END = [
     # ED-B-PANEL (29') and clear of the ERV duct crossing at 31'-4". It is the only
     # low-voltage device on a branch circuit: CKT-HA, with the HA server it sits beside.
     ElectricalDevice(uid="CND001AAAA", tag="ED-B-NET-PATCH", kind=DeviceKind.DATA_OUTLET,
-                     position=pt(ft(1, 2), ft(31)), type_ref="ED-T-NET-ENCLOSURE",
+                     position=pt(inch(10), ft(31)), type_ref="ED-T-NET-ENCLOSURE",
                      circuit="CKT-HA", room="RM-B-FURNACE",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5)), rotation=deg(90)),
 ]
@@ -909,7 +920,7 @@ NEC_FILL_BASEMENT = [
                      circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC007AAAA", tag="ED-B-GYM-RC7", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(28, 11.5), ft(1, 1)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(28, 11.5), inch(9)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
 ]

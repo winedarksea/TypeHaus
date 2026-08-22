@@ -158,15 +158,19 @@ MAX_PAIRED_PLAN_EXTENT_DELTA_M = 0.75   # ~2'-6"
 # Keyed on the *reference* name — the current tag is the thing that may be renamed.
 DECLARED_WALL_EXTENT_CHANGES = {
     "House Basement Stair Side Wall (8\")": (
-        1.03,
+        1.13,
         "the stair shaft's west wall is 12\" concrete on x=10' now, not 8\" on x=11', and it "
-        "runs the full north-row depth (14'-2 5/8\" of W-B-STR) instead of dying at the "
-        "stair foot — 3'-4\" longer. 12\" on that line is what gives the shaft its "
-        "code-minimum 7'-0\" clear well and the furnace room its 8'-6\", both measured off "
-        "the same wall (reference basement plan). It read as an unpaired deletion until "
-        "2026-08-02, when the ESS closet's two partitions and the W-B-CW split changed the "
-        "basement's wall pool enough for the matcher to find the counterpart that was "
-        "always there — the pairing is the right answer, and this is the size of it"
+        "runs the full north-row depth instead of dying at the stair foot — 3'-8\" longer. "
+        "12\" on that line is what gives the shaft its code-minimum 7'-0\" clear well and "
+        "the furnace room its 8'-10\", both measured off the same wall (reference basement "
+        "plan). It read as an unpaired deletion until 2026-08-02, when the ESS closet's two "
+        "partitions and the W-B-CW split changed the basement's wall pool enough for the "
+        "matcher to find the counterpart that was always there — the pairing is the right "
+        "answer, and this is the size of it. The last 4\" of it arrived on 2026-08-21: "
+        "W-B-STR did not move or grow by decision, the wall it dies into did. Thinning "
+        "W-B-N1/N2/N3 from 12\" to 8\" (they align on face(\"concrete-ext\"), so only the "
+        "inside face moved) pulled the north end of the north row 4\" back, and this wall "
+        "runs to meet it"
     ),
 }
 

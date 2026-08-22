@@ -401,6 +401,8 @@ the future.
   derivation (`params/foundations.py`, `FT-B-BRICK`) leans on that 10" toe being there
   to bear on. Correcting the footings means re-deriving the plinth with them.
 
+* Is this enough glazing for light feeling rooms (along with LED strips, etc)
+
 ## Questions from 08-15 session
 The two ventilation FAILs were real gaps. RM-S-STUDY2 had System 1's air handler hanging in its own ceiling soffit and no supply terminal — a room doesn't breathe by being next to the machine. Both it and RM-S-PLANT now take air from DU-S-HP-SOUTH, a new branch in the FS-ATTIC joist bay; the air-handler case fills the hall soffit and the x=18' bearing wall blocks the attic deck, so the floor cavity over both rooms is the only continuous route
 

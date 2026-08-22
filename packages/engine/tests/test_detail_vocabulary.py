@@ -358,7 +358,7 @@ def test_buried_foundation_foam_gets_no_protection_board(catlin_model):
     (Until the 2026-08-18 lift the *whole* basement was this case, because the wall topped
     out at grade. N/E/W now stand 2'-6" out of the ground — see the test below.)"""
     _derived, scene = _exact_detail_scene(
-        catlin_model, "wall_foundation:CATLIN_BASEMENT_12_GARDEN|CATLIN_EXT_2X6")
+        catlin_model, "wall_foundation:CATLIN_BASEMENT_8_GARDEN|CATLIN_EXT_2X6")
     assert "foam-protection-board" not in _component_tags(scene)
 
 
@@ -534,7 +534,7 @@ def test_opening_and_ridge_conditions_scaffold_detail_slices(catlin_model):
     assert "opening_perimeter:CATLIN_EXT_2X6" in keys
     # The south wall's assembly: the basement's openings (D-B-PATIO, WIN-B-SAUNA) are all
     # in the sunken-garden face. TR-CATLIN-BASEMENT-OPENING binds both with a `*` pattern.
-    assert "opening_perimeter:CATLIN_BASEMENT_12_GARDEN" in keys
+    assert "opening_perimeter:CATLIN_BASEMENT_8_GARDEN" in keys
     assert "roof_ridge:RF-HOUSE" in keys
 
 

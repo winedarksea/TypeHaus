@@ -39,6 +39,15 @@ from typehaus import (
 # 16'-6" (south row). The 7'-0" shaft is the code-minimum well (two 3'-3 3/4" flights +
 # 4 1/2" partition); W-B-STR at x=10' as 12" concrete satisfies both rows at once, since
 # the 18' bearing grid fixes the shaft's east face at 17'-6".
+#
+# Two of those clears got 4" BIGGER on 2026-08-21 and the datums above are still the
+# back-calculation, not the built number: thinning W-B-W1/W2 to 8" moved the west wall's
+# inside face from x=1'-0" to 0'-8", so the furnace room reads 8'-10" and the workshop
+# 7'-10". Both rooms only gain. The stair well (7'-0", between two walls that stayed 12")
+# and the playroom (16'-6", between the centre line and the east wall, both 12") are
+# unchanged, which is why the code-minimum and the architect's dimension both still hold.
+# Note that the model does not report this: `clear_face` is inset from the wall AXIS
+# network (resolve/rooms.py), and the axis did not move.
 NODES = [
     # Perimeter (split at grid lines + partition tees)
     Node(uid="CBN001AAAA", tag="N-B-SW", position=pt(ft(0), ft(0))),
@@ -270,8 +279,9 @@ WALLS = [
     Wall(uid="CBW115AAAA", tag="W-B-CE", start_node="N-B-C",
          end_node="N-B-E1", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(8, 2.75)),
     # Stair shaft's west wall — 12" concrete on x=10', full north-row depth (reference:
-    # "Stairway 7' x 16' 6 1/2""). 12" (not 8") puts the shaft's west face at 9'-6", giving
-    # both the furnace room's 8'-6" clear and the shaft's 7'-0" off the same wall.
+    # "Stairway 7' x 16' 6 1/2""). 12" (not 8") puts the shaft's west face at 9'-6", which
+    # is what holds the well at its code-minimum 7'-0" and gives the furnace room the other
+    # side of the same wall (8'-10" since the west wall thinned on 2026-08-21).
     # Split at N-B-BA-W (2026-07-30): W-B-STR keeps tag/uid and the north 14'-2 5/8" that
     # W-M-STRW/W-M-STRW2 stack on; W-B-STR2 is the 3'-9 3/8" stub alongside the bathroom,
     # carrying its three ceiling-level service crossings (plan/mep.py's WALL_SLEEVES).
