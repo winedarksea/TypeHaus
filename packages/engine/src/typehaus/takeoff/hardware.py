@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.anchors import anchorage_rows
+from typehaus.takeoff.doors import door_hardware_rows
 from typehaus.takeoff.fasteners import exterior_insulation_screw_rows
 from typehaus.takeoff.glazing import glazing_fastener_rows
 from typehaus.takeoff.hangers import joist_hanger_rows
@@ -33,4 +34,5 @@ def hardware_takeoff(model: ResolvedModel,
         *joist_hanger_rows(model, config.hanger_detection),
         *anchorage_rows(model, config),
         *glazing_fastener_rows(model),
+        *door_hardware_rows(model),
     ]

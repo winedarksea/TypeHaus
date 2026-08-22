@@ -336,22 +336,28 @@ def test_the_balcony_door_ships_the_french_door_solid_shape(catlin_model):
                for leaf in balcony_leaves)
 
 
-def test_the_laundry_bifold_still_holds_at_bifold56(catlin_model):
-    """D-M-LAUN kept its bifold operation across the retype — only its catalog width family
-    changed (BIFOLD60 → BIFOLD56) — so its closed, four-leaf coplanar shape must still hold.
+def test_the_laundry_pocket_ships_one_leaf_on_a_head_track(catlin_model):
+    """D-M-LAUN became a pocket on 2026-08-21 (was a 56" bifold, four coplanar leaves).
+
+    A pocket is drawn closed and coplanar on the same principle the slider below uses: the
+    wall over the cavity is drywalled on both faces and genuinely reads solid, so the leaf
+    fills its opening rather than being staged inside the wall. The cavity is modelled, but
+    as framing — the ``pocketsplit-*`` members and the jamb pack relocated to its closed
+    end. What separates it from a swing leaf here is the head track: a pocket has no floor
+    track, so unlike the slider the rail sits at the top of the opening.
     """
-    bifold = next(op for op in catlin_model.openings if op.tag == "D-M-LAUN")
-    assert bifold.type_ref == "DT-INT-BIFOLD56"
+    pocket = next(op for op in catlin_model.openings if op.tag == "D-M-LAUN")
+    assert pocket.type_ref == "DT-POCKET-INT-48"
     door_type = next(dt for dt in catlin_model.plan.library.door_types
-                     if dt.tag == "DT-INT-BIFOLD56")
-    assert door_type.width.inches == pytest.approx(56.0)
+                     if dt.tag == "DT-POCKET-INT-48")
+    assert door_type.width.inches == pytest.approx(48.0)
 
     gltf, blob = emit_gltf_dict(catlin_model)
-    bifold_solids = _solids_of_node(gltf, blob, _opening_node(gltf, bifold.uid))
-    bifold_leaves = [solid for solid in bifold_solids
-                     if solid.has_thickness(_DOOR_LEAF_THICKNESS_M)]
-    assert len(bifold_solids) == _FRAME_PIECE_COUNT + 4
-    assert len(bifold_leaves) == 4, "a closed bifold is four coplanar leaves"
+    solids = _solids_of_node(gltf, blob, _opening_node(gltf, pocket.uid))
+    leaves = [solid for solid in solids if solid.has_thickness(_DOOR_LEAF_THICKNESS_M)]
+    # One leaf and one track, where the bifold shipped four leaves and no track.
+    assert len(solids) == _FRAME_PIECE_COUNT + 2
+    assert len(leaves) == 1, "a closed pocket door is a single coplanar leaf"
 
 
 def test_a_synthetic_slider_ships_a_stile_track_and_two_panels():

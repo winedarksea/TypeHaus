@@ -21,6 +21,7 @@ from typehaus.takeoff.hardware_catalog import (
     ROLE_BEAM_HOLD_DOWN,
     ROLE_GLAZING_PANEL_FASTENER,
     ROLE_PIPE_CLAMP,
+    ROLE_POCKET_DOOR_FRAME_KIT,
     ROLE_PV_SEAM_CLAMP,
     ROLE_SLOPED_JOIST_HANGER,
     ROLE_SNOW_RETENTION,
@@ -310,6 +311,50 @@ S5_PV_KIT = StructuralHardware(
            "integrated module clamp; one kit per module corner support point",
 )
 
+# --- door hardware ------------------------------------------------------------------
+# The first non-structural family in this catalog, and it earns its place: a pocket door's
+# frame kit is the whole reason a pocket is a *product* decision and not a framing one. The
+# kit brings the split studs, the head track, the hangers and the leaf guides, and it is
+# what caps the leaf width — which is why the two records below are two products, not two
+# rows of one ladder. A takeoff that orders the commodity kit for a 4'-0" solid-core leaf
+# gets a frame the door will pull off the wall.
+#
+# Selected by door width through ``fits_nominal`` (inches, as authored on the DoorType).
+POCKET_FRAME_KIT_1500PF = StructuralHardware(
+    tag="johnson-1500pf-pocket-frame-kit",
+    name="Pocket door frame kit, 2x4 wall (commodity, to 36\"/125 lb)",
+    role=ROLE_POCKET_DOOR_FRAME_KIT,
+    manufacturer="Johnson Hardware",
+    # Named for its trade, not its brand: ``cost_codes`` routes ``pocket-frame-*`` to
+    # CSI 08 71 00 Door Hardware rather than to the hardware section's rough-carpentry
+    # default, and this string is the BOM key that rule matches.
+    model="POCKET-FRAME-1500PF",
+    fits_nominal=("24", "28", "30", "32", "36"),
+    part_number_by_length_in={24: "152068PF", 28: "152468PF", 30: "152668PF",
+                              32: "152868PF", 36: "153068PF"},
+    source="Johnson Hardware 1500PF series pocket door frame kit "
+           "(johnsonhardware.com/1500-series-pocket-door-frame-kits) — all-steel split "
+           "studs, 6063T6 extruded aluminium track, 125 lb max per door, 3-1/2\" minimum "
+           "wall structure. Door, jambs, drywall and locks not included.",
+)
+
+# Past the commodity ladder the frame, the track and the hangers all change. No published
+# SKU ladder is recorded here on purpose: the width families are published, the part
+# numbers are configured per order, and inventing one would be an estimate wearing a part
+# number's clothes.
+POCKET_FRAME_KIT_HEAVY = StructuralHardware(
+    tag="cavity-sliders-cs-for-wood-pocket-frame",
+    name="Pocket door frame, 2x4 wall (heavy duty, to 4'-0\")",
+    role=ROLE_POCKET_DOOR_FRAME_KIT,
+    manufacturer="Cavity Sliders",
+    model="POCKET-FRAME-CS-WOOD",
+    fits_nominal=("48",),
+    source="Cavity Sliders CS For Wood cavity slider pocket frame, 2x4 stud "
+           "(cavitysliders.com/cavislider/cavity-slider-pocket-door-frame/2x4-stud/) — "
+           "published to 4'0\" x 8'0\", above the 36\"/125 lb ceiling of the commodity "
+           "series.",
+)
+
 STRUCTURAL_HARDWARE: tuple = (
     SDWS_TIMBER_SCREW,
     SDWH_TIMBER_HEX_SCREW,
@@ -333,4 +378,6 @@ STRUCTURAL_HARDWARE: tuple = (
     S5_COLORGARD_SNOW_RETENTION,
     KBS_BEAM_HOLD_DOWN,
     POLY_PANEL_FASTENER,
+    POCKET_FRAME_KIT_1500PF,
+    POCKET_FRAME_KIT_HEAVY,
 )

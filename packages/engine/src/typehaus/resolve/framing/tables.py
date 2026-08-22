@@ -113,7 +113,10 @@ class OpeningFramingPattern:
     """How one door operation is framed beyond the shared king/jack/header pack.
 
     Only operations that genuinely differ get an entry; everything else is framed as a
-    plain rough opening, which is what a swing, slide or pocket door actually needs.
+    plain rough opening, which is what a swing or a surface-running slide actually needs.
+    A pocket door does *not*: it parks its leaf inside the wall, so the framed extent is
+    roughly twice the clear opening and the studs over the pocket are split. That is what
+    ``pocket_cavity`` turns on.
     """
 
     #: Trimmer span carried per jack stud, or ``None`` to use ``king_jack_counts``.
@@ -124,6 +127,10 @@ class OpeningFramingPattern:
     needs_track_backing: bool = False
     #: False → a flat nailer head instead of a bearing header (non-structural opening).
     header_is_structural: bool = True
+    #: True → the opening carries a leaf-width pocket beside it: split studs instead of
+    #: full-depth ones over the pocket run, a solid end post closing it, and a header that
+    #: spans the rough opening *and* the pocket.
+    pocket_cavity: bool = False
 
 
 # An overhead sectional concentrates its whole reaction on two jamb packs and additionally
@@ -138,8 +145,44 @@ OVERHEAD_SPAN_PER_JACK = ft(6)
 # size — the track brackets and the operator hangers need that face width to land on.
 OVERHEAD_TRACK_MEMBER = "2x6"
 
+# A pocket door's leaf parks inside the wall, so the framed opening is the clear opening
+# plus a pocket of the same width again. Every published frame kit sizes the rough opening
+# at 2W + 1" (Johnson 1500PF, Cavity Sliders, Hartford all agree), which is exactly
+# ``width + pocket_run(width)``.
+POCKET_RUN_ALLOWANCE = inch(1)
+# Split studs run at 12" o.c. rather than the wall's 16" module: each half is a fraction of
+# a stud's depth, so the pocket's two skins need the closer spacing to stay flat under
+# drywall. They are what the leaf runs between, and nothing may be fastened through them
+# deeper than the skin — see ``POCKET_MAX_FASTENER``.
+POCKET_SPLIT_STUD_SPACING = inch(12)
+# A split stud is a pair of half-thickness legs with the leaf slot between them, so it is
+# authored as a built-up ``2-1x4``: two 3/4"x3-1/2" halves, the same 3-1/2" depth as the
+# 2x4 wall it stands in. A premium kit substitutes steel-wrapped legs of the same
+# dimensions and supplies them *in* the kit; the takeoff carries the kit as hardware, so a
+# house that buys one is over-billed by this lumber row and under-billed by nothing.
+POCKET_SPLIT_STUD_MEMBER = "2-1x4"
+# The pocket's closed end is solid: ``frame_opening`` relocates that side's whole jamb pack
+# there, so the king and jack together are the post the leaf stops against. It is the only
+# solid framing along the run, and the only place a fixing may land in the wall's depth.
+# Longest fastener that may enter either face over the pocket run. Every kit publishes this
+# limit; past it the screw reaches the leaf. Carried here so the note, the check and the
+# library record all cite one number.
+POCKET_MAX_FASTENER = inch(1)
+
+
+def pocket_run(clear_width: Length) -> Length:
+    """How far the pocket runs past the rough opening for a leaf of ``clear_width``.
+
+    The leaf has to disappear completely, plus the split jamb it passes through, which is
+    the 1" every frame-kit rough-opening table folds into its 2W + 1 formula.
+    """
+    return inch(clear_width.inches + POCKET_RUN_ALLOWANCE.inches)
+
+
 # A bifold hangs entirely from its own head track inside a non-bearing partition: it needs
-# a flat head nailer to screw the track to, not a bearing header and trimmer pack.
+# a flat head nailer to screw the track to, not a bearing header and trimmer pack. A pocket
+# hangs from a head track the same way — the kit ships its own — so its head is a nailer
+# too, and it additionally opens the cavity the leaf lives in.
 OPENING_FRAMING_PATTERNS: dict[DoorOperation, OpeningFramingPattern] = {
     DoorOperation.OVERHEAD: OpeningFramingPattern(
         span_per_jack=OVERHEAD_SPAN_PER_JACK,
@@ -147,6 +190,11 @@ OPENING_FRAMING_PATTERNS: dict[DoorOperation, OpeningFramingPattern] = {
         needs_track_backing=True,
     ),
     DoorOperation.BIFOLD: OpeningFramingPattern(header_is_structural=False),
+    DoorOperation.POCKET: OpeningFramingPattern(
+        needs_track_backing=True,
+        header_is_structural=False,
+        pocket_cavity=True,
+    ),
 }
 
 

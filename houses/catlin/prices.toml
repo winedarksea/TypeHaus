@@ -9,11 +9,12 @@
 # Cost tracking (paid check-offs, exact products, actual $) lives in costs.toml, keyed by
 # the same (section, key) join used here.
 #
-# EVERY NUMBER IN THIS FILE IS A RESEARCHED ESTIMATE FOR BUDGETING, not a quote. Four
+# EVERY NUMBER IN THIS FILE IS A RESEARCHED ESTIMATE FOR BUDGETING, not a quote. Five
 # research passes so far: 2026-08-07 (framing, sheet goods, concrete, envelope layers,
 # openings), 2026-08-08a (everything else), 2026-08-08b (owner answers: stair species,
-# railings, drainage, the Gree line, the furnishings split), and 2026-08-20. Each section
-# header carries its own basis and sources.
+# railings, drainage, the Gree line, the furnishings split), 2026-08-20, and 2026-08-21
+# (the twelve FX-* plumbing-fixture rows, after the tub-shower was found priced below the
+# bare tub on both halves). Each section header carries its own basis and sources.
 #
 # --- WHAT THE 2026-08-20 PASS DID ---------------------------------------------------------
 # It added LABOUR. Before it, 21 of the 24 sections were material-only and the estimate
@@ -195,6 +196,12 @@
 # price then. $0.45-0.85/LF is 8' furring strips at $3.50-6.75 a piece, 2026 Midwest
 # retail (SPF strapping runs a little under a 2x4 by the foot).
 "1x4" = { material = { low = 0.45, high = 0.7 }, labour = { low = 0.35, high = 0.7 } }  # 5536 LF
+# A pocket door's split stud: two 1x4 legs with the leaf slot between them, so the material
+# is exactly twice the 1x4 above. Labour is NOT doubled — the pair is set as one member, and
+# the frame kit ships them assembled (they are steel-wrapped in the heavy-duty unit), so the
+# carpenter hangs one thing. See library/hardware.py: a house that buys the kit is over-billed
+# by this row and under-billed by nothing.
+"2-1x4" = { material = { low = 0.9, high = 1.4 }, labour = { low = 0.35, high = 0.7 } }  # 20 LF
 # "1x6.81165 panel" =    # 112 LF — cellular-PVC fascia, billed in [edge_trim]
 "2-1.75x11.875 LVL" = { material = { low = 14, high = 26 }, labour = { low = 8, high = 18 } }  # 16 LF
 "2-1.75x14 LVL" = { material = { low = 16, high = 30 }, labour = { low = 9, high = 20 } }  # 20 LF
@@ -321,6 +328,13 @@
 # includes its own seam clamp (which this one must, since no separate PV clamp is billed)
 # costs materially more than the bare grab.
 "S-5-PVKIT" = { low = 14, high = 35 }  # 48 ea
+# 2026-08-21 — D-M-LAUN's pocket frame. ** NOT RE-SOURCED IN THIS PASS ** — a heavy-duty
+# cavity frame is configured per order rather than shelf-priced, which is also why
+# library/hardware.py records no SKU ladder for it. The low end is roughly 3x a commodity
+# 1500PF kit (those sit near $90-130 retail); the high end is where a 4'-0" timber-framed
+# unit with soft-close hardware lands. This is the one line in this section standing on a
+# ratio instead of a quote — re-source it before it matters.
+"POCKET-FRAME-CS-WOOD" = { low = 300, high = 750 }  # 1 ea — D-M-LAUN
 # 2026-08-20 — the wind-mitigation clamps (plan/wind_clamps.py). Two part numbers because
 # the PANEL PROFILE decides the part: an S-5-S will not close on a nail-strip bulb and an
 # S-5-N will not close on a snap-lock leg. Priced per SKU rather than as a family:
@@ -697,10 +711,14 @@
 "electric" = { material = { low = 1.25, high = 3 }, labour = { low = 1.5, high = 3.25 } }  # 393 LF. NOT IN THIS LINE: the 3 floor sensors/thermostats at $150-300 each — ED-T-FLOOR-STAT covers the stat but not its sensor install
 
 [placeables]
-# RESEARCHED 2026-08-08 — [low, high] $ each for the UNIT ONLY: no installation, no rough-in,
-# no trim-out labour. Ranges are wide on purpose — most of this section is an owner selection
-# with a real 5x spread between builder-grade and specified, and a narrow range here would be
-# a false precision. Basis by family:
+# RESEARCHED 2026-08-08, LABOUR ADDED 2026-08-20, FX-* REPRICED 2026-08-21 — [low, high] $
+# each, unit price PLUS the labour to set and connect it. (Until 2026-08-20 this section was
+# the unit only, and this header still said so for a day after it stopped being true.) What
+# is still NOT in these rows: rough-in, which is billed by the foot in [pipe_runs], [ducts]
+# and [conduit]; tile surrounds, which are [floor_finishes]; and the tile backer and
+# waterproofing, which are their own allowance. Ranges are wide on purpose — most of this
+# section is an owner selection with a real 5x spread between builder-grade and specified,
+# and a narrow range here would be a false precision. Basis by family:
 #   APPL-*   homeguide.com 2026 appliance price chart: package of fridge/range/dishwasher/
 #            microwave $2,100-5,400; fridge $600-2,300; range $600-1,300; washer-dryer set
 #            $1,000-2,300 with stacked pairs at the top.
@@ -723,9 +741,13 @@
 #            the bare multi-zone head — and are set between a Livo 7k head at $450 and the
 #            Sapphire 9k head at $977.
 #   FURN-*   FF&E, not construction. See the note below.
-#   FX-*     homeguide.com 2026 bathroom cost guide (toilet unit $150-800, sink $40-300, tub
-#            $600-7,200), homedepot.com 33" kitchen sink $285, lawnstarter.com yard hydrant
-#            $50-400.
+#   FX-*     REPRICED 2026-08-21, whole family — see the block comment on the FX- rows for
+#            what went wrong and the three orderings that now hold. homeguide.com 2026
+#            plumbing-estimate and sink guides ($450-1,800 per fixture, toilet $350-800,
+#            sink $250-500, labour $45-150/hr), thisoldhouse.com 2026 bathtub-installation
+#            guide ($1,600-6,500 installed, $200-1,200 of it demolition this house does not
+#            have), homewyse 2026 modular tub-and-surround calculator, homedepot.com /
+#            lowes.com listings, woodfordmfg Model 19 list, lawnstarter.com yard hydrant.
 #   REG-*    engineeringair.com / hvacwholesaledirect.com grille listings, $19-78 by size.
 #
 # FURNITURE SPLIT, 2026-08-08b. The loose furniture moved to furnishings, which is priced
@@ -737,8 +759,10 @@
 # FURN-WARDROBE-48 is the borderline one: kept here on the reading that it is a PAX-style
 # fitted wardrobe rather than a freestanding piece.
 #
-# The five house-local FT-* types are from the 2026-08-07 batch. Rods are the rod, brackets
-# and finials — not the fabric, which is an owner selection with no useful range.
+# Five of the six house-local FT-* types are from the 2026-08-07 batch. Rods are the rod,
+# brackets and finials — not the fabric, which is an owner selection with no useful range.
+# The sixth, FT-BATH1-SHELF-2030 (2026-08-21), is millwork and is priced the way the
+# mudroom and sauna benches are: what the built article costs in materials and shop time.
 # $ each, by catalog type tag
 "APPL-DISHWASHER" = { material = { low = 450, high = 1200 }, labour = { low = 150, high = 350 } }  # 1 ea
 "APPL-DISPOSAL" = { material = { low = 90, high = 300 }, labour = { low = 0, high = 0 } }  # 1 ea
@@ -861,7 +885,13 @@
 # carried) — Rheem ProTerra 80gal PROPH80/XE80T10HS45U0 class, retail-listed $900-$1,300.
 "EQ-T-WATER-HEATER" = { material = { low = 1900, high = 3000 }, labour = { low = 550, high = 1300 } }  # 1 ea
 "FT-ACCESS-PANEL-1414" = { material = { low = 35, high = 90 }, labour = { low = 45, high = 110 } }  # 2 ea
-"FT-ACCESS-PANEL-1429" = { material = { low = 55, high = 140 }, labour = { low = 45, high = 110 } }  # 1 ea
+"FT-ACCESS-PANEL-1429" = { material = { low = 55, high = 140 }, labour = { low = 45, high = 110 } }  # 2 ea
+# Site-built, not bought: a 20" x 30" x 84" plywood carcass closing RM-S-BATH1's tub alcove,
+# whose west panel is the tub's east return. ~95 SF of cabinet plywood — cross-check against
+# the "cabinet-plywood" row, which carries the same $/SF casework-fabrication read —
+# plus edge banding, a paint-grade finish in a wet room, and the scribe to two walls. Labour
+# is shop time plus the set; the 2x4 framed behind the west panel is [framing].
+"FT-BATH1-SHELF-2030" = { material = { low = 200, high = 750 }, labour = { low = 150, high = 450 } }  # 1 ea
 "FT-CURTAIN-ROD-48" = { material = { low = 25, high = 90 }, labour = { low = 35, high = 90 } }  # 8 ea
 "FT-CURTAIN-ROD-84" = { material = { low = 40, high = 140 }, labour = { low = 35, high = 90 } }  # 1 ea
 "FT-CURTAIN-ROD-OUTDOOR-114" = { material = { low = 90, high = 260 }, labour = { low = 60, high = 150 } }  # 2 ea
@@ -876,21 +906,51 @@
 "FURN-SAUNA-BENCH-54" = { material = { low = 200, high = 800 }, labour = { low = 80, high = 300 } }  # 1 ea
 "FURN-WALL-RACK-24" = { material = { low = 30, high = 150 }, labour = { low = 30, high = 90 } }  # 1 ea
 "FURN-WARDROBE-48" = { material = { low = 250, high = 1200 }, labour = { low = 100, high = 300 } }  # 3 ea
-"FX-FLOOR-DRAIN" = { material = { low = 30, high = 150 }, labour = { low = 85, high = 200 } }  # 1 ea
-"FX-HYDRANT-SD34" = { material = { low = 50, high = 200 }, labour = { low = 110, high = 290 } }  # 2 ea
-"FX-HYDRANT-Y34SS" = { material = { low = 90, high = 400 }, labour = { low = 110, high = 290 } }  # 1 ea
-"FX-KITCHEN-SINK-33" = { material = { low = 200, high = 700 }, labour = { low = 235, high = 540 } }  # 2 ea
-"FX-LAUNDRY-SINK-24" = { material = { low = 100, high = 400 }, labour = { low = 110, high = 260 } }  # 1 ea
+# --- FX-*, REPRICED 2026-08-21 -------------------------------------------------------
+# The whole family was re-researched after FX-TUBSHOWER-60 was found priced BELOW FX-TUB-60
+# on both halves — a tub plus a surround, a valve, a riser and a head cannot cost less to
+# buy or less to set than the bare tub. Three orderings are now enforced and are the first
+# thing to re-check if any of these rows is edited:
+#   FX-TUBSHOWER-60 > FX-TUB-60   (the combo contains the tub)
+#   FX-TOILET-WH    > FX-TOILET-STD  (a carrier and an in-wall tank are most of the price)
+#   FX-LAV-24       > FX-LAV-COMPACT (a 24" lav with its vanity against an 18" powder bowl)
+# The basis is the section's, unchanged: unit price PLUS SET-AND-CONNECT LABOUR ONLY. Rough-
+# in is billed by the foot in [pipe_runs]; the tub and shower surrounds are tile in
+# [floor_finishes]; the backer and the waterproofing are the finish-tile-backer-and-
+# waterproofing allowance. None of that is folded in here, and folding it in would double-
+# count it. Demolition is not in any of these numbers either — this is new construction, so
+# the published "replacement" costs (thisoldhouse 2026: $1,600-6,500 to install a bathtub,
+# $200-1,200 of it removal and disposal) are read for their SET half only.
+# Sources: thisoldhouse.com 2026 bathtub-installation guide, homeguide.com 2026 sink and
+# plumbing-estimate guides ($450-1,800 per fixture rough-in-to-full-install; toilet
+# $350-800; sink $250-500; plumber labour $45-150/hr), homewyse 2026 modular tub-and-
+# surround calculator, homedepot.com / lowes.com 2026 listings, woodfordmfg Model 19 list.
+"FX-FLOOR-DRAIN" = { material = { low = 40, high = 200 }, labour = { low = 90, high = 230 } }  # 1 ea
+# Both hydrants are "set and connect" only in the same sense the rest of the section is: the
+# trench for the yard hydrant is excavation and the barrel's penetration kit rides its
+# PipeAccessory(PENETRATION_SEAL), so neither is in these two rows.
+"FX-HYDRANT-SD34" = { material = { low = 110, high = 260 }, labour = { low = 120, high = 310 } }  # 2 ea
+"FX-HYDRANT-Y34SS" = { material = { low = 180, high = 500 }, labour = { low = 140, high = 360 } }  # 1 ea
+"FX-KITCHEN-SINK-33" = { material = { low = 220, high = 800 }, labour = { low = 250, high = 600 } }  # 2 ea
+"FX-LAUNDRY-SINK-24" = { material = { low = 130, high = 450 }, labour = { low = 120, high = 290 } }  # 1 ea
 # Read as the lavatory AND its vanity: no CASE-* row covers the bathrooms, so if this were
 # the bowl alone the vanities would be missing from the estimate entirely.
-"FX-LAV-24" = { material = { low = 200, high = 800 }, labour = { low = 185, high = 420 } }  # 5 ea
-"FX-LAV-COMPACT" = { material = { low = 90, high = 350 }, labour = { low = 130, high = 290 } }  # 1 ea
-"FX-SHOWER-36" = { material = { low = 250, high = 900 }, labour = { low = 175, high = 420 } }  # 2 ea
-"FX-TOILET-STD" = { material = { low = 150, high = 600 }, labour = { low = 95, high = 210 } }  # 4 ea
-# Wall-hung: the carrier and in-wall tank are most of the price, hence 3x the floor unit.
-"FX-TOILET-WH" = { material = { low = 500, high = 1600 }, labour = { low = 310, high = 720 } }  # 1 ea
-"FX-TUB-60" = { material = { low = 300, high = 1500 }, labour = { low = 330, high = 790 } }  # 1 ea
-"FX-TUBSHOWER-60" = { material = { low = 400, high = 1400 }, labour = { low = 165, high = 400 } }  # 2 ea
+"FX-LAV-24" = { material = { low = 250, high = 950 }, labour = { low = 200, high = 460 } }  # 5 ea
+"FX-LAV-COMPACT" = { material = { low = 110, high = 420 }, labour = { low = 150, high = 330 } }  # 1 ea
+# 36x36 curbed pan plus its three-wall surround panels, set on a mortar bed. The tiled
+# version of this wall is NOT here — see the basis note above.
+"FX-SHOWER-36" = { material = { low = 300, high = 1000 }, labour = { low = 200, high = 470 } }  # 2 ea
+"FX-TOILET-STD" = { material = { low = 180, high = 700 }, labour = { low = 110, high = 260 } }  # 4 ea
+# Wall-hung: the carrier and in-wall tank are most of the price, hence ~3x the floor unit,
+# and the carrier is set during framing rather than at trim-out.
+"FX-TOILET-WH" = { material = { low = 650, high = 1900 }, labour = { low = 360, high = 820 } }  # 1 ea
+"FX-TUB-60" = { material = { low = 400, high = 1600 }, labour = { low = 330, high = 800 } }  # 1 ea
+# 60x30 acrylic or gelcoat one-piece unit, or the 3-piece kit a finished second floor takes
+# because a one-piece will not go up the stair. Labour is the set: level the base in mortar,
+# nail the flange to three walls, hang the walls, set the valve and riser, connect the waste
+# and overflow. It is strictly above FX-TUB-60 on both halves, which is the point of the
+# 2026-08-21 pass.
+"FX-TUBSHOWER-60" = { material = { low = 500, high = 2000 }, labour = { low = 400, high = 950 } }  # 2 ea
 "REG-T-ERV-EXH" = { material = { low = 25, high = 80 }, labour = { low = 18, high = 45 } }  # 15 ea
 "REG-T-ERV-SAUNA-EXH" = { material = { low = 15, high = 60 }, labour = { low = 18, high = 45 } }  # 1 ea
 # 2026-08-18, RM-S-PLANT. Both carry a MOTORISED damper rather than a manual face damper,
@@ -1379,7 +1439,13 @@
 "DT-INT-DOUBLE60" = { material = { low = 400, high = 1000 }, labour = { low = 255, high = 500 } }  # 1 ea — flush solid-core pair, paint-grade to stain-grade
 # 56" needs a FOUR-panel bifold, not a two-panel — doornmore prices a 4-door at $302.40 against
 # $103.50-206.50 for a 2-door, which is why the old $150 floor was wrong.
-"DT-INT-BIFOLD56" = { material = { low = 175, high = 500 }, labour = { low = 105, high = 225 } }  # 2 ea
+"DT-INT-BIFOLD56" = { material = { low = 175, high = 500 }, labour = { low = 105, high = 225 } }  # 1 ea — was 2 until D-M-LAUN became a pocket (2026-08-21); O-S-CLOSET is the last one
+# ** NOT RE-SOURCED IN THIS PASS ** — the slab only. The frame kit is a counted part in
+# [hardware], not folded in here, which is the point of billing it as hardware at all. A
+# 4'-0" x 6'-8" leaf is past every stock interior ladder, so this brackets off DT-INT-DOUBLE60,
+# the same 60"-class special order in solid core. Labour is high for a single leaf on purpose:
+# the frame goes in before the drywall and a pocket cannot be adjusted afterwards.
+"DT-POCKET-INT-48" = { material = { low = 400, high = 1100 }, labour = { low = 260, high = 560 } }  # 1 ea
 "DT-INT-BYPASS48" = { material = { low = 200, high = 500 }, labour = { low = 100, high = 220 } }  # 1 ea — stock molded pair + track, to solid-core or mirrored
 # ** NOT RE-SOURCED IN THIS PASS ** — a hidden-jamb reveal door has no shelf price, because it
 # is a frame system (Eclisse, Arkitek) plus a door, not a catalogue item. The material figure

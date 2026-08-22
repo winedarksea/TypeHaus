@@ -232,14 +232,21 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     glazing narrowed to WT-3048 and the module's ideal position went with it, both pairs
     shifted the same way so the storeys still stack and the two segments' 8" phase miss
     is unchanged). The attic no longer joins them — see **Gables**.
-    The **west face stacks three** through main and second (y 5'-0", 19'-8", 31'-4"). It
-    had exactly one (31'-4", and only because both its hosts start at y=33'-4") until
-    2026-08-15, when N-M-W3 went 13'-4" -> 13'-0" and N-M-W2 went 22'-2" -> 22'-4" to put
-    the main storey's west stud grid in phase with the second's — the residue rule, applied
-    to the two tees rather than to the six windows. WIN-M-BATH2 was retyped WT-1424-T ->
-    WT-2736-T at a 3'-0" sill to reach the 19'-8" column (the 8" rule), which also buys
-    R303.3's window alternative outright. RM-M-BED gave up 4" and RM-M-BATH2 gained 6".
-    **The fourth column is deliberately absent** and is pinned absent by
+    The **west face stacks two** through main and second (y 5'-0", 19'-8"). It had exactly
+    one (31'-4", and only because both its hosts start at y=33'-4") until 2026-08-15, when
+    N-M-W3 went 13'-4" -> 13'-0" and N-M-W2 went 22'-2" -> 22'-4" to put the main storey's
+    west stud grid in phase with the second's — the residue rule, applied to the two tees
+    rather than to the six windows. WIN-M-BATH2 was retyped WT-1424-T -> WT-2736-T at a
+    3'-0" sill to reach the 19'-8" column (the 8" rule), which also buys R303.3's window
+    alternative outright. RM-M-BED gave up 4" and RM-M-BATH2 gained 6".
+    The original 31'-4" column was **spent on 2026-08-21**, and it is the residue rule
+    read backwards: the second storey's mechanical chase took its south corners 3 1/8"
+    south so its face lands on FX-S-BATH1-SH's apron line, N-S-CH3 moved with them, and
+    W-S-W1's grid re-phased out from under WIN-S-BATH-W. That window rode south to its new
+    bay centre (31'-0 7/8") rather than break a stud holding the old y; WIN-M-MUD stayed at
+    31'-4", centred on the mudroom bench's aisle. **A grid belongs to a node, so a node
+    move is a facade decision** — price it before making it.
+    **A further column is deliberately absent** and is pinned absent by
     `test_the_west_suite_window_pair_is_left_uncolumned_on_purpose`: WIN-M-BED-W2 (10'-4")
     and WIN-S-SUITE1 (13'-0") are the same unit on the same head line, and the only two
     shared stud lines their hosts offer are 10'-4" and 11'-8" — each leaving ~16" of wall
@@ -294,6 +301,20 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     them; the jack/king/header pack is what pays for it. The margin is 0.05 sf — growing
     either room's clear face fails R303.1 again, and the answer then is a taller unit, not
     a wider one.
+- **`W-M-HS4` is a pocket, and is therefore spoken for.** `D-M-LAUN` became a 4'-0" pocket
+  door on 2026-08-21 (was a 56" bifold); its leaf parks east inside `W-M-HS4`, crossing
+  node `N-M-E3` where `W-M-LS` tees in. **Nothing may ever go in that wall again** — no
+  outlet, no switch, no pipe, no register, no blocking, no towel bar — between 12'-4" and
+  16'-5" on y=22'-4" there is no stud to fasten to and no depth to recess into.
+  `mep.pocket_occupancy` enforces it; W-M-HS4 hosted nothing when this was built, which is
+  the only reason it was possible. The cavity crossing a node is legal because wall
+  segmentation at a tee is an authoring convention (`resolve/framing/pockets.py`), and the
+  W-M-LS tie survives because a pocket occupies floor to 6'-8" only, so the band's plates
+  run continuously over and under it — W-M-LS ties plate to plate and only its vertical
+  edge floats. **A split stud that ever reaches the top plate destroys that tie.** 4'-0" is
+  the widest leaf that fits: the pack closing the cavity must clear `N-M-C2`, where the
+  BEARING `W-M-C3` corners in and `BM-M-HALL` starts. Full detail, including the 1"
+  fastener limit, in `notes/pocket_door_at_laundry.md`.
 - **Four basement assemblies, and every split is a condition, not a preference.** Two
   independent axes cross here: what covers the exterior XPS, and how thick the pour is.
   All four compose off `library/`'s `FOUNDATION_WALL_{8,12}_XPS4_CORE` plus a house-local

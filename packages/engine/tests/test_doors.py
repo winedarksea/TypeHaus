@@ -10,10 +10,12 @@ vocabulary: an unstyled name is not a missing glyph but a wrong one.
 from __future__ import annotations
 
 import math
+from dataclasses import replace
 from types import SimpleNamespace
 
 import pytest
 
+from library import STARTER_DOOR_TYPES
 from typehaus.emit.draw import build_floorplan, write_dxf, write_raster
 from typehaus.emit.draw.door_symbols import (
     DOOR_BIFOLD,
@@ -34,8 +36,14 @@ from typehaus.model.enums import DoorOperation, LayerFunction
 from typehaus.model.types import DoorType
 from typehaus.quantities import ft, inch
 from typehaus.resolve.framing.openings import WallOpening
+from typehaus.resolve.framing.pockets import pocket_segments
 from typehaus.resolve.framing.solver import frame_wall
-from typehaus.resolve.framing.tables import ENGINEERED_LVL, header_depth, header_size
+from typehaus.resolve.framing.tables import (
+    ENGINEERED_LVL,
+    header_depth,
+    header_size,
+    pocket_run,
+)
 from typehaus.resolve.model import ResolvedWall
 
 GARAGE_DOOR_WIDTH = ft(16)
@@ -76,7 +84,14 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
         "DT-INT-DOUBLE60": (60.0, DoorOperation.DOUBLE_SWING, False, False),
         "DT-EXT-OVERHEAD192": (192.0, DoorOperation.OVERHEAD, True, False),
     }
-    assert set(types) == set(expected)
+    # The house catalog is the union of its own types and the library's shared pocket
+    # family (2026-08-21), which is what D-M-LAUN is typed from. The two tag sets must
+    # stay disjoint — `integrity.duplicate_catalog_tag` proves it at load time, and this
+    # pins that the promotion did not quietly shadow a house type.
+    library_pockets = {door_type.tag for door_type in STARTER_DOOR_TYPES}
+    assert set(types) == set(expected) | library_pockets
+    assert not (set(expected) & library_pockets)
+    assert all(types[tag].operation is DoorOperation.POCKET for tag in library_pockets)
     for tag, (width_in, operation, exterior, glazed) in expected.items():
         door_type = types[tag]
         assert door_type.width.inches == pytest.approx(width_in)
@@ -304,9 +319,27 @@ def test_catlin_garage_door_emits_the_overhead_symbol(catlin_model):
 
 
 def test_catlin_interior_bifolds_emit_the_bifold_symbol(catlin_model):
-    names = {node.name for node in build_floorplan(catlin_model, "main").nodes
+    """O-S-CLOSET is the house's only bifold since D-M-LAUN became a pocket (2026-08-21).
+
+    It lives on ``second``; this test read ``main`` while D-M-LAUN was the bifold there.
+    Retyping that door emptied the main storey of bifolds, so the storey moved rather than
+    the assertion being dropped — the BIFOLD symbol still has to be exercised.
+    """
+    names = {node.name for node in build_floorplan(catlin_model, "second").nodes
              if isinstance(node, Symbol)}
     assert DOOR_BIFOLD in names
+
+
+def test_catlin_laundry_door_emits_the_pocket_symbol(catlin_model):
+    """D-M-LAUN is the house's (and the repo's) first authored pocket door."""
+    laundry = next(op for op in catlin_model.openings if op.tag == "D-M-LAUN")
+    symbols = {node.uid: node for node in build_floorplan(catlin_model, "main").nodes
+               if isinstance(node, Symbol)}
+    assert symbols[laundry.uid].name == DOOR_POCKET
+    # A pocket sweeps nothing: no arc, and no swing clearance ring to conflict with the
+    # appliances 8-3/4" in front of it — which is the whole reason for the retype.
+    assert not door_symbol_geometry(symbols[laundry.uid]).arcs
+    assert not laundry.swing_clearance
 
 
 def test_synthetic_slide_door_emits_the_sliding_symbol():
@@ -432,3 +465,163 @@ def test_bifold_gets_a_flat_head_instead_of_a_bearing_header():
     # and it gets none of the overhead door's track framing.
     assert header.profile == "2-2x6"
     assert not [m for m in members if m.child_key.startswith("track")]
+
+
+def _pocket_members(width=ft(4), *, flip=False, wall_len=6.0):
+    """A 4'-0" pocket in a 20' wall, pocketing toward the end node unless ``flip``."""
+    plan, wall = _wall_and_plan()
+    wall = replace(wall, axis=((0.0, 0.0), (wall_len, 0.0)))
+    sign = -1 if flip else 1
+    center = 0.1016 + width.meters / 2 if not flip else wall_len - 0.1016 - width.meters / 2
+    opening = WallOpening(center_m=center, width_m=width.meters, height_m=ft(6, 8).meters,
+                          sill_m=0.0, is_door=True, operation=DoorOperation.POCKET,
+                          pocket_run_m=pocket_run(width).meters, pocket_sign=sign)
+    return frame_wall(plan, wall, openings=[opening]), opening
+
+
+def test_pocket_rough_opening_is_the_published_two_w_plus_one():
+    """Every frame kit sizes the RO at 2W + 1"; ``pocket_run`` is the second half of it."""
+    assert (ft(4) + pocket_run(ft(4))).inches == pytest.approx(97.0)
+    assert (ft(3) + pocket_run(ft(3))).inches == pytest.approx(73.0)
+    assert (ft(2, 6) + pocket_run(ft(2, 6))).inches == pytest.approx(61.0)
+
+
+def test_pocket_leaves_the_mouth_open_and_moves_the_jamb_pack_to_the_closed_end():
+    members, opening = _pocket_members()
+    mouth = opening.center_m + opening.width_m / 2
+    closed = mouth + opening.pocket_run_m
+    stations = sorted(m.p0[0] for m in members
+                      if m.category in ("king", "jack") and m.p0 == m.p1)
+    # Nothing stands at the mouth: that edge is the split jamb the leaf passes through,
+    # and a trimmer there is a door that will not open.
+    assert not [s for s in stations if abs(s - mouth) < inch(3).meters]
+    # Both packs are present, one at the strike jamb and one closing the cavity.
+    strike = opening.center_m - opening.width_m / 2
+    assert min(stations) < strike + inch(3).meters
+    assert max(stations) > closed - inch(0.1).meters
+
+
+def test_pocket_header_spans_the_opening_and_the_cavity_together():
+    members, opening = _pocket_members()
+    header = next(m for m in members if m.category == "header")
+    # RO + pocket, plus the one jack each end the header bears on: 48 + 49 + 1.5 + 1.5.
+    assert header.length_m == pytest.approx(inch(100.0).meters)
+    # A pocket hangs from the kit's own head track inside a partition, so the head is a
+    # nailer and a track backing — never a bearing header, however wide the span gets.
+    assert header.profile == "2-2x6"
+    backing = [m for m in members if m.child_key.startswith("trackbacking-")]
+    assert len(backing) == 1 and backing[0].z0_m == pytest.approx(header.z1_m)
+    # ...and none of the overhead sectional's vertical track framing.
+    assert not [m for m in members if m.child_key.startswith("trackjamb-")]
+
+
+def test_pocket_split_studs_stop_at_the_header_so_the_plates_stay_continuous():
+    """This is what lets a partition tee into a wall over a pocket.
+
+    The cavity exists only below the head, so the wall's double top plate runs unbroken
+    above it and its bottom plate below. A branch wall ties to both, plate to plate, and
+    only its vertical edge floats against the split jamb.
+    """
+    members, opening = _pocket_members()
+    splits = [m for m in members if m.child_key.startswith("pocketsplit-")]
+    header = next(m for m in members if m.category == "header")
+    assert splits, "a pocket must frame its cavity"
+    assert all(m.profile == "2-1x4" for m in splits)
+    assert all(m.z1_m == pytest.approx(header.z0_m) for m in splits)
+    assert all(m.z0_m == pytest.approx(min(s.z0_m for s in splits)) for m in splits)
+    # 12" o.c. from the mouth, and never inside the pack that closes the cavity.
+    mouth = opening.center_m + opening.width_m / 2
+    offsets = sorted(m.p0[0] - mouth for m in splits)
+    assert offsets == pytest.approx([inch(12).meters, inch(24).meters, inch(36).meters])
+
+
+def test_pocket_frames_no_two_members_on_one_station():
+    """The closed end is the relocated jamb pack, not a pack *and* a separate end post."""
+    members, _ = _pocket_members()
+    stations = [round(m.p0[0], 6) for m in members if m.p0 == m.p1]
+    assert len(stations) == len(set(stations))
+
+
+def test_pocket_can_run_either_way_along_the_wall():
+    forward, op_f = _pocket_members()
+    reverse, op_r = _pocket_members(flip=True)
+    f_splits = sorted(m.p0[0] for m in forward if m.child_key.startswith("pocketsplit-"))
+    r_splits = sorted(m.p0[0] for m in reverse if m.child_key.startswith("pocketsplit-"))
+    assert len(f_splits) == len(r_splits)
+    # flip_hinge picks the side: forward pockets past the opening, reverse before it.
+    assert min(f_splits) > op_f.center_m
+    assert max(r_splits) < op_r.center_m
+
+
+def test_a_swing_door_is_untouched_by_the_pocket_path():
+    """The pocket branch must be inert for every other operation."""
+    plan, wall = _wall_and_plan()
+    opening = WallOpening(center_m=4.0, width_m=ft(2, 6).meters, height_m=ft(6, 8).meters,
+                          sill_m=0.0, is_door=True, operation=DoorOperation.SWING)
+    members = frame_wall(plan, wall, openings=[opening])
+    header = next(m for m in members if m.category == "header")
+    assert header.length_m == pytest.approx(inch(33.0).meters)  # 30 RO + two jacks
+    assert not [m for m in members if "pocket" in m.child_key]
+
+
+# --- the cavity crossing a node ---------------------------------------------------
+
+
+def _colinear_plan(*, second_assembly="INT", second_len=1.4224, angled=False):
+    """Two walls meeting end-to-start at a node: 64" then 56", the catlin laundry band."""
+    from typehaus.model.elements import Wall
+
+    a = Wall(uid="WA", tag="W-A", start_node="N0", end_node="N1", assembly="INT")
+    b = Wall(uid="WB", tag="W-B", start_node="N1", end_node="N2", assembly=second_assembly)
+    end = (1.6256, second_len) if angled else (1.6256 + second_len, 0.0)
+    resolved = {
+        "W-A": SimpleNamespace(tag="W-A", axis=((0.0, 0.0), (1.6256, 0.0))),
+        "W-B": SimpleNamespace(tag="W-B", axis=((1.6256, 0.0), end)),
+    }
+    plan = SimpleNamespace(all_elements=lambda: [a, b])
+    model = SimpleNamespace(wall=resolved.get)
+    return plan, model
+
+
+def _pocket_opening(width=ft(4)):
+    return SimpleNamespace(
+        tag="D-TEST", host_wall="W-A",
+        center_along_m=inch(4).meters + width.meters / 2, width_m=width.meters,
+        pocket_run_m=pocket_run(width).meters, pocket_sign=1)
+
+
+def test_a_pocket_may_run_across_a_node_into_a_colinear_wall():
+    """Wall segmentation at a tee is an authoring convention, not a wall.
+
+    ``classify_storey_junctions`` builds junctions from wall *endpoints*, so a partition
+    teeing in has to split the wall it lands on. The two halves are still one plane, one
+    assembly and one pair of plates, and the leaf really does travel across the node.
+    """
+    plan, model = _colinear_plan()
+    segments, shortfall = pocket_segments(plan, model, _pocket_opening())
+    assert shortfall == pytest.approx(0.0), "a 49\" cavity fits 64\" + 56\" of wall"
+    assert [segment.wall_tag for segment in segments] == ["W-A", "W-B"]
+    # The mouth is 52" along W-A, which is 64" long, so 12" lands there and the rest next
+    # door — the run is contiguous across the node, with no gap and no overlap.
+    assert segments[0].high_m == pytest.approx(1.6256)
+    assert segments[1].low_m == pytest.approx(0.0)
+
+
+def test_a_pocket_is_refused_when_the_colinear_run_is_too_short():
+    plan, model = _colinear_plan(second_len=inch(6).meters)
+    _segments, shortfall = pocket_segments(plan, model, _pocket_opening())
+    assert shortfall > 0.0, "a leaf with nowhere to go must be reported, not drawn"
+
+
+def test_a_pocket_stops_at_a_corner_and_at_an_assembly_change():
+    """Neither a turn nor a different assembly continues the run.
+
+    A leaf cannot slide round a corner, and a different assembly is a different wall in
+    every way that matters — a thickness change, a different stud depth, often a different
+    trade — so the cavity must not be allowed to open into one.
+    """
+    for kwargs in ({"angled": True}, {"second_assembly": "EXT_2X6"}):
+        plan, model = _colinear_plan(**kwargs)
+        segments, shortfall = pocket_segments(plan, model, _pocket_opening())
+        assert shortfall > 0.0, f"the run must stop: {kwargs}"
+        assert [segment.wall_tag for segment in segments] == ["W-A"]

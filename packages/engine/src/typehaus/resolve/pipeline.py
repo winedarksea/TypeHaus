@@ -183,6 +183,7 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
             framing_bumper = _opening_framing_bumper(rw, center, width)
             arch = getattr(el, "arch", None)
             arch_rise = arch.rise.meters if arch is not None else 0.0
+            pocket_run, pocket_sign = _door_pocket(plan, el, rw, operation, width)
             model.openings.append(
                 ResolvedOpening(
                     uid=el.uid, tag=el.tag, host_wall=el.host, type_ref=type_ref,
@@ -190,6 +191,7 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
                     center_along_m=center, kind=kind, is_door=is_door,
                     swing_clearance=swing_clearance, framing_bumper=framing_bumper,
                     arch_rise_m=arch_rise,
+                    pocket_run_m=pocket_run, pocket_sign=pocket_sign,
                 )
             )
             model.conditions.append(
@@ -218,6 +220,26 @@ def _door_operation(plan: PlanModel, el) -> str:
     door_type = next((x for x in plan.library.door_types if x.tag == el.type_ref), None)
     operation = getattr(door_type, "operation", None)
     return str(getattr(operation, "value", operation) or "swing")
+
+
+def _door_pocket(plan: PlanModel, el, rw, operation, width: float) -> tuple[float, int]:
+    """A pocket door's cavity run and its direction along the host wall axis.
+
+    ``(0.0, 0)`` for every other operation, so nothing else in the model changes.
+
+    The side is read off ``Door.flip_hinge`` rather than a field of its own. A pocket has
+    no hinge, so the flag is inert for it today (``_LEAF_SWEEP_FRACTION["pocket"]`` is 0),
+    and it already carries exactly the meaning wanted here — which side of the opening the
+    leaf belongs to. ``False`` (the default) pockets toward the wall's end node.
+    """
+    from typehaus.model.enums import DoorOperation
+    from typehaus.quantities import m as _metres
+    from typehaus.resolve.framing.tables import pocket_run
+
+    if el.element_kind != "Door" or operation != DoorOperation.POCKET.value:
+        return (0.0, 0)
+    sign = -1 if getattr(el, "flip_hinge", False) else +1
+    return (pocket_run(_metres(width)).meters, sign)
 
 
 def _opening_center(plan: PlanModel, el, rw, axis_len: float, width: float) -> float:

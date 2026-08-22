@@ -68,6 +68,11 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     # Sheet goods: roof and wall sheathing bill to the same account as the framing they
     # skin, insulated sheathing to insulation.
     ("sheet_goods", "zip-r*", CostCode("2100", "07 21 00", "walls")),
+    # A pocket door's frame kit is Door Hardware (08 71 00), not the 06 05 23 rough
+    # carpentry the `hardware` section defaults to. Named for its trade on purpose — see
+    # the allowance note below: the key prefix is the trade declaration, and a kit filed
+    # under framing lands the carpenter's number in the framer's work package.
+    ("hardware", "pocket-frame-*", CostCode("2400", "08 71 00", "openings")),
     # Openings: doors and windows are one NAHB account but two CSI divisions.
     ("openings", "*door*", CostCode("2400", "08 10 00", "openings")),
     ("openings", "*window*", CostCode("2400", "08 50 00", "openings")),

@@ -107,9 +107,31 @@ NODES = [
     # The mechanical chase moved NE -> NW corner of the hall bath (2026-07-28) to stack on
     # RM-M-MECH below. N-S-CH1 is its inner (SE) corner; N-S-CH2/CH3 tee into the exterior
     # north/west walls.
-    Node(uid="CSN035AAAA", tag="N-S-CH1", position=pt(ft(2, 9), ft(33, 4))),
+    #
+    # Both south corners came 3 1/8" south on 2026-08-21, off the 33'-4" line RM-M-MECH's
+    # own south wall still holds below. That is exactly the offset that lands W-S-CH-S's
+    # bathroom face on y 32'-10 1/2" — FX-S-BATH1-SH's apron line, and now
+    # FURN-S-BATH1-SHELF's front too — so the room's whole north band is one straight line
+    # instead of a 3 1/8" jog. It buys two real things beyond the line: the shaft's clear
+    # depth goes 1'-11" -> 2'-2 1/8" (this is the house's basement-to-attic pipe highway,
+    # and it was the tightest it has ever needed to be), and W-S-CH-W now runs the tub's
+    # full 30" instead of stopping 3 1/8" short of its front, so the insert's west flange
+    # finally has stud behind all of it.
+    #
+    # What it costs, and this one was not cheap: W-S-W1 lays its studs from N-S-CH3, so
+    # moving that node re-phased the whole wall's grid by 3 1/8" — and a grid is a property
+    # of the node, not of the openings on it, so no window move can put it back
+    # (structural.window_framing_module says exactly that in its own fix hint). The house
+    # spent the west facade's 31'-4" column on this: WIN-S-BATH-W rides south to the new
+    # bay centre at 31'-0 7/8" and no longer stacks on WIN-M-MUD, which stays at 31'-4"
+    # because it is centred on FURN-M-MUD-BENCH's aisle. The west face stacks two columns
+    # now, not three (houses/catlin/CLAUDE.md, Facade rules; the count is pinned by
+    # test_the_west_facade_stacks_two_two_storey_window_columns). It also takes 3 1/8" out
+    # of the only standing room in front of the shaft: the floor between FX-S-BATH1-WC's
+    # clearance and the chase face is 1'-7 1/4" now, not 1'-10 3/8".
+    Node(uid="CSN035AAAA", tag="N-S-CH1", position=pt(ft(2, 9), ft(33, 0.875))),
     Node(uid="CSN036AAAA", tag="N-S-CH2", position=pt(ft(2, 9), ft(36))),
-    Node(uid="CSN037AAAA", tag="N-S-CH3", position=pt(ft(0), ft(33, 4))),
+    Node(uid="CSN037AAAA", tag="N-S-CH3", position=pt(ft(0), ft(33, 0.875))),
 ]
 
 WALLS = [
@@ -286,6 +308,9 @@ WALLS = [
     # 2'x2' mechanical chase, moved to the hall bath's NW corner (2026-07-28, was the NE
     # corner) so it stacks on RM-M-MECH below and the attic exit above. This is what makes
     # RM-S-BATH1 the source's L-shaped 80.73 sf bathroom, now notched NW instead of NE.
+    # 2 1/8" deeper than 2'x2' since 2026-08-21 (the south-corner move in NODES); the
+    # source's shaft was 2'x2' and test_hall_bath_chase_is_the_source_two_foot_shaft still
+    # grades it against that to +/- 3".
     Wall(uid="CSW151AAAA", tag="W-S-CH-W", start_node="N-S-CH1", end_node="N-S-CH2",
          assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CSW152AAAA", tag="W-S-CH-S", start_node="N-S-CH1", end_node="N-S-CH3",
@@ -436,10 +461,19 @@ OPENINGS = [
     # (test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs).
     Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3", type_ref="WT-1424-T",
            position=from_node("N-S-CH2", ft(0, 8)), sill_height=ft(4)),
-    # Re-hosted off N-S-CH3 (2026-07-28) after the chase split W-S-W1 there. Same physical
-    # position, centre y=31'-4" — the west face's fourth column: WIN-M-MUD is the same 14"
-    # unit at the same centre, both hosts starting at y=33'-4", the face's only true column
-    # since before the others.
+    # Re-hosted off N-S-CH3 (2026-07-28) after the chase split W-S-W1 there. Centred
+    # y=31'-4" from then until 2026-08-21, when it columned with WIN-M-MUD — the same 14"
+    # unit at the same centre, and the west face's only true column before the 2026-08-15
+    # tee moves gave it two more.
+    #
+    # It is y=31'-0 7/8" now. The offset is still 1'-5" and that is the whole story: the
+    # chase's south corners went 3 1/8" south (see NODES), W-S-W1's stud grid went with
+    # them, and holding the offset lets the window ride south onto the SAME bay centre it
+    # always sat on. Holding the old y instead was tried and does not work — the window
+    # would then be 3.1" off a bay centre and break a stud, and structural.
+    # window_framing_module is explicit that no window move fixes an out-of-phase segment.
+    # So the column was spent rather than the framing. WIN-M-MUD did not follow it south:
+    # that one is centred on FURN-M-MUD-BENCH's aisle, which did not move.
     Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424-T",
            position=from_node("N-S-CH3", ft(1, 5)), sill_height=ft(4)),
     # Moved 29'-4" -> 28'-0" (2026-07-30 facade pass): WIN-M-KITCH below and WIN-A-N2

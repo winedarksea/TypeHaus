@@ -21,8 +21,8 @@ from pathlib import Path
 
 from typehaus import Building, Library, PlanModel, Project, Storey, ft, load_basemap_geojson
 
-from library import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES, STARTER_FIXTURE_TYPES,
-                     STARTER_FURNITURE_TYPES, STARTER_RAILING_TYPES)
+from library import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES, STARTER_DOOR_TYPES,
+                     STARTER_FIXTURE_TYPES, STARTER_FURNITURE_TYPES, STARTER_RAILING_TYPES)
 
 from params import (breezeway, foundations, main_deck, raised_garden, roof_trim,
                     second_deck, solar, sunken_garden)
@@ -40,7 +40,10 @@ PROJECT_UUID = uuid.UUID("c471a000-93b5-4e6e-8f5a-000000000002")
 _library = Library(
     materials=tuple(assemblies.MATERIALS),
     assemblies=tuple(assemblies.ASSEMBLIES),
-    door_types=tuple(main.DOOR_TYPES),
+    # The library's pocket family alongside the house's own catalog. Only the pocket
+    # types are shared so far — the rest of `main.DOOR_TYPES` is a promotion for another
+    # day, and `integrity.duplicate_catalog_tag` proves the two tag sets stay disjoint.
+    door_types=(*STARTER_DOOR_TYPES, *main.DOOR_TYPES),
     window_types=tuple(main.WINDOW_TYPES),
     # The shared catalogs supply every plumbing fixture, appliance, and railing this house
     # uses; only the wall-fitted mudroom closets stay house-local. Tags are disjoint, and

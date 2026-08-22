@@ -18,6 +18,8 @@ from typehaus.resolve.framing.stud_module import OpeningStudModule, opening_stud
 from typehaus.resolve.framing.tables import (
     DEFAULT_SPACING,
     OVERHEAD_TRACK_MEMBER,
+    POCKET_SPLIT_STUD_MEMBER,
+    POCKET_SPLIT_STUD_SPACING,
     header_depth,
     header_profile_from_spec,
     header_size,
@@ -41,6 +43,11 @@ class WallOpening:
     ``header_spec`` is the authored engineered-header override (``Door.header_spec``,
     falling back to ``DoorType.header_spec``), e.g. ``'2-ply 14" LVL'``; ``None`` lets
     the prescriptive table size the header.
+
+    ``pocket_run_m`` is how far the leaf's cavity runs past the rough opening, and
+    ``pocket_sign`` which way along the wall axis (+1 toward the wall's end node). Both are
+    zero for every operation but ``POCKET``. ``width_m`` stays the *clear* opening
+    throughout — the pocket is additional, and their sum is the framed extent.
     """
 
     center_m: float
@@ -50,6 +57,22 @@ class WallOpening:
     is_door: bool
     operation: DoorOperation | None = None
     header_spec: str | None = None
+    pocket_run_m: float = 0.0
+    pocket_sign: int = 0
+
+
+def pocket_extent(opening: WallOpening) -> tuple[float, float]:
+    """(mouth, closed-end) stations of ``opening``'s pocket, or ``(0.0, 0.0)`` if none.
+
+    The mouth is the rough-opening edge the leaf passes through — a split jamb, not a
+    trimmer — and the closed end is where its solid post stands.
+    """
+    pattern = opening_framing_pattern(opening.operation)
+    if not pattern.pocket_cavity or opening.pocket_run_m <= 1e-9 or not opening.pocket_sign:
+        return (0.0, 0.0)
+    sign = 1 if opening.pocket_sign > 0 else -1
+    mouth = opening.center_m + sign * opening.width_m / 2
+    return (mouth, mouth + sign * opening.pocket_run_m)
 
 
 def opening_stud_break(opening: WallOpening, spacing_m: float,
@@ -91,9 +114,18 @@ def opening_exclusions(openings: list[WallOpening], stud_thickness_m: float,
             continue
         kings, jacks = jamb_pack_counts(_m(opening.width_m),
                                         opening_framing_pattern(opening.operation))
-        zones.append((opening.center_m,
-                      opening.width_m / 2
-                      + (kings + jacks + 0.5) * stud_thickness_m + 0.005))
+        reach = (kings + jacks + 0.5) * stud_thickness_m + 0.005
+        low = opening.center_m - opening.width_m / 2 - reach
+        high = opening.center_m + opening.width_m / 2 + reach
+        # A pocket extends the band on one side only — the cavity is where the leaf lives,
+        # and a module stud in it is not a redundant load path but a door that will not
+        # open. The band is re-centred rather than widened both ways, so the strike side
+        # keeps every module stud it is entitled to.
+        mouth, closed = pocket_extent(opening)
+        if closed:
+            low = min(low, closed - reach)
+            high = max(high, closed + reach)
+        zones.append(((low + high) / 2, (high - low) / 2))
     return zones
 
 
@@ -123,13 +155,23 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
                                      top_at, opening_index, thickness, stud_stations,
                                      header_bottom)
 
+    # A pocket moves one jamb pack outboard of the cavity. The rough-opening edge on that
+    # side is the split jamb the leaf passes through — putting a trimmer there would stop
+    # the door — so the pack stands at the pocket's closed end and carries that end of the
+    # header over the whole cavity. ``pocket_extent`` returns (0, 0) for every other
+    # operation, which leaves the symmetric pack below exactly as it was.
+    mouth, closed = pocket_extent(opening)
+    pocket_sign = 0 if not closed else (1 if opening.pocket_sign > 0 else -1)
+
     # Trimmers (jacks) and kings pack face-to-face outward from each rough-opening edge:
     # the innermost jack's inner face sits on the RO edge (centreline at half a thickness
     # in), each following member is one full thickness further out. Spacing members by
     # their real thickness makes the stud pack *touch* rather than interpenetrate — the
     # box IR then shows a face-nailed pack as adjacency, not a clash.
+    pack_edges: dict[int, float] = {}
     for side, sign in (("l", -1), ("r", +1)):
-        edge = center + sign * half
+        edge = closed if sign == pocket_sign else center + sign * half
+        pack_edges[sign] = edge
         for jack_index in range(jacks):
             station = edge + sign * (thickness / 2 + jack_index * thickness)
             position = add(wall_start, scale(direction, station))
@@ -144,11 +186,19 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
                                     "king", member, position, position, z0, king_top,
                                     king_top - z0, orient=direction))
 
+    if pocket_sign:
+        _append_pocket_cavity(out, rw, direction, wall_start, opening_index, mouth, closed,
+                              pocket_sign, z0, header_bottom, thickness)
+
     # The header bears on both trimmer stacks; its ends land on the king inner faces
-    # (RO half-width + the full trimmer stack), so it butts the kings without crossing them.
-    header_half = half + jacks * thickness
-    header_left = add(wall_start, scale(direction, center - header_half))
-    header_right = add(wall_start, scale(direction, center + header_half))
+    # (the pack edge plus the full trimmer stack), so it butts the kings without crossing
+    # them. Over a pocket the left/right stations are no longer symmetric about the
+    # opening's centre — the header spans the rough opening *and* the cavity.
+    header_left_station = pack_edges[-1] - jacks * thickness
+    header_right_station = pack_edges[+1] + jacks * thickness
+    header_span = header_right_station - header_left_station
+    header_left = add(wall_start, scale(direction, header_left_station))
+    header_right = add(wall_start, scale(direction, header_right_station))
     # An authored engineered header (e.g. '2-ply 14" LVL') replaces the table-sized
     # member: the profile carries the ply count/width/depth structurally, and the depth
     # comes from the profile itself. An unparseable spec falls back to the table rather
@@ -163,14 +213,14 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
         depth = header_depth(size, _m(opening.width_m)).meters
     out.append(FramedMember(rw.uid, f"header-{opening_index}", "header", size,
                             header_left, header_right, header_bottom,
-                            header_bottom + depth, 2 * header_half))
+                            header_bottom + depth, header_span))
 
     if pattern.needs_track_jamb_legs:
         _append_track_jamb_legs(out, rw, direction, wall_start, opening, opening_index,
                                 z0, header_bottom)
     if pattern.needs_track_backing:
         _append_track_backing(out, rw, header_left, header_right, opening_index,
-                              header_bottom + depth, 2 * header_half)
+                              header_bottom + depth, header_span)
 
     if not opening.is_door:
         sill_z0 = z0 + opening.sill_m
@@ -186,6 +236,38 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
         _append_opening_cripples(out, rw.uid, opening_index, direction, wall_start, center,
                                  half, z0, sill_z0, header_bottom + depth, top_at, member)
     return out
+
+
+def _append_pocket_cavity(out: list[FramedMember], rw, direction, wall_start,
+                          opening_index: int, mouth: float, closed: float, sign: int,
+                          z0: float, header_bottom: float, thickness: float) -> None:
+    """Split studs for the cavity a pocket leaf parks in.
+
+    They are what the leaf runs between: a pair of half-thickness legs with the slot
+    between them, at 12" o.c. rather than the wall's 16" module because each leg is too
+    thin to hold drywall flat at the wider spacing.
+
+    Two things this function deliberately does *not* emit. There is no separate end post —
+    the jamb pack has already been relocated to ``closed`` by the caller, and that king and
+    jack together are the solid post the leaf stops against; emitting another one there
+    puts two members on one station, which is a clash, not framing. And nothing reaches
+    above ``header_bottom``: the cavity exists only under the header, so the wall's own
+    plates run continuously over and under the pocket. That is what still lets a partition
+    tee into this wall over the cavity, tied plate to plate, with only its vertical edge
+    floating.
+    """
+    spacing = POCKET_SPLIT_STUD_SPACING.meters
+    count = int(abs(closed - mouth) // spacing)
+    for index in range(1, count + 1):
+        station = mouth + sign * index * spacing
+        # The last interval is short of a full bay; a split stud landing inside the
+        # relocated jamb pack's own footprint would be a clash.
+        if abs(station - closed) < thickness:
+            break
+        point = add(wall_start, scale(direction, station))
+        out.append(FramedMember(rw.uid, f"pocketsplit-{opening_index}-{index:02d}", "stud",
+                                POCKET_SPLIT_STUD_MEMBER, point, point, z0, header_bottom,
+                                header_bottom - z0, orient=direction))
 
 
 def _append_track_jamb_legs(out: list[FramedMember], rw, direction, wall_start,

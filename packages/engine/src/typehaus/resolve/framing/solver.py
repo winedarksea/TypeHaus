@@ -27,6 +27,7 @@ from typehaus.resolve.framing.openings import (
     in_exclusion,
     opening_exclusions,
 )
+from typehaus.resolve.framing.pockets import pocket_keepouts
 from typehaus.resolve.framing.tables import DEFAULT_SPACING, member_actual
 from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedWall
@@ -64,13 +65,21 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
                corner_style_start: str | None = None,
                corner_style_end: str | None = None,
                neighbour_insets_start: tuple[float, float] | None = None,
-               neighbour_insets_end: tuple[float, float] | None = None) \
+               neighbour_insets_end: tuple[float, float] | None = None,
+               stud_keepouts: tuple[tuple[float, float], ...] = ()) \
         -> tuple[FramedMember, ...]:
     """Generate studs, plates, and opening framing for one resolved wall.
 
     ``corner_*`` marks an end where this wall *owns* the L corner (its framing runs through
     the shared corner square); ``butting_*`` marks an end where the neighbour owns it and
     this wall's framing stops at the neighbour's near face. See ``framing/corners.py``.
+
+    ``stud_keepouts`` are extra (centre, half-width) bands to keep module studs out of,
+    on top of this wall's own openings' packs. They exist for one case: a pocket door on a
+    *colinear neighbour* whose cavity runs across the shared node into this wall. Wall
+    segmentation at a tee is an authoring convention — the two walls are one plane, one
+    assembly and one set of plates — so the leaf really does travel through here, and a
+    module stud in its path is a door that will not open. See ``_pocket_keepouts``.
 
     ``corner_style_start``/``corner_style_end`` are the authored per-end overrides
     (``Wall.corner_style_start``/``corner_style_end``): ``"3-stud"``/``"4-stud"`` at the
@@ -138,6 +147,7 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     # every other consumer of the module) must see that same rhythm.
     module_spacing = spacing / 2.0 if staggered else spacing
     stud_zones = opening_exclusions(openings, thickness, module_spacing)
+    stud_zones.extend(stud_keepouts)
 
     def top_at(s: float) -> float:
         """Framing top (below the top plate(s)) at station ``s`` along the wall axis.
@@ -382,7 +392,10 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             header_spec=(door_header_specs.get(op.tag)
                          or type_header_specs.get(op.type_ref))
             if op.is_door else None,
+            pocket_run_m=op.pocket_run_m,
+            pocket_sign=op.pocket_sign,
         ))
+    keepouts = pocket_keepouts(plan, model)
     corner_endpoints: dict[str, set[str]] = {}
     butting_endpoints: dict[str, set[str]] = {}
     # (wall tag, endpoint) -> the tag of the other wall in that L corner, so the framing
@@ -489,7 +502,8 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                                  framing_len),
                              neighbour_insets_end=_neighbour_insets(
                                  rw, "end", framing_start, framing_direction,
-                                 framing_len))
+                                 framing_len),
+                             stud_keepouts=tuple(keepouts.get(rw.tag, ())))
         # ``replace`` rather than a field-by-field rebuild: this pass only adds members,
         # and respelling the constructor here silently drops any field added later.
         framed.append(replace(rw, members=members))

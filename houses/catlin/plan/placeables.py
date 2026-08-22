@@ -420,6 +420,37 @@ SECOND_PLACEABLES = [
     Furniture(uid="CSB707AAAA", tag="FURN-S-BATH1-CLOSET", type_ref="CASE-PANTRY-CLOSET-72",
               room="RM-S-BATH1", position=pt(m(1.09343), m(8.42656)),
               rotation=deg(180)),
+    # The tub alcove's east return, built as a shelf (2026-08-21). FX-S-BATH1-SH is a
+    # flanged 60x30 insert and was standing in two walls, not three: the chase face at
+    # x 2'-11 3/8" west (0.36" of scribe), the north wall at y 35'-5 3/8", and its EAST end
+    # open at x 7'-11 3/4", with 1'-8 7/8" of dead floor between it and the east wall at
+    # x 9'-8 5/8". This carcass closes it. Its west panel IS that return — the carpenter
+    # frames a 2x4 behind the panel and the flange nails to it — so the same article that
+    # makes the tub a legitimate three-wall install is also the only storage in the room
+    # you can reach from inside the tub.
+    #
+    # Rotation 0 puts the back at +y against the exterior wall and opens it south into the
+    # room. y centre is FX-S-BATH1-SH's own and the depth is the tub's, so the two share a
+    # front line at y 32'-10 1/2" and a back line at y 35'-4 1/2"; x runs 7'-11 3/4"..
+    # 9'-7 3/4", butted to the tub, with the 7/8" of slack taken as scribe at the east wall.
+    #
+    # Deliberately NOT a Wall. A real return partition has to tee into W-S-N3, splitting it
+    # at a new node, and a segment lays its studs from its own start node — which re-phases
+    # the very stud grid WIN-S-BATH-N was nudged 8" off N-S-CH2 to sit centred in
+    # (test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs). Built
+    # millwork as Furniture is this house's existing convention: the mudroom and both sauna
+    # benches are priced the same way.
+    #
+    # Clearances, all measured against the resolved model: FX-S-BATH1-LAV ends at y 32'-0",
+    # 10 1/2" south of the front line; ED-S-BATH1-MIRROR is the tight one at y 32'-6" —
+    # 4 1/2" of daylight, and the reason the case stops 7/8" short of the east wall rather
+    # than being furred out to it; ED-S-BATH1-RC-MIRROR and -SW are further down at
+    # y <= 31'-2"; D-S-BATH1's leaf hangs at y 26'-4" and sweeps nowhere near, 6'-3" south;
+    # WIN-S-BATH-N spans x 3'-5"..4'-7" on this same wall, well west of the case;
+    # REG-S-EXH1 and both cans are ceiling-mounted and none is over it; and the FH-S-BATH1
+    # radiant zone stops at y 31'-3", so the unit does not stand on the mat.
+    Furniture(uid="640HBGH1XS", tag="FURN-S-BATH1-SHELF", type_ref="FT-BATH1-SHELF-2030",
+              room="RM-S-BATH1", position=pt(m(2.68588), m(10.4013))),
     # RM-S-PLANT: a place to sit among the plants, program divides along y — plants on the
     # south glass, seating behind. Plants sit directly under ED-S-PLANT-TUBE1/2 (x=3'-4"/8'-8",
     # 2'-3" below ceiling, on a photoperiod timer) and under WIN-S-PLANT1/2 (same x, the
@@ -461,6 +492,32 @@ SECOND_PLACEABLES = [
     Furniture(uid="NHFPDD49RB", tag="FURN-S-SUITEBATH-AP", type_ref="FT-ACCESS-PANEL-1414", room="RM-S-HALL",
               position=pt(ft(16, 4.5), ft(22, 6.375)), rotation=deg(180),
               mount=Mount(kind=MountKind.WALL, elevation=ft(0, 6))),
+    # --- mechanical-shaft access panel (2026-08-21) --------------------------
+    # The NW shaft (W-S-CH-W/CH-S) is the house's basement-to-attic pipe highway, not a
+    # leftover corner: VR-M-RADON-VENT's 3" combined radon/plumbing riser stands in it at
+    # (1', 34'-6") from -8'-10" to 23'-10", four vent branches tie into it, and the second
+    # floor's own risers are meant to run it. Until now it had no opening on this storey at
+    # all — RM-M-MECH's D-M-MECH is a real swing door, but that reaches the main floor's
+    # segment, not this one.
+    #
+    # South is the only face there is: north is W-S-N3B and west is W-S-W1B, both exterior,
+    # and east is W-S-CH-W with FX-S-BATH1-SH's flange on the far side of it. Panel in
+    # W-S-CH-S's bathroom face, which since the 2026-08-21 corner move is y 32'-10 1/2".
+    #
+    # 14x29 rather than the 14x14 the suite bath's tub takes: this is a reach-in into a
+    # 2'-2 1/8" deep shaft that carries live pipe, not a look at one trap. Base 2'-0" puts
+    # the opening at 2'-0"..4'-5" — the same band FURN-M-BATH1-AP uses on the WC carrier.
+    # Centred x 1'-4" (opening 0'-9"..1'-11"): 2 3/8" off the west corner, and the riser's
+    # own x=1'-0" sits 3" inside the west jamb rather than on it.
+    #
+    # NOT sized for the ceiling: PR-S-BATH1-VENT and PR-S-SUITEBATH-VENT tie in at
+    # elevation 9'-3"..9'-5", which no wall panel at standing height reaches. Those stay a
+    # ceiling job from the storey above. Standing room in front is 1'-7 1/4", between
+    # FX-S-BATH1-WC's clearance zone and the wall face — enough to kneel square to the
+    # opening, and the FH-S-BATH1 mat stops at y 31'-3" so nobody kneels on it.
+    Furniture(uid="7MW8644E5H", tag="FURN-S-BATH1-CH-AP", type_ref="FT-ACCESS-PANEL-1429", room="RM-S-BATH1",
+              position=pt(ft(1, 4), ft(32, 10.5)),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(2))),
 ]
 # The attic study uses the same compact work-and-meeting program as the second-storey
 # study, but the stair opening occupies the north side of the room. Keep the desk in the

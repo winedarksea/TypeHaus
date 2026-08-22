@@ -511,6 +511,17 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
       addBox(leafWidth, panelHeight, 0.045,
         firstLeafCenter + index * (leafWidth + foldGap), panelElevation, frameMaterial);
     }
+  } else if (opening.kind === "door" && operation === "pocket") {
+    // Closed and coplanar, like the slider above. The wall over a pocket is drywalled on
+    // both faces and genuinely reads solid, so the leaf is drawn filling its opening
+    // rather than parked in the cavity — the cavity is modelled, but as framing members.
+    // A pocket has no floor track, so unlike the slider the rail sits at the head.
+    const clearWidth = Math.max(0.01, opening.width_m - 2 * frameWidth);
+    const trackHeight = Math.min(0.02, panelHeight);
+    const leafHeight = Math.max(0.01, panelHeight - trackHeight);
+    const base = wall.z0_m + opening.sill_m + frameWidth;
+    addBox(clearWidth, trackHeight, depth, 0, base + panelHeight - trackHeight / 2, frameMaterial);
+    addBox(clearWidth, leafHeight, 0.045, 0, base + leafHeight / 2, frameMaterial);
   } else if (opening.kind === "door") {
     addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, isGlazed ? 0.015 : 0.045, 0,
       wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2, isGlazed ? glassMaterial : frameMaterial);

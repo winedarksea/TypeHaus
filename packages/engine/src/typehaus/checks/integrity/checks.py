@@ -239,6 +239,15 @@ def _comparable_span(extent: LayerExtent | None) -> tuple[LayerDatum, float, flo
 
 @check(Tier.INTEGRITY, "integrity.opening_fits")
 def opening_fits_host(ctx: CheckContext) -> list[Finding]:
+    """The rough opening fits its host wall — and a pocket door's cavity fits too.
+
+    The second half is not the same test. A pocket's framed extent is roughly twice its
+    clear opening, and the cavity legitimately crosses a node into a colinear neighbour of
+    the same assembly, so it is graded against that whole run rather than against the host
+    alone (``framing/pockets.py``). Without this the wall body, the plan symbol and the
+    framing would all happily draw a leaf sliding into a corner.
+    """
+    from typehaus.resolve.framing.pockets import pocket_segments
     from typehaus.resolve.geometry import length, sub
 
     out: list[Finding] = []
@@ -254,6 +263,18 @@ def opening_fits_host(ctx: CheckContext) -> list[Finding]:
             out.append(_err("integrity.opening_fits",
                             f"opening {op.tag} does not fit host {op.host_wall} "
                             f"(needs >= {min_edge*39.37:.1f}\" edge distance)", (op.tag,)))
+        if not op.pocket_run_m or ctx.plan is None:
+            continue
+        segments, shortfall = pocket_segments(ctx.plan, ctx.model, op)
+        if shortfall > 1e-9:
+            chain = " -> ".join(segment.wall_tag for segment in segments) or op.host_wall
+            out.append(_err(
+                "integrity.opening_fits",
+                f"pocket door {op.tag} needs {op.pocket_run_m*39.37:.1f}\" of cavity past "
+                f"its opening but runs out of colinear wall in {chain} — "
+                f"{shortfall*39.37:.1f}\" short. A pocket may only continue into a wall "
+                f"that shares the node, runs parallel and carries the same assembly.",
+                (op.tag,)))
     return out
 
 

@@ -47,6 +47,13 @@ ROLE_PIPE_CLAMP = "pipe_clamp"
 ROLE_BEAM_HOLD_DOWN = "beam_hold_down"
 # The gasketed stainless screw that holds a multiwall glazing sheet down to its framing.
 ROLE_GLAZING_PANEL_FASTENER = "glazing_panel_fastener"
+# The frame kit a pocket door slides in: split studs, an aluminium head track, hangers and
+# the leaf's guides, bought as one boxed unit per door and selected by door width. It is the
+# first door hardware in this catalog — before it, a door's ironmongery could only be carried
+# as a ``finish-door-*`` lump-sum allowance, never as a counted part. Width-selected via
+# ``fits_nominal``, because the commodity series and the heavy-duty series are different
+# products with different tracks and different weight ratings, not two rows of one ladder.
+ROLE_POCKET_DOOR_FRAME_KIT = "pocket_door_frame_kit"
 # Snow retention on a standing-seam slope: the rail/fence assembly that holds a snow pack on
 # the roof instead of letting it release onto whatever is below. Like the CanDuit ring it
 # does not reach the panel itself — it mounts on seam clamps (``requires_role``).

@@ -153,6 +153,22 @@ MAIN_FIXTURES = (
 # backs west onto exterior 2x6 W-S-W1 (rotation -90), its REQUIRED clearance zone stopping
 # 3" south of the tub-shower. Lav backs east onto W-S-BA-E1B (INT_2X6_PLUMBING). All three
 # footprints are pairwise disjoint with 9"+ clearance between any two.
+#
+# ALCOVE CHECK, 2026-08-21. FX-TUBSHOWER-60 is a 60"x30" flanged insert, which is exactly
+# the standard alcove footprint (the type's 7'-0" height is the modelled surround envelope,
+# matching FX-SHOWER-36 — not a product dimension). A flanged insert nails to studs on
+# THREE sides. Measured at real finish faces, FX-S-BATH1-SH had two: the chase wall at
+# x 2'-11 3/8" against the tub's west end at 2'-11 3/4" (0.36" of scribe), and the north
+# wall at y 35'-5 3/8" against the tub's north edge at 35'-4 1/2". Its EAST end at
+# x 7'-11 3/4" stood open, with 1'-8 7/8" of dead floor out to the east wall at x 9'-8 5/8".
+# FURN-S-BATH1-SHELF (plan/placeables.py) closes it: the shelf's west panel is the return,
+# with a 2x4 framed behind it for the flange to nail to.
+#
+# The west side was not quite two walls either, and is now. W-S-CH-W used to stop at
+# y 33'-1 5/8", 3 1/8" short of the tub's front, so the southernmost 3 1/8" of the west
+# flange had nothing to nail to. The chase's south corners moved 3 1/8" south on 2026-08-21
+# (storeys/second.py, NODES) and that wall now runs the tub's full 30". All three sides are
+# real.
 SECOND_FIXTURES = (
     Fixture(uid="CSQ801AAAA", tag="FX-S-BATH1-WC", type_ref="FX-TOILET-STD", room="RM-S-BATH1",
             position=pt(m(0.560313), m(9.2783)), rotation=deg(90), wall_ref="W-S-W1"),
@@ -173,6 +189,14 @@ SECOND_FIXTURES = (
     # 9'-8 1/8" x ~6'-4", and the east wall has 5'-0" of run for a 60"x30" alcove. Rotated
     # -90, back turns east onto W-S-C2C; footprint keeps the old pan's north/east edges,
     # extended south, clearing the WC zone, the south lav, and the door swing.
+    #
+    # SAME DEFECT, LEFT OPEN (2026-08-21). This insert also stands in two walls, not three:
+    # the east wall and W-S-SN3 to the north are closed, and its SOUTH end is open with only
+    # 10.4" to W-S-SBS. That is why the hall bath's fix does not transfer — a return
+    # partition here leaves 5 5/8" of filler beside a 4 3/4" wall, which is a framing
+    # decision (furr the whole 10.4" out, move W-S-SBS, or accept a two-wall install and
+    # detail the open end) and not a modelling one. Left for the owner rather than decided
+    # here; a shelf like FURN-S-BATH1-SHELF will not fit the leftover.
     Fixture(uid="CSQ809AAAA", tag="FX-S-SUITEBATH-TUBSH", type_ref="FX-TUBSHOWER-60",
             room="RM-S-SUITEBATH", position=pt(m(4.99282), m(5.96387)), rotation=deg(-90),
             wall_ref="W-S-C2C"),

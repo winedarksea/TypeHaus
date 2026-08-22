@@ -467,7 +467,30 @@ OPENINGS = [
          position=from_node("N-M-MUDC1", ft(1, 1))),
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING30",
          position=from_node("N-M-W3", ft(2)), flip_swing=True, flip_hinge=True),
-    Door(uid="CMD207AAAA", tag="D-M-LAUN", host="W-M-HS3", type_ref="DT-INT-BIFOLD56",
+    # Pocket, not the 56" bifold it was (2026-08-21). The leaf parks east inside W-M-HS4,
+    # which hosts nothing and now never may: `mep.pocket_occupancy` refuses a pipe, a
+    # register or a wall-mounted device anywhere in the cavity, and nothing hangs on that
+    # 4'-8" of hallway wall again. The uid is kept through the retype so the IFC GlobalId
+    # survives, the same way the ED-*-LT luminaires were re-typed in place.
+    #
+    # The cavity crosses N-M-E3, where W-M-LS tees in, and that is legal here rather than
+    # in general: a pocket only occupies floor to 6'-8", so this wall's double top plate
+    # runs continuously above it and its bottom plate below. W-M-LS ties to both, plate to
+    # plate, and only its vertical edge floats against the split jamb — a floating drywall
+    # corner. Nothing over the pocket takes a fastener longer than 1"
+    # (`tables.POCKET_MAX_FASTENER`) or it reaches the leaf.
+    #
+    # 4'-0" is the widest leaf that fits. The pocket runs 49" east of the RO and its closed
+    # end carries the relocated jamb pack, which has to clear N-M-C2 — where the BEARING
+    # W-M-C3 corners in and BM-M-HALL starts. Strike jamb at 8'-4" puts the closed end at
+    # 16'-5", 1'-7" clear of that corner. It is also a real product size: the commodity kit
+    # ladder stops at 36"/125 lb, so this one is a heavy-duty frame (DT-POCKET-INT-48).
+    #
+    # Clear width barely moves. The 4-leaf bifold lost ~6" to its own stacked leaves and
+    # track, so it really gave ~50"; this gives 48", and hands back the 8 3/4" of floor the
+    # bifold track needed (see plan/fixtures.py). The cost is ~9" of the utility tub's east
+    # end sitting behind fixed wall — shifting the RO east only hides the stack instead.
+    Door(uid="CMD207AAAA", tag="D-M-LAUN", host="W-M-HS3", type_ref="DT-POCKET-INT-48",
          position=from_node("N-M-D1", ft(0, 4))),
     # Offset 6 11/16" off N-M-E4, not the 1'-2 11/16" it was: N-M-E4 moved north 8" with the
     # closet line (2026-08-03), and this offset moved the same 8" so the door itself did not
@@ -494,8 +517,10 @@ OPENINGS = [
     # the only two shared stud lines in the overlap (124"/140" from the wall start) each leave
     # only 16" of clear wall where the jamb pack needs ~16 1/2", so either choice puts a king
     # stud sharing 83% of a 2x6 with W-M-W3's end stud (structural.member_interference).
-    # Three columns is the answer instead: 5'-0" (here), 19'-8" (WIN-M-BATH2), 31'-4"
-    # (WIN-M-MUD), all on the shared 6'-0" head line.
+    # Two columns are the answer instead: 5'-0" (here) and 19'-8" (WIN-M-BATH2), on the
+    # shared 6'-0" head line. There were three until 2026-08-21: WIN-M-MUD at 31'-4"
+    # columned with WIN-S-BATH-W until the second-floor chase's south corners moved 3 1/8"
+    # and re-phased W-S-W1's grid out from under it (plan/storeys/second.py, NODES).
     Window(uid="CMX301AAAA", tag="WIN-M-BED-W1", host="W-M-W4",
            type_ref="WT-2736", position=from_node("N-M-SW", ft(3, 10.5)),
            sill_height=ft(3)),                                                # y 5'-0"
@@ -529,6 +554,10 @@ OPENINGS = [
     # N-M-MECH1 the start, the window silently slid 2'-8" south. 1'-5" off N-M-MECH1 restores
     # y=31'-4" — a bay centre, so the 14" RO stays inside a stud bay. Sill raised to 4'-0"
     # (2026-07-30) puts its head on the shared 6'-0" line.
+    #
+    # It stopped columning with WIN-S-BATH-W on 2026-08-21 and stays here anyway: the bench
+    # centreline is what fixes this window, and N-M-MECH1 is on 33'-4" where it has always
+    # been. It was the second storey's chase that moved.
     Window(uid="CMX306AAAA", tag="WIN-M-MUD", host="W-M-W1",
            type_ref="WT-1424-FIX", position=from_node("N-M-MECH1", ft(1, 5)),
            sill_height=ft(4)),

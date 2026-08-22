@@ -212,6 +212,26 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                 first_leaf_center + index * (leaf_width + fold_gap), panel_elev)
             for index in range(_BIFOLD_LEAF_COUNT)
         )))
+    elif opening.kind == "door" and operation is DoorOperation.POCKET:
+        # Closed and coplanar, on the same principle as the slider above: the leaf is drawn
+        # filling its opening rather than parked inside the wall. That is not a shortcut —
+        # the wall over a pocket is drywalled on both faces and genuinely reads solid, so
+        # voiding it here would draw a hole that does not exist. The cavity is real and it
+        # is modelled, but it belongs to the framed LOD (the ``pocketsplit-*`` members and
+        # the jamb pack relocated to the closed end), not to the product view.
+        #
+        # What separates it from a plain swing leaf is the track it hangs from. A pocket
+        # has no floor track — nothing runs along the sill — so unlike the slider the rail
+        # sits at the head.
+        track_height = min(_SLIDING_TRACK_HEIGHT_M, panel_height)
+        leaf_height = max(_OPENING_MIN_PANEL_DIMENSION_M, panel_height - track_height)
+        parts.append(GPart(key="pocket_track", material_key=frame_key, solids=(
+            box(clear_width, track_height, depth, 0.0,
+                z0 + sill + frame_width + panel_height - track_height / 2.0),)))
+        parts.append(GPart(key="leaf", material_key=_FRAME_KEY, solids=(
+            box(max(_OPENING_MIN_PANEL_DIMENSION_M, clear_width), leaf_height,
+                _DOOR_LEAF_THICKNESS_M, 0.0,
+                z0 + sill + frame_width + leaf_height / 2.0),)))
     elif opening.kind == "door" and not is_glazed:
         parts.append(GPart(key="leaf", material_key=_FRAME_KEY, solids=(
             box(max(_OPENING_MIN_PANEL_DIMENSION_M, clear_width), panel_height,

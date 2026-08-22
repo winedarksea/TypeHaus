@@ -660,8 +660,8 @@ def _framing_offenders(tags):
             and any(tag in finding.message for tag in tags)]
 
 
-def test_the_west_facade_stacks_three_two_storey_window_columns(catlin_model):
-    """Main and second column on the west at 5'-0", 19'-8" and 31'-4", on one head line.
+def test_the_west_facade_stacks_two_two_storey_window_columns(catlin_model):
+    """Main and second column on the west at 5'-0" and 19'-8", on one head line.
 
     Nothing else in the engine tests window *alignment*, so without this the arrangement is
     one drive-by node edit away from drifting back. It drifted here in the first place: a
@@ -673,18 +673,26 @@ def test_the_west_facade_stacks_three_two_storey_window_columns(catlin_model):
     facade's altitude rather than the window's. The second half re-runs the framing gates,
     so each shared station is pinned as a legal framing station and not just a coincidence.
 
+    There were three columns until 2026-08-21, and losing the third is the same rule read
+    backwards. 31'-4" columned only because W-M-W1 and W-S-W1 both started on y=33'-4";
+    when the second storey's mechanical chase took its south corners 3 1/8" south to line
+    its face up with FX-S-BATH1-SH's apron, N-S-CH3 went with them and W-S-W1's grid
+    re-phased. WIN-S-BATH-W rode south to its new bay centre at 31'-0 7/8" rather than
+    breaking a stud to hold the old y, and WIN-M-MUD stayed at 31'-4" because it is centred
+    on the mudroom bench's aisle. Two windows, one head line, no column — which is the
+    honest reading of a grid that is a property of a node.
+
     The corollary that decides 19'-8": ``structural.window_framing_module`` puts a 14" RO
     on a bay centre and a 27"/30" RO on a stud line, 8" apart on one grid. So a 14" unit
     can never column with a 27" one, which is why WIN-M-BATH2 is a 27" unit and not the
     14" one it was.
 
-    The fourth column is deliberately absent — see
+    A further column is deliberately absent — see
     ``test_the_west_suite_window_pair_is_left_uncolumned_on_purpose``.
     """
     columns = {
         ft(5).meters: ("WIN-M-BED-W1", "WIN-S-PLANT3"),
         ft(19, 8).meters: ("WIN-M-BATH2", "WIN-S-SUITE2"),
-        ft(31, 4).meters: ("WIN-M-MUD", "WIN-S-BATH-W"),
     }
     for expected_y, (main_tag, second_tag) in columns.items():
         main_y, main = _opening_plan_y(catlin_model, main_tag)
@@ -1475,3 +1483,51 @@ def test_the_main_floor_finish_follows_the_deck_boundary(tmp_path):
     # clipped to the room, so the drop is the room's share of 7' x 18' — not the whole of it.
     assert before == pytest.approx(411.3, abs=0.5)
     assert before - after == pytest.approx(7.0 * 17.9, rel=0.05)
+
+
+def test_the_laundry_pocket_clears_the_bearing_corner_and_owns_its_wall(catlin_model):
+    """D-M-LAUN's cavity crosses N-M-E3 into W-M-HS4, and that wall is spoken for.
+
+    Three facts, each of which a later edit would otherwise break silently:
+
+    1. **The closed end clears N-M-C2.** That node is where the BEARING ``W-M-C3`` corners
+       in and ``BM-M-HALL`` starts, so the jamb pack that closes the cavity has to stop
+       short of its corner square. 4'-0" is the widest leaf that does; a wider one walks
+       the pack into the corner.
+    2. **The cavity crosses the W-M-LS tee.** This is legal because a pocket occupies only
+       floor to 6'-8": the band's double top plate runs unbroken above it and its bottom
+       plate below, so W-M-LS ties plate to plate and only its vertical edge floats. If a
+       split stud ever reaches the plate, that tie is gone.
+    3. **W-M-HS4 hosts nothing, and never may again.** No pipe, no register, no
+       wall-mounted device — there is no stud to fasten to and no depth to recess into.
+       ``mep.pocket_occupancy`` enforces it; this pins the wall was empty to begin with.
+    """
+    from typehaus.resolve.framing.pockets import pocket_segments
+
+    door = next(op for op in catlin_model.openings if op.tag == "D-M-LAUN")
+    assert door.type_ref == "DT-POCKET-INT-48"
+    assert door.host_wall == "W-M-HS3" and door.pocket_sign == 1
+
+    segments, shortfall = pocket_segments(catlin_model.plan, catlin_model, door)
+    assert shortfall == pytest.approx(0.0)
+    assert [segment.wall_tag for segment in segments] == ["W-M-HS3", "W-M-HS4"]
+
+    # (1) The far end of the framing, in absolute plan x, against N-M-C2 at 18'-0".
+    hs4 = catlin_model.wall("W-M-HS4")
+    pack = [m for m in catlin_model.wall("W-M-HS3").members
+            if m.category in ("king", "jack") and m.p0 == m.p1]
+    closed_x = max(m.p0[0] for m in pack)
+    assert closed_x < ft(18).meters - inch(6).meters, "the pack must clear the bearing corner"
+
+    # (2) Every split stud stops at the header, well below the 9'-0" plate line.
+    splits = [m for m in catlin_model.wall("W-M-HS3").members
+              if m.child_key.startswith("pocketsplit-")]
+    assert splits, "the cavity must be framed"
+    assert all(m.z1_m <= ft(7).meters for m in splits)
+    # ...and they really do stand inside W-M-HS4, past their own host's end node.
+    assert max(m.p0[0] for m in splits) > hs4.axis[0][0]
+
+    # (3) Nothing else claims W-M-HS4.
+    assert not [op for op in catlin_model.openings if op.host_wall == "W-M-HS4"]
+    assert not [run for run in catlin_model.pipe_runs
+                if "W-M-HS4" in (run.wall_refs or ())]
