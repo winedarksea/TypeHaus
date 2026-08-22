@@ -1128,6 +1128,11 @@
 #                     rate. CATLIN_BASEMENT_12, FOUNDATION_WALL_12_INT, SAUNA_LINER_ON_CONCRETE
 #                     (the concrete backing only — its sauna-tg liner bills in
 #                     [envelope_layers]) and SUNKEN_GARDEN_WALL sit on this basis.
+#   poured 8" wall    $110-180/LF of a 9'-0" wall is the market's OWN quote (the 12" row above
+#                     is the extrapolation, not this one); at 9'-4" that is $114-187/LF over
+#                     0.2305 cy/LF -> $495-810/cy. CATLIN_BASEMENT_8, CATLIN_BASEMENT_8_GARDEN
+#                     and SAUNA_LINER_ON_BASEMENT_8_GARDEN sit on this basis. Never price
+#                     these off the 12" row — see the block comment on the rows themselves.
 #   8" ICF            $12-25/SF of face installed; 1 SF of 8" wall = 0.0247 cy -> $486-1012/cy.
 #   16" arch          curved formwork, roughly double a straight wall of the same yardage.
 #   block retaining   $20-55/SF of face; 12" thick = 0.037 cy/SF -> $540-1485/cy.
