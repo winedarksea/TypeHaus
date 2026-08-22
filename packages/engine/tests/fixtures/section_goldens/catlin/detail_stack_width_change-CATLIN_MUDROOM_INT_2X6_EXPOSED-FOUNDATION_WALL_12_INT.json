@@ -1,5 +1,5 @@
 {
-  "name": "detail-D-wall_foundation-CATLIN_CONC_12_IN-ca49d5",
+  "name": "detail-D-stack_width_change-CATLIN_MUDROOM-23ad49",
   "units": "in",
   "nodes": [
     {
@@ -8,11 +8,11 @@
       "points": [
         [
           114.0,
-          -51.181102362204726
+          -19.68503937007874
         ],
         [
           126.00000000000001,
-          -51.181102362204726
+          -19.68503937007874
         ],
         [
           126.00000000000001,
@@ -36,11 +36,11 @@
       "boundary": [
         [
           114.0,
-          -51.181102362204726
+          -19.68503937007874
         ],
         [
           126.00000000000001,
-          -51.181102362204726
+          -19.68503937007874
         ],
         [
           126.00000000000001,
@@ -72,11 +72,11 @@
         ],
         [
           122.62500000000001,
-          35.43307086614173
+          19.68503937007874
         ],
         [
           117.12500000000001,
-          35.43307086614173
+          19.68503937007874
         ]
       ],
       "layer": "A-WALL",
@@ -100,11 +100,11 @@
         ],
         [
           122.62500000000001,
-          35.43307086614173
+          19.68503937007874
         ],
         [
           117.12500000000001,
-          35.43307086614173
+          19.68503937007874
         ]
       ],
       "pattern": "lumber",
@@ -128,11 +128,11 @@
         ],
         [
           123.37500000000001,
-          35.43307086614173
+          19.68503937007874
         ],
         [
           122.62500000000001,
-          35.43307086614173
+          19.68503937007874
         ]
       ],
       "layer": "A-WALL-FINI",
@@ -597,17 +597,17 @@
         "kind": "point",
         "xy": [
           120.0,
-          -3.1777777777777776
+          -2.0888888888888886
         ],
         "name": ""
       },
       "at": [
-        91.34645669291339,
-        -3.1777777777777776
+        103.15748031496064,
+        -2.0888888888888886
       ],
       "to": [
         120.0,
-        -3.1777777777777776
+        -2.0888888888888886
       ],
       "text": "concrete 12\"",
       "height": 1.6,
@@ -622,17 +622,17 @@
         "kind": "point",
         "xy": [
           119.87500000000001,
-          32.255293088363956
+          17.596150481189852
         ],
         "name": ""
       },
       "at": [
-        91.34645669291339,
-        32.255293088363956
+        103.15748031496064,
+        17.596150481189852
       ],
       "to": [
         119.87500000000001,
-        32.255293088363956
+        17.596150481189852
       ],
       "text": "stud 5.5\"",
       "height": 1.6,
@@ -647,17 +647,17 @@
         "kind": "point",
         "xy": [
           123.00000000000001,
-          27.1997375328084
+          15.068372703412074
         ],
         "name": ""
       },
       "at": [
-        91.34645669291339,
-        27.1997375328084
+        103.15748031496064,
+        15.068372703412074
       ],
       "to": [
         123.00000000000001,
-        27.1997375328084
+        15.068372703412074
       ],
       "text": "ply-stair 0.75\"",
       "height": 1.6,
@@ -667,66 +667,10 @@
     },
     {
       "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          117.12500000000001,
-          0.0
-        ],
-        [
-          122.62500000000001,
-          0.0
-        ],
-        [
-          122.62500000000001,
-          0.25
-        ],
-        [
-          117.12500000000001,
-          0.25
-        ]
-      ],
-      "pattern": "metal",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "rubber"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          117.12500000000001,
-          0.0
-        ],
-        [
-          122.62500000000001,
-          0.0
-        ],
-        [
-          122.62500000000001,
-          0.25
-        ],
-        [
-          117.12500000000001,
-          0.25
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.35,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": "detail-component:sill-gasket"
-    },
-    {
-      "space": "model",
       "node": "text",
       "anchor": [
         131.0,
-        29.07751531058618
+        15.507261592300964
       ],
       "content": "air continuity — sheathing-ext →\nsheathing-ext",
       "height": 3.0,
@@ -742,7 +686,7 @@
       "node": "text",
       "anchor": [
         131.0,
-        21.61084864391951
+        11.77392825896763
       ],
       "content": "water continuity — wrb-ext → wrb-ext",
       "height": 3.0,
@@ -758,7 +702,7 @@
       "node": "text",
       "anchor": [
         131.0,
-        14.144181977252844
+        8.040594925634295
       ],
       "content": "thermal continuity — ci-ext → ci-ext",
       "height": 3.0,
@@ -773,10 +717,10 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        92.34645669291339,
-        -55.181102362204726
+        104.15748031496064,
+        -23.68503937007874
       ],
-      "content": "TR-CATLIN-FOUNDATION  ·  basement-framed-wall",
+      "content": "TR-CATLIN-STACK-SHELF  ·  stack-width-shelf",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -844,7 +788,7 @@
         0.5,
         7.597222222222222
       ],
-      "content": "TR-CATLIN-FOUNDATION  ·  basement-framed-wall",
+      "content": "TR-CATLIN-STACK-SHELF  ·  stack-width-shelf",
       "height": 3.0,
       "height_pt": 8.0,
       "rotation": 0.0,
@@ -1030,24 +974,7 @@
       "uid": null
     }
   ],
-  "notes": [
-    "NOTES:",
-    "• Detail intent: schematic section showing basement exterior wall and transition to wood-framed exterior wall above.",
-    "• Above-grade wall: 2x6 framing (LSL recommended) with R-19 cavity insulation and continuous exterior CI totaling 4\". Above-grade CI shown as 2\" polyiso + 2\" EPS; seams staggered, outer layer taped.",
-    "• Foundation waterproofing / air barrier: liquid-applied membrane on sheathing and on concrete foundation wall; maintain continuity at the sill/rim transition with overlap, sealant, and/or additional liquid membrane as needed.",
-    "• Basement CI: 4\" XPS in two layers with staggered seams; tape seams on the outer layer. Use lower water-absorption XPS types (most are) and confirm compressive strength / below-grade suitability.",
-    "• Exposed XPS (top portion above grade): protect with appropriate elastomeric coating or rigid metal/PVC trim per manufacturer.",
-    "• **The exposed band is modelled now, not only drawn (2026-08-18).** The 2026-08-18 lift put grade at -2'-6\", and the 2026-08-21 basement-ceiling overhaul took it to -2'-10\", so the north, east and west basement walls stand 2'-10\" out of the ground and that much XPS is exposed on each. The band is authored off the GRADE datum rather than as a height, so both lifts grew it (and the panel order, ~324 SF to ~374 SF) without the assembly being edited. `CATLIN_BASEMENT_12` therefore carries a fifth layer — a 1/2\" aluminium-faced protection panel (`foundation-protection-panel`, the house's one exterior dark, #1c1f24) — with a `Layer.extent` running from 6\" *below* grade up to the top of the wall. Six inches below so no foam edge shows at the soil line and the shovel hits panel, not XPS. Because it is a real layer with a real band, the drawing, the 3D model, the IFC export (as an `IfcBuildingElementPart` aggregated to its wall) and the order all read the same area; the detail component no longer derives a second band of its own beside it.",
-    "• **The parge coat is off these three walls and stays on the south one.** The full-height parge added 2026-08-01 was there for the *south* wall, which the sunken garden opens to the air over its whole 9', and it landed on all four sides only because a layer had no way to say \"only here\". The south wall keeps it, in its own assembly (`CATLIN_BASEMENT_12_GARDEN`) — a grade-datum band cannot describe a face whose exposure runs from -9'-0\" to 0'-0\". Both assemblies still carry exactly 4.55\" outboard of the concrete face, which is what `N-B-BRICK-W`/`-E`'s stand-off is measured from.",
-    "• **The panel's head is the Z-flashing below.** The band tops out at 0'-0\", which is the top of the basement wall and the base of the framed wall above — exactly where the rainscreen's 1-1/2\" corrugated bug screen sits in the furring band and where the Z-flashing with its drip is drawn. The panel tucks under that flashing; nothing new is fastened for the tie, and the flashing is what sheds water clear of the panel head.",
-    "• Sill: include sill gasket and treated mudsill. Prioritize air sealing at sill plate (sealant + spray foam at gaps). Use mudsill anchors (e.g., MASAP) as required (not shown).",
-    "• Flashings: provide stainless (preferred) or thick aluminum Z-flashing with drip edge at bottom of rainscreen furring. Install insect barrier mesh/strip (Cor-A-Vent or SS screen) just above flashing. Mesh can be stapled to furring strips, run behind the flashing, and into the layer between basement and wall foam.",
-    "• Interface flashing: provide L-flashing from bottom of sheathing down onto the top of basement foam. Terminate within the insulation plane and seal the outer end with spray foam (Pestblock) to avoid an exterior thermal bridge. This is meant as a foam layer insect barrier.",
-    "• Drainage: 4\" perforated french drain in geotextile-lined washed stone (wider area, not under footing). Additional compacted aggregate in front of footing (equal to footing height, geotextile-lined). River rock trench (geotextile-lined) against foundation for top of soil.",
-    "• Interior slab: 4\" concrete slab (min. 3,500 psi, IRC R506.1) over R-10 XPS insulation (≥25 psi), 10 mil (min) polyethylene vapor barrier, and 4\" compacted gravel base. Provide 1\" XPS thermal break with 1/2\" polyurethane sealant at foundation wall perimeter.",
-    "• Grading: soil must slope away from foundation at minimum 6\" per 10' for first 10' (IRC R401.3).",
-    "• All gaps: fill voids and transitions with low-expansion spray foam as needed for air sealing and continuity."
-  ],
+  "notes": [],
   "frame": {
     "paper": [
       11.0,
@@ -1060,11 +987,11 @@
       5.199999999999999
     ],
     "center": [
-      146.88976377952758,
-      -7.874015748031496
+      130.0,
+      0.0
     ],
-    "scale": 0.375,
-    "scale_label": "3/8\" = 1'-0\"",
+    "scale": 0.75,
+    "scale_label": "3/4\" = 1'-0\"",
     "bands": {
       "title": [
         0.5,

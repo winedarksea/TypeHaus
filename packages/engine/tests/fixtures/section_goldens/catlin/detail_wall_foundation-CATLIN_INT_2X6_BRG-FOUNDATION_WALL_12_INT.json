@@ -1,5 +1,5 @@
 {
-  "name": "detail-D-stack_width_change-CATLIN_CONC_12-63fb86",
+  "name": "detail-D-wall_foundation-CATLIN_INT_2X6_BR-85fe5f",
   "units": "in",
   "nodes": [
     {
@@ -8,11 +8,11 @@
       "points": [
         [
           210.0,
-          -19.68503937007874
+          -32.00000000000001
         ],
         [
           222.0,
-          -19.68503937007874
+          -32.00000000000001
         ],
         [
           222.0,
@@ -36,11 +36,11 @@
       "boundary": [
         [
           210.0,
-          -19.68503937007874
+          -32.00000000000001
         ],
         [
           222.0,
-          -19.68503937007874
+          -32.00000000000001
         ],
         [
           222.0,
@@ -63,6 +63,26 @@
       "node": "polyline",
       "points": [
         [
+          216.00000000000003,
+          -51.181102362204726
+        ],
+        [
+          216.00000000000003,
+          -32.00000000000001
+        ]
+      ],
+      "layer": "A-GLAZ",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CBW112AAAA",
+      "tag": "W-B-CS2-void"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           212.615,
           0.0
         ],
@@ -72,11 +92,11 @@
         ],
         [
           212.625,
-          19.68503937007874
+          35.43307086614173
         ],
         [
           212.615,
-          19.68503937007874
+          35.43307086614173
         ]
       ],
       "layer": "A-WALL-FINI",
@@ -100,11 +120,11 @@
         ],
         [
           213.25,
-          19.68503937007874
+          35.43307086614173
         ],
         [
           212.625,
-          19.68503937007874
+          35.43307086614173
         ]
       ],
       "layer": "A-WALL-FINI",
@@ -128,11 +148,11 @@
         ],
         [
           213.25,
-          19.68503937007874
+          35.43307086614173
         ],
         [
           212.625,
-          19.68503937007874
+          35.43307086614173
         ]
       ],
       "pattern": "gypsum",
@@ -156,11 +176,11 @@
         ],
         [
           218.75000000000003,
-          19.68503937007874
+          35.43307086614173
         ],
         [
           213.25,
-          19.68503937007874
+          35.43307086614173
         ]
       ],
       "layer": "A-WALL",
@@ -184,11 +204,11 @@
         ],
         [
           218.75000000000003,
-          19.68503937007874
+          35.43307086614173
         ],
         [
           213.25,
-          19.68503937007874
+          35.43307086614173
         ]
       ],
       "pattern": "lumber",
@@ -212,11 +232,11 @@
         ],
         [
           219.375,
-          19.68503937007874
+          35.43307086614173
         ],
         [
           218.75000000000003,
-          19.68503937007874
+          35.43307086614173
         ]
       ],
       "layer": "A-WALL-FINI",
@@ -240,11 +260,11 @@
         ],
         [
           219.375,
-          19.68503937007874
+          35.43307086614173
         ],
         [
           218.75000000000003,
-          19.68503937007874
+          35.43307086614173
         ]
       ],
       "pattern": "gypsum",
@@ -268,11 +288,11 @@
         ],
         [
           219.385,
-          19.68503937007874
+          35.43307086614173
         ],
         [
           219.375,
-          19.68503937007874
+          35.43307086614173
         ]
       ],
       "layer": "A-WALL-FINI",
@@ -291,11 +311,11 @@
           -11.875
         ],
         [
-          231.8425196850394,
+          257.4330708661418,
           -11.875
         ],
         [
-          231.8425196850394,
+          257.4330708661418,
           0.7499999999999999
         ],
         [
@@ -319,11 +339,11 @@
           -11.875
         ],
         [
-          231.8425196850394,
+          257.4330708661418,
           -11.875
         ],
         [
-          231.8425196850394,
+          257.4330708661418,
           0.7499999999999999
         ],
         [
@@ -847,7 +867,7 @@
       "node": "polyline",
       "points": [
         [
-          200.15748031496065,
+          188.34645669291342,
           -11.875
         ],
         [
@@ -859,7 +879,7 @@
           0.0
         ],
         [
-          200.15748031496065,
+          188.34645669291342,
           0.0
         ]
       ],
@@ -875,7 +895,7 @@
       "node": "hatch",
       "boundary": [
         [
-          200.15748031496065,
+          188.34645669291342,
           -11.875
         ],
         [
@@ -887,7 +907,7 @@
           0.0
         ],
         [
-          200.15748031496065,
+          188.34645669291342,
           0.0
         ]
       ],
@@ -903,7 +923,7 @@
       "node": "polyline",
       "points": [
         [
-          200.15748031496065,
+          188.34645669291342,
           -10.5
         ],
         [
@@ -923,7 +943,7 @@
       "node": "polyline",
       "points": [
         [
-          200.15748031496065,
+          188.34645669291342,
           -1.375
         ],
         [
@@ -1057,17 +1077,17 @@
         "kind": "point",
         "xy": [
           216.0,
-          -2.0888888888888886
+          -3.1777777777777776
         ],
         "name": ""
       },
       "at": [
-        199.15748031496065,
-        -2.0888888888888886
+        187.34645669291342,
+        -3.1777777777777776
       ],
       "to": [
         216.0,
-        -2.0888888888888886
+        -3.1777777777777776
       ],
       "text": "concrete 12\"",
       "height": 1.6,
@@ -1082,17 +1102,17 @@
         "kind": "point",
         "xy": [
           212.62,
-          17.596150481189852
+          32.255293088363956
         ],
         "name": ""
       },
       "at": [
-        199.15748031496065,
-        17.596150481189852
+        187.34645669291342,
+        32.255293088363956
       ],
       "to": [
         212.62,
-        17.596150481189852
+        32.255293088363956
       ],
       "text": "paint-a 0.01\"",
       "height": 1.6,
@@ -1107,17 +1127,17 @@
         "kind": "point",
         "xy": [
           212.93750000000003,
-          15.068372703412074
+          27.1997375328084
         ],
         "name": ""
       },
       "at": [
-        199.15748031496065,
-        15.068372703412074
+        187.34645669291342,
+        27.1997375328084
       ],
       "to": [
         212.93750000000003,
-        15.068372703412074
+        27.1997375328084
       ],
       "text": "gwb-a 0.625\"",
       "height": 1.6,
@@ -1132,17 +1152,17 @@
         "kind": "point",
         "xy": [
           216.0,
-          12.540594925634295
+          22.144181977252842
         ],
         "name": ""
       },
       "at": [
-        199.15748031496065,
-        12.540594925634295
+        187.34645669291342,
+        22.144181977252842
       ],
       "to": [
         216.0,
-        12.540594925634295
+        22.144181977252842
       ],
       "text": "stud 5.5\"",
       "height": 1.6,
@@ -1157,17 +1177,17 @@
         "kind": "point",
         "xy": [
           219.0625,
-          10.012817147856516
+          17.088626421697285
         ],
         "name": ""
       },
       "at": [
-        199.15748031496065,
-        10.012817147856516
+        187.34645669291342,
+        17.088626421697285
       ],
       "to": [
         219.0625,
-        10.012817147856516
+        17.088626421697285
       ],
       "text": "gwb-b 0.625\"",
       "height": 1.6,
@@ -1182,17 +1202,17 @@
         "kind": "point",
         "xy": [
           219.38,
-          7.485039370078739
+          12.03307086614173
         ],
         "name": ""
       },
       "at": [
-        199.15748031496065,
-        7.485039370078739
+        187.34645669291342,
+        12.03307086614173
       ],
       "to": [
         219.38,
-        7.485039370078739
+        12.03307086614173
       ],
       "text": "paint-b 0.01\"",
       "height": 1.6,
@@ -1202,10 +1222,66 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          213.25000000000006,
+          0.0
+        ],
+        [
+          218.75000000000003,
+          0.0
+        ],
+        [
+          218.75000000000003,
+          0.25
+        ],
+        [
+          213.25000000000006,
+          0.25
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "rubber"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          213.25000000000006,
+          0.0
+        ],
+        [
+          218.75000000000003,
+          0.0
+        ],
+        [
+          218.75000000000003,
+          0.25
+        ],
+        [
+          213.25000000000006,
+          0.25
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:sill-gasket"
+    },
+    {
+      "space": "model",
       "node": "text",
       "anchor": [
         227.00000000000003,
-        15.507261592300964
+        29.07751531058618
       ],
       "content": "air continuity — sheathing-ext →\nsheathing-ext",
       "height": 3.0,
@@ -1221,7 +1297,7 @@
       "node": "text",
       "anchor": [
         227.00000000000003,
-        11.77392825896763
+        21.61084864391951
       ],
       "content": "water continuity — wrb-ext → wrb-ext",
       "height": 3.0,
@@ -1237,7 +1313,7 @@
       "node": "text",
       "anchor": [
         227.00000000000003,
-        8.040594925634295
+        14.144181977252844
       ],
       "content": "thermal continuity — ci-ext → ci-ext",
       "height": 3.0,
@@ -1252,10 +1328,10 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        200.15748031496065,
-        -23.68503937007874
+        188.34645669291342,
+        -55.181102362204726
       ],
-      "content": "TR-CATLIN-STACK-SHELF  ·  stack-width-shelf",
+      "content": "TR-CATLIN-FOUNDATION  ·  basement-framed-wall",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -1323,7 +1399,7 @@
         0.5,
         7.597222222222222
       ],
-      "content": "TR-CATLIN-STACK-SHELF  ·  stack-width-shelf",
+      "content": "TR-CATLIN-FOUNDATION  ·  basement-framed-wall",
       "height": 3.0,
       "height_pt": 8.0,
       "rotation": 0.0,
@@ -1581,7 +1657,24 @@
       "uid": null
     }
   ],
-  "notes": [],
+  "notes": [
+    "NOTES:",
+    "• Detail intent: schematic section showing basement exterior wall and transition to wood-framed exterior wall above.",
+    "• Above-grade wall: 2x6 framing (LSL recommended) with R-19 cavity insulation and continuous exterior CI totaling 4\". Above-grade CI shown as 2\" polyiso + 2\" EPS; seams staggered, outer layer taped.",
+    "• Foundation waterproofing / air barrier: liquid-applied membrane on sheathing and on concrete foundation wall; maintain continuity at the sill/rim transition with overlap, sealant, and/or additional liquid membrane as needed.",
+    "• Basement CI: 4\" XPS in two layers with staggered seams; tape seams on the outer layer. Use lower water-absorption XPS types (most are) and confirm compressive strength / below-grade suitability.",
+    "• Exposed XPS (top portion above grade): protect with appropriate elastomeric coating or rigid metal/PVC trim per manufacturer.",
+    "• **The exposed band is modelled now, not only drawn (2026-08-18).** The 2026-08-18 lift put grade at -2'-6\", and the 2026-08-21 basement-ceiling overhaul took it to -2'-10\", so the north, east and west basement walls stand 2'-10\" out of the ground and that much XPS is exposed on each. The band is authored off the GRADE datum rather than as a height, so both lifts grew it (and the panel order, ~324 SF to ~374 SF) without the assembly being edited. `CATLIN_BASEMENT_12` therefore carries a fifth layer — a 1/2\" aluminium-faced protection panel (`foundation-protection-panel`, the house's one exterior dark, #1c1f24) — with a `Layer.extent` running from 6\" *below* grade up to the top of the wall. Six inches below so no foam edge shows at the soil line and the shovel hits panel, not XPS. Because it is a real layer with a real band, the drawing, the 3D model, the IFC export (as an `IfcBuildingElementPart` aggregated to its wall) and the order all read the same area; the detail component no longer derives a second band of its own beside it.",
+    "• **The parge coat is off these three walls and stays on the south one.** The full-height parge added 2026-08-01 was there for the *south* wall, which the sunken garden opens to the air over its whole 9', and it landed on all four sides only because a layer had no way to say \"only here\". The south wall keeps it, in its own assembly (`CATLIN_BASEMENT_12_GARDEN`) — a grade-datum band cannot describe a face whose exposure runs from -9'-0\" to 0'-0\". Both assemblies still carry exactly 4.55\" outboard of the concrete face, which is what `N-B-BRICK-W`/`-E`'s stand-off is measured from.",
+    "• **The panel's head is the Z-flashing below.** The band tops out at 0'-0\", which is the top of the basement wall and the base of the framed wall above — exactly where the rainscreen's 1-1/2\" corrugated bug screen sits in the furring band and where the Z-flashing with its drip is drawn. The panel tucks under that flashing; nothing new is fastened for the tie, and the flashing is what sheds water clear of the panel head.",
+    "• Sill: include sill gasket and treated mudsill. Prioritize air sealing at sill plate (sealant + spray foam at gaps). Use mudsill anchors (e.g., MASAP) as required (not shown).",
+    "• Flashings: provide stainless (preferred) or thick aluminum Z-flashing with drip edge at bottom of rainscreen furring. Install insect barrier mesh/strip (Cor-A-Vent or SS screen) just above flashing. Mesh can be stapled to furring strips, run behind the flashing, and into the layer between basement and wall foam.",
+    "• Interface flashing: provide L-flashing from bottom of sheathing down onto the top of basement foam. Terminate within the insulation plane and seal the outer end with spray foam (Pestblock) to avoid an exterior thermal bridge. This is meant as a foam layer insect barrier.",
+    "• Drainage: 4\" perforated french drain in geotextile-lined washed stone (wider area, not under footing). Additional compacted aggregate in front of footing (equal to footing height, geotextile-lined). River rock trench (geotextile-lined) against foundation for top of soil.",
+    "• Interior slab: 4\" concrete slab (min. 3,500 psi, IRC R506.1) over R-10 XPS insulation (≥25 psi), 10 mil (min) polyethylene vapor barrier, and 4\" compacted gravel base. Provide 1\" XPS thermal break with 1/2\" polyurethane sealant at foundation wall perimeter.",
+    "• Grading: soil must slope away from foundation at minimum 6\" per 10' for first 10' (IRC R401.3).",
+    "• All gaps: fill voids and transitions with low-expansion spray foam as needed for air sealing and continuity."
+  ],
   "frame": {
     "paper": [
       11.0,
@@ -1594,11 +1687,11 @@
       5.199999999999999
     ],
     "center": [
-      226.00000000000003,
-      0.0
+      242.8897637795276,
+      -7.874015748031496
     ],
-    "scale": 0.75,
-    "scale_label": "3/4\" = 1'-0\"",
+    "scale": 0.375,
+    "scale_label": "3/8\" = 1'-0\"",
     "bands": {
       "title": [
         0.5,
