@@ -7,6 +7,12 @@ import ...``. Each item is declarative wherever possible so the dialect trust cl
 from __future__ import annotations
 
 from library.assemblies import (
+    FOUNDATION_WALL_8_INT,
+    FOUNDATION_WALL_8_XPS4,
+    FOUNDATION_WALL_8_XPS4_CORE,
+    FOUNDATION_WALL_12_INT,
+    FOUNDATION_WALL_12_XPS4,
+    FOUNDATION_WALL_12_XPS4_CORE,
     GARAGE_ICF,
     HOUSE_ROOF,
     HOUSE_WALL_2X4_WITH_CI,
@@ -30,6 +36,12 @@ __all__ = [
     "HOUSE_WALL_2X4_WITH_CI",
     "HOUSE_WALL_2X6_WITH_ZIPR",
     "GARAGE_ICF",
+    "FOUNDATION_WALL_8_INT",
+    "FOUNDATION_WALL_12_INT",
+    "FOUNDATION_WALL_8_XPS4",
+    "FOUNDATION_WALL_12_XPS4",
+    "FOUNDATION_WALL_8_XPS4_CORE",
+    "FOUNDATION_WALL_12_XPS4_CORE",
     "HOUSE_ROOF",
     "INT_2X4_PARTITION",
     "INT_2X4_RC",

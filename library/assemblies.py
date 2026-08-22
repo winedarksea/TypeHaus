@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typehaus.model import (
     Assembly,
+    AssemblyInterface,
     CavityFill,
     ControlLayer,
     FramingSpec,
@@ -14,6 +15,11 @@ from typehaus.model import (
     inch,
     r_us,
 )
+
+# The load-bearing face the junction solver binds a concrete↔concrete return on (#44):
+# the pour's inboard face, named by LAYER, not index, so an outboard skin may be added
+# without invalidating the transition.
+_CONCRETE_BEARING = AssemblyInterface(role="bearing", layer_name="concrete", outboard=False)
 
 # Painted gypsum lining. Layer order is interior → exterior everywhere the lining is
 # consumed (``list(default_lining) + list(layers)``), so the paint is *first*: it is the
@@ -93,8 +99,104 @@ GARAGE_ICF = Assembly(
         Layer(name="eps-int", material_ref="icf-eps", thickness=inch(2.625),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
     ),
+    interfaces=(_CONCRETE_BEARING,),
     default_lining=_GWB_LINING,
 )
+
+# --- cast concrete foundation walls ----------------------------------------------
+#
+# The generic 8"/12" family. A house draws the pour from here rather than re-minting it,
+# and adds its own outermost protective skin (parge, panel, veneer) on top of a ``_CORE``
+# tuple where it wants one — that skin is a colour and exposure decision, which is a house
+# decision, while the pour, the damp-proofing, the two staggered 2" XPS courses and the
+# bearing face are not.
+#
+# **8" vs 12" is a soil/height question, never a default.** IRC Table R404.1.2(8) is what
+# decides it: at 45 psf/ft equivalent fluid density, a 10' wall retaining 7' of unbalanced
+# fill takes 12" plain but 8" reinforced #6 @ 48" o.c. vertical. The 12" members here exist
+# for the cases the table (or a cast deck bearing on the wall top beside the sill) actually
+# earns them; picking one without reading the row for the wall's own height, backfill and
+# soil class is how an unreinforced 8" wall gets built where the table required steel.
+# ``structural.foundation_unbalanced_fill`` grades this from the STRUCTURE layer, so the
+# thickness authored here is the thickness that gets checked.
+
+_R404_SOURCE = ("IRC Table R404.1.2(8), plain and minimally reinforced concrete "
+                "foundation walls: 45 psf/ft equivalent fluid density, 10 ft maximum "
+                "wall height, 7 ft unbalanced backfill")
+
+# Bare pours for interior cross / bearing walls — soil on neither face.
+#
+# **The ``INT`` token is load-bearing and must stay underscore-delimited.**
+# ``mn_energy._is_interior_assembly`` is literally ``"INT" in tag.split("_")``; without it
+# a bare concrete wall between two conditioned rooms is graded as basement envelope and
+# fails on R-1.5. The token must not lead the tag either — ``INT_*`` is the acoustic
+# namespace, whose test demands a published STC and a URL, and a cast wall has no lab test
+# to cite.
+FOUNDATION_WALL_8_INT = Assembly(
+    tag="FOUNDATION_WALL_8_INT",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
+              function=LayerFunction.STRUCTURE),
+    ),
+    interfaces=(_CONCRETE_BEARING,),
+    source=_R404_SOURCE + "; 8 in. requires #6 at 48 in. o.c. vertical",
+)
+
+FOUNDATION_WALL_12_INT = Assembly(
+    tag="FOUNDATION_WALL_12_INT",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
+              function=LayerFunction.STRUCTURE),
+    ),
+    interfaces=(_CONCRETE_BEARING,),
+    source=_R404_SOURCE + "; 12 in. reads NR (no vertical reinforcement required)",
+)
+
+# Below-grade envelope cores, interior→exterior from the pour outward: whatever is inboard
+# of the concrete is the consuming house's business, and so is whatever protects the foam
+# outboard of it. Exported as bare layer tuples so a house can splat one and append its own
+# skin without re-typing the pour — ``FOUNDATION_WALL_*_XPS4`` below are the skinless
+# assemblies for a house that wants the core as-is.
+#
+# 2 x 2" rather than one 4" board: staggered joints, and 2" is the stocked thickness.
+# Damp-proofing outboard of the pour and inboard of the foam is IRC R406.1's position.
+FOUNDATION_WALL_8_XPS4_CORE = (
+    Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
+          function=LayerFunction.STRUCTURE),
+    Layer(name="damp-proof", material_ref="air-barrier", thickness=inch(0.05),
+          function=LayerFunction.MEMBRANE,
+          control={ControlLayer.AIR, ControlLayer.WATER}),
+    Layer(name="xps-a", material_ref="xps", thickness=inch(2.0),
+          function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+    Layer(name="xps-b", material_ref="xps", thickness=inch(2.0),
+          function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+)
+
+FOUNDATION_WALL_12_XPS4_CORE = (
+    Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
+          function=LayerFunction.STRUCTURE),
+    *FOUNDATION_WALL_8_XPS4_CORE[1:],
+)
+
+# 8" + damp-proofing + 4" XPS = 12.05" total, ~R-21.8.
+FOUNDATION_WALL_8_XPS4 = Assembly(
+    tag="FOUNDATION_WALL_8_XPS4",
+    layers=FOUNDATION_WALL_8_XPS4_CORE,
+    interfaces=(_CONCRETE_BEARING,),
+    source=_R404_SOURCE + "; 8 in. requires #6 at 48 in. o.c. vertical. Exterior "
+                          "insulation 2 x 2 in. XPS over damp-proofing per IRC R406.1",
+)
+
+# 12" + the same tail = 16.05".
+FOUNDATION_WALL_12_XPS4 = Assembly(
+    tag="FOUNDATION_WALL_12_XPS4",
+    layers=FOUNDATION_WALL_12_XPS4_CORE,
+    interfaces=(_CONCRETE_BEARING,),
+    source=_R404_SOURCE + "; 12 in. reads NR (no vertical reinforcement required). "
+                          "Exterior insulation 2 x 2 in. XPS over damp-proofing per "
+                          "IRC R406.1",
+)
+
 
 HOUSE_ROOF = Assembly(
     tag="HOUSE_ROOF",
@@ -252,6 +354,10 @@ ALL_ASSEMBLIES: tuple[Assembly, ...] = (
     HOUSE_WALL_2X4_WITH_CI,
     HOUSE_WALL_2X6_WITH_ZIPR,
     GARAGE_ICF,
+    FOUNDATION_WALL_8_INT,
+    FOUNDATION_WALL_12_INT,
+    FOUNDATION_WALL_8_XPS4,
+    FOUNDATION_WALL_12_XPS4,
     HOUSE_ROOF,
     INT_2X4_PARTITION,
     INT_2X4_RC,
