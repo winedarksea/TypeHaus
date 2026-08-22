@@ -146,23 +146,29 @@ def test_tudor_posts_within_their_wall_are_not_a_clash():
 _OPENING_FRAMING_KEYS = ("king-", "jack-", "header-", "sill-")
 
 
-def test_catlin_window_member_overlaps_pinned_at_eight():
-    """The 8 residual window/member overlaps, pinned (plans/TODO.md "Windows: 8 residual").
+def test_catlin_window_member_overlaps_pinned_at_four():
+    """The 4 residual window/member overlaps, pinned (plans/TODO.md "Windows: 8 residual").
 
     Measured with the junction-proximity clear disabled — the honest metric the TODO
     records, since every one of these sits at a junction and would otherwise be silently
     cleared. The TODO's prose summarised them as 4 at two L corners + 4 at one T; the walls
     have moved since and the measured composition today is:
 
-    - 6 at one T: CSW148's jamb pack (king/jack/header) against the neighbouring walls'
-      end studs (CSW145:stud-005, CSW146:stud-000) — the jamb pack sits at the junction.
+    - 2 at one T: CSW148's king stud against the neighbouring walls' end studs
+      (CSW145:stud-008, CSW146:stud-000) — the jamb sits at the junction.
     - 1 at an L corner: CMW103:stud-008 against CMW104:king-0-l0 — the neighbouring
       wall's 1.5" stud/plate elevation mismatch.
     - 1 raked: CSW141:king-0-r0 against the stair soffit's bottom plate
       (CSF601AAAA:soffit-plate-bottom-e).
 
-    The count is the regression guard (historic: 138 -> 8); the docstring is the map for
-    whoever moves it."""
+    That T was 6 until 2026-08-22, when O-S-VANITY (CSW148's only opening) moved from 3" to
+    4 5/8" off N-S-V1: at 3" its whole jamb pack — king, jack and header — stood inside the
+    corner square the 8" sound wall grew on 2026-08-21, and the opening's first inch was
+    being cut out of framing rather than out of the wall. Clear of the square, only the king
+    still meets the neighbours' end studs, which is the ordinary T geometry.
+
+    The count is the regression guard (historic: 138 -> 8 -> 4); the docstring is the map
+    for whoever moves it."""
     ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
     ctx.model.junctions = []  # disable the junction-proximity clear
     window_findings = [
@@ -170,7 +176,7 @@ def test_catlin_window_member_overlaps_pinned_at_eight():
         if any(t.split(":")[-1].startswith(_OPENING_FRAMING_KEYS)
                for t in f.element_tags)
     ]
-    assert len(window_findings) == 8, sorted(
+    assert len(window_findings) == 4, sorted(
         f.element_tags for f in window_findings)
 
 

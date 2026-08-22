@@ -129,10 +129,12 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   and PT-SG-COL plus the six balcony pillars bear on non-Pad chains (grouted CMU / bell
   footing) so `deck_footing_size` can't resolve. (`deck_beam_span`'s two genuine R507.5(1)
   overspans were closed 2026-07-31 by going engineered.)
-- **Windows: 8 residual member-interference overlaps** — now **pinned** by
-  `test_catlin_window_member_overlaps_pinned_at_eight` (junction clear disabled — the
-  honest metric). Measured composition drifted from this file's memory of 4+4: it is 6 at
-  one T (CSW148 jamb pack), 1 L corner, 1 vs the stair soffit plate. (Historic: 138 → 8.)
+- **Windows: 4 residual member-interference overlaps** — now **pinned** by
+  `test_catlin_window_member_overlaps_pinned_at_four` (junction clear disabled — the
+  honest metric). Measured composition drifted from this file's memory of 4+4: it is 2 at
+  one T (CSW148's king stud), 1 L corner, 1 vs the stair soffit plate. The T was 6 until
+  2026-08-22, when O-S-VANITY moved off the corner square that the 8" suite sound wall grew
+  the day before — its whole jamb pack had been standing inside it. (Historic: 138 → 8 → 4.)
 
 ### Residuals from the 2026-07-30 batch
 
