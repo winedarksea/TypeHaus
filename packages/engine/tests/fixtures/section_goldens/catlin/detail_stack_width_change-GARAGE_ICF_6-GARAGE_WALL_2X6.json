@@ -7,6 +7,62 @@
       "node": "polyline",
       "points": [
         [
+          497.375,
+          -31.685039370078748
+        ],
+        [
+          498.00000000000006,
+          -31.685039370078748
+        ],
+        [
+          498.00000000000006,
+          -12.000000000000005
+        ],
+        [
+          497.375,
+          -12.000000000000005
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CGF101AAAA",
+      "tag": "W-GF-S1/gwb-stem"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          497.375,
+          -31.685039370078748
+        ],
+        [
+          498.00000000000006,
+          -31.685039370078748
+        ],
+        [
+          498.00000000000006,
+          -12.000000000000005
+        ],
+        [
+          497.375,
+          -12.000000000000005
+        ]
+      ],
+      "pattern": "gypsum",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           494.875,
           -31.685039370078748
         ],
@@ -559,6 +615,31 @@
       "anchor": {
         "kind": "point",
         "xy": [
+          497.6875,
+          -21.672222222222228
+        ],
+        "name": ""
+      },
+      "at": [
+        475.53248031496065,
+        -21.672222222222228
+      ],
+      "to": [
+        497.6875,
+        -21.672222222222228
+      ],
+      "text": "gwb-stem 0.625\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
           486.125,
           5.596150481189847
         ],
@@ -682,7 +763,7 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        502.37500000000006,
+        503.00000000000006,
         3.507261592300958
       ],
       "content": "air continuity — sheathing-ext →\nsheathing-ext",
@@ -698,7 +779,7 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        502.37500000000006,
+        503.00000000000006,
         -0.2260717410323756
       ],
       "content": "water continuity — wrb-ext → wrb-ext",
@@ -722,7 +803,7 @@
         "name": ""
       },
       "at": [
-        502.37500000000006,
+        503.00000000000006,
         -3.959405074365709
       ],
       "to": [
@@ -908,12 +989,12 @@
           1.468
         ]
       ],
-      "pattern": "none",
+      "pattern": "gypsum",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "icf-eps"
+      "material": "gwb"
     },
     {
       "space": "paper",
@@ -950,7 +1031,7 @@
         0.7,
         1.3980000000000001
       ],
-      "content": "icf-eps  2.5\"",
+      "content": "gwb  0.625\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -980,12 +1061,12 @@
           1.298
         ]
       ],
-      "pattern": "concrete",
+      "pattern": "none",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "concrete"
+      "material": "icf-eps"
     },
     {
       "space": "paper",
@@ -1022,7 +1103,7 @@
         0.7,
         1.228
       ],
-      "content": "concrete  6\"",
+      "content": "icf-eps  2.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1052,12 +1133,12 @@
           1.1280000000000001
         ]
       ],
-      "pattern": "gypsum",
+      "pattern": "concrete",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "gwb"
+      "material": "concrete"
     },
     {
       "space": "paper",
@@ -1094,7 +1175,7 @@
         0.7,
         1.058
       ],
-      "content": "gwb  0.625\"",
+      "content": "concrete  6\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1333,7 +1414,7 @@
       5.199999999999999
     ],
     "center": [
-      501.875,
+      502.1875,
       -12.000000000000007
     ],
     "scale": 0.75,

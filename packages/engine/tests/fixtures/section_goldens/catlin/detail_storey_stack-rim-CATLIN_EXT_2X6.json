@@ -1015,62 +1015,6 @@
       "node": "polyline",
       "points": [
         [
-          -14.862519685039372,
-          120.0
-        ],
-        [
-          -10.0,
-          120.0
-        ],
-        [
-          -10.0,
-          121.50000000000001
-        ],
-        [
-          -14.862519685039372,
-          121.50000000000001
-        ]
-      ],
-      "layer": "A-SLAB",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "SGS503AAAA",
-      "tag": "SL-SG-DECK"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -14.862519685039372,
-          120.0
-        ],
-        [
-          -10.0,
-          120.0
-        ],
-        [
-          -10.0,
-          121.50000000000001
-        ],
-        [
-          -14.862519685039372,
-          121.50000000000001
-        ]
-      ],
-      "pattern": "aluminum-deck",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "aluminum-deck"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           -10.750000000000002,
           103.50000000000001
         ],
@@ -1115,12 +1059,12 @@
           112.75000000000001
         ]
       ],
-      "pattern": "spf",
+      "pattern": "kdat",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "spf"
+      "material": "kdat"
     },
     {
       "space": "model",

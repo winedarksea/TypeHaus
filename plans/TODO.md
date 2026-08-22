@@ -204,20 +204,6 @@ the future.
     the schema, so authoring it would give every second-storey room a PVC ceiling. Needs
     either a `CeilingPaneling` element (the `WallPaneling` shape, one surface up) or a
     per-room override on `FloorSystem`.
-  - ~~**`RM-B-SAUNA` is still `humidity_class=NORMAL`, and that is a finding.**~~ — **closed
-    2026-08-18, same day.** The axis surfaced a real gap (`W-B-S2`, the sauna's whole south
-    side, was bare 12" concrete on the room face while
-    `notes/sauna_basement_wall_detail.md` says the liner runs "walls + ceiling"), and
-    `SAUNA_LINER_ON_BASEMENT_12_GARDEN` closed it: the liner variant on that wall, the room
-    marked `WET`, and all four faces now passing `humid_room_liner` and `humid_room_finish`
-    on the foil-faced polyiso at 0.015 perm. `glazing_dew_point` clears `WIN-B-SAUNA` by
-    2.5 F at centre-of-glass with the frame accepted as condensing — recorded on the Room
-    rather than hidden. Two details worth carrying forward: the liner's three layers carry a
-    `LayerExtent` off `WALL_TOP` so a 7'-6" room does not bill 9'-0" of basswood off a
-    foundation wall (and `takeoff/wood_surfaces.py` had to start honouring that band, which
-    it was ignoring), and the 3 1/2" the liner grows inward moved `FURN-B-SAUNA-BENCH-S`,
-    `FURN-B-SAUNA-BENCH-E` and `REG-B-EXH2` north with it — no check fires on
-    furniture-vs-wall overlap, so those were hand edits the gate could not have caught.
   - **The showers are still unclassified.** Same axis, same rules, same question to answer
     first: what is actually behind the tile. The sauna is the worked example of what
     answering it costs — a liner variant on the wall that turned out not to have one.
@@ -277,26 +263,6 @@ the future.
     own neighbour, five `structural.member_interference` FAILs. These joists are hung flush
     between the beams and cannot cantilever. **The engine has no way to say "sheet wider
     than joist field", and that is the change this wants** — not a re-model of the deck.
-- ~~**Every opening row reads UNKNOWN**~~ — **FIXED 2026-08-22**, and it was worse than the
-  note below said. `takeoff/openings.py` read `getattr(product, "name", None) or "UNKNOWN"`,
-  and neither `WindowType` nor `DoorType` HAS a `name` field — only `FurnitureType` does. So
-  the fallback fired on all 78 rows, not just the four with no type, and `product` is the
-  field `cli/prices._DESCRIPTION_FIELDS` reads first: every opening line in the estimate, the
-  CSV and the task export said UNKNOWN. Rows now describe themselves —
-  `WT-2736 — casement window, 27" x 36"` — built from the type tag, operation and size, with
-  no product name invented.
-  **The four typeless openings are all intentional and were already priced correctly.**
-  `AO-B-BRICK-WIN`, `AO-B-BRICK-DOOR` and `O-S-VANITY` are rough openings; `D-S-STUDY2` is a
-  `RoughOpening` too — a leafless cased passthrough — and `RoughOpening` carries no
-  `type_ref` field at all, so there was nothing to give it. `prices.toml [openings]` has
-  priced them under the `"None"` key as cased openings, drywall return, since 2026-08-20.
-- **Answered 2026-08-22: "drain tile" and "french drain" do NOT duplicate here.** There is no
-  `FrenchDrain` element in the plan and no element kind of that name; the two mentions in the
-  note files describe the same article `FootingBedding.drain_tile_spec` already models, and
-  the pipe length agrees to 0.1 LF across two independent tables (`[concrete]` `drain_tile`
-  reports 761.4 LF by its SF-per-foot conversion, `[footing_bedding]` reports 515.3 + 246.0 =
-  761.3 by its own). Authoring a `FrenchDrain` element would be the moment a duplicate could
-  appear — a second element over the same trench, billing the same stone twice.
 - study on first floor location adjustments (deferred by decision 2026-08-02)
 - Nest/loft design
 - Window sealing detail (RM-S-PLANT's is drawn — TR-CATLIN-PLANT-OPENING, 2026-08-18 — and
@@ -306,42 +272,8 @@ the future.
   French door in a 70 %-RH room and its threshold will condense (raised 2026-08-18)
 - Floor drain in RM-S-PLANT — confirm, with the trap primer it implies (raised 2026-08-18)
 - Make sure all desired access panels are in
-- ~~Any rooms with fancy ceilings? ... "Resilient channels on ceiling perpendicular to
-  joists, hat channels maybe better, or sound isolation clips. Whichever the drywall guy
-  prefers/is cheapest" for the Living Room ceiling.~~ — **minimal treatment authored
-  2026-08-07,** which is the decision: bill the two things that get ordered, and leave
-  full layered ceiling assemblies deferred.
-  FS-SECOND gained `ceiling_below` gypsum, so the main-floor ceiling finally bills — 1226
-  sf net, 39 sheets, previously ordered by nobody. `CR-LIVING-CEIL-RC` is the channel:
-  16" o.c. over RM-M-LIVING only, 523.7 LF. The new `floor:ceiling_channel` finder computes
-  length as field area / spacing and deliberately ignores joist direction — the runs do
-  cross the joists, but parallel runs at a fixed spacing over an area come to the same
-  length however the field is turned.
-  **Product choice SETTLED 2026-08-22: it stays resilient channel.** That is what the note
-  above names first, it is the cheapest of the three, and every drywall crew has hung it. Hat
-  channel or isolation clips remain a `takeoff_category` swap if a bid comes back preferring
-  one — not a re-model.
-  **The "gap worth knowing" here was already closed and the note went stale.**
-  `construction_returns` IS in `cli/prices.py::_SECTIONS` (added 2026-08-18) and
-  `prices.toml` carries the section and a `ceiling-channel` rate, so the run reaches the
-  estimate. The length is **522.2 LF**, not the 523.7 this note repeated — the figure moved
-  with RM-M-LIVING's face and nobody re-read it.
 - Small windows on corners?
-- ~~Do "drain tile" and "french drain" duplicate at all here?~~ — **answered above,
-  2026-08-22: no.**
 - Improve the symmetry of the windows on the east and west side
-- ~~Extend the outdoor curtain rods to cover all three exposed sides of the porch~~ —
-  **DONE 2026-08-22 as four bay panels**, and the continuous U was tried first.
-  `FURN-M-PORCH-ROD-SW`/`-SE` are new 98" rods at x=9'-0"/27'-0"; the two 114" front rods are
-  untouched. A U is expressible — `Furniture` carries one position and one rectangular
-  footprint, so a U is straight segments on a shared path plus corner connectors, which is
-  exactly how the real product is made. The porch is what refuses it. `PT-SG-BF2` stands ON
-  the front guard line at x=18'-0", and the only continuous line past it clears a 6x6 in
-  weather by **a quarter inch**; the side pillar line (x 8'-0"/28'-0") is 6" OUTBOARD of the
-  guard, so a rod hung on it drops its curtain outside the 42" railing. Buying continuity
-  across a pillar the curtain cannot pass anyway costs 6" of an 8'-8" porch on three sides
-  and three new types. Full reasoning on `FT-CURTAIN-ROD-OUTDOOR-98` in
-  `plan/furniture_types.py`.
 - Permit drawings
 - The house's own strip footings are eccentric under their walls, the same way the garage
   stem's were before 2026-08-15: `FT-B-*` is a 20" strip centred on the y=0 node line,
@@ -354,20 +286,6 @@ the future.
 * Is this enough glazing for light feeling rooms (along with LED strips, etc)
 * Plan a revamp off the plumbing to see if we can make any of the runs more efficiently routed. Try to run things through the NW corner of the house's maintenance shaft, and make sure there are plumbing shutoffs in appropriate places.
 * How can we properly anchor the heat pumps on the upper porch without compromising the waterproofing of the aluminum decking? Perhaps we need a different subtype of flooring there?
-* ~~Seam clamps are shown as too large in the 3d model~~ — **FIXED 2026-08-22.**
-  `resolve/accessories.py` drew EVERY `Connector` as a fixed 5"x5"x6" marker; it now carries a
-  per-`ConnectorKind` size table and `STANDING_SEAM_CLAMP` uses the real 1.60 x 0.76 x 0.39.
-  The other six kinds keep today's box deliberately — a hanger and a post base are within
-  sight of it, and moving them would be a change to the drawings for its own sake. Purely
-  visual: hardware bills from the element, not from this solid, and no test pinned the
-  dimensions. (The tag in this line was misspelled — it is `CN-G-WIND-SEE-2_5`, hyphen not
-  underscore, one of 137 resolved clamp instances.)
-  **One side effect, checked rather than assumed:** `concrete:seam_clamp` dropped OFF the
-  estimate's `unpriced` list, because the honest marker's volume rounds to 0.00 cy and a
-  row with no quantity cannot report a miss. That is not a hole going quiet — all 137
-  clamps bill in `[hardware]` (S-5-S 48, S-5-PVKIT 48, S-5-N 28, plus the ColorGard,
-  CanDuit and plain S-5! rows), so the entry was a mirror of a mirror. Nothing else left
-  the list.
 * **Move EQ-B-ESS-BATT and its enclosure to the NE corner of the mechanical room** —
   **BLOCKED, investigated 2026-08-22, nothing moved.** `EQ-B-WH`, the 24"x24" water heater,
   stands at **(6'-2", 32'-10")**, which is itself in that corner. The battery type carries a
@@ -381,20 +299,6 @@ the future.
   vent), narrow the authored zone, or leave the closet in the SE corner where it clears.
   Enclosure fire-proofing is deferred to its own pass — `INT_ESS_CLOSET_STEEL` is untouched
   and `advisory.ess_enclosure` passes on all four walls today.
-* ~~See if we can make W-B-STR cheaper~~ — **PRICED 2026-08-22, recommendation is neither.**
-  Both options and their numbers are a row in `plans/cost-options.md`. The short version: an
-  8" pour saves **$330-560** of ready-mix (not the $771-1,279 a naive $/cy multiply suggests
-  — the forms do not go away) and pulls a 9'-0" engineered floor header, because
-  `FO-M-STAIR`'s west edge at x=10'-6" falls 2" outside an 8" wall's footprint. Framing it
-  gives back **$389-2,745** and retires a two-storey bearing line and the one interior
-  footing the 2026-08-21 pass deliberately kept.
-* ~~What is WT-2736 and why is it so expensive? It might help if the openings weren't linked
-  to "UNKNOWN"~~ — **the UNKNOWN half is FIXED 2026-08-22** (see the opening-row entry
-  above); every opening line now names its type, operation and size. WT-2736 is the house's
-  27"x36" casement family, 63 united inches, and `prices.toml [openings]`' 2026-08-20b
-  re-sourcing is where its price comes from: windows are quoted by UNITED-INCH BAND, and
-  everything from 0 to 71 UI is one flat base price. WT-2736 is not expensive *for its size*
-  — it costs what a 14x24 costs, which is the finding that pass recorded.
 * garage stairs should probably be pressure treated wood or a prebuilt metal staircase
 * 3d models of the stair handrails need some work
 * Add two workbenches, outlets above them, and a hard-wired ethernet cable run to the RM-B-Workshop. Can likely share the spa conduit.

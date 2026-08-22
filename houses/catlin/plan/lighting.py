@@ -545,8 +545,10 @@ SECOND_LIGHTING = [
 
     # RM-S-SUITE: the linear wall lamp the notes ask for over the bed, on the long west
     # wall, plus cans down the west strip and one in the arm past the walk-in.
+    # Same 1 5/8" shift as ED-S-SUITE-RC5: W-S-SN1's south face came into the room when the
+    # wall became the 8" staggered sound wall. Authored y was 22'-0 1/8" against the old face.
     ElectricalDevice(uid="QTS0007AAA", tag="ED-S-SUITE-LAMP", kind=DeviceKind.LIGHT,
-                     position=pt(ft(4, 11.875), ft(22, 0.125)), type_ref="ED-T-LT-WALL-LINEAR",
+                     position=pt(ft(4, 11.875), ft(21, 10.5)), type_ref="ED-T-LT-WALL-LINEAR",
                      circuit="CKT-LT-UPPER", room="RM-S-SUITE", rotation=deg(180),
                      controlled_by=("ED-S-SUITE-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),

@@ -1099,12 +1099,12 @@
           88.25000000000001
         ]
       ],
-      "pattern": "spf",
+      "pattern": "kdat",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "spf"
+      "material": "kdat"
     },
     {
       "space": "model",

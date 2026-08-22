@@ -646,8 +646,12 @@ GARAGE_EQUIPMENT = [
     # case tops at 7'-3", blows down over a bench.
     # Hard-wired, not cord-and-plug: NEC 210.8(A)(2) GFCI applies to garage *receptacles*
     # only, so CKT-GAR-HEAT carries none — a plug-in unit would need CKT-RC-GARAGE instead.
+    # Nudged 12" south of the 2026-08-21 NW-corner position (y was 18.1628): at that y the
+    # case straddled FX-G-HYDRANT's own y band, and the hydrant is the one thing in this
+    # corner someone stands over with a hose. 12" takes the two bands apart without moving
+    # the heater off FURN-G-WORKBENCH, which it is here to blow down over.
     Equipment(uid="CEE023AAAA", tag="EQ-G-HEATER", kind=EquipmentKind.SPACE_HEATER,
-              position=pt(m(0.213454), m(18.1628)), footprint=(inch(14), inch(9)),
+              position=pt(m(0.213454), m(17.858)), footprint=(inch(14), inch(9)),
               room="RM-GARAGE", type_ref="EQ-T-GARAGE-HEATER", rotation=deg(90),
               circuit="CKT-GAR-HEAT",
               mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
@@ -1174,8 +1178,11 @@ NEC_FILL_SECOND = [
                      position=pt(ft(0, 7.625), ft(12, 11.875)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
+    # y follows W-S-SN1's south face, which moved 1 5/8" into the room on 2026-08-21 when
+    # the suite's north wall went from the 4 3/4" INT_2X4_PARTITION to the 8" staggered
+    # sound wall. Authored y was 22'-0 5/8" against the old face.
     ElectricalDevice(uid="NEC045AAAA", tag="ED-S-SUITE-RC5", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(1, 0.75), ft(22, 0.625)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(1, 0.75), ft(21, 11)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC046AAAA", tag="ED-S-SUITE-RC6", kind=DeviceKind.RECEPTACLE_GFCI,

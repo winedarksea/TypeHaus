@@ -268,8 +268,11 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     assert rows["polished-concrete"]["coating"] is True
     assert rows["polished-concrete"]["waste_pct"] == 0.0
     assert float(rows["polished-concrete"]["net_area_sqft"]) == pytest.approx(411.3, abs=0.5)
-    # LVP and the underlayment that follows it both bill the reduced field.
-    assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(743.1, abs=0.5)
+    # LVP and the underlayment that follows it both bill the reduced field. 743.1 until
+    # 2026-08-21, when the suite's north wall line (W-S-SN1/SN2) went from the 4 3/4"
+    # INT_2X4_PARTITION to the 8" INT_2X4_STAGGERED_DOUBLE_GWB sound wall: 3 1/4" more
+    # framing across a 9'-7 1/2" run, taken off the rooms on both faces.
+    assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(742.3, abs=0.5)
     assert rows["lvp-underlayment"]["net_area_sqft"] == rows["lvp"]["net_area_sqft"]
 
 

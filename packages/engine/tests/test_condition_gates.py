@@ -284,6 +284,16 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
     thickness-only variants of one material sequence, which the layer-equivalence gate
     drops independently. The list stays eight, and only the sauna key's two tags were
     renamed.
+
+    A ninth arrived with the same 2026-08-21 batch and is the reason the list is nine now:
+    the suite's north wall line runs W-S-SN1 -> W-S-SN2 -> W-S-SN3 straight through from
+    x=0' to x=18' at y=22'-4", and the first two took the 8" INT_2X4_STAGGERED_DOUBLE_GWB
+    sound wall while W-S-SN3 stayed on the 4 3/4" INT_2X4_PARTITION. They meet collinear at
+    N-S-D4, so the collinearity gate does not drop it, and staggered 2x4s on 2x6 plates with
+    doubled gypsum against single studs with one layer is a different material sequence, not
+    a thickness-only variant, so the layer-equivalence gate does not either. A builder
+    framing that line has to be told where the sound wall stops — which is the definition
+    this test exists to hold. TR-CATLIN-ASSEMBLY-JOG binds and suppresses it like the rest.
     """
     keys = sorted({c.key for c in catlin_model.conditions
                    if c.key.startswith("assembly_change:")})
@@ -302,6 +312,7 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         ("assembly_change:FOUNDATION_WALL_12_INT|INT_2X6_STAGGERED_PLUMBING|"
          "INT_ESS_CLOSET_STEEL"),
         "assembly_change:FOUNDATION_WALL_12_INT|SAUNA_LINER_ON_CONCRETE",
+        "assembly_change:INT_2X4_PARTITION|INT_2X4_STAGGERED_DOUBLE_GWB",
         "assembly_change:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",
         "assembly_change:INT_2X4_PARTITION|INT_ESS_CLOSET_STEEL",
         "assembly_change:INT_2X6_PLUMBING|INT_ESS_CLOSET_STEEL",

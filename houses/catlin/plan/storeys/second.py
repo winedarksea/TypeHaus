@@ -354,9 +354,14 @@ OPENINGS = [
     # pinwheeling through it (test_wall_corner_and_opening_framing).
     Door(uid="CSD214AAAA", tag="D-S-SUITEBATH", host="W-S-SBS", type_ref="DT-INT-SWING30",
          position=from_node("N-S-D3", ft(0, 6.5)), flip_hinge=True),                      # x 11'-5"
+    # 4 5/8" off N-S-V1, not the authored 3": W-S-SN1/SN2 became the 8" staggered sound
+    # wall on 2026-08-21, so the node square this wall starts past grew from 2 3/8" to 4",
+    # and at 3" the void's first inch was cut inside the corner (the IFC self-diff read the
+    # emitted opening 1" narrower than the authored 2'-8"). 4 5/8" restores the 5/8" the
+    # opening always had between its jamb and the corner square.
     RoughOpening(uid="CSD215AAAA", tag="O-S-VANITY", host="W-S-VE",
-                 position=from_node("N-S-V1", ft(0, 3)), width=ft(2, 8),
-                 height=ft(6, 8)),                                       # y 23'-11"
+                 position=from_node("N-S-V1", ft(0, 4.625)), width=ft(2, 8),
+                 height=ft(6, 8)),                                       # y 24'-0 5/8"
     # Pulled 3" west of its original 1'-4.5" (2026-07-29): at that offset the door's own
     # king stud landed inside N-S-BA1's corner square and punched into W-S-BA-E1B's end
     # stud (the same class of overlap as N-M-MECH2 in test_wall_corner_and_opening_framing).

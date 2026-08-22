@@ -93,10 +93,33 @@ def test_the_hydrant_is_on_the_garage_storey_at_the_authored_spot(catlin_model):
     # cannot sit against a wall whose footing bears at -4'-2" without putting its shutoff
     # and weep stone inside the 45° influence line. → test_the_hydrant_assembly_clears_...
     assert hydrant.wall_ref is None
-    # Clear of everything else in the room: EQ-G-HEATER and the workbench at y≈48', both EV
-    # receptacles at y=41.5'/56', and both north windows.
-    heater = catlin_model.plan.by_tag("EQ-G-HEATER")
-    assert abs(heater.position.xy_m[1] - hydrant.position.xy_m[1]) * _M_TO_FT > 10
+
+
+def test_the_hydrant_stands_clear_of_everything_else_in_the_garage(catlin_model):
+    """A working annulus around the handle, graded on the resolved bodies.
+
+    This read `abs(heater.y - hydrant.y) > 10 ft` until 2026-08-22 — a y-only proxy from the
+    days when the heater and its workbench sat at y≈48' and the hydrant alone held the NW
+    corner. The 2026-08-21 pass moved that pair into the corner deliberately, and the proxy
+    called it a conflict when the two are 3'-8" apart across the room in x. What the hydrant
+    actually needs is plan clearance in both axes: room to swing a hose onto the spout and to
+    get a hand on the handle, from whatever else the corner is asked to hold.
+
+    12" is the number, and FURN-G-WORKBENCH at 17 1/2" is the one that binds it — the bench
+    is 30" deep off the west wall and the hydrant stands 4'-9" out from the same wall.
+    """
+    from shapely.geometry import Polygon
+
+    garage = [obj for obj in catlin_model.canvas_objects if obj.room == "RM-GARAGE"]
+    hydrant = next(obj for obj in garage if obj.tag == "FX-G-HYDRANT")
+    body = Polygon(hydrant.footprint)
+    tight = {obj.tag: body.distance(Polygon(obj.footprint)) * _M_TO_FT * 12
+             for obj in garage if obj.tag != hydrant.tag}
+    assert tight, "the garage resolves no other placeable to grade against"
+    assert min(tight.values()) >= 12, sorted(tight.items(), key=lambda kv: kv[1])[:3]
+    # The two the corner is shared with, named so a future move reads as a decision.
+    assert tight["FURN-G-WORKBENCH"] == pytest.approx(17.5, abs=0.5)
+    assert tight["EQ-G-HEATER"] == pytest.approx(44.1, abs=0.5)
 
 
 # --- 3. the supply run --------------------------------------------------------------------

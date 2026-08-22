@@ -902,6 +902,12 @@
 "FT-CURTAIN-ROD-48" = { material = { low = 25, high = 90 }, labour = { low = 35, high = 90 } }  # 8 ea
 "FT-CURTAIN-ROD-84" = { material = { low = 40, high = 140 }, labour = { low = 35, high = 90 } }  # 1 ea
 "FT-CURTAIN-ROD-OUTDOOR-114" = { material = { low = 90, high = 260 }, labour = { low = 60, high = 150 } }  # 2 ea
+# The two SIDE bays, added with the type 2026-08-22. Same article as the 114" pair cut
+# to the 8'-8" side run, so the bracket pair, the finish and the hanging labour are
+# identical and only the tube is shorter — the material low/high come off the 114" row
+# scaled by length (98/114 = 0.86 on the tube, which is roughly half the rod's cost),
+# and labour is unchanged because two brackets in a pillar is two brackets in a pillar.
+"FT-CURTAIN-ROD-OUTDOOR-98" = { material = { low = 80, high = 235 }, labour = { low = 60, high = 150 } }  # 2 ea
 # The eight fitted FURN-* rows that stay in the build number. The loose ones are in
 # [furnishings] at the bottom of the file.
 "FURN-BESTA-2358" = { material = { low = 90, high = 260 }, labour = { low = 60, high = 160 } }  # 9 ea
