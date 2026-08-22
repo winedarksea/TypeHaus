@@ -71,6 +71,17 @@ def _solids(model, category):
     return [s for s in model.solids if s.category == category]
 
 
+def _balcony_deck_top(model) -> float:
+    """Top of the aluminium boards over FS-SG-DECK — the balcony walking surface.
+
+    There is no SL-SG-DECK slab standing in for it any more (2026-08-22): the plank is the
+    floor system's own ``subfloor``, so the surface underfoot is the resolved deck sheet.
+    """
+    deck = next(f for f in model.floors if f.tag == "FS-SG-DECK")
+    assert deck.deck_z1_m > deck.deck_z0_m, "FS-SG-DECK must resolve a deck sheet"
+    return deck.deck_z1_m
+
+
 def test_catlin_resolves_all_accessory_categories(catlin_model) -> None:
     for category in ("railing", "dowel", "thermal_break", "connector",
                      "fascia", "gutter", "downspout", "flashing", "sump", "vent"):
@@ -305,13 +316,13 @@ def test_catlin_balcony_guard_is_a_42in_railing(catlin_model) -> None:
     The aluminum boards sit *on* the joists whose tops define the datum, so a guard based
     on the datum stands only 40.5" above the deck someone actually walks on.
     """
-    deck = next(s for s in catlin_model.solids if s.tag == "SL-SG-DECK")
+    deck_top = _balcony_deck_top(catlin_model)
     posts = [s for s in _solids(catlin_model, "railing")
              if "RL-SG-BALCONY" in s.tag and "POST" in s.tag]
     assert posts, "railing posts expected"
     for post in posts:
-        assert math.isclose(post.z0_m, deck.z1_m, abs_tol=0.02), "guard must start on the boards"
-        assert math.isclose(post.z1_m - deck.z1_m, 3.5 * FT, abs_tol=0.02)
+        assert math.isclose(post.z0_m, deck_top, abs_tol=0.02), "guard must start on the boards"
+        assert math.isclose(post.z1_m - deck_top, 3.5 * FT, abs_tol=0.02)
 
 
 def test_catlin_stair_guard_still_resolves_flat(catlin_model) -> None:
@@ -391,15 +402,15 @@ def test_catlin_balcony_guard_draws_its_balusters(catlin_model) -> None:
     while the R312.1.3 check passed on the authored field alone. The pickets exist now, they
     stand on the deck-walking-surface datum the guard is measured from, and they stop short
     of both rails so they tuck under the banded rail instead of poking through it."""
-    deck = next(s for s in catlin_model.solids if s.tag == "SL-SG-DECK")
+    deck_top = _balcony_deck_top(catlin_model)
     pickets = [s for s in catlin_model.solids
                if s.category == "railing_infill" and s.tag.startswith("RL-SG-BALCONY-")]
     assert len(pickets) > 80, "a 38' guard at a 4\" clear gap is ~90 pickets"
     rail_half = 0.75 * 0.0254
     for picket in pickets:
-        assert math.isclose(picket.z0_m, deck.z1_m + rail_half, abs_tol=1e-9), (
+        assert math.isclose(picket.z0_m, deck_top + rail_half, abs_tol=1e-9), (
             "a picket's foot sits on the walking surface, trimmed under the bottom rail")
-        assert math.isclose(picket.z1_m, deck.z1_m + 3.5 * FT - rail_half, abs_tol=1e-9), (
+        assert math.isclose(picket.z1_m, deck_top + 3.5 * FT - rail_half, abs_tol=1e-9), (
             "...and its head stops under the top rail")
 
 

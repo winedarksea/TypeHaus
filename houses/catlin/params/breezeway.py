@@ -106,13 +106,13 @@ from typehaus import (
     Connector,
     ConnectorKind,
     FloorSystem,
+    Slab,
     GlazingPanel,
     GlazingTrim,
     JoistSpec,
     Node,
     Pad,
     Post,
-    Slab,
     TrimKind,
     ft,
     inch,
@@ -276,13 +276,15 @@ _PIER_TOPS = [_PIER_TOP, _PIER_TOP,
 
 PIERS = [
     Post(uid=f"BWPR{i}AAAAA", tag=f"PR-BW-{i}", position=pt(ft(x), ft(y)),
-         size="12 round", height=ft(_PIER_TOPS[i - 1] - _PAD_TOP), supported_by=f"PD-BW-{i}")
+         size="12 round", height=ft(_PIER_TOPS[i - 1] - _PAD_TOP),
+         assembly="PIER_CONCRETE_12", supported_by=f"PD-BW-{i}")
     for i, (x, y) in enumerate(_POST_XY, start=1)
 ]
 
 POSTS = [
     Post(uid=f"CP{i}50AAAAA", tag=f"PT-BW-{i}", position=pt(ft(x), ft(y)),
-         size="6x6", height=ft(_POST_TOP - _PIER_TOPS[i - 1]), supported_by=f"PR-BW-{i}")
+         size="6x6", height=ft(_POST_TOP - _PIER_TOPS[i - 1]),
+         assembly="POST_KDAT", supported_by=f"PR-BW-{i}")
     for i, (x, y) in enumerate(_POST_XY, start=1)
 ]
 
@@ -321,10 +323,10 @@ NODES = [Node(uid=uid, tag=tag, position=pt(ft(x), ft(y)))
 # beam — down by a joist depth.
 FLOOR_BEAMS = [
     Beam(uid="BWBM01AAAA", tag="BM-BW-FW", start_node="N-BW-FSW", end_node="N-BW-FNW",
-         size=_BEAM, top_elevation=ft(_FLOOR_BEAM_TOP),
+         size=_BEAM, top_elevation=ft(_FLOOR_BEAM_TOP), assembly="BEAM_KDAT",
          bearing_refs=("PT-BW-1", "PT-BW-3")),
     Beam(uid="BWBM02AAAA", tag="BM-BW-FE", start_node="N-BW-FSE", end_node="N-BW-FNE",
-         size=_BEAM, top_elevation=ft(_FLOOR_BEAM_TOP),
+         size=_BEAM, top_elevation=ft(_FLOOR_BEAM_TOP), assembly="BEAM_KDAT",
          bearing_refs=("PT-BW-2", "PT-BW-4")),
 ]
 
@@ -346,6 +348,30 @@ FLOOR = FloorSystem(
 # joist top so the two never trap water against each other. It reaches out to the post
 # faces on all four sides at the house end, and past them at the garage end: the deck
 # runs on to the stem face, tucking 7/8" under the cladding that oversails it.
+#
+# ** THIS ONE STAYS A SLAB, AND IT IS THE ONLY DECK IN THE HOUSE THAT DOES. ** The garden's
+# two plank decks became their floor systems' `subfloor` (SL-SG-PORCH in 3bf2f48,
+# SL-SG-DECK on 2026-08-22), which is the right model: a plank over joists is a surface
+# layer, not a slab, and as a Slab it bills by the cubic yard out of a table named
+# [concrete]. This deck was converted with them on 2026-08-22 and converted back the same
+# day, because it is the one case the model cannot express.
+#
+# `resolve/floors.py` draws a subfloor bearing-line to bearing-line by the OUTLINE'S
+# perpendicular extent, so a floor system's sheet is exactly its joist field. The plank here
+# is not: it oversails the rim 2 3/4" at each end to land on the house cladding and the
+# garage stem, which is what a deck board does and what these two doors open onto. Two ways
+# to say it and both fail —
+#   * keep the outline at the post box, and the sheet stops 2 3/4" short of each threshold:
+#     `code.R311_3_exterior_landing` FAILS D-M-ENTRY and D-G-SERVICE, correctly, because
+#     nothing at threshold height covers the 36" patch outside them;
+#   * stretch the outline to the two faces, and the joist solver lays a joist on that line —
+#     straight through PT-BW-1..4 and into its own neighbour, five
+#     `structural.member_interference` FAILs. These joists are HUNG FLUSH between the beams
+#     and cannot cantilever (the `cantilever` fields run along the joist axis, x, not y).
+# The balcony converted term for term because its joists genuinely do cantilever 6" and its
+# slab outline was that cantilever. This one would have to invent framing to keep a plank
+# where it is. Left as a Slab, priced by qualified key in [concrete], and re-examined when
+# a floor system can carry a sheet wider than its joists.
 DECK = Slab(
     uid="BWSL01AAAA", tag="SL-BW-DECK",
     outline=(pt(ft(_GLAZING_X0), ft(_HOUSE_CLADDING_Y)),
@@ -361,10 +387,10 @@ DECK = Slab(
 # ============================================================================
 ROOF_BEAMS = [
     Beam(uid="BWBM03AAAA", tag="BM-BW-RW", start_node="N-BW-RSW", end_node="N-BW-RNW",
-         size=_BEAM, top_elevation=ft(_ROOF_BEAM_TOP),
+         size=_BEAM, top_elevation=ft(_ROOF_BEAM_TOP), assembly="BEAM_KDAT",
          bearing_refs=("PT-BW-1", "PT-BW-3")),
     Beam(uid="BWBM04AAAA", tag="BM-BW-RE", start_node="N-BW-RSE", end_node="N-BW-RNE",
-         size=_BEAM, top_elevation=ft(_ROOF_BEAM_TOP),
+         size=_BEAM, top_elevation=ft(_ROOF_BEAM_TOP), assembly="BEAM_KDAT",
          bearing_refs=("PT-BW-2", "PT-BW-4")),
 ]
 
@@ -375,7 +401,7 @@ ROOF_BEAMS = [
 RAFTERS = [
     Beam(uid=f"BWRF0{i}AAAA", tag=f"BM-BW-R{i}", start_node=f"N-BW-R{i}W",
          end_node=f"N-BW-R{i}E", size="2x6", top_elevation=ft(_RAFTER_TOP),
-         bearing_refs=("BM-BW-RW", "BM-BW-RE"))
+         assembly="BEAM_KDAT", bearing_refs=("BM-BW-RW", "BM-BW-RE"))
     for i in range(1, len(_RAFTER_Y) + 1)
 ]
 

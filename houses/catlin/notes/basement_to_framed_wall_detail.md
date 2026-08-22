@@ -39,6 +39,14 @@ source:
 - Interface flashing: provide L-flashing from bottom of sheathing down onto the top of basement foam. Terminate within the insulation plane and seal the outer end with spray foam (Pestblock) to avoid an exterior thermal bridge. This is meant as a foam layer insect barrier.
 
 - Drainage: 4" perforated french drain in geotextile-lined washed stone (wider area, not under footing). Additional compacted aggregate in front of footing (equal to footing height, geotextile-lined). River rock trench (geotextile-lined) against foundation for top of soil.
+  - **"French drain" here and "drain tile" in the model are the same article — checked
+    2026-08-22, no duplication.** There is no `FrenchDrain` element kind and no such element
+    in the plan; the pipe this line describes is what `FootingBedding.drain_tile_spec`
+    models, and its length agrees to 0.1 LF across two independent tables (`[concrete]`
+    `drain_tile` 761.4 LF by its SF-per-foot conversion, `[footing_bedding]` 515.3 + 246.0 =
+    761.3 by its own). If a `FrenchDrain` element is ever authored, THAT is the moment a
+    duplicate can appear — a second element over the same trench billing the same stone
+    twice.
 
 - Interior slab: 4" concrete slab (min. 3,500 psi, IRC R506.1) over R-10 XPS insulation (≥25 psi), 10 mil (min) polyethylene vapor barrier, and 4" compacted gravel base. Provide 1" XPS thermal break with 1/2" polyurethane sealant at foundation wall perimeter.
 

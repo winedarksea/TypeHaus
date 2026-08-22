@@ -99,7 +99,16 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
 # the wall, which is the opposite of what the gate is for. These two stay non-gating by
 # nature, not by staging, and flipping them would need a "this house has no ESS" concept
 # the checklist does not have.
-MAX_NON_BLOCKING_ITEMS = {"mn-2024": 23}
+#
+# 23 -> 24 on 2026-08-22 for "Thermal barrier over foam plastic" (R316.4), and the reason is
+# the same kind as the two above rather than "not yet": the rule reads AUTHORED ASSEMBLY
+# STACKS. It can say the drawn wall puts 5/8" of gypsum between the foam and the room; it
+# cannot say the built one does, it does not model R316.5's exceptions, and it reports
+# UNKNOWN for any barrier the catalog carries no field to identify — a PVC liner, a wood
+# structural panel. Gating a permit on a specification check that answers UNKNOWN for
+# materials it simply cannot classify would block houses over a missing datum rather than a
+# missing barrier. Flipping it needs the wood-structural-panel field first.
+MAX_NON_BLOCKING_ITEMS = {"mn-2024": 24}
 
 
 @pytest.mark.parametrize("profile", ALL_PROFILES, ids=lambda p: p.name)

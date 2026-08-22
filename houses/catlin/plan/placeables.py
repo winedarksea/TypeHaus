@@ -323,6 +323,28 @@ MAIN_PLACEABLES = [
     Furniture(uid="90BCAAC74M", tag="FURN-M-PORCH-ROD-E", type_ref="FT-CURTAIN-ROD-OUTDOOR-114", room="RM-M-BED",
               position=pt(ft(23), ft(-9.5)),
               mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
+    # The two SIDE bays, 2026-08-22 — the porch was curtained on its front edge only and open
+    # on both flanks, which is three quarters of a wind break. Four bay panels rather than one
+    # continuous U; the reasoning, and the U that was tried first, is on
+    # `FT-CURTAIN-ROD-OUTDOOR-98` in plan/furniture_types.py.
+    #
+    # x = 9'-0" and 27'-0", not the 8'-6"/27'-6" guard line and not the 8'-0"/28'-0" pillar
+    # line. The pillar line is 6" OUTBOARD of the guard, so a rod on it hangs its curtain
+    # over the railing and outside the porch. The guard line clears the 6x6 by a quarter inch
+    # at this type's 6" bracket projection, which is not a clearance. 9'-0" is the first line
+    # inboard that clears the pillar by more than a bracket (6 1/2") and still has balcony
+    # joists overhead to hang from — the front pair hang from the E-W girts, these from the
+    # 2x8 joist field crossing them.
+    #
+    # 98" over an 8'-8" (104") guard run, centred at y=-5'-0": 3" short of the house edge at
+    # the north end and 2" clear of the front rods' bracket line at the south. Those two gaps
+    # ARE the corners — the thing four panels have and a U does not.
+    Furniture(uid="K6G71PKS4C", tag="FURN-M-PORCH-ROD-SW", type_ref="FT-CURTAIN-ROD-OUTDOOR-98", room="RM-M-BED",
+              position=pt(ft(9), ft(-5)), rotation=deg(90),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
+    Furniture(uid="D9X6HWW4DZ", tag="FURN-M-PORCH-ROD-SE", type_ref="FT-CURTAIN-ROD-OUTDOOR-98", room="RM-M-BED",
+              position=pt(ft(27), ft(-5)), rotation=deg(90),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
 ]
 GARAGE_PLACEABLES = [
     # The 60"-wide work surface runs along the west wall directly below the infrared

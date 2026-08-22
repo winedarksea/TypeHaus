@@ -29,7 +29,10 @@ MN_2024 = JurisdictionProfile(
         "R312.1.3 guard opening limits, R311.7.8 stair handrails, and R312.2 window fall "
         "protection. Glazing: R308.4 safety glazing in hazardous locations. "
         "Fire safety: R302.5/R302.6 garage-to-dwelling separation (gypsum thickness, doors "
-        "into sleeping rooms, ducts into garages) and R302.13 floor-assembly protection; "
+        "into sleeping rooms, ducts into garages), R302.13 floor-assembly protection and "
+        "R316.4 the thermal barrier over foam plastic — the latter graded off authored "
+        "assembly stacks, so R316.5's exceptions and any barrier breached on site are "
+        "outside it; "
         "R314/R315 smoke and CO alarms per storey and per sleeping area. "
         "Light and ventilation: R303.1 glazing and openable area, R303.3 local exhaust, "
         "N1103.6 whole-house ventilation rate. "
@@ -135,6 +138,12 @@ MN_2024 = JurisdictionProfile(
                        ("IRC R302.5.1", "IRC R302.5.2", "IRC R302.6"), blocking=False),
         PermitItemSpec("Floor assembly protection", ("code.R302_13_floor_protection",),
                        ("IRC R302.13",), blocking=False),
+        # Non-blocking, like its two neighbours above: the rule is graded off authored
+        # assemblies, so it can say the drawn stack puts a barrier over the foam and cannot
+        # say the built one does. R316.5's exceptions are not modelled either. That is a
+        # useful reviewer's line and not a gate.
+        PermitItemSpec("Thermal barrier over foam plastic", ("code.R316_4",),
+                       ("IRC R316.4",), blocking=False),
         PermitItemSpec("Under-stair protection", ("code.R302_7_under_stair_protection",),
                        ("IRC R302.7",)),
         # Two rules, one permit line: a reviewer asks "is the stair lit, and can you switch
@@ -253,6 +262,11 @@ MN_2024 = JurisdictionProfile(
         ("mep.hydrant_freeze_depth",
          "a fixture-durability rule (a yard hydrant's own freeze protection), not a "
          "permit-plan review item; it stays in the full check report"),
+        ("mep.pocket_occupancy",
+         "a coordination rule between trades, not a code article: a pocket-door cavity has "
+         "no stud to fasten to and no depth to recess into, so nothing may be hosted in it. "
+         "No IRC section states that and no plan reviewer checks it; it stays in the full "
+         "check report, where the framer and the electrician both read it"),
     ),
 )
 

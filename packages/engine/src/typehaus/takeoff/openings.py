@@ -13,8 +13,47 @@ finishes section reports an unfinished room.
 
 from __future__ import annotations
 
+from typehaus.model.types import DoorType, WindowType
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
+
+
+def _size(width_in: float, height_in: float) -> str:
+    """``27" x 36"``, trimming a trailing ``.0`` so a whole-inch unit reads as one."""
+    return " x ".join(f"{value:g}\"" for value in (width_in, height_in))
+
+
+def _product_description(kind: str, type_ref: str,
+                         product: DoorType | WindowType | None,
+                         qualifier: str | None,
+                         width_in: float, height_in: float, arched: bool) -> str:
+    """What this row IS, in words a supplier could quote from.
+
+    This field is the row's human description everywhere downstream —
+    ``cli/prices._DESCRIPTION_FIELDS`` reads ``product`` — so it lands in the estimate, the
+    CSV and the task export. It used to be ``getattr(product, "name", None) or "UNKNOWN"``,
+    and neither :class:`~typehaus.model.types.WindowType` nor
+    :class:`~typehaus.model.types.DoorType` HAS a ``name`` field — only ``FurnitureType``
+    does. So the fallback fired on every row, and every opening line in the estimate read
+    UNKNOWN whether or not the type resolved. The bug was invisible because it looked
+    exactly like the thing it was supposed to report.
+
+    Nothing here invents a product name: the type tag IS the name a house orders by, and
+    the operation and size are read off the resolved type. An opening with no type still
+    says so, in its own words rather than in the same word a resolved one used.
+    """
+    size = _size(width_in, height_in)
+    head = " arched" if arched else ""
+    # ``kind`` is the resolver's own vocabulary and one of its values is already two words:
+    # "rough_opening" would otherwise print as "rough_opening rough opening".
+    noun = kind.replace("_", " ")
+    if product is None:
+        if type_ref:
+            # A type_ref naming a type the library does not carry. Worth reading as its own
+            # sentence: it is a dangling reference, not a deliberately bare rough opening.
+            return f"{type_ref} — unresolved {noun} type, {size}{head}"
+        return f"{noun}, {size}{head} (no type)"
+    return f"{type_ref} — {qualifier} {noun}, {size}{head}"
 
 
 def opening_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
@@ -47,7 +86,8 @@ def opening_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         rows.append({
             "kind": kind,
             "type": type_ref or None,
-            "product": getattr(product, "name", None) or "UNKNOWN",
+            "product": _product_description(kind, type_ref, product, qualifier,
+                                           width_in, height_in, bool(entry["arched"])),
             "known": product is not None,
             "operation": operation,
             "qualifier": qualifier,

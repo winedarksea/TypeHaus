@@ -100,6 +100,10 @@ ESTIMATE_PLANS = (
     ("edge_trim", "edge_trim", "category", "length_ft", "LF"),
     # Placed by the yard, keyed on the assembly — see the field comment on ``Prices``.
     ("wall_structure", "wall_structure", "assembly", "volume_cubic_yards", "cy"),
+    # The wood half of ``structural_solids`` (2026-08-22). Identical join to ``concrete``,
+    # on the identical BOM table; ``MATERIAL_ONLY`` is what keeps the two from both
+    # billing the same row. See the field comment on ``Prices.timber``.
+    ("timber", "structural_solids", "category", "volume_cubic_yards", "cy"),
     ("railings", "railings", "type", "length_ft", "LF"),
     # Pre-framing returns by the foot, keyed on ``takeoff_category`` (2026-08-18).
     ("construction_returns", "construction_returns", "category", "length_ft", "LF"),
@@ -128,17 +132,32 @@ ESTIMATE_PLANS = (
 ALLOWANCES = "allowances"
 ALLOWANCE_KEY_FIELD = "item"
 
-#: Sections that may only bill a BOM row made of a particular material, and the material
-#: that row's ``structure_material`` must name. A row whose ``structure_material`` is
-#: ``None`` — no assembly, so the model never said — is billed as before; this suppresses
-#: only what is *positively known* to be something else.
+#: Sections that may only bill a BOM row made of certain materials, and the set of
+#: ``structure_material`` values each will accept. ``None`` in a set means "the model never
+#: said" — no assembly, so no material — and a section carrying it is the CATCH-ALL for
+#: its BOM table.
 #:
-#: ``concrete`` needs it because ``structural_solids`` keys on solid CATEGORY, and a
-#: category is not a material. "slab" covers SL-M-DECK (9" of cast concrete) *and*
-#: SL-SG-DECK (Wahoo aluminium plank on 2x8 wood joists) and SL-BW-DECK (composite plank
-#: on wood joists); "column" covers a concrete pier and four solid elm timbers. Without
-#: this guard the wood ones bill at the ready-mix $/cy on top of billing as lumber in
-#: ``sheet_goods``/``framing`` — a double-count, not just a mis-price.
+#: ``concrete`` needs the guard because ``structural_solids`` keys on solid CATEGORY, and a
+#: category is not a material. "slab" covers SL-M-DECK (9" of cast concrete) *and* a Wahoo
+#: aluminium plank deck and a composite plank deck; "column" covers a concrete pier and
+#: four solid elm timbers. Without this guard the wood ones bill at the ready-mix $/cy on
+#: top of billing as lumber in ``sheet_goods``/``framing`` — a double-count, not just a
+#: mis-price.
+#:
+#: The value was a single material tag until 2026-08-22, and one tag could not say "any
+#: structural wood" — which is what ``timber`` needs. ``timber`` reads the *same*
+#: ``structural_solids`` table ``concrete`` does, and the two are told apart here and
+#: nowhere else: a Beam or a Post is a solid whose category says nothing about what it is
+#: made of, so the material is the only honest discriminator.
+#:
+#: WHY THE SET NAMES ONLY ENGINEERED AND TREATED LUMBER, not every wood tag in the library:
+#: ``spf`` is the STRUCTURE material of ordinary stud-wall assemblies, and a solid that is
+#: not lumber at all can carry one — catlin's rainscreen vent strip is a ``bug_screen``
+#: solid holding ``CATLIN_EXT_2X6``, whose structure layer is spf studs. So ``spf`` on a
+#: solid does not mean "this solid is a stick of timber", while ``lvl``/``lsl``/``kdat`` are
+#: only ever authored on a member that really is one. A house whose own wood tag should bill
+#: here either uses one of these or prices the row by QUALIFIED key, exactly as the elm
+#: posts already do.
 #:
 #: The guard is a *default*, not a wall. A house that authors the QUALIFIED key for one of
 #: these rows (``"slab:BALCONY_DECK_ALUMINUM"``, see :data:`QUALIFIED_KEY_FIELD`) has said
@@ -146,7 +165,10 @@ ALLOWANCE_KEY_FIELD = "item"
 #: escape hatch for a solid no other table bills — the aluminium balcony deck, the elm
 #: posts, the breezeway polycarbonate — none of which are lumber and so none of which are
 #: double-counted. A bare-category row is still filtered.
-MATERIAL_ONLY = {"concrete": "concrete"}
+MATERIAL_ONLY: dict[str, frozenset[str | None]] = {
+    "concrete": frozenset({"concrete", None}),
+    "timber": frozenset({"lvl", "lsl", "kdat"}),
+}
 
 
 #: Sections whose price table may key a row more narrowly than its ``key_field`` alone,
@@ -176,8 +198,8 @@ MATERIAL_ONLY = {"concrete": "concrete"}
 #: weighted right only for today's band heights and would silently become wrong the moment a
 #: band moved. ``wall_structure_takeoff`` already reports the material per row, so
 #: qualifying by it costs nothing.
-QUALIFIED_KEY_FIELD = {"concrete": "assembly", "drainage": "product",
-                       "wall_structure": "material"}
+QUALIFIED_KEY_FIELD = {"concrete": "assembly", "timber": "assembly",
+                       "drainage": "product", "wall_structure": "material"}
 
 
 #: Sections priced and reported but held out of the construction total. They stay in
@@ -334,11 +356,11 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
         buckets = empty_buckets()
         waste_sum = ZERO
         tax_paid_sum = ZERO
-        required_material = MATERIAL_ONLY.get(name)
+        required_materials = MATERIAL_ONLY.get(name)
         for row in bom.get(bom_key, []) or []:
-            if required_material is not None:
+            if required_materials is not None:
                 material = row.get("structure_material")
-                if material is not None and material != required_material:
+                if material not in required_materials:
                     # A wood deck is not ready-mix, so this section does not price the row
                     # *by default*. But a QUALIFIED key names one assembly and nothing else,
                     # so authoring `slab:BALCONY_DECK_ALUMINUM` in [concrete] is an explicit
@@ -349,14 +371,21 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
                     qualified = (f"{row.get(key_field)}:{row.get(qualifier_field)}"
                                  if qualifier_field else str(row.get(key_field)))
                     if not (qualifier_field and table.get(qualified) is not None):
-                        # Recorded, never silent. Dropping it without a word would hide real
-                        # scope — the same reason a blank row stays UNPRICED rather than
-                        # being priced at zero. The key names the assembly that fell out.
-                        quantity = float(row.get(section_quantity_field) or 0.0)
-                        if quantity:
-                            misses.append((bom_key, {
-                                "section": name, "key": qualified,
-                                "quantity": round(quantity, 2), "unit": section_unit}))
+                        # Recorded, never silent — but recorded ONCE. Two guarded sections
+                        # now read ``structural_solids`` (concrete and timber), and a row
+                        # that plainly belongs to the other one is not a hole in this one:
+                        # reporting from both would list every pipe sleeve and gutter twice
+                        # and drown the real misses. The CATCH-ALL — the section whose set
+                        # carries ``None``, i.e. the one that bills a solid the model never
+                        # gave a material — owns the report; the specialist stays quiet.
+                        # A row homeless in *every* section still surfaces, from the
+                        # catch-all, exactly as it did before ``timber`` existed.
+                        if None in required_materials:
+                            quantity = float(row.get(section_quantity_field) or 0.0)
+                            if quantity:
+                                misses.append((bom_key, {
+                                    "section": name, "key": qualified,
+                                    "quantity": round(quantity, 2), "unit": section_unit}))
                         continue
             key = str(row.get(key_field))
             qualifier_field = QUALIFIED_KEY_FIELD.get(name)

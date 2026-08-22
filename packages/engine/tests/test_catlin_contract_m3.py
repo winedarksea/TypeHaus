@@ -856,17 +856,32 @@ def test_stairs_render_on_both_connected_storey_plans(catlin_model):
 
 
 def test_deck_slabs_render_on_their_storey_plans(catlin_model):
-    """The balcony aluminum deck (second) encloses no walls, so without a slab outline the
-    plan slice drew it as empty air. (The porch's own SL-SG-PORCH slab is gone — the
-    FS-SG-PORCH floor system is the porch floor now, boards included.)"""
+    """A deck that encloses no walls has to draw its own outline, or the plan slice shows
+    empty air where a walking surface is.
+
+    Two of the three exterior decks are FloorSystems — the porch (3bf2f48) and the balcony
+    (2026-08-22) — so neither is a Slab any more and neither would be drawn by reading
+    ``model.solids`` alone. ``_emit_slabs`` reads ``model.floors`` too, and the tag on the
+    polyline is the floor system's. The breezeway is the third and stays a Slab, for the
+    reason params/breezeway.py gives: its plank oversails its joist field onto two door
+    thresholds, and a floor system's sheet cannot. It draws from ``model.solids``, so this
+    covers both paths."""
     from typehaus.emit.draw.floorplan import build_floorplan
     from typehaus.emit.draw.scene import Polyline
 
-    for storey, tag in (("second", "SL-SG-DECK"),):
+    for storey, tag in (("second", "FS-SG-DECK"), ("main", "FS-SG-PORCH"),
+                        ("main", "SL-BW-DECK")):
         outlines = [node for node in build_floorplan(catlin_model, storey).nodes
                     if isinstance(node, Polyline) and getattr(node, "tag", None) == tag]
         assert len(outlines) == 1, (storey, tag)
         assert outlines[0].layer == "A-SLAB" and outlines[0].closed
+
+    # And an interior floor still does NOT draw one: its subfloor covers the whole storey,
+    # so its rectangle would sit over every room on the plan.
+    interior = [node for node in build_floorplan(catlin_model, "second").nodes
+                if isinstance(node, Polyline)
+                and str(getattr(node, "tag", "")).startswith("FS-S-")]
+    assert not interior, [node.tag for node in interior]
 
 
 def test_catlin_drain_fixtures_use_six_inch_wet_walls():
@@ -1142,12 +1157,14 @@ def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_m
     wall = catlin_model.wall("W-G-S")
     door = next(o for o in catlin_model.openings if o.tag == "D-G-SERVICE")
     slab = next(s for s in catlin_model.solids if s.tag == "SL-G-FLOOR")
-    deck = next(s for s in catlin_model.solids if s.tag == "SL-BW-DECK")
+    # The breezeway plank is FS-BW-FLOOR's `subfloor` since 2026-08-22, not the SL-BW-DECK
+    # Slab it used to be, so the landing height is the resolved deck sheet's top.
+    deck_top = next(f for f in catlin_model.floors if f.tag == "FS-BW-FLOOR").deck_z1_m
 
     threshold = wall.z0_m + door.sill_m
     # The landing outside, not the floor inside: within R311.3.1's 1 1/2" of the deck, and a
     # full 2'-10" above the slab.
-    assert abs(deck.z1_m - threshold) <= inch(1.5).meters
+    assert abs(deck_top - threshold) <= inch(1.5).meters
     assert threshold - slab.z1_m == pytest.approx(inch(34.0).meters)
 
     # Five 6.8" risers inside close that 2'-10", top step level with the threshold and
@@ -1274,13 +1291,15 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     assert {"BM-SG-GIRT-RW", "BM-SG-GIRT-RE",
             "BM-SG-GIRT-FW", "BM-SG-GIRT-FE"} <= beams
 
-    # Both exterior decks carry their walking surface. The balcony still does it with a
-    # slab over its joists; the porch's slab is gone and the boards are FS-SG-PORCH's own
-    # deck sheet, so the surface follows the framing instead of floating beside it.
-    deck = next(s for s in catlin_model.solids if s.tag == "SL-SG-DECK")
-    assert deck.assembly == "BALCONY_DECK_ALUMINUM"
-    porch = catlin_model.plan.by_tag("FS-SG-PORCH")
-    assert porch.subfloor is not None and porch.subfloor.material_ref == "composite-deck"
+    # Both exterior decks carry their walking surface, and both do it the same way now: the
+    # plank is the floor system's own deck sheet, so the surface follows the framing instead
+    # of floating beside it as a second element. The balcony's SL-SG-DECK slab was the last
+    # of the three to go (2026-08-22); no Slab is left over either deck.
+    for tag, material in (("FS-SG-PORCH", "composite-deck"), ("FS-SG-DECK", "aluminum-deck")):
+        system = catlin_model.plan.by_tag(tag)
+        assert system.subfloor is not None and system.subfloor.material_ref == material
+    assert not [s for s in catlin_model.solids
+                if s.category == "slab" and s.tag.startswith("SL-SG-DECK")]
 
 
 def test_stack_width_change_resolves_on_the_side_wall_line(catlin_model):

@@ -10,10 +10,33 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   exactly that much both times (`building_height_summary.peak_above_grade_m`, and the
   north/south elevations' ridge dimension). Nothing in the engine enforces a height limit —
   `SetbackSpec` is plan-only, and there is no `height_limit` on a jurisdiction profile — so
-  this is a note rather than a check, but it is a real 2'-10" against whatever the
-  Minneapolis limit for this district is. Worth confirming against the zoning code before
-  the lift is committed to; if a limit is close, the levers are the attic's 11' ceiling and
-  the 4:12 ridge, not the lift.
+  this is a note rather than a check, but it is a real 2'-10" against whatever the local
+  limit for this district is. If a limit is close, the levers are the attic's 11' ceiling
+  and the 4:12 ridge, not the lift.
+
+  **JURISDICTION CORRECTION, 2026-08-22 — the site is most likely SAINT PAUL, not
+  Minneapolis, and "Minneapolis" in this repo has meant the metro generally.** That matters
+  because the two cities measure height from different data, so the number this note is
+  worried about is not the number `building_height_summary` computes:
+  - **St Paul §520.160 measures from NATURAL GRADE at the curb**, or at a point 10 ft from
+    the front lot line's centre — not from average grade around the building.
+    `peak_above_grade_m` uses average grade, which is the datum every other check in this
+    model shares. On a lot that falls away from the street the two disagree by the whole
+    fall, and in either direction.
+  - So **no `height_limit` and no check is being authored here.** Encoding a limit measured
+    from a datum the model does not carry would produce a confident wrong answer, which is
+    worse than the note. The item stays ON HOLD pending two facts only a survey and a
+    parcel lookup can supply: the zoning district, and the natural grade at the curb.
+  - **Two knock-ons of the correction, FLAGGED AND DELIBERATELY NOT CHANGED**, because both
+    want confirming against Ramsey County rather than swapping on a guess:
+    - `plan/site.py:73` authors the ground snow load as "Hennepin County / Minneapolis".
+      Ramsey and Hennepin are adjacent and almost certainly share the value, but the
+      *citation* is wrong if the site is in Ramsey, and a sourced number with the wrong
+      source is the thing this repo's conventions exist to prevent.
+    - `prices.toml [tax]` uses suburban Hennepin's **8.525%**. Ramsey County's combined rate
+      is its own figure, and the 2026-08-20 owner decision that picked 8.525% over the
+      city's 9.025% was reasoned about Hennepin. On ~$300-600k of taxable material a
+      half-point is $1,500-3,000.
 
 - **What braces the porch and balcony east-west, now that the arch is gone?**
   (raised 2026-08-18, and the one item on this list that the arch swap *created*.) Removing
@@ -219,35 +242,61 @@ the future.
     for the glazing ratio, and the wrong one for clear floor).
   - **A floor drain in RM-S-PLANT** (the room should be hoseable): implies a drain line, a
     trap primer — the trap *will* dry — and slope in `FS-SECOND`. See the Questions list.
-- **Wood solids still bill as concrete, and two deck planks now bill nowhere** (2026-08-19).
-  `structural_solids` keys on solid CATEGORY, and a category is not a material.
-  `cli/prices.MATERIAL_ONLY` now stops `[concrete]` pricing a row whose assembly's
-  STRUCTURE layer is not concrete, and records the suppression in the unpriced list rather
-  than dropping it silently. Three things are still open:
-  - `beam` (1.06 cy, $276 – $445) and four of the nine `column` solids carry **no
-    assembly**, so the model never states a material and the guard cannot fire. Every
-    `Beam` in the house is LVL or dimensional (`SPEC.back_beam` = 2-1.75x11.25 LVL,
-    `BM-M-HALL`/`BM-S-HALL` are LVL flitches, `BM-BW-*` is breezeway KDAT), and they bill
-    **nowhere else** — a standalone `Beam` resolves to a solid, not a framed member, so
-    this is a mis-price, not a double-count. Fix by authoring assemblies, not by widening
-    the guard. `PR-BW-1..4` and `PT-SG-COL` are 12" sonotube piers that genuinely ARE
-    concrete and also carry no assembly, so they must gain one before the wood ones can be
-    excluded by default.
-  - `ELM_TIMBER` (0.34 cy) and `POST_WHITE_PAINT` (0.40 cy) were reaching the estimate
-    *through* `[concrete]` on purpose — `ESTIMATE_PLANS` says timber rows "price as 0 here
-    — they bill via structural_solids". They are now honestly unpriced instead of priced
-    as ready-mix. **There is no price section that bills a wood solid by volume**; that
-    gap is the real fix.
-  - `SL-SG-DECK` (balcony, aluminium plank) and `SL-BW-DECK` (breezeway, composite plank)
-    are wood-framed walking surfaces modelled as `Slab`. Their concrete billing is gone,
-    but `aluminum-deck` bills in no section at all and the breezeway's `composite-deck`
-    only billed through that slab, so both planks are now unbilled. The fix is the one
-    `SL-SG-PORCH` already had: delete the `Slab` and move the plank into its
-    `FloorSystem`'s `subfloor=DeckLayer(...)`, where it bills as sheet goods. Trim
-    `host_ref` is metadata only — never resolved or validated — so `TR-SG-FASCIA` and
-    `TR-SG-WRB-FLASH` do not block it; the cost is rewriting the ~6 tests that assert on
-    those two slabs (test_site_earth, test_detail_vocabulary, test_accessories x2,
-    test_catlin_contract_m3 x2).
+- ~~**Wood solids still bill as concrete, and two deck planks now bill nowhere**~~ —
+  **CLOSED 2026-08-22.** All three sub-items landed, and the shape of the fix is the one this
+  note argued for: author assemblies, do not widen the guard.
+  - `BEAM_LVL`, `BEAM_KDAT`, `POST_KDAT` and `PIER_CONCRETE_12` are authored in
+    `plan/assemblies.py`, with `lvl` and `kdat` added to `library/materials.py`. Every one of
+    the twenty `Beam` solids and all nine bare `Post` solids now states a material, which
+    splits `beam/None` and `column/None` into `(category, assembly)` groups.
+  - `cli/prices.MATERIAL_ONLY` widened from one tag to a **set** of accepted
+    `structure_material` values (`frozenset[str | None]`, where `None` means "the model never
+    said" and marks the catch-all section), and a new **`[timber]`** section prices the wood
+    half of `structural_solids` end to end — `_SECTIONS`, a `Prices` field, `ESTIMATE_PLANS`,
+    `ALTERNATE_UNITS`, `SECTION_CODES`, a `[basis]` and a `[basis_notes]` line.
+    `SOLID_SECTION` became `SOLID_SECTIONS`, because two sections read that table now.
+  - The re-key is the part that could have silently zeroed a line, and did not: the bare
+    `"beam"` and `"column"` keys in `[concrete]` are **deleted**, replaced by
+    `column:PIER_CONCRETE_12` and `column:SUNKEN_GARDEN_COLUMN_16` there and
+    `beam:BEAM_LVL` / `beam:BEAM_KDAT` / `column:POST_KDAT` in `[timber]`. The before/after
+    `haus takeoff` diff is clean: every beam and column row still prices and the `unpriced`
+    list is unchanged, line for line.
+  - The LVL beams now bill at **$2,041–4,317** against the retired row's $954–2,120. The
+    2026-08-21 note on that row predicted "the rate is wrong in kind, and probably in size
+    ... ~$1,860–3,530/cy". It was.
+  - `SL-SG-DECK` is gone: the aluminium plank is `FS-SG-DECK`'s `subfloor` and bills as
+    182.0 SF in `[sheet_goods]`. The conversion was exact — the balcony joists cantilever 6"
+    and the deleted slab's outline *was* that cantilever.
+  - **`SL-BW-DECK` stays a Slab, and that is the finding.** It was converted with the
+    balcony and converted back the same day. `resolve/floors.py` draws a subfloor
+    bearing-line to bearing-line by the outline's perpendicular extent, so a floor system's
+    sheet is exactly its joist field; the breezeway plank oversails its rim 2 3/4" at each
+    end onto the two door thresholds. Keeping the post-box outline FAILS
+    `code.R311_3_exterior_landing` on D-M-ENTRY and D-G-SERVICE (a door has to open onto
+    something); stretching the outline to the faces lays a joist through PT-BW-1..4 and its
+    own neighbour, five `structural.member_interference` FAILs. These joists are hung flush
+    between the beams and cannot cantilever. **The engine has no way to say "sheet wider
+    than joist field", and that is the change this wants** — not a re-model of the deck.
+- ~~**Every opening row reads UNKNOWN**~~ — **FIXED 2026-08-22**, and it was worse than the
+  note below said. `takeoff/openings.py` read `getattr(product, "name", None) or "UNKNOWN"`,
+  and neither `WindowType` nor `DoorType` HAS a `name` field — only `FurnitureType` does. So
+  the fallback fired on all 78 rows, not just the four with no type, and `product` is the
+  field `cli/prices._DESCRIPTION_FIELDS` reads first: every opening line in the estimate, the
+  CSV and the task export said UNKNOWN. Rows now describe themselves —
+  `WT-2736 — casement window, 27" x 36"` — built from the type tag, operation and size, with
+  no product name invented.
+  **The four typeless openings are all intentional and were already priced correctly.**
+  `AO-B-BRICK-WIN`, `AO-B-BRICK-DOOR` and `O-S-VANITY` are rough openings; `D-S-STUDY2` is a
+  `RoughOpening` too — a leafless cased passthrough — and `RoughOpening` carries no
+  `type_ref` field at all, so there was nothing to give it. `prices.toml [openings]` has
+  priced them under the `"None"` key as cased openings, drywall return, since 2026-08-20.
+- **Answered 2026-08-22: "drain tile" and "french drain" do NOT duplicate here.** There is no
+  `FrenchDrain` element in the plan and no element kind of that name; the two mentions in the
+  note files describe the same article `FootingBedding.drain_tile_spec` already models, and
+  the pipe length agrees to 0.1 LF across two independent tables (`[concrete]` `drain_tile`
+  reports 761.4 LF by its SF-per-foot conversion, `[footing_bedding]` reports 515.3 + 246.0 =
+  761.3 by its own). Authoring a `FrenchDrain` element would be the moment a duplicate could
+  appear — a second element over the same trench, billing the same stone twice.
 - study on first floor location adjustments (deferred by decision 2026-08-02)
 - Nest/loft design
 - Window sealing detail (RM-S-PLANT's is drawn — TR-CATLIN-PLANT-OPENING, 2026-08-18 — and
@@ -268,16 +317,31 @@ the future.
   length as field area / spacing and deliberately ignores joist direction — the runs do
   cross the joists, but parallel runs at a fixed spacing over an area come to the same
   length however the field is turned.
-  **The product choice is still open and still yours** — the rule is authored as resilient
-  channel because that is what the note above names first; hat channel or isolation clips
-  are a `takeoff_category` swap, not a re-model.
-  **Gap worth knowing:** `construction_returns` is not in `cli/prices.py::_SECTIONS`, so
-  those 523.7 LF reach the BOM and never the cost estimate. Verified empirically, noted on
-  the rule, not fixed here.
+  **Product choice SETTLED 2026-08-22: it stays resilient channel.** That is what the note
+  above names first, it is the cheapest of the three, and every drywall crew has hung it. Hat
+  channel or isolation clips remain a `takeoff_category` swap if a bid comes back preferring
+  one — not a re-model.
+  **The "gap worth knowing" here was already closed and the note went stale.**
+  `construction_returns` IS in `cli/prices.py::_SECTIONS` (added 2026-08-18) and
+  `prices.toml` carries the section and a `ceiling-channel` rate, so the run reaches the
+  estimate. The length is **522.2 LF**, not the 523.7 this note repeated — the figure moved
+  with RM-M-LIVING's face and nobody re-read it.
 - Small windows on corners?
-- Do "drain tile" and "french drain" duplicate at all here?
+- ~~Do "drain tile" and "french drain" duplicate at all here?~~ — **answered above,
+  2026-08-22: no.**
 - Improve the symmetry of the windows on the east and west side
-- Extend the outdoor curtain rods to cover all three exposed side of the porch (possibly as a single continuous curtain, if that is possible, or else as 4 single bay panels)
+- ~~Extend the outdoor curtain rods to cover all three exposed sides of the porch~~ —
+  **DONE 2026-08-22 as four bay panels**, and the continuous U was tried first.
+  `FURN-M-PORCH-ROD-SW`/`-SE` are new 98" rods at x=9'-0"/27'-0"; the two 114" front rods are
+  untouched. A U is expressible — `Furniture` carries one position and one rectangular
+  footprint, so a U is straight segments on a shared path plus corner connectors, which is
+  exactly how the real product is made. The porch is what refuses it. `PT-SG-BF2` stands ON
+  the front guard line at x=18'-0", and the only continuous line past it clears a 6x6 in
+  weather by **a quarter inch**; the side pillar line (x 8'-0"/28'-0") is 6" OUTBOARD of the
+  guard, so a rod hung on it drops its curtain outside the 42" railing. Buying continuity
+  across a pillar the curtain cannot pass anyway costs 6" of an 8'-8" porch on three sides
+  and three new types. Full reasoning on `FT-CURTAIN-ROD-OUTDOOR-98` in
+  `plan/furniture_types.py`.
 - Permit drawings
 - The house's own strip footings are eccentric under their walls, the same way the garage
   stem's were before 2026-08-15: `FT-B-*` is a 20" strip centred on the y=0 node line,
@@ -290,15 +354,55 @@ the future.
 * Is this enough glazing for light feeling rooms (along with LED strips, etc)
 * Plan a revamp off the plumbing to see if we can make any of the runs more efficiently routed. Try to run things through the NW corner of the house's maintenance shaft, and make sure there are plumbing shutoffs in appropriate places.
 * How can we properly anchor the heat pumps on the upper porch without compromising the waterproofing of the aluminum decking? Perhaps we need a different subtype of flooring there?
-* Seam clamps such as CN-G-WIND_SEE-2_5 are shown as too large in the 3d model. They are really quite small, 1.60" long, 0.76" deep (mostly over the seem), and 0.39" wide
-* Move the EQ-B-ESS-BATT along with its enclosure to the NE corner of the mechanical room, and review the fire proofing of the enclosure, improving where needed
-* See if we can make W-B-STR stair cheaper, at least thinner concrete, or perhaps replace with a wood stud wall.
-* What is WT-2736 and why is it so expensive? It might help if the openings weren't linked to "UNKNOWN"
+* ~~Seam clamps are shown as too large in the 3d model~~ — **FIXED 2026-08-22.**
+  `resolve/accessories.py` drew EVERY `Connector` as a fixed 5"x5"x6" marker; it now carries a
+  per-`ConnectorKind` size table and `STANDING_SEAM_CLAMP` uses the real 1.60 x 0.76 x 0.39.
+  The other six kinds keep today's box deliberately — a hanger and a post base are within
+  sight of it, and moving them would be a change to the drawings for its own sake. Purely
+  visual: hardware bills from the element, not from this solid, and no test pinned the
+  dimensions. (The tag in this line was misspelled — it is `CN-G-WIND-SEE-2_5`, hyphen not
+  underscore, one of 137 resolved clamp instances.)
+  **One side effect, checked rather than assumed:** `concrete:seam_clamp` dropped OFF the
+  estimate's `unpriced` list, because the honest marker's volume rounds to 0.00 cy and a
+  row with no quantity cannot report a miss. That is not a hole going quiet — all 137
+  clamps bill in `[hardware]` (S-5-S 48, S-5-PVKIT 48, S-5-N 28, plus the ColorGard,
+  CanDuit and plain S-5! rows), so the entry was a mirror of a mirror. Nothing else left
+  the list.
+* **Move EQ-B-ESS-BATT and its enclosure to the NE corner of the mechanical room** —
+  **BLOCKED, investigated 2026-08-22, nothing moved.** `EQ-B-WH`, the 24"x24" water heater,
+  stands at **(6'-2", 32'-10")**, which is itself in that corner. The battery type carries a
+  REQUIRED +/-48"/+/-41" separation zone (`mep_hvac.py`, an owner rule) and
+  `advisory.ess_clearance` has no room exemption and no wall exemption — "the wall between
+  them does not make the distance". Clearing the water heater needs the battery east of
+  x=11'-2" or north of y=37'-3", and the room is x 0..10, y 18..36: **no position in the NE
+  corner works.** Confirmed by moving it to (9'-0", 35'-0") and running the check, which
+  FAILED naming EQ-B-WH; the move was reverted. Three ways forward, all owner decisions:
+  move the water heater (it has a T&P relief line `PR-B-WH-TPR`, a 240V circuit, a pan and a
+  vent), narrow the authored zone, or leave the closet in the SE corner where it clears.
+  Enclosure fire-proofing is deferred to its own pass — `INT_ESS_CLOSET_STEEL` is untouched
+  and `advisory.ess_enclosure` passes on all four walls today.
+* ~~See if we can make W-B-STR cheaper~~ — **PRICED 2026-08-22, recommendation is neither.**
+  Both options and their numbers are a row in `plans/cost-options.md`. The short version: an
+  8" pour saves **$330-560** of ready-mix (not the $771-1,279 a naive $/cy multiply suggests
+  — the forms do not go away) and pulls a 9'-0" engineered floor header, because
+  `FO-M-STAIR`'s west edge at x=10'-6" falls 2" outside an 8" wall's footprint. Framing it
+  gives back **$389-2,745** and retires a two-storey bearing line and the one interior
+  footing the 2026-08-21 pass deliberately kept.
+* ~~What is WT-2736 and why is it so expensive? It might help if the openings weren't linked
+  to "UNKNOWN"~~ — **the UNKNOWN half is FIXED 2026-08-22** (see the opening-row entry
+  above); every opening line now names its type, operation and size. WT-2736 is the house's
+  27"x36" casement family, 63 united inches, and `prices.toml [openings]`' 2026-08-20b
+  re-sourcing is where its price comes from: windows are quoted by UNITED-INCH BAND, and
+  everything from 0 to 71 UI is one flat base price. WT-2736 is not expensive *for its size*
+  — it costs what a 14x24 costs, which is the finding that pass recorded.
 * garage stairs should probably be pressure treated wood or a prebuilt metal staircase
 * 3d models of the stair handrails need some work
 * Add two workbenches, outlets above them, and a hard-wired ethernet cable run to the RM-B-Workshop. Can likely share the spa conduit.
 * Add a hardwired ethernet connection to the RM-M-STUDY, and one to the center of the north wall of the media room.
 * Model a large U-shaped couch and TV in the basement media room. Billy bookshelves on W-B-CE to either side of the door in the media room.
+* is the under basement slab foam and polyethylene modeled completely? It's R-10 of XPS.
+* We need to review the frost risk of the sunken garden around the house footings. Perhaps make the brick wall on an ICF footing. May need to put some ICF footings for the house near there too.
+
 
 ## Questions from 08-15 session
 

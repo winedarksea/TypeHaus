@@ -17,6 +17,7 @@ from typehaus.checks.code.mn_residential import (  # noqa: F401 - registers chec
     energy_storage,
     fall_protection,
     fire_separation,
+    foam_plastic,
     foundation_protection,
     glazing,
     illumination,

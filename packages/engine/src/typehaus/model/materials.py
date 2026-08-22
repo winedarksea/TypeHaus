@@ -67,6 +67,20 @@ class Material(HausModel):
     # ``code.R302_5_garage_separation`` reads it for R302.6's 5/8" Type X requirement where
     # habitable space sits above a garage; without it that sub-rule can only report UNKNOWN.
     gypsum_type: Literal["regular", "type-x", "type-c"] | None = None
+    # This material is a FOAM PLASTIC in the sense of IRC R316 — a cellular plastic
+    # insulation, whether rigid board, spray-applied or a stay-in-place form. Authored, for
+    # the same reason ``gypsum_type`` is: ``code.R316_4`` has to know which layers the
+    # thermal-barrier rule is about, and the alternatives are guessing from substrings in
+    # the tag ("eps", "iso", "foam") or from ``hatch``. Both are exactly the mistake
+    # ``checks/code/mn_residential/fire_separation.py`` warns against — they work for a
+    # library that spells it "polyiso" and fail silently for one that spells it "CI-board",
+    # and a fire rule that silently stops applying is worse than no rule.
+    #
+    # It is a property of the substance and nothing else: it changes no R-value, no
+    # quantity, no price. Mineral wool and fiberglass are not foam plastics and must stay
+    # False — R316 does not reach them, and marking them would demand a thermal barrier
+    # over every batt in the house.
+    foam_plastic: bool = False
     # Wood species ("basswood", "oak", "walnut", "elm", ...) where the material *is* a wood
     # product an estimator orders by species. Authoring it is what admits the material into
     # the species-split ``wood_surfaces`` takeoff; a wood-ish tag without it stays out —

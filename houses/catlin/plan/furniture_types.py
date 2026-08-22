@@ -48,6 +48,30 @@ CURTAIN_ROD_OUTDOOR_114 = FurnitureType(
     footprint=(inch(114), inch(6)), height=inch(2),
     plan_symbol=None, mount=_WALL_MOUNT, source=_ROD_SOURCE,
 )
+# The porch's two SIDE bays, 2026-08-22. Same product as the 114" front pair, cut to the
+# 8'-8" side run less its corner gaps.
+#
+# ** THIS IS THE FALLBACK, AND THE CONTINUOUS U WAS TRIED FIRST. ** An outdoor U-rod is a
+# real article — straight track plus corner connectors, one curtain running the whole way —
+# and ``Furniture`` could carry it: one position and one rectangular footprint per element,
+# so a U is segments on a shared path, exactly as the real product is. What defeats it is
+# the porch, not the schema. Two pillars stand in the way of the only lines a U could take:
+#   * PT-SG-BF2 sits ON the front guard line at x=18'-0", 5 1/2" square, y -9'-8 3/4" to
+#     -9'-3 1/4". A front rod stays continuous past it only if the whole path moves north of
+#     -9'-3 1/4", and at the 6" bracket projection this type carries that is a QUARTER INCH
+#     of clearance against a 6x6 in weather. Nobody builds a quarter inch.
+#   * The side pillar line (x 8'-0" / 28'-0") is 6" OUTBOARD of the guard at 8'-6"/27'-6",
+#     so a rod hung on the pillars drops its curtain outside the 42" railing.
+# Pulling the path inboard far enough to answer both costs 6" of an 8'-8" porch on three
+# sides, needs three new types and moves two rods that are already right — to buy continuity
+# across a pillar the curtain cannot pass at any line. Four bay panels is what the structure
+# actually offers: the front is two bays because PT-SG-BF2 divides it, and the sides are one
+# each. Recorded in plans/TODO.md so the decision is not re-litigated from the product alone.
+CURTAIN_ROD_OUTDOOR_98 = FurnitureType(
+    tag="FT-CURTAIN-ROD-OUTDOOR-98", name='Outdoor curtain rod, 98"',
+    footprint=(inch(98), inch(6)), height=inch(2),
+    plan_symbol=None, mount=_WALL_MOUNT, source=_ROD_SOURCE,
+)
 
 _PANEL_SOURCE = ("plans/TODO.md — plumbing access. Framed metal panel in a finished wall "
                  "face; size is the clear opening, depth the frame's projection.")
@@ -95,4 +119,5 @@ BATH1_SHELF_2030 = FurnitureType(
 )
 
 FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, CURTAIN_ROD_OUTDOOR_114,
+                   CURTAIN_ROD_OUTDOOR_98,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, BATH1_SHELF_2030)

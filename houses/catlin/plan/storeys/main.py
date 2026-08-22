@@ -804,7 +804,7 @@ STAIR_HANDRAILS = [
 BEAMS = [
     Beam(uid="CMBM01AAAA", tag="BM-M-HALL", start_node="N-M-C2", end_node="N-M-C3",
          size="3-1.75x11.875 LVL", bearing_refs=("W-M-C3", "W-M-C5"),
-         top_elevation=ft(10)),
+         assembly="BEAM_LVL", top_elevation=ft(10)),
 ]
 
 # The first-floor study's walnut wainscot (plans/TODO.md §Hardwood): every bounding wall

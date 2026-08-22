@@ -243,18 +243,40 @@ _CONNECTOR_CATEGORY = {
 }
 
 
+#: Plan half-extent and half-height of the marker box each connector kind draws, in inches.
+#:
+#: Hardware bills from the ELEMENT, never from this solid (see ``_resolve_connector``), so
+#: nothing about a quantity depends on these numbers — they are what the viewer, the GLB and
+#: the section detail show, and the only question they answer is "does that look like the
+#: part". A 5" x 5" x 6" box is a fair hanger and a fair post base. It is not a fair seam
+#: clamp: an S-5! clamp is 1.60" long, 0.76" deep and 0.39" wide, so the default drew each
+#: of the 137 resolved clamps roughly forty times its real volume — a rash of grey cubes
+#: down every standing-seam wall, over the one piece of hardware a reader is most likely to
+#: mistake for a defect.
+#:
+#: Every kind not listed keeps the original box, deliberately: a hanger and a post base are
+#: within sight of it and moving them would be a change to the drawings for its own sake.
+_CONNECTOR_MARKER_IN = {
+    # S-5! S-5-S / VersaBracket class seam clamp: 1.60 L x 0.76 D x 0.39 W. Drawn as its
+    # real footprint, half-extents, with the long axis in plan.
+    ConnectorKind.STANDING_SEAM_CLAMP: (0.80, 0.38, 0.20),
+}
+_CONNECTOR_MARKER_DEFAULT = (2.5, 2.5, 3.0)
+
+
 def _resolve_connector(model: ResolvedModel, el: Connector, storey: str) -> None:
     cx, cy = el.position.xy_m
     z = el.elevation.meters if el.elevation is not None else \
         next((s.elevation.meters for s in model.plan.storeys if s.tag == storey), 0.0)
     # A compact marker box at the connection point. Hardware is billed from the element, not
-    # measured off this solid, so the marker only has to read at the right place.
-    half = inch(2.5).meters
+    # measured off this solid, so the marker only has to read at the right place — and at
+    # roughly the right size, which is what ``_CONNECTOR_MARKER_IN`` is for.
+    half_x, half_y, half_z = _CONNECTOR_MARKER_IN.get(el.kind, _CONNECTOR_MARKER_DEFAULT)
     model.solids.append(ResolvedSolid(
         uid=el.uid or f"{el.tag}-conn", tag=el.tag, storey=storey,
         category=_CONNECTOR_CATEGORY.get(el.kind, "connector"),
-        outline=square(cx, cy, half, half),
-        z0_m=z - inch(3).meters, z1_m=z + inch(3).meters,
+        outline=square(cx, cy, inch(half_x).meters, inch(half_y).meters),
+        z0_m=z - inch(half_z).meters, z1_m=z + inch(half_z).meters,
     ))
 
 

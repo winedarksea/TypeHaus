@@ -259,7 +259,26 @@
 # Composite decking is bought by the board, not the sheet. 2026-08-08: rather than leave
 # it blank a second time, this is the sheet-EQUIVALENT — 32 SF at the $4-10/SF material
 # price of capped composite board. It is a unit conversion, not a product you can order.
-"composite-deck" = { material = { low = 130, high = 320 }, labour = { low = 128, high = 288 } }  # 6 sheets
+"composite-deck" = { material = { low = 130, high = 320 }, labour = { low = 128, high = 288 } }  # 6 sheets — 164.7 SF, FS-SG-PORCH only
+# The balcony's waterproof interlocking aluminium plank (FS-SG-DECK's subfloor). Bought by
+# the board like the composite above it, so this is the same sheet-EQUIVALENT conversion —
+# 32 SF at the researched installed rate. It carried the identical money as
+# [concrete] `slab:BALCONY_DECK_ALUMINUM` until 2026-08-22, when the plank stopped being a
+# Slab; the rate is that one divided by six sheets and nothing else has changed.
+# ** NO PUBLISHED PRICE EXISTS FOR ANY WATERPROOF INTERLOCKING ALUMINIUM DECK SYSTEM. ** All five
+# brands are quote-only — Wahoo AridDek, Nexan LockDry, Versadeck Versadry, Last Deck, DryJoistEZ.
+# No dealer, no e-commerce, no forum post with a transacted number. Versadeck's sales line is a
+# Twin Cities number, (651) 356-1870, and one call would turn this from the weakest row in the
+# file into a real one.
+# Homewyse aluminum decking, May 2026, decoded and localised — material $16.74-20.57/SF
+# (including 6.75% waste), labour 0.1085 hr/SF at $61.36-74.38 = $6.66-8.07/SF, supplies
+# $1.40-1.60/SF, equipment $84-126/job, so $25.3-30.9/SF installed. But that prices GENERIC 6"x1"
+# 6005-T5 board, not a gasketed dry-below system. HomeAdvisor (Aug 2026) gives $30-55/SF installed
+# and $40-55/SF for SECOND-STOREY work, which this is.
+# $30-52/SF for the plank system only — framing, ledger, wall flashing and railing are billed
+# elsewhere — at roughly 70:30 material to labour, PLUS $400-900 of LTL freight on a factory-cut
+# small order to Minnesota. -> $6,948-12,252 over 6 sheets. CONFIDENCE: LOW above the Homewyse floor.
+"aluminum-deck" = { material = { low = 833, high = 1450 }, labour = { low = 325, high = 592 } }  # 6 sheets = 182.0 SF
 # Ceiling gypsum (FS-S-WEST/FS-S-EAST's `ceiling_below`, since 2026-08-21's truss/I-joist
 # split — FS-SECOND before that), by the sheet. Distinct from the
 # `[envelope_layers]` "gwb" row, which is wall lining priced by the net SF.
@@ -399,31 +418,30 @@
 # $/cy placed, by solid category
 # 2026-08-20 RESEARCH PASS 4 raised every rate below. The old numbers were ready-mix plus a
 # thin placement allowance; a formed pour is bought by the FOOT OF FORM, not the yard of mud.
-# 2026-08-21: THIS ROW BILLS WOOD, NOT CONCRETE. It sits in a $/cy concrete table only
-# because `structural_solids` keys on solid CATEGORY. Nine of the twenty Beam elements are
-# LVL — BM-M-HALL / BM-S-HALL at 3-1.75x11.875, the garden's back and front beams at
-# 2-1.75x11.25, its balcony beams at 2-1.75x9.25 — and the other eleven are sawn, on
-# purpose: the garden's four E-W girts are 2x10, the breezeway's four floor beams 2-2x8
-# (flush with its joists) and its three rafters 2x6. Not one is concrete, and none was on
-# 2026-08-20 either — so the caveat this line used to carry ("if this beam is cast
-# monolithically with CATLIN_DECK_9_INT it is already inside that deck rate") described a
-# pour that never existed, not one the EPS deck swap retired.
 #
-# The row still cannot be zeroed: these twenty solids bill NOWHERE else. RB-HOUSE is the
-# only Beam that does — the ridge resolves as a framing member and shows up as 36 LF of
-# lumber — and it is not one of the twenty.
+# 2026-08-22: THE BARE "beam" AND "column" ROWS ARE GONE, and this is the one change in this
+# file that could have silently zeroed a line. Both used to bill WOOD out of a $/cy concrete
+# table, because `structural_solids` keys on solid CATEGORY and every Beam and four of the
+# nine bare Posts carried no assembly, so the takeoff could not say what they were made of.
+# They do now (plan/assemblies.py: BEAM_LVL, BEAM_KDAT, POST_KDAT, PIER_CONCRETE_12), which
+# splits both categories into `category:assembly` groups — so a bare key matches nothing any
+# more, and the wood goes to the new [timber] table. What stays here is what is actually a
+# pour: the five 12" sonotube piers and the 16" square front column. Both are keyed
+# explicitly; leaving them on a bare "column" would have been a rate looking for a row.
 #
-# So the rate is wrong in kind, and probably in size. Left as researched rather than
-# guessed at: 1 cy of framing is 27 cf, and against this file's own [framing] rows a 2-2x8
-# at $3.20-5.10/LF is $572-912/cy while a 3-ply 1.75x11.875 LVL at $36-69/LF is
-# $2,246-4,306/cy. The volume is 77% LVL by the yard, which blends to ~$1,860-3,530/cy —
-# roughly double what the row carries. The real fix is to bill these by the FOOT in
-# [framing] like every other stick, and keep this row for a concrete beam the house does
-# not have yet.
-"beam" = { low = 900, high = 2000 }  # 1.06 cy of LVL/sawn — read as wood, NOT a formed pour
 # A 16"x16" column 9' tall is 0.593 cy, so this is $530-1,480 each. Column forms, plumbing,
 # bracing and rubbing/patching after strip dominate; ready-mix is under 15% of the cost.
-"column" = { low = 900, high = 2500 }  # 1.78 cy — was $260-420
+# Rate carried across unchanged from the bare "column" row it replaces, so the front column
+# costs exactly what it cost before the split.
+"column:SUNKEN_GARDEN_COLUMN_16" = { low = 900, high = 2500 }  # 0.55 cy = 8.4 LF — PT-SG-FCOL
+# The five 12" round sonotube piers: PR-BW-1..4 under the breezeway posts and PT-SG-COL at
+# the garden back-beam midspan, 25.9 LF between them. A round pier is cheaper per yard than
+# the square column above because the form is a disposable tube rather than built panels and
+# there is no chamfer, no wash and no rubbing after strip. $31-62/LF installed: fibre tube
+# $4-9/LF, ready-mix $5.80-9.30/LF (a 12" round is 0.0291 cy/LF at $200-320/cy), a 4-bar #4
+# cage with ties $3-6/LF, then $18-38/LF to lay out, set and brace the tube plumb, place and
+# vibrate, and strip. Labour-dominated, like every small-volume pour in this table.
+"column:PIER_CONCRETE_12" = { material = { low = 462, high = 852 }, labour = { low = 638, high = 1348 } }  # 0.73 cy = 25.9 LF; $/cy, so the line is $803-1,606
 # ** THE LARGEST PROPORTIONAL ERROR IN THE 2026-08-08 FILE, ~5x. ** The old $240-400/cy came
 # out at $0.99-1.66 per LF over the ~800 LF this volume represents, which is roughly the bare
 # pipe and not even all of it. New-construction installed exterior footing drain, open trench,
@@ -597,22 +615,9 @@
 "glazing:BREEZEWAY_GLAZED_WALL" = { material = { low = 4400, high = 10200 }, labour = { low = 4500, high = 9600 } }  # 0.16 cy = 79.2 SF
 "glazing:BREEZEWAY_ROOF_GLAZING" = { material = { low = 7200, high = 16600 }, labour = { low = 8800, high = 15400 } }  # 0.03 cy = 16.0 SF
 #
-# ALUMINIUM BALCONY DECK — SL-SG-DECK. 0.84 cy at the modelled 1.5" is 181.4 SF, which is a
-# plausible balcony, so unlike the porch deck below this quantity looks sound.
-# ** NO PUBLISHED PRICE EXISTS FOR ANY WATERPROOF INTERLOCKING ALUMINIUM DECK SYSTEM. ** All five
-# brands are quote-only — Wahoo AridDek, Nexan LockDry, Versadeck Versadry, Last Deck, DryJoistEZ.
-# No dealer, no e-commerce, no forum post with a transacted number. Versadeck's sales line is a
-# Twin Cities number, (651) 356-1870, and one call would turn this from the weakest row in the
-# file into a real one.
-# Floor: Homewyse aluminum decking, May 2026, decoded and localised — material $16.74-20.57/SF
-# (including 6.75% waste), labour 0.1085 hr/SF at $61.36-74.38 = $6.66-8.07/SF, supplies
-# $1.40-1.60/SF, equipment $84-126/job, so $25.3-30.9/SF installed. But that prices GENERIC 6"x1"
-# 6005-T5 board, not a gasketed dry-below system. HomeAdvisor (Aug 2026) gives $30-55/SF installed
-# and $40-55/SF for SECOND-STOREY work, which this is.
-# $30-52/SF for the plank system only — framing, ledger, wall flashing and railing are billed
-# elsewhere — at roughly 70:30 material to labour, PLUS $400-900 of LTL freight on a factory-cut
-# small order to Minnesota. -> $5,842-10,333 over 0.84 cy. CONFIDENCE: LOW above the Homewyse floor.
-"slab:BALCONY_DECK_ALUMINUM" = { material = { low = 5000, high = 8700 }, labour = { low = 1950, high = 3550 } }  # 0.84 cy = 181.4 SF
+# ALUMINIUM BALCONY DECK — moved to [sheet_goods] `aluminum-deck` on 2026-08-22, when
+# SL-SG-DECK stopped being a Slab and became FS-SG-DECK's `subfloor`. Same boards, same
+# money, an honest unit: 182.0 SF / 6 sheets instead of 0.84 cubic yards of plank.
 #
 # ELM TIMBER COLUMNS — the four suite tudor posts, 6-1/8" square S4S, 40 LF / 125 bf. There is
 # no published market for this: a solid clear 6" elm timber is effectively unobtainable and would
@@ -664,20 +669,22 @@
 # PORCH DECK, COMPOSITE — the breezeway deck. PRICED 2026-08-20, after the "10x discrepancy"
 # that held this row open through two passes turned out not to exist.
 #
-# The 2026-08-08 note read [sheet_goods] `composite-deck` (164.7 SF) and this solid
-# (SL-BW-DECK, 0.05 cy = 16.5 SF at 1.0") as two counts of one deck differing by 10x. They are
-# TWO DIFFERENT DECKS, and `takeoff/framing.py:223` is what proves it: the sheet_goods
-# "subfloor" scope reads `FloorSystem.subfloor` and nothing else, so a Slab can never appear
-# there. The 164.7 SF is FS-SG-PORCH's `subfloor=DeckLayer(material_ref="composite-deck")`
-# in params/sunken_garden.py — the sunken-garden porch floor, whose own slab was deleted so
-# the plank became the floor system's surface layer. This solid is the breezeway deck in
-# params/breezeway.py, 4.0' x 4.11' between the house cladding and the garage stem. Neither
-# one double-counts the other, and 16.5 SF is exactly the modelled outline.
+# The 2026-08-08 note read [sheet_goods] `composite-deck` (then 164.7 SF) and this solid
+# (SL-BW-DECK, 0.05 cy = 16.5 SF at 1.0") as two counts of one deck differing by 10x. They
+# are TWO DIFFERENT DECKS: the sheet_goods "subfloor" scope reads `FloorSystem.subfloor` and
+# nothing else, so a Slab can never appear there. That row is the garden porch's plank
+# (FS-SG-PORCH); this is the 4.0' x 4.11' breezeway between the house cladding and the
+# garage stem. Neither double-counts the other, and 16.5 SF is exactly the modelled outline.
+#
+# 2026-08-22: this row nearly went away. SL-BW-DECK was converted to FS-BW-FLOOR's subfloor
+# alongside the balcony's, and converted back the same day — a floor system's sheet is its
+# joist field, and this plank oversails its rim 2 3/4" onto the two door thresholds. The
+# reasoning is in params/breezeway.py; the row stays.
 #
 # So: material is the same capped composite plank as the sheet_goods row, $4-10/SF, and
 # labour is a MINIMUM CHARGE rather than a rate — 16.5 SF is under an hour of laying and
 # nobody mobilises for it separately, so this assumes the crew is already on site for the
-# 164.7 SF porch. Homewyse synthetic decking (May 2026) decodes to 0.1215 crew-hr/SF at a
+# garden porch. Homewyse synthetic decking (May 2026) decodes to 0.1215 crew-hr/SF at a
 # localised $61.36-74.38/hr, which would be $123-149 of pure lay time; the range below carries
 # that plus the cut-in against two dissimilar buildings (the deck tucks 7/8" under the garage
 # cladding, so the garage edge is scribed, not butted).
@@ -1315,6 +1322,60 @@
 # faces, its own footing, and site-access constraints. Third-largest wall line in the house.
 "SUNKEN_GARDEN_WALL" = { low = 500, high = 900 }  # 28.91 CY — was $350-650
 
+[timber]
+# NEW 2026-08-22 — [low, high] $/cy, by solid category, qualified by assembly. This is the
+# WOOD half of `structural_solids`: [concrete] above bills the rows whose material is
+# concrete, this one bills the rows whose material is engineered or treated lumber, and
+# `cli/prices.MATERIAL_ONLY` is the only thing that tells the two apart.
+#
+# It exists because the free-standing Beam and Post elements bill NOWHERE ELSE. The [framing]
+# table reads sticks the resolver emits from walls, floors and roofs; a Beam is authored, not
+# emitted, so it never reaches it. RB-HOUSE is the one exception — the ridge resolves as a
+# framing member and shows up as 36 LF of lumber — and it is not one of these.
+#
+# A cubic yard is a strange unit for lumber and the file admits it: `structural_solids`
+# measures volume, so the yard is what the join has. Every rate below is therefore built from
+# a LINEAL FOOT figure taken off this file's own [framing] rows, then divided by the modelled
+# volume, and both numbers are in the trailing comment so an estimator can check the
+# conversion instead of trusting it. 1 cy of framing is 27 cf.
+#
+# The KDAT premium used throughout: kiln-dried-after-treatment southern yellow pine runs
+# 35-60% over SPF on MATERIAL and the same on labour, and it is not optional here — every
+# stick in these two rows stands in weather over open ground.
+#
+# BEAM, LVL — 78.0 LF over nine members, 0.81 cy. Three sizes, priced separately and summed:
+#   12.0 LF  3-1.75x11.875 (BM-M-HALL 3.5', BM-S-HALL 8.5') — interior, untreated.
+#            [framing] "3-1.75x11.875 LVL" is $21-39 mat + $15-30 lab = $36-69/LF.
+#   40.0 LF  2-1.75x11.25, the garden's back and front pairs at 10'-0" each — TREATED LVL,
+#            in beam pockets cast in a wall holding 9'-9" of fill, over an open well.
+#            [framing] "2-1.75x11.875 LVL" is $14-26 mat; a hair shallower and treated
+#            (+30-50% on a special-order preservative-treated billet) is $18-38 mat, labour
+#            unchanged at $8-18 = $26-56/LF.
+#   26.0 LF  2-1.75x9.25, the three balcony beams at 8'-8" — treated, same build-up:
+#            $15-32 mat + $7-16 lab = $22-48/LF.
+# -> material $1,362-2,820 and labour $682-1,496, i.e. $2,044-4,316 over 0.81 cy.
+# This is roughly DOUBLE what the retired bare "beam" row in [concrete] billed, and the
+# 2026-08-21 note on that row predicted exactly that: "the rate is wrong in kind, and
+# probably in size ... ~$1,860-3,530/cy". It was.
+"beam:BEAM_LVL" = { material = { low = 1680, high = 3480 }, labour = { low = 840, high = 1850 } }  # 0.81 cy = 78.0 LF
+#
+# BEAM, KDAT — 64.8 LF over eleven members, 0.24 cy. The breezeway's whole frame plus the
+# garden's four balcony girts:
+#   14.3 LF  2-2x8, the four breezeway floor and roof beams at 3'-7". [framing] "2-2x8" is
+#            $2.20-3.10 mat + $1-2 lab; KDAT is $3.00-5.00 mat = $4.00-7.00/LF.
+#   12.0 LF  2x6, the three breezeway rafters at 4'-0". $1.20-1.90 mat + $0.90-1.60 lab.
+#   38.5 LF  2x10, the four E-W balcony girts at ~9'-7". $2.10-3.30 mat + $1.30-2.40 lab.
+# -> material $138-222 and labour $75-140, i.e. $213-362 over 0.24 cy. The smallest line in
+# this table and the one most exposed to a minimum charge: nobody mobilises for 65 LF, so it
+# assumes the crew is already framing the deck it belongs to.
+"beam:BEAM_KDAT" = { material = { low = 575, high = 925 }, labour = { low = 313, high = 583 } }  # 0.24 cy = 64.8 LF
+#
+# COLUMN, KDAT — the four breezeway 6x6 posts, 28.4 LF, 0.22 cy. [framing] "6x6" is $5-8.50
+# mat + $2.50-5 lab; these are GROUND-CONTACT rated (the brief) and stand on standoff bases
+# over open soil, so material is $6.50-11/LF. The bases, the post caps and the structural
+# screws are all in [hardware] already and are NOT in this rate.
+"column:POST_KDAT" = { material = { low = 840, high = 1420 }, labour = { low = 323, high = 645 } }  # 0.22 cy = 28.4 LF
+
 [wood_surfaces]
 # RESEARCHED 2026-08-08 — [low, high] $/SF on the order quantity, by material tag. Mind the
 # mirrors: this table shares three of its five materials with tables that already price them,
@@ -1755,12 +1816,12 @@
 # rim-spray-foam: 3" of closed-cell foam in an 11-7/8" rim cavity is about 3.0 board-feet of
 # foam per lineal foot (11.875" x 3"), and 2 lb ccSPF runs $1.00-1.50/board-foot installed
 # by a sprayer with a minimum-charge floor. That is $3.00-4.50/LF of rim, and the range below
-# widens the top end because 54 LF is well under any sprayer's minimum — the mobilisation, not
+# widens the top end because 81 LF is well under any sprayer's minimum — the mobilisation, not
 # the foam, is what this line actually costs.
 # Sources: 2026 published ccSPF $/board-foot surveys (homeguide.com, retrofoamofmichigan);
 # the board-foot-per-foot figure is the cavity's own geometry, not a quote.
 # $/LF of return, by takeoff_category
-"rim-spray-foam" = { material = { low = 1.2, high = 2.4 }, labour = { low = 1.8, high = 6.6 } }  # 54 LF
+"rim-spray-foam" = { material = { low = 1.2, high = 2.4 }, labour = { low = 1.8, high = 6.6 } }  # 81.0 LF — was 54 LF when this rate was written (re-read 2026-08-22)
 
 # 2026-08-20 — the two rows the 2026-08-18 pass left open, answered as far as they can be.
 #
@@ -2215,6 +2276,7 @@ install_parts        = "material"
 pipe_insulation      = "material"
 edge_trim            = "material"
 wall_structure       = "installed"
+timber               = "material"
 railings             = "material"
 drainage             = "material"
 construction_returns = "material"
@@ -2227,6 +2289,7 @@ allowances           = "installed"
 
 [basis_notes]
 concrete        = "$/cy PLACED and MERGED — ready-mix plus placement, rebar and forming; never divided into a guessed split. Raised across the board 2026-08-20; slab-on-grade was ~2.5x low and drain_tile ~5x"
+timber          = "$/cy, but built from $/LF and shown divided in every row's comment — the join measures volume and lumber is bought by the foot. Material and labour are split because a stick of LVL is a purchase and hanging it is a wage, unlike the merged pours in [concrete]"
 wall_structure  = "$/cy PLACED and MERGED, same reason as [concrete]. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and BASEMENT_BRICK_VENEER (including its per-material rows BASEMENT_BRICK_VENEER:brown-brick / :glazed-lapis-brick / :glazed-gold-brick) contain no ready-mix at all and must not be escalated with a concrete index"
 footing_bedding = "$/cy delivered — material only. Spreading and compacting is in the excavator's number, which is not in this file. Confirmed 2026-08-20 against MnDOT 2025 average bid prices"
 openings        = "material and labour are now SEPARATE quantities. The old single 55-65% back-out factor is gone: the real material share runs 70-85% for windows, 60-70% for exterior doors, 40-55% for interior doors and 10-25% for a cased opening"

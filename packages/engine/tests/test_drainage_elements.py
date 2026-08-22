@@ -92,8 +92,8 @@ def test_the_balcony_leader_hangs_outside_the_east_retaining_wall(catlin_model):
     # The deck's east edge is flush with W-SG-E1's *outer* face by construction (the joists
     # cantilever 6" off the axis and the wall is 12" thick), so clearing the deck is the
     # same statement as clearing the wall the whole drop would otherwise pass through.
-    deck = next(s for s in catlin_model.solids if s.tag == "SL-SG-DECK")
-    assert _x0(leader) >= _x1(deck)
+    deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-DECK")
+    assert _x0(leader) >= max(point[0] for point in deck.deck_outline)
 
     terrace_m = next(w for w in catlin_model.walls if w.tag == "W-SG-E2").z1_m
     assert terrace_m < leader.z0_m < terrace_m + 0.3, \

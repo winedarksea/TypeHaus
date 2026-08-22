@@ -150,6 +150,72 @@ facade is composed around; `FH-M-DINING`/`FH-M-BATH2` radiant would need re-auth
 anticipates a joist ceiling raising the sauna liner to full wall height.
 </details>
 
+## W-B-STR, the 12" stair wall — PRICED 2026-08-22, RECOMMENDATION IS NEITHER
+
+The last 12" pour anybody asked about: `W-B-STR`, the basement stair shaft's west wall,
+14'-2 5/8" x 9'-4" = 132.7 SF, **4.92 cy** of `FOUNDATION_WALL_12_INT` on the x=10'-0" axis.
+Two ways to make it cheaper were asked for — thin it, or frame it — and both are priced
+below. Neither is recommended, and the reason in both cases is the same floor opening.
+
+| swap | current → new | saves | notes |
+|---|---|---|---|
+| `W-B-STR` 12" → 8" pour | 4.92 cy → 3.28 cy | **$330–560** | NOT $771–1,279. See below — the forms do not go away. Pulls a 9'-0" engineered floor header |
+| `W-B-STR` → `CATLIN_INT_2X6_BRG` stud wall | $2,312–3,838 concrete → $1,093–1,923 framing | **$389–2,745** | retires a two-storey bearing line and the one interior footing the 2026-08-21 pass deliberately kept |
+
+**Why the 8" saving is a third of what a $/cy multiply says.** `[wall_structure]`
+`FOUNDATION_WALL_12_INT` is $470–780/cy, and 1.64 cy x that is $771–1,279. That number is
+wrong in kind: it is a **merged placed rate for a formed wall**, and a formed wall is bought
+by the foot of form. Thinning it changes neither form area (2 x 132.7 SF), nor the strip,
+nor the rebar, nor the labour — only the mud. 1.64 cy of ready-mix at this file's own
+$200–320/cy delivered-plus-placement basis is **$330–560**, and that is the honest figure.
+The same trap is why `[concrete]`'s 2026-08-20 pass raised every small-pour rate: *a formed
+pour is bought by the FOOT OF FORM, not the yard of mud.*
+
+**Why 8" pulls an engineered header, exactly.**
+`resolve/floors.py::_opening_edge_has_declared_bearing` tests a floor opening's edge against
+the bearing wall's plan **footprint**, not its axis. `FO-M-STAIR`'s west edge is at
+x=**10'-6"**. At 12" the wall's footprint is 9'-6"–10'-6" and the edge sits on its boundary,
+carried. At 8" the footprint is 9'-8"–10'-4" and the edge is **2" outside it**: the resolver
+emits a header over the whole 8'-11 5/8" edge, and `structural.floor_opening_header` FAILs it
+as past R602.7's 8'-0" prescriptive table — the emitted `engineered-LVL` is a placeholder for
+a designed beam.
+- **The fix exists and is not free:** move `FO-M-STAIR`'s west edge to 10'-4". That widens
+  the well to 7'-2" (it is at the 7'-0" code minimum now, so wider is legal), and `ST-B2M`'s
+  flight width is measured off that face, so the stair re-dimensions. No materials, several
+  drawings.
+- A 6.75" `CATLIN_INT_2X6_BRG` wall has faces at 9'-8 5/8"/10'-3 3/8" — the same problem, 1/8"
+  worse.
+
+**What framing it really costs.** 4.92 cy at $470–780/cy is $2,312–3,838 out of
+`[wall_structure]`; the replacement is ~155 LF of 2x6 at `[framing]`'s $1.75–2.75/LF, 265 SF
+of gypsum both faces at `[envelope_layers]`' $1.55–2.65/SF, and 265 SF of paint at
+$1.55–3.00/SF = **$1,093–1,923**. So $389–2,745 back, and the low end is nearly nothing.
+**The cost of the cut is structural, not financial:**
+- It is a **two-storey bearing line**. `W-M-STRW` and `W-M-STRW2` name it in `stacks_on`
+  (`plan/storeys/main.py:362,372`) and carry to the footings.
+- `FT-B-STR` is the one interior footing the 2026-08-21 framing pass deliberately did *not*
+  retire (`params/foundations.py:76-80`), and it is there because this wall bears.
+- The stair well is at the 7'-0" code minimum and `ST-B2M`'s flight width is measured off
+  this wall's east face, so any thickness change is a stair change.
+- No *check* requires concrete here: `unbalanced_fill=ft(0)` makes
+  `structural.foundation_unbalanced_fill` skip it entirely (it retains nothing — it is an
+  interior wall). The constraints are dimensional and structural, and they are the ones the
+  "do not touch" note at `plan/storeys/basement.py:284-297` already lists.
+
+**What moves with it, either way.** Two cast conduit sleeves — `SP-B-STR-CD-GAR` and
+`SP-B-STR-CD-KITCH` — become bored stud-bay crossings if it is framed, which is *cheaper*;
+`SP-B-CN-CD-KITCH` through `W-B-CN` is unaffected, and `SP-B-STR-BATH-VENT` already crosses
+`W-B-STR2`'s steel studs. Three blessed section goldens are keyed to this junction —
+`detail_wall_foundation-`, `detail_stack_width_change-` and
+`detail_storey_stack-rim-CATLIN_INT_2X6_BRG-FOUNDATION_WALL_12_INT`. The assembly survives on
+`W-B-CN/CN2/CS2` so those scenes stay, but a stud-on-stud junction appears that wants
+blessing.
+
+**Recommendation: neither.** $330–560 for a stair-well re-dimension plus an engineered
+header is a bad trade at any confidence; $389–2,745 for retiring a two-storey bearing line
+and its footing is a worse one. If the stair well is ever re-drawn for another reason, the
+8" pour comes almost free at that moment — revisit it then, not before.
+
 ## Taken
 
 ### Metal skin: one rate to four, garage rainscreen dropped — 2026-08-20

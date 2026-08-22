@@ -243,6 +243,17 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
             span_in, span_out = spans[index]
         host_name = stack[host_index].name if host_index is not None else None
         band_z0, band_z1 = _band(layer)
+        # A band clamped to nothing is not on this wall. `_band` clips a layer's extent to
+        # the wall's own z range, so a layer banded above grade lands on a wall that stops AT
+        # grade with bottom == top — catlin's garage grade beams (W-GF-E-DR/S-DR) against the
+        # R316.4 gypsum band the ICF stem carries above the slab. Emitting it anyway produced
+        # a ResolvedLayer with no height, which the geometry builder then skipped as a
+        # zero-volume prism: the two disagreed about the wall's part count, which is exactly
+        # what `test_geometry_ir_parity` exists to catch. Dropping it here is the honest
+        # reading — the band is out of this wall's range — and it drops the layer's cavity
+        # fill with it, since a cavity has no business outliving its host.
+        if band_z0 is not None and band_z1 is not None and band_z1 - band_z0 <= 1e-9:
+            continue
         layers.append(
             ResolvedLayer(
                 name=layer.name,

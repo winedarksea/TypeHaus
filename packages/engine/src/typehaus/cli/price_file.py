@@ -68,6 +68,9 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "pl
              "edge_trim",
              # Monolithic wall structure (2026-08-03): concrete/masonry walls by the yard.
              "wall_structure",
+             # Structural WOOD solids by the yard (2026-08-22) — the other half of
+             # [concrete]. See ``Prices.timber``.
+             "timber",
              # Sheet-metal families the yard is the wrong unit for (2026-08-08): guards and
              # gutter/leader runs by the foot.
              "railings", "drainage",
@@ -146,6 +149,8 @@ BASES = (MATERIAL, LABOUR, INSTALLED)
 ALTERNATE_UNITS: dict[str, dict[str, str]] = {
     # ``structural_solids``: every row carries all four, so any of them is honest.
     "concrete": {"ea": "count", "SF": "plan_area_sqft", "cuft": "volume_cuft"},
+    # Same table, same rows — see ``Prices.timber``.
+    "timber": {"ea": "count", "SF": "plan_area_sqft", "cuft": "volume_cuft"},
     # A retaining wall and a brick veneer are sold by the square foot of FACE, and neither is
     # ready-mix; ``net_area_sqft`` is the face the takeoff already measured.
     "wall_structure": {"SF": "net_area_sqft", "ea": "count"},
@@ -219,6 +224,23 @@ class Prices:
     # carry net_area_sqft, so a face-priced second plan entry can be added later — but
     # price each assembly in one table only.
     wall_structure: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Structural WOOD solids by the cubic yard (2026-08-22), keyed exactly like [concrete]:
+    # the solid CATEGORY, optionally qualified by assembly as ``"beam:BEAM_LVL"``.
+    #
+    # It reads the *same* ``structural_solids`` BOM table [concrete] does, and the two are
+    # kept apart by ``prices.MATERIAL_ONLY`` alone: [concrete] bills the rows whose
+    # ``structure_material`` is concrete, this one bills the rows whose material is a wood.
+    # Before this table existed there was nowhere else for a beam to go — "beam" is a
+    # category, not a material, so twenty LVL and KDAT sticks billed through a $/cy rate
+    # sitting in the ready-mix table with a nine-line comment apologising for it.
+    #
+    # A yard is an odd unit for lumber and it is the honest one here: ``structural_solids``
+    # measures volume, and these members bill NOWHERE else — the framing takeoff reads
+    # walls, floors and roofs, not free-standing Beam/Post elements. Where a house would
+    # rather quote by the foot, ``ALTERNATE_UNITS["timber"]`` offers the same row's
+    # ``count`` and ``plan_area_sqft``; converting a yard to a foot is the house's business,
+    # not the engine's.
+    timber: Mapping[str, PriceRange] = field(default_factory=dict)
     # Guards by the lineal foot of guard line (2026-08-08), keyed on the railing product
     # type. A count cannot price a railing: a 6-ft balcony guard and a 20-ft stair guard
     # are both "1".

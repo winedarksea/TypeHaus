@@ -44,5 +44,5 @@ source:
 
 - Indicators: provide an exterior “in use” light, tied to heater control or via current-sensing relay.
 
-- Foundation: 8" concrete wall with #6 @ 48" o.c. vertical reinforcement, bearing on 20"×8" footing per IRC Table R403.1 (confirm local requirements). Footing concrete 5000 psi. Footing bears on 6" compacted washed stone aggregate (wider than footing) with French drain located in the wider area, not under the footing.
+- Foundation: 8" concrete wall with #6 @ 48" o.c. vertical reinforcement, bearing on 20"×8" footing per IRC Table R403.1 (confirm local requirements). Footing concrete 5000 psi. Footing bears on 6" compacted washed stone aggregate (wider than footing) with French drain located in the wider area, not under the footing. (Same pipe the model calls drain tile — see `basement_to_framed_wall_detail.md`; the two names do not describe two runs.)
 

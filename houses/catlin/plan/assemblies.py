@@ -562,6 +562,76 @@ ELM_TIMBER = Assembly(
     source="plans/TODO.md — suite tudor posts, elm 6-1/8\" square",
 )
 
+# --- structural members that are NOT concrete (2026-08-22) --------------------
+# `structural_solids` keys on solid CATEGORY, and "beam"/"column" are categories, not
+# materials. Until these four assemblies existed every Beam in the house and four of the
+# nine bare columns resolved with `structure_material=None`, which meant three separate
+# things went wrong at once: the section hatcher fell back to `solid_material_ref`'s
+# "any non-round beam is spf" rule, the GLB palette painted an LVL flitch and a treated
+# 2x6 rafter the same colour, and the estimate billed 1.06 cy of engineered lumber
+# through a $/cy row sitting in the CONCRETE table because that was the only table
+# `structural_solids` reached. Authoring the assembly is what makes `structure_material`
+# well-defined per group — see cli/prices.MATERIAL_ONLY, which can now say "this section
+# bills wood" instead of only "this section bills concrete".
+#
+# The LAYER THICKNESS here is one ply, not the built-up width, and that is deliberate: the
+# nine LVL beams are 3-1.75x11.875 (BM-M-HALL/BM-S-HALL), 2-1.75x11.25 (the garden's back
+# and front pairs) and 2-1.75x9.25 (its three balcony beams). One body width would be a
+# fiction for two of those three. The real section is `Beam.size`, which the resolver reads
+# directly; the assembly exists to name the MATERIAL, and a ply is the unit LVL is made in.
+BEAM_LVL = Assembly(
+    tag="BEAM_LVL",
+    layers=(
+        Layer(name="lvl", material_ref="lvl", thickness=inch(1.75),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="catlin-house LVL beams — 1-3/4\" plies, built up 2 or 3 wide per Beam.size; the garden's back/front pairs are treated LVL (exterior, over an open well)",
+)
+
+# The breezeway's whole frame: four 2-2x8 floor and roof beams, three 2x6 rafters. It stands
+# in weather over open ground with no enclosure above it, so every stick is treated — and
+# KDAT rather than plain PT, because a wet-treated deck frame shrinks and cups through its
+# first season and backs its own fasteners out doing it.
+BEAM_KDAT = Assembly(
+    tag="BEAM_KDAT",
+    layers=(
+        Layer(name="kdat", material_ref="kdat", thickness=inch(1.5),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="catlin-house breezeway frame — KDAT 2x stock, ply count per Beam.size (2-2x8 beams, single 2x6 rafters)",
+)
+
+# The breezeway's four 6x6 posts. NOT POST_WHITE_PAINT: that assembly is white-painted and
+# is shared with the balcony pillars and the stairwell posts, which stay white (CLAUDE.md,
+# "One exterior dark"), so pointing these at it would either recolour six pillars or claim a
+# paint finish nobody is applying. These are bare KDAT 6x6 with a clear water repellent —
+# the breezeway reads as structure, not as trim. 5.5" is the true 6x6 section, matching
+# POST_WHITE_PAINT's body.
+POST_KDAT = Assembly(
+    tag="POST_KDAT",
+    layers=(
+        Layer(name="kdat-post", material_ref="kdat", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="catlin-house breezeway 6x6 posts — ground-contact-rated KDAT, left unpainted with a clear water repellent",
+)
+
+# The 12" sonotube piers: PR-BW-1..4 under the breezeway posts and PT-SG-COL at the garden
+# back-beam midspan. Every one of the five is a round cast pier, and `solid_material_ref`
+# already reads "12 round" as concrete for the section hatch — but only for the hatch. The
+# assembly is what puts `structure_material="concrete"` on the BOM row so the [concrete]
+# price table's material guard admits it, which is the difference between the pier billing
+# at ready-mix and the pier billing at whatever rate the bare "column" key happened to hold.
+PIER_CONCRETE_12 = Assembly(
+    tag="PIER_CONCRETE_12",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
+              function=LayerFunction.STRUCTURE),
+    ),
+    interfaces=(_CONCRETE_BEARING,),
+    source="catlin-house 12\" round sonotube piers — cast in a fibre form on a spread pad, stripped to the form line; 4,000 psi, 6.0-6.5% air (Minn. R. 1309.0402, ACI 318-19 class F2)",
+)
+
 RAILING_DARK_METAL = Assembly(
     tag="RAILING_DARK_METAL",
     layers=(
@@ -579,9 +649,27 @@ RAILING_DARK_METAL = Assembly(
 GARAGE_ICF_EPS = inch(2.5)
 GARAGE_ICF_CORE = inch(6.0)
 
+# The stem's inside face carries the same 5/8" board the wood wall above it already lines
+# with, banded from grade up — 2026-08-22, and it is `code.R316_4` that asked for it. The
+# ICF's interior EPS stood bare inside the garage from the slab (poured at grade) to the
+# stem top 1'-10" above it, ~176 SF of exposed foam plastic facing an occupied space with
+# no thermal barrier over it. R316.4 wants 1/2" gypsum, 5/8" wood structural panel or an
+# NFPA 275 barrier, and the garage is boarded already (GARAGE_WALL_2X6's `default_lining`),
+# so continuing that board down the stem is the detail rather than a new one.
+#
+# BANDED, not full height: below grade the stem is backfilled and there is no interior to
+# separate anything from — a full-height layer would bill board into the soil. The `GRADE`
+# datum is the same mechanism the basement's foundation-protection panel uses, and it
+# tracks `Site.grade` rather than restating it, so the band follows the next lift down.
+#
+# Held 1/2" off the slab in the field, as any board over a garage slab is; the model has no
+# way to say so and the gap is inside the layer's own thickness either way.
 GARAGE_ICF_6 = Assembly(
     tag="GARAGE_ICF_6",
     layers=(
+        Layer(name="gwb-stem", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH,
+              extent=LayerExtent(bottom=LayerBound(datum=LayerDatum.GRADE))),
         Layer(name="eps-int", material_ref="icf-eps", thickness=GARAGE_ICF_EPS,
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
         Layer(name="concrete", material_ref="concrete", thickness=GARAGE_ICF_CORE,
@@ -907,7 +995,7 @@ MATERIALS = [
     # installed, which is R-3.125/inch through the finished deck — the number that belongs
     # in a thermal model of this floor, and 22% below the bare-foam figure.
     Material(tag="eps-deck-form", name="EPS stay-in-place deck form", r_per_inch=3.125,
-             perm_rating=3.9, hatch="rigid", color="#f0f0e6",
+             perm_rating=3.9, hatch="rigid", color="#f0f0e6", foam_plastic=True,
              source="BuildDeck brochure: R-25 at the 8\" base section as installed (ribs bridged by the pour), i.e. R-3.125/inch; permeance from ASHRAE UAF 'Expanded polystyrene, bead' 2.0-5.8 perm-in, midpoint, as `icf-eps`"),
     # --- accent wall paint -------------------------------------------------------
     # The house's one interior accent: deep spruce green-blue on RM-S-BED1's feature wall
@@ -1031,7 +1119,7 @@ MATERIALS = [
              skin_family="standing-seam",
              source="26 ga. PVDF-coated steel, nail-strip seam profile — the detached garage's wall spec; same white as the house, one gauge thinner"),
     Material(tag="polyiso-foil", name="Foil-faced polyisocyanurate", r_per_inch=6.0,
-             perm_rating=0.03, hatch="rigid", color="#d9d2a8",
+             perm_rating=0.03, hatch="rigid", color="#d9d2a8", foam_plastic=True,
              source="foil facer is the sauna's vapour retarder as well as its CI"),
     # Loose-fill for the garage attic (GARAGE_ROOF). A separate tag from `fiberglass`
     # because blown wool is installed at roughly half batt density and rates R-2.5/in
@@ -1393,10 +1481,12 @@ CONSTRUCTION_RULES = [
     # the rest of that ceiling is screwed direct. A full layered-ceiling assembly is
     # deliberately deferred; this just bills the channel (gypsum comes via FS-S-EAST's
     # `ceiling_below`).
-    # (That gap is closed as of 2026-08-18: `construction_returns` is a priced section now.
-    # This rule's own channel is still left unpriced in houses/catlin/prices.toml, on purpose
-    # and with the reason written there — it is the same "is this a second count of material
-    # another table already bought" question the sill plate raises.)
+    # (That gap closed on 2026-08-18: `construction_returns` is a priced section. The
+    # channel itself is PRICED — prices.toml [construction_returns] `resilient-channel`,
+    # 522.2 LF at $1.35-2.25/LF installed. This comment said it was "still left unpriced on
+    # purpose" until 2026-08-22 and had been wrong since the rate was authored; the sill
+    # plate is the row that is deliberately blank, because a PT sill is lumber [framing]
+    # already bought. Channel is not — nothing else in the file buys it.)
     ConstructionRule(
         tag="CR-LIVING-CEIL-RC",
         applies_to="floor:ceiling_channel",
@@ -1426,6 +1516,10 @@ ASSEMBLIES = [
     BALCONY_DECK_ALUMINUM,
     POST_WHITE_PAINT,
     ELM_TIMBER,
+    BEAM_LVL,
+    BEAM_KDAT,
+    POST_KDAT,
+    PIER_CONCRETE_12,
     RAILING_DARK_METAL,
     GARAGE_ICF_6,
     GARAGE_WALL_2X6,

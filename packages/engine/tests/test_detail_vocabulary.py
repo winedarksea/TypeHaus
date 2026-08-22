@@ -802,8 +802,14 @@ def test_sill_gasket_prefers_the_authored_framing_spec():
 
 def test_thermal_break_spec_reads_the_slab_source(catlin_model):
     """``Slab.perimeter_thermal_break`` is read off the cut slab's plan source. The two
-    slabs-on-grade (basement + garage) author the 1" XPS edge break; the walking-surface
-    decks author none and keep the pinned fallback."""
+    slabs-on-grade (basement + garage) author the 1" XPS edge break; a slab that authors
+    none keeps the pinned fallback.
+
+    The negative case used to be SL-SG-DECK, a walking-surface deck slab. Every exterior
+    deck became a FloorSystem subfloor on 2026-08-22, so the standing example of "a slab
+    with no authored edge break" is now the garden slab — cast against the retaining walls
+    at the bottom of an open well, with nothing conditioned on the other side of its edge
+    to insulate from."""
     from typehaus.emit.draw.detail_components.wall_base import thermal_break_spec
 
     slabs = {s.tag: s for s in catlin_model.solids if s.category == "slab"}
@@ -812,7 +818,7 @@ def test_thermal_break_spec_reads_the_slab_source(catlin_model):
         spec = thermal_break_spec(catlin_model, slabs[tag])
         assert spec is not None and spec.material_ref == "xps"
         assert spec.thickness == inch(1)
-    assert thermal_break_spec(catlin_model, slabs["SL-SG-DECK"]) is None
+    assert thermal_break_spec(catlin_model, slabs["SL-SG-FLOOR"]) is None
 
 
 def test_thermal_break_prefers_the_authored_slab_spec():

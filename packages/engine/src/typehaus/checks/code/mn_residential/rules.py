@@ -11,14 +11,30 @@ unrelated articles. The rest now live in topic modules beside it (``egress``, ``
 
 from __future__ import annotations
 
-from typehaus.checks.code.mn_residential._common import (_fail, _foundation_footprint,
-                                                         _pass, _room_storey, _unknown)
+from typing import Any
+
+from typehaus.checks.code.mn_residential._common import (
+    _fail,
+    _foundation_footprint,
+    _pass,
+    _room_storey,
+    _unknown,
+)
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import Occupancy
 from typehaus.model.refs import FollowRoof
-from typehaus.quantities import ft
+from typehaus.quantities import Length, ft, m
 from typehaus.resolve.roof_geometry import roof_headroom_areas
+
+#: Occupancies R305.1 does not reach. The rule's subject is "habitable space, hallways and
+#: portions of basements containing them", plus bathrooms, toilet rooms and laundry rooms —
+#: a garage is none of those, and grading one against a habitable-space minimum is a
+#: category error, not a strict reading. It also has no deck over it here (its ceiling is
+#: GARAGE_ROOF), so since the height became a derived measurement rather than the storey's
+#: authored default it could only ever answer UNKNOWN — a blocking UNKNOWN, on a permit item,
+#: about a rule that does not apply.
+_OUT_OF_R305_SCOPE = frozenset({Occupancy.UNCONDITIONED, Occupancy.GARAGE})
 
 _MIN_CEILING = ft(7)
 _MIN_SLOPED_CEILING = ft(5)
@@ -36,28 +52,84 @@ _SLOPE_EPS = 1e-3
 
 @check(Tier.CODE, "code.R305_ceiling_height")
 def ceiling_height(ctx: CheckContext) -> list[Finding]:
+    """R305.1 clear height, measured to the structure that is actually overhead.
+
+    ``Storey.default_ceiling_height`` used to answer this, and it is not a measurement — it
+    is a convenience number the plan author types once per storey and nothing reconciles
+    against the decks. Catlin's basement authors 9'-0" while the joisted halves and the EPS
+    deck band over it leave 8'-3 1/2" and 8'-4 1/8" — the storey default runs eight inches
+    generous. A room that authored 7'-6" over a deck that left 6'-9" would have PASSED.
+    Grading a code minimum against a number the model never checks is grading nothing.
+
+    So the underside is derived (``resolve/ceiling_over.py``, shared with the resilient-
+    channel return so the drawing and the check cannot disagree), and the MINIMUM underside
+    over the room's clear face governs — a room under two structures gets the lower of them,
+    because that is the head somebody walks into. An explicit ``Room.ceiling`` still wins:
+    a dropped or vaulted ceiling authored on the room is a statement about the room, not a
+    guess about the deck.
+
+    Where nothing covers the room the finding is UNKNOWN, not a pass on the storey default.
+    A room with no ceiling element over it is a modelling gap, and saying so is the whole
+    point of the tri-state.
+    """
     out: list[Finding] = []
     for room in ctx.plan.all_elements():
-        if room.element_kind != "Room" or room.occupancy is Occupancy.UNCONDITIONED:
+        if room.element_kind != "Room" or room.occupancy in _OUT_OF_R305_SCOPE:
             continue
-        if room.ceiling is None:
-            storey = _room_storey(ctx, room.tag)
-            h = storey.default_ceiling_height if storey else None
-        elif hasattr(room.ceiling, "meters"):
-            h = room.ceiling
-        elif isinstance(room.ceiling, FollowRoof):
+        if isinstance(room.ceiling, FollowRoof):
             out.append(_follow_roof_ceiling_finding(ctx, room))
             continue
-        if h is None:
-            out.append(_unknown("code.R305_ceiling_height", "no ceiling height",
-                                (room.tag,), "R305.1"))
-        elif h < _MIN_CEILING:
-            out.append(_fail("code.R305_ceiling_height",
-                             f"{room.tag} ceiling {h.fmt()} < 7'-0\" minimum", (room.tag,),
-                             "R305.1"))
+        if room.ceiling is not None and hasattr(room.ceiling, "meters"):
+            out.append(_graded_ceiling(room.tag, room.ceiling, "authored"))
+            continue
+        derived, source = _derived_clear_height(ctx, room)
+        if derived is None:
+            out.append(_unknown("code.R305_ceiling_height", source, (room.tag,), "R305.1"))
         else:
-            out.append(_pass("code.R305_ceiling_height", f"{room.tag} ceiling ok", "R305.1"))
+            out.append(_graded_ceiling(room.tag, derived, source))
     return out
+
+
+def _graded_ceiling(room_tag: str, height: Length, source: str) -> Finding:
+    if height < _MIN_CEILING:
+        return _fail("code.R305_ceiling_height",
+                     f"{room_tag} ceiling {height.fmt()} < 7'-0\" minimum ({source})",
+                     (room_tag,), "R305.1")
+    return _pass("code.R305_ceiling_height",
+                 f"{room_tag} ceiling {height.fmt()} ({source})", "R305.1")
+
+
+def _derived_clear_height(ctx: CheckContext,
+                          room: Any) -> tuple[Length | None, str]:
+    """``(clear height, source phrase)`` for a room with no authored ceiling.
+
+    The height is measured from the room's FLOOR LEVEL, which is taken as its storey datum.
+    That omits the subfloor sheet standing on the joists — a known and deliberate gap
+    (``resolve.rooms.room_floor_elevation`` shares it, and closing it moves every placeable
+    in every wood-floored room), so the derived height reads 3/4" GENEROUS on a joisted
+    floor. Against a 7'-0" minimum on rooms clearing it by more than a foot, that is not the
+    error worth stopping this pass for; it is recorded here so nobody reads the number as
+    exact.
+    """
+    from shapely.geometry import Polygon
+
+    from typehaus.resolve.ceiling_over import ceiling_decks_over, ceiling_underside_m
+
+    storey = _room_storey(ctx, room.tag)
+    resolved = next((item for item in ctx.model.rooms if item.tag == room.tag), None)
+    if storey is None or resolved is None or len(resolved.clear_face) < 3:
+        return None, "room does not resolve a clear face"
+    face = Polygon([tuple(point) for point in resolved.clear_face])
+    decks = ceiling_decks_over(ctx.plan, storey.tag, face)
+    if not decks:
+        return None, "no ceiling element over the room"
+    undersides = [value for value in
+                  (ceiling_underside_m(deck_storey, deck) for deck_storey, deck in decks)
+                  if value is not None]
+    if not undersides:
+        return None, "ceiling element over the room has no derivable underside"
+    tags = ", ".join(sorted({deck.tag for _storey, deck in decks}))
+    return m(min(undersides) - storey.elevation.meters), f"clear under {tags}"
 
 
 def _follow_roof_ceiling_finding(ctx: CheckContext, room) -> Finding:

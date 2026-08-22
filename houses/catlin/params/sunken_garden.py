@@ -23,11 +23,11 @@ Vertical stack (project-north frame; +X east, +Y north, +Z up):
   o.c. N-S; rear row 2" taller for drainage slope) carrying three N-S double-2x10 beams,
   2x8 joists @ 16" o.c., and aluminum (Wahoo AridDeck-style) decking.
 
-Everything here is generated — these elements carry no editable-source location. The porch
-floor is a FloorSystem outright (FS-SG-PORCH: joists, and the composite plank as its deck
-sheet) — it used to be a Slab standing in for the framing beside it, which meant two
-elements claiming one floor. The balcony's aluminum boards are still a walking-surface Slab
-over FS-SG-DECK.
+Everything here is generated — these elements carry no editable-source location. Both decks
+are FloorSystems outright, joists plus the plank as the deck sheet: FS-SG-PORCH (composite)
+since 3bf2f48, FS-SG-DECK (aluminium) since 2026-08-22. Each used to carry a second Slab
+element standing in for the surface beside the framing, which meant two elements claiming
+one floor and a plank billing by the cubic yard.
 """
 
 from __future__ import annotations
@@ -201,19 +201,33 @@ WALLS = [
     # Porch box: two 12" side walls only, topping at the porch floor. Both cross-edges are
     # column-and-beam (the balcony above rides on 6x6 pillars, not a concrete box).
     #
-    # W-SG-W1/E1 deliberately do NOT author `lateral_support`, and the check reports them
-    # UNKNOWN because of it. The question is real and unanswered: FS-SG-PORCH's framing lands
-    # on these two through CN-SG-HGR-W/E, and the garden slab bears at their foot, which is
-    # the shape of support top and bottom — but whether a porch deck of two 2x12 back beams
-    # counts as *permanent lateral support* at the head of a wall holding 9'-9" of fill is a
-    # judgment about the real structure, not something the model can read off its own
-    # geometry. Author it once that is settled: "top_and_bottom" puts them on IRC Table
-    # R404.1.2(8)'s 10' x 10' row, which asks for #6 @ 38" o.c. (prescriptive — R404.1.3 says
-    # drawings using this section need no engineer's seal); "unsupported" sends them to R404.4
-    # with W2/E2/S.
+    # W-SG-W1/E1 are SUPPORTED TOP AND BOTTOM (settled 2026-08-22). The question stood open
+    # for a while and it was a real one: whether a porch deck counts as *permanent lateral
+    # support* at the head of a wall holding 9'-9" of fill is a judgment about the real
+    # structure, not something the model can read off its own geometry. It does here, and
+    # the reason is that this head is not a deck edge resting alongside a wall — it is a
+    # beam pocket cast INTO it. Both back beams and both front beams die into these two
+    # walls in HUCQ410-SDS concealed-flange hangers (CN-SG-HGR-W/E, -FW/-FE), the porch
+    # joists span between those beams, and FS-SG-PORCH's plank sheet ties the whole
+    # diaphragm together. The bottom is the garden slab bearing at their foot. That is a
+    # continuous load path in both directions at both ends, which is what R404.1.2(8)
+    # presumes and what the free retaining walls south of here (W2/E2/S) do not have.
+    #
+    # The reinforcement is Table R404.1.2(8)'s 10' x 10' row for a 12" wall — #6 @ 38" o.c.
+    # vertical — and it is a CARRIED-UP row, not a table lookup, which is worth saying
+    # plainly. These walls resolve 10'-1" tall over 7'-3" of unbalanced fill, and the table
+    # stops at 10'-0", so `structural.foundation_unbalanced_fill` still reports them UNKNOWN
+    # — but for a different and much smaller reason than before: not "nobody has said
+    # whether the head is braced" but "the wall is an inch past the published maximum".
+    # R404.1.3's no-seal prescriptive path does not quite reach it. Two ways to close it and
+    # both belong to the engineer, not to this file: confirm the 10' row at 10'-1", or trim
+    # the wall to 10'-0". Authoring the schedule now is what makes that a one-line question
+    # instead of a blank.
     FoundationWall(uid="SGW103AAAA", tag="W-SG-W1", start_node="N-SG-NW",
                    end_node="N-SG-MW", assembly="SUNKEN_GARDEN_WALL",
-                   top_elevation=_porch_top, bottom_elevation=_wall_bottom),
+                   top_elevation=_porch_top, bottom_elevation=_wall_bottom,
+                   lateral_support="top_and_bottom",
+                   vertical_reinforcement='#6 @ 38" o.c.'),
     # East wall runs ME→NE (south→north), opposite the west wall, so both side walls wind
     # the same way around the garden. Retiring the arched cross-wall broke this component's
     # only closed loop — the five survivors are now one open chain NW→MW→SW→SE→ME→NE, whose
@@ -225,7 +239,9 @@ WALLS = [
     # layer — which is exactly what the retired masonry railing above them was.
     FoundationWall(uid="SGW104AAAA", tag="W-SG-E1", start_node="N-SG-ME",
                    end_node="N-SG-NE", assembly="SUNKEN_GARDEN_WALL",
-                   top_elevation=_porch_top, bottom_elevation=_wall_bottom),
+                   top_elevation=_porch_top, bottom_elevation=_wall_bottom,
+                   lateral_support="top_and_bottom",
+                   vertical_reinforcement='#6 @ 38" o.c.'),
     # Garden retaining run (to just above grade), the U south of the porch.
     #
     # `lateral_support="unsupported"` is the honest statement of what these three are: free
@@ -277,6 +293,7 @@ _front_footing_width_in = 36.0  # spread footing under the 16" square front colu
 COLUMN = Post(uid="SGP001AAAA", tag="PT-SG-COL",
               position=pt(ft(_cx), ft(_y_col)), size="12 round",
               height=ft(SPEC.basement_depth_ft - _back_beam_depth_ft),
+              assembly="PIER_CONCRETE_12",
               supported_by="FT-SG-COL")
 
 # The front column: 16" square cast concrete on its own spread footing, replacing the 16"
@@ -409,9 +426,11 @@ MAIN_NODES = [
 # Two treated LVL back beams: sonotube column -> side-wall hangers (two ~9'6" spans).
 BACK_BEAMS = [
     Beam(uid="SGBM01AAAA", tag="BM-SG-BKW", start_node="N-SGM-COL", end_node="N-SGM-NW",
-         size=SPEC.back_beam, bearing_refs=("PT-SG-COL", "W-SG-W1")),
+         size=SPEC.back_beam, assembly="BEAM_LVL",
+         bearing_refs=("PT-SG-COL", "W-SG-W1")),
     Beam(uid="SGBM02AAAA", tag="BM-SG-BKE", start_node="N-SGM-COL", end_node="N-SGM-NE",
-         size=SPEC.back_beam, bearing_refs=("PT-SG-COL", "W-SG-E1")),
+         size=SPEC.back_beam, assembly="BEAM_LVL",
+         bearing_refs=("PT-SG-COL", "W-SG-E1")),
 ]
 
 # The matching front pair, FLUSH: ``top_elevation`` pins them at the 0' joist datum so the
@@ -425,10 +444,10 @@ BACK_BEAMS = [
 # the 12" wall band is the modelled hanger detail already in use at the back.
 FRONT_BEAMS = [
     Beam(uid="SGBM03AAAA", tag="BM-SG-FRW", start_node="N-SGM-FCOL", end_node="N-SGM-FW",
-         size=SPEC.back_beam, top_elevation=_porch_top,
+         size=SPEC.back_beam, top_elevation=_porch_top, assembly="BEAM_LVL",
          bearing_refs=("PT-SG-FCOL", "W-SG-W1")),
     Beam(uid="SGBM04AAAA", tag="BM-SG-FRE", start_node="N-SGM-FCOL", end_node="N-SGM-FE",
-         size=SPEC.back_beam, top_elevation=_porch_top,
+         size=SPEC.back_beam, top_elevation=_porch_top, assembly="BEAM_LVL",
          bearing_refs=("PT-SG-FCOL", "W-SG-E1")),
 ]
 
@@ -537,11 +556,14 @@ SECOND_NODES = [
 # Three N-S double-2x10 beams over the west / center / east pillar lines.
 BALCONY_BEAMS = [
     Beam(uid="SGBB01AAAA", tag="BM-SG-BLW", start_node="N-SGB-NW", end_node="N-SGB-SW",
-         size=SPEC.balcony_beam, bearing_refs=("PT-SG-BR1", "PT-SG-BF1")),
+         size=SPEC.balcony_beam, assembly="BEAM_LVL",
+         bearing_refs=("PT-SG-BR1", "PT-SG-BF1")),
     Beam(uid="SGBB02AAAA", tag="BM-SG-BLC", start_node="N-SGB-NC", end_node="N-SGB-SC",
-         size=SPEC.balcony_beam, bearing_refs=("PT-SG-BR2", "PT-SG-BF2")),
+         size=SPEC.balcony_beam, assembly="BEAM_LVL",
+         bearing_refs=("PT-SG-BR2", "PT-SG-BF2")),
     Beam(uid="SGBB03AAAA", tag="BM-SG-BLE", start_node="N-SGB-NE", end_node="N-SGB-SE",
-         size=SPEC.balcony_beam, bearing_refs=("PT-SG-BR3", "PT-SG-BF3")),
+         size=SPEC.balcony_beam, assembly="BEAM_LVL",
+         bearing_refs=("PT-SG-BR3", "PT-SG-BF3")),
 ]
 
 # E-W girts, up ON the pillar tops in the same band as the N-S beams — they carry no
@@ -572,16 +594,16 @@ GIRT_NODES = [
 ]
 BALCONY_GIRTS = [
     Beam(uid="SGBG01AAAA", tag="BM-SG-GIRT-RW", start_node="N-SGG-RW1", end_node="N-SGG-RW2",
-         size="2x10", top_elevation=_girt_top,
+         size="2x10", top_elevation=_girt_top, assembly="BEAM_KDAT",
          bearing_refs=("PT-SG-BR1", "PT-SG-BR2")),
     Beam(uid="SGBG03AAAA", tag="BM-SG-GIRT-RE", start_node="N-SGG-RE1", end_node="N-SGG-RE2",
-         size="2x10", top_elevation=_girt_top,
+         size="2x10", top_elevation=_girt_top, assembly="BEAM_KDAT",
          bearing_refs=("PT-SG-BR2", "PT-SG-BR3")),
     Beam(uid="SGBG02AAAA", tag="BM-SG-GIRT-FW", start_node="N-SGG-FW1", end_node="N-SGG-FW2",
-         size="2x10", top_elevation=_girt_top,
+         size="2x10", top_elevation=_girt_top, assembly="BEAM_KDAT",
          bearing_refs=("PT-SG-BF1", "PT-SG-BF2")),
     Beam(uid="SGBG04AAAA", tag="BM-SG-GIRT-FE", start_node="N-SGG-FE1", end_node="N-SGG-FE2",
-         size="2x10", top_elevation=_girt_top,
+         size="2x10", top_elevation=_girt_top, assembly="BEAM_KDAT",
          bearing_refs=("PT-SG-BF2", "PT-SG-BF3")),
 ]
 
@@ -591,14 +613,10 @@ BALCONY_GIRTS = [
 _cant_ft = SPEC.joist_cantilever_in / 12.0
 _deck_x_w = _x_ax_w - _cant_ft
 _deck_x_e = _x_ax_e + _cant_ft
-DECK_FLOOR = Slab(
-    uid="SGS503AAAA", tag="SL-SG-DECK",
-    outline=(pt(ft(_deck_x_w), ft(_y_ax_front)), pt(ft(_deck_x_e), ft(_y_ax_front)),
-             pt(ft(_deck_x_e), ft(_y_in_n)), pt(ft(_deck_x_w), ft(_y_in_n))),
-    thickness=inch(SPEC.balcony_deck_thickness_in),
-    assembly="BALCONY_DECK_ALUMINUM",
-    datum="walking_surface",  # boards laid over FS-SG-DECK, not the structure itself
-)
+# The plank outline, kept as a constant now that no Slab draws it: TR-SG-FASCIA and the two
+# flashings are dimensioned off this deck edge, and so is _FRONT_PATH / _REAR_PATH below.
+_DECK_OUTLINE = (pt(ft(_deck_x_w), ft(_y_ax_front)), pt(ft(_deck_x_e), ft(_y_ax_front)),
+                 pt(ft(_deck_x_e), ft(_y_in_n)), pt(ft(_deck_x_w), ft(_y_in_n)))
 
 # --- joist framing under the two decks (rendered members beneath the surface slabs) ---
 # Porch: PT 2x8 @ 16" o.c. running N-S between the two beam lines — hung flush in the front
@@ -643,17 +661,33 @@ PORCH_JOISTS = FloorSystem(
     source="porch floor — PT 2x8 joists, flush in the front beams -> back beams",
 )
 
-# Balcony: 2x8 @ 16" o.c. running E-W across the three N-S double-2x10 beams.
+# Balcony: 2x8 @ 16" o.c. running E-W across the three N-S beams.
+#
+# SL-SG-DECK, a `datum="walking_surface"` Slab holding the aluminium plank, used to sit on
+# top of this and was deleted on 2026-08-22 — the same conversion SL-SG-PORCH had in
+# 3bf2f48, and for the same reason. A plank laid over joists is a floor system's SURFACE
+# LAYER, not a slab: as a Slab it resolved into `structural_solids` with category "slab",
+# where it could only be billed by the cubic yard out of a table named [concrete], and it
+# read as a second floor plane sitting on the deck in section and in the GLB. As a
+# `subfloor` it is a sheet over the joist field, bills by the square foot in
+# [sheet_goods] beside the porch's composite plank, and there is one floor here again.
+#
+# The area survives the move EXACTLY, which is why this one is safe: `resolve/floors.py`
+# draws the deck sheet bearing-line to bearing-line PLUS both cantilevers, by the joists'
+# perpendicular extent — that is _x_ax_w - 6" to _x_ax_e + 6" by _y_ax_front to _y_in_n,
+# which is the deleted slab's outline term for term.
 BALCONY_JOISTS = FloorSystem(
     uid="SGFS02AAAA", tag="FS-SG-DECK",
     joists=JoistSpec(member=SPEC.balcony_joist, spacing=inch(SPEC.balcony_joist_oc_in),
                      direction="x", cantilever=inch(SPEC.joist_cantilever_in),
                      bearing_refs=("BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE")),
-    outline=DECK_FLOOR.outline,
+    outline=_DECK_OUTLINE,
+    subfloor=DeckLayer(material_ref="aluminum-deck",
+                       thickness=inch(SPEC.balcony_deck_thickness_in)),
     # ``service="deck"`` is what puts this under IRC R507 / AWC DCA6 instead of the interior
     # 40-psf floor table — see checks/structural/deck.py.
     service="deck",
-    source="balcony — 2x8 joists on three double-2x10 beams",
+    source="balcony — 2x8 joists on three beams, Wahoo aluminium plank laid over them",
 )
 
 # ============================================================================
@@ -720,12 +754,20 @@ _back_beam_mid = _porch_top - ft(_porch_joist_depth_ft + _back_beam_depth_ft / 2
 _front_beam_soffit = _porch_top - ft(_front_beam_depth_ft)
 _front_beam_mid = _porch_top - ft(_front_beam_depth_ft / 2.0)
 CONNECTORS += [
+    # HUCQ410-SDS, not LUS210 (2026-08-22). Both back-beam ends land in a pocket cast in a
+    # 12" SUNKEN_GARDEN_WALL — concrete, not a wood ledger — and LUS210 is a wood-to-wood
+    # hanger with an exposed face flange and 10d-into-lumber nailing that has nothing to
+    # bite here. HUCQ is the concealed-flange hanger Simpson publishes for exactly this
+    # joint (library/hardware.py, ROLE_CONCRETE_FACE_MOUNT_HANGER); the front pair below
+    # has carried it since the front beams went flush, and the back pair being different
+    # was an oversight, not a detail. uid, tag, position and elevation are unchanged, so
+    # the IFC GlobalIds survive the retype.
     Connector(uid="SGCH01AAAA", tag="CN-SG-HGR-W", kind=ConnectorKind.JOIST_HANGER,
-              position=pt(ft(_x_ax_w), ft(_y_col)), elevation=_back_beam_mid, size="LUS210",
-              connects=("BM-SG-BKW", "W-SG-W1")),
+              position=pt(ft(_x_ax_w), ft(_y_col)), elevation=_back_beam_mid,
+              size="HUCQ410-SDS", connects=("BM-SG-BKW", "W-SG-W1")),
     Connector(uid="SGCH02AAAA", tag="CN-SG-HGR-E", kind=ConnectorKind.JOIST_HANGER,
-              position=pt(ft(_x_ax_e), ft(_y_col)), elevation=_back_beam_mid, size="LUS210",
-              connects=("BM-SG-BKE", "W-SG-E1")),
+              position=pt(ft(_x_ax_e), ft(_y_col)), elevation=_back_beam_mid,
+              size="HUCQ410-SDS", connects=("BM-SG-BKE", "W-SG-E1")),
     Connector(uid="SGCT01AAAA", tag="CN-SG-TIE-COL", kind=ConnectorKind.HURRICANE_TIE,
               position=pt(ft(_cx), ft(_y_col)), elevation=_back_beam_soffit, size="H2.5A",
               connects=("BM-SG-BKW", "BM-SG-BKE", "PT-SG-COL")),
@@ -740,10 +782,7 @@ CONNECTORS += [
               position=pt(_BR2_AT.x, ft(_y_ax_front)),
               elevation=_porch_top - ft(_porch_joist_depth_ft / 2.0), size="H2.5A",
               connects=("FS-SG-PORCH", "BM-SG-FRW", "BM-SG-FRE")),
-    # Front-beam pockets. HUCQ is the concealed-flange hanger Simpson publishes for a wood
-    # member landing on concrete or masonry (library/hardware.py,
-    # ROLE_CONCRETE_FACE_MOUNT_HANGER) — the right part where LUS210, a wood-to-wood hanger,
-    # is what the back pair still carries (see plans/TODO.md).
+    # Front-beam pockets, the same concrete-face-mount detail as the back pair above.
     Connector(uid="SGCH03AAAA", tag="CN-SG-HGR-FW", kind=ConnectorKind.JOIST_HANGER,
               position=pt(ft(_x_ax_w), ft(_y_ax_front)), elevation=_front_beam_mid,
               size="HUCQ410-SDS", connects=("BM-SG-FRW", "W-SG-W1")),
@@ -830,7 +869,7 @@ BALCONY_GUARD = Railing(
 BALCONY_FASCIA = Fascia(
     uid="SGFC01AAAA", tag="TR-SG-FASCIA", kind=TrimKind.FASCIA, path=_GUARD_PATH,
     top_elevation=_deck_top, depth=inch(9), thickness=inch(1), material="PVC",
-    host_ref="SL-SG-DECK")
+    host_ref="FS-SG-DECK")
 # Front (south, low) edge only — the drip flashing follows the deck edge itself.
 _FRONT_PATH = (pt(ft(_deck_x_w), ft(_y_ax_front)), pt(ft(_deck_x_e), ft(_y_ax_front)))
 # Where the leader hangs is what sets the trough's east end, so it is decided here. The
@@ -888,7 +927,7 @@ _REAR_PATH = (pt(ft(_deck_x_w), ft(_y_in_n)), pt(ft(_deck_x_e), ft(_y_in_n)))
 BALCONY_REAR_FLASH = Flashing(
     uid="SGFF02AAAA", tag="TR-SG-WRB-FLASH", kind=TrimKind.WRB_COUNTERFLASHING,
     path=_REAR_PATH, top_elevation=_deck_top + inch(6), depth=inch(8), thickness=inch(2),
-    material="aluminum", host_ref="SL-SG-DECK")
+    material="aluminum", host_ref="FS-SG-DECK")
 
 # ============================================================================
 # Per-storey exports (spliced into plan/manifest.py).
@@ -899,6 +938,6 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
 # tie), so main takes them whole; the knee braces are the only second-storey hardware.
 MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, *FRONT_BEAMS, PORCH_JOISTS, PORCH_GUARD,
                  *CONNECTORS]
-SECOND_ELEMENTS = [*SECOND_NODES, *GIRT_NODES, *BALCONY_BEAMS, *BALCONY_GIRTS, *PILLARS, DECK_FLOOR,
+SECOND_ELEMENTS = [*SECOND_NODES, *GIRT_NODES, *BALCONY_BEAMS, *BALCONY_GIRTS, *PILLARS,
                    BALCONY_JOISTS, *KNEE_BRACES, BALCONY_GUARD, BALCONY_FASCIA,
                    BALCONY_GUTTER, BALCONY_LEADER, BALCONY_DRIP, BALCONY_REAR_FLASH]

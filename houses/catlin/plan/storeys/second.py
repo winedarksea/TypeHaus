@@ -679,7 +679,7 @@ FLOOR_OPENINGS = [
 BEAMS = [
     Beam(uid="CSBM01AAAA", tag="BM-S-HALL", start_node="N-S-C2C", end_node="N-S-C3D",
          size="3-1.75x11.875 LVL", bearing_refs=("W-S-C2C", "W-S-C4B"),
-         top_elevation=ft(20)),
+         assembly="BEAM_LVL", top_elevation=ft(20)),
 ]
 
 # Guards on the two open sides of the stair well: attic RL-A-STAIR product, 42" height,

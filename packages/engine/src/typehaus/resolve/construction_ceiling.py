@@ -17,6 +17,7 @@ from shapely.geometry import Point, Polygon
 from typehaus.model.assembly import ConstructionRule
 from typehaus.model.floors import FloorOpening, FloorSystem
 from typehaus.model.plan import PlanModel
+from typehaus.resolve.ceiling_over import decks_covering
 from typehaus.resolve.construction_geometry import _EPS
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import ResolvedConstructionReturn, ResolvedModel
@@ -132,15 +133,9 @@ def _find_ceiling_channel(model: ResolvedModel, rule: ConstructionRule) \
             # replaces (safe only when it is the storey's one deck).
             candidates = [(storey, system) for storey, system in decks
                          if storey.tag == lowest_storey.tag]
-            overlapping = [
-                (storey, system) for storey, system in candidates
-                if not system.outline or (
-                    # Area, not ``intersects()``: two split-deck halves share a boundary
-                    # edge, and a boundary touch alone satisfies ``intersects()`` for
-                    # both — real coverage needs an actual overlap, not a shared line.
-                    Polygon([p.xy_m for p in system.outline]).intersection(face).area
-                    > _EPS)
-            ] if len(candidates) > 1 else candidates
+            # Shared with ``code.R305_ceiling_height``, which asks the same question about
+            # the same decks and used to not ask it at all — see resolve/ceiling_over.py.
+            overlapping = decks_covering(face, candidates)
             if overlapping:
                 combined_field = face
                 for storey, system in overlapping:

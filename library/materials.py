@@ -30,6 +30,32 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              hatch="lumber", color="#cbb98e",
              source="R-value per ifcplot port; no published ASTM E96 rating located, so "
                     "the vapour fields stay unset (Glaser reports UNKNOWN, never a guess)"),
+    # Laminated VENEER lumber, the sibling of ``lsl`` and a different product: rotary-peeled
+    # veneers laid parallel and glued, rather than stranded flakes. It is authored here and
+    # not left to the ``solid_material_ref`` fallback (which calls every non-round beam
+    # "spf") because an LVL beam costs three to five times a sawn one by the foot, and a
+    # takeoff that cannot tell them apart cannot price either.
+    # Same discipline as ``lsl`` on vapour: no published ASTM E96 rating located, so both
+    # fields stay unset and the Glaser walk names this material in an UNKNOWN.
+    Material(tag="lvl", name="Laminated veneer lumber", r_per_inch=1.25, density=670.0,
+             hatch="lumber", color="#c2ab7c",
+             source="R-value shares the engineered-lumber value used for lsl; density is "
+                    "the midpoint of the 640-720 kg/m3 (40-45 pcf) band published for "
+                    "softwood LVL; no ASTM E96 rating located, so the vapour fields "
+                    "stay unset (Glaser reports UNKNOWN, never a guess)"),
+    # Kiln-dried-after-treatment southern yellow pine — the exterior framing species. KDAT
+    # rather than plain PT is a real distinction and not a label: the treatment leaves the
+    # stick soaked, and drying it *after* is what stops a deck frame shrinking, cupping and
+    # backing its fasteners out over its first season. It is a separate tag from ``spf``
+    # because it is a denser species, costs more by the foot, and must not be substituted
+    # into an interior wall by a takeoff that only knows "lumber".
+    Material(tag="kdat", name="KDAT southern yellow pine (treated exterior framing)",
+             r_per_inch=0.95, density=600.0, perm_rating=2.9, hatch="lumber",
+             color="#bfa06a",
+             source="SYP is the densest of the framing softwoods (SG ~0.55 green vs SPF "
+                    "~0.42), and R/inch falls as density rises, so it sits below the "
+                    "df-select-s4s 0.99-1.06 band already authored in catlin; "
+                    f"permeability shares the softwood midpoint used for spf ({_UAF})"),
     Material(tag="osb", name="OSB sheathing", r_per_inch=1.25, density=650.0,
              perm_rating=0.4, hatch="osb", color="#c9a86a",
              source=f"{_APA}: OSB 7/16\" 0.91, 15/32-1/2\" 0.70, 19/32-5/8\" 0.72, "
@@ -53,7 +79,7 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              source="Huber ZIP System sheathing published ASTM E96 Procedure A (dry cup) "
                     "panel permeance 2-3 perm at 7/16-1/2\"; low end of the published range"),
     Material(tag="polyiso", name="Polyisocyanurate CI", r_per_inch=5.6, perm_rating=1.0,
-             hatch="rigid", color="#e8d64f",
+             hatch="rigid", color="#e8d64f", foam_plastic=True,
              source=f"{_UAF}: 'Expanded polyurethane, R-11, board stock' 0.4-1.6 perm-in; "
                     "midpoint of the published range"),
     Material(tag="fiberglass", name="Fiberglass batt", r_per_inch=3.7, perm_rating=116.0,
@@ -93,6 +119,7 @@ STARTER_MATERIALS: tuple[Material, ...] = (
     # with no seam to fail. `resolve/construction_rim.py` bills it by the lineal foot of rim.
     Material(tag="closed-cell-spray-foam", name="Closed-cell spray polyurethane foam (2 lb)",
              r_per_inch=6.5, density=32.0, perm_rating=1.6, hatch="batt", color="#e8d9b5",
+             foam_plastic=True,
              source="published ccSPF range R-5.9 to R-7.0 per inch and ASTM E96 permeance 1.2-2.0 perm at 1 in.; midpoints of the published ranges, per this file's convention"),
     # The wet/humid-room air+vapour barrier: the layer a room run at 55-70% RH depends on,
     # and the one `building_science.humid_room_liner` keys on. Authored as a
@@ -164,18 +191,18 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              density=2400.0, perm_rating=3.2, hatch="concrete", color="#a9a9a9",
              source=f"{_UAF}: 'Concrete, 1:2:4 mix' 3.2 perm-in (1.25 perm at 4\")"),
     Material(tag="icf-eps", name="ICF EPS form", r_per_inch=4.0, perm_rating=3.9,
-             hatch="rigid", color="#f0f0e6",
+             hatch="rigid", color="#f0f0e6", foam_plastic=True,
              source=f"{_UAF}: 'Expanded polystyrene, bead' 2.0-5.8 perm-in; midpoint of "
                     "the published range"),
     Material(tag="plywood-subfloor", name="3/4\" plywood subfloor", r_per_inch=1.25,
              density=600.0, perm_rating=0.30, hatch="osb", color="#c9a86a",
              source=f"{_APA}: 0.8 perm for 3/8\" Exterior-type plywood = 0.30 perm-in"),
     Material(tag="eps", name="EPS rigid insulation", r_per_inch=4.0, perm_rating=3.9,
-             hatch="rigid", color="#eef0f2",
+             hatch="rigid", color="#eef0f2", foam_plastic=True,
              source=f"{_UAF}: 'Expanded polystyrene, bead' 2.0-5.8 perm-in (midpoint); "
                     "Type II datasheets publish 5.0 perm at 1\", inside that band"),
     Material(tag="xps", name="XPS rigid insulation", r_per_inch=5.0, perm_rating=1.2,
-             hatch="rigid", color="#f2b8c6",
+             hatch="rigid", color="#f2b8c6", foam_plastic=True,
              source=f"{_UAF}: 'Expanded polystyrene, extruded' 1.2 perm-in; Owens Corning "
                     "FOAMULAR publishes 1.1 perm max at 1\" by ASTM E96"),
     Material(tag="cedar-tg", name="Cedar T&G paneling", r_per_inch=1.0, perm_rating=2.9,

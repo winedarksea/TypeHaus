@@ -143,6 +143,11 @@ SECTION_CODES: dict[str, CostCode] = {
     "pipe_insulation": CostCode("3100", "22 07 00", "plumbing"),
     "edge_trim": CostCode("2500", "07 62 00", "roof"),
     "wall_structure": CostCode("1200", "03 30 00", "concrete"),
+    # Structural wood solids (2026-08-22) — free-standing beams and posts, which is rough
+    # carpentry however they are measured. Reached only when ``_solid_code`` declines,
+    # which it does not for a beam or a column; it is the honest default for a wood solid
+    # in a category the trade table has not classified.
+    "timber": CostCode("2000", "06 11 00", "framing"),
     "railings": CostCode("2700", "05 52 00", "stairs"),
     "drainage": CostCode("2600", "07 71 00", "drainage"),
     "furnishings": CostCode("4200", "12 50 00", "furniture"),
@@ -158,12 +163,13 @@ SECTION_CODES: dict[str, CostCode] = {
 }
 
 
-#: The estimate section that prices ``structural_solids``. Named because it is the one
-#: section whose *table* name and whose *content* disagree: ``[concrete]`` in a
+#: The estimate sections that price ``structural_solids``. Named because these are the
+#: sections whose *table* name and whose *content* disagree: ``[concrete]`` in a
 #: ``prices.toml`` bills every resolved solid there is a $/cy for — the elm timbers, the
 #: breezeway polycarbonate, the composite deck, the soakaway stone — and only some of them
-#: are pours.
-SOLID_SECTION = "concrete"
+#: are pours. ``[timber]`` (2026-08-22) splits the structural wood back out of it, and
+#: reads the same BOM rows, so it needs the same category-versus-material reasoning.
+SOLID_SECTIONS = frozenset({"concrete", "timber"})
 
 #: Where a ``structural_solids`` row files once its solid *category* has named the trade
 #: that owns it (:func:`typehaus.emit.trades.solid_trade`).
@@ -231,7 +237,7 @@ def cost_code(section: str, key: str, overrides: dict[str, str] | None = None,
     accounts is not thereby renaming MasterFormat.
 
     ``material`` is the BOM row's ``structure_material``, and only the
-    :data:`SOLID_SECTION` reads it. See :func:`_solid_code`: the section prices solids by
+    :data:`SOLID_SECTIONS` read it. See :func:`_solid_code`: the section prices solids by
     CATEGORY, and a category is not a material. Callers that cannot supply it get the
     category-only answer, which is right for everything but a laid deck in a ``slab`` row.
     """
@@ -240,7 +246,7 @@ def cost_code(section: str, key: str, overrides: dict[str, str] | None = None,
         if plan_section == section and fnmatch.fnmatchcase(key.lower(), pattern):
             base = code
             break
-    if base is None and section == SOLID_SECTION:
+    if base is None and section in SOLID_SECTIONS:
         base = _solid_code(key, material)
     if base is None:
         base = SECTION_CODES.get(section)

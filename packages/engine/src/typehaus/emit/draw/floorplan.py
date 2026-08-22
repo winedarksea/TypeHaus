@@ -129,28 +129,67 @@ def _emit_rooms(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
 
 
 def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
-    """Draw every resolved slab outline on its storey's plan (decks included).
+    """Draw every walking surface's outline on its storey's plan.
 
-    The plan slice showed no slabs at all, so a walking surface with no enclosing walls —
-    the porch's composite deck on main, the balcony's aluminum deck on second — was
-    invisible in 2D. Same dedupe idiom as ``_emit_stairs``: sort for a stable draw order,
-    then skip a slab whose outline coincides with one already drawn.
+    The plan slice showed no slabs at all, so a surface with no enclosing walls — the
+    porch's composite deck on main, the balcony's aluminum deck on second — was invisible
+    in 2D. Same dedupe idiom as ``_emit_stairs``: sort for a stable draw order, then skip
+    an outline that coincides with one already drawn.
+
+    A FLOOR SYSTEM'S DECK SHEET COUNTS, not only a Slab. Both exterior decks used to be a
+    ``datum="walking_surface"`` Slab sitting on top of a FloorSystem's joists, and both
+    became that FloorSystem's ``subfloor`` instead (SL-SG-PORCH in 3bf2f48, SL-SG-DECK and
+    SL-BW-DECK on 2026-08-22) — which is the right model and took the deck straight back
+    out of this drawing, because a subfloor sheet is not a solid. Reading ``model.floors``
+    beside ``model.solids`` is what keeps the conversion a modelling change rather than a
+    silent regression in the 2D set.
     """
-    slabs = sorted((s for s in model.solids
-                    if s.category == "slab" and s.storey == storey),
-                   key=lambda s: s.uid)
     seen_outlines: set[tuple[tuple[float, float], ...]] = set()
-    for slab in slabs:
-        outline_key = tuple(sorted((round(x, 6), round(y, 6)) for x, y in slab.outline))
+
+    def _draw(outline, uid: str, tag: str) -> None:
+        outline_key = tuple(sorted((round(x, 6), round(y, 6)) for x, y in outline))
         if outline_key in seen_outlines:
-            continue
+            return
         seen_outlines.add(outline_key)
-        b.add(Polyline(points=tuple(_in(p) for p in slab.outline), layer="A-SLAB",
-                       closed=True, lineweight=0.35, uid=slab.uid, tag=slab.tag))
-        cx = sum(p[0] for p in slab.outline) / len(slab.outline)
-        cy = sum(p[1] for p in slab.outline) / len(slab.outline)
-        b.add(Text(anchor=_in((cx, cy)), content=slab.tag, height=2.2, layer="A-SLAB",
+        b.add(Polyline(points=tuple(_in(p) for p in outline), layer="A-SLAB",
+                       closed=True, lineweight=0.35, uid=uid, tag=tag))
+        cx = sum(p[0] for p in outline) / len(outline)
+        cy = sum(p[1] for p in outline) / len(outline)
+        b.add(Text(anchor=_in((cx, cy)), content=tag, height=2.2, layer="A-SLAB",
                    align="center"))
+
+    for slab in sorted((s for s in model.solids
+                        if s.category == "slab" and s.storey == storey),
+                       key=lambda s: s.uid):
+        _draw(slab.outline, slab.uid, slab.tag)
+    # Only a deck with no walls around it: an interior floor's subfloor covers the whole
+    # storey and drawing its rectangle would put a box over every room plan.
+    walled = {wall.storey for wall in model.walls}
+    for floor in sorted((f for f in model.floors
+                         if f.storey == storey and len(f.deck_outline) >= 3),
+                        key=lambda f: f.uid):
+        if floor.storey in walled and _has_enclosing_walls(model, floor):
+            continue
+        _draw(floor.deck_outline, floor.uid, floor.tag)
+
+
+def _has_enclosing_walls(model: ResolvedModel, floor) -> bool:
+    """True when a wall on this floor's storey stands inside its deck footprint.
+
+    The test for "this deck is part of the building" rather than a free-standing platform.
+    An interior floor is walled and its outline is redundant with the room plan; a porch,
+    a balcony and a breezeway deck are not, and they are the whole reason this draws.
+    """
+    xs = [p[0] for p in floor.deck_outline]
+    ys = [p[1] for p in floor.deck_outline]
+    x0, x1, y0, y1 = min(xs), max(xs), min(ys), max(ys)
+    for wall in model.walls:
+        if wall.storey != floor.storey:
+            continue
+        for point in wall.axis:
+            if x0 - 1e-9 <= point[0] <= x1 + 1e-9 and y0 - 1e-9 <= point[1] <= y1 + 1e-9:
+                return True
+    return False
 
 
 def _member_footprint(member) -> list[tuple[float, float]]:

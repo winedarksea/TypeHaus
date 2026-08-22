@@ -75,8 +75,10 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   joists, not the finished floor** — walls bear there and the subfloor rides above it, so
   main-floor FFE is +3/4" and every slab meant to land on it needs an explicit
   `top_elevation` (`params/main_deck.py`). The `main`, `second` and `attic` datums have
-  never moved; the basement storey went to -9'-4" with the soil, so it holds 8'-3" clear to
-  the lower of its two ceiling planes. What follows the soil down is everything pinned to it: the garage and
+  never moved; the basement storey went to -9'-4" with the soil, so it holds **8'-3 1/2"**
+  clear to the lower of its two ceiling planes (8'-4 1/8" under the EPS deck band) — the
+  number `code.R305_ceiling_height` now DERIVES rather than reads off
+  `Storey.default_ceiling_height`, which still authors a fictional 9'-0" here. What follows the soil down is everything pinned to it: the garage and
   its whole foundation, the breezeway's frost pads and piers, the hydrant's bury, the sunken
   garden's floor, the site's nine house-perimeter spot elevations and both impervious
   surfaces. The number lives in `params/foundations.py::SITE_GRADE`, is repeated as a
@@ -344,6 +346,26 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   room and the workshop each gained 4" of clear (the model still reports the old number —
   `clear_face` is inset from the wall axis, which did not move). See
   `notes/basement_to_framed_wall_detail.md`.
+- **Every exterior deck's plank is the floor system's own sheet, with ONE exception.**
+  `FS-SG-PORCH` (composite, 3bf2f48) and `FS-SG-DECK` (aluminium, 2026-08-22) carry their
+  boards as `subfloor=DeckLayer(...)`; the `SL-SG-PORCH` and `SL-SG-DECK` slabs that used to
+  stand beside the framing are gone, and both planks bill by the square foot in
+  `[sheet_goods]` instead of by the cubic yard out of a table named `[concrete]`. The
+  balcony converted term for term because its joists cantilever 6" and the deleted slab's
+  outline *was* that cantilever.
+  **`SL-BW-DECK` stays a Slab and must not be "finished".** The breezeway plank oversails
+  its joist rim 2 3/4" at each end onto D-M-ENTRY's and D-G-SERVICE's thresholds, and a
+  floor system's sheet is exactly its joist field (`resolve/floors.py`). Converting it
+  either FAILS `code.R311_3_exterior_landing` on both doors or lays a joist through
+  `PT-BW-1..4`. It was tried and reverted on 2026-08-22; the reasoning is in
+  `params/breezeway.py`.
+- **The garage ICF stem is boarded above grade, and `code.R316_4` is why.** `GARAGE_ICF_6`
+  carries a 5/8" gypsum layer on its INSIDE face, banded from the `GRADE` datum up — the
+  2.5" of interior EPS stood bare from the slab to the stem top, ~176 SF of foam plastic
+  facing an occupied space. It continues the board `GARAGE_WALL_2X6` already lines with, so
+  it is the same detail, not a new one. Banded, not full height: below grade there is no
+  interior to separate anything from, and a full-height layer would bill board into the
+  soil.
 - **One exterior dark, `#1c1f24`** (2026-08-01), carried by every dark metal element on the
   envelope so they read at one weight: the opening casings, the roof's rake/eave/ridge trim
   coil, the eave water chain (drip edge, box gutter, downspouts), and the guards.

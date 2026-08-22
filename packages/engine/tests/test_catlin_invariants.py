@@ -91,3 +91,58 @@ def test_both_breezeway_doors_open_onto_the_deck_at_the_same_level(catlin_model)
         wall = next(w for w in catlin_model.walls if w.tag == opening.host_wall)
         levels[tag] = storey_z[wall.storey] + opening.sill_m
     assert levels[ENTRY_DOOR] == pytest.approx(levels[SERVICE_DOOR], abs=0.5 * INCH), levels
+
+
+# --- the flood threshold at the sunken-garden door ----------------------------
+PATIO_DOOR = "D-B-PATIO"
+GARDEN_FLOOR = "SL-SG-FLOOR"
+# checks/code/mn_residential/egress.py::_MAX_NONREQUIRED_STEP_DOWN. Restated rather than
+# imported on purpose: this test is a statement about the HOUSE, and it must fail if the
+# engine's constant moves under it rather than move with it.
+MAX_NONREQUIRED_STEP_DOWN_IN = 7.75
+
+
+def test_the_patio_door_keeps_its_seven_inch_flood_threshold(catlin_model):
+    """`D-B-PATIO` stands 7" above the basement floor, and nothing else says so.
+
+    The sunken garden is a walled well with a drywell at the bottom and one door out of the
+    basement into it. The 7" is flood resistance: a blocked outlet, a cloudburst, or a spring
+    thaw ponding against the house, and the threshold is the only thing between that and the
+    finished basement. It is one keyword in plan/storeys/basement.py — `sill_height=inch(7)`
+    — carried in a comment and asserted by nothing, so any edit that retyped the door or
+    rebuilt the wall could have dropped it to the floor silently.
+
+    Derived from the resolved model rather than read off the source: the number that matters
+    is where the threshold LANDS, and the door's sill is measured from its host wall's base.
+    """
+    door = next(o for o in catlin_model.openings if o.tag == PATIO_DOOR)
+    wall = next(w for w in catlin_model.walls if w.tag == door.host_wall)
+    floor = next(s for s in catlin_model.solids if s.tag == "SL-B-FLOOR")
+
+    threshold = wall.z0_m + door.sill_m
+    assert threshold - floor.z1_m == pytest.approx(7.0 * INCH, abs=0.05 * INCH), (
+        f"{PATIO_DOOR} stands {(threshold - floor.z1_m) / INCH:.2f}\" above SL-B-FLOOR; "
+        "the sunken garden's flood threshold is 7\" (plan/storeys/basement.py)"
+    )
+
+
+def test_the_flood_threshold_stays_under_one_riser_of_step_down(catlin_model):
+    """...and the 7" cannot grow, because R311.3.1 is 3/4" away.
+
+    `code.R311_3_exterior_landing` allows a non-required exterior door 7.75" — one riser —
+    down to its landing. The garden floor outside this door is the landing, so the flood
+    threshold IS that step. At 7" it passes with 3/4" to spare; at 8" it FAILS, and the
+    failure would read as a landing problem rather than as the threshold decision it is.
+    This is the pin that makes raising the threshold a conscious trade rather than a
+    surprise, and the reason the two live in one test file.
+    """
+    door = next(o for o in catlin_model.openings if o.tag == PATIO_DOOR)
+    wall = next(w for w in catlin_model.walls if w.tag == door.host_wall)
+    garden = next(s for s in catlin_model.solids if s.tag == GARDEN_FLOOR)
+
+    step_down = (wall.z0_m + door.sill_m) - garden.z1_m
+    assert 0.0 <= step_down / INCH <= MAX_NONREQUIRED_STEP_DOWN_IN, (
+        f"{PATIO_DOOR} steps {step_down / INCH:.2f}\" down to {GARDEN_FLOOR}; "
+        f"R311.3.1 allows {MAX_NONREQUIRED_STEP_DOWN_IN}\" for a door that is not the "
+        "required egress door"
+    )
