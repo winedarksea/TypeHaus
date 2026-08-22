@@ -296,8 +296,9 @@ the future.
 * What is WT-2736 and why is it so expensive? It might help if the openings weren't linked to "UNKNOWN"
 * garage stairs should probably be pressure treated wood or a prebuilt metal staircase
 * 3d models of the stair handrails need some work
-* Add two workbenches, outlets above them, and a hard-wired ethernet cable run to the RM-B-Workshop
-* Add a hardwired ethernet connection to the RM-M-STUDY
+* Add two workbenches, outlets above them, and a hard-wired ethernet cable run to the RM-B-Workshop. Can likely share the spa conduit.
+* Add a hardwired ethernet connection to the RM-M-STUDY, and one to the center of the north wall of the media room.
+* Model a large U-shaped couch and TV in the basement media room. Billy bookshelves on W-B-CE to either side of the door in the media room.
 
 ## Questions from 08-15 session
 
