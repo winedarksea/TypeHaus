@@ -387,12 +387,12 @@
           -12.500000000000023
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "osb",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": null
+      "material": "struct-1-plywood"
     },
     {
       "space": "model",
@@ -443,12 +443,12 @@
           0.0
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "osb",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": null
+      "material": "struct-1-plywood"
     },
     {
       "space": "model",
@@ -627,9 +627,9 @@
       "node": "text",
       "anchor": [
         227.00000000000003,
-        13.742432195975507
+        12.828543307086619
       ],
-      "content": "water continuity — wrb-ext → wrb-ext",
+      "content": "water continuity — spray-foam-ext →\nspray-foam-ext",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -640,27 +640,18 @@
     },
     {
       "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          209.00000000000003,
-          0.0
-        ],
-        "name": ""
-      },
-      "at": [
+      "node": "text",
+      "anchor": [
         227.00000000000003,
-        10.009098862642173
+        8.181321084864397
       ],
-      "to": [
-        209.00000000000003,
-        0.0
-      ],
-      "text": "thermal continuity — ci-ext → ci-ext",
-      "height": 1.6,
+      "content": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
+      "height": 3.0,
       "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
       "layer": "A-ANNO-TEXT",
+      "align": "left",
       "uid": null
     },
     {

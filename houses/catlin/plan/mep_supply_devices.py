@@ -76,6 +76,139 @@ SUPPLY_DEVICES_BASEMENT = [
                   serves=("FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
 ]
 
+# --- Branch and fixture stops (2026-08-23) --------------------------------------------
+#
+# Until now the house had exactly ONE valve you could close: PA-B-MAIN-SHUTOFF, plus the
+# hydrant isolation above. Change a lavatory tap and the whole dwelling goes dry, including
+# the WCs. `mep.main_shutoff` never noticed because it only asks for the one; nothing in the
+# engine grades a branch stop, so the deliverable here is not a green check but a model that
+# stops implying the plumbing has stops it does not have.
+#
+# **Why these sit at the fixture end of each branch and not at the tee.** The natural place
+# for a branch stop is where the branch leaves its trunk, and in this house every one of
+# those tees is at the basement ceiling plane (~8'-1" on the cold trunk, ~8'-0" on the hot).
+# That plane is 5/8" gypsum end to end — `ceiling_below` on FS-M-WEST and FS-M-EAST
+# (params/main_deck.py) — so a valve at a tee is a valve behind a finished ceiling, which
+# `PipeAccessory.accessible` would have to be False about. The four access panels this house
+# owns (plan/placeables.py) serve a WC carrier, two tub wastes and the NW shaft; none is over
+# a supply tee, and two more were deliberately declined there. **Authoring stops at the tees
+# would mean inventing panels, so the stops go where the pipe already comes out into the
+# room it serves** — at the riser head, under the lavatory, behind the WC, at the machine
+# box. Every one is reachable standing or kneeling in a finished room with no panel and no
+# ladder, which is what P2903.9.1 means by accessible and what makes a stop worth having.
+#
+# The consequence, stated rather than hidden: these isolate a FIXTURE GROUP at its point of
+# use, not a whole branch at its origin. Working on the pipe *between* the tee and the room
+# still means closing the main. Putting a real stop at each tee is an access-panel decision
+# and it is on plans/TODO.md as one.
+#
+# No `elevation` on any of them: an accessory without one takes its host run's invert at the
+# nearest vertex, and each position below IS that run's last vertex — the height the riser
+# already arrives at (2'-6" to 3'-6" above the room's own floor). Authoring a number here
+# would only be a second, drift-prone copy of one the run already carries.
+SUPPLY_STOPS = [
+    # RM-M-BATH1 — the wall-hung WC and its lavatory. Cold carries both, hot the lav alone,
+    # which is why the two stops sit 4.8" apart rather than side by side.
+    PipeAccessory(uid="0RA7PE7K5N", tag="PA-M-BATH1-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-CW-BATH1", position=pt(ft(6), ft(23, 7.2)),
+                  accessible=True, room="RM-M-BATH1",
+                  model='3/4" quarter-turn ball valve, chrome, at the riser head',
+                  serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV")),
+    PipeAccessory(uid="1YCTZR50YR", tag="PA-M-BATH1-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-HW-BATH1", position=pt(ft(6), ft(24)),
+                  accessible=True, room="RM-M-BATH1",
+                  model='3/4" quarter-turn ball valve, chrome, at the riser head',
+                  serves=("FX-M-BATH1-LAV",)),
+    # RM-M-BATH2 — WC, shower, tub and sink; the busiest group in the house and the one
+    # most worth being able to isolate on its own.
+    PipeAccessory(uid="3VR28WJF1E", tag="PA-M-BATH2-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-CW-BATH2", position=pt(ft(2, 3), ft(17, 2.4)),
+                  accessible=True, room="RM-M-BATH2",
+                  model='3/4" quarter-turn ball valve, chrome, at the riser head',
+                  serves=("FX-M-BATH2-WC", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
+                          "FX-M-BATH2-SINK")),
+    PipeAccessory(uid="4ZC2WZVFWB", tag="PA-M-BATH2-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-HW-BATH2", position=pt(ft(2, 3), ft(16, 9.6)),
+                  accessible=True, room="RM-M-BATH2",
+                  model='3/4" quarter-turn ball valve, chrome, at the riser head',
+                  serves=("FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-SINK")),
+    # RM-S-BATH1 — the second floor's hall bath plus the two vanity lavatories it feeds.
+    PipeAccessory(uid="B20MFS2ZH2", tag="PA-S-BATH1-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-CW-SBATH", position=pt(ft(5, 7.2), ft(26, 4)),
+                  accessible=True, room="RM-S-BATH1",
+                  model='3/4" quarter-turn ball valve, chrome, at the riser head',
+                  serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
+                          "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
+    PipeAccessory(uid="P6WSEM39FM", tag="PA-S-BATH1-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-HW-SBATH", position=pt(ft(6, 4), ft(26, 4)),
+                  accessible=True, room="RM-S-BATH1",
+                  model='3/4" quarter-turn ball valve, chrome, at the riser head',
+                  serves=("FX-S-BATH1-LAV", "FX-S-BATH1-SH", "FX-S-VANITY-LAV1",
+                          "FX-S-VANITY-LAV2")),
+    # RM-S-SUITEBATH.
+    PipeAccessory(uid="SSSW9XQZZ4", tag="PA-S-SUITEBATH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-CW-SUITE", position=pt(ft(13, 7.2), ft(16, 10.8)),
+                  accessible=True, room="RM-S-SUITEBATH",
+                  model='3/4" quarter-turn ball valve, chrome, at the riser head',
+                  serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
+                          "FX-S-SUITEBATH-TUBSH")),
+    PipeAccessory(uid="R24SV93Y39", tag="PA-S-SUITEBATH-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-HW-SUITE", position=pt(ft(14, 2.4), ft(16, 10.8)),
+                  accessible=True, room="RM-S-SUITEBATH",
+                  model='3/4" quarter-turn ball valve, chrome, at the riser head',
+                  serves=("FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH")),
+    # RM-B-BATH, the stair-foot bathroom. 1/2" branches, so 1/2" valves — the only pair
+    # here that is not 3/4". Both arrive in W-B-BA-N's cavity at the same point.
+    PipeAccessory(uid="F1M7RSZV67", tag="PA-B-BATH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-CW-BATH", position=pt(ft(16), ft(21, 9.375)),
+                  accessible=True, room="RM-B-BATH",
+                  model='1/2" quarter-turn ball valve, chrome, at the riser head',
+                  serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
+    PipeAccessory(uid="2DD9DEYNAS", tag="PA-B-BATH-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-HW-BATH", position=pt(ft(16), ft(21, 9.375)),
+                  accessible=True, room="RM-B-BATH",
+                  model='1/2" quarter-turn ball valve, chrome, at the riser head',
+                  serves=("FX-B-BATH-LAV",)),
+    # The kitchen. Its hot has its own branch; its COLD comes straight off the end of
+    # PR-B-CW-TRUNK, so the cold stop sits on the trunk's own terminus at the sink base.
+    # That is a stop for the kitchen, not a second main: PA-B-MAIN-SHUTOFF is upstream of
+    # everything and this is the last 3'-6" of the run.
+    PipeAccessory(uid="09MWB7MH7K", tag="PA-M-KITCH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-CW-TRUNK", position=pt(ft(29, 0.6), ft(34, 1.2)),
+                  accessible=True, room="RM-M-LIVING",
+                  model='1 1/4" quarter-turn ball valve, in the sink base cabinet',
+                  serves=("FX-M-KITCH-SINK",)),
+    PipeAccessory(uid="JPFD6JQM44", tag="PA-M-KITCH-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-HW-KITCH", position=pt(ft(29, 6.6), ft(33, 7.2)),
+                  accessible=True, room="RM-M-LIVING",
+                  model='3/4" quarter-turn ball valve, in the sink base cabinet',
+                  serves=("FX-M-KITCH-SINK", "APPL-M-DW")),
+    # The laundry. These land on the same two vertices as PA-M-WASH-WHA-CW/HW above — the
+    # machine box is where the arrestors already are, and a washer box with stops in it is
+    # the ordinary product.
+    PipeAccessory(uid="VCF71D18GJ", tag="PA-M-WASH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-CW-WASH", position=pt(ft(8), ft(20, 7.2)),
+                  accessible=True, room="RM-M-LAUNDRY",
+                  model='3/4" quarter-turn ball valve, in the recessed washer box',
+                  serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
+    PipeAccessory(uid="D0DS71PB2J", tag="PA-M-WASH-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-HW-WASH", position=pt(ft(8), ft(21, 2.4)),
+                  accessible=True, room="RM-M-LAUNDRY",
+                  model='3/4" quarter-turn ball valve, in the recessed washer box',
+                  serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
+    # The water heater's cold inlet — the one stop in this list that IS at its branch's own
+    # end rather than at a fixture, and the one the house most obviously lacked. P2903.9.2
+    # wants a valve on the cold supply to a water heater; without it, changing an anode rod
+    # or a T&P valve means closing the main. It stands at the tank in the mechanical room at
+    # the run's own 4'-0" invert, with nothing over it — the most accessible valve in the
+    # house after the main itself.
+    PipeAccessory(uid="XTPXNZ8PRZ", tag="PA-B-WH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-CW-WH", position=pt(ft(5, 6), ft(24)),
+                  accessible=True, room="RM-B-FURNACE",
+                  model='1" full-port bronze ball valve, lever handle, at the tank inlet',
+                  serves=("EQ-B-WH",)),
+]
+
 # The garage yard hydrant's two devices, on the service run (filed on ``main``). The seat
 # takes the run's elevation, its own buried valve at -8'-6" (the 72" bury
 # `mep.hydrant_freeze_depth` grades, measured from the -2'-6" grade); the vacuum breaker

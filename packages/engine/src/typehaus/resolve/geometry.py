@@ -97,6 +97,32 @@ def rect_between(p0: Vec, p1: Vec, left: float, right: float,
     ]
 
 
+def clip_half_plane(ring: list[Vec], origin: Vec, direction: Vec) -> list[Vec]:
+    """The part of ``ring`` on the ``direction`` side of the line through ``origin``.
+
+    Sutherland-Hodgman against a single half-plane, which is all any caller here needs: a
+    band already mitred into its neighbours has to give up its inner inches to a cavity
+    fill, and the answer is the same polygon with one edge moved. Returns ``[]`` when the
+    ring is entirely on the far side.
+    """
+    if not ring:
+        return []
+    def side(point: Vec) -> float:
+        return (point[0] - origin[0]) * direction[0] + (point[1] - origin[1]) * direction[1]
+
+    out: list[Vec] = []
+    for index, current in enumerate(ring):
+        previous = ring[index - 1]
+        d_current, d_previous = side(current), side(previous)
+        if (d_previous < 0.0) != (d_current < 0.0):
+            t = d_previous / (d_previous - d_current)
+            out.append((previous[0] + (current[0] - previous[0]) * t,
+                        previous[1] + (current[1] - previous[1]) * t))
+        if d_current >= 0.0:
+            out.append(current)
+    return out
+
+
 def square(cx: float, cy: float, half_x: float, half_y: float) -> list[Vec]:
     """Axis-aligned plan rectangle about ``(cx, cy)``.
 

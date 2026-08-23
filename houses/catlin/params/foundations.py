@@ -82,6 +82,11 @@ _HOUSE_WALL_TAGS = (
     (6, "W-B-N1"), (7, "W-B-N2"), (8, "W-B-N3"), (9, "W-B-W1"), (10, "W-B-W2"),
     (11, "W-B-CS"), (12, "W-B-CS2"), (13, "W-B-CN"), (14, "W-B-CN2"),
     (17, "W-B-STR"),
+    # 20/21 are the halves the 2026-08-23 ESS-closet relocation split off: W-B-N4 is the
+    # west 6'-0" of the old W-B-N3 and W-B-STR3 the south 9'-2 5/8" of the old W-B-STR.
+    # Each keeps its own strip because each is still a wall on the same footing line — the
+    # split is where a partition tees in, not where the pour stops.
+    (20, "W-B-N4"), (21, "W-B-STR3"),
 )
 
 # The three south strips are formed in an insulated footing form, the rest are poured

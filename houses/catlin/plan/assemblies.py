@@ -1,8 +1,8 @@
 # haus: editable
 # Catlin house assemblies — ported from catlin-house ifcplot (WP3.1).
 # Layer order is interior → exterior. The exterior wall family is one 2x6 stack on every
-# framed storey (sheathing / WRB / 2" polyiso / 2" EPS / furring / standing seam), so the
-# sheathing plane and every control layer are continuous with no stud-depth jog.
+# framed storey (sheathing / 4" closed-cell spray foam around a 2x4 truss / standing seam),
+# so the sheathing plane and every control layer are continuous with no stud-depth jog.
 from typehaus import (
     Assembly,
     AssemblyInterface,
@@ -88,6 +88,30 @@ ACCENT_GWB_LINING = (
 # (straightness under the 9' first-floor glazing/cabinet runs); second + attic are
 # standard dimensional 2x6 SPF. Same 5.5" depth either way, so one assembly tells
 # the truth about the geometry and the source string records the material split.
+#
+# **A SWINBURNE TRUSS WALL, not a rigid-CI wall** (2026-08-23). Until this date the
+# cladding stood off on 1/2" furring held through 4" of polyiso + EPS by 537 eight-inch
+# structural screws, over a sheet WRB. It now stands off on an INTERMITTENT WOODEN TRUSS —
+# a 2x4 block flat on the sheathing, a 1/2" plywood tab on the block's side, a KDAT 2x4
+# outrigger on edge lap-screwed to the tab — with closed-cell spray foam filling the whole
+# 4" around it. Three consequences, each load-bearing somewhere else:
+#
+#   1. THE WRB IS GONE, and its absence is the spec, not an omission. ccSPF is air +
+#      water + vapour + thermal in one bonded, seamless application, so the foam face IS
+#      the water plane. `plan/transitions.py` names it as such (`AIR_WATER_THERMAL`), and
+#      that is what `advisory.control_continuity` watches. The build order follows from it:
+#      the bucks go in FIRST and the foam is sprayed around them, never the other way.
+#   2. Only the TAB crosses the insulation zone, and only every 40" up every 16" bay.
+#      That is what buys the (small) bridging improvement — R-38.6 against R-36.8 — and
+#      it is small on purpose: the outrigger's back 2-1/2" is inside the foam and the
+#      engine parallel-paths it, which is the conservative 1D reading of a 2D detail.
+#   3. The cladding plane moves OUT 1/2" (11.5" total, was 11.02"). Walls align on
+#      `face("sheathing-ext")`, so no room changes size and nothing interior moves — but
+#      `params/roof_trim.py`, `params/breezeway.py` and `plan/wind_clamps.py` all measure
+#      off the cladding face and move with it.
+#
+# The honest case for the change is LABOUR: no 8" screws, no two-layer board install, no
+# separate WRB, one sprayer instead of three operations. See notes/outie_window_truss_detail.md.
 CATLIN_EXT_2X6 = Assembly(
     tag="CATLIN_EXT_2X6",
     layers=(
@@ -97,16 +121,27 @@ CATLIN_EXT_2X6 = Assembly(
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
-        Layer(name="wrb", material_ref="air-barrier", thickness=inch(0.02),
-              function=LayerFunction.MEMBRANE,
-              control={ControlLayer.AIR, ControlLayer.WATER}),
-        Layer(name="polyiso", material_ref="polyiso", thickness=inch(2.0),
-              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        Layer(name="eps", material_ref="eps", thickness=inch(2.0),
-              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        Layer(name="furring", material_ref="spf", thickness=inch(0.5),
+        # The band behind the outrigger: continuous, crossed by nothing but the blocks and
+        # the tabs. There is no WRB above it because there is nothing left for one to do —
+        # ccSPF is air, water, vapour and thermal in one bonded, seamless application.
+        Layer(name="spray-foam", material_ref="closed-cell-spray-foam", thickness=inch(1.5),
+              function=LayerFunction.INSULATION,
+              control={ControlLayer.AIR, ControlLayer.WATER,
+                       ControlLayer.VAPOR, ControlLayer.THERMAL}),
+        # The outrigger band. 3.5" deep (2x4 on edge), of which the inner 2.5" is foam and
+        # the outer 1" is the drained rainscreen gap to the clip line. Wood and foam here
+        # are a PARALLEL path, which is the whole reason the foam is authored as two bands
+        # rather than one 4" layer: a single layer would credit 4" of foam over 100% of the
+        # area and hide the outrigger entirely. Split, `analysis._layer_rsi` parallel-paths
+        # this band exactly as it already does a stud bay, and the take-off bills the outer
+        # band as `insulation (cavity)`. ff 0.094 is 1.5" of outrigger per 16" bay.
+        Layer(name="outrigger", material_ref="kdat", thickness=inch(3.5),
               function=LayerFunction.FURRING,
-              framing=FramingSpec(member="1x4", direction="vertical")),
+              framing=FramingSpec(member="2x4", direction="vertical", laid="edge"),
+              cavity=CavityFill(material_ref="closed-cell-spray-foam",
+                                thickness=inch(2.5), framing_factor=0.094,
+                                control={ControlLayer.AIR, ControlLayer.WATER,
+                                         ControlLayer.VAPOR, ControlLayer.THERMAL})),
         Layer(name="cladding", material_ref="standing-seam-snaplock", thickness=inch(0.5),
               function=LayerFunction.CLADDING),
     ),
@@ -601,30 +636,40 @@ ELM_TIMBER = Assembly(
 # bills wood" instead of only "this section bills concrete".
 #
 # The LAYER THICKNESS here is one ply, not the built-up width, and that is deliberate: the
-# nine LVL beams are 3-1.75x11.875 (BM-M-HALL/BM-S-HALL), 2-1.75x11.25 (the garden's back
-# and front pairs) and 2-1.75x9.25 (its three balcony beams). One body width would be a
-# fiction for two of those three. The real section is `Beam.size`, which the resolver reads
-# directly; the assembly exists to name the MATERIAL, and a ply is the unit LVL is made in.
+# real section is `Beam.size`, which the resolver reads directly. The assembly exists to
+# name the MATERIAL, and a ply is the unit LVL is made in.
+#
+# Two members, both 3-1.75x11.875: BM-M-HALL and BM-S-HALL. NOTHING ON THIS ASSEMBLY IS
+# EXTERIOR any more. It used to carry the sunken garden's seven beams too, and to claim in
+# its `source` that the back/front pairs were "treated LVL" — which is not a product.
+# Treated Parallam Plus PSL is the real article, it comes only in 9 1/4"/11 7/8"/14"/16"
+# depths, and Weyerhaeuser forbids resawing it in depth, so the 11 1/4" the porch is derived
+# from was never buyable treated. All seven went to 3-ply KDAT sawn stock on 2026-08-23 and
+# are on BEAM_KDAT now (see params/sunken_garden.py).
 BEAM_LVL = Assembly(
     tag="BEAM_LVL",
     layers=(
         Layer(name="lvl", material_ref="lvl", thickness=inch(1.75),
               function=LayerFunction.STRUCTURE),
     ),
-    source="catlin-house LVL beams — 1-3/4\" plies, built up 2 or 3 wide per Beam.size; the garden's back/front pairs are treated LVL (exterior, over an open well)",
+    source="catlin-house LVL beams — 1-3/4\" plies, built up 3 wide per Beam.size; interior only (the two dropped hall girders), so untreated LVL is the right product",
 )
 
-# The breezeway's whole frame: four 2-2x8 floor and roof beams, three 2x6 rafters. It stands
-# in weather over open ground with no enclosure above it, so every stick is treated — and
-# KDAT rather than plain PT, because a wet-treated deck frame shrinks and cups through its
-# first season and backs its own fasteners out doing it.
+# Every treated sawn member in the house's outdoor frame. The breezeway (four 2-2x8 floor
+# and roof beams, three 2x6 rafters) is where it started; the balcony's four E-W girts
+# joined it, and on 2026-08-23 so did the sunken garden's seven beams, which had been on
+# BEAM_LVL claiming a treatment LVL is not sold in.
+#
+# All of it stands in weather over open ground with no enclosure above it, so every stick is
+# treated — and KDAT rather than plain PT, because a wet-treated deck frame shrinks and cups
+# through its first season and backs its own fasteners out doing it.
 BEAM_KDAT = Assembly(
     tag="BEAM_KDAT",
     layers=(
         Layer(name="kdat", material_ref="kdat", thickness=inch(1.5),
               function=LayerFunction.STRUCTURE),
     ),
-    source="catlin-house breezeway frame — KDAT 2x stock, ply count per Beam.size (2-2x8 beams, single 2x6 rafters)",
+    source="catlin-house KDAT 2x framing — ply count per Beam.size: the breezeway frame (2-2x8 beams, single 2x6 rafters), the balcony's four E-W girts (2x10), and since 2026-08-23 the sunken garden's seven beams (3-2x12 porch, 3-2x10 balcony)",
 )
 
 # The breezeway's four 6x6 posts. NOT POST_WHITE_PAINT: that assembly is white-painted and
@@ -1390,12 +1435,13 @@ _HUMID_LINER = (
 # CATLIN_EXT_2X6 verbatim, restated rather than composed because the editable dialect has
 # no way to splice one assembly's layers into another. Keep the two in step by hand.
 #
-# CATLIN_EXT_2X6 needs no re-engineering for this room and deliberately gets none: the
-# model's `polyiso` is 1.0 perm-in and `eps` 3.9, so the exterior CI stack runs about
-# 0.4 perm — Class II, slow but real outward drying. THE POLYISO MUST BE GLASS-FACED OR
-# UNFACED, NEVER FOIL-FACED. Foil-faced (the house's own `polyiso-foil`, 0.03 perm) would
-# sandwich the stud bay between two vapour barriers with wet-prone wood at 25 F in between,
-# and the model would not catch it because it carries the permeable number.
+# CATLIN_EXT_2X6 needs no re-engineering for this room and deliberately gets none, and the
+# 2026-08-23 truss wall does not change that reading: 4" of 2 lb ccSPF at 1.6 perm-in runs
+# about 0.4 perm — the SAME Class II the polyiso+EPS stack it replaced read, slow but real
+# outward drying. The warning the CI stack carried (never foil-faced polyiso, which at 0.03
+# perm would sandwich the stud bay between two vapour barriers with wet-prone wood at 25 F
+# in between) is moot now that there is no board in the stack at all; it is left here as the
+# reason the foam's permeance is a spec line and not an incidental.
 PLANT_EXT_2X6_HUMID = Assembly(
     tag="PLANT_EXT_2X6_HUMID",
     layers=(
@@ -1406,16 +1452,27 @@ PLANT_EXT_2X6_HUMID = Assembly(
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
-        Layer(name="wrb", material_ref="air-barrier", thickness=inch(0.02),
-              function=LayerFunction.MEMBRANE,
-              control={ControlLayer.AIR, ControlLayer.WATER}),
-        Layer(name="polyiso", material_ref="polyiso", thickness=inch(2.0),
-              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        Layer(name="eps", material_ref="eps", thickness=inch(2.0),
-              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        Layer(name="furring", material_ref="spf", thickness=inch(0.5),
+        # The band behind the outrigger: continuous, crossed by nothing but the blocks and
+        # the tabs. There is no WRB above it because there is nothing left for one to do —
+        # ccSPF is air, water, vapour and thermal in one bonded, seamless application.
+        Layer(name="spray-foam", material_ref="closed-cell-spray-foam", thickness=inch(1.5),
+              function=LayerFunction.INSULATION,
+              control={ControlLayer.AIR, ControlLayer.WATER,
+                       ControlLayer.VAPOR, ControlLayer.THERMAL}),
+        # The outrigger band. 3.5" deep (2x4 on edge), of which the inner 2.5" is foam and
+        # the outer 1" is the drained rainscreen gap to the clip line. Wood and foam here
+        # are a PARALLEL path, which is the whole reason the foam is authored as two bands
+        # rather than one 4" layer: a single layer would credit 4" of foam over 100% of the
+        # area and hide the outrigger entirely. Split, `analysis._layer_rsi` parallel-paths
+        # this band exactly as it already does a stud bay, and the take-off bills the outer
+        # band as `insulation (cavity)`. ff 0.094 is 1.5" of outrigger per 16" bay.
+        Layer(name="outrigger", material_ref="kdat", thickness=inch(3.5),
               function=LayerFunction.FURRING,
-              framing=FramingSpec(member="1x4", direction="vertical")),
+              framing=FramingSpec(member="2x4", direction="vertical", laid="edge"),
+              cavity=CavityFill(material_ref="closed-cell-spray-foam",
+                                thickness=inch(2.5), framing_factor=0.094,
+                                control={ControlLayer.AIR, ControlLayer.WATER,
+                                         ControlLayer.VAPOR, ControlLayer.THERMAL})),
         Layer(name="cladding", material_ref="standing-seam-snaplock", thickness=inch(0.5),
               function=LayerFunction.CLADDING),
     ),

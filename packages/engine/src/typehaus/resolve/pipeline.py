@@ -24,6 +24,7 @@ from typehaus.resolve.framing.furring import frame_furring
 from typehaus.resolve.framing.roof import frame_roofs
 from typehaus.resolve.framing.soffit import frame_soffits
 from typehaus.resolve.framing.solver import frame_model
+from typehaus.resolve.framing.truss_wall import frame_truss_walls
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.mep import resolve_mep
 from typehaus.resolve.solar import resolve_solar
@@ -84,6 +85,10 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         # FURRING layer frames its own grid in its own band even when the wall behind it
         # is a pour, and `frame_wall` returns early for those (→ framing/furring.py).
         findings.extend(frame_furring(plan, model))
+        # The intermittent truss that carries an on-edge outrigger band: blocks, tabs, the
+        # opening ladder and the outie-window buck. Strictly after `frame_furring`, which is
+        # what frames the outriggers this pass hangs everything off (→ framing/truss_wall.py).
+        frame_truss_walls(plan, model)
         # Soffit ladders hang off records the envelope stage already created.
         findings.extend(frame_soffits(model))
         findings.extend(frame_roofs(model))

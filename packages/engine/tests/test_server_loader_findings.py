@@ -51,7 +51,14 @@ def test_loader_findings_survive_a_fast_edit(client) -> None:
     them would make the error blink out until the next full rebuild."""
     c, _ = client
     model = c.get("/model").json()
-    wall = model["walls"][0]
+    # A wall authored with the `Wall(...)` constructor, not just any wall. `model["walls"]`
+    # is ordered by uid, so which one lands first is arbitrary and moves whenever a wall is
+    # added — on 2026-08-23 it became W-B-STR3, a `FoundationWall`, and the patch came back
+    # 422 "no editable file hosts update Wall". That is a real (pre-existing) gap in the
+    # writeback — `type: "Wall"` does not reach a FoundationWall — but it is not what this
+    # test is about, so pick a wall the op can actually address.
+    foundation = {w["tag"] for w in model["walls"] if w.get("is_foundation")}
+    wall = next(w for w in model["walls"] if w["tag"] not in foundation)
     resp = c.patch("/plan", json={
         "revision": model["revision"],
         "ops": [{"op": "update", "type": "Wall", "tag": wall["tag"], "fields": {}}],

@@ -50,6 +50,51 @@ def _order_length_ft(length_ft: float, profile: str | None = None) -> int:
     return int(math.ceil(length_ft / 2.0)) * 2
 
 
+#: A cut this short — half the shortest stock or less — is nested: several of them come out
+#: of one stick, which is what a framer does with blocking, cripples and the 8" truss-wall
+#: blocks. Charging each its own 8' stick is the failure this exists to stop: 1,660 blocks
+#: at 8" is 1,107 lineal feet of wood ordered as 13,280. Anything longer than the threshold
+#: cannot reliably pair with a second piece, so it still buys its own stick — the
+#: conservative reading, and the one that leaves every long-member row exactly as it was.
+_NEST_FRACTION = 0.5
+#: Saw kerf lost at each cut when several pieces come off one stick. 1/8" — a framing blade.
+_KERF_FT = 0.125 / 12.0
+
+
+def _bucket_cut_lengths(lengths: list[float], profile: str | None) -> Counter:
+    """The stock sticks one ``(profile, category, material)`` group is actually bought in.
+
+    Long pieces bucket one-for-one, exactly as before. Short ones are packed first-fit-
+    decreasing into the shortest stock, kerf included, so the order reflects the sticks a
+    framer carries to the saw rather than one per cut. A fabricated member (a floor truss)
+    is never nested: it is made to its length, and two of them do not come off one blank.
+    """
+    buckets: Counter = Counter()
+    stock = _STOCK_LENGTHS_FT[0]
+    fabricated = profile is not None and cross_section(profile).shape == "floor_truss"
+    nestable: list[float] = []
+    own_stick: list[float] = []
+    for cut_ft in lengths:
+        if not fabricated and cut_ft <= stock * _NEST_FRACTION + 1e-9:
+            nestable.append(cut_ft)
+        else:
+            own_stick.append(cut_ft)
+    for cut_ft in own_stick:
+        buckets[_order_length_ft(cut_ft, profile)] += 1
+    remaining: list[float] = []
+    for cut_ft in sorted(nestable, reverse=True):
+        need = cut_ft + _KERF_FT
+        for index, left in enumerate(remaining):
+            if left >= need - 1e-9:
+                remaining[index] = left - need
+                break
+        else:
+            remaining.append(stock - need)
+    if remaining:
+        buckets[stock] += len(remaining)
+    return buckets
+
+
 def _board_feet_per_ft(profile: str) -> float | None:
     """Nominal board-feet per lineal foot for a dimensional/built-up profile, or None."""
     match = _PROFILE_RE.match(profile)
@@ -69,33 +114,25 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     ``model.all_members()`` is the complete resolved member set (walls, floors, roofs,
     stairs, braces), so the pieces here reconcile 1:1 with what the 3D model frames.
     """
-    Group = dict[str, object]
-    groups: dict[tuple[str, str], Group] = {}
+    cuts: dict[tuple[str, str, str], list[float]] = defaultdict(list)
     for member in model.all_members():
-        cut_ft = member.length_m * _M_TO_FT
-        order_ft = _order_length_ft(cut_ft, member.profile)
-        key = (member.profile, member.category)
-        group = groups.get(key)
-        if group is None:
-            group = groups[key] = {"pieces": 0, "cut_length_ft": 0.0,
-                                   "buckets": Counter()}
-        group["pieces"] = int(group["pieces"]) + 1
-        group["cut_length_ft"] = float(group["cut_length_ft"]) + cut_ft
-        buckets = group["buckets"]
-        assert isinstance(buckets, Counter)
-        buckets[order_ft] += 1
+        cuts[(member.profile, member.category, member.material or "")].append(
+            member.length_m * _M_TO_FT)
 
     rows: list[dict[str, object]] = []
-    for (profile, category), group in sorted(groups.items()):
-        buckets = group["buckets"]
-        assert isinstance(buckets, Counter)
+    for (profile, category, material), lengths in sorted(cuts.items()):
+        buckets = _bucket_cut_lengths(lengths, profile)
         order_ft_total = sum(length_ft * count for length_ft, count in buckets.items())
         bf_per_ft = _board_feet_per_ft(profile)
         rows.append({
             "profile": profile,
             "category": category,
-            "pieces": int(group["pieces"]),
-            "cut_length_ft": round(float(group["cut_length_ft"]), 1),
+            # The species/product the member is cut from, when the model knows it — a KDAT
+            # outrigger and an SPF stud are both "2x4" and are not the same purchase. ``None``
+            # for ordinary framing, which is what every row said before truss walls existed.
+            "material": material or None,
+            "pieces": len(lengths),
+            "cut_length_ft": round(sum(lengths), 1),
             "order_length_ft": order_ft_total,
             "stock": [{"length_ft": length_ft, "count": count}
                       for length_ft, count in sorted(buckets.items())],
@@ -105,15 +142,24 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
 
 
 def framing_bom_by_size(model: ResolvedModel) -> list[dict[str, object]]:
-    """Roll the framing takeoff up to one row per profile (size), across all member types."""
-    by_size: dict[str, dict[str, object]] = {}
+    """Roll the framing takeoff up to one row per (size, material), across member types.
+
+    ``material`` splits the row only where the model actually knows one — a KDAT 2x4
+    outrigger against an SPF 2x4 stud. Everything the model calls plain lumber carries
+    ``None`` and lands in the single row it always did. The price join reads it as a
+    qualifier (``cli/prices.QUALIFIED_KEY_FIELD``), so a house that says nothing about
+    material still prices ``2x4`` at one rate and nothing changes for it.
+    """
+    by_size: dict[tuple[str, str], dict[str, object]] = {}
     for row in framing_takeoff(model):
         profile = str(row["profile"])
-        size = by_size.get(profile)
+        material = row["material"]
+        key = (profile, str(material or ""))
+        size = by_size.get(key)
         if size is None:
-            size = by_size[profile] = {"profile": profile, "pieces": 0,
-                                       "cut_length_ft": 0.0, "order_length_ft": 0,
-                                       "board_feet": 0.0, "types": []}
+            size = by_size[key] = {"profile": profile, "material": material, "pieces": 0,
+                                   "cut_length_ft": 0.0, "order_length_ft": 0,
+                                   "board_feet": 0.0, "types": []}
         size["pieces"] = int(size["pieces"]) + int(row["pieces"])
         size["cut_length_ft"] = round(
             float(size["cut_length_ft"]) + float(row["cut_length_ft"]), 1)
@@ -126,7 +172,7 @@ def framing_bom_by_size(model: ResolvedModel) -> list[dict[str, object]]:
     for size in by_size.values():
         if not size["board_feet"]:
             size["board_feet"] = None
-    return [by_size[profile] for profile in sorted(by_size)]
+    return [by_size[key] for key in sorted(by_size)]
 
 
 def structural_solids_takeoff(model: ResolvedModel) -> list[dict[str, object]]:

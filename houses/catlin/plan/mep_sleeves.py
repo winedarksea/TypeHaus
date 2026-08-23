@@ -138,7 +138,7 @@ WALL_SLEEVES = [
                       position=pt(ft(5), ft(0, 6)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-8, -10)),
-    SleevePenetration(uid="CBPW20AAAA", tag="SP-B-N3-HYD", host_ref="W-B-N3",
+    SleevePenetration(uid="CBPW20AAAA", tag="SP-B-N3-HYD", host_ref="W-B-N4",
                       position=pt(ft(5), ft(35, 6)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-8, -10)),

@@ -59,7 +59,8 @@ def gross_area_sf(model: ResolvedModel) -> dict[str, object]:
     is the footprint. Interior courtyards are not filled — a ring's holes stay holes.
     """
     from shapely.geometry import Polygon
-    from shapely.ops import unary_union
+
+    from typehaus.resolve.overlay import union_all
 
     per_storey: dict[str, list] = {}
     for wall in model.walls:
@@ -73,7 +74,11 @@ def gross_area_sf(model: ResolvedModel) -> dict[str, object]:
             rooms_by_storey.setdefault(room.storey, []).append(Polygon(room.clear_face))
     out: dict[str, float] = {}
     for storey, bodies in per_storey.items():
-        merged = unary_union([body.buffer(0) for body in bodies])
+        # ``overlay.union_all`` rather than ``shapely.ops.unary_union``: on GEOS 3.12 (what
+        # the published Pyodide app runs) the floating-point noder throws a
+        # ``TopologyException`` on the mitred NW basement corner, and a fatal one — it kills
+        # the whole worker, so the web app never renders. See ``resolve/overlay``.
+        merged = union_all([body.buffer(0) for body in bodies])
         polys = list(merged.geoms) if merged.geom_type == "MultiPolygon" else [merged]
         rooms = rooms_by_storey.get(storey, [])
         area = 0.0

@@ -53,9 +53,18 @@ four and be tempted to make them go away.
   builder actually details. Catlin does exactly that — see its `plan/transitions.py`.
 - Same reasoning covers the starter's other reds (`integrity.condition_coverage`,
   `structural.window_framing_module`, `structural.ijoist_span`,
-  `mep.ventilation_distribution`, `electrical.*`): a template with 36" windows on an
-  unstated stud grid and a 20' I-joist span is a *shape*, not a buildable design. Do not
-  tune the starter to a clean report; tune it to be the smallest thing that loads.
+  `mep.ventilation_distribution`): a template with 36" windows on an unstated stud grid and
+  a 20' I-joist span is a *shape*, not a buildable design. Do not tune the starter to a
+  clean report; tune it to be the smallest thing that loads.
+- **`electrical.*` is the exception, and it is green now** (2026-08-23). It used to be on
+  that list for the wrong reason: `plan/mep.py` has to carry ED-RADON-FAN-JB (MN Rules
+  1303.2402 subpart 6), and `electrical.room_lighting` / `electrical.receptacle_spacing`
+  both gate on "does this plan model electrical at all" — so one mandatory box flipped them
+  from *not modeled* to *modeled and incomplete*, and the template shipped four advisory
+  FAILs that said nothing about the design. `plan/electrical.py` + `plan/circuits.py` are
+  the smallest honest answer: one panel, four circuits, a light + switch in each habitable
+  room, and NEC 210.52 receptacles on their wall lines. Unlike a rim-band flashing detail,
+  none of that is an opinion about a specific building.
 
 ## Command crib
 `haus new <dir>` · `haus serve` (UI + PATCH/undo) · `haus build` · `haus check` ·

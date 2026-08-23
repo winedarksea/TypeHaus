@@ -27,7 +27,10 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # (2026-08-20) one wall can reach several rows: W-B-BRICK's wythe is a split row
     # (`Layer.slot`) of three brick colours, and each colour bills its own band. Summing the
     # counts would say 41 walls and be counting brick, not walls.
-    assert len({tag for row in rows for tag in row["tags"]}) == 34
+    # 36 since 2026-08-23, not 34: the ESS closet's relocation to the NE corner split
+    # W-B-N3 at x=6'-0" and W-B-STR at y=31'-0" so its two partitions had nodes to tee
+    # into. Two more tags, the same pour, the same cubic yards.
+    assert len({tag for row in rows for tag in row["tags"]}) == 36
     assert {row["material"] for row in rows} == {
         "concrete", "retaining-block", "brown-brick",
         "glazed-lapis-brick", "glazed-gold-brick"}
@@ -102,7 +105,9 @@ def test_the_garden_walls_are_distinguishable_from_house_concrete(catlin_model) 
     assert set(house["tags"]) == {"W-B-E1", "W-B-E2"}
     thinned = (set(by_assembly["CATLIN_BASEMENT_8"]["tags"])
                | set(by_assembly["CATLIN_BASEMENT_8_GARDEN"]["tags"]))
-    assert thinned == {"W-B-N1", "W-B-N2", "W-B-N3", "W-B-W1", "W-B-W2",
+    # W-B-N4 is the west 6'-0" of the old W-B-N3, split off on 2026-08-23 for the ESS
+    # closet's west partition. Same assembly, same thickness, its own strip footing.
+    assert thinned == {"W-B-N1", "W-B-N2", "W-B-N3", "W-B-N4", "W-B-W1", "W-B-W2",
                        "W-B-S1", "W-B-S3"}
 
 

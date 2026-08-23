@@ -45,6 +45,18 @@ DECLARED_DIVERGENCES = {
         "reference 2\"; Catlin uses 3\" (R-15) at 40 psi under the slab — rated for slab "
         "loading rather than the lighter foundation-wall grade"
     ),
+    "wall/polyiso_in": (
+        "reference 2\" polyiso as the inner course of a 4\" rigid-CI stack; Catlin sprays "
+        "1-1/2\" of closed-cell foam there instead (2026-08-23 truss wall). The 4\" of "
+        "exterior insulation is unchanged and is asserted below — what moved is HOW it is "
+        "applied: two sprayed bands around an intermittent 2x4 truss, no boards, no WRB"
+    ),
+    "wall/furring_in": (
+        "reference 1/2\" furring held off the studs through 4\" of board by 8\" screws; "
+        "Catlin's cladding now stands off on a 3-1/2\" KDAT 2x4 outrigger on edge, whose "
+        "back 2-1/2\" is packed with the second band of that same foam and whose front 1\" "
+        "is the rainscreen vent"
+    ),
 }
 
 
@@ -53,9 +65,14 @@ WALL_PARITY = [
     ("basementtoframedwalldetail", "wall/drywall_in", ("CATLIN_EXT_2X6", "gwb-int")),
     ("basementtoframedwalldetail", "wall/stud_depth_in", ("CATLIN_EXT_2X6", "stud")),
     ("basementtoframedwalldetail", "wall/sheathing_in", ("CATLIN_EXT_2X6", "sheathing")),
-    ("basementtoframedwalldetail", "wall/polyiso_in", ("CATLIN_EXT_2X6", "polyiso")),
-    ("basementtoframedwalldetail", "wall/eps_in", ("CATLIN_EXT_2X6", "eps")),
-    ("basementtoframedwalldetail", "wall/furring_in", ("CATLIN_EXT_2X6", "furring")),
+    ("basementtoframedwalldetail", "wall/polyiso_in", ("CATLIN_EXT_2X6", "spray-foam")),
+    ("basementtoframedwalldetail", "wall/furring_in", ("CATLIN_EXT_2X6", "outrigger")),
+    # ``wall/eps_in`` (the reference's outer 2" CI course) has no layer to name any more.
+    # Its replacement — the second 2-1/2" band of spray foam — lives INSIDE the outrigger
+    # layer as a ``CavityFill``, deliberately, so the engine parallel-paths the wood through
+    # it. A CavityFill is not a Layer, so it cannot be resolved by name here; the depth it
+    # carries is asserted by ``test_the_wall_still_carries_four_inches_of_exterior_insulation``
+    # below, which is the fact the reference was actually fixing.
     ("basementtoframedwalldetail", "wall/cladding_in", ("CATLIN_EXT_2X6", "cladding")),
     ("basementconstruction", "foundation/wall_thickness_in",
      ("CATLIN_BASEMENT_12", "concrete")),
@@ -261,3 +278,24 @@ def test_every_reference_fixture_is_reachable():
     expected = {"basementconstruction", "basementplan", "basementtoframedwalldetail",
                 "houseframing", "saunashowerdetail"}
     assert {p.stem for p in FIXTURES.glob("*.json")} >= expected
+
+
+def test_the_wall_still_carries_four_inches_of_exterior_insulation(catlin_model):
+    """The reference fixes 4" of CI outboard of the sheathing. The truss wall keeps it.
+
+    The 2026-08-23 change replaced 2" polyiso + 2" EPS with 1-1/2" of closed-cell spray foam
+    plus a 2-1/2" band of the same foam packed into the outrigger layer. Two of those three
+    numbers are declared divergences above, and this is what stops the pair of them from
+    quietly adding up to something else: the depth is the fact, the layer names are not.
+    """
+    assembly = catlin_model.plan.library.resolve_assembly("CATLIN_EXT_2X6")
+    sheathing = next(index for index, layer in enumerate(assembly.layers)
+                     if layer.name == "sheathing")
+    insulation = 0.0
+    for layer in assembly.layers[sheathing + 1:]:
+        fill = layer.cavity
+        if fill is not None:
+            insulation += (fill.thickness or layer.thickness).inches
+        elif layer.function.value == "insulation":
+            insulation += layer.thickness.inches
+    assert insulation == pytest.approx(4.0, abs=1e-6)

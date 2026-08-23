@@ -36,7 +36,7 @@ source:
 
 - Eave bay blocking: close every rafter bay over the top plate with rigid foam blocking set in the plane of the wall sheathing, sealed to the joist webs and the plate with canned foam. This is what carries the air barrier across the eave from the wall sheathing up to the roof ZIP. With a paint-only interior there is no second line of defence inboard of it, so an unblocked bay vents the ceiling straight into the vent mat.
 
-- Wall: 2x6 studs (LSL on the main storey), 1/2" sheathing taped over a liquid membrane air barrier, continuous CI 2" polyiso + 2" EPS (outer layer taped), 1/2" furring, standing-seam cladding. Class III interior paint on drywall.
+- Wall: 2x6 studs (LSL on the main storey), 1/2" sheathing, then **4" of closed-cell spray foam around an intermittent 2x4 truss** — a flat block on the sheathing, a 1/2" plywood tab, a KDAT 2x4 outrigger on edge at 16" o.c. — and standing-seam cladding clipped to the outriggers. Class III interior paint on drywall. **No WRB:** the foam is the water plane (2026-08-23; was a liquid membrane over the sheathing under 2" polyiso + 2" EPS and 1/2" furring). The cladding face is 5-1/2" proud of the sheathing, not 5.02", which is what `params/roof_trim.py::_WALL_OUTBOARD_IN` carries and what moved the whole eave water chain out with it.
 
 - Foam interface: leave the angled mismatch between roof foam and wall foam; fill with closed-cell spray polyurethane foam. Avoid high-expansion foams — they lift the roof foam off the deck barrier.
 

@@ -23,6 +23,7 @@ from typehaus.emit.draw.detail_components.geometry import condition_opening, con
 from typehaus.emit.draw.detail_components.opening import (
     concrete_opening_bucks,
     humid_liner_opening_return,
+    outie_window_truss,
     sauna_liner_opening_return,
     window_head_jamb_sill,
 )
@@ -73,6 +74,17 @@ def _recipe_window_head_jamb_sill(model, context) -> list[IRNode]:
                                  context.direction, context.station)
 
 
+def _recipe_outie_window_truss(model, context) -> list[IRNode]:
+    """Truss-wall opening: the outie head flashing and sill pan, in the truss plane."""
+    if context.opening is None:
+        return []
+    wall = next((w for w in context.walls if not w.is_foundation), None)
+    if wall is None:
+        return []
+    return outie_window_truss(model, wall, context.opening, context.crop,
+                              context.direction, context.station)
+
+
 def _recipe_concrete_opening(model, context) -> list[IRNode]:
     """Opening cast into concrete (interior door, basement window): treated buck + sealant."""
     if context.opening is None:
@@ -111,6 +123,7 @@ OVERLAY_RECIPES = {
     "rim-band-air-seal": _recipe_rim_band_air_seal,
     "stack-width-shelf": _recipe_stack_width_shelf,
     "window-head-jamb-sill": _recipe_window_head_jamb_sill,
+    "outie-window-truss": _recipe_outie_window_truss,
     "garage-opening": _recipe_window_head_jamb_sill,
     "concrete-opening": _recipe_concrete_opening,
     "foundation-window": _recipe_concrete_opening,

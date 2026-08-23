@@ -459,71 +459,15 @@
           80.0
         ],
         [
-          432.02,
+          433.5,
           80.0
         ],
         [
-          432.02,
+          433.5,
           97.71653543307087
         ],
         [
           432.0,
-          97.71653543307087
-        ]
-      ],
-      "layer": "A-WALL-PATT",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW107AAAA",
-      "tag": "W-M-N3/wrb"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          432.0,
-          80.0
-        ],
-        [
-          432.02,
-          80.0
-        ],
-        [
-          432.02,
-          97.71653543307087
-        ],
-        [
-          432.0,
-          97.71653543307087
-        ]
-      ],
-      "pattern": "membrane",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "air-barrier"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          432.02,
-          80.0
-        ],
-        [
-          434.02000000000004,
-          80.0
-        ],
-        [
-          434.02000000000004,
-          97.71653543307087
-        ],
-        [
-          432.02,
           97.71653543307087
         ]
       ],
@@ -532,110 +476,54 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMW107AAAA",
-      "tag": "W-M-N3/polyiso"
+      "tag": "W-M-N3/spray-foam"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          432.02,
+          432.0,
           80.0
         ],
         [
-          434.02000000000004,
+          433.5,
           80.0
         ],
         [
-          434.02000000000004,
+          433.5,
           97.71653543307087
         ],
         [
-          432.02,
+          432.0,
           97.71653543307087
         ]
       ],
-      "pattern": "none",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "polyiso"
+      "material": "closed-cell-spray-foam"
     },
     {
       "space": "model",
       "node": "polyline",
       "points": [
         [
-          434.02000000000004,
+          433.5,
           80.0
         ],
         [
-          436.02000000000004,
+          437.0,
           80.0
         ],
         [
-          436.02000000000004,
+          437.0,
           97.71653543307087
         ],
         [
-          434.02000000000004,
-          97.71653543307087
-        ]
-      ],
-      "layer": "A-WALL-INSU",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW107AAAA",
-      "tag": "W-M-N3/eps"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          434.02000000000004,
-          80.0
-        ],
-        [
-          436.02000000000004,
-          80.0
-        ],
-        [
-          436.02000000000004,
-          97.71653543307087
-        ],
-        [
-          434.02000000000004,
-          97.71653543307087
-        ]
-      ],
-      "pattern": "none",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "eps"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          436.02000000000004,
-          80.0
-        ],
-        [
-          436.52,
-          80.0
-        ],
-        [
-          436.52,
-          97.71653543307087
-        ],
-        [
-          436.02000000000004,
+          433.5,
           97.71653543307087
         ]
       ],
@@ -644,54 +532,26 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMW107AAAA",
-      "tag": "W-M-N3/furring"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          436.02000000000004,
-          80.0
-        ],
-        [
-          436.52,
-          80.0
-        ],
-        [
-          436.52,
-          97.71653543307087
-        ],
-        [
-          436.02000000000004,
-          97.71653543307087
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "spf"
+      "tag": "W-M-N3/outrigger"
     },
     {
       "space": "model",
       "node": "polyline",
       "points": [
         [
-          436.52,
+          437.0,
           80.0
         ],
         [
-          437.02000000000004,
+          437.50000000000006,
           80.0
         ],
         [
-          437.02000000000004,
+          437.50000000000006,
           97.71653543307087
         ],
         [
-          436.52,
+          437.0,
           97.71653543307087
         ]
       ],
@@ -707,19 +567,19 @@
       "node": "hatch",
       "boundary": [
         [
-          436.52,
+          437.0,
           80.0
         ],
         [
-          437.02000000000004,
+          437.50000000000006,
           80.0
         ],
         [
-          437.02000000000004,
+          437.50000000000006,
           97.71653543307087
         ],
         [
-          436.52,
+          437.0,
           97.71653543307087
         ]
       ],
@@ -760,6 +620,34 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          433.50000000000006,
+          80.0
+        ],
+        [
+          437.0000000000001,
+          80.0
+        ],
+        [
+          437.0000000000001,
+          97.71653543307087
+        ],
+        [
+          433.50000000000006,
+          97.71653543307087
+        ]
+      ],
+      "pattern": "batt",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "closed-cell-spray-foam"
+    },
+    {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -843,11 +731,11 @@
       "node": "polyline",
       "points": [
         [
-          432.01000000000005,
+          432.75000000000006,
           0.0
         ],
         [
-          432.01000000000005,
+          432.75000000000006,
           80.0
         ]
       ],
@@ -863,11 +751,11 @@
       "node": "polyline",
       "points": [
         [
-          433.02000000000004,
+          435.25000000000006,
           0.0
         ],
         [
-          433.02000000000004,
+          435.25000000000006,
           80.0
         ]
       ],
@@ -883,11 +771,11 @@
       "node": "polyline",
       "points": [
         [
-          435.02000000000004,
+          437.25000000000006,
           0.0
         ],
         [
-          435.02000000000004,
+          437.25000000000006,
           80.0
         ]
       ],
@@ -903,59 +791,19 @@
       "node": "polyline",
       "points": [
         [
-          436.2700000000001,
+          437.50000000000006,
           0.0
         ],
         [
-          436.2700000000001,
-          80.0
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW107AAAA",
-      "tag": "W-M-N3-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          436.77000000000004,
+          447.3425196850394,
           0.0
         ],
         [
-          436.77000000000004,
-          80.0
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW107AAAA",
-      "tag": "W-M-N3-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          437.02000000000004,
-          0.0
-        ],
-        [
-          446.86251968503944,
-          0.0
-        ],
-        [
-          446.86251968503944,
+          447.3425196850394,
           1.0
         ],
         [
-          437.02000000000004,
+          437.50000000000006,
           1.0
         ]
       ],
@@ -971,19 +819,19 @@
       "node": "hatch",
       "boundary": [
         [
-          437.02000000000004,
+          437.50000000000006,
           0.0
         ],
         [
-          446.86251968503944,
+          447.3425196850394,
           0.0
         ],
         [
-          446.86251968503944,
+          447.3425196850394,
           1.0
         ],
         [
-          437.02000000000004,
+          437.50000000000006,
           1.0
         ]
       ],
@@ -999,19 +847,19 @@
       "node": "polyline",
       "points": [
         [
-          437.02000000000004,
+          437.50000000000006,
           88.75000000000001
         ],
         [
-          446.86251968503944,
+          447.3425196850394,
           88.75000000000001
         ],
         [
-          446.86251968503944,
+          447.3425196850394,
           89.38000000000001
         ],
         [
-          437.02000000000004,
+          437.50000000000006,
           89.38000000000001
         ]
       ],
@@ -1027,19 +875,19 @@
       "node": "hatch",
       "boundary": [
         [
-          437.02000000000004,
+          437.50000000000006,
           88.75000000000001
         ],
         [
-          446.86251968503944,
+          447.3425196850394,
           88.75000000000001
         ],
         [
-          446.86251968503944,
+          447.3425196850394,
           89.38000000000001
         ],
         [
-          437.02000000000004,
+          437.50000000000006,
           89.38000000000001
         ]
       ],
@@ -1055,19 +903,19 @@
       "node": "polyline",
       "points": [
         [
-          439.02000000000004,
+          439.5,
           82.75000000000001
         ],
         [
-          440.52000000000004,
+          441.0,
           82.75000000000001
         ],
         [
-          440.52000000000004,
+          441.0,
           88.25000000000001
         ],
         [
-          439.02000000000004,
+          439.5,
           88.25000000000001
         ]
       ],
@@ -1083,19 +931,19 @@
       "node": "hatch",
       "boundary": [
         [
-          439.02000000000004,
+          439.5,
           82.75000000000001
         ],
         [
-          440.52000000000004,
+          441.0,
           82.75000000000001
         ],
         [
-          440.52000000000004,
+          441.0,
           88.25000000000001
         ],
         [
-          439.02000000000004,
+          439.5,
           88.25000000000001
         ]
       ],
@@ -1111,19 +959,19 @@
       "node": "polyline",
       "points": [
         [
-          436.52,
+          437.0,
           87.38000000000001
         ],
         [
-          437.52000000000004,
+          438.0,
           87.38000000000001
         ],
         [
-          437.52000000000004,
+          438.0,
           88.88000000000001
         ],
         [
-          436.52,
+          437.0,
           88.88000000000001
         ]
       ],
@@ -1139,19 +987,19 @@
       "node": "hatch",
       "boundary": [
         [
-          436.52,
+          437.0,
           87.38000000000001
         ],
         [
-          437.52000000000004,
+          438.0,
           87.38000000000001
         ],
         [
-          437.52000000000004,
+          438.0,
           88.88000000000001
         ],
         [
-          436.52,
+          437.0,
           88.88000000000001
         ]
       ],
@@ -1167,19 +1015,19 @@
       "node": "polyline",
       "points": [
         [
-          436.02000000000004,
+          436.00000000000006,
           0.0
         ],
         [
-          436.52,
+          437.0,
           0.0
         ],
         [
-          436.52,
+          437.0,
           1.4999999999999998
         ],
         [
-          436.02000000000004,
+          436.00000000000006,
           1.4999999999999998
         ]
       ],
@@ -1195,19 +1043,19 @@
       "node": "hatch",
       "boundary": [
         [
-          436.02000000000004,
+          436.00000000000006,
           0.0
         ],
         [
-          436.52,
+          437.0,
           0.0
         ],
         [
-          436.52,
+          437.0,
           1.4999999999999998
         ],
         [
-          436.02000000000004,
+          436.00000000000006,
           1.4999999999999998
         ]
       ],
@@ -1223,19 +1071,19 @@
       "node": "polyline",
       "points": [
         [
-          439.02000000000004,
+          439.5,
           -7.249999999999999
         ],
         [
-          440.52000000000004,
+          441.0,
           -7.249999999999999
         ],
         [
-          440.52000000000004,
+          441.0,
           0.0
         ],
         [
-          439.02000000000004,
+          439.5,
           0.0
         ]
       ],
@@ -1251,19 +1099,19 @@
       "node": "hatch",
       "boundary": [
         [
-          439.02000000000004,
+          439.5,
           -7.249999999999999
         ],
         [
-          440.52000000000004,
+          441.0,
           -7.249999999999999
         ],
         [
-          440.52000000000004,
+          441.0,
           0.0
         ],
         [
-          439.02000000000004,
+          439.5,
           0.0
         ]
       ],
@@ -1580,6 +1428,230 @@
     },
     {
       "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          433.5,
+          80.0
+        ],
+        [
+          437.0,
+          80.0
+        ],
+        [
+          437.0,
+          81.5
+        ],
+        [
+          433.5,
+          81.5
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW107AAAA",
+      "tag": "ladder-head-000"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          433.5,
+          80.0
+        ],
+        [
+          437.0,
+          80.0
+        ],
+        [
+          437.0,
+          81.5
+        ],
+        [
+          433.5,
+          81.5
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          433.5,
+          -1.4999999999999998
+        ],
+        [
+          437.0,
+          -1.4999999999999998
+        ],
+        [
+          437.0,
+          0.0
+        ],
+        [
+          433.5,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW107AAAA",
+      "tag": "ladder-sill-000"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          433.5,
+          -1.4999999999999998
+        ],
+        [
+          437.0,
+          -1.4999999999999998
+        ],
+        [
+          437.0,
+          0.0
+        ],
+        [
+          433.5,
+          0.0
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          432.0,
+          79.625
+        ],
+        [
+          437.0,
+          79.625
+        ],
+        [
+          437.0,
+          80.0
+        ],
+        [
+          432.0,
+          80.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW107AAAA",
+      "tag": "buck-head-000"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          432.0,
+          79.625
+        ],
+        [
+          437.0,
+          79.625
+        ],
+        [
+          437.0,
+          80.0
+        ],
+        [
+          432.0,
+          80.0
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "struct-1-plywood"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          432.0,
+          0.0
+        ],
+        [
+          437.0,
+          0.0
+        ],
+        [
+          437.0,
+          0.37499999999999994
+        ],
+        [
+          432.0,
+          0.37499999999999994
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW107AAAA",
+      "tag": "buck-sill-000"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          432.0,
+          0.0
+        ],
+        [
+          437.0,
+          0.0
+        ],
+        [
+          437.0,
+          0.37499999999999994
+        ],
+        [
+          432.0,
+          0.37499999999999994
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "struct-1-plywood"
+    },
+    {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -1809,7 +1881,7 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          432.01,
+          432.75,
           79.91653543307085
         ],
         "name": ""
@@ -1819,10 +1891,10 @@
         79.91653543307085
       ],
       "to": [
-        432.01,
+        432.75,
         79.91653543307085
       ],
-      "text": "wrb 0.02\"",
+      "text": "spray-foam 1.5\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1834,7 +1906,7 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          433.02000000000004,
+          435.25000000000006,
           76.12486876640418
         ],
         "name": ""
@@ -1844,10 +1916,10 @@
         76.12486876640418
       ],
       "to": [
-        433.02000000000004,
+        435.25000000000006,
         76.12486876640418
       ],
-      "text": "polyiso 2\"",
+      "text": "outrigger 3.5\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1859,7 +1931,7 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          435.02,
+          437.25,
           72.3332020997375
         ],
         "name": ""
@@ -1869,58 +1941,8 @@
         72.3332020997375
       ],
       "to": [
-        435.02,
+        437.25,
         72.3332020997375
-      ],
-      "text": "eps 2\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          436.27000000000004,
-          68.54153543307083
-        ],
-        "name": ""
-      },
-      "at": [
-        414.5224803149607,
-        68.54153543307083
-      ],
-      "to": [
-        436.27000000000004,
-        68.54153543307083
-      ],
-      "text": "furring 0.5\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          436.77000000000004,
-          64.74986876640416
-        ],
-        "name": ""
-      },
-      "at": [
-        414.5224803149607,
-        64.74986876640416
-      ],
-      "to": [
-        436.77000000000004,
-        64.74986876640416
       ],
       "text": "cladding 0.5\"",
       "height": 1.6,
@@ -1933,36 +1955,36 @@
       "node": "hatch",
       "boundary": [
         [
-          432.25000000000006,
-          83.0
+          433.75000000000006,
+          83.5
         ],
         [
-          432.25000000000006,
-          80.25
+          433.75000000000006,
+          81.75
         ],
         [
-          437.7700000000001,
-          80.25
+          438.25000000000006,
+          81.75
         ],
         [
-          437.7700000000001,
-          78.4
+          438.25000000000006,
+          79.9
         ],
         [
-          437.2700000000001,
-          78.4
+          437.75000000000006,
+          79.9
         ],
         [
-          437.2700000000001,
-          79.75
+          437.75000000000006,
+          81.25
         ],
         [
-          431.75000000000006,
-          79.75
+          433.25000000000006,
+          81.25
         ],
         [
-          431.75000000000006,
-          83.0
+          433.25000000000006,
+          83.5
         ]
       ],
       "pattern": "metal",
@@ -1977,36 +1999,36 @@
       "node": "polyline",
       "points": [
         [
-          432.25000000000006,
-          83.0
+          433.75000000000006,
+          83.5
         ],
         [
-          432.25000000000006,
-          80.25
+          433.75000000000006,
+          81.75
         ],
         [
-          437.7700000000001,
-          80.25
+          438.25000000000006,
+          81.75
         ],
         [
-          437.7700000000001,
-          78.4
+          438.25000000000006,
+          79.9
         ],
         [
-          437.2700000000001,
-          78.4
+          437.75000000000006,
+          79.9
         ],
         [
-          437.2700000000001,
-          79.75
+          437.75000000000006,
+          81.25
         ],
         [
-          431.75000000000006,
-          79.75
+          433.25000000000006,
+          81.25
         ],
         [
-          431.75000000000006,
-          83.0
+          433.25000000000006,
+          83.5
         ]
       ],
       "layer": "A-DETL-CMPT",
@@ -2021,19 +2043,19 @@
       "node": "hatch",
       "boundary": [
         [
-          436.4200000000001,
+          437.0000000000001,
           79.4
         ],
         [
-          437.0200000000001,
+          437.60000000000014,
           79.4
         ],
         [
-          437.0200000000001,
+          437.60000000000014,
           80.0
         ],
         [
-          436.4200000000001,
+          437.0000000000001,
           80.0
         ]
       ],
@@ -2049,19 +2071,19 @@
       "node": "polyline",
       "points": [
         [
-          436.4200000000001,
+          437.0000000000001,
           79.4
         ],
         [
-          437.0200000000001,
+          437.60000000000014,
           79.4
         ],
         [
-          437.0200000000001,
+          437.60000000000014,
           80.0
         ],
         [
-          436.4200000000001,
+          437.0000000000001,
           80.0
         ]
       ],
@@ -2077,35 +2099,35 @@
       "node": "hatch",
       "boundary": [
         [
-          426.25000000000006,
+          432.25000000000006,
           1.5
         ],
         [
-          426.25000000000006,
+          432.25000000000006,
           0.25
         ],
         [
-          438.0200000000001,
+          437.2500000000001,
           0.25
         ],
         [
-          438.0200000000001,
-          -1.2
+          437.2500000000001,
+          -0.75
         ],
         [
-          437.5200000000001,
-          -1.2
+          436.7500000000001,
+          -0.75
         ],
         [
-          437.5200000000001,
+          436.7500000000001,
           -0.25
         ],
         [
-          425.75000000000006,
+          431.75000000000006,
           -0.25
         ],
         [
-          425.75000000000006,
+          431.75000000000006,
           1.5
         ]
       ],
@@ -2121,35 +2143,35 @@
       "node": "polyline",
       "points": [
         [
-          426.25000000000006,
+          432.25000000000006,
           1.5
         ],
         [
-          426.25000000000006,
+          432.25000000000006,
           0.25
         ],
         [
-          438.0200000000001,
+          437.2500000000001,
           0.25
         ],
         [
-          438.0200000000001,
-          -1.2
+          437.2500000000001,
+          -0.75
         ],
         [
-          437.5200000000001,
-          -1.2
+          436.7500000000001,
+          -0.75
         ],
         [
-          437.5200000000001,
+          436.7500000000001,
           -0.25
         ],
         [
-          425.75000000000006,
+          431.75000000000006,
           -0.25
         ],
         [
-          425.75000000000006,
+          431.75000000000006,
           1.5
         ]
       ],
@@ -2172,7 +2194,7 @@
         "name": ""
       },
       "at": [
-        442.0200000000001,
+        442.50000000000006,
         92.44986876640421
       ],
       "to": [
@@ -2191,20 +2213,20 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          432.01000000000005,
+          432.75000000000006,
           40.0
         ],
         "name": ""
       },
       "at": [
-        442.0200000000001,
-        86.84986876640421
+        442.50000000000006,
+        85.47903543307088
       ],
       "to": [
-        432.01000000000005,
+        432.75000000000006,
         40.0
       ],
-      "text": "water continuity — wrb-ext → wrb-ext",
+      "text": "water continuity — spray-foam-ext →\nspray-foam-ext",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2216,20 +2238,20 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          435.02000000000004,
+          432.75000000000006,
           40.0
         ],
         "name": ""
       },
       "at": [
-        442.0200000000001,
-        81.24986876640422
+        442.50000000000006,
+        78.50820209973755
       ],
       "to": [
-        435.02000000000004,
+        432.75000000000006,
         40.0
       ],
-      "text": "thermal continuity — ci-ext → ci-ext",
+      "text": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2242,7 +2264,7 @@
         415.5224803149607,
         -21.716535433070867
       ],
-      "content": "TR-CATLIN-FRAMED-OPENING  ·  window-head-jamb-sill",
+      "content": "TR-CATLIN-FRAMED-OPENING  ·  outie-window-truss",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -2259,7 +2281,7 @@
         {
           "kind": "point",
           "xy": [
-            440.0200000000001,
+            440.50000000000006,
             0.0
           ],
           "name": ""
@@ -2267,18 +2289,18 @@
         {
           "kind": "point",
           "xy": [
-            440.0200000000001,
+            440.50000000000006,
             80.0
           ],
           "name": ""
         }
       ],
       "p0": [
-        440.0200000000001,
+        440.50000000000006,
         0.0
       ],
       "p1": [
-        440.0200000000001,
+        440.50000000000006,
         80.0
       ],
       "offset": 3.0,
@@ -2310,7 +2332,7 @@
         0.5,
         7.597222222222222
       ],
-      "content": "TR-CATLIN-FRAMED-OPENING  ·  window-head-jamb-sill",
+      "content": "TR-CATLIN-FRAMED-OPENING  ·  outie-window-truss",
       "height": 3.0,
       "height_pt": 8.0,
       "rotation": 0.0,
@@ -2588,12 +2610,12 @@
           0.9580000000000001
         ]
       ],
-      "pattern": "membrane",
+      "pattern": "metal",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "air-barrier"
+      "material": "closed-cell-spray-foam"
     },
     {
       "space": "paper",
@@ -2630,7 +2652,7 @@
         0.7,
         0.8880000000000001
       ],
-      "content": "air-barrier  0.02\"",
+      "content": "closed-cell-spray-foam  1.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2660,12 +2682,12 @@
           0.7880000000000001
         ]
       ],
-      "pattern": "none",
+      "pattern": "metal",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "polyiso"
+      "material": "kdat"
     },
     {
       "space": "paper",
@@ -2702,7 +2724,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "polyiso  2\"",
+      "content": "kdat  3.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2732,12 +2754,12 @@
           1.468
         ]
       ],
-      "pattern": "none",
+      "pattern": "metal",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "eps"
+      "material": "standing-seam-snaplock"
     },
     {
       "space": "paper",
@@ -2774,78 +2796,6 @@
         2.85,
         1.3980000000000001
       ],
-      "content": "eps  2\"",
-      "height": 3.0,
-      "height_pt": 6.5,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "paper",
-      "node": "hatch",
-      "boundary": [
-        [
-          2.65,
-          1.158
-        ],
-        [
-          2.79,
-          1.158
-        ],
-        [
-          2.79,
-          1.298
-        ],
-        [
-          2.65,
-          1.298
-        ]
-      ],
-      "pattern": "metal",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "standing-seam-snaplock"
-    },
-    {
-      "space": "paper",
-      "node": "polyline",
-      "points": [
-        [
-          2.65,
-          1.158
-        ],
-        [
-          2.79,
-          1.158
-        ],
-        [
-          2.79,
-          1.298
-        ],
-        [
-          2.65,
-          1.298
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.2,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": null
-    },
-    {
-      "space": "paper",
-      "node": "text",
-      "anchor": [
-        2.85,
-        1.228
-      ],
       "content": "standing-seam-snaplock  0.5\"",
       "height": 3.0,
       "height_pt": 6.5,
@@ -2858,22 +2808,85 @@
   ],
   "notes": [
     "NOTES:",
-    "• Roof framing: 11-7/8\" I-joists at 16\" o.c. on the double top plate; birdsmouth seat cut with beveled bearing stiffeners (APA D710 10h) or a beveled plate (D710 10q, extra uplift fasteners). Structural ridge beam per D710 10c — not a rafter-tie roof. 4:12, zero overhang.",
-    "• Cavity: R-19 fiberglass batt (6-1/4\") held to the ceiling side. The remaining ~5-5/8\" is left open deliberately — the exterior foam keeps the sheathing above dew point, so that depth is condensation margin, not a shortfall.",
-    "• AIR barrier: 1/2\" ZIP sheathing, seams taped, lapping the wall sheathing membrane for continuity.",
-    "• VAPOR barrier: self-adhered sheet over the taped ZIP, under the foam. NOT OPTIONAL — ZIP is Class III (2 perm) and does not replace it. Without this layer the dew point lands inside the polyiso. With it, every control layer is outboard of the structure and the interior finish is PAINT ONLY: no ceiling poly, no smart membrane, no vapour-retarder primer.",
-    "• Roof CI: two courses of 3\" polyiso, 6\" total. STAGGER the seams between courses and tape each course — a single 6\" board leaves a joint running unbroken from deck to deck.",
-    "• Nailbase top deck: 5/8\" OSB screwed through the foam into the rafters on a 16\" x 24\" grid. 7.165\" of penetration + 1-1/2\" embedment = 10\" SDWH191000DB. The 8\" SDWS used on the walls is short here.",
-    "• Field underlayment: vapour-PERMEABLE synthetic, NOT peel-and-stick. Full-field self-adhered (0.05 perm) matches the deck vapour barrier and seals the foam and OSB on both faces with no way to dry. Self-adhered ice barrier still runs at eaves and valleys per MN code — that band is narrow enough not to close the field's drying path.",
-    "• Vent mat: ~1/4\" ventilated nylon-matrix mat, panel clips screwed through it into the top deck. Not a furring strip, and not optional — standing seam is vapour-impermeable, so this is the assembly's only outward drying path.",
-    "• Roofing: 24 ga architectural standing seam, mechanically field-seamed, concealed floating clips.",
-    "• Eave bay blocking: close every rafter bay over the top plate with rigid foam blocking set in the plane of the wall sheathing, sealed to the joist webs and the plate with canned foam. This is what carries the air barrier across the eave from the wall sheathing up to the roof ZIP. With a paint-only interior there is no second line of defence inboard of it, so an unblocked bay vents the ceiling straight into the vent mat.",
-    "• Wall: 2x6 studs (LSL on the main storey), 1/2\" sheathing taped over a liquid membrane air barrier, continuous CI 2\" polyiso + 2\" EPS (outer layer taped), 1/2\" furring, standing-seam cladding. Class III interior paint on drywall.",
-    "• Foam interface: leave the angled mismatch between roof foam and wall foam; fill with closed-cell spray polyurethane foam. Avoid high-expansion foams — they lift the roof foam off the deck barrier.",
-    "• Drip edge: its flange lies ON the top deck (underside at 7.55\" vertical above the deck datum), running 1-1/2\" back onto the deck from the roof edge, with the field underlayment lapped OVER it. Nothing ELSE in the eave chain may reach that plane — the underlayment has to ride over exactly one thing to bond to the deck. The turn-down hangs at the trough mid-width, throwing runoff into the middle of the gutter rather than down the wall behind it.",
-    "• Gutter: 6\" box gutter, back sheet tucked a lap BEHIND the corner trim's formed face — behind the sheet itself, not merely inboard of the 1.25\" of plan depth it hangs at the end of. Rim 4.38\" above the deck datum, a lap under the trim's lower edge (the trim's leg is 4\", not the 2\" this chain was first derived from). Downspout steadied with conduit pipe clamps (not primary support).",
-    "• No fascia and no soffit: roof and wall are one continuous standing-seam skin over a flush zero-overhang edge, so the resolver draws a corner trim angle instead. Every eave offset is measured off that trim's face.",
-    "• Build order (water laps downhill, so the eave chain is the part that gets built backwards): frame and block the eave bays -> ZIP, taped -> deck vapour barrier -> polyiso course 1, taped -> polyiso course 2, staggered and taped -> OSB top deck on the 10\" screws -> ice barrier at eaves and valleys only -> DRIP EDGE -> field underlayment lapped OVER the drip -> vent mat -> standing seam -> gutter, back sheet behind the trim. The drip edge goes on before the field underlayment, not after."
+    "`CATLIN_EXT_2X6` is a **Swinburne truss wall** (2026-08-23). Outboard of the 2x6 studs and",
+    "their 1/2\" plywood sheathing there is 4\" of 2 lb closed-cell spray foam, and the cladding",
+    "stands off on an **intermittent wooden truss** rather than on furring screwed through boards:",
+    "| piece | what it is | where |",
+    "|---|---|---|",
+    "| block | 2x4 laid flat, long axis vertical, ~8\" long | on the sheathing, over a stud, 0 → 1-1/2\" |",
+    "| tab | 1/2\" plywood | against the block's flush side face, 0 → 5\" |",
+    "| outrigger | KDAT 2x4 **on edge**, 16\" o.c. | lap-screwed to the tab, 1-1/2\" → 5\" |",
+    "| cladding | snap-lock standing seam | clipped to the outriggers, 5\" → 5-1/2\" |",
+    "The block is slid sideways so **one side face is flush with the stud's face**. That is the",
+    "only block position that lands the outrigger centred on the stud line, and it is what puts",
+    "two screws squarely over the stud. Centring the block instead throws the outrigger 3\" off the",
+    "stud grid and breaks every window alignment below. Blocks go every ~40\" up each outrigger.",
+    "The inner 1-1/2\" of foam is a continuous band crossed by nothing but the blocks and the tabs.",
+    "The outer 2-1/2\" fills between the outriggers; the 1\" in front of it is the drained,",
+    "back-vented rainscreen gap the standing-seam clips land in, and it is what the bug screen at",
+    "the bottom of the wall closes.",
+    "There is no housewrap and no sheet membrane anywhere in this wall. Closed-cell foam is the",
+    "air barrier, the water barrier, the vapour retarder (4\" ≈ 0.4 perm, Class II) and the",
+    "insulation in one bonded, seamless application. `plan/transitions.py` names `spray-foam-ext`",
+    "as the water and thermal continuity face for exactly this reason.",
+    "**That makes the build order part of the detail, not a preference.** A sheet WRB can be cut",
+    "and taped around an opening after the fact; sprayed foam cannot. So:",
+    "1. Frame the wall. Sheathe it. Cut the rough openings.",
+    "2. **Set the bucks.** 3/8\" plywood lining each RO on all four sides, from the sheathing face",
+    "out to the truss plane (5\"), square and plumb. Non-structural — it closes the foam at the",
+    "reveal, gives the reveal a face, and carries the pan and the head flashing.",
+    "3. Screw on the blocks. Lap-screw the tabs. Set the field outriggers and the jamb outriggers,",
+    "then the head and sill blocking between them.",
+    "4. **Spray the foam** — around the truss, up to and against the bucks, in two lifts of the",
+    "same visit. This is the moment the wall becomes weathertight, and every opening it has to",
+    "seal against must already be framed and bucked.",
+    "5. Sill pan, window, head flashing, cladding.",
+    "Spraying before the bucks go in leaves a cut edge of foam at every reveal, which is a",
+    "discontinuity in the water plane that no sealant closes honestly. Do not do it.",
+    "The unit sits in the **truss plane, 5\" outboard of the sheathing** — the same plane the",
+    "standing-seam clips land on — with its flanges bearing on the outriggers at the jambs and on",
+    "the head and sill blocking. It is not in the stud plane, and no window in this house carries a",
+    "depth dimension: the mount plane is derived from the outermost furring layer's outer face, so",
+    "it follows the assembly if the assembly ever changes again.",
+    "**Jamb bearing.** Outriggers sit on stud lines at 16\" o.c., so their faces land 1/4\" clear of",
+    "a 14\", 30\" or 38\" RO jamb and the flange bears without help. The 18\" and 27\" RO families do",
+    "not reach one, and neither do the doors; those get a **jamb outrigger** over the jack stud,",
+    "with its own tab and block over the king beside it. This is derived, not authored:",
+    "`resolve/framing/truss_wall.py` adds them, and `structural.truss_wall_opening_support` FAILs",
+    "if any RO jamb ends up further than a flange's bearing (1\") from wood. That check is what",
+    "keeps this paragraph true after the next window moves.",
+    "**Wide heads.** A head spanning more than 48\" between flanking outriggers doubles up — two",
+    "plies of the KDAT 2x4 on edge. The 60\" French and slider heads span about 63\" and take it.",
+    "Drawn by the `outie-window-truss` recipe",
+    "(`emit/draw/detail_components/opening.py::outie_window_truss`), which is a sibling of the",
+    "innie `window-head-jamb-sill` rather than a variant of it — the innie measures both pieces",
+    "from the sheathing face, and on this wall neither piece is anywhere near it.",
+    "• **Sill pan.** Lies on the sill buck, back dam turned up against the buck's inboard leg,",
+    "running out to the truss plane and turning **down into the rainscreen gap**. It discharges",
+    "*behind* the cladding. An outie pan carried out to a visible drip would put a metal lip",
+    "under every window on the facade, which is not what this house looks like.",
+    "• **Head flashing.** Starts on the **foam face** above the head blocking — the foam is the",
+    "water plane, so lapping onto it is what makes the head continuous — turns out over the head",
+    "blocking, laps past the cladding and drips. Sealant at the cladding-to-frame joint sits at",
+    "the truss plane, tucked under the drip.",
+    "The buck, the head/sill blocking and the outriggers are **not** drawn as convention linework.",
+    "They are resolved members, so the cut carries them as the solids they are; drawing them again",
+    "would be a second, disagreeing picture of the same wood.",
+    "Not R-value. By `analysis.assembly_r_value` the wall lands at **R-38.7** against R-36.8 for",
+    "the rigid-CI stack it replaced — about +5%, not the step change 4\" of foam suggests, because",
+    "the outrigger's back 2-1/2\" sits inside the foam and the engine parallel-paths it at a 9.4%",
+    "framing factor. That is the conservative 1D reading of a 2D detail; the wood is isolated from",
+    "the interior by 1-1/2\" of foam and the sheathing, and a 2D calculation would be kinder. The",
+    "house's own `preferences.toml wall_r = 40` is still not met, exactly as it was not met before.",
+    "Code minimum is R-21, so there is no risk in either direction.",
+    "The case is **labour and trades**: no 537 eight-inch structural screws, no two-layer board",
+    "install, no separate WRB, one sprayer instead of three operations. The bridging improvement is",
+    "real but small, and saying so is the point.",
+    "**Open question, flagged not decided:** whether the outrigger needs to be KDAT at all. It sits",
+    "behind cladding, embedded in closed-cell foam, in a vented cavity — it never sees bulk water",
+    "and it never touches concrete. Plain SPF would price it at the ordinary 2x4 rate and save on",
+    "the order of $3,000–5,000 across 3,610 LF. `prices.toml` carries the treated spec, which is",
+    "the conservative one."
   ],
   "frame": {
     "paper": [
@@ -2887,7 +2900,7 @@
       5.199999999999999
     ],
     "center": [
-      446.1925000000001,
+      446.43250000000006,
       40.0
     ],
     "scale": 0.5,

@@ -11,14 +11,22 @@ def _parts(model, kind: str):
 
 
 def test_wall_layers_carry_their_raw_material_ref(catlin_model):
-    """The detail's whole job is telling polyiso from EPS; ``material_key`` cannot.
+    """The detail's whole job is telling one rigid insulation from another; ``material_key``
+    cannot — they all fold to ``"rigid"`` through ``family_of``, which is right for a viewer
+    material and useless for a hatch.
 
-    Both fold to ``"rigid"`` through ``family_of``, which is right for a viewer material and
-    useless for a hatch.
+    Asked of the ROOF stack since 2026-08-23: the catlin wall carried 2" of polyiso against
+    2" of EPS until the truss wall replaced both with one sprayed foam, and the roof is where
+    two different rigid materials still meet in one assembly. The wall is checked here for
+    the same property one detail out — a plywood sheathing against a sprayed foam against a
+    treated outrigger, none of which a folded finish key can tell apart either.
     """
-    refs = {part.catalog.material_ref for (_e, part) in _parts(catlin_model, "wall")
-            if part.catalog is not None and part.catalog.material_ref}
-    assert {"polyiso", "eps"} <= refs
+    wall_refs = {part.catalog.material_ref for (_e, part) in _parts(catlin_model, "wall")
+                 if part.catalog is not None and part.catalog.material_ref}
+    assert {"closed-cell-spray-foam", "struct-1-plywood", "kdat"} <= wall_refs
+    roof_refs = {part.catalog.material_ref for (_e, part) in _parts(catlin_model, "roof")
+                 if part.catalog is not None and part.catalog.material_ref}
+    assert {"polyiso", "struct-1-plywood"} <= roof_refs
     assert layer_material_key("polyiso", "insulation") == \
            layer_material_key("eps", "insulation")
 

@@ -198,8 +198,20 @@ MATERIAL_ONLY: dict[str, frozenset[str | None]] = {
 #: weighted right only for today's band heights and would silently become wrong the moment a
 #: band moved. ``wall_structure_takeoff`` already reports the material per row, so
 #: qualifying by it costs nothing.
+#: ``framing`` needs it a fourth time, one profile string over two products: a truss wall's
+#: outriggers are KDAT 2x4 on edge and the studs beside them are SPF 2x4, and treated stock
+#: is roughly double. ``framing_by_size`` reports the material per row (``None`` for
+#: ordinary lumber, which is every row of every house authored before truss walls), so a
+#: table that says nothing prices ``2x4`` exactly as it always did.
+#: ``envelope_layers`` needs it a fifth time, and for the sharpest version yet: the SAME
+#: material at two depths. A truss wall's closed-cell foam is authored as a 1-1/2" band and
+#: a 2-1/2" one — deliberately, so the outrigger inside the outer band parallel-paths — and
+#: they are one $/SF rate only if a 2-1/2" spray costs what a 1-1/2" spray costs, which it
+#: does not. Qualifying by ``thickness_in`` prices each band at its own rate; a house that
+#: keeps its bare ``polyiso`` key keeps one rate over every thickness, unchanged.
 QUALIFIED_KEY_FIELD = {"concrete": "assembly", "timber": "assembly",
-                       "drainage": "product", "wall_structure": "material"}
+                       "drainage": "product", "wall_structure": "material",
+                       "framing": "material", "envelope_layers": "thickness_in"}
 
 
 #: Sections priced and reported but held out of the construction total. They stay in

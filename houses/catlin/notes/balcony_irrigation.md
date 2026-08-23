@@ -75,7 +75,8 @@ good it is *the* thermal bridge. Three things answer it, and all three are bille
    as "a hydrant", and the same hydrant through a different wall takes a different kit.
 
 `CATLIN_EXT_2X6` is what makes any of this safe. It carries 4" of continuous exterior
-insulation (2" polyiso + 2" EPS) *outboard* of the sheathing, so the stud cavity holding
+insulation (4" of closed-cell spray foam around the truss; 2" polyiso + 2" EPS until
+2026-08-23) *outboard* of the sheathing, so the stud cavity holding
 the seat and its feed sits on the warm side of the whole thermal break. In a cavity-only
 wall the same detail freezes.
 

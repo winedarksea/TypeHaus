@@ -13,6 +13,8 @@ from collections import Counter
 from dataclasses import dataclass
 
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.truss_wall import BLOCK_SPACING, truss_layer_name
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.hardware_catalog import (
@@ -28,6 +30,11 @@ _GRID_EPSILON = 1e-9
 # Layers a screw passes through without anything of it bearing on them, so they never break
 # the contact between a screwed strip/deck and the foam it is held off the framing by.
 _MEMBRANE_FUNCTIONS = frozenset({"membrane"})
+
+#: Screws per truss-wall block. Two, so the block cannot rotate about a single fastener —
+#: which is the whole reason the block is 3-1/2" wide and slid flush to the stud's face
+#: rather than centred on it: both screws have to land squarely over the stud.
+TRUSS_BLOCK_SCREWS = 2
 
 
 @dataclass(frozen=True)
@@ -149,6 +156,17 @@ def exterior_insulation_screw_rows(model: ResolvedModel,
             group["required_in"], group["fastening"] = required_in, fastening
 
     for wall in model.walls:
+        # A TRUSS WALL has no screwed-strip condition at all, and billing it one is the
+        # error this branch exists to stop. Its stack reads sheathing -> foam -> furring
+        # exactly as a rigid-CI wall's does, so the walk above happily "finds" a strip
+        # standing 5" off the studs and orders an 8" screw for every cell of a 16x24 grid.
+        # There is no such screw. The outrigger is lap-screwed to a plywood tab, the tab to
+        # a block, and only the BLOCK is fastened back to the framing — through 1-1/2" of
+        # wood and the sheathing, with no foam in the path, because the foam is sprayed
+        # around the truss afterwards. Those screws are billed off the blocks themselves,
+        # below, where their count is the model's and not a grid's.
+        if truss_layer_name(model.plan, wall.assembly) is not None:
+            continue
         fastening = exterior_insulation_fastening(_wall_layer_stack(wall), rules)
         if fastening is None:
             continue
@@ -171,7 +189,7 @@ def exterior_insulation_screw_rows(model: ResolvedModel,
         add("roof top deck", roof.storey, fastening,
             int(math.ceil(roof.surface_area_m2 / cell_m2)))
 
-    rows = []
+    rows = [*truss_wall_block_screw_rows(model, rules)]
     for (scope, part_number), group in sorted(groups.items()):
         fastening = group["fastening"]
         rows.append(hardware_row(
@@ -186,3 +204,54 @@ def exterior_insulation_screw_rows(model: ResolvedModel,
                    f"{group['required_in']:.2f} in required)"),
         ))
     return rows
+
+
+def truss_wall_block_screw_rows(model: ResolvedModel,
+                                rules: ExteriorInsulationFastenerRules) -> list:
+    """The structural screws holding a truss wall's blocks to its studs.
+
+    Counted off the resolved blocks rather than off a grid, because the blocks ARE the grid:
+    ``resolve/framing/truss_wall.py`` puts one every 40" up every outrigger, on the 16" stud
+    module, and two screws land squarely over the stud behind each. A rigid-CI wall's
+    16 x 24 x one-screw schedule is the wrong shape *and* the wrong count for that, which is
+    why this does not go through :func:`fastener_grid_count`.
+
+    Length is derived the same way every other screw here is: through the block and the
+    sheathing, plus the embedment rule. No foam is in the path — the block is screwed on
+    bare sheathing and the ccSPF is sprayed around it afterwards — so this lands on an
+    ordinary structural screw rather than the 8" one the boards it replaced needed.
+    """
+    from typehaus.resolve.framing.truss_wall import BLOCK_CATEGORY
+
+    groups: dict = {}
+    for wall in model.walls:
+        if truss_layer_name(model.plan, wall.assembly) is None:
+            continue
+        sheathing_m = sum(layer.thickness_m for layer in wall.depth_layers()
+                          if layer.function == "sheathing")
+        for member in wall.members:
+            if member.category != BLOCK_CATEGORY:
+                continue
+            through_in = (cross_section(member.profile).width_m + sheathing_m) / M_PER_IN
+            required_in = through_in + rules.minimum_structural_embedment_in
+            item, length_in, part_number = screw_for_required_length(
+                ROLE_EXTERIOR_INSULATION_SCREW, required_in)
+            group = groups.setdefault((part_number, round(required_in, 3)), {
+                "item": item, "length_in": length_in, "part_number": part_number,
+                "count": 0, "by_storey": Counter(), "required_in": required_in,
+                "through_in": through_in,
+            })
+            group["count"] += TRUSS_BLOCK_SCREWS
+            group["by_storey"][wall.storey] += TRUSS_BLOCK_SCREWS
+
+    return [hardware_row(
+        group["item"], scope="truss wall blocks", count=int(group["count"]),
+        part_number=group["part_number"], size=f"{group['length_in']:g} in",
+        by_storey=dict(sorted(group["by_storey"].items())),
+        basis=(f"{TRUSS_BLOCK_SCREWS} per block, blocks at "
+               f"{BLOCK_SPACING.inches:g} in o.c. up outriggers at "
+               f"{rules.strip_spacing_in:g} in o.c. "
+               f"({group['through_in']:.2f} in through block + sheathing + "
+               f"{rules.minimum_structural_embedment_in:g} in embedment = "
+               f"{group['required_in']:.2f} in required)"),
+    ) for _key, group in sorted(groups.items())]

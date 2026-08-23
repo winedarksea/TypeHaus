@@ -22,11 +22,13 @@ from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import (
     bar,
     circle_outline,
+    clip_half_plane,
     length,
     nominal_actual_m,
     rect_between,
     square,
     sub,
+    wall_frame,
 )
 from typehaus.resolve.model import (
     FramedMember,
@@ -113,12 +115,26 @@ def rainscreen_cavity_m(layers) -> float | None:
     predicate is read off the assembly, so every wall built on a rainscreen stack qualifies
     automatically and an interior partition (no cladding at all) never does.
 
-    ``layers`` are the resolved depth layers, interior→exterior.
+    A furring band packed with insulation vents only what is left over. A truss wall's
+    outrigger is 3-1/2" deep with 2-1/2" of closed-cell foam behind it, so the drained and
+    vented cavity in front of the foam is 1" — not 3-1/2", which is what the band's own
+    thickness says and what would size a 3-1/2" insect closure at the bottom of every wall.
+    The fill resolves as a cavity layer of its own (``topology.py``) sharing the band's
+    depth position, so subtract it where it names the band as its host.
+
+    ``layers`` is ``ResolvedWall.layers`` — every resolved layer interior→exterior,
+    cavity fills included, since a fill is exactly what this has to subtract. Passing
+    ``depth_layers()`` (which drops them) reports the band's gross depth.
     """
     depth = None
+    band_name = None
     for layer in layers:
+        if getattr(layer, "is_cavity", False):
+            if depth is not None and layer.cavity_host == band_name:
+                depth = max(0.0, depth - layer.thickness_m)
+            continue
         if layer.function == LayerFunction.FURRING.value:
-            depth = layer.thickness_m
+            depth, band_name = layer.thickness_m, layer.name
         elif layer.function == LayerFunction.CLADDING.value and depth is not None:
             return depth
     return None
@@ -149,7 +165,7 @@ def _continues_cavity_below(model: ResolvedModel, wall) -> bool:
     for other in model.walls:
         if other.tag == wall.tag or abs(other.z1_m - wall.z0_m) > _STACK_TOLERANCE_M:
             continue
-        if rainscreen_cavity_m(other.depth_layers()) is None:
+        if rainscreen_cavity_m(other.layers) is None:
             continue
         mid = ((wall.axis[0][0] + wall.axis[1][0]) / 2.0,
                (wall.axis[0][1] + wall.axis[1][1]) / 2.0)
@@ -179,17 +195,57 @@ def _resolve_bug_screens(model: ResolvedModel) -> None:
             continue
         furring = next(layer for layer in wall.depth_layers()
                        if layer.function == LayerFunction.FURRING.value)
+        outline = _vented_band(wall, furring)
+        if len(outline) < 3:
+            continue
         model.solids.append(ResolvedSolid(
             uid=f"{wall.uid}-bugscreen", tag=f"{wall.tag}-BUGSCREEN", storey=wall.storey,
-            category=TrimKind.BUG_SCREEN.value, outline=list(furring.polygon),
+            category=TrimKind.BUG_SCREEN.value, outline=outline,
             z0_m=wall.z0_m, z1_m=wall.z0_m + height, assembly=wall.assembly,
         ))
+
+
+def _vented_band(wall, furring) -> list[tuple[float, float]]:
+    """The furring band's plan polygon less whatever cavity fill packs it.
+
+    An unfilled band vents over its whole depth, which is every rainscreen wall built
+    before the truss wall and is why this returns the band unchanged there. A band packed
+    with 2-1/2" of closed-cell foam vents only the 1" in front of it, and drawing the
+    screen across the foam too would put a 3-1/2" insect closure where a 1" one goes —
+    the same overstatement :func:`rainscreen_cavity_m` corrects for the order.
+
+    The fill's own polygon is no help here: ``topology._synchronize_cavity_polygons`` makes
+    every cavity layer share its host's ring by convention, so the fill's *depth* is the
+    only thing it can be measured by. Which end of the band that depth is packed against is
+    read off the stack — the cladding is outboard, so the vent is the slice nearest it.
+    """
+    ring = list(furring.polygon)
+    fill = next((layer for layer in wall.layers
+                 if layer.is_cavity and layer.cavity_host == furring.name), None)
+    if fill is None or fill.thickness_m <= 0.0:
+        return ring
+    vent = furring.thickness_m - fill.thickness_m
+    if vent <= 0.0 or vent >= furring.thickness_m:
+        return ring
+    _origin, _tangent, across, axis_length = wall_frame(wall)
+    if axis_length <= 0.0:
+        return ring
+    def mean_offset(polygon) -> float:
+        return sum(x * across[0] + y * across[1] for x, y in polygon) / len(polygon)
+
+    outermost = [layer for layer in wall.layers if not layer.is_cavity and layer.polygon]
+    if not outermost:
+        return ring
+    outward = across if mean_offset(outermost[-1].polygon) >= mean_offset(ring) \
+        else (-across[0], -across[1])
+    cut = max(x * outward[0] + y * outward[1] for x, y in ring) - vent
+    return clip_half_plane(ring, (outward[0] * cut, outward[1] * cut), outward)
 
 
 def screens_rainscreen_base(model: ResolvedModel, wall) -> bool:
     """Does this wall carry a bug-screen run? Shared by the resolver and the take-off, so
     the geometry and the order can never disagree about which walls are screened."""
-    return (rainscreen_cavity_m(wall.depth_layers()) is not None
+    return (rainscreen_cavity_m(wall.layers) is not None
             and not _continues_cavity_below(model, wall))
 
 

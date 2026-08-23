@@ -124,12 +124,30 @@ def glaser_layers(layers: list[Layer]) -> list[Layer]:
     tray" and "communicates freely with room air" is the whole question. So the walk keeps
     the panel, and reports UNKNOWN naming it — which is the honest answer while no
     manufacturer in that product class publishes an ASTM E96 number.
+
+    A furring band PACKED WITH INSULATION is not a vented cavity either, and a truss wall is
+    the case that tests that rule. Its outrigger band is 3-1/2" deep with 2-1/2" of
+    closed-cell foam behind the stick; only the outer 1" vents. Truncating at the band's
+    inner face would drop most of the wall's exterior insulation out of the walk and read a
+    4"-of-foam wall as a 1-1/2"-of-foam wall — which is a dew point at the stud that the
+    real assembly does not have. So a band carrying a ``CavityFill`` is walked (parallel-
+    pathed across its fill, like any other layer with one) and the vent plane is the *next*
+    layer out. The same reasoning ``resolve/accessories.rainscreen_cavity_m`` applies to the
+    insect closure at the bottom of that cavity: what vents is the unfilled remainder.
     """
     for index, layer in enumerate(layers):
-        if layer.function in _VENTED and any(
+        if layer.function not in _VENTED or not any(
             inner.function in _WETTABLE for inner in layers[:index]
         ):
-            return layers[:index]
+            continue
+        # An empty band vents over its whole depth, so the walk stops at its inner face. A
+        # band packed with insulation vents only the unfilled remainder in front of the
+        # fill, so the walk keeps the band — parallel-pathed across its fill like any other
+        # layer with one — and stops at its OUTER face. Stopping short of it would drop most
+        # of a truss wall's exterior insulation; running past it would put the standing-seam
+        # cladding, a perfect vapour barrier, on the cold side of a wall that is in fact
+        # back-vented to outdoor air, and read a trap that is not there.
+        return layers[:index] if layer.cavity is None else layers[:index + 1]
     return layers
 
 

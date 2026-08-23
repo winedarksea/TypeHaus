@@ -126,6 +126,22 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   attic, sheathing plane continuous, no stud-depth jog. Main-storey studs are LSL,
   the upper storeys standard dimensional 2x6 (a purchasing note recorded in the
   assembly's `source`, not a separate assembly).
+- **It is a SWINBURNE TRUSS WALL outboard of that sheathing (2026-08-23).** 4" of 2 lb
+  closed-cell spray foam around an intermittent 2x4 truss — a flat block on the sheathing
+  over a stud, a 1/2" plywood tab, a KDAT 2x4 outrigger on edge at 16" o.c. — with the
+  standing seam clipped to the outriggers. It replaced a sheet WRB + 2" polyiso + 2" EPS +
+  1/2" furring on 537 eight-inch screws. Three things follow, each load-bearing elsewhere:
+  - **There is no WRB.** The foam is air + water + vapour + thermal, bonded and seamless,
+    and `plan/transitions.py` names `spray-foam-ext` as the water and thermal plane. The
+    build order is therefore part of the spec: **bucks before foam**, always.
+  - **Windows are OUTIE**, in the truss plane 5" out from the sheathing, flanges bearing on
+    the outriggers. Derived, never authored — the mount plane is the outermost FURRING
+    layer's outer face. `structural.truss_wall_opening_support` keeps every RO jamb within a
+    flange's bearing of wood.
+  - **The cladding face moved out 1/2"** (5.5", was 5.02"). Nothing interior moved — walls
+    align on `face("sheathing-ext")` — but `params/roof_trim.py`, `params/breezeway.py` and
+    the exterior electrical all measure off the cladding and moved with it.
+  See `notes/outie_window_truss_detail.md`.
 - Bearing lines: west wall, center N-S wall (x=18'), east wall; 18' spans E-W, on every
   storey and in both materials.
 - **The basement's ceiling is mixed, and that is the point.** `FS-M-WEST` (x 0'-18') and

@@ -20,6 +20,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
 from typehaus.quantities import inch
 from typehaus.resolve.framing.footprint import member_footprint
+from typehaus.resolve.framing.truss_wall import TRUSS_CATEGORIES
 
 # Minimum shared plan area (m²) for a real interference. A face/side abutment
 # intersects in a zero-area line; this clears it with margin.
@@ -149,9 +150,19 @@ _TRUSS_KINDS = frozenset({"top_chord", "bottom_chord", "truss_web", "truss_heel"
 # load, so it cannot be the elevation-arithmetic bug this check exists to catch. Without it
 # the plant room's liner strapping read as three clashes against neighbouring plates, each
 # about 0.3 square inches in plan (2026-08-18).
+# The truss-wall pieces (``resolve/framing/truss_wall.py``) join them for the identical
+# reason, one detail further out. A block, a tab, the head/sill ladder and the window buck
+# all live OUTBOARD of the sheathing, in the band a rainscreen's strapping used to have to
+# itself: the block is screwed to the sheathing over a stud, the tab is a plywood offcut
+# lapping two of them, the ladder is fitted between outriggers to carry a window flange, and
+# the buck is 3/8" ply lining a rough opening. None of them carries structural load. What
+# they do share plan with is a floor truss or an eave web stiffener laid out to the host
+# wall's *axis* rather than its finished face — defect D3 in plans/TODO.md, the same offset
+# that already clears every stud and plate below — so a contact there reports that datum, not
+# the elevation-arithmetic bug this check exists to catch.
 _ENVELOPE_SKIN_KINDS = frozenset({"sheathing", "furring", "strapping", "cladding", "fascia",
                                   "soffit", "insulation", "membrane", "gutter", "ridge_cap",
-                                  "corner_trim"})
+                                  "corner_trim"}) | TRUSS_CATEGORIES
 # Rake framing (resolve/framing/roof_gable.py): outlookers run *over* the dropped gable
 # truss and land on the barge rafter. Interpenetration there is the joint the drop creates.
 _RAKE_KINDS = frozenset({"outlooker", "barge_rafter"})

@@ -273,12 +273,20 @@ CONDENSATE = [
 # 3/4" full-size copper (the valve's own outlet — P2804.6.1 forbids reducing it, or any
 # valve/trap/rise along the run). Drops from the valve at 3'-6" to 8" above the slab, then
 # 1'-0" horizontal at 2"/ft to an air gap 6" over the floor — the low end of P2804.6.1's
-# 6"-24" band. Discharges onto the mechanical-room slab by design: the floor falls to
-# SM-B-RADON with no fixture below to damage, the same reason P2801.6 needs no pan under it.
+# 6"-24" band. Discharges onto the mechanical-room slab by design, with no fixture below to
+# damage — the same reason P2801.6 needs no pan under the tank.
+#
+# The run followed EQ-B-WH south on 2026-08-23 (see plan/mep_hvac.py): it hangs 2" off the
+# tank's west face and drops a foot toward the door, exactly as it did in the old corner.
+# **What did change is the distance to the sump.** The discharge used to land 4'-10" from
+# SM-B-RADON and now lands 11'-11" from it, so "the floor falls to SM-B-RADON" is no longer
+# an argument that carries itself. The air gap is what P2804.6.1 actually requires and it is
+# unchanged; the slope is a slab-pour question, and the honest statement is that the pour
+# has to be told to fall this way rather than assumed to. Flagged in plans/TODO.md.
 TPR_DISCHARGE = [
     PipeRun(uid="CBPT01AAAA", tag="PR-B-WH-TPR", system=PipeSystem.DRAIN,
-            path=(pt(ft(5, 0.3), ft(32, 9.7)), pt(ft(5, 0.3), ft(32, 9.7)),
-                  pt(ft(5, 0.3), ft(31, 9.7))),
+            path=(pt(ft(4, 4), ft(24)), pt(ft(4, 4), ft(24)),
+                  pt(ft(4, 4), ft(23))),
             diameter=inch(0.75), material="copper",
             elevations=(ft(3, 6), ft(0, 8), ft(0, 6))),
 ]

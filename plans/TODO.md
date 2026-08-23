@@ -29,14 +29,28 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     parcel lookup can supply: the zoning district, and the natural grade at the curb.
   - **Two knock-ons of the correction, FLAGGED AND DELIBERATELY NOT CHANGED**, because both
     want confirming against Ramsey County rather than swapping on a guess:
-    - `plan/site.py:73` authors the ground snow load as "Hennepin County / Minneapolis".
-      Ramsey and Hennepin are adjacent and almost certainly share the value, but the
-      *citation* is wrong if the site is in Ramsey, and a sourced number with the wrong
-      source is the thing this repo's conventions exist to prevent.
-    - `prices.toml [tax]` uses suburban Hennepin's **8.525%**. Ramsey County's combined rate
-      is its own figure, and the 2026-08-20 owner decision that picked 8.525% over the
-      city's 9.025% was reasoned about Hennepin. On ~$300-600k of taxable material a
-      half-point is $1,500-3,000.
+    - ~~`plan/site.py:73` authors the ground snow load as "Hennepin County / Minneapolis".~~
+      **DONE 2026-08-23, and the number did not move.** The citation is now **MN Rules
+      1303.1700**, which is the document that actually sets it: 50 psf in every Minnesota
+      county EXCEPT twenty-nine named northern ones, and neither Ramsey nor Hennepin is
+      among them. So `ground_snow_load_psf=50.0` is right either way, and the citation now
+      names the rule and its exception list rather than a county and a blank IRC table —
+      which is what makes it survive the parcel lookup instead of needing to be redone
+      after it.
+    - `prices.toml [tax]` uses suburban Hennepin's **8.525%**. **HELD ENTIRELY, owner
+      decision 2026-08-23 — the rate and its note are untouched**, because changing it before
+      the parcel is confirmed would replace one sourced-but-possibly-wrong number with
+      another. The research is done, though, so whoever picks this up is not starting cold:
+      - **Suburban Ramsey is 8.375%** (6.875 state + 1.5 metro; Ramsey County levies no local
+        sales tax of its own).
+      - **The City of Saint Paul is 9.875%** (+1.5% city, since 2024-04-01).
+      - MN taxes materials **where they are RECEIVED**: a job-site delivery takes the site's
+        rate and a contractor-yard pickup takes the yard's, so a single house can legitimately
+        carry two.
+      Against the current 8.525%, suburban Ramsey is 0.15 points LOWER (~$450-900 on
+      $300-600k of taxable material) and Saint Paul 1.35 points higher (~$4,000-8,100). The
+      spread between the two candidate answers is what makes this worth the parcel lookup and
+      not worth a guess.
 
 - **What braces the porch and balcony east-west, now that the arch is gone?**
   (raised 2026-08-18, and the one item on this list that the arch swap *created*.) Removing
@@ -60,43 +74,44 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   - **An engineer's lateral design.** The honest answer, and the same consultant the two
     side walls below already need.
 
-- **The exposed LVL beams are untreated, and ICC-ES says they should not be.**
-  (raised 2026-08-18, deliberately out of scope of that day's change.) `BM-SG-BKW`/`BKE`,
-  `BM-SG-FRW`/`FRE` and the three balcony beams are all authored as plain LVL. **ESR-1387
-  §5.3** limits Microllam/Parallam/TimberStrand to *"covered end-use installations with dry
-  conditions of use in which the in-service equilibrium moisture content is less than 16
-  percent"* — an open porch under a slatted balcony generally is not "covered". The right
-  product is treated **Parallam Plus PSL** (Weyerhaeuser TJ-7102). It was not folded into the
-  arch swap on purpose: PSL comes in 9¼ / 11⅞ / 14 / 16" depths, and 11.25" was chosen
-  precisely so derived elevations would not move (`params/sunken_garden.py`'s `back_beam`
-  note). Changing it moves the porch joist soffit, the column tops and the hanger elevations
-  together, which is its own change with its own check diff.
+- **DONE 2026-08-23 — the three sunken-garden items that stood here are closed.** Kept as a
+  paragraph rather than deleted outright, because two of the three answers are worth
+  carrying:
+  - **"Treated LVL" is not a product.** The exposed beam item asked for treated Parallam Plus
+    PSL. It cannot be had at 11 1/4": Weyerhaeuser make PSL in 9 1/4" / 11 7/8" / 14" / 16"
+    only and forbid resawing it in depth, so the depth the whole porch is derived from was
+    never buyable treated. All seven beams went to **3-ply KDAT sawn stock** instead — 3-2x12
+    on the porch four, 3-2x10 on the balcony three — which holds every derived elevation to
+    the byte (only the four front girt nodes moved, exactly 1/2", with the beam width).
+    The porch four are a strict improvement: `structural.deck_beam_span` grades them PASS at
+    10'-0" against a 10'-3" limit where it used to report UNKNOWN.
+    **The balcony three are not**, and the decision was taken knowing it — see the accepted
+    failures below.
+  - **`CN-SG-HGR-W`/`E` were already `HUCQ410-SDS`**, retyped 2026-08-22. The item was two
+    revisions stale; `prices.toml` still said `# 2 ea` for a part the takeoff bills 4 of, and
+    that is fixed too.
+  - **`W-SG-W1`/`E1` are `lateral_support="top_and_bottom"` with `#6 @ 38" o.c.`**, authored
+    2026-08-22. The 1" residual that kept them UNKNOWN — they resolved 10'-1" against IRC
+    Table R404.1.2(8)'s 10'-0" maximum — is closed: the walls are trimmed to exactly 10'-0"
+    and `structural.foundation_unbalanced_fill` PASSES both. The inch came out of the wall,
+    not the ground: `FT-SG-W1`/`E1` went 12" -> 13" thick so their undersides stayed put and
+    the 21" of frost cover the R403.3 wing insulation is sized against did not move.
 
-- **`CN-SG-HGR-W`/`E` are wood-to-wood hangers landing in 12" of concrete.**
-  (raised 2026-08-18.) They are `LUS210`. The front pair authored the same day are
-  `HUCQ410-SDS` — the concealed-flange hanger Simpson publishes for a wood member on concrete
-  or masonry (`library/hardware.py`, `ROLE_CONCRETE_FACE_MOUNT_HANGER`) — which is what these
-  two should be as well. Left alone only because it is a different decision from the arch
-  swap and deserves its own line rather than a silent retype.
-
-- **Do the porch side walls `W-SG-W1` / `W-SG-E1` count as laterally supported at the top?**
-  (raised 2026-08-16) These two 12" walls hold 9'-9" of fill and carry `FS-SG-PORCH`'s
-  framing through `CN-SG-HGR-W`/`E`, with the garden slab at their foot. That is the *shape*
-  of permanent lateral support top and bottom — but whether a porch deck of two 2x12 back
-  beams actually braces the head of a wall retaining 9'-9" is a judgment about the real
-  structure, not something the model can read off its own geometry, and it decides which code
-  path the walls are on. They are the last unanswered foundation walls in the house; the
-  check reports them UNKNOWN until this is authored.
-  - **"top_and_bottom"** puts them on IRC Table R404.1.2(8)'s 10' x 10' row, which asks for
-    **#6 @ 38" o.c.** vertical, at 1 1/4" cover from the inside face (footnote h), Grade 60.
-    That is a *prescriptive* answer — R404.1.3 says drawings using that section need no
-    engineer's seal — so it needs no consultant, just `vertical_reinforcement` authored.
-  - **"unsupported"** puts them with `W-SG-E2`/`S`/`W2` under R404.4: engineered design, 1.5
-    safety factor against sliding and overturning.
-  - The 16" `W-SG-ARCH` used to be the free rider here — off every IRC table and engineered
-    either way, so folding these two into its scope cost little. It was retired 2026-08-18,
-    and these two are now the *only* unanswered walls in the house; nobody else is paying
-    for the engineer.
+- **ACCEPTED, not open: three `structural.deck_beam_span` FAILs on `BM-SG-BLW`/`BLC`/`BLE`.**
+  The balcony's 8'-8" span has no prescriptive answer in any built-up sawn size — R507.5(1)
+  stops at 7'-2" for a 3-2x10 at the 12' joist-span row, and even a 3-2x12 reaches only
+  8'-4", so no depth fixes it and a deeper beam would move the soffit plane and every
+  elevation off it. Going to sawn stock therefore traded an UNKNOWN (a member outside the
+  table) for a FAIL (a member past its row), which is the **more** honest of the two states.
+  The member is engineered and goes to the consultant already scoped for the E-W bracing
+  above and the `FT-SG-*` frost design below — one consultant, three questions.
+  `test_cli_check_output.py::ACCEPTED_CATLIN_FAILURES` pins exactly these three, so a fourth
+  failure anywhere still breaks the build; `scripts/verify.sh` is back on `--exit-on error`
+  for the same reason it was between 2026-08-02 and 2026-08-16.
+  **Note while reading the old item: its "open porch under a slatted balcony" premise was
+  already stale.** `FS-SG-DECK`'s plank is `aluminum-deck` — Wahoo AridDeck-style, watertight,
+  with a drip trough and leader — so the balcony beams sit under a DRY-BELOW surface and only
+  the porch beams sit under gapped composite. That asymmetry is the real ESR-1387 5.3 story.
 
 - **2D-edit sync — fix design proposed** (investigated 2026-08-02). Root cause confirmed: a
   PatchOp rewrites one constructor; derived data recomputes, authored cross-references
@@ -280,22 +295,74 @@ the future.
   derivation (`params/foundations.py`, `FT-B-BRICK`) leans on that 10" toe being there
   to bear on. Correcting the footings means re-deriving the plinth with them.
 
-* Is this enough glazing for light feeling rooms (along with LED strips, etc)
-* Plan a revamp off the plumbing to see if we can make any of the runs more efficiently routed. Try to run things through the NW corner of the house's maintenance shaft, and make sure there are plumbing shutoffs in appropriate places.
+* **Is this enough glazing for light-feeling rooms (along with LED strips, etc)?** Still
+  open, and deliberately: 8% is the code minimum, not an answer about how a room feels. But
+  the numbers are knowable, so here they are —
+  `code.R303_1_light_and_ventilation` prints them for every habitable room, pass or fail:
+
+  | room | glazing | floor | ratio | openable | ratio |
+  |---|---:|---:|---:|---:|---:|
+  | RM-S-PLANT | 26.7 sf | 159 sf | **16.8%** | 13.4 sf | 8.4% |
+  | RM-S-STUDY2 | 26.7 sf | 159 sf | **16.8%** | 13.4 sf | 8.4% |
+  | RM-M-BED | 33.5 sf | 231 sf | **14.5%** | 16.7 sf | 7.2% |
+  | RM-S-BED3 | 14.2 sf | 129 sf | **11.0%** | 7.1 sf | 5.5% |
+  | RM-A-STUDY | 15.0 sf | 159 sf | **9.4%** | 7.5 sf | 4.7% |
+  | RM-S-SUITE | 13.5 sf | 154 sf | **8.8%** | 6.7 sf | 4.4% |
+  | RM-S-BED1 | 10.0 sf | 120 sf | **8.3%** | 5.0 sf | 4.2% |
+  | RM-S-BED2 | 10.0 sf | 124 sf | **8.1%** | 5.0 sf | 4.0% |
+  | RM-M-LIVING | 49.3 sf | 766 sf | 6.4% | — | — |
+  | RM-M-STUDY | 0.0 sf | 19 sf | 0% | — | — |
+  | RM-B-GYM | 0.0 sf | 324 sf | 0% | — | — |
+  | RM-B-PLAY-N | 0.0 sf | 324 sf | 0% | — | — |
+
+  The top eight clear R303.1's 8% glazing and 4% openable outright, and two of them do it
+  twice over. **The bottom four pass under R303.1 Exception 1** — artificial light plus
+  mechanical ventilation — and they are where the question actually lives:
+  - **RM-M-LIVING at 6.4%** is the one worth arguing about. It is a 766 sf open plan and it
+    is 12 sf of glass short of the code line, which on a room that size is one more window.
+  - **RM-S-BED2 at 8.1% and RM-S-BED1 at 8.3%** clear by 0.1 and 0.4 sf. That is not comfort,
+    that is a rounding margin — and `houses/catlin/CLAUDE.md` already records that growing
+    either room's clear face fails R303.1 again.
+  - **RM-B-GYM and RM-B-PLAY-N have no glass at all** and are lit to 7.4 fc. They are
+    basement rooms and always were; whether that is acceptable is a use question, not a
+    daylight one.
+  - **RM-M-STUDY's 19 sf** is a nook, not a room. Ignore the 0%.
+* Plan a revamp off the plumbing to see if we can make any of the runs more efficiently routed. Try to run things through the NW corner of the house's maintenance shaft.
+  (**The shutoff half of this item is DONE 2026-08-23** — see the stops below. The routing
+  half stays open.)
+* **DONE 2026-08-23 — branch and fixture stops.** The house had exactly one valve you could
+  close (`PA-B-MAIN-SHUTOFF`) plus a hydrant isolation, so changing a tap meant shutting the
+  dwelling off. Fifteen `SHUTOFF` accessories now cover the five bath groups, the kitchen,
+  the laundry and the water heater's cold inlet, all `accessible=True`.
+  **They sit at the fixture end of each branch, not at the tee, and that is a compromise
+  worth knowing about:** every branch tee in this house is at the basement ceiling plane,
+  which is 5/8" gypsum end to end, and the four access panels the house owns serve a WC
+  carrier, two tub wastes and the NW shaft — none is over a supply tee. So these isolate a
+  fixture GROUP at its point of use; working on the pipe between the tee and the room still
+  means closing the main. **Putting a real stop at each tee is an access-panel decision and
+  it is the open residue of this item.**
 * How can we properly anchor the heat pumps on the upper porch without compromising the waterproofing of the aluminum decking? Perhaps we need a different subtype of flooring there?
-* **Move EQ-B-ESS-BATT and its enclosure to the NE corner of the mechanical room** —
-  **BLOCKED, investigated 2026-08-22, nothing moved.** `EQ-B-WH`, the 24"x24" water heater,
-  stands at **(6'-2", 32'-10")**, which is itself in that corner. The battery type carries a
-  REQUIRED +/-48"/+/-41" separation zone (`mep_hvac.py`, an owner rule) and
-  `advisory.ess_clearance` has no room exemption and no wall exemption — "the wall between
-  them does not make the distance". Clearing the water heater needs the battery east of
-  x=11'-2" or north of y=37'-3", and the room is x 0..10, y 18..36: **no position in the NE
-  corner works.** Confirmed by moving it to (9'-0", 35'-0") and running the check, which
-  FAILED naming EQ-B-WH; the move was reverted. Three ways forward, all owner decisions:
-  move the water heater (it has a T&P relief line `PR-B-WH-TPR`, a 240V circuit, a pan and a
-  vent), narrow the authored zone, or leave the closet in the SE corner where it clears.
-  Enclosure fire-proofing is deferred to its own pass — `INT_ESS_CLOSET_STEEL` is untouched
-  and `advisory.ess_enclosure` passes on all four walls today.
+* **DONE 2026-08-23 — `EQ-B-ESS-BATT` and its Type X closet are in the NE corner.** The
+  blocker was `EQ-B-WH`, the water heater, standing in that corner itself; the owner's answer
+  was to move the tank, and it went to (5'-6", 24'-0") — south of `EQ-B-ERV`, north of
+  `D-B-FURN`'s swing, and clear of the 36" NEC 110.26 working space in front of the panel
+  wall. `advisory.ess_clearance` PASSES; put the tank back and it FAILs naming `EQ-B-WH`,
+  which is the check that the move is what unblocked it. Three things the item did not
+  anticipate, all now in `notes/backup_power.md`:
+  - **The corner had no split walls to tee into**, so `W-B-N3` split at x=6'-0" (which is
+    `N-M-MECH3`'s line, so the two storeys break in the same place) and `W-B-STR` at
+    y=31'-0" (which has no such line — `W-M-STRW` crosses it). `FO-M-STAIR.bearing_refs`
+    needed `W-B-STR3` adding or the resolver emitted a 9'-0" LVL header over the stair well.
+  - **The tank's coordinate was a literal in eight places** — seven supply runs plus the T&P
+    line — and nothing pulls a pipe onto its equipment, so moving it alone would have
+    silently disconnected the hot trunk, the cold feed and five branches with the model still
+    green. `test_water_heater_connections.py` now pins all eight against the resolved model.
+  - **The DC run to `EQ-B-ESS-INV` got ~10' longer.** Flagged on the battery in
+    `plan/electrical.py`; a real voltage-drop question on an EG4 12kPV, and the one argument
+    that could still send this back. Against it: the battery hangs on cast concrete again
+    rather than on the steel studs the 2026-08-21 overhaul left it on.
+  - There was never a pan (`mep_drainage.py` explains why P2801.6 needs none) and never a
+    vent. The item said both; neither was ever authored.
 
 DONE 2026-08-22 — the seven items that stood here (garage stairs, handrail 3D, workshop
 benches/outlets/ethernet, study + media-room ethernet, the media room's U sectional and TV,
@@ -341,7 +408,17 @@ Three things NOT done and deliberately left:
 
 ## Questions from 08-15 session
 
-The starter template gained 4 advisory FAILs. Clearing its radon ERROR required a junction box for the future fan (the code requires it), and electrical.room_lighting / receptacle_spacing both gate on "any electrical device exists" — so one box flips them from "not modeled" to "modeled and incomplete." They're honest findings and advisory only, but the alternatives are adding a full electrical package to a deliberately minimal template or loosening those checks. Your call.
+~~The starter template gained 4 advisory FAILs.~~ **ANSWERED and DONE 2026-08-23.** The
+alternatives offered were "a full electrical package" or "loosen the checks". The answer was
+neither: `houses/starter/plan/electrical.py` + `plan/circuits.py` are the *smallest honest*
+package — one 20-space panel, four circuits, a light + switch in each of the two habitable
+rooms, and NEC 210.52 receptacles on their wall lines (eight in RM-Main, nine in RM-Upper).
+
+The result is the gate the item asked for: **the four FAILs are gone, six UNKNOWNs resolved
+into twelve PASSes, and not one new finding of any kind** — verified by diffing the whole
+`haus check --only all` report before and after. Unlike the four `advisory.control_continuity`
+FAILs the template still carries deliberately, none of this is an opinion about a specific
+building, which is why it belongs in a template and a rim-band flashing detail does not.
 
 ### Plumbing
 
@@ -360,18 +437,81 @@ The starter template gained 4 advisory FAILs. Clearing its radon ERROR required 
 
 Make sure the basement door keeps the 7" step threshold (reduces flood risk)
 
+## Found while doing the 2026-08-23 batch — recorded so they are not rediscovered
+
+- **The published web app runs a GEOS a version behind the dev venv, and a geometry bug can
+  therefore ship green.** `.venv` is Shapely 2.1.2 / GEOS **3.13.1**; the app runs the engine
+  under Pyodide 0.26.2, which is Shapely 2.0.2 / GEOS **3.12.1**
+  (`ui/src/engine/pyodide/worker.ts`). GEOS 3.13 hardened OverlayNG's noding, so 3.12 raised
+  a **fatal** `TopologyException` unioning the basement wall bodies in
+  `server/space_summary.gross_area_sf` — it killed the worker, so type-haus.com/app never
+  rendered — on input rings that carry no defect of their own and that 3.13 absorbs
+  silently. Fixed by routing that overlay through `resolve/overlay.py`'s fixed-precision
+  (1 micron) helper; measured area-neutral to within a square millimetre per storey.
+  **The class of bug is the item.** Either pin a Pyodide smoke test into CI
+  (`.github/workflows/deploy-site.yml` already builds the site, and a headless
+  `node` + `pyodide` run reproduces it in about 90 seconds) or bump Pyodide — 0.28.x ships a
+  newer GEOS. Until one of those, `pytest` passing proves nothing about the published app's
+  geometry.
+- **The offline PWA's `costs_json` is broken.** `OfflineEngine.costs_json` imports
+  `typehaus.cli.prices`, which triggers `typehaus/cli/__init__.py` -> `app.py` -> `typer`,
+  and the worker loads only micropip/pydantic/shapely. It raises `ModuleNotFoundError: typer`
+  in the browser. Found with the same Pyodide harness as the item above; unrelated to it.
+  The fix is to move `load_prices` out from under the `cli` package's import side effects.
+- **There is no trap-primer element, field or `PipeAccessoryKind` member.** This is what
+  blocks the `RM-S-PLANT` floor drain: `library/placeables/fixtures.py:108-110` says the
+  existing `FX-FLOOR-DRAIN` type is for wet-room floors and *"a floor drain in a room that
+  stays dry for months wants a primer line, which would be a different type."*
+- **`ResolvedRoom` carries neither clear height nor glazing ratio** (`resolve/model.py`).
+  Every consumer re-derives them and neither reaches `model.json` — which is why the glazing
+  table above had to be scraped out of check messages rather than read off the model.
+- **Four `AlarmKind` members only** (SMOKE / CO / COMBO / HEAT). No leak or freeze kind, and
+  `emit/draw/floorplan.py:316-317` is a hard index that `KeyError`s the whole plan sheet on a
+  new member without a label — so adding one is a two-file change, not a one-line enum edit.
+- **`profile.py:82` cites the *Hennepin County* soil survey** for `soil_class="GM"`. Same
+  class of wrong-source citation as the snow load fixed in `plan/site.py` on 2026-08-23
+  (that one read Hennepin/IRC where it should have read MN Rules 1303.1700 and Ramsey), but
+  this one lives in the shared engine profile rather than in a house, so it is a different
+  fix: the house should be able to state its own soil class.
+- **The HPWH has no combustion/air-volume provision.** An 80-gal Rheem ProTerra in a 160 sf
+  mechanical room has a manufacturer air-volume requirement, and no `DuctRun`, `Register` or
+  louvre is authored for it. Nothing in `haus check` grades it. The room got 7.7 sf smaller
+  on 2026-08-23 when the ESS closet took its NE corner, which does not help.
+- **The writeback cannot address a `FoundationWall` as `type: "Wall"`.** A PATCH with
+  `{"type": "Wall", "tag": "W-B-STR3"}` comes back 422 *"no editable file hosts update Wall"*
+  even though the wall is authored in an editable file. Pre-existing; it surfaced on
+  2026-08-23 only because `model["walls"]` is uid-ordered and a new wall landed first in
+  `test_server_loader_findings`. A UI drag of any foundation wall presumably fails the same
+  way.
+- **`W-B-CW3` and `W-B-STR2` are over-specified.** Both are `INT_ESS_CLOSET_STEEL` (steel
+  studs, Type X both faces) because they used to bound the ESS closet in the SE corner. The
+  closet left on 2026-08-23 and they were deliberately NOT re-specified: matching them to
+  their neighbours would widen each by 2", move a room face an inch, and re-open
+  `integrity.condition_coverage` on a line nothing else asked about. Worth revisiting the
+  next time that wall line is opened for another reason; not worth opening it for.
+
 ## Basement Ceiling
 
 Left open, and worth doing next:
 
-- **No check enforces IRC R316.4.** The gypsum thermal barrier over the EPS deck is
-  authored (`CATLIN_DECK_EPS_INT`'s FINISH layer, and `ceiling_below` on both
-  `FloorSystem`s) and nothing would notice if it were deleted. A `code.R316_4` reading foam
-  plastic exposed to a room's interior would.
-- **`code.R305_ceiling_height` reads `Storey.default_ceiling_height`, never the real clear
-  height.** The basement's is authored 9'-0" and its actual clear is 8'-2 3/4"; the check
-  did not notice the change in either direction, which means it would not notice a real
-  violation either.
+- ~~**No check enforces IRC R316.4.**~~ **FALSE, and it was false when written.**
+  `checks/code/mn_residential/foam_plastic.py` is the whole check — `_CID = "code.R316_4"` at
+  :32 — it is on the permit checklist at `profile.py:145`, and it grades thirteen catlin
+  assemblies today (ten PASS, three UNKNOWN: two sauna liners and the plant room's sheathing,
+  each because no field on `Material` says whether a board is an approved barrier). Deleting
+  `CATLIN_DECK_EPS_INT`'s gypsum would be caught. Verified 2026-08-23.
+  - **What IS missing is `code.R316_3`** — flame spread and smoke developed, ASTM E84. R316.4
+    is the thermal barrier and it is covered; R316.3 is the surface-burning rating and it is
+    graded nowhere in this repo.
+- ~~**`code.R305_ceiling_height` reads `Storey.default_ceiling_height`.**~~ **FALSE.** It
+  derives a measured clear height per room — `rules.py:113-131` walks
+  `resolve/ceiling_over.py`'s `ceiling_decks_over` / `ceiling_underside_m` and reports
+  "clear under FS-M-WEST". The basement reads **8'-3 1/2"** (8'-4 1/8" under the EPS deck
+  band), not the fictional 9'-0" the storey still authors, and not the 8'-2 3/4" this item
+  quoted — that figure was itself two revisions old. Verified 2026-08-23.
+  - The residual, recorded in the check's own docstring: the derived height is 3/4" GENEROUS
+    on a joisted floor, because the subfloor is not subtracted. Against a 7'-0" minimum on
+    rooms clearing by more than a foot, that is not worth stopping for — but it is not exact.
 - **No boundary condition for "two decks meet in plan".** The mixed deck's wood/concrete
   line at y=13'-0" is a real movement joint — matched depths, unmatched stiffness — and the
   finish, the ceiling board and any tile field have to break on it

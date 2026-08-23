@@ -75,7 +75,10 @@ from typehaus import Downspout, Flashing, Gutter, TrimKind, ft, inch, pt
 _HOUSE_FT = 36.0
 # Wall layers outboard of the sheathing-ext datum -> the cladding outer face, which is
 # exactly the roof footprint edge (the zero-overhang roof laps the cladding).
-_WALL_OUTBOARD_IN = 0.02 + 2.0 + 2.0 + 0.5 + 0.5  # 5.02"
+# 1 1/2" spray foam + the 3 1/2" truss/outrigger band + 1/2" standing seam. Was
+# 0.02 WRB + 2" polyiso + 2" EPS + 1/2" furring + 1/2" seam = 5.02" until 2026-08-23; the
+# truss wall moved the whole roof footprint edge out 0.48" with it.
+_WALL_OUTBOARD_IN = 1.5 + 3.5 + 0.5  # 5.5"
 _EAVE_X_W = ft(0) - inch(_WALL_OUTBOARD_IN)
 _EAVE_X_E = ft(_HOUSE_FT) + inch(_WALL_OUTBOARD_IN)
 

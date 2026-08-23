@@ -361,10 +361,17 @@ def test_sonotube_column_and_bell_tuck_south_of_the_house_gap(catlin_model) -> N
     foam = catlin_model.plan.by_tag("DW-SG-COL").foam_thickness.meters
     assert max(p[1] for p in bell.outline) == pytest.approx(house_footing_s - foam)
     # The back-beam line (and its midspan node) re-anchors to the same offset, collinear.
+    # The tolerance IS the beam's own half-width, and it is READ off the member rather than
+    # written out: the pair went from a 3 1/2" two-ply LVL to a 4 1/2" three-ply KDAT 2x12
+    # on 2026-08-23, and a hardcoded 2" quietly became a quarter-inch too tight for a beam
+    # that had not moved at all.
+    from typehaus.resolve.framing.profiles import cross_section
+
+    half_width = cross_section(catlin_model.plan.by_tag("BM-SG-BKW").size).width_m / 2
     for tag in ("BM-SG-BKW", "BM-SG-BKE"):
         beam = _solid(catlin_model, tag)
         for _, y in beam.outline:
-            assert y == pytest.approx(column_y, abs=2 * INCH)  # within the beam half-width
+            assert y == pytest.approx(column_y, abs=half_width + 1e-9)
 
 
 def test_porch_joists_reach_the_deck_edge_without_oversailing_the_front_wall(

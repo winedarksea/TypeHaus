@@ -328,18 +328,23 @@ EQUIPMENT_TYPES = (
 
 # --- Service entrance + backup enclosure ---------------------------------------------
 SERVICE_DEVICES = [
-    # Exterior west wall at y=29', 6" outside the sheathing plane, 5' up.
+    # Exterior west wall at y=29', 6" outside the sheathing plane, 5' up. Moved out 1/2"
+    # on 2026-08-23 with the truss wall: the cladding face went from 5.02" to 5.5" proud of
+    # the sheathing plane, and the meter's back was left inside it.
     ElectricalDevice(uid="CEE001AAAA", tag="ED-M-METER", kind=DeviceKind.METER,
-                     position=pt(ft(0, -8), ft(29, 9.125)), type_ref="ED-T-METER",
+                     position=pt(ft(0, -8.5), ft(29, 9.125)), type_ref="ED-T-METER",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room=None, rotation=deg(270)),
 ]
 
 # --- the backup microgrid (2026-08-02, notes/backup_power.md) ------------------------
 # Four pieces, positions carry the design: EQ-B-ESS-BATT is the only thing in the RM-B-ESS
-# Type X closet; EQ-B-ESS-INV sits outside it on the furnace room's west wall (not a fire
-# risk, needs to be reachable to reset); ED-B-BACKUP-PANEL is beside the inverter on its
+# Type X closet, which moved to the furnace room's NE corner on 2026-08-23;
+# EQ-B-ESS-INV sits outside it, mid-room against the east concrete (not a fire risk, needs
+# to be reachable to reset); ED-B-BACKUP-PANEL is on the west wall on the inverter's
 # dedicated load output; ED-B-BACKUP-ENCL stays in place but demoted to shed-tier relays +
-# 24V bus only, no feed of its own.
+# 24V bus only, no feed of its own. Only the battery moved with the closet — which is why
+# the DC run between it and the inverter grew, and why that is flagged on the battery below
+# rather than quietly absorbed.
 BACKUP_ENCLOSURE = [
     # circuit= is gone with CKT-BACKUP-FEED (plan/circuits.py): this enclosure's gear lives
     # downstream of the inverter's load output now, and naming a grid-side branch circuit on
@@ -356,15 +361,27 @@ BACKUP_ENCLOSURE = [
 ]
 
 ESS_EQUIPMENT = [
-    # On the ESS closet's east face (W-B-STR2). That wall was 12" concrete when this
-    # 300 lb battery was hung on it; the 2026-08-21 overhaul reframed the stub as
-    # INT_ESS_CLOSET_STEEL, so the load now wants blocking or a backing plate spanning the
-    # steel studs rather than a concrete anchor — a detail to draw, not a position to move.
-    # (8'-4", 20'-3") clears both framed partitions and the door swing.
+    # On the NE closet's north wall, W-B-N3 (2026-08-23; was the SE closet, 2026-08-02).
+    # (8'-1 1/5", 34'-11") puts the 10"-deep cabinet's back flat on that wall's inner face at
+    # y=35'-4" and centres it in the 2'-9 5/8" clear width, north of D-B-ESS's swing.
+    #
+    # **This is a 300 lb wall load and the wall matters.** It hung on 12" concrete when it
+    # was first authored, the 2026-08-21 overhaul reframed that stub as steel studs, and the
+    # note here said the load then wanted blocking or a backing plate. The move puts it back
+    # on cast concrete — an 8" pour, anchored directly. That is a better fixing than either
+    # of the two before it and it is the quiet win in this relocation.
+    #
     # `code.R327_ess_capacity` reads `room="RM-B-ESS"` to count this as indoor storage
     # (14.3 of the 40 kWh article limit) — a future garage relocation is just this one line.
+    #
+    # **Flag, not a silent acceptance: the DC run got about 10' longer.** EQ-B-ESS-INV is at
+    # (8'-1 13/16", 24'-11 7/8") and ED-B-BACKUP-PANEL at (0'-10", 27'-0"), both of which
+    # stayed put; the battery went from ~4'-9" to ~10'-0" of conductor from the inverter. On
+    # an EG4 12kPV that is real copper and a real voltage-drop question, and it is the one
+    # argument that could send this decision back — the corner was chosen for the battery's
+    # separation zone and its concrete fixing, not for the run length.
     Equipment(uid="CEQ020AAAA", tag="EQ-B-ESS-BATT", kind=EquipmentKind.BATTERY,
-              position=pt(ft(8, 4), ft(20, 3)), footprint=(inch(24), inch(10)),
+              position=pt(ft(8, 1.2), ft(34, 11)), footprint=(inch(24), inch(10)),
               type_ref="EQ-T-ESS-BATT",
               room="RM-B-ESS", circuit="CKT-ESS-GRID",
               mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
@@ -477,8 +494,9 @@ MAIN_DEVICES = [
     # System 3 (Sapphire, backup battery circuit): its outdoor unit stands on the north
     # side beside the mudroom door, so the disconnect goes on W-M-N2's exterior face west
     # of the breezeway — clear of ED-M-HP1-DISC's condenser gap.
+    # Moved out 1/2" on 2026-08-23 with the truss wall's cladding face.
     ElectricalDevice(uid="CEE026AAAA", tag="ED-M-HP3-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(4), ft(36, 7)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
+                     position=pt(ft(4), ft(36, 7.5)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     # FH-M-BATH2's thermostat: inside the room on its south wall (W-M-BDN1, interior face
     # y=13'-0 11/16"), 8" east of D-M-BATH2's opening (x 1'-6 1/2"..4'-0 1/2") — the wall
@@ -567,13 +585,15 @@ SECOND_DEVICES = [
     # sight of their units. Moved 2026-07-31 off D-S-DECK-W's rough opening onto clear wall
     # with 110.26 working space clear of any condenser: HP1's box between the plant windows,
     # HP2's east of D-S-DECK-E (its unit sits 7' away in plain sight — 440.14 needs sight,
-    # not reach). Both on the wall's exterior face (y=-7"), corrected 2026-08-03 from y=+6"
-    # which put a 3R disconnect on the interior side of the wall from its condenser.
+    # not reach). Both on the wall's exterior face (y=-7 1/2"), corrected 2026-08-03 from
+    # y=+6" which put a 3R disconnect on the interior side of the wall from its condenser,
+    # and moved out a further 1/2" on 2026-08-23 when the truss wall took the cladding face
+    # from 5.02" to 5.5" proud of the sheathing plane.
     ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(6), ft(0, -7)), type_ref="ED-T-DISCONNECT-3R",
+                     position=pt(ft(6), ft(0, -7.5)), type_ref="ED-T-DISCONNECT-3R",
                      circuit="CKT-HP1", mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(25, 6.5), ft(0, -7)), type_ref="ED-T-DISCONNECT-3R",
+                     position=pt(ft(25, 6.5), ft(0, -7.5)), type_ref="ED-T-DISCONNECT-3R",
                      circuit="CKT-HP2", mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     # FH-S-BATH1's thermostat, inside the room on its south wall (W-S-BD-N1B, interior
     # face y=26'-4 11/16"), 9" west of D-S-BATH1's opening (x 7'-3"..9'-9"). Same
@@ -671,8 +691,9 @@ GARAGE_EQUIPMENT = [
 
 # --- Attic: PV junction box beside the radon riser (ED-A-NEMA-JB at (6', 37')) --------
 PV_JBOX = [
+    # Moved out 1/2" on 2026-08-23 with the truss wall's cladding face.
     ElectricalDevice(uid="CEE014AAAA", tag="ED-A-PV-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(9), ft(36, 8)), type_ref="ED-T-PV-JB", circuit="CKT-ESS-GRID",
+                     position=pt(ft(9), ft(36, 8.5)), type_ref="ED-T-PV-JB", circuit="CKT-ESS-GRID",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
 ]
 PV_JBOX_CLAMP = [
@@ -902,7 +923,7 @@ BASEMENT_DATA_TRUNKS = [
 DATA_SLEEVES = [
     # CD-B-DATA-MEDIA's two concrete crossings. `mep.sleeve_coverage` is a CODE-tier check
     # and an unsleeved crossing FAILs it.
-    SleevePenetration(uid="NP84SHW31K", tag="SP-B-STR-CD-DATA", host_ref="W-B-STR",
+    SleevePenetration(uid="NP84SHW31K", tag="SP-B-STR-CD-DATA", host_ref="W-B-STR3",
                       position=pt(ft(10), ft(30)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.DATA,
                       axis="horizontal", center_elevation=ft(-1, -6)),
@@ -967,7 +988,7 @@ CONDUIT_SLEEVES = [
     # CD-B-KITCHEN: east across the basement ceiling at -1' and up through SL-M-DECK to the
     # kitchen's east counter wall. The wall and deck sleeves are 1/2" apart in plan but in
     # different hosts, which is what the matcher keys on.
-    SleevePenetration(uid="CNS011AAAA", tag="SP-B-STR-CD-KITCH", host_ref="W-B-STR",
+    SleevePenetration(uid="CNS011AAAA", tag="SP-B-STR-CD-KITCH", host_ref="W-B-STR3",
                       position=pt(ft(10), ft(29)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.POWER_120,
                       axis="horizontal", center_elevation=ft(-1)),

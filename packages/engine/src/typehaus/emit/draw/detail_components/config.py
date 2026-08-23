@@ -279,6 +279,19 @@ class OpeningDetailConfig:
     #: Building fact: 2x treated buck lining a concrete opening (what the frame screws to).
     buck_in: float = 1.5
 
+    # --- outie window in a truss wall (``outie-window-truss``) ----------------------
+    #: Building fact: the head/sill blocking the flange bears on is a 2x4 ON EDGE, so it
+    #: stands 1-1/2" above the head and below the sill in the truss plane.
+    truss_blocking_in: float = 1.5
+    #: How far the head flashing laps UP the spray-foam face before it turns out. Shorter
+    #: than the innie head's 3" rise: it starts above the head blocking rather than behind a
+    #: WRB, and the foam it laps is the water plane, bonded and seamless.
+    outie_head_rise_in: float = 2.0
+    #: How far the sill pan's outboard leg turns DOWN past the truss plane. It stops inside
+    #: the 1" rainscreen gap and discharges behind the cladding — an outie pan that ran out
+    #: past the panel face would be a visible metal lip under every window.
+    outie_pan_drop_in: float = 0.75
+
 
 OPENING_DETAIL = OpeningDetailConfig()
 

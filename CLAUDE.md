@@ -51,9 +51,12 @@ scripts/verify.sh --fast                  # tests + ruff + mypy, skipping builds
 ```
 
 `haus check` exits 1 on any FAIL, not only on an ERROR — `--exit-on error` is the older,
-looser gate. `scripts/verify.sh` used it while catlin carried four accepted advisory FAILs;
-catlin carries none since 2026-08-16, so the gate is back on the default and a new advisory
-FAIL stops it.
+looser gate. `scripts/verify.sh` is back on `--exit-on error` since 2026-08-23, because
+catlin now carries **three accepted advisory FAILs** — `structural.deck_beam_span` on
+`BM-SG-BLW`/`BLC`/`BLE`, an owner decision recorded in `plans/TODO.md`. The real gate is not
+that exit code: `test_cli_check_output.py::ACCEPTED_CATLIN_FAILURES` pins those three by
+(check_id, tags), so a fourth failure anywhere breaks the build while the three stay
+accepted. Keep the two in step.
 
 ## Costs and schedule
 

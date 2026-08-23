@@ -129,25 +129,44 @@ def test_a_vented_mat_over_a_nailbase_deck_does_not_steal_the_screw() -> None:
 
 
 def test_catlin_bills_wall_and_roof_screws_as_separate_longer_line(catlin_model) -> None:
+    """The roof still takes the 10" screw through 6" of foam. The WALL no longer takes one.
+
+    Until 2026-08-23 catlin's walls were the textbook screwed-strip condition: 1/2" furring
+    held off the studs through 4" of rigid board, 537 eight-inch SDWS on a 16 x 24 grid. The
+    truss wall has no such screw anywhere in it. The outrigger is lap-screwed to a plywood
+    tab, the tab to a block, and only the BLOCK is fastened back to the framing — through
+    1-1/2" of wood and the sheathing, with no foam in the path, because the foam is sprayed
+    around the truss afterwards.
+
+    So the wall line is billed off the resolved BLOCKS rather than off a grid, and this is
+    what stops the grid walk from silently re-finding a screwed strip in the stack and
+    ordering 537 eight-inch screws for a wall that needs none.
+    """
     rows = [row for row in hardware_takeoff(catlin_model)
             if row["role"] == ROLE_EXTERIOR_INSULATION_SCREW]
-    wall = next(row for row in rows if row["scope"] == "exterior wall furring")
+    assert not [row for row in rows if row["scope"] == "exterior wall furring"], \
+        "a truss wall has no screwed furring strip — see takeoff/fasteners.py"
+    wall = next(row for row in rows if row["scope"] == "truss wall blocks")
     roof = next(row for row in rows if row["scope"] == "roof top deck")
 
-    # Same grid, longer screw: the roof carries 6 in of foam to the wall's 4 in, and since
-    # 2026-08-20 the screw also has to reach through the 5/8" nailbase deck it fastens —
-    # 0.625 + 6 + 0.54 = 7.165 in of penetration + 1.5 in of embedment = 8.665 in, so the
-    # 8 in SDWS is short and only the 10 in SDWH reaches. An under-length structural screw
-    # here is the whole roof hanging on 1 in less thread than it was designed for.
-    assert wall["size"] == "8 in" and roof["size"] == "10 in"
-    assert roof["part_number"] == "SDWH191000DB"
-    assert wall["part_number"] != roof["part_number"]
-    assert "16 in o.c." in wall["basis"] and "24 in o.c." in wall["basis"]
+    # The roof: 0.625 + 6 + 0.54 = 7.165 in of penetration + 1.5 in of embedment = 8.665 in,
+    # so the 8 in SDWS is short and only the 10 in SDWH reaches. An under-length structural
+    # screw here is the whole roof hanging on 1 in less thread than it was designed for.
+    assert roof["size"] == "10 in" and roof["part_number"] == "SDWH191000DB"
     assert "16 in o.c." in roof["basis"] and "24 in o.c." in roof["basis"]
 
-    # Counted across every floor that has a furred-and-foamed wall, not just the first.
+    # The wall: 1.5 in block + 0.5 in sheathing + 1.5 in embedment = 3.50 in, so a 4 in screw.
+    assert wall["size"] == "4 in"
+    assert wall["part_number"] != roof["part_number"]
+    assert "2 per block" in wall["basis"] and "40 in o.c." in wall["basis"]
+
+    # Counted across every floor that has a truss wall, not just the first, and exactly two
+    # per resolved block — the count is the model's, not a grid's.
     assert set(wall["by_storey"]) == {"main", "second", "attic"}
     assert wall["count"] == sum(wall["by_storey"].values())
+    blocks = sum(1 for w in catlin_model.walls for m in w.members
+                 if m.category == "truss_block")
+    assert wall["count"] == 2 * blocks > 0
     assert wall["count"] > roof["count"] > 0
 
 

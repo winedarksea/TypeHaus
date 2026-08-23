@@ -39,10 +39,15 @@ def test_cavity_shares_its_host_polygon_and_adds_no_depth(catlin_model):
     # depth counts every layer once; the cavity rides inside the studs
     depth = sum(ly.thickness_m for ly in wall.depth_layers())
     assert wall.thickness_m == pytest.approx(depth)
-    # 0.01 paint + 0.625 gwb + 5.5 stud + 0.5 sheathing + 0.02 wrb + 2 polyiso + 2 eps
-    # + 0.5 furring + 0.5 standing seam. The paint film is the interior lining's Class III
-    # vapour retarder (IRC R702.7), so it is a layer with a thickness, not a colour note.
-    assert wall.thickness_m * 39.3701 == pytest.approx(11.655, abs=0.01)
+    # 0.01 paint + 0.625 gwb + 5.5 stud + 0.5 sheathing + 1.5 spray foam + 3.5 outrigger
+    # + 0.5 standing seam. The paint film is the interior lining's Class III vapour retarder
+    # (IRC R702.7), so it is a layer with a thickness, not a colour note.
+    #
+    # 11.655" until the truss wall (2026-08-23), when the WRB + 2" polyiso + 2" EPS + 1/2"
+    # furring became 1-1/2" of spray foam and a 3-1/2" on-edge outrigger band. The band's own
+    # 2-1/2" of foam is a CavityFill and adds no depth — which is exactly what this test is
+    # for, one layer further out than it used to reach.
+    assert wall.thickness_m * 39.3701 == pytest.approx(12.135, abs=0.01)
 
 
 def test_no_wall_layer_overlaps_another(catlin_model):

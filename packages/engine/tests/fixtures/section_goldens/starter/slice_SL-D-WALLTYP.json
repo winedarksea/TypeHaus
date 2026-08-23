@@ -1532,7 +1532,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": null
+      "material": "spf"
     },
     {
       "space": "model",
@@ -1868,7 +1868,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": null
+      "material": "spf"
     },
     {
       "space": "model",
@@ -1924,7 +1924,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": null
+      "material": "spf"
     },
     {
       "space": "model",

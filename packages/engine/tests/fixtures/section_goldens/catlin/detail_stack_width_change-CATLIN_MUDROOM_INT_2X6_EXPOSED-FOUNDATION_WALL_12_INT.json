@@ -483,230 +483,6 @@
       "node": "polyline",
       "points": [
         [
-          127.71298744094489,
-          8.369999999999985
-        ],
-        [
-          128.28701255905514,
-          8.369999999999985
-        ],
-        [
-          128.28701255905514,
-          10.083003247443378
-        ],
-        [
-          127.71298744094489,
-          10.083003247443378
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMRL02AAAA-r48",
-      "tag": "RL-M-HANDRAIL-W-RAIL49"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          127.71298744094489,
-          8.369999999999985
-        ],
-        [
-          128.28701255905514,
-          8.369999999999985
-        ],
-        [
-          128.28701255905514,
-          10.083003247443378
-        ],
-        [
-          127.71298744094489,
-          10.083003247443378
-        ]
-      ],
-      "pattern": "metal-dark-exterior",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "metal-dark-exterior"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          127.30709035433071,
-          8.589669914110075
-        ],
-        [
-          128.6929096456693,
-          8.589669914110075
-        ],
-        [
-          128.6929096456693,
-          10.613333333333289
-        ],
-        [
-          127.30709035433071,
-          10.613333333333289
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMRL02AAAA-r49",
-      "tag": "RL-M-HANDRAIL-W-RAIL50"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          127.30709035433071,
-          8.589669914110075
-        ],
-        [
-          128.6929096456693,
-          8.589669914110075
-        ],
-        [
-          128.6929096456693,
-          10.613333333333289
-        ],
-        [
-          127.30709035433071,
-          10.613333333333289
-        ]
-      ],
-      "pattern": "metal-dark-exterior",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "metal-dark-exterior"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          127.30709035433071,
-          9.119999999999985
-        ],
-        [
-          128.6929096456693,
-          9.119999999999985
-        ],
-        [
-          128.6929096456693,
-          11.1436634192232
-        ],
-        [
-          127.30709035433071,
-          11.1436634192232
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMRL02AAAA-r50",
-      "tag": "RL-M-HANDRAIL-W-RAIL51"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          127.30709035433071,
-          9.119999999999985
-        ],
-        [
-          128.6929096456693,
-          9.119999999999985
-        ],
-        [
-          128.6929096456693,
-          11.1436634192232
-        ],
-        [
-          127.30709035433071,
-          11.1436634192232
-        ]
-      ],
-      "pattern": "metal-dark-exterior",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "metal-dark-exterior"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          127.71298744094489,
-          9.650330085889896
-        ],
-        [
-          128.28701255905514,
-          9.650330085889896
-        ],
-        [
-          128.28701255905514,
-          11.363333333333289
-        ],
-        [
-          127.71298744094489,
-          11.363333333333289
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMRL02AAAA-r51",
-      "tag": "RL-M-HANDRAIL-W-RAIL52"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          127.71298744094489,
-          9.650330085889896
-        ],
-        [
-          128.28701255905514,
-          9.650330085889896
-        ],
-        [
-          128.28701255905514,
-          11.363333333333289
-        ],
-        [
-          127.71298744094489,
-          11.363333333333289
-        ]
-      ],
-      "pattern": "metal-dark-exterior",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "metal-dark-exterior"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           117.12500000000001,
           0.0
         ],
@@ -854,9 +630,9 @@
       "node": "text",
       "anchor": [
         131.0,
-        11.77392825896763
+        10.860039370078741
       ],
-      "content": "water continuity — wrb-ext → wrb-ext",
+      "content": "water continuity — spray-foam-ext →\nspray-foam-ext",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -870,9 +646,9 @@
       "node": "text",
       "anchor": [
         131.0,
-        8.040594925634295
+        6.21281714785652
       ],
-      "content": "thermal continuity — ci-ext → ci-ext",
+      "content": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,

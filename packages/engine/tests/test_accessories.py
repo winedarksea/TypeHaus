@@ -605,11 +605,18 @@ def test_every_rainscreen_wall_base_is_screened(catlin_model) -> None:
 
 def test_a_screen_sits_in_the_cavity_it_closes_at_the_cladding_start(catlin_model) -> None:
     """Depth is the rainscreen cavity's own thickness and elevation is the wall base — both
-    read off the wall, so re-sizing the battens moves the strip with them."""
+    read off the wall, so re-sizing the battens moves the strip with them.
+
+    A band PACKED WITH INSULATION vents only the unfilled remainder in front of the fill, so
+    the strip is the outer slice of the band and not the whole of it. On the catlin truss
+    wall that is 1" of a 3-1/2" outrigger band; drawing the band would order a 3-1/2" insect
+    closure where a 1" one goes, and claim 42.7 SF of it where 12.2 SF is bought.
+    """
     from typehaus.resolve.accessories import (
         BUG_SCREEN_HEIGHT_IN,
         rainscreen_cavity_m,
     )
+    from typehaus.resolve.geometry import polygon_area
 
     wall = next(w for w in catlin_model.walls if w.tag == "W-M-S1")
     screen = next(s for s in catlin_model.solids
@@ -617,8 +624,17 @@ def test_a_screen_sits_in_the_cavity_it_closes_at_the_cladding_start(catlin_mode
     assert screen.z0_m == pytest.approx(wall.z0_m)
     assert screen.z1_m - screen.z0_m == pytest.approx(inch(BUG_SCREEN_HEIGHT_IN).meters)
     furring = next(ly for ly in wall.depth_layers() if ly.function == "furring")
-    assert list(screen.outline) == list(furring.polygon)
-    assert rainscreen_cavity_m(wall.depth_layers()) == pytest.approx(furring.thickness_m)
+    fill = next(ly for ly in wall.layers
+                if ly.is_cavity and ly.cavity_host == furring.name)
+    vent_m = furring.thickness_m - fill.thickness_m
+    assert vent_m == pytest.approx(inch(1.0).meters)
+    assert rainscreen_cavity_m(wall.layers) == pytest.approx(vent_m)
+    # The strip is the vent slice of the band, in the band's own footprint: same run, the
+    # vent's depth. Compared by area rather than by vertex list, because the band is mitred
+    # at its corners and the clip inherits that shape.
+    band_area = abs(polygon_area(list(furring.polygon)))
+    assert abs(polygon_area(list(screen.outline))) == pytest.approx(
+        band_area * vent_m / furring.thickness_m, rel=0.02)
 
 
 def test_a_stacked_storey_does_not_get_a_second_screen(catlin_model) -> None:

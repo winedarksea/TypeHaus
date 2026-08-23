@@ -21,16 +21,44 @@ def starter_model(starter_dir: Path):
     return model
 
 
-def test_starter_electrical_content_is_the_radon_fan_box_only(starter_model):
-    """The template models no lighting or power — its one device is the MN 1303.2402 subp. 6
-    junction box beside the radon riser, which is required of every new MN dwelling and so
-    cannot be left out of even the smallest plausible house."""
+def test_starter_models_a_minimal_electrical_package_on_both_storeys(starter_model):
+    """The template carries the smallest package a house can be wired from.
+
+    It used to carry exactly one device — the MN 1303.2402 subp. 6 junction box beside the
+    radon riser, required of every new MN dwelling — and that single mandatory box was
+    enough to flip ``electrical.room_lighting`` and ``electrical.receptacle_spacing`` from
+    *not modeled* to *modeled and incomplete*, so the template shipped four advisory FAILs
+    that said nothing about the design. ``plan/electrical.py`` answers them: a panel, a
+    light + switch in each of the two habitable rooms, and NEC 210.52 receptacles on their
+    wall lines.
+    """
     with_content = [s.tag for s in starter_model.plan.storeys
                     if has_electrical_content(starter_model, s.tag)]
-    assert with_content == ["main"]
-    devices = [e.tag for e in starter_model.plan.storey_elements("main")
-               if e.element_kind == "ElectricalDevice"]
-    assert devices == ["ED-RADON-FAN-JB"]
+    assert with_content == ["main", "upper"]
+
+    def devices(storey: str) -> list[str]:
+        return [e.tag for e in starter_model.plan.storey_elements(storey)
+                if e.element_kind == "ElectricalDevice"]
+
+    main = devices("main")
+    assert "ED-RADON-FAN-JB" in main, "the subpart 6 box is not optional"
+    assert "ED-PANEL" in main
+    assert [t for t in main if t.startswith("ED-Main-RC")] == [
+        f"ED-Main-RC{n}" for n in range(1, 9)]
+    assert {"ED-Main-LT1", "ED-Main-SW1"} <= set(main)
+
+    upper = devices("upper")
+    assert [t for t in upper if t.startswith("ED-Upper-RC")] == [
+        f"ED-Upper-RC{n}" for n in range(1, 10)]
+    assert {"ED-Upper-LT1", "ED-Upper-SW1"} <= set(upper)
+
+    # Every device joins the panel schedule, and every circuit it names exists.
+    circuits = {c.tag for c in starter_model.plan.library.circuits}
+    assert circuits == {"CKT-LIGHTS", "CKT-RECEPT", "CKT-ALARMS", "CKT-RADON"}
+    named = {e.circuit for storey in ("main", "upper")
+             for e in starter_model.plan.storey_elements(storey)
+             if e.element_kind == "ElectricalDevice" and e.circuit}
+    assert named <= circuits
 
 
 def test_main_plan_symbol_census(catlin_model):

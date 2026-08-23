@@ -41,15 +41,21 @@ from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
 from typehaus.resolve.intervals import subtract as _subtract_spans
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedOpening, ResolvedWall
 
-#: Category every member here carries. Strapping is billed by ``(profile, category)`` like
-#: all framing, so this string is what puts 1x4 battens on their own BOM row instead of
-#: merging them into the wall's studs.
+#: Category every member here carries. Strapping is billed by ``(profile, category,
+#: material)`` like all framing, so this string is what puts 1x4 battens on their own BOM row
+#: instead of merging them into the wall's studs. The layer's own ``material_ref`` rides
+#: along on each member for the same reason one step finer: a truss wall's outriggers are
+#: KDAT and the studs behind them are SPF, and "2x4" alone cannot say which was bought.
 STRAPPING_CATEGORY = "strapping"
 
 #: ``FramingSpec.direction`` values this module lays out. A FURRING spec that names neither
 #: is framed vertically (the conventional rainscreen batten) *and* reported — silently
 #: guessing would turn a typo into a wrong take-off nobody ever sees.
 VERTICAL, HORIZONTAL = "vertical", "horizontal"
+
+#: ``FramingSpec.laid`` value that stands a strip up in its band. Named here so
+#: ``framing/truss_wall.py`` — which exists only because of it — tests the same string.
+EDGE = "edge"
 
 
 def frame_furring(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
@@ -120,12 +126,15 @@ def _layout_vertical(rw: ResolvedWall, layer, spec,
     p0, direction, axis_len = _band_geometry(rw, layer)
     if axis_len <= 0.0:
         return []
-    first, last = _band_extent(layer.polygon, p0, direction, axis_len)
+    first, last = band_extent(layer.polygon, p0, direction, axis_len)
     section = cross_section(spec.member)
     # A strip laid flat presents its *wide* face to the wall, so ``depth_m`` — not
     # ``width_m`` — is the run it occupies along the axis. That is the dimension the end
     # strips have to be held in by, and the one two strips have to clear each other by.
-    face = section.depth_m
+    # Stood on edge (a truss wall's outrigger) the two swap: 1-1/2" on the wall, 3-1/2"
+    # out through the band.
+    on_edge = spec.laid == EDGE
+    face = section.width_m if on_edge else section.depth_m
     spacing = (spec.spacing or DEFAULT_SPACING).meters
     top_start, top_end = _wall_top_elevations(rw)
 
@@ -135,7 +144,11 @@ def _layout_vertical(rw: ResolvedWall, layer, spec,
     # runs *through* the wall and its 3-1/2" face lies on it. Passing the wall direction
     # here — as a stud does — would stand every strip on edge, poking 1-3/4" out through
     # cladding that is nailed to it.
-    through = normal(direction)
+    # An on-edge strip turns 90 degrees about its own long axis: the thickness face it
+    # presents to the wall run is the 1-1/2" one, so ``orient`` — the thickness axis —
+    # becomes the wall direction, exactly as a stud's does, and the 3-1/2" depth then
+    # runs out through the band.
+    through = direction if on_edge else normal(direction)
     out: list[FramedMember] = []
     index = 0
     for station in stations:
@@ -157,7 +170,8 @@ def _layout_vertical(rw: ResolvedWall, layer, spec,
                 continue
             out.append(FramedMember(
                 rw.uid, f"strapping-{layer.name}-{index:03d}", STRAPPING_CATEGORY,
-                spec.member, point, point, bottom, z1, z1 - bottom, orient=through))
+                spec.member, point, point, bottom, z1, z1 - bottom, orient=through,
+                material=layer.material_ref))
             index += 1
     return out
 
@@ -174,17 +188,21 @@ def _layout_horizontal(rw: ResolvedWall, layer, spec,
     p0, direction, axis_len = _band_geometry(rw, layer)
     if axis_len <= 0.0:
         return []
-    first, last = _band_extent(layer.polygon, p0, direction, axis_len)
+    first, last = band_extent(layer.polygon, p0, direction, axis_len)
     section = cross_section(spec.member)
     # Laid flat and running horizontally, the strip's wide face is its *height* on the
     # wall; its thickness is the band depth, which is what ``member_footprint`` bands a
-    # p0 != p1 member by.
-    face = section.depth_m
+    # p0 != p1 member by. On edge the two swap, and nothing downstream needs telling:
+    # ``profiles.plan_cross_section_m`` reads which way a horizontal member was laid off
+    # its own z-extent, so a 1-1/2"-tall course automatically bands 3-1/2" deep.
+    on_edge = spec.laid == EDGE
+    face = section.width_m if on_edge else section.depth_m
     # A course ends against whatever crosses its band at the corner — the neighbouring
     # wall's course, whose centreline runs half a board inside the mitre. The member IR
     # has no mitre and no butt cut, so hold each end back half a thickness and the two
     # courses abut there instead of lapping through each other.
-    first, last = first + section.width_m / 2.0, last - section.width_m / 2.0
+    plan_face = section.depth_m if on_edge else section.width_m
+    first, last = first + plan_face / 2.0, last - plan_face / 2.0
     spacing = (spec.spacing or DEFAULT_SPACING).meters
     top_start, top_end = _wall_top_elevations(rw)
     top_low, top_high = min(top_start, top_end), max(top_start, top_end)
@@ -214,7 +232,8 @@ def _layout_horizontal(rw: ResolvedWall, layer, spec,
             b = add(p0, scale(direction, seg_hi))
             out.append(FramedMember(
                 rw.uid, f"strapping-{layer.name}-{index:03d}", STRAPPING_CATEGORY,
-                spec.member, a, b, z, z + face, length(sub(b, a))))
+                spec.member, a, b, z, z + face, length(sub(b, a)),
+                material=layer.material_ref))
             index += 1
     return out
 
@@ -232,7 +251,7 @@ def _band_geometry(rw: ResolvedWall, layer):
     return start, unit(sub(end, start)), length(sub(end, start))
 
 
-def _band_extent(polygon, p0, direction, axis_len: float) -> tuple[float, float]:
+def band_extent(polygon, p0, direction, axis_len: float) -> tuple[float, float]:
     """The band's first/last station *on its own centreline*, clamped to the wall.
 
     The resolved layer polygon is mitred at every junction, so this is where corner

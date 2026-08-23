@@ -1557,9 +1557,9 @@
       "node": "text",
       "anchor": [
         779.875,
-        109.61644794400699
+        108.7025590551181
       ],
-      "content": "water continuity — wrb-ext → wrb-ext",
+      "content": "water continuity — spray-foam-ext →\nspray-foam-ext",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -1570,27 +1570,18 @@
     },
     {
       "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          773.6250000000001,
-          88.0
-        ],
-        "name": ""
-      },
-      "at": [
+      "node": "text",
+      "anchor": [
         779.875,
-        105.88311461067366
+        81.9609197650269
       ],
-      "to": [
-        773.6250000000001,
-        88.0
-      ],
-      "text": "thermal continuity — ci-ext → ci-ext",
-      "height": 1.6,
+      "content": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
+      "height": 3.0,
       "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
       "layer": "A-ANNO-TEXT",
+      "align": "left",
       "uid": null
     },
     {
@@ -2226,7 +2217,7 @@
     "• Vent mat: ~1/4\" ventilated nylon-matrix mat, panel clips screwed through it into the top deck. Not a furring strip, and not optional — standing seam is vapour-impermeable, so this is the assembly's only outward drying path.",
     "• Roofing: 24 ga architectural standing seam, mechanically field-seamed, concealed floating clips.",
     "• Eave bay blocking: close every rafter bay over the top plate with rigid foam blocking set in the plane of the wall sheathing, sealed to the joist webs and the plate with canned foam. This is what carries the air barrier across the eave from the wall sheathing up to the roof ZIP. With a paint-only interior there is no second line of defence inboard of it, so an unblocked bay vents the ceiling straight into the vent mat.",
-    "• Wall: 2x6 studs (LSL on the main storey), 1/2\" sheathing taped over a liquid membrane air barrier, continuous CI 2\" polyiso + 2\" EPS (outer layer taped), 1/2\" furring, standing-seam cladding. Class III interior paint on drywall.",
+    "• Wall: 2x6 studs (LSL on the main storey), 1/2\" sheathing, then **4\" of closed-cell spray foam around an intermittent 2x4 truss** — a flat block on the sheathing, a 1/2\" plywood tab, a KDAT 2x4 outrigger on edge at 16\" o.c. — and standing-seam cladding clipped to the outriggers. Class III interior paint on drywall. **No WRB:** the foam is the water plane (2026-08-23; was a liquid membrane over the sheathing under 2\" polyiso + 2\" EPS and 1/2\" furring). The cladding face is 5-1/2\" proud of the sheathing, not 5.02\", which is what `params/roof_trim.py::_WALL_OUTBOARD_IN` carries and what moved the whole eave water chain out with it.",
     "• Foam interface: leave the angled mismatch between roof foam and wall foam; fill with closed-cell spray polyurethane foam. Avoid high-expansion foams — they lift the roof foam off the deck barrier.",
     "• Drip edge: its flange lies ON the top deck (underside at 7.55\" vertical above the deck datum), running 1-1/2\" back onto the deck from the roof edge, with the field underlayment lapped OVER it. Nothing ELSE in the eave chain may reach that plane — the underlayment has to ride over exactly one thing to bond to the deck. The turn-down hangs at the trough mid-width, throwing runoff into the middle of the gutter rather than down the wall behind it.",
     "• Gutter: 6\" box gutter, back sheet tucked a lap BEHIND the corner trim's formed face — behind the sheet itself, not merely inboard of the 1.25\" of plan depth it hangs at the end of. Rim 4.38\" above the deck datum, a lap under the trim's lower edge (the trim's leg is 4\", not the 2\" this chain was first derived from). Downspout steadied with conduit pipe clamps (not primary support).",

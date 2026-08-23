@@ -74,7 +74,7 @@ SUPPLY = [
                     # column, so the tee costs nothing in size.
                     "FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
     PipeRun(uid="CBPW31AAAA", tag="PR-B-HW-TRUNK", system=PipeSystem.WATER_HOT,
-            path=(pt(m(1.88684), m(10.0015)), pt(m(1.88684), m(10.0015)),
+            path=(pt(ft(5, 6), ft(24)), pt(ft(5, 6), ft(24)),
                   pt(ft(6, 6), ft(19, 2.4)), pt(ft(6, 6), ft(15, 6))),
             diameter=inch(1), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(4), ft(8), ft(8), ft(8)),
@@ -93,7 +93,7 @@ SUPPLY = [
     # Cold feed to the water heater itself (equipment, not a fixture — no fixture units).
     PipeRun(uid="CBPW32AAAA", tag="PR-B-CW-WH", system=PipeSystem.WATER_COLD,
             path=(pt(ft(5), ft(16)), pt(ft(5, 6), ft(16, 9.6)), pt(ft(5, 6), ft(19, 2.4)),
-                  pt(m(1.88684), m(10.0015)), pt(m(1.88684), m(10.0015))),
+                  pt(ft(5, 6), ft(24)), pt(ft(5, 6), ft(24))),
             diameter=inch(1), material="copper", finish="lacquered",
             elevations=(ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(4))),
     # Main-storey groups.
@@ -106,7 +106,7 @@ SUPPLY = [
             wall_refs=(None, None, None, None, "W-M-BAE"),
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV")),
     PipeRun(uid="CBPW34AAAA", tag="PR-B-HW-BATH1", system=PipeSystem.WATER_HOT,
-            path=(pt(m(1.88684), m(10.0015)), pt(ft(6), ft(24)), pt(ft(6), ft(24)),
+            path=(pt(ft(5, 6), ft(24)), pt(ft(6), ft(24)), pt(ft(6), ft(24)),
                   pt(ft(6), ft(24))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(8), ft(8), ft(9, 4), ft(12, 10)),
@@ -137,7 +137,7 @@ SUPPLY = [
             wall_refs=(None, None, "W-M-BA2E"),
             serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
     PipeRun(uid="CBPW38AAAA", tag="PR-B-HW-WASH", system=PipeSystem.WATER_HOT,
-            path=(pt(m(1.88684), m(10.0015)), pt(ft(8), ft(21, 2.4)),
+            path=(pt(ft(5, 6), ft(24)), pt(ft(8), ft(21, 2.4)),
                   pt(ft(8), ft(21, 2.4)), pt(ft(8), ft(21, 2.4))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(8), ft(8), ft(9, 4), ft(12, 4)),
@@ -168,7 +168,7 @@ SUPPLY = [
     # first clean bay past the tee (6 1/2" west of D-M-MUD's jamb pack, 8" west of D-S-BATH1's
     # above). SP-M-HW-SBATH moved with it.
     PipeRun(uid="CBPW41AAAA", tag="PR-B-HW-SBATH", system=PipeSystem.WATER_HOT,
-            path=(pt(m(1.88684), m(10.0015)), pt(ft(6, 4), ft(26, 4)),
+            path=(pt(ft(5, 6), ft(24)), pt(ft(6, 4), ft(26, 4)),
                   pt(ft(6, 4), ft(26, 4)), pt(ft(6, 4), ft(26, 4)),
                   pt(ft(6, 4), ft(26, 4))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
@@ -194,7 +194,7 @@ SUPPLY = [
     # hot 19'-9") to x=16', then north into W-B-BA-N's cavity. Cold carries the WC and
     # lavatory (3.25 WSFU), hot the lavatory alone.
     PipeRun(uid="CBPW44AAAA", tag="PR-B-CW-BATH", system=PipeSystem.WATER_COLD,
-            path=(pt(m(1.88684), m(10.0015)), pt(ft(7), ft(26)), pt(ft(7), ft(20, 3)),
+            path=(pt(ft(5, 6), ft(24)), pt(ft(7), ft(26)), pt(ft(7), ft(20, 3)),
                   pt(ft(16), ft(20, 3)), pt(ft(16), ft(21, 9.375)),
                   pt(ft(16), ft(21, 9.375))),
             diameter=inch(0.5), material="copper", finish="lacquered",
@@ -202,7 +202,7 @@ SUPPLY = [
                         ft(2, 6)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
     PipeRun(uid="CBPW45AAAA", tag="PR-B-HW-BATH", system=PipeSystem.WATER_HOT,
-            path=(pt(m(1.88684), m(10.0015)), pt(ft(7, 3.6), ft(26)),
+            path=(pt(ft(5, 6), ft(24)), pt(ft(7, 3.6), ft(26)),
                   pt(ft(7, 3.6), ft(19, 9)), pt(ft(16), ft(19, 9)),
                   pt(ft(16), ft(21, 9.375)), pt(ft(16), ft(21, 9.375))),
             diameter=inch(0.5), material="copper", finish="lacquered",

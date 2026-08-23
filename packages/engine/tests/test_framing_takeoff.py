@@ -34,15 +34,26 @@ def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
     assert members  # the catlin model frames thousands of members
 
     rows = framing_takeoff(catlin_model)
-    # Every (profile, category) pair is present exactly once and total pieces reconcile 1:1.
-    keys = [(row["profile"], row["category"]) for row in rows]
+    # Every (profile, category, material) triple is present exactly once and total pieces
+    # reconcile 1:1. Material is part of the key because a KDAT 2x4 outrigger and an SPF 2x4
+    # stud are the same profile and not the same purchase.
+    keys = [(row["profile"], row["category"], row["material"]) for row in rows]
     assert len(keys) == len(set(keys))
     assert sum(int(row["pieces"]) for row in rows) == len(members)
 
     for row in rows:
-        # The per-stock buckets account for every piece in the group.
-        assert sum(bucket["count"] for bucket in row["stock"]) == row["pieces"]
+        # Sticks, not pieces: short cuts nest several to a stock length, so a group's bucket
+        # count is at most its piece count and is only equal when nothing nested.
+        sticks = sum(bucket["count"] for bucket in row["stock"])
+        assert 0 < sticks <= row["pieces"]
         assert row["order_length_ft"] >= row["cut_length_ft"]  # ordered >= cut
+
+    # Nesting is what keeps a short-piece row honest: 1,285 eight-inch truss-wall blocks are
+    # about 857 lineal feet of 2x4, and must not order 10,280.
+    blocks = [row for row in rows if row["category"] == "truss_block"]
+    assert blocks
+    for row in blocks:
+        assert row["order_length_ft"] < 1.5 * row["cut_length_ft"]
 
     # A known dimensional profile carries a board-foot rollup; every stud is a real size.
     studs = [row for row in rows if row["category"] == "stud"]
@@ -53,8 +64,9 @@ def test_framing_by_size_rolls_up_types(catlin_model) -> None:
     rows = framing_takeoff(catlin_model)
     by_size = framing_bom_by_size(catlin_model)
 
-    # One row per distinct profile, and the piece totals match the detailed takeoff.
-    assert {row["profile"] for row in by_size} == {row["profile"] for row in rows}
+    # One row per distinct (profile, material), and the piece totals match the detailed takeoff.
+    assert ({(row["profile"], row["material"]) for row in by_size}
+            == {(row["profile"], row["material"]) for row in rows})
     assert sum(int(row["pieces"]) for row in by_size) == sum(
         int(row["pieces"]) for row in rows
     )

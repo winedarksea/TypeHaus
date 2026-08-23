@@ -286,10 +286,13 @@ WALLS = [
          assembly="CATLIN_EXT_2X6",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N3"),
+    # stacks_on W-B-N4, not W-B-N3: the basement's north wall was split at this same
+    # x=6'-0" line on 2026-08-23 (the ESS closet's west partition tees in there), so the
+    # two storeys now break in the same place and each main segment has one wall under it.
     Wall(uid="CMW135AAAA", tag="W-M-N3B", start_node="N-M-MECH3", end_node="N-M-NW",
          assembly="CATLIN_EXT_2X6", corner_style_end="4-stud",
          alignment=face("sheathing-ext"), top=ft(9),
-         structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N3"),
+         structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N4"),
     # Split at N-M-MECH1, where RM-M-MECH's south wall tees into the west wall
     # (2026-07-28, MEP shaft closet).
     Wall(uid="CMW136AAAA", tag="W-M-W1B", start_node="N-M-NW", end_node="N-M-MECH1",
@@ -365,11 +368,13 @@ WALLS = [
     # return of the mudroom wall rather than as bare framing in the hall. `interior_room`
     # still names the mudroom: the field only picks which side layer 0 faces, and the
     # mudroom seed is on the correct (west) side of this segment's midpoint too.
+    # stacks_on W-B-STR3 since 2026-08-23: W-B-STR was split at y=31'-0" for the ESS
+    # closet's south partition, and this 6" segment sits wholly south of that line.
     Wall(uid="CMW134AAAA", tag="W-M-STRW2", start_node="N-M-STRJ",
          end_node="N-M-STR1", assembly="CATLIN_MUDROOM_INT_2X6_EXPOSED", top=ft(9),
          alignment=face("ply-stair-ext", offset=inch(-3.375)),
          interior_room="RM-M-MUDROOM",
-         structural_role=StructuralRole.BEARING, stacks_on="W-B-STR"),
+         structural_role=StructuralRole.BEARING, stacks_on="W-B-STR3"),
     # The wall at the top of the stairs, pushed north to y=25'-10" (2026-07-28) to close
     # against the wells; D-M-STAIR opens onto ST-B2M's top nosing in the west lane.
     # Shortened 2026-07-30: it now dies flush into the well partition's east face
@@ -738,7 +743,16 @@ FLOOR_OPENINGS = [
                  # refs decide whether the edges are carried or get a 9'-0" LVL header
                  # (structural.floor_opening_header). W-B-STR's east face and W-B-CN's west
                  # face are the shaft's own 7'-0" faces, which is what the well is drawn to.
-                 bearing_refs=("W-B-STR", "W-B-CN")),
+                 #
+                 # W-B-STR3 joined the list on 2026-08-23: the ESS closet's relocation split
+                 # W-B-STR at y=31'-0", and this edge runs y 26'-0 3/8"..35'-0", so the north
+                 # segment alone stopped covering it. `_opening_edge_has_declared_bearing`
+                 # walks the named walls' footprints and wants the WHOLE edge carried with no
+                 # gap; one segment short and the resolver quietly emits a 9'-0" LVL header
+                 # here instead — which it did, and `structural.floor_opening_header` FAILed
+                 # it, exactly as this comment's last sentence predicted. The pour never
+                 # changed; only the number of tags describing it did.
+                 bearing_refs=("W-B-STR", "W-B-STR3", "W-B-CN")),
 ]
 
 # 7'-0" well = 3'-3 3/4" + 4 1/2" well partition + 3'-3 3/4", each flight clearing IRC

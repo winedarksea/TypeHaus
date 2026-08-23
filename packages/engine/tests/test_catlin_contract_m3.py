@@ -369,7 +369,11 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
     # eave rides the deck plane, ~10.04" (0.2551 m) above the plate.
     assert roof.eave_z_m - roof.bearing_z_m == pytest.approx(ft(DECK_RISE_FT).meters)
 
-    birdsmouth = inch(1.17).meters
+    # 1.333" = the 4:12 rise over the horizontal distance from the footprint edge to
+    # the heel. It was 1.17" until 2026-08-23: the truss wall put the cladding face
+    # 0.48" further out, the zero-overhang roof laps the cladding, so the rafter tail
+    # and the deck plane above it went with it and the notch deepened by 0.48" x 4/12.
+    birdsmouth = inch(1.333).meters
     rafters = [m for m in roof.members if m.category == "rafter"]
     assert not [m for m in roof.members if m.category == "seat_cut"], \
         "the seat is part of the rafter's own solid now, not a block beside it"
@@ -401,10 +405,14 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
         deck, foam = setbacks["zip"][edge], setbacks["polyiso-1"][edge]
         batten, metal = setbacks["top-deck"][edge], setbacks["roofing"][edge]
         assert deck >= foam >= batten >= metal
-        # Wall stack per the reference: deck clips at the wall-sheathing face (wrb +
-        # polyiso + eps + furring + cladding), metal runs 0.6" proud of the furring.
-        assert deck == pytest.approx(inch(0.02 + 2 + 2 + 0.5 + 0.5).meters)
-        assert foam == pytest.approx(inch(1.0).meters)
+        # Wall stack per the reference: deck clips at the wall-sheathing face (spray foam +
+        # the on-edge outrigger band + cladding), metal runs 0.6" proud of the truss plane.
+        # 0.02 + 2 + 2 + 0.5 + 0.5 = 5.02" until the truss wall replaced that stack.
+        assert deck == pytest.approx(inch(1.5 + 3.5 + 0.5).meters)
+        # 1/2" cladding + the 1" rainscreen vent. It was 1/2" + 1/2" of furring until the
+        # truss wall; the outrigger band that replaced the furring is 3-1/2" deep but 2-1/2"
+        # of that is packed with foam, and only the vent is a gap the roof's foam clears.
+        assert foam == pytest.approx(inch(1.5).meters)
         assert batten == pytest.approx(inch(0.5).meters)
         assert metal == pytest.approx(inch(-0.1).meters)
         # The nailbase deck is the case that made _layer_group position-aware (2026-08-20).
@@ -815,7 +823,7 @@ def test_ci_thickness_bump_reflows_resolved_envelope_without_losing_transition_c
     assert not [finding for finding in baseline_findings if finding.severity.value == "error"]
     base_assembly = next(item for item in plan.library.assemblies if item.tag == "CATLIN_EXT_2X6")
     thicker_layers = tuple(
-        layer.model_copy(update={"thickness": inch(3)}) if layer.name == "polyiso" else layer
+        layer.model_copy(update={"thickness": inch(3)}) if layer.name == "spray-foam" else layer
         for layer in base_assembly.layers
     )
     thicker_assembly = base_assembly.model_copy(update={"layers": thicker_layers})
@@ -1041,16 +1049,20 @@ def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
     """Old: 4 perimeter segments x 2 XPS layers; new: every perimeter segment
     carries both 2" XPS layers in its resolved stack.
 
-    Ten segments across four assemblies since 2026-08-21: seven on N/E/W with an above-grade
-    protection band, three on the south with a full-height parge into the sunken garden — of
-    which W-B-S2 also carries the sauna's liner inboard of the pour. The foam is identical on
-    all of them and so is the 4.05" it puts outboard of the pour; the splits are about what
-    covers the foam outside, what (if anything) lines the room inside, and — since the
-    thinning — how thick the pour behind it is.
+    Eleven segments across four assemblies since 2026-08-23: eight on N/E/W with an
+    above-grade protection band, three on the south with a full-height parge into the sunken
+    garden — of which W-B-S2 also carries the sauna's liner inboard of the pour. The foam is
+    identical on all of them and so is the 4.05" it puts outboard of the pour; the splits are
+    about what covers the foam outside, what (if anything) lines the room inside, and — since
+    the thinning — how thick the pour behind it is.
+
+    It was ten until the ESS closet moved to the furnace room's NE corner and W-B-N3 split at
+    x=6'-0" into W-B-N3 + W-B-N4. That is a node, not a construction change: both halves carry
+    the same assembly, and the assertion below still runs over every one of them.
     """
     perimeter = [w for w in catlin_model.walls
                  if w.storey == "basement" and w.assembly in _PERIMETER_ASSEMBLIES]
-    assert len(perimeter) == 10  # same wall line, split at grid/tee nodes
+    assert len(perimeter) == 11  # same wall line, split at grid/tee nodes
     garden = [w for w in perimeter if w.assembly.endswith("BASEMENT_8_GARDEN")]
     assert len(garden) == 2 + 1  # W-B-S1/W-B-S3 bare + W-B-S2 on the liner variant
     for wall in perimeter:

@@ -1411,12 +1411,12 @@
           -76.5
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "osb",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": null
+      "material": "struct-1-plywood"
     },
     {
       "space": "model",
@@ -1467,12 +1467,12 @@
           -28.50000000000001
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "osb",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": null
+      "material": "struct-1-plywood"
     },
     {
       "space": "model",

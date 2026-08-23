@@ -94,10 +94,13 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-B-FURNACE",
                      controlled_by=("ED-B-FURNACE-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(1.5))),
-    # Moved north 2026-08-02: (9'-7", 20'-0") is inside RM-B-ESS now that the closet took
-    # the furnace room's SE corner, and a switch for the furnace-room lights cannot live
-    # behind the battery closet's door. It stays on the same concrete face (W-B-STR, x=10')
-    # at the closet's north side, where you reach it walking in from D-B-FURN.
+    # Moved north 2026-08-02, when the ESS closet took the furnace room's SE corner: at
+    # (9'-7", 20'-0") the switch would have stood inside RM-B-ESS, and a switch for the
+    # furnace-room lights cannot live behind the battery closet's door. The closet left for
+    # the NE corner on 2026-08-23 and this did NOT follow it — y=23'-0" is now simply
+    # mid-room on the east concrete face (W-B-STR3 since that wall was split), which is
+    # where you reach it walking in from D-B-FURN. Nothing to re-derive; the reason changed,
+    # not the position.
     ElectricalDevice(uid="QTB000AAAA", tag="ED-B-FURNACE-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(9, 5), ft(23)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-BACKUP", room="RM-B-FURNACE", rotation=deg(-90),

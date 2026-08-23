@@ -250,7 +250,7 @@ def bug_screen_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     for wall in model.walls:
         if not screens_rainscreen_base(model, wall):
             continue
-        key = round(rainscreen_cavity_m(wall.depth_layers()) or 0.0, 4)
+        key = round(rainscreen_cavity_m(wall.layers) or 0.0, 4)
         row = runs.get(key)
         if row is None:
             row = runs[key] = {"category": TrimKind.BUG_SCREEN.value,

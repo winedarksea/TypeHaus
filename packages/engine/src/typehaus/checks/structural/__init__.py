@@ -8,3 +8,4 @@ from typehaus.checks.structural import guards  # noqa: F401 - registers checks
 from typehaus.checks.structural import interference  # noqa: F401 - registers checks
 from typehaus.checks.structural import snow  # noqa: F401 - registers checks
 from typehaus.checks.structural import stairs  # noqa: F401 - registers checks
+from typehaus.checks.structural import truss_wall  # noqa: F401 - registers checks

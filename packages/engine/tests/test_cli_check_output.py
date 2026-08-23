@@ -109,17 +109,46 @@ def test_exit_on_error_is_the_looser_gate() -> None:
         app, ["check", str(CATLIN), "--exit-on", ExitOn.error.value]).exit_code == 0
 
 
-def test_catlin_carries_no_failures(catlin_model) -> None:
-    """The reference house is clean, and stays that way.
+# The advisory FAILs `houses/catlin` is allowed to carry, and the only ones. Keyed on
+# (check_id, tag) so a fourth failure — or the same check failing on a different member —
+# is a test failure, not a line in a report nobody reads.
+#
+# The house carried none between 2026-08-16 and 2026-08-23. These three arrived with an
+# OWNER DECISION, taken with the evidence in front of it and recorded in plans/TODO.md and
+# in params/sunken_garden.py's `balcony_beam`: the three balcony beams went from two-ply LVL
+# to three-ply KDAT 2x10 because "treated LVL" is not a product that exists, and no built-up
+# sawn size in IRC Table R507.5(1) reaches their 8'-8" span at the 12' joist-span row. So
+# they FAIL the prescriptive table rather than reporting UNKNOWN against a member the table
+# does not cover — which is the *more* honest of the two states, and it routes them to the
+# consultant already scoped for the balcony's E-W bracing and the FT-SG-* frost design.
+ACCEPTED_CATLIN_FAILURES = {
+    ("structural.deck_beam_span", ("BM-SG-BLC", "FS-SG-DECK")),
+    ("structural.deck_beam_span", ("BM-SG-BLE", "FS-SG-DECK")),
+    ("structural.deck_beam_span", ("BM-SG-BLW", "FS-SG-DECK")),
+}
 
-    It carried four accepted advisory FAILs until 2026-08-16 — see plans/TODO.md. Two rooms
-    got the supply terminals they always should have had; the other two were
-    ``structural.foundation_unbalanced_fill`` screening against a table that does not exist
-    in the IRC. Pinned so a regression in either shows up as a test failure rather than as a
-    line in a report nobody reads.
+
+def test_catlin_carries_only_its_accepted_failures(catlin_model) -> None:
+    """The reference house fails in exactly three known places and nowhere else.
+
+    Stronger than asserting the exit code: `haus check` exits 1 on any FAIL, so an
+    exit-code test can only say "clean" or "not clean". This says *which*, so a regression
+    anywhere else is caught even while the three below are accepted.
     """
-    result = runner.invoke(app, ["check", str(CATLIN), "--plain"])
-    assert result.exit_code == 0, result.output
+    import json
+
+    result = runner.invoke(app, ["check", str(CATLIN), "--json"])
+    payload = json.loads(result.output)
+    failures = {
+        (f["check_id"], tuple(sorted(f["element_tags"] or ())))
+        for f in payload["findings"] if f["result"] == "fail"
+    }
+    unexpected = failures - ACCEPTED_CATLIN_FAILURES
+    assert not unexpected, sorted(unexpected)
+    # And the accepted three must still be failing: if one of them is fixed, this list is
+    # stale and should shrink rather than sit here forgiving a check that now passes.
+    assert ACCEPTED_CATLIN_FAILURES <= failures, sorted(
+        ACCEPTED_CATLIN_FAILURES - failures)
 
 
 def test_exit_on_none_never_gates() -> None:
@@ -146,7 +175,10 @@ def test_json_summary_agrees_with_json_on_the_counts_but_is_far_smaller() -> Non
 
     full = runner.invoke(app, ["check", str(CATLIN), "--json"])
     summary = runner.invoke(app, ["check", str(CATLIN), "--json-summary"])
-    assert full.exit_code == 0 and summary.exit_code == 0
+    # exit 1, not 0: catlin carries three accepted advisory FAILs since 2026-08-23 (see
+    # ACCEPTED_CATLIN_FAILURES above) and `haus check` gates on any FAIL. What this test is
+    # about is that the two machine surfaces AGREE, which is asserted below.
+    assert full.exit_code == summary.exit_code
     full_payload = json.loads(full.output)
     summary_payload = json.loads(summary.output)
     assert summary_payload["pass"] == full_payload["pass"]

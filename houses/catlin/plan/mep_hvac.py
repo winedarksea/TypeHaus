@@ -390,8 +390,30 @@ DUCTS_HVAC_ATTIC = [
             width=inch(8), depth=inch(6), routing=DuctRouting.CHASE, design_cfm=100),
 ]
 
+# The tank moved from (6'-2 1/4", 32'-9 7/8") to (5'-6", 24'-0") on 2026-08-23, to free the
+# furnace room's NE corner for the ESS closet (plan/storeys/basement.py). It is not a
+# preference: EQ-B-ESS-BATT declares a REQUIRED 48" x 41" separation zone all round
+# (EQ-T-ESS-BATT, above), `advisory.ess_clearance` grades it with no room-or-wall exemption,
+# and the old tank stood squarely inside the zone a battery in that corner would project.
+# With the room only 10' wide there is no room to buy the 48" in x — every foot west of
+# x=3'-11" is the 36" NEC 110.26 working space in front of ED-B-PANEL, ED-B-BACKUP-PANEL,
+# ED-B-BACKUP-ENCL and ED-B-NET-PATCH — so the 41" had to come out of y, which means south.
+#
+# (5'-6", 24'-0") is what is left once the room's other fixed points are honoured: north of
+# D-B-FURN's leaf (which sweeps to y=20'-8"), west of EQ-B-ESS-INV (x=7'-0 5/16"), south of
+# EQ-B-ERV (y=28'-1 5/8"), and starting at x=4'-6" so the panel wall's working space stays
+# clear. It also SHORTENS the plumbing: all three runs below leave the tank heading south,
+# and PR-B-CW-WH now arrives straight up its own x=5'-6" line instead of doglegging.
+#
+# **Four literals, one position.** This coordinate is repeated verbatim as a path endpoint in
+# PR-B-HW-TRUNK, PR-B-CW-WH and PR-B-HW-BATH1 (plan/mep_supply.py) and is the datum for
+# PR-B-WH-TPR (plan/mep_drainage.py). Move the tank without moving all four and the hot
+# trunk, the cold feed and the bath-1 branch silently disconnect — nothing in the resolver
+# pulls a pipe onto its equipment. `test_water_heater_connections.py` asserts the three
+# endpoints coincide with EQ-B-WH.position in the RESOLVED model, so the trap is now caught
+# in CI rather than by eye.
 EQUIPMENT = [
     Equipment(uid="CME902AAAA", tag="EQ-B-WH", kind=EquipmentKind.WATER_HEATER,
-             position=pt(m(1.88684), m(10.0015)), footprint=(inch(24), inch(24)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH-240",
+             position=pt(ft(5, 6), ft(24)), footprint=(inch(24), inch(24)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH-240",
              relief_discharge_ref="PR-B-WH-TPR"),
 ]

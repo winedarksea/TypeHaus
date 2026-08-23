@@ -7,10 +7,21 @@
 from typehaus import Continuity, Transition
 
 
+# The three planes every envelope crossing in this house has to carry through. Retargeted
+# 2026-08-23 with the truss wall: `wrb-ext` and `ci-ext` were the outer faces of the sheet
+# WRB and the rigid-CI stack, and neither exists any more. Both roles now land on the SAME
+# face — closed-cell spray foam is the water plane and the insulation in one bonded,
+# seamless application, which is the whole reason there is no membrane above it. The air
+# plane stays on the sheathing: it is the one of the three that is continuous through a
+# foundation or a stack-width crossing where there is no foam at all.
+#
+# The build order this implies is not incidental and belongs on every sheet that carries
+# this tuple: with no WRB, the foam IS the water barrier, so it is sprayed AFTER the window
+# bucks are set, never before. See notes/outie_window_truss_detail.md.
 AIR_WATER_THERMAL = (
     Continuity(control="air", from_face="sheathing-ext", to_face="sheathing-ext"),
-    Continuity(control="water", from_face="wrb-ext", to_face="wrb-ext"),
-    Continuity(control="thermal", from_face="ci-ext", to_face="ci-ext"),
+    Continuity(control="water", from_face="spray-foam-ext", to_face="spray-foam-ext"),
+    Continuity(control="thermal", from_face="spray-foam-ext", to_face="spray-foam-ext"),
 )
 
 TRANSITIONS = (
@@ -61,9 +72,14 @@ TRANSITIONS = (
     Transition(uid="CATR004AAAA", tag="TR-CATLIN-STACK-SHELF",
                condition_pattern="stack_width_change:*", overlay="stack-width-shelf",
                continuity=AIR_WATER_THERMAL),
+    # THE OUTIE WINDOW (2026-08-23). The unit moved out of the stud plane and into the truss
+    # plane, 5" outboard of the sheathing, so the innie `window-head-jamb-sill` recipe — which
+    # measures its head flashing and sill pan from the sheathing face — draws neither piece
+    # where it now goes. `outie-window-truss` is its sibling. The notes pointer moved with it:
+    # it used to point at the eave sheet, which is the wrong drawing for an opening.
     Transition(uid="CATR005AAAA", tag="TR-CATLIN-FRAMED-OPENING",
                condition_pattern="opening_perimeter:CATLIN_EXT_*",
-               notes="notes/roof_wall_eave_detail.md", overlay="window-head-jamb-sill",
+               notes="notes/outie_window_truss_detail.md", overlay="outie-window-truss",
                continuity=AIR_WATER_THERMAL, star=True),
     Transition(uid="CATR006AAAA", tag="TR-CATLIN-CONCRETE-OPENING",
                condition_pattern="opening_perimeter:FOUNDATION_WALL_*_INT",

@@ -11,7 +11,7 @@ import uuid
 
 from typehaus import Building, Library, PlanModel, Project, Storey, ft
 
-from plan import assemblies, mep, site, views
+from plan import assemblies, circuits, electrical, mep, site, views
 from plan.storeys import main, upper
 
 format_version = 1
@@ -25,6 +25,8 @@ _library = Library(
     assemblies=tuple(assemblies.ASSEMBLIES),
     door_types=tuple(main.DOOR_TYPES),
     window_types=tuple(main.WINDOW_TYPES),
+    electrical_device_types=tuple(electrical.DEVICE_TYPES),
+    circuits=tuple(circuits.CIRCUITS),
 )
 
 _project = Project(
@@ -46,10 +48,12 @@ PLAN = (
     .with_elements(
         "main",
         [*main.NODES, *main.WALLS, *main.OPENINGS, *main.ROOMS, *main.FLOOR,
-         *main.ALARMS, *mep.SUMP, *mep.RISER, *mep.FAN_BOX, *views.DETAIL_SLICES],
+         *main.ALARMS, *mep.SUMP, *mep.RISER, *mep.FAN_BOX, *electrical.MAIN_DEVICES,
+         *views.DETAIL_SLICES],
     )
     .with_elements(
         "upper",
-        [*upper.NODES, *upper.WALLS, *upper.OPENINGS, *upper.ROOMS, *upper.ALARMS],
+        [*upper.NODES, *upper.WALLS, *upper.OPENINGS, *upper.ROOMS, *upper.ALARMS,
+         *electrical.UPPER_DEVICES],
     )
 )

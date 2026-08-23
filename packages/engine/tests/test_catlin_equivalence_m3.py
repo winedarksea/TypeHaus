@@ -158,7 +158,7 @@ MAX_PAIRED_PLAN_EXTENT_DELTA_M = 0.75   # ~2'-6"
 # Keyed on the *reference* name — the current tag is the thing that may be renamed.
 DECLARED_WALL_EXTENT_CHANGES = {
     "House Basement Stair Side Wall (8\")": (
-        1.13,
+        1.19,
         "the stair shaft's west wall is 12\" concrete on x=10' now, not 8\" on x=11', and it "
         "runs the full north-row depth instead of dying at the stair foot — 3'-8\" longer. "
         "12\" on that line is what gives the shaft its code-minimum 7'-0\" clear well and "
@@ -170,7 +170,12 @@ DECLARED_WALL_EXTENT_CHANGES = {
         "W-B-STR did not move or grow by decision, the wall it dies into did. Thinning "
         "W-B-N1/N2/N3 from 12\" to 8\" (they align on face(\"concrete-ext\"), so only the "
         "inside face moved) pulled the north end of the north row 4\" back, and this wall "
-        "runs to meet it"
+        "runs to meet it. 2026-08-23 took it from 1.13 to 1.19: the ESS closet's move to "
+        "the NE corner split this wall at y=31'-0\" so its south partition had a node to "
+        "tee into, and the segment that still carries the reference's tag is the north "
+        "5'-0\" alone (W-B-STR3 is the rest). The POUR is unchanged and continuous; what "
+        "grew is the extent delta between one reference wall and the one current tag the "
+        "matcher pairs it with"
     ),
 }
 
@@ -343,12 +348,19 @@ def test_paired_walls_stay_on_their_reference_wall_lines(equivalence):
 
 
 def test_house_walls_gain_layers_rather_than_lose_them(equivalence):
-    """The reference drew 7 layer-walls per exterior wall; the resolved stack carries 9.
+    """The reference drew 7 layer-walls per exterior wall; the resolved stack carries 7.
 
-    Two layers the old model never drew: the WRB, and the latex-paint film over the interior
-    gypsum, which IRC R702.7 counts as the wall's Class III warm-side vapour retarder (drawing
-    the lining as bare gypsum said the wall had no retarder at all). Comparing layer *counts*
-    per run is what makes the layer-per-wall and layerset-per-wall conventions commensurable.
+    It carried 9 until the 2026-08-23 truss wall, and the two it gave up are the point of
+    this test rather than a hole in it: the WRB went because closed-cell foam is the water
+    plane now, and the two rigid-CI courses became ONE sprayed layer plus a ``CavityFill``
+    inside the outrigger band — a fill is not a layer, deliberately, because it is the other
+    path through a depth and not a course of its own. The latex-paint film over the interior
+    gypsum is still a layer the old model never drew (IRC R702.7 counts it as the wall's
+    Class III warm-side vapour retarder), and the 4" of exterior insulation is still there.
+
+    So the invariant this test defends is unchanged and is asserted below: never FEWER
+    layer-walls than the reference. Comparing layer *counts* per run is what makes the
+    layer-per-wall and layerset-per-wall conventions commensurable.
     """
     house_walls = [item for item in _paired(equivalence, "wall")
                    if item.reference_name.startswith("House ")
@@ -363,11 +375,11 @@ def test_house_walls_gain_layers_rather_than_lose_them(equivalence):
     # drainage strapping / Class I membrane) in place of the two-layer painted-gypsum
     # lining. Ten, not nine — and still strictly gaining, which is what this test is about.
     _HUMID_LINED = {"House Second Stud Wall 1", "House Second Stud Wall 4"}
-    expected = {name: 10 for name in _HUMID_LINED}
-    assert all(item.current_layer_count == expected.get(item.reference_name, 9)
+    expected = {name: 8 for name in _HUMID_LINED}
+    assert all(item.current_layer_count == expected.get(item.reference_name, 7)
                for item in exterior), [
         item.as_dict() for item in exterior
-        if item.current_layer_count != expected.get(item.reference_name, 9)]
+        if item.current_layer_count != expected.get(item.reference_name, 7)]
 
 
 def test_house_footprint_still_measures_thirty_six_feet(reference_model, current_model):

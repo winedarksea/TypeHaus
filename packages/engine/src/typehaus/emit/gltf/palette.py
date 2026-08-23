@@ -62,6 +62,18 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # over the sheathing are the last lumber outboard of the wall, and reading them as
     # a paler grid over the darker frame is how a rainscreen is told apart from it.
     "strapping": (0.757, 0.596, 0.416, 1.0),  # 0xc1986a
+    # The truss wall's own three pieces plus the window buck (resolve/framing/truss_wall.py).
+    # All four sit OUTBOARD of the sheathing with the strapping above, so they are keyed off
+    # its tone rather than the frame's: the block a shade darker than a batten (it is 2x
+    # stock flat on the sheathing), the ladder blocking darker again (it is the piece a
+    # window bears on), and the two plywood pieces pulled toward the pale, flat grey-tan a
+    # sheet good reads as so a 1/2" tab is never mistaken for a stick of lumber. Every one of
+    # them also carries a ``material``, so both renderers colour them by that in practice —
+    # these are the fallback, and the fallback has to be right too.
+    "truss_block": (0.706, 0.541, 0.361, 1.0),    # 0xb48a5c
+    "truss_blocking": (0.639, 0.463, 0.247, 1.0), # 0xa3763f — as blocking
+    "truss_tab": (0.800, 0.706, 0.565, 1.0),      # 0xccb490
+    "buck": (0.788, 0.694, 0.549, 1.0),           # 0xc9b18c
     "ridge_beam": (0.55, 0.38, 0.22, 1.0),
     "brace": (0.639, 0.463, 0.247, 1.0),         # 0xa3763f — as blocking
     # Stick-framed roof lumber + the blocking that fills between it. These had no entry at

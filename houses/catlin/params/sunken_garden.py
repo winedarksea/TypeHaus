@@ -98,14 +98,21 @@ class SunkenGardenSpec:
     column_south_offset_in: float = 17.0
     porch_joist: str = "2x8"
     porch_joist_oc_in: float = 16.0
-    # Two-ply treated LVL, 11 1/4" deep — same depth as the 2-2x12 it replaced (2026-07-31),
-    # so derived elevations don't move. The sawn beam was 1'-9" past IRC Table R507.5(1)'s
-    # 8'-3" limit on this 10'-0" span; the column + two hangers are the only bearings
-    # available, so the member had to change, not the geometry. Being engineered, it's
-    # outside the prescriptive table's scope, so `structural.deck_beam_span` reports UNKNOWN
-    # rather than PASS (a 3-ply sawn 2x12 would also have cleared it and stayed checkable,
-    # but the engineered member was the decision).
-    back_beam: str = "2-1.75x11.25 LVL"
+    # Three-ply KDAT 2x12 (2026-08-23), 11 1/4" deep — the same depth as every member this
+    # position has carried, so no derived elevation moves.
+    #
+    # It replaces a two-ply LVL that was described in this file as "treated LVL", which is a
+    # product that does not exist. Treated Parallam Plus PSL is the real article and it is
+    # made in 9 1/4", 11 7/8", 14" and 16" depths only, at 3 1/2" and 5 1/4" widths;
+    # Weyerhaeuser forbids resawing it in depth. So the 11 1/4" this whole porch is derived
+    # from cannot be bought treated in an engineered member at all. A 2x12 is exactly
+    # 11 1/4" sawn, and KDAT is a stocked treatment.
+    #
+    # It is also a strict improvement on the check: three plies of 2x12 clear IRC Table
+    # R507.5(1) on this span, so `structural.deck_beam_span` grades the member PASS instead
+    # of reporting UNKNOWN against a member outside the table's scope. Treated, same depth,
+    # and prescriptively checkable for the first time.
+    back_beam: str = "3-2x12"
     porch_deck_thickness_in: float = 1.0  # composite plank
     # The two side walls run this far PAST the porch's front edge before handing off to the
     # retaining run. Without it the W1/W2 (and E1/E2) junction node landed exactly on
@@ -125,12 +132,29 @@ class SunkenGardenSpec:
     # balcony framing
     pillar_size: str = "6x6"
     rear_pillar_rise_in: float = 2.0  # rear row taller for drainage slope
-    # Two-ply treated LVL at the 2x10's own 9 1/4" depth (2026-07-31), so
-    # `_balcony_beam_depth_ft` and its soffit plane are unchanged. The 2-2x10 was nearly
-    # 3'-0" past R507.5(1)'s 5'-9" limit on this 8'-8" span, and no built-up sawn size in the
-    # table (even 3-2x12) reaches 8'-8" at the 12' joist-span row — unlike the porch beam,
-    # this had no prescriptive answer short of re-framing.
-    balcony_beam: str = "2-1.75x9.25 LVL"
+    # Three-ply KDAT 2x10 (2026-08-23) at the 2x10's own 9 1/4" depth, so
+    # `_balcony_beam_depth_ft` and its soffit plane are unchanged.
+    #
+    # This one is NOT the improvement the back beam is, and the decision was taken knowing
+    # it. "Treated LVL" is not a product (see `back_beam`), so the LVL had to go; but unlike
+    # the porch beams there is no sawn size that answers this span. R507.5(1) stops at 7'-2"
+    # for a 3-2x10 at the 12' joist-span row, and even a 3-2x12 reaches only 8'-4" against
+    # the 8'-8" here — so no depth fixes it prescriptively, and going deeper would move the
+    # soffit plane and every elevation derived off it.
+    #
+    # The member is therefore ENGINEERED, and `structural.deck_beam_span` says so out loud:
+    # it FAILs the prescriptive table rather than reporting UNKNOWN, because a built-up
+    # sawn size IS in the table and this one is past its row. That finding is the correct
+    # reading of the code and is routed to the same consultant already scoped for the
+    # balcony's E-W bracing and the `FT-SG-*` frost design (R404.4) — not something to
+    # design away by deepening a beam the geometry cannot afford.
+    #
+    # Worth keeping straight while reading this file: the balcony beams sit under a
+    # DRY-BELOW surface — `FS-SG-DECK`'s plank is `aluminum-deck`, a Wahoo AridDeck-style
+    # watertight system with a drip trough and leader (see the deck's own comment) — while
+    # the porch beams sit under GAPPED composite. That asymmetry is the real ESR-1387 5.3
+    # exposure story, and it is why the two pairs were never the same problem.
+    balcony_beam: str = "3-2x10"
     balcony_joist: str = "2x8"
     balcony_joist_oc_in: float = 16.0
     balcony_deck_thickness_in: float = 1.5  # aluminum plank
@@ -175,6 +199,21 @@ _y_in_s = _y_in_n - SPEC.clear_length_ft
 _y_ax_s = _y_in_s - _half
 
 _wall_bottom = ft(-(SPEC.basement_depth_ft + 0.75))
+# The two porch side walls stop 1" higher than the free retaining run, and the 1" comes out
+# of the wall, not out of the ground (2026-08-23). At the old bottom they resolved 10'-1"
+# tall, and IRC Table R404.1.2(8) stops at 10'-0", so `structural.foundation_unbalanced_fill`
+# could not answer them: not because anything about the wall was in doubt but because it was
+# an inch past the published maximum. Trimming to exactly 10'-0" puts them ON the table's
+# last row, which is also the row their reinforcement was already carried up from.
+#
+# It is a SEPARATE constant rather than a change to `_wall_bottom` on purpose. The three
+# retaining walls south of here (W2/E2/S) are not the subject of the decision, they are not
+# graded against that table (they are `lateral_support="unsupported"` → IRC R404.4,
+# engineered), and raising their bottoms would take an inch of frost cover off FT-SG-W2/E2/S
+# for nothing. `_PORCH_FOOTING_THICKNESS_IN` below then puts the inch straight back into
+# FT-SG-W1/E1, so the two footing UNDERSIDES do not move either — which is what keeps their
+# 21" of cover, and the whole R403.3 frost design under this garden, exactly where it was.
+_porch_wall_bottom = ft(-(SPEC.basement_depth_ft + 8.0 / 12.0))
 _porch_top = ft(SPEC.porch_top_ft)  # storey datum = top of joist; the masonry bears here
 _ret_top = ft(SPEC.retaining_top_ft)
 # Top of the composite boards laid over FS-SG-PORCH: the joist tops are the 0' storey datum
@@ -213,19 +252,27 @@ WALLS = [
     # continuous load path in both directions at both ends, which is what R404.1.2(8)
     # presumes and what the free retaining walls south of here (W2/E2/S) do not have.
     #
-    # The reinforcement is Table R404.1.2(8)'s 10' x 10' row for a 12" wall — #6 @ 38" o.c.
-    # vertical — and it is a CARRIED-UP row, not a table lookup, which is worth saying
-    # plainly. These walls resolve 10'-1" tall over 7'-3" of unbalanced fill, and the table
-    # stops at 10'-0", so `structural.foundation_unbalanced_fill` still reports them UNKNOWN
-    # — but for a different and much smaller reason than before: not "nobody has said
-    # whether the head is braced" but "the wall is an inch past the published maximum".
-    # R404.1.3's no-seal prescriptive path does not quite reach it. Two ways to close it and
-    # both belong to the engineer, not to this file: confirm the 10' row at 10'-1", or trim
-    # the wall to 10'-0". Authoring the schedule now is what makes that a one-line question
-    # instead of a blank.
+    # These walls resolve EXACTLY 10'-0" tall over 7'-2" of unbalanced fill (2026-08-23),
+    # which is the last row IRC Table R404.1.2(8) publishes. Until that trim they stood
+    # 10'-1" and the check reported UNKNOWN — not because anything about the wall was in
+    # doubt, but because one inch put it past the published maximum. The 10' row is the row
+    # now, R404.1.3's no-seal prescriptive path reaches it, and
+    # `structural.foundation_unbalanced_fill` PASSES both walls.
+    #
+    # The inch came out of the WALL and not out of the ground: `_porch_wall_bottom` raised
+    # the bearing and FT-SG-W1/E1 went 12" -> 13" thick to hold their undersides at the same
+    # -11'-1", so the 21" of frost cover the R403.3 wing insulation is sized against did not
+    # move. Verified before and after.
+    #
+    # `#6 @ 38" o.c.` is kept, and it is now MORE than the table asks: at 10' x 8' backfill
+    # a 12" wall of 4,000 psi concrete needs no vertical reinforcement at all under footnote
+    # l, and the check says so in its PASS. The schedule stays because it was carried up from
+    # the same row, because these two walls also carry the porch's four beam pockets, and
+    # because taking steel out of a retaining wall to match a table minimum is the engineer's
+    # call, not this file's.
     FoundationWall(uid="SGW103AAAA", tag="W-SG-W1", start_node="N-SG-NW",
                    end_node="N-SG-MW", assembly="SUNKEN_GARDEN_WALL",
-                   top_elevation=_porch_top, bottom_elevation=_wall_bottom,
+                   top_elevation=_porch_top, bottom_elevation=_porch_wall_bottom,
                    lateral_support="top_and_bottom",
                    vertical_reinforcement='#6 @ 38" o.c.'),
     # East wall runs ME→NE (south→north), opposite the west wall, so both side walls wind
@@ -239,7 +286,7 @@ WALLS = [
     # layer — which is exactly what the retired masonry railing above them was.
     FoundationWall(uid="SGW104AAAA", tag="W-SG-E1", start_node="N-SG-ME",
                    end_node="N-SG-NE", assembly="SUNKEN_GARDEN_WALL",
-                   top_elevation=_porch_top, bottom_elevation=_wall_bottom,
+                   top_elevation=_porch_top, bottom_elevation=_porch_wall_bottom,
                    lateral_support="top_and_bottom",
                    vertical_reinforcement='#6 @ 38" o.c.'),
     # Garden retaining run (to just above grade), the U south of the porch.
@@ -335,9 +382,17 @@ FRONT_COLUMN = Post(uid="SGP002AAAA", tag="PT-SG-FCOL",
 _WALL_FOOTING_UID = {"W-SG-W1": "SGF102AAAA", "W-SG-E1": "SGF103AAAA",
                      "W-SG-W2": "SGF104AAAA", "W-SG-E2": "SGF105AAAA",
                      "W-SG-S": "SGF106AAAA"}
+# FT-SG-W1/E1 are 13" thick, not the 12" the other three carry. That extra inch is the one
+# the porch walls gave up when they were trimmed to 10'-0" (see `_porch_wall_bottom`): a
+# footing's top follows the wall bottom above it, so without this the two footings would
+# have RISEN an inch and lost an inch of the 21" of cover that IRC R403.3 wing insulation
+# under SL-SG-FLOOR is sized against. Thickening instead of raising keeps every underside,
+# every bedding undercut and every cover figure where the frost design left them.
+_PORCH_FOOTING_THICKNESS_IN = {"W-SG-W1": 13.0, "W-SG-E1": 13.0}
 FOOTINGS = [
     Footing(uid=_WALL_FOOTING_UID[w.tag], tag=f"FT-{w.tag[2:]}", under=w.tag,
-            width=inch(SPEC.footing_width_in), depth=inch(SPEC.footing_thickness_in))
+            width=inch(SPEC.footing_width_in),
+            depth=inch(_PORCH_FOOTING_THICKNESS_IN.get(w.tag, SPEC.footing_thickness_in)))
     for w in WALLS
 ]
 # Spread footings under the two porch columns. FT-SG-COL keeps SGF199AAAA; the front
@@ -477,10 +532,10 @@ MAIN_NODES = [
 # Two treated LVL back beams: sonotube column -> side-wall hangers (two ~9'6" spans).
 BACK_BEAMS = [
     Beam(uid="SGBM01AAAA", tag="BM-SG-BKW", start_node="N-SGM-COL", end_node="N-SGM-NW",
-         size=SPEC.back_beam, assembly="BEAM_LVL",
+         size=SPEC.back_beam, assembly="BEAM_KDAT",
          bearing_refs=("PT-SG-COL", "W-SG-W1")),
     Beam(uid="SGBM02AAAA", tag="BM-SG-BKE", start_node="N-SGM-COL", end_node="N-SGM-NE",
-         size=SPEC.back_beam, assembly="BEAM_LVL",
+         size=SPEC.back_beam, assembly="BEAM_KDAT",
          bearing_refs=("PT-SG-COL", "W-SG-E1")),
 ]
 
@@ -495,10 +550,10 @@ BACK_BEAMS = [
 # the 12" wall band is the modelled hanger detail already in use at the back.
 FRONT_BEAMS = [
     Beam(uid="SGBM03AAAA", tag="BM-SG-FRW", start_node="N-SGM-FCOL", end_node="N-SGM-FW",
-         size=SPEC.back_beam, top_elevation=_porch_top, assembly="BEAM_LVL",
+         size=SPEC.back_beam, top_elevation=_porch_top, assembly="BEAM_KDAT",
          bearing_refs=("PT-SG-FCOL", "W-SG-W1")),
     Beam(uid="SGBM04AAAA", tag="BM-SG-FRE", start_node="N-SGM-FCOL", end_node="N-SGM-FE",
-         size=SPEC.back_beam, top_elevation=_porch_top, assembly="BEAM_LVL",
+         size=SPEC.back_beam, top_elevation=_porch_top, assembly="BEAM_KDAT",
          bearing_refs=("PT-SG-FCOL", "W-SG-E1")),
 ]
 
@@ -607,13 +662,13 @@ SECOND_NODES = [
 # Three N-S double-2x10 beams over the west / center / east pillar lines.
 BALCONY_BEAMS = [
     Beam(uid="SGBB01AAAA", tag="BM-SG-BLW", start_node="N-SGB-NW", end_node="N-SGB-SW",
-         size=SPEC.balcony_beam, assembly="BEAM_LVL",
+         size=SPEC.balcony_beam, assembly="BEAM_KDAT",
          bearing_refs=("PT-SG-BR1", "PT-SG-BF1")),
     Beam(uid="SGBB02AAAA", tag="BM-SG-BLC", start_node="N-SGB-NC", end_node="N-SGB-SC",
-         size=SPEC.balcony_beam, assembly="BEAM_LVL",
+         size=SPEC.balcony_beam, assembly="BEAM_KDAT",
          bearing_refs=("PT-SG-BR2", "PT-SG-BF2")),
     Beam(uid="SGBB03AAAA", tag="BM-SG-BLE", start_node="N-SGB-NE", end_node="N-SGB-SE",
-         size=SPEC.balcony_beam, assembly="BEAM_LVL",
+         size=SPEC.balcony_beam, assembly="BEAM_KDAT",
          bearing_refs=("PT-SG-BR3", "PT-SG-BF3")),
 ]
 

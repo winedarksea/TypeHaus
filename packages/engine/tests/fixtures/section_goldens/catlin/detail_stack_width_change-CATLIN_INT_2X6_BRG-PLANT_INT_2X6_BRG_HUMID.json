@@ -1204,7 +1204,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": null
+      "material": "spf"
     },
     {
       "space": "model",
@@ -1260,7 +1260,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": null
+      "material": "spf"
     },
     {
       "space": "model",
@@ -1558,9 +1558,9 @@
       "node": "text",
       "anchor": [
         224.38500000000005,
-        133.25170603674542
+        132.56628937007875
       ],
-      "content": "water continuity — wrb-ext → wrb-ext",
+      "content": "water continuity — spray-foam-ext →\nspray-foam-ext",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -1574,9 +1574,9 @@
       "node": "text",
       "anchor": [
         224.38500000000005,
-        130.4517060367454
+        129.08087270341207
       ],
-      "content": "thermal continuity — ci-ext → ci-ext",
+      "content": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,

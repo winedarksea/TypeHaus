@@ -55,8 +55,13 @@ RISER = [
 # though the fan may never be; the rule also forbids putting it in conditioned space, a
 # basement or a crawl space, which is why it rides the siding beside the exterior riser
 # rather than sitting next to the pit.
+#
+# `circuit=` names the branch it will be fed from (plan/circuits.py). The box is provision,
+# not a load — nothing is connected to it until a fan is fitted — but naming the circuit is
+# what lets `electrical.circuit_refs` reconcile the panel schedule against the plan, and it
+# is the field a future fan would otherwise be added without.
 FAN_BOX = [
     ElectricalDevice(uid="1S4K85KRDC", tag="ED-RADON-FAN-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(-1), ft(13)),
+                     position=pt(ft(-1), ft(13)), circuit="CKT-RADON",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(10))),
 ]

@@ -270,8 +270,10 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
 
     The 2026-08-21 basement-ceiling overhaul framed the four 12" concrete walls on the y=18'
     cross line, and each of the three splits along it became a real assembly change where it
-    used to be one continuous pour: the furnace room's wet wall meeting the ESS closet's
-    steel box at N-B-ESS-S, the closet meeting the plain playroom partition at N-B-STR, and
+    used to be one continuous pour: the furnace room's wet wall meeting a steel-stud
+    box at N-B-CW-E (tagged N-B-ESS-S until the ESS closet left this corner on 2026-08-23;
+    W-B-CW3 kept the Type X assembly, so the change of construction along the line is
+    unchanged), that box meeting the plain playroom partition at N-B-STR, and
     the whole line meeting the surviving x=18' concrete at N-B-C. The ESS/bathroom entry at
     N-B-BA-W picked up W-B-STR2's new steel-stud assembly for the same reason. All four are
     changes of construction along a wall line a builder has to be told about — which is the
@@ -309,8 +311,13 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         "assembly_change:CATLIN_EXT_2X6|PLANT_EXT_2X6_HUMID",
         ("assembly_change:CATLIN_INT_2X6_BRG|INT_2X4_PARTITION|"
          "PLANT_INT_2X4_HUMID|PLANT_INT_2X6_BRG_HUMID"),
-        ("assembly_change:FOUNDATION_WALL_12_INT|INT_2X6_STAGGERED_PLUMBING|"
-         "INT_ESS_CLOSET_STEEL"),
+        # N-B-BA-W. Two collinear wall lines used to cross here and the key merged both:
+        # x=10' (the 12" pour handing off to the steel stub) and y=21'-9 3/8" (the ESS
+        # closet's north partition meeting the bathroom's staggered wet wall). The closet
+        # left for the NE corner on 2026-08-23, so the y-line is a single wall again and
+        # changes construction nowhere; the x-line still does, and that is all this key is
+        # now. The count is unchanged — one node, one key, one fewer assembly named in it.
+        "assembly_change:FOUNDATION_WALL_12_INT|INT_ESS_CLOSET_STEEL",
         "assembly_change:FOUNDATION_WALL_12_INT|SAUNA_LINER_ON_CONCRETE",
         "assembly_change:INT_2X4_PARTITION|INT_2X4_STAGGERED_DOUBLE_GWB",
         "assembly_change:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",

@@ -203,7 +203,7 @@
       "node": "polyline",
       "points": [
         [
-          -0.02,
+          -1.5000000000000002,
           102.28346456692913
         ],
         [
@@ -215,63 +215,7 @@
           120.0
         ],
         [
-          -0.02,
-          120.0
-        ]
-      ],
-      "layer": "A-WALL-PATT",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW101AAAA",
-      "tag": "W-M-S1/wrb"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -0.02,
-          102.28346456692913
-        ],
-        [
-          0.0,
-          102.28346456692913
-        ],
-        [
-          0.0,
-          120.0
-        ],
-        [
-          -0.02,
-          120.0
-        ]
-      ],
-      "pattern": "membrane",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "air-barrier"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -2.02,
-          102.28346456692913
-        ],
-        [
-          -0.02,
-          102.28346456692913
-        ],
-        [
-          -0.02,
-          120.0
-        ],
-        [
-          -2.02,
+          -1.5000000000000002,
           120.0
         ]
       ],
@@ -280,110 +224,54 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMW101AAAA",
-      "tag": "W-M-S1/polyiso"
+      "tag": "W-M-S1/spray-foam"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          -2.02,
+          -1.5000000000000002,
           102.28346456692913
         ],
         [
-          -0.02,
+          0.0,
           102.28346456692913
         ],
         [
-          -0.02,
+          0.0,
           120.0
         ],
         [
-          -2.02,
+          -1.5000000000000002,
           120.0
         ]
       ],
-      "pattern": "none",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "polyiso"
+      "material": "closed-cell-spray-foam"
     },
     {
       "space": "model",
       "node": "polyline",
       "points": [
         [
-          -4.0200000000000005,
+          -5.0,
           102.28346456692913
         ],
         [
-          -2.02,
+          -1.5000000000000002,
           102.28346456692913
         ],
         [
-          -2.02,
+          -1.5000000000000002,
           120.0
         ],
         [
-          -4.0200000000000005,
-          120.0
-        ]
-      ],
-      "layer": "A-WALL-INSU",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW101AAAA",
-      "tag": "W-M-S1/eps"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -4.0200000000000005,
-          102.28346456692913
-        ],
-        [
-          -2.02,
-          102.28346456692913
-        ],
-        [
-          -2.02,
-          120.0
-        ],
-        [
-          -4.0200000000000005,
-          120.0
-        ]
-      ],
-      "pattern": "none",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "eps"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -4.52,
-          102.28346456692913
-        ],
-        [
-          -4.0200000000000005,
-          102.28346456692913
-        ],
-        [
-          -4.0200000000000005,
-          120.0
-        ],
-        [
-          -4.52,
+          -5.0,
           120.0
         ]
       ],
@@ -392,54 +280,26 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMW101AAAA",
-      "tag": "W-M-S1/furring"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -4.52,
-          102.28346456692913
-        ],
-        [
-          -4.0200000000000005,
-          102.28346456692913
-        ],
-        [
-          -4.0200000000000005,
-          120.0
-        ],
-        [
-          -4.52,
-          120.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "spf"
+      "tag": "W-M-S1/outrigger"
     },
     {
       "space": "model",
       "node": "polyline",
       "points": [
         [
-          -5.0200000000000005,
+          -5.5,
           102.28346456692913
         ],
         [
-          -4.52,
+          -5.0,
           102.28346456692913
         ],
         [
-          -4.52,
+          -5.0,
           120.0
         ],
         [
-          -5.0200000000000005,
+          -5.5,
           120.0
         ]
       ],
@@ -455,19 +315,19 @@
       "node": "hatch",
       "boundary": [
         [
-          -5.0200000000000005,
+          -5.5,
           102.28346456692913
         ],
         [
-          -4.52,
+          -5.0,
           102.28346456692913
         ],
         [
-          -4.52,
+          -5.0,
           120.0
         ],
         [
-          -5.0200000000000005,
+          -5.5,
           120.0
         ]
       ],
@@ -505,6 +365,34 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "mineral-wool"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -5.0,
+          102.28346456692913
+        ],
+        [
+          -1.4999999999999998,
+          102.28346456692913
+        ],
+        [
+          -1.4999999999999998,
+          120.0
+        ],
+        [
+          -5.0,
+          120.0
+        ]
+      ],
+      "pattern": "batt",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "closed-cell-spray-foam"
     },
     {
       "space": "model",
@@ -763,7 +651,7 @@
       "node": "polyline",
       "points": [
         [
-          -0.02,
+          -1.5000000000000002,
           200.0
         ],
         [
@@ -775,63 +663,7 @@
           217.71653543307087
         ],
         [
-          -0.02,
-          217.71653543307087
-        ]
-      ],
-      "layer": "A-WALL-PATT",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CSW101AAAA",
-      "tag": "W-S-S1/wrb"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -0.02,
-          200.0
-        ],
-        [
-          0.0,
-          200.0
-        ],
-        [
-          0.0,
-          217.71653543307087
-        ],
-        [
-          -0.02,
-          217.71653543307087
-        ]
-      ],
-      "pattern": "membrane",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "air-barrier"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -2.02,
-          200.0
-        ],
-        [
-          -0.02,
-          200.0
-        ],
-        [
-          -0.02,
-          217.71653543307087
-        ],
-        [
-          -2.02,
+          -1.5000000000000002,
           217.71653543307087
         ]
       ],
@@ -840,110 +672,54 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW101AAAA",
-      "tag": "W-S-S1/polyiso"
+      "tag": "W-S-S1/spray-foam"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          -2.02,
+          -1.5000000000000002,
           200.0
         ],
         [
-          -0.02,
+          0.0,
           200.0
         ],
         [
-          -0.02,
+          0.0,
           217.71653543307087
         ],
         [
-          -2.02,
+          -1.5000000000000002,
           217.71653543307087
         ]
       ],
-      "pattern": "none",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "polyiso"
+      "material": "closed-cell-spray-foam"
     },
     {
       "space": "model",
       "node": "polyline",
       "points": [
         [
-          -4.0200000000000005,
+          -5.0,
           200.0
         ],
         [
-          -2.02,
+          -1.5000000000000002,
           200.0
         ],
         [
-          -2.02,
+          -1.5000000000000002,
           217.71653543307087
         ],
         [
-          -4.0200000000000005,
-          217.71653543307087
-        ]
-      ],
-      "layer": "A-WALL-INSU",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CSW101AAAA",
-      "tag": "W-S-S1/eps"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -4.0200000000000005,
-          200.0
-        ],
-        [
-          -2.02,
-          200.0
-        ],
-        [
-          -2.02,
-          217.71653543307087
-        ],
-        [
-          -4.0200000000000005,
-          217.71653543307087
-        ]
-      ],
-      "pattern": "none",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "eps"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -4.52,
-          200.0
-        ],
-        [
-          -4.0200000000000005,
-          200.0
-        ],
-        [
-          -4.0200000000000005,
-          217.71653543307087
-        ],
-        [
-          -4.52,
+          -5.0,
           217.71653543307087
         ]
       ],
@@ -952,54 +728,26 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW101AAAA",
-      "tag": "W-S-S1/furring"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -4.52,
-          200.0
-        ],
-        [
-          -4.0200000000000005,
-          200.0
-        ],
-        [
-          -4.0200000000000005,
-          217.71653543307087
-        ],
-        [
-          -4.52,
-          217.71653543307087
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "spf"
+      "tag": "W-S-S1/outrigger"
     },
     {
       "space": "model",
       "node": "polyline",
       "points": [
         [
-          -5.0200000000000005,
+          -5.5,
           200.0
         ],
         [
-          -4.52,
+          -5.0,
           200.0
         ],
         [
-          -4.52,
+          -5.0,
           217.71653543307087
         ],
         [
-          -5.0200000000000005,
+          -5.5,
           217.71653543307087
         ]
       ],
@@ -1015,19 +763,19 @@
       "node": "hatch",
       "boundary": [
         [
-          -5.0200000000000005,
+          -5.5,
           200.0
         ],
         [
-          -4.52,
+          -5.0,
           200.0
         ],
         [
-          -4.52,
+          -5.0,
           217.71653543307087
         ],
         [
-          -5.0200000000000005,
+          -5.5,
           217.71653543307087
         ]
       ],
@@ -1068,6 +816,34 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -5.0,
+          200.0
+        ],
+        [
+          -1.4999999999999998,
+          200.0
+        ],
+        [
+          -1.4999999999999998,
+          217.71653543307087
+        ],
+        [
+          -5.0,
+          217.71653543307087
+        ]
+      ],
+      "pattern": "batt",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "closed-cell-spray-foam"
+    },
+    {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1171,11 +947,11 @@
       "node": "polyline",
       "points": [
         [
-          -0.010000000000000167,
+          -0.7499999999999999,
           120.0
         ],
         [
-          -0.010000000000000167,
+          -0.7499999999999999,
           200.0
         ]
       ],
@@ -1191,11 +967,11 @@
       "node": "polyline",
       "points": [
         [
-          -1.0200000000000007,
+          -3.25,
           120.0
         ],
         [
-          -1.0200000000000007,
+          -3.25,
           200.0
         ]
       ],
@@ -1211,51 +987,11 @@
       "node": "polyline",
       "points": [
         [
-          -3.0200000000000014,
+          -5.25,
           120.0
         ],
         [
-          -3.0200000000000014,
-          200.0
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CSW101AAAA",
-      "tag": "W-S-S1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -4.270000000000001,
-          120.0
-        ],
-        [
-          -4.270000000000001,
-          200.0
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CSW101AAAA",
-      "tag": "W-S-S1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -4.7700000000000005,
-          120.0
-        ],
-        [
-          -4.7700000000000005,
+          -5.25,
           200.0
         ]
       ],
@@ -2240,7 +1976,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": null
+      "material": "spf"
     },
     {
       "space": "model",
@@ -2296,7 +2032,119 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": null
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -5.0,
+          199.625
+        ],
+        [
+          0.0,
+          199.625
+        ],
+        [
+          0.0,
+          200.0
+        ],
+        [
+          -5.0,
+          200.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSW101AAAA",
+      "tag": "buck-head-000"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -5.0,
+          199.625
+        ],
+        [
+          0.0,
+          199.625
+        ],
+        [
+          0.0,
+          200.0
+        ],
+        [
+          -5.0,
+          200.0
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "struct-1-plywood"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -5.0,
+          120.0
+        ],
+        [
+          0.0,
+          120.0
+        ],
+        [
+          0.0,
+          120.375
+        ],
+        [
+          -5.0,
+          120.375
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSW101AAAA",
+      "tag": "buck-sill-000"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -5.0,
+          120.0
+        ],
+        [
+          0.0,
+          120.0
+        ],
+        [
+          0.0,
+          120.375
+        ],
+        [
+          -5.0,
+          120.375
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "struct-1-plywood"
     },
     {
       "space": "model",
@@ -2304,17 +2152,17 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -4.7700000000000005,
+          -5.25,
           117.36666666666666
         ],
         "name": ""
       },
       "at": [
-        -15.862519685039372,
+        -16.34251968503937,
         117.36666666666666
       ],
       "to": [
-        -4.7700000000000005,
+        -5.25,
         117.36666666666666
       ],
       "text": "cladding 0.5\"",
@@ -2329,20 +2177,20 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -4.2700000000000005,
+          -3.25,
           113.57499999999999
         ],
         "name": ""
       },
       "at": [
-        -15.862519685039372,
+        -16.34251968503937,
         113.57499999999999
       ],
       "to": [
-        -4.2700000000000005,
+        -3.25,
         113.57499999999999
       ],
-      "text": "furring 0.5\"",
+      "text": "outrigger 3.5\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2354,70 +2202,20 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -3.02,
+          -0.7500000000000001,
           109.78333333333332
         ],
         "name": ""
       },
       "at": [
-        -15.862519685039372,
+        -16.34251968503937,
         109.78333333333332
       ],
       "to": [
-        -3.02,
+        -0.7500000000000001,
         109.78333333333332
       ],
-      "text": "eps 2\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          -1.02,
-          105.99166666666665
-        ],
-        "name": ""
-      },
-      "at": [
-        -15.862519685039372,
-        105.99166666666665
-      ],
-      "to": [
-        -1.02,
-        105.99166666666665
-      ],
-      "text": "polyiso 2\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          -0.01,
-          102.19999999999997
-        ],
-        "name": ""
-      },
-      "at": [
-        -15.862519685039372,
-        102.19999999999997
-      ],
-      "to": [
-        -0.01,
-        102.19999999999997
-      ],
-      "text": "wrb 0.02\"",
+      "text": "spray-foam 1.5\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2430,17 +2228,17 @@
         "kind": "point",
         "xy": [
           0.25,
-          98.4083333333333
+          105.99166666666665
         ],
         "name": ""
       },
       "at": [
-        -15.862519685039372,
-        98.4083333333333
+        -16.34251968503937,
+        105.99166666666665
       ],
       "to": [
         0.25,
-        98.4083333333333
+        105.99166666666665
       ],
       "text": "sheathing 0.5\"",
       "height": 1.6,
@@ -2455,17 +2253,17 @@
         "kind": "point",
         "xy": [
           3.25,
-          94.61666666666663
+          102.19999999999997
         ],
         "name": ""
       },
       "at": [
-        -15.862519685039372,
-        94.61666666666663
+        -16.34251968503937,
+        102.19999999999997
       ],
       "to": [
         3.25,
-        94.61666666666663
+        102.19999999999997
       ],
       "text": "stud 5.5\"",
       "height": 1.6,
@@ -2480,17 +2278,17 @@
         "kind": "point",
         "xy": [
           6.312500000000001,
-          90.82499999999996
+          98.4083333333333
         ],
         "name": ""
       },
       "at": [
-        -15.862519685039372,
-        90.82499999999996
+        -16.34251968503937,
+        98.4083333333333
       ],
       "to": [
         6.312500000000001,
-        90.82499999999996
+        98.4083333333333
       ],
       "text": "gwb-int 0.625\"",
       "height": 1.6,
@@ -2505,17 +2303,17 @@
         "kind": "point",
         "xy": [
           6.63,
-          87.03333333333329
+          94.61666666666663
         ],
         "name": ""
       },
       "at": [
-        -15.862519685039372,
-        87.03333333333329
+        -16.34251968503937,
+        94.61666666666663
       ],
       "to": [
         6.63,
-        87.03333333333329
+        94.61666666666663
       ],
       "text": "paint 0.01\"",
       "height": 1.6,
@@ -2529,17 +2327,17 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -4.7700000000000005,
+          -5.25,
           215.08320209973755
         ],
         "name": ""
       },
       "at": [
-        -15.862519685039372,
+        -16.34251968503937,
         215.08320209973755
       ],
       "to": [
-        -4.7700000000000005,
+        -5.25,
         215.08320209973755
       ],
       "text": "cladding 0.5\"",
@@ -2554,20 +2352,20 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -4.2700000000000005,
+          -3.25,
           211.2915354330709
         ],
         "name": ""
       },
       "at": [
-        -15.862519685039372,
+        -16.34251968503937,
         211.2915354330709
       ],
       "to": [
-        -4.2700000000000005,
+        -3.25,
         211.2915354330709
       ],
-      "text": "furring 0.5\"",
+      "text": "outrigger 3.5\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2579,70 +2377,20 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -3.02,
+          -0.7500000000000001,
           207.49986876640423
         ],
         "name": ""
       },
       "at": [
-        -15.862519685039372,
+        -16.34251968503937,
         207.49986876640423
       ],
       "to": [
-        -3.02,
+        -0.7500000000000001,
         207.49986876640423
       ],
-      "text": "eps 2\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          -1.02,
-          203.70820209973758
-        ],
-        "name": ""
-      },
-      "at": [
-        -15.862519685039372,
-        203.70820209973758
-      ],
-      "to": [
-        -1.02,
-        203.70820209973758
-      ],
-      "text": "polyiso 2\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          -0.01,
-          199.91653543307092
-        ],
-        "name": ""
-      },
-      "at": [
-        -15.862519685039372,
-        199.91653543307092
-      ],
-      "to": [
-        -0.01,
-        199.91653543307092
-      ],
-      "text": "wrb 0.02\"",
+      "text": "spray-foam 1.5\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2655,17 +2403,17 @@
         "kind": "point",
         "xy": [
           0.25,
-          196.12486876640426
+          203.70820209973758
         ],
         "name": ""
       },
       "at": [
-        -15.862519685039372,
-        196.12486876640426
+        -16.34251968503937,
+        203.70820209973758
       ],
       "to": [
         0.25,
-        196.12486876640426
+        203.70820209973758
       ],
       "text": "sheathing 0.5\"",
       "height": 1.6,
@@ -2680,17 +2428,17 @@
         "kind": "point",
         "xy": [
           3.25,
-          192.3332020997376
+          199.91653543307092
         ],
         "name": ""
       },
       "at": [
-        -15.862519685039372,
-        192.3332020997376
+        -16.34251968503937,
+        199.91653543307092
       ],
       "to": [
         3.25,
-        192.3332020997376
+        199.91653543307092
       ],
       "text": "stud 5.5\"",
       "height": 1.6,
@@ -2705,17 +2453,17 @@
         "kind": "point",
         "xy": [
           6.02,
-          188.54153543307095
+          196.12486876640426
         ],
         "name": ""
       },
       "at": [
-        -15.862519685039372,
-        188.54153543307095
+        -16.34251968503937,
+        196.12486876640426
       ],
       "to": [
         6.02,
-        188.54153543307095
+        196.12486876640426
       ],
       "text": "humid-membrane 0.04\"",
       "height": 1.6,
@@ -2730,17 +2478,17 @@
         "kind": "point",
         "xy": [
           6.415,
-          184.7498687664043
+          192.3332020997376
         ],
         "name": ""
       },
       "at": [
-        -15.862519685039372,
-        184.7498687664043
+        -16.34251968503937,
+        192.3332020997376
       ],
       "to": [
         6.415,
-        184.7498687664043
+        192.3332020997376
       ],
       "text": "liner-furring 0.75\"",
       "height": 1.6,
@@ -2755,17 +2503,17 @@
         "kind": "point",
         "xy": [
           7.04,
-          180.95820209973763
+          188.54153543307095
         ],
         "name": ""
       },
       "at": [
-        -15.862519685039372,
-        180.95820209973763
+        -16.34251968503937,
+        188.54153543307095
       ],
       "to": [
         7.04,
-        180.95820209973763
+        188.54153543307095
       ],
       "text": "pvc-panel 0.5\"",
       "height": 1.6,
@@ -2995,7 +2743,7 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        -14.862519685039372,
+        -15.34251968503937,
         98.28346456692913
       ],
       "content": "TR-CATLIN-PLANT-OPENING  ·  humid-liner-opening",
@@ -3344,12 +3092,12 @@
           0.9580000000000001
         ]
       ],
-      "pattern": "membrane",
+      "pattern": "metal",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "air-barrier"
+      "material": "closed-cell-spray-foam"
     },
     {
       "space": "paper",
@@ -3386,7 +3134,7 @@
         0.7,
         0.8880000000000001
       ],
-      "content": "air-barrier  0.02\"",
+      "content": "closed-cell-spray-foam  1.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3416,12 +3164,12 @@
           0.7880000000000001
         ]
       ],
-      "pattern": "none",
+      "pattern": "metal",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "polyiso"
+      "material": "kdat"
     },
     {
       "space": "paper",
@@ -3458,7 +3206,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "polyiso  2\"",
+      "content": "kdat  3.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3488,12 +3236,12 @@
           1.468
         ]
       ],
-      "pattern": "none",
+      "pattern": "metal",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "eps"
+      "material": "standing-seam-snaplock"
     },
     {
       "space": "paper",
@@ -3529,78 +3277,6 @@
       "anchor": [
         2.85,
         1.3980000000000001
-      ],
-      "content": "eps  2\"",
-      "height": 3.0,
-      "height_pt": 6.5,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "paper",
-      "node": "hatch",
-      "boundary": [
-        [
-          2.65,
-          1.158
-        ],
-        [
-          2.79,
-          1.158
-        ],
-        [
-          2.79,
-          1.298
-        ],
-        [
-          2.65,
-          1.298
-        ]
-      ],
-      "pattern": "metal",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "standing-seam-snaplock"
-    },
-    {
-      "space": "paper",
-      "node": "polyline",
-      "points": [
-        [
-          2.65,
-          1.158
-        ],
-        [
-          2.79,
-          1.158
-        ],
-        [
-          2.79,
-          1.298
-        ],
-        [
-          2.65,
-          1.298
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.2,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": null
-    },
-    {
-      "space": "paper",
-      "node": "text",
-      "anchor": [
-        2.85,
-        1.228
       ],
       "content": "standing-seam-snaplock  0.5\"",
       "height": 3.0,
@@ -3646,13 +3322,20 @@
     "condensed below about +13 °F outdoors — most of a Minnesota winter.",
     "`building_science.glazing_dew_point` is the rule that says so, and it now prints the margin",
     "for every one of the three units.",
-    "**Good news on the existing wall.** The model's `polyiso` is 1.0 perm-in (0.5 perm at 2\")",
-    "and `eps` 3.9 perm-in, so `CATLIN_EXT_2X6`'s exterior CI stack is ≈ 0.4 perm — Class II,",
-    "slow but real outward drying. The wall does not need re-engineering. **But the spec must say",
-    "glass-faced or unfaced polyiso, never foil-faced.** Foil-faced polyiso (the house's own",
-    "`polyiso-foil`, 0.03 perm) would sandwich the stud bay between two vapour barriers with",
-    "wet-prone wood at 25 °F in between — the one genuinely unrecoverable mistake available here,",
-    "and the model would not catch it, because it carries the permeable number.",
+    "**Good news on the existing wall, and the 2026-08-23 truss wall does not change it.**",
+    "`CATLIN_EXT_2X6`'s exterior insulation was 2\" polyiso (1.0 perm-in, 0.5 perm at 2\") plus 2\"",
+    "EPS (3.9 perm-in), which ran ≈ 0.4 perm — Class II, slow but real outward drying. It is now",
+    "4\" of 2 lb closed-cell spray foam at 1.6 perm-in, which runs **≈ 0.4 perm: the same Class II**,",
+    "in one bonded seamless application instead of two boarded courses and a sheet WRB. The wall",
+    "did not need re-engineering then and does not now.",
+    "The warning the boarded stack carried is moot rather than wrong, and is kept here because it",
+    "is why the foam's permeance is a spec line and not an incidental: **glass-faced or unfaced",
+    "polyiso, never foil-faced.** Foil-faced polyiso (the house's own `polyiso-foil`, 0.03 perm)",
+    "would have sandwiched the stud bay between two vapour barriers with wet-prone wood at 25 °F",
+    "in between — the one genuinely unrecoverable mistake available here, and the model would not",
+    "have caught it, because it carries the permeable number. There is no board in this wall any",
+    "more, so there is nothing left to specify wrongly; the sprayed foam's 1.6 perm-in is authored",
+    "in `library/materials.py` and the condensation gate reads it directly.",
     "**RH strategy.** Hold 70 % whenever outdoors is ≥ +10 °F; below that, reset the setpoint down",
     "to ~55 % at −15 °F. With the HP glazing this is a comfort/safety margin on the frames rather",
     "than a necessity, and it keeps a genuinely tropical room for ~95 % of the winter. 60 % is the",
@@ -3867,7 +3550,7 @@
       5.199999999999999
     ],
     "center": [
-      16.134999999999998,
+      15.895,
       160.0
     ],
     "scale": 0.5,

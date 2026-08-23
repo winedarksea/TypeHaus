@@ -195,7 +195,10 @@
 # 1x4 furring/strapping is not in the 2026-08-07 sweep above — it had no members to
 # price then. $0.45-0.85/LF is 8' furring strips at $3.50-6.75 a piece, 2026 Midwest
 # retail (SPF strapping runs a little under a 2x4 by the foot).
-"1x4" = { material = { low = 0.45, high = 0.7 }, labour = { low = 0.35, high = 0.7 } }  # 5536 LF
+# RE-SCOPED 2026-08-23: 5,536 LF of this was the exterior rainscreen furring, and the truss
+# wall took it (a KDAT 2x4 outrigger on edge does that job now — "2x4:kdat" below). What is
+# left is the sauna/plant liner strapping and the garage's own rainscreen.
+"1x4" = { material = { low = 0.45, high = 0.7 }, labour = { low = 0.35, high = 0.7 } }  # 742 LF
 # A pocket door's split stud: two 1x4 legs with the leaf slot between them, so the material
 # is exactly twice the 1x4 above. Labour is NOT doubled — the pair is set as one member, and
 # the frame kit ships them assembled (they are steel-wrapped in the heavy-duty unit), so the
@@ -214,7 +217,35 @@
 # 2"x2" rigid-insulation strip: 1/6 SF of 2" board per LF, at the [envelope_layers]
 # polyiso rate of $1.20-2.20/SF.
 "2x2 panel" = { low = 0.2, high = 0.45 }  # 316 LF
-"2x4" = { material = { low = 0.55, high = 0.8 }, labour = { low = 0.65, high = 1.2 } }  # 7964 LF
+"2x4" = { material = { low = 0.55, high = 0.8 }, labour = { low = 0.65, high = 1.2 } }  # 6654 LF — SPF
+# THE TRUSS WALL'S OUTRIGGERS (2026-08-23), and the single biggest cost lever in the change.
+# 3,610 LF of KDAT southern yellow pine 2x4, stood on edge at 16" o.c. behind the standing
+# seam. Two things set the rate apart from the SPF row above:
+#   material — KDAT (kiln-dried AFTER treatment) SYP 2x4 runs about 2-2.5x SPF by the foot.
+#     $1.30-1.90/LF is AC2/YellaWood-class 2x4-8 at $10.50-15.00 a stick (Menards/Lowe's
+#     2026 shelf pricing on treated SYP), which is the same basis every other lumber row
+#     here uses. Ordinary above-ground .15 pcf retention; nothing here is ground contact.
+#   labour  — HIGHER than a 1x4 batten, not lower: an on-edge 2x4 is lap-screwed to a
+#     plywood tab rather than screwed flat to sheathing, so each stick is held, plumbed and
+#     fastened at two planes. It is still far cheaper than the 8" screw-through-4"-of-board
+#     install it replaces, which is the labour case for the whole change.
+# ** OPEN: whether this needs to be KDAT at all. ** The outrigger sits behind cladding,
+# embedded in closed-cell foam, in a vented cavity — it never sees bulk water and it never
+# touches concrete. Plain SPF would price this line at the "2x4" rate above and save on the
+# order of $3,000-5,000. Flagged, not decided; the treated spec is the conservative one and
+# is what is priced.
+"2x4:kdat" = { material = { low = 1.3, high = 1.9 }, labour = { low = 0.8, high = 1.5 } }  # 3610 LF
+# The doubled head blocking over the wide openings (60" French/slider). Two plies of the
+# KDAT 2x4 above, material doubled; labour is not, since the pair is fitted as one piece.
+"2-2x4" = { material = { low = 2.6, high = 3.8 }, labour = { low = 0.9, high = 1.7 } }  # 8 LF
+# The truss wall's plywood tabs and window bucks, both ripped from ordinary sheathing stock
+# in 5" strips — 9.6 strips out of a 4x8 sheet, so a sheet yields ~77 LF.
+#   1/2" struct-1 at $38-58/sheet -> $0.49-0.75/LF of 5" strip, plus the rip.
+#   3/8" struct-1 at $30-46/sheet -> $0.39-0.60/LF.
+# Labour is the fastening, not the stock: a tab is two lap screws, a buck is a four-sided
+# frame set square in the RO before the foam goes on, which is why the buck's is higher.
+"5x0.5 panel" = { material = { low = 0.5, high = 0.75 }, labour = { low = 0.4, high = 0.9 } }  # 936 LF
+"5x0.375 panel" = { material = { low = 0.4, high = 0.6 }, labour = { low = 0.9, high = 1.8 } }  # 536 LF
 "2x6" = { material = { low = 0.85, high = 1.15 }, labour = { low = 0.9, high = 1.6 } }  # 10702 LF
 "2x8" = { material = { low = 1.1, high = 1.55 }, labour = { low = 1.3, high = 2.4 } }  # 708 LF
 # D-G-SERVICE's continuous header (2026-08-18). Three plies at $3-5/LF per 1.75" ply, on
@@ -319,21 +350,34 @@
 # HUCQ into concrete/masonry. G90 to ZMAX; the stainless variant would be ~$170 and is
 # not what the plan calls for.
 "HUCQ" = { low = 45, high = 95 }  # 4 ea
-# 2026-08-20, verified per SKU. The concealed-flange twin of the row above, carrying the two
-# sunken-garden front beams into pockets cast in concrete (params/sunken_garden.py) — an
-# exterior, WET location at grade, so this specifies ZMAX rather than the G90 an interior
+# 2026-08-20, verified per SKU; count corrected 2026-08-23. The concealed-flange twin of the
+# row above, carrying **all four** sunken-garden porch beams into pockets cast in concrete
+# (params/sunken_garden.py: CN-SG-HGR-W/E on the back pair, CN-SG-HGR-FW/FE on the front).
+# This comment said "the two front beams" and "# 2 ea" until the 2026-08-22 retype took the
+# back pair off LUS210 as well — both back-beam ends land in the same 12" pour, and a
+# wood-to-wood face hanger has nothing to nail to there. The RATE was always per each and
+# billed all four correctly; only the count in this comment was two revisions behind.
+#
+# An exterior, WET location at grade, so this specifies ZMAX rather than the G90 an interior
 # HUCQ can take: HUCQ410-SDS G90 is $50.17-52.00 and HUCQ410Z-SDSG ZMAX is $79.99 (Fasteners
 # Plus / FastoolNow, 2026); stainless would be $169.99 and is not what a beam pocket needs.
 # The "-SDS" suffix means the Strong-Drive screw pack ships with the hanger — but that is the
 # WOOD side only. The concrete side needs 4-6 Titen HD 1/2"x4" at $2.40 zinc / $4.60
 # mechanically galvanised, so $12-40 a hanger, and those are in this material figure because
 # they are in no other line. Labour is 0.75-1.5 crew-hr each: layout, rotary-hammer 4-6 holes
-# in cured concrete, blow and brush clean, set, support the 4x10, drive 8-14 SDS screws.
-"HUCQ410-SDS" = { material = { low = 92, high = 120 }, labour = { low = 60, high = 150 } }  # 2 ea
+# in cured concrete, blow and brush clean, set, support the beam, drive 8-14 SDS screws.
+#
+# The beams they carry went from two-ply LVL to three-ply KDAT 2x12 on 2026-08-23. The
+# hanger does not change: HUCQ410 takes a 4x10 seat, and 3 x 1 1/2" is 4 1/2" against the
+# old 3 1/2" — still inside the 4x width the -410 designates, and the same 11 1/4" depth.
+"HUCQ410-SDS" = { material = { low = 92, high = 120 }, labour = { low = 60, high = 150 } }  # 4 ea
 "KBS1Z" = { low = 3.5, high = 6.5 }  # 4 ea
 "LSSR" = { low = 12, high = 22 }  # 56 ea
 "LUS" = { low = 2, high = 6 }  # 42 ea
-"LUS210" = { low = 2.5, high = 6.5 }  # 2 ea
+# "LUS210" retired 2026-08-23. It priced the two back-beam hangers until the 2026-08-22
+# retype moved them onto HUCQ410-SDS, after which nothing in the house authored a LUS210 and
+# the row billed nothing. A price row for a part the model does not contain is not harmless:
+# it reads as coverage.
 "MASA" = { low = 1.75, high = 3 }  # 109 ea
 "S-5!" = { low = 9, high = 15 }  # 19 ea
 "S-5! CanDuit #11" = { low = 10, high = 22 }  # 3 ea
@@ -378,7 +422,16 @@
 # that pass.
 "S-5-N" = { low = 6, high = 10 }  # 28 ea — garage roof and garage walls, nail strip
 "S-5-S" = { low = 6.25, high = 10.25 }  # 48 ea — house wall corners, snap lock
-"SDWH191000DB" = { low = 1.05, high = 1.95 }  # 537 ea
+"SDWH191000DB" = { low = 1.05, high = 1.95 }  # 539 ea — the ROOF's 10" screws through 6" of polyiso
+# 2026-08-23, the truss wall's block screws. 2 per block x 1,285 blocks, derived from the
+# resolved members rather than from a grid (takeoff/fasteners.truss_wall_block_screw_rows):
+# 1-1/2" block + 1/2" sheathing + 1-1/2" embedment = 3.50" required, so a 4" screw.
+# ** This row REPLACED 537 ea of SDWH191000DB on the walls. ** Those were the 10" screws
+# holding 1/2" furring through 4" of rigid board; the truss wall has no such screw, and a
+# 4" SDWS is roughly a third the price of a 10" SDWH. Same basis as the 8" row below:
+# SDWS22400DB runs about $0.60-0.95 ea in the 500-count carton (Simpson list less contractor
+# discount, 2026), tracking the 8" row's $/inch.
+"SDWS22400DB" = { low = 0.6, high = 0.95 }  # 2570 ea — truss-wall block screws
 "SDWS22800DB" = { low = 1.15, high = 1.75 }  # 1865 ea
 "SP6" = { low = 1.5, high = 2.75 }  # 424 ea
 "SS-GASKET-12" = { low = 0.35, high = 0.9 }  # 32 ea — generic 304 SS #12 screw, bonded EPDM washer
@@ -1067,7 +1120,31 @@
 # wool thread, westernstatesmetalroofing.com metal roof guide, homeguide.com drywall and
 # OSB-vs-plywood 2026 charts.
 # $/SF net, by material tag
-"air-barrier" = { material = { low = 0.25, high = 0.6 }, labour = { low = 0.35, high = 0.75 } }  # 8386.3 SF
+# RE-SCOPED 2026-08-23: 6,328 SF of this was the sheet WRB in CATLIN_EXT_2X6, and the truss
+# wall dropped it — closed-cell foam is the water plane now, seamless and bonded, so there is
+# no membrane to hang there. What is left is the foundation-wall sheet and the roof's.
+"air-barrier" = { material = { low = 0.25, high = 0.6 }, labour = { low = 0.35, high = 0.75 } }  # 2057.9 SF
+# THE TRUSS WALL'S 4" OF CLOSED-CELL SPRAY FOAM (2026-08-23), keyed by MATERIAL:THICKNESS —
+# see `cli/prices.QUALIFIED_KEY_FIELD`. It is one product sprayed in two lifts, and the two
+# lifts do not cost the same per square foot, which is the whole reason the key carries the
+# thickness: only the board-feet scale, and a sprayer's mobilisation and set-up do not.
+#
+# Basis, the same one `[construction_returns]."rim-spray-foam"` already derives from: 2 lb
+# ccSPF is $1.00-1.50 per BOARD-FOOT installed, and a board-foot is 1 SF at 1". So
+#   1-1/2" lift  -> 1.5 bd-ft/SF -> $1.50-2.25/SF
+#   2-1/2" lift  -> 2.5 bd-ft/SF -> $2.50-3.75/SF
+# split here roughly 40/60 material/labour, which is where a sprayed-in-place product with a
+# rig, a crew and a cure window sits. Total for the wall: 3,512 SF x 4" = 14,050 board-feet.
+#
+# ** THIS IS ONE MOBILISATION, NOT TWO. ** The two rows are two lifts of one visit — the
+# second is sprayed over the first once it has cured, in the same day — so do NOT let a
+# quote carry set-up twice. At 14,050 bd-ft the job is well past any sprayer's minimum
+# charge, unlike the 81 LF rim, which is why neither range is widened at the top the way
+# `rim-spray-foam`'s is.
+# Sources: 2026 published ccSPF $/board-foot surveys (homeguide.com, retrofoamofmichigan) —
+# the same two the rim row cites; the board-feet are this assembly's own geometry.
+"closed-cell-spray-foam:1.5" = { material = { low = 0.6, high = 0.95 }, labour = { low = 0.9, high = 1.3 } }  # 3512.2 SF — the continuous band behind the outriggers
+"closed-cell-spray-foam:2.5" = { material = { low = 1.0, high = 1.55 }, labour = { low = 1.5, high = 2.2 } }  # 3512.2 SF — the fill between them, billed as insulation (cavity)
 # RESEARCHED 2026-08-20 — GARAGE_ROOF's attic fill, 576 SF at 14.5" settled (R-38). A
 # separate key from "fiberglass" above because that row is a 5.5" stud-bay BATT and this is
 # loose fill three times as deep: same fibre, different product, different trade, and this
@@ -1098,7 +1175,12 @@
 # to a proctor, and the absence of fines IS the capillary break.
 "capillary-break-stone" = { material = { low = 0.55, high = 0.95 }, labour = { low = 0.35, high = 0.8 } }  # 1783.7 SF — 4" #57, screeded
 "cabinet-plywood" = { material = { low = 2.5, high = 4.5 }, labour = { low = 4, high = 8 } }  # 101.2 SF — casework fabrication hours, not a sheet-goods rate
-"eps" = { material = { low = 0.7, high = 1.4 }, labour = { low = 0.7, high = 1.35 } }  # 3515.7 SF
+# RETIRED 2026-08-23, kept as a row rather than deleted. The 3,515.7 SF was the outer 2" of
+# CATLIN_EXT_2X6's rigid-CI stack, which the truss wall replaced with spray foam; EPS is now
+# used nowhere in this house, so the row bills nothing. It stays because the rate is
+# researched and because `plans/cost-options.md` weighs a return to boards — a deleted row
+# would have to be researched again to have that argument.
+"eps" = { material = { low = 0.7, high = 1.4 }, labour = { low = 0.7, high = 1.35 } }  # 0 SF — was 3515.7 SF of wall CI until the truss wall
 "fiberglass" = { material = { low = 0.45, high = 0.9 }, labour = { low = 0.45, high = 0.85 } }  # 438.8 SF — fastest batt to install, bottom of the $0.50-1.30 band
 # The roof cavity batt. Dearer per SF than the wall row above only because it is thicker
 # (6-1/4" against 3-1/2"); it is the same product at the same rate per inch.
@@ -1142,7 +1224,9 @@
 "mineral-wool" = { material = { low = 1.5, high = 2.3 }, labour = { low = 0.6, high = 1.15 } }  # 6316.6 SF
 # The nailbase top deck, by the SF. Same panels as the [sheet_goods] "osb" row.
 "osb" = { material = { low = 0.75, high = 1.2 }, labour = { low = 0.95, high = 1.85 } }  # 1430.3 SF — 5/8", screwed through 6" of foam
-"polyiso" = { material = { low = 1.5, high = 2.3 }, labour = { low = 1.1, high = 2.1 } }  # 4946 SF — exterior CI, ~2x the labour of cavity batt
+# RE-SCOPED 2026-08-23: 2,072 SF of this was CATLIN_EXT_2X6's inner 2" of wall CI, now spray
+# foam. What is left is the ROOF's two 3" courses, which are untouched by the truss wall.
+"polyiso" = { material = { low = 1.5, high = 2.3 }, labour = { low = 1.1, high = 2.1 } }  # 2873.1 SF — roof CI only, ~2x the labour of cavity batt
 "polyiso-foil" = { material = { low = 1.3, high = 2.4 }, labour = { low = 1.3, high = 2.3 } }  # 297.4 SF
 "sauna-tg" = { material = { low = 4.5, high = 9 }, labour = { low = 6, high = 11 } }  # 297.4 SF
 # ** THE BIGGEST LINE IN THE HOUSE, and as of 2026-08-20 it is FOUR lines. ** One
@@ -1388,32 +1472,39 @@
 # 35-60% over SPF on MATERIAL and the same on labour, and it is not optional here — every
 # stick in these two rows stands in weather over open ground.
 #
-# BEAM, LVL — 78.0 LF over nine members, 0.81 cy. Three sizes, priced separately and summed:
-#   12.0 LF  3-1.75x11.875 (BM-M-HALL 3.5', BM-S-HALL 8.5') — interior, untreated.
-#            [framing] "3-1.75x11.875 LVL" is $21-39 mat + $15-30 lab = $36-69/LF.
-#   40.0 LF  2-1.75x11.25, the garden's back and front pairs at 10'-0" each — TREATED LVL,
-#            in beam pockets cast in a wall holding 9'-9" of fill, over an open well.
-#            [framing] "2-1.75x11.875 LVL" is $14-26 mat; a hair shallower and treated
-#            (+30-50% on a special-order preservative-treated billet) is $18-38 mat, labour
-#            unchanged at $8-18 = $26-56/LF.
-#   26.0 LF  2-1.75x9.25, the three balcony beams at 8'-8" — treated, same build-up:
-#            $15-32 mat + $7-16 lab = $22-48/LF.
-# -> material $1,362-2,820 and labour $682-1,496, i.e. $2,044-4,316 over 0.81 cy.
-# This is roughly DOUBLE what the retired bare "beam" row in [concrete] billed, and the
-# 2026-08-21 note on that row predicted exactly that: "the rate is wrong in kind, and
-# probably in size ... ~$1,860-3,530/cy". It was.
-"beam:BEAM_LVL" = { material = { low = 1680, high = 3480 }, labour = { low = 840, high = 1850 } }  # 0.81 cy = 78.0 LF
+# Both rows were re-derived on 2026-08-23, when the sunken garden's seven beams moved off
+# BEAM_LVL onto BEAM_KDAT (params/sunken_garden.py). The old BEAM_LVL row priced 40.0 LF of
+# "treated LVL" at a +30-50% special-order premium, for a product that is not sold: treated
+# Parallam Plus PSL exists only in 9 1/4"/11 7/8"/14"/16" depths and may not be resawn in
+# depth, so the 11 1/4" the porch is derived from was never buyable. Seven members left this
+# row and joined the one below it; the house got about $850-2,100 cheaper for it.
 #
-# BEAM, KDAT — 64.8 LF over eleven members, 0.24 cy. The breezeway's whole frame plus the
-# garden's four balcony girts:
-#   14.3 LF  2-2x8, the four breezeway floor and roof beams at 3'-7". [framing] "2-2x8" is
+# BEAM, LVL — 12.0 LF over two members, 0.19 cy. One size, and interior:
+#   12.0 LF  3-1.75x11.875 (BM-M-HALL 3.5', BM-S-HALL 8.5') — the two dropped hall girders,
+#            inside the envelope, untreated.
+#            [framing] "3-1.75x11.875 LVL" is $21-39 mat + $15-30 lab = $36-69/LF.
+# -> material $252-468 and labour $180-360, i.e. $432-828 over 0.19 cy.
+"beam:BEAM_LVL" = { material = { low = 1326, high = 2463 }, labour = { low = 947, high = 1895 } }  # 0.19 cy = 12.0 LF
+#
+# BEAM, KDAT — 130.5 LF over eighteen members, 1.04 cy. The breezeway's whole frame, the
+# balcony's four E-W girts, and the garden's seven beams:
+#   14.2 LF  2-2x8, the four breezeway floor and roof beams at 3'-7". [framing] "2-2x8" is
 #            $2.20-3.10 mat + $1-2 lab; KDAT is $3.00-5.00 mat = $4.00-7.00/LF.
 #   12.0 LF  2x6, the three breezeway rafters at 4'-0". $1.20-1.90 mat + $0.90-1.60 lab.
-#   38.5 LF  2x10, the four E-W balcony girts at ~9'-7". $2.10-3.30 mat + $1.30-2.40 lab.
-# -> material $138-222 and labour $75-140, i.e. $213-362 over 0.24 cy. The smallest line in
-# this table and the one most exposed to a minimum charge: nobody mobilises for 65 LF, so it
-# assumes the crew is already framing the deck it belongs to.
-"beam:BEAM_KDAT" = { material = { low = 575, high = 925 }, labour = { low = 313, high = 583 } }  # 0.24 cy = 64.8 LF
+#   38.3 LF  2x10, the four E-W balcony girts. $2.10-3.30 mat + $1.30-2.40 lab. (Two of the
+#            four lost 1/2" each when the beams they butt went from 3 1/2" to 4 1/2" wide.)
+#   40.0 LF  3-2x12, the porch's back and front pairs at 10'-0" each. [framing] "2x12" is
+#            $1.85-2.60 mat, so three plies are $5.55-7.80/LF in SPF and $7.77-12.87 in KDAT.
+#   26.0 LF  3-2x10, the three balcony beams at 8'-8". [framing] "2x10" is $1.50-2.00 mat,
+#            so three plies are $4.50-6.00/LF in SPF and $6.30-9.90 in KDAT.
+#
+# The KDAT premium used throughout these two built-up rows is the same one the 2x10 girt
+# line above already carries: +40%/+65% on MATERIAL, labour unchanged. Labour on a built-up
+# beam is per LF of assembled member, not per ply — that is why [framing] prices "2-2x10"
+# labour at $1-2 while a single "2x10" joist is $1.30-2.40. A 3-ply is heavier to set than a
+# 2-ply, so it is carried at $1.50-3.00/LF; that step is a judgement, not a quote.
+# -> material $612-992 and labour $174-338, i.e. $786-1,330 over 1.04 cy.
+"beam:BEAM_KDAT" = { material = { low = 588, high = 954 }, labour = { low = 167, high = 325 } }  # 1.04 cy = 130.5 LF
 #
 # COLUMN, KDAT — the four breezeway 6x6 posts, 28.4 LF, 0.22 cy. [framing] "6x6" is $5-8.50
 # mat + $2.50-5 lab; these are GROUND-CONTACT rated (the brief) and stand on standoff bases
@@ -2087,8 +2178,13 @@ roof-ice-and-water-barrier-code-minimum = { low = 5000, high = 11000 }
 # Partly overlaps [edge_trim]; this is the balance — valley metal, boots, custom flashings
 # and snow retention over a walking surface.
 roof-flashings-boots-and-snow-retention = { low = 6000, high = 14000 }
-# Required for cladding attachment through 2" of exterior foam, whatever the cladding is.
-envelope-rainscreen-furring = { low = 4400, high = 8800 }
+# RETIRED 2026-08-23 with the truss wall. This was the allowance for attaching cladding
+# through 4" of rigid board — the long screws, the shimming, the two-layer board install.
+# Every part of it is now a modelled member with a modelled rate: the outriggers price in
+# [framing] as "2x4:kdat", the blocks and tabs beside them, and the screws in [hardware] as
+# SDWS22400DB. Leaving the lump here as well would bill the same scope twice, which is the
+# mirror this section's header warns about. Deliberately zero, not deleted.
+# envelope-rainscreen-furring =    # was $4,400-8,800; now modelled in [framing] + [hardware]
 # 45 openings. Tape, sill pans and the air-sealing detail at each one.
 envelope-opening-flashing-and-sill-pans = { low = 5100, high = 11800 }
 # MN limits to 3.0 ACH50, so the second blower-door test is not optional.

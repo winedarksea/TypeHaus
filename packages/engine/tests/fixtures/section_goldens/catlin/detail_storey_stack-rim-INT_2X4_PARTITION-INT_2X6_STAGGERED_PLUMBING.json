@@ -1031,9 +1031,9 @@
       "node": "text",
       "anchor": [
         323.37500000000006,
-        135.22020997375327
+        134.5347933070866
       ],
-      "content": "water continuity — wrb-ext → wrb-ext",
+      "content": "water continuity — spray-foam-ext →\nspray-foam-ext",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -1047,9 +1047,9 @@
       "node": "text",
       "anchor": [
         323.37500000000006,
-        132.42020997375326
+        131.04937664041992
       ],
-      "content": "thermal continuity — ci-ext → ci-ext",
+      "content": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,

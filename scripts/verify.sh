@@ -64,12 +64,17 @@ if [[ -n "$BASELINE_DIR" ]]; then
 fi
 
 echo "== haus check: catlin =="
-# catlin carried four accepted advisory FAILs until 2026-08-16 — two rooms without a supply
-# register (drawn) and the unbalanced-fill screen (a bug in the check, not the house; see
-# plans/TODO.md). It now carries none, so the default `fail` gate is the honest one and a new
-# advisory FAIL stops the build instead of being waved through. `--exit-on error` is still
-# there if a house ever needs to accept one; using it here would only hide a regression.
-$HAUS check houses/catlin | tail -3
+# catlin carries THREE accepted advisory FAILs since 2026-08-23, all of them
+# `structural.deck_beam_span` on BM-SG-BLW/BLC/BLE. They are an owner decision taken with
+# the evidence: the three balcony beams went from two-ply LVL to three-ply KDAT 2x10 because
+# "treated LVL" is not a product, and no built-up sawn size in IRC Table R507.5(1) reaches
+# their 8'-8" span. The member is engineered and the check says so out loud.
+#
+# So the gate here is `--exit-on error` again — but the real gate is NOT this line. It is
+# `test_catlin_carries_only_its_accepted_failures` in the engine tests above, which pins
+# those three by (check_id, tags) and fails on a fourth. That is strictly stronger than an
+# exit code, which can only say "clean" or "not clean"; keep it in step when the list moves.
+$HAUS check houses/catlin --exit-on error | tail -3
 
 echo "== full build: catlin (IFC + glTF + permit PDFs) =="
 $HAUS build houses/catlin

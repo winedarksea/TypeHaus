@@ -104,6 +104,75 @@ def window_head_jamb_sill(model, wall, opening, crop, direction, station) -> lis
     return nodes
 
 
+def outie_window_truss(model, wall, opening, crop, direction, station) -> list[IRNode]:
+    """Head flashing + sill pan at an OUTIE window in a truss wall.
+
+    The innie recipe above measures both pieces from ``sheath_out``, because that is where an
+    innie unit sits: in the stud plane, behind the insulation, with the flashing lapped onto
+    the WRB. A truss wall has neither of those things. The unit sits 5" further out, in the
+    truss plane, its flanges bearing on the outriggers and the head/sill blocking; the water
+    plane is the spray foam, not a sheet; and between the truss plane and the cladding there
+    is a 1" drained and back-vented gap for the pan to discharge into.
+
+    So both pieces move out with the window:
+
+    * the **head flashing** starts on the FOAM face above the head blocking — the foam is the
+      water plane, so lapping onto it is what makes the head continuous — turns out over the
+      head blocking, and laps past the cladding to a drip;
+    * the **sill pan** lies on the sill buck with its back dam turned up against the buck's
+      inboard leg, runs out to the truss plane, and turns down into the rainscreen gap. It
+      discharges BEHIND the cladding, not past it: an outie pan that ran out to a visible
+      drip would put a metal lip under every window on the facade.
+
+    The buck, the head/sill blocking and the outriggers themselves are not drawn here. They
+    are real resolved members now (``resolve/framing/truss_wall.py``), so the cut already
+    carries them, and convention linework over a solid is a second, disagreeing drawing of
+    the same wood.
+    """
+    if not is_weather_exposed(wall):
+        return []
+    is_outboard_high = outboard_is_high(wall, direction, station)
+    if is_outboard_high is None:
+        return []
+    intervals = layer_intervals(wall, direction, station)
+    sheath = outermost_with_function(intervals, "sheathing")
+    band = outermost_with_function(intervals, "furring")
+    clad = outermost_with_function(intervals, "cladding")
+    if sheath is None or band is None or clad is None:
+        return []
+    out_sign = 1.0 if is_outboard_high else -1.0
+    sheath_out = face_of(sheath, is_outboard_high, outer=True)
+    foam_face = face_of(band, is_outboard_high, outer=False)   # the outrigger band's back
+    truss_plane = face_of(band, is_outboard_high, outer=True)  # where the flanges land
+    clad_out = face_of(clad, is_outboard_high, outer=True)
+    clad_in = face_of(clad, is_outboard_high, outer=False)
+    sill_z, head_z = opening_z_in(wall, opening)
+    cfg = OPENING_DETAIL
+
+    nodes: list[IRNode] = []
+    if _in_crop_z(head_z, crop):
+        block_top = head_z + cfg.truss_blocking_in
+        path = path_from_steps((foam_face, block_top + cfg.outie_head_rise_in), [
+            (0.0, -cfg.outie_head_rise_in),
+            (out_sign * (clad_out - foam_face) + out_sign * cfg.head_flashing_lip_in, 0.0),
+            (0.0, -cfg.head_flashing_drop_in),
+        ])
+        nodes += flashing_nodes(path, tag="opening-head-flashing")
+        # Sealant at the cladding-to-frame joint, tucked under the flashing's drip. The
+        # joint is at the truss plane now, which is the cladding's own inner face.
+        nodes += rect_region(clad_in, head_z - cfg.sealant_bead_in,
+                             clad_in + out_sign * cfg.sealant_bead_in, head_z,
+                             "opening-sealant", "sealant", "metal", lineweight=0.3)
+    if _in_crop_z(sill_z, crop):
+        pan = path_from_steps((sheath_out, sill_z + cfg.sill_pan_back_dam_in), [
+            (0.0, -cfg.sill_pan_back_dam_in),
+            (out_sign * (truss_plane - sheath_out), 0.0),
+            (0.0, -cfg.outie_pan_drop_in),
+        ])
+        nodes += flashing_nodes(pan, tag="opening-sill-pan")
+    return nodes
+
+
 def concrete_opening_bucks(model, wall, opening, crop, direction, station) -> list[IRNode]:
     """Treated buck + sealant at an opening cast into concrete.
 

@@ -73,12 +73,32 @@ NODES = [
     # INT_2X6_STAGGERED_PLUMBING's 6 3/4" thickness.
     Node(uid="CBN015AAAA", tag="N-B-BA-W", position=pt(ft(10), ft(21, 9.375))),
     Node(uid="CBN016AAAA", tag="N-B-BA-E", position=pt(ft(18), ft(21, 9.375))),
-    # ESS closet (2026-08-02, notes/backup_power.md): takes the furnace room's SE corner, so
-    # W-B-STR2/W-B-CW are already its east/south walls, and its north partition reuses
-    # y=21'-9 3/8" (N-B-BA-W). x=6'-9" clears D-B-FURN's leaf (ends x=5'-8") and the last
-    # W-B-CW sleeve (x=6'-6"), fixing the closet at 2'-8 1/4" clear — a cabinet, not a room.
-    Node(uid="CBN017AAAA", tag="N-B-ESS-S", position=pt(ft(6, 9), ft(18))),
-    Node(uid="CBN018AAAA", tag="N-B-ESS-N", position=pt(ft(6, 9), ft(21, 9.375))),
+    # W-B-CW's east end. Named N-B-ESS-S until 2026-08-23, when the ESS closet left the SE
+    # corner for the NE one: the split it was minted for is still real (W-B-CW3 carries a
+    # different assembly from W-B-CW here) but it has nothing to do with the battery any
+    # more, and a node tagged for a room it no longer touches is how a plan starts lying.
+    # The uid is unchanged, so nothing in the IFC moved.
+    Node(uid="CBN017AAAA", tag="N-B-CW-E", position=pt(ft(6, 9), ft(18))),
+    # ESS closet, NE corner of the furnace room (2026-08-23; was the SE corner, 2026-08-02).
+    # Two concrete sides come free here as they did there — W-B-N3 on the north (inner face
+    # y=35'-4") and W-B-STR on the east (inner face x=9'-6") — so it is still two framed
+    # partitions, not four. x=6'-0" and y=31'-0" leave 3'-3 5/8" x 4'-1 5/8" clear, more than
+    # the 2'-8 1/4" cabinet it replaces, and clear of everything already on this side:
+    # SP-B-N3-HYD (x=5'-0" through the north wall), ED-B-SUMP-RC (x=4'-6"),
+    # SP-B-STR-CD-DATA (y=30'-0" through the east wall, a foot south of the partition).
+    #
+    # **x=6'-0" is not a round number chosen for tidiness.** Neither concrete side of this
+    # corner was split before, so both had to be, and a basement split that does not line up
+    # with the storey above puts one wall over two. N-M-MECH3 already splits the main
+    # storey's north wall line at exactly x=6'-0" (RM-M-MECH's shaft closet, 2026-07-28), so
+    # splitting W-B-N3 there makes W-M-N3 sit over W-B-N3 and W-M-N3B over W-B-N4, one to
+    # one. The east wall has no such gift — W-M-STRW runs y 26'-4"..36'-0" straight across
+    # W-B-STR's new y=31'-0" split — and that is called out on W-B-STR below.
+    #
+    # The corner is only available because EQ-B-WH left it — see plan/mep_hvac.py.
+    Node(uid="CBN018AAAA", tag="N-B-ESS-N", position=pt(ft(6), ft(36))),
+    Node(uid="BT88F385N4", tag="N-B-ESS-SW", position=pt(ft(6), ft(31))),
+    Node(uid="GXJ9S72CKH", tag="N-B-ESS-SE", position=pt(ft(10), ft(31))),
     # Glazed-brick veneer over the exposed south wall (W-B-BRICK): a freestanding wythe off
     # the concrete, both ends ``open_end`` like the sunken garden's N-SG-NW/NE (not part of
     # any wall loop). x runs only as far as the excavation in front of it: N-B-S1's x (8'-10")
@@ -183,7 +203,20 @@ WALLS = [
                    top_elevation=ft(0), bottom_elevation=ft(-9, -4),
                    lateral_support="top_and_bottom",
                    vertical_reinforcement='#6 @ 48" o.c.'),
+    # Split at N-B-ESS-N (x=6'-0") on 2026-08-23 so the ESS closet's west partition has a
+    # node to tee into — `integrity.wall_loop_open` wants two edges at every node, and a
+    # partition dying against the middle of an unsplit wall has one. Both halves keep
+    # everything else: same assembly, same alignment, same reinforcement, one continuous
+    # pour on site. W-B-N3 keeps its tag, uid and the east 4'-0" that W-M-N3 stacks on;
+    # W-B-N4 is the west 6'-0" under W-M-N3B, and x=6'-0" is N-M-MECH3's line so the two
+    # storeys split in the same place.
     FoundationWall(uid="CBW108AAAA", tag="W-B-N3", start_node="N-B-N2",
+                   end_node="N-B-ESS-N", assembly="CATLIN_BASEMENT_8",
+                   alignment=face("concrete-ext"),
+                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
+                   lateral_support="top_and_bottom",
+                   vertical_reinforcement='#6 @ 48" o.c.'),
+    FoundationWall(uid="HEX0ZDQZEN", tag="W-B-N4", start_node="N-B-ESS-N",
                    end_node="N-B-NW", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
                    top_elevation=ft(0), bottom_elevation=ft(-9, -4),
@@ -264,10 +297,15 @@ WALLS = [
     # W-B-CW is the furnace room's south wall and carries the 4" building drain, so it takes
     # the wet-wall 2x6 rather than a 2x4.
     Wall(uid="CBW114AAAA", tag="W-B-CW", start_node="N-B-W1",
-         end_node="N-B-ESS-S", assembly="INT_2X6_PLUMBING", top=ft(8, 2.75)),
-    # Matched to the ESS closet's other two walls (W-B-ESS-N/W-B-ESS-W), which are the
-    # steel-stud, type-X box the battery enclosure asks for.
-    Wall(uid="CBW123AAAA", tag="W-B-CW3", start_node="N-B-ESS-S",
+         end_node="N-B-CW-E", assembly="INT_2X6_PLUMBING", top=ft(8, 2.75)),
+    # Steel studs and Type X because this was the ESS closet's south wall until 2026-08-23,
+    # when the closet moved to the NE corner. Left as built, deliberately: it is now an
+    # over-specified 3'-3" stub rather than a wrong one, and re-specifying it to match
+    # W-B-CW would widen it 2", move the furnace room's south face an inch north over this
+    # run, and re-open `integrity.condition_coverage` on a line nothing else asked about.
+    # The same is true of W-B-STR2 below. Both are worth revisiting the next time this wall
+    # line is opened for another reason; neither is worth opening it for.
+    Wall(uid="CBW123AAAA", tag="W-B-CW3", start_node="N-B-CW-E",
          end_node="N-B-STR", assembly="INT_ESS_CLOSET_STEEL", top=ft(8)),
     # Nothing runs in this one and nothing bears on it — a plain 2x4 partition. Keep the
     # tag: W-M-CLN and W-M-CLN2 name it in `stacks_on`.
@@ -295,7 +333,19 @@ WALLS = [
     # (structural.floor_opening_header). It is also a two-storey bearing line
     # (W-M-STRW/W-M-STRW2 stack on it) and keeps FT-B-STR either way, so framing it would
     # have bought only its own ~4.9 cy and cost the stair its dimensions.
+    # Split again at N-B-ESS-SE (y=31'-0") on 2026-08-23, for the ESS closet's south
+    # partition, exactly as it was split at N-B-BA-W for the bathroom. **Unlike the north
+    # wall's split this one does NOT line up with the storey above**: W-M-STRW runs
+    # y 26'-4"..36'-0" and now crosses from W-B-STR onto W-B-STR3 halfway along. It keeps
+    # naming W-B-STR — the segment its north two thirds bear on — and W-M-STRW2, which sits
+    # wholly south of the split, names W-B-STR3. The pour is continuous either way; what the
+    # split changes is only which tag each stack edge is drawn to, and there is no y on this
+    # line that is both a main-storey node and far enough north to leave EQ-B-ERV outside
+    # the closet.
     FoundationWall(uid="CBW116AAAA", tag="W-B-STR", start_node="N-B-N2",
+                   end_node="N-B-ESS-SE", assembly="FOUNDATION_WALL_12_INT", unbalanced_fill=ft(0),
+                   top_elevation=ft(0), bottom_elevation=ft(-9, -4)),
+    FoundationWall(uid="1H4KR79N9M", tag="W-B-STR3", start_node="N-B-ESS-SE",
                    end_node="N-B-BA-W", assembly="FOUNDATION_WALL_12_INT", unbalanced_fill=ft(0),
                    top_elevation=ft(0), bottom_elevation=ft(-9, -4)),
     # The stub south of it is a different job: RM-B-BATH's west enclosure, nothing bearing
@@ -331,16 +381,23 @@ WALLS = [
     Wall(uid="CBW120AAAA", tag="W-B-BA-N", start_node="N-B-BA-W",
          end_node="N-B-BA-E", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(8),
          interior_room="RM-B-BATH"),
-    # ESS closet's two framed walls (2026-08-02). INT_ESS_CLOSET_STEEL (steel studs, 5/8"
-    # Type X both faces) is an owner standard, not a code-rated assembly, hence
-    # `advisory.ess_enclosure` being advisory (see plan/assemblies.py). `top=ft(8)` matches
-    # W-B-BA-N's plate line on the other side of the concrete so the two partitions read as
-    # one line in section; `interior_room` on both keeps the Type X face unambiguous.
-    Wall(uid="CBW124AAAA", tag="W-B-ESS-W", start_node="N-B-ESS-S",
-         end_node="N-B-ESS-N", assembly="INT_ESS_CLOSET_STEEL", top=ft(8),
+    # ESS closet's two framed walls (2026-08-02; moved to the NE corner 2026-08-23, same
+    # uids, so the enclosure is the same two walls relocated rather than a new pair).
+    # INT_ESS_CLOSET_STEEL (steel studs, 5/8" Type X both faces) is an owner standard, not a
+    # code-rated assembly, hence `advisory.ess_enclosure` being advisory (see
+    # plan/assemblies.py). `interior_room` on both keeps the Type X face unambiguous; the
+    # other two sides of the closet are concrete and satisfy the same check by being mass
+    # noncombustible.
+    #
+    # W-B-ESS-N runs north-to-south down the closet's west side and carries D-B-ESS, which
+    # is the change of habit from the old corner: there the door was in the long north wall,
+    # here the west wall is the one facing the room's open floor. The south partition cannot
+    # take it — EQ-B-ERV stands 10 1/4" south of it and a 2'-0" leaf needs 2'-0".
+    Wall(uid="CBW124AAAA", tag="W-B-ESS-W", start_node="N-B-ESS-N",
+         end_node="N-B-ESS-SW", assembly="INT_ESS_CLOSET_STEEL", top=ft(8),
          interior_room="RM-B-ESS"),
-    Wall(uid="CBW125AAAA", tag="W-B-ESS-N", start_node="N-B-ESS-N",
-         end_node="N-B-BA-W", assembly="INT_ESS_CLOSET_STEEL", top=ft(8),
+    Wall(uid="CBW125AAAA", tag="W-B-ESS-S", start_node="N-B-ESS-SW",
+         end_node="N-B-ESS-SE", assembly="INT_ESS_CLOSET_STEEL", top=ft(8),
          interior_room="RM-B-ESS"),
     # Glazed forest-green brick veneer over the exposed run of W-B-S2/W-B-S3, where the
     # sunken garden is dug against them — everywhere else this wall is buried and the parge
@@ -400,12 +457,15 @@ OPENINGS = [
     # Positioned so jambs (x 12'-8"..15'-4") clear both fixtures' footprints.
     Door(uid="CBD207AAAA", tag="D-B-BATH", host="W-B-BA-N", type_ref="DT-INT-SWING32",
          position=from_node("N-B-BA-W", ft(2, 8))),
-    # ESS closet door, opening into the furnace room. DT-INT-SWING24: a 2'-0" leaf is what
-    # the 2'-8 1/4" clear closet can take with jamb both sides. 10" offset, not the original
-    # 4": at 4" the opening's king stud clashed with the wall's corner post
-    # (`structural.member_interference` against CBW125AAAA); 10" clears it.
-    Door(uid="CBD208AAAA", tag="D-B-ESS", host="W-B-ESS-N", type_ref="DT-INT-SWING24",
-         position=from_node("N-B-ESS-N", inch(10))),
+    # ESS closet door, opening west into the furnace room. DT-INT-SWING24: a 2'-0" leaf is
+    # what a closet this size takes with jamb both sides. 10" offset from the corner, not
+    # the original 4": at 4" the opening's king stud clashed with the wall's corner post
+    # (`structural.member_interference` against CBW125AAAA); 10" clears it, and the same 10"
+    # is carried over to the new corner for the same reason. Measured from N-B-ESS-SW so the
+    # leaf sits in the closet's south half and EQ-B-ESS-BATT, hung on the north concrete,
+    # stands clear of the swing.
+    Door(uid="CBD208AAAA", tag="D-B-ESS", host="W-B-ESS-W", type_ref="DT-INT-SWING24",
+         position=from_node("N-B-ESS-SW", inch(10))),
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-SA-W", type_ref="DT-INT-SWING24",
          position=from_node("N-B-S1", ft(10, 10.4375))),
     # Raise the exterior threshold above the basement floor to resist sunken-garden flooding.
@@ -491,7 +551,7 @@ ROOMS = [
     # ESS closet (2026-08-02): MECHANICAL like the room it's carved from — STORAGE would
     # trigger habitability rules a battery cabinet has no use for. R327.4 permits an ESS in
     # a utility closet, which is exactly what this is.
-    Room(uid="CBR408AAAA", tag="RM-B-ESS", seed=pt(ft(8, 6), ft(20)),
+    Room(uid="CBR408AAAA", tag="RM-B-ESS", seed=pt(ft(8), ft(33, 6)),
          occupancy=Occupancy.MECHANICAL, floor_finish="sealed-concrete"),
 ]
 

@@ -121,7 +121,18 @@ def _wall_clip_setbacks(wall) -> dict[str, float]:
     cladding = sum(layer.thickness_m for layer in layers if layer.function == "cladding")
     if furring_index is not None:
         batten = sum(layer.thickness_m for layer in layers[furring_index + 1:])
-        foam = sum(layer.thickness_m for layer in layers[furring_index:])
+        # The roof's foam runs out to the back of the wall's VENT, not to the back of the
+        # band that holds it open. On a rainscreen those are the same plane, because the band
+        # is empty. On a truss wall they are 2-1/2" apart: the outrigger band is 3-1/2" deep
+        # with closed-cell foam packed behind the stick, and clipping the roof foam at the
+        # band's inner face would hold it 4" back from the footprint edge to clear a gap that
+        # is only 1" — leaving a 3" thermal notch all round the eave that is not in the
+        # building. Same reading ``accessories.rainscreen_cavity_m`` gives the same band.
+        band = layers[furring_index]
+        fill = next((layer for layer in wall.layers
+                     if layer.is_cavity and layer.cavity_host == band.name), None)
+        vent = band.thickness_m - (fill.thickness_m if fill is not None else 0.0)
+        foam = batten + max(0.0, vent)
     else:
         batten = foam = cladding
     if sheathing_index is not None:

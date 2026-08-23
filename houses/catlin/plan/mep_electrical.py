@@ -347,15 +347,16 @@ ATTIC_DEVICES = [
 # 20'), Connector elevation is project-frame absolute.
 NEMA_BOX = [
     ElectricalDevice(uid="CEJ901AAAA", tag="ED-A-NEMA-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(4), ft(36, 8)), type_ref="ED-T-JBOX",
+                     position=pt(ft(4), ft(36, 8.5)), type_ref="ED-T-JBOX",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
 ]
 NEMA_CLAMP = [
     # The clamp is the box's own fastener, so it shares the box's point exactly — it followed
     # ED-A-NEMA-JB from y=37'-0" to the cladding face on 2026-08-03 (the box had been hanging
-    # 4" clear of the siding it is supposed to be clamped to).
+    # 4" clear of the siding it is supposed to be clamped to), and out another 1/2" on
+    # 2026-08-23 when the truss wall moved that cladding face.
     Connector(uid="CMNC01AAAA", tag="CN-A-NEMA-CLAMP", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(4), ft(36, 8)), elevation=ft(25, 6), size="S-5!",
+              position=pt(ft(4), ft(36, 8.5)), elevation=ft(25, 6), size="S-5!",
               connects=("ED-A-NEMA-JB", "W-A-N2")),
 ]
 

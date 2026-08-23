@@ -780,9 +780,9 @@
       "node": "text",
       "anchor": [
         503.00000000000006,
-        -0.2260717410323756
+        -1.1399606299212635
       ],
-      "content": "water continuity — wrb-ext → wrb-ext",
+      "content": "water continuity — spray-foam-ext →\nspray-foam-ext",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -793,27 +793,18 @@
     },
     {
       "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          487.625,
-          -12.000000000000005
-        ],
-        "name": ""
-      },
-      "at": [
+      "node": "text",
+      "anchor": [
         503.00000000000006,
-        -3.959405074365709
+        -5.787182852143484
       ],
-      "to": [
-        487.625,
-        -12.000000000000005
-      ],
-      "text": "thermal continuity — ci-ext → ci-ext",
-      "height": 1.6,
+      "content": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
+      "height": 3.0,
       "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
       "layer": "A-ANNO-TEXT",
+      "align": "left",
       "uid": null
     },
     {

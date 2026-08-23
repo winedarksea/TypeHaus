@@ -70,9 +70,20 @@ SITE = Site(
     # monthly TAVG normals above, rounded to 47. Below-grade walls and slabs see this, not
     # the -15 F design air.
     soil_temp_f=47.0,
-    # Hennepin County / Minneapolis ground snow load, IRC Table R301.2(1). Flat-roof
-    # Pf = 0.7 x 50 = 35 psf at the fully-exposed heated defaults; the roof framing sheet
-    # prints that load case from this number.
+    # Ground snow load, **MN Rules 1303.1700**, corrected 2026-08-23. It read "Hennepin
+    # County / Minneapolis, IRC Table R301.2(1)" — the right number from the wrong document
+    # and the wrong county. The IRC table is the blank the state fills in, not the source,
+    # and this parcel is in RAMSEY County, not Hennepin.
+    #
+    # The number does not move either way, and that is worth stating plainly rather than
+    # leaving to be rediscovered: 1303.1700 sets **50 psf** in every Minnesota county
+    # EXCEPT twenty-nine named northern ones, and neither Ramsey nor Hennepin is among them.
+    # So the citation is now the one that survives a parcel lookup — if this house is ever
+    # sited in a different county, the rule to re-read is named here and the exception list
+    # is where the answer is.
+    #
+    # Flat-roof Pf = 0.7 x 50 = 35 psf at the fully-exposed heated defaults; the roof
+    # framing sheet prints that load case from this number.
     ground_snow_load_psf=50.0,
     parcel=(pt(ft(-32), ft(-60)), pt(ft(68), ft(-60)), pt(ft(68), ft(105)),
             pt(ft(-32), ft(105))),

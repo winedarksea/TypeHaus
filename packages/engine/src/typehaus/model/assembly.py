@@ -44,6 +44,13 @@ class FramingSpec(HausModel):
     advanced_framing: bool = False  # single top plate + in-line stud stacking
     stagger_gap: Length | None = None  # for STAGGERED/DOUBLE partition layouts
     direction: str | None = None  # FURRING only: "vertical" | "horizontal"
+    # FURRING only: which way the stick is turned in the band. "flat" (the default, and
+    # every furred wall before the truss wall existed) lays the wide face against the
+    # sheathing — a 1x4 rainscreen batten, 3-1/2" on the wall and 3/4" through it. "edge"
+    # stands it up so the wide face runs *through* the wall: the 2x4 outrigger of a truss
+    # wall, 1-1/2" on the wall and 3-1/2" out from it. The default is what keeps every
+    # existing FURRING spec framing exactly as it did.
+    laid: Literal["flat", "edge"] = "flat"
     corner_style: Literal["3-stud", "4-stud"] = "3-stud"
     tee_backing_style: Literal["ladder", "stud-pack", "none"] = "ladder"
     # None uses the framing solver's named domain default.

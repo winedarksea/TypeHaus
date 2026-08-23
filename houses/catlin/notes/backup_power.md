@@ -97,14 +97,37 @@ contributor and never as zero, so the calc cannot quietly flatter itself.
 
 ## The closet
 
-`RM-B-ESS` is a 3'-3" × 3'-9 3/8" closet in the SE corner of the furnace room: 12" concrete
-on its south and east (existing walls), two `INT_ESS_CLOSET_STEEL` partitions on its north
-and west — steel studs, 5/8" Type X both faces — and a 2'-0" door. Its north partition runs
-on the same y-line as `W-B-BA-N` on the far side of the concrete, so the two read as one line
-in plan.
+`RM-B-ESS` is a 3'-3 5/8" × 4'-1 5/8" closet in the **NE** corner of the furnace room
+(x 6'-0"–10'-0", y 31'-0"–36'-0" on the node lines): concrete on its north and east — the 8"
+`W-B-N3` and the 12" `W-B-STR`, both existing — two `INT_ESS_CLOSET_STEEL` partitions on its
+south and west (steel studs, 5/8" Type X both faces), and a 2'-0" door in the west partition
+opening onto the room's open floor.
 
-The width is fixed by two things and neither is aesthetic: `D-B-FURN`'s leaf ends at x=5'-8",
-and the last sleeve in the west half of `W-B-CW` sits at x=6'-6". The tee lands at 6'-9".
+**It stood in the SE corner until 2026-08-23.** The move is the one plans/TODO.md had
+recorded as BLOCKED: `EQ-B-WH`, the 24"×24" water heater, stood in the NE corner itself, and
+the battery's REQUIRED ±48"/±41" separation zone has no room or wall exemption, so no
+position in that corner cleared it. The owner's answer was to move the tank, which went to
+(5'-6", 24'-0") — south of `EQ-B-ERV`, north of `D-B-FURN`'s swing, and east of the 36" NEC
+110.26 working space in front of the panel wall. `advisory.ess_clearance` PASSES; put the
+tank back and it FAILs naming `EQ-B-WH`, which is the check that the move is what unblocked
+it.
+
+Two things the relocation cost, both worth knowing:
+
+- **Both concrete sides had to be split**, because a partition dying against the middle of an
+  unsplit wall leaves a one-edge node and `integrity.wall_loop_open` (an ERROR) reports it.
+  `W-B-N3` split at x=6'-0" into `W-B-N3` + `W-B-N4`, and `W-B-STR` at y=31'-0" into
+  `W-B-STR` + `W-B-STR3`. The x=6'-0" line is `N-M-MECH3`, where the main storey already
+  breaks, so that pair stacks one-to-one; the east wall has no such line and `W-M-STRW`
+  crosses the split. `FO-M-STAIR.bearing_refs` had to gain `W-B-STR3` — without it the
+  resolver emitted a 9'-0" LVL header over the stair well, which is precisely the failure
+  the old comment on those refs warned about.
+- **The DC run got ~10' longer.** `EQ-B-ESS-INV` and `ED-B-BACKUP-PANEL` did not move. On an
+  EG4 12kPV that is a real voltage-drop question and it is the one argument that could send
+  this decision back.
+
+And one it gained: the battery hangs on **cast concrete** again (`W-B-N3`, 8"), rather than
+on the steel studs the 2026-08-21 overhaul left it on. 300 lb wants that.
 
 Smoke *and* heat alarms (`AL-B-ESS-SMOKE`, `AL-B-ESS-HEAT`), both inside the closet, both on
 `CKT-LT-BACKUP` so they ride the always-on tier — an alarm that dies with the grid is the
@@ -134,7 +157,9 @@ voltage the rule may read.
   no feeder element. A source on `ED-B-BACKUP-PANEL` needs that feeder first. The 705.12
   headroom is there: 225 × 1.2 − 200 = 70A allowed, 50A used, 20A spare on the main bus.
   `LM-EV` stays the load-management hook on the charging side.
-- **Moving the ESS to the garage.** `code.R327_ess_capacity` already exempts garage rooms
+- **Moving the ESS to the garage.** Still open, and now a bigger change than it was: the
+  closet is two partitions and two wall splits, not a `room=` string.
+  `code.R327_ess_capacity` already exempts garage rooms
   from the 40 kWh indoor aggregate (R327.4 treats a garage as its own permitted location),
   so the move is: re-room `EQ-B-ESS-BATT`, re-run the two conduits, move the two alarms.
   No check changes.
