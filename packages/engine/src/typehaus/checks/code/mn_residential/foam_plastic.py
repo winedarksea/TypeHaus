@@ -144,11 +144,28 @@ def foam_plastic_thermal_barrier(ctx: CheckContext) -> list[Finding]:
     """Every authored assembly whose interior-most substance is foam plastic needs a
     barrier in front of it."""
     out: list[Finding] = []
-    used = {tag for tag in (getattr(element, "assembly", None)
-                            for element in ctx.plan.all_elements()) if tag}
+    # An assembly used by nothing but footings and pads has no interior face for a barrier to
+    # be on. R316.4 separates foam from *the interior of a building*; a strip footing is
+    # buried on all six sides, and an insulated footing form's whole point is that the foam
+    # is between the concrete and the soil. Read off what uses the assembly rather than off
+    # the assembly itself, because the same layer stack in a wall would need the barrier.
+    _BURIED_ONLY = ("Footing", "Pad")
+    used: dict[str, set[str]] = {}
+    for element in ctx.plan.all_elements():
+        tag = getattr(element, "assembly", None)
+        if tag:
+            used.setdefault(tag, set()).add(element.element_kind)
     for tag in sorted(used):
+        if used[tag] <= set(_BURIED_ONLY):
+            continue
         assembly = ctx.plan.library.resolve_assembly(tag)
         if assembly is None or not assembly.layers:
+            continue
+        if assembly.role == "band":
+            # IRC R316.5.3 and R316.5.4: foam plastic installed under a slab-on-ground, or
+            # in a foundation, is exempt from R316.4's thermal barrier. A band has no
+            # interior-most face at all — it is buried on both sides — so grading one would
+            # be reporting that soil is not gypsum.
             continue
         layers = list(assembly.layers)
         if not _interior_first(ctx, assembly):

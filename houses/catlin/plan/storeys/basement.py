@@ -346,12 +346,17 @@ WALLS = [
     # sunken garden is dug against them — everywhere else this wall is buried and the parge
     # is a below-grade coating nobody sees; here it's the house's most-looked-at elevation.
     #
-    # Bottom at -8'-5", NOT -9' with the concrete it faces: (1) there's no ground left for a
+    # Bottom at -8'-9", NOT -9' with the concrete it faces: (1) there's no ground left for a
     # footing at -9' — FT-B-S2/FT-B-S3 already project 10" south, so the veneer bears on the
     # house footing's own toe via a shallow plinth (FT-B-BRICK) cast on it, not poured
-    # beside it; (2) that plinth has to clear D-B-PATIO's 7" raised threshold, which is also
+    # beside it; (2) that plinth has to clear D-B-PATIO's raised threshold, which is also
     # the better detail — a glazed veneer's base course should not sit in standing water.
-    # The plinth shows 3.5" above the garden slab (-8'-8.5") as a concrete water table.
+    # The plinth runs -9'-2" to -8'-9" and shows **7"** above the garden slab (-9'-4") as a
+    # concrete water table.
+    #
+    # (Both numbers were stale, corrected 2026-08-22 against the resolved model: this read
+    # "-8'-5"" and "3.5" above the garden slab (-8'-8.5")". The garden floor is at -9'-4",
+    # not -8'-8.5" — it went down with the soil on 2026-08-21 and this comment did not.)
     #
     # Authored EAST->WEST — opposite W-B-S2/W-B-S3 — deliberately: this wythe is its own
     # wall-graph component (two open ends, no loop), so resolve/orientation.py hands it

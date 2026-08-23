@@ -22,6 +22,7 @@ falls back to a stock section here.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 from typehaus.model.structure import Railing
@@ -40,6 +41,19 @@ RAILING_GLASS_CATEGORY = "railing_glass"
 
 #: The horizontal rail's square section. A guard rail is stock extrusion, not a sized member.
 RAIL_SECTION_M = inch(1.5).meters
+
+#: Facets a *round* rail's section is drawn with. Far below the 12-gon the pipe sweeps use,
+#: because a raked rail pays the budget once per diameter of fall — sixty times over on the
+#: attic flight — for a bar an inch and a half across. Eight reads as round at that size.
+RAILING_FACETS = 8
+#: A profile is round when it says so. ``graspable_profile`` is documented as "type-I",
+#: "type-II", or a product name, and every handrail in the reference house authors the
+#: third form — ``"1.5in round — Type I"``. IRC R311.7.8.3's Type I admits a *circular*
+#: 1-1/4"-2" rail **or** an equivalent-perimeter shaped one, so a bare "type-I" is not
+#: evidence of a circle and stays square; only a profile naming the shape is drawn as one.
+_ROUND_WORDS = re.compile(r"\b(round|circular|dia(?:meter)?)\b", re.IGNORECASE)
+#: The leading dimension of a profile string, in inches — the "1.5" of "1.5in round".
+_PROFILE_SIZE = re.compile(r"^\s*(\d+(?:\.\d+)?)\s*(?:in\b|\"|\u2033)?", re.IGNORECASE)
 #: Stock 3/4" square picket, 3/16" cable, 1/2" lite — used where the product states nothing.
 _DEFAULT_BALUSTER_WIDTH = inch(0.75)
 _DEFAULT_CABLE_DIAMETER = inch(0.1875)
@@ -66,6 +80,11 @@ class RailingParts:
     infill_category: str
     #: ``RailingType.glazing`` — what R308.4.4 reads. ``None`` means the product is silent.
     glazing: str | None
+    #: Half the diameter of a rail the product describes as round, or ``None`` for the
+    #: stock square extrusion. ``resolve/round_solids.py`` — the machinery a faceted circle
+    #: in this prism-only IR is already built from — was simply never wired to it, so a rail
+    #: authored ``"1.5in round — Type I"`` drew as a 1-1/2" square bar.
+    rail_round_radius_m: float | None
 
 
 def resolve_parts(model: ResolvedModel, el: Railing) -> RailingParts:
@@ -99,7 +118,27 @@ def resolve_parts(model: ResolvedModel, el: Railing) -> RailingParts:
                          if el.infill == "panel" and is_translucent(model, infill_material)
                          else RAILING_INFILL_CATEGORY),
         glazing=getattr(product, "glazing", None),
+        rail_round_radius_m=round_rail_radius_m(el, product, rail_section),
     )
+
+
+def round_rail_radius_m(el: Railing, product: object,
+                        rail_section_m: float) -> float | None:
+    """Half the diameter of a round rail, from what the profile says it is.
+
+    A panel-topping cap is a cap, not a grab rail: it is sized off the lite it swallows and
+    is never drawn round, whatever the handrail beside it is made of.
+    """
+    if el.infill == "panel":
+        return None
+    profile = (getattr(el, "graspable_profile", None)
+               or getattr(product, "graspable_profile", None))
+    if not profile or not _ROUND_WORDS.search(profile):
+        return None
+    match = _PROFILE_SIZE.match(profile)
+    diameter: float = (float(match.group(1)) * inch(1).meters if match
+                       else rail_section_m)
+    return diameter / 2.0
 
 
 def is_translucent(model: ResolvedModel, material_ref: str | None) -> bool:

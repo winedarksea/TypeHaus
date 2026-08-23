@@ -47,6 +47,10 @@ _M_TO_FT = 3.280839895
 # every FURRING layer with a FramingSpec, monolithic walls included. That last clause is
 # the whole point of the pass: until it existed the claim on this line was simply false,
 # and W-B-CS's liner strapping over concrete was ordered by nobody.
+#: Solid categories whose assembly layers bill here. Horizontal solids, all of them: their
+#: STRUCTURE bills by the cubic yard in ``structural_solids`` and everything else by area.
+_LAYERED_SOLID_SCOPES = ("slab", "footing", "pad")
+
 _BILLABLE = (
     LayerFunction.INSULATION,
     LayerFunction.SHEATHING,
@@ -117,8 +121,8 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     Wall areas are net of their openings, the same deduction ``sheet_goods_takeoff`` makes,
     so a wall that is mostly glass does not order a wall's worth of drywall. Scopes are
     ``wall`` / ``foundation wall``, the roof's two planes (``roof`` the sloped deck,
-    ``roof ceiling`` the plane under it), and ``slab`` — the horizontal equivalent, net of
-    its floor openings.
+    ``roof ceiling`` the plane under it), and the horizontal solids — ``slab``, ``footing``,
+    ``pad`` — net of their openings.
     """
     areas: dict[tuple[str, str, str, float], float] = defaultdict(float)
     net_areas = wall_net_areas_m2(model)
@@ -187,26 +191,34 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     # ``structural_solids_takeoff`` extrudes, so the covering and the pour cannot disagree
     # about how big the slab is. STRUCTURE stays out for the wall path's reason: concrete is
     # bought by the yard, and ``structural_solids`` already bills it.
+    #
+    # ``footing`` and ``pad`` are here for the same reason and were added the day a footing
+    # could carry an assembly at all (2026-08-22). ``Footing`` had no assembly, no material
+    # and no reinforcement, so there was never a non-structural layer on one to bill; the
+    # moment there is — a frost-protected shallow footing bearing on 2" of 40 psi XPS — the
+    # foam under it has to reach an order, and the slab loop was the only place that knew how
+    # to bill a horizontal solid's covering.
     for solid in model.solids:
-        if solid.category != "slab" or solid.assembly is None:
+        if solid.category not in _LAYERED_SOLID_SCOPES or solid.assembly is None:
             continue
         assembly = model.plan.library.resolve_assembly(solid.assembly)
         if assembly is None:
             continue
+        scope = solid.category
         net_m2 = max(0.0, abs(polygon_area(list(solid.outline)))
                      - sum(abs(polygon_area(list(void))) for void in solid.voids))
         for slab_layer in assembly.layers:
             if slab_layer.function in _BILLABLE:
-                areas[("slab", slab_layer.function.value, slab_layer.material_ref,
+                areas[(scope, slab_layer.function.value, slab_layer.material_ref,
                        slab_layer.thickness.meters)] += net_m2
             fill = slab_layer.cavity
             if fill is not None:
                 depth = fill.thickness if fill.thickness is not None else slab_layer.thickness
-                areas[("slab", "insulation (cavity)", fill.material_ref,
+                areas[(scope, "insulation (cavity)", fill.material_ref,
                        depth.meters)] += net_m2
         for lining_layer in assembly.default_lining:
             if lining_layer.function in _BILLABLE:
-                areas[("slab", lining_layer.function.value, lining_layer.material_ref,
+                areas[(scope, lining_layer.function.value, lining_layer.material_ref,
                        lining_layer.thickness.meters)] += net_m2
 
     return [
@@ -214,8 +226,12 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
          "thickness_in": round(thickness / 0.0254, 3),
          "net_area_sqft": round(area * _M2_TO_FT2, 1),
          # Sheathing is the one function `sheet_goods_takeoff` also bills, in sheets. Flagged
-         # so a caller summing both sections knows where the overlap is.
-         "also_in_sheet_goods": function == LayerFunction.SHEATHING.value}
+         # so a caller summing both sections knows where the overlap is — but only for the
+         # scopes that section actually walks. It walks walls, roofs and floor systems; it
+         # has never walked a slab, so a slab's base course is billed here and nowhere else,
+         # and flagging it as an overlap would point a reader at a row that does not exist.
+         "also_in_sheet_goods": (function == LayerFunction.SHEATHING.value
+                                 and scope != "slab")}
         for (scope, function, material, thickness), area in sorted(areas.items())
     ]
 

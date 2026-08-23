@@ -33,14 +33,22 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     the fascia-mount product now bills two guards, 36.3 LF of porch under 38.3 LF of
     balcony, and the ``style == "masonry"`` group this test used to exclude is empty."""
     rows = [row for row in bom["railings"] if row["style"] != "masonry"]
-    assert sum(int(row["count"]) for row in rows) == 10
+    # Eleven since 2026-08-22: RL-G-SERVICE, the handrail on the garage service stair. It is
+    # new because the *stair* is new — five concrete slabs until `Stair` could express a
+    # step-down within one storey, and R311.7.8 asks for a handrail on any flight of four or
+    # more risers the moment one is a flight at all.
+    assert sum(int(row["count"]) for row in rows) == 11
     assert not [row for row in bom["railings"] if row["style"] == "masonry"]
     by_type = {}
     for row in rows:
         by_type[row["type"]] = by_type.get(row["type"], 0.0) + float(row["length_ft"])
     assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(74.6, abs=0.1)
     assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(23.0, abs=0.1)
-    assert by_type["(untyped railing)"] == pytest.approx(30.0, abs=0.1)
+    # 36.7, not 30.0, since 2026-08-22, in two parts: RL-A-HANDRAIL gained 3'-0" at its east
+    # end so it runs beside ST-S2A's winder fan as well as its straight flight (which is what
+    # R311.7.8.2 asks of it, and what `code.R311_7_8_handrail` started measuring rather than
+    # reading off `continuous=True`), and RL-G-SERVICE added 3'-8" on the new garage stair.
+    assert by_type["(untyped railing)"] == pytest.approx(36.7, abs=0.1)
 
 
 def test_the_untyped_group_key_is_also_what_gets_emitted(bom):
@@ -69,10 +77,24 @@ def test_railing_post_counts_reconcile_against_the_models_own_posts(catlin_model
     assert billed == drawn
 
 
+def test_a_wall_mounted_rail_bills_brackets_rather_than_posts(catlin_model, bom):
+    """The five handrails have no posts at all — they are screwed to a wall — and the box of
+    brackets that carries them is what an order for one contains."""
+    billed = sum(int(row["bracket_count"]) for row in bom["railings"])
+    drawn = len([s for s in catlin_model.solids
+                 if s.category == "railing" and "BRACKET" in s.tag])
+    assert billed == drawn > 0
+
+
 def test_a_raking_guards_top_rail_is_longer_than_its_plan_run(bom):
     """``length_ft`` is a plan projection by design; the cap stock a rake consumes is not.
     The untyped handrails are the five ``serves_stair`` railings, so every one of their rows
-    must show the slope."""
+    must show the slope.
+
+    All five are ``mount="wall"``, so the station walk this is read off is their *brackets*.
+    It was their posts until the resolver stopped drawing posts under a rail that is screwed
+    to a wall, at which point this quantity silently went to zero — a rake's worth of cap
+    stock dropping out of the order."""
     for row in bom["railings"]:
         if row["type"] != "(untyped railing)":
             continue
@@ -81,10 +103,17 @@ def test_a_raking_guards_top_rail_is_longer_than_its_plan_run(bom):
 
 def test_the_railing_frame_row_in_structural_solids_is_still_the_frame_alone(bom):
     """Infill landing back on ``category="railing"`` would inflate this row and the plan
-    sheet at once. 90 is posts + rails across all ten railings."""
+    sheet at once.
+
+    Not pinned to a solid count any more: a raking rail is now banded finely enough to draw
+    as one continuous bar and a round one is faceted on top of that, so the count is a
+    function of stair slope and rail diameter. What has to hold is that there is exactly one
+    frame row and that the infill is still filed in its own categories beside it."""
     frame = [row for row in bom["structural_solids"]
              if row["category"] == "railing" and row["assembly"] == "RAILING_DARK_METAL"]
-    assert len(frame) == 1 and int(frame[0]["count"]) == 90
+    assert len(frame) == 1 and int(frame[0]["count"]) > 0
+    assert [row for row in bom["structural_solids"]
+            if row["category"] in ("railing_infill", "railing_glass")]
 
 
 # --- floor finishes: the half of S3 that makes a finish purchasable ------------------------
@@ -307,9 +336,16 @@ def test_envelope_bills_more_than_the_sheathing(bom):
     functions = {row["function"] for row in bom["envelope_layers"]}
     assert {"insulation", "cladding", "membrane"} <= functions
     assert "sheathing" in functions
-    # The overlap with sheet_goods is flagged, so a caller summing both cannot double-count.
+    # The overlap with sheet_goods is flagged, so a caller summing both cannot double-count —
+    # and only where there IS one. `sheet_goods_takeoff` walks walls, roofs and floor systems
+    # and has never walked a slab, so the 4" capillary break under CATLIN_SLAB_FLOOR (a
+    # SHEATHING layer, and #57 stone rather than a sheet good at all) bills here and nowhere
+    # else. Flagging it would point a reader at a row that does not exist.
     sheathing = [row for row in bom["envelope_layers"] if row["function"] == "sheathing"]
-    assert sheathing and all(row["also_in_sheet_goods"] for row in sheathing)
+    assert sheathing
+    assert all(row["also_in_sheet_goods"] for row in sheathing if row["scope"] != "slab")
+    assert not any(row["also_in_sheet_goods"] for row in sheathing
+                   if row["scope"] == "slab")
     assert not any(row["also_in_sheet_goods"] for row in bom["envelope_layers"]
                    if row["function"] != "sheathing")
 

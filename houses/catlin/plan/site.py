@@ -125,8 +125,13 @@ SITE = Site(
         # structures, not readings of the soil plane, and those structures stayed put. The
         # +0'-6" pair now stands 3'-4" above grade rather than 6" above it — which is the
         # whole point of the lift.
-        SpotElevation(position=pt(ft(8), ft(-20)), elevation=ft(-9)),
-        SpotElevation(position=pt(ft(28), ft(-20)), elevation=ft(-9)),
+        # The garden floor, and it is -9'-4" rather than the -9' these read until
+        # 2026-08-22: SL-SG-FLOOR is filed on the basement storey, so it went down with the
+        # datum on 2026-08-21 and these two annotations did not follow it. Nothing
+        # structural reads spot elevations — they are drafting annotation — which is exactly
+        # why a stale one survives.
+        SpotElevation(position=pt(ft(8), ft(-20)), elevation=ft(-9, -4)),
+        SpotElevation(position=pt(ft(28), ft(-20)), elevation=ft(-9, -4)),
         SpotElevation(position=pt(ft(10), ft(-29)), elevation=ft(0, 6)),
         SpotElevation(position=pt(ft(26), ft(-29)), elevation=ft(0, 6)),
     ),

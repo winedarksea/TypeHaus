@@ -29,6 +29,7 @@ from typehaus.emit.draw.structural_common import (
     wall_length_m,
 )
 from typehaus.findings import Finding, Result, Severity
+from typehaus.model.assembly import Layer
 from typehaus.model.enums import ControlLayer, LayerFunction
 if TYPE_CHECKING:
     from typehaus.checks.jurisdiction import JurisdictionProfile
@@ -234,8 +235,21 @@ def _under_slab_note(model: ResolvedModel, slab: ResolvedSolid) -> str:
     if structure_index is None:
         return ""
     below = assembly.layers[structure_index + 1:]
-    return ", ".join(f"{layer.thickness.inches:.0f}\" {layer.material_ref.upper()}"
+    return ", ".join(f"{_layer_thickness(layer)} {layer.material_ref.upper()}"
                      for layer in below)
+
+
+def _layer_thickness(layer: Layer) -> str:
+    """A layer's thickness the way its own trade states it.
+
+    A sheet membrane is specified in mils and is 0.010" thick, which the schedule's ``.0f``
+    inches printed as ``0"`` — a callout for a layer of nothing. Anything under half an inch
+    is a sheet good; say mils.
+    """
+    inches: float = layer.thickness.inches
+    if inches < 0.5:
+        return f"{inches * 1000.0:.0f} MIL"
+    return f"{inches:.0f}\""
 
 
 def _is_under_wall(model: ResolvedModel, authored) -> bool:
@@ -277,8 +291,10 @@ def foundation_general_notes(model: ResolvedModel,
         profile = get_profile(DEFAULT_PROFILE_NAME)
     notes: list[str] = []
     if profile.frost_depth_in is not None:
-        notes.append(f"ALL FOOTINGS TO BEAR {profile.frost_depth_in:.0f}\" MIN BELOW FINISHED "
-                     f"GRADE PER {profile.name.upper()} ({profile.edition}).")
+        notes.append(f"ALL FOOTINGS TO BEAR {profile.frost_depth_in:.0f}\" MIN BELOW THE "
+                     f"LOWEST ADJACENT FINISHED GRADE (IRC R403.1.4.1) PER "
+                     f"{profile.name.upper()} ({profile.edition}).")
+        notes.extend(_lowest_adjacent_grade_notes(model, profile.frost_depth_in))
     notes.extend(_bearing_tier_notes(model))
     drainage = _drainage_note(model)
     if drainage:
@@ -286,6 +302,46 @@ def foundation_general_notes(model: ResolvedModel,
     notes.append("FOOTING, PAD, WALL AND SLAB GEOMETRY IS RESOLVED FROM THE PLAN SOURCE; "
                  "SIZES ARE AUTHORED, NOT ENGINEERED.")
     return notes
+
+
+def _lowest_adjacent_grade_notes(model: ResolvedModel, frost_depth_in: float) -> list[str]:
+    """Name the footings whose lowest adjacent grade is not the site grade plane.
+
+    "ALL FOOTINGS TO BEAR 42\" MIN BELOW FINISHED GRADE" printed on this sheet for as long
+    as it has existed, and on a site with an open sunken court beside the house it was
+    simply false: the strips along that court bear 8" below the court floor, and the note
+    told a reader — and an inspector — otherwise. The blanket claim is the thing that was
+    wrong, not the number, so the note keeps the number and states the exceptions the
+    geometry actually contains. Silent where there are none, which is most houses.
+    """
+    from typehaus.resolve.site_earth import (
+        heated_floor_footprint,
+        local_grade_elevation_m,
+        open_excavation_floors,
+    )
+
+    reach_m = frost_depth_in * 0.0254
+    floors = open_excavation_floors(model)
+    if not floors:
+        return []
+    sheltered_by = heated_floor_footprint(model)
+    shallow: list[tuple[str, float, str]] = []
+    for solid in sorted(bearing_solids(model), key=lambda item: item.tag):
+        grade_m, source = local_grade_elevation_m(
+            model, solid.outline, reach_m, floors, sheltered_by)
+        if source is None:
+            continue
+        cover_in = (grade_m - solid.z0_m) / 0.0254
+        if cover_in < frost_depth_in - 1e-6:
+            shallow.append((solid.tag, cover_in, source))
+    if not shallow:
+        return []
+    return ["THE LOWEST ADJACENT GRADE FOR " + ", ".join(
+                f"{tag} ({cover:.0f}\" COVER)" for tag, cover, _ in shallow)
+            + " IS THE FLOOR OF "
+            + ", ".join(sorted({source for _, _, source in shallow}))
+            + ", NOT THE SITE GRADE PLANE; FROST PROTECTION THERE IS PER IRC R403.3 "
+              "AND THE FOUNDATION DETAILS, NOT BY DEPTH."]
 
 
 def _bearing_tier_notes(model: ResolvedModel) -> list[str]:
@@ -370,7 +426,9 @@ def foundation_sheet_findings(model: ResolvedModel) -> list[Finding]:
             fix_hint="add a reinforcement field to model.floors.Slab (bar size, spacing, "
                      "cover) and schedule it here",
         ))
-    unretarded = [slab.tag for slab in slabs if not _has_vapour_retarder(model, slab)]
+    unretarded = [slab.tag for slab in slabs
+                  if _within_the_building(model, slab)
+                  and not _has_vapour_retarder(model, slab)]
     if unretarded:
         findings.append(Finding(
             severity=Severity.WARN, check_id="sheet.foundation.vapour_retarder",
@@ -399,6 +457,36 @@ def foundation_sheet_findings(model: ResolvedModel) -> list[Finding]:
                     "cannot be scheduled", element_tags=tuple(unscheduled),
             result=Result.UNKNOWN))
     return findings
+
+
+def _within_the_building(model: ResolvedModel, slab: ResolvedSolid) -> bool:
+    """Is this a slab IRC R506.2.3 is talking about?
+
+    R506.2.3 requires the retarder under a slab "in contact with the ground" *within the
+    building*, and its exception names what is outside that: garages, utility buildings,
+    unheated accessory structures, and flatwork not likely to be enclosed and heated later.
+    Asked of every slab bearing on grade, this reported the garden's own floor and a garage
+    step-down as missing a retarder they must not have — one under an exterior slab protects
+    nothing, and traps water in a pour with weather on both sides of it.
+
+    "Within the building" is read as "under a conditioned room", and deliberately NOT as "has
+    a room over it": a garage slab has one, and R506.2.3 names garages in its exception.
+    """
+    from shapely.geometry import Polygon
+
+    if len(slab.outline) < 3:
+        return False
+    footprint = Polygon(slab.outline)
+    if not footprint.is_valid or footprint.area <= 0.0:
+        return False
+    covered = 0.0
+    for room in model.rooms:
+        if not room.conditioned or len(room.clear_face) < 3:
+            continue
+        face = Polygon(room.clear_face)
+        if face.is_valid and face.area > 0.0:
+            covered += footprint.intersection(face).area
+    return bool(covered > 0.5 * footprint.area)
 
 
 def _has_vapour_retarder(model: ResolvedModel, slab: ResolvedSolid) -> bool:

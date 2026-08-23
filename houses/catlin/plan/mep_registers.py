@@ -299,13 +299,20 @@ REGISTERS_BASEMENT = [
             design_cfm=30,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     #
-    # REG-B-RET1 moved from mid-floor (5', 8') to the workbench line at (4'-6", 4'-6") for
-    # light fume handling (plans/TODO.md) — a bench hood's worth of pull, not a spray booth's,
-    # so it stays on the RETURN trunk rather than a dedicated exhaust. The bench itself isn't
-    # modeled yet, so the position is offset 18" south of ED-B-WORKSHOP-PANEL1 (the "over a
-    # bench" light, plan/lighting.py); move this register when the bench is placed.
+    # REG-B-RET1 is the workshop's light-fume pickup — a bench hood's worth of pull, not a
+    # spray booth's, so it stays on the RETURN trunk rather than getting a dedicated exhaust.
+    #
+    # It moved from mid-floor (5', 8') to (4'-6", 4'-6") in a pass that wanted it over a
+    # bench, and had to guess where a bench would go: there was no workbench placeable in the
+    # room, so it was parked 18" south of ED-B-WORKSHOP-PANEL1 — a *light* also named "over a
+    # bench" — with a note to move it when the bench was placed. That is the whole of
+    # plans/TODO.md's workshop-ERV residual, and 2026-08-22 closes it: the benches exist
+    # (FURN-B-WORKSHOP-BENCH-N/S), they run the west wall from y=3'-6" to y=13'-6" with their
+    # tops at 34", and this now hangs over the middle of that run at x=2'-0", 3" out from the
+    # 15"-deep bench line so the grille pulls across the work surface rather than off its back
+    # edge.
     Register(uid="CBRV03AAAA", tag="REG-B-RET1", kind=DuctSystem.RETURN, room="RM-B-WORKSHOP",
-            position=pt(ft(4, 6), ft(4, 6)), duct_ref="DU-B-ERV-RET", type_ref="REG-T-ERV-EXH",
+            position=pt(ft(2), ft(8, 6)), duct_ref="DU-B-ERV-RET", type_ref="REG-T-ERV-EXH",
             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     # The sauna's stale pickup moved from ceiling to wall (2026-07-29), 4" above the floor on
     # the south face below FURN-B-SAUNA-BENCH-S: a sauna stratifies hard, so the low pickup

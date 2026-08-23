@@ -102,17 +102,30 @@ def test_s100_schedules_size_bearing_elevation_and_thickness(catlin_model):
     poured = {row[1]: row[2] for row in slabs.rows}
     assert poured["SL-B-FLOOR"] == '3-1/2"' and poured["SL-G-FLOOR"] == '3-1/2"'
     assert "SL-G-HYDRANT-PED" not in poured
-    # Every *floor* pour is 3-1/2". The five SL-G-STEP-* are 6" — the step-down from the
-    # garage service door's 0'-0" threshold to the slab at grade (2026-08-18), and a 6"
-    # riser is the pour, not a rounding of one.
+    # Every *floor* pour is 3-1/2". SL-G-STEP-0 is 6" — the landing at the garage service
+    # door's 0'-0" threshold, 2'-10" over the slab at grade, and a 6" pad is the pour rather
+    # than a rounding of one. Its four treads were four more 6" slabs until 2026-08-22 and
+    # are a pressure-treated `Stair` now (ST-G-SERVICE), so they are framing, not flatwork,
+    # and this schedule is right not to list them.
+    # SL-SG-FROST-* are the R403.3 wing insulation under the sunken-garden slab (2026-08-22):
+    # 1" and 2" of XPS, `role="band"` assemblies with no structure in them at all. They are
+    # slabs only because a horizontal band of foam has no other element kind to be, and they
+    # are not pours.
     assert all(thickness == '3-1/2"' for tag, thickness in poured.items()
-               if not tag.startswith("SL-G-STEP-")), poured
+               if not tag.startswith(("SL-G-STEP-", "SL-SG-FROST-"))), poured
     assert {poured[tag] for tag in poured if tag.startswith("SL-G-STEP-")} == {'6"'}
+    assert [tag for tag in poured if tag.startswith("SL-G-STEP-")] == ["SL-G-STEP-0"]
+    assert {poured[tag] for tag in poured if tag.startswith("SL-SG-FROST-")} == {'1"', '2"'}
 
 
 def test_s100_calls_frost_depth_drainage_and_steps(catlin_model):
     notes = " | ".join(foundation_general_notes(catlin_model))
-    assert '42" MIN BELOW FINISHED GRADE' in notes
+    # "ALL FOOTINGS TO BEAR 42" MIN BELOW FINISHED GRADE" was a blanket claim this sheet
+    # printed for as long as it existed, and on a site with an open sunken court beside the
+    # house it was false: the strips along that court bear 8" below the court floor. The
+    # number was never the wrong part — the word "GRADE" was.
+    assert '42" MIN BELOW THE LOWEST ADJACENT FINISHED GRADE' in notes
+    assert "SL-SG-FLOOR, NOT THE SITE GRADE PLANE" in notes
     # The note reads the tile's authored discharge. It used to say "TO SUMP SM-B-RADON"
     # merely because a sump solid existed somewhere in the model, while every DrainTile on
     # the project discharges to daylight — a sheet note that contradicted its own drawing.
@@ -126,8 +139,15 @@ def test_s100_calls_frost_depth_drainage_and_steps(catlin_model):
 
 def test_s100_names_its_missing_inputs_instead_of_inventing_them(catlin_model):
     ids = {finding.check_id for finding in foundation_sheet_findings(catlin_model)}
-    assert {"sheet.foundation.slab_reinforcement", "sheet.foundation.vapour_retarder",
+    assert {"sheet.foundation.slab_reinforcement",
             "sheet.foundation.sill_anchorage"} <= ids
+    # `sheet.foundation.vapour_retarder` is NOT in that set any more, and both halves of why
+    # are the point: CATLIN_SLAB_FLOOR and GARAGE_SLAB_ON_GRADE carry a 10-mil ASTM E1745
+    # Class A retarder over a 4" capillary break since 2026-08-22, and the exterior slabs
+    # that never needed one — the garden floor, the garage step landing — are out of
+    # R506.2.3's scope rather than failing it. This finding was the only voice the missing
+    # layer ever had, and it spoke only on the permit sheet.
+    assert "sheet.foundation.vapour_retarder" not in ids
     sheet_text = _joined(build_foundation_plan(catlin_model))
     assert "NOT SHOWN — MISSING MODEL INPUTS" in sheet_text
     for check_id in ids:

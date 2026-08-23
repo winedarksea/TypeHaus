@@ -902,6 +902,21 @@ GARAGE_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    # A third shop light over the service-door landing (2026-08-22). The two above are at
+    # y=48' and y=58', the working half of the bay; the landing is at y 40'-6"..43'-6" and
+    # the flight below it drops 2'-10" in five risers, and neither light reaches within
+    # R303.8's 4'. Stepping off a 34" landing in the dark is the reason the rule exists.
+    #
+    # Nothing was asking until 2026-08-22 either: R303.8 grades `model.stairs`, and this
+    # flight was five concrete `Slab`s. (It reads as an *exterior* stair rather than an
+    # interior one because `_stair_is_indoors` asks whether a CONDITIONED room stands over
+    # it, and the garage is deliberately unconditioned. R303.7 would want the same luminaire
+    # here and not the switching, since five risers is under its six-riser threshold.)
+    ElectricalDevice(uid="4PQRD03TG8", tag="ED-G-LT3", kind=DeviceKind.LIGHT,
+                     position=pt(ft(6, 6), ft(42)), type_ref="ED-T-LT-SHOP4",
+                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     controlled_by=("ED-G-SW",),
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="QTG0003AAA", tag="ED-G-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(8, 6), ft(41, 3)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),

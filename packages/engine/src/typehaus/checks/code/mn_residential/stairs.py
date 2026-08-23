@@ -17,6 +17,12 @@ from typehaus.findings import Finding
 from typehaus.quantities import ft, inch
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.roof_geometry import roof_underside_at
+from typehaus.checks.code.mn_residential.handrail_geometry import (
+    MAX_HANDRAIL_HEIGHT,
+    MIN_HANDRAIL_HEIGHT,
+    drawn_handrail_findings,
+    flight_continuity_findings,
+)
 from typehaus.resolve.stairs.walkline import flight_stations
 
 _MAX_STAIR_RISER = inch(7.75)
@@ -26,8 +32,6 @@ _MIN_STAIR_WIDTH = inch(36)  # R311.7.1, above the handrail / between finished w
 _MIN_STAIR_LANDING_DEPTH = inch(36)  # R311.7.6, in the direction of travel
 _MIN_HANDRAIL_RISERS = 4  # R311.7.8: required on flights with four or more risers
 # R311.7.8.1: handrail top measured above the sloped nosing line, not above any floor.
-_MIN_HANDRAIL_HEIGHT = inch(34)
-_MAX_HANDRAIL_HEIGHT = inch(38)
 # Plumb-clearance sampling along the sloped nosing line: plan step between samples, and
 # where across the flight each station is probed (both edges + centre — the worst point
 # under a raking well header is at one side, not the middle).
@@ -62,8 +66,15 @@ def stair_geometry(ctx: CheckContext) -> list[Finding]:
             continue
         walking = sorted(member.z1_m for member in stair.members
                          if member.category in {"tread", "winder", "landing"})
-        arrival = target.elevation.meters
-        expected = [source.elevation.meters + stair.riser_height_m * step
+        # The flight's own ends where it states them. A run between two storeys states
+        # nothing and the storey table is the answer, exactly as before; a step-down within
+        # one storey states both, and re-deriving them from ``from_storey``/``to_storey``
+        # would grade it against a datum it never touches.
+        springing = (stair.base_elevation_m if stair.base_elevation_m is not None
+                     else source.elevation.meters)
+        arrival = (stair.arrival_elevation_m if stair.arrival_elevation_m is not None
+                   else target.elevation.meters)
+        expected = [springing + stair.riser_height_m * step
                     for step in range(1, stair.riser_count)]
         # Headroom is NOT this check's business: it is a plumb measurement against the
         # overhead structure, made by code.R311_7_2_stair_headroom. Reporting the arrival
@@ -73,7 +84,7 @@ def stair_geometry(ctx: CheckContext) -> list[Finding]:
             and stair.going_depth_m >= _MIN_STAIR_GOING.meters - 1e-9
             and len(walking) == len(expected)
             and all(abs(actual - wanted) <= 1e-6 for actual, wanted in zip(walking, expected))
-            and abs(source.elevation.meters + stair.riser_count * stair.riser_height_m - arrival) <= 1e-6
+            and abs(springing + stair.riser_count * stair.riser_height_m - arrival) <= 1e-6
         )
         if valid:
             out.append(_pass("code.R311_7_stair_geometry",
@@ -415,8 +426,8 @@ def stair_handrail(ctx: CheckContext) -> list[Finding]:
             if top is None:
                 out.append(_unknown(cid, f"handrail {rail.tag} on {stair.tag} states no "
                                     "top_height above the nosings", (rail.tag,), code))
-            elif not (_MIN_HANDRAIL_HEIGHT.meters - 1e-9 <= top.meters
-                      <= _MAX_HANDRAIL_HEIGHT.meters + 1e-9):
+            elif not (MIN_HANDRAIL_HEIGHT.meters - 1e-9 <= top.meters
+                      <= MAX_HANDRAIL_HEIGHT.meters + 1e-9):
                 out.append(_fail(cid, f"handrail {rail.tag} on {stair.tag} tops out at "
                                  f"{top.inches:.1f}\" above the nosings; R311.7.8.1 requires "
                                  "34\"-38\"", (rail.tag, stair.tag), "R311.7.8.1"))
@@ -430,7 +441,14 @@ def stair_handrail(ctx: CheckContext) -> list[Finding]:
                                     "graspability cannot be evaluated", (rail.tag,),
                                     "R311.7.8.3"))
             else:
-                out.append(_pass(cid, f"{stair.tag} has handrail {rail.tag} at "
-                                 f"{top.inches:.1f}\" ({rail.graspable_profile}), continuous",
-                                 code))
+                drawn, note = drawn_handrail_findings(ctx, stair, rail, cid)
+                out.extend(drawn)
+                if not drawn:
+                    out.append(_pass(cid, f"{stair.tag} has handrail {rail.tag} at "
+                                     f"{top.inches:.1f}\" ({rail.graspable_profile}) as "
+                                     f"drawn, continuous{note}", code))
+        # Continuity is the one question that belongs to the *stair*, not to any one rail:
+        # ST-B2M is two lanes with a rail apiece, and asking each rail whether it covers
+        # the other lane's flight would fail both for doing exactly what they should.
+        out.extend(flight_continuity_findings(ctx, stair, serving, cid))
     return out

@@ -72,6 +72,16 @@ def winder_stair(catlin_model):
 
 
 def _subfloor(catlin_model, stair) -> float:
+    """The walking surface this flight springs from.
+
+    The storey datum, for the three flights that rise between two storeys — and NOT for
+    ST-G-SERVICE, which is a step-down within the garage storey from the slab at -2'-10" to
+    a threshold at 0'-0". Its base is 1'-10" *below* the garage datum (the ICF stem top), so
+    reading the datum here would assert its stringers never drop below a plane they start
+    under. ``ResolvedStair`` carries what the flight actually resolved against.
+    """
+    if stair.base_elevation_m is not None:
+        return stair.base_elevation_m
     storey = catlin_model.plan.storey(stair.storey)
     assert storey is not None
     return storey.elevation.meters
@@ -637,13 +647,20 @@ def test_every_stair_walks_from_its_source_floor_to_its_destination_floor(catlin
         source = catlin_model.plan.storey(stair.storey)
         target = catlin_model.plan.storey(stair.to_storey)
         assert source is not None and target is not None
+        # A flight's own ends where it states them (ST-G-SERVICE, a step-down within one
+        # storey), the storey table where it does not — which is every flight that rises
+        # from one floor to the next, and was every flight there was before 2026-08-22.
+        springing = (stair.base_elevation_m if stair.base_elevation_m is not None
+                     else source.elevation.meters)
+        arrival = (stair.arrival_elevation_m if stair.arrival_elevation_m is not None
+                   else target.elevation.meters)
         surfaces = sorted(member.z1_m for member in stair.members
                           if member.category in {"tread", "winder", "landing"})
-        expected = [source.elevation.meters + stair.riser_height_m * step
+        expected = [springing + stair.riser_height_m * step
                     for step in range(1, stair.riser_count)]
         assert surfaces == pytest.approx(expected, abs=1e-6), stair.tag
-        assert source.elevation.meters + stair.riser_count * stair.riser_height_m == pytest.approx(
-            target.elevation.meters, abs=1e-6)
+        assert springing + stair.riser_count * stair.riser_height_m == pytest.approx(
+            arrival, abs=1e-6)
 
 
 def test_a_tread_stacked_on_its_step_elevation_fails_riser_uniformity(catlin_model):

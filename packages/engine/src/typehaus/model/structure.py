@@ -51,6 +51,14 @@ class Footing(Element):
     under: str  # wall or post tag
     width: Length
     depth: Length
+    # What the strip is made of. A Footing carried no assembly and no material at all until
+    # 2026-08-22, so every footing in every house priced and scheduled as plain cast
+    # concrete out of ``emit/trades``' hardcoded category row. That is right for most of
+    # them and wrong for the one that matters: an insulated footing form (EPS faces around
+    # a concrete core) is the FPSF answer to a shallow-cover condition, and the model had
+    # no way to say a footing was one. Unset stays "plain concrete" — the resolved solid
+    # carries no assembly, ``structural_solids_takeoff`` groups it bare, and nothing moves.
+    assembly: str | None = None
     # What the strip is centred on. "axis" — the parent wall's raw node line — is the
     # historical behaviour and stays the default. It is only right where the wall is
     # centred on its own axis; under an ``alignment=face(...)`` wall the section sits to

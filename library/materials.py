@@ -132,6 +132,34 @@ STARTER_MATERIALS: tuple[Material, ...] = (
     # two are opposites: one is a vapour-open weather barrier for the cold side, this is a
     # vapour-closed barrier for the warm side, and confusing them is the classic way to
     # build a wall that cannot dry in either direction.
+    # Under-slab vapour retarder. There was no polyethylene in this catalog at all — the only
+    # hit for the word was the radon sump basin — which is why the layer below every slab in
+    # every house was simply absent, and why ``sheet.foundation.vapour_retarder`` fired
+    # UNKNOWN on the permit sheet and nowhere else.
+    #
+    # 10 mil, Class A per ASTM E1745. The class is the specification that matters: E1745
+    # grades a sheet on water-vapour transmission (0.01 perms or less after conditioning),
+    # tensile strength and puncture resistance together, and Class A is the tier that
+    # survives being walked on and having rebar chairs set on it. A 6-mil builder's poly is
+    # the same polymer and none of the same product.
+    Material(tag="polyethylene", name="Under-slab vapour retarder (10 mil, ASTM E1745 Class A)",
+             r_per_inch=0.0, density=940.0, vapor_permeance_perms=0.01, hatch="membrane",
+             color="#2e3d34",
+             source="ASTM E1745 Class A: <=0.01 perms by ASTM E96 after the standard's "
+                    "conditioning, >=45 lbf/in tensile (E154), >=2,200 g puncture (D1709). "
+                    "IRC R506.2.3 requires a vapour retarder in contact with a slab's base "
+                    "course; ACI 302.2R and E1745 are what specify which one"),
+    # The capillary break under it: open-graded crushed stone, compacted, no fines. The
+    # break is the *absence* of small pores — water cannot wick up through voids this large —
+    # so "4 inches of clean stone" is the specification and a well-graded base course, which
+    # compacts better, is the wrong material for the job.
+    Material(tag="capillary-break-stone",
+             name="Compacted open-graded stone (capillary break, #57)",
+             r_per_inch=0.0, density=1600.0, hatch="concrete", color="#8f8d88",
+             source="IRC R506.2.2: a 4\" base course of clean graded sand, gravel or crushed "
+                    "stone passing a 2\" sieve under a slab-on-ground. #57 is the open-graded "
+                    "stone ACI 302.2R names for the capillary break; the point is the absence "
+                    "of fines, not the compaction"),
     Material(tag="humid-room-membrane",
              name="Self-adhered air/vapour barrier membrane (Class I)",
              r_per_inch=0.0, density=1000.0, vapor_permeance_perms=0.05, hatch="membrane",

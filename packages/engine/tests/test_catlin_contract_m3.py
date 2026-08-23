@@ -100,7 +100,17 @@ def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables(
     findings = [finding for finding in report.findings
                 if finding.check_id in {"structural.ijoist_span", "structural.frost_depth"}]
     assert findings
-    assert all(finding.result is Result.PASS for finding in findings)
+    # Nothing FAILS. The seven sunken-garden footings report UNKNOWN — they retain the
+    # excavation they stand in, which IRC R404.4 sends to an engineered design rather than to
+    # any prescriptive table — and the four house footings the garden reaches PASS through
+    # IRC R403.3's frost-protected path on the wing insulation under the garden slab. Every
+    # one of the eleven read a comfortable 7'-2" and passed until 2026-08-22, because the
+    # rule measured them against a grade plane six and a half feet over their heads.
+    assert not [f for f in findings if f.result is Result.FAIL]
+    unknown = [f for f in findings if f.result is Result.UNKNOWN]
+    assert {tag for f in unknown for tag in f.element_tags if tag.startswith("FT-")} == {
+        "FT-SG-W1", "FT-SG-W2", "FT-SG-E1", "FT-SG-E2", "FT-SG-S",
+        "FT-SG-COL", "FT-SG-FCOL"}
 
 
 def test_catlin_sunken_garden_decks_are_graded_and_the_guard_rule_resolves():
@@ -161,10 +171,27 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset():
     # sit UNKNOWN against a house authored before they existed. What must never regress is
     # the gate itself — an item that gates today and stops passing tomorrow.
     # tests/test_permit_gate_catlin.py pins the size of that lane so it cannot grow.
+    #
+    # ONE gating item is UNKNOWN and is pinned rather than waived. "Foundation frost depth"
+    # became evaluable-against-the-real-condition on 2026-08-22, when `structural.frost_depth`
+    # stopped comparing every footing to a single global grade plane and started deriving a
+    # local one. It found four house footings with 8" of cover — and one with 2" of NEGATIVE
+    # cover — below the sunken garden's floor; those are answered, by the R403.3 wings under
+    # the garden slab, and they pass. It also found the garden's OWN seven footings 12"-21"
+    # below the floor of the court they retain. Those are not a table's business: a structure
+    # holding up the hole it stands in is an engineered design under IRC R404.4, which is
+    # where `structural.foundation_unbalanced_fill` already sends the same five walls. The
+    # honest checklist entry for a permit set is therefore "engineered — see the consultant's
+    # drawings", not a green tick.
+    #
+    # Pinned tightly on purpose: any OTHER gating item regressing still fails this test, and
+    # so does this one changing shape.
     gating = [item for item in checklist.items if item.blocking]
-    assert all(item.result is Result.PASS for item in gating), \
-        [(item.label, item.result, item.detail) for item in gating
-         if item.result is not Result.PASS]
+    unresolved = [item for item in gating if item.result is not Result.PASS]
+    assert [item.label for item in unresolved] == ["Foundation frost depth"], \
+        [(item.label, item.result, item.detail) for item in unresolved]
+    assert unresolved[0].result is Result.UNKNOWN
+    assert "R404.4" in unresolved[0].detail
 
 
 def test_site_plan_keeps_freestanding_roofs_and_foundation_supports_visible(catlin_model):
@@ -1152,7 +1179,7 @@ def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_m
     doors open onto it at one level), so the threshold stays at 0'-0" and the sill turns
     positive. Grade went down another 4" on 2026-08-21 for the basement-ceiling overhaul,
     so it is now +1'-0" over a garage storey at -1'-0", and the 2'-10" is taken inside
-    instead, by SL-G-STEP-0..4.
+    instead — by the SL-G-STEP-0 landing and the ST-G-SERVICE flight below it.
     """
     wall = catlin_model.wall("W-G-S")
     door = next(o for o in catlin_model.openings if o.tag == "D-G-SERVICE")
@@ -1167,15 +1194,27 @@ def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_m
     assert abs(deck_top - threshold) <= inch(1.5).meters
     assert threshold - slab.z1_m == pytest.approx(inch(34.0).meters)
 
-    # Five 6.8" risers inside close that 2'-10", top step level with the threshold and
-    # bottom step one riser above the slab. (Six-inch risers while grade was -2'-6".)
-    steps = sorted((s for s in catlin_model.solids if s.tag.startswith("SL-G-STEP-")),
-                   key=lambda s: -s.z1_m)
-    assert len(steps) == 5
-    assert steps[0].z1_m == pytest.approx(threshold)
-    assert steps[-1].z1_m - slab.z1_m == pytest.approx(inch(34.0 / 5).meters)
-    for upper, lower in zip(steps, steps[1:]):
-        assert upper.z1_m - lower.z1_m == pytest.approx(inch(34.0 / 5).meters)
+    # Five 6.8" risers inside close that 2'-10": a 3'-0" concrete landing level with the
+    # threshold, and four pressure-treated treads below it. (Six-inch risers while grade was
+    # -2'-6"; five concrete slabs until 2026-08-22, when `Stair` gained the optional
+    # `floor_opening` and the explicit elevations a step-down within one storey needs.)
+    landing = next(s for s in catlin_model.solids if s.tag == "SL-G-STEP-0")
+    assert landing.z1_m == pytest.approx(threshold)
+    assert [s.tag for s in catlin_model.solids if s.tag.startswith("SL-G-STEP-")] == \
+        ["SL-G-STEP-0"]
+
+    stair = next(s for s in catlin_model.stairs if s.tag == "ST-G-SERVICE")
+    assert stair.riser_count == 5
+    assert stair.riser_height_m == pytest.approx(inch(34.0 / 5).meters)
+    assert stair.base_elevation_m == pytest.approx(slab.z1_m)
+    assert stair.arrival_elevation_m == pytest.approx(threshold)
+    treads = sorted((m for m in stair.members if m.category == "tread"), key=lambda m: m.z1_m)
+    assert len(treads) == 4
+    assert treads[0].z1_m - slab.z1_m == pytest.approx(inch(34.0 / 5).meters)
+    assert treads[-1].z1_m == pytest.approx(threshold - inch(34.0 / 5).meters)
+    # Pressure-treated, not the generic lumber every stair in the house rendered as before
+    # `Stair` had a material at all.
+    assert {m.material for m in stair.members} == {"kdat"}
 
 
 def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
@@ -1336,19 +1375,30 @@ def test_wall_and_room_counts_by_storey(catlin_model):
 
 def test_stairs_resolve_with_code_risers(catlin_model):
     stairs = {s.tag: s for s in catlin_model.stairs}
-    assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A"}
+    # ST-G-SERVICE joined them on 2026-08-22: five risers from the garage slab to the
+    # service-door threshold, a step-down WITHIN one storey, which `Stair` could not express
+    # until `floor_opening` became optional and `base_elevation`/`top_elevation` were added.
+    # It was five concrete `Slab`s before that, and invisible to every stair rule there is.
+    assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE"}
     for stair in stairs.values():
-        # ST-B2M gained a riser (14 -> 15) on 2026-08-21: the basement storey went down
-        # 4" so the house could carry a 12 5/8" deck over it and keep its headroom.
-        assert stair.riser_count in {14, 15, 16}
         assert stair.riser_height_m <= inch(7.75).meters + 1e-9
         assert stair.tread_depth_m >= inch(10.0).meters - 1e-9
+    # ST-B2M gained a riser (14 -> 15) on 2026-08-21: the basement storey went down 4" so the
+    # house could carry a 12 5/8" deck over it and keep its headroom. The three storey-to-
+    # storey flights are all in that band; ST-G-SERVICE is a 2'-10" step-down and has five.
+    assert {stairs[tag].riser_count for tag in ("ST-B2M", "ST-M2S", "ST-S2A")} <= {14, 15, 16}
+    assert stairs["ST-G-SERVICE"].riser_count == 5
     # Ordinary stairs stay compact by default: 11" boards with a 1" nose yield the 10"
     # code-minimum going, leaving any extra shaft length beyond the arrival platform.
     assert stairs["ST-M2S"].tread_depth_m == pytest.approx(inch(11.0).meters, abs=1e-9)
     assert stairs["ST-B2M"].tread_depth_m == pytest.approx(inch(11.0).meters, abs=1e-9)
     assert all(stair.going_depth_m == pytest.approx(inch(10).meters, abs=1e-9)
-               for stair in stairs.values())
+               for tag, stair in stairs.items() if tag != "ST-G-SERVICE")
+    # The garage stair takes the opposite trade: 11" boards with NO nose, so its going is the
+    # full 11" and its run stays the 3'-8" the four concrete treads it replaced occupied. A
+    # nose would have shortened the run and bought nothing — there is no shaft to fit into.
+    assert stairs["ST-G-SERVICE"].going_depth_m == pytest.approx(inch(11).meters, abs=1e-9)
+    assert stairs["ST-G-SERVICE"].nosing_depth_m == 0.0
     attic = stairs["ST-S2A"]
     assert attic.winder_count == 3
     assert attic.run_reversed is True
@@ -1380,7 +1430,11 @@ def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
     from typehaus.server.model_json import model_to_dict
 
     stairs = {item["tag"]: item for item in model_to_dict(catlin_model)["stairs"]}
-    assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A"}
+    # ST-G-SERVICE joined them on 2026-08-22: five risers from the garage slab to the
+    # service-door threshold, a step-down WITHIN one storey, which `Stair` could not express
+    # until `floor_opening` became optional and `base_elevation`/`top_elevation` were added.
+    # It was five concrete `Slab`s before that, and invisible to every stair rule there is.
+    assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE"}
     # 3'-3 3/4" is the flight the basement's 7'-0" well leaves either side of the 4 1/2"
     # well partition.
     assert stairs["ST-B2M"]["width_m"] == pytest.approx(ft(3, 3.75).meters, abs=1e-9)

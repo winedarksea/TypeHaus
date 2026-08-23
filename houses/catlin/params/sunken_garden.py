@@ -403,6 +403,57 @@ GARDEN_SLAB = Slab(
     thickness=inch(SPEC.slab_thickness_in),
 )
 
+# --- FPSF wing insulation under the garden slab, along the house ------------------------
+#
+# IRC R403.3, Figure R403.3(3): the heated-building-adjoining-an-unheated-slab case, which is
+# what a heated basement beside an open sunken court is. Table R403.3(1) at design AFI 2500
+# (Minneapolis-St Paul) wants R-1.7 over B = 24" along the wall and R-4.9 over C = 40" at the
+# corners; SG_FROST_WING_XPS1/2 in plan/assemblies.py carry R-5 and R-10 and the citation.
+#
+# WHY THIS EXISTS: `structural.frost_depth` measured every footing against one global grade
+# plane until 2026-08-22 and therefore passed all 35 of them — including FT-B-S1/S2/S3 with
+# 8" of cover below the garden floor, and FT-B-BRICK with 2" of NEGATIVE cover. Frost depth
+# is measured from the lowest adjacent grade, and beside these footings that is the garden
+# floor at -9'-4", not the -2'-10" site plane six and a half feet above it.
+#
+# WHY SLABS: a horizontal band of foam has no other element kind to be. `Layer.extent`
+# measures from WALL_BASE / WALL_TOP / GRADE — all vertical — so it cannot describe a skirt
+# reaching sideways under a floor. These are thin `Slab`s with a single-INSULATION-layer
+# assembly, which bills by the square foot through `envelope_layer_takeoff` like any other
+# insulation. `resolve/site_earth._is_a_floor` keeps them from being read as excavation
+# floors in their own right (they are buried, not stood on), and prices.toml carries a zero
+# qualified key so `structural_solids_takeoff` does not also bill them by the cubic yard.
+#
+# The wings sit directly under SL-SG-FLOOR: garden slab top -9'-4" less its own 3 1/2" is
+# -9'-7 1/2", which is the wings' top.
+_WING_TOP = inch(-(9 * 12 + 4) - SPEC.slab_thickness_in)
+_WING_ALONG_FT = 24.0 / 12.0   # Table R403.3(1) dimension B
+_WING_CORNER_FT = 40.0 / 12.0  # Table R403.3(1) dimension C
+
+FROST_WINGS = [
+    # The two re-entrant corners, where the garden's own east and west retaining walls meet
+    # the house and frost drives in from two directions at once: C = 40" each way, 2" XPS.
+    Slab(uid="SGFW01AAAA", tag="SL-SG-FROST-W", assembly="SG_FROST_WING_XPS2",
+         outline=(pt(ft(_x_in_w), ft(_y_in_n - _WING_CORNER_FT)),
+                  pt(ft(_x_in_w + _WING_CORNER_FT), ft(_y_in_n - _WING_CORNER_FT)),
+                  pt(ft(_x_in_w + _WING_CORNER_FT), ft(_y_in_n)),
+                  pt(ft(_x_in_w), ft(_y_in_n))),
+         thickness=inch(2.0), top_elevation=_WING_TOP),
+    Slab(uid="SGFW02AAAA", tag="SL-SG-FROST-E", assembly="SG_FROST_WING_XPS2",
+         outline=(pt(ft(_x_in_e - _WING_CORNER_FT), ft(_y_in_n - _WING_CORNER_FT)),
+                  pt(ft(_x_in_e), ft(_y_in_n - _WING_CORNER_FT)),
+                  pt(ft(_x_in_e), ft(_y_in_n)),
+                  pt(ft(_x_in_e - _WING_CORNER_FT), ft(_y_in_n))),
+         thickness=inch(2.0), top_elevation=_WING_TOP),
+    # The run between them, along the wall: B = 24", 1" XPS.
+    Slab(uid="SGFW03AAAA", tag="SL-SG-FROST-N", assembly="SG_FROST_WING_XPS1",
+         outline=(pt(ft(_x_in_w + _WING_CORNER_FT), ft(_y_in_n - _WING_ALONG_FT)),
+                  pt(ft(_x_in_e - _WING_CORNER_FT), ft(_y_in_n - _WING_ALONG_FT)),
+                  pt(ft(_x_in_e - _WING_CORNER_FT), ft(_y_in_n)),
+                  pt(ft(_x_in_w + _WING_CORNER_FT), ft(_y_in_n))),
+         thickness=inch(1.0), top_elevation=_WING_TOP),
+]
+
 # ============================================================================
 # Main (porch, 0'): back + front beams on their columns, composite deck.
 # ============================================================================
@@ -933,7 +984,7 @@ BALCONY_REAR_FLASH = Flashing(
 # Per-storey exports (spliced into plan/manifest.py).
 # ============================================================================
 BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
-                     *FOOTING_BEDDING, GARDEN_DRYWELL, GARDEN_SLAB, *DOWELS]
+                     *FOOTING_BEDDING, GARDEN_DRYWELL, GARDEN_SLAB, *FROST_WINGS, *DOWELS]
 # Every remaining connector is porch hardware at the deck (post bases, hangers, the column
 # tie), so main takes them whole; the knee braces are the only second-storey hardware.
 MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, *FRONT_BEAMS, PORCH_JOISTS, PORCH_GUARD,

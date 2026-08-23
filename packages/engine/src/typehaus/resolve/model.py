@@ -409,6 +409,16 @@ class ResolvedStair:
     # them.
     going_depth_m: float = 0.0
     nosing_depth_m: float = 0.0
+    # Where the flight actually springs from and arrives at, in the project frame. These were
+    # always the two storey elevations, so every rule re-derived them from ``storey`` and
+    # ``to_storey`` and was right to. A flight that states its own rise —
+    # ``Stair.base_elevation`` / ``top_elevation``, for a step-down within one storey — breaks
+    # that: the garage service stair runs from the slab at -2'-10" to a threshold at 0'-0"
+    # with ``from_storey == to_storey``, and a rule re-deriving its rise from the storey table
+    # grades it against the top of an ICF stem it has nothing to do with. ``None`` on a
+    # synthetic stair built without the resolver; callers fall back to the storey table there.
+    base_elevation_m: float | None = None
+    arrival_elevation_m: float | None = None
 
 
 @dataclass(frozen=True)

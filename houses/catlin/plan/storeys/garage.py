@@ -15,9 +15,12 @@ from typehaus import (
     Node,
     Occupancy,
     Pitch,
+    Railing,
+    RailingKind,
     Roof,
     RoofForm,
     Room,
+    Stair,
     StructuralRole,
     Wall,
     Window,
@@ -245,5 +248,75 @@ ALARMS = [
           circuit="CKT-LT-BACKUP"),
 ]
 
+# --- service-door stair (ST-G-SERVICE) --------------------------------------------------
+#
+# Five risers from the garage slab at -2'-10" up to D-G-SERVICE's threshold at 0'-0", the
+# same 5 x 6.8" risers on 11" treads at 3'-0" wide that five concrete `Slab`s used to be
+# (SL-G-STEP-0..4 in params/foundations.py). SL-G-STEP-0, the 3'-0" landing at the
+# threshold, is still a Slab and belongs there — a landing is a floor, not a flight. The
+# four treads below it are this.
+#
+# PRESSURE-TREATED WOOD, not concrete (owner, 2026-08-22): KDAT southern yellow pine, kiln-
+# dried after treatment so it is stable enough to cut and fit like framing. The garden's
+# beams and the breezeway already use it (BEAM_KDAT / POST_KDAT), so it is the house's
+# established exterior-wood answer. Where the stringers land on the garage slab they need a
+# capillary break — a strip of the same 10-mil under-slab retarder, which is on site anyway.
+# PT stops the fungus that follows wicked water; it does not stop the wicking.
+#
+# `Stair` could not express this until 2026-08-22: it took its rise from a pair of storey
+# elevations through a FloorOpening in the storey above, and this is a step-down *within* one
+# storey with no floor to open. `floor_opening` is optional now and `base_elevation` /
+# `top_elevation` state the rise directly. That is what puts the flight in front of
+# `structural.stair_riser_uniformity` and `code.R311_7_8_handrail`, neither of which could
+# see a stack of slabs, and what RL-G-SERVICE below is the answer to.
+#
+# The elevations are literals because this file is `# haus: editable` and may hold only
+# literals; -2'-10" is `params/foundations.SITE_GRADE`, which `plan/site.py` repeats as
+# `Site.grade` and `plan/manifest.py` asserts the two agree. `start` is the foot of the
+# flight — GARAGE_Y_SOUTH + 3'-0" of landing + 4 x 11" of tread = 47'-2 3/8" — and it climbs
+# south (`run_reversed`) back to the landing's north edge.
+#
+# 11" treads with NO nosing, which keeps the run at the 3'-8" the four slabs occupied and
+# leaves an 11" going against R311.7.5.2's 10" minimum. A nose would shorten the run and buy
+# nothing here.
+STAIRS = [
+    Stair(uid="X99TD38ZS3", tag="ST-G-SERVICE",
+          from_storey="garage", to_storey="garage",
+          base_elevation=ft(-2, -10), top_elevation=ft(0),
+          width=ft(3), start=pt(ft(5), ft(47, 2.375)),
+          run_direction="y", run_reversed=True,
+          tread_depth=inch(11), nosing_depth=inch(0),
+          material="kdat"),
+]
+
+# R311.7.8 wants a handrail on any flight of four or more risers, and this one has five.
+# Nothing was asking for it while the flight was five slabs, because both handrail rules
+# iterate `model.stairs`.
+#
+# Post-mounted on the west side of the run, not wall-mounted: the flight stands in the
+# open on the garage floor at x=5'..8', with the nearest wall 5'-0" away. The posts stand on
+# the treads (`serves_stair` rakes the rail along the flight's nosing line) and the rail
+# tops out 36" above them, inside R311.7.8.1's 34"-38".
+#
+# FLAGGED, NOT ANSWERED: the landing at 0'-0" is **34" above the garage slab**, over
+# R312.1.1's 30" threshold, so its open east and north sides want a guard as well as this
+# handrail. That is a design decision with a cost and a look to it, and it is the owner's,
+# not this file's.
+#
+# **Nothing in the engine will ask.** `code.R312_1_guard_height` censuses `FloorSystem`s and
+# `code.R312_1_guard` censuses `FloorOpening`s; SL-G-STEP-0 is a `Slab`, so it is in neither
+# census and its 34" drop is invisible to both. That is a real coverage gap, not a pass —
+# recorded in plans/TODO.md rather than papered over here, because the fix is a rule that
+# walks slab edges and belongs with the guard rules, not with this stair.
+RAILINGS = [
+    Railing(uid="CX7KN0MZE0", tag="RL-G-SERVICE",
+            path=(pt(ft(5), ft(47, 2.375)), pt(ft(5), ft(43, 6.375))),
+            kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
+            base_elevation=ft(-2, -10), post_spacing=inch(36), post_size="2x2",
+            rail_count=1, mount="surface", assembly="RAILING_DARK_METAL",
+            role="handrail", serves_stair="ST-G-SERVICE", top_height=inch(36),
+            graspable_profile="1.5in round — Type I"),
+]
+
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ROOFS, _GARAGE_LEADER,
-            *SNOW_GUARDS, *ALARMS]
+            *SNOW_GUARDS, *ALARMS, *STAIRS, *RAILINGS]

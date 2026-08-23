@@ -123,6 +123,12 @@ def test_low_voltage_devices_export_as_communications_appliances(catlin_model, t
         "ED-M-KITCH-AP": "NETWORKAPPLIANCE",
         "ED-M-PORCH-AP": "NETWORKAPPLIANCE",
         "ED-A-EAST-AP": "NETWORKAPPLIANCE",
+        # The three hardwired drops, 2026-08-22. They are the first instances of
+        # ED-T-DATA-JACK: the catalog had an enclosure and two access points and no way to
+        # say "a cable ends here at a plate", so a wall jack could not be modelled at all.
+        "ED-B-WORKSHOP-DATA1": "NETWORKAPPLIANCE",
+        "ED-M-STUDY-DATA1": "NETWORKAPPLIANCE",
+        "ED-B-PLAY-N-DATA1": "NETWORKAPPLIANCE",
     }
     systems = {s.Name: s.PredefinedType for s in f.by_type("IfcDistributionSystem")}
     assert systems["Data"] == "COMMUNICATION"

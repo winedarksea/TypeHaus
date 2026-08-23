@@ -18,7 +18,7 @@ import math
 
 from typehaus.model.elements import Wall
 from typehaus.model.structure import Railing
-from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.model import ResolvedModel, ResolvedSolid
 from typehaus.resolve.railings.infill import derived_infill_count
 from typehaus.resolve.railings.parts import (
     RAILING_GLASS_CATEGORY,
@@ -68,25 +68,47 @@ def _plan_run_m(outline) -> float:
     return max(max(xs) - min(xs), max(ys) - min(ys))
 
 
-def _posts(model: ResolvedModel, tag: str) -> list:
+def _posts(model: ResolvedModel, tag: str) -> list[ResolvedSolid]:
     """This railing's post solids, in the order the resolver walked its stations."""
+    return _by_part(model, tag, "POST")
+
+
+def _brackets(model: ResolvedModel, tag: str) -> list[ResolvedSolid]:
+    """This railing's wall brackets — what carries it where posts would be the wrong item.
+
+    A wall-mounted handrail is bought as a rail and a box of brackets, and it has no posts
+    at all. Until ``Railing.mount`` was read (2026-08-22) the resolver drew posts under one
+    anyway, so this section counted them and nobody noticed the order was for the wrong
+    part; when the posts went away, the *station* walk this file reads went with them and
+    took the sloped rail length with it.
+    """
+    return _by_part(model, tag, "BRACKET")
+
+
+def _by_part(model: ResolvedModel, tag: str, part: str) -> list[ResolvedSolid]:
     return sorted((s for s in model.solids
-                   if s.category == "railing" and s.tag.startswith(f"{tag}-POST")),
+                   if s.category == "railing" and s.tag.startswith(f"{tag}-{part}")),
                   key=lambda s: s.uid)
+
+
+def _stations(model: ResolvedModel, tag: str) -> list[ResolvedSolid]:
+    """Whatever this railing is carried on, post or bracket, in station order."""
+    return _posts(model, tag) or _brackets(model, tag)
 
 
 def _top_rail_length_ft(model: ResolvedModel, tag: str) -> float:
     """The top rail's *true* run, following the walking surface rather than its projection.
 
-    Read off the posts: every post stands on the surface under it, and the station walk puts
-    one at every path vertex, so the rail's 3D length is the sum of the station-to-station
-    hypotenuses. That is the length of cap stock a rake actually consumes — about 19% over
-    the plan run on a code stair — and it is measured off the drawn geometry rather than
-    re-derived from the stair, so a resolver change cannot leave the order behind.
+    Read off the stations: a post stands on the surface under it and a bracket hangs a fixed
+    drop below the rail over it, so either one tracks the rake, and the station walk puts one
+    at every path vertex. The rail's 3D length is then the sum of the station-to-station
+    hypotenuses — the cap stock a rake actually consumes, about 19% over the plan run on a
+    code stair — measured off the drawn geometry rather than re-derived from the stair, so a
+    resolver change cannot leave the order behind.
     """
-    posts = _posts(model, tag)
+    stations = _stations(model, tag)
     total = 0.0
-    for a, b in zip(posts, posts[1:]):
+    for a, b in zip(stations, stations[1:]):
         (ax, ay), (bx, by) = _centroid(a.outline), _centroid(b.outline)
         total += math.hypot(math.dist((ax, ay), (bx, by)), b.z0_m - a.z0_m)
     return total * _M_TO_FT
@@ -144,12 +166,15 @@ def railing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                 "count": 0,
                 "length_ft": 0.0,
                 "post_count": 0,
+                "bracket_count": 0,
                 "top_rail_length_ft": 0.0,
                 "tags": [],
             })
             row["count"] = int(row["count"]) + 1
             row["length_ft"] = float(row["length_ft"]) + _path_length_ft(element)
             row["post_count"] = int(row["post_count"]) + len(_posts(model, element.tag))
+            row["bracket_count"] = (int(row["bracket_count"])
+                                    + len(_brackets(model, element.tag)))
             row["top_rail_length_ft"] = (float(row["top_rail_length_ft"])
                                          + _top_rail_length_ft(model, element.tag))
             _add_infill(row, _infill_quantities(model, element))
@@ -179,6 +204,7 @@ def _accumulate_guard_wall(model: ResolvedModel, groups: dict, element: Wall,
         "count": 0,
         "length_ft": 0.0,
         "post_count": 0,
+        "bracket_count": 0,
         "top_rail_length_ft": 0.0,
         "note": "volume bills through wall_structure; priced at zero here, not twice",
         "tags": [],

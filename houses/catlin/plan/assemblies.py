@@ -302,6 +302,19 @@ CATLIN_BASEMENT_8_GARDEN = Assembly(
 
 # Basement slab-on-grade: 3" XPS below the slab (R-15 @ 40 psi compressive — rated for
 # slab loading, not the lighter foundation-wall grade) breaks direct slab-to-clay contact.
+#
+# The **poly and the stone under it were not modeled at all** until 2026-08-22, and their
+# absence had exactly one voice anywhere in the toolchain: `sheet.foundation.vapour_retarder`
+# fired UNKNOWN on the permit sheet — "no under-slab vapour retarder in the slab assembly" —
+# where nobody reading `haus check` would ever meet it. So the UNDER-SLAB column of S-100
+# read "3\" XPS" and stopped, and the takeoff ordered neither sheet nor stone.
+#
+# Order below the slab is the order it is built in, bottom last: concrete, then foam, then
+# the retarder, then the base course. The retarder goes *under* the foam rather than between
+# foam and slab — a sheet directly under a slab traps bleed water with nowhere to go and is
+# the classic cause of curling; below the foam it still separates the slab from ground
+# moisture and the slab can dry downward into the foam joints. (IRC R506.2.3 permits either;
+# ACI 302.2R is where the preference comes from.)
 CATLIN_SLAB_FLOOR = Assembly(
     tag="CATLIN_SLAB_FLOOR",
     layers=(
@@ -309,8 +322,12 @@ CATLIN_SLAB_FLOOR = Assembly(
               function=LayerFunction.STRUCTURE),
         Layer(name="xps-below", material_ref="xps", thickness=inch(3.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+        Layer(name="vapour-retarder", material_ref="polyethylene", thickness=inch(0.01),
+              function=LayerFunction.MEMBRANE, control={ControlLayer.VAPOR}),
+        Layer(name="capillary-break", material_ref="capillary-break-stone", thickness=inch(4.0),
+              function=LayerFunction.SHEATHING),
     ),
-    source="catlin-house basement slab: 3\" below-slab XPS, R-15 @ 40 psi compressive",
+    source="catlin-house basement slab: 3\" below-slab XPS, R-15 @ 40 psi compressive, over a 10-mil ASTM E1745 Class A vapour retarder on a 4\" open-graded capillary break (IRC R506.2.2/R506.2.3)",
 )
 
 # Main-floor structural deck: an EPS stay-in-place form with a cast concrete cap, over the
@@ -705,6 +722,90 @@ GARAGE_ICF_6 = Assembly(
     source="library GARAGE_ICF's 6\" concrete core (ICF-6, matching masonry spec) + this house's 2.5\" EPS facing (thinner than library's 2.625\" generic default) and gwb-stem interior banding above grade (code.R316_4)",
 )
 
+# --- frost-protected shallow foundation, sunken-garden side -----------------------------
+#
+# The condition, measured 2026-08-22: the sunken garden's floor is at -9'-4", the south house
+# strips FT-B-S1/S2/S3 bottom out at -10'-0", and the glazed-brick plinth FT-B-BRICK bottoms
+# at -9'-2" — 8" of cover, and 2" of *negative* cover, against MN Rules 1303.1600's 42" for
+# Ramsey County (Zone II). Frost depth is measured from the LOWEST ADJACENT grade (IRC
+# R403.1.4.1), and beside those footings that is the garden floor, not the -2'-10" site
+# grade plane. Nothing said so because `structural.frost_depth` compared every footing to one
+# global scalar and therefore passed all 35, negative cover included; it derives a local grade
+# per footing since the same date, and names these four.
+#
+# The answer is R403.3 — a frost-protected shallow foundation — under **Figure R403.3(3)**
+# specifically: a heated building adjoining a slab-on-ground that is *not* maintained at
+# 64 deg F, which is exactly a heated basement beside an open sunken court. Deepening the
+# strips is the alternative and it is not available: FT-B-BRICK's whole derivation leans on
+# FT-B-S2/S3's 10" south toe being there to bear on (params/foundations.py), so re-centring
+# the strips and re-footing the brick wall are one change, and not this one.
+#
+# Design air-freezing index **AFI 2500** (Minneapolis-St Paul; MN Rules 1303.1600 and the
+# IRC's own Figure R403.3(2) put the Twin Cities near 2,500 F-days). Table R403.3(1) at
+# AFI 2500 asks for:
+#
+#     vertical            R-6.7
+#     horizontal, walls   R-1.7        dimension B = 24"
+#     horizontal, corners R-4.9        dimension C = 40"
+#
+# The **vertical leg is already built**: the south basement walls compose off
+# FOUNDATION_WALL_8_XPS4_CORE, 4" of XPS = R-20 against the table's R-6.7, and
+# CATLIN_BASEMENT_8_GARDEN carries that face full height precisely because the garden exposes
+# it from -9'-0" to 0'-0". Only the horizontal band is new.
+#
+# Both wings are specified far over the table rather than at it. R-5 and R-10 against R-1.7
+# and R-4.9 is not generosity: 1" is the thinnest XPS anyone stocks, the labour and the
+# excavation are identical at either thickness, and a band sitting exactly on a table minimum
+# has nothing left if the design AFI is revised upward. 40 psi, the same slab-bearing grade
+# as CATLIN_SLAB_FLOOR's, because the garden slab is cast on top of it.
+SG_FROST_WING_XPS1 = Assembly(
+    tag="SG_FROST_WING_XPS1",
+    role="band",
+    layers=(
+        Layer(name="xps-wing", material_ref="xps", thickness=inch(1.0),
+              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+    ),
+    source="IRC R403.3 Figure R403.3(3) horizontal wing along the wall, Table R403.3(1) at AFI 2500: R-1.7 required over dimension B = 24\"; 1\" XPS at 40 psi is R-5",
+)
+
+SG_FROST_WING_XPS2 = Assembly(
+    tag="SG_FROST_WING_XPS2",
+    role="band",
+    layers=(
+        Layer(name="xps-wing", material_ref="xps", thickness=inch(2.0),
+              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+    ),
+    source="IRC R403.3 Figure R403.3(3) horizontal wing at a corner, Table R403.3(1) at AFI 2500: R-4.9 required over dimension C = 40\"; 2\" XPS at 40 psi is R-10",
+)
+
+# The footings the wings protect, bearing on load-rated insulation rather than on soil.
+#
+# IRC R403.3 sends a frost-protected shallow foundation to **ASCE 32**, and ASCE 32 is where
+# insulation *beneath* a footing comes from — it is the Scandinavian FPSF detail, not an
+# improvisation. The arithmetic is the part worth writing down: a 20" strip under a
+# residential basement wall delivers on the order of 1,500-2,000 psf to the bearing plane,
+# i.e. **10-14 psi**, against 40 psi XPS. The foam is loaded to roughly a third of its rated
+# compressive strength at 10% deformation, and creep at that ratio is what the rating exists
+# to bound. Same board, same grade, as the 3" under CATLIN_SLAB_FLOOR.
+#
+# The wall bears on concrete, not on foam: the insulation is the bottom layer and the top of
+# the strip is the pour. The vertical faces of the form are insulated too in the built
+# detail — that is what makes it an insulated *form* — and this stack cannot say so, because
+# a ``Footing``'s layers run depth-wise through a horizontal element and there is no sideways
+# axis in them. The wings (SG_FROST_WING_XPS1/2) are the horizontal leg and the basement
+# wall's own 4" XPS is the vertical one, so the two legs Table R403.3(1) actually grades are
+# both modelled; the form's side foam is detail, not a graded quantity.
+FOOTING_FPSF_20 = Assembly(
+    tag="FOOTING_FPSF_20",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
+              function=LayerFunction.STRUCTURE),
+        Layer(name="xps-bearing", material_ref="xps", thickness=inch(2.0),
+              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+    ),
+    source="frost-protected shallow footing at the sunken-garden face: 8\" cast strip bearing on 2\" XPS at 40 psi (IRC R403.3 -> ASCE 32; ~10-14 psi imposed against a 40 psi board), with the horizontal wings SG_FROST_WING_XPS1/2 under the garden slab beside it",
+)
+
 GARAGE_WALL_2X6 = Assembly(
     tag="GARAGE_WALL_2X6",
     layers=(
@@ -746,23 +847,23 @@ GARAGE_SLAB_ON_GRADE = Assembly(
               function=LayerFunction.STRUCTURE),
         Layer(name="xps-below", material_ref="xps", thickness=inch(3.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+        # Same stack, same reasoning, as CATLIN_SLAB_FLOOR above. R506.2.3 exempts a garage
+        # from the vapour retarder; the foam does not care and the stone under it is
+        # required either way, and a garage floor with 3" of XPS under it is being asked to
+        # stay dry for the same reason a basement floor is.
+        Layer(name="vapour-retarder", material_ref="polyethylene", thickness=inch(0.01),
+              function=LayerFunction.MEMBRANE, control={ControlLayer.VAPOR}),
+        Layer(name="capillary-break", material_ref="capillary-break-stone", thickness=inch(4.0),
+              function=LayerFunction.SHEATHING),
     ),
-    source="catlin-house detached garage floor — 3\" below-slab XPS on compacted base",
+    source="catlin-house detached garage floor — 3\" below-slab XPS over a 10-mil ASTM E1745 Class A vapour retarder on a 4\" open-graded capillary break (IRC R506.2.2)",
 )
 
-# The step-down inside the garage service door (ST-G-STEPS in params/foundations.py). The
-# door threshold stayed at 0'-0" with the breezeway deck when grade dropped 2'-6" on
-# 2026-08-18, and the slab stayed at grade, so five 6" risers now stand between them. Plain
-# 6" concrete on compacted base: no below-slab XPS, because these bear on the fill inside
-# the stem's own thermal break rather than on the ground plane the slab insulates.
-GARAGE_STEP_CONCRETE = Assembly(
-    tag="GARAGE_STEP_CONCRETE",
-    layers=(
-        Layer(name="concrete", material_ref="concrete", thickness=inch(6.0),
-              function=LayerFunction.STRUCTURE),
-    ),
-    source="catlin-house garage service-door step-down — 6\" concrete on compacted base",
-)
+# REMOVED 2026-08-22: GARAGE_STEP_CONCRETE, 6" plain concrete on compacted base. It was the
+# assembly of SL-G-STEP-1..4, the four treads of the garage service step-down, and those are
+# a real `Stair` now (ST-G-SERVICE in plan/storeys/garage.py) in pressure-treated KDAT rather
+# than concrete. SL-G-STEP-0 survives as the 3'-0" landing at the threshold, pours with the
+# slab, and names no assembly of its own.
 
 GARAGE_ROOF = Assembly(
     tag="GARAGE_ROOF",
@@ -1481,7 +1582,9 @@ ASSEMBLIES = [
     GARAGE_ICF_6,
     GARAGE_WALL_2X6,
     GARAGE_SLAB_ON_GRADE,
-    GARAGE_STEP_CONCRETE,
+    SG_FROST_WING_XPS1,
+    SG_FROST_WING_XPS2,
+    FOOTING_FPSF_20,
     GARAGE_ROOF,
     CATLIN_INT_2X6_BRG,
     INT_2X6_PLUMBING,

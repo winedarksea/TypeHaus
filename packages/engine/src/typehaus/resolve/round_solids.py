@@ -29,17 +29,23 @@ _MAX_SLOPE_STEPS = 3
 
 
 def round_run_bands(start: tuple[float, float], end: tuple[float, float], radius: float,
-                    center_z: float) -> list[tuple[list[tuple[float, float]], float, float]]:
+                    center_z: float, sweep_bands: int = PIPE_SWEEP_BANDS,
+                    ) -> list[tuple[list[tuple[float, float]], float, float]]:
     """Sweep a horizontal pipe as ``(outline, z0, z1)`` bands stacked in Z.
 
     Each band spans an equal arc of the circle and is as wide as the chord at that arc's
     midpoint, so the stack neither inscribes nor circumscribes the pipe and its
     silhouette stays centred on the true diameter.
+
+    ``sweep_bands`` is the caller's facet budget. A drain stack is one run of one pipe and
+    can afford the 12-gon; a raked handrail is *sixty* stacks — one per diameter of fall —
+    and pays that budget sixty times over for a 1-1/2" bar, so it asks for fewer. The
+    default is unchanged, so every existing caller is untouched.
     """
     bands = []
-    for index in range(PIPE_SWEEP_BANDS):
-        low_angle = math.pi * index / PIPE_SWEEP_BANDS
-        high_angle = math.pi * (index + 1) / PIPE_SWEEP_BANDS
+    for index in range(sweep_bands):
+        low_angle = math.pi * index / sweep_bands
+        high_angle = math.pi * (index + 1) / sweep_bands
         half_width = radius * math.sin((low_angle + high_angle) / 2.0)
         bands.append((rect_between(start, end, -half_width, half_width),
                       center_z - radius * math.cos(low_angle),

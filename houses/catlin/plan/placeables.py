@@ -36,6 +36,63 @@ BASEMENT_PLACEABLES = [
     # to the south. Its top is 18", well clear of WIN-B-SAUNA's 3'-8" sill above it.
     Furniture(uid="CBF602AAAA", tag="FURN-B-SAUNA-BENCH-S", type_ref="FURN-SAUNA-BENCH-54",
               room="RM-B-SAUNA", position=pt(ft(11, 5.5), ft(1, 9.5)), rotation=deg(180)),
+
+    # RM-B-WORKSHOP's two benches (2026-08-22). The room is L-shaped: a west bay running the
+    # full 18' of the storey, plus a north strip east of the sauna block. **Both benches take
+    # the west wall, not one per leg** — the north strip is 4'-2" deep and a 30" bench there
+    # would leave a 20" aisle, which is not an aisle.
+    #
+    # The west wall is the only unbroken face the room has: 18'-0" of bare concrete
+    # (CATLIN_BASEMENT_8, interior face at x=0'-8" — the pour's inboard face, the foam is all
+    # outboard). `rotation=deg(90)` turns FURN-G-WORKBENCH's 30" depth into the wall-to-room
+    # dimension, exactly as the garage instance does, so the centre sits 15" off that face at
+    # x=1'-11". Centres at y=6'-0" (under ED-B-WORKSHOP-PANEL1, the "over a bench" panel that
+    # has been naming a bench that did not exist since it was authored) and y=11'-0", giving
+    # one contiguous 10'-0" run from y=3'-6" to y=13'-6" — clear of the sauna's north face
+    # beyond it.
+    Furniture(uid="6FJ01Z04WX", tag="FURN-B-WORKSHOP-BENCH-N", type_ref="FURN-G-WORKBENCH",
+              room="RM-B-WORKSHOP", position=pt(ft(1, 11), ft(11)), rotation=deg(90)),
+    Furniture(uid="8FXXT06T4E", tag="FURN-B-WORKSHOP-BENCH-S", type_ref="FURN-G-WORKBENCH",
+              room="RM-B-WORKSHOP", position=pt(ft(1, 11), ft(6)), rotation=deg(90)),
+
+    # --- RM-B-PLAY-N, the media room (2026-08-22) ---------------------------------------
+    #
+    # A windowless 324 sf box whose four resolved finish faces are south (W-B-CE) y=18'-3
+    # 3/8", west (W-B-CN/CN2) x=18'-6", north (W-B-N1) y=35'-4", east (W-B-E2) x=35'-0" —
+    # 16'-6" x 17'-0 5/8" clear. Everything below is dimensioned off those faces, not off the
+    # room's `clear_face` ring, which for a concrete wall lands on the wall AXIS.
+    #
+    # The screen: 98" (85.3" wide), hung on the north concrete wall, centred at x=26'-9",
+    # which is the room's own centreline and where the owner asked for the ethernet drop
+    # (ED-B-PLAY-N-DATA1). `mount=WALL` with the panel's bottom at 2'-6" puts its top at
+    # 6'-8" under an 8'-3 1/2" ceiling. **An 8" concrete wall takes anchors, not blocking** —
+    # there is no stud bay behind this and the mount is a mechanical fixing into the pour.
+    Furniture(uid="X99HBG99WJ", tag="FURN-B-PLAY-TV", type_ref="FURN-TV-98", room="RM-B-PLAY-N",
+              position=pt(ft(26, 9), ft(34, 7.75)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(30))),
+    # The U, opening north at the screen. 11'-0" of back run leaves 2'-9" either side of a
+    # 16'-6" box; y 21'-6" to 29'-6" puts the back run 11'-13' off the panel — right for a
+    # 98" screen — and leaves 2'-2 3/4" of walk between the bookcases and the sectional's
+    # south face. FT-SECTIONAL-U-MEDIA is house-local and says why in plan/furniture_types.py.
+    Furniture(uid="1KZNJX16H6", tag="FURN-B-PLAY-SECTIONAL", type_ref="FT-SECTIONAL-U-MEDIA",
+              room="RM-B-PLAY-N", position=pt(ft(26, 9), ft(25, 6))),
+    # Bookcases either side of D-B-PLAY on the south wall, backs on its 18'-3 3/8" face.
+    # The door's framing runs x 23'-10" to 29'-2" and its leaf sweeps x 24'-0"..26'-6",
+    # y 18'-0"..20'-6", so both pairs stand clear of the arc: west from the 18'-6" corner to
+    # 23'-10", east from 29'-8" to the 35'-0" corner.
+    #
+    # FURN-BOOKCASE-32 is 2'-8" x 1'-0" x 6'-0". A real Billy is 31 1/2" x 11" x **79 1/2"**,
+    # so the catalog piece is 7 1/2" short in height; called out rather than corrected,
+    # because what matters here is the plan footprint, and a house-local Billy type would be
+    # a product clone rather than something made to fit this house.
+    Furniture(uid="CS3QSXP6JR", tag="FURN-B-PLAY-BOOK-W1", type_ref="FURN-BOOKCASE-32", room="RM-B-PLAY-N",
+              position=pt(ft(19, 10), ft(18, 9.375)), rotation=deg(180)),
+    Furniture(uid="F9X5X4J5N5", tag="FURN-B-PLAY-BOOK-W2", type_ref="FURN-BOOKCASE-32", room="RM-B-PLAY-N",
+              position=pt(ft(22, 6), ft(18, 9.375)), rotation=deg(180)),
+    Furniture(uid="0NPX3QZ0GA", tag="FURN-B-PLAY-BOOK-E1", type_ref="FURN-BOOKCASE-32", room="RM-B-PLAY-N",
+              position=pt(ft(31), ft(18, 9.375)), rotation=deg(180)),
+    Furniture(uid="2XX4D4BYHR", tag="FURN-B-PLAY-BOOK-E2", type_ref="FURN-BOOKCASE-32", room="RM-B-PLAY-N",
+              position=pt(ft(33, 8), ft(18, 9.375)), rotation=deg(180)),
 ]
 MAIN_PLACEABLES = [
     Furniture(uid="XV5MXV43QJ", tag="FURN-M-SOFA", type_ref="FURN-SOFA-84", room="RM-M-LIVING",

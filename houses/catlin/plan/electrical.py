@@ -159,6 +159,18 @@ DEVICE_TYPES = (
                           ifc_predefined_type="NETWORKAPPLIANCE",
                           ports=(ServicePort(tag="data", service=Service.DATA,
                                              position=(ft(0), ft(0), ft(0))),)),
+    # A wall jack. The catalog had an enclosure and two access points and no way to say
+    # "a cable ends here at a plate", so a hardwired drop could not be modelled at all —
+    # which is why RM-M-STUDY and RM-B-PLAY-N had none. Receptacle-sized because it is a
+    # single-gang plate in the same box family, and NO ``poe_watts``: a jack is passive, and
+    # a number here would land in the PoE budget as load that does not exist.
+    ElectricalDeviceType(tag="ED-T-DATA-JACK",
+                          name="Data outlet, single-gang RJ45 (Cat 6A)",
+                          footprint=(inch(2.75), inch(2)), height=inch(4.5),
+                          ifc_entity="IfcCommunicationsAppliance",
+                          ifc_predefined_type="NETWORKAPPLIANCE",
+                          ports=(ServicePort(tag="data", service=Service.DATA,
+                                             position=(ft(0), ft(0), ft(0))),)),
     ElectricalDeviceType(tag="ED-T-AP-OUTDOOR",
                           name="Wireless access point, outdoor wet-rated, PoE 802.3af",
                           poe_watts=15.0,
@@ -814,6 +826,92 @@ MAIN_DATA_DEVICES = [
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 6))),
 ]
 
+# --- The three hardwired drops (owner, 2026-08-22) ---------------------------------------
+#
+# The owner's brief: "run through joists and down; all come together at a switch and router
+# in the mechanical room, powered by backup power." That IS the topology already here —
+# ED-B-NET-PATCH stands in RM-B-FURNACE on CKT-HA, which is homed to ED-B-BACKUP-PANEL at
+# BackupTier.ALWAYS_ON — so nothing new is needed at the head end. These are three more home
+# runs off it.
+#
+# ** WHY NOT THE SPA CONDUIT. ** The brief said the workshop drop could "likely share the spa
+# conduit", and the route is right — CD-B-SPA runs 1" EMT south down x=2'-0" at -4'-0", a
+# foot clear of the workshop's west wall. The PIPE is not shareable: NEC 800.133(A)(1)(c) and
+# 725.136 forbid communications and Class 2 circuits sharing a raceway with power conductors,
+# and the model already encodes it — ``ConduitRun.service`` is one value, never a set. So
+# CD-B-DATA-SHOP runs PARALLEL, 6" east of it, in its own pipe. The E-603 sheet's own note
+# draws the same line: shared *penetrations* are permitted, shared raceways are not, which is
+# the precedent CD-M-DATA-PORCH already sets by sharing SP-SG-PORCH-ELEC with a supply.
+#
+# No ``circuit=`` on any of the three: a passive jack names no circuit, which is the
+# documented pattern (takeoff/data.py) and what keeps the PoE budget honest.
+BASEMENT_DATA_DEVICES = [
+    # At the workbenches on the west wall, between ED-B-WORKSHOP-RC1 (y=6') and RC2 (y=11'),
+    # at the same 42" the receptacles use — 8" above a 34" bench top.
+    ElectricalDevice(uid="C75K1P71SX", tag="ED-B-WORKSHOP-DATA1", kind=DeviceKind.DATA_OUTLET,
+                     position=pt(inch(9), ft(8, 6)), type_ref="ED-T-DATA-JACK",
+                     room="RM-B-WORKSHOP", rotation=deg(90),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
+    # Behind the television on the media room's north wall, 1'-0" east of ED-B-PLAY-N-RC1 so
+    # the two plates do not share a box location. Both sit inside the panel's 85.3" width
+    # (x 23'-2" to 30'-3"), so neither is visible with the TV hung.
+    ElectricalDevice(uid="N99QMTQDK6", tag="ED-B-PLAY-N-DATA1", kind=DeviceKind.DATA_OUTLET,
+                     position=pt(ft(27, 9), ft(35, 3)), type_ref="ED-T-DATA-JACK",
+                     room="RM-B-PLAY-N", rotation=deg(180),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(30))),
+]
+
+MAIN_DATA_DEVICES_STUDY = [
+    # RM-M-STUDY is 4'-8" x 4'-2" with its east wall nearly all door, so the south wall is
+    # where anything goes — beside ED-M-STUDY-RC1 and at the same 16", the pairing a desk
+    # actually wants. 1'-0" west of it.
+    ElectricalDevice(uid="V51Z24K1AA", tag="ED-M-STUDY-DATA1", kind=DeviceKind.DATA_OUTLET,
+                     position=pt(ft(16), ft(18, 3.375)), type_ref="ED-T-DATA-JACK",
+                     room="RM-M-STUDY",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+]
+
+BASEMENT_DATA_TRUNKS = [
+    # Workshop: south down x=2'-6" at -4'-0", six inches east of CD-B-SPA and parallel to it
+    # the whole way, then west to the jack and down the wall to 42" over the slab. Stays
+    # inside the basement box — no crossing, no sleeve.
+    ConduitRun(uid="F2D3CT89ZV", tag="CD-B-DATA-SHOP", trade_size=inch(0.75), service=Service.DATA,
+               path=(pt(inch(10), ft(31)), pt(ft(2, 6), ft(31)), pt(ft(2, 6), ft(8, 6)),
+                     pt(inch(9), ft(8, 6))),
+               start_elevation=ft(-4), end_elevation=ft(-5, -10),
+               from_ref="ED-B-NET-PATCH", to_ref="ED-B-WORKSHOP-DATA1"),
+    # Media room: east along the basement ceiling at -1'-6", through the stair shaft's west
+    # wall and the centre wall, then north to the jack behind the television. Held at y=30'
+    # so its two sleeves stay a clear foot from CD-B-KITCHEN's at y=29' — the sleeve matcher
+    # pairs a run to a hole by proximity, and two holes 6" apart in the same wall confuse it.
+    ConduitRun(uid="D606MFGTEG", tag="CD-B-DATA-MEDIA", trade_size=inch(0.75), service=Service.DATA,
+               path=(pt(inch(10), ft(31)), pt(ft(2), ft(30)), pt(ft(27, 9), ft(30)),
+                     pt(ft(27, 9), ft(35, 3))),
+               start_elevation=ft(-1, -6), end_elevation=ft(-6, -10),
+               from_ref="ED-B-NET-PATCH", to_ref="ED-B-PLAY-N-DATA1"),
+    # Study: up the x=2'-0" riser to the main floor structure, then east through the
+    # FS-M-WEST joist bays and up the study's south wall. Drilled bays, not a raceway
+    # penetration: FS-M-WEST is wood.
+    ConduitRun(uid="Z9TXYSYKWG", tag="CD-B-DATA-STUDY", trade_size=inch(0.75), service=Service.DATA,
+               path=(pt(inch(10), ft(31)), pt(ft(2), ft(31)), pt(ft(2), ft(19)),
+                     pt(ft(16), ft(19)), pt(ft(16), ft(18, 3.375))),
+               start_elevation=ft(-4), end_elevation=ft(1, 4),
+               from_ref="ED-B-NET-PATCH", to_ref="ED-M-STUDY-DATA1"),
+]
+
+DATA_SLEEVES = [
+    # CD-B-DATA-MEDIA's two concrete crossings. `mep.sleeve_coverage` is a CODE-tier check
+    # and an unsleeved crossing FAILs it.
+    SleevePenetration(uid="NP84SHW31K", tag="SP-B-STR-CD-DATA", host_ref="W-B-STR",
+                      position=pt(ft(10), ft(30)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.DATA,
+                      axis="horizontal", center_elevation=ft(-1, -6)),
+    SleevePenetration(uid="V44DS76X6J", tag="SP-B-CN-CD-DATA", host_ref="W-B-CN",
+                      position=pt(ft(18), ft(30)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.DATA,
+                      axis="horizontal", center_elevation=ft(-1, -6)),
+]
+
 ATTIC_DATA_DEVICES = [
     # High on the north gable in the NE corner of RM-A-EAST. Mount elevation is
     # storey-relative (attic datum 20'), so 4' here is 24' absolute — under the 4:12 rake,
@@ -927,6 +1025,44 @@ NEC_FILL_BASEMENT = [
                      position=pt(ft(28, 11.5), inch(9)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+
+    # RM-B-WORKSHOP had ZERO receptacles until 2026-08-22 — `electrical.receptacle_spacing`
+    # walks {BEDROOM, LIVING, KITCHEN, DINING, OFFICE} and a UTILITY room is outside it, so
+    # nothing ever asked. These are the two over the new benches
+    # (FURN-B-WORKSHOP-BENCH-N/S, plan/placeables.py), one apiece, at their centres.
+    #
+    # x = 9": the face convention at the top of this file — half the 2" body off the west
+    # wall's 0'-8" finish plane — with `rotation=deg(90)` turning the plate along the wall.
+    # Elevation 42" is the house's counter idiom, 8" above a 34" bench top.
+    #
+    # CKT-RC-BSMT, which is already `gfci=True, afci=True` (plan/circuits.py), so E3902.11's
+    # unfinished-basement GFCI requirement is satisfied with no new circuit. That matters:
+    # ED-B-PANEL has no spare 2-pole left, and a bench outlet is not worth a service change.
+    ElectricalDevice(uid="17M93C11P3", tag="ED-B-WORKSHOP-RC1", kind=DeviceKind.RECEPTACLE,
+                     position=pt(inch(9), ft(6)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-BSMT", room="RM-B-WORKSHOP", rotation=deg(90),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
+    ElectricalDevice(uid="Z8RBX115XH", tag="ED-B-WORKSHOP-RC2", kind=DeviceKind.RECEPTACLE,
+                     position=pt(inch(9), ft(11)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-BSMT", room="RM-B-WORKSHOP", rotation=deg(90),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
+
+    # RM-B-PLAY-N had no receptacle of its own either, and a wall-hung 98" panel needs one
+    # behind it. Directly under FURN-B-PLAY-TV at x=26'-9", on the north wall's 35'-4" face
+    # (1" south of it — half the 2" body, the face convention above), plate turned south into
+    # the room. Elevation 30" puts it behind the panel's lower edge rather than below it.
+    #
+    # ** REPORTED, NOT FIXED: ED-B-GYM-RC3 and ED-B-GYM-RC4 are on the WRONG SIDE of a wall.**
+    # Both sit at y=18'-4.385", which is NORTH of W-B-CE's 18'-3 3/8" finish face, so they
+    # resolve inside this room while counting toward the gym's NEC 210.52 6-foot rule. They
+    # carry no `room=`, so nothing reports the mismatch. This receptacle is deliberately NOT
+    # a duplicate of them: it is on the north wall behind the television, 17' away, and it
+    # would be needed whatever those two turn out to be. Fixing them means re-running the gym
+    # fill, which is its own pass.
+    ElectricalDevice(uid="GQCPVT59F6", tag="ED-B-PLAY-N-RC1", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(26, 9), ft(35, 3)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-BSMT", room="RM-B-PLAY-N", rotation=deg(180),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(30))),
 ]
 NEC_FILL_MAIN = [
     ElectricalDevice(uid="NEC008AAAA", tag="ED-M-LIVING-RC1", kind=DeviceKind.RECEPTACLE,
@@ -1252,8 +1388,10 @@ NEC_FILL_ATTIC = [
 
 BASEMENT_ELEMENTS = [*BACKUP_ENCLOSURE, *ESS_EQUIPMENT, *BASEMENT_DEVICES,
                      *BASEMENT_EQUIPMENT, *CONDUIT_TRUNKS, *DATA_HEAD_END, *DATA_TRUNKS,
+                     *BASEMENT_DATA_DEVICES, *BASEMENT_DATA_TRUNKS, *DATA_SLEEVES,
                      *NEC_FILL_BASEMENT]
 MAIN_ELEMENTS = [*SERVICE_DEVICES, *MAIN_DEVICES, *MAIN_EQUIPMENT, *MAIN_DATA_DEVICES,
+                 *MAIN_DATA_DEVICES_STUDY,
                  *MAIN_DATA_TRUNKS, *CONDUIT_SLEEVES, *NEC_FILL_MAIN]
 GARAGE_ELEMENTS = [*GARAGE_DEVICES, *GARAGE_EQUIPMENT]
 SECOND_ELEMENTS = [*SECOND_DEVICES, *SECOND_EQUIPMENT, *NEC_FILL_SECOND]

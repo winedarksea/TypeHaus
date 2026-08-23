@@ -335,8 +335,16 @@ def test_stairs_payload_carries_landing_depth(catlin_payload):
     # stair authors none.
     assert stairs["ST-B2M"]["landing_depth_m"] == pytest.approx(0.9144)  # 3'-0"
     assert stairs["ST-S2A"]["landing_depth_m"] is None
-    for stair in stairs.values():
+    for tag, stair in stairs.items():
         assert stair["tread_depth_m"] == pytest.approx(inch(11).meters)
+    # ST-G-SERVICE is the exception and states why in its own source: 11" boards with NO
+    # nose, so its going is the full 11" and its run stays the 3'-8" the four concrete
+    # treads it replaced occupied. There is no shaft for it to fit inside, so the compaction
+    # a nose buys is worth nothing there.
+        if tag == "ST-G-SERVICE":
+            assert stair["going_depth_m"] == pytest.approx(inch(11).meters)
+            assert stair["nosing_depth_m"] == 0.0
+            continue
         assert stair["going_depth_m"] == pytest.approx(inch(10).meters)
         assert stair["nosing_depth_m"] == pytest.approx(inch(1).meters)
 

@@ -483,48 +483,216 @@
       "node": "polyline",
       "points": [
         [
-          127.25,
-          12.227777777777744
+          127.71298744094489,
+          8.369999999999985
         ],
         [
-          128.75,
-          12.227777777777744
+          128.28701255905514,
+          8.369999999999985
         ],
         [
-          128.75,
-          13.727777777777744
+          128.28701255905514,
+          10.083003247443378
         ],
         [
-          127.25,
-          13.727777777777744
+          127.71298744094489,
+          10.083003247443378
         ]
       ],
       "layer": "S-FNDN",
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMRL02AAAA-r03",
-      "tag": "RL-M-HANDRAIL-W-RAIL4"
+      "uid": "CMRL02AAAA-r48",
+      "tag": "RL-M-HANDRAIL-W-RAIL49"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          127.25,
-          12.227777777777744
+          127.71298744094489,
+          8.369999999999985
         ],
         [
-          128.75,
-          12.227777777777744
+          128.28701255905514,
+          8.369999999999985
         ],
         [
-          128.75,
-          13.727777777777744
+          128.28701255905514,
+          10.083003247443378
         ],
         [
-          127.25,
-          13.727777777777744
+          127.71298744094489,
+          10.083003247443378
+        ]
+      ],
+      "pattern": "metal-dark-exterior",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "metal-dark-exterior"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          127.30709035433071,
+          8.589669914110075
+        ],
+        [
+          128.6929096456693,
+          8.589669914110075
+        ],
+        [
+          128.6929096456693,
+          10.613333333333289
+        ],
+        [
+          127.30709035433071,
+          10.613333333333289
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMRL02AAAA-r49",
+      "tag": "RL-M-HANDRAIL-W-RAIL50"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          127.30709035433071,
+          8.589669914110075
+        ],
+        [
+          128.6929096456693,
+          8.589669914110075
+        ],
+        [
+          128.6929096456693,
+          10.613333333333289
+        ],
+        [
+          127.30709035433071,
+          10.613333333333289
+        ]
+      ],
+      "pattern": "metal-dark-exterior",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "metal-dark-exterior"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          127.30709035433071,
+          9.119999999999985
+        ],
+        [
+          128.6929096456693,
+          9.119999999999985
+        ],
+        [
+          128.6929096456693,
+          11.1436634192232
+        ],
+        [
+          127.30709035433071,
+          11.1436634192232
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMRL02AAAA-r50",
+      "tag": "RL-M-HANDRAIL-W-RAIL51"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          127.30709035433071,
+          9.119999999999985
+        ],
+        [
+          128.6929096456693,
+          9.119999999999985
+        ],
+        [
+          128.6929096456693,
+          11.1436634192232
+        ],
+        [
+          127.30709035433071,
+          11.1436634192232
+        ]
+      ],
+      "pattern": "metal-dark-exterior",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "metal-dark-exterior"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          127.71298744094489,
+          9.650330085889896
+        ],
+        [
+          128.28701255905514,
+          9.650330085889896
+        ],
+        [
+          128.28701255905514,
+          11.363333333333289
+        ],
+        [
+          127.71298744094489,
+          11.363333333333289
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMRL02AAAA-r51",
+      "tag": "RL-M-HANDRAIL-W-RAIL52"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          127.71298744094489,
+          9.650330085889896
+        ],
+        [
+          128.28701255905514,
+          9.650330085889896
+        ],
+        [
+          128.28701255905514,
+          11.363333333333289
+        ],
+        [
+          127.71298744094489,
+          11.363333333333289
         ]
       ],
       "pattern": "metal-dark-exterior",
@@ -1053,7 +1221,17 @@
     "761.3 by its own). If a `FrenchDrain` element is ever authored, THAT is the moment a",
     "duplicate can appear — a second element over the same trench billing the same stone",
     "twice.",
-    "• Interior slab: 4\" concrete slab (min. 3,500 psi, IRC R506.1) over R-10 XPS insulation (≥25 psi), 10 mil (min) polyethylene vapor barrier, and 4\" compacted gravel base. Provide 1\" XPS thermal break with 1/2\" polyurethane sealant at foundation wall perimeter.",
+    "• Interior slab: 3 1/2\" concrete slab (min. 3,500 psi, IRC R506.1) over R-15 XPS insulation",
+    "(3\", 40 psi), 10 mil (min) polyethylene vapor barrier (ASTM E1745 Class A), and 4\"",
+    "compacted open-graded gravel base. Provide 1\" XPS thermal break with 1/2\" polyurethane",
+    "sealant at foundation wall perimeter.",
+    "• **Reconciled against the model 2026-08-22.** This line read 4\" concrete over R-10 XPS at",
+    "≥25 psi; `CATLIN_SLAB_FLOOR` is 3 1/2\" concrete over **3\" XPS, R-15 at 40 psi**. The",
+    "model wins on both — 40 psi is the slab-bearing grade rather than the lighter",
+    "foundation-wall grade, and the extra R was a deliberate choice, so the note was simply",
+    "stale and this text prints into the detail SVGs. The **note** won on the polyethylene and",
+    "the gravel, which it had called for all along and which the assembly did not carry at",
+    "all; they are layers of `CATLIN_SLAB_FLOOR` now, and of `GARAGE_SLAB_ON_GRADE` with them.",
     "• Grading: soil must slope away from foundation at minimum 6\" per 10' for first 10' (IRC R401.3).",
     "• All gaps: fill voids and transitions with low-expansion spray foam as needed for air sealing and continuity."
   ],

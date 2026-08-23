@@ -255,17 +255,23 @@ def test_the_budget_truncates_with_exactly_one_warn():
     assert len(warns) == 1 and "RL-HUGE" in warns[0].message
 
 
-def test_an_oversize_bay_warns_for_a_sheet_and_not_for_pickets():
-    """``railing_post_stations`` uses ``int(seg // spacing)`` where it wants ``ceil``, so a
-    segment's last bay can approach 2x the authored spacing. Balusters absorb that
+def test_a_bay_can_no_longer_run_over_the_authored_post_spacing():
+    """``railing_post_stations`` used ``int(seg // spacing)`` where it wanted ``ceil``, so a
+    segment's last bay could approach 2x the authored spacing. Balusters absorbed that
     invisibly — they re-space to the bay they are given — but a 9' glass lite does not
-    exist. Flagged here, fixed separately: the fix moves existing post positions."""
-    # 5'-11" at 3'-0" o.c.: ``int(5.917 // 3)`` is 1, so the whole run is ONE bay of 5'-11"
-    # rather than the two bays a ``ceil`` would place — just under 2x the authored spacing.
+    exist, and ``geometry.railing_bay_oversize`` existed to say so.
+
+    Fixed at the source on 2026-08-22: bays are divided evenly, ``ceil(seg / spacing)`` of
+    them, so ``spacing`` is a maximum and this warning has nothing left to report on a run
+    laid out by that function. It stays as the backstop for a caller that lays out its own
+    stations.
+    """
+    # 5'-11" at 3'-0" o.c.: ``int(5.917 // 3)`` was 1, so the whole run came out as ONE bay
+    # of 5'-11" rather than the two a ``ceil`` places — just under 2x the authored spacing.
     wide = (pt(ft(0), ft(0)), pt(ft(5, 11), ft(0)))
     panel = resolve_railings([railing("RL-WIDE", path=wide, infill="panel",
                                       post_spacing=inch(36))])
-    assert [f.check_id for f in panel.railing_findings] == ["geometry.railing_bay_oversize"]
+    assert panel.railing_findings == []
     pickets = resolve_railings([railing("RL-WIDE", path=wide, infill="balusters",
                                         post_spacing=inch(36), baluster_spacing=inch(4))])
     assert pickets.railing_findings == []

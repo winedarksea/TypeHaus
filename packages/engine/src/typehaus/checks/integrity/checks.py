@@ -74,9 +74,18 @@ def assembly_layer_sanity(ctx: CheckContext) -> list[Finding]:
             out.extend(_layer_extent_findings(asm.tag, layer))
         out.extend(_overlapping_band_findings(asm.tag, resolved.layers))
         out.extend(_slot_findings(asm.tag, resolved.layers))
-        if resolved.structure_index() is None:
+        # A "band" is a buried single-purpose layer of the ground — an FPSF wing, a
+        # capillary break — and has no structure by definition. Read off the assembly's own
+        # ``role`` rather than inferred from the absence of the layer, which is the very
+        # mistake this line exists to catch.
+        if resolved.role == "enclosure" and resolved.structure_index() is None:
             out.append(_err("integrity.assembly_layers",
                             f"assembly {asm.tag} has no STRUCTURE layer", (asm.tag,)))
+        if resolved.role == "band" and resolved.structure_index() is not None:
+            out.append(_err("integrity.assembly_layers",
+                            f"assembly {asm.tag} declares role=\"band\" but carries a "
+                            "STRUCTURE layer; a band is a buried layer of the ground, not a "
+                            "thing that holds anything up", (asm.tag,)))
     return out
 
 

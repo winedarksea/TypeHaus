@@ -92,8 +92,15 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   D-G-OVERHEAD carries the plan's only negative `sill_height` to reach it, and the stem
   becomes a grade beam flush with the slab under that door so there is no curb across it.
   D-G-SERVICE no longer does: its threshold stays at 0'-0" with the breezeway deck, so it
-  carries `+1'-0"` and `SL-G-STEP-0..4` take the 2'-10" down to the slab inside the garage
-  in five 6.8" risers. The garage plates are 8'-4", not 8'-0", for the same reason: the door
+  carries `+1'-0"` and the 2'-10" is taken inside the garage in five 6.8" risers — the
+  `SL-G-STEP-0` landing pad at the threshold, and `ST-G-SERVICE` below it. That flight was
+  five concrete `Slab`s (`SL-G-STEP-0..4`) until 2026-08-22, because `Stair` took its rise
+  from a pair of storey elevations through a `FloorOpening` and a step-down *within* one
+  storey has no floor to open. `Stair.floor_opening` is optional now and
+  `base_elevation`/`top_elevation` state a rise directly. It matters beyond tidiness:
+  `structural.stair_riser_uniformity` and `code.R311_7_8_handrail` both iterate
+  `model.stairs`, so a five-riser flight with no handrail drew no finding at all while it
+  was slabs. It is KDAT (pressure-treated) with `RL-G-SERVICE` over it. The garage plates are 8'-4", not 8'-0", for the same reason: the door
   climbed 4" inside its own wall when the storey went down, and its 3-ply LVL header would
   have pushed through the top plate into the truss heels.
   Emitters — and, since 2026-08-03, the placeable resolver that decides how high anything in

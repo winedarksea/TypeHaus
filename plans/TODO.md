@@ -156,9 +156,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   Residual: `DU-S-HP-SOUTH`'s rise out of the trunk head at x=19'-4" is undrawn, same
   status as `DU-S-ERV-HP-FEED`'s (below) — it rides the riser `DU-A-HP-STUDY` already
   leaves from.
-- **Workshop ERV intake is positioned off the light** `ED-B-WORKSHOP-PANEL1` ("over a
-  bench") — no workbench placeable exists in RM-B-WORKSHOP yet; move the register when the
-  bench is actually placed.
 - **The ERV→System 1 fresh feed's vertical is undrawn.** `DU-S-ERV-HP-FEED` (2026-07-30)
   taps `DU-M1-ERV-SUP` in its FS-SECOND joist bay under the hall at y=12'-8" and runs in
   SF-S-DUCT's box to the wye behind `REG-S-HP-RET`, but the rise from the joist bay up
@@ -195,21 +192,14 @@ the future.
 ## Questions:
 - Do we want floor drains in kitchen/laundry room (deferred 2026-07-30: neither, for now)
 - Pantry (deferred by decision 2026-08-02)
-- ~~Add the plant room wall types (deferred by decision 2026-08-02)~~ — **done 2026-08-18.**
-  `PLANT_EXT_2X6_HUMID` / `PLANT_INT_2X6_BRG_HUMID` / `PLANT_INT_2X4_HUMID`, a shared
-  `HumidityClass` axis on `Room` and four rules that read it, the U-0.14 glazing retype, the
-  sheet-vinyl coved floor, the dedicated dampered extract off `EQ-B-ERV`, and wet-location /
-  UL 8800 electrical. The whole argument and the numbers are in
-  `houses/catlin/notes/plant_room.md`; decisions #55 and #56. What it deliberately did NOT
-  close, each for a stated reason:
-  - **The plant room's ceiling is specified but unmodelled.** PVC panel on furring over the
+- **The plant room's ceiling is specified but unmodelled.** PVC panel on furring over the
     same membrane, continuous with the wall membrane at the perimeter, and explicitly *not*
     a suspended/tile ceiling. `FS-ATTIC` carries no `ceiling_below`, and that field is one
     `DeckLayer` for the whole storey below — there is no room-scoped ceiling construction in
     the schema, so authoring it would give every second-storey room a PVC ceiling. Needs
     either a `CeilingPaneling` element (the `WallPaneling` shape, one surface up) or a
     per-room override on `FloorSystem`.
-  - **The showers are still unclassified.** Same axis, same rules, same question to answer
+- **The showers are still unclassified.** Same axis, same rules, same question to answer
     first: what is actually behind the tile. The sauna is the worked example of what
     answering it costs — a liner variant on the wall that turned out not to have one.
   - **`FX-S-BALC-HYD`'s sleeve.** A freeze-proof wall hydrant passes through the plant room's
@@ -282,8 +272,10 @@ the future.
 - Permit drawings
 - The house's own strip footings are eccentric under their walls, the same way the garage
   stem's were before 2026-08-15: `FT-B-*` is a 20" strip centred on the y=0 node line,
-  under a `face("concrete-ext")` wall whose 12" of concrete runs 0..12" inboard, so the
-  south toe is 10" and the north one is -2". `Footing.center_on="wall"` now exists to
+  under a `face("concrete-ext")` wall whose concrete runs inboard from it. **The -2" north
+  toe in this note is stale**: that wall went 12" -> 8" on 2026-08-21 and only its inside
+  face moved, so the south toe is 10" and the north one is now **+2"**, not -2".
+  `Footing.center_on="wall"` now exists to
   fix it, but it is deliberately *not* authored there: the glazed-brick plinth's whole
   derivation (`params/foundations.py`, `FT-B-BRICK`) leans on that 10" toe being there
   to bear on. Correcting the footings means re-deriving the plinth with them.
@@ -304,13 +296,47 @@ the future.
   vent), narrow the authored zone, or leave the closet in the SE corner where it clears.
   Enclosure fire-proofing is deferred to its own pass — `INT_ESS_CLOSET_STEEL` is untouched
   and `advisory.ess_enclosure` passes on all four walls today.
-* garage stairs should probably be pressure treated wood or a prebuilt metal staircase
-* 3d models of the stair handrails need some work
-* Add two workbenches, outlets above them, and a hard-wired ethernet cable run to the RM-B-Workshop. Can likely share the spa conduit.
-* Add a hardwired ethernet connection to the RM-M-STUDY, and one to the center of the north wall of the media room.
-* Model a large U-shaped couch and TV in the basement media room. Billy bookshelves on W-B-CE to either side of the door in the media room.
-* is the under basement slab foam and polyethylene modeled completely? It's R-10 of XPS.
-* We need to review the frost risk of the sunken garden around the house footings. Perhaps make the brick wall on an ICF footing. May need to put some ICF footings for the house near there too.
+
+DONE 2026-08-22 — the seven items that stood here (garage stairs, handrail 3D, workshop
+benches/outlets/ethernet, study + media-room ethernet, the media room's U sectional and TV,
+under-slab foam and poly, sunken-garden frost risk). Three of them turned out to be engine
+gaps rather than authoring gaps, and those are the notes worth keeping:
+
+- **The sunken garden was a real frost defect, not a review item.** `structural.frost_depth`
+  compared every footing to one global grade plane (`Site.grade`), so it PASSED all 35 —
+  including `FT-B-S1/S2/S3` with 8" of cover below the garden floor and `FT-B-BRICK` with 2"
+  of NEGATIVE cover. Frost depth is measured from the lowest *adjacent* grade (IRC
+  R403.1.4.1), and beside those four that is the garden floor at -9'-4". The check derives a
+  local grade per footing now; the four are answered by IRC R403.3 wing insulation under the
+  garden slab (`SL-SG-FROST-*`) and an FPSF footing form; the garden's own seven footings
+  report UNKNOWN and go to the engineer who already owns those walls (R404.4).
+- **The garage "stairs" were five concrete `Slab`s**, invisible to `structural.
+  stair_riser_uniformity` and `code.R311_7_8_handrail` alike, so a 5-riser flight with no
+  handrail drew no finding at all. `Stair.floor_opening` is optional now and
+  `base_elevation`/`top_elevation` state a rise directly, so a step-down within one storey is
+  expressible: `ST-G-SERVICE`, KDAT, with `RL-G-SERVICE` over it.
+- **The ethernet could not ride the spa conduit.** NEC 800.133/725 forbids comms sharing a
+  raceway with power, and the model already encodes it (`ConduitRun.service` is one value).
+  The route was right; the pipe is not shareable, so `CD-B-DATA-SHOP` runs parallel to
+  `CD-B-SPA`, 6" east of it.
+
+Three things NOT done and deliberately left:
+
+- **The R312.1.1 guard on the garage stair's 34" landing.** An owner decision with a cost
+  and a look to it, flagged in `plan/storeys/garage.py`. It comes with an engine gap worth
+  its own item: `code.R312_1_guard_height` censuses `FloorSystem`s and `code.R312_1_guard`
+  censuses `FloorOpening`s, so `SL-G-STEP-0` — a `Slab` — is in neither census and its 34"
+  drop is graded by nothing. A rule that walks slab edges would close it.
+- **`ED-B-GYM-RC3`/`RC4`** are authored on the wrong side of `W-B-CE`'s finish face
+  (y=18'-4.385" against a face at 18'-3 3/8"), so they resolve inside the media room while
+  counting toward the gym's NEC 210.52 6-foot rule. They carry no `room=`, so nothing
+  reports it. Fixing them means re-running the gym's NEC fill.
+- **`FT-SG-*`'s frost cover**, 12"-21" below the sunken garden's own floor against 42".
+  `structural.frost_depth` routes all seven to UNKNOWN — a structure retaining the
+  excavation it stands in is an engineered design under IRC R404.4, and
+  `structural.foundation_unbalanced_fill` already sends the same walls to the same
+  consultant. The permit checklist's "Foundation frost depth" item is UNKNOWN because of it,
+  and `test_catlin_contract_m3.py` pins exactly that so nothing else can regress behind it.
 
 
 ## Questions from 08-15 session

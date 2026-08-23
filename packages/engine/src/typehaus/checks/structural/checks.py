@@ -8,8 +8,7 @@ from __future__ import annotations
 from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
-from typehaus.model.enums import StructuralRole
-from typehaus.resolve.site_earth import site_grade_elevation_m
+from typehaus.model.enums import LayerFunction, StructuralRole
 
 # Simplified allowable joist spans (ft) at 16" o.c., residential floor (40 psf live).
 # I-joists by depth; dimensional lumber per IRC R502.3.1(1), SPF #2.
@@ -169,43 +168,161 @@ def ijoist_span(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+def _is_frost_insulation(ctx: CheckContext, assembly_tag: str | None) -> bool:
+    """Is this assembly a *frost-protection* element rather than a floor?
+
+    R403.3's whole mechanism is a skirt of rigid foam laid out from the foundation, keeping
+    the ground under the footing above freezing. Drawn, that is a thin horizontal element of
+    nothing but insulation. A slab with a STRUCTURE layer is a floor, whatever else it
+    carries, and a floor is not what R403.3 is talking about.
+    """
+    if not assembly_tag:
+        return False
+    assembly = ctx.plan.library.resolve_assembly(assembly_tag)
+    if assembly is None or assembly.role != "band":
+        return False
+    return any(layer.function is LayerFunction.INSULATION for layer in assembly.layers)
+
+
+def _frost_protection_footprints(ctx: CheckContext) -> list[tuple[str, object]]:
+    """``(tag, plan polygon)`` for every drawn horizontal frost-protection element."""
+    from shapely.geometry import Polygon
+
+    out: list[tuple[str, object]] = []
+    for solid in ctx.model.solids:
+        if solid.category != "slab" or len(solid.outline) < 3:
+            continue
+        if not _is_frost_insulation(ctx, solid.assembly):
+            continue
+        polygon = Polygon(solid.outline)
+        if polygon.is_valid and polygon.area > 0.0:
+            out.append((solid.tag, polygon))
+    return out
+
+
 @check(Tier.STRUCTURAL, "structural.frost_depth")
 def footing_frost_depth(ctx: CheckContext) -> list[Finding]:
     """Check resolved footings and pads against the profile frost depth.
 
-    Frost depth is measured **from finished grade**, not from the project datum: the two
-    coincide only while ``Site.grade`` is 0. Every sibling grade-dependent rule reads
-    ``site.grade``, and this one now does too (via ``site_grade_elevation_m``, which falls
-    back to the main-floor datum when the site declares no grade). This deliberately does
-    not size foundations or replace engineering; it catches the common omission of a
-    shallow detached-structure pad.
+    Frost depth is measured from **the lowest adjacent finished grade** (IRC R403.1.4.1),
+    which is not the same thing as the site's grade plane. This check compared every
+    footing in the model to one global scalar (``Site.grade``) for as long as it existed,
+    and that is exactly the reading that cannot see an excavation: dig an open sunken court
+    6'-6" into the site beside the house and the footings along it keep being graded against
+    the plane 6'-6" overhead, so a strip with 8" of cover — and a plinth whose bottom is 2"
+    *above* the new ground — both report a comfortable 7'-2" and PASS.
+
+    So the grade is derived per footing now (``resolve.site_earth.local_grade_elevation_m``):
+    the site plane, lowered by any *open* excavation floor within a frost depth of it. That
+    is a strict refinement — a site with nothing dug beside it gets the same single plane it
+    always did, and no existing house moves.
+
+    Three outcomes rather than two, because "shallow" turns out to cover three different
+    conditions:
+
+    * **PASS** — full cover below the local grade, or short of it but protected by drawn
+      horizontal insulation, which is IRC R403.3's frost-protected shallow foundation.
+      The R-values and the B/C dimensions of Table R403.3(1) are the *assembly's* authored
+      citation; this check grades that the protection is drawn and adjacent, not that it is
+      sized. Saying so is the point — a check that claimed to size an FPSF would be the
+      engineering this tier promises it is not doing.
+    * **UNKNOWN** — the footing stands *inside* the excavation that lowered its own grade.
+      That is a retaining structure holding up the hole it sits in, which IRC R404.4 sends
+      to an engineered design rather than to any prescriptive table; its frost protection
+      belongs to the same design and to the same consultant.
+    * **FAIL** — a building footing beside an open excavation, short of cover, with no
+      protection drawn.
+
+    Still advisory, and still not sizing foundations.
     """
+    from shapely.geometry import Polygon
+
+    from typehaus.resolve.site_earth import (
+        heated_floor_footprint,
+        local_grade_elevation_m,
+        open_excavation_floors,
+    )
+
+    cid = "structural.frost_depth"
     minimum_in = ctx.profile.frost_depth_in
     if minimum_in is None:
-        return [Finding(severity=Severity.WARN, check_id="structural.frost_depth",
+        return [Finding(severity=Severity.WARN, check_id=cid,
                         message="UNKNOWN — profile declares no frost depth",
                         result=Result.UNKNOWN)]
     supports = [solid for solid in ctx.model.solids
                 if solid.category in ("footing", "pad")]
     if not supports:
-        return [Finding(severity=Severity.WARN, check_id="structural.frost_depth",
+        return [Finding(severity=Severity.WARN, check_id=cid,
                         message="UNKNOWN — no resolved footings or pads",
                         result=Result.UNKNOWN)]
     minimum_m = minimum_in * 0.0254
-    grade_m = site_grade_elevation_m(ctx.model)
-    shallow = [solid for solid in supports if solid.z0_m > grade_m - minimum_m + 1e-9]
-    if shallow:
-        return [_advisory(
-            "structural.frost_depth",
-            f"{solid.tag} base is {(grade_m - solid.z0_m) / 0.0254:.0f}\" below grade; "
-            f"{minimum_in:.0f}\" minimum is required by the MN profile",
-            (solid.tag,), Result.FAIL,
-        ) for solid in shallow]
-    return [_advisory(
-        "structural.frost_depth",
-        f"{len(supports)} resolved footing/pad bases are at least {minimum_in:.0f}\" below grade",
-        tuple(solid.tag for solid in supports), Result.PASS,
-    )]
+    # Reach and required depth are the same number on purpose: frost drives into the ground
+    # from every exposed face, so the excavation that governs a footing is one within about
+    # a frost depth of it, and the insulation that protects it is likewise.
+    reach_m = minimum_m
+    floors = open_excavation_floors(ctx.model)
+    sheltered_by = heated_floor_footprint(ctx.model)
+    protection = _frost_protection_footprints(ctx)
+
+    out: list[Finding] = []
+    covered = []
+    for solid in sorted(supports, key=lambda item: item.tag):
+        grade_m, source_tag = local_grade_elevation_m(
+            ctx.model, solid.outline, reach_m, floors, sheltered_by)
+        cover_in = (grade_m - solid.z0_m) / 0.0254
+        where = f" below {source_tag}" if source_tag else " below grade"
+        if cover_in >= minimum_in - 1e-6:
+            covered.append(solid)
+            continue
+
+        here = Polygon(solid.outline) if len(solid.outline) >= 3 else None
+        inside = source_tag is not None and here is not None and any(
+            tag == source_tag and here.intersection(polygon).area > 1e-6
+            for tag, polygon, _z in floors)
+        if inside:
+            out.append(_advisory(
+                cid,
+                f"UNKNOWN — {solid.tag} stands inside the {source_tag} excavation with "
+                f"{cover_in:.0f}\" of cover against the {minimum_in:.0f}\" MN profile "
+                f"minimum; a structure retaining the excavation it sits in is outside the "
+                f"prescriptive path (IRC R404.4) and its frost protection belongs to that "
+                f"engineered design",
+                (solid.tag,) + ((source_tag,) if source_tag else ()), Result.UNKNOWN,
+            ))
+            continue
+
+        shielding = [tag for tag, polygon in protection
+                     if here is not None and here.distance(polygon) <= reach_m + 1e-9]
+        if shielding:
+            out.append(_advisory(
+                cid,
+                f"{solid.tag} has {cover_in:.0f}\"{where} against the "
+                f"{minimum_in:.0f}\" MN profile minimum, and is frost-protected by "
+                f"{', '.join(sorted(shielding))} — IRC R403.3, whose Table R403.3(1) "
+                f"R-values and B/C dimensions are the insulation assembly's own sourced "
+                f"citation, not this check's finding",
+                (solid.tag, *sorted(shielding)), Result.PASS,
+            ))
+            continue
+
+        out.append(_advisory(
+            cid,
+            f"{solid.tag} base is {cover_in:.0f}\"{where}; {minimum_in:.0f}\" minimum is "
+            f"required by the MN profile"
+            + ("" if source_tag is None else
+               f" — measured from the lowest adjacent grade (IRC R403.1.4.1), which here is "
+               f"the floor of the {source_tag} excavation, not the site grade plane"),
+            (solid.tag,) + ((source_tag,) if source_tag else ()), Result.FAIL,
+        ))
+
+    if covered:
+        out.append(_advisory(
+            cid,
+            f"{len(covered)} resolved footing/pad bases are at least {minimum_in:.0f}\" "
+            f"below their lowest adjacent grade",
+            tuple(solid.tag for solid in covered), Result.PASS,
+        ))
+    return out
 
 
 def _segment_residue_in(wall: object, module_in: float) -> float:

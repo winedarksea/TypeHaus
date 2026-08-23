@@ -96,7 +96,10 @@ def test_headroom_ignores_structure_below_the_walk():
 
 def test_catlin_stair_headroom_is_measured_and_passes(catlin_ctx):
     findings = {f.message.split()[0]: f for f in stair_headroom(catlin_ctx)}
-    assert set(findings) == {"ST-B2M", "ST-M2S", "ST-S2A"}
+    # ST-G-SERVICE joined the census on 2026-08-22 — five risers from the garage slab to the
+    # service-door threshold, five concrete slabs before that and invisible to every stair
+    # rule. Nothing overhangs it: it climbs into open garage.
+    assert set(findings) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE"}
     for finding in findings.values():
         assert finding.result is Result.PASS, finding.message
         assert "plumb under" in finding.message  # a measurement, not a storey attribute
@@ -114,7 +117,7 @@ def test_width_measures_the_tread_boards():
 
 def test_catlin_stair_widths_pass_at_or_above_the_minimum(catlin_ctx):
     findings = stair_width(catlin_ctx)
-    assert len(findings) == 3
+    assert len(findings) == 4  # + ST-G-SERVICE (2026-08-22)
     assert all(f.result is Result.PASS for f in findings)
     # ST-S2A rides the 36" limit exactly — the tolerance idiom is what keeps it passing.
     assert any("36.00" in f.message for f in findings)
@@ -196,9 +199,10 @@ def test_catlin_flights_have_graded_handrails(catlin_ctx):
     along the nosing line at resolve and graded here on top_height (34"-38" above the
     nosings), continuity and graspability."""
     findings = stair_handrail(catlin_ctx)
-    assert [f.result for f in findings] == [Result.PASS] * 5, \
+    assert [f.result for f in findings] == [Result.PASS] * 6, \
         [f.message for f in findings]
-    assert {f.message.split()[0] for f in findings} == {"ST-B2M", "ST-M2S", "ST-S2A"}
+    assert {f.message.split()[0] for f in findings} == {
+        "ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE"}
 
 
 def test_handrail_is_unknown_when_no_handrail_is_authored_anywhere(catlin_ctx):
@@ -210,7 +214,7 @@ def test_handrail_is_unknown_when_no_handrail_is_authored_anywhere(catlin_ctx):
         catlin_ctx,
         lambda e: None if isinstance(e, Railing) and e.role == "handrail" else e)
     findings = stair_handrail(ctx)
-    assert len(findings) == 3
+    assert len(findings) == 4  # + ST-G-SERVICE (2026-08-22)
     assert all(f.result is Result.UNKNOWN for f in findings)
     assert all("handrail" in f.message for f in findings)
 

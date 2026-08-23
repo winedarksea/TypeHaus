@@ -475,9 +475,27 @@
 # plain slab material+labour $6.50-10.50/SF (Concrete Network, Jul 2026); Midwest $7-11/SF.
 # This rate is set BELOW all three on purpose: an interior basement slab is the cheapest slab
 # there is — no perimeter forming, no edge finish, no exposure. $400-700/cy = $4.94-8.64/SF.
-# Wire mesh ($0.20-0.50/SF) and 6-mil vapour barrier ($0.10-0.15/SF) are inside it. The gravel
-# base is NOT — that is [footing_bedding], and pricing it here would bill the stone twice.
-"slab" = { low = 400, high = 700 }  # 26.37 cy — SLAB-ON-GRADE ONLY, was $175-280
+# Wire mesh ($0.20-0.50/SF) is inside it.
+#
+# AMENDED 2026-08-22. This line used to read "and 6-mil vapour barrier ($0.10-0.15/SF) are
+# inside it. The gravel base is NOT — that is [footing_bedding]". Both halves have changed,
+# because CATLIN_SLAB_FLOOR and GARAGE_SLAB_ON_GRADE now carry the retarder and the base
+# course as real layers with real areas:
+#   * the retarder bills by the square foot in [envelope_layers] as "polyethylene", so it
+#     comes OUT of this rate — $0.10-0.15/SF at a 3.5" slab is $9-14/cy, which is why the
+#     range moved $400-700 -> $390-685 rather than by anything a reader would notice;
+#   * the base course bills there too, as "capillary-break-stone". [footing_bedding] is the
+#     washed rock in the 7" undercut BESIDE each footing and always was — a different
+#     quantity from the 4" course under the slab field, which nothing was ordering at all.
+"slab" = { low = 390, high = 685 }  # 26.37 cy — SLAB-ON-GRADE ONLY, was $400-700
+# The FPSF wings under the sunken-garden slab (IRC R403.3) are `Slab` elements because a
+# horizontal band of rigid foam has no other element kind to be — see
+# params/sunken_garden.FROST_WINGS. They are 1" and 2" XPS and nothing else, so pricing them
+# out of this section's $/cy would order 0.22 cy of concrete that does not exist. Zero here,
+# by qualified key; the foam bills by the square foot in [envelope_layers] as "xps", off the
+# same assembly the model draws.
+"slab:SG_FROST_WING_XPS1" = { low = 0, high = 0 }  # 0.08 cy of foam — bills in [envelope_layers]
+"slab:SG_FROST_WING_XPS2" = { low = 0, high = 0 }  # 0.14 cy of foam — bills in [envelope_layers]
 # RESEARCHED 2026-08-18 — the suspended main-floor deck, priced apart from every other
 # slab in the house. `structural_solids` keys on solid CATEGORY, and "slab" is one
 # category covering two completely different jobs: a slab-on-grade is screeded on the
@@ -836,6 +854,11 @@
 "ED-T-LT-WALL-LINEAR" = { material = { low = 100, high = 350 }, labour = { low = 45, high = 100 } }  # 1 ea
 "ED-T-METER" = { material = { low = 70, high = 200 }, labour = { low = 150, high = 400 } }  # 1 ea
 # The enclosure AND its contents (router, PoE switch, patch panel), per the catalog name.
+# ADDED 2026-08-22 with the three hardwired drops. A single-gang Cat 6A keystone plate is
+# a few dollars of parts; the money is the pull — a home run from ED-B-NET-PATCH, terminated
+# and tested at both ends. The high end is a long pull through finished concrete with a
+# certification report; the low end is a short one in an open basement.
+"ED-T-DATA-JACK" = { material = { low = 12, high = 45 }, labour = { low = 90, high = 260 } }  # 3 ea
 "ED-T-NET-ENCLOSURE" = { material = { low = 300, high = 900 }, labour = { low = 150, high = 400 } }  # 1 ea
 "ED-T-PANEL" = { material = { low = 250, high = 700 }, labour = { low = 1700, high = 3600 } }  # 1 ea
 "ED-T-PV-JB" = { material = { low = 25, high = 80 }, labour = { low = 45, high = 95 } }  # 1 ea
@@ -1058,6 +1081,22 @@
 # applies separately in [markup]), Owens Corning AttiCat published bag coverage at Home
 # Depot, and craftedcalcs.com's R-value depth chart for the R-2.5/in that sets the 14.5".
 "blown-fiberglass" = { material = { low = 0.35, high = 0.7 }, labour = { low = 0.55, high = 1.5 } }  # 576 SF — loose fill, 14.5" at R-2.5/in
+# RESEARCHED 2026-08-22 — the two under-slab layers, 1,783.7 SF each (SL-B-FLOOR 1,296 +
+# SL-G-FLOOR 488). Neither existed in the model until today; both were standing in as one
+# lump-sum allowance in [allowances], now removed.
+#
+# 10-mil ASTM E1745 Class A sheet, not 6-mil builder's poly: Class A is the tier graded on
+# puncture and tensile as well as permeance, i.e. the one that survives rebar chairs and a
+# crew walking on it. Stego Wrap 10-mil and Perminator 10-mil both sit in this band at
+# contractor pricing. Labour is spreading, lapping 6", taping every seam and detailing the
+# penetrations — cheap per SF, and the seam detailing is what the high end pays for.
+"polyethylene" = { material = { low = 0.25, high = 0.55 }, labour = { low = 0.15, high = 0.4 } }  # 1783.7 SF — 10 mil, lapped and taped
+# 4" of #57 washed stone: 0.0123 cy/SF, at $45-75/cy delivered in the Twin Cities, is
+# $0.55-0.92/SF of material. Labour is placing and screeding it to grade inside a finished
+# foundation — wheelbarrowed or conveyed, not tailgated, which is the whole spread between
+# the ends. Compaction is nominal by design: an open-graded stone is placed, not compacted
+# to a proctor, and the absence of fines IS the capillary break.
+"capillary-break-stone" = { material = { low = 0.55, high = 0.95 }, labour = { low = 0.35, high = 0.8 } }  # 1783.7 SF — 4" #57, screeded
 "cabinet-plywood" = { material = { low = 2.5, high = 4.5 }, labour = { low = 4, high = 8 } }  # 101.2 SF — casework fabrication hours, not a sheet-goods rate
 "eps" = { material = { low = 0.7, high = 1.4 }, labour = { low = 0.7, high = 1.35 } }  # 3515.7 SF
 "fiberglass" = { material = { low = 0.45, high = 0.9 }, labour = { low = 0.45, high = 0.85 } }  # 438.8 SF — fastest batt to install, bottom of the $0.50-1.30 band
@@ -1884,6 +1923,24 @@
 # $ each, by catalog type tag
 "FURN-ARMCHAIR-35" = { low = 200, high = 1200 }  # 1 ea
 "FURN-BAR-STOOL" = { low = 60, high = 350 }  # 3 ea
+# ADDED 2026-08-22 with the media room's furnishings. All three are owner-furnished loose
+# pieces, so [furnishings] and not [placeables] — a type must land in exactly one of the two
+# and `load_prices` rejects the overlap.
+#
+# The bookcase is a Billy-class 32" unit; four of them line RM-B-PLAY-N's south wall either
+# side of D-B-PLAY. The low end is the IKEA price with no doors, the high end a solid-wood
+# equivalent of the same size.
+"FURN-BOOKCASE-32" = { low = 80, high = 500 }  # 4 ea
+# A 98" panel is the one line in this table with a floor well above zero: the size itself is
+# specialty, and the low end is a TCL/Hisense-class 98" rather than anything smaller. The
+# high end is an LG/Samsung flagship at the same diagonal. The articulating anchor mount into
+# 8" concrete is inside the range and is a real part of it.
+"FURN-TV-98" = { low = 1600, high = 6000 }  # 1 ea
+# The U sectional, 11'-0" x 8'-0" with a 3'-0" seat depth: eight to nine seats' worth of
+# frame, so it prices as roughly two-and-a-half sofas rather than one. Same enormous spread
+# as every other seating row here, and for the same reason — it is an owner decision that can
+# move 5x after the house is built without a drawing changing.
+"FT-SECTIONAL-U-MEDIA" = { low = 1400, high = 8000 }  # 1 ea
 "FURN-BED-KING" = { low = 400, high = 2500 }  # 1 ea
 "FURN-DESK-48" = { low = 120, high = 600 }  # 4 ea
 "FURN-DESK-CHAIR" = { low = 100, high = 600 }  # 4 ea
@@ -2047,7 +2104,13 @@ envelope-interior-vapour-retarder = { low = 2200, high = 10700 }
 # CATLIN_ROOF's rafter batts and gypsum ceiling arrived with it. Keeping the allowance would
 # pay for the same insulation twice.
 envelope-exterior-sealants-and-caulking = { low = 1800, high = 4500 }
-envelope-subslab-vapour-barrier-and-capillary-break = { low = 1255, high = 2760 }
+# REMOVED 2026-08-22: envelope-subslab-vapour-barrier-and-capillary-break, $1,255-2,760. It
+# was the placeholder for two layers the model did not have. It has them now — a 10-mil ASTM
+# E1745 Class A retarder on a 4" open-graded course, 1,783.7 SF of each across the basement
+# and garage slabs — and they bill by area in [envelope_layers] off the drawn assembly.
+# Keeping the allowance would buy the same sheet and the same stone twice. (The allowance
+# also only ever covered the basement: 1,296 SF at its own implied $0.97-2.13/SF. The area
+# rows cover the garage slab as well, which is why the section total goes up.)
 site-scaffolding-and-lift-rental = { low = 3000, high = 8000 }
 # Dryer, range, HRV and the hose bibs, with their flashing.
 envelope-exterior-hoods-and-flashing = { low = 800, high = 2000 }

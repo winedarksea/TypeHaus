@@ -314,13 +314,22 @@ STAIR_GUARD = Railing(
     infill="balusters", baluster_spacing=inch(4),
 )
 
-# ST-S2A handrail (R311.7.8), wall-mounted on W-S-SS2, raked along the straight flight's
-# nosing line (`serves_stair`). Covers only the straight run, not the three lower winders
-# in the tiered box at the east end — there's no raking wall line to mount a rail on until
-# the flight leaves the turn.
+# ST-S2A handrail (R311.7.8), wall-mounted on W-S-SS2, raked along the flight's nosing line
+# (`serves_stair`).
+#
+# It used to stop at x=32'-5 3/8", where the straight run leaves the turn, on the reasoning
+# that "there's no raking wall line to mount a rail on until the flight leaves the turn".
+# The turn is a LEFT one out of an east entry, so its outside — the wide end of all three
+# winders — is against this same north wall, which runs on to x=36'-0": there is wall, and
+# the winders are beside it. The rail now continues east to x=34'-2" so it is beside the
+# winder fan as well as the straight run, which is what R311.7.8.2 asks of it ("continuous
+# for the full length of the flight"). It ends over the outer corner of the lowest winder
+# tread, 10" from it. Nothing was asking until 2026-08-22, when `code.R311_7_8_handrail`
+# started measuring the drawn rail against the drawn flight instead of reading
+# `continuous=True` off the element; it named the three unserved winders straight away.
 STAIR_HANDRAIL = Railing(
     uid="CARL02AAAA", tag="RL-A-HANDRAIL", path=(
-        pt(ft(32, 5.375), ft(8, 7.625)),
+        pt(ft(35, 5), ft(8, 7.625)),
         pt(ft(22, 5.375), ft(8, 7.625)),
     ),
     kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),

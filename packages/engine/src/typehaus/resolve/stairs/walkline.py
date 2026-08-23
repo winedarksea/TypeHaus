@@ -15,6 +15,13 @@ import math
 
 from typehaus.resolve.framing.profiles import cross_section
 
+#: How far a plan point may sit from every flight centreline before it is judged *off* the
+#: stair. 2 m clears a rail path at the far edge of a code-width flight plus a landing's
+#: depth without ever reaching the next lane's flight one storey away in plan. Lives here,
+#: beside the derivation it qualifies, because both the resolver that rakes a rail and the
+#: check that measures one have to mean the same thing by "beside this flight".
+RAIL_LATERAL_REACH_M = 2.0
+
 
 def flight_stations(stair) -> dict[str, list[tuple[tuple[float, float],
                                                    tuple[float, float], float]]]:
@@ -63,17 +70,35 @@ def flight_stations(stair) -> dict[str, list[tuple[tuple[float, float],
     return flights
 
 
-def flight_walklines(stair) -> list[list[tuple[float, float, float]]]:
+def flight_walklines(stair, include_arrival: bool = True, flights_only: bool = False
+                     ) -> list[list[tuple[float, float, float]]]:
     """Each flight's walking line as a 3D centreline: station midpoints, climb order.
 
     The reduction a railing rake needs: a rail authored *alongside* a flight projects onto
     the flight's centreline, and the projection parameter carries the elevation because the
     rail runs parallel to the flight axis. Degenerate flights (fewer than two stations)
     contribute nothing.
+
+    ``include_arrival=False`` drops the synthetic station :func:`flight_stations` extends a
+    tread flight by — the arrival edge, one going past the top nosing. That extension is
+    right for *raking* a rail, which runs out onto the deck it arrives at, and wrong for
+    asking how long the flight is: R311.7.8.2 wants a handrail continuous from a point above
+    the lowest riser to a point above the top riser, and the deck beyond the top riser is
+    not part of that measurement.
+
+    ``flights_only=True`` drops the *landings* as well. They are stations of the walking
+    line — a rail rakes across one — but they are not flights, and R311.7.8.2 asks its
+    question about a flight: a handrail is expressly permitted to be interrupted at a turn
+    or a landing, which is where the newel goes.
     """
     lines: list[list[tuple[float, float, float]]] = []
-    for stations in flight_stations(stair).values():
-        line = [((a[0] + b[0]) / 2.0, (a[1] + b[1]) / 2.0, z) for a, b, z in stations]
+    for key, stations in flight_stations(stair).items():
+        if flights_only and not (key.startswith("tread") or key == "winder"):
+            continue
+        used = stations
+        if not include_arrival and key.startswith("tread") and len(stations) >= 3:
+            used = stations[:-1]
+        line = [((a[0] + b[0]) / 2.0, (a[1] + b[1]) / 2.0, z) for a, b, z in used]
         if len(line) >= 2:
             lines.append(line)
     return lines
@@ -84,22 +109,37 @@ def walkline_z_at(lines: list[list[tuple[float, float, float]]],
                   max_lateral_m: float) -> float | None:
     """Walking-surface elevation under plan ``point``, off the nearest flight centreline.
 
-    The point is projected (clamped) onto every centreline segment; the closest one in
-    plan wins and its interpolated ``z`` is returned. ``None`` when every flight is
-    farther than ``max_lateral_m`` away — the caller's cue that the point is off the
-    stair (a rail run continuing past the flight onto a floor edge).
+    The point is projected onto every centreline segment; the closest one in plan wins and
+    its interpolated ``z`` is returned. ``None`` when every flight is farther than
+    ``max_lateral_m`` away — the caller's cue that the point is off the stair (a rail run
+    continuing past the flight onto a floor edge).
+
+    **A segment the point projects *inside* always beats one it projects past the end of**,
+    however much nearer that end happens to be. Ranking on clamped distance alone let a
+    *neighbouring* flight's endpoint win over the flight the point actually runs beside:
+    on ST-S2A, the first band of RL-A-HANDRAIL sits 0.40 m from the straight flight it
+    rakes along and 0.28 m from the last nosing of the winder fan below it, so it took the
+    winder's elevation and drew a rail band 0.416 m out of step with its own neighbours —
+    twice their 0.176 m rise. Clamping is what a *lateral* reach test is for; it is not a
+    way to decide which flight a point belongs to.
     """
-    best: tuple[float, float] | None = None  # (plan distance, z)
+    interior: tuple[float, float] | None = None  # (plan distance, z), projection in [0,1]
+    beyond: tuple[float, float] | None = None    # (plan distance, z), projection clamped
     px, py = point
     for line in lines:
         for (x0, y0, z0), (x1, y1, z1) in zip(line, line[1:]):
             dx, dy = x1 - x0, y1 - y0
             run2 = dx * dx + dy * dy
-            t = 0.0 if run2 < 1e-18 else max(
-                0.0, min(1.0, ((px - x0) * dx + (py - y0) * dy) / run2))
+            raw = 0.0 if run2 < 1e-18 else ((px - x0) * dx + (py - y0) * dy) / run2
+            t = max(0.0, min(1.0, raw))
             dist = math.hypot(px - (x0 + dx * t), py - (y0 + dy * t))
-            if best is None or dist < best[0]:
-                best = (dist, z0 + (z1 - z0) * t)
+            candidate = (dist, z0 + (z1 - z0) * t)
+            if -1e-9 <= raw <= 1.0 + 1e-9:
+                if interior is None or dist < interior[0]:
+                    interior = candidate
+            elif beyond is None or dist < beyond[0]:
+                beyond = candidate
+    best = interior if interior is not None else beyond
     if best is None or best[0] > max_lateral_m:
         return None
     return best[1]

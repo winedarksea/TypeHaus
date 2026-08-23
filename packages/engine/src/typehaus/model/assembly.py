@@ -185,6 +185,25 @@ class Assembly(HausModel):
     substitute: tuple[Substitution, ...] = ()
     # Acoustics (#50): empirical lab-test lookup, never computed.
     stc: int | None = None
+    # What this assembly IS, which every rule about it has had to guess from its layers.
+    #
+    # "enclosure" — the only kind that existed: a wall, a roof, a floor, a slab. It separates
+    # an inside from an outside, so it must have a STRUCTURE layer
+    # (``integrity.assembly_layers``), its interior-most face is a face somebody stands in
+    # front of (``code.R316_4``), and a horizontal one is a surface somebody walks on
+    # (``resolve.site_earth``).
+    #
+    # "band" — a buried, single-purpose layer of the ground: an FPSF wing of rigid foam
+    # under a slab, a capillary break, a skirt. It has no structure by definition, faces no
+    # room (IRC R316.5 exempts foam used under a slab or in a foundation from R316.4 for
+    # exactly this reason), and is nobody's walking surface. Modelled as a thin ``Slab``
+    # because ``Layer.extent`` measures from WALL_BASE / WALL_TOP / GRADE and is
+    # vertical-only, so it cannot describe a skirt reaching out sideways under a floor.
+    #
+    # Authored rather than inferred, because the natural inference — "no STRUCTURE layer" —
+    # is precisely the mistake ``integrity.assembly_layers`` exists to catch, and a rule
+    # cannot both catch a thing and treat it as a declaration.
+    role: Literal["enclosure", "band"] = "enclosure"
     source: str | None = None
 
     def depth_layers(self) -> tuple[Layer, ...]:

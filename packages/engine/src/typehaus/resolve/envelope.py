@@ -301,7 +301,7 @@ def _resolve_footing(model: ResolvedModel, footing: Footing, storey: str) -> Res
                                footing.width.meters / 2)
         z1 = wall.z0_m
         return ResolvedSolid(footing.uid, footing.tag, storey, "footing", outline,
-                             z1 - footing.depth.meters, z1)
+                             z1 - footing.depth.meters, z1, assembly=footing.assembly)
     post = model.plan.by_tag(footing.under)
     if not isinstance(post, Post):
         return None
@@ -313,7 +313,7 @@ def _resolve_footing(model: ResolvedModel, footing: Footing, storey: str) -> Res
     assert storey_def is not None
     z1 = storey_def.elevation.meters
     return ResolvedSolid(footing.uid, footing.tag, storey, "footing", outline,
-                         z1 - footing.depth.meters, z1)
+                         z1 - footing.depth.meters, z1, assembly=footing.assembly)
 
 
 def _resolve_roof(

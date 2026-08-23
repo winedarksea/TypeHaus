@@ -70,9 +70,32 @@ class Room(Element):
 class Stair(Element):
     """Rise derived from storey elevations; geometry is selected by ``layout``."""
 
-    floor_opening: str  # FloorOpening tag in the storey above
+    # The hole the flight comes up through, in the storey above. ``None`` for a run that
+    # does not pass through a floor at all — a step-down within one storey, of which the
+    # garage service stair is the reference case: five risers from the garage slab to the
+    # house entry landing, no deck overhead, nothing to open. That case had to be authored
+    # as a stack of ``Slab``s for want of this field, and a stack of slabs is invisible to
+    # every stair check in the engine (``structural.stair_riser_uniformity`` and
+    # ``code.R311_7_8_handrail`` both iterate ``model.stairs``), so a 5-riser flight with
+    # no handrail drew no finding at all. A flight with no opening states its own
+    # elevations below.
+    floor_opening: str | None = None
     from_storey: str
     to_storey: str
+    # Explicit absolute elevations, for a flight whose rise is not the gap between two
+    # storey data. Authored together or not at all: ``base_elevation`` is the walking
+    # surface the flight springs from and ``top_elevation`` the one it arrives at, both in
+    # the project frame, exactly as a storey elevation is. Unset — the ordinary case — the
+    # rise stays ``to_storey.elevation - from_storey.elevation`` and nothing moves.
+    base_elevation: Length | None = None
+    top_elevation: Length | None = None
+    # What the flight is built of. ``Stair`` carried no material at all: the generators
+    # build ``FramedMember``s with hard-coded "2x12"/"2x8" profiles and passed no
+    # ``material=``, so every stair in every house rendered — in the viewer, the sections
+    # and the glTF alike — as the generic lumber the category palette paints. A pressure-
+    # treated exterior flight beside a painted interior one was the same colour as it.
+    # A catalog material ref (``kdat``, ``spf``); ``None`` keeps the category palette.
+    material: str | None = None
     width: Length
     run_direction: str = "x"
     run_reversed: bool = False

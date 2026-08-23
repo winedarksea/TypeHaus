@@ -323,8 +323,12 @@ def test_conduit_emits_cable_carrier_segments(project, tmp_path: Path):
 def test_catlin_conduit_trunks(catlin_model):
     from typehaus.takeoff import conduit_takeoff
 
-    # 4 power trunks + the 3 ESS microgrid runs + the 5 structured-cabling runs.
-    assert len(catlin_model.conduits) == 12
+    # 4 power trunks + the 3 ESS microgrid runs + the 8 structured-cabling runs. The last
+    # three arrived 2026-08-22 with the workshop, study and media-room drops — and one of
+    # them, CD-B-DATA-SHOP, is the answer to "can it share the spa conduit": it runs 6" east
+    # of CD-B-SPA and parallel to it the whole way, because NEC 800.133/725 forbids comms
+    # sharing a RACEWAY with power and `ConduitRun.service` is one value, never a set.
+    assert len(catlin_model.conduits) == 15
     # Not all from the panel any more: the three 2026-08-02 microgrid runs start at the PV
     # junction box and at the inverter, and every data run starts at the patch enclosure.
     assert {run.from_ref for run in catlin_model.conduits} == {
