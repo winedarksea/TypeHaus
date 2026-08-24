@@ -171,7 +171,33 @@ MEDIA_SECTIONAL_U = FurnitureType(
 )
 
 
+# A filler, which is the fourth made-to-fit family and the most literal of them: 6 1/4" of
+# panel scribed between the all-freezer column and the pantry closet beside it (2026-08-24).
+#
+# It exists because a 72" bay does not divide by a 32 7/8" appliance. The cold run was built
+# as two 36" boxes; the Frigidaire Professional pair the owner chose is 65 3/4" together, so
+# 6 1/4" is what is left over, and leftover width in a cabinet run is a filler panel or it is
+# a gap someone drops a broom into. Putting the whole remainder at ONE end rather than
+# splitting it in half is deliberate: both cold-storage receptacles (ED-M-LIVING-KFZ1 at
+# y=29'-10", KRF1 at y=31'-5 3/8") stay behind their own appliance only if the pair sits at
+# the north end of the bay, which puts the filler at the south end against the pantry closet.
+#
+# 72" tall, NOT the 96" of the tall run, and that is the whole detail: FURN-M-KIT-OVER-FREEZER
+# is a CASE-OVER-36 hanging at a 6'-0" mount directly above this spot. A full-height filler
+# would occupy the same air as the over-cabinet. It stops where the appliances stop.
+#
+# Base depth (24"), so its face lines up with the tall cabinets rather than with the columns,
+# which stand 3" proud of them.
+COLDSTORE_FILLER = FurnitureType(
+    tag="FT-KIT-COLDSTORE-FILLER", name='6 1/4" cold-storage filler panel',
+    footprint=(inch(6.25), ft(2)), height=ft(6), plan_symbol="tall-cabinet",
+    storage=False, work_surface=False,
+    source=('scribed filler, 2026-08-24 — the remainder of the 72" cold bay after the '
+            'Frigidaire Professional pair (32 7/8" each). Millwork, not a catalog box.'),
+)
+
+
 FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, CURTAIN_ROD_OUTDOOR_114,
                    CURTAIN_ROD_OUTDOOR_98,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, BATH1_SHELF_2030,
-                   MEDIA_SECTIONAL_U)
+                   MEDIA_SECTIONAL_U, COLDSTORE_FILLER)

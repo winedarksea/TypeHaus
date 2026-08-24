@@ -115,7 +115,13 @@ MAIN_FIXTURES = (
     # Room (and both fixtures) slid north 8" on 2026-08-03 with the W-M-CLN/CLN2 move;
     # this appliance sized that move — 40" deep leaves 8 3/4" to the door plane, the
     # margin the bifold track needs and no more.
-    Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-WASHER-DRYER-STACKED",
+    #
+    # Retyped again 2026-08-24, allowance -> product: the LG WashTower the owner selected
+    # (plan/appliance_types.py). Position is untouched. The tower is 27"x32 3/4"x74 3/8"
+    # against the allowance's 28"x40"x80", so the 2026-08-03 move north is now 7 1/4"
+    # roomier than the paragraph above describes — 16" to the door plane, not 8 3/4". The
+    # margin only ever needed to be positive, so nothing moves to collect the slack.
+    Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-LG-WASHTOWER",
               room="RM-M-LAUNDRY", position=pt(m(2.89712), m(6.06006)), rotation=deg(180),
               wall_ref="W-M-BA2E"),
     # Utility tub, 1" east of the stack — also the *receptor*: PR-M-DRYER-COND air-gaps

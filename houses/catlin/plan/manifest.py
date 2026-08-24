@@ -26,9 +26,9 @@ from library import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES, STARTER_DO
 
 from params import (breezeway, foundations, main_deck, raised_garden, roof_trim,
                     second_deck, solar, sunken_garden)
-from plan import (assemblies, circuits, electrical, fixtures, furniture_types,
-                  lighting, lighting_types, mep, placeables, site, transitions,
-                  views, wind_clamps)
+from plan import (appliance_types, assemblies, circuits, electrical, fixtures,
+                  furniture_types, lighting, lighting_types, mep, placeables, site,
+                  transitions, views, wind_clamps)
 from plan.storeys import attic, basement, garage, main, second
 
 format_version = 1
@@ -52,7 +52,12 @@ _library = Library(
                      *furniture_types.FURNITURE_TYPES),
     railing_types=STARTER_RAILING_TYPES,
     fixture_types=STARTER_FIXTURE_TYPES,
-    appliance_types=STARTER_APPLIANCE_TYPES,
+    # The library's appliance catalog is a planning ALLOWANCE — its own header says final
+    # selection is the owner's. `plan/appliance_types.py` is that selection, and rides
+    # beside the allowances rather than replacing them: the disposer and the recirculating
+    # hood are still unchosen and still correctly generic. Tags are disjoint (APPL-LG-*
+    # vs APPL-*), which `integrity.duplicate_catalog_tag` proves rather than assumes.
+    appliance_types=(*STARTER_APPLIANCE_TYPES, *appliance_types.APPLIANCE_TYPES),
     register_types=mep.REGISTER_TYPES,
     equipment_types=(*mep.EQUIPMENT_TYPES, *electrical.EQUIPMENT_TYPES),
     electrical_device_types=(*mep.ELECTRICAL_DEVICE_TYPES, *electrical.DEVICE_TYPES,

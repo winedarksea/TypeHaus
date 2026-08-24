@@ -163,10 +163,34 @@ MAIN_PLACEABLES = [
               position=pt(ft(19, 3.375), ft(34, 11.375)), rotation=deg(90)),
     Furniture(uid="RABKK6V43P", tag="FURN-M-KIT-TALL-S", type_ref="CASE-TALL-PANTRY-18", room="RM-M-LIVING",
               position=pt(ft(19, 3.375), ft(33, 8.375)), rotation=deg(90)),
-    Appliance(uid="A1Y5Q0RDXV", tag="APPL-M-FRIDGE", type_ref="APPL-REFRIGERATOR", room="RM-M-LIVING",
-              position=pt(ft(19, 8.375), ft(31, 5.375)), rotation=deg(90)),
-    Appliance(uid="ZH6G4SNPWT", tag="APPL-M-FREEZER", type_ref="APPL-FREEZER-UPRIGHT", room="RM-M-LIVING",
-              position=pt(ft(19, 8.375), ft(28, 5.375)), rotation=deg(90)),
+    # Retyped and re-laid-out 2026-08-24, allowance -> product: the Frigidaire Professional
+    # single-door pair (plan/appliance_types.py). The bay is unchanged — still 26'-11 3/8"
+    # to 32'-11 3/8", still 72" — but the appliances no longer divide it in half, because a
+    # column is 32 7/8" and not 36". The 6 1/4" remainder goes to FURN-M-KIT-COLDSTORE-FILL
+    # at the SOUTH end, which is what lets both these boxes shift south as a contiguous
+    # pair and still keep their own receptacles behind them (ED-M-LIVING-KFZ1 at y=29'-10"
+    # lands behind the freezer, KRF1 at y=31'-5 3/8" behind the refrigerator). Splitting the
+    # remainder into two 3 1/8" scribes would have put KFZ1 on the joint between them.
+    #
+    # x moved OUT, from 19'-8 3/8" to 19'-4 7/8", and the run got roomier for it: these
+    # columns are 27" deep against the allowance's 34", and both are back-aligned to the
+    # centre bearing wall's face at x=18'-3 3/8" the way the whole run is. They stand 3"
+    # proud of the 24" tall cabinets beside them instead of 10". Frigidaire does not publish
+    # the handle projection, so the *real* proudness is 3" plus a handle nobody has measured
+    # — a tape on a floor sample before the cabinet order, not a number to invent here.
+    Appliance(uid="A1Y5Q0RDXV", tag="APPL-M-FRIDGE", type_ref="APPL-FRIG-PRO-ALLFRIDGE", room="RM-M-LIVING",
+              position=pt(ft(19, 4.875), ft(31, 6.9375)), rotation=deg(90),
+              # TWINSPAIRKIT rides on the refrigerator rather than the freezer arbitrarily —
+              # it is one kit for the pair, and billing it twice would be wrong. It is what
+              # makes two cabinets legal to stand against each other: the shared side walls
+              # would otherwise sweat.
+              install_parts=("Frigidaire TWINSPAIRKIT twin pairing kit (anti-condensation heater, power supply, cord, clips)",)),
+    Appliance(uid="ZH6G4SNPWT", tag="APPL-M-FREEZER", type_ref="APPL-FRIG-PRO-ALLFREEZER", room="RM-M-LIVING",
+              position=pt(ft(19, 4.875), ft(28, 10.0625)), rotation=deg(90)),
+    # The 6 1/4" the pair does not fill, against FURN-M-KIT-PANTRYC. 72" tall, not 96": the
+    # CASE-OVER-36 above hangs at 6'-0" and a full-height panel would be inside it.
+    Furniture(uid="38V4J30GCK", tag="FURN-M-KIT-COLDSTORE-FILL", type_ref="FT-KIT-COLDSTORE-FILLER",
+              room="RM-M-LIVING", position=pt(ft(19, 3.375), ft(27, 2.5)), rotation=deg(90)),
     Furniture(uid="XTD1N9A693", tag="FURN-M-KIT-PANTRYC", type_ref="CASE-PANTRY-CLOSET-24", room="RM-M-LIVING",
               position=pt(ft(19, 3.375), ft(25, 11.375)), rotation=deg(90)),
     # Over the two cold boxes: 24" deep like the talls, so all four fronts land on x=20'-3 3/8"
@@ -209,7 +233,10 @@ MAIN_PLACEABLES = [
                              "momentary pushbutton, stainless, counter-top",
                              "2-gang low-voltage mounting ring and plate",
                              "18/6 CL2 control cable, 50 ft")),
-    Appliance(uid="XPA5ZCQM5Q", tag="APPL-M-DW", type_ref="APPL-DISHWASHER", room="RM-M-LIVING",
+    # Retyped 2026-08-24, allowance -> product: LG LDTS5552S (plan/appliance_types.py).
+    # 23 3/4"x24 5/8" against the allowance's 24"x24" — the nominal-vs-actual quarter inch
+    # a 24" cabinet opening already carries, so the run's arithmetic is unaffected.
+    Appliance(uid="XPA5ZCQM5Q", tag="APPL-M-DW", type_ref="APPL-LG-DISHWASHER", room="RM-M-LIVING",
               position=pt(ft(31, 1), ft(34, 5.375))),
     Furniture(uid="3QTQ2NFWYD", tag="FURN-M-KIT-E2", type_ref="CASE-B15", room="RM-M-LIVING",
               position=pt(ft(32, 8.5), ft(34, 5.375))),
@@ -230,7 +257,13 @@ MAIN_PLACEABLES = [
     # island aisle is measured from. N4 still claims the corner (flush to 35'-5 3/8").
     Furniture(uid="KA0ETVK8F8", tag="FURN-M-KIT-N4", type_ref="CASE-B30", room="RM-M-LIVING",
               position=pt(ft(34, 5.375), ft(34, 2.375)), rotation=deg(-90)),
-    Appliance(uid="417H1EH5C3", tag="APPL-M-RANGE", type_ref="APPL-ELECTRIC-RANGE", room="RM-M-LIVING",
+    # Retyped 2026-08-24, allowance -> product: LG LSIL6336FE induction slide-in
+    # (plan/appliance_types.py). `APPL-ELECTRIC-RANGE` covered coil, radiant and induction
+    # alike; this house has no gas piped to it and a recirculating hood over the cooktop
+    # precisely because the cooking is induction, so the allowance was wider than the
+    # decision. 29 7/8"x29 5/16" against the allowance's 30"x30" — an eighth and change,
+    # which is why the position and the 3"-proud offset above are unchanged.
+    Appliance(uid="417H1EH5C3", tag="APPL-M-RANGE", type_ref="APPL-LG-INDUCTION-RANGE", room="RM-M-LIVING",
               position=pt(ft(34, 2.375), ft(31, 8.375)), rotation=deg(-90)),
     Furniture(uid="7YPYR8K5FS", tag="FURN-M-KIT-N3", type_ref="CASE-B36", room="RM-M-LIVING",
               position=pt(ft(34, 5.375), ft(28, 11.375)), rotation=deg(-90)),

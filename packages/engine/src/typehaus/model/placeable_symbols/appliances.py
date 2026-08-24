@@ -190,6 +190,37 @@ def panel_board() -> Builder:
     return build
 
 
+def safety_switch() -> Builder:
+    """A NEMA 3R disconnect: a small grey enclosure with a rain hood and a side lever.
+
+    Not ``panel_board`` at a smaller size — a load centre is read by its breaker columns, and
+    a disconnect has none. What identifies one on site is the operating handle hanging off the
+    right-hand side and the hood that sheds water off the cover, so both are the glyph. Both
+    are drawn *inside* the declared W x D: the authored footprint is the product's overall
+    size, handle and hood included, which is what a clearance check has to measure.
+    """
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        handle_t = clamp(width * 0.14, 0.015, 0.05)
+        handle_cx = width / 2 - handle_t / 2
+        body_w = width - handle_t
+        body_cx = -handle_t / 2
+        body_d = depth * 0.82
+        body_cy = depth / 2 - body_d / 2  # the enclosure sits back against its wall
+        body_z1 = height * 0.9
+        strokes = [rect(body_cx, body_cy, body_w, body_d, fill="metal"),
+                   rect(body_cx, body_cy, body_w * 0.8, body_d * 0.62, weight=DETAIL_WEIGHT),
+                   rect(handle_cx, body_cy, handle_t, body_d * 0.42,
+                        fill="luminaire-housing", weight=DETAIL_WEIGHT)]
+        parts = [box(body_cx, body_cy, 0.0, body_z1, body_w, body_d, "metal"),
+                 box(body_cx, 0, body_z1, height, body_w, depth, "metal"),
+                 box(handle_cx, body_cy, height * 0.38, height * 0.68, handle_t,
+                     body_d * 0.42, "luminaire-housing")]
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
 def grille(*, louvers: int = 5) -> Builder:
     """A supply/return register: the louver lines are the whole symbol."""
 
@@ -229,5 +260,6 @@ APPLIANCE_SYMBOLS: dict[str, Builder] = {
     "water-heater": tank(),
     "sauna-heater": sauna_heater(),
     "panel": panel_board(),
+    "disconnect": safety_switch(),
     "register": grille(louvers=5),
 }

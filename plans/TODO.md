@@ -392,7 +392,6 @@ the future.
  - Add some wire shelves and racks to the dedicated closets (mudroom closet aimed at jackets)
  - Remove door D-M-STAIR which likely means wall W-M-STRS can be removed or reconfigured
  - Access panel FURN-M-BATH1-AP is in the wrong spot, probably needs to be on W-M-HS1
- - Recolor the NEMA disconnects like ED-M-HP2-DISC to a gray and probably make them about 20% smaller, they don't look much like actual disconnect boxes right now
  - Are horizontal hat channels necessary for the siding of the house? (nail flange over 20 ga galvanized hat channels)
  - D-M-BED2 door can likely be moved slightly to optimize the stud line
 

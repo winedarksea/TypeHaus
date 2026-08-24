@@ -74,8 +74,13 @@ DEVICE_TYPES = (
                           footprint=(inch(12), inch(6)), height=inch(16),
                           ports=(ServicePort(tag="service", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
+    # A 60A NEMA 3R safety switch is a small hooded grey can with a lever on its right side,
+    # not the yellow slab the domain fallback colour draws — `plan_symbol` gives it both the
+    # handle and the steel grey. Sized off the product (6-1/2" x 3-1/4" x 9-1/2"), about a
+    # fifth under the placeholder it replaced.
     ElectricalDeviceType(tag="ED-T-DISCONNECT-3R", name="NEMA 3R disconnect, 240V",
-                          footprint=(inch(8), inch(4)), height=inch(12),
+                          footprint=(inch(6.5), inch(3.25)), height=inch(9.5),
+                          plan_symbol="disconnect",
                           ports=(ServicePort(tag="power", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
     # EV receptacles (plans/electrical_notes.md lines 5-7). load_va is the continuous EV

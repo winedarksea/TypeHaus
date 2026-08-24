@@ -58,6 +58,7 @@ SYMBOL_NAMES = frozenset({
     "refrigerator", "range", "dishwasher", "washer", "dryer", "washer-dryer-stacked",
     "microwave", "hood",
     "furnace", "erv", "heat-pump-outdoor", "water-heater", "sauna-heater", "panel", "register",
+    "disconnect",
     # plumbing fixtures. "hydrant" is the odd one out: it is a standpipe, not a vessel, so
     # its glyph is the riser's own diameter with a handle bar and an outlet nipple rather
     # than a basin. "floor-drain" is the other one: it is the opening itself, so its glyph is

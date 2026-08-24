@@ -278,6 +278,17 @@ SUPPLY_DEVICES_MAIN = [
                   pipe_ref="PR-B-CW-TRUNK", position=pt(ft(29, 0.6), ft(34, 1.2)),
                   elevation=ft(2, 6), room="RM-M-LIVING", accessible=True,
                   model='1/4" compression stop on a capped tee, in the sink base'),
+    # The cold-storage bay's twin of the row above, at the far end of
+    # PR-M-CW-COLDSTORE-STUB (plan/mep_supply.py). Same reasoning, same nothing-drawn: the
+    # chosen all-refrigerator has no ice maker, so this caps a line that serves nobody yet.
+    # `accessible` is True on the reading that a stop behind a refrigerator is reached the
+    # way every ice-maker stop in every house is — by rolling the appliance out — not by
+    # opening a wall. No fixture, no fixture units, and no arrestor: an arrestor answers to
+    # a quick-closing valve (P2903.5), and a cap is the opposite of one.
+    PipeAccessory(uid="2KBAMK6NTE", tag="PA-M-COLDSTORE-STUB", kind=PipeAccessoryKind.RO_STUB,
+                  pipe_ref="PR-M-CW-COLDSTORE-STUB", position=pt(ft(18, 9), ft(31)),
+                  elevation=ft(2, 6), room="RM-M-LIVING", accessible=True,
+                  model='1/4" compression stop on a capped tee, behind the cold-storage bay'),
 ]
 
 # The balcony hydrant's two, on ``second``. No PA-S-BALC-HYD-VB, same reason as the porch's

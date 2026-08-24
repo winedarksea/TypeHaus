@@ -883,13 +883,28 @@
 # The sixth, FT-BATH1-SHELF-2030 (2026-08-21), is millwork and is priced the way the
 # mudroom and sauna benches are: what the built article costs in materials and shop time.
 # $ each, by catalog type tag
-"APPL-DISHWASHER" = { material = { low = 450, high = 1200 }, labour = { low = 150, high = 350 } }  # 1 ea
+# THREE APPLIANCES STOPPED BEING ALLOWANCES ON 2026-08-24. The owner named products
+# (plan/appliance_types.py), so the APPL-LG-* rows below are not the homeguide chart's
+# category spread any more — they are the street price and the list price of one model,
+# which is a narrower and more defensible bracket than a $600-1,600 "range" ever was. The
+# generic rows they replaced are DELETED rather than commented, because a priced row for a
+# type no instance references is a line nobody can reconcile against the BOM.
+#
+# What is still an allowance, and correctly so: the disposer and the recirculating hood.
+# Neither is chosen, and LG makes neither (no US standalone recirc canopy hood, no disposer
+# at all), so both keep the category spread.
 "APPL-DISPOSAL" = { material = { low = 90, high = 300 }, labour = { low = 0, high = 0 } }  # 1 ea
-"APPL-ELECTRIC-RANGE" = { material = { low = 600, high = 1600 }, labour = { low = 100, high = 250 } }  # 1 ea
-"APPL-FREEZER-UPRIGHT" = { material = { low = 550, high = 1400 }, labour = { low = 75, high = 200 } }  # 1 ea
 "APPL-HOOD-RECIRC" = { material = { low = 150, high = 600 }, labour = { low = 100, high = 300 } }  # 1 ea
-"APPL-REFRIGERATOR" = { material = { low = 900, high = 2600 }, labour = { low = 75, high = 200 } }  # 1 ea
-"APPL-WASHER-DRYER-STACKED" = { material = { low = 1100, high = 2600 }, labour = { low = 120, high = 320 } }  # 1 ea
+# Named LG products, priced 2026-08-24 off LG.com plus the retailer checks in the research
+# note. Low is the observed street/promo price, high is LG's own MSRP — the honest spread
+# on an appliance nobody buys at list and nobody is guaranteed the promo on. Labour is
+# carried over unchanged from the allowance rows: naming the model tells you what the box
+# costs, not what the trade charges to set and connect it.
+"APPL-FRIG-PRO-ALLFREEZER" = { material = { low = 3293, high = 3699 }, labour = { low = 75, high = 200 } }  # 1 ea. FPFU19F8WF, ~$3,293-3,299 street against a $3,699 pre-promo list
+"APPL-FRIG-PRO-ALLFRIDGE" = { material = { low = 3299, high = 3699 }, labour = { low = 75, high = 200 } }  # 1 ea. FPRU19F8WF, $3,299 at Home Depot/Lowe's against a $3,699 pre-promo list. The pair is ~$6,600, roughly 2x the old fridge+freezer allowance — a Professional column pair is what that costs, and the Bosch alternative was ~$13,000
+"APPL-LG-DISHWASHER" = { material = { low = 679, high = 1149 }, labour = { low = 150, high = 350 } }  # 1 ea. LDTS5552S, $679 stainless on LG.com against a $1,149 MSRP
+"APPL-LG-INDUCTION-RANGE" = { material = { low = 1150, high = 2999 }, labour = { low = 100, high = 250 } }  # 1 ea. LSIL6336FE. The widest bracket of the three and deliberately so: $1,150 was a Labor Day promo, typical street is $1,800-2,300, list is $2,999. Budget to the middle, not the low
+"APPL-LG-WASHTOWER" = { material = { low = 2499, high = 3399 }, labour = { low = 120, high = 320 } }  # 1 ea. WKHC252HBA, $2,599 Black Steel / $2,499 White on LG.com against a $3,399 MSRP. A heat-pump WashTower is roughly 2x the old stacked-pair allowance — that is the ventless dryer being bought, not an estimating error
 "CASE-B15" = { material = { low = 130, high = 330 }, labour = { low = 90, high = 220 } }  # 1 ea
 "CASE-B24" = { material = { low = 170, high = 420 }, labour = { low = 90, high = 220 } }  # 1 ea
 "CASE-B30" = { material = { low = 190, high = 480 }, labour = { low = 90, high = 220 } }  # 2 ea
@@ -1015,6 +1030,7 @@
 # the "cabinet-plywood" row, which carries the same $/SF casework-fabrication read —
 # plus edge banding, a paint-grade finish in a wet room, and the scribe to two walls. Labour
 # is shop time plus the set; the 2x4 framed behind the west panel is [framing].
+"FT-KIT-COLDSTORE-FILLER" = { material = { low = 40, high = 110 }, labour = { low = 45, high = 120 } }  # 1 ea. 6 1/4" x 24" x 72" scribed filler — a panel, a scribe and the time to fit it, priced like the other house-local millwork
 "FT-BATH1-SHELF-2030" = { material = { low = 200, high = 750 }, labour = { low = 150, high = 450 } }  # 1 ea
 "FT-CURTAIN-ROD-48" = { material = { low = 25, high = 90 }, labour = { low = 35, high = 90 } }  # 8 ea
 "FT-CURTAIN-ROD-84" = { material = { low = 40, high = 140 }, labour = { low = 35, high = 90 } }  # 1 ea
@@ -1839,6 +1855,11 @@
 "water_hammer_arrestor" = { material = { low = 12, high = 35 }, labour = { low = 25, high = 70 } }  # 3 ea
 
 [install_parts]
+# 2026-08-24: the twin pairing kit for the Frigidaire column pair (plan/placeables.py, on
+# APPL-M-FRIDGE). It is a row here rather than folded into either appliance price because it
+# is ONE kit for TWO cabinets — carried on an appliance row it would read as a per-unit
+# accessory and be counted twice.
+"Frigidaire TWINSPAIRKIT twin pairing kit (anti-condensation heater, power supply, cord, clips)" = { low = 90, high = 150 }  # 1 ea
 # RESEARCHED 2026-08-08 — [low, high] $ each, by loose part. The seven 24V rows are
 # APPL-M-DISP's control loop, billed as parts because its route is not designed
 # (plan/placeables.py). They are an order, not geometry. Ranges are retail electrical-supply

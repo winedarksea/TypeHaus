@@ -302,6 +302,35 @@ HYDRANT_BRANCH_MAIN = [
             serves=("FX-M-PORCH-HYD",)),
 ]
 
+# --- kitchen cold stub, for a future cold-storage water connection (2026-08-24) ---------
+#
+# The owner chose an all-refrigerator with no ice maker and no dispenser, so nothing in the
+# cold-storage bay takes water and nothing here `serves` anything. This is provision, not
+# plumbing: a capped 1/2" line to the back of the bay so the day a unit with an ice maker or
+# a filtered tap arrives, the job is pulling the appliance out and opening a stop, not
+# opening a finished kitchen.
+#
+# **Why it is worth authoring now and not later.** SL-M-DECK is a 12 5/8" cast concrete band
+# covering x 18'-36', y 13'-36' (plan/mep_sleeves.py) — the whole cold-storage bay stands on
+# it. A line fed from *below* would need a cast-in sleeve set before the pour, and coring a
+# structural band afterwards is a different kind of job. This one never goes below the floor:
+# it tees off the kitchen cold where it has already surfaced, at the riser head in the sink
+# base (SP-M-CW-KITCH, ft(29, 0.6) / ft(34, 1.2)) where PA-M-KITCH-STOP-CW and PA-M-RO-STUB
+# already sit, and runs at 2'-6" through the backs of cabinets that are being built anyway —
+# west along the north run, then south down the west run. No penetration, no sleeve, no
+# concrete, and every inch of it behind a removable cabinet back.
+#
+# PEX rather than copper for the same reason HYDRANT_BRANCH_MAIN is: it is a cold branch
+# threading a built assembly, not a trunk. 1/2" stubbed and reduced at the stop, so the tee
+# suits a filtered tap as well as the 1/4" an ice maker wants.
+KITCHEN_STUB_MAIN = [
+    PipeRun(uid="N0D5ATAN07", tag="PR-M-CW-COLDSTORE-STUB", system=PipeSystem.WATER_COLD,
+            path=(pt(ft(29, 0.6), ft(34, 1.2)), pt(ft(18, 9), ft(34, 1.2)),
+                  pt(ft(18, 9), ft(31))),
+            diameter=inch(0.5), material="pex",
+            elevations=(ft(2, 6), ft(2, 6), ft(2, 6))),
+]
+
 # The balcony hydrant's barrel, filed on ``second`` (datum 10'-0") with the wall it pierces.
 HYDRANT_BRANCH_SECOND = [
     PipeRun(uid="G7YB4XN2SD", tag="PR-S-CW-BALC-HYD-CU", system=PipeSystem.WATER_COLD,
