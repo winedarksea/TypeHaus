@@ -67,7 +67,7 @@ export interface StoreState extends MutationActions {
   // Derived from `representation`, never set directly: a separate toggle could disagree
   // with the representation the Views panel was reporting.
   showFraming: boolean;
-  labelMode: LabelMode; // how much name text the 2D plan draws (rooms + objects; default all)
+  labelMode: LabelMode; // how much name text the 2D plan draws (rooms + objects; default hover)
   // One visibility model, read by both Canvas2D and Panel3D (→ model/visibility.ts): trades
   // answer "which discipline", layer groups answer "which band of the assembly".
   visibleTrades: Record<Trade, boolean>;
@@ -162,7 +162,7 @@ export const useStore = create<StoreState>((set, get) => ({
   activeStorey: null,
   view: { scale: 120, tx: 80, ty: 80 },
   showFraming: true,
-  labelMode: "all",
+  labelMode: "hover",
   visibleTrades: {
     walls: true, openings: true, framing: true, floors: true, concrete: true, roof: true,
     stairs: true, furniture: true, plumbing: true, electrical: true, mechanical: true, earth: true,

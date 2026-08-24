@@ -4,13 +4,13 @@
 // Split out of components/Canvas2D.tsx. The door/window symbol is the fiddliest drawing in the
 // plan — hinge side, swing side, arc sweep, the sill/head line weights — and memoizing it is
 // what keeps a pan from redrawing every door in the house.
-import { memo, useRef } from "react";
+import { memo, useRef, useState } from "react";
 import type { DoorOperation, Model, Opening, Stair, Vec2, Wall, WindowOperation } from "../../model/types";
 import { doorStrokeGlyph, hostWallThicknessM, windowStrokeGlyph } from "../../model/doorSymbols";
 import { openingHostWall, pointAlong, swingArcSweepFlag } from "../../model/geometry";
 import { memberFootprint } from "../../model/memberFootprint";
 import { NORDIC_ACCENT, NORDIC_INK } from "../../nordic/palette";
-import type { Selection } from "../../state/vocabulary";
+import type { LabelMode, Selection } from "../../state/vocabulary";
 
 export function hostStorey(model: Model, opening: Opening): string {
   return openingHostWall(model.walls, opening)?.storey ?? "";
@@ -51,7 +51,7 @@ export function nearestOpeningHost(walls: Wall[], storey: string, point: Vec2):
 }
 
 export const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selected, operation, onSelect, onEdit,
-  toWorld, onMove, onPreview, onPreviewEnd, preview }: {
+  toWorld, onMove, onPreview, onPreviewEnd, preview, labelMode = "all" }: {
   o: Opening;
   host: Wall;
   project: (p: Vec2) => Vec2;
@@ -68,6 +68,9 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
   onPreview?: (opening: Opening, host: Wall, position: Vec2) => void;
   onPreviewEnd?: () => void;
   preview?: "valid" | "invalid";
+  // The Views panel's label toggle, same contract as the room and object labels: a window's
+  // tag is a label too, and used to draw regardless.
+  labelMode?: LabelMode;
 }) {
   const center = pointAlong(host, o.center_along_m);
   const [cx, cy] = project(center);
@@ -107,9 +110,12 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
   // threshold is a click → select + open settings; one that does → commit the move.
   const downRef = useRef<Vec2 | null>(null);
   const movedRef = useRef(false);
+  const [hovered, setHovered] = useState(false);
   const DRAG_THRESHOLD_PX = 4;
   return (
     <g onDoubleClick={() => !preview && onEdit(o, [cx, cy])}
+      onPointerEnter={() => setHovered(true)}
+      onPointerLeave={() => setHovered(false)}
       onPointerDown={(event) => {
         if (preview) return;
         event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId);
@@ -197,9 +203,10 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
             fill="none" stroke={NORDIC_ACCENT} strokeWidth={stroke.dashed ? 1 : 1.5}
             strokeDasharray={stroke.dashed ? "4 3" : undefined} />
         ))}
+        {(labelMode === "all" || selected || (labelMode === "hover" && hovered)) &&
         <text x={cx - Math.sin(ang) * 14} y={cy + Math.cos(ang) * 14} textAnchor="middle"
           fill={NORDIC_ACCENT} fontSize={9} fontWeight={700}
-          style={{ paintOrder: "stroke", stroke: "var(--canvas-white)", strokeWidth: 3 }}>{o.tag}</text>
+          style={{ paintOrder: "stroke", stroke: "var(--canvas-white)", strokeWidth: 3 }}>{o.tag}</text>}
       </>}
       {selected && <circle cx={cx} cy={cy} r={5} fill={NORDIC_ACCENT} />}
       {preview && <circle cx={cx} cy={cy} r={Math.max(6, scale * .08)} fill="none"
@@ -208,11 +215,13 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
   );
 });
 
-export const StairShape = memo(function StairShape({ stair, project, selected, hovered, onSelect, onHover }: {
+export const StairShape = memo(function StairShape({ stair, project, selected, hovered, labelMode = "all", onSelect, onHover }: {
   stair: Stair;
   project: (p: Vec2) => Vec2;
   selected: boolean;
   hovered: boolean;
+  // "UP n R" is a label like any other — the Views toggle governs it too.
+  labelMode?: LabelMode;
   onSelect: (kind: Selection["kind"], uid: string) => void;
   onHover: (uid: string | null) => void;
 }) {
@@ -260,7 +269,8 @@ export const StairShape = memo(function StairShape({ stair, project, selected, h
     })}
     <line x1={arrowStartX} y1={arrowStartY} x2={arrowEndX} y2={arrowEndY} stroke={stroke}
       strokeWidth={1.5} markerEnd="url(#stair-arrow)" />
+    {(labelMode === "all" || selected || (labelMode === "hover" && hovered)) &&
     <text x={labelX} y={labelY - 5} textAnchor="middle" fontSize={10} fill={stroke}
-      style={{ paintOrder: "stroke" }} stroke="var(--canvas-white)" strokeWidth={3}>UP {stair.riser_count} R</text>
+      style={{ paintOrder: "stroke" }} stroke="var(--canvas-white)" strokeWidth={3}>UP {stair.riser_count} R</text>}
   </g>;
 });

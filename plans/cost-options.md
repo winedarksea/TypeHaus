@@ -9,10 +9,11 @@ an unpriced idea lives in TODO.md's "potential cost cutting" list until it has a
 swap that changes what the house *does*, not just what it costs, gets a **cost of the cut**
 note. Rows are material+labour unless noted.
 
-**Start here:** [Premium features](#premium-features--what-each-one-costs-2026-08-23) — what
+**Start here:** [Premium features](#premium-features--what-each-one-costs-2026-08-24) — what
 each optional thing costs — and the
-[cost-reduction sweep](#cost-reduction-sweep--2026-08-23) — everything worth $3,000 or more
-off the bottom line. Both were added 2026-08-23 and both quote bid totals, not section deltas.
+[cost-reduction sweep](#cost-reduction-sweep--2026-08-24) — everything worth $3,000 or more
+off the bottom line. Both were added 2026-08-24, both measured against the 2026-08-23
+baseline below, and both quote **bid totals**, not section deltas.
 
 ## Baseline — it moved four times; read this before comparing rows
 
@@ -35,12 +36,12 @@ multiplies it ~1.20x (waste, 10% contingency, material tax) on the way to the bo
 printed total today.
 
 **Two conventions live in this file, and every row says which it uses.** The rows above and
-below this line are *section* deltas. The two 2026-08-23 sections that follow — the premium
+below this line are *section* deltas. The two 2026-08-24 sections that follow — the premium
 menu and the cost-reduction sweep — quote **bid-total** deltas instead, measured by rebuilding
 the estimate with the change made. The measured ladder multiplier is **~1.17x**, not the 1.20x
 estimated above.
 
-## Premium features — what each one costs (2026-08-23)
+## Premium features — what each one costs (2026-08-24)
 
 Asked for directly: the things this house has that an ordinary 5,100 sf Minnesota house
 would not, each with a number against it.
@@ -196,6 +197,12 @@ Interior wall gypsum is not in the table: it is inside `envelope_layers`' 11,392
 `gwb` row and cannot be separated out, and a detached garage 4' from a dwelling may want it
 for exposure reasons regardless.
 
+### Raised garden apron — $8,700–17,400
+
+Ten elements (`W-RG-*` and their levelling pads): `wall_structure` −$7,350/−$14,700 for
+245 SF of `RETAINING_BLOCK_12`, `footing_bedding` −$136/−$287. No engine work, no envelope,
+no MEP — which is exactly why it defers cleanly.
+
 ### Concrete deck over the theatre — $6,300–10,700
 
 Deleting `SL-M-DECK` alone: **−$11,450/−$20,843** (`envelope_layers` −$5,092/−$8,032, the
@@ -209,13 +216,7 @@ after the ladder. The finish is close to a wash — 411 SF of cream polish
 re-author to mat-under-LVP, and the thermal mass sits under the south glazing the facade is
 composed around. The flat bearing seat of 2026-08-23 does not change any of that.
 
-### Raised garden apron — $8,700–17,400
-
-Ten elements (`W-RG-*` and their levelling pads): `wall_structure` −$7,350/−$14,700 for
-245 SF of `RETAINING_BLOCK_12`, `footing_bedding` −$136/−$287. No engine work, no envelope,
-no MEP — which is exactly why it defers cleanly.
-
-## Cost-reduction sweep — 2026-08-23
+## Cost-reduction sweep — 2026-08-24
 
 Asked for: things that take real money out without giving up a high-performance house.
 **Threshold for appearing here is $3,000 off the bottom line.** Same convention as the
@@ -228,37 +229,53 @@ the total. Those rows say **built**. The rest are arithmetic on named `prices.to
 | # | change | saves | how priced |
 |---|---|---|---|
 | 1 | **Attic level → trussed cold attic + blown R-60** | **$89,000–160,000** | see above |
-| 2 | **House-wall cladding: standing-seam snap-lock → lap siding on the same outriggers** | **$15,600–29,000** | built |
-| 3 | Excavation: reuse spoil on site instead of hauling off | $10,000–25,000 | allowance note |
-| 4 | Roofs (house + garage, 2,186 SF): standing seam → architectural asphalt | $9,700–18,200 <br>+$1,500–3,000 of snow retention | built |
-| 5 | Garage ICF stem → conventional formed frost wall | $9,400–16,900 | arithmetic |
-| 6 | ⏳ Raised garden apron — defer | $8,700–17,400 | ablation |
-| 7 | ⏳ Driveway apron + walks — defer to a later contract | $18,000–44,000 | allowance |
+| 2 | ⏳ Driveway apron + walks — defer to a later contract | $18,000–44,000 | allowance |
+| 3 | **House-wall cladding: standing-seam snap-lock → lap siding on the same outriggers** | **$15,600–29,000** | built |
+| 4 | Excavation: reuse spoil on site instead of hauling off | $10,000–25,000 | allowance note |
+| 5 | Roofs (house + garage, 2,186 SF): standing seam → architectural asphalt | $9,700–18,200 <br>+$1,500–3,000 of snow retention | built |
+| 6 | Garage ICF stem → conventional formed frost wall | $9,400–16,900 | arithmetic |
+| 7 | ⏳ Raised garden apron — defer | $8,700–17,400 | ablation |
 | 8 | Windows: mid-range clad/fibreglass → vinyl or entry fibreglass, same U-0.25 | $6,500–11,000 | the `[openings]` note's own number |
-| 9 | Delete the 8 discretionary attic windows | $6,200–12,100 | built, 0 FAIL |
-| 10 | Concrete deck over the theatre → I-joists | $6,300–10,700 | see above |
+| 9 | Concrete deck over the theatre → I-joists | $6,300–10,700 | see above |
+| 10 | Delete the 8 discretionary attic windows | $6,200–12,100 | built, 0 FAIL |
 | 11 | Exterior CI: 4" → 2.5" of ccSPF (R-38.7 → R-32.7) | $5,600–8,000 | built, 0 FAIL |
 | 12 | Plant room → an ordinary second-floor room | $5,300–10,400 | arithmetic |
 | 13 | Trim, stool and apron package simplified | $5,000–13,000 | allowance scope |
 | 14 | Oak floor + red-oak stair treads → LVP / carpet | $4,300–6,800 | `[floor_finishes]` |
-| 15 | Balcony aluminium plank → walkable PVC membrane deck | $3,400–10,000 | `[sheet_goods]`, low confidence |
-| 16 | Exterior guards: Trex Signature → builder-grade aluminium | $3,700–5,700 | `[railings]` |
+| 15 | Exterior guards: Trex Signature → builder-grade aluminium | $3,700–5,700 | `[railings]` |
+| 16 | Balcony aluminium plank → walkable PVC membrane deck | $3,400–10,000 | `[sheet_goods]`, low confidence |
 | 17 | Ishtar-gate glazed brick veneer → plain brick, or delete | $3,300–7,100 | ablation |
 | 18 | HVAC System 3 folded into the multi-zone | $3,000–5,400 | ablation + line-set allowance |
 
-**They do not add up.** #1 contains #9 outright and part of #2, #4 and #11; #5 is
-two-thirds of the "insulated garage" premium; #6, #7 and #10 also appear in the premium
-table. Take #1 and rows 9, and most of 2/4/11, shrink with it.
+**These do not add up, and must not be summed as they stand.** Row 1 swallows row 10 whole
+and shrinks rows 3, 5 and 11 (a smaller house has less wall, less roof and less continuous
+insulation). Row 6 is two-thirds of the "insulated garage" premium above; rows 7 and 9 are
+the same money as the ⏳ raised-garden and concrete-deck rows in the premium table; row 16 is
+inside the sunken-garden number. **Decide row 1 first** — everything else is priced against
+the house as drawn and has to be re-read if the attic goes.
 
-### 2 — the wall cladding is the biggest lever that is not a feature
+With the attic **kept**, and counting each of the remaining seventeen once:
+
+| | low | high | |
+|---|---|---|---|
+| permanently cheaper (rows 3–6, 8–9, 11–18) | **$91,100** | **$177,200** | 9.6% / 8.9% of the bid total |
+| deferred, not saved (rows 2 and 7) | $26,700 | $61,400 | comes back as a later contract |
+| out of the first build | **$117,800** | **$238,600** | 12.4% / 12.0% |
+
+None of the seventeen touches the wall assembly, the air barrier, the ERV, the ACH50 target
+or the window U-value. The only one that spends measurable building performance is row 11 —
+and it is the smallest of the four built rows, which is the argument for weighing it last.
+
+### 3 — the wall cladding is the biggest lever that is not a feature
 
 3,512.2 SF of `standing-seam-snaplock` at $8.75–16.00/SF installed = **$30,732–56,195** —
 the largest single row in the *resolved* bill of materials (allowance lump sums aside),
 ahead of the 11,392.8 SF of gypsum ($17,659–30,191) and the roof's own metal
-($15,084–26,577). It is a *rainscreen
-skin*: it carries no structure, no air control, no water control
-and no thermal control — the Swinburne truss wall's 4" of ccSPF is all four of those. So this
-is the one exterior line where a downgrade costs nothing but looks.
+($15,084–26,577).
+
+It is a *rainscreen skin*: it carries no structure, no air control, no water control and no
+thermal control — the Swinburne truss wall's 4" of ccSPF is all four of those at once. So it
+is the one big exterior line where a downgrade costs nothing but looks.
 
 Re-priced at $5.00–9.00/SF installed (steel or engineered-wood lap, or a fibre-cement panel —
 the band published for metal siding and for LP SmartSide alike): total
@@ -277,21 +294,22 @@ $951,336–1,992,450 → **$935,575–1,963,226**, **−$15,600 / −$29,000**.
   elevations want revisiting. Exposed-fastener products also put 20–30 year gasketed screws
   on the wall where there are none today.
 
-### 4 — the roof row in this file was wrong, and here is the honest split
+### 5 — the roof row in this file was wrong, and here is the honest split
 
-The **Standing-seam metal roof → architectural asphalt shingle** row above compares
-$54,777–99,331 of metal over 6,322 SF against $31,600–56,900 of asphalt, then says in its own
-detail that only 2,180 SF of that is roof and the other 4,143 SF "is not shinglable". Both
-halves are true and the subtraction between them is not — the row's headline
+The **Standing-seam metal roof → architectural asphalt shingle** row in *Downgrades* below
+compares $54,777–99,331 of metal over 6,322 SF against $31,600–56,900 of asphalt, then says
+in its own detail that only 2,180 SF of that is roof and the other 4,143 SF "is not
+shinglable". Both halves are true and the subtraction between them is not — the row's headline
 "**~$20,000–42,400, the biggest lever on the list**" is really two different swaps added
 together, and the asphalt column is priced over area that can never take asphalt.
 
 Split honestly, both built:
 
-| swap | area | current | after | saves |
-|---|---|---|---|---|
-| **roofs only** → architectural asphalt | 2,186 SF (`RF-HOUSE` 1,436.6 + `RF-GARAGE` 749.6) | $20,331–36,322 | $10,931–19,675 | **$9,700–18,200** |
-| **walls only** → lap siding (row 2 above) | 3,512 SF house + 663 SF garage | $34,712–63,491 | — | **$15,600–29,000** |
+| swap | area | current | saves |
+|---|---|---|---|
+| **roofs only** → architectural asphalt, both roofs | 2,186 SF (`RF-HOUSE` 1,436.6 + `RF-GARAGE` 749.6) | $20,331–36,322 | **$9,700–18,200** |
+| **house walls only** → lap siding (row 3 above) | 3,512.2 SF (`standing-seam-snaplock`) | $30,732–56,195 | **$15,600–29,000** |
+| *garage walls, left alone* | 663.3 SF (`standing-seam-nailstrip-26`) | $3,980–7,296 | *under threshold on its own* |
 
 Plus, on the roof swap only, the S-5! seam clamp family and the formed ridge cap go away:
 ~$1,500–3,000 more, per this file's existing note. So the roof-only lever is
@@ -303,7 +321,27 @@ Everything the old row says about the *cost of the cut* stands, and the PV argum
 strongest part of it: `S-5-PVKIT` clamps to a standing seam with zero penetrations, and
 asphalt needs 48 flashed penetrating feet instead.
 
-### 9 — the eight discretionary attic windows
+### 6 — the garage ICF stem
+
+`GARAGE_ICF_6` is 8.8 cy of core at $758–1,299/cy plus 952.5 SF of EPS form at
+$6.50–11.50/SF — **$12,859–22,385**, or **$27–47 per SF of wall**, for a 476 SF frost wall
+under an unheated-by-default detached garage. A conventional formed 8" wall at this file's
+own re-derived $495–810/cy (see the 12"→8" entry) is $4,851–7,938 for the same 9.8 cy,
+forms in the rate.
+
+**−$8,000 / −$14,400 net, −$9,400 / −$16,900 after the ladder.**
+
+- **Cost of the cut:** R-21.9 → R-1.8 on the stem, and the stem is the garage's only
+  below-grade thermal layer. If the garage stays heated, ~64 LF × 5' of uninsulated frost
+  wall is a real loss; 2" of exterior XPS on a conventional wall buys most of it back for
+  $1,900–3,800 and still lands well under the ICF.
+- **This file's two existing garage rows go the *other* way** (full-height ICF at
+  +$3,540–7,940 net, CMU at +$11,200–15,600, both under *Upgrades* below). This is the third
+  direction and the only one that is cheaper than what is drawn.
+- The `_find_framed_on_concrete` sill logic already fires for a formed concrete stem
+  (`material_ref == "concrete"`), so unlike the two upgrade rows there is no engine gap here.
+
+### 10 — the eight discretionary attic windows
 
 **Built: 699 pass, 0 fail, 45 not evaluable** — deleting all eight breaks no rule in the
 registry. `RM-A-WEST` and `RM-A-EAST` are `storage` occupancy, so R303.1's natural-light
@@ -347,34 +385,14 @@ $951,336–1,992,450 → **$945,604–1,984,213**, **−$5,600 / −$8,000**.
   against R-21 of cavity is a 0.44 CI-to-total ratio, over the ~0.36 zone 6 wants and over
   IRC Table R702.7.1's R-11.25 minimum for a 2x6 wall. That is *why* the gate still passes,
   and it is the number to re-check before going thinner still.
-- `preferences.toml` asks for `wall_r = 40`; this is a deliberate move to R-33, still roughly
-  double the MN prescriptive R-20+5ci. It is the row on this list that most directly spends
-  performance for money, and it is the smallest saving of the four built rows — **weigh it
-  last, not first.**
+- `preferences.toml` asks for `wall_r = 40`; this is a deliberate move to R-33, still well
+  clear of the MN prescriptive R-20+5ci and still inside the Pretty Good House band for
+  zone 6. It is the row on this list that most directly spends building performance for
+  money, and it is the smallest saving of the four built rows — **weigh it last, not first.**
 - **The lumber does not come back with it.** The outrigger stays a 2x4 on edge and the
   rainscreen gap grows 1.0" → 2.5". A 2x3 outrigger (1.5" foam + 1" gap, R-35 total) would
   take the KDAT line down too, but `[framing]` has no 2x3 row and the truss-wall geometry
   tests are written against the 3.5" member — price that separately.
-
-### 5 — the garage ICF stem
-
-`GARAGE_ICF_6` is 8.8 cy of core at $758–1,299/cy plus 952.5 SF of EPS form at
-$6.50–11.50/SF — **$12,859–22,385**, or **$27–47 per SF of wall**, for a 476 SF frost wall
-under an unheated-by-default detached garage. A conventional formed 8" wall at this file's
-own re-derived $495–810/cy (see the 12"→8" entry) is $4,851–7,938 for the same 9.8 cy,
-forms in the rate.
-
-**−$8,000 / −$14,400 net, −$9,400 / −$16,900 after the ladder.**
-
-- **Cost of the cut:** R-21.9 → R-1.8 on the stem, and the stem is the garage's only
-  below-grade thermal layer. If the garage stays heated, ~64 LF × 5' of uninsulated frost
-  wall is a real loss; 2" of exterior XPS on a conventional wall buys most of it back for
-  $1,900–3,800 and still lands well under the ICF.
-- `plans/cost-options.md`'s two existing garage rows go the *other* way (full-height ICF at
-  +$3,540–7,940 net, CMU at +$11,200–15,600). This row is the third direction and the only
-  one that is cheaper than what is drawn.
-- The `_find_framed_on_concrete` sill logic already fires for a formed concrete stem
-  (`material_ref == "concrete"`), so unlike the two upgrade rows there is no engine gap here.
 
 ### 12 — the plant room
 
@@ -407,15 +425,21 @@ plant room", not "cheapen it". The three HP windows are the part that is *not* o
   $3,300–7,400 — $23,300–45,400, none of it modelled. Drywall-return jambs at the 41 windows
   (the house already details its four cased openings exactly that way) plus a flat paint-grade
   base takes **$5,000–13,000** out of that block. **Do not read this as "go trimless"** — the
-  `DT-INT-SWING30-TRIMLESS` row above shows a hidden-jamb *door* is a 4–5x premium, not a
+  `DT-INT-SWING30-TRIMLESS` row in *Downgrades* below shows a hidden-jamb *door* is a 4–5x
+  premium, not a
   saving. Returns at windows are cheap; reveals at doors are not.
 - **14, oak.** `[floor_finishes]` "oak" is 351 SF at $11.50–20.50/SF installed
   ($4,037–7,196), and its own note says 351 SF is **under most Twin Cities sand-and-finish
   minimums** — a $1,200–1,800 mobilisation plus a trip per coat, for two rooms. LVP over the
   same 351 SF is $1,229–3,071: **−$2,800/−$4,100**. The red-oak stair treads add
-  $1,500–2,700 more (existing row above; note `stair_finish` is not in the priced sections
-  today, so that half does not show in the total).
-- **15, the balcony plank.** `[sheet_goods] "aluminum-deck"` is 6 sheet-equivalents = 182.0 SF
+  $1,500–2,700 more (the existing *Downgrades* row below; note `stair_finish` is not in the
+  priced sections today, so that half does not show in the total).
+- **15, guards.** `RAILING-EXT-ALUMINUM-FASCIA` is 74.6 LF (balcony 38.3 + porch 36.3) of
+  Trex Signature at $90–135/LF = $6,714–10,071. Builder-grade aluminium at $40–70/LF is
+  $2,984–5,222: **−$3,700/−$5,700**. Both guards or neither — the two levels stop matching
+  otherwise. (This supersedes the $1,343–2,611 in the *Downgrades* row below, which predates
+  the porch guard replacing the masonry parapet.)
+- **16, the balcony plank.** `[sheet_goods] "aluminum-deck"` is 6 sheet-equivalents = 182.0 SF
   at $30–52/SF installed = **$6,948–12,252**, and the row itself says **CONFIDENCE: LOW** and
   that no published price exists for any waterproof interlocking aluminium deck. A walkable
   PVC membrane (Duradek/Tufdek class) over a plywood substrate is $12–22/SF installed =
@@ -424,14 +448,9 @@ plant room", not "cheapen it". The three HP windows are the part that is *not* o
   a quote-only product. **Call Versadeck, (651) 356-1870, before deciding**; the existing row
   already says the call may make the swap moot. Dry-below is not optional: this deck is the
   porch's roof.
-- **16, guards.** `RAILING-EXT-ALUMINUM-FASCIA` is 74.6 LF (balcony 38.3 + porch 36.3) of
-  Trex Signature at $90–135/LF = $6,714–10,071. Builder-grade aluminium at $40–70/LF is
-  $2,984–5,222: **−$3,700/−$5,700**. Both guards or neither — the two levels stop matching
-  otherwise. (This supersedes the $1,343–2,611 in the row above, which predates the porch
-  guard replacing the masonry parapet.)
 - **17, the brick veneer.** Ablating `W-B-BRICK`, `FT-B-BRICK` and the two arched reveals:
   **−$3,322/−$7,107**, essentially all `wall_structure` (129.2 SF of glazed lapis, gold and
-  brown at $15–27/SF). This supersedes the "$1,233–2,603" downgrade row above. Cost of the
+  brown at $15–27/SF). This supersedes the "$1,233–2,603" *Downgrades* row below. Cost of the
   cut is the entire Ishtar-Gate composition, the voussoir rings and the one place the sunken
   garden has colour — it is a *look* line, and cheap for what it does.
 - **18, HVAC System 3.** Installed capacity is ~63,000 BTU/h (`GREE-MULTI-U30` 30k +
@@ -1005,10 +1024,11 @@ Not cost swaps — places the *estimate* was wrong or fragile, found in the 2026
 
 | # | question | what it moves |
 |---|---|---|
-| 5 | **The PV allowance prices 5.28 kW at $4.55–8.71 per watt.** Published 2026 US residential installed cost is $2.60–3.60/W, and a sub-6 kW Twin Cities system $3.50–4.50/W — i.e. $18,500–23,800 for this array. One quote settles it | $6,000–22,000, and it is the second-highest-value phone call on the list |
-| 6 | **Is the attic staying?** Now priced at $89,000–160,000 — the largest single decision left in the model, and the only one that changes the building's whole upper third | $89,000–160,000 |
-| 7 | Cladding: is this a metal-clad house on all four elevations, or on the two that are seen? | $10,000–29,000 |
 | 1 | Is the GC fee in or out? `[markup]` stays zero for now | — |
 | 2 | Is rebar inside the concrete $/cy rates, or its own line? Assumed inside; reversing means editing both places at once | $10,000–18,000 if wrong |
 | 3 | Is 761 LF the right drain-tile length, or should it be one perimeter ring? | $3,000–7,200 |
 | 4 | One roofing quote — see Refactors above | resolves ~$15,500–34,000 of boundary |
+| 5 | **Is the attic staying?** Priced 2026-08-24 at $89,000–160,000 — the largest single decision left in the model, and the only one that changes the building's whole upper third | $89,000–160,000 |
+| 6 | **The PV allowance prices 5.28 kW at $4.55–8.71 per watt.** Published 2026 US residential installed cost is $2.60–3.60/W, and a sub-6 kW Twin Cities system $3.50–4.50/W — i.e. $18,500–23,800 for this array. One quote settles it | $6,000–22,000, and the second-highest-value phone call on the list after the roofer's |
+| 7 | Cladding: is this a metal-clad house on all four elevations, or on the two that are seen? | $10,000–29,000 |
+| 8 | The balcony plank: one call to Versadeck, (651) 356-1870, turns the least certain row in the file into a real one | $3,400–10,000 |

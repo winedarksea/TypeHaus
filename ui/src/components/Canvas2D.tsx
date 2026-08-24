@@ -465,6 +465,7 @@ export function Canvas2D() {
               scale={view.scale}
               selected={selection.uid === o.uid}
               operation={operation}
+              labelMode={labelMode}
               onSelect={selectEl}
               onEdit={editOpeningStable}
               toWorld={unproject}
@@ -490,7 +491,7 @@ export function Canvas2D() {
         {visibleTrades.stairs && stairsOnStorey
           .map((stair) => <StairShape key={stair.uid} stair={stair} project={project}
             selected={selection.uid === stair.uid} hovered={hoverUid === stair.uid}
-            onSelect={selectEl} onHover={hoverEl} />)}
+            labelMode={labelMode} onSelect={selectEl} onHover={hoverEl} />)}
         {/* guards over the stair wells and open edges, drawn on top of the flight they
             protect. Gated on `stairs`, which is where a `railing` solid lands in the 3D viewer
             (three/solidMaterials.ts::SOLID_CATEGORY_TRADE), so the toggle behaves the same in
