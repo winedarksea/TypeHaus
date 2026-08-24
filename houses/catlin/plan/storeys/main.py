@@ -722,10 +722,17 @@ FLOOR_HEAT = [
 # FS-M-WEST's joists rather than a hole in a pour.
 
 # Drawn to the *finished* well, not the wall centrelines — the shaft the stair actually
-# climbs; the u-split resolver anchors flights to its near corner. West/east are the
-# basement's 12" concrete faces (W-B-STR at x=10'-6" and W-B-CW/CW2 at x=17'-6", both of
-# which stayed 12" through the 2026-08-21 thinning precisely because things are dimensioned
-# off them; narrower than the 2x6 walls above, so they size the flights). North
+# climbs; the u-split resolver anchors flights to its near corner. East is the basement's
+# 12" concrete face (W-B-CW/CW2 at x=17'-6", which stayed 12" through the 2026-08-21
+# thinning precisely because things are dimensioned off it; narrower than the 2x6 wall
+# above, so it sizes the flights). West came down to x=10'-3 3/8" on 2026-08-24, when
+# W-B-STR/W-B-STR3 stopped being 12" pours and became 2x6 bearing studs plumb under
+# W-M-STRW's (basement.py): the well's west face is now the plywood face of that framed
+# wall, one continuous plane from the basement floor to the main-storey ceiling, and the
+# shaft reads 7'-2 5/8" rather than 7'-0". The edge lands *exactly* on the layer
+# footprint's east limit, which is what `_opening_edge_has_declared_bearing` tests to a
+# 1e-9 tolerance; if a header ever emits here, back it off to ft(10, 3.25) — 1/8" of deck
+# lip is framing, not a design change. North
 # (2026-07-28) is y=35'-0" — it *was* W-B-N2's inside face, and the 12" -> 8" thinning moved
 # that face to 35'-4". The opening deliberately stays at 35'-0": a 4" strip of deck against
 # the wall is ordinary framing, and chasing the face would perturb a stair tuned to
@@ -734,8 +741,8 @@ FLOOR_HEAT = [
 # R311.7.6's 36" landing plus six 11 15/16" treads, well inside R311.7.5.2's 10" minimum.
 FLOOR_OPENINGS = [
     FloorOpening(uid="CMF601AAAA", tag="FO-M-STAIR",
-                 outline=(pt(ft(10, 6), ft(26, 0.375)), pt(ft(17, 6), ft(26, 0.375)),
-                          pt(ft(17, 6), ft(35)), pt(ft(10, 6), ft(35))),
+                 outline=(pt(ft(10, 3.375), ft(26, 0.375)), pt(ft(17, 6), ft(26, 0.375)),
+                          pt(ft(17, 6), ft(35)), pt(ft(10, 3.375), ft(35))),
                  # The basement walls *under* the two long edges, not the main-storey walls
                  # that stand on them. W-M-STRW/W-M-STRW2 were named here while this hole
                  # was cut in a concrete pour and nothing framed it, so the wrong tags were
@@ -751,12 +758,22 @@ FLOOR_OPENINGS = [
                  # gap; one segment short and the resolver quietly emits a 9'-0" LVL header
                  # here instead — which it did, and `structural.floor_opening_header` FAILed
                  # it, exactly as this comment's last sentence predicted. The pour never
-                 # changed; only the number of tags describing it did.
+                 # changed; only the number of tags describing it did — and on 2026-08-24
+                 # the pour became framing, which this list also does not have to notice:
+                 # `_opening_edge_has_declared_bearing` reads the named walls' full layer
+                 # footprints either way, and the west edge moved with them.
                  bearing_refs=("W-B-STR", "W-B-STR3", "W-B-CN")),
 ]
 
-# 7'-0" well = 3'-3 3/4" + 4 1/2" well partition + 3'-3 3/4", each flight clearing IRC
-# R311.7.1's 36" minimum above the handrail; landing is R311.7.6's 36" minimum.
+# 7'-2 5/8" well = 3'-5 1/16" + 4 1/2" well partition + 3'-5 1/16", each flight clearing
+# IRC R311.7.1's 36" minimum above the handrail; landing is R311.7.6's 36" minimum.
+# It read 7'-0" = two 3'-3 3/4" flights until 2026-08-24, when W-B-STR/W-B-STR3 stopped
+# being 12" pours and the well's west face came down to x=10'-3 3/8" (basement.py). The
+# 2 5/8" is absorbed into the two flights rather than left as a slot beside the west wall
+# or handed to the partition: the flights are still the well's full width, they are wider
+# than they were, and the shaft now reads exactly as FO-S-STAIR does one storey up — same
+# west face, same anchor corner, 3'-1/4" narrower only because W-M-C5 is 2x6 where W-B-CN
+# is 12" concrete.
 # `turn_direction="left"` (2026-07-28): the basement flight springs in the east lane and
 # arrives in the west (D-M-STAIR's lane); ST-M2S is mirrored so the east lane carries the
 # flight up to second. No guard is authored at the head — W-M-STRS closes the west lane and
@@ -764,15 +781,17 @@ FLOOR_OPENINGS = [
 # not a drop.
 STAIRS = [
     Stair(uid="CST701AAAA", tag="ST-B2M", floor_opening="FO-M-STAIR",
-          from_storey="basement", to_storey="main", width=ft(3, 3.75),
+          from_storey="basement", to_storey="main", width=ft(3, 5.0625),
           layout="u_split_landing", run_direction="y", turn_direction="left",
-          start=pt(ft(10, 6), ft(26, 0.375)), landing_depth=ft(3)),
+          start=pt(ft(10, 3.375), ft(26, 0.375)), landing_depth=ft(3)),
 ]
 
 # ST-B2M handrails (R311.7.8): one wall-mounted rail per flight, `serves_stair` rakes each
 # to its flight's nosing line and code.R311_7_8_handrail grades `top_height` (34"-38"),
 # continuity and graspability. Same authoring as ST-M2S one storey up (second.py
 # STAIR_HANDRAILS): each rail sits 2" off its lane's wall face and runs the flight's span.
+# The west rail moved 2 5/8" west on 2026-08-24 with the wall face it is mounted to
+# (x=10'-3 3/8" now); the east one is on W-B-CN's concrete and did not move.
 STAIR_HANDRAILS = [
     Railing(
         uid="CMRL01AAAA", tag="RL-M-HANDRAIL-E", path=(
@@ -787,8 +806,8 @@ STAIR_HANDRAILS = [
     ),
     Railing(
         uid="CMRL02AAAA", tag="RL-M-HANDRAIL-W", path=(
-            pt(ft(10, 8), ft(31, 0.375)),
-            pt(ft(10, 8), ft(26, 10.375)),
+            pt(ft(10, 5.375), ft(31, 0.375)),
+            pt(ft(10, 5.375), ft(26, 10.375)),
         ),
         kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
         base_elevation=ft(0), post_spacing=inch(48), post_size="2x2", rail_count=1,

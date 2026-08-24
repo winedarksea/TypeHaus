@@ -2025,13 +2025,29 @@
 #      `applies_to="wall:framed_on_concrete"`. The rule's own docstring calls the construction
 #      rules "typed declarations of the physical returns the junction solver leaves", i.e. it
 #      states that this plate must be PRESSURE-TREATED. It does not add a second plate.
-# Hence the `spf` material the takeoff reports is not a bug to chase — it is the framing
-# member's species, and this row is the upgrade on it. Price ONLY THE DELTA, and do NOT buy
-# a second 2x6:
+# So this row is the upgrade on the board [framing] already bought. Price ONLY THE DELTA, and
+# do NOT buy a second 2x6:
 #   PT premium over the SPF already billed   $0.50-1.00/LF
-#   foam sill sealer                         $0.15-0.30/LF  (Pregis 5-1/2"x50' $10.58/roll)
 #   anchor bolt + nut + washer at 6' o.c.    $0.42-0.83/LF  (Grip Fast 1/2"x10" HDG $1.645 ea)
-#   drill, set, plate layout                 $2.00-4.00/LF labour (0.04-0.06 crew-hr/LF)
+#   drill, set, plate layout                 $2.00-4.00/LF labour (0.04-0.06 crew-hr/LF),
+#                                            which includes rolling the sill seal out ahead
+#                                            of the plate — see the note in [sill_gaskets]
+#
+# ** The sill sealer came OUT of this row on 2026-08-24 ** ($0.15-0.30/LF material, which is
+# why the material end reads 0.92-1.83 where it read 1.07-2.13). It has its own BOM table and
+# its own price rows now, because the model distinguishes the two products the house actually
+# uses — plain foam inside, peel-and-stick where the plate joint is the air barrier's
+# crossing — and one blended figure inside a PT delta could not carry that. Leaving it here
+# as well would double-count it.
+#
+# **The material the takeoff reports for this return is `kdat`, not `spf`, since 2026-08-24.**
+# The old note here argued the `spf` it reported "is not a bug to chase — it is the framing
+# member's species". That was wrong about the record even though it was right about the
+# money: `resolve/construction_sills.py` was hardcoding a species onto a return whose own
+# category is `pt-sill-plate` and whose docstring cites IRC R317.1, so the BOM said untreated
+# where the detail said treated. Nothing about the rate changes — `construction_returns` is
+# not in `QUALIFIED_KEY_FIELD` (cli/prices.py), so the material column is reported, not
+# priced on — and this row stays the delta for exactly the reasons (1) and (2) above.
 # The FULL assembly, if it is genuinely a separate plate, is material $2.00-2.50/LF and
 # installed $4.50-7.00/LF — verified against AC2 PT 2x6 at $1.62-1.86/LF (Menards 2026). Add
 # a further $1.10-2.35/LF if the anchors have to be drilled into cured concrete rather than
@@ -2048,7 +2064,7 @@
 # when they want the full assembly. That is roughly $13-25 understated on a $1,100-2,300 row.
 # It is recorded rather than fudged: the clean fix is for the takeoff to split the return by
 # whether a framed wall stands on it, which is a schema question and not a rate.
-"pt-sill-plate" = { material = { low = 1.07, high = 2.13 }, labour = { low = 2, high = 4 } }  # 370.0 LF — the PT/sealer/anchor DELTA only (see the gap note above)
+"pt-sill-plate" = { material = { low = 0.92, high = 1.83 }, labour = { low = 2, high = 4 } }  # 370.0 LF — the PT/anchor DELTA only, sealer moved to [sill_gaskets] (see the notes above)
 
 # resilient-channel, 522.2 LF. The 2026-08-18 guess of $0.45-0.90/LF material is CONFIRMED and
 # tightened: single-leg RC-1 in 12' sticks clusters at $0.499-0.566/LF across three independent
@@ -2059,6 +2075,30 @@
 # in the same 25 ga, AND hat is only an acoustic assembly when it rides on resilient clips
 # (RSIC-1/IB-1) at $3.50-5.00 each at ~4 sf — which turns this into a $3-5/LF line.
 "resilient-channel" = { material = { low = 0.55, high = 0.75 }, labour = { low = 0.8, high = 1.5 } }  # 522.2 LF
+
+[sill_gaskets]
+# 2026-08-24 — the seal under the sill plates, split out of the `pt-sill-plate` delta above
+# when the model learned to say WHICH seal. Keyed on the product `resolve/construction_sills.py`
+# picks from the wall: a wall carrying a cladding layer is an envelope wall, its plate joint
+# is where the air barrier crosses onto the foundation, and that joint gets the peel-and-stick
+# form; everything else gets plain closed-cell foam.
+#
+# ** MATERIAL ONLY, DELIBERATELY. ** Rolling the seal out is inside the "drill, set, plate
+# layout" labour already billed on `pt-sill-plate` — it is the same crew in the same pass, and
+# a second labour figure here would be the double-count that pulling the sealer out of that
+# row was meant to end. If this ever becomes a separately-subbed air-sealing scope, price the
+# labour here and say so, and take it back off the plate row in the same edit.
+#
+# $/LF. Foam: Pregis/Owens Corning 5-1/2" x 50' sill sealer at $10.58-14.00/roll = $0.21-0.28/LF,
+# held at $0.15-0.30 for the 3-1/2" and 5-1/2" widths this house uses and for waste on short runs.
+"sill-seal-foam" = { low = 0.15, high = 0.3 }  # material; the section basis says so
+# Peel-and-stick: a self-adhered foam sill seal (Protecto Wrap Triple Guard / Sill Seal-PS
+# class), 5-1/2" x 50' at $60-105/roll = $1.20-2.10/LF. It is ~8x the plain foam and it is
+# bought for one reason — the release liner comes off and the plate joint is *sealed* rather
+# than merely gasketed, which is the only way a blower-door number survives the sill on an
+# envelope wall. Do not value-engineer it onto the interior partitions; they are not on the
+# air barrier and the foam is the right product there.
+"sill-seal-peel-stick" = { low = 1.2, high = 2.1 }  # material; the section basis says so
 
 [furnishings]
 # RESEARCHED 2026-08-08a, split out of [placeables] 2026-08-08b — [low, high] $ each, same
@@ -2509,6 +2549,7 @@ timber               = "material"
 railings             = "material"
 drainage             = "material"
 construction_returns = "material"
+sill_gaskets         = "material"
 furnishings          = "material"
 allowances           = "installed"
 

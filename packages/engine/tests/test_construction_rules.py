@@ -94,7 +94,10 @@ def test_sill_plate_is_pt_bearing_and_carries_overlay_metadata(catlin_model) -> 
     assert sills
     for sill in sills:
         assert sill.kind == "bearing_plate"
-        assert sill.material_ref == "spf"
+        # kdat, not spf (2026-08-24): this return's own category is ``pt-sill-plate`` and
+        # its rule cites IRC R317.1, so the record has to say treated. The rate does not
+        # follow it — ``construction_returns`` prices on the category, not the material.
+        assert sill.material_ref == "kdat"
         assert sill.lap_m > 0.0
         assert sill.sealant is not None
         assert len(sill.element_tags) >= 2  # the concrete element + the framed wall
@@ -156,7 +159,10 @@ def test_the_basement_mudsill_covers_every_bearing_wall_end_to_end(catlin_model)
     """
     plate = {r.element_tags[0]: r for r in catlin_model.construction_returns
              if r.tag == "CR-CONC-TO-FRAMED-SILL"}
-    for tag in ("W-B-CN", "W-B-CS", "W-B-W1", "W-B-STR"):
+    # W-B-STR was the fourth until 2026-08-24, when it was framed: it is a 2x6 bearing wall
+    # on a footing now, so its plate is a ``_framed_on_slab`` return keyed on SL-B-FLOOR
+    # rather than a wall stack. W-B-E1 replaces it as the east wall's floor-bearing pour.
+    for tag in ("W-B-CN", "W-B-CS", "W-B-W1", "W-B-E1"):
         wall = catlin_model.wall(tag)
         assert tag in plate, f"{tag} bears a floor and carries no mudsill"
         run = ((wall.axis[1][0] - wall.axis[0][0]) ** 2
@@ -289,3 +295,61 @@ def test_an_unscoped_ceiling_channel_rule_needs_an_authored_deck_outline(catlin_
     assert sorted({tag for tag in ("FS-M-WEST", "FS-M-EAST", "FS-S-WEST", "FS-S-EAST", "FS-ATTIC")
                    if any(tag in item.uid for item in found)}) == [
         "FS-M-EAST", "FS-M-WEST", "FS-S-EAST", "FS-S-WEST"]
+
+
+# --- the sill seal under those plates (2026-08-24) ----------------------------
+
+
+def test_the_sill_seal_picks_its_product_from_the_wall(catlin_model) -> None:
+    """Peel-and-stick where the plate joint crosses the air barrier, plain foam elsewhere.
+
+    The predicate is a ``cladding`` layer on the framed wall's assembly — a weather skin
+    means an envelope wall means the sill is where the air barrier lands on the foundation.
+    It is read off the *assembly* rather than the resolved members because sills resolve
+    before framing (``takeoff/anchors._is_exterior_framed_wall`` asks the same question of a
+    wall that has already been framed, and cannot be used here).
+    """
+    from typehaus.resolve.construction_sills import (
+        SILL_GASKET_FOAM,
+        SILL_GASKET_PEEL_STICK,
+    )
+
+    sills = [r for r in catlin_model.construction_returns
+             if r.tag == "CR-CONC-TO-FRAMED-SILL"]
+    assert sills
+    by_wall = {}
+    for sill in sills:
+        for tag in sill.element_tags:
+            by_wall[tag] = sill.gasket_product
+    # Exterior: the main-storey walls stacked on the perimeter pour.
+    assert by_wall["W-M-W1B"] == SILL_GASKET_PEEL_STICK
+    assert by_wall["W-M-E1"] == SILL_GASKET_PEEL_STICK
+    # Interior: the centre bearing line, and the two stair walls framed on 2026-08-24 —
+    # neither is on the air barrier, and neither should be bought the expensive product.
+    assert by_wall["W-M-C5"] == SILL_GASKET_FOAM
+    assert by_wall["W-B-STR"] == SILL_GASKET_FOAM
+    assert by_wall["W-B-STR3"] == SILL_GASKET_FOAM
+    # Every sill states a compressed thickness, and it is the in-place joint, not the roll.
+    assert all(s.gasket_thickness_m is not None for s in sills)
+    assert max(s.gasket_thickness_m for s in sills) < 0.125 * 0.0254 + 1e-9
+
+
+def test_the_gasket_rows_reconcile_against_the_sill_returns(catlin_model) -> None:
+    """The LF billed equals the LF of plate, split by product and by nothing else.
+
+    A gasket row is deliberately NOT a second row inside
+    ``construction_returns_takeoff`` — that function reconciles 1:1 with
+    ``model.construction_returns`` (asserted above), and the seal is a separate purchase at
+    a separate rate from the PT delta the plate row bills.
+    """
+    from typehaus.takeoff.anchors import sill_gasket_rows
+
+    rows = sill_gasket_rows(catlin_model)
+    assert len(rows) >= 2, rows
+    gasketed = [r for r in catlin_model.construction_returns
+                if r.gasket_product is not None]
+    assert sum(int(row["count"]) for row in rows) == len(gasketed)
+    total_ft = sum(r.length_m for r in gasketed) * 3.280839895013123
+    assert sum(float(row["length_ft"]) for row in rows) == pytest.approx(total_ft, abs=0.2)
+    # Every gasketed return is a sill plate; nothing else in the model grows one.
+    assert {r.takeoff_category for r in gasketed} == {"pt-sill-plate"}

@@ -60,8 +60,18 @@ class FramingSpec(HausModel):
     # every bay. Empty (the default) emits no blocking, so existing walls are unchanged.
     blocking_heights: tuple[Length, ...] = ()
     # Compressible sill-seal gasket under the sole/sill plate (capillary + air break at
-    # the plate-to-concrete joint), stated as its uncompressed thickness. None = no gasket.
+    # the plate-to-concrete joint), stated as its **compressed, in-place** thickness — the
+    # dimension the wall-base detail draws and the one the bearing seat is derived from
+    # (a house's seat = joist depth + mudsill + gasket). It was the *uncompressed* roll
+    # thickness until 2026-08-24, which no consumer wanted: the only reader draws the
+    # joint as built, and a house that needed the real number was hard-coding it beside
+    # this field. None = no gasket.
     sill_gasket: Length | None = None
+    # Which sill-seal product that gasket is, for the BOM. None (the default) lets
+    # ``resolve/construction_sills.py`` pick from the wall itself: a wall with a cladding
+    # layer is an air-barrier crossing and gets the peel-and-stick form, an interior wall
+    # gets plain closed-cell foam. State it only to override that.
+    sill_gasket_product: str | None = None
 
 
 class MasonrySpec(HausModel):

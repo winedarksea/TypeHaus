@@ -137,6 +137,18 @@ DECLARED_DIVERGENCES = {
     # so the slot would not open up.) 7'-5 5/8" is far past MAX_PAIRED_PLACEMENT_DELTA_M — deliberately: an element that travelled that
     # far is not the same element in the same place, and the matcher is right to say so.
     # The garage itself is unchanged in size, section and framing; only its y is different.
+    # 2026-08-24. The reference drew this line as 8" of concrete on x=11'; it was 12" of
+    # concrete on x=10' for as long as it was a pour, which DECLARED_WALL_EXTENT_CHANGES
+    # below used to record. It is a 2x6 bearing STUD wall on x=10' now — two of them,
+    # W-B-STR and W-B-STR3 — because it retains nothing (`unbalanced_fill` was always
+    # ft(0)) and what it carries is FS-M-MECH/FS-M-STAIR's joists and the W-M-STRW stack,
+    # which is a stud-wall job on a footing. The footing is the part that did NOT change.
+    # The matcher stops pairing it, correctly: a 6 1/4"/6 7/8" framed stack on a different
+    # line is not the same element as an 8" pour, and there is no pour on this line to pair.
+    "House Basement Stair Side Wall (8\")": (
+        "the stair shaft's west wall is two framed 2x6 bearing walls on x=10' since "
+        "2026-08-24 (W-B-STR + W-B-STR3), not a pour on x=11' — see plan/storeys/basement.py"
+    ),
     "Garage Floor Slab": _GARAGE_MOVED,
     "Garage ICF Concrete Core 3": _GARAGE_MOVED,
     "Garage Stud Wall 1": _GARAGE_MOVED,
@@ -156,27 +168,12 @@ MAX_PAIRED_PLAN_EXTENT_DELTA_M = 0.75   # ~2'-6"
 # fails, and a stale entry is deleted the moment the wall stops diverging.
 #
 # Keyed on the *reference* name — the current tag is the thing that may be renamed.
-DECLARED_WALL_EXTENT_CHANGES = {
-    "House Basement Stair Side Wall (8\")": (
-        1.19,
-        "the stair shaft's west wall is 12\" concrete on x=10' now, not 8\" on x=11', and it "
-        "runs the full north-row depth instead of dying at the stair foot — 3'-8\" longer. "
-        "12\" on that line is what gives the shaft its code-minimum 7'-0\" clear well and "
-        "the furnace room its 8'-10\", both measured off the same wall (reference basement "
-        "plan). It read as an unpaired deletion until 2026-08-02, when the ESS closet's two "
-        "partitions and the W-B-CW split changed the basement's wall pool enough for the "
-        "matcher to find the counterpart that was always there — the pairing is the right "
-        "answer, and this is the size of it. The last 4\" of it arrived on 2026-08-21: "
-        "W-B-STR did not move or grow by decision, the wall it dies into did. Thinning "
-        "W-B-N1/N2/N3 from 12\" to 8\" (they align on face(\"concrete-ext\"), so only the "
-        "inside face moved) pulled the north end of the north row 4\" back, and this wall "
-        "runs to meet it. 2026-08-23 took it from 1.13 to 1.19: the ESS closet's move to "
-        "the NE corner split this wall at y=31'-0\" so its south partition had a node to "
-        "tee into, and the segment that still carries the reference's tag is the north "
-        "5'-0\" alone (W-B-STR3 is the rest). The POUR is unchanged and continuous; what "
-        "grew is the extent delta between one reference wall and the one current tag the "
-        "matcher pairs it with"
-    ),
+DECLARED_WALL_EXTENT_CHANGES: dict[str, tuple[float, str]] = {
+    # Empty since 2026-08-24. Its one entry, "House Basement Stair Side Wall (8\")", moved
+    # to DECLARED_DIVERGENCES: that line is framed now and the matcher no longer pairs it
+    # with the reference pour at all, so there is no paired extent left to bound. The
+    # mechanism stays — a wall whose plan extent changes by decision is pinned to the size
+    # of the change here, so a further silent stretch still fails.
 }
 
 HOUSE_SIZE_FT = 36.0
@@ -325,12 +322,13 @@ def test_every_reference_element_has_a_counterpart_or_a_declared_reason(equivale
 def test_paired_walls_stay_on_their_reference_wall_lines(equivalence):
     """Every reference wall line that still exists is within a construction-scale move."""
     pairs = _paired(equivalence, "wall")
-    # 20, not 25: the garage's 7'-0" move deliberately unpairs three of its stud-wall runs,
-    # and *both* centerlines unpair because a stretch of each is an LVL rather than wall —
-    # BM-S-HALL on second, BM-M-HALL on main (all recorded in DECLARED_DIVERGENCES). Every
-    # wall that still pairs must still be within a construction-scale move of its reference
-    # line, which the loop below asserts.
-    assert len(pairs) >= 20, equivalence.status_counts()
+    # 19, not 25: the garage's 7'-0" move deliberately unpairs three of its stud-wall runs,
+    # *both* centerlines unpair because a stretch of each is an LVL rather than wall —
+    # BM-S-HALL on second, BM-M-HALL on main — and the basement stair side wall unpaired on
+    # 2026-08-24 when it stopped being a pour at all (all recorded in DECLARED_DIVERGENCES).
+    # Every wall that still pairs must still be within a construction-scale move of its
+    # reference line, which the loop below asserts.
+    assert len(pairs) >= 19, equivalence.status_counts()
     for item in pairs:
         assert item.placement_delta_m <= MAX_PAIRED_PLACEMENT_DELTA_M, item.as_dict()
         plan_delta = max(abs(item.size_delta_m[0]), abs(item.size_delta_m[1]))

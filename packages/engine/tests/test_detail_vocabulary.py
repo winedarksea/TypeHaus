@@ -434,16 +434,27 @@ def test_slab_on_grade_is_read_from_rooms_below_not_the_assembly_name(catlin_mod
 
 # --- dimensional parity for the drawn vocabulary ------------------------------
 
-def test_sill_gasket_is_the_reference_quarter_inch(catlin_model):
+def test_sill_gasket_is_the_compressed_sixteenth(catlin_model):
+    """The drawn gasket is the joint as built, not the roll it came off.
+
+    The source detail's ``sill/gasket_in`` is 1/4" — the uncompressed thickness — and that
+    is what both the config default and ``FramingSpec.sill_gasket`` stated until
+    2026-08-24. Nothing wanted it: the one consumer draws the bolted-down joint, and the
+    bearing seat is derived from the same compressed dimension (``params/main_deck.py``),
+    which is why catlin was hard-coding 1/16" beside the field rather than reading it.
+    """
     from typehaus.emit.draw.detail_components import BASEMENT_TO_FRAMED_WALL
 
-    expected = float(_reference("basementtoframedwalldetail")["sill"]["gasket_in"])
-    assert BASEMENT_TO_FRAMED_WALL.sill_gasket_in == pytest.approx(expected)
+    uncompressed = float(_reference("basementtoframedwalldetail")["sill"]["gasket_in"])
+    assert uncompressed == pytest.approx(0.25)
+    assert BASEMENT_TO_FRAMED_WALL.sill_gasket_in == pytest.approx(0.0625)
 
     _derived, scene = _detail_scene(catlin_model, "wall_foundation:CATLIN_BASEMENT_12")
     gasket = _component_nodes(scene, "sill-gasket")[0]
     height = (max(z for _u, z in gasket.points) - min(z for _u, z in gasket.points))
-    assert height == pytest.approx(expected, abs=1e-6)
+    # CATLIN_EXT_2X6 authors the same 1/16" on its own FramingSpec, so the drawn joint and
+    # the config fallback agree — as they must, or the seat and the drawing disagree.
+    assert height == pytest.approx(0.0625, abs=1e-6)
 
 
 def test_slab_thermal_break_and_sealant_match_the_reference(catlin_model):
@@ -781,7 +792,7 @@ def test_drain_tile_spec_reads_the_footing_bedding(catlin_model):
 
 def test_sill_gasket_prefers_the_authored_framing_spec():
     """``FramingSpec.sill_gasket`` on the assembly's structure layer wins; absent, the
-    pinned reference 1/4" stands."""
+    pinned reference (1/16" compressed) stands."""
     from types import SimpleNamespace
 
     from typehaus.emit.draw.detail_components import BASEMENT_TO_FRAMED_WALL

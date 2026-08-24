@@ -328,9 +328,9 @@ OPENINGS = [
     Door(uid="CSD201AAAA", tag="D-S-BED1", host="W-S-BW1", type_ref="DT-INT-SWING30",
          position=from_node("N-S-B1", ft(4, 11)), flip_swing=True),          # y 15'-2"
     Door(uid="CSD202AAAA", tag="D-S-BED2", host="W-S-BW2", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-B2", ft(4, 10))),                       # y 24'-1"
+         position=from_node("N-S-B2", ft(4, 1.0625)), flip_swing=True),                       # y 24'-1"
     Door(uid="CSD203AAAA", tag="D-S-BED3", host="W-S-BW3", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-B3", ft(0, 8))),                        # y 28'-11"
+         position=from_node("N-S-B3", ft(0, 8)), flip_swing=True),                        # y 28'-11"
     # Just an opening, framed the same as a 30" door: no leaf needed for this passthrough.
     RoughOpening(uid="CSD204AAAA", tag="D-S-STUDY2", host="W-S-SS1",
                  position=from_node("N-S-C1", ft(1, 0.625)), width=ft(2, 6),
@@ -368,7 +368,7 @@ OPENINGS = [
     Door(uid="CSD208AAAA", tag="D-S-BATH1", host="W-S-BD-N1B", type_ref="DT-INT-SWING30",
          position=from_node("N-S-V2", ft(1, 1.5))),                      # x 8'-3"
     Door(uid="CSD217AAAA", tag="D-S-NCLOSET", host="W-S-CLN-S", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-C3D", ft(0, 8.5))),                     # x 19'-11 1/2"
+         position=from_node("N-S-C3D", ft(0, 8.5)), flip_swing=True, flip_hinge=True),                     # x 19'-11 1/2"
     # O-S-STAIRTOP, the 6'-0" cased stair head, went with its host wall W-S-BD-N2.
     # Balcony doors. The source draws ONE opening (x 18'-8"..23'-11", 5'-3", with two
     # leaves), east of the centre line; that is D-S-DECK-E, standardized to the catalog's

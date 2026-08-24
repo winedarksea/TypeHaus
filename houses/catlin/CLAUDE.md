@@ -376,8 +376,12 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     flat bearing seat made the pour exactly 8'-0", which is the table's 8'-unsupported row
     rather than the 10' row a 9'-4" wall rounds up to. **The "12" is earned only where a cast
     deck lands beside the sill plate" rule is now obsolete** — with a flat seat nothing
-    competes for wall-top width, and the four 12" segments are left as built for reasons
-    written on the walls themselves, not for bearing.) Drop that string on any of the nine and
+    competes for wall-top width, and the 12" segments that are left are left as built for
+    reasons written on the walls themselves, not for bearing. There were four until
+    2026-08-24; `W-B-STR` and `W-B-STR3` are 2x6 bearing stud walls now — `unbalanced_fill`
+    was already `ft(0)` on both, and what they carry is joists and a wall stack, which is a
+    stud-wall job on a footing. The centre line's three interior segments
+    `W-B-CS`/`W-B-CS2`/`W-B-CN` are the interior pour that remains.) Drop that string on any of the nine and
     `structural.foundation_unbalanced_fill` FAILs, correctly.
   Every one of the four carries exactly 4.55" outboard of the concrete face — the panel is
   the same 1/2" as the parge it replaces, and neither is part of the pour — which is what

@@ -87,10 +87,12 @@ SHEET_METAL = SheetMetalConfig()
 class BasementToFramedWallConfig:
     """The basement→framed-wall transition (``basement_to_framed_wall_detail_ifc.png``)."""
 
-    #: Building fact: 1/4" sill gasket under the treated mudsill
-    #: (``basementtoframedwalldetail.json`` ``sill/gasket_in``). Belongs on the wall's
-    #: ``FramingSpec`` (a ``sill_gasket`` thickness) once the model carries one.
-    sill_gasket_in: float = 0.25
+    #: Building fact: 1/16" of *compressed* sill gasket under the treated mudsill. The
+    #: source detail's ``sill/gasket_in`` states 1/4", which is the uncompressed roll; what
+    #: this draws, and what a bearing seat is derived from, is the joint as built. Only the
+    #: fallback — ``FramingSpec.sill_gasket`` on the wall's structure layer wins when the
+    #: assembly states one, and states the same compressed dimension.
+    sill_gasket_in: float = 0.0625
     #: Spray-foam sealant bead at the outer end of the L-flashing.
     sealant_bead_in: float = 0.75
     sealant_bead_height_in: float = 0.9

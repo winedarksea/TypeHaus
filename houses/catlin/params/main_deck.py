@@ -161,6 +161,11 @@ MAIN_FINISHED_FLOOR_LVP = inch(MAIN_FINISHED_FLOOR.inches + _LVP.inches)
 # The mudsill is the framed wall's own 2x6 sill, shared: one board carries the studs above
 # and the joists beside it, which is why the sill return is authored over the *union* of the
 # two runs rather than as two rules that would double-bill the same plate.
+# The same number ``FramingSpec.sill_gasket`` states on CATLIN_EXT_2X6 (and the same one
+# ``BasementToFramedWallConfig.sill_gasket_in`` falls back to). It is stated twice on
+# purpose: the seat is derived here, and the field is what the wall-base detail draws. It
+# used to be stated twice *differently* — the field carried the uncompressed 1/4" roll until
+# 2026-08-24, which is why this line existed at all.
 _SILL_GASKET_COMPRESSED = inch(0.0625)   # EPDM sill seal, compressed thickness
 _MUDSILL = inch(1.5)                     # the framed wall's 2x6 sill plate, laid flat
 BEARING_SEAT = inch(-(_SILL_GASKET_COMPRESSED.inches + _MUDSILL.inches
@@ -232,12 +237,14 @@ def _rect(x0: object, y0: object, x1: object, y1: object) -> tuple[Point2D, ...]
 # went to y=36'. Two things are true now instead. Each system names every wall its joists
 # actually land on — duplicates on one grid line are a degenerate span and ``resolve/floors.py``
 # drops them — and the x=10' line north of ``_MECH_Y`` is declared as bearing, which is what
-# ``W-B-STR3`` stayed 12" of pour for — see its note in plan/storeys/basement.py, which
-# records the stud-wall version that was built and backed out on the same day.
+# ``W-B-STR3`` was 12" of pour for until 2026-08-24. It is 2x6 bearing studs now (see its
+# note in plan/storeys/basement.py): what these joists need from it is 1 1/2" of structure
+# either side of the NODE axis, which the studs give at 2 7/8" / 2 5/8" — the pour was
+# never the point, the bearing was.
 #
 # ``_MECH_Y`` is the N-B-BA-W / N-B-BA-E node line: the southernmost y at which x=10' is a
 # bearing wall for its whole remaining run (W-B-STR3 to y=31', then W-B-STR to y=36' —
-# one continuous pour, two tags). South of it x=10' is W-B-STR2, a non-bearing steel-stud stub, so the south bay
+# one continuous wall, two tags). South of it x=10' is W-B-STR2, a non-bearing steel-stud stub, so the south bay
 # keeps the full 18'-0" span.
 #
 # Joist depth does NOT follow the shorter spans. It is set by the deck match — the seat and
@@ -292,7 +299,10 @@ MECH_FLOOR = FloorSystem(
 # Stair bay: 8'-0" from the x=10' line to the centre line, carrying FO-M-STAIR. Its west
 # edge is a bearing edge, which is why W-B-STR3 has to stay a declared bearing ref —
 # ``structural.floor_opening_header`` reads FO-M-STAIR's own refs and would otherwise size
-# that edge a 9'-0" engineered header.
+# that edge a 9'-0" engineered header. Since 2026-08-24 that edge sits on the framed wall's
+# plywood face at x=10'-3 3/8" rather than the pour's at 10'-6"; the refs did not change,
+# because ``_opening_edge_has_declared_bearing`` reads the named walls' full layer
+# footprints and this one reaches exactly that face.
 STAIR_FLOOR = FloorSystem(
     uid="CMFS04AAAA", tag="FS-M-STAIR",
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",

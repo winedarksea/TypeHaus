@@ -523,6 +523,9 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         # Structure
         "framing", "framing_by_size", "structural_solids", "sheet_goods",
         "construction_returns", "hardware", "footing_bedding",
+        # The sill seal under the bearing plates (2026-08-24): its own section because
+        # `construction_returns` reconciles 1:1 with the resolved returns.
+        "sill_gaskets",
         # Monolithic wall structure (2026-08-03): the concrete/masonry wall cores that
         # frame no members and are not solids, so no other section could see them.
         "wall_structure",

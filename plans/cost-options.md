@@ -654,7 +654,25 @@ facade is composed around; `FH-M-DINING`/`FH-M-BATH2` radiant would need re-auth
 anticipates a joist ceiling raising the sauna liner to full wall height.
 </details>
 
-## W-B-STR, the 12" stair wall — PRICED 2026-08-22, RECOMMENDATION IS NEITHER
+## W-B-STR, the 12" stair wall — PRICED 2026-08-22, TAKEN 2026-08-24 (the third option)
+
+> **Both options priced below were declined, and the wall was framed anyway on 2026-08-24
+> — by a route neither of them describes.** The blocker in both is `FO-M-STAIR`'s west edge
+> at x=10'-6", and both answers below treat that edge as fixed: one leaves it and eats an
+> engineered header, the other proposes moving it to 10'-4" and calls the stair
+> re-dimension a cost. The route taken moves it to **10'-3 3/8"** — the plywood face of a
+> 2x6 stud line aligned plumb under `W-M-STRW`'s studs with
+> `face("stud-ext", offset=inch(-2.625))`, which is where `FO-S-STAIR`'s west edge already
+> was one storey up. So the well's west face becomes one continuous plane top to bottom
+> rather than a new dimension, the 2 5/8" is absorbed into the two flights (3'-3 3/4" ->
+> 3'-5 1/16", both further over the 36" minimum than before), `RM-B-FURNACE` gains 3 1/8",
+> and `_opening_edge_has_declared_bearing` is satisfied on the layer footprint with no
+> header. `FT-B-STR`/`FT-B-STR3` stay — a framed bearing wall wants the same footing — so
+> the "retires the one interior footing the 2026-08-21 pass kept" objection below does not
+> apply either. Two segments, `W-B-STR` + `W-B-STR3`, ~9.8 cy out. The prices below stand;
+> read the objections as the constraints the route had to satisfy, not as reasons it did
+> not happen.
+
 
 The last 12" pour anybody asked about: `W-B-STR`, the basement stair shaft's west wall,
 14'-2 5/8" x 9'-4" = 132.7 SF, **4.92 cy** of `FOUNDATION_WALL_12_INT` on the x=10'-0" axis.
@@ -688,7 +706,9 @@ a designed beam.
   flight width is measured off that face, so the stair re-dimensions. No materials, several
   drawings.
 - A 6.75" `CATLIN_INT_2X6_BRG` wall has faces at 9'-8 5/8"/10'-3 3/8" — the same problem, 1/8"
-  worse.
+  worse. *(This is the line the 2026-08-24 change turned around: it is only a problem while
+  the opening edge is treated as fixed. Move the edge to the stud line's own face — which is
+  where the storey above already drew it — and the footprint reaches it exactly.)*
 
 **What framing it really costs.** 4.92 cy at $470–780/cy is $2,312–3,838 out of
 `[wall_structure]`; the replacement is ~155 LF of 2x6 at `[framing]`'s $1.75–2.75/LF, 265 SF
@@ -715,10 +735,16 @@ $1.55–3.00/SF = **$1,093–1,923**. So $389–2,745 back, and the low end is n
 `W-B-CN/CN2/CS2` so those scenes stay, but a stud-on-stud junction appears that wants
 blessing.
 
-**Recommendation: neither.** $330–560 for a stair-well re-dimension plus an engineered
-header is a bad trade at any confidence; $389–2,745 for retiring a two-storey bearing line
-and its footing is a worse one. If the stair well is ever re-drawn for another reason, the
-8" pour comes almost free at that moment — revisit it then, not before.
+**Recommendation as written 2026-08-22: neither.** $330–560 for a stair-well re-dimension
+plus an engineered header is a bad trade at any confidence; $389–2,745 for retiring a
+two-storey bearing line and its footing is a worse one.
+
+**Superseded 2026-08-24 by the note at the head of this entry.** The framing option was
+taken across both segments, and the two objections that carried the recommendation both
+turned out to be answerable rather than true: the bearing line is not retired (a framed
+bearing wall on the same footing is still a bearing line, and `FT-B-STR`/`FT-B-STR3` did
+not move), and the stair re-dimension is not a cost — the well's west face lands on the
+plane `FO-S-STAIR` already used, and the flights got wider.
 
 ## Taken
 

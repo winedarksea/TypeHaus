@@ -70,6 +70,33 @@ def mudsill_anchor_rows(model: ResolvedModel, rules: SillPlateAnchorRules,
                f"{len(returns)} sill runs totalling {total_length_m * _M_TO_FT:.1f} LF"))]
 
 
+def sill_gasket_rows(model: ResolvedModel) -> list[dict[str, object]]:
+    """The sill seal under every bearing plate, by the lineal foot, one row per product.
+
+    Read off the same construction returns ``mudsill_anchor_rows`` counts anchors on, so the
+    gasket follows the plate exactly: the resolver picked the product from the wall (plain
+    closed-cell foam where the plate joint is only a capillary/air break, peel-and-stick
+    where it is the air barrier crossing onto the foundation) and stated the compressed
+    thickness; this only sums the runs.
+
+    Deliberately its own table rather than a second row inside
+    ``construction_returns_takeoff``: that function reconciles 1:1 with
+    ``model.construction_returns`` (``test_construction_rules``) and a gasket row alongside
+    the plate row would break the invariant the section/3D/IFC render against.
+    """
+    runs: dict[tuple[str, float], list[float]] = {}
+    for ret in model.construction_returns:
+        if ret.gasket_product is None:
+            continue
+        key = (ret.gasket_product, round((ret.gasket_thickness_m or 0.0) / M_PER_IN, 4))
+        runs.setdefault(key, []).append(ret.length_m)
+    return [
+        {"product": product, "thickness_in": thickness_in, "count": len(lengths),
+         "length_ft": round(sum(lengths) * _M_TO_FT, 1)}
+        for (product, thickness_in), lengths in sorted(runs.items())
+    ]
+
+
 def strap_holdown_rows(model: ResolvedModel, rules: SillPlateAnchorRules,
                        sill_category: str) -> list:
     """Embedded strap holdowns at the ends of the sill-plate runs.

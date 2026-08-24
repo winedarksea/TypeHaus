@@ -1466,14 +1466,19 @@ def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
     # until `floor_opening` became optional and `base_elevation`/`top_elevation` were added.
     # It was five concrete `Slab`s before that, and invisible to every stair rule there is.
     assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE"}
-    # 3'-3 3/4" is the flight the basement's 7'-0" well leaves either side of the 4 1/2"
-    # well partition.
-    assert stairs["ST-B2M"]["width_m"] == pytest.approx(ft(3, 3.75).meters, abs=1e-9)
+    # 3'-5 1/16" is the flight the basement's 7'-2 5/8" well leaves either side of the
+    # 4 1/2" well partition. It was 3'-3 3/4" in a 7'-0" well until 2026-08-24, when
+    # W-B-STR/W-B-STR3 were framed and the shaft's west face came down from x=10'-6" to the
+    # stud line's plywood at 10'-3 3/8"; the 2 5/8" went into the two flights rather than
+    # being left as a slot beside the wall.
+    assert stairs["ST-B2M"]["width_m"] == pytest.approx(ft(3, 5.0625).meters, abs=1e-9)
     assert stairs["ST-B2M"]["floor_opening"] == "FO-M-STAIR"
     assert stairs["ST-B2M"]["run_direction"] == "y"
     assert stairs["ST-B2M"]["layout"] == "u_split_landing"
+    # x=10'-3 3/8" since 2026-08-24 — the framed stair wall's plywood face, which is where
+    # FO-M-STAIR's west edge is now and where FO-S-STAIR's already was.
     assert stairs["ST-B2M"]["start"] == pytest.approx(
-        [ft(10, 6).meters, ft(26, 0.375).meters])
+        [ft(10, 3.375).meters, ft(26, 0.375).meters])
     assert stairs["ST-M2S"]["layout"] == "u_split_landing"
     # Both U-stairs turn left, so each springs from the east lane and arrives in the west
     # one — the lane D-M-STAIR stands in on main.

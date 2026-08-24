@@ -117,6 +117,13 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # charcoal 0x3a3d40 was meant to be: the viewer's ambient lifts a dark albedo well above
     # itself, so the authored value has to sit under the tone you want on screen.
     "window_trim": (0.110, 0.122, 0.141, 1.0),
+    # The sectional overhead door's panel (resolve/geometry_openings.py). Charcoal grey, and
+    # deliberately NOT the window_trim dark above: a 16' door panel carrying the trim coil's
+    # near-black filled a whole elevation with matte black. Rounds to 0x3a3d40 — the tone the
+    # trim comment calls "the charcoal it was meant to read as", authored here rather than
+    # dimmed, because a flat panel this size takes far more of the viewer's ambient than a
+    # 1 1/4" casing face does. Mirrored into ui/src/three via the vocabulary manifest.
+    "overhead_door": (0.227, 0.239, 0.251, 1.0),
     # accessories (→ resolve/accessories.py)
     "railing": (0.80, 0.81, 0.83, 1.0),   # aluminum guard — posts + rails, the frame
     # Guard infill, split from the frame because the frame's tone and metalness are wrong for

@@ -38,6 +38,61 @@ from typehaus.resolve.model import (
 )
 
 
+#: The compressed, in-place sill-seal thickness used when an assembly's ``FramingSpec``
+#: does not state one. Matches ``BasementToFramedWallConfig.sill_gasket_in`` — the drawing
+#: config states it in inches for the detail writer, and it is the same building fact.
+_COMPRESSED_SILL_GASKET_M = 0.0625 * 0.0254
+
+#: What a sill-seal *is*, for the BOM. Plain closed-cell foam sill seal on the walls whose
+#: plate joint is only a capillary and air break inside the envelope; a peel-and-stick
+#: foam (Protecto Wrap style) where that joint is the air barrier crossing the foundation.
+SILL_GASKET_FOAM = "sill-seal-foam"
+SILL_GASKET_PEEL_STICK = "sill-seal-peel-stick"
+
+
+def _assembly_is_clad(asm) -> bool:
+    """Does this assembly carry a weather skin — i.e. is it an envelope wall?
+
+    Derived, never named. This is the assembly-only half of the test the engine already
+    makes twice: ``takeoff/anchors._is_exterior_framed_wall`` asks the same question of a
+    *resolved* wall's layers (and additionally that it has studs), and
+    ``checks/code/mn_residential/_common._wall_is_exterior`` is the canonical form, deriving
+    it from whether modelled space exists on one side or two. Neither is usable here — sills
+    resolve before framing, and rooms are not what a sill-seal product depends on — but a
+    cladding layer answers it from the assembly alone, which is what this stage has.
+    """
+    if asm is None:
+        return False
+    return any(getattr(layer.function, "value", layer.function) == "cladding"
+               for layer in asm.layers)
+
+
+def _sill_gasket(asm, fallback_asm=None) -> tuple[str, float]:
+    """``(product, compressed thickness in metres)`` for the seal under this plate.
+
+    ``FramingSpec.sill_gasket_product`` overrides; otherwise a clad (envelope) wall gets the
+    peel-and-stick form because its plate joint is where the air barrier crosses onto the
+    foundation, and everything else gets plain foam. ``fallback_asm`` is what a run with no
+    framed wall over it is graded on — a plate under joists on bare pour.
+    """
+    graded = asm if asm is not None else fallback_asm
+    product = None
+    thickness = None
+    for layer in (asm.layers if asm is not None else ()):
+        spec = getattr(layer, "framing", None)
+        if spec is None:
+            continue
+        if getattr(spec, "sill_gasket_product", None) is not None:
+            product = spec.sill_gasket_product
+        if getattr(spec, "sill_gasket", None) is not None:
+            thickness = spec.sill_gasket.meters
+    if product is None:
+        product = (SILL_GASKET_PEEL_STICK if _assembly_is_clad(graded)
+                   else SILL_GASKET_FOAM)
+    return product, (thickness if thickness is not None
+                     else _COMPRESSED_SILL_GASKET_M)
+
+
 # --- finders (one per applies_to predicate) -----------------------------------
 # Each yields a fully-formed ResolvedConstructionReturn for the given rule. The finders own
 # geometry/placement; ``apply_construction_rules`` owns the solid + book-keeping.
@@ -181,11 +236,14 @@ def _find_framed_on_concrete(model: ResolvedModel, rule: ConstructionRule) \
                 element_tags = (lower.tag, *floor_tags)
                 returning = _SILL_PLATE_MEMBER
                 condition = _condition_key("floor_foundation", lower.assembly)
+            gasket_product, gasket_t = _sill_gasket(
+                framed[1] if framed is not None else None,
+                model.plan.library.resolve_assembly(lower.assembly))
             yield ResolvedConstructionReturn(
                 uid=uid,
                 tag=rule.tag, storey=storey_tag, kind=rule.kind,
                 applies_to=rule.applies_to, takeoff_category=rule.takeoff_category,
-                material_ref="spf",
+                material_ref="kdat",
                 element_tags=element_tags,
                 outline=_strip(anchor, direction, run, lo, hi),
                 # On the pour, not at the framed wall's base — since 2026-08-23 those are
@@ -193,6 +251,7 @@ def _find_framed_on_concrete(model: ResolvedModel, rule: ConstructionRule) \
                 z0_m=lower.z1_m, z1_m=lower.z1_m + lap, thickness_m=width, length_m=run,
                 lap_m=lap, thermal_continuity=False, sealant="sill-gasket",
                 flashing="capillary-break", returning_layer=returning,
+                gasket_product=gasket_product, gasket_thickness_m=gasket_t,
                 condition_key=condition,
             )
     yield from _framed_on_slab(model, rule, lap)
@@ -253,16 +312,18 @@ def _framed_on_slab(model: ResolvedModel, rule: ConstructionRule,
         direction = unit(sub(a1, a0))
         anchor = add(a0, sub(band_axis(wall.axis, _structure_polygon(wall))[0],
                              wall.axis[0]))
+        gasket_product, gasket_t = _sill_gasket(asm)
         yield ResolvedConstructionReturn(
             uid=f"CR-{slab.uid}-{wall.uid}-sill",
             tag=rule.tag, storey=wall.storey, kind=rule.kind,
             applies_to=rule.applies_to, takeoff_category=rule.takeoff_category,
-            material_ref="spf",
+            material_ref="kdat",
             element_tags=(slab.tag, wall.tag),
             outline=_strip(anchor, direction, run, -width / 2.0, width / 2.0),
             z0_m=wall.z0_m, z1_m=wall.z0_m + lap, thickness_m=width, length_m=run,
             lap_m=lap, thermal_continuity=False, sealant="sill-gasket",
             flashing="capillary-break", returning_layer=bearing.name,
+            gasket_product=gasket_product, gasket_thickness_m=gasket_t,
             condition_key=None,
         )
 

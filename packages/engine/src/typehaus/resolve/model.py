@@ -306,6 +306,15 @@ class ResolvedConstructionReturn:
     sealant: str | None = None
     flashing: str | None = None
     returning_layer: str | None = None  # name of the layer that turns the corner
+    # The sill-seal under a bearing plate: which product, and its compressed in-place
+    # thickness. Set by ``resolve/construction_sills.py`` (which picks the product from the
+    # wall — peel-and-stick where the plate joint is the air barrier's crossing, plain foam
+    # where it is only a capillary break); None on every other kind of return.
+    # ``takeoff/anchors.sill_gasket_rows`` bills these by the lineal foot, one row per
+    # product — NOT ``construction_returns_takeoff``, whose 1:1 invariant with
+    # ``model.construction_returns`` a second row would break.
+    gasket_product: str | None = None
+    gasket_thickness_m: float | None = None
     # The existing derived boundary-condition key this return documents (stacking /
     # assembly-change), so an overlay can join return -> condition -> Transition.
     condition_key: str | None = None

@@ -51,6 +51,11 @@ ACCESSORY_KEYS = frozenset({
     # Exterior window casing on the cladding plane (resolve/geometry_openings.py). Its
     # colour is a design choice authored in both palettes, not derived from a material.
     "window_trim",
+    # A sectional overhead door's panel. Split from the frame it hangs in because a garage
+    # door is a factory-finished product in its own colour, not a length of the same trim
+    # coil: sharing "window_trim" painted the whole 16' panel the house's near-black
+    # exterior dark, which reads as matte black rather than the charcoal it is meant to be.
+    "overhead_door",
 })
 
 # Material families, inferred from a material ref by `emit/draw/palette.family_of` (mirrored

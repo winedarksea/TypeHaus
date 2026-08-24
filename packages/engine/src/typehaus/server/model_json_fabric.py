@@ -111,7 +111,10 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              "thermal_continuity": ret.thermal_continuity,
              "air_vapor_continuity": ret.air_vapor_continuity,
              "sealant": ret.sealant, "flashing": ret.flashing,
-             "returning_layer": ret.returning_layer, "condition_key": ret.condition_key,
+             "returning_layer": ret.returning_layer,
+             "gasket_product": ret.gasket_product,
+             "gasket_thickness_m": ret.gasket_thickness_m,
+             "condition_key": ret.condition_key,
              "provenance": _provenance(provenance, ret.tag)}
             for ret in sorted(model.construction_returns, key=lambda item: item.uid)
         ],

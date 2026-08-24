@@ -98,11 +98,12 @@ BASEMENT_LIGHTING = [
     # (9'-7", 20'-0") the switch would have stood inside RM-B-ESS, and a switch for the
     # furnace-room lights cannot live behind the battery closet's door. The closet left for
     # the NE corner on 2026-08-23 and this did NOT follow it — y=23'-0" is now simply
-    # mid-room on the east concrete face (W-B-STR3 since that wall was split), which is
-    # where you reach it walking in from D-B-FURN. Nothing to re-derive; the reason changed,
-    # not the position.
+    # mid-room on the east wall face (W-B-STR3 since that wall was split, and framed 2x6
+    # rather than concrete since 2026-08-24 — the face moved 3 1/8" east with it, and this
+    # box came with it, x=9'-5" to 9'-8 1/8", still 1" proud of the face), which is where you
+    # reach it walking in from D-B-FURN.
     ElectricalDevice(uid="QTB000AAAA", tag="ED-B-FURNACE-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(9, 5), ft(23)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(9, 8.125), ft(23)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-BACKUP", room="RM-B-FURNACE", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
@@ -153,7 +154,7 @@ BASEMENT_LIGHTING = [
     # eyeline coming up. 3-way with the main-storey stair switch, because a stair light
     # that can only be switched from the bottom is a stair light nobody uses.
     LightRun(uid="QRB0001AAA", tag="LR-B-STAIR-RAIL", type_ref="ED-T-LT-STRIP24",
-             path=(pt(ft(10, 7), ft(25, 5)), pt(ft(10, 7), ft(34, 10))),
+             path=(pt(ft(10, 4.375), ft(25, 5)), pt(ft(10, 4.375), ft(34, 10))),
              room="RM-B-STAIR", psu_ref="ED-B-STAIR-LT-PSU",
              controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
              mount=Mount(kind=MountKind.WALL, elevation=inch(34))),
@@ -164,8 +165,11 @@ BASEMENT_LIGHTING = [
                      position=pt(ft(11), ft(24, 6)), type_ref="ED-T-LT-PSU-60",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
                      mount=Mount(kind=MountKind.CEILING)),
+    # Both this and LR-B-STAIR-RAIL above moved 2 5/8" west on 2026-08-24, with the wall
+    # face they hang on: W-B-STR3 is a framed 2x6 line now and the shaft's west face is
+    # x=10'-3 3/8" instead of the pour's 10'-6". Each still sits 1" proud of that face.
     ElectricalDevice(uid="QTB000HAAA", tag="ED-B-STAIR-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(10, 7), ft(23)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(10, 4.375), ft(23)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
     # Moved north from y=21' on 2026-07-30: RM-B-BATH took the shaft's south 3'-0", so the old

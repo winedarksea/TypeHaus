@@ -43,7 +43,10 @@ TRANSITIONS = (
                star=True,
                unstarred_conditions=(
                    "wall_foundation:CATLIN_INT_2X6_BRG|FOUNDATION_WALL_12_INT",
-                   "wall_foundation:CATLIN_MUDROOM_INT_2X6_EXPOSED|FOUNDATION_WALL_12_INT",
+                   # ...|CATLIN_MUDROOM_INT_2X6_EXPOSED was here until 2026-08-24. W-B-STR
+                   # and W-B-STR3 are framed now, so W-M-STRW/W-M-STRW2 are framed-on-framed
+                   # and derive no wall_foundation condition at all — see the rim band below,
+                   # which is where those two stacks moved.
                    "wall_foundation:CATLIN_INT_2X6_BRG|SAUNA_LINER_ON_CONCRETE",
                )),
     # Same curation as the foundation above: the rim band is a sheet because it is where
@@ -54,7 +57,12 @@ TRANSITIONS = (
                continuity=AIR_WATER_THERMAL, star=True,
                unstarred_conditions=(
                    "storey_stack:rim:CATLIN_INT_2X6_BRG|FOUNDATION_WALL_12_INT",
-                   "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|FOUNDATION_WALL_12_INT",
+                   # The stair-wall stack, framed-on-framed since 2026-08-24 (it read
+                   # ...|FOUNDATION_WALL_12_INT while the basement segments were poured).
+                   # Two keys now, because W-B-STR carries the ESS closet's Type X leaf and
+                   # W-B-STR3 does not.
+                   "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|CATLIN_STAIRWALL_INT_2X6_BRG",
+                   "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX",
                    "storey_stack:rim:CATLIN_INT_2X6_BRG",
                    "storey_stack:rim:CATLIN_INT_2X6_BRG|SAUNA_LINER_ON_CONCRETE",
                    "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|INT_2X6_STAGGERED_PLUMBING",

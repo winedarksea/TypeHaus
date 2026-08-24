@@ -296,6 +296,12 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
     a thickness-only variant, so the layer-equivalence gate does not either. A builder
     framing that line has to be told where the sound wall stops — which is the definition
     this test exists to hold. TR-CATLIN-ASSEMBLY-JOG binds and suppresses it like the rest.
+
+    A tenth arrived on 2026-08-24, when W-B-STR/W-B-STR3 were framed: the two segments
+    differ by the ESS closet's 5/8" Type X leaf, they meet collinear at N-B-ESS-SE, and one
+    rated leaf against none is not a thickness-only variant. Same test: a builder has to be
+    told where the leaf stops. (The split itself is older — it was invisible while both
+    segments were one continuous pour under one assembly tag.)
     """
     keys = sorted({c.key for c in catlin_model.conditions
                    if c.key.startswith("assembly_change:")})
@@ -311,13 +317,23 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         "assembly_change:CATLIN_EXT_2X6|PLANT_EXT_2X6_HUMID",
         ("assembly_change:CATLIN_INT_2X6_BRG|INT_2X4_PARTITION|"
          "PLANT_INT_2X4_HUMID|PLANT_INT_2X6_BRG_HUMID"),
+        # N-B-ESS-SE. The stair wall's own split, and a real change of construction: W-B-STR
+        # carries a 5/8" Type X leaf on the ESS closet's face where W-B-STR3 does not, so the
+        # two segments are two assemblies. It appeared on 2026-08-24 when both were framed;
+        # while they were one continuous pour there was nothing here to name. That is the
+        # tenth key, and it is a real one — a builder has to be told where the rated leaf
+        # stops.
+        ("assembly_change:CATLIN_STAIRWALL_INT_2X6_BRG|"
+         "CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX"),
         # N-B-BA-W. Two collinear wall lines used to cross here and the key merged both:
-        # x=10' (the 12" pour handing off to the steel stub) and y=21'-9 3/8" (the ESS
+        # x=10' (the pour handing off to the steel stub) and y=21'-9 3/8" (the ESS
         # closet's north partition meeting the bathroom's staggered wet wall). The closet
         # left for the NE corner on 2026-08-23, so the y-line is a single wall again and
         # changes construction nowhere; the x-line still does, and that is all this key is
-        # now. The count is unchanged — one node, one key, one fewer assembly named in it.
-        "assembly_change:FOUNDATION_WALL_12_INT|INT_ESS_CLOSET_STEEL",
+        # now. It read ...FOUNDATION_WALL_12_INT|... until 2026-08-24, when W-B-STR3 became
+        # a framed stud wall: same node, same junction, a different wall type meeting the
+        # stub.
+        "assembly_change:CATLIN_STAIRWALL_INT_2X6_BRG|INT_ESS_CLOSET_STEEL",
         "assembly_change:FOUNDATION_WALL_12_INT|SAUNA_LINER_ON_CONCRETE",
         "assembly_change:INT_2X4_PARTITION|INT_2X4_STAGGERED_DOUBLE_GWB",
         "assembly_change:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",

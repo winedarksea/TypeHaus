@@ -89,6 +89,11 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     ("construction_returns", "*foam-return*", CostCode("2100", "07 21 00", "walls")),
     ("construction_returns", "*masonry*", CostCode("1200", "04 20 00", "concrete")),
     ("construction_returns", "resilient-channel", CostCode("4300", "09 22 00", "walls")),
+    # A gasket is never rough carpentry — it is the air/weather-barrier accessory the framer
+    # rolls out ahead of the plate. Matched here as well as defaulted for the
+    # ``sill_gaskets`` section below, so a house that files one as a construction return
+    # still lands on the right trade.
+    ("construction_returns", "*gasket*", CostCode("2100", "07 27 00", "walls")),
     # Allowances (2026-08-20). ** THE KEY PREFIX IS THE TRADE DECLARATION. ** These match on a
     # leading segment rather than a substring, and that is a correctness requirement, not a
     # style choice: the first draft used substrings and filed "waterproofing" under ROOF,
@@ -155,6 +160,10 @@ SECTION_CODES: dict[str, CostCode] = {
     # the liner laps are a framer's work; KEY_PATTERNS above re-files the insulation, the
     # masonry and the channel rows onto their own trades.
     "construction_returns": CostCode("2000", "06 11 00", "framing"),
+    # Sill seal (2026-08-24), the seal under those plates. CSI 07 27 00 is Air Barriers,
+    # which is what the peel-and-stick form is; the plain foam is the same trade's material
+    # on the same joint.
+    "sill_gaskets": CostCode("2100", "07 27 00", "walls"),
     # Lump sums (2026-08-20). NAHB 1000 is Land and Site Work and CSI 01 21 00 is literally
     # "Allowances", so the pair is the honest default for scope the model cannot resolve.
     # A key that lands HERE rather than on a KEY_PATTERNS prefix above is an unclassified

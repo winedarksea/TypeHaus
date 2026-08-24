@@ -60,10 +60,10 @@ def basement_framed_wall(model, framed, concrete, crop, direction,
 
     # Sill gasket under the treated mudsill, sealing the stud line to the concrete — the
     # authored ``FramingSpec.sill_gasket`` thickness when the assembly carries one, else
-    # the pinned reference 1/4".
+    # the pinned reference. Both are the compressed, in-place joint (1/16"), not the roll.
     stud = outermost_with_function(intervals, "structure")
     if stud is not None:
-        # Filled with the no-overlay ``metal`` pattern rather than a hatch family: at 1/4"
+        # Filled with the no-overlay ``metal`` pattern rather than a hatch family: at 1/16"
         # any hatch collapses into a smear, but the fill is what carries the material colour
         # to the writers, and an outline alone reads as an empty gap in the drawing.
         gasket_in = sill_gasket_in(model, framed)
@@ -158,7 +158,8 @@ def sill_gasket_in(model, wall) -> float:
 
     Prefers the authored ``FramingSpec.sill_gasket`` on the wall assembly's structure
     layer — the model field that owns the fact — and falls back to the pinned reference
-    1/4" when no layer carries one.
+    when no layer carries one. Both are the **compressed** thickness since 2026-08-24:
+    what the joint measures once the plate is bolted down, not the roll it came off.
     """
     assembly = model.plan.library.resolve_assembly(wall.assembly)
     if assembly is not None:

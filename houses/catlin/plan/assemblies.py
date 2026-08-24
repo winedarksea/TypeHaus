@@ -117,7 +117,7 @@ CATLIN_EXT_2X6 = Assembly(
     layers=(
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x6", sill_gasket=inch(0.25)),
+              framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625)),
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
@@ -861,7 +861,7 @@ GARAGE_WALL_2X6 = Assembly(
         # by this.
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x6", sill_gasket=inch(0.25))),
+              framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625))),
         Layer(name="zip-r", material_ref="zip-r", thickness=inch(1.5),
               function=LayerFunction.SHEATHING,
               control={ControlLayer.AIR, ControlLayer.WATER, ControlLayer.THERMAL}),
@@ -1125,6 +1125,48 @@ CATLIN_MUDROOM_INT_2X6_EXPOSED = Assembly(
     ),
     interfaces=(_STUD_BEARING,),
     source="plans/TODO.md — mudroom coat wall: exposed Select Structural S4S 2x6 DF studs on the mudroom face (open bays = coat nooks), 3/4\" cabinet-grade plywood on the stair face",
+)
+
+# --- basement stair-shaft bearing walls -------------------------------------------
+# W-B-STR3 / W-B-STR, the last two 12" interior pours on the x=10' line, framed instead
+# (2026-08-24). They carry no earth; what they carry is FS-M-MECH/FS-M-STAIR's short
+# joists and the W-M-STRW/W-M-STRW2 stack above, which is a stud-wall job on a footing.
+# Both continue CATLIN_MUDROOM_INT_2X6_EXPOSED's plywood plane on the stair face, so the
+# well's west face is one plywood surface from the basement floor to the main-storey
+# ceiling — but with plain `spf` studs: nothing down here is exposed to a finished room.
+# The "INT" token is load-bearing exactly as it is there (`_is_interior_assembly` in
+# mn_energy.py keeps an uninsulated bay out of the R-21 exterior table).
+CATLIN_STAIRWALL_INT_2X6_BRG = Assembly(
+    tag="CATLIN_STAIRWALL_INT_2X6_BRG",
+    layers=(
+        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x6", spacing=inch(16),
+                                  sill_gasket=inch(0.0625))),
+        Layer(name="ply-stair", material_ref="cabinet-plywood", thickness=inch(0.75),
+              function=LayerFunction.FINISH),
+    ),
+    interfaces=(_STUD_BEARING,),
+    source="catlin basement stair wall (W-B-STR3): 2x6 spf bearing studs at 16 in. o.c. on a PT sill, 3/4 in. plywood on the stair face continuing CATLIN_MUDROOM_INT_2X6_EXPOSED",
+)
+
+# The same wall where it forms RM-B-ESS's west side: one 5/8" Type X leaf on the closet
+# face, which is what `advisory.ess_enclosure` sums for now that the mass of 12" of
+# concrete is no longer there to satisfy it. Same `gwb-x` material as INT_ESS_CLOSET_STEEL.
+CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX = Assembly(
+    tag="CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX",
+    layers=(
+        Layer(name="gwb-x", material_ref="gwb-x", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x6", spacing=inch(16),
+                                  sill_gasket=inch(0.0625))),
+        Layer(name="ply-stair", material_ref="cabinet-plywood", thickness=inch(0.75),
+              function=LayerFunction.FINISH),
+    ),
+    interfaces=(_STUD_BEARING,),
+    source="catlin basement stair wall (W-B-STR) where it is also RM-B-ESS's west enclosure: CATLIN_STAIRWALL_INT_2X6_BRG with a 5/8 in. Type X leaf on the closet face (notes/backup_power.md)",
 )
 
 MATERIALS = [
@@ -1452,7 +1494,7 @@ PLANT_EXT_2X6_HUMID = Assembly(
         *_HUMID_LINER,
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x6", sill_gasket=inch(0.25)),
+              framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625)),
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
@@ -1660,4 +1702,6 @@ ASSEMBLIES = [
     PLANT_INT_2X6_BRG_HUMID,
     PLANT_INT_2X4_HUMID,
     CATLIN_MUDROOM_INT_2X6_EXPOSED,
+    CATLIN_STAIRWALL_INT_2X6_BRG,
+    CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX,
 ]

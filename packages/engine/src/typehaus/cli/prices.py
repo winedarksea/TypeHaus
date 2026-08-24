@@ -107,6 +107,10 @@ ESTIMATE_PLANS = (
     ("railings", "railings", "type", "length_ft", "LF"),
     # Pre-framing returns by the foot, keyed on ``takeoff_category`` (2026-08-18).
     ("construction_returns", "construction_returns", "category", "length_ft", "LF"),
+    # The sill seal under those plates, keyed on the product the resolver picked
+    # (2026-08-24). Priced separately from ``pt-sill-plate`` above, which is a delta over
+    # the SPF board and no longer carries a foam-sealer component.
+    ("sill_gaskets", "sill_gaskets", "product", "length_ft", "LF"),
     ("drainage", "drainage", "category", "length_ft", "LF"),
     # Reads the *same* BOM rows as ``placeables`` — see ``EXCLUDED_FROM_TOTAL``.
     ("furnishings", "placeables", "type", "count", "ea"),

@@ -372,6 +372,9 @@ the future.
     `N-M-MECH3`'s line, so the two storeys break in the same place) and `W-B-STR` at
     y=31'-0" (which has no such line — `W-M-STRW` crosses it). `FO-M-STAIR.bearing_refs`
     needed `W-B-STR3` adding or the resolver emitted a 9'-0" LVL header over the stair well.
+    (Both walls are framed 2x6 since 2026-08-24 and `W-B-STR` carries the closet's Type X
+    leaf on its own assembly; `advisory.ess_enclosure` passed on the pour's mass before and
+    passes on that leaf now.)
   - **The tank's coordinate was a literal in eight places** — seven supply runs plus the T&P
     line — and nothing pulls a pipe onto its equipment, so moving it alone would have
     silently disconnected the hot trunk, the cold feed and five branches with the model still
@@ -386,6 +389,12 @@ the future.
  - Sunken garden slab (is it needed above footing) and make sure 7" threshold to basement from sunken garden
  - Basement under the stairs storage closet
  - Wall W-B-CS is likely worth making a wood stud wall (if the load bearing math works and the cost is noticeably lower)
+ - Add some wire shelves and racks to the dedicated closets (mudroom closet aimed at jackets)
+ - Remove door D-M-STAIR which likely means wall W-M-STRS can be removed or reconfigured
+ - Access panel FURN-M-BATH1-AP is in the wrong spot, probably needs to be on W-M-HS1
+ - Recolor the NEMA disconnects like ED-M-HP2-DISC to a gray and probably make them about 20% smaller, they don't look much like actual disconnect boxes right now
+ - Are horizontal hat channels necessary for the siding of the house? (nail flange over 20 ga galvanized hat channels)
+ - D-M-BED2 door can likely be moved slightly to optimize the stud line
 
 - **The sunken garden was a real frost defect, not a review item.** `structural.frost_depth`
   compared every footing to one global grade plane (`Site.grade`), so it PASSED all 35 —
@@ -528,13 +537,20 @@ Left open, and worth doing next:
   `detail_components/wall_base.py` before touching it — it reads `concrete.z1_m` now, which
   is right in both conventions.
 - **`W-B-STR3`'s footing is not sized for what it carries.** It is a bearing line under
-  `W-M-STRW2` and it keeps the house-standard 20"x8" strip. That was true before this change
-  too; it is written down here because the 2026-08-23 pass looked straight at it. The same
-  pass tried framing `W-B-STR3` as a stud wall and **backed it out** — a floor system's span
-  boundary is the bearing wall's node axis, so a 6 3/4" wall holding its east face on
-  x=10'-6" leaves FS-M-MECH's joists 1/16" of plate, and centring it uncarries FO-M-STAIR's
-  west edge into a 9'-0" LVL. The reasoning is on the wall in `plan/storeys/basement.py`; do
-  not re-attempt it without moving the x=10' node line.
+  `W-M-STRW2` and it keeps the house-standard 20"x8" strip. That was true before the
+  2026-08-23 pass, it is still true after 2026-08-24, and it is the residue of this item:
+  framing the wall changed what stands on the footing, not what the footing is sized for
+  (`Footing.under` takes any wall tag and `_resolve_footing` reads the wall's own `z0`, so
+  `FT-B-STR`/`FT-B-STR3` needed no edit at all).
+  **The framing itself is DONE, 2026-08-24.** The 2026-08-23 attempt was backed out because
+  it pinned the wall's east face on x=10'-6": a floor system's span boundary is the bearing
+  wall's NODE axis, so that leaves FS-M-MECH's joists 1/16" of plate, and centring instead
+  uncarries FO-M-STAIR's west edge into a 9'-0" LVL. The way through was neither — align the
+  basement studs plumb under `W-M-STRW`'s with `face("stud-ext", offset=inch(-2.625))`, and
+  move the well's west face down to x=10'-3 3/8" to match the wall above. ~9.8 cy of pour
+  out, `RM-B-FURNACE` gains 3 1/8", the shaft goes 7'-0" -> 7'-2 5/8" (absorbed into the two
+  flights, now 3'-5 1/16" each), and the reasoning is on the wall in
+  `plan/storeys/basement.py`.
 - **Two abutting FloorSystems each lay a joist on the shared edge.** `resolve/floors.py`
   always emits a member at `perp0` and at `perp1`, so splitting a deck perpendicular to its
   joists puts two joists in one place and `structural.member_interference` FAILs — correctly,

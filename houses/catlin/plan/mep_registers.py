@@ -246,7 +246,7 @@ REGISTERS_MAIN = [
             position=pt(ft(10, 6), ft(20)), duct_ref="DU-M1-ERV-RET", type_ref="REG-T-ERV-EXH",
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     Register(uid="CMRV08AAAA", tag="REG-M-RET5", kind=DuctSystem.RETURN, room="RM-M-LIVING",
-            position=pt(ft(33), ft(33)), duct_ref="DU-M1-ERV-RET", type_ref="REG-T-ERV-EXH",
+            position=pt(m(6.36709), m(7.76418)), duct_ref="DU-M1-ERV-RET", type_ref="REG-T-ERV-EXH",
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # RM-M-MUDROOM is stale-pickup only, no fresh-air outlet (reversed 2026-07-29 from an
     # earlier fresh-air-intake call). A mudroom is the room that smells; pressurising it pushes

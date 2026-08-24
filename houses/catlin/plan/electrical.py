@@ -923,12 +923,13 @@ BASEMENT_DATA_TRUNKS = [
 ]
 
 DATA_SLEEVES = [
-    # CD-B-DATA-MEDIA's two concrete crossings. `mep.sleeve_coverage` is a CODE-tier check
-    # and an unsleeved crossing FAILs it.
-    SleevePenetration(uid="NP84SHW31K", tag="SP-B-STR-CD-DATA", host_ref="W-B-STR3",
-                      position=pt(ft(10), ft(30)), pipe_diameter=inch(0.75),
-                      sleeve_diameter=inch(1.5), purpose=Service.DATA,
-                      axis="horizontal", center_elevation=ft(-1, -6)),
+    # CD-B-DATA-MEDIA's concrete crossing. `mep.sleeve_coverage` is a CODE-tier check and
+    # an unsleeved crossing of a pour FAILs it.
+    # SP-B-STR-CD-DATA (W-B-STR3, x=10', y=30') was here until 2026-08-24 and is gone for
+    # the same reason the eighteen listed at mep_sleeves.py went on 2026-08-21: W-B-STR3
+    # is 2x6 bearing studs now, not 12" of concrete, and a framed wall takes a bored hole
+    # on the day rather than a sleeve set before a pour. The raceway still crosses the wall
+    # at the same station; there is simply no pour to cast into.
     SleevePenetration(uid="V44DS76X6J", tag="SP-B-CN-CD-DATA", host_ref="W-B-CN",
                       position=pt(ft(18), ft(30)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.DATA,
@@ -967,10 +968,9 @@ CONDUIT_SLEEVES = [
     # and the two grazing crossings needed sleeves. At 8" the inside face is 35'-4" and the
     # raceway is 4" clear of both walls: no crossing, no hole. Only the genuine north punch
     # at x=16' (SP-B-N2-CD-GAR2) and the stair wall at x=10' remain.
-    SleevePenetration(uid="CNS006AAAA", tag="SP-B-STR-CD-GAR", host_ref="W-B-STR",
-                      position=pt(ft(10), ft(35)), pipe_diameter=inch(1.25),
-                      sleeve_diameter=inch(2), purpose=Service.POWER_240,
-                      axis="horizontal", center_elevation=ft(-4)),
+    # SP-B-STR-CD-GAR (W-B-STR, x=10', y=35') went on 2026-08-24 with the pour: that wall
+    # is framed now, so its crossing is bored, not cast. Only the genuine north punch at
+    # x=16' is still a hole in concrete.
     SleevePenetration(uid="CNS008AAAA", tag="SP-B-N2-CD-GAR2", host_ref="W-B-N2",
                       position=pt(ft(16), ft(35, 6)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(2), purpose=Service.POWER_240,
@@ -996,14 +996,8 @@ CONDUIT_SLEEVES = [
     # CD-B-KITCHEN: east across the basement ceiling at -1' and up through SL-M-DECK to the
     # kitchen's east counter wall. The wall and deck sleeves are 1/2" apart in plan but in
     # different hosts, which is what the matcher keys on.
-    SleevePenetration(uid="CNS011AAAA", tag="SP-B-STR-CD-KITCH", host_ref="W-B-STR3",
-                      position=pt(ft(10), ft(29)), pipe_diameter=inch(0.75),
-                      sleeve_diameter=inch(1.5), purpose=Service.POWER_120,
-                      # -1'-6", matching CD-B-KITCHEN itself and its partner sleeve in
-                      # W-B-CN. It sat at -1'-0" until 2026-08-23 — 6" above the run it
-                      # serves, inside the matcher's tolerance and outside the wall the
-                      # moment the pour stopped at the -13 7/16" bearing seat.
-                      axis="horizontal", center_elevation=ft(-1, -6)),
+    # SP-B-STR-CD-KITCH (W-B-STR3, x=10', y=29', -1'-6") also went on 2026-08-24 with the
+    # pour. Its partner in W-B-CN stays: that wall is still concrete.
     SleevePenetration(uid="CNS012AAAA", tag="SP-B-CN-CD-KITCH", host_ref="W-B-CN",
                       position=pt(ft(18), ft(29)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.POWER_120,

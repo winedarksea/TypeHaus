@@ -27,18 +27,23 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # (2026-08-20) one wall can reach several rows: W-B-BRICK's wythe is a split row
     # (`Layer.slot`) of three brick colours, and each colour bills its own band. Summing the
     # counts would say 41 walls and be counting brick, not walls.
-    # 36 since 2026-08-23, not 34: the ESS closet's relocation to the NE corner split
-    # W-B-N3 at x=6'-0" and W-B-STR at y=31'-0" so its two partitions had nodes to tee
-    # into. Two more tags, the same pour, the same cubic yards.
-    assert len({tag for row in rows for tag in row["tags"]}) == 36
+    # 36 from 2026-08-23, when the ESS closet's relocation to the NE corner split W-B-N3
+    # at x=6'-0" and W-B-STR at y=31'-0" so its two partitions had nodes to tee into —
+    # two more tags, the same pour, the same cubic yards.
+    # **34 since 2026-08-24**, and this time the pour really did shrink: those same two
+    # segments, W-B-STR and W-B-STR3, are 2x6 bearing stud walls now. They hold back no
+    # earth, and what they carry is joists and a wall stack — a stud-wall job on a footing.
+    # ~9.8 cy out of this table and into [framing] (plan/storeys/basement.py).
+    assert len({tag for row in rows for tag in row["tags"]}) == 34
     assert {row["material"] for row in rows} == {
         "concrete", "retaining-block", "brown-brick",
         "glazed-lapis-brick", "glazed-gold-brick"}
     # Bigger than the entire priced concrete order (footings + slab) the estimate used to
     # know about, which is the measure of what was missing. It was >100 cy until 2026-08-23:
     # the flat bearing seat took every basement wall from 9'-4" to exactly 8'-0", which is
-    # ~14% of the tallest pour in the house.
-    assert sum(float(row["volume_cubic_yards"]) for row in rows) > 90
+    # ~14% of the tallest pour in the house. Then ~9.8 cy more on 2026-08-24, when W-B-STR
+    # and W-B-STR3 were framed — 89.0 cy now.
+    assert sum(float(row["volume_cubic_yards"]) for row in rows) > 85
     assert all(float(row["net_area_sqft"]) > 0 for row in rows)
 
 

@@ -523,8 +523,18 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     addBox(clearWidth, trackHeight, depth, 0, base + panelHeight - trackHeight / 2, frameMaterial);
     addBox(clearWidth, leafHeight, 0.045, 0, base + leafHeight / 2, frameMaterial);
   } else if (opening.kind === "door") {
+    // A sectional overhead door's panel is a factory-finished product in its own charcoal,
+    // not the wood leaf of an interior door nor the near-black trim coil its frame is drawn
+    // in — at 16' wide the trim tone read as matte black across the whole elevation. The
+    // colour rides the generated vocabulary ("overhead_door"), mirroring
+    // resolve/geometry_openings.py::_OVERHEAD_KEY.
+    const leafMaterial = isGlazed ? glassMaterial
+      : operation === "overhead"
+        ? standardMaterial(categoryColor("overhead_door"), mode,
+          { roughness: NORDIC_ROUGHNESS.matte })
+        : frameMaterial;
     addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, isGlazed ? 0.015 : 0.045, 0,
-      wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2, isGlazed ? glassMaterial : frameMaterial);
+      wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2, leafMaterial);
   } else {
     addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, 0.015, 0,
       wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2, glassMaterial);

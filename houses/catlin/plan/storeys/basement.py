@@ -23,6 +23,7 @@ from typehaus import (
     Slab,
     SlabThermalBreak,
     SlabThermalBreak,
+    StructuralRole,
     Wall,
     WallPaneling,
     Window,
@@ -36,16 +37,21 @@ from typehaus import (
 # Plan datums (catlin_floorplan/"Colin House_Basement_Level 1.png") are *clear* face
 # dimensions, so node lines are back-calculated from them: furnace room 8'-6" | stair
 # shaft 7'-0" | playroom 16'-6" (north row); workshop 7'-6" | sauna 8'-0" | playroom
-# 16'-6" (south row). The 7'-0" shaft is the code-minimum well (two 3'-3 3/4" flights +
-# 4 1/2" partition); W-B-STR at x=10' as 12" concrete satisfies both rows at once, since
-# the 18' bearing grid fixes the shaft's east face at 17'-6".
+# 16'-6" (south row). The shaft was the code-minimum 7'-0" well (two 3'-3 3/4" flights +
+# 4 1/2" partition) while W-B-STR at x=10' was 12" concrete, the 18' bearing grid fixing
+# its east face at 17'-6".
 #
 # Two of those clears got 4" BIGGER on 2026-08-21 and the datums above are still the
 # back-calculation, not the built number: thinning W-B-W1/W2 to 8" moved the west wall's
 # inside face from x=1'-0" to 0'-8", so the furnace room reads 8'-10" and the workshop
-# 7'-10". Both rooms only gain. The stair well (7'-0", between two walls that stayed 12")
-# and the playroom (16'-6", between the centre line and the east wall, both 12") are
-# unchanged, which is why the code-minimum and the architect's dimension both still hold.
+# 7'-10". Both rooms only gain. The playroom (16'-6", between the centre line and the east
+# wall, both 12") is unchanged, which is why the architect's dimension still holds.
+#
+# **The shaft is 7'-2 5/8" since 2026-08-24**, and the furnace room 9'-1 1/8": framing
+# W-B-STR/W-B-STR3 (see WALLS) put the well's west face on x=10'-3 3/8" instead of
+# 10'-6", and the mechanical room took the other 3 1/8" of what the pour used to occupy.
+# Both flights widened to 3'-5 1/16" to keep the well full, so the code minimum is cleared
+# by more than it was, not less.
 # Note that the model does not report this: `clear_face` is inset from the wall AXIS
 # network (resolve/rooms.py), and the axis did not move.
 NODES = [
@@ -80,12 +86,15 @@ NODES = [
     # The uid is unchanged, so nothing in the IFC moved.
     Node(uid="CBN017AAAA", tag="N-B-CW-E", position=pt(ft(6, 9), ft(18))),
     # ESS closet, NE corner of the furnace room (2026-08-23; was the SE corner, 2026-08-02).
-    # Two concrete sides come free here as they did there — W-B-N3 on the north (inner face
-    # y=35'-4") and W-B-STR on the east (inner face x=9'-6") — so it is still two framed
-    # partitions, not four. x=6'-0" and y=31'-0" leave 3'-3 5/8" x 4'-1 5/8" clear, more than
-    # the 2'-8 1/4" cabinet it replaces, and clear of everything already on this side:
-    # SP-B-N3-HYD (x=5'-0" through the north wall), ED-B-SUMP-RC (x=4'-6"),
-    # SP-B-STR-CD-DATA (y=30'-0" through the east wall, a foot south of the partition).
+    # Two sides come free here as they did there — W-B-N3 on the north (concrete, inner
+    # face y=35'-4") and W-B-STR on the east (inner face x=9'-8 1/2" since 2026-08-24,
+    # when that wall was framed and took the Type X leaf the closet needs) — so it is
+    # still two framed partitions, not four. x=6'-0" and y=31'-0" leave 3'-6 1/8" x
+    # 4'-1 5/8" clear (3'-3 5/8" while the east side was the pour's face at x=9'-6"; the
+    # Type X leaf lands 2 1/2" further east), more than the 2'-8 1/4" cabinet it replaces,
+    # and clear of everything already on this side: SP-B-N3-HYD (x=5'-0" through the north
+    # wall) and ED-B-SUMP-RC (x=4'-6"). SP-B-STR-CD-DATA was the third of those; it went
+    # with the pour (electrical.py).
     #
     # **x=6'-0" is not a round number chosen for tidiness.** Neither concrete side of this
     # corner was split before, so both had to be, and a basement split that does not line up
@@ -351,64 +360,65 @@ WALLS = [
     # and it also runs under the concrete band, so it wants the sound break.
     Wall(uid="CBW115AAAA", tag="W-B-CE", start_node="N-B-C",
          end_node="N-B-E1", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(8)),
-    # Stair shaft's west wall — 12" concrete on x=10', full north-row depth (reference:
-    # "Stairway 7' x 16' 6 1/2""). 12" (not 8") puts the shaft's west face at 9'-6", which
-    # is what holds the well at its code-minimum 7'-0" and gives the furnace room the other
-    # side of the same wall (8'-10" since the west wall thinned on 2026-08-21).
+    # Stair shaft's west wall — 2x6 bearing studs on x=10', full north-row depth
+    # (reference: "Stairway 7' x 16' 6 1/2""). Framed, not poured, since 2026-08-24: it
+    # holds back no earth (`unbalanced_fill` was ft(0) the whole time it was concrete), and
+    # what it actually does is carry FS-M-MECH/FS-M-STAIR's short joists — the stubs the
+    # stair well leaves — and stack W-M-STRW/W-M-STRW2 above. That is a stud-wall job on a
+    # footing, not a pour: ~9.8 cy of concrete out, and RM-B-FURNACE gains 3 1/8".
     # Split at N-B-BA-W (2026-07-30): W-B-STR keeps tag/uid and the north 14'-2 5/8" that
     # W-M-STRW/W-M-STRW2 stack on; W-B-STR2 is the 3'-9 3/8" stub alongside the bathroom,
     # carrying its three ceiling-level service crossings (plan/mep.py's WALL_SLEEVES).
-    #
-    # **This one stayed concrete through the 2026-08-21 overhaul**, alone on the interior.
-    # Three things are measured off its east face at x=10'-6" and all three break if the
-    # wall narrows to a 6 3/4" stud line on the same node: the shaft's 7'-0" (two 3'-3 3/4"
-    # flights plus the 4 1/2" well partition, exactly), ST-B2M's own flight width, and
-    # FO-M-STAIR's west edge — which since the deck became joists is a real bearing edge,
-    # and off this wall would take a 9'-0" engineered header instead
-    # (structural.floor_opening_header). It is also a two-storey bearing line
-    # (W-M-STRW/W-M-STRW2 stack on it) and keeps FT-B-STR either way, so framing it would
-    # have bought only its own ~4.9 cy and cost the stair its dimensions.
     # Split again at N-B-ESS-SE (y=31'-0") on 2026-08-23, for the ESS closet's south
     # partition, exactly as it was split at N-B-BA-W for the bathroom. **Unlike the north
     # wall's split this one does NOT line up with the storey above**: W-M-STRW runs
-    # y 26'-4"..36'-0" and now crosses from W-B-STR onto W-B-STR3 halfway along. It keeps
+    # y 26'-4"..36'-0" and crosses from W-B-STR onto W-B-STR3 halfway along. It keeps
     # naming W-B-STR — the segment its north two thirds bear on — and W-M-STRW2, which sits
-    # wholly south of the split, names W-B-STR3. The pour is continuous either way; what the
-    # split changes is only which tag each stack edge is drawn to, and there is no y on this
-    # line that is both a main-storey node and far enough north to leave EQ-B-ERV outside
-    # the closet.
-    FoundationWall(uid="CBW116AAAA", tag="W-B-STR", start_node="N-B-N2",
-                   end_node="N-B-ESS-SE", assembly="FOUNDATION_WALL_12_INT", unbalanced_fill=ft(0),
-                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375)),
-    # **W-B-STR3 stays 12" concrete, and 2026-08-23 is the date that was decided rather
-    # than assumed.** The flat-bearing-seat rework proposed framing it as a load-bearing stud
-    # wall — it carries W-M-STRW2 and no floor, the x=10' line is a declared bearing line now
-    # (params/main_deck.py's FS-M-MECH and FS-M-STAIR land joists on it), and the argument was
-    # that a 6 3/4" stud line would hand ~7 1/2" back to RM-B-FURNACE. It was built and
-    # backed out, because the geometry says the opposite on both counts:
+    # wholly south of the split, names W-B-STR3.
     #
-    #   * **The freed width does not go to the furnace room.** A floor system's span boundary
-    #     is the bearing wall's NODE axis (`resolve/floors.py`), so FS-M-MECH's joists stop at
-    #     exactly x=10'-0". A stud wall holding its east face on x=10'-6" — which three
-    #     dimensions require (see W-B-STR above) — runs 9'-11 1/4"..10'-6" and leaves those
-    #     joists 1/16" of top plate to sit on. Centring it on the node line fixes the bearing
-    #     and moves the west face the WRONG way: 9'-6" -> 9'-8 5/8", so the furnace room
-    #     loses 2 5/8" over this run instead of gaining.
-    #   * **It also uncarries FO-M-STAIR's west edge.** That edge is at x=10'-6" and
-    #     `_opening_edge_has_declared_bearing` wants the whole of it inside a named wall's
-    #     footprint. A centred 6 3/4" wall reaches 10'-3 3/8", so the y 26'-0 3/8"..31'-0"
-    #     half of the edge falls off the end of it and `structural.floor_opening_header`
-    #     emits — correctly — a 9'-0" LVL.
+    # **ALIGNMENT is the whole of it**, and the two failure modes below are why it is what
+    # it is. Framing this line was tried and backed out on 2026-08-23, for one reason: that
+    # attempt pinned the wall's EAST face on x=10'-6" to preserve the stair dimensions.
     #
-    # 12" of pour answers both by being 12" wide: 6" of joist bearing either side of the
-    # node line, and a footprint that reaches the opening edge. It is also one continuous
-    # pour with W-B-STR either way — the y=31'-0" split is where a partition tees in, not
-    # where the concrete stops. `integrity.floor_bearing_grid` is what will catch it if
-    # anyone thins it later without moving the opening with it.
-    FoundationWall(uid="1H4KR79N9M", tag="W-B-STR3", start_node="N-B-ESS-SE",
-                   end_node="N-B-BA-W", assembly="FOUNDATION_WALL_12_INT",
-                   unbalanced_fill=ft(0),
-                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375)),
+    #   * `resolve/floors.py` bounds a floor system's span at the bearing wall's NODE axis,
+    #     not at a wall face. A 6 3/4" stud line with its east face on 10'-6" runs
+    #     9'-11 1/4"..10'-6" and leaves FS-M-MECH's joists 1/16" of plate to sit on —
+    #     `integrity.floor_bearing_grid` wants 1 1/2" of structure each side of the axis.
+    #   * Centring on the node fixed the bearing and pulled the footprint back off
+    #     FO-M-STAIR's west edge at x=10'-6"; `_opening_edge_has_declared_bearing` then
+    #     gave up and `structural.floor_opening_header` emitted a 9'-0" LVL, correctly.
+    #
+    # The way through is neither: align these studs plumb UNDER W-M-STRW's studs and move
+    # the well's west face down to match the wall above (main.py's FO-M-STAIR is now at
+    # x=10'-3 3/8"). `_axis_offset_from_interior` measures from the interior face, so
+    # pinning the STUD layer's outboard face 2 5/8" east of the node puts the studs at
+    # 9'-9 1/8"..10'-2 5/8" on both segments — the identical band W-M-STRW occupies above —
+    # no matter what is added on the west, which is why both assemblies below can use the
+    # same offset. That leaves 2 7/8" of structure west of the axis and 2 5/8" east, and a
+    # full layer footprint reaching exactly x=10'-3 3/8", where the opening edge now stops.
+    # The shaft goes 7'-0" -> 7'-2 5/8"; the thickness that came off goes to the mechanical
+    # room. Set `interior_room` explicitly on both — do not let the component winding
+    # decide which side layer 0 faces.
+    #
+    # W-B-STR is also RM-B-ESS's west enclosure, so it takes the Type X variant:
+    # `advisory.ess_enclosure` passed here on the mass of 12" of concrete and now passes on
+    # a 5/8" Type X leaf on the closet face. W-B-N3 (the closet's north side) is still
+    # concrete and still passes on mass.
+    Wall(uid="CBW116AAAA", tag="W-B-STR", start_node="N-B-N2",
+         end_node="N-B-ESS-SE", assembly="CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX", top=ft(8),
+         alignment=face("stud-ext", offset=inch(-2.625)),
+         interior_room="RM-B-ESS",
+         structural_role=StructuralRole.BEARING),
+    # The same wall south of the closet: no Type X leaf, RM-B-FURNACE on the west face.
+    # FT-B-STR / FT-B-STR3 and their beddings need no edit — `Footing.under` takes any wall
+    # tag and `_resolve_footing` sets z1 from the wall's own z0, which for a framed wall on
+    # the basement storey is the same -109 7/16" the pour authored (params/foundations.py
+    # says so in as many words).
+    Wall(uid="1H4KR79N9M", tag="W-B-STR3", start_node="N-B-ESS-SE",
+         end_node="N-B-BA-W", assembly="CATLIN_STAIRWALL_INT_2X6_BRG", top=ft(8),
+         alignment=face("stud-ext", offset=inch(-2.625)),
+         interior_room="RM-B-FURNACE",
+         structural_role=StructuralRole.BEARING),
     # The stub south of it is a different job: RM-B-BATH's west enclosure, nothing bearing
     # on it, nothing dimensioned off it. It is *also* the ESS closet's east wall, and that
     # is what picks the assembly — `advisory.ess_enclosure` wants 5/8" Type X on the closet

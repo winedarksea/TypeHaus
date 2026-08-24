@@ -96,7 +96,12 @@ def test_structural_solids_account_for_every_resolved_solid(catlin_model) -> Non
 def test_bill_of_materials_carries_every_section(catlin_model) -> None:
     bom = bill_of_materials(catlin_model)
     assert set(bom) == {"framing", "framing_by_size", "structural_solids",
-                        "construction_returns", "sheet_goods", "glazing_panels",
+                        # The sill seal under the bearing plates (2026-08-24), by the lineal
+                        # foot and by product — its own section because
+                        # ``construction_returns`` reconciles 1:1 with the resolved returns
+                        # (→ ``takeoff/anchors.sill_gasket_rows``).
+                        "construction_returns", "sill_gaskets",
+                        "sheet_goods", "glazing_panels",
                         "glazing_trim", "hardware", "placeables", "floor_heat",
                         "electrical_devices", "panel_schedule", "service_load",
                         "conduit", "conductors", "solar", "backup_power",

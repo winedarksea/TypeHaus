@@ -53,6 +53,9 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "pl
              "railings", "drainage",
              # Pre-framing construction-rule returns (2026-08-18), by the lineal foot.
              "construction_returns",
+             # The sill seal under those plates (2026-08-24), by the lineal foot, keyed on
+             # the product the resolver picked. See ``Prices.sill_gaskets``.
+             "sill_gaskets",
              # Loose furnishings (2026-08-08) — priced, reported, and deliberately *not*
              # summed into the construction total. See ``EXCLUDED_FROM_TOTAL``.
              "furnishings",
@@ -238,6 +241,14 @@ class Prices:
     # drainage note describes — price a return here only where it is a *separate purchase*,
     # and leave the pure laps blank rather than billing the same material twice.
     construction_returns: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Sill seal by the lineal foot (2026-08-24), keyed on ``gasket_product`` —
+    # ``sill-seal-foam`` or ``sill-seal-peel-stick``. Its own table rather than a component
+    # of ``pt-sill-plate``: the plate rate above is a *delta* over the SPF board
+    # ``[framing]`` already bills, the gasket is a separate purchase at a separate rate, and
+    # rolling it into the delta made the two impossible to move independently — which is
+    # exactly what happened when the peel-and-stick form appeared on the envelope walls and
+    # the plain foam stayed on the interior ones.
+    sill_gaskets: Mapping[str, PriceRange] = field(default_factory=dict)
     # Loose furnishings (2026-08-08), keyed on the same catalog type tag as [placeables]
     # and read against the same BOM rows. A sofa is not a construction cost, and rolling
     # one into the build number makes the build number wrong in both directions — it is

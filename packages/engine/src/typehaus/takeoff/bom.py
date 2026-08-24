@@ -15,6 +15,7 @@ from typehaus.takeoff.framing import (
     sheet_goods_takeoff,
     structural_solids_takeoff,
 )
+from typehaus.takeoff.anchors import sill_gasket_rows
 from typehaus.takeoff.backup_calc import backup_runtime_summary
 from typehaus.takeoff.electrical import (
     backup_component_rows,
@@ -80,6 +81,10 @@ def bill_of_materials(
         "framing_by_size": framing_bom_by_size(model),
         "structural_solids": structural_solids_takeoff(model),
         "construction_returns": construction_returns_takeoff(model),
+        # The seal under the sill plates the line above bills the boards of. Its own table
+        # because ``construction_returns`` reconciles 1:1 with the resolved returns
+        # (→ ``takeoff/anchors.sill_gasket_rows``).
+        "sill_gaskets": sill_gasket_rows(model),
         "sheet_goods": sheet_goods_takeoff(model),
         "glazing_panels": glazing_panel_takeoff(model),
         "glazing_trim": glazing_trim_takeoff(model),

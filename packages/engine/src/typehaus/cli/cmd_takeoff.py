@@ -66,6 +66,7 @@ def takeoff(
                "structural_solids": bom["structural_solids"],
                "floor_heat": radiant, "sheet_goods": bom["sheet_goods"],
                "construction_returns": bom["construction_returns"],
+               "sill_gaskets": bom["sill_gaskets"],
                "glazing_panels": bom["glazing_panels"],
                "glazing_trim": bom["glazing_trim"],
                "hardware": bom["hardware"],
@@ -167,6 +168,11 @@ def takeoff(
         console.print("[bold]Construction returns (#45 pre-framing laps)[/bold]")
         for item in payload["construction_returns"]:
             console.print(f"  {item['category']} ({item['material']}): "
+                          f"{item['count']} × / {item['length_ft']} LF")
+    if payload["sill_gaskets"]:
+        console.print("[bold]Sill seal (under the bearing plates)[/bold]")
+        for item in payload["sill_gaskets"]:
+            console.print(f"  {item['product']} ({item['thickness_in']}\" compressed): "
                           f"{item['count']} × / {item['length_ft']} LF")
     if payload["glazing_panels"]:
         console.print("[bold]Glazing panels (4x8 sheets)[/bold]")

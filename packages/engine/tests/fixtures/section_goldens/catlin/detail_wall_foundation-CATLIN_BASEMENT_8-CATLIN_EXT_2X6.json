@@ -1508,11 +1508,11 @@
         ],
         [
           431.50000000000006,
-          -13.187499999999998
+          -13.374999999999998
         ],
         [
           426.00000000000006,
-          -13.187499999999998
+          -13.374999999999998
         ]
       ],
       "pattern": "metal",
@@ -1536,11 +1536,11 @@
         ],
         [
           431.50000000000006,
-          -13.187499999999998
+          -13.374999999999998
         ],
         [
           426.00000000000006,
-          -13.187499999999998
+          -13.374999999999998
         ]
       ],
       "layer": "A-DETL-CMPT",
@@ -2460,6 +2460,8 @@
     "• **The sill is one board and it is shared (2026-08-23).** This has always been the intent of the line further down — \"the I-joists and rim bear on the same 2x6 mudsill the framed wall above stands on\" — and until 2026-08-23 the model only half-carried it: `CR-CONC-TO-FRAMED-SILL` was returned under the framed wall's studs and stopped where the framed wall did, so the stretches where a floor bore and no wall stacked (W-B-CN's north 4.05 LF, W-B-CS's 0.83 LF) ordered no plate at all, and the joists themselves resolved *inside* the pour with nothing between wood and concrete. One rule takes the **union** of the two runs now, on the seat, and it bills 370.0 LF where it billed 358.6. There is no second rule and there must not be: two rules over one board is a double-bill, and that is exactly what retiring `floor:on_concrete_wall` prevents.",
     "• **The pour is 8\" everywhere the detail applies (2026-08-21), and the steel is `#5 @ 41\" o.c.` (2026-08-23).** The bar changed with the seat, not with the design: an exactly 8'-0\" wall is IRC Table R404.1.2(8)'s 8'-unsupported row rather than the 10' row a 9'-4\" wall rounds up to, and that cell reads `#5 @ 41\"` where the taller one read `#6 @ 48\"` — a lighter bar at a tighter spacing. This detail is the wood-over-concrete transition, and 12\" was only ever earned where a *cast concrete deck* lands on the wall top beside the sill plate and needs its own bearing seat inboard of it. Wood does not: the I-joists and rim bear on the same 2x6 mudsill the framed wall above stands on, and an 8\" wall carries that sill with 2\" to spare. After the 2026-08-21 basement-ceiling overhaul the only cast deck left is `SL-M-DECK`, which lands on the east wall and the centre line — neither of which this detail draws. So the north, west and south perimeter is 8\" (`CATLIN_BASEMENT_8`, `CATLIN_BASEMENT_8_GARDEN`, `SAUNA_LINER_ON_BASEMENT_8_GARDEN`) with `#5 @ 41\" o.c.` vertical steel, which IRC Table R404.1.2(8) requires at 8\" where 12\" reads NR. Nothing in the drawn transition changed: the walls align on `face(\"concrete-ext\")`, so the exterior face, the 4\" of XPS and its hand-off to the framed wall's 4\" of CI all stand exactly where they did, and the 4\" came off the inside face where the sill has room to spare.",
     "• **The panel's head is the Z-flashing below.** The band tops out at the top of the basement wall — -13 7/16\" since 2026-08-23, 0'-0\" before it — which is where the framed wall's mudsill sits, and the rainscreen's 1-1/2\" corrugated bug screen sits in the vented part of the outrigger band and where the Z-flashing with its drip is drawn. (That vent is 1\" deep since the truss wall — the outrigger band is 3-1/2\" but its back 2-1/2\" is packed with the foam, so the screen closes 1\", not 3-1/2\".) The panel tucks under that flashing; nothing new is fastened for the tie, and the flashing is what sheds water clear of the panel head.",
+    "• **The sill is treated in the BOM as well as in the detail, and the gasket is a named product (2026-08-24).** Two defects, both fixed in the engine rather than worked around here. `resolve/construction_sills.py` hardcoded `material_ref=\"spf\"` on a return whose own take-off category is `pt-sill-plate` and whose rule cites IRC R317.1, so the record said untreated where this note said treated; it says `kdat` now. No dollar moves with it — `construction_returns` is not in `QUALIFIED_KEY_FIELD`, so that column is reported and not priced on, and the `pt-sill-plate` rate stays the *delta* over the SPF board `[framing]` already bills. Separately, `FramingSpec.sill_gasket` was authored as the *uncompressed* 1/4\" roll while the only consumer draws the joint as built and this house was hard-coding `_SILL_GASKET_COMPRESSED = 1/16\"` beside it; the field is the compressed in-place thickness now, and a second field says WHICH seal — plain closed-cell foam where the plate joint is only a capillary/air break, peel-and-stick where it is the air barrier crossing onto the foundation, resolved from whether the framed wall carries a cladding layer. It reaches the BOM as its own `[sill_gaskets]` table (240 LF peel-and-stick on the envelope, 130 LF foam on the interior lines), and the $0.15-0.30/LF sealer that used to hide inside the `pt-sill-plate` delta came back out of it so the estimate does not pay twice.",
+    "• **This detail draws the envelope crossing only, and there are two interior walls on the same plate that it does not draw (2026-08-24).** `W-B-STR`/`W-B-STR3`, the stair shaft's west line, are 2x6 bearing stud walls on footings now instead of 12\" pours. They take the same PT plate, the same anchors and the same capillary break — but the plain-foam seal, not the peel-and-stick, because nothing about that joint is on the air barrier. Their detail is the ordinary framed-wall-on-slab base, and `plan/storeys/basement.py` carries the alignment reasoning.",
     "• Sill: include sill gasket and treated mudsill. **The stack is 1/16\" of compressed EPDM gasket under a 1 1/2\" PT 2x6, and those two numbers are structural, not trim**: the bearing seat is derived as joist depth + mudsill + gasket below the storey datum (`params/main_deck.py::BEARING_SEAT`), so the EPS deck beside it was deepened to land on the same plane. Substituting a thicker gasket or a 2x8 laid flat moves the seat and `structural.mixed_deck_bearing_seat` FAILs the build until the deck follows. Prioritize air sealing at sill plate (sealant + spray foam at gaps). Use mudsill anchors (e.g., MASAP) as required (not shown).",
     "• Flashings: provide stainless (preferred) or thick aluminum Z-flashing with drip edge at the bottom of the rainscreen — i.e. at the bottom of the **outriggers** since 2026-08-23, and set to the 1\" vent in front of the foam rather than to a 3-1/2\" band. Install insect barrier mesh/strip (Cor-A-Vent or SS screen) just above flashing. Mesh can be stapled to the outriggers, run behind the flashing, and into the layer between basement and wall foam.",
     "• Interface flashing: provide L-flashing from bottom of sheathing down onto the top of basement foam. Terminate within the insulation plane and seal the outer end with spray foam (Pestblock) to avoid an exterior thermal bridge. This is meant as a foam layer insect barrier. Since 2026-08-23 the \"insulation plane\" it terminates within is the wall's own sprayed foam rather than a board course, so the seal is foam to foam — bonded, not lapped.",

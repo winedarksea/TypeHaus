@@ -253,7 +253,7 @@ def _sill_return(tag: str, length_m: float) -> ResolvedConstructionReturn:
     return ResolvedConstructionReturn(
         uid=tag, tag="CR-CONC-TO-FRAMED-SILL", storey="main", kind="bearing_plate",
         applies_to="stacking", takeoff_category=CONFIG.sill_plate_takeoff_category,
-        material_ref="spf", element_tags=(), z0_m=0.0, z1_m=0.04, thickness_m=0.14,
+        material_ref="kdat", element_tags=(), z0_m=0.0, z1_m=0.04, thickness_m=0.14,
         length_m=length_m, lap_m=0.0,
         outline=[(0.0, 0.0), (length_m, 0.0), (length_m, 0.14), (0.0, 0.14)])
 

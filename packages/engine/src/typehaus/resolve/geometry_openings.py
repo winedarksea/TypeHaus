@@ -37,6 +37,13 @@ _SLIDING_TRACK_HEIGHT_M = 0.02
 
 _FRAME_KEY = "opening_frame"
 _GLASS_KEY = "glass"
+# A sectional overhead door's panel. The leaf of every other door takes _FRAME_KEY (interior
+# wood) or the clad wall's charcoal frame tone; a garage door is neither. It is a painted
+# steel product with its own factory colour, and at 16' wide it is one of the largest single
+# surfaces on the elevation — carrying the trim coil's near-black made it read matte black.
+# The colour is authored in emit/gltf/palette.py and reaches the viewer through the
+# generated vocabulary manifest, so a recolour stays a palette-only edit.
+_OVERHEAD_KEY = "overhead_door"
 
 # --- exterior window casing ---------------------------------------------------------------
 # A picture-frame of flat boards around the RO on the exterior cladding plane, for windows
@@ -233,7 +240,10 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                 _DOOR_LEAF_THICKNESS_M, 0.0,
                 z0 + sill + frame_width + leaf_height / 2.0),)))
     elif opening.kind == "door" and not is_glazed:
-        parts.append(GPart(key="leaf", material_key=_FRAME_KEY, solids=(
+        # A sectional overhead door is a factory-finished panel, not a wood leaf and not the
+        # exterior trim coil its frame is drawn in — see _OVERHEAD_KEY.
+        leaf_key = (_OVERHEAD_KEY if operation is DoorOperation.OVERHEAD else _FRAME_KEY)
+        parts.append(GPart(key="leaf", material_key=leaf_key, solids=(
             box(max(_OPENING_MIN_PANEL_DIMENSION_M, clear_width), panel_height,
                 _DOOR_LEAF_THICKNESS_M, 0.0, panel_elev),)))
     else:

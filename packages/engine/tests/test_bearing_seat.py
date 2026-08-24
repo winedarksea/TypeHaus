@@ -136,7 +136,11 @@ def test_the_seat_is_the_number_the_basement_walls_are_authored_to(catlin_model)
     it repeats -13 7/16" and -9'-1 7/16" as literals. This is the tie between the copies."""
     walls = [w for w in catlin_model.walls
              if w.tag.startswith("W-B-") and w.is_foundation and w.tag != "W-B-BRICK"]
-    assert len(walls) == 17
+    # 15 since 2026-08-24: W-B-STR and W-B-STR3 are framed 2x6 bearing walls now, not
+    # FoundationWalls, so they are no longer pours authored to the seat. What they stand
+    # on did not move — their own z0 is still the basement floor and their footings are
+    # unchanged — but they have nothing to say about the pour's top.
+    assert len(walls) == 15
     for wall in walls:
         assert wall.z1_m / M_PER_IN == pytest.approx(-13.4375, abs=1e-6), wall.tag
         assert wall.z0_m / M_PER_IN == pytest.approx(-109.4375, abs=1e-6), wall.tag
