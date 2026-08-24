@@ -627,7 +627,9 @@ Standing seam clamps to anchor decorative elements, possibly at gable peak, or l
 Architectural lighting on facade (try to aim to be dark sky friendly)
 
 ### Potential cost cutting (just ideas, not a TODO)
-Remove the attic level and switch to truss/blown in insulation
+~~Remove the attic level and switch to truss/blown in insulation~~ — PRICED 2026-08-23 at
+$89,000-160,000 off the bid total, and moved to `plans/cost-options.md` per the rule below,
+along with 17 other rows worth $3,000 or more each (the 2026-08-23 cost-reduction sweep).
 
 Once an idea here has a number against it, it moves to `plans/cost-options.md` — the
 priced upgrade/downgrade menu (started 2026-08-08).

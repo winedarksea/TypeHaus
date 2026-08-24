@@ -55,6 +55,13 @@ def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
     for row in blocks:
         assert row["order_length_ft"] < 1.5 * row["cut_length_ft"]
 
+    # Head cripples over a door are a short-cut family too — an 18" stud above a garage
+    # overhead-door header is ~1.5 ft of 2x6 — so the same nesting has to reach them. This
+    # pins the BOM path for the family rather than leaving it incidental to the sweep.
+    cripples = next(row for row in rows
+                    if row["profile"] == "2x6" and row["category"] == "cripple")
+    assert cripples["order_length_ft"] < 2 * cripples["cut_length_ft"]
+
     # A known dimensional profile carries a board-foot rollup; every stud is a real size.
     studs = [row for row in rows if row["category"] == "stud"]
     assert studs and all(row["board_feet"] for row in studs)

@@ -8,6 +8,7 @@ business knowing which is which. Every dimension used here comes from
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 
 from typehaus.model.enums import DoorOperation
@@ -31,6 +32,9 @@ from typehaus.resolve.geometry import add, scale
 from typehaus.resolve.model import FramedMember
 
 _PLATE_THICKNESS_M = 1.5 * M_PER_IN
+# Shorter than a plate is not a buildable stud, it is a sliver: a header landing
+# just shy of the plate line gets no cripples rather than a row of offcuts.
+_MIN_CRIPPLE_M = _PLATE_THICKNESS_M
 
 
 @dataclass(frozen=True)
@@ -218,9 +222,13 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     if pattern.needs_track_jamb_legs:
         _append_track_jamb_legs(out, rw, direction, wall_start, opening, opening_index,
                                 z0, header_bottom)
+    # Cripples above the header bear on whatever the header actually carries: the flat
+    # track nailer where one is emitted, the header itself otherwise.
+    cripple_bottom = header_bottom + depth
     if pattern.needs_track_backing:
-        _append_track_backing(out, rw, header_left, header_right, opening_index,
-                              header_bottom + depth, header_span)
+        cripple_bottom = _append_track_backing(out, rw, header_left, header_right,
+                                               opening_index, header_bottom + depth,
+                                               header_span)
 
     if not opening.is_door:
         sill_z0 = z0 + opening.sill_m
@@ -231,10 +239,15 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
         out.append(FramedMember(rw.uid, f"sill-{opening_index}", "sill", member,
                                 left, right, sill_z0, sill_z0 + _PLATE_THICKNESS_M,
                                 opening.width_m))
-        # Cripples under the rough sill and above the header retain the normal stud
-        # module without placing framing through the opening itself.
-        _append_opening_cripples(out, rw.uid, opening_index, direction, wall_start, center,
-                                 half, z0, sill_z0, header_bottom + depth, top_at, member)
+        # Cripples under the rough sill retain the normal stud module without placing
+        # framing through the opening itself.
+        _append_sill_cripples(out, rw.uid, opening_index, direction, wall_start, center,
+                              half, z0, sill_z0, member)
+    # Head cripples depend only on the gap between the header (or its nailer) and the
+    # plate underside — a door has no rough sill, but it has the same head condition a
+    # window does.
+    _append_head_cripples(out, rw.uid, opening_index, direction, wall_start, center,
+                          half, cripple_bottom, top_at, member)
     return out
 
 
@@ -288,12 +301,16 @@ def _append_track_jamb_legs(out: list[FramedMember], rw, direction, wall_start,
 
 
 def _append_track_backing(out: list[FramedMember], rw, header_left, header_right,
-                          opening_index: int, header_top: float, span_m: float) -> None:
-    """Flat nailer on top of the header: what the horizontal track and operator hang from."""
+                          opening_index: int, header_top: float, span_m: float) -> float:
+    """Flat nailer on top of the header: what the horizontal track and operator hang from.
+
+    Returns its own top, which is what any head cripple above it bears on.
+    """
     backing_thickness = member_actual(OVERHEAD_TRACK_MEMBER)[0] * M_PER_IN
     out.append(FramedMember(rw.uid, f"trackbacking-{opening_index}", "blocking",
                             OVERHEAD_TRACK_MEMBER, header_left, header_right, header_top,
                             header_top + backing_thickness, span_m))
+    return header_top + backing_thickness
 
 
 def _frame_inside_one_bay(rw, direction, wall_start, opening: WallOpening, member: str,
@@ -347,27 +364,51 @@ def _frame_inside_one_bay(rw, direction, wall_start, opening: WallOpening, membe
     return out
 
 
-def _append_opening_cripples(out: list[FramedMember], parent_uid: str, opening_index: int,
-                             direction, wall_start, center: float, half: float,
-                             bottom: float, sill: float, header_top: float, top_at,
-                             member: str) -> None:
-    """Add deterministic sill and header cripples at a 16 in. maximum spacing."""
+def _cripple_stations(center: float, half: float) -> list[tuple[int, float]]:
+    """Interior 16 in. o.c. stations across a rough opening, as (index, station).
+
+    The two edge stations coincide with jack framing and are dropped: a cripple there
+    would be a second member on the trimmer's own centreline.
+    """
     spacing = DEFAULT_SPACING.meters
     start, end = center - half, center + half
     stations = [start + index * spacing for index in range(int((end - start) // spacing) + 1)]
     if not stations or stations[-1] < end - 1e-6:
         stations.append(end)
-    # Edge stations coincide with jack framing, so only interior stations are cripples.
-    for index, station in enumerate(stations):
-        if station <= start + 1e-6 or station >= end - 1e-6:
-            continue
+    return [(index, station) for index, station in enumerate(stations)
+            if start + 1e-6 < station < end - 1e-6]
+
+
+def _append_sill_cripples(out: list[FramedMember], parent_uid: str, opening_index: int,
+                          direction: tuple[float, float], wall_start: tuple[float, float],
+                          center: float, half: float, bottom: float, sill: float,
+                          member: str) -> None:
+    """Cripples under a rough sill, at a 16 in. maximum spacing. Windows only — a door
+    has no rough sill to carry."""
+    if sill - bottom <= _MIN_CRIPPLE_M:
+        return
+    for index, station in _cripple_stations(center, half):
         position = add(wall_start, scale(direction, station))
-        if sill - bottom > 1e-6:
-            out.append(FramedMember(parent_uid, f"cripple-sill-{opening_index}-{index:02d}",
-                                    "cripple", member, position, position, bottom, sill,
-                                    sill - bottom, orient=direction))
+        out.append(FramedMember(parent_uid, f"cripple-sill-{opening_index}-{index:02d}",
+                                "cripple", member, position, position, bottom, sill,
+                                sill - bottom, orient=direction))
+
+
+def _append_head_cripples(out: list[FramedMember], parent_uid: str, opening_index: int,
+                          direction: tuple[float, float], wall_start: tuple[float, float],
+                          center: float, half: float, header_top: float,
+                          top_at: Callable[[float], float], member: str) -> None:
+    """Cripples between the header (or its track nailer) and the plate underside.
+
+    Every opening with a jamb pack gets these, doors included: what governs is the
+    arithmetic gap above the header, not the operation. An opening whose header runs to
+    the plate line simply has no gap and emits none.
+    """
+    for index, station in _cripple_stations(center, half):
+        position = add(wall_start, scale(direction, station))
         wall_top = top_at(station)
-        if wall_top - header_top > 1e-6:
-            out.append(FramedMember(parent_uid, f"cripple-head-{opening_index}-{index:02d}",
-                                    "cripple", member, position, position, header_top,
-                                    wall_top, wall_top - header_top, orient=direction))
+        if wall_top - header_top <= _MIN_CRIPPLE_M:
+            continue
+        out.append(FramedMember(parent_uid, f"cripple-head-{opening_index}-{index:02d}",
+                                "cripple", member, position, position, header_top,
+                                wall_top, wall_top - header_top, orient=direction))

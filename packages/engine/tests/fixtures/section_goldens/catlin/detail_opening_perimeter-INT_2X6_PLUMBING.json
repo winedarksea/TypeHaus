@@ -1392,6 +1392,62 @@
     },
     {
       "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          213.25,
+          -20.6875
+        ],
+        [
+          218.75000000000003,
+          -20.6875
+        ],
+        [
+          218.75000000000003,
+          -16.437499999999996
+        ],
+        [
+          213.25,
+          -16.437499999999996
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CBW114AAAA",
+      "tag": "cripple-head-0-01"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          213.25,
+          -20.6875
+        ],
+        [
+          218.75000000000003,
+          -20.6875
+        ],
+        [
+          218.75000000000003,
+          -16.437499999999996
+        ],
+        [
+          213.25,
+          -16.437499999999996
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",

@@ -1184,6 +1184,19 @@ def test_garage_overhead_door_opens_from_the_slab_at_grade(catlin_model):
                   if m.parent_uid == wall.uid and m.category == "header")
     assert header.z0_m == pytest.approx(plate_top + door.sill_m + door.height_m)
 
+    # …and the cripples the docstring promises are actually there. Until 2026-08-23 they
+    # were not: the head family was emitted from inside the window-only branch that carries
+    # the rough sill, so this door — the widest opening in the house — had 18" of empty
+    # wall and 16 ft of unbacked double top plate above its header. They bear on the flat
+    # track nailer, not on the LVL through it.
+    backing = next(m for m in catlin_model.all_members()
+                   if m.parent_uid == wall.uid and m.child_key.startswith("trackbacking-"))
+    cripples = [m for m in catlin_model.all_members()
+                if m.parent_uid == wall.uid and m.child_key.startswith("cripple-head-")]
+    assert len(cripples) > 8, "16'-9\" of header at 16\" o.c. is a dozen stations"
+    for cripple in cripples:
+        assert cripple.z0_m == pytest.approx(backing.z1_m)
+
 
 def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_model):
     """D-G-SERVICE follows the *deck*, and D-G-OVERHEAD follows the *slab*. That split is

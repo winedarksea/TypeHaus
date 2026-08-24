@@ -37,9 +37,11 @@ from __future__ import annotations
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.floors import FloorSystem, Slab
+from typehaus.model.project import Storey
 from typehaus.model.structure import FoundationWall
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.model import ResolvedSolid
 
 # One flat seat means one plane. A sixteenth is the tolerance a form crew works to and the
 # tolerance the arithmetic upstream is authored in.
@@ -61,7 +63,7 @@ def _fail(msg: str, tags: tuple[str, ...], hint: str | None = None) -> Finding:
                    message=msg, element_tags=tags, result=Result.FAIL, fix_hint=hint)
 
 
-def _adjacent(a, b) -> bool:
+def _adjacent(a: list[tuple[float, float]], b: list[tuple[float, float]]) -> bool:
     from shapely.geometry import Polygon
 
     pa, pb = Polygon(a), Polygon(b)
@@ -69,7 +71,7 @@ def _adjacent(a, b) -> bool:
         return False
     if pa.intersection(pb).area > 1e-6:
         return False  # one lies on the other — not a mixed deck, a slab on a floor
-    return pa.buffer(1e-3).intersection(pb).area / 1e-3 >= _SHARED_EDGE_M
+    return bool(pa.buffer(1e-3).intersection(pb).area / 1e-3 >= _SHARED_EDGE_M)
 
 
 @check(Tier.STRUCTURAL, "structural.mixed_deck_bearing_seat")
@@ -92,7 +94,8 @@ def mixed_deck_bearing_seat(ctx: CheckContext) -> list[Finding]:
     return out
 
 
-def _grade(ctx: CheckContext, storey, slab: Slab, solid, floor: FloorSystem) -> list[Finding]:
+def _grade(ctx: CheckContext, storey: Storey, slab: Slab, solid: ResolvedSolid,
+           floor: FloorSystem) -> list[Finding]:
     tags = (slab.tag, floor.tag)
     seats = _seats(ctx, floor)
     if not seats:

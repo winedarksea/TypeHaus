@@ -90,7 +90,7 @@ BASEMENT_LIGHTING = [
                      controlled_by=("ED-B-FURNACE-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(1.5))),
     ElectricalDevice(uid="QTB0009AAA", tag="ED-B-FURNACE-PANEL2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(5), ft(32)), type_ref="ED-T-LT-PANEL",
+                     position=pt(m(1.52108), m(8.91654)), type_ref="ED-T-LT-PANEL",
                      circuit="CKT-LT-BACKUP", room="RM-B-FURNACE",
                      controlled_by=("ED-B-FURNACE-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(1.5))),

@@ -510,7 +510,7 @@ OPENINGS = [
     # 3/4" inside this opening's south jamb. At 22'-6" the door keeps 5 1/4" of concrete jamb
     # south of it, and the flight it faces still springs 1'-4" further north at 26'-0 3/8".
     Door(uid="CBD204AAAA", tag="D-B-NE", host="W-B-CN", type_ref="DT-INT-SWING32",
-         position=from_node("N-B-BA-E", inch(8.625)), flip_hinge=True),
+         position=from_node("N-B-BA-E", inch(8.625)), flip_hinge=False, flip_swing=True),
     # Used to be D-B-STAIR, opening into the workshop through W-B-CW2's concrete; on
     # 2026-07-30 the shaft's south 3'-0" became RM-B-BATH, so this leaf (same uid, same
     # 32" width — wheelchair-usable in a 3'-deep room) was rehung on the bathroom's north
@@ -519,7 +519,7 @@ OPENINGS = [
     # the lavatory and the receptacle, all `integrity.door_swing_conflict` violations.
     # Positioned so jambs (x 12'-8"..15'-4") clear both fixtures' footprints.
     Door(uid="CBD207AAAA", tag="D-B-BATH", host="W-B-BA-N", type_ref="DT-INT-SWING32",
-         position=from_node("N-B-BA-W", ft(2, 8))),
+         position=from_node("N-B-BA-W", ft(3, 1.875)), flip_hinge=True),
     # ESS closet door, opening west into the furnace room. DT-INT-SWING24: a 2'-0" leaf is
     # what a closet this size takes with jamb both sides. 10" offset from the corner, not
     # the original 4": at 4" the opening's king stud clashed with the wall's corner post

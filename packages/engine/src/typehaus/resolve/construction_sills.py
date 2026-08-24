@@ -19,7 +19,6 @@ from collections.abc import Iterator
 
 from typehaus.model.assembly import ConstructionRule
 from typehaus.model.floors import FloorSystem
-from typehaus.model.structure import FoundationWall
 from typehaus.resolve.construction_assemblies import _framed_wood_layer, _is_concrete
 from typehaus.resolve.construction_geometry import (
     _EPS,
@@ -75,7 +74,12 @@ def _find_framed_on_concrete(model: ResolvedModel, rule: ConstructionRule) \
             continue
         direction = unit(sub(a1, a0))
 
-        def _project(point: tuple[float, float]) -> float:
+        # ``a0``/``direction`` bound as defaults, not closed over: the helper is only ever
+        # called inside this iteration, but a late-binding closure over a loop variable is
+        # the kind of thing that is true until someone moves the call (ruff B023).
+        def _project(point: tuple[float, float],
+                     a0: tuple[float, float] = a0,
+                     direction: tuple[float, float] = direction) -> float:
             v = sub(point, a0)
             return v[0] * direction[0] + v[1] * direction[1]
 

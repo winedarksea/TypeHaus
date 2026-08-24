@@ -10,8 +10,8 @@ of and assert the build goes red.
 from __future__ import annotations
 
 import pytest
-
 from _helpers import check_context
+
 from typehaus.checks.structural.bearing_seat import (
     floor_bearing_grid,
     mixed_deck_bearing_seat,
@@ -117,13 +117,12 @@ def test_an_alignment_offset_that_stops_matching_the_thickness_is_caught(
     """W-B-CS's ``face("concrete-ext", offset=inch(-6))`` is a hand-written HALF of a 12"
     pour. Thin the wall and leave the number and the concrete slides off the x=18' grid
     while the joists keep stopping on it — the silent failure the check is for."""
-    from typehaus.resolve import resolve
-
     # -11" against a 12" pour: the concrete then runs 17'-11"..18'-11" and the joists that
     # stop on x=18' have 1" of it on the near side, under the 1 1/2" the check wants. (-6",
     # the authored number, is a genuine half of 12". Even at 8" it would still leave 2" and
     # pass — which is the honest answer: the rule is bearing, not tidiness.)
     from typehaus.model.refs import face
+    from typehaus.resolve import resolve
 
     plan = _nudged(catlin_plan, "W-B-CS", alignment=face("concrete-ext", offset=inch(-11)))
     model, _findings = resolve(plan)

@@ -98,7 +98,8 @@ def test_a_block_covers_the_whole_stud_it_is_screwed_to(catlin_model):
 
     * **Blocks with no stud at all.** Over a header or a rough sill (the framing above a door
       head and under a window spans the whole opening), and above an opening whose header
-      runs to the top plate, where there are no cripples. That is wood, just not a stud.
+      runs to the top plate, where there are no cripples — a head gap shallower than a
+      plate is not framed. That is wood, just not a stud.
     * **The last 6" of each band.** A band's end strip is off-module by construction, like
       the end stud; its pack is slid to stay inside the mitred band, and it lands on a corner
       post whose other studs belong to the WALL NEXT DOOR and are not in this member list.

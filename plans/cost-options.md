@@ -9,13 +9,19 @@ an unpriced idea lives in TODO.md's "potential cost cutting" list until it has a
 swap that changes what the house *does*, not just what it costs, gets a **cost of the cut**
 note. Rows are material+labour unless noted.
 
-## Baseline — it moved three times; read this before comparing rows
+**Start here:** [Premium features](#premium-features--what-each-one-costs-2026-08-23) — what
+each optional thing costs — and the
+[cost-reduction sweep](#cost-reduction-sweep--2026-08-23) — everything worth $3,000 or more
+off the bottom line. Both were added 2026-08-23 and both quote bid totals, not section deltas.
+
+## Baseline — it moved four times; read this before comparing rows
 
 | date | change | before → after |
 |---|---|---|
 | 08-18 | suspended deck got its own price key (was billed at slab-on-grade rate) | $274,206–562,712 → $307,330–627,774 |
 | 08-20 | labour added to file (21/24 sections were $0 labour) | constr. total $306,982–627,214 → **$574,980–1,135,114**; labour $0 → $211,280–421,533; $/gsf $51–104 → $96–189 |
 | 08-20 | allowance register authored in + 3 of 4 bid-ladder stages turned on | net $576,557–1,139,150 → **total $978,947–2,061,452**; $/gsf $96–189 → **$163–343** |
+| 08-23 | mixed-deck bearing seat, 8'-0" pour, joist alignment (net of every TAKEN row below) | **total $951,336–1,992,450**; $/gsf **$138–289**; $/conditioned sf **$162–341** |
 
 Four owner decisions on 08-20 took **$64,782** off the high end: wire closet shelving not
 laminate (−$35,000), summer pour (−$21,000), code-min ice barrier confirmed as base scope,
@@ -28,18 +34,446 @@ multiplies it ~1.20x (waste, 10% contingency, material tax) on the way to the bo
 ~1.40x if markup is switched on. A $10,000 saving in `envelope_layers` is ~$12,000 off the
 printed total today.
 
+**Two conventions live in this file, and every row says which it uses.** The rows above and
+below this line are *section* deltas. The two 2026-08-23 sections that follow — the premium
+menu and the cost-reduction sweep — quote **bid-total** deltas instead, measured by rebuilding
+the estimate with the change made. The measured ladder multiplier is **~1.17x**, not the 1.20x
+estimated above.
+
+## Premium features — what each one costs (2026-08-23)
+
+Asked for directly: the things this house has that an ordinary 5,100 sf Minnesota house
+would not, each with a number against it.
+
+**Every figure in this section is a BOTTOM-LINE delta** — what the printed `haus takeoff`
+total moves by — not a section delta. It already carries waste, the 10% contingency and
+material tax; `[markup]` is still off. That is deliberately a different convention from the
+rest of this file, and the rows say which one they use.
+
+**Method.** Delete the feature's elements from the *resolved* model, re-run
+`bill_of_materials` + `estimate_costs`, diff the bid total. Where a feature cannot simply be
+deleted — something else has to stand where it stood — the replacement is costed off named
+`prices.toml` rows and subtracted. Those rows show their arithmetic below the table.
+
+| feature | cost | of the $951k–$1.99M total | |
+|---|---|---|---|
+| **Habitable cathedral-roofed attic** — 1,281 sf of floor *and* the hot roof over it | **$89,000–160,000** | 9.4% / 8.0% | vs a trussed cold attic |
+| **Sunken garden / porch / balcony** — the freestanding concrete structure | **$47,900–86,900** | 5.0% / 4.4% | balcony alone is $10,300–19,100 of it |
+| ⏳ **PV array + battery backup** — 5.28 kW, 14.3 kWh, EG4 12kPV | **$38,000–73,000** | 4.0% / 3.7% | defer, but pre-wire |
+| **Sauna** — 127 sf, heater, benches, T&G liner, shower, its own ERV pair | **$12,700–29,500** | 1.3% / 1.5% | |
+| **Insulated + heated detached garage** — the insulation and the heat only | **$12,500–24,000** | 1.3% / 1.2% | the whole garage is $62,300–119,100 |
+| ⏳ **Raised garden apron** — 245 SF of SRW wrapping the sunken garden | **$8,700–17,400** | 0.9% / 0.9% | defer |
+| **Concrete deck over the theatre** — 414 SF of LiteDeck + cast cap | **$6,300–10,700** | 0.7% / 0.5% | premium over I-joists |
+| | **$215,100–$401,500** | **22.6% / 20.2%** | |
+
+⏳ **easy to defer to a small later renovation** — both are outside the weather envelope and
+neither is trapped behind finished work. The raised garden is a landscape contract that can
+be let any spring. The PV + battery is deferrable *only if the roof, the conduit and the
+service are built for it now*: `ED-A-PV-JB`, the attic riser conduit, the backup subpanel
+enclosure and the 12 S-5! PVKIT seam clamps are ~$1,500–3,500 of the $38,000–73,000 and
+they are the part that is expensive to retrofit. Leave those in, defer the modules, racking,
+inverter and battery — **$34,500–69,500** deferred for ~$1,500–3,500 of insurance.
+
+Deferring both ⏳ rows takes **$43,200–86,900** out of the first build.
+
+### Habitable cathedral attic — $89,000–160,000
+
+The single largest optional thing in the house, and this is the number
+`plans/TODO.md`'s "remove the attic level and switch to truss/blown-in" line has been
+waiting for since it was written.
+
+| | low | high |
+|---|---|---|
+| delete the attic storey **and** `RF-HOUSE`/`RB-HOUSE`/`FS-ATTIC`/`ST-S2A` | −$131,528 | −$240,185 |
+| put back a trussed cold attic (below) | +$42,600 | +$80,400 |
+| **premium** | **$88,900** | **$159,800** |
+
+Gross area 6,027 → 4,664 sf; conditioned 5,113 → 3,832 sf. Bill-of-materials movers:
+`envelope_layers` −$60,956/−$108,496, `framing` −$22,075/−$37,542, `openings`
+−$8,415/−$17,345, `sheet_goods` −$8,670/−$14,856, `floor_finishes` −$5,532/−$12,541.
+
+The put-back, priced off this file's own rows (trusses are the one number not sourced here —
+`[framing]` has no truss row for a 36'-0" roof truss, so $5.00–9.00/SF of footprint is a
+market rate, not a house number):
+
+| | low | high |
+|---|---|---|
+| 36'-0" gable trusses @24" o.c., energy heel, set, 1,296 SF footprint | $6,480 | $11,664 |
+| 7/16" OSB deck, 1,436.6 SF (`envelope_layers` "osb" basis) | $1,724 | $3,161 |
+| synthetic underlayment, 1,436.6 SF (`roof-underlayment-synthetic`) | $1,221 | $2,730 |
+| standing seam retained, 1,436.6 SF (`standing-seam`) | $15,084 | $26,577 |
+| edge trim + eave water chain, unchanged (`edge_trim`) | $2,070 | $4,805 |
+| blown fibreglass to R-60 over 1,296 SF (`blown-fiberglass` ×1.6 for depth) | $1,866 | $4,562 |
+| flat ceiling: gwb + paint, 1,296 SF (`gwb` + `latex-paint`) | $4,019 | $7,322 |
+| two gable triangles still clad, 216 SF of `CATLIN_EXT_2X6` | $3,024 | $5,616 |
+| attic access, ridge/edge venting | $900 | $2,300 |
+| net | $36,388 | $68,737 |
+| × the bid ladder (~1.17) | **$42,600** | **$80,400** |
+
+**Read this before treating it as a saving.** $89,000 over 1,281 sf is **$69–125 / sf**,
+against **$138–289 / gross sf** for the house as a whole. *The attic is the cheapest square
+footage in the building* — it buys no foundation, no site work and no extra stair run, and
+1,079 sf of it (`RM-A-WEST` 598, `RM-A-EAST` 481) is already typed `storage`, i.e. the
+cheapest finish level in the house. If square footage is wanted anywhere, it is wanted here
+before anywhere else.
+
+**Cost of the cut** is bigger than the money. The 5' knee walls, the N–S structural ridge
+(`RB-HOUSE` on `W-A-C1/C2`, which stacks unbroken to the footings), `FO-A-STAIR`, the whole
+south gable composition (four openings mirrored about x=18') and `params/solar.py`'s 12-module
+fit on the ridge planes are all consequences of this decision. It is a re-design of the
+building's whole upper third, not a line item. It also drops `preferences.toml`'s R-60 roof to
+whatever the blown depth reaches, and swaps every control layer from outboard-of-structure to
+a ceiling plane — a different building-science argument entirely (see `CATLIN_ROOF`'s note).
+
+### Sunken garden / porch / balcony — $47,900–86,900
+
+Ablating every `*-SG-*` element: bid $951,336–1,992,450 → $903,397–1,905,540.
+`wall_structure` −$14,590/−$26,262 (29.2 cy of `SUNKEN_GARDEN_WALL`), `concrete`
+−$12,147/−$23,214, `sheet_goods` −$8,496/−$15,900 (the aluminium balcony plank, see the
+sweep below), `footing_bedding` −$3,592/−$5,389, `framing` −$1,198/−$1,974,
+`timber` −$764/−$1,311.
+
+Sub-slices, each measured on its own: **balcony** (`FS-SG-DECK`, `RL-SG-BALCONY`, three
+`BM-SG-BL*` beams, six `PT-SG-B*` pillars) **$10,323–19,071**; **Ishtar-gate brick veneer**
+(`W-B-BRICK` + `FT-B-BRICK` + the two arched reveals) **$3,322–7,107**.
+
+Not included and not modelled: the E–W lateral bracing the arch removal left open
+(`plans/TODO.md`), and the seven `FT-SG-*` footings that `structural.frost_depth` routes to
+UNKNOWN. Both go to the same engineer, and neither is free.
+
+### PV array + battery backup — $38,000–73,000
+
+`[allowances] electrical-pv-array-modules-and-racking` $24,000–46,000 (→ $26,400–52,900 after
+contingency) plus the modelled hardware: ablating `SP-A-PV-*`, `EQ-B-ESS-INV`, `EQ-B-ESS-BATT`,
+`ED-B-BACKUP-*`, `ED-A-PV-JB`, `RM-B-ESS` and `W-B-ESS-*` moves the bid total
+−$11,152/−$19,608, almost all of it `placeables` (−$8,610/−$14,935 — the 12 kPV hybrid inverter
+and the 14.3 kWh PowerPro).
+
+**The allowance is the weakest number in it.** $24,000–46,000 for 5.28 kW DC is
+**$4.55–8.71 per watt**. Published 2026 US residential installed cost sits at $2.60–3.60/W,
+and a small (<6 kW) system in the Twin Cities at $3.50–4.50/W — i.e. **$18,500–23,800** for
+this array. One quote is worth $6,000–22,000 here and is the highest-value phone call on the
+list after the roofer's. See **Open questions**.
+
+### Sauna — $12,700–29,500
+
+Ablating `RM-B-SAUNA`, `W-B-SA-W/N`, `EQ-B-SAUNA-HTR`, the two benches, `D-B-SAUNA`,
+`WIN-B-SAUNA`, the drain/vent run and the dampered ERV pair: **−$10,748/−$25,591**
+(`placeables` −$2,913/−$8,915, `envelope_layers` −$2,617/−$4,807, `floor_finishes`
+−$1,460/−$3,358, `openings` −$1,065/−$2,250).
+
+Plus what the ablation cannot reach: the liner that rides on concrete rather than on a
+sauna-only wall — 177.1 SF of `sauna-tg` ($1,860–3,542) + `polyiso-foil` ($460–832) on
+`W-B-S2` and `W-B-CS`, less the $549–1,001 of gwb + paint those walls would carry instead.
+**+$2,000–3,950** after the ladder.
+
+The two liner assemblies (`SAUNA_LINER_ON_CONCRETE`, `SAUNA_LINER_ON_BASEMENT_8_GARDEN`) are
+the reason the sauna is not simply two partitions: its vapour control has to be continuous on
+all four sides, so two basement walls carry a second, house-local stack.
+
+### Insulated + heated detached garage — $12,500–24,000
+
+The garage entire is **$62,250–119,051** (571 sf, `RM-GARAGE` + `RF-GARAGE` + `W-G-*` +
+`W-GF-*` + `SL-G-*` + `D-G-*`). What "insulated" costs inside that, against the same box
+built cold, unlined and unheated:
+
+| | low | high | source row |
+|---|---|---|---|
+| ICF stem, 8.8 cy + 952.5 SF of form | $12,859 | $22,385 | `wall_structure GARAGE_ICF_6`, `envelope_layers icf-eps` |
+| *less* a conventional formed 8" frost wall, 9.8 cy | −$4,851 | −$7,938 | `CATLIN_BASEMENT_8`'s re-derived $495–810/cy |
+| 1.5" Zip-R, 663.3 SF, *less* plain 7/16" OSB | +$1,526 | +$2,919 | `envelope_layers zip-r` vs `osb` |
+| blown fibreglass, 576 SF at 14.5" | +$518 | +$1,267 | `envelope_layers blown-fiberglass` |
+| gwb band on the ICF stem above grade (R316.4) | +$217 | +$372 | `envelope_layers gwb` |
+| unit heater + its 240 V circuit and conduit | +$400 | +$1,200 | `EQ-T-GARAGE-HEATER`, `[conduit]` |
+| net | $10,669 | $20,205 | |
+| × the bid ladder | **$12,500** | **$23,600** | |
+
+**Two-thirds of it is the ICF stem, not the insulation** — see the sweep below, where
+swapping it for a conventional frost wall stands on its own as a $9,400–16,900 line. The
+garage walls themselves carry no cavity insulation by decision (2026-08-20); only the Zip-R
+and the ceiling are thermal layers, so this is already the cheap version of a warm garage.
+Interior wall gypsum is not in the table: it is inside `envelope_layers`' 11,392.8 SF bulk
+`gwb` row and cannot be separated out, and a detached garage 4' from a dwelling may want it
+for exposure reasons regardless.
+
+### Concrete deck over the theatre — $6,300–10,700
+
+Deleting `SL-M-DECK` alone: **−$11,450/−$20,843** (`envelope_layers` −$5,092/−$8,032, the
+10" LiteDeck forms; `concrete` −$4,562/−$9,683, the 18.37 cy). Putting 414 SF of 11-7/8"
+I-joist floor back at this file's own researched $10.58–20.94/SF is **+$5,125/+$10,143**
+after the ladder. The finish is close to a wash — 411 SF of cream polish
+($1,751–3,708, and a $2,000–3,500 mobilisation lump either way) against LVP at $1,449–3,623.
+
+**Cost of the cut**, as recorded on 2026-08-21 and still true: the acoustic isolation over
+`RM-B-PLAY-N` is the whole point of the line, `FH-M-DINING` is an `in_slab` embed that would
+re-author to mat-under-LVP, and the thermal mass sits under the south glazing the facade is
+composed around. The flat bearing seat of 2026-08-23 does not change any of that.
+
+### Raised garden apron — $8,700–17,400
+
+Ten elements (`W-RG-*` and their levelling pads): `wall_structure` −$7,350/−$14,700 for
+245 SF of `RETAINING_BLOCK_12`, `footing_bedding` −$136/−$287. No engine work, no envelope,
+no MEP — which is exactly why it defers cleanly.
+
+## Cost-reduction sweep — 2026-08-23
+
+Asked for: things that take real money out without giving up a high-performance house.
+**Threshold for appearing here is $3,000 off the bottom line.** Same convention as the
+premium table above — every number is a **bid-total** delta, not a section delta.
+
+Four of these were priced by actually building the change: a copy of the house with the
+edit made, `haus check` run to confirm it stays at 0 FAIL, and `haus takeoff` run to read
+the total. Those rows say **built**. The rest are arithmetic on named `prices.toml` rows.
+
+| # | change | saves | how priced |
+|---|---|---|---|
+| 1 | **Attic level → trussed cold attic + blown R-60** | **$89,000–160,000** | see above |
+| 2 | **House-wall cladding: standing-seam snap-lock → lap siding on the same outriggers** | **$15,600–29,000** | built |
+| 3 | Excavation: reuse spoil on site instead of hauling off | $10,000–25,000 | allowance note |
+| 4 | Roofs (house + garage, 2,186 SF): standing seam → architectural asphalt | $9,700–18,200 <br>+$1,500–3,000 of snow retention | built |
+| 5 | Garage ICF stem → conventional formed frost wall | $9,400–16,900 | arithmetic |
+| 6 | ⏳ Raised garden apron — defer | $8,700–17,400 | ablation |
+| 7 | ⏳ Driveway apron + walks — defer to a later contract | $18,000–44,000 | allowance |
+| 8 | Windows: mid-range clad/fibreglass → vinyl or entry fibreglass, same U-0.25 | $6,500–11,000 | the `[openings]` note's own number |
+| 9 | Delete the 8 discretionary attic windows | $6,200–12,100 | built, 0 FAIL |
+| 10 | Concrete deck over the theatre → I-joists | $6,300–10,700 | see above |
+| 11 | Exterior CI: 4" → 2.5" of ccSPF (R-38.7 → R-32.7) | $5,600–8,000 | built, 0 FAIL |
+| 12 | Plant room → an ordinary second-floor room | $5,300–10,400 | arithmetic |
+| 13 | Trim, stool and apron package simplified | $5,000–13,000 | allowance scope |
+| 14 | Oak floor + red-oak stair treads → LVP / carpet | $4,300–6,800 | `[floor_finishes]` |
+| 15 | Balcony aluminium plank → walkable PVC membrane deck | $3,400–10,000 | `[sheet_goods]`, low confidence |
+| 16 | Exterior guards: Trex Signature → builder-grade aluminium | $3,700–5,700 | `[railings]` |
+| 17 | Ishtar-gate glazed brick veneer → plain brick, or delete | $3,300–7,100 | ablation |
+| 18 | HVAC System 3 folded into the multi-zone | $3,000–5,400 | ablation + line-set allowance |
+
+**They do not add up.** #1 contains #9 outright and part of #2, #4 and #11; #5 is
+two-thirds of the "insulated garage" premium; #6, #7 and #10 also appear in the premium
+table. Take #1 and rows 9, and most of 2/4/11, shrink with it.
+
+### 2 — the wall cladding is the biggest lever that is not a feature
+
+3,512.2 SF of `standing-seam-snaplock` at $8.75–16.00/SF installed = **$30,732–56,195** —
+the largest single row in the *resolved* bill of materials (allowance lump sums aside),
+ahead of the 11,392.8 SF of gypsum ($17,659–30,191) and the roof's own metal
+($15,084–26,577). It is a *rainscreen
+skin*: it carries no structure, no air control, no water control
+and no thermal control — the Swinburne truss wall's 4" of ccSPF is all four of those. So this
+is the one exterior line where a downgrade costs nothing but looks.
+
+Re-priced at $5.00–9.00/SF installed (steel or engineered-wood lap, or a fibre-cement panel —
+the band published for metal siding and for LP SmartSide alike): total
+$951,336–1,992,450 → **$935,575–1,963,226**, **−$15,600 / −$29,000**.
+
+- **The outriggers decide what can go on.** They are KDAT 2x4 on edge, **vertical**, at 16"
+  o.c. That is a direct nailer for *horizontal* lap or panel and takes it with no extra
+  framing. A vertical ribbed or corrugated panel wants horizontal girts and would need a
+  second layer, which eats a third of the saving — price that version separately before
+  choosing it.
+- **A half version exists.** Keeping standing seam on the south and west elevations
+  (~1,212 SF) and lapping north and east (~2,300 SF) is roughly **−$10,000 / −$17,600**.
+- **Cost of the cut:** this is a metal-clad house whose roof, walls, corner trim and edge
+  trim are one continuous material, and `brief.md`'s style line says so. Lap siding on the
+  walls makes the roof a different material from the walls for the first time, and the
+  elevations want revisiting. Exposed-fastener products also put 20–30 year gasketed screws
+  on the wall where there are none today.
+
+### 4 — the roof row in this file was wrong, and here is the honest split
+
+The **Standing-seam metal roof → architectural asphalt shingle** row above compares
+$54,777–99,331 of metal over 6,322 SF against $31,600–56,900 of asphalt, then says in its own
+detail that only 2,180 SF of that is roof and the other 4,143 SF "is not shinglable". Both
+halves are true and the subtraction between them is not — the row's headline
+"**~$20,000–42,400, the biggest lever on the list**" is really two different swaps added
+together, and the asphalt column is priced over area that can never take asphalt.
+
+Split honestly, both built:
+
+| swap | area | current | after | saves |
+|---|---|---|---|---|
+| **roofs only** → architectural asphalt | 2,186 SF (`RF-HOUSE` 1,436.6 + `RF-GARAGE` 749.6) | $20,331–36,322 | $10,931–19,675 | **$9,700–18,200** |
+| **walls only** → lap siding (row 2 above) | 3,512 SF house + 663 SF garage | $34,712–63,491 | — | **$15,600–29,000** |
+
+Plus, on the roof swap only, the S-5! seam clamp family and the formed ridge cap go away:
+~$1,500–3,000 more, per this file's existing note. So the roof-only lever is
+**$11,200–21,200** and the wall-only lever is **$15,600–29,000**; together **$26,800–50,200**,
+which is where the old row's $20,000–42,400 was reaching. They are independent decisions and
+should be taken as two.
+
+Everything the old row says about the *cost of the cut* stands, and the PV argument is the
+strongest part of it: `S-5-PVKIT` clamps to a standing seam with zero penetrations, and
+asphalt needs 48 flashed penetrating feet instead.
+
+### 9 — the eight discretionary attic windows
+
+**Built: 699 pass, 0 fail, 45 not evaluable** — deleting all eight breaks no rule in the
+registry. `RM-A-WEST` and `RM-A-EAST` are `storage` occupancy, so R303.1's natural-light
+rule never applied to them, and none of the eight is an emergency escape opening.
+
+| unit | ×  | what it is |
+|---|---|---|
+| `WIN-A-W-N`, `WIN-A-W-S`, `WIN-A-E-N` (`WT-1424`), `WIN-A-E-S` (`WT-1424-T`) | 4 | the 5' knee band, both eave walls |
+| `WIN-A-S2`, `WIN-A-S3` (`WT-1448`) | 2 | south gable flankers |
+| `WIN-A-S-JUL-W`, `WIN-A-S-JUL-E` (`WT-1864`) | 2 | the juliet pair |
+
+$951,336–1,992,450 → **$945,008–1,980,177**, **−$6,300 / −$12,300**, plus a share of
+`[allowances] envelope-opening-flashing-and-sill-pans` and `finish-window-stools-and-aprons`
+that is a lump and does not move on its own: 8 of 45 openings is ~$900–2,100 more.
+
+**Why these eight and not any other eight.** `[openings]`' own 2026-08-20 pass found that
+windows are priced by **united-inch band, not by area** — a 14x24 costs the same as a 27x36.
+Eleven `WT-1424`, two `WT-1864` and two `WT-1448` are the house's fifteen sub-stock-size
+units, and the same note flags all three families as possibly **below a stock line's minimum
+size** (Simonton's awning minimum is 23.5" wide; Andersen 400's narrowest casement is
+20-11/16"). So these are the units that cost the most per square inch of daylight *and* carry
+the most availability risk. The four in the knee band buy daylight for carpeted storage.
+
+**Cost of the cut is entirely compositional, and it is not small.** `houses/catlin/CLAUDE.md`
+spends three paragraphs on this: the knee band "reads as its own row across 5'-6" of blank
+wall", the south gable's four openings are exactly mirrored about x=18' and moving
+`N-A-V1` to 22'-8" was done to make that mirror possible. Delete them and the south gable
+has two openings, and the east/west elevations lose their top row. Render before deciding.
+
+### 11 — 4" of exterior ccSPF → 2.5"
+
+**Built. R-38.7 → R-32.7, 700 pass / 0 fail / 45 unknown — unchanged from the baseline,
+including `building_science.condensation`'s monthly Glaser gate.** Design heating load
+30,869 → 32,333 BTU/h (+4.7%); cooling 17,923 → 18,268 BTU/h.
+
+One line each in `CATLIN_EXT_2X6` and `PLANT_EXT_2X6_HUMID`: the outrigger's `CavityFill`
+thickness 2.5" → 1.0", leaving the 1.5" continuous band behind it untouched. Total
+$951,336–1,992,450 → **$945,604–1,984,213**, **−$5,600 / −$8,000**.
+
+- **The ratio is what keeps the sheathing dry, and it survives.** R-16.25 of exterior ccSPF
+  against R-21 of cavity is a 0.44 CI-to-total ratio, over the ~0.36 zone 6 wants and over
+  IRC Table R702.7.1's R-11.25 minimum for a 2x6 wall. That is *why* the gate still passes,
+  and it is the number to re-check before going thinner still.
+- `preferences.toml` asks for `wall_r = 40`; this is a deliberate move to R-33, still roughly
+  double the MN prescriptive R-20+5ci. It is the row on this list that most directly spends
+  performance for money, and it is the smallest saving of the four built rows — **weigh it
+  last, not first.**
+- **The lumber does not come back with it.** The outrigger stays a 2x4 on edge and the
+  rainscreen gap grows 1.0" → 2.5". A 2x3 outrigger (1.5" foam + 1" gap, R-35 total) would
+  take the KDAT line down too, but `[framing]` has no 2x3 row and the truss-wall geometry
+  tests are written against the 3.5" member — price that separately.
+
+### 5 — the garage ICF stem
+
+`GARAGE_ICF_6` is 8.8 cy of core at $758–1,299/cy plus 952.5 SF of EPS form at
+$6.50–11.50/SF — **$12,859–22,385**, or **$27–47 per SF of wall**, for a 476 SF frost wall
+under an unheated-by-default detached garage. A conventional formed 8" wall at this file's
+own re-derived $495–810/cy (see the 12"→8" entry) is $4,851–7,938 for the same 9.8 cy,
+forms in the rate.
+
+**−$8,000 / −$14,400 net, −$9,400 / −$16,900 after the ladder.**
+
+- **Cost of the cut:** R-21.9 → R-1.8 on the stem, and the stem is the garage's only
+  below-grade thermal layer. If the garage stays heated, ~64 LF × 5' of uninsulated frost
+  wall is a real loss; 2" of exterior XPS on a conventional wall buys most of it back for
+  $1,900–3,800 and still lands well under the ICF.
+- `plans/cost-options.md`'s two existing garage rows go the *other* way (full-height ICF at
+  +$3,540–7,940 net, CMU at +$11,200–15,600). This row is the third direction and the only
+  one that is cheaper than what is drawn.
+- The `_find_framed_on_concrete` sill logic already fires for a formed concrete stem
+  (`material_ref == "concrete"`), so unlike the two upgrade rows there is no engine gap here.
+
+### 12 — the plant room
+
+`RM-S-PLANT`, 159 sf, held at ~75 °F / 70% RH: `PLANT_EXT_2X6_HUMID` /
+`PLANT_INT_*_HUMID` carry a fully-adhered vapour barrier and a PVC plank liner, the floor is
+heat-welded sheet vinyl with a 6" integral flash cove, and three windows are a **different
+manufacturer** (U-0.14 Alpen/Zola class) because `building_science.glazing_dew_point` FAILs
+them at U-0.25.
+
+| | low | high |
+|---|---|---|
+| `pvc-panel`, 445.2 SF | $2,894 | $5,565 |
+| `humid-room-membrane`, 445.2 SF | $779 | $1,402 |
+| `vinyl-sheet` 179 SF *less* LVP | $1,163 | $2,014 |
+| the three `-HP` window units *less* their U-0.25 twins | $845 | $1,845 |
+| RH-controlled dampered ERV branch *less* a plain extract | $247 | $575 |
+| *less* the gwb + paint an ordinary room would carry on 445.2 SF | −$1,380 | −$2,515 |
+| net | $4,548 | $8,886 |
+| × the bid ladder | **$5,300** | **$10,400** |
+
+**Cost of the cut is the room, not the finish.** The liner exists to stop 70% RH air reaching
+a stud bay; take it out and the room cannot be run at that setpoint, so this is "delete the
+plant room", not "cheapen it". The three HP windows are the part that is *not* optional at
+75 °F/70% — `glazing_dew_point` is a FAIL check and it FAILs them at U-0.25.
+
+### 13, 14, 15, 16, 17, 18 — the short ones
+
+- **13, trim/stool/apron.** `[allowances]` carries `finish-interior-trim-and-baseboard`
+  $12,000–20,000, `paint-trim-and-doors` $8,000–18,000 and `finish-window-stools-and-aprons`
+  $3,300–7,400 — $23,300–45,400, none of it modelled. Drywall-return jambs at the 41 windows
+  (the house already details its four cased openings exactly that way) plus a flat paint-grade
+  base takes **$5,000–13,000** out of that block. **Do not read this as "go trimless"** — the
+  `DT-INT-SWING30-TRIMLESS` row above shows a hidden-jamb *door* is a 4–5x premium, not a
+  saving. Returns at windows are cheap; reveals at doors are not.
+- **14, oak.** `[floor_finishes]` "oak" is 351 SF at $11.50–20.50/SF installed
+  ($4,037–7,196), and its own note says 351 SF is **under most Twin Cities sand-and-finish
+  minimums** — a $1,200–1,800 mobilisation plus a trip per coat, for two rooms. LVP over the
+  same 351 SF is $1,229–3,071: **−$2,800/−$4,100**. The red-oak stair treads add
+  $1,500–2,700 more (existing row above; note `stair_finish` is not in the priced sections
+  today, so that half does not show in the total).
+- **15, the balcony plank.** `[sheet_goods] "aluminum-deck"` is 6 sheet-equivalents = 182.0 SF
+  at $30–52/SF installed = **$6,948–12,252**, and the row itself says **CONFIDENCE: LOW** and
+  that no published price exists for any waterproof interlocking aluminium deck. A walkable
+  PVC membrane (Duradek/Tufdek class) over a plywood substrate is $12–22/SF installed =
+  $2,184–4,004, and the existing downgrade row quotes composite-over-membrane at
+  $2,000–3,600. **−$3,400/−$10,000** after the ladder — a wide range because the top end is
+  a quote-only product. **Call Versadeck, (651) 356-1870, before deciding**; the existing row
+  already says the call may make the swap moot. Dry-below is not optional: this deck is the
+  porch's roof.
+- **16, guards.** `RAILING-EXT-ALUMINUM-FASCIA` is 74.6 LF (balcony 38.3 + porch 36.3) of
+  Trex Signature at $90–135/LF = $6,714–10,071. Builder-grade aluminium at $40–70/LF is
+  $2,984–5,222: **−$3,700/−$5,700**. Both guards or neither — the two levels stop matching
+  otherwise. (This supersedes the $1,343–2,611 in the row above, which predates the porch
+  guard replacing the masonry parapet.)
+- **17, the brick veneer.** Ablating `W-B-BRICK`, `FT-B-BRICK` and the two arched reveals:
+  **−$3,322/−$7,107**, essentially all `wall_structure` (129.2 SF of glazed lapis, gold and
+  brown at $15–27/SF). This supersedes the "$1,233–2,603" downgrade row above. Cost of the
+  cut is the entire Ishtar-Gate composition, the voussoir rings and the one place the sunken
+  garden has colour — it is a *look* line, and cheap for what it does.
+- **18, HVAC System 3.** Installed capacity is ~63,000 BTU/h (`GREE-MULTI-U30` 30k +
+  `GREE-SLIM24` 24k + `SAPPHIRE-9` 9k) against a **30,869 BTU/h** design heating load and
+  1.49 tons of cooling — roughly 2x, before any cold-climate derate. Folding System 3's
+  `EQ-M-HP3-STAIR`/`-OD` pair into System 2's multi-zone: **−$2,574/−$4,593** on
+  `placeables`, plus one of the five pairings in `[allowances] hvac-refrigerant-line-sets`
+  (~$750–1,400). **The existing downgrade row is right that this is not free money** — the
+  Sapphire's true VFD soft-start is what lets it run off the battery. Folding it in gives up
+  a battery-backed heat zone unless the inverter is resized.
+
+### Priced and *not* recommended
+
+- **Basement interior 12" walls (`W-B-CN`/`CN2`/`CS2`/`STR`) → 2x6 stud.** Ablation
+  −$4,177/−$6,979, but replacing 255.5 SF with framing, gypsum both faces and paint costs
+  $2,100–3,700 back — **net $2,100–3,300**, under the threshold, and it retires two-storey
+  bearing lines and their footings. The W-B-STR entry below already worked this through in
+  detail and reached the same answer.
+- **`struct-1-plywood` → OSB on the exterior walls.** Only $0.20–0.55/SF apart in this
+  file's own rates: $700–1,930 over 3,512 SF. Not worth the shear-value argument.
+- **Consolidating the two second-floor deck doors** (`D-S-DECK-E`/`-W`, both onto the same
+  balcony) to one, and one `DT-EXT-FRENCH60` to a `DT-EXT-SWING36`: $1,900–4,200. Under
+  threshold at the low end, and it is the south facade.
+- **The wall-hung toilet** (`FX-TOILET-WH` $1,010–2,720 against `FX-TOILET-STD`'s $290–960):
+  $720–1,760. Under threshold.
+- **Lighting.** 306 luminaires, runs and controls total **$285–695** of `placeables` movement
+  — the fixture *count* is not where lighting money is. It is in
+  `[allowances] electrical-branch-circuit-conductors` ($10,000–25,000), which no fixture
+  decision touches.
+
 ## Downgrades (money back)
 
 | swap | current → new | saves | notes |
 |---|---|---|---|
-| Standing-seam metal roof → architectural asphalt shingle | $54,777–99,331 → $31,600–56,900 | **~$20,000–42,400**, the biggest lever on the list | see detail below |
+| ~~Standing-seam metal roof → architectural asphalt shingle~~ | ~~$54,777–99,331 → $31,600–56,900~~ | ~~**~$20,000–42,400**~~ | **SUPERSEDED 2026-08-23** — this row adds two independent swaps and prices asphalt over 4,143 SF of wall that cannot take it. Split into roof-only ($11,200–21,200) and wall-only ($15,600–29,000) in the sweep above |
 | Elm tudor posts → paint/stain-grade species | $2,006–6,001 → $700–1,500 | ~$1,300–4,500 | 6-1/8" S4S elm isn't a purchasable article — needs a glued-up blank from 8/4 stock. **Get a real quote first** (Wood From The Hood, Siwek Millwork) — low end is only $2,006 |
-| Aluminium balcony deck → composite over membrane | $5,838–10,290 → $2,000–3,600 | ~$3,800–6,700 | quote-only product, least certain line in the file. Call Versadeck (651) 356-1870 first — may make the swap moot |
+| Aluminium balcony deck → composite over membrane | $6,948–12,252 → $2,000–4,004 | **$3,400–10,000** (bid total) | RE-PRICED 2026-08-23: the plank grew when it stopped being a Slab (2026-08-22), so the current line is $6,948–12,252, not $5,838–10,290. Still quote-only and still the least certain line in the file. Call Versadeck (651) 356-1870 first — may make the swap moot |
 | Fabricated box gutter → seamless K-style | $1,179–2,506 → $600–1,100 | ~$600–1,400 | plus $150–400/ea conductor heads a box gutter needs (not in estimate) |
 | Trimless interior door → standard cased prehung | $1,220–2,800 → $305–755 | ~$915–2,045 + schedule risk | hidden-jamb reveal is a 3-trade sequencing item; frame must be set before drywall, so this can't be reversed later |
 | Post bases: ABU66SS stainless → ABU66Z/RZ ZMAX | $1,500–2,300 → ~$550 | ~$950–1,750 | wrong $1,000 to save — one detail nobody re-does without jacking the structure |
-| Exterior guards: Trex Signature → builder-grade aluminium | $2,835–5,222 → $1,492–2,611 | ~$1,343–2,611 | now covers both balcony (38.3 LF) and porch (36.3 LF, replaced the masonry parapet) — downgrade together or the two levels stop matching |
-| Basement brick veneer → delete | $1,233–2,603 | full line | the one masonry note on the basement wall |
+| Exterior guards: Trex Signature → builder-grade aluminium | $6,714–10,071 → $2,984–5,222 | **$3,700–5,700** (bid total) | RE-PRICED 2026-08-23: 74.6 LF at $90–135/LF, not $2,835–5,222 — the 08-20 material re-source (Signature is the premium line) and the fascia-mount labour premium both landed after this row was written. Covers both balcony (38.3 LF) and porch (36.3 LF) — downgrade together or the two levels stop matching |
+| Basement brick veneer → delete | $2,573–5,467 | **$3,300–7,100** (bid total) | RE-PRICED 2026-08-23 — the row predates the Ishtar-Gate re-authoring (2026-08-20), which took one flat field to five priced bands over 129.2 SF |
 | Stair treads: red oak → carpet, all 3 flights | $2,668–5,544 → $1,200–2,800 | ~$1,400–2,700 | cheapest finish change per dollar; basement flight is already carpet |
 | System 3: Gree Sapphire → Vireo/Livo single-zone | $2,600–3,450 → $1,600–2,200 | ~$1,000–1,250 | **not free money** — Sapphire's true VFD soft-start is what lets it run off the battery; a hard-starting compressor can't. Losing it means giving up backup heat on that zone or resizing the inverter |
 
@@ -371,9 +805,12 @@ dollars, or stucco is a hard no — otherwise full ICF is the stronger of the tw
 
 ## Not yet priced
 
-- Remove the attic level, truss + blown-in insulation. Touches framing, envelope_layers,
-  floor_finishes, stairs and the ST-S2A guard at once — needs a variant (`haus variants
-  compare`), not an arithmetic estimate.
+- ~~Remove the attic level, truss + blown-in insulation.~~ **PRICED 2026-08-23 at
+  $89,000–160,000** — see the cost-reduction sweep at the top of this file. It did not need a
+  declared variant in the end: `variants.toml` can only swap assemblies and retune layer
+  thicknesses, and this deletes elements. It was measured by ablating the resolved model
+  (attic storey + `RF-HOUSE`/`RB-HOUSE`/`FS-ATTIC`/`ST-S2A`) and costing the trussed cold
+  attic that replaces it off named `prices.toml` rows.
 
 ## Scope the model can't resolve — the allowance register
 
@@ -568,6 +1005,9 @@ Not cost swaps — places the *estimate* was wrong or fragile, found in the 2026
 
 | # | question | what it moves |
 |---|---|---|
+| 5 | **The PV allowance prices 5.28 kW at $4.55–8.71 per watt.** Published 2026 US residential installed cost is $2.60–3.60/W, and a sub-6 kW Twin Cities system $3.50–4.50/W — i.e. $18,500–23,800 for this array. One quote settles it | $6,000–22,000, and it is the second-highest-value phone call on the list |
+| 6 | **Is the attic staying?** Now priced at $89,000–160,000 — the largest single decision left in the model, and the only one that changes the building's whole upper third | $89,000–160,000 |
+| 7 | Cladding: is this a metal-clad house on all four elevations, or on the two that are seen? | $10,000–29,000 |
 | 1 | Is the GC fee in or out? `[markup]` stays zero for now | — |
 | 2 | Is rebar inside the concrete $/cy rates, or its own line? Assumed inside; reversing means editing both places at once | $10,000–18,000 if wrong |
 | 3 | Is 761 LF the right drain-tile length, or should it be one perimeter ring? | $3,000–7,200 |

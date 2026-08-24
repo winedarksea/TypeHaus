@@ -19,7 +19,7 @@ from typehaus.model import (
 )
 from typehaus.model.assembly import FramingSpec, Layer
 from typehaus.model.elements import Door
-from typehaus.model.enums import LayerFunction
+from typehaus.model.enums import DoorOperation, LayerFunction
 from typehaus.model.refs import from_node
 from typehaus.model.types import DoorType
 from typehaus.resolve import resolve
@@ -144,3 +144,75 @@ def test_door_instance_header_spec_wins_over_its_type():
 def test_no_spec_anywhere_keeps_the_table_header():
     header = _resolved_header(_door_plan(None, None))
     assert header.profile == "2-2x8"
+
+
+# ------------------------------------------------------------------ head cripples
+# Doors used to get none of these at all: ``_append_opening_cripples`` was called from
+# inside the ``if not opening.is_door:`` branch that emits the rough sill, so the garage
+# overhead door carried 18" of empty wall — and 16 ft of unbacked double top plate —
+# above its header. The head family depends only on the arithmetic gap between the header
+# top and the plate underside, never on the operation.
+def _head_cripples(members):
+    return sorted((m for m in members if m.child_key.startswith("cripple-head-")),
+                  key=lambda m: m.child_key)
+
+
+def _plate_underside(rw) -> float:
+    """Wall top less the double top plate — what a vertical member's top lands on."""
+    return rw.z1_m - 2 * inch(1.5).meters
+
+
+def test_a_door_below_the_plate_line_gets_head_cripples():
+    plan, rw = _wall_and_plan()
+    members = frame_wall(plan, rw, openings=[_door(None)])
+    cripples = _head_cripples(members)
+    assert cripples, "a 6'-8\" door in a 9 ft wall has 16\" of wall above its header"
+    header = next(m for m in members if m.category == "header")
+    for cripple in cripples:
+        assert cripple.category == "cripple"
+        assert cripple.profile == "2x6"  # the wall's own member, so the price key
+        #                                  stays the bare "2x6" the BOM already lists
+        assert cripple.z0_m == pytest.approx(header.z1_m)
+        assert cripple.z1_m == pytest.approx(_plate_underside(rw))
+    # 16" o.c. across a 36" rough opening leaves exactly the two interior stations.
+    stations = [m.p0[0] for m in cripples]
+    assert len(stations) == 2
+    assert stations[1] - stations[0] == pytest.approx(inch(16).meters)
+
+
+def test_a_header_running_to_the_plate_line_gets_none():
+    plan, rw = _wall_and_plan()
+    # A door tall enough that its header top lands on the plate underside: no gap, so no
+    # cripples — by the same arithmetic, not by a door/window test.
+    depth = cross_section("2-2x8").depth_m
+    tall = WallOpening(center_m=3.0, width_m=inch(36).meters,
+                       height_m=_plate_underside(rw) - depth, sill_m=0.0, is_door=True)
+    assert _head_cripples(frame_wall(plan, rw, openings=[tall])) == []
+
+
+def test_a_sliver_gap_above_the_header_is_not_framed():
+    plan, rw = _wall_and_plan()
+    depth = cross_section("2-2x8").depth_m
+    # 1" of wall above the header is an offcut, not a stud.
+    sliver = WallOpening(center_m=3.0, width_m=inch(36).meters,
+                         height_m=_plate_underside(rw) - depth - inch(1).meters,
+                         sill_m=0.0, is_door=True)
+    assert _head_cripples(frame_wall(plan, rw, openings=[sliver])) == []
+
+
+def test_overhead_door_head_cripples_bear_on_the_track_backing():
+    plan, rw = _wall_and_plan()
+    overhead = WallOpening(center_m=3.0, width_m=ft(9).meters, height_m=ft(7).meters,
+                           sill_m=0.0, is_door=True, operation=DoorOperation.OVERHEAD)
+    members = frame_wall(plan, rw, openings=[overhead])
+    backing = next(m for m in members if m.category == "blocking"
+                   and m.child_key.startswith("trackbacking-"))
+    header = next(m for m in members if m.category == "header")
+    assert backing.z0_m == pytest.approx(header.z1_m)
+    cripples = _head_cripples(members)
+    assert cripples
+    for cripple in cripples:
+        # On the nailer, not through it: starting at the header top would bury 1.5" of
+        # every cripple inside the blocking.
+        assert cripple.z0_m == pytest.approx(backing.z1_m)
+        assert cripple.z1_m == pytest.approx(_plate_underside(rw))
