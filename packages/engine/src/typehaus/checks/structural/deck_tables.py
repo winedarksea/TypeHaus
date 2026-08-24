@@ -53,6 +53,13 @@ def deck_joist_span_limit(member: str, spacing_in: float) -> tuple[float, float]
     return row[tabulated], tabulated
 
 
+# --- IRC R507.6.1 — deck joist cantilevers -------------------------------------------
+# The overhang a deck joist is allowed past its outermost bearing, as a fraction of the
+# adjacent (back) span. This is the rule that lets the span tables above be read as span
+# tables: the cantilever is bounded here instead of being counted as span there.
+MAX_JOIST_CANTILEVER_RATIO = 0.25
+
+
 # --- IRC Table R507.5(1) — deck beam spans --------------------------------------------
 # Maximum beam span (feet) by built-up beam size and the *joist span the beam carries*
 # (i.e. the total span of the joists bearing on it, not its tributary half). Same 40+10 psf

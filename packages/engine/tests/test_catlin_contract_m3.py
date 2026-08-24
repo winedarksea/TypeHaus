@@ -42,13 +42,19 @@ GARAGE_SIZE_FT = 24.0
 # outsulation and the garage's own 7/8" of rainscreen + cladding leave 4'-0 1/2" of clear
 # slot, which is what the breezeway's 4'-0" polycarbonate panels are sized to.
 #
-# 4.53125' (4'-6 3/8"), not the 5'-0" it was until 2026-08-15. The garage's ICF stem used to
+# 4.57292' (4'-6 7/8"), not the 5'-0" it was until 2026-08-15. The garage's ICF stem used to
 # straddle the wall line and stand 5 5/8" proud of the cladding — a rain shelf right round
 # the building. Aligning the stem's exterior EPS face onto the wall line fixed that, and the
 # wall lines moved 5 5/8" south with it so the clear slot, and the uncut 4'-0" panel in it,
 # are exactly what they were. The *cladding* is the controlling face now, where the stem
 # used to be.
-GARAGE_GAP_FT = 4.53125
+#
+# It grew 1/2" on 2026-08-23. The truss wall put the HOUSE's cladding 1/2" further north
+# (5.02" -> 5.5" proud of y=36'), which would have closed the breezeway's clear slot to
+# 4'-0" on the nose and left an uncut 4'-0" panel with nowhere to go; the garage moved with
+# it so the slot, and the panel's 1/2" reveal, are again exactly what they were. Both wall
+# lines moved — the garage is still 24'-0" square.
+GARAGE_GAP_FT = 4.5729166666666665
 GARAGE_OVERHANG_IN = 16.0
 # eave_z_m is the rafter-top (deck) plane: the 11.875" I-joist rises above the knee-wall
 # plate by its depth less the seat drop across the stud (5.5" 2x6 depth x 4:12 pitch =

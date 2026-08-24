@@ -164,8 +164,9 @@ def test_the_h_channel_bills_as_its_own_line(catlin_model):
     profiles = {row["profile"] for row in rows}
     assert "H" in profiles
     h_row = next(row for row in rows if row["profile"] == "H")
-    # Two channels, one per side, each running the glazing's N-S depth. That depth was the
-    # full uncut 4'-0" until the 2026-08-23 truss wall moved the house cladding 0.48" north
-    # and closed the clear gap to exactly 4'-0" — the sheet is ripped a 1/2" reveal now, so
-    # the channels run 3'-11 1/2" each (params/breezeway.py `_REVEAL_FT`).
-    assert h_row["length_ft"] == pytest.approx(2 * (4.0 - 0.5 / 12.0), abs=0.05)
+    # Two channels, one per side, each running the glazing's N-S depth — the sheet's own
+    # uncut 4'-0". This briefly read 3'-11 1/2" on 2026-08-23, when the truss wall moved the
+    # house cladding 0.48" north and closed the clear slot to exactly 4'-0"; the garage moved
+    # 1/2" north the same day rather than the sheet being ripped, so the slot is 4'-0 1/2"
+    # again and the reveal is once more a leftover (params/breezeway.py `_REVEAL_FT`).
+    assert h_row["length_ft"] == pytest.approx(2 * 4.0, abs=0.05)

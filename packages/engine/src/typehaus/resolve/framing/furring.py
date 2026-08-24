@@ -29,6 +29,7 @@ uses for load-bearing studs.
 
 from __future__ import annotations
 
+import math
 from dataclasses import replace
 
 from typehaus.findings import Finding, Result, Severity
@@ -138,7 +139,8 @@ def _layout_vertical(rw: ResolvedWall, layer, spec,
     spacing = (spec.spacing or DEFAULT_SPACING).meters
     top_start, top_end = _wall_top_elevations(rw)
 
-    stations = _module_stations(first + face / 2.0, last - face / 2.0, spacing, face)
+    stations = _module_stations(first + face / 2.0, last - face / 2.0, spacing, face,
+                                module=True)
     # ``orient`` is the member's *thickness* axis (profiles.py convention). A stud's
     # thickness runs along the wall; a furring strip is laid flat, so its 3/4" thickness
     # runs *through* the wall and its 3-1/2" face lies on it. Passing the wall direction
@@ -283,21 +285,42 @@ def band_extent(polygon, p0, direction, axis_len: float) -> tuple[float, float]:
     return max(0.0, min(crossings)), min(axis_len, max(crossings))
 
 
-def _module_stations(first: float, last: float, spacing: float,
-                     width: float) -> list[float]:
+def _module_stations(first: float, last: float, spacing: float, width: float,
+                     module: bool = False) -> list[float]:
     """``first`` on centre to ``last``, with ``last`` always framed.
 
     Same rule the stud module follows: a strip at each end of the run whatever the
     spacing does, and no module strip so close to the end one that the two are the same
     piece of wood.
+
+    ``module=True`` additionally **phase-locks the run to the wall's own framing module** —
+    stations at whole multiples of ``spacing`` from axis station 0, which is where
+    ``solver._module_stations`` puts the studs. Without it the grid starts at
+    ``first + width / 2`` and inherits that offset for the whole wall, so a strip lands
+    half a stick off every stud line: a 3-1/2" batten laid flat came out 1-3/4" off, and a
+    truss wall's 1-1/2"-wide outrigger 3/4" off, which is what put 806 of catlin's 1,285
+    truss blocks half-lapped on their studs and 74 of them on bare sheathing.
+
+    A vertical strip on an exterior wall is screwed *into the studs*, so its grid is the
+    stud grid; only the end strips are off-module, exactly as the end studs are. Courses
+    running horizontally are a different question — they climb their own elevation module
+    and have no stud line to find — so they do not pass this.
     """
     if last < first:
         return []
     stations = [first]
-    index = 1
-    while first + index * spacing < last - width + 1e-9:
-        stations.append(first + index * spacing)
-        index += 1
+    if module and spacing > 0.0:
+        index = math.ceil((first + width) / spacing)
+        station = index * spacing
+        while station < last - width + 1e-9:
+            stations.append(station)
+            index += 1
+            station = index * spacing
+    else:
+        index = 1
+        while first + index * spacing < last - width + 1e-9:
+            stations.append(first + index * spacing)
+            index += 1
     if last - stations[-1] > width - 1e-9:
         stations.append(last)
     return stations

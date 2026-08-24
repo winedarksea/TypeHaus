@@ -6992,6 +6992,118 @@
       "points": [
         [
           -5.0,
+          80.0
+        ],
+        [
+          -1.5000000000000002,
+          80.0
+        ],
+        [
+          -1.5000000000000002,
+          81.5
+        ],
+        [
+          -5.0,
+          81.5
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW101AAAA",
+      "tag": "ladder-head-001-00"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -5.0,
+          80.0
+        ],
+        [
+          -1.5000000000000002,
+          80.0
+        ],
+        [
+          -1.5000000000000002,
+          81.5
+        ],
+        [
+          -5.0,
+          81.5
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -5.0,
+          30.5
+        ],
+        [
+          -1.5000000000000002,
+          30.5
+        ],
+        [
+          -1.5000000000000002,
+          32.0
+        ],
+        [
+          -5.0,
+          32.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW101AAAA",
+      "tag": "ladder-sill-001-00"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -5.0,
+          30.5
+        ],
+        [
+          -1.5000000000000002,
+          30.5
+        ],
+        [
+          -1.5000000000000002,
+          32.0
+        ],
+        [
+          -5.0,
+          32.0
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -5.0,
           79.625
         ],
         [
@@ -7664,6 +7776,118 @@
       "points": [
         [
           -5.0,
+          200.0
+        ],
+        [
+          -1.5000000000000002,
+          200.0
+        ],
+        [
+          -1.5000000000000002,
+          201.5
+        ],
+        [
+          -5.0,
+          201.5
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSW101AAAA",
+      "tag": "ladder-head-002-00"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -5.0,
+          200.0
+        ],
+        [
+          -1.5000000000000002,
+          200.0
+        ],
+        [
+          -1.5000000000000002,
+          201.5
+        ],
+        [
+          -5.0,
+          201.5
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -5.0,
+          150.50000000000003
+        ],
+        [
+          -1.5000000000000002,
+          150.50000000000003
+        ],
+        [
+          -1.5000000000000002,
+          152.00000000000003
+        ],
+        [
+          -5.0,
+          152.00000000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSW101AAAA",
+      "tag": "ladder-sill-002-00"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -5.0,
+          150.50000000000003
+        ],
+        [
+          -1.5000000000000002,
+          150.50000000000003
+        ],
+        [
+          -1.5000000000000002,
+          152.00000000000003
+        ],
+        [
+          -5.0,
+          152.00000000000003
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -5.0,
           199.625
         ],
         [
@@ -8076,7 +8300,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CAW101AAAA",
-      "tag": "ladder-head-000"
+      "tag": "ladder-head-000-00"
     },
     {
       "space": "model",
@@ -8132,7 +8356,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CAW101AAAA",
-      "tag": "ladder-sill-000"
+      "tag": "ladder-sill-000-00"
     },
     {
       "space": "model",

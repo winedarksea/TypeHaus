@@ -35,7 +35,7 @@ def truss_wall_opening_support(ctx: CheckContext) -> list[Finding]:
     """
     from typehaus.resolve.framing.truss_wall import (
         FLANGE_BEARING,
-        nearest_outrigger_gap,
+        nearest_bearing_gap,
         truss_layer_name,
     )
 
@@ -49,16 +49,16 @@ def truss_wall_opening_support(ctx: CheckContext) -> list[Finding]:
         openings = [op for op in ctx.model.openings if op.host_wall == wall.tag]
         if not openings:
             continue
-        frame = _truss_stations(wall, layer_name)
-        if frame is None:
+        spans = _truss_stations(wall, layer_name)
+        if spans is None:
             continue
-        origin, direction, stations, width = frame
         for opening in openings:
             half = opening.width_m / 2.0
-            gaps = [nearest_outrigger_gap(opening.center_along_m + side * half,
-                                          stations, width)
+            z0 = wall.z0_m + opening.sill_m
+            z1 = z0 + opening.height_m
+            gaps = [nearest_bearing_gap(opening.center_along_m + side * half, spans, z0, z1)
                     for side in (-1.0, 1.0)]
-            worst = max((gap for gap in gaps if gap is not None), default=None)
+            worst = max((found[0] for found in gaps if found is not None), default=None)
             if worst is None or worst > bearing_m + 1e-9:
                 out.append(_advisory(
                     "structural.truss_wall_opening_support",
@@ -83,16 +83,20 @@ def truss_wall_opening_support(ctx: CheckContext) -> list[Finding]:
     return out
 
 
-def _truss_stations(
-        wall: object, layer_name: str
-) -> tuple[tuple[float, float], tuple[float, float], list[float], float] | None:
-    """``(origin, direction, outrigger stations, outrigger width)`` for one truss wall.
+def _truss_stations(wall: object,
+                    layer_name: str) -> list[tuple[float, float, float, float]] | None:
+    """Plan spans of everything in one truss wall's band a window flange can bear on.
 
     Measured off the band's own centreline, the same datum the emitter placed the members
     on, so the check cannot drift from the geometry by re-deriving it from the wall axis.
+    Field outriggers, jamb outriggers and jamb fillers all count and each is measured at its
+    OWN width — a two-ply filler is 3" of wood, and reading it as 1-1/2" would report a gap
+    that is not there. Each carries its elevation band too, so an outrigger cut around the
+    very opening being measured is not counted as wood at that opening's jamb.
     """
     from typehaus.resolve.framing.profiles import cross_section
     from typehaus.resolve.framing.solver import band_axis
+    from typehaus.resolve.framing.truss_wall import FILLER_CATEGORY
     from typehaus.resolve.geometry import length, sub, unit
 
     band = next((layer for layer in wall.layers  # type: ignore[attr-defined]
@@ -104,9 +108,14 @@ def _truss_stations(
         return None
     direction = unit(sub(end, start))
     prefix = f"strapping-{layer_name}-"
-    stations = sorted(
-        (member.p0[0] - start[0]) * direction[0] + (member.p0[1] - start[1]) * direction[1]
-        for member in wall.members  # type: ignore[attr-defined]
-        if member.child_key.startswith(prefix) or member.child_key.startswith("strapping-jamb-")
-    )
-    return start, direction, stations, cross_section("2x4").width_m
+    spans: list[tuple[float, float, float, float]] = []
+    for member in wall.members:  # type: ignore[attr-defined]
+        if not (member.child_key.startswith(prefix)
+                or member.child_key.startswith("strapping-jamb-")
+                or member.category == FILLER_CATEGORY):
+            continue
+        station = ((member.p0[0] - start[0]) * direction[0]
+                   + (member.p0[1] - start[1]) * direction[1])
+        half = cross_section(member.profile).width_m / 2.0
+        spans.append((station - half, station + half, member.z0_m, member.z1_m))
+    return sorted(spans) or None

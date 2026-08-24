@@ -217,9 +217,9 @@
 # 2"x2" rigid-insulation strip: 1/6 SF of 2" board per LF, at the [envelope_layers]
 # polyiso rate of $1.20-2.20/SF.
 "2x2 panel" = { low = 0.2, high = 0.45 }  # 316 LF
-"2x4" = { material = { low = 0.55, high = 0.8 }, labour = { low = 0.65, high = 1.2 } }  # 6654 LF — SPF
+"2x4" = { material = { low = 0.55, high = 0.8 }, labour = { low = 0.65, high = 1.2 } }  # 7630 LF — SPF (6,670 framing + 960 of truss block)
 # THE TRUSS WALL'S OUTRIGGERS (2026-08-23), and the single biggest cost lever in the change.
-# 3,610 LF of KDAT southern yellow pine 2x4, stood on edge at 16" o.c. behind the standing
+# 3,736 LF of KDAT southern yellow pine 2x4, stood on edge at 16" o.c. behind the standing
 # seam. Two things set the rate apart from the SPF row above:
 #   material — KDAT (kiln-dried AFTER treatment) SYP 2x4 runs about 2-2.5x SPF by the foot.
 #     $1.30-1.90/LF is AC2/YellaWood-class 2x4-8 at $10.50-15.00 a stick (Menards/Lowe's
@@ -234,18 +234,31 @@
 # touches concrete. Plain SPF would price this line at the "2x4" rate above and save on the
 # order of $3,000-5,000. Flagged, not decided; the treated spec is the conservative one and
 # is what is priced.
-"2x4:kdat" = { material = { low = 1.3, high = 1.9 }, labour = { low = 0.8, high = 1.5 } }  # 3610 LF
-# The doubled head blocking over the wide openings (60" French/slider). Two plies of the
-# KDAT 2x4 above, material doubled; labour is not, since the pair is fitted as one piece.
-"2-2x4" = { material = { low = 2.6, high = 3.8 }, labour = { low = 0.9, high = 1.7 } }  # 8 LF
+"2x4:kdat" = { material = { low = 1.3, high = 1.9 }, labour = { low = 0.8, high = 1.5 } }  # 3736 LF
+# The doubled head/sill blocking over the wide openings (60" French/slider), and the two-ply
+# jamb fillers. Two plies of the KDAT 2x4 above, material doubled; labour is not, since the
+# pair is fitted as one piece.
+"2-2x4" = { material = { low = 2.6, high = 3.8 }, labour = { low = 0.9, high = 1.7 } }  # 48 LF
 # The truss wall's plywood tabs and window bucks, both ripped from ordinary sheathing stock
 # in 5" strips — 9.6 strips out of a 4x8 sheet, so a sheet yields ~77 LF.
 #   1/2" struct-1 at $38-58/sheet -> $0.49-0.75/LF of 5" strip, plus the rip.
 #   3/8" struct-1 at $30-46/sheet -> $0.39-0.60/LF.
 # Labour is the fastening, not the stock: a tab is two lap screws, a buck is a four-sided
 # frame set square in the RO before the foam goes on, which is why the buck's is higher.
-"5x0.5 panel" = { material = { low = 0.5, high = 0.75 }, labour = { low = 0.4, high = 0.9 } }  # 936 LF
+"5x0.5 panel" = { material = { low = 0.5, high = 0.75 }, labour = { low = 0.4, high = 0.9 } }  # 960 LF
 "5x0.375 panel" = { material = { low = 0.4, high = 0.6 }, labour = { low = 0.9, high = 1.8 } }  # 536 LF
+# The JAMB FILLERS (2026-08-23), where a rough opening lands 1"-6" off the outrigger grid
+# and the gap is closed by plies laminated to the member beside it rather than by standing
+# another outrigger there. One ply bills on "2x4:kdat" above and two on "2-2x4"; three plies
+# is its own row. Material is 3x the KDAT 2x4; labour is per assembled member, not per ply,
+# and is the same nailing-off as any built-up jamb post.
+"3-2x4" = { material = { low = 3.9, high = 5.7 }, labour = { low = 1, high = 1.9 } }  # 48 LF
+# The eave and rake return at the top of the truss wall: the band's own depth carried out to
+# close the cladding cavity under the roof edge. It followed the outrigger band on 2026-08-23
+# — it was a 1/2" strip when the wall was furred 1/2", and it is a 3-1/2" one now — so it is
+# a KDAT 2x4 ripped square, or a 4x4, whichever the yard has. Priced off "2x4:kdat" at 2.3x
+# the section, labour unchanged: it is one screwed run either way.
+"3.5x3.5 panel" = { material = { low = 3, high = 4.4 }, labour = { low = 0.8, high = 1.5 } }  # 158 LF
 "2x6" = { material = { low = 0.85, high = 1.15 }, labour = { low = 0.9, high = 1.6 } }  # 10702 LF
 "2x8" = { material = { low = 1.1, high = 1.55 }, labour = { low = 1.3, high = 2.4 } }  # 708 LF
 # D-G-SERVICE's continuous header (2026-08-18). Three plies at $3-5/LF per 1.75" ply, on
@@ -729,13 +742,23 @@
 # 2026-08-20: RE-UNITED. These were the worst rates in the file — 18 screens against 0.04 cy
 # meant a multiplier of ~6,000, so a 25-cent/LF error moved the printed $/cy by $1,500 and no
 # reader could tell a right rate from a wrong one. `unit = "SF"` reads `plan_area_sqft`, the
-# footprint of the screen band: the band is the rainscreen cavity's own depth, so the house's
-# 144 LF is 6.1 SF (23.6 LF/SF) and the garage's 96 LF is 3.0 SF (32 LF/SF). The underlying
-# rate is unchanged at $0.80-2.00/LF material and $1.20-2.50/LF labour — insect mesh strip in a
-# vented cavity, set as the cladding goes on — and the money is within a dollar of before. The
-# multiplier is now ~25 instead of ~6,000, which is the entire point.
-"bug_screen:CATLIN_EXT_2X6" = { unit = "SF", material = { low = 19, high = 47 }, labour = { low = 28, high = 59 } }  # 6.1 SF = 144 LF
-"bug_screen:GARAGE_WALL_2X6" = { unit = "SF", material = { low = 26, high = 64 }, labour = { low = 38, high = 80 } }  # 3.0 SF = 96 LF
+# footprint of the screen band: the band is the rainscreen cavity's own depth.
+#
+# ** THAT MAKES THE $/SF A PROXY, AND A PROXY HAS TO BE RE-STRUCK WHEN THE DEPTH MOVES. **
+# The truss wall took the cavity from 1/2" to 1" on 2026-08-23, so the same 144 LF of strip
+# now reports 12.2 SF instead of 6.1 — and at the old rate the line silently doubled to
+# $573-1,293 for a product nobody buys by the square foot. Halved here, which is what keeps
+# the LF rate the thing that is actually priced.
+#
+# Underlying: **$2.00-4.50/LF installed** — material $0.80-2.00, labour $1.20-2.50 at
+# 40-60 LF/hr — for a corrugated vent strip set as the cladding goes on. A 1" section is a
+# Cor-A-Vent SV-5 rather than the 3/4" SV-3, a few cents a foot dearer, and that is inside
+# this band. 144 LF x $2.00-4.50 = **$288-648**, which is what the line prints again.
+"bug_screen:CATLIN_EXT_2X6" = { unit = "SF", material = { low = 9.5, high = 23.5 }, labour = { low = 14, high = 29.5 } }  # 12.2 SF = 144 LF
+# RETIRED 2026-08-20, kept for the rate. The garage lost its 3/8" rainscreen furring that
+# day, so GARAGE_WALL_2X6 has no vented cavity and bills no screen; the row is left because
+# the number was researched and the wall could get its cavity back. It reads 0 SF today.
+"bug_screen:GARAGE_WALL_2X6" = { unit = "SF", material = { low = 26, high = 64 }, labour = { low = 38, high = 80 } }  # 0 SF (was 3.0 SF = 96 LF)
 
 # PORCH DECK, COMPOSITE — the breezeway deck. PRICED 2026-08-20, after the "10x discrepancy"
 # that held this row open through two passes turned out not to exist.
@@ -1486,25 +1509,31 @@
 # -> material $252-468 and labour $180-360, i.e. $432-828 over 0.19 cy.
 "beam:BEAM_LVL" = { material = { low = 1326, high = 2463 }, labour = { low = 947, high = 1895 } }  # 0.19 cy = 12.0 LF
 #
-# BEAM, KDAT — 130.5 LF over eighteen members, 1.04 cy. The breezeway's whole frame, the
-# balcony's four E-W girts, and the garden's seven beams:
+# BEAM, KDAT — 130.5 LF over eighteen members, 1.13 cy. The breezeway's whole frame, the
+# balcony's four E-W girts, and the garden's seven beams. Same eighteen members and the same
+# 130.5 LF as the 2026-08-23 morning file; the volume moved 1.04 -> 1.13 cy because the
+# balcony beams and the girts each went 2" deeper (2x10 -> 2x12) to clear IRC Table
+# R507.5(1) prescriptively — see params/sunken_garden.py::SPEC.balcony_beam.
 #   14.2 LF  2-2x8, the four breezeway floor and roof beams at 3'-7". [framing] "2-2x8" is
 #            $2.20-3.10 mat + $1-2 lab; KDAT is $3.00-5.00 mat = $4.00-7.00/LF.
 #   12.0 LF  2x6, the three breezeway rafters at 4'-0". $1.20-1.90 mat + $0.90-1.60 lab.
-#   38.3 LF  2x10, the four E-W balcony girts. $2.10-3.30 mat + $1.30-2.40 lab. (Two of the
-#            four lost 1/2" each when the beams they butt went from 3 1/2" to 4 1/2" wide.)
-#   40.0 LF  3-2x12, the porch's back and front pairs at 10'-0" each. [framing] "2x12" is
-#            $1.85-2.60 mat, so three plies are $5.55-7.80/LF in SPF and $7.77-12.87 in KDAT.
-#   26.0 LF  3-2x10, the three balcony beams at 8'-8". [framing] "2x10" is $1.50-2.00 mat,
-#            so three plies are $4.50-6.00/LF in SPF and $6.30-9.90 in KDAT.
+#   38.3 LF  2x12, the four E-W balcony girts. [framing] "2x12" is $1.85-2.60 mat, so KDAT
+#            is $2.59-4.29 mat + $1.40-2.60 lab. (Two of the four lost 1/2" each when the
+#            beams they butt went from 3 1/2" to 4 1/2" wide; that is unchanged — the 2x12
+#            swap moved their depth, not their length.)
+#   40.0 LF  3-2x12, the porch's back and front pairs at 10'-0" each. Three plies of that
+#            same 2x12 are $5.55-7.80/LF in SPF and $7.77-12.87 in KDAT.
+#   26.0 LF  3-2x12, the three balcony beams at 8'-8", now the identical member to the
+#            porch pairs above and carried at the identical rate.
 #
-# The KDAT premium used throughout these two built-up rows is the same one the 2x10 girt
-# line above already carries: +40%/+65% on MATERIAL, labour unchanged. Labour on a built-up
+# The KDAT premium used throughout these two built-up rows is the same one the girt line
+# above already carries: +40%/+65% on MATERIAL, labour unchanged. Labour on a built-up
 # beam is per LF of assembled member, not per ply — that is why [framing] prices "2-2x10"
 # labour at $1-2 while a single "2x10" joist is $1.30-2.40. A 3-ply is heavier to set than a
 # 2-ply, so it is carried at $1.50-3.00/LF; that step is a judgement, not a quote.
-# -> material $612-992 and labour $174-338, i.e. $786-1,330 over 1.04 cy.
-"beam:BEAM_KDAT" = { material = { low = 588, high = 954 }, labour = { low = 167, high = 325 } }  # 1.04 cy = 130.5 LF
+# -> material $669-1,108 and labour $178-345, i.e. $847-1,453 over 1.13 cy. The deepening
+# costs the house about $60-125 in material and nothing in labour.
+"beam:BEAM_KDAT" = { material = { low = 592, high = 980 }, labour = { low = 157, high = 305 } }  # 1.13 cy = 130.5 LF
 #
 # COLUMN, KDAT — the four breezeway 6x6 posts, 28.4 LF, 0.22 cy. [framing] "6x6" is $5-8.50
 # mat + $2.50-5 lab; these are GROUND-CONTACT rated (the brief) and stand on standoff bases

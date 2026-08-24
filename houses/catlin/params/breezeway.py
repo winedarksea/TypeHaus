@@ -129,7 +129,8 @@ from plan.storeys.garage import GARAGE_STEM_REVEAL, GARAGE_Y_SOUTH
 # foam, the 3 1/2" truss/outrigger band and 1/2" of standing seam (plan/assemblies.py
 # CATLIN_EXT_2X6). This is what the breezeway's south end butts. It moved north 0.48" on
 # 2026-08-23 with the truss wall — the WRB + 2" polyiso + 2" EPS + 1/2" furring it replaced
-# stood 5.02" proud, and the truss stands 5.5" — which is what closed the reveal below.
+# stood 5.02" proud, and the truss stands 5.5" — and the garage moved 1/2" north the same
+# day so the slot below did not lose its reveal (plan/storeys/garage.py).
 _HOUSE_CLADDING_Y = 36.0 + (1.5 + 3.5 + 0.5) / 12.0  # 36.4583'
 
 # South face of the garage's ICF stem: the wall line itself. The 11" section is aligned so
@@ -137,38 +138,41 @@ _HOUSE_CLADDING_Y = 36.0 + (1.5 + 3.5 + 0.5) / 12.0  # 36.4583'
 # above (params/foundations.py), so the stem is no longer the proud face here — the
 # cladding is, 7/8" south of it. It keeps its own name because the deck still butts *this*
 # plane, tucked under that 7/8" of overhang.
-_GARAGE_STEM_Y = GARAGE_Y_SOUTH.feet  # 40.53125'
+_GARAGE_STEM_Y = GARAGE_Y_SOUTH.feet  # 40.57292'
 # South face of the garage's wood wall above the stem: rainscreen + standing seam over the
 # zip-R plane. That is the obstruction now, at deck level and at roof level both, so it is
 # what sets the clear gap.
-_GARAGE_CLADDING_Y = GARAGE_Y_SOUTH.feet - (0.375 + 0.5) / 12.0  # 40.4583'
+_GARAGE_CLADDING_Y = GARAGE_Y_SOUTH.feet - (0.375 + 0.5) / 12.0  # 40.5000'
 
-_CLEAR_GAP_FT = _GARAGE_CLADDING_Y - _HOUSE_CLADDING_Y  # 4.0000' = 4'-0" exactly
-_PANEL_FT = 4.0  # one 4'x8' sheet
+_CLEAR_GAP_FT = _GARAGE_CLADDING_Y - _HOUSE_CLADDING_Y  # 4.04167' = 4'-0 1/2"
+_PANEL_FT = 4.0  # one 4'x8' sheet, UNCUT in the N-S direction
 
 #: The reveal the glazing is held off the garage cladding by, so the sheet has somewhere to
-#: go and the north F-channel has a thickness. It used to be free: the clear gap was
-#: 4'-0 1/2" and a full uncut 4'-0" sheet left the extra half inch at the garage end.
+#: go and the north F-channel has a thickness. **It is free, and it is DERIVED**: the slot
+#: is 1/2" wider than the sheet, so what an uncut sheet does not fill is the reveal. Nothing
+#: authors it, which is the point — it is a leftover, and if it ever goes to zero the sheet
+#: stops being glazeable and this line goes negative rather than lying about it.
 #:
-#: ** THE TRUSS WALL SPENT IT (2026-08-23). ** The house cladding moved 0.48" north, the gap
-#: is now 4'-0" on the nose, and there is no arrangement of an UNCUT 4'-0" sheet that leaves
-#: a reveal at either end — a panel that exactly fills its opening cannot be glazed into it.
-#: So the sheet is now ripped 1/2" in the N-S direction; it is still one 4x8 sheet and still
-#: one cut, and the E-W dimension below is untouched. The alternative is to move
-#: ``GARAGE_Y_SOUTH`` half an inch north, which is a site decision, not a detail one.
-_REVEAL_FT = 0.5 / 12.0
+#: It was spent once, for a few hours on 2026-08-23: the truss wall moved the house cladding
+#: 0.48" north and closed the slot to 4'-0" on the nose. The detail-scale answer was to rip
+#: the sheet 1/2"; the site-scale answer — moving the garage's two wall lines 1/2" north —
+#: is the one that was taken, because the reveal is the only free thing in the slot and a
+#: 24'x24' garage on open ground 40' from any setback does not care where it stands to the
+#: half inch. See plan/storeys/garage.py::GARAGE_Y_SOUTH.
+_REVEAL_FT = _CLEAR_GAP_FT - _PANEL_FT  # 0.04167' = 1/2"
 
 # N-S: post outer faces snug to the house cladding and the garage cladding — the
 # most-proud face at each end is what a post has to clear.
 _POST_HALF_FT = 5.5 / 24.0  # half a dressed 6x6
-_POST_Y0 = _HOUSE_CLADDING_Y + _POST_HALF_FT  # 36.6475'
-_POST_Y1 = _GARAGE_CLADDING_Y - _POST_HALF_FT  # 40.2292'
+_POST_Y0 = _HOUSE_CLADDING_Y + _POST_HALF_FT  # 36.6875'
+_POST_Y1 = _GARAGE_CLADDING_Y - _POST_HALF_FT  # 40.2708'
 
-# The glazing runs from the house cladding north and stops one reveal short of the garage
-# cladding — the reveal stays at the garage end rather than at the house, where the door is.
-# Its N-S dimension is therefore DERIVED from the gap, not authored: 4'-0" less the reveal.
+# The glazing runs from the house cladding north and stops one panel later — so the reveal
+# lands at the garage end rather than at the house, where the door is. The sheet's N-S
+# dimension is the sheet's own 4'-0" and nothing else; the slot is what has to be wide
+# enough for it.
 _GLAZING_Y0 = _HOUSE_CLADDING_Y
-_GLAZING_Y1 = _GARAGE_CLADDING_Y - _REVEAL_FT
+_GLAZING_Y1 = _GLAZING_Y0 + _PANEL_FT
 
 # E-W: exactly 4'-0", centred midway between the two doors it shelters. That centre moved
 # from x = 4'-6" to x = 7'-3" on 2026-08-01, and the reason is a coordination miss rather

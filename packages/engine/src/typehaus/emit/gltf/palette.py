@@ -73,6 +73,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "truss_block": (0.706, 0.541, 0.361, 1.0),    # 0xb48a5c
     "truss_blocking": (0.639, 0.463, 0.247, 1.0), # 0xa3763f — as blocking
     "truss_tab": (0.800, 0.706, 0.565, 1.0),      # 0xccb490
+    "truss_filler": (0.639, 0.463, 0.247, 1.0),   # 0xa3763f — as blocking
     "buck": (0.788, 0.694, 0.549, 1.0),           # 0xc9b18c
     "ridge_beam": (0.55, 0.38, 0.22, 1.0),
     "brace": (0.639, 0.463, 0.247, 1.0),         # 0xa3763f — as blocking

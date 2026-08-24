@@ -1515,62 +1515,6 @@
       "node": "polyline",
       "points": [
         [
-          -5.0,
-          0.0
-        ],
-        [
-          -1.5000000000000002,
-          0.0
-        ],
-        [
-          -1.5000000000000002,
-          19.68503937007874
-        ],
-        [
-          -5.0,
-          19.68503937007874
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW101AAAA",
-      "tag": "strapping-outrigger-014"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -5.0,
-          0.0
-        ],
-        [
-          -1.5000000000000002,
-          0.0
-        ],
-        [
-          -1.5000000000000002,
-          19.68503937007874
-        ],
-        [
-          -5.0,
-          19.68503937007874
-        ]
-      ],
-      "pattern": "metal",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "kdat"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           -1.5000000000000002,
           0.0
         ],
@@ -1592,7 +1536,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMW101AAAA",
-      "tag": "block-truss-014-00"
+      "tag": "block-truss-012-00"
     },
     {
       "space": "model",
@@ -2196,7 +2140,7 @@
         {
           "kind": "point",
           "xy": [
-            -1.4999999999999998,
+            -4.0,
             6.0
           ],
           "name": ""
@@ -2211,7 +2155,7 @@
         }
       ],
       "p0": [
-        -1.4999999999999998,
+        -4.0,
         6.0
       ],
       "p1": [
@@ -2221,7 +2165,7 @@
       "offset": 4.0,
       "height_pt": 6.5,
       "layer": "A-ANNO-DIMS",
-      "text": "1.5\" CI",
+      "text": "4\" ext. insul.",
       "uid": null
     },
     {
@@ -3034,7 +2978,7 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "kdat"
+      "material": "standing-seam-snaplock"
     },
     {
       "space": "paper",
@@ -3070,78 +3014,6 @@
       "anchor": [
         2.85,
         0.7180000000000002
-      ],
-      "content": "kdat  3.5\"",
-      "height": 3.0,
-      "height_pt": 6.5,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "paper",
-      "node": "hatch",
-      "boundary": [
-        [
-          4.8,
-          1.328
-        ],
-        [
-          4.9399999999999995,
-          1.328
-        ],
-        [
-          4.9399999999999995,
-          1.468
-        ],
-        [
-          4.8,
-          1.468
-        ]
-      ],
-      "pattern": "metal",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "standing-seam-snaplock"
-    },
-    {
-      "space": "paper",
-      "node": "polyline",
-      "points": [
-        [
-          4.8,
-          1.328
-        ],
-        [
-          4.9399999999999995,
-          1.328
-        ],
-        [
-          4.9399999999999995,
-          1.468
-        ],
-        [
-          4.8,
-          1.468
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.2,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": null
-    },
-    {
-      "space": "paper",
-      "node": "text",
-      "anchor": [
-        4.999999999999999,
-        1.3980000000000001
       ],
       "content": "standing-seam-snaplock  0.5\"",
       "height": 3.0,

@@ -81,12 +81,13 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     PSL. It cannot be had at 11 1/4": Weyerhaeuser make PSL in 9 1/4" / 11 7/8" / 14" / 16"
     only and forbid resawing it in depth, so the depth the whole porch is derived from was
     never buyable treated. All seven beams went to **3-ply KDAT sawn stock** instead — 3-2x12
-    on the porch four, 3-2x10 on the balcony three — which holds every derived elevation to
-    the byte (only the four front girt nodes moved, exactly 1/2", with the beam width).
+    on the porch four and, after the second pass below, 3-2x12 on the balcony three too.
     The porch four are a strict improvement: `structural.deck_beam_span` grades them PASS at
-    10'-0" against a 10'-3" limit where it used to report UNKNOWN.
-    **The balcony three are not**, and the decision was taken knowing it — see the accepted
-    failures below.
+    10'-0" against a 10'-3" limit where it used to report UNKNOWN, and their swap held every
+    derived elevation to the byte (only the four front girt nodes moved, exactly 1/2", with
+    the beam width).
+    **The balcony three took a second pass the same day** and are now the same improvement —
+    see the entry below.
   - **`CN-SG-HGR-W`/`E` were already `HUCQ410-SDS`**, retyped 2026-08-22. The item was two
     revisions stale; `prices.toml` still said `# 2 ea` for a part the takeoff bills 4 of, and
     that is fixed too.
@@ -97,17 +98,34 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     not the ground: `FT-SG-W1`/`E1` went 12" -> 13" thick so their undersides stayed put and
     the 21" of frost cover the R403.3 wing insulation is sized against did not move.
 
-- **ACCEPTED, not open: three `structural.deck_beam_span` FAILs on `BM-SG-BLW`/`BLC`/`BLE`.**
-  The balcony's 8'-8" span has no prescriptive answer in any built-up sawn size — R507.5(1)
-  stops at 7'-2" for a 3-2x10 at the 12' joist-span row, and even a 3-2x12 reaches only
-  8'-4", so no depth fixes it and a deeper beam would move the soffit plane and every
-  elevation off it. Going to sawn stock therefore traded an UNKNOWN (a member outside the
-  table) for a FAIL (a member past its row), which is the **more** honest of the two states.
-  The member is engineered and goes to the consultant already scoped for the E-W bracing
-  above and the `FT-SG-*` frost design below — one consultant, three questions.
-  `test_cli_check_output.py::ACCEPTED_CATLIN_FAILURES` pins exactly these three, so a fourth
-  failure anywhere still breaks the build; `scripts/verify.sh` is back on `--exit-on error`
-  for the same reason it was between 2026-08-02 and 2026-08-16.
+- **DONE 2026-08-23 (second pass): the three balcony beams PASS `structural.deck_beam_span`.**
+  This was written up earlier the same day as ACCEPTED-not-open, on the reading that no
+  built-up sawn size answers the 8'-8" span. That reading was right about the sizes and
+  wrong about the row. R507.5(1) is indexed by the joist span a beam carries, and the check
+  was handing it 10'-6" — the balcony joists span **10'-0"** beam to beam and then overhang
+  the outer beams by `joist_cantilever_in` (6"), and `structural.deck_joist_span` was
+  measuring the whole member and rounding that up to the 12' row. A cantilever is not span.
+  Two changes, and both stand on their own:
+  - **`checks/structural/deck.py` reads the back span now**, subtracting the authored
+    `JoistSpec.cantilever` / `cantilever_start` / `cantilever_end` the resolver used to
+    build the tips. It is read back off the member geometry rather than the member key, so
+    it holds for any bay count including a single bay overhanging both ends.
+  - **`structural.deck_joist_cantilever` is new**, and is where the overhang is now
+    actually bounded: IRC R507.6.1, a quarter of the back span. Without it the fix above
+    would be a loosening — a 5' overhang would have vanished out of both checks. The garden
+    porch is the interesting case and it passes on its merits: 1'-5" against a 1'-10" limit.
+  With the right row (10'), a 3-2x12 reaches 9'-2" against the 8'-8" span, so
+  `SPEC.balcony_beam` went 3-2x10 -> **3-2x12** — the identical member to the porch pairs
+  below it, in the same stocked KDAT. The four E-W girts followed it 2x10 -> 2x12 because
+  they ride the same pillar tops and their tops have to finish in plane with the beams'.
+  Costs ~$60-125 in material and nothing in labour (`prices.toml`, 1.04 -> 1.13 cy).
+  The 2" of depth is real: beam soffit, pillar tops, girts and both knee-brace families all
+  drop 2", headroom under the balcony goes 8'-7 1/2" -> 8'-5 1/2", and the walking surface
+  at `balcony_level_ft` does not move. `_balcony_beam_depth_ft` and `_girt_depth_ft` are
+  derived from the size strings now instead of hardcoded, which is what made that safe.
+  **catlin is back to 0 FAIL**: `ACCEPTED_CATLIN_FAILURES` is deleted,
+  `test_catlin_carries_no_failures` is restored, and `scripts/verify.sh` is off
+  `--exit-on error` and back on the strict gate.
   **Note while reading the old item: its "open porch under a slatted balcony" premise was
   already stale.** `FS-SG-DECK`'s plank is `aluminum-deck` — Wahoo AridDeck-style, watertight,
   with a drip trough and leader — so the balcony beams sit under a DRY-BELOW surface and only
@@ -142,8 +160,9 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 - **Deck post/footing UNKNOWNs (2026-07-26, by design).** Both sunken-garden decks are now
   `service="deck"`: `deck_post_size` has no R507.4 row for the 12" round column PT-SG-COL,
   and PT-SG-COL plus the six balcony pillars bear on non-Pad chains (grouted CMU / bell
-  footing) so `deck_footing_size` can't resolve. (`deck_beam_span`'s two genuine R507.5(1)
-  overspans were closed 2026-07-31 by going engineered.)
+  footing) so `deck_footing_size` can't resolve. (`deck_beam_span` itself is fully green:
+  two genuine R507.5(1) overspans closed 2026-07-31 by going engineered, and the balcony
+  three closed 2026-08-23 prescriptively — see the second-pass entry above.)
 - **Windows: 4 residual member-interference overlaps** — now **pinned** by
   `test_catlin_window_member_overlaps_pinned_at_four` (junction clear disabled — the
   honest metric). Measured composition drifted from this file's memory of 4+4: it is 2 at
@@ -363,11 +382,7 @@ the future.
     rather than on the steel studs the 2026-08-21 overhaul left it on.
   - There was never a pan (`mep_drainage.py` explains why P2801.6 needs none) and never a
     vent. The item said both; neither was ever authored.
-
-DONE 2026-08-22 — the seven items that stood here (garage stairs, handrail 3D, workshop
-benches/outlets/ethernet, study + media-room ethernet, the media room's U sectional and TV,
-under-slab foam and poly, sunken-garden frost risk). Three of them turned out to be engine
-gaps rather than authoring gaps, and those are the notes worth keeping:
+ - Hand rails on the stairs are still modeled as dozens of tiny pieces, rather than a single 'tube' rail
 
 - **The sunken garden was a real frost defect, not a review item.** `structural.frost_depth`
   compared every footing to one global grade plane (`Site.grade`), so it PASSED all 35 —

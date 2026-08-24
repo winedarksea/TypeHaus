@@ -107,7 +107,7 @@ def test_knee_brace_resolves_to_a_raked_wood_member(catlin_model) -> None:
     assert member.length_m == pytest.approx(leg * math.sqrt(2))
     # It lands on the beam soffit, and leaves from the post face rather than its centre —
     # an end buried in the column reads as a member clash.
-    assert member.z1_end_m == pytest.approx(8.625 * FT)
+    assert member.z1_end_m == pytest.approx(8.4583333 * FT)
     post_centre_y = -9.5 * FT
     assert abs(member.p0[1] - post_centre_y) == pytest.approx(2.75 * 0.0254)
 
@@ -121,7 +121,7 @@ def test_knee_brace_hardware_resolves_as_a_band_at_each_end(catlin_model) -> Non
     top = solids["KB-SG-R1-NS-APVKB45-6-TOP"]
     bottom = solids["KB-SG-R1-NS-APVKB45-6-BOT"]
     assert top.category == bottom.category == "connector"
-    soffit = 8.625 * FT
+    soffit = 8.4583333 * FT  # the pillar-top plane, 2" down since the 3-2x12 beams
     assert top.z1_m == pytest.approx(soffit)
     assert bottom.z1_m == pytest.approx(soffit - 3 * FT)  # down the 3' leg, at the post
     # Each band spans exactly the end-grain z-band of the wood it wraps.
@@ -138,8 +138,10 @@ def test_balcony_braces_reach_the_shared_pillar_top_soffit(catlin_model) -> None
     not share an elevation in general; since the girt third pass these two happen to."""
     ns = next(b for b in catlin_model.braces if b.tag == "KB-SG-R1-NS").members[0]
     ew = next(b for b in catlin_model.braces if b.tag == "KB-SG-R1-EW").members[0]
-    assert ns.z1_end_m == pytest.approx(8.625 * FT)  # N-S beam soffit
-    assert ew.z1_end_m == pytest.approx(8.625 * FT)  # girt soffit — the same plane now
+    # 8.458', not the 8.625' this was until 2026-08-23: the beams went 3-2x10 -> 3-2x12 to
+    # clear IRC Table R507.5(1), and the whole pillar-top band came down 2" with them.
+    assert ns.z1_end_m == pytest.approx(8.4583333 * FT)  # N-S beam soffit
+    assert ew.z1_end_m == pytest.approx(8.4583333 * FT)  # girt soffit — the same plane now
     # Both feet stay well above the pillar base at the railing top (3.583').
     assert min(ns.z0_m, ew.z0_m) > 4.0 * FT
     # Every brace is in the framing cut list, so a framer orders the lumber.
@@ -153,19 +155,24 @@ def test_balcony_girts_sit_flush_with_the_beams(catlin_model) -> None:
     The N-S beams get their drop from the deck joists that bear on them; the girt segments
     carry no joists, so without an authored top they would hang from the storey datum and
     collide with the deck. Since the third pass they sit ON the pillar tops in the beams'
-    own band: 2x10, soffit at the resolved pillar-top plane, tops flush with the beams.
+    own band: soffit at the resolved pillar-top plane, tops flush with the beams.
+
+    The girts share the beams' depth by construction (SPEC.balcony_girt), so when the beams
+    went 3-2x10 -> 3-2x12 on 2026-08-23 the girts went 2x10 -> 2x12 with them. Flushness is
+    the invariant, and it is why the TOP plane below is unchanged from the 2x10 era while
+    the soffit dropped 2": depth +2", soffit -2".
     """
     solids = {s.tag: s for s in catlin_model.solids}
     for tag in ("BM-SG-GIRT-RW", "BM-SG-GIRT-RE", "BM-SG-GIRT-FW", "BM-SG-GIRT-FE"):
         assert solids[tag].z1_m == pytest.approx(9.3958333 * FT)
-        assert solids[tag].z0_m == pytest.approx(8.625 * FT)  # 2x10 on the pillar tops
+        assert solids[tag].z0_m == pytest.approx(8.4583333 * FT)  # 2x12 on the pillar tops
     for tag in ("BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE"):
-        assert solids[tag].z0_m == pytest.approx(8.625 * FT)
+        assert solids[tag].z0_m == pytest.approx(8.4583333 * FT)
         assert solids[tag].z1_m == pytest.approx(9.3958333 * FT)
     # The girts name their pillars for the schedule but carry no joists, so the pillars
     # keep the heights the deck joists gave them (the rear row 2" high for drainage).
-    assert solids["PT-SG-BF1"].z1_m == pytest.approx(8.625 * FT)
-    assert solids["PT-SG-BR1"].z1_m == pytest.approx(8.7916667 * FT)
+    assert solids["PT-SG-BF1"].z1_m == pytest.approx(8.4583333 * FT)
+    assert solids["PT-SG-BR1"].z1_m == pytest.approx(8.625 * FT)
 
 
 def test_catlin_dowels_and_foam_bridge_the_footing_joint(catlin_model) -> None:

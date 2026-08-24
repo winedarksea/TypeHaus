@@ -157,13 +157,45 @@ def _paper_legend(model, derived, band, drawn=None) -> list[IRNode]:
     return nodes
 
 
-def _continuous_insulation(intervals: dict):
-    """``(u_lo, u_hi, total_in)`` of the continuous exterior-insulation band, if any."""
+def _continuous_insulation(wall, intervals: dict):
+    """``(u_lo, u_hi, total_in, label)`` of the exterior insulation outboard of the frame.
+
+    ``layer_intervals`` drops cavity fills, and it is right to — a stud bay's batt shares
+    the structure layer's band, and counting it would print the cavity into a string that
+    says CI. But a fill hosted by a **furring** layer is not a stud bay: it is foam packed
+    into a rainscreen band, wholly outboard of the sheathing, and dropping it is how a truss
+    wall carrying 4" of exterior foam came to dimension "1.5" CI" — the 2-1/2" in the
+    outrigger bays, five eighths of the wall's exterior insulation, simply not counted.
+
+    So the band is measured to the outermost insulated face, fill included. What it is
+    CALLED changes with it: 2-1/2" of foam interrupted by outriggers at 16" o.c. is not
+    continuous insulation, whatever it is worth thermally (``analysis`` parallel-paths it at
+    a 9.4% framing factor), so a filled band prints "ext. insul." and only an unbroken board
+    stack keeps the letters CI.
+    """
     insulation = [iv for iv in intervals.values() if iv[2] == "insulation"]
     if not insulation:
         return None
-    return (min(iv[0] for iv in insulation), max(iv[1] for iv in insulation),
-            sum(abs(iv[1] - iv[0]) for iv in insulation))
+    lo = min(iv[0] for iv in insulation)
+    hi = max(iv[1] for iv in insulation)
+    total = sum(abs(iv[1] - iv[0]) for iv in insulation)
+
+    band = outermost_with_function(intervals, "furring")
+    bands = {layer.name for layer in wall.layers
+             if not getattr(layer, "is_cavity", False) and layer.function == "furring"}
+    fill = next((layer for layer in wall.layers
+                 if getattr(layer, "is_cavity", False) and layer.cavity_host in bands), None)
+    if band is None or fill is None or fill.thickness_m <= 0.0:
+        return (lo, hi, total, "CI")
+
+    packed = fill.thickness_m / M_PER_IN
+    b_lo, b_hi = min(band[0], band[1]), max(band[0], band[1])
+    # The fill packs against the band's INBOARD face, hard up against the continuous boards
+    # behind it — the same reading ``resolve.accessories._vented_band`` takes to size the
+    # insect strip, and the reason the vent is the slice nearest the cladding.
+    if abs(b_lo - hi) <= abs(b_hi - lo):
+        return (lo, max(hi, b_lo + packed), total + packed, "ext. insul.")
+    return (min(lo, b_hi - packed), hi, total + packed, "ext. insul.")
 
 
 def dimension_strings(model, derived, crop, direction, station) -> list[IRNode]:
@@ -216,10 +248,10 @@ def dimension_strings(model, derived, crop, direction, station) -> list[IRNode]:
         # enough that both strings sit in clear wall.
         drop = 16.0 if derived.condition.kind.value == "wall_roof" else 6.0
         z_here = junction_z + 6.0 if concrete is not None else top - drop
-        ci = _continuous_insulation(intervals)
+        ci = _continuous_insulation(framed, intervals)
         if ci is not None and outboard_is_high(framed, direction, station) is not None:
-            lo, hi, total = ci
-            _dim((lo, z_here), (hi, z_here), 4.0, f'{total:.3g}" CI')
+            lo, hi, total, label = ci
+            _dim((lo, z_here), (hi, z_here), 4.0, f'{total:.3g}" {label}')
         stud = outermost_with_function(intervals, "structure")
         if stud is not None:
             _dim((stud[0], z_here + 8.0), (stud[1], z_here + 8.0), 3.0,

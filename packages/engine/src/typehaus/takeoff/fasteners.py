@@ -32,8 +32,9 @@ _GRID_EPSILON = 1e-9
 _MEMBRANE_FUNCTIONS = frozenset({"membrane"})
 
 #: Screws per truss-wall block. Two, so the block cannot rotate about a single fastener —
-#: which is the whole reason the block is 3-1/2" wide and slid flush to the stud's face
-#: rather than centred on it: both screws have to land squarely over the stud.
+#: which is the whole reason the block is 3-1/2" wide and slid flush to the OUTRIGGER's face
+#: rather than centred on it: the outrigger is on the stud line, so that face is the stud's
+#: face too, and both screws land inside the 1-1/2" the block laps the stud by.
 TRUSS_BLOCK_SCREWS = 2
 
 
@@ -248,9 +249,9 @@ def truss_wall_block_screw_rows(model: ResolvedModel,
         group["item"], scope="truss wall blocks", count=int(group["count"]),
         part_number=group["part_number"], size=f"{group['length_in']:g} in",
         by_storey=dict(sorted(group["by_storey"].items())),
-        basis=(f"{TRUSS_BLOCK_SCREWS} per block, blocks at "
-               f"{BLOCK_SPACING.inches:g} in o.c. up outriggers at "
-               f"{rules.strip_spacing_in:g} in o.c. "
+        basis=(f"{TRUSS_BLOCK_SCREWS} per block; one block at each end of every outrigger "
+               f"run and the rest spread at max {BLOCK_SPACING.inches:g} in o.c., "
+               f"outriggers at {rules.strip_spacing_in:g} in o.c. "
                f"({group['through_in']:.2f} in through block + sheathing + "
                f"{rules.minimum_structural_embedment_in:g} in embedment = "
                f"{group['required_in']:.2f} in required)"),

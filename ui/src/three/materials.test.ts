@@ -9,7 +9,9 @@ import {
   masonryTileSizeM,
   MASONRY_TILE_SIZE_M,
 } from "./materials";
-import { authoredAppearance, familyOf, materialColor, RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
+import {
+  authoredAppearance, familyOf, materialColor, RESOLVED_NORDIC_PALETTE, statesOwnColor,
+} from "../nordic/palette";
 import { CATEGORY_FALLBACK, categoryColor, isSeamMember, memberColor } from "./members";
 import type { Member } from "../model/types";
 
@@ -204,13 +206,31 @@ export function runMemberColorTests() {
     ["pvc-cellular", "#f4f2ee"],
     ["standing-seam", light.material.metal],
     ["air-barrier", light.material.membrane],
-    ["no-such-material", light.material.fallback],
+    // A ref the palette cannot place keeps its category tone rather than taking the neutral
+    // `material.fallback` — see the kdat assertions below for why that matters.
+    ["no-such-material", categoryColor("cladding")],
   ] as const) {
     const resolved = memberColor(member("cladding", materialRef), light);
     assert(resolved === expected,
       `A ${materialRef} skin member resolves through the palette to ${expected}`);
-    assert(typeof resolved === "string" && !resolved.includes("var("),
+    assert(typeof resolved !== "string" || !resolved.includes("var("),
       `memberColor(${materialRef}) never hands THREE.Color a CSS var() string`);
+  }
+
+  // The truss wall's outrigger band (resolve/framing/furring.py + framing/truss_frame.py).
+  // Every strapping, ladder-blocking and jamb-filler stick carries material_ref "kdat", which
+  // no familyOf needle matches and no FINISH_BASE entry names — so routing a member by its
+  // material ref unconditionally painted 590 members of catlin the neutral #cfc9bd, a pale
+  // grey band of "lumber" screwed to the frame it is supposed to match. They belong on their
+  // category tone, which is what the .glb has always given them.
+  assert(familyOf("kdat") === null && !statesOwnColor("kdat"),
+    "kdat states no colour a member can see — the precondition this whole case rests on");
+  for (const category of ["strapping", "truss_blocking", "truss_filler", "furring"]) {
+    const resolved = memberColor(member(category, "kdat"), light);
+    assert(resolved === categoryColor(category),
+      `A kdat ${category} member reads as its category lumber, not the grey material fallback`);
+    assert(categoryColor(category) !== CATEGORY_FALLBACK,
+      `${category} has a lumber tone of its own to fall back to`);
   }
   for (const [theme, themed] of Object.entries(RESOLVED_NORDIC_PALETTE)) {
     assert(memberColor(member("cladding", "standing-seam"), themed) === themed.material.metal,

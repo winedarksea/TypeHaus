@@ -20,7 +20,7 @@ Vertical stack (project-north frame; +X east, +Y north, +Z up):
   RL-SG-BALCONY one storey up. The balcony post bases land on the concrete wall tops, and
   at the two centre pillars on the porch decking itself.
 - The *balcony* one storey up (second, ~9-10') rides six 6x6 pillars (10' o.c. E-W, 8'
-  o.c. N-S; rear row 2" taller for drainage slope) carrying three N-S double-2x10 beams,
+  o.c. N-S; rear row 2" taller for drainage slope) carrying three N-S triple-2x12 beams,
   2x8 joists @ 16" o.c., and aluminum (Wahoo AridDeck-style) decking.
 
 Everything here is generated — these elements carry no editable-source location. Both decks
@@ -132,29 +132,41 @@ class SunkenGardenSpec:
     # balcony framing
     pillar_size: str = "6x6"
     rear_pillar_rise_in: float = 2.0  # rear row taller for drainage slope
-    # Three-ply KDAT 2x10 (2026-08-23) at the 2x10's own 9 1/4" depth, so
-    # `_balcony_beam_depth_ft` and its soffit plane are unchanged.
+    # Three-ply KDAT 2x12 (2026-08-23), 11 1/4" deep. Same member as `back_beam` below the
+    # porch, and for the same two reasons: "treated LVL" is not a product, and three plies
+    # of 2x12 is the deepest row IRC Table R507.5(1) publishes.
     #
-    # This one is NOT the improvement the back beam is, and the decision was taken knowing
-    # it. "Treated LVL" is not a product (see `back_beam`), so the LVL had to go; but unlike
-    # the porch beams there is no sawn size that answers this span. R507.5(1) stops at 7'-2"
-    # for a 3-2x10 at the 12' joist-span row, and even a 3-2x12 reaches only 8'-4" against
-    # the 8'-8" here — so no depth fixes it prescriptively, and going deeper would move the
-    # soffit plane and every elevation derived off it.
+    # This was briefly a 3-2x10, on the reading that no sawn size could answer the span:
+    # R507.5(1) stops at 7'-2" for a 3-2x10 and 8'-4" for a 3-2x12 at the *12'* joist-span
+    # row, and the beams span 8'-8". But the 12' row was never the right one. These joists
+    # span 10'-0" beam to beam and then overhang the outer beams by `joist_cantilever_in`;
+    # `structural.deck_joist_span` was reading the 10'-6" MEMBER and rounding that up to
+    # the 12' row, counting the cantilever as span. A cantilever is not span — R507.6.1
+    # bounds it separately, at a quarter of the back span — and the check reads the back
+    # span now (`structural.deck_joist_cantilever` is where the 6" overhang is graded).
     #
-    # The member is therefore ENGINEERED, and `structural.deck_beam_span` says so out loud:
-    # it FAILs the prescriptive table rather than reporting UNKNOWN, because a built-up
-    # sawn size IS in the table and this one is past its row. That finding is the correct
-    # reading of the code and is routed to the same consultant already scoped for the
-    # balcony's E-W bracing and the `FT-SG-*` frost design (R404.4) — not something to
-    # design away by deepening a beam the geometry cannot afford.
+    # At the 10' row a 3-2x12 reaches 9'-2", so the 8'-8" span clears it by 6". The three
+    # balcony beams PASS the prescriptive table; nothing here is engineered any more, and
+    # the consultant scoped for the E-W bracing and the `FT-SG-*` frost design (R404.4) is
+    # no longer carrying these as well.
+    #
+    # The 2" of extra depth is real and it moves things: `_balcony_beam_depth_ft` is
+    # derived from this string now, so the beam soffit, the pillar tops, the girts and both
+    # knee-brace families drop 2" with it. Clear height from the porch deck to the balcony
+    # beam soffit goes 8'-7 1/2" -> 8'-5 1/2", and the walking surface at `balcony_level_ft`
+    # has not moved.
     #
     # Worth keeping straight while reading this file: the balcony beams sit under a
     # DRY-BELOW surface — `FS-SG-DECK`'s plank is `aluminum-deck`, a Wahoo AridDeck-style
     # watertight system with a drip trough and leader (see the deck's own comment) — while
     # the porch beams sit under GAPPED composite. That asymmetry is the real ESR-1387 5.3
     # exposure story, and it is why the two pairs were never the same problem.
-    balcony_beam: str = "3-2x10"
+    balcony_beam: str = "3-2x12"
+    # The four E-W girts share the beams' depth by construction: both ride ON the pillar
+    # tops, so a girt of any other depth would finish its top out of plane with the beam
+    # tops the deck joists cross. It followed `balcony_beam` from 2x10 to 2x12 for that
+    # reason, not for a span one — a girt carries no joists (see BALCONY_GIRTS).
+    balcony_girt: str = "2x12"
     balcony_joist: str = "2x8"
     balcony_joist_oc_in: float = 16.0
     balcony_deck_thickness_in: float = 1.5  # aluminum plank
@@ -589,7 +601,7 @@ PORCH_GUARD = Railing(
     infill="balusters", baluster_spacing=inch(4))
 
 # ============================================================================
-# Second (balcony, ~10'): 6x6 pillars, three 2x10 beams, aluminum deck.
+# Second (balcony, ~10'): 6x6 pillars, three 3-ply 2x12 beams, aluminum deck.
 # ============================================================================
 # Six pillars. Four land on concrete wall tops — the rear outer pair on the porch side walls
 # at 0'-0", the front outer pair on the retaining walls' +0'-6" (the 6" step at the front
@@ -597,8 +609,8 @@ PORCH_GUARD = Railing(
 # masonry guard was retired, five of the six started 42" higher, on top of it; now each is
 # that much longer, and the pillar *tops* are unchanged because height is measured back from
 # the beam soffit. Rear row is 2" taller overall so the deck crowns and drains south, away
-# from the house. Beam soffit = balcony level minus 2x10 beam depth (9.25").
-_balcony_beam_depth_ft = 9.25 / 12.0
+# from the house. Beam soffit = balcony level minus the beam depth, read off the size.
+_balcony_beam_depth_ft = cross_section(SPEC.balcony_beam).depth_m / 0.3048
 _balcony_joist_depth_ft = 7.25 / 12.0  # 2x8 deck joist
 # Pillar-height *input* only — the resolver drops beam + post by the deck joist depth
 # (resolve/envelope.py::_bearing_stack_drops), so the wood doesn't actually land here (see
@@ -607,12 +619,13 @@ _beam_soffit = ft(SPEC.balcony_level_ft - _balcony_beam_depth_ft)
 # The *resolved* soffit: the pillar-top plane the beams and E-W girts sit on, and the
 # plane both brace families rise to.
 _balcony_beam_soffit = ft(SPEC.balcony_level_ft - _balcony_joist_depth_ft
-                          - _balcony_beam_depth_ft)  # 8.625'
-_girt_depth_ft = 9.25 / 12.0  # 2x10 — same depth as the double-2x10 beams, so tops finish flush
+                          - _balcony_beam_depth_ft)  # 8.458'
+# Same depth as the beams by design (see SPEC.balcony_girt), so the tops finish flush.
+_girt_depth_ft = cross_section(SPEC.balcony_girt).depth_m / 0.3048
 # Girts ride ON the pillar tops (not bolted to the faces a girt-depth lower), so their
 # soffit IS the resolved pillar-top/beam-soffit plane — E-W and N-S knee braces land at the
 # same soffit.
-_girt_soffit = _balcony_beam_soffit  # 8.625'
+_girt_soffit = _balcony_beam_soffit  # 8.458'
 _girt_top = _balcony_beam_soffit + ft(_girt_depth_ft)  # 9.396' — flush with the beam tops
 _PILLAR_X = (_x_ax_w, _cx, _x_ax_e)
 # (row, x index) -> (the concrete wall top that pillar bears on, its elevation). Anything
@@ -659,7 +672,7 @@ SECOND_NODES = [
     Node(uid="SGNB06AAAA", tag="N-SGB-SE", position=pt(ft(_x_ax_e), ft(_y_ax_front))),
 ]
 
-# Three N-S double-2x10 beams over the west / center / east pillar lines.
+# Three N-S three-ply 2x12 beams over the west / center / east pillar lines.
 BALCONY_BEAMS = [
     Beam(uid="SGBB01AAAA", tag="BM-SG-BLW", start_node="N-SGB-NW", end_node="N-SGB-SW",
          size=SPEC.balcony_beam, assembly="BEAM_KDAT",
@@ -683,7 +696,7 @@ BALCONY_BEAMS = [
 # the rest of the gap to the beam.
 #
 # Front-row half-width is read off ``SPEC.balcony_beam`` rather than hardcoded — it was a
-# literal 1.5" for the old 3"-wide double-2x10, and the 2026-07-31 LVL swap (3 1/2" wide)
+# literal 1.5" for a long-gone 3"-wide double-2x10, and the 2026-07-31 LVL swap (3 1/2")
 # would have driven the girts 1/4" into the beams if left hardcoded
 # (`structural.member_interference` is what catches this class of bug).
 _beam_face_ft = cross_section(SPEC.balcony_beam).width_m / 2 / 0.3048
@@ -700,16 +713,16 @@ GIRT_NODES = [
 ]
 BALCONY_GIRTS = [
     Beam(uid="SGBG01AAAA", tag="BM-SG-GIRT-RW", start_node="N-SGG-RW1", end_node="N-SGG-RW2",
-         size="2x10", top_elevation=_girt_top, assembly="BEAM_KDAT",
+         size=SPEC.balcony_girt, top_elevation=_girt_top, assembly="BEAM_KDAT",
          bearing_refs=("PT-SG-BR1", "PT-SG-BR2")),
     Beam(uid="SGBG03AAAA", tag="BM-SG-GIRT-RE", start_node="N-SGG-RE1", end_node="N-SGG-RE2",
-         size="2x10", top_elevation=_girt_top, assembly="BEAM_KDAT",
+         size=SPEC.balcony_girt, top_elevation=_girt_top, assembly="BEAM_KDAT",
          bearing_refs=("PT-SG-BR2", "PT-SG-BR3")),
     Beam(uid="SGBG02AAAA", tag="BM-SG-GIRT-FW", start_node="N-SGG-FW1", end_node="N-SGG-FW2",
-         size="2x10", top_elevation=_girt_top, assembly="BEAM_KDAT",
+         size=SPEC.balcony_girt, top_elevation=_girt_top, assembly="BEAM_KDAT",
          bearing_refs=("PT-SG-BF1", "PT-SG-BF2")),
     Beam(uid="SGBG04AAAA", tag="BM-SG-GIRT-FE", start_node="N-SGG-FE1", end_node="N-SGG-FE2",
-         size="2x10", top_elevation=_girt_top, assembly="BEAM_KDAT",
+         size=SPEC.balcony_girt, top_elevation=_girt_top, assembly="BEAM_KDAT",
          bearing_refs=("PT-SG-BF2", "PT-SG-BF3")),
 ]
 

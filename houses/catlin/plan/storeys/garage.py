@@ -34,18 +34,28 @@ from typehaus import (
 # The garage's two N-S wall lines, published so the ICF stem (params/foundations.py), the
 # slab, and the breezeway (params/breezeway.py) all derive from one number.
 #
-# 40'-6 3/8" is set by the breezeway off the *cladding*, not the stem: the stem's exterior
+# 40'-6 7/8" is set by the breezeway off the *cladding*, not the stem: the stem's exterior
 # EPS face is coplanar with the wood wall's zip-R face (both land on this line), so the
-# most-proud plane is the 7/8" of rainscreen + standing seam at y = 40'-5 1/2" — what the
+# most-proud plane is the 7/8" of rainscreen + standing seam at y = 40'-6" — what the
 # breezeway deck/glazing butt against, 4'-0 1/2" north of the house's cladding face
-# (y = 36'-5.02"): one 4'-0" polycarbonate panel with a 1/2" reveal.
+# (y = 36'-5 1/2"): one UNCUT 4'-0" polycarbonate panel with a 1/2" reveal.
 #
 # Moved 5 5/8" south from 41'-0" on 2026-08-15 when the stem was aligned to it and dropped
 # from an 8" core to 6". Moving the wall lines with the stem (rather than aligning the stem
 # alone) keeps the breezeway slot and its uncut panel unchanged — see CLAUDE.md's ICF
 # stem/wood-wall coplanarity note; do not move these nodes independently of the stem.
-GARAGE_Y_SOUTH = ft(40, 6.375)
-GARAGE_Y_NORTH = ft(64, 6.375)
+#
+# ** MOVED 1/2" NORTH ON 2026-08-23, and the whole 24'x24' went with it. ** The truss wall
+# put the house's cladding face 1/2" further out (5.02" -> 5.5" proud of the y=36' sheathing
+# plane), which spent the breezeway's reveal exactly: the slot closed to 4'-0" on the nose
+# and an uncut 4'-0" sheet cannot be glazed into an opening it exactly fills. Ripping the
+# sheet 1/2" was the detail-scale answer and is retired; this is the site-scale one, and it
+# is the better trade because the reveal is the only thing in the slot that was ever free.
+# BOTH lines move together — the garage stays 24'-0" square, the stem, footings, slab and
+# breezeway all derive from these two numbers, and nothing north of the house is dimensioned
+# to a property line closer than 40'.
+GARAGE_Y_SOUTH = ft(40, 6.875)
+GARAGE_Y_NORTH = ft(64, 6.875)
 
 # ICF stem height above grade == this storey's elevation (wood walls sit on the stem top).
 # Published so the storey table, the stem (params/foundations.py) and the overhead door's
@@ -185,7 +195,7 @@ _GARAGE_EAVE_TRIM = EaveTrim(
 # moves the trough fails there instead of leaving a leader hanging beside it.
 _GARAGE_LEADER = Downspout(
     uid="CGDS01AAAA", tag="TR-G-LEADER-E",
-    position=pt(ft(25), ft(39, 4.5)),   # east end of the trough, on its centreline
+    position=pt(ft(25), ft(39, 5)),     # east end of the trough, on its centreline
     # Both absolute, and both dropped 2'-6" on 2026-08-18 when grade did and the garage
     # went down with it. The trough they bracket is derived from the roof plane, so it moved
     # on its own; these are the two numbers that had to follow it by hand.
@@ -209,13 +219,13 @@ ROOFS = [
 # bills the clamps automatically). Row runs x 1'-4"..8'-0" — canopy width plus a full bay of
 # margin each end, since snow releases at an angle. Row count/spacing at Pg = 50 psf is the
 # manufacturer's calculation; the check only screens for retention being *authored*.
-# Placed 4" up-slope of the eave (y = 39'-6 3/8", z = 8'-1"), deliberately close to it since
+# Placed 4" up-slope of the eave (y = 39'-6 7/8", z = 8'-1"), deliberately close to it since
 # retention holds the pack where the load lives. (Position moved 5 5/8" south with the wall
 # line on 2026-08-15; height didn't, since the wall didn't get taller. It dropped 2'-6" on
 # 2026-08-18, when the garage followed grade down and the roof it clamps to went with it —
 # an absolute elevation on a structure that moved.)
 # Written out, not generated: the editable dialect allows no comprehensions.
-_SNOW_GUARD_Y = ft(39, 6.375)
+_SNOW_GUARD_Y = ft(39, 6.875)
 _SNOW_GUARD_Z = ft(8, 1)
 _SNOW_GUARD_SIZE = "S-5! ColorGard"
 SNOW_GUARDS = [
@@ -274,7 +284,8 @@ ALARMS = [
 # literals; -2'-10" is `params/foundations.SITE_GRADE`, which `plan/site.py` repeats as
 # `Site.grade` and `plan/manifest.py` asserts the two agree. `start` is the foot of the
 # flight — GARAGE_Y_SOUTH + 3'-0" of landing + 4 x 11" of tread = 47'-2 3/8" — and it climbs
-# south (`run_reversed`) back to the landing's north edge.
+# south (`run_reversed`) back to the landing's north edge. All three y literals below
+# went up 1/2" on 2026-08-23 with GARAGE_Y_SOUTH.
 #
 # 11" treads with NO nosing, which keeps the run at the 3'-8" the four slabs occupied and
 # leaves an 11" going against R311.7.5.2's 10" minimum. A nose would shorten the run and buy
@@ -283,7 +294,7 @@ STAIRS = [
     Stair(uid="X99TD38ZS3", tag="ST-G-SERVICE",
           from_storey="garage", to_storey="garage",
           base_elevation=ft(-2, -10), top_elevation=ft(0),
-          width=ft(3), start=pt(ft(5), ft(47, 2.375)),
+          width=ft(3), start=pt(ft(5), ft(47, 2.875)),
           run_direction="y", run_reversed=True,
           tread_depth=inch(11), nosing_depth=inch(0),
           material="kdat"),
@@ -310,7 +321,7 @@ STAIRS = [
 # walks slab edges and belongs with the guard rules, not with this stair.
 RAILINGS = [
     Railing(uid="CX7KN0MZE0", tag="RL-G-SERVICE",
-            path=(pt(ft(5), ft(47, 2.375)), pt(ft(5), ft(43, 6.375))),
+            path=(pt(ft(5), ft(47, 2.875)), pt(ft(5), ft(43, 6.875))),
             kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
             base_elevation=ft(-2, -10), post_spacing=inch(36), post_size="2x2",
             rail_count=1, mount="surface", assembly="RAILING_DARK_METAL",

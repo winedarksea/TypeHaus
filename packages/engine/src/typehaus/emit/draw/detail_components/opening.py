@@ -19,6 +19,12 @@ interior partition draws nothing, and no function here mutates construction geom
 
 Dimensions come from :data:`~typehaus.emit.draw.detail_components.config.OPENING_DETAIL`.
 Section coordinates: ``u`` is the in-section axis, ``z`` is world z, both in model inches.
+
+``out_sign`` multiplies a length that does not already carry a direction. The difference
+between two ``face_of`` readings DOES carry one — it is signed by which side is outboard —
+so multiplying that by ``out_sign`` again flips it on a wall whose outboard face is the LOW
+side and runs every flashing inboard, through the wall it is supposed to shed water off.
+Only the loose dimensions (a lip, a bead, a drop) take the sign.
 """
 
 from __future__ import annotations
@@ -36,6 +42,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     outermost_with_function,
     path_from_steps,
     rect_region,
+    vent_face,
 )
 from typehaus.emit.draw.scene import IRNode
 from typehaus.quantities import M_PER_IN
@@ -83,7 +90,7 @@ def window_head_jamb_sill(model, wall, opening, crop, direction, station) -> lis
     if _in_crop_z(head_z, crop):
         path = path_from_steps((sheath_out, head_z + cfg.head_flashing_rise_in), [
             (0.0, -cfg.head_flashing_rise_in),
-            (out_sign * (clad_out - sheath_out) + out_sign * cfg.head_flashing_lip_in, 0.0),
+            ((clad_out - sheath_out) + out_sign * cfg.head_flashing_lip_in, 0.0),
             (0.0, -cfg.head_flashing_drop_in),
         ])
         nodes += flashing_nodes(path, tag="opening-head-flashing")
@@ -97,7 +104,7 @@ def window_head_jamb_sill(model, wall, opening, crop, direction, station) -> lis
                 else sheath_out - out_sign * 4.0)
         pan = path_from_steps((back, sill_z + cfg.sill_pan_back_dam_in), [
             (0.0, -cfg.sill_pan_back_dam_in),
-            (out_sign * (clad_out - back) + out_sign * cfg.sill_pan_lip_in, 0.0),
+            ((clad_out - back) + out_sign * cfg.sill_pan_lip_in, 0.0),
             (0.0, -cfg.sill_pan_drop_in),
         ])
         nodes += flashing_nodes(pan, tag="opening-sill-pan")
@@ -118,7 +125,11 @@ def outie_window_truss(model, wall, opening, crop, direction, station) -> list[I
 
     * the **head flashing** starts on the FOAM face above the head blocking — the foam is the
       water plane, so lapping onto it is what makes the head continuous — turns out over the
-      head blocking, and laps past the cladding to a drip;
+      head blocking, and laps past the cladding to a drip. That face is the one the vented
+      gap EXPOSES (``vent_face``), 1" behind the truss plane, not the band's own back 3-1/2"
+      behind it: the foam is sprayed *after* the truss and *before* the flashing, so the
+      band's back is 2-1/2" inside a cured solid at the moment this piece goes on and an
+      upstand there would have to be cut into it;
     * the **sill pan** lies on the sill buck with its back dam turned up against the buck's
       inboard leg, runs out to the truss plane, and turns down into the rainscreen gap. It
       discharges BEHIND the cladding, not past it: an outie pan that ran out to a visible
@@ -142,7 +153,7 @@ def outie_window_truss(model, wall, opening, crop, direction, station) -> list[I
         return []
     out_sign = 1.0 if is_outboard_high else -1.0
     sheath_out = face_of(sheath, is_outboard_high, outer=True)
-    foam_face = face_of(band, is_outboard_high, outer=False)   # the outrigger band's back
+    foam_face = vent_face(wall, band, is_outboard_high)        # what the vent gap exposes
     truss_plane = face_of(band, is_outboard_high, outer=True)  # where the flanges land
     clad_out = face_of(clad, is_outboard_high, outer=True)
     clad_in = face_of(clad, is_outboard_high, outer=False)
@@ -154,19 +165,19 @@ def outie_window_truss(model, wall, opening, crop, direction, station) -> list[I
         block_top = head_z + cfg.truss_blocking_in
         path = path_from_steps((foam_face, block_top + cfg.outie_head_rise_in), [
             (0.0, -cfg.outie_head_rise_in),
-            (out_sign * (clad_out - foam_face) + out_sign * cfg.head_flashing_lip_in, 0.0),
+            ((clad_out - foam_face) + out_sign * cfg.head_flashing_lip_in, 0.0),
             (0.0, -cfg.head_flashing_drop_in),
         ])
         nodes += flashing_nodes(path, tag="opening-head-flashing")
         # Sealant at the cladding-to-frame joint, tucked under the flashing's drip. The
         # joint is at the truss plane now, which is the cladding's own inner face.
-        nodes += rect_region(clad_in, head_z - cfg.sealant_bead_in,
-                             clad_in + out_sign * cfg.sealant_bead_in, head_z,
+        nodes += rect_region(clad_in - out_sign * cfg.sealant_bead_in,
+                             head_z - cfg.sealant_bead_in, clad_in, head_z,
                              "opening-sealant", "sealant", "metal", lineweight=0.3)
     if _in_crop_z(sill_z, crop):
         pan = path_from_steps((sheath_out, sill_z + cfg.sill_pan_back_dam_in), [
             (0.0, -cfg.sill_pan_back_dam_in),
-            (out_sign * (truss_plane - sheath_out), 0.0),
+            ((truss_plane - sheath_out), 0.0),
             (0.0, -cfg.outie_pan_drop_in),
         ])
         nodes += flashing_nodes(pan, tag="opening-sill-pan")

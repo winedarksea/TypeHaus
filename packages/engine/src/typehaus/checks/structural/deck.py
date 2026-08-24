@@ -26,6 +26,7 @@ from typehaus.checks.structural.deck_tables import (
     DECK_TOTAL_LOAD_PSF,
     GUARD_MIN_HEIGHT_IN,
     GUARD_REQUIRED_ABOVE_IN,
+    MAX_JOIST_CANTILEVER_RATIO,
     MIN_DECK_FOOTING_SIDE_IN,
     MIN_DECK_FOOTING_THICKNESS_IN,
     MIN_DECK_POST_NOMINAL,
@@ -44,6 +45,10 @@ _M_PER_FT = 0.3048
 # The tables are published at 12/16/24" o.c.; a FloorSystem that leaves JoistSpec.spacing
 # unset gets the solver's own default, which is the middle one.
 _DEFAULT_SPACING_IN = 16.0
+# Slop for "is this member tip on the joist field's outer edge", in metres. The tips are
+# built by adding the authored cantilever to a bearing coordinate, so they agree to
+# floating-point noise; a micron is far tighter than any real framing dimension.
+_TOL_M = 1e-6
 
 
 
@@ -69,9 +74,55 @@ class _Deck:
         return [m for m in self.resolved.members if m.category == "joist"]
 
     @property
+    def _axis(self) -> int:
+        """Index into a member point of the joists' own span direction."""
+        return 0 if (self.authored.joists.direction or "x") == "x" else 1
+
+    @property
+    def cantilevers_ft(self) -> tuple[float, float]:
+        """The authored overhang past the low / high outermost bearing lines, in feet.
+
+        Mirrors ``resolve/floors.py``: each per-end value falls back to the symmetric
+        ``JoistSpec.cantilever`` scalar, and a deck that authors none has no overhang.
+        """
+        spec = self.authored.joists
+        base = spec.cantilever.meters if spec.cantilever is not None else 0.0
+        start = spec.cantilever_start.meters if spec.cantilever_start is not None else base
+        end = spec.cantilever_end.meters if spec.cantilever_end is not None else base
+        return start / _M_PER_FT, end / _M_PER_FT
+
+    @property
     def joist_span_ft(self) -> float | None:
+        """The joists' longest SPAN — bearing line to bearing line, cantilever excluded.
+
+        A cantilever is not span, and both tables this module reads are span tables:
+        DCA6 Table 3A is entered with the backspan (R507.6.1 limits the overhang
+        separately, at a quarter of it — see ``deck_joist_cantilever`` below), and IRC
+        Table R507.5(1) is indexed by the joist span a beam carries.
+
+        ``resolve/floors.py`` adds the overhang to the two outer bays only, one end each,
+        so a member is carrying a cantilever exactly when one of its tips sits on the
+        joist field's outer extent. Reading it back off the geometry that way — rather
+        than off the member key — keeps this correct for a deck of any bay count,
+        including the single-bay case that cantilevers at both ends.
+        """
         joists = self.joists
-        return max(m.length_m for m in joists) / _M_PER_FT if joists else None
+        if not joists:
+            return None
+        axis = self._axis
+        ends = [sorted((m.p0[axis], m.p1[axis])) for m in joists]
+        low = min(a for a, _ in ends)
+        high = max(b for _, b in ends)
+        start_ft, end_ft = self.cantilevers_ft
+        spans = []
+        for (a, b), member in zip(ends, joists, strict=True):
+            span_ft = member.length_m / _M_PER_FT
+            if abs(a - low) < _TOL_M:
+                span_ft -= start_ft
+            if abs(b - high) < _TOL_M:
+                span_ft -= end_ft
+            spans.append(span_ft)
+        return max(spans)
 
     @property
     def area_ft2(self) -> float | None:
@@ -140,6 +191,49 @@ def deck_joist_span(ctx: CheckContext) -> list[Finding]:
                 "structural.deck_joist_span",
                 f"deck {deck.tag} {member} joists span {span_ft:.2f}', within the "
                 f"{allowable:.2f}' DCA6 Table 3A limit at {at}", (deck.tag,), Result.PASS,
+            ))
+    return out
+
+
+@check(Tier.STRUCTURAL, "structural.deck_joist_cantilever")
+def deck_joist_cantilever(ctx: CheckContext) -> list[Finding]:
+    """Deck joist overhang vs. IRC R507.6.1 — not more than a quarter of the back span.
+
+    The companion to :func:`deck_joist_span`. That check reads DCA6 Table 3A against the
+    backspan, which is what a span table means; this is where the overhang it excludes is
+    actually bounded. Splitting them the way the code does is what keeps a long cantilever
+    from disappearing out of both.
+    """
+    decks = _decks(ctx)
+    if not decks:
+        return []  # no exterior deck — R507 does not apply
+    out: list[Finding] = []
+    for deck in decks:
+        start_ft, end_ft = deck.cantilevers_ft
+        overhang_ft = max(start_ft, end_ft)
+        if overhang_ft <= 1e-9:
+            continue  # flush both ends — nothing to bound
+        span_ft = deck.joist_span_ft
+        if span_ft is None or span_ft <= 1e-9:
+            out.append(_unknown("structural.deck_joist_cantilever",
+                                f"deck {deck.tag} cantilevers {overhang_ft:.2f}' past a "
+                                f"back span that did not resolve", (deck.tag,)))
+            continue
+        allowable = span_ft * MAX_JOIST_CANTILEVER_RATIO
+        if overhang_ft > allowable + 1e-6:
+            out.append(_advisory(
+                "structural.deck_joist_cantilever",
+                f"deck {deck.tag} joists cantilever {overhang_ft:.2f}', past the "
+                f"{allowable:.2f}' IRC R507.6.1 limit (a quarter of the {span_ft:.2f}' "
+                f"back span)", (deck.tag,), Result.FAIL,
+                fix_hint="shorten the overhang or move the outer bearing line out under it",
+            ))
+        else:
+            out.append(_advisory(
+                "structural.deck_joist_cantilever",
+                f"deck {deck.tag} joists cantilever {overhang_ft:.2f}', within the "
+                f"{allowable:.2f}' IRC R507.6.1 limit (a quarter of the {span_ft:.2f}' "
+                f"back span)", (deck.tag,), Result.PASS,
             ))
     return out
 

@@ -16,7 +16,9 @@
 // member (→ three/memberPicking.ts) instead of to the wall/floor/roof that owns it.
 import * as THREE from "three";
 import type { Member } from "../model/types";
-import { materialColor, type ResolvedNordicPalette } from "../nordic/palette";
+import {
+  familyOf, materialColor, type ResolvedNordicPalette, statesOwnColor,
+} from "../nordic/palette";
 import { createStandingSeamMaterial, isStandingSeam, SEAM_TILE_SIZE_M } from "./materials";
 import {
   composeCenteredBoxMatrix, composeMemberBoxMatrix, isRakedMember, isVerticalMember,
@@ -61,13 +63,27 @@ export function isRoofFramingMember(m: Member): boolean {
   return !ROOF_SKIN_CATEGORIES.has(m.category.toLowerCase());
 }
 
-// A member that names a material is envelope skin, not lumber: colour it the way the wall and
-// roof layer stacks colour that same material, or a standing-seam closure band reads as the
-// generic grey fallback rather than as the white metal it continues. The resolved palette is
-// required: without it materialColor falls back to CSS var() strings, which THREE.Color
-// cannot parse (it logs "unknown color" for every skin member on every rebuild).
+// A member that names a material *the palette can resolve* is envelope skin, not lumber:
+// colour it the way the wall and roof layer stacks colour that same material, or a
+// standing-seam closure band reads as the generic grey fallback rather than as the white
+// metal it continues. The resolved palette is required: without it materialColor falls back
+// to CSS var() strings, which THREE.Color cannot parse (it logs "unknown color" for every
+// skin member on every rebuild).
+//
+// "Can resolve" is the whole rule, and it is why this is not a bare `m.material ? …`. A
+// member carries a material ref but no catalog, so `materialColor` here sees only a named
+// finish and the substring family guess — and a ref that hits neither returns the neutral
+// grey `material.fallback`, which is a worse answer than the category tone the member
+// already had. The truss wall's outrigger band is 590 members on "kdat": no needle in
+// familyOf matches it, so every strapping, ladder-blocking and jamb-filler stick in the
+// house rendered pale grey next to the lumber it is screwed to. Falling back to the
+// category also puts this back in step with the .glb, whose member path
+// (emit/gltf/members.py -> _material_finish_color with authored=None) has always ended at
+// `_color(category)` for exactly the same refs.
 export function memberColor(m: Member, palette: ResolvedNordicPalette): THREE.ColorRepresentation {
-  return m.material ? materialColor(m.material, palette) : categoryColor(m.category);
+  return m.material && (statesOwnColor(m.material) || familyOf(m.material) !== null)
+    ? materialColor(m.material, palette)
+    : categoryColor(m.category);
 }
 
 // Standing-seam skin members get the real finish (procedural seam/oil-canning normal map),

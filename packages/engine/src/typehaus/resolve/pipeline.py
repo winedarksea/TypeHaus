@@ -88,7 +88,7 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         # The intermittent truss that carries an on-edge outrigger band: blocks, tabs, the
         # opening ladder and the outie-window buck. Strictly after `frame_furring`, which is
         # what frames the outriggers this pass hangs everything off (→ framing/truss_wall.py).
-        frame_truss_walls(plan, model)
+        findings.extend(frame_truss_walls(plan, model))
         # Soffit ladders hang off records the envelope stage already created.
         findings.extend(frame_soffits(model))
         findings.extend(frame_roofs(model))

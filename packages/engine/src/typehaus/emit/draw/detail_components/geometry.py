@@ -212,6 +212,37 @@ def outermost_with_function(intervals: dict, function: str):
     return hits[-1] if hits else None
 
 
+def vent_face(wall, band, is_outboard_high: bool) -> float:
+    """The INBOARD face of the drained and back-vented gap in a rainscreen band.
+
+    For an ordinary rainscreen — an empty furring band — this is just the band's own back
+    face, because the whole band is the gap. For a **truss wall** it is not: the outrigger
+    band is 3-1/2" deep with 2-1/2" of closed-cell foam packed into its bays, so the gap is
+    the 1" in front of that foam and the band's back face is buried 2-1/2" inside a solid
+    mass. That distinction is what two pieces of drawn vocabulary hang on:
+
+    * the **insect closure** at the base of the cladding fills the gap, not the band — a
+      strip drawn band-wide is 3-1/2" of screen where a 1" one goes, and disagrees with the
+      lineal foot ``takeoff/envelope.bug_screen_takeoff`` orders;
+    * a **head flashing's upstand** laps the water plane, and on this wall the water plane is
+      whatever face of the foam the gap exposes. Starting it at the band's back would mean
+      cutting a 2-1/2" slot into cured foam to insert it — and the foam goes on *after* the
+      truss (``houses/catlin/notes/outie_window_truss_detail.md``), so there is nothing to
+      slot it into at the moment it is installed.
+
+    Read through ``resolve.accessories.rainscreen_cavity_m`` so the drawing, the resolved
+    bug-screen solid and the order are all one number.
+    """
+    from typehaus.resolve.accessories import rainscreen_cavity_m
+
+    outer = face_of(band, is_outboard_high, outer=True)
+    gap_m = rainscreen_cavity_m(wall.layers)
+    if gap_m is None:
+        return face_of(band, is_outboard_high, outer=False)
+    gap_in = gap_m / M_PER_IN
+    return outer - gap_in if is_outboard_high else outer + gap_in
+
+
 def wall_in_frame(wall, direction: str, station: float, crop) -> bool:
     """Whether the cut crosses ``wall`` and its cut interval overlaps the crop's u-window."""
     lo, hi = wall_cut_bounds_m(wall, direction, station)

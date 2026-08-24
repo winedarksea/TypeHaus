@@ -68,7 +68,11 @@ def test_detail_has_legend_dims_and_notes(catlin_model):
     assert catlin_model.plan.project.name in texts, "title block carries the project name"
     dims = [n for n in scene.nodes if isinstance(n, ArchDimension)]
     assert dims, "derived dimension strings expected from resolved layer thicknesses"
-    assert any('CI' in (n.text or '') for n in dims)
+    # The exterior-insulation string. Its LABEL depends on the stack: a board stack is
+    # continuous insulation and says CI, while a truss wall's outrigger band is packed with
+    # foam between members at 16" o.c. and says "ext. insul." instead — 4" of it, but not
+    # continuous by the code's own definition (chrome.py::_continuous_insulation).
+    assert any('CI' in (n.text or '') or 'insul' in (n.text or '') for n in dims)
 
 
 def test_derive_scaffolds_bound_conditions_only(catlin_model):

@@ -157,7 +157,7 @@ WALL_SLEEVES = [
 # to remove the west-footing encroachment entirely — see params/foundations.py.
 GARAGE_SLEEVES = [
     SleevePenetration(uid="CGPW01AAAA", tag="SP-GF-S-HYD", host_ref="FT-GF-S-DR",
-                      position=pt(ft(5), ft(41)), pipe_diameter=inch(0.75),
+                      position=pt(ft(5), ft(41, 0.5)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(2), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-8, -10)),
 ]

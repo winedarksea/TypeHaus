@@ -1452,7 +1452,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMW107AAAA",
-      "tag": "ladder-head-000"
+      "tag": "ladder-head-000-01"
     },
     {
       "space": "model",
@@ -1508,7 +1508,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMW107AAAA",
-      "tag": "ladder-sill-000"
+      "tag": "ladder-sill-000-00"
     },
     {
       "space": "model",
@@ -1955,11 +1955,11 @@
       "node": "hatch",
       "boundary": [
         [
-          433.75000000000006,
+          436.2500000000001,
           83.5
         ],
         [
-          433.75000000000006,
+          436.2500000000001,
           81.75
         ],
         [
@@ -1979,11 +1979,11 @@
           81.25
         ],
         [
-          433.25000000000006,
+          435.7500000000001,
           81.25
         ],
         [
-          433.25000000000006,
+          435.7500000000001,
           83.5
         ]
       ],
@@ -1999,11 +1999,11 @@
       "node": "polyline",
       "points": [
         [
-          433.75000000000006,
+          436.2500000000001,
           83.5
         ],
         [
-          433.75000000000006,
+          436.2500000000001,
           81.75
         ],
         [
@@ -2023,11 +2023,11 @@
           81.25
         ],
         [
-          433.25000000000006,
+          435.7500000000001,
           81.25
         ],
         [
-          433.25000000000006,
+          435.7500000000001,
           83.5
         ]
       ],
@@ -2043,19 +2043,19 @@
       "node": "hatch",
       "boundary": [
         [
+          436.4000000000001,
+          79.4
+        ],
+        [
           437.0000000000001,
           79.4
         ],
         [
-          437.60000000000014,
-          79.4
-        ],
-        [
-          437.60000000000014,
+          437.0000000000001,
           80.0
         ],
         [
-          437.0000000000001,
+          436.4000000000001,
           80.0
         ]
       ],
@@ -2071,19 +2071,19 @@
       "node": "polyline",
       "points": [
         [
+          436.4000000000001,
+          79.4
+        ],
+        [
           437.0000000000001,
           79.4
         ],
         [
-          437.60000000000014,
-          79.4
-        ],
-        [
-          437.60000000000014,
+          437.0000000000001,
           80.0
         ],
         [
-          437.0000000000001,
+          436.4000000000001,
           80.0
         ]
       ],
@@ -2815,12 +2815,23 @@
     "|---|---|---|",
     "| block | 2x4 laid flat, long axis vertical, ~8\" long | on the sheathing, over a stud, 0 → 1-1/2\" |",
     "| tab | 1/2\" plywood | against the block's flush side face, 0 → 5\" |",
-    "| outrigger | KDAT 2x4 **on edge**, 16\" o.c. | lap-screwed to the tab, 1-1/2\" → 5\" |",
+    "| outrigger | KDAT 2x4 **on edge**, 16\" o.c. on the stud module | lap-screwed to the tab, 1-1/2\" → 5\" |",
+    "| filler | 1–4 plies of the same 2x4 | only at an RO jamb the grid misses, laminated to the outrigger's face |",
     "| cladding | snap-lock standing seam | clipped to the outriggers, 5\" → 5-1/2\" |",
-    "The block is slid sideways so **one side face is flush with the stud's face**. That is the",
-    "only block position that lands the outrigger centred on the stud line, and it is what puts",
-    "two screws squarely over the stud. Centring the block instead throws the outrigger 3\" off the",
-    "stud grid and breaks every window alignment below. Blocks go every ~40\" up each outrigger.",
+    "The **outrigger is on the stud line** — its grid is the wall's own 16\" framing module, laid",
+    "out from the same station 0 the studs are, with only the strip at each end of a band off it",
+    "(exactly as the end stud is). The block is then slid sideways so **one side face is flush",
+    "with the outrigger's**, which is the stud's face too: the block laps the stud's whole 1-1/2\"",
+    "and both its screws land inside that lap. Centring the block instead throws it half off.",
+    "That is worth stating flatly because it was WRONG for a day (2026-08-23). The furring layout",
+    "started an on-edge strip at half its own width from the band's end rather than on the module,",
+    "so every outrigger in the house sat 3/4\" off its stud, 806 of 1,285 blocks half-lapped, and",
+    "74 were screwed to nothing but 1/2\" plywood. It is asserted now —",
+    "`packages/engine/tests/test_truss_wall_geometry.py`.",
+    "Blocks climb each outrigger at **no more than 40\" o.c.**, one at each end of every run and",
+    "the rest spread evenly between — a run being a *segment*, so the piece above a window head is",
+    "its own stick with its own two. A block whose own elevation falls inside a rough opening it",
+    "laps in plan is skipped; the ones above and below it are ordinary wall and stay.",
     "The inner 1-1/2\" of foam is a continuous band crossed by nothing but the blocks and the tabs.",
     "The outer 2-1/2\" fills between the outriggers; the 1\" in front of it is the drained,",
     "back-vented rainscreen gap the standing-seam clips land in, and it is what the bug screen at",
@@ -2848,15 +2859,27 @@
     "the head and sill blocking. It is not in the stud plane, and no window in this house carries a",
     "depth dimension: the mount plane is derived from the outermost furring layer's outer face, so",
     "it follows the assembly if the assembly ever changes again.",
-    "**Jamb bearing.** Outriggers sit on stud lines at 16\" o.c., so their faces land 1/4\" clear of",
-    "a 14\", 30\" or 38\" RO jamb and the flange bears without help. The 18\" and 27\" RO families do",
-    "not reach one, and neither do the doors; those get a **jamb outrigger** over the jack stud,",
-    "with its own tab and block over the king beside it. This is derived, not authored:",
-    "`resolve/framing/truss_wall.py` adds them, and `structural.truss_wall_opening_support` FAILs",
-    "if any RO jamb ends up further than a flange's bearing (1\") from wood. That check is what",
-    "keeps this paragraph true after the next window moves.",
-    "**Wide heads.** A head spanning more than 48\" between flanking outriggers doubles up — two",
-    "plies of the KDAT 2x4 on edge. The 60\" French and slider heads span about 63\" and take it.",
+    "**Jamb bearing.** Outriggers sit on stud lines at 16\" o.c., so a 14\", 30\" or 38\" RO jamb",
+    "lands within a flange's bearing of one and needs no help. The others get one of two things,",
+    "and which one is a question of how much room there is:",
+    "| gap, RO edge to the nearest outrigger face | what goes in |",
+    "|---|---|",
+    "| ≤ 1\" | nothing — the flange bears on the outrigger already there |",
+    "| 1\" to 6\" | a **filler**: one to four plies of the same 2x4 laminated to that outrigger's face, running the RO height between the sill and head blocking. It takes no block or tab of its own, because the outrigger it is nailed to has one |",
+    "| > 6\" | a **jamb outrigger** over the jack, half an outrigger plus a tab outboard of the RO edge — the offset that lands its tab exactly ON the edge and its block over the king beyond, instead of half an inch of plywood in front of the glass. It carries its own pack |",
+    "Six inches is where a free member's pack stops colliding with the pack next door. Below it a",
+    "free outrigger ends up with **neither block nor tab** — which is what happened to 20 of the",
+    "21 jamb outriggers this detail first shipped with, every one of them the member a window",
+    "hangs its flange on and every one of them fastened to nothing.",
+    "All of it is derived, not authored: `resolve/framing/truss_frame.py` places it, and",
+    "`structural.truss_wall_opening_support` FAILs if any RO jamb ends up further than a flange's",
+    "bearing (1\") from wood **that exists at that opening's own elevation** — an outrigger cut",
+    "around this very window is not wood at its jamb. That check is what keeps this table true",
+    "after the next window moves.",
+    "**Wide heads.** A head spanning more than 48\" clear between the two jamb supports doubles up",
+    "— two plies of the KDAT 2x4 on edge. The 60\" French and slider heads span about 60\" and take",
+    "it. Where a tab genuinely stands in the run (a field outrigger cut at the head has its lowest",
+    "tab right there) the blocking is the pieces on either side of it, not one bay at the end.",
     "Drawn by the `outie-window-truss` recipe",
     "(`emit/draw/detail_components/opening.py::outie_window_truss`), which is a sibling of the",
     "innie `window-head-jamb-sill` rather than a variant of it — the innie measures both pieces",
@@ -2879,9 +2902,12 @@
     "the interior by 1-1/2\" of foam and the sheathing, and a 2D calculation would be kinder. The",
     "house's own `preferences.toml wall_r = 40` is still not met, exactly as it was not met before.",
     "Code minimum is R-21, so there is no risk in either direction.",
-    "The case is **labour and trades**: no 537 eight-inch structural screws, no two-layer board",
-    "install, no separate WRB, one sprayer instead of three operations. The bridging improvement is",
-    "real but small, and saying so is the point.",
+    "The case is **labour and trades**: no two-layer board install, no separate WRB, one sprayer",
+    "instead of three operations, and **1,871 eight-inch structural screws through 4\" of foam",
+    "replaced by 2,624 four-inch screws into a block bearing on the sheathing** — a shorter, easier",
+    "fastener that is not fighting compressible board. (The \"537 screws\" the first draft of this",
+    "note claimed was the ROOF's 10\" count, which is untouched and still there.) The bridging",
+    "improvement is real but small, and saying so is the point.",
     "**Open question, flagged not decided:** whether the outrigger needs to be KDAT at all. It sits",
     "behind cladding, embedded in closed-cell foam, in a vented cavity — it never sees bulk water",
     "and it never touches concrete. Plain SPF would price it at the ordinary 2x4 rate and save on",

@@ -141,13 +141,24 @@ def glaser_layers(layers: list[Layer]) -> list[Layer]:
         ):
             continue
         # An empty band vents over its whole depth, so the walk stops at its inner face. A
-        # band packed with insulation vents only the unfilled remainder in front of the
-        # fill, so the walk keeps the band — parallel-pathed across its fill like any other
-        # layer with one — and stops at its OUTER face. Stopping short of it would drop most
-        # of a truss wall's exterior insulation; running past it would put the standing-seam
-        # cladding, a perfect vapour barrier, on the cold side of a wall that is in fact
-        # back-vented to outdoor air, and read a trap that is not there.
-        return layers[:index] if layer.cavity is None else layers[:index + 1]
+        # PARTLY filled band vents only the unfilled remainder in front of the fill, so the
+        # walk keeps the band — parallel-pathed across its fill like any other layer with
+        # one — and stops at its OUTER face. Stopping short of it would drop most of a truss
+        # wall's exterior insulation; running past it would put the standing-seam cladding, a
+        # perfect vapour barrier, on the cold side of a wall that is in fact back-vented to
+        # outdoor air, and read a trap that is not there.
+        #
+        # A band filled SOLID is neither: nothing vents, so it is not a vent plane at all and
+        # the walk must carry on past it to whatever really is. ``CavityFill.thickness``
+        # defaults to the host layer's own depth, so "packed solid" is the *default* spelling
+        # of a fill — without this guard a service chase stuffed with batt would truncate the
+        # walk at its own outer face and hide every layer beyond it, which is the exact trap
+        # the paragraph above claims to avoid.
+        if layer.cavity is None:
+            return layers[:index]
+        if (layer.cavity.thickness or layer.thickness).meters < layer.thickness.meters - 1e-9:
+            return layers[:index + 1]
+        continue
     return layers
 
 

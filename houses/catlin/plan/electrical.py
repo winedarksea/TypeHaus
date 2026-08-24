@@ -29,12 +29,12 @@
 # `test_catlin_contract_m3.py::test_wall_mounted_devices_resolve_against_a_wall_face`,
 # except ED-M-LIVING-KGF4 (mounts on the island, not a Wall) and ED-M-PORCH-FLOOD (a
 # pillar). CATLIN_EXT_2X6's inside face is 6 5/8" in from the sheathing datum, cladding
-# face 5" outboard of that.
+# face 5 1/2" outboard of that (was 5" until the 2026-08-23 truss wall).
 #
 # Positions worth knowing (project-north frame, house sheathing SW corner at 0,0):
 # - Meter: exterior face of west wall (W-M-W1), outside ED-B-PANEL at (2', 29') in the
 #   basement — shortest run from the underground POWER entry at (0', 18').
-# - Garage south wall W-G-S at y=41', service door at x=5'-8'; both EV receptacles east
+# - Garage south wall W-G-S at y=40'-6 7/8", service door at x=5'-8'; both EV receptacles east
 #   of it, clear of the door swing.
 # - Sunken-garden porch: west wall W-SG-W1 axis x=8', inner face x=8.5', north end
 #   y=-0.833'. Hot tub disconnect 7' south of that, under the deck — basement storey, so
@@ -669,7 +669,7 @@ GARAGE_DEVICES = [
                      position=pt(ft(0, 9.625), ft(56, 0.75)), type_ref="ED-T-EV-620", circuit="CKT-EV-620",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE", rotation=deg(90)),
     ElectricalDevice(uid="CEE009AAAA", tag="ED-G-EV-1450", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(19, 11.375), ft(41, 4)), type_ref="ED-T-EV-1450", circuit="CKT-EV-1450",
+                     position=pt(ft(19, 11.375), ft(41, 4.5)), type_ref="ED-T-EV-1450", circuit="CKT-EV-1450",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE"),
 ]
 
@@ -743,7 +743,7 @@ CONDUIT_TRUNKS = [
     # where two sleeves went away because of it.
     ConduitRun(uid="CDT002AAAA", tag="CD-B-GARAGE", trade_size=inch(1.25),
                path=(pt(ft(2), ft(29)), pt(ft(2), ft(35)), pt(ft(16), ft(35)),
-                     pt(ft(16), ft(41, 6))),
+                     pt(ft(16), ft(41, 9))),
                start_elevation=ft(-4), end_elevation=ft(5, 10),
                from_ref="ED-B-PANEL", to_ref="ED-G-EV-1450"),
     # Across the basement ceiling to the kitchen's east counter wall — still the east wall
@@ -979,11 +979,17 @@ CONDUIT_SLEEVES = [
     # at -6'-8" and its top is -6'-0", two feet clear below this crossing, while W-GF-S2
     # spans -6'-0" to -0'-8" and is what the conduit actually passes through.
     SleevePenetration(uid="CNS009AAAA", tag="SP-GF-CD-GAR", host_ref="W-GF-S2",
-                      position=pt(ft(16), ft(40, 10)), pipe_diameter=inch(1.25),
+                      position=pt(ft(16), ft(40, 10.5)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(2), purpose=Service.POWER_240,
                       axis="horizontal", center_elevation=ft(-4)),
+    # The stub-up, 3 3/8" north of the stem's inside face. It stood at 41'-6" until
+    # 2026-08-23 and that was 1/8" inside SL-G-FLOOR's south edge — passing only because
+    # `integrity.sleeve_in_opening` tests the sleeve's CENTRE, with half the 2" bore hanging
+    # over the slab edge. Moving the garage 1/2" north pushed the centre out too and it
+    # failed, correctly. It is not back at the edge: 41'-9" leaves 2 3/8" of concrete around
+    # the bore. The conduit runs up the inside face of W-G-S from here to ED-G-EV-1450.
     SleevePenetration(uid="CNS010AAAA", tag="SP-G-CD-GAR", host_ref="SL-G-FLOOR",
-                      position=pt(ft(16), ft(41, 6)), pipe_diameter=inch(1.25),
+                      position=pt(ft(16), ft(41, 9)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(2), purpose=Service.POWER_240),
     # CD-B-KITCHEN: east across the basement ceiling at -1' and up through SL-M-DECK to the
     # kitchen's east counter wall. The wall and deck sleeves are 1/2" apart in plan but in

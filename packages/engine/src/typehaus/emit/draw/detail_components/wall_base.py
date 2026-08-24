@@ -27,6 +27,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     path_from_steps,
     rect_region,
     slab_at_junction,
+    vent_face,
     wall_cut_bounds_m,
 )
 from typehaus.emit.draw.scene import IRNode
@@ -48,7 +49,8 @@ def basement_framed_wall(model, framed, concrete, crop, direction,
 
     nodes: list[IRNode] = []
     nodes += _l_flashing_and_bead(intervals, is_outboard_high, out_sign, junction_z)
-    nodes += _z_flashing_and_screen(intervals, is_outboard_high, out_sign, junction_z)
+    nodes += _z_flashing_and_screen(framed, intervals, is_outboard_high, out_sign,
+                                    junction_z)
 
     # Sill gasket under the treated mudsill, sealing the stud line to the concrete — the
     # authored ``FramingSpec.sill_gasket`` thickness when the assembly carries one, else
@@ -89,7 +91,7 @@ def _l_flashing_and_bead(intervals, is_outboard_high, out_sign, junction_z) -> l
     foam_out = face_of(foam, is_outboard_high, outer=True)
     path = path_from_steps((sheath_out, junction_z + cfg.l_flashing_rise_in),
                            [(0.0, -cfg.l_flashing_drop_in),
-                            (out_sign * (foam_out - sheath_out), 0.0)])
+                            ((foam_out - sheath_out), 0.0)])
     nodes = flashing_nodes(path, tag="l-flashing")
     # Spray-foam sealant bead at the outer end, so the flashing terminates sealed rather
     # than open — an unsealed end is an insect path straight into the foam.
@@ -100,7 +102,7 @@ def _l_flashing_and_bead(intervals, is_outboard_high, out_sign, junction_z) -> l
     return nodes
 
 
-def _z_flashing_and_screen(intervals, is_outboard_high, out_sign,
+def _z_flashing_and_screen(wall, intervals, is_outboard_high, out_sign,
                            junction_z) -> list[IRNode]:
     """Z-flashing with a drip at the bottom of the rainscreen, screened above it.
 
@@ -110,9 +112,17 @@ def _z_flashing_and_screen(intervals, is_outboard_high, out_sign,
     The screen band is the same corrugated vent strip the resolver derives as geometry and
     the take-off bills by the lineal foot, so its height comes from
     ``BUG_SCREEN_HEIGHT_IN`` rather than from a drawing-only constant: the section shows the
-    product that is actually on the order. It spans the furring cavity — the strip is cut to
-    the cavity depth — and carries the material tag so the writers colour it as the
-    polypropylene section it is instead of leaving it an unfilled outline.
+    product that is actually on the order. It carries the material tag so the writers colour
+    it as the polypropylene section it is instead of leaving it an unfilled outline.
+
+    **It spans the vented GAP, not the furring band.** Those are the same thing on an empty
+    band and are not the same thing on a truss wall, where 2-1/2" of the 3-1/2" band is
+    packed with foam: drawn band-wide the strip is 3-1/2" of screen against the 1" the
+    resolver builds and the take-off orders. ``vent_face`` is the shared reading.
+
+    The Z-flashing itself still starts at the band's back — it is the pan under the whole
+    outrigger zone, foam and gap both, and it laps the L-flashing that comes out from the
+    sheathing face. Only the screen closes the part that is open.
     """
     cfg = BASEMENT_TO_FRAMED_WALL
     furring = outermost_with_function(intervals, "furring")
@@ -123,14 +133,15 @@ def _z_flashing_and_screen(intervals, is_outboard_high, out_sign,
     clad_out = face_of(clad, is_outboard_high, outer=True)
     path = path_from_steps((fur_in, junction_z + cfg.z_flashing_rise_in), [
         (0.0, -cfg.z_flashing_drop_in),
-        (out_sign * (clad_out - fur_in), 0.0),
+        ((clad_out - fur_in), 0.0),
         (out_sign * cfg.z_flashing_lip_in, 0.0),
         (0.0, -cfg.z_flashing_face_in),
         (out_sign * cfg.z_flashing_kick_in, -cfg.z_flashing_kick_drop_in),
     ])
     nodes = flashing_nodes(path, tag="z-flashing")
     fur_out = face_of(furring, is_outboard_high, outer=True)
-    nodes += rect_region(fur_in, junction_z + cfg.screen_rise_in, fur_out,
+    gap_in = vent_face(wall, furring, is_outboard_high)
+    nodes += rect_region(gap_in, junction_z + cfg.screen_rise_in, fur_out,
                          junction_z + cfg.screen_rise_in + BUG_SCREEN_HEIGHT_IN,
                          "bug-screen", BUG_SCREEN_MATERIAL, "rigid", lineweight=0.3)
     return nodes
