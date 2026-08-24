@@ -34,6 +34,8 @@ source:
 
 - Stem and framing are flush on the outside: the wood wall's Zip-R face and the ICF's exterior EPS face are the same plane, so the only thing standing proud at the base of the wall is the 7/8" of rainscreen + metal siding, which drips clear. The stem must NOT stand out past the sheathing — a 6" core (11" section) is what makes the two reconcile while keeping 4 1/2" of the 5 1/2" PT sill plate bearing on concrete. The leftover 3 3/8" of section shows up on the *inside* as a curb below the drywall, which is where a curb belongs in a garage.
 
+- Cap the curb: an up-turned metal flashing tucked behind the wood wall's interior drywall, sloped back into the room, with a drip at the inboard edge. Water running down the stud wall's interior face (splash, a hosed-down wall, condensation) is diverted out onto the curb top and into the garage instead of tracking down behind the drywall and into the ICF's board joint below.
+
 - Roof: gable trusses @16" o.c. with drip edge, fascia board + trim and vented soffit (coated aluminum recommended). OSB sheathing + underlayment (e.g., synthetic or self-adhering) + metal roofing (optional rainscreen mesh). Metal roofing shown with 16" o.c. support spacing per manufacturer system. Vented ridge not shown.
 
 - ICF brick ledge forms may be used per manufacturer guidelines for heavy sidings.

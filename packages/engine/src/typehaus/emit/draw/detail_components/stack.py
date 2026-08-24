@@ -9,6 +9,10 @@ Two junction kinds, two recipe ids:
 * ``stack-width-shelf`` (``stack_width_change:*``) — a wall stepping in over a wider wall
   leaves a horizontal ledge in the weather. Reference: the basement detail's flashed step
   from the 12" foundation with 4" of CI up to the framed wall on the sheathing plane.
+  Its inboard sibling, :func:`interior_curb_cap`, shares the same overlay: a masonry stem
+  wider than the framed wall it carries leaves a ledge on the *interior* instead — the
+  garage ICF stem under its 2x6 wall is the reference case — and that ledge gets capped
+  rather than flashed against weather.
 
 Both derive entirely from the resolved faces of the two walls and the floor structure
 between them, and both draw nothing when their subject is not genuinely in frame.
@@ -16,7 +20,11 @@ between them, and both draw nothing when their subject is not genuinely in frame
 
 from __future__ import annotations
 
-from typehaus.emit.draw.detail_components.config import RIM_BAND, STACK_WIDTH_SHELF
+from typehaus.emit.draw.detail_components.config import (
+    INTERIOR_CURB_CAP,
+    RIM_BAND,
+    STACK_WIDTH_SHELF,
+)
 from typehaus.emit.draw.detail_components.geometry import (
     face_of,
     flashing_nodes,
@@ -151,3 +159,54 @@ def stack_width_shelf(model, walls, crop, direction, station) -> list[IRNode]:
         (0.0, -cfg.drip_drop_in),
     ])
     return flashing_nodes(path, tag="stack-shelf-flashing")
+
+
+def interior_curb_cap(model, walls, crop, direction, station) -> list[IRNode]:
+    """Sloped cap flashing over the interior curb a masonry stem leaves under a framed wall.
+
+    The inboard sibling of :func:`stack_width_shelf`: compares the two walls' *inboard*
+    faces instead of their outboard ones. A masonry wall (a foundation or ICF stem) wider
+    than the framed wall it carries steps in on the interior, leaving a ledge behind the
+    framed wall's drywall — nothing there sheds weather, but water running down that
+    drywall's face (splash, a hosed-down wall, condensation on the cold masonry below)
+    still needs somewhere to go besides the ledge and the board joint underneath it.
+
+    Scoped to masonry-to-framed junctions: the lower wall must be a foundation wall, so
+    two framed walls of different widths stacking (an interior partition change, say) has
+    no masonry curb and correctly draws nothing.
+    """
+    lower, upper = _lower_and_upper(walls)
+    if lower is None or crop is None:
+        return []
+    if not lower.is_foundation:
+        return []
+    is_outboard_high = outboard_is_high(upper, direction, station)
+    if is_outboard_high is None:
+        return []
+    lower_lo, lower_hi = wall_cut_bounds_m(lower, direction, station)
+    upper_lo, upper_hi = wall_cut_bounds_m(upper, direction, station)
+    if lower_lo is None or upper_lo is None:
+        return []
+    if is_outboard_high:
+        # Outboard is the high side, so inboard — the room side — is the low side.
+        lower_face, upper_face = lower_lo, upper_lo
+        ledge_in = (upper_face - lower_face) / M_PER_IN
+    else:
+        lower_face, upper_face = lower_hi, upper_hi
+        ledge_in = (lower_face - upper_face) / M_PER_IN
+    cfg = INTERIOR_CURB_CAP
+    if ledge_in < cfg.min_ledge_in:
+        return []
+
+    in_sign = -1.0 if is_outboard_high else 1.0
+    curb_z = upper.z0_m / M_PER_IN
+    back_u = upper_face / M_PER_IN
+    # Back leg up behind the upper wall's interior drywall, fall back into the room across
+    # the curb, drip off the inboard edge.
+    path = path_from_steps((back_u, curb_z + cfg.back_leg_rise_in), [
+        (0.0, -cfg.back_leg_rise_in),
+        (in_sign * ledge_in, -cfg.slope_fall_in),
+        (in_sign * cfg.drip_projection_in, 0.0),
+        (0.0, -cfg.drip_drop_in),
+    ])
+    return flashing_nodes(path, tag="interior-curb-cap-flashing")

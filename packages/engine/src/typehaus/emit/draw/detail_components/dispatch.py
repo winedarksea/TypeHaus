@@ -30,7 +30,11 @@ from typehaus.emit.draw.detail_components.opening import (
 from typehaus.emit.draw.detail_components.ridge import lvl_ridge_hanger
 from typehaus.emit.draw.detail_components.sauna import sauna_components
 from typehaus.emit.draw.detail_components.shower import shower_components
-from typehaus.emit.draw.detail_components.stack import rim_band_air_seal, stack_width_shelf
+from typehaus.emit.draw.detail_components.stack import (
+    interior_curb_cap,
+    rim_band_air_seal,
+    stack_width_shelf,
+)
 from typehaus.emit.draw.detail_components.wall_base import basement_framed_wall
 from typehaus.emit.draw.scene import IRNode
 
@@ -59,8 +63,13 @@ def _recipe_rim_band_air_seal(model, context) -> list[IRNode]:
 
 
 def _recipe_stack_width_shelf(model, context) -> list[IRNode]:
-    return stack_width_shelf(model, context.walls, context.crop, context.direction,
-                             context.station)
+    """The outboard weather shelf and the inboard masonry-curb cap are mutually exclusive
+    in practice (Catlin's garage is flush outboard, stepped inboard) but both are read
+    from the same stack, so both recipes run and whichever finds a genuine ledge draws."""
+    return (stack_width_shelf(model, context.walls, context.crop, context.direction,
+                              context.station)
+            + interior_curb_cap(model, context.walls, context.crop, context.direction,
+                                context.station))
 
 
 def _recipe_window_head_jamb_sill(model, context) -> list[IRNode]:

@@ -220,6 +220,34 @@ class StackWidthShelfConfig:
 STACK_WIDTH_SHELF = StackWidthShelfConfig()
 
 
+@dataclass(frozen=True)
+class InteriorCurbCapConfig:
+    """The interior curb left where a framed wall steps in over a wider masonry wall
+    below (also ``stack-width-shelf``, the inboard sibling of :class:`StackWidthShelfConfig`).
+
+    A masonry stem wider than the framed wall it carries leaves a ledge on the *inside* —
+    a garage ICF stem under a 2x6 wall is the reference case. Nothing sheds weather there,
+    but it is still a horizontal ledge behind the framed wall's interior drywall, and water
+    running down that drywall's face (splash, a hosed-down wall, condensation) needs to be
+    turned back into the room rather than tracking down into the ledge and the board joint
+    below it. Scaled down from the exterior shelf: this tucks behind 5/8" drywall, not a
+    full rainscreen water plane.
+    """
+
+    #: Ledges narrower than this are a construction tolerance, not a curb worth capping.
+    min_ledge_in: float = 0.25
+    #: Height of the up-turned back leg, behind the upper wall's interior drywall.
+    back_leg_rise_in: float = 2.0
+    #: Fall across the curb top (positive slope drains back into the room).
+    slope_fall_in: float = 0.25
+    #: Drip at the inboard edge: how far it projects and how far it turns down.
+    drip_projection_in: float = 0.375
+    drip_drop_in: float = 0.5
+
+
+INTERIOR_CURB_CAP = InteriorCurbCapConfig()
+
+
 # --- Sauna --------------------------------------------------------------------
 # Building facts from ``saunashowerdetail.json``. Kept as flat module constants because the
 # sauna's room-scale functions take them one at a time and the parity tests name them.
