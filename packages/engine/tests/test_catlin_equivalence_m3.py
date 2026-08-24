@@ -262,10 +262,14 @@ DECLARED_STOREY_ELEVATION_MOVES = {
                         "because it had the house at grade; the garage has not moved "
                         "relative to the ground it is driven into, the ground moved "
                         "relative to the house"),
-    "basement": (-2.8448, "the 2026-08-21 basement-ceiling overhaul: the mixed I-joist / "
-                          "EPS-formed deck over the basement is 12 5/8\" deep where the "
-                          "cast slab was 9\", so the house rose 4\" and the basement floor "
-                          "stayed in the ground — -9'-4\" instead of the reference's -9'-0\""),
+    # **"basement" is deliberately absent.** It was declared at -2.8448 (-9'-4") from
+    # 2026-08-21, when the mixed I-joist / EPS-formed deck replaced a 9" cast slab and the
+    # house rose 4" while the basement floor stayed in the ground. The 2026-08-23
+    # flat-bearing-seat rework is the opposite move: the deck deepened to 14 3/8" and the
+    # FLOOR came up 2 9/16" to meet its soffit, with grade untouched. That leaves the slab at
+    # -9'-1 7/16", which is 1 7/16" off the reference's -9'-0" — inside the +/-0.05 m the
+    # comparison allows, so the entry would be stale and the `stale` assertion below deletes
+    # it for us. The basement agrees with the reference model again; do not re-add it.
 }
 
 

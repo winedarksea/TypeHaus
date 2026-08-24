@@ -159,7 +159,7 @@ VENT_BRANCHES_BASEMENT = [
                   pt(ft(16), ft(21)), pt(ft(7), ft(21)), pt(ft(7), ft(34, 6)),
                   pt(ft(1), ft(34, 6))),
             diameter=inch(1.5), material="pvc",
-            elevations=(ft(1, 6), ft(7, 8), ft(7, 9), ft(7, 10), ft(8, 0.5), ft(8, 1)),
+            elevations=(ft(1, 3.4375), ft(7, 5.4375), ft(7, 6.4375), ft(7, 7.4375), ft(7, 9.9375), ft(7, 10.4375)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
     # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (17'-4", 13'-0") — inside W-B-CS's
     # 3 1/2" liner build-up, in the pan's own east wall, 6" south of the north liner and clear
@@ -176,6 +176,6 @@ VENT_BRANCHES_BASEMENT = [
                   pt(ft(17, 4), ft(14, 8)), pt(ft(9), ft(14, 8)),
                   pt(ft(9), ft(34, 6)), pt(ft(1), ft(34, 6))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(0, 6), ft(7, 4), ft(7, 6), ft(7, 8), ft(8, 0.5), ft(8, 1)),
+            elevations=(ft(0, 3.4375), ft(7, 1.4375), ft(7, 3.4375), ft(7, 5.4375), ft(7, 9.9375), ft(7, 10.4375)),
             serves=("FX-B-SAUNA-SH", "FX-B-SAUNA-FD")),
 ]

@@ -329,11 +329,14 @@ def test_the_rule_re_derives_from_what_is_overhead_not_from_a_tag_list(
     under_joists = PipeRun(
         uid="TSTPM00001", tag="PR-B-CW-NEW", system=PipeSystem.WATER_COLD,
         path=(pt(ft(12), ft(6)), pt(ft(16), ft(6))), diameter=inch(0.75),
-        elevations=(ft(8), ft(8)), material="pex")
+        # 7'-6" over the basement slab, i.e. -1'-7 7/16" project: clear under the -13 7/16"
+        # bearing seat. It read ft(8) until 2026-08-23, which is the seat exactly — a trunk
+        # inside the pour is not a trunk hung under it.
+        elevations=(ft(7, 6), ft(7, 6)), material="pex")
     under_concrete = PipeRun(
         uid="TSTPM00002", tag="PR-B-CW-NEW2", system=PipeSystem.WATER_COLD,
         path=(pt(ft(22), ft(24)), pt(ft(30), ft(24))), diameter=inch(0.75),
-        elevations=(ft(8), ft(8)), material="pex")
+        elevations=(ft(7, 6), ft(7, 6)), material="pex")
     plan = catlin_plan.with_elements(
         "basement", (*catlin_plan.storey_elements("basement"),
                      under_joists, under_concrete))

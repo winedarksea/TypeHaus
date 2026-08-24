@@ -42,7 +42,13 @@ def basement_framed_wall(model, framed, concrete, crop, direction,
     is_outboard_high = outboard_is_high(framed, direction, station)
     if is_outboard_high is None or crop is None:
         return []
-    junction_z = framed.z0_m / M_PER_IN  # top of concrete == bottom of framed wall
+    # The top of the POUR, which is where the flashings, the gasket and the mudsill all
+    # land. It was read off ``framed.z0_m`` — "top of concrete == bottom of framed wall" —
+    # and that equality died on 2026-08-23: catlin's basement walls top out on the bearing
+    # seat at -13 7/16" while the framed wall above them still starts at the storey datum,
+    # so the whole detail drew 13 7/16" above the concrete it is a detail of. The garage
+    # stem, where the two ARE the same elevation, is unchanged by reading the concrete.
+    junction_z = concrete.z1_m / M_PER_IN
     intervals = layer_intervals(framed, direction, station)
     out_sign = 1.0 if is_outboard_high else -1.0
     cfg = BASEMENT_TO_FRAMED_WALL

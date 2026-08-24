@@ -377,7 +377,13 @@ def test_the_exposed_basement_band_draws_the_layer_the_order_bills(catlin_model)
     # and the bug screen above it are, and its foot runs down past grade (the band starts 6"
     # under it; how much of that the sheet shows is the detail crop's business, not the
     # layer's — test_layer_extent.py holds the band itself).
-    assert max(z for _u, z in board.points) == pytest.approx(0.0, abs=0.5)
+    #
+    # "The top of the wall" is not 0'-0" any more. Since 2026-08-23 the basement pour stops
+    # at the bearing seat, -13 7/16", and the framed wall above it still starts at the storey
+    # datum — so this reads the concrete rather than the datum, which is exactly the fix
+    # ``detail_components/wall_base.py`` needed on the same date.
+    wall_top = catlin_model.wall("W-B-E1").z1_m / M_PER_IN
+    assert max(z for _u, z in board.points) == pytest.approx(wall_top, abs=0.5)
     assert min(z for _u, z in board.points) <= grade_in + 0.5
 
 

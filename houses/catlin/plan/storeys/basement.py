@@ -126,37 +126,77 @@ WALLS = [
     # direction. (Horizontal steel is a separate table, R404.1.2(1) — one #4 within 12" of
     # the top and one at third points above 8' — not screened here.)
     #
-    # **The row, spelled out.** GM soil is 45 psf/ft (mn-2024 profile). The wall runs
-    # 0'-0" to -9'-4", so 9.33' unsupported -> the 10' row; grade is at -2'-10"
-    # (params/site.py), so 6.5' of unbalanced fill -> the 7' row. Footnote f forbids
-    # interpolating, so both round UP. At (45, 10', 7'): 12" reads NR, 10" reads NR,
-    # 8" reads #6 @ 48" o.c., 6" reads #6 @ 34".
+    # **The row, spelled out.** GM soil is 45 psf/ft (mn-2024 profile). Since 2026-08-23 the
+    # wall runs -13 7/16" (the bearing seat) to -9'-1 7/16" (the slab), so it is **exactly
+    # 8'-0"** of pour -> the 8' row, not the 10' row a 9'-4" wall rounded up to. Grade is at
+    # -2'-10" (params/site.py), so 6.29' of unbalanced fill -> the 7' row. Footnote f forbids
+    # interpolating, so both round UP. At (45, 8', 7'): 12" reads NR, 10" reads NR, 8" reads
+    # **#5 @ 41" o.c.**, which is where the nine 8" segments below sit. It was `#6 @ 48"` on
+    # the 10' row; two feet of unsupported height is what a flat bearing seat bought, and it
+    # is the cheaper bar at the tighter spacing. Re-read the cell rather than trusting this
+    # comment: `checks/structural/_r404_table.VERTICAL_REINFORCEMENT[(8, 45, 8, 7)]`.
+    # (Horizontal steel is a separate table, R404.1.2(1) — one #4 within 12" of the top and
+    # one at third points above 8' — not screened here.)
     #
-    # **Which wall gets which is one physical rule: 12" is earned only where a cast
-    # concrete deck lands on the wall top beside the sill plate** and needs its own bearing
-    # seat inboard of that sill. A wood floor needs no extra width — the I-joists and rim
-    # bear on the same 2x6 mudsill the framed wall above stands on, and an 8" wall carries
-    # that sill with 2" to spare. Since the 2026-08-21 basement-ceiling overhaul the only
-    # cast deck left is SL-M-DECK (x 18'-36', y 13'-36', spanning east-west), which bears
-    # on the east wall and the centre line and nowhere else. So W-B-E1/E2 stay 12" and the
-    # other eight segments — 108 LF, ~12.4 cy — are 8" carrying #6 @ 48" o.c. vertical,
+    # **Elevations are literals here and derived in ``params/main_deck.py``.** An editable
+    # file may not import, so ``BEARING_SEAT`` (-13 7/16") and ``BASEMENT_DATUM``
+    # (-9'-1 7/16") are transcribed onto every wall below.
+    # ``integrity.basement_bearing_seat`` is what stops the two copies from drifting, the way
+    # ``integrity.slab_thickness`` guards the deck's build-up. Do not edit one without the
+    # other.
+    #
+    # **Which wall gets which thickness.** It used to be one physical rule — "12" is earned
+    # only where a cast concrete deck lands on the wall top beside the sill plate" — and
+    # that rule is **obsolete as of 2026-08-23.** It described a wall top where a cast deck
+    # and a mudsill competed for width: the deck needed its own seat *inboard* of the plate,
+    # so the wall had to be wide enough for both. There is one flat seat now, at
+    # -13 7/16" all the way round, and the deck's soffit lands on the same plane the mudsill
+    # sits on. Nothing competes, and no wall needs extra width for bearing at all: the 12"
+    # segments carry SL-M-DECK on 12" because they always did, and an 8" wall would carry it
+    # just as well.
+    #
+    # So the four that stay 12" stay for reasons that are no longer about bearing width, and
+    # each is worth stating:
+    #
+    #   W-B-E1/E2 — the east perimeter. SL-M-DECK is a 414 SF cast slab and its east edge
+    #     lands here; 12" is not needed for the seat, but this is the one perimeter run with
+    #     a cast deck on it and the extra 4" is ~2.2 cy against re-detailing the east edge of
+    #     a pour that is already the model's fussiest element. Left as built, deliberately —
+    #     and it is now the only place in the house where wall thickness is a judgement
+    #     rather than a derivation, so it is the first candidate the next time this line is
+    #     opened.
+    #   W-B-CS2, W-B-CN2, W-B-CN — the centre line under the cast band, same reading.
+    #   W-B-CS — carries wood on both faces and COULD go to 8". Left at 12" deliberately: it
+    #     is 13'-10" (~1.5 cy), it is the sauna's east face with a tile splash on it, and its
+    #     alignment `face("concrete-ext", offset=inch(-6))` is a hardcoded HALF of the
+    #     thickness — thinning it silently moves the bearing grid unless that number moves
+    #     with it. `integrity.floor_bearing_grid` FAILs if it ever does, now that three
+    #     FloorSystems name this wall.
+    #   W-B-STR — three dimensions are measured off its east face (see its own note below).
+    #
+    # The other nine segments — 108 LF, ~12.4 cy — are 8" carrying #5 @ 41" o.c. vertical,
     # authored on each of them below. Drop that string and the check FAILs, correctly.
+    #
+    # **The clear-face back-calculations above do not move.** The 2 9/16" lift is vertical
+    # and the wall axes did not change, so every plan dimension in the NODES header still
+    # reads as it did. What moved is the ceiling: 8'-0 15/16" clear under the joists,
+    # 7'-10 7/8" under the concrete band's finished face, both over R305.1's 7'-0".
     #
     # 8" and not 10" (which also reads NR): 8" is the standard residential form module and
     # the market rate is quoted for it, whereas thickness above 8" adds concrete without
     # adding forming — so 10" would keep an odd-thickness forming premium and hand back
-    # half the yardage to save ~245 LF of #6 bar. See prices.toml's [wall_structure].
+    # half the yardage to save ~245 LF of bar. See prices.toml's [wall_structure].
     #
     # The 8" walls also sit better than the 12" ones did: FT-B-* is a 20" strip on
     # `center_on="axis"`, so a 12" pour overhung its inside edge by 2" and an 8" one has a
-    # 2" inboard toe. The footings do not move — the brick plinth FT-B-BRICK is dimensioned
-    # off the strip's -10" edge.
+    # 2" inboard toe. The footings follow the slab up 2 9/16" (params/foundations.py) but do
+    # not move in plan — the brick plinth FT-B-BRICK is dimensioned off the strip's -10" edge.
     FoundationWall(uid="CBW101AAAA", tag="W-B-S1", start_node="N-B-SW",
                    end_node="N-B-S1", assembly="CATLIN_BASEMENT_8_GARDEN",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
+                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#6 @ 48" o.c.'),
+                   vertical_reinforcement='#5 @ 41" o.c.'),
     # The sauna's south side. W-B-S1 and W-B-S3 stay on the bare garden wall deliberately —
     # they bound the workshop and the patio side — but this one segment is a room face in a
     # WET room, so it carries the liner variant of the same stack
@@ -172,37 +212,37 @@ WALLS = [
                    end_node="N-B-S2", assembly="SAUNA_LINER_ON_BASEMENT_8_GARDEN",
                    alignment=face("concrete-ext"),
                    interior_room="RM-B-SAUNA",
-                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
+                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#6 @ 48" o.c.'),
+                   vertical_reinforcement='#5 @ 41" o.c.'),
     FoundationWall(uid="CBW103AAAA", tag="W-B-S3", start_node="N-B-S2",
                    end_node="N-B-SE", assembly="CATLIN_BASEMENT_8_GARDEN",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
+                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#6 @ 48" o.c.'),
+                   vertical_reinforcement='#5 @ 41" o.c.'),
     FoundationWall(uid="CBW104AAAA", tag="W-B-E1", start_node="N-B-SE",
                    end_node="N-B-E1", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
+                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW105AAAA", tag="W-B-E2", start_node="N-B-E1",
                    end_node="N-B-NE", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
+                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW106AAAA", tag="W-B-N1", start_node="N-B-NE",
                    end_node="N-B-N1", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
+                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#6 @ 48" o.c.'),
+                   vertical_reinforcement='#5 @ 41" o.c.'),
     FoundationWall(uid="CBW107AAAA", tag="W-B-N2", start_node="N-B-N1",
                    end_node="N-B-N2", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
+                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#6 @ 48" o.c.'),
+                   vertical_reinforcement='#5 @ 41" o.c.'),
     # Split at N-B-ESS-N (x=6'-0") on 2026-08-23 so the ESS closet's west partition has a
     # node to tee into — `integrity.wall_loop_open` wants two edges at every node, and a
     # partition dying against the middle of an unsplit wall has one. Both halves keep
@@ -213,42 +253,33 @@ WALLS = [
     FoundationWall(uid="CBW108AAAA", tag="W-B-N3", start_node="N-B-N2",
                    end_node="N-B-ESS-N", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
+                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#6 @ 48" o.c.'),
+                   vertical_reinforcement='#5 @ 41" o.c.'),
     FoundationWall(uid="HEX0ZDQZEN", tag="W-B-N4", start_node="N-B-ESS-N",
                    end_node="N-B-NW", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
+                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#6 @ 48" o.c.'),
+                   vertical_reinforcement='#5 @ 41" o.c.'),
     FoundationWall(uid="CBW109AAAA", tag="W-B-W1", start_node="N-B-NW",
                    end_node="N-B-W1", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
+                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#6 @ 48" o.c.'),
+                   vertical_reinforcement='#5 @ 41" o.c.'),
     FoundationWall(uid="CBW110AAAA", tag="W-B-W2", start_node="N-B-W1",
                    end_node="N-B-SW", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9, -4),
+                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#6 @ 48" o.c.'),
+                   vertical_reinforcement='#5 @ 41" o.c.'),
     # Center cross walls (12" concrete) — the 18' bearing grid. Every wall from here down is
     # an *interior* cross wall with soil on neither side, so `unbalanced_fill=ft(0)` says so
-    # explicitly — without it `structural.foundation_unbalanced_fill` would read these eight
-    # as retaining 9' of backfill apiece. R404.1.2(8) therefore decides nothing here; these
-    # are 12" for their own reasons, and the reasons are worth stating since the perimeter
-    # went to 8" on 2026-08-21:
-    #
-    #   W-B-CS2, W-B-CN2, W-B-CN — SL-M-DECK, the 414 SF cast remnant, lands on one face of
-    #     each with wood joists on the other. A cast deck needs its own bearing seat.
-    #   W-B-CS — carries wood on both faces and COULD go to 8". Left at 12" deliberately:
-    #     it is 13'-10" (~1.5 cy), it is the sauna's east face with a tile splash on it, and
-    #     its alignment `face("concrete-ext", offset=inch(-6))` is a hardcoded HALF of the
-    #     thickness — thinning it silently moves the bearing grid unless that number moves
-    #     with it. Not worth 1.5 cy.
-    #   W-B-STR — three dimensions are measured off its east face (see its own note below).
+    # explicitly — without it `structural.foundation_unbalanced_fill` would read these as
+    # retaining 8' of backfill apiece. R404.1.2(8) therefore decides nothing here; these are
+    # 12" for the reasons set out in the WALLS header above, none of which is bearing width
+    # any more.
     #
     # This segment is the sauna's east boundary, carrying the liner stack directly on the
     # concrete. Aligned on the concrete's far face so the bearing grid stays put and the
@@ -257,19 +288,19 @@ WALLS = [
                    end_node="N-B-S2", assembly="SAUNA_LINER_ON_CONCRETE", unbalanced_fill=ft(0),
                    alignment=face("concrete-ext", offset=inch(-6)),
                    interior_room="RM-B-SAUNA",
-                   top_elevation=ft(0), bottom_elevation=ft(-9, -4)),
+                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375)),
     FoundationWall(uid="CBW112AAAA", tag="W-B-CS2", start_node="N-B-C1",
                    end_node="N-B-C", assembly="FOUNDATION_WALL_12_INT", unbalanced_fill=ft(0),
-                   top_elevation=ft(0), bottom_elevation=ft(-9, -4)),
+                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375)),
     # Split at N-B-BA-E (2026-07-30) so the bathroom's north partition tees onto a shared
     # node — else `integrity.wall_loop_open` reads it as a free end. W-B-CN keeps the tag,
     # uid, and the north 14'-2 5/8" that W-M-C5 stacks on, so the bearing stack is untouched.
     FoundationWall(uid="CBW113AAAA", tag="W-B-CN", start_node="N-B-BA-E",
                    end_node="N-B-N1", assembly="FOUNDATION_WALL_12_INT", unbalanced_fill=ft(0),
-                   top_elevation=ft(0), bottom_elevation=ft(-9, -4)),
+                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375)),
     FoundationWall(uid="CBW121AAAA", tag="W-B-CN2", start_node="N-B-C",
                    end_node="N-B-BA-E", assembly="FOUNDATION_WALL_12_INT", unbalanced_fill=ft(0),
-                   top_elevation=ft(0), bottom_elevation=ft(-9, -4)),
+                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375)),
     # **The y=18' cross line is framed now (2026-08-21).** All four of these were 12" cast
     # concrete for one reason: the 9" suspended deck over the basement was designed to span
     # between them. The deck is joists and an EPS-formed band since the basement-ceiling
@@ -283,11 +314,15 @@ WALLS = [
     # Centrelines stay on the node lines, so each room gains symmetrically — 2 5/8" a side
     # off the 2x6 walls, 3 5/8" a side off the 2x4 and steel ones.
     #
-    # Tops are the basement's own 8'-2 3/4" clear, not the 0'-0" the concrete ran to: a stud
-    # wall that reaches the floor datum stands *inside* the joists, which is what
-    # `structural.member_interference` reported on W-B-STR2 the moment it was framed. Where
-    # a wall above stacks on one of these, `resolve/platform.py` grows the wall solid up to
-    # meet it and leaves the double top plate here, which is what platform framing is.
+    # Tops are 8'-0" — **the bearing seat**, since 2026-08-23. Everything in this basement
+    # stops on one plane now: the concrete tops there, the deck's soffit lands there, the
+    # mudsill sits there, and a framed partition's double top plate reaches it and no
+    # further. It is the lower of the two ceiling planes, so a partition under a joisted bay
+    # stops 1 9/16" short of the joist soffit and the gypsum runs continuously over it. A
+    # stud wall that reaches the floor datum instead stands *inside* the joists, which is
+    # what `structural.member_interference` reported on W-B-STR2 the moment it was framed.
+    # Where a wall above stacks on one of these, `resolve/platform.py` grows the wall solid
+    # up to meet it and leaves the double top plate here, which is what platform framing is.
     #
     # Split at the stair shaft's west wall so the shaft is a real tee, not a wall end. Also
     # split at N-B-ESS-S (2026-08-02) for the ESS closet's west partition, the same move
@@ -297,7 +332,7 @@ WALLS = [
     # W-B-CW is the furnace room's south wall and carries the 4" building drain, so it takes
     # the wet-wall 2x6 rather than a 2x4.
     Wall(uid="CBW114AAAA", tag="W-B-CW", start_node="N-B-W1",
-         end_node="N-B-CW-E", assembly="INT_2X6_PLUMBING", top=ft(8, 2.75)),
+         end_node="N-B-CW-E", assembly="INT_2X6_PLUMBING", top=ft(8)),
     # Steel studs and Type X because this was the ESS closet's south wall until 2026-08-23,
     # when the closet moved to the NE corner. Left as built, deliberately: it is now an
     # over-specified 3'-3" stub rather than a wrong one, and re-specifying it to match
@@ -310,12 +345,12 @@ WALLS = [
     # Nothing runs in this one and nothing bears on it — a plain 2x4 partition. Keep the
     # tag: W-M-CLN and W-M-CLN2 name it in `stacks_on`.
     Wall(uid="CBW119AAAA", tag="W-B-CW2", start_node="N-B-STR",
-         end_node="N-B-C", assembly="INT_2X4_PARTITION", top=ft(8, 2.75)),
+         end_node="N-B-C", assembly="INT_2X4_PARTITION", top=ft(8)),
     # The playroom's south wall, 18'-0" of it, and the one that keeps D-B-PLAY (the 5'-0"
     # glazed double). Staggered studs: it is the long wall between the playroom and the gym,
     # and it also runs under the concrete band, so it wants the sound break.
     Wall(uid="CBW115AAAA", tag="W-B-CE", start_node="N-B-C",
-         end_node="N-B-E1", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(8, 2.75)),
+         end_node="N-B-E1", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(8)),
     # Stair shaft's west wall — 12" concrete on x=10', full north-row depth (reference:
     # "Stairway 7' x 16' 6 1/2""). 12" (not 8") puts the shaft's west face at 9'-6", which
     # is what holds the well at its code-minimum 7'-0" and gives the furnace room the other
@@ -344,10 +379,36 @@ WALLS = [
     # the closet.
     FoundationWall(uid="CBW116AAAA", tag="W-B-STR", start_node="N-B-N2",
                    end_node="N-B-ESS-SE", assembly="FOUNDATION_WALL_12_INT", unbalanced_fill=ft(0),
-                   top_elevation=ft(0), bottom_elevation=ft(-9, -4)),
+                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375)),
+    # **W-B-STR3 stays 12" concrete, and 2026-08-23 is the date that was decided rather
+    # than assumed.** The flat-bearing-seat rework proposed framing it as a load-bearing stud
+    # wall — it carries W-M-STRW2 and no floor, the x=10' line is a declared bearing line now
+    # (params/main_deck.py's FS-M-MECH and FS-M-STAIR land joists on it), and the argument was
+    # that a 6 3/4" stud line would hand ~7 1/2" back to RM-B-FURNACE. It was built and
+    # backed out, because the geometry says the opposite on both counts:
+    #
+    #   * **The freed width does not go to the furnace room.** A floor system's span boundary
+    #     is the bearing wall's NODE axis (`resolve/floors.py`), so FS-M-MECH's joists stop at
+    #     exactly x=10'-0". A stud wall holding its east face on x=10'-6" — which three
+    #     dimensions require (see W-B-STR above) — runs 9'-11 1/4"..10'-6" and leaves those
+    #     joists 1/16" of top plate to sit on. Centring it on the node line fixes the bearing
+    #     and moves the west face the WRONG way: 9'-6" -> 9'-8 5/8", so the furnace room
+    #     loses 2 5/8" over this run instead of gaining.
+    #   * **It also uncarries FO-M-STAIR's west edge.** That edge is at x=10'-6" and
+    #     `_opening_edge_has_declared_bearing` wants the whole of it inside a named wall's
+    #     footprint. A centred 6 3/4" wall reaches 10'-3 3/8", so the y 26'-0 3/8"..31'-0"
+    #     half of the edge falls off the end of it and `structural.floor_opening_header`
+    #     emits — correctly — a 9'-0" LVL.
+    #
+    # 12" of pour answers both by being 12" wide: 6" of joist bearing either side of the
+    # node line, and a footprint that reaches the opening edge. It is also one continuous
+    # pour with W-B-STR either way — the y=31'-0" split is where a partition tees in, not
+    # where the concrete stops. `integrity.floor_bearing_grid` is what will catch it if
+    # anyone thins it later without moving the opening with it.
     FoundationWall(uid="1H4KR79N9M", tag="W-B-STR3", start_node="N-B-ESS-SE",
-                   end_node="N-B-BA-W", assembly="FOUNDATION_WALL_12_INT", unbalanced_fill=ft(0),
-                   top_elevation=ft(0), bottom_elevation=ft(-9, -4)),
+                   end_node="N-B-BA-W", assembly="FOUNDATION_WALL_12_INT",
+                   unbalanced_fill=ft(0),
+                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375)),
     # The stub south of it is a different job: RM-B-BATH's west enclosure, nothing bearing
     # on it, nothing dimensioned off it. It is *also* the ESS closet's east wall, and that
     # is what picks the assembly — `advisory.ess_enclosure` wants 5/8" Type X on the closet
@@ -377,7 +438,9 @@ WALLS = [
     # this is the room's *only* stud cavity: the lavatory's and WC's shared 1 1/2" vent rises
     # here before turning west (PR-B-BATH-VENT) — `advisory.wet_wall_depth` needs 5 1/2",
     # exactly this cavity. Runs node line to node line so it tees into both concrete walls.
-    # Top=8'-0" is SL-M-DECK's 8'-3" underside less 3" for the vent to turn over the plate.
+    # Top=8'-0" is the bearing seat, like every other partition here; the vent turns north
+    # over the plate inside the joist bay above it (the joists run east-west, parallel to
+    # this wall, so the turn is along a bay rather than across one).
     Wall(uid="CBW120AAAA", tag="W-B-BA-N", start_node="N-B-BA-W",
          end_node="N-B-BA-E", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(8),
          interior_room="RM-B-BATH"),
@@ -426,7 +489,7 @@ WALLS = [
                    end_node="N-B-BRICK-W", assembly="BASEMENT_BRICK_VENEER",
                    alignment=face("air-gap-int"),
                    unbalanced_fill=ft(0),
-                   top_elevation=ft(0), bottom_elevation=ft(-8, -9)),
+                   top_elevation=ft(0), bottom_elevation=inch(-102.4375)),
 ]
 
 OPENINGS = [
@@ -447,7 +510,7 @@ OPENINGS = [
     # 3/4" inside this opening's south jamb. At 22'-6" the door keeps 5 1/4" of concrete jamb
     # south of it, and the flight it faces still springs 1'-4" further north at 26'-0 3/8".
     Door(uid="CBD204AAAA", tag="D-B-NE", host="W-B-CN", type_ref="DT-INT-SWING32",
-         position=from_node("N-B-BA-E", inch(8.625))),
+         position=from_node("N-B-BA-E", inch(8.625)), flip_hinge=True),
     # Used to be D-B-STAIR, opening into the workshop through W-B-CW2's concrete; on
     # 2026-07-30 the shaft's south 3'-0" became RM-B-BATH, so this leaf (same uid, same
     # 32" width — wheelchair-usable in a 3'-deep room) was rehung on the bathroom's north

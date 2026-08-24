@@ -81,10 +81,22 @@ class SunkenGardenSpec:
     aggregate_bedding_depth_in: float = 42.0
     house_size_ft: float = 36.0
     house_ext_layers_in: float = 5.0  # polyiso+EPS+furring+cladding beyond sheathing
-    # 9'-4" since 2026-08-21, not 9'-0": the house rose 4" for the deeper basement ceiling
-    # and grade went down with it, so the garden floor stayed exactly where it was in the
-    # soil — 6'-6" below grade — and moved 4" in the project frame to say so.
-    basement_depth_ft: float = 9.0 + 1.0 / 3.0
+    # 9'-1 7/16" since 2026-08-23, 9'-4" before it, 9'-0" before that. The 2026-08-21 lift
+    # took the house up 4" for the deeper basement ceiling and grade went down with it, so
+    # the garden floor stayed where it was in the soil and moved in the project frame to say
+    # so. The 2026-08-23 flat-bearing-seat rework is the opposite move: grade did NOT change,
+    # the basement slab came up 2 9/16" to meet the deck's soffit, and this floor comes up
+    # with it — because ``SL-SG-FLOOR`` and ``SL-B-FLOOR`` top out on exactly the same plane
+    # and that flush plane IS the walkout at D-B-PATIO. 109.4375" is
+    # ``params/main_deck.BASEMENT_DATUM``; this module may import, but it is one house-wide
+    # number transcribed rather than a second derivation, and
+    # ``integrity.basement_bearing_seat`` checks the two agree.
+    #
+    # The court gets 2 9/16" shallower with it: the retained height on W-SG-E2/S/W2 reads
+    # 7.09' where it read 7.3'. Both are well past the 48" that sends R404.1.1 to an
+    # engineered design, so those three walls stay engineered either way and
+    # ``structural.foundation_unbalanced_fill`` keeps reporting them UNKNOWN, unchanged.
+    basement_depth_ft: float = 109.4375 / 12.0
     slab_thickness_in: float = 3.5
     porch_top_ft: float = 0.0  # top of the porch concrete walls = porch floor / railing base
     railing_height_ft: float = 3.5  # 42" guard above the porch walking surface
@@ -493,7 +505,7 @@ GARDEN_SLAB = Slab(
 #
 # The wings sit directly under SL-SG-FLOOR: garden slab top -9'-4" less its own 3 1/2" is
 # -9'-7 1/2", which is the wings' top.
-_WING_TOP = inch(-(9 * 12 + 4) - SPEC.slab_thickness_in)
+_WING_TOP = inch(-(SPEC.basement_depth_ft * 12.0) - SPEC.slab_thickness_in)
 _WING_ALONG_FT = 24.0 / 12.0   # Table R403.3(1) dimension B
 _WING_CORNER_FT = 40.0 / 12.0  # Table R403.3(1) dimension C
 
@@ -815,7 +827,7 @@ BALCONY_JOISTS = FloorSystem(
 # sonotube column, along the north edge) pin to the house footing across a 2" XPS block so
 # the joint transfers shear without a thermal bridge. Bars at mid-footing (-9.25').
 # ============================================================================
-_dowel_z = ft(-(SPEC.basement_depth_ft + 0.75) + SPEC.footing_thickness_in / 24.0)  # -9.25'
+_dowel_z = ft(-(SPEC.basement_depth_ft + 0.75) + SPEC.footing_thickness_in / 24.0)
 # Side-wall dowels sit on the north-edge line; the column's follow to its bell footing's
 # north face, the plane that actually abuts FT-B-S2 (whose south face sits ON the
 # north-edge line). At the 17" column offset the bell's north face lands 2" south of it,

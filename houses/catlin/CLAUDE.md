@@ -75,9 +75,13 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   joists, not the finished floor** — walls bear there and the subfloor rides above it, so
   main-floor FFE is +3/4" and every slab meant to land on it needs an explicit
   `top_elevation` (`params/main_deck.py`). The `main`, `second` and `attic` datums have
-  never moved; the basement storey went to -9'-4" with the soil, so it holds **8'-3 1/2"**
-  clear to the lower of its two ceiling planes (8'-4 1/8" under the EPS deck band) — the
-  number `code.R305_ceiling_height` now DERIVES rather than reads off
+  never moved. **The basement storey is at -9'-1 7/16" (2026-08-23), and grade did not move
+  with it.** It went to -9'-4" with the soil on 2026-08-21 and came back UP 2 9/16" when the
+  flat bearing seat landed the EPS deck's soffit on the same plane as the wood bays' mudsill:
+  the deck deepened to 14 3/8" and the FLOOR rose to meet it, so the house is where it was
+  and the basement is shallower. That makes the pour **exactly 8'-0"**, and the basement
+  holds **8'-0 15/16"** clear under the joists / **7'-10 7/8"** under the EPS band — the
+  number `code.R305_ceiling_height` DERIVES rather than reads off
   `Storey.default_ceiling_height`, which still authors a fictional 9'-0" here. What follows the soil down is everything pinned to it: the garage and
   its whole foundation, the breezeway's frost pads and piers, the hydrant's bury, the sunken
   garden's floor, the site's nine house-perimeter spot elevations and both impervious
@@ -144,20 +148,29 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   See `notes/outie_window_truss_detail.md`.
 - Bearing lines: west wall, center N-S wall (x=18'), east wall; 18' spans E-W, on every
   storey and in both materials.
-- **The basement's ceiling is mixed, and that is the point.** `FS-M-WEST` (x 0'-18') and
-  `FS-M-EAST` (x 18'-36', y 0'-13') are 11 7/8" I-joists at 16" o.c.; `SL-M-DECK` is what is
-  left of the old 1,233 SF cast deck — 414 SF over the dining end, an 8" EPS stay-in-place
-  form with a 4 5/8" cast cap. Both are 12 5/8" deep and both span 18'-0" to the x=18' line,
-  so the boundary between them is a line on a drawing rather than a structural decision, and
-  moving it is a one-line edit in `params/main_deck.py` (which is also where the two depth
-  constants live, and why they are not in the editable storey file). Ceiling is 5/8" gypsum
-  end to end — IRC R316.4 over the EPS, `ceiling_below` on the two joist fields, though the
-  two gypsum faces step 1/2" at the boundary because the board screws to the form's steel
-  rib on one side and to joists on the other. **The floor finish follows the deck**: `SL-M-DECK.floor_finish` is `polished-concrete` (the cap's top
+- **The basement's ceiling is mixed, and what the two halves share is ONE FLAT BEARING SEAT
+  at -13 7/16" (2026-08-23), not one depth.** `FS-M-WEST`, `FS-M-MECH`, `FS-M-STAIR` (x 0'-18')
+  and `FS-M-EAST` (x 18'-36', y 0'-13') are 11 7/8" I-joists at 16" o.c.; `SL-M-DECK` is what
+  is left of the old 1,233 SF cast deck — 414 SF over the dining end, a 10" LiteDeck EPS
+  stay-in-place beam (8" base + 2" top hat) under a 4 3/8" cast cover. Every basement concrete
+  wall tops out on the seat; the deck's soffit lands on it and so does the underside of the
+  gasket under the wood bays' shared 2x6 mudsill. **No step in the forms, one plate for the
+  studs and the joists together.** They were tuned to one *depth* (12 5/8") until 2026-08-23,
+  which matched the finished floors and left the joists resolving inside the top foot of the
+  pour with nothing between wood and concrete. `structural.mixed_deck_bearing_seat` is a FAIL
+  check that holds it, and `integrity.floor_bearing_grid` holds every joist cut over its own
+  wall's structure. The boundary between the two materials is still a line on a drawing and
+  moving it is still a one-line edit in `params/main_deck.py` (which is also where the seat
+  and the depth constants live, and why they are not in the editable storey file). Ceiling is
+  5/8" gypsum end to end — IRC R316.4 over the EPS, `ceiling_below` on the joist fields —
+  though the two gypsum faces step **2 1/16"** at the boundary: 1/2" of it is the form's steel
+  rib, the other 1 9/16" is the deck being deeper than the wood bay, which is what one flat
+  seat costs. **The floor finish follows the deck**: `SL-M-DECK.floor_finish` is `polished-concrete` (the cap's top
   *is* the finished floor), `RM-M-LIVING.floor_finish="lvp"` is the field finish over the
   wood bays only, and the split is derived — moving `_BAND_Y` moves the finish with it.
-  `notes/mixed_deck_movement_joint.md` has the reducer, the L-shaped transition and the
-  cream-polish spec.
+  `notes/mixed_deck_movement_joint.md` has the T-moulding (a reducer until 2026-08-23 —
+  the two walking surfaces are flush within a plank's tolerance now), the L-shaped
+  transition and the cream-polish spec.
 - **The second floor's deck is mixed too, and for a different reason than the basement's:
   services, not a concrete/wood boundary.** `FS-S-WEST` (x 0'-18') is 11 7/8" open-web
   trimmable floor trusses at 16" o.c.; `FS-S-EAST` (x 18'-36') is 11 7/8" I-joists,
@@ -358,8 +371,13 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     wall top beside the sill plate and needs a bearing seat inboard of it. After the
     basement-ceiling overhaul the only cast deck left is `SL-M-DECK`, which bears on the
     east wall and the centre line — so `W-B-E1/E2` stay `CATLIN_BASEMENT_12` and the other
-    eight segments are 8" carrying `#6 @ 48" o.c.` vertical steel, which IRC Table
-    R404.1.2(8) requires at 8" where 12" reads NR. Drop that string on any of the eight and
+    nine segments are 8" carrying `#5 @ 41" o.c.` vertical steel, which IRC Table
+    R404.1.2(8) requires at 8" where 12" reads NR. (It was `#6 @ 48"` until 2026-08-23: the
+    flat bearing seat made the pour exactly 8'-0", which is the table's 8'-unsupported row
+    rather than the 10' row a 9'-4" wall rounds up to. **The "12" is earned only where a cast
+    deck lands beside the sill plate" rule is now obsolete** — with a flat seat nothing
+    competes for wall-top width, and the four 12" segments are left as built for reasons
+    written on the walls themselves, not for bearing.) Drop that string on any of the nine and
     `structural.foundation_unbalanced_fill` FAILs, correctly.
   Every one of the four carries exactly 4.55" outboard of the concrete face — the panel is
   the same 1/2" as the parge it replaces, and neither is part of the pour — which is what

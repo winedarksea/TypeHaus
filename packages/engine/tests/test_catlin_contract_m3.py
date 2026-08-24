@@ -1099,7 +1099,7 @@ def test_only_the_deck_bearing_perimeter_stays_twelve_inches(catlin_model):
         assert concrete.thickness_m == pytest.approx(inch(8.0).meters)
         source = next(w for w in catlin_model.plan.all_elements()
                       if isinstance(w, FoundationWall) and w.tag == tag)
-        assert source.vertical_reinforcement == '#6 @ 48" o.c.', tag
+        assert source.vertical_reinforcement == '#5 @ 41" o.c.', tag
 
 
 def test_the_brick_standoff_is_independent_of_the_pour(catlin_model):

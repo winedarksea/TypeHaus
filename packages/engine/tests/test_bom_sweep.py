@@ -438,7 +438,12 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     east_second_net = _gross_sqft("FS-S-EAST")
     assert float(ceiling[0]["net_area_sqft"]) > west_second_net + east_second_net
 
-    others = _gross_sqft("FS-M-WEST") - _opening_sqft("FO-M-STAIR") + _gross_sqft("FS-M-EAST")
+    # The main storey's wood bays are four systems since 2026-08-23, not two: the west half
+    # split at the bathroom node line so the mechanical-room and stair bays could bear on the
+    # x=10' line. FO-M-STAIR moved to FS-M-STAIR with the hole it cuts.
+    others = (_gross_sqft("FS-M-WEST") + _gross_sqft("FS-M-MECH")
+              + _gross_sqft("FS-M-STAIR") - _opening_sqft("FO-M-STAIR")
+              + _gross_sqft("FS-M-EAST"))
     total = west_second_net + east_second_net + others
     assert float(ceiling[0]["net_area_sqft"]) == pytest.approx(total, abs=0.5)
 

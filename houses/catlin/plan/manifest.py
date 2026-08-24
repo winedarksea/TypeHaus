@@ -91,7 +91,12 @@ _project = Project(
 )
 
 _storeys = (
-    Storey(uid="STBASEAAAA", tag="basement", elevation=ft(-9, -4),
+    # -9'-1 7/16": the bearing seat less an exactly 8'-0" pour. It was a literal ft(-9, -4)
+    # here until 2026-08-23 — the one storey elevation not derived from the arithmetic that
+    # sets it — which is how the basement floor and the walls standing on it could have
+    # moved apart. It reads from ``params/main_deck.py`` now, the way ``main`` already reads
+    # MAIN_DATUM from the same module.
+    Storey(uid="STBASEAAAA", tag="basement", elevation=main_deck.BASEMENT_DATUM,
            default_ceiling_height=ft(9)),
     # The datum every other elevation in the house is measured from, and the plane
     # SL-M-DECK pins its cap to — so it lives beside that arithmetic in params/main_deck.py

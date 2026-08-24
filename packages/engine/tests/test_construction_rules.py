@@ -126,13 +126,16 @@ def test_foundation_foam_return_is_thermal(catlin_model) -> None:
 
 # --- floor system landing on a concrete wall ----------------------------------
 # ``CR-DECK-ON-CONCRETE-SILL`` and the two tests that measured it were retired 2026-08-18
-# with the rule's only host. It billed the flat-laid PT 2x4 the porch's joists landed on
-# where they bore on the 16" arched cross-wall's 3.5" ledge; that wall is a column and two
-# flush beams now, the joists hang in hangers, and no FloorSystem in the plan names a
-# FoundationWall in its ``joists.bearing_refs``. The predicate ``floor:on_concrete_wall``
-# and its finder both survive in the engine — this house simply has no such joint left, and
-# an authored rule that binds nothing is exactly what ``test_all_authored_returns_are_emitted``
-# above is there to catch.
+# with the rule's only host, on the reading that "no FloorSystem in the plan names a
+# FoundationWall in its ``joists.bearing_refs``". **That reading was made false three days
+# later** by the 2026-08-21 basement-ceiling overhaul, which put FS-M-WEST and FS-M-EAST on
+# the basement's concrete walls, and nothing noticed until 2026-08-23 — the joists resolved
+# bearing on bare pour for two days.
+#
+# The answer was not to re-author the rule. A framed wall and the joists beside it land on
+# ONE board, so two rules over the same run is a double-bill; ``floor:on_concrete_wall`` and
+# its finder are gone from the engine and ``wall:framed_on_concrete`` takes the union of the
+# two runs instead (``resolve/construction_sills.py``). The test below is what measures it.
 
 
 def test_the_wall_sills_bill_as_pt_sill_plate(catlin_model) -> None:
@@ -140,6 +143,28 @@ def test_the_wall_sills_bill_as_pt_sill_plate(catlin_model) -> None:
             if row["category"] == "pt-sill-plate"]
     assert rows
     assert sum(row["length_ft"] for row in rows) > 19.0
+
+
+def test_the_basement_mudsill_covers_every_bearing_wall_end_to_end(catlin_model) -> None:
+    """One board per pour, and it runs the whole pour — the 2026-08-23 union.
+
+    W-B-CN carried 14.22 LF of wall against 10.17 LF of plate before it, and W-B-CS 13.83
+    against 13.00: the bare remainder was the stretch where a floor bore and no framed wall
+    stacked. Both are full-length now, and each return names the floor systems on it as well
+    as the wall above, so a second rule cannot be added over the same run without the
+    double-bill being obvious.
+    """
+    plate = {r.element_tags[0]: r for r in catlin_model.construction_returns
+             if r.tag == "CR-CONC-TO-FRAMED-SILL"}
+    for tag in ("W-B-CN", "W-B-CS", "W-B-W1", "W-B-STR"):
+        wall = catlin_model.wall(tag)
+        assert tag in plate, f"{tag} bears a floor and carries no mudsill"
+        run = ((wall.axis[1][0] - wall.axis[0][0]) ** 2
+               + (wall.axis[1][1] - wall.axis[0][1]) ** 2) ** 0.5
+        assert abs(plate[tag].length_m - run) < 0.05, f"{tag} has a bare stretch"
+        # On the pour, not at the framed wall's base — 13 7/16" apart since 2026-08-23.
+        assert abs(plate[tag].z0_m - wall.z1_m) < 1e-6
+    assert "FS-M-STAIR" in plate["W-B-CN"].element_tags
 
 
 # --- resilient channel under a ceiling ----------------------------------------

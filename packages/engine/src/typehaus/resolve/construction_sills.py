@@ -1,10 +1,16 @@
-"""Sill-plate returns: what a framed wall — or a joisted deck — lands on over concrete.
+"""Sill-plate returns: what a framed wall — and the joists beside it — land on over concrete.
 
-Two finders, one physical detail. A framed wall stacked on a concrete wall gets a PT sill
-with sill seal and a capillary break under it; a ``FloorSystem`` bearing on a
-``FoundationWall`` gets the same return one element down, laid flat on the bearing ledge.
-They live together because they share that detail's materials and treatments — change what
-goes under a plate and both have to move.
+**One plate, one finder.** A framed wall stacked on a concrete wall gets a PT sill with sill
+seal and a capillary break under it, and a ``FloorSystem`` bearing on the same
+``FoundationWall`` bears on that same board. There were two finders and two predicates until
+2026-08-23 — ``wall:framed_on_concrete`` and ``floor:on_concrete_wall`` — which is a
+double-bill wherever both are true, and a coverage gap wherever only the floor is: the
+second predicate was never authored in any house, it was retired from the catlin plan on
+2026-08-18 on the reading that "no FloorSystem names a FoundationWall in its
+``joists.bearing_refs``", and the 2026-08-21 deck overhaul made that false three days later
+without anything noticing. It is gone now; ``_find_framed_on_concrete`` takes the **union**
+of the two runs. ``_framed_on_slab`` is the third case and stays separate — a partition
+standing on a slab shares the materials but not the run.
 """
 
 from __future__ import annotations
@@ -38,25 +44,54 @@ from typehaus.resolve.model import (
 # geometry/placement; ``apply_construction_rules`` owns the solid + book-keeping.
 def _find_framed_on_concrete(model: ResolvedModel, rule: ConstructionRule) \
         -> Iterator[ResolvedConstructionReturn]:
-    """PT sill where a framed wood wall lands on the concrete wall stacked below it."""
+    """PT sill on top of a concrete wall — for the framed wall AND for the joists.
+
+    **One board, one return.** Since the 2026-08-23 flat-bearing-seat rework the framed wall
+    above and the floor beside it land on the same plate: the wall's own 2x6 mudsill runs the
+    length of the pour and the I-joists and their rim bear on it too. Two rules — one per
+    element — would bill that plate twice over every run where both are present, which is
+    most of this basement, so the run is the **union** of the framed-wall stack runs and the
+    floor systems' bearing runs on the same wall.
+
+    It also fixes a real coverage gap the two-rule reading had. W-B-CN carried 14.22 LF of
+    wall against 10.17 LF of plate and W-B-CS 13.83 against 13.00 — the bare remainder was
+    the stretch where a floor bore and no framed wall stacked, and it ordered no plate at all.
+
+    The plate sits **on the concrete**, at ``lower.z1_m``, not at the framed wall's own base:
+    the two were the same elevation while the pour ran to the storey datum and they are
+    13 7/16" apart now.
+    """
     lap = rule.dimension.meters if rule.dimension is not None else 0.0381  # 1.5"
     by_storey = _walls_by_storey(model)
     ordered = sorted(model.plan.storeys, key=lambda s: s.elevation.meters)
+    flat_plate = cross_section(_SILL_PLATE_MEMBER)
     for lower in model.walls:
         lower_asm = model.plan.library.resolve_assembly(lower.assembly)
         if lower_asm is None or not _is_concrete(lower_asm):
             continue
+        a0, a1 = lower.axis
+        span = length(sub(a1, a0))
+        if span < _EPS:
+            continue
+        direction = unit(sub(a1, a0))
+
+        def _project(point: tuple[float, float]) -> float:
+            v = sub(point, a0)
+            return v[0] * direction[0] + v[1] * direction[1]
+
+        # --- what lands on this pour ------------------------------------------------
         # Framed walls in the first storey above that carries a collinear wall over it.
         lower_i = next((i for i, s in enumerate(ordered) if s.tag == lower.storey), None)
         if lower_i is None:
             continue
+        pieces: list[tuple[float, float, object]] = []
         for upper_s in ordered[lower_i + 1:]:
             hits = []
             for upper in by_storey.get(upper_s.tag, []):
                 upper_asm = model.plan.library.resolve_assembly(upper.assembly)
                 if upper_asm is None or _framed_wood_layer(upper_asm) is None:
                     continue
-                if _is_concrete(upper_asm):  # a concrete tier stacked on concrete is not framed
+                if _is_concrete(upper_asm):  # a concrete tier on concrete is not framed
                     continue
                 segment = _stack_overlap(lower, upper)
                 if segment is not None:
@@ -64,32 +99,98 @@ def _find_framed_on_concrete(model: ResolvedModel, rule: ConstructionRule) \
             if not hits:
                 continue
             for upper, upper_asm, (p0, p1) in hits:
+                t0, t1 = sorted((_project(p0), _project(p1)))
+                pieces.append((t0, t1, (upper, upper_asm)))
+            break  # first storey above with a stack owns this concrete wall
+
+        # Floor systems whose joists bear on this wall — the same plate, one element down.
+        for storey in model.plan.storeys:
+            for system in model.plan.storey_elements(storey.tag):
+                if not isinstance(system, FloorSystem):
+                    continue
+                if lower.tag not in system.joists.bearing_refs:
+                    continue
+                run_segment = _floor_run_on_wall(lower, system)
+                if run_segment is None:
+                    continue
+                t0, t1 = sorted(_project(p) for p in run_segment)
+                pieces.append((t0, t1, (system, storey)))
+        if not pieces:
+            continue
+
+        # --- the union ---------------------------------------------------------------
+        # Merged so the board is billed once. A merged run takes its width, its side-shift
+        # and its condition key from the framed wall on it when there is one — that is the
+        # board the carpenter sets — and falls back to the flat-laid 2x4 ledge plate where a
+        # floor bears on bare pour with nothing stacked over it.
+        pieces.sort(key=lambda piece: piece[0])
+        merged: list[tuple[float, float, list]] = []
+        for t0, t1, owner in pieces:
+            if merged and t0 <= merged[-1][1] + _EPS:
+                prev0, prev1, owners = merged[-1]
+                merged[-1] = (prev0, max(prev1, t1), [*owners, owner])
+            else:
+                merged.append((t0, t1, [owner]))
+
+        for t0, t1, owners in merged:
+            run = t1 - t0
+            if run < _MIN_STACK_OVERLAP_M:
+                continue
+            p0 = add(a0, scale(direction, t0))
+            framed = next((o for o in owners if isinstance(o[0], ResolvedWall)), None)
+            floors = [o for o in owners if not isinstance(o[0], ResolvedWall)]
+            floor_tags = tuple(o[0].tag for o in floors)
+            if framed is not None:
+                upper, upper_asm = framed
                 bearing = _framed_wood_layer(upper_asm)
                 width = bearing.thickness.meters
-                run = length(sub(p1, p0))
-                direction = unit(sub(p1, p0))
-                z0 = upper.z0_m
                 # ``_stack_overlap`` returns the run on the *lower* wall's axis, but the
-                # plate belongs under the upper wall's studs, and an
-                # ``alignment=face(...)`` wall's axis is not its centreline. Slide the
-                # strip sideways onto the structure band the studs are laid in — the same
-                # correction resolve/floors.py and stairs/bearing.py already make.
+                # plate belongs under the upper wall's studs, and an ``alignment=face(...)``
+                # wall's axis is not its centreline. Slide the strip sideways onto the
+                # structure band the studs are laid in — the same correction
+                # resolve/floors.py and stairs/bearing.py already make.
                 anchor = add(p0, sub(band_axis(upper.axis, _structure_polygon(upper))[0],
                                      upper.axis[0]))
-                yield ResolvedConstructionReturn(
-                    uid=f"CR-{lower.uid}-{upper.uid}-sill",
-                    tag=rule.tag, storey=upper.storey, kind=rule.kind,
-                    applies_to=rule.applies_to, takeoff_category=rule.takeoff_category,
-                    material_ref="spf",
-                    element_tags=(lower.tag, upper.tag),
-                    outline=_strip(anchor, direction, run, -width / 2.0, width / 2.0),
-                    z0_m=z0, z1_m=z0 + lap, thickness_m=width, length_m=run,
-                    lap_m=lap, thermal_continuity=False, sealant="sill-gasket",
-                    flashing="capillary-break", returning_layer=bearing.name,
-                    condition_key=_condition_key(
-                        "wall_foundation", lower.assembly, upper.assembly),
-                )
-            break  # first storey above with a stack owns this concrete wall
+                lo, hi = -width / 2.0, width / 2.0
+                uid = f"CR-{lower.uid}-{upper.uid}-sill"
+                storey_tag = upper.storey
+                element_tags = (lower.tag, upper.tag, *floor_tags)
+                returning = bearing.name
+                condition = _condition_key("wall_foundation", lower.assembly, upper.assembly)
+            else:
+                system, storey = floors[0]
+                # Land the plate on the deck side of the wall — the bearing ledge is the
+                # face the joists come from, not the middle of a 16" pier section.
+                width = flat_plate.depth_m       # laid flat: the 3.5" face bears
+                n = normal(direction)
+                ring = [p.xy_m for p in system.outline]
+                centroid = (sum(p[0] for p in ring) / len(ring),
+                            sum(p[1] for p in ring) / len(ring))
+                toward = sub(centroid, p0)
+                side = 1.0 if (toward[0] * n[0] + toward[1] * n[1]) >= 0.0 else -1.0
+                far = side * lower.thickness_m / 2.0
+                near = side * (lower.thickness_m / 2.0 - width)
+                anchor = p0
+                lo, hi = min(near, far), max(near, far)
+                uid = f"CR-{lower.uid}-{system.uid}-sill"
+                storey_tag = storey.tag
+                element_tags = (lower.tag, *floor_tags)
+                returning = _SILL_PLATE_MEMBER
+                condition = _condition_key("floor_foundation", lower.assembly)
+            yield ResolvedConstructionReturn(
+                uid=uid,
+                tag=rule.tag, storey=storey_tag, kind=rule.kind,
+                applies_to=rule.applies_to, takeoff_category=rule.takeoff_category,
+                material_ref="spf",
+                element_tags=element_tags,
+                outline=_strip(anchor, direction, run, lo, hi),
+                # On the pour, not at the framed wall's base — since 2026-08-23 those are
+                # 13 7/16" apart and the plate is what bridges them.
+                z0_m=lower.z1_m, z1_m=lower.z1_m + lap, thickness_m=width, length_m=run,
+                lap_m=lap, thermal_continuity=False, sealant="sill-gasket",
+                flashing="capillary-break", returning_layer=returning,
+                condition_key=condition,
+            )
     yield from _framed_on_slab(model, rule, lap)
 
 
@@ -200,60 +301,3 @@ def _floor_run_on_wall(rw: ResolvedWall, system: FloorSystem) \
     if hi - lo < _MIN_STACK_OVERLAP_M:
         return None
     return add(a0, scale(direction, lo)), add(a0, scale(direction, hi))
-
-
-def _find_floor_on_concrete(model: ResolvedModel, rule: ConstructionRule) \
-        -> Iterator[ResolvedConstructionReturn]:
-    """PT sill plate where a joisted deck bears on a concrete wall.
-
-    The framed-wall case above is a *wall* landing on concrete; this is the same physical
-    return one element down — a ``FloorSystem`` whose ``joists.bearing_refs`` names a
-    ``FoundationWall``. The plate lies flat on the wall's bearing ledge with its top at the
-    joist soffit (one joist depth below the storey datum), sill seal under it and the same
-    capillary break, so the joists butt a rim on it instead of sitting on bare concrete.
-    """
-    plate = cross_section(_SILL_PLATE_MEMBER)
-    width = plate.depth_m          # laid flat: the 3.5" face bears
-    lap = rule.dimension.meters if rule.dimension is not None else plate.width_m  # 1.5"
-    for storey in model.plan.storeys:
-        for system in model.plan.storey_elements(storey.tag):
-            if not isinstance(system, FloorSystem):
-                continue
-            z1 = storey.elevation.meters - cross_section(system.joists.member).depth_m
-            for ref in system.joists.bearing_refs:
-                if not isinstance(model.plan.by_tag(ref), FoundationWall):
-                    continue
-                rw = model.wall(ref)
-                if rw is None:
-                    continue
-                asm = model.plan.library.resolve_assembly(rw.assembly)
-                if asm is None or not _is_concrete(asm):
-                    continue
-                run_segment = _floor_run_on_wall(rw, system)
-                if run_segment is None:
-                    continue
-                p0, p1 = run_segment
-                direction = unit(sub(p1, p0))
-                run = length(sub(p1, p0))
-                # Land the plate on the deck side of the wall — the bearing ledge is the
-                # face the joists come from, not the middle of a 16" pier section.
-                n = normal(direction)
-                ring = [p.xy_m for p in system.outline]
-                centroid = (sum(p[0] for p in ring) / len(ring),
-                            sum(p[1] for p in ring) / len(ring))
-                toward = sub(centroid, p0)
-                side = 1.0 if (toward[0] * n[0] + toward[1] * n[1]) >= 0.0 else -1.0
-                far = side * rw.thickness_m / 2.0
-                near = side * (rw.thickness_m / 2.0 - width)
-                yield ResolvedConstructionReturn(
-                    uid=f"CR-{rw.uid}-{system.uid}-sill",
-                    tag=rule.tag, storey=storey.tag, kind=rule.kind,
-                    applies_to=rule.applies_to, takeoff_category=rule.takeoff_category,
-                    material_ref="spf",
-                    element_tags=(rw.tag, system.tag),
-                    outline=_strip(p0, direction, run, min(near, far), max(near, far)),
-                    z0_m=z1 - lap, z1_m=z1, thickness_m=width, length_m=run,
-                    lap_m=lap, thermal_continuity=False, sealant="sill-gasket",
-                    flashing="capillary-break", returning_layer=_SILL_PLATE_MEMBER,
-                    condition_key=_condition_key("floor_foundation", rw.assembly),
-                )

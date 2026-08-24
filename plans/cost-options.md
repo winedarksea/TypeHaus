@@ -79,15 +79,62 @@ movable later.** Supersedes the all-joists vs. all-concrete debate below.
   LiteDeck EPS stay-in-place form + 4-5/8" cast cap (12-5/8" total, matching the joist depth
   beside it) — **$10–20/SF** (`unit="SF"`, bills the true 7.35cy pour not the 16.13cy gross
   prism) plus forms at $9–14.50/SF. **$7,900–14,300** for the 414 SF, vs. $10,600–20,300 at
-  the old shored-pour rate.
-- Saving came from skipping shoring/formwork — the $25,000–40,000 commercial mobilisation
-  floor a shored deck requires. Four interior 12" concrete cross walls became stud
-  partitions, taking 4 footings and 4 drain-tile runs with them.
+  the old shored-pour rate. **Both halves of that line were revised 2026-08-23 — see the
+  bearing-seat entry below; the decision does not change, only the number.**
+- Saving came from skipping **formwork**, and from a shoring package a residential crew owns
+  rather than the $25,000–40,000 commercial mobilisation floor a plywood-and-scaffold shored
+  deck requires. This line read "skipping shoring/formwork" until 2026-08-23 and the shoring
+  half of it was simply wrong: the LiteDeck WRS manual requires continuous temporary shoring
+  at 6' o.c. for any span over 5', held to 75% strength / 21 days, and this deck spans 18'-0".
+  Four interior 12" concrete cross walls became stud partitions, taking 4 footings and 4
+  drain-tile runs with them.
 - **Cost:** house rose 4" (12-5/8" deck vs 9" slab, basement kept its headroom) — grew the
   foundation protection panel ~50 SF and added 4" to the zoning-height question in TODO.md.
   R-25 of EPS between two conditioned storeys buys nothing thermally; it's there as formwork.
 - **Next cut available:** 10" form + 3" cap, same depth class, ~21% less concrete, R-31 —
-  one line in `houses/catlin/params/main_deck.py`.
+  one line in `houses/catlin/params/main_deck.py`. **Spent, in the other direction, on
+  2026-08-23:** the section is 10" + 4-3/8" now, deeper rather than leaner, because the depth
+  is set by the bearing seat and not by matching the wood bay's depth. See below.
+
+## Mixed deck: one flat bearing seat — TAKEN 2026-08-23
+
+**Two structures that meet share the plane they BEAR on, not the plane people walk on**
+(decision #61). The 2026-08-21 deck was tuned to the wood bay's *depth*, which matched both
+finished floors and left its soffit 1-9/16" above the plane the wood bay's mudsill sits on —
+so the joists and their rim resolved inside the top foot of walls that ran to the storey
+datum, with nothing between wood and concrete.
+
+- The deck goes 12-5/8" → **14-3/8"** (10" LiteDeck beam = 8" base + 2" top hat, under a
+  4-3/8" cast cover) so its soffit lands on the same seat as the mudsill: **-13-7/16"**, flat
+  all the way round, no stepping in the forms.
+- **The basement floor rises 2-9/16"; the house does not move.** This is #60 read backwards —
+  grade is pinned to soil, the soil did not change, and the basement simply gets shallower.
+  Slab and storey to -9'-1-7/16", footings and the sunken garden's floor with them (the
+  walkout stays flush by construction).
+- **The pour comes out at exactly 8'-0"**, which is IRC Table R404.1.2(8)'s 8'-unsupported
+  row rather than the 10' row a 9'-4" wall rounds up to: `#6 @ 48" o.c.` → **`#5 @ 41" o.c.`**
+  on the nine 8" segments. A lighter bar at a tighter spacing, and ~14% less concrete in every
+  basement wall — total wall yardage across the house goes from >100 cy to ~93 cy.
+- **Costs, honestly:** the cover re-derives off the manual's consumption table at
+  **0.01869 cy/SF** (the authored 0.01774 was ~4% light even at the old section), so 7.35 →
+  **7.74 cy**; the form re-quotes for the 10" beam (25% more EPS, one more piece per bay); and
+  a **shoring line goes in at $2.00–5.00/SF** — ~12–15 rentable adjustable posts at 6' o.c.
+  under 414 SF, set and struck by the placing crew. Net on the deck rows: $8.85–18.20/SF →
+  **$11.02–23.39/SF** concrete-plus-shoring, and $9.00–14.50/SF → $10.75–16.75/SF on forms.
+  Against the $25–40k mobilisation floor this decision was made to avoid, it does not flip.
+- **What it bought besides truth:** the basement's clear height is 8'-0-15/16" under the
+  joists (7'-10-7/8" under the band), both over R305.1's 7'-0"; the mudsill is one board
+  serving the studs and the joists, billed once over the union of the two runs — 370.0 LF,
+  where the old framed-only rule left ~10 LF of bearing wall with no plate at all.
+- **What it cost:** the basement ceiling's step at the wood/concrete line goes 1/2" →
+  **2-1/16"** (1/2" is the form's steel rib, the rest is the deck being deeper than the wood
+  bay). The finished floors go 3/16" apart, which the 6 mm plank absorbs — it finishes
+  1/64"–1/20" proud of the polish, and the reducer that used to be specified becomes a
+  T-moulding.
+- **Guarded, which is the actual point.** `structural.mixed_deck_bearing_seat` (FAIL) holds
+  the seat, the plate thickness and the finished planes; `integrity.floor_bearing_grid` holds
+  every joist cut over its own wall's structure. The 2026-08-21 arithmetic was already right
+  and had nothing watching it, which is how it went wrong three days later.
 
 ## Basement perimeter pour, 12" → 8" — TAKEN 2026-08-21
 
@@ -106,7 +153,9 @@ on were carrying 4" of concrete that bought nothing.
   (`W-B-CS/CS2/CN/CN2/STR`) also stay 12".
 - **Not free:** IRC Table R404.1.2(8) at 45 psf/ft GM soil, 10' unsupported, 7' unbalanced
   fill reads NR at 12" and 10" but **#6 @ 48" o.c. vertical at 8"** — ~27 bars, authored on
-  each wall and gated by `structural.foundation_unbalanced_fill`.
+  each wall and gated by `structural.foundation_unbalanced_fill`. (The 2026-08-23 bearing-seat
+  entry above takes the wall to 8'-0" and the cell to `#5 @ 41" o.c.`; the 12"-vs-8" decision
+  itself is unaffected.)
 - **8" and not 10"** (which also reads NR): 8" is the standard residential form module and
   the market rate is quoted for it. Thickness above 8" adds concrete without adding forming,
   so 10" would pay an odd-thickness forming premium and hand back half the yardage to save
@@ -115,7 +164,9 @@ on were carrying 4" of concrete that bought nothing.
   **−$3,239 to −$5,759** on `[wall_structure]`. Re-derived rates, not the 12" row: the 12"
   $420–700/cy is $110–180/LF of forming, crew and pour at that height, and forming does not
   get cheaper because the wall got thinner. 8" × 9'-4" is 0.2305 cy/LF, so the same
-  $114–187/LF is **~$495–810/cy**. Pricing the 8" wall at the 12" rate would have claimed
+  $114–187/LF is **~$495–810/cy** — and at the 8'-0" wall of 2026-08-23, $98–160/LF over
+  0.1975 cy/LF is the same **$495–810/cy**, which is the point of quoting per cubic yard.
+  Pricing the 8" wall at the 12" rate would have claimed
   −$8,700, which is the whole trap here.
 - **What else moved:** the walls align on `face("concrete-ext")`, so only the inside face
   came in. Furnace room 8'-6" → 8'-10" clear, workshop 7'-6" → 7'-10", playroom unchanged at

@@ -753,10 +753,12 @@ CONDUIT_TRUNKS = [
     ConduitRun(uid="CDT003AAAA", tag="CD-B-KITCHEN", trade_size=inch(0.75),
                path=(pt(ft(2), ft(29)), pt(ft(35), ft(29)), pt(ft(35), ft(28, 11))),
                # -1'-6", not the -1'-0" it held until 2026-08-21: the basement ceiling
-               # dropped when the 9" deck became the 12 5/8" EPS deck with 5/8" gypsum
-               # under it, and a raceway at -1'-0" was then lying *inside* the pour
-               # (mep.sleeve_coverage caught it as an unsleeved crossing at 26'-6").
-               # 4 3/4" clear under the -1'-1 1/4" soffit. Its two wall crossings go with it.
+               # dropped when the 9" deck became the EPS deck with 5/8" gypsum under it, and
+               # a raceway at -1'-0" was then lying *inside* the pour (mep.sleeve_coverage
+               # caught it as an unsleeved crossing at 26'-6"). The 2026-08-23 seat rework
+               # took the deck soffit down another 1 9/16" to -13 7/16" and its board to
+               # -14 1/16", so the clear under it is 1 15/16" — still clear, and this is the
+               # tightest raceway in the basement. Its two wall crossings go with it.
                start_elevation=ft(-1, -6), end_elevation=ft(3, 6),
                from_ref="ED-B-PANEL", to_ref="ED-M-LIVING-KGF3"),
     # South out of the basement to the hot tub disconnect under the porch. Same 2026-08-02
@@ -997,7 +999,11 @@ CONDUIT_SLEEVES = [
     SleevePenetration(uid="CNS011AAAA", tag="SP-B-STR-CD-KITCH", host_ref="W-B-STR3",
                       position=pt(ft(10), ft(29)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.POWER_120,
-                      axis="horizontal", center_elevation=ft(-1)),
+                      # -1'-6", matching CD-B-KITCHEN itself and its partner sleeve in
+                      # W-B-CN. It sat at -1'-0" until 2026-08-23 — 6" above the run it
+                      # serves, inside the matcher's tolerance and outside the wall the
+                      # moment the pour stopped at the -13 7/16" bearing seat.
+                      axis="horizontal", center_elevation=ft(-1, -6)),
     SleevePenetration(uid="CNS012AAAA", tag="SP-B-CN-CD-KITCH", host_ref="W-B-CN",
                       position=pt(ft(18), ft(29)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.POWER_120,

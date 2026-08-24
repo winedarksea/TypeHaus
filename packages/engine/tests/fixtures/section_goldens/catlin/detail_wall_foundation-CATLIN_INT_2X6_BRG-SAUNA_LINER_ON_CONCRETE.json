@@ -8,19 +8,19 @@
       "points": [
         [
           206.5,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           207.50000000000003,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           207.50000000000003,
-          0.0
+          -13.437499999999998
         ],
         [
           206.5,
-          0.0
+          -13.437499999999998
         ]
       ],
       "layer": "A-WALL-FINI",
@@ -36,19 +36,19 @@
       "boundary": [
         [
           206.5,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           207.50000000000003,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           207.50000000000003,
-          0.0
+          -13.437499999999998
         ],
         [
           206.5,
-          0.0
+          -13.437499999999998
         ]
       ],
       "pattern": "lumber",
@@ -64,19 +64,19 @@
       "points": [
         [
           207.50000000000003,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           208.0,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           208.0,
-          0.0
+          -13.437499999999998
         ],
         [
           207.50000000000003,
-          0.0
+          -13.437499999999998
         ]
       ],
       "layer": "A-WALL",
@@ -92,19 +92,19 @@
       "boundary": [
         [
           207.50000000000003,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           208.0,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           208.0,
-          0.0
+          -13.437499999999998
         ],
         [
           207.50000000000003,
-          0.0
+          -13.437499999999998
         ]
       ],
       "pattern": "osb",
@@ -120,19 +120,19 @@
       "points": [
         [
           208.0,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           210.0,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           210.0,
-          0.0
+          -13.437499999999998
         ],
         [
           208.0,
-          0.0
+          -13.437499999999998
         ]
       ],
       "layer": "A-WALL-INSU",
@@ -148,19 +148,19 @@
       "boundary": [
         [
           208.0,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           210.0,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           210.0,
-          0.0
+          -13.437499999999998
         ],
         [
           208.0,
-          0.0
+          -13.437499999999998
         ]
       ],
       "pattern": "none",
@@ -176,19 +176,19 @@
       "points": [
         [
           210.0,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           222.0,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           222.0,
-          0.0
+          -13.437499999999998
         ],
         [
           210.0,
-          0.0
+          -13.437499999999998
         ]
       ],
       "layer": "A-WALL",
@@ -204,19 +204,19 @@
       "boundary": [
         [
           210.0,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           222.0,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           222.0,
-          0.0
+          -13.437499999999998
         ],
         [
           210.0,
-          0.0
+          -13.437499999999998
         ]
       ],
       "pattern": "concrete",
@@ -344,19 +344,75 @@
       "points": [
         [
           207.375,
-          -48.000000000000014
+          -61.43750000000001
         ],
         [
           208.125,
-          -48.000000000000014
+          -61.43750000000001
         ],
         [
           208.125,
-          -44.500000000000014
+          -57.937500000000014
         ],
         [
           207.375,
-          -44.500000000000014
+          -57.937500000000014
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CBW111AAAA",
+      "tag": "strapping-liner-furring-003"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          207.375,
+          -61.43750000000001
+        ],
+        [
+          208.125,
+          -61.43750000000001
+        ],
+        [
+          208.125,
+          -57.937500000000014
+        ],
+        [
+          207.375,
+          -57.937500000000014
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "struct-1-plywood"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          207.375,
+          -45.43750000000001
+        ],
+        [
+          208.125,
+          -45.43750000000001
+        ],
+        [
+          208.125,
+          -41.93750000000001
+        ],
+        [
+          207.375,
+          -41.93750000000001
         ]
       ],
       "layer": "S-FRAM",
@@ -372,19 +428,19 @@
       "boundary": [
         [
           207.375,
-          -48.000000000000014
+          -45.43750000000001
         ],
         [
           208.125,
-          -48.000000000000014
+          -45.43750000000001
         ],
         [
           208.125,
-          -44.500000000000014
+          -41.93750000000001
         ],
         [
           207.375,
-          -44.500000000000014
+          -41.93750000000001
         ]
       ],
       "pattern": "osb",
@@ -400,19 +456,19 @@
       "points": [
         [
           207.375,
-          -32.00000000000001
+          -29.4375
         ],
         [
           208.125,
-          -32.00000000000001
+          -29.4375
         ],
         [
           208.125,
-          -28.50000000000001
+          -25.937500000000004
         ],
         [
           207.375,
-          -28.50000000000001
+          -25.937500000000004
         ]
       ],
       "layer": "S-FRAM",
@@ -428,19 +484,19 @@
       "boundary": [
         [
           207.375,
-          -32.00000000000001
+          -29.4375
         ],
         [
           208.125,
-          -32.00000000000001
+          -29.4375
         ],
         [
           208.125,
-          -28.50000000000001
+          -25.937500000000004
         ],
         [
           207.375,
-          -28.50000000000001
+          -25.937500000000004
         ]
       ],
       "pattern": "osb",
@@ -456,19 +512,19 @@
       "points": [
         [
           207.375,
-          -16.00000000000002
+          -16.9375
         ],
         [
           208.125,
-          -16.00000000000002
+          -16.9375
         ],
         [
           208.125,
-          -12.500000000000023
+          -13.437499999999998
         ],
         [
           207.375,
-          -12.500000000000023
+          -13.437499999999998
         ]
       ],
       "layer": "S-FRAM",
@@ -484,75 +540,19 @@
       "boundary": [
         [
           207.375,
-          -16.00000000000002
+          -16.9375
         ],
         [
           208.125,
-          -16.00000000000002
+          -16.9375
         ],
         [
           208.125,
-          -12.500000000000023
+          -13.437499999999998
         ],
         [
           207.375,
-          -12.500000000000023
-        ]
-      ],
-      "pattern": "osb",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "struct-1-plywood"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          207.375,
-          -3.5
-        ],
-        [
-          208.125,
-          -3.5
-        ],
-        [
-          208.125,
-          0.0
-        ],
-        [
-          207.375,
-          0.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CBW111AAAA",
-      "tag": "strapping-liner-furring-007"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          207.375,
-          -3.5
-        ],
-        [
-          208.125,
-          -3.5
-        ],
-        [
-          208.125,
-          0.0
-        ],
-        [
-          207.375,
-          0.0
+          -13.437499999999998
         ]
       ],
       "pattern": "osb",
@@ -625,17 +625,17 @@
         "kind": "point",
         "xy": [
           207.0,
-          -3.1777777777777776
+          -16.615277777777777
         ],
         "name": ""
       },
       "at": [
         183.84645669291342,
-        -3.1777777777777776
+        -16.615277777777777
       ],
       "to": [
         207.0,
-        -3.1777777777777776
+        -16.615277777777777
       ],
       "text": "tg-liner 1\"",
       "height": 1.6,
@@ -650,17 +650,17 @@
         "kind": "point",
         "xy": [
           207.75,
-          -8.233333333333333
+          -21.670833333333334
         ],
         "name": ""
       },
       "at": [
         183.84645669291342,
-        -8.233333333333333
+        -21.670833333333334
       ],
       "to": [
         207.75,
-        -8.233333333333333
+        -21.670833333333334
       ],
       "text": "liner-furring 0.5\"",
       "height": 1.6,
@@ -675,17 +675,17 @@
         "kind": "point",
         "xy": [
           209.00000000000003,
-          -13.288888888888888
+          -26.72638888888889
         ],
         "name": ""
       },
       "at": [
         183.84645669291342,
-        -13.288888888888888
+        -26.72638888888889
       ],
       "to": [
         209.00000000000003,
-        -13.288888888888888
+        -26.72638888888889
       ],
       "text": "foil-polyiso 2\"",
       "height": 1.6,
@@ -700,17 +700,17 @@
         "kind": "point",
         "xy": [
           216.0,
-          -18.34444444444444
+          -31.78194444444445
         ],
         "name": ""
       },
       "at": [
         183.84645669291342,
-        -18.34444444444444
+        -31.78194444444445
       ],
       "to": [
         216.0,
-        -18.34444444444444
+        -31.78194444444445
       ],
       "text": "concrete 12\"",
       "height": 1.6,
@@ -724,19 +724,19 @@
       "boundary": [
         [
           213.25000000000006,
-          0.0
+          -13.437499999999998
         ],
         [
           218.75000000000003,
-          0.0
+          -13.437499999999998
         ],
         [
           218.75000000000003,
-          0.25
+          -13.187499999999998
         ],
         [
           213.25000000000006,
-          0.25
+          -13.187499999999998
         ]
       ],
       "pattern": "metal",
@@ -752,19 +752,19 @@
       "points": [
         [
           213.25000000000006,
-          0.0
+          -13.437499999999998
         ],
         [
           218.75000000000003,
-          0.0
+          -13.437499999999998
         ],
         [
           218.75000000000003,
-          0.25
+          -13.187499999999998
         ],
         [
           213.25000000000006,
-          0.25
+          -13.187499999999998
         ]
       ],
       "layer": "A-DETL-CMPT",
@@ -779,7 +779,7 @@
       "node": "text",
       "anchor": [
         227.00000000000003,
-        29.07751531058618
+        15.640015310586179
       ],
       "content": "air continuity — sheathing-ext →\nsheathing-ext",
       "height": 3.0,
@@ -795,7 +795,7 @@
       "node": "text",
       "anchor": [
         227.00000000000003,
-        19.783070866141735
+        6.3455708661417365
       ],
       "content": "water continuity — spray-foam-ext →\nspray-foam-ext",
       "height": 3.0,
@@ -811,7 +811,7 @@
       "node": "text",
       "anchor": [
         227.00000000000003,
-        10.488626421697292
+        -2.948873578302706
       ],
       "content": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
       "height": 3.0,
@@ -827,7 +827,7 @@
       "node": "text",
       "anchor": [
         184.84645669291342,
-        -55.181102362204726
+        -68.61860236220473
       ],
       "content": "TR-CATLIN-FOUNDATION  ·  basement-framed-wall",
       "height": 3.0,
@@ -883,7 +883,7 @@
           "kind": "point",
           "xy": [
             208.00000000000003,
-            -56.00000000000001
+            -61.4375
           ],
           "name": ""
         },
@@ -891,18 +891,18 @@
           "kind": "point",
           "xy": [
             210.00000000000003,
-            -56.00000000000001
+            -61.4375
           ],
           "name": ""
         }
       ],
       "p0": [
         208.00000000000003,
-        -56.00000000000001
+        -61.4375
       ],
       "p1": [
         210.00000000000003,
-        -56.00000000000001
+        -61.4375
       ],
       "offset": 3.0,
       "height_pt": 6.5,
@@ -1273,9 +1273,11 @@
     "• Exposed XPS (top portion above grade): protect with appropriate elastomeric coating or rigid metal/PVC trim per manufacturer.",
     "• **The exposed band is modelled now, not only drawn (2026-08-18).** The 2026-08-18 lift put grade at -2'-6\", and the 2026-08-21 basement-ceiling overhaul took it to -2'-10\", so the north, east and west basement walls stand 2'-10\" out of the ground and that much XPS is exposed on each. The band is authored off the GRADE datum rather than as a height, so both lifts grew it (and the panel order, ~324 SF to ~374 SF) without the assembly being edited. `CATLIN_BASEMENT_12` and `CATLIN_BASEMENT_8` therefore carry a fifth layer — a 1/2\" aluminium-faced protection panel (`foundation-protection-panel`, the house's one exterior dark, #1c1f24) — with a `Layer.extent` running from 6\" *below* grade up to the top of the wall. Six inches below so no foam edge shows at the soil line and the shovel hits panel, not XPS. Because it is a real layer with a real band, the drawing, the 3D model, the IFC export (as an `IfcBuildingElementPart` aggregated to its wall) and the order all read the same area; the detail component no longer derives a second band of its own beside it.",
     "• **The parge coat is off these three walls and stays on the south one.** The full-height parge added 2026-08-01 was there for the *south* wall, which the sunken garden opens to the air over its whole 9', and it landed on all four sides only because a layer had no way to say \"only here\". The south wall keeps it, in its own assembly (`CATLIN_BASEMENT_8_GARDEN`) — a grade-datum band cannot describe a face whose exposure runs from -9'-0\" to 0'-0\". Every one of these assemblies still carries exactly 4.55\" outboard of the concrete face, which is what `N-B-BRICK-W`/`-E`'s stand-off is measured from.",
-    "• **The pour is 8\" everywhere the detail applies (2026-08-21).** This detail is the wood-over-concrete transition, and 12\" was only ever earned where a *cast concrete deck* lands on the wall top beside the sill plate and needs its own bearing seat inboard of it. Wood does not: the I-joists and rim bear on the same 2x6 mudsill the framed wall above stands on, and an 8\" wall carries that sill with 2\" to spare. After the 2026-08-21 basement-ceiling overhaul the only cast deck left is `SL-M-DECK`, which lands on the east wall and the centre line — neither of which this detail draws. So the north, west and south perimeter is 8\" (`CATLIN_BASEMENT_8`, `CATLIN_BASEMENT_8_GARDEN`, `SAUNA_LINER_ON_BASEMENT_8_GARDEN`) with `#6 @ 48\" o.c.` vertical steel, which IRC Table R404.1.2(8) requires at 8\" where 12\" reads NR. Nothing in the drawn transition changed: the walls align on `face(\"concrete-ext\")`, so the exterior face, the 4\" of XPS and its hand-off to the framed wall's 4\" of CI all stand exactly where they did, and the 4\" came off the inside face where the sill has room to spare.",
-    "• **The panel's head is the Z-flashing below.** The band tops out at 0'-0\", which is the top of the basement wall and the base of the framed wall above — exactly where the rainscreen's 1-1/2\" corrugated bug screen sits in the vented part of the outrigger band and where the Z-flashing with its drip is drawn. (That vent is 1\" deep since the truss wall — the outrigger band is 3-1/2\" but its back 2-1/2\" is packed with the foam, so the screen closes 1\", not 3-1/2\".) The panel tucks under that flashing; nothing new is fastened for the tie, and the flashing is what sheds water clear of the panel head.",
-    "• Sill: include sill gasket and treated mudsill. Prioritize air sealing at sill plate (sealant + spray foam at gaps). Use mudsill anchors (e.g., MASAP) as required (not shown).",
+    "• **The pour stops at the bearing seat, -13 7/16\", and this detail's junction is there (2026-08-23).** For as long as the basement walls ran to 0'-0\" the top of the concrete and the bottom of the framed wall were one elevation, and `detail_components/wall_base.py` said so in a comment — `junction_z = framed.z0_m  # top of concrete == bottom of framed wall`. They are 13 7/16\" apart now. The pour tops out on one flat seat all the way round, the framed wall above still starts at the storey datum (the house-wide datum convention is unchanged and is a known split — see `plans/TODO.md`), and the 13 7/16\" between them is the mudsill, its gasket, and the 11 7/8\" rim band the joists die into. The component reads `concrete.z1_m` now, so the L-flashing, the Z-flashing with its drip, the bug screen and the sill gasket all draw on the concrete rather than a foot above it. **Nothing in the detail's own stack moved** — the same pieces in the same order, one plane lower.",
+    "• **The sill is one board and it is shared (2026-08-23).** This has always been the intent of the line further down — \"the I-joists and rim bear on the same 2x6 mudsill the framed wall above stands on\" — and until 2026-08-23 the model only half-carried it: `CR-CONC-TO-FRAMED-SILL` was returned under the framed wall's studs and stopped where the framed wall did, so the stretches where a floor bore and no wall stacked (W-B-CN's north 4.05 LF, W-B-CS's 0.83 LF) ordered no plate at all, and the joists themselves resolved *inside* the pour with nothing between wood and concrete. One rule takes the **union** of the two runs now, on the seat, and it bills 370.0 LF where it billed 358.6. There is no second rule and there must not be: two rules over one board is a double-bill, and that is exactly what retiring `floor:on_concrete_wall` prevents.",
+    "• **The pour is 8\" everywhere the detail applies (2026-08-21), and the steel is `#5 @ 41\" o.c.` (2026-08-23).** The bar changed with the seat, not with the design: an exactly 8'-0\" wall is IRC Table R404.1.2(8)'s 8'-unsupported row rather than the 10' row a 9'-4\" wall rounds up to, and that cell reads `#5 @ 41\"` where the taller one read `#6 @ 48\"` — a lighter bar at a tighter spacing. This detail is the wood-over-concrete transition, and 12\" was only ever earned where a *cast concrete deck* lands on the wall top beside the sill plate and needs its own bearing seat inboard of it. Wood does not: the I-joists and rim bear on the same 2x6 mudsill the framed wall above stands on, and an 8\" wall carries that sill with 2\" to spare. After the 2026-08-21 basement-ceiling overhaul the only cast deck left is `SL-M-DECK`, which lands on the east wall and the centre line — neither of which this detail draws. So the north, west and south perimeter is 8\" (`CATLIN_BASEMENT_8`, `CATLIN_BASEMENT_8_GARDEN`, `SAUNA_LINER_ON_BASEMENT_8_GARDEN`) with `#5 @ 41\" o.c.` vertical steel, which IRC Table R404.1.2(8) requires at 8\" where 12\" reads NR. Nothing in the drawn transition changed: the walls align on `face(\"concrete-ext\")`, so the exterior face, the 4\" of XPS and its hand-off to the framed wall's 4\" of CI all stand exactly where they did, and the 4\" came off the inside face where the sill has room to spare.",
+    "• **The panel's head is the Z-flashing below.** The band tops out at the top of the basement wall — -13 7/16\" since 2026-08-23, 0'-0\" before it — which is where the framed wall's mudsill sits, and the rainscreen's 1-1/2\" corrugated bug screen sits in the vented part of the outrigger band and where the Z-flashing with its drip is drawn. (That vent is 1\" deep since the truss wall — the outrigger band is 3-1/2\" but its back 2-1/2\" is packed with the foam, so the screen closes 1\", not 3-1/2\".) The panel tucks under that flashing; nothing new is fastened for the tie, and the flashing is what sheds water clear of the panel head.",
+    "• Sill: include sill gasket and treated mudsill. **The stack is 1/16\" of compressed EPDM gasket under a 1 1/2\" PT 2x6, and those two numbers are structural, not trim**: the bearing seat is derived as joist depth + mudsill + gasket below the storey datum (`params/main_deck.py::BEARING_SEAT`), so the EPS deck beside it was deepened to land on the same plane. Substituting a thicker gasket or a 2x8 laid flat moves the seat and `structural.mixed_deck_bearing_seat` FAILs the build until the deck follows. Prioritize air sealing at sill plate (sealant + spray foam at gaps). Use mudsill anchors (e.g., MASAP) as required (not shown).",
     "• Flashings: provide stainless (preferred) or thick aluminum Z-flashing with drip edge at the bottom of the rainscreen — i.e. at the bottom of the **outriggers** since 2026-08-23, and set to the 1\" vent in front of the foam rather than to a 3-1/2\" band. Install insect barrier mesh/strip (Cor-A-Vent or SS screen) just above flashing. Mesh can be stapled to the outriggers, run behind the flashing, and into the layer between basement and wall foam.",
     "• Interface flashing: provide L-flashing from bottom of sheathing down onto the top of basement foam. Terminate within the insulation plane and seal the outer end with spray foam (Pestblock) to avoid an exterior thermal bridge. This is meant as a foam layer insect barrier. Since 2026-08-23 the \"insulation plane\" it terminates within is the wall's own sprayed foam rather than a board course, so the seal is foam to foam — bonded, not lapped.",
     "• Drainage: 4\" perforated french drain in geotextile-lined washed stone (wider area, not under footing). Additional compacted aggregate in front of footing (equal to footing height, geotextile-lined). River rock trench (geotextile-lined) against foundation for top of soil.",
@@ -1314,7 +1316,7 @@
     ],
     "center": [
       241.1397637795276,
-      -7.874015748031496
+      -21.311515748031496
     ],
     "scale": 0.375,
     "scale_label": "3/8\" = 1'-0\"",

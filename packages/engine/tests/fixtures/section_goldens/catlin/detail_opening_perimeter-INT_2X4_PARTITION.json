@@ -263,102 +263,6 @@
       "node": "polyline",
       "points": [
         [
-          302.75,
-          -11.875
-        ],
-        [
-          305.25,
-          -11.875
-        ],
-        [
-          305.25,
-          0.0
-        ],
-        [
-          302.75,
-          0.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMFS01AAAA",
-      "tag": "joist-0-019-0"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          302.75,
-          -11.875
-        ],
-        [
-          305.25,
-          -11.875
-        ],
-        [
-          305.25,
-          0.0
-        ],
-        [
-          302.75,
-          0.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          302.75,
-          -10.5
-        ],
-        [
-          305.25,
-          -10.5
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMFS01AAAA",
-      "tag": "joist-0-019-0/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          302.75,
-          -1.375
-        ],
-        [
-          305.25,
-          -1.375
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMFS01AAAA",
-      "tag": "joist-0-019-0/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           311.125,
           -11.875
         ],
@@ -379,7 +283,7 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMFS01AAAA",
+      "uid": "CMFS04AAAA",
       "tag": "trimmer-FO-M-STAIR-0-0"
     },
     {
@@ -427,7 +331,7 @@
       "lineweight": 0.13,
       "linetype": "CONTINUOUS",
       "closed": false,
-      "uid": "CMFS01AAAA",
+      "uid": "CMFS04AAAA",
       "tag": "trimmer-FO-M-STAIR-0-0/flange"
     },
     {
@@ -447,7 +351,7 @@
       "lineweight": 0.13,
       "linetype": "CONTINUOUS",
       "closed": false,
-      "uid": "CMFS01AAAA",
+      "uid": "CMFS04AAAA",
       "tag": "trimmer-FO-M-STAIR-0-0/flange"
     },
     {
@@ -475,7 +379,7 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMFS01AAAA",
+      "uid": "CMFS04AAAA",
       "tag": "trimmer-FO-M-STAIR-0-1"
     },
     {
@@ -523,7 +427,7 @@
       "lineweight": 0.13,
       "linetype": "CONTINUOUS",
       "closed": false,
-      "uid": "CMFS01AAAA",
+      "uid": "CMFS04AAAA",
       "tag": "trimmer-FO-M-STAIR-0-1/flange"
     },
     {
@@ -543,7 +447,7 @@
       "lineweight": 0.13,
       "linetype": "CONTINUOUS",
       "closed": false,
-      "uid": "CMFS01AAAA",
+      "uid": "CMFS04AAAA",
       "tag": "trimmer-FO-M-STAIR-0-1/flange"
     },
     {

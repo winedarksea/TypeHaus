@@ -383,6 +383,9 @@ the future.
   - There was never a pan (`mep_drainage.py` explains why P2801.6 needs none) and never a
     vent. The item said both; neither was ever authored.
  - Hand rails on the stairs are still modeled as dozens of tiny pieces, rather than a single 'tube' rail
+ - Sunken garden slab (is it needed above footing) and make sure 7" threshold to basement from sunken garden
+ - Basement under the stairs storage closet
+ - Wall W-B-CS is likely worth making a wood stud wall (if the load bearing math works and the cost is noticeably lower)
 
 - **The sunken garden was a real frost defect, not a review item.** `structural.frost_depth`
   compared every footing to one global grade plane (`Site.grade`), so it PASSED all 35 —
@@ -507,7 +510,50 @@ Make sure the basement door keeps the 7" step threshold (reduces flood risk)
 
 ## Basement Ceiling
 
+**2026-08-23 — the flat bearing seat.** The deck and the wood bays now share one plane at
+-13 7/16" (decision #61, `houses/catlin/params/main_deck.py`). What that closed, and what it
+opened, is below; the numbers in the older items are marked where they moved.
+
 Left open, and worth doing next:
+
+- **The house-wide datum convention is now split, deliberately, and this is the record of
+  it.** The basement's walls are physically true: they top out on the seat, the mudsill sits
+  on them, and the joists bear on the mudsill. Every storey above still uses the old
+  convention — a framed wall starts at its storey datum, so `W-M-*` float 13 7/16" above the
+  concrete they bear on, and `FS-S-WEST`'s joists still sit *inside* `W-M-*` at
+  108 1/8"..120". Nothing is wrong in the takeoff or the checks; the model simply says two
+  different things about the same joint at two different storeys. Making the upper storeys
+  true means starting framed walls at the subfloor top rather than the datum, which moves
+  every wall, opening, placeable and MEP elevation in the house. Not this change. Read
+  `detail_components/wall_base.py` before touching it — it reads `concrete.z1_m` now, which
+  is right in both conventions.
+- **`W-B-STR3`'s footing is not sized for what it carries.** It is a bearing line under
+  `W-M-STRW2` and it keeps the house-standard 20"x8" strip. That was true before this change
+  too; it is written down here because the 2026-08-23 pass looked straight at it. The same
+  pass tried framing `W-B-STR3` as a stud wall and **backed it out** — a floor system's span
+  boundary is the bearing wall's node axis, so a 6 3/4" wall holding its east face on
+  x=10'-6" leaves FS-M-MECH's joists 1/16" of plate, and centring it uncarries FO-M-STAIR's
+  west edge into a 9'-0" LVL. The reasoning is on the wall in `plan/storeys/basement.py`; do
+  not re-attempt it without moving the x=10' node line.
+- **Two abutting FloorSystems each lay a joist on the shared edge.** `resolve/floors.py`
+  always emits a member at `perp0` and at `perp1`, so splitting a deck perpendicular to its
+  joists puts two joists in one place and `structural.member_interference` FAILs — correctly,
+  but there is no way to say "this edge is shared". `params/main_deck.py` answers it by
+  authoring the transition as a real **double joist**: the south system stops one joist width
+  (2 1/2") short and the pair sits face to face, which is what gets built anyway. It costs
+  ~3.75 SF of sheet area out of ~1,300 that no system claims. A `FloorSystem` that could name
+  a neighbour on an edge would be the real fix.
+- **The 6 mm LVP has no home in the model.** `floor_finish` is a bare material-tag string
+  with no thickness (`model/floors.py`), and the flush-joint argument at the wood/concrete
+  boundary rests entirely on that 6 mm. It lives as `_LVP` in `params/main_deck.py` and in
+  the `lvp` material's spec instead, and `structural.mixed_deck_bearing_seat` has to allow a
+  loose ±1/4" on the finished planes because of it. Giving finishes a real thickness tightens
+  that check and is its own change.
+- **~10 LF of mudsill is priced at the delta rate and wants the full assembly.** The sill
+  return is the union of the framed-wall runs and the floor bearing runs; `[framing]` has
+  already bought a bottom plate on the first and not on the second. See the note on
+  `pt-sill-plate` in `houses/catlin/prices.toml`. $13-25 on a $1,100-2,300 row — the fix is
+  for the takeoff to split the return by whether a framed wall stands on it.
 
 - ~~**No check enforces IRC R316.4.**~~ **FALSE, and it was false when written.**
   `checks/code/mn_residential/foam_plastic.py` is the whole check — `_CID = "code.R316_4"` at
@@ -521,9 +567,11 @@ Left open, and worth doing next:
 - ~~**`code.R305_ceiling_height` reads `Storey.default_ceiling_height`.**~~ **FALSE.** It
   derives a measured clear height per room — `rules.py:113-131` walks
   `resolve/ceiling_over.py`'s `ceiling_decks_over` / `ceiling_underside_m` and reports
-  "clear under FS-M-WEST". The basement reads **8'-3 1/2"** (8'-4 1/8" under the EPS deck
-  band), not the fictional 9'-0" the storey still authors, and not the 8'-2 3/4" this item
-  quoted — that figure was itself two revisions old. Verified 2026-08-23.
+  "clear under FS-M-WEST". The basement reads **8'-0 15/16"** (7'-10 7/8" under the EPS deck
+  band) since the 2026-08-23 seat rework, and read 8'-3 1/2" / 8'-4 1/8" before it — not the
+  fictional 9'-0" the storey still authors, and not the 8'-2 3/4" this item quoted, which was
+  itself two revisions old when it was written. Both current numbers clear R305.1's 7'-0" by
+  more than a foot. Verified 2026-08-23.
   - The residual, recorded in the check's own docstring: the derived height is 3/4" GENEROUS
     on a joisted floor, because the subfloor is not subtracted. Against a 7'-0" minimum on
     rooms clearing by more than a foot, that is not worth stopping for — but it is not exact.
@@ -538,8 +586,10 @@ Left open, and worth doing next:
   **The *finish* half is derived as of 2026-08-21** — `Slab.floor_finish` on `SL-M-DECK`
   resolves the band as a `FinishZone` inside `RM-M-LIVING`, so the polish and the plank bill,
   draw and price separately and the split tracks `_BAND_Y`. What is still missing is the
-  **joint**: the derived condition a `Transition` could bind to bill the 31.5 lf of reducer
-  and the soft joint along the y=13' leg of it.
+  **joint**: the derived condition a `Transition` could bind to bill the 31.5 lf of moulding
+  and the soft joint along the y=13' leg of it. (A T-moulding since 2026-08-23, not a
+  reducer — the flat bearing seat left the two walking surfaces flush within the plank's own
+  tolerance. The *movement* half of the joint is unchanged and is the half that matters.)
 - **`room_floor_elevation` never adds a FloorSystem's subfloor**, so a room over joists
   resolves its floor 3/4" below the surface people stand on. It prefers a slab top under the
   room and otherwise falls back to the wall base — which is the storey datum, i.e. the top

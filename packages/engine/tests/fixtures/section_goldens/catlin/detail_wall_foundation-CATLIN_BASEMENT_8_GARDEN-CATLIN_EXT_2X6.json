@@ -8,11 +8,11 @@
       "boundary": [
         [
           -26.203543307086615,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           -4.550000000000001,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           -4.550000000000001,
@@ -36,11 +36,11 @@
       "points": [
         [
           -26.203543307086615,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           -4.550000000000001,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           -4.550000000000001,
@@ -84,19 +84,19 @@
       "points": [
         [
           0.0,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           8.0,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           8.0,
-          0.0
+          -13.437499999999998
         ],
         [
           0.0,
-          0.0
+          -13.437499999999998
         ]
       ],
       "layer": "A-WALL",
@@ -112,19 +112,19 @@
       "boundary": [
         [
           0.0,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           8.0,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           8.0,
-          0.0
+          -13.437499999999998
         ],
         [
           0.0,
-          0.0
+          -13.437499999999998
         ]
       ],
       "pattern": "concrete",
@@ -140,19 +140,19 @@
       "points": [
         [
           -0.05,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           0.0,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           0.0,
-          0.0
+          -13.437499999999998
         ],
         [
           -0.05,
-          0.0
+          -13.437499999999998
         ]
       ],
       "layer": "A-WALL-PATT",
@@ -168,19 +168,19 @@
       "boundary": [
         [
           -0.05,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           0.0,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           0.0,
-          0.0
+          -13.437499999999998
         ],
         [
           -0.05,
-          0.0
+          -13.437499999999998
         ]
       ],
       "pattern": "membrane",
@@ -196,19 +196,19 @@
       "points": [
         [
           -2.05,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           -0.05,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           -0.05,
-          0.0
+          -13.437499999999998
         ],
         [
           -2.05,
-          0.0
+          -13.437499999999998
         ]
       ],
       "layer": "A-WALL-INSU",
@@ -224,19 +224,19 @@
       "boundary": [
         [
           -2.05,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           -0.05,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           -0.05,
-          0.0
+          -13.437499999999998
         ],
         [
           -2.05,
-          0.0
+          -13.437499999999998
         ]
       ],
       "pattern": "none",
@@ -252,19 +252,19 @@
       "points": [
         [
           -4.050000000000001,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           -2.05,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           -2.05,
-          0.0
+          -13.437499999999998
         ],
         [
           -4.050000000000001,
-          0.0
+          -13.437499999999998
         ]
       ],
       "layer": "A-WALL-INSU",
@@ -280,19 +280,19 @@
       "boundary": [
         [
           -4.050000000000001,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           -2.05,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           -2.05,
-          0.0
+          -13.437499999999998
         ],
         [
           -4.050000000000001,
-          0.0
+          -13.437499999999998
         ]
       ],
       "pattern": "none",
@@ -308,19 +308,19 @@
       "points": [
         [
           -4.550000000000001,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           -4.050000000000001,
-          -51.181102362204726
+          -64.61860236220473
         ],
         [
           -4.050000000000001,
-          0.0
+          -13.437499999999998
         ],
         [
           -4.550000000000001,
-          0.0
+          -13.437499999999998
         ]
       ],
       "layer": "A-WALL-FINI",
@@ -344,11 +344,11 @@
         ],
         [
           6.635000000000001,
-          32.0
+          21.995570866141733
         ],
         [
           6.625000000000001,
-          32.0
+          21.995570866141733
         ]
       ],
       "layer": "A-WALL-FINI",
@@ -372,11 +372,11 @@
         ],
         [
           6.625000000000001,
-          32.0
+          21.995570866141733
         ],
         [
           6.000000000000001,
-          32.0
+          21.995570866141733
         ]
       ],
       "layer": "A-WALL-FINI",
@@ -400,11 +400,11 @@
         ],
         [
           6.625000000000001,
-          32.0
+          21.995570866141733
         ],
         [
           6.000000000000001,
-          32.0
+          21.995570866141733
         ]
       ],
       "pattern": "gypsum",
@@ -428,11 +428,11 @@
         ],
         [
           6.000000000000001,
-          32.0
+          21.995570866141733
         ],
         [
           0.5,
-          32.0
+          21.995570866141733
         ]
       ],
       "layer": "A-WALL",
@@ -456,11 +456,11 @@
         ],
         [
           6.000000000000001,
-          32.0
+          21.995570866141733
         ],
         [
           0.5,
-          32.0
+          21.995570866141733
         ]
       ],
       "pattern": "lumber",
@@ -484,11 +484,11 @@
         ],
         [
           0.5,
-          32.0
+          21.995570866141733
         ],
         [
           0.0,
-          32.0
+          21.995570866141733
         ]
       ],
       "layer": "A-WALL",
@@ -512,11 +512,11 @@
         ],
         [
           0.5,
-          32.0
+          21.995570866141733
         ],
         [
           0.0,
-          32.0
+          21.995570866141733
         ]
       ],
       "pattern": "osb",
@@ -540,11 +540,11 @@
         ],
         [
           0.0,
-          32.0
+          21.995570866141733
         ],
         [
           -1.5000000000000002,
-          32.0
+          21.995570866141733
         ]
       ],
       "layer": "A-WALL-INSU",
@@ -568,11 +568,11 @@
         ],
         [
           0.0,
-          32.0
+          21.995570866141733
         ],
         [
           -1.5000000000000002,
-          32.0
+          21.995570866141733
         ]
       ],
       "pattern": "batt",
@@ -596,11 +596,11 @@
         ],
         [
           -1.5000000000000002,
-          32.0
+          21.995570866141733
         ],
         [
           -5.0,
-          32.0
+          21.995570866141733
         ]
       ],
       "layer": "A-WALL",
@@ -624,11 +624,11 @@
         ],
         [
           -5.0,
-          32.0
+          21.995570866141733
         ],
         [
           -5.5,
-          32.0
+          21.995570866141733
         ]
       ],
       "layer": "A-WALL",
@@ -652,11 +652,11 @@
         ],
         [
           -5.0,
-          32.0
+          21.995570866141733
         ],
         [
           -5.5,
-          32.0
+          21.995570866141733
         ]
       ],
       "pattern": "metal",
@@ -680,11 +680,11 @@
         ],
         [
           5.999999999999999,
-          32.0
+          21.995570866141733
         ],
         [
           0.4999999999999996,
-          32.0
+          21.995570866141733
         ]
       ],
       "pattern": "batt",
@@ -708,11 +708,11 @@
         ],
         [
           -1.4999999999999998,
-          32.0
+          21.995570866141733
         ],
         [
           -5.0,
-          32.0
+          21.995570866141733
         ]
       ],
       "pattern": "batt",
@@ -721,146 +721,6 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "closed-cell-spray-foam"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          6.63,
-          32.0
-        ],
-        [
-          6.63,
-          35.43307086614173
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW101AAAA",
-      "tag": "W-M-S1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          6.312499999999999,
-          32.0
-        ],
-        [
-          6.312499999999999,
-          35.43307086614173
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW101AAAA",
-      "tag": "W-M-S1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          3.2499999999999996,
-          32.0
-        ],
-        [
-          3.2499999999999996,
-          35.43307086614173
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW101AAAA",
-      "tag": "W-M-S1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          0.2499999999999998,
-          32.0
-        ],
-        [
-          0.2499999999999998,
-          35.43307086614173
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW101AAAA",
-      "tag": "W-M-S1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -0.7499999999999999,
-          32.0
-        ],
-        [
-          -0.7499999999999999,
-          35.43307086614173
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW101AAAA",
-      "tag": "W-M-S1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -3.25,
-          32.0
-        ],
-        [
-          -3.25,
-          35.43307086614173
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW101AAAA",
-      "tag": "W-M-S1-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -5.25,
-          32.0
-        ],
-        [
-          -5.25,
-          35.43307086614173
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW101AAAA",
-      "tag": "W-M-S1-void"
     },
     {
       "space": "model",
@@ -1280,7 +1140,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMFS01AAAA",
-      "tag": "joist-0-000-0"
+      "tag": "joist-1-000-0"
     },
     {
       "space": "model",
@@ -1328,7 +1188,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS01AAAA",
-      "tag": "joist-0-000-0/flange"
+      "tag": "joist-1-000-0/flange"
     },
     {
       "space": "model",
@@ -1348,7 +1208,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS01AAAA",
-      "tag": "joist-0-000-0/flange"
+      "tag": "joist-1-000-0/flange"
     },
     {
       "space": "model",
@@ -1376,7 +1236,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMFS01AAAA",
-      "tag": "joist-0-001-0"
+      "tag": "joist-1-001-0"
     },
     {
       "space": "model",
@@ -1424,7 +1284,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS01AAAA",
-      "tag": "joist-0-001-0/flange"
+      "tag": "joist-1-001-0/flange"
     },
     {
       "space": "model",
@@ -1444,7 +1304,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS01AAAA",
-      "tag": "joist-0-001-0/flange"
+      "tag": "joist-1-001-0/flange"
     },
     {
       "space": "model",
@@ -1472,7 +1332,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMFS01AAAA",
-      "tag": "joist-0-002-0"
+      "tag": "joist-1-002-0"
     },
     {
       "space": "model",
@@ -1520,7 +1380,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS01AAAA",
-      "tag": "joist-0-002-0/flange"
+      "tag": "joist-1-002-0/flange"
     },
     {
       "space": "model",
@@ -1540,7 +1400,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS01AAAA",
-      "tag": "joist-0-002-0/flange"
+      "tag": "joist-1-002-0/flange"
     },
     {
       "space": "model",
@@ -1600,190 +1460,22 @@
     },
     {
       "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          0.5,
-          33.5
-        ],
-        [
-          6.000000000000001,
-          33.5
-        ],
-        [
-          6.000000000000001,
-          35.0
-        ],
-        [
-          0.5,
-          35.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW101AAAA",
-      "tag": "sill-0"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          0.5,
-          33.5
-        ],
-        [
-          6.000000000000001,
-          33.5
-        ],
-        [
-          6.000000000000001,
-          35.0
-        ],
-        [
-          0.5,
-          35.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -5.0,
-          30.5
-        ],
-        [
-          -1.5000000000000002,
-          30.5
-        ],
-        [
-          -1.5000000000000002,
-          32.0
-        ],
-        [
-          -5.0,
-          32.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW101AAAA",
-      "tag": "ladder-sill-000-01"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -5.0,
-          30.5
-        ],
-        [
-          -1.5000000000000002,
-          30.5
-        ],
-        [
-          -1.5000000000000002,
-          32.0
-        ],
-        [
-          -5.0,
-          32.0
-        ]
-      ],
-      "pattern": "metal",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "kdat"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -5.0,
-          32.0
-        ],
-        [
-          0.0,
-          32.0
-        ],
-        [
-          0.0,
-          32.375
-        ],
-        [
-          -5.0,
-          32.375
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW101AAAA",
-      "tag": "buck-sill-000"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -5.0,
-          32.0
-        ],
-        [
-          0.0,
-          32.0
-        ],
-        [
-          0.0,
-          32.375
-        ],
-        [
-          -5.0,
-          32.375
-        ]
-      ],
-      "pattern": "osb",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "struct-1-plywood"
-    },
-    {
-      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
         "xy": [
           -4.300000000000001,
-          -3.1777777777777776
+          -16.615277777777777
         ],
         "name": ""
       },
       "at": [
         -27.203543307086615,
-        -3.1777777777777776
+        -16.615277777777777
       ],
       "to": [
         -4.300000000000001,
-        -3.1777777777777776
+        -16.615277777777777
       ],
       "text": "parge 0.5\"",
       "height": 1.6,
@@ -1798,17 +1490,17 @@
         "kind": "point",
         "xy": [
           -3.05,
-          -8.233333333333333
+          -21.670833333333334
         ],
         "name": ""
       },
       "at": [
         -27.203543307086615,
-        -8.233333333333333
+        -21.670833333333334
       ],
       "to": [
         -3.05,
-        -8.233333333333333
+        -21.670833333333334
       ],
       "text": "xps-b 2\"",
       "height": 1.6,
@@ -1823,17 +1515,17 @@
         "kind": "point",
         "xy": [
           -1.05,
-          -13.288888888888888
+          -26.72638888888889
         ],
         "name": ""
       },
       "at": [
         -27.203543307086615,
-        -13.288888888888888
+        -26.72638888888889
       ],
       "to": [
         -1.05,
-        -13.288888888888888
+        -26.72638888888889
       ],
       "text": "xps-a 2\"",
       "height": 1.6,
@@ -1848,17 +1540,17 @@
         "kind": "point",
         "xy": [
           -0.025,
-          -18.34444444444444
+          -31.78194444444445
         ],
         "name": ""
       },
       "at": [
         -27.203543307086615,
-        -18.34444444444444
+        -31.78194444444445
       ],
       "to": [
         -0.025,
-        -18.34444444444444
+        -31.78194444444445
       ],
       "text": "damp-proof 0.05\"",
       "height": 1.6,
@@ -1873,17 +1565,17 @@
         "kind": "point",
         "xy": [
           4.0,
-          -23.4
+          -36.837500000000006
         ],
         "name": ""
       },
       "at": [
         -27.203543307086615,
-        -23.4
+        -36.837500000000006
       ],
       "to": [
         4.0,
-        -23.4
+        -36.837500000000006
       ],
       "text": "concrete 8\"",
       "height": 1.6,
@@ -1898,17 +1590,17 @@
         "kind": "point",
         "xy": [
           -5.25,
-          32.255293088363956
+          18.817793088363956
         ],
         "name": ""
       },
       "at": [
         -27.203543307086615,
-        32.255293088363956
+        18.817793088363956
       ],
       "to": [
         -5.25,
-        32.255293088363956
+        18.817793088363956
       ],
       "text": "cladding 0.5\"",
       "height": 1.6,
@@ -1923,17 +1615,17 @@
         "kind": "point",
         "xy": [
           -3.25,
-          27.1997375328084
+          13.7622375328084
         ],
         "name": ""
       },
       "at": [
         -27.203543307086615,
-        27.1997375328084
+        13.7622375328084
       ],
       "to": [
         -3.25,
-        27.1997375328084
+        13.7622375328084
       ],
       "text": "outrigger 3.5\"",
       "height": 1.6,
@@ -1948,17 +1640,17 @@
         "kind": "point",
         "xy": [
           -0.7500000000000001,
-          22.144181977252842
+          8.706681977252845
         ],
         "name": ""
       },
       "at": [
         -27.203543307086615,
-        22.144181977252842
+        8.706681977252845
       ],
       "to": [
         -0.7500000000000001,
-        22.144181977252842
+        8.706681977252845
       ],
       "text": "spray-foam 1.5\"",
       "height": 1.6,
@@ -1973,17 +1665,17 @@
         "kind": "point",
         "xy": [
           0.25,
-          17.088626421697285
+          3.65112642169729
         ],
         "name": ""
       },
       "at": [
         -27.203543307086615,
-        17.088626421697285
+        3.65112642169729
       ],
       "to": [
         0.25,
-        17.088626421697285
+        3.65112642169729
       ],
       "text": "sheathing 0.5\"",
       "height": 1.6,
@@ -1998,17 +1690,17 @@
         "kind": "point",
         "xy": [
           3.25,
-          12.03307086614173
+          -1.4044291338582653
         ],
         "name": ""
       },
       "at": [
         -27.203543307086615,
-        12.03307086614173
+        -1.4044291338582653
       ],
       "to": [
         3.25,
-        12.03307086614173
+        -1.4044291338582653
       ],
       "text": "stud 5.5\"",
       "height": 1.6,
@@ -2023,17 +1715,17 @@
         "kind": "point",
         "xy": [
           6.312500000000001,
-          6.977515310586174
+          -6.459984689413821
         ],
         "name": ""
       },
       "at": [
         -27.203543307086615,
-        6.977515310586174
+        -6.459984689413821
       ],
       "to": [
         6.312500000000001,
-        6.977515310586174
+        -6.459984689413821
       ],
       "text": "gwb-int 0.625\"",
       "height": 1.6,
@@ -2048,17 +1740,17 @@
         "kind": "point",
         "xy": [
           6.63,
-          1.9219597550306187
+          -11.515540244969376
         ],
         "name": ""
       },
       "at": [
         -27.203543307086615,
-        1.9219597550306187
+        -11.515540244969376
       ],
       "to": [
         6.63,
-        1.9219597550306187
+        -11.515540244969376
       ],
       "text": "paint 0.01\"",
       "height": 1.6,
@@ -2072,27 +1764,27 @@
       "boundary": [
         [
           0.25,
-          3.0
+          -10.437499999999998
         ],
         [
           0.25,
-          -0.10000000000000009
+          -13.537499999999998
         ],
         [
           -1.4999999999999998,
-          -0.10000000000000009
+          -13.537499999999998
         ],
         [
           -1.4999999999999998,
-          0.3999999999999999
+          -13.037499999999998
         ],
         [
           -0.25,
-          0.3999999999999999
+          -13.037499999999998
         ],
         [
           -0.25,
-          3.0
+          -10.437499999999998
         ]
       ],
       "pattern": "metal",
@@ -2108,27 +1800,27 @@
       "points": [
         [
           0.25,
-          3.0
+          -10.437499999999998
         ],
         [
           0.25,
-          -0.10000000000000009
+          -13.537499999999998
         ],
         [
           -1.4999999999999998,
-          -0.10000000000000009
+          -13.537499999999998
         ],
         [
           -1.4999999999999998,
-          0.3999999999999999
+          -13.037499999999998
         ],
         [
           -0.25,
-          0.3999999999999999
+          -13.037499999999998
         ],
         [
           -0.25,
-          3.0
+          -10.437499999999998
         ]
       ],
       "layer": "A-DETL-CMPT",
@@ -2144,19 +1836,19 @@
       "boundary": [
         [
           -1.4999999999999998,
-          0.0
+          -13.437499999999998
         ],
         [
           -0.7499999999999998,
-          0.0
+          -13.437499999999998
         ],
         [
           -0.7499999999999998,
-          0.9
+          -12.537499999999998
         ],
         [
           -1.4999999999999998,
-          0.9
+          -12.537499999999998
         ]
       ],
       "pattern": "foam",
@@ -2172,19 +1864,19 @@
       "points": [
         [
           -1.4999999999999998,
-          0.0
+          -13.437499999999998
         ],
         [
           -0.7499999999999998,
-          0.0
+          -13.437499999999998
         ],
         [
           -0.7499999999999998,
-          0.9
+          -12.537499999999998
         ],
         [
           -1.4999999999999998,
-          0.9
+          -12.537499999999998
         ]
       ],
       "layer": "A-DETL-CMPT",
@@ -2200,51 +1892,51 @@
       "boundary": [
         [
           -1.2499999999999998,
-          2.4
+          -11.037499999999998
         ],
         [
           -1.2499999999999998,
-          0.0
+          -13.437499999999998
         ],
         [
           -5.5,
-          0.0
+          -13.437499999999998
         ],
         [
           -5.8,
-          0.0
+          -13.437499999999998
         ],
         [
           -5.8,
-          -4.126179799059259
+          -17.56367979905926
         ],
         [
           -6.665915900750461,
-          -4.43543547789871
+          -17.872935477898707
         ],
         [
           -6.834084099249539,
-          -3.964564522101291
+          -17.40206452210129
         ],
         [
           -6.3,
-          -3.773820200940741
+          -17.21132020094074
         ],
         [
           -6.3,
-          0.5
+          -12.937499999999998
         ],
         [
           -5.5,
-          0.5
+          -12.937499999999998
         ],
         [
           -1.7499999999999998,
-          0.5
+          -12.937499999999998
         ],
         [
           -1.7499999999999998,
-          2.4
+          -11.037499999999998
         ]
       ],
       "pattern": "metal",
@@ -2260,51 +1952,51 @@
       "points": [
         [
           -1.2499999999999998,
-          2.4
+          -11.037499999999998
         ],
         [
           -1.2499999999999998,
-          0.0
+          -13.437499999999998
         ],
         [
           -5.5,
-          0.0
+          -13.437499999999998
         ],
         [
           -5.8,
-          0.0
+          -13.437499999999998
         ],
         [
           -5.8,
-          -4.126179799059259
+          -17.56367979905926
         ],
         [
           -6.665915900750461,
-          -4.43543547789871
+          -17.872935477898707
         ],
         [
           -6.834084099249539,
-          -3.964564522101291
+          -17.40206452210129
         ],
         [
           -6.3,
-          -3.773820200940741
+          -17.21132020094074
         ],
         [
           -6.3,
-          0.5
+          -12.937499999999998
         ],
         [
           -5.5,
-          0.5
+          -12.937499999999998
         ],
         [
           -1.7499999999999998,
-          0.5
+          -12.937499999999998
         ],
         [
           -1.7499999999999998,
-          2.4
+          -11.037499999999998
         ]
       ],
       "layer": "A-DETL-CMPT",
@@ -2320,19 +2012,19 @@
       "boundary": [
         [
           -5.0,
-          2.65
+          -10.787499999999998
         ],
         [
           -4.0,
-          2.65
+          -10.787499999999998
         ],
         [
           -4.0,
-          4.15
+          -9.287499999999998
         ],
         [
           -5.0,
-          4.15
+          -9.287499999999998
         ]
       ],
       "pattern": "rigid",
@@ -2348,19 +2040,19 @@
       "points": [
         [
           -5.0,
-          2.65
+          -10.787499999999998
         ],
         [
           -4.0,
-          2.65
+          -10.787499999999998
         ],
         [
           -4.0,
-          4.15
+          -9.287499999999998
         ],
         [
           -5.0,
-          4.15
+          -9.287499999999998
         ]
       ],
       "layer": "A-DETL-CMPT",
@@ -2376,19 +2068,19 @@
       "boundary": [
         [
           0.4999999999999996,
-          0.0
+          -13.437499999999998
         ],
         [
           5.999999999999999,
-          0.0
+          -13.437499999999998
         ],
         [
           5.999999999999999,
-          0.25
+          -13.187499999999998
         ],
         [
           0.4999999999999996,
-          0.25
+          -13.187499999999998
         ]
       ],
       "pattern": "metal",
@@ -2404,19 +2096,19 @@
       "points": [
         [
           0.4999999999999996,
-          0.0
+          -13.437499999999998
         ],
         [
           5.999999999999999,
-          0.0
+          -13.437499999999998
         ],
         [
           5.999999999999999,
-          0.25
+          -13.187499999999998
         ],
         [
           0.4999999999999996,
-          0.25
+          -13.187499999999998
         ]
       ],
       "layer": "A-DETL-CMPT",
@@ -2433,17 +2125,17 @@
         "kind": "point",
         "xy": [
           0.2499999999999998,
-          0.0
+          -13.437499999999998
         ],
         "name": ""
       },
       "at": [
         13.0,
-        29.07751531058618
+        15.640015310586179
       ],
       "to": [
         0.2499999999999998,
-        0.0
+        -13.437499999999998
       ],
       "text": "air continuity — sheathing-ext →\nsheathing-ext",
       "height": 1.6,
@@ -2458,17 +2150,17 @@
         "kind": "point",
         "xy": [
           -0.7499999999999999,
-          0.0
+          -13.437499999999998
         ],
         "name": ""
       },
       "at": [
         13.0,
-        19.783070866141735
+        6.3455708661417365
       ],
       "to": [
         -0.7499999999999999,
-        0.0
+        -13.437499999999998
       ],
       "text": "water continuity — spray-foam-ext →\nspray-foam-ext",
       "height": 1.6,
@@ -2483,17 +2175,17 @@
         "kind": "point",
         "xy": [
           -0.7499999999999999,
-          0.0
+          -13.437499999999998
         ],
         "name": ""
       },
       "at": [
         13.0,
-        10.488626421697292
+        -2.948873578302706
       ],
       "to": [
         -0.7499999999999999,
-        0.0
+        -13.437499999999998
       ],
       "text": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
       "height": 1.6,
@@ -2506,7 +2198,7 @@
       "node": "text",
       "anchor": [
         -26.203543307086615,
-        -55.181102362204726
+        -68.61860236220473
       ],
       "content": "TR-CATLIN-FOUNDATION  ·  basement-framed-wall",
       "height": 3.0,
@@ -2598,7 +2290,7 @@
           "kind": "point",
           "xy": [
             -4.050000000000001,
-            -56.00000000000001
+            -61.4375
           ],
           "name": ""
         },
@@ -2606,18 +2298,18 @@
           "kind": "point",
           "xy": [
             -0.04999999999999974,
-            -56.00000000000001
+            -61.4375
           ],
           "name": ""
         }
       ],
       "p0": [
         -4.050000000000001,
-        -56.00000000000001
+        -61.4375
       ],
       "p1": [
         -0.04999999999999974,
-        -56.00000000000001
+        -61.4375
       ],
       "offset": 3.0,
       "height_pt": 6.5,
@@ -3219,7 +2911,7 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "kdat"
+      "material": "standing-seam-snaplock"
     },
     {
       "space": "paper",
@@ -3256,78 +2948,6 @@
         2.85,
         1.058
       ],
-      "content": "kdat  3.5\"",
-      "height": 3.0,
-      "height_pt": 6.5,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
-    },
-    {
-      "space": "paper",
-      "node": "hatch",
-      "boundary": [
-        [
-          2.65,
-          0.8180000000000001
-        ],
-        [
-          2.79,
-          0.8180000000000001
-        ],
-        [
-          2.79,
-          0.9580000000000001
-        ],
-        [
-          2.65,
-          0.9580000000000001
-        ]
-      ],
-      "pattern": "metal",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "standing-seam-snaplock"
-    },
-    {
-      "space": "paper",
-      "node": "polyline",
-      "points": [
-        [
-          2.65,
-          0.8180000000000001
-        ],
-        [
-          2.79,
-          0.8180000000000001
-        ],
-        [
-          2.79,
-          0.9580000000000001
-        ],
-        [
-          2.65,
-          0.9580000000000001
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.2,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": null
-    },
-    {
-      "space": "paper",
-      "node": "text",
-      "anchor": [
-        2.85,
-        0.8880000000000001
-      ],
       "content": "standing-seam-snaplock  0.5\"",
       "height": 3.0,
       "height_pt": 6.5,
@@ -3348,9 +2968,11 @@
     "• Exposed XPS (top portion above grade): protect with appropriate elastomeric coating or rigid metal/PVC trim per manufacturer.",
     "• **The exposed band is modelled now, not only drawn (2026-08-18).** The 2026-08-18 lift put grade at -2'-6\", and the 2026-08-21 basement-ceiling overhaul took it to -2'-10\", so the north, east and west basement walls stand 2'-10\" out of the ground and that much XPS is exposed on each. The band is authored off the GRADE datum rather than as a height, so both lifts grew it (and the panel order, ~324 SF to ~374 SF) without the assembly being edited. `CATLIN_BASEMENT_12` and `CATLIN_BASEMENT_8` therefore carry a fifth layer — a 1/2\" aluminium-faced protection panel (`foundation-protection-panel`, the house's one exterior dark, #1c1f24) — with a `Layer.extent` running from 6\" *below* grade up to the top of the wall. Six inches below so no foam edge shows at the soil line and the shovel hits panel, not XPS. Because it is a real layer with a real band, the drawing, the 3D model, the IFC export (as an `IfcBuildingElementPart` aggregated to its wall) and the order all read the same area; the detail component no longer derives a second band of its own beside it.",
     "• **The parge coat is off these three walls and stays on the south one.** The full-height parge added 2026-08-01 was there for the *south* wall, which the sunken garden opens to the air over its whole 9', and it landed on all four sides only because a layer had no way to say \"only here\". The south wall keeps it, in its own assembly (`CATLIN_BASEMENT_8_GARDEN`) — a grade-datum band cannot describe a face whose exposure runs from -9'-0\" to 0'-0\". Every one of these assemblies still carries exactly 4.55\" outboard of the concrete face, which is what `N-B-BRICK-W`/`-E`'s stand-off is measured from.",
-    "• **The pour is 8\" everywhere the detail applies (2026-08-21).** This detail is the wood-over-concrete transition, and 12\" was only ever earned where a *cast concrete deck* lands on the wall top beside the sill plate and needs its own bearing seat inboard of it. Wood does not: the I-joists and rim bear on the same 2x6 mudsill the framed wall above stands on, and an 8\" wall carries that sill with 2\" to spare. After the 2026-08-21 basement-ceiling overhaul the only cast deck left is `SL-M-DECK`, which lands on the east wall and the centre line — neither of which this detail draws. So the north, west and south perimeter is 8\" (`CATLIN_BASEMENT_8`, `CATLIN_BASEMENT_8_GARDEN`, `SAUNA_LINER_ON_BASEMENT_8_GARDEN`) with `#6 @ 48\" o.c.` vertical steel, which IRC Table R404.1.2(8) requires at 8\" where 12\" reads NR. Nothing in the drawn transition changed: the walls align on `face(\"concrete-ext\")`, so the exterior face, the 4\" of XPS and its hand-off to the framed wall's 4\" of CI all stand exactly where they did, and the 4\" came off the inside face where the sill has room to spare.",
-    "• **The panel's head is the Z-flashing below.** The band tops out at 0'-0\", which is the top of the basement wall and the base of the framed wall above — exactly where the rainscreen's 1-1/2\" corrugated bug screen sits in the vented part of the outrigger band and where the Z-flashing with its drip is drawn. (That vent is 1\" deep since the truss wall — the outrigger band is 3-1/2\" but its back 2-1/2\" is packed with the foam, so the screen closes 1\", not 3-1/2\".) The panel tucks under that flashing; nothing new is fastened for the tie, and the flashing is what sheds water clear of the panel head.",
-    "• Sill: include sill gasket and treated mudsill. Prioritize air sealing at sill plate (sealant + spray foam at gaps). Use mudsill anchors (e.g., MASAP) as required (not shown).",
+    "• **The pour stops at the bearing seat, -13 7/16\", and this detail's junction is there (2026-08-23).** For as long as the basement walls ran to 0'-0\" the top of the concrete and the bottom of the framed wall were one elevation, and `detail_components/wall_base.py` said so in a comment — `junction_z = framed.z0_m  # top of concrete == bottom of framed wall`. They are 13 7/16\" apart now. The pour tops out on one flat seat all the way round, the framed wall above still starts at the storey datum (the house-wide datum convention is unchanged and is a known split — see `plans/TODO.md`), and the 13 7/16\" between them is the mudsill, its gasket, and the 11 7/8\" rim band the joists die into. The component reads `concrete.z1_m` now, so the L-flashing, the Z-flashing with its drip, the bug screen and the sill gasket all draw on the concrete rather than a foot above it. **Nothing in the detail's own stack moved** — the same pieces in the same order, one plane lower.",
+    "• **The sill is one board and it is shared (2026-08-23).** This has always been the intent of the line further down — \"the I-joists and rim bear on the same 2x6 mudsill the framed wall above stands on\" — and until 2026-08-23 the model only half-carried it: `CR-CONC-TO-FRAMED-SILL` was returned under the framed wall's studs and stopped where the framed wall did, so the stretches where a floor bore and no wall stacked (W-B-CN's north 4.05 LF, W-B-CS's 0.83 LF) ordered no plate at all, and the joists themselves resolved *inside* the pour with nothing between wood and concrete. One rule takes the **union** of the two runs now, on the seat, and it bills 370.0 LF where it billed 358.6. There is no second rule and there must not be: two rules over one board is a double-bill, and that is exactly what retiring `floor:on_concrete_wall` prevents.",
+    "• **The pour is 8\" everywhere the detail applies (2026-08-21), and the steel is `#5 @ 41\" o.c.` (2026-08-23).** The bar changed with the seat, not with the design: an exactly 8'-0\" wall is IRC Table R404.1.2(8)'s 8'-unsupported row rather than the 10' row a 9'-4\" wall rounds up to, and that cell reads `#5 @ 41\"` where the taller one read `#6 @ 48\"` — a lighter bar at a tighter spacing. This detail is the wood-over-concrete transition, and 12\" was only ever earned where a *cast concrete deck* lands on the wall top beside the sill plate and needs its own bearing seat inboard of it. Wood does not: the I-joists and rim bear on the same 2x6 mudsill the framed wall above stands on, and an 8\" wall carries that sill with 2\" to spare. After the 2026-08-21 basement-ceiling overhaul the only cast deck left is `SL-M-DECK`, which lands on the east wall and the centre line — neither of which this detail draws. So the north, west and south perimeter is 8\" (`CATLIN_BASEMENT_8`, `CATLIN_BASEMENT_8_GARDEN`, `SAUNA_LINER_ON_BASEMENT_8_GARDEN`) with `#5 @ 41\" o.c.` vertical steel, which IRC Table R404.1.2(8) requires at 8\" where 12\" reads NR. Nothing in the drawn transition changed: the walls align on `face(\"concrete-ext\")`, so the exterior face, the 4\" of XPS and its hand-off to the framed wall's 4\" of CI all stand exactly where they did, and the 4\" came off the inside face where the sill has room to spare.",
+    "• **The panel's head is the Z-flashing below.** The band tops out at the top of the basement wall — -13 7/16\" since 2026-08-23, 0'-0\" before it — which is where the framed wall's mudsill sits, and the rainscreen's 1-1/2\" corrugated bug screen sits in the vented part of the outrigger band and where the Z-flashing with its drip is drawn. (That vent is 1\" deep since the truss wall — the outrigger band is 3-1/2\" but its back 2-1/2\" is packed with the foam, so the screen closes 1\", not 3-1/2\".) The panel tucks under that flashing; nothing new is fastened for the tie, and the flashing is what sheds water clear of the panel head.",
+    "• Sill: include sill gasket and treated mudsill. **The stack is 1/16\" of compressed EPDM gasket under a 1 1/2\" PT 2x6, and those two numbers are structural, not trim**: the bearing seat is derived as joist depth + mudsill + gasket below the storey datum (`params/main_deck.py::BEARING_SEAT`), so the EPS deck beside it was deepened to land on the same plane. Substituting a thicker gasket or a 2x8 laid flat moves the seat and `structural.mixed_deck_bearing_seat` FAILs the build until the deck follows. Prioritize air sealing at sill plate (sealant + spray foam at gaps). Use mudsill anchors (e.g., MASAP) as required (not shown).",
     "• Flashings: provide stainless (preferred) or thick aluminum Z-flashing with drip edge at the bottom of the rainscreen — i.e. at the bottom of the **outriggers** since 2026-08-23, and set to the 1\" vent in front of the foam rather than to a 3-1/2\" band. Install insect barrier mesh/strip (Cor-A-Vent or SS screen) just above flashing. Mesh can be stapled to the outriggers, run behind the flashing, and into the layer between basement and wall foam.",
     "• Interface flashing: provide L-flashing from bottom of sheathing down onto the top of basement foam. Terminate within the insulation plane and seal the outer end with spray foam (Pestblock) to avoid an exterior thermal bridge. This is meant as a foam layer insect barrier. Since 2026-08-23 the \"insulation plane\" it terminates within is the wall's own sprayed foam rather than a board course, so the seal is foam to foam — bonded, not lapped.",
     "• Drainage: 4\" perforated french drain in geotextile-lined washed stone (wider area, not under footing). Additional compacted aggregate in front of footing (equal to footing height, geotextile-lined). River rock trench (geotextile-lined) against foundation for top of soil.",
@@ -3389,7 +3011,7 @@
     ],
     "center": [
       28.614763779527557,
-      -7.874015748031496
+      -21.311515748031496
     ],
     "scale": 0.375,
     "scale_label": "3/8\" = 1'-0\"",

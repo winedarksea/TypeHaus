@@ -46,8 +46,7 @@ DRAINS = [
             # project): the under-slab leg falls 5.4" (0.33"/ft, above the 0.125"/ft floor)
             # with its crown 5.7" clear of the slab underside. Sized 4" (2026-07-31): the
             # rolled-up basement load is 42 DFU, past the 35 a 3" branch carries (Table 703.2).
-            elevations=(ft(9, 4), ft(8), ft(7), ft(6, 11.2), ft(6, 10.9), ft(-1.1),
-                        ft(-1.55)),
+            elevations=(ft(9, 1.4375), ft(7, 9.4375), ft(6, 9.4375), ft(6, 8.6375), ft(6, 8.3375), inch(-13.2), inch(-18.6)),
             serves=("FX-M-BATH1-WC", "FX-M-BATH2-WC", "FX-M-KITCH-SINK",
                     "FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
                     "FX-M-BATH2-SINK", "FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK",
@@ -72,41 +71,45 @@ DRAINS = [
             path=(pt(ft(28, 7), ft(35)), pt(ft(28, 7), ft(35)),
                   pt(ft(28, 7), ft(16, 6)), pt(ft(6), ft(16, 6))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(9, 4.75), ft(8, 2.9), ft(7, 8.44), ft(6, 11.57)),
+            # Starts on the cap's own top (+15/16" project = 9'-2 3/8" basement-relative,
+            # 2026-08-23) and drops clear of the deck's SOFFIT, which is the bearing seat at
+            # -13 7/16" and 1 9/16" lower than it was — a drop that stops inside the pour is
+            # what `mep.sleeve_coverage` reads as a sleeve serving nothing.
+            elevations=(ft(9, 2.375), ft(7, 9.9375), ft(7, 5.25), ft(6, 11.57)),
             serves=("FX-M-KITCH-SINK",)),
     # BATH2's WC, at its re-pointed flange on the wet wall (→ SP-M-WC2).
     PipeRun(uid="CBPD01AAAA", tag="PR-B-WC2-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(m(0.686504), m(6.14439)), pt(m(0.686504), m(6.14439)),
                   pt(m(0.686504), ft(16, 6)), pt(ft(3), ft(16, 6))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(9, 4), ft(8), ft(7, 2), ft(7)),
+            elevations=(ft(9, 1.4375), ft(7, 9.4375), ft(6, 11.4375), ft(6, 9.4375)),
             serves=("FX-M-BATH2-WC",)),
     PipeRun(uid="CBPD02AAAA", tag="PR-B-LAV1-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(6), m(7.00891)), pt(ft(6), m(7.00891)), pt(ft(6), ft(22, 7))),
             diameter=inch(1.5), material="pvc",
-            elevations=(ft(9, 4), ft(8, 0.6), ft(8, 0.2)),
+            elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(7, 9.6375)),
             serves=("FX-M-BATH1-LAV",)),
     PipeRun(uid="CBPD03AAAA", tag="PR-B-TUB2-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(7, 4), ft(19, 4.8)), pt(ft(7, 4), ft(19, 4.8)),
                   pt(ft(6), ft(19, 4.8))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(9, 4), ft(8, 0.6), ft(7, 7.2)),
+            elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(7, 4.6375)),
             serves=("FX-M-BATH2-TUB",)),
     PipeRun(uid="CBPD04AAAA", tag="PR-B-SH2-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(1, 9), ft(17, 3)), pt(ft(1, 9), ft(17, 3)),
                   pt(ft(3), ft(16, 6))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(9, 4), ft(8, 0.6), ft(7, 1.2)),
+            elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(6, 10.6375)),
             serves=("FX-M-BATH2-SH",)),
     PipeRun(uid="CBPD05AAAA", tag="PR-B-SINK2-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(1), ft(16, 6)), pt(ft(1), ft(16, 6)), pt(ft(3), ft(16, 6))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(9, 4), ft(8, 0.6), ft(7, 0.6)),
+            elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(6, 10.0375)),
             serves=("FX-M-BATH2-SINK",)),
     PipeRun(uid="CBPD06AAAA", tag="PR-B-WASH-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(8), ft(20)), pt(ft(8), ft(20)), pt(ft(6), ft(20))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(9, 4), ft(8, 0.6), ft(7, 8.4)),
+            elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(7, 5.8375)),
             serves=("FX-M-LAUNDRY",)),
     # The laundry tub (2026-07-31): down its own cast sleeve, then 5'-9" west along the
     # ceiling to PR-B-MAIN-DRAIN's x=6' collector — same two-move shape as PR-B-SINK2-DRAIN/
@@ -118,7 +121,7 @@ DRAINS = [
             path=(pt(ft(11, 9), ft(18, 9)), pt(ft(11, 9), ft(18, 9)),
                   pt(ft(6), ft(18, 9))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(9, 4), ft(8, 0.6), ft(7, 5)),
+            elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(7, 2.4375)),
             serves=("FX-M-LAUNDRY-SINK",)),
     # --- the two basement slab-fixture branches (2026-07-30) ---------------------------
     #
@@ -260,8 +263,7 @@ CONDENSATE = [
             path=(pt(ft(27), ft(9)), pt(ft(18), ft(9)), pt(ft(13, 6), ft(9)),
                   pt(ft(13, 6), ft(12, 9)), pt(ft(13, 6), ft(12, 9))),
             diameter=inch(0.75), material="pvc",
-            elevations=(ft(7, 7.9), ft(7, 5.2), ft(7, 3.85), ft(7, 2.725),
-                        ft(0, 9))),
+            elevations=(ft(7, 5.3375), ft(7, 2.6375), ft(7, 1.2875), ft(7, 0.1625), ft(0, 9))),
 ]
 
 # --- TPR relief discharge (P2804.6.1) ------------------------------------------------

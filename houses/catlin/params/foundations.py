@@ -56,8 +56,14 @@ from plan.storeys.garage import (
 # reveal, the breezeway's frost pads, the hydrant's bury — derives from here.
 #
 # 2'-6" on 2026-08-18, then 2'-10" on 2026-08-21: the mixed I-joist / EPS-formed deck over
-# the basement is 12 5/8" deep where the cast slab was 9", so the house rose 4" and the
+# the basement is deeper than the 9" cast slab it replaced, so the house rose 4" and the
 # basement floor stayed where it was rather than surrendering the headroom.
+#
+# **It did NOT move again on 2026-08-23.** The flat-bearing-seat rework deepened that deck
+# to 14 3/8" and took the basement slab UP 2 9/16" to meet it. The house does not rise; the
+# basement floor does. Grade, the garage, the breezeway pads and the hydrant's bury are all
+# pinned to soil and none of them moved — which is the whole reason this constant is
+# authored as a distance from the datum rather than derived from the basement.
 #
 # ``plan/site.py`` is ``# haus: editable`` and may hold only literals, so it repeats this
 # number as ``Site.grade``. ``plan/manifest.py`` asserts the two agree; do not edit one
@@ -91,7 +97,8 @@ _HOUSE_WALL_TAGS = (
 
 # The three south strips are formed in an insulated footing form, the rest are poured
 # against the bedding as before. They are the strips the sunken garden runs along: the
-# garden floor is at -9'-4" and they bottom out at -10'-0", so they carry **8" of frost
+# garden floor is at -9'-1 7/16" and they bottom out at -9'-9 7/16" — both rose 2 9/16" on
+# 2026-08-23 with the basement slab, so the cover between them is unchanged at **8" of frost
 # cover** against MN Rules 1303.1600's 42" for Ramsey County — measured, as IRC R403.1.4.1
 # says to, from the lowest adjacent grade, which beside them is the garden floor and not the
 # -2'-10" site plane six and a half feet overhead.

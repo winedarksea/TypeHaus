@@ -35,8 +35,10 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
         "concrete", "retaining-block", "brown-brick",
         "glazed-lapis-brick", "glazed-gold-brick"}
     # Bigger than the entire priced concrete order (footings + slab) the estimate used to
-    # know about, which is the measure of what was missing.
-    assert sum(float(row["volume_cubic_yards"]) for row in rows) > 100
+    # know about, which is the measure of what was missing. It was >100 cy until 2026-08-23:
+    # the flat bearing seat took every basement wall from 9'-4" to exactly 8'-0", which is
+    # ~14% of the tallest pour in the house.
+    assert sum(float(row["volume_cubic_yards"]) for row in rows) > 90
     assert all(float(row["net_area_sqft"]) > 0 for row in rows)
 
 
@@ -76,11 +78,13 @@ def test_the_sunken_garden_brick_wythe_is_billed(catlin_model) -> None:
         assert row["tags"] == ["W-B-BRICK"]
         assert float(row["net_area_sqft"]) > 0
         assert float(row["volume_cuft"]) > 0
-    # The bands partition the wall's whole net face, no more and no less: 19'-2" x 8'-9" is
-    # 167.7 SF gross, less the two reveals (5'-0" x 78" and 14" x 20") is 133.2. The window
-    # was 132 until 2026-08-21, when both reveals were taken down 6" at the head and the
-    # deduction shrank with them — a reminder that this bound moves whenever those do.
-    assert 130 < sum(float(row["net_area_sqft"]) for row in rows) < 136
+    # The bands partition the wall's whole net face, no more and no less: 19'-2" x 8'-6 7/16"
+    # gross, less the two reveals (5'-0" x 78" and 14" x 20"). 133.2 until 2026-08-23, when
+    # the wythe's base rose 2 9/16" with the footing toe it bears on — its head is still
+    # 0'-0", so the wall simply got that much shorter. The window was 132 before 2026-08-21,
+    # when both reveals were taken down 6" at the head — a reminder that this bound moves
+    # whenever the reveals or the plinth do.
+    assert 127 < sum(float(row["net_area_sqft"]) for row in rows) < 133
     # And they are in the right proportions: the field is most of the wall, the plinth is
     # the bottom 2'-0", and the two 2-course registers are the least of it.
     assert (float(by_material["glazed-lapis-brick"]["net_area_sqft"])

@@ -603,41 +603,59 @@
 # because it is the comparison the replacement is judged against, not because anything
 # still bills at it.
 #
-# What replaced it: 414 SF of BuildDeck/LiteDeck 8" EPS stay-in-place form with a 4 5/8"
-# cast cap, and 819 SF of I-joists. Two rows carry it, and they must not overlap.
+# What replaced it: 414 SF of LiteDeck 10" EPS stay-in-place beam (8" base panel + 2" top
+# hat) with a 4 3/8" cast cover, and 819 SF of I-joists. Two rows carry it, and they must not
+# overlap. It was the 8" panel + a 4 5/8" cap until 2026-08-23, when the deck deepened to
+# reach the wood bays' flat bearing seat (params/main_deck.py).
 #
 # **This row is the concrete only** — ready-mix, reinforcing, pump, place and finish. The
 # forms are a separate ``[envelope_layers]`` row ("eps-deck-form"), exactly as ``icf-eps``
 # is forms-only with its ready-mix in ``[wall_structure]``.
 #
 # **`unit = "SF"` is load-bearing.** ``structural_solids`` bills a slab's *gross* prism, so
-# this deck reads as 16.13 cy — the whole 12 5/8" depth, 8" of which is foam. Priced per cy
-# that would buy 16 yards of concrete for a deck that pours 7.35. ``unit = "SF"`` reads the
+# this deck reads as 18.4 cy — the whole 14 3/8" depth, 10" of which is foam. Priced per cy
+# that would buy 18 yards of concrete for a deck that pours 7.74. ``unit = "SF"`` reads the
 # row's ``plan_area_sqft`` instead (cli/price_file.py), so the rate below is literally the
 # per-square-foot price the build-up quotes.
 #
-# Build-up, per SF of deck, at 0.01774 cy/SF (BuildDeck's 3"-cap consumption plus the extra
-# 1 5/8" of cap):
-#   ready-mix, 7.35 cy + waste @ $180-200/cy            $3.20- 3.55/SF
+# Build-up, per SF of deck, at **0.01869 cy/SF**. That number is re-derived, not scaled:
+# the LiteDeck WRS manual's consumption table reads 58 SF/cy for the 10" beam at a 4" cover
+# and 52 SF/cy at 4 1/2", so 4 3/8" interpolates to ~53.5 SF/cy = 0.01869 cy/SF. The 0.01774
+# authored until 2026-08-23 was "BuildDeck's 3"-cap consumption plus the extra 1 5/8" of cap",
+# an extrapolation that came out ~4% light even at the shallower section it described.
+# 414 SF x 0.01869 = 7.74 cy.
+#   ready-mix, 7.74 cy + waste @ $180-200/cy            $3.37- 3.74/SF
 #   reinforcing: rib bars + cap mesh, furnished/placed  $1.50- 3.00/SF
 #   place, screed, power trowel, cure                   $3.00- 5.50/SF
+#   temporary shoring, adjustable posts @ 6' o.c.       $2.00- 5.00/SF
 #   cold-weather protection (Nov-Mar in MN)             $0.00- 0.75/SF
 #   structural engineering, stamped                     $1.00- 3.00/SF
 #   small-job premium                                   $0.15- 2.40/SF
 #                                                      -----------------
-#                                                      $ 8.85-18.20/SF
+#                                                      $11.02-23.39/SF
 # **No pump line here, on purpose (corrected 2026-08-21).** The build-up carried
-# "boom pump (mob + hours + yardage) $1.15-1.80/SF" until today, which double-booked the
+# "boom pump (mob + hours + yardage) $1.15-1.80/SF" until then, which double-booked the
 # `concrete-pumping` lump sum in [allowances] — this file's single house-wide home for
 # pumping, and the reason its own note says flatwork subs quote "pump by others". One home
-# or the other; the lump sum is the one every other pour already relies on. Dropping the
-# line takes the rate from $10.00-20.00 to $8.85-18.20/SF, i.e. -$476 to -$745 on 414 SF.
+# or the other; the lump sum is the one every other pour already relies on.
 #
-# No shoring line and no formwork line either: that is the whole point of a stay-in-place
-# form, and it is where the $25-40k mobilisation floor went. Engineering stays — the form
-# supplier gives a layout, not a stamp — but it is a third of what a shored deck's was
-# because there is no shoring design in it.
-"slab:CATLIN_DECK_EPS_INT" = { low = 8.85, high = 18.20, unit = "SF" }  # 414 SF — EPS-formed deck, concrete only, pump in [allowances]
+# **There IS a shoring line, added 2026-08-23, and this file said the opposite for two
+# days.** It read "No shoring line and no formwork line either: that is the whole point of a
+# stay-in-place form". The formwork half is true and is the point. The shoring half is simply
+# wrong: the LiteDeck WRS installation manual (Sept 2020) requires continuous temporary
+# shoring at 6' o.c. for any span over 5', held until the pour reaches 75% design strength or
+# 21 days, whichever is first. This deck spans 18'-0".
+#
+# **It does not flip the decision, and that is worth saying plainly.** What the 9" slab
+# carried was $8.00-14.00/SF of single-use plywood formwork AND shoring, over a commercial
+# shoring sub's $25-40k mobilisation floor. What this carries is roughly a dozen rentable
+# adjustable posts on stringers under 414 SF, set and struck by the same crew that places the
+# deck — the kind of shoring a residential concrete contractor owns. 414 SF at 6' o.c. is
+# ~12-15 shores; a month's rental at $30-50 each plus 8-16 crew-hours to set and strike is
+# $900-2,060, i.e. $2.00-5.00/SF. Engineering also stays and is still a third of a shored
+# deck's, because the form supplier gives a layout and the shoring is prescriptive out of the
+# manual rather than designed.
+"slab:CATLIN_DECK_EPS_INT" = { low = 11.02, high = 23.39, unit = "SF" }  # 414 SF — EPS-formed deck, concrete + temporary shoring, pump in [allowances]
 # $400-1,200 each — basin, gasketed sealed lid, 4" riser, sub-slab connection, slab patch.
 # Minnesota has required radon-resistant new construction since June 2009, so this is code
 # scope, not an option. 2026-08-20: RE-UNITED — `unit = "ea"` reads the row's `count`, so the
@@ -1238,7 +1256,9 @@
 # $5-7/SF for the 8" panel with its steel ribs. Labour is a step over icf-eps's because this
 # one is set overhead on temporary bearers rather than stacked on a footing: set panels,
 # level and brace the intermediate bearer line, close the ends, strip the bearers.
-"eps-deck-form" = { material = { low = 5, high = 7 }, labour = { low = 4, high = 7.5 } }  # 414 SF — forms only; ready-mix is in [concrete]
+# Re-quoted 2026-08-23 for the **10" beam** (8" base panel + 2" top hat), not the 8" panel
+# the old rate was taken from: 25% more EPS in the section, and one more piece per bay to set.
+"eps-deck-form" = { material = { low = 6.25, high = 8.75 }, labour = { low = 4.5, high = 8 } }  # 414 SF — 10" LiteDeck forms only; ready-mix is in [concrete]
 "latex-paint" = { material = { low = 0.35, high = 0.8 }, labour = { low = 1.2, high = 2.2 } }  # 7004.9 SF — ~75/25 LABOUR to material
 # 2026-08-08: the accent colour, 80 SF. A deep/custom base runs above a builder white and
 # the coverage per gallon is worse, so it sits a step over the `latex-paint` row.
@@ -1348,8 +1368,12 @@
 #                     (the concrete backing only — its sauna-tg liner bills in
 #                     [envelope_layers]) and SUNKEN_GARDEN_WALL sit on this basis.
 #   poured 8" wall    $110-180/LF of a 9'-0" wall is the market's OWN quote (the 12" row above
-#                     is the extrapolation, not this one); at 9'-4" that is $114-187/LF over
-#                     0.2305 cy/LF -> $495-810/cy. CATLIN_BASEMENT_8, CATLIN_BASEMENT_8_GARDEN
+#                     is the extrapolation, not this one). The wall is **8'-0"** since the
+#                     2026-08-23 flat-bearing-seat rework, not the 9'-4" it was, so the quote
+#                     scales DOWN: $98-160/LF over 0.1975 cy/LF -> $495-810/cy. The $/cy is
+#                     unchanged, which is the point of quoting per cubic yard — the wall lost
+#                     15% of its height and 15% of its money, and the rate did not move.
+#                     CATLIN_BASEMENT_8, CATLIN_BASEMENT_8_GARDEN
 #                     and SAUNA_LINER_ON_BASEMENT_8_GARDEN sit on this basis. Never price
 #                     these off the 12" row — see the block comment on the rows themselves.
 #   8" ICF            $12-25/SF of face installed; 1 SF of 8" wall = 0.0247 cy -> $486-1012/cy.
@@ -1990,7 +2014,8 @@
 
 # 2026-08-20 — the two rows the 2026-08-18 pass left open, answered as far as they can be.
 #
-# pt-sill-plate, 306.6 LF. ** THE OPEN QUESTION IS NOW CLOSED, and the delta-only answer
+# pt-sill-plate, 370.0 LF (306.6 when this block was written). ** THE OPEN QUESTION IS NOW
+# CLOSED, and the delta-only answer
 # below is the right one. ** Two facts settle it:
 #   1. `resolve/framing/solver.py:_append_plates` appends exactly one `plate-bottom` member to
 #      EVERY framed wall, unconditionally — there is no branch that skips it when the wall
@@ -2013,7 +2038,17 @@
 # wet-set in the pour (Titen HD 1/2"x4" at $2.40 zinc / $4.60 mechanically galvanised).
 # The full-assembly figures above are kept only as a cross-check on the delta; do NOT add the
 # 2x6 itself at $1.30-2.20/LF on top — per (1) and (2), [framing] has already bought it.
-"pt-sill-plate" = { material = { low = 1.07, high = 2.13 }, labour = { low = 2, high = 4 } }  # 358.6 LF — the PT/sealer/anchor DELTA only
+#
+# **One honest gap, opened 2026-08-23 and left open on purpose.** The return is now the UNION
+# of the framed-wall runs and the floor systems' bearing runs on the same pour
+# (resolve/construction_sills.py), because the mudsill is one board carrying both the studs
+# and the joists. Argument (1) covers the framed part and only the framed part: on the ~10 LF
+# where a floor bears and no wall stacks over it — W-B-CN's north 4.05 LF, W-B-CS's 0.83 LF
+# and the like — [framing] has bought no plate, so those feet are being priced at the delta
+# when they want the full assembly. That is roughly $13-25 understated on a $1,100-2,300 row.
+# It is recorded rather than fudged: the clean fix is for the takeoff to split the return by
+# whether a framed wall stands on it, which is a schema question and not a rate.
+"pt-sill-plate" = { material = { low = 1.07, high = 2.13 }, labour = { low = 2, high = 4 } }  # 370.0 LF — the PT/sealer/anchor DELTA only (see the gap note above)
 
 # resilient-channel, 522.2 LF. The 2026-08-18 guess of $0.45-0.90/LF material is CONFIRMED and
 # tightened: single-leg RC-1 in 12' sticks clusters at $0.499-0.566/LF across three independent

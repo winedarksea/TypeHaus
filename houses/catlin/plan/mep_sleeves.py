@@ -87,8 +87,17 @@ SLAB_STUBS = [
 
 # Horizontal sleeves through the basement's cast concrete walls: every ceiling-level run
 # crossing the y=18' centre walls or the perimeter is a cast-in hole (`mep.sleeve_coverage`).
-# center_elevation is project-frame absolute (walls span -9'-4"..0'); positions along y=18'
-# keep >= 5" between neighbours so the 4"-tolerance matcher stays unambiguous.
+# center_elevation is project-frame absolute (the walls span -9'-1 7/16"..-13 7/16" since
+# 2026-08-23); positions along y=18' keep >= 5" between neighbours so the 4"-tolerance
+# matcher stays unambiguous.
+#
+# **Three of them rose 2 9/16" on 2026-08-23** — SP-B-CS2-KITCH, SP-B-CS-COND and
+# SP-B-SEWER-EXIT, the three the drains actually land in. Nothing about the drainage moved:
+# every ``PipeRun.elevations`` in this house is basement-storey-relative, the basement floor
+# came up 2 9/16" to meet the flat bearing seat, and a drain laid to a fall off that floor
+# came up with it. These sleeves are the only absolute numbers in the drainage path, so they
+# are the only ones that had to be re-stated. ``mep.sewer_exit_invert`` is what caught it,
+# and would catch it again.
 # **2026-08-21: 18 of these went too.** Every crossing of W-B-CW, W-B-CW2, W-B-CW3,
 # W-B-CE and W-B-STR2 was a cast-in hole while those five were 12" concrete. They are stud
 # and steel-stud partitions since the basement-ceiling overhaul (the deck no longer spans
@@ -101,7 +110,7 @@ WALL_SLEEVES = [
     SleevePenetration(uid="CBPW15AAAA", tag="SP-B-CS2-KITCH", host_ref="W-B-CS2",
                       position=pt(ft(18), ft(16, 6)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), axis="horizontal",
-                      center_elevation=ft(-1.8933)),
+                      center_elevation=inch(-21.8571)),
     SleevePenetration(uid="CBPW21AAAA", tag="SP-B-CS2-CW", host_ref="W-B-CS2",
                       position=pt(ft(18), ft(16)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(2.5), axis="horizontal",
@@ -115,7 +124,7 @@ WALL_SLEEVES = [
     SleevePenetration(uid="CBPW16AAAA", tag="SP-B-CS-COND", host_ref="W-B-CS",
                       position=pt(ft(18), ft(9)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
-                      center_elevation=ft(-1.9003)),
+                      center_elevation=inch(-22.8036)),
     SleevePenetration(uid="CBPW17AAAA", tag="SP-B-CS-COND2", host_ref="W-B-CS",
                       position=pt(ft(18), ft(1, 5.3)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
@@ -124,12 +133,12 @@ WALL_SLEEVES = [
     # Building drain leaves *under* FT-B-S1, not through W-B-S1 (2026-07-30): the walls stop
     # at -9'-4" (the slab top), below the sewer connection, so this is an under-footing
     # protection sleeve (IRC P2604, `mep.footing_clearance`) at the footing centerline.
-    # center_elevation = invert (-10'-6 1/4") + half the 4" pipe = ft(-10.689), matched to
+    # center_elevation = invert (-10'-3 11/16") + half the 4" pipe = -125.7055", matched to
     # within 1/2" by `mep.sewer_exit_invert`.
     SleevePenetration(uid="CBPW18AAAA", tag="SP-B-SEWER-EXIT", host_ref="FT-B-S1",
                       position=pt(ft(3), ft(0)), pipe_diameter=inch(4),
                       sleeve_diameter=inch(6), axis="horizontal",
-                      center_elevation=ft(-10.689)),
+                      center_elevation=inch(-125.7055)),
     # Both follow PR-G-HYDRANT-CW down to -8'-10" (2026-08-21): the run holds 6' under a
     # grade that is now -2'-10", and a sleeve that stayed at -6'-0" would be a bore the pipe
     # misses by 2'-10". They sit 6" above the basement walls' own bottom, which is as low as

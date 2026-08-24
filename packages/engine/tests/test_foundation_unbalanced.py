@@ -244,15 +244,19 @@ def test_catlin_basement_passes_and_the_free_garden_walls_stay_engineered(catlin
     assert "CATLIN_BASEMENT_12" in passes
     assert "needs no vertical reinforcement" in passes
     assert "GARAGE_ICF_6" in passes
-    # The other eight segments went to 8" on 2026-08-21, which the same table permits ONLY
-    # with #6 @ 48" o.c. vertical. This is the assertion that stops the steel being silently
+    # The other nine segments went to 8" on 2026-08-21, which the same table permits ONLY
+    # with vertical steel. The bar itself moved on 2026-08-23: the flat bearing seat made the
+    # pour exactly 8'-0" instead of 9'-4", which is the 8' unsupported row rather than the
+    # 10' one, and that cell reads #5 @ 41" o.c. — a lighter bar at a tighter spacing.
+    # This is the assertion that stops the steel being silently
     # dropped: without the authored string the check still reports, but as a FAIL, and
     # `fails == ""` above would catch it — this catches the subtler regression where the
     # walls quietly go back to 12" instead.
     for tag in ("CATLIN_BASEMENT_8", "CATLIN_BASEMENT_8_GARDEN",
                 "SAUNA_LINER_ON_BASEMENT_8_GARDEN"):
         assert tag in passes, tag
-    assert 'is reinforced #6 @ 48" o.c. against the #6 @ 48" o.c.' in passes
+    assert 'is reinforced #5 @ 41" o.c. against the #5 @ 41" o.c.' in passes
+    assert "the 8' wall x 7' backfill row" in passes
     # The three free retaining walls, named by R404.4 rather than graded by the table.
     assert "R404.4" in unknowns
     # Nothing in this house is off the table on *thickness* any more.

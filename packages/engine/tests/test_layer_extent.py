@@ -34,9 +34,11 @@ def test_the_panel_band_runs_from_six_inches_under_grade_to_the_wall_top(catlin_
         z0, z1 = layer.band(wall)
         assert z0 == pytest.approx(grade_m - inch(6).meters)
         assert z1 == pytest.approx(wall.z1_m)
-        # 3'-4" of panel over a 9'-4" wall — the point of banding it. (Grade is -2'-10"
-        # since the 2026-08-21 deck overhaul, and the band is 6" under it.)
-        assert (z1 - z0) * _M_TO_FT == pytest.approx(3.0 + 1.0 / 3.0, abs=1e-6)
+        # 2'-2 9/16" of panel over an 8'-0" wall — the point of banding it. (Grade is
+        # -2'-10" since the 2026-08-21 deck overhaul and the band starts 6" under it; the
+        # wall stops at the -13 7/16" bearing seat rather than at 0'-0" since 2026-08-23,
+        # which is where the 1'-1 7/16" the band lost went.)
+        assert (z1 - z0) * _M_TO_FT == pytest.approx((34.0 + 6.0 - 13.4375) / 12.0, abs=1e-6)
 
 
 # W-B-S2 carries the sauna's liner variant of the same outboard stack since 2026-08-18, so
@@ -60,17 +62,19 @@ def test_the_south_wall_keeps_a_full_height_parge_and_no_band(catlin_model):
 
 
 def test_the_sauna_liner_stops_at_the_room_ceiling_not_the_wall_top(catlin_model):
-    """W-B-S2 is a 9'-4" foundation wall bounding a 7'-6" room. The liner is banded off
+    """W-B-S2 is an 8'-0" foundation wall bounding a 7'-6" room. The liner is banded off
     WALL_TOP so the takeoff does not buy basswood, furring and foil-faced polyiso for the
-    1'-6" of concrete above the sauna's ceiling."""
+    concrete above the sauna's ceiling. The offset is 6" since 2026-08-23 — the pour stops
+    on the bearing seat now rather than at 0'-0", so the same ceiling is that much nearer
+    the top of the wall. What is pinned here is the CEILING, at 7'-6" over the slab."""
     wall = catlin_model.wall("W-B-S2")
     for name in ("tg-liner", "liner-furring", "foil-polyiso"):
         layer = next(ly for ly in wall.layers if ly.name == name)
         assert layer.is_banded
         z0, z1 = layer.band(wall)
         assert z0 == pytest.approx(wall.z0_m)
-        assert z1 == pytest.approx(wall.z1_m - inch(18).meters)
-        assert (z1 - z0) * _M_TO_FT == pytest.approx(7.5 + 1.0 / 3.0, abs=1e-6)
+        assert z1 == pytest.approx(wall.z1_m - inch(6).meters)
+        assert (z1 - z0) * _M_TO_FT == pytest.approx(7.5, abs=1e-6)
 
 
 def test_both_basement_assemblies_stand_the_same_distance_off_the_concrete(catlin_model):
@@ -105,14 +109,17 @@ def test_the_solid_is_cut_to_the_band_not_to_the_wall(catlin_model):
 
 
 def test_the_takeoff_bills_the_band_and_not_the_wall(catlin_model):
-    """360 SF: 108 LF of N/E/W perimeter x 3'-4". Billing the wall's face instead would
+    """239 SF: 108 LF of N/E/W perimeter x 2'-2 9/16". It was 360 SF against a 3'-4" band
+    until 2026-08-23, when the pour stopped at the bearing seat and took the band's head down
+    with it — the band runs grade-less-6" to the top of the wall, and the top of the wall
+    moved. Billing the wall's face instead would
     order the panel for every buried foot of foam it never reaches — which is exactly what
     the parge coat it replaced was doing, over 1,394 SF house-wide."""
     from typehaus.takeoff.envelope import envelope_layer_takeoff
 
     rows = {row["material"]: row for row in envelope_layer_takeoff(catlin_model)}
     panel = rows["foundation-protection-panel"]
-    assert panel["net_area_sqft"] == pytest.approx(360.0, abs=1.0)
+    assert panel["net_area_sqft"] == pytest.approx(239.1, abs=1.0)
     # The parge survives only on the south wall (and the porch railing's CMU back face).
     assert rows["stucco"]["net_area_sqft"] < 500.0
 

@@ -396,9 +396,9 @@ CATLIN_SLAB_FLOOR = Assembly(
 CATLIN_DECK_EPS_INT = Assembly(
     tag="CATLIN_DECK_EPS_INT",
     layers=(
-        Layer(name="concrete-cap", material_ref="concrete", thickness=inch(4.625),
+        Layer(name="concrete-cap", material_ref="concrete", thickness=inch(4.375),
               function=LayerFunction.STRUCTURE),
-        Layer(name="eps-form", material_ref="eps-deck-form", thickness=inch(8.0),
+        Layer(name="eps-form", material_ref="eps-deck-form", thickness=inch(10.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
         # The form's own integral steel rib, which is what the ceiling screws to — the same
         # "the vapour path is the air between the sections" reading `steel-stud` carries.
@@ -409,7 +409,7 @@ CATLIN_DECK_EPS_INT = Assembly(
               function=LayerFunction.FINISH),
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="catlin-house main-floor deck — BuildDeck/LiteDeck 8\" EPS stay-in-place form with a 4 5/8\" cast cap (12 5/8\" total, matching the second floor's joist + subfloor), steel furring rib and a 5/8\" gypsum R316.4 thermal barrier under it; replaced CATLIN_DECK_9_INT 2026-08-21",
+    source="catlin-house main-floor deck — LiteDeck 10\" EPS stay-in-place beam (8\" base panel + 2\" top hat) with a 4 3/8\" cast cover (14 3/8\" total, so the soffit lands on the same flat bearing seat as the wood bays' mudsill), steel furring rib and a 5/8\" gypsum R316.4 thermal barrier under it; replaced CATLIN_DECK_9_INT 2026-08-21, deepened 2026-08-23",
 )
 
 # Freestanding sunken-garden / porch / balcony structure — exposed concrete.
@@ -1076,12 +1076,16 @@ SAUNA_LINER_ON_CONCRETE = Assembly(
 # they carry a vertical extent that is specific to this wall and must not leak onto the
 # partitions: the sauna's ceiling is at 7'-6" (W-B-SA-W/-N are `top=ft(7, 6)`) while the
 # foundation wall runs the full 9'-4" from bottom_elevation=ft(-9, -4) to top_elevation=ft(0).
-# Bounding the liner at WALL_TOP - 1'-6" keeps the takeoff from billing basswood T&G, furring
-# and foil-faced polyiso over the 1'-6" of concrete above the sauna's ceiling.
+# Bounding the liner below the wall top keeps the takeoff from billing basswood T&G, furring
+# and foil-faced polyiso over the concrete above the sauna's ceiling. The offset is 6", not
+# the 1'-6" it was until 2026-08-23: the pour used to run to 0'-0" and stops on the bearing
+# seat at -13 7/16" now, so the same 7'-6" ceiling is 6" down from the top of the wall
+# instead of eighteen. The number to keep true is the *ceiling*, not the offset — if the
+# seat moves again, this moves with it.
 # PROVISIONAL: if the basement ever goes to a joist ceiling running the full width, the liner
 # would run the wall's whole height and this extent should come back off.
 _SAUNA_CEILING_EXTENT = LayerExtent(
-    top=LayerBound(datum=LayerDatum.WALL_TOP, offset=inch(-18.0)))
+    top=LayerBound(datum=LayerDatum.WALL_TOP, offset=inch(-6.0)))
 
 SAUNA_LINER_ON_BASEMENT_8_GARDEN = Assembly(
     tag="SAUNA_LINER_ON_BASEMENT_8_GARDEN",

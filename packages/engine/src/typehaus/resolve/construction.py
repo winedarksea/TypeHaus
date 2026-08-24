@@ -47,7 +47,6 @@ from typehaus.resolve.construction_corners import (
 )
 from typehaus.resolve.construction_rim import _find_rim_cavity_foam
 from typehaus.resolve.construction_sills import (
-    _find_floor_on_concrete,
     _find_framed_on_concrete,
 )
 from typehaus.resolve.model import ResolvedModel
@@ -56,7 +55,6 @@ from typehaus.resolve.model import ResolvedModel
 # declarative return needs; unknown predicates simply emit nothing (and are flagged once).
 _FINDERS = {
     "wall:framed_on_concrete": _find_framed_on_concrete,
-    "floor:on_concrete_wall": _find_floor_on_concrete,
     "wall:foundation_foam_return": _find_foundation_foam_return,
     "wall:porch_masonry_return": _find_porch_masonry_return,
     "wall:sauna_liner_return": _find_sauna_liner_return,
@@ -88,7 +86,6 @@ __all__ = [
     # every caller and test already imports.
     "_FINDERS",
     "_find_ceiling_channel",
-    "_find_floor_on_concrete",
     "_find_foundation_foam_return",
     "_find_framed_on_concrete",
     "_find_porch_masonry_return",
