@@ -239,19 +239,25 @@ def test_handrail_not_required_under_four_risers():
 
 
 def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
-    """R312.1.3 measures all five authored guards: baluster infill at a 4" clear gap — the
+    """R312.1.3 measures all six authored guards: baluster infill at a 4" clear gap — the
     largest opening the sphere rule admits — flips the census from UNKNOWN to PASS. The
     handrail-only railings are deliberately absent: they are not guards.
 
     There is no ``Wall.guard`` in the plan any more. Until 2026-08-18 the porch was guarded
     by three W-SG-RAIL-* masonry parapets, which passed by construction (solid masonry
     admits no sphere); RL-SG-PORCH replaced all three and is measured like every other
-    railing, off its drawn pickets."""
+    railing, off its drawn pickets.
+
+    RL-M-STAIRHEAD (2026-08-24) is the sixth, and the one that passes the way the parapets
+    used to: it is 4 1/2" of guard closing the well partition's end at the head of the main
+    stairs, too narrow for a picket bay, so it is ``infill="panel"`` and admits no sphere by
+    construction. It is deliberately absent from the drawn-gap census in the next test —
+    a panel has no gap to draw."""
     from typehaus.checks.code.mn_residential.fall_protection import guard_opening_limit
 
     findings = guard_opening_limit(catlin_ctx)
     tags = sorted(t for f in findings for t in (f.message.split()[0],))
-    assert tags == ["RL-A-STAIR", "RL-S-STAIR", "RL-S-STAIRHEAD",
+    assert tags == ["RL-A-STAIR", "RL-M-STAIRHEAD", "RL-S-STAIR", "RL-S-STAIRHEAD",
                     "RL-SG-BALCONY", "RL-SG-PORCH"], [f.message for f in findings]
     assert {f.result for f in findings} == {Result.PASS}
 

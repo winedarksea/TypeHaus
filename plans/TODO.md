@@ -389,8 +389,32 @@ the future.
  - Sunken garden slab (is it needed above footing) and make sure 7" threshold to basement from sunken garden
  - Basement under the stairs storage closet
  - Wall W-B-CS is likely worth making a wood stud wall (if the load bearing math works and the cost is noticeably lower)
+ - PLATE-BOTTOM in the garage is still shown incorrectly going right through the overhead garage door (it should terminate where the ICF stem wall does on each side, not going across the opening)
+ - For the breezeway sonotubes, something like https://www.homedepot.com/p/Bigfoot-20-in-Pier-Footing-Form-489-20-BF/300325004 for a "single pour footing". However right now it looks like those footings bisect the house and garage foundation walls. Perhaps the beams should be slightly cantilever to push them further out? Or we could link it in straight to the garage footings as one level?
+ - The sidebar of the UI shown when items are selected should show the material, if applicable, and chosen product brand/id/name if applicable.
+ - FURN-B-PLAY-SECTIONAL is facing the wrong way, it should face the TV. The bookshelves should go higher in the theater too, closer to the ceiling
  - Add some wire shelves and racks to the dedicated closets (mudroom closet aimed at jackets)
- - Remove door D-M-STAIR which likely means wall W-M-STRS can be removed or reconfigured
+ - Drain pipe runs (as seen in the workshop especially) are modeled as a mess, not gradual sloping single pieces with occasional turns. This may actually be able to share some code with hand railings on stairs which have a similar problem
+ - **DONE 2026-08-24 — the door, the wall and the node are all gone; the head of the stairs
+   is open on both lanes.** `W-M-STRS` could not simply lose its door: `D-M-STAIR` filled
+   3'-4" of a 4'-2" partition and was the only way onto `ST-B2M`, so a doorless wall there
+   would have sealed the basement flight off. Removed instead: the door, the wall, node
+   `N-M-STR2`, and `ED-M-LIVING-RC11`, the receptacle that had nothing left to hang on.
+   `N-M-STR1` is now `W-M-STRW2`'s free south end (`open_end=True`), which also retired the
+   `integrity.junction_fallback` UNKNOWN that the mixed-assembly L there had been raising.
+   Two things the item did not anticipate:
+   - **The wall had been covering an open floor edge by accident.** With it gone,
+     `code.R312_1_guard` FAILed `FO-M-STAIR`'s south edge over x 13'-9 3/4"..14'-2 1/4" —
+     the 4 1/2" the shaft reserves between the two flights, open from the basement slab to
+     the second floor. Not a fall-through, but wider than R312.1.3's 4" sphere and a
+     foot-catcher at the top of a flight. Closed with `RL-M-STAIRHEAD`, a 4 1/2" guard on
+     the same faces and of the same family as `RL-S-STAIRHEAD` one storey up — a newel in
+     the field. No guard is needed across either lane itself: both flights meet the floor at
+     their nosing.
+   - **More of `W-M-STRW2`'s appearance-grade west face is now in the open** — 6" instead of
+     1 1/4", at the head of the stairs rather than in a corner. It still reads as the
+     mudroom wall's exposed-stud return, and the "keep MEP out, a bored stud shows" rule on
+     that wall matters more now, not less.
  - Access panel FURN-M-BATH1-AP is in the wrong spot, probably needs to be on W-M-HS1
  - Are horizontal hat channels necessary for the siding of the house? (nail flange over 20 ga galvanized hat channels)
  - D-M-BED2 door can likely be moved slightly to optimize the stud line

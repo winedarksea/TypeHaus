@@ -37,13 +37,18 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # new because the *stair* is new — five concrete slabs until `Stair` could express a
     # step-down within one storey, and R311.7.8 asks for a handrail on any flight of four or
     # more risers the moment one is a flight at all.
-    assert sum(int(row["count"]) for row in rows) == 11
+    # Twelve since 2026-08-24: RL-M-STAIRHEAD, 4 1/2" of panel guard closing the well
+    # partition's end where W-M-STRS used to. It bills as a railing row like any other —
+    # 0.4 LF is a real line on a real product, and the alternative was leaving a 4 1/2"
+    # hole at the head of the stairs off the BOM entirely.
+    assert sum(int(row["count"]) for row in rows) == 12
     assert not [row for row in bom["railings"] if row["style"] == "masonry"]
     by_type = {}
     for row in rows:
         by_type[row["type"]] = by_type.get(row["type"], 0.0) + float(row["length_ft"])
     assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(74.6, abs=0.1)
-    assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(23.0, abs=0.1)
+    # 23.4 since 2026-08-24, not 23.0: RL-M-STAIRHEAD's 4 1/2" joins the same product group.
+    assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(23.4, abs=0.1)
     # 36.7, not 30.0, since 2026-08-22, in two parts: RL-A-HANDRAIL gained 3'-0" at its east
     # end so it runs beside ST-S2A's winder fan as well as its straight flight (which is what
     # R311.7.8.2 asks of it, and what `code.R311_7_8_handrail` started measuring rather than
@@ -64,10 +69,32 @@ def test_the_untyped_group_key_is_also_what_gets_emitted(bom):
 def test_railing_infill_counts_reconcile_against_the_models_own_solids(catlin_model, bom):
     """The bill's picket count is the model's picket count. Summed rather than asserted per
     row, because a per-row number can be right while a whole railing is missing from the
-    grouping."""
+    grouping.
+
+    Scoped to the baluster guards since 2026-08-24: ``railing_infill`` is the category for
+    every style of infill solid, and RL-M-STAIRHEAD's is a single panel lite, billed as
+    ``panel_count``/``panel_area_sqft`` and never as a picket. Counting the raw category
+    against ``baluster_count`` would report the panel as a missing picket, which is why the
+    panel assertion below counts it on its own terms."""
+    from typehaus.model.structure import Railing
+
+    picketed = {e.tag for storey in catlin_model.plan.storeys
+                for e in catlin_model.plan.storey_elements(storey.tag)
+                if isinstance(e, Railing) and e.infill == "balusters"}
     billed = sum(int(row.get("baluster_count") or 0) for row in bom["railings"])
-    drawn = len([s for s in catlin_model.solids if s.category == "railing_infill"])
+    drawn = len([s for s in catlin_model.solids if s.category == "railing_infill"
+                 and any(s.tag.startswith(f"{tag}-") for tag in picketed)])
     assert billed == drawn
+
+
+def test_panel_infill_is_billed_by_its_lite_not_as_a_picket(catlin_model, bom):
+    """RL-M-STAIRHEAD is the house's only panel-filled guard — 4 1/2" closing the well
+    partition's end at the head of the main stairs, too narrow for a picket bay. It draws one
+    infill solid and bills one panel, and it must never land in the picket column."""
+    billed = sum(int(row.get("panel_count") or 0) for row in bom["railings"])
+    drawn = len([s for s in catlin_model.solids if s.category == "railing_infill"
+                 and s.tag.startswith("RL-M-STAIRHEAD-")])
+    assert billed == drawn == 1
 
 
 def test_railing_post_counts_reconcile_against_the_models_own_posts(catlin_model, bom):

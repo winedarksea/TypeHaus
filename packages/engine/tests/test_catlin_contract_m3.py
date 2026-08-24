@@ -1481,7 +1481,7 @@ def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
         [ft(10, 3.375).meters, ft(26, 0.375).meters])
     assert stairs["ST-M2S"]["layout"] == "u_split_landing"
     # Both U-stairs turn left, so each springs from the east lane and arrives in the west
-    # one — the lane D-M-STAIR stands in on main.
+    # one — on main, the lane D-M-STAIR stood in until the wall came out (2026-08-24).
     for tag in ("ST-B2M", "ST-M2S"):
         assert stairs[tag]["turn_direction"] == "left"
     assert stairs["ST-S2A"]["layout"] == "right_angle_winder"

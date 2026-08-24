@@ -1159,13 +1159,9 @@ NEC_FILL_MAIN = [
                      position=pt(ft(9, 6), ft(26, 0.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    # On the 10 3/16" pier at W-M-STRS's east end, between D-M-STAIR and the well partition
-    # the wall dies into — the only wall left on that face, and a useful one to have at the
-    # head of the stairs.
-    ElectricalDevice(uid="NEC069AAAA", tag="ED-M-LIVING-RC11", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(13, 10.25), ft(25, 6.625)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    # ED-M-LIVING-RC11 stood on the 10 3/16" pier at W-M-STRS's east end. That wall was
+    # removed with D-M-STAIR (2026-08-24, main.py WALLS) and the receptacle went with its
+    # host — there is no wall on that face any more to mount it to.
     # Fills the >6' gap electrical.receptacle_spacing opened on the hall band between RC7/
     # STUDY-RC3 and the door into RM-M-STOS (2026-07-29): N-M-W2/N-M-C2 pushed 6" north
     # for the BATH2 wall move, stretching this door-to-door wall space past the 6' rule.
