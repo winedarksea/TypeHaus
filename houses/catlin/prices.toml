@@ -930,14 +930,23 @@
 "CASE-TALL-PANTRY-18" = { material = { low = 280, high = 700 }, labour = { low = 120, high = 300 } }  # 0 ea
 # 12" is the narrowest wall box on the ladder; scaled off CASE-W24 by width.
 "CASE-W12" = { material = { low = 95, high = 240 }, labour = { low = 90, high = 220 } }  # 1 ea
+# The other rung the wall ladder was missing. The BASE ladder has had CASE-B15 since the
+# beginning; 15" is stock in both families and only turned up here when the mixer garage
+# left a 15" gap on the east wall.
+"CASE-W15" = { material = { low = 115, high = 290 }, labour = { low = 90, high = 220 } }  # 1 ea
 "CASE-W24" = { material = { low = 140, high = 350 }, labour = { low = 90, high = 220 } }  # 3 ea
 "CASE-W30" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 2 ea
 # The stacker course, 96" -> 108". A 12"-high "wall bridge" box is a stock item and cheap
 # per unit; the labour is NOT proportionally cheap, because every one of them is hung at
 # 8'-0" off a ladder against a course that has to line up with the box under it. Labour is
 # therefore carried at the full wall-cabinet rate, not scaled down with the material.
+"CASE-WS15-12" = { material = { low = 55, high = 140 }, labour = { low = 90, high = 220 } }  # 1 ea
 "CASE-WS24-12" = { material = { low = 75, high = 190 }, labour = { low = 90, high = 220 } }  # 2 ea
 "CASE-WS30-12" = { material = { low = 90, high = 225 }, labour = { low = 90, high = 220 } }  # 1 ea
+# The 24"-DEEP stacker, closing the three 96" tall cabinets to the 108" ceiling (owner,
+# 2026-08-24). Same width as CASE-WS24-12 at twice the depth, so material scales and labour
+# does not — it is the same box hung at the same height off the same ladder.
+"CASE-TS24-12" = { material = { low = 130, high = 320 }, labour = { low = 90, high = 220 } }  # 3 ea
 # 24" deep rather than 13", over the cold columns, and 32 7/8" is not a stock width — a
 # made-to-size box, so the material carries the house-local millwork premium.
 "CASE-TS3278-12" = { material = { low = 145, high = 360 }, labour = { low = 90, high = 220 } }  # 2 ea
@@ -1001,12 +1010,7 @@
 "ED-T-RECEPTACLE-240" = { material = { low = 15, high = 45 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-RECEPTACLE-520S" = { material = { low = 4, high = 14 }, labour = { low = 38, high = 78 } }  # 1 ea
 "ED-T-RECEPTACLE-620" = { material = { low = 12, high = 35 }, labour = { low = 45, high = 95 } }  # 1 ea
-"ED-T-RECEPTACLE-GFCI" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 18 ea
-# FURN-M-KIT-PENINSULA's three counter-top pop-ups (2026-08-24). An order of magnitude over a
-# duplex because it is a machined stainless assembly, not a device in a box — and the labour
-# is a hole cut in a finished stone top, which is a fabricator's operation and is why the
-# high end is what it is. 210.52(C)(3) leaves no cheaper compliant option on a peninsula.
-"ED-T-RECEPTACLE-POPUP" = { material = { low = 120, high = 380 }, labour = { low = 90, high = 260 } }  # 3 ea
+"ED-T-RECEPTACLE-GFCI" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 19 ea
 # 2026-08-18, RM-S-PLANT. A GFCI device with a WR-listed body, plus the two things that
 # make it right for a room that condenses: an in-use ("bubble") cover ($12-25) and a
 # non-metallic gasketed box ($4-9). Priced as the assembly, because buying the GFCI
@@ -1065,6 +1069,12 @@
 # Site-built to the appliance: a 32 7/8" x 24" x 24" over-cabinet where a 36" stock box no
 # longer fits. Priced off CASE-OVER-36 with a made-to-size premium on the material.
 "FT-KIT-OVER-COLD-3278" = { material = { low = 175, high = 440 }, labour = { low = 90, high = 220 } }  # 2 ea
+# The mixer garage (owner, 2026-08-24): 24" x 24" x 72", standing on the peninsula's
+# countertop against the east wall. Priced as a tall cabinet's worth of carcass — it is
+# three quarters the height of a CASE-PANTRY-CLOSET-24 at the same width and depth — with a
+# made-to-size premium, because 72" is "counter to ceiling in this room" and not a stock
+# height. The pull-out shelf and the door hardware are [allowances], not this row.
+"FT-KIT-MIXER-GARAGE-24" = { material = { low = 240, high = 650 }, labour = { low = 140, high = 340 } }  # 1 ea
 # RM-M-PANTRY's shelf stack, and it is NOT a closet system — see the type's `source` and
 # notes/pantry_climbable_shelving.md. What is being bought at the owner's 24" depth
 # (2026-08-24, up from 16"): ~75 SF of 3/4" birch ply in shelves plus a full-height centre
@@ -2448,11 +2458,14 @@ finish-garage-door-opener = { low = 500, high = 1400 }
 # The 5374-24 SWING-OUT is the 24" article and gives the same behaviour: ~200 lb, five
 # shelves plus door-mounted racks.
 cabinet-pantry-swing-out-inserts = { low = 900, high = 2200 }  # 2 x Rev-A-Shelf 5374-24
-# The peninsula's second 24" bay from the west end. ~$169 for the mechanism alone plus a
-# butcher-block platform and the fitting. Needs a full-height base at 24" depth and a min
-# 12"W x 23"D x 23 1/2"H opening — see plan/mep_electrical.py's ED-M-LIVING-KMX1 note, and
-# WIRE THE OUTLET BEFORE THE LIFT GOES IN.
-cabinet-mixer-lift = { low = 250, high = 700 }  # 1 x Rev-A-Shelf RAS-ML-HDSCOG + platform
+# FURN-M-KIT-MIXER-GARAGE's fitting-out. ** A LIFT WAS PRICED HERE UNTIL 2026-08-24 ** —
+# a Rev-A-Shelf RAS-ML-HDSCOG spring lift in a base bay, which was a misreading of the
+# brief: the mixer sits at counter level in the garage and slides out level, so what is
+# actually bought is a heavy-duty FULL-EXTENSION pull-out shelf rated for a ~30 lb machine
+# plus bowl, and a door that does not swing into the room (roll-up or lift-up). Dearer than
+# the lift was, and the reason is the door: a 72"-tall face over a counter cannot swing.
+# WIRE ED-M-LIVING-KGF4/KMX1 BEFORE THE BOX GOES IN.
+cabinet-mixer-garage-pullout-and-door = { low = 400, high = 1100 }
 site-protection-final-clean-and-dumpsters = { low = 3500, high = 8500 }
 
 # --- general conditions and soft costs --------------------------------------------------------

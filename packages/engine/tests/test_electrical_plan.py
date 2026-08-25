@@ -293,10 +293,11 @@ def test_a_wall_attached_peninsula_is_not_graded_as_an_island(catlin_model):
     freestanding work-surface carcass left in the house the check has nothing to grade and
     says so.
 
-    ** THIS IS AN HONEST REGRESSION IN COVERAGE, NOT A FIX. ** The peninsula's countertop
-    receptacles still exist and are still required — ED-M-LIVING-KGF4/KGF5/KGF6, three
-    flush pop-ups under 210.52(C)(2)/(C)(3) — but nothing in the engine grades 210.52(C),
-    which reports UNKNOWN by design. What used to be checked here is now only reviewed.
+    ** THIS IS AN HONEST REGRESSION IN COVERAGE, NOT A FIX. ** The peninsula still has
+    countertop-serving receptacles — ED-M-LIVING-KGF4 and KMX1, both inside
+    FURN-M-KIT-MIXER-GARAGE at 42", which is "above the counter surface" under
+    210.52(C)(3) — but nothing in the engine grades 210.52(C) at all, which it reports
+    UNKNOWN by design. What used to be checked here is now only reviewed.
     """
     from typehaus.checks import run_from_model
     from typehaus.checks.registry import Tier

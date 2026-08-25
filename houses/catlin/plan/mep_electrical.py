@@ -65,16 +65,6 @@ ELECTRICAL_DEVICE_TYPES = (
                           footprint=(inch(4), inch(2)), height=inch(2),
                           ports=(ServicePort(tag="power", service=Service.POWER_120,
                                              position=(ft(0), ft(0), ft(0))),)),
-    # The flush counter-top pop-up (2026-08-24), for FURN-M-KIT-PENINSULA. 2023 NEC
-    # 210.52(C)(3) confines a receptacle that serves a countertop to on/above/IN the
-    # surface, and a peninsula has no backsplash to put one above — so the only compliant
-    # article is a unit that lives in the top. 20 A, 125 V, gasketed and closed flush when
-    # it is not in use.
-    ElectricalDeviceType(tag="ED-T-RECEPTACLE-POPUP",
-                          name="Flush counter-top pop-up receptacle, 20A 125V",
-                          footprint=(inch(4), inch(4)), height=inch(6),
-                          ports=(ServicePort(tag="power", service=Service.POWER_120,
-                                             position=(ft(0), ft(0), ft(0))),)),
     # The plant room's outlets (2026-08-18). NEC 2023 makes RM-S-PLANT a damp location
     # throughout and a wet one anywhere it is misted or hosed, which changes three things at
     # once about an ordinary duplex: WR listing (the receptacle body itself), a GFCI device
@@ -196,69 +186,47 @@ MAIN_DEVICES = [
                      position=pt(ft(35, 4.375), ft(34, 8)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-KITCH-SA2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)), rotation=deg(270)),
-    # --- FURN-M-KIT-PENINSULA's counter (2026-08-24) ---------------------------------
-    # KGF4 was the ISLAND's single receptacle, side-mounted on its east end face at 32".
-    # The island became a 10'-0" peninsula landed on the east wall, so that end face no
-    # longer exists — it is against the gypsum. KGF4 keeps its uid (an IFC GlobalId that
-    # has shipped) and becomes the first of three FLUSH POP-UPS in the counter top.
+    # --- FURN-M-KIT-MIXER-GARAGE's outlets (2026-08-24) ------------------------------
+    # ** BOTH OF THESE LIVE INSIDE THE CABINET, AND THAT IS THE POINT. ** The owner asked
+    # for the stand mixer to slide straight out onto the peninsula with "outlet in the
+    # cabinet". That was first built as three flush ED-T-RECEPTACLE-POPUP units cut into the
+    # countertop plus one inside a base bay under a spring lift — a misreading on both
+    # counts. The pop-ups (KGF5/KGF6) and their type are deleted with this correction; KGF4
+    # keeps its uid, which is a shipped IFC GlobalId, and moves into the garage where the
+    # brief actually put it.
     #
-    # ** POP-UPS, NOT SIDE-MOUNTS, AND THAT IS FORCED. ** 2023 NEC 210.52(C)(3) confines a
-    # receptacle serving a countertop to on/above/IN the surface — the old below-counter
-    # side-mount allowance is gone — and a peninsula has no backsplash to put one above.
-    # A unit that lives in the top is the only compliant article left.
+    # 42": 6" above the peninsula's 36" top, so a cord reaches an appliance standing on the
+    # pull-out shelf and coils clear of it when the shelf travels. x=35'-4 3/8" is the east
+    # wall's finish face plus 1" — the garage's back IS that wall, so these are ordinary
+    # wall-hosted boxes, not floating in-cabinet ones. y=25'-9" and 26'-8" are inside the
+    # garage's y 25'-2 3/8"..27'-2 3/8" after it was bumped south against the tall bank.
     #
-    # THREE of them, at x 27'-5 3/8" / 30'-5 3/8" / 33'-5 3/8": 24"/48"/48"/24" along a 120"
-    # counter, so no point on it is more than 24" from one, which is what 210.52(C)(2) asks
-    # of a 30 sq ft peninsular top. y=27'-11 3/8" is 6" back from the carcass's north edge
-    # and 18" clear of the seating overhang, so nothing pops up into a diner's plate.
+    # ** GFCI, and it is not merely belt-and-braces here. ** These sit 5'-6" from
+    # FX-M-KITCH-SINK, outside E3902.10's 6' reach, and CKT-KITCH-SA1 is a GFCI breaker
+    # anyway — but a receptacle serving a countertop appliance a step from a sink is exactly
+    # where an inspector will want the device, and a GFCI device costs less than an argument.
     #
-    # MountKind.WALL at 36" is this file's idiom for "sits at a stated height" (the closed
-    # enum is FLOOR/WALL/CEILING — there is no COUNTER), the same way APPL-M-DISP hangs at
-    # 14 1/2" under the sink. These three are genuinely NOT wall-hosted, and
-    # test_catlin_contract_m3.py's _NOT_WALL_HOSTED is where that is recorded.
+    # ** NEC note, and it is a real one. ** 2023 NEC 210.52(C)(2) no longer REQUIRES a
+    # receptacle at an island or peninsular countertop, but where none is installed it wants
+    # provisions for adding one; 210.52(C)(3) confines any receptacle that does serve the
+    # top to on/above/IN the surface. These are ABOVE it, inside a cabinet whose bottom is
+    # the counter plane, which satisfies (C)(3) — and they are the peninsula's only
+    # countertop-serving outlets now that the pop-ups are gone. A cord from here reaches the
+    # east end of the counter and not the west; if the owner wants power at the seating end
+    # later, that is a second device on this circuit, not a redesign.
+    #
+    # ** WIRE THEM BEFORE THE BOX GOES IN. ** Retrofitting behind an installed
+    # counter-to-ceiling cabinet is miserable, and that sequencing belongs in the source.
     ElectricalDevice(uid="CEDKGF4AAA", tag="ED-M-LIVING-KGF4", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(27, 5.375), ft(27, 11.375)), type_ref="ED-T-RECEPTACLE-POPUP",
+                     position=pt(ft(35, 4.375), ft(25, 9)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-KITCH-SA2",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(36))),
-    ElectricalDevice(uid="B6WXYW1QQ1", tag="ED-M-LIVING-KGF5", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(30, 5.375), ft(27, 11.375)), type_ref="ED-T-RECEPTACLE-POPUP",
-                     circuit="CKT-KITCH-SA2",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(36))),
-    ElectricalDevice(uid="58HN4TQ53Q", tag="ED-M-LIVING-KGF6", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(33, 5.375), ft(27, 11.375)), type_ref="ED-T-RECEPTACLE-POPUP",
-                     circuit="CKT-KITCH-SA2",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(36))),
-
-    # --- the mixer lift's in-cabinet outlet ------------------------------------------
-    # ** THE SECOND 24" BAY FROM THE WEST END ** (x 27'-5 3/8"..29'-5 3/8", centre
-    # 28'-5 3/8") — second and not first because a lift swings a 25 lb mixer up and OUT and
-    # wants a neighbour on both sides, and not the east end because the pantry closets stand
-    # there and that frontage is already dead.
-    #
-    # The hardware sets the box: Rev-A-Shelf RAS-ML-HDSCOG (soft-close, 60 lb, three spring
-    # settings) needs a minimum 12"W x 23"D x 23 1/2"H opening, is recommended for 12"-21"
-    # widths, and requires a FULL-HEIGHT base at 24" depth — no top drawer. A 24" bay in a
-    # 24"-deep carcass clears all three. (Hafele's 504.20.900 is the alternative and caps
-    # platform depth at 13".) The mechanism is a prices.toml [allowances] line: the model
-    # has one solid carcass per cabinet, not a fitting-out.
-    #
-    # ** 20", NOT 18". ** The cord has to reach with the platform UP, so the receptacle
-    # belongs near the top of the lift's travel, just under the counter — where it also
-    # coils out of the way on the down-stroke.
-    #
-    # ** GFCI, not plain. ** The device is outside E3902.10's 6' sink reach by about six
-    # inches and CKT-KITCH-SA1 is a GFCI breaker anyway, so the check passes either way —
-    # but inspectors differ on whether an in-cabinet appliance-garage outlet is
-    # countertop-serving, and a GFCI device costs less than an argument. This is an
-    # ADDITIONAL outlet: NEC 210.52(C) does not count a receptacle inside a cabinet toward
-    # countertop spacing, which is why the three pop-ups above are unaffected by it.
-    #
-    # ** WIRE IT BEFORE THE BOX GOES IN. ** Retrofitting a receptacle behind an installed
-    # lift is miserable, and that sequencing belongs in the source, not in someone's memory.
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)), rotation=deg(270)),
+    # The mixer's own outlet, on the SMALL-APPLIANCE partner circuit so a 1,000 W machine
+    # and whatever else is plugged in up here are not on one 20 A branch.
     ElectricalDevice(uid="NXKCFS9YGV", tag="ED-M-LIVING-KMX1", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(28, 5.375), ft(27, 5.875)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(35, 4.375), ft(26, 8)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-KITCH-SA1",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(20))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)), rotation=deg(270)),
     # Behind the range at 6": the whip drops to the floor box, not to a counter height. Moved
     # north with APPL-M-RANGE when it swapped with N3; x is still the wall-face constant
     # (35'-4") and y is the range's new along-wall position.

@@ -207,6 +207,14 @@ MAIN_PLACEABLES = [
     # commit), improved by the 1 1/2", and it draws no finding. Do not "fix" it.
     Furniture(uid="XTD1N9A693", tag="FURN-M-KIT-PANTRYC", type_ref="CASE-PANTRY-CLOSET-24", room="RM-M-LIVING",
               position=pt(ft(19, 3.375), ft(26, 0.875)), rotation=deg(90)),
+    # ** THE TALL UNITS GO TO THE CEILING TOO (owner, 2026-08-24). ** This was left as an
+    # open question when the stacker course went in over the uppers — stack the 96" talls to
+    # match, or accept a 12" step across the kitchen. The answer is stack them. CASE-TS24-12
+    # is the 24"-DEEP stacker: a tall cabinet's box is base depth, so the WS (13") family
+    # would float a shallow box over it and put the step back in a different place.
+    Furniture(uid="ZMBSYYRCX5", tag="FURN-M-KIT-PANTRYC-ST", type_ref="CASE-TS24-12", room="RM-M-LIVING",
+              position=pt(ft(19, 3.375), ft(26, 0.875)), rotation=deg(90),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
     # Over the two cold boxes: 24" deep like the talls, so all four fronts land on x=20'-3 3/8"
     # and the appliances stand 3" proud — clearing the fridge/freezer door swing. Retyped
     # CASE-OVER-36 -> FT-KIT-OVER-COLD-3278 (2026-08-24): the bay is 65 3/4" and two 36"
@@ -288,9 +296,10 @@ MAIN_PLACEABLES = [
     #
     # WN1 and WE3 get none: both hang at 66" and are 42" tall, so they already land on 108".
     #
-    # ** OPEN ITEM FOR THE OWNER: ** the four 96" TALL units (FURN-M-KIT-PANTRYC and the two
-    # east pantry closets) now stop 12" short of uppers that do not. Stack them to match or
-    # accept the step — not decided here.
+    # ** ANSWERED (owner, 2026-08-24): the 96" TALL units are stacked to match. ** The
+    # question was whether FURN-M-KIT-PANTRYC and the two east pantry closets should stop
+    # 12" short of uppers that do not. They do not: each carries a CASE-TS24-12, so every
+    # cabinet in this kitchen now lands on 108" and there is no step anywhere in the room.
     Furniture(uid="H3N6SVBPQY", tag="FURN-M-KIT-WE1-ST", type_ref="CASE-WS30-12", room="RM-M-LIVING",
               position=pt(ft(25, 10), ft(34, 10.875)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
@@ -356,6 +365,13 @@ MAIN_PLACEABLES = [
     # dining paragraph earlier in this file for why that is accepted rather than designed out.
     Furniture(uid="K09MANH37J", tag="FURN-M-KIT-PANTRY-S2", type_ref="CASE-PANTRY-CLOSET-24", room="RM-M-LIVING",
               position=pt(ft(34, 5.375), ft(22, 2.375)), rotation=deg(-90)),
+    # Both to the ceiling with PANTRYC — see its note on the west run.
+    Furniture(uid="4WFET9VXWK", tag="FURN-M-KIT-PANTRY-S1-ST", type_ref="CASE-TS24-12", room="RM-M-LIVING",
+              position=pt(ft(34, 5.375), ft(24, 2.375)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
+    Furniture(uid="785R3FDGRK", tag="FURN-M-KIT-PANTRY-S2-ST", type_ref="CASE-TS24-12", room="RM-M-LIVING",
+              position=pt(ft(34, 5.375), ft(22, 2.375)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
 
     # East wall uppers, 13" deep. Rewritten 2026-08-24 with the peninsula: FURN-M-KIT-WN2
     # (over the deleted N2, at y 25'-5 3/8"..27'-11 3/8") is gone — the peninsula's east end
@@ -381,6 +397,19 @@ MAIN_PLACEABLES = [
     Furniture(uid="FTTPRYMZEH", tag="FURN-M-KIT-WN3-ST", type_ref="CASE-WS24-12", room="RM-M-LIVING",
               position=pt(ft(34, 10.875), ft(29, 5.375)), rotation=deg(-90),
               mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
+    # ** WN4 FILLS THE 15" THE GARAGE LEFT ** (owner, 2026-08-24): y 27'-2 3/8"..28'-5 3/8",
+    # between FURN-M-KIT-MIXER-GARAGE's north face and WN3's south face, over the peninsula's
+    # east end. 15" is a stock wall-cabinet width and is why this is a second box rather than
+    # a wider WN3 — extending WN3 south would have made it 39", which is not a size anyone
+    # sells. It carries the same 54" mount, the same 13" depth and the same stacker course as
+    # the rest of the run, so the only step on this wall is the 11" from the garage's 24"
+    # depth out to the uppers' 13" — which is what a tall cabinet beside uppers always does.
+    Furniture(uid="0J52FYZBY6", tag="FURN-M-KIT-WN4", type_ref="CASE-W15", room="RM-M-LIVING",
+              position=pt(ft(34, 10.875), ft(27, 9.875)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
+    Furniture(uid="N8BZY1M8FA", tag="FURN-M-KIT-WN4-ST", type_ref="CASE-WS15-12", room="RM-M-LIVING",
+              position=pt(ft(34, 10.875), ft(27, 9.875)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
 
     # ** THE ISLAND BECAME A PENINSULA, 2026-08-24. ** FURN-M-KIT-ISLAND was a 5'x3'
     # CASE-ISLAND-60 at (27'-6", 27'-11 3/8"), and the comment that stood here admitted its
@@ -400,11 +429,13 @@ MAIN_PLACEABLES = [
     # (42" one cook, 48" two, both clear). West face 25'-5 3/8" -> fridge front 20'-6 3/8"
     # = 4'-11". Behind the seated diners is the open living room, 44" to walk past.
     #
-    # ** THE EAST ~24" OF SEATING OVERHANG IS DEAD FRONTAGE, and that is recorded, not
-    # discovered on site: ** FURN-M-KIT-PANTRY-S1 stands exactly where an east-end sitter's
-    # legs would go. Nothing overlaps (both faces are coplanar at y=25'-2 3/8") and no check
+    # ** THE EAST ~24" OF SEATING OVERHANG IS NOT A SEAT, and it is now used rather than
+    # merely conceded: ** FURN-M-KIT-PANTRY-S1 stands exactly where an east-end sitter's legs
+    # would go, so that end was never going to seat anyone. FURN-M-KIT-MIXER-GARAGE takes it,
+    # standing ON the countertop from 36" to the 108" ceiling against the east wall. Nothing
+    # overlaps (the tall bank and the overhang are coplanar at y=25'-2 3/8") and no check
     # fires, because casework carries no clearance zones here. THREE stools is the honest
-    # count, which is what is authored below.
+    # count either way, which is what is authored below.
     Furniture(uid="PD9W4Q86MD", tag="FURN-M-KIT-PENINSULA", type_ref="CASE-PENINSULA-120", room="RM-M-LIVING",
               position=pt(ft(30, 5.375), ft(26, 9.875))),
     # 24" per seat (NKBA), tucked under the 15" overhang at y=24'-10".
@@ -414,6 +445,38 @@ MAIN_PLACEABLES = [
               position=pt(ft(28, 5.375), ft(24, 10)), rotation=deg(180)),
     Furniture(uid="1RME2HHSQT", tag="FURN-M-KIT-STOOL3", type_ref="FURN-BAR-STOOL", room="RM-M-LIVING",
               position=pt(ft(30, 5.375), ft(24, 10)), rotation=deg(180)),
+
+    # ** THE MIXER GARAGE — where the stand mixer lives (owner, 2026-08-24). **
+    # 24" x 24", sitting ON the peninsula's countertop at a 36" mount and running to the
+    # 108" ceiling, at the east end against the east wall: x 33'-5 3/8"..35'-5 3/8",
+    # y 25'-2 3/8"..27'-2 3/8".
+    #
+    # ** IT IS BUMPED SOUTH, FLUSH AGAINST FURN-M-KIT-PANTRY-S1 ** (owner, 2026-08-24), so
+    # the east wall reads as one unbroken column of storage from y=21'-2 3/8" to the ceiling
+    # — the two 96"+12" pantry closets, then this, with no 15" of blank counter left between
+    # them. What that costs is a millwork note the model cannot draw: the peninsula's
+    # southern 15" is a seating OVERHANG everywhere else along its 10'-0", and under this
+    # cabinet it must be a full-depth 39" carcass instead. Nobody sits at this end — the
+    # tall bank is where an east-end sitter's legs would go — so the cantilever was never
+    # earning anything here, and a counter-to-ceiling cabinet cannot stand on one.
+    #
+    # The 15" that opened up on its NORTH side is filled by FURN-M-KIT-WN4 below.
+    #
+    # ** THIS REPLACES A LIFT IN A BASE BAY, AND THE LIFT WAS A MISREADING. ** "Mixer slides
+    # straight out onto the peninsula, outlet in the cabinet" was first built as a
+    # Rev-A-Shelf spring lift under the counter plus three flush pop-ups in the top. The
+    # mixer is meant to be AT counter level already and slide out level onto the open
+    # counter west of it — no lifting 25 lb up out of a base, and no holes cut in stone.
+    # The bottom bay is a heavy-duty full-extension pull-out at the counter plane; that and
+    # the two receptacles inside it are on the type's `source` (plan/furniture_types.py) and
+    # in prices.toml [allowances].
+    #
+    # It can only go at this end: a counter-to-ceiling box anywhere else on the peninsula
+    # hangs from the ceiling with nothing behind it. Against the east wall it is a normal
+    # tall cabinet that happens to start at 36".
+    Furniture(uid="5T1VTCY3EV", tag="FURN-M-KIT-MIXER-GARAGE", type_ref="FT-KIT-MIXER-GARAGE-24",
+              room="RM-M-LIVING", position=pt(ft(34, 5.375), ft(26, 2.375)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(36))),
 
     # --- RM-M-PANTRY (storeys/main.py), 2026-08-24 -----------------------------------
     # The shelf stack, wall face to wall face across the room's whole 70 1/4" clear span,

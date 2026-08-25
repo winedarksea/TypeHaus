@@ -362,8 +362,12 @@ MAIN_LIGHTING = [
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
+    # Extended south to 27'-2 3/8" (2026-08-24) with FURN-M-KIT-WN4, the 15" box filling the
+    # gap the mixer garage left: the tape runs the whole continuous 13"-deep upper face from
+    # the garage's north side to the range, which is also the whole of the peninsula's east
+    # counter and FURN-M-KIT-N3's top.
     LightRun(uid="N9243MWVM0", tag="LR-M-KIT-E-WN3", type_ref="ED-T-LT-STRIP24-TASK",
-             path=(pt(ft(34, 5.375), ft(28, 5.375)), pt(ft(34, 5.375), ft(30, 5.375))),
+             path=(pt(ft(34, 5.375), ft(27, 2.375)), pt(ft(34, 5.375), ft(30, 5.375))),
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
@@ -374,9 +378,11 @@ MAIN_LIGHTING = [
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
-    # 8'-11" of tape at 5 W/ft = 44.6 W; x1.25 = 55.7 W. That clears ED-T-LT-PSU-60's 60 VA
-    # by 4.3 VA — enough for electrical.light_run_psu to pass and not enough to add a foot
-    # of tape later, so this takes the 200 W supply and loads it to ~28%. NOT a share of
+    # 10'-2" of tape at 5 W/ft = 50.8 W; x1.25 = 63.5 W. ** That is already past
+    # ED-T-LT-PSU-60's 60 VA ** — it cleared by 4.3 VA at the 8'-11" this run was first
+    # drawn at, and one 15" cabinet (FURN-M-KIT-WN4) spent that margin and 3.5 VA more,
+    # which is exactly why the 200 W supply was specified instead of the 60. It loads to
+    # ~32%. NOT a share of
     # ED-M-LIVING-LT-PSU: that one is on CKT-LT-MAIN, and electrical_notes.md line 24 puts
     # kitchen lighting behind the backup relay.
     ElectricalDevice(uid="7VSVT7B8ZS", tag="ED-M-KITCH-LT-PSU", kind=DeviceKind.JUNCTION_BOX,

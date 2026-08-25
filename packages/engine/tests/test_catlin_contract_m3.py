@@ -1526,14 +1526,16 @@ def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
 # Two devices are wall-*mounted* but not wall-*hosted*, and both say so in their own
 # comments: the island GFCI is let into FURN-M-KIT-ISLAND's east end, and the porch flood
 # is strapped to pillar PT-SG-BR2. Neither is a Wall, and `wall_ref` only names Walls.
-# Devices that are deliberately not on a wall face. KGF4/KGF5/KGF6 are the peninsula's three
-# flush counter-top pop-ups and KMX1 is the mixer lift's outlet INSIDE its cabinet — all four
-# added or re-sited 2026-08-24. They mount MountKind.WALL only because the closed enum is
-# FLOOR/WALL/CEILING and "at a stated height" is what this house uses WALL for.
-# ** ED-M-LIVING-KGF7 is deliberately NOT here: ** it is genuinely wall-hosted, on the east
-# wall at 42" over FURN-M-KIT-N4's counter, and must keep being graded.
-_NOT_WALL_HOSTED = {"ED-M-LIVING-KGF4", "ED-M-LIVING-KGF5", "ED-M-LIVING-KGF6",
-                    "ED-M-LIVING-KMX1", "ED-M-PORCH-FLOOD"}
+# Devices that are deliberately not on a wall face — one, and it should stay one.
+#
+# ED-M-LIVING-KGF4 was here from 2026-08-02 (the island's end-mounted GFCI) until
+# 2026-08-24, and for two days of that it had three companions: KGF5/KGF6, flush
+# counter-top pop-ups, and KMX1 inside a base-cabinet mixer lift. All four went when the
+# mixer moved into FURN-M-KIT-MIXER-GARAGE, a counter-to-ceiling cabinet whose back IS the
+# east wall — so KGF4 and KMX1 are ordinary wall-hosted boxes at 42" now and are graded like
+# every other receptacle in the house. ** Shrinking this set is the direction it should
+# move; adding to it is how a device ends up floating in a room and nobody notices. **
+_NOT_WALL_HOSTED = {"ED-M-PORCH-FLOOD"}
 
 
 def test_wall_mounted_devices_resolve_against_a_wall_face(catlin_model):

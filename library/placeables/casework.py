@@ -77,6 +77,9 @@ SINK_BASE_36 = FurnitureType(
 # The missing rung on this module's own width ladder (18/24/30/66), and a stock size
 # everywhere: 12" is what is left over the head of a small window at the end of a run.
 WALL_12 = _wall("CASE-W12", ft(1))
+# 15" is on the module and on every stock list; the base ladder has had CASE-B15 since the
+# beginning and the wall ladder simply never needed one until a 15" gap turned up.
+WALL_15 = _wall("CASE-W15", inch(15))
 WALL_18 = _wall("CASE-W18", inch(18))
 WALL_24 = _wall("CASE-W24", ft(2))
 WALL_30 = _wall("CASE-W30", inch(30))
@@ -168,6 +171,7 @@ def _stacker(tag: str, width, depth) -> FurnitureType:
 
 # WS = over a 13"-deep WALL cabinet. TS = over a 24"-deep TALL or over-appliance one. The
 # prefix carries the depth because the width alone cannot: a 24" stacker exists in both.
+STACK_W15 = _stacker("CASE-WS15-12", inch(15), _WALL_DEPTH)
 STACK_W24 = _stacker("CASE-WS24-12", ft(2), _WALL_DEPTH)
 STACK_W30 = _stacker("CASE-WS30-12", inch(30), _WALL_DEPTH)
 # The rung that closes a 96" tall cabinet to a 108" ceiling. Same box as CASE-WS24-12 at
@@ -212,5 +216,5 @@ STARTER_CASEWORK_TYPES = (
     TALL_PANTRY_12, TALL_PANTRY_18, PANTRY_CLOSET_24, PANTRY_CLOSET_48,
     PANTRY_CLOSET_72,
     ISLAND_60, PENINSULA_120, BAR_STOOL, WALL_DRYING_RACK_24,
-    WALL_12, STACK_W24, STACK_W30, STACK_T24, STACK_T3278,
+    WALL_12, WALL_15, STACK_W15, STACK_W24, STACK_W30, STACK_T24, STACK_T3278,
 )
