@@ -711,16 +711,18 @@ MAIN_PLACEABLES = [
     # Two outdoor rods across the sunken garden's front pillar bays (PT-SG-BF1..BF2,
     # BF2..BF3), front row at y=-9'-6" on 10'-0" centres: 9'-6 1/2" clear between 6x6 faces,
     # which is why the type is 114" (half an inch of clearance).
-    # Filed on `main` not `second` because Mount.elevation reads off the room floor and only
-    # a main-storey room gives the right height: 8'-6" lands 1 1/2" under the balcony beam
-    # soffit (8'-7 1/2") it hangs from.
-    # `room="RM-M-BED"` follows FX-M-PORCH-HYD: the porch isn't a Room, so this names the
-    # nearest interior one and accepts the `integrity.placeable_room_mismatch` advisory —
-    # expected, same as the two hydrants.
-    Furniture(uid="XH1JW70E8D", tag="FURN-M-PORCH-ROD-W", type_ref="FT-CURTAIN-ROD-OUTDOOR-114", room="RM-M-BED",
+    # Filed on `main` not `second` because Mount.elevation reads off the floor of the storey
+    # it is filed on and only the main datum gives the right height: 8'-6" lands 1 1/2" under
+    # the balcony beam soffit (8'-7 1/2") it hangs from.
+    # No `room=`. The porch isn't a Room, and unlike the two hydrants (plan/fixtures.py) a
+    # rod has no fixture-schedule cell to fill, so naming the room behind the wall bought
+    # nothing but an `integrity.placeable_room_mismatch` advisory. The elevation datum is
+    # unaffected: `Mount.elevation` falls back to the storey datum, and RM-M-BED's floor IS
+    # the main datum (0"), so 8'-6" resolves to the same absolute height it always did.
+    Furniture(uid="XH1JW70E8D", tag="FURN-M-PORCH-ROD-W", type_ref="FT-CURTAIN-ROD-OUTDOOR-114",
               position=pt(ft(13), ft(-9.5)),
               mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
-    Furniture(uid="90BCAAC74M", tag="FURN-M-PORCH-ROD-E", type_ref="FT-CURTAIN-ROD-OUTDOOR-114", room="RM-M-BED",
+    Furniture(uid="90BCAAC74M", tag="FURN-M-PORCH-ROD-E", type_ref="FT-CURTAIN-ROD-OUTDOOR-114",
               position=pt(ft(23), ft(-9.5)),
               mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
     # The two SIDE bays, 2026-08-22 — the porch was curtained on its front edge only and open
@@ -739,10 +741,10 @@ MAIN_PLACEABLES = [
     # 98" over an 8'-8" (104") guard run, centred at y=-5'-0": 3" short of the house edge at
     # the north end and 2" clear of the front rods' bracket line at the south. Those two gaps
     # ARE the corners — the thing four panels have and a U does not.
-    Furniture(uid="K6G71PKS4C", tag="FURN-M-PORCH-ROD-SW", type_ref="FT-CURTAIN-ROD-OUTDOOR-98", room="RM-M-BED",
+    Furniture(uid="K6G71PKS4C", tag="FURN-M-PORCH-ROD-SW", type_ref="FT-CURTAIN-ROD-OUTDOOR-98",
               position=pt(ft(9), ft(-5)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
-    Furniture(uid="D9X6HWW4DZ", tag="FURN-M-PORCH-ROD-SE", type_ref="FT-CURTAIN-ROD-OUTDOOR-98", room="RM-M-BED",
+    Furniture(uid="D9X6HWW4DZ", tag="FURN-M-PORCH-ROD-SE", type_ref="FT-CURTAIN-ROD-OUTDOOR-98",
               position=pt(ft(27), ft(-5)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
 ]
@@ -760,11 +762,15 @@ GARAGE_PLACEABLES = [
 # x=30' clears the RC1/RC2 outlets; beds sit 9'-7" apart (not the 9'-0" room pitch) so each
 # foot zone stops short of the headboard below it — heads float 5"-6" off the north wall.
 SECOND_PLACEABLES = [
-    # BED1 is 7" further east than the other two (2026-07-31): the head goes tight to the
-    # east wall so its foot zone leaves the north wall a 4'-0 wardrobe slot clear of
-    # D-S-BED1's sweep. See the wardrobe block below.
+    # BED1 does not share the other two's station. It sits 14 1/8" further south (head still
+    # against the east wall, foot still west) so its FOOT zone drops clear of the wardrobe on
+    # the north wall, and its west face is then held on that wardrobe's east end at
+    # x 28'-7 11/16" so the NORTH side-access zone clears it too. Both zones are 18" and the
+    # room is only 8'-6 3/4" deep, so the pair cannot both be satisfied at the other beds'
+    # y — which is why this one is authored apart from them. The south side zone runs into
+    # the south wall by design: the bed is pushed to that wall and walked on the north side.
     Furniture(uid="819QDDYMZ5", tag="FURN-S-BED1", type_ref="FURN-QUEEN-BED", room="RM-S-BED1",
-              position=pt(m(9.88911), m(4.07897)), rotation=deg(270)),
+              position=pt(m(9.7996), m(3.71898)), rotation=deg(270)),
     Furniture(uid="CSB701AAAA", tag="FURN-S-BED2", type_ref="FURN-QUEEN-BED", room="RM-S-BED2",
               position=pt(m(9.68788), m(6.90099)), rotation=deg(-90)),
     Furniture(uid="CSB702AAAA", tag="FURN-S-BED3", type_ref="FURN-QUEEN-BED", room="RM-S-BED3",

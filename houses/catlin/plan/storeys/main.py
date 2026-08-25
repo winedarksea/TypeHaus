@@ -620,10 +620,10 @@ OPENINGS = [
     # finish backing there. The 31'-4" service group stays a near-column: WIN-S-BATH-W is
     # 3 1/8" south because its mechanical-chase node re-phases that wall's stud grid.
     Window(uid="CMX301AAAA", tag="WIN-M-BED-W1", host="W-M-W4",
-           type_ref="WT-2736", position=from_node("N-M-SW", ft(3, 10.5)),
+           type_ref="WT-2736", position=from_node("N-M-SW", ft(4, 2.5)),
            sill_height=ft(3)),                                                # y 5'-0"
     Window(uid="CMX302AAAA", tag="WIN-M-BED-W2", host="W-M-W4",
-           type_ref="WT-2736", position=from_node("N-M-SW", ft(9, 2.5)),
+           type_ref="WT-2736", position=from_node("N-M-SW", ft(9, 6.5)),
            sill_height=ft(3)),                                               # y 10'-4"
     # South face, bedroom: centres 4'-0" and 14'-8", both STUD LINES on W-M-S1's grid.
     # S1 stacks under WIN-S-PLANT1; S2 stacks under D-S-DECK-W, the balcony's west French
@@ -649,14 +649,14 @@ OPENINGS = [
     # R303.3's 3/1.5 sf where 14x24 gave 2.33/1.17. Sill drops to 3'-0" for the shared
     # 6'-0" head line; `-T` stays since R308.4.5 tempers any bathroom sill under 60".
     Window(uid="CMX305AAAA", tag="WIN-M-BATH2", host="W-M-W3",
-           type_ref="WT-2736-T", position=from_node("N-M-W3", ft(5, 6.5)),
+           type_ref="WT-2736-T", position=from_node("N-M-W3", ft(5, 10.5)),
            sill_height=ft(3)),                                               # y 19'-8"
     # Paired with WIN-S-VANITY-W at the centre of the 4'-0" room band. The 14" RO fits
     # wholly between studs; the 4'-0" sill preserves privacy and the west face's 6'-0"
     # head line. Tempered because the safety-glazing check treats the wet-room location as
     # hazardous below 60".
     Window(uid="FGWPV572DB", tag="WIN-M-BATH1-W", host="W-M-W2", type_ref="WT-1424-T",
-           position=from_node("N-M-W1", ft(1, 5)), sill_height=ft(4)),       # y 24'-4"
+           position=from_node("N-M-W1", ft(1, 1)), sill_height=ft(4)),       # y 24'-4"
     # Picture unit centred y=31'-4", the bench/aisle centreline (FURN-M-MUD-BENCH,
     # plan/placeables.py). Re-authored off N-M-MECH1 (2026-08-02): a `from_node` offset is
     # measured from the host's *start* node, so when the 2026-07-28 MECH split made
@@ -680,7 +680,7 @@ OPENINGS = [
     # 2026-08-24: the south face reads as a column now, not a pair of pairs — see
     # WIN-M-BED-S2, which moved east to 13'-8" to stand under D-S-DECK-W.
     Window(uid="CMX307AAAA", tag="WIN-M-LIV-S1", host="W-M-S2",
-           type_ref="WT-3048", position=from_node("N-M-SE", ft(2, 1)),
+           type_ref="WT-3048", position=from_node("N-M-SE", ft(2, 9)),
            sill_height=ft(2, 8)),
     # East row respaced (2026-07-30 facade pass): the facade favors within-storey rhythm
     # over between-storey stacking here, so this row runs as even as its own grid allows —

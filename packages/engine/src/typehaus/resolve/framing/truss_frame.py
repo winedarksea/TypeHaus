@@ -166,6 +166,49 @@ class TrussFrame:
         return float(offset[0] * self.direction[0] + offset[1] * self.direction[1])
 
     # --- the three-piece pack ------------------------------------------------------
+    @property
+    def pack_width(self) -> float:
+        """Plan width of one block-and-tab pack — the room an outrigger needs beside it."""
+        low, high = self._pack_span(0.0, 1.0)
+        return high - low
+
+    def crowded_end_neighbours(self, field: list[FramedMember],
+                               loose: tuple[str, ...]) -> tuple[str, ...]:
+        """Field outriggers a band END strip is crowded against, when that strip went unpacked.
+
+        The end strips land where the band ends, not on the module, so a wall whose length is
+        not a whole number of modules finishes with the last module outrigger and the end
+        strip two or three inches apart. Neither can then take its 3-1/2" block and its tab
+        without reaching into the other's, and no carpenter stands two studs that close: the
+        MODULE one is the one that goes, because the end strip is the cladding's edge nailer
+        and the band's mitre and cannot move.
+
+        Read off a **trial pack**, not off the stations alone, and that is the whole care in
+        it. Two outriggers inside a pack's width of each other are common and mostly fine —
+        the pack is chiral, so the second one takes the other hand and both are fastened. Only
+        where the end strip came back with no block and no tab is there a stick to delete, and
+        deleting one anywhere else would take framing off walls that are correctly framed.
+
+        Returned as child keys, so the caller drops them from the wall's own field and frames
+        again — one fewer stick on the wall and one fewer in the order, rather than a stick the
+        model shows fastened to nothing.
+        """
+        by_station: dict[float, list[str]] = {}
+        for member in field:
+            by_station.setdefault(round(self.station_of(member), 6), []).append(
+                member.child_key)
+        stations = sorted(by_station)
+        if len(stations) < 2:
+            return ()
+        unpacked = set(loose)
+        dropped: list[str] = []
+        for outer, inner in ((0, 1), (-1, -2)):
+            if not any(key in unpacked for key in by_station[stations[outer]]):
+                continue
+            if abs(stations[outer] - stations[inner]) < self.pack_width - _TOL:
+                dropped.extend(by_station[stations[inner]])
+        return tuple(dict.fromkeys(dropped))
+
     def pack_all(self, outriggers: list[tuple[FramedMember, float]],
                  voids: list[tuple[float, float, float, float]]
                  ) -> tuple[list[FramedMember], list[tuple[float, float, float, float]],

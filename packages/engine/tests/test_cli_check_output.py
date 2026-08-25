@@ -145,10 +145,11 @@ def test_catlin_carries_no_failures(catlin_model) -> None:
         (f["check_id"], tuple(sorted(f["element_tags"] or ())))
         for f in payload["findings"] if f["result"] == "fail"
     ]
-    accepted = {
-        ("structural.window_framing_module", ("WIN-A-S-JUL-W",)),
-        ("structural.window_framing_module", ("WIN-A-S-JUL-E",)),
-    }
+    # **Empty on purpose (2026-08-25).** It held the attic juliet pair, 3" off its stud line
+    # since the 2026-08-24 one-sided widening, until catlin's exterior assemblies took their
+    # stud module from the layout line and 16'-0"/20'-0" became stud lines. Taking the entry
+    # out rather than leaving it stale is what the message below asks of the next person.
+    accepted: set[tuple[str, tuple[str, ...]]] = set()
     assert accepted <= set(failures), (
         "an accepted advisory stopped firing — delete it from `accepted` rather than "
         "leaving a stale entry", sorted(accepted - set(failures)))

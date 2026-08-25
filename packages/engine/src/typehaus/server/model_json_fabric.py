@@ -29,6 +29,10 @@ def wall_graph_json(
                 "provenance": _provenance(provenance, w.tag),
                 "axis": [list(w.axis[0]), list(w.axis[1])],
                 "z0_m": w.z0_m, "z1_m": w.z1_m, "top_z0_m": w.top_z0_m,
+                # Where the framing actually sits when the skin was dropped below it
+                # (resolve/platform.extend_walls_to_foundation). The viewer measures
+                # every sill from this, not from z0_m — mirrors ResolvedWall.base_ref_z_m.
+                "plate_base_z_m": w.plate_base_z_m,
                 "top_z1_m": w.top_z1_m, "is_foundation": w.is_foundation,
                 "layers": [_layer_json(ly) for ly in w.layers],
                 "members": [_member_json(m) for m in w.members],

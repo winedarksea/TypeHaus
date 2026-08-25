@@ -77,14 +77,18 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
             model.junctions.extend(junctions)
             findings.extend(junction_findings)
         extend_walls_to_platform(model)
-        # ...and the same band at the bottom of the lowest framed storey, where the
-        # pour stops a mudsill + rim below the storey datum. Strictly after the lift:
-        # both replace entries in ``model.walls``, and the down pass must read walls
-        # the up pass has already finished with.
-        extend_walls_to_foundation(model)
 
     with _stage("openings"):
         _resolve_openings(plan, model, findings)
+        # ...and the same band at the bottom of the lowest framed storey, where the pour
+        # stops a mudsill + rim below the storey datum. Strictly after the lift: both
+        # replace entries in ``model.walls``, and the down pass must read walls the up pass
+        # has already finished with. And strictly after the openings, which it reads to tell
+        # a rim band from a doorway — a stem is *gapped* under a door, to a grade beam, so
+        # the pour's step down there is not a band the cladding chases (see
+        # ``_foundation_below``). Safe in that order because ``_resolve_openings`` takes
+        # nothing from a wall but its axis: no sill is measured off the ``z0_m`` this moves.
+        extend_walls_to_foundation(model)
     with _stage("envelope"):
         findings.extend(resolve_envelope_geometry(model))
         # A truss roof's deck rises by its raised heel; establish that *before* anything
@@ -172,8 +176,8 @@ def resolve_preview(plan: PlanModel) -> ResolvedModel:
         model.walls.extend(walls)
         model.junctions.extend(junctions)
     extend_walls_to_platform(model)
-    extend_walls_to_foundation(model)
     _resolve_openings(plan, model, findings)
+    extend_walls_to_foundation(model)  # reads the openings — see the full pipeline above
     resolve_envelope_geometry(model)
     apply_truss_heel_lift(model)
     apply_to_roof_wall_tops(model)

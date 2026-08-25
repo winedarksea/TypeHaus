@@ -9,7 +9,7 @@ function assert(condition: unknown, message: string): asserts condition {
 function wall(tag: string, uid: string): Wall {
   return {
     uid, tag, storey: "basement", assembly: "CATLIN_CONC_8_INT", provenance: null,
-    axis: [[3.3528, 5], [3.3528, 7.62]], z0_m: 0, z1_m: 3, top_z0_m: null, top_z1_m: null,
+    axis: [[3.3528, 5], [3.3528, 7.62]], z0_m: 0, z1_m: 3, top_z0_m: null, top_z1_m: null, plate_base_z_m: null,
     is_foundation: true, layers: [], members: [],
   };
 }

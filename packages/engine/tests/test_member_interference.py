@@ -146,8 +146,8 @@ def test_tudor_posts_within_their_wall_are_not_a_clash():
 _OPENING_FRAMING_KEYS = ("king-", "jack-", "header-", "sill-")
 
 
-def test_catlin_window_member_overlaps_pinned_at_four():
-    """The 4 residual window/member overlaps, pinned (plans/TODO.md "Windows: 8 residual").
+def test_catlin_window_member_overlaps_pinned_at_three():
+    """The 3 residual window/member overlaps, pinned (plans/TODO.md "Windows: 8 residual").
 
     Measured with the junction-proximity clear disabled — the honest metric the TODO
     records, since every one of these sits at a junction and would otherwise be silently
@@ -156,10 +156,15 @@ def test_catlin_window_member_overlaps_pinned_at_four():
 
     - 2 at one T: CSW148's king stud against the neighbouring walls' end studs
       (CSW145:stud-008, CSW146:stud-000) — the jamb sits at the junction.
-    - 1 at an L corner: CMW103:stud-008 against CMW104:king-0-l0 — the neighbouring
-      wall's 1.5" stud/plate elevation mismatch.
     - 1 raked: CSW141:king-0-r0 against the stair soffit's bottom plate
       (CSF601AAAA:soffit-plate-bottom-e).
+
+    The L corner (CMW103:stud-008 against CMW104:king-0-l0, the neighbouring wall's 1.5"
+    stud/plate elevation mismatch) went on 2026-08-25: WIN-M-BED-W1 moved 4" along W-M-W4 to
+    reach the layout line's grid and took its king out of the corner with it. Nobody was
+    aiming at this one — it is the kind of thing that falls out of putting a whole facade on
+    one datum, and it is recorded here so the next person does not go looking for a fix that
+    was never written.
 
     That T was 6 until 2026-08-22, when O-S-VANITY (CSW148's only opening) moved from 3" to
     4 5/8" off N-S-V1: at 3" its whole jamb pack — king, jack and header — stood inside the
@@ -167,8 +172,8 @@ def test_catlin_window_member_overlaps_pinned_at_four():
     being cut out of framing rather than out of the wall. Clear of the square, only the king
     still meets the neighbours' end studs, which is the ordinary T geometry.
 
-    The count is the regression guard (historic: 138 -> 8 -> 4); the docstring is the map
-    for whoever moves it."""
+    The count is the regression guard (historic: 138 -> 8 -> 4 -> 3); the docstring is the
+    map for whoever moves it."""
     ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
     ctx.model.junctions = []  # disable the junction-proximity clear
     window_findings = [
@@ -176,7 +181,7 @@ def test_catlin_window_member_overlaps_pinned_at_four():
         if any(t.split(":")[-1].startswith(_OPENING_FRAMING_KEYS)
                for t in f.element_tags)
     ]
-    assert len(window_findings) == 4, sorted(
+    assert len(window_findings) == 3, sorted(
         f.element_tags for f in window_findings)
 
 

@@ -125,25 +125,97 @@ def _is_clad(wall: Any) -> bool:
 
 
 def _foundation_below(model: ResolvedModel, upper: Any) -> Any | None:
-    """Highest-topped foundation wall on ``upper``'s axis, from below.
+    """The foundation wall whose top is where ``upper`` must reach to close its rim band.
 
-    *Highest*, and that choice is catlin's south wall: ``W-M-S1`` stands over both the pour
-    (top -13 7/16") and ``W-B-BRICK``, the freestanding glazed wythe that runs up to 0'-0"
-    in front of it. The brick already closes the band, so the highest top is the honest
-    answer and the wall stays where it is — reaching past it would lay siding behind a veneer.
+    Not the highest under the run, and not the lowest — the highest at the *worst station*
+    along it. A foundation wall shuts the band only over the stretch it actually runs, while
+    the drop is one elevation for the whole wall, so the band is closed everywhere only if
+    the wall reaches the lowest point of the run's closing profile.
+
+    Catlin needs both halves of that. On the south wall ``W-M-S1`` spans 0'-0"..18'-0" over
+    the pour ``W-B-S1`` (top -13 7/16") and over ``W-B-BRICK``, the freestanding glazed wythe
+    that reaches 0'-0" but only from 8'-10" east. Reading the highest calls the band closed
+    and bares the rim over the western 8'-10" the brick never covers — the FS-M-WEST joist
+    band, in plain view. In the garage the error runs the other way: ``W-G-S`` stands on a
+    stem topping at -12", stepped down to -34" across the 3'-6" door, and reading the lowest
+    would drag 22" of siding down the whole 24'-0" wall for a threshold it never touches.
+
+    So: sweep the run, take the highest top covering each station, and return the wall owning
+    the *lowest* of those. Two kinds of station are skipped rather than counted as open. One
+    no foundation reaches at all is a walkout, not a band, and must not pull the wall to
+    -inf. One standing in a door that lands at or below the framing base has no skin to lap
+    to begin with — that is the garage's stepped pour, whose two depressed stretches are
+    exactly the door openings over them.
+
+    ``_MAX_BAND_M`` is applied per candidate for the same reason: a stepped pour deep enough
+    to be a real void is not a joist band to be absorbed, and excluding it lets the next
+    candidate close what honestly can be closed.
     """
     tol = max(upper.thickness_m, 1e-3)
-    best = None
-    for lower in model.walls:
-        if lower is upper or not lower.is_foundation:
+    spans = [
+        (lo_t, hi_t, lower)
+        for lower in model.walls
+        if lower is not upper and lower.is_foundation
+        and lower.z1_m <= upper.z0_m + 1e-6
+        and upper.z0_m - lower.z1_m <= _MAX_BAND_M
+        for lo_t, hi_t in (_project(upper.axis, lower.axis, tol),)
+        if hi_t - lo_t > tol
+    ]
+    if not spans:
+        return None
+    thresholds = _door_thresholds(model, upper)
+    stations = sorted({t for lo_t, hi_t, _ in spans for t in (lo_t, hi_t)})
+    worst = None
+    for start, end in zip(stations, stations[1:], strict=False):
+        mid = (start + end) / 2.0
+        if any(lo_t <= mid <= hi_t for lo_t, hi_t in thresholds):
             continue
-        if lower.z1_m > upper.z0_m + 1e-6:
+        covering = [w for lo_t, hi_t, w in spans if lo_t <= mid <= hi_t]
+        if not covering:
             continue
-        if not _collinear_overlap(upper.axis, lower.axis, tol):
-            continue
-        if best is None or lower.z1_m > best.z1_m:
-            best = lower
-    return best
+        highest = max(covering, key=lambda w: w.z1_m)
+        if worst is None or highest.z1_m < worst.z1_m:
+            worst = highest
+    return worst
+
+
+def _door_thresholds(model: ResolvedModel, wall: Any) -> list[tuple[float, float]]:
+    """Station ranges of ``wall``'s doors, whose stations cannot set a cladding base.
+
+    A stem is *gapped* under a door and picked up on a grade beam — catlin's garage says so
+    outright: "there is no 22"-above-grade stem wall under a vehicle door (it would be a curb
+    the car has to climb)", and the service door beside it gets "identical treatment for the
+    identical reason". So the pour's step down at a doorway is a threshold, not a rim band,
+    and reading it as one drags the siding down the whole wall to chase a grade beam.
+
+    Doors only. A window has ordinary wall under it, and that wall's rim band is exactly what
+    :func:`_foundation_below` is measuring.
+    """
+    return [
+        (opening.center_along_m - opening.width_m / 2.0,
+         opening.center_along_m + opening.width_m / 2.0)
+        for opening in model.openings
+        if opening.host_wall == wall.tag and opening.is_door
+    ]
+
+
+def _project(a: tuple[tuple[float, float], tuple[float, float]],
+             b: tuple[tuple[float, float], tuple[float, float]],
+             tol: float) -> tuple[float, float]:
+    """``b``'s overlap with ``a``, as a station range along ``a``; empty if off its line."""
+    (ax0, ay0), (ax1, ay1) = a
+    dx, dy = ax1 - ax0, ay1 - ay0
+    span = math.hypot(dx, dy)
+    if span < 1e-9:
+        return (0.0, 0.0)
+    ux, uy = dx / span, dy / span
+    ts = []
+    for (px, py) in b:
+        ex, ey = px - ax0, py - ay0
+        if abs(-uy * ex + ux * ey) > tol:
+            return (0.0, 0.0)
+        ts.append(ux * ex + uy * ey)
+    return (max(min(ts), 0.0), min(max(ts), span))
 
 
 def _drop(model: ResolvedModel, upper: Any, z0: float, grade_m: float,

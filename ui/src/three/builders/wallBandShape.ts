@@ -18,7 +18,7 @@
 // with anything, because nothing is drawn at the clamp line at all.
 import * as THREE from "three";
 import type { Opening, Wall } from "../../model/types";
-import { archSoffitCircle, archSoffitSample, archSoffitSegmentCount } from "./wallFrame";
+import { archSoffitCircle, archSoffitSample, archSoffitSegmentCount, baseRefZ } from "./wallFrame";
 
 // `circleCenterM` is the soffit circle's centre elevation — the springline for a semicircle,
 // and `depthM` below it for a segmental arch.
@@ -73,7 +73,7 @@ function bandCuts(
     // the clamped value instead would make the hole as much too tall as the sill is
     // negative, and disagree with the wall solids (resolve/geometry_walls.py, and
     // wallLayerPieces, which both measure from the threshold).
-    const threshold = wall.z0_m + opening.sill_m;
+    const threshold = baseRefZ(wall) + opening.sill_m;
     const bottom = clampY(threshold);
     // An opening that misses this band entirely cuts nothing from it: the plinth course
     // under a door's threshold is solid brick, and so is the field above its arch.

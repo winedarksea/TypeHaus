@@ -112,29 +112,36 @@ ACCENT_GWB_LINING = (
 #
 # The honest case for the change is LABOUR: no 8" screws, no two-layer board install, no
 # separate WRB, one sprayer instead of three operations. See notes/outie_window_truss_detail.md.
-# LAYOUT_ORIGIN, and why this assembly does NOT yet set it (2026-08-25). Adding
-# ``layout_origin="line"`` to the stud spec below (and to the outrigger spec, or the
-# battens come off the studs) counts the 16" module from this wall's *layout line* — the
-# derived chain of collinear, stacked walls — instead of from each wall's own start node.
+# LAYOUT_ORIGIN (2026-08-25). Both framing specs below set ``layout_origin="line"``, which
+# counts the 16" module from this wall's *layout line* — the derived chain of collinear,
+# stacked walls (``resolve/layout_lines.py``) — instead of from each wall's own start node.
+# Both, deliberately: the outriggers are clipped to the studs, so a stud spec on the line
+# and a batten spec on the wall would take the rainscreen off its backing.
+#
 # This is the assembly it was built for: deliberately one type for main, second and attic,
 # and the south facade alone is eight walls on one line (W-M-S1/S2, W-S-S1/S2, W-A-S1..S4),
-# split at tees purely as an authoring convenience, every split restarting the module.
+# split at tees purely as an authoring convenience, and every split used to restart the
+# module. The attic was the visible symptom — W-A-S2 starts at x=10'-0" and W-A-S3 at
+# x=18'-0", both 8" off 16", so two of the four gable segments framed on a grid the storeys
+# below never used. ``PLANT_EXT_2X6_HUMID`` sets it too and has to: W-S-S1 and W-S-W4 are
+# members of the south and west lines, and one wall left on wall-start origin puts a jog in
+# a line that is otherwise continuous.
 #
-# Measured on this house it takes studs that land on a stud below from **46.5% to 75.5%**
-# (the residue is end, corner and king studs, which are deliberately off-module and can
-# only align by accident) and adds 363 members as the outriggers and their blocks re-phase.
-#
-# It is off because every window on this assembly was authored against its own wall's node:
-# turning it on re-phases the grid under 19 of them and `structural.window_framing_module`
-# reports every one, plus one attic header that then meets a rafter. The fix each finding
-# names is to shift the RO onto the line's grid — a facade decision, not an engine one, and
-# 19 of them at once. Do that first, then flip both specs together.
+# What it cost: 20 windows moved 3"–8" onto the unified grid, and that is the part to
+# understand before moving any of them back. The old per-segment phase was *why* several
+# facade compositions were crooked, so hanging them all on one datum let four documented
+# defects go at once — the west face's lost fifth column (WIN-S-BATH-W back under
+# WIN-M-MUD), the east knee band's 4" north-end miss, the north gable's asymmetry about the
+# ridge, and the attic juliet pair's 3" off-module exception. The south face gained mirror
+# symmetry about the ridge on both storeys, and the east second-storey row went from a
+# 9'-0"/10'-0"/9'-0" beat to an even 9'-4". See CLAUDE.md, Facade rules.
 CATLIN_EXT_2X6 = Assembly(
     tag="CATLIN_EXT_2X6",
     layers=(
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625)),
+              framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625),
+                                  layout_origin="line"),
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
@@ -154,7 +161,8 @@ CATLIN_EXT_2X6 = Assembly(
         # band as `insulation (cavity)`. ff 0.094 is 1.5" of outrigger per 16" bay.
         Layer(name="outrigger", material_ref="kdat", thickness=inch(3.5),
               function=LayerFunction.FURRING,
-              framing=FramingSpec(member="2x4", direction="vertical", laid="edge"),
+              framing=FramingSpec(member="2x4", direction="vertical", laid="edge",
+                                  layout_origin="line"),
               cavity=CavityFill(material_ref="closed-cell-spray-foam",
                                 thickness=inch(2.5), framing_factor=0.094,
                                 control={ControlLayer.AIR, ControlLayer.WATER,
@@ -1522,7 +1530,8 @@ PLANT_EXT_2X6_HUMID = Assembly(
         *_HUMID_LINER,
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625)),
+              framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625),
+                                  layout_origin="line"),
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
@@ -1542,7 +1551,8 @@ PLANT_EXT_2X6_HUMID = Assembly(
         # band as `insulation (cavity)`. ff 0.094 is 1.5" of outrigger per 16" bay.
         Layer(name="outrigger", material_ref="kdat", thickness=inch(3.5),
               function=LayerFunction.FURRING,
-              framing=FramingSpec(member="2x4", direction="vertical", laid="edge"),
+              framing=FramingSpec(member="2x4", direction="vertical", laid="edge",
+                                  layout_origin="line"),
               cavity=CavityFill(material_ref="closed-cell-spray-foam",
                                 thickness=inch(2.5), framing_factor=0.094,
                                 control={ControlLayer.AIR, ControlLayer.WATER,

@@ -238,14 +238,16 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   family until 2026-08-24), WT-2736, WT-3036 (north gables/hall), WT-3048 (the
   south-glazing size, head at 6'-8") — each family sharing the one height that fits its
   most constrained wall. Five sizes carry the whole house.
-  **The juliet family is the one place a window is knowingly OFF its ideal station.** It
-  centred on a stud line while it was 18" wide. Widening it to 24" on 2026-08-24 could only
-  go outward — the 14" bearing pier under the ridge pins the inboard jambs — so each centre
-  landed 3" off, and `structural.window_framing_module` reports both. It is accepted, not
-  overlooked: each RO still breaks exactly one stud and now stops 1/4" short of the next
-  stud's body outboard, and with the pier fixed no outward-only width between 19" and the
-  30" non-bearing cap puts the centre back on a legal station. See the exception list in
-  `test_catlin_contract_m3.py::test_catlin_window_openings_follow_the_sixteen_inch_framing_module`.
+  **Every window in the house is on its ideal station (2026-08-25), and the exception list
+  is empty.** The juliet family was the last holdout: it centred on a stud line at 18" wide,
+  and widening it to 24" on 2026-08-24 could only go outward — the 14" bearing pier under
+  the ridge pins the inboard jambs — so each centre landed 3" off and
+  `structural.window_framing_module` reported both. What ended it was not a fifth attempt at
+  the width but the grid moving under it: with the exterior assembly laying out from the
+  layout line, 16'-0"/20'-0" are stud lines, 5" further out, and the pair fits with no
+  retype. `test_catlin_contract_m3.py::test_catlin_window_openings_follow_the_sixteen_inch_framing_module`
+  asserts the empty list; keep it empty, and see **ONE GRID PER FACADE** under Facade rules
+  before concluding a window cannot reach its station.
   **Two exceptions, both 2026-08-01**, each a second height on an existing width family
   because the rule's own remedy — give it its own width family — costs more than the
   second height does:
@@ -257,52 +259,73 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     would drop the south head off the 6'-8" door-head line the whole face is built on.
 - Facade rules (2026-07-30 pass, gable revised 2026-08-01, E/W revised 2026-08-15).
   Windows line up or they are not there:
-  - **The residue rule — read this before moving any window.** A wall segment lays its
-    studs out from **its own start node** (`resolve/framing/stud_module.py`), so where a
-    window may legally sit is a property of that node, not of the facade. Two segments are
-    in phase only if their start nodes share the same residue mod 16"; a **column** between
-    storeys needs the two host segments to have the **same** residue, and a **mirror pair**
-    within one storey needs the two residues to **sum to 0** mod 16". A near-miss on a
-    facade is almost always this and never a window's own offset — no amount of moving the
-    *window* fixes an out-of-phase *segment*. It is why the south gable needed N-A-V1 at
-    22'-8" (see **Gables**), and why the 2026-08-15 E/W pass is four node moves and only
-    then some window moves.
-    - **Corollary, the 8" rule.** `structural.window_framing_module` puts a 14" RO on a
-      **bay centre** and a 27"/30" RO on a **stud line** — 8" apart on one grid. So a 14"
-      unit can only column with a 27" unit when the two segments are 8" out of phase, and
-      *never* when they share a residue. Retyping the narrow unit is usually the answer
-      (WIN-M-BATH2, 2026-08-15).
-  - **Columns.** The south face stacks four columns clean through main and second
-    (x 4'-0", 9'-4", 27'-4", 32'-8" — all four moved 8" inboard on 2026-08-01 when the
-    glazing narrowed to WT-3048 and the module's ideal position went with it, both pairs
-    shifted the same way so the storeys still stack and the two segments' 8" phase miss
-    is unchanged). The attic no longer joins them — see **Gables**.
-    The **west face stacks four** through main and second (y 5'-0", 10'-4", 19'-8",
-    24'-4"). The first three use the 27" family on a 3'-0" sill; the fourth pairs tempered
-    14" awnings in RM-M-BATH1 and RM-S-VANITY on a 4'-0" sill. All share one 6'-0" head
-    line. The 10'-4" suite header crosses the top ladder-backing rung at W-S-W3's tee;
-    opening framing owns that volume, so the solver omits only that nonstructural rung.
-    WIN-M-BATH2 was retyped WT-1424-T -> WT-2736-T at a 3'-0" sill to reach the 19'-8"
+  - **ONE GRID PER FACADE (2026-08-25). The residue rule is dead — read this instead.**
+    `CATLIN_EXT_2X6` and `PLANT_EXT_2X6_HUMID` both set `layout_origin="line"`, so a wall
+    segment lays its studs out from its **layout line** — the derived chain of collinear,
+    stacked walls (`resolve/layout_lines.py`) — not from its own start node. Every segment
+    on a facade, on every storey, is therefore on one 16" grid measured from the house
+    origin. **A window's legal stations are now a property of the facade, and moving a node
+    no longer re-phases anything.** Stations are absolute: x (or y) ≡ 0 mod 16" is a stud
+    line, ≡ 8" a bay centre.
+    - What this retired, all of it the same defect in different costumes: node moves made
+      purely to buy phase (N-A-V1 to 22'-8" for the south gable; four of them in the
+      2026-08-15 E/W pass); the "spent" 31'-4" west column; the east knee band's 4" miss;
+      the north gable's asymmetry; and the juliet pair's accepted 3" off-module exception.
+      All five dissolved when the grid was unified, at a cost of 20 windows moving 3"–8".
+      **`test_catlin_contract_m3.py::test_catlin_window_openings_follow_the_sixteen_inch_framing_module`
+      now asserts an EMPTY exception list.** Keep it empty.
+    - **The 8" rule survives, and is now the only phase rule left.**
+      `structural.window_framing_module` puts a 14" RO on a **bay centre** and a 27"/30" RO
+      on a **stud line** — 8" apart on the one grid. So a 14" unit still cannot column with
+      a 27" unit, anywhere on the house, and retyping the narrow unit is still the answer
+      (WIN-M-BATH2, 2026-08-15). This is no longer a per-segment accident to be worked
+      around; it is a property of the two widths and it is permanent.
+    - **A node move is now cheap and a window move is now global.** The old warning was
+      "price a node move before making it". The new one is its mirror: a node may move
+      freely, but a window that moves off the grid stays off it, and a facade whose windows
+      disagree with the grid can no longer be blamed on authoring order.
+  - **Columns.** The south face stacks its columns through main and second at
+    x 4'-0" and 32'-0"; the second storey adds 9'-4" and 26'-8" where main has none.
+    **Both storeys are now mirror-symmetric about the x=18'-0" ridge** — main reads
+    4'-0" / 14'-8" / 21'-4"(door) / 32'-0", second reads 4'-0" / 9'-4" / 14'-8"(door) /
+    21'-4"(door) / 26'-8" / 32'-0", and every one of those pairs sums to 36'-0". The east
+    pair came 8" *inboard* on 2026-08-25 to get there, which was the choice the unified
+    grid opened up: the nearest legal station was 8" the other way, and inboard bought the
+    mirror for the same 8". They had been 27'-4"/32'-8" since 2026-08-01, when the glazing
+    narrowed to WT-3048. The attic does not join them — see **Gables**.
+    The **west face stacks FIVE** through main and second (y 5'-4", 10'-8", 20'-0",
+    24'-8", 31'-4"), all four lower ones having shifted 4" together on 2026-08-25 when the
+    face re-hung on the house grid. The first three use the 27" family on a 3'-0" sill; the
+    fourth pairs tempered 14" awnings in RM-M-BATH1 and RM-S-VANITY on a 4'-0" sill; the
+    fifth pairs WIN-M-MUD with WIN-S-BATH-W. All share one 6'-0" head line.
+    WIN-M-BATH2 was retyped WT-1424-T -> WT-2736-T at a 3'-0" sill to reach the third
     column (the 8" rule), which also buys R303.3's window alternative outright.
-    The original 31'-4" column was **spent on 2026-08-21**, and it is the residue rule
-    read backwards: the second storey's mechanical chase took its south corners 3 1/8"
-    south so its face lands on FX-S-BATH1-SH's apron line, N-S-CH3 moved with them, and
-    W-S-W1's grid re-phased out from under WIN-S-BATH-W. That window rode south to its new
-    bay centre (31'-0 7/8") rather than break a stud holding the old y; WIN-M-MUD stayed at
-    31'-4", centred on the mudroom bench's aisle. **A grid belongs to a node, so a node
-    move is a facade decision** — price it before making it. The west attic pair moved one
-    bay inward to 4'-8" / 31'-4", symmetric about y=18'-0"; it caps the outer lower-floor
-    groups without introducing another width family.
+    **The fifth column was recovered on 2026-08-25**, having been spent on 2026-08-21: the
+    second storey's mechanical chase took its south corners 3 1/8" south so its face lands
+    on FX-S-BATH1-SH's apron line, N-S-CH3 moved with them, and W-S-W1's grid re-phased out
+    from under WIN-S-BATH-W, which rode south to the bay centre that move created. With one
+    grid per line there is no per-segment phase left for a node move to disturb, so the
+    window returned to 31'-4" under WIN-M-MUD and the chase kept its 3 1/8".
+    The 10'-8" suite header used to cross the top ladder-backing rung at W-S-W3's tee, and
+    the solver omitted that one nonstructural rung; the 4" the window moved took the header
+    off it and **the backing is complete again**. The west attic pair sits at 4'-8" /
+    31'-4", symmetric about y=18'-0"; it caps the outer lower-floor groups without
+    introducing another width family.
     The north face stacks one three-storey column at x=28'-0" (WIN-M-KITCH /
     WIN-S-HALL-N / WIN-A-N2).
   - **Rows.** Where a column is impossible, the storey's own rhythm wins instead — but a
     row must be *centred*, not merely even. The east second storey ran a perfect 9'-0" beat
     that sat 10" north of the centreline until 2026-08-15 (5'-4" of wall south, 3'-8"
-    north); it now reads 4'-0" / 13'-0" / 23'-0" / 32'-0", exactly mirrored about y=18'-0"
+    north); it now reads 4'-0" / 13'-4" / 22'-8" / 32'-0", exactly mirrored about y=18'-0"
     in station, width (27/30/30/27) and head (6'-0"/7'-0"/7'-0"/6'-0") over one 3'-0" sill.
-    That took N-S-E2 to 17'-8" and N-S-E3 to 26'-8" — again the residue rule — and the
+    **And since 2026-08-25 it is even as well as centred** — a 9'-4" beat three times over,
+    where 4/13/23/32 was 9'-0"/10'-0"/9'-0". The inner pair moved 4" outward onto the
+    unified grid and the row got the thing it had been trading away. The 2026-08-15 pass
+    that first centred it took N-S-E2 to 17'-8" and N-S-E3 to 26'-8" to buy phase, and the
     bedroom bays became 8'-8"/9'-0"/9'-4" to pay for it, shrinking BED1 (whose R303.1
-    margin is 0.05 sf) and growing BED3 (which has two windows).
+    margin is 0.05 sf) and growing BED3 (which has two windows). Those node positions are
+    now incidental — the grid no longer depends on them — but the room sizes they set are
+    real and still govern.
     **The east MAIN row reads 4'-0" / 12'-0" / 18'-8" / 34'-0", and the last of those is
     the blank kitchen stretch being deliberately ended** (2026-08-24). This bullet used to
     say the opposite — *"the blank is the composition, so the 8" hitch is not worth moving
@@ -318,27 +341,34 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     16") so it breaks no stud and takes no header — see the 8" rule above for why a 14" unit
     can never column with the 27"/30" family beside it. WIN-S-STUDY3 at 4'-0" still columns
     with WIN-M-LIV-E1.
-  - **Knee band.** Both 5' knee walls carry a WT-1424 pair; the west is exactly mirrored at
-    3'-4"/32'-8" and the east is 4" off at its north end, at 3'-4"/32'-4". It stays off:
-    W-A-E2's grid starts at N-A-E1 (y=9'-0"), and both fixes for it — 9'-4" for the pair's
-    own mirror, 8'-8" for a column under WIN-S-BED3 at 32'-0" — drag N-A-C2 and therefore
-    W-A-SN, whose south face is what closes FO-A-STAIR's north edge. Building 9'-4" put
-    3'-0" of unguarded stair well on `code.R312_1_guard`. The band reads as its own row
-    across 5'-6" of blank wall, so neither alignment is worth reworking the stair for.
+  - **Knee band.** Both 5' knee walls carry a WT-1424 pair, and **both are now exactly
+    mirrored at 3'-4" / 32'-8"** (2026-08-25). The east end had been 4" off at 32'-4" since
+    it was built, and the entry here used to explain why it had to stay off: W-A-E2's grid
+    started at N-A-E1 (y=9'-0"), and the only fixes moved that node, dragging N-A-C2 and
+    therefore W-A-SN, whose south face closes FO-A-STAIR's north edge — 9'-4" put 3'-0" of
+    unguarded stair well on `code.R312_1_guard`. The line-based module removed the premise:
+    W-A-E2's grid is the house grid now, so the window moved 4" on its own and the stair
+    was never touched. A worked example of what "one grid per facade" buys.
   - **Head lines.** The west face puts every main and second head on one 6'-0" line —
     27" units at a 3'-0" sill, 14" units at 4'-0". The south face shares a 2'-8" sill.
   - **Gables** read symmetric about the ridge before they answer to anything below:
-    that is why WIN-A-N1 stays at 7'-4" rather than stacking on WIN-S-STAIR-N, and why
-    the 2026-08-01 pass gave the south gable up as a column-capper. It now carries four
-    openings, exactly mirrored about x=18': WT-1448 flankers at 8'-8"/27'-4" (head 6'-8")
-    around the WT-2464 juliet pair at 16'-5"/19'-7" (head 8'-0"), one 2'-8" sill under all
-    four, heads stepping with the rake. The juliet centres were 16'-8"/19'-4" until the
-    2026-08-24 widening pushed each unit 3" outward; the mirror about x=18' — the rule that
-    actually governs a gable — is what survived, and is what to hold if they move again. The corner pair at 3'-4"/33'-8" was retired — the
-    rake leaves ~6'-0" of wall there and nothing stands in it without reading as a stamp.
-    Mirroring the east half at all required moving N-A-V1 from 22'-4" to **22'-8"**: a
-    wall's stud grid lays out from its start node, and 36' − 22'-4" is not a multiple of
-    16", so W-A-S4's bay centres were 4" out of phase with a mirror of W-A-S1's.
+    that is why WIN-A-N1 does not stack on WIN-S-STAIR-N, and why the 2026-08-01 pass gave
+    the south gable up as a column-capper. **The north gable became symmetric on
+    2026-08-25** — WIN-A-N1 moved 7'-4" -> 8'-0", mirroring WIN-A-N2 at 28'-0" about x=18'.
+    It had never been, and the reason was phase, not composition. The south gable carries
+    four openings, exactly mirrored about x=18': WT-1448 flankers at 8'-8"/27'-4"
+    (head 6'-8") around the WT-2464 juliet pair at **16'-0"/20'-0"** (head 8'-0"), one 2'-8"
+    sill under all four, heads stepping with the rake. The juliet centres were 16'-8"/19'-4"
+    until the 2026-08-24 widening pushed each unit 3" outward onto a non-module station —
+    the house's one accepted off-module pair — and 5" further out on 2026-08-25, where the
+    unified grid puts a stud line and the exception ends. The clear bearing pier between
+    them went 14" -> 24" with that move; 14" is the requirement, so it is spent slack, not a
+    new constraint. The mirror about x=18' is the rule that actually governs a gable and is
+    the one thing that survived all three positions. The corner pair at 3'-4"/33'-8" was
+    retired — the rake leaves ~6'-0" of wall there and nothing stands in it without reading
+    as a stamp. Mirroring the east half once required moving N-A-V1 from 22'-4" to 22'-8",
+    because W-A-S4's bay centres were then 4" out of phase with a mirror of W-A-S1's; that
+    node no longer sets any grid, so the move is now only a wall-segmentation choice.
   - WT-1424 still does the work wherever a bigger unit will not fit — in the 5' knee
     walls, where its 2'-0" height is the only one that clears the plate, and in the
     mudroom. Under the south rake it handed off to WT-1448.

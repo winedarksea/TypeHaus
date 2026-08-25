@@ -37,7 +37,14 @@ def room_floor_elevation(model: ResolvedModel, room: ResolvedRoom) -> float:
     wall_z = 0.0
     for w in model.walls:
         if w.storey == room.storey:
-            wall_z = w.z0_m
+            # ``base_ref_z_m``, not ``z0_m``: a clad wall's skin is run down over the mudsill
+            # and rim to lap the foundation (``resolve/platform.extend_walls_to_foundation``),
+            # so its ``z0_m`` is 13 7/16" under the floor it stands on. Reading that put every
+            # main-storey room's floor — and so every ceiling light hung off it — a rim band
+            # too low, and only once enough of the ring was dropped for the first matching
+            # wall to be one of the dropped ones. Whichever wall answers first, the framing
+            # datum is the floor.
+            wall_z = w.base_ref_z_m
             break
     if not room.clear_face:
         return wall_z

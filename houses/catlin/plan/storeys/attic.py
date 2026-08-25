@@ -192,13 +192,13 @@ OPENINGS = [
     # Tags are descriptive, not positional, since a mid-sequence insertion couldn't join the
     # west→east WIN-A-S* numbering without renumbering (and breaking IFC GlobalIds) the rest.
     Window(uid="CAX311AAAA", tag="WIN-A-S-JUL-W", host="W-A-S2", type_ref="WT-2464",
-           position=from_node("N-A-S1", ft(5, 5)), sill_height=ft(2, 8)),   # x 16'-5"
+           position=from_node("N-A-S1", ft(5, 0)), sill_height=ft(2, 8)),   # x 16'-5"
     Window(uid="CAX312AAAA", tag="WIN-A-S-JUL-E", host="W-A-S3", type_ref="WT-2464",
-           position=from_node("N-A-S2", ft(0, 7)), sill_height=ft(2, 8)),   # x 19'-7"
+           position=from_node("N-A-S2", ft(1, 0)), sill_height=ft(2, 8)),   # x 19'-7"
     # The source attic has no north, east or west opening at all; these three are kept for
     # daylight and cross-ventilation and are this storey's only openings with no counterpart.
     Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2", type_ref="WT-3036",
-           position=from_node("N-A-NW", ft(6, 1)), sill_height=ft(2)),
+           position=from_node("N-A-NW", ft(6, 9)), sill_height=ft(2)),
     Window(uid="CAX305AAAA", tag="WIN-A-N2", host="W-A-N1", type_ref="WT-3036",
            position=from_node("N-A-NE", ft(6, 9)), sill_height=ft(2)),
     # Knee-wall windows, one at each end of the east and west walls (2026-07-30 facade
@@ -219,7 +219,7 @@ OPENINGS = [
     Window(uid="CAX309AAAA", tag="WIN-A-E-S", host="W-A-E1", type_ref="WT-1424-T",
            position=from_node("N-A-SE", ft(2, 9)), sill_height=ft(2, 6)),    # y 3'-4"
     Window(uid="CAX310AAAA", tag="WIN-A-E-N", host="W-A-E2", type_ref="WT-1424",
-           position=from_node("N-A-E1", ft(22, 9)), sill_height=ft(2, 6)),   # y 32'-4"
+           position=from_node("N-A-E1", ft(23, 1)), sill_height=ft(2, 6)),   # y 32'-4"
 ]
 
 ROOMS = [

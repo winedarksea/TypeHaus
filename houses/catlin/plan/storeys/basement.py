@@ -342,15 +342,18 @@ WALLS = [
     # the wet-wall 2x6 rather than a 2x4.
     Wall(uid="CBW114AAAA", tag="W-B-CW", start_node="N-B-W1",
          end_node="N-B-CW-E", assembly="INT_2X6_PLUMBING", top=ft(8)),
-    # Steel studs and Type X because this was the ESS closet's south wall until 2026-08-23,
-    # when the closet moved to the NE corner. Left as built, deliberately: it is now an
-    # over-specified 3'-3" stub rather than a wrong one, and re-specifying it to match
-    # W-B-CW would widen it 2", move the furnace room's south face an inch north over this
-    # run, and re-open `integrity.condition_coverage` on a line nothing else asked about.
-    # The same is true of W-B-STR2 below. Both are worth revisiting the next time this wall
-    # line is opened for another reason; neither is worth opening it for.
+    # Steel studs and Type X until 2026-08-25, because this was the ESS closet's south wall
+    # until the closet moved to the NE corner on 2026-08-23. Now simply W-B-CW continued:
+    # same INT_2X6_PLUMBING, one wall type down the whole furnace-room south line.
+    #
+    # What forced it was `integrity.junction_fallback`. A steel stud and a wood stud are two
+    # different bearing materials, so N-B-CW-E (this stub against W-B-CW) and N-B-STR (this
+    # stub, W-B-CW2 and W-B-STR2) both resolved as mixed-assembly junctions the solver has no
+    # interface rule for — three UNKNOWNs bought by a leftover. The stub widens 2" and the
+    # furnace room's south face moves an inch north over this 3'-3" run; that is the price,
+    # and it was named here before it was paid.
     Wall(uid="CBW123AAAA", tag="W-B-CW3", start_node="N-B-CW-E",
-         end_node="N-B-STR", assembly="INT_ESS_CLOSET_STEEL", top=ft(8)),
+         end_node="N-B-STR", assembly="INT_2X6_PLUMBING", top=ft(8)),
     # Nothing runs in this one and nothing bears on it — a plain 2x4 partition. Keep the
     # tag: W-M-CLN and W-M-CLN2 name it in `stacks_on`.
     Wall(uid="CBW119AAAA", tag="W-B-CW2", start_node="N-B-STR",
@@ -419,16 +422,23 @@ WALLS = [
          alignment=face("stud-ext", offset=inch(-2.625)),
          interior_room="RM-B-FURNACE",
          structural_role=StructuralRole.BEARING),
-    # The stub south of it is a different job: RM-B-BATH's west enclosure, nothing bearing
-    # on it, nothing dimensioned off it. It is *also* the ESS closet's east wall, and that
-    # is what picks the assembly — `advisory.ess_enclosure` wants 5/8" Type X on the closet
-    # face, which 12" of concrete satisfied by being concrete and a staggered-stud wet wall
-    # would not. So it joins its two neighbours (W-B-ESS-W/W-B-ESS-N) in the steel-stud
-    # Type X box instead of matching W-B-BA-N: a battery closet's rating beats a sound break
-    # between a bathroom and an unoccupied cupboard. Its three ceiling-level crossings
-    # (vent, hot, cold) are bored, not cast, now that there is no pour to cast into.
+    # The stub south of it: RM-B-BATH's west enclosure, nothing bearing on it, nothing
+    # dimensioned off it. It carried the ESS closet's steel-stud Type X box until 2026-08-25
+    # — it was the closet's east wall before the closet moved to the NE corner on 2026-08-23
+    # — and like W-B-CW3 above it is now just its neighbour continued: W-B-STR3's assembly,
+    # W-B-STR3's `alignment`, W-B-STR3's `interior_room`, so the studs stand in the same
+    # 9'-9 1/8"..10'-2 5/8" band the whole line does and W-M-STRW is plumb over all of it.
+    # `structural_role` is deliberately NOT copied: the wall type is shared, the load is not.
+    #
+    # Same reason as W-B-CW3: steel bearing against wood left N-B-BA-W and N-B-STR as
+    # mixed-assembly junctions with no interface rule. The 3/4" plywood face now lands on the
+    # bathroom rather than the stair, and the bathroom's west face moves 1" east; its three
+    # ceiling-level crossings (vent, hot, cold) are bored, as they have been since the pour
+    # went away.
     Wall(uid="CBW122AAAA", tag="W-B-STR2", start_node="N-B-BA-W",
-         end_node="N-B-STR", assembly="INT_ESS_CLOSET_STEEL", top=ft(8)),
+         end_node="N-B-STR", assembly="CATLIN_STAIRWALL_INT_2X6_BRG", top=ft(8),
+         alignment=face("stud-ext", offset=inch(-2.625)),
+         interior_room="RM-B-FURNACE"),
     # Sauna partitions — SAUNA_2X4 carries the hot-side liner (T&G/furring/foil-faced
     # polyiso) as part of the wall type, not a room finish override; the east wall (center
     # concrete) takes it via SAUNA_LINER_ON_CONCRETE. Both are interior partitions, so

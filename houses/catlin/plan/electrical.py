@@ -424,8 +424,11 @@ BASEMENT_DEVICES = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18)), rotation=deg(90)),
     # Hot tub in the sunken garden: disconnect on the west porch wall, 7' from its north
     # end, under the porch deck (see header). NEC 680.22 convenience receptacle beside it.
+    # x is 1 5/8" off W-SG-W1's east face (x=8'-6"), not 2": the can is 3 1/4" deep, and the
+    # 2" standoff the four DISCONNECT-3R boxes were authored with dates from when the type
+    # carried a placeholder 4" depth. Its back now sits on the concrete.
     ElectricalDevice(uid="CEE010AAAA", tag="ED-B-SPA-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(8, 8), ft(-7, -10)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-SPA",
+                     position=pt(ft(8, 7.625), ft(-7, -10)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-SPA",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5)), rotation=deg(90)),
     ElectricalDevice(uid="CEE011AAAA", tag="ED-B-SPA-RC", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(8, 7), ft(-5, -6)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-RC-BSMT",
@@ -504,9 +507,10 @@ MAIN_DEVICES = [
     # System 3 (Sapphire, backup battery circuit): its outdoor unit stands on the north
     # side beside the mudroom door, so the disconnect goes on W-M-N2's exterior face west
     # of the breezeway — clear of ED-M-HP1-DISC's condenser gap.
-    # Moved out 1/2" on 2026-08-23 with the truss wall's cladding face.
+    # Moved out 1/2" on 2026-08-23 with the truss wall's cladding face, and 3/8" back in on
+    # 2026-08-25 with the can's true 3 1/4" depth (see ED-M-HP1-DISC).
     ElectricalDevice(uid="CEE026AAAA", tag="ED-M-HP3-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(4), ft(36, 7.5)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
+                     position=pt(ft(4), ft(36, 7.125)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     # FH-M-BATH2's thermostat: inside the room on its south wall (W-M-BDN1, interior face
     # y=13'-0 11/16"), 8" east of D-M-BATH2's opening (x 1'-6 1/2"..4'-0 1/2") — the wall
@@ -598,12 +602,15 @@ SECOND_DEVICES = [
     # not reach). Both on the wall's exterior face (y=-7 1/2"), corrected 2026-08-03 from
     # y=+6" which put a 3R disconnect on the interior side of the wall from its condenser,
     # and moved out a further 1/2" on 2026-08-23 when the truss wall took the cladding face
-    # from 5.02" to 5.5" proud of the sheathing plane.
+    # from 5.02" to 5.5" proud of the sheathing plane. Pulled 3/8" back in on 2026-08-25:
+    # ED-T-DISCONNECT-3R is a 3 1/4"-deep can, so its centre belongs 1 5/8" off the cladding
+    # face, and the 2" these were authored with dates from the type's old placeholder 4"
+    # depth. Same correction on ED-M-HP3-DISC and ED-B-SPA-DISC.
     ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(6), ft(0, -7.5)), type_ref="ED-T-DISCONNECT-3R",
+                     position=pt(ft(6), ft(0, -7.125)), type_ref="ED-T-DISCONNECT-3R",
                      circuit="CKT-HP1", mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(25, 6.5), ft(0, -7.5)), type_ref="ED-T-DISCONNECT-3R",
+                     position=pt(ft(25, 6.5), ft(0, -7.125)), type_ref="ED-T-DISCONNECT-3R",
                      circuit="CKT-HP2", mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     # FH-S-BATH1's thermostat, inside the room on its south wall (W-S-BD-N1B, interior
     # face y=26'-4 11/16"), 9" west of D-S-BATH1's opening (x 7'-3"..9'-9"). Same
@@ -701,7 +708,8 @@ GARAGE_EQUIPMENT = [
 
 # --- Attic: PV junction box beside the radon riser (ED-A-NEMA-JB at (6', 37')) --------
 PV_JBOX = [
-    # Moved out 1/2" on 2026-08-23 with the truss wall's cladding face.
+    # Moved out 1/2" on 2026-08-23 with the truss wall's cladding face, and 3/8" back in on
+    # 2026-08-25 with the can's true 3 1/4" depth (see ED-M-HP1-DISC).
     ElectricalDevice(uid="CEE014AAAA", tag="ED-A-PV-JB", kind=DeviceKind.JUNCTION_BOX,
                      position=pt(ft(9), ft(36, 8.5)), type_ref="ED-T-PV-JB", circuit="CKT-ESS-GRID",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),

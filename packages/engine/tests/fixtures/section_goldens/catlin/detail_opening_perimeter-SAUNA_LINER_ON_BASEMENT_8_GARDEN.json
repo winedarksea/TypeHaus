@@ -1307,6 +1307,174 @@
       "node": "polyline",
       "points": [
         [
+          -9.174993043438926,
+          -23.720964566929126
+        ],
+        [
+          -9.17497676981188,
+          -45.437500091322036
+        ],
+        [
+          -5.55,
+          -45.437500091322036
+        ],
+        [
+          -5.55,
+          -23.720964566929126
+        ]
+      ],
+      "layer": "A-WALL",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CBW126AAAA",
+      "tag": "W-B-BRICK/brick-field-lo"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -9.174993043438926,
+          -23.720964566929126
+        ],
+        [
+          -9.17497676981188,
+          -45.437500091322036
+        ],
+        [
+          -5.55,
+          -45.437500091322036
+        ],
+        [
+          -5.55,
+          -23.720964566929126
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "glazed-lapis-brick"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -9.17499065477702,
+          -23.720964566929126
+        ],
+        [
+          -9.17497676981188,
+          -45.437500091322036
+        ],
+        [
+          -5.55,
+          -45.437500091322036
+        ],
+        [
+          -5.55,
+          -23.720964566929126
+        ]
+      ],
+      "layer": "A-WALL",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CBW126AAAA",
+      "tag": "W-B-BRICK/brick-band-hi"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -9.17499065477702,
+          -23.720964566929126
+        ],
+        [
+          -9.17497676981188,
+          -45.437500091322036
+        ],
+        [
+          -5.55,
+          -45.437500091322036
+        ],
+        [
+          -5.55,
+          -23.720964566929126
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "glazed-gold-brick"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -9.174987872589067,
+          -23.720964566929126
+        ],
+        [
+          -9.17497676981188,
+          -45.437500091322036
+        ],
+        [
+          -5.55,
+          -45.437500091322036
+        ],
+        [
+          -5.55,
+          -23.720964566929126
+        ]
+      ],
+      "layer": "A-WALL",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CBW126AAAA",
+      "tag": "W-B-BRICK/brick-field-hi"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -9.174987872589067,
+          -23.720964566929126
+        ],
+        [
+          -9.17497676981188,
+          -45.437500091322036
+        ],
+        [
+          -5.55,
+          -45.437500091322036
+        ],
+        [
+          -5.55,
+          -23.720964566929126
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "glazed-lapis-brick"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           -5.05,
           -65.4375
         ],

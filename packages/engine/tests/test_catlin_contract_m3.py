@@ -618,22 +618,18 @@ def test_catlin_window_openings_follow_the_sixteen_inch_framing_module():
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
     findings = [finding for finding in report.findings
                 if finding.check_id == "structural.window_framing_module"]
-    # WIN-S-BATH-N is the one exception: its 7'8" wall is too short to put the RO both on
-    # the 16" module's bay centre and clear `integrity.opening_fits`'s 2" edge minimum, so
-    # it sits ~1" off ideal instead of failing the hard edge-clearance check.
+    # **No exceptions, and that is the point of the assertion (2026-08-25).** This list
+    # carried three until the exterior assembly took its stud module from the layout line
+    # instead of from each wall's own start node: WIN-S-BATH-N, whose 7'-8" segment could
+    # not put the RO on a bay centre and still clear `integrity.opening_fits`'s 2" edge
+    # minimum, and the attic juliet pair, 3" off since the 2026-08-24 one-sided widening.
+    # Every one of the three was the same defect wearing a different hat — a wall segment
+    # laying out from a node that happens to sit off 16" — so unifying the grid dissolved
+    # all three rather than fixing them one at a time. 20 windows moved 3"-8" to get here;
+    # `houses/catlin/plan/assemblies.py` (LAYOUT_ORIGIN) has the ledger.
     #
-    # The attic juliet pair is the second exception, and a deliberate one as of 2026-08-24.
-    # Both units were widened 18" -> 24" OUTWARD ONLY — the inboard jambs are pinned by the
-    # 14" bearing pier under the ridge (see the juliet test below), so the growth is
-    # one-sided and each RO centre moved 3" off its stud line. Nothing else about the
-    # framing got worse: each RO still breaks exactly one stud and now stops 1/4" clear of
-    # the next stud's body on the outboard side, so the check is reporting a real
-    # asymmetry (the outboard king/jack pack lands tight against a stud, the inboard one
-    # stands mid-bay) rather than a mistake. The arithmetic admits no alternative: with the
-    # pier fixed, no outward-only width between 19" and the 30" non-bearing RO cap puts the
-    # centre back on a legal station.
-    for exception in ("WIN-S-BATH-N", "WIN-A-S-JUL-W", "WIN-A-S-JUL-E"):
-        findings = [f for f in findings if exception not in f.message]
+    # Keep this empty. An exception here is now evidence of a genuinely constrained wall,
+    # not of an accident of authoring order, and deserves the argument written out.
     assert not findings, [finding.message for finding in findings]
 
 
@@ -648,29 +644,31 @@ def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_heigh
     west = next(item for item in catlin_model.openings if item.tag == "WIN-A-S-JUL-W")
     east = next(item for item in catlin_model.openings if item.tag == "WIN-A-S-JUL-E")
 
-    # W-A-S2 starts at N-A-S1 (x 10'), W-A-S3 at N-A-S2 (x 18'), and both segments lay
-    # their studs from an 8" residue, so the stud lines here are x 15'-4", 16'-8", 18'-0"
-    # (the ridge), 19'-4" and 20'-8".
+    # W-A-S2 starts at N-A-S1 (x 10'), W-A-S3 at N-A-S2 (x 18'), and since 2026-08-25 both
+    # take their module from the layout line rather than from those nodes, so the stud lines
+    # here are the house grid itself: x 16'-0", 17'-4", 18'-8", 20'-0".
     #
-    # The centres sat ON 16'-8"/19'-4" until 2026-08-24. Widening the pair 18" -> 24" moved
-    # them to 16'-5"/19'-7", because the growth is OUTWARD ONLY: the inboard jambs are held
-    # by the bearing pier below, so only the outboard jambs could move. They now stop 1/4"
-    # clear of the 15'-4" and 20'-8" studs — as wide as the pair goes without breaking a
-    # second stud each. What survives untouched is the mirror about the ridge, which is the
-    # gable rule that governs this composition.
+    # The centres sat on 16'-8"/19'-4" until the 2026-08-24 widening 18" -> 24" pushed them
+    # OUTWARD ONLY to 16'-5"/19'-7" — the inboard jambs being held by the bearing pier — and
+    # left both 3" off a stud line, the house's one knowingly-off-module pair. The line
+    # origin retired that exception: 16'-0"/20'-0" are stud lines on the unified grid, 5"
+    # further out, so each RO breaks exactly one stud again and the pair is back on module
+    # with no width change. What never moved through any of it is the mirror about the
+    # ridge, which is the gable rule that governs this composition.
     assert west.host_wall == "W-A-S2"
     assert east.host_wall == "W-A-S3"
-    assert west.center_along_m == pytest.approx(ft(6, 5).meters, abs=1e-6)
-    assert east.center_along_m == pytest.approx(ft(1, 7).meters, abs=1e-6)
+    assert west.center_along_m == pytest.approx(ft(6).meters, abs=1e-6)
+    assert east.center_along_m == pytest.approx(ft(2).meters, abs=1e-6)
     west_x = ft(10).meters + west.center_along_m
     east_x = ft(18).meters + east.center_along_m
-    assert west_x == pytest.approx(ft(16, 5).meters, abs=1e-6)
-    assert east_x == pytest.approx(ft(19, 7).meters, abs=1e-6)
+    assert west_x == pytest.approx(ft(16).meters, abs=1e-6)
+    assert east_x == pytest.approx(ft(20).meters, abs=1e-6)
     assert ft(18).meters - west_x == pytest.approx(east_x - ft(18).meters, abs=1e-9)
-    # The outboard jambs stop just short of the neighbouring stud's body (1 1/2" centred on
-    # 15'-4"/20'-8"), which is what "as wide as it goes" means here.
-    assert west_x - inch(12).meters == pytest.approx(ft(15, 5).meters, abs=1e-6)
-    assert east_x + inch(12).meters == pytest.approx(ft(20, 7).meters, abs=1e-6)
+    # Each RO now sits centred on its own stud line with a full clear bay to the next one
+    # out (17'-4" west, 18'-8"... east reads 21'-4"), so one stud breaks and no jamb crowds
+    # a neighbour — the 1/4" squeeze the outward-only widening had left is gone.
+    assert west_x - inch(12).meters == pytest.approx(ft(15).meters, abs=1e-6)
+    assert east_x + inch(12).meters == pytest.approx(ft(21).meters, abs=1e-6)
 
     for opening in (west, east):
         # The storey-wide south sill line, held here deliberately — and 8" above the 24"
@@ -690,13 +688,19 @@ def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_heigh
     # 2026-08-24 widening is one-sided. Unchanged by that widening, and asserted here so a
     # future "just make them a bit wider" cannot quietly spend it.
     pier = (east_x - inch(12).meters) - (west_x + inch(12).meters)
-    assert pier == pytest.approx(inch(14).meters, abs=1e-6)
+    assert pier == pytest.approx(inch(24).meters, abs=1e-6)
+    # 14" is the requirement — W-A-C1's 5-1/2" stud body plus a jack and king each side is
+    # 11-1/2". The pair moving back onto the grid spent its 5" of outward travel here, so
+    # the clear pier is 24" and the bearing has 12-1/2" to spare rather than 2-1/2".
+    assert pier >= inch(14).meters
 
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
-    # `integrity.opening_fits` is a hard gate and stays clean. `window_framing_module` is
-    # an ADVISORY, and since 2026-08-24 the pair fails it by the 3" the one-sided widening
-    # cost — accepted deliberately, see
-    # test_catlin_window_openings_follow_the_sixteen_inch_framing_module above.
+    # `integrity.opening_fits` is a hard gate and stays clean. `window_framing_module` is an
+    # ADVISORY, and between 2026-08-24 and 2026-08-25 the pair failed it by the 3" the
+    # one-sided widening cost — the house's one accepted off-module window. The line-based
+    # stud module retired that exception rather than the pair moving: on a grid shared by the
+    # whole south line, 16'-0"/20'-0" ARE stud lines. Both checks are clean now, and the
+    # advisory is asserted clean so a future re-phase cannot quietly reintroduce the debt.
     offenders = [finding for finding in report.findings
                  if finding.check_id == "integrity.opening_fits"
                  and finding.result is Result.FAIL
@@ -706,9 +710,7 @@ def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_heigh
                   if finding.check_id == "structural.window_framing_module"
                   and finding.result is Result.FAIL
                   and ("WIN-A-S-JUL-W" in finding.message or "WIN-A-S-JUL-E" in finding.message)]
-    assert len(advisories) == 2, [finding.message for finding in advisories]
-    assert all("3.0\" off" in finding.message for finding in advisories), \
-        [finding.message for finding in advisories]
+    assert not advisories, [finding.message for finding in advisories]
 
 
 def _opening_plan_y(model, tag):
@@ -736,13 +738,23 @@ def _framing_offenders(tags):
             and any(tag in finding.message for tag in tags)]
 
 
-def test_the_west_facade_stacks_four_two_storey_window_columns(catlin_model):
-    """Four exact lower columns, mirrored attic caps, and one constrained near-column."""
+def test_the_west_facade_stacks_five_two_storey_window_columns(catlin_model):
+    """Five exact lower columns and mirrored attic caps.
+
+    Four until 2026-08-25, when the assembly took its stud module from the layout line.
+    The fifth was the face's one broken column: W-S-W1's grid had re-phased out from under
+    WIN-S-BATH-W on 2026-08-21 when the mechanical chase moved N-S-CH3, and the window rode
+    3 1/8" south to the bay centre that move created rather than break a stud. With one grid
+    for the whole line there is no per-segment phase left to drift, so it returns to 31'-4"
+    under WIN-M-MUD. The other four shifted 4" together, which is the whole face re-hanging
+    on the house grid — same rhythm, same pairs, one datum.
+    """
     columns = {
-        ft(5).meters: ("WIN-M-BED-W1", "WIN-S-PLANT3"),
-        ft(10, 4).meters: ("WIN-M-BED-W2", "WIN-S-SUITE1"),
-        ft(19, 8).meters: ("WIN-M-BATH2", "WIN-S-SUITE2"),
-        ft(24, 4).meters: ("WIN-M-BATH1-W", "WIN-S-VANITY-W"),
+        ft(5, 4).meters: ("WIN-M-BED-W1", "WIN-S-PLANT3"),
+        ft(10, 8).meters: ("WIN-M-BED-W2", "WIN-S-SUITE1"),
+        ft(20).meters: ("WIN-M-BATH2", "WIN-S-SUITE2"),
+        ft(24, 8).meters: ("WIN-M-BATH1-W", "WIN-S-VANITY-W"),
+        ft(31, 4).meters: ("WIN-M-MUD", "WIN-S-BATH-W"),
     }
     for expected_y, (main_tag, second_tag) in columns.items():
         main_y, main = _opening_plan_y(catlin_model, main_tag)
@@ -759,8 +771,8 @@ def test_the_west_facade_stacks_four_two_storey_window_columns(catlin_model):
 
     vanity_y, vanity = _opening_plan_y(catlin_model, "WIN-S-VANITY-W")
     bath_y, bath = _opening_plan_y(catlin_model, "WIN-M-BATH1-W")
-    assert vanity_y == pytest.approx(ft(24, 4).meters, abs=1e-6)
-    assert bath_y == pytest.approx(ft(24, 4).meters, abs=1e-6)
+    assert vanity_y == pytest.approx(ft(24, 8).meters, abs=1e-6)
+    assert bath_y == pytest.approx(ft(24, 8).meters, abs=1e-6)
     assert vanity.host_wall == "W-S-W2" and vanity.type_ref == "WT-1424-T"
     assert bath.host_wall == "W-M-W2" and bath.type_ref == "WT-1424-T"
 
@@ -771,33 +783,45 @@ def test_the_west_facade_stacks_four_two_storey_window_columns(catlin_model):
     assert attic_south_y + attic_north_y == pytest.approx(ft(36).meters, abs=1e-6)
     assert attic_south.width_m == pytest.approx(attic_north.width_m, abs=1e-6)
 
+    # The recovered column, asserted as a pair rather than as two separate stations: the
+    # 3 1/8" that used to sit between them was the per-segment phase drift, and there is no
+    # longer a mechanism that could reopen it without moving both.
     mud_y, _mud = _opening_plan_y(catlin_model, "WIN-M-MUD")
     second_bath_y, _second_bath = _opening_plan_y(catlin_model, "WIN-S-BATH-W")
     assert mud_y == pytest.approx(ft(31, 4).meters, abs=1e-6)
-    assert second_bath_y == pytest.approx(ft(31, 0.875).meters, abs=1e-6)
+    assert second_bath_y == pytest.approx(mud_y, abs=1e-6)
 
+    # The ladder backing at W-S-W3's tee is COMPLETE again (2026-08-25). WIN-S-SUITE1's
+    # header used to cross the top rung, and opening framing owns that volume, so the solver
+    # dropped the one nonstructural block and this test pinned the hole. The 4" the window
+    # moved to reach the line's grid took the header off the rung, and the rung came back —
+    # a second-order win worth asserting, because a future window move could re-open it.
     suite_wall = catlin_model.wall("W-S-W3")
     suite_wall_member_keys = {member.child_key for member in suite_wall.members}
     assert "header-0" in suite_wall_member_keys
-    assert "tee-N-S-W3-block-02" not in suite_wall_member_keys
-    assert {"tee-N-S-W3-block-00", "tee-N-S-W3-block-01"} <= suite_wall_member_keys
+    assert {"tee-N-S-W3-block-00", "tee-N-S-W3-block-01",
+            "tee-N-S-W3-block-02", "tee-N-S-W3-block-03"} <= suite_wall_member_keys
 
     column_tags = [tag for pair in columns.values() for tag in pair]
     assert not _framing_offenders(column_tags)
 
 
 def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(catlin_model):
-    """4'-0" / 13'-0" / 23'-0" / 32'-0" — 4+32 = 13+23 = 36'-0", exactly.
+    """4'-0" / 13'-4" / 22'-8" / 32'-0" — 4+32 = 13'-4"+22'-8" = 36'-0", exactly.
 
     The row it replaced ran a perfectly even 9'-0" beat that sat 10" north of centre: 5'-4"
     of wall at the south end against 3'-8" at the north. An even beat is invisible; a 20"
     asymmetry on a 36'-0" face is not. Width and head mirror too, on one 3'-0" sill, so the
     two halves are the same picture — that is the claim, and it is pinned in all three
     dimensions because holding only the stations would let a retype break it silently.
+
+    The inner pair moved 4" outward on 2026-08-25 with the line-based stud module, and the
+    row got *more* regular for it: the beat is now 9'-4" three times over, even and centred
+    at once, where 4/13/23/32 was centred with a 9'-0"/10'-0"/9'-0" beat.
     """
     house = ft(36).meters
     pairs = (("WIN-S-STUDY3", "WIN-S-BED3", ft(4).meters),
-             ("WIN-S-BED1", "WIN-S-BED2", ft(13).meters))
+             ("WIN-S-BED1", "WIN-S-BED2", ft(13, 4).meters))
     tags = []
     for south_tag, north_tag, expected_south_y in pairs:
         south_y, south = _opening_plan_y(catlin_model, south_tag)

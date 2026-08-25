@@ -134,6 +134,11 @@ export interface Wall {
   // cutter uses to interpolate a sloped top (→ emit/draw/section.py::_wall_top_at_cut).
   top_z0_m: number | null;
   top_z1_m: number | null;
+  // Where this wall's framing actually starts, when the skin was dropped below it to lap
+  // the foundation (→ resolve/platform.py::extend_walls_to_foundation). null = the wall
+  // body and its framing share a base, so z0_m is the datum. Every sill is measured from
+  // `baseRefZ(wall)`, never from z0_m — mirrors ResolvedWall.base_ref_z_m.
+  plate_base_z_m: number | null;
   is_foundation: boolean;
   layers: Layer[];
   members: Member[];

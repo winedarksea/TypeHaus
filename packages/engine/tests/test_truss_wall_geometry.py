@@ -24,6 +24,7 @@ import pytest
 from typehaus.resolve.framing.truss_frame import BLOCK_SPACING, TrussFrame
 from typehaus.resolve.framing.truss_wall import truss_layer_name
 from typehaus.resolve.geometry import sub, unit
+from typehaus.resolve.layout_lines import layout_phase
 
 IN = 0.0254
 
@@ -43,6 +44,24 @@ def _by_category(wall, category):
     return [m for m in wall.members if m.category == category]
 
 
+def _module_phase(model, wall, spacing_m):
+    """Wall-local station of this wall's first module station, in ``[0, spacing)``.
+
+    0.0 for a wall whose framing lays out from its own start node, which is the default and
+    was the only case until 2026-08-25. Catlin's exterior assemblies now set
+    ``FramingSpec.layout_origin="line"``, so the module is the *layout line's* and a wall
+    whose start node is off 16" carries a nonzero phase — its studs and its outriggers are
+    still one grid, which is what these tests are about, but that grid is no longer a whole
+    multiple of 16" from the wall's own end.
+    """
+    layer = truss_layer_name(model.plan, wall.assembly)
+    assembly = model.plan.library.resolve_assembly(wall.assembly)
+    spec = next((ly.framing for ly in assembly.layers
+                 if ly.name == layer and ly.framing is not None), None)
+    line = next((ln for ln in model.layout_lines if ln.member(wall.tag) is not None), None)
+    return layout_phase(spec, line, wall.tag, spacing_m)
+
+
 #: Everything the framing solver emits as a vertical stick on (or beside) the stud module.
 #: A block screwed "over a stud" may equally land on the king or jack at an opening — they
 #: are the same 1-1/2" of wood in the same plane — and testing only ``stud`` reports every
@@ -52,6 +71,12 @@ _STUDLIKE = ("stud", "king", "jack", "cripple", "corner", "trimmer")
 
 def _studlike(wall):
     return [m for m in wall.members if m.category in _STUDLIKE]
+
+
+def _opening_spans(model, wall):
+    """``(station_lo, station_hi)`` of every rough opening hosted in ``wall``."""
+    return [(o.center_along_m - o.width_m / 2.0, o.center_along_m + o.width_m / 2.0)
+            for o in model.openings if o.host_wall == wall.tag]
 
 
 def test_the_house_has_truss_walls_at_all(catlin_model):
@@ -66,16 +91,21 @@ def test_an_outrigger_lands_on_the_stud_line_it_is_screwed_to(catlin_model):
     An outrigger is not fastened to the sheathing — it is fastened, through a plywood tab and
     a flat block, to a STUD. So its grid has to be the stud grid. Only the strip at each end
     of a band is off-module, exactly as the end studs are.
+
+    The module is taken from ``_module_phase``, not assumed to start at the wall's own end:
+    since 2026-08-25 catlin's exterior walls phase from their layout line, and this test's
+    claim is that the two grids AGREE — never that either one starts at a particular node.
     """
     off_module = []
     for wall in _truss_walls(catlin_model):
+        phase = _module_phase(catlin_model, wall, 16.0 * IN) / IN
         for member in _by_category(wall, "strapping"):
             if member.material != "kdat" or "jamb" in member.child_key:
                 continue
             # Measured against the 16" MODULE, not against whichever studs survived this
             # wall's openings: the grid is the invariant, and a stud missing under a window
             # is the opening's business, not the outrigger's.
-            station = _station(member, wall) / IN
+            station = _station(member, wall) / IN - phase
             if abs(station - round(station / 16.0) * 16.0) > 0.01:
                 off_module.append((wall.tag, round(station, 3)))
     # Two per wall at most: the end strip at each end of the mitred band.
@@ -94,12 +124,15 @@ def test_a_block_covers_the_whole_stud_it_is_screwed_to(catlin_model):
     the block laps the stud completely — and if the grid ever drifts off the module again,
     this is the half inch that goes missing.
 
-    Two exclusions, and neither is a tolerance:
+    Three exclusions, and none of them is a tolerance:
 
     * **Blocks with no stud at all.** Over a header or a rough sill (the framing above a door
       head and under a window spans the whole opening), and above an opening whose header
       runs to the top plate, where there are no cripples — a head gap shallower than a
       plate is not framed. That is wood, just not a stud.
+    * **Blocks standing inside a rough opening**, which is the same idea stated by station
+      rather than by elevation: an outrigger crossing an opening is blocked at the header,
+      the rough sill and the plates, all of which run the width of the wall.
     * **The last 6" of each band.** A band's end strip is off-module by construction, like
       the end stud; its pack is slid to stay inside the mitred band, and it lands on a corner
       post whose other studs belong to the WALL NEXT DOOR and are not in this member list.
@@ -115,9 +148,19 @@ def test_a_block_covers_the_whole_stud_it_is_screwed_to(catlin_model):
         if len(studs) < 4:
             continue
         run = max(studs)
+        openings = _opening_spans(catlin_model, wall)
         for block in _by_category(wall, "truss_block"):
             centre = _station(block, wall)
             if centre < 6.0 * IN or centre > run - 6.0 * IN:
+                continue
+            # A block standing INSIDE a rough opening has no stud under it and wants none:
+            # the outrigger crossing an opening is blocked at the header, the rough sill and
+            # the plates, which is wood that runs the width of the wall. W-M-N3 is the case
+            # to picture — a 4'-0" wall almost entirely filled by D-M-ENTRY. Before
+            # 2026-08-25 the 4"-window skip below happened to exclude these; on the line's
+            # grid they land nearer a jack and it no longer does, so state the rule outright
+            # rather than leaving it to a coincidence of spacing.
+            if any(lo - 1e-9 <= centre <= hi + 1e-9 for lo, hi in openings):
                 continue
             nearest = min(studs, key=lambda s, c=centre: abs(s - c))
             if abs(nearest - centre) > 4.0 * IN:
@@ -127,7 +170,10 @@ def test_a_block_covers_the_whole_stud_it_is_screwed_to(catlin_model):
             laps.append(overlap)
             if overlap < 0.75 * IN - 1e-6:
                 thin.append((wall.tag, round(centre / IN, 2), round(overlap / IN, 3)))
-    assert len(laps) > 800, "the field of the wall is what this measures"
+    # 796 today. The floor is a vacuity guard, not a quantity: it was 800 while blocks
+    # inside a rough opening were being skipped by a coincidence of spacing rather
+    # than by the rule above, and excluding them deliberately costs a handful.
+    assert len(laps) > 750, "the field of the wall is what this measures"
     assert not thin, f"blocks lapping under 3/4\" of stud: {thin[:6]}"
     full = sum(1 for lap in laps if lap >= 1.5 * IN - 1e-6)
     assert full / len(laps) >= 0.85, (

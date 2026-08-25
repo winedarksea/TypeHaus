@@ -111,7 +111,14 @@ checked like every other boundary.
   2. **Stud stacking** — the framing solver's in-line framing option (§Framing solver below)
      aligns stud layout grids along stack edges. *Built 2026-08-25* as
      `FramingSpec.layout_origin: "wall-start" | "line"`, default `"wall-start"` so every
-     existing wall is unchanged byte for byte. Deliberately **not** folded into
+     existing wall is unchanged byte for byte. *Catlin opted in the same day* —
+     `CATLIN_EXT_2X6` and `PLANT_EXT_2X6_HUMID`, stud layer and outrigger layer both — which
+     is what turned the option into evidence: 20 window ROs had to move 3"–8" onto the
+     unified grid, and doing so took the house from 2 `haus check` FAILs to **0** and
+     dissolved four separately-documented facade defects that had each been recorded as
+     unfixable. The cost is real and worth stating plainly: a house that opts in is choosing
+     to re-hang its openings on the line's grid, once, and the findings name every station.
+     Deliberately **not** folded into
      `advanced_framing`, which also drops the second top plate: R602.3.2's single-top-plate
      exception turns on rafters or joists centred over studs within 1", not on studs stacking
      over studs (R602.3.3's 5" rule is the bearing-stud one), and in-line framing is an APA

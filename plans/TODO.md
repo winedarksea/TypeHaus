@@ -710,13 +710,16 @@ Left open, and worth doing next:
 - **`IfcBuildingElementPart` bodies carry no voids** (`ifc/lowlevel.py:435-436`) while glTF
   cuts openings out of banded layers, so a banded band crossing a window is already
   inconsistent between the two exports. Cross-storey `LINE_BASE` bands make it likelier hit.
-- **19 catlin windows are off the layout line's grid.** `CATLIN_EXT_2X6` is the assembly
-  `FramingSpec.layout_origin="line"` was built for and it is still opted out, because
-  turning it on re-phases the module under every window authored against its own wall's
-  node — 19 `structural.window_framing_module` findings and one attic header meeting a
-  rafter. Measured, it takes studs landing on a stud below from **46.5% to 75.5%**. Shift
-  the ROs onto the line's grid, then flip both specs in `houses/catlin/plan/assemblies.py`
-  (the stud layer *and* the outrigger layer, or the battens come off the studs).
+- ~~**19 catlin windows are off the layout line's grid.**~~ **DONE 2026-08-25.** Both specs
+  in `CATLIN_EXT_2X6` are flipped (stud *and* outrigger), and `PLANT_EXT_2X6_HUMID` with
+  them — W-S-S1 and W-S-W4 are members of the south and west lines, so leaving that assembly
+  on wall-start origin would have put a jog in an otherwise continuous line. 20 window ROs
+  moved 3"–8" onto the unified grid. `haus check houses/catlin` is **0 FAIL**, down from 2,
+  and the `window_framing_module` exception list in `test_catlin_contract_m3.py` is now
+  empty. Four documented facade defects went with it — the west face's spent fifth column,
+  the east knee band's 4" miss, the north gable's asymmetry, the juliet pair's accepted 3"
+  off-module exception — plus a ladder-backing rung the suite header had been displacing.
+  See `houses/catlin/CLAUDE.md` **ONE GRID PER FACADE**.
 - **A `Slab` or `FloorSystem` rim has no cladding concept at all.** `SL-M-DECK`'s exposed
   perimeter edge takes no fascia, no edge trim and no drip: the machinery for that
   (`resolve/roof_edge.py`, `resolve/trim_bands.py`) is roof-only and has no analog for a

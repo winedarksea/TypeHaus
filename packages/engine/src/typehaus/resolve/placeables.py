@@ -78,7 +78,8 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             mount_elevation = resolved_mount_elevation(storey, item, floor_m=floor)
             obstruction_by_uid[item.uid] = clear_floor_space_obstruction(
                 _body_profile(product_type, item, floor, mount_elevation, local_footprint))
-            if explicit_room is not None and explicit_room != resolved_room:
+            if (explicit_room is not None and explicit_room != resolved_room
+                    and not _set_into_room_wall(item, explicit_room, center, model, room_shapes)):
                 findings.append(_finding("integrity.placeable_room_mismatch", item.tag,
                     f"placeable {item.tag} is assigned to {explicit_room} but its footprint center is outside that room",
                     Severity.WARN))
@@ -111,6 +112,39 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
 
 
 _Bounds = tuple[float, float, float, float]
+
+#: How far a room's clear face may stand off the wall solid bounding it and still count as
+#: bounded by it. The clear face is built from those wall faces, so the true answer is zero;
+#: the allowance only absorbs the finish-face rounding that a resolved polygon carries.
+_WALL_BOUNDS_ROOM_M = 0.01
+
+
+def _set_into_room_wall(item: object, room_tag: str, center: tuple[float, float],
+                        model: ResolvedModel,
+                        room_shapes: list[tuple[str, Polygon, _Bounds]]) -> bool:
+    """True when the placeable is set INTO a wall that bounds the room it names.
+
+    A wall hydrant pierces the wall between its room and the weather: the escutcheon is
+    outdoors, so the footprint centre is *necessarily* outside the room, and the room behind
+    the wall is still the true answer for the permit fixture schedule
+    (``advisory.fixture_room_unassigned`` is what asks for it). Reporting that as a room
+    mismatch asks the author to choose between two findings rather than to fix anything.
+
+    Both halves of the claim are checked, so an ordinary drag error still reports: the body
+    has to stand in the wall it names, and that wall has to bound the room it names. A
+    placeable pulled off its host, or one naming a wall on the far side of the house, fails
+    the first test; one set into a wall of some other room fails the second.
+    """
+    wall = model.wall(getattr(item, "wall_ref", None) or "")
+    if wall is None:
+        return False
+    rings = [Polygon(layer.polygon) for layer in wall.layers if len(layer.polygon) >= 3]
+    point = Point(center)
+    if not any(ring.covers(point) for ring in rings):
+        return False
+    shape = next((s for tag, s, _bounds in room_shapes if tag == room_tag), None)
+    return shape is not None and any(shape.distance(ring) <= _WALL_BOUNDS_ROOM_M
+                                     for ring in rings)
 
 
 def _containing_room(room_shapes: list[tuple[str, Polygon, _Bounds]],

@@ -195,7 +195,14 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
     # D-S-BED2/BED3 came 4" south with N-S-B2/N-S-B3 on 2026-08-15 (their offsets are
     # authored off those nodes and were left alone, so the doors kept their position in
     # their own rooms); D-S-BED1 hangs off N-S-B1, which did not move.
-    for tag, y_ft in (("D-S-BED1", 15 + 2 / 12), ("D-S-BED2", 23 + 9 / 12),
+    #
+    # D-S-BED2 then left the source gap outright on 2026-08-24, when the swing-direction pass
+    # gave it `flip_swing`: swinging the other way put its sweep across FURN-S-BED2-WARD, the
+    # room's only wardrobe, and the case cannot move (the bed's own side zone bounds it east
+    # and the swing bounds it west, whichever hand the leaf takes). The door went 8 15/16"
+    # north instead, to 23'-0 1/16". That is a real deviation from the survey and is asserted
+    # as one — put the door back on 24'-1" and `integrity.door_swing_conflict` returns.
+    for tag, y_ft in (("D-S-BED1", 15 + 2 / 12), ("D-S-BED2", 23 + 1 / 16 / 12),
                       ("D-S-BED3", 28 + 7 / 12)):
         x, y = centres[tag]
         assert x == pytest.approx(ft(21, 11).meters, abs=TOL_M), tag
@@ -224,7 +231,11 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
         assert centres[near][1] + centres[far][1] == pytest.approx(ft(36).meters,
                                                                   abs=TOL_M), far
     assert centres["WIN-S-STUDY3"][1] == pytest.approx(ft(4).meters, abs=TOL_M)
-    assert centres["WIN-S-BED1"][1] == pytest.approx(ft(13).meters, abs=TOL_M)
+    # 13'-4", not 13'-0", since 2026-08-25: the inner pair moved 4" outward onto the layout
+    # line's stud grid, which made the row evenly beaten (9'-4" x3) as well as mirrored. The
+    # mirror asserted just above is the claim that outranks the survey; this station is the
+    # row's own rhythm and moves with it.
+    assert centres["WIN-S-BED1"][1] == pytest.approx(ft(13, 4).meters, abs=TOL_M)
 
     # The source draws one balcony door, east of the centre line, inside its 18'-8"..23'-11"
     # run. D-S-DECK-W is ours, not the survey's (2026-07-31) — the second door off the plant

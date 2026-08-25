@@ -22,7 +22,7 @@ import * as THREE from "three";
 import type { Opening, Wall } from "../../model/types";
 import { masonryTileSizeM, type MasonryStyle } from "../materials";
 import type { PlanCenter } from "../planGeometry";
-import { archSoffitCircle, archSoffitSegmentCount, wallLocalFrame, wallLocalToSceneMatrix } from "./wallFrame";
+import { archSoffitCircle, archSoffitSegmentCount, baseRefZ, wallLocalFrame, wallLocalToSceneMatrix } from "./wallFrame";
 
 /**
  * How far the ring stands radially above the soffit: one header, 3⅝".
@@ -129,7 +129,7 @@ export function createArchRingGeometry(
   // The soffit circle's centre, in the wall's local frame. The springline rule is the one the
   // whole codebase measures from: `height_m` already includes the rise.
   const centerAlong = opening.center_along_m;
-  const springline = wall.z0_m + opening.sill_m + Math.max(0, opening.height_m - rise);
+  const springline = baseRefZ(wall) + opening.sill_m + Math.max(0, opening.height_m - rise);
   const centerElevation = springline - depthM;
   // Proud on the intrados too, so no ring surface is ever coincident with the wall's own.
   const innerRadius = Math.max(1e-4, radiusM - ARCH_RING_PROUD_M);

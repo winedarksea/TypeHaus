@@ -115,6 +115,13 @@ def frame_truss_walls(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     rather than swallowed because the number is the thing worth watching: a handful is the
     geometry being crowded, and a hundred is this pass being broken, which is what it was
     until 2026-08-23.
+
+    The one crowding this pass now *resolves* instead of reporting is the band END strip
+    against the last module outrigger (``TrussFrame.crowded_end_neighbours``): on a wall
+    that is not a whole number of modules long the two land two or three inches apart, the
+    end strip cannot move, and the module one is simply omitted — which is what is framed.
+    Those members are dropped from the wall's field here, so the BOM and the 3D model lose
+    the stick as well as the finding.
     """
     by_host: dict[str, list[ResolvedOpening]] = {}
     for opening in model.openings:
@@ -123,8 +130,11 @@ def frame_truss_walls(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     findings: list[Finding] = []
     framed: list[ResolvedWall] = []
     for wall in model.walls:
-        members, loose = frame_wall_truss(plan, wall, by_host.get(wall.tag, []))
-        framed.append(replace(wall, members=wall.members + members) if members else wall)
+        members, loose, dropped = frame_wall_truss(plan, wall, by_host.get(wall.tag, []))
+        kept = (tuple(member for member in wall.members
+                      if member.child_key not in dropped) if dropped else wall.members)
+        framed.append(replace(wall, members=kept + members)
+                      if members or dropped else wall)
         if loose:
             findings.append(Finding(
                 check_id="structural.truss_wall_unpacked_outrigger",
@@ -160,8 +170,10 @@ def truss_layer_name(plan: PlanModel, assembly_tag: str | None) -> str | None:
 
 def frame_wall_truss(plan: PlanModel, wall: ResolvedWall,
                      openings: list[ResolvedOpening]
-                     ) -> tuple[tuple[FramedMember, ...], tuple[str, ...]]:
-    """Every truss piece on one wall, or ``()`` if the wall is not a truss wall.
+                     ) -> tuple[tuple[FramedMember, ...], tuple[str, ...], tuple[str, ...]]:
+    """Every truss piece on one wall, plus the loose and dropped field keys.
+
+    ``()`` for all three if the wall is not a truss wall.
 
     Order matters and is the whole of the sequencing here. The jamb outriggers come first,
     because they are outriggers and carry packs like any other; the packs come next, because
@@ -170,17 +182,33 @@ def frame_wall_truss(plan: PlanModel, wall: ResolvedWall,
     """
     layer_name = truss_layer_name(plan, wall.assembly)
     if layer_name is None:
-        return (), ()
+        return (), (), ()
     band = next((layer for layer in wall.layers if layer.name == layer_name
                  and layer.polygon), None)
     if band is None:
-        return (), ()
+        return (), (), ()
     frame = TrussFrame.build(plan, wall, band)
     if frame is None:
-        return (), ()
+        return (), (), ()
 
     field = [member for member in wall.members
              if member.child_key.startswith(f"strapping-{layer_name}-")]
+    members, loose = _frame_field(frame, wall, openings, field)
+    # A band end strip and the last module outrigger can land inches apart. Where that left
+    # the end strip with no block and no tab, the module one is the stick that goes — omitted
+    # rather than framed and left hanging — and the wall is framed again without it
+    # (→ ``TrussFrame.crowded_end_neighbours``).
+    dropped = frame.crowded_end_neighbours(field, loose)
+    if dropped:
+        field = [member for member in field if member.child_key not in dropped]
+        members, loose = _frame_field(frame, wall, openings, field)
+    return members, loose, dropped
+
+
+def _frame_field(frame: TrussFrame, wall: ResolvedWall,
+                 openings: list[ResolvedOpening], field: list[FramedMember]
+                 ) -> tuple[tuple[FramedMember, ...], tuple[str, ...]]:
+    """Jambs, packs, ladders and bucks for one outrigger field, and its unpacked keys."""
     # (station, z0, z1) — the elevation band matters: an outrigger inside an opening's own
     # width was cut around it, so it is not wood at that opening's jamb (→ nearest_bearing_gap).
     stations = sorted((frame.station_of(member), member.z0_m, member.z1_m)

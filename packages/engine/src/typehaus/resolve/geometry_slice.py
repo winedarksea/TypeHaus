@@ -245,6 +245,33 @@ def _key(point: Vec2UZ) -> tuple[int, int]:
     return (round(point[0] / WELD_M), round(point[1] / WELD_M))
 
 
+def _cells(key: tuple[int, int]) -> tuple[tuple[int, int], ...]:
+    """``key`` and its eight neighbours, ``key`` first so exact matches keep winning.
+
+    Rounding to the weld grid is not the same thing as welding: two endpoints a fraction of
+    a micron apart still land in different cells whenever they straddle a cell boundary, and
+    then the chain walks off the end of a ring that geometrically closes. Searching the ring
+    of cells around one makes the weld a *distance* again. It strictly widens what welds —
+    two points in one cell were already up to a cell diagonal apart — so no chain that closed
+    before stops closing.
+
+    The case that found it: catlin's garage-roof membrane is 0.02" thick, its eave edge
+    carries two z values 7.4e-7 m apart, the segment between them is dropped as degenerate
+    (rightly — it is below ``WELD_M``), and the two chain ends it left behind quantized one
+    cell apart. Four open chains on a mesh whose deck and roofing siblings, cut on the same
+    plane, closed cleanly.
+    """
+    x, y = key
+    return ((x, y),
+            (x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1),
+            (x - 1, y - 1), (x - 1, y + 1), (x + 1, y - 1), (x + 1, y + 1))
+
+
+def _welds(a: Vec2UZ, b: Vec2UZ) -> bool:
+    """Whether two endpoints are the same point, to the weld grid."""
+    return _key(b) in _cells(_key(a))
+
+
 def _chain(segments) -> tuple[list[tuple[Vec2UZ, ...]], int]:
     """Weld segment endpoints into closed rings; count the chains that never close."""
     if not segments:
@@ -264,16 +291,19 @@ def _chain(segments) -> tuple[list[tuple[Vec2UZ, ...]], int]:
         a, b = segments[start]
         chain = [a, b]
         while True:
-            candidates = [i for i in adjacency.get(_key(chain[-1]), []) if not used[i]]
+            candidates = [i for cell in _cells(_key(chain[-1]))
+                          for i in adjacency.get(cell, ()) if not used[i]]
             if not candidates:
                 break
             index = candidates[0]
             used[index] = True
             p0, p1 = segments[index]
-            chain.append(p1 if _key(p0) == _key(chain[-1]) else p0)
-            if _key(chain[-1]) == _key(chain[0]):
+            # Which end of the found segment continues the chain. Distance, not key
+            # equality: the endpoint that welded may sit in a neighbouring cell.
+            chain.append(p1 if _distance(p0, chain[-1]) <= _distance(p1, chain[-1]) else p0)
+            if _welds(chain[-1], chain[0]):
                 break
-        if len(chain) > 3 and _key(chain[-1]) == _key(chain[0]):
+        if len(chain) > 3 and _welds(chain[-1], chain[0]):
             rings.append(tuple(chain[:-1]))
         else:
             open_chains += 1

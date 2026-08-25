@@ -12,6 +12,20 @@ import * as THREE from "three";
 import type { Wall } from "../../model/types";
 import type { PlanCenter } from "../planGeometry";
 
+/** The datum every sill is measured up from.
+ *
+ * A framed wall whose skin was dropped to lap the foundation below it carries a `z0_m`
+ * under its own floor — the cladding reaches down over the mudsill and rim, the framing
+ * does not (→ resolve/platform.py::extend_walls_to_foundation). `plate_base_z_m` is where
+ * the framing starts, so it, not `z0_m`, is the floor an opening's `sill_m` rises from.
+ * Mirrors `ResolvedWall.base_ref_z_m`; using `z0_m` here drops every opening on an
+ * extended wall by the mudsill+rim depth while its framing stays put.
+ */
+export function baseRefZ(w: Wall): number {
+  return w.plate_base_z_m ?? w.z0_m;
+}
+
+
 // Arch tessellation for one continuous viewer mesh; no internal wall-piece seams are emitted.
 // The segment count is derived per arch from its radius (archSoffitSegmentCount) so that a
 // soffit facet never strays further than this from the true circle, whatever the arch's size.

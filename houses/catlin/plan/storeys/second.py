@@ -337,8 +337,13 @@ OPENINGS = [
     # stair band rather than inside RM-S-BED1.
     Door(uid="CSD201AAAA", tag="D-S-BED1", host="W-S-BW1", type_ref="DT-INT-SWING30",
          position=from_node("N-S-B1", ft(4, 11)), flip_swing=True),          # y 15'-2"
+    # 8 15/16" north of the source gap (24'-1"), unlike its two neighbours, and the only
+    # opening on this storey that leaves the survey: `flip_swing` on 2026-08-24 turned the
+    # leaf toward FURN-S-BED2-WARD, and the wardrobe has nowhere to go — the bed's side zone
+    # bounds it east, the swing bounds it west whichever hand the leaf takes. Moving the door
+    # was the way out. Asserted at its real y in test_openings_land_on_the_source_gaps.
     Door(uid="CSD202AAAA", tag="D-S-BED2", host="W-S-BW2", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-B2", ft(4, 1.0625)), flip_swing=True),                       # y 24'-1"
+         position=from_node("N-S-B2", ft(4, 1.0625)), flip_swing=True),          # y 23'-0 1/16"
     Door(uid="CSD203AAAA", tag="D-S-BED3", host="W-S-BW3", type_ref="DT-INT-SWING30",
          position=from_node("N-S-B3", ft(0, 8)), flip_swing=True),                        # y 28'-11"
     # Just an opening, framed the same as a 30" door: no leaf needed for this passthrough.
@@ -430,18 +435,18 @@ OPENINGS = [
     # BED1 carries WT-3048-T because at y=13'-0" the glass falls inside 60" of ST-S2A,
     # R308.4.5's stair band.
     Window(uid="CSX301AAAA", tag="WIN-S-BED1", host="W-S-E2", type_ref="WT-3048-T",
-           position=from_node("N-S-E1", ft(2, 9)), sill_height=ft(3)),      # y 13'-0"
+           position=from_node("N-S-E1", ft(3, 1)), sill_height=ft(3)),      # y 13'-0"
     Window(uid="CSX302AAAA", tag="WIN-S-BED2", host="W-S-E3", type_ref="WT-3048",
-           position=from_node("N-S-E2", ft(4, 1)), sill_height=ft(3)),      # y 23'-0"
+           position=from_node("N-S-E2", ft(3, 9)), sill_height=ft(3)),      # y 23'-0"
     Window(uid="CSX303AAAA", tag="WIN-S-BED3", host="W-S-E4", type_ref="WT-2736",
            position=from_node("N-S-E3", ft(4, 2.5)), sill_height=ft(3)),    # y 32'-0"
     # West suite (bearing wall). SUITE1 moved 13'-0" -> 10'-4" for the third exact
     # main/second west column. Its header crosses W-S-W3's top ladder-backing rung, so the
     # solver omits that nonstructural rung while preserving the header and every other rung.
     Window(uid="CSX304AAAA", tag="WIN-S-SUITE1", host="W-S-W3", type_ref="WT-2736",
-           position=from_node("N-S-W2", ft(10, 10.5)), sill_height=ft(3)),   # y 10'-4"
+           position=from_node("N-S-W2", ft(10, 6.5)), sill_height=ft(3)),   # y 10'-4"
     Window(uid="CSX305AAAA", tag="WIN-S-SUITE2", host="W-S-W3", type_ref="WT-2736",
-           position=from_node("N-S-W2", ft(1, 6.5)), sill_height=ft(3)),      # y 19'-8"
+           position=from_node("N-S-W2", ft(1, 2.5)), sill_height=ft(3)),      # y 19'-8"
     # Plant room — south glazing: centres 4'-0" and 9'-4" are stud lines on W-S-S1's grid,
     # stacking exactly over WIN-M-BED-S1/2. Sill 2'-8" = the shared 6'-8" head line.
     # Narrowed 42" -> 30" and moved 8" east off the old bay centres (WT-3048, 2026-08-01,
@@ -462,12 +467,12 @@ OPENINGS = [
     # dragging the whole east row off its mirror — so WIN-M-BED-W1 came up to meet it
     # instead.
     Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2736-HP",
-           position=from_node("N-S-W3", ft(2, 10.5)), sill_height=ft(3)),     # y 5'-0"
+           position=from_node("N-S-W3", ft(2, 6.5)), sill_height=ft(3)),     # y 5'-0"
     # Restores west daylight to the double-vanity alcove without competing with its two
     # north-wall sinks and mirror lights. Paired exactly with WIN-M-BATH1-W below; the 14"
     # RO fits one stud bay, and the tempered awning shares the facade's 6'-0" head line.
     Window(uid="RGC7QGVF7Y", tag="WIN-S-VANITY-W", host="W-S-W2", type_ref="WT-1424-T",
-           position=from_node("N-S-W1", ft(1, 5)), sill_height=ft(4)),       # y 24'-4"
+           position=from_node("N-S-W1", ft(1, 1)), sill_height=ft(4)),       # y 24'-4"
     # Study 2's south pair: centres 27'-4" and 32'-8" are stud lines on W-S-S2's grid,
     # STUDY1 stacking exactly over WIN-M-LIV-S1 (STUDY2's partner below, WIN-M-LIV-S2, was
     # deleted 2026-08-24, so STUDY2 no longer columns with anything). Moved 8" west off the old bay centres with the
@@ -475,9 +480,9 @@ OPENINGS = [
     # out of phase, the same unavoidable mirror miss as always. Sill 2'-8" is the shared
     # 6'-8" head line; D-S-DECK-E's RO stays clear by 1'-3".
     Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-3048-T",
-           position=from_node("N-S-S1", ft(8, 1)), sill_height=ft(2, 8)),     # x 27'-4"
+           position=from_node("N-S-S1", ft(7, 5)), sill_height=ft(2, 8)),     # x 27'-4"
     Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3048",
-           position=from_node("N-S-S1", ft(13, 5)), sill_height=ft(2, 8)),    # x 32'-8"
+           position=from_node("N-S-S1", ft(12, 9)), sill_height=ft(2, 8)),    # x 32'-8"
     # Baths + north. WIN-S-BATH-N/W have no source counterpart, kept for hall-bath daylight.
     # Re-hosted off W-S-N3 (2026-07-28): W-S-N3B is now the chase's own wall, not the
     # bathroom's. Nudged to 8" off N-S-CH2 (2026-07-29): at 1' the RO straddled the module
@@ -485,7 +490,7 @@ OPENINGS = [
     # header/jacks a 14" RO should never need
     # (test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs).
     Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3", type_ref="WT-1424-T",
-           position=from_node("N-S-CH2", ft(0, 8)), sill_height=ft(4)),
+           position=from_node("N-S-CH2", ft(1, 4)), sill_height=ft(4)),
     # Re-hosted off N-S-CH3 (2026-07-28) after the chase split W-S-W1 there. Centred
     # y=31'-4" from then until 2026-08-21, when it columned with WIN-M-MUD — the same 14"
     # unit at the same centre, and the west face's only true column before the 2026-08-15
@@ -500,7 +505,7 @@ OPENINGS = [
     # So the column was spent rather than the framing. WIN-M-MUD did not follow it south:
     # that one is centred on FURN-M-MUD-BENCH's aisle, which did not move.
     Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424-T",
-           position=from_node("N-S-CH3", ft(1, 5)), sill_height=ft(4)),
+           position=from_node("N-S-CH3", ft(1, 1.875)), sill_height=ft(4)),
     # Moved 29'-4" -> 28'-0" (2026-07-30 facade pass): WIN-M-KITCH below and WIN-A-N2
     # above are both centred at x 28'-0", and 28'-0" is a stud line on W-S-N1's own
     # grid too, so the north facade gets one exact three-storey column.
@@ -512,7 +517,7 @@ OPENINGS = [
     # too) but deliberately stays at 7'-4" instead, so the north gable reads
     # near-symmetric about the ridge — the same read that governs the south gable pair.
     Window(uid="CSX315AAAA", tag="WIN-S-STAIR-N", host="W-S-N2", type_ref="WT-3036-T",
-           position=from_node("N-S-N1", ft(4, 1)), sill_height=ft(3)),        # x 12'-8"
+           position=from_node("N-S-N1", ft(3, 5)), sill_height=ft(3)),        # x 12'-8"
 ]
 
 ROOMS = [

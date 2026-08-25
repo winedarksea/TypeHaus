@@ -27,12 +27,13 @@ import { wallBandShapes, type ArchSoffitCylinder } from "./wallBandShape";
 // The wall's local frame and the arch-head circle live in ./wallFrame, shared with the
 // voussoir rings. Re-exported here because callers and tests knew them at this path first.
 import {
-  archSoffitCircle, archSoffitSample, archSoffitSegmentCount, wallLocalFrame,
+  archSoffitCircle, archSoffitSample, archSoffitSegmentCount, baseRefZ, wallLocalFrame,
   wallLocalToSceneMatrix,
 } from "./wallFrame";
 export {
   ARCH_SOFFIT_CHORD_TOLERANCE_M, ARCH_SOFFIT_MAX_SEGMENT_COUNT, ARCH_SOFFIT_MIN_SEGMENT_COUNT,
   COLLINEAR_VERTEX_TOLERANCE_M, archSoffitCircle, archSoffitSample, archSoffitSegmentCount,
+  baseRefZ,
   withoutCollinearVertices,
 } from "./wallFrame";
 
@@ -153,7 +154,7 @@ export function buildWall(
     if (masonryStyle) {
       for (const opening of openings) {
         if ((opening.arch_rise_m ?? 0) <= 1e-9) continue;
-        const springline = w.z0_m + opening.sill_m
+        const springline = baseRefZ(w) + opening.sill_m
           + Math.max(0, opening.height_m - (opening.arch_rise_m ?? 0));
         if (springline < Math.max(w.z0_m, ly.z0_m ?? -Infinity) - 1e-9 ||
             springline >= Math.min(w.z1_m, ly.z1_m ?? Infinity) - 1e-9) continue;
@@ -354,7 +355,7 @@ export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][]
       pieces.push({ polygon: strip, z0_m: wall.z0_m, z1_m: wall.z1_m, topIsRaked: raked });
       continue;
     }
-    const openingBottom = wall.z0_m + active.sill_m;
+    const openingBottom = baseRefZ(wall) + active.sill_m;
     const openingTop = openingBottom + active.height_m;
     if (openingBottom > wall.z0_m + 1e-9)
       pieces.push({ polygon: strip, z0_m: wall.z0_m, z1_m: openingBottom, topIsRaked: false });
@@ -433,8 +434,8 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
   const direction: [number, number] = [(x1 - x0) / length, (y1 - y0) / length];
   const position: [number, number] = [x0 + direction[0] * opening.center_along_m, y0 + direction[1] * opening.center_along_m];
   const availableHeight = Math.max(0, Math.min(opening.height_m,
-    rakedTopAt(wall, x0 + direction[0] * (opening.center_along_m - opening.width_m / 2), y0 + direction[1] * (opening.center_along_m - opening.width_m / 2)) - wall.z0_m - opening.sill_m,
-    rakedTopAt(wall, x0 + direction[0] * (opening.center_along_m + opening.width_m / 2), y0 + direction[1] * (opening.center_along_m + opening.width_m / 2)) - wall.z0_m - opening.sill_m));
+    rakedTopAt(wall, x0 + direction[0] * (opening.center_along_m - opening.width_m / 2), y0 + direction[1] * (opening.center_along_m - opening.width_m / 2)) - baseRefZ(wall) - opening.sill_m,
+    rakedTopAt(wall, x0 + direction[0] * (opening.center_along_m + opening.width_m / 2), y0 + direction[1] * (opening.center_along_m + opening.width_m / 2)) - baseRefZ(wall) - opening.sill_m));
   if (availableHeight <= 1e-9) return;
   const rotation = Math.atan2(direction[1], direction[0]);
   const frameWidth = Math.min(0.075, opening.width_m / 4, availableHeight / 4);
@@ -461,14 +462,14 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     mesh.rotation.y = rotation;
     parent.add(mesh);
   };
-  const midElevation = wall.z0_m + opening.sill_m + availableHeight / 2;
+  const midElevation = baseRefZ(wall) + opening.sill_m + availableHeight / 2;
   if (!isTrimless) {
     // A trimless door (drywall return jamb, no applied casing) draws no frame boxes; the
     // leaf keeps its framed size so the reveal reads the same. Mirrors emit/gltf/openings.py.
     addBox(frameWidth, availableHeight, frameDepth, -opening.width_m / 2 + frameWidth / 2, midElevation, frameMaterial, frameOffset);
     addBox(frameWidth, availableHeight, frameDepth, opening.width_m / 2 - frameWidth / 2, midElevation, frameMaterial, frameOffset);
-    addBox(opening.width_m, frameWidth, frameDepth, 0, wall.z0_m + opening.sill_m + availableHeight - frameWidth / 2, frameMaterial, frameOffset);
-    addBox(opening.width_m, frameWidth, frameDepth, 0, wall.z0_m + opening.sill_m + frameWidth / 2, frameMaterial, frameOffset);
+    addBox(opening.width_m, frameWidth, frameDepth, 0, baseRefZ(wall) + opening.sill_m + availableHeight - frameWidth / 2, frameMaterial, frameOffset);
+    addBox(opening.width_m, frameWidth, frameDepth, 0, baseRefZ(wall) + opening.sill_m + frameWidth / 2, frameMaterial, frameOffset);
   }
   const panelHeight = Math.max(0.01, availableHeight - 2 * frameWidth);
   const glassMaterial = standardMaterial(0x8fb7c9, mode, { transparent: true, opacity: 0.48,
@@ -477,7 +478,7 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     // Two leaves meeting at a center mullion, matching the 2D French-door symbol.
     const mullionWidth = Math.min(frameWidth, (opening.width_m - 2 * frameWidth) / 6);
     const leafWidth = Math.max(0.01, (opening.width_m - 2 * frameWidth - mullionWidth) / 2);
-    const panelElevation = wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2;
+    const panelElevation = baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2;
     addBox(mullionWidth, availableHeight, depth, 0, midElevation, frameMaterial);
     const leafMaterial = isGlazed ? glassMaterial : frameMaterial;
     const leafThickness = isGlazed ? 0.015 : 0.045;
@@ -491,12 +492,12 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     const panelWidth = Math.max(0.01, (clearWidth - stileWidth) / 2);
     const panelOffset = stileWidth / 2 + panelWidth / 2;
     const trackHeight = Math.min(0.02, panelHeight);
-    const panelElevation = wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2;
+    const panelElevation = baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2;
     const panelMaterial = isGlazed ? glassMaterial : frameMaterial;
     const panelThickness = isGlazed ? 0.015 : 0.045;
     addBox(stileWidth, panelHeight, depth, 0, panelElevation, frameMaterial);
     addBox(clearWidth, trackHeight, depth, 0,
-      wall.z0_m + opening.sill_m + frameWidth + trackHeight / 2, frameMaterial);
+      baseRefZ(wall) + opening.sill_m + frameWidth + trackHeight / 2, frameMaterial);
     addBox(panelWidth, panelHeight, panelThickness, -panelOffset, panelElevation, panelMaterial);
     addBox(panelWidth, panelHeight, panelThickness, panelOffset, panelElevation, panelMaterial);
   } else if (opening.kind === "door" && operation === "bifold") {
@@ -506,7 +507,7 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     const foldGap = Math.min(frameWidth / 8, clearWidth / 40);
     const leafWidth = Math.max(0.01, (clearWidth - 3 * foldGap) / 4);
     const firstLeafCenter = -clearWidth / 2 + leafWidth / 2;
-    const panelElevation = wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2;
+    const panelElevation = baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2;
     for (let index = 0; index < 4; index++) {
       addBox(leafWidth, panelHeight, 0.045,
         firstLeafCenter + index * (leafWidth + foldGap), panelElevation, frameMaterial);
@@ -519,7 +520,7 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     const clearWidth = Math.max(0.01, opening.width_m - 2 * frameWidth);
     const trackHeight = Math.min(0.02, panelHeight);
     const leafHeight = Math.max(0.01, panelHeight - trackHeight);
-    const base = wall.z0_m + opening.sill_m + frameWidth;
+    const base = baseRefZ(wall) + opening.sill_m + frameWidth;
     addBox(clearWidth, trackHeight, depth, 0, base + panelHeight - trackHeight / 2, frameMaterial);
     addBox(clearWidth, leafHeight, 0.045, 0, base + leafHeight / 2, frameMaterial);
   } else if (opening.kind === "door") {
@@ -534,10 +535,10 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
           { roughness: NORDIC_ROUGHNESS.matte })
         : frameMaterial;
     addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, isGlazed ? 0.015 : 0.045, 0,
-      wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2, leafMaterial);
+      baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2, leafMaterial);
   } else {
     addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, 0.015, 0,
-      wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2, glassMaterial);
+      baseRefZ(wall) + opening.sill_m + frameWidth + panelHeight / 2, glassMaterial);
   }
   if (opening.kind === "window") {
     if (exterior) {
@@ -550,7 +551,7 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
       const trimMaterial = standardMaterial(categoryColor("window_trim"), mode,
         { roughness: NORDIC_ROUGHNESS.matte });
       const rakedHost = wall.top_z0_m != null || wall.top_z1_m != null;
-      const sillZ = wall.z0_m + opening.sill_m;
+      const sillZ = baseRefZ(wall) + opening.sill_m;
       const bands: [number, number, number, number][] = [
         [trimW, availableHeight, -opening.width_m / 2 - trimW / 2, sillZ],
         [trimW, availableHeight, opening.width_m / 2 + trimW / 2, sillZ],
