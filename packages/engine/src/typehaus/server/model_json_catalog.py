@@ -76,14 +76,22 @@ def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, A
     return {
         "window_types": [
             {"tag": wt.tag, "width_m": wt.width.meters, "height_m": wt.height.meters,
-             "operation": wt.operation}
+             "operation": wt.operation, "product_ref": wt.product_ref}
             for wt in lib.window_types
         ],
         "door_types": [
             {"tag": dt.tag, "width_m": dt.width.meters, "height_m": dt.height.meters,
              "operation": dt.operation, "exterior": dt.exterior, "glazed": dt.glazed,
-             "trimless": dt.trimless}
+             "trimless": dt.trimless, "product_ref": dt.product_ref}
             for dt in lib.door_types
+        ],
+        # The chosen-product catalog (model/product.py): identity only, and deliberately
+        # no price — dollars reach the UI through the BOM, never through the palette. The
+        # referring entries below carry ``product_ref``; this is what a ref resolves to.
+        "products": [
+            {"tag": pr.tag, "brand": pr.brand, "model": pr.model, "name": pr.name,
+             "sku": pr.sku, "url": pr.url, "source": pr.source}
+            for pr in lib.products
         ],
         "occupancies": [o.value for o in Occupancy],
         # ``color``/``finish`` are the authored *appearance* of a material. Without them the
@@ -104,7 +112,8 @@ def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, A
              "perm_rating": mat.perm_rating,
              "vapor_permeance_perms": mat.vapor_permeance_perms,
              "density": mat.density, "source": mat.source,
-             "color": mat.color, "finish": mat.finish, "coating": mat.coating}
+             "color": mat.color, "finish": mat.finish, "coating": mat.coating,
+             "product_ref": mat.product_ref}
             for mat in lib.materials
         ],
         "assemblies": assemblies,

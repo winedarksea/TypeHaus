@@ -180,6 +180,7 @@ def _write_handoff_numbers(house: Path, model, handoff: Path) -> None:
     from typehaus.takeoff import bill_of_materials
     from typehaus.takeoff.costs import load_costs
     from typehaus.takeoff.estimate_csv import ESTIMATE_COLUMNS, estimate_rows
+    from typehaus.takeoff.product_labels import product_labels
 
     try:
         prices = load_prices(house)
@@ -191,7 +192,8 @@ def _write_handoff_numbers(house: Path, model, handoff: Path) -> None:
     bom = bill_of_materials(model)
     summary = build_space_summary(model)["overall"]
     estimate = estimate_costs(bom, prices, {"conditioned": summary["conditioned_sf"],
-                                            "gross": summary["gross_sf"]})
+                                            "gross": summary["gross_sf"]},
+                              product_labels(model.plan))
     (handoff / "estimate.json").write_text(json.dumps(estimate, indent=2, sort_keys=True))
     write_csv(handoff / "estimate.csv", ESTIMATE_COLUMNS,
               estimate_rows(estimate, load_costs(house)))

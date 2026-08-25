@@ -135,13 +135,28 @@ MAIN_PLACEABLES = [
     Furniture(uid="CMB808AAAA", tag="FURN-M-LIVING-BESTA-08", type_ref="FURN-BESTA-2358",
               room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(19, 7.1875)), rotation=deg(-90)),
     # Dining at 17'-4" (moved 4' south once the island moved down and the 48" pantry took
-    # the east wall to 22'-8" — that pantry is gone, see the BESTA run above). Chair-use zone y=12'-7"..22'-1": clear of the sofa (10'-5")
-    # and pantry (7"), with a 4'-4" circulation band to the island.
+    # the east wall to 22'-8" — that pantry is gone, see the BESTA run above). Table
+    # x 23'-0 1/2"..31'-0 1/2", y 15'-4 1/2"..18'-10 1/2"; the 36" chair-use margin reaches
+    # y=12'-4 1/2" and y=21'-10 1/2", clear of the sofa and with a wide circulation band to
+    # the peninsula.
     #
     # Only the six side chairs are drawn on this 8-place table — end chairs would block the
     # hall-to-east-windows walk, so those two places stay unset, brought in when needed.
-    Furniture(uid="QWCMN48QST", tag="FURN-M-DINING", type_ref="FURN-DINING-8", room="RM-M-LIVING",
-              position=pt(m(8.24278), m(5.2201))),
+    #
+    # ** THE ZONE LOST ITS CORNERS (owner, 2026-08-24), which is why the type is house-local. **
+    # FURN-M-KIT-PANTRY-S2's carcass (x from 33'-5 3/8", y from 21'-2 3/8") stood 7 1/8" x
+    # 8 1/8" inside the NE corner of the library type's chair-use rectangle — 0.4 sf, and
+    # the only recommended-clearance finding in the kitchen. It is a corner lap and nothing
+    # else: the tall bank is 2'-4 7/8" east of the table's end and 2'-3 7/8" north of its
+    # side, so it is outside BOTH bands at the full 36" and clear of every chair.
+    #
+    # The owner's call was to shrink the zone, and this is the shrink that costs nothing
+    # real: FT-DINING-8-OPEN-CORNERS keeps 36" on all four sides and drops only the four
+    # corner squares, where no chair goes. Retyping rather than reducing the reach is
+    # deliberate — cutting 36" to 27" would have cleared the same 0.4 sf while quietly
+    # unpolicing the two long sides, where the six chairs that actually exist stand.
+    Furniture(uid="QWCMN48QST", tag="FURN-M-DINING", type_ref="FT-DINING-8-OPEN-CORNERS",
+              room="RM-M-LIVING", position=pt(m(8.24278), m(5.2201))),
     Furniture(uid="60XVKZHFAS", tag="FURN-M-CHAIR-S1", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
               position=pt(ft(24, 5), ft(14, 6)), rotation=deg(180)),
     Furniture(uid="XCW1QKV701", tag="FURN-M-CHAIR-S2", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
@@ -244,12 +259,19 @@ MAIN_PLACEABLES = [
     # CASE-OVER-36 -> FT-KIT-OVER-COLD-3278 (2026-08-24): the bay is 65 3/4" and two 36"
     # boxes need 72". 32 7/8" is the appliance width carried up, so each box's ends land on
     # its own column's sides.
+    #
+    # ** THE MOUNT WENT 72" -> 75" (2026-08-24) BECAUSE 72" DID NOT FIT. ** The Frigidaire
+    # columns top out at 72 1/2" at the hinge and want 1" of air above; a cabinet bottom at
+    # 72" stood BELOW the hinge. The box shortened 24" -> 21" to match, so the top is still
+    # 96" and the stacker course is untouched. Both numbers are the manufacturer's own and
+    # were already quoted in plan/appliance_types.py — see FT-KIT-OVER-COLD-3278's note in
+    # plan/furniture_types.py for the whole arithmetic. Do not lower these back to 72".
     Furniture(uid="8T3D1P2QRV", tag="FURN-M-KIT-OVER-FRIDGE", type_ref="FT-KIT-OVER-COLD-3278", room="RM-M-LIVING",
               position=pt(ft(19, 3.375), ft(31, 2.1875)), rotation=deg(90),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(75))),
     Furniture(uid="Y4KJ6WB0ZC", tag="FURN-M-KIT-OVER-FREEZER", type_ref="FT-KIT-OVER-COLD-3278", room="RM-M-LIVING",
               position=pt(ft(19, 3.375), ft(28, 5.3125)), rotation=deg(90),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(75))),
     # The stacker course over the cold run, 96" -> 108". 24" DEEP, not the 13" of the
     # counter stackers: a stacker inherits the depth of the box it sits on, and a shallow
     # box floating over a 24" over-appliance cabinet is the step this course exists to
@@ -339,8 +361,26 @@ MAIN_PLACEABLES = [
     #
     # 36" exactly: x 27'-1" to 30'-1", which is FURN-M-KIT-SINKBASE's own width carried up,
     # so the band's joints land on the base joints below. One stock bridge box, no filler.
-    Furniture(tag="FURN-M-KIT-WE4-ST", type_ref="CASE-WS36-12", room="RM-M-LIVING",
+    Furniture(uid="RSP5MTPXPM", tag="FURN-M-KIT-WE4-ST", type_ref="CASE-WS36-12", room="RM-M-LIVING",
               position=pt(ft(28, 7), ft(34, 10.875)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
+    # ** THE LAST BLANK ON THIS WALL, OVER FURN-M-KIT-E2 (owner, 2026-08-24). ** 15 1/8"
+    # ran floor-to-ceiling between WE2's east end (32'-1") and WE3's west end (33'-4 3/16"),
+    # left over when WE2 followed the dishwasher and WE3 was sized to the window bridge.
+    # Nothing put it there; it was remainder. CASE-W15 takes x 32'-1"..33'-4" — E2's own
+    # width carried up, so the joint lands on the base joint below — and stops 1" clear of
+    # WIN-M-KITCH-N's RO at 33'-5", the same jamb condition WE3 already has on its far side.
+    #
+    # Hung at 54" WITH a stacker, not at 66" flush with WE3: the owner's call, and it keeps
+    # the whole run's bottom on one line at 54" and buys a full extra shelf. WE3 stays the
+    # single box stepped up to 66", which now reads as the window's bridge rather than as
+    # one cabinet at an odd height. Tags are chronological here, not west-to-east — WE4-ST
+    # is the window stacker at 28'-7".
+    Furniture(uid="2V68CXXCNR", tag="FURN-M-KIT-WE5", type_ref="CASE-W15", room="RM-M-LIVING",
+              position=pt(ft(32, 8.5), ft(34, 10.875)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
+    Furniture(uid="T0QD4C4KHD", tag="FURN-M-KIT-WE5-ST", type_ref="CASE-WS15-12",
+              room="RM-M-LIVING", position=pt(ft(32, 8.5), ft(34, 10.875)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
     # ** A CABINET OVER THE EXISTING NORTH WINDOW. ** The owner asked for cabinets above
     # BOTH small windows and WIN-M-KITCH-N has never had one. CASE-W12 spans the 12 3/8"
@@ -397,8 +437,8 @@ MAIN_PLACEABLES = [
     # cabinet, not a fitting-out, so there is no element for it to hang on.
     Furniture(uid="77DB93R0QZ", tag="FURN-M-KIT-PANTRY-S1", type_ref="CASE-PANTRY-CLOSET-24", room="RM-M-LIVING",
               position=pt(ft(34, 5.375), ft(24, 2.375)), rotation=deg(-90)),
-    # S2 is the one that laps FURN-M-DINING's recommended chair zone by 10 5/8" — see the
-    # dining paragraph earlier in this file for why that is accepted rather than designed out.
+    # S2 used to lap the corner of FURN-M-DINING's recommended chair zone. It no longer
+    # does — the table was retyped, not moved; see the dining paragraph earlier in this file.
     Furniture(uid="K09MANH37J", tag="FURN-M-KIT-PANTRY-S2", type_ref="CASE-PANTRY-CLOSET-24", room="RM-M-LIVING",
               position=pt(ft(34, 5.375), ft(22, 2.375)), rotation=deg(-90)),
     # Both to the ceiling with PANTRYC — see its note on the west run.

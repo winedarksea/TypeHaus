@@ -14,6 +14,14 @@
 #   note = "second quote"            # whose BOM row disappears are surfaced as STALE,
 #                                    # never dropped.
 #
+# ``product`` is the AS-BOUGHT record — the box that actually arrived. Since 2026-08-24 the
+# estimate row carries the *specified* product beside it (brand + model, derived from the
+# plan's Product catalog — model/product.py, takeoff/product_labels.py), and the BOM view
+# shows that as the placeholder. So this field is worth writing when it DIFFERS from what
+# was specified: a substitution, a different finish, a supplier's own listing number.
+# Re-typing the specification here would be a second copy of a fact the model already holds,
+# and the two would drift — which is the whole reason the specification moved into the model.
+#
 #   [[extra]]                        # spend the model does not bill (permits, dumpster,
 #   id = "building-permit"           # delivery). id is minted from the name when omitted
 #   name = "Building permit"         # in a UI op; unique across items.

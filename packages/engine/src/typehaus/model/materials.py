@@ -90,6 +90,13 @@ class Material(HausModel):
     # 4/4 stock, 1.25 for 5/4. None means "no board-feet figure" — the takeoff omits the
     # column rather than inventing a thickness (#32).
     stock_bf_per_sqft: float | None = None
+    # The chosen product this material *is*, by ``Product.tag`` (model/product.py).
+    # ``None`` is the ordinary case: "5/8\" type X gypsum board" is a specification, and a
+    # specification is what most of a house is bought against. Naming a product narrows it
+    # to one manufacturer's item, which is worth doing exactly where the choice has been
+    # made and matters — a cladding coil colour, a floor finish. Identity only: it moves no
+    # quantity and carries no price (#28).
+    product_ref: str | None = None
     # Optional freeform provenance (URL, standard, or "generic assumption") (#46).
     source: str | None = None
 

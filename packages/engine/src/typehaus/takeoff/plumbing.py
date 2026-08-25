@@ -14,7 +14,6 @@ to — a fitting is where two pipes meet, which the geometry already says.
 
 from __future__ import annotations
 
-
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.mep_queries import drain_tie_ins
 from typehaus.resolve.model import ResolvedModel, SolidSweep
@@ -114,11 +113,24 @@ def _size_text(diameter_m: float) -> str:
     return f"{round(diameter_m / M_PER_IN, 2):g}in"
 
 
+#: A made bend's angle is rounded to this before it becomes a row. 71.4° and 71.6° are one
+#: bend made twice, not two rows; 71° and 57° are not, and were.
+_BEND_ROUND_DEG = 5.0
+
+
 def _elbow_key(angle_deg: float, diameter_m: float) -> str:
+    """The row a turn is *ordered* as: a stock elbow, or a made bend at its own angle.
+
+    The bend carries its angle because a row that does not is unbuildable: catlin's
+    ``bend-2in`` was three turns of 71°, 57° and 63°, and the plumber making them off that
+    line has been told the size and nothing else. A stock elbow needs no angle in the key —
+    it is *in* the key — which is the same reason.
+    """
     for stock in _STOCK_ELBOW_DEG:
         if abs(angle_deg - stock) <= _STOCK_SNAP_DEG:
             return f"elbow-{stock:g}-{_size_text(diameter_m)}"
-    return f"bend-{_size_text(diameter_m)}"
+    rounded = round(angle_deg / _BEND_ROUND_DEG) * _BEND_ROUND_DEG
+    return f"bend-{rounded:g}-{_size_text(diameter_m)}"
 
 
 def fitting_takeoff(model: ResolvedModel) -> list[dict[str, object]]:

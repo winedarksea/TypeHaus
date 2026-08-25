@@ -58,7 +58,11 @@ from typehaus.emit.ifc.structural import (
     _emit_solid,
     _emit_stair,
 )
-from typehaus.emit.trades import DRAINAGE_CATEGORIES, PIPE_ACCESSORY_CATEGORIES
+from typehaus.emit.trades import (
+    DRAINAGE_CATEGORIES,
+    PIPE_ACCESSORY_CATEGORIES,
+    ROUTED_RUN_CATEGORIES,
+)
 from typehaus.model.enums import Service
 from typehaus.resolve.model import ResolvedModel
 
@@ -130,6 +134,11 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
         # second, untyped copy of every shutoff in the file — and, since none of these
         # categories is in ``_SOLID_IFC_CLASS``, that copy would be an ``IfcFooting``.
         if (solid.category or "").lower() in PIPE_ACCESSORY_CATEGORIES:
+            continue
+        # And a routed run's own tube, for the same reason: ``_emit_pipe_run`` and
+        # ``emit_conduits`` already export it as the segments it is. The solid is how glTF
+        # and the viewer draw a run; in IFC it would be a duplicate, and an IfcFooting.
+        if (solid.category or "").lower() in ROUTED_RUN_CATEGORIES:
             continue
         element = _emit_solid(f, body, solid, storeys, project_uuid, model)
         element_entities.setdefault(solid.tag, element)

@@ -385,19 +385,33 @@ the future.
     rather than on the steel studs the 2026-08-21 overhaul left it on.
   - There was never a pan (`mep_drainage.py` explains why P2801.6 needs none) and never a
     vent. The item said both; neither was ever authored.
- - **DONE 2026-08-24 — a rail is one solid.** `SolidSweep` + `resolve/sweep.py` (→ #62):
-   `RL-A-HANDRAIL` went from 297 solids to 6 (one rail plus five brackets), railings from
-   1,149 of the house's 2,857 solids to 295 of 953. One glTF node, one `IfcRailing` (a round
-   section as a real `IfcSweptDiskSolid`), one plan polyline, one click to select. Posts,
-   brackets and infill are unchanged — those are genuinely discrete pieces.
  - Sunken garden slab (is it needed above footing) and make sure 7" threshold to basement from sunken garden
  - Basement under the stairs storage closet
  - Wall W-B-CS is likely worth making a wood stud wall (if the load bearing math works and the cost is noticeably lower)
  - PLATE-BOTTOM in the garage is still shown incorrectly going right through the overhead garage door (it should terminate where the ICF stem wall does on each side, not going across the opening)
  - For the breezeway sonotubes, something like https://www.homedepot.com/p/Bigfoot-20-in-Pier-Footing-Form-489-20-BF/300325004 for a "single pour footing". However right now it looks like those footings bisect the house and garage foundation walls. Perhaps the beams should be slightly cantilever to push them further out? Or we could link it in straight to the garage footings as one level?
- - The sidebar of the UI shown when items are selected should show the material, if applicable, and chosen product brand/id/name if applicable.
+ - ~~The sidebar of the UI shown when items are selected should show the material, if applicable, and chosen product brand/id/name if applicable.~~
+   **DONE 2026-08-24, and the second half needed a model change rather than a panel change.**
+   *Material* was nearly free: every selectable element already carried a material or an
+   assembly tag on the wire, and the one real gap was `Solid.material` — shipped in
+   `model.json` since the trim-run work and never rendered, so a gutter, fascia, soffit,
+   ridge cap or railing part showed `Assembly —` and nothing else while the viewer coloured
+   it from that exact field. `SolidInspector` prints it now.
+   *Product identity did not exist as structured data* — a chosen product was prose in a
+   type's `name=` with the model number buried again in `source=`, which no panel can lay
+   out and no estimator can join against. There is a `Product` catalog record now
+   (`model/product.py`), referenced by `product_ref` from `Material` and every `*Type`, with
+   `integrity.unknown_product_ref` refusing a dangling one; the sidebar prints brand / model
+   / product / SKU wherever a selection resolves to one, and the estimate row carries the
+   *specified* product so `costs.toml`'s `product` field records only what actually differed
+   (decision #63).
  - FURN-B-PLAY-SECTIONAL is facing the wrong way, it should face the TV. The bookshelves should go higher in the theater too, closer to the ceiling
  - Add some wire shelves and racks to the dedicated closets (mudroom closet aimed at jackets)
+ - **DONE 2026-08-24 — a rail is one solid.** `SolidSweep` + `resolve/sweep.py` (→ #62):
+   `RL-A-HANDRAIL` went from 297 solids to 6 (one rail plus five brackets), railings from
+   1,149 of the house's 2,857 solids to 295 of 953. One glTF node, one `IfcRailing` (a round
+   section as a real `IfcSweptDiskSolid`), one plan polyline, one click to select. Posts,
+   brackets and infill are unchanged — those are genuinely discrete pieces.
  - **DONE 2026-08-24 — and it did share the code, exactly as guessed.** One `ResolvedSolid`
    per run carrying its own 3D polyline, mitred by the same `resolve/sweep.py` the handrails
    use; `sloped_run_bands` and its "accepted approximation" are deleted, and a vertical drop
@@ -405,6 +419,8 @@ the future.
    author its **grade** (`PipeRun.slope_in_per_ft`) and leave the inverts it implies as
    `None`, and fittings are **counted** off the geometry rather than estimated off a 20°
    plan-turn heuristic — which re-based the drain/vent `$/LF` to bare pipe (→ #62).
+ - Run a stud alignment pass, and a "custom where standard item could be swapped in" pass
+ - As unfinished space, can we just leave exposed subfloor in the attic storage rooms?
  - **DONE 2026-08-24 — the door, the wall and the node are all gone; the head of the stairs
    is open on both lanes.** `W-M-STRS` could not simply lose its door: `D-M-STAIR` filled
    3'-4" of a 4'-2" partition and was the only way onto `ST-B2M`, so a doorless wall there

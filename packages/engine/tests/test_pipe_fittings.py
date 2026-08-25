@@ -65,8 +65,23 @@ def test_a_pitched_branch_off_a_stack_is_still_the_quarter_bend_it_is_bought_as(
 
 
 def test_a_branch_dropping_far_steeper_than_stock_is_named_a_bend() -> None:
+    """And named with its **angle**: a bend row without one cannot be made or bought."""
     model = _model(_run("PR-A", [(0, 0), (0, 0), (2, 0)], [2.0, 0.0, -1.2], 2))
-    assert _counts(model) == {"bend-2in": 1}
+    assert _counts(model) == {"bend-60-2in": 1}
+
+
+def test_two_bends_a_fifth_of_a_degree_apart_are_one_row() -> None:
+    """Rounding to 5° is what keeps the angle from fragmenting the order sheet: the same
+    made bend measured twice is one line, and 71° against 57° is still two."""
+    import math
+
+    def leg(deg: float) -> list[tuple[float, float]]:
+        return [(0, 0), (2, 0), (2 + 2 * math.cos(math.radians(deg)),
+                                 2 * math.sin(math.radians(deg)))]
+
+    near = _model(_run("PR-A", leg(71.4), [0.0, 0.0, 0.0], 2, "vent"))
+    far = _model(_run("PR-A", leg(71.6), [0.0, 0.0, 0.0], 2, "vent"))
+    assert _counts(near) == _counts(far) == {"bend-70-2in": 1}
 
 
 def test_a_plan_offset_snaps_to_the_eighth_bend() -> None:

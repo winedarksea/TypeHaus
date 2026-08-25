@@ -83,6 +83,7 @@ from typehaus.model.trim import (
     GlazingTrim, Gutter,
 )
 from typehaus.model.plan import Library, PlanModel
+from typehaus.model.product import Product
 from typehaus.model.project import Building, Project, Site, Storey
 from typehaus.model.refs import (
     Arch,
@@ -226,7 +227,7 @@ __all__ = [
     "SolarPanel",
     "Assembly", "Layer", "LayerBound", "LayerExtent", "CavityFill", "FramingSpec",
     "MasonrySpec", "AssemblyInterface",
-    "ConstructionRule", "Substitution", "Material",
+    "ConstructionRule", "Substitution", "Material", "Product",
     "DoorType", "WindowType", "FurnitureType", "FixtureType", "ApplianceType", "EquipmentType",
     "RegisterType", "RailingType", "ElectricalDeviceType", "LuminaireType", "MeshRef",
     "JoistSpec", "JoistReinforcement", "DeckLayer", "FloorSystem", "FloorOpening",

@@ -35,6 +35,7 @@ def _load_priced_model(
     from typehaus.source import load_plan
     from typehaus.takeoff import bill_of_materials
     from typehaus.takeoff.costs import load_costs
+    from typehaus.takeoff.product_labels import product_labels
 
     loaded = load_plan(directory)
     if loaded.plan is None:
@@ -50,7 +51,8 @@ def _load_priced_model(
     except ValueError as exc:
         console.print(f"[red]{exc}[/red]")
         raise typer.Exit(2) from exc
-    estimate = estimate_costs(bom, prices) if prices is not None else None
+    estimate = (estimate_costs(bom, prices, None, product_labels(loaded.plan))
+                if prices is not None else None)
     return model, bom, estimate, load_costs(directory)
 
 

@@ -43,6 +43,8 @@ __all__ = [
     "waste_in_quantity",
 ]
 
+from typehaus.takeoff.product_labels import specified_product
+
 #: BOM fields that read as a human description, most specific first. A CSV row that says
 #: only "framing / 2x6" is not something a supplier can quote from.
 _DESCRIPTION_FIELDS = ("description", "scope", "name", "label", "product", "assembly")
@@ -315,7 +317,9 @@ def _allowance_rows(prices: Prices) -> list[dict[str, Any]]:
 
 
 def estimate_costs(bom: dict[str, Any], prices: Prices,
-                   areas: Optional[Mapping[str, float]] = None) -> dict[str, Any]:
+                   areas: Optional[Mapping[str, float]] = None,
+                   products: Optional[Mapping[tuple[str, str], str]] = None
+                   ) -> dict[str, Any]:
     """Price a :func:`typehaus.takeoff.bill_of_materials` payload against ``prices``.
 
     Returns ``{"sections": {name: {"rows": [...], "subtotal": {...}}}, "total": {...},
@@ -336,6 +340,12 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
       ladder from :mod:`typehaus.takeoff.cost_model`, each stage its own reported line.
     - ``per_sf``: $/sf against the ``areas`` mapping the caller supplies (conditioned and
       gross, from ``server/space_summary.build_space_summary``). Absent when ``areas`` is.
+
+    ``products`` is the *specified* product per ``(section, key)`` — see
+    :func:`typehaus.takeoff.product_labels.product_labels`. A row that has one gains a
+    ``product`` label, which is the plan's answer to "which product is this line?" and takes
+    no part in any arithmetic: it is not a price, it never reaches a subtotal, and a caller
+    that passes nothing gets exactly the payload it got before.
     """
     from typehaus.takeoff.cost_codes import cost_code
     from typehaus.takeoff.cost_model import (
@@ -442,7 +452,11 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
             # only the solids section reads it — see ``cost_codes._solid_code``.
             code = cost_code(name, key, dict(prices.codes),
                              material=row.get("structure_material"))
+            # The product the PLAN specifies for this line, where it names one — never the
+            # as-bought record, which lives in costs.toml and is the estimator's to write.
+            specified = specified_product(name, key, row, products)
             rows.append({"key": key, "description": _describe(row, name, key),
+                         **({"product": specified} if specified else {}),
                          "quantity": round(quantity, 2), "unit": unit,
                          "unit_price": price.as_dict(), "cost": cost.as_dict(),
                          "cost_fmt": cost.fmt(),

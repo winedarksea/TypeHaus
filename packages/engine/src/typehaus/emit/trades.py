@@ -27,7 +27,7 @@ is the link between the two, in both directions.
 
 from __future__ import annotations
 
-from typehaus.model.enums import PipeAccessoryKind
+from typehaus.model.enums import PipeAccessoryKind, PipeSystem
 
 # The visibility trades the UI honours (``ui/src/state/vocabulary.ts::Trade``). Spelled out here
 # so a typo in the table below fails a test rather than shipping a node the UI drops.
@@ -170,6 +170,22 @@ DRAINAGE_CATEGORIES = frozenset(
 # owns them and knows which ``IfcValve`` PredefinedType each one is; a device that fell
 # through the generic path would export as the ``IfcFooting`` fallback.
 PIPE_ACCESSORY_CATEGORIES = frozenset(kind.value for kind in PipeAccessoryKind)
+
+# The categories a *routed run* — a pipe or a raceway — gives its one swept solid
+# (``resolve/mep.py::_emit_run_solids``). Derived from the enum for pipes and named for
+# raceways, whose two categories are a service split rather than an enum
+# (``resolve/mep.py::_conduit_category``); ``test_mep_geometry`` asserts the reference house
+# mints nothing outside this set, so the two cannot drift apart in silence.
+#
+# The IFC emitter skips exactly these in its generic solid loop, for the same reason it skips
+# the accessories above and with a worse symptom: a run already exports as real
+# ``IfcPipeSegment``s (``emit/ifc/mep.py``) or ``IfcCableCarrierSegment``s
+# (``emit/ifc/electrical.py``), so emitting its solid too put a **second** copy of every run
+# in the file — and, with no ``_SOLID_IFC_CLASS`` row to land on, that copy was an
+# ``IfcFooting``. 68 of catlin's 239 footings were pipe. glTF and ``model.json`` are the
+# other way round: there the solid *is* the run, and no second element exists.
+ROUTED_RUN_CATEGORIES = (frozenset(f"pipe_{system.value}" for system in PipeSystem)
+                         | frozenset({"conduit_power", "conduit_data"}))
 
 
 def solid_trade(category: str | None) -> str:

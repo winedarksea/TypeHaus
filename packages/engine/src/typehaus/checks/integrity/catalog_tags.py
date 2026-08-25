@@ -18,7 +18,7 @@ from typehaus.findings import Finding, Result, Severity
 # Every tag-keyed catalog on Library. Named explicitly rather than discovered, so adding a
 # catalog is a deliberate decision to cover (or not cover) it.
 CATALOGS = (
-    "materials", "assemblies", "door_types", "window_types", "furniture_types",
+    "materials", "assemblies", "products", "door_types", "window_types", "furniture_types",
     "railing_types", "fixture_types", "appliance_types", "equipment_types",
     "register_types", "electrical_device_types", "circuits", "load_managements",
     "transitions", "construction_rules",
@@ -48,4 +48,40 @@ def duplicate_catalog_tag(ctx: CheckContext) -> list[Finding]:
                               "entry shadowing a library one must not share its tag"),
                     result=Result.FAIL,
                 ))
+    return findings
+
+
+# The catalogs whose entries may name a product. ``Library.products`` itself is excluded —
+# a product does not reference another product.
+_PRODUCT_REF_CATALOGS = tuple(c for c in CATALOGS if c not in {"products", "assemblies"})
+
+
+@check(Tier.INTEGRITY, "integrity.unknown_product_ref")
+def unknown_product_ref(ctx: CheckContext) -> list[Finding]:
+    """A ``product_ref`` naming nothing is an ERROR, not a silent blank row.
+
+    The lookup is ``Library.product(tag)``, which returns None for a miss exactly as it does
+    for a real absence — so a typo'd ref reads downstream as "no product chosen" and the
+    sidebar, the schedules and the estimate all quietly agree about a choice nobody made.
+    This is the narrow dangling-reference check for the one field that has no other guard.
+    """
+    library = ctx.plan.library
+    known = {p.tag for p in library.products}
+    findings: list[Finding] = []
+    for catalog in _PRODUCT_REF_CATALOGS:
+        for entry in getattr(library, catalog, ()) or ():
+            ref = getattr(entry, "product_ref", None)
+            if ref is None or ref in known:
+                continue
+            tag = getattr(entry, "tag", "?")
+            findings.append(Finding(
+                severity=Severity.ERROR,
+                check_id="integrity.unknown_product_ref",
+                message=(f"library.{catalog} entry {tag!r} names product_ref {ref!r}, which no "
+                         "entry in library.products defines"),
+                element_tags=(tag,),
+                fix_hint=(f"add a Product(tag={ref!r}, ...) to the house's product catalog, or "
+                          "correct the reference"),
+                result=Result.FAIL,
+            ))
     return findings

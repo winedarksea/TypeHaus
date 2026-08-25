@@ -933,20 +933,28 @@
 # The other rung the wall ladder was missing. The BASE ladder has had CASE-B15 since the
 # beginning; 15" is stock in both families and only turned up here when the mixer garage
 # left a 15" gap on the east wall.
-"CASE-W15" = { material = { low = 115, high = 290 }, labour = { low = 90, high = 220 } }  # 1 ea
+"CASE-W15" = { material = { low = 115, high = 290 }, labour = { low = 90, high = 220 } }  # 2 ea
 "CASE-W24" = { material = { low = 140, high = 350 }, labour = { low = 90, high = 220 } }  # 3 ea
 "CASE-W30" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 2 ea
 # The stacker course, 96" -> 108". A 12"-high "wall bridge" box is a stock item and cheap
 # per unit; the labour is NOT proportionally cheap, because every one of them is hung at
 # 8'-0" off a ladder against a course that has to line up with the box under it. Labour is
 # therefore carried at the full wall-cabinet rate, not scaled down with the material.
-"CASE-WS15-12" = { material = { low = 55, high = 140 }, labour = { low = 90, high = 220 } }  # 1 ea
+"CASE-WS15-12" = { material = { low = 55, high = 140 }, labour = { low = 90, high = 220 } }  # 2 ea
 "CASE-WS24-12" = { material = { low = 75, high = 190 }, labour = { low = 90, high = 220 } }  # 2 ea
 "CASE-WS30-12" = { material = { low = 90, high = 225 }, labour = { low = 90, high = 220 } }  # 1 ea
+# The 36" bridge box, added 2026-08-24 so the course runs across WIN-M-KITCH instead of
+# stopping either side of it. Stock width, material scaled off CASE-WS30-12 by width.
+"CASE-WS36-12" = { material = { low = 110, high = 270 }, labour = { low = 90, high = 220 } }  # 1 ea
 # The 24"-DEEP stacker, closing the three 96" tall cabinets to the 108" ceiling (owner,
 # 2026-08-24). Same width as CASE-WS24-12 at twice the depth, so material scales and labour
 # does not — it is the same box hung at the same height off the same ladder.
-"CASE-TS24-12" = { material = { low = 130, high = 320 }, labour = { low = 90, high = 220 } }  # 3 ea
+"CASE-TS24-12" = { material = { low = 130, high = 320 }, labour = { low = 90, high = 220 } }  # 2 ea
+# The narrow rung of the same course (owner, 2026-08-24): FURN-M-KIT-PANTRYC-ST stepped
+# 24" -> 15" so the stacker stops at the end of W-M-C5 rather than soffiting the passage.
+# Material is CASE-WS15-12 carried to base depth at the same 1.73x CASE-TS24-12 pays over
+# CASE-WS24-12; labour is unchanged, because it is still one box hung at 8'-0".
+"CASE-TS15-12" = { material = { low = 95, high = 240 }, labour = { low = 90, high = 220 } }  # 1 ea
 # 24" deep rather than 13", over the cold columns, and 32 7/8" is not a stock width — a
 # made-to-size box, so the material carries the house-local millwork premium.
 "CASE-TS3278-12" = { material = { low = 145, high = 360 }, labour = { low = 90, high = 220 } }  # 2 ea
@@ -1066,9 +1074,11 @@
 # is shop time plus the set; the 2x4 framed behind the west panel is [framing].
 # FT-KIT-COLDSTORE-FILLER was here and is DELETED with its type (2026-08-24): the cold bay
 # is 65 3/4" now, exactly two appliance widths, so there is no remainder to scribe.
-# Site-built to the appliance: a 32 7/8" x 24" x 24" over-cabinet where a 36" stock box no
-# longer fits. Priced off CASE-OVER-36 with a made-to-size premium on the material.
-"FT-KIT-OVER-COLD-3278" = { material = { low = 175, high = 440 }, labour = { low = 90, high = 220 } }  # 2 ea
+# Site-built to the appliance: a 32 7/8" x 24" x 21" over-cabinet where a 36" stock box no
+# longer fits. Priced off CASE-OVER-36 with a made-to-size premium on the material. The
+# box lost 3" of height on 2026-08-24 (it has to clear the Frigidaire hinge) and the
+# material comes down with it; the labour does not, because it is the same hang.
+"FT-KIT-OVER-COLD-3278" = { material = { low = 155, high = 390 }, labour = { low = 90, high = 220 } }  # 2 ea
 # The mixer garage (owner, 2026-08-24): 24" x 24" x 72", standing on the peninsula's
 # countertop against the east wall. Priced as a tall cabinet's worth of carcass — it is
 # three quarters the height of a CASE-PANTRY-CLOSET-24 at the same width and depth — with a
@@ -1897,11 +1907,22 @@
 "elbow-45-3in" = { low = 4.5, high = 10 }         # 1 ea
 "elbow-22.5-0.75in" = { low = 0.9, high = 2.75 }  # 1 ea
 "elbow-22.5-1in" = { low = 1.5, high = 4 }        # 1 ea
-"bend-0.5in" = { low = 1.2, high = 4 }            # 2 ea — a made offset: two elbows
-"bend-0.75in" = { low = 1.8, high = 5.5 }         # 2 ea
-"bend-1in" = { low = 3, high = 8 }                # 1 ea
-"bend-2in" = { low = 4.5, high = 10 }             # 3 ea
-"bend-3in" = { low = 9, high = 20 }               # 2 ea
+# A made offset — two elbows and a nipple, not a part off the shelf — so the row carries the
+# angle it is made to (rounded to 5°). Priced by size alone, because what a made bend costs
+# is the two fittings and the fitter's time, and neither cares whether it turns 55° or 70°.
+# The rows used to be per-size only, which billed correctly and told the plumber nothing:
+# one "3 ea bend-2in" line stood for turns of 71°, 63° and 57°.
+"bend-140-0.5in" = { low = 1.2, high = 4 }        # 1 ea — PR-B-HW-BATH's hairpin back south
+"bend-145-0.5in" = { low = 1.2, high = 4 }        # 1 ea — PR-B-CW-BATH, the same jog
+"bend-60-0.75in" = { low = 1.8, high = 5.5 }      # 1 ea
+"bend-70-0.75in" = { low = 1.8, high = 5.5 }      # 1 ea
+# 12° measured: barely past the 10° floor that separates a fitting from a run changing grade.
+"bend-10-1in" = { low = 3, high = 8 }             # 1 ea
+"bend-55-2in" = { low = 4.5, high = 10 }          # 1 ea
+"bend-65-2in" = { low = 4.5, high = 10 }          # 1 ea
+"bend-70-2in" = { low = 4.5, high = 10 }          # 1 ea
+"bend-55-3in" = { low = 9, high = 20 }            # 1 ea
+"bend-75-3in" = { low = 9, high = 20 }            # 1 ea
 "wye-0.75x0.75in" = { low = 2, high = 5 }         # 1 ea
 "wye-2x0.75in" = { low = 4, high = 9 }            # 1 ea
 "wye-2x2in" = { low = 5, high = 11 }              # 2 ea
@@ -2273,7 +2294,12 @@
 "FURN-DESK-48" = { low = 120, high = 600 }  # 4 ea
 "FURN-DESK-CHAIR" = { low = 100, high = 600 }  # 4 ea
 "FURN-DINING-2-36" = { low = 120, high = 600 }  # 2 ea
-"FURN-DINING-8" = { low = 500, high = 3000 }  # 1 ea
+# Retyped 2026-08-24 to FT-DINING-8-OPEN-CORNERS below — same table, same money, a smaller
+# clearance zone. The row stays at 0 for catalog reuse.
+"FURN-DINING-8" = { low = 500, high = 3000 }  # 0 ea
+# The identical 8' table, house-local only because its chair-use zone drops the four corner
+# squares (plan/furniture_types.py). Nothing about the product differs, so nor does the price.
+"FT-DINING-8-OPEN-CORNERS" = { low = 500, high = 3000 }  # 1 ea
 "FURN-DINING-CHAIR" = { low = 60, high = 350 }  # 10 ea
 "FURN-MEDIA-60" = { low = 150, high = 800 }  # 1 ea
 "FURN-PLANT-18" = { low = 30, high = 150 }  # 2 ea

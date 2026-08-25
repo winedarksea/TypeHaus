@@ -10,6 +10,7 @@ from typehaus.model.assembly import Assembly, ConstructionRule
 from typehaus.model.base import Element, HausModel
 from typehaus.model.electrical import Circuit, LoadManagement
 from typehaus.model.materials import Material
+from typehaus.model.product import Product
 from typehaus.model.project import Project, Storey
 from typehaus.model.types import (ApplianceType, DoorType, ElectricalDeviceType, EquipmentType,
                                   FixtureType, FurnitureType, RailingType, RegisterType, WindowType)
@@ -21,6 +22,9 @@ class Library(HausModel):
 
     materials: tuple[Material, ...] = ()
     assemblies: tuple[Assembly, ...] = ()
+    # The chosen-product catalog. Identity only — never a price (#28); a material or a
+    # ``*Type`` names one by tag through its ``product_ref``.
+    products: tuple[Product, ...] = ()
     door_types: tuple[DoorType, ...] = ()
     window_types: tuple[WindowType, ...] = ()
     furniture_types: tuple[FurnitureType, ...] = ()
@@ -40,6 +44,9 @@ class Library(HausModel):
 
     def material(self, tag: str) -> Material | None:
         return next((m for m in self.materials if m.tag == tag), None)
+
+    def product(self, tag: str) -> Product | None:
+        return next((p for p in self.products if p.tag == tag), None)
 
     def resolve_assembly(self, tag: str) -> Assembly | None:
         """Resolve a variant against its base — unchanged layers track the base (#35)."""

@@ -6,6 +6,8 @@ import { SectionCard } from "./SectionCard";
 import { DetailViewer } from "./DetailViewer";
 import { StairDesigner } from "./StairDesigner";
 import { Provenance } from "./Provenance";
+import { ProductRows } from "./ProductRows";
+import { productFor } from "../model/products";
 import { FloorInspector, FootingBeddingInspector, LightRunInspector, MemberInspector, RoofInspector, SolarPanelInspector, SolidInspector } from "./DerivedInspectors";
 import { locateMember } from "../model/memberIdentity";
 import { locateUid } from "../state/locate";
@@ -335,6 +337,10 @@ function CanvasObjectInspector({ model, item }: { model: Model; item: NonNullabl
     <div className="kv">
       <span className="k">Category</span><span>{item.domain}</span>
       <span className="k">Type</span><span>{item.type ?? "—"}</span>
+      {/* Brand and model, where the type names a chosen product. Absent — not blank —
+          when it does not: most of a house is bought against a specification, and an
+          empty "Brand" row would read as missing data rather than as an open choice. */}
+      <ProductRows product={productFor(model.catalog, type?.product_ref)} />
       <span className="k">Room</span><span>{item.room ?? "unassigned"}</span>
       {item.circuit && <>
         <span className="k">Circuit</span>
@@ -430,6 +436,9 @@ function OpeningInspector({ model, opening }: { model: Model; opening: Opening }
   ));
   const [sill, setSill] = useState(() => formatFtIn(opening.sill_m));
   const [targetHost, setTargetHost] = useState(opening.host);
+  // `types` is already the right catalog for this opening's family, so the unit's own
+  // entry — and the product it names — comes out of it rather than a second lookup.
+  const openingType = types.find((candidate) => candidate.tag === opening.type_ref);
 
   const update = async (fields: Record<string, unknown>) => {
     const ok = await applyOps([{
@@ -459,6 +468,7 @@ function OpeningInspector({ model, opening }: { model: Model; opening: Opening }
       <span className="k">Host wall</span><span>{host?.tag ?? opening.host}</span>
       <span className="k">Width</span><span>{formatFtIn(opening.width_m)}</span>
       <span className="k">Height</span><span>{formatFtIn(opening.height_m)}</span>
+      <ProductRows product={productFor(model.catalog, openingType?.product_ref)} />
     </div>
     <label className="field-label">Start-jamb station along wall
       <span><input value={along} onChange={(event) => setAlong(event.target.value)} />

@@ -46,6 +46,8 @@ class DoorType(HausModel):
     # Safety glazing in the leaf — R308.4.1 requires it of every glazed door, with no
     # location test to derive. Meaningful only where ``glazed`` is true.
     tempered: bool = False
+    # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
+    product_ref: str | None = None
     source: str | None = None
 
 
@@ -70,6 +72,8 @@ class WindowType(HausModel):
     # guard at the window. "none" is the honest default — most windows have nothing, and
     # most windows do not need anything.
     fall_protection: Literal["none", "limiter", "guard", "screen_rated"] = "none"
+    # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
+    product_ref: str | None = None
     source: str | None = None
 
 
@@ -95,6 +99,11 @@ class FurnitureType(HausModel):
     work_surface: bool | None = None
     clearance: tuple[Length, Length, Length, Length] | None = None  # front/back/L/R
     mesh: MeshRef | None = None
+    # The chosen product, by ``Product.tag`` (model/product.py). A type is a
+    # *specification* — the width the run is cut to, the circuit the electrician pulls —
+    # and stays one when nobody has picked a brand yet; naming a product records that the
+    # pick has been made, without moving a dimension. Identity only, never a price (#28).
+    product_ref: str | None = None
     source: str | None = None
     # Project-local imports retain their source facts separately from the read-only library
     # source label, so IFC handoff can identify a visual asset without parsing a JSON sidecar.
@@ -138,6 +147,8 @@ class RailingType(HausModel):
     # is what R308.4.4 (structural glass balusters) reads; ``None`` means "not stated",
     # which that rule reports as UNKNOWN rather than as a deficiency.
     glazing: Literal["tempered", "laminated", "laminated-tempered"] | None = None
+    # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
+    product_ref: str | None = None
     source: str | None = None
 
 
@@ -150,6 +161,8 @@ class FixtureType(HausModel):
     height: Length
     needs: frozenset[Service] = frozenset()
     clearance: tuple[Length, Length, Length, Length] | None = None
+    # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
+    product_ref: str | None = None
     source: str | None = None
     import_provenance: dict[str, object] | None = None
     placement: PlacementStrategy = PlacementStrategy.FREE_PLACED

@@ -21,6 +21,7 @@ try {
   const { runTagIndexTests } = await server.ssrLoadModule("/src/model/tagIndex.test.ts");
   const { runDetailStarTests } = await server.ssrLoadModule("/src/model/detailStar.test.ts");
   const { runVaporTests } = await server.ssrLoadModule("/src/model/vapor.test.ts");
+  const { runProductTests } = await server.ssrLoadModule("/src/model/products.test.ts");
   const { runOpenHouseTests } = await server.ssrLoadModule("/src/engine/openHouse.test.ts");
   const { runDoorSymbolTests, runWindowSymbolTests } = await server.ssrLoadModule("/src/model/doorSymbols.test.ts");
   const { runRoofGeometryTests } = await server.ssrLoadModule("/src/three/roofGeometry.test.ts");
@@ -56,6 +57,7 @@ try {
   runTagIndexTests();
   runDetailStarTests();
   runVaporTests();
+  runProductTests();
   runOpenHouseTests();
   runModelGeometryTests();
   runMemberFootprintTests();

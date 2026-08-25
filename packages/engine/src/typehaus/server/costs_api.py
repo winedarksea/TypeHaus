@@ -33,6 +33,7 @@ def build_costs_payload(model: Any, house_dir: Path) -> dict:
     from typehaus.cli.prices import load_prices
     from typehaus.server.space_summary import build_space_summary
     from typehaus.takeoff.bom import bill_of_materials
+    from typehaus.takeoff.product_labels import product_labels
 
     try:
         prices = load_prices(house_dir)
@@ -43,7 +44,8 @@ def build_costs_payload(model: Any, house_dir: Path) -> dict:
     # plain JSON dict, so its "overall" block reads as `object` under mypy --strict.
     summary = cast("dict[str, float]", build_space_summary(model)["overall"])
     areas = {"conditioned": summary["conditioned_sf"], "gross": summary["gross_sf"]}
-    return costs_payload(bill_of_materials(model), prices, state, areas)
+    return costs_payload(bill_of_materials(model), prices, state, areas,
+                         product_labels(model.plan))
 
 
 def apply_costs_ops(house_dir: Path, ops: Any) -> None:

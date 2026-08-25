@@ -21,7 +21,18 @@ on the floor and occupies 20" of a small room, so it has to draw.
 
 from __future__ import annotations
 
-from typehaus.model import Footprint2D, FurnitureType, Mount, MountKind, ft, inch, pt
+from typehaus.model import (
+    ClearancePolicy,
+    ClearanceZone,
+    Footprint2D,
+    FurnitureType,
+    Mount,
+    MountKind,
+    ft,
+    inch,
+    m,
+    pt,
+)
 
 _WALL_MOUNT = Mount(kind=MountKind.WALL)
 
@@ -185,15 +196,33 @@ MEDIA_SECTIONAL_U = FurnitureType(
 # The over-appliance box the retired CASE-OVER-36 can no longer be. Two 36" boxes need 72";
 # the bay is 65 3/4". 32 7/8" is not a cabinet size and never will be — it is an APPLIANCE
 # width, carried up so each box's ends land on its own column's sides and the run divides
-# with no filler at either end. Same 24" depth and 24" height as CASE-OVER-36 (see the
-# library type's note: base depth so the four fronts line up on x=20'-3 3/8" and the
-# appliances stand 10" proud, clearing their own door swing).
+# with no filler at either end. Same 24" DEPTH as CASE-OVER-36 (see the library type's note:
+# base depth so the four fronts line up on x=20'-3 3/8" and the appliances stand 3" proud,
+# clearing their own door swing).
+#
+# ** 21" TALL, NOT 24", AND HUNG AT 75" — this box was UNBUILDABLE until 2026-08-24. ** It
+# was authored 24" tall at a 72" mount. The Frigidaire columns are 71 1/2" high with the
+# hinge topping out at 72 1/2", and the manufacturer requires 1" of clearance above (both
+# numbers are in `_FRIGIDAIRE_SOURCE`, plan/appliance_types.py — the spec was read
+# correctly and then not applied to the cabinet). A cabinet bottom at 72" therefore stood
+# 1/2" BELOW the hinge it has to clear and 1 1/2" below the minimum: the door would not
+# have opened.
+#
+# The fix holds two things fixed and moves the third. The stacker course breaks at 96"
+# across every cabinet in this kitchen, so the box's TOP stays at 96"; 21" is a stock wall-
+# cabinet height, so the box stays a catalog size. That puts the bottom at 75" — 2 1/2"
+# over the hinge, comfortably past the 1" minimum, and by coincidence exactly the datum of
+# the 75" flush trim kit Frigidaire sells for these columns (deliberately not ordered; see
+# plan/appliance_types.py). The cost is 3" of storage in two cabinets, which is the price
+# of the door opening.
 OVER_COLD_3278 = FurnitureType(
     tag="FT-KIT-OVER-COLD-3278", name='32 7/8" over-appliance cabinet',
-    footprint=(inch(32.875), ft(2)), height=ft(2), plan_symbol="wall-cabinet",
+    footprint=(inch(32.875), ft(2)), height=inch(21), plan_symbol="wall-cabinet",
     storage=True, work_surface=False,
     source=('site-built to the appliance, 2026-08-24 — 32 7/8" is the Frigidaire '
-            'Professional column width, not a cabinet module. Millwork, not a catalog box.'),
+            'Professional column width, not a cabinet module. Millwork, not a catalog box. '
+            '21" tall hung at 75": the columns clear 72 1/2" at the hinge and the '
+            'manufacturer requires 1" above, so 24" at 72" did not fit.'),
 )
 
 
@@ -296,8 +325,54 @@ PANTRY_SHELVES_70 = FurnitureType(
 )
 
 
+
+# --- Dining -----------------------------------------------------------------------------
+
+_DINING_SOURCE = (
+    "library FURN-DINING-8, with the chair-use zone's four corner squares removed — see "
+    "FURN-M-DINING in plan/placeables.py for the decision"
+)
+_DINING_CHAIR = "FURN-DINING-CHAIR"
+
+
+def _open_corner_chair_zone(half_width, half_depth, reach):
+    """A rectangular table's chair-use margin as two crossed bands, not one bigger rectangle.
+
+    ``library.placeables._zones.surround_zone`` grows the footprint by ``reach`` on all four
+    sides, which is right for a ROUND table — its footprint is the square around the circle
+    and a chair really does sit on the diagonal. On a rectangular table the four corner
+    squares hold nothing: a seat is on a side, and the corner of an 8' table is where two
+    seats' elbows meet, not where a seventh chair goes.
+
+    So this is the same ``reach`` on every side, minus those corners: one band the table's
+    own width running past both long sides, one band the table's own depth running past both
+    ends. Strictly smaller than ``surround_zone``, and smaller only where nothing stands.
+    """
+    def band(hw, hd) -> ClearanceZone:
+        return ClearanceZone(
+            footprint=Footprint2D(points=(pt(m(-hw), m(-hd)), pt(m(hw), m(-hd)),
+                                          pt(m(hw), m(hd)), pt(m(-hw), m(hd)))),
+            purpose="chair-use zone", policy=ClearancePolicy.RECOMMENDED,
+            source=_DINING_SOURCE, occupant_types=(_DINING_CHAIR,),
+        )
+    return (band(half_width.meters, half_depth.meters + reach.meters),
+            band(half_width.meters + reach.meters, half_depth.meters))
+
+
+# The house's dining table. Identical to library FURN-DINING-8 in every dimension — 8' x
+# 3'-6", 30" high, eight places — and differs only in the shape of its recommended zone.
+# It is house-local rather than a change to the shared type because the shared one is also
+# the round table's rule, and on a round table the corners are real (see the helper above).
+DINING_8_OPEN_CORNERS = FurnitureType(
+    tag="FT-DINING-8-OPEN-CORNERS", name="Eight-seat dining table (open-corner chair zone)",
+    footprint=(ft(8), ft(3, 6)), height=ft(2, 6), plan_symbol="dining-table",
+    source=_DINING_SOURCE,
+    clearances=_open_corner_chair_zone(ft(4), ft(1, 9), ft(3)),
+)
+
+
 FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, CURTAIN_ROD_OUTDOOR_114,
                    CURTAIN_ROD_OUTDOOR_98,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, BATH1_SHELF_2030,
                    MEDIA_SECTIONAL_U, OVER_COLD_3278, MIXER_GARAGE_24,
-                   PANTRY_SHELVES_70)
+                   PANTRY_SHELVES_70, DINING_8_OPEN_CORNERS)

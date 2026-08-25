@@ -150,6 +150,7 @@ EQUIPMENT_TYPES = (
     # `type_ref` on EQ-B-WH to a 120V-only EquipmentType, retag `circuit` to a 1-pole 120V
     # circuit at ~450 VA, and delete `LM-WH`. Nothing else needs to move.
     EquipmentType(tag="EQ-T-WATER-HEATER", name="Water heater, Rheem ProTerra 80gal hybrid heat pump (EcoNet)",
+                  product_ref="PROD-RHEEM-PROPH80",
                   footprint=(inch(24), inch(24)), height=ft(5, 8),
                   plan_symbol="water-heater",
                   source="Rheem PROPH80 T2 RH400-30 / ProTerra XE80T10HS45U0 class: 80 gal, 4.5 kW resistance element, 30A/240V dedicated circuit, ~360-500W compressor draw in Heat Pump Only mode, EcoNet wifi module.",
@@ -164,6 +165,7 @@ EQUIPMENT_TYPES = (
     # UL 9540 belongs to the battery, not here — marking the inverter would pass R327.2's
     # check on the strength of the wrong product.
     EquipmentType(tag="EQ-T-EG4-12KPV", name="EG4 12kPV hybrid inverter",
+                  product_ref="PROD-EG4-12KPV",
                   footprint=(inch(27), inch(12)), height=inch(35),
                   inverter_kw_continuous=8.0, inverter_kw_surge=16.0, pv_input_kw=12.0,
                   ports=(ServicePort(tag="grid", service=Service.POWER_240,
@@ -179,6 +181,7 @@ EQUIPMENT_TYPES = (
     # no CODE check does — authored as a band all around since it's about any neighbouring
     # device, not front-face access.
     EquipmentType(tag="EQ-T-ESS-BATT", name="EG4 PowerPro WallMount Indoor, 14.3 kWh",
+                  product_ref="PROD-EG4-POWERPRO-WM",
                   footprint=(inch(24), inch(10)), height=inch(43),
                   storage_kwh=14.3, ul_9540_listed=True,
                   clearances=(ClearanceZone(

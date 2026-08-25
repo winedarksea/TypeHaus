@@ -181,3 +181,37 @@ def test_a_run_carries_its_material_finish_and_insulation_into_the_file(catlin_m
                    if s.Name.startswith(f"{lacquered.tag}/"))
     pset = _pset(segment, "TypeHaus_Pipe")
     assert (pset["material"], pset["finish"]) == (lacquered.material, lacquered.finish)
+
+
+def test_a_routed_run_exports_once_and_never_as_a_footing(catlin_model, catlin_ifc):
+    """The same trap this file was written for, one family over: a *run's own tube*.
+
+    A pipe or raceway exports as the segments it is (``_emit_pipe_run``/``emit_conduits``),
+    and its swept ``ResolvedSolid`` is how glTF and the viewer draw it — not a second IFC
+    element. ``ROUTED_RUN_CATEGORIES`` has no ``_SOLID_IFC_CLASS`` row, so the generic loop
+    exported every run a second time as a concrete footing: 68 of catlin's 239.
+    """
+    from typehaus.emit.trades import ROUTED_RUN_CATEGORIES
+
+    run_solids = [s for s in catlin_model.solids
+                  if (s.category or "").lower() in ROUTED_RUN_CATEGORIES]
+    assert len(run_solids) > 50, "the reference house should be full of routed runs"
+    footing_names = {element.Name for element in catlin_ifc.by_type("IfcFooting")}
+    assert not (footing_names & {s.tag for s in run_solids})
+
+
+def test_every_routed_run_category_is_declared(catlin_model):
+    """``ROUTED_RUN_CATEGORIES`` is assembled from the enums; this is the check that the
+    categories ``resolve/mep.py`` actually mints are the ones it names."""
+    from typehaus.emit.trades import ROUTED_RUN_CATEGORIES
+
+    minted = {(s.category or "").lower() for s in catlin_model.solids if s.sweep is not None}
+    assert minted - {"railing"} <= ROUTED_RUN_CATEGORIES
+
+
+def test_the_runs_are_still_in_the_file_as_segments(catlin_model, catlin_ifc):
+    """Skipping the solid must not take the run with it: one ``IfcPipeSegment`` per leg."""
+    segments = [s for s in catlin_ifc.by_type("IfcPipeSegment") if "/" in (s.Name or "")]
+    named = {(s.Name or "").split("/")[0] for s in segments}
+    for run in catlin_model.pipe_runs:
+        assert run.tag in named, f"{run.tag} lost its segments"

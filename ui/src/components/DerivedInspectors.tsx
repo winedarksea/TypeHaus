@@ -12,6 +12,8 @@ import type { LocatedMember } from "../model/memberIdentity";
 import { solidCategoryLabel } from "../model/solidLabels";
 import { useStore } from "../state/store";
 import { Provenance } from "./Provenance";
+import { ProductRows } from "./ProductRows";
+import { productForMaterial } from "../model/products";
 
 // NB: construction returns (ConstructionRule laps) used to arrive here as solids with a
 // "return:" category prefix. They no longer produce solids at all — the resolver records them
@@ -39,6 +41,7 @@ function DerivedNote({ source }: { source: string }) {
 }
 
 export function SolidInspector({ solid }: { solid: Solid }) {
+  const model = useStore((s) => s.model);
   return <div>
     <h3>{solidCategoryLabel(solid.category)} · {solid.tag}</h3>
     <div className="kv">
@@ -47,6 +50,14 @@ export function SolidInspector({ solid }: { solid: Solid }) {
           reader chasing one needs to see it spelled the way the code spells it. */}
       <span className="k">Category</span><span>{solid.category}</span>
       <span className="k">Assembly</span><span>{solid.assembly ?? "—"}</span>
+      {/* The trim-run family (gutters, fascia, soffits, ridge caps, edge cladding, railing
+          parts) names a material DIRECTLY instead of an assembly — the resolver sets it and
+          the viewer has been colouring from it since 2026-08-01, but this panel printed
+          only "Assembly —" and left the reader with nothing. Raw tag, matching
+          MemberInspector: it is the key the palette, the trade table and the take-off are
+          all written against. */}
+      <span className="k">Material</span><span>{solid.material ?? "—"}</span>
+      <ProductRows product={productForMaterial(model, solid.material)} />
       <span className="k">Plan extent</span><PlanExtent points={solid.outline} />
       <span className="k">Thickness</span><span>{formatFtIn(solid.z1_m - solid.z0_m)}</span>
       <span className="k">Elevation</span><span>{formatFtIn(solid.z0_m)} → {formatFtIn(solid.z1_m)}</span>
@@ -159,6 +170,7 @@ function sectionSummary(located: LocatedMember): string {
 // to "make this stud different" is always the parent's assembly or spacing rule.
 export function MemberInspector({ located }: { located: LocatedMember }) {
   const select = useStore((s) => s.select);
+  const model = useStore((s) => s.model);
   const { member, ownerKind, ownerTag, ownerUid } = located;
   const raked = member.z0_end_m != null || member.z1_end_m != null;
   return <div>
@@ -171,6 +183,7 @@ export function MemberInspector({ located }: { located: LocatedMember }) {
       <span className="k">Elevation</span>
       <span>{formatFtIn(member.z0_m)} → {formatFtIn(member.z1_m)}{raked ? " (raked)" : ""}</span>
       <span className="k">Material</span><span>{member.material ?? "lumber"}</span>
+      <ProductRows product={productForMaterial(model, member.material)} />
       {/* Only shown when the resolver actually overrode the category default — otherwise the
           trade is whatever the category implies and repeating it here is noise. */}
       {member.trade && <><span className="k">Trade</span><span>{member.trade}</span></>}

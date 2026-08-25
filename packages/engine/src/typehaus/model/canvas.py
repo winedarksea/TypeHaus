@@ -33,6 +33,9 @@ def canvas_object_types(plan: PlanModel) -> list[dict[str, Any]]:
             result.append({
                 "tag": item.tag, "name": getattr(item, "name", item.tag), "domain": domain, "kind": kind,
                 "placement": getattr(item, "placement", default_strategy).value,
+                # One line covering all eight type collections — every one of them either
+                # carries ``product_ref`` or inherits it from FurnitureType.
+                "product_ref": getattr(item, "product_ref", None),
                 "footprint_m": [part.meters for part in footprint] if footprint else None,
                 "height_m": item.height.meters if hasattr(item, "height") else None,
                 "footprint_shape_m": _polygon(getattr(item, "footprint_shape", None)),

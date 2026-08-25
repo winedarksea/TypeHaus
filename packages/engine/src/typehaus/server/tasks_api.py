@@ -30,6 +30,7 @@ def build_tasks_payload(model: Any, house_dir: Path) -> dict[str, Any]:
     from typehaus.cli.prices import estimate_costs, load_prices
     from typehaus.takeoff.bom import bill_of_materials
     from typehaus.takeoff.costs import load_costs
+    from typehaus.takeoff.product_labels import product_labels
     from typehaus.takeoff.tasks import build_work_items
 
     try:
@@ -39,7 +40,8 @@ def build_tasks_payload(model: Any, house_dir: Path) -> dict[str, Any]:
     except ValueError as exc:
         raise TasksRequestError(str(exc)) from exc
     bom = bill_of_materials(model)
-    estimate = estimate_costs(bom, prices) if prices is not None else None
+    estimate = (estimate_costs(bom, prices, None, product_labels(model.plan))
+                if prices is not None else None)
     items = [item.as_dict() | {"status": state.status_of(item.slug),
                                "entry": (state.entries[item.slug].as_dict()
                                          if item.slug in state.entries else None)}

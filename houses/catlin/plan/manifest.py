@@ -27,8 +27,8 @@ from library import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES, STARTER_DO
 from params import (breezeway, foundations, main_deck, raised_garden, roof_trim,
                     second_deck, solar, sunken_garden)
 from plan import (appliance_types, assemblies, circuits, electrical, fixtures,
-                  furniture_types, lighting, lighting_types, mep, placeables, site,
-                  transitions, views, wind_clamps)
+                  furniture_types, lighting, lighting_types, mep, placeables, products,
+                  site, transitions, views, wind_clamps)
 from plan.storeys import attic, basement, garage, main, second
 
 format_version = 1
@@ -40,6 +40,9 @@ PROJECT_UUID = uuid.UUID("c471a000-93b5-4e6e-8f5a-000000000002")
 _library = Library(
     materials=tuple(assemblies.MATERIALS),
     assemblies=tuple(assemblies.ASSEMBLIES),
+    # Brand and model for the products this house has actually chosen — identity only,
+    # never a price (#28). The types above point at these by ``product_ref``.
+    products=products.PRODUCTS,
     # The library's pocket family alongside the house's own catalog. Only the pocket
     # types are shared so far — the rest of `main.DOOR_TYPES` is a promotion for another
     # day, and `integrity.duplicate_catalog_tag` proves the two tag sets stay disjoint.

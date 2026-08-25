@@ -68,14 +68,27 @@ function BomTableView({ table, actions }: { table: CostedTable; actions?: CostAc
                     );
                   }
                   if (rc && rc.key !== null && actions && cellIndex === productIndex) {
+                    // Two different facts under one heading, and the distinction is the
+                    // point: `estimate.product` is what the PLAN specifies (brand + model,
+                    // derived from the model), `entry.product` is what was actually BOUGHT.
+                    // The specified product shows through as a muted placeholder until
+                    // someone records something different, so the field only ever asks for
+                    // what differed — before this it asked for the whole answer over again,
+                    // against nothing, which is why it stayed empty.
+                    const specified = rc.estimate?.product ?? null;
+                    const bought = rc.entry?.product ?? null;
                     return (
                       <td key="product" className="reader-mono">
                         <button
                           className="btn-link"
                           onClick={() => actions.editProduct(rc)}
-                          title="Record the exact product bought"
+                          title={specified && !bought
+                            ? `Specified: ${specified}. Record what was actually bought.`
+                            : "Record the exact product bought"}
                         >
-                          {rc.entry?.product ?? "—"}
+                          {bought ?? (specified
+                            ? <span className="muted">{specified}</span>
+                            : "—")}
                         </button>
                       </td>
                     );
@@ -183,7 +196,15 @@ export function BomView() {
 
   const editProduct = useCallback(async (rc: RowCost) => {
     if (rc.key === null) return;
-    const product = window.prompt(`Exact product for ${rc.key}:`, rc.entry?.product ?? "");
+    // Prefilled with the specified product where the plan names one: the common edit is a
+    // substitution, so the field starts from what was asked for rather than from blank.
+    // Clearing it back to empty still deletes the record — the specification is the model's
+    // and is never written into costs.toml by this dialog.
+    const specified = rc.estimate?.product ?? "";
+    const prompt = specified
+      ? `Exact product bought for ${rc.key} (specified: ${specified}):`
+      : `Exact product for ${rc.key}:`;
+    const product = window.prompt(prompt, rc.entry?.product ?? specified);
     if (product === null) return;
     await applyCostsOps([{ op: "set_entry", section: rc.section, key: rc.key,
       entry: { ...(rc.entry ?? {}), product: product.trim() || null } }]);

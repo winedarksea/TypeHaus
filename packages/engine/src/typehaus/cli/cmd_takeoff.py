@@ -38,6 +38,7 @@ def takeoff(
     import json
 
     from typehaus.cli.prices import estimate_costs, load_prices
+    from typehaus.takeoff.product_labels import product_labels
     from typehaus.resolve import resolve
     from typehaus.source import load_plan
     from typehaus.takeoff import bill_of_materials
@@ -118,7 +119,8 @@ def takeoff(
 
         space_summary = build_space_summary(model)["overall"]
         areas = {"conditioned": space_summary["conditioned_sf"], "gross": space_summary["gross_sf"]}
-        payload["cost_estimate"] = estimate_costs(bom, prices, areas)
+        payload["cost_estimate"] = estimate_costs(bom, prices, areas,
+                                                  product_labels(loaded.plan))
         payload["space_summary"] = space_summary
     if csv is not None:
         if prices is None:

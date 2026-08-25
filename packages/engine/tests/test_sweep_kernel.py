@@ -297,26 +297,121 @@ def test_an_upright_box_keeps_the_fast_path() -> None:
         _sweep([(0, 0, 0), (2, 0, 0)], round_profile(0.05, 12)))[0])
 
 
-def test_every_swept_solid_in_catlin_closes_when_cut(catlin_model) -> None:
-    """The mesh branch discards an open chain rather than fabricating a closing edge, so a
-    run that sliced open would silently lose part of itself — the same guarantee
-    ``test_geometry_slice.py`` makes for meshes, made for the runs."""
+def test_every_swept_leg_in_catlin_draws_when_it_is_cut(catlin_model) -> None:
+    """Cut every leg of every run both ways, at its own mid-station. Every one must draw.
+
+    The section kernel discards a face it cannot close rather than fabricating one — the
+    right call — so a leg that failed here would silently draw *nothing at all*, which is
+    exactly how every drain vanished from the sections the day sweeps landed. Cutting at the
+    midpoint rather than at an end is deliberate: a plane tangent to a tube meets it in a
+    hairline, and a hairline is a degenerate drawing for any solid, not a swept one.
+    """
     from typehaus.resolve.geometry_ir import GBox
-    from typehaus.resolve.geometry_slice import CutPlane, _box_mesh, open_chain_count
+    from typehaus.resolve.geometry_slice import CutPlane, perp_values, slice_solid
 
     swept = [solid for solid in catlin_model.solids if solid.sweep is not None]
     assert len(swept) > 50, "the reference house should be full of runs by now"
-    offenders = []
+    missing = []
     for solid in swept:
+        for index, (start, end) in enumerate(sweep_legs(solid.sweep)):
+            box = GBox(corners_bottom=start, corners_top=end)
+            for axis in ("x", "y"):
+                values = perp_values(box, CutPlane(axis=axis, station_m=0.0).perp_index)
+                low, high = min(values), max(values)
+                if high - low < 1e-9:
+                    continue  # the leg lies in the plane; there is no cut to make
+                station = (low + high) / 2.0
+                if not slice_solid(box, CutPlane(axis=axis, station_m=station)):
+                    missing.append(f"{solid.tag} leg {index} at {axis}={station:.4f}")
+    assert not missing, missing[:5]
+
+
+def test_a_tube_cut_on_its_own_axis_plane_still_draws() -> None:
+    """The cut that used to break, named: a 12-gon has two vertex rows on its axis plane.
+
+    Welding segments into a ring drops anything shorter than 1e-6, so a plane grazing a
+    vertex left two slivers, lost both, and the ring fell open. A section down the centreline
+    of a drain stack is an ordinary thing to draw, so the swept branch takes the hull of its
+    crossings instead — no welding, nothing to fall open.
+    """
+    from typehaus.resolve.geometry_slice import CutPlane, slice_solid
+
+    radius = inch(2).meters
+    sweep = _sweep([(0, 0, 2.0), (6, 0, 2.0)], round_profile(radius, 12))
+    box = _tube_boxes(sweep)[0]
+    profiles = slice_solid(box, CutPlane(axis="y", station_m=3.0))
+    assert len(profiles) == 1
+    zs = [z for _u, z in profiles[0].outline]
+    assert max(zs) - min(zs) == pytest.approx(2.0 * radius, abs=1e-6)
+
+
+def test_a_butted_corner_draws_at_the_station_its_cap_sits_on() -> None:
+    """``CD-B-KITCHEN-RUN`` turns at x=10.668 m — 35 ft exactly, a station a detail may well
+    be cut at. The leg arriving there is capped square on that plane, so the cut grazes a
+    whole ring of vertices at once rather than two of them."""
+    from typehaus.resolve.geometry_slice import CutPlane, slice_solid
+
+    radius = inch(1.5).meters
+    sweep = _sweep([(0, 0, 0), (10.668, 0, 0), (10.668, -0.5, 0)], round_profile(radius, 12))
+    arriving = _tube_boxes(sweep)[0]
+    profiles = slice_solid(arriving, CutPlane(axis="y", station_m=10.668))
+    assert len(profiles) == 1, "the leg's own end cap is the face the cut lands on"
+    zs = [z for _u, z in profiles[0].outline]
+    assert max(zs) - min(zs) == pytest.approx(2.0 * radius, abs=1e-6)
+
+
+def test_the_hull_cut_agrees_with_the_mesh_walk_it_replaced(catlin_model) -> None:
+    """Two independent kernels over every run, at twenty stations each: the same face.
+
+    The hull is the *more* accurate of the two — the mesh walk snaps its endpoints to the
+    1e-6 weld grid — so this is a tolerance on that snapping, not on the hull.
+    """
+    from typehaus.resolve.geometry_ir import GBox
+    from typehaus.resolve.geometry_slice import (CutPlane, _box_hull_profile, _box_mesh,
+                                                 _mesh_profiles, _nudge_off, perp_values)
+
+    def area(ring) -> float:
+        count = len(ring)
+        return abs(sum(ring[i][0] * ring[(i + 1) % count][1]
+                       - ring[(i + 1) % count][0] * ring[i][1]
+                       for i in range(count))) / 2.0
+
+    compared = 0
+    for solid in (s for s in catlin_model.solids if s.sweep is not None):
         for start, end in sweep_legs(solid.sweep):
             box = GBox(corners_bottom=start, corners_top=end)
             mesh = _box_mesh(box)
             for axis in ("x", "y"):
-                values = [point[0 if axis == "y" else 1] for point in start + end]
-                station = (min(values) + max(values)) / 2.0
-                if open_chain_count(mesh, CutPlane(axis=axis, station_m=station)):
-                    offenders.append(f"{solid.tag} at {axis}={station}")
-    assert not offenders, offenders[:5]
+                values = perp_values(box, CutPlane(axis=axis, station_m=0.0).perp_index)
+                low, high = min(values), max(values)
+                if high - low < 1e-6:
+                    continue
+                for step in range(1, 20):
+                    station = low + (high - low) * step / 20.0
+                    plane = _nudge_off(CutPlane(axis=axis, station_m=station),
+                                       values, low, high)
+                    hulled = _box_hull_profile(box, plane)
+                    walked, open_chains = _mesh_profiles(mesh, plane)
+                    if open_chains or len(walked) != 1 or len(hulled) != 1:
+                        continue  # the mesh walk's own failures are what the hull replaces
+                    compared += 1
+                    assert area(hulled[0].outline) == pytest.approx(
+                        area(walked[0].outline), rel=1e-4)
+    assert compared > 5000, f"only {compared} cuts compared — the sample went thin"
+
+
+def test_a_non_convex_swept_box_falls_back_to_the_mesh_walk() -> None:
+    """The hull is only the section of a *convex* solid, and the guard says so out loud."""
+    from typehaus.resolve.geometry_ir import GBox
+    from typehaus.resolve.geometry_slice import _box_is_convex
+
+    assert _box_is_convex(_tube_boxes(
+        _sweep([(0, 0, 0), (2, 0, 0)], round_profile(0.05, 12)))[0])
+    chevron = ((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.5, 0.4, 0.0), (1.0, 1.0, 0.0),
+               (0.0, 1.0, 0.0))
+    assert not _box_is_convex(GBox(
+        corners_bottom=chevron,
+        corners_top=tuple((x, y, z + 1.0) for x, y, z in chevron)))
 
 
 # --- the TS fixture -------------------------------------------------------------------

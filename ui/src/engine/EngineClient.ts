@@ -246,6 +246,11 @@ export interface EngineEstimateRow {
   // equals `quantity` rather than growing by `waste_pct`.
   waste_in_quantity?: boolean;
   order_quantity?: number;
+  // The product the PLAN specifies for this line — "LG WKHC252HBA" — where a material or a
+  // product type names one (→ takeoff/product_labels.py). A label and nothing more: it is
+  // never a price and takes no part in any total. Absent where the plan specifies no
+  // particular product, which is the ordinary state of most of a house.
+  product?: string | null;
   // Cost codes (takeoff/cost_codes.py): the NAHB account, the CSI division where one
   // applies, and the viewer trade — the same 13-value vocabulary as `Trade`.
   nahb_code?: string;

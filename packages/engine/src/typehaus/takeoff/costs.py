@@ -56,7 +56,11 @@ class CostEntry:
 
     paid: bool = False
     paid_date: Optional[str] = None      # "YYYY-MM-DD" prose, not validated as a date
-    product: Optional[str] = None        # the exact product bought, e.g. a SKU or listing
+    # The exact product BOUGHT — a SKU, a listing, whatever identifies the box that
+    # arrived. Worth writing when it DIFFERS from what the plan specified: the estimate row
+    # now carries the specification itself (``product_labels``), so re-typing it here would
+    # be a second copy of a fact the model already holds, and the two would drift.
+    product: Optional[str] = None
     actual_cost: Optional[float] = None  # what it really cost, once known
     note: Optional[str] = None
 
@@ -208,7 +212,9 @@ def write_costs(house_dir: Path, state: CostsState) -> Path:
     per line — so a diff of ``costs.toml`` reads as exactly the check-offs that changed."""
     lines = ["# costs.toml — cost tracking (written by Type:Haus; safe to edit by hand).",
              "# [entries.<section>.<key>]: paid / paid_date / product / actual_cost / note",
-             "# for the BOM row `estimate_costs` joins as (section, key).",
+             "# for the BOM row `estimate_costs` joins as (section, key). `product` is the",
+             "# AS-BOUGHT record: write it when it differs from the product the plan",
+             "# specifies, which the estimate row already carries (takeoff/product_labels).",
              "# [[extra]]: id / name / cost / paid / product / category / note for spend",
              "# the model does not bill.", ""]
     for section in sorted(state.entries):
@@ -301,7 +307,8 @@ def apply_costs_op(state: CostsState, op: Mapping[str, Any]) -> CostsState:
 # --- payload ------------------------------------------------------------------------------
 
 def costs_payload(bom: dict, prices: Optional[Prices], state: CostsState,
-                  areas: Optional[Mapping[str, float]] = None) -> dict:
+                  areas: Optional[Mapping[str, float]] = None,
+                  products: Optional[Mapping[tuple[str, str], str]] = None) -> dict:
     """Everything the costs view needs in one JSON-ready dict.
 
     ``join`` tells the client how each estimate section maps onto BOM rows (bom key, key
@@ -315,8 +322,14 @@ def costs_payload(bom: dict, prices: Optional[Prices], state: CostsState,
     :func:`typehaus.cli.prices.estimate_costs`. Optional because a caller that has no
     resolved model has no honest denominator, and $/sf against a guessed area is worse
     than no $/sf at all — omitted, never zero.
+
+    ``products`` is the *specified* product per ``(section, key)``
+    (:func:`typehaus.takeoff.product_labels.product_labels`), which the estimate rows carry
+    as a label. It is what makes ``CostEntry.product`` an **as-bought** record rather than a
+    second, unchecked copy of the specification: the view can show what was specified, so
+    the estimator only writes down what differed.
     """
-    estimate = estimate_costs(bom, prices, areas) if prices is not None else None
+    estimate = estimate_costs(bom, prices, areas, products) if prices is not None else None
     join = {name: {"bom_key": bom_key, "key_field": key_field,
                    "quantity_field": quantity_field, "unit": unit,
                    # False for a section reported beside the construction total

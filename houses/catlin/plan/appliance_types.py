@@ -17,6 +17,11 @@ Every dimension below is off the manufacturer's own spec sheet, read 2026-08-24,
 one-line reviewable change (the idiom ``plan/mep_hvac.py`` already uses for the Rheem HPWH
 and the EG4 gear).
 
+Since 2026-08-24 each type also names its ``product_ref`` — brand and model number as
+structured data in ``plan/products.py``, which is what the inspector sidebar and the
+estimate read. The names and sources below are unchanged and still authoritative for the
+reasoning; the ref is what a machine can follow.
+
 **Nominal vs actual, and why the footprints look odd.** A "30-inch range" is 29 7/8" wide
 and a "24-inch dishwasher" is 23 3/4". The cabinet opening is the nominal number; the
 appliance is the actual one. These footprints are the *appliance*, so the run's arithmetic
@@ -60,6 +65,7 @@ from library.placeables._zones import front_zone
 # ``code.M1502_dryer_exhaust`` reads the flag rather than the name.
 LG_WASHTOWER = ApplianceType(
     tag="APPL-LG-WASHTOWER", name="LG WashTower WKHC252HBA (washer + heat-pump dryer)",
+    product_ref="PROD-LG-WKHC252HBA",
     footprint=(inch(27), inch(32.75)), height=inch(74.375),
     plan_symbol="washer-dryer-stacked",
     ductless=True,
@@ -113,6 +119,7 @@ LG_WASHTOWER = ApplianceType(
 # range's cord lands in is the receptacle a 50A circuit takes. No electrical change.
 LG_INDUCTION_RANGE = ApplianceType(
     tag="APPL-LG-INDUCTION-RANGE", name="LG LSIL6336FE 30\" induction slide-in range",
+    product_ref="PROD-LG-LSIL6336FE",
     # 29 7/8" x 29 5/16" is the appliance; the cabinet cutout is 30" x 25". The body is
     # deeper than the cutout because a slide-in oversails the counter front by design —
     # which is why plan/placeables.py stands the range 3" proud of the 24" bases beside it.
@@ -142,6 +149,7 @@ LG_INDUCTION_RANGE = ApplianceType(
 # 20-120 psi and there is no cold connection to make. So the arrestor count stays one.
 LG_DISHWASHER = ApplianceType(
     tag="APPL-LG-DISHWASHER", name="LG LDTS5552S 24\" QuadWash dishwasher",
+    product_ref="PROD-LG-LDTS5552S",
     footprint=(inch(23.75), inch(24.625)), height=inch(33.625),
     plan_symbol="dishwasher",
     needs=frozenset({Service.WATER_HOT, Service.DRAIN, Service.POWER_120}),
@@ -214,10 +222,16 @@ _FRIGIDAIRE_SOURCE = (
 # walls, without which the seam sweats. Billed as a part because it is an order, not
 # geometry — the same idiom APPL-M-DISP's control loop uses in plan/placeables.py. The
 # 75"/79" flush trim kits Frigidaire also sells are deliberately NOT ordered: they assume a
-# built-in cutout, and this run puts 24" over-cabinets at 72" instead.
+# built-in cutout, and this run puts 21" over-cabinets at 75" instead.
+#
+# ** 75" IS THE SPEC, NOT A PREFERENCE (corrected 2026-08-24). ** It was 24" boxes at 72"
+# until the over-cabinets were swept for body overlap, which is 1/2" below the 72 1/2" hinge
+# and 1 1/2" below the 1" top clearance this very source records. The mount is the
+# manufacturer's minimum, and it lands on the 75" trim kit's own datum by coincidence.
 FRIGIDAIRE_ALL_REFRIGERATOR = ApplianceType(
     tag="APPL-FRIG-PRO-ALLFRIDGE",
     name="Frigidaire Professional FPRU19F8WF 19 cu ft all-refrigerator column",
+    product_ref="PROD-FRIGIDAIRE-FPRU19F8WF",
     footprint=(inch(32.875), inch(27)), height=inch(72.5),
     plan_symbol="refrigerator",
     needs=frozenset({Service.POWER_120}),
@@ -232,6 +246,7 @@ FRIGIDAIRE_ALL_REFRIGERATOR = ApplianceType(
 FRIGIDAIRE_ALL_FREEZER = ApplianceType(
     tag="APPL-FRIG-PRO-ALLFREEZER",
     name="Frigidaire Professional FPFU19F8WF 19 cu ft all-freezer column",
+    product_ref="PROD-FRIGIDAIRE-FPFU19F8WF",
     footprint=(inch(32.875), inch(27)), height=inch(72.5),
     plan_symbol="refrigerator",
     needs=frozenset({Service.POWER_120}),

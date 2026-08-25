@@ -327,6 +327,9 @@ export interface CanvasObjectType {
   domain: string;
   kind: string;
   placement: "opening_hosted" | "free_placed" | "wall_attached";
+  // The chosen product (`Catalog.products`), or null where this is still a specification
+  // rather than a picked item. Resolve it with `productFor` (components/ProductRows.tsx).
+  product_ref?: string | null;
   footprint_m: [number, number] | null;
   footprint_shape_m?: Vec2[] | null;
   height_m: number | null;
@@ -942,6 +945,9 @@ export interface WindowTypeSpec {
   // Closed vocabulary mirroring the engine's `WindowOperation` enum; it selects the plan
   // symbol and separates a fixed picture unit from an operable sash of the same size.
   operation: WindowOperation;
+  // The chosen product (`Catalog.products`), or null where this is still a specification
+  // rather than a picked item. Resolve it with `productFor` (components/ProductRows.tsx).
+  product_ref?: string | null;
 }
 
 export interface DoorTypeSpec {
@@ -955,6 +961,9 @@ export interface DoorTypeSpec {
   glazed: boolean;
   // No applied casing — drywall return jamb; the viewer draws no frame boxes for it.
   trimless: boolean;
+  // The chosen product (`Catalog.products`), or null where this is still a specification
+  // rather than a picked item. Resolve it with `productFor` (components/ProductRows.tsx).
+  product_ref?: string | null;
 }
 
 export interface MaterialSpec {
@@ -982,6 +991,9 @@ export interface MaterialSpec {
   // adds no thickness, so `buildRoomFloor` draws no finish plane for it. Without this a
   // sealed slab renders as two floors: the slab and a finish plane on the same face.
   coating?: boolean | null;
+  // The chosen product (`Catalog.products`), or null where this is still a specification
+  // rather than a picked item. Resolve it with `productFor` (components/ProductRows.tsx).
+  product_ref?: string | null;
 }
 
 export interface CatalogLayer {
@@ -1000,11 +1012,30 @@ export interface AssemblySpec {
   layers: CatalogLayer[];
 }
 
+// A chosen product: brand and model number as data, not as prose in a `name` string
+// (→ engine model/product.py). Identity ONLY — there is deliberately no price field here
+// and never will be; dollars reach the UI through the BOM, not through the palette.
+export interface ProductSpec {
+  tag: string;
+  brand: string;
+  // The manufacturer's own designation. Empty where a brand is chosen and a model is not.
+  model: string;
+  // Marketing name, where it differs usefully from the model number.
+  name: string;
+  // A distributor/retailer number, where that is what an order is placed against.
+  sku: string;
+  url: string | null;
+  source: string | null;
+}
+
 export interface Catalog {
   window_types: WindowTypeSpec[];
   door_types: DoorTypeSpec[];
   occupancies: string[];
   materials: MaterialSpec[];
+  // What every `product_ref` above resolves against. Optional so a payload from an older
+  // engine still parses — an absent catalog simply renders no product rows.
+  products?: ProductSpec[];
   assemblies: AssemblySpec[];
   canvas_object_types?: CanvasObjectType[];
 }
