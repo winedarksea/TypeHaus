@@ -151,6 +151,19 @@ BATH1_SHELF_2030 = FurnitureType(
 # The 3D massing draws the "sectional" glyph, which is L-shaped: the same acknowledged
 # approximation plan/placeables.py already accepts for the armchair. The *plan* outline —
 # what every clearance and collision rule measures — is the true U below.
+#
+# ** IT FACED THE WRONG WAY UNTIL 2026-08-24, AND THE GLYPH IS WHY. ** The ring below was
+# first authored opening toward +y so that an *unrotated* instance would face north at the
+# screen. But every seating family in `model/placeable_symbols/_families.py` — `seating`
+# and `sectional` alike — puts its back band at ``+y`` and faces ``-y``; that is the engine's
+# convention, and `plan/placeables.py` states it at the top of the file. So the collision
+# outline opened north while the body you actually see in the viewer sat with its back to
+# the panel. Nothing caught it: `footprint_shape` is read only by
+# `resolve/placeables.py:_local_footprint` for collision and wall attachment, never by the
+# symbol that draws. The ring is now authored to the engine's convention — back run at +y,
+# opening toward -y — and FURN-B-PLAY-SECTIONAL carries ``rotation=deg(180)`` to point the
+# whole thing north. World geometry is unchanged (a 180 degree turn maps this ring onto the
+# old one exactly); what changed is that the drawn body now turns with it.
 _U_WIDTH = ft(11)
 _U_DEPTH = ft(8)
 _U_SEAT = ft(3)  # back run and arm depth alike
@@ -162,17 +175,19 @@ _U_ARM = _U_SEAT.inches
 MEDIA_SECTIONAL_U = FurnitureType(
     tag="FT-SECTIONAL-U-MEDIA", name="U sectional, 11'-0\" x 8'-0\"",
     footprint=(_U_WIDTH, _U_DEPTH), height=ft(2, 10), plan_symbol="sectional",
-    # Opening toward +y in local coordinates, so an unrotated instance faces north — which
-    # is where the screen is. Walked as one ring: south face, up the east arm, back down its
-    # inner face, across the top of the back run, and up the west arm's inner face.
+    # Back run at +y, opening toward -y: the same convention `seating` and `sectional` draw
+    # to, so the outline and the body turn together under one rotation. Walked as one ring
+    # from the west arm's open tip: across the arm's end, up its inner face, along the front
+    # of the back run, down the east arm's inner face, out its tip, and back along the
+    # sectional's own back and west side.
     footprint_shape=Footprint2D(points=(
         pt(inch(-_U_HALF_W), inch(-_U_HALF_D)),
+        pt(inch(-_U_HALF_W + _U_ARM), inch(-_U_HALF_D)),
+        pt(inch(-_U_HALF_W + _U_ARM), inch(_U_HALF_D - _U_ARM)),
+        pt(inch(_U_HALF_W - _U_ARM), inch(_U_HALF_D - _U_ARM)),
+        pt(inch(_U_HALF_W - _U_ARM), inch(-_U_HALF_D)),
         pt(inch(_U_HALF_W), inch(-_U_HALF_D)),
         pt(inch(_U_HALF_W), inch(_U_HALF_D)),
-        pt(inch(_U_HALF_W - _U_ARM), inch(_U_HALF_D)),
-        pt(inch(_U_HALF_W - _U_ARM), inch(-_U_HALF_D + _U_ARM)),
-        pt(inch(-_U_HALF_W + _U_ARM), inch(-_U_HALF_D + _U_ARM)),
-        pt(inch(-_U_HALF_W + _U_ARM), inch(_U_HALF_D)),
         pt(inch(-_U_HALF_W), inch(_U_HALF_D)),
     )),
     source=("owner, 2026-08-22 — a U sectional for RM-B-PLAY-N. Sized to the room: 11'-0\" "
@@ -181,6 +196,43 @@ MEDIA_SECTIONAL_U = FurnitureType(
             "2'-10\" to match the catalog's seating."),
 )
 
+
+# --- the media room's bookcases, 2026-08-24 ----------------------------------------------
+#
+# House-local because it is a HEIGHT made to fit one room, not a product cloned from a
+# catalog. plan/placeables.py used to argue the other way — it called the library's 6'-0"
+# FURN-BOOKCASE-32 "7 1/2" short" of a real Billy and declined to correct it, on the grounds
+# that a house-local Billy would be a clone. That reasoning stands and this is not that: the
+# owner asked for the theatre's shelving to run up near the ceiling, and the number that
+# answers it comes from RM-B-PLAY-N's own section, not from a product page.
+#
+# The room's measured clear height is 8'-0" under SL-M-DECK (`code.R305_ceiling_height`) —
+# NOT the 8'-3 1/2" plan/placeables.py quoted from an older revision of the deck. 7'-6"
+# leaves a 6" reveal, which is the reason for that number and not a rounding:
+#   * it is scribe room. A site-built case run tight to a poured deck has nowhere to go if
+#     the soffit is out of level, and a basement deck is never dead flat.
+#   * it keeps the case tippable. A 90" x 12" carcass swings up on a 90 3/4" diagonal, so it
+#     can be built flat on the floor and stood — at 7'-10" the diagonal is 94 3/4" in a 96"
+#     room and it has to be assembled standing.
+# Same 2'-8" x 1'-0" footprint as the library case it replaces, so every plan dimension in
+# plan/placeables.py — the clearances off D-B-PLAY's swing, the backs on the 18'-3 3/8"
+# face — is unchanged by the swap.
+#
+# ** ANTI-TIP IS NOT OPTIONAL AT THIS HEIGHT ** and is easy here: the south wall is W-B-CE,
+# INT_2X6_STAGGERED_PLUMBING, so there are real studs to catch. That is worth saying because
+# the room's OTHER wall — the north one the screen hangs on — is an 8" pour that takes
+# anchors instead, and someone reading only that note could reach for the wrong fastener.
+THEATER_BOOKCASE = FurnitureType(
+    tag="FT-BOOKCASE-32-90", name='Bookcase, 2\'-8" x 7\'-6"',
+    footprint=(ft(2, 8), ft(1)), height=ft(7, 6),
+    plan_symbol="bookcase", storage=True,
+    source=("owner, 2026-08-24 — the theatre's shelving taken up near the ceiling. The "
+            "library's FURN-BOOKCASE-32 at 6'-0\" in the same 2'-8\" x 1'-0\" footprint, "
+            "stretched to 7'-6\": a 6\" reveal under RM-B-PLAY-N's measured 8'-0\" clear, "
+            "which is scribe room for an out-of-level deck and keeps the 90\" x 12\" "
+            "carcass tippable on its 90 3/4\" diagonal. Anti-tip strap or cleat into "
+            "W-B-CE's studs at every case."),
+)
 
 # --- kitchen millwork, 2026-08-24 (the peninsula/pantry-room rework) --------------------
 #
@@ -374,5 +426,5 @@ DINING_8_OPEN_CORNERS = FurnitureType(
 FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, CURTAIN_ROD_OUTDOOR_114,
                    CURTAIN_ROD_OUTDOOR_98,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, BATH1_SHELF_2030,
-                   MEDIA_SECTIONAL_U, OVER_COLD_3278, MIXER_GARAGE_24,
+                   MEDIA_SECTIONAL_U, THEATER_BOOKCASE, OVER_COLD_3278, MIXER_GARAGE_24,
                    PANTRY_SHELVES_70, DINING_8_OPEN_CORNERS)

@@ -954,7 +954,11 @@
 # 24" -> 15" so the stacker stops at the end of W-M-C5 rather than soffiting the passage.
 # Material is CASE-WS15-12 carried to base depth at the same 1.73x CASE-TS24-12 pays over
 # CASE-WS24-12; labour is unchanged, because it is still one box hung at 8'-0".
-"CASE-TS15-12" = { material = { low = 95, high = 240 }, labour = { low = 90, high = 220 } }  # 1 ea
+"CASE-TS15-12" = { material = { low = 95, high = 240 }, labour = { low = 90, high = 220 } }  # 0 ea
+# ...and its 18" sibling, which is the one actually hung: W-M-PAN-S moved 4" north later the
+# same day, the cold run went with it, and PANTRYC's oversail shrank from 9 1/8" to 5 1/8".
+# The 15" row stays for catalog reuse — the library carries the whole rung ladder.
+"CASE-TS18-12" = { material = { low = 110, high = 275 }, labour = { low = 90, high = 220 } }  # 1 ea
 # 24" deep rather than 13", over the cold columns, and 32 7/8" is not a stock width — a
 # made-to-size box, so the material carries the house-local millwork premium.
 "CASE-TS3278-12" = { material = { low = 145, high = 360 }, labour = { low = 90, high = 220 } }  # 2 ea
@@ -2538,10 +2542,14 @@ finish-garage-door-opener = { low = 500, high = 1400 }
 # named because both are the specific article the design depends on, not a category.
 #
 # The two east tall cabinets are FURN-M-KIT-PANTRY-S1/S2, CASE-PANTRY-CLOSET-24 carcasses.
-# ** A 24"-wide tall PULL-OUT is not a stock item ** — Rev-A-Shelf's tall pullout ladder stops
-# at the 19" unit, because the limit is the cantilevered moment on a 74" rack, not the slide.
-# The 5374-24 SWING-OUT is the 24" article and gives the same behaviour: ~200 lb, five
-# shelves plus door-mounted racks.
+# ** A 24"-wide tall PULL-OUT is not a stock item ** — Rev-A-Shelf's tall pullout ladder tops
+# out at the 5758-20 (20 11/16" wide), because the limit is the cantilevered moment on a 74"
+# rack, not the slide. The 5374-24FL SWING-OUT is the 24" article and gives the same
+# behaviour. Spec re-checked 2026-08-24: five solid-bottom adjustable shelves on 250 lb
+# full-extension soft-close slides, plus two door mount BRACKETS (the hardware tying the rack
+# to the door leaf — not door-mounted racks, which an earlier note here claimed). Requires a
+# 22 1/4" clear opening, so it fits the frameless 24" carcass by 1/4" and would NOT fit a
+# face-framed one; see FURN-M-KIT-PANTRY-S1 in plan/placeables.py for the full check.
 cabinet-pantry-swing-out-inserts = { low = 900, high = 2200 }  # 2 x Rev-A-Shelf 5374-24
 # FURN-M-KIT-MIXER-GARAGE's fitting-out. ** A LIFT WAS PRICED HERE UNTIL 2026-08-24 ** —
 # a Rev-A-Shelf RAS-ML-HDSCOG spring lift in a base bay, which was a misreading of the

@@ -74,24 +74,44 @@ BASEMENT_PLACEABLES = [
     # 16'-6" box; y 21'-6" to 29'-6" puts the back run 11'-13' off the panel — right for a
     # 98" screen — and leaves 2'-2 3/4" of walk between the bookcases and the sectional's
     # south face. FT-SECTIONAL-U-MEDIA is house-local and says why in plan/furniture_types.py.
+    #
+    # ** ROTATION 180 IS WHAT MAKES IT FACE THE SCREEN, and it was missing until 2026-08-24. **
+    # It was authored unrotated against a footprint_shape that opened north on its own. But
+    # rotation 0 puts a seat's back at +y — the note at the top of this file, and the
+    # convention every glyph in `model/placeable_symbols/_families.py` draws to — so the
+    # body in the viewer sat with its back to the panel while the collision outline faced it.
+    # The type's ring is re-authored to the convention and the turn is declared here, which
+    # is also what makes this the ONE line to edit if the screen ever moves wall.
     Furniture(uid="1KZNJX16H6", tag="FURN-B-PLAY-SECTIONAL", type_ref="FT-SECTIONAL-U-MEDIA",
-              room="RM-B-PLAY-N", position=pt(ft(26, 9), ft(25, 6))),
+              room="RM-B-PLAY-N", position=pt(ft(26, 9), ft(25, 6)), rotation=deg(180)),
     # Bookcases either side of D-B-PLAY on the south wall, backs on its 18'-3 3/8" face.
     # The door's framing runs x 23'-10" to 29'-2" and its leaf sweeps x 24'-0"..26'-6",
     # y 18'-0"..20'-6", so both pairs stand clear of the arc: west from the 18'-6" corner to
     # 23'-10", east from 29'-8" to the 35'-0" corner.
     #
-    # FURN-BOOKCASE-32 is 2'-8" x 1'-0" x 6'-0". A real Billy is 31 1/2" x 11" x **79 1/2"**,
-    # so the catalog piece is 7 1/2" short in height; called out rather than corrected,
-    # because what matters here is the plan footprint, and a house-local Billy type would be
-    # a product clone rather than something made to fit this house.
-    Furniture(uid="CS3QSXP6JR", tag="FURN-B-PLAY-BOOK-W1", type_ref="FURN-BOOKCASE-32", room="RM-B-PLAY-N",
+    # ** 7'-6" SINCE 2026-08-24, NOT THE LIBRARY'S 6'-0" ** (owner: take the theatre's
+    # shelving nearer the ceiling). FT-BOOKCASE-32-90 is house-local and argues the height in
+    # plan/furniture_types.py; the short version is that the room's measured clear is 8'-0"
+    # under SL-M-DECK, so 7'-6" leaves a 6" reveal — scribe room under a poured deck that is
+    # never dead flat, and enough that a 90" x 12" carcass can still be stood up off the
+    # floor. Anti-tip into W-B-CE's studs at every case; it is a stud wall, unlike the pour
+    # the screen hangs on.
+    #
+    # ** THE 8'-3 1/2" CEILING QUOTED ABOVE FOR THE SCREEN IS STALE ** — it was the basement
+    # number before the 2026-08-23 seat rework. `code.R305_ceiling_height` reads 8'-0" here
+    # today. It does not move the panel (top of glass at 6'-8" clears either), but do not
+    # re-derive anything else from it.
+    #
+    # The footprint is unchanged at 2'-8" x 1'-0", so every dimension above still holds: the
+    # backs stay on the 18'-3 3/8" face and both pairs stay clear of D-B-PLAY's swing arc.
+    # A real Billy is 31 1/2" x 11" x 79 1/2"; this is not that piece and does not try to be.
+    Furniture(uid="CS3QSXP6JR", tag="FURN-B-PLAY-BOOK-W1", type_ref="FT-BOOKCASE-32-90", room="RM-B-PLAY-N",
               position=pt(ft(19, 10), ft(18, 9.375)), rotation=deg(180)),
-    Furniture(uid="F9X5X4J5N5", tag="FURN-B-PLAY-BOOK-W2", type_ref="FURN-BOOKCASE-32", room="RM-B-PLAY-N",
+    Furniture(uid="F9X5X4J5N5", tag="FURN-B-PLAY-BOOK-W2", type_ref="FT-BOOKCASE-32-90", room="RM-B-PLAY-N",
               position=pt(ft(22, 6), ft(18, 9.375)), rotation=deg(180)),
-    Furniture(uid="0NPX3QZ0GA", tag="FURN-B-PLAY-BOOK-E1", type_ref="FURN-BOOKCASE-32", room="RM-B-PLAY-N",
+    Furniture(uid="0NPX3QZ0GA", tag="FURN-B-PLAY-BOOK-E1", type_ref="FT-BOOKCASE-32-90", room="RM-B-PLAY-N",
               position=pt(ft(31), ft(18, 9.375)), rotation=deg(180)),
-    Furniture(uid="2XX4D4BYHR", tag="FURN-B-PLAY-BOOK-E2", type_ref="FURN-BOOKCASE-32", room="RM-B-PLAY-N",
+    Furniture(uid="2XX4D4BYHR", tag="FURN-B-PLAY-BOOK-E2", type_ref="FT-BOOKCASE-32-90", room="RM-B-PLAY-N",
               position=pt(ft(33, 8), ft(18, 9.375)), rotation=deg(180)),
 ]
 MAIN_PLACEABLES = [
@@ -221,19 +241,19 @@ MAIN_PLACEABLES = [
     # the handle projection, so the *real* proudness is 3" plus a handle nobody has measured
     # — a tape on a floor sample before the cabinet order, not a number to invent here.
     Appliance(uid="A1Y5Q0RDXV", tag="APPL-M-FRIDGE", type_ref="APPL-FRIG-PRO-ALLFRIDGE", room="RM-M-LIVING",
-              position=pt(ft(19, 4.875), ft(31, 2.1875)), rotation=deg(90),
+              position=pt(ft(19, 4.875), ft(31, 6.1875)), rotation=deg(90),
               # TWINSPAIRKIT rides on the refrigerator rather than the freezer arbitrarily —
               # it is one kit for the pair, and billing it twice would be wrong. It is what
               # makes two cabinets legal to stand against each other: the shared side walls
               # would otherwise sweat.
               install_parts=("Frigidaire TWINSPAIRKIT twin pairing kit (anti-condensation heater, power supply, cord, clips)",)),
     Appliance(uid="ZH6G4SNPWT", tag="APPL-M-FREEZER", type_ref="APPL-FRIG-PRO-ALLFREEZER", room="RM-M-LIVING",
-              position=pt(ft(19, 4.875), ft(28, 5.3125)), rotation=deg(90)),
+              position=pt(ft(19, 4.875), ft(28, 9.3125)), rotation=deg(90)),
     # PANTRYC closes straight up against the freezer now that the filler is gone. It still
     # stands 9 1/8" past W-M-C5's south end at y=25'-10" — pre-existing (10 5/8" before this
     # commit), improved by the 1 1/2", and it draws no finding. Do not "fix" it.
     Furniture(uid="XTD1N9A693", tag="FURN-M-KIT-PANTRYC", type_ref="CASE-PANTRY-CLOSET-24", room="RM-M-LIVING",
-              position=pt(ft(19, 3.375), ft(26, 0.875)), rotation=deg(90)),
+              position=pt(ft(19, 3.375), ft(26, 4.875)), rotation=deg(90)),
     # ** THE TALL UNITS GO TO THE CEILING TOO (owner, 2026-08-24). ** This was left as an
     # open question when the stacker course went in over the uppers — stack the 96" talls to
     # match, or accept a 12" step across the kitchen. The answer is stack them. The stacker
@@ -241,18 +261,21 @@ MAIN_PLACEABLES = [
     # would float a shallow box over it and put the step back in a different place.
     #
     # ** BUT NOT THE FULL 24" WIDE (owner, 2026-08-24). ** PANTRYC oversails the south end
-    # of W-M-C5 by 9 1/8" — accepted at floor level (see its note above), because a cabinet
-    # end standing 9" into a 4'-wide passage is a jamb you walk past. Carrying that same
+    # of W-M-C5 at y=25'-10" — accepted at floor level (see its note above), because a
+    # cabinet end standing in a 4'-wide passage is a jamb you walk past. Carrying that same
     # oversail up as a 24"-deep box floating at 8'-0" is a different object: it is a soffit
-    # over the passage, and it reads as one from the living room. So the stacker steps down
-    # to the 15" box (CASE-TS15-12) and lands its south end on y=25'-9 7/8" — 1/8" shy of
-    # the wall's own end at 25'-10". Above 8'-0" the passage is clear to the ceiling and the
-    # oversail below it reads as what it is, a cabinet end.
+    # over the passage, and it reads as one from the living room. So the stacker is sized to
+    # stop where the WALL stops, not where the cabinet does.
     #
-    # The 9 1/8" of PANTRYC's top left uncovered is a finished cabinet top, not a hole: it
+    # It was CASE-TS15-12 when the oversail was 9 1/8". W-M-PAN-S then moved 4" north (see
+    # storeys/main.py) and the whole run went with it, so the oversail is 5 1/8" and the
+    # stacker steps back up to the 18" box: south end on y=25'-10 7/8", 7/8" clear of the
+    # wall's end instead of 1/8" past it. Above 8'-0" the passage is clear to the ceiling.
+    #
+    # The 6 1/8" of PANTRYC's top left uncovered is a finished cabinet top, not a hole: it
     # is the same detail as the top of any 96" tall that stops short of a ceiling.
-    Furniture(uid="ZMBSYYRCX5", tag="FURN-M-KIT-PANTRYC-ST", type_ref="CASE-TS15-12", room="RM-M-LIVING",
-              position=pt(ft(19, 3.375), ft(26, 5.375)), rotation=deg(90),
+    Furniture(uid="ZMBSYYRCX5", tag="FURN-M-KIT-PANTRYC-ST", type_ref="CASE-TS18-12", room="RM-M-LIVING",
+              position=pt(ft(19, 3.375), ft(26, 7.875)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
     # Over the two cold boxes: 24" deep like the talls, so all four fronts land on x=20'-3 3/8"
     # and the appliances stand 3" proud — clearing the fridge/freezer door swing. Retyped
@@ -267,20 +290,20 @@ MAIN_PLACEABLES = [
     # were already quoted in plan/appliance_types.py — see FT-KIT-OVER-COLD-3278's note in
     # plan/furniture_types.py for the whole arithmetic. Do not lower these back to 72".
     Furniture(uid="8T3D1P2QRV", tag="FURN-M-KIT-OVER-FRIDGE", type_ref="FT-KIT-OVER-COLD-3278", room="RM-M-LIVING",
-              position=pt(ft(19, 3.375), ft(31, 2.1875)), rotation=deg(90),
+              position=pt(ft(19, 3.375), ft(31, 6.1875)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=inch(75))),
     Furniture(uid="Y4KJ6WB0ZC", tag="FURN-M-KIT-OVER-FREEZER", type_ref="FT-KIT-OVER-COLD-3278", room="RM-M-LIVING",
-              position=pt(ft(19, 3.375), ft(28, 5.3125)), rotation=deg(90),
+              position=pt(ft(19, 3.375), ft(28, 9.3125)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=inch(75))),
     # The stacker course over the cold run, 96" -> 108". 24" DEEP, not the 13" of the
     # counter stackers: a stacker inherits the depth of the box it sits on, and a shallow
     # box floating over a 24" over-appliance cabinet is the step this course exists to
     # close. See CASE-TS3278-12's note in library/placeables/casework.py.
     Furniture(uid="6SVFKKA66M", tag="FURN-M-KIT-OVER-FRIDGE-ST", type_ref="CASE-TS3278-12", room="RM-M-LIVING",
-              position=pt(ft(19, 3.375), ft(31, 2.1875)), rotation=deg(90),
+              position=pt(ft(19, 3.375), ft(31, 6.1875)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
     Furniture(uid="WE0EY3QAXB", tag="FURN-M-KIT-OVER-FREEZER-ST", type_ref="CASE-TS3278-12", room="RM-M-LIVING",
-              position=pt(ft(19, 3.375), ft(28, 5.3125)), rotation=deg(90),
+              position=pt(ft(19, 3.375), ft(28, 9.3125)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
 
     # North run — the sink wall. Sink and dishwasher flipped 2026-07-30 (owner's call): sink
@@ -428,13 +451,34 @@ MAIN_PLACEABLES = [
     #
     # ** "PULL-OUT" IS BOUGHT WITH HARDWARE, NOT WITH THE BOX, AND AT 24" IT IS A
     # SWING-OUT. ** A 24"-wide TALL PULL-OUT pantry is not a stock item: Rev-A-Shelf's tall
-    # pullout ladder stops at the 19" unit (~20" opening), because what limits it is the
-    # cantilevered moment on a 74" rack, not the 200 lb slide. At 24" the stock article is
-    # a SWING-OUT (5374-24: min opening 22 1/4"W x 18 3/4"D x 75"H, five shelves plus
-    # door-mounted racks), which delivers the same everything-comes-to-you behaviour the
-    # owner asked for. So the carcass type matches FURN-M-KIT-PANTRYC exactly as asked and
-    # the insert is a prices.toml [allowances] line — the model has one solid carcass per
-    # cabinet, not a fitting-out, so there is no element for it to hang on.
+    # pullout ladder tops out at the 5758-20 (20 11/16" wide), because what limits it is the
+    # cantilevered moment on a 74" rack, not the slide. At 24" the stock article is a
+    # SWING-OUT, and this carcass is sized to it.
+    #
+    # ** RE-CHECKED AGAINST THE PUBLISHED SPEC, 2026-08-24 (owner). ** Rev-A-Shelf 5374-24FL:
+    # unit 22 1/16"W x 18 1/2"D x 74 1/16"H, MIN CABINET OPENING 22 1/4"W x 18 3/4"D x 75"H,
+    # five solid-bottom adjustable shelves on 250 lb full-extension soft-close slides, plus
+    # two DOOR MOUNT BRACKETS. The brackets are the hardware that ties the rack to the door
+    # leaf so it swings out with it — they are not door-mounted racks, and an earlier note
+    # here said racks and overstated the storage.
+    #
+    # Three numbers decide whether this box is right, and all three pass:
+    #   * WIDTH is the tight one. The insert needs a 22 1/4" clear opening. A FRAMELESS 24"
+    #     box gives 24 - 2 x 3/4" = 22 1/2" — 1/4" to spare. A face-framed 24" cabinet gives
+    #     about 21" and this insert WOULD NOT FIT IN IT. The library's casework is frameless
+    #     (see its REFERENCE), which is why "24 inch" is a sufficient answer here and would
+    #     not be in another catalog.
+    #   * DEPTH needs 18 3/4"; a 24" frameless box gives about 22 1/2" clear. ** DELIBERATELY
+    #     NOT DEEPER: ** the insert is 18 1/2" deep, so every inch of cabinet past ~20" is
+    #     dead space BEHIND a rack that cannot reach it, bought by pushing the carcass
+    #     further into the aisle. 24" is the depth the product is sold against.
+    #   * HEIGHT needs 75"; a 96" carcass has ~90" of interior. The rack is 74 1/16" tall, so
+    #     it occupies the bottom 75" and leaves roughly 15" above it — a fixed top shelf,
+    #     reached from the step the pantry shelving already is.
+    #
+    # So the carcass type matches FURN-M-KIT-PANTRYC exactly as asked and the insert is a
+    # prices.toml [allowances] line — the model has one solid carcass per cabinet, not a
+    # fitting-out, so there is no element for it to hang on.
     Furniture(uid="77DB93R0QZ", tag="FURN-M-KIT-PANTRY-S1", type_ref="CASE-PANTRY-CLOSET-24", room="RM-M-LIVING",
               position=pt(ft(34, 5.375), ft(24, 2.375)), rotation=deg(-90)),
     # S2 used to lap the corner of FURN-M-DINING's recommended chair zone. It no longer

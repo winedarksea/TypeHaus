@@ -491,14 +491,15 @@ MAIN_DEVICES = [
                      circuit="CKT-LAUNDRY",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(43),
                                  recessed_into_host_surface=True)),
-    # Freezer beside the fridge (KRF1 at (18'-4 3/8", 31'-0 5/8")) on the centre wall's east
+    # Freezer beside the fridge (KRF1 at (18'-4 3/8", 31'-4 5/8")) on the centre wall's east
     # face; fridge + freezer + PoE WiFi share the backup kitchen circuit.
-    # y 29'-10" -> 29'-5 1/4" (2026-08-24): the cold pair slid 4 3/4" south when the pantry
-    # room's partition took the north end of the run. This box stays behind its own
-    # appliance (freezer now y 27'-0 7/8"..29'-9 3/4") — the same constraint that decided
+    # y 29'-10" -> 29'-5 1/4" -> 29'-9 1/4" (both 2026-08-24). It went south when the pantry
+    # room's partition took the north end of the run, then came back north with the whole
+    # cold run when W-M-PAN-S moved 4" (storeys/main.py). This box stays behind its own
+    # appliance (freezer now y 27'-4 7/8"..30'-1 3/4") — the same constraint that decided
     # which end of the old 72" bay the retired filler went to.
     ElectricalDevice(uid="CEE006AAAA", tag="ED-M-LIVING-KFZ1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18, 4.375), ft(29, 5.25)), type_ref="ED-T-RECEPTACLE", circuit="CKT-FRIDGE",
+                     position=pt(ft(18, 4.375), ft(29, 9.25)), type_ref="ED-T-RECEPTACLE", circuit="CKT-FRIDGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
     # System 3 (Sapphire, backup battery circuit): its outdoor unit stands on the north
     # side beside the mudroom door, so the disconnect goes on W-M-N2's exterior face west

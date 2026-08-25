@@ -405,7 +405,20 @@ the future.
    / product / SKU wherever a selection resolves to one, and the estimate row carries the
    *specified* product so `costs.toml`'s `product` field records only what actually differed
    (decision #63).
- - FURN-B-PLAY-SECTIONAL is facing the wrong way, it should face the TV. The bookshelves should go higher in the theater too, closer to the ceiling
+ - Hover text should display in front of all items in the UI
+ - **DONE 2026-08-24 — the sectional faced the wrong way because a `footprint_shape` and a
+   glyph disagreed.** `FT-SECTIONAL-U-MEDIA`'s ring was authored opening toward +y so an
+   *unrotated* instance would face north at the screen, but every seating family in
+   `model/placeable_symbols/_families.py` puts its back band at +y and faces -y. The
+   collision outline faced the panel; the body you see never did. `footprint_shape` is read
+   only by `resolve/placeables.py:_local_footprint`, so nothing in `haus check` compares the
+   two — **that gap is still open** (see the clearance-vs-body note below: the checks grade
+   declared zones, not what a symbol actually draws). Ring re-authored to the engine's
+   convention + `rotation=deg(180)` on the instance; world geometry byte-identical.
+   Bookcases went 6'-0" -> 7'-6" on a house-local `FT-BOOKCASE-32-90`, a 6" reveal under
+   RM-B-PLAY-N's measured 8'-0" clear (`code.R305_ceiling_height`) — same 2'-8" x 1'-0"
+   footprint, so no plan dimension moved. Note the 8'-3 1/2" ceiling quoted in
+   plan/placeables.py for the screen was two revisions stale; it is 8'-0".
  - Add some wire shelves and racks to the dedicated closets (mudroom closet aimed at jackets)
  - **DONE 2026-08-24 — a rail is one solid.** `SolidSweep` + `resolve/sweep.py` (→ #62):
    `RL-A-HANDRAIL` went from 297 solids to 6 (one rail plus five brackets), railings from

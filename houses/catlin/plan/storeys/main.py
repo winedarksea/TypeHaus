@@ -279,11 +279,22 @@ NODES = [
     # 24'-6 3/8", 5/8" of scribe off FURN-M-KIT-E1's carcass at x=24'-7", and x=24'-0"
     # would drop the framed span to 66 1/4" and kill the 60" bypass.
     #
-    # y=32'-9" is what the cold-storage run can pay: the partition's south face at
-    # 32'-6 5/8" takes 4 3/4" off the north end of that run, which is exactly what deleting
-    # FURN-M-KIT-COLDSTORE-FILL's 6 1/4" gives back, less the 1 1/2" PANTRYC nets north.
-    Node(uid="BVTKY7EE89", tag="N-M-PAN1", position=pt(ft(18), ft(32, 9))),
-    Node(uid="4B6ND7KATA", tag="N-M-PAN2", position=pt(ft(24, 4), ft(32, 9))),
+    # ** y=33'-1", MOVED 4" NORTH ON 2026-08-24 (owner). ** It was 32'-9", set by what the
+    # cold-storage run could pay: the partition's south face took 4 3/4" off the north end
+    # of that run, which deleting FURN-M-KIT-COLDSTORE-FILL's 6 1/4" gave back.
+    #
+    # The owner then spent 4" of the PANTRY to buy it back for the PASSAGE. Every inch this
+    # wall moves north comes out of the 6" of standing floor in front of the shelves and
+    # goes to the south end of the cold run, where FURN-M-KIT-PANTRYC oversails W-M-C5's end
+    # at y=25'-10" and hangs into the walk-through. That oversail was 9 1/8" and is 5 1/8"
+    # now; the pantry is a 26" reach-in with 2" of floor, and FURN-M-KIT-PANTRYC-ST grew
+    # 15" -> 18" because its box no longer has to stop as short.
+    #
+    # ** 24" SHELVES ARE FIXED, so this wall cannot go much further. ** At 6" north the floor
+    # is gone entirely and the bypass leaves land on the shelf noses. The next move after
+    # this one is a shelf-depth decision, not a wall decision.
+    Node(uid="BVTKY7EE89", tag="N-M-PAN1", position=pt(ft(18), ft(33, 1))),
+    Node(uid="4B6ND7KATA", tag="N-M-PAN2", position=pt(ft(24, 4), ft(33, 1))),
     Node(uid="HTWHAAG4SF", tag="N-M-PAN3", position=pt(ft(24, 4), ft(36))),
 ]
 

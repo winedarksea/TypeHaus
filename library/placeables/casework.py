@@ -182,11 +182,13 @@ STACK_W36 = _stacker("CASE-WS36-12", ft(3), _WALL_DEPTH)
 # The rung that closes a 96" tall cabinet to a 108" ceiling. Same box as CASE-WS24-12 at
 # twice the depth, which is the whole reason the two cannot share a tag.
 STACK_T24 = _stacker("CASE-TS24-12", ft(2), _BASE_DEPTH)
-# The narrow rung of the same course. A tall cabinet that oversails the end of its wall —
-# which is how a 24" box against a short return ends up standing in a doorway — takes this
-# instead, so the course stops where the wall does rather than carrying the oversail 8'
-# up over a passage. (catlin's FURN-M-KIT-PANTRYC-ST.)
+# The narrow rungs of the same course. A tall cabinet that oversails the end of its wall —
+# which is how a 24" box against a short return ends up standing in a doorway — takes one of
+# these instead, so the course stops where the wall does rather than carrying the oversail 8'
+# up over a passage. Pick the widest that still lands clear of the wall's end; catlin's
+# FURN-M-KIT-PANTRYC-ST has been both, at 15" and then 18" once its oversail shrank.
 STACK_T15 = _stacker("CASE-TS15-12", inch(15), _BASE_DEPTH)
+STACK_T18 = _stacker("CASE-TS18-12", inch(18), _BASE_DEPTH)
 # 32 7/8" is not on the 3" module and never will be: it is an appliance width (see the
 # catlin house's FT-KIT-OVER-COLD-3278), carried up so the stacker's face lines up with the
 # over-appliance box below it rather than leaving a 3" step at 8'-0".
@@ -227,5 +229,5 @@ STARTER_CASEWORK_TYPES = (
     PANTRY_CLOSET_72,
     ISLAND_60, PENINSULA_120, BAR_STOOL, WALL_DRYING_RACK_24,
     WALL_12, WALL_15, STACK_W15, STACK_W24, STACK_W30, STACK_W36,
-    STACK_T15, STACK_T24, STACK_T3278,
+    STACK_T15, STACK_T18, STACK_T24, STACK_T3278,
 )

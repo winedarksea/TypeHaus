@@ -9,14 +9,18 @@ carries the summary on its `source`, and the arithmetic is here.
 
 ## The room
 
-Interior clear **5'-10 1/4" (E-W) x 2'-6" (N-S)**, 9'-0" to the ceiling.
+Interior clear **5'-10 1/4" (E-W) x 2'-2" (N-S)**, 9'-0" to the ceiling.
+
+It was 2'-6" until the owner moved `W-M-PAN-S` 4" north later on 2026-08-24, to pull the
+cold-storage run out of the passage south of it (see `plan/storeys/main.py`). **The shelves
+did not change — the standing floor did**, from 6" to 2".
 
 | face | what it is | station |
 |---|---|---|
 | west | `W-M-C5B`'s east gypsum | x = 18'-3 3/8" |
 | east | `W-M-PAN-E`'s west gypsum | x = 24'-1 5/8" |
 | north | `W-M-N1B`'s interior gypsum | y = 35'-5 3/8" |
-| south | `W-M-PAN-S`'s north gypsum, with `D-M-PANTRY`'s 60" bypass in it | y = 32'-11 3/8" |
+| south | `W-M-PAN-S`'s north gypsum, with `D-M-PANTRY`'s 60" bypass in it | y = 33'-3 3/8" |
 
 Shelves are **70 1/4" wide** — wall face to wall face, the room's whole clear span — and
 **24" deep** against the north wall (owner's decision, 2026-08-24; see *Depth* below).
@@ -108,10 +112,12 @@ trade is worth stating plainly, because the drawings will not show it:
 
 - 16" is the usual published practical maximum for a reach-in (14" is better), and 20"+ is
   normally called too deep to see into.
-- The room is **30" deep**. At 24" the shelves run y 33'-5 3/8"..35'-5 3/8" and leave
-  **6"** of floor in front of them, at y 32'-11 3/8"..33'-5 3/8". **RM-M-PANTRY is
+- The room is **26" deep**. At 24" the shelves run y 33'-5 3/8"..35'-5 3/8" and leave
+  **2"** of floor in front of them, at y 33'-3 3/8"..33'-5 3/8". **RM-M-PANTRY is
   therefore reached from the doorway, not walked into** — it is a very deep wall of
-  shelving behind a 60" opening, not a room you step inside.
+  shelving behind a 60" opening, not a room you step inside. That was true at 6" and it is
+  simply more literal at 2": there is no floor to stand on, so **the bottom shelf is the
+  floor**, which is the whole reason the shelves are built to be stood on.
 - The back ~8" of every shelf is a second row: reaching it means moving the front row.
 
 Two things make 24" work rather than merely fit, and both are already in this design:
@@ -122,8 +128,11 @@ Two things make 24" work rather than merely fit, and both are already in this de
 2. **`ED-M-PANTRY-LT` is a vertical slot**, which is the one fixture that lights the depth
    *behind* what is on each shelf. At this depth an overhead-only pantry would be a cave.
 
-Also check at rough-in that the bypass leaves and their track clear the shelf noses — 6" is
-not much, and the door hardware is the thing most likely to want some of it.
+**Check at rough-in that the bypass leaves and their track clear the shelf noses. At 2" this
+is the one dimension that can still go wrong.** It works only because the leaves and their
+two-track head hang INSIDE the 4 1/2" jamb depth of a 2x4 partition and take none of the
+room's 2" — a surface-mounted bypass track, or a thicker leaf, lands on the shelf fronts.
+Specify the track with the door, not after the shelves are in.
 
 ## Lighting
 

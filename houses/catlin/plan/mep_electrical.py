@@ -235,10 +235,11 @@ MAIN_DEVICES = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(6)), rotation=deg(270)),
     # On the centre bearing wall's east face, behind APPL-M-FRIDGE, at 48" — above the
     # coil deck, so the plug is reachable without pulling the whole cabinet out.
-    # y 31'-5 3/8" -> 31'-0 5/8" (2026-08-24), following the fridge 4 3/4" south with the
-    # pantry room's partition. Fridge now y 29'-9 3/4"..32'-6 5/8".
+    # y 31'-5 3/8" -> 31'-0 5/8" -> 31'-4 5/8" (both 2026-08-24): south with the pantry
+    # room's partition, then back north with the cold run when W-M-PAN-S moved 4"
+    # (storeys/main.py). Fridge now y 30'-1 3/4"..32'-10 5/8".
     ElectricalDevice(uid="D9EBW2FJTX", tag="ED-M-LIVING-KRF1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18, 4.375), ft(31, 0.625)), type_ref="ED-T-RECEPTACLE", circuit="CKT-FRIDGE",
+                     position=pt(ft(18, 4.375), ft(31, 4.625)), type_ref="ED-T-RECEPTACLE", circuit="CKT-FRIDGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
     # Inside the sink base, 18" up: the dishwasher's cord. Used to share this box with the
     # disposer, which moved to its own circuit and single receptacle 9" west (2026-08-07),

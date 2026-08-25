@@ -417,14 +417,14 @@ MAIN_LIGHTING = [
     # standard for a closet. Optionally a second layer of shelf-edge strips at the front
     # underside of each shelf, facing back. 3000-4000K either way.
     ElectricalDevice(uid="2A635YS6VW", tag="ED-M-PANTRY-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18, 5.125), ft(33, 0.375)), type_ref="ED-T-LT-SLOT72",
+                     position=pt(ft(18, 5.125), ft(33, 4.375)), type_ref="ED-T-LT-SLOT72",
                      circuit="CKT-LT-BACKUP", room="RM-M-PANTRY", rotation=deg(90),
                      controlled_by=("ED-M-PANTRY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(1, 6))),
     # Switched from the KITCHEN side, the way a closet is. The only wall left on that face
     # is the 8 7/8" east of D-M-PANTRY's rough opening.
     ElectricalDevice(uid="1M4ZM8DRWH", tag="ED-M-PANTRY-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(24, 2), ft(32, 5.625)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(24, 2), ft(32, 9.625)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
