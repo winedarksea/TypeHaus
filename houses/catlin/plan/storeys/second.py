@@ -170,9 +170,14 @@ WALLS = [
     Wall(uid="CSW107AAAA", tag="W-S-N1", start_node="N-S-NE", end_node="N-S-B5",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N1"),
+    # Re-pointed W-M-N1 -> W-M-N1B (2026-08-24): the main storey's north wall split at
+    # x=24'-4" for RM-M-PANTRY's east partition, and this segment (x 21'-11"..18'-0") sits
+    # entirely under the WESTERN half. Left naming W-M-N1 it would have been one of two
+    # authored tiebreakers for the same lower wall, and the resolver links only one upper
+    # wall per lower — so the segment actually over it would have lost the edge.
     Wall(uid="CSW135AAAA", tag="W-S-N1B", start_node="N-S-B5", end_node="N-S-N1",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
-         structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N1"),
+         structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N1B"),
     Wall(uid="CSW108AAAA", tag="W-S-N2", start_node="N-S-N1", end_node="N-S-N2",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N2"),
@@ -674,7 +679,12 @@ FLOOR_OPENINGS = [
                  # W-M-STRW/STRW2 west, W-M-C5 east (which since 2026-07-28 starts at
                  # N-M-C3 on the stair wall's line, so it still reaches this edge's south
                  # end even though W-M-C4B under it is gone).
-                 bearing_refs=("W-M-STRW", "W-M-STRW2", "W-M-C5")),
+                 # W-M-C5B joined the list 2026-08-24: the centre wall split at N-M-PAN1
+                 # (y=32'-9") for RM-M-PANTRY, and this edge runs to y=35'-5 3/8", so the
+                 # north 2'-8 3/8" of it is carried by the NEW segment. Named, not derived —
+                 # without it structural.floor_opening_header emits a 9.4' LVL placeholder
+                 # for an edge that is fully bearing-supported along its whole length.
+                 bearing_refs=("W-M-STRW", "W-M-STRW2", "W-M-C5", "W-M-C5B")),
 ]
 
 # The beam that lets the centre line be open (2026-07-28). Per CLAUDE.md, x=18' is a

@@ -172,9 +172,14 @@ def test_the_second_storey_lvp_and_carpet_rows_match_what_was_authored(catlin_mo
     # RM-S-LANDING was folded into RM-S-HALL when the centre line opened up under
     # BM-S-HALL, so the one hall row now bills what used to be two. The two main-floor
     # rooms joined on 2026-08-02 when solid oak retreated to the studies (§Hardwood).
+    # RM-M-PANTRY joined 2026-08-24 and contributes ZERO area: it stands entirely on
+    # SL-M-DECK, so its whole floor derives polished-concrete and its authored "lvp" is the
+    # intent if that slab outline ever moves, not a field finish. It is in the room list
+    # because the list is by authored finish; the sqft assertions elsewhere are what pin
+    # that it adds nothing.
     assert set(lvp["rooms"]) == {"RM-S-HALL", "RM-S-SUITEBATH",
                                  "RM-S-VANITY", "RM-S-BATH1",
-                                 "RM-M-LIVING", "RM-M-STUDY"}
+                                 "RM-M-LIVING", "RM-M-STUDY", "RM-M-PANTRY"}
     # NET of in-room finish zones. RM-M-LIVING is the reason: 411 SF of it sits on
     # SL-M-DECK, whose polished cap is the finished floor there, so the plank stops at the
     # band. Summing room areas alone would order LVP for a floor nobody covers.

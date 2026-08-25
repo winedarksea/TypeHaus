@@ -295,8 +295,15 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(1.5))),
+    # Moved x 22'-6" -> 25'-10" (2026-08-24). At 22'-6" it resolved INSIDE W-M-PAN-S, the
+    # new pantry's south partition (axis y=32'-9"), which is also where it drew
+    # integrity.placeable_room_mismatch. It is NOT retagged into RM-M-PANTRY: its
+    # controlled_by is ED-M-KITCH-SW and the kitchen needs the can. 25'-10" is
+    # FURN-M-KIT-E1's centre — the north counter run's new west end, now that the run
+    # starts at the pantry wall instead of at FURN-M-KIT-PANTRY-E. y is unchanged, so it
+    # stays on CAN2's line, 8" south of the counter front, which is the composition.
     ElectricalDevice(uid="QTM0009AAA", tag="ED-M-KITCH-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(m(6.858), m(9.9884)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(25, 10), m(9.9884)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -305,20 +312,114 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # Over the sink at (34'-5", 32'-8").
+    # ** BOTH EAST CANS WERE STALE, AND THE COMMENT MORE SO. ** The line that stood here
+    # said "over the sink" — the sink moved to the NORTH wall in the 2026-07-30 swap, and
+    # this can has been lighting the top of APPL-M-HOOD's canopy ever since. CAN4 was over
+    # FURN-M-KIT-N2, which the peninsula deletes. Re-laid 2026-08-24 onto what is actually
+    # underneath: CAN3 over FURN-M-KIT-N4 (centre y=34'-2 3/8") and CAN4 over the new 24"
+    # FURN-M-KIT-N3 (centre y=29'-5 3/8"). x=34'-3" is unchanged — 9 5/8" in from the
+    # counter front, the same offset the pair already had.
     ElectricalDevice(uid="QTM000BAAA", tag="ED-M-KITCH-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(34, 3), ft(32, 8)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(34, 3), ft(34, 2.375)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000CAAA", tag="ED-M-KITCH-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(34, 3), ft(28)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(34, 3), ft(29, 5.375)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000DAAA", tag="ED-M-KITCH-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(18, 4.375), ft(26, 6)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING", rotation=deg(90),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+
+    # --- kitchen under-cabinet task light (2026-08-24) --------------------------------
+    # The kitchen had no task light at all: four ceiling cans over a counter you stand in
+    # front of, which is the arrangement this file's own kitchen header warns about.
+    #
+    # ** ED-T-LT-STRIP24 IS THE WRONG TAPE FOR THIS AND IS DELIBERATELY NOT USED. ** The
+    # cove tape is 3 W/ft, near 120 lm/ft; a work counter wants 350-500 lm/ft. These run on
+    # ED-T-LT-STRIP24-TASK (mark U, 5 W/ft, ~400 lm/ft) — same 24V family, different
+    # product. See its note in plan/lighting_types.py.
+    #
+    # ** FOUR RUNS, NOT ONE, AND THE PATHS ARE 1" BEHIND THE UPPERS' FRONT EDGE. ** Four
+    # because the north pair is broken by WIN-M-KITCH over the sink and the east pair by the
+    # range and APPL-M-HOOD. Front-mounted because front-mounted tape lights the WORK
+    # SURFACE — back-mounted tape lights the backsplash and puts your own shadow on the
+    # board. (On a 13" upper over a 24" base the two land within an inch of each other, so
+    # the reason has to be the thing written down, not the coordinate.) The light rail and
+    # the deep frosted diffuser are on the type, and both are spec: a bare diode line is
+    # visible from a seated position at the peninsula and reflects as a row of dots in a
+    # polished counter.
+    LightRun(uid="63DMV159RN", tag="LR-M-KIT-N-WE1", type_ref="ED-T-LT-STRIP24-TASK",
+             path=(pt(ft(24, 7), ft(34, 5.375)), pt(ft(27, 1), ft(34, 5.375))),
+             room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
+             controlled_by=("ED-M-KITCH-SW-UC",),
+             mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
+    LightRun(uid="0ZE5GQV7CQ", tag="LR-M-KIT-N-WE2", type_ref="ED-T-LT-STRIP24-TASK",
+             path=(pt(ft(30, 1), ft(34, 5.375)), pt(ft(32, 1), ft(34, 5.375))),
+             room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
+             controlled_by=("ED-M-KITCH-SW-UC",),
+             mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
+    LightRun(uid="N9243MWVM0", tag="LR-M-KIT-E-WN3", type_ref="ED-T-LT-STRIP24-TASK",
+             path=(pt(ft(34, 5.375), ft(28, 5.375)), pt(ft(34, 5.375), ft(30, 5.375))),
+             room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
+             controlled_by=("ED-M-KITCH-SW-UC",),
+             mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
+    # 66", not 54": this one is under the REHUNG FURN-M-KIT-WN1. At 54" it would be a strip
+    # of tape across WIN-M-KIT-E's glass.
+    LightRun(uid="D1YNDEW7NK", tag="LR-M-KIT-E-WN1", type_ref="ED-T-LT-STRIP24-TASK",
+             path=(pt(ft(34, 5.375), ft(32, 11.375)), pt(ft(34, 5.375), ft(35, 4.375))),
+             room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
+             controlled_by=("ED-M-KITCH-SW-UC",),
+             mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
+    # 8'-11" of tape at 5 W/ft = 44.6 W; x1.25 = 55.7 W. That clears ED-T-LT-PSU-60's 60 VA
+    # by 4.3 VA — enough for electrical.light_run_psu to pass and not enough to add a foot
+    # of tape later, so this takes the 200 W supply and loads it to ~28%. NOT a share of
+    # ED-M-LIVING-LT-PSU: that one is on CKT-LT-MAIN, and electrical_notes.md line 24 puts
+    # kitchen lighting behind the backup relay.
+    ElectricalDevice(uid="7VSVT7B8ZS", tag="ED-M-KITCH-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
+                     position=pt(ft(32), ft(33)), type_ref="ED-T-LT-PSU-200",
+                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     mount=Mount(kind=MountKind.CEILING)),
+    # ** NOT beside ED-M-KITCH-SW, and that is worth stating. ** W-M-C5's east face has no
+    # free wall left on it at all: FURN-M-KIT-PANTRYC covers y 25'-0 7/8"..27'-0 7/8" and
+    # the cold pair covers 27'-0 7/8"..32'-6 5/8", so the existing switch at y=26'-6" is
+    # already behind a cabinet — a pre-existing condition this commit neither causes nor
+    # fixes, but is not going to make worse by ganging a second device into it. This one
+    # goes on W-M-PAN-E's EAST face instead, at the pantry's outside corner, which is the
+    # wall you actually pass on the way into the kitchen from the west.
+    ElectricalDevice(uid="EX3ZQQPM9K", tag="ED-M-KITCH-SW-UC", kind=DeviceKind.SWITCH,
+                     position=pt(ft(24, 7.375), ft(33, 1)), type_ref="ED-T-SWITCH-DIM",
+                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING", rotation=deg(90),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+
+    # --- RM-M-PANTRY's vertical slot (2026-08-24) -------------------------------------
+    # A POINT DEVICE, NOT A LightRun — see ED-T-LT-SLOT72's note in plan/lighting_types.py
+    # for why a vertical run silently bills zero feet and sizes its supply at 0 W.
+    # 1'-6" to 7'-6" on the pantry's west wall (W-M-C5B's east face), so the slot lights the
+    # DEPTH behind whatever is on each shelf; overhead alone is the worst option in a
+    # reach-in, because every shelf below the top sits in its own shadow.
+    #
+    # 120V with an integral driver, deliberately: there is no cavity here for a 24V PSU.
+    # Load and switch share CKT-LT-BACKUP, so electrical.lighting_controls draws no NEC
+    # 210.7 finding.
+    #
+    # ** Refinement worth taking at rough-in, not modelled: ** a door-jamb switch instead of
+    # (or wired parallel to) the wall switch, so opening the bypass lights the pantry — the
+    # standard for a closet. Optionally a second layer of shelf-edge strips at the front
+    # underside of each shelf, facing back. 3000-4000K either way.
+    ElectricalDevice(uid="2A635YS6VW", tag="ED-M-PANTRY-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(18, 5.125), ft(33, 0.375)), type_ref="ED-T-LT-SLOT72",
+                     circuit="CKT-LT-BACKUP", room="RM-M-PANTRY", rotation=deg(90),
+                     controlled_by=("ED-M-PANTRY-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(1, 6))),
+    # Switched from the KITCHEN side, the way a closet is. The only wall left on that face
+    # is the 8 7/8" east of D-M-PANTRY's rough opening.
+    ElectricalDevice(uid="1M4ZM8DRWH", tag="ED-M-PANTRY-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(24, 2), ft(32, 5.625)), type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
     # RM-M-BED: a four-can grid (ED-M-BED-LT is the SW corner of it, plan/mep.py).

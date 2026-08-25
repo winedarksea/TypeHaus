@@ -81,6 +81,10 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
         # RM-M-MUD-CLOSET's bypass slider (2026-08-02): the framed replacement for
         # FURN-M-MUD-CLOSET-S keeps the furniture's sliding-door intent.
         "DT-INT-BYPASS48": (48.0, DoorOperation.SLIDE, False, False),
+        # RM-M-PANTRY's bypass pair (2026-08-24). The 60" leaf D-M-MUDC could not have:
+        # W-M-MUDC-N's framed span is 63 1/8" and a 62" RO leaves 1 1/8" for jamb packs,
+        # where W-M-PAN-S offers 71 1/2".
+        "DT-INT-BYPASS60": (60.0, DoorOperation.SLIDE, False, False),
         "DT-INT-DOUBLE60": (60.0, DoorOperation.DOUBLE_SWING, False, False),
         "DT-EXT-OVERHEAD192": (192.0, DoorOperation.OVERHEAD, True, False),
     }

@@ -111,18 +111,34 @@ def test_usable_storage_is_nameplate_times_the_declared_dod(summary):
 
 
 def test_the_always_on_tier_outlasts_the_shed_tier_by_a_wide_margin(summary):
-    """Battery-only autonomy, which fell from ~50 h to 46.3 h on 2026-08-02.
+    """Battery-only autonomy, which fell from ~50 h to 46.3 h on 2026-08-02 and to 41.3 h
+    on 2026-08-24.
 
-    Nothing was added to the house's *design* — the three PoE access points became real
-    elements, and the model had only ever carried one notional 15 W allowance for them
-    (parked on CKT-FRIDGE, of all circuits). Counting all three, on the switch's circuit
-    where they actually land, put ~30 W of genuine always-on load on the books for the first
-    time. The 48-hour question the design is built around is still answered yes — see
+    2026-08-02: nothing was added to the house's *design* — the three PoE access points
+    became real elements, and the model had only ever carried one notional 15 W allowance
+    for them (parked on CKT-FRIDGE, of all circuits). Counting all three, on the switch's
+    circuit where they actually land, put ~30 W of genuine always-on load on the books for
+    the first time.
+
+    2026-08-24: the kitchen got under-cabinet task light, and its 24V supply
+    (ED-M-KITCH-LT-PSU) sits on CKT-LT-BACKUP because electrical_notes.md line 24 puts
+    kitchen lighting behind the backup relay. That circuit went 558 -> 782 VA and its
+    average draw 83.7 -> 117.3 W at the authored 0.15 duty.
+
+    ** MOST OF THAT 224 VA IS A RATING, NOT A LOAD, AND THE OVERSTATEMENT IS DELIBERATE. **
+    Per plan/lighting_types.py's own rule, a PSU's ``load_va`` is the supply's rating and
+    not the tape's draw: the driver is rated 200 VA and the four LR-M-KIT-* runs pull
+    44.6 W (55.7 W at the 125% sizing factor). So the true added always-on average is nearer
+    12 W than 33.6 W, and the honest 41.3 h is a floor rather than an estimate. A backup
+    calculation that errs is supposed to err this way.
+
+    The 48-hour question the design is built around is still answered yes — see
     ``test_the_48_hour_cycle_sustains_the_always_on_tier_but_not_both``, which is the one
-    that includes solar — but on battery alone the tier no longer spans two full days.
+    that includes solar — but on battery alone the tier is now well short of two full days.
     """
     autonomy = summary["autonomy"]
-    assert 45.0 < autonomy["hours_always_on_only"] < 48.0
+    assert 40.0 < autonomy["hours_always_on_only"] < 43.0
+
     assert autonomy["hours_all_tiers"] < autonomy["hours_always_on_only"]
 
 

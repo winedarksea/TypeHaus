@@ -340,7 +340,10 @@ def test_catlin_zone_loads_do_not_exceed_the_whole_house_load(catlin_model) -> N
     # zoned), and its 48" bypass slider onto the conditioned mudroom is wide open air
     # transfer, not a sealed enclosure — a dedicated supply register would be serving a
     # storage closet through its own open door.
-    assert set(unclaimed) == {"RM-A-DEN", "RM-B-ESS", "RM-M-MUD-CLOSET"}
+    # RM-M-PANTRY joined them 2026-08-24 for exactly RM-M-MUD-CLOSET's reason: a framed
+    # reach-in off a conditioned room, with no register and no need of one — it borrows the
+    # kitchen's air through a 60" bypass that is open whenever anyone is in there.
+    assert set(unclaimed) == {"RM-A-DEN", "RM-B-ESS", "RM-M-MUD-CLOSET", "RM-M-PANTRY"}
 
 
 # --- supplemental resistance heat ------------------------------------------------------

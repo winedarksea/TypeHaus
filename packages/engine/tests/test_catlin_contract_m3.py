@@ -1526,7 +1526,14 @@ def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
 # Two devices are wall-*mounted* but not wall-*hosted*, and both say so in their own
 # comments: the island GFCI is let into FURN-M-KIT-ISLAND's east end, and the porch flood
 # is strapped to pillar PT-SG-BR2. Neither is a Wall, and `wall_ref` only names Walls.
-_NOT_WALL_HOSTED = {"ED-M-LIVING-KGF4", "ED-M-PORCH-FLOOD"}
+# Devices that are deliberately not on a wall face. KGF4/KGF5/KGF6 are the peninsula's three
+# flush counter-top pop-ups and KMX1 is the mixer lift's outlet INSIDE its cabinet — all four
+# added or re-sited 2026-08-24. They mount MountKind.WALL only because the closed enum is
+# FLOOR/WALL/CEILING and "at a stated height" is what this house uses WALL for.
+# ** ED-M-LIVING-KGF7 is deliberately NOT here: ** it is genuinely wall-hosted, on the east
+# wall at 42" over FURN-M-KIT-N4's counter, and must keep being graded.
+_NOT_WALL_HOSTED = {"ED-M-LIVING-KGF4", "ED-M-LIVING-KGF5", "ED-M-LIVING-KGF6",
+                    "ED-M-LIVING-KMX1", "ED-M-PORCH-FLOOD"}
 
 
 def test_wall_mounted_devices_resolve_against_a_wall_face(catlin_model):
@@ -1623,7 +1630,11 @@ def test_the_main_floor_finish_follows_the_deck_boundary(tmp_path):
     after = band_sqft(house)
     # The band lost 7' of its 23' north-south run over the 18' east half, and the zone is
     # clipped to the room, so the drop is the room's share of 7' x 18' — not the whole of it.
-    assert before == pytest.approx(411.3, abs=0.5)
+    # 411.3 until 2026-08-24, when RM-M-PANTRY took the living room's NW corner — the band
+    # is clipped to the ROOM, so framing a room out of it shrinks this zone by that room's
+    # area. The 7' x 18' arithmetic below is unaffected: the pantry is at y 32'-11 3/8"..
+    # 35'-5 3/8", nowhere near the _BAND_Y line this test moves.
+    assert before == pytest.approx(390.6, abs=0.5)
     assert before - after == pytest.approx(7.0 * 17.9, rel=0.05)
 
 

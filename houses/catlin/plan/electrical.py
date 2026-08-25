@@ -491,10 +491,14 @@ MAIN_DEVICES = [
                      circuit="CKT-LAUNDRY",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(43),
                                  recessed_into_host_surface=True)),
-    # Freezer beside the fridge (KRF1 at (18'-4", 31'-5")) on the centre wall's east face;
-    # fridge + freezer + PoE WiFi share the backup kitchen circuit.
+    # Freezer beside the fridge (KRF1 at (18'-4 3/8", 31'-0 5/8")) on the centre wall's east
+    # face; fridge + freezer + PoE WiFi share the backup kitchen circuit.
+    # y 29'-10" -> 29'-5 1/4" (2026-08-24): the cold pair slid 4 3/4" south when the pantry
+    # room's partition took the north end of the run. This box stays behind its own
+    # appliance (freezer now y 27'-0 7/8"..29'-9 3/4") — the same constraint that decided
+    # which end of the old 72" bay the retired filler went to.
     ElectricalDevice(uid="CEE006AAAA", tag="ED-M-LIVING-KFZ1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18, 4.375), ft(29, 10)), type_ref="ED-T-RECEPTACLE", circuit="CKT-FRIDGE",
+                     position=pt(ft(18, 4.375), ft(29, 5.25)), type_ref="ED-T-RECEPTACLE", circuit="CKT-FRIDGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
     # System 3 (Sapphire, backup battery circuit): its outdoor unit stands on the north
     # side beside the mudroom door, so the disconnect goes on W-M-N2's exterior face west
@@ -1130,10 +1134,25 @@ NEC_FILL_MAIN = [
                      position=pt(ft(29, 7), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    ElectricalDevice(uid="NEC061AAAA", tag="ED-M-LIVING-RC6", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35, 4.375), ft(23, 8.375)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
+    # ED-M-LIVING-RC6 (uid NEC061AAAA) stood at (35'-4 3/8", 23'-8 3/8") on the east wall
+    # at 16" and is DELETED 2026-08-24: FURN-M-KIT-PANTRY-S2, a 96" tall cabinet, now
+    # occupies y 21'-2 3/8"..23'-2 3/8" and S1 23'-2 3/8"..25'-2 3/8", so that station is
+    # behind a floor-to-ceiling carcass. A receptacle behind a fixed cabinet is not wall
+    # space under 210.52(A) and is not reachable under any reading of it. The tombstone is
+    # here rather than a silent removal because the uid is an IFC GlobalId that has shipped.
+    # RM-M-PANTRY's reach-in outlet (2026-08-24). NEC 210.52(B)(1) puts a pantry receptacle
+    # on a small-appliance branch circuit, so CKT-KITCH-SA1 and not CKT-RC-MAIN. NOT GFCI:
+    # E3902 keys on room occupancy (STORAGE is not in the map) and on the 6' sink reach, and
+    # FX-M-KITCH-SINK is 7'-4" away.
+    #
+    # The NORTH wall at 48" — over the second shelf, which is what "reach-in height" means.
+    # Not the south wall (3 1/2"/4 1/8" of jamb pack is all there is), not the west (KRF1
+    # and KFZ1 already sit in that band on the far face of the same 2x6), not the east
+    # (4 3/4" of 2x4 with the door pack in it).
+    ElectricalDevice(uid="ZC14VSGCST", tag="ED-M-PANTRY-RC1", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(21, 3), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-KITCH-SA1", room="RM-M-PANTRY",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     # Fills the >6' gap electrical.receptacle_spacing flags on the centre bearing wall
     # between RC2 (y=15.87) and the wall's south end, on the LIVING face.
     ElectricalDevice(uid="NEC064AAAA", tag="ED-M-LIVING-RC7", kind=DeviceKind.RECEPTACLE,
@@ -1323,6 +1342,20 @@ NEC_FILL_SECOND = [
                      position=pt(ft(22, 8.375), ft(17, 11.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    # RM-S-BED2's west wall, NORTH of D-S-BED2 (2026-08-24). The door's rough opening runs
+    # y 21'-9 1/16" .. 24'-3 1/16" and breaks the wall line there; the space that reopens at
+    # the north jamb ran 6'-2 5/8" round the NW corner to ED-S-BED2-RC1 before reaching a
+    # receptacle, which is the 210.52(A)(1) 6' rule by 2 5/8" — the one FAIL the house
+    # carried. x=22'-1 3/8" is W-S-BW2's east gypsum face (axis 21'-11", 4 1/2" partition);
+    # y=25'-6" leaves 1'-2 15/16" of wall to the RO and 1'-2" to the corner, so the box lands
+    # in a stud bay and not in a corner pack. x is the face PLUS 1" — the box is 2" deep and
+    # its back goes on the face, which is the same offset ED-S-BED2-RC2 uses on the east
+    # wall (test_wall_mounted_devices_resolve_against_a_wall_face grades the resolved body,
+    # and authoring the face itself buries half the box in the gypsum).
+    ElectricalDevice(uid="QBXTAARME9", tag="ED-S-BED2-RC5", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(22, 2.375), ft(25, 6)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-SECOND",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
     ElectricalDevice(uid="NEC038AAAA", tag="ED-S-BED3-RC2", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(32, 4), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",

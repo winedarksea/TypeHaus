@@ -314,10 +314,19 @@ def test_framed_wall_bearing_picks_the_longest_host(main_stair):
 
     ST-M2S turns left, so the east lane is the *lower* flight and the west lane the upper
     one — the two hosts are the same walls either way, since handedness only swaps which
-    flight occupies which lane."""
+    flight occupies which lane.
+
+    ** THE RIM AND THE STRINGER NOW NAME DIFFERENT SEGMENTS, AND THAT IS THE RULE WORKING.
+    ** W-M-C5 split at N-M-PAN1 (y=32'-9") on 2026-08-24 for RM-M-PANTRY. The stringer runs
+    the length of the flight and still shares most of it with the SOUTH half, which keeps
+    the tag; landing-rim-lower-1 runs y 31'-10 3/8"..34'-10 3/8" and now shares 25 3/8" with
+    W-M-C5B against 10 5/8" with W-M-C5, so longest-host correctly re-hosts it. The 10 5/8"
+    that falls out of the ledger's interval is what P-M-STRLAND-SE (storeys/main.py) blocks
+    down to W-B-CN — see its note.
+    """
     members = {m.child_key: m for m in main_stair.members}
-    for key in ("stringer-lower-1", "landing-rim-lower-1"):
-        assert members[key].connection == "framed-wall-ledger:W-M-C5", key
+    assert members["stringer-lower-1"].connection == "framed-wall-ledger:W-M-C5"
+    assert members["landing-rim-lower-1"].connection == "framed-wall-ledger:W-M-C5B"
     for key in ("stringer-upper-0", "landing-rim-upper-0"):
         assert members[key].connection == "framed-wall-ledger:W-M-STRW", key
 

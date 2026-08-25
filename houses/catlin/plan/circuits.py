@@ -193,9 +193,17 @@ CIRCUITS = (
             load_va=300, duty_cycle=0.30,
             description="Basement outlet 1: HA server + router + PoE switch"),
     # load_va is None: the luminaires carry real typed loads and the panel-schedule takeoff
-    # sums the fixtures actually on the circuit (558 VA today). 0.15 is about five hours of
-    # the twenty-four with roughly two thirds of those fixtures lit — an outage evening in
-    # the kitchen and the mechanical room while the rest of the house stays dark.
+    # sums the fixtures actually on the circuit (782 VA today, 558 before 2026-08-24). 0.15
+    # is about five hours of the twenty-four with roughly two thirds of those fixtures lit —
+    # an outage evening in the kitchen and the mechanical room while the rest of the house
+    # stays dark.
+    #
+    # ** 224 VA of that is the kitchen's under-cabinet task light, and 200 of the 224 is a
+    # RATING, not a load. ** ED-M-KITCH-LT-PSU is an ED-T-LT-PSU-200 driving 8'-11" of
+    # 5 W/ft tape — 44.6 W, 55.7 W at the sizing factor — but per plan/lighting_types.py a
+    # PSU's load_va is the supply's rating, so it sums here at 200. That is what took
+    # battery-only always-on autonomy from 46.3 h to 41.3 h (test_backup_calc.py). The
+    # overstatement is left in: a backup calculation is supposed to err heavy.
     Circuit(uid="CKT018AAAA", tag="CKT-LT-BACKUP", slot=6, panel_ref=_BACKUP_PANEL,
             breaker_amps=15, poles=1, backup_tier=BackupTier.ALWAYS_ON, afci=True,
             duty_cycle=0.15,

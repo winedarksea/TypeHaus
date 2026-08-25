@@ -282,32 +282,69 @@ def test_an_unshielded_cool_exterior_luminaire_is_reported(catlin_model):
     assert any("4000" in f.message for f in failures)
 
 
-def test_island_receptacle_passes_on_the_catlin_house(catlin_model):
-    """``electrical.island_receptacle``: the kitchen island's end-mounted GFCI
-    (ED-M-LIVING-KGF4) is inside the island's reach, so the one freestanding
-    work-surface carcass in the house is served."""
+def test_a_wall_attached_peninsula_is_not_graded_as_an_island(catlin_model):
+    """``electrical.island_receptacle`` returns UNKNOWN on catlin, and that is correct.
+
+    This test asserted a PASS on FURN-M-KIT-ISLAND until 2026-08-24, when the island became
+    FURN-M-KIT-PENINSULA and landed its east end on the east wall. The check's own
+    population rule is "freestanding by more than ``_NEAR_WALL_M`` from every room
+    boundary" — a peninsula reads as near-wall and is deliberately not graded, because a
+    carcass against a wall is ``receptacle_spacing``'s beat, not this one. With no
+    freestanding work-surface carcass left in the house the check has nothing to grade and
+    says so.
+
+    ** THIS IS AN HONEST REGRESSION IN COVERAGE, NOT A FIX. ** The peninsula's countertop
+    receptacles still exist and are still required — ED-M-LIVING-KGF4/KGF5/KGF6, three
+    flush pop-ups under 210.52(C)(2)/(C)(3) — but nothing in the engine grades 210.52(C),
+    which reports UNKNOWN by design. What used to be checked here is now only reviewed.
+    """
     from typehaus.checks import run_from_model
     from typehaus.checks.registry import Tier
 
     report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
     findings = [f for f in report.findings if f.check_id == "electrical.island_receptacle"]
-    assert findings
-    assert all(f.result.value == "pass" for f in findings), \
-        [f.message for f in findings if f.result.value != "pass"]
-    assert any("FURN-M-KIT-ISLAND" in f.element_tags for f in findings)
+    assert [f.result.value for f in findings] == ["unknown"]
+    assert "no freestanding work-surface casework" in findings[0].message
+    tags = {item.tag for item in catlin_model.canvas_objects}
+    assert "FURN-M-KIT-PENINSULA" in tags and "FURN-M-KIT-ISLAND" not in tags
 
 
 def test_an_island_with_no_receptacle_is_reported(catlin_model):
-    """Delete the island's receptacle: the island fails, citing 210.52(C)."""
+    """Pull the peninsula off the wall and strip its receptacles: it fails, citing 210.52(C).
+
+    Re-anchored 2026-08-24. It used to delete ED-M-LIVING-KGF4 and lean on the island's own
+    freestanding position; there is no freestanding carcass in the house any more, so the
+    fixture has to make one. Moving the peninsula's resolved footprint is what does it —
+    the check populates off ``model.canvas_objects``, not off the plan — and stripping every
+    receptacle on the storey is what makes the *finding* rather than a pass.
+    """
+    from dataclasses import replace
+
     from typehaus.checks.code.mn_residential.profile import MN_2024
     from typehaus.checks.mep.electrical import island_receptacle
     from typehaus.checks.registry import CheckContext, Preferences
 
-    patched = catlin_model.plan.with_elements(
-        "main", [element for element in catlin_model.plan.storey_elements("main")
-                 if element.tag != "ED-M-LIVING-KGF4"])
-    context = CheckContext(plan=patched, model=catlin_model, preferences=Preferences(),
+    # Re-centred on (26'-0", 27'-0"), which is the ONE place a 10'-0" carcass stands clear
+    # of every RM-M-LIVING boundary by more than `_NEAR_WALL_M` (4.07', the widest margin
+    # the room offers a box this long). As built it is centred at (30'-5 3/8", 26'-9 7/8")
+    # with its east end ON the wall — hence the sibling test above.
+    peninsula = next(item for item in catlin_model.canvas_objects
+                     if item.tag == "FURN-M-KIT-PENINSULA")
+    xs = [x for x, _ in peninsula.footprint]
+    ys = [y for _, y in peninsula.footprint]
+    shift_x = 26 * 0.3048 - (min(xs) + max(xs)) / 2
+    shift_y = 27 * 0.3048 - (min(ys) + max(ys)) / 2
+    moved = [
+        replace(item, footprint=[(x + shift_x, y + shift_y) for x, y in item.footprint])
+        if item.tag == "FURN-M-KIT-PENINSULA" else item
+        for item in catlin_model.canvas_objects
+    ]
+    model = replace(catlin_model, canvas_objects=moved)
+    patched = model.plan.with_elements(
+        "main", [element for element in model.plan.storey_elements("main")
+                 if element.element_kind != "ElectricalDevice"])
+    context = CheckContext(plan=patched, model=model, preferences=Preferences(),
                            profile=MN_2024)
     failures = [f for f in island_receptacle(context) if f.result.value == "fail"]
-    assert [f.element_tags for f in failures] == [("FURN-M-KIT-ISLAND",)]
+    assert [f.element_tags for f in failures] == [("FURN-M-KIT-PENINSULA",)]
     assert "210.52(C)" in failures[0].message

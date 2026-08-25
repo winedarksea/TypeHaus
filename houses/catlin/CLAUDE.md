@@ -308,10 +308,22 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     in station, width (27/30/30/27) and head (6'-0"/7'-0"/7'-0"/6'-0") over one 3'-0" sill.
     That took N-S-E2 to 17'-8" and N-S-E3 to 26'-8" — again the residue rule — and the
     bedroom bays became 8'-8"/9'-0"/9'-4" to pay for it, shrinking BED1 (whose R303.1
-    margin is 0.05 sf) and growing BED3 (which has two windows). The east main row keeps
-    its 8'-0"/7'-4" beat and its blank kitchen stretch north of WIN-M-DIN-E2: the blank is
-    the composition, so the 8" hitch is not worth moving N-M-E1 for. WIN-S-STUDY3 at 4'-0"
-    now also columns with WIN-M-LIV-E1.
+    margin is 0.05 sf) and growing BED3 (which has two windows).
+    **The east MAIN row reads 4'-0" / 12'-0" / 18'-8" / 34'-0", and the last of those is
+    the blank kitchen stretch being deliberately ended** (2026-08-24). This bullet used to
+    say the opposite — *"the blank is the composition, so the 8" hitch is not worth moving
+    N-M-E1 for"* — and by then it was doubly stale: N-M-E1 and W-M-E2 went when the wall was
+    merged for WIN-M-EAST-MID, and WIN-M-DIN-E2, the window the blank was measured north of,
+    was retired with them. **Look at `out/render/elev_east.png` before touching this.** What
+    the row now does, and what it costs: the first three are the row proper — two 27" units
+    and a 30" one on one 2'-6" sill — and WIN-M-KIT-E is a 14" unit at a 3'-6" sill, so it
+    joins neither the beat nor the head line. It reads as a smaller service window closing
+    the row at the north end rather than as a fourth beat, which is the honest description
+    and was the trade: the kitchen wanted a second window over its counter more than the
+    facade wanted 16'-0" of unbroken wall. It is on a bay centre (408" off N-M-SE, 8" mod
+    16") so it breaks no stud and takes no header — see the 8" rule above for why a 14" unit
+    can never column with the 27"/30" family beside it. WIN-S-STUDY3 at 4'-0" still columns
+    with WIN-M-LIV-E1.
   - **Knee band.** Both 5' knee walls carry a WT-1424 pair; the west is exactly mirrored at
     3'-4"/32'-8" and the east is 4" off at its north end, at 3'-4"/32'-4". It stays off:
     W-A-E2's grid starts at N-A-E1 (y=9'-0"), and both fixes for it — 9'-4" for the pair's

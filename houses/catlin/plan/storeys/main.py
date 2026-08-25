@@ -62,6 +62,13 @@ DOOR_TYPES = [
     # FURN-WARDROBE-48. 48" is the largest standard bypass whose RO (50") still fits the
     # partition's 63 1/8" framed span with jamb packs to spare — 60" would leave 1 1/8" total.
     DoorType(tag="DT-INT-BYPASS48", width=ft(4), height=ft(6, 8), operation="slide"),
+    # RM-M-PANTRY's bypass pair (2026-08-24). The 60" leaf the mudroom closet could not
+    # have: W-M-PAN-S offers a 71 1/2" framed span, so a 62" RO leaves 4 3/4" of jamb pack
+    # at each end. ** THE MUDROOM CANNOT FOLLOW IT ** — the arithmetic three lines up still
+    # holds, and D-M-MUDC stays at 48".
+    # Bypass and not a bifold (a bifold's leaves fold out into the cold-storage run) and not
+    # a pocket (a 24" leaf would have to park inside a 30"-deep reach-in).
+    DoorType(tag="DT-INT-BYPASS60", width=ft(5), height=ft(6, 8), operation="slide"),
     # D-B-PLAY's pair. Solid-core, unglazed (2026-08-21): the play room wanted the acoustic
     # separation a solid leaf gives more than it wanted borrowed light, so this is a flush
     # double-swing pair rather than a French pair — hence DOUBLE60, not FRENCH60. With no
@@ -258,6 +265,26 @@ NODES = [
     # W-M-STOS/STOS2 junction.
     Node(uid="N9H36K3W70", tag="N-M-MUDC1", position=pt(ft(0), ft(29, 7.5))),
     Node(uid="T374Q35GT9", tag="N-M-MUDC2", position=pt(ft(6), ft(29, 7.5))),
+    # RM-M-PANTRY: the framed reach-in pantry in the kitchen's NW corner (2026-08-24),
+    # replacing four scattered cabinets — FURN-M-KIT-PANTRY-E (48"), -TALL-N (12"),
+    # -TALL-S (18") and the east run's N1/N2 bases. It closes against W-M-C5B (west) and
+    # W-M-N1B (north), so only these two partitions are new.
+    #
+    # ** x=24'-4" IS NOT ON THE 16" MODULE, AND THAT IS FINE HERE. ** 36' - 24'-4" = 140" =
+    # 8x16 + 12. It costs nothing because W-M-N1's EASTERN segment keeps
+    # ``start_node="N-M-NE"`` through the split, and ``resolve/framing/stud_module.py``
+    # lays a segment out from its OWN start node — so its grid cannot move no matter where
+    # the far end is cut, and WIN-M-KITCH's three-storey x=28'-0" column survives.
+    # 24'-4" is chosen for two reasons of its own: the partition's EAST face lands at
+    # 24'-6 3/8", 5/8" of scribe off FURN-M-KIT-E1's carcass at x=24'-7", and x=24'-0"
+    # would drop the framed span to 66 1/4" and kill the 60" bypass.
+    #
+    # y=32'-9" is what the cold-storage run can pay: the partition's south face at
+    # 32'-6 5/8" takes 4 3/4" off the north end of that run, which is exactly what deleting
+    # FURN-M-KIT-COLDSTORE-FILL's 6 1/4" gives back, less the 1 1/2" PANTRYC nets north.
+    Node(uid="BVTKY7EE89", tag="N-M-PAN1", position=pt(ft(18), ft(32, 9))),
+    Node(uid="4B6ND7KATA", tag="N-M-PAN2", position=pt(ft(24, 4), ft(32, 9))),
+    Node(uid="HTWHAAG4SF", tag="N-M-PAN3", position=pt(ft(24, 4), ft(36))),
 ]
 
 WALLS = [
@@ -282,9 +309,27 @@ WALLS = [
          assembly="CATLIN_EXT_2X6", corner_style_end="4-stud",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING),
-    Wall(uid="CMW105AAAA", tag="W-M-N1", start_node="N-M-NE", end_node="N-M-N1",
+    # Split at N-M-PAN3, where RM-M-PANTRY's east partition tees into the north wall
+    # (2026-08-24) — ``resolve/topology.py`` builds junctions from wall ENDPOINTS only, the
+    # same rule that forced the N-M-MECH* and N-M-MUDC* splits.
+    #
+    # ** THIS SEGMENT KEEPS ITS TAG, ITS UID AND ITS ``start_node="N-M-NE"``. THAT IS THE
+    # POINT OF THE SPLIT. ** A segment's stud grid is a property of its start node, so
+    # holding N-M-NE holds WIN-M-KITCH (x=28'-0", the north face's three-storey column) and
+    # WIN-M-KITCH-N (x=34'-0") exactly where they are. Both ROs are east of 24'-4", so both
+    # stay on this segment.
+    #
+    # ** BOTH SEGMENTS MUST AUTHOR ``stacks_on="W-B-N1"``, WHICH THIS WALL NEVER HAD. **
+    # The basement's north wall is unsplit, so after the split it sees two main-storey
+    # candidates over it and ``resolve/stacking.py`` calls that ``integrity.stack_ambiguous``
+    # — an ERROR, not an advisory. An authored tiebreaker on the upper wall is what it asks
+    # for. Second storey: W-S-N1B is re-pointed to W-M-N1B for the same reason (second.py).
+    Wall(uid="CMW105AAAA", tag="W-M-N1", start_node="N-M-NE", end_node="N-M-PAN3",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
-         structural_role=StructuralRole.NONBEARING),
+         structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N1"),
+    Wall(uid="R0STSQM95Y", tag="W-M-N1B", start_node="N-M-PAN3", end_node="N-M-N1",
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N1"),
     Wall(uid="CMW106AAAA", tag="W-M-N2", start_node="N-M-N1", end_node="N-M-N2",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
@@ -343,7 +388,17 @@ WALLS = [
     # 4'-2" is now open so the hall and the living room read as one room (2026-07-28), the
     # way the second storey already does under its own beam. The bearing stack is unbroken
     # because the beam is *in* it: see BEAMS below.
-    Wall(uid="CMW116AAAA", tag="W-M-C5", start_node="N-M-C3", end_node="N-M-N1",
+    # Split at N-M-PAN1 for RM-M-PANTRY's south partition (2026-08-24), same endpoint rule
+    # as W-M-N1 above. ** THE SOUTHERN HALF KEEPS THE TAG AND THE UID **: BM-M-HALL names
+    # W-M-C5 in ``bearing_refs`` and bears at N-M-C3, which is this segment's start node, so
+    # moving the tag to the northern half would move the beam's named support. Splitting a
+    # bearing line is safe here because stacking is per-segment and W-B-CN beneath it is
+    # untouched — both halves are the same assembly, the same role and the same
+    # ``stacks_on``, so the load path is unchanged and only the junction framing is new.
+    Wall(uid="CMW116AAAA", tag="W-M-C5", start_node="N-M-C3", end_node="N-M-PAN1",
+         assembly="CATLIN_INT_2X6_BRG", top=ft(9),
+         structural_role=StructuralRole.BEARING, stacks_on="W-B-CN"),
+    Wall(uid="A5K4RVWPWW", tag="W-M-C5B", start_node="N-M-PAN1", end_node="N-M-N1",
          assembly="CATLIN_INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CN"),
     # --- stair / storage block --------------------------------------------------
@@ -449,6 +504,15 @@ WALLS = [
          assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="21GE85HJDT", tag="W-M-MUDC-E", start_node="N-M-MUDC2", end_node="N-M-BA1",
          assembly="INT_2X4_PARTITION", top=ft(9)),
+    # --- RM-M-PANTRY: framed reach-in pantry, kitchen NW corner (2026-08-24) ----
+    # Interior clear 5'-10 1/4" (E-W) x 2'-6" (N-S): west face is W-M-C5B's east gwb at
+    # 18'-3 3/8", north face W-M-N1B's at 35'-5 3/8", and these two partitions' inner faces
+    # at 32'-11 3/8" and 24'-1 5/8". All three junctions are precedented — two
+    # 2x4-into-host tees (as at N-M-MECH1 / N-M-MECH3) and one 2x4/2x4 L (as at N-M-MECH2).
+    Wall(uid="QY8YCE6XV3", tag="W-M-PAN-S", start_node="N-M-PAN1", end_node="N-M-PAN2",
+         assembly="INT_2X4_PARTITION", top=ft(9)),
+    Wall(uid="HGVY43DYQH", tag="W-M-PAN-E", start_node="N-M-PAN2", end_node="N-M-PAN3",
+         assembly="INT_2X4_PARTITION", top=ft(9)),
 ]
 
 OPENINGS = [
@@ -484,6 +548,13 @@ OPENINGS = [
     # (the D-M-MECH king-stud lesson).
     Door(uid="QBTZNWG6AG", tag="D-M-MUDC", host="W-M-MUDC-N", type_ref="DT-INT-BYPASS48",
          position=from_node("N-M-MUDC1", ft(1, 1))),
+    # RM-M-PANTRY's bypass pair. W-M-PAN-S's framed span is 71 1/2" (W-M-C5B's stud face at
+    # 18'-2 3/4" to W-M-PAN-E's at 24'-2 1/4"), so a 62" real RO at 18'-7 1/2"..23'-9 1/2"
+    # leaves 4 3/4" of framing at EACH end and clears both corner stud packs by 1 3/4" —
+    # the D-M-MECH king-stud lesson applied at both ends rather than one.
+    # ``integrity.opening_fits`` sees edge distances of 7 1/2"/8 1/2" against a 1.97" min.
+    Door(uid="MSJJGJTJ42", tag="D-M-PANTRY", host="W-M-PAN-S", type_ref="DT-INT-BYPASS60",
+         position=from_node("N-M-PAN1", inch(7.5))),
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING30",
          position=from_node("N-M-W3", ft(2)), flip_swing=True, flip_hinge=True),
     # Pocket, not the 56" bifold it was (2026-08-21). The leaf parks east inside W-M-HS4,
@@ -614,6 +685,12 @@ OPENINGS = [
     # on a bay centre (residue 8" off W-M-E1's own start-node grid), and a 30" RO needs a
     # stud line, so the nearest legal station is 18'-8", 8" north of centre. W-M-E1/E2 were
     # merged into one wall (above) so this RO wouldn't straddle the old tee at y=18'-0".
+    #
+    # ** THIS IS NO LONGER THE ROW'S NORTH END (2026-08-24). ** The retirement note above
+    # left the kitchen stretch north of here blank on purpose, and CLAUDE.md's Rows bullet
+    # said so. WIN-M-KIT-E ends it at y=34'-0" — a 14" unit at a 3'-6" sill, joining neither
+    # this row's beat nor its head line, deliberately. See that window at the end of this
+    # list, and the rewritten Rows bullet, before reading the blank as still intended.
     Window(uid="QPNDT7TF6G", tag="WIN-M-EAST-MID", host="W-M-E1",
            type_ref="WT-3048", position=from_node("N-M-SE", ft(17, 5)),
            sill_height=ft(2, 6)),
@@ -630,6 +707,30 @@ OPENINGS = [
     # of WIN-M-KITCH by 20 1/2" and of the corner face by 10 3/8".
     Window(uid="82WVR597PA", tag="WIN-M-KITCH-N", host="W-M-N1", type_ref="WT-1424",
            position=from_node("N-M-NE", ft(1, 5)), sill_height=ft(3, 6)),
+    # The kitchen's second small window (2026-08-24), around the corner from
+    # WIN-M-KITCH-N on the east wall, over FURN-M-KIT-N4's counter. Centre y=34'-0": 408"
+    # off N-M-SE, 408 mod 16 = 8, so it is a BAY CENTRE on W-M-E1's own grid — a 14" RO
+    # falls wholly inside one bay, breaks no stud and takes no header, the framing the four
+    # attic WT-1424s already use. ``from_node`` is the NEAR jamb, so 33'-5" + 7" = 34'-0".
+    # Sill 3'-6" (counter + 6" backsplash) and head 5'-6", matching both existing kitchen
+    # units.
+    #
+    # ** WT-1424, NOT -FIX **: it is an operable awning, which is what answers "one of these
+    # should open". WIN-M-KITCH-N beside it is already the same unit, so the corner pair is
+    # two operable awnings. ** Plain glass, not -T **: no door on this wall, no stair, not a
+    # wet room — R308.4 names no clause.
+    #
+    # ** TWO OTHER BAYS WERE CONSIDERED AND SPENT. ** y=32'-8" is also a legal bay centre,
+    # and it is behind the induction cooktop under APPL-M-HOOD. y=35'-4" leaves 1 3/8" of
+    # wall to the inside corner face. 34'-0" is the only bay over N4's counter — and the
+    # 5 5/8" it leaves to the hood's north end is real clearance, not a lap.
+    #
+    # It was 33'-4" while the plan for this work was being written, on W-M-E2's grid off
+    # N-M-E1. That wall no longer exists: W-M-E1/E2 were merged for WIN-M-EAST-MID
+    # (2026-08-24, see its note above), and on the merged wall's own grid — which starts at
+    # N-M-SE — 33'-4" is a STUD LINE. The bay centres moved 8", not the window.
+    Window(uid="G0Y75W9ZS1", tag="WIN-M-KIT-E", host="W-M-E1", type_ref="WT-1424",
+           position=from_node("N-M-SE", ft(33, 5)), sill_height=ft(3, 6)),
 ]
 
 ROOMS = [
@@ -679,6 +780,18 @@ ROOMS = [
     # reasoning as RM-M-MUDROOM/RM-M-MECH above — and the same wood deck under it.
     Room(uid="G01HFSH967", tag="RM-M-MUD-CLOSET", seed=pt(ft(3), ft(28)),
          occupancy=Occupancy.STORAGE, floor_finish="vinyl-sheet"),
+    # The kitchen's framed reach-in pantry (2026-08-24), replacing FURN-M-KIT-PANTRY-E,
+    # -TALL-N and -TALL-S. STORAGE for the same closed-enum reason as RM-M-MECH and
+    # RM-M-MUD-CLOSET above; 14.6 SF clear, 5'-10 1/4" x 2'-6".
+    #
+    # ** ``floor_finish`` IS INERT HERE AND THAT IS NOT AN OVERSIGHT. ** This room stands
+    # entirely on SL-M-DECK (params/main_deck.py outlines it x 18'-36', y 13'-36'), and the
+    # cast cap's top IS the finished floor, so the whole 14.6 SF derives POLISHED-CONCRETE
+    # regardless of the string below — the same rule that makes RM-M-LIVING's "lvp" the
+    # wood-bay field finish only. Plank in here is an SL-M-DECK outline change, not a
+    # string change. "lvp" is written so the intent survives if that outline ever moves.
+    Room(uid="M3YNPA0YPJ", tag="RM-M-PANTRY", seed=pt(ft(21, 3), ft(34, 2)),
+         occupancy=Occupancy.STORAGE, floor_finish="lvp"),
 ]
 
 ALARMS = [
@@ -970,6 +1083,36 @@ POSTS = [
          height=ft(9, 4), assembly="POST_WHITE_PAINT"),
     Post(uid="CZE3N5C14R", tag="P-M-STRWELL-N", position=pt(ft(14), ft(34, 8.9)), size="4x4",
          height=ft(9, 4), assembly="POST_WHITE_PAINT"),
+    # ST-M2S's lower landing gained a THIRD corner post on 2026-08-24, and it is a direct
+    # consequence of splitting W-M-C5 for RM-M-PANTRY.
+    #
+    # ``resolve/stairs/bearing.py`` ledgers a landing rim to ONE host wall — the segment it
+    # shares the longest run with — and marks only the rim ends that host actually reaches
+    # as supported. landing-rim-lower-1 runs y 31'-10 3/8"..34'-10 3/8" against the centre
+    # line; before the split one W-M-C5 covered all 36" of it. Now W-M-C5B covers the north
+    # 25 3/8" and W-M-C5 the south 10 5/8", the longer one wins the ledger, and the SOUTH
+    # end falls out of the interval — so the resolver stands landing-post-002 there.
+    # ** There is no pantry depth that avoids this ** (the rim occupies y 31'-10 3/8"..
+    # 34'-10 3/8" and a split anywhere inside that range cuts it), and moving the split
+    # south of the rim would push FURN-M-KIT-PANTRYC 19 3/4" past the end of the wall it
+    # backs onto — a worse trade than a 4x4.
+    #
+    # ** IT IS BLOCKING, NOT A COLUMN, WHICH IS WHY IT IS 13 3/8" AND NOT 9'-4". ** The two
+    # P-M-STRWELL posts above stand the basement's full height because FO-M-STAIR's hole is
+    # under them. This corner is not over the hole: FO-M-STAIR stops at x=17'-6" and the
+    # post lands at 17'-8 5/8", on FS-M-WEST's joists — which
+    # ``structural.landing_post_bearing`` deliberately refuses as a load path, since a 4x4
+    # set down mid-bay is a point load on a member sized for a uniform one. So this fills
+    # the joist bay from the deck datum down to W-B-CN's top at -1'-1 7/16" and delivers the
+    # corner reaction straight into the 12" concrete, which is the "block the joist bay
+    # under it" the check's own hint asks for.
+    #
+    # x=17'-7 1/2" puts its EAST face on W-M-C5's stud face (17'-9 1/4") — it laps only the
+    # 5/8" gypsum, which is scribed to it, and touches no stud — while still containing the
+    # rim end at 17'-8 5/8". Move ST-M2S and this moves with it, exactly as the note above
+    # says of the other two.
+    Post(uid="0Q6WK11T26", tag="P-M-STRLAND-SE", position=pt(ft(17, 7.5), ft(31, 10.374)),
+         size="4x4", height=inch(13.4), assembly="POST_WHITE_PAINT"),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT,

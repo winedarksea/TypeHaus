@@ -1,4 +1,4 @@
-"""Catlin luminaire *type* catalog — the E-602 schedule's marks A through S.
+"""Catlin luminaire *type* catalog — the E-602 schedule's marks A through U.
 
 NOT ``# haus: editable``: like ``fixture_types.py`` these are catalog type definitions,
 not placed instances, and ``ElectricalDeviceType.needs`` is a ``frozenset``, which the
@@ -116,6 +116,29 @@ LUMINAIRE_TYPES = (
                          "with an integrated LIPROTEC-LLP profile; LIPROTEC-ES 24V driver "
                          "(here the shared ED-T-LT-PSU-60 in the ceiling above)."),
 
+    # --- U: the kitchen's under-cabinet task tape -------------------------------------
+    # A SEPARATE TYPE FROM E, NOT A LONGER RUN OF IT, and the whole reason is output.
+    # ED-T-LT-STRIP24 is cove tape: 3 W/ft lands near 120 lm/ft, which is right for washing
+    # a ceiling and is not a task light. A work counter wants 350-500 lm/ft — 4 to 6 W/ft —
+    # so this is 5 W/ft at roughly 400 lm/ft. Same 24V family so it shares the PSU idiom and
+    # the per-lineal-foot pricing; a separate mark so a future reader cannot "simplify" the
+    # cove tape and the task tape into one row, which would either underlight the counter or
+    # triple the load on the cove runs.
+    #
+    # 3000K and CRI 90 match the cove tape: food has to look like food, and the kitchen's
+    # cans are the 3000K ED-T-LT-CAN4, not the 4000K A1 variant.
+    LuminaireType(tag="ED-T-LT-STRIP24-TASK",
+                  name="24V LED task tape in aluminium channel, deep frosted diffuser",
+                  form=LuminaireForm.STRIP, type_mark="U",
+                  footprint=(inch(0.5), inch(0.5)), height=inch(0.5),
+                  lamp="LED tape, 24V DC, high-output", watts_per_ft=5.0, lumens=400.0,
+                  cct_k=3000, cri=90, voltage=24, dimmable=True,
+                  source="High-output 24V task tape in an aluminium channel with a DEEP "
+                         "FROSTED diffuser, behind a light rail/valance at the cabinet "
+                         "nose. Both are spec, not trim: a bare tape reflects as a row of "
+                         "dots in a polished counter, and an unshielded diode line is "
+                         "visible from a seated position at the peninsula."),
+
     # --- F: the plant-room tubes ------------------------------------------------------
     # Growth-spectrum, hung on a cable suspension kit over the plants at the south windows.
     # Multi-watt selectable; specified at the 50 W setting because the point of putting them
@@ -144,6 +167,33 @@ LUMINAIRE_TYPES = (
                   footprint=(ft(3), inch(3)), height=inch(4), plan_symbol="linear-light",
                   lamp="LED integrated", watts=18.0, lumens=1500.0, cct_k=2700, cri=90,
                   dimmable=True, load_va=18.0, ports=_POWER_120),
+
+    # --- T: RM-M-PANTRY's vertical slot -----------------------------------------------
+    # ** A POINT DEVICE, AND A ``LightRun`` CANNOT BE ONE. ** ``LightRun.path`` is a PLAN
+    # polyline under ONE ``Mount`` elevation (model/mep.py), so a vertical run degenerates
+    # to two identical points: ``length_m == 0``, ``electrical.light_run_psu`` sizes the
+    # supply at 0 W, the per-foot takeoff bills 0 lineal feet and the plan renderer draws a
+    # dot. It fails SILENTLY, which is the worst of the options.
+    # ``LuminaireForm.STRIP``'s own docstring says it "is the one form with no point
+    # instance", so STRIP is spoken for, and extending the engine for one fixture is not
+    # the trade.
+    #
+    # The model already has the honest article: ``resolve/placeables.py``'s
+    # ``resolved_mount_elevation`` returns the BASE of the body and ``LuminaireType.height``
+    # measures up from it, so a 6'-0" WALL_LAMP on a 2" x 2" footprint IS a vertical slot.
+    # ED-T-LT-WALL-LINEAR (mark G) is the same construction lying down.
+    #
+    # 120V with an integral driver, deliberately: the 3 1/2" of partition at the slot's end
+    # of the pantry is king stud and jack stud, with no cavity for a 24V PSU.
+    #
+    # A vertical strip is the RIGHT fixture for a shallow reach-in, not a stylistic choice:
+    # it lights the depth behind whatever is on each shelf, and overhead alone is the worst
+    # option here because every shelf below the top sits in its own shadow.
+    LuminaireType(tag="ED-T-LT-SLOT72", name='72" vertical linear LED slot',
+                  form=LuminaireForm.WALL_LAMP, type_mark="T",
+                  footprint=(inch(2), inch(2)), height=ft(6), plan_symbol="linear-light",
+                  lamp="LED integrated, integral 120V driver", watts=24.0, lumens=2000.0,
+                  cct_k=3000, cri=90, dimmable=True, load_va=24.0, ports=_POWER_120),
 
     # --- H/J/K: sconces ---------------------------------------------------------------
     # Up-and-down for the basement theatre, on a dimmer: the traditional answer for a room

@@ -171,33 +171,133 @@ MEDIA_SECTIONAL_U = FurnitureType(
 )
 
 
-# A filler, which is the fourth made-to-fit family and the most literal of them: 6 1/4" of
-# panel scribed between the all-freezer column and the pantry closet beside it (2026-08-24).
+# --- kitchen millwork, 2026-08-24 (the peninsula/pantry-room rework) --------------------
 #
-# It exists because a 72" bay does not divide by a 32 7/8" appliance. The cold run was built
-# as two 36" boxes; the Frigidaire Professional pair the owner chose is 65 3/4" together, so
-# 6 1/4" is what is left over, and leftover width in a cabinet run is a filler panel or it is
-# a gap someone drops a broom into. Putting the whole remainder at ONE end rather than
-# splitting it in half is deliberate: both cold-storage receptacles (ED-M-LIVING-KFZ1 at
-# y=29'-10", KRF1 at y=31'-5 3/8") stay behind their own appliance only if the pair sits at
-# the north end of the bay, which puts the filler at the south end against the pantry closet.
+# FT-KIT-COLDSTORE-FILLER stood here and is RETIRED with this commit, along with its one
+# instance. It was 6 1/4" of scribed panel: the remainder of a 72" cold bay after the
+# Frigidaire Professional pair (32 7/8" each). The pantry ROOM's south partition now takes
+# 4 3/4" off the north end of that run, so the bay is 65 3/4" — exactly two appliance
+# widths — and the remainder it existed to fill is gone. Deleting the type rather than
+# leaving it unused is deliberate: an unreferenced house-local type reads as a size someone
+# might reach for, and this one is arithmetic, not a product.
+
+
+# The over-appliance box the retired CASE-OVER-36 can no longer be. Two 36" boxes need 72";
+# the bay is 65 3/4". 32 7/8" is not a cabinet size and never will be — it is an APPLIANCE
+# width, carried up so each box's ends land on its own column's sides and the run divides
+# with no filler at either end. Same 24" depth and 24" height as CASE-OVER-36 (see the
+# library type's note: base depth so the four fronts line up on x=20'-3 3/8" and the
+# appliances stand 10" proud, clearing their own door swing).
+OVER_COLD_3278 = FurnitureType(
+    tag="FT-KIT-OVER-COLD-3278", name='32 7/8" over-appliance cabinet',
+    footprint=(inch(32.875), ft(2)), height=ft(2), plan_symbol="wall-cabinet",
+    storage=True, work_surface=False,
+    source=('site-built to the appliance, 2026-08-24 — 32 7/8" is the Frigidaire '
+            'Professional column width, not a cabinet module. Millwork, not a catalog box.'),
+)
+
+
+# --- the peninsula's mixer garage -----------------------------------------------------
 #
-# 72" tall, NOT the 96" of the tall run, and that is the whole detail: FURN-M-KIT-OVER-FREEZER
-# is a CASE-OVER-36 hanging at a 6'-0" mount directly above this spot. A full-height filler
-# would occupy the same air as the over-cabinet. It stops where the appliances stop.
+# ** THIS IS WHERE THE STANDING MIXER LIVES, AND IT IS NOT A LIFT. ** The first pass at the
+# owner's "mixer slides straight out onto the peninsula, outlet in the cabinet" put a
+# Rev-A-Shelf spring lift in a BASE bay and three flush pop-ups in the countertop. Both were
+# a misreading, corrected 2026-08-24: the mixer is meant to sit at counter level already,
+# in a cabinet ABOVE the top, and slide straight out onto the counter beside it — no lifting
+# a 25 lb machine up out of a base cabinet, and no holes cut in the stone.
 #
-# Base depth (24"), so its face lines up with the tall cabinets rather than with the columns,
-# which stand 3" proud of them.
-COLDSTORE_FILLER = FurnitureType(
-    tag="FT-KIT-COLDSTORE-FILLER", name='6 1/4" cold-storage filler panel',
-    footprint=(inch(6.25), ft(2)), height=ft(6), plan_symbol="tall-cabinet",
-    storage=False, work_surface=False,
-    source=('scribed filler, 2026-08-24 — the remainder of the 72" cold bay after the '
-            'Frigidaire Professional pair (32 7/8" each). Millwork, not a catalog box.'),
+# 24" x 24" x 72": it stands ON the peninsula's countertop at 36" and runs to the 108"
+# ceiling, so its bottom shelf IS the counter plane and the pull-out slides level. 72" is
+# not a stock cabinet height and cannot be — the dimension is "counter to ceiling" in THIS
+# room. Built as two ganged boxes behind one face frame is fine and is a shop decision; it
+# is modelled as the one article it reads as.
+#
+# It takes the peninsula's EAST 24", against the east wall, which is what makes it possible:
+# a counter-to-ceiling box in the middle of a peninsula would hang from the ceiling with
+# nothing behind it. That end was dead frontage before this — a seated diner's legs would
+# have gone where FURN-M-KIT-PANTRY-S1 stands — so the cabinet costs no seat. Three stools
+# was the honest count before it and still is.
+#
+# No ``clearances``, per the casework rule; the counter in front of it is the counter.
+MIXER_GARAGE_24 = FurnitureType(
+    tag="FT-KIT-MIXER-GARAGE-24", name='24" counter-to-ceiling mixer garage',
+    footprint=(inch(24), inch(24)), height=ft(6),
+    storage=True, work_surface=False, plan_symbol="tall-cabinet",
+    source="Site-built millwork, 36\" to 108\" on FURN-M-KIT-PENINSULA's countertop at its "
+           "east end, against the east wall. Bottom bay is a HEAVY-DUTY FULL-EXTENSION "
+           "PULL-OUT SHELF at the counter plane, rated for a ~30 lb stand mixer plus bowl "
+           "and travelling its full depth, so the machine comes out onto the open counter "
+           "rather than being lifted. Shelf face flush with the counter so nothing has to "
+           "be picked up over a lip. Two GFCI receptacles inside at 42\" "
+           "(ED-M-LIVING-KGF4/KMX1) — WIRE THEM BEFORE THE BOX GOES IN. Upper bays are "
+           "ordinary adjustable shelving; a roll-up or lift-up door keeps a raised door out "
+           "of the room, and is a millwork selection, not a model element.",
+)
+
+
+# --- RM-M-PANTRY's shelf stack --------------------------------------------------------
+#
+# House-local by the test at the top of this file: 70 1/4" is this room's clear span, wall
+# face to wall face, and nothing else.
+#
+# ** IT IS DESIGNED TO BE STOOD ON, AND THAT IS A STRUCTURAL CLAIM, NOT A FINISH. ** There
+# is no model field for "rated to climb", and each of the three mechanisms that could carry
+# it is a dead end: ``Furniture`` cannot take ``install_parts`` (only ``PipeAccessory`` and
+# ``Appliance`` are ``_install_part_carriers``); an ``Assembly`` is a layered WALL stack,
+# not a shelf; and ``FramingSpec.blocking_heights`` is a property of the assembly, so a
+# three-sided cleat would mean cloning three assemblies — the exterior truss wall among
+# them, re-running its Glaser gate, its energy table and truss_wall_opening_support against
+# an unreviewed tag — to bill some 40 bf of 2x4. So the build lives on ``source`` (the
+# FT-BATH1-SHELF-2030 precedent) and in notes/pantry_climbable_shelving.md.
+#
+# ** THE MID-SPAN GABLE IS NOT OPTIONAL, AT EITHER DEPTH. ** A 3/4" ply shelf cannot span
+# 70 1/4" under a person. At the 24" width below, 250 lb at midspan gives M = PL/4 =
+# 4,391 in-lb on S = 2.25 in^3 — about 1,950 psi against a 1,500-2,000 psi flatwise
+# allowable — and 1.65" of sag. The stress is borderline and the DEFLECTION is an outright
+# failure. A full-height centre gable halves the span to ~34 3/4": ~965 psi and ~0.20".
+# The 1x3 hardwood nose glued on edge is what takes the rest of the spring out — a
+# 3/4" x 2 1/2" edge nearly triples the shelf's effective I and is the cheapest stiffener
+# there is. (At the 16" depth this was first drawn at, the same numbers are 2,900 psi and
+# 2.4" full-span, 1,460 psi and 0.30" gabled: going deeper HELPS the shelf, because b grows
+# with the depth while the span does not.)
+#
+# ** 24" DEEP IS THE OWNER'S CALL, 2026-08-24, AND IT IS PAST THE PUBLISHED GUIDANCE. **
+# 16" is the usual practical maximum for a reach-in (14" is better) and 20"+ is normally
+# called too deep to see into. At 24" in a 30"-deep room there is 6" of floor left in front
+# of the stack: this is a walk-UP pantry reached from the doorway, not a walk-in, and the
+# back 8" of every shelf is a second row you have to move the front row to reach. That is
+# the trade, made deliberately for the volume. Two things make it work rather than merely
+# fit: the shelves are STANDABLE, so the bottom bay is a step and the back of the top shelf
+# is reachable; and ED-M-PANTRY-LT is a vertical slot, which is the one fixture that lights
+# the depth behind what is on each shelf.
+#
+# Shelf pitch is GRADUATED, not uniform — uniform spacing wastes about two shelves' worth of
+# volume, and since every shelf is rated to be stood on regardless of pitch, climbing does
+# not need even rungs.
+PANTRY_SHELVES_70 = FurnitureType(
+    tag="FT-KIT-PANTRY-SHELVES-70", name='Pantry shelf stack, 70 1/4" x 24"',
+    footprint=(inch(70.25), inch(24)), height=ft(7),
+    storage=True, work_surface=False, plan_symbol="bookcase",
+    source="Site-built millwork, DESIGNED TO BE CLIMBED — see "
+           "notes/pantry_climbable_shelving.md. 3/4\" birch ply shelves on continuous 1x3 "
+           "cleats on three sides, glued and screwed DOWN onto the cleats (load path is "
+           "cleat -> fastener -> stud, never shelf -> pin); NO adjustable standards and no "
+           "shelf pins — a pin carries a jar, not a person. A full-height 3/4\" ply centre "
+           "gable at mid-span, notched around the cleats, floor to top shelf, is what makes "
+           "the 70 1/4\" span legal to stand on and is not optional. 1x3 hardwood nose glued "
+           "and screwed on edge at each shelf front. Two #10 x 3\" structural screws per "
+           "cleat into solid wood at EVERY bay, over flat 2x4 blocking laid in each bay "
+           "BEFORE the gypsum. Design load: treat as floor, not shelf — 40 psf uniform PLUS "
+           "a 250-300 lb concentrated load anywhere, which governs. Graduated spacing: "
+           "~20\" bottom bay (small appliances, bulk), 12\"-14\" middle (boxes, bottles), "
+           "8\"-10\" top (cans, jars). 24\" DEEP by owner's decision (2026-08-24), which "
+           "leaves 6\" of floor in front of the stack — reached from the doorway, not "
+           "walked into.",
 )
 
 
 FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, CURTAIN_ROD_OUTDOOR_114,
                    CURTAIN_ROD_OUTDOOR_98,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, BATH1_SHELF_2030,
-                   MEDIA_SECTIONAL_U, COLDSTORE_FILLER)
+                   MEDIA_SECTIONAL_U, OVER_COLD_3278, MIXER_GARAGE_24,
+                   PANTRY_SHELVES_70)

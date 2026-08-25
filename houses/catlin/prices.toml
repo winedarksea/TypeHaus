@@ -909,18 +909,38 @@
 "CASE-B24" = { material = { low = 170, high = 420 }, labour = { low = 90, high = 220 } }  # 1 ea
 "CASE-B30" = { material = { low = 190, high = 480 }, labour = { low = 90, high = 220 } }  # 2 ea
 "CASE-B36" = { material = { low = 220, high = 550 }, labour = { low = 90, high = 220 } }  # 2 ea
-"CASE-ISLAND-60" = { material = { low = 500, high = 1400 }, labour = { low = 250, high = 600 } }  # 1 ea
-"CASE-OVER-36" = { material = { low = 150, high = 380 }, labour = { low = 90, high = 220 } }  # 2 ea
+# CASE-ISLAND-60 has NO instance since 2026-08-24 — FURN-M-KIT-ISLAND became a peninsula.
+# The row stays: it is a shared-catalog product and the next house may want it.
+"CASE-ISLAND-60" = { material = { low = 500, high = 1400 }, labour = { low = 250, high = 600 } }  # 0 ea
+# 10'-0" x 3'-3", so twice the carcass of the 60" island and a 15" overhang that needs a
+# counter substrate and brackets over open knee space. Priced at roughly 2x the island.
+"CASE-PENINSULA-120" = { material = { low = 950, high = 2600 }, labour = { low = 400, high = 950 } }  # 1 ea
+# CASE-OVER-36 also has no instance since 2026-08-24 — both went to FT-KIT-OVER-COLD-3278
+# when the cold bay shrank to 65 3/4". Kept for the same catalog reason as the island.
+"CASE-OVER-36" = { material = { low = 150, high = 380 }, labour = { low = 90, high = 220 } }  # 0 ea
 # The PANTRY-CLOSET rows are read as built-in casework at the same $/LF as the kitchen
 # boxes. If they are in fact wire/melamine closet systems they are 3-5x too high.
 "CASE-PANTRY-CLOSET-24" = { material = { low = 200, high = 550 }, labour = { low = 120, high = 300 } }  # 1 ea
 "CASE-PANTRY-CLOSET-48" = { material = { low = 350, high = 950 }, labour = { low = 120, high = 300 } }  # 1 ea
 "CASE-PANTRY-CLOSET-72" = { material = { low = 500, high = 1400 }, labour = { low = 120, high = 300 } }  # 1 ea
 "CASE-SINK-BASE-36" = { material = { low = 230, high = 570 }, labour = { low = 90, high = 220 } }  # 1 ea
-"CASE-TALL-PANTRY-12" = { material = { low = 240, high = 600 }, labour = { low = 120, high = 300 } }  # 1 ea
-"CASE-TALL-PANTRY-18" = { material = { low = 280, high = 700 }, labour = { low = 120, high = 300 } }  # 1 ea
-"CASE-W24" = { material = { low = 140, high = 350 }, labour = { low = 90, high = 220 } }  # 1 ea
-"CASE-W30" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 4 ea
+# Both TALL-PANTRY rows lost their instances 2026-08-24: FURN-M-KIT-TALL-N/-S stood where
+# RM-M-PANTRY now is. Catalog rows, kept.
+"CASE-TALL-PANTRY-12" = { material = { low = 240, high = 600 }, labour = { low = 120, high = 300 } }  # 0 ea
+"CASE-TALL-PANTRY-18" = { material = { low = 280, high = 700 }, labour = { low = 120, high = 300 } }  # 0 ea
+# 12" is the narrowest wall box on the ladder; scaled off CASE-W24 by width.
+"CASE-W12" = { material = { low = 95, high = 240 }, labour = { low = 90, high = 220 } }  # 1 ea
+"CASE-W24" = { material = { low = 140, high = 350 }, labour = { low = 90, high = 220 } }  # 3 ea
+"CASE-W30" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 2 ea
+# The stacker course, 96" -> 108". A 12"-high "wall bridge" box is a stock item and cheap
+# per unit; the labour is NOT proportionally cheap, because every one of them is hung at
+# 8'-0" off a ladder against a course that has to line up with the box under it. Labour is
+# therefore carried at the full wall-cabinet rate, not scaled down with the material.
+"CASE-WS24-12" = { material = { low = 75, high = 190 }, labour = { low = 90, high = 220 } }  # 2 ea
+"CASE-WS30-12" = { material = { low = 90, high = 225 }, labour = { low = 90, high = 220 } }  # 1 ea
+# 24" deep rather than 13", over the cold columns, and 32 7/8" is not a stock width — a
+# made-to-size box, so the material carries the house-local millwork premium.
+"CASE-TS3278-12" = { material = { low = 145, high = 360 }, labour = { low = 90, high = 220 } }  # 2 ea
 "ED-T-AP-CEILING" = { material = { low = 100, high = 350 }, labour = { low = 90, high = 200 } }  # 2 ea
 "ED-T-AP-OUTDOOR" = { material = { low = 150, high = 450 }, labour = { low = 90, high = 200 } }  # 1 ea
 "ED-T-BACKUP-ENCL" = { material = { low = 250, high = 800 }, labour = { low = 150, high = 400 } }  # 1 ea
@@ -961,6 +981,11 @@
 "ED-T-LT-SPOT-SW" = { material = { low = 60, high = 200 }, labour = { low = 60, high = 140 } }  # 1 ea
 "ED-T-LT-TUBE6" = { material = { low = 120, high = 350 }, labour = { low = 45, high = 100 } }  # 2 ea
 "ED-T-LT-WALL-LINEAR" = { material = { low = 100, high = 350 }, labour = { low = 45, high = 100 } }  # 1 ea
+# RM-M-PANTRY's vertical slot (2026-08-24). Same article as WALL-LINEAR — an integral-driver
+# 120V linear LED — twice as long, hung vertically. Note the tape rows are NOT here:
+# ED-T-LT-STRIP24 and its new task sibling ED-T-LT-STRIP24-TASK bill per lineal foot through
+# `light_run_materials`, which is a declared-unpriced view, and this is a point fixture.
+"ED-T-LT-SLOT72" = { material = { low = 140, high = 420 }, labour = { low = 45, high = 100 } }  # 1 ea
 "ED-T-METER" = { material = { low = 70, high = 200 }, labour = { low = 150, high = 400 } }  # 1 ea
 # The enclosure AND its contents (router, PoE switch, patch panel), per the catalog name.
 # ADDED 2026-08-22 with the three hardwired drops. A single-gang Cat 6A keystone plate is
@@ -976,7 +1001,12 @@
 "ED-T-RECEPTACLE-240" = { material = { low = 15, high = 45 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-RECEPTACLE-520S" = { material = { low = 4, high = 14 }, labour = { low = 38, high = 78 } }  # 1 ea
 "ED-T-RECEPTACLE-620" = { material = { low = 12, high = 35 }, labour = { low = 45, high = 95 } }  # 1 ea
-"ED-T-RECEPTACLE-GFCI" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 17 ea
+"ED-T-RECEPTACLE-GFCI" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 18 ea
+# FURN-M-KIT-PENINSULA's three counter-top pop-ups (2026-08-24). An order of magnitude over a
+# duplex because it is a machined stainless assembly, not a device in a box — and the labour
+# is a hole cut in a finished stone top, which is a fabricator's operation and is why the
+# high end is what it is. 210.52(C)(3) leaves no cheaper compliant option on a peninsula.
+"ED-T-RECEPTACLE-POPUP" = { material = { low = 120, high = 380 }, labour = { low = 90, high = 260 } }  # 3 ea
 # 2026-08-18, RM-S-PLANT. A GFCI device with a WR-listed body, plus the two things that
 # make it right for a room that condenses: an in-use ("bubble") cover ($12-25) and a
 # non-metallic gasketed box ($4-9). Priced as the assembly, because buying the GFCI
@@ -1030,7 +1060,21 @@
 # the "cabinet-plywood" row, which carries the same $/SF casework-fabrication read —
 # plus edge banding, a paint-grade finish in a wet room, and the scribe to two walls. Labour
 # is shop time plus the set; the 2x4 framed behind the west panel is [framing].
-"FT-KIT-COLDSTORE-FILLER" = { material = { low = 40, high = 110 }, labour = { low = 45, high = 120 } }  # 1 ea. 6 1/4" x 24" x 72" scribed filler — a panel, a scribe and the time to fit it, priced like the other house-local millwork
+# FT-KIT-COLDSTORE-FILLER was here and is DELETED with its type (2026-08-24): the cold bay
+# is 65 3/4" now, exactly two appliance widths, so there is no remainder to scribe.
+# Site-built to the appliance: a 32 7/8" x 24" x 24" over-cabinet where a 36" stock box no
+# longer fits. Priced off CASE-OVER-36 with a made-to-size premium on the material.
+"FT-KIT-OVER-COLD-3278" = { material = { low = 175, high = 440 }, labour = { low = 90, high = 220 } }  # 2 ea
+# RM-M-PANTRY's shelf stack, and it is NOT a closet system — see the type's `source` and
+# notes/pantry_climbable_shelving.md. What is being bought at the owner's 24" depth
+# (2026-08-24, up from 16"): ~75 SF of 3/4" birch ply in shelves plus a full-height centre
+# gable, continuous 1x3 cleats on three sides, a 1x3 hardwood nose glued on edge at every
+# shelf front, and structural screws into blocking that has to be laid in each bay BEFORE
+# the gypsum. The high end is a cabinetmaker building it as casework; the low end is a good
+# carpenter building it in place. A wire or melamine system is 1/4 of this and CANNOT be
+# substituted — it is not standable. Material rose ~40% with the depth; labour did not,
+# because the piece count and the fitting are the same.
+"FT-KIT-PANTRY-SHELVES-70" = { material = { low = 450, high = 1250 }, labour = { low = 350, high = 950 } }  # 1 ea
 "FT-BATH1-SHELF-2030" = { material = { low = 200, high = 750 }, labour = { low = 150, high = 450 } }  # 1 ea
 "FT-CURTAIN-ROD-48" = { material = { low = 25, high = 90 }, labour = { low = 35, high = 90 } }  # 8 ea
 "FT-CURTAIN-ROD-84" = { material = { low = 40, high = 140 }, labour = { low = 35, high = 90 } }  # 1 ea
@@ -1711,6 +1755,7 @@
 # the frame goes in before the drywall and a pocket cannot be adjusted afterwards.
 "DT-POCKET-INT-48" = { material = { low = 400, high = 1100 }, labour = { low = 260, high = 560 } }  # 1 ea
 "DT-INT-BYPASS48" = { material = { low = 200, high = 500 }, labour = { low = 100, high = 220 } }  # 1 ea — stock molded pair + track, to solid-core or mirrored
+"DT-INT-BYPASS60" = { material = { low = 240, high = 600 }, labour = { low = 100, high = 220 } }  # 1 ea — RM-M-PANTRY. Two 30" leaves on one track; same hardware and same hang as the 48", wider leaves
 # ** NOT RE-SOURCED IN THIS PASS ** — a hidden-jamb reveal door has no shelf price, because it
 # is a frame system (Eclisse, Arkitek) plus a door, not a catalogue item. The material figure
 # is the 2026-08-20a estimate and is the least-supported number left in this section.
@@ -2390,6 +2435,24 @@ finish-window-stools-and-aprons = { low = 3300, high = 7400 }
 # Seven finishes meeting each other.
 finish-transitions-and-stair-nosings = { low = 1000, high = 3000 }
 finish-garage-door-opener = { low = 500, high = 1400 }
+# ** TWO KITCHEN HARDWARE LINES WITH NO ELEMENT TO HANG ON (2026-08-24). ** The model has one
+# solid CARCASS per cabinet, not a fitting-out, so a pull-out mechanism inside a box is scope
+# no [casework] row can reach — and the allowance rule at the head of this section is
+# satisfied exactly: nothing else prices these. They are here so they are not forgotten at
+# ordering, which is the only place a $1,000 of inserts ever goes missing. Model numbers are
+# named because both are the specific article the design depends on, not a category.
+#
+# The two east tall cabinets are FURN-M-KIT-PANTRY-S1/S2, CASE-PANTRY-CLOSET-24 carcasses.
+# ** A 24"-wide tall PULL-OUT is not a stock item ** — Rev-A-Shelf's tall pullout ladder stops
+# at the 19" unit, because the limit is the cantilevered moment on a 74" rack, not the slide.
+# The 5374-24 SWING-OUT is the 24" article and gives the same behaviour: ~200 lb, five
+# shelves plus door-mounted racks.
+cabinet-pantry-swing-out-inserts = { low = 900, high = 2200 }  # 2 x Rev-A-Shelf 5374-24
+# The peninsula's second 24" bay from the west end. ~$169 for the mechanism alone plus a
+# butcher-block platform and the fitting. Needs a full-height base at 24" depth and a min
+# 12"W x 23"D x 23 1/2"H opening — see plan/mep_electrical.py's ED-M-LIVING-KMX1 note, and
+# WIRE THE OUTLET BEFORE THE LIFT GOES IN.
+cabinet-mixer-lift = { low = 250, high = 700 }  # 1 x Rev-A-Shelf RAS-ML-HDSCOG + platform
 site-protection-final-clean-and-dumpsters = { low = 3500, high = 8500 }
 
 # --- general conditions and soft costs --------------------------------------------------------

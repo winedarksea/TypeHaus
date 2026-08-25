@@ -240,7 +240,12 @@ def test_the_living_room_splits_its_floor_where_its_structure_splits(catlin_mode
     # Derived, not authored — and it names the slab, which is the answer to "why is this
     # band different" in the Inspector and in the takeoff.
     assert zone.source_ref == "SL-M-DECK"
-    assert zone.area_m2 * _M2_TO_FT2 == pytest.approx(411.3, abs=0.5)
+    # 411.3 until 2026-08-24, when RM-M-PANTRY was framed out of the living room's NW
+    # corner. The band is clipped to the room, so the room losing 19.6 sf of clear face plus
+    # ~1.1 sf of new partition footprint takes exactly that off the zone. The 19.6 sf did not
+    # leave the slab — it moved to RM-M-PANTRY's own derived zone, which is the whole of that
+    # room's floor (see test_the_billed_finishes_move_with_the_split).
+    assert zone.area_m2 * _M2_TO_FT2 == pytest.approx(390.6, abs=0.5)
     field = (living.area_m2 - zone.area_m2) * _M2_TO_FT2
     assert field == pytest.approx(355.1, abs=0.5)
 
@@ -264,15 +269,23 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     from typehaus.takeoff.finishes import floor_finish_rows
 
     rows = {row["finish"]: row for row in floor_finish_rows(catlin_model)}
-    assert rows["polished-concrete"]["rooms"] == ["RM-M-LIVING"]
+    # RM-M-PANTRY joined 2026-08-24. It stands ENTIRELY on SL-M-DECK, so its derived zone is
+    # its whole floor and its authored "lvp" contributes no field area at all — which is why
+    # it is in the lvp room LIST below and adds nothing to the lvp number. The zone total
+    # barely moves (411.3 -> 410.2): the room did not leave the slab, it only grew two
+    # partitions that stand on it.
+    assert rows["polished-concrete"]["rooms"] == ["RM-M-LIVING", "RM-M-PANTRY"]
     assert rows["polished-concrete"]["coating"] is True
     assert rows["polished-concrete"]["waste_pct"] == 0.0
-    assert float(rows["polished-concrete"]["net_area_sqft"]) == pytest.approx(411.3, abs=0.5)
+    assert float(rows["polished-concrete"]["net_area_sqft"]) == pytest.approx(410.2, abs=0.5)
     # LVP and the underlayment that follows it both bill the reduced field. 743.1 until
     # 2026-08-21, when the suite's north wall line (W-S-SN1/SN2) went from the 4 3/4"
     # INT_2X4_PARTITION to the 8" INT_2X4_STAGGERED_DOUBLE_GWB sound wall: 3 1/4" more
     # framing across a 9'-7 1/2" run, taken off the rooms on both faces.
-    assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(742.3, abs=0.5)
+    # 742.3 until 2026-08-24: the living room's LVP field lost the pantry's footprint, and
+    # the pantry itself adds none back because all of it derives concrete.
+    assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(742.1, abs=0.5)
+    assert "RM-M-PANTRY" in rows["lvp"]["rooms"]
     assert rows["lvp-underlayment"]["net_area_sqft"] == rows["lvp"]["net_area_sqft"]
 
 

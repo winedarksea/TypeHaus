@@ -323,12 +323,38 @@ HYDRANT_BRANCH_MAIN = [
 # PEX rather than copper for the same reason HYDRANT_BRANCH_MAIN is: it is a cold branch
 # threading a built assembly, not a trunk. 1/2" stubbed and reduced at the stop, so the tee
 # suits a filtered tap as well as the 1/4" an ice maker wants.
+#
+# ** RE-ROUTED 2026-08-24, AND THE OLD ROUTE WAS NOT MERELY UNTIDY. ** It ran west at 2'-6"
+# along y=34'-1.2" and dropped at x=18'-9", which after the pantry rework lands INSIDE
+# D-M-PANTRY's rough opening (x 18'-7 1/2"..23'-9 1/2"). Threading it through the 1 3/4"
+# between W-M-C5B's stud band and the door's west king stud is geometrically possible and is
+# rejected: nobody builds a 1 3/4" window.
+#
+# ** THE CORNER IT USED TO CROSS IS A ROOM NOW, so there is no cabinet-back path left. **
+# That is the honest cost of the pantry, not a routing failure: the run's whole premise was
+# "behind removable cabinet backs the whole way", and between x=18'-0" and 24'-4" the
+# cabinets that made that true have become RM-M-PANTRY. So the crossing is made where a
+# plumber would actually make it — UP into the framing at each end, ACROSS at 8'-6",
+# clear over FURN-M-PANTRY-SHELVES' 7'-0" top and under the 9'-0" plate. Six feet of it is
+# exposed in the pantry, above the shelves and out of reach, and every vertical is inside a
+# stud cavity parallel to the studs, boring nothing:
+#   * the rise at x=24'-5" is in W-M-PAN-E's cavity (studs 24'-2 1/4"..24'-5 3/4");
+#   * the drop at x=18'-0" is on W-M-C5/C5B's own axis, mid-cavity (17'-9 1/4"..18'-2 3/4"),
+#     and carries on south inside it to y=31' before stepping east to the stub.
+# Still no penetration of SL-M-DECK, still no cast-in sleeve, which is what the paragraph
+# above is actually protecting.
 KITCHEN_STUB_MAIN = [
     PipeRun(uid="N0D5ATAN07", tag="PR-M-CW-COLDSTORE-STUB", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(29, 0.6), ft(34, 1.2)), pt(ft(18, 9), ft(34, 1.2)),
+            path=(pt(ft(29, 0.6), ft(34, 1.2)),
+                  pt(ft(24, 5), ft(34, 1.2)),
+                  pt(ft(24, 5), ft(34, 1.2)),
+                  pt(ft(18), ft(34, 1.2)),
+                  pt(ft(18), ft(34, 1.2)),
+                  pt(ft(18), ft(31)),
                   pt(ft(18, 9), ft(31))),
             diameter=inch(0.5), material="pex",
-            elevations=(ft(2, 6), ft(2, 6), ft(2, 6))),
+            elevations=(ft(2, 6), ft(2, 6), ft(8, 6), ft(8, 6), ft(2, 6), ft(2, 6),
+                        ft(2, 6))),
 ]
 
 # The balcony hydrant's barrel, filed on ``second`` (datum 10'-0") with the wall it pierces.

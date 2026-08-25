@@ -311,20 +311,34 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     # (WIN-A-W-S/W-N, WIN-A-E-S/E-N). Every one of them still passes the per-window checks
     # below — which is the whole reason the facade work could use this size so freely, and
     # why growing the flankers 24" taller cost the framing nothing.
-    assert len(framed) == 12, [o.tag for o in framed]
+    # 13 since 2026-08-24: WIN-M-KIT-E, the kitchen's second small window, on the east
+    # wall at y=34'-0" over FURN-M-KIT-N4's counter. Its presence in THIS list rather than
+    # the header list is the whole point of choosing 34'-0" — 408" off N-M-SE is 8" mod 16",
+    # a bay centre on the merged W-M-E1's own grid, so a 14" RO drops into the bay whole.
+    assert len(framed) == 13, [o.tag for o in framed]
     for opening in framed:
         wall = walls[opening.host_wall]
         start, end = _framing_axis(wall)
         direction = unit(sub(end, start))
-        stations = [
-            (member.p0[0] - start[0]) * direction[0]
-            + (member.p0[1] - start[1]) * direction[1]
-            for member in wall.members if member.category in _VERTICAL_CATEGORIES
-        ]
+        def station(point, start=start, direction=direction) -> float:
+            return ((point[0] - start[0]) * direction[0]
+                    + (point[1] - start[1]) * direction[1])
+
+        stations = [station(member.p0) for member in wall.members
+                    if member.category in _VERTICAL_CATEGORIES]
         low = opening.center_along_m - opening.width_m / 2
         high = opening.center_along_m + opening.width_m / 2
         assert [s for s in stations if s <= low + 1e-9], opening.tag
         assert [s for s in stations if s >= high - 1e-9], opening.tag
+        # PROJECT the header onto the wall axis before comparing it to `center_along_m`,
+        # which is a distance ALONG the wall. This used to read `(m.p0[0] + m.p1[0]) / 2`
+        # — a raw x — which is only comparable to a station on an EAST-WEST wall that
+        # starts at x=0. On a north-south wall it compares an x against a y: W-M-E1's
+        # members all sit at x=36'-0" (10.97 m), so every header on that wall matched every
+        # opening within 1 m of 10.97, and WIN-M-KIT-E (station 10.36 m) was reported as
+        # headered by WIN-M-EAST-MID's header 16 feet away. It has no header — its stud
+        # stations at 33'-4" and 34'-8" are both intact, which is the assertion above.
         headers = [m for m in wall.members if m.category == "header"
-                   and abs((m.p0[0] + m.p1[0]) / 2 - opening.center_along_m) < 1.0]
+                   and abs((station(m.p0) + station(m.p1)) / 2
+                           - opening.center_along_m) < 1.0]
         assert not headers, opening.tag

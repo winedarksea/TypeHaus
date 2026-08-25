@@ -30,6 +30,9 @@ _BASE_HEIGHT = ft(3)
 _WALL_DEPTH = inch(13)
 _WALL_HEIGHT = ft(3, 6)
 _TALL_HEIGHT = ft(8)
+# The stacker course: 96" upper top -> 108" ceiling. A 12" box is a stock size (the
+# "wall bridge"), so closing that gap is a catalog part and not a custom height.
+_STACK_HEIGHT = ft(1)
 
 BESTA_UNIT = FurnitureType(
     tag="FURN-BESTA-2358",
@@ -71,6 +74,9 @@ SINK_BASE_36 = FurnitureType(
     source=REFERENCE,
 )
 
+# The missing rung on this module's own width ladder (18/24/30/66), and a stock size
+# everywhere: 12" is what is left over the head of a small window at the end of a run.
+WALL_12 = _wall("CASE-W12", ft(1))
 WALL_18 = _wall("CASE-W18", inch(18))
 WALL_24 = _wall("CASE-W24", ft(2))
 WALL_30 = _wall("CASE-W30", inch(30))
@@ -133,6 +139,45 @@ ISLAND_60 = FurnitureType(
     height=_BASE_HEIGHT, plan_symbol="base-cabinet", storage=True, work_surface=True,
     source=REFERENCE,
 )
+# A peninsula is an island with one end landed on a wall, so the aisle it used to need on
+# that side becomes counter. 39" deep, not the 36" ISLAND_60 carries: 24" of carcass plus
+# NKBA's **15"** of knee space for a 36"-high counter. The 12" overhang above is the figure
+# for a 42" BAR-height top, where the legs tuck under differently — at 36" it is short, and
+# ISLAND_60's 36" total was always the wrong number for a seated counter.
+#
+# Deliberately no ``clearances``, per this module's header rule: which side overhangs and
+# what sits against the far end are properties of the layout, stated at the instance and by
+# the stools, not of the type. ``advisory.clearance_overlap`` therefore does not grade it.
+PENINSULA_120 = FurnitureType(
+    tag="CASE-PENINSULA-120", name='120" kitchen peninsula', footprint=(ft(10), inch(39)),
+    height=_BASE_HEIGHT, plan_symbol="base-cabinet", storage=True, work_surface=True,
+    source=REFERENCE,
+)
+
+
+# The stacker course. Its whole design is the DEPTH split, which is not an oversight: a
+# stacker inherits the depth of the box it sits on, so one over a 13" counter upper is 13"
+# deep and one over a 24" over-appliance box is 24" deep. A single depth would either float
+# a shallow box over the cold run or hang a 24" box 8' up over a work counter.
+def _stacker(tag: str, width, depth) -> FurnitureType:
+    return FurnitureType(
+        tag=tag, name=f'{width.inches:.0f}" stacker cabinet', footprint=(width, depth),
+        height=_STACK_HEIGHT, plan_symbol="wall-cabinet", storage=True, source=REFERENCE,
+    )
+
+
+# WS = over a 13"-deep WALL cabinet. TS = over a 24"-deep TALL or over-appliance one. The
+# prefix carries the depth because the width alone cannot: a 24" stacker exists in both.
+STACK_W24 = _stacker("CASE-WS24-12", ft(2), _WALL_DEPTH)
+STACK_W30 = _stacker("CASE-WS30-12", inch(30), _WALL_DEPTH)
+# The rung that closes a 96" tall cabinet to a 108" ceiling. Same box as CASE-WS24-12 at
+# twice the depth, which is the whole reason the two cannot share a tag.
+STACK_T24 = _stacker("CASE-TS24-12", ft(2), _BASE_DEPTH)
+# 32 7/8" is not on the 3" module and never will be: it is an appliance width (see the
+# catlin house's FT-KIT-OVER-COLD-3278), carried up so the stacker's face lines up with the
+# over-appliance box below it rather than leaving a 3" step at 8'-0".
+STACK_T3278 = _stacker("CASE-TS3278-12", inch(32.875), _BASE_DEPTH)
+
 # Counter-height seating. No pull-out zone of its own for the same reason a dining chair has
 # none: the stool lives in the island's overhang, and a zone there would report the correct
 # arrangement as a conflict.
@@ -166,5 +211,6 @@ STARTER_CASEWORK_TYPES = (
     WALL_18, WALL_24, WALL_30, WALL_66, OVER_APPLIANCE_36,
     TALL_PANTRY_12, TALL_PANTRY_18, PANTRY_CLOSET_24, PANTRY_CLOSET_48,
     PANTRY_CLOSET_72,
-    ISLAND_60, BAR_STOOL, WALL_DRYING_RACK_24,
+    ISLAND_60, PENINSULA_120, BAR_STOOL, WALL_DRYING_RACK_24,
+    WALL_12, STACK_W24, STACK_W30, STACK_T24, STACK_T3278,
 )
