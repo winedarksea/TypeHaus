@@ -696,6 +696,27 @@ Left open, and worth doing next:
   catlin's 15 second-storey walls that never authored `stacks_on`, and tightening it risks
   re-opening the bare-rim ring `test_platform_continuity` exists to catch. Migrate one
   consumer at a time, behind that test.
+  **Narrowed, not fixed, on 2026-08-25:** `layout_lines._stacks` dropped its vertical-
+  adjacency gate, so it and `stacking._axis_match` now ask the same *question*. What is
+  still not shared is the geometry each is handed — `layout_lines` measures on the
+  **datum face** (`Storey.vertical_datum`, so a width change stacks), `_axis_match` on the
+  raw **node** axis. On concrete under wood those differ by 43.8 mm (basement) and 57.0 mm
+  (garage), outside both `_TOL`s, so **13 stack pairs stack in one pass and not the other**:
+  `W-B-S1`→`W-M-S1` and the eight garage `W-GF-*`→`W-G-*`. All 13 are pours under framed
+  walls, which frame no studs, so nothing reads the difference today — which is exactly why
+  it will be a surprise when something does.
+
+- **`solver.py:231`'s staggered face-parity rule breaks at a non-zero phase.**
+  `side = 1.0 if round(station / module_spacing) % 2 == 0 else -1.0` decides which face a
+  staggered stud sits on. It assumes `station / spacing` lands on an integer; with a layout-
+  line phase it lands anywhere, and at a phase near 4" or 12" the quotient sits on a `.5`,
+  where Python's banker's rounding sends consecutive studs to the *same* face —
+  float-noise-dependently, so it will not reproduce. Runs of same-face studs destroy the
+  acoustic decoupling that is the entire reason for a staggered wall, silently and without
+  a finding. **It cannot fire today**: every staggered wall (`INT_2X6_STAGGERED_PLUMBING`,
+  `INT_2X4_STAGGERED_DOUBLE_GWB`) is on `layout_origin="wall-start"`, so the phase is
+  always 0.0, and the 2026-08-25 interior opt-in deliberately excluded them. It is a trap
+  for whoever widens that opt-in. Fix it by tracking the stud's *index*, not its station.
 - **`platform._platform_above` uses one number for two jobs.** `tol = max(thickness, 1e-3)`
   is both the off-axis slop *and* the minimum overlap length, so an upper wall overlapping
   by less than ~12" is invisible and a parallel interior wall within 12" can be a false

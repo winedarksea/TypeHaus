@@ -127,7 +127,8 @@ _EDGES = ((0, 1), (1, 2), (2, 3), (3, 0))
 
 def _rect_storey(prefix: str, top, assembly: str = "EXT", *,
                  clockwise: bool = False, y_offset=ft(0),
-                 split_south: bool = False, south_assembly: str | None = None):
+                 split_south: bool = False, split_at=None,
+                 south_assembly: str | None = None):
     """The four walls of one storey's rectangle, and their nodes.
 
     ``clockwise`` walks the loop the other way, so every wall on it — the south wall
@@ -136,8 +137,10 @@ def _rect_storey(prefix: str, top, assembly: str = "EXT", *,
     exists for; reversing *one* wall inside a loop is a different thing entirely (it turns
     that wall's assembly inside out) and is not what this models.
 
-    ``split_south`` cuts edge 0 in two at its midpoint — the tee-split shape, and, on an
-    upper storey, the two-walls-over-one shape.
+    ``split_south`` cuts edge 0 in two at ``split_at`` — the tee-split shape, and, on an
+    upper storey, the two-walls-over-one shape. The default 10' is deliberately *off* the
+    16" module (120" is 8" out); pass a multiple of 16" for the other case, where the seam
+    and a module station want the same stud.
     """
     positions = [(x, y + y_offset if index in (0, 1) else y)
                  for index, (x, y) in enumerate(_CORNERS)]
@@ -145,7 +148,8 @@ def _rect_storey(prefix: str, top, assembly: str = "EXT", *,
     walls, extra = [], []
     for index, (a, b) in enumerate(_EDGES):
         if index == 0 and split_south:
-            mid = _node(f"N-{prefix}-MID", ft(10), positions[0][1])
+            mid = _node(f"N-{prefix}-MID",
+                        ft(10) if split_at is None else split_at, positions[0][1])
             extra.append(mid)
             pairs = [(nodes[a], mid, f"W-{prefix}-0A"), (mid, nodes[b], f"W-{prefix}-0B")]
         else:
@@ -160,11 +164,20 @@ def _rect_storey(prefix: str, top, assembly: str = "EXT", *,
     return (*[n for n in (*nodes, *extra) if n.tag in used], *walls)
 
 
-def _two_storey(assemblies=None, *, upper=None, lower=None, **asm_kwargs) -> PlanModel:
-    """Main (9') under second (8'), each a rectangle, each authored by the caller."""
+def _two_storey(assemblies=None, *, upper=None, lower=None, platform_band=None,
+                **asm_kwargs) -> PlanModel:
+    """Main (9') under second (8'), each a rectangle, each authored by the caller.
+
+    ``platform_band`` lifts the upper storey by a floor thickness, so the lower wall tops
+    out that far *below* the upper wall's base — real platform framing, and the shape every
+    other fixture here quietly lacks: with second at exactly ``ft(9)`` the two walls touch,
+    and a vertical-adjacency test can never be exercised. 13 3/8" is catlin's basement band
+    (mudsill + 11 7/8" rim), the same number ``test_layer_extent._lift_plan`` uses.
+    """
     main = Storey(uid="STMAIN00LL", tag="main", elevation=ft(0),
                   default_ceiling_height=ft(9))
-    second = Storey(uid="STSEC000LL", tag="second", elevation=ft(9),
+    second = Storey(uid="STSEC000LL", tag="second",
+                    elevation=ft(9) if platform_band is None else ft(9) + platform_band,
                     default_ceiling_height=ft(8))
     plan = _plan((main, second), assemblies or (_assembly("EXT", **asm_kwargs),))
     return (plan
@@ -202,6 +215,34 @@ def test_a_width_change_still_stacks_on_the_shared_datum_face():
     assert {m.wall_tag for m in line.members} == {"W-M-0", "W-S-0"}
 
 
+def test_a_platform_band_between_the_storeys_is_still_one_line():
+    """The case every other fixture here misses, and the reason the interior never stacked.
+
+    Platform framing puts a floor — 13 3/8" at catlin's basement, 12" above it — between a
+    wall's top plate and the base of the wall over it, so the two are nowhere near touching.
+    Grouping on *vertical adjacency* calls them two lines and quietly makes
+    ``layout_origin="line"`` a no-op for every wall that is not authored ``stacks_on``.
+    The question a layout line asks is the one ``stacking._axis_match`` asks — collinear,
+    and overlapping by at least ``_MIN_OVERLAP`` — and nothing about the gap between them.
+    """
+    plan = _two_storey(platform_band=inch(13.375))
+    by_wall = lines_by_wall(resolve_layout_lines(plan))
+    assert by_wall["W-M-0"].tag == by_wall["W-S-0"].tag
+    line = by_wall["W-M-0"]
+    assert {m.wall_tag for m in line.members} == {"W-M-0", "W-S-0"}
+    assert line.base_z_m == pytest.approx(0.0)
+    assert line.top_z_m == pytest.approx((ft(9) + inch(13.375) + ft(8)).meters)
+
+
+def test_a_setback_wall_over_a_platform_band_is_still_two_lines():
+    """The band must not become a licence to weld anything vaguely above anything else:
+    two feet inboard is still not the same wall line. The companion to
+    ``test_a_setback_wall_is_a_line_of_its_own`` with the gap that test does not have."""
+    plan = _two_storey(platform_band=inch(13.375), upper={"y_offset": ft(2)})
+    by_wall = lines_by_wall(resolve_layout_lines(plan))
+    assert by_wall["W-M-0"].tag != by_wall["W-S-0"].tag
+
+
 def test_a_setback_wall_is_a_line_of_its_own():
     """Two feet inboard is not the same wall line, and must not be welded onto one."""
     plan = _two_storey(upper={"y_offset": ft(2)})
@@ -235,12 +276,13 @@ def test_an_upper_wall_authored_reversed_keeps_a_negative_direction_sign():
 # --- the horizontal case ------------------------------------------------------------------
 
 
-def _tee_split_plan(**asm_kwargs) -> PlanModel:
-    """One 20' south plane authored as two 10' segments meeting at a mid node."""
+def _tee_split_plan(split_at=None, **asm_kwargs) -> PlanModel:
+    """One 20' south plane authored as two segments meeting at a mid node."""
     main = Storey(uid="STMAIN00TT", tag="main", elevation=ft(0),
                   default_ceiling_height=ft(9))
     plan = _plan((main,), (_assembly("EXT", **asm_kwargs),))
-    return plan.with_elements("main", _rect_storey("M", ft(9), split_south=True))
+    return plan.with_elements("main", _rect_storey("M", ft(9), split_south=True,
+                                                   split_at=split_at))
 
 
 def test_two_segments_split_at_a_tee_are_one_line():
@@ -332,6 +374,73 @@ def test_a_tee_split_lays_out_as_one_module_when_the_line_is_the_origin():
     assert len(stations) >= 8, f"almost no on-module studs: {stations}"
     gaps = {round(b - a, 3) for a, b in zip(stations, stations[1:], strict=False)}
     assert gaps <= {16.0}, f"the module broke at the tee: {sorted(gaps)}"
+
+
+def _seam_stations(line, *walls, category: str = "stud") -> list[float]:
+    """Every member of ``category`` on these walls, as a station on the line."""
+    ox, oy = line.origin
+    dx, dy = line.direction
+    return sorted(round(((m.p0[0] - ox) * dx + (m.p0[1] - oy) * dy) * _IN, 4)
+                  for wall in walls for m in wall.members if m.category == category)
+
+
+def test_a_tee_split_frames_no_stud_at_an_off_module_seam():
+    """The seam is where the *rooms* change, not where the wall does. Both halves used to
+    plant an end stud on it — two sticks in the same 1-1/2", off the module, at a station
+    the storey above splits somewhere else. Nothing stands there now; the module runs on."""
+    from typehaus.resolve import resolve
+
+    model, _ = resolve(_tee_split_plan(layout_origin="line"))
+    line = lines_by_wall(model.layout_lines)["W-M-0A"]
+    seam = 120.0  # the 10' split, 8" off the module
+    stations = _seam_stations(line, model.wall("W-M-0A"), model.wall("W-M-0B"))
+    assert not [s for s in stations if abs(s - seam) < 3.0], \
+        f"a stud is still standing at the seam: {stations}"
+    module = _on_module(stations)
+    gaps = {round(b - a, 3) for a, b in zip(module, module[1:], strict=False)}
+    assert gaps <= {16.0}, f"the module broke at the seam: {sorted(gaps)}"
+
+
+def test_a_seam_on_the_module_is_framed_once_not_twice():
+    """The one station the two halves both claim. Exactly one stud, not two stacked in the
+    same place and not — the failure the first cut of this had — none at all."""
+    from typehaus.resolve import resolve
+
+    model, _ = resolve(_tee_split_plan(split_at=ft(16), layout_origin="line"))
+    line = lines_by_wall(model.layout_lines)["W-M-0A"]
+    seam = 192.0  # 16' — a whole number of modules from the line origin
+    stations = _seam_stations(line, model.wall("W-M-0A"), model.wall("W-M-0B"))
+    at_seam = [s for s in stations if abs(s - seam) < 0.75]
+    assert len(at_seam) == 1, f"expected one stud on the seam, got {at_seam}"
+
+
+def test_a_batten_band_runs_through_a_tee_split_too():
+    """The battens are what a standing seam clips to, so a doubled pair at every seam is a
+    doubled *panel line* — the defect you can see from the street, not just in the cut list.
+    """
+    from typehaus.resolve import resolve
+
+    furred = Assembly(tag="EXT", layers=(
+        _assembly("EXT", layout_origin="line").layers[0],
+        _assembly("EXT").layers[1],
+        Layer(name="batten", material_ref="spf", thickness=inch(0.75),
+              function=LayerFunction.FURRING,
+              framing=FramingSpec(member="1x4", direction="vertical",
+                                  layout_origin="line")),
+    ))
+    main = Storey(uid="STMAIN00BB", tag="main", elevation=ft(0),
+                  default_ceiling_height=ft(9))
+    plan = _plan((main,), (furred,)).with_elements(
+        "main", _rect_storey("M", ft(9), split_south=True))
+    model, _ = resolve(plan)
+    line = lines_by_wall(model.layout_lines)["W-M-0A"]
+    battens = _seam_stations(line, model.wall("W-M-0A"), model.wall("W-M-0B"),
+                             category="strapping")
+    assert not [s for s in battens if abs(s - 120.0) < 3.0], \
+        f"battens still double at the seam: {battens}"
+    module = _on_module(battens)
+    gaps = {round(b - a, 3) for a, b in zip(module, module[1:], strict=False)}
+    assert gaps <= {16.0}, f"the batten module broke at the seam: {sorted(gaps)}"
 
 
 def test_studs_stack_even_when_the_upper_wall_is_authored_reversed():

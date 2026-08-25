@@ -6,7 +6,9 @@ level wall tops only; the raked-top/rafter arm activates with M3 roofs (→ 30 W
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import replace
+from typing import Any
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.elements import Door, Wall
@@ -68,6 +70,8 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
                neighbour_insets_start: tuple[float, float] | None = None,
                neighbour_insets_end: tuple[float, float] | None = None,
                stud_keepouts: tuple[tuple[float, float], ...] = (),
+               continuation_start: str | None = None,
+               continuation_end: str | None = None,
                line: object | None = None) \
         -> tuple[FramedMember, ...]:
     """Generate studs, plates, and opening framing for one resolved wall.
@@ -82,6 +86,12 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     segmentation at a tee is an authoring convention — the two walls are one plane, one
     assembly and one set of plates — so the leaf really does travel through here, and a
     module stud in its path is a door that will not open. See ``_pocket_keepouts``.
+
+    ``continuation_start``/``continuation_end`` mark an end where this wall simply *carries
+    on* into a collinear neighbour that shares its grid — the two halves of one real wall,
+    split at a tee because the rooms behind them are two rooms. ``"owner"`` on one side and
+    ``"follower"`` on the other; ``None`` (the default) is an end that really ends. See
+    ``_continuation_roles``.
 
     ``corner_style_start``/``corner_style_end`` are the authored per-end overrides
     (``Wall.corner_style_start``/``corner_style_end``): ``"3-stud"``/``"4-stud"`` at the
@@ -190,13 +200,18 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     # corner neither end stud sits on the module at all (it sits where the corner square
     # lets it). Both end studs are therefore explicit, and module stations that would land
     # inside the end/corner pack are dropped rather than allowed to interpenetrate it.
+    #
+    # Except where the end is not an end: at a continuation the wall runs on into a collinear
+    # neighbour on the same grid, so the module carries through and neither half plants a
+    # stud at the seam.
     stud_stations = sorted(
         station for station in _module_stations(
             axis_len, module_spacing, thickness,
             (start_end.end_stud_station_m, far_end.end_stud_station_m),
             (max((start_end.end_stud_station_m, *corner_stations["start"])),
              min((far_end.end_stud_station_m, *corner_stations["end"]))),
-            phase=module_phase)
+            phase=module_phase,
+            continuations=(continuation_start, continuation_end))
         if not in_exclusion(station, stud_zones)
     )
     perpendicular = normal(d)
@@ -250,7 +265,9 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
 def _module_stations(axis_len: float, spacing: float, thickness: float,
                      end_studs: tuple[float, float],
                      pack_limits: tuple[float, float],
-                     phase: float = 0.0) -> list[float]:
+                     phase: float = 0.0,
+                     continuations: tuple[str | None, str | None] = (None, None)
+                     ) -> list[float]:
     """Both end-stud stations plus every module station that clears the end packs.
 
     A module station closer than one stud thickness to an end stud (or to the corner studs
@@ -264,20 +281,47 @@ def _module_stations(axis_len: float, spacing: float, thickness: float,
     old behaviour exactly. End studs, corner packs and opening king/jack packs are not
     phased: they are already deliberately off-module, sitting where the corner square and
     the rough opening put them.
+
+    ``continuations`` (``frame_wall``'s ``continuation_*``) marks an end that is not an end:
+    the wall runs on into a collinear neighbour on the same grid. Three things follow, and
+    all three are needed — the first cut of this had only the first two and left a 32" bay on
+    the north wall, where the seam fell 1" off a grid station and *both* halves declined it.
+      * no end stud there, because the module carries through instead;
+      * no pack limit either — the limit exists to keep a module stud out of an end stud or
+        corner pack, and at a continuation there is neither, so a station 1" from the seam is
+        perfectly placed rather than a collision;
+      * exactly one station is genuinely contested — the seam itself, when the seam happens
+        to land *on* the grid. Both halves hold it as an endpoint, so the ``"follower"``
+        yields it and the ``"owner"`` frames it, and it carries one stud rather than two in
+        the same place.
+
+    The fallback at the bottom is what makes dropping end studs safe: a jog short enough to
+    hold no module station at all still gets its ends, so no wall is left with nothing
+    standing in it.
     """
     start_station, end_station = end_studs
     start_limit, end_limit = pack_limits
-    stations = [start_station]
-    if end_station - start_station > thickness - 1e-9:
+    start_cont, end_cont = continuations
+    stations = [] if start_cont else [start_station]
+    if not end_cont and (start_cont or end_station - start_station > thickness - 1e-9):
         stations.append(end_station)
     for index in range(int(max(0.0, axis_len - phase) // spacing) + 1):
         station = phase + index * spacing
         if station > axis_len + 1e-6:
             break
-        if (station - start_limit < thickness - 1e-9
-                or end_limit - station < thickness - 1e-9):
+        if start_cont is None and station - start_limit < thickness - 1e-9:
+            continue
+        if end_cont is None and end_limit - station < thickness - 1e-9:
+            continue
+        if start_cont == "follower" and abs(station) < 1e-6:
+            continue
+        if end_cont == "follower" and abs(station - axis_len) < 1e-6:
             continue
         stations.append(station)
+    if not stations:
+        stations = [start_station]
+        if end_station - start_station > thickness - 1e-9:
+            stations.append(end_station)
     return stations
 
 
@@ -476,6 +520,8 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     authored_walls = {element.tag: element for element in plan.all_elements()
                       if isinstance(element, Wall)}
     resolved_by_tag = {wall.tag: wall for wall in model.walls}
+    continuations = continuation_roles(model, lambda tag: _structure_module_signature(
+        plan, resolved_by_tag.get(tag), lines_for_wall.get(tag)))
 
     def _neighbour_insets(rw: ResolvedWall, endpoint: str, p0, direction,
                           axis_len: float) -> tuple[float, float] | None:
@@ -528,12 +574,81 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                                  rw, "end", framing_start, framing_direction,
                                  framing_len),
                              stud_keepouts=tuple(keepouts.get(rw.tag, ())),
+                             continuation_start=continuations.get((rw.tag, "start")),
+                             continuation_end=continuations.get((rw.tag, "end")),
                              line=lines_for_wall.get(rw.tag))
         # ``replace`` rather than a field-by-field rebuild: this pass only adds members,
         # and respelling the constructor here silently drops any field added later.
         framed.append(replace(rw, members=members))
     model.walls = framed
     return findings
+
+
+def _structure_module_signature(plan: PlanModel, rw: ResolvedWall | None,
+                               line: object | None) -> tuple[Any, ...] | None:
+    """What has to match for two walls' *stud* modules to be provably one grid."""
+    if rw is None or line is None:
+        return None
+    layer = structure_layer(plan, rw.assembly)
+    if not frames_as_members(layer):
+        return None
+    spec = layer.framing
+    if getattr(spec, "layout_origin", "wall-start") != "line":
+        return None
+    return (getattr(line, "tag", None), (spec.spacing or DEFAULT_SPACING).meters,
+            spec.layout, spec.member, spec.plate_member)
+
+
+def continuation_roles(model: ResolvedModel,
+                       signature: Callable[[str], tuple[Any, ...] | None],
+                       ) -> dict[tuple[str, str], str]:
+    """Wall ends that are not ends: (wall, endpoint) -> ``"owner"`` | ``"follower"``.
+
+    A facade is authored as a chain of wall segments because the *rooms* behind it are a
+    chain of rooms — the exterior wall is split wherever a partition tees in. Each half then
+    framed its own end stud at that node, so the seam carried two studs in the same 1.5" of
+    wall, off the module, at a station the storey above split somewhere else entirely. That
+    is what stopped studs stacking up a facade even after #43 phase-locked the module itself
+    to the layout line: the module lined up, and the seam studs it ran between did not.
+
+    Where the two halves provably lay out on **one grid** — same layout line, both taking
+    their origin from it, same member and same module — the seam is a modelling artifact and
+    the module simply runs through it. Elsewhere (two different lines, a wall laying out from
+    its own start, a change of stud size) the modules are genuinely independent and dropping
+    the seam stud would leave a hole, so the historical end studs stay.
+
+    The ``"owner"``/``"follower"`` split settles the one station the two halves share: a seam
+    that happens to land *on* the grid is claimed by the owner, so it carries one stud rather
+    than two stacked in the same place or — worse — none at all.
+
+    The branch wall at a tee is untouched: it still butts, and its backing is
+    ``append_tee_backing``'s job either way.
+
+    ``signature`` is what "one grid" means for the caller's layer — ``wall_tag`` in, an
+    opaque comparable out, or ``None`` for "this wall has no such grid". The stud module and
+    a furring band ask the same question of the same junctions about different layers, so the
+    junction reading lives here once and the layer reading stays with each caller.
+    """
+    roles: dict[tuple[str, str], str] = {}
+    for junction in model.junctions:
+        if junction.kind not in ("collinear", "t", "x"):
+            continue
+        through = [item for item in junction.incidents
+                   if item.wall_tag in junction.through_walls]
+        if len(through) != 2:
+            continue
+        first, second = (signature(item.wall_tag) for item in through)
+        if first is None or first != second:
+            continue
+        tags = {item.wall_tag for item in through}
+        # ``framing_owner`` is a through wall at every junction kind reaching here, but it is
+        # not part of that contract; falling back on the sorted tag keeps the choice
+        # deterministic rather than letting both halves think they are the follower.
+        owner = junction.framing_owner if junction.framing_owner in tags else min(tags)
+        for item in through:
+            roles[(item.wall_tag, item.endpoint)] = (
+                "owner" if item.wall_tag == owner else "follower")
+    return roles
 
 
 def _framing_junction_finding(junction, problem: str) -> Finding:

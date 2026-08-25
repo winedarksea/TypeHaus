@@ -15,7 +15,7 @@ import {
   EARTH_FALLBACK_HALF_SIZE_M,
 } from "../three/builders/site";
 import {
-  archSoffitCircle, archSoffitSample, archSoffitSegmentCount, buildOpening,
+  archSoffitCircle, archSoffitSample, archSoffitSegmentCount, buildOpening, buildWall,
   createSmoothArchedWallLayerGeometry, wallLayerPieces, withoutCollinearVertices,
 } from "../three/builders/walls";
 import {
@@ -26,7 +26,7 @@ import {
   SOLID_CATEGORY_COLOR, SOLID_CATEGORY_TRADE, createSolidMaterial,
   solidColor, solidOpacity, solidTrade,
 } from "../three/solidMaterials";
-import { ALL_TRADES } from "../state/vocabulary";
+import { ALL_TRADES, type Trade } from "../state/vocabulary";
 import { carriesMemberIdentity, resolveMemberPickUid } from "../three/memberPicking";
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -44,7 +44,7 @@ function registry() {
 function wall(axis: Wall["axis"], topZ0: number | null = null, topZ1: number | null = null): Wall {
   return {
     uid: "wall", tag: "W-1", storey: "S-1", assembly: "A-1", provenance: null, axis,
-    z0_m: 0, z1_m: 3, top_z0_m: topZ0, top_z1_m: topZ1, plate_base_z_m: null, is_foundation: false,
+    z0_m: 0, z1_m: 3, top_z0_m: topZ0, top_z1_m: topZ1, plate_base_z_m: null, layout_axis: null, is_foundation: false,
     layers: [], members: [],
   };
 }
@@ -526,6 +526,25 @@ export function runSelectionRegistrationTests() {
     "Instance 1 of the floor's joist bucket resolves to the second joist, not to the floor");
   assert((floors.byUid.get("FL-1") ?? []).includes(joistBucket!.material as THREE.Material),
     "Selecting the floor still lights its joists — the bucket stays in the owner's highlight set");
+
+  // A wall's own closure members (the derived bands carrying a skin layer up to the roof it
+  // meets) split by what they continue: a cladding closure is envelope skin and belongs with
+  // the wall body on the walls toggle, while a furring closure (a truss wall's outrigger band)
+  // is still lumber and stays on the framing toggle with the studs.
+  const tradeGroups = Object.fromEntries(
+    ALL_TRADES.map((trade) => [trade, new THREE.Group()]),
+  ) as Record<Trade, THREE.Group>;
+  const walls = registry();
+  const closureWall = wall([[0, 0], [4, 0]]);
+  closureWall.members = [
+    { ...member("W-1-closure-0-cladding"), category: "cladding", material: "standing-seam" },
+    { ...member("W-1-closure-0-outrigger"), category: "furring", material: "kdat" },
+  ];
+  buildWall(tradeGroups, closureWall, [], [0, 0], "schematic", PALETTE, walls.picks, walls.byUid);
+  assert(tradeGroups.walls.children.length > 0,
+    "A wall's cladding closure band builds into the walls group");
+  assert(tradeGroups.framing.children.length > 0,
+    "A wall's furring closure band still builds into the framing group");
 
   const roofGroup = new THREE.Group();
   const roofs = registry();

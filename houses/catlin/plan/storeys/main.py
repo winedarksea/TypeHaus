@@ -13,6 +13,7 @@ from typehaus import (
     ConnectorKind,
     Door,
     DoorType,
+    FinishZone,
     FloorHeat,
     FloorOpening,
     Node,
@@ -755,16 +756,39 @@ ROOMS = [
     # face — the seed and the claim are unchanged. 768 sf is the honest walkable area, stair included.
     # Main-floor finishes revised 2026-08-02 (plans/TODO.md §Hardwood): solid oak is the
     # studies' floor (RM-A-STUDY + RM-S-STUDY2) — living/study here go LVP, bed/closet carpet.
+    #
+    # 2026-08-25, the hall: the corridor along the north side of the W-M-HS* band is part of
+    # this one claim (see above) and cannot be a second Room without double-billing the
+    # floor, so it is a `FinishZone` instead — the authored in-room override the field
+    # `lvp` yields to. Sheet vinyl, matching RM-M-MUDROOM, RM-M-MECH and RM-M-MUD-CLOSET to
+    # the west and RM-M-LAUNDRY and RM-M-BATH1 off it, so the whole wet/dirty spine from
+    # the entry through to the laundry is one washable surface with no transition strip.
+    # The rectangle IS the hall band of RM-M-LIVING's clear face: W-M-BAE's east lining
+    # face at x=6'-0 5/8" to the centre line at x=18'-0", W-M-HS*'s north lining face at
+    # y=22'-4 5/8" to W-M-STOS*'s south lining face at y=26'-3 3/8". It stops at x=18'-0"
+    # — the BM-M-HALL opening is where hall becomes living room, so that is where the
+    # vinyl meets the plank. `resolve/rooms.py` clips the zone to the clear face before
+    # billing, so the 1/16" of slop at the beam line costs nothing.
     Room(uid="CMR401AAAA", tag="RM-M-LIVING", seed=pt(ft(27), ft(12)),
-         occupancy=Occupancy.LIVING, floor_finish="lvp"),
+         occupancy=Occupancy.LIVING, floor_finish="lvp",
+         finish_zones=(FinishZone(outline=(pt(ft(6, 0.625), ft(22, 4.625)),
+                                           pt(ft(18), ft(22, 4.625)),
+                                           pt(ft(18), ft(26, 3.375)),
+                                           pt(ft(6, 0.625), ft(26, 3.375))),
+                                  material_ref="vinyl-sheet"),)),
     Room(uid="CMR402AAAA", tag="RM-M-BED", seed=pt(ft(9), ft(6)),
          occupancy=Occupancy.BEDROOM, floor_finish="carpet"),
+    # RM-M-BATH1 and RM-M-LAUNDRY are sheet vinyl, not tile (2026-08-25): both open off the
+    # hall band, whose FinishZone above is vinyl-sheet, and the point of the change is one
+    # unbroken washable floor from the mudroom to the laundry with no threshold and no
+    # grout to keep. RM-M-BATH2 upstairs of the plumbing wall keeps its tile — it is a full
+    # bath on its own radiant zone (FH-M-BATH2), which is where tile earns the mass.
     Room(uid="CMR403AAAA", tag="RM-M-BATH1", seed=pt(ft(2), ft(24, 6)),
-         occupancy=Occupancy.BATHROOM, floor_finish="tile"),
+         occupancy=Occupancy.BATHROOM, floor_finish="vinyl-sheet"),
     Room(uid="CMR404AAAA", tag="RM-M-BATH2", seed=pt(ft(4), ft(18)),
          occupancy=Occupancy.BATHROOM, floor_finish="tile"),
     Room(uid="CMR405AAAA", tag="RM-M-LAUNDRY", seed=pt(ft(10, 6), ft(20)),
-         occupancy=Occupancy.LAUNDRY, floor_finish="tile"),
+         occupancy=Occupancy.LAUNDRY, floor_finish="vinyl-sheet"),
     Room(uid="CMR406AAAA", tag="RM-M-STUDY", seed=pt(ft(15, 8), ft(20)),
          occupancy=Occupancy.OFFICE, floor_finish="lvp"),
     Room(uid="CMR407AAAA", tag="RM-M-CLOSET", seed=pt(ft(13), ft(15, 4)),

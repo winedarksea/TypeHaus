@@ -118,7 +118,9 @@ export function buildWall(
         : createPlanPrismGeometry(piece.polygon, piece.z0_m, piece.z1_m, [], center));
     for (const geo of geometries) {
       if (!geo) continue;
-      if (seam) applyStandingSeamWallUv(geo, w.axis, center);
+      // The line, not the wall: the pan module belongs to the facade, and the outriggers it
+      // clips to are laid out on that same line (resolve/framing/furring.py).
+      if (seam) applyStandingSeamWallUv(geo, w.layout_axis ?? w.axis, center);
       else if (masonryStyle) {
         // Course from the wall's own base, not project zero — see applyMasonryWallUv.
         applyMasonryWallUv(geo, w.axis, center, masonryTileSizeM(masonryStyle), w.z0_m);
@@ -173,23 +175,34 @@ export function buildWall(
     tagLayerGroup(tradeGroups.walls, layerFirstChildIndex, layerGroup);
   }
   const framingFirstIndex = tradeGroups.framing.children.length;
-  buildWallSkinMembers(tradeGroups.framing, w.uid, w.members, center, mode, palette);
+  const wallsSkinFirstIndex = tradeGroups.walls.children.length;
+  buildWallSkinMembers(tradeGroups, w.uid, w.members, center, mode, palette);
   // A wall's studs are pickable as themselves; the wall body remains pickable through its
   // layer meshes above, so both "this wall" and "this stud" stay one click away.
   registerMemberPicks(tradeGroups.framing, framingFirstIndex, picks);
+  registerMemberPicks(tradeGroups.walls, wallsSkinFirstIndex, picks);
   byUid.set(w.uid, mats);
 }
 
-// Wall members split two ways for visibility: plain lumber answers to the Framing trade, while
-// a member that names a material is a derived skin band (a gable closure, a trim run) and must
-// answer to the assembly-layer control that governs the layer it continues. The split has to
-// happen before the merge, since a merged mesh has one visibility flag for all of it.
+// A skin member continuing the furring band (a truss wall's outrigger closure) is still real
+// lumber — the carpenter's work — so it stays with the studs on the Framing trade. Every other
+// skin category (cladding, sheathing, membrane, insulation, airgap, finish) is envelope skin
+// and belongs with the wall body it continues, on the Walls trade, or a cladding closure band
+// running up to the roof reads as framing while the wall's own cladding prism below it reads
+// as walls.
+const FRAMING_SKIN_GROUPS = new Set<LayerVisibilityGroup>(["furring"]);
+
+// Wall members split two ways for visibility: plain lumber and a furring skin band (the
+// outrigger closure) answer to the Framing trade, while every other named-material skin band
+// (a cladding/sheathing/membrane closure, a trim run) is a derived envelope skin and answers to
+// the assembly-layer control that governs the layer it continues, on the Walls trade. The split
+// has to happen before the merge, since a merged mesh has one visibility flag for all of it.
 function buildWallSkinMembers(
-  parent: THREE.Group, wallUid: string, members: Member[], center: PlanCenter,
+  tradeGroups: Record<Trade, THREE.Group>, wallUid: string, members: Member[], center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
 ) {
   const lumber = members.filter((member) => !member.material);
-  buildMembers(parent, lumber, center, mode, palette, wallUid);
+  buildMembers(tradeGroups.framing, lumber, center, mode, palette, wallUid);
   const skinByGroup = new Map<LayerVisibilityGroup, Member[]>();
   for (const member of members) {
     if (!member.material) continue;
@@ -197,6 +210,7 @@ function buildWallSkinMembers(
     skinByGroup.set(group, [...(skinByGroup.get(group) ?? []), member]);
   }
   for (const [group, skin] of skinByGroup) {
+    const parent = FRAMING_SKIN_GROUPS.has(group) ? tradeGroups.framing : tradeGroups.walls;
     const firstChildIndex = parent.children.length;
     buildMembers(parent, skin, center, mode, palette, wallUid);
     tagLayerGroup(parent, firstChildIndex, group);

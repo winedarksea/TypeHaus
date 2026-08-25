@@ -18,6 +18,16 @@ from typehaus.server.model_json_shared import _layer_json, _member_json, _proven
 from typehaus.source.provenance import Provenance
 
 
+def _layout_axis(model: ResolvedModel, wall_tag: str) -> list[list[float]] | None:
+    """``[origin, origin + direction]`` of the wall's layout line, in plan metres."""
+    line = next((ln for ln in model.layout_lines
+                 if any(m.wall_tag == wall_tag for m in ln.members)), None)
+    if line is None:
+        return None
+    (ox, oy), (dx, dy) = line.origin, line.direction
+    return [[ox, oy], [ox + dx, oy + dy]]
+
+
 def wall_graph_json(
     model: ResolvedModel, provenance: Provenance | None
 ) -> dict[str, Any]:
@@ -33,6 +43,13 @@ def wall_graph_json(
                 # (resolve/platform.extend_walls_to_foundation). The viewer measures
                 # every sill from this, not from z0_m — mirrors ResolvedWall.base_ref_z_m.
                 "plate_base_z_m": w.plate_base_z_m,
+                # The facade datum this wall subdivides against, as an axis the viewer can
+                # project onto: [origin, origin + direction] of its layout line. The standing
+                # seam is a 16" module that has to run corner to corner, and the wall's own
+                # axis restarts it at every tee the facade is chunked at — so the pan module
+                # is measured from here, exactly as the outriggers it clips to are
+                # (resolve/layout_lines.py). None for a wall on no line.
+                "layout_axis": _layout_axis(model, w.tag),
                 "top_z1_m": w.top_z1_m, "is_foundation": w.is_foundation,
                 "layers": [_layer_json(ly) for ly in w.layers],
                 "members": [_member_json(m) for m in w.members],

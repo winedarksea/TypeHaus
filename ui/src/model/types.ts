@@ -139,6 +139,12 @@ export interface Wall {
   // body and its framing share a base, so z0_m is the datum. Every sill is measured from
   // `baseRefZ(wall)`, never from z0_m — mirrors ResolvedWall.base_ref_z_m.
   plate_base_z_m: number | null;
+  // The facade datum this wall subdivides against — [origin, origin + unit direction] of its
+  // layout line (→ resolve/layout_lines.py). The standing-seam pan module is 16" and has to
+  // run corner to corner; measuring it from `w.axis` restarts it at every tee the facade
+  // happens to be chunked at, so the seam finish is framed from here instead. null = a wall
+  // on no line, where its own axis is the only datum there is.
+  layout_axis: [[number, number], [number, number]] | null;
   is_foundation: boolean;
   layers: Layer[];
   members: Member[];

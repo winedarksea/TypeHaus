@@ -22,6 +22,27 @@ CATLIN = HOUSES / "catlin"
 HOUSE_IGNORE = shutil.ignore_patterns("out", "__pycache__", ".claude", ".DS_Store", ".git")
 
 
+#: Every ``FramedMember`` category ``framing/solver.py::frame_wall`` emits from a wall's
+#: STRUCTURE layer. It is the member-side witness for "this wall framed rather than poured",
+#: and the partition the two wall-structure BOM sections make (→ takeoff/wall_structure.py).
+#:
+#: Not just ``"stud"``, which is what it was until 2026-08-25: a wall short enough to be
+#: almost entirely rough opening frames a jamb pack and no module stud at all — W-M-N3 is
+#: 4'-0" long and 3'-2" of that is D-M-ENTRY, leaving 3-3/4" of wall at each end that the
+#: king and jack fill between them. Its spf reaches the cut list as kings, jacks, cripples,
+#: a header and three plates; only the proxy was blind to it. It became reachable when the
+#: seam studs went (``solver.continuation_roles``), because those 3-3/4" ends were exactly
+#: where a segment used to frame its own end stud.
+FRAMED_STRUCTURE_CATEGORIES = frozenset({
+    "stud", "plate", "raked_plate", "corner", "king", "jack", "cripple", "header", "sill",
+})
+
+
+def frames_structure(wall) -> bool:
+    """Did this wall's STRUCTURE layer resolve to sticks of lumber?"""
+    return any(member.category in FRAMED_STRUCTURE_CATEGORIES for member in wall.members)
+
+
 def copy_house(src: Path, dst: Path) -> Path:
     """Copy an authored house into a sandbox, leaving build output behind."""
     shutil.copytree(src, dst, ignore=HOUSE_IGNORE)

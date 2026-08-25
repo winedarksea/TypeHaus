@@ -394,7 +394,7 @@ ESS_EQUIPMENT = [
     # circuit: its grid port IS CKT-ESS-GRID, which is a source, and its load output feeds
     # ED-B-BACKUP-PANEL.
     Equipment(uid="CEQ021AAAA", tag="EQ-B-ESS-INV", kind=EquipmentKind.INVERTER,
-              position=pt(m(2.48448), m(7.61735)), footprint=(inch(27), inch(12)),
+              position=pt(m(1.35596), m(10.6076)), footprint=(inch(27), inch(12)),
               type_ref="EQ-T-EG4-12KPV",
               room="RM-B-FURNACE", circuit="CKT-ESS-GRID",
               mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
@@ -449,7 +449,7 @@ BASEMENT_EQUIPMENT = [
     # two-tank split was a modelling artifact of describing one product's two internal power
     # draws as two appliances.
     Equipment(uid="CEE016AAAA", tag="EQ-B-ERV", kind=EquipmentKind.ERV,
-              position=pt(m(2.09754), m(8.88149)), footprint=(inch(24), inch(24)),
+              position=pt(m(1.2053), m(9.61783)), footprint=(inch(24), inch(24)),
               room="RM-B-FURNACE", type_ref="EQ-T-ERV", circuit="CKT-ERV"),
     # Sauna heater: NW corner of the *heated* zone (south 8'-6" of RM-B-SAUNA — the north 4'
     # is the shower per notes/sauna_shower_basement_detail.md), back to the west liner face,

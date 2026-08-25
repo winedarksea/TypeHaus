@@ -228,11 +228,17 @@ ROOMS = [
     # room. Joins RM-A-EAST and RM-A-DEN, STORAGE for the same reason — only RM-A-STUDY has
     # the gable to glaze. Retagging is honest; it keeps the permit set from claiming a
     # bedroom-grade room the daylight can't support.
+    # ** NO FLOOR FINISH ON PURPOSE (2026-08-25). ** These two lofts are unfinished bulk
+    # storage — the STORAGE tag above is not a hedge, it is what they are — so the walking
+    # surface is FS-ATTIC's own 3/4" plywood-subfloor deck and nothing goes over it.
+    # `floor_finish=None` is the honest way to say that: `takeoff/finishes.py` skips a room
+    # with no finish entirely, so no carpet, no pad and no tack strip bill for 1,080 sf that
+    # will never be laid. RM-A-DEN keeps its carpet — it is the one loft used as a room.
     Room(uid="CAR401AAAA", tag="RM-A-WEST", seed=pt(ft(9), ft(20)),
-         occupancy=Occupancy.STORAGE, floor_finish="carpet",
+         occupancy=Occupancy.STORAGE, floor_finish=None,
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),
     Room(uid="CAR402AAAA", tag="RM-A-EAST", seed=pt(ft(27), ft(20)),
-         occupancy=Occupancy.STORAGE, floor_finish="carpet",
+         occupancy=Occupancy.STORAGE, floor_finish=None,
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),
     # Cathedral like the other three (2026-07-31): the 7'-6" dropped ceiling it used to
     # carry would have buried the 8'-0" head of WIN-A-S-JUL-W, which stands in this room's

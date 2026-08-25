@@ -1011,6 +1011,23 @@ GARAGE_ROOF = Assembly(
 # finished), the masonry/concrete/deck/glazing assemblies (no gypsum face), POST_WHITE_PAINT
 # (its own exterior-paint material), and INT_2X4_PARTITION (a tested STC assembly — see
 # library/assemblies.py for why it doesn't get layers added).
+# LAYOUT_ORIGIN, INTERIOR (2026-08-25). The five bearing assemblies below join the four
+# facades on ``layout_origin="line"``. The facades were done first because they are what you
+# look at; the centreline is the one that actually matters structurally. `W-M-C1..C5B`,
+# `W-S-C1..C4B` and `W-A-C1..C2` are the x=18'-0" line that carries the ridge beam
+# continuously to the footings, and until now each of those twelve walls restarted the 16"
+# module at its own start node — three storeys, three phases, on the house's primary load
+# path. R602.3.3's "studs shall be located directly over the studs below" is about this line
+# before it is about any facade.
+#
+# STRUCTURE spec only, unlike the exterior pair: an interior wall has no vertical FURRING
+# band to phase-lock to the studs. Both liner bands here are `direction="horizontal"`, and
+# `furring._layout_horizontal` takes no phase, so there is nothing else to keep in step.
+#
+# Not opted in, deliberately: `INT_2X4_PARTITION` and the other non-bearing partitions
+# (~46 walls — bearing lines first), and the staggered assemblies, which have a live
+# rounding trap in `solver.py`'s face-parity rule that a non-zero phase would wake. See
+# plans/TODO.md.
 CATLIN_INT_2X6_BRG = Assembly(
     tag="CATLIN_INT_2X6_BRG",
     layers=(
@@ -1018,7 +1035,8 @@ CATLIN_INT_2X6_BRG = Assembly(
         Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6")),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x6", layout_origin="line")),
         Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
         _PAINT_FINISH_B,
@@ -1151,11 +1169,15 @@ SAUNA_LINER_ON_BASEMENT_8_GARDEN = Assembly(
 # and screw-anywhere hook backing at once. "INT" in the tag is load-bearing (see
 # FOUNDATION_WALL_12_INT, INT_2X6_PLUMBING, _is_interior_assembly in mn_energy.py) — without it
 # the uninsulated bays would fail as an exterior wall against R-21.
+# `layout_origin="line"`: W-M-STRW/STRW2 are the main storey of the stair line, standing on
+# W-B-STR/STR2/STR3 below. The exposed studs are the ones you can see from the mudroom, so
+# they were always the ones a broken module showed up on.
 CATLIN_MUDROOM_INT_2X6_EXPOSED = Assembly(
     tag="CATLIN_MUDROOM_INT_2X6_EXPOSED",
     layers=(
         Layer(name="stud", material_ref="df-select-s4s", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6")),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x6", layout_origin="line")),
         Layer(name="ply-stair", material_ref="cabinet-plywood", thickness=inch(0.75),
               function=LayerFunction.FINISH),
     ),
@@ -1178,7 +1200,8 @@ CATLIN_STAIRWALL_INT_2X6_BRG = Assembly(
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member="2x6", spacing=inch(16),
-                                  sill_gasket=inch(0.0625))),
+                                  sill_gasket=inch(0.0625),
+                                  layout_origin="line")),
         Layer(name="ply-stair", material_ref="cabinet-plywood", thickness=inch(0.75),
               function=LayerFunction.FINISH),
     ),
@@ -1197,7 +1220,8 @@ CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX = Assembly(
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member="2x6", spacing=inch(16),
-                                  sill_gasket=inch(0.0625))),
+                                  sill_gasket=inch(0.0625),
+                                  layout_origin="line")),
         Layer(name="ply-stair", material_ref="cabinet-plywood", thickness=inch(0.75),
               function=LayerFunction.FINISH),
     ),
@@ -1571,12 +1595,16 @@ PLANT_EXT_2X6_HUMID = Assembly(
 # "INT" is a whole `_`-delimited token on purpose: `mn_energy.py` splits the tag on `_` to
 # decide whether a wall is interior, and PLANT_INT2X6 or PLANTINT_2X6 would be graded
 # against R-21 as though this partition faced the weather.
+# `layout_origin="line"` for the same reason `PLANT_EXT_2X6_HUMID` has it on the facades:
+# W-S-C1 is a member of the x=18'-0" centreline, and one wall left on its own start node
+# puts a jog in a line that is otherwise continuous. Same line, humid liner.
 PLANT_INT_2X6_BRG_HUMID = Assembly(
     tag="PLANT_INT_2X6_BRG_HUMID",
     layers=(
         *_HUMID_LINER,
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6"),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x6", layout_origin="line"),
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="gwb-cold", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),

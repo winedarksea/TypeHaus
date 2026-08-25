@@ -622,11 +622,17 @@ ROOMS = [
     # Honest about the margin: `glazing_dew_point` clears WIN-B-SAUNA by 2.5 F at
     # centre-of-glass (55.5 F inner glass vs a 53.1 F dew point at 70 F / 55% RH), and the
     # frame runs 5-8 F colder than that, so the frame does condense at design. That is an
-    # accepted condition over a tiled, drained floor in a room that dries between sessions,
+    # accepted condition over a sealed, drained slab in a room that dries between sessions,
     # not a hidden failure.
+    # The floor is SEALED CONCRETE, not tile (2026-08-25). SL-B-FLOOR already runs flat and
+    # sloped 1/8"/ft to FX-B-SAUNA-FD under the whole room, and FX-B-SAUNA-SH is a curbed
+    # liner pan — the pan brings its own waterproof floor, so nothing outside it needs a
+    # tile bed. `integrity.concrete_finish_needs_concrete_deck` is satisfied by SL-B-FLOOR.
+    # The tile that remains in this room is WP-B-SAUNA-SPLASH, the pan's two closed wall
+    # sides; see the PANELING note below.
     Room(uid="CBR403AAAA", tag="RM-B-SAUNA", seed=pt(ft(14), ft(6)),
          occupancy=Occupancy.BATHROOM, humidity_class=HumidityClass.WET,
-         floor_finish="tile"),
+         floor_finish="sealed-concrete"),
     Room(uid="CBR404AAAA", tag="RM-B-PLAY-N", seed=pt(ft(27), ft(27)),
          occupancy=Occupancy.MEDIA, floor_finish="carpet"),
     Room(uid="CBR405AAAA", tag="RM-B-GYM", seed=pt(ft(27), ft(9)),

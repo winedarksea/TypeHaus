@@ -142,6 +142,77 @@ def test_header_free_sill_and_head_bear_on_the_flanking_studs():
         assert member.p0[0] == pytest.approx(4 * _MODULE + _STUD_THICKNESS / 2, abs=1e-9)
 
 
+def _thirty_inch_window_wall():
+    """A 4 m wall with a 30" window on a stud line: the header/jack/king path."""
+    rw = _mitred_wall(4.0, 0.0, at_start=True)
+    center = 4 * _MODULE
+    opening = SimpleNamespace(center_m=center, width_m=inch(30).meters,
+                              height_m=inch(36).meters, sill_m=inch(24).meters,
+                              is_door=False, operation=None, header_spec=None,
+                              pocket_run_m=0.0, pocket_sign=0)
+    return rw, frame_wall(_plan_double(), rw, openings=[opening])
+
+
+def test_opening_pack_is_framed_from_the_wall_base_not_the_stud_bearing_line():
+    """A sill height is measured from ``base_ref_z_m``; a jack bears a plate above it.
+
+    The solver hands ``frame_opening`` one elevation for both jobs, and reading it as the
+    sill datum framed every opening in a house 1 1/2" above the hole every other emitter
+    cut — the wall body, the buck, the furring, the IFC void. On top of that the rough
+    sill was emitted upward from the sill line rather than hanging under it, another
+    1 1/2", which is what left a 2x6 lying across the glass of each window.
+    """
+    rw, members = _thirty_inch_window_wall()
+    plate_h = inch(1.5).meters
+    sill_line = rw.base_ref_z_m + inch(24).meters
+    head_line = sill_line + inch(36).meters
+
+    sill = next(m for m in members if m.category == "sill")
+    assert sill.z1_m == pytest.approx(sill_line, abs=1e-9), "the sill's TOP is the RO"
+    assert sill.z0_m == pytest.approx(sill_line - plate_h, abs=1e-9)
+
+    header = next(m for m in members if m.category == "header")
+    assert header.z0_m == pytest.approx(head_line, abs=1e-9), "the header bears ON the head"
+
+    # …and the members that genuinely stand on the bottom plate did not move with it.
+    for category in ("jack", "king"):
+        member = next(m for m in members if m.category == category)
+        assert member.z0_m == pytest.approx(rw.base_ref_z_m + plate_h, abs=1e-9)
+    cripple = next(m for m in members if m.child_key.startswith("cripple-sill-"))
+    assert cripple.z0_m == pytest.approx(rw.base_ref_z_m + plate_h, abs=1e-9)
+    assert cripple.z1_m == pytest.approx(sill.z0_m, abs=1e-9), "cripples carry the sill"
+
+
+def test_header_free_opening_registers_on_the_same_lines():
+    """The bay path frames the same two elevations — and it is the only framing in the
+    hole, so a misplaced sill there is the whole of what a small window shows."""
+    rw = _mitred_wall(4.0, 0.0, at_start=True)
+    _center, members = _fourteen_inch_window_wall()
+    plate_h = inch(1.5).meters
+    sill_line = rw.base_ref_z_m + inch(24).meters
+
+    sill = next(m for m in members if m.category == "sill")
+    assert sill.z1_m == pytest.approx(sill_line, abs=1e-9)
+    assert sill.z0_m == pytest.approx(sill_line - plate_h, abs=1e-9)
+    # The head nailer is the mirror image: it sits ON the head, backing it from above.
+    head = next(m for m in members if m.child_key.startswith("roughhead-"))
+    assert head.z0_m == pytest.approx(sill_line + inch(36).meters, abs=1e-9)
+
+
+def test_an_opening_that_reaches_the_floor_gets_no_rough_sill():
+    """A cased opening with ``sill_m == 0`` has the bottom plate as its sill. Emitting a
+    member anyway laid a 2x4 across the threshold, an inch and a half off the floor."""
+    rw = _mitred_wall(4.0, 0.0, at_start=True)
+    opening = SimpleNamespace(center_m=2.5 * _MODULE, width_m=inch(30).meters,
+                              height_m=inch(80).meters, sill_m=0.0,
+                              is_door=False, operation=None, header_spec=None,
+                              pocket_run_m=0.0, pocket_sign=0)
+    members = frame_wall(_plan_double(), rw, openings=[opening])
+    assert not [m for m in members if m.category == "sill"]
+    header = next(m for m in members if m.category == "header")
+    assert header.z0_m == pytest.approx(rw.base_ref_z_m + inch(80).meters, abs=1e-9)
+
+
 def test_header_free_opening_with_no_bounding_studs_adds_its_own_pair():
     # The bay's studs can be missing — a neighbouring opening's jamb pack takes them, or the
     # opening sits past the last module station. The sill and head nailer bear on them, so

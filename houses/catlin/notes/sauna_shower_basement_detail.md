@@ -40,5 +40,7 @@ source:
 
 - Ventilation: include HRV/ERV connections with adjustable cedar vent registers; intake low and away from heater, exhaust high above/near heater. Keep plastic vent pipe behind insulation.
 
-- Coordinate: thresholds (now flush throughout — see the slab note), the pan curb's two open sides, slip resistance, and transitions between sauna membrane/duckboards and shower tile.
+- **Revised 2026-08-25 — the room floor is sealed concrete, not tile.** `FX-B-SAUNA-SH` is a curbed *liner* pan: it brings its own waterproof floor inside the curb, so there is no tile bed to lay there and no reason to tile the wet floor outside it either. `RM-B-SAUNA.floor_finish` is `sealed-concrete` — densifier plus two coats on `SL-B-FLOOR`, which already slopes 1/8" per foot to `FX-B-SAUNA-FD`. The tile that remains in this room is `WP-B-SAUNA-SPLASH`, the pan's two closed wall sides, unchanged. The "shower tile" and "foam tile backer" bullets above are superseded for the *floor*; the wall build-up still stands. Duckboards over the sealed slab in the hot zone remain an owner option and are not modelled.
+
+- Coordinate: thresholds (now flush throughout — see the slab note), the pan curb's two open sides, slip resistance, and transitions between the sealed slab, any duckboards, and the pan curb.
 

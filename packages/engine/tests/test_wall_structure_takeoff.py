@@ -10,6 +10,8 @@ from __future__ import annotations
 
 from typehaus.takeoff.wall_structure import wall_structure_takeoff
 
+from _helpers import frames_structure
+
 
 def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     rows = wall_structure_takeoff(catlin_model)
@@ -49,11 +51,13 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
 
 def test_every_wall_bills_its_structure_exactly_once(catlin_model) -> None:
     """The regression gate. Asserted against *members*, not against the predicate the
-    takeoff selects on, so it cannot be satisfied circularly: a wall either frames studs
-    (billed in `framing`) or it appears here, never both and never neither."""
+    takeoff selects on, so it cannot be satisfied circularly: a wall either frames lumber
+    (billed in `framing`) or it appears here, never both and never neither.
+
+    The witness is every structure category, not ``"stud"`` alone — see
+    ``_helpers.FRAMED_STRUCTURE_CATEGORIES`` for the wall that made the difference."""
     monolithic = {tag for row in wall_structure_takeoff(catlin_model) for tag in row["tags"]}
-    framed = {wall.tag for wall in catlin_model.walls
-              if any(member.category == "stud" for member in wall.members)}
+    framed = {wall.tag for wall in catlin_model.walls if frames_structure(wall)}
     all_walls = {wall.tag for wall in catlin_model.walls}
 
     assert monolithic & framed == set(), (

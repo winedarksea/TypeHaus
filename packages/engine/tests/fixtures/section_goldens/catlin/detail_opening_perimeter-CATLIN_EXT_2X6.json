@@ -1844,6 +1844,62 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMW107AAAA",
+      "tag": "strapping-outrigger-002"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          433.5,
+          -13.437499999999998
+        ],
+        [
+          437.0,
+          -13.437499999999998
+        ],
+        [
+          437.0,
+          0.0
+        ],
+        [
+          433.5,
+          0.0
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          433.5,
+          80.0
+        ],
+        [
+          437.0,
+          80.0
+        ],
+        [
+          437.0,
+          97.71653543307087
+        ],
+        [
+          433.5,
+          97.71653543307087
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW107AAAA",
       "tag": "strapping-outrigger-003"
     },
     {
@@ -1852,19 +1908,19 @@
       "boundary": [
         [
           433.5,
-          -13.437499999999998
+          80.0
         ],
         [
           437.0,
-          -13.437499999999998
+          80.0
         ],
         [
           437.0,
-          0.0
+          97.71653543307087
         ],
         [
           433.5,
-          0.0
+          97.71653543307087
         ]
       ],
       "pattern": "metal",
@@ -1879,20 +1935,20 @@
       "node": "polyline",
       "points": [
         [
-          433.5,
-          80.0
-        ],
-        [
-          437.0,
-          80.0
-        ],
-        [
-          437.0,
-          97.71653543307087
+          432.0,
+          -13.437499999999998
         ],
         [
           433.5,
-          97.71653543307087
+          -13.437499999999998
+        ],
+        [
+          433.5,
+          -5.437499999999999
+        ],
+        [
+          432.0,
+          -5.437499999999999
         ]
       ],
       "layer": "S-FRAM",
@@ -1900,35 +1956,35 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMW107AAAA",
-      "tag": "strapping-outrigger-004"
+      "tag": "block-truss-002-00"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          433.5,
-          80.0
-        ],
-        [
-          437.0,
-          80.0
-        ],
-        [
-          437.0,
-          97.71653543307087
+          432.0,
+          -13.437499999999998
         ],
         [
           433.5,
-          97.71653543307087
+          -13.437499999999998
+        ],
+        [
+          433.5,
+          -5.437499999999999
+        ],
+        [
+          432.0,
+          -5.437499999999999
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "kdat"
+      "material": "spf"
     },
     {
       "space": "model",
@@ -1936,19 +1992,75 @@
       "points": [
         [
           432.0,
-          -13.437499999999998
+          -8.0
         ],
         [
           433.5,
-          -13.437499999999998
+          -8.0
         ],
         [
           433.5,
-          -5.437499999999999
+          0.0
         ],
         [
           432.0,
-          -5.437499999999999
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW107AAAA",
+      "tag": "block-truss-002-01"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          432.0,
+          -8.0
+        ],
+        [
+          433.5,
+          -8.0
+        ],
+        [
+          433.5,
+          0.0
+        ],
+        [
+          432.0,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          432.0,
+          80.0
+        ],
+        [
+          433.5,
+          80.0
+        ],
+        [
+          433.5,
+          88.0
+        ],
+        [
+          432.0,
+          88.0
         ]
       ],
       "layer": "S-FRAM",
@@ -1957,118 +2069,6 @@
       "closed": true,
       "uid": "CMW107AAAA",
       "tag": "block-truss-003-00"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          432.0,
-          -13.437499999999998
-        ],
-        [
-          433.5,
-          -13.437499999999998
-        ],
-        [
-          433.5,
-          -5.437499999999999
-        ],
-        [
-          432.0,
-          -5.437499999999999
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "spf"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          432.0,
-          -8.0
-        ],
-        [
-          433.5,
-          -8.0
-        ],
-        [
-          433.5,
-          0.0
-        ],
-        [
-          432.0,
-          0.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW107AAAA",
-      "tag": "block-truss-003-01"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          432.0,
-          -8.0
-        ],
-        [
-          433.5,
-          -8.0
-        ],
-        [
-          433.5,
-          0.0
-        ],
-        [
-          432.0,
-          0.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "spf"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          432.0,
-          80.0
-        ],
-        [
-          433.5,
-          80.0
-        ],
-        [
-          433.5,
-          88.0
-        ],
-        [
-          432.0,
-          88.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW107AAAA",
-      "tag": "block-truss-004-00"
     },
     {
       "space": "model",

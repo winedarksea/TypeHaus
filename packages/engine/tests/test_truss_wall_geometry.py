@@ -170,10 +170,13 @@ def test_a_block_covers_the_whole_stud_it_is_screwed_to(catlin_model):
             laps.append(overlap)
             if overlap < 0.75 * IN - 1e-6:
                 thin.append((wall.tag, round(centre / IN, 2), round(overlap / IN, 3)))
-    # 796 today. The floor is a vacuity guard, not a quantity: it was 800 while blocks
-    # inside a rough opening were being skipped by a coincidence of spacing rather
-    # than by the rule above, and excluding them deliberately costs a handful.
-    assert len(laps) > 750, "the field of the wall is what this measures"
+    # 717 today. The floor is a vacuity guard, not a quantity, and it has come down twice for
+    # reasons that are both improvements: 800 -> 750 when blocks inside a rough opening
+    # started being excluded by the rule above rather than by a coincidence of spacing, and
+    # 750 -> 700 on 2026-08-25 when the doubled outrigger at every wall seam went away
+    # (``solver.continuation_roles``) and took its blocks with it. Fewer blocks measured,
+    # none of them thin — which is the thing this actually asserts.
+    assert len(laps) > 700, "the field of the wall is what this measures"
     assert not thin, f"blocks lapping under 3/4\" of stud: {thin[:6]}"
     full = sum(1 for lap in laps if lap >= 1.5 * IN - 1e-6)
     assert full / len(laps) >= 0.85, (

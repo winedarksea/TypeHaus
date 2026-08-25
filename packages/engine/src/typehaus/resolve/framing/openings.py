@@ -138,6 +138,30 @@ def in_exclusion(station_m: float, zones: list[tuple[float, float]]) -> bool:
     return any(abs(station_m - center) <= half for center, half in zones)
 
 
+def _sill_datum(rw, z0: float) -> float:
+    """The elevation an opening's ``sill_m`` is measured up from.
+
+    ``ResolvedWall.base_ref_z_m`` — the wall's framing base — and never the stud bearing
+    line, which sits a bottom plate above it. The fallback to ``z0`` is for the solver's
+    own unit fixtures, which hand this function stand-in walls; a real ``ResolvedWall``
+    always answers.
+    """
+    return getattr(rw, "base_ref_z_m", z0)
+
+
+def _rough_sill_bottom(sill_top: float, z0: float) -> float | None:
+    """Underside of the rough sill whose top face is ``sill_top``, or ``None`` if there is
+    no room for one.
+
+    A rough sill's *top* is the rough opening — the window bears on it — so the member
+    hangs below the sill line rather than standing on it. An opening whose sill lands
+    within a plate of the framing base has the bottom plate itself as its rough sill; a
+    separate member there would be a sliver buried in the plate.
+    """
+    bottom = sill_top - _PLATE_THICKNESS_M
+    return None if bottom <= z0 + 1e-9 else bottom
+
+
 def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
                   z0: float, top_at, opening_index: int, spacing: float,
                   stud_stations: tuple[float, ...] = (),
@@ -148,13 +172,20 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     thickness = member_actual(member)[0] * M_PER_IN  # stud face dimension along the wall
     kings, jacks = jamb_pack_counts(_m(opening.width_m), pattern)
     center, half = opening.center_m, opening.width_m / 2
+    # ``z0`` is where a vertical member BEARS — the top of the bottom plate. It is not the
+    # datum a sill is measured from: ``ResolvedWall.base_ref_z_m`` is, and every other
+    # consumer of a sill reads it (``geometry_walls``, the buck and ladder blocking in
+    # ``truss_frame``, the furring cuts, the IFC void, the elevations). Framing an opening
+    # off ``z0`` put the whole pack a plate — 1 1/2" — above the hole it frames, which the
+    # viewer showed as a rough sill standing inside the glass of every window in the house.
+    sill_datum = _sill_datum(rw, z0)
     # Head = threshold + clear height, doors included. Doors used to skip the ``sill_m``
     # term on the assumption a door always starts at its host wall's own floor; the Catlin
     # garage breaks that (its overhead door drops a negative sill to the slab below the ICF
     # stem the wall bears on), and skipping the term there left the framed header 22" above
     # the head the wall body, the IFC void and the viewer had all already cut. Every
     # sill_m == 0 door is unaffected.
-    header_bottom = z0 + opening.sill_m + opening.height_m
+    header_bottom = sill_datum + opening.sill_m + opening.height_m
 
     # The same phase ``opening_exclusions`` asked with. The two verdicts must agree: one
     # saying "fits inside a bay, no pack" while the other leaves a module stud standing in
@@ -162,7 +193,7 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     if not needs_jamb_pack(opening, spacing, thickness, phase_m):
         return _frame_inside_one_bay(rw, direction, wall_start, opening, member, z0,
                                      top_at, opening_index, thickness, stud_stations,
-                                     header_bottom)
+                                     header_bottom, sill_datum)
 
     # A pocket moves one jamb pack outboard of the cavity. The rough-opening edge on that
     # side is the split jamb the leaf passes through — putting a trimmer there would stop
@@ -236,18 +267,21 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
                                                header_span)
 
     if not opening.is_door:
-        sill_z0 = z0 + opening.sill_m
+        sill_top = sill_datum + opening.sill_m
+        sill_bottom = _rough_sill_bottom(sill_top, z0)
         # The rough sill fits *between* the trimmers, spanning the rough opening only, so
         # its ends butt the jack inner faces instead of running through them.
         left = add(wall_start, scale(direction, center - half))
         right = add(wall_start, scale(direction, center + half))
-        out.append(FramedMember(rw.uid, f"sill-{opening_index}", "sill", member,
-                                left, right, sill_z0, sill_z0 + _PLATE_THICKNESS_M,
-                                opening.width_m))
+        if sill_bottom is not None:
+            out.append(FramedMember(rw.uid, f"sill-{opening_index}", "sill", member,
+                                    left, right, sill_bottom, sill_top,
+                                    opening.width_m))
         # Cripples under the rough sill retain the normal stud module without placing
         # framing through the opening itself.
         _append_sill_cripples(out, rw.uid, opening_index, direction, wall_start, center,
-                              half, z0, sill_z0, member)
+                              half, z0, sill_bottom if sill_bottom is not None else z0,
+                              member)
     # Head cripples depend only on the gap between the header (or its nailer) and the
     # plate underside — a door has no rough sill, but it has the same head condition a
     # window does.
@@ -321,7 +355,7 @@ def _append_track_backing(out: list[FramedMember], rw, header_left, header_right
 def _frame_inside_one_bay(rw, direction, wall_start, opening: WallOpening, member: str,
                           z0: float, top_at, opening_index: int, thickness: float,
                           stud_stations: tuple[float, ...],
-                          header_bottom: float) -> list[FramedMember]:
+                          header_bottom: float, sill_datum: float) -> list[FramedMember]:
     """Rough sill + head nailer for an opening that fits wholly inside one stud bay.
 
     No header and no jamb pack — but the bay's two bounding studs are load-bearing here:
@@ -360,9 +394,11 @@ def _frame_inside_one_bay(rw, direction, wall_start, opening: WallOpening, membe
     left = add(wall_start, scale(direction, bearing_start))
     right = add(wall_start, scale(direction, bearing_end))
     span = bearing_end - bearing_start
-    sill_z0 = z0 + opening.sill_m
-    out.append(FramedMember(rw.uid, f"sill-{opening_index}", "sill", member,
-                            left, right, sill_z0, sill_z0 + _PLATE_THICKNESS_M, span))
+    sill_top = sill_datum + opening.sill_m
+    sill_bottom = _rough_sill_bottom(sill_top, z0)
+    if sill_bottom is not None:
+        out.append(FramedMember(rw.uid, f"sill-{opening_index}", "sill", member,
+                                left, right, sill_bottom, sill_top, span))
     out.append(FramedMember(rw.uid, f"roughhead-{opening_index}", "blocking", member,
                             left, right, header_bottom,
                             header_bottom + _PLATE_THICKNESS_M, span))

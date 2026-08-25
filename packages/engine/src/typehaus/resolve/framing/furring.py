@@ -30,13 +30,19 @@ uses for load-bearing studs.
 from __future__ import annotations
 
 import math
+from collections.abc import Callable
 from dataclasses import replace
+from typing import Any
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.resolve.framing.solver import _wall_top_elevations, band_axis
+from typehaus.resolve.framing.solver import (
+    _wall_top_elevations,
+    band_axis,
+    continuation_roles,
+)
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
 from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
 from typehaus.resolve.intervals import subtract as _subtract_spans
@@ -75,9 +81,25 @@ def frame_furring(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     # A wall's layout line, so a batten grid that phase-locks to the studs follows them onto
     # the line when the assembly opts in (``FramingSpec.layout_origin``).
     lines_for_wall = lines_by_wall(model.layout_lines)
+    # A batten band splits at a tee exactly as the studs behind it do, and until now each
+    # half framed an end strip there: two outriggers 1-1/2" apart straddling a seam the
+    # storey above put somewhere else. On this wall that band is what the standing seam
+    # clips into, so those pairs are the visible vertical lines of the facade — the reason
+    # this pass needs the same continuation reading ``solver.frame_model`` takes, per
+    # furring layer, since it is that layer's own module that has to run through.
+    roles_by_layer: dict[str, dict[tuple[str, str], str]] = {}
+    resolved_by_tag = {wall.tag: wall for wall in model.walls}
+
+    def roles_for(layer_name: str) -> dict[tuple[str, str], str]:
+        if layer_name not in roles_by_layer:
+            roles_by_layer[layer_name] = continuation_roles(
+                model, lambda tag: _furring_module_signature(
+                    plan, resolved_by_tag.get(tag), lines_for_wall.get(tag), layer_name))
+        return roles_by_layer[layer_name]
+
     for rw in model.walls:
         members, wall_findings = frame_wall_furring(plan, rw, by_host.get(rw.tag, []),
-                                                    lines_for_wall.get(rw.tag))
+                                                    lines_for_wall.get(rw.tag), roles_for)
         findings.extend(wall_findings)
         # ``replace`` rather than a field-by-field rebuild, as in ``frame_model``: this pass
         # only appends members, and respelling the constructor drops fields added later.
@@ -86,9 +108,36 @@ def frame_furring(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     return findings
 
 
+def _furring_module_signature(plan: PlanModel, rw: ResolvedWall | None, line: object | None,
+                              layer_name: str) -> tuple[Any, ...] | None:
+    """What has to match for two walls' ``layer_name`` batten grids to be provably one grid.
+
+    Deliberately stricter than the stud signature ``solver`` uses: the *same layer name*, and
+    the same member laid the same way, because a band that changes stick or turns from flat
+    to on edge does not continue — it starts again, and its end strip is a real end strip.
+    """
+    if rw is None or line is None:
+        return None
+    assembly = plan.library.resolve_assembly(rw.assembly)
+    if assembly is None:
+        return None
+    spec = next((layer.framing for layer in assembly.layers
+                 if layer.name == layer_name
+                 and layer.function is LayerFunction.FURRING
+                 and layer.framing is not None), None)
+    if spec is None or getattr(spec, "layout_origin", "wall-start") != "line":
+        return None
+    if (spec.direction or VERTICAL).strip().lower() != VERTICAL:
+        return None
+    return (getattr(line, "tag", None), (spec.spacing or DEFAULT_SPACING).meters,
+            spec.member, spec.laid)
+
+
 def frame_wall_furring(
         plan: PlanModel, rw: ResolvedWall, openings: list[ResolvedOpening],
-        line: object | None = None) -> tuple[tuple[FramedMember, ...], list[Finding]]:
+        line: object | None = None,
+        roles_for: Callable[[str], dict[tuple[str, str], str]] | None = None,
+        ) -> tuple[tuple[FramedMember, ...], list[Finding]]:
     """Strapping for one wall: every FURRING layer that carries a ``FramingSpec``.
 
     Returns ``(members, findings)`` — the shape ``framing/soffit.py`` uses, for the same
@@ -115,13 +164,20 @@ def frame_wall_furring(
         if direction not in (VERTICAL, HORIZONTAL):
             findings.append(_direction_finding(rw, resolved.name, spec.direction))
             direction = VERTICAL
-        layout = _layout_vertical if direction == VERTICAL else _layout_horizontal
-        members.extend(layout(rw, resolved, spec, openings, line))
+        if direction == VERTICAL:
+            roles = roles_for(resolved.name) if roles_for is not None else {}
+            members.extend(_layout_vertical(
+                rw, resolved, spec, openings, line,
+                (roles.get((rw.tag, "start")), roles.get((rw.tag, "end")))))
+        else:
+            members.extend(_layout_horizontal(rw, resolved, spec, openings, line))
     return tuple(members), findings
 
 
 def _layout_vertical(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpening],
-                     line: object | None = None) -> list[FramedMember]:
+                     line: object | None = None,
+                     continuations: tuple[str | None, str | None] = (None, None),
+                     ) -> list[FramedMember]:
     """Battens on centre along the wall axis, split around any opening they cross.
 
     Each station normally frames one member from the base to the framing top (raked or
@@ -146,7 +202,9 @@ def _layout_vertical(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpeni
 
     stations = _module_stations(first + face / 2.0, last - face / 2.0, spacing, face,
                                 module=True,
-                                phase=layout_phase(spec, line, rw.tag, spacing))
+                                phase=layout_phase(spec, line, rw.tag, spacing),
+                                continuations=continuations,
+                                seams=(0.0, axis_len))
     # ``orient`` is the member's *thickness* axis (profiles.py convention). A stud's
     # thickness runs along the wall; a furring strip is laid flat, so its 3/4" thickness
     # runs *through* the wall and its 3-1/2" face lies on it. Passing the wall direction
@@ -293,7 +351,9 @@ def band_extent(polygon, p0, direction, axis_len: float) -> tuple[float, float]:
 
 
 def _module_stations(first: float, last: float, spacing: float, width: float,
-                     module: bool = False, phase: float = 0.0) -> list[float]:
+                     module: bool = False, phase: float = 0.0,
+                     continuations: tuple[str | None, str | None] = (None, None),
+                     seams: tuple[float, float] = (0.0, 0.0)) -> list[float]:
     """``first`` on centre to ``last``, with ``last`` always framed.
 
     Same rule the stud module follows: a strip at each end of the run whatever the
@@ -319,24 +379,40 @@ def _module_stations(first: float, last: float, spacing: float, width: float,
     keeping the old promise to nothing. ``band_axis`` only ever translates the axis
     perpendicular, never along it, so the band's station 0 and the wall's are the same
     station and one phase serves both.
+
+    ``continuations`` marks an end that is not an end — the band runs on into a collinear
+    neighbour whose grid is this grid (``solver.continuation_roles``). There the mandatory end
+    strip is dropped and the module is let out to the seam itself (``seams``, the wall-local
+    station of each), because the strip that would have been held a full face clear of an end
+    strip has no end strip to clear. A seam landing *on* the grid is framed by the ``"owner"``
+    half alone, so it carries one strip rather than two in the same 1-1/2".
     """
     if last < first:
         return []
-    stations = [first]
+    start_cont, end_cont = continuations
+    seam_start, seam_end = seams
+    stations = [] if start_cont else [first]
+    low = seam_start if start_cont else first + width
+    high = seam_end if end_cont else last - width
     if module and spacing > 0.0:
-        index = math.ceil((first + width - phase) / spacing)
+        index = math.ceil((low - phase) / spacing)
         station = phase + index * spacing
-        while station < last - width + 1e-9:
-            stations.append(station)
+        while station < high + 1e-9:
+            contested = ((start_cont == "follower" and abs(station - seam_start) < 1e-9)
+                         or (end_cont == "follower" and abs(station - seam_end) < 1e-9))
+            if not contested:
+                stations.append(station)
             index += 1
             station = phase + index * spacing
     else:
         index = 1
-        while first + index * spacing < last - width + 1e-9:
+        while first + index * spacing < high + 1e-9:
             stations.append(first + index * spacing)
             index += 1
-    if last - stations[-1] > width - 1e-9:
+    if not end_cont and (not stations or last - stations[-1] > width - 1e-9):
         stations.append(last)
+    if not stations:
+        stations = [first] if last - first < width - 1e-9 else [first, last]
     return stations
 
 

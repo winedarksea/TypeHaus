@@ -106,7 +106,7 @@ REGISTERS_HVAC_SECOND = [
     # humid air stratifies — the wettest air in the room is the air at the ceiling, which is
     # also the air directly under FS-ATTIC's I-joists.
     Register(uid="C7LM4KAP2X", tag="REG-S-ERV-PLANT-EXH", kind=DuctSystem.EXHAUST,
-             room="RM-S-PLANT", position=pt(ft(14), ft(4, 8)), duct_ref="DU-S-PLANT-EXH",
+             room="RM-S-PLANT", position=pt(m(3.61486), m(0.2419)), duct_ref="DU-S-PLANT-EXH",
              type_ref="REG-T-ERV-PLANT-EXH", design_cfm=25,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # The one return, at the hall's south end right AT EQ-S-HP1-AH (2026-07-30), 1" north
@@ -287,7 +287,7 @@ REGISTERS_MAIN = [
 # sauna's stale pickup, which is the one wall-mounted terminal in the house (see below).
 REGISTERS_BASEMENT = [
     Register(uid="CBRV01AAAA", tag="REG-B-SUP1", kind=DuctSystem.SUPPLY, room="RM-B-GYM",
-            position=pt(ft(27), ft(9)), duct_ref="DU-B-ERV-SUP", type_ref="REG-T-ERV-SUP",
+            position=pt(m(5.75157), m(3.2161)), duct_ref="DU-B-ERV-SUP", type_ref="REG-T-ERV-SUP",
             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     # REG-B-SUP2 is back (2026-08-01), same hole and uid as before it was dropped on
     # 2026-07-29 for sharing the basement's open volume with the gym. That argument missed
@@ -322,7 +322,7 @@ REGISTERS_BASEMENT = [
     # EXHAUST at 20 cfm since 2026-08-01: the room is Occupancy.BATHROOM and its window's
     # openable area (1.2 sf) falls short of R303.3's 1.5 sf, so mechanical exhaust governs.
     Register(uid="CBRV04AAAA", tag="REG-B-EXH2", kind=DuctSystem.EXHAUST, room="RM-B-SAUNA",
-            position=pt(ft(11, 5.5), ft(1, 3.5)), duct_ref="DU-B-ERV-RET",
+            position=pt(m(2.85824), m(0.407047)), duct_ref="DU-B-ERV-RET",
             type_ref="REG-T-ERV-SAUNA-EXH", design_cfm=20,
             mount=Mount(kind=MountKind.WALL, elevation=inch(4))),
     # Fresh air in high, over the stones, directly above EQ-B-SAUNA-HTR (west liner,
@@ -350,6 +350,6 @@ REGISTERS_BASEMENT = [
 # pattern as every other storey. The attic is one cathedral volume, so one extract suffices.
 REGISTERS_ATTIC = [
     Register(uid="CARV04AAAA", tag="REG-A-RET1", kind=DuctSystem.RETURN, room="RM-A-WEST",
-            position=pt(ft(6), ft(31, 4)), duct_ref="DU-A-ERV-RET", type_ref="REG-T-ERV-EXH",
+            position=pt(m(0.671896), m(10.6354)), duct_ref="DU-A-ERV-RET", type_ref="REG-T-ERV-EXH",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
 ]

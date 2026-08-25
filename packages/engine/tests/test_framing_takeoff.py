@@ -11,6 +11,8 @@ from typehaus.takeoff import (
     structural_solids_takeoff,
 )
 
+from _helpers import frames_structure
+
 
 def test_order_length_rounds_up_to_stock() -> None:
     assert _order_length_ft(7.5) == 8
@@ -274,7 +276,7 @@ def test_every_wall_layer_is_billed_or_waived(catlin_model) -> None:
                 assert (scope, function, layer.material_ref) in envelope, (
                     f"{wall.tag}: {function} layer {layer.material_ref} is billed nowhere")
             elif function == LayerFunction.STRUCTURE.value:
-                framed = any(member.category == "stud" for member in wall.members)
+                framed = frames_structure(wall)
                 assert framed or wall.tag in monolithic, (
                     f"{wall.tag}: its {layer.material_ref} STRUCTURE layer frames no "
                     "members and is not in `wall_structure` — it is billed nowhere")

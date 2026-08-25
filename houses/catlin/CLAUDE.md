@@ -168,6 +168,10 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   seat costs. **The floor finish follows the deck**: `SL-M-DECK.floor_finish` is `polished-concrete` (the cap's top
   *is* the finished floor), `RM-M-LIVING.floor_finish="lvp"` is the field finish over the
   wood bays only, and the split is derived — moving `_BAND_Y` moves the finish with it.
+  Since 2026-08-25 that room carries a second, **authored** zone as well: the hall band
+  (x 6'-0 5/8"-18'-0", y 22'-4 5/8"-26'-3 3/8") is `vinyl-sheet`, continuous with the
+  mudroom, laundry and powder bath. Authored zones win over derived ones, but these two do
+  not overlap — the hall is west of x=18' and `SL-M-DECK` starts there.
   `notes/mixed_deck_movement_joint.md` has the T-moulding (a reducer until 2026-08-23 —
   the two walking surfaces are flush within a plank's tolerance now), the L-shaped
   transition and the cream-polish spec.
@@ -284,6 +288,55 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
       "price a node move before making it". The new one is its mirror: a node may move
       freely, but a window that moves off the grid stays off it, and a facade whose windows
       disagree with the grid can no longer be blamed on authoring order.
+    - **A tee is not a wall end (2026-08-25, second half of the same fix).** Unifying the
+      module was necessary and was not sufficient: each of the six or seven segments a facade
+      is authored as still framed its *own end stud* where it met the next, so every seam
+      carried two sticks in the same 1-1/2", off the module, at a station the storey above
+      split somewhere else. Those seams are gone — where two collinear segments provably
+      share one grid, `framing/solver.py::continuation_roles` drops both end studs and lets
+      the module run through, one `"owner"` claiming a seam that lands on the grid. The same
+      reading now runs the **outrigger band** (`framing/furring.py`), which is the line the
+      standing seam clips to. All four facades now frame an identical 28-strip outrigger grid
+      on main, second and attic — 15-1/4" pan at each corner, then 25 even 16" bays.
+      `test_catlin_contract_m3.py::test_each_facade_outrigger_band_is_one_grid_on_every_storey`
+      and `::test_no_facade_stud_stands_off_the_module_except_at_a_corner` pin it, per facade.
+      The only members left off the grid are the corner packs (identical on every storey) and
+      the jamb packs, which sit where their rough openings put them and always did.
+    - **AND THE INSIDE OF THE HOUSE, TOO (2026-08-25, third and last round).** The two
+      rounds above were both about facades, and the house is not a facade. Five interior
+      bearing assemblies now set `layout_origin="line"` on their STRUCTURE layer:
+      `CATLIN_INT_2X6_BRG` and `PLANT_INT_2X6_BRG_HUMID` (the x=18'-0" **centreline**,
+      `W-M-C1..C5B` / `W-S-C1..C4B` / `W-A-C1..C2`), and
+      `CATLIN_STAIRWALL_INT_2X6_BRG`, `CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX`,
+      `CATLIN_MUDROOM_INT_2X6_EXPOSED` (the **stair line**, `W-B-STR/STR2/STR3` under
+      `W-M-STRW/STRW2`). The centreline is the one that actually matters: it is what carries
+      `RB-HOUSE` continuously to the footings, so "studs directly over the studs below"
+      (R602.3.3) is a bearing requirement there, not a facade preference. It used to run
+      three storeys on three different phases, each of its twelve segments restarting the
+      module at its own start node.
+      `test_catlin_contract_m3.py::test_the_centreline_bearing_wall_is_one_stud_grid_on_every_storey`
+      pins it, and `::test_upper_storey_studs_stand_over_studs` pins the whole house — 94 of
+      237 stacked upper-storey studs still stand over nothing, down from 113, and that is a
+      **ceiling, not a target**: a module stud suppressed under a window on one storey and
+      not the other, and jamb packs at differing stations because the windows differ, are
+      both correct framing and neither will ever go to zero.
+      - **STRUCTURE spec only, unlike the exterior pair.** An interior wall has no vertical
+        FURRING band to phase-lock to the studs — both liner bands here are
+        `direction="horizontal"` and `furring._layout_horizontal` takes no phase — so the
+        paired stud+outrigger opt-in the facades needed has nothing to pair with.
+      - **The honest caveat: "stacked" is not "on the house grid".** `layout_lines._orient`
+        puts a line's origin at its extreme member end, not at the house origin. The
+        centreline chain happens to end at y=0, so its grid *is* the house's 16" grid — by
+        luck. `LL-W-B-STR` starts at y=216" and its grid sits 8" off. Interior studs stack
+        storey to storey, which is what was asked; do not read more into it than that.
+      - **Not opted in, deliberately.** `INT_2X4_PARTITION` and the other non-bearing
+        partitions (~46 walls) — bearing lines first. And the *staggered* assemblies, which
+        must not be widened into without reading `plans/TODO.md` first:
+        `framing/solver.py`'s face-parity rule rounds a station to decide which face a stud
+        sits on, and at a phase near 4" or 12" banker's rounding collapses it into runs of
+        same-face studs, destroying the acoustic decoupling. It cannot fire while every
+        staggered wall has phase 0.0, and a non-zero phase is exactly what opting one in
+        would hand it.
   - **Columns.** The south face stacks its columns through main and second at
     x 4'-0" and 32'-0"; the second storey adds 9'-4" and 26'-8" where main has none.
     **Both storeys are now mirror-symmetric about the x=18'-0" ridge** — main reads

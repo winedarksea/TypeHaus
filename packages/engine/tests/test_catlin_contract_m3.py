@@ -28,7 +28,7 @@ from typehaus.resolve.geometry_members import member_solid
 from typehaus.source import load_plan
 from typehaus.checks import run
 from typehaus.findings import Result
-from _helpers import CATLIN as CATLIN_DIR
+from _helpers import CATLIN as CATLIN_DIR, frames_structure
 
 # Old CatlinHouseSpec contract values.
 HOUSE_SIZE_FT = 36.0
@@ -517,6 +517,51 @@ def test_exterior_wall_spans_floor_to_floor_across_the_rim(catlin_model):
         "studs and plates must not run up into the joist band"
     studs = [m for m in lower.members if m.category == "stud"]
     assert studs and max(m.z1_m for m in studs) < lower.plate_top_z_m + 1e-6
+
+
+def test_opening_framing_registers_with_the_opening_it_frames(catlin_model):
+    """Every rough sill's top face and every header's underside land ON the hole.
+
+    The framing solver hands ``frame_opening`` the stud bearing line — the top of the
+    bottom plate — and until 2026-08-25 that value was used for two different jobs: where
+    a jack bears (right) and what a ``sill_m`` is measured from (wrong). ``base_ref_z_m``
+    is the sill datum, and every other consumer already read it — the wall body's cut, the
+    buck, the ladder blocking, the furring cuts, the IFC void, the elevations — so the
+    stud wall alone framed 1 1/2" high. The rough sill was flipped on top of that: emitted
+    upward from the sill line instead of hanging under it, which put it 3" into the
+    opening and left a plank of 2x6 lying across the glass of every window in the house.
+
+    Nothing checked the two against each other, which is why it shipped. This does.
+    """
+    plate_h = inch(1.5).meters
+    checked = 0
+    for wall in catlin_model.walls:
+        members = [m for m in catlin_model.all_members() if m.parent_uid == wall.uid]
+        if not any(m.category in ("plate", "stud") for m in members):
+            continue  # concrete, brick, strapping-only: no stud pack to register
+        openings = [o for o in catlin_model.openings if o.host_wall == wall.tag]
+        heads = sorted(wall.base_ref_z_m + o.sill_m + o.height_m for o in openings)
+        # A rough sill only exists where the opening leaves room for one under it: a cased
+        # opening running to the floor has the bottom plate as its sill and gets no member.
+        sills = sorted(wall.base_ref_z_m + o.sill_m for o in openings
+                       if not o.is_door
+                       and wall.base_ref_z_m + o.sill_m - plate_h
+                       > wall.base_ref_z_m + plate_h + 1e-9)
+        got_sills = sorted(m.z1_m for m in members if m.category == "sill")
+        got_heads = sorted(m.z0_m for m in members
+                           if m.category == "header" or m.child_key.startswith("roughhead-"))
+        assert got_sills == pytest.approx(sills, abs=1e-9), \
+            f"{wall.tag}: rough sill tops do not land on their openings' sill lines"
+        for head in got_heads:
+            assert any(head == pytest.approx(h, abs=1e-9) for h in heads), \
+                f"{wall.tag}: a header/head nailer at {head} sits on no opening's head"
+        # The sill hangs *below* the line it carries, one plate deep.
+        for member in members:
+            if member.category != "sill":
+                continue
+            assert member.z1_m - member.z0_m == pytest.approx(plate_h, abs=1e-9)
+        checked += len(openings)
+    assert checked > 75, "the whole plan's openings, not a handful"
 
 
 def test_raked_gable_king_studs_match_roof_plane_at_own_station(catlin_model):
@@ -1211,11 +1256,13 @@ def test_garage_overhead_door_opens_from_the_slab_at_grade(catlin_model):
 
     # The framed header follows the head down too. It used to be pinned to the host wall's
     # base regardless of sill, which left the LVL 22" above the hole every other emitter cut.
-    plate_top = min(m.z1_m for m in catlin_model.all_members()
-                    if m.parent_uid == wall.uid and m.child_key == "plate-bottom")
+    # And it sits ON the head, not a plate above it: until 2026-08-25 the opening pack was
+    # framed off the stud bearing line rather than the wall's framing base, so every header
+    # in the house stood 1 1/2" clear of the hole it carries — see
+    # test_opening_framing_registers_with_the_opening_it_frames.
     header = next(m for m in catlin_model.all_members()
                   if m.parent_uid == wall.uid and m.category == "header")
-    assert header.z0_m == pytest.approx(plate_top + door.sill_m + door.height_m)
+    assert header.z0_m == pytest.approx(head)
 
     # …and the cripples the docstring promises are actually there. Until 2026-08-23 they
     # were not: the head family was emitted from inside the window-only branch that carries
@@ -1687,3 +1734,200 @@ def test_the_laundry_pocket_clears_the_bearing_corner_and_owns_its_wall(catlin_m
     assert not [op for op in catlin_model.openings if op.host_wall == "W-M-HS4"]
     assert not [run for run in catlin_model.pipe_runs
                 if "W-M-HS4" in (run.wall_refs or ())]
+
+
+# --- one grid per facade ------------------------------------------------------------------
+
+#: The four exterior layout lines, named by a wall on each (→ resolve/layout_lines.py).
+FACADE_WALLS = ("W-M-N1", "W-M-S1", "W-M-E1", "W-M-W1")
+
+
+def _facade_stations(model, wall_tag: str, category: str, child_prefix: str = ""):
+    """``{storey: [station in inches]}`` for one facade line's members of ``category``.
+
+    ``child_prefix`` narrows a category that more than one layer writes into: ``strapping``
+    carries both the exterior outrigger band and the plant room's horizontal liner courses,
+    and only the first is a facade grid.
+    """
+    from typehaus.resolve.layout_lines import lines_by_wall
+
+    line = lines_by_wall(model.layout_lines)[wall_tag]
+    (ox, oy), (dx, dy) = line.origin, line.direction
+    walls = {w.tag: w for w in model.walls}
+    out: dict[str, set[float]] = {}
+    for member in line.members:
+        wall = walls.get(member.wall_tag)
+        if wall is None:
+            continue
+        for framed in wall.members:
+            if framed.category != category:
+                continue
+            if child_prefix and not framed.child_key.startswith(child_prefix):
+                continue
+            station = ((framed.p0[0] - ox) * dx + (framed.p0[1] - oy) * dy) / inch(1).meters
+            out.setdefault(member.storey, set()).add(round(station, 3))
+    return {storey: sorted(values) for storey, values in out.items()}
+
+
+def _off_module(stations) -> list[float]:
+    return [s for s in stations if min(s % 16.0, 16.0 - s % 16.0) > 0.02]
+
+
+@pytest.mark.parametrize("wall_tag", FACADE_WALLS)
+def test_each_facade_outrigger_band_is_one_grid_on_every_storey(catlin_model, wall_tag):
+    """The line the standing seam clips to, and so the one the eye reads off the street.
+
+    The outriggers are a 16" module and the panel above them is a 16" module, so the two are
+    the same line or the facade is wrong. Every storey of a facade must therefore lay out the
+    *identical* set of stations: the module itself, plus one end strip held in at each true
+    building corner. What this rules out is the old behaviour, where each of the six or seven
+    wall segments a facade is authored as framed its own end strip at the tee it was split
+    at — a doubled panel line on main that the storey above put somewhere else entirely.
+    """
+    by_storey = _facade_stations(catlin_model, wall_tag, "strapping",
+                                 "strapping-outrigger-")
+    assert set(by_storey) == {"main", "second", "attic"}, by_storey.keys()
+    main, second, attic = (by_storey["main"], by_storey["second"], by_storey["attic"])
+    assert main == second == attic, (
+        f"{wall_tag}: the outrigger grid differs storey to storey\n"
+        f"  main   {main}\n  second {second}\n  attic  {attic}")
+    # Two off-module strips and no more: the end strip held inside each corner.
+    assert len(_off_module(main)) == 2, _off_module(main)
+    interior = [s for s in main if s not in _off_module(main)]
+    gaps = {round(b - a, 3) for a, b in zip(interior, interior[1:], strict=False)}
+    assert gaps <= {16.0}, f"{wall_tag}: the module breaks at {sorted(gaps)}"
+
+
+@pytest.mark.parametrize("wall_tag", FACADE_WALLS)
+def test_no_facade_stud_stands_off_the_module_except_at_a_corner(catlin_model, wall_tag):
+    """Studs stack up a facade, and the seam studs were the last thing stopping them.
+
+    A stud is allowed off the module in exactly one place — packed into a building corner,
+    where the corner square and not the grid says where it goes, and where every storey packs
+    it identically. Anywhere else an off-module stud is a wall segment that framed its own
+    end at a tee. (King and jack studs are a different category and are not swept here: a
+    jamb pack is deliberately off-module, sitting where its rough opening puts it.)
+    """
+    by_storey = _facade_stations(catlin_model, wall_tag, "stud")
+    corners = (min(min(v) for v in by_storey.values()),
+               max(max(v) for v in by_storey.values()))
+    for storey, stations in sorted(by_storey.items()):
+        strays = [s for s in _off_module(stations)
+                  if min(abs(s - corners[0]), abs(s - corners[1])) > inch(6).inches]
+        assert not strays, f"{wall_tag} on {storey}: studs off the facade grid at {strays}"
+
+
+# --- the interior: the centreline bearing line -------------------------------------------
+#: The x=18'-0" centreline, named by a wall on it. `LL-W-A-C1` carries `W-M-C1..C5B`,
+#: `W-S-C1..C4B` and `W-A-C1..C2` — twelve walls on three storeys — and it is the load path
+#: R602.3.3 is written about: `RB-HOUSE` bears on it continuously down to the footings.
+CENTRELINE_WALL = "W-A-C1"
+
+
+def _line_breaks(model, wall_tag: str) -> list[float]:
+    """Every station, in inches, where a segment of the line starts or stops.
+
+    A stud that is off the module is only defensible at one of these: it is the end stud of
+    a segment whose neighbour does not continue the grid. Anywhere else it is a wall that
+    laid its module out from its own start node.
+    """
+    from typehaus.resolve.layout_lines import lines_by_wall
+
+    line = lines_by_wall(model.layout_lines)[wall_tag]
+    walls = {w.tag: w for w in model.walls}
+    out: set[float] = set()
+    for member in line.members:
+        wall = walls.get(member.wall_tag)
+        if wall is None:
+            continue
+        span = math.dist(*wall.axis) / inch(1).meters
+        start = member.u_offset_m / inch(1).meters
+        out.update((round(start, 3), round(start + member.direction_sign * span, 3)))
+    return sorted(out)
+
+
+def test_the_centreline_bearing_wall_is_one_stud_grid_on_every_storey(catlin_model):
+    """The interior analogue of the facade tests above, on the wall that carries the ridge.
+
+    Three storeys used to lay this line out on three different phases, and every one of its
+    twelve segments restarted the 16" module at its own start node — on the house's primary
+    load path, where "studs directly over the studs below" is a bearing requirement and not
+    a facade preference. `CATLIN_INT_2X6_BRG` and `PLANT_INT_2X6_BRG_HUMID` now set
+    `layout_origin="line"`, so all three read off one grid.
+
+    The line's origin lands on the house origin here — `_orient` puts it at the extreme
+    member end, and this chain happens to end at y=0 — so the grid is *the* 16" grid and the
+    assertion can be made in the plan frame rather than relative to the line. That is luck,
+    not a property: `LL-W-B-STR` starts at y=216" and its grid will sit 8" off the house's.
+    """
+    by_storey = _facade_stations(catlin_model, CENTRELINE_WALL, "stud")
+    assert {"main", "second", "attic"} <= set(by_storey), sorted(by_storey)
+
+    breaks = _line_breaks(catlin_model, CENTRELINE_WALL)
+    shared: set[float] | None = None
+    for storey in ("main", "second", "attic"):
+        stations = by_storey[storey]
+        off = _off_module(stations)
+        # Every off-module stud is a segment end. Not "near a corner", as on a facade: an
+        # interior line breaks where a room does, so the end studs are wherever the chain
+        # stops being provably continuous — 268" on main and second, 310"/370" where the
+        # next segment starts somewhere the module does not reach.
+        strays = [s for s in off if min(abs(s - b) for b in breaks) > inch(12).inches]
+        assert not strays, f"{storey}: studs off the centreline grid at {strays}"
+        module = [s for s in stations if s not in off]
+        assert len(module) >= 15, f"{storey}: only {len(module)} module studs"
+        shared = set(module) if shared is None else (shared & set(module))
+
+    # Not merely "each storey is on a 16" grid" — the same stations, storey to storey. Ten
+    # of them run the full height of the house; the rest are where one storey has a door or
+    # a segment the others do not.
+    assert shared is not None and len(shared) >= 10, sorted(shared or ())
+
+
+def test_upper_storey_studs_stand_over_studs(catlin_model):
+    """The house-wide metric, and the only thing that would catch a later un-stacking.
+
+    Nothing in `checks/` measures this. Walk `model.stack_edges`, skip any lower wall that
+    frames no lumber (a stud cannot stack on concrete, and 13 of the 75 edges are pours
+    under framed walls), project both walls' studs onto the upper wall's own axis, and count
+    the upper studs standing over nothing.
+
+    The pinned number is a ceiling, not a target, and it is not zero and should not be: a
+    module stud suppressed under a window on one storey and not the other, and jamb packs at
+    different stations because the windows differ, are both correct framing. What the pin
+    catches is the whole house drifting back apart — it fell from 113 to 94 when the five
+    interior bearing assemblies joined the four facades on `layout_origin="line"`.
+    """
+    walls = {w.tag: w for w in catlin_model.walls}
+
+    def studs(wall):
+        return [m for m in wall.members if m.category == "stud"]
+
+    carriers: dict[str, list[str]] = {}
+    for edge in catlin_model.stack_edges:
+        lower, upper = walls.get(edge.lower_wall), walls.get(edge.upper_wall)
+        if lower is None or upper is None or not frames_structure(lower):
+            continue
+        carriers.setdefault(edge.upper_wall, []).append(edge.lower_wall)
+
+    tol = inch(0.5).meters
+    total, orphans = 0, []
+    for upper_tag, lower_tags in sorted(carriers.items()):
+        upper = walls[upper_tag]
+        (ax, ay), (bx, by) = upper.axis
+        span = math.dist((ax, ay), (bx, by))
+        dx, dy = (bx - ax) / span, (by - ay) / span
+
+        def station(member, ax=ax, ay=ay, dx=dx, dy=dy):
+            return (member.p0[0] - ax) * dx + (member.p0[1] - ay) * dy
+
+        below = [station(b) for tag in lower_tags for b in studs(walls[tag])]
+        for stud in studs(upper):
+            total += 1
+            if not any(abs(station(stud) - b) <= tol for b in below):
+                orphans.append(f"{upper_tag}/{stud.child_key}")
+
+    assert total >= 230, f"fixture regression: only {total} stacked studs found"
+    assert len(orphans) <= 94, (
+        f"{len(orphans)}/{total} upper-storey studs stand over no stud below "
+        f"(was 94/237); first offenders {orphans[:12]}")

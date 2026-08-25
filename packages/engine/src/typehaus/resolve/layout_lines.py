@@ -42,8 +42,17 @@ from typehaus.model.plan import PlanModel
 from typehaus.quantities import ft, inch
 
 # Datum-face alignment tolerance, and the minimum in-plane overlap that makes two walls on
-# different storeys one line. Both are ``stacking.py``'s numbers on purpose: two passes
-# disagreeing about which walls are stacked would be worse than either being wrong.
+# different storeys one line. Both are ``stacking.py``'s numbers on purpose, and ``_stacks``
+# now applies them to the same *question* ``stacking._axis_match`` asks — collinear within
+# ``_TOL``, overlapping by ``_MIN_OVERLAP``, and nothing about vertical adjacency.
+#
+# What the two passes still do not share is the geometry they feed those numbers: this pass
+# measures on the **datum face** (``Storey.vertical_datum``, so a width change stacks),
+# ``_axis_match`` measures on the raw **node** axis. On concrete under wood those differ by
+# more than ``_TOL`` — 43.8 mm at catlin's basement, 57.0 mm at the garage — so 13 pours-
+# under-framed-walls stack in one pass and not the other. Pours frame no studs, so nothing
+# reads the difference today; ``plans/TODO.md`` logs the wider "four matchers, three
+# tolerances" problem, and warns that unifying them is not a mechanical edit.
 _TOL = inch(0.5).meters
 _MIN_OVERLAP = ft(2).meters
 # Two walls of one storey chain when they share a node and run the same way. The node is
@@ -180,7 +189,9 @@ def _collinear(a: _Segment, b: _Segment, tol: float) -> float:
     """Overlap length of ``b`` projected on ``a``'s line, or 0 if they are not collinear.
 
     ``stacking._axis_match``'s rule, kept deliberately identical: parallel (reversal
-    allowed), within ``tol`` of the same line, and overlapping in projection.
+    allowed), within ``tol`` of the same line, and overlapping in projection. Identical in
+    the arithmetic, that is — the *segments* handed in here are datum-face axes, where
+    ``_axis_match`` is handed raw node axes. See the note at ``_TOL``.
     """
     da, db = _unit(*a), _unit(*b)
     if da is None or db is None:
@@ -298,14 +309,23 @@ def _vertical_merge(groups: list[list[_Seg]], _plan: PlanModel) -> list[list[_Se
 
 
 def _stacks(lower: list[_Seg], upper: list[_Seg]) -> bool:
+    """Collinear and overlapping, or authored as a stack. Deliberately *not* vertical
+    adjacency.
+
+    This used to gate on the two walls' z-extents touching within ``_TOL``. Platform framing
+    puts a floor between a wall's top plate and the base of the wall above — 13 3/8" at
+    catlin's basement band, 12" above it — so that arm never fired on a real house, and a
+    pair merged only when the author had written ``Wall.stacks_on`` by hand. catlin carries
+    it on 52 walls, all exterior or centreline; every interior wall fell through, landing 22
+    of the house's 75 stack edges on two different layout lines and making
+    ``layout_origin="line"`` a no-op for them no matter what the assembly asked for.
+
+    Dropping the gate is what makes this function ask ``stacking._axis_match``'s question and
+    no other. A setback wall is still a line of its own — that is ``_MIN_OVERLAP``'s job, and
+    it is unchanged.
+    """
     for a in lower:
         for b in upper:
-            adjacent = (abs(a.z1_m - b.z0_m) <= _TOL or abs(b.z1_m - a.z0_m) <= _TOL)
-            authored = (getattr(b.wall, "stacks_on", None) == a.wall.tag
-                        or getattr(a.wall, "stacks_on", None) == b.wall.tag)
-            # Not adjacent vertically and not authored as a stack: not one line.
-            if not adjacent and not authored:
-                continue
             if _collinear(a.axis, b.axis, _TOL) >= _MIN_OVERLAP:
                 return True
             if getattr(b.wall, "stacks_on", None) == a.wall.tag:

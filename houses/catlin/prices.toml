@@ -1193,15 +1193,15 @@
 # Sources: homeguide.com 2026 LVP / carpet / carpet-padding / tile-flooring cost charts,
 # dgfloors.com carpet grade table, angi.com oak flooring 2026, homeadvisor.com rubber floor.
 # $/SF on the ORDER quantity (waste included), by finish
-"carpet" = { material = { low = 1.5, high = 4 }, labour = { low = 1, high = 2.25 } }  # 2533 SF — labour INCLUDES pad and tack strip
-"carpet-pad" = { material = { low = 0.35, high = 1 }, labour = { low = 0, high = 0 } }  # 2533 SF — labour is 0 ON PURPOSE: laying the pad is inside the carpet rate above
-"lvp" = { material = { low = 2, high = 5.5 }, labour = { low = 1.5, high = 3.25 } }  # 1272 SF — click-lock floating; glue-down or herringbone would be +$1.00-2.50
+"carpet" = { material = { low = 1.5, high = 4 }, labour = { low = 1, high = 2.25 } }  # 1343 SF — labour INCLUDES pad and tack strip
+"carpet-pad" = { material = { low = 0.35, high = 1 }, labour = { low = 0, high = 0 } }  # 1343 SF — labour is 0 ON PURPOSE: laying the pad is inside the carpet rate above
+"lvp" = { material = { low = 2, high = 5.5 }, labour = { low = 1.5, high = 3.25 } }  # 766 SF — click-lock floating; glue-down or herringbone would be +$1.00-2.50
 # ** POSSIBLE DOUBLE-COUNT, flagged not resolved. ** Most 5-8mm SPC/rigid-core plank ships with
 # an attached IXPE pad, in which case this layer should not exist at all and the row is buying
 # a product the floor does not need. The plan carries it as an explicit layer, so it is priced
 # — but the labour floor is 0 because when a separate pad IS used it rolls out ahead of the
 # plank at almost no marginal time. Resolve the spec before ordering.
-"lvp-underlayment" = { material = { low = 0.25, high = 0.75 }, labour = { low = 0, high = 0.25 } }  # 1272 SF
+"lvp-underlayment" = { material = { low = 0.25, high = 0.75 }, labour = { low = 0, high = 0.25 } }  # 766 SF
 "oak" = { material = { low = 4, high = 8 }, labour = { low = 7.5, high = 12.5 } }  # 351 SF — labour INCLUDES sand and finish (nail-down $4.00-6.50 + 3-coat site finish $3.50-6.00). ** 351 SF is UNDER most Twin Cities sand-and-finish minimums ($1,200-1,800 mobilisation plus a trip per coat) — carry the HIGH end or take it as a lump **
 # 2026-08-21: SL-M-DECK's cap. A polish is not a covering and not the sealer above it —
 # it is a mechanical grind, 4-6 passes on progressively finer diamonds, with a lithium
@@ -1216,8 +1216,14 @@
 # concrete chart, CPAA cream-polish class specifications.
 "polished-concrete" = { material = { low = 0.75, high = 2 }, labour = { low = 3.5, high = 7 } }  # 411 SF — cream polish over the EPS-deck cap; grinding only, the cap is in [concrete]
 "rubber" = { material = { low = 3, high = 8 }, labour = { low = 1.5, high = 3.5 } }  # 357 SF — adhesive-set; substrate prep is NOT in this number
-"sealed-concrete" = { material = { low = 0.35, high = 1.2 }, labour = { low = 0.75, high = 2 } }  # 1155 SF — densifier + 2 coats, NO grinding. A real polish is a separate specialty contract at $3-7/SF more
-"tile" = { material = { low = 3, high = 9 }, labour = { low = 7, high = 14 } }  # 495 SF — labour INCLUDES thinset and grout, which is the trade convention. Backer board and waterproofing are NOT included and are not in this file at all
+"sealed-concrete" = { material = { low = 0.35, high = 1.2 }, labour = { low = 0.75, high = 2 } }  # 1189 SF — densifier + 2 coats, NO grinding. A real polish is a separate specialty contract at $3-7/SF more
+# 2026-08-25: the tile scope collapsed from 495 SF to 119. RM-B-SAUNA went to sealed
+# concrete (its shower is a curbed liner pan, which brings its own waterproof floor), and
+# RM-M-BATH1 and RM-M-LAUNDRY went to sheet vinyl with the hall. What is left is RM-B-BATH
+# and RM-M-BATH2 — two small floors. ** 119 SF is under any tile sub's minimum: expect a
+# LUMP of $1,500-2,500 for the pair rather than the $/SF arithmetic, the same mobilisation
+# argument the oak and vinyl-sheet rows make. ** The rate is kept so the line is not zero.
+"tile" = { material = { low = 3, high = 9 }, labour = { low = 7, high = 14 } }  # 119 SF — labour INCLUDES thinset and grout, which is the trade convention. Backer board and waterproofing are NOT included and are not in this file at all
 # 2026-08-18: RM-S-PLANT. Sheet vinyl itself is cheap — commercial homogeneous sheet runs
 # $2.50-5/SF — but this floor is not just the goods: the seams are heat-welded and it turns
 # a 6" integral flash cove up every wall, which is a specialist install and roughly doubles
@@ -1228,10 +1234,15 @@
 # 2026-08-20 labour: plain glue-down sheet vinyl is $1.50-3.00/SF to lay. Heat-welded seams
 # with a 6" integral flash cove is a COMMERCIAL RESILIENT scope — cove stick, cap strip,
 # scribing, hot-air welding with a grooved seam and a skiving pass — and runs 3-4x that.
-# ** On 179 SF the sub's minimum mobilisation dominates: expect a LUMP of $1,500-2,500
-# rather than anything the $/SF arithmetic produces. ** The rate is carried so the line is
-# not zero, not because 179 SF will ever be bid by the foot.
-"vinyl-sheet" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }  # 179 SF
+# 2026-08-25: 179 SF -> 385. The finish is no longer just RM-S-PLANT and the mudroom
+# closets — RM-M-BATH1, RM-M-LAUNDRY and the hall band FinishZone in RM-M-LIVING joined it,
+# so the main floor now carries one continuous washable spine from the entry to the laundry.
+# ** The old "LUMP of $1,500-2,500, never bid by the foot" caveat is retired with that.
+# 385 SF is a real day's work for a resilient crew and the $/SF arithmetic is defensible —
+# but confirm the SCOPE of the cove before pricing: a 6" flash cove up every wall of six
+# rooms plus a corridor is a lot more welded linear foot than the RM-S-PLANT number was
+# researched against, and a plain glue-down with a vinyl base would be half this rate. **
+"vinyl-sheet" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }  # 385 SF
 
 [envelope_layers]
 # RESEARCHED 2026-08-07 — [low, high] $/SF net, material only. IMPORTANT: this section is

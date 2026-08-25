@@ -17,7 +17,7 @@ function wall(topZ0: number | null = null, topZ1: number | null = null): Wall {
   return {
     uid: "wall", tag: "W-B-BRICK", storey: "S-B", assembly: "A-1", provenance: null,
     axis: [[0, 0], [5.842, 0]], z0_m: 0, z1_m: 101 * IN,
-    top_z0_m: topZ0, top_z1_m: topZ1, plate_base_z_m: null, is_foundation: false, layers: [], members: [],
+    top_z0_m: topZ0, top_z1_m: topZ1, plate_base_z_m: null, layout_axis: null, is_foundation: false, layers: [], members: [],
   };
 }
 

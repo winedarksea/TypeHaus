@@ -124,6 +124,37 @@ checked like every other boundary.
      over studs (R602.3.3's 5" rule is the bearing-stud one), and in-line framing is an APA
      Advanced Framing technique rather than a code mandate. `furring._module_stations` takes
      the same phase, so battens keep sitting on the studs across a split.
+     A shared phase turned out to be **half** the answer, and the missing half was found the
+     same day: a facade is authored as a chain of segments split at every tee, and each
+     segment still framed its own end stud at the split, so the grid was continuous and the
+     sticks standing between its stations were not. `solver.continuation_roles` reads the
+     junctions once — a `t`/`x`/`collinear` node whose two through walls provably share one
+     grid — and both halves then drop that end stud and let the module run through, with one
+     `"owner"` claiming a seam that lands *on* a station so it carries one stud and not two
+     (nor, as a first cut had it, none). `framing/furring.py` takes the same reading for its
+     own band, which matters more than the studs do: on a vertical standing-seam wall that
+     band is the nailer the panel clips to, so a doubled strip at a seam is a doubled panel
+     line. Catlin's four facades now frame an identical outrigger grid on all three storeys.
+     A shared phase and a continuous seam were still only two thirds of it: **the third
+     round, the same day, was that the line did not reach the inside of the house.**
+     `layout_lines._stacks` welded two storeys into one line only when their z-extents
+     touched within 1/2" *or* the upper wall authored `Wall.stacks_on` — and platform framing
+     puts a 12"–13 3/8" floor between a top plate and the wall over it, so the geometric arm
+     never fired on a real house. Catlin merged its facades only because it authors
+     `stacks_on` on 52 walls, every one of them exterior or centreline; **22 of its 75 stack
+     edges landed on two different layout lines**, which made `layout_origin="line"` a no-op
+     for those walls whatever the assembly asked for. **`_stacks` and `resolve_stacking` now
+     ask one question** — collinear within `_TOL`, overlapping by `_MIN_OVERLAP`, and nothing
+     about vertical adjacency, which is exactly `stacking._axis_match`'s test. The comment at
+     `layout_lines:_TOL` claimed this parity while it was false; it now says what is shared
+     (the tolerances and the collinearity rule) and what still is not — the *geometry* fed to
+     them, datum-face axes here against raw node axes there, which is why 13 pours-under-
+     framed-walls still stack in one pass and not the other. Dropping the gate moved **zero
+     framed members** on either house: it is a pure enabler, and what it enabled was catlin's
+     five interior bearing assemblies (the x=18'-0" centreline and the stair line) joining the
+     four facades. House-wide, upper-storey studs standing over no stud below went 113 → 94
+     of 237, pinned by `test_catlin_contract_m3.py::test_upper_storey_studs_stand_over_studs`
+     — the only measurement of the property anywhere; nothing in `checks/` grades it.
   3. **Load path** — `haus explain --bearing` walks stack edges as vertical load-path
      segments (§Foundations below).
 - **Control-layer continuity is vertical too:** the continuity check (→ 12 §Checks) walks
