@@ -38,7 +38,7 @@ PRICES_FILENAME = "prices.toml"
 _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "placeables",
              "floor_finishes", "envelope_layers", "wood_surfaces", "openings",
              "footing_bedding",
-             "pipe_runs", "ducts", "sleeves", "conduit",
+             "pipe_runs", "pipe_fittings", "ducts", "sleeves", "conduit",
              # Plumbing specialties (2026-08-01): devices by the piece, their loose install
              # kits, and hot-line insulation by the foot.
              "plumbing_specialties", "install_parts", "pipe_insulation",
@@ -187,6 +187,10 @@ class Prices:
     openings: Mapping[str, PriceRange] = field(default_factory=dict)
     footing_bedding: Mapping[str, PriceRange] = field(default_factory=dict)
     pipe_runs: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Fittings by the piece (2026-08-24), keyed as they are ordered: "elbow-90-4in",
+    # "wye-4x2in". Material only by design — a fitting is a part you buy, and the labour of
+    # making it up is inside the run's own installed $/LF, which is where it has always been.
+    pipe_fittings: Mapping[str, PriceRange] = field(default_factory=dict)
     ducts: Mapping[str, PriceRange] = field(default_factory=dict)
     sleeves: Mapping[str, PriceRange] = field(default_factory=dict)
     conduit: Mapping[str, PriceRange] = field(default_factory=dict)

@@ -27,7 +27,7 @@ from typehaus.model.mep import (
     SleevePenetration,
 )
 from typehaus.quantities import inch
-from typehaus.resolve.geometry import bbox, circle_outline, length, sub
+from typehaus.resolve.geometry import bbox, length, sub
 from typehaus.resolve.mep_queries import (  # noqa: F401 - re-exported query API
     _CONCRETE_SOLID_CATEGORIES,
     _conduit_vertical_profile,
@@ -47,6 +47,7 @@ from typehaus.resolve.mep_sleeves import (  # noqa: F401 - re-exported sleeve AP
     _pipe_expected_point,
     _resolve_sleeve,
 )
+from typehaus.resolve.mep_slope import _pipe_vertex_z  # noqa: F401 - re-exported
 from typehaus.resolve.model import (
     ResolvedConduitRun,
     ResolvedDuct,
@@ -55,9 +56,16 @@ from typehaus.resolve.model import (
     ResolvedPipeAccessory,
     ResolvedPipeRun,
     ResolvedSolid,
+    SolidSweep,
 )
 from typehaus.resolve.placeables import resolved_mount_elevation
-from typehaus.resolve.round_solids import PIPE_FACETS, sloped_run_bands
+from typehaus.resolve.round_solids import PIPE_FACETS
+from typehaus.resolve.sweep import (
+    clean_path,
+    round_profile,
+    sweep_plan_silhouette,
+    sweep_z_extent,
+)
 
 _DEFAULT_SPACING_M = inch(16).meters
 
@@ -181,44 +189,6 @@ def _conduit_category(service: str | None) -> str:
     return "conduit_data" if service == Service.DATA.value else "conduit_power"
 
 
-def _pipe_vertex_z(run: PipeRun, path: list[tuple[float, float]],
-                   datum: float) -> tuple[list[float] | None, list[Finding]]:
-    """Absolute project-frame invert per path vertex.
-
-    Authored ``elevations`` win; otherwise interpolate linearly between
-    ``start_elevation``/``end_elevation`` over developed plan length — exactly the old
-    two-invert behaviour, so legacy runs resolve unchanged. Both absent → None (no
-    vertical information at all, matching the old None/None endpoints)."""
-    if run.elevations is not None:
-        if len(run.elevations) != len(path):
-            return None, [Finding(
-                severity=Severity.ERROR, check_id="integrity.pipe_run_elevations",
-                message=(f"pipe run {run.tag} authors {len(run.elevations)} elevations "
-                         f"for {len(path)} path points — one invert per vertex"),
-                element_tags=(run.tag,), result=Result.FAIL)]
-        z = [datum + e.meters for e in run.elevations]
-        for label, authored in (("start", run.start_elevation), ("end", run.end_elevation)):
-            if authored is None:
-                continue
-            expected = z[0] if label == "start" else z[-1]
-            if abs(datum + authored.meters - expected) > 1e-6:
-                return None, [Finding(
-                    severity=Severity.ERROR, check_id="integrity.pipe_run_elevations",
-                    message=(f"pipe run {run.tag} {label}_elevation disagrees with "
-                             f"elevations[{0 if label == 'start' else -1}]"),
-                    element_tags=(run.tag,), result=Result.FAIL)]
-        return z, []
-    if run.start_elevation is None and run.end_elevation is None:
-        return None, []
-    z0 = datum + (run.start_elevation or run.end_elevation).meters
-    z1 = datum + (run.end_elevation or run.start_elevation).meters
-    plan_cum = [0.0]
-    for i in range(len(path) - 1):
-        plan_cum.append(plan_cum[-1] + length(sub(path[i], path[i + 1])))
-    total = plan_cum[-1] or 1.0
-    return [z0 + (z1 - z0) * (c / total) for c in plan_cum], []
-
-
 def _pipe_wall_refs(run: PipeRun, n_segments: int) -> tuple[tuple[str | None, ...],
                                                             list[Finding]]:
     """Per-segment host wall tags, expanding the single-wall ``wall_ref`` sugar."""
@@ -238,8 +208,15 @@ def _pipe_wall_refs(run: PipeRun, n_segments: int) -> tuple[tuple[str | None, ..
 def _emit_run_solids(model: ResolvedModel, run_uid: str, run_tag: str, storey_tag: str,
                      path: list[tuple[float, float]], z: list[float],
                      radius: float, category: str) -> None:
-    """Viewer/IFC solids for a routed run: vertical drops as faceted circle prisms,
-    horizontal/sloped segments as chord-band stacks (→ resolve/round_solids.py).
+    """One swept solid for the whole routed run — the tube it actually is.
+
+    A run used to be chopped up twice over: a vertical drop was a faceted circle prism, a
+    horizontal leg a stack of chord bands in Z, and a *sloping* leg a stair-step of at most
+    three of those stacks — an approximation ``round_solids.sloped_run_bands`` said so in its
+    own docstring. Now the polyline and its per-vertex inverts go straight into a
+    :class:`~typehaus.resolve.model.SolidSweep`, which mitres itself (→ resolve/sweep.py):
+    a vertical drop is just a leg whose direction happens to be down, so the repeated-plan-
+    point special case has nothing left to special-case.
 
     ``category`` is passed in rather than derived here because two trades route through this
     one geometry: a pipe run is per-system (``pipe_drain``, ``pipe_water_hot``, …) and a
@@ -250,21 +227,16 @@ def _emit_run_solids(model: ResolvedModel, run_uid: str, run_tag: str, storey_ta
     conduit had no geometry at all: there was nowhere for a raceway to say what it was.)"""
     from typehaus.resolve.model import ResolvedSolid
 
-    for i in range(len(path) - 1):
-        a, b = path[i], path[i + 1]
-        za, zb = z[i], z[i + 1]
-        if length(sub(a, b)) < 1e-6:
-            if abs(zb - za) < 1e-9:
-                continue  # degenerate zero-length segment
-            model.solids.append(ResolvedSolid(
-                uid=f"{run_uid}-s{i:02d}", tag=f"{run_tag}-S{i + 1}", storey=storey_tag,
-                category=category, outline=circle_outline(a, radius, PIPE_FACETS),
-                z0_m=min(za, zb), z1_m=max(za, zb)))
-            continue
-        for band, (outline, z0, z1) in enumerate(sloped_run_bands(a, b, radius, za, zb)):
-            model.solids.append(ResolvedSolid(
-                uid=f"{run_uid}-s{i:02d}b{band:02d}", tag=f"{run_tag}-S{i + 1}B{band + 1}",
-                storey=storey_tag, category=category, outline=outline, z0_m=z0, z1_m=z1))
+    # ``clean_path`` rather than the raw vertices: an authored elbow repeats its plan point
+    # at one invert, and two points at the same place are one point, not a zero-length leg.
+    points = clean_path([(p[0], p[1], zi) for p, zi in zip(path, z)])
+    if len(points) < 2:
+        return
+    sweep = SolidSweep(path=points, profile=round_profile(radius, PIPE_FACETS))
+    z0, z1 = sweep_z_extent(sweep)
+    model.solids.append(ResolvedSolid(
+        uid=f"{run_uid}-run", tag=f"{run_tag}-RUN", storey=storey_tag, category=category,
+        outline=sweep_plan_silhouette(sweep), z0_m=z0, z1_m=z1, sweep=sweep))
 
 
 def _resolve_pipe_run(model: ResolvedModel, run: PipeRun, storey) -> list[Finding]:

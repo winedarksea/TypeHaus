@@ -6,6 +6,8 @@
 // walks `model_to_dict`'s emitted keys for the catlin house and asserts each appears here.
 
 export type Vec2 = [number, number];
+// A 3D project-frame point (x, y, z) in metres — a swept run's path.
+export type Vec3 = [number, number, number];
 
 /** Mirror of the engine's `DoorOperation` enum (model/enums.py). */
 export type DoorOperation =
@@ -1050,6 +1052,12 @@ export interface Solid {
   // The material the authored element named directly, for the solids that have one instead of
   // an assembly (the trim-run family). Mirrors ResolvedSolid.material.
   material?: string | null;
+  // A RUN — a handrail, a drain, a raceway — carried as one section swept along a 3D
+  // polyline (→ resolve/model.py SolidSweep, resolve/sweep.py). Null on every prism, which
+  // is every solid that is not one of those; `three/tubeGeometry.ts` mitres it, and
+  // outline/z0_m/z1_m still carry the whole run's plan silhouette and Z extents so anything
+  // that has not been taught about sweeps degrades honestly rather than breaking.
+  sweep?: { path: Vec3[]; profile: Vec2[] } | null;
   provenance: Provenance | null;
 }
 

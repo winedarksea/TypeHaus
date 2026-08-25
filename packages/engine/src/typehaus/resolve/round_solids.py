@@ -1,15 +1,20 @@
-"""Round pipe sections faceted into the prism-only solid IR (shared by vents/sumps/pipes).
+"""Round pipe sections faceted into the prism-only solid IR — **the legacy path**.
 
-``ResolvedSolid`` only extrudes a plan outline vertically, so a vertical pipe is a
-faceted circle prism and a horizontal one is swept as bands stacked in Z whose plan
-width tracks the circle. The band boundaries land on the *same* regular-polygon vertex
-elevations the vertical risers are faceted at, so a jog reads as the identical n-gon
-section rather than as a few square bands: an n-gon spans n/2 bands top to bottom.
+``ResolvedSolid`` only extruded a plan outline vertically, so a vertical pipe was a faceted
+circle prism and a horizontal one was swept as bands stacked in Z whose plan width tracks
+the circle. The band boundaries land on the *same* regular-polygon vertex elevations the
+vertical risers are faceted at, so a jog reads as the identical n-gon section rather than as
+a few square bands: an n-gon spans n/2 bands top to bottom.
 
-Sloped segments are an accepted approximation: a near-horizontal run is drawn as one
-band stack at its mean invert, a steeper run is stair-stepped into a few sub-stacks.
-Checks never read these solids — slope/burial/clearance math runs on the true 3D
-polyline — the bands are viewer/IFC presentation only.
+Sloped runs no longer come through here at all. ``sloped_run_bands`` stair-stepped one into
+at most three level stacks and its own docstring called that "an accepted approximation";
+:mod:`typehaus.resolve.sweep` now carries a run as the single mitred tube it is, and
+``resolve/mep.py`` builds one ``SolidSweep`` per pipe or raceway. What is left is the
+callers whose geometry genuinely is level and axis-aligned — sleeve bores, drain tile,
+drywell bores, vent risers — for which a band stack is exact and a sweep would be ceremony.
+
+Checks never read these solids — slope/burial/clearance math runs on the true 3D polyline —
+the bands are viewer/IFC presentation only.
 """
 
 from __future__ import annotations
@@ -50,27 +55,4 @@ def round_run_bands(start: tuple[float, float], end: tuple[float, float], radius
         bands.append((rect_between(start, end, -half_width, half_width),
                       center_z - radius * math.cos(low_angle),
                       center_z - radius * math.cos(high_angle)))
-    return bands
-
-
-def sloped_run_bands(
-    start: tuple[float, float], end: tuple[float, float], radius: float,
-    z_start: float, z_end: float,
-) -> list[tuple[list[tuple[float, float]], float, float]]:
-    """Bands for a (possibly) sloped horizontal segment.
-
-    Flat or gently sloped (drop ≤ one diameter): one stack at the mean invert. Steeper:
-    stair-stepped into ≤ ``_MAX_SLOPE_STEPS`` sub-stacks, each at its own mean invert.
-    """
-    drop = abs(z_end - z_start)
-    if drop <= 2.0 * radius:
-        return round_run_bands(start, end, radius, (z_start + z_end) / 2.0)
-    steps = min(_MAX_SLOPE_STEPS, max(2, int(math.ceil(drop / (2.0 * radius)))))
-    bands: list[tuple[list[tuple[float, float]], float, float]] = []
-    for k in range(steps):
-        t0, t1 = k / steps, (k + 1) / steps
-        a = (start[0] + (end[0] - start[0]) * t0, start[1] + (end[1] - start[1]) * t0)
-        b = (start[0] + (end[0] - start[0]) * t1, start[1] + (end[1] - start[1]) * t1)
-        zc = z_start + (z_end - z_start) * (t0 + t1) / 2.0
-        bands.extend(round_run_bands(a, b, radius, zc))
     return bands

@@ -196,42 +196,39 @@ def _emit_pipe_system(f: Any, building: Any, system_key: str, elements: list) ->
 
 def _emit_pipe_run(f: Any, body: Any, run: Any, storeys: dict[str, Any],
                    project_uuid: Any) -> list:
-    """One IfcPipeSegment per path segment — a plan rectangle of width ``diameter_m``
-    around the centerline, extruded ``diameter_m`` tall at the segment's interpolated
-    invert (a boxy placeholder profile, not a true cylindrical sweep, → Phase 2 spec).
+    """One ``IfcPipeSegment`` per path segment, each a real ``IfcSweptDiskSolid``.
+
+    This used to be "a plan rectangle of width ``diameter_m`` around the centerline, extruded
+    ``diameter_m`` tall at the segment's interpolated invert (a boxy placeholder profile, not
+    a true cylindrical sweep)". The run now knows its own invert at every vertex, and IFC4
+    has the idiom for exactly this shape, so a segment arrives as the pipe it is — including
+    the vertical drops, which were a square prism and are now simply a directrix pointing
+    down. ``_interpolated_invert`` survives only for a legacy run that authored two
+    elevations and no ``z_m``.
 
     Returns the segments, so the caller can group a run's pieces into the
     ``IfcDistributionSystem`` its system belongs to."""
     segments: list = []
-    half = run.diameter_m / 2.0
+    radius = run.diameter_m / 2.0
     cumulative = 0.0
     z_m = getattr(run, "z_m", None)
     for index in range(len(run.path) - 1):
         p0, p1 = run.path[index], run.path[index + 1]
         seg_len = ((p1[0] - p0[0]) ** 2 + (p1[1] - p0[1]) ** 2) ** 0.5
         if z_m is not None:
-            z0 = (z_m[index] + z_m[index + 1]) / 2.0
+            z0, z1 = z_m[index], z_m[index + 1]
         else:
-            z0 = _interpolated_invert(run, cumulative, cumulative + seg_len)
+            invert = _interpolated_invert(run, cumulative, cumulative + seg_len)
+            z0 = z1 = invert
         cumulative += seg_len
-        if seg_len < 1e-6:
-            # Vertical drop (repeated plan point, different inverts): a square prism the
-            # pipe's own section, spanning the drop.
-            if z_m is None or abs(z_m[index + 1] - z_m[index]) < 1e-9:
-                continue
-            lo, hi = sorted((z_m[index], z_m[index + 1]))
-            profile = [(p0[0] - half, p0[1] - half), (p0[0] + half, p0[1] - half),
-                       (p0[0] + half, p0[1] + half), (p0[0] - half, p0[1] + half)]
-            height, base = hi - lo, lo
-        else:
-            profile = rect_between(p0, p1, -half, half)
-            height, base = run.diameter_m, z0 - half
+        if seg_len < 1e-6 and abs(z1 - z0) < 1e-9:
+            continue  # a repeated vertex at one invert is one point, not a segment
         child_key = f"seg-{index:02d}"
         element = ll.create_entity(f, "IfcPipeSegment", name=f"{run.tag}/{child_key}")
         segments.append(element)
         element.GlobalId = derive_child_guid(project_uuid, run.uid, child_key)
-        ll.assign_representation(f, element, ll.add_prism_from_profile(
-            f, body, profile, height, base,
+        ll.assign_representation(f, element, ll.add_swept_disk(
+            f, body, points_m=[(p0[0], p0[1], z0), (p1[0], p1[1], z1)], radius_m=radius,
         ))
         ll.ensure_pset(f, element, PSET_SOURCE, {"uid": run.uid, "tag": run.tag})
         ll.ensure_pset(f, element, "TypeHaus_Pipe", {

@@ -99,11 +99,25 @@ MAIN_PLACEABLES = [
               position=pt(m(7.87848), m(2.69813))),
     Furniture(uid="EKN22YPA9J", tag="FURN-M-MEDIA", type_ref="FURN-MEDIA-60", room="RM-M-LIVING",
               position=pt(ft(26, 11), ft(1, 10)), rotation=deg(180)),
-    # East living-room storage: nine 23 5/8" BESTA units fill the 17'-10" clear span from
-    # the fireplace's north edge at y=4'-10" toward the 48" pantry closet's south edge at
-    # y=22'-8". Their backs sit directly on the east wall's interior face at x=35'-5 3/8";
-    # the 1 3/8" residual at the pantry end is the only non-module tolerance in the run.
+    # East living-room storage: EIGHT 23 5/8" BESTA units fill the 15'-10 3/8" clear span
+    # from the fireplace's north edge at y=4'-10" to FURN-M-KIT-PANTRY-S2's south face at
+    # y=21'-2 3/8". Their backs sit directly on the east wall's interior face at x=35'-5 3/8".
     # Rotation -90 puts each unit's back against the east wall and opens it toward the room.
+    #
+    # ** IT WAS NINE UNTIL 2026-08-24, AND THE NINTH WAS OVERLAPPING. ** The run was laid
+    # out against a 48" pantry closet whose south edge was y=22'-8". The kitchen rework
+    # replaced that with the east tall bank, which runs 1'-5 5/8" further south to
+    # y=21'-2 3/8" — so FURN-M-LIVING-BESTA-09 (y 20'-7"..22'-6 5/8") ended up 1.86 SF
+    # inside FURN-M-KIT-PANTRY-S2's carcass, two solid bodies in the same air. Deleting it is
+    # the owner's call and the right one: the alternative is sliding all nine south into the
+    # fireplace.
+    #
+    # ** NOTHING IN `haus check` CAUGHT THIS, and that is worth knowing. ** The advisory
+    # clearance rules grade a declared CLEARANCE ZONE against a body; two bodies simply
+    # occupying the same volume is not something any current check walks. The 1'-4 5/8"
+    # residual between BESTA-08's north end and the tall bank is now the run's only
+    # non-module tolerance, where it used to be 1 3/8" — it is slack, not a gap to fill,
+    # because a tenth unit does not fit in it either.
     Furniture(uid="CMB801AAAA", tag="FURN-M-LIVING-BESTA-01", type_ref="FURN-BESTA-2358",
               room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(5, 9.8125)), rotation=deg(-90)),
     Furniture(uid="CMB802AAAA", tag="FURN-M-LIVING-BESTA-02", type_ref="FURN-BESTA-2358",
@@ -120,10 +134,8 @@ MAIN_PLACEABLES = [
               room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(17, 7.5625)), rotation=deg(-90)),
     Furniture(uid="CMB808AAAA", tag="FURN-M-LIVING-BESTA-08", type_ref="FURN-BESTA-2358",
               room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(19, 7.1875)), rotation=deg(-90)),
-    Furniture(uid="CMB809AAAA", tag="FURN-M-LIVING-BESTA-09", type_ref="FURN-BESTA-2358",
-              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(21, 6.8125)), rotation=deg(-90)),
     # Dining at 17'-4" (moved 4' south once the island moved down and the 48" pantry took
-    # the east wall to 22'-8"). Chair-use zone y=12'-7"..22'-1": clear of the sofa (10'-5")
+    # the east wall to 22'-8" — that pantry is gone, see the BESTA run above). Chair-use zone y=12'-7"..22'-1": clear of the sofa (10'-5")
     # and pantry (7"), with a 4'-4" circulation band to the island.
     #
     # Only the six side chairs are drawn on this 8-place table — end chairs would block the
@@ -209,11 +221,23 @@ MAIN_PLACEABLES = [
               position=pt(ft(19, 3.375), ft(26, 0.875)), rotation=deg(90)),
     # ** THE TALL UNITS GO TO THE CEILING TOO (owner, 2026-08-24). ** This was left as an
     # open question when the stacker course went in over the uppers — stack the 96" talls to
-    # match, or accept a 12" step across the kitchen. The answer is stack them. CASE-TS24-12
-    # is the 24"-DEEP stacker: a tall cabinet's box is base depth, so the WS (13") family
+    # match, or accept a 12" step across the kitchen. The answer is stack them. The stacker
+    # is a 24"-DEEP box: a tall cabinet's carcass is base depth, so the WS (13") family
     # would float a shallow box over it and put the step back in a different place.
-    Furniture(uid="ZMBSYYRCX5", tag="FURN-M-KIT-PANTRYC-ST", type_ref="CASE-TS24-12", room="RM-M-LIVING",
-              position=pt(ft(19, 3.375), ft(26, 0.875)), rotation=deg(90),
+    #
+    # ** BUT NOT THE FULL 24" WIDE (owner, 2026-08-24). ** PANTRYC oversails the south end
+    # of W-M-C5 by 9 1/8" — accepted at floor level (see its note above), because a cabinet
+    # end standing 9" into a 4'-wide passage is a jamb you walk past. Carrying that same
+    # oversail up as a 24"-deep box floating at 8'-0" is a different object: it is a soffit
+    # over the passage, and it reads as one from the living room. So the stacker steps down
+    # to the 15" box (CASE-TS15-12) and lands its south end on y=25'-9 7/8" — 1/8" shy of
+    # the wall's own end at 25'-10". Above 8'-0" the passage is clear to the ceiling and the
+    # oversail below it reads as what it is, a cabinet end.
+    #
+    # The 9 1/8" of PANTRYC's top left uncovered is a finished cabinet top, not a hole: it
+    # is the same detail as the top of any 96" tall that stops short of a ceiling.
+    Furniture(uid="ZMBSYYRCX5", tag="FURN-M-KIT-PANTRYC-ST", type_ref="CASE-TS15-12", room="RM-M-LIVING",
+              position=pt(ft(19, 3.375), ft(26, 5.375)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
     # Over the two cold boxes: 24" deep like the talls, so all four fronts land on x=20'-3 3/8"
     # and the appliances stand 3" proud — clearing the fridge/freezer door swing. Retyped
@@ -305,6 +329,18 @@ MAIN_PLACEABLES = [
               mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
     Furniture(uid="PVRA77ZM2N", tag="FURN-M-KIT-WE2-ST", type_ref="CASE-WS24-12", room="RM-M-LIVING",
               position=pt(ft(31, 1), ft(34, 10.875)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
+    # ** THE COURSE RUNS ACROSS THE SINK WINDOW (owner, 2026-08-24). ** WE1-ST and WE2-ST
+    # were laid one-per-upper, which left the 36" between them empty — because the uppers
+    # below stop either side of WIN-M-KITCH. At 96" that reason is gone: the window's head
+    # is 78" (sill 42" + WT-2736's 36"), so the stacker course clears it by 18" and there is
+    # nothing up there to stop for. Filling it turns three floating boxes into one band at
+    # the ceiling, which is what the course was for.
+    #
+    # 36" exactly: x 27'-1" to 30'-1", which is FURN-M-KIT-SINKBASE's own width carried up,
+    # so the band's joints land on the base joints below. One stock bridge box, no filler.
+    Furniture(tag="FURN-M-KIT-WE4-ST", type_ref="CASE-WS36-12", room="RM-M-LIVING",
+              position=pt(ft(28, 7), ft(34, 10.875)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
     # ** A CABINET OVER THE EXISTING NORTH WINDOW. ** The owner asked for cabinets above
     # BOTH small windows and WIN-M-KITCH-N has never had one. CASE-W12 spans the 12 3/8"

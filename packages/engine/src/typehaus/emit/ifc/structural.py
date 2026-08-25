@@ -23,6 +23,12 @@ from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
 from typehaus.resolve.geometry import rect_between
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.sweep import (
+    clean_path,
+    is_round_profile,
+    profile_radius_m,
+    sweep_leg_axes,
+)
 
 # Profiles that describe a board tapered *in plan* (the winder tread runs from a newel-face
 # sliver to a full nosing): no constant cross-section swept along the axis can represent
@@ -122,17 +128,40 @@ def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_
     if object_type is not None:
         element.ObjectType = object_type
     element.GlobalId = derive_guid(project_uuid, solid.uid)
-    if solid.outline:
-        ll.assign_representation(
-            f, element, ll.add_prism_from_profile(f, body, solid.outline, solid.z1_m - solid.z0_m,
-                                                   solid.z0_m, solid.voids)
-        )
+    representation = _solid_body(f, body, solid)
+    if representation is not None:
+        ll.assign_representation(f, element, representation)
     if model is not None:
         _assign_solid_material(f, element, solid, model)
     ll.ensure_pset(f, element, PSET_SOURCE, {"uid": solid.uid, "tag": solid.tag,
                                                "category": solid.category})
     ll.assign_container(f, element, storeys[solid.storey])
     return element
+
+
+def _solid_body(f: Any, body: Any, solid: Any) -> Any:
+    """A solid's Body representation: a swept run if it is one, else the plan prism.
+
+    A run carries its own 3D centreline (→ ``resolve/sweep.py``), and IFC has the two idioms
+    for it: a round section is one ``IfcSweptDiskSolid`` over an ``IfcPolyline`` directrix —
+    what a pipe and a round handrail both are in IFC4 — and a shaped one is an extrusion per
+    leg. Either way the run is *one* element with one representation, where a raked rail used
+    to arrive as 292 separate ``IfcRailing``s, one per 1-1/2" of fall.
+    """
+    if solid.sweep is not None:
+        profile = tuple(solid.sweep.profile)
+        path = clean_path(solid.sweep.path)
+        if len(path) < 2:
+            return None
+        if is_round_profile(profile):
+            return ll.add_swept_disk(f, body, points_m=[tuple(p) for p in path],
+                                     radius_m=profile_radius_m(profile))
+        return ll.add_swept_run(f, body, profile_points=[tuple(p) for p in profile],
+                                legs=sweep_leg_axes(solid.sweep))
+    if not solid.outline:
+        return None
+    return ll.add_prism_from_profile(f, body, solid.outline, solid.z1_m - solid.z0_m,
+                                     solid.z0_m, solid.voids)
 
 
 def _assign_solid_material(f: Any, element: Any, solid: Any, model: Any) -> None:

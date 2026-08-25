@@ -21,6 +21,10 @@ if TYPE_CHECKING:  # the IR imports this module, so the reference stays type-onl
 # A polygon ring: list of (x, y) in meters. Layer polygons are simple rings.
 Ring = list[tuple[float, float]]
 
+# One point of a swept run's 3D path, and one point of its section (→ resolve/sweep.py).
+Vec3 = tuple[float, float, float]
+Vec2 = tuple[float, float]
+
 
 @dataclass(frozen=True)
 class ResolvedLayer:
@@ -321,6 +325,25 @@ class ResolvedConstructionReturn:
 
 
 @dataclass(frozen=True)
+class SolidSweep:
+    """A closed section profile carried along a 3D polyline — the run *is* one solid.
+
+    The prism IR can only extrude a plan ring straight up, so everything that rakes or
+    slopes had to be chopped into level pieces: one band per 1-1/2" of a handrail's fall
+    (a straight 13-ft bar came out as 292 solids), and a drain stair-stepped into three
+    level stacks. A run is one thing and one purchase, so this says so directly.
+
+    ``path`` is >= 2 project-frame points in metres with no repeats; ``profile`` is the
+    section in the leg's local ``(right, up)`` frame, closed implicitly like every other
+    ring in the IR. :mod:`typehaus.resolve.sweep` owns the mitre, the frame convention and
+    the developed length, and ``ui/src/three/tubeGeometry.ts`` mirrors it vertex for vertex.
+    """
+
+    path: tuple[Vec3, ...]
+    profile: tuple[Vec2, ...]
+
+
+@dataclass(frozen=True)
 class ResolvedSolid:
     """A resolved horizontal or below-grade solid with a plan outline.
 
@@ -344,6 +367,12 @@ class ResolvedSolid:
     # say "I am category gutter", so a gutter ordered in a second coil colour had no way to
     # say so and rendered the palette's mill aluminium in both renderers.
     material: str | None = None
+    # A run — a handrail, a drain, a raceway — carried as one swept solid rather than as a
+    # stack of level bands. When set, ``outline``/``z0_m``/``z1_m`` still carry the plan
+    # silhouette and Z extents of the *whole* run, so every consumer that has not been
+    # taught about sweeps (the plan sheet's railing polylines, the take-off's centroid)
+    # degrades to something honest instead of breaking.
+    sweep: SolidSweep | None = None
 
 
 @dataclass

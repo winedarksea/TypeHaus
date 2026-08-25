@@ -27,14 +27,24 @@ import {
   aboveStructureLayers, boundaryEdges, layerInsetRect, roofOffsetter, roofPlaneTriangles,
 } from "../roofGeometry";
 import { createSolidMaterial } from "../solidMaterials";
+import { createSweepGeometry } from "../tubeGeometry";
 import { makeSurfaceMesh, NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
 import { registerSelectable, tagLayerGroup } from "./registry";
 
+// A resolved solid: a plan prism, or — when it carries a `sweep` — the mitred tube of a run.
+//
+// Still ONE mesh and ONE registerSelectable either way, which is the whole point: a handrail
+// that used to arrive as 292 separate solids (and 292 pick targets, and 292 Inspector rows)
+// is one click, one highlight, one name. Picking, highlighting, SolidInspector and
+// solidCategoryLabel are untouched below the fork.
 export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, catalog: Catalog | undefined,
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
-  if (solid.outline.length < 3) return;
-  const geo = createPlanPrismGeometry(solid.outline, solid.z0_m, Math.max(solid.z1_m, solid.z0_m + 0.01), solid.voids ?? [], center);
+  const geo = solid.sweep
+    ? createSweepGeometry(solid, center)
+    : (solid.outline.length < 3 ? null
+      : createPlanPrismGeometry(solid.outline, solid.z0_m,
+        Math.max(solid.z1_m, solid.z0_m + 0.01), solid.voids ?? [], center));
   if (!geo) return;
   const deckBoards = catalog?.assemblies.find((a) => a.tag === solid.assembly)?.layers
     .some((layer) => isAluminumDeckBoard(layer.material));

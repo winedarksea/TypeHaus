@@ -24,6 +24,7 @@ try {
   const { runOpenHouseTests } = await server.ssrLoadModule("/src/engine/openHouse.test.ts");
   const { runDoorSymbolTests, runWindowSymbolTests } = await server.ssrLoadModule("/src/model/doorSymbols.test.ts");
   const { runRoofGeometryTests } = await server.ssrLoadModule("/src/three/roofGeometry.test.ts");
+  const { runSweepParityTests, runSweepFrameTests, runSweepMeshTests } = await server.ssrLoadModule("/src/three/tubeGeometry.test.ts");
   const { runMaterialGeometryTests, runMemberColorTests } = await server.ssrLoadModule("/src/three/materials.test.ts");
   const { runDetailAnnotationTests } = await server.ssrLoadModule("/src/components/DetailCanvas.test.ts");
   const { runMemberPickingTests } = await server.ssrLoadModule("/src/three/memberPicking.test.ts");
@@ -61,6 +62,9 @@ try {
   runDoorSymbolTests();
   runWindowSymbolTests();
   runRoofGeometryTests();
+  runSweepParityTests();
+  runSweepFrameTests();
+  runSweepMeshTests();
   runMaterialGeometryTests();
   runMemberColorTests();
   runDetailAnnotationTests();

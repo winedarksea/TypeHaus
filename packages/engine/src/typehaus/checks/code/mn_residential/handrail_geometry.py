@@ -21,14 +21,15 @@ from typehaus.checks.code.mn_residential._common import _fail
 from typehaus.checks.registry import CheckContext
 from typehaus.findings import Finding
 from typehaus.model.structure import Railing
-from typehaus.resolve.model import ResolvedSolid, ResolvedStair
 from typehaus.quantities import inch
+from typehaus.resolve.model import ResolvedSolid, ResolvedStair
 from typehaus.resolve.stairs.walkline import (
     RAIL_LATERAL_REACH_M,
     flight_stations,
     flight_walklines,
     walkline_z_at,
 )
+from typehaus.resolve.sweep import clean_path
 
 #: R311.7.8.1's band: a handrail tops out 34"-38" above the nosings. Defined here rather
 #: than in ``stairs.py`` so the authored grade and the measured one cannot drift apart —
@@ -55,6 +56,10 @@ _HANDRAIL_REACH_M = inch(18).meters
 #: crossing a flight junction rather than raking along a flight. Half a maximum riser: no
 #: flight climbs that fast, and any two consecutive nosings of one differ by less.
 _JUNCTION_STEP_M = inch(3.875).meters
+#: How far apart the stations a swept rail is measured at sit. The quarter metre the rail
+#: was itself sampled at (``resolve/railings/spans.RAIL_BAND_STEP_M``) — close enough that
+#: every nosing on a code stair has one beside it, which is what R311.7.8.2 asks.
+_BAND_SAMPLE_M = 0.25
 
 
 def drawn_handrail_findings(ctx: CheckContext, stair: ResolvedStair, rail: Railing,
@@ -133,23 +138,33 @@ def _drawn_rail_bands(ctx: CheckContext, rail: Railing
                       ) -> list[tuple[tuple[float, float], float, float]]:
     """``(plan centre, bar centreline elevation, half the band's plan length)`` per band.
 
-    A round rail is faceted into a stack of solids sharing one plan axis, so the band is the
-    stack, not the solid: its centreline is the middle of the stack's full z extent. A
-    square rail's stack is one solid and the same arithmetic returns its centre.
+    A rail that carries a :class:`~typehaus.resolve.model.SolidSweep` *is* its centreline —
+    one solid whose 3D polyline is exactly the line R311.7.8.1 measures. It is resampled at
+    :data:`_BAND_SAMPLE_M` here rather than read vertex for vertex, because the sweep is
+    simplified down to the points a carpenter cuts at (a straight flight is two of them) and
+    both this rule and R311.7.8.2's nosing coverage want stations *along* the bar.
 
-    Solids sharing an axis are then split where they are not *touching* in z, because a
-    guard with ``rail_count=2`` puts a top and a bottom rail on the same axis and averaging
-    the pair would report a rail height halfway between them, which is nowhere.
+    The band-stack branch below it is the legacy prism reading, kept for any rail solid that
+    carries no sweep: a round rail used to be faceted into a stack of solids sharing one plan
+    axis, so the band was the stack, not the solid, and its centreline the middle of the
+    stack's full z extent. Solids sharing an axis are split where they are not *touching* in
+    z, because a guard with ``rail_count=2`` puts a top and a bottom rail on the same axis
+    and averaging the pair would report a rail height halfway between them, which is nowhere.
     """
+    out: list[tuple[tuple[float, float], float, float]] = []
     stacks: dict[tuple[float, float], list[ResolvedSolid]] = {}
     prefix = f"{rail.tag}-RAIL"
     for solid in ctx.model.solids:
-        if not solid.tag.startswith(prefix) or not solid.outline:
+        if not solid.tag.startswith(prefix):
+            continue
+        if solid.sweep is not None:
+            out.extend(_sweep_bands(solid))
+            continue
+        if not solid.outline:
             continue
         cx = sum(x for x, _y in solid.outline) / len(solid.outline)
         cy = sum(y for _x, y in solid.outline) / len(solid.outline)
         stacks.setdefault((round(cx, 4), round(cy, 4)), []).append(solid)
-    out: list[tuple[tuple[float, float], float, float]] = []
     for (cx, cy), group in sorted(stacks.items()):
         widest = max(group, key=lambda solid: len(solid.outline))
         reach = max(math.hypot(x - cx, y - cy) for x, y in widest.outline)
@@ -162,6 +177,22 @@ def _drawn_rail_bands(ctx: CheckContext, rail: Railing
         if run:
             out.append(((cx, cy), _mid_z(run), reach))
     return out
+
+
+def _sweep_bands(solid: ResolvedSolid) -> list[tuple[tuple[float, float], float, float]]:
+    """One station every :data:`_BAND_SAMPLE_M` along a swept rail's own 3D polyline."""
+    path = clean_path(solid.sweep.path)
+    bands: list[tuple[tuple[float, float], float, float]] = []
+    for a, b in zip(path[:-1], path[1:]):
+        run = math.hypot(b[0] - a[0], b[1] - a[1])
+        steps = max(int(math.ceil(run / _BAND_SAMPLE_M)), 1)
+        for k in range(steps):
+            t = (k + 0.5) / steps
+            bands.append(((a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t),
+                          a[2] + (b[2] - a[2]) * t, run / (2.0 * steps)))
+    if not bands and path:
+        bands.append(((path[0][0], path[0][1]), path[0][2], 0.0))
+    return bands
 
 
 def _mid_z(group: list[ResolvedSolid]) -> float:

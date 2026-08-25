@@ -33,6 +33,11 @@ class PipeRun(Element):
     ``start_elevation``/``end_elevation`` over developed plan length, which is exactly
     the old two-invert behaviour — existing authored runs resolve unchanged.
 
+    An ``elevations`` entry may itself be ``None``, meaning "solve me": with
+    ``slope_in_per_ft`` set, the resolver falls at that grade over the developed plan length
+    from the last invert that *was* authored. A vertical leg is the one place that cannot
+    work — a drop does not fall at a grade — so both its ends must be authored.
+
     ``wall_refs`` names the host wall per segment (len == len(path) - 1); a None entry
     means the segment is in-floor/under-slab/exposed, not in a wall. ``wall_ref`` is
     sugar for a run living in one wall throughout. The resolver validates in-wall
@@ -45,7 +50,19 @@ class PipeRun(Element):
     diameter: Length
     start_elevation: Length | None = None  # invert at path[0], storey-relative
     end_elevation: Length | None = None
-    elevations: tuple[Length, ...] | None = None  # per-vertex inverts, len == len(path)
+    # Per-vertex inverts, ``len == len(path)``. An entry may be **None**: "fall at
+    # ``slope_in_per_ft`` from the last invert I did author". A drain that runs at one grade
+    # for forty feet is one fact — the grade — and authoring twelve hand-computed inverts
+    # off it is twelve chances to get the arithmetic wrong and no way for the file to say
+    # what it meant. A UI drag simply writes a concrete ``ft(...)`` into the slot, so the
+    # editable dialect and its write-back are untouched (``None`` in a tuple is what
+    # ``wall_refs`` has always done).
+    elevations: tuple[Length | None, ...] | None = None
+    # Inches of fall per foot of developed plan run, used to solve every ``None`` above.
+    # Positive falls in path order, which is flow order for a drain. ``None`` means every
+    # invert is authored — set one without an anchor invert and the resolver errors rather
+    # than picking a datum out of the air (``integrity.pipe_run_slope``).
+    slope_in_per_ft: float | None = None
     serves: tuple[str, ...] = ()  # upstream Fixture tags
     wall_refs: tuple[str | None, ...] | None = None  # host wall per segment
     wall_ref: str | None = None  # sugar: every segment hosted by this one wall

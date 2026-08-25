@@ -6,16 +6,19 @@ carries ``uid``/``tag`` so the reader can zoom the plan. The fixture-unit arithm
 imported from ``takeoff/plumbing_calc.py`` — the same functions ``checks/mep/plumbing.py``
 grades with — so the public page and the permit findings can never disagree.
 
-The fitting counts are *estimates from geometry* (bends → elbows, shared vertices → tees);
-no fitting element exists in the schema, and the rows say "estimated" for that reason.
+Fittings are *counted* off geometry rather than estimated: elbows are the measured turns of
+each run's own 3D polyline snapped to a stock angle, and wyes come from the drainage graph
+``drain_tie_ins`` already derives. No fitting element exists in the schema, and none needs
+to — a fitting is where two pipes meet, which the geometry already says.
 """
 
 from __future__ import annotations
 
-import math
 
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.mep_queries import drain_tie_ins
+from typehaus.resolve.model import ResolvedModel, SolidSweep
+from typehaus.resolve.sweep import clean_path, sweep_turns
 from typehaus.takeoff.plumbing_calc import (
     branch_load,
     fixture_units,
@@ -24,8 +27,6 @@ from typehaus.takeoff.plumbing_calc import (
 )
 
 _M_TO_FT = 3.280839895
-_ELBOW_MIN_TURN_DEG = 20.0
-_TEE_TOL_M = 0.02
 
 
 def riser_runs(model: ResolvedModel) -> list[dict[str, object]]:
@@ -93,42 +94,88 @@ def fixture_unit_rows(model: ResolvedModel) -> dict[str, object]:
     }
 
 
-def _turn_angle_deg(a, b, c) -> float:
-    v1 = (b[0] - a[0], b[1] - a[1])
-    v2 = (c[0] - b[0], c[1] - b[1])
-    n1 = math.hypot(*v1)
-    n2 = math.hypot(*v2)
-    if n1 < 1e-9 or n2 < 1e-9:
-        return 90.0  # a vertical drop meeting a horizontal segment is a turn
-    dot = max(-1.0, min(1.0, (v1[0] * v2[0] + v1[1] * v2[1]) / (n1 * n2)))
-    return math.degrees(math.acos(dot))
+#: Stock DWV/supply elbow angles, in degrees — the 1/4, 1/8 and 1/16 bends. A turn that
+#: lands on one of these within :data:`_STOCK_SNAP_DEG` is that fitting; anything else is a
+#: made bend, which is a real distinction on the invoice — a 57° turn is not a part you take
+#: off the shelf.
+_STOCK_ELBOW_DEG = (90.0, 45.0, 22.5)
+#: How far off a stock angle a *measured* turn may be and still be that fitting. This is the
+#: pitch a bend absorbs, not slop: a 1/4 bend taking a stack into a branch at 2"/ft measures
+#: 80.5°, not 90°, and 2"/ft is eight times IRC P3005.3's minimum. A trap arm dropping
+#: steeper than that is genuinely not a stock elbow and says so.
+_STOCK_SNAP_DEG = 10.0
+#: Below this, a vertex is not a fitting at all — it is where a run changes grade, which is
+#: the pipe flexing or two lengths glued straight. Half the smallest stock bend.
+_MIN_FITTING_TURN_DEG = 10.0
 
 
-def fitting_estimate(model: ResolvedModel) -> list[dict[str, object]]:
-    """Estimated elbows (interior bends) and tees (vertices shared between runs of one
-    system), grouped by system + diameter. Estimates, not a schema — labeled as such."""
-    counts: dict[tuple[str, float, str], int] = {}
+def _size_text(diameter_m: float) -> str:
+    """A diameter as it is *ordered*: ``4in``, ``1.5in``, ``0.75in``."""
+    return f"{round(diameter_m / M_PER_IN, 2):g}in"
+
+
+def _elbow_key(angle_deg: float, diameter_m: float) -> str:
+    for stock in _STOCK_ELBOW_DEG:
+        if abs(angle_deg - stock) <= _STOCK_SNAP_DEG:
+            return f"elbow-{stock:g}-{_size_text(diameter_m)}"
+    return f"bend-{_size_text(diameter_m)}"
+
+
+def fitting_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
+    """Elbows and wyes **counted off the geometry**, by system, fitting and size.
+
+    Both halves used to be guesses, and said so in their row labels:
+
+    * an elbow was any interior vertex whose *plan* turn cleared a flat 20°, with a
+      hard-coded ``return 90.0`` standing in wherever a leg had no plan direction at all.
+      A run knows its own 3D polyline now, so the turn is measured — a vertical drop meeting
+      a horizontal branch is the 90° it actually is, a rolled offset is the 45° it actually
+      is — and snapped to the stock angle it is bought as
+      (→ :func:`~typehaus.resolve.sweep.sweep_turns`).
+    * a tee was any pair of runs on one system sharing a vertex within 20 mm, found by
+      comparing every run against every other. ``drain_tie_ins`` already does real geometric
+      parent inference for the drainage graph — it is what ``mep.pipe_sizing`` rolls fixture
+      load up through — and it yields *both* diameters, so the row is sized correctly rather
+      than at the larger of the two.
+
+    Supply tees are not counted. There is no equivalent parent inference for a pressurised
+    system (a water branch has no invert to arrive above, so nothing distinguishes a tee
+    from two runs crossing), and a guess billed as a count is worse than an absence: the
+    fittings a supply manifold takes are in the ``[pipe_runs]`` per-foot rate, whose basis
+    note says so.
+    """
+    counts: dict[tuple[str, str], dict[str, object]] = {}
+
+    def bump(system: str, fitting: str, tag: str) -> None:
+        entry = counts.setdefault((system, fitting), {"count": 0, "tags": set()})
+        entry["count"] = int(entry["count"]) + 1
+        tags = entry["tags"]
+        assert isinstance(tags, set)
+        tags.add(tag)
+
     for run in model.pipe_runs:
-        diameter = round(run.diameter_m / M_PER_IN, 2)
-        for i in range(1, len(run.path) - 1):
-            if _turn_angle_deg(run.path[i - 1], run.path[i],
-                               run.path[i + 1]) >= _ELBOW_MIN_TURN_DEG:
-                key = (run.system, diameter, "elbow (estimated)")
-                counts[key] = counts.get(key, 0) + 1
-    for i, run_a in enumerate(model.pipe_runs):
-        for run_b in model.pipe_runs[i + 1:]:
-            if run_a.system != run_b.system:
-                continue
-            for va in run_a.path:
-                if any(math.hypot(va[0] - vb[0], va[1] - vb[1]) <= _TEE_TOL_M
-                       for vb in run_b.path):
-                    diameter = round(max(run_a.diameter_m, run_b.diameter_m) / M_PER_IN, 2)
-                    key = (run_a.system, diameter, "tee (estimated)")
-                    counts[key] = counts.get(key, 0) + 1
-                    break
-    return [{"system": system, "diameter_in": diameter, "fitting": fitting,
-             "count": count}
-            for (system, diameter, fitting), count in sorted(counts.items())]
+        if run.z_m is None:
+            continue
+        sweep = SolidSweep(
+            path=clean_path([(x, y, z) for (x, y), z in zip(run.path, run.z_m)]),
+            profile=((run.diameter_m / 2.0, 0.0),))
+        for turn in sweep_turns(sweep):
+            if turn.angle_deg < _MIN_FITTING_TURN_DEG:
+                continue  # a grade change, not a fitting
+            bump(run.system, _elbow_key(turn.angle_deg, run.diameter_m), run.tag)
+
+    by_tag = {run.tag: run for run in model.pipe_runs}
+    for child_tag, parent_tag in sorted(drain_tie_ins(model.pipe_runs).items()):
+        child, parent = by_tag.get(child_tag), by_tag.get(parent_tag)
+        if child is None or parent is None:
+            continue
+        bump(parent.system,
+             f"wye-{_size_text(parent.diameter_m)[:-2]}x{_size_text(child.diameter_m)}",
+             parent_tag)
+
+    return [{"system": system, "fitting": fitting, "count": int(entry["count"]),
+             "tags": sorted(entry["tags"])}
+            for (system, fitting), entry in sorted(counts.items())]
 
 
 def cast_in_list(model: ResolvedModel) -> list[dict[str, object]]:
@@ -216,7 +263,7 @@ def plumbing_takeoff(model: ResolvedModel) -> dict[str, object]:
         "fixture_units": fixture_unit_rows(model),
         "takeoff": {
             "pipe": pipe_takeoff_by_material(model),
-            "fittings": fitting_estimate(model),
+            "fittings": fitting_takeoff(model),
             "cast_in": cast_in_list(model),
             "hydrants": hydrant_rows(model),
             "accessories": accessory_rows(model),

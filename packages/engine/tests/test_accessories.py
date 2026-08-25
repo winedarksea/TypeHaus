@@ -369,13 +369,17 @@ def test_catlin_stair_handrail_rakes_along_the_flight(catlin_model) -> None:
     assert brackets[-1].z1_m == pytest.approx(1.524 + rail_h, abs=2e-2)
     for bracket in brackets:
         assert bracket.z1_m - bracket.z0_m < 6 * 0.0254, "a bracket, not a post"
-    bands = sorted((s for s in catlin_model.solids
-                    if s.tag.startswith("RL-S-HANDRAIL-E-RAIL")), key=along_y)
-    zs = [band.z0_m for band in bands]
-    assert len(zs) >= 4
-    assert zs == sorted(zs), "rail bands must climb with the flight"
+    # The rail is ONE solid now, carrying the 3D polyline it used to be chopped into bands to
+    # approximate (→ resolve/sweep.py), so the rake is read off that path rather than off a
+    # stack of pieces sorted along y.
+    rails = [s for s in catlin_model.solids
+             if s.tag.startswith("RL-S-HANDRAIL-E-RAIL") and s.sweep is not None]
+    assert len(rails) == 1, "a handrail is one bar, cut once and ordered once"
+    path = sorted(rails[0].sweep.path, key=lambda point: point[1])
+    zs = [z for _x, _y, z in path]
+    assert zs == sorted(zs), "the rail must climb with the flight"
     assert zs[-1] - zs[0] > 1.0  # the full ~4'4" rise of the lower flight
-    assert 1.524 + rail_h - 0.15 < bands[-1].z1_m < 1.524 + rail_h + 0.05
+    assert 1.524 + rail_h - 0.15 < zs[-1] < 1.524 + rail_h + 0.05
 
 
 def _bay_pickets(model, tag):

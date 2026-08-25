@@ -150,7 +150,12 @@ DRAINS = [
             path=(pt(ft(11, 8), ft(20)), pt(ft(11, 8), ft(20)), pt(ft(7), ft(20)),
                   pt(ft(7), ft(15, 6)), pt(ft(3), ft(15, 6))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(0), ft(-0.758), ft(-0.875), ft(-0.988), ft(-1.088)),
+            # The 0.3"/ft above is the authored fact now; the two intermediate inverts fall
+            # out of it. (They moved 0.004" and 0.010" doing so — the old hand-computed
+            # numbers were rounded to the thousandth of a foot, which is where that came
+            # from. The stub at path[1] is the vertical drop's foot and must stay authored.)
+            elevations=(ft(0), ft(-0.758), None, None, ft(-1.088)),
+            slope_in_per_ft=0.3,
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
     # The lavatory's own 1 1/2" arm to the WC's branch, arriving at -7 5/8" — inside the
     # 3" branch's upper half there (invert -8 5/8", crown -5 5/8").
@@ -168,7 +173,10 @@ DRAINS = [
                   pt(ft(15, 8.5), ft(12, 9)), pt(ft(13, 6), ft(12, 9)),
                   pt(ft(3), ft(12, 9))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(0, 2), ft(-0.715), ft(-0.733), ft(-0.788), ft(-1.051)),
+            # As PR-B-BATH-DRAIN: the grade is authored and the intermediate inverts follow
+            # (-0.004" and -0.007" off the old rounded numbers).
+            elevations=(ft(0, 2), ft(-0.715), None, None, ft(-1.051)),
+            slope_in_per_ft=0.3,
             serves=("FX-B-SAUNA-SH", "FX-B-SAUNA-FD")),
     # The floor drain's own drop through the slab: a floor drain has no trap arm above the
     # floor — the body *is* the penetration — so this is one vertical drop, authored
@@ -263,7 +271,12 @@ CONDENSATE = [
             path=(pt(ft(27), ft(9)), pt(ft(18), ft(9)), pt(ft(13, 6), ft(9)),
                   pt(ft(13, 6), ft(12, 9)), pt(ft(13, 6), ft(12, 9))),
             diameter=inch(0.75), material="pvc",
-            elevations=(ft(7, 5.3375), ft(7, 2.6375), ft(7, 1.2875), ft(7, 0.1625), ft(0, 9))),
+            # The 0.3"/ft the comment above states, authored as the grade it is: the two
+            # intermediate inverts solve to exactly the numbers that were hand-written here.
+            # path[3] is the top of the boxed chase's drop and stays authored — a vertical
+            # leg has no plan run to fall over.
+            elevations=(ft(7, 5.3375), None, None, ft(7, 0.1625), ft(0, 9)),
+            slope_in_per_ft=0.3),
 ]
 
 # --- TPR relief discharge (P2804.6.1) ------------------------------------------------

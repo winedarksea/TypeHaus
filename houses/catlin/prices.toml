@@ -1097,7 +1097,7 @@
 "FT-CURTAIN-ROD-OUTDOOR-98" = { material = { low = 80, high = 235 }, labour = { low = 60, high = 150 } }  # 2 ea
 # The eight fitted FURN-* rows that stay in the build number. The loose ones are in
 # [furnishings] at the bottom of the file.
-"FURN-BESTA-2358" = { material = { low = 90, high = 260 }, labour = { low = 60, high = 160 } }  # 9 ea
+"FURN-BESTA-2358" = { material = { low = 90, high = 260 }, labour = { low = 60, high = 160 } }  # 8 ea
 "FURN-G-WORKBENCH" = { material = { low = 200, high = 900 }, labour = { low = 60, high = 200 } }  # 1 ea
 # The two mudroom and two sauna rows are millwork, not catalogue furniture — they are
 # built, and the range is what the built article costs in materials and shop time.
@@ -1839,17 +1839,76 @@
 "MnDOT Class 5 aggregate base" = { low = 45, high = 95 }  # 3.03 cy = 4.24 tons — freight-dominated; $15-30/cy if it rides along
 
 [pipe_runs]
-# RESEARCHED 2026-08-08 — [low, high] $/LF of run, material only, INCLUDING a share of
-# fittings (a DWV run is mostly fittings by cost, and a per-foot price that ignored them
-# would be about half the real number). Basis: 1/2" PEX $0.30-1.10/LF and 3/4" $0.50-1.50/LF;
-# PVC DWV at retail $1.29/LF for 1-1/2", $1.58/LF for 2", $2.60/LF for 4". Fittings carry
-# roughly a 50-80% adder on the bare pipe. Sources: designtransitionstudio.com PEX cost per
-# foot 2026, latestcost.com PEX install guide, lowes.com Charlotte Pipe DWV listings.
+# RESEARCHED 2026-08-08 — [low, high] $/LF of run. Basis: 1/2" PEX $0.30-1.10/LF and 3/4"
+# $0.50-1.50/LF; PVC DWV at retail $1.29/LF for 1-1/2", $1.58/LF for 2", $2.60/LF for 4".
+# Sources: designtransitionstudio.com PEX cost per foot 2026, latestcost.com PEX install
+# guide, lowes.com Charlotte Pipe DWV listings.
+#
+# RE-BASED 2026-08-24 (→ plans/01-decisions.md #62). The `drain` and `vent` material rates
+# used to state that they INCLUDED a share of fittings — "a DWV run is mostly fittings by
+# cost, and a per-foot price that ignored them would be about half the real number", which
+# was true and was the only place a fitting could be carried, because fittings were an
+# *estimate* labelled as one and never entered the bill. They are counted off the geometry
+# now ([pipe_fittings] below), so these two rows come down to BARE PIPE: the 50-80% adder
+# they carried is in that table instead, by the piece and by the size. DO NOT restore the
+# adder here without deleting that table — that is the double bill this note exists to stop.
+#
+# The supply rows keep their adder and their old numbers. There is no geometric parent
+# inference for a pressurised system, so `fitting_takeoff` counts a supply *elbow* but never
+# a supply tee, and a manifold's tees have nowhere else to be. Split the day supply tees can
+# be counted, and not before.
+#
+# LABOUR is unchanged on all four rows and stays here: making up a joint is not separable
+# from installing the foot of pipe it is on, so [pipe_fittings] is material only.
 # $/LF, by system
-"drain" = { material = { low = 2, high = 4.5 }, labour = { low = 6.5, high = 15 } }  # 224.5 LF
-"vent" = { material = { low = 1.5, high = 3.5 }, labour = { low = 4.25, high = 10 } }  # 209.6 LF
+"drain" = { material = { low = 1.3, high = 2.6 }, labour = { low = 6.5, high = 15 } }  # 232.3 LF, bare pipe
+"vent" = { material = { low = 1, high = 2 }, labour = { low = 4.25, high = 10 } }  # 209.6 LF, bare pipe
 "water_cold" = { material = { low = 0.9, high = 2.2 }, labour = { low = 3.25, high = 7.5 } }  # 319.4 LF
 "water_hot" = { material = { low = 0.9, high = 2.2 }, labour = { low = 3.25, high = 7.5 } }  # 194.3 LF
+
+[pipe_fittings]
+# DERIVED 2026-08-24 — $ each, MATERIAL ONLY. The other half of the [pipe_runs] re-base
+# above: fittings are counted off the runs' own 3D polylines and the drainage graph
+# (takeoff/plumbing.py::fitting_takeoff), so the money that used to ride inside the drain and
+# vent $/LF as "a share of fittings" is here instead, as the parts it buys.
+#
+# NOT QUOTED. These are DERIVED the way [sleeves] is: retail PVC DWV and PEX/copper fitting
+# prices scale close to the square of the bore, so each row is the same-size pipe's own
+# $/LF basis scaled by the 50-80% adder the old [pipe_runs] note documented, checked against
+# the shape of a big-box DWV listing (a 4" 1/4 bend runs an order of magnitude over a 1/2"
+# PEX elbow, and a 4x3 wye over both). Worth a research pass against a real supplier list.
+#
+# A `bend-<size>` row is a turn that is NOT a stock 1/4, 1/8 or 1/16 bend — a fabricated
+# offset — so it is priced at two same-size elbows, which is what making one takes.
+#
+# One row per SIZE, not per system: a 3/4" DWV condensate elbow and a 3/4" supply elbow
+# share a key, and the range spans both. Labour is deliberately absent (see [pipe_runs]).
+# $ each, by fitting
+"elbow-90-0.5in" = { low = 0.6, high = 2 }        # 14 ea — supply
+"elbow-90-0.75in" = { low = 0.9, high = 2.75 }    # 23 ea — supply + condensate DWV
+"elbow-90-1in" = { low = 1.5, high = 4 }          # 3 ea
+"elbow-90-1.25in" = { low = 2.5, high = 6 }       # 4 ea
+"elbow-90-1.5in" = { low = 1.75, high = 4 }       # 8 ea
+"elbow-90-2in" = { low = 2.25, high = 5 }         # 16 ea
+"elbow-90-3in" = { low = 4.5, high = 10 }         # 6 ea
+"elbow-90-4in" = { low = 8, high = 17 }           # 5 ea
+"elbow-45-0.75in" = { low = 0.9, high = 2.75 }    # 1 ea
+"elbow-45-2in" = { low = 2.25, high = 5 }         # 2 ea
+"elbow-45-3in" = { low = 4.5, high = 10 }         # 1 ea
+"elbow-22.5-0.75in" = { low = 0.9, high = 2.75 }  # 1 ea
+"elbow-22.5-1in" = { low = 1.5, high = 4 }        # 1 ea
+"bend-0.5in" = { low = 1.2, high = 4 }            # 2 ea — a made offset: two elbows
+"bend-0.75in" = { low = 1.8, high = 5.5 }         # 2 ea
+"bend-1in" = { low = 3, high = 8 }                # 1 ea
+"bend-2in" = { low = 4.5, high = 10 }             # 3 ea
+"bend-3in" = { low = 9, high = 20 }               # 2 ea
+"wye-0.75x0.75in" = { low = 2, high = 5 }         # 1 ea
+"wye-2x0.75in" = { low = 4, high = 9 }            # 1 ea
+"wye-2x2in" = { low = 5, high = 11 }              # 2 ea
+"wye-3x1.5in" = { low = 7, high = 15 }            # 1 ea
+"wye-4x1.5in" = { low = 10, high = 21 }           # 1 ea
+"wye-4x2in" = { low = 11, high = 23 }             # 7 ea
+"wye-4x3in" = { low = 14, high = 29 }             # 4 ea
 
 [ducts]
 # RESEARCHED 2026-08-08 — [low, high] $/LF, material only. Sheet metal is $7-13/LF for
@@ -2632,6 +2691,7 @@ wood_surfaces        = "material"
 openings             = "material"
 footing_bedding      = "material"
 pipe_runs            = "material"
+pipe_fittings        = "material"
 ducts                = "material"
 sleeves              = "material"
 conduit              = "material"
@@ -2653,6 +2713,7 @@ allowances           = "installed"
 # reader is entitled to know which rows those are.
 
 [basis_notes]
+pipe_fittings   = "material only, and derived rather than quoted — see the table's own note. Its arrival RE-BASED [pipe_runs] drain/vent to bare pipe; restoring the old fitting adder there would double-bill every elbow in the house"
 concrete        = "$/cy PLACED and MERGED — ready-mix plus placement, rebar and forming; never divided into a guessed split. Raised across the board 2026-08-20; slab-on-grade was ~2.5x low and drain_tile ~5x"
 timber          = "$/cy, but built from $/LF and shown divided in every row's comment — the join measures volume and lumber is bought by the foot. Material and labour are split because a stick of LVL is a purchase and hanging it is a wage, unlike the merged pours in [concrete]"
 wall_structure  = "$/cy PLACED and MERGED, same reason as [concrete]. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and BASEMENT_BRICK_VENEER (including its per-material rows BASEMENT_BRICK_VENEER:brown-brick / :glazed-lapis-brick / :glazed-gold-brick) contain no ready-mix at all and must not be escalated with a concrete index"

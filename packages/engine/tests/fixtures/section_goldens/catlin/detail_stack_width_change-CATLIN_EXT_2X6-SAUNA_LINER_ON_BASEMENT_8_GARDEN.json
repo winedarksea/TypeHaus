@@ -847,6 +847,62 @@
       "node": "polyline",
       "points": [
         [
+          0.0,
+          0.0
+        ],
+        [
+          0.5,
+          0.0
+        ],
+        [
+          0.5,
+          6.247539370078742
+        ],
+        [
+          0.0,
+          6.247539370078742
+        ]
+      ],
+      "layer": "A-WALL",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW101AAAA",
+      "tag": "W-M-S1/sheathing"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.5,
+          0.0
+        ],
+        [
+          0.5,
+          6.247539370078742
+        ],
+        [
+          0.0,
+          6.247539370078742
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "struct-1-plywood"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           -1.5000000000000002,
           0.0
         ],
@@ -1515,6 +1571,62 @@
       "node": "polyline",
       "points": [
         [
+          0.5,
+          1.4999999999999998
+        ],
+        [
+          6.000000000000001,
+          1.4999999999999998
+        ],
+        [
+          6.000000000000001,
+          6.247539370078742
+        ],
+        [
+          0.5,
+          6.247539370078742
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW101AAAA",
+      "tag": "jack-1-l0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.5,
+          1.4999999999999998
+        ],
+        [
+          6.000000000000001,
+          1.4999999999999998
+        ],
+        [
+          6.000000000000001,
+          6.247539370078742
+        ],
+        [
+          0.5,
+          6.247539370078742
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           -1.5000000000000002,
           0.0
         ],
@@ -1536,7 +1648,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMW101AAAA",
-      "tag": "block-truss-012-00"
+      "tag": "block-truss-011-00"
     },
     {
       "space": "model",
@@ -2040,6 +2152,110 @@
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          6.885,
+          2.0
+        ],
+        [
+          6.885,
+          0.23748300091103433
+        ],
+        [
+          11.506419197728727,
+          0.0
+        ],
+        [
+          12.125,
+          0.0
+        ],
+        [
+          12.125,
+          -0.75
+        ],
+        [
+          11.625,
+          -0.75
+        ],
+        [
+          11.625,
+          -0.5
+        ],
+        [
+          11.493580802271273,
+          -0.5
+        ],
+        [
+          6.385,
+          -0.23748300091103433
+        ],
+        [
+          6.385,
+          2.0
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "metal"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          6.885,
+          2.0
+        ],
+        [
+          6.885,
+          0.23748300091103433
+        ],
+        [
+          11.506419197728727,
+          0.0
+        ],
+        [
+          12.125,
+          0.0
+        ],
+        [
+          12.125,
+          -0.75
+        ],
+        [
+          11.625,
+          -0.75
+        ],
+        [
+          11.625,
+          -0.5
+        ],
+        [
+          11.493580802271273,
+          -0.5
+        ],
+        [
+          6.385,
+          -0.23748300091103433
+        ],
+        [
+          6.385,
+          2.0
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.45,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:interior-curb-cap-flashing"
     },
     {
       "space": "model",

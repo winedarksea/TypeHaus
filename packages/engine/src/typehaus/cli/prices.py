@@ -91,6 +91,7 @@ ESTIMATE_PLANS = (
     ("openings", "openings", "type", "count", "ea"),
     ("footing_bedding", "footing_bedding", "aggregate", "volume_cubic_yards", "cy"),
     ("pipe_runs", "pipe_runs", "system", "length_ft", "LF"),
+    ("pipe_fittings", "pipe_fittings", "fitting", "count", "ea"),
     ("ducts", "ducts", "system", "length_ft", "LF"),
     ("sleeves", "sleeves", "sleeve_diameter_in", "count", "ea"),
     ("conduit", "conduit", "trade_size_in", "length_ft", "LF"),

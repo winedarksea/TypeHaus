@@ -7,14 +7,20 @@ import math
 from typehaus.model.structure import Railing
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import Vec, length, rect_between, square, sub
-from typehaus.resolve.model import ResolvedModel, ResolvedSolid
+from typehaus.resolve.model import ResolvedModel, ResolvedSolid, SolidSweep, Vec3
 from typehaus.resolve.railings.parts import (
     RAILING_CATEGORY,
     RAILING_FACETS,
     RailingParts,
 )
-from typehaus.resolve.railings.spans import RailingSurface
-from typehaus.resolve.round_solids import round_run_bands
+from typehaus.resolve.railings.spans import RAIL_BAND_STEP_M, RailingSurface
+from typehaus.resolve.sweep import (
+    rect_profile,
+    round_profile,
+    simplify_path,
+    sweep_plan_silhouette,
+    sweep_z_extent,
+)
 
 #: A post cannot be closer than this o.c. — a zero or negative authored spacing would
 #: otherwise walk a segment forever.
@@ -32,6 +38,12 @@ _BRACKET_REACH_M = inch(9).meters
 #: Bracket stock: the drop from the rail centreline to the arm, and the arm's section.
 _BRACKET_DROP_M = inch(2.5).meters
 _BRACKET_SECTION_M = inch(1.0).meters
+
+#: How far a sampled rail station may sit off the chord between the stations either side of
+#: it before the run keeps it as a real vertex. A straight flight's samples are collinear to
+#: well inside a sixteenth, so a 13-ft bar collapses back to the two points a carpenter cuts
+#: it at; a winder, whose nosing line genuinely curves, keeps as many as it needs.
+_RAIL_SIMPLIFY_TOL_M = inch(1.0 / 16.0).meters
 
 
 def railing_post_stations(path: list[Vec], spacing: float) -> list[Vec]:
@@ -137,44 +149,63 @@ def _nearest_wall_face(model: ResolvedModel, el: Railing, storey: str,
 
 def emit_rails(model: ResolvedModel, el: Railing, storey: str, path: list[Vec],
                surface: RailingSurface, parts: RailingParts, rail_h: float) -> None:
-    """``rail_count`` evenly spaced horizontal runs, top rail at the guard height.
+    """``rail_count`` evenly spaced runs, top rail at the guard height — **one solid each**.
 
-    Banded per *path segment*, and within a segment by what the surface under it does: a
-    flat run is one band, a raking one is a ladder of bands each climbing no more than the
-    bar's own section, so consecutive pieces abut rather than leaving air between them
-    (→ :mod:`.spans`). Rails are the guard line a plan reader looks for, so a flat run stays
-    one solid per segment rather than being chopped into bays.
+    A rail is one bar. It is cut once, ordered once and installed once, so it is one solid
+    carrying its own 3D polyline (:class:`~typehaus.resolve.model.SolidSweep`) rather than a
+    stack of level bands faking a rake. The polyline is *sampled* off the walking surface
+    under it — the same ``height_at`` the posts stand on, every
+    :data:`~typehaus.resolve.railings.spans.RAIL_BAND_STEP_M` along the authored path — and
+    then simplified, so a straight flight comes back as the two points it really has and a
+    winder keeps its curve.
 
-    A rail whose product profile names a *round* section is drawn as one — faceted through
-    :func:`~typehaus.resolve.round_solids.round_run_bands`, the same machinery the pipe
-    sweeps use, at a smaller facet budget. Take-off is unaffected either way: railings bill
-    per element off their path length (``takeoff/railings.py``), never off these solids.
+    That is the whole difference from what this used to do: ``RL-A-HANDRAIL``, one straight
+    13-ft bar, was 292 solids (one band per 1-1/2" of fall, times the round section's four
+    facet bands), and railings were 1,149 of the reference house's 2,857 solids. Each was a
+    separate glTF node, a separate ``IfcRailing`` and a separate polyline on the plan sheet.
+
+    A rail whose product profile names a *round* section gets a faceted circle; anything else
+    gets its square stock section, whose flat face stays level on a rake because of the
+    sweep's frame convention (→ :mod:`typehaus.resolve.sweep`). Take-off is unaffected either
+    way — railings bill per element (``takeoff/railings.py``), and the one quantity that does
+    come off this geometry, the top rail's developed length, now reads the sweep's own path.
+
+    Posts, brackets and infill are untouched: those are genuinely discrete pieces.
     """
     levels = el.rail_count if el.rail_count > 0 else 1
     radius = parts.rail_round_radius_m
-    section = 2.0 * radius if radius is not None else parts.rail_section_m
-    half = section / 2.0
-    index = 0
+    profile = (round_profile(radius, RAILING_FACETS) if radius is not None
+               else rect_profile(parts.rail_section_m, parts.rail_section_m))
+    for level in range(levels):
+        frac = 1.0 - (level / max(levels - 1, 1)) if levels > 1 else 1.0
+        sweep = SolidSweep(path=_rail_path(path, surface, rail_h * frac), profile=profile)
+        if len(sweep.path) < 2:
+            continue
+        z0, z1 = sweep_z_extent(sweep)
+        model.solids.append(ResolvedSolid(
+            uid=f"{el.uid}-r{level:02d}", tag=f"{el.tag}-RAIL{level + 1}",
+            storey=storey, category=RAILING_CATEGORY,
+            outline=sweep_plan_silhouette(sweep), z0_m=z0, z1_m=z1,
+            assembly=el.assembly, material=parts.rail_material, sweep=sweep,
+        ))
+
+
+def _rail_path(path: list[Vec], surface: RailingSurface, rise_m: float) -> tuple[Vec3, ...]:
+    """The rail's own 3D polyline: the authored plan path lifted onto the walking surface.
+
+    Sampled rather than taken at the vertices because the surface under a stair guard is a
+    ramp the authored path knows nothing about — every authored vertex is still a sample, so
+    a corner can never be rounded off, and the sampling in between is what makes the bar
+    follow the flight. ``rise_m`` is this level's height above that surface.
+    """
+    points: list[Vec3] = []
     for a, b in zip(path[:-1], path[1:]):
-        for pa, pb, za, zb in surface.rail_bands(a, b, section):
-            for level in range(levels):
-                frac = 1.0 - (level / max(levels - 1, 1)) if levels > 1 else 1.0
-                ra, rb = za + rail_h * frac, zb + rail_h * frac
-                if radius is not None:
-                    pieces = round_run_bands(pa, pb, radius, (ra + rb) / 2.0,
-                                             sweep_bands=RAILING_FACETS // 2)
-                    # The band's own fall, opened out from the section's mid-height so the
-                    # faceted stack spans the slope instead of sitting level across it.
-                    fall = abs(rb - ra) / 2.0
-                    pieces = [(outline, z0 - fall, z1 + fall) for outline, z0, z1 in pieces]
-                else:
-                    pieces = [(rect_between(pa, pb, -half, half),
-                               min(ra, rb) - half, max(ra, rb) + half)]
-                for outline, z0, z1 in pieces:
-                    model.solids.append(ResolvedSolid(
-                        uid=f"{el.uid}-r{index:02d}", tag=f"{el.tag}-RAIL{index + 1}",
-                        storey=storey, category=RAILING_CATEGORY, outline=outline,
-                        z0_m=z0, z1_m=z1, assembly=el.assembly,
-                        material=parts.rail_material,
-                    ))
-                    index += 1
+        run = length(sub(b, a))
+        steps = max(int(math.ceil(run / RAIL_BAND_STEP_M)), 1)
+        for k in range(steps):
+            t = k / steps
+            station = (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
+            points.append((station[0], station[1], surface.height_at(station) + rise_m))
+    end = path[-1]
+    points.append((end[0], end[1], surface.height_at(end) + rise_m))
+    return simplify_path(points, _RAIL_SIMPLIFY_TOL_M, _RAIL_SIMPLIFY_TOL_M)

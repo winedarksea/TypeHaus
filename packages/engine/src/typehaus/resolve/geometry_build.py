@@ -53,6 +53,7 @@ from typehaus.resolve.model import (
     ResolvedWall,
 )
 from typehaus.resolve.site_earth import earth_plane_void_rings, site_grade_elevation_m
+from typehaus.resolve.sweep import sweep_legs
 
 # The site sheet is a presentation surface, not an excavation model: thick enough to read as
 # ground from any angle, thin enough that no consumer mistakes it for fill.
@@ -125,7 +126,26 @@ def _solid_geometry(solid: ResolvedSolid, plan) -> ElementGeometry:
     ``voids`` ride the prism rather than being pre-subtracted, so the IFC emitter can express
     them as real openings while the glTF emitter tessellates them away — same input, each
     format's own idiom.
+
+    A solid carrying a :class:`~typehaus.resolve.model.SolidSweep` is a *run* instead — a
+    handrail, a drain, a raceway — and becomes one mitred ``GBox`` per leg. That is the whole
+    reason the sweep exists: a prism cannot rake, so a raking rail used to be a stack of
+    level bands. Every downstream reader of the IR (glTF, IFC, the section slice kernel)
+    already speaks ``GBox``, so they get real swept geometry with no further change.
     """
+    if solid.sweep is not None:
+        boxes = tuple(GBox(corners_bottom=start, corners_top=end)
+                      for start, end in sweep_legs(solid.sweep))
+        if boxes:
+            return ElementGeometry(
+                uid=solid.uid, kind=solid.category, trade=solid_trade(solid.category),
+                parts=(GPart(key="body", solids=boxes,
+                             material_key=normalize(solid.category),
+                             layer_group="structure",
+                             catalog=PartCatalogRef(
+                                 material_ref=solid_material_ref(plan, solid),
+                                 role=solid.category, name=solid.tag)),),
+            )
     prism = GPrism(ring=solid.outline, z0_m=solid.z0_m, z1_m=solid.z1_m,
                    voids=tuple(solid.voids))
     return ElementGeometry(

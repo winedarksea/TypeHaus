@@ -105,7 +105,12 @@ def test_sill_plate_is_pt_bearing_and_carries_overlay_metadata(catlin_model) -> 
     on_slabs = [s for s in sills if s.condition_key is None]
     assert on_walls and on_slabs, "both cases are live on this house"
     assert all(s.condition_key.startswith("wall_foundation:") for s in on_walls)
-    assert {s.element_tags[0] for s in on_slabs} == {"SL-B-FLOOR"}
+    # SL-M-DECK joined SL-B-FLOOR on 2026-08-24 with RM-M-PANTRY: W-M-PAN-S and W-M-PAN-E
+    # are the first framed partitions in the house to stand on the MAIN storey's cast deck
+    # rather than on the basement slab. Same rule, same R317.1 plate, same reason there is no
+    # `wall_foundation:` condition to name — a slab-to-partition junction is not a wall
+    # stack — and it is a real ordering item: those two walls need treated sill stock too.
+    assert {s.element_tags[0] for s in on_slabs} == {"SL-B-FLOOR", "SL-M-DECK"}
 
 
 def test_sauna_liner_return_declares_air_vapor_continuity(catlin_model) -> None:
@@ -237,7 +242,11 @@ def test_the_ceiling_channel_length_is_its_field_over_the_spacing(catlin_model) 
     room = Polygon(_living_room(catlin_model).clear_face)
     field = room.difference(_stair_hole(catlin_model))
     assert rc.length_m == pytest.approx(field.area / _RC_SPACING_M)
-    assert rc.length_m / 0.3048 == pytest.approx(524.0, abs=2.0)
+    # 524 LF until 2026-08-24, when RM-M-PANTRY was framed out of the living room's NW
+    # corner. The channel field is the room's clear face less the stair hole, so the room
+    # losing ~20 sf takes ~17 LF of channel with it — derived from the field above, and
+    # pinned here so the number cannot drift without someone reading why.
+    assert rc.length_m / 0.3048 == pytest.approx(506.5, abs=2.0)
 
 
 def test_the_ceiling_channel_hangs_below_the_joist_soffit(catlin_model) -> None:

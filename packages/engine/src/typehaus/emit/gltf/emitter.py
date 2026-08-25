@@ -18,33 +18,23 @@ import json
 import struct
 from pathlib import Path
 
-from typehaus.emit.gltf.canvas_objects import _add_canvas_objects
-from typehaus.emit.gltf.members import _add_member, is_roof_framing_member
-from typehaus.emit.gltf.mesh import _MeshBuilder
-from typehaus.emit.gltf.openings import _add_opening_filling
-from typehaus.emit.gltf.palette import _FALLBACK, _color, _solid_color
-from typehaus.emit.gltf.roofs import _add_roof
-from typehaus.emit.gltf.scene import _SceneBuilder
-from typehaus.emit.gltf.walls import _add_wall_body
-from typehaus.resolve.geometry import light_run_band_profiles
-from typehaus.resolve.room_floor import room_floor_elevation
-from typehaus.emit.trades import solid_trade
-from typehaus.resolve.model import ResolvedModel, ResolvedRoom, Ring
-
 # Re-exported for callers that reach past the entry point (tests pinning palette parity, the
 # arch-soffit tessellation, the wall/roof builders). Import them from their own modules in new
 # code; this list keeps ``from typehaus.emit.gltf.emitter import ...`` working unchanged.
 from typehaus.emit.gltf.buffers import _deindex_with_normals  # noqa: F401
+from typehaus.emit.gltf.canvas_objects import _add_canvas_objects
 from typehaus.emit.gltf.geometry import (  # noqa: F401
     _ARCH_SOFFIT_CHORD_TOLERANCE_M,
-    _to_gltf,
     _ARCH_SOFFIT_MAX_SEGMENTS,
     _ARCH_SOFFIT_MIN_SEGMENTS,
     _arch_soffit_sample,
     _arch_soffit_segment_count,
     _thin_rect_edges,
+    _to_gltf,
     _without_collinear_vertices,
 )
+from typehaus.emit.gltf.members import _add_member, is_roof_framing_member
+from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.gltf.openings import (  # noqa: F401
     _DOOR_LEAF_THICKNESS_M,
     _DOUBLE_SWING_LEAF_COUNT,
@@ -54,17 +44,32 @@ from typehaus.emit.gltf.openings import (  # noqa: F401
     _OPENING_FRAME_SPAN_DIVISOR,
     _OPENING_MIN_PANEL_DIMENSION_M,
     _WINDOW_GLAZING_THICKNESS_M,
+    _add_opening_filling,
 )
 from typehaus.emit.gltf.palette import (  # noqa: F401
     _CMU_BASE,
+    _FALLBACK,
     _PALETTE,
     _SEAM_BASE,
+    _color,
     _hex_rgba,
     _material_finish_color,
     _room_floor_color,
+    _solid_color,
     authored_colors,
 )
-from typehaus.emit.gltf.walls import _wall_top_at  # noqa: F401
+from typehaus.emit.gltf.roofs import _add_roof
+from typehaus.emit.gltf.scene import _SceneBuilder
+from typehaus.emit.gltf.walls import (
+    _add_wall_body,
+    _wall_top_at,  # noqa: F401
+)
+from typehaus.emit.trades import solid_trade
+from typehaus.resolve.geometry import light_run_band_profiles
+from typehaus.resolve.geometry_ir import GBox
+from typehaus.resolve.model import ResolvedModel, ResolvedRoom, Ring
+from typehaus.resolve.room_floor import room_floor_elevation
+from typehaus.resolve.sweep import sweep_legs
 
 
 def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes]:
@@ -138,7 +143,18 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             scene.add_object(mb, trade="floors", kind="room", uid=room.uid)
 
     for solid in sorted(model.solids, key=lambda item: item.uid):
-        if solid.outline:
+        # A run — handrail, drain, raceway — is one mitred tube per leg rather than a plan
+        # prism (→ resolve/sweep.py). One ``add_object`` either way, so a rail that used to
+        # arrive as 292 nodes arrives as one.
+        legs = sweep_legs(solid.sweep) if solid.sweep is not None else []
+        if legs:
+            mb = _MeshBuilder()
+            color = _solid_color(model, solid)
+            for start, end in legs:
+                mb.add_gbox(GBox(corners_bottom=start, corners_top=end), color)
+            scene.add_object(mb, trade=solid_trade(solid.category), kind="solid",
+                             uid=solid.uid)
+        elif solid.outline:
             mb = _MeshBuilder()
             mb.add_prism_with_rectangular_voids(solid.outline, solid.voids, solid.z0_m,
                                                 solid.z1_m, _solid_color(model, solid))

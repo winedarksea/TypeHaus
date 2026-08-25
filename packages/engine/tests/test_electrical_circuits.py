@@ -709,14 +709,42 @@ def test_a_combination_receptacle_counts_by_its_125v_half():
 
 def test_wall_space_stops_at_a_run_of_counterless_fixed_cabinet():
     """210.52(A)(2)(1) lists "fixed cabinets that do not have countertops or similar work
-    surfaces" alongside doorways as things wall space is unbroken by, and catlin's kitchen is
-    the case: 7'-1" of the north wall is floor-to-ceiling pantry (FURN-M-KIT-PANTRY-E and the
-    tall pull-outs at the head of the west run). Give those types a countertop and the same
-    stretch becomes wall space that nothing serves.
+    surfaces" alongside doorways as things wall space is unbroken by.
+
+    ** RE-ANCHORED 2026-08-24, AND THE REASON MATTERS MORE THAN THE EDIT. ** This used to
+    name 7'-1" of catlin's north wall — FURN-M-KIT-PANTRY-E plus the tall pull-outs at the
+    head of the west run — and prove the rule by giving every counterless type a countertop
+    and watching RM-M-LIVING flip pass -> fail. All three of those cabinets are gone: the
+    pantry became a framed room (RM-M-PANTRY) and the pull-outs stood where its south
+    partition now runs. The room's counterless fixed cabinets are the east tall bank
+    (FURN-M-KIT-PANTRY-S1/S2) and the mixer garage, and RM-M-LIVING now has enough
+    receptacles that it passes WITH OR WITHOUT their break — so the old mutation asserts
+    'fail' on a house that no longer fails, and no other room in the house depends on the
+    break either (RM-S-BATH1's closet is in a bathroom, which is not habitable and is not
+    graded).
+
+    So the mutation is pointed at the RULE instead of at one room's incidental dependence
+    on it: the break intervals themselves have to appear for a counterless cabinet and have
+    to vanish when the same cabinet is given a work surface. That is the behaviour
+    210.52(A)(2)(1) describes, and unlike a room verdict it cannot be made vacuous by adding
+    a receptacle somewhere else.
     """
+    from typehaus.checks.code.mn_residential.profile import MN_2024
+    from typehaus.checks.mep.electrical import _fixed_cabinet_intervals
+    from typehaus.checks.registry import CheckContext, Preferences
+
     plan = load_plan(CATLIN_DIR).plan
     model, _ = resolve(plan)
     assert _room_result(model, "RM-M-LIVING") == "pass"
+
+    living = next(room for room in model.rooms if room.tag == "RM-M-LIVING")
+    ring = [tuple(point) for point in living.clear_face]
+    ctx = CheckContext(plan=plan, model=model, preferences=Preferences(), profile=MN_2024)
+    breaks = _fixed_cabinet_intervals(ctx, ring, "main")
+    # The east tall bank is 4'-0" of floor-to-ceiling carcass on the living room's boundary,
+    # so it has to produce a break, and one long enough to be that bank.
+    assert breaks, "counterless fixed cabinets should break the wall line"
+    assert max(hi - lo for lo, hi in breaks) >= 3.5 * 0.3048
 
     library = plan.library
     countertopped = tuple(
@@ -726,5 +754,10 @@ def test_wall_space_stops_at_a_run_of_counterless_fixed_cabinet():
     plan = plan.model_copy(update={"library": library.model_copy(
         update={"furniture_types": countertopped})})
     model, _ = resolve(plan)
+    living = next(room for room in model.rooms if room.tag == "RM-M-LIVING")
+    ring = [tuple(point) for point in living.clear_face]
+    ctx = CheckContext(plan=plan, model=model, preferences=Preferences(), profile=MN_2024)
 
-    assert _room_result(model, "RM-M-LIVING") == "fail"
+    # Give every one of them a countertop and the wall line is unbroken by cabinets: the
+    # same carcasses are now work surfaces, which 210.52(A)(2)(1) does not exempt.
+    assert _fixed_cabinet_intervals(ctx, ring, "main") == []

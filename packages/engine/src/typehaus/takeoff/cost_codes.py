@@ -82,6 +82,9 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     ("pipe_runs", "water_*", CostCode("3100", "22 11 00", "plumbing")),
     ("pipe_runs", "gas", CostCode("3300", "22 11 00", "plumbing")),
     ("pipe_runs", "radon", CostCode("3200", "23 05 00", "mechanical")),
+    # Fittings ride with the pipe they join: same NAHB account, same CSI section, same work
+    # package. One wildcard because the key names the part and its size, never its trade.
+    ("pipe_fittings", "*", CostCode("3100", "22 13 00", "plumbing")),
     # Construction returns are one BOM section and several trades — that is the nature of a
     # "return": it is named by what it closes, not by who buys it. The section default files
     # them as rough carpentry; these four go where the trade actually is.
@@ -140,6 +143,7 @@ SECTION_CODES: dict[str, CostCode] = {
     "openings": CostCode("2400", "08 00 00", "openings"),
     "footing_bedding": CostCode("1100", "31 23 00", "earth"),
     "pipe_runs": CostCode("3100", "22 10 00", "plumbing"),
+    "pipe_fittings": CostCode("3100", "22 13 00", "plumbing"),
     "ducts": CostCode("3200", "23 31 00", "mechanical"),
     "sleeves": CostCode("3100", "22 05 17", "plumbing"),
     "conduit": CostCode("3300", "26 05 33", "electrical"),

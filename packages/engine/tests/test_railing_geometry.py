@@ -36,26 +36,32 @@ def _solids(model, tag: str, suffix: str):
     return [s for s in model.solids if s.tag.startswith(f"{tag}-{suffix}")]
 
 
-def _bands(model, tag: str):
-    """Rail solids grouped into bands: one shared plan axis, one contiguous run of z.
+def _rails(model, tag: str):
+    """This railing's rail solids — one per level now, each carrying its own 3D polyline."""
+    return _solids(model, tag, "RAIL")
 
-    Both halves matter — a round section is a stack of solids on one axis, and a guard with
-    ``rail_count=2`` puts two such stacks on that same axis a guard-height apart.
+
+def _stations(model, tag: str, step_m: float = 0.25):
+    """``(plan point, centreline z)`` resampled along the top rail's own swept path.
+
+    These tests used to walk the *bands* a raking rail was chopped into — one per 1-1/2" of
+    fall, times the round section's facet bands — because that stack was all the prism IR
+    could say. The rail is one solid with one polyline now (→ resolve/sweep.py), so the
+    stations are sampled off it rather than recovered from a pile of pieces. Same
+    measurement, one source.
     """
-    stacks: dict[tuple[float, float], list] = {}
-    for solid in _solids(model, tag, "RAIL"):
-        cx = sum(x for x, _y in solid.outline) / len(solid.outline)
-        cy = sum(y for _x, y in solid.outline) / len(solid.outline)
-        stacks.setdefault((round(cx, 4), round(cy, 4)), []).append(solid)
-    out: dict[tuple[float, float, int], list] = {}
-    for (cx, cy), group in stacks.items():
-        run, level = [], 0
-        for solid in sorted(group, key=lambda item: item.z0_m):
-            if run and solid.z0_m > max(p.z1_m for p in run) + 1e-9:
-                out[(cx, cy, level)] = run
-                run, level = [], level + 1
-            run.append(solid)
-        out[(cx, cy, level)] = run
+    rails = [s for s in _rails(model, tag) if s.sweep is not None]
+    assert rails, f"{tag} draws no swept rail"
+    path = max(rails, key=lambda s: s.z1_m).sweep.path
+    out = []
+    for a, b in zip(path, path[1:]):
+        run = math.hypot(b[0] - a[0], b[1] - a[1])
+        steps = max(int(math.ceil(run / step_m)), 1)
+        for k in range(steps):
+            t = k / steps
+            out.append(((a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t),
+                        a[2] + (b[2] - a[2]) * t))
+    out.append(((path[-1][0], path[-1][1]), path[-1][2]))
     return out
 
 
@@ -79,24 +85,33 @@ def test_a_raking_handrail_has_no_vertical_gaps(catlin_model, tag):
 # --- 2. a round profile draws round ---------------------------------------------------
 
 def test_a_rail_authored_round_is_drawn_round(catlin_model):
-    """A faceted circle is a stack of bands whose plan widths differ; a square is one band."""
-    stacks = _bands(catlin_model, "RL-M-HANDRAIL-E")
-    assert stacks
-    widths = set()
-    for group in stacks.values():
-        assert len(group) > 1, "a round section is faceted into a stack, not one prism"
-        for solid in group:
-            xs = [x for x, _y in solid.outline]
-            ys = [y for _x, y in solid.outline]
-            widths.add(round(min(max(xs) - min(xs), max(ys) - min(ys)), 4))
-    assert len(widths) > 1, "every band the same width is a square bar, not a round one"
-    assert max(widths) <= inch(1.5).meters + 1e-9
+    """A round section is a faceted circle profile on the sweep — not a square one.
+
+    It used to be readable only from the drawn bands (a stack whose plan widths differ), the
+    prism IR having no way to say "circle". The sweep carries the section itself, so the
+    question is answered where it is asked.
+    """
+    from typehaus.resolve.sweep import is_round_profile, profile_radius_m
+
+    rails = [s for s in _rails(catlin_model, "RL-M-HANDRAIL-E") if s.sweep is not None]
+    assert rails
+    for rail in rails:
+        assert is_round_profile(rail.sweep.profile), "authored round, drawn square"
+        assert profile_radius_m(rail.sweep.profile) <= inch(0.75).meters + 1e-9
+    widths = {round(max(x for x, _y in r.outline) - min(x for x, _y in r.outline), 4)
+              for r in rails}
+    assert widths
 
 
 def test_a_guard_with_no_stated_profile_is_left_square(catlin_model):
     """Type I also admits a shaped non-circular rail, so silence is not a circle."""
-    for group in _bands(catlin_model, "RL-A-STAIR").values():
-        assert len(group) == 1
+    from typehaus.resolve.sweep import is_round_profile
+
+    rails = [s for s in _rails(catlin_model, "RL-A-STAIR") if s.sweep is not None]
+    assert rails
+    for rail in rails:
+        assert len(rail.sweep.profile) == 4
+        assert not is_round_profile(rail.sweep.profile)
 
 
 # --- 3. mount="wall" means brackets, not posts ----------------------------------------
@@ -128,18 +143,44 @@ def test_a_bracket_reaches_the_wall_face_it_lands_on(catlin_model):
 # --- 4. the rake follows the flight the rail is beside --------------------------------
 
 def test_the_rake_takes_its_elevation_from_the_flight_it_runs_along(catlin_model):
-    """Consecutive bands of one rail climb by one band's worth, not by three of them.
+    """Consecutive stations of one rail climb by one station's worth, not by three of them.
 
     The first band of RL-A-HANDRAIL sat 0.40 m from the straight flight it rakes along and
     0.28 m from the last nosing of the winder fan below it. Ranking on clamped distance gave
-    it the winder's elevation and a 0.416 m step against its neighbours' 0.176 m.
+    it the winder's elevation and a 0.416 m step against its neighbours' 0.176 m. The
+    sampling that fed that ranking is still there — it is what the sweep's path is built
+    from — so the measurement still has to hold; it is now read off the one solid the rail
+    became instead of off the pile of bands it used to be.
     """
-    stacks = _bands(catlin_model, "RL-A-HANDRAIL")
-    ordered = [((cx, cy), (min(s.z0_m for s in g) + max(s.z1_m for s in g)) / 2.0)
-               for (cx, cy, _level), g in sorted(stacks.items())]
-    steps = [abs(b - a) for (_p, a), (_q, b) in zip(ordered, ordered[1:])]
-    interior = sorted(steps)[:-2]  # the flight junction genuinely does step a full riser
-    assert max(interior) < inch(3).meters, f"a band out of step with its neighbours: {steps}"
+    zs = [z for _point, z in _stations(catlin_model, "RL-A-HANDRAIL")]
+    # The *second* difference, not the first: a rail climbing a flight steps by a riser at
+    # every station and that is not a defect. What was wrong was one station stepping three
+    # times as far as the two either side of it — a kink, which is what this measures.
+    kinks = [abs(zs[i] - (zs[i - 1] + zs[i + 1]) / 2.0) for i in range(1, len(zs) - 1)]
+    interior = sorted(kinks)[:-1]  # the flight junction genuinely is one real kink
+    assert max(interior) < inch(3).meters, f"a station out of step with its neighbours: {kinks}"
+
+
+def test_a_raking_rail_is_one_solid_per_level(catlin_model):
+    """The defect this whole change is about: a straight 13-ft bar was 292 solids.
+
+    One band per 1-1/2" of fall, times ``rail_count``, times the round section's four facet
+    bands — and railings came to 1,149 of the house's 2,857 solids, each of them a separate
+    glTF node, a separate ``IfcRailing`` and a separate polyline on the plan sheet.
+    """
+    from typehaus.model.structure import Railing
+
+    element = next(e for e in catlin_model.plan.all_elements()
+                   if isinstance(e, Railing) and e.tag == "RL-A-HANDRAIL")
+    rails = _rails(catlin_model, "RL-A-HANDRAIL")
+    assert len(rails) == max(element.rail_count, 1)
+    assert all(rail.sweep is not None for rail in rails)
+
+
+def test_a_straight_flight_collapses_to_the_points_it_is_cut_at(catlin_model):
+    """The sampled path is simplified, so a rail is authored geometry again, not stations."""
+    rail = next(s for s in _rails(catlin_model, "RL-A-HANDRAIL") if s.sweep is not None)
+    assert 2 <= len(rail.sweep.path) <= 12, rail.sweep.path
 
 
 # --- 5. post spacing is a maximum ------------------------------------------------------

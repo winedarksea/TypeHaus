@@ -40,6 +40,7 @@ from typehaus.takeoff.hardware_config import (
 )
 from typehaus.takeoff.mep import (duct_takeoff, pipe_insulation_takeoff, pipe_run_takeoff,
                                   sleeve_takeoff)
+from typehaus.takeoff.plumbing import fitting_takeoff
 from typehaus.takeoff.plumbing_specialties import (install_parts_takeoff,
                                                    plumbing_specialties_takeoff)
 from typehaus.takeoff.openings import opening_takeoff
@@ -119,6 +120,10 @@ def bill_of_materials(
         # of aluminium is not an order.
         "edge_trim": edge_trim_takeoff(model),
         "pipe_runs": pipe_run_takeoff(model),
+        # Fittings by the piece, counted off the runs' own 3D polylines and the drainage
+        # graph — not estimated. Its arrival re-based [pipe_runs]: the drain and vent $/LF
+        # rates used to carry "a share of fittings" and now price bare pipe (→ #62).
+        "pipe_fittings": fitting_takeoff(model),
         # The supply system's protection budget, which no section could see before
         # `PipeAccessory` existed: valves and preventers by the piece, and the loose
         # gasket/bracket/foam kits that go in with them.

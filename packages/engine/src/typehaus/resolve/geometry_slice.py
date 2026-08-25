@@ -257,6 +257,37 @@ def _crossing_tops(solid: GPrism, crossings) -> list[float]:
     return tops
 
 
+#: A ``GBox`` whose two rings differ only in Z is *upright*: its bottom ring is a plan
+#: footprint and its top ring is that footprint at other elevations. Every member, panel and
+#: closure band is one — which is what :func:`_box_profiles`'s fast path assumes.
+_UPRIGHT_TOLERANCE_M = 1e-9
+
+
+def _box_is_upright(solid: GBox) -> bool:
+    return all(abs(top[0] - bottom[0]) <= _UPRIGHT_TOLERANCE_M
+               and abs(top[1] - bottom[1]) <= _UPRIGHT_TOLERANCE_M
+               for bottom, top in zip(solid.corners_bottom, solid.corners_top))
+
+
+def _box_mesh(solid: GBox) -> GMesh:
+    """The hexahedron as a closed triangle mesh — caps fanned, one quad per ring edge.
+
+    The same triangulation ``emit/gltf/mesh.py::add_gbox`` writes, so a section and a render
+    of the same box are the same solid.
+    """
+    count = len(solid.corners_bottom)
+    positions = tuple(solid.corners_bottom) + tuple(solid.corners_top)
+    triangles: list[tuple[int, int, int]] = []
+    for index in range(1, count - 1):
+        triangles.append((0, index + 1, index))
+        triangles.append((count, count + index, count + index + 1))
+    for index in range(count):
+        nxt = (index + 1) % count
+        triangles.append((index, nxt, count + nxt))
+        triangles.append((index, count + nxt, count + index))
+    return GMesh(positions=positions, triangles=tuple(triangles))
+
+
 def _box_profiles(solid: GBox, plane: CutPlane) -> list[SectionProfile]:
     """A hexahedron's cut face.
 
@@ -264,7 +295,19 @@ def _box_profiles(solid: GBox, plane: CutPlane) -> list[SectionProfile]:
     nothing and its two end faces each cross, so the profile that falls out is exactly the
     raked parallelogram the 2D code hand-built. The rake, the ends and the flange datums
     need no special case.
+
+    That fast path reads the **bottom ring as a plan footprint** and pairs each crossing with
+    the top ring at the same fraction, which is exactly right for a member and exactly wrong
+    for a *swept run* (→ resolve/sweep.py): a tube leg's two rings are separated along the
+    LEG AXIS, so for a horizontal pipe the "bottom" ring is a vertical disc and its plan
+    footprint is a line. Walking it drew nothing, which is how every drain quietly vanished
+    from the sections the day sweeps landed. A box that is not upright is sliced as the
+    closed polyhedron it is instead — 86 solids in the reference house against 15,160
+    members, so the hot path keeps its shortcut and the general case is correct.
     """
+    if not _box_is_upright(solid):
+        profiles, _open = _mesh_profiles(_box_mesh(solid), plane)
+        return profiles
     count = len(solid.corners_bottom)
     station = plane.station_m
     hits: list[tuple[float, float, float]] = []  # (u, z_bottom, z_top)

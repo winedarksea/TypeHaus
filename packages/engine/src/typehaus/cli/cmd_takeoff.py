@@ -99,6 +99,7 @@ def takeoff(
                "stair_finish": bom["stair_finish"],
                "footing_bedding": bom["footing_bedding"],
                "pipe_runs": bom["pipe_runs"],
+               "pipe_fittings": bom["pipe_fittings"],
                "plumbing_specialties": bom["plumbing_specialties"],
                "install_parts": bom["install_parts"],
                "pipe_insulation": bom["pipe_insulation"],

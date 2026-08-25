@@ -212,6 +212,16 @@ def add_faceted_solids(f: Any, body_ctx: Any, shells_m: list[list[list[Vec3]]]) 
     return f.createIfcShapeRepresentation(body_ctx, "Body", "Brep", solids)
 
 
+# The two swept-RUN builders live next door (a run is a section carried along a polyline,
+# which is a different shape from a member's single straight axis and wanted its own file
+# rather than pushing this one past AGENTS.md's 500 lines). Re-exported, because every call
+# site says ``ll.add_swept_disk`` and that name is the contract.
+from typehaus.emit.ifc.swept import (  # noqa: E402, F401 - re-exported builder API
+    add_swept_disk,
+    add_swept_run,
+)
+
+
 def add_swept_member(f: Any, body_ctx: Any, *, origin_m: Vec3, axis: Vec3,
                      ref_direction: Vec3, length_m: float,
                      width_m: float, depth_m: float) -> Any:

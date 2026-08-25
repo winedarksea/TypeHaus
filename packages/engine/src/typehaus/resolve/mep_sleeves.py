@@ -28,7 +28,7 @@ from typehaus.resolve.model import (
     ResolvedSolid,
     Ring,
 )
-from typehaus.resolve.round_solids import PIPE_FACETS, sloped_run_bands
+from typehaus.resolve.round_solids import PIPE_FACETS, round_run_bands
 
 
 def _sleeve_host(model: ResolvedModel, host_ref: str):
@@ -165,7 +165,7 @@ def _emit_sleeve_solid(model: ResolvedModel, sleeve: ResolvedSleeve,
         return
     start, end = bore
     for band, (band_outline, band_z0, band_z1) in enumerate(
-            sloped_run_bands(start, end, radius, sleeve.center_z_m, sleeve.center_z_m)):
+            round_run_bands(start, end, radius, sleeve.center_z_m)):
         model.solids.append(ResolvedSolid(
             uid=f"{uid}-b{band:02d}", tag=f"{sleeve.tag}-B{band + 1}", storey=storey_tag,
             category=_SLEEVE_CATEGORY, outline=band_outline, z0_m=band_z0, z1_m=band_z1))

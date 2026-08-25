@@ -385,7 +385,11 @@ the future.
     rather than on the steel studs the 2026-08-21 overhaul left it on.
   - There was never a pan (`mep_drainage.py` explains why P2801.6 needs none) and never a
     vent. The item said both; neither was ever authored.
- - Hand rails on the stairs are still modeled as dozens of tiny pieces, rather than a single 'tube' rail
+ - **DONE 2026-08-24 — a rail is one solid.** `SolidSweep` + `resolve/sweep.py` (→ #62):
+   `RL-A-HANDRAIL` went from 297 solids to 6 (one rail plus five brackets), railings from
+   1,149 of the house's 2,857 solids to 295 of 953. One glTF node, one `IfcRailing` (a round
+   section as a real `IfcSweptDiskSolid`), one plan polyline, one click to select. Posts,
+   brackets and infill are unchanged — those are genuinely discrete pieces.
  - Sunken garden slab (is it needed above footing) and make sure 7" threshold to basement from sunken garden
  - Basement under the stairs storage closet
  - Wall W-B-CS is likely worth making a wood stud wall (if the load bearing math works and the cost is noticeably lower)
@@ -394,7 +398,13 @@ the future.
  - The sidebar of the UI shown when items are selected should show the material, if applicable, and chosen product brand/id/name if applicable.
  - FURN-B-PLAY-SECTIONAL is facing the wrong way, it should face the TV. The bookshelves should go higher in the theater too, closer to the ceiling
  - Add some wire shelves and racks to the dedicated closets (mudroom closet aimed at jackets)
- - Drain pipe runs (as seen in the workshop especially) are modeled as a mess, not gradual sloping single pieces with occasional turns. This may actually be able to share some code with hand railings on stairs which have a similar problem
+ - **DONE 2026-08-24 — and it did share the code, exactly as guessed.** One `ResolvedSolid`
+   per run carrying its own 3D polyline, mitred by the same `resolve/sweep.py` the handrails
+   use; `sloped_run_bands` and its "accepted approximation" are deleted, and a vertical drop
+   is now just a leg whose direction happens to be down. Two things came with it: a run may
+   author its **grade** (`PipeRun.slope_in_per_ft`) and leave the inverts it implies as
+   `None`, and fittings are **counted** off the geometry rather than estimated off a 20°
+   plan-turn heuristic — which re-based the drain/vent `$/LF` to bare pipe (→ #62).
  - **DONE 2026-08-24 — the door, the wall and the node are all gone; the head of the stairs
    is open on both lanes.** `W-M-STRS` could not simply lose its door: `D-M-STAIR` filled
    3'-4" of a 4'-2" partition and was the only way onto `ST-B2M`, so a doorless wall there

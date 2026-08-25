@@ -25,6 +25,7 @@ from typehaus.resolve.railings.parts import (
     RAILING_INFILL_CATEGORY,
     resolve_parts,
 )
+from typehaus.resolve.sweep import sweep_length_m
 
 _M_TO_FT = 3.280839895013123
 _M2_TO_SQFT = 10.763910416709722
@@ -99,13 +100,22 @@ def _stations(model: ResolvedModel, tag: str) -> list[ResolvedSolid]:
 def _top_rail_length_ft(model: ResolvedModel, tag: str) -> float:
     """The top rail's *true* run, following the walking surface rather than its projection.
 
-    Read off the stations: a post stands on the surface under it and a bracket hangs a fixed
-    drop below the rail over it, so either one tracks the rake, and the station walk puts one
-    at every path vertex. The rail's 3D length is then the sum of the station-to-station
-    hypotenuses — the cap stock a rake actually consumes, about 19% over the plan run on a
-    code stair — measured off the drawn geometry rather than re-derived from the stair, so a
-    resolver change cannot leave the order behind.
+    The rail carries its own 3D polyline now (:class:`~typehaus.resolve.model.SolidSweep`),
+    so this is the developed length of that polyline — the cap stock a rake actually
+    consumes, about 19% over the plan run on a code stair — read straight off the drawn
+    geometry. It used to be recovered by summing post-to-post hypotenuses, which was the best
+    a stack of level bands could offer: the stations track the rake and the walk puts one at
+    every path vertex, but between two stations the sum is a chord across whatever the
+    surface does, and a wall-mounted rail had to borrow its brackets to have stations at all.
+
+    ``rail_count > 1`` puts more than one bar on the same path; the *top* rail is the one
+    this row prices, so the longest is taken rather than the sum. Falls back to the station
+    walk for a rail drawn without a sweep.
     """
+    lengths = [sweep_length_m(solid.sweep) for solid in _by_part(model, tag, "RAIL")
+               if solid.sweep is not None]
+    if lengths:
+        return max(lengths) * _M_TO_FT
     stations = _stations(model, tag)
     total = 0.0
     for a, b in zip(stations, stations[1:]):
