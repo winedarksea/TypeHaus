@@ -110,7 +110,7 @@ def test_exit_on_error_is_the_looser_gate() -> None:
 
 
 def test_catlin_carries_no_failures(catlin_model) -> None:
-    """The reference house checks clean — 0 FAIL, not "0 errors".
+    """The reference house checks clean — 0 FAIL, not "0 errors", bar one accepted advisory.
 
     Asserted through the JSON surface rather than the exit code so the failure message
     names the offending finding instead of just saying 1 != 0.
@@ -124,6 +124,18 @@ def test_catlin_carries_no_failures(catlin_model) -> None:
     `structural.deck_joist_cantilever`), and the beams are three-ply KDAT 2x12, so all
     three PASS on their merits. Deleting the allow-list is the point — do not re-add one
     without an owner decision written down beside it.
+
+    THE ONE ENTRY BELOW IS SUCH A DECISION, taken 2026-08-24. The attic juliet pair widened
+    18" -> 24" at the owner's direction, and it could only grow OUTWARD — the 14" bearing
+    pier under the ridge pins the inboard jambs — so each RO centre landed 3" off its stud
+    line and `structural.window_framing_module` (an advisory, not an engineering gate)
+    reports both. It is the price of the width, not an oversight: with the pier fixed, no
+    outward-only width between 19" and the 30" non-bearing RO cap puts a centre back on a
+    legal station, and each RO still breaks exactly one stud. The design record is in
+    `houses/catlin/CLAUDE.md` and in
+    `test_catlin_contract_m3.py::test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_height`.
+    Narrow the pair back to 18", or move it out a bay to x 15'-4"/20'-8", and this entry
+    goes with it.
     """
     import json
 
@@ -133,6 +145,14 @@ def test_catlin_carries_no_failures(catlin_model) -> None:
         (f["check_id"], tuple(sorted(f["element_tags"] or ())))
         for f in payload["findings"] if f["result"] == "fail"
     ]
+    accepted = {
+        ("structural.window_framing_module", ("WIN-A-S-JUL-W",)),
+        ("structural.window_framing_module", ("WIN-A-S-JUL-E",)),
+    }
+    assert accepted <= set(failures), (
+        "an accepted advisory stopped firing — delete it from `accepted` rather than "
+        "leaving a stale entry", sorted(accepted - set(failures)))
+    failures = [item for item in failures if item not in accepted]
     assert not failures, sorted(failures)
 
 

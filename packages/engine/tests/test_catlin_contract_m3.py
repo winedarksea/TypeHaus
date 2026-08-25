@@ -621,12 +621,24 @@ def test_catlin_window_openings_follow_the_sixteen_inch_framing_module():
     # WIN-S-BATH-N is the one exception: its 7'8" wall is too short to put the RO both on
     # the 16" module's bay centre and clear `integrity.opening_fits`'s 2" edge minimum, so
     # it sits ~1" off ideal instead of failing the hard edge-clearance check.
-    findings = [f for f in findings if "WIN-S-BATH-N" not in f.message]
+    #
+    # The attic juliet pair is the second exception, and a deliberate one as of 2026-08-24.
+    # Both units were widened 18" -> 24" OUTWARD ONLY — the inboard jambs are pinned by the
+    # 14" bearing pier under the ridge (see the juliet test below), so the growth is
+    # one-sided and each RO centre moved 3" off its stud line. Nothing else about the
+    # framing got worse: each RO still breaks exactly one stud and now stops 1/4" clear of
+    # the next stud's body on the outboard side, so the check is reporting a real
+    # asymmetry (the outboard king/jack pack lands tight against a stud, the inboard one
+    # stands mid-bay) rather than a mistake. The arithmetic admits no alternative: with the
+    # pier fixed, no outward-only width between 19" and the 30" non-bearing RO cap puts the
+    # centre back on a legal station.
+    for exception in ("WIN-S-BATH-N", "WIN-A-S-JUL-W", "WIN-A-S-JUL-E"):
+        findings = [f for f in findings if exception not in f.message]
     assert not findings, [finding.message for finding in findings]
 
 
 def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_height(catlin_model):
-    """The gable peak's composition: two 18x64 casements symmetric about the x=18' ridge.
+    """The gable peak's composition: two 24x64 casements symmetric about the x=18' ridge.
 
     Every number here is load-bearing on the design. The rake is what makes this worth
     pinning: ``resolve/geometry_openings.py`` *shortens* an opening that runs into the roof
@@ -636,20 +648,29 @@ def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_heigh
     west = next(item for item in catlin_model.openings if item.tag == "WIN-A-S-JUL-W")
     east = next(item for item in catlin_model.openings if item.tag == "WIN-A-S-JUL-E")
 
-    # Stud lines on their own hosts: W-A-S2 starts at N-A-S1 (x 10'), W-A-S3 at N-A-S2
-    # (x 18'), and both offsets are whole 16" modules, so the two RO centres land at world
-    # x 16'-8" and 19'-4" — 1'-4" either side of the ridge, which is the whole point of the
-    # pair. The bay centres at x 16'-0"/20'-0" are the only other symmetric position, and
-    # they are 48" apart rather than 32".
+    # W-A-S2 starts at N-A-S1 (x 10'), W-A-S3 at N-A-S2 (x 18'), and both segments lay
+    # their studs from an 8" residue, so the stud lines here are x 15'-4", 16'-8", 18'-0"
+    # (the ridge), 19'-4" and 20'-8".
+    #
+    # The centres sat ON 16'-8"/19'-4" until 2026-08-24. Widening the pair 18" -> 24" moved
+    # them to 16'-5"/19'-7", because the growth is OUTWARD ONLY: the inboard jambs are held
+    # by the bearing pier below, so only the outboard jambs could move. They now stop 1/4"
+    # clear of the 15'-4" and 20'-8" studs — as wide as the pair goes without breaking a
+    # second stud each. What survives untouched is the mirror about the ridge, which is the
+    # gable rule that governs this composition.
     assert west.host_wall == "W-A-S2"
     assert east.host_wall == "W-A-S3"
-    assert west.center_along_m == pytest.approx(ft(6, 8).meters, abs=1e-6)
-    assert east.center_along_m == pytest.approx(ft(1, 4).meters, abs=1e-6)
+    assert west.center_along_m == pytest.approx(ft(6, 5).meters, abs=1e-6)
+    assert east.center_along_m == pytest.approx(ft(1, 7).meters, abs=1e-6)
     west_x = ft(10).meters + west.center_along_m
     east_x = ft(18).meters + east.center_along_m
-    assert west_x == pytest.approx(ft(16, 8).meters, abs=1e-6)
-    assert east_x == pytest.approx(ft(19, 4).meters, abs=1e-6)
+    assert west_x == pytest.approx(ft(16, 5).meters, abs=1e-6)
+    assert east_x == pytest.approx(ft(19, 7).meters, abs=1e-6)
     assert ft(18).meters - west_x == pytest.approx(east_x - ft(18).meters, abs=1e-9)
+    # The outboard jambs stop just short of the neighbouring stud's body (1 1/2" centred on
+    # 15'-4"/20'-8"), which is what "as wide as it goes" means here.
+    assert west_x - inch(12).meters == pytest.approx(ft(15, 5).meters, abs=1e-6)
+    assert east_x + inch(12).meters == pytest.approx(ft(20, 7).meters, abs=1e-6)
 
     for opening in (west, east):
         # The storey-wide south sill line, held here deliberately — and 8" above the 24"
@@ -660,22 +681,34 @@ def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_heigh
         # Unclipped: the rake did not silently eat the head.
         assert opening.height_m == pytest.approx(inch(64).meters, abs=1e-6)
         assert opening.sill_m + opening.height_m == pytest.approx(ft(8).meters, abs=1e-6)
-        assert opening.width_m == pytest.approx(inch(18).meters, abs=1e-6)
+        assert opening.width_m == pytest.approx(inch(24).meters, abs=1e-6)
 
     # The clear pier between the two ROs, centred on W-A-C1 / the RB-HOUSE south bearing
     # point: W-A-C1's 5-1/2" stud body plus a jack and king each side is 11-1/2", so 14"
-    # carries the bearing with room to spare, and it is why the pair is 18" wide rather
-    # than the 20" that would leave exactly 12". It is also the composition's mullion.
-    pier = (east_x - inch(9).meters) - (west_x + inch(9).meters)
+    # carries the bearing with 2-1/2" to spare. It is also the composition's mullion, and
+    # between the two it is what forbids the pair from growing INWARD — which is why the
+    # 2026-08-24 widening is one-sided. Unchanged by that widening, and asserted here so a
+    # future "just make them a bit wider" cannot quietly spend it.
+    pier = (east_x - inch(12).meters) - (west_x + inch(12).meters)
     assert pier == pytest.approx(inch(14).meters, abs=1e-6)
 
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
-    for check_id in ("structural.window_framing_module", "integrity.opening_fits"):
-        offenders = [finding for finding in report.findings
-                     if finding.check_id == check_id
-                     and finding.result is Result.FAIL
-                     and ("WIN-A-S-JUL-W" in finding.message or "WIN-A-S-JUL-E" in finding.message)]
-        assert not offenders, [finding.message for finding in offenders]
+    # `integrity.opening_fits` is a hard gate and stays clean. `window_framing_module` is
+    # an ADVISORY, and since 2026-08-24 the pair fails it by the 3" the one-sided widening
+    # cost — accepted deliberately, see
+    # test_catlin_window_openings_follow_the_sixteen_inch_framing_module above.
+    offenders = [finding for finding in report.findings
+                 if finding.check_id == "integrity.opening_fits"
+                 and finding.result is Result.FAIL
+                 and ("WIN-A-S-JUL-W" in finding.message or "WIN-A-S-JUL-E" in finding.message)]
+    assert not offenders, [finding.message for finding in offenders]
+    advisories = [finding for finding in report.findings
+                  if finding.check_id == "structural.window_framing_module"
+                  and finding.result is Result.FAIL
+                  and ("WIN-A-S-JUL-W" in finding.message or "WIN-A-S-JUL-E" in finding.message)]
+    assert len(advisories) == 2, [finding.message for finding in advisories]
+    assert all("3.0\" off" in finding.message for finding in advisories), \
+        [finding.message for finding in advisories]
 
 
 def _opening_plan_y(model, tag):

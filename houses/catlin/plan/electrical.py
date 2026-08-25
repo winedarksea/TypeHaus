@@ -1117,8 +1117,17 @@ NEC_FILL_MAIN = [
                      # Same east-wall BESTA condition as RC3: 36" puts the box above the
                      # countertop while preserving the receptacle's wall-space location.
                      mount=Mount(kind=MountKind.WALL, elevation=inch(36)), rotation=deg(270)),
+    # x 30'-0 3/8" -> 29'-7" (2026-08-24). D-M-BALC moved 6" west to stand under D-S-DECK-E,
+    # putting its east jamb at 23'-10", and 30'-0 3/8" was then 6'-2" from it
+    # (electrical.receptacle_spacing). RC5 is the only receptacle covering BOTH ends of the
+    # south run — that jamb and the far end near the SE corner, where RC4's coverage comes
+    # round the east wall to meet it — and the two ends together pin it to a ~5" window,
+    # about 29'-5"..29'-10". 29'-7" splits it: 5'-9" to the jamb, 5'-9 3/4" to the far
+    # point. No stud line falls in that window (28'-8" and 30'-0" are the neighbours), so
+    # unlike its neighbours this box is not 3/8" off a stud — it lands mid-bay, 3" east of
+    # the 29'-4" bay centre. 29'-4" itself was tried and left the far point 6'-1" out.
     ElectricalDevice(uid="NEC012AAAA", tag="ED-M-LIVING-RC5", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(30, 0.375), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(29, 7), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC061AAAA", tag="ED-M-LIVING-RC6", kind=DeviceKind.RECEPTACLE,
@@ -1236,11 +1245,18 @@ NEC_FILL_SECOND = [
     # cannot take the photoperiod down with it — and grow-light drivers' own leakage current
     # is exactly why the lighting side must not sit behind a 5 mA trip either.
     # Moved x=15.89' -> 17.0' (2026-07-31): the old station was inside D-S-DECK-W's rough
-    # opening (x 11'-2"..16'-2"). 17'-0" centres the 1'-10" of wall left, under the 2'-0"
+    # opening (x 11'-2"..16'-2"). 17'-0" centred the 1'-10" of wall left, under the 2'-0"
     # 210.52(A)(2) counts as wall space — kept anyway since the south wall is where the
     # plant gear plugs in.
+    #
+    # 17.0' -> 11'-4" (2026-08-24): D-S-DECK-W slid 1'-0" inward, so its rough opening is
+    # x 12'-2"..17'-2" and the east remnant is 2" of wall. RC1 crosses to the *west* jamb
+    # instead, on the 11'-4" bay centre — and that is also what closes the wall space west
+    # of the door, which the inward move had stretched to 6'-3 3/4" from RC2 alone
+    # (electrical.receptacle_spacing). FX-S-BALC-HYD gave up this bay for it and moved to
+    # 7'-4" (plan/fixtures.py).
     ElectricalDevice(uid="NEC021AAAA", tag="ED-S-PLANT-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(17), ft(0, 8.75)), type_ref="ED-T-RECEPTACLE-WR-GFCI",
+                     position=pt(ft(11, 4), ft(0, 8.75)), type_ref="ED-T-RECEPTACLE-WR-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC022AAAA", tag="ED-S-PLANT-RC2", kind=DeviceKind.RECEPTACLE_GFCI,

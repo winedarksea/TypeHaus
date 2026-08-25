@@ -67,12 +67,14 @@ def test_window_operation_coerces_authored_strings_and_rejects_unmodeled_ones():
 
 def test_the_attic_juliet_pair_is_a_casement_and_not_an_awning(catlin_plan):
     by_tag = {wt.tag: wt for wt in catlin_plan.library.window_types}
-    juliet = by_tag["WT-1864"]
+    juliet = by_tag["WT-2464"]
     # The pair's whole premise is a sash that swings like a door leaf; an awning (bottom-hung
     # only) would open the head and nothing else, which is not the same window. It was a
     # TILT_TURN for the few hours the pair was 32" wide — narrowing the RO to 18" put it
     # under the ~500 mm minimum frame that hardware line is made in, and a casement leaf is
-    # what a juliet unit is anyway.
+    # what a juliet unit is anyway. The 2026-08-24 widening back to 24" (WT-1864 -> WT-2464)
+    # clears that hardware minimum again but does NOT reopen the question: casement is the
+    # family's operation and the leaf the composition wants.
     assert juliet.operation is WindowOperation.CASEMENT
     assert juliet.operation == "casement"
 

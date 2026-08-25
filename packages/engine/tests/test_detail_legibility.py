@@ -17,12 +17,50 @@ import re
 from typehaus.emit.draw.details import build_detail, derive_detail_slices
 from typehaus.emit.draw.palette import detail_hatch
 from typehaus.emit.draw.pdf_writer import _band_linewidth, _min_printed_width_pt
-from typehaus.emit.draw.scene import Hatch, Leader, Text
+from typehaus.emit.draw.scene import Hatch, Leader, Polyline, Text
 
 
 def _eave(model):
     detail = next(d for d in derive_detail_slices(model) if d.key.startswith("wall_roof"))
     return build_detail(model, detail)[0]
+
+
+#: A ladder rung says `<layer name> <n>"` and nothing else. The name may carry a space
+#: ("rafter fill"), so it is anything that is not the trailing dimension.
+_RUNG_TEXT = re.compile(r'^(?P<name>.+?) [\d.]+"$')
+
+
+def _rungs(scene):
+    """Every roof ladder rung as ``(name, tip)``, where ``tip`` is ``to``.
+
+    ``to`` and not ``anchor``: every renderer draws the single segment ``at → to`` and puts
+    the arrowhead on ``to``. ``anchor`` is provenance, and asserting on it would pass while
+    the printed arrow pointed somewhere else entirely — which is exactly what happened.
+
+    The continuity callouts share the layer but point at control planes, not at bands; a
+    wall rung is flat, its tip at its own row. Both are filtered out here.
+    """
+    out = []
+    for node in scene.nodes:
+        if not isinstance(node, Leader) or node.layer != "A-ANNO-TEXT":
+            continue
+        match = _RUNG_TEXT.match(node.text)
+        if match is None or abs(node.at[1] - node.to[1]) <= 1e-9:
+            continue
+        out.append((match.group("name"), node.to))
+    return out
+
+
+def _contains(points, point) -> bool:
+    """Even-odd point-in-polygon, on the outline exactly as it was drawn."""
+    u, z = point
+    inside = False
+    count = len(points)
+    for index in range(count):
+        (u0, z0), (u1, z1) = points[index], points[(index + 1) % count]
+        if (z0 > z) != (z1 > z) and u < u0 + (u1 - u0) * (z - z0) / (z1 - z0):
+            inside = not inside
+    return inside
 
 
 # --- the boards go bare ----------------------------------------------------------------
@@ -126,7 +164,7 @@ def test_the_roof_ladder_steps_the_same_way_the_roof_stacks(catlin_model):
     # layer and the elbow shape but point at control planes, not at bands. A roof rung then
     # carries its band's own elevation in the anchor and its rung height in `at`; a wall
     # rung's two are equal, which is what tells the two ladders apart.
-    rung_text = re.compile(r'^\S+ [\d.]+"$')
+    rung_text = _RUNG_TEXT
     rungs = [(n.at[1], n.anchor.xy[1]) for n in scene.nodes
              if isinstance(n, Leader) and n.layer == "A-ANNO-TEXT"
              and rung_text.match(n.text) and abs(n.at[1] - n.anchor.xy[1]) > 1e-9]
@@ -136,3 +174,50 @@ def test_the_roof_ladder_steps_the_same_way_the_roof_stacks(catlin_model):
     assert targets == sorted(targets, reverse=True), (
         "rungs descend, so their targets must descend too — otherwise the leaders cross: "
         f"{targets}")
+
+
+def test_every_roof_label_lands_inside_the_band_it_names(catlin_model):
+    """The arrow end is *measured* off the band, so this is exact, not approximate.
+
+    The ladder used to walk the assembly's own layer spans and step down from the roof
+    plane by each layer's thickness — spending a perpendicular offset as a vertical one. On
+    catlin's roof the two differ by 5.4%, which is invisible per layer and cumulative down
+    the stack: the roofing pointed at the vent mat, the vent mat and the underlayment both
+    at the deck, the deck at the polyiso, and the vapour barrier at the ZIP. Five of nine
+    named the wrong band and every one of them looked right, because each still landed
+    cleanly on *a* layer. Nothing short of containment catches that.
+    """
+    checked = 0
+    for detail in derive_detail_slices(catlin_model):
+        scene = build_detail(catlin_model, detail)[0]
+        outlines: dict[str, list] = {}
+        for node in scene.nodes:
+            if isinstance(node, Polyline) and node.layer == "A-ROOF" and node.tag:
+                outlines.setdefault(node.tag.rsplit("/", 1)[-1], []).append(node.points)
+        for name, tip in _rungs(scene):
+            if name not in outlines:   # the rafter and its fill are drawn as members
+                continue
+            assert any(_contains(points, tip) for points in outlines[name]), (
+                f"{detail.key}: the {name!r} arrow lands at {tip}, which is outside "
+                f"every {name} band on the sheet")
+            checked += 1
+    assert checked >= 8, f"only {checked} roof bands were both drawn and laddered"
+
+
+def test_a_leader_points_where_its_arrowhead_lands(catlin_model):
+    """``anchor`` is not drawn — by anything — so it may not be the truth of a leader.
+
+    ``pdf_writer`` annotates ``at → to``, ``dxf_writer`` adds a two-point leader over the
+    same pair, and the viewer's ``DetailCanvas`` draws the same segment. The roof ladder
+    once carried the point on the band in ``anchor`` and a shoulder at the label's own row
+    in ``to``, describing an elbow that no back end has ever drawn: the arrow stopped at the
+    shoulder, several inches off the band, while the IR looked correct. A ladder leader
+    keeps one point so that cannot recur.
+    """
+    scene = _eave(catlin_model)
+    for node in scene.nodes:
+        if not isinstance(node, Leader) or not _RUNG_TEXT.match(node.text):
+            continue
+        assert node.anchor.xy == node.to, (
+            f"{node.text!r} claims to point at {node.anchor.xy} but its arrowhead lands at "
+            f"{node.to}")

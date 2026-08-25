@@ -242,9 +242,16 @@ GARAGE_FIXTURES = (
 # self-drains outward when closed. Not buried, not shut down for winter — the owner's ask.
 #
 # Both on the south face, serving the porch (0'-0") and balcony (10' up) outdoor rooms:
-#   FX-M-PORCH-HYD  x=12'-0" on W-M-S1, the blank stretch between WIN-M-BED-S2 and centre.
-#   FX-S-BALC-HYD   x=16'-8" on W-S-S1, a 16" module bay centre behind RM-S-PLANT (which
-#                   the balcony irrigation this hydrant feeds actually waters).
+#   FX-M-PORCH-HYD  x=12'-0" on W-M-S1, the blank stretch between WIN-M-BED-S1 and
+#                   WIN-M-BED-S2 (which moved east to centre 14'-8" on 2026-08-24 — its
+#                   RO now runs 13'-5"..15'-11", leaving 1'-5" of clear wall to that jamb).
+#   FX-S-BALC-HYD   x=7'-4" on W-S-S1, a 16" module bay centre behind RM-S-PLANT (which
+#                   the balcony irrigation this hydrant feeds actually waters). Moved west
+#                   off 16'-8" on 2026-08-24: D-S-DECK-W slid 1'-0" inward and its rough
+#                   opening (12'-2"..17'-2") swallowed the old station. It lands in the
+#                   2'-10" of blank wall between WIN-S-PLANT1 and WIN-S-PLANT2 — the only
+#                   bay left on this wall that is not spoken for, since the 1'-7" west of
+#                   the door took ED-S-PLANT-RC1 (plan/electrical.py).
 #
 # Each names the room *behind* it, which draws an `integrity.placeable_room_mismatch`
 # (footprint centre outside its assigned room) — correct for an exterior hose bib whose
@@ -260,5 +267,5 @@ PORCH_HYDRANT = (
 )
 BALCONY_HYDRANT = (
     Fixture(uid="D3NLW8VC5T", tag="FX-S-BALC-HYD", type_ref="FX-HYDRANT-SD34",
-            room="RM-S-PLANT", position=pt(ft(16, 8), ft(0)), wall_ref="W-S-S1"),
+            room="RM-S-PLANT", position=pt(ft(7, 4), ft(0)), wall_ref="W-S-S1"),
 )

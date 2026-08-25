@@ -351,7 +351,7 @@ rule never applied to them, and none of the eight is an emergency escape opening
 |---|---|---|
 | `WIN-A-W-N`, `WIN-A-W-S`, `WIN-A-E-N` (`WT-1424`), `WIN-A-E-S` (`WT-1424-T`) | 4 | the 5' knee band, both eave walls |
 | `WIN-A-S2`, `WIN-A-S3` (`WT-1448`) | 2 | south gable flankers |
-| `WIN-A-S-JUL-W`, `WIN-A-S-JUL-E` (`WT-1864`) | 2 | the juliet pair |
+| `WIN-A-S-JUL-W`, `WIN-A-S-JUL-E` (`WT-2464`) | 2 | the juliet pair |
 
 $951,336–1,992,450 → **$945,008–1,980,177**, **−$6,300 / −$12,300**, plus a share of
 `[allowances] envelope-opening-flashing-and-sill-pans` and `finish-window-stools-and-aprons`
@@ -359,11 +359,14 @@ that is a lump and does not move on its own: 8 of 45 openings is ~$900–2,100 m
 
 **Why these eight and not any other eight.** `[openings]`' own 2026-08-20 pass found that
 windows are priced by **united-inch band, not by area** — a 14x24 costs the same as a 27x36.
-Eleven `WT-1424`, two `WT-1864` and two `WT-1448` are the house's fifteen sub-stock-size
-units, and the same note flags all three families as possibly **below a stock line's minimum
+Eleven `WT-1424` and two `WT-1448` are the house's thirteen sub-stock-size
+units, and the same note flags both families as possibly **below a stock line's minimum
 size** (Simonton's awning minimum is 23.5" wide; Andersen 400's narrowest casement is
 20-11/16"). So these are the units that cost the most per square inch of daylight *and* carry
-the most availability risk. The four in the knee band buy daylight for carpeted storage.
+the most availability risk. The juliet pair was a third such family until 2026-08-24, when
+it widened 18" -> 24" (`WT-1864` -> `WT-2464`) and cleared the casement minimum; it is still
+in the cut below for composition reasons, but it is no longer an availability risk, and the
+band change (82 -> 88 united inches) makes it ~$120-220 dearer than the figures above. The four in the knee band buy daylight for carpeted storage.
 
 **Cost of the cut is entirely compositional, and it is not small.** `houses/catlin/CLAUDE.md`
 spends three paragraphs on this: the knee band "reads as its own row across 5'-6" of blank

@@ -158,7 +158,7 @@ OPENINGS = [
     # on a second head line, with 8' of blank gable between groups — and it wasn't symmetric.
     # The corner pair (x 3'-4"/33'-8") was cut: the 4:12 rake leaves only ~6' of wall there,
     # not enough for anything that doesn't look like a stamp. The survivors (x 8'-8" and its
-    # mirror) took WT-1448 instead of WT-1864 (which the family would share) because an 18"
+    # mirror) took WT-1448 instead of the juliet family (which they would share) because an 18"
     # RO needs a jamb pack whose header, at the nearest stud line, is 1.8" too tall to clear
     # the rake there — a 14" RO fits inside a bay and needs no pack.
     # WIN-A-S3 at x 27'-4" mirrors WIN-A-S2's 8'-8" only because N-A-V1 moved to 22'-8" (see
@@ -170,24 +170,31 @@ OPENINGS = [
            position=from_node("N-A-SW", ft(8, 1)), sill_height=ft(2, 8)),   # x 8'-8"
     Window(uid="CAX303AAAA", tag="WIN-A-S3", host="W-A-S4", type_ref="WT-1448",
            position=from_node("N-A-V1", ft(4, 1)), sill_height=ft(2, 8)),   # x 27'-4"
-    # The blank middle of the same gable: a pair of 18x64 casements straddling the ridge,
+    # The blank middle of the same gable: a pair of 24x64 casements straddling the ridge,
     # reading like a juliet balcony without being one (no door/guard/walking surface — the
     # 2'-8" sill clears R312.2's 24" fall-protection trigger by 8"). Shrank from an initial
     # 32x76 (2026-07-31) to 50x64 overall: the bigger glass overwhelmed the then-14x24
     # flankers and read as two windows rather than one mullioned opening.
-    # Centred on the STUD LINES (x 16'-8"/19'-4", 32" apart), not the bay centres (48" apart):
-    # the gable's stud grid is continuous across the ridge, and the tighter, stud-line pairing
-    # both brings the units closer and costs one broken stud each instead of two.
-    # 18" wide, not 20": the clear pier between the two ROs is 14", centred on W-A-C1/the
-    # RB-HOUSE bearing point — enough to carry the bearing (11-1/2" of stud+jack+king) with
-    # 2-1/2" to spare and let the kings double as drywall backing; 20" would leave only the
-    # arithmetic minimum of 12". That pier also reads as the composition's mullion.
+    #
+    # WIDENED 18" -> 24" EACH, OUTWARD ONLY (2026-08-24), so the pair now reads 62" overall.
+    # The inboard jambs (17'-5" and 18'-7") did NOT move and cannot: the clear pier between
+    # the two ROs is 14", centred on W-A-C1/the RB-HOUSE bearing point — enough to carry the
+    # bearing (11-1/2" of stud+jack+king) with 2-1/2" to spare and let the kings double as
+    # drywall backing, where 12" is the arithmetic minimum. That pier also reads as the
+    # composition's mullion, which is the other reason it is fixed.
+    #
+    # Growing outward moved the centres off the STUD LINES they used to sit on (16'-8" and
+    # 19'-4") to 16'-5" and 19'-7". The frame is no worse for it — the outboard jambs now
+    # land 1" inside the 15'-4" and 20'-8" stud lines, so each RO still breaks exactly one
+    # stud (the 16'-8"/19'-4" lines), and the king studs pack against the flanking stud
+    # rather than standing free in a bay. The pair stays an exact mirror about x=18'-0",
+    # which is the gable rule that governs here.
     # Tags are descriptive, not positional, since a mid-sequence insertion couldn't join the
     # west→east WIN-A-S* numbering without renumbering (and breaking IFC GlobalIds) the rest.
-    Window(uid="CAX311AAAA", tag="WIN-A-S-JUL-W", host="W-A-S2", type_ref="WT-1864",
-           position=from_node("N-A-S1", ft(5, 11)), sill_height=ft(2, 8)),  # x 16'-8"
-    Window(uid="CAX312AAAA", tag="WIN-A-S-JUL-E", host="W-A-S3", type_ref="WT-1864",
-           position=from_node("N-A-S2", ft(0, 7)), sill_height=ft(2, 8)),   # x 19'-4"
+    Window(uid="CAX311AAAA", tag="WIN-A-S-JUL-W", host="W-A-S2", type_ref="WT-2464",
+           position=from_node("N-A-S1", ft(5, 5)), sill_height=ft(2, 8)),   # x 16'-5"
+    Window(uid="CAX312AAAA", tag="WIN-A-S-JUL-E", host="W-A-S3", type_ref="WT-2464",
+           position=from_node("N-A-S2", ft(0, 7)), sill_height=ft(2, 8)),   # x 19'-7"
     # The source attic has no north, east or west opening at all; these three are kept for
     # daylight and cross-ventilation and are this storey's only openings with no counterpart.
     Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2", type_ref="WT-3036",

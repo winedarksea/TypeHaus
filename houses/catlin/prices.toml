@@ -1621,11 +1621,9 @@
 # 65-85% LOW, which is the single largest correction in this file since labour was added.
 # Everything else here moved 10-25%, which is an ordinary revision.
 #
-# THREE UNITS ARE BELOW A STOCK LINE'S MINIMUM SIZE and may not be orderable as priced:
+# TWO UNITS ARE BELOW A STOCK LINE'S MINIMUM SIZE and may not be orderable as priced:
 #   WT-1424 (14" wide) — Simonton's AWNING minimum is 23.5" wide. A 14x24 awning is a
 #                        specialty unit, and there are eleven of them (6 + 5 tempered).
-#   WT-1864 (18" wide) — narrower than Andersen 400's narrowest casement (20-11/16"). May
-#                        force a different series.
 #   WT-1448 (14x48)    — a legal casement at a 3.4:1 aspect, but an odd one; expect the band
 #                        floor, never below it.
 # ** VERIFY AVAILABILITY BEFORE BIDDING THESE. ** An unavailable size is not a price problem.
@@ -1665,14 +1663,14 @@
 "WT-1424-FIX" = { material = { low = 400, high = 780 }, labour = { low = 105, high = 215 } }  # 1 ea — fixed runs 75-80% of an operable casement
 "WT-1424-T" = { material = { low = 670, high = 1250 }, labour = { low = 115, high = 240 } }  # 5 ea — +$150/250 flat tempered
 "WT-1448" = { material = { low = 550, high = 1050 }, labour = { low = 135, high = 275 } }  # 2 ea — 62 UI, same band as WT-2736
-"WT-1864" = { material = { low = 700, high = 1320 }, labour = { low = 165, high = 360 } }  # 2 ea — 82 UI, over the band; 18" may force a series change
+"WT-2464" = { material = { low = 760, high = 1430 }, labour = { low = 170, high = 370 } }  # 2 ea — 88 UI, over the band. Was WT-1864 (18x64, 82 UI) until 2026-08-24; +6" of width is ~8% of material here, and 24" clears Andersen 400's 20-11/16" casement minimum, so this row is no longer an availability risk
 # The mid units — ordinary 17-26% corrections.
 "WT-2736" = { material = { low = 550, high = 1050 }, labour = { low = 155, high = 320 } }  # 10 ea — the production unit, 63 UI
 "WT-2736-T" = { material = { low = 700, high = 1300 }, labour = { low = 160, high = 330 } }  # 1 ea
 "WT-3036" = { material = { low = 560, high = 1080 }, labour = { low = 160, high = 330 } }  # 3 ea — 66 UI
 "WT-3036-T" = { material = { low = 710, high = 1330 }, labour = { low = 165, high = 340 } }  # 1 ea
 "WT-3048" = { material = { low = 700, high = 1320 }, labour = { low = 185, high = 390 } }  # 7 ea — 78 UI, over the band; two-man set
-"WT-3048-T" = { material = { low = 850, high = 1570 }, labour = { low = 190, high = 405 } }  # 3 ea
+"WT-3048-T" = { material = { low = 850, high = 1570 }, labour = { low = 190, high = 405 } }  # 2 ea — was 3 until WIN-M-LIV-S2 was deleted (2026-08-24)
 # The plant room's U-0.14 units. Same dimensions as their parents, a different MANUFACTURER.
 # Not an upgrade the owner may decline: `building_science.glazing_dew_point` FAILs these three
 # at U-0.25 — the glass condenses below about +13 F outdoors.

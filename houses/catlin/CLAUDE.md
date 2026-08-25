@@ -234,17 +234,24 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   `structural.window_framing_module` (asserted clean by
   `test_catlin_contract_m3.py::test_catlin_window_openings_follow_the_sixteen_inch_framing_module`)
   is what says so. Resize windows to fit the grid, not vice versa. One type per width
-  family — WT-1424, WT-1864 (the attic gable's juliet pair, head at 8'-0"), WT-2736,
-  WT-3036 (north gables/hall), WT-3048 (the south-glazing size, head at 6'-8") —
-  each family sharing the one height that fits its most constrained wall. Five sizes
-  carry the whole house; the 18" family breaks one stud and so centres on a stud line,
-  which is also what lets the juliet pair sit 32" apart instead of 48".
+  family — WT-1424, WT-2464 (the attic gable's juliet pair, head at 8'-0"; an 18" WT-1864
+  family until 2026-08-24), WT-2736, WT-3036 (north gables/hall), WT-3048 (the
+  south-glazing size, head at 6'-8") — each family sharing the one height that fits its
+  most constrained wall. Five sizes carry the whole house.
+  **The juliet family is the one place a window is knowingly OFF its ideal station.** It
+  centred on a stud line while it was 18" wide. Widening it to 24" on 2026-08-24 could only
+  go outward — the 14" bearing pier under the ridge pins the inboard jambs — so each centre
+  landed 3" off, and `structural.window_framing_module` reports both. It is accepted, not
+  overlooked: each RO still breaks exactly one stud and now stops 1/4" short of the next
+  stud's body outboard, and with the pier fixed no outward-only width between 19" and the
+  30" non-bearing cap puts the centre back on a legal station. See the exception list in
+  `test_catlin_contract_m3.py::test_catlin_window_openings_follow_the_sixteen_inch_framing_module`.
   **Two exceptions, both 2026-08-01**, each a second height on an existing width family
   because the rule's own remedy — give it its own width family — costs more than the
   second height does:
   - **WT-1448** (the south gable's flankers): the 4:12 rake forbids the remedy outright.
     Any width over 14" breaks a stud and takes a header, and the header is what hits the
-    rake (WT-1864 at the nearest usable stud line misses by 1.8"). 14" fits inside a bay
+    rake (the juliet family at the nearest usable stud line misses by 1.8"). 14" fits in a bay
     and takes no pack, so only the glass has to clear.
   - **WT-3048** (the south glazing): the 30" family's committed height (WT-3036's 36")
     would drop the south head off the 6'-8" door-head line the whole face is built on.
@@ -318,8 +325,10 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     that is why WIN-A-N1 stays at 7'-4" rather than stacking on WIN-S-STAIR-N, and why
     the 2026-08-01 pass gave the south gable up as a column-capper. It now carries four
     openings, exactly mirrored about x=18': WT-1448 flankers at 8'-8"/27'-4" (head 6'-8")
-    around the WT-1864 juliet pair at 16'-8"/19'-4" (head 8'-0"), one 2'-8" sill under all
-    four, heads stepping with the rake. The corner pair at 3'-4"/33'-8" was retired — the
+    around the WT-2464 juliet pair at 16'-5"/19'-7" (head 8'-0"), one 2'-8" sill under all
+    four, heads stepping with the rake. The juliet centres were 16'-8"/19'-4" until the
+    2026-08-24 widening pushed each unit 3" outward; the mirror about x=18' — the rule that
+    actually governs a gable — is what survived, and is what to hold if they move again. The corner pair at 3'-4"/33'-8" was retired — the
     rake leaves ~6'-0" of wall there and nothing stands in it without reading as a stamp.
     Mirroring the east half at all required moving N-A-V1 from 22'-4" to **22'-8"**: a
     wall's stud grid lays out from its start node, and 36' − 22'-4" is not a multiple of

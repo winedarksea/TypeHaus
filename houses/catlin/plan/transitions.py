@@ -77,9 +77,14 @@ TRANSITIONS = (
                    "storey_stack:rim:CATLIN_EXT_2X6|PLANT_EXT_2X6_HUMID",
                    "storey_stack:rim:CATLIN_INT_2X6_BRG|PLANT_INT_2X6_BRG_HUMID",
                )),
+    # No notes= here, deliberately: this condition pattern is a wildcard over every
+    # stack-width change in the house (partition-to-partition, sauna liner, plant room,
+    # mudroom, and the garage's masonry-to-framed curb among them), and the garage's own
+    # narrative note would land on all of them if pointed at from here. The garage curb
+    # gets its narrative from TR-CATLIN-GARAGE-OPENING below instead, which is genuinely
+    # scoped to GARAGE_WALL_2X6.
     Transition(uid="CATR004AAAA", tag="TR-CATLIN-STACK-SHELF",
-               condition_pattern="stack_width_change:*",
-               notes="notes/garage_wall_detail_side.md", overlay="stack-width-shelf",
+               condition_pattern="stack_width_change:*", overlay="stack-width-shelf",
                continuity=AIR_WATER_THERMAL),
     # THE OUTIE WINDOW (2026-08-23). The unit moved out of the stud plane and into the truss
     # plane, 5" outboard of the sheathing, so the innie `window-head-jamb-sill` recipe — which

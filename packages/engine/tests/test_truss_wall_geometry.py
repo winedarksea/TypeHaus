@@ -175,24 +175,40 @@ def test_blocks_climb_an_outrigger_at_no_more_than_the_stated_spacing(catlin_mod
     A gap may be LONGER than the spacing where a block was dropped for landing inside a
     rough opening in plan — that block would be in the glass — so the test is on the shape of
     the distribution rather than on every gap: the typical climb is at or under the stated
-    spacing, and no gap swallows more than two dropped blocks.
+    spacing, and no gap swallows more blocks than the openings it passes can explain.
+
+    The per-wall ceiling is the arithmetic of that sentence rather than a flat multiple of
+    the spacing. A pack running past an RO loses every block the RO covers PLUS the two that
+    straddle its sill and its head, so the widest defensible gap on a wall is that wall's
+    tallest RO plus two climbs. On a wall with no opening it collapses to the old 3x bound,
+    which is the same statement with a zero-height opening.
+
+    That distinction started to matter on 2026-08-24: widening the attic juliet pair
+    18" -> 24" moved the RO over the bay beside the outrigger at x 15'-4", so a pack on
+    W-A-S2/W-A-S3 now gives up three blocks to a 64"-tall opening (a 125" gap) where the
+    flat 120" bound allowed only two.
     """
     gaps: list[float] = []
     for wall in _truss_walls(catlin_model):
+        tallest = max((op.height_m for op in catlin_model.openings
+                       if op.host_wall == wall.tag), default=0.0)
+        ceiling = max(3.0, tallest / BLOCK_SPACING.meters + 2.0) * BLOCK_SPACING.meters
         by_pack: dict[str, list[float]] = {}
         for block in _by_category(wall, "truss_block"):
             by_pack.setdefault(block.child_key.split("-")[2], []).append(block.z0_m)
         for elevations in by_pack.values():
             elevations.sort()
-            gaps.extend(upper - lower for lower, upper
-                        in zip(elevations, elevations[1:], strict=False))
+            for lower, upper in zip(elevations, elevations[1:], strict=False):
+                gaps.append(upper - lower)
+                assert upper - lower <= ceiling + 1e-6, (
+                    f"{wall.tag}: a block gap of {(upper - lower) / IN:.1f}\" runs past what "
+                    f"its tallest RO ({tallest / IN:.0f}\") plus two climbs can explain "
+                    f"({ceiling / IN:.1f}\")")
     assert gaps
     gaps.sort()
     assert gaps[len(gaps) // 2] <= BLOCK_SPACING.meters + 1e-6, (
         f"typical block climb is {gaps[len(gaps) // 2] / IN:.1f}\", past the stated "
         f"{BLOCK_SPACING.inches:g}\"")
-    assert gaps[-1] <= 3.0 * BLOCK_SPACING.meters + 1e-6, (
-        f"widest block gap is {gaps[-1] / IN:.1f}\" — more than two dropped blocks")
 
 
 def test_the_buck_lines_the_rough_opening_out_to_the_truss_plane(catlin_model):

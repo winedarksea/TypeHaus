@@ -156,12 +156,17 @@ WALLS = [
     Wall(uid="CSW102BAAA", tag="W-S-E2", start_node="N-S-E1", end_node="N-S-E2",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-E1"),
+    # stacks_on repointed to W-M-E1 (2026-08-24): main.py merged W-M-E1/E2 into one wall
+    # for WIN-M-EAST-MID, retiring the W-M-E2 tag. The resolver links only one upper wall
+    # per lower wall, and W-S-E1 already claims that slot, so this segment's own
+    # STOREY_STACK/WALL_FOUNDATION boundary condition is dropped rather than merely
+    # repointed — see the note on the merged wall in main.py.
     Wall(uid="CSW104AAAA", tag="W-S-E3", start_node="N-S-E2", end_node="N-S-E3",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
-         structural_role=StructuralRole.BEARING, stacks_on="W-M-E2"),
+         structural_role=StructuralRole.BEARING, stacks_on="W-M-E1"),
     Wall(uid="CSW105AAAA", tag="W-S-E4", start_node="N-S-E3", end_node="N-S-NE",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
-         structural_role=StructuralRole.BEARING, stacks_on="W-M-E2"),
+         structural_role=StructuralRole.BEARING, stacks_on="W-M-E1"),
     Wall(uid="CSW107AAAA", tag="W-S-N1", start_node="N-S-NE", end_node="N-S-B5",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N1"),
@@ -383,10 +388,16 @@ OPENINGS = [
     # north into the plant room — caught in `haus render --view plan`, not by any check.
     # The mirror station is what forced the two balcony condensers off the plant room's
     # wall band: see SECOND_EQUIPMENT in plan/electrical.py.
+    #
+    # Both doors moved 1'-0" inward on 2026-08-24 (13'-8"/22'-4" -> 14'-8"/21'-4"), still an
+    # exact mirror about x=18'-0". 14'-8" is a stud line on W-S-S1's grid, and on W-M-S1's
+    # below it, which is the point: WIN-M-BED-S2 moved there to column under this door.
+    # The inward move also opened the west door's gap to WIN-S-PLANT2 from 7" to 1'-7";
+    # it leaves 10" of wall to each inside corner, which is the trade.
     Door(uid="CSD218AAAA", tag="D-S-DECK-W", host="W-S-S1", type_ref="DT-EXT-FRENCH60",
-         position=from_node("N-S-SW", ft(11, 2)), flip_swing=True),                       # x 13'-8"
+         position=from_node("N-S-SW", ft(12, 2)), flip_swing=True),                       # x 14'-8"
     Door(uid="CSD211AAAA", tag="D-S-DECK-E", host="W-S-S2", type_ref="DT-EXT-FRENCH60",
-         position=from_node("N-S-S1", ft(1, 10)), flip_swing=True),                       # x 22'-4"
+         position=from_node("N-S-S1", ft(0, 10)), flip_swing=True),                       # x 21'-4"
     # Windows — east wall, on the source's four 2'-8" openings (we build 27", the bearing cap).
     # WIN-S-STUDY3 moved off its source position (y 3'-10", 2026-07-30) to y=5'-4" for an
     # exact 9'-0" rhythm on one sill line — within-storey rhythm wins over between-storey
@@ -450,7 +461,8 @@ OPENINGS = [
     Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2736-HP",
            position=from_node("N-S-W3", ft(2, 10.5)), sill_height=ft(3)),     # y 5'-0"
     # Study 2's south pair: centres 27'-4" and 32'-8" are stud lines on W-S-S2's grid,
-    # stacking exactly over WIN-M-LIV-S2/S1. Moved 8" west off the old bay centres with the
+    # STUDY1 stacking exactly over WIN-M-LIV-S1 (STUDY2's partner below, WIN-M-LIV-S2, was
+    # deleted 2026-08-24, so STUDY2 no longer columns with anything). Moved 8" west off the old bay centres with the
     # WT-3048 narrowing (2026-08-01, see WIN-M-BED-S1/2); the two south segments stay 8"
     # out of phase, the same unavoidable mirror miss as always. Sill 2'-8" is the shared
     # 6'-8" head line; D-S-DECK-E's RO stays clear by 1'-3".

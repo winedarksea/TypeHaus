@@ -390,7 +390,7 @@ LEADER_CLAMPS = [
               connects=("TR-RF-LEADER-W", "W-A-W1")),
     Connector(uid="CMLC05AAAA", tag="CN-A-LEADER-E1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
               position=pt(_LEADER_X_E, _LEADER_Y), elevation=ft(5), size="S-5! CanDuit #13",
-              connects=("TR-RF-LEADER-E", "W-M-E2")),
+              connects=("TR-RF-LEADER-E", "W-M-E1")),
     Connector(uid="CMLC06AAAA", tag="CN-A-LEADER-E2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
               position=pt(_LEADER_X_E, _LEADER_Y), elevation=ft(11), size="S-5! CanDuit #13",
               connects=("TR-RF-LEADER-E", "W-S-E4")),

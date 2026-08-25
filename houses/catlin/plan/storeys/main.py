@@ -74,8 +74,9 @@ DOOR_TYPES = [
 # One size per width family: every placement shares one height, the tallest that still
 # fits the family's most constrained wall in the house. The 42" family (old WT-4242 twin
 # for the raked gables) is gone as of 2026-08-01, replaced by WT-1424 there and by WT-3048
-# for the south glazing. WT-1864 (18") is a deliberate fifth family, added 2026-07-31 for
-# the attic's south juliet pair — no committed height gives that tall/narrow proportion.
+# for the south glazing. WT-2464 (24", an 18" family until 2026-08-24) is a deliberate fifth
+# family, added 2026-07-31 for the attic's south juliet pair — no committed height gives that
+# tall/narrow proportion.
 #
 # Two deliberate exceptions to "one height per family", both 2026-08-01, each because a
 # fresh width family costs more than a second height does: WT-1448 (the 4:12 rake forbids
@@ -91,19 +92,23 @@ WINDOW_TYPES = [
     WindowType(tag="WT-1424", width=inch(14), height=ft(2), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="awning"),
     # 14" RO, 48" tall — the south gable's flanker size (2026-08-01), and the one deliberate
-    # break of "one height per family". WT-1864 (18") doesn't fit: it breaks a stud, taking a
+    # break of "one height per family". The juliet family doesn't fit: it breaks a stud, taking a
     # 5.5"-deep header that at the nearest usable stud line (x 8'-0"/28'-0") clashes with the
     # 4:12 roof underside by 1.8". 14" lands wholly inside a bay so no header forms, and the
     # 6'-8" head (the main storey's head line) clears the rake by 2'-0". Casement, not
     # WT-1424's awning: a 48"-tall leaf is past what an awning projects.
     WindowType(tag="WT-1448", width=inch(14), height=ft(4), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
-    # 18" RO — the attic gable's juliet size (2026-07-31, narrowed from a 32" tilt-turn the
-    # same day). One stud broken, centred on a STUD LINE (cheap frame, and what lets the
-    # pair sit 32" apart instead of 48"). 64" tall is a proportion choice, not a clearance
-    # one — head lands at 8'-0" with the storey's 2'-8" sill, well clear of the rake.
-    # Casement, not tilt-turn: 18" is below tilt-turn hardware's minimum frame width.
-    WindowType(tag="WT-1864", width=inch(18), height=ft(5, 4), u_factor=u_us(0.25),
+    # 24" RO — the attic gable's juliet size (2026-07-31 as an 18x64, narrowed that day from
+    # a 32" tilt-turn; widened 18" -> 24" on 2026-08-24). Still one stud broken, but the pair
+    # no longer centres on the stud lines: each unit grew OUTWARD only, since the 14" pier
+    # between them is bearing (see WIN-A-S-JUL-W/E in plan/storeys/attic.py). 64" tall is a
+    # proportion choice, not a clearance one — head lands at 8'-0" with the storey's 2'-8"
+    # sill, well clear of the rake. Casement stays: 24" is workable as a tilt-turn where 18"
+    # was under the hardware's minimum frame width, but the family is casement throughout.
+    # 24" also clears Andersen 400's 20-11/16" narrowest casement, which 18" did not — see
+    # the "BELOW A STOCK LINE'S MINIMUM SIZE" note in prices.toml.
+    WindowType(tag="WT-2464", width=inch(24), height=ft(5, 4), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # 27" RO — bearing-wall size (N*2-9): one stud broken, jacks added. 36" tall
     # because the garage's 8' wall can't take a 60" height at a 42" sill (header would
@@ -190,7 +195,6 @@ NODES = [
     Node(uid="CMN001AAAA", tag="N-M-SW", position=pt(ft(0), ft(0))),
     Node(uid="CMN002AAAA", tag="N-M-S1", position=pt(ft(18), ft(0))),
     Node(uid="CMN003AAAA", tag="N-M-SE", position=pt(ft(36), ft(0))),
-    Node(uid="CMN004AAAA", tag="N-M-E1", position=pt(ft(36), ft(18))),
     Node(uid="CMN005AAAA", tag="N-M-NE", position=pt(ft(36), ft(36))),
     Node(uid="CMN006AAAA", tag="N-M-N1", position=pt(ft(18), ft(36))),
     Node(uid="CMN007AAAA", tag="N-M-N2", position=pt(ft(10), ft(36))),
@@ -265,10 +269,16 @@ WALLS = [
          assembly="CATLIN_EXT_2X6", corner_style_end="4-stud",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
-    Wall(uid="CMW103AAAA", tag="W-M-E1", start_node="N-M-SE", end_node="N-M-E1",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
-         structural_role=StructuralRole.BEARING),
-    Wall(uid="CMW104AAAA", tag="W-M-E2", start_node="N-M-E1", end_node="N-M-NE",
+    # W-M-E1/W-M-E2 merged into one wall (2026-08-24) so WIN-M-EAST-MID could land inside
+    # a single host instead of straddling the old N-M-E1 tee at y=18'-0" (the exact
+    # midpoint between WIN-S-BED1/BED2 above). The split had mirrored the basement's
+    # W-B-E1/E2 boundary and given the second storey's four east segments two distinct
+    # stacking partners (W-S-E1/E2 -> here, W-S-E3/E4 -> the old W-M-E2). Both still stack
+    # here now (see second.py), but the resolver links only one upper wall per lower wall,
+    # so W-S-E3/E4's own stacking/foundation boundary condition is gone — accepted, not
+    # fixed; re-splitting the second storey's own east wall to restore it would undo the
+    # 2026-08-15 mirror-rhythm tuning that keeps WIN-S-BED1/BED2 on their stud lines.
+    Wall(uid="CMW103AAAA", tag="W-M-E1", start_node="N-M-SE", end_node="N-M-NE",
          assembly="CATLIN_EXT_2X6", corner_style_end="4-stud",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING),
@@ -449,8 +459,12 @@ OPENINGS = [
     # door reaches the west wall almost whole. See RM-M-MUDROOM below.
     Door(uid="CMD201AAAA", tag="D-M-ENTRY", host="W-M-N3", type_ref="DT-EXT-SWING36",
          position=from_node("N-M-N2", ft(0, 6))),
+    # Centre 21'-4" (2026-08-24, was 21'-10"): D-S-DECK-E moved to 21'-4" when the two
+    # balcony doors slid 1'-0" inward, and this door stands directly under it, so the south
+    # face reads as one column of French pairs rather than a 6" jog. 10" of wall to the
+    # inside corner at N-M-S1, the same remnant D-S-DECK-E leaves above it.
     Door(uid="CMD202AAAA", tag="D-M-BALC", host="W-M-S2", type_ref="DT-EXT-FRENCH60",
-         position=from_node("N-M-S1", ft(1, 4)), flip_swing=True),
+         position=from_node("N-M-S1", ft(0, 10)), flip_swing=True),
     # Interior
     # D-M-STAIR was here — the 32" swing in the west lane, onto the flight ST-B2M arrives in.
     # Retired 2026-08-24 with its host wall W-M-STRS; see WALLS. The stair head is open.
@@ -532,16 +546,21 @@ OPENINGS = [
     Window(uid="CMX302AAAA", tag="WIN-M-BED-W2", host="W-M-W4",
            type_ref="WT-2736", position=from_node("N-M-SW", ft(9, 2.5)),
            sill_height=ft(3)),                                               # y 10'-4"
-    # South pair: centres 4'-0" and 9'-4" are STUD LINES on W-M-S1's grid, stacking exactly
-    # under WIN-S-PLANT1/2. Sill 2'-8" puts heads at 6'-8" with the doors. Moved 8" east off
-    # the old 3'-4"/8'-8" bay centres when units narrowed 42" -> 30" (WT-3048, 2026-08-01) —
-    # a 30" RO wants a stud line, not a bay centre (structural.window_framing_module, held
-    # by test_catlin_contract_m3).
+    # South face, bedroom: centres 4'-0" and 14'-8", both STUD LINES on W-M-S1's grid.
+    # S1 stacks under WIN-S-PLANT1; S2 stacks under D-S-DECK-W, the balcony's west French
+    # pair, which moved 1'-0" inward on 2026-08-24 to share this stud line (see
+    # plan/storeys/second.py). Sill 2'-8" puts heads at 6'-8" with the doors. Moved 8" east
+    # off the old 3'-4"/8'-8" bay centres when units narrowed 42" -> 30" (WT-3048,
+    # 2026-08-01) — a 30" RO wants a stud line, not a bay centre
+    # (structural.window_framing_module, held by test_catlin_contract_m3).
+    #
+    # S2 was at 9'-4" until 2026-08-24. It moved 5'-4" east (four stud bays, so the grid
+    # phase is unchanged) to column with D-S-DECK-W instead of with WIN-S-PLANT2.
     Window(uid="CMX303AAAA", tag="WIN-M-BED-S1", host="W-M-S1",
            type_ref="WT-3048", position=from_node("N-M-SW", ft(2, 9)),
            sill_height=ft(2, 8)),
     Window(uid="CMX304AAAA", tag="WIN-M-BED-S2", host="W-M-S1",
-           type_ref="WT-3048", position=from_node("N-M-SW", ft(8, 1)),
+           type_ref="WT-3048", position=from_node("N-M-SW", ft(13, 5)),
            sill_height=ft(2, 8)),
     # Offset bumped 4'-5" -> 4'-11" (2026-07-29) when N-M-W2 pushed 6" north, keeping the
     # window on the same bay. Retyped WT-1424-T -> WT-2736-T and moved to 19'-8" on
@@ -566,36 +585,37 @@ OPENINGS = [
     Window(uid="CMX306AAAA", tag="WIN-M-MUD", host="W-M-W1",
            type_ref="WT-1424-FIX", position=from_node("N-M-MECH1", ft(1, 5)),
            sill_height=ft(4)),
-    # South pair: centres 27'-4" and 32'-8" are stud lines on W-M-S2's grid, stacking exactly
-    # under WIN-S-STUDY1/2. Moved 8" west off the old 28'-0"/33'-4" bay centres with the
+    # South face, living room: one unit at 32'-8", a stud line on W-M-S2's grid, stacking
+    # exactly under WIN-S-STUDY1. Moved 8" west off the old 33'-4" bay centre with the
     # WT-3048 narrowing (see WIN-M-BED-S1/2). The two south segments are 8" out of phase, so
-    # this pair carries the same phase miss off the bedroom pair's mirror as it always has.
-    # D-M-BALC's french-door RO stays clear by 1'-9".
+    # it carries the same phase miss off the bedroom pair's mirror as it always has.
+    # D-M-BALC's french-door RO (18'-10"..23'-10") stays clear by 8'-10".
+    #
+    # Its partner WIN-M-LIV-S2 (27'-4", WT-3048-T, under WIN-S-STUDY2) was deleted
+    # 2026-08-24: the south face reads as a column now, not a pair of pairs — see
+    # WIN-M-BED-S2, which moved east to 13'-8" to stand under D-S-DECK-W.
     Window(uid="CMX307AAAA", tag="WIN-M-LIV-S1", host="W-M-S2",
            type_ref="WT-3048", position=from_node("N-M-SE", ft(2, 1)),
            sill_height=ft(2, 8)),
-    Window(uid="CMX308AAAA", tag="WIN-M-LIV-S2", host="W-M-S2",
-           type_ref="WT-3048-T", position=from_node("N-M-SE", ft(7, 5)),
-           sill_height=ft(2, 8)),
     # East row respaced (2026-07-30 facade pass): the facade favors within-storey rhythm
     # over between-storey stacking here, so this row runs as even as its own grid allows —
-    # 4'-0" / 12'-0" / 19'-4" (the true-even 11'-8" middle isn't a stud line on W-M-E1).
-    # The kitchen stretch north of WIN-M-DIN-E2 stays deliberately blank. Both sills stay
-    # 2'-6": the BESTA run tops out at 29 3/4" (placeables.py), clearing the countertop
-    # by 1/4".
+    # 4'-0" / 12'-0" (the true-even 11'-8" middle isn't a stud line on W-M-E1). Both sills
+    # stay 2'-6": the BESTA run tops out at 29 3/4" (placeables.py), clearing the
+    # countertop by 1/4".
     Window(uid="CMX309AAAA", tag="WIN-M-LIV-E1", host="W-M-E1",
            type_ref="WT-2736", position=from_node("N-M-SE", ft(2, 10.5)),
            sill_height=ft(2, 6)),
     Window(uid="CMX310AAAA", tag="WIN-M-LIV-E2", host="W-M-E1",
            type_ref="WT-2736", position=from_node("N-M-SE", ft(10, 10.5)),
            sill_height=ft(2, 6)),
-    # WIN-M-DIN-E1 was retired in the 2026-07-30 east restack: every candidate position
-    # either sat over a kitchen counter (forcing an awkward sill) or collided with
-    # WIN-M-LIV-E2's RO. WIN-M-KITCH covers the kitchen instead. E2 also can't take the
-    # fourth second-floor column (WIN-S-BED3 at 32'-4") — that stretch of wall now carries
-    # the range/hood/cooking run — so it sits at 19'-4" instead, clear of that column band.
-    Window(uid="CMX312AAAA", tag="WIN-M-DIN-E2", host="W-M-E2",
-           type_ref="WT-2736", position=from_node("N-M-E1", ft(0, 2.5)),
+    # WIN-M-LIV-E2 (old, 12'-0") and WIN-M-DIN-E2 (19'-4") retired 2026-08-24, replaced by
+    # one WT-3048 unit centred as close as the 16" module allows to y=18'-0" — the exact
+    # midpoint between WIN-S-BED1 (13'-0") and WIN-S-BED2 (23'-0") above. True centre falls
+    # on a bay centre (residue 8" off W-M-E1's own start-node grid), and a 30" RO needs a
+    # stud line, so the nearest legal station is 18'-8", 8" north of centre. W-M-E1/E2 were
+    # merged into one wall (above) so this RO wouldn't straddle the old tee at y=18'-0".
+    Window(uid="QPNDT7TF6G", tag="WIN-M-EAST-MID", host="W-M-E1",
+           type_ref="WT-3048", position=from_node("N-M-SE", ft(17, 5)),
            sill_height=ft(2, 6)),
     # Moved to the north wall 2026-07-30 with the sink (plan/placeables.py's kitchen header),
     # then re-centred the same day when the sink flipped with the dishwasher toward the
