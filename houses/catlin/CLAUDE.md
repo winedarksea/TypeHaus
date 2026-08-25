@@ -11,10 +11,13 @@ proposing any design change.
 - `plan/assemblies.py`, `plan/site.py`, `plan/placeables.py` — editable assemblies/site/placeables.
 - `plan/mep*.py` — MEP *instances*, split by system so no file runs past ~400 lines:
   `mep_sleeves` (cast penetrations), `mep_drainage`, `mep_venting`, `mep_supply` +
-  `mep_supply_devices`, `mep_hvac` (ducts, equipment, terminal types), `mep_registers`,
-  `mep_electrical` (symbols). All eight are `# haus: editable`. `plan/mep.py` itself is
-  now only the four storey element lists the manifest consumes — NOT editable, because an
-  aggregator needs `from plan import ...` and the dialect forbids it.
+  `mep_supply_devices`, `mep_hvac` (System 1's conditioned-air chase, equipment, terminal
+  types), `mep_erv` + `mep_erv_types` (the ventilator, its manifolds, its outdoor side, its
+  risers and radials), `mep_registers`, `mep_electrical` (symbols). All ten are
+  `# haus: editable`. `plan/mep.py` itself is now only the four storey element lists the
+  manifest consumes — NOT editable, because an aggregator needs `from plan import ...` and
+  the dialect forbids it. **`mep_erv.py` cannot import `mep_erv_types.py`** for that same
+  reason; the aggregator imports both and hands both to `Library(...)`.
 - `plan/fixtures.py` — `# haus: editable` plumbing-fixture *instances* (so UI drags
   round-trip). Only explicit constructors in any of these — no functions/generators.
 - `plan/electrical.py` — `# haus: editable` electrical service upgrade: meter, backup
@@ -146,6 +149,42 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     align on `face("sheathing-ext")` — but `params/roof_trim.py`, `params/breezeway.py` and
     the exterior electrical all measure off the cladding and moved with it.
   See `notes/outie_window_truss_detail.md`.
+- **Every exterior corner is construction-correct, 4-stud, with a plywood box outboard of
+  it (2026-08-25 audit).** Three findings and their fix:
+  - **The grid is struck from the building's outside sheathing corner.** All four facade
+    layout lines have an along-axis origin of `+0.0000"` from a building corner; 217 of 241
+    exterior module studs sit on exact 16" multiples from that corner (the 24 exceptions are
+    the corner posts themselves); all 31 exterior windows centre exactly on that grid; the
+    outrigger band runs the same grid, so the standing-seam clip line and the stud line are
+    one line. This was already correct and the audit did not touch it.
+  - **The house's corner is 4-stud, not 3.** `CATLIN_EXT_2X6` and `PLANT_EXT_2X6_HUMID`
+    (the only two truss-wall assemblies) both carry `corner_style="4-stud"` on the STRUCTURE
+    `FramingSpec`, and `preferences.toml`'s `[framing] corner` states it once for the whole
+    house. The APA/BASC thermal objection to a solid 4-stud post (an insulable void inside
+    it) does not apply here: the primary insulation is the *continuous exterior closed-cell
+    foam*, outboard of the post, so the post itself needs no cavity to hold batt in. Before
+    2026-08-25 the house had ZERO 4-stud corners despite four walls authoring
+    `corner_style_end="4-stud"` — the exterior loop is a CCW chain, so every wall's `end` is
+    the *next* wall's `start`, and `resolve/topology.py` gives L-corner ownership to
+    whichever wall *starts* there. A style authored on the wall that only ever *butts* the
+    corner could never take effect; `resolve/framing/solver.py::frame_model` now resolves a
+    corner's style from BOTH incident walls (the owner's own authored end-style, else the
+    butting wall's), which is what makes an override on either wall reach the pack. The
+    freestanding garage (`GARAGE_WALL_2X6`) was NOT changed and stays 3-stud on purpose —
+    it has no continuous exterior foam, so the thermal objection still applies there, and
+    `structural.corner_style_matches_preference` is scoped to assemblies whose own
+    `FramingSpec.corner_style` already matches the house preference for exactly this reason.
+  - **The corner is now boxed in with plywood, outboard of the sheathing** — the
+    Larsen/Swinburne detail (FHB, Jan 2024): two 1/2" OSB rips per corner per storey (24
+    total), one along each wall's own outrigger band, meeting at the true building corner
+    to close both outboard faces of the ~5"x5" full-height void the band's own 45° mitre
+    otherwise leaves standing open there (`FramingSpec.corner_cap="plywood-box"` on the
+    outrigger FURRING layer; `TrussFrame.corner_box`, category `truss_corner_cap`). Dense-
+    pack insulation still fills the cavity behind the box, per the FHB detail — that part is
+    a construction note, not modelled geometry.
+  - **The 1/2" sheathing lap at the corner is still undeclared** (all layers mitre 45°
+    today; a real lap has one wall's sheet run long and the other stop short by its
+    thickness) — logged in `plans/TODO.md`, not built.
 - Bearing lines: west wall, center N-S wall (x=18'), east wall; 18' spans E-W, on every
   storey and in both materials.
 - **The basement's ceiling is mixed, and what the two halves share is ONE FLAT BEARING SEAT
@@ -310,8 +349,13 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
       `CATLIN_STAIRWALL_INT_2X6_BRG`, `CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX`,
       `CATLIN_MUDROOM_INT_2X6_EXPOSED` (the **stair line**, `W-B-STR/STR2/STR3` under
       `W-M-STRW/STRW2`). The centreline is the one that actually matters: it is what carries
-      `RB-HOUSE` continuously to the footings, so "studs directly over the studs below"
-      (R602.3.3) is a bearing requirement there, not a facade preference. It used to run
+      `RB-HOUSE` continuously to the footings, so a continuous load path is worth more there
+      than on any facade. **No code compels it**, and an earlier draft of this passage wrongly
+      said one did: R602.3.3 is the *bearing-stud* rule (a joist, truss or rafter landing
+      within 5" of a stud, and only where both runs are 24" o.c.), R602.3.2's single-top-plate
+      exception is about rafters/joists centred over studs within 1", and in-line framing is
+      an APA Advanced Framing technique. `model/assembly.py`'s `layout_origin` note had this
+      right all along. It used to run
       three storeys on three different phases, each of its twelve segments restarting the
       module at its own start node.
       `test_catlin_contract_m3.py::test_the_centreline_bearing_wall_is_one_stud_grid_on_every_storey`
@@ -437,6 +481,42 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     them; the jack/king/header pack is what pays for it. The margin is 0.05 sf — growing
     either room's clear face fails R303.1 again, and the answer then is a taller unit, not
     a wider one.
+- **The ERV is a Broan B210E75RT on a semi-rigid radial install, and three facts about it
+  must stay true** (2026-08-25, `plan/mep_erv.py`).
+  - **The manifolds map to CAVITIES, not storeys, and there are exactly three.** Level 1 is
+    the basement ceiling at the machine in RM-B-FURNACE; level 2 is RM-M-MECH, which feeds
+    main-storey CEILING grilles *and* second-storey FLOOR boots because both open into the
+    one FS-S-WEST/EAST cavity; level 3 is the FS-ATTIC deck at the chase head. A terminal is
+    fed from whichever cavity it sits in — moving a terminal between storeys is free, moving
+    it between cavities is a new radial off a different manifold.
+  - **The radon/plumbing chase at (1', 34'-6") is the only riser, and it is now full.** Four
+    6" insulated ducts share it with six plumbing vents, `VR-M-RADON-VENT` and eight
+    conduits: a row of three at y=33'-7 1/2" and a fourth at (5", 35'-6"), ~25% fill of a
+    30 1/8" x 32 3/8" shaft. The arrangement is in `plan/mep_erv.py` and **nothing else
+    should be added to that chase.**
+  - **The two outdoor hoods are on the north gable at x=12'-0" and x=24'-0", mirrored about
+    the ridge.** IRC M1602.2 wants 10 ft between an intake and a discharge and RM-M-MECH is
+    5'-11" x 2'-7", so no pair of hoods near the shaft can make the distance — the gable
+    costs ~30 ft of insulated riser each way and buys 12'-0" of separation, 25'-10" above
+    grade, and distance from both the garage and `EQ-M-HP3-OD`'s ground-level slot.
+    `mep.erv_outdoor_terminals` grades all three of those; the mirror about x=18'-0" is the
+    facade rule (see **Gables**) and nothing but this line enforces it.
+- **A duct or a machine inside a modeled `Soffit` NAMES IT, and the clear section is
+  DERIVED** (2026-08-25). `DuctRun.soffit_ref` and `Equipment.soffit_ref` mirror `floor_ref`;
+  `mep.duct_soffit_occupancy` derives the cavity from the soffit's own drop, `FramingSpec`
+  member and 5/8" lining and measures everything claiming it side by side with a 2" hanger
+  gap. **Never author a clear width** — it is a second source of truth for a number the
+  framing already states, and it drifts the first time a 2x2 becomes a 2x3. `SF-S-DUCT`
+  derives 30 3/4" clear x 11 1/4" drop; `SF-S-SUITE` 31 3/4" x 11 1/4".
+  - `CHASE` routing keeps its honest meaning — a framed shaft that is NOT modeled as a
+    `Soffit` — and is a *declared* unchecked case. It used to be the flag that turned the
+    joist-bay check off, which is why four hand-arithmetic clearance comments lived in the
+    plan source unchecked. They are gone; read the check.
+  - **The check found two real errors on its first run, both in `EQ-S-HP1-AH`.** It was
+    resolving at the 9'-0" storey ceiling (a CEILING mount with no elevation fell back to
+    `default_ceiling_height`, which is now soffit-aware), and its case resolved 43" across
+    the hall instead of 21" along it, because `EquipmentType.footprint` wins over the
+    element's and `EQ-T-GREE-SLIM24` states (43, 21). It needed `rotation=deg(90)`.
 - **`W-M-HS4` is a pocket, and is therefore spoken for.** `D-M-LAUN` became a 4'-0" pocket
   door on 2026-08-21 (was a 56" bifold); its leaf parks east inside `W-M-HS4`, crossing
   node `N-M-E3` where `W-M-LS` tees in. **Nothing may ever go in that wall again** — no

@@ -7,7 +7,11 @@ The 2,515-line original was split by system (AGENTS.md §1.1 keeps files under 5
 - ``plan/mep_venting.py``        — vent branches, the shared riser and its clamps
 - ``plan/mep_supply.py``         — house entry, hot/cold distribution, hydrant branches
 - ``plan/mep_supply_devices.py`` — in-line valves, stops and arrestors
-- ``plan/mep_hvac.py``           — ERV trunks, System 1's chase, equipment, terminal types
+- ``plan/mep_hvac.py``           — System 1's conditioned-air chase, equipment, terminal types
+- ``plan/mep_erv.py``            — the ERV as placed: manifolds, mixing box, hoods, the four
+  chase risers and the twenty-two semi-rigid radials
+- ``plan/mep_erv_types.py``      — the ERV catalog: the Broan, the two manifold sizes, the
+  mixing box, the exterior hood, the over-bench capture hood
 - ``plan/mep_registers.py``      — the air terminals themselves, storey by storey
 - ``plan/mep_electrical.py``     — panel, per-storey devices, exterior boxes and clamps
 
@@ -22,12 +26,12 @@ element order — and therefore model.json — is unchanged.
 
 from __future__ import annotations
 
-from plan import (mep_drainage, mep_electrical, mep_hvac, mep_registers, mep_sleeves,
-                  mep_supply, mep_supply_devices, mep_venting)
+from plan import (mep_drainage, mep_electrical, mep_erv, mep_erv_types, mep_hvac,
+                  mep_registers, mep_sleeves, mep_supply, mep_supply_devices, mep_venting)
 
 # Catalogs, re-exported so ``manifest.py``'s Library(...) call is untouched by the split.
-REGISTER_TYPES = mep_hvac.REGISTER_TYPES
-EQUIPMENT_TYPES = mep_hvac.EQUIPMENT_TYPES
+REGISTER_TYPES = (*mep_hvac.REGISTER_TYPES, *mep_erv_types.REGISTER_TYPES_ERV)
+EQUIPMENT_TYPES = (*mep_hvac.EQUIPMENT_TYPES, *mep_erv_types.EQUIPMENT_TYPES_ERV)
 ELECTRICAL_DEVICE_TYPES = mep_electrical.ELECTRICAL_DEVICE_TYPES
 
 MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
@@ -45,10 +49,13 @@ MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
                  *mep_supply_devices.SUPPLY_DEVICES_MAIN,
                  *mep_supply_devices.SUPPLY_DEVICES_GARAGE,
                  *mep_hvac.DUCTS_MAIN,
+                 *mep_erv.EQUIPMENT_ERV_MAIN,
+                 *mep_erv.DUCTS_ERV_RISERS,
                  *mep_registers.REGISTERS_MAIN]
 
 BASEMENT_ELEMENTS = [*mep_drainage.DRAINS,
                      *mep_drainage.CONDENSATE,
+                     *mep_drainage.ERV_CONDENSATE,
                      *mep_drainage.TPR_DISCHARGE,
                      *mep_supply.SUPPLY,
                      *mep_supply.HYDRANT_BRANCH_BASEMENT,
@@ -64,8 +71,15 @@ BASEMENT_ELEMENTS = [*mep_drainage.DRAINS,
                      *mep_venting.VENT_RISERS,
                      *mep_venting.VENT_CLAMPS,
                      *mep_hvac.DUCTS_BASEMENT,
+                     *mep_erv.EQUIPMENT_ERV_BASEMENT,
+                     *mep_erv.DUCTS_ERV_BASEMENT,
                      *mep_registers.REGISTERS_BASEMENT]
 SECOND_ELEMENTS = [*mep_hvac.DUCTS,
+                   *mep_erv.EQUIPMENT_ERV_SECOND,
+                   # Filed here, not on `main`, though their manifolds hang in RM-M-MECH one
+                   # storey down: these run in FS-S-WEST's cavity and the bay check matches a
+                   # segment against sibling floors ON THE DUCT'S OWN STOREY.
+                   *mep_erv.DUCTS_ERV_LEVEL2,
                    *mep_hvac.DUCTS_HVAC_SECOND,
                    *mep_registers.REGISTERS,
                    *mep_registers.REGISTERS_SECOND,
@@ -74,7 +88,11 @@ SECOND_ELEMENTS = [*mep_hvac.DUCTS,
                    *mep_electrical.SECOND_DEVICES,
                    *mep_supply.HYDRANT_BRANCH_SECOND,
                    *mep_supply_devices.SUPPLY_DEVICES_SECOND]
-ATTIC_ELEMENTS = [*mep_electrical.NEMA_BOX,
+ATTIC_ELEMENTS = [*mep_erv.EQUIPMENT_ERV_ATTIC,
+                  *mep_erv.EQUIPMENT_ERV_HOODS,
+                  *mep_erv.DUCTS_ERV_ATTIC,
+                  *mep_erv.DUCTS_ERV_MIX_FEED,
+                  *mep_electrical.NEMA_BOX,
                   *mep_electrical.NEMA_CLAMP,
                   *mep_electrical.LEADER_CLAMPS,
                   *mep_electrical.ATTIC_DEVICES,

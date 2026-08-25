@@ -16,10 +16,11 @@ import { CanvasObjectFootprint, ClearanceOverlays, NodeHandle } from "./plan/Obj
 import { WallDimension, WallShape } from "./plan/WallShapes";
 import { OpeningShape, StairShape } from "./plan/OpeningShapes";
 import {
-  DetailMarkerLayer, PlanNodesLayer, RailingOutlines, RoomLayer, SlabOutlines, WallDraftLayer,
-  WarningMarkerLayer,
+  DetailMarkerLayer, PlanNodesLayer, RailingOutlines, RoomLayer, SlabOutlines, SumpOutlines,
+  WallDraftLayer, WarningMarkerLayer,
 } from "./plan/PlanMarkers";
 import { CanvasOverlays } from "./plan/CanvasOverlays";
+import { PlanLabelLayer } from "./plan/PlanLabelLayer";
 import { useCanvasInteractions } from "./plan/useCanvasInteractions";
 import { useStoreySlice } from "./plan/useStoreySlice";
 import { usePanZoom } from "./plan/usePanZoom";
@@ -114,6 +115,7 @@ export function Canvas2D() {
 
   const {
     wallsOnStorey, nodes, openEnds, storeyNodes, stairsOnStorey, slabsOnStorey, railingsOnStorey,
+    sumpsOnStorey,
     snapNodes,
     defaultAssembly, serviceOptions, canvasTypes, warningMarkers, nearestNodeTag, storeyHintFile,
   } = useStoreySlice(model, activeStorey, tolM);
@@ -418,171 +420,178 @@ export function Canvas2D() {
             <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--canvas-wood)" />
           </marker>
         </defs>
-        <BackgroundGrid view={view} />
-        {/* resolved slabs first: the concrete plate everything on this storey stands on */}
-        {visibleTrades.concrete && <SlabOutlines slabs={slabsOnStorey} project={project} />}
-        {/* rooms next (tinted fills, behind walls; → plan/PlanMarkers.tsx::RoomLayer) */}
-        <RoomLayer rooms={roomsOnStorey}
-          previewGeom={previewGeom} tool={tool} labelMode={labelMode}
-          project={project} onSelect={selectRoom} />
-        {/* walls — likewise shown at their previewed axis (tag-matched) while a node drag is
-            in flight, so connected walls visibly stretch/shrink before the commit lands */}
-        {(visibleTrades.walls || visibleTrades.framing) && wallsOnStorey.map((w) => {
-          const previewAxis = previewGeom?.walls.find((x) => x.tag === w.tag)?.axis;
-          const displayWall = previewAxis ? { ...w, axis: previewAxis as [Vec2, Vec2] } : w;
-          return (
-            <WallShape
-              key={w.uid}
-              w={displayWall}
-              openings={openingsByHost.get(w.tag) ?? NO_OPENINGS}
-              project={project}
-              selected={selection.uid === w.uid}
-              hovered={hoverUid === w.uid}
-              showFraming={showFraming && visibleTrades.framing}
-              showLayers={visibleTrades.walls}
-              visibleLayerGroups={visibleLayerGroups}
-              activeLens={activeLens}
-              onSelect={selectWallWithPopup}
-              onHover={hoverEl}
-            />
-          );
-        })}
-        {/* openings */}
-        {visibleTrades.openings && model.openings.map((o) => {
-          const host = openingHostWall(model.walls, o);
-          if (!host || (activeStorey && host.storey !== activeStorey)) return null;
-          // Both kinds carry an operation now: it picks the door's swing/track glyph and,
-          // for a window, the sash tick that separates an operable unit from a picture one.
-          const operation = o.is_door
-            ? model.catalog?.door_types.find((dt) => dt.tag === o.type_ref)?.operation
-            : model.catalog?.window_types.find((wt) => wt.tag === o.type_ref)?.operation;
-          return (
-            <OpeningShape
-              key={o.uid}
-              o={o}
-              host={host}
-              project={project}
-              scale={view.scale}
-              selected={selection.uid === o.uid}
-              operation={operation}
-              labelMode={labelMode}
-              onSelect={selectEl}
-              onEdit={editOpeningStable}
-              toWorld={unproject}
-              onMove={moveOpeningFromDrag}
-              onPreview={previewOpeningFromDrag}
-              onPreviewEnd={() => setOpeningDragPreview(null)}
-            />
-          );
-        })}
-        {openingDragPreview && <OpeningShape
-          key={`preview-${openingDragPreview.opening.uid}`}
-          o={openingDragPreview.opening}
-          host={openingDragPreview.host}
-          project={project}
-          scale={view.scale}
-          selected={false}
-          preview={openingDragPreview.valid ? "valid" : "invalid"}
-          onSelect={selectEl}
-          onEdit={editOpeningStable}
-          toWorld={unproject}
-          onMove={moveOpeningFromDrag}
-        />}
-        {visibleTrades.stairs && stairsOnStorey
-          .map((stair) => <StairShape key={stair.uid} stair={stair} project={project}
-            selected={selection.uid === stair.uid} hovered={hoverUid === stair.uid}
-            labelMode={labelMode} onSelect={selectEl} onHover={hoverEl} />)}
-        {/* guards over the stair wells and open edges, drawn on top of the flight they
-            protect. Gated on `stairs`, which is where a `railing` solid lands in the 3D viewer
-            (three/solidMaterials.ts::SOLID_CATEGORY_TRADE), so the toggle behaves the same in
-            both viewers rather than the plan inventing its own grouping. These two move
-            together: re-home the category and this gate goes with it. It was `concrete` for as
-            long as the railing category rode the concrete fallback. */}
-        {visibleTrades.stairs && <RailingOutlines railings={railingsOnStorey} project={project} />}
-        {footprintObjects
-          .map((item) => <CanvasObjectFootprint key={item.uid} item={item}
-            type={item.type ? canvasTypes.get(item.type) : undefined} project={project} scale={view.scale}
-            walls={wallsOnStorey}
-            selected={selection.uid === item.uid} labelMode={labelMode} onSelect={selectEl} toWorld={unproject}
-            onMove={movePlaceableFromDrag} onRotate={rotatePlaceableFromHandle} />)}
-        {showClearances && <ClearanceOverlays model={model} storey={activeStorey} project={project}
-          scale={view.scale} />}
-        <PlanNodesLayer nodes={nodes} openEnds={openEnds} model={model} tool={tool}
-          project={project} nearestNodeTag={nearestNodeTag} onHeal={healNodeStable} />
-        <WarningMarkerLayer markers={warningMarkers} activeKey={warningPopup?.marker.key ?? null}
-          project={project} onOpen={openWarningPopup} />
-        {/* draggable endpoint handles on the selected wall (stretch → move_nodes) */}
-        {tool === "select" && selection.kind === "wall" && (() => {
-          const w = wallsOnStorey.find((x) => x.uid === selection.uid);
-          if (!w) return null;
-          return w.axis.map((p, i) => (
-            <NodeHandle
-              key={i}
-              world={nodeDrag && nodeTagMatches(nodeDrag.tag, p, storeyNodes) ? nodeDrag.to : p}
-              project={project}
-              onStart={() => {
-                const tag = nearestNodeTag(p);
-                if (!tag || refuseIfNotEditable(selection.uid!)) return;
-                setNodeDrag({ tag, from: p, to: p });
-                void rehearseNodeDrag(tag); // may cancel the drag a beat later
-              }}
-              onMove={(clientX, clientY) => setNodeDrag((d) => {
-                if (!d) return d;
-                const raw = unproject(clientX, clientY);
-                const others = new Map([...snapNodes].filter(([t]) => t !== d.tag));
-                const to = snapWorld(raw, others, tolM, gridM).point;
-                if (activeStorey) {
-                  const dx = to[0] - d.from[0];
-                  const dy = to[1] - d.from[1];
-                  void previewMacro({
-                    macro: "move_nodes", storey: activeStorey, nodes: [d.tag], dx, dy,
-                  }).then((geom) => { if (geom && geom !== "refused") setPreviewGeom(geom); });
-                }
-                return { ...d, to };
-              })}
-              onEnd={() => setNodeDrag((d) => { if (d) void commitNodeDrag(d); return null; })}
-            />
-          ));
-        })()}
-        {tool === "wall" && <WallDraftLayer draft={draft} rubber={rubber} cursor={cursor}
-          snapNodes={snapNodes} tolM={tolM} gridM={gridM} project={project} />}
-        {workspace === "document" && <DetailMarkerLayer model={model} activeStorey={activeStorey}
-          project={project} onSelectWall={selectWall} />}
-        {/* measure tape: a scratch two-tap segment, dual-unit readout, never written back */}
-        {measure && measureEnd && (() => {
-          const [sx, sy] = project(measure.start);
-          const [ex, ey] = project(measureEnd);
-          const d_m = Math.hypot(measureEnd[0] - measure.start[0], measureEnd[1] - measure.start[1]);
-          return (
-            <g pointerEvents="none">
-              <line x1={sx} y1={sy} x2={ex} y2={ey} stroke="var(--canvas-ink)" strokeWidth={1.5}
-                strokeDasharray={measure.end ? undefined : "5 4"} />
-              <circle cx={sx} cy={sy} r={4} fill="var(--canvas-white)" stroke="var(--canvas-ink)" strokeWidth={1.5} />
-              <circle cx={ex} cy={ey} r={4} fill="var(--canvas-white)" stroke="var(--canvas-ink)" strokeWidth={1.5} />
-              {d_m > 0.001 && (
-                <text x={(sx + ex) / 2} y={(sy + ey) / 2 - 8} fill="var(--canvas-ink)" fontSize={12}
-                  textAnchor="middle" style={{ paintOrder: "stroke" }}
-                  stroke="var(--canvas-white)" strokeWidth={3}>
-                  {`${formatFtIn(d_m)} / ${d_m.toFixed(2)} m`}
-                </text>
-              )}
-            </g>
-          );
-        })()}
-        {/* dimension line for selected wall */}
-        {selection.kind === "wall" && (() => {
-          const w = wallsOnStorey.find((x) => x.uid === selection.uid);
-          if (!w) return null;
-          return <WallDimension w={w} project={project} />;
-        })()}
-        {activeService && <>
-          <rect width="100%" height="100%" fill="var(--canvas-dim)" pointerEvents="none" />
-          {visibleServiceObjects.map((item) => <CanvasObjectFootprint key={`service-${item.uid}`} item={item}
-            type={item.type ? canvasTypes.get(item.type) : undefined} project={project} scale={view.scale}
-            walls={wallsOnStorey}
-            selected={selection.uid === item.uid} labelMode={labelMode} onSelect={selectEl} toWorld={unproject}
-            onMove={movePlaceableFromDrag} onRotate={rotatePlaceableFromHandle} />)}
-        </>}
+        {/* Everything below draws in document order; PlanLabelLayer adds the top-most
+            <g> that every label portals into, so plan text always reads above plan
+            geometry — including the activeService dim rect at the end of this block. */}
+        <PlanLabelLayer>
+          <BackgroundGrid view={view} />
+          {/* resolved slabs first: the concrete plate everything on this storey stands on */}
+          {visibleTrades.concrete && <SlabOutlines slabs={slabsOnStorey} project={project} />}
+          {/* sump pits sit on that same plate (solid_trade: "drainage") */}
+          {visibleTrades.drainage && <SumpOutlines sumps={sumpsOnStorey} project={project} />}
+          {/* rooms next (tinted fills, behind walls; → plan/PlanMarkers.tsx::RoomLayer) */}
+          <RoomLayer rooms={roomsOnStorey}
+            previewGeom={previewGeom} tool={tool} labelMode={labelMode}
+            project={project} onSelect={selectRoom} />
+          {/* walls — likewise shown at their previewed axis (tag-matched) while a node drag is
+              in flight, so connected walls visibly stretch/shrink before the commit lands */}
+          {(visibleTrades.walls || visibleTrades.framing) && wallsOnStorey.map((w) => {
+            const previewAxis = previewGeom?.walls.find((x) => x.tag === w.tag)?.axis;
+            const displayWall = previewAxis ? { ...w, axis: previewAxis as [Vec2, Vec2] } : w;
+            return (
+              <WallShape
+                key={w.uid}
+                w={displayWall}
+                openings={openingsByHost.get(w.tag) ?? NO_OPENINGS}
+                project={project}
+                selected={selection.uid === w.uid}
+                hovered={hoverUid === w.uid}
+                showFraming={showFraming && visibleTrades.framing}
+                showLayers={visibleTrades.walls}
+                visibleLayerGroups={visibleLayerGroups}
+                activeLens={activeLens}
+                onSelect={selectWallWithPopup}
+                onHover={hoverEl}
+              />
+            );
+          })}
+          {/* openings */}
+          {visibleTrades.openings && model.openings.map((o) => {
+            const host = openingHostWall(model.walls, o);
+            if (!host || (activeStorey && host.storey !== activeStorey)) return null;
+            // Both kinds carry an operation now: it picks the door's swing/track glyph and,
+            // for a window, the sash tick that separates an operable unit from a picture one.
+            const operation = o.is_door
+              ? model.catalog?.door_types.find((dt) => dt.tag === o.type_ref)?.operation
+              : model.catalog?.window_types.find((wt) => wt.tag === o.type_ref)?.operation;
+            return (
+              <OpeningShape
+                key={o.uid}
+                o={o}
+                host={host}
+                project={project}
+                scale={view.scale}
+                selected={selection.uid === o.uid}
+                operation={operation}
+                labelMode={labelMode}
+                onSelect={selectEl}
+                onEdit={editOpeningStable}
+                toWorld={unproject}
+                onMove={moveOpeningFromDrag}
+                onPreview={previewOpeningFromDrag}
+                onPreviewEnd={() => setOpeningDragPreview(null)}
+              />
+            );
+          })}
+          {openingDragPreview && <OpeningShape
+            key={`preview-${openingDragPreview.opening.uid}`}
+            o={openingDragPreview.opening}
+            host={openingDragPreview.host}
+            project={project}
+            scale={view.scale}
+            selected={false}
+            preview={openingDragPreview.valid ? "valid" : "invalid"}
+            onSelect={selectEl}
+            onEdit={editOpeningStable}
+            toWorld={unproject}
+            onMove={moveOpeningFromDrag}
+          />}
+          {visibleTrades.stairs && stairsOnStorey
+            .map((stair) => <StairShape key={stair.uid} stair={stair} project={project}
+              selected={selection.uid === stair.uid} hovered={hoverUid === stair.uid}
+              labelMode={labelMode} onSelect={selectEl} onHover={hoverEl} />)}
+          {/* guards over the stair wells and open edges, drawn on top of the flight they
+              protect. Gated on `stairs`, which is where a `railing` solid lands in the 3D viewer
+              (three/solidMaterials.ts::SOLID_CATEGORY_TRADE), so the toggle behaves the same in
+              both viewers rather than the plan inventing its own grouping. These two move
+              together: re-home the category and this gate goes with it. It was `concrete` for as
+              long as the railing category rode the concrete fallback. */}
+          {visibleTrades.stairs && <RailingOutlines railings={railingsOnStorey} project={project} />}
+          {footprintObjects
+            .map((item) => <CanvasObjectFootprint key={item.uid} item={item}
+              type={item.type ? canvasTypes.get(item.type) : undefined} project={project} scale={view.scale}
+              walls={wallsOnStorey}
+              selected={selection.uid === item.uid} labelMode={labelMode} onSelect={selectEl} toWorld={unproject}
+              onMove={movePlaceableFromDrag} onRotate={rotatePlaceableFromHandle} />)}
+          {showClearances && <ClearanceOverlays model={model} storey={activeStorey} project={project}
+            scale={view.scale} />}
+          <PlanNodesLayer nodes={nodes} openEnds={openEnds} model={model} tool={tool}
+            project={project} nearestNodeTag={nearestNodeTag} onHeal={healNodeStable} />
+          <WarningMarkerLayer markers={warningMarkers} activeKey={warningPopup?.marker.key ?? null}
+            project={project} onOpen={openWarningPopup} />
+          {/* draggable endpoint handles on the selected wall (stretch → move_nodes) */}
+          {tool === "select" && selection.kind === "wall" && (() => {
+            const w = wallsOnStorey.find((x) => x.uid === selection.uid);
+            if (!w) return null;
+            return w.axis.map((p, i) => (
+              <NodeHandle
+                key={i}
+                world={nodeDrag && nodeTagMatches(nodeDrag.tag, p, storeyNodes) ? nodeDrag.to : p}
+                project={project}
+                onStart={() => {
+                  const tag = nearestNodeTag(p);
+                  if (!tag || refuseIfNotEditable(selection.uid!)) return;
+                  setNodeDrag({ tag, from: p, to: p });
+                  void rehearseNodeDrag(tag); // may cancel the drag a beat later
+                }}
+                onMove={(clientX, clientY) => setNodeDrag((d) => {
+                  if (!d) return d;
+                  const raw = unproject(clientX, clientY);
+                  const others = new Map([...snapNodes].filter(([t]) => t !== d.tag));
+                  const to = snapWorld(raw, others, tolM, gridM).point;
+                  if (activeStorey) {
+                    const dx = to[0] - d.from[0];
+                    const dy = to[1] - d.from[1];
+                    void previewMacro({
+                      macro: "move_nodes", storey: activeStorey, nodes: [d.tag], dx, dy,
+                    }).then((geom) => { if (geom && geom !== "refused") setPreviewGeom(geom); });
+                  }
+                  return { ...d, to };
+                })}
+                onEnd={() => setNodeDrag((d) => { if (d) void commitNodeDrag(d); return null; })}
+              />
+            ));
+          })()}
+          {tool === "wall" && <WallDraftLayer draft={draft} rubber={rubber} cursor={cursor}
+            snapNodes={snapNodes} tolM={tolM} gridM={gridM} project={project} />}
+          {workspace === "document" && <DetailMarkerLayer model={model} activeStorey={activeStorey}
+            project={project} onSelectWall={selectWall} />}
+          {/* measure tape: a scratch two-tap segment, dual-unit readout, never written back */}
+          {measure && measureEnd && (() => {
+            const [sx, sy] = project(measure.start);
+            const [ex, ey] = project(measureEnd);
+            const d_m = Math.hypot(measureEnd[0] - measure.start[0], measureEnd[1] - measure.start[1]);
+            return (
+              <g pointerEvents="none">
+                <line x1={sx} y1={sy} x2={ex} y2={ey} stroke="var(--canvas-ink)" strokeWidth={1.5}
+                  strokeDasharray={measure.end ? undefined : "5 4"} />
+                <circle cx={sx} cy={sy} r={4} fill="var(--canvas-white)" stroke="var(--canvas-ink)" strokeWidth={1.5} />
+                <circle cx={ex} cy={ey} r={4} fill="var(--canvas-white)" stroke="var(--canvas-ink)" strokeWidth={1.5} />
+                {d_m > 0.001 && (
+                  <text x={(sx + ex) / 2} y={(sy + ey) / 2 - 8} fill="var(--canvas-ink)" fontSize={12}
+                    textAnchor="middle" style={{ paintOrder: "stroke" }}
+                    stroke="var(--canvas-white)" strokeWidth={3}>
+                    {`${formatFtIn(d_m)} / ${d_m.toFixed(2)} m`}
+                  </text>
+                )}
+              </g>
+            );
+          })()}
+          {/* dimension line for selected wall */}
+          {selection.kind === "wall" && (() => {
+            const w = wallsOnStorey.find((x) => x.uid === selection.uid);
+            if (!w) return null;
+            return <WallDimension w={w} project={project} />;
+          })()}
+          {activeService && <>
+            <rect width="100%" height="100%" fill="var(--canvas-dim)" pointerEvents="none" />
+            {visibleServiceObjects.map((item) => <CanvasObjectFootprint key={`service-${item.uid}`} item={item}
+              type={item.type ? canvasTypes.get(item.type) : undefined} project={project} scale={view.scale}
+              walls={wallsOnStorey}
+              selected={selection.uid === item.uid} labelMode={labelMode} onSelect={selectEl} toWorld={unproject}
+              onMove={movePlaceableFromDrag} onRotate={rotatePlaceableFromHandle} />)}
+          </>}
+        </PlanLabelLayer>
       </svg>
       <CanvasOverlays
         svgRef={svgRef}

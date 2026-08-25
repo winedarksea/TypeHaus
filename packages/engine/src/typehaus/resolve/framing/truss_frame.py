@@ -18,9 +18,10 @@ import math
 
 from typehaus.quantities import inch
 from typehaus.resolve.assembly_material import assembly_structure_material
+from typehaus.resolve.framing.corners import neighbour_band_insets
 from typehaus.resolve.framing.furring import band_extent
 from typehaus.resolve.framing.profiles import cross_section, panel_profile
-from typehaus.resolve.framing.solver import band_axis
+from typehaus.resolve.framing.solver import _wall_top_elevations, band_axis
 from typehaus.resolve.geometry import add, length, scale, sub, unit, wall_frame
 from typehaus.resolve.intervals import subtract as subtract_spans
 from typehaus.model.plan import PlanModel
@@ -52,10 +53,17 @@ BUCK_CATEGORY = "buck"
 #: block and tab hold both — so it is not "held on by air" the way a free-standing member
 #: with no pack would be, and it must not be counted as one.
 FILLER_CATEGORY = "truss_filler"
+#: The Larsen/Swinburne plywood corner box (FHB Jan 2024): two 1/2" rips per owned L
+#: corner, closing the band's two outboard faces where its own mitre leaves a full-height
+#: void with no framed member in it. Its own category rather than ``TAB_CATEGORY`` (same
+#: material, same thickness) because it is billed and rendered as its own line — a corner
+#: closure, not a lap piece — and because ``checks/structural/interference`` needs to know
+#: it, like every other truss piece, sits outboard of the sheathing.
+CORNER_CAP_CATEGORY = "truss_corner_cap"
 
-#: The five together, for ``checks.structural.interference``. One name, one place to be wrong.
+#: The six together, for ``checks.structural.interference``. One name, one place to be wrong.
 TRUSS_CATEGORIES = frozenset({BLOCK_CATEGORY, TAB_CATEGORY, LADDER_CATEGORY, BUCK_CATEGORY,
-                              FILLER_CATEGORY})
+                              FILLER_CATEGORY, CORNER_CAP_CATEGORY})
 
 #: Block length, and the spacing up an outrigger. Two screws per block into the stud behind it;
 #: at 40" o.c. that is 1 block per 3.3 LF of outrigger, against the 24" x 1 screw grid a
@@ -68,6 +76,9 @@ BLOCK_SPACING = inch(40.0)
 #: non-structural, lining the RO from the sheathing face out to the truss plane.
 TAB_THICKNESS_IN = 0.5
 BUCK_THICKNESS_IN = 0.375
+#: Corner box stock — the FHB Jan 2024 detail's "rips of plywood or OSB" — the same 1/2"
+#: as the tab, so ``family_of`` resolves it to the same OSB finish.
+CORNER_CAP_THICKNESS_IN = 0.5
 
 #: How far a rough-opening jamb may sit from the nearest outrigger face and still have the
 #: window's nailing flange land on wood. A flange is about 1-1/4" wide, so 1" of gap is the
@@ -104,7 +115,8 @@ class TrussFrame:
 
     def __init__(self, wall: ResolvedWall, origin: Vec, direction: Vec, across: Vec,
                  first: float, last: float, band_depth: float,
-                 block_material: str | None, band_material: str) -> None:
+                 block_material: str | None, band_material: str,
+                 run: float = 0.0) -> None:
         self.wall = wall
         self.origin = origin            # band centreline start, in plan
         self.direction = direction      # unit vector along the wall
@@ -114,6 +126,10 @@ class TrussFrame:
         # sits 1" off its outrigger's centre, so without this it would happily reach past
         # the mitre and into the next wall's truss.
         self.first, self.last = first, last
+        # The band's own RAW axis length, before the mitre clips it to ``first``/``last`` —
+        # what ``corner_box`` needs to read the neighbour's band in this same coordinate
+        # frame, since the true building corner it reaches for sits outside ``[first, last]``.
+        self.run = run
         # Every depth in this class is a signed offset along ``across`` in the plan frame,
         # measured from the same origin the band centreline is on. One datum, so a block and
         # a buck cannot disagree about where the sheathing face is.
@@ -152,7 +168,8 @@ class TrussFrame:
             across = (-across[0], -across[1])
         first, last = band_extent(band.polygon, start, direction, run)
         return cls(wall, start, direction, across, first, last, band.thickness_m,
-                   assembly_structure_material(plan, wall.assembly), band.material_ref)
+                   assembly_structure_material(plan, wall.assembly), band.material_ref,
+                   run=run)
 
     # --- placement -----------------------------------------------------------------
     def point(self, station: float, depth: float) -> Vec:
@@ -164,6 +181,44 @@ class TrussFrame:
         """Where along the band a vertical member of this frame stands."""
         offset = sub(member.p0, self.origin)
         return float(offset[0] * self.direction[0] + offset[1] * self.direction[1])
+
+    # --- the corner box --------------------------------------------------------------
+    def corner_box(self, at_start: bool, neighbour_band_polygon) -> FramedMember | None:
+        """The plywood rip that closes THIS band's outboard face at an owned L corner.
+
+        Runs from this band's own mitred edge (``first``/``last`` — where every other
+        piece in the band stops, because that is where its own wall's cladding stops) out
+        to the true building corner: the far face of the *neighbour's* outrigger band,
+        projected onto this axis (``corners.neighbour_band_insets``, the same reading
+        ``solver.wall_end_framing`` gives the OWNER of an L corner for its stud framing —
+        an L corner's owner is the one whose framing runs through the shared square).
+        Deliberately placed outside ``[first, last]``: that is the whole point of it,
+        closing the void nothing else in this band reaches.
+
+        ``None`` when the neighbour's band cannot be read, or the two already meet with no
+        gap to close (a degenerate or unresolved corner).
+        """
+        outer_inset, _inner_inset = neighbour_band_insets(
+            neighbour_band_polygon, self.origin, self.direction, self.run, at_start)
+        edge = self.first if at_start else self.last
+        corner_station = outer_inset if at_start else self.run - outer_inset
+        gap = (edge - corner_station) if at_start else (corner_station - edge)
+        if gap <= _TOL:
+            return None
+        centre = (edge + corner_station) / 2.0
+        # The band's own outboard face — flush with the cladding, which is exactly the
+        # face this rip closes.
+        depth = self.band_mid + self.band_depth / 2.0
+        top_start, top_end = _wall_top_elevations(self.wall)
+        fraction = centre / self.run if self.run else 0.0
+        top = top_start + (top_end - top_start) * fraction
+        point = self.point(centre, depth)
+        endpoint = "start" if at_start else "end"
+        return FramedMember(
+            self.wall.uid, f"corner-cap-{endpoint}", CORNER_CAP_CATEGORY,
+            panel_profile(gap / 0.0254, CORNER_CAP_THICKNESS_IN, "corner"),
+            point, point, self.wall.z0_m, top, top - self.wall.z0_m,
+            orient=self.direction, material="struct-1-plywood")
 
     # --- the three-piece pack ------------------------------------------------------
     @property

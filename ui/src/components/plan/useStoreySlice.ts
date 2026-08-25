@@ -20,6 +20,7 @@ export interface StoreySlice {
   stairsOnStorey: Stair[];
   slabsOnStorey: Solid[];
   railingsOnStorey: Solid[];
+  sumpsOnStorey: Solid[];
   snapNodes: Map<string, GeoNode>;
   defaultAssembly: string;
   serviceOptions: string[];
@@ -79,6 +80,15 @@ export function useStoreySlice(model: Model, activeStorey: string | null, tolM: 
       (!activeStorey || solid.storey === activeStorey) && solid.outline.length >= 3),
     [model.solids, activeStorey],
   );
+  // Sump pits, drawn on the same slab pass they sit in: a sump is a basin cast at the
+  // storey's own elevation (resolve/accessories.py::_resolve_sump), not a buried run like
+  // the rest of the "drainage" trade (drain tile, downspouts) that a horizontal cut through
+  // the storey never crosses — so unlike those, it belongs in plan.
+  const sumpsOnStorey = useMemo(
+    () => (model.solids ?? []).filter((solid) => solid.category === "sump" &&
+      (!activeStorey || solid.storey === activeStorey) && solid.outline.length >= 3),
+    [model.solids, activeStorey],
+  );
   const snapNodes = useMemo(() => {
     const m = new Map<string, GeoNode>();
     for (const n of storeyNodes) m.set(n.tag, { id: n.tag, p: [n.x_m, n.y_m], walls: [] });
@@ -133,6 +143,7 @@ export function useStoreySlice(model: Model, activeStorey: string | null, tolM: 
 
   return {
     wallsOnStorey, nodes, openEnds, storeyNodes, stairsOnStorey, slabsOnStorey, railingsOnStorey,
+    sumpsOnStorey,
     snapNodes,
     defaultAssembly, serviceOptions, canvasTypes, warningMarkers, nearestNodeTag, storeyHintFile,
   };

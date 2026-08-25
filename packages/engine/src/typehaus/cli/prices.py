@@ -95,6 +95,8 @@ ESTIMATE_PLANS = (
     ("pipe_runs", "pipe_runs", "system", "length_ft", "LF"),
     ("pipe_fittings", "pipe_fittings", "fitting", "count", "ea"),
     ("ducts", "ducts", "system", "length_ft", "LF"),
+    ("duct_fittings", "duct_fittings", "fitting", "count", "ea"),
+    ("duct_insulation", "duct_insulation", "spec", "length_ft", "LF"),
     ("sleeves", "sleeves", "sleeve_diameter_in", "count", "ea"),
     ("conduit", "conduit", "trade_size_in", "length_ft", "LF"),
     ("plumbing_specialties", "plumbing_specialties", "kind", "count", "ea"),

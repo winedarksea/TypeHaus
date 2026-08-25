@@ -303,6 +303,29 @@ def test_authored_per_end_corner_style_reaches_the_framing_solver():
     assert len(boxed_keys) == 2 * len(base_keys)
 
 
+def test_end_only_corner_style_override_reaches_its_owner():
+    """``corner_style_end="4-stud"`` authored ALONE (no matching ``corner_style_start``).
+
+    On a CCW box every wall's ``end`` butts the next wall's ``start`` — the shape catlin's
+    real exterior loop is authored in, and four-for-four the reason a 4-stud override
+    authored only on ``corner_style_end`` used to take effect nowhere: the wall that
+    authors it never owns that corner (``topology.py`` gives L ownership to the wall that
+    *starts* there), so the style has to travel to the neighbour that owns it instead of
+    being read off the owning wall's own fields.
+    """
+    def corner_keys(model):
+        return sorted((wall.tag, member.child_key) for wall in model.walls
+                      for member in wall.members if member.category == "corner")
+
+    base, _ = resolve(_box_plan())
+    boxed, _ = resolve(_box_plan(corner_style_end="4-stud"))
+    base_keys = corner_keys(base)
+    boxed_keys = corner_keys(boxed)
+    assert base_keys, "the box must own some L corners"
+    assert [key for key in boxed_keys if not key[1].endswith("-2")] == base_keys
+    assert len(boxed_keys) == 2 * len(base_keys)
+
+
 # ------------------------------------------------------------------- catlin integration
 @pytest.fixture(scope="module")
 def catlin_resolved():

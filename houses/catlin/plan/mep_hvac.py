@@ -197,97 +197,46 @@ EQUIPMENT_TYPES = (
 )
 
 # --- Ventilation: ERV fresh-air / stale-air trunks in the second-floor joist bays ----
-# Ventilation trunks (EQ-B-ERV), not heating ducts. Sized to ASHRAE 62.2, not furnace CFM:
-# 0.03 x 5,115 ft2 + 7.5 x 6 = 198 cfm required, 210 cfm on the machine (2026-08-01) — at
-# 10"x6" that's ~505 fpm, quiet enough to run continuously (vs. the ~4x oversized 12"x8"/
-# 14"x8" furnace trunks they replaced). Balanced pair = ERV SUPPLY/RETURN; dedicated stale
-# pulls (hall-bath shower) use EXHAUST. Reaches all four storeys via joist-bay routing
-# (FS-S-WEST/FS-S-EAST, FS-ATTIC) dropping to CHASE routing in the basement under SL-M-DECK.
-DUCTS = [
-    # DU-M-ERV-SUP is gone (2026-07-29): the second storey now takes fresh air off System 1's
-    # chase (REG-S-HP-BED1/2/3 on DU-S-HP-SUP, suite on DU-S-HP-SUITE) and returns stale air
-    # via DU-M-ERV-RET below (now carrying seven pickups). A supply trunk with no terminal
-    # is deleted, not stubbed. Main storey's own pair is DU-M1-ERV-SUP/RET below.
-    DuctRun(uid="CMD902AAAA", tag="DU-M-ERV-RET", system=DuctSystem.RETURN,
-           path=(pt(ft(4), ft(23, 4)), pt(ft(32), ft(23, 4))), width=inch(10), depth=inch(6),
-           routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST"),
-    # Hall bath shower exhaust: a dedicated stale pull in the FS-ATTIC joist bay centred at
-    # y=32'-8" (8" + 24*16"), right over FX-S-BATH1-SH at (5', 33'). It crosses the
-    # SL-D-SHOWER cut plane (x=5', plan/views.py) inside the shower's reach, which is what
-    # makes the detail's `shower_hrv_duct` component draw the takeoff.
-    DuctRun(uid="CSDV01AAAA", tag="DU-S-BATH1-EXH", system=DuctSystem.EXHAUST,
-           path=(pt(ft(3), ft(32, 8)), pt(ft(17), ft(32, 8))), width=inch(6), depth=inch(4),
-           routing=DuctRouting.JOIST_BAY, floor_ref="FS-ATTIC"),
-]
+# ================= THE RECTANGULAR ERV IS GONE (2026-08-25) =========================
+#
+# Nine sheet-metal ERV trunks used to live in the four lists below — 10x6 and 8x6 trunk and
+# branch with tees cut into them, sized to ASHRAE 62.2 rather than to furnace CFM and, at
+# ~505 fpm, perfectly quiet. What was wrong with them was not the sizing: it was that they
+# were a *furnace*-shaped system for a ventilator, and that half the machine they served did
+# not exist. The install is semi-rigid radial now — one 75 mm run per terminal off three
+# sub-manifolds, plus a real outdoor side, plus four drawn risers — and all of it lives in
+# **plan/mep_erv.py**.
+#
+# The four lists stay as empty lists rather than being deleted, so plan/mep.py's per-storey
+# assembly (and therefore element order in model.json) is untouched by the move.
+#
+# Deleted, for the record: DU-M-ERV-RET, DU-M1-ERV-SUP, DU-M1-ERV-RET, DU-B-ERV-SUP,
+# DU-B-ERV-RET, DU-B-ERV-BATH, DU-B-SAUNA-SUP, DU-S-BATH1-EXH, DU-A-ERV-RET. Also
+# DU-S-PLANT-EXH, which the plan's port budget moved onto the attic sub-manifold.
+DUCTS = []
 
-# Main-storey distribution rides the FS-SECOND joist bays overhead (the main ceiling is
-# that floor's underside) in its own pair of bays — 12'-8" (8"+9*16") and 15'-4"
-# (8"+11*16") — south of both second-storey trunks and clear of FO-S-STAIR.
-DUCTS_MAIN = [
-    DuctRun(uid="CMDV01AAAA", tag="DU-M1-ERV-SUP", system=DuctSystem.SUPPLY,
-           path=(pt(ft(4), ft(12, 8)), pt(ft(32), ft(12, 8))), width=inch(8), depth=inch(6),
-           routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST"),
-    DuctRun(uid="CMDV02AAAA", tag="DU-M1-ERV-RET", system=DuctSystem.RETURN,
-           path=(pt(ft(4), ft(15, 4)), pt(ft(32), ft(15, 4))), width=inch(8), depth=inch(6),
-           routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST"),
-]
+DUCTS_MAIN = []
 
-# Basement trunks leave EQ-B-ERV in the furnace room and run exposed-in-chase under the
-# main floor. CHASE routing, no floor_ref, and that is now a *choice* rather than the only
-# option it was: until 2026-08-21 the whole ceiling was SL-M-DECK's 9" pour with no joist
-# bays to ride at all. Two thirds of it is FS-M-WEST/FS-M-EAST joists now, and the west
-# half's bays run east-west — the same direction the trunk's long leg does at y=18'. Moving
-# these into the bays (routing=JOIST_BAY, floor_ref="FS-M-WEST") would buy back the 6" of
-# headroom the chases cost along that run. Left as chase because the runs also cross the
-# x=18' bearing line and the concrete band, so they cannot be bays end to end, and splitting
-# a trunk into bay and chase segments is a routing pass of its own — recorded in
-# plans/TODO.md rather than half-done here.
-DUCTS_BASEMENT = [
-    DuctRun(uid="CBDV01AAAA", tag="DU-B-ERV-SUP", system=DuctSystem.SUPPLY,
-           path=(pt(ft(5), ft(29)), pt(ft(5), ft(18)), pt(ft(27), ft(18)), pt(ft(27), ft(9))),
-           width=inch(8), depth=inch(6), routing=DuctRouting.CHASE),
-    DuctRun(uid="CBDV02AAAA", tag="DU-B-ERV-RET", system=DuctSystem.RETURN,
-           path=(pt(ft(5), ft(29)), pt(ft(5), ft(8)), pt(ft(16), ft(8))),
-           width=inch(8), depth=inch(6), routing=DuctRouting.CHASE),
-    # Stair-foot bathroom branch (2026-07-30): 6"x4" for one 50 cfm terminal, teed off at
-    # y=20' and crossing W-B-STR2. That crossing used to be a cast opening in 12" concrete,
-    # set with the room's three service sleeves before the pour; W-B-STR2 is a steel-stud
-    # partition since 2026-08-21, so it is a boxed-out stud bay the framer cuts, and the
-    # three sleeves beside it are gone (plan/mep_sleeves.py).
-    DuctRun(uid="CBDV03AAAA", tag="DU-B-ERV-BATH", system=DuctSystem.EXHAUST,
-           path=(pt(ft(5), ft(20)), pt(ft(11, 8), ft(20))),
-           width=inch(6), depth=inch(4), routing=DuctRouting.CHASE),
-    # Sauna's fresh-air branch (2026-07-29): 4"x4", a trickle it can shut rather than a
-    # room's worth of air. Taps the supply trunk at (5', 18'), runs south along W-B-SA-W to
-    # the heater line, ending over EQ-B-SAUNA-HTR on purpose — fresh air dropped onto the
-    # stones drives the convection loop down to REG-B-EXH2, the only way the sealed room
-    # turns over.
-    DuctRun(uid="CBDV04AAAA", tag="DU-B-SAUNA-SUP", system=DuctSystem.SUPPLY,
-           path=(pt(ft(5), ft(18)), pt(ft(5), ft(8, 9)), pt(ft(9, 9.8125), ft(8, 9))),
-           width=inch(4), depth=inch(4), routing=DuctRouting.CHASE),
-]
+DUCTS_BASEMENT = []
 
-# Attic distribution rides the FS-ATTIC joist bays. DU-A-ERV-SUP is gone (2026-07-30, same
-# reasoning as DU-M-ERV-SUP): its terminal REG-A-SUP1 was made redundant by REG-A-HP-WEST,
-# a floor boot off System 1's DU-S-HP-SUITE branch directly below. Attic air pattern is now
-# uniform: conditioned/fresh air in off System 1, stale air out through the one ERV extract.
-# Surviving return starts at x=2' by the maintenance shaft (1', 34'-6", same shaft the ERV
-# branch rides up from the basement) and runs to its terminal at bay-centre 31'-4"
-# (8"+23*16"); DU-S-BATH1-EXH's bay at 32'-8" stays free. Nothing here nears FO-A-STAIR.
-# Coverage held: RM-A-STUDY via REG-A-HP-STUDY, RM-A-WEST via REG-A-HP-WEST off the suite branch.
-DUCTS_ATTIC = [
-    DuctRun(uid="CADV02AAAA", tag="DU-A-ERV-RET", system=DuctSystem.RETURN,
-           path=(pt(ft(2), ft(31, 4)), pt(ft(6), ft(31, 4))), width=inch(8), depth=inch(6),
-           routing=DuctRouting.JOIST_BAY, floor_ref="FS-ATTIC"),
-]
+DUCTS_ATTIC = []
 
 # --- System 1: the conditioned-air chase (plans/TODO.md §HVAC) -----------------------
 # EQ-S-HP1-AH (plan/electrical.py) hangs INSIDE the dropped soffit box at its south end
 # (y 6'..9'-7", over RM-S-STUDY2) and feeds ONE straight supply trunk north along the
 # second-floor hallway inside that soffit, with a short return-plenum stub at its rear
-# (ERV fresh feed wyed in behind it — DU-S-ERV-HP-FEED below). CHASE routing, no
-# `floor_ref`: it's in a framed box, not a joist bay, so joist-bay geometry checks
-# correctly don't apply, and its two crossings of the x=18' bearing line are legal.
+# (ERV fresh feed wyed in behind it — DU-S-ERV-HP-FEED below).
+#
+# SOFFIT routing + `soffit_ref="SF-S-DUCT"` since 2026-08-25, replacing CHASE. CHASE was
+# never a description of where these run — it was the flag that turned the joist-bay check
+# off, and nothing checked anything in its place, which is why every clearance in this file
+# used to be hand arithmetic in a comment. Naming the modeled Soffit puts them under
+# `mep.duct_soffit_occupancy`, which derives the box's clear section from its own drop,
+# framing member and lining and measures both trunks, the air handler and the strip heater
+# against it side by side. It also gives them their elevation for free: a run that names a
+# soffit and authors no elevation sits on the box's clear underside. CHASE keeps its honest
+# meaning for a framed shaft that is not modeled as a Soffit. The two crossings of the
+# x=18' bearing line are legal either way.
 # Hall is x 18'-2 3/4"..21'-8" clear: supply at x=19'-4", return at x=20'-8", side by side.
 # `design_cfm` is authored intent for a low-flow straight run (why one 24k unit covers the
 # upstairs): 14x8 @ 750 cfm is ~965 fpm.
@@ -297,7 +246,8 @@ DUCTS_HVAC_SECOND = [
     # trunk is everything north of the case.
     DuctRun(uid="CSDH01AAAA", tag="DU-S-HP-SUP", system=DuctSystem.SUPPLY,
             path=(pt(ft(19, 4), ft(9, 7)), pt(ft(19, 4), ft(33))),
-            width=inch(14), depth=inch(8), routing=DuctRouting.CHASE, design_cfm=750),
+            width=inch(14), depth=inch(8), routing=DuctRouting.SOFFIT,
+            soffit_ref="SF-S-DUCT", design_cfm=750),
     # Plenum stub, not a trunk (2026-07-30): REG-S-HP-RET sits at the unit's rear corner;
     # this 6" carries grille air to the bottom-return opening. Rooms do NOT return to the
     # AH — only extract is the ERV's stale pickups; the hall (fed by door undercuts) is the
@@ -305,29 +255,45 @@ DUCTS_HVAC_SECOND = [
     # terminals, AH just recirculates the hall plus whatever DU-S-ERV-HP-FEED injects.
     DuctRun(uid="CSDH02AAAA", tag="DU-S-HP-RET", system=DuctSystem.RETURN,
             path=(pt(ft(20, 8), ft(9, 8)), pt(ft(20, 8), ft(9, 2))),
-            width=inch(14), depth=inch(8), routing=DuctRouting.CHASE, design_cfm=750),
+            width=inch(14), depth=inch(8), routing=DuctRouting.SOFFIT,
+            soffit_ref="SF-S-DUCT", design_cfm=750),
     # West branch to RM-S-SUITE, rerouted 2026-07-30: tees off DU-S-HP-SUP at D-S-SUITE's
     # centreline (y=14'-1 7/8"), crosses W-S-C2B above the door through the header/top-plate
-    # cripple zone (an 8"-deep duct on the 14" soffit drop clears it), then runs west down
-    # the suite's entry arm to the grille near D-S-SUITEBATH. 6'-10" of 10x8 replaces the
-    # old 10'-10" detour across RM-S-SUITEBATH.
+    # cripple zone, then runs west down the suite's entry arm to the grille near
+    # D-S-SUITEBATH. 6'-10" of 10x8 replaces the old 10'-10" detour across RM-S-SUITEBATH.
+    # (This used to carry "an 8"-deep duct on the 14" soffit drop clears it". It does, but
+    # that is now `mep.duct_soffit_occupancy`'s answer against SF-S-SUITE's derived cavity,
+    # not a number in a comment that nothing re-runs when the FramingSpec changes.)
     # 250 cfm (not 150): feeds two terminals — REG-S-HP-SUITE and REG-A-HP-WEST, a floor
     # boot up through FS-ATTIC directly above. ~450 fpm through 10x8, still quiet.
     DuctRun(uid="CSDH03AAAA", tag="DU-S-HP-SUITE", system=DuctSystem.SUPPLY,
             path=(pt(ft(19, 4), ft(14, 1.875)), pt(ft(12, 6), ft(14, 1.875))),
-            width=inch(10), depth=inch(8), routing=DuctRouting.CHASE, design_cfm=250),
+            width=inch(10), depth=inch(8), routing=DuctRouting.SOFFIT,
+            soffit_ref="SF-S-SUITE", design_cfm=250),
     # The two south rooms' branch (2026-08-16). RM-S-PLANT and RM-S-STUDY2 were the only
     # conditioned rooms on this storey with no drawn terminal, which was always the odd
     # reading: EQ-S-HP1-AH hangs in RM-S-STUDY2's own ceiling soffit.
     #
-    # Nothing can leave the trunk southward inside SF-S-DUCT: the air handler's 21"x43" case
-    # fills the box from y=6'-0" to y=9'-7", leaving ~5" either side of it — no lane for a
-    # branch. So this one comes off the top instead, riding the FS-ATTIC joist bay centred at
+    # Nothing can leave the trunk southward inside SF-S-DUCT: the air handler's case fills
+    # the box from y=6'-0" to y=9'-7" and the slivers either side of it are no lane for a
+    # branch. `mep.duct_soffit_occupancy` is what says so now, and it prints the actual
+    # clearances against the box's derived cavity — the "~5" either side" this comment used
+    # to assert was arithmetic against a case the model had rotated 90 degrees, so it was
+    # describing a fit that did not exist (see plan/electrical.py::EQ-S-HP1-AH).
+    #
+    # So this one comes off the top instead, riding the FS-ATTIC joist bay centred at
     # y=3'-4" (8" + 2*16"), a floor cavity that runs unbroken east-west over BOTH rooms. It
-    # feeds off the same riser out of the trunk head at x=19'-4" that DU-A-HP-STUDY leaves
-    # from, dropping into the bay 4" north of that branch's centreline instead of continuing
-    # up onto the attic deck. The riser itself stays undrawn (DuctRun carries no elevation),
-    # exactly as DU-S-ERV-HP-FEED's rise and EQ-S-HP1-AH's condensate drop are — plans/TODO.md.
+    # feeds off the same riser lane at x=19'-4" that DU-A-HP-STUDY leaves from, dropping
+    # into the bay 4" north of that branch's centreline.
+    #
+    # THE RISER ITSELF IS STILL UNDRAWN, and now for a reason rather than for want of a
+    # field: `DuctRun` carries elevations since 2026-08-25 and DU-A-HP-STUDY's rise out of
+    # this bay onto the attic deck is drawn below, but the leg that brings air *up* to this
+    # lane from the second storey has no determinable lower end. Every comment in this file
+    # calls it "the riser out of the trunk head", and the trunk head is at (19'-4", 9'-7");
+    # SF-S-DUCT stops at y=6'-0", so nothing connects (19'-4", 9'-7") to (19'-4", 3'-4")
+    # without either a route across five FS-ATTIC I-joists or a run along the attic floor,
+    # and both are route decisions rather than draughting. Left open, in plans/TODO.md.
     #
     # JOIST_BAY and not CHASE because the alternative — running west along the attic floor —
     # cannot get past W-A-C1/C1B, the x=18' bearing wall RB-HOUSE sits on, which does not open
@@ -347,39 +313,17 @@ DUCTS_HVAC_SECOND = [
             path=(pt(ft(22, 8), ft(3, 4)), pt(ft(6, 8), ft(3, 4))),
             width=inch(8), depth=inch(6), routing=DuctRouting.JOIST_BAY,
             floor_ref="FS-ATTIC", design_cfm=150),
-    # ERV -> System 1 fresh-air feed (2026-07-30), the one place fresh air enters the
-    # heat-pump loop. Taps DU-M1-ERV-SUP at y=12'-8" (FS-SECOND bay), rises into the lane
-    # DU-S-HP-RET vacated, runs south at x=20'-8" to inject behind REG-S-HP-RET via a
-    # 45-degree wye. Wye (not hard-ducted) is deliberate: the ERV and AH run on independent
-    # schedules and each must breathe without the other. 6" is the biggest round the
-    # joist-bay tap takes; ~100 cfm (storey's share of whole-house rate) runs ~510 fpm.
-    # Vertical rise into the soffit is undrawn (DuctRun has no elevation) — same status as
-    # EQ-S-HP1-AH's condensate drop, per plans/TODO.md.
-    DuctRun(uid="CSDV02AAAA", tag="DU-S-ERV-HP-FEED", system=DuctSystem.SUPPLY,
-            path=(pt(ft(20, 8), ft(12, 8)), pt(ft(20, 8), ft(10))),
-            width=inch(6), depth=inch(6), routing=DuctRouting.CHASE, design_cfm=100),
-    # The plant room's dedicated extract (2026-08-18). Rides the FS-ATTIC joist bay centred
-    # at y=4'-8" (8" + 3*16") — the next bay north of DU-S-HP-SOUTH's at 3'-4", so the
-    # room's supply and its extract are in different bays and different halves of the room.
-    # (Not the 6'-0" bay: FS-ATTIC carries trimmers at 5'-7" and 5'-9 5/8" there, and a 6"
-    # duct centred at 6'-0" straddles one — mep.duct_joist_bay.)
-    # Runs east from the terminal to x=19'-4", the same riser lane out of the trunk head
-    # that DU-S-HP-SOUTH and DU-A-HP-STUDY leave from, and drops through SF-S-DUCT to
-    # EQ-B-ERV's stale side. The vertical leg is undrawn — DuctRun carries no elevation —
-    # exactly as DU-S-ERV-HP-FEED's rise and EQ-S-HP1-AH's condensate drop are (plans/TODO.md).
-    #
-    # 25 cfm against ~20 of makeup: extract-biased on purpose, which is what "slightly
-    # negative" means in air rather than in inches of water. 6x4 fits the 11 7/8" I-joist bay
-    # with room to spare and runs ~150 fpm, quiet enough for a room somebody sits in.
-    #
-    # An ERV is damage limitation, not humidity control. Even an 84%-latent core loses ~16%
-    # of the moisture in every air change; at this flow against -15 F outdoor air the
-    # unrecovered loss is on the order of 1.5-2 gal/day, so a humidifier is required
-    # regardless — see notes/plant_room.md, and plans/TODO.md for the unmodelled item.
-    DuctRun(uid="RVGWJXKPZ7", tag="DU-S-PLANT-EXH", system=DuctSystem.EXHAUST,
-            path=(pt(ft(14), ft(4, 8)), pt(ft(19, 4), ft(4, 8))),
-            width=inch(6), depth=inch(4), routing=DuctRouting.JOIST_BAY,
-            floor_ref="FS-ATTIC", design_cfm=25),
+    # DU-S-ERV-HP-FEED moved to plan/mep_erv.py (2026-08-25). It kept its tag and its uid
+    # and nothing else: it used to tap DU-M1-ERV-SUP at y=12'-8" — a trunk that no longer
+    # exists — and its rise into the soffit was undrawn because `DuctRun` had no elevation
+    # field. It now comes off the attic sub-manifold, drops into SF-S-DUCT, and lands on the
+    # new EQ-S-ERV-MIX mixing box instead of wyeing into the return plenum by comment.
+    # DU-S-PLANT-EXH moved to plan/mep_erv.py as DU-A-ERV-R-PLANT (2026-08-25). It was
+    # never System 1's — it is the ERV's stale pull out of RM-S-PLANT — and the plan's port
+    # budget puts REG-S-ERV-PLANT-EXH on the attic sub-manifold, which is the cavity its
+    # terminal actually opens into. The reasoning that survives the move is in the new run's
+    # comment and in notes/plant_room.md: 25 cfm against ~20 of makeup, extract-biased on
+    # purpose, and an ERV is damage limitation rather than humidity control.
 ]
 
 # One attic branch left (2026-07-30): RM-A-STUDY's, which genuinely needs a horizontal run
@@ -387,9 +331,20 @@ DUCTS_HVAC_SECOND = [
 # — rides the attic floor/knee space, not a joist bay. DU-A-HP-EAST is gone: its grille
 # became a straight boot off the trunk (REG-A-HP-EAST), same pattern as REG-A-HP-WEST —
 # a 6'-8" run just to reach a grille that could sit anywhere in the open room.
+#
+# **Its riser is drawn** (2026-08-25), the first of plans/TODO.md's three undrawn verticals
+# to close. The repeated plan point at (19'-4", 3'-0") carried at two elevations IS the
+# vertical leg — the same idiom a PipeRun's drop has always used, and all `DuctRun` ever
+# lacked was somewhere to put the second number. -8 7/8" (storey-relative) is the centreline
+# of the FS-ATTIC joist bay this branch shares with DU-S-HP-SOUTH, whose joists sit at
+# 228 1/8"; +3" is the centreline of a 6"-deep duct lying on the attic deck. So the run now
+# comes up out of the bay and turns east, which is what it always did on site and never did
+# in the model — and the take-off bills the 11 7/8" of rise instead of the zero length a
+# plan polyline projects to.
 DUCTS_HVAC_ATTIC = [
     DuctRun(uid="CADH01AAAA", tag="DU-A-HP-STUDY", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 4), ft(3)), pt(ft(26), ft(3))),
+            path=(pt(ft(19, 4), ft(3)), pt(ft(19, 4), ft(3)), pt(ft(26), ft(3))),
+            elevations=(inch(-8.875), inch(3), inch(3)),
             width=inch(8), depth=inch(6), routing=DuctRouting.CHASE, design_cfm=100),
 ]
 

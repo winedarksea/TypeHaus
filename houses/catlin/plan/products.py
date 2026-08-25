@@ -92,10 +92,23 @@ EG4_POWERPRO_WALLMOUNT = Product(
     source="EG4 product literature — UL 9540 listing declared on EQ-T-ESS-BATT, which is "
            "where a check reads it.",
 )
+# The ventilator. It is the one machine in this house whose *identity* changed a number the
+# checks read: the placeholder it replaced carried SRE 0.75 with a `# TODO verify datasheet`
+# against it, and the real unit's certified figure at this site's -15 F design temperature
+# is 0.65. Picking the product moved the block load, which is the whole argument for
+# recording what was actually bought.
+BROAN_B210E75RT = Product(
+    tag="PROD-BROAN-B210E75RT", brand="Broan", model="B210E75RT",
+    name="B210E75RT energy recovery ventilator, 210 CFM",
+    source="Broan published specifications, read 2026-08-25 — see EQ-T-BROAN-B210E75RT "
+           "(plan/mep_erv.py) for the airflow, the port size and the two SRE figures, and "
+           "for why the -13 F one is the one authored.",
+)
 
 
 PRODUCTS = (
     LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER,
     FRIGIDAIRE_ALL_REFRIGERATOR, FRIGIDAIRE_ALL_FREEZER,
     RHEEM_PROTERRA_80, EG4_12KPV, EG4_POWERPRO_WALLMOUNT,
+    BROAN_B210E75RT,
 )

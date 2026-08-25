@@ -32,7 +32,12 @@ class FramingPreferences:
     """Module and opening rules that keep framing, panels, and openings coordinated."""
 
     module_in: float = 16.0
-    corner: str = "three-stud"
+    # "3-stud" | "4-stud" — the live vocabulary ``Wall.corner_style_start/end`` and
+    # ``FramingSpec.corner_style`` speak; "three-stud" was never read by anything, since
+    # nothing here compared this field to the framing solver's own vocabulary at all
+    # (2026-08-25, ``structural.corner_style_matches_preference`` is the first thing that
+    # does).
+    corner: str = "3-stud"
     max_window_ro_unbroken_in: float = 14.0
     max_window_ro_nonbearing_in: float = 30.0
     max_window_ro_bearing_in: float = 27.0

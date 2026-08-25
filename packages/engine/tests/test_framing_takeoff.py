@@ -131,6 +131,10 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         # insulation, neither of which anything could see before
                         # `PipeAccessory` and `PipeRun.insulation` existed.
                         "plumbing_specialties", "install_parts", "pipe_insulation",
+                        # Duct elbows off the runs' own 3D polylines and duct wrap by the
+                        # foot — neither visible until `DuctRun` gained elevations and an
+                        # `insulation` field (the ERV pass).
+                        "duct_fittings", "duct_insulation",
                         # The species-wood rollup (2026-08-02, hardwood pass).
                         "wood_surfaces",
                         # Edge trim by the lineal foot: the fascia/soffit/flashing family,
@@ -198,7 +202,7 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     "pipe_runs": ("pipe_runs", "pipe_fittings", "pipe_insulation"),
     "pipe_accessories": ("plumbing_specialties", "install_parts"),
     "sleeves": ("sleeves",),
-    "ducts": ("ducts",),
+    "ducts": ("ducts", "duct_fittings", "duct_insulation"),
     "conduits": ("conduit", "conductors"),
     "footing_beddings": ("footing_bedding",),
     # The paneling records (sauna liner, wainscot, tile splash) roll up by species/material.

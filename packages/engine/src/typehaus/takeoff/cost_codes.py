@@ -64,6 +64,10 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     ("concrete", "downspout", CostCode("2600", "07 71 00", "drainage")),
     # Framing profiles that are not lumber.
     ("framing", "gutter*", CostCode("2600", "07 71 00", "drainage")),
+    # The Larsen/Swinburne corner box: sheet good closing a wall cavity, not glazing trim —
+    # tried before the generic "*panel*" catch-all below (first-match-wins), which would
+    # otherwise file it as 08 80 00 Glazing alongside window/door panel infill.
+    ("framing", "* corner panel", CostCode("2100", "06 16 00", "walls")),
     ("framing", "*panel*", CostCode("2400", "08 80 00", "openings")),
     # Sheet goods: roof and wall sheathing bill to the same account as the framing they
     # skin, insulated sheathing to insulation.
@@ -145,6 +149,10 @@ SECTION_CODES: dict[str, CostCode] = {
     "pipe_runs": CostCode("3100", "22 10 00", "plumbing"),
     "pipe_fittings": CostCode("3100", "22 13 00", "plumbing"),
     "ducts": CostCode("3200", "23 31 00", "mechanical"),
+    # 23 31 00 is "HVAC Ducts and Casings"; a duct fitting is part of that section, and
+    # 23 07 13 is "Duct Insulation" — the air-side twin of the 22 07 00 pipe row below.
+    "duct_fittings": CostCode("3200", "23 31 00", "mechanical"),
+    "duct_insulation": CostCode("3200", "23 07 13", "mechanical"),
     "sleeves": CostCode("3100", "22 05 17", "plumbing"),
     "conduit": CostCode("3300", "26 05 33", "electrical"),
     "plumbing_specialties": CostCode("3100", "22 40 00", "plumbing"),

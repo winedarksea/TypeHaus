@@ -138,10 +138,14 @@ ACCENT_GWB_LINING = (
 CATLIN_EXT_2X6 = Assembly(
     tag="CATLIN_EXT_2X6",
     layers=(
+        # Four-stud outside corners (2026-08-25): the thermal objection APA/BASC raise
+        # against a solid corner post does not apply here — the primary insulation is the
+        # continuous exterior closed-cell foam OUTBOARD of this layer, so the post itself
+        # does not need an insulable void. See houses/catlin/CLAUDE.md's corner section.
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625),
-                                  layout_origin="line"),
+                                  layout_origin="line", corner_style="4-stud"),
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
@@ -159,10 +163,13 @@ CATLIN_EXT_2X6 = Assembly(
         # area and hide the outrigger entirely. Split, `analysis._layer_rsi` parallel-paths
         # this band exactly as it already does a stud bay, and the take-off bills the outer
         # band as `insulation (cavity)`. ff 0.094 is 1.5" of outrigger per 16" bay.
+        # ``corner_cap="plywood-box"`` closes the Larsen/Swinburne corner box (FHB Jan
+        # 2024) outboard of the sheathing, at every owned L corner — the ~5"x5" full-height
+        # void the mitred outrigger band otherwise leaves standing open at the corner.
         Layer(name="outrigger", material_ref="kdat", thickness=inch(3.5),
               function=LayerFunction.FURRING,
               framing=FramingSpec(member="2x4", direction="vertical", laid="edge",
-                                  layout_origin="line"),
+                                  layout_origin="line", corner_cap="plywood-box"),
               cavity=CavityFill(material_ref="closed-cell-spray-foam",
                                 thickness=inch(2.5), framing_factor=0.094,
                                 control={ControlLayer.AIR, ControlLayer.WATER,
@@ -1017,8 +1024,12 @@ GARAGE_ROOF = Assembly(
 # `W-S-C1..C4B` and `W-A-C1..C2` are the x=18'-0" line that carries the ridge beam
 # continuously to the footings, and until now each of those twelve walls restarted the 16"
 # module at its own start node — three storeys, three phases, on the house's primary load
-# path. R602.3.3's "studs shall be located directly over the studs below" is about this line
-# before it is about any facade.
+# path. Stacking them is an APA Advanced Framing technique, **not** an IRC mandate: R602.3.3
+# is the *bearing-stud* rule (a joist, truss or rafter landing within 5" of a stud, and only
+# where both runs are 24" o.c., with three exceptions), and R602.3.2's single-top-plate
+# exception turns on rafters/joists centred over studs within 1" — neither says studs stack
+# over studs. See ``model/assembly.py``'s note on ``layout_origin``. Worth doing anyway, and
+# worth doing here first: a continuous load path is the whole argument for the centreline.
 #
 # STRUCTURE spec only, unlike the exterior pair: an interior wall has no vertical FURRING
 # band to phase-lock to the studs. Both liner bands here are `direction="horizontal"`, and
@@ -1555,7 +1566,7 @@ PLANT_EXT_2X6_HUMID = Assembly(
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625),
-                                  layout_origin="line"),
+                                  layout_origin="line", corner_style="4-stud"),
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
@@ -1576,7 +1587,7 @@ PLANT_EXT_2X6_HUMID = Assembly(
         Layer(name="outrigger", material_ref="kdat", thickness=inch(3.5),
               function=LayerFunction.FURRING,
               framing=FramingSpec(member="2x4", direction="vertical", laid="edge",
-                                  layout_origin="line"),
+                                  layout_origin="line", corner_cap="plywood-box"),
               cavity=CavityFill(material_ref="closed-cell-spray-foam",
                                 thickness=inch(2.5), framing_factor=0.094,
                                 control={ControlLayer.AIR, ControlLayer.WATER,

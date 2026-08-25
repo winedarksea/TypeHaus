@@ -15,7 +15,7 @@ adequate_overhang_ft = 0.0
 
 [framing]
 module_in = 16
-corner = "three-stud"
+corner = "4-stud"
 max_window_ro_unbroken_in = 14
 max_window_ro_nonbearing_in = 42
 # 27 -> 30 on 2026-08-01, by decision: WIN-S-BED1/BED2 needed a 30" RO in the east bearing

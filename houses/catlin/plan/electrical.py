@@ -194,29 +194,11 @@ EQUIPMENT_TYPES = (
                   plan_symbol="sauna-heater",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
-    # Only air-moving equipment in the house (no furnace/air handler), so the SUPPLY_AIR/
-    # RETURN_AIR ports live here. "Supply" is fresh air, not heat: plan/mep.py's ERV trunks
-    # connect to these two ports across all four storeys (see mep.py for the branch layout);
-    # outdoor-side intake/exhaust stay unmodeled since `Service` has no OUTDOOR_AIR/
-    # EXHAUST_AIR member.
-    # ventilation_cfm is the ASHRAE 62.2 continuous balanced rate the trunks are sized for
-    # (0.03 x conditioned ft2 + 7.5 x (bedrooms+1)). Bumped 197 -> 210 (2026-08-01) when
-    # conditioned area drift (5,078 -> 5,115 ft2) put code.N1103_6 one cfm short; 210 rounds
-    # up with headroom for the next ~400 ft2 of growth. Still quiet: ~505 fpm through the
-    # 10x6 trunk.
-    # sensible_recovery_effectiveness drives the block load's ventilation term (0.05 SRE ~=
-    # 2,000 Btu/h at this rate and 85F design ΔT) — the number most needing the datasheet.
-    EquipmentType(tag="EQ-T-ERV", name="ERV, 240V", footprint=(inch(24), inch(24)), height=inch(30),
-                  plan_symbol="erv",
-                  ventilation_cfm=210,  # TODO verify datasheet
-                  sensible_recovery_effectiveness=0.75,  # TODO verify datasheet
-                  source="Airflow is the computed ASHRAE 62.2 whole-house rate; SRE 0.75 is a REPRESENTATIVE PLACEHOLDER for a good residential ERV core. TODO verify datasheet.",
-                  ports=(ServicePort(tag="power", service=Service.POWER_240,
-                                     position=(ft(0), ft(0), ft(0))),
-                         ServicePort(tag="supply", service=Service.SUPPLY_AIR,
-                                     position=(ft(0), ft(0), inch(24))),
-                         ServicePort(tag="return", service=Service.RETURN_AIR,
-                                     position=(ft(0), ft(0), inch(24))))),
+    # EQ-T-ERV is gone (2026-08-25), replaced by EQ-T-BROAN-B210E75RT in plan/mep_erv.py.
+    # It was `24x24x30, 210 cfm, SRE 0.75` with two `# TODO verify datasheet` markers, and
+    # its note ended: "outdoor-side intake/exhaust stay unmodeled since `Service` has no
+    # OUTDOOR_AIR/EXHAUST_AIR member." `Service` has both now, so the machine has four
+    # ports, and an ERV with an intake and a discharge is finally a modeled ERV.
     # --- The three Gree heat-pump systems (plans/TODO.md §HVAC) ----------------------
     # Outdoor units carry real Gree datasheet capacities (model # in each `source`), not
     # placeholders. `heating_capacity_at_design_btuh` linearly interpolates the datasheet
@@ -448,9 +430,26 @@ BASEMENT_EQUIPMENT = [
     # heater, an 80-gal Rheem ProTerra hybrid HPWH (plan/mep.py::EQ-T-WATER-HEATER) — the
     # two-tank split was a modelling artifact of describing one product's two internal power
     # draws as two appliances.
+    # The ventilator, retyped to the real machine on 2026-08-25 — a Broan B210E75RT, four
+    # 6" round top ports, in place of a placeholder that carried two `# TODO verify
+    # datasheet` markers. Same uid, same position, same room, same circuit: the unit did not
+    # move, it stopped being generic. Everything downstream of it — the manifolds, the four
+    # chase risers, the outdoor side that did not exist, the radials — is in plan/mep_erv.py,
+    # and `pan_drain_ref` names the condensate line a cold-climate core makes water into
+    # (plan/mep_drainage.py). The footprint on the element is documentation; the TYPE's
+    # 24.8" x 21" is what resolves.
     Equipment(uid="CEE016AAAA", tag="EQ-B-ERV", kind=EquipmentKind.ERV,
-              position=pt(m(1.2053), m(9.61783)), footprint=(inch(24), inch(24)),
-              room="RM-B-FURNACE", type_ref="EQ-T-ERV", circuit="CKT-ERV"),
+              position=pt(m(1.2053), m(9.61783)), footprint=(inch(24.8), inch(21)),
+              room="RM-B-FURNACE", type_ref="EQ-T-BROAN-B210E75RT", circuit="CKT-ERV",
+              # HUNG, not floor-standing (2026-08-25). Two reasons and the second is the
+              # binding one: a Broan ships with hanging straps and this is how the unit
+              # installs, and a floor-standing ERV cannot drain by gravity. Its core makes
+              # water all winter, the nearest receptor is FX-B-SAUNA-FD nine feet up the
+              # basement's other end, and a spigot at slab level has nowhere to fall to. At
+              # a 6'-0" base the 21.6" case tops out at 7'-9 5/8", three inches under the
+              # basement's 8'-0 15/16" clear.
+              mount=Mount(kind=MountKind.CEILING, elevation=ft(6)),
+              pan_drain_ref="PR-B-ERV-COND"),
     # Sauna heater: NW corner of the *heated* zone (south 8'-6" of RM-B-SAUNA — the north 4'
     # is the shower per notes/sauna_shower_basement_detail.md), back to the west liner face,
     # diagonally opposite the bench for 3'-2 11/16" of clear floor.
@@ -643,19 +642,32 @@ SECOND_EQUIPMENT = [
     # System 1's concealed ducted AH, inside SF-S-DUCT's dropped box at the south end of the
     # hallway trunk (2026-07-30). Can't sit in the floor structure — 21"x11" case vs. ~14 1/2"
     # clear in an 11 7/8" I-joist bay — and the old (21', 7') spot hung 18" into FO-A-STAIR's
-    # framed opening. The soffit box (14" drop x 30 3/4" clear) is the one cavity that holds
-    # it; footprint 21"x43" runs the hall, discharge north into DU-S-HP-SUP, return through
+    # framed opening. The soffit box is the one cavity that holds it; the case runs the hall
+    # 43" north-south by 21" across, discharge north into DU-S-HP-SUP, return through
     # REG-S-HP-RET's plenum stub. Own branch circuit (CKT-HP1-AH) since a ducted unit's
     # blower is fed at the unit, unlike a multi's heads.
+    #
+    # `soffit_ref` + `rotation` are the 2026-08-25 correction, and both were real errors the
+    # new `mep.duct_soffit_occupancy` found on its first run:
+    #   * WITHOUT `soffit_ref` a CEILING mount with no stated elevation hung off
+    #     `storey.default_ceiling_height` (resolve/placeables.py) — this unit was resolving at
+    #     9'-0", fourteen inches ABOVE the box every comment here says it lives in.
+    #   * WITHOUT `rotation` the case resolved 43" across the hall and 21" along it, because
+    #     `EquipmentType.footprint` wins over the element's and EQ-T-GREE-SLIM24 states
+    #     (43, 21). 43" across a 30 3/4" cavity is 6" of air handler outside its own soffit.
+    # x moved 19'-10" -> 20'-0", the box's own centreline, so the 21" case sits central with
+    # ~4 7/8" either side. The check prints those clearances now; do not restate them here.
+    #
     # zone_rooms covers the whole conditioned second storey plus RM-A-STUDY/RM-A-EAST (short
     # attic branches) and RM-A-WEST (suite branch's REG-A-HP-WEST boot, 2026-07-30).
     # RM-A-DEN is deliberately excluded — nothing serves it (plans/TODO.md).
     Equipment(uid="CEE032AAAA", tag="EQ-S-HP1-AH",
               kind=EquipmentKind.DUCTED_AIR_HANDLER,
-              position=pt(ft(19, 10), ft(7, 9.5)), footprint=(inch(21), inch(43)),
+              position=pt(ft(20), ft(7, 9.5)), footprint=(inch(21), inch(43)),
+              rotation=deg(90),
               room="RM-S-STUDY2", type_ref="EQ-T-GREE-SLIM24",
               outdoor_ref="EQ-M-HP1-OD", circuit="CKT-HP1-AH",
-              mount=Mount(kind=MountKind.CEILING),
+              mount=Mount(kind=MountKind.CEILING), soffit_ref="SF-S-DUCT",
               zone_rooms=("RM-S-STUDY2", "RM-S-PLANT", "RM-S-BED1", "RM-S-BED2",
                           "RM-S-BED3", "RM-S-SUITE", "RM-S-SUITEBATH", "RM-S-VANITY",
                           "RM-S-BATH1", "RM-S-HALL", "RM-S-CLOSET", "RM-S-NCLOSET",
@@ -677,7 +689,14 @@ SECOND_EQUIPMENT = [
     Equipment(uid="CEE033AAAA", tag="EQ-S-HP1-STRIP", kind=EquipmentKind.SPACE_HEATER,
               position=pt(ft(19, 10), ft(10, 3)), footprint=(inch(16), inch(10)),
               room="RM-S-HALL", type_ref="EQ-T-DUCT-HEATER-2KW",
-              circuit="CKT-HP1-STRIP", mount=Mount(kind=MountKind.CEILING)),
+              circuit="CKT-HP1-STRIP", mount=Mount(kind=MountKind.CEILING),
+              # Same 2026-08-25 correction as the air handler above: without `soffit_ref`
+              # this hung at the 9'-0" storey ceiling instead of inside the box it is
+              # plumbed into. Its 16"x10" plate is measured against SF-S-DUCT's derived
+              # cavity by `mep.duct_soffit_occupancy`, and DU-S-HP-SUP's centreline runs
+              # through it, which is what tells the check the two are one assembly rather
+              # than two things fighting for the same lane.
+              soffit_ref="SF-S-DUCT"),
 ]
 
 # --- Garage: both EV receptacles on the south wall, east of the service door ----------

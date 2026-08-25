@@ -10,6 +10,7 @@ import { doorStrokeGlyph, hostWallThicknessM, windowStrokeGlyph } from "../../mo
 import { openingHostWall, pointAlong, swingArcSweepFlag } from "../../model/geometry";
 import { memberFootprint } from "../../model/memberFootprint";
 import { NORDIC_ACCENT, NORDIC_INK } from "../../nordic/palette";
+import { PLAN_TEXT_HALO, PlanLabel } from "./PlanLabelLayer";
 import type { LabelMode, Selection } from "../../state/vocabulary";
 
 export function hostStorey(model: Model, opening: Opening): string {
@@ -204,9 +205,11 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
             strokeDasharray={stroke.dashed ? "4 3" : undefined} />
         ))}
         {(labelMode === "all" || selected || (labelMode === "hover" && hovered)) &&
-        <text x={cx - Math.sin(ang) * 14} y={cy + Math.cos(ang) * 14} textAnchor="middle"
-          fill={NORDIC_ACCENT} fontSize={9} fontWeight={700}
-          style={{ paintOrder: "stroke", stroke: "var(--canvas-white)", strokeWidth: 3 }}>{o.tag}</text>}
+        <PlanLabel>
+          <text x={cx - Math.sin(ang) * 14} y={cy + Math.cos(ang) * 14} textAnchor="middle"
+            fill={NORDIC_ACCENT} fontSize={9} fontWeight={700}
+            style={PLAN_TEXT_HALO}>{o.tag}</text>
+        </PlanLabel>}
       </>}
       {selected && <circle cx={cx} cy={cy} r={5} fill={NORDIC_ACCENT} />}
       {preview && <circle cx={cx} cy={cy} r={Math.max(6, scale * .08)} fill="none"
@@ -270,7 +273,9 @@ export const StairShape = memo(function StairShape({ stair, project, selected, h
     <line x1={arrowStartX} y1={arrowStartY} x2={arrowEndX} y2={arrowEndY} stroke={stroke}
       strokeWidth={1.5} markerEnd="url(#stair-arrow)" />
     {(labelMode === "all" || selected || (labelMode === "hover" && hovered)) &&
-    <text x={labelX} y={labelY - 5} textAnchor="middle" fontSize={10} fill={stroke}
-      style={{ paintOrder: "stroke" }} stroke="var(--canvas-white)" strokeWidth={3}>UP {stair.riser_count} R</text>}
+    <PlanLabel>
+      <text x={labelX} y={labelY - 5} textAnchor="middle" fontSize={10} fill={stroke}
+        style={PLAN_TEXT_HALO}>UP {stair.riser_count} R</text>
+    </PlanLabel>}
   </g>;
 });

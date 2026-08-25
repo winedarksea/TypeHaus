@@ -59,6 +59,9 @@ _COVERING_PREDEFINED_TYPE = {
     "sheathing": "CLADDING", "furring": "CLADDING", "airgap": "CLADDING",
     "membrane": "MEMBRANE", "insulation": "INSULATION",
     "ridge_cap": "MOLDING", "corner_trim": "MOLDING",
+    # The Larsen/Swinburne plywood corner box closes a cladding void, not a load path —
+    # a covering, like the sheathing and cladding it sits beside, rather than an IfcMember.
+    "truss_corner_cap": "CLADDING",
 }
 # The gutter is a drainage accessory rather than a member or a finish covering. The vented
 # ridge cap is *not* here: it is formed trim over the roofing and files as an IfcCovering

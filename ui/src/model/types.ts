@@ -711,11 +711,22 @@ export interface HvacDuctRow {
   storey: string;
   system: string;
   routing: string;
+  /** Developed length — plan run plus every rise. A riser used to bill as the zero length
+   *  a plan polyline projects to, because `DuctRun` had nowhere to put an elevation. */
   length_ft: number;
   width_in: number;
   depth_in: number;
+  /** Round section, when the run has one. `width_in`/`depth_in` are then both the diameter,
+   *  so anything measuring the duct against a cavity keeps working; this is what tells a
+   *  reader (and an order) that it is 6" semi-rigid and not a 6x6 rectangle. */
+  diameter_in: number | null;
   design_cfm: number | null;
   floor_ref: string | null;
+  /** The modeled `Soffit` the run is concealed in — the SOFFIT-routing counterpart of
+   *  `floor_ref`, graded by `mep.duct_soffit_occupancy`. */
+  soffit_ref: string | null;
+  material: string | null;
+  insulation: string | null;
 }
 
 export interface HvacRegisterRow {

@@ -1051,7 +1051,25 @@
 # sheet-metal work. If the plenum heater is deliberate this stands; if it is a modelling
 # default it is roughly $1,000 of overspend.
 "EQ-T-DUCT-HEATER-2KW" = { material = { low = 600, high = 1300 }, labour = { low = 250, high = 600 } }  # 1 ea
-"EQ-T-ERV" = { material = { low = 900, high = 2200 }, labour = { low = 950, high = 2100 } }  # 1 ea
+# The ventilator, 2026-08-25. EQ-T-ERV was a placeholder row for a placeholder machine; the
+# unit is a Broan B210E75RT now and the row is a named product's street price rather than a
+# class bracket. Labour is unchanged in shape — hanging the case, four 6" collars, the
+# balancing pass — but the case now HANGS (see plan/electrical.py), which is the cheaper end
+# of that range rather than the dearer.
+"EQ-T-BROAN-B210E75RT" = { material = { low = 1400, high = 2400 }, labour = { low = 950, high = 2100 } }  # 1 ea
+# The three radial sub-manifolds. A 160 mm-collared plenum with six or ten 75 mm outlets and
+# a balancing damper at each, plus the ONE 6" -> 160 mm adapter every manifold needs because
+# the Broan's ports are 6" and the manifold stock is metric. The adapter is a real part and a
+# real fitting-up, so it rides in these rows rather than being shrugged into the duct $/LF.
+"EQ-T-ERV-MANIFOLD-6" = { material = { low = 180, high = 420 }, labour = { low = 120, high = 300 } }  # 4 ea
+"EQ-T-ERV-MANIFOLD-10" = { material = { low = 260, high = 600 }, labour = { low = 150, high = 380 } }  # 1 ea
+# Fabricated plenum box with a 6" collar and a gravity backdraft damper. Sheet-metal shop
+# work, not a catalogue item: the material range is the metal and the damper, the labour is
+# the fabrication plus fitting it into a 30 3/4" soffit with an air handler already in it.
+"EQ-T-ERV-MIXING-BOX" = { material = { low = 120, high = 300 }, labour = { low = 180, high = 420 } }  # 1 ea
+# The two gable hoods. Cheap castings; the labour is the flashing and the air-sealing of a
+# 6" penetration through a truss wall with 4" of closed-cell foam in it, which is most of it.
+"EQ-T-ERV-HOOD-6" = { material = { low = 35, high = 95 }, labour = { low = 140, high = 320 } }  # 2 ea
 "EQ-T-ESS-BATT" = { material = { low = 3000, high = 4400 }, labour = { low = 800, high = 1800 } }  # 1 ea
 "EQ-T-FIREPLACE-EL" = { material = { low = 300, high = 900 }, labour = { low = 100, high = 300 } }  # 1 ea
 "EQ-T-GARAGE-HEATER" = { material = { low = 80, high = 250 }, labour = { low = 120, high = 300 } }  # 1 ea
@@ -1165,7 +1183,11 @@
 # and overflow. It is strictly above FX-TUB-60 on both halves, which is the point of the
 # 2026-08-21 pass.
 "FX-TUBSHOWER-60" = { material = { low = 500, high = 2000 }, labour = { low = 400, high = 950 } }  # 2 ea
-"REG-T-ERV-EXH" = { material = { low = 25, high = 80 }, labour = { low = 18, high = 45 } }  # 15 ea
+"REG-T-ERV-EXH" = { material = { low = 25, high = 80 }, labour = { low = 18, high = 45 } }  # 13 ea
+# The workshop's over-bench capture hood (2026-08-25), which used to be a REG-T-ERV-EXH
+# ceiling diffuser. A 30" x 12" fabricated capture face on a drop, not a stamped grille: the
+# material is shop sheet metal and the labour is hanging it plumb 24" over a bench top.
+"REG-T-ERV-BENCH-HOOD" = { material = { low = 140, high = 340 }, labour = { low = 90, high = 220 } }  # 1 ea
 "REG-T-ERV-SAUNA-EXH" = { material = { low = 15, high = 60 }, labour = { low = 18, high = 45 } }  # 1 ea
 # 2026-08-18, RM-S-PLANT. Both carry a MOTORISED damper rather than a manual face damper,
 # which is most of the price: a 6" motorised zone damper with an actuator is $90-220, and
@@ -1954,9 +1976,43 @@
 # homeguide.com 2026 cost to replace ductwork, angi.com ductwork installation, angi.com flex
 # vs rigid duct comparison.
 # $/LF, by system
-"exhaust" = { material = { low = 3, high = 8 }, labour = { low = 5, high = 12 } }  # 20.7 LF
-"return" = { material = { low = 6, high = 13 }, labour = { low = 8.5, high = 19 } }  # 92.5 LF
-"supply" = { material = { low = 6, high = 13 }, labour = { low = 8.5, high = 19 } }  # 123.7 LF
+#
+# ** THESE RATES ARE NOW A BLEND, AND THAT IS THE ONE THING WRONG WITH THIS SECTION. **
+# The 2026-08-25 ERV pass replaced nine rectangular sheet-metal trunks with 75 mm semi-rigid
+# radials, which are a different product at a different price: semi-rigid runs about
+# $2.50-5.00/LF in material and installs far faster than sheet metal (that is the whole
+# labour argument for a radial system). The BOM keys `[ducts]` on `system` alone, so a
+# supply row is one rate over 6" insulated riser, 3" semi-rigid radial and 14x8 galvanized
+# trunk together. The takeoff DOES report `material` and `diameter_in` per row, so this
+# section wants the qualified-key treatment `[drainage]` and `[wall_structure]` already have
+# (cli/prices.QUALIFIED_KEY_FIELD) — recorded in plans/TODO.md rather than half-done here.
+# Until then the rates below are weighted for today's mix and will drift if it changes.
+"exhaust" = { material = { low = 3, high = 8 }, labour = { low = 5, high = 12 } }  # 246.4 LF
+"outdoor_air" = { material = { low = 6, high = 13 }, labour = { low = 8.5, high = 19 } }  # 37.6 LF
+"return" = { material = { low = 5, high = 11 }, labour = { low = 7, high = 16 } }  # 198.6 LF
+"supply" = { material = { low = 5, high = 11 }, labour = { low = 7, high = 16 } }  # 300.6 LF
+
+[duct_fittings]
+# NEW 2026-08-25, and it could not have existed a day earlier: a duct elbow is counted off
+# the run's own 3D polyline (takeoff/mep.py::duct_fitting_takeoff), and until `DuctRun`
+# carried elevations there were no risers to turn at and every one of these was invisible.
+# Material only, exactly as [pipe_fittings] is and for the same reason — the labour of making
+# a bend up is inside the run's installed $/LF above.
+# $ each, keyed as ordered
+"elbow-90-3in" = { low = 3, high = 8 }             # 42 ea — 75 mm semi-rigid bend
+"elbow-90-6in" = { low = 9, high = 22 }            # 9 ea — 6" insulated riser elbow
+"elbow-90-8in" = { low = 12, high = 28 }           # 1 ea — DU-A-HP-STUDY's drawn rise
+
+[duct_insulation]
+# NEW 2026-08-25, the air-side mirror of [pipe_insulation]. Billed off the host run's
+# DEVELOPED length, so a riser's wrap is measured over the rise and not over the zero length
+# a plan polyline projects to. The vapour-sealed spec is dearer per foot than the plain wrap
+# because the mastic and the taped seams are the point: an uninsulated outdoor-air duct
+# through conditioned space sweats all winter, and an insulated-but-unsealed one sweats
+# inside the insulation, which is worse because nobody sees it.
+# $/LF, by spec
+"R-8 wrap" = { material = { low = 2.2, high = 4.5 }, labour = { low = 2, high = 5 } }  # 43.9 LF
+"R-8 wrap, vapour-sealed" = { material = { low = 3.2, high = 6.5 }, labour = { low = 3.5, high = 8 } }  # 86.8 LF
 
 [sleeves]
 # RESEARCHED 2026-08-08 — [low, high] $ each, by sleeve diameter. Derived, not quoted: each
@@ -2738,6 +2794,8 @@ footing_bedding      = "material"
 pipe_runs            = "material"
 pipe_fittings        = "material"
 ducts                = "material"
+duct_fittings        = "material"
+duct_insulation      = "material"
 sleeves              = "material"
 conduit              = "material"
 plumbing_specialties = "material"
@@ -2758,6 +2816,7 @@ allowances           = "installed"
 # reader is entitled to know which rows those are.
 
 [basis_notes]
+duct_fittings   = "material only, and derived rather than quoted, exactly as [pipe_fittings] is: an elbow is counted off the run's own 3D polyline, so the count is geometry and the rate is a catalogue price. No tees — there is no parent inference for an air-side system the way drain_tie_ins gives one for drainage, and a radial install barely has any"
 pipe_fittings   = "material only, and derived rather than quoted — see the table's own note. Its arrival RE-BASED [pipe_runs] drain/vent to bare pipe; restoring the old fitting adder there would double-bill every elbow in the house"
 concrete        = "$/cy PLACED and MERGED — ready-mix plus placement, rebar and forming; never divided into a guessed split. Raised across the board 2026-08-20; slab-on-grade was ~2.5x low and drain_tile ~5x"
 timber          = "$/cy, but built from $/LF and shown divided in every row's comment — the join measures volume and lumber is bought by the foot. Material and labour are split because a stick of LVL is a purchase and hanging it is a wage, unlike the merged pours in [concrete]"
@@ -2765,7 +2824,7 @@ wall_structure  = "$/cy PLACED and MERGED, same reason as [concrete]. Derived fr
 footing_bedding = "$/cy delivered — material only. Spreading and compacting is in the excavator's number, which is not in this file. Confirmed 2026-08-20 against MnDOT 2025 average bid prices"
 openings        = "material and labour are now SEPARATE quantities. The old single 55-65% back-out factor is gone: the real material share runs 70-85% for windows, 60-70% for exterior doors, 40-55% for interior doors and 10-25% for a cased opening"
 hardware        = "material only, and deliberately so — the labour to drive a screw or set a hanger is inside the [framing] labour rate. HUCQ410-SDS is the exception and says why"
-ducts           = "material plus sheet-metal labour; the material third was the whole of this section until 2026-08-20"
+ducts           = "material plus installed labour, and BLENDED ACROSS PRODUCTS since the 2026-08-25 radial pass — this is the section's known weakness. One `supply` rate now covers 6-inch insulated riser, 3-inch semi-rigid radial and 14x8 galvanized trunk, because the BOM keys [ducts] on `system` alone. The takeoff already reports `material` and `diameter_in` per row, so the qualified-key treatment [drainage] and [wall_structure] use would fix it; until then these rates are weighted for today's mix"
 edge_trim       = "material plus installed labour. Two rows, drip_flashing and ridge_cap, are commonly inside a roofer's price — check for a double count against any roofing bid"
 railings        = "material plus installed labour. RAILING-INT-STAIR-GUARD is priced as a COMPONENT system; a shop-welded guard moves cost from labour into material and the two models must not be stacked"
 drainage        = "material plus installed labour, BLENDED over two products that differ 3x (seamless K-style vs fabricated box gutter). Seamless is roll-formed on site, so its own split is inseparable and every quote will come back merged"

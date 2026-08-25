@@ -266,6 +266,33 @@ LAUNDRY_MAIN = [
 # rather than mid-floor because an exposed drop in a tiled wet room isn't buildable. Air gap
 # is 9" above finish floor, falling 0.3"/ft (above IRC P3005.3's 1/4"/ft `mep.drain_slope`
 # minimum) across all three legs.
+# --- the ERV's condensate (2026-08-25) -------------------------------------------------
+#
+# A cold-climate ERV core makes water — on the order of a gallon or two a day at this flow
+# against -15 F outdoor air — and EQ-B-ERV had no drain at all. `pan_drain_ref` on the unit
+# names this run.
+#
+# **It shares FX-B-SAUNA-FD rather than tying into PR-B-COND, and the arithmetic is why.**
+# PR-B-COND's horizontal leg is at 85" and change where it passes x=13'-6", because it is
+# carrying the main storey's heads down from 7'-5 3/8". The basement's clear height is
+# 8'-0 15/16" and the Broan's case is 21.6" tall, so the highest its spigot can possibly sit
+# is about 75" — ten inches BELOW the tie-in. There is no gravity connection to be made, and
+# the alternative the plan floated (the mechanical-room sink) still has no drain of its own,
+# which is the same plans/TODO.md open item it predicted this would land on.
+#
+# So it runs its own line to the same receptor, dropping in the same boxed chase against
+# W-B-SA-N 6" north of PR-B-COND's drop: two air gaps over one trapped floor drain that sees
+# water in normal use, which is the whole reason that receptor was chosen in the first place.
+# 0.3"/ft across both horizontal legs, the same grade as its neighbour and above IRC
+# P3005.3's 1/4"/ft minimum.
+ERV_CONDENSATE = [
+    PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN,
+            path=(pt(ft(3, 11), ft(30, 9)), pt(ft(3, 11), ft(13, 3)),
+                  pt(ft(13, 6), ft(13, 3)), pt(ft(13, 6), ft(13, 3))),
+            diameter=inch(0.75), material="pvc",
+            elevations=(inch(72), inch(66.75), inch(63.88), inch(9))),
+]
+
 CONDENSATE = [
     PipeRun(uid="CBPC01AAAA", tag="PR-B-COND", system=PipeSystem.DRAIN,
             path=(pt(ft(27), ft(9)), pt(ft(18), ft(9)), pt(ft(13, 6), ft(9)),

@@ -18,6 +18,7 @@ from typehaus.resolve.framing.backing import append_blocking_rows, append_tee_ba
 from typehaus.resolve.framing.corners import (
     CORNER_ROLE_BUTTING,
     CORNER_ROLE_OWNER,
+    corner_junctions,
     corner_stud_stations,
     invert_corner_role,
     neighbour_band_insets,
@@ -464,24 +465,42 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             pocket_sign=op.pocket_sign,
         ))
     keepouts = pocket_keepouts(plan, model)
-    corner_endpoints: dict[str, set[str]] = {}
-    butting_endpoints: dict[str, set[str]] = {}
-    # (wall tag, endpoint) -> the tag of the other wall in that L corner, so the framing
-    # rule can read the neighbour's own band instead of inferring it from the mitre.
-    corner_neighbours: dict[tuple[str, str], str] = {}
+    authored_walls = {element.tag: element for element in plan.all_elements()
+                      if isinstance(element, Wall)}
+    # Pure topology (owner/butting/neighbour), shared with ``truss_wall.frame_truss_walls``'s
+    # plywood corner box — this pass layers the STUD-specific reading (authored style
+    # resolution, conflict/orphan findings) on top of it.
+    corners = corner_junctions(model)
+    corner_endpoints: dict[str, set[str]] = {tag: set(ends)
+                                             for tag, ends in corners.owner.items()}
+    butting_endpoints: dict[str, set[str]] = {tag: set(ends)
+                                              for tag, ends in corners.butting.items()}
+    corner_neighbours: dict[tuple[str, str], tuple[str, str]] = dict(corners.neighbours)
+    # A corner belongs to two walls, so its style is resolved from both: the owner's own
+    # authored end-style if set, else the butting wall's authored style for that same
+    # junction, else (left unset here) ``FramingSpec.corner_style`` at ``frame_wall``. Only
+    # the OWNER's endpoint is ever looked up below — ``frame_wall`` only reads a corner
+    # style at the end it owns — so this dict is keyed on the owner's (wall, endpoint) alone.
+    corner_style_overrides: dict[tuple[str, str], str] = {}
     tee_points: dict[str, list[tuple[tuple[float, float], str]]] = {}
     findings: list[Finding] = []
     for junction in model.junctions:
         if junction.kind == "l" and junction.framing_owner:
-            # Both walls at the corner are recorded: the owner runs its framing through the
-            # shared corner square, and the other has to know to stop at the owner's near
-            # face instead of pinwheeling its end stud through the owner's.
-            for item in junction.incidents:
-                owned = item.wall_tag == junction.framing_owner
-                target = corner_endpoints if owned else butting_endpoints
-                target.setdefault(item.wall_tag, set()).add(item.endpoint)
-                other = next(o for o in junction.incidents if o is not item)
-                corner_neighbours[(item.wall_tag, item.endpoint)] = other.wall_tag
+            owner_item = next(item for item in junction.incidents
+                              if item.wall_tag == junction.framing_owner)
+            other_item = next(item for item in junction.incidents if item is not owner_item)
+            owner_authored = getattr(authored_walls.get(owner_item.wall_tag),
+                                     f"corner_style_{owner_item.endpoint}", None)
+            other_authored = getattr(authored_walls.get(other_item.wall_tag),
+                                     f"corner_style_{other_item.endpoint}", None)
+            resolved_override = owner_authored or other_authored
+            if resolved_override is not None:
+                corner_style_overrides[(owner_item.wall_tag, owner_item.endpoint)] = (
+                    resolved_override)
+            if owner_authored and other_authored and owner_authored != other_authored:
+                findings.append(_framing_junction_finding(
+                    junction, "authored corner_style_start/end values disagree"
+                ))
             corner_styles = {
                 layer.framing.corner_style
                 for item in junction.incidents
@@ -516,9 +535,19 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                     junction, "incompatible tee_backing_style values"
                 ))
 
+    # An authored override that cannot take effect: not owning or butting any L corner at
+    # all (a tee, an open end, a collinear run) is a silent no-op even after the fix above,
+    # since a corner style only ever governs an *L junction*.
+    for tag, wall in authored_walls.items():
+        for endpoint in ("start", "end"):
+            style = getattr(wall, f"corner_style_{endpoint}", None)
+            if style is None:
+                continue
+            if (endpoint not in corners.owner.get(tag, set())
+                    and endpoint not in corners.butting.get(tag, set())):
+                findings.append(_orphaned_corner_style_finding(tag, endpoint, style))
+
     framed: list[ResolvedWall] = []
-    authored_walls = {element.tag: element for element in plan.all_elements()
-                      if isinstance(element, Wall)}
     resolved_by_tag = {wall.tag: wall for wall in model.walls}
     continuations = continuation_roles(model, lambda tag: _structure_module_signature(
         plan, resolved_by_tag.get(tag), lines_for_wall.get(tag)))
@@ -530,7 +559,9 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
         Only for a square corner: the projection of a whole wall polygon is its band width
         only while the neighbour runs perpendicular, and a skew L keeps the mitre reading.
         """
-        neighbour = resolved_by_tag.get(corner_neighbours.get((rw.tag, endpoint), ""))
+        neighbour_tag, _neighbour_endpoint = corner_neighbours.get(
+            (rw.tag, endpoint), ("", ""))
+        neighbour = resolved_by_tag.get(neighbour_tag)
         if neighbour is None:
             return None
         n0, n1 = _framing_axis(neighbour)
@@ -555,8 +586,11 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
         )
         endpoints = corner_endpoints.get(rw.tag, set())
         butting = butting_endpoints.get(rw.tag, set())
-        # The authored per-end corner-style overrides (Wall.corner_style_start/end).
-        # ``ResolvedWall`` does not carry them, so read them off the authored element.
+        # The authored per-end corner-style overrides (Wall.corner_style_start/end),
+        # resolved from BOTH incident walls at an owned L corner (``corner_style_overrides``
+        # above); ``ResolvedWall`` does not carry them, so an end this wall does not own
+        # falls back to reading its own authored value directly (inert either way, since
+        # ``frame_wall`` only ever consults the style at an end it owns).
         authored = authored_walls.get(rw.tag)
         members = frame_wall(plan, rw, by_host.get(rw.tag, []),
                              corner_start="start" in endpoints,
@@ -564,9 +598,12 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                              butting_start="start" in butting,
                              butting_end="end" in butting,
                              tee_stations=tee_stations,
-                             corner_style_start=getattr(authored, "corner_style_start",
-                                                        None),
-                             corner_style_end=getattr(authored, "corner_style_end", None),
+                             corner_style_start=corner_style_overrides.get(
+                                 (rw.tag, "start"),
+                                 getattr(authored, "corner_style_start", None)),
+                             corner_style_end=corner_style_overrides.get(
+                                 (rw.tag, "end"),
+                                 getattr(authored, "corner_style_end", None)),
                              neighbour_insets_start=_neighbour_insets(
                                  rw, "start", framing_start, framing_direction,
                                  framing_len),
@@ -659,4 +696,24 @@ def _framing_junction_finding(junction, problem: str) -> Finding:
         element_tags=tuple(item.wall_tag for item in junction.incidents),
         fix_hint="make incident FramingSpec junction settings agree",
         result=Result.UNKNOWN,
+    )
+
+
+def _orphaned_corner_style_finding(wall_tag: str, endpoint: str, style: str) -> Finding:
+    """An authored ``corner_style_start/end`` at an end that owns or buts no L corner.
+
+    A tee, an open end or a collinear run has no shared corner square to divide, so the
+    value is a silent no-op — same shape as ``loader.uneditable_movable_element``: WARN
+    severity (``haus build``/``haus print`` still succeed) but a FAIL result, so ``haus
+    check`` catches the authoring mistake instead of the plan quietly ignoring it.
+    """
+    return Finding(
+        severity=Severity.WARN,
+        check_id="structural.corner_style_not_an_l_corner",
+        message=(f"{wall_tag}: corner_style_{endpoint}={style!r} is authored on an end "
+                 "that is not an L corner (a tee, an open end, or a collinear run), so it "
+                 "has no effect"),
+        element_tags=(wall_tag,),
+        fix_hint=f"remove corner_style_{endpoint}, or move it to an end that is a real "
+                 "L corner",
     )

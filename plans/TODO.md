@@ -144,6 +144,41 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Remaining Work
 
+### Framing follow-ups from the 2026-08-25 corner audit
+
+- **The 1/2" sheathing lap is undeclared.** `_clip_l_corner` (`resolve/topology.py:630-643`)
+  mitres **all** layers on the angular bisector through the node; there is no per-layer logic
+  and thickness is not an input, so the sheathing course mitres exactly like the studs
+  behind it. Real sheathing laps: one wall's sheet runs long and the other's stops short by
+  its thickness. Whichever wall loses the 1/2"x1/2" square starts its first sheet 1/2" late,
+  so a 4' sheet breaks at 48.5" on a stud centred at 48" — 1/4" bearing, under APA's 1/2"
+  minimum. `junction.framing_owner` **is** already available at `_clip_l_corner` time (a free
+  input, zero plumbing) but the `PlanModel` is not, so an authored lap direction would need a
+  field on `ResolvedJunction` populated in `_classify_tier`. `test_junction_solver.py:85`
+  asserts no-gap/no-overlap but does **not** pin the 50/50 split, so a lap would still pass
+  it. Sheathing takeoff area comes from the node axis (`takeoff/framing.py:265-272`), not the
+  polygon, so the lapping wall's extra 1/2" per corner is never billed today — a second,
+  pre-existing gap independent of the first. And nothing in the engine lays out sheathing
+  sheets at all, so a "sheet break lands >=1/2" onto a stud" check has no home yet.
+
+- **California corners as the next `corner_style` value.** `corner_stud_stations`
+  (`resolve/framing/corners.py:125-143`) packs supplemental studs face-to-face with
+  `orient=d` — the wall direction, same as the module studs. A California corner is one stud
+  turned **flat** instead — `orient=normal(d)` — so it stands the same way a batten laid flat
+  does, closing more of the corner cavity to a batt but landing a bay off the drywall
+  screw-line. The extension is a third `Literal` value (`FramingSpec.corner_style` and
+  `Wall.corner_style_start/end`) plus an orientation flag threaded through
+  `corner_stud_stations`, not just a count change like 3-stud -> 4-stud was.
+
+- **Plywood ordered by the sheet.** `takeoff/framing.py:117-141` bills every framing member
+  by lineal foot, so the corner box's 24 rips (`resolve/framing/truss_frame.py::corner_box`,
+  2026-08-25) are billed as nested 8-ft sticks of `"NxN corner panel"` with a board-foot
+  figure — exactly as the existing 1/2" tabs and 3/8" bucks already are. There is no
+  member-fed sheet-goods path (`sheet_goods_takeoff` at `takeoff/framing.py:253-310` reads
+  **layers** only, never `model.all_members()`). Ordering plywood by the sheet — nesting
+  panel-profile members onto 4x8 stock the way `_bucket_cut_lengths` nests lumber onto stock
+  lengths — is separate work.
+
 **Deliberately not done, and why:**
 
 - **The four exterior placeables keep their false room refs** (both wall hydrants, both
@@ -187,15 +222,55 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   grilles at 9'-0". 150 cfm is taken out of the trunk's 750 by damper, not added to it.
   The mini-HRV idea for the plant room is dropped — it was solving a distribution problem.
   `mep.ventilation_distribution` now names no unserved room and the test pins the empty set.
-  Residual: `DU-S-HP-SOUTH`'s rise out of the trunk head at x=19'-4" is undrawn, same
-  status as `DU-S-ERV-HP-FEED`'s (below) — it rides the riser `DU-A-HP-STUDY` already
-  leaves from.
-- **The ERV→System 1 fresh feed's vertical is undrawn.** `DU-S-ERV-HP-FEED` (2026-07-30)
-  taps `DU-M1-ERV-SUP` in its FS-SECOND joist bay under the hall at y=12'-8" and runs in
-  SF-S-DUCT's box to the wye behind `REG-S-HP-RET`, but the rise from the joist bay up
-  into the soffit is not modeled (`DuctRun` carries no elevation) — same status as
-  EQ-S-HP1-AH's condensate drop. Physically it wants the hall/bedroom wall corner furred
-  or the soffit's east cheek; decide when the chase details get drawn.
+  Residual: `DU-S-HP-SOUTH`'s rise is still undrawn — see the item below.
+
+### Undrawn verticals — TWO OF THREE CLOSED (2026-08-25)
+
+`DuctRun` had no elevation field at all, so every vertical leg in the house's air side was
+a plan polyline that teleported between floors, ducts emitted no 3D solids, and the take-off
+billed plan length. It carries per-vertex elevations now, the same field set `PipeRun` has
+had since MEP Phase 2 and solved by the same solver — a riser is a repeated plan point at
+two elevations, which is exactly how a drain drop has always been written.
+
+- **`DU-A-HP-STUDY`'s riser lane — DRAWN.** The branch comes up out of the FS-ATTIC joist
+  bay it shares with `DU-S-HP-SOUTH` (centreline 228 1/8" + 3") onto the attic deck and
+  turns east. 11 7/8" of rise the take-off now bills instead of projecting to zero.
+- **`DU-S-ERV-HP-FEED`'s rise — DRAWN, and the run rebuilt around it.** It no longer taps
+  `DU-M1-ERV-SUP` (that trunk is deleted with the rest of the rectangular ERV). It comes off
+  the attic sub-manifold, rides the FS-ATTIC bay at y=11'-4" east, and **drops into
+  SF-S-DUCT** onto the new `EQ-S-ERV-MIX` mixing box — a modeled box with a backdraft damper
+  on the ERV leg, which is what keeps System 1's return working when the ERV is off, and
+  which replaces a comment describing a 45-degree wye.
+- **`DU-S-HP-SOUTH`'s rise — STILL OPEN, and now for a reason rather than for want of a
+  field.** Every comment in `plan/mep_hvac.py` calls it "the riser out of the trunk head at
+  x=19'-4"", and the trunk head is at (19'-4", 9'-7") — but `SF-S-DUCT` stops at y=6'-0" and
+  the branch drops into its bay at (19'-4", 3'-4"). Nothing connects those two points without
+  either crossing five FS-ATTIC I-joists in a bay (illegal) or running along the attic floor
+  through a habitable room. Both are route decisions rather than draughting, and the
+  2026-08-25 pass was explicitly forbidden from moving a System 1 trunk. Decide the route,
+  then draw it: the field is there and waiting.
+
+### ERV residuals (2026-08-25)
+
+- **`[ducts]` is priced on a blend.** The BOM keys that section on `system` alone, so one
+  `supply` rate covers 6" insulated riser, 3" semi-rigid radial and 14x8 galvanized trunk —
+  three products at three prices. `duct_takeoff` already reports `material` and
+  `diameter_in` per row, so this wants the qualified-key treatment `[drainage]` and
+  `[wall_structure]` already have (`cli/prices.QUALIFIED_KEY_FIELD`).
+- **The ERV's condensate shares FX-B-SAUNA-FD rather than tying into `PR-B-COND`.** The
+  arithmetic is in `plan/mep_drainage.py`: the condensate main is at 85"-and-change where it
+  passes x=13'-6", and the highest a 21.6" case can put its spigot under an 8'-0 15/16"
+  basement ceiling is about 75". There is no gravity connection to be made. The alternative
+  the plan floated — the mechanical-room sink — still has no drain, which is the open item
+  below and the one that would actually fix this.
+- **Radials cross one another in the FS-S-WEST field, ungraded.** Nothing in the engine
+  grades duct-against-duct outside a modeled `Soffit`; an 11 7/8" bay with an 8 7/8" web
+  opening has room for one 3" duct to pass under another, so it builds, but the model cannot
+  say so. `mep.duct_soffit_occupancy` is the shape the joist-bay version would take.
+- **`DU-A-ERV-R-PLANT` is the longest radial in the house** — attic manifold at the north
+  end to the plant room at the south. Its pressure drop wants checking against the machine's
+  0.2" w.g. before 75 mm is committed to; there is no airflow solver here and there will not
+  be one.
 
 ## Phase 2 — Complete Catlin junctions (deferred by decision 2026-08-02 — construction-rule authoring)
 

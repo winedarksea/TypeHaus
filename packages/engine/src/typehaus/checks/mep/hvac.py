@@ -148,6 +148,61 @@ def ventilation_distribution(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+@check(Tier.STRUCTURAL, "mep.duct_soffit_occupancy")
+def duct_soffit_occupancy(ctx: CheckContext) -> list[Finding]:
+    """Everything inside a modeled ``Soffit`` fits its **derived** clear section.
+
+    The other half of ``mep.duct_joist_bay``. ``JOIST_BAY`` routing has had a validator
+    since MEP Phase 3; ``SOFFIT``/``CHASE`` had none — they were the flag that turned the
+    joist check *off*. So every clearance claim about a duct box in this house lived in a
+    plan comment as hand arithmetic: "the plan's 2'-8" box loses 4 1/4" total to
+    framing/lining, leaving only 27 3/4" clear", "the air handler's 21"x43" case fills the
+    box y 6'-0"..9'-7", leaving ~5" either side of it". Right, both of them, and neither
+    re-runnable when the ``FramingSpec`` changes.
+
+    The clear section is never authored — it comes off the soffit's own drop, its framing
+    member and the gypsum lining, from the same arithmetic ``framing/soffit.py`` builds the
+    ladders with (→ ``soffit_clear_section``). An authored ``clear_width`` would be a second
+    source of truth for a number the framing already states, and would drift the first time
+    a 2x2 became a 2x3.
+
+    A soffit with no ``FramingSpec`` reports UNKNOWN rather than being graded against its
+    finished dimension: an unframed box has no clear width, and crediting 4 1/4" of gypsum
+    and lumber as if it were air is exactly the mistake the check exists to catch.
+    """
+    from typehaus.resolve.mep_soffit import soffit_occupancy
+
+    cid = "mep.duct_soffit_occupancy"
+    out: list[Finding] = []
+    claimed = {duct.soffit_ref for duct in ctx.model.ducts if duct.soffit_ref}
+    claimed |= {ref for ref in (getattr(el, "soffit_ref", None)
+                                for el in ctx.plan.all_elements()) if ref}
+    known = {soffit.tag for soffit in ctx.model.soffits}
+    for missing in sorted(claimed - known):
+        out.append(_fail(cid, f"soffit_ref={missing!r} names no modeled Soffit", (missing,)))
+    for soffit in ctx.model.soffits:
+        if soffit.tag not in claimed:
+            continue  # a soffit nobody is hiding anything in has nothing to grade
+        conflicts, section = soffit_occupancy(ctx.model, soffit)
+        if section is None:
+            out.append(_unknown(
+                cid, f"soffit {soffit.tag} states no FramingSpec (or is not an "
+                     "axis-aligned rectangle), so it has no derivable clear section",
+                (soffit.tag,)))
+            continue
+        if conflicts:
+            out.append(_fail(cid, f"soffit {soffit.tag}: " + "; ".join(conflicts),
+                             (soffit.tag,)))
+            continue
+        out.append(_pass(
+            cid, f"soffit {soffit.tag} holds everything claiming it: "
+                 f"{section.width_m / M_PER_IN:.2f}\" clear x "
+                 f"{section.drop_m / M_PER_IN:.2f}\" drop", (soffit.tag,)))
+    if not out:
+        out.append(_unknown(cid, "no duct or machine names a modeled Soffit", ()))
+    return out
+
+
 @check(Tier.ADVISORY, "mep.duct_direction_hint")
 def duct_direction_hint(ctx: CheckContext) -> list[Finding]:
     out: list[Finding] = []

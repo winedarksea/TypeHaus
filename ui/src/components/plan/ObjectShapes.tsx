@@ -11,6 +11,7 @@ import type { CanvasObject, CanvasObjectType, Model, Vec2, Wall } from "../../mo
 import { nearestWallHit, openingHostWall } from "../../model/geometry";
 import { draggedCenter, exceedsDragThreshold, grabOffsetFor } from "./objectDrag";
 import { NORDIC_ACCENT } from "../../nordic/palette";
+import { PLAN_INK_TEXT_HALO, PlanLabel } from "./PlanLabelLayer";
 import { useStore } from "../../state/store";
 import type { LabelMode, Selection } from "../../state/vocabulary";
 
@@ -180,10 +181,14 @@ export const CanvasObjectFootprint = memo(function CanvasObjectFootprint({ item,
         name below the footprint instead. A selected object always names itself, whatever the
         label mode — you asked for that one. */}
     {(labelMode === "all" || selected || (labelMode === "hover" && hovered)) &&
-      <text x={x} y={strokes.length ? y + depth / 2 + 11 : y + 3} textAnchor="middle" fontSize={9}
-        fill="var(--ink)" pointerEvents="none">
-        {(type?.name ?? item.type ?? item.kind).replace(/^[A-Z]+-/, "")}
-      </text>}
+      <PlanLabel>
+        {/* Hoisted out of this <g>, so it no longer inherits the group's 0.92/0.55 opacity:
+            a drag-blocked object keeps a dimmed glyph but names itself crisply. */}
+        <text x={x} y={strokes.length ? y + depth / 2 + 11 : y + 3} textAnchor="middle" fontSize={9}
+          fill="var(--ink)" pointerEvents="none" style={PLAN_INK_TEXT_HALO}>
+          {(type?.name ?? item.type ?? item.kind).replace(/^[A-Z]+-/, "")}
+        </text>
+      </PlanLabel>}
     {/* Rotation is a writeback too, so a non-editable object shows no rotate handle. */}
     {selected && !dragBlocked && <g>
       <line x1={x} y1={y - depth / 2} x2={x} y2={y - depth / 2 - 18}

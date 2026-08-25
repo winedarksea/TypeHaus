@@ -257,6 +257,15 @@ MN_2024 = JurisdictionProfile(
                        ("IRC P2902", "IRC P2903.5", "IRC P2903.9.1")),
         PermitItemSpec("Hot-water pipe insulation", ("mep.hot_water_insulation",),
                        ("IRC N1103.4.2",)),
+        # A balanced ventilator's outdoor-side terminations (2026-08-25). A plan reviewer
+        # does look at these — an intake within ten feet of a discharge short-circuits the
+        # machine, and one within three feet of a plumbing vent draws sewer gas into every
+        # room the supply side feeds — and both are distances measured off the elevation
+        # rather than judgment. Non-blocking: the third thing the check grades, hood height
+        # above drifted snow, is a cold-climate rule of thumb with no section behind it.
+        PermitItemSpec("ERV outdoor-air intake and exhaust terminations",
+                       ("mep.erv_outdoor_terminals",),
+                       ("IRC M1602.2",), blocking=False),
     ),
     permit_exclusions=(
         ("mep.hydrant_freeze_depth",

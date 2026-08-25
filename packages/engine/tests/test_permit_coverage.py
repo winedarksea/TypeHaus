@@ -108,7 +108,16 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
 # structural panel. Gating a permit on a specification check that answers UNKNOWN for
 # materials it simply cannot classify would block houses over a missing datum rather than a
 # missing barrier. Flipping it needs the wood-structural-panel field first.
-MAX_NON_BLOCKING_ITEMS = {"mn-2024": 24}
+# 24 -> 25 on 2026-08-25 for "ERV outdoor-air intake and exhaust terminations" (M1602.2),
+# and the reason is the ESS/PV one exactly: the item is about equipment a house may simply
+# not have. Its check no-ops to UNKNOWN when no ``DuctSystem.OUTDOOR_AIR`` run is modeled,
+# and gating the permit on it would fail every house with no balanced ventilator drawn. The
+# two distances it grades ARE code — ten feet intake-to-exhaust, three feet from a plumbing
+# vent — and both report as hard FAILs in the full report; the third thing it measures, hood
+# height above drifted snow, is a documented rule of thumb with no section behind it and is
+# graded advisory for that reason. Flipping this one needs a "this house is mechanically
+# ventilated" concept the checklist does not have.
+MAX_NON_BLOCKING_ITEMS = {"mn-2024": 25}
 
 
 @pytest.mark.parametrize("profile", ALL_PROFILES, ids=lambda p: p.name)

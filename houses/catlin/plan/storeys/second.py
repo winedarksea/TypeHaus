@@ -635,10 +635,14 @@ FLOOR_HEAT = [
 # Runs y 6'-0"..34'-0", reaching south into RM-S-STUDY2 to meet EQ-S-HP1-AH's trunk collars.
 # LR-S-HALL-GAP already washes the soffit's flanks at x=18'-6"/21'-6", so no new lighting.
 #
-# WIDTH: the plan's 2'-8" box loses 4 1/4" total to framing/lining, leaving only 27 3/4"
-# clear — short of the 28" the two 14" ducts need side by side (2" gap for hangers/flanges).
-# Box widened to 35" (x 18'-6 1/2"..21'-5 1/2", still centred on the duct centrelines) for
-# 30 3/4" clear. Face elevation unchanged at 7'-10"; ED-S-HALL-CAN1/2/3 set into it.
+# WIDTH: widened from the plan's 2'-8" to 35" (x 18'-6 1/2"..21'-5 1/2", centred on the duct
+# centrelines) because the two 14" trunks need 28" side by side plus 2" for hangers and
+# flanges, and a finished box gives up its lining and both ladder rails before any of that.
+# The arithmetic used to be written out here and was nobody's to re-run; since 2026-08-25
+# `mep.duct_soffit_occupancy` derives the clear section from THIS soffit's own drop, member
+# and lining and measures both trunks, EQ-S-HP1-AH and EQ-S-HP1-STRIP against it. Read the
+# check, not a comment — and if the 2x2 ever becomes a 2x3, the check moves and this note
+# does not. Face elevation unchanged at 7'-10"; ED-S-HALL-CAN1/2/3 set into it.
 SOFFITS = [
     Soffit(uid="CSF601AAAA", tag="SF-S-DUCT",
            outline=(pt(ft(18, 6.5), ft(6)), pt(ft(21, 5.5), ft(6)),
@@ -655,8 +659,9 @@ SOFFITS = [
     # — the same shadow-gap inset SF-S-DUCT uses, needed because an outline ON the wall
     # lines puts the ladder rails inside the walls' own stud zones
     # (structural.member_interference). Runs x 12'-0" (D-S-SUITEBATH's jamb) to 18'-6 1/2"
-    # (abutting SF-S-DUCT, reading as one continuous box). 36" plan width clears a single
-    # 10" duct with room to spare.
+    # (abutting SF-S-DUCT, reading as one continuous box). 36" of plan width for a single
+    # 10" duct — `mep.duct_soffit_occupancy` prints what that leaves once the lining and the
+    # ladders are taken off, so the number is not restated here.
     Soffit(uid="CSF6S1AAAA", tag="SF-S-SUITE",
            outline=(pt(ft(12), ft(12, 8)), pt(ft(18, 6.5), ft(12, 8)),
                     pt(ft(18, 6.5), ft(15, 8)), pt(ft(12), ft(15, 8))),

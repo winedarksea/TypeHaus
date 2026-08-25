@@ -186,13 +186,20 @@ def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
     assert not unresolved
     assert load == 42.0
     # Every drain run discharges somewhere except the building drain itself and the runs
-    # that terminate at an air gap — the dryer condensate, and the water heater's TPR
+    # that terminate at an air gap — the two condensate lines, and the water heater's TPR
     # relief discharge, which P2804.6.1 requires to end 6"-24" over the floor and forbids
     # to be piped into a drain at all. A new run silently missing its tie-in would show up
     # here as an extra terminal, understating every load downstream of it.
+    #
+    # PR-B-ERV-COND joined the list on 2026-08-25 and is an air gap for the same reason
+    # PR-B-COND beside it is: the ERV's core makes water, the condensate main it would
+    # otherwise tie into runs 10" above the highest a hung 21.6" case can put its spigot
+    # under an 8'-0 15/16" basement ceiling, and there is no gravity connection to be made
+    # (plan/mep_drainage.py). Both air-gap over FX-B-SAUNA-FD.
     ties = drain_tie_ins(drains)
     terminals = {r.tag for r in drains} - set(ties)
-    assert terminals == {"PR-B-MAIN-DRAIN", "PR-M-DRYER-COND", "PR-B-WH-TPR"}
+    assert terminals == {"PR-B-MAIN-DRAIN", "PR-M-DRYER-COND", "PR-B-WH-TPR",
+                         "PR-B-ERV-COND"}
 
 
 def test_rollup_is_a_union_never_a_sum_and_unknown_never_partial():

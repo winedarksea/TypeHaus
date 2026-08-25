@@ -66,6 +66,12 @@ class FramingSpec(HausModel):
     # existing FURRING spec framing exactly as it did.
     laid: Literal["flat", "edge"] = "flat"
     corner_style: Literal["3-stud", "4-stud"] = "3-stud"
+    # FURRING only — the Larsen/Swinburne plywood corner box (FHB Jan 2024) that closes an
+    # owned L corner's two outboard faces outboard of the sheathing, where the band's own
+    # mitre otherwise leaves a full-height void with no framed member in it. "none" (the
+    # default) keeps every furred wall, including every rainscreen batten, exactly as it
+    # framed before this field existed; only a truss wall opts in.
+    corner_cap: Literal["none", "plywood-box"] = "none"
     tee_backing_style: Literal["ladder", "stud-pack", "none"] = "ladder"
     # None uses the framing solver's named domain default.
     tee_blocking_spacing: Length | None = None

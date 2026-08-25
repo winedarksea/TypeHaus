@@ -269,6 +269,50 @@ def test_the_buck_lines_the_rough_opening_out_to_the_truss_plane(catlin_model):
         assert all(m.profile == "5x0.375 panel" for m in bucks), wall.tag
 
 
+def test_every_owned_truss_wall_l_corner_carries_a_clear_plywood_corner_cap(catlin_model):
+    """The Larsen/Swinburne corner box: two 1/2" rips per owned L corner between two truss
+    walls, standing clear of the end outriggers on both sides of it.
+
+    The box exists to close the void OUTSIDE the band the mitre leaves the end outriggers
+    in (``TrussFrame.corner_box`` deliberately sits outside ``[first, last]``) — the whole
+    point is a piece that reaches somewhere nothing else does, never one that overlaps the
+    wood already there.
+    """
+    from shapely.geometry import Polygon
+
+    from typehaus.resolve.framing.footprint import member_footprint
+
+    truss_tags = {wall.tag for wall in _truss_walls(catlin_model)}
+    corners = [j for j in catlin_model.junctions
+              if j.kind == "l" and j.framing_owner
+              and all(item.wall_tag in truss_tags for item in j.incidents)]
+    assert corners, "catlin's exterior L corners are all truss-wall corners"
+    by_tag = {w.tag: w for w in catlin_model.walls}
+    by_uid = {w.uid: w for w in catlin_model.walls}
+    checked = 0
+    for junction in corners:
+        owner = by_tag[junction.framing_owner]
+        caps = _by_category(owner, "truss_corner_cap")
+        assert len(caps) == 2, f"{owner.tag}: expected 2 corner-cap rips, found {len(caps)}"
+        for cap in caps:
+            cap_ring, cap_lo, cap_hi = member_footprint(cap)
+            cap_poly = Polygon(cap_ring)
+            host = by_uid.get(cap.parent_uid)
+            assert host is not None, f"{cap.child_key}: no wall owns parent_uid {cap.parent_uid}"
+            outriggers = [m for m in host.members
+                         if m.category == "strapping" and m.material == "kdat"]
+            for outrigger in outriggers:
+                if outrigger.z1_m <= cap_lo or outrigger.z0_m >= cap_hi:
+                    continue
+                other_ring, _, _ = member_footprint(outrigger)
+                overlap = cap_poly.intersection(Polygon(other_ring)).area
+                assert overlap < 1e-6, (
+                    f"{cap.child_key} on {host.tag} overlaps outrigger "
+                    f"{outrigger.child_key} by {overlap:.6f} m^2")
+            checked += 1
+    assert checked == 2 * len(corners)
+
+
 def test_the_frame_reads_the_band_the_same_way_the_check_does(catlin_model):
     """One datum. The check re-derives stations off the band centreline; so does the frame."""
     wall = next(w for w in _truss_walls(catlin_model) if len(w.members) > 40)

@@ -18,6 +18,7 @@ import {
   formatFtIn, snapWorld, type Node as GeoNode,
 } from "../../model/geometry";
 import { NORDIC_ACCENT, NORDIC_INK, NORDIC_LINE } from "../../nordic/palette";
+import { PLAN_TEXT_HALO, PlanLabel } from "./PlanLabelLayer";
 import { collinearAt } from "./PlanChrome";
 import type { LabelMode } from "../../state/vocabulary";
 import type { RubberBand, WallDraft } from "./canvasTypes";
@@ -61,9 +62,8 @@ export const RoomLayer = memo(function RoomLayer({ rooms, previewGeom, tool, lab
                 clearFace.reduce((sum, point) => sum + point[1], 0) / clearFace.length,
               ];
               const [x, y] = project(centroid);
-              return <text x={x} y={y - (lines - 1) * 7} textAnchor="middle" pointerEvents="none"
-                fill="var(--canvas-ink)" fontSize={12} fontWeight={700}
-                style={{ paintOrder: "stroke", stroke: "var(--canvas-white)", strokeWidth: 3 }}>
+              return <PlanLabel><text x={x} y={y - (lines - 1) * 7} textAnchor="middle" pointerEvents="none"
+                fill="var(--canvas-ink)" fontSize={12} fontWeight={700} style={PLAN_TEXT_HALO}>
                 <tspan x={x}>{lines >= 2 ? label.name : label.id}</tspan>
                 {lines >= 2 && (
                   <tspan x={x} dy={14} fontSize={10} fontWeight={600} className="space-label-id">
@@ -73,7 +73,7 @@ export const RoomLayer = memo(function RoomLayer({ rooms, previewGeom, tool, lab
                 {lines >= 3 && (
                   <tspan x={x} dy={13} fontSize={10} fontWeight={500}>{label.area}</tspan>
                 )}
-              </text>;
+              </text></PlanLabel>;
             })()}
           </g>
         );
@@ -132,6 +132,25 @@ export const RailingOutlines = memo(function RailingOutlines({ railings, project
         return <polygon key={railing.uid} points={points} fill="var(--material-metal)"
           fillOpacity={0.35} stroke="var(--material-metal)" strokeWidth={1.25} />;
       })}
+    </g>
+  );
+});
+
+// Sump pits on the active storey. A sump resolves to its own standalone solid rather than a
+// void carved into a slab (resolve/accessories.py::_resolve_sump) — the "dashed inner ring"
+// this comment block on SlabOutlines advertises never actually fires for one — so it gets its
+// own small dashed-square glyph in the same visual language instead. Color matches the
+// generated `vocabulary.json` solidColors.sump entry, so the plan and the 3D basin agree.
+export const SumpOutlines = memo(function SumpOutlines({ sumps, project }: {
+  sumps: Solid[];
+  project: (p: Vec2) => Vec2;
+}) {
+  return (
+    <g pointerEvents="none">
+      {sumps.map((sump) => (
+        <polygon key={sump.uid} points={sump.outline.map(project).map((p) => p.join(",")).join(" ")}
+          fill="#4c5257" fillOpacity={0.3} stroke="#4c5257" strokeWidth={1.25} strokeDasharray="4 3" />
+      ))}
     </g>
   );
 });

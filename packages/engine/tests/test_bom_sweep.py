@@ -583,7 +583,7 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         "bug_screens", "openings", "floor_finishes", "stair_finish", "railings",
         # Mechanical & plumbing
         "pipe_runs", "pipe_fittings", "plumbing_specialties", "install_parts", "pipe_insulation",
-        "ducts", "sleeves", "floor_heat", "drainage",
+        "ducts", "duct_fittings", "duct_insulation", "sleeves", "floor_heat", "drainage",
         # Electrical
         "electrical_devices", "panel_schedule", "service_load", "conduit", "conductors",
         "solar", "backup_power",

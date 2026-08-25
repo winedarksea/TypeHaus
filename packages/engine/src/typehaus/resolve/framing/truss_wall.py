@@ -47,6 +47,7 @@ from dataclasses import replace
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import PlanModel
+from typehaus.resolve.framing.corners import CornerJunctions, corner_junctions
 from typehaus.resolve.framing.furring import EDGE, VERTICAL
 from typehaus.resolve.framing.truss_frame import (  # noqa: F401 - the package's public names
     BLOCK_CATEGORY,
@@ -54,6 +55,8 @@ from typehaus.resolve.framing.truss_frame import (  # noqa: F401 - the package's
     BLOCK_SPACING,
     BUCK_CATEGORY,
     BUCK_THICKNESS_IN,
+    CORNER_CAP_CATEGORY,
+    CORNER_CAP_THICKNESS_IN,
     DOUBLE_HEADER_SPAN,
     FILLER_CATEGORY,
     FILLER_LIMIT,
@@ -82,6 +85,8 @@ __all__ = [
     "BLOCK_SPACING",
     "BUCK_CATEGORY",
     "BUCK_THICKNESS_IN",
+    "CORNER_CAP_CATEGORY",
+    "CORNER_CAP_THICKNESS_IN",
     "DOUBLE_HEADER_SPAN",
     "FILLER_CATEGORY",
     "FILLER_LIMIT",
@@ -126,11 +131,13 @@ def frame_truss_walls(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     by_host: dict[str, list[ResolvedOpening]] = {}
     for opening in model.openings:
         by_host.setdefault(opening.host_wall, []).append(opening)
+    corner_caps = _frame_corner_caps(plan, model, corner_junctions(model))
 
     findings: list[Finding] = []
     framed: list[ResolvedWall] = []
     for wall in model.walls:
         members, loose, dropped = frame_wall_truss(plan, wall, by_host.get(wall.tag, []))
+        members = members + tuple(corner_caps.get(wall.tag, ()))
         kept = (tuple(member for member in wall.members
                       if member.child_key not in dropped) if dropped else wall.members)
         framed.append(replace(wall, members=kept + members)
@@ -166,6 +173,70 @@ def truss_layer_name(plan: PlanModel, assembly_tag: str | None) -> str | None:
                 and (spec.direction or VERTICAL).strip().lower() == VERTICAL):
             return layer.name
     return None
+
+
+def _outrigger_band(wall: ResolvedWall, layer_name: str):
+    return next((layer for layer in wall.layers
+                if layer.name == layer_name and layer.polygon), None)
+
+
+def _corner_cap_frame(plan: PlanModel, wall: ResolvedWall) -> TrussFrame | None:
+    """This wall's ``TrussFrame``, only if its outrigger band opted into the corner box."""
+    layer_name = truss_layer_name(plan, wall.assembly)
+    if layer_name is None:
+        return None
+    assembly = plan.library.resolve_assembly(wall.assembly)
+    spec = next((ly.framing for ly in (assembly.layers if assembly else ())
+                if ly.name == layer_name and ly.framing is not None), None)
+    if spec is None or spec.corner_cap != "plywood-box":
+        return None
+    band = _outrigger_band(wall, layer_name)
+    if band is None:
+        return None
+    return TrussFrame.build(plan, wall, band)
+
+
+def _frame_corner_caps(plan: PlanModel, model: ResolvedModel,
+                       corners: CornerJunctions) -> dict[str, list[FramedMember]]:
+    """The plywood corner box's two rips (one per wall), keyed by the OWNER that emits both.
+
+    ``junction.framing_owner`` (``corners.owner``, read off the same topology
+    ``solver.frame_model`` uses for the stud pack) is the deterministic tiebreak: exactly
+    one wall per corner builds both pieces, so the corner is never doubled or skipped
+    because both incident walls thought it was the other one's job. The second rip stands
+    on the NEIGHBOUR's own band, but is still returned under the owner's key — it is one
+    corner box, and the owner is who models it.
+    """
+    by_tag = {wall.tag: wall for wall in model.walls}
+    caps: dict[str, list[FramedMember]] = {}
+    for wall_tag, endpoints in corners.owner.items():
+        wall = by_tag.get(wall_tag)
+        if wall is None:
+            continue
+        frame = _corner_cap_frame(plan, wall)
+        if frame is None:
+            continue
+        for endpoint in endpoints:
+            neighbour_tag, neighbour_endpoint = corners.neighbours.get(
+                (wall_tag, endpoint), ("", ""))
+            neighbour = by_tag.get(neighbour_tag)
+            if neighbour is None:
+                continue
+            neighbour_frame = _corner_cap_frame(plan, neighbour)
+            if neighbour_frame is None:
+                continue
+            own_band = _outrigger_band(wall, truss_layer_name(plan, wall.assembly) or "")
+            neighbour_band = _outrigger_band(
+                neighbour, truss_layer_name(plan, neighbour.assembly) or "")
+            if own_band is None or neighbour_band is None:
+                continue
+            pieces = [
+                frame.corner_box(endpoint == "start", neighbour_band.polygon),
+                neighbour_frame.corner_box(neighbour_endpoint == "start", own_band.polygon),
+            ]
+            caps.setdefault(wall_tag, []).extend(
+                member for member in pieces if member is not None)
+    return caps
 
 
 def frame_wall_truss(plan: PlanModel, wall: ResolvedWall,

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Literal
+
 from typehaus.model.base import Element
 from typehaus.model.enums import StructuralRole
 from typehaus.model.refs import Arch, FaceRef, OpeningPosition, ToRoof
@@ -43,8 +45,8 @@ class Wall(Element):
     # solver; None follows the assembly's FramingSpec.corner_style. Authored per wall end
     # because a corner belongs to two walls — the override lives on the end that hosts
     # the extra stud, so two walls never fight over one corner's style.
-    corner_style_start: str | None = None
-    corner_style_end: str | None = None
+    corner_style_start: Literal["3-stud", "4-stud"] | None = None
+    corner_style_end: Literal["3-stud", "4-stud"] | None = None
     # This wall *is* a guard at an open edge, not an enclosure — a masonry parapet standing
     # where a Railing would otherwise be. A guard is the one thing a wall can be that
     # changes which rules apply to it: R312.1.3 has nothing to measure in solid masonry

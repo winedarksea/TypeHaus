@@ -63,14 +63,19 @@ _RE_ROUND = re.compile(r"^(?P<dia>\d+(?:\.\d+)?)\s+round$")
 # "<width>x<thickness> panel" in inches: ``width`` is the face the panel presents across
 # its run, ``thickness`` its sheet thickness. Real panels come in arbitrary dimensions,
 # so they cannot be spelled as a nominal lumber size.
+# The optional ``label`` word (e.g. "corner") is a BOM-facing distinction only — two panels
+# of the same width and thickness still parse to the identical ``CrossSection`` regardless of
+# label, so ``takeoff/cost_codes.py`` can key a specific pattern off it without this module
+# caring what the label means.
 _RE_PANEL = re.compile(
-    r"^(?P<width>\d+(?:\.\d+)?)x(?P<thickness>\d+(?:\.\d+)?)\s+panel$"
+    r"^(?P<width>\d+(?:\.\d+)?)x(?P<thickness>\d+(?:\.\d+)?)\s+(?:(?P<label>[a-z]+)\s+)?panel$"
 )
 
 
-def panel_profile(width_in: float, thickness_in: float) -> str:
-    """The canonical ``"<width>x<thickness> panel"`` profile string for sheet goods."""
-    return f"{width_in:g}x{thickness_in:g} panel"
+def panel_profile(width_in: float, thickness_in: float, label: str | None = None) -> str:
+    """The canonical ``"<width>x<thickness>[ <label>] panel"`` profile string for sheet goods."""
+    prefix = f"{label} " if label else ""
+    return f"{width_in:g}x{thickness_in:g} {prefix}panel"
 
 
 @dataclass(frozen=True)

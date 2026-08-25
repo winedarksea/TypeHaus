@@ -76,6 +76,22 @@ def test_no_corner_studs_when_wall_does_not_own_a_corner():
     assert not [m for m in members if m.category == "corner"]
 
 
+def test_butting_wall_never_frames_studs_off_its_own_authored_override():
+    """``butting_start=True`` + an authored ``corner_style_start`` on THIS wall: still zero
+    corner studs on this end.
+
+    The supplemental pack lives entirely on the OWNER's side of an L corner; a wall butting
+    that corner never gets one of its own, no matter what its own authored override says.
+    ``frame_model`` (solver.py) is where that authored value travels to the neighbour that
+    DOES own the corner — this is the unit-level half of the contract, pinning that
+    ``frame_wall`` itself never honours a style at an end it does not own.
+    """
+    plan, rw = _wall_and_plan("3-stud")
+    members = frame_wall(plan, rw, openings=[], corner_start=False, butting_start=True,
+                         corner_style_start="4-stud")
+    assert not [m for m in members if m.category == "corner"]
+
+
 def test_vertical_members_carry_orient_but_plates_do_not():
     plan, rw = _wall_and_plan("3-stud")
     members = frame_wall(plan, rw, openings=[], corner_start=True)

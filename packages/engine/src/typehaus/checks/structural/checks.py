@@ -445,3 +445,70 @@ def window_framing_module(ctx: CheckContext) -> list[Finding]:
                           f"{header_free_hint}. {hint_tail}"),
             ))
     return out
+
+
+#: ``FramingPreferences.corner`` -> how many supplemental corner studs that style builds.
+_CORNER_STYLE_STUD_COUNT = {"3-stud": 1, "4-stud": 2}
+
+
+@check(Tier.STRUCTURAL, "structural.corner_style_matches_preference")
+def corner_style_matches_preference(ctx: CheckContext) -> list[Finding]:
+    """Every corner an assembly declares at the house's own style, BUILT that way.
+
+    ``preferences.toml``'s ``[framing] corner`` is the one place a house states its corner
+    style once; nothing compared it to what the solver actually built until this rule, which
+    is exactly the gap that let a house author ``corner_style_end="4-stud"`` on four exterior
+    walls and still ship zero 4-stud corners (2026-08-25) — the override never took effect,
+    and nothing said so.
+
+    Scoped to walls whose own STRUCTURE ``FramingSpec.corner_style`` already matches the
+    declared preference: a wall on a *different* assembly-declared style (the freestanding
+    garage's 3-stud walls, while the house's own exterior is 4-stud) is a deliberate,
+    per-assembly choice this rule has nothing to say about — comparing every corner in the
+    house against one house-wide number would flag that legitimate divergence as though it
+    were the same authoring bug. Comparing against ``preferences.toml`` rather than
+    re-deriving "what should be built" from the solver's own corner-style resolution is the
+    whole point: an independent, human-authored statement is the one thing immune to a bug
+    *in* that resolution, which is what let the original four overrides go unnoticed.
+    """
+    from typehaus.resolve.framing.corners import corner_junctions
+
+    rules = ctx.preferences.framing
+    expected = _CORNER_STYLE_STUD_COUNT.get(rules.corner)
+    if expected is None:
+        return [_advisory(
+            "structural.corner_style_matches_preference",
+            f"preferences.toml [framing] corner = {rules.corner!r} is not a style the "
+            "framing solver speaks (\"3-stud\" or \"4-stud\")",
+            (), Result.UNKNOWN,
+            fix_hint="set [framing] corner to \"3-stud\" or \"4-stud\"",
+        )]
+    corners = corner_junctions(ctx.model)
+    out: list[Finding] = []
+    for wall_tag, endpoints in sorted(corners.owner.items()):
+        wall = ctx.model.wall(wall_tag)
+        authored = ctx.plan.by_tag(wall_tag)
+        if wall is None or authored is None:
+            continue
+        assembly = ctx.plan.library.resolve_assembly(wall.assembly)
+        spec = next((ly.framing for ly in (assembly.layers if assembly else ())
+                    if ly.function is LayerFunction.STRUCTURE), None)
+        if spec is None or spec.corner_style != rules.corner:
+            continue
+        for endpoint in sorted(endpoints):
+            built = sum(1 for m in wall.members
+                       if m.category == "corner"
+                       and m.child_key.startswith(f"corner-{endpoint}"))
+            if built != expected:
+                out.append(_advisory(
+                    "structural.corner_style_matches_preference",
+                    f"{wall_tag} {endpoint}: built {built} supplemental corner stud(s), "
+                    f"preferences.toml declares corner = {rules.corner!r} "
+                    f"({expected} expected)",
+                    (wall_tag,), Result.FAIL,
+                    fix_hint="match the declared style to what is built: update "
+                             "preferences.toml's [framing] corner, or the assembly's "
+                             "FramingSpec.corner_style / this end's corner_style_"
+                             f"{endpoint}",
+                ))
+    return out

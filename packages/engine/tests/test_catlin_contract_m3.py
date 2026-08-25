@@ -1122,7 +1122,14 @@ def test_catlin_is_all_electric_with_no_gas_appliance(catlin_model):
     # all-electric contract forbids is a *combustion* appliance, not a duct.
     air = {product.tag for product in plan.library.equipment_types
            if "supply_air" in {port.service.value for port in product.ports}}
-    assert air == {"EQ-T-ERV", "EQ-T-GREE-SLIM24"}
+    # The ventilator became a named product on 2026-08-25 (EQ-T-BROAN-B210E75RT), and the
+    # radial pass added two more boxes its FRESH air passes through — the 6-port supply
+    # manifold and the mixing box where the ERV leg joins System 1's return. (The 10-port
+    # manifold and the gable hoods carry stale and outdoor air, so they declare RETURN_AIR
+    # and OUTDOOR_AIR instead and are not in this set.) None of the five burns anything,
+    # which is what this assertion is actually about.
+    assert air == {"EQ-T-BROAN-B210E75RT", "EQ-T-GREE-SLIM24", "EQ-T-ERV-MANIFOLD-6",
+                   "EQ-T-ERV-MIXING-BOX"}
 
 
 _PERIMETER_ASSEMBLIES = ("CATLIN_BASEMENT_12", "CATLIN_BASEMENT_8",

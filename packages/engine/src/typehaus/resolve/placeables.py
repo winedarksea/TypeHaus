@@ -75,7 +75,9 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             # elevation depends on it.
             floor = _floor_elevation(model, storey, explicit_room or resolved_room,
                                      floor_by_room)
-            mount_elevation = resolved_mount_elevation(storey, item, floor_m=floor)
+            mount_elevation = resolved_mount_elevation(
+                storey, item, floor_m=floor,
+                soffit_underside_m=_soffit_underside(model, item))
             obstruction_by_uid[item.uid] = clear_floor_space_obstruction(
                 _body_profile(product_type, item, floor, mount_elevation, local_footprint))
             if (explicit_room is not None and explicit_room != resolved_room
@@ -174,8 +176,30 @@ def _floor_elevation(model: ResolvedModel, storey: object, room_tag: str | None,
     return cache[room_tag]
 
 
+def _soffit_underside(model: ResolvedModel, item: object) -> float | None:
+    """The clear underside of the ``Soffit`` a placeable names, if it names one.
+
+    The *clear* underside — inside the lining and the ladder's bottom rail — not the
+    finished face of the box: a machine hung in a soffit sits on the framing, not on the
+    gypsum. Unnamed, or naming a soffit that does not resolve, gives None and the caller
+    falls back to the storey ceiling exactly as before; a dangling ``soffit_ref`` is
+    reported by ``mep.duct_soffit_occupancy``, not silently here.
+    """
+    from typehaus.resolve.framing.soffit import soffit_clear_section
+
+    ref = getattr(item, "soffit_ref", None)
+    if not ref:
+        return None
+    soffit = next((s for s in model.soffits if s.tag == ref), None)
+    if soffit is None:
+        return None
+    section = soffit_clear_section(soffit)
+    return soffit.z0_m if section is None else section.z[0]
+
+
 def resolved_mount_elevation(storey: object, item: object,
-                             floor_m: float | None = None) -> float:
+                             floor_m: float | None = None,
+                             soffit_underside_m: float | None = None) -> float:
     """The one project-frame Z for a placeable — glTF, the UI, and IFC all read this.
 
     ``Mount`` is the single authoritative height contract: an explicit ``elevation`` is a
@@ -190,6 +214,16 @@ def resolved_mount_elevation(storey: object, item: object,
     up in the air on the ICF stem top the storey datum sits at. Callers holding an element
     that is not in a room — a PipeRun, an unplaced device — keep the storey default, which
     is what their authored elevations have always meant.
+
+    ``soffit_underside_m`` is the *other* plane a ceiling mount can hang from, and it exists
+    because the fallback above was wrong for everything installed in a dropped box: an air
+    handler concealed inside a 14" duct soffit was resolving at the 9'-0" storey ceiling,
+    fourteen inches above the box every comment in the plan says it lives in — and the strip
+    heater in the same soffit with it. ``resolve_placeables`` passes it whenever the item
+    names a modeled ``Soffit`` through ``soffit_ref``. This is the second time
+    ``default_ceiling_height`` has been the wrong plane for a consumer that had no way to say
+    so (→ resolve/ceiling_over.py, which fixed it for the room-height side and for that
+    consumer only); it is fixed here for placeables, in the one function they all go through.
     """
     mount = getattr(item, "mount", None)
     floor = storey.elevation.meters if floor_m is None else floor_m
@@ -199,7 +233,9 @@ def resolved_mount_elevation(storey: object, item: object,
         return floor + mount.elevation.meters
     if mount.kind.value == "ceiling":
         drop = mount.drop.meters if mount.drop is not None else 0.0
-        return floor + storey.default_ceiling_height.meters - drop
+        plane = (floor + storey.default_ceiling_height.meters
+                 if soffit_underside_m is None else soffit_underside_m)
+        return plane - drop
     return floor
 
 

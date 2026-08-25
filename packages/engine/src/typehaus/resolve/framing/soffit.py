@@ -63,9 +63,9 @@ class SoffitClearSection:
     """
 
     long_axis: str  # "x" | "y" — the direction the ladders run
-    along: tuple[float, float]  # the run's extent on ``long_axis``, inside the lining
+    along: tuple[float, float]  # between the two end blocking pieces
     across: tuple[float, float]  # clear cavity, between the two ladders' inner faces
-    z: tuple[float, float]  # clear cavity, between the bottom and top rails
+    z: tuple[float, float]  # from the top of the bottom rungs to the deck above
 
     @property
     def width_m(self) -> float:
@@ -99,14 +99,23 @@ def soffit_clear_section(soffit: ResolvedSoffit) -> SoffitClearSection | None:
     if x1 <= x0 or y1 <= y0 or z_top - z_bottom <= 2 * thickness:
         return None
     long_is_x = (x1 - x0) >= (y1 - y0)
-    along = (x0, x1) if long_is_x else (y0, y1)
+    along_raw = (x0, x1) if long_is_x else (y0, y1)
     across_raw = (y0, y1) if long_is_x else (x0, x1)
+    # The two ladders eat a full stock *depth* off each long side; the end blocking closes
+    # each end with a piece of stock *thickness*.
     across = (across_raw[0] + depth, across_raw[1] - depth)
-    if across[1] <= across[0]:
+    along = (along_raw[0] + thickness, along_raw[1] - thickness)
+    if across[1] <= across[0] or along[1] <= along[0]:
         return None
+    # Vertically the cavity runs from the top of the bottom rungs — the only members that
+    # cross the box — to the deck the soffit hangs from. The *top* rail is deliberately not
+    # subtracted: it sits directly over the bottom rail, one stock depth in from each long
+    # face, which is already outside ``across``. Subtracting it too would take 1 1/2" off
+    # the middle of the box where there is nothing, and that missing inch and a half is the
+    # difference between EQ-S-HP1-AH's 11" case fitting SF-S-DUCT and not.
     return SoffitClearSection(
         long_axis="x" if long_is_x else "y", along=along, across=across,
-        z=(z_bottom + thickness, z_top - thickness),
+        z=(z_bottom + thickness, z_top),
     )
 
 

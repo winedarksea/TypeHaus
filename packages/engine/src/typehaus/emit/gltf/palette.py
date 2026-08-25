@@ -74,6 +74,9 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "truss_blocking": (0.639, 0.463, 0.247, 1.0), # 0xa3763f — as blocking
     "truss_tab": (0.800, 0.706, 0.565, 1.0),      # 0xccb490
     "truss_filler": (0.639, 0.463, 0.247, 1.0),   # 0xa3763f — as blocking
+    # The Larsen/Swinburne plywood corner box: same 1/2" plywood, same pale flat tone as
+    # the tab it is billed alongside, so a corner reads as sheet good and not lumber.
+    "truss_corner_cap": (0.800, 0.706, 0.565, 1.0),  # 0xccb490 — as truss_tab
     "buck": (0.788, 0.694, 0.549, 1.0),           # 0xc9b18c
     "ridge_beam": (0.55, 0.38, 0.22, 1.0),
     "brace": (0.639, 0.463, 0.247, 1.0),         # 0xa3763f — as blocking

@@ -103,7 +103,10 @@ export const TRADE_SURFACES: Record<Trade, TradeSurfaces> = {
   electrical: { plan: true, model: true },
   mechanical: { plan: true, model: true },
   earth: { plan: false, model: true },
-  // The stormwater run is gutters overhead and buried tile below — nothing a horizontal cut
-  // through the storey draws. A 2D pass for it is deliberately deferred.
-  drainage: { plan: false, model: true },
+  // Most of the stormwater run is gutters overhead and buried tile below — nothing a
+  // horizontal cut through the storey draws, and a 2D pass for those is deliberately
+  // deferred. The one exception is the sump pit (PlanMarkers.tsx::SumpOutlines): it is cast
+  // at the storey's own elevation, so it gets a plan glyph while the rest of the trade does
+  // not.
+  drainage: { plan: true, model: true },
 };

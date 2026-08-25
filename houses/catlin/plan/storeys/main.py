@@ -305,7 +305,7 @@ WALLS = [
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="CMW102AAAA", tag="W-M-S2", start_node="N-M-S1", end_node="N-M-SE",
-         assembly="CATLIN_EXT_2X6", corner_style_end="4-stud",
+         assembly="CATLIN_EXT_2X6",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     # W-M-E1/W-M-E2 merged into one wall (2026-08-24) so WIN-M-EAST-MID could land inside
@@ -318,7 +318,7 @@ WALLS = [
     # fixed; re-splitting the second storey's own east wall to restore it would undo the
     # 2026-08-15 mirror-rhythm tuning that keeps WIN-S-BED1/BED2 on their stud lines.
     Wall(uid="CMW103AAAA", tag="W-M-E1", start_node="N-M-SE", end_node="N-M-NE",
-         assembly="CATLIN_EXT_2X6", corner_style_end="4-stud",
+         assembly="CATLIN_EXT_2X6",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING),
     # Split at N-M-PAN3, where RM-M-PANTRY's east partition tees into the north wall
@@ -346,8 +346,9 @@ WALLS = [
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     # Split at N-M-MECH3, where RM-M-MECH's east wall tees into the north wall
-    # (2026-07-28, MEP shaft closet). corner_style_end moves to W-M-N3B, which now
-    # carries the actual NW building corner.
+    # (2026-07-28, MEP shaft closet). W-M-N3B carries the actual NW building corner —
+    # its four-stud pack now comes from the assembly's own ``corner_style``, not a
+    # per-wall override (2026-08-25, see houses/catlin/CLAUDE.md's corner section).
     Wall(uid="CMW107AAAA", tag="W-M-N3", start_node="N-M-N2", end_node="N-M-MECH3",
          assembly="CATLIN_EXT_2X6",
          alignment=face("sheathing-ext"), top=ft(9),
@@ -356,7 +357,7 @@ WALLS = [
     # x=6'-0" line on 2026-08-23 (the ESS closet's west partition tees in there), so the
     # two storeys now break in the same place and each main segment has one wall under it.
     Wall(uid="CMW135AAAA", tag="W-M-N3B", start_node="N-M-MECH3", end_node="N-M-NW",
-         assembly="CATLIN_EXT_2X6", corner_style_end="4-stud",
+         assembly="CATLIN_EXT_2X6",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N4"),
     # Split at N-M-MECH1, where RM-M-MECH's south wall tees into the west wall
@@ -382,7 +383,7 @@ WALLS = [
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-W2"),
     Wall(uid="CMW111AAAA", tag="W-M-W4", start_node="N-M-W3", end_node="N-M-SW",
-         assembly="CATLIN_EXT_2X6", corner_style_end="4-stud",
+         assembly="CATLIN_EXT_2X6",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-W2"),
     # --- center bearing wall (2x6), stacks on the basement concrete line ------

@@ -63,7 +63,7 @@ def load_preferences(house_dir: Path) -> Preferences:
         ),
         framing=FramingPreferences(
             module_in=framing.get("module_in", 16.0),
-            corner=framing.get("corner", "three-stud"),
+            corner=framing.get("corner", "3-stud"),
             max_window_ro_unbroken_in=framing.get("max_window_ro_unbroken_in", 14.0),
             max_window_ro_nonbearing_in=framing.get("max_window_ro_nonbearing_in", 30.0),
             max_window_ro_bearing_in=framing.get("max_window_ro_bearing_in", 27.0),

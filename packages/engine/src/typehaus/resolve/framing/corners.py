@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from typehaus.resolve.model import Ring
+from typehaus.resolve.model import ResolvedModel, Ring
 
 #: This wall's framing runs through the shared corner square (the junction's framing owner).
 CORNER_ROLE_OWNER = "owner"
@@ -141,6 +141,50 @@ def corner_stud_stations(end: WallEndFraming, at_start: bool, stud_thickness_m: 
         if (station <= midpoint) == at_start:
             stations.append(station)
     return tuple(stations)
+
+
+@dataclass(frozen=True)
+class CornerJunctions:
+    """Which (wall, endpoint) pairs sit at an L corner, and who else is there.
+
+    Shared topology, read off ``model.junctions`` once rather than re-derived per layer:
+    the stud module (``solver.frame_model``) and the outrigger/furring corner box
+    (``furring.frame_furring``) ask the same question — *does this wall own or butt an L
+    corner at this end, and which wall is on the other side of it* — about two different
+    bands on the same wall pair, and the junction reading itself does not vary by layer.
+    """
+
+    #: wall tag -> the ends where this wall OWNS the L corner (its framing runs through it).
+    owner: dict[str, set[str]]
+    #: wall tag -> the ends where this wall BUTS an L corner another wall owns.
+    butting: dict[str, set[str]]
+    #: (wall tag, endpoint) -> (the other wall's tag, the other wall's OWN endpoint at this
+    #: same corner) — a caller that needs to measure or frame the neighbour's own end (the
+    #: corner box's second rip) needs both, not just which wall it is.
+    neighbours: dict[tuple[str, str], tuple[str, str]]
+
+
+def corner_junctions(model: ResolvedModel) -> CornerJunctions:
+    """Every L-corner (wall, endpoint) pair in the model, owner and butting alike.
+
+    Purely topological — no assembly, no authored style — so it is correct for any band a
+    caller measures off it (a stud layer's structure polygon, a furring layer's outrigger
+    band): only which wall owns which corner, and who its neighbour is, ever changes, and
+    that is a property of the junction, not of the layer reading it.
+    """
+    owner: dict[str, set[str]] = {}
+    butting: dict[str, set[str]] = {}
+    neighbours: dict[tuple[str, str], tuple[str, str]] = {}
+    for junction in model.junctions:
+        if junction.kind != "l" or not junction.framing_owner:
+            continue
+        for item in junction.incidents:
+            owned = item.wall_tag == junction.framing_owner
+            target = owner if owned else butting
+            target.setdefault(item.wall_tag, set()).add(item.endpoint)
+            other = next(o for o in junction.incidents if o is not item)
+            neighbours[(item.wall_tag, item.endpoint)] = (other.wall_tag, other.endpoint)
+    return CornerJunctions(owner=owner, butting=butting, neighbours=neighbours)
 
 
 def _neighbour_band_insets(structure_polygon: Ring, axis_start, direction,

@@ -287,19 +287,32 @@ def heating_zones(
 
 
 def duct_schedule(model: ResolvedModel) -> list[dict[str, object]]:
-    """Every resolved duct run: system, routing, developed plan length, section, intent."""
+    """Every resolved duct run: system, routing, developed length, section, intent.
+
+    ``length_ft`` is the resolver's developed length — plan run plus every rise — not the
+    plan sum this used to compute for itself. The two agreed while no duct had an elevation
+    to rise through; now a riser is a leg like any other and a schedule that printed its
+    plan projection would print zero for it.
+
+    ``diameter_in`` and the two host refs are what a reader needs to find a run on site: a
+    6" semi-rigid radial and a 6x6 rectangular branch are not the same duct, and "which
+    cavity is it in" is answered by the bay or the soffit it names.
+    """
     rows: list[dict[str, object]] = []
     for duct in model.ducts:
-        length_m = sum(((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5
-                       for a, b in zip(duct.path[:-1], duct.path[1:]))
         rows.append({
             "tag": duct.tag, "uid": duct.uid, "storey": duct.storey,
             "system": duct.system, "routing": duct.routing,
-            "length_ft": round(length_m * _M_TO_FT, 1),
+            "length_ft": round(duct.length_m * _M_TO_FT, 1),
             "width_in": round(duct.width_m / M_PER_IN, 2),
             "depth_in": round(duct.depth_m / M_PER_IN, 2),
+            "diameter_in": (round(duct.diameter_m / M_PER_IN, 2)
+                            if duct.diameter_m is not None else None),
             "design_cfm": duct.design_cfm,
             "floor_ref": duct.floor_ref,
+            "soffit_ref": duct.soffit_ref,
+            "material": duct.material,
+            "insulation": duct.insulation,
         })
     return sorted(rows, key=lambda row: str(row["tag"]))
 

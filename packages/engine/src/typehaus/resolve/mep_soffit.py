@@ -75,7 +75,9 @@ def _segment_band(a: tuple[float, float], b: tuple[float, float],
     dx, dy = abs(b[0] - a[0]), abs(b[1] - a[1])
     half = width_m / 2.0
     if dx <= 1e-9 and dy <= 1e-9:
-        return None
+        # A vertical leg: one plan point repeated at two elevations. Its plan footprint is
+        # the section itself, and it competes for the box exactly as a horizontal leg does.
+        return ((a[0] - half, a[0] + half), (a[1] - half, a[1] + half))
     if dy <= 1e-9:  # runs east-west
         return ((min(a[0], b[0]), max(a[0], b[0])), (a[1] - half, a[1] + half))
     if dx <= 1e-9:  # runs north-south
@@ -179,12 +181,34 @@ def _connected(model: ResolvedModel, machine: SoffitOccupant,
     obj = next((o for o in model.canvas_objects if o.tag == machine.tag), None)
     if obj is None or not obj.footprint:
         return False
-    (x0, x1), (y0, y1) = _plan_ring_bbox(obj.footprint)
-    for a, b in zip(duct.path[:-1], duct.path[1:]):
-        for point in (a, b, ((a[0] + b[0]) / 2.0, (a[1] + b[1]) / 2.0)):
-            if x0 - 1e-9 <= point[0] <= x1 + 1e-9 and y0 - 1e-9 <= point[1] <= y1 + 1e-9:
-                return True
-    return False
+    box = _plan_ring_bbox(obj.footprint)
+    return any(_segment_meets_box(a, b, box) for a, b in zip(duct.path[:-1], duct.path[1:]))
+
+
+def _segment_meets_box(a: tuple[float, float], b: tuple[float, float],
+                       box: tuple[tuple[float, float], tuple[float, float]]) -> bool:
+    """Whether the segment ``a``->``b`` enters the axis-aligned box. Liang-Barsky.
+
+    Endpoints alone are not enough and the midpoint is not either: DU-S-HP-SUP is one
+    281"-long segment from the air handler's discharge to the north end of the hall, and the
+    duct heater it passes through sits 10" along it. A run *through* a machine is as plumbed
+    as a run *into* one.
+    """
+    (x0, x1), (y0, y1) = box
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    t0, t1 = 0.0, 1.0
+    for delta, start, low, high in ((dx, a[0], x0, x1), (dy, a[1], y0, y1)):
+        if abs(delta) < 1e-12:
+            if start < low - 1e-9 or start > high + 1e-9:
+                return False
+            continue
+        near, far = (low - start) / delta, (high - start) / delta
+        if near > far:
+            near, far = far, near
+        t0, t1 = max(t0, near), min(t1, far)
+        if t0 > t1:
+            return False
+    return True
 
 
 def soffit_occupancy(model: ResolvedModel, soffit: ResolvedSoffit
