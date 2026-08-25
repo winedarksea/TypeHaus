@@ -84,7 +84,8 @@ def _emit_wall(b: SceneBuilder, model: ResolvedModel, wall: ResolvedWall, facing
         direction = 1 if end_u >= start_u else -1
         center = start_u + direction * opening.center_along_m
         half = opening.width_m / 2
-        sill, head = wall.z0_m + opening.sill_m, wall.z0_m + opening.sill_m + opening.height_m
+        sill = wall.base_ref_z_m + opening.sill_m
+        head = sill + opening.height_m
         opening_points = tuple((u / M_PER_IN, z / M_PER_IN) for u, z in (
             (center - half, sill), (center + half, sill), (center + half, head), (center - half, head),
         ))

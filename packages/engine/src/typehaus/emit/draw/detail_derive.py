@@ -153,7 +153,7 @@ def _junction_z(model, cond, wall) -> float:
     if kind == "opening_perimeter" and wall is not None:
         opening = _condition_opening(model, cond)
         if opening is not None:
-            return wall.z0_m + opening.sill_m + opening.height_m / 2.0
+            return wall.base_ref_z_m + opening.sill_m + opening.height_m / 2.0
     top = wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m
     if kind == "wall_roof":
         return top
@@ -191,7 +191,7 @@ def _build_derived(model, cond, tr, wall) -> DerivedDetail | None:
     if opening is not None:
         # The z-window holds the whole opening: below measures off the sill, above off the
         # head, so a full-height door and a high awning window both crop to their subject.
-        sill_z = wall.z0_m + opening.sill_m
+        sill_z = wall.base_ref_z_m + opening.sill_m
         z0, z1 = sill_z - below, sill_z + opening.height_m + above
     else:
         junction_z = _junction_z(model, cond, wall)

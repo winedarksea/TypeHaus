@@ -156,9 +156,16 @@ def _emit_banded_layer_parts(f: Any, body: Any, rw: ResolvedWall,
     material. The prism is the layer's own plan polygon over its own resolved band, so the
     exported solid matches what the viewer and the drawings show rather than being a
     property nobody can see.
+
+    Walked over ``body_layers()``, not ``depth_layers()``: the latter counts a
+    ``Layer.slot``'s regions once, for *depth*, so it hands back a split row's first region
+    only. Reading it here exported ``W-B-BRICK`` as its brick plinth and nothing else — the
+    lapis field, both gold registers and the upper field, four of five regions on one 3 5/8"
+    wythe, were absent from the IFC entirely. ``geometry_build`` and the GLB walk the same
+    list, so the IR and the exports can no longer disagree about a wall's part count.
     """
     parts = []
-    for layer in rw.depth_layers():
+    for layer in rw.body_layers():
         if not getattr(layer, "is_banded", False) or len(layer.polygon) < 3:
             continue
         z0, z1 = layer.band(rw)
@@ -315,7 +322,7 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
     wall = wall_entities.get(opening.host_wall)
     if rw is None or wall is None:
         return
-    z0 = rw.z0_m + opening.sill_m
+    z0 = rw.base_ref_z_m + opening.sill_m
     # Void: an arched profile is swept through the wall; ordinary openings retain the
     # footprint prism used by the established rectangular IFC representation.
     void = ll.create_entity(f, "IfcOpeningElement", name=f"{opening.tag}/void")

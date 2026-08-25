@@ -16,10 +16,10 @@ from shapely.geometry import GeometryCollection, MultiPolygon, Polygon
 from shapely.ops import unary_union
 
 from typehaus.findings import Finding, Result, Severity
-from typehaus.model.assembly import LayerBound
-from typehaus.model.enums import LayerDatum, LayerFunction
+from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.geometry import length, polygon_area, rect_between, sub, unit
+from typehaus.resolve.layer_bands import band_datums, band_spec, resolve_band_spec
 from typehaus.resolve.model import (
     JunctionIncident,
     ResolvedJunction,
@@ -134,17 +134,6 @@ def site_grade_elevation_m_from_plan(plan: PlanModel) -> float:
     return grade.meters if grade is not None else 0.0
 
 
-def _bound_elevation(bound: LayerBound | None, z0: float, z1: float,
-                     grade_m: float) -> float | None:
-    """One end of a ``LayerExtent``, resolved to an absolute elevation."""
-    if bound is None:
-        return None
-    base = {LayerDatum.WALL_BASE: z0,
-            LayerDatum.WALL_TOP: z1,
-            LayerDatum.GRADE: grade_m}[bound.datum]
-    return base + bound.offset.meters
-
-
 def _storey_nodes(plan: PlanModel, storey_tag: str) -> dict[str, object]:
     return {e.tag: e for e in plan.storey_elements(storey_tag) if e.element_kind == "Node"}
 
@@ -154,7 +143,8 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                           is_foundation: bool,
                           outward_sign: float = 1.0,
                           lining_override: tuple | None = None,
-                          nodes: dict[str, object] | None = None) -> ResolvedWall | None:
+                          nodes: dict[str, object] | None = None,
+                          line: object | None = None) -> ResolvedWall | None:
     """Build a ResolvedWall with per-layer polygons for one authored wall.
 
     ``lining_override`` is a Room-authored replacement for the assembly's interior lining
@@ -208,25 +198,8 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
         return rect_between(p0, p1, (span_in - axis_from_int) * outward_sign,
                             (span_out - axis_from_int) * outward_sign, ext0, ext1)
 
-    def _band(layer: object) -> tuple[float | None, float | None]:
-        """The layer's absolute vertical extent, or (None, None) for a full-height layer.
-
-        ``Layer.extent`` states its ends against a *datum* rather than an elevation, because
-        an ``Assembly`` is a type shared by many walls and knows none of their z. Resolving
-        it is this function: the wall supplies WALL_BASE/WALL_TOP, the site supplies GRADE.
-        A band is clamped to the wall — a panel whose top runs past the wall top is simply
-        the wall top, not a layer floating above the wall.
-        """
-        extent = getattr(layer, "extent", None)
-        if extent is None:
-            return None, None
-        bottom = _bound_elevation(extent.bottom, z0, z1, grade_m)
-        top = _bound_elevation(extent.top, z0, z1, grade_m)
-        bottom = z0 if bottom is None else min(max(bottom, z0), z1)
-        top = z1 if top is None else min(max(top, z0), z1)
-        return bottom, top
-
     grade_m = site_grade_elevation_m_from_plan(plan)
+    datums = band_datums(z0, z1, grade_m, line)
     layers: list[ResolvedLayer] = []
     for index, (layer, _add_t, cavity) in enumerate(added):
         host_index = _cavity_host(stack, index) if cavity else None
@@ -242,7 +215,8 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
         else:
             span_in, span_out = spans[index]
         host_name = stack[host_index].name if host_index is not None else None
-        band_z0, band_z1 = _band(layer)
+        spec = band_spec(layer)
+        band_z0, band_z1 = resolve_band_spec(spec, z0, z1, datums)
         # A band clamped to nothing is not on this wall. `_band` clips a layer's extent to
         # the wall's own z range, so a layer banded above grade lands on a wall that stops AT
         # grade with bottom == top — catlin's garage grade beams (W-GF-E-DR/S-DR) against the
@@ -267,6 +241,7 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                 z0_m=band_z0,
                 z1_m=band_z1,
                 slot=getattr(layer, "slot", None),
+                band_spec=spec,
             )
         )
         fill = getattr(layer, "cavity", None)
@@ -285,6 +260,7 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                     cavity_host=layer.name,
                     z0_m=band_z0,
                     z1_m=band_z1,
+                    band_spec=spec,
                 )
             )
 
@@ -818,9 +794,10 @@ def _walls(plan: PlanModel, storey_tag: str) -> list:
     ]
 
 
-def resolve_storey_walls(plan: PlanModel, storey_tag: str, z0: float,
-                         z1: float) -> tuple[list[ResolvedWall], list[ResolvedJunction],
-                                             list[Finding]]:
+def resolve_storey_walls(plan: PlanModel, storey_tag: str, z0: float, z1: float,
+                         layout_lines: dict | None = None,
+                         ) -> tuple[list[ResolvedWall], list[ResolvedJunction],
+                                    list[Finding]]:
     junctions = classify_storey_junctions(plan, storey_tag)
     endpoint_extensions = _endpoint_extensions(plan, junctions)
     # One graph trace per storey, split into independent structures: a storey key is a floor
@@ -839,6 +816,7 @@ def resolve_storey_walls(plan: PlanModel, storey_tag: str, z0: float,
                                            windings.sign_for_wall(wall)),
             lining_override=lining_overrides.get(wall.tag),
             nodes=nodes,
+            line=(layout_lines or {}).get(wall.tag),
         )
         if rw is not None:
             out.append(rw)

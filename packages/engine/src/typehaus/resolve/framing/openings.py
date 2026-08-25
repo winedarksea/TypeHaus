@@ -79,15 +79,15 @@ def pocket_extent(opening: WallOpening) -> tuple[float, float]:
     return (mouth, mouth + sign * opening.pocket_run_m)
 
 
-def opening_stud_break(opening: WallOpening, spacing_m: float,
-                       stud_thickness_m: float) -> OpeningStudModule:
+def opening_stud_break(opening: WallOpening, spacing_m: float, stud_thickness_m: float,
+                       phase_m: float = 0.0) -> OpeningStudModule:
     """This opening's verdict against the stud module at ``spacing_m``."""
     return opening_stud_module(opening.center_m, opening.width_m, spacing_m,
-                               stud_thickness_m)
+                               stud_thickness_m, phase_m)
 
 
-def needs_jamb_pack(opening: WallOpening, spacing_m: float,
-                    stud_thickness_m: float) -> bool:
+def needs_jamb_pack(opening: WallOpening, spacing_m: float, stud_thickness_m: float,
+                    phase_m: float = 0.0) -> bool:
     """Whether the opening gets the king/jack/header pack at all.
 
     A door always reaches the floor and breaks the run. A window narrow enough to land
@@ -96,12 +96,13 @@ def needs_jamb_pack(opening: WallOpening, spacing_m: float,
     place to carry the rough sill and head nailer.
     """
     return (opening.is_door
-            or not opening_stud_break(opening, spacing_m,
-                                      stud_thickness_m).fits_between_studs)
+            or not opening_stud_break(opening, spacing_m, stud_thickness_m,
+                                      phase_m).fits_between_studs)
 
 
 def opening_exclusions(openings: list[WallOpening], stud_thickness_m: float,
-                       spacing_m: float) -> list[tuple[float, float]]:
+                       spacing_m: float,
+                       phase_m: float = 0.0) -> list[tuple[float, float]]:
     """(center, half-width) bands to keep regular module studs clear of each opening.
 
     The band covers the rough opening *and* the full trimmer+king pack on each side, so a
@@ -114,7 +115,7 @@ def opening_exclusions(openings: list[WallOpening], stud_thickness_m: float,
     """
     zones: list[tuple[float, float]] = []
     for opening in openings:
-        if not needs_jamb_pack(opening, spacing_m, stud_thickness_m):
+        if not needs_jamb_pack(opening, spacing_m, stud_thickness_m, phase_m):
             continue
         kings, jacks = jamb_pack_counts(_m(opening.width_m),
                                         opening_framing_pattern(opening.operation))
@@ -139,7 +140,8 @@ def in_exclusion(station_m: float, zones: list[tuple[float, float]]) -> bool:
 
 def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
                   z0: float, top_at, opening_index: int, spacing: float,
-                  stud_stations: tuple[float, ...] = ()) -> list[FramedMember]:
+                  stud_stations: tuple[float, ...] = (),
+                  phase_m: float = 0.0) -> list[FramedMember]:
     """King/jack/header/cripple pack for one opening, plus its operation's extras."""
     out: list[FramedMember] = []
     pattern = opening_framing_pattern(opening.operation)
@@ -154,7 +156,10 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     # sill_m == 0 door is unaffected.
     header_bottom = z0 + opening.sill_m + opening.height_m
 
-    if not needs_jamb_pack(opening, spacing, thickness):
+    # The same phase ``opening_exclusions`` asked with. The two verdicts must agree: one
+    # saying "fits inside a bay, no pack" while the other leaves a module stud standing in
+    # the rough opening is a stud through the sill.
+    if not needs_jamb_pack(opening, spacing, thickness, phase_m):
         return _frame_inside_one_bay(rw, direction, wall_start, opening, member, z0,
                                      top_at, opening_index, thickness, stud_stations,
                                      header_bottom)

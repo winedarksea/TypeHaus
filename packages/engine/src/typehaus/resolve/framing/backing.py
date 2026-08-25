@@ -7,12 +7,49 @@ partition, blocking at a fixed height), and both are driven entirely by ``Framin
 
 from __future__ import annotations
 
+import math
+
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.framing.footprint import member_footprint
 from typehaus.resolve.framing.tables import DEFAULT_TEE_BLOCKING_SPACING, member_actual
 from typehaus.resolve.geometry import add, scale
 from typehaus.resolve.model import FramedMember, ResolvedWall
 
 _EPSILON = 1e-9
+_VERTICAL_OPENING_MEMBERS_THAT_ACCEPT_BLOCKING = frozenset({
+    "stud", "king", "jack", "cripple",
+})
+
+
+def _convex_footprints_have_positive_area_overlap(
+        first_ring: list[tuple[float, float]],
+        second_ring: list[tuple[float, float]]) -> bool:
+    """Return whether two convex member footprints overlap in area, not just at a face."""
+    for ring in (first_ring, second_ring):
+        for index, start in enumerate(ring):
+            end = ring[(index + 1) % len(ring)]
+            edge_x, edge_y = end[0] - start[0], end[1] - start[1]
+            edge_length = math.hypot(edge_x, edge_y)
+            if edge_length <= _EPSILON:
+                continue
+            axis = (-edge_y / edge_length, edge_x / edge_length)
+            first_projection = [x * axis[0] + y * axis[1] for x, y in first_ring]
+            second_projection = [x * axis[0] + y * axis[1] for x, y in second_ring]
+            overlap = (min(max(first_projection), max(second_projection))
+                       - max(min(first_projection), min(second_projection)))
+            if overlap <= _EPSILON:
+                return False
+    return True
+
+
+def _framing_members_have_positive_volume_overlap(
+        first_member: FramedMember, second_member: FramedMember) -> bool:
+    """Use emitted member footprints and elevations so face contact remains legal."""
+    first_ring, first_z0, first_z1 = member_footprint(first_member)
+    second_ring, second_z0, second_z1 = member_footprint(second_member)
+    vertical_overlap = min(first_z1, second_z1) - max(first_z0, second_z0)
+    return (vertical_overlap > _EPSILON
+            and _convex_footprints_have_positive_area_overlap(first_ring, second_ring))
 
 
 def append_blocking_rows(members: list[FramedMember], rw: ResolvedWall, spec, member: str,
@@ -48,8 +85,9 @@ def append_blocking_rows(members: list[FramedMember], rw: ResolvedWall, spec, me
 def append_tee_backing(members: list[FramedMember], rw: ResolvedWall, spec,
                        member: str, direction, wall_start, axis_len: float,
                        station: float, junction_key: str, stud_bottom: float,
-                       top_at) -> None:
-    """Emit the through-wall backing selected by ``FramingSpec`` at one T branch."""
+                       top_at,
+                       opening_framing_members: tuple[FramedMember, ...] = ()) -> None:
+    """Emit through-wall backing, yielding ladder elevations occupied by opening framing."""
     station = min(max(station, 0.0), axis_len)
     if spec.tee_backing_style == "none":
         return
@@ -78,9 +116,19 @@ def append_tee_backing(members: list[FramedMember], rw: ResolvedWall, spec,
     elevation = stud_bottom + spacing
     index = 0
     while elevation + block_height < top - _EPSILON:
-        members.append(FramedMember(
+        candidate = FramedMember(
             rw.uid, f"tee-{junction_key}-block-{index:02d}", "blocking", member,
             block_start, block_end, elevation, elevation + block_height, depth_m,
-        ))
+        )
+        # Horizontal opening framing owns its volume; a ladder rung is only finish backing.
+        # Vertical jamb/cripple members are different: blocking is face-nailed into them by
+        # design, just as ordinary in-line blocking is nailed into a stud. Keeping those
+        # contacts is what preserves every useful rung around the one occupied elevation.
+        if not any(
+            opening_member.category not in _VERTICAL_OPENING_MEMBERS_THAT_ACCEPT_BLOCKING
+            and _framing_members_have_positive_volume_overlap(candidate, opening_member)
+            for opening_member in opening_framing_members
+        ):
+            members.append(candidate)
         elevation += spacing
         index += 1

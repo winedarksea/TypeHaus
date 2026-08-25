@@ -15,8 +15,8 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.accessories import resolve_accessories
-from typehaus.resolve.drainage import resolve_drainage
 from typehaus.resolve.construction import apply_construction_rules
+from typehaus.resolve.drainage import resolve_drainage
 from typehaus.resolve.envelope import resolve_columns_and_beams, resolve_envelope_geometry
 from typehaus.resolve.floor_heat import resolve_floor_heat
 from typehaus.resolve.floors import resolve_floors
@@ -26,15 +26,19 @@ from typehaus.resolve.framing.soffit import frame_soffits
 from typehaus.resolve.framing.solver import frame_model
 from typehaus.resolve.framing.truss_wall import frame_truss_walls
 from typehaus.resolve.geometry import length, sub
+from typehaus.resolve.layout_lines import lines_by_wall, resolve_layout_lines
 from typehaus.resolve.mep import resolve_mep
-from typehaus.resolve.solar import resolve_solar
 from typehaus.resolve.model import BoundaryCondition, ResolvedModel, ResolvedOpening
 from typehaus.resolve.paneling import resolve_paneling
 from typehaus.resolve.placeables import resolve_placeables
-from typehaus.resolve.platform import extend_walls_to_platform
+from typehaus.resolve.platform import (
+    extend_walls_to_foundation,
+    extend_walls_to_platform,
+)
 from typehaus.resolve.roof_edge import resolve_roof_edges
 from typehaus.resolve.roof_geometry import apply_to_roof_wall_tops, apply_truss_heel_lift
 from typehaus.resolve.rooms import resolve_rooms
+from typehaus.resolve.solar import resolve_solar
 from typehaus.resolve.stacking import resolve_stacking
 from typehaus.resolve.topology import detect_gaps, resolve_storey_walls
 
@@ -52,6 +56,14 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         finally:
             model.timings[name] = (time.perf_counter() - t0) * 1000.0
 
+    with _stage("layout_lines"):
+        # Before anything is resolved, and derived from the authored plan alone: a wall's
+        # line is what resolves its LINE_BASE/LINE_TOP bands and phases its stud module, so
+        # it has to exist before ``resolve_storey_walls`` runs rather than twelve stages
+        # later beside ``stack_edges`` (→ resolve/layout_lines.py).
+        model.layout_lines = resolve_layout_lines(plan)
+        lines_for_wall = lines_by_wall(model.layout_lines)
+
     with _stage("junctions"):
         ordered = sorted(plan.storeys, key=lambda s: s.elevation.meters)
         for storey in ordered:
@@ -59,12 +71,17 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
             z1 = z0 + storey.default_ceiling_height.meters
             findings.extend(detect_gaps(plan, storey.tag))
             walls, junctions, junction_findings = resolve_storey_walls(
-                plan, storey.tag, z0, z1
+                plan, storey.tag, z0, z1, layout_lines=lines_for_wall
             )
             model.walls.extend(walls)
             model.junctions.extend(junctions)
             findings.extend(junction_findings)
         extend_walls_to_platform(model)
+        # ...and the same band at the bottom of the lowest framed storey, where the
+        # pour stops a mudsill + rim below the storey datum. Strictly after the lift:
+        # both replace entries in ``model.walls``, and the down pass must read walls
+        # the up pass has already finished with.
+        extend_walls_to_foundation(model)
 
     with _stage("openings"):
         _resolve_openings(plan, model, findings)
@@ -143,16 +160,19 @@ def resolve_preview(plan: PlanModel) -> ResolvedModel:
     model = ResolvedModel(plan=plan)
     findings: list[Finding] = []
 
+    model.layout_lines = resolve_layout_lines(plan)
+    lines_for_wall = lines_by_wall(model.layout_lines)
     ordered = sorted(plan.storeys, key=lambda s: s.elevation.meters)
     for storey in ordered:
         z0 = storey.elevation.meters
         z1 = z0 + storey.default_ceiling_height.meters
         walls, junctions, _junction_findings = resolve_storey_walls(
-            plan, storey.tag, z0, z1
+            plan, storey.tag, z0, z1, layout_lines=lines_for_wall
         )
         model.walls.extend(walls)
         model.junctions.extend(junctions)
     extend_walls_to_platform(model)
+    extend_walls_to_foundation(model)
     _resolve_openings(plan, model, findings)
     resolve_envelope_geometry(model)
     apply_truss_heel_lift(model)

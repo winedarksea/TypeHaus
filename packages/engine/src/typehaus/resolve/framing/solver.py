@@ -30,6 +30,7 @@ from typehaus.resolve.framing.openings import (
 from typehaus.resolve.framing.pockets import pocket_keepouts
 from typehaus.resolve.framing.tables import DEFAULT_SPACING, member_actual
 from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
+from typehaus.resolve.layout_lines import layout_phase, lines_by_wall
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedWall
 
 
@@ -66,7 +67,8 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
                corner_style_end: str | None = None,
                neighbour_insets_start: tuple[float, float] | None = None,
                neighbour_insets_end: tuple[float, float] | None = None,
-               stud_keepouts: tuple[tuple[float, float], ...] = ()) \
+               stud_keepouts: tuple[tuple[float, float], ...] = (),
+               line: object | None = None) \
         -> tuple[FramedMember, ...]:
     """Generate studs, plates, and opening framing for one resolved wall.
 
@@ -114,7 +116,10 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
         plate_depth = member_actual(plate_member)[1] * 0.0254
         stud_depth = member_actual(member)[1] * 0.0254
         stagger_offset = max((plate_depth - stud_depth) / 2.0, 0.0)
-    z0 = rw.z0_m
+    # The framing base, which a wall extended down over the rim does NOT move: the
+    # bottom plate, the studs and every opening sill stay on the storey datum while
+    # only the wall's skin laps the foundation below (→ ``ResolvedWall.plate_base_z_m``).
+    z0 = rw.base_ref_z_m
     plate_h = 1.5 * 0.0254
 
     start_role = (CORNER_ROLE_OWNER if corner_start
@@ -146,7 +151,8 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     # module studs on the combined half-spacing rhythm, so the jamb-pack verdict (and
     # every other consumer of the module) must see that same rhythm.
     module_spacing = spacing / 2.0 if staggered else spacing
-    stud_zones = opening_exclusions(openings, thickness, module_spacing)
+    module_phase = layout_phase(spec, line, rw.tag, module_spacing)
+    stud_zones = opening_exclusions(openings, thickness, module_spacing, module_phase)
     stud_zones.extend(stud_keepouts)
 
     def top_at(s: float) -> float:
@@ -189,7 +195,8 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
             axis_len, module_spacing, thickness,
             (start_end.end_stud_station_m, far_end.end_stud_station_m),
             (max((start_end.end_stud_station_m, *corner_stations["start"])),
-             min((far_end.end_stud_station_m, *corner_stations["end"]))))
+             min((far_end.end_stud_station_m, *corner_stations["end"]))),
+            phase=module_phase)
         if not in_exclusion(station, stud_zones)
     )
     perpendicular = normal(d)
@@ -212,20 +219,27 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
                                     point, point, stud_z0, stud_top, stud_top - stud_z0,
                                     orient=d))
 
-    for station, junction_key in tee_stations:
-        append_tee_backing(
-            members, rw, spec, frame_member, d, p0, axis_len, station, junction_key,
-            stud_z0, top_at,
-        )
-
     # --- opening framing (king/jack/header/cripple/sill) ----------------------
     # Staggered walls frame their openings full plate depth: a king/jack pack split
     # across two faces has no continuous bearing surface for the header.
+    opening_framing_members: list[FramedMember] = []
     for opening_index, opening in enumerate(openings):
-        members.extend(
+        opening_framing_members.extend(
             frame_opening(rw, d, p0, opening, frame_member, stud_z0, top_at,
-                          opening_index, module_spacing, tuple(stud_stations))
+                          opening_index, module_spacing, tuple(stud_stations),
+                          module_phase)
         )
+
+    # Opening framing is computed first because it is structural and takes precedence over
+    # finish-backing ladder rungs. Keep the historical member order by appending the backing
+    # before the already-computed opening members.
+    opening_framing = tuple(opening_framing_members)
+    for station, junction_key in tee_stations:
+        append_tee_backing(
+            members, rw, spec, frame_member, d, p0, axis_len, station, junction_key,
+            stud_z0, top_at, opening_framing,
+        )
+    members.extend(opening_framing)
 
     # --- in-line blocking courses (fire/backing blocking) ---------------------
     append_blocking_rows(members, rw, spec, member, d, p0, stud_z0, module_spacing,
@@ -235,21 +249,29 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
 
 def _module_stations(axis_len: float, spacing: float, thickness: float,
                      end_studs: tuple[float, float],
-                     pack_limits: tuple[float, float]) -> list[float]:
+                     pack_limits: tuple[float, float],
+                     phase: float = 0.0) -> list[float]:
     """Both end-stud stations plus every module station that clears the end packs.
 
     A module station closer than one stud thickness to an end stud (or to the corner studs
     packed against it) *is* that member: two there would interpenetrate rather than double,
     which is why the module loop cannot simply run from 0 once the corner rule places the
     ends. ``pack_limits`` is the innermost occupied station at each end.
+
+    ``phase`` shifts the module's first station off the wall's own station 0, and is how a
+    wall lays out from its *layout line* instead of from itself (``FramingSpec
+    .layout_origin``). 0.0 — the default and every wall before the field existed — is the
+    old behaviour exactly. End studs, corner packs and opening king/jack packs are not
+    phased: they are already deliberately off-module, sitting where the corner square and
+    the rough opening put them.
     """
     start_station, end_station = end_studs
     start_limit, end_limit = pack_limits
     stations = [start_station]
     if end_station - start_station > thickness - 1e-9:
         stations.append(end_station)
-    for index in range(int(axis_len // spacing) + 1):
-        station = index * spacing
+    for index in range(int(max(0.0, axis_len - phase) // spacing) + 1):
+        station = phase + index * spacing
         if station > axis_len + 1e-6:
             break
         if (station - start_limit < thickness - 1e-9
@@ -383,6 +405,8 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     door_header_specs = {element.tag: element.header_spec
                          for element in plan.all_elements()
                          if isinstance(element, Door)}
+    # A wall's layout line, so ``FramingSpec.layout_origin="line"`` can phase its module.
+    lines_for_wall = lines_by_wall(model.layout_lines)
     by_host: dict[str, list[WallOpening]] = {}
     for op in model.openings:
         by_host.setdefault(op.host_wall, []).append(WallOpening(
@@ -503,7 +527,8 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                              neighbour_insets_end=_neighbour_insets(
                                  rw, "end", framing_start, framing_direction,
                                  framing_len),
-                             stud_keepouts=tuple(keepouts.get(rw.tag, ())))
+                             stud_keepouts=tuple(keepouts.get(rw.tag, ())),
+                             line=lines_for_wall.get(rw.tag))
         # ``replace`` rather than a field-by-field rebuild: this pass only adds members,
         # and respelling the constructor here silently drops any field added later.
         framed.append(replace(rw, members=members))

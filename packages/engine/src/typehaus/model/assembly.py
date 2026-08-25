@@ -42,6 +42,20 @@ class FramingSpec(HausModel):
     chord_member: str | None = None
     web_member: str | None = None
     advanced_framing: bool = False  # single top plate + in-line stud stacking
+    # Where the stud module counts from. "wall-start" — the default, and every wall written
+    # before this existed — starts at the wall's own station 0, so two collinear segments
+    # split at a tee each restart the module and a wall over a wall aligns only by the
+    # accident of sharing a start node. "line" counts from the wall's *layout line* instead
+    # (→ resolve/layout_lines.py), so the module runs through a tee split and stacks floor
+    # to floor, and the battens that phase-lock to it follow for free.
+    #
+    # Deliberately not folded into ``advanced_framing``, which also drops the second top
+    # plate: in-line studs and a single top plate are independent decisions and the code
+    # backs that up. R602.3.2's single-top-plate exception turns on *rafters or joists*
+    # centred over studs within 1", not on studs stacking over studs (R602.3.3's 5" rule is
+    # the bearing-stud one). In-line framing is an APA Advanced Framing technique, not a
+    # code mandate, which is exactly why it is an opt-in field rather than an inference.
+    layout_origin: Literal["wall-start", "line"] = "wall-start"
     stagger_gap: Length | None = None  # for STAGGERED/DOUBLE partition layouts
     direction: str | None = None  # FURRING only: "vertical" | "horizontal"
     # FURRING only: which way the stick is turned in the band. "flat" (the default, and

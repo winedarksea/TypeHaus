@@ -211,7 +211,7 @@ def _resolved_openings(
         records.append({
             "uid": opening.uid, "tag": opening.tag, "storey": wall.storey,
             "kind": opening.kind, "type": opening.type_ref, "domain": "opening", "room": None,
-            "position_m": list(center), "z_m": wall.z0_m + opening.sill_m,
+            "position_m": list(center), "z_m": wall.base_ref_z_m + opening.sill_m,
             "rotation": degrees(atan2(uy, ux)), "host": opening.host_wall, "attachment": None,
             "footprint": [list(point) for point in footprint],
             "required_clearances": [],

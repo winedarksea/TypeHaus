@@ -335,12 +335,31 @@ def _segment_residue_in(wall: object, module_in: float) -> float:
     column between storeys needs the same residue, a mirror pair needs residues summing to
     0 mod the module. Reporting it turns "this window is 4" off" into the answer: a facade
     near-miss is almost always an out-of-phase *segment*, which no window move can fix.
+
+    True only while the assembly lays out from the wall — see :func:`_module_origin`, which
+    is what an opt-in ``FramingSpec.layout_origin="line"`` changes and which this check must
+    follow, or it would report legal stations the solver does not frame.
     """
     (x0, y0), (x1, y1) = wall.axis  # type: ignore[attr-defined]
     # Project the start node onto the segment's own dominant axis — the direction the grid
     # runs — so the residue is comparable between two segments on the same facade.
     along_m = x0 if abs(x1 - x0) >= abs(y1 - y0) else y0
     return (along_m / 0.0254) % module_in
+
+
+def _module_origin(ctx, wall, framing, spacing_m: float) -> tuple[float, str]:
+    """``(phase in metres, how to describe it)`` for this wall's stud grid.
+
+    The framing solver's own arithmetic, asked the same question — the check and the framing
+    it checks must never disagree about where the studs are.
+    """
+    from typehaus.resolve.layout_lines import layout_phase, lines_by_wall
+
+    line = lines_by_wall(ctx.model.layout_lines).get(wall.tag)
+    phase = layout_phase(framing, line, wall.tag, spacing_m)
+    if getattr(framing, "layout_origin", "wall-start") != "line" or line is None:
+        return phase, "segment"
+    return phase, line.tag
 
 
 @check(Tier.STRUCTURAL, "structural.window_framing_module")
@@ -379,8 +398,9 @@ def window_framing_module(ctx: CheckContext) -> list[Finding]:
         width_in = opening.width_m / 0.0254
         # The stud *body*, not just its centreline, decides whether the RO clears the bay,
         # so the analysis needs the wall's own member thickness.
+        phase, origin = _module_origin(ctx, wall, framing, spacing)
         module = opening_stud_module(opening.center_along_m, opening.width_m, spacing,
-                                     member_actual(framing.member)[0] * 0.0254)
+                                     member_actual(framing.member)[0] * 0.0254, phase)
         break_note = module.describe()
         maximum = (rules.max_window_ro_bearing_in if role is StructuralRole.BEARING
                    else rules.max_window_ro_nonbearing_in)
@@ -401,20 +421,27 @@ def window_framing_module(ctx: CheckContext) -> list[Finding]:
             "need no header at all"
             if width_in <= rules.max_window_ro_unbroken_in else "")
         if module.straddles_awkwardly or module.offset_from_ideal_m > tolerance:
-            residue = _segment_residue_in(wall, rules.module_in)
+            if origin == "segment":
+                residue = _segment_residue_in(wall, rules.module_in)
+                where = (f"its host segment {wall.tag} lays out from a {residue:.1f}\" "
+                         f"residue mod {rules.module_in:.0f}\"")
+                hint_tail = ("If the miss is against a window on another segment, move the "
+                             "segment's start NODE instead: the grid is a property of that "
+                             "node, and no window move fixes an out-of-phase segment")
+            else:
+                residue = phase / 0.0254
+                where = (f"its host segment {wall.tag} lays out from layout line {origin} "
+                         f"and reaches the module {residue:.1f}\" along itself")
+                hint_tail = ("The grid here is the LINE's, shared with every wall on it, so "
+                             "moving this segment's node moves nothing — shift the RO")
             out.append(_advisory(
                 "structural.window_framing_module",
                 f"window {opening.tag} is {module.offset_from_ideal_m / 0.0254:.1f}\" off "
-                f"its {module.ideal_label} and {break_note}; its host segment "
-                f"{wall.tag} lays out from a {residue:.1f}\" residue mod "
-                f"{rules.module_in:.0f}\", so the legal stations on it are "
-                f"{residue:.1f}\" + n\u00d7{rules.module_in:.0f}\"",
+                f"its {module.ideal_label} and {break_note}; {where}, so the legal "
+                f"stations on it are {residue:.1f}\" + n\u00d7{rules.module_in:.0f}\"",
                 (opening.tag,), Result.FAIL,
                 fix_hint=(f"shift the RO centre onto its {module.ideal_label} so it "
                           f"interrupts {module.minimum_interrupted} stud(s)"
-                          f"{header_free_hint}. If the miss is against a window on another "
-                          f"segment, move the segment's start NODE instead: the grid is a "
-                          f"property of that node, and no window move fixes an out-of-phase "
-                          f"segment"),
+                          f"{header_free_hint}. {hint_tail}"),
             ))
     return out

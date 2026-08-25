@@ -51,7 +51,7 @@ from typehaus.quantities import M_PER_IN
 def opening_z_in(wall, opening) -> tuple[float, float]:
     """``(sill, head)`` elevations in section inches. ``sill_m`` is storey-relative, so the
     wall's own base carries it to world z; ``height_m`` already includes any arch rise."""
-    sill = (wall.z0_m + opening.sill_m) / M_PER_IN
+    sill = (wall.base_ref_z_m + opening.sill_m) / M_PER_IN
     return sill, sill + opening.height_m / M_PER_IN
 
 

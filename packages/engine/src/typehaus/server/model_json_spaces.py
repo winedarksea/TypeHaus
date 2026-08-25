@@ -64,4 +64,18 @@ def spaces_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str
              "width_change": e.width_change}
             for e in model.stack_edges
         ],
+        # The chain ``stack_edges`` only ever had pairs of. Not an element — nothing in the
+        # viewer draws it — but it is what explains why two walls share a stud module or a
+        # course line, so it ships beside the edges it generalizes.
+        "layout_lines": [
+            {"tag": line.tag, "origin": list(line.origin),
+             "direction": list(line.direction),
+             "base_z_m": line.base_z_m, "top_z_m": line.top_z_m,
+             "members": [{"wall": m.wall_tag, "storey": m.storey,
+                          "u_offset_m": m.u_offset_m,
+                          "direction_sign": m.direction_sign,
+                          "z0_m": m.z0_m, "z1_m": m.z1_m}
+                         for m in line.members]}
+            for line in model.layout_lines
+        ],
     }

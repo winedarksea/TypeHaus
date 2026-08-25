@@ -686,6 +686,46 @@ Left open, and worth doing next:
   the west half's run east-west the way the trunk does. Left as chase because the runs also
   cross the concrete band, and splitting a trunk between bay and chase is its own pass.
 
+- **Four matchers still answer "is this wall above that one", at three tolerances.**
+  `platform._collinear_overlap` (tol = wall *thickness*, returns a bool),
+  `stacking._axis_match` (tol = `inch(0.5)`, returns overlap length),
+  `construction_geometry._stack_overlap` (returns the segment), and — since 2026-08-25 —
+  `layout_lines._collinear`, which is `_axis_match`'s rule copied deliberately. Making
+  `model.layout_lines` the source of truth for all four is the right end state and is
+  **not** a mechanical swap: platform's thickness-scale tolerance is what covers the 8 of
+  catlin's 15 second-storey walls that never authored `stacks_on`, and tightening it risks
+  re-opening the bare-rim ring `test_platform_continuity` exists to catch. Migrate one
+  consumer at a time, behind that test.
+- **`platform._platform_above` uses one number for two jobs.** `tol = max(thickness, 1e-3)`
+  is both the off-axis slop *and* the minimum overlap length, so an upper wall overlapping
+  by less than ~12" is invisible and a parallel interior wall within 12" can be a false
+  match.
+- **`platform`'s rake guards are effectively dead.** `apply_to_roof_wall_tops` runs at
+  `pipeline.py:76`, after the lift at `:67`, so `top_z0_m` is still `None` when the two
+  guards test it.
+- **`roof_geometry.py:257-261` drops `plate_top_z_m`** when it rebuilds a `ToRoof` wall,
+  discarding the lift for a wall that is both lifted and raked.
+- **Neither `plate_top_z_m` nor `plate_base_z_m` is serialized** (`model_json_fabric.py`),
+  so the viewer cannot tell wall body from joist band, or wall body from rim lap.
+- **`IfcBuildingElementPart` bodies carry no voids** (`ifc/lowlevel.py:435-436`) while glTF
+  cuts openings out of banded layers, so a banded band crossing a window is already
+  inconsistent between the two exports. Cross-storey `LINE_BASE` bands make it likelier hit.
+- **19 catlin windows are off the layout line's grid.** `CATLIN_EXT_2X6` is the assembly
+  `FramingSpec.layout_origin="line"` was built for and it is still opted out, because
+  turning it on re-phases the module under every window authored against its own wall's
+  node — 19 `structural.window_framing_module` findings and one attic header meeting a
+  rafter. Measured, it takes studs landing on a stud below from **46.5% to 75.5%**. Shift
+  the ROs onto the line's grid, then flip both specs in `houses/catlin/plan/assemblies.py`
+  (the stud layer *and* the outrigger layer, or the battens come off the studs).
+- **A `Slab` or `FloorSystem` rim has no cladding concept at all.** `SL-M-DECK`'s exposed
+  perimeter edge takes no fascia, no edge trim and no drip: the machinery for that
+  (`resolve/roof_edge.py`, `resolve/trim_bands.py`) is roof-only and has no analog for a
+  horizontal element's edge. Noted 2026-08-24 while closing the *wall* side of the same gap:
+  `resolve/platform.extend_walls_to_foundation` now runs a framed wall's skin down over the
+  mudsill and rim to lap the foundation below, which covers the basement-to-main line — and
+  does nothing whatever for a slab edge, which is a different element with a different
+  detail. Scope it on its own.
+
 # Project Management (deferred)
 * Track to inspection (list of inspections, calendar, pass registration). Likely includes Kanban somehow
 * Report final costs (but also reusable plan)

@@ -132,5 +132,13 @@ def test_ifc_material_layer_set_sums_to_the_wall_thickness(catlin_model, tmp_pat
                 if rep.RepresentationIdentifier == "Body")
     axis = next(rep for rep in walls["W-M-S1"].Representation.Representations
                 if rep.RepresentationIdentifier == "Axis")
-    assert len(body.Items) == len(catlin_model.wall("W-M-S1").depth_layers())
+    # The *unbanded* body: ``_emit_wall`` extrudes the full-height layers and re-emits every
+    # banded one as an ``IfcBuildingElementPart`` instead, so this count is depth_layers()
+    # only while no layer of this wall is banded. Stated rather than assumed — the emitter
+    # now walks ``body_layers()`` for the parts, and the two lists differ on a wall with a
+    # ``Layer.slot`` (→ test_emitter_band_parity.py).
+    wall_ir = catlin_model.wall("W-M-S1")
+    assert not any(layer.is_banded for layer in wall_ir.layers), \
+        "W-M-S1 gained a banded layer; this assertion is about the unbanded body"
+    assert len(body.Items) == len(wall_ir.depth_layers())
     assert len(axis.Items) == 1

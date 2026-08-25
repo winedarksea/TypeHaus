@@ -204,18 +204,18 @@ OPENINGS = [
     # Knee-wall windows, one at each end of the east and west walls (2026-07-30 facade
     # pass). The 5' knee walls are the one place the 14" family is chosen for height, not
     # width: at sill 2'-6" the head sits at 4'-6", 3" under the double top plate — all a
-    # 5' wall has to give. West is symmetric at 3'-4" from both corners about y=18'; east
-    # is 4" off (32'-4" vs. 32'-8") because W-A-E2's grid starts at N-A-E1 (y=9'), not the
-    # corner, so 32'-8" isn't a bay centre there.
+    # 5' wall has to give. West moved one bay inward for the facade pass and is symmetric
+    # at 4'-8" / 31'-4" about y=18'. East is 4" off (32'-4" vs. 32'-8") because W-A-E2's
+    # grid starts at N-A-E1 (y=9'), not the corner, so 32'-8" isn't a bay centre there.
     # 2026-08-15: left as-is after pricing the alternative — moving N-A-E1 to 8'-8" (to
     # column WIN-A-E-N with WIN-S-BED3 at 32'-0") or 9'-4" (for the pair's own mirror) both
     # drag N-A-C2/W-A-SN with them, and 9'-4" was tried and reverted the same day when
     # code.R312_1_guard flagged 3'-0" of unguarded well at FO-A-STAIR. Not worth reworking
     # the stair well for.
     Window(uid="CAX308AAAA", tag="WIN-A-W-S", host="W-A-W1", type_ref="WT-1424",
-           position=from_node("N-A-NW", ft(32, 1)), sill_height=ft(2, 6)),   # y 3'-4"
+           position=from_node("N-A-NW", ft(30, 9)), sill_height=ft(2, 6)),   # y 4'-8"
     Window(uid="CAX306AAAA", tag="WIN-A-W-N", host="W-A-W1", type_ref="WT-1424",
-           position=from_node("N-A-NW", ft(2, 9)), sill_height=ft(2, 6)),    # y 32'-8"
+           position=from_node("N-A-NW", ft(4, 1)), sill_height=ft(2, 6)),    # y 31'-4"
     Window(uid="CAX309AAAA", tag="WIN-A-E-S", host="W-A-E1", type_ref="WT-1424-T",
            position=from_node("N-A-SE", ft(2, 9)), sill_height=ft(2, 6)),    # y 3'-4"
     Window(uid="CAX310AAAA", tag="WIN-A-E-N", host="W-A-E2", type_ref="WT-1424",

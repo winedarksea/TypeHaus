@@ -241,11 +241,19 @@ def test_the_living_room_splits_its_floor_where_its_structure_splits(catlin_mode
     # band different" in the Inspector and in the takeoff.
     assert zone.source_ref == "SL-M-DECK"
     # 411.3 until 2026-08-24, when RM-M-PANTRY was framed out of the living room's NW
-    # corner. The band is clipped to the room, so the room losing 19.6 sf of clear face plus
-    # ~1.1 sf of new partition footprint takes exactly that off the zone. The 19.6 sf did not
-    # leave the slab — it moved to RM-M-PANTRY's own derived zone, which is the whole of that
-    # room's floor (see test_the_billed_finishes_move_with_the_split).
-    assert zone.area_m2 * _M2_TO_FT2 == pytest.approx(390.6, abs=0.5)
+    # corner. The band is clipped to the room, so the room losing its clear face plus the new
+    # partition footprint takes exactly that off the zone. That area did not leave the slab —
+    # it moved to RM-M-PANTRY's own derived zone, which is the whole of that room's floor
+    # (see test_the_billed_finishes_move_with_the_split).
+    #
+    # 390.6 -> 392.7 later the same day, when the owner moved W-M-PAN-S 4" north to pull the
+    # cold-storage run out of the passage: the pantry gave 2.1 sf of clear face back to the
+    # living room. ** THE INVARIANT IS THE SUM, NOT EITHER HALF. ** Both rooms sit wholly on
+    # SL-M-DECK, so moving the wall between them only moves area from one derived zone to the
+    # other — the billed polished-concrete total in
+    # test_the_billed_finishes_move_with_the_split is 410.2 before and after, and does not
+    # move when this number does.
+    assert zone.area_m2 * _M2_TO_FT2 == pytest.approx(392.7, abs=0.5)
     field = (living.area_m2 - zone.area_m2) * _M2_TO_FT2
     assert field == pytest.approx(355.1, abs=0.5)
 

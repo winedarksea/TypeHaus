@@ -260,6 +260,34 @@
       "points": [
         [
           425.365,
+          -13.437499999999998
+        ],
+        [
+          425.375,
+          -13.437499999999998
+        ],
+        [
+          425.375,
+          0.0
+        ],
+        [
+          425.365,
+          0.0
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW107AAAA",
+      "tag": "W-M-N3/paint"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          425.365,
           80.0
         ],
         [
@@ -281,6 +309,62 @@
       "closed": true,
       "uid": "CMW107AAAA",
       "tag": "W-M-N3/paint"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          425.375,
+          -13.437499999999998
+        ],
+        [
+          426.0,
+          -13.437499999999998
+        ],
+        [
+          426.0,
+          0.0
+        ],
+        [
+          425.375,
+          0.0
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW107AAAA",
+      "tag": "W-M-N3/gwb-int"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          425.375,
+          -13.437499999999998
+        ],
+        [
+          426.0,
+          -13.437499999999998
+        ],
+        [
+          426.0,
+          0.0
+        ],
+        [
+          425.375,
+          0.0
+        ]
+      ],
+      "pattern": "gypsum",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
     },
     {
       "space": "model",
@@ -344,6 +428,62 @@
       "points": [
         [
           426.0,
+          -13.437499999999998
+        ],
+        [
+          431.50000000000006,
+          -13.437499999999998
+        ],
+        [
+          431.50000000000006,
+          0.0
+        ],
+        [
+          426.0,
+          0.0
+        ]
+      ],
+      "layer": "A-WALL",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW107AAAA",
+      "tag": "W-M-N3/stud"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          426.0,
+          -13.437499999999998
+        ],
+        [
+          431.50000000000006,
+          -13.437499999999998
+        ],
+        [
+          431.50000000000006,
+          0.0
+        ],
+        [
+          426.0,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          426.0,
           80.0
         ],
         [
@@ -393,6 +533,62 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          431.50000000000006,
+          -13.437499999999998
+        ],
+        [
+          432.0,
+          -13.437499999999998
+        ],
+        [
+          432.0,
+          0.0
+        ],
+        [
+          431.50000000000006,
+          0.0
+        ]
+      ],
+      "layer": "A-WALL",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW107AAAA",
+      "tag": "W-M-N3/sheathing"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          431.50000000000006,
+          -13.437499999999998
+        ],
+        [
+          432.0,
+          -13.437499999999998
+        ],
+        [
+          432.0,
+          0.0
+        ],
+        [
+          431.50000000000006,
+          0.0
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "struct-1-plywood"
     },
     {
       "space": "model",
@@ -456,6 +652,62 @@
       "points": [
         [
           432.0,
+          -13.437499999999998
+        ],
+        [
+          433.5,
+          -13.437499999999998
+        ],
+        [
+          433.5,
+          0.0
+        ],
+        [
+          432.0,
+          0.0
+        ]
+      ],
+      "layer": "A-WALL-INSU",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW107AAAA",
+      "tag": "W-M-N3/spray-foam"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          432.0,
+          -13.437499999999998
+        ],
+        [
+          433.5,
+          -13.437499999999998
+        ],
+        [
+          433.5,
+          0.0
+        ],
+        [
+          432.0,
+          0.0
+        ]
+      ],
+      "pattern": "batt",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "closed-cell-spray-foam"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          432.0,
           80.0
         ],
         [
@@ -512,6 +764,34 @@
       "points": [
         [
           433.5,
+          -13.437499999999998
+        ],
+        [
+          437.0,
+          -13.437499999999998
+        ],
+        [
+          437.0,
+          0.0
+        ],
+        [
+          433.5,
+          0.0
+        ]
+      ],
+      "layer": "A-WALL",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW107AAAA",
+      "tag": "W-M-N3/outrigger"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          433.5,
           80.0
         ],
         [
@@ -533,6 +813,62 @@
       "closed": true,
       "uid": "CMW107AAAA",
       "tag": "W-M-N3/outrigger"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          437.0,
+          -13.437499999999998
+        ],
+        [
+          437.50000000000006,
+          -13.437499999999998
+        ],
+        [
+          437.50000000000006,
+          0.0
+        ],
+        [
+          437.0,
+          0.0
+        ]
+      ],
+      "layer": "A-WALL",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW107AAAA",
+      "tag": "W-M-N3/cladding"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          437.0,
+          -13.437499999999998
+        ],
+        [
+          437.50000000000006,
+          -13.437499999999998
+        ],
+        [
+          437.50000000000006,
+          0.0
+        ],
+        [
+          437.0,
+          0.0
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "standing-seam-snaplock"
     },
     {
       "space": "model",
@@ -596,6 +932,34 @@
       "boundary": [
         [
           426.00000000000006,
+          -13.437499999999998
+        ],
+        [
+          431.50000000000006,
+          -13.437499999999998
+        ],
+        [
+          431.50000000000006,
+          0.0
+        ],
+        [
+          426.00000000000006,
+          0.0
+        ]
+      ],
+      "pattern": "batt",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "mineral-wool"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          426.00000000000006,
           80.0
         ],
         [
@@ -617,6 +981,34 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "mineral-wool"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          433.50000000000006,
+          -13.437499999999998
+        ],
+        [
+          437.0000000000001,
+          -13.437499999999998
+        ],
+        [
+          437.0000000000001,
+          0.0
+        ],
+        [
+          433.50000000000006,
+          0.0
+        ]
+      ],
+      "pattern": "batt",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "closed-cell-spray-foam"
     },
     {
       "space": "model",
@@ -1016,19 +1408,19 @@
       "points": [
         [
           436.00000000000006,
-          0.0
+          -13.437499999999998
         ],
         [
           437.0,
-          0.0
+          -13.437499999999998
         ],
         [
           437.0,
-          1.4999999999999998
+          -11.9375
         ],
         [
           436.00000000000006,
-          1.4999999999999998
+          -11.9375
         ]
       ],
       "layer": "S-FNDN",
@@ -1044,19 +1436,19 @@
       "boundary": [
         [
           436.00000000000006,
-          0.0
+          -13.437499999999998
         ],
         [
           437.0,
-          0.0
+          -13.437499999999998
         ],
         [
           437.0,
-          1.4999999999999998
+          -11.9375
         ],
         [
           436.00000000000006,
-          1.4999999999999998
+          -11.9375
         ]
       ],
       "pattern": "spf",
@@ -1508,7 +1900,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMW107AAAA",
-      "tag": "ladder-sill-000-00"
+      "tag": "ladder-sill-000-01"
     },
     {
       "space": "model",

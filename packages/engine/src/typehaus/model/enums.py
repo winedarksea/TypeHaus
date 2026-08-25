@@ -26,11 +26,22 @@ class LayerDatum(Enum):
     absolute elevation. ``GRADE`` is the one that makes "above grade" expressible on a type
     at all, and it is what a foundation-protection band, a water table, or a splash course
     is actually described by on a drawing.
+
+    ``LINE_BASE``/``LINE_TOP`` measure from the wall's *layout line* — the derived chain of
+    collinear, stacked walls it belongs to (→ ``resolve/layout_lines.py``) — rather than from
+    the wall itself. That is what makes a band describable against the *building*: brick
+    coursing on a 2 2/3" module, or a siding band, runs grade to eave without the author
+    chunking walls to match. The type/instance discipline this docstring defends is
+    untouched: the assembly still knows no elevation, and it is still the wall that resolves
+    the datum — now by asking its line instead of only itself. A band is clamped to its host
+    wall either way, so a wall outside the band's reach simply carries no layer for it.
     """
 
     WALL_BASE = "wall_base"
     WALL_TOP = "wall_top"
     GRADE = "grade"
+    LINE_BASE = "line_base"
+    LINE_TOP = "line_top"
 
 
 class ControlLayer(Enum):

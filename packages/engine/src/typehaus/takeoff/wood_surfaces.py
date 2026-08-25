@@ -94,7 +94,9 @@ def wood_surfaces_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     for paneling in model.panelings:
         key = (paneling.material_ref, paneling.replaces_wall_finish)
         paneling_area[key] += paneling.area_m2
-        paneling_rooms[key].append(paneling.room)
+        # "Where" is the room for a room-scoped band and the line for a facade one, which
+        # is the same answer to the same question — the scope the author named.
+        paneling_rooms[key].append(paneling.room or paneling.layout_line or "")
     for ref, is_override in sorted(paneling_area):
         rows.append(_area_row(
             materials, ref, paneling_area[(ref, is_override)],

@@ -203,8 +203,8 @@ def frame_wall_truss(plan: PlanModel, wall: ResolvedWall,
     # taken by the pack next door.
     voids = [(opening.center_along_m - opening.width_m / 2.0,
               opening.center_along_m + opening.width_m / 2.0,
-              wall.z0_m + opening.sill_m,
-              wall.z0_m + opening.sill_m + opening.height_m)
+              wall.base_ref_z_m + opening.sill_m,
+              wall.base_ref_z_m + opening.sill_m + opening.height_m)
              for opening in openings]
     packs, tabs, loose = frame.pack_all(packable, voids)
     members.extend(packs)

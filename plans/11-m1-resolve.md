@@ -87,7 +87,21 @@ checked like every other boundary.
     authored tiebreaker `Wall.stacks_on = "<tag-below>"`, which always wins.
   - No candidate → simply no stack edge (a setback storey); nothing to check.
 - **Wall-line stacks** (chains bottom → top, including `FoundationWall` at the bottom) are a
-  first-class `ResolvedModel` product with three consumers:
+  first-class `ResolvedModel` product with three consumers.
+
+  *Built 2026-08-25 as `resolve/layout_lines.py` → `ResolvedModel.layout_lines`.* Named
+  **layout line**, not wall line: *braced wall line* is an IRC term of art (R602.10.1.4) and
+  admits up to 4 ft of in-plane offset, where this is strictly collinear — `WallLine` /
+  `BracedWallLine` stays free for a bracing check. It is derived from the **authored** plan
+  rather than from `ResolvedWall`, because `topology._band` needs a wall's line while it is
+  resolving that wall, twelve stages before `resolve_stacking` runs; and it chains
+  *horizontally* as well as vertically, which is what makes two segments split at a tee one
+  grid. It is derived and **unexported** — Revit's Stacked Wall is skipped by the Autodesk
+  IFC exporter, which writes the subwalls as separate `IfcWall`s, and this is the same shape.
+  A fourth consumer arrived with it: `LayerDatum.LINE_BASE`/`LINE_TOP`, so a band is
+  describable against the *building* (brick coursing, a siding band) instead of restarting at
+  every storey line. And a fifth: `WallPaneling.layout_line`, so a facade band is not forced
+  through a room. The three below:
   1. **Boundary conditions** — each stack edge through a `FloorSystem` emits a
      **storey-stack condition** (the rim/band condition, anchored to the generated rim joist,
      §Floors), and each stack edge where assembly
@@ -95,7 +109,14 @@ checked like every other boundary.
      jogs quantified (same computation as assembly-change nodes, §Wall variation below).
      Both feed the transition system (→ 11b §Transitions).
   2. **Stud stacking** — the framing solver's in-line framing option (§Framing solver below)
-     aligns stud layout grids along stack edges.
+     aligns stud layout grids along stack edges. *Built 2026-08-25* as
+     `FramingSpec.layout_origin: "wall-start" | "line"`, default `"wall-start"` so every
+     existing wall is unchanged byte for byte. Deliberately **not** folded into
+     `advanced_framing`, which also drops the second top plate: R602.3.2's single-top-plate
+     exception turns on rafters or joists centred over studs within 1", not on studs stacking
+     over studs (R602.3.3's 5" rule is the bearing-stud one), and in-line framing is an APA
+     Advanced Framing technique rather than a code mandate. `furring._module_stations` takes
+     the same phase, so battens keep sitting on the studs across a split.
   3. **Load path** — `haus explain --bearing` walks stack edges as vertical load-path
      segments (§Foundations below).
 - **Control-layer continuity is vertical too:** the continuity check (→ 12 §Checks) walks

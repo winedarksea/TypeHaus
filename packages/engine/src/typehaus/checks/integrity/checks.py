@@ -197,7 +197,23 @@ def _slot_findings(assembly_tag: str, layers: Sequence[Layer]) -> list[Finding]:
             for second in members[index + 1:]:
                 span_a = _slot_span(first.extent)
                 span_b = _slot_span(second.extent)
-                if span_a is None or span_b is None or span_a[0] is not span_b[0]:
+                if span_a is None or span_b is None:
+                    continue
+                if span_a[0] is not span_b[0]:
+                    # Two regions of ONE row measured from two different datums cannot be
+                    # shown exclusive here at all — the offsets are in different frames, and
+                    # which way they resolve depends on the wall. LINE_BASE is what makes
+                    # this reachable: a row half-authored against the wall and half against
+                    # its layout line tiles on a single-wall line and overlaps the moment
+                    # that line gains a second member, which is the worst way to find out.
+                    out.append(_err(
+                        "integrity.assembly_layers",
+                        f"assembly {assembly_tag} slot {slot!r} layers {first.name} and "
+                        f"{second.name} measure from different datums "
+                        f"({span_a[0].value} and {span_b[0].value}), so their bands cannot "
+                        f"be shown exclusive",
+                        (assembly_tag,),
+                        "regions of one row share one datum — pick the wall or its line"))
                     continue
                 _datum, a0, a1 = span_a
                 _datum, b0, b1 = span_b

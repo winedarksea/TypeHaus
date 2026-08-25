@@ -412,7 +412,7 @@ def _door_swing_conflicts(model: ResolvedModel,
         wall = wall_by_tag.get(opening.host_wall)
         if wall is None:
             continue
-        leaf_head_m = wall.z0_m + opening.sill_m + opening.height_m
+        leaf_head_m = wall.base_ref_z_m + opening.sill_m + opening.height_m
         swing = Polygon(opening.swing_clearance)
         swing_min_x, swing_min_y, swing_max_x, swing_max_y = swing.bounds
         for item in model.canvas_objects:

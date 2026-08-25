@@ -614,14 +614,11 @@ OPENINGS = [
     # grid (see NODES); offsets are authored off the wall's far node so they don't move
     # automatically and had to be rewritten by hand.
     #
-    # W1 columns at 5'-0" (under WIN-S-PLANT3). W2 cannot column with WIN-S-SUITE1 above it:
-    # the only two shared stud lines in the overlap (124"/140" from the wall start) each leave
-    # only 16" of clear wall where the jamb pack needs ~16 1/2", so either choice puts a king
-    # stud sharing 83% of a 2x6 with W-M-W3's end stud (structural.member_interference).
-    # Two columns are the answer instead: 5'-0" (here) and 19'-8" (WIN-M-BATH2), on the
-    # shared 6'-0" head line. There were three until 2026-08-21: WIN-M-MUD at 31'-4"
-    # columned with WIN-S-BATH-W until the second-floor chase's south corners moved 3 1/8"
-    # and re-phased W-S-W1's grid out from under it (plan/storeys/second.py, NODES).
+    # Four exact main/second columns now order the west face: 5'-0", 10'-4", 19'-8" and
+    # 24'-4", all on the shared 6'-0" head line. The 10'-4" suite header replaces the one
+    # ladder-backing rung it crosses at W-S-W3's tee; opening framing takes precedence over
+    # finish backing there. The 31'-4" service group stays a near-column: WIN-S-BATH-W is
+    # 3 1/8" south because its mechanical-chase node re-phases that wall's stud grid.
     Window(uid="CMX301AAAA", tag="WIN-M-BED-W1", host="W-M-W4",
            type_ref="WT-2736", position=from_node("N-M-SW", ft(3, 10.5)),
            sill_height=ft(3)),                                                # y 5'-0"
@@ -654,6 +651,12 @@ OPENINGS = [
     Window(uid="CMX305AAAA", tag="WIN-M-BATH2", host="W-M-W3",
            type_ref="WT-2736-T", position=from_node("N-M-W3", ft(5, 6.5)),
            sill_height=ft(3)),                                               # y 19'-8"
+    # Paired with WIN-S-VANITY-W at the centre of the 4'-0" room band. The 14" RO fits
+    # wholly between studs; the 4'-0" sill preserves privacy and the west face's 6'-0"
+    # head line. Tempered because the safety-glazing check treats the wet-room location as
+    # hazardous below 60".
+    Window(uid="FGWPV572DB", tag="WIN-M-BATH1-W", host="W-M-W2", type_ref="WT-1424-T",
+           position=from_node("N-M-W1", ft(1, 5)), sill_height=ft(4)),       # y 24'-4"
     # Picture unit centred y=31'-4", the bench/aisle centreline (FURN-M-MUD-BENCH,
     # plan/placeables.py). Re-authored off N-M-MECH1 (2026-08-02): a `from_node` offset is
     # measured from the host's *start* node, so when the 2026-07-28 MECH split made

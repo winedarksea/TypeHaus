@@ -726,47 +726,23 @@ def _opening_plan_y(model, tag):
 
 
 def _framing_offenders(tags):
-    """Re-run the two framing gates and keep only failures naming one of ``tags``."""
+    """Re-run opening/module/safety gates and keep only failures naming one of ``tags``."""
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
     return [finding.message for finding in report.findings
-            if finding.check_id in ("structural.window_framing_module", "integrity.opening_fits")
+            if finding.check_id in ("structural.window_framing_module",
+                                    "integrity.opening_fits",
+                                    "code.R308_4_safety_glazing")
             and finding.result is Result.FAIL
             and any(tag in finding.message for tag in tags)]
 
 
-def test_the_west_facade_stacks_two_two_storey_window_columns(catlin_model):
-    """Main and second column on the west at 5'-0" and 19'-8", on one head line.
-
-    Nothing else in the engine tests window *alignment*, so without this the arrangement is
-    one drive-by node edit away from drifting back. It drifted here in the first place: a
-    wall lays its studs out from its own start node, and the main storey's west tees
-    (N-M-W3, N-M-W2) sat 4" and 2" off the second storey's (N-S-W3, N-S-W2), which put the
-    two storeys' stud grids permanently out of phase — only 31'-4" columned, and only
-    because both its hosts happen to start at y=33'-4". No amount of moving *windows* fixes
-    that, which is why the fix was to move those two nodes and why this test exists at the
-    facade's altitude rather than the window's. The second half re-runs the framing gates,
-    so each shared station is pinned as a legal framing station and not just a coincidence.
-
-    There were three columns until 2026-08-21, and losing the third is the same rule read
-    backwards. 31'-4" columned only because W-M-W1 and W-S-W1 both started on y=33'-4";
-    when the second storey's mechanical chase took its south corners 3 1/8" south to line
-    its face up with FX-S-BATH1-SH's apron, N-S-CH3 went with them and W-S-W1's grid
-    re-phased. WIN-S-BATH-W rode south to its new bay centre at 31'-0 7/8" rather than
-    breaking a stud to hold the old y, and WIN-M-MUD stayed at 31'-4" because it is centred
-    on the mudroom bench's aisle. Two windows, one head line, no column — which is the
-    honest reading of a grid that is a property of a node.
-
-    The corollary that decides 19'-8": ``structural.window_framing_module`` puts a 14" RO
-    on a bay centre and a 27"/30" RO on a stud line, 8" apart on one grid. So a 14" unit
-    can never column with a 27" one, which is why WIN-M-BATH2 is a 27" unit and not the
-    14" one it was.
-
-    A further column is deliberately absent — see
-    ``test_the_west_suite_window_pair_is_left_uncolumned_on_purpose``.
-    """
+def test_the_west_facade_stacks_four_two_storey_window_columns(catlin_model):
+    """Four exact lower columns, mirrored attic caps, and one constrained near-column."""
     columns = {
         ft(5).meters: ("WIN-M-BED-W1", "WIN-S-PLANT3"),
+        ft(10, 4).meters: ("WIN-M-BED-W2", "WIN-S-SUITE1"),
         ft(19, 8).meters: ("WIN-M-BATH2", "WIN-S-SUITE2"),
+        ft(24, 4).meters: ("WIN-M-BATH1-W", "WIN-S-VANITY-W"),
     }
     for expected_y, (main_tag, second_tag) in columns.items():
         main_y, main = _opening_plan_y(catlin_model, main_tag)
@@ -781,33 +757,33 @@ def test_the_west_facade_stacks_two_two_storey_window_columns(catlin_model):
             assert opening.sill_m + opening.height_m == pytest.approx(ft(6).meters, abs=1e-6), \
                 opening.tag
 
-    assert not _framing_offenders([tag for pair in columns.values() for tag in pair])
+    vanity_y, vanity = _opening_plan_y(catlin_model, "WIN-S-VANITY-W")
+    bath_y, bath = _opening_plan_y(catlin_model, "WIN-M-BATH1-W")
+    assert vanity_y == pytest.approx(ft(24, 4).meters, abs=1e-6)
+    assert bath_y == pytest.approx(ft(24, 4).meters, abs=1e-6)
+    assert vanity.host_wall == "W-S-W2" and vanity.type_ref == "WT-1424-T"
+    assert bath.host_wall == "W-M-W2" and bath.type_ref == "WT-1424-T"
 
+    attic_south_y, attic_south = _opening_plan_y(catlin_model, "WIN-A-W-S")
+    attic_north_y, attic_north = _opening_plan_y(catlin_model, "WIN-A-W-N")
+    assert attic_south_y == pytest.approx(ft(4, 8).meters, abs=1e-6)
+    assert attic_north_y == pytest.approx(ft(31, 4).meters, abs=1e-6)
+    assert attic_south_y + attic_north_y == pytest.approx(ft(36).meters, abs=1e-6)
+    assert attic_south.width_m == pytest.approx(attic_north.width_m, abs=1e-6)
 
-def test_the_west_suite_window_pair_is_left_uncolumned_on_purpose(catlin_model):
-    """WIN-M-BED-W2 (10'-4") and WIN-S-SUITE1 (13'-0") do not stack, and must not be made to.
+    mud_y, _mud = _opening_plan_y(catlin_model, "WIN-M-MUD")
+    second_bath_y, _second_bath = _opening_plan_y(catlin_model, "WIN-S-BATH-W")
+    assert mud_y == pytest.approx(ft(31, 4).meters, abs=1e-6)
+    assert second_bath_y == pytest.approx(ft(31, 0.875).meters, abs=1e-6)
 
-    Written as a test because the gap is exactly the kind a later pass "fixes": both windows
-    are the same 27" unit on the same 6'-0" head line, two storeys apart, 2'-8" out of
-    line. The reason they cannot column is arithmetic. Their hosts are W-M-W4 (13'-0" ->
-    0'-0") and W-S-W3 (22'-4" -> 9'-0"), whose start nodes are both 12" mod 16", so a
-    shared stud line is 12" mod 16" too — and the only two inside both walls are 10'-4" and
-    11'-8". Each leaves ~16" of wall between the RO and the far tee where the jamb pack
-    wants ~16 1/2"; 11'-8" was built and the king stud came out sharing 83% of a 2x6 with
-    W-M-W3's end stud, and 10'-4" moves the identical clash onto the second storey.
+    suite_wall = catlin_model.wall("W-S-W3")
+    suite_wall_member_keys = {member.child_key for member in suite_wall.members}
+    assert "header-0" in suite_wall_member_keys
+    assert "tee-N-S-W3-block-02" not in suite_wall_member_keys
+    assert {"tee-N-S-W3-block-00", "tee-N-S-W3-block-01"} <= suite_wall_member_keys
 
-    Buying it would mean moving a tee by a whole 16" module and taking a foot out of a room
-    (RM-M-BATH2's depth, or RM-S-PLANT's), which is a worse trade than an unstacked pair.
-    """
-    main_y, main = _opening_plan_y(catlin_model, "WIN-M-BED-W2")
-    second_y, second = _opening_plan_y(catlin_model, "WIN-S-SUITE1")
-    assert main_y == pytest.approx(ft(10, 4).meters, abs=1e-6)
-    assert second_y == pytest.approx(ft(13).meters, abs=1e-6)
-    # Both still obey the facade's own head line and the framing module, which is the
-    # standard they are held to instead of the column.
-    for opening in (main, second):
-        assert opening.sill_m + opening.height_m == pytest.approx(ft(6).meters, abs=1e-6)
-    assert not _framing_offenders(["WIN-M-BED-W2", "WIN-S-SUITE1"])
+    column_tags = [tag for pair in columns.values() for tag in pair]
+    assert not _framing_offenders(column_tags)
 
 
 def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(catlin_model):
@@ -1634,9 +1610,10 @@ def test_the_main_floor_finish_follows_the_deck_boundary(tmp_path):
     # clipped to the room, so the drop is the room's share of 7' x 18' — not the whole of it.
     # 411.3 until 2026-08-24, when RM-M-PANTRY took the living room's NW corner — the band
     # is clipped to the ROOM, so framing a room out of it shrinks this zone by that room's
-    # area. The 7' x 18' arithmetic below is unaffected: the pantry is at y 32'-11 3/8"..
-    # 35'-5 3/8", nowhere near the _BAND_Y line this test moves.
-    assert before == pytest.approx(390.6, abs=0.5)
+    # area. Then 390.6 -> 392.7 later the same day, when W-M-PAN-S moved 4" north and handed
+    # 2.1 sf back. The 7' x 18' arithmetic below is unaffected either way: the pantry is at
+    # y 33'-3 3/8"..35'-5 3/8", nowhere near the _BAND_Y line this test moves.
+    assert before == pytest.approx(392.7, abs=0.5)
     assert before - after == pytest.approx(7.0 * 17.9, rel=0.05)
 
 

@@ -64,6 +64,19 @@ def explain(
                                   *(f"to {tag}" for tag in upper)]) or "bearing role"
             table.add_row(wall.storey, wall.tag, wall.assembly, relation)
         console.print(table)
+
+        # The chain, not the pairs: ``stack_edges`` is pairwise and says nothing about where
+        # a wall sits *along* the line it shares, which is the number that decides whether
+        # two stud modules agree.
+        lines = Table("layout line", "storey", "wall", "station", "runs")
+        for line in model.layout_lines:
+            if len(line.members) < 2:
+                continue
+            for index, member in enumerate(line.members):
+                lines.add_row(line.tag if index == 0 else "", member.storey,
+                              member.wall_tag, f"{member.u_offset_m:+.3f} m",
+                              "with" if member.direction_sign > 0 else "reversed")
+        console.print(lines)
         return
 
     if detail:

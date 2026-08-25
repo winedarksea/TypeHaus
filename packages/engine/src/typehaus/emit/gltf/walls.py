@@ -36,10 +36,14 @@ def _add_wall_body(mb: _MeshBuilder, wall: ResolvedWall, lod: str, openings=(),
     separate ``framing`` node by the caller, so the framed LOD leaves the body empty and lets the
     stud model stand on its own. ``authored`` is the catalog's authored-colour map
     (``palette.authored_colors``), so a layer whose material states a colour — a paint film,
-    a wood liner — reads with it instead of a family guess."""
+    a wood liner — reads with it instead of a family guess.
+
+    ``body_layers()``, not ``depth_layers()``: a ``Layer.slot``'s regions each sit at their
+    own elevation and each is a real solid, and counting them once — which is what *depth*
+    accounting wants — drew ``W-B-BRICK``'s plinth with bare nothing above it."""
     if lod == "framed" and wall.members:
         return
-    for layer in wall.depth_layers():
+    for layer in wall.body_layers():
         if not layer.polygon:
             continue
         color = _layer_color(layer, authored)

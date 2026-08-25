@@ -68,8 +68,8 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         if host is None:
             continue
         frame_points = _opening_frame_bounds(host, o)
-        centroid, bbox = _bounds(frame_points, host.z0_m + o.sill_m,
-                                 host.z0_m + o.sill_m + o.height_m)
+        centroid, bbox = _bounds(frame_points, host.base_ref_z_m + o.sill_m,
+                                 host.base_ref_z_m + o.sill_m + o.height_m)
         elems.append(DiffElem(
             global_id=(derive_child_guid(puid, o.uid, "void") if o.kind == "rough_opening" else _guid(puid, o.uid)), tag=o.tag,
             ifc_class=("IfcDoor" if o.is_door else "IfcWindow") if o.kind != "rough_opening" else "IfcOpeningElement",

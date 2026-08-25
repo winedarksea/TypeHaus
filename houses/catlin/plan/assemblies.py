@@ -112,6 +112,23 @@ ACCENT_GWB_LINING = (
 #
 # The honest case for the change is LABOUR: no 8" screws, no two-layer board install, no
 # separate WRB, one sprayer instead of three operations. See notes/outie_window_truss_detail.md.
+# LAYOUT_ORIGIN, and why this assembly does NOT yet set it (2026-08-25). Adding
+# ``layout_origin="line"`` to the stud spec below (and to the outrigger spec, or the
+# battens come off the studs) counts the 16" module from this wall's *layout line* — the
+# derived chain of collinear, stacked walls — instead of from each wall's own start node.
+# This is the assembly it was built for: deliberately one type for main, second and attic,
+# and the south facade alone is eight walls on one line (W-M-S1/S2, W-S-S1/S2, W-A-S1..S4),
+# split at tees purely as an authoring convenience, every split restarting the module.
+#
+# Measured on this house it takes studs that land on a stud below from **46.5% to 75.5%**
+# (the residue is end, corner and king studs, which are deliberately off-module and can
+# only align by accident) and adds 363 members as the outriggers and their blocks re-phase.
+#
+# It is off because every window on this assembly was authored against its own wall's node:
+# turning it on re-phases the grid under 19 of them and `structural.window_framing_module`
+# reports every one, plus one attic header that then meets a rafter. The fix each finding
+# names is to shift the RO onto the line's grid — a facade decision, not an engine one, and
+# 19 of them at once. Do that first, then flip both specs together.
 CATLIN_EXT_2X6 = Assembly(
     tag="CATLIN_EXT_2X6",
     layers=(
@@ -282,8 +299,12 @@ CATLIN_ROOF = Assembly(
 
 # The exposed-foundation band (2026-08-18, deeper since 2026-08-21). Runs from 6" *below*
 # grade — so no foam edge shows at the soil line, and so the panel is what the shovel hits
-# rather than the XPS — up to the top of the wall at 0'-0", where its head tucks under the
-# rainscreen's Z-flashing with the bug screen above it. It replaces the full-height parge
+# rather than the XPS — up to the top of the wall, where its head tucks under the
+# rainscreen's Z-flashing with the bug screen above it. The wall top has been the bearing
+# seat at -1'-1 7/16", not 0'-0", since the 2026-08-23 seat rework: the framed wall above
+# now reaches back down to meet it (``resolve/platform.extend_walls_to_foundation``), so
+# the two skins abut there rather than leaving the mudsill and rim bare. It replaces the
+# full-height parge
 # the N/E/W walls used to claim over nine feet of buried foam: the parge was added
 # 2026-08-01 for the *south* wall's exposure and applied to all four sides because a layer
 # had no way to say "only here".
@@ -479,6 +500,13 @@ SUNKEN_GARDEN_COLUMN_16 = Assembly(
 # STRUCTURE, not CLADDING, on every region: this wythe has nothing behind it in this
 # assembly (the backer is a *different wall*), so it has to be the structure layer or
 # integrity.assembly_layers finds none. Same precedent as RETAINING_BLOCK_12.
+#
+# Every band is measured LINE_BASE, not WALL_BASE, and that is the whole point of the
+# datum: a 2 2/3" modular course is a property of the *building*, not of whichever wall
+# happens to carry it, so stacking a second wall on this line has to continue the coursing
+# rather than restart it at the storey datum. W-B-BRICK is a single-wall line today, so
+# ``base_z_m == z0_m`` and every region resolves to exactly the elevation it did as
+# WALL_BASE — the conversion is a no-op on this house and a promise about the next one.
 _VENEER_WYTHE = inch(3.625)
 BASEMENT_BRICK_VENEER = Assembly(
     tag="BASEMENT_BRICK_VENEER",
@@ -492,28 +520,28 @@ BASEMENT_BRICK_VENEER = Assembly(
         Layer(name="brick-plinth", material_ref="brown-brick", thickness=_VENEER_WYTHE,
               function=LayerFunction.STRUCTURE, slot="wythe",
               extent=LayerExtent(
-                  bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(0.0)),
-                  top=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(32.0)))),
+                  bottom=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(0.0)),
+                  top=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(32.0)))),
         # 2 courses of gold capping the plinth — the same two courses, carried up 8" with it.
         Layer(name="brick-band-lo", material_ref="glazed-gold-brick", thickness=_VENEER_WYTHE,
               function=LayerFunction.STRUCTURE, slot="wythe",
               extent=LayerExtent(
-                  bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(32.0)),
-                  top=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(37.333)))),
+                  bottom=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(32.0)),
+                  top=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(37.333)))),
         # The field: 19 courses of lapis, plinth cap to door head. It gives up the three
         # courses the plinth gained; the door head at 88" does not move.
         Layer(name="brick-field-lo", material_ref="glazed-lapis-brick",
               thickness=_VENEER_WYTHE,
               function=LayerFunction.STRUCTURE, slot="wythe",
               extent=LayerExtent(
-                  bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(37.333)),
-                  top=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(88.0)))),
+                  bottom=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(37.333)),
+                  top=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(88.0)))),
         # 2 courses of gold on the door head line, springing off the arch crown.
         Layer(name="brick-band-hi", material_ref="glazed-gold-brick", thickness=_VENEER_WYTHE,
               function=LayerFunction.STRUCTURE, slot="wythe",
               extent=LayerExtent(
-                  bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(88.0)),
-                  top=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(93.333)))),
+                  bottom=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(88.0)),
+                  top=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(93.333)))),
         # The lapis cap above the upper register. Open top on purpose: `top=None` is the
         # wall's own top, which is the only way to say "run it out" without writing this
         # wall's 8'-9" into an assembly type that any wall may use.
@@ -521,7 +549,7 @@ BASEMENT_BRICK_VENEER = Assembly(
               thickness=_VENEER_WYTHE,
               function=LayerFunction.STRUCTURE, slot="wythe",
               extent=LayerExtent(
-                  bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(93.333)))),
+                  bottom=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(93.333)))),
     ),
     source="basement south veneer over the sunken garden — the Ishtar scheme (2026-08-20): lapis glazed field with golden-yellow register bands over an unglazed brown plinth, one 3 5/8\" wythe banded by Layer.slot, 1\" airgap, corrugated masonry ties back to the existing CATLIN_BASEMENT_8_GARDEN wall (no CMU backer: the basement concrete is the backer). Was one flat field of glazed-green-brick, which is still in the catalog for a one-word revert",
 )

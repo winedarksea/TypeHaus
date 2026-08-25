@@ -106,7 +106,9 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
     if axis_length <= 1e-9:
         return ()
     posx, posy = opening_center(wall, opening)
-    z0, sill = wall.z0_m, opening.sill_m
+    # ``base_ref_z_m``, not ``z0_m``: a sill is measured up from the room floor, and a
+    # wall extended down over the rim keeps its floor where the framing is.
+    z0, sill = wall.base_ref_z_m, opening.sill_m
     width = opening.width_m
     # A gable/ToRoof wall's top slopes, so the product is clipped by the rake over *both*
     # jambs (the lower one wins), not by the flat bounding z1 — otherwise a door under a rake

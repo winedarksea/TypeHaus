@@ -228,7 +228,7 @@ def dimension_strings(model, derived, crop, direction, station) -> list[IRNode]:
         host = walls[0] if walls else None
         if opening is None or host is None:
             return []
-        sill_z = (host.z0_m + opening.sill_m) / M_PER_IN
+        sill_z = (host.base_ref_z_m + opening.sill_m) / M_PER_IN
         head_z = sill_z + opening.height_m / M_PER_IN
         _lo, hi = wall_cut_bounds_m(host, direction, station)
         if hi is None:

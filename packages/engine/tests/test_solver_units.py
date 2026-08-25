@@ -108,6 +108,33 @@ def test_ladder_and_stud_pack_tee_backing_are_configurable():
                 if member.child_key.startswith("tee-N-T-stud-")]) == 2
 
 
+def test_ladder_tee_backing_omits_only_the_rung_intersecting_opening_framing():
+    plan, rw = _wall_and_plan("3-stud")
+    tee_station = 2.0
+    baseline = frame_wall(plan, rw, openings=[], tee_stations=((tee_station, "N-T"),))
+    baseline_rungs = {
+        member.child_key for member in baseline
+        if member.child_key.startswith("tee-N-T-block-")
+    }
+    opening = WallOpening(
+        center_m=tee_station,
+        width_m=inch(27).meters,
+        height_m=inch(36).meters,
+        sill_m=inch(36).meters,
+        is_door=False,
+    )
+
+    framed = frame_wall(plan, rw, openings=[opening], tee_stations=((tee_station, "N-T"),))
+    retained_rungs = {
+        member.child_key for member in framed
+        if member.child_key.startswith("tee-N-T-block-")
+    }
+
+    assert baseline_rungs - retained_rungs == {"tee-N-T-block-02"}
+    assert retained_rungs == baseline_rungs - {"tee-N-T-block-02"}
+    assert any(member.category == "header" for member in framed)
+
+
 def _wall_and_plan_with_blocking(heights) -> tuple[SimpleNamespace, ResolvedWall]:
     layer = Layer(name="stud", material_ref="spf", thickness=inch(3.5),
                  function=LayerFunction.STRUCTURE,

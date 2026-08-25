@@ -277,28 +277,22 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     glazing narrowed to WT-3048 and the module's ideal position went with it, both pairs
     shifted the same way so the storeys still stack and the two segments' 8" phase miss
     is unchanged). The attic no longer joins them — see **Gables**.
-    The **west face stacks two** through main and second (y 5'-0", 19'-8"). It had exactly
-    one (31'-4", and only because both its hosts start at y=33'-4") until 2026-08-15, when
-    N-M-W3 went 13'-4" -> 13'-0" and N-M-W2 went 22'-2" -> 22'-4" to put the main storey's
-    west stud grid in phase with the second's — the residue rule, applied to the two tees
-    rather than to the six windows. WIN-M-BATH2 was retyped WT-1424-T -> WT-2736-T at a
-    3'-0" sill to reach the 19'-8" column (the 8" rule), which also buys R303.3's window
-    alternative outright. RM-M-BED gave up 4" and RM-M-BATH2 gained 6".
+    The **west face stacks four** through main and second (y 5'-0", 10'-4", 19'-8",
+    24'-4"). The first three use the 27" family on a 3'-0" sill; the fourth pairs tempered
+    14" awnings in RM-M-BATH1 and RM-S-VANITY on a 4'-0" sill. All share one 6'-0" head
+    line. The 10'-4" suite header crosses the top ladder-backing rung at W-S-W3's tee;
+    opening framing owns that volume, so the solver omits only that nonstructural rung.
+    WIN-M-BATH2 was retyped WT-1424-T -> WT-2736-T at a 3'-0" sill to reach the 19'-8"
+    column (the 8" rule), which also buys R303.3's window alternative outright.
     The original 31'-4" column was **spent on 2026-08-21**, and it is the residue rule
     read backwards: the second storey's mechanical chase took its south corners 3 1/8"
     south so its face lands on FX-S-BATH1-SH's apron line, N-S-CH3 moved with them, and
     W-S-W1's grid re-phased out from under WIN-S-BATH-W. That window rode south to its new
     bay centre (31'-0 7/8") rather than break a stud holding the old y; WIN-M-MUD stayed at
     31'-4", centred on the mudroom bench's aisle. **A grid belongs to a node, so a node
-    move is a facade decision** — price it before making it.
-    **A further column is deliberately absent** and is pinned absent by
-    `test_the_west_suite_window_pair_is_left_uncolumned_on_purpose`: WIN-M-BED-W2 (10'-4")
-    and WIN-S-SUITE1 (13'-0") are the same unit on the same head line, and the only two
-    shared stud lines their hosts offer are 10'-4" and 11'-8" — each leaving ~16" of wall
-    to the far tee where the jamb pack wants ~16 1/2". At 11'-8" the king stud came out
-    sharing 83% of a 2x6 with W-M-W3's end stud; at 10'-4" the identical clash lands on the
-    second storey. **When a column costs a stud, it is not a column** — buy the alignment
-    only with a whole 16" module of room depth, or not at all.
+    move is a facade decision** — price it before making it. The west attic pair moved one
+    bay inward to 4'-8" / 31'-4", symmetric about y=18'-0"; it caps the outer lower-floor
+    groups without introducing another width family.
     The north face stacks one three-storey column at x=28'-0" (WIN-M-KITCH /
     WIN-S-HALL-N / WIN-A-N2).
   - **Rows.** Where a column is impossible, the storey's own rhythm wins instead — but a

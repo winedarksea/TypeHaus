@@ -893,6 +893,32 @@ export interface StackEdge {
   width_change: boolean;
 }
 
+/** One wall's place on a derived layout line (→ resolve/layout_lines.py). */
+export interface LayoutLineMember {
+  wall: string;
+  storey: string;
+  /** Signed station, along the line, of this wall's own station 0. */
+  u_offset_m: number;
+  /** +1 when the wall runs with the line, -1 when authored reversed. */
+  direction_sign: number;
+  z0_m: number;
+  z1_m: number;
+}
+
+/**
+ * A chain of collinear, stacked walls sharing one origin in both axes — the chain
+ * `stack_edges` only ever had the pairs of. Derived, never authored and never exported as
+ * an element; it is what explains why two walls share a stud module or a course line.
+ */
+export interface LayoutLine {
+  tag: string;
+  origin: [number, number];
+  direction: [number, number];
+  base_z_m: number;
+  top_z_m: number;
+  members: LayoutLineMember[];
+}
+
 export interface FacadeWWR {
   facade: "N" | "E" | "S" | "W";
   gross_wall_area_ft2: number;
@@ -1300,6 +1326,7 @@ export interface Model {
   hvac?: Hvac | null; // the HVAC take-off; null without preferences, absent on older model.json
   plumbing?: Plumbing | null; // the plumbing take-off; absent on older model.json
   stack_edges: StackEdge[];
+  layout_lines?: LayoutLine[]; // derived wall-line chains; absent on older model.json
   building_science?: BuildingScience | null;
   catalog?: Catalog; // authoring palette (→ _catalog); absent on older model.json
   ok?: boolean; // server/offline resolve status (state.py / bootstrap.py add this)

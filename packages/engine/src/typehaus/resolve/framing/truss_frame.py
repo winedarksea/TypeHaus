@@ -354,7 +354,7 @@ class TrussFrame:
         """
         half = opening.width_m / 2.0
         jambs = (opening.center_along_m - half, opening.center_along_m + half)
-        z_sill = self.wall.z0_m + opening.sill_m
+        z_sill = self.wall.base_ref_z_m + opening.sill_m
         z_head = z_sill + opening.height_m
         faces: list[float] = []
         added: list[tuple[FramedMember, float]] = []
@@ -428,7 +428,7 @@ class TrussFrame:
         a, b = supports
         if b - a <= _TOL:
             return []
-        z_sill = self.wall.z0_m + opening.sill_m
+        z_sill = self.wall.base_ref_z_m + opening.sill_m
         z_head = z_sill + opening.height_m
         profile = "2-2x4" if b - a > DOUBLE_HEADER_SPAN.meters else "2x4"
         thickness = cross_section(profile).width_m
@@ -461,7 +461,7 @@ class TrussFrame:
         centre = self.band_in - self.block_depth + self.truss_depth / 2.0
         half = opening.width_m / 2.0
         lo, hi = opening.center_along_m - half, opening.center_along_m + half
-        z_sill = self.wall.z0_m + opening.sill_m
+        z_sill = self.wall.base_ref_z_m + opening.sill_m
         z_head = z_sill + opening.height_m
         p_a, p_b = self.point(lo, centre), self.point(hi, centre)
         out: list[FramedMember] = []

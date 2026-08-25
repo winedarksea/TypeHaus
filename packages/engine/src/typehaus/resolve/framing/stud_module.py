@@ -25,13 +25,21 @@ _TOUCHING_CLEARANCE_M = 1e-6
 
 
 def studs_interrupted(center_m: float, half_width_m: float, spacing_m: float,
-                      stud_thickness_m: float = 0.0) -> int:
-    """How many on-module studs an opening interrupts (0 => it fits inside a bay)."""
+                      stud_thickness_m: float = 0.0, phase_m: float = 0.0) -> int:
+    """How many on-module studs an opening interrupts (0 => it fits inside a bay).
+
+    ``phase_m`` is the wall-local station of the module's first stud. 0.0 is the wall's own
+    start node, which is where the solver puts the grid unless the assembly asks to lay out
+    from its layout line instead (``FramingSpec.layout_origin``) — and this arithmetic has
+    to know, because it is what decides that an opening needs no jamb pack. Answering for
+    the wrong grid says "it fits inside a bay" about an opening a module stud runs straight
+    through, and the stud then interpenetrates the rough sill.
+    """
     if spacing_m <= 0.0:
         return 0
     reach = half_width_m + stud_thickness_m / 2.0 - _TOUCHING_CLEARANCE_M
-    lowest = math.ceil((center_m - reach) / spacing_m)
-    highest = math.floor((center_m + reach) / spacing_m)
+    lowest = math.ceil((center_m - reach - phase_m) / spacing_m)
+    highest = math.floor((center_m + reach - phase_m) / spacing_m)
     return max(0, highest - lowest + 1)
 
 
@@ -80,18 +88,25 @@ class OpeningStudModule:
 
 
 def opening_stud_module(center_m: float, width_m: float, spacing_m: float,
-                        stud_thickness_m: float = 0.0) -> OpeningStudModule:
-    """Analyse one opening against the stud module at ``spacing_m``."""
+                        stud_thickness_m: float = 0.0,
+                        phase_m: float = 0.0) -> OpeningStudModule:
+    """Analyse one opening against the stud module at ``spacing_m``.
+
+    ``phase_m`` shifts the whole grid off the wall's start node — see
+    :func:`studs_interrupted`. It moves the ideal positions with it, so "on its stud line"
+    and "on its bay centre" keep meaning the same thing about the studs actually framed.
+    """
     half = width_m / 2.0
-    interrupted = studs_interrupted(center_m, half, spacing_m, stud_thickness_m)
+    interrupted = studs_interrupted(center_m, half, spacing_m, stud_thickness_m, phase_m)
     if spacing_m <= 0.0:
         return OpeningStudModule(0, 0, 0.0, True, spacing_m)
     # Symmetric framing only ever wants the RO centred on a stud line or on a bay centre;
     # evaluating both candidates is exact, and avoids a closed-form minimum drifting from
     # the counting rule above.
     candidates = []
-    for is_bay_centre, ideal_offset in ((True, spacing_m / 2.0), (False, 0.0)):
-        count = studs_interrupted(ideal_offset, half, spacing_m, stud_thickness_m)
+    for is_bay_centre, ideal_offset in ((True, phase_m + spacing_m / 2.0),
+                                        (False, phase_m)):
+        count = studs_interrupted(ideal_offset, half, spacing_m, stud_thickness_m, phase_m)
         shifted = ((center_m - ideal_offset + spacing_m / 2.0) % spacing_m) - spacing_m / 2.0
         candidates.append((count, abs(shifted), is_bay_centre))
     minimum, offset, ideal_is_bay_centre = min(candidates)

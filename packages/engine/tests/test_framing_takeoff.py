@@ -154,6 +154,8 @@ _BOM_WAIVED_COLLECTIONS: dict[str, str] = {
     "junctions": "derived wall-meeting topology; the framing it implies bills as members",
     "conditions": "boundary-condition keys for transition matching — an index, not material",
     "stack_edges": "assembly-change edges the detail pipeline keys on; no quantity",
+    "layout_lines": "the derived wall-line chains those edges are pairs of — a shared "
+                    "origin for bands and stud layout, not an element and not material",
     "canvas_objects": "the normalized placeable view; billed as `placeables` off the same "
                       "records, and billing both would double every appliance",
     "timings": "resolve instrumentation",

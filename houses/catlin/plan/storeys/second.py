@@ -124,9 +124,9 @@ NODES = [
     # (structural.window_framing_module says exactly that in its own fix hint). The house
     # spent the west facade's 31'-4" column on this: WIN-S-BATH-W rides south to the new
     # bay centre at 31'-0 7/8" and no longer stacks on WIN-M-MUD, which stays at 31'-4"
-    # because it is centred on FURN-M-MUD-BENCH's aisle. The west face stacks two columns
-    # now, not three (houses/catlin/CLAUDE.md, Facade rules; the count is pinned by
-    # test_the_west_facade_stacks_two_two_storey_window_columns). It also takes 3 1/8" out
+    # because it is centred on FURN-M-MUD-BENCH's aisle. The west face now stacks four
+    # exact columns farther south; this constrained service group remains a 3 1/8"
+    # near-column (houses/catlin/CLAUDE.md, Facade rules). It also takes 3 1/8" out
     # of the only standing room in front of the shaft: the floor between FX-S-BATH1-WC's
     # clearance and the chase face is 1'-7 1/4" now, not 1'-10 3/8".
     Node(uid="CSN035AAAA", tag="N-S-CH1", position=pt(ft(2, 9), ft(33, 0.875))),
@@ -435,13 +435,11 @@ OPENINGS = [
            position=from_node("N-S-E2", ft(4, 1)), sill_height=ft(3)),      # y 23'-0"
     Window(uid="CSX303AAAA", tag="WIN-S-BED3", host="W-S-E4", type_ref="WT-2736",
            position=from_node("N-S-E3", ft(4, 2.5)), sill_height=ft(3)),    # y 32'-0"
-    # West suite (bearing wall) — source openings at y 12'-7" and 19'-4". SUITE2 became a
-    # column on 2026-08-15 without moving: N-M-W2 came up to 22'-4" instead, putting
-    # W-M-W3's grid in phase (see main.py). SUITE1 stays at 13'-0" and uncolumned — both
-    # candidate shared stud lines put a jamb pack into a tee's stud pack (see
-    # WIN-M-BED-W2).
+    # West suite (bearing wall). SUITE1 moved 13'-0" -> 10'-4" for the third exact
+    # main/second west column. Its header crosses W-S-W3's top ladder-backing rung, so the
+    # solver omits that nonstructural rung while preserving the header and every other rung.
     Window(uid="CSX304AAAA", tag="WIN-S-SUITE1", host="W-S-W3", type_ref="WT-2736",
-           position=from_node("N-S-W2", ft(8, 2.5)), sill_height=ft(3)),      # y 13'-0"
+           position=from_node("N-S-W2", ft(10, 10.5)), sill_height=ft(3)),   # y 10'-4"
     Window(uid="CSX305AAAA", tag="WIN-S-SUITE2", host="W-S-W3", type_ref="WT-2736",
            position=from_node("N-S-W2", ft(1, 6.5)), sill_height=ft(3)),      # y 19'-8"
     # Plant room — south glazing: centres 4'-0" and 9'-4" are stud lines on W-S-S1's grid,
@@ -465,6 +463,11 @@ OPENINGS = [
     # instead.
     Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2736-HP",
            position=from_node("N-S-W3", ft(2, 10.5)), sill_height=ft(3)),     # y 5'-0"
+    # Restores west daylight to the double-vanity alcove without competing with its two
+    # north-wall sinks and mirror lights. Paired exactly with WIN-M-BATH1-W below; the 14"
+    # RO fits one stud bay, and the tempered awning shares the facade's 6'-0" head line.
+    Window(uid="RGC7QGVF7Y", tag="WIN-S-VANITY-W", host="W-S-W2", type_ref="WT-1424-T",
+           position=from_node("N-S-W1", ft(1, 5)), sill_height=ft(4)),       # y 24'-4"
     # Study 2's south pair: centres 27'-4" and 32'-8" are stud lines on W-S-S2's grid,
     # STUDY1 stacking exactly over WIN-M-LIV-S1 (STUDY2's partner below, WIN-M-LIV-S2, was
     # deleted 2026-08-24, so STUDY2 no longer columns with anything). Moved 8" west off the old bay centres with the

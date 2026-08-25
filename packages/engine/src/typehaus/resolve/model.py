@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING
 
 from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
+from typehaus.resolve.layout_lines import ResolvedLayoutLine
 
 if TYPE_CHECKING:  # the IR imports this module, so the reference stays type-only
     from typehaus.model.placeables import Mount
@@ -53,6 +54,15 @@ class ResolvedLayer:
     # the first of them may be counted toward the wall's thickness. ``None`` — every layer
     # in every assembly authored before slots existed — is a row of its own.
     slot: str | None = None
+    # The *unresolved* ``Layer.extent`` that produced ``z0_m``/``z1_m``, as
+    # ``((datum, offset_m) | None, (datum, offset_m) | None)`` — bottom, then top.
+    # ``z0_m``/``z1_m`` are absolute and therefore stale the moment the wall's own extent
+    # moves: ``extend_walls_to_platform`` grows a wall *after* its layers are resolved, and
+    # a band frozen against the pre-lift top refused to follow, including a "run it out"
+    # ``top=None`` band, which resolves to the old ``z1`` rather than staying ``None``.
+    # Keeping the recipe beside the answer lets :func:`typehaus.resolve.layer_bands.reband`
+    # re-resolve it against the wall's new elevations without a plan lookup.
+    band_spec: tuple[tuple[str, float] | None, tuple[str, float] | None] | None = None
 
     def band(self, wall: ResolvedWall) -> tuple[float, float]:
         """This layer's absolute (z0, z1), falling back to the wall's where unbanded."""
@@ -196,6 +206,26 @@ class ResolvedWall:
     # joists, not studs — so that elevation is carried separately here. ``None`` means the
     # wall is not extended and its framing tops out at ``z1_m``/``top_z*_m`` as before.
     plate_top_z_m: float | None = None
+    # The mirror image, and for the mirror-image reason (#43): a framed wall's *body* —
+    # sheathing, CI, WRB, cladding — runs down over the mudsill and rim board and laps the
+    # foundation's protection panel, which is what is built (notes/basement_to_framed_wall
+    # _detail.md) and what left ~270 SF of the basement-to-main line unclad while every
+    # ``W-M-*`` started at the storey datum and the pour stopped 13 7/16" below it. Its
+    # *framing* does not move: bottom plate, studs and opening sills stay on the storey
+    # datum, which is the elevation kept here. ``None`` means the wall was not extended
+    # down and its base is ``z0_m`` as before.
+    plate_base_z_m: float | None = None
+
+    @property
+    def base_ref_z_m(self) -> float:
+        """The wall's *framing* base — the datum a sill height is measured from.
+
+        ``ResolvedOpening.sill_m`` is stated up from the room floor, and the room floor is
+        where the framing starts, not where the cladding stops. Every consumer that adds a
+        sill to an elevation reads this rather than ``z0_m``, so extending a wall down over
+        the rim moves its skin without moving a single window (→ ``plate_base_z_m``).
+        """
+        return self.z0_m if self.plate_base_z_m is None else self.plate_base_z_m
 
     @property
     def thickness_m(self) -> float:
@@ -534,12 +564,18 @@ class ResolvedPaneling:
     already net of the openings that punch the band — so the takeoff sums, it never
     re-intersects. ``band_z0_m``/``band_z1_m`` are wall-local, measured up from the wall
     base (the room floor), matching ``ResolvedOpening.sill_m``.
+
+    A *line*-scoped paneling resolves the same way, one record per member wall, and its
+    band is measured from the line's base instead — so a facade band crossing a storey
+    line still arrives here as per-wall records in each wall's own frame, and every
+    downstream consumer sums exactly as it did.
     """
 
     uid: str
     tag: str
     storey: str
-    room: str
+    # The room the band belongs to, or ``None`` when it belongs to ``layout_line``.
+    room: str | None
     wall_tag: str
     material_ref: str
     area_m2: float
@@ -547,6 +583,8 @@ class ResolvedPaneling:
     band_z1_m: float
     run_m: float
     replaces_wall_finish: bool
+    # The layout line the band belongs to, or ``None`` for the room-scoped path.
+    layout_line: str | None = None
 
 
 @dataclass(frozen=True)
@@ -849,6 +887,11 @@ class ResolvedModel:
     panelings: list[ResolvedPaneling] = field(default_factory=list)
     conditions: list[BoundaryCondition] = field(default_factory=list)
     stack_edges: list[StackEdge] = field(default_factory=list)
+    # Derived wall-line chains (#43): collinear within a storey, stacked across them,
+    # each with one origin and one direction. Built from the *authored* plan in the
+    # pipeline's first stage, because ``topology`` needs a wall's line while it is
+    # resolving that wall (→ resolve/layout_lines.py). Never exported as an element.
+    layout_lines: list[ResolvedLayoutLine] = field(default_factory=list)
     pipe_runs: list[ResolvedPipeRun] = field(default_factory=list)
     pipe_accessories: list[ResolvedPipeAccessory] = field(default_factory=list)
     sleeves: list[ResolvedSleeve] = field(default_factory=list)
@@ -861,7 +904,7 @@ class ResolvedModel:
     # Derived geometry: every solid the building contributes, built once by the pipeline's
     # final stage so the emitters serialize rather than re-derive it. Optional because
     # ``resolve_preview`` (the drag-overlay path) skips the stage.
-    geometry: "GeometryModel | None" = None
+    geometry: GeometryModel | None = None
     # Per-stage resolve timings in milliseconds (Phase 0 instrumentation). Not serialized
     # as source; surfaced to the UI via the `perf` payload for measurement, not correctness.
     timings: dict[str, float] = field(default_factory=dict)

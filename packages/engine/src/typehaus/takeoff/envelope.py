@@ -108,8 +108,8 @@ def wall_layer_net_area_m2(model: ResolvedModel, wall: ResolvedWall,
     for opening in model.openings:
         if opening.host_wall != wall.tag:
             continue
-        overlap = (min(band_z1, wall.z0_m + opening.sill_m + opening.height_m)
-                   - max(band_z0, wall.z0_m + opening.sill_m))
+        overlap = (min(band_z1, wall.base_ref_z_m + opening.sill_m + opening.height_m)
+                   - max(band_z0, wall.base_ref_z_m + opening.sill_m))
         if overlap > 0.0:
             area -= opening.width_m * overlap
     return max(0.0, area)

@@ -184,7 +184,7 @@ def layer_solids(wall: ResolvedWall, polygon, openings,
         # wall, not of whichever layer happens to be in front of it — then clipped into this
         # layer's band, which is what makes a band that misses an opening entirely simply
         # not cut for it.
-        raw_bottom = wall.z0_m + op.sill_m
+        raw_bottom = wall.base_ref_z_m + op.sill_m
         bottom = min(max(raw_bottom, z0), z1)
         head = min(max(raw_bottom + op.height_m, z0), z1)
         if bottom > z0 + 1e-6:  # sill band — always flat, below the rake

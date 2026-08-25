@@ -315,7 +315,9 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     # wall at y=34'-0" over FURN-M-KIT-N4's counter. Its presence in THIS list rather than
     # the header list is the whole point of choosing 34'-0" — 408" off N-M-SE is 8" mod 16",
     # a bay centre on the merged W-M-E1's own grid, so a 14" RO drops into the bay whole.
-    assert len(framed) == 13, [o.tag for o in framed]
+    # 15 after the west-facade recomposition: WIN-M-BATH1-W and WIN-S-VANITY-W form the
+    # exact y=24'-4" service-window column, each wholly inside the corresponding clear bay.
+    assert len(framed) == 15, [o.tag for o in framed]
     for opening in framed:
         wall = walls[opening.host_wall]
         start, end = _framing_axis(wall)

@@ -94,7 +94,7 @@ def opening_splits(wall, openings, direction, station, z0, z1):
     if not cut_openings:
         return [(z0, z1, False)]
     op = cut_openings[0]
-    sill_z = wall.z0_m + op.sill_m
+    sill_z = wall.base_ref_z_m + op.sill_m
     head_z = sill_z + op.height_m
     if sill_z > z0:
         bands.append((z0, min(sill_z, z1), False))

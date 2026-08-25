@@ -54,7 +54,7 @@ def truss_wall_opening_support(ctx: CheckContext) -> list[Finding]:
             continue
         for opening in openings:
             half = opening.width_m / 2.0
-            z0 = wall.z0_m + opening.sill_m
+            z0 = wall.base_ref_z_m + opening.sill_m
             z1 = z0 + opening.height_m
             gaps = [nearest_bearing_gap(opening.center_along_m + side * half, spans, z0, z1)
                     for side in (-1.0, 1.0)]

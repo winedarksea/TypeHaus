@@ -40,6 +40,7 @@ from typehaus.resolve.framing.solver import _wall_top_elevations, band_axis
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
 from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
 from typehaus.resolve.intervals import subtract as _subtract_spans
+from typehaus.resolve.layout_lines import layout_phase, lines_by_wall
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedOpening, ResolvedWall
 
 #: Category every member here carries. Strapping is billed by ``(profile, category,
@@ -71,8 +72,12 @@ def frame_furring(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
 
     findings: list[Finding] = []
     framed: list[ResolvedWall] = []
+    # A wall's layout line, so a batten grid that phase-locks to the studs follows them onto
+    # the line when the assembly opts in (``FramingSpec.layout_origin``).
+    lines_for_wall = lines_by_wall(model.layout_lines)
     for rw in model.walls:
-        members, wall_findings = frame_wall_furring(plan, rw, by_host.get(rw.tag, []))
+        members, wall_findings = frame_wall_furring(plan, rw, by_host.get(rw.tag, []),
+                                                    lines_for_wall.get(rw.tag))
         findings.extend(wall_findings)
         # ``replace`` rather than a field-by-field rebuild, as in ``frame_model``: this pass
         # only appends members, and respelling the constructor drops fields added later.
@@ -82,8 +87,8 @@ def frame_furring(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
 
 
 def frame_wall_furring(
-        plan: PlanModel, rw: ResolvedWall,
-        openings: list[ResolvedOpening]) -> tuple[tuple[FramedMember, ...], list[Finding]]:
+        plan: PlanModel, rw: ResolvedWall, openings: list[ResolvedOpening],
+        line: object | None = None) -> tuple[tuple[FramedMember, ...], list[Finding]]:
     """Strapping for one wall: every FURRING layer that carries a ``FramingSpec``.
 
     Returns ``(members, findings)`` — the shape ``framing/soffit.py`` uses, for the same
@@ -111,12 +116,12 @@ def frame_wall_furring(
             findings.append(_direction_finding(rw, resolved.name, spec.direction))
             direction = VERTICAL
         layout = _layout_vertical if direction == VERTICAL else _layout_horizontal
-        members.extend(layout(rw, resolved, spec, openings))
+        members.extend(layout(rw, resolved, spec, openings, line))
     return tuple(members), findings
 
 
-def _layout_vertical(rw: ResolvedWall, layer, spec,
-                     openings: list[ResolvedOpening]) -> list[FramedMember]:
+def _layout_vertical(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpening],
+                     line: object | None = None) -> list[FramedMember]:
     """Battens on centre along the wall axis, split around any opening they cross.
 
     Each station normally frames one member from the base to the framing top (raked or
@@ -140,7 +145,8 @@ def _layout_vertical(rw: ResolvedWall, layer, spec,
     top_start, top_end = _wall_top_elevations(rw)
 
     stations = _module_stations(first + face / 2.0, last - face / 2.0, spacing, face,
-                                module=True)
+                                module=True,
+                                phase=layout_phase(spec, line, rw.tag, spacing))
     # ``orient`` is the member's *thickness* axis (profiles.py convention). A stud's
     # thickness runs along the wall; a furring strip is laid flat, so its 3/4" thickness
     # runs *through* the wall and its 3-1/2" face lies on it. Passing the wall direction
@@ -162,7 +168,8 @@ def _layout_vertical(rw: ResolvedWall, layer, spec,
         # to ``sill_m + height_m`` never lets the batten intrude into the opening — it only
         # gives up a few conservative inches in an arch's spandrel corners, which
         # ``layer_solids`` draws precisely because *that* solid is what a viewer sees.
-        cuts = [(rw.z0_m + op.sill_m, rw.z0_m + op.sill_m + op.height_m)
+        cuts = [(rw.base_ref_z_m + op.sill_m,
+                 rw.base_ref_z_m + op.sill_m + op.height_m)
                 for op in openings
                 if _overlaps(station - face / 2.0, station + face / 2.0,
                             op.center_along_m - op.width_m / 2.0,
@@ -178,8 +185,8 @@ def _layout_vertical(rw: ResolvedWall, layer, spec,
     return out
 
 
-def _layout_horizontal(rw: ResolvedWall, layer, spec,
-                       openings: list[ResolvedOpening]) -> list[FramedMember]:
+def _layout_horizontal(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpening],
+                       _line: object | None = None) -> list[FramedMember]:
     """Batten courses at the spec's spacing up the wall, split around any opening they cross.
 
     A raked wall carries a course only where its top is above that course; the clipped
@@ -225,8 +232,8 @@ def _layout_horizontal(rw: ResolvedWall, layer, spec,
             continue
         cuts = [(op.center_along_m - op.width_m / 2.0, op.center_along_m + op.width_m / 2.0)
                 for op in openings
-                if _overlaps(z, z + face, rw.z0_m + op.sill_m,
-                            rw.z0_m + op.sill_m + op.height_m)]
+                if _overlaps(z, z + face, rw.base_ref_z_m + op.sill_m,
+                            rw.base_ref_z_m + op.sill_m + op.height_m)]
         for seg_lo, seg_hi in _subtract_spans(lo, hi, cuts):
             if seg_hi - seg_lo <= face:
                 continue
@@ -286,7 +293,7 @@ def band_extent(polygon, p0, direction, axis_len: float) -> tuple[float, float]:
 
 
 def _module_stations(first: float, last: float, spacing: float, width: float,
-                     module: bool = False) -> list[float]:
+                     module: bool = False, phase: float = 0.0) -> list[float]:
     """``first`` on centre to ``last``, with ``last`` always framed.
 
     Same rule the stud module follows: a strip at each end of the run whatever the
@@ -305,17 +312,24 @@ def _module_stations(first: float, last: float, spacing: float, width: float,
     stud grid; only the end strips are off-module, exactly as the end studs are. Courses
     running horizontally are a different question — they climb their own elevation module
     and have no stud line to find — so they do not pass this.
+
+    ``phase`` is the same shift ``solver._module_stations`` takes, and it has to be, because
+    the promise this makes is *"sit on the studs"*: a wall laying out from its layout line
+    moves its studs, and a batten grid still counting from the wall's own station 0 would be
+    keeping the old promise to nothing. ``band_axis`` only ever translates the axis
+    perpendicular, never along it, so the band's station 0 and the wall's are the same
+    station and one phase serves both.
     """
     if last < first:
         return []
     stations = [first]
     if module and spacing > 0.0:
-        index = math.ceil((first + width) / spacing)
-        station = index * spacing
+        index = math.ceil((first + width - phase) / spacing)
+        station = phase + index * spacing
         while station < last - width + 1e-9:
             stations.append(station)
             index += 1
-            station = index * spacing
+            station = phase + index * spacing
     else:
         index = 1
         while first + index * spacing < last - width + 1e-9:

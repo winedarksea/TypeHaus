@@ -290,3 +290,96 @@ def test_an_open_topped_region_still_refuses_to_overlap():
     findings = _assembly_findings(_slot_assembly(second_extent="overlapping-open"))
     assert [f.check_id for f in findings] == ["integrity.assembly_layers"]
     assert "overlapping bands" in findings[0].message
+
+
+# --- the band follows the wall when the wall moves ---------------------------------------
+#
+# ``resolve_storey_walls`` freezes every extent into absolute ``ResolvedLayer.z0_m/z1_m``,
+# and ``extend_walls_to_platform`` grows a stacked wall *after* that (pipeline.py: the lift
+# runs in the same stage, but after every storey has resolved). A band pinned to the
+# pre-lift top is a layer that stops a joist depth below the wall it belongs to — including
+# a ``top=None`` band, whose whole meaning is "run it out to the wall top" and which resolves
+# to a number rather than staying open. Latent on catlin only because ``CATLIN_EXT_2X6``
+# bands nothing.
+
+
+def _lift_plan():
+    """Two framed storeys with a 13 3/8" joist band between them, and a banded cladding."""
+    import uuid
+
+    from typehaus.model import (
+        Assembly, Building, FramingSpec, Layer, LayerBound, LayerDatum, LayerExtent,
+        LayerFunction, Library, Material, Node, PlanModel, Project, Site, Storey, Wall,
+        degF, ft, inch, pt,
+    )
+
+    assembly = Assembly(tag="EXT", layers=(
+        Layer(name="stud", material_ref="wood", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6")),
+        # "From grade, and run it out" — the open-topped band.
+        Layer(name="siding", material_ref="wood", thickness=inch(0.5),
+              function=LayerFunction.CLADDING,
+              extent=LayerExtent(bottom=LayerBound(datum=LayerDatum.GRADE))),
+        # And one measured down from the wall's own top.
+        Layer(name="frieze", material_ref="wood", thickness=inch(0.75),
+              function=LayerFunction.FINISH,
+              extent=LayerExtent(bottom=LayerBound(datum=LayerDatum.WALL_TOP,
+                                                   offset=inch(-6)))),
+    ))
+    project = Project(
+        name="Lift", project_uuid=uuid.UUID("00000000-0000-4000-8000-0000000000b1"),
+        site=Site(lat=44.9, lon=-93.2, elevation=ft(830), design_temp_heating=degF(-15)),
+        building=Building(name="Lift"),
+    )
+    # main tops out at 9'-0"; second starts 13 3/8" above it (mudsill + 11 7/8" rim).
+    main = Storey(uid="STMAIN0002", tag="main", elevation=ft(0), default_ceiling_height=ft(9))
+    second = Storey(uid="STSEC00002", tag="second",
+                    elevation=ft(9) + inch(13.375), default_ceiling_height=ft(8))
+    corners = (pt(ft(0), ft(0)), pt(ft(20), ft(0)), pt(ft(20), ft(14)), pt(ft(0), ft(14)))
+    plan = PlanModel(project=project, library=Library(
+        materials=(Material(tag="wood", name="Wood", r_per_inch=1.25),),
+        assemblies=(assembly,)), storeys=(main, second))
+
+    def _storey(prefix: str, top, stacks_on: bool):
+        nodes = tuple(
+            Node(uid=f"N{prefix}{i:08d}", tag=f"N-{prefix}-{i}", position=position)
+            for i, position in enumerate(corners, 1)
+        )
+        walls = tuple(
+            Wall(uid=f"W{prefix}{i:08d}", tag=f"W-{prefix}-{i}",
+                 start_node=f"N-{prefix}-{start}", end_node=f"N-{prefix}-{end}",
+                 assembly="EXT", top=top,
+                 **({"stacks_on": f"W-M-{i}"} if stacks_on else {}))
+            for i, (start, end) in enumerate(((1, 2), (2, 3), (3, 4), (4, 1)), 1)
+        )
+        return (*nodes, *walls)
+
+    return (plan.with_elements("main", _storey("M", ft(9), False))
+                .with_elements("second", _storey("S", ft(8), True)))
+
+
+def test_a_banded_layer_follows_the_wall_up_the_platform_lift():
+    from typehaus.quantities import ft
+    from typehaus.resolve import resolve
+
+    model, _findings = resolve(_lift_plan())
+    lower = model.wall("W-M-1")
+    assert lower.plate_top_z_m is not None, "fixture regression: W-M-1 was not lifted"
+    assert lower.plate_top_z_m == pytest.approx(ft(9).meters)
+    assert lower.z1_m == pytest.approx((ft(9) + inch(13.375)).meters)
+
+    siding = next(ly for ly in lower.layers if ly.name == "siding")
+    assert siding.band(lower)[1] == pytest.approx(lower.z1_m), \
+        "an open-topped band stopped at the pre-lift wall top"
+    assert siding.band(lower)[0] == pytest.approx(0.0)  # grade
+
+    # A WALL_TOP-relative band re-datums too: 6" below the *new* top, not the old one.
+    frieze = next(ly for ly in lower.layers if ly.name == "frieze")
+    assert frieze.band(lower)[0] == pytest.approx(lower.z1_m - inch(6).meters)
+
+    # The unlifted wall above is unchanged, and still carries the recipe beside the answer.
+    upper = model.wall("W-S-1")
+    assert upper.plate_top_z_m is None
+    assert next(ly for ly in upper.layers if ly.name == "siding").band(upper)[1] == \
+        pytest.approx(upper.z1_m)
+    assert siding.band_spec == (("grade", 0.0), None)
