@@ -537,10 +537,25 @@ ROOMS = [
     # one tray with no base joint. Nothing impermeable goes under it — a second Class I
     # layer beneath sheet vinyl sandwiches the plywood subfloor with no drying path either
     # way. The cove IS the waterproofing.
+    # Ceiling: PVC panel on furring over the same membrane as the walls, continuous with
+    # them at the perimeter (notes/plant_room.md "Ceiling — specified, not yet modelled").
+    # Restated rather than imported — assemblies.py's `_HUMID_LINER` is the same three
+    # layers in the same order, but the editable dialect cannot import a sibling plan
+    # module (see ACCENT_GWB_LINING above). Keep the two in step by hand.
     Room(uid="CSR401AAAA", tag="RM-S-PLANT", seed=pt(ft(9), ft(4)),
          occupancy=Occupancy.LIVING, humidity_class=HumidityClass.HUMID,
          design_relative_humidity=0.70, design_temperature_f=75.0,
-         floor_finish="vinyl-sheet"),
+         floor_finish="vinyl-sheet",
+         ceiling_lining=(
+             Layer(name="pvc-panel", material_ref="pvc-panel", thickness=inch(0.5),
+                   function=LayerFunction.FINISH),
+             Layer(name="liner-furring", material_ref="spf", thickness=inch(0.75),
+                   function=LayerFunction.FURRING,
+                   framing=FramingSpec(member="1x4", direction="horizontal")),
+             Layer(name="humid-membrane", material_ref="humid-room-membrane",
+                   thickness=inch(0.04), function=LayerFunction.MEMBRANE,
+                   control={ControlLayer.VAPOR, ControlLayer.AIR}),
+         )),
     Room(uid="CSR402AAAA", tag="RM-S-STUDY2", seed=pt(ft(27), ft(4)),
          occupancy=Occupancy.OFFICE, floor_finish="oak"),
     # BED1's east wall is the house's one painted accent (spruce green-blue): swaps the

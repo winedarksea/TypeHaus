@@ -130,6 +130,9 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
     # the geometry IR's one pre-existing exception; the glTF emitter disagreed and sent it to
     # concrete with everything else. The table settles it.
     "soffit": "floors",
+    # A room's own ceiling plane (``resolve/ceilings.py``) rides the same toggle for the same
+    # reason: it is the flooring trade's overhead surface, not a wall or a roof deck.
+    "ceiling": "floors",
 
     # Below explicit for the record, though they equal the fallback: naming them documents that
     # they were considered, so the parity test's "unclassified" list stays meaningful.

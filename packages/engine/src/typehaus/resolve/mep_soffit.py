@@ -182,7 +182,8 @@ def _connected(model: ResolvedModel, machine: SoffitOccupant,
     if obj is None or not obj.footprint:
         return False
     box = _plan_ring_bbox(obj.footprint)
-    return any(_segment_meets_box(a, b, box) for a, b in zip(duct.path[:-1], duct.path[1:]))
+    return any(_segment_meets_box(a, b, box)
+               for a, b in zip(duct.path[:-1], duct.path[1:], strict=False))
 
 
 def _segment_meets_box(a: tuple[float, float], b: tuple[float, float],

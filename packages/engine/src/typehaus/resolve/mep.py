@@ -28,6 +28,7 @@ from typehaus.model.mep import (
 )
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import length, sub
+from typehaus.resolve.mep_ducts import resolve_duct_run
 from typehaus.resolve.mep_queries import (  # noqa: F401 - re-exported query API
     _CONCRETE_SOLID_CATEGORIES,
     _conduit_vertical_profile,
@@ -47,7 +48,6 @@ from typehaus.resolve.mep_sleeves import (  # noqa: F401 - re-exported sleeve AP
     _pipe_expected_point,
     _resolve_sleeve,
 )
-from typehaus.resolve.mep_ducts import resolve_duct_run
 from typehaus.resolve.mep_slope import _pipe_vertex_z  # noqa: F401 - re-exported
 from typehaus.resolve.mep_soffit import (  # noqa: F401 - re-exported query API
     soffit_occupancy,
@@ -69,6 +69,7 @@ from typehaus.resolve.sweep import (
     sweep_plan_silhouette,
     sweep_z_extent,
 )
+
 
 def resolve_mep(model: ResolvedModel) -> list[Finding]:
     findings: list[Finding] = []
@@ -234,7 +235,7 @@ def _emit_run_solids(model: ResolvedModel, run_uid: str, run_tag: str, storey_ta
 
     # ``clean_path`` rather than the raw vertices: an authored elbow repeats its plan point
     # at one invert, and two points at the same place are one point, not a zero-length leg.
-    points = clean_path([(p[0], p[1], zi) for p, zi in zip(path, z)])
+    points = clean_path([(p[0], p[1], zi) for p, zi in zip(path, z, strict=False)])
     if len(points) < 2:
         return
     sweep = SolidSweep(path=points, profile=profile)

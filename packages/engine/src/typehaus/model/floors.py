@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Literal
 
+from typehaus.model.assembly import Layer
 from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import FloorOpeningPurpose, RadiantSystem
 from typehaus.model.refs import Embed
@@ -79,7 +80,10 @@ class FloorSystem(Element):
     # Empty is the ordinary case: a deck with no point load on it needs none.
     reinforcements: tuple[JoistReinforcement, ...] = ()
     subfloor: DeckLayer | None = None
-    ceiling_below: DeckLayer | None = None
+    # The ceiling hung under this deck's joists, room side first (furring, membrane,
+    # finish — same "interior -> exterior" convention as ``Assembly.default_lining``).
+    # Empty means no ceiling is authored below this deck at all (open-to-structure).
+    ceiling_below: tuple[Layer, ...] = ()
     openings: tuple[str, ...] = ()  # FloorOpening tags
     # What this deck *is*, structurally. "floor" is an interior floor: the 40 psf live +
     # dead residential floor tables in ``checks/structural/checks.py`` grade it. "deck" is an
@@ -147,6 +151,10 @@ class Slab(Element):
     # is structure only. Not on FloorSystem: a joisted deck's top is a subfloor sheet, and
     # what goes over it is the room's decision, never the deck's.
     floor_finish: str | None = None
+    # The ceiling hung under this slab, room side first, meaningful only where a room sits
+    # under it (``datum == "structure"``): a slab-on-grade with no occupied space below
+    # authors none. Same convention as ``FloorSystem.ceiling_below``.
+    ceiling_below: tuple[Layer, ...] = ()
 
 
 @register_element

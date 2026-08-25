@@ -326,6 +326,40 @@ def test_end_only_corner_style_override_reaches_its_owner():
     assert len(boxed_keys) == 2 * len(base_keys)
 
 
+def test_corner_style_on_an_open_end_reports_a_finding_instead_of_a_silent_no_op():
+    """An authored override at an end that is not an L corner at all (here: an open end,
+    no closing wall) has nothing to take effect on, even after Change 2's owner/butting
+    fix — an L corner is the only shape this style ever governs. That must be a reported
+    finding, not silence, the same way an uneditable authoring location is."""
+    ext = Assembly(tag="EXT", layers=(
+        Layer(name="stud", material_ref="wood", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6")),
+    ))
+    project = Project(
+        name="OpenEnd", project_uuid=uuid.UUID("00000000-0000-4000-8000-0000000000c5"),
+        site=Site(lat=44.9, lon=-93.2, elevation=ft(830), design_temp_heating=degF(-15),
+                  design_temp_cooling=degF(90)), building=Building(name="OpenEnd"))
+    main = Storey(uid="STMAIN00C5", tag="main", elevation=ft(0),
+                  default_ceiling_height=ft(9))
+    nodes = (
+        Node(uid="NC50000001", tag="N-1", position=pt(ft(0), ft(0)), open_end=True),
+        Node(uid="NC50000002", tag="N-2", position=pt(ft(10), ft(0)), open_end=True),
+    )
+    wall = Wall(uid="WC50000001", tag="W-1", start_node="N-1", end_node="N-2",
+               assembly="EXT", top=ft(9), corner_style_end="4-stud")
+    plan = PlanModel(project=project, library=Library(
+        materials=(Material(tag="wood", name="Wood", r_per_inch=1.25),),
+        assemblies=(ext,)), storeys=(main,))
+    plan = plan.with_elements("main", (*nodes, wall))
+    _model, findings = resolve(plan)
+    orphaned = [f for f in findings
+               if f.check_id == "structural.corner_style_not_an_l_corner"]
+    assert len(orphaned) == 1, findings
+    assert orphaned[0].severity.value == "warn"
+    assert orphaned[0].result.value == "fail"
+    assert orphaned[0].element_tags == ("W-1",)
+
+
 # ------------------------------------------------------------------- catlin integration
 @pytest.fixture(scope="module")
 def catlin_resolved():

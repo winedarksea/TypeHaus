@@ -15,6 +15,7 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.accessories import resolve_accessories
+from typehaus.resolve.ceilings import resolve_ceilings
 from typehaus.resolve.construction import apply_construction_rules
 from typehaus.resolve.drainage import resolve_drainage
 from typehaus.resolve.envelope import resolve_columns_and_beams, resolve_envelope_geometry
@@ -134,6 +135,8 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_drainage(model))
     with _stage("rooms"):
         findings.extend(resolve_rooms(plan, model))
+        # After resolve_rooms: needs each room's clear face to hang a ceiling under.
+        resolve_ceilings(plan, model)
     with _stage("paneling"):
         findings.extend(resolve_paneling(plan, model))
     with _stage("placeables"):

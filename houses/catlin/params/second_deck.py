@@ -43,7 +43,7 @@ field's spans are exactly 18'-0" — the 18' truss untrimmed, with 6" of range e
 any later adjustment (``takeoff/framing.py::_order_length_ft``).
 """
 
-from typehaus import DeckLayer, FloorSystem, JoistSpec, Point2D, ft, inch, pt
+from typehaus import DeckLayer, FloorSystem, JoistSpec, Layer, LayerFunction, Point2D, ft, inch, pt
 
 # Both members share one depth, deliberately — see the module docstring. ``main_deck.py``
 # imports ``_DEPTH``/``_SUBFLOOR`` from here rather than restating them, so the concrete
@@ -53,6 +53,14 @@ _JOIST = "11.875 I-joist"
 _DEPTH = inch(11.875)
 _OC = inch(16)
 _SUBFLOOR = inch(0.75)
+
+# The main floor's ceiling below both halves — 5/8" gypsum board, room side (and only
+# layer). Migrated from a single ``DeckLayer`` to a one-``Layer`` tuple with the
+# generalized ``ceiling_below`` field; the living room's resilient channel
+# (``CR-LIVING-CEIL-RC`` in ``plan/assemblies.py``) still bills separately as a
+# ``ConstructionRule`` return, unaffected by this shape change.
+_CEILING_GWB = (Layer(name="gwb-ceil", material_ref="gwb", thickness=inch(0.625),
+                      function=LayerFunction.FINISH),)
 _CENTRE_X = ft(18)
 _HOUSE = ft(36)
 _ZERO = ft(0)
@@ -69,7 +77,7 @@ WEST_FLOOR = FloorSystem(
     joists=JoistSpec(member=_TRUSS, spacing=_OC, direction="x",
                      bearing_refs=("W-M-W2", "W-M-C2", "BM-M-HALL")),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
-    ceiling_below=DeckLayer(material_ref="gwb", thickness=inch(0.625)),
+    ceiling_below=_CEILING_GWB,
     outline=_rect(_ZERO, _ZERO, _CENTRE_X, _HOUSE),
     openings=("FO-S-STAIR",),
     source="catlin second floor, west half — 11 7/8\" open-web floor trusses at 16\" o.c. "
@@ -86,7 +94,7 @@ EAST_FLOOR = FloorSystem(
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     # The main floor's ceiling: this deck's underside *is* that ceiling (unchanged from
     # the old FS-SECOND). Plain board, not type X: R302.13 doesn't reach this floor.
-    ceiling_below=DeckLayer(material_ref="gwb", thickness=inch(0.625)),
+    ceiling_below=_CEILING_GWB,
     outline=_rect(_CENTRE_X, _ZERO, _HOUSE, _HOUSE),
     source="catlin second floor, east half — 11 7/8\" I-joists at 16\" o.c. spanning "
            "18'-0\" from the x=18' bearing line to W-M-E1, unchanged from the old "

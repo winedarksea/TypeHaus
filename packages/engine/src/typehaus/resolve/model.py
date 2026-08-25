@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
+from typehaus.model.assembly import Layer
 from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.layout_lines import ResolvedLayoutLine
@@ -425,6 +426,32 @@ class ResolvedSoffit:
     z1_m: float  # the ceiling plane it hangs from
     framing: object | None = None  # FramingSpec | None (model/floors.py Soffit.framing)
     members: list[FramedMember] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class ResolvedCeiling:
+    """A room's resolved ceiling construction — the layer stack checks and takeoff read.
+
+    The room's own finished plane is also emitted as a ``ResolvedSolid`` (category
+    "ceiling") when it resolves a flat extent, exactly the ``ResolvedSoffit`` /
+    ``ResolvedSolid`` split above: that record is what a renderer draws, this one is what
+    a check or a takeoff reads without re-deriving the layer stack (room override, else
+    the covering deck's ``ceiling_below``, else the room's roof's ``default_lining``).
+
+    ``z0_m``/``z1_m`` are None for a room whose ceiling follows a sloped/vaulted roof
+    (``Room.ceiling=FollowRoof(...)``) — there is no single flat plane to state, so no
+    ``ResolvedSolid`` is emitted for it either, and only the layer stack (for the roof's
+    own material/BOM) is carried here.
+    """
+
+    uid: str
+    tag: str
+    storey: str
+    room_ref: str
+    outline: Ring
+    z0_m: float | None
+    z1_m: float | None
+    layers: tuple[Layer, ...]
 
 
 @dataclass(frozen=True)
@@ -901,6 +928,7 @@ class ResolvedModel:
     braces: list[ResolvedBrace] = field(default_factory=list)
     floor_heat: list[ResolvedFloorHeat] = field(default_factory=list)
     rooms: list[ResolvedRoom] = field(default_factory=list)
+    ceilings: list[ResolvedCeiling] = field(default_factory=list)
     panelings: list[ResolvedPaneling] = field(default_factory=list)
     conditions: list[BoundaryCondition] = field(default_factory=list)
     stack_edges: list[StackEdge] = field(default_factory=list)

@@ -21,6 +21,7 @@ from dataclasses import dataclass
 from typehaus.checks._authoring import advisory, passed, unknown
 from typehaus.checks.building_science.condensation import (
     _effective_lining,
+    _room_design_rh,
     humid_rooms_by_wall,
 )
 from typehaus.checks.building_science.glaser import dew_point_f, layer_permeance_perms
@@ -28,6 +29,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.assembly import Layer
 from typehaus.model.enums import ControlLayer, HumidityClass, LayerFunction
+from typehaus.model.spatial import Room
 
 LINER_CHECK_ID = "building_science.humid_room_liner"
 FINISH_CHECK_ID = "building_science.humid_room_finish"
@@ -72,11 +74,14 @@ class HumidSurface:
 
 
 def humid_surfaces(ctx: CheckContext) -> list[HumidSurface]:
-    """Every (wet/humid room, bounding wall) pair, with the room's design conditions.
+    """Every (wet/humid room, bounding wall or ceiling) surface, at the room's design RH.
 
     Reuses the condensation check's room→wall map so the two rules can never disagree
     about which walls bound the room: an authored ``Wall.interior_room`` first, then the
-    geometric probe for the walls that do not name one.
+    geometric probe for the walls that do not name one. The ceiling is the room's own
+    resolved construction (``resolve/ceilings.py``) — a humid room's overhead plane is
+    exactly as much a bounding surface as its walls, and the plant room's own note records
+    that its ceiling could not be checked at all before that resolver existed.
     """
     setpoint = ctx.preferences.interior_setpoint_f
     walls = {wall.tag: wall for wall in ctx.model.walls}
@@ -100,6 +105,33 @@ def humid_surfaces(ctx: CheckContext) -> list[HumidSurface]:
                 else setpoint,
                 wall_tag, wall.assembly, layers,
             ))
+    out.extend(_humid_ceilings(ctx, setpoint))
+    return out
+
+
+def _humid_ceilings(ctx: CheckContext, setpoint: float) -> list[HumidSurface]:
+    """One :class:`HumidSurface` per (wet/humid room, resolved ceiling) pair."""
+    rooms: dict[str, Room] = {}
+    for storey in ctx.plan.storeys:
+        for element in ctx.plan.storey_elements(storey.tag):
+            if element.element_kind == "Room" and _room_design_rh(element) is not None:
+                rooms[element.tag] = element
+    if not rooms:
+        return []
+    out: list[HumidSurface] = []
+    for ceiling in ctx.model.ceilings:
+        room = rooms.get(ceiling.room_ref)
+        if room is None or not ceiling.layers:
+            continue
+        rh = room.interior_design_relative_humidity
+        if rh is None:
+            continue
+        out.append(HumidSurface(
+            room.tag, room.humidity_class, rh,
+            room.design_temperature_f if room.design_temperature_f is not None
+            else setpoint,
+            ceiling.tag, ceiling.tag, ceiling.layers,
+        ))
     return out
 
 

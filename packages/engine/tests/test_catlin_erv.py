@@ -9,7 +9,6 @@ quietly undo.
 from __future__ import annotations
 
 import pytest
-
 from _helpers import check_context
 
 from typehaus.checks.mep.erv_terminals import erv_outdoor_terminals

@@ -17,7 +17,7 @@ from shapely.geometry import Point, Polygon
 from typehaus.model.assembly import ConstructionRule
 from typehaus.model.floors import FloorOpening, FloorSystem
 from typehaus.model.plan import PlanModel
-from typehaus.resolve.ceiling_over import decks_covering
+from typehaus.resolve.ceiling_over import decks_covering, finish_layer
 from typehaus.resolve.construction_geometry import _EPS
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import ResolvedConstructionReturn, ResolvedModel
@@ -107,7 +107,7 @@ def _find_ceiling_channel(model: ResolvedModel, rule: ConstructionRule) \
     decks = [(storey, system)
              for storey in sorted(plan.storeys, key=lambda s: s.elevation.meters)
              for system in plan.storey_elements(storey.tag)
-             if isinstance(system, FloorSystem) and system.ceiling_below is not None]
+             if isinstance(system, FloorSystem) and system.ceiling_below]
 
     fields: list[tuple[object, FloorSystem, Polygon, tuple[str, ...]]] = []
     if rule.scope_ref is not None:
@@ -156,6 +156,7 @@ def _find_ceiling_channel(model: ResolvedModel, rule: ConstructionRule) \
         # The channel hangs off the joist soffit, one joist depth below the storey datum —
         # the same datum the deck's own PT sill plate is measured from.
         z1 = storey.elevation.meters - cross_section(system.joists.member).depth_m
+        returning = finish_layer(system.ceiling_below)
         pieces = [piece for piece in getattr(field, "geoms", (field,))
                   if piece.geom_type == "Polygon" and piece.area > _EPS]
         for index, piece in enumerate(pieces, start=1):
@@ -177,7 +178,7 @@ def _find_ceiling_channel(model: ResolvedModel, rule: ConstructionRule) \
                 thickness_m=_RC_STANDOFF_M, length_m=piece.area / spacing,  # net of holes
                 lap_m=spacing,  # the authored dimension is a spacing here, not a lap
                 thermal_continuity=False,
-                returning_layer=system.ceiling_below.material_ref,
+                returning_layer=returning.material_ref if returning is not None else None,
                 # No junction: a field return under a deck documents no boundary condition,
                 # so there is no condition key for an overlay to join on.
                 condition_key=None,

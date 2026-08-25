@@ -6,9 +6,13 @@ import math
 import re
 from collections import Counter, defaultdict
 
+from shapely.geometry import Polygon
+
 from typehaus.model.enums import LayerFunction
-from typehaus.model.floors import FloorOpening, FloorSystem
+from typehaus.model.floors import FloorOpening, FloorSystem, Slab
+from typehaus.model.spatial import Room
 from typehaus.resolve.assembly_material import assembly_structure_material
+from typehaus.resolve.ceiling_over import ceiling_decks_over
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.model import ResolvedModel
@@ -298,9 +302,37 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             # ``FloorSystem.ceiling_below`` is the same kind of sheet on the underside of
             # the same deck, and was simply never read here — a whole storey of ceiling
             # drywall silently absent from the order.
-            if system.ceiling_below is not None:
-                areas[("ceiling", system.ceiling_below.material_ref,
-                       system.ceiling_below.thickness.meters)] += gross - openings
+            for layer in system.ceiling_below:
+                areas[("ceiling", layer.material_ref, layer.thickness.meters)] += gross - openings
+
+    # A structural Slab's own ceiling_below (a room sitting under a cast deck) bills the
+    # same way, net of its floor openings — meaningless, and left unauthored, on a
+    # slab-on-grade with no occupied space below it.
+    for storey in model.plan.storeys:
+        for slab in model.plan.storey_elements(storey.tag):
+            if (not isinstance(slab, Slab) or not slab.ceiling_below
+                    or slab.datum != "structure"):
+                continue
+            net = max(0.0, abs(polygon_area([point.xy_m for point in slab.outline])) - sum(
+                abs(polygon_area([point.xy_m for point in opening.outline]))
+                for opening in model.plan.storey_elements(storey.tag)
+                if isinstance(opening, FloorOpening) and opening.tag in slab.openings))
+            for layer in slab.ceiling_below:
+                areas[("ceiling", layer.material_ref, layer.thickness.meters)] += net
+
+    # A room's own ``ceiling_lining`` override replaces the covering deck's generic
+    # billing over just its own clear face — the same clip-and-rebill ``FinishZone``/
+    # ``WallPaneling.replaces_wall_finish`` apply to a base billing they only partly cover.
+    for room in model.rooms:
+        plan_room = model.plan.by_tag(room.tag)
+        if not isinstance(plan_room, Room) or not plan_room.ceiling_lining:
+            continue
+        face = Polygon(room.clear_face)
+        for _deck_storey, deck in ceiling_decks_over(model.plan, room.storey, face):
+            for layer in deck.ceiling_below:
+                areas[("ceiling", layer.material_ref, layer.thickness.meters)] -= room.area_m2
+        for layer in plan_room.ceiling_lining:
+            areas[("ceiling", layer.material_ref, layer.thickness.meters)] += room.area_m2
 
     return [
         {"scope": scope, "material": material, "thickness_in": round(thickness / 0.0254, 3),

@@ -9,9 +9,11 @@ from typehaus import (
     Alarm,
     AlarmKind,
     Arch,
+    ControlLayer,
     Door,
     FloorOpening,
     FoundationWall,
+    FramingSpec,
     HumidityClass,
     Layer,
     LayerFunction,
@@ -630,9 +632,22 @@ ROOMS = [
     # tile bed. `integrity.concrete_finish_needs_concrete_deck` is satisfied by SL-B-FLOOR.
     # The tile that remains in this room is WP-B-SAUNA-SPLASH, the pan's two closed wall
     # sides; see the PANELING note below.
+    # Ceiling: the same T&G-over-foil-polyiso liner as the walls (assemblies.py's
+    # `_SAUNA_LINER`), restated rather than imported — the editable dialect cannot import
+    # a sibling plan module. Keep the two in step by hand.
     Room(uid="CBR403AAAA", tag="RM-B-SAUNA", seed=pt(ft(14), ft(6)),
          occupancy=Occupancy.BATHROOM, humidity_class=HumidityClass.WET,
-         floor_finish="sealed-concrete"),
+         floor_finish="sealed-concrete",
+         ceiling_lining=(
+             Layer(name="tg-liner", material_ref="sauna-tg", thickness=inch(1.0),
+                   function=LayerFunction.FINISH),
+             Layer(name="liner-furring", material_ref="struct-1-plywood", thickness=inch(0.5),
+                   function=LayerFunction.FURRING,
+                   framing=FramingSpec(member="1x4", direction="horizontal")),
+             Layer(name="foil-polyiso", material_ref="polyiso-foil", thickness=inch(2.0),
+                   function=LayerFunction.INSULATION,
+                   control={ControlLayer.THERMAL, ControlLayer.VAPOR, ControlLayer.AIR}),
+         )),
     Room(uid="CBR404AAAA", tag="RM-B-PLAY-N", seed=pt(ft(27), ft(27)),
          occupancy=Occupancy.MEDIA, floor_finish="carpet"),
     Room(uid="CBR405AAAA", tag="RM-B-GYM", seed=pt(ft(27), ft(9)),

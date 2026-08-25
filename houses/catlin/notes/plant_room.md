@@ -175,15 +175,20 @@ a room-side ventilated cavity the same way it has always trimmed an exterior rai
 is both the honest scope (the gap behind the panel is at room conditions) and the conservative
 one (the panel's own vapour resistance is credited at nothing).
 
-### Ceiling — specified, not yet modelled
+### Ceiling — modelled
 
 PVC panel on furring over the same membrane, continuous with the wall membrane at the
 perimeter. **No suspended/tile ceiling** — natatorium guidance is explicit that the cavity
 above one reaches at least the room's humidity ratio and cannot be protected.
 
-`FS-ATTIC` carries no `ceiling_below`, and that field is one `DeckLayer` for the whole storey
-below, so there is no way today to give one room its own ceiling construction. Recorded in
-`plans/TODO.md`; the specification above is the buildable answer in the meantime.
+`FS-ATTIC` still carries no `ceiling_below` (it never needed one: nothing else sits under
+it with a ceiling of its own), so authoring the liner here needed a room-scoped override —
+`Room.ceiling_lining`, the per-room ceiling construction added alongside the general
+ceiling pipeline (`resolve/ceilings.py`). `RM-S-PLANT` authors the same three layers as the
+wall liner (`pvc-panel`, `liner-furring`, `humid-membrane`), restated in
+`plan/storeys/second.py` since the editable dialect cannot import `assemblies.py`'s
+`_HUMID_LINER`. `building_science.humid_room_liner`/`_finish` now grade the ceiling exactly
+as they grade the walls, closing the gap this section used to record.
 
 ### Floor
 
@@ -322,9 +327,10 @@ misted or hosed.
 - `building_science.condensation` reports `PLANT_EXT_2X6_HUMID @ RM-S-PLANT` **at 70 % RH**
   against the humid liner and passes the monthly gate — tightest plane 75 % RH, 577 Pa below
   saturation, warm-side retarder named as `humid-membrane`, Class I.
-- `building_science.humid_room_liner` passes on all five bounding walls, naming
-  `humid-membrane` at 0.050 perm on the room side of each core.
-- `building_science.humid_room_finish` passes on all five — no paper-faced gypsum shows.
+- `building_science.humid_room_liner` passes on all five bounding walls and the ceiling,
+  naming `humid-membrane` at 0.050 perm on the room side of each core.
+- `building_science.humid_room_finish` passes on all six surfaces — no paper-faced gypsum
+  shows.
 - `building_science.glazing_dew_point` passes all three windows by 1.9 °F **at the centre of
   glass**, and says in the finding that the frame and edge run 5–8 °F colder. That margin is
   the whole reason the frame spec, the sill pans and the glass wash are not optional.

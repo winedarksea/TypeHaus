@@ -115,7 +115,7 @@ def _ctx(*, assembly="HUMID", humidity=HumidityClass.HUMID, registers=(),
         uid="R000000001", tag="RM-X", storey="main", occupancy="living",
         conditioned=True, clear_face=[(0.0, 0.0), (4.0, 0.0), (4.0, 4.0), (0.0, 4.0)],
         area_m2=16.0, floor_finish=None)
-    model = SimpleNamespace(walls=[wall], rooms=[resolved_room],
+    model = SimpleNamespace(walls=[wall], rooms=[resolved_room], ceilings=[],
                             openings=list(openings), plan=plan)
     return SimpleNamespace(
         plan=plan, model=model,

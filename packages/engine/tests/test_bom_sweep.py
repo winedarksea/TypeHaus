@@ -462,15 +462,20 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     framed ceiling; FS-S-WEST/FS-S-EAST when the second floor split truss/I-joist), and
     they group into one ``ceiling`` row because they are the same board at the same
     thickness. So the deck-by-deck arithmetic is checked against each deck's *share* of
-    that row, not against the whole of it."""
+    that row, not against the whole of it.
+
+    ``SL-M-DECK`` (the media room's cast band) authors the same board and adds to this
+    row too; ``RM-B-SAUNA``'s own ``ceiling_lining`` override subtracts its clear-face
+    area back out of it (``FS-M-WEST``'s share) and bills under its own T&G materials
+    instead — the room-override rows checked separately below.
+    """
     from typehaus.resolve.geometry import polygon_area
     from typehaus.takeoff.framing import sheet_goods_takeoff
 
     rows = sheet_goods_takeoff(catlin_model)
-    ceiling = [row for row in rows if row["scope"] == "ceiling"]
-    assert len(ceiling) == 1, "ceiling_below reached no order"
-    assert ceiling[0]["material"] == "gwb"
-    assert float(ceiling[0]["thickness_in"]) == 0.625
+    ceiling = {(row["material"], row["thickness_in"]): row for row in rows
+              if row["scope"] == "ceiling"}
+    gwb = ceiling[("gwb", 0.625)]
 
     def _gross_sqft(tag: str) -> float:
         floor = next(item for item in catlin_model.floors if item.tag == tag)
@@ -483,9 +488,13 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
                        if getattr(element, "tag", None) == tag)
         return abs(polygon_area([p.xy_m for p in opening.outline])) * 10.7639
 
+    def _room_sqft(tag: str) -> float:
+        room = next(item for item in catlin_model.rooms if item.tag == tag)
+        return room.area_m2 * 10.7639
+
     west_second_net = _gross_sqft("FS-S-WEST") - _opening_sqft("FO-S-STAIR")
     east_second_net = _gross_sqft("FS-S-EAST")
-    assert float(ceiling[0]["net_area_sqft"]) > west_second_net + east_second_net
+    assert float(gwb["net_area_sqft"]) > west_second_net + east_second_net
 
     # The main storey's wood bays are four systems since 2026-08-23, not two: the west half
     # split at the bathroom node line so the mechanical-room and stair bays could bear on the
@@ -493,13 +502,23 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     others = (_gross_sqft("FS-M-WEST") + _gross_sqft("FS-M-MECH")
               + _gross_sqft("FS-M-STAIR") - _opening_sqft("FO-M-STAIR")
               + _gross_sqft("FS-M-EAST"))
-    total = west_second_net + east_second_net + others
-    assert float(ceiling[0]["net_area_sqft"]) == pytest.approx(total, abs=0.5)
+    # SL-M-DECK — the concrete band over the media room — bills the same board, and the
+    # sauna's own T&G override carves its clear face back out of FS-M-WEST's contribution.
+    sl_m_deck_net = 414.0  # 18' x 23', no floor openings (params/main_deck.py)
+    sauna_net = _room_sqft("RM-B-SAUNA")
+    total = west_second_net + east_second_net + others + sl_m_deck_net - sauna_net
+    assert float(gwb["net_area_sqft"]) == pytest.approx(total, abs=0.5)
 
     # Several decks of several: the house's subfloor area is larger than this one ceiling.
     subfloor_area = sum(float(row["net_area_sqft"]) for row in rows
                         if row["scope"] == "subfloor")
-    assert 0 < float(ceiling[0]["net_area_sqft"]) < subfloor_area
+    assert 0 < float(gwb["net_area_sqft"]) < subfloor_area
+
+    # The sauna's own ceiling — T&G over foil-polyiso, over furring — bills under its own
+    # materials at its clear-face area, not under the blanket gwb row it carved itself out
+    # of.
+    sauna_tg = ceiling[("sauna-tg", 1.0)]
+    assert float(sauna_tg["net_area_sqft"]) == pytest.approx(sauna_net, abs=0.5)
 
 
 def test_conductors_bill_beside_the_raceway_they_pull_through(bom):

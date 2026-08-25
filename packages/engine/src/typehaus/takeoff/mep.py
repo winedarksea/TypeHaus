@@ -12,8 +12,6 @@ sections already follow.
 
 from __future__ import annotations
 
-from collections import defaultdict
-
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel, SolidSweep
 from typehaus.resolve.sweep import clean_path, sweep_turns
@@ -163,7 +161,7 @@ def duct_fitting_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         size = (duct.diameter_m if duct.diameter_m is not None
                 else max(duct.width_m, duct.depth_m))
         sweep = SolidSweep(
-            path=clean_path([(x, y, z) for (x, y), z in zip(duct.path, duct.z_m)]),
+            path=clean_path([(x, y, z) for (x, y), z in zip(duct.path, duct.z_m, strict=False)]),
             profile=((size / 2.0, 0.0),))
         for turn in sweep_turns(sweep):
             if turn.angle_deg < _MIN_FITTING_TURN_DEG:

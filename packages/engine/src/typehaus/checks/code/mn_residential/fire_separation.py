@@ -303,7 +303,7 @@ def floor_assembly_protection(ctx: CheckContext) -> list[Finding]:
                              "R302.13 applies to engineered floor framing", code))
             continue
         ceiling = getattr(fs, "ceiling_below", None)
-        if ceiling is None:
+        if not ceiling:
             out.append(_fail(cid, f"{fs.tag} uses engineered framing ({member}) over a "
                              "basement with no ceiling membrane below; R302.13 requires "
                              "1/2\" gypsum or 5/8\" wood structural panel",

@@ -196,6 +196,10 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "solar": (0.10, 0.14, 0.28, 1.0),      # PV module glass, deep blue
     "fascia": (0.92, 0.92, 0.90, 1.0),     # PVC fascia
     "soffit": (0.88, 0.88, 0.85, 1.0),     # vented soffit panel under the overhang
+    # A room's own ceiling plane (resolve/ceilings.py). Painted-gwb tone; almost every
+    # ceiling states its own FINISH material and wins over this fallback (see _solid_color),
+    # so this is only what an unpainted/uncoloured ceiling material falls back to.
+    "ceiling": (0.93, 0.92, 0.89, 1.0),
     "gutter": (0.85, 0.86, 0.87, 1.0),     # metal gutter
     # stormwater below the gutter (→ emit/trades.py, trade "drainage")
     "downspout": (0.85, 0.86, 0.87, 1.0),  # the gutter's own aluminium, drawn down the wall

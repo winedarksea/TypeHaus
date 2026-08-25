@@ -40,6 +40,11 @@ class Room(Element):
     finish_zones: tuple[FinishZone, ...] = ()
     wall_lining: tuple[Layer, ...] = ()  # overrides assembly default_lining on all faces
     wall_lining_exceptions: tuple[WallLiningException, ...] = ()
+    # Overrides the derived ceiling — the deck's ``ceiling_below``, or the roof's
+    # ``default_lining`` for a room with no deck above — on this room's ceiling plane.
+    # Room side first, same convention as ``wall_lining``. Empty = no override, fall
+    # through to the derived default.
+    ceiling_lining: tuple[Layer, ...] = ()
     # How wet this room is run — a separate axis from `occupancy` (see HumidityClass).
     # It is what scopes the condensation walk and the humid-room checks to the RH a
     # bounding assembly actually faces, instead of the whole-house design figure.

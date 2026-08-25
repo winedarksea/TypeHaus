@@ -112,6 +112,8 @@ from typehaus import (
     DeckLayer,
     FloorSystem,
     JoistSpec,
+    Layer,
+    LayerFunction,
     Point2D,
     Slab,
     ft,
@@ -131,6 +133,11 @@ from params.second_deck import _SUBFLOOR
 # below derives from them rather than restating them.
 _JOIST = "11.875 I-joist"
 _JOIST_OC = inch(16)
+
+# The basement's ceiling — 5/8" gypsum board, room side (and only layer). Migrated from a
+# single ``DeckLayer`` to a one-``Layer`` tuple with the generalized ``ceiling_below`` field.
+_CEILING_GWB = (Layer(name="gwb-ceil", material_ref="gwb", thickness=inch(0.625),
+                      function=LayerFunction.FINISH),)
 
 # The storey datum is the TOP OF JOISTS, not the walking surface — walls bear there and the
 # subfloor rides above it (``Slab.datum``'s own docstring, and W-S-E2 starting at exactly
@@ -277,7 +284,7 @@ WEST_FLOOR = FloorSystem(
     # owner's decision was to drywall the whole ceiling rather than stop the board at the
     # boundary, which is also what retires the old "visible copper in the basement"
     # preference (houses/catlin/preferences.toml).
-    ceiling_below=DeckLayer(material_ref="gwb", thickness=inch(0.625)),
+    ceiling_below=_CEILING_GWB,
     outline=_rect(_ZERO, _ZERO, _CENTRE_X, _MECH_Y_S),
     source="catlin main floor, west half south of the bathroom node line — 11 7/8\" "
            "I-joists at 16\" o.c. spanning 18'-0\" east-west from the west wall to the "
@@ -290,7 +297,7 @@ MECH_FLOOR = FloorSystem(
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
                      bearing_refs=("W-B-W1", "W-B-STR3", "W-B-STR")),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
-    ceiling_below=DeckLayer(material_ref="gwb", thickness=inch(0.625)),
+    ceiling_below=_CEILING_GWB,
     outline=_rect(_ZERO, _MECH_Y, _STR_X, _HOUSE),
     source="catlin main floor, over the furnace room — same joists as FS-M-WEST, spanning "
            "10'-0\" east-west from the west wall to the x=10' bearing line",
@@ -308,7 +315,7 @@ STAIR_FLOOR = FloorSystem(
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
                      bearing_refs=("W-B-STR3", "W-B-STR", "W-B-CN")),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
-    ceiling_below=DeckLayer(material_ref="gwb", thickness=inch(0.625)),
+    ceiling_below=_CEILING_GWB,
     outline=_rect(_STR_X, _MECH_Y, _CENTRE_X, _HOUSE),
     openings=("FO-M-STAIR",),
     source="catlin main floor, over the stair shaft — same joists as FS-M-WEST, spanning "
@@ -324,7 +331,7 @@ EAST_FLOOR = FloorSystem(
                      # segment runs y 13'-10"..18' and this deck never touches it.
                      bearing_refs=("W-B-CS", "W-B-E1")),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
-    ceiling_below=DeckLayer(material_ref="gwb", thickness=inch(0.625)),
+    ceiling_below=_CEILING_GWB,
     outline=_rect(_CENTRE_X, _ZERO, _HOUSE, _BAND_Y),
     source="catlin main floor, east half south of y=13' — same joists as FS-M-WEST, "
            "spanning 18'-0\" from the x=18' bearing line to W-B-E1",
@@ -342,6 +349,10 @@ DECK = Slab(
     # bays and the band bills as polished concrete. Move _BAND_Y and the finish moves too —
     # the boundary is stated once, here. Spec in notes/mixed_deck_movement_joint.md.
     floor_finish="polished-concrete",
+    # Ceiling is 5/8" gypsum end to end (CLAUDE.md) — the media room below sees the same
+    # board as the wood bays either side of it, no EPS layer (per the owner: EPS is always
+    # hidden, never modelled).
+    ceiling_below=_CEILING_GWB,
     # And the cap top has to BE a stated plane, not whatever a datum leaves it at.
     # ``top_elevation`` is absolute and wins over ``datum`` outright
     # (``resolve/envelope.py::_slab_elevations``), which is the only way to say it: a

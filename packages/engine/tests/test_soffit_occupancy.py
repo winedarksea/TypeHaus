@@ -19,7 +19,6 @@ the numbers, and that a third 14" duct in SF-S-DUCT fails.
 from __future__ import annotations
 
 import pytest
-
 from _helpers import check_context
 
 from typehaus.checks.mep.hvac import duct_soffit_occupancy
@@ -85,7 +84,7 @@ def test_the_air_handler_leaves_about_five_inches_either_side(catlin_model) -> N
 def test_the_two_trunks_fit_with_exactly_the_hanger_gap(catlin_model) -> None:
     """14" + 2" + 14" = 30", inside 30 3/4". That 2" is the figure the box was widened to
     buy, and the check grades against the same one rather than quietly relaxing it."""
-    assert HANGER_GAP_M / M_PER_IN == pytest.approx(2.0)
+    assert pytest.approx(2.0) == HANGER_GAP_M / M_PER_IN
     conflicts, section = soffit_occupancy(catlin_model, next(
         s for s in catlin_model.soffits if s.tag == "SF-S-DUCT"))
     assert conflicts == []

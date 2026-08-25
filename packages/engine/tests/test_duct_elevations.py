@@ -132,7 +132,7 @@ def test_a_drawn_riser_bills_more_than_its_plan_projection(catlin_model) -> None
     its developed length is the whole basement-to-attic rise. Billing the former is exactly
     what ``duct_takeoff`` did before this."""
     riser = next(d for d in catlin_model.ducts if d.tag == "DU-ERV-RISER-SUP")
-    plan = sum(math.dist(a, b) for a, b in zip(riser.path, riser.path[1:]))
+    plan = sum(math.dist(a, b) for a, b in zip(riser.path, riser.path[1:], strict=False))
     assert plan == pytest.approx(0.0, abs=1e-9)
     assert riser.length_m > 6.0  # ~21'-11" of rise
 

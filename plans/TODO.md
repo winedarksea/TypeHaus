@@ -301,13 +301,6 @@ the future.
 ## Questions:
 - Do we want floor drains in kitchen/laundry room (deferred 2026-07-30: neither, for now)
 - Pantry (deferred by decision 2026-08-02)
-- **The plant room's ceiling is specified but unmodelled.** PVC panel on furring over the
-    same membrane, continuous with the wall membrane at the perimeter, and explicitly *not*
-    a suspended/tile ceiling. `FS-ATTIC` carries no `ceiling_below`, and that field is one
-    `DeckLayer` for the whole storey below — there is no room-scoped ceiling construction in
-    the schema, so authoring it would give every second-storey room a PVC ceiling. Needs
-    either a `CeilingPaneling` element (the `WallPaneling` shape, one surface up) or a
-    per-room override on `FloorSystem`.
 - **The showers are still unclassified.** Same axis, same rules, same question to answer
     first: what is actually behind the tile. The sauna is the worked example of what
     answering it costs — a liner variant on the wall that turned out not to have one.
@@ -332,28 +325,6 @@ the future.
     for the glazing ratio, and the wrong one for clear floor).
   - **A floor drain in RM-S-PLANT** (the room should be hoseable): implies a drain line, a
     trap primer — the trap *will* dry — and slope in `FS-SECOND`. See the Questions list.
-- ~~**Wood solids still bill as concrete, and two deck planks now bill nowhere**~~ —
-  **CLOSED 2026-08-22.** All three sub-items landed, and the shape of the fix is the one this
-  note argued for: author assemblies, do not widen the guard.
-  - `BEAM_LVL`, `BEAM_KDAT`, `POST_KDAT` and `PIER_CONCRETE_12` are authored in
-    `plan/assemblies.py`, with `lvl` and `kdat` added to `library/materials.py`. Every one of
-    the twenty `Beam` solids and all nine bare `Post` solids now states a material, which
-    splits `beam/None` and `column/None` into `(category, assembly)` groups.
-  - `cli/prices.MATERIAL_ONLY` widened from one tag to a **set** of accepted
-    `structure_material` values (`frozenset[str | None]`, where `None` means "the model never
-    said" and marks the catch-all section), and a new **`[timber]`** section prices the wood
-    half of `structural_solids` end to end — `_SECTIONS`, a `Prices` field, `ESTIMATE_PLANS`,
-    `ALTERNATE_UNITS`, `SECTION_CODES`, a `[basis]` and a `[basis_notes]` line.
-    `SOLID_SECTION` became `SOLID_SECTIONS`, because two sections read that table now.
-  - The re-key is the part that could have silently zeroed a line, and did not: the bare
-    `"beam"` and `"column"` keys in `[concrete]` are **deleted**, replaced by
-    `column:PIER_CONCRETE_12` and `column:SUNKEN_GARDEN_COLUMN_16` there and
-    `beam:BEAM_LVL` / `beam:BEAM_KDAT` / `column:POST_KDAT` in `[timber]`. The before/after
-    `haus takeoff` diff is clean: every beam and column row still prices and the `unpriced`
-    list is unchanged, line for line.
-  - The LVL beams now bill at **$2,041–4,317** against the retired row's $954–2,120. The
-    2026-08-21 note on that row predicted "the rate is wrong in kind, and probably in size
-    ... ~$1,860–3,530/cy". It was.
   - `SL-SG-DECK` is gone: the aluminium plank is `FS-SG-DECK`'s `subfloor` and bills as
     182.0 SF in `[sheet_goods]`. The conversion was exact — the balcony joists cantilever 6"
     and the deleted slab's outline *was* that cantilever.

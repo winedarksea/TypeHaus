@@ -23,12 +23,16 @@ from __future__ import annotations
 
 from collections import defaultdict
 
+from shapely.geometry import Polygon
+
 from typehaus.model.enums import LayerFunction, TrimKind
+from typehaus.model.spatial import Room
 from typehaus.resolve.accessories import (
     BUG_SCREEN_MATERIAL,
     rainscreen_cavity_m,
     screens_rainscreen_base,
 )
+from typehaus.resolve.ceiling_over import ceiling_decks_over, room_roof_over
 from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
 from typehaus.resolve.roof_geometry import roof_ceiling_area_m2
@@ -177,11 +181,25 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         # roofs never went through that path, so a roof's lining was thermally modelled,
         # drawn in section, graded by the Glaser walk — and ordered by nobody.
         if ceiling_m2 is not None:
+            # A room with no deck above it and its own ``ceiling_lining`` (a sauna T&G
+            # ceiling under the attic roof) bills under its own materials in
+            # ``sheet_goods``/its own takeoff row instead — not here too, or the roof's
+            # blanket lining double-bills the same square footage.
+            overridden_m2 = sum(
+                room.area_m2 for room in model.rooms
+                if room.storey == roof.storey
+                and isinstance(plan_room := model.plan.by_tag(room.tag), Room)
+                and plan_room.ceiling_lining
+                and not ceiling_decks_over(model.plan, room.storey, Polygon(room.clear_face))
+                and (over_roof := room_roof_over(model.plan, room.storey, plan_room))
+                is not None and over_roof.tag == roof.tag
+            )
+            net_ceiling_m2 = max(0.0, ceiling_m2 - overridden_m2)
             for lining_layer in assembly.default_lining:
                 if lining_layer.function in _BILLABLE:
                     areas[("roof ceiling", lining_layer.function.value,
                            lining_layer.material_ref,
-                           lining_layer.thickness.meters)] += ceiling_m2
+                           lining_layer.thickness.meters)] += net_ceiling_m2
 
     # Slabs had the identical hole ``wall_structure.py`` names in so many words: a slab is a
     # ``ResolvedSolid``, ``structural_solids_takeoff`` bills its gross volume as concrete, and

@@ -24,8 +24,12 @@ from typing import Any
 
 from shapely.geometry import Polygon
 
+from typehaus.model.assembly import Layer
+from typehaus.model.enums import LayerFunction
 from typehaus.model.floors import FloorSystem, Slab
 from typehaus.model.plan import PlanModel
+from typehaus.model.refs import FollowRoof
+from typehaus.model.spatial import Roof
 from typehaus.resolve.construction_geometry import _EPS
 from typehaus.resolve.framing.profiles import cross_section
 
@@ -108,17 +112,16 @@ def ceiling_decks_over(plan: PlanModel, room_storey_tag: str,
     return []
 
 
-def ceiling_underside_m(storey: Any, deck: Any) -> float | None:
-    """Absolute elevation of the underside of ``deck``, or None where it cannot be derived.
+def deck_structure_underside_m(storey: Any, deck: Any) -> float | None:
+    """Absolute elevation of the naked structure underside — no ceiling hung on it yet.
 
-    A FloorSystem's storey datum is the TOP of its structure, so the room below sees the
-    joist soffit less whatever membrane hangs on it. A Slab hangs its own thickness below
-    the datum (or below ``top_elevation`` where it authors one).
-
-    The resilient-channel standoff is deliberately NOT subtracted: a channel is a
-    ``ConstructionRule`` return, not an element, and a check that reads it here would be
-    grading a quantity rather than the model. It is 1/2", well inside the margin any room
-    this applies to carries.
+    A FloorSystem's storey datum is the TOP of its structure, so this is the joist soffit.
+    A Slab hangs its own thickness below the datum (or below ``top_elevation`` where it
+    authors one), so this is the slab's own bottom face. Shared by
+    :func:`ceiling_underside_m` (the deck's own authored ceiling) and
+    :mod:`typehaus.resolve.ceilings` (which may hang a different, room-authored stack off
+    the same structure), so both derive the same structural fact and only the layers below
+    it can differ.
     """
     if isinstance(deck, Slab):
         top: float = (deck.top_elevation.meters if deck.top_elevation is not None
@@ -129,7 +132,45 @@ def ceiling_underside_m(storey: Any, deck: Any) -> float | None:
     section = cross_section(deck.joists.member)
     if section is None:
         return None
-    underside: float = storey.elevation.meters - section.depth_m
-    if deck.ceiling_below is not None:
-        underside -= deck.ceiling_below.thickness.meters
-    return underside
+    return storey.elevation.meters - section.depth_m
+
+
+def ceiling_underside_m(storey: Any, deck: Any) -> float | None:
+    """Absolute elevation of the underside of ``deck``'s OWN ceiling, or None if derivable.
+
+    A FloorSystem's storey datum is the TOP of its structure, so the room below sees the
+    joist soffit less whatever membrane hangs on it. A Slab hangs its own thickness below
+    the datum (or below ``top_elevation`` where it authors one).
+
+    The resilient-channel standoff is deliberately NOT subtracted: a channel is a
+    ``ConstructionRule`` return, not an element, and a check that reads it here would be
+    grading a quantity rather than the model. It is 1/2", well inside the margin any room
+    this applies to carries.
+    """
+    underside = deck_structure_underside_m(storey, deck)
+    if underside is None:
+        return None
+    return underside - sum(layer.thickness.meters for layer in deck.ceiling_below)
+
+
+def room_roof_over(plan: PlanModel, storey_tag: str, room: Any) -> Roof | None:
+    """The ``Roof`` directly overhead a room with no deck above it, or None.
+
+    An authored ``Room.ceiling=FollowRoof(roof_ref=...)`` names it outright — the room's
+    ceiling follows that roof's slope, which is the whole reason ``FollowRoof`` exists.
+    Absent that, the room's own storey may carry a ``Roof`` directly (a single-storey
+    volume like the garage, ceilinged flat on the truss bottom chord): the first ``Roof``
+    authored on the room's storey is taken, since a storey with a room and no deck above it
+    has never authored more than one.
+    """
+    ceiling = getattr(room, "ceiling", None)
+    if isinstance(ceiling, FollowRoof):
+        return next((element for element in plan.storey_elements(storey_tag)
+                     if isinstance(element, Roof) and element.tag == ceiling.roof_ref), None)
+    return next((element for element in plan.storey_elements(storey_tag)
+                 if isinstance(element, Roof)), None)
+
+
+def finish_layer(layers: tuple[Layer, ...]) -> Layer | None:
+    """The FINISH-function layer of a layer tuple, room side, or None if it has none."""
+    return next((layer for layer in layers if layer.function == LayerFunction.FINISH), None)
