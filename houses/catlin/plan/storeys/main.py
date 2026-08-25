@@ -769,6 +769,22 @@ ROOMS = [
     # — the BM-M-HALL opening is where hall becomes living room, so that is where the
     # vinyl meets the plank. `resolve/rooms.py` clips the zone to the clear face before
     # billing, so the 1/16" of slop at the beam line costs nothing.
+    #
+    # ** WHERE THE VINYL'S EDGE IS ACTUALLY EXPOSED. ** Three of the four sides die into a
+    # wall line (W-M-HS* south, W-M-BAE west, W-M-STOS/STOS2 north to x=10'-0 5/8"), and
+    # every room on the far side of those walls is vinyl-sheet too, so the doorways are
+    # vinyl-to-vinyl with nothing to trim. The exposed edges are the east end at x=18'-0",
+    # under BM-M-HALL, where the vinyl meets SL-M-DECK's polished cap — that is the top of
+    # the x=18' leg in `notes/mixed_deck_movement_joint.md`, and it wants that leg's
+    # T-moulding — and the north edge east of x=10'-0 5/8", which runs across the head of
+    # the stairs. Most of that second line is over FO-M-STAIR's hole rather than over floor:
+    # the well is x 10'-3 3/8"..17'-6", y 26'-0 3/8"..35'-0", so what is left of the edge is
+    # ~3" at the west jamb and ~6" at the east. THE ZONE IS NOT CUT TO THE WELL, on purpose
+    # — the room's own clear face is not either (`resolve/rooms.py` polygonizes wall axes and
+    # never subtracts a FloorOpening), so cutting the zone and not the room would make the
+    # override more precise than the thing it overrides. It bills ~1.8 sf of vinyl over the
+    # hole. Take that off by hand at order time, or move the whole north edge to the well's
+    # y=26'-0 3/8" and accept the jog.
     Room(uid="CMR401AAAA", tag="RM-M-LIVING", seed=pt(ft(27), ft(12)),
          occupancy=Occupancy.LIVING, floor_finish="lvp",
          finish_zones=(FinishZone(outline=(pt(ft(6, 0.625), ft(22, 4.625)),

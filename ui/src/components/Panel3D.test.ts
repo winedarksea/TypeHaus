@@ -546,6 +546,33 @@ export function runSelectionRegistrationTests() {
   assert(tradeGroups.framing.children.length > 0,
     "A wall's furring closure band still builds into the framing group");
 
+  // The Swinburne truss pack. Every piece of it names a material — the block is spf, the
+  // outrigger and the ladder blocking kdat, the tab and the buck struct-1-plywood — and every
+  // piece is lumber a carpenter cuts, so the whole pack belongs on the framing toggle beside
+  // the studs. Routing on "does it name a material" instead of on the category put all of it
+  // on the Walls trade under the "Other" layer group, which is how a truss wall came to be
+  // present in the model and in 2D and *absent from 3D*. Nothing here is envelope skin, so
+  // the walls group must take none of it.
+  const trussGroups = Object.fromEntries(
+    ALL_TRADES.map((trade) => [trade, new THREE.Group()]),
+  ) as Record<Trade, THREE.Group>;
+  const trussWall = wall([[0, 0], [4, 0]]);
+  trussWall.members = [
+    { ...member("stud-000"), category: "stud", material: null },
+    { ...member("strapping-outrigger-000"), category: "strapping", material: "kdat" },
+    { ...member("block-truss-000-00"), category: "truss_block", material: "spf" },
+    { ...member("tab-truss-000-00"), category: "truss_tab", material: "struct-1-plywood" },
+    { ...member("ladder-0-head"), category: "truss_blocking", material: "kdat" },
+    { ...member("filler-0-left"), category: "truss_filler", material: "kdat" },
+    { ...member("buck-0-head"), category: "buck", material: "struct-1-plywood" },
+  ];
+  buildWall(trussGroups, trussWall, [], [0, 0], "schematic", PALETTE, registry().picks,
+    registry().byUid);
+  assert(trussGroups.walls.children.length === 0,
+    "No piece of the truss pack is envelope skin — the walls group takes none of it");
+  assert(trussGroups.framing.children.length > 0,
+    "The truss pack draws with the studs, on the framing toggle");
+
   const roofGroup = new THREE.Group();
   const roofs = registry();
   buildRoof(roofGroup, {

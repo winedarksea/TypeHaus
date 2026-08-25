@@ -26,6 +26,8 @@ wrong lumber in the take-off under a passing build.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from typehaus.findings import Finding, Result, Severity
 from typehaus.quantities import inch
 from typehaus.resolve.framing.solver import _module_stations
@@ -41,6 +43,72 @@ SOFFIT_LINING_THICKNESS = inch(0.625)
 # corners come from foot/inch quantities, so they land on the box exactly; this only
 # absorbs float round-trip noise.
 _RECT_TOLERANCE_M = 1e-6
+
+
+@dataclass(frozen=True)
+class SoffitClearSection:
+    """The usable cavity inside a framed soffit — **derived**, never authored.
+
+    Every clearance claim about a duct box in this house used to be hand arithmetic in a
+    plan comment ("the plan's 2'-8" box loses 4 1/4" total to framing/lining, leaving only
+    27 3/4" clear"). The arithmetic was right, but a comment cannot be re-run when the
+    ``FramingSpec`` changes from 2x2 to 2x3, and nothing was checking that the two 14"
+    ducts it was computed for still fit. An authored ``clear_width`` would have been no
+    better: it is a second source of truth for a number the framing already states.
+
+    So the section comes off exactly the geometry :func:`_frame_one` builds — the lining
+    on every face, then a ladder rail of stock depth down each long side, then the rails
+    top and bottom — and the check reads it. ``long_axis`` is the direction the box runs;
+    ``across`` and ``z`` bound the cavity, ``along`` bounds the run.
+    """
+
+    long_axis: str  # "x" | "y" — the direction the ladders run
+    along: tuple[float, float]  # the run's extent on ``long_axis``, inside the lining
+    across: tuple[float, float]  # clear cavity, between the two ladders' inner faces
+    z: tuple[float, float]  # clear cavity, between the bottom and top rails
+
+    @property
+    def width_m(self) -> float:
+        return self.across[1] - self.across[0]
+
+    @property
+    def drop_m(self) -> float:
+        return self.z[1] - self.z[0]
+
+
+def soffit_clear_section(soffit: ResolvedSoffit) -> SoffitClearSection | None:
+    """The cavity inside ``soffit``, or None when it has no framing to derive one from.
+
+    None rather than a guess in the two cases :func:`_frame_one` also declines: a soffit
+    with no ``FramingSpec`` (drawn but not built, so there is no lumber to measure against)
+    and a non-rectangular one (v1 frames rectangles only). A caller that cannot get a
+    section reports UNKNOWN — it does not fall back to the finished box, which would credit
+    the run with 4 1/4" of gypsum and lumber as if it were air.
+    """
+    if soffit.framing is None:
+        return None
+    box = _rectangle(soffit.outline)
+    if box is None:
+        return None
+    thickness, depth = _stock_actual_m(getattr(soffit.framing, "member", "2x4"))
+    lining = SOFFIT_LINING_THICKNESS.meters
+    minx, miny, maxx, maxy = box
+    x0, x1 = minx + lining, maxx - lining
+    y0, y1 = miny + lining, maxy - lining
+    z_bottom, z_top = soffit.z0_m + lining, soffit.z1_m - lining
+    if x1 <= x0 or y1 <= y0 or z_top - z_bottom <= 2 * thickness:
+        return None
+    long_is_x = (x1 - x0) >= (y1 - y0)
+    along = (x0, x1) if long_is_x else (y0, y1)
+    across_raw = (y0, y1) if long_is_x else (x0, x1)
+    across = (across_raw[0] + depth, across_raw[1] - depth)
+    if across[1] <= across[0]:
+        return None
+    return SoffitClearSection(
+        long_axis="x" if long_is_x else "y", along=along, across=across,
+        z=(z_bottom + thickness, z_top - thickness),
+    )
+
 
 def frame_soffits(model: ResolvedModel) -> list[Finding]:
     """Generate ladder framing for every soffit that authored a ``FramingSpec``."""

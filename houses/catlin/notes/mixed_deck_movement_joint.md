@@ -78,6 +78,18 @@ Along x = 18' both the slab and `FS-M-WEST`'s joists bear on the same wall line,
 deflects nowhere. It is a material and height change and nothing more, and it does not want
 a soft joint.
 
+**2026-08-25: the x = 18' leg is no longer one material on its west side.** The hall band
+became an authored `vinyl-sheet` `FinishZone` on `RM-M-LIVING`, so from y = 22.4' to 26.28'
+— the BM-M-HALL opening, which is the whole width of the hall — the cap now meets sheet
+vinyl, not plank. North of 26.28' (the stair lane) it is still LVP against the cap. Nothing
+about the *joint* changes: this leg deflects nowhere either way and still wants a T rather
+than a soft joint. What changes is the height either side of it. The 1/64"-1/20" proud
+figure below is the 6 mm SPC plank's number and does NOT carry to the vinyl half: sheet
+vinyl over the 3/4" plywood is ~2 mm of goods with no rigid core and no IXPE pad, so it will
+sit **low** to the cap rather than a hair proud, and the T over those 3.9 lf has to be
+specified for a real step. Measure it against the resolved elevations, not against this
+paragraph or the one below.
+
 **The step — and since 2026-08-23 there is very nearly none.** The plank is 6 mm SPC (5 mm
 rigid core over a 1 mm IXPE pad that compresses under load), so it stands 0.95"-0.99" over
 the storey datum; the polished cap tops at 0.9375". The plank finishes **1/64" to 1/20"

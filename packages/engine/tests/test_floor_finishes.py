@@ -234,8 +234,12 @@ def test_the_living_room_splits_its_floor_where_its_structure_splits(catlin_mode
     """One derived zone, taken from the slab, and the field LVP is the room minus it."""
     living = next(room for room in catlin_model.rooms if room.tag == "RM-M-LIVING")
     assert living.floor_finish == "lvp", "the room's own string stays the FIELD finish"
-    assert len(living.finish_zones) == 1
-    zone = living.finish_zones[0]
+    # TWO zones since 2026-08-25: the derived concrete band below, and an AUTHORED
+    # vinyl-sheet rectangle over the hall — the corridor is inside this one claim and cannot
+    # be a second Room without double-billing the floor. They do not overlap: the hall stops
+    # at x=18' and SL-M-DECK starts there, so neither zone is cut against the other.
+    assert len(living.finish_zones) == 2
+    zone = next(z for z in living.finish_zones if z.source_ref is not None)
     assert zone.material_ref == "polished-concrete"
     # Derived, not authored — and it names the slab, which is the answer to "why is this
     # band different" in the Inspector and in the takeoff.
@@ -254,8 +258,12 @@ def test_the_living_room_splits_its_floor_where_its_structure_splits(catlin_mode
     # test_the_billed_finishes_move_with_the_split is 410.2 before and after, and does not
     # move when this number does.
     assert zone.area_m2 * _M2_TO_FT2 == pytest.approx(392.7, abs=0.5)
-    field = (living.area_m2 - zone.area_m2) * _M2_TO_FT2
-    assert field == pytest.approx(355.1, abs=0.5)
+    hall = next(z for z in living.finish_zones if z.source_ref is None)
+    assert hall.material_ref == "vinyl-sheet"
+    assert hall.area_m2 * _M2_TO_FT2 == pytest.approx(46.5, abs=0.5)
+    # 355.1 until the hall zone: the field is the room minus BOTH zones now.
+    field = (living.area_m2 - zone.area_m2 - hall.area_m2) * _M2_TO_FT2
+    assert field == pytest.approx(308.4, abs=0.5)
 
 
 def test_a_derived_zone_is_clipped_to_the_room_not_drawn_as_the_slab(catlin_model):
@@ -265,10 +273,14 @@ def test_a_derived_zone_is_clipped_to_the_room_not_drawn_as_the_slab(catlin_mode
     from shapely.geometry import Polygon
 
     living = next(room for room in catlin_model.rooms if room.tag == "RM-M-LIVING")
-    ring = Polygon(living.finish_zones[0].outline)
+    # Selected by ``source_ref``, not by index: the room has carried an authored hall zone
+    # since 2026-08-25, and an authored ring is exactly the thing this test does NOT hold to
+    # the clear face — it draws as drawn (to the wall lines) and bills clipped.
+    derived = next(z for z in living.finish_zones if z.source_ref is not None)
+    ring = Polygon(derived.outline)
     face = Polygon(living.clear_face)
     assert face.buffer(1e-6).contains(ring), "the drawn ring never leaves the room"
-    assert ring.area == pytest.approx(living.finish_zones[0].area_m2, rel=1e-9)
+    assert ring.area == pytest.approx(derived.area_m2, rel=1e-9)
 
 
 def test_the_billed_finishes_move_with_the_split(catlin_model):
@@ -292,9 +304,17 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     # framing across a 9'-7 1/2" run, taken off the rooms on both faces.
     # 742.3 until 2026-08-24: the living room's LVP field lost the pantry's footprint, and
     # the pantry itself adds none back because all of it derives concrete.
-    assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(742.1, abs=0.5)
+    # 742.1 until 2026-08-25, when the hall band came out of the living room's LVP field and
+    # became an authored vinyl-sheet zone — the one change here that is a finish DECISION
+    # rather than a consequence of the structure under the floor.
+    assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(695.6, abs=0.5)
     assert "RM-M-PANTRY" in rows["lvp"]["rooms"]
     assert rows["lvp-underlayment"]["net_area_sqft"] == rows["lvp"]["net_area_sqft"]
+    # The other half of that move: RM-M-LIVING is now a vinyl-sheet room too, on the zone
+    # alone, and the corridor joins the mudroom/laundry/powder-bath spine it runs between.
+    assert "RM-M-LIVING" in rows["vinyl-sheet"]["rooms"]
+    assert {"RM-M-BATH1", "RM-M-LAUNDRY", "RM-M-MUDROOM"} <= set(
+        rows["vinyl-sheet"]["rooms"])
 
 
 # --- 5. a sealer needs a slab to seal ----------------------------------------------------

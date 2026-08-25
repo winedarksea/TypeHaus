@@ -135,6 +135,12 @@ class Service(Enum):
     # raceway: a run carrying this may never also carry power, and saying so in the type
     # system is what makes that unrepresentable rather than merely undrawn.
     DATA = "data"
+    # The two outdoor-side legs of a balanced ventilator. Named here because a port on a
+    # piece of equipment has to be able to say what it is: an ERV has four, and with only
+    # SUPPLY_AIR/RETURN_AIR to spell them the outdoor pair could not be modeled at all —
+    # which is precisely why the Catlin ERV's intake and discharge did not exist.
+    OUTDOOR_AIR = "outdoor_air"  # in from the intake hood
+    EXHAUST_AIR = "exhaust_air"  # out to the discharge hood
 
 
 class DoorOperation(str, Enum):  # noqa: UP042 — StrEnum needs 3.11; the toolchain is 3.9
@@ -288,6 +294,14 @@ class DuctSystem(Enum):
     # member and skip this one; the garage separation check deliberately does *not*, since
     # a hole in the R302.5.1 wall is the plainest form of the opening R302.5.2 forbids.
     TRANSFER = "transfer"
+    # Outdoor air drawn in from a wall or gable hood to the supply side of an HRV/ERV. Its
+    # own member rather than SUPPLY because nothing about it is a supply run: it carries
+    # outdoor-temperature air through conditioned space (so it must be insulated and vapour
+    # sealed, which SUPPLY is not), it terminates at a hood rather than a grille, and the
+    # separation rules that govern where it may end — 10 ft from any exhaust, 3 ft from any
+    # plumbing vent — apply to it and to nothing else. Filed as SUPPLY it would be counted
+    # as conditioned air delivered to a room by every ventilation check in the house.
+    OUTDOOR_AIR = "outdoor_air"
 
 
 class DuctRouting(Enum):
@@ -328,6 +342,16 @@ class EquipmentKind(Enum):
     # ``EquipmentType``, so a second battery module is one more placement, not a new kind.
     BATTERY = "battery"
     INVERTER = "inverter"
+    # A box where two air streams meet under a damper: the ERV's fresh-air leg joining an
+    # air handler's return. Equipment rather than a duct fitting because it is a purchased
+    # enclosure with a footprint, it occupies a soffit the way the air handler beside it
+    # does, and the backdraft damper in it is what keeps the return working when the ERV is
+    # off — behaviour, not a tee.
+    MIXING_BOX = "mixing_box"
+    # A radial-distribution plenum: one collared trunk connection, N small round takeoffs.
+    # The thing that makes a semi-rigid radial install a radial install, and a real box with
+    # a real footprint that has to fit the space it hangs in.
+    DUCT_MANIFOLD = "duct_manifold"
 
 
 class BackupTier(Enum):

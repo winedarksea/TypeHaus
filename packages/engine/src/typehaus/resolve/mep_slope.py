@@ -6,18 +6,37 @@ elevation is this run at, at each of its vertices — and nothing else in ``mep.
 
 ``typehaus.resolve.mep`` re-exports :func:`_pipe_vertex_z`, which is the name every existing
 call site and test already imports.
+
+Two trades route through it. A ``DuctRun`` now carries the same field set a ``PipeRun``
+does — per-vertex elevations, a start/end pair, an optional grade — because a riser is a
+riser whatever is inside it, and nothing in the solving is about water. The only
+plumbing-specific thing left was the *check id* on a finding, so that is a parameter
+(``prefix``): a duct reports ``integrity.duct_run_elevations``, a pipe
+``integrity.pipe_run_elevations``, and one solver answers both.
 """
 
 from __future__ import annotations
 
+from typing import Protocol
+
 from typehaus.findings import Finding, Result, Severity
-from typehaus.model.mep import PipeRun
-from typehaus.quantities import inch
+from typehaus.quantities import Length, inch
 from typehaus.resolve.geometry import length, sub
 
 
-def _pipe_vertex_z(run: PipeRun, path: list[tuple[float, float]],
-                   datum: float) -> tuple[list[float] | None, list[Finding]]:
+class _SlopedRun(Protocol):
+    """What the solver actually reads off a run — ``PipeRun`` and ``DuctRun`` both do."""
+
+    tag: str
+    start_elevation: Length | None
+    end_elevation: Length | None
+    elevations: tuple[Length | None, ...] | None
+    slope_in_per_ft: float | None
+
+
+def _pipe_vertex_z(run: _SlopedRun, path: list[tuple[float, float]],
+                   datum: float, prefix: str = "pipe"
+                   ) -> tuple[list[float] | None, list[Finding]]:
     """Absolute project-frame invert per path vertex.
 
     Authored ``elevations`` win; a ``None`` among them is *solved* at
@@ -29,8 +48,8 @@ def _pipe_vertex_z(run: PipeRun, path: list[tuple[float, float]],
     if run.elevations is not None:
         if len(run.elevations) != len(path):
             return None, [Finding(
-                severity=Severity.ERROR, check_id="integrity.pipe_run_elevations",
-                message=(f"pipe run {run.tag} authors {len(run.elevations)} elevations "
+                severity=Severity.ERROR, check_id=f"integrity.{prefix}_run_elevations",
+                message=(f"{prefix} run {run.tag} authors {len(run.elevations)} elevations "
                          f"for {len(path)} path points — one invert per vertex"),
                 element_tags=(run.tag,), result=Result.FAIL)]
         z: list[float | None] = [None if e is None else datum + e.meters
@@ -43,7 +62,7 @@ def _pipe_vertex_z(run: PipeRun, path: list[tuple[float, float]],
             z[-1] = datum + run.end_elevation.meters
             authored[-1] = True
         if not all(authored):
-            solved, findings = _solve_slope(run, path, z, authored)
+            solved, findings = _solve_slope(run, path, z, authored, prefix)
             if findings:
                 return None, findings
             z = solved
@@ -56,8 +75,8 @@ def _pipe_vertex_z(run: PipeRun, path: list[tuple[float, float]],
             endpoint = z[index]
             if endpoint is None or abs(datum + stated.meters - endpoint) > 1e-6:
                 return None, [Finding(
-                    severity=Severity.ERROR, check_id="integrity.pipe_run_elevations",
-                    message=(f"pipe run {run.tag} {label}_elevation disagrees with "
+                    severity=Severity.ERROR, check_id=f"integrity.{prefix}_run_elevations",
+                    message=(f"{prefix} run {run.tag} {label}_elevation disagrees with "
                              f"elevations[{0 if label == 'start' else -1}]"),
                     element_tags=(run.tag,), result=Result.FAIL)]
         return [0.0 if value is None else float(value) for value in z], []
@@ -79,14 +98,14 @@ def _pipe_vertex_z(run: PipeRun, path: list[tuple[float, float]],
 _M_PER_IN_PER_FT = inch(1).meters / 0.3048
 
 
-def _slope_error(run: PipeRun, message: str) -> list[Finding]:
-    return [Finding(severity=Severity.ERROR, check_id="integrity.pipe_run_slope",
-                    message=f"pipe run {run.tag} {message}",
+def _slope_error(run: _SlopedRun, message: str, prefix: str) -> list[Finding]:
+    return [Finding(severity=Severity.ERROR, check_id=f"integrity.{prefix}_run_slope",
+                    message=f"{prefix} run {run.tag} {message}",
                     element_tags=(run.tag,), result=Result.FAIL)]
 
 
-def _solve_slope(run: PipeRun, path: list[tuple[float, float]],
-                 z: list[float | None], authored: list[bool]
+def _solve_slope(run: _SlopedRun, path: list[tuple[float, float]],
+                 z: list[float | None], authored: list[bool], prefix: str = "pipe"
                  ) -> tuple[list[float | None], list[Finding]]:
     """Fill every unauthored invert by falling at ``slope_in_per_ft`` from the last one.
 
@@ -102,10 +121,10 @@ def _solve_slope(run: PipeRun, path: list[tuple[float, float]],
     """
     if run.slope_in_per_ft is None:
         return z, _slope_error(run, "leaves an invert unauthored but states no "
-                                    "slope_in_per_ft to solve it from")
+                                    "slope_in_per_ft to solve it from", prefix)
     if not any(authored):
         return z, _slope_error(run, "states slope_in_per_ft but authors no invert at all "
-                                    "— a grade needs somewhere to start from")
+                                    "— a grade needs somewhere to start from", prefix)
     fall_per_m = run.slope_in_per_ft * _M_PER_IN_PER_FT
     for i in range(1, len(z)):
         previous = z[i - 1]
@@ -122,5 +141,6 @@ def _solve_slope(run: PipeRun, path: list[tuple[float, float]],
             continue
         return z, _slope_error(
             run, f"drops vertically at path point {i} with an unauthored invert; a vertical "
-                 "leg has no plan run to fall over, so both its ends must be authored")
+                 "leg has no plan run to fall over, so both its ends must be authored",
+            prefix)
     return z, []

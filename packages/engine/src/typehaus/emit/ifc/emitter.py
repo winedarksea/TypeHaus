@@ -194,7 +194,7 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
         _emit_sleeve(f, body, sleeve, storeys, project_uuid)
 
     for duct in sorted(model.ducts, key=lambda item: item.uid):
-        _emit_duct_run(f, body, model, duct, storeys, project_uuid)
+        _emit_duct_run(f, body, duct, storeys, project_uuid)
 
     raceways_by_service = emit_conduits(f, body, model, storeys, project_uuid,
                                         ll.assign_representation)

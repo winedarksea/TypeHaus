@@ -822,6 +822,23 @@ class ResolvedDuct:
     conflicts: tuple[str, ...]  # non-empty -> structural FAIL, named per conflict
     depth_ok: bool  # duct depth fits within the joist depth
     design_cfm: float | None = None  # authored intent, echoed for the duct schedule
+    # Round section, when the run has one. ``width_m``/``depth_m`` are then both the
+    # diameter, so every consumer that measures a duct against a bay, a soffit or a sheet
+    # keeps working without asking which shape it is; this field is what the *takeoff* and
+    # the sweep need, because a 6" round and a 6x6 rectangular are two different orders.
+    diameter_m: float | None = None
+    # Absolute project-frame centreline elevation per path vertex, mirroring
+    # ``ResolvedPipeRun.z_m``. Never None: where the run authors nothing the resolver
+    # derives one z from its joist bay, its soffit or the storey datum, so a consumer never
+    # has to re-derive it (and never has to re-derive it *differently* — this used to live
+    # in the IFC emitter alone, which is why nothing else could draw a duct).
+    z_m: tuple[float, ...] = ()
+    # Developed length — plan run plus every rise. The BOM bills this; the plan-only sum it
+    # replaced billed a four-storey riser as the zero length it projects to.
+    length_m: float = 0.0
+    material: str | None = None
+    insulation: str | None = None
+    soffit_ref: str | None = None
 
 
 @dataclass(frozen=True)

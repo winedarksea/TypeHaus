@@ -178,6 +178,18 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # hole, and reading as the pour it sits in would defeat the point of drawing it — and not
     # pipe metal either: the cream is the fibre void former the concrete crew actually sets.
     "pipe_sleeve": (0.851, 0.788, 0.639, 1.0),    # 0xd9c9a3
+    # Routed air (→ resolve/mep_ducts.py, one category per DuctSystem). Galvanized greys
+    # tinted by what the run carries, because the question you ask standing in front of a
+    # duct box is which way the air is going: fresh air warm, stale air cool, and the two
+    # outdoor legs saturated enough to pick out of a wall at a glance — those are the two a
+    # reader is hunting for on the elevation. Kept clear of the plumbing hues above so a
+    # basement ceiling full of both still reads.
+    "duct_supply": (0.780, 0.800, 0.820, 1.0),      # bright galv, the fresh side
+    "duct_return": (0.560, 0.590, 0.620, 1.0),      # darker galv, the stale side
+    "duct_exhaust": (0.470, 0.510, 0.560, 1.0),     # cooler still — leaving the house
+    "duct_dryer": (0.860, 0.680, 0.420, 1.0),       # its own system, its own colour (M1502)
+    "duct_transfer": (0.700, 0.720, 0.700, 1.0),    # a louver, not a duct: muted
+    "duct_outdoor_air": (0.360, 0.640, 0.780, 1.0),  # outdoor air, insulated and sealed
     "solar": (0.10, 0.14, 0.28, 1.0),      # PV module glass, deep blue
     "fascia": (0.92, 0.92, 0.90, 1.0),     # PVC fascia
     "soffit": (0.88, 0.88, 0.85, 1.0),     # vented soffit panel under the overhang

@@ -15,7 +15,7 @@ import {
   applyMasonryWallUv, applyStandingSeamWallUv, createMasonryMaterial,
   createStandingSeamMaterial, isMasonry, isStandingSeam, masonryStyleFor, masonryTileSizeM,
 } from "../materials";
-import { buildMembers, categoryColor } from "../members";
+import { buildMembers, categoryColor, isSkinMember } from "../members";
 import {
   createPlanPrismGeometry, createRakedPlanPrismGeometry, projectPointToScene, type PlanCenter,
 } from "../planGeometry";
@@ -192,25 +192,48 @@ export function buildWall(
 // as walls.
 const FRAMING_SKIN_GROUPS = new Set<LayerVisibilityGroup>(["furring"]);
 
-// Wall members split two ways for visibility: plain lumber and a furring skin band (the
-// outrigger closure) answer to the Framing trade, while every other named-material skin band
-// (a cladding/sheathing/membrane closure, a trim run) is a derived envelope skin and answers to
-// the assembly-layer control that governs the layer it continues, on the Walls trade. The split
-// has to happen before the merge, since a merged mesh has one visibility flag for all of it.
+/** Which trade draws one wall member: the stick trade, or the envelope the member continues.
+ *
+ * `isSkinMember` asks the member's *category*, and that is the whole of it. Naming a material
+ * is not the test and never was: every piece of the Swinburne truss pack names one — the
+ * block is spf, the outrigger and the ladder blocking are kdat, the tab and the buck are
+ * struct-1-plywood — and all of them are lumber. Routing on `member.material` sent the entire
+ * truss wall to the Walls trade under the "Other" layer group, which took it out of the
+ * framing view: present in the model and in 2D, gone from 3D.
+ */
+function memberTrade(member: Member, tradeGroups: Record<Trade, THREE.Group>,
+  group: LayerVisibilityGroup): THREE.Group {
+  return !isSkinMember(member) || FRAMING_SKIN_GROUPS.has(group)
+    ? tradeGroups.framing : tradeGroups.walls;
+}
+
+// Wall members split two ways for visibility: lumber and a furring skin band (the outrigger
+// closure) answer to the Framing trade, while every other skin band (a cladding/sheathing/
+// membrane closure, a trim run) is a derived envelope skin and answers to the assembly-layer
+// control that governs the layer it continues, on the Walls trade. Both halves still carry
+// their layer-group tag, so a member that names a material stays reachable from the per-layer
+// toggles whichever trade draws it. The split has to happen before the merge, since a merged
+// mesh has one visibility flag for all of it.
 function buildWallSkinMembers(
   tradeGroups: Record<Trade, THREE.Group>, wallUid: string, members: Member[], center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
 ) {
   const lumber = members.filter((member) => !member.material);
   buildMembers(tradeGroups.framing, lumber, center, mode, palette, wallUid);
-  const skinByGroup = new Map<LayerVisibilityGroup, Member[]>();
+  // Bucketed by (trade, layer group), not by layer group alone: "other" collects both a
+  // truss block and a corner-trim run, and those two answer to different trades.
+  const skinByBucket = new Map<string, { parent: THREE.Group; group: LayerVisibilityGroup;
+    members: Member[] }>();
   for (const member of members) {
     if (!member.material) continue;
     const group = layerVisibilityGroupOf(member.category);
-    skinByGroup.set(group, [...(skinByGroup.get(group) ?? []), member]);
+    const parent = memberTrade(member, tradeGroups, group);
+    const key = `${parent === tradeGroups.framing ? "framing" : "walls"}|${group}`;
+    const bucket = skinByBucket.get(key) ?? { parent, group, members: [] };
+    bucket.members.push(member);
+    skinByBucket.set(key, bucket);
   }
-  for (const [group, skin] of skinByGroup) {
-    const parent = FRAMING_SKIN_GROUPS.has(group) ? tradeGroups.framing : tradeGroups.walls;
+  for (const { parent, group, members: skin } of skinByBucket.values()) {
     const firstChildIndex = parent.children.length;
     buildMembers(parent, skin, center, mode, palette, wallUid);
     tagLayerGroup(parent, firstChildIndex, group);

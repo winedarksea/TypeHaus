@@ -157,12 +157,29 @@ def test_floor_finishes_reconcile_against_the_houses_own_floor_area(catlin_model
 
 def test_every_finish_row_resolved_a_real_material(bom):
     """An UNKNOWN row is the feature — it surfaces a typo'd finish string — but the catlin
-    house must not have one, or something is genuinely unbilled."""
-    unknown = [row for row in bom["floor_finishes"] if not row["known"]]
+    house must not have one, or something is genuinely unbilled.
+
+    ``finish: None`` is NOT that row and is deliberately excluded here. ``floor_finish_rows``
+    emits one such row, once, naming every room that carries no finish at all — a different
+    statement from "this string did not resolve", and one the catlin house now makes on
+    purpose. It gets its own assertion below."""
+    unknown = [row for row in bom["floor_finishes"]
+               if not row["known"] and row["finish"] is not None]
     assert unknown == [], unknown
     assert {row["finish"] for row in bom["floor_finishes"] if "under" not in row} == {
         "carpet", "lvp", "oak", "tile", "sealed-concrete", "polished-concrete", "rubber",
-        "vinyl-sheet"}
+        "vinyl-sheet", None}
+
+
+def test_the_unfinished_rooms_are_the_two_attic_lofts_and_bill_nothing(bom):
+    """RM-A-WEST and RM-A-EAST lost their carpet on 2026-08-25: unfinished bulk storage
+    walks on FS-ATTIC's plywood and nothing goes over it. The row exists so 1,079 SF of
+    floor is not silently missing from the schedule — but it orders zero, because there is
+    nothing to order."""
+    row = next(row for row in bom["floor_finishes"] if row["finish"] is None)
+    assert row["rooms"] == ["RM-A-EAST", "RM-A-WEST"]
+    assert float(row["net_area_sqft"]) == pytest.approx(1078.8, abs=1.0)
+    assert float(row["order_area_sqft"]) == 0.0
 
 
 def test_the_second_storey_lvp_and_carpet_rows_match_what_was_authored(catlin_model, bom):

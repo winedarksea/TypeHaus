@@ -59,8 +59,20 @@ const ROOF_SKIN_CATEGORIES = new Set([
   "lining", "finish", "soffit", "gutter", "ridge_cap", "corner_trim",
 ]);
 
+/**
+ * Whether a member is a derived *skin* band rather than a stick of lumber.
+ *
+ * The question is the member's category, never whether it names a material: a truss wall's
+ * blocks, tabs, bucks and jamb fillers all carry one (spf, kdat, struct-1-plywood) and every
+ * one of them is wood a carpenter cuts. Asking `m.material` instead put the whole Swinburne
+ * pack on the Walls trade and out of the framing view (→ builders/walls.ts).
+ */
+export function isSkinMember(m: Member): boolean {
+  return ROOF_SKIN_CATEGORIES.has(m.category.toLowerCase());
+}
+
 export function isRoofFramingMember(m: Member): boolean {
-  return !ROOF_SKIN_CATEGORIES.has(m.category.toLowerCase());
+  return !isSkinMember(m);
 }
 
 // A member that names a material *the palette can resolve* is envelope skin, not lumber:

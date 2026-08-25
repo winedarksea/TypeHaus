@@ -135,14 +135,56 @@ class SleevePenetration(Element):
 
 @register_element
 class DuctRun(Element):
-    """One authored HVAC duct run, optionally routed through a floor's joist bays."""
+    """One authored HVAC duct run — a routed 3D polyline, round or rectangular.
+
+    Section is *either* ``diameter`` (round: semi-rigid radial, flex, spiral) *or*
+    ``width`` + ``depth`` (rectangular sheet metal), never both and never neither —
+    ``integrity.duct_run_section`` says so. Both spellings are optional fields because
+    both spellings are real ducts, and a round run forced to declare a width would be
+    declaring a number nobody could measure on site.
+
+    Elevations work exactly as :class:`PipeRun`'s inverts do, and for the same reason: a
+    four-storey ERV is not a set of plan polylines that teleport between floors. A vertical
+    riser is a repeated plan point at two elevations — no new concept. Where ``elevations``
+    is absent the resolver derives z from the ``floor_ref`` bay (JOIST_BAY) or the storey
+    datum, so every duct authored before this field existed still resolves, and gains a 3D
+    solid for free.
+
+    ``soffit_ref`` names the modeled :class:`~typehaus.model.floors.Soffit` a run is
+    concealed in, mirroring ``floor_ref`` for a joist bay. It is what turns
+    ``routing=SOFFIT`` from an escape hatch — the flag that told ``duct_bay_occupancy`` to
+    stop looking — into a checked claim: ``mep.duct_soffit_occupancy`` measures everything
+    naming a soffit against that soffit's *derived* clear section. ``CHASE`` keeps its
+    honest meaning, a framed shaft that is not modeled as a ``Soffit``, and stays a
+    declared unchecked case rather than a silent one.
+    """
 
     system: DuctSystem
     path: tuple[Point2D, ...]
-    width: Length  # plan width
-    depth: Length  # vertical
+    # Exactly one of (diameter) or (width + depth). See the class docstring.
+    diameter: Length | None = None  # round section
+    width: Length | None = None  # rectangular: plan width
+    depth: Length | None = None  # rectangular: vertical
     routing: DuctRouting = DuctRouting.EXPOSED
     floor_ref: str | None = None  # FloorSystem tag whose bays it occupies (JOIST_BAY)
+    soffit_ref: str | None = None  # Soffit tag the run is concealed in (SOFFIT routing)
+    # Storey-relative centreline elevations, mirroring PipeRun's inverts. ``elevations``
+    # is one per path vertex and an entry may be None ("solve me" — see mep_slope); the
+    # start/end pair is the two-point sugar. All absent -> the resolver derives one z from
+    # the floor bay or the storey, which is what every duct authored before this field
+    # existed already meant.
+    start_elevation: Length | None = None
+    end_elevation: Length | None = None
+    elevations: tuple[Length | None, ...] | None = None
+    #: Inches of fall per foot of developed plan run, solving every ``None`` above. Rare on
+    #: a duct — air does not need a grade — but a condensing-side run does get pitched, and
+    #: the solver is the same one.
+    slope_in_per_ft: float | None = None
+    material: str | None = None  # "galv" | "semi_rigid" | "flex" — takeoff grouping
+    # The duct insulation spec, billed by the foot, exactly as ``PipeRun.insulation`` is.
+    # ``None`` means bare, which for an outdoor-air duct through conditioned space is what
+    # sweats all winter.
+    insulation: str | None = None  # e.g. 'R-8 wrap, vapour-sealed'
     # The airflow this run is *intended* to carry, for the duct schedule and the HVAC sheet.
     # Documentation, not a solved quantity: there is no airflow solver here, and inventing
     # one from the section would be exactly the kind of guess this model refuses to make.
@@ -206,6 +248,13 @@ class Equipment(Element):
     # the indirect waste that empties the pan.
     drain_pan: bool = False
     pan_drain_ref: str | None = None
+    # The modeled ``Soffit`` this unit is installed inside, mirroring ``DuctRun.soffit_ref``.
+    # Two things follow from it and neither could be said before: the placeable hangs off the
+    # soffit's underside instead of the storey's default ceiling plane (an air handler in a
+    # 14" dropped box was resolving at 9'-0", the ceiling above it), and
+    # ``mep.duct_soffit_occupancy`` counts its case against the box's clear width alongside
+    # every duct sharing it.
+    soffit_ref: str | None = None
 
 
 class SumpPump(HausModel):

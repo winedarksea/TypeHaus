@@ -27,7 +27,7 @@ is the link between the two, in both directions.
 
 from __future__ import annotations
 
-from typehaus.model.enums import PipeAccessoryKind, PipeSystem
+from typehaus.model.enums import DuctSystem, PipeAccessoryKind, PipeSystem
 
 # The visibility trades the UI honours (``ui/src/state/vocabulary.ts::Trade``). Spelled out here
 # so a typo in the table below fails a test rather than shipping a node the UI drops.
@@ -86,6 +86,17 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
 
     # Vent runs — bath/dryer exhaust and the radon riser (``resolve/accessories.py``).
     "vent": "mechanical",
+
+    # Routed air (``resolve/mep_ducts.py``, one category per ``DuctSystem``). Every one of
+    # them is the HVAC contractor's work, so the split is for the colour and the inspector
+    # heading, exactly as the raceway pair above is: what a reader wants to tell apart in a
+    # duct box is fresh air from stale, not sheet metal from sheet metal.
+    "duct_supply": "mechanical",
+    "duct_return": "mechanical",
+    "duct_exhaust": "mechanical",
+    "duct_dryer": "mechanical",
+    "duct_transfer": "mechanical",
+    "duct_outdoor_air": "mechanical",
 
     # Fenestration: the glazing panels and the aluminium extrusions that hold them. They read
     # as openings even where the panel is set in a roof plane, because what a viewer wants to
@@ -185,6 +196,7 @@ PIPE_ACCESSORY_CATEGORIES = frozenset(kind.value for kind in PipeAccessoryKind)
 # ``IfcFooting``. 68 of catlin's 239 footings were pipe. glTF and ``model.json`` are the
 # other way round: there the solid *is* the run, and no second element exists.
 ROUTED_RUN_CATEGORIES = (frozenset(f"pipe_{system.value}" for system in PipeSystem)
+                         | frozenset(f"duct_{system.value}" for system in DuctSystem)
                          | frozenset({"conduit_power", "conduit_data"}))
 
 

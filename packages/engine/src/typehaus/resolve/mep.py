@@ -27,7 +27,7 @@ from typehaus.model.mep import (
     SleevePenetration,
 )
 from typehaus.quantities import inch
-from typehaus.resolve.geometry import bbox, length, sub
+from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.mep_queries import (  # noqa: F401 - re-exported query API
     _CONCRETE_SOLID_CATEGORIES,
     _conduit_vertical_profile,
@@ -47,10 +47,13 @@ from typehaus.resolve.mep_sleeves import (  # noqa: F401 - re-exported sleeve AP
     _pipe_expected_point,
     _resolve_sleeve,
 )
+from typehaus.resolve.mep_ducts import resolve_duct_run
 from typehaus.resolve.mep_slope import _pipe_vertex_z  # noqa: F401 - re-exported
+from typehaus.resolve.mep_soffit import (  # noqa: F401 - re-exported query API
+    soffit_occupancy,
+)
 from typehaus.resolve.model import (
     ResolvedConduitRun,
-    ResolvedDuct,
     ResolvedLightRun,
     ResolvedModel,
     ResolvedPipeAccessory,
@@ -67,9 +70,6 @@ from typehaus.resolve.sweep import (
     sweep_z_extent,
 )
 
-_DEFAULT_SPACING_M = inch(16).meters
-
-
 def resolve_mep(model: ResolvedModel) -> list[Finding]:
     findings: list[Finding] = []
     # Pipes resolve first, model-wide: a sleeve's expected center prefers a routed pipe
@@ -84,7 +84,7 @@ def resolve_mep(model: ResolvedModel) -> list[Finding]:
             if isinstance(element, SleevePenetration):
                 findings.extend(_resolve_sleeve(model, element, storey.tag))
             elif isinstance(element, DuctRun):
-                findings.extend(_resolve_duct_run(model, element, storey.tag))
+                findings.extend(_resolve_duct_run(model, element, storey))
             elif isinstance(element, ConduitRun):
                 findings.extend(_resolve_conduit_run(model, element, storey.tag))
             elif isinstance(element, LightRun):
@@ -171,7 +171,8 @@ def _resolve_conduit_run(model: ResolvedModel, run: ConduitRun, storey_tag: str)
     if profile is not None:
         solid_path, solid_z = profile
         _emit_run_solids(model, run.uid or run.tag, run.tag, storey_tag,
-                         solid_path, solid_z, run.trade_size.meters / 2.0,
+                         solid_path, solid_z,
+                         round_profile(run.trade_size.meters / 2.0, PIPE_FACETS),
                          _conduit_category(resolved.service))
     return []
 
@@ -207,7 +208,7 @@ def _pipe_wall_refs(run: PipeRun, n_segments: int) -> tuple[tuple[str | None, ..
 
 def _emit_run_solids(model: ResolvedModel, run_uid: str, run_tag: str, storey_tag: str,
                      path: list[tuple[float, float]], z: list[float],
-                     radius: float, category: str) -> None:
+                     profile: tuple[tuple[float, float], ...], category: str) -> None:
     """One swept solid for the whole routed run — the tube it actually is.
 
     A run used to be chopped up twice over: a vertical drop was a faceted circle prism, a
@@ -224,7 +225,11 @@ def _emit_run_solids(model: ResolvedModel, run_uid: str, run_tag: str, storey_ta
     round section along a polyline with per-vertex elevations — and the only thing that
     differs is the label the viewer and the glTF export colour-code by, so the label is the
     argument. (It used to be ``system: str`` with ``f"pipe_{system}"`` baked in, which is why
-    conduit had no geometry at all: there was nowhere for a raceway to say what it was.)"""
+    conduit had no geometry at all: there was nowhere for a raceway to say what it was.)
+
+    ``profile`` is passed in for the same reason, one trade later: a duct is round *or*
+    rectangular, and ``rect_profile`` has been sitting in ``sweep.py`` unused since the
+    kernel was written. A radius argument could only ever have described half of HVAC."""
     from typehaus.resolve.model import ResolvedSolid
 
     # ``clean_path`` rather than the raw vertices: an authored elbow repeats its plan point
@@ -232,7 +237,7 @@ def _emit_run_solids(model: ResolvedModel, run_uid: str, run_tag: str, storey_ta
     points = clean_path([(p[0], p[1], zi) for p, zi in zip(path, z)])
     if len(points) < 2:
         return
-    sweep = SolidSweep(path=points, profile=round_profile(radius, PIPE_FACETS))
+    sweep = SolidSweep(path=points, profile=profile)
     z0, z1 = sweep_z_extent(sweep)
     model.solids.append(ResolvedSolid(
         uid=f"{run_uid}-run", tag=f"{run_tag}-RUN", storey=storey_tag, category=category,
@@ -261,7 +266,8 @@ def _resolve_pipe_run(model: ResolvedModel, run: PipeRun, storey) -> list[Findin
             math.hypot(length(sub(path[i], path[i + 1])), z[i + 1] - z[i])
             for i in range(len(path) - 1))
         _emit_run_solids(model, run.uid or run.tag, run.tag, storey.tag, path, z,
-                         run.diameter.meters / 2.0, f"pipe_{run.system.value}")
+                         round_profile(run.diameter.meters / 2.0, PIPE_FACETS),
+                         f"pipe_{run.system.value}")
     else:
         developed = plan_len
     model.pipe_runs.append(ResolvedPipeRun(
@@ -349,62 +355,11 @@ def _host_z_at(host: ResolvedPipeRun, point: tuple[float, float]) -> float | Non
     return host.z_m[best]
 
 
-def _duct_containing_floor(model: ResolvedModel, storey_tag: str, direction: str,
-                           point: tuple[float, float], fallback):
-    """Whichever FloorSystem on this storey shares ``direction`` and contains ``point``.
+def _resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey) -> list[Finding]:
+    """Thin seam onto :mod:`typehaus.resolve.mep_ducts` — see that module's docstring.
 
-    Siblings from the same x-spanning deck split share a joist ``direction``; a duct that
-    crosses the split boundary needs the floor under each segment, not the one named by
-    ``floor_ref`` alone. Falls back to ``fallback`` (the named ``floor_ref``'s floor) when
-    no sibling's deck outline contains the point — e.g. a duct that briefly runs outside
-    any deck footprint."""
-    for f in model.floors:
-        if f.storey != storey_tag or f.direction != direction or not f.deck_outline:
-            continue
-        (x0, y0), (x1, y1) = bbox(list(f.deck_outline))
-        if x0 - 1e-6 <= point[0] <= x1 + 1e-6 and y0 - 1e-6 <= point[1] <= y1 + 1e-6:
-            return f
-    return fallback
-
-
-def _resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey_tag: str) -> list[Finding]:
-    path = [p.xy_m for p in duct.path]
-    if len(path) < 2:
-        return [Finding(
-            severity=Severity.ERROR, check_id="integrity.duct_run_path",
-            message=f"duct run {duct.tag} needs >= 2 path points", element_tags=(duct.tag,),
-            result=Result.FAIL,
-        )]
-    width_m, depth_m = duct.width.meters, duct.depth.meters
-    floor = (next((f for f in model.floors if f.tag == duct.floor_ref), None)
-            if duct.floor_ref else None)
-    conflicts_list: list[str] = []
-    crossings_list: list[tuple[float, float]] = []
-    depth_ok = True
-    if floor is not None:
-        # Each segment validates against whichever sibling FloorSystem (same storey,
-        # same joist direction) contains its midpoint, so a duct spanning a split deck
-        # (e.g. the ERV trunks crossing the truss/I-joist boundary) resolves against
-        # both halves instead of reporting UNKNOWN past the named floor_ref's edge.
-        for a, b in zip(path, path[1:], strict=False):
-            midpoint = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
-            seg_floor = _duct_containing_floor(model, storey_tag, floor.direction, midpoint, floor)
-            system = model.plan.by_tag(seg_floor.tag)
-            bearing_walls = [model.wall(tag) for tag in getattr(system.joists, "bearing_refs", ())]
-            bearing_walls = [w for w in bearing_walls if w is not None]
-            spacing_m = (system.joists.spacing.meters if system.joists.spacing is not None
-                        else _DEFAULT_SPACING_M)
-            seg_conflicts, seg_crossings, seg_depth_ok = duct_bay_occupancy(
-                [a, b], width_m, depth_m, duct.routing, seg_floor, bearing_walls, spacing_m,
-            )
-            conflicts_list.extend(seg_conflicts)
-            crossings_list.extend(seg_crossings)
-            depth_ok = depth_ok and seg_depth_ok
-    conflicts, crossings = tuple(conflicts_list), tuple(crossings_list)
-    model.ducts.append(ResolvedDuct(
-        uid=duct.uid, tag=duct.tag, storey=storey_tag, system=duct.system.value,
-        path=path, width_m=width_m, depth_m=depth_m, routing=duct.routing.value,
-        floor_ref=duct.floor_ref, crossings=crossings, conflicts=conflicts, depth_ok=depth_ok,
-        design_cfm=duct.design_cfm,
-    ))
-    return []
+    ``_emit_run_solids`` is handed over rather than imported there: this module owns it and
+    is the one every call site imports, so the dependency runs mep -> mep_ducts and stays
+    acyclic.
+    """
+    return resolve_duct_run(model, duct, storey, _emit_run_solids)

@@ -38,7 +38,8 @@ from typehaus.takeoff.hardware_config import (
     DEFAULT_HARDWARE_TAKEOFF_CONFIG,
     HardwareTakeoffConfig,
 )
-from typehaus.takeoff.mep import (duct_takeoff, pipe_insulation_takeoff, pipe_run_takeoff,
+from typehaus.takeoff.mep import (duct_fitting_takeoff, duct_insulation_takeoff,
+                                  duct_takeoff, pipe_insulation_takeoff, pipe_run_takeoff,
                                   sleeve_takeoff)
 from typehaus.takeoff.plumbing import fitting_takeoff
 from typehaus.takeoff.plumbing_specialties import (install_parts_takeoff,
@@ -133,6 +134,13 @@ def bill_of_materials(
         # cannot drift out of length with the pipe it sleeves.
         "pipe_insulation": pipe_insulation_takeoff(model),
         "ducts": duct_takeoff(model),
+        # Elbows by the piece off the ducts' own 3D polylines, the same derivation
+        # [pipe_fittings] uses. Only possible since DuctRun gained elevations: a plan
+        # polyline has no riser to turn at, so every one of these was invisible.
+        "duct_fittings": duct_fitting_takeoff(model),
+        # Duct wrap by the foot. An uninsulated outdoor-air duct through conditioned space
+        # sweats, so this is not a finish line — it is why the ceiling below stays dry.
+        "duct_insulation": duct_insulation_takeoff(model),
         "sleeves": sleeve_takeoff(model),
         # The electrical program (→ takeoff/electrical.py): devices by type, the panel
         # schedule + NEC 220.82-style service load, raceway LF, the PV array's installed
