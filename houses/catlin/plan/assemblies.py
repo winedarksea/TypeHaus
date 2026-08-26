@@ -1507,8 +1507,8 @@ MATERIALS = [
              density=560.0, hatch="lumber", color="#b08d5e",
              finish="clear-satin-hardwax-oil", species="elm",
              source="plans/TODO.md — suite bedroom tudor posts, 10' sections cut to fit"),
-    # --- the four metal skins (2026-08-20) --------------------------------------
-    # The house is clad in metal in FOUR specifications. They are all the same white PVDF
+    # --- the metal skins (2026-08-20; a fifth added 2026-08-26) ------------------
+    # The house is clad in metal in FIVE specifications. They are all the same white PVDF
     # steel to look at; what separates them is SEAM PROFILE and GAUGE, and both are labour
     # and material facts rather than architectural ones. Splitting them into four tags is
     # what lets `prices.toml` bill each at its own rate — before this date a single tag
@@ -1521,10 +1521,12 @@ MATERIALS = [
     #       plus a seamer rental. It is on the main house roof on purpose — this is the roof
     #       that carries the PV array, sheds onto occupied ground, and must not be re-roofed
     #       in 25 years.
-    #   `standing-seam-snaplock` — 24 ga, SNAP-LOCK. The house walls, CATLIN_EXT_2X6 and
-    #       PLANT_EXT_2X6_HUMID. Concealed floating clips like the seamed roof, but the male
-    #       and female legs engage under hand pressure, so there is no seaming pass. Roughly
-    #       $2-4/SF cheaper installed than mechanical seam.
+    #   `standing-seam-snaplock` — 24 ga, SNAP-LOCK. Concealed floating clips like the
+    #       seamed roof, but the male and female legs engage under hand pressure, so there
+    #       is no seaming pass. Roughly $2-4/SF cheaper installed than mechanical seam.
+    #       It clad the house walls until 2026-08-26 and is now taken by nothing but
+    #       CATLIN_EXT_2X6_SWINBURNE, the revert wall — which is exactly what keeps the
+    #       swap back to it a one-line `material_ref` change.
     #   `standing-seam-nailstrip` — 24 ga, NAIL-STRIP. GARAGE_ROOF only. Nail strip has NO
     #       concealed clips at all: an integral flange is face-fastened to the deck and the
     #       next panel's leg snaps over it, dropping both the clip material and the
@@ -1537,13 +1539,16 @@ MATERIALS = [
     #       flat wall, which is acceptable on a detached garage and would not be on the
     #       house; specify a striated pan rather than a flat one.
     #
-    # Every building-science number on all four is `standing-seam`'s verbatim — continuous
+    # Every building-science number on all five is `standing-seam`'s verbatim — continuous
     # sheet steel is vapour-impermeable and carries no R whatever its gauge or seam — so
     # nothing here changes an energy or a Glaser result. Keep them in step by hand.
     #
-    # The tags keep the substring "seam" ON PURPOSE: `ui/src/three/materials.isStandingSeam`
-    # and `nordic/palette.familyOf` both key the ribbed metal finish off it, and a tag like
-    # "nail-strip-steel" would render this house's walls as flat grey.
+    # The FIRST FOUR tags keep the substring "seam" ON PURPOSE:
+    # `ui/src/three/materials.isStandingSeam` and `nordic/palette.familyOf` both key the
+    # ribbed metal finish off it, and a tag like "nail-strip-steel" would render this
+    # house's walls as flat grey. `pbr-panel-26` deliberately does NOT play that game — it
+    # declares `finish="ribbed-panel"` and the renderers dispatch on the declaration, which
+    # is what the substring fallback was always standing in for.
     Material(tag="standing-seam-snaplock", name="Snap-lock standing-seam steel, 24 ga.",
              r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
              color="#6b7076",

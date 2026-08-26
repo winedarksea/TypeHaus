@@ -127,16 +127,18 @@ from plan.storeys.garage import GARAGE_STEM_REVEAL, GARAGE_Y_SOUTH
 # ============================================================================
 # North face of the house's outsulated wall: the y=36' sheathing plane plus the whole
 # catlin-truss stack — 1 1/2" band A foam, the 1 1/2" inner girt, 1" of band C foam, the
-# 1/2" vent gap, the 1 1/2" outer girt and 1/2" of standing seam (plan/assemblies.py
+# 1/2" vent gap, the 1 1/2" outer girt and 1 1/4" of PBR panel (plan/assemblies.py
 # CATLIN_EXT_2X6, and params/roof_trim.py::_WALL_OUTBOARD_IN, which is the same number).
 # This is what the breezeway's south end butts.
 #
-# It has moved north twice. On 2026-08-23 by 0.48", when the Swinburne truss (5.5" proud)
-# replaced the WRB + 2" polyiso + 2" EPS + 1/2" furring stack (5.02"), and the garage moved
-# 1/2" north the same day so the slot below did not lose its reveal. On 2026-08-26 by a
-# further 1", when the girts replaced the outriggers and the stack went to 6.5" — and the
-# garage moved 1" north again, for the identical reason (plan/storeys/garage.py).
-_HOUSE_CLADDING_Y = 36.0 + 6.5 / 12.0  # 36.5417'
+# It has moved north three times. On 2026-08-23 by 0.48", when the Swinburne truss (5.5"
+# proud) replaced the WRB + 2" polyiso + 2" EPS + 1/2" furring stack (5.02"), and the
+# garage moved 1/2" north the same day so the slot below did not lose its reveal. On
+# 2026-08-26 by a further 1", when the girts replaced the outriggers and the stack went to
+# 6.5" — garage 1" north again, identical reason. And on 2026-08-26 by 3/4" more, when the
+# 1 1/4" exposed-fastener PBR panel replaced the 1/2" snap-lock seam and the stack went to
+# 7.25" (plan/storeys/garage.py).
+_HOUSE_CLADDING_Y = 36.0 + 7.25 / 12.0  # 36.6042'
 
 # South face of the garage's ICF stem: the wall line itself. The 11" section is aligned so
 # its exterior EPS face lands on the node line, coplanar with the zip-R of the wood wall
@@ -144,10 +146,18 @@ _HOUSE_CLADDING_Y = 36.0 + 6.5 / 12.0  # 36.5417'
 # cladding is, 7/8" south of it. It keeps its own name because the deck still butts *this*
 # plane, tucked under that 7/8" of overhang.
 _GARAGE_STEM_Y = GARAGE_Y_SOUTH.feet  # 40.57292'
-# South face of the garage's wood wall above the stem: rainscreen + standing seam over the
+# South face of the garage's wood wall above the stem: nail-strip panel straight on the
 # zip-R plane. That is the obstruction now, at deck level and at roof level both, so it is
 # what sets the clear gap.
-_GARAGE_CLADDING_Y = GARAGE_Y_SOUTH.feet - (0.375 + 0.5) / 12.0  # 40.5833'
+#
+# **This carried a 3/8" rainscreen furring that does not exist.** GARAGE_WALL_2X6 dropped
+# it on 2026-08-20 — the stack is stud / zip-R / cladding and nothing between — so the
+# garage face was modelled 3/8" further south than it stands for six days, and the clear
+# gap below was 3/8" optimistic the whole time. Corrected 2026-08-26 rather than carried
+# forward into the PBR arithmetic, because recomputing off a known-wrong expression is how
+# an error stops being visible. It is why the garage moved only 3/8" this time and not the
+# full 3/4" the house face moved.
+_GARAGE_CLADDING_Y = GARAGE_Y_SOUTH.feet - 0.5 / 12.0  # 40.6458'
 
 _CLEAR_GAP_FT = _GARAGE_CLADDING_Y - _HOUSE_CLADDING_Y  # 4.04167' = 4'-0 1/2"
 _PANEL_FT = 4.0  # one 4'x8' sheet, UNCUT in the N-S direction

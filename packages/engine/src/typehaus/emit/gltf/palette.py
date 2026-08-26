@@ -155,6 +155,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # hanger or a hold-down is, so they read a shade lighter than the fastener grey above.
     "snow_guard": (0.72, 0.73, 0.75, 1.0),
     "seam_clamp": (0.72, 0.73, 0.75, 1.0),
+    "panel_strap": (0.72, 0.73, 0.75, 1.0),
     "sump": (0.30, 0.32, 0.34, 1.0),       # pit
     "vent": (0.88, 0.88, 0.86, 1.0),       # painted vent pipe
     # routed plumbing runs (→ resolve/mep.py _emit_run_solids), riser-diagram colors
@@ -273,6 +274,11 @@ _EXTERIOR_DARK = "#1c1f24"      # the house's one exterior dark; see window_trim
 
 _FINISH_BASE: dict[str, str] = {
     "standing-seam": _SEAM_BASE,
+    # The exposed-fastener PBR panel is the SAME white as the seamed skin — one paint, five
+    # specifications — so it shares the base and differs only in its normal map. Its own
+    # entry rather than a shared key, because this table is matched exactly and a finish
+    # with no row falls to the "metal" family blue-grey.
+    "ribbed-panel": _SEAM_BASE,
     "cmu": _CMU_BASE,
     "white-brick": _WHITE_BRICK_BASE,
     "glazed-green-brick": _GLAZED_GREEN_BRICK_BASE,

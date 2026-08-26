@@ -374,6 +374,11 @@ def _resolve_dowel(model: ResolvedModel, el: Dowel, storey: str) -> None:
 _CONNECTOR_CATEGORY = {
     ConnectorKind.SNOW_GUARD: "snow_guard",
     ConnectorKind.STANDING_SEAM_CLAMP: "seam_clamp",
+    # Named for the STRAP and the panel it penetrates, deliberately not for the pipe it
+    # holds: a category starting "pipe_" means a ROUTED PIPE RUN everywhere else in the
+    # model (emit/trades.py keys the plumbing trade off that prefix), and a fixing filed
+    # under it would render a bracket as plumbing.
+    ConnectorKind.PIPE_STRAP: "panel_strap",
 }
 
 
@@ -394,6 +399,10 @@ _CONNECTOR_MARKER_IN = {
     # S-5! S-5-S / VersaBracket class seam clamp: 1.60 L x 0.76 D x 0.39 W. Drawn as its
     # real footprint, half-extents, with the long axis in plan.
     ConnectorKind.STANDING_SEAM_CLAMP: (0.80, 0.38, 0.20),
+    # A two-hole pipe strap on a standoff block: wider than a seam clamp because it spans
+    # the pipe, and deeper because the block holds it off the rib crowns. Still far short
+    # of the 5" default box, which is what matters — these run down a wall in fours.
+    ConnectorKind.PIPE_STRAP: (1.50, 1.25, 0.50),
 }
 _CONNECTOR_MARKER_DEFAULT = (2.5, 2.5, 3.0)
 

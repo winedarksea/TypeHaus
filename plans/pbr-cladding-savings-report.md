@@ -1,0 +1,114 @@
+# House-wall cladding: snap-lock seam → exposed-fastener PBR panel
+
+**Taken 2026-08-26.** The catlin house's wall cladding moved from `standing-seam-snaplock`
+(24 ga, concealed floating clips) to `pbr-panel-26` (26 ga, exposed-fastener PBR, 36" net
+coverage, 1-1/4" major ribs at 12" o.c.), face-fastened with Simpson **T09150HWAM** #9 x
+1-1/2" 316 stainless panel screws with bonded EPDM washers.
+
+Two assemblies moved: `CATLIN_EXT_2X6` and `PLANT_EXT_2X6_HUMID`. `CATLIN_EXT_2X6_SWINBURNE`
+keeps the snap-lock layer as the one-line revert.
+
+**The garage was excluded.** `GARAGE_WALL_2X6` has no furring — cladding sits straight on
+Zip-R — so PBR there needs a whole new girt layer plus through-insulation structural screws,
+and that cost cancels the saving over 631 SF. It keeps `standing-seam-nailstrip-26` and its
+28 `S-5-N` wind clamps. Both roofs (`CATLIN_ROOF`, `GARAGE_ROOF`) are untouched.
+
+---
+
+## The saving
+
+Figures are the takeoff's own, before and after, from `haus takeoff houses/catlin --csv`.
+
+| line | before | after | delta |
+|---|---|---|---|
+| `envelope_layers` house-wall cladding, 3,670.7 → 3,672.2 SF | $32,119 – $58,731 | $16,525 – $26,623 | **−$15,594 / −$32,108** |
+| 48 `S-5-S` wall wind clamps | $300 – $492 | — | −$300 / −$492 |
+| 11 `S-5! CanDuit` rings (#11 ×3, #13 ×8) | $110 – $242 | — | −$110 / −$242 |
+| the 11 `S-5!` seam clamps those rings *required* | $99 – $165 | — | −$99 / −$165 |
+| 11 `SS316-STANDOFF-STRAP` through-panel straps | — | $32 – $58 | +$32 / +$58 |
+| 3,098 `T09150HWAM` panel screws (2,473 field + 625 sidelap) | — | $1,794 – $2,246 | **+$1,794 / +$2,246** |
+| roof metal + polyiso, from the grown cladding lap | $22,759 – $39,574 | $22,912 – $39,839 | +$153 / +$265 |
+| **net, before waste / contingency / tax** | **$850,207 – $1,778,149** | **$836,182 – $1,747,900** | **−$14,025 / −$30,249** |
+
+**Marked up**, the saving grows, because every stage of the ladder scales with it:
+
+| stage | before | after | delta |
+|---|---|---|---|
+| `subtotal_net` | $850,207 – $1,778,149 | $836,182 – $1,747,900 | −$14,025 / −$30,249 |
+| waste | $13,752 – $25,153 | $13,069 – $23,655 | −$683 / −$1,498 |
+| `subtotal_ordered` | $863,959 – $1,803,301 | $849,251 – $1,771,555 | −$14,709 / −$31,746 |
+| contingency (10%) | $86,396 – $180,330 | $84,925 – $177,156 | −$1,471 / −$3,175 |
+| tax (8.53%) | $25,825 – $49,801 | $25,249 – $48,441 | −$577 / −$1,360 |
+| **total** | **$976,181 – $2,033,432** | **$959,424 – $1,997,151** | **−$16,756 / −$36,281** |
+
+The material/labour split of the net delta is **−$5,911 / −$13,992 material** and
+**−$8,114 / −$16,257 labour**. That split is not decoration: per `takeoff/cost_model.py`
+waste applies to material and to merged lines but **never** to declared labour, so the waste
+line above moves on the material half only — which is why waste falls by roughly 12% of the
+material saving rather than by 10% of all of it.
+
+**Sanity check.** `plans/cost-options.md` §3 independently pre-estimated −$15,600 / −$29,000
+for this exact move. The realised low end lands just under that and the high end runs past
+it, for a reason that is arithmetic rather than a modelling surprise: the pre-flight was
+written against 3,512 SF and the resolved area is 3,672 SF.
+
+## Where the money actually went
+
+- **The panel is cheaper on both halves, for separate reasons.** Material $1.75–2.75/SF
+  against $3.75–7.00: 26 ga PBR is the commodity metal-panel product and carries no clips at
+  all, which on a snap-lock wall is real material and not only labour. Labour $2.75–4.50/SF
+  against $5.00–9.00: no clips to set, no clip line to lay out, no seamer pass, no seamer
+  rental. Both rows still carry this wall's 20–35% trim load — 45 openings, and a ribbed
+  panel is if anything worse for trim than a flat pan, since every opening wants a closure
+  strip shaped to the rib as well as a jamb return.
+- **The clamps went because they cannot work, not to save money.** An `S-5-S` closes on a
+  snap-lock leg and there is no leg left; `S5_CANDUIT_PIPE_CLAMP` declares
+  `requires_role=ROLE_STANDING_SEAM_CLAMP`, so each ring would have arrived with a bracket
+  that has nothing to grip. The 11 pipe fixings moved to a 316 stainless two-hole strap on a
+  standoff block, screwed through the panel into the girt with two of the same panel screws.
+  The ~$180–350 that saves is a consequence, not the argument.
+- **The screws are the counterpart, and they are billed on purpose.** 3,098 of them, as a
+  *counted part* rather than inside the $/SF rate — the first cladding fixings in this house
+  billed that way. `Material.exposed_fastener` is what enables it and is the double-billing
+  guard: the four seam profiles' fixings stay inside their own rates, and `[basis_notes]`
+  records that the five rows must never be re-merged.
+- **A small counter-effect, honestly reported.** The roof laps the cladding, so a face 3/4"
+  further out grows the roof footprint slightly: +$153 / +$265 across the roofing metal and
+  the roof polyiso. It is inside the noise of the saving but it is not zero.
+
+## What it cost that is not money
+
+- **Service life.** The gaskets set the clock, not the steel. Expect a re-screw at 25–30
+  years — a maintenance event a clipped, seamed wall does not have at all.
+- **Appearance.** Oil-canning on a screwed 26 ga panel at eye level is more visible than on
+  a floating clipped one. The renderers model this: `RIBBED_PANEL_PROFILE` carries a *lower*
+  oil-canning term than the seam profile (a screwed panel is pulled tight to its girts every
+  24"), but 26 ga is a thinner sheet than the 24 ga it replaced, and that runs the other way.
+- **No corner-zone densification.** The 48 corner wind clamps are gone, and the screw
+  schedule that replaced them is a uniform field grid. If a wind analysis is ever run, the
+  lever is tightening the screw pitch in the corner zone — not re-authoring clamps onto a
+  panel that cannot take them. `plan/wind_clamps.py` says so in its header.
+
+## Geometry that moved with it
+
+The cladding face went **6.5" → 7.25"** (`params/roof_trim.py::_WALL_OUTBOARD_IN`). Windows
+and doors did **not** move: they mount on the outer girt plane, which is unchanged — only
+the cladding return depth at a jamb changed. What did move:
+
+- the breezeway's house face (`params/breezeway.py`), and the garage with it;
+- the birdsmouth notch, deeper by 0.75 × 4/12 = 0.25" (1.667" → 1.917"), because the
+  zero-overhang roof laps the cladding;
+- the roof's `top-deck` edge setback, which clips at the cladding face (0.5" → 1.25").
+
+**The garage moved only 3/8" of the house's 3/4", and half of that difference is a bug fix.**
+`params/breezeway.py` was carrying a 3/8" rainscreen furring on the *garage* face that
+`GARAGE_WALL_2X6` dropped on 2026-08-20 — the modelled garage face had stood 3/8" south of
+where it actually is for six days, and the breezeway clear gap was 3/8" optimistic the whole
+time. Correcting that rather than recomputing off it gave back exactly half the move. The
+breezeway slot holds at **4'-0 1/2"**, still one uncut 4'-0" polycarbonate panel with its
+1/2" reveal — unchanged, which was the constraint.
+
+The flush zero-overhang roof edge survives because both the wall panel and the roofing
+declare `skin_family="standing-seam"`, which is what
+`resolve/roof_edge_geometry.continuous_skin_cladding` actually reads. Drop it on either and
+the edge silently reverts to a fascia-and-drip-edge detail nobody has drawn.

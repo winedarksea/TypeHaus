@@ -48,7 +48,7 @@ export function solidTrade(solid: Pick<Solid, "category">): Trade {
 // lite listed here renders as dark metal however its material is authored.
 const METALLIC_SOLID_CATEGORIES = new Set([
   "railing", "railing_infill", "gutter", "downspout", "flashing", "connector",
-  "snow_guard", "seam_clamp",
+  "snow_guard", "seam_clamp", "panel_strap",
 ]);
 
 // Painted finishes name their colour in the material ref ("post-paint-white"). The served

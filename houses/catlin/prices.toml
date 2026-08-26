@@ -426,8 +426,20 @@
 # it reads as coverage.
 "MASA" = { low = 1.75, high = 3 }  # 109 ea
 "S-5!" = { low = 9, high = 15 }  # 19 ea
-"S-5! CanDuit #11" = { low = 10, high = 22 }  # 3 ea
-"S-5! CanDuit #13" = { low = 10, high = 22 }  # 8 ea
+# The two CanDuit rings are NOT TAKEN as of 2026-08-26 — 0 ea each. The house walls went to
+# `pbr-panel-26`, an exposed-fastener panel with no seam, and the ring mounts on a seam
+# clamp by its M8 shaft (`requires_role`): it would arrive with a bracket that has nothing
+# to grip. The 11 leader/riser fixings moved to "SS316-STANDOFF-STRAP" below, and the 11
+# carried-mount "S-5!" clamps they dragged with them went with them.
+#
+# Both rows STAY, with their counts commented rather than deleted, and that is deliberate:
+# nothing else in the catalog serves ROLE_PIPE_CLAMP, so reverting the cladding is a
+# `size=` change in the plan and nothing here. Contrast the S-5-S row below, which was
+# deleted — a snap-lock CORNER clamp has no revert path short of re-authoring 48
+# connectors, so leaving its rate behind would only read as coverage for a part the model
+# no longer contains.
+"S-5! CanDuit #11" = { low = 10, high = 22 }  # 0 ea (was 3 — vent riser, now a strap)
+"S-5! CanDuit #13" = { low = 10, high = 22 }  # 0 ea (was 8 — roof leaders, now straps)
 # ColorGard is a BAR system quoted by the foot of rail plus its clamps; the clamps are
 # already billed as the 6 carried-mount "S-5!" rows. This range treats each of the 6
 # modeled units as one 8' crossbar + colour strip at $10-16/LF. If the snow-retention
@@ -444,11 +456,17 @@
 # unit with soft-close hardware lands. This is the one line in this section standing on a
 # ratio instead of a quote — re-source it before it matters.
 "POCKET-FRAME-CS-WOOD" = { low = 300, high = 750 }  # 1 ea — D-M-LAUN
-# 2026-08-20 — the wind-mitigation clamps (plan/wind_clamps.py). Two part numbers because
-# the PANEL PROFILE decides the part: an S-5-S will not close on a nail-strip bulb and an
-# S-5-N will not close on a snap-lock leg. Priced per SKU rather than as a family:
-#   S-5-S  MSRP $7.34; street $7.85 (RapidMaterials) to $9.75 (Best Buy Metals)
+# 2026-08-20 — the wind-mitigation clamps (plan/wind_clamps.py). The PANEL PROFILE decides
+# the part: an S-5-S will not close on a nail-strip bulb and an S-5-N will not close on a
+# snap-lock leg. Priced per SKU rather than as a family:
 #   S-5-N  MSRP $7.11; street $7.62 to $9.50
+#
+# ** The S-5-S row is GONE (2026-08-26), and with it the 48 house-wall corner clamps. **
+# Those walls are `pbr-panel-26` now, an exposed-fastener panel with no seam of any kind, so
+# the S clamp is not merely unneeded but uninstallable. What it resisted is resisted by the
+# panel's own face screws, billed as "T09150HWAM" below. The row is deleted rather than
+# zeroed because a rate for a part the model cannot contain reads as coverage — and unlike
+# the CanDuit rings above, nothing about the swap back would go through this file.
 # The range widens downward from street for contractor-carton pricing, the same 25-40%
 # adjustment this whole section carries.
 #
@@ -467,7 +485,35 @@
 # the setscrews where published load values are relied on, and nothing in this file pays for
 # that pass.
 "S-5-N" = { low = 6, high = 10 }  # 28 ea — garage roof and garage walls, nail strip
-"S-5-S" = { low = 6.25, high = 10.25 }  # 48 ea — house wall corners, snap lock
+# 2026-08-26 — the exposed-fastener wall panel's own screws (takeoff/fasteners.py
+# `exposed_fastener_cladding_screw_rows`). 3,098 ea over two BOM rows: 2,473 field (one per
+# rib flat at every 24" girt course) + 625 sidelap stitch (one line per panel-to-panel
+# JOINT, which is one fewer than the panel count on each run). Openings are NOT deducted, following the furring-screw convention — trim,
+# closures and jamb returns take those screws back.
+#
+# $579/1,000 is the quoted carton price, so this is $0.579 each and the row is authored at
+# that number rather than a range: it is a purchase price for a stocked SKU, not an
+# estimate. The high end carries a 25% small-order adjustment for a job that buys four
+# cartons and not forty.
+#
+# ** This is the one cladding fixing in this file billed as a counted part rather than
+# inside a $/SF rate, and that is the whole reason `Material.exposed_fastener` exists. **
+# The four seam profiles' clips and fixings are inside their [envelope_layers] rows. See
+# [basis_notes]. Labour is NOT here: driving them is inside the "pbr-panel-26" labour rate,
+# which is where the care they need (land in the flat, drive to gasket compression and no
+# further) is actually priced.
+"T09150HWAM" = { low = 0.579, high = 0.725 }  # 3,098 ea — 2,473 field + 625 sidelap
+# The through-panel pipe straps that replaced the CanDuit rings on the two roof leaders (#13,
+# 4.0" OD) and the north-gable vent riser (#11, 3.5" OD). A commodity 316 stainless two-hole
+# strap on a moulded standoff block, ~$2-4 the pair of holes; the range is per POINT and
+# includes the two T09150HWAM screws it takes, which are NOT separately counted in the panel
+# rows above — those are derived from the panel grid, and a strap point is not on it.
+#
+# Roughly a fifth of the $15-22/point the ring-plus-clamp assembly cost. That saving is the
+# consequence of the cladding change, not its justification: on a wall already penetrated
+# 3,098 times, a non-penetrating fixing has nothing left to protect.
+"SS316-STANDOFF-STRAP #11" = { low = 2.5, high = 4.5 }  # 3 ea — vent riser
+"SS316-STANDOFF-STRAP #13" = { low = 3, high = 5.5 }  # 8 ea — roof leaders
 "SDWH191000DB" = { low = 1.05, high = 1.95 }  # 539 ea — the ROOF's 10" screws through 6" of polyiso
 # 2026-08-26, the catlin truss's block screws — ONE per block, two rows, both landing on the
 # same 5" part. Derived from the resolved members rather than from a grid
@@ -1476,11 +1522,39 @@
 # $12-22 Minnesota for mechanically seamed. This is the roof that carries the PV array and
 # sheds onto occupied ground; the seam is the reason it is not being re-roofed in 25 years.
 "standing-seam" = { material = { low = 3.5, high = 6.5 }, labour = { low = 7, high = 12 } }
-# 3,511.3 SF — the house walls, CATLIN_EXT_2X6 and PLANT_EXT_2X6_HUMID. Installed
-# $8.75-16.00/SF against $10-16 published for standing-seam siding. Material is ABOVE the
-# seamed roof's despite being the cheaper profile, and that is the wall trim load: 20-35% on
-# top of field panel is normal on a concealed-fastener wall, and this wall has 45 openings.
+# NOT TAKEN as of 2026-08-26 — kept as the revert rate. It clad the house walls
+# (CATLIN_EXT_2X6, PLANT_EXT_2X6_HUMID) until the exposed-fastener PBR row below replaced
+# it, and CATLIN_EXT_2X6_SWINBURNE still names it, so the row stays and the swap back is a
+# `material_ref` change with no price archaeology. Installed $8.75-16.00/SF against $10-16
+# published for standing-seam siding. Material is ABOVE the seamed roof's despite being the
+# cheaper profile, and that is the wall trim load: 20-35% on top of field panel is normal on
+# a concealed-fastener wall, and this wall has 45 openings.
 "standing-seam-snaplock" = { material = { low = 3.75, high = 7 }, labour = { low = 5, high = 9 } }
+# 3,670.7 SF — the house walls, CATLIN_EXT_2X6 and PLANT_EXT_2X6_HUMID, from 2026-08-26.
+# Installed $4.50-7.25/SF, and BOTH halves are below the snap-lock row above for reasons
+# that are separate and should not be collapsed into one "it's cheaper" line.
+#
+# MATERIAL $1.75-2.75/SF. 26 ga PBR is the commodity metal-panel product — it is what a
+# post-frame supplier stocks in 36" coverage, and it carries no clips at all, which on the
+# snap-lock row is real material and not just labour. Against a bare panel price nearer
+# $1.20-1.60/SF, this row is lifted hard for the SAME reason the snap-lock row is lifted
+# above the seamed roof: 45 openings and a 20-35% trim load. A ribbed panel is if anything
+# worse for trim than a flat pan, since every opening needs a closure strip shaped to the
+# rib as well as a jamb return.
+#
+# LABOUR $2.75-4.50/SF. No clips to set, no clip line to lay out, no seamer pass and no
+# seamer rental — the panel is set on the girts and screwed off. That puts it materially
+# below the concealed-fastener rate and below the 26 ga NAIL-STRIP garage rate too, which
+# still has a lapped leg to engage and a hidden flange to nail. It is not a trivial job:
+# 3,098 face screws each have to land in the flat and be driven to gasket compression and
+# no further, and an overdriven screw is a leak. That is a rate for a crew that has done it
+# before, and the low end assumes one.
+#
+# ** The fixings are NOT in this rate. ** They are billed as a counted part
+# (`[hardware]` "T09150HWAM"), which is what `Material.exposed_fastener` exists to enable.
+# See [basis_notes] — this is the one wall panel where that split applies, and folding the
+# screws back into $/SF here would double-bill them.
+"pbr-panel-26" = { material = { low = 1.75, high = 2.75 }, labour = { low = 2.75, high = 4.5 } }
 # 749.6 SF — RF-GARAGE. Installed $7.00-13.00/SF against Sheffield's $5-11 for nail strip,
 # lifted for the Twin Cities and for a 749 SF roof being a minimum-mobilisation job for any
 # metal crew. Expect a floor of roughly $4,000-6,000 whatever the $/SF arithmetic says.
@@ -2904,5 +2978,5 @@ drainage        = "material plus installed labour, BLENDED over two products tha
 floor_heat      = "material plus installed labour, backed out of published $/SF-of-floor prices. The 3 floor sensors are not in it"
 floor_finishes  = "material plus installed labour on the ORDER quantity. carpet-pad carries labour = 0 on purpose: laying the pad is inside the carpet rate"
 placeables      = "unit price plus INSTALL labour. Rough-in is billed by the foot in [pipe_runs], [ducts] and [conduit]; branch-circuit conductors are in neither and are the largest single omission in the file"
-envelope_layers = "material plus installed labour, $/SF net. Labour is ~60% of this section — standing-seam roofing, drywall finishing and painting are all labour-dominated trades. The metal skin is FOUR rows keyed on seam profile and gauge, not one: mechanical seam, snap lock, nail strip and 26 ga nail strip differ by up to $2.50/SF of LABOUR and must never be re-merged"
+envelope_layers = "material plus installed labour, $/SF net. Labour is ~60% of this section — standing-seam roofing, drywall finishing and painting are all labour-dominated trades. The metal skin is FIVE rows keyed on fixing method, seam profile and gauge, not one: mechanical seam, snap lock, nail strip, 26 ga nail strip and 26 ga exposed-fastener PBR differ by up to $4.50/SF of LABOUR and must never be re-merged. PBR is the odd one out and the split matters beyond labour: it is the only wall panel whose FIXINGS are billed as a separate counted part ([hardware] T09150HWAM, 3,098 screws), because a face-fastened panel opts in via Material.exposed_fastener. Every other row has its clips and fixings inside its $/SF rate. Folding the PBR screws back into this section, or adding a screw count against any of the other four, double-bills them"
 framing         = "material plus installed labour, $/LF of ordered stock. Add 10-15% for framing general conditions (mobilisation, bracing, layout, hardware, punch-out), which no per-unit rate captures"

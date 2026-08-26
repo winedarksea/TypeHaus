@@ -21,15 +21,20 @@ from typehaus.resolve.model import (
 from typehaus.takeoff import hardware_takeoff
 from typehaus.takeoff.anchors import knee_brace_rows, mudsill_anchor_rows
 from typehaus.takeoff.fasteners import (
+    exposed_fastener_cladding_screw_rows,
     exterior_insulation_fastening,
     fastener_grid_count,
 )
 from typehaus.takeoff.hangers import hung_connections
 from typehaus.takeoff.hardware_catalog import (
+    ROLE_EXPOSED_FASTENER_PANEL_SCREW,
     ROLE_EXTERIOR_INSULATION_SCREW,
     ROLE_KNEE_BRACE,
     ROLE_MUDSILL_ANCHOR,
+    ROLE_PIPE_CLAMP,
     ROLE_SLOPED_JOIST_HANGER,
+    ROLE_THROUGH_PANEL_PIPE_STRAP,
+    hardware_for_role,
     screw_for_required_length,
     structural_hardware_catalog,
 )
@@ -399,43 +404,57 @@ def test_coil_strap_is_ordered_by_the_coil(catlin_model) -> None:
     assert "straps" in row["basis"]
 
 
-def test_pipe_clamps_bill_as_canduit_rings_not_as_bare_seam_clamps(catlin_model) -> None:
-    """Every clamp holding a round pipe bills the ring, by its size, on one CanDuit line.
+def test_pipe_fixings_bill_by_size_not_as_a_bare_family(catlin_model) -> None:
+    """Every fixing holding a round pipe bills the sized part, on its own line.
 
     The bug this pins is a silent one. ``hardware_by_model`` falls back to a family-prefix
-    match, so an authored "S-5! CanDuit #13" used to resolve to the plain "S-5!" seam clamp
-    and print as one — a BOM that looked complete, priced fine, and would have arrived on
-    site as brackets with nothing to hold the leaders in.
+    match, so an authored size suffix used to collapse into the bare family and print as it
+    — a BOM that looked complete, priced fine, and would have arrived on site as brackets
+    with nothing to hold the leaders in.
+
+    The part changed on 2026-08-26 and the rule did not. The house walls are an
+    exposed-fastener panel now, so the leaders and the vent riser ride through-panel straps
+    rather than CanDuit rings on seam clamps; the ring is still catalogued and still serves
+    ROLE_PIPE_CLAMP for a seam-clad house (see the role test below), which is why this asks
+    the model what it contains rather than asserting a part number the cladding decides.
     """
-    rows = [row for row in hardware_takeoff(catlin_model) if row["role"] == "pipe_clamp"]
-    assert rows, "the roof leaders and the vent riser are held by pipe clamps"
-    assert all(row["description"] == "S-5! CanDuit pipe clamp" for row in rows)
-    # Selected on the pipe's OD, so the ring size is the part number and must reach the BOM.
+    rows = [row for row in hardware_takeoff(catlin_model)
+            if row["role"] == "through_panel_pipe_strap"]
+    assert rows, "the roof leaders and the vent riser are held by pipe straps"
+    assert all(row["description"].startswith("316 stainless two-hole pipe strap")
+               for row in rows)
+    # Selected on the pipe's OD, so the size suffix is the part number and must reach the BOM.
     by_part = {row["part_number"]: row["count"] for row in rows}
-    assert by_part == {"S-5! CanDuit #11": 3, "S-5! CanDuit #13": 8}
+    assert by_part == {"SS316-STANDOFF-STRAP #11": 3, "SS316-STANDOFF-STRAP #13": 8}
+    # And the strap reaches the wall by itself: nothing is carried under it.
+    assert not [row for row in hardware_takeoff(catlin_model)
+                if row["scope"] == "carried-mount" and "strap" in row["basis"]]
 
 
-def test_each_pipe_clamp_also_bills_the_seam_clamp_it_mounts_on(catlin_model) -> None:
-    """A CanDuit is a strap: the seam clamp under it is what reaches the roof.
+def test_a_part_that_mounts_on_another_also_bills_that_carrier(catlin_model) -> None:
+    """ColorGard is a RAIL: the seam clamps under it are what reach the roof.
 
     Same part number, its own row: the carrier line's ``scope`` marks it as implied by a
-    modeled ring rather than authored directly, so the count stays auditable back to the
+    modeled rail rather than authored directly, so the count stays auditable back to the
     plan instead of being folded into the directly-modeled clamps' total. In the 3D view a
-    ring and the clamp it mounts on stay one modeled ``Connector`` — this split only affects
-    how the BOM itemizes the same hardware, not the geometry.
+    rail and the clamps it mounts on stay one modeled ``Connector`` — this split only
+    affects how the BOM itemizes the same hardware, not the geometry.
+
+    The CanDuit ring exercised this rule too, until the 2026-08-26 cladding swap took the
+    house's pipe fixings off the seam. ColorGard is now the only ``requires_role`` part the
+    model contains, and it pins the rule the same way.
     """
     rows = hardware_takeoff(catlin_model)
-    rings = sum(row["count"] for row in rows if row["role"] == "pipe_clamp")
+    rails = sum(row["count"] for row in rows if row["role"] == "snow_retention")
     seam = [row for row in rows if row["role"] == "standing_seam_clamp"]
     modeled = next(row for row in seam if row["scope"] == "modeled connector")
-    # One carried-mount row per *requiring* part: the CanDuit rings and the ColorGard snow
-    # rail both ride S-5! clamps, and merging them would give a right count with a wrong
-    # reason. Pick the rings' row by its basis text.
+    # One carried-mount row per *requiring* part, so two parts riding the same clamp never
+    # collapse into one row with a right count and a wrong reason. Pick by basis text.
     mounts = next(row for row in seam
-                  if row["scope"] == "carried-mount" and "CanDuit" in row["basis"])
+                  if row["scope"] == "carried-mount" and "ColorGard" in row["basis"])
     assert modeled["part_number"] == mounts["part_number"] == "S-5!"
-    assert mounts["count"] == rings
-    assert "required to mount a modeled S-5! CanDuit pipe clamp" in mounts["basis"]
+    assert mounts["count"] == rails > 0
+    assert "required to mount a modeled S-5! ColorGard snow-retention rail" in mounts["basis"]
 
 
 def test_every_hardware_row_is_a_purchasable_catalogued_line(catlin_model) -> None:
@@ -451,3 +470,161 @@ def test_library_hardware_tags_are_stable_and_sourced() -> None:
     tags = [item.tag for item in catalog]
     assert len(tags) == len(set(tags))
     assert all(item.source and item.manufacturer and item.model for item in catalog)
+
+
+# --- exposed-fastener panel screws (2026-08-26) --------------------------------------
+
+
+PANEL = CONFIG.exposed_fastener_cladding
+
+
+class _FakeMaterial:
+    def __init__(self, exposed_fastener: bool) -> None:
+        self.exposed_fastener = exposed_fastener
+
+
+class _FakeLibrary:
+    def __init__(self, exposed: dict) -> None:
+        self._exposed = exposed
+
+    def material(self, ref):
+        if ref not in self._exposed:
+            return None
+        return _FakeMaterial(self._exposed[ref])
+
+
+class _FakePlan:
+    def __init__(self, exposed: dict) -> None:
+        self.library = _FakeLibrary(exposed)
+
+
+class _FakeLayer:
+    def __init__(self, function: str, material_ref: str) -> None:
+        self.function, self.material_ref = function, material_ref
+
+
+class _FakeWall:
+    """The three things the screw rule reads off a wall: its run, its rise, its cladding."""
+
+    def __init__(self, run_ft: float, rise_ft: float, cladding_ref: str,
+                 storey: str = "main") -> None:
+        self.storey = storey
+        self.axis = ((0.0, 0.0), (run_ft * FT_TO_M, 0.0))
+        self.z0_m, self.z1_m = 0.0, rise_ft * FT_TO_M
+        self.top_z0_m = self.top_z1_m = None
+        self._layers = (_FakeLayer("sheathing", "zip"),
+                        _FakeLayer("cladding", cladding_ref))
+
+    def depth_layers(self):
+        return self._layers
+
+
+def _panel_rows(walls, exposed: dict) -> list:
+    model = ResolvedModel(plan=_FakePlan(exposed))
+    model.walls.extend(walls)
+    return exposed_fastener_cladding_screw_rows(model, PANEL)
+
+
+def test_panel_screws_are_a_rib_by_support_grid_plus_a_sidelap_line() -> None:
+    """A 36 ft x 24 ft wall, worked by hand so the row can be re-derived without the model.
+
+    FIELD — screws land in the flats between 12 in major ribs, at every 24 in girt course.
+    36 ft = 36 flats + 1 = 37 across; 24 ft = 12 courses + 1 = 13 up; 37 x 13 = 481.
+
+    SIDELAP — one stitch line per 36 in of panel coverage. 36 ft of run is 12 panels, which
+    lap at ELEVEN joints, not twelve — the end of the last panel is a corner, not a lap —
+    each stitched at 24 in o.c. up 24 ft = 13 screws. 11 x 13 = 143.
+    """
+    rows = _panel_rows([_FakeWall(36.0, 24.0, "pbr")], {"pbr": True})
+    by_scope = {row["scope"]: row for row in rows}
+    assert by_scope["exposed-fastener panel field"]["count"] == 37 * 13 == 481
+    assert by_scope["exposed-fastener panel sidelap"]["count"] == 11 * 13 == 143
+
+
+def test_a_partial_last_panel_still_makes_a_joint() -> None:
+    """4.5 panels of run is 5 panels and 4 laps: the rip is lapped like any other."""
+    rows = _panel_rows([_FakeWall(13.5, 8.0, "pbr")], {"pbr": True})
+    sidelap = next(r for r in rows if r["scope"].endswith("sidelap"))
+    assert sidelap["count"] == 4 * 5
+
+
+def test_a_run_one_panel_wide_has_a_field_but_no_sidelap() -> None:
+    """The joint count floors. A single 36 in panel laps nothing, and billing it a stitch
+    line would put screws down a seam that does not exist."""
+    rows = _panel_rows([_FakeWall(3.0, 8.0, "pbr")], {"pbr": True})
+    assert {row["scope"] for row in rows} == {"exposed-fastener panel field"}
+
+
+def test_a_clipped_or_seamed_panel_bills_no_screws_at_all() -> None:
+    """**The double-billing guard.** A concealed-fastener panel's fixings are already inside
+    its $/SF cladding rate, so a wall whose material does not declare ``exposed_fastener``
+    must emit NOTHING here — not a zero row, no row. An unknown material is the same case:
+    absence of the declaration is the answer, never a default to True."""
+    assert _panel_rows([_FakeWall(36.0, 24.0, "snaplock")], {"snaplock": False}) == []
+    assert _panel_rows([_FakeWall(36.0, 24.0, "mystery")], {}) == []
+
+
+def test_only_the_outermost_cladding_layer_decides() -> None:
+    """A wall carrying an inboard cladding layer under the face panel is graded on the face.
+
+    The gate reads the OUTERMOST cladding layer, because that is the one a screw is driven
+    through. Reading any cladding layer would let a buried one opt a wall in.
+    """
+    wall = _FakeWall(36.0, 24.0, "snaplock")
+    wall._layers = (_FakeLayer("cladding", "pbr"), _FakeLayer("cladding", "snaplock"))
+    assert _panel_rows([wall], {"pbr": True, "snaplock": False}) == []
+
+
+def test_panel_screw_length_takes_the_full_nailer_and_no_more() -> None:
+    """1-1/2 in through a 0.02 in panel into the flat 1.5 in girt = ~1.4 in of embedment.
+
+    Longer is not better: a screw that reached the WRB would put a second penetration in a
+    plane meant to stay unbroken, which is why the rule asks for panel + nailer and nothing
+    beyond it.
+    """
+    required_in = PANEL.panel_thickness_in + PANEL.support_embedment_in
+    item, length_in, part_number = screw_for_required_length(
+        ROLE_EXPOSED_FASTENER_PANEL_SCREW, required_in)
+    assert (length_in, part_number) == (1.5, "T09150HWAM")
+    assert item.manufacturer == "Simpson Strong-Tie"
+    assert "316" in item.source and "EPDM" in item.source
+
+
+def test_the_canduit_ring_is_still_the_one_part_serving_the_pipe_clamp_role() -> None:
+    """The new strap role must not orphan or shadow the part kept for the swap back.
+
+    ``hardware_for_role`` raises unless a role holds exactly one product, so adding the
+    strap as a second ROLE_PIPE_CLAMP item would have broken the ring for every house — and
+    the ring is what a reverted (or seam-clad) house orders. Two roles, two parts, keyed on
+    how each one reaches the building.
+    """
+    ring = hardware_for_role(ROLE_PIPE_CLAMP)
+    strap = hardware_for_role(ROLE_THROUGH_PANEL_PIPE_STRAP)
+    assert ring.model == "S-5! CanDuit" and ring.requires_role is not None
+    # The strap penetrates the panel itself, so unlike the ring it carries nothing under it.
+    assert strap.requires_role is None
+    assert ring.tag != strap.tag
+
+
+def test_catlin_bills_panel_screws_on_the_house_walls_only(catlin_model) -> None:
+    """The house is PBR; the garage stays nail strip, and nail strip's fixings are in its rate.
+
+    This is the same guard as the unit test above, asserted against the real model: if the
+    garage's ``standing-seam-nailstrip-26`` ever leaked into this rule it would bill ~600
+    screws that the garage's $/SF row has already paid for.
+    """
+    rows = [row for row in hardware_takeoff(catlin_model)
+            if row["role"] == ROLE_EXPOSED_FASTENER_PANEL_SCREW]
+    assert {row["scope"] for row in rows} == {
+        "exposed-fastener panel field", "exposed-fastener panel sidelap"}
+    for row in rows:
+        assert row["part_number"] == "T09150HWAM" and row["size"] == "1.5 in"
+        assert row["count"] == sum(row["by_storey"].values()) > 0
+        # The garage is one storey and is not PBR, so it must not appear on either row.
+        assert "garage" not in row["by_storey"], row["by_storey"]
+    field = next(r for r in rows if r["scope"].endswith("field"))
+    sidelap = next(r for r in rows if r["scope"].endswith("sidelap"))
+    assert "12 in o.c." in field["basis"] and "24 in o.c." in field["basis"]
+    assert "openings not deducted" in field["basis"]
+    assert "36 in panel coverage" in sidelap["basis"]
+    assert field["count"] > sidelap["count"] > 0

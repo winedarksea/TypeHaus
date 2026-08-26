@@ -391,28 +391,52 @@ ATTIC_DEVICES = [
 # 20'), Connector elevation is project-frame absolute.
 NEMA_BOX = [
     ElectricalDevice(uid="CEJ901AAAA", tag="ED-A-NEMA-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(4), ft(36, 9.5)), type_ref="ED-T-JBOX",
+                     position=pt(ft(4), ft(36, 10.25)), type_ref="ED-T-JBOX",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
 ]
-NEMA_CLAMP = [
-    # The clamp is the box's own fastener, so it shares the box's point exactly — it followed
-    # ED-A-NEMA-JB from y=37'-0" to the cladding face on 2026-08-03 (the box had been hanging
-    # 4" clear of the siding it is supposed to be clamped to), out another 1/2" on
-    # 2026-08-23 when the Swinburne truss moved that cladding face, and 1" more on
-    # 2026-08-26 when the catlin truss took it to 6.5" proud.
-    Connector(uid="CMNC01AAAA", tag="CN-A-NEMA-CLAMP", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(4), ft(36, 9.5)), elevation=ft(25, 6), size="S-5!",
-              connects=("ED-A-NEMA-JB", "W-A-N2")),
-]
+# ** CN-A-NEMA-CLAMP is GONE (2026-08-26), and this list is empty on purpose. **
+# It was a plain S-5! seam clamp: the box's own fastener, sharing ED-A-NEMA-JB's point
+# exactly, and it had followed that box out to the cladding face on 2026-08-03 (the box had
+# been hanging 4" clear of the siding it is supposed to be clamped to), out 1/2" more on
+# 2026-08-23 with the Swinburne truss, and 1" more on 2026-08-26 with the catlin truss.
+#
+# The gable wall it sits on is `pbr-panel-26` now. **This is WALL and not roof**, which is
+# the fact that decides it: at x=4' the rake stands near 26'-6" and the box hangs at 25'-6",
+# so it is a foot below the roof line on an exposed-fastener panel with no seam anywhere in
+# it. An S-5! clamp has nothing to close on.
+#
+# Nothing replaces it, and that is the honest answer rather than a gap: a surface enclosure
+# on a face-fastened panel is screwed to the wall the way the panel itself is, with the same
+# gasketed T09150HWAM through the flat into the girt behind. Those screws are inside the
+# field-grid count (``takeoff.fasteners``), which deducts nothing for openings or
+# penetrations precisely so that fixings like this one are covered by it.
+#
+# Restoring the seam cladding means restoring this connector — see git, and see
+# CATLIN_EXT_2X6_SWINBURNE in plan/assemblies.py, which is the rest of that revert.
+NEMA_CLAMP = []
 
-# --- Downspout securement: S-5! CanDuit clamps on the standing-seam siding ------------
+# --- Downspout securement: through-panel straps on the PBR siding ---------------------
 # The two roof leaders (params/roof_trim.py, TR-RF-LEADER-W/E) run ~24' down the north end
-# of the west/east faces, steadied — NOT supported — by an S-5! non-penetrating seam clamp
-# with an S-5! CanDuit pipe clamp on its M8 shaft (same hardware as CN-M-VENT-CLAMP1..3). A
-# 4" round leader (4.0" OD) takes the **#13** ring (4.00-4.37" range is the only one that
-# closes on it); `size` bills the ring through `library/hardware.py` (S5_CANDUIT_PIPE_CLAMP),
-# whose `requires_role` bills the seam clamp with it — a bare "S-5!" would order brackets
-# with no rings. Four per leader at ~6' o.c. (5'/11'/17'/23'), each on the wall with
+# of the west/east faces, steadied — NOT supported — by a two-hole 316 stainless pipe strap
+# on a standoff block, screwed through the panel into the girt behind with two of the same
+# gasketed T09150HWAM screws the panel itself is hung on (library/hardware.py,
+# THROUGH_PANEL_PIPE_STRAP; same hardware as CN-M-VENT-CLAMP1..3).
+#
+# ** This was an S-5! CanDuit #13 ring on an S-5! seam clamp until 2026-08-26, and it is
+# not a downgrade — it is the only thing that can work. ** The CanDuit's entire value is
+# non-penetration, and S5_CANDUIT_PIPE_CLAMP declares `requires_role=ROLE_STANDING_SEAM_CLAMP`,
+# so every ring ordered brings a seam clamp with it. `pbr-panel-26` has no seam to clamp:
+# the ring would arrive with a bracket that has nothing to grip. On a wall already screwed
+# through 3,098 times, a non-penetrating fixing also buys nothing it did not already spend.
+# It is cheaper by roughly $15-22/point against ~$3, but that is the consequence, not the
+# reason.
+#
+# The ring is still catalogued and still priced, untouched, so reverting the cladding is a
+# `size=` change here and nothing more. The strap is sized on pipe OUTER diameter exactly
+# the way the ring was: a 4" round leader is 4.0" OD, hence **#13**, and `size` bills it
+# through `hardware_by_model`'s family-prefix match. Four per leader at ~6' o.c.
+# (5'/11'/17'/23') — 6' apart is three 24" girt courses, so every strap lands on a course
+# and none of them needs its own blocking. Each on the wall with
 # cladding at that elevation. Plan position is the leader's own centreline, 8.77" outboard
 # of the sheathing datum (trough mid-width, params/roof_trim.py::_TROUGH_MID_IN) — literal
 # offsets below, not arithmetic, since the editable-plan dialect forbids binary operators.
@@ -421,28 +445,28 @@ _LEADER_X_E = ft(36, 8.77)
 _LEADER_Y = ft(35, 6)
 
 LEADER_CLAMPS = [
-    Connector(uid="CMLC01AAAA", tag="CN-A-LEADER-W1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(_LEADER_X_W, _LEADER_Y), elevation=ft(5), size="S-5! CanDuit #13",
+    Connector(uid="CMLC01AAAA", tag="CN-A-LEADER-W1", kind=ConnectorKind.PIPE_STRAP,
+              position=pt(_LEADER_X_W, _LEADER_Y), elevation=ft(5), size="SS316-STANDOFF-STRAP #13",
               connects=("TR-RF-LEADER-W", "W-M-W1B")),
-    Connector(uid="CMLC02AAAA", tag="CN-A-LEADER-W2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(_LEADER_X_W, _LEADER_Y), elevation=ft(11), size="S-5! CanDuit #13",
+    Connector(uid="CMLC02AAAA", tag="CN-A-LEADER-W2", kind=ConnectorKind.PIPE_STRAP,
+              position=pt(_LEADER_X_W, _LEADER_Y), elevation=ft(11), size="SS316-STANDOFF-STRAP #13",
               connects=("TR-RF-LEADER-W", "W-S-W1B")),
-    Connector(uid="CMLC03AAAA", tag="CN-A-LEADER-W3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(_LEADER_X_W, _LEADER_Y), elevation=ft(17), size="S-5! CanDuit #13",
+    Connector(uid="CMLC03AAAA", tag="CN-A-LEADER-W3", kind=ConnectorKind.PIPE_STRAP,
+              position=pt(_LEADER_X_W, _LEADER_Y), elevation=ft(17), size="SS316-STANDOFF-STRAP #13",
               connects=("TR-RF-LEADER-W", "W-S-W1B")),
-    Connector(uid="CMLC04AAAA", tag="CN-A-LEADER-W4", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(_LEADER_X_W, _LEADER_Y), elevation=ft(23), size="S-5! CanDuit #13",
+    Connector(uid="CMLC04AAAA", tag="CN-A-LEADER-W4", kind=ConnectorKind.PIPE_STRAP,
+              position=pt(_LEADER_X_W, _LEADER_Y), elevation=ft(23), size="SS316-STANDOFF-STRAP #13",
               connects=("TR-RF-LEADER-W", "W-A-W1")),
-    Connector(uid="CMLC05AAAA", tag="CN-A-LEADER-E1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(_LEADER_X_E, _LEADER_Y), elevation=ft(5), size="S-5! CanDuit #13",
+    Connector(uid="CMLC05AAAA", tag="CN-A-LEADER-E1", kind=ConnectorKind.PIPE_STRAP,
+              position=pt(_LEADER_X_E, _LEADER_Y), elevation=ft(5), size="SS316-STANDOFF-STRAP #13",
               connects=("TR-RF-LEADER-E", "W-M-E1")),
-    Connector(uid="CMLC06AAAA", tag="CN-A-LEADER-E2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(_LEADER_X_E, _LEADER_Y), elevation=ft(11), size="S-5! CanDuit #13",
+    Connector(uid="CMLC06AAAA", tag="CN-A-LEADER-E2", kind=ConnectorKind.PIPE_STRAP,
+              position=pt(_LEADER_X_E, _LEADER_Y), elevation=ft(11), size="SS316-STANDOFF-STRAP #13",
               connects=("TR-RF-LEADER-E", "W-S-E4")),
-    Connector(uid="CMLC07AAAA", tag="CN-A-LEADER-E3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(_LEADER_X_E, _LEADER_Y), elevation=ft(17), size="S-5! CanDuit #13",
+    Connector(uid="CMLC07AAAA", tag="CN-A-LEADER-E3", kind=ConnectorKind.PIPE_STRAP,
+              position=pt(_LEADER_X_E, _LEADER_Y), elevation=ft(17), size="SS316-STANDOFF-STRAP #13",
               connects=("TR-RF-LEADER-E", "W-S-E4")),
-    Connector(uid="CMLC08AAAA", tag="CN-A-LEADER-E4", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(_LEADER_X_E, _LEADER_Y), elevation=ft(23), size="S-5! CanDuit #13",
+    Connector(uid="CMLC08AAAA", tag="CN-A-LEADER-E4", kind=ConnectorKind.PIPE_STRAP,
+              position=pt(_LEADER_X_E, _LEADER_Y), elevation=ft(23), size="SS316-STANDOFF-STRAP #13",
               connects=("TR-RF-LEADER-E", "W-A-E2")),
 ]

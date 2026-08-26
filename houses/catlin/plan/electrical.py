@@ -321,7 +321,7 @@ SERVICE_DEVICES = [
     # further 1" on 2026-08-26 with the catlin truss (5.5" -> 6.5"); each time the meter's
     # back was left inside the cladding it is surface-mounted on.
     ElectricalDevice(uid="CEE001AAAA", tag="ED-M-METER", kind=DeviceKind.METER,
-                     position=pt(ft(0, -9.5), ft(29, 9.125)), type_ref="ED-T-METER",
+                     position=pt(ft(0, -10.25), ft(29, 9.125)), type_ref="ED-T-METER",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room=None, rotation=deg(270)),
 ]
 
@@ -512,7 +512,7 @@ MAIN_DEVICES = [
     # on 2026-08-25 with the can's true 3 1/4" depth (see ED-M-HP1-DISC), and out 1" again
     # on 2026-08-26 with the catlin truss (5.5" -> 6.5" proud).
     ElectricalDevice(uid="CEE026AAAA", tag="ED-M-HP3-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(4), ft(36, 8.125)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
+                     position=pt(ft(4), ft(36, 8.875)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     # FH-M-BATH2's thermostat: inside the room on its south wall (W-M-BDN1, interior face
     # y=13'-0 11/16"), 8" east of D-M-BATH2's opening (x 1'-6 1/2"..4'-0 1/2") — the wall
@@ -610,10 +610,10 @@ SECOND_DEVICES = [
     # face, and the 2" these were authored with dates from the type's old placeholder 4"
     # depth. Same correction on ED-M-HP3-DISC and ED-B-SPA-DISC.
     ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(6), ft(0, -8.125)), type_ref="ED-T-DISCONNECT-3R",
+                     position=pt(ft(6), ft(0, -8.875)), type_ref="ED-T-DISCONNECT-3R",
                      circuit="CKT-HP1", mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(25, 6.5), ft(0, -8.125)), type_ref="ED-T-DISCONNECT-3R",
+                     position=pt(ft(25, 6.5), ft(0, -8.875)), type_ref="ED-T-DISCONNECT-3R",
                      circuit="CKT-HP2", mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     # FH-S-BATH1's thermostat, inside the room on its south wall (W-S-BD-N1B, interior
     # face y=26'-4 11/16"), 9" west of D-S-BATH1's opening (x 7'-3"..9'-9"). Same
@@ -713,7 +713,7 @@ GARAGE_DEVICES = [
                      position=pt(ft(0, 9.625), ft(56, 0.75)), type_ref="ED-T-EV-620", circuit="CKT-EV-620",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE", rotation=deg(90)),
     ElectricalDevice(uid="CEE009AAAA", tag="ED-G-EV-1450", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(19, 11.375), ft(41, 5.5)), type_ref="ED-T-EV-1450", circuit="CKT-EV-1450",
+                     position=pt(ft(19, 11.375), ft(41, 5.875)), type_ref="ED-T-EV-1450", circuit="CKT-EV-1450",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE"),
 ]
 
@@ -739,14 +739,20 @@ PV_JBOX = [
     # on 2026-08-25 with the can's true 3 1/4" depth (see ED-M-HP1-DISC), and out 1" again
     # on 2026-08-26 with the catlin truss (5.5" -> 6.5" proud).
     ElectricalDevice(uid="CEE014AAAA", tag="ED-A-PV-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(9), ft(36, 9.5)), type_ref="ED-T-PV-JB", circuit="CKT-ESS-GRID",
+                     position=pt(ft(9), ft(36, 10.25)), type_ref="ED-T-PV-JB", circuit="CKT-ESS-GRID",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
 ]
-PV_JBOX_CLAMP = [
-    Connector(uid="CEE019AAAA", tag="CN-A-PV-CLAMP", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(9), ft(37)), elevation=ft(25, 6), size="S-5!",
-              connects=("ED-A-PV-JB", "W-A-N2")),
-]
+# ** CN-A-PV-CLAMP is GONE (2026-08-26), for the same reason as CN-A-NEMA-CLAMP **
+# (plan/mep_electrical.py, which carries the full note). It was a plain S-5! seam clamp on
+# W-A-N2, and W-A-N2 wears `pbr-panel-26` now — an exposed-fastener panel with no seam. At
+# x=9' the rake is well above the box's 25'-6", so this was wall and not roof, and a seam
+# clamp there is not merely unnecessary but uninstallable. The box is screwed through the
+# panel into the girt with the same gasketed T09150HWAM the panel is hung on, and those are
+# inside the field-grid screw count.
+#
+# NOT to be confused with the 48 S-5-PVKIT clamps in params/solar.py: those are on the
+# mechanically seamed ROOF, which is untouched, and they stay exactly as they are.
+PV_JBOX_CLAMP = []
 
 # --- Conduit trunks (electrical_notes.md line 3: make it easy to run new lines) -------
 # Four EMT trunks from ED-B-PANEL, elevations project-frame absolute (they cross
@@ -789,7 +795,7 @@ CONDUIT_TRUNKS = [
     # where two sleeves went away because of it.
     ConduitRun(uid="CDT002AAAA", tag="CD-B-GARAGE", trade_size=inch(1.25),
                path=(pt(ft(2), ft(29)), pt(ft(2), ft(35)), pt(ft(16), ft(35)),
-                     pt(ft(16), ft(41, 9))),
+                     pt(ft(16), ft(41, 9.375))),
                start_elevation=ft(-4), end_elevation=ft(5, 10),
                from_ref="ED-B-PANEL", to_ref="ED-G-EV-1450"),
     # Across the basement ceiling to the kitchen's east counter wall — still the east wall
@@ -1027,7 +1033,7 @@ CONDUIT_SLEEVES = [
     # at -6'-8" and its top is -6'-0", two feet clear below this crossing, while W-GF-S2
     # spans -6'-0" to -0'-8" and is what the conduit actually passes through.
     SleevePenetration(uid="CNS009AAAA", tag="SP-GF-CD-GAR", host_ref="W-GF-S2",
-                      position=pt(ft(16), ft(40, 10.5)), pipe_diameter=inch(1.25),
+                      position=pt(ft(16), ft(40, 10.875)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(2), purpose=Service.POWER_240,
                       axis="horizontal", center_elevation=ft(-4)),
     # The stub-up, 3 3/8" north of the stem's inside face. It stood at 41'-6" until
@@ -1037,7 +1043,7 @@ CONDUIT_SLEEVES = [
     # failed, correctly. It is not back at the edge: 41'-9" leaves 2 3/8" of concrete around
     # the bore. The conduit runs up the inside face of W-G-S from here to ED-G-EV-1450.
     SleevePenetration(uid="CNS010AAAA", tag="SP-G-CD-GAR", host_ref="SL-G-FLOOR",
-                      position=pt(ft(16), ft(41, 9)), pipe_diameter=inch(1.25),
+                      position=pt(ft(16), ft(41, 9.375)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(2), purpose=Service.POWER_240),
     # CD-B-KITCHEN: east across the basement ceiling at -1' and up through SL-M-DECK to the
     # kitchen's east counter wall. The wall and deck sleeves are 1/2" apart in plan but in

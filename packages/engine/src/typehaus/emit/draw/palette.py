@@ -121,6 +121,13 @@ DETAIL_FILL: dict[str, str] = {
     "standing-seam-snaplock": "#2f2f2f",
     "standing-seam-nailstrip": "#2f2f2f",
     "standing-seam-nailstrip-26": "#2f2f2f",
+    # The exposed-fastener PBR panel draws as the same metal ink as the four seam profiles:
+    # a section shows a metal skin, and 1/2" of snap-lock pan and 1 1/4" of PBR rib differ
+    # in thickness (which the layer carries) and in nothing this table decides. It is listed
+    # explicitly because these tables match by TAG and never guess — `pbr-panel-26` hits no
+    # needle in `_FAMILY_NEEDLES` ("clad"/"metal"/"seam" are all absent from it), so without
+    # this row it would draw as the near-white fallback with no hatch.
+    "pbr-panel-26": "#2f2f2f",
     "fiber-cement": "#e6e6e6",
     "cedar-tg": "#c8a26a",
     "sauna-tg": "#e6d4ae",
@@ -193,6 +200,7 @@ DETAIL_HATCH: dict[str, str] = {
     "standing-seam-snaplock": "metal",
     "standing-seam-nailstrip": "metal",
     "standing-seam-nailstrip-26": "metal",
+    "pbr-panel-26": "metal",
     "aggregate": "gravel",
     "river-rock": "gravel",
     "soil": "soil",

@@ -78,14 +78,17 @@ _HOUSE_FT = 36.0
 #
 # **The one constant the cladding face is measured by**, and deliberately spelled as the
 # stack it is: 1 1/2" band A foam + 1 1/2" inner girt + 1" band C foam + 1/2" vent gap +
-# 1 1/2" outer girt + 1/2" standing seam (plan/assemblies.py CATLIN_EXT_2X6). The catlin
-# truss moved it out one full inch on 2026-08-26, and every param in this house that
-# measures off the cladding moved with it.
+# 1 1/2" outer girt + 1 1/4" PBR panel (plan/assemblies.py CATLIN_EXT_2X6). The catlin
+# truss moved it out one full inch on 2026-08-26, and the exposed-fastener panel that
+# replaced the snap-lock seam the same day moved it a further 3/4" — a ribbed panel stands
+# off by its rib height, where a snap-lock pan stands off by its pan. Every param in this
+# house that measures off the cladding moved with it.
 #
-# The two values it has had, kept beside it so the revert is a line and not a re-derivation:
+# The values it has had, kept beside it so the revert is a line and not a re-derivation:
+#   6.5"  — the girts under 1/2" snap-lock seam (2026-08-26, earlier the same day)
 #   5.5"  — the Swinburne truss (2026-08-23): 1.5 foam + 3.5 outrigger band + 0.5 seam
 #   5.02" — the CI boards before it: 0.02 WRB + 2" polyiso + 2" EPS + 0.5 furring + 0.5 seam
-_WALL_OUTBOARD_IN = 1.5 + 1.5 + 1.0 + 0.5 + 1.5 + 0.5  # 6.5"
+_WALL_OUTBOARD_IN = 1.5 + 1.5 + 1.0 + 0.5 + 1.5 + 1.25  # 7.25"
 _EAVE_X_W = ft(0) - inch(_WALL_OUTBOARD_IN)
 _EAVE_X_E = ft(_HOUSE_FT) + inch(_WALL_OUTBOARD_IN)
 

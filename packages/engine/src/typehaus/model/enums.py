@@ -429,6 +429,13 @@ class ConnectorKind(Enum):
     POST_BASE = "post_base"                # standoff post base (e.g. Simpson ABU/CBSQ)
     HOLD_DOWN = "hold_down"                # beam-to-post uplift strap (e.g. Simpson KBS/LSTA)
     STANDING_SEAM_CLAMP = "standing_seam_clamp"  # S-5!-style seam clamp on the siding
+    # A pipe/conduit/leader strap that reaches the building THROUGH an exposed-fastener
+    # panel, on a standoff block, rather than by gripping a seam. Its own kind because the
+    # seam clamp above is defined by the thing it grips, and a PBR wall has no seam: filing
+    # a strap as a seam clamp would label it "seam_clamp" in the drawings and draw it at a
+    # seam clamp's 1.6" x 0.39" footprint, neither of which is true of it. Its resolved
+    # SOLID category is "panel_strap", not "pipe_strap": "pipe_*" marks a routed pipe run.
+    PIPE_STRAP = "pipe_strap"
     SNOW_GUARD = "snow_guard"              # e.g. S-5! ColorGard snow-retention rail
 
 

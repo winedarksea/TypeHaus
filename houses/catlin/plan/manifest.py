@@ -146,8 +146,7 @@ PLAN = (
          *sunken_garden.MAIN_ELEMENTS,
          *breezeway.MAIN_ELEMENTS, *main_deck.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS,
          *electrical.MAIN_ELEMENTS, *lighting.MAIN_LIGHTING,
-         *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES,
-         *wind_clamps.MAIN_WIND_CLAMPS],
+         *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES],
     )
     .with_elements("garage", [*garage.ELEMENTS, *foundations.GARAGE_ELEMENTS,
                               *electrical.GARAGE_ELEMENTS,
@@ -161,11 +160,9 @@ PLAN = (
                                 *sunken_garden.SECOND_ELEMENTS, *mep.SECOND_ELEMENTS,
                                 *electrical.SECOND_ELEMENTS, *lighting.SECOND_LIGHTING,
                                 *placeables.SECOND_PLACEABLES,
-                                *wind_clamps.SECOND_WIND_CLAMPS,
                                 *second_deck.SECOND_ELEMENTS])
     .with_elements("attic", [*attic.ELEMENTS, *roof_trim.ATTIC_ELEMENTS,
                              *mep.ATTIC_ELEMENTS, *electrical.ATTIC_ELEMENTS,
                              *solar.ATTIC_ELEMENTS, *lighting.ATTIC_LIGHTING,
-                             *placeables.ATTIC_PLACEABLES,
-                             *wind_clamps.ATTIC_WIND_CLAMPS])
+                             *placeables.ATTIC_PLACEABLES])
 )

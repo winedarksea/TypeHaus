@@ -104,27 +104,35 @@ VENT_RISERS = [
             systems=(PipeSystem.RADON, PipeSystem.VENT), diameter=inch(3),
             chase_position=pt(ft(1), ft(34, 6)), start_elevation=ft(-8, -10),
             exit_elevation=ft(23, 10), exit_offset=pt(ft(0), ft(2, 6)),
-            wall_ref="W-A-N2", attachment="standing_seam_clamp"),
+            wall_ref="W-A-N2", attachment="pipe_strap"),
 ]
 
-# S-5! standing-seam clamps fixing the exterior riser to the north gable siding. The riser
-# spans 23'-10" to its derived termination, and the gable siding at x=1' stops at the
-# 25'-5.7" rake, so all three clamps sit on the pipe *and* on cladding they can actually
-# grip. The riser rides W-A-N2, the west half of the north gable wall (x=0..18); W-A-N1
-# is the east half.
-# These hold a *pipe*, so the part is an S-5! CanDuit ring on an S-5! seam clamp, not the
-# bare clamp — the same assembly the roof leaders use (LEADER_CLAMPS below). The ring is
-# selected on outer diameter, and 3" PVC DWV is 3.5" OD, which is the #11 (3.4-3.7") size;
-# the 4" leaders take #13. Authoring the bare "S-5!" here billed brackets and no rings.
+# Through-panel straps fixing the exterior riser to the north gable siding. The riser spans
+# 23'-10" to its derived termination, and the gable siding at x=1' stops at the 25'-5.7"
+# rake — so all three fixings, at 24'-4" / 24'-10" / 25'-4", sit on the pipe *and* on WALL
+# cladding, not on roof. That is the question that decides the part, and it was checked:
+# a fixing that had landed above the rake would be on `standing-seam` roofing and would
+# have stayed on the CanDuit ring. The riser rides W-A-N2, the west half of the north gable
+# wall (x=0..18); W-A-N1 is the east half.
+#
+# These hold a *pipe*, and until 2026-08-26 the part was an S-5! CanDuit #11 ring on an
+# S-5! seam clamp. The gable wall is now `pbr-panel-26`, an exposed-fastener panel with no
+# seam, and the ring's `requires_role=ROLE_STANDING_SEAM_CLAMP` would order a bracket with
+# nothing to grip — so this follows the roof leaders (plan/mep_electrical.py LEADER_CLAMPS)
+# onto the 316 stainless standoff strap, screwed through the panel into the girt.
+#
+# Sizing is unchanged and is still on OUTER diameter: 3" PVC DWV is 3.5" OD, which is the
+# **#11** (3.4-3.7") size; the 4" leaders take #13. Authoring a bare part family here once
+# billed brackets and no rings, which is why the size suffix stays.
 VENT_CLAMPS = [
-    Connector(uid="CMVC01AAAA", tag="CN-M-VENT-CLAMP1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(1), ft(37)), elevation=ft(24, 4), size="S-5! CanDuit #11",
+    Connector(uid="CMVC01AAAA", tag="CN-M-VENT-CLAMP1", kind=ConnectorKind.PIPE_STRAP,
+              position=pt(ft(1), ft(37)), elevation=ft(24, 4), size="SS316-STANDOFF-STRAP #11",
               connects=("VR-M-RADON-VENT", "W-A-N2")),
-    Connector(uid="CMVC02AAAA", tag="CN-M-VENT-CLAMP2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(1), ft(37)), elevation=ft(24, 10), size="S-5! CanDuit #11",
+    Connector(uid="CMVC02AAAA", tag="CN-M-VENT-CLAMP2", kind=ConnectorKind.PIPE_STRAP,
+              position=pt(ft(1), ft(37)), elevation=ft(24, 10), size="SS316-STANDOFF-STRAP #11",
               connects=("VR-M-RADON-VENT", "W-A-N2")),
-    Connector(uid="CMVC03AAAA", tag="CN-M-VENT-CLAMP3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(1), ft(37)), elevation=ft(25, 4), size="S-5! CanDuit #11",
+    Connector(uid="CMVC03AAAA", tag="CN-M-VENT-CLAMP3", kind=ConnectorKind.PIPE_STRAP,
+              position=pt(ft(1), ft(37)), elevation=ft(25, 4), size="SS316-STANDOFF-STRAP #11",
               connects=("VR-M-RADON-VENT", "W-A-N2")),
 ]
 # The basement's two plumbing vents. Both are offset vents to VR-M-RADON-VENT's shared

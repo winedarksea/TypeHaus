@@ -372,9 +372,10 @@ def exposed_fastener_cladding_screw_rows(model: ResolvedModel,
             continue
         field_by_storey[wall.storey] += fastener_grid_count(
             run_m, rise_m, rib_pitch_m, support_pitch_m)
-        # Joints, not panels: a run one coverage wide has no sidelap at all, which is why
-        # this floors rather than rounding up the way a panel count would.
-        joints = int(math.floor(run_m / coverage_m + _GRID_EPSILON))
+        # Joints, not panels. N panels lap at N-1 joints, and a run exactly one coverage
+        # wide has no sidelap at all — billing a stitch line there would put screws down a
+        # seam that does not exist. A partial last panel still makes a joint, hence ceil.
+        joints = max(0, int(math.ceil(run_m / coverage_m - _GRID_EPSILON)) - 1)
         per_joint = int(math.floor(rise_m / stitch_pitch_m + _GRID_EPSILON)) + 1
         sidelap_by_storey[wall.storey] += joints * per_joint
 

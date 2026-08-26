@@ -57,6 +57,15 @@ DECLARED_DIVERGENCES = {
         "KDAT 2x4 laid flat, horizontal, 24\" o.c., 1-1/2\" deep, with a 1/2\" vented gap "
         "authored behind it and a second SPF girt tier buried in the foam behind that"
     ),
+    "wall/cladding_in": (
+        "reference 1/2\" standing-seam pan; Catlin's house walls carry 1-1/4\" of "
+        "exposed-fastener PBR panel (2026-08-26). The extra 3/4\" is RIB HEIGHT, not "
+        "material — a PBR panel is a 26 ga sheet whose 1-1/4\" major ribs at 12\" o.c. set "
+        "the depth of the band, where a snap-lock pan's depth is the pan. The swap is the "
+        "cost lever in plans/cost-options.md section 3, and it is what moved the house's "
+        "cladding face from 6.5\" to 7.25\". The garage (GARAGE_WALL_2X6) keeps the 1/2\" "
+        "reference dimension, so that number is still resolved somewhere in the house"
+    ),
 }
 
 

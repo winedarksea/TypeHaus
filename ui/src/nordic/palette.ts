@@ -139,6 +139,9 @@ export function familyOf(materialRef: string | null | undefined): string | null 
 // is "metal" by family, which would paint it the palette's blue-grey).
 const FINISH_BASE: Readonly<Record<string, string>> = {
   "metal-dark-exterior": "#1c1f24",
+  // The exposed-fastener PBR panel: the same white as the seamed skin (0xE8E8E2), which is
+  // what createStandingSeamMaterial paints it. Mirrors _FINISH_BASE in emit/gltf/palette.py.
+  "ribbed-panel": "#e8e8e2",
   // Cellular PVC trim (garage fascia/soffit) is factory-white, not the "siding" family's
   // blue-grey the substring guess falls to. Mirrors _FINISH_BASE in emit/gltf/palette.py.
   "pvc-cellular": "#f4f2ee",

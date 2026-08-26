@@ -8,6 +8,14 @@ import {
   masonryStyleFor,
   masonryTileSizeM,
   MASONRY_TILE_SIZE_M,
+  metalPanelProfileForFinish,
+  panelTileSizeM,
+  isStandingSeam,
+  RIBBED_PANEL_PROFILE,
+  RIBBED_PANEL_PITCH_M,
+  SEAM_PAN_WIDTH_M,
+  SEAM_PROFILE,
+  SEAM_TILE_SIZE_M,
 } from "./materials";
 import {
   authoredAppearance, familyOf, materialColor, RESOLVED_NORDIC_PALETTE, statesOwnColor,
@@ -87,6 +95,46 @@ export function runMaterialGeometryTests() {
   assert(authoredAppearance("white-brick", catalog)?.finish === "white-brick"
     && authoredAppearance("missing", catalog) === undefined,
     "authoredAppearance finds a catalog entry by tag and reports absence as undefined");
+
+  // ── Metal panel profiles (2026-08-26) ────────────────────────────────────────────────
+  // The house walls went from a snap-lock seam to an exposed-fastener PBR panel, and the
+  // dispatch had to stop being a substring test to survive it. `pbr-panel-26` has no "seam"
+  // in its tag ON PURPOSE, so `isStandingSeam` cannot see it — this is exactly the case that
+  // Material.finish exists for, the same argument the Ishtar bricks below make.
+  assert(!isStandingSeam("pbr-panel-26"),
+    "The substring test cannot reach the PBR panel — which is why the finish dispatch exists");
+  assert(isStandingSeam("standing-seam-snaplock") && isStandingSeam("standing-seam-nailstrip-26"),
+    "The four seam-profile tags still match the substring fallback (the roofs keep it)");
+  assert(metalPanelProfileForFinish("ribbed-panel") === RIBBED_PANEL_PROFILE,
+    "An authored finish of 'ribbed-panel' selects the ribbed profile");
+  assert(metalPanelProfileForFinish("standing-seam") === SEAM_PROFILE,
+    "An authored finish of 'standing-seam' selects the seam profile");
+  assert(metalPanelProfileForFinish(null) === null
+    && metalPanelProfileForFinish("no-such-finish") === null,
+    "No (or unknown) finish declares nothing, leaving the substring fallback in charge");
+
+  // The two profiles are genuinely different geometry, not one recipe with a new name.
+  assert(Math.abs(SEAM_PROFILE.moduleM - SEAM_PAN_WIDTH_M) < 1e-9
+    && Math.abs(RIBBED_PANEL_PROFILE.moduleM - RIBBED_PANEL_PITCH_M) < 1e-9,
+    "Seam pans are 16in and PBR ribs are 12in o.c.");
+  assert(RIBBED_PANEL_PROFILE.moduleM < SEAM_PROFILE.moduleM,
+    "The PBR rib module is tighter than the seam pan module");
+  assert(RIBBED_PANEL_PROFILE.squareness > SEAM_PROFILE.squareness,
+    "A roll-formed rib has a flatter crown than a folded seam");
+  assert(RIBBED_PANEL_PROFILE.ribHalfWidth > SEAM_PROFILE.ribHalfWidth,
+    "A PBR major rib is wider across than a snap-lock upstand");
+  // A screwed panel is pulled tight to its girts every 24"; a clipped one floats between
+  // clips and is free to wander. Less oil canning is the physical claim, not a style choice.
+  assert(RIBBED_PANEL_PROFILE.oilCanning < SEAM_PROFILE.oilCanning,
+    "A face-fastened panel oil-cans less than a floating clipped one");
+
+  // Tile size follows the module, so both profiles sit at true scale under the same wall UVs.
+  assert(Math.abs(panelTileSizeM(SEAM_PROFILE) - SEAM_TILE_SIZE_M) < 1e-9,
+    "The seam profile's tile size is the exported constant (no regression)");
+  assert(panelTileSizeM(RIBBED_PANEL_PROFILE) < panelTileSizeM(SEAM_PROFILE),
+    "The ribbed tile spans the same 4 modules, so a tighter module means a smaller tile");
+  assert(Math.abs(panelTileSizeM() - SEAM_TILE_SIZE_M) < 1e-9,
+    "Called with no profile it still answers for the seam, so old call sites are unchanged");
 
   // The Ishtar scheme (2026-08-20): three more brick faces on the sunken garden's wythe.
   // Every one of them is a tag substring inference CANNOT reach — "glazed-lapis-brick" and

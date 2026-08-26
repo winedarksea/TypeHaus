@@ -14,6 +14,8 @@ import { familyOf } from "../nordic/palette";
 
 /** Nominal flat-pan width of a mechanically seamed panel. */
 export const SEAM_PAN_WIDTH_M = 0.4064; // 16"
+/** Major-rib pitch of a PBR exposed-fastener panel. */
+export const RIBBED_PANEL_PITCH_M = 0.3048; // 12"
 
 // 128 px per pan. At 256 (64 px/pan) the seam ridge was only ~4 px wide and mip generation
 // ate it unevenly, so the module survived at some distances and not others.
@@ -22,13 +24,76 @@ const NORMAL_MAP_PX = 512;
 const PANS_PER_TILE = 4;
 export const SEAM_TILE_SIZE_M = SEAM_PAN_WIDTH_M * PANS_PER_TILE;
 
-let sharedNormalMap: THREE.Texture | null = null;
+/**
+ * One metal-panel profile: the module across the sheet and the shape standing on it.
+ *
+ * Two recipes share this because they share everything but the cross-section — same Kynar
+ * paint, same procedural approach, same band-limiting discipline. What separates a folded
+ * seam from a rolled rib is `ribHalfWidth` (a seam is a narrow upstand at the pan edge; a
+ * PBR major rib is a wide trapezoid) and how much the pan between them wanders.
+ */
+export interface MetalPanelProfile {
+  readonly key: string;
+  /** Module across the sheet: pan width for a seam, rib pitch for a ribbed panel. */
+  readonly moduleM: number;
+  /** Half-width of the standing rib, as a fraction of the module. */
+  readonly ribHalfWidth: number;
+  /** 0 = raised cosine (a folded seam); 1 = flat-topped trapezoid (a rolled rib). */
+  readonly squareness: number;
+  /** Amplitude of the fine anti-oil-canning striations rolled into the flat. */
+  readonly striations: number;
+  /** Amplitude of the low-frequency sheet waviness — the oil canning itself. */
+  readonly oilCanning: number;
+}
+
+export const SEAM_PROFILE: MetalPanelProfile = {
+  key: "standing-seam", moduleM: SEAM_PAN_WIDTH_M, ribHalfWidth: 0.08, squareness: 0,
+  striations: 0.05, oilCanning: 0.03,
+};
+
+/**
+ * PBR exposed-fastener panel: 1-1/4" major ribs at 12" o.c., screwed flat to its supports.
+ *
+ * Squarer than a seam because the rib is roll-formed with a flat crown rather than folded
+ * to a point, and wider — a PBR rib is roughly an inch across where a snap-lock upstand is
+ * a fold. The oil-canning term is deliberately LOWER than the seam profile's: a screwed
+ * panel is pulled tight against its girts every 24", where a clipped panel floats and is
+ * free to wander between clips. The striations stay, since the flats are still ribbed.
+ */
+export const RIBBED_PANEL_PROFILE: MetalPanelProfile = {
+  key: "ribbed-panel", moduleM: RIBBED_PANEL_PITCH_M, ribHalfWidth: 0.14, squareness: 0.65,
+  striations: 0.05, oilCanning: 0.018,
+};
+
+/** Tile size in meters for a profile, i.e. `PANS_PER_TILE` modules of it. */
+export function panelTileSizeM(profile: MetalPanelProfile = SEAM_PROFILE): number {
+  return profile.moduleM * PANS_PER_TILE;
+}
+
+const sharedNormalMaps = new Map<string, THREE.Texture>();
 
 /** True when a layer's material should be finished as painted standing-seam metal. */
 export function isStandingSeam(materialRef: string | null | undefined): boolean {
   if (!materialRef) return false;
   const s = materialRef.toLowerCase();
   return s.includes("seam") || (familyOf(materialRef) === "metal" && s.includes("standing"));
+}
+
+/**
+ * The profile a material's AUTHORED `finish` names, or null if it names none.
+ *
+ * This is the dispatch that `isStandingSeam` above cannot do. That function is a substring
+ * test on the material ref — it was the whole story while every metal skin in the catalog
+ * had "seam" in its tag on purpose, and `pbr-panel-26` deliberately does not play that
+ * game. A material that declares `finish: "ribbed-panel"` gets the ribbed profile because
+ * it SAYS so, and the substring test stays as the fallback for the four that don't.
+ */
+export function metalPanelProfileForFinish(
+  finish: string | null | undefined,
+): MetalPanelProfile | null {
+  if (finish === "ribbed-panel") return RIBBED_PANEL_PROFILE;
+  if (finish === "standing-seam") return SEAM_PROFILE;
+  return null;
 }
 
 /**
@@ -42,32 +107,45 @@ export function isStandingSeam(materialRef: string | null | undefined): boolean 
  * rather than as siding. A smooth ridge profile and a waviness term with no per-row phase
  * keep the 16" rhythm identical on every pan and at every distance.
  */
-function standingSeamNormalMap(): THREE.Texture {
-  if (sharedNormalMap) return sharedNormalMap;
+function metalPanelNormalMap(profile: MetalPanelProfile = SEAM_PROFILE): THREE.Texture {
+  const cached = sharedNormalMaps.get(profile.key);
+  if (cached) return cached;
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = NORMAL_MAP_PX;
   const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("2D canvas unavailable for the standing-seam normal map");
+  if (!ctx) throw new Error(`2D canvas unavailable for the ${profile.key} normal map`);
   const image = ctx.createImageData(NORMAL_MAP_PX, NORMAL_MAP_PX);
   const panPx = NORMAL_MAP_PX / PANS_PER_TILE;
-  const seamPx = panPx * 0.08;
+  const seamPx = panPx * profile.ribHalfWidth;
+
+  // A trapezoid's slope is zero across its flat crown and constant up its two webs. Blending
+  // the sine bump toward that shape by `squareness` is what turns a folded seam into a rolled
+  // rib without introducing the slope STEP a true trapezoid would have at the crown edges —
+  // and a step is exactly what mip filtering could not carry when the seam was a linear ramp.
+  const ribSlope = (u: number): number => {
+    const round = Math.sin(u * Math.PI);
+    const square = Math.sin(Math.min(1, u * 2.2) * Math.PI * 0.5)
+      * Math.sin(Math.min(1, (1 - u) * 2.2) * Math.PI * 0.5)
+      * Math.sign(0.5 - u) * -1;
+    return round * (1 - profile.squareness) + square * profile.squareness;
+  };
 
   for (let y = 0; y < NORMAL_MAP_PX; y++) {
     for (let x = 0; x < NORMAL_MAP_PX; x++) {
       const withinPan = x % panPx;
-      // dx is the surface slope across the panel: the seam is a rib standing off the pan edge,
-      // everything else is millimetre-scale waviness. The rib is a raised-cosine bump, so its
-      // slope is one full sine period straddling the pan boundary — a lit face and a shaded
-      // face, meeting the flat pan at zero slope on both sides. The old profile was a linear
-      // ramp that stepped by a full unit where it met the pan; that discontinuity is what mip
-      // filtering could not carry, so the module survived in patches and read as streaks.
+      // dx is the surface slope across the panel: the rib stands off the module boundary,
+      // everything else is millimetre-scale waviness. The rib's slope is one full period
+      // straddling that boundary — a lit face and a shaded face, meeting the flat at zero
+      // slope on both sides. The old profile was a linear ramp that stepped by a full unit
+      // where it met the pan; that discontinuity is what mip filtering could not carry, so
+      // the module survived in patches and read as streaks.
       let dx = 0;
-      if (withinPan < seamPx) dx = -Math.sin(withinPan / seamPx * Math.PI);
-      else if (withinPan > panPx - seamPx) dx = Math.sin((panPx - withinPan) / seamPx * Math.PI);
+      if (withinPan < seamPx) dx = -ribSlope(withinPan / seamPx);
+      else if (withinPan > panPx - seamPx) dx = ribSlope((panPx - withinPan) / seamPx);
       else {
         const t = (withinPan - seamPx) / (panPx - 2 * seamPx);
-        dx += 0.05 * Math.sin(t * Math.PI * 14); // striations
-        dx += 0.03 * Math.sin(t * Math.PI * 1.3); // oil canning
+        dx += profile.striations * Math.sin(t * Math.PI * 14);
+        dx += profile.oilCanning * Math.sin(t * Math.PI * 1.3);
       }
       const dy = 0.015 * Math.sin(y * 0.05 + x * 0.003);
       const n = new THREE.Vector3(-dx, -dy, 1).normalize();
@@ -83,7 +161,7 @@ function standingSeamNormalMap(): THREE.Texture {
   const texture = new THREE.CanvasTexture(canvas);
   texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
   texture.colorSpace = THREE.NoColorSpace;
-  sharedNormalMap = texture;
+  sharedNormalMaps.set(profile.key, texture);
   return texture;
 }
 
@@ -96,6 +174,7 @@ export function createStandingSeamMaterial(
   worldSizeM: readonly [number, number],
   color = 0xE8E8E2,
   worldScaledUv = false,
+  profile: MetalPanelProfile = SEAM_PROFILE,
 ): THREE.Material {
   if (mode === "schematic") {
     return new THREE.MeshStandardMaterial({ color, roughness: 1, metalness: 0, flatShading: true });
@@ -105,15 +184,16 @@ export function createStandingSeamMaterial(
     // metalness stays near zero and the gloss comes from the clearcoat instead.
     color, metalness: 0.05, roughness: 0.45, clearcoat: 0.3, clearcoatRoughness: 0.1,
   });
-  const map = standingSeamNormalMap().clone();
+  const map = metalPanelNormalMap(profile).clone();
   map.needsUpdate = true;
+  const tileM = panelTileSizeM(profile);
   // Wall extrusion UVs are based on the polygon's local shape and therefore rotate or
   // collapse as wall runs change direction. Wall cladding opts into explicit world-scaled
   // UVs below; roof surfaces retain the legacy surface-size repeat until they have their
   // own slope-aware coordinate frame.
   map.repeat.set(
-    worldScaledUv ? 1 : Math.max(1, Math.round(worldSizeM[0] / SEAM_TILE_SIZE_M)),
-    worldScaledUv ? 1 : Math.max(1, Math.round(worldSizeM[1] / SEAM_TILE_SIZE_M)),
+    worldScaledUv ? 1 : Math.max(1, Math.round(worldSizeM[0] / tileM)),
+    worldScaledUv ? 1 : Math.max(1, Math.round(worldSizeM[1] / tileM)),
   );
   material.normalMap = map;
   material.normalScale = new THREE.Vector2(0.6, 0.6);
@@ -129,7 +209,9 @@ export function applyStandingSeamWallUv(
   geometry: THREE.BufferGeometry,
   wallAxis: readonly [readonly [number, number], readonly [number, number]],
   center: PlanCenter,
+  profile: MetalPanelProfile = SEAM_PROFILE,
 ): void {
+  const tileM = panelTileSizeM(profile);
   const [[x0, y0], [x1, y1]] = wallAxis;
   const dx = x1 - x0;
   const dy = y1 - y0;
@@ -145,16 +227,16 @@ export function applyStandingSeamWallUv(
     );
     const elevation = positions.getY(index);
     const along = (projectX - x0) * directionX + (projectY - y0) * directionY;
-    uv[index * 2] = along / SEAM_TILE_SIZE_M;
-    uv[index * 2 + 1] = elevation / SEAM_TILE_SIZE_M;
+    uv[index * 2] = along / tileM;
+    uv[index * 2 + 1] = elevation / tileM;
   }
   geometry.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
 }
 
-/** Drop the process-wide normal map — only for teardown in tests/hot reload. */
+/** Drop the process-wide normal maps — only for teardown in tests/hot reload. */
 export function disposeStandingSeamTextures(): void {
-  sharedNormalMap?.dispose();
-  sharedNormalMap = null;
+  for (const texture of sharedNormalMaps.values()) texture.dispose();
+  sharedNormalMaps.clear();
 }
 
 // ── Masonry (brick / CMU / stone veneer) ──────────────────────────────────────────────

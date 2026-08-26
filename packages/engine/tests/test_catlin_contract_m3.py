@@ -38,8 +38,8 @@ KNEE_FT = 5.0
 RIDGE_OVER_ATTIC_FT = 11.0
 ATTIC_ELEV_FT = 20.0
 GARAGE_SIZE_FT = 24.0
-# House sheathing plane to garage wall line. The finished gap is tighter: the house's 5" of
-# outsulation and the garage's own 7/8" of rainscreen + cladding leave 4'-0 1/2" of clear
+# House sheathing plane to garage wall line. The finished gap is tighter: the house's 7 1/4"
+# of outsulation + cladding and the garage's own 1/2" of cladding leave 4'-0 1/2" of clear
 # slot, which is what the breezeway's 4'-0" polycarbonate panels are sized to.
 #
 # 4.57292' (4'-6 7/8"), not the 5'-0" it was until 2026-08-15. The garage's ICF stem used to
@@ -49,14 +49,20 @@ GARAGE_SIZE_FT = 24.0
 # are exactly what they were. The *cladding* is the controlling face now, where the stem
 # used to be.
 #
-# It grew 1/2" on 2026-08-23 and another 1" on 2026-08-26, for the identical reason both
-# times. The Swinburne truss put the HOUSE's cladding 1/2" further north (5.02" -> 5.5"
-# proud of y=36'); the catlin truss's four flat girt layers put it 1" further again
-# (5.5" -> 6.5"). Either move alone would have closed the breezeway's clear slot to 4'-0" on
-# the nose and left an uncut 4'-0" panel with nowhere to go, so the garage moved with it and
-# the slot — and the panel's 1/2" reveal — are again exactly what they were. Both wall lines
-# moved each time; the garage is still 24'-0" square.
-GARAGE_GAP_FT = 4.65625
+# It grew 1/2" on 2026-08-23, another 1" on 2026-08-26, and 3/8" more the same day, for the
+# identical reason every time. The Swinburne truss put the HOUSE's cladding 1/2" further
+# north (5.02" -> 5.5" proud of y=36'); the catlin truss's four flat girt layers put it 1"
+# further again (5.5" -> 6.5"); then the 1 1/4" exposed-fastener PBR panel replaced the 1/2"
+# snap-lock seam and took it to 7.25". Any of those alone would have closed the breezeway's
+# clear slot to 4'-0" or less and left an uncut 4'-0" panel with nowhere to go, so the garage
+# moved with it and the slot — and the panel's 1/2" reveal — are again exactly what they
+# were. Both wall lines moved each time; the garage is still 24'-0" square.
+#
+# The last move is only 3/8" against the house's 3/4", and the difference is a CORRECTION:
+# ``params/breezeway.py`` carried a 3/8" rainscreen furring on the garage face that
+# ``GARAGE_WALL_2X6`` dropped on 2026-08-20, so the modelled garage face had been 3/8" south
+# of where it stands for six days. Fixing that gave back exactly half the move.
+GARAGE_GAP_FT = 4.6875
 GARAGE_OVERHANG_IN = 16.0
 # eave_z_m is the rafter-top (deck) plane: the 11.875" I-joist rises above the knee-wall
 # plate by its depth less the seat drop across the stud (5.5" 2x6 depth x 4:12 pitch =
@@ -377,13 +383,14 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
     # eave rides the deck plane, ~10.04" (0.2551 m) above the plate.
     assert roof.eave_z_m - roof.bearing_z_m == pytest.approx(ft(DECK_RISE_FT).meters)
 
-    # 1.667" = the 4:12 rise over the horizontal distance from the footprint edge to the
-    # heel. It has deepened twice, both times by the same arithmetic: the zero-overhang roof
-    # laps the CLADDING, so the rafter tail and the deck plane above it follow the cladding
-    # face out and the notch deepens by the move times 4/12. 1.17" under the rigid-CI stack;
-    # 1.333" from 2026-08-23, when the Swinburne truss moved the face 0.48"; 1.667" since
-    # 2026-08-26, when the catlin truss moved it a further 1.0".
-    birdsmouth = inch(1.667).meters
+    # 1.917" = the 4:12 rise over the horizontal distance from the footprint edge to the
+    # heel. It has deepened three times, every time by the same arithmetic: the zero-overhang
+    # roof laps the CLADDING, so the rafter tail and the deck plane above it follow the
+    # cladding face out and the notch deepens by the move times 4/12. 1.17" under the
+    # rigid-CI stack; 1.333" from 2026-08-23, when the Swinburne truss moved the face 0.48";
+    # 1.667" when the catlin truss moved it a further 1.0"; 1.917" since the exposed-fastener
+    # PBR panel moved it 0.75" more (2026-08-26, 0.75 x 4/12 = 0.25").
+    birdsmouth = inch(1.917).meters
     rafters = [m for m in roof.members if m.category == "rafter"]
     assert not [m for m in roof.members if m.category == "seat_cut"], \
         "the seat is part of the rafter's own solid now, not a block beside it"
@@ -418,16 +425,22 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
         # Wall stack per the reference: the deck clips at the wall-sheathing face (the whole
         # catlin-truss stand-off plus the cladding), metal runs 0.6" proud of the mount
         # plane. 0.02 + 2 + 2 + 0.5 + 0.5 = 5.02" for the rigid-CI stack, 5.5" for the
-        # Swinburne truss, 6.5" since the catlin truss laid four flat layers where the
-        # outrigger band was.
-        assert deck == pytest.approx(inch(1.5 + 1.5 + 1.0 + 0.5 + 1.5 + 0.5).meters)
-        # 1/2" cladding + the 2" vented cavity the roof's foam clears. It was 1/2" + 1/2" of
+        # Swinburne truss, 6.5" when the catlin truss laid four flat layers where the
+        # outrigger band was, and 7.25" since the 1 1/4" exposed-fastener PBR panel replaced
+        # the 1/2" snap-lock seam (2026-08-26).
+        assert deck == pytest.approx(inch(1.5 + 1.5 + 1.0 + 0.5 + 1.5 + 1.25).meters)
+        # The cladding + the 2" vented cavity the roof's foam clears. It was 1/2" + 1/2" of
         # furring under the rigid-CI stack, and 1/2" + a 1" vent under the Swinburne truss
         # (whose 3-1/2" band was 2-1/2" packed with foam). The catlin truss's cavity is the
         # 1/2" gap PLUS the 1-1/2" between girt courses — ``accessories.rainscreen_band``
-        # reads both, and this is the number that follows it.
-        assert foam == pytest.approx(inch(2.5).meters)
-        assert batten == pytest.approx(inch(0.5).meters)
+        # reads both, and this is the number that follows it. The cladding term grew 3/4"
+        # with the panel, and the cavity behind it did not move.
+        assert foam == pytest.approx(inch(3.25).meters)
+        # The batten/top-deck plane clips at the CLADDING face, so it is the cladding
+        # thickness and nothing else — 1/2" while the wall wore a snap-lock pan, 1-1/4"
+        # since the PBR panel (2026-08-26). It moves with the panel and never with the
+        # stand-off behind it.
+        assert batten == pytest.approx(inch(1.25).meters)
         assert metal == pytest.approx(inch(-0.1).meters)
         # The nailbase deck is the case that made _layer_group position-aware (2026-08-20).
         # It is a SHEATHING layer like the ZIP below the foam, but it stands where a vented

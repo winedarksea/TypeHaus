@@ -99,6 +99,7 @@ _SOLID_IFC_CLASS: dict[str, tuple[str, str | None]] = {
     # semantic.py`` carries an ``IfcDiscreteAccessory`` row, so both still round-trip.
     "snow_guard": ("IfcDiscreteAccessory", None),
     "seam_clamp": ("IfcDiscreteAccessory", None),
+    "panel_strap": ("IfcDiscreteAccessory", None),
     "vent": ("IfcBuildingElementProxy", None),
     "fascia": ("IfcCovering", None), "soffit": ("IfcCovering", None),
     "flashing": ("IfcCovering", None),

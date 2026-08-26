@@ -14,6 +14,7 @@ import {
 import {
   applyMasonryWallUv, applyStandingSeamWallUv, createMasonryMaterial,
   createStandingSeamMaterial, isMasonry, isStandingSeam, masonryStyleFor, masonryTileSizeM,
+  metalPanelProfileForFinish, SEAM_PROFILE,
 } from "../materials";
 import { buildMembers, categoryColor, isSkinMember } from "../members";
 import {
@@ -85,13 +86,23 @@ export function buildWall(
     // Cavity fill shares its host structure layer's polygon — extruding it would only
     // z-fight with the studs it lives between.
     if (ly.is_cavity) continue;
-    const seam = ly.function === "cladding" && isStandingSeam(ly.material);
+    const appearance = authoredAppearance(ly.material, materials);
+    // A metal panel finish is DECLARED first and guessed second. `metalPanelProfileForFinish`
+    // reads the material's authored `finish` — "ribbed-panel" for the house's exposed-fastener
+    // PBR, "standing-seam" for anything that says so — and only a material that declares
+    // nothing falls back to `isStandingSeam`, which is a substring test on the ref and cannot
+    // tell a rib from a fold. `pbr-panel-26` has no "seam" in its tag on purpose, so without
+    // this branch it would render as flat grey.
+    const declaredPanel = metalPanelProfileForFinish(appearance?.finish);
+    const seamProfile = ly.function === "cladding"
+      ? (declaredPanel ?? (isStandingSeam(ly.material) ? SEAM_PROFILE : null))
+      : null;
+    const seam = seamProfile !== null;
     // Masonry (brick/CMU/stone) gets coursing + recessed mortar, not a flat fill — a brick
     // veneer or CMU wythe otherwise read like painted drywall. The style (module + mortar +
     // jitter) comes from the material's authored `finish`, so CMU reads as 16"×8" grey block
     // and white brick as whitewash over grey mortar; only a material that declares nothing
     // falls back to guessing from its tag.
-    const appearance = authoredAppearance(ly.material, materials);
     const masonryStyle = !seam && isMasonry(ly.material)
       ? masonryStyleFor(ly.material, appearance?.finish) : null;
     // Wood boards get the same treatment for the same reason: the sauna's basswood T&G liner
@@ -104,7 +115,7 @@ export function buildWall(
       ? createStandingSeamMaterial(mode, [
         Math.hypot(w.axis[1][0] - w.axis[0][0], w.axis[1][1] - w.axis[0][1]),
         Math.max(0.1, w.z1_m - w.z0_m),
-      ], 0xE8E8E2, true)
+      ], 0xE8E8E2, true, seamProfile ?? SEAM_PROFILE)
       : masonryStyle
         ? createMasonryMaterial(mode, masonryStyle,
           materialColor(ly.material, palette, materials), appearance?.color)
@@ -132,7 +143,7 @@ export function buildWall(
       if (!geo) continue;
       // The line, not the wall: the pan module belongs to the facade, and the outriggers it
       // clips to are laid out on that same line (resolve/framing/furring.py).
-      if (seam) applyStandingSeamWallUv(geo, w.layout_axis ?? w.axis, center);
+      if (seam) applyStandingSeamWallUv(geo, w.layout_axis ?? w.axis, center, seamProfile ?? SEAM_PROFILE);
       else if (masonryStyle) {
         // Course from the wall's own base, not project zero — see applyMasonryWallUv.
         applyMasonryWallUv(geo, w.axis, center, masonryTileSizeM(masonryStyle), w.z0_m);

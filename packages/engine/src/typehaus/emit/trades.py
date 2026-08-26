@@ -169,6 +169,10 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
     # rides the roof it penetrates rather than following its payload into four trades.
     "snow_guard": "roof",
     "seam_clamp": "roof",
+    # The strap that replaces that clamp where the skin is face-fastened. Same trade for
+    # the same reason: it penetrates the skin, so it rides the skin rather than following
+    # the leader or riser it happens to be holding.
+    "panel_strap": "roof",
 }
 
 

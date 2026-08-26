@@ -121,10 +121,12 @@ const DETAIL_FILL: Record<string, string> = {
   eps: "#c8e0f8", "icf-eps": "#d8e8fa", xps: "#a7d7c5",
   "mineral-wool": "#a8a8a8", fiberglass: "#ddecc8",
   "air-barrier": "#1e3a5f", "standing-seam": "#2f2f2f",
-  // Same detail ink for all four seam profiles — the section drawing shows metal, and
-  // snap-lock, nail strip and 26 ga nail strip draw identically to a mechanically seamed pan.
+  // Same detail ink for all five metal skins — the section drawing shows metal, and
+  // snap-lock, nail strip, 26 ga nail strip and the exposed-fastener PBR panel all draw
+  // identically to a mechanically seamed pan. Mirrors emit/draw/palette.py DETAIL_FILL.
   "standing-seam-snaplock": "#2f2f2f", "standing-seam-nailstrip": "#2f2f2f",
-  "standing-seam-nailstrip-26": "#2f2f2f", "fiber-cement": "#e6e6e6",
+  "standing-seam-nailstrip-26": "#2f2f2f", "pbr-panel-26": "#2f2f2f",
+  "fiber-cement": "#e6e6e6",
   "cedar-tg": "#c8a26a", "sauna-tg": "#e6d4ae", "resilient-channel": "#91979d",
   aggregate: "#7f7f7f", "river-rock": "#a9a9a9", soil: "#d2b48c",
   "spray-foam": "#ffd966", sealant: "#6e4f2a", flashing: "#7a0c0c",

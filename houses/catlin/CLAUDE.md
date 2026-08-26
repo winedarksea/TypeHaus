@@ -35,8 +35,12 @@ proposing any design change.
 - `params/solar.py` — rooftop PV array (12 × 440 W on the gable ridge, computed max fit).
 - `params/roof_trim.py` — the eave water chain on RF-HOUSE's west/east eaves: drip edge →
   box gutter → downspout, each piece's position derived from the one above it so the laps
-  hold. RF-HOUSE has **no fascia** (continuous standing-seam skin ⇒ the resolver's corner
-  trim), so every offset is measured off the corner trim's face, never a fascia's. The lap
+  hold. RF-HOUSE has **no fascia** (continuous metal skin ⇒ the resolver's corner trim), so
+  every offset is measured off the corner trim's face, never a fascia's. "Continuous" is
+  `Material.skin_family`, not tag equality — the walls are exposed-fastener PBR and the roof
+  is mechanically seamed, and they read as one skin because both declare
+  `skin_family="standing-seam"`. Drop that on either and the flush edge silently reverts to
+  a fascia-and-drip-edge detail nobody has drawn. The lap
   order is enforced by `packages/engine/tests/test_catlin_eave_water.py` — read it before
   moving any of these numbers. All three pieces are ordered in `_CHAIN_MATERIAL`, the
   house's one exterior dark, so the eave line matches the rake's corner trim.
@@ -162,10 +166,16 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     plane is the outermost FURRING layer's outer face, which is why not one window moved when
     the stack changed. `structural.truss_wall_opening_support` keeps every RO jamb within a
     flange's bearing of wood.
-  - **The cladding face moved out 1"** (6.5", was 5.5", was 5.02"). Nothing interior moved —
+  - **The cladding face moved out 1", then 3/4" more** (**7.25"**, was 6.5", was 5.5", was
+    5.02"). The second move is the 2026-08-26 cladding swap, not the truss: 1 1/4" of
+    exposed-fastener PBR panel where 1/2" of snap-lock seam stood. Nothing interior moved —
     walls align on `face("sheathing-ext")` — but `params/roof_trim.py` (one named constant,
-    `_WALL_OUTBOARD_IN`, with both older values beside it), `params/breezeway.py`, the garage
+    `_WALL_OUTBOARD_IN`, with every older value beside it), `params/breezeway.py`, the garage
     wall lines and the exterior electrical all measure off the cladding and moved with it.
+    Windows and doors did NOT: they mount on the outer GIRT plane, which did not move, so
+    only the cladding return depth at a jamb changed. The garage moved just 3/8" of that 3/4",
+    because `params/breezeway.py` was also carrying a 3/8" rainscreen furring on the garage
+    face that `GARAGE_WALL_2X6` dropped on 2026-08-20 — a correction, not a rounding.
   - **The Swinburne truss is one swap away.** Nothing vertical was deleted:
     `resolve/framing/truss_frame.py` and its branch of the pass are untouched behind their own
     predicate (`laid="edge"` + vertical), the girt frame is a sibling selected by
