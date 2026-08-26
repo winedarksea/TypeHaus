@@ -30,6 +30,13 @@ export function SpaceDashboard({ summary, buildingHeight }: {
             <span className="k">{roof.roof_tag} peak</span><span>{metersToFeet(roof.peak_above_grade_m)}</span>
           </div>
         ))}
+        <div style={{ fontWeight: 600, marginTop: 12, marginBottom: 4 }}>Exterior footprint (cladding to cladding)</div>
+        {buildingHeight.footprint.map((row) => (
+          <div key={row.storey} className="kv" style={{ marginTop: 5 }}>
+            <span className="k">{row.storey} width</span><span>{metersToFeet(row.width_m)}</span>
+            <span className="k">{row.storey} depth</span><span>{metersToFeet(row.depth_m)}</span>
+          </div>
+        ))}
       </>}
     </div>
   );

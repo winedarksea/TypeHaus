@@ -163,6 +163,20 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             scene.add_object(mb, trade=solid_trade(solid.category), kind="solid",
                              uid=solid.uid)
 
+    # WallPaneling bands. A band is an applied surface on the room side of a wall, and until
+    # 2026-08-25 it billed without ever being exported — a wainscot on the order and nowhere in
+    # the .glb. Its colour resolves through the catalog material, the same path the viewer's
+    # `materialColor` takes, so the two agree (→ glb-emitter-parity).
+    for band in sorted(model.panelings, key=lambda item: (item.uid, item.wall_tag)):
+        if not band.outline or band.z0_m is None or band.z1_m is None:
+            continue
+        if band.z1_m <= band.z0_m:
+            continue
+        mb = _MeshBuilder()
+        mb.add_prism(band.outline, band.z0_m, band.z1_m,
+                     _material_finish_color(band.material_ref, "finish", authored))
+        scene.add_object(mb, trade="walls", kind="paneling", uid=band.uid)
+
     for bedding in sorted(model.footing_beddings, key=lambda item: item.uid):
         if bedding.outline and bedding.z1_m > bedding.z0_m:
             mb = _MeshBuilder()

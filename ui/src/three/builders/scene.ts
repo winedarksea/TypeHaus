@@ -22,7 +22,7 @@ import { buildCanvasObject, buildEarth } from "./site";
 import { buildOpening, buildWall } from "./walls";
 import {
   buildBrace, buildFloor, buildFootingBedding, buildLightRun, buildRoof, buildRoomFloor,
-  buildSolarPanel, buildSolid, buildStair, storeyFloorTopM,
+  buildPaneling, buildSolarPanel, buildSolid, buildStair, storeyFloorTopM,
 } from "./structure";
 
 /** What a click can land on, and which materials the highlight pass drives per uid. */
@@ -145,6 +145,12 @@ export function populateScene(options: PopulateSceneOptions) {
   // is roof. The mapping is shared with the exporter — see solidTrade / emit/trades.py.
   for (const solid of model.solids ?? []) {
     buildSolid(tradeGroups[solidTrade(solid)], solid, center, mode, palette, model.catalog,
+      registry.picks, registry.byUid, model.catalog?.materials);
+  }
+  // A paneling band rides the walls trade: it is an applied surface on a wall, and turning
+  // the walls off should take its wainscot with it.
+  for (const band of model.panelings ?? []) {
+    buildPaneling(tradeGroups.walls, band, center, mode, palette, model.catalog?.materials,
       registry.picks, registry.byUid);
   }
   for (const bedding of model.footing_beddings ?? []) {

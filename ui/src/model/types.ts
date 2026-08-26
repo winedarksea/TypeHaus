@@ -52,6 +52,11 @@ export interface Layer {
   // feet of buried foam, and stacks a brick wythe's three colours in the same place.
   z0_m?: number | null;
   z1_m?: number | null;
+  // Which way a board finish's boards run, derived by the engine from the furring behind the
+  // layer (resolve/topology.py `_board_run`) — boards land perpendicular to what they are
+  // fastened to. Null/absent on every layer that is not a board finish, and on one with no
+  // furring behind it to derive from.
+  board_run?: "horizontal" | "vertical" | null;
 }
 
 // Orientation convention (defined once, engine side: resolve/framing/profiles.py):
@@ -393,9 +398,16 @@ export interface BuildingHeightRow {
   peak_above_grade_m: number;
 }
 
+export interface BuildingFootprintRow {
+  storey: string;
+  width_m: number;
+  depth_m: number;
+}
+
 export interface BuildingHeightSummary {
   average_ground_grade_m: number;
   roofs: BuildingHeightRow[];
+  footprint: BuildingFootprintRow[];
 }
 
 export interface Underlay {
@@ -1116,6 +1128,32 @@ export interface Roof {
   layer_edge_setbacks?: RoofLayerSetback[];
 }
 
+// One wall's share of a WallPaneling band — a wainscot, a tile splash (→ resolve/model.py
+// ResolvedPaneling). A band is an applied surface on the ROOM side of its wall, so it is
+// drawn where the wall's own face is, not where the room's clear face is (those differ on a
+// wall with an unusual liner; see resolve/paneling.py `_room_side_offset`).
+//
+// `area_m2` is net of the openings punching the band; `outline` is the plain rectangle and is
+// NOT. That is the engine's choice, not an oversight — see ResolvedPaneling.
+export interface Paneling {
+  uid: string;
+  tag: string;
+  storey: string;
+  room: string | null;
+  wall_tag: string;
+  material_ref: string;
+  layout_line: string | null;
+  replaces_wall_finish: boolean;
+  area_m2: number;
+  run_m: number;
+  // Empty where the band's side could not be derived (a line-scoped band): quantities only,
+  // nothing to draw.
+  outline: Vec2[];
+  z0_m: number | null;
+  z1_m: number | null;
+  thickness_m: number;
+}
+
 // Slabs, pads, and footings — a resolved horizontal or below-grade solid with a plan
 // outline (→ resolve/model.py ResolvedSolid).
 export interface Solid {
@@ -1326,6 +1364,7 @@ export interface Model {
   openings: Opening[];
   roofs?: Roof[];
   solids?: Solid[];
+  panelings?: Paneling[];
   construction_returns?: ConstructionReturn[];
   footing_beddings?: FootingBedding[];
   solar_panels?: SolarPanel[];

@@ -125,6 +125,22 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              "provenance": _provenance(provenance, solid.tag)}
             for solid in sorted(model.solids, key=lambda item: item.uid)
         ],
+        # WallPaneling bands (wainscot, tile splash). Unlike a construction return these ARE
+        # render geometry: a band is a real applied surface on the room side of its wall, and
+        # until 2026-08-25 it billed without ever being drawn. One record per wall the band
+        # covers; ``outline`` is empty where the side could not be derived (a line-scoped
+        # band), which the viewer skips.
+        "panelings": [
+            {"uid": band.uid, "tag": band.tag, "storey": band.storey, "room": band.room,
+             "wall_tag": band.wall_tag, "material_ref": band.material_ref,
+             "layout_line": band.layout_line,
+             "replaces_wall_finish": band.replaces_wall_finish,
+             "area_m2": band.area_m2, "run_m": band.run_m,
+             "outline": [list(point) for point in band.outline],
+             "z0_m": band.z0_m, "z1_m": band.z1_m, "thickness_m": band.thickness_m,
+             "provenance": _provenance(provenance, band.tag)}
+            for band in sorted(model.panelings, key=lambda item: (item.uid, item.wall_tag))
+        ],
         # ConstructionRule returns (#45): documentation + take-off records, not render
         # geometry — a correctly-placed return duplicates the host wall's own mitred layer
         # polygon, so no solid is emitted for one. Carried here for the inspector/overlay.

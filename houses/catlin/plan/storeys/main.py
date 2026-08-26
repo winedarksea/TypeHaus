@@ -2,9 +2,13 @@
 # Main floor — 36'x36' at sheathing, 16" o.c. module, east half open living (WP3.1).
 # Exterior walls: CATLIN_EXT_2X6, sheathing exterior face on the 0/36 lines.
 # Bearing lines: west wall, center N-S wall (x=18), east wall (18' I-joist spans, E-W).
-# Windows follow the stud-bay rules: WT-1424 fits one bay unbroken; WT-3048 breaks two
-# studs (non-bearing walls only, RO centred on a bay centre); WT-2736 adds jacks on
-# bearing walls (RO centred on a stud line).
+# Windows follow the RO ladder (preferences.toml [framing]), which is arithmetic on the
+# 16" module and a 1.5" stud — each rung is how wide the RO can get before it costs one
+# more stud line. WT-1424 (14") fits one bay unbroken, RO on a BAY CENTRE, no header at
+# all. Every wider family breaks exactly one stud and centres on a STUD LINE: 30" is the
+# nonbearing cap (32" - 1.5" = 30.5" clear, no jacks under a R602.7.4 flat 2x4 header),
+# 27" the bearing cap (the same 30.5" less a jack each side = 27.5", R602.7.5). The 3"
+# between the two caps IS the pair of jacks.
 from typehaus import (
     Alarm,
     AlarmKind,
@@ -123,6 +127,26 @@ WINDOW_TYPES = [
     # land above the top plate). 27x36 still clears R310 egress (6.75 sf > 5.7).
     WindowType(tag="WT-2736", width=inch(27), height=ft(3), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
+    # 27" RO x 48" — the same bearing cap as WT-2736 at WT-3048's height, for the one
+    # bearing-wall unit whose head line had to survive the 2026-08-25 narrowing:
+    # WIN-M-EAST-MID, the east living row's feature window, keeps its 2'-6" sill and
+    # 6'-6" head while the width comes off. Third break of "one height per family", and
+    # the cheapest of the three — a retype that moves neither datum.
+    WindowType(tag="WT-2748", width=inch(27), height=ft(4), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="casement"),
+    # 27" RO x 54" — the bearing-wall BEDROOM size (2026-08-25). WIN-S-BED1/BED2 are
+    # single-window rooms, so R303.1 binds on AREA and the 27" cap has to be paid for in
+    # height: at 27x48 BED2 has 9.00 sf against its 9.945 sf requirement and FAILS. 27x54
+    # is 10.125 sf / 5.063 sf openable, which clears BED1 (119.66 sf -> 9.573) by
+    # +0.55/+0.28 sf and BED2 (124.32 sf -> 9.945) by +0.18/+0.09 — better margins than the
+    # 30x48 it replaces (+0.43/+0.21 and +0.055/+0.027).
+    # This is exactly the "taller unit, not a wider one" that the 2026-08-01 note said the
+    # answer would have to be. Head lands at 7'-6" on a 3'-0" sill, 18" clear below the
+    # 9'-0" plate — room for a 2-2x8 header (7 1/4") and the double top plate with 7 3/4"
+    # of cripple left over, which is what disproves that note's "27" cannot reach it at
+    # any height that fits under the 9'-0" plate".
+    WindowType(tag="WT-2754", width=inch(27), height=ft(4, 6), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="casement"),
     # 30" RO — non-load-bearing size (N*2-6): one stud broken. 36" tall keeps the
     # attic-gable heads below the cathedral-roof framing. Since the 2026-07-30 south
     # enlargement this is the north-side size (attic gable pair, hall).
@@ -161,6 +185,8 @@ WINDOW_TYPES = [
     WindowType(tag="WT-1424-T", width=inch(14), height=ft(2), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="awning", tempered=True),
     WindowType(tag="WT-2736-T", width=inch(27), height=ft(3), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="casement", tempered=True),
+    WindowType(tag="WT-2754-T", width=inch(27), height=ft(4, 6), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement", tempered=True),
     WindowType(tag="WT-3036-T", width=inch(30), height=ft(3), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement", tempered=True),
@@ -707,8 +733,18 @@ OPENINGS = [
     # said so. WIN-M-KIT-E ends it at y=34'-0" — a 14" unit at a 3'-6" sill, joining neither
     # this row's beat nor its head line, deliberately. See that window at the end of this
     # list, and the rewritten Rows bullet, before reading the blank as still intended.
+    # NARROWED 30" -> 27" (2026-08-25): W-M-E1 is a BEARING wall, and the bearing rung of
+    # the RO ladder is 27" — a 30" RO there cannot take its jacks without pushing the kings
+    # off the module. Retype only: WT-2748 holds the 2'-6" sill and the 6'-6" head, so this
+    # window's place in the east row is untouched. The near-jamb offset moved +1 1/2"
+    # (17'-5" -> 17'-6 1/2") because ``from_node`` is the NEAR JAMB, not the centre: half
+    # of 3" of lost width, which keeps the CENTRE on y=18'-8", the same stud line the
+    # 2026-08-24 note picked. RM-M-LIVING passes R303.1 under Exception 1 already — it is
+    # artificially lit (15.7 fc) and mechanically ventilated — so the exactly 1 sf of glass
+    # this gives up (10.0 -> 9.0) changes no result: the room reads 44.9 -> 43.9 sf against
+    # a nominal 59.8 sf, short either way, and the exception is what carries it.
     Window(uid="QPNDT7TF6G", tag="WIN-M-EAST-MID", host="W-M-E1",
-           type_ref="WT-3048", position=from_node("N-M-SE", ft(17, 5)),
+           type_ref="WT-2748", position=from_node("N-M-SE", ft(17, 6.5)),
            sill_height=ft(2, 6)),
     # Moved to the north wall 2026-07-30 with the sink (plan/placeables.py's kitchen header),
     # then re-centred the same day when the sink flipped with the dishwasher toward the

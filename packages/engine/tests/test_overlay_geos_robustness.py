@@ -70,7 +70,7 @@ def test_gross_area_goes_through_the_robust_overlay() -> None:
     A bare ``shapely.ops.unary_union`` here is invisible on GEOS 3.13.1 and fatal on 3.12,
     so no runtime assertion in this venv can catch a revert. Read the source instead.
     """
-    source = inspect.getsource(space_summary.gross_area_sf)
+    source = inspect.getsource(space_summary._exterior_shells_by_storey)
     code = "\n".join(line for line in source.splitlines()
                      if not line.lstrip().startswith("#"))
     assert "typehaus.resolve.overlay import union_all" in code

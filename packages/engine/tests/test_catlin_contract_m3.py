@@ -863,6 +863,15 @@ def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(ca
     The inner pair moved 4" outward on 2026-08-25 with the line-based stud module, and the
     row got *more* regular for it: the beat is now 9'-4" three times over, even and centred
     at once, where 4/13/23/32 was centred with a 9'-0"/10'-0"/9'-0" beat.
+
+    Later the same day the inner pair went 30x48 -> 27x54 (WT-2754): the east wall is
+    BEARING, so it takes the 27" rung of the RO ladder, and R303.1's area had to be bought
+    back in height. Every claim above survived it unchanged — same stations, same mirror,
+    same 3'-0" sill, same equal widths and equal heads within the pair — because the width
+    came off both jambs symmetrically (``from_node`` is the NEAR jamb, so both authored
+    offsets moved +1 1/2", half of the 3" lost). Only the inner head reads 7'-6" now
+    instead of 7'-0". That is the test earning its keep: it let the narrowing through and
+    caught the one thing the narrowing actually moved.
     """
     house = ft(36).meters
     pairs = (("WIN-S-STUDY3", "WIN-S-BED3", ft(4).meters),
@@ -880,13 +889,22 @@ def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(ca
         assert (south.sill_m + south.height_m
                 == pytest.approx(north.sill_m + north.height_m, abs=1e-6))
 
-    # And the row really is a row: the outer pair reads 6'-0" at the head, the inner 7'-0",
+    # And the row really is a row: the outer pair reads 6'-0" at the head, the inner 7'-6",
     # so the composition steps up toward the middle rather than wandering.
+    #
+    # The inner head was 7'-0" until 2026-08-25 and moved with the 27" bearing cap, not for
+    # a compositional reason: W-S-E2/E3 are BEARING, the bearing rung of the RO ladder is
+    # 27", and BED1/BED2 are single-window rooms where R303.1 binds on AREA — so the 3" of
+    # width had to come back as 6" of height (30x48 -> 27x54) or the rooms fail R303.1:
+    # 27x48 is 9.00 sf against BED2's 9.945 sf requirement, 27x54 is 10.125 sf.
+    # The step-up this pins is therefore still the claim; only its size changed. Pinned
+    # exactly, because the whole point of this test is that a retype cannot move the
+    # picture silently.
     heads = {tag: _opening_plan_y(catlin_model, tag)[1].sill_m
                   + _opening_plan_y(catlin_model, tag)[1].height_m
              for tag in tags}
     assert heads["WIN-S-STUDY3"] == pytest.approx(ft(6).meters, abs=1e-6)
-    assert heads["WIN-S-BED1"] == pytest.approx(ft(7).meters, abs=1e-6)
+    assert heads["WIN-S-BED1"] == pytest.approx(ft(7, 6).meters, abs=1e-6)
 
     assert not _framing_offenders(tags)
 

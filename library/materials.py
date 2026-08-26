@@ -316,8 +316,10 @@ STARTER_MATERIALS: tuple[Material, ...] = (
     # them appears in an `Assembly`, so the Glaser walk and the R-value rollup never see them
     # and their thermal/vapour fields stay unset rather than being filled with numbers no
     # published test measured. `color` and `hatch` are what these entries exist to carry.
+    # `finish` picks the 3D board recipe: strip flooring is 2 1/4" boards with staggered butt
+    # joints, not the 3 1/2" tongue-and-groove paneling the `*-tg` refs infer by default.
     Material(tag="oak", name="3/4\" white-oak strip flooring", hatch="lumber", color="#c69c6d",
-             species="oak",
+             species="oak", finish="strip-floor",
              source="finish covering, not an assembly layer: thermal/vapour fields unset "
                     "(no published rating located, and nothing consumes them here)"),
     Material(tag="lvp", name="Luxury vinyl plank, click-lock", hatch="lumber", color="#a08a72",

@@ -282,10 +282,37 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   `W-A-C1/C2` bearing wall, which stacks unbroken to the footings. That is what makes the
   rafters simple spans and keeps thrust off the 5' knee walls. Opening that center line up
   without a beam under it dumps ~1.5 klf of thrust into knee walls that can take ~0.1.
-- Window rules: 14" RO fits a stud bay (centre on a bay centre); 27" RO max bearing
-  (centre on a stud line, jacks added); 30" RO max non-bearing on a STUD LINE (one stud
-  broken); above that the RO has to move to a bay centre and break two, which is why the
-  42" WT-4248 sat on one until it was retired (2026-08-01). **The ideal position is a
+- Window rules — **the RO ladder**. Three caps, one rule, and the rule is arithmetic on the
+  16" module and a 1.5" stud rather than anything in the code book: *how wide can the RO get
+  before it costs one more stud line?* `preferences.toml [framing]` holds the numbers and
+  `structural.window_framing_module` enforces them.
+
+  | RO | studs broken | why that width | what frames the head |
+  |----|--------------|----------------|----------------------|
+  | **14"** | 0 | one bay is `16 - 1.5 = 14.5"` clear | nothing — no header, no jacks, no kings; the bay's own two studs carry the rough sill and head nailer |
+  | **30"** | 1 | kill one stud and its two neighbours leave `32 - 1.5 = 30.5"` clear | R602.7.4 lets a NONBEARING header be a single flat 2x4 nailed to the stud each side — no jack eats into the clear width |
+  | **27"** | 1 | the same 30.5" less a jack each side: `30.5 - 2x1.5 = 27.5"` | R602.7.5 lands a BEARING header on a jack at each end, and each jack packs against its king |
+
+  **The 3" between the 30" cap and the 27" cap IS the pair of jacks.** That is the entire
+  reason the cap is a function of the wall's bearing status and of nothing else — same
+  module, same stud, same single broken stud line; the only difference is whether the
+  header needs something under its ends. 36" is the next rung up and it breaks **three**
+  studs on a stud line (two on a bay centre), which is why the 42" WT-4248 sat on a bay
+  centre until it was retired (2026-08-01).
+
+  R602.7.5 does also permit "approved framing anchors" instead of a jack, so a header
+  hanger would buy the 3" back and put a 30" RO in a bearing wall on one broken stud. The
+  house declines it — per-opening hardware and a detail the framer has to be told about is
+  exactly the cost the preference exists to avoid — but it is a real option, not a fiction.
+  If an opening ever needs it, raise `max_window_ro_bearing_in` deliberately and say so.
+
+  **NOTE A MODELLING GAP:** the solver's `needs_jamb_pack` keys off *whether the RO breaks a
+  stud*, not off the wall's `structural_role`, so it frames a king/jack/header pack on every
+  stud-breaking window including the nonbearing 30" ones. The 30" cap is therefore correct
+  about what is BUILDABLE and conservative about what the model DRAWS. Widening that gap is
+  not the same as fixing it.
+
+  **The ideal position is a
   property of the RO width, not of the wall** — narrowing a unit can move it, and
   `structural.window_framing_module` (asserted clean by
   `test_catlin_contract_m3.py::test_catlin_window_openings_follow_the_sixteen_inch_framing_module`)
@@ -293,7 +320,11 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   family — WT-1424, WT-2464 (the attic gable's juliet pair, head at 8'-0"; an 18" WT-1864
   family until 2026-08-24), WT-2736, WT-3036 (north gables/hall), WT-3048 (the
   south-glazing size, head at 6'-8") — each family sharing the one height that fits its
-  most constrained wall. Five sizes carry the whole house.
+  most constrained wall. Five WIDTHS carry the whole house, and after the 2026-08-25
+  narrowing the 27" family carries three of the nine heights (36"/48"/54"): the bearing cap
+  is the width every bearing wall has to meet, so when a bearing-wall opening needs area or
+  a head line, HEIGHT is the only dimension left to spend. That is a consequence of the
+  ladder, not a drift away from "one type per width family".
   **Every window in the house is on its ideal station (2026-08-25), and the exception list
   is empty.** The juliet family was the last holdout: it centred on a stud line at 18" wide,
   and widening it to 24" on 2026-08-24 could only go outward — the 14" bearing pier under
@@ -304,15 +335,24 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   retype. `test_catlin_contract_m3.py::test_catlin_window_openings_follow_the_sixteen_inch_framing_module`
   asserts the empty list; keep it empty, and see **ONE GRID PER FACADE** under Facade rules
   before concluding a window cannot reach its station.
-  **Two exceptions, both 2026-08-01**, each a second height on an existing width family
-  because the rule's own remedy — give it its own width family — costs more than the
-  second height does:
+  **Four exceptions**, each an extra height on an existing width family because the rule's
+  own remedy — give it its own width family — costs more than the extra height does. The
+  first two are 2026-08-01 and are about a HEAD LINE; the last two are 2026-08-25 and are
+  the 27" bearing cap being paid for in height (see the RO ladder above):
   - **WT-1448** (the south gable's flankers): the 4:12 rake forbids the remedy outright.
     Any width over 14" breaks a stud and takes a header, and the header is what hits the
     rake (the juliet family at the nearest usable stud line misses by 1.8"). 14" fits in a bay
     and takes no pack, so only the glass has to clear.
   - **WT-3048** (the south glazing): the 30" family's committed height (WT-3036's 36")
     would drop the south head off the 6'-8" door-head line the whole face is built on.
+  - **WT-2748** (`WIN-M-EAST-MID`, 2026-08-25): the east living row's feature window had to
+    come 30" → 27" for the bearing cap, and the 27" family's committed 36" would have
+    dropped its head from 6'-6" to 5'-6". 48" makes the narrowing a pure retype — same
+    2'-6" sill, same 6'-6" head, only the width moves. The cheapest of the four.
+  - **WT-2754** (`WIN-S-BED1`/`BED2`, 2026-08-25): the same 27" cap, but these are
+    single-window BEDROOMS, so R303.1 binds on area and 27x48 is 9.00 sf against BED2's
+    9.945 sf requirement — it would FAIL. 54" is the height that makes 27" legal
+    (10.125 sf), which is why this one is a code necessity and not a composition choice.
 - Facade rules (2026-07-30 pass, gable revised 2026-08-01, E/W revised 2026-08-15).
   Windows line up or they are not there:
   - **ONE GRID PER FACADE (2026-08-25). The residue rule is dead — read this instead.**
@@ -488,12 +528,27 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     stair). They are **not** width families and no facade or framing rule sees them: adding
     a tempered unit is a retype, never a move. All three glazed *door* types are tempered
     outright — R308.4.1 has no location test to fail.
-  - **The east bearing wall now takes a 30" RO** (2026-08-01): `WIN-S-BED1`/`BED2` had 6.75
-    sf of glass against R303.1's 9.95 sf, and 27" cannot reach it at any height that fits
-    under the 9'-0" plate. `preferences.toml`'s `max_window_ro_bearing_in` went 27 → 30 with
-    them; the jack/king/header pack is what pays for it. The margin is 0.05 sf — growing
-    either room's clear face fails R303.1 again, and the answer then is a taller unit, not
-    a wider one.
+  - **~~The east bearing wall now takes a 30" RO~~ — REVERSED 2026-08-25, and the reversal
+    is the more useful half of this entry.** For three weeks `WIN-S-BED1`/`BED2` carried a
+    30" RO in a BEARING wall and `max_window_ro_bearing_in` sat at 30 to allow it. The
+    reason given was: R303.1 wants 9.95 sf of glazing, a 27x36 gives 6.75, and *"27" cannot
+    reach it at any height that fits under the 9'-0" plate."*
+
+    **That last clause was never checked, and it is false.** R303.1 binds on AREA, and area
+    is width × height — so the cap on width is only binding if height has run out, and here
+    it had not. 27x54 is 10.125 sf / 5.063 sf openable, which clears BED1 (119.66 sf, needs
+    9.573/4.786) by +0.55/+0.28 and BED2 (124.32 sf, needs 9.945/4.973 — the binding room)
+    by +0.18/+0.09 — **wider margins than the 30x48 it replaced** (+0.43/+0.21 and
+    +0.055/+0.027). On the shared 3'-0" sill its head lands at 7'-6",
+    leaving 18" to the 9'-0" top of wall; the built framing puts a 2-2x8 header at
+    7'-6"→8'-1¼" under a plate whose underside is 8'-9", so **7¾" of cripple is left over**.
+    There was never a plate conflict to design around.
+
+    Both rooms are `WT-2754`/`WT-2754-T` now, the preference is back to **27**, and the east
+    bearing wall keeps the same rule as every other bearing wall in the house. The general
+    lesson is the one the original note itself half-stated — *"the answer then is a taller
+    unit, not a wider one"* — it simply never tried one. **When a dimensional cap looks like
+    it forces a code failure, check the other dimension before moving the cap.**
 - **The ERV is a Broan B210E75RT on a semi-rigid radial install, and three facts about it
   must stay true** (2026-08-25, `plan/mep_erv.py`).
   - **The manifolds map to CAVITIES, not storeys, and there are exactly three.** Level 1 is

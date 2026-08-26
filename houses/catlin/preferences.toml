@@ -16,13 +16,42 @@ adequate_overhang_ft = 0.0
 [framing]
 module_in = 16
 corner = "4-stud"
+# THE RO LADDER. These three numbers are one rule seen at three rungs, and the rule is
+# arithmetic on the 16" module and a 1.5" stud, not code: how wide can a rough opening get
+# before it costs one more stud line? Every rung assumes the RO is centred where it is
+# cheapest — a bay centre for the first, a stud line for the other two.
+#
+#   14"  NO stud broken. One bay is 16" - 1.5" = 14.5" clear. No header, no jacks, no
+#        kings: the bay's own two studs carry the rough sill and head nailer.
 max_window_ro_unbroken_in = 14
-max_window_ro_nonbearing_in = 42
-# 27 -> 30 on 2026-08-01, by decision: WIN-S-BED1/BED2 needed a 30" RO in the east bearing
-# line to reach R303.1's 8% glazing, and a 30" RO on a stud line is one broken stud with the
-# ordinary jack/king/header pack — a framing detail, not a structural problem. This is a
-# preference, not code; the constraint it encodes is cost and simplicity of framing.
-max_window_ro_bearing_in = 30
+#
+#   30"  ONE stud broken, NO jacks. Kill the stud in the middle and the two that flank it
+#        leave 32" - 1.5" = 30.5" clear. Nothing eats into that on a NONBEARING wall,
+#        because IRC R602.7.4 lets a nonbearing header be a single flat 2x4 nailed to the
+#        stud each side — there is no jack under it to lose width to.
+#        Was 42 until 2026-08-25, which was the two-broken-stud rung (48" - 1.5" - 3" of
+#        jacks) and a leftover from the retired 42" WT-4248. No window in the house was
+#        over 30" when it came down, so tightening it changed no result — it just stopped
+#        the file from permitting a size the house had already decided against.
+max_window_ro_nonbearing_in = 30
+#
+#   27"  ONE stud broken, WITH jacks. A BEARING header lands on a jack at each end
+#        (R602.7.5), and each jack packs against its king, so the same 30.5" of clear bay
+#        loses 2 x 1.5" = 27.5". THE 3" BETWEEN THIS RUNG AND THE ONE ABOVE IS THE PAIR OF
+#        JACKS — that is the whole rule, and it is why the cap is a function of bearing
+#        status and nothing else.
+#        Went 27 -> 30 on 2026-08-01 to let WIN-S-BED1/BED2 reach R303.1's 8% glazing, and
+#        came BACK to 27 on 2026-08-25 when that turned out to be avoidable: R303.1 binds
+#        on area, and area can be bought in height. The two bedrooms are 27x54 (WT-2754)
+#        now and clear R303.1 by wider margins than the 30x48 did. See the long note at
+#        WIN-S-BED1 in plan/storeys/second.py.
+#
+# R602.7.5 does permit "approved framing anchors" in place of a jack, so a header hanger
+# would buy back the 3" and let a 30" RO sit in a bearing wall on one broken stud. That is
+# a real option, not a fiction — it is declined here because it is per-opening hardware and
+# a detail the framer has to be told about, which is exactly the cost this preference exists
+# to avoid. If a future opening needs it, raise this number deliberately and say so.
+max_window_ro_bearing_in = 27
 
 [structural]
 # The dead load a guard may put on ordinary wood framing (structural.masonry_guard_bearing).

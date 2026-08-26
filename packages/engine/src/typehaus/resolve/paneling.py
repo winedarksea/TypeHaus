@@ -67,6 +67,14 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                         el, f"paneling {el.tag} spans wall {ref!r}, which does not "
                             f"{scope} (or is excluded by walls=)"))
             offset = el.offset.meters if el.offset is not None else 0.0
+            thickness_m = _band_thickness_m(plan, el.material_ref)
+            # Which side of its walls the band is on. A room-scoped band faces into its room,
+            # and a point guaranteed to be *inside* the face answers that for an L-shaped room
+            # too, where the centroid can fall outside. A line-scoped band has no room to
+            # face, and which side of a facade line its band lands on is not derivable from
+            # anything the model carries today — so those still resolve area-only, exactly as
+            # every band did before this. Better no geometry than a band on the wrong face.
+            toward = _interior_point(room) if room is not None else None
             for wall, (u0, u1) in walls:
                 intervals = [(u0, u1)]
                 if spans_by_wall:
@@ -108,6 +116,9 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                             area -= du * dz
                     if area <= 0.0:
                         continue
+                    outline = ([] if toward is None else
+                               _band_outline(wall, lo, hi, toward, thickness_m,
+                                             el.replaces_wall_finish))
                     model.panelings.append(ResolvedPaneling(
                         uid=el.uid, tag=el.tag, storey=wall.storey,
                         room=room.tag if room is not None else None,
@@ -115,8 +126,109 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                         area_m2=area, band_z0_m=band_z0, band_z1_m=band_z1,
                         run_m=hi - lo, replaces_wall_finish=el.replaces_wall_finish,
                         layout_line=line.tag if line is not None else None,
+                        outline=outline,
+                        # The record's own band is wall-local, measured up from
+                        # ``base_ref_z_m``; geometry wants it absolute.
+                        z0_m=None if not outline else wall.base_ref_z_m + band_z0,
+                        z1_m=None if not outline else wall.base_ref_z_m + band_z1,
+                        thickness_m=thickness_m,
                     ))
     return findings
+
+
+
+# What a band stands proud of the wall by, where its material states no stock thickness. Half
+# an inch — a tile-and-thinset bed, a panel — and visual only: nothing in the takeoff reads it.
+# A band's *area* is what gets ordered, and that is measured on the face, not through it.
+
+def _interior_point(room) -> tuple[float, float]:
+    """A point guaranteed to lie inside a room's clear face — its side of its walls."""
+    from shapely.geometry import Polygon
+
+    point = Polygon(room.clear_face).representative_point()
+    return (point.x, point.y)
+
+
+_DEFAULT_BAND_THICKNESS_M = 0.0127
+
+
+def _band_thickness_m(plan: PlanModel, material_ref: str) -> float:
+    """How thick to draw a band, from its material's nominal board stock where it has one.
+
+    ``stock_bf_per_sqft`` is board feet per square foot on NOMINAL thickness — 1.0 is 4/4,
+    1.25 is 5/4 — so it doubles as the nominal thickness in inches. Stock under 2" dresses
+    1/4" thinner (4/4 surfaces to 3/4", 5/4 to 1"), which is the figure a board actually
+    stands proud by and the figure ``_SAUNA_LINER`` authors for its 5/4 liner.
+    """
+    material = next((m for m in plan.library.materials if m.tag == material_ref), None)
+    nominal = getattr(material, "stock_bf_per_sqft", None) if material is not None else None
+    if not nominal:
+        return _DEFAULT_BAND_THICKNESS_M
+    return max(0.003, (float(nominal) - 0.25) * 0.0254)
+
+
+
+def _room_side_sign(wall, toward: tuple[float, float]) -> float:
+    """+1 or -1: which way along the wall's plan normal the room lies.
+
+    ``toward`` is a POINT inside the room, not a direction, so the test is against the vector
+    from the wall's axis to it. Taking it as a direction (a bare dot with the point's
+    coordinates) is the same arithmetic and silently right for a room north-east of the
+    origin, which is why it wants saying: it flips for a wall whose room sits toward -x.
+    """
+    from typehaus.resolve.geometry import normal, sub, unit
+
+    n = normal(unit(sub(wall.axis[1], wall.axis[0])))
+    to_room = (toward[0] - wall.axis[0][0], toward[1] - wall.axis[0][1])
+    return 1.0 if (n[0] * to_room[0] + n[1] * to_room[1]) >= 0.0 else -1.0
+
+
+def _room_side_offset(wall, toward: tuple[float, float]) -> float:
+    """How far the wall's face stands off its axis, on the side ``toward`` points to.
+
+    Measured from the wall's own resolved layer polygons rather than from the room's clear
+    face. That is deliberate: ``resolve/rooms.py::_lining_inset`` insets a claimed face by one
+    uniform figure derived from ``Room.wall_lining`` rather than by each bounding wall's own
+    resolved lining, so the clear face does *not* sit on the finish plane of a wall with an
+    unusual liner — the sauna's 3 1/2" liner famously does not move its room polygon at all.
+    Hanging a band off it would put the sauna's tile splash three inches inside the wall.
+
+    The layer polygons have no such problem: they are where the wall's material actually is.
+    """
+    from typehaus.resolve.geometry import normal, sub, unit
+
+    direction = unit(sub(wall.axis[1], wall.axis[0]))
+    n = normal(direction)
+    sign = _room_side_sign(wall, toward)
+    x0, y0 = wall.axis[0]
+    best = 0.0
+    for layer in wall.layers:
+        for (px, py) in layer.polygon:
+            offset = ((px - x0) * n[0] + (py - y0) * n[1]) * sign
+            best = max(best, offset)
+    return best
+
+
+def _band_outline(wall, lo: float, hi: float, toward: tuple[float, float],
+                  thickness_m: float, replaces_finish: bool):
+    """The band's plan rectangle: the ``lo``..``hi`` stretch of the wall's room-side face.
+
+    A band that *replaces* the wall finish occupies the depth that finish had, so it lies
+    between the face and ``thickness_m`` back into the wall. A band added over the finish — a
+    wainscot — stands proud of it by the same amount. Getting this backwards is visible: the
+    tile splash would float off the sauna wall, and the wainscot would be buried in it.
+    """
+    from typehaus.resolve.geometry import add, rect_between, scale, sub, unit
+
+    direction = unit(sub(wall.axis[1], wall.axis[0]))
+    sign = _room_side_sign(wall, toward)
+    face = _room_side_offset(wall, toward)
+    inner, outer = ((face - thickness_m, face) if replaces_finish
+                    else (face, face + thickness_m))
+    p0 = add(wall.axis[0], scale(direction, lo))
+    p1 = add(wall.axis[0], scale(direction, hi))
+    return [(float(x), float(y))
+            for (x, y) in rect_between(p0, p1, inner * sign, outer * sign)]
 
 
 def _line_walls(model: ResolvedModel, line) -> list:

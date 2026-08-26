@@ -17,6 +17,9 @@ import {
 } from "../materials";
 import { buildMembers, categoryColor, isSkinMember } from "../members";
 import {
+  applyPlankWallUv, createPlankMaterial, isWoodPlank, plankStyleFor, plankTileSizeM,
+} from "../plankMaterial";
+import {
   createPlanPrismGeometry, createRakedPlanPrismGeometry, projectPointToScene, type PlanCenter,
 } from "../planGeometry";
 import { makeSurfaceMesh, NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
@@ -91,6 +94,12 @@ export function buildWall(
     const appearance = authoredAppearance(ly.material, materials);
     const masonryStyle = !seam && isMasonry(ly.material)
       ? masonryStyleFor(ly.material, appearance?.finish) : null;
+    // Wood boards get the same treatment for the same reason: the sauna's basswood T&G liner
+    // and the study's walnut wainscot are boards, and a flat fill made a lined room read as
+    // tan drywall. `ly.board_run` is derived by the engine from the furring behind the layer
+    // (resolve/topology.py `_board_run`), so the boards land the way they are fastened.
+    const plankStyle = !seam && !masonryStyle && isWoodPlank(ly.material)
+      ? plankStyleFor(ly.material, appearance?.finish) : null;
     const mat = seam
       ? createStandingSeamMaterial(mode, [
         Math.hypot(w.axis[1][0] - w.axis[0][0], w.axis[1][1] - w.axis[0][1]),
@@ -99,7 +108,10 @@ export function buildWall(
       : masonryStyle
         ? createMasonryMaterial(mode, masonryStyle,
           materialColor(ly.material, palette, materials), appearance?.color)
-        : standardMaterial(new THREE.Color(materialColor(ly.material, palette, materials)), mode);
+        : plankStyle
+          ? createPlankMaterial(mode, plankStyle,
+            materialColor(ly.material, palette, materials))
+          : standardMaterial(new THREE.Color(materialColor(ly.material, palette, materials)), mode);
     mats.push(mat);
     // A banded layer (`Layer.extent`, or one region of a split row via `Layer.slot`) covers
     // only part of the wall's height, and BOTH geometry paths have to honour that. Clamping
@@ -124,6 +136,11 @@ export function buildWall(
       else if (masonryStyle) {
         // Course from the wall's own base, not project zero — see applyMasonryWallUv.
         applyMasonryWallUv(geo, w.axis, center, masonryTileSizeM(masonryStyle), w.z0_m);
+      } else if (plankStyle) {
+        // Same datum argument as the masonry course: boards start at the corner and at the
+        // floor, and only the last one is cut.
+        applyPlankWallUv(geo, w.axis, center, plankTileSizeM(plankStyle), w.z0_m,
+          ly.board_run ?? null);
       }
       const mesh = makeSurfaceMesh(geo, mat);
       mesh.userData.uid = w.uid;

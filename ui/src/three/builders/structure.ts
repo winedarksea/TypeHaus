@@ -6,8 +6,8 @@
 // resolved outline or lay out a member list, and none carries an editing path.
 import * as THREE from "three";
 import type {
-  Brace, Catalog, FootingBedding, Floor, LightRun, Member, Roof, Room, Solid, SolarPanel, Stair,
-  Vec2,
+  Brace, Catalog, FootingBedding, Floor, LightRun, Member, Paneling, Roof, Room, Solid,
+  SolarPanel, Stair, Vec2,
 } from "../../model/types";
 import { layerVisibilityGroupOf, type LayerVisibilityGroup } from "../../model/visibility";
 import {
@@ -19,6 +19,10 @@ import {
   isAluminumDeckBoard, isStandingSeam,
 } from "../materials";
 import { buildMembers, isRoofFramingMember, memberColor } from "../members";
+import {
+  applyPlankPlaneUv, createPlankMaterial, isWoodPlank, planLongAxis, plankStyleFor,
+  plankTileSizeM,
+} from "../plankMaterial";
 import {
   createPlanPrismGeometry, createProjectedSurfaceGeometry, rectBetween, type PlanCenter,
   type ProjectVertex,
@@ -39,7 +43,8 @@ import { registerSelectable, tagLayerGroup } from "./registry";
 // solidCategoryLabel are untouched below the fork.
 export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, catalog: Catalog | undefined,
-  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>,
+  materials?: readonly MaterialAppearance[]) {
   const geo = solid.sweep
     ? createSweepGeometry(solid, center)
     : (solid.outline.length < 3 ? null
@@ -49,9 +54,23 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
   const deckBoards = catalog?.assemblies.find((a) => a.tag === solid.assembly)?.layers
     .some((layer) => isAluminumDeckBoard(layer.material));
   if (deckBoards) applyDeckBoardUv(geo, center);
+  // A boarded ceiling: `resolve/ceilings.py` puts the ceiling stack's FINISH layer material
+  // straight on the solid, so the sauna's T&G arrives here as `material: "sauna-tg"` with no
+  // assembly to walk. Boards run along the room's long axis — a ceiling's furring is
+  // authored "horizontal", which says nothing about which horizontal.
+  const plankStyle = !deckBoards && isWoodPlank(solid.material)
+    ? plankStyleFor(solid.material, authoredAppearance(solid.material, materials)?.finish)
+    : null;
+  if (plankStyle && !solid.sweep) {
+    applyPlankPlaneUv(geo, center, planLongAxis(solid.outline), plankTileSizeM(plankStyle));
+  }
   const firstChildIndex = parent.children.length;
   const mesh = makeSurfaceMesh(geo,
-    deckBoards ? createDeckBoardMaterial(mode) : createSolidMaterial(solid, catalog, mode, palette));
+    deckBoards ? createDeckBoardMaterial(mode)
+      : plankStyle
+        ? createPlankMaterial(mode, plankStyle,
+          materialColor(solid.material, palette, materials))
+        : createSolidMaterial(solid, catalog, mode, palette));
   parent.add(mesh);
   registerSelectable(parent, firstChildIndex, solid.uid, "solid", picks, byUid);
 }
@@ -281,16 +300,89 @@ function addFinishPlane(parent: THREE.Group, room: Room, finish: string,
   if (!geometry) return;
   const firstChildIndex = parent.children.length;
   const surface = floorSurface(finish);
+  // A plank floor is boards, not a sheet. Oak strip and (later) LVP take the board treatment;
+  // carpet, tile and sheet vinyl stay a flat fill, which is what they are. The boards run
+  // along the room's long axis — a floor is laid the long way.
+  const plankStyle = isWoodPlank(finish)
+    ? plankStyleFor(finish, authoredAppearance(finish, materials)?.finish) : null;
+  if (plankStyle) {
+    applyPlankPlaneUv(geometry, center, planLongAxis(outline), plankTileSizeM(plankStyle));
+  }
   const mesh = new THREE.Mesh(geometry,
-    standardMaterial(new THREE.Color(materialColor(finish, palette, materials)), mode, {
-      roughness: mode === "nordic" ? surface.roughness : 1,
-      metalness: mode === "nordic" ? surface.metalness : 0,
-    }));
+    plankStyle
+      ? createPlankMaterial(mode, plankStyle,
+        materialColor(finish, palette, materials), mode === "nordic" ? surface.roughness : 1)
+      : standardMaterial(new THREE.Color(materialColor(finish, palette, materials)), mode, {
+        roughness: mode === "nordic" ? surface.roughness : 1,
+        metalness: mode === "nordic" ? surface.metalness : 0,
+      }));
   // Receives but does not cast: a 20 mm finish laid on the deck has nothing to cast onto.
   mesh.receiveShadow = true;
   parent.add(mesh);
   // A zone belongs to its room: clicking the band selects RM-M-LIVING, not a nameless plane.
   registerSelectable(parent, firstChildIndex, room.uid, "room", picks, byUid);
+}
+
+/**
+ * A `WallPaneling` band — the study's walnut wainscot, the sauna shower's tile splash — as a
+ * thin prism on the room side of its wall.
+ *
+ * It resolved to quantities and nothing else until 2026-08-25: `resolve/paneling.py` computed
+ * the wall, the run and the band height, billed the area and threw the geometry away, so a
+ * wainscot appeared on the order and nowhere in the model. That is also why the sauna liner
+ * needed this: `WP-B-SAUNA-SPLASH` REPLACES the wall finish over two 3' stretches, so without
+ * a band drawn over them the basswood T&G would run straight through a tiled shower wall.
+ *
+ * Selecting one resolves to the paneling element itself, not to the wall it sits on — a click
+ * on the walnut should say `WP-M-STUDY-WAINSCOT`.
+ */
+export function buildPaneling(parent: THREE.Group, band: Paneling, center: PlanCenter,
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
+  materials: readonly MaterialAppearance[] | undefined,
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  // A band with no derivable side resolves area-only (see resolve/paneling.py). Nothing to
+  // draw is the honest outcome, not a degenerate prism at the wall's centreline.
+  if (band.outline.length < 3 || band.z0_m === null || band.z1_m === null) return;
+  const geometry = createPlanPrismGeometry(band.outline, band.z0_m, band.z1_m, [], center);
+  if (!geometry) return;
+  const plankStyle = isWoodPlank(band.material_ref)
+    ? plankStyleFor(band.material_ref, authoredAppearance(band.material_ref, materials)?.finish)
+    : null;
+  if (plankStyle) {
+    // A wainscot's boards stand vertical unless its wall says otherwise. The band is applied
+    // OVER a finished wall rather than fastened to furring, so there is no furring layer for
+    // `board_run` to derive from — and vertical is what a board wainscot is.
+    applyPlankWallUv(geometry, bandAxis(band.outline), center,
+      plankTileSizeM(plankStyle), band.z0_m, "vertical");
+  }
+  const firstChildIndex = parent.children.length;
+  const mesh = makeSurfaceMesh(geometry,
+    plankStyle
+      ? createPlankMaterial(mode, plankStyle,
+        materialColor(band.material_ref, palette, materials))
+      : standardMaterial(
+        new THREE.Color(materialColor(band.material_ref, palette, materials)), mode));
+  parent.add(mesh);
+  registerSelectable(parent, firstChildIndex, band.uid, "paneling", picks, byUid);
+}
+
+/**
+ * The long axis of a band's rectangle — its run along the wall. Taken from the outline rather
+ * than looked up on the wall, so the builder needs only the record it was handed.
+ */
+function bandAxis(outline: readonly Vec2[]): [Vec2, Vec2] {
+  let best: [Vec2, Vec2] = [outline[0], outline[1]];
+  let bestLen = -1;
+  for (let index = 0; index < outline.length; index++) {
+    const a = outline[index];
+    const b = outline[(index + 1) % outline.length];
+    const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    if (len > bestLen) {
+      bestLen = len;
+      best = [a, b];
+    }
+  }
+  return best;
 }
 
 // Sloped quads from footprint/eave_z/ridge_z/ridge_direction — mirrors

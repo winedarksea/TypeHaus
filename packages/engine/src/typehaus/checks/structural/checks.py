@@ -409,8 +409,15 @@ def window_framing_module(ctx: CheckContext) -> list[Finding]:
                 "structural.window_framing_module",
                 f"window {opening.tag} RO {width_in:.0f}\" exceeds the {maximum:.0f}\" "
                 f"{role.value} framing limit ({break_note})", (opening.tag,), Result.FAIL,
-                fix_hint=(f"a {role.value} window this wide needs an engineered header; keep "
-                          f"RO <= {maximum:.0f}\" to stay on the prescriptive module"),
+                fix_hint=(
+                    f"keep RO <= {maximum:.0f}\" so the opening breaks ONE stud line on the "
+                    f"{rules.module_in:.0f}\" module. The bearing cap is just the nonbearing "
+                    f"one ({rules.max_window_ro_nonbearing_in:.0f}\") less a jack each "
+                    f"side, because a BEARING header lands "
+                    f"on a jack at each end (R602.7.5) where a NONBEARING one need not "
+                    f"(R602.7.4 allows a flat 2x4 nailed to the stud each side). If this "
+                    f"width is carrying a glazing-AREA requirement, buy the area back in "
+                    f"HEIGHT rather than raising the cap"),
             ))
             continue
         # The ideal position is the one that costs the fewest studs: a bay centre for an

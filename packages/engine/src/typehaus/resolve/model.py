@@ -64,6 +64,18 @@ class ResolvedLayer:
     # Keeping the recipe beside the answer lets :func:`typehaus.resolve.layer_bands.reband`
     # re-resolve it against the wall's new elevations without a plan lookup.
     band_spec: tuple[tuple[str, float] | None, tuple[str, float] | None] | None = None
+    # Which way the BOARDS of a board finish run — ``"horizontal"`` | ``"vertical"``, or
+    # ``None`` where the question does not arise (any layer that is not a board finish, and a
+    # board finish with no furring behind it to derive from).
+    #
+    # Boards land perpendicular to the furring they are fastened to, because that is where
+    # the fastener has to reach: the sauna and plant-room liners both strap horizontally with
+    # 1x4 (``FramingSpec(direction="horizontal")``) precisely so a vertical T&G board's
+    # concealed flange lands on strapping rather than between studs. So this is derived, never
+    # authored — the fact was already in the assembly, it just had nowhere to go. Carried on
+    # the resolved layer because ``FramingSpec`` itself does not survive into ``model.json``,
+    # and the viewer is where a board direction is finally visible.
+    board_run: str | None = None
 
     def band(self, wall: ResolvedWall) -> tuple[float, float]:
         """This layer's absolute (z0, z1), falling back to the wall's where unbanded."""
@@ -612,6 +624,23 @@ class ResolvedPaneling:
     replaces_wall_finish: bool
     # The layout line the band belongs to, or ``None`` for the room-scoped path.
     layout_line: str | None = None
+    # The band as drawable geometry: a plan rectangle on the wall's room-side face, plus the
+    # absolute elevations it spans. Until 2026-08-25 this record carried area and nothing
+    # else, so a wainscot billed but never appeared — in the viewer, the .glb or IFC.
+    #
+    # ``outline`` is empty and the elevations ``None`` only where the band could not be placed
+    # (a wall whose axis is degenerate). Consumers must treat that as "no geometry", never as
+    # a zero-area band: the area above is still right and still bills.
+    #
+    # NOTE ``area_m2`` is net of the openings that punch the band; ``outline`` is NOT. A
+    # rectangle is what a band is, and the punches are already subtracted from the number
+    # that gets ordered — cutting them out of the polygon too would need the opening voids
+    # threaded through every downstream consumer for a hole you cannot see from inside the
+    # room anyway (a door reveal covers it).
+    outline: Ring = ()
+    z0_m: float | None = None
+    z1_m: float | None = None
+    thickness_m: float = 0.0
 
 
 @dataclass(frozen=True)

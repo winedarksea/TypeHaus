@@ -80,7 +80,8 @@ def _layer_json(layer) -> dict[str, Any]:
             "thickness_m": layer.thickness_m, "polygon": [list(point) for point in layer.polygon],
             "control": sorted(layer.control),
             "is_cavity": layer.is_cavity, "cavity_host": layer.cavity_host,
-            "z0_m": layer.z0_m, "z1_m": layer.z1_m}
+            "z0_m": layer.z0_m, "z1_m": layer.z1_m,
+            "board_run": layer.board_run}
 
 
 def _findings_json(findings: list[Finding] | None) -> list[dict[str, Any]]:

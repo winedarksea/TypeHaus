@@ -36,6 +36,39 @@ _L_CORNER_EXTENSION_MULTIPLIER = 4.0
 _MIN_POLYGON_AREA_M2 = 1e-10
 
 
+_PERPENDICULAR = {"horizontal": "vertical", "vertical": "horizontal"}
+
+
+def _board_run(layers: list, index: int) -> str | None:
+    """Which way a board finish's boards run, from the furring immediately behind it.
+
+    A board is fastened to what is behind it, so it lands *perpendicular* to its furring —
+    that is the whole reason a liner straps horizontally with 1x4 in the first place, so a
+    vertical T&G board's concealed flange has something to bite between the studs
+    (``houses/catlin/plan/assemblies.py`` says so at the plant-room liner). So the direction
+    is derived here rather than authored anywhere: the fact was already in the assembly.
+
+    "Immediately behind" is literal — the next layer outward, not the next furring layer
+    anywhere outward. A finish separated from the strapping by an insulation band is not
+    fastened to that strapping, and guessing that it is would put boards the wrong way round
+    on the first assembly that interleaves them.
+
+    ``None`` for anything that is not a FINISH layer, and for a finish with no furring behind
+    it: a direction nobody can derive must not be invented, because the viewer's fallback for
+    ``None`` (vertical) is at least an honest default rather than a wrong answer dressed up
+    as a derived one.
+    """
+    layer = layers[index]
+    if layer.function is not LayerFunction.FINISH:
+        return None
+    behind = layers[index + 1] if index + 1 < len(layers) else None
+    if behind is None or behind.function is not LayerFunction.FURRING:
+        return None
+    framing = getattr(behind, "framing", None)
+    direction = getattr(framing, "direction", None) if framing is not None else None
+    return _PERPENDICULAR.get(direction or "")
+
+
 def _cavity_host(layers: list, index: int) -> int | None:
     """Index of the STRUCTURE layer a legacy sibling batt fills, or None.
 
@@ -242,6 +275,7 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                 z1_m=band_z1,
                 slot=getattr(layer, "slot", None),
                 band_spec=spec,
+                board_run=_board_run(stack, index),
             )
         )
         fill = getattr(layer, "cavity", None)

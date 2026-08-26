@@ -422,22 +422,46 @@ OPENINGS = [
     # column; WIN-A-E-N at 32'-4" is the one alignment given up (attic.py).
     Window(uid="CSX314AAAA", tag="WIN-S-STUDY3", host="W-S-E1", type_ref="WT-2736-T",
            position=from_node("N-S-SE", ft(2, 10.5)), sill_height=ft(3)),     # y 4'-0"
-    # BED1/BED2 carry the 30" unit, not the east wall's 27" bearing cap (2026-08-01, by
-    # decision): both rooms are 124.3 sf with one window, so R303.1 wants 9.95 sf glazed /
-    # 4.97 sf openable and a 27x36 falls a third short. `preferences.toml [framing]
-    # max_window_ro_bearing_in` moved 27 -> 30 to allow it. WT-3048 clears both thresholds
-    # by only 0.05/0.03 sf — arithmetic, not comfort; growing either room's clear face fails
-    # R303.1 again, and the fix then is a taller unit, not wider.
+    # BED1/BED2 ARE BACK ON THE 27" BEARING CAP (2026-08-25), AND THE 2026-08-01 NOTE THAT
+    # PUT THEM ON 30" WAS WRONG ABOUT WHY IT HAD TO. That note read: "a 27x36 falls a third
+    # short [of R303.1] ... 27" cannot reach it at any height that fits under the 9'-0"
+    # plate", and moved `preferences.toml [framing] max_window_ro_bearing_in` 27 -> 30 to
+    # allow a 30x48. The first half is true and the second half is not. R303.1 binds on
+    # AREA, and area is width x height:
+    #   * BED1 is 119.66 sf -> 9.573 sf glazed / 4.786 openable; BED2 is the binding one at
+    #     124.32 sf -> 9.945 / 4.973. (The 2026-08-01 note called both 124.3; BED1 lost 4"
+    #     of depth in the 2026-08-15 node move, which that note predates.)
+    #   * 27x36 = 6.75 sf. Short by 2.8/3.2 sf, as the note said.
+    #   * 27x48 = 9.00 sf. Still short of BOTH (-0.57 BED1, -0.95 BED2).
+    #   * 27x54 = 10.125 sf / 5.063 openable. CLEARS BOTH — BED1 by +0.55/+0.28 sf and
+    #     BED2 by +0.18/+0.09, wider margins than the 30x48 this replaces (+0.43/+0.21 and
+    #     +0.055/+0.027). Openable is half the RO in this engine, and it never binds first.
+    # 54" fits under the plate with room to spare: on the shared 3'-0" sill the head lands
+    # at 7'-6", leaving 18" to the 9'-0" top of wall — a 2-2x8 header is 7 1/4" and the
+    # double top plate 3", so 7 3/4" of cripple remains. The 2026-08-01 note simply never
+    # tried a height above 48".
     #
-    # Sill stays on the shared 3'-0" east-face line; 48" height puts these heads at 7'-0"
-    # where WIN-S-STUDY3/BED3 stay at 6'-0". BED1 lost 4" of depth in the 2026-08-15 node
-    # move (it had the margin to spare); BED3 gained 4" (it has a second window, 14.2 sf).
-    # BED1 carries WT-3048-T because at y=13'-0" the glass falls inside 60" of ST-S2A,
-    # R308.4.5's stair band.
-    Window(uid="CSX301AAAA", tag="WIN-S-BED1", host="W-S-E2", type_ref="WT-3048-T",
-           position=from_node("N-S-E1", ft(3, 1)), sill_height=ft(3)),      # y 13'-0"
-    Window(uid="CSX302AAAA", tag="WIN-S-BED2", host="W-S-E3", type_ref="WT-3048",
-           position=from_node("N-S-E2", ft(3, 9)), sill_height=ft(3)),      # y 23'-0"
+    # So the east bearing wall keeps the one framing rule the whole house is built on — one
+    # broken stud, jacks on a bearing header (R602.7.5) — and R303.1 is paid in height.
+    # Sill stays on the shared 3'-0" east-face line, which is the datum this face actually
+    # holds; the head moves 7'-0" -> 7'-6", and the face already carried two head lines
+    # (WIN-S-STUDY3/BED3 sit at 6'-0"), so it is not giving one up.
+    #
+    # ``from_node`` is the NEAR JAMB, so both offsets moved +1 1/2" — half the 3" of lost
+    # width — which holds the CENTRES on y=13'-4" and y=22'-8" and on their stud lines.
+    # (Those are the real stations: the inner pair moved 4" outward earlier on 2026-08-25
+    # with the line-based stud module, and the trailing comments on these two lines said
+    # 13'-0"/23'-0" until this edit. The row is a mirror — 13'-4" + 22'-8" = 36'-0" — and
+    # `test_catlin_contract_m3.py::test_the_east_second_storey_window_row_mirrors_about_
+    # the_house_centreline` pins it.) The one thing the narrowing moved is the head, from
+    # 7'-0" to 7'-6"; the outer pair stays at 6'-0", so the row still steps up to the middle.
+    # BED1 lost 4" of depth in the 2026-08-15 node move (it had the margin to spare); BED3
+    # gained 4" (it has a second window, 14.2 sf). BED1 carries the -T twin because at
+    # y=13'-4" the glass falls inside 60" of ST-S2A, R308.4.5's stair band.
+    Window(uid="CSX301AAAA", tag="WIN-S-BED1", host="W-S-E2", type_ref="WT-2754-T",
+           position=from_node("N-S-E1", ft(3, 2.5)), sill_height=ft(3)),    # y 13'-4"
+    Window(uid="CSX302AAAA", tag="WIN-S-BED2", host="W-S-E3", type_ref="WT-2754",
+           position=from_node("N-S-E2", ft(3, 10.5)), sill_height=ft(3)),   # y 22'-8"
     Window(uid="CSX303AAAA", tag="WIN-S-BED3", host="W-S-E4", type_ref="WT-2736",
            position=from_node("N-S-E3", ft(4, 2.5)), sill_height=ft(3)),    # y 32'-0"
     # West suite (bearing wall). SUITE1 moved 13'-0" -> 10'-4" for the third exact
