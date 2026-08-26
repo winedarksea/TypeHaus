@@ -204,7 +204,14 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   5/8" gypsum end to end — IRC R316.4 over the EPS, `ceiling_below` on the joist fields —
   though the two gypsum faces step **2 1/16"** at the boundary: 1/2" of it is the form's steel
   rib, the other 1 9/16" is the deck being deeper than the wood bay, which is what one flat
-  seat costs. **The floor finish follows the deck**: `SL-M-DECK.floor_finish` is `polished-concrete` (the cap's top
+  seat costs. **And the step is modelled (2026-08-25).** `RM-B-GYM` is the only room the
+  boundary crosses, and it resolves TWO ceilings rather than one — 234 SF at -11 7/8" under
+  `FS-M-EAST`, 90 SF at -13 7/16" under `SL-M-DECK` — because a room's ceiling is derived per
+  *deck region* (`resolve/ceilings.py`, `ceiling_over.ceiling_regions`), not per room. The
+  model states the 1 9/16" it can derive; the rib's 1/2" belongs to the EPS form and EPS is
+  never modelled here. A room over two decks of the same depth (`RM-M-LIVING` across the
+  second floor's truss/I-joist split) stays ONE ceiling — a deck seam is not a step.
+  **The floor finish follows the deck**: `SL-M-DECK.floor_finish` is `polished-concrete` (the cap's top
   *is* the finished floor), `RM-M-LIVING.floor_finish="lvp"` is the field finish over the
   wood bays only, and the split is derived — moving `_BAND_Y` moves the finish with it.
   Since 2026-08-25 that room carries a second, **authored** zone as well: the hall band
@@ -237,7 +244,13 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   (`checks/structural/checks.py::_IJOIST_SPAN_FT`) is explicitly advisory at this 18'-0"
   span — the fabricator's own table governs.
 - Attic is a habitable hot-roofed cathedral space: 5' knee walls E/W, gables N/S,
-  ridge N-S, 4:12, **zero overhang**.
+  ridge N-S, 4:12, **zero overhang**. Its deck `FS-ATTIC` is also **the second storey's
+  ceiling**, and it authors that board (`ceiling_below`, 5/8" gypsum, restated inline
+  because `plan/storeys/attic.py` is `# haus: editable` and cannot import `params/`). It
+  was the last deck in the house without one: until 2026-08-25 every second-storey room
+  resolved open to the I-joists, absent from the 3D model and from the order. The one
+  exception is `RM-S-PLANT`, whose `Room.ceiling_lining` humidity liner replaces it over
+  that room's own face.
 - **The roof is a screwed nailbase, and three of its layers exist only because the
   condensation gate says so** (2026-08-20; it was a vented batten roof before). Stack above
   the rafters: 1/2" taped ZIP -> self-adhered deck vapour barrier -> 3" + 3" polyiso

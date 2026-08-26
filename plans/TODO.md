@@ -345,7 +345,7 @@ the future.
   TR-CATLIN-FRAMED-OPENING)
 - Does balcony access have to pass through the plant room? `D-S-DECK-W` is a 60" exterior
   French door in a 70 %-RH room and its threshold will condense (raised 2026-08-18)
-- Floor drain in RM-S-PLANT — confirm, with the trap primer it implies (raised 2026-08-18)
+- Floor drain in RM-S-PLANT — Answer: No floor drain necessary. Spilled water is mopped up as needed.
 - Make sure all desired access panels are in
 - Small windows on corners?
 - Improve the symmetry of the windows on the east and west side

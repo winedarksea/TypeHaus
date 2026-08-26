@@ -458,16 +458,18 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     underside *is* the main storey's ceiling), and it has to bill over exactly the surface
     its own subfloor covers: the same gross rectangle, less any stair opening.
 
-    Four decks author one since 2026-08-21 (FS-M-WEST/FS-M-EAST when the basement got a
-    framed ceiling; FS-S-WEST/FS-S-EAST when the second floor split truss/I-joist), and
-    they group into one ``ceiling`` row because they are the same board at the same
-    thickness. So the deck-by-deck arithmetic is checked against each deck's *share* of
-    that row, not against the whole of it.
+    **Every deck in the house that has occupied space under it authors one**, and they
+    group into a single ``ceiling`` row because they are the same board at the same
+    thickness — so the deck-by-deck arithmetic is checked against each deck's *share* of
+    that row, not against the whole of it. `FS-S-WEST`/`FS-S-EAST` are the main storey's
+    ceiling, `FS-M-WEST`/`MECH`/`STAIR`/`EAST` plus the cast `SL-M-DECK` band are the
+    basement's, and `FS-ATTIC` is the second storey's — the last one to be authored, and
+    while it was not, every bedroom below resolved open to the I-joists.
 
-    ``SL-M-DECK`` (the media room's cast band) authors the same board and adds to this
-    row too; ``RM-B-SAUNA``'s own ``ceiling_lining`` override subtracts its clear-face
-    area back out of it (``FS-M-WEST``'s share) and bills under its own T&G materials
-    instead — the room-override rows checked separately below.
+    Two rooms carve themselves back out of the blanket: ``RM-B-SAUNA``'s ``ceiling_lining``
+    override subtracts its clear face from ``FS-M-WEST``'s share and ``RM-S-PLANT``'s from
+    ``FS-ATTIC``'s, each billing under its own liner materials instead — the room-override
+    rows checked separately below.
     """
     from typehaus.resolve.geometry import polygon_area
     from typehaus.takeoff.framing import sheet_goods_takeoff
@@ -502,11 +504,15 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     others = (_gross_sqft("FS-M-WEST") + _gross_sqft("FS-M-MECH")
               + _gross_sqft("FS-M-STAIR") - _opening_sqft("FO-M-STAIR")
               + _gross_sqft("FS-M-EAST"))
-    # SL-M-DECK — the concrete band over the media room — bills the same board, and the
-    # sauna's own T&G override carves its clear face back out of FS-M-WEST's contribution.
+    # SL-M-DECK — the concrete band over the media room — bills the same board, and the two
+    # room-level liner overrides carve their clear faces back out of the decks they hang
+    # under (the sauna out of FS-M-WEST, the plant room out of FS-ATTIC).
     sl_m_deck_net = 414.0  # 18' x 23', no floor openings (params/main_deck.py)
+    attic_net = _gross_sqft("FS-ATTIC") - _opening_sqft("FO-A-STAIR")
     sauna_net = _room_sqft("RM-B-SAUNA")
-    total = west_second_net + east_second_net + others + sl_m_deck_net - sauna_net
+    plant_net = _room_sqft("RM-S-PLANT")
+    total = (west_second_net + east_second_net + others + sl_m_deck_net + attic_net
+             - sauna_net - plant_net)
     assert float(gwb["net_area_sqft"]) == pytest.approx(total, abs=0.5)
 
     # Several decks of several: the house's subfloor area is larger than this one ceiling.

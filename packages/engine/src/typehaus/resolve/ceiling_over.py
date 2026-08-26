@@ -20,9 +20,10 @@ post-resolve (where the checks run).
 from __future__ import annotations
 
 from collections.abc import Sequence
+from dataclasses import dataclass
 from typing import Any
 
-from shapely.geometry import Polygon
+from shapely.geometry import MultiPolygon, Polygon
 
 from typehaus.model.assembly import Layer
 from typehaus.model.enums import LayerFunction
@@ -32,6 +33,7 @@ from typehaus.model.refs import FollowRoof
 from typehaus.model.spatial import Roof
 from typehaus.resolve.construction_geometry import _EPS
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.overlay import difference, intersection, union_all
 
 
 def decks_covering(face: Polygon,
@@ -79,8 +81,10 @@ def ceiling_decks_over(plan: PlanModel, room_storey_tag: str,
     More than one pair comes back where the room straddles a split deck (the second floor's
     truss/I-joist halves) or sits under two different structures — a concrete deck band and
     a joisted deck, which is exactly catlin's basement. Every one of them is a real ceiling
-    over part of the room, which is why the caller takes the MINIMUM underside rather than
-    picking one.
+    over PART of the room, and the two kinds of caller take that differently: a clear-height
+    check wants the MINIMUM underside (the worst head in the room), while anything drawing
+    or billing the ceiling itself wants the pieces apportioned — :func:`ceiling_regions`.
+    Neither may pick one and call it the room's.
     """
     room_storey = next((storey for storey in plan.storeys
                         if storey.tag == room_storey_tag), None)
@@ -169,6 +173,81 @@ def room_roof_over(plan: PlanModel, storey_tag: str, room: Any) -> Roof | None:
                      if isinstance(element, Roof) and element.tag == ceiling.roof_ref), None)
     return next((element for element in plan.storey_elements(storey_tag)
                  if isinstance(element, Roof)), None)
+
+
+#: Below this, an overlap between a room face and a deck outline is a noding sliver rather
+#: than a piece of ceiling. 1e-3 m2 is 1.6 sq in — smaller than any real ceiling region and
+#: several orders above the micron grid :mod:`typehaus.resolve.overlay` snaps to.
+_MIN_REGION_M2 = 1e-3
+
+
+@dataclass(frozen=True)
+class CeilingRegion:
+    """One piece of a room's ceiling — the part of it under a single deck.
+
+    A room under one deck has exactly one region, carrying the room's whole clear face.
+    A room that straddles two decks has one per deck, because the two hang at *different
+    elevations* and are two planes, not one: catlin's `RM-B-GYM` sits 234 SF under
+    `FS-M-EAST`'s joist soffit at -11 7/8" and 90 SF under `SL-M-DECK`'s EPS soffit at
+    -13 7/16", the 1 9/16" step one flat bearing seat costs (`params/main_deck.py`).
+    Averaging them, or taking the lower as the room's one ceiling, draws 234 SF of gypsum
+    an inch and a half below the joists it is screwed to.
+    """
+
+    storey: Any
+    deck: Any
+    face: Polygon
+    structure_z_m: float
+
+
+def polygon_parts(geometry: Any) -> list[Polygon]:
+    """``geometry`` as a list of real polygons — an overlay result may be neither."""
+    if isinstance(geometry, Polygon):
+        return [geometry] if geometry.area > _MIN_REGION_M2 else []
+    if isinstance(geometry, MultiPolygon):
+        return [part for part in geometry.geoms if part.area > _MIN_REGION_M2]
+    return []
+
+
+def ceiling_regions(plan: PlanModel, room_storey_tag: str,
+                    face: Polygon) -> list[CeilingRegion]:
+    """``face``, cut into one region per deck overhead, each with its structure elevation.
+
+    The single-deck case returns the WHOLE face rather than its intersection with the
+    deck's outline: a deck is authored to its own bearing lines and a room's clear face is
+    inset from its wall axes, so the two agree to within a fraction of an inch that a clip
+    would turn into a missing strip of ceiling. Only where two decks compete for one room
+    does the outline become the thing that apportions them.
+
+    A deck that authors no outline (catlin's ``FS-ATTIC``) takes whatever is left of the
+    face after the outlined decks have taken their share — it is the storey's blanket deck,
+    so "everything the others do not cover" is precisely what it covers.
+    """
+    usable = [(storey, deck, z)
+              for storey, deck in ceiling_decks_over(plan, room_storey_tag, face)
+              if (z := deck_structure_underside_m(storey, deck)) is not None]
+    if not usable:
+        return []
+    if len(usable) == 1:
+        storey, deck, z = usable[0]
+        return [CeilingRegion(storey, deck, face, z)]
+    regions: list[CeilingRegion] = []
+    taken: list[Polygon] = []
+    for storey, deck, z in usable:
+        if not getattr(deck, "outline", ()):
+            continue
+        outline = Polygon([point.xy_m for point in deck.outline])
+        for part in polygon_parts(intersection(face, outline)):
+            regions.append(CeilingRegion(storey, deck, part, z))
+            taken.append(part)
+    for storey, deck, z in usable:
+        if getattr(deck, "outline", ()):
+            continue
+        rest = difference(face, union_all(taken)) if taken else face
+        for part in polygon_parts(rest):
+            regions.append(CeilingRegion(storey, deck, part, z))
+            taken.append(part)
+    return regions
 
 
 def finish_layer(layers: tuple[Layer, ...]) -> Layer | None:

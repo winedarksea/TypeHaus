@@ -44,19 +44,17 @@ def build_space_summary(model: ResolvedModel) -> dict[str, object]:
                         "storage_ratio": _ratio(total)}}
 
 
-def gross_area_sf(model: ResolvedModel) -> dict[str, object]:
-    """Gross floor area per storey — the **exterior** footprint, walls included.
-
-    The three areas this module reports are three different questions and an estimate needs
-    all of them: ``usable_sf`` is what you can stand in, ``conditioned_sf`` is what the
-    energy code grades, and gross is what a builder means by "$/sf". None of them was gross
-    before this, so a $/sf figure had no honest denominator at all.
+def _exterior_shells_by_storey(model: ResolvedModel) -> dict[str, list]:
+    """Per-storey exterior (cladding-to-cladding) footprint shells, room-enclosures only.
 
     Derived from the wall *bodies*, not from the rooms: rooms stop at the finish face, so a
     room-sum understates the building by its whole envelope thickness — about 6% on a 36x36
     house with 12" foundation walls. Each wall layer already carries its own plan polygon;
     their union per storey is the building's plan mass, and the exterior ring of that union
     is the footprint. Interior courtyards are not filled — a ring's holes stay holes.
+
+    Shared by :func:`gross_area_sf` (area) and :func:`exterior_footprint_dimensions_m`
+    (bounding width/depth) — both need the same room-enclosed shells, not raw wall unions.
     """
     from shapely.geometry import Polygon
 
@@ -72,7 +70,7 @@ def gross_area_sf(model: ResolvedModel) -> dict[str, object]:
     for room in model.rooms:
         if room.clear_face and len(room.clear_face) >= 3:
             rooms_by_storey.setdefault(room.storey, []).append(Polygon(room.clear_face))
-    out: dict[str, float] = {}
+    shells_by_storey: dict[str, list] = {}
     for storey, bodies in per_storey.items():
         # ``overlay.union_all`` rather than ``shapely.ops.unary_union``: on GEOS 3.12 (what
         # the published Pyodide app runs) the floating-point noder throws a
@@ -81,7 +79,7 @@ def gross_area_sf(model: ResolvedModel) -> dict[str, object]:
         merged = union_all([body.buffer(0) for body in bodies])
         polys = list(merged.geoms) if merged.geom_type == "MultiPolygon" else [merged]
         rooms = rooms_by_storey.get(storey, [])
-        area = 0.0
+        kept = []
         for poly in polys:
             if poly.is_empty:
                 continue
@@ -93,9 +91,42 @@ def gross_area_sf(model: ResolvedModel) -> dict[str, object]:
             # unconditioned one, and a builder does price garage square footage) — so this
             # tracks the plan rather than maintaining a list of structures to exclude.
             if any(shell.contains(room.representative_point()) for room in rooms):
-                area += shell.area
-        out[storey] = round(area * 10.7639, 1)
+                kept.append(shell)
+        shells_by_storey[storey] = kept
+    return shells_by_storey
+
+
+def gross_area_sf(model: ResolvedModel) -> dict[str, object]:
+    """Gross floor area per storey — the **exterior** footprint, walls included.
+
+    The three areas this module reports are three different questions and an estimate needs
+    all of them: ``usable_sf`` is what you can stand in, ``conditioned_sf`` is what the
+    energy code grades, and gross is what a builder means by "$/sf". None of them was gross
+    before this, so a $/sf figure had no honest denominator at all.
+    """
+    out = {storey: round(sum(shell.area for shell in shells) * 10.7639, 1)
+           for storey, shells in _exterior_shells_by_storey(model).items()}
     return {"storeys": out, "overall": round(sum(out.values()), 1)}
+
+
+def exterior_footprint_dimensions_m(model: ResolvedModel) -> list[dict[str, object]]:
+    """Per-storey exterior width/depth (cladding-to-cladding), in meters.
+
+    The bounding box of the same room-enclosed shells :func:`gross_area_sf` sums the area
+    of — so the sunken garden's retaining walls and the breezeway posts are excluded here
+    the same way they are excluded there, without a second list of structures to skip.
+    """
+    rows = []
+    for storey, shells in sorted(_exterior_shells_by_storey(model).items()):
+        if not shells:
+            continue
+        minx = min(shell.bounds[0] for shell in shells)
+        miny = min(shell.bounds[1] for shell in shells)
+        maxx = max(shell.bounds[2] for shell in shells)
+        maxy = max(shell.bounds[3] for shell in shells)
+        rows.append({"storey": storey, "width_m": round(maxx - minx, 4),
+                     "depth_m": round(maxy - miny, 4)})
+    return rows
 
 
 def _empty_row() -> dict[str, float]:

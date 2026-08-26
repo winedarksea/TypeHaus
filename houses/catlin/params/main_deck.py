@@ -58,6 +58,15 @@ wood side. With the deck 1 9/16" deeper than the wood bay's soffit and the rib's
 of that, the two gypsum faces sit **2 1/16"** apart at the boundary. That is a real step in
 a real ceiling, and ``notes/mixed_deck_movement_joint.md`` carries how it is trimmed.
 
+**And the model draws it.** ``RM-B-GYM`` is the only room the boundary runs through, so it
+resolves TWO ceilings rather than one — 234 SF hung off ``FS-M-EAST``'s joist soffit at
+-11 7/8", 90 SF off this deck's at -13 7/16" (``resolve/ceilings.py``, via
+``ceiling_over.ceiling_regions``). The model states the **1 9/16"** it can derive, not the
+2 1/16" that gets built: the rib is part of the EPS form, and EPS is never modelled here.
+A room straddling two decks of the SAME depth — ``RM-M-LIVING`` over the second floor's
+truss/I-joist split, ``RM-B-FURNACE`` over two of the west bays — is one flat ceiling and
+must stay one; a deck seam is not a step.
+
 The basement floor rose 2 9/16" with the seat (the house did not move — ``SITE_GRADE`` is
 unchanged), so the basement slab and storey are at -9'-1 7/16" and the walls are exactly
 8'-0" of pour: 8'-0 15/16" clear under the joists, 7'-10 7/8" under the concrete band, both

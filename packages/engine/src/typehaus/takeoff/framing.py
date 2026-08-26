@@ -12,7 +12,7 @@ from typehaus.model.enums import LayerFunction
 from typehaus.model.floors import FloorOpening, FloorSystem, Slab
 from typehaus.model.spatial import Room
 from typehaus.resolve.assembly_material import assembly_structure_material
-from typehaus.resolve.ceiling_over import ceiling_decks_over
+from typehaus.resolve.ceiling_over import ceiling_regions
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.model import ResolvedModel
@@ -328,9 +328,13 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         if not isinstance(plan_room, Room) or not plan_room.ceiling_lining:
             continue
         face = Polygon(room.clear_face)
-        for _deck_storey, deck in ceiling_decks_over(model.plan, room.storey, face):
-            for layer in deck.ceiling_below:
-                areas[("ceiling", layer.material_ref, layer.thickness.meters)] -= room.area_m2
+        # Per REGION, not per deck: a room straddling two decks takes only its own share
+        # out of each one's blanket billing, or the second subtraction credits back area
+        # that deck never billed (catlin's RM-B-GYM is 234 SF of FS-M-EAST and 90 of
+        # SL-M-DECK, not 324 of each).
+        for region in ceiling_regions(model.plan, room.storey, face):
+            for layer in region.deck.ceiling_below:
+                areas[("ceiling", layer.material_ref, layer.thickness.meters)] -= region.face.area
         for layer in plan_room.ceiling_lining:
             areas[("ceiling", layer.material_ref, layer.thickness.meters)] += room.area_m2
 

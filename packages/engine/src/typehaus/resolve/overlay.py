@@ -42,3 +42,8 @@ def union_all(geometries: Any) -> Any:
 def difference(geometry: Any, other: Any) -> Any:
     """``a.difference(b)`` on the same fixed-precision grid as :func:`union_all`."""
     return shapely.difference(geometry, other, grid_size=GRID_SIZE_M)
+
+
+def intersection(geometry: Any, other: Any) -> Any:
+    """``a.intersection(b)`` on the same fixed-precision grid as :func:`union_all`."""
+    return shapely.intersection(geometry, other, grid_size=GRID_SIZE_M)

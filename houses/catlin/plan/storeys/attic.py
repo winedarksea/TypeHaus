@@ -12,6 +12,8 @@ from typehaus import (
     FloorSystem,
     FollowRoof,
     JoistSpec,
+    Layer,
+    LayerFunction,
     Node,
     Occupancy,
     Pitch,
@@ -309,6 +311,17 @@ FLOOR = [
                                  bearing_refs=("W-S-W3", "W-S-C1", "W-S-E2",
                                                "BM-S-HALL")),
                 subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=inch(0.75)),
+                # The SECOND storey's ceiling, and the last deck in the house to get one:
+                # the same 5/8" board FS-M-* / SL-M-DECK hang over the basement and
+                # FS-S-WEST/EAST over the main floor. Without it every bedroom, the study
+                # and the hall below resolved open to the I-joists — a whole storey of
+                # ceiling absent from the model and from the order. Restated inline rather
+                # than imported from params/: this file is `# haus: editable` and the
+                # dialect forbids the import (same reason RM-S-PLANT restates its liner).
+                ceiling_below=(
+                    Layer(name="gwb-ceil", material_ref="gwb", thickness=inch(0.625),
+                          function=LayerFunction.FINISH),
+                ),
                 openings=("FO-A-STAIR",)),
 ]
 
