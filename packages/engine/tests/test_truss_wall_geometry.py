@@ -15,6 +15,19 @@ paid for and a *build* bug a framer would have found on site:
 
 None of the three is visible in a take-off total or a rendered elevation. They are visible
 here.
+
+**This module runs on a SYNTHETIC fixture now (2026-08-26), and that is the whole of what
+changed.** catlin is on the catlin truss — flat horizontal girts, ``truss_girts.py``,
+``test_truss_girt_geometry.py`` — so there is no longer a Swinburne wall in the house to
+measure. The frame is not gone and is deliberately not gone: it is one assembly swap away
+(``CATLIN_EXT_2X6_SWINBURNE``), and a revert path nothing exercises is a revert path that
+does not work. ``conftest.swinburne_model`` is a two-wall L built on that very tuple, so
+every assertion below still tests the real retired assembly rather than a copy of it.
+
+The catlin-sized count floors came down with the fixture — 700 measured laps became a
+handful, 300 outriggers became a few dozen — and each of them is annotated where it sits.
+They are vacuity guards, never quantities; the *shape* claims (on the module, lapping the
+whole stud, packed, spanning the RO) are unchanged and are what this module is for.
 """
 
 from __future__ import annotations
@@ -79,13 +92,13 @@ def _opening_spans(model, wall):
             for o in model.openings if o.host_wall == wall.tag]
 
 
-def test_the_house_has_truss_walls_at_all(catlin_model):
+def test_the_house_has_truss_walls_at_all(swinburne_model):
     """Guard the rest of the module: every assertion below is vacuous without these."""
-    walls = _truss_walls(catlin_model)
-    assert len(walls) >= 30, "catlin's main/second/attic exterior walls are all truss walls"
+    walls = _truss_walls(swinburne_model)
+    assert len(walls) == 2, "the fixture is a two-wall L of CATLIN_EXT_2X6_SWINBURNE"
 
 
-def test_an_outrigger_lands_on_the_stud_line_it_is_screwed_to(catlin_model):
+def test_an_outrigger_lands_on_the_stud_line_it_is_screwed_to(swinburne_model):
     """The premise of the whole detail, and the one the block geometry is derived from.
 
     An outrigger is not fastened to the sheathing — it is fastened, through a plywood tab and
@@ -93,12 +106,12 @@ def test_an_outrigger_lands_on_the_stud_line_it_is_screwed_to(catlin_model):
     of a band is off-module, exactly as the end studs are.
 
     The module is taken from ``_module_phase``, not assumed to start at the wall's own end:
-    since 2026-08-25 catlin's exterior walls phase from their layout line, and this test's
+    since 2026-08-25 a truss wall may phase from its layout line, and this test's
     claim is that the two grids AGREE — never that either one starts at a particular node.
     """
     off_module = []
-    for wall in _truss_walls(catlin_model):
-        phase = _module_phase(catlin_model, wall, 16.0 * IN) / IN
+    for wall in _truss_walls(swinburne_model):
+        phase = _module_phase(swinburne_model, wall, 16.0 * IN) / IN
         for member in _by_category(wall, "strapping"):
             if member.material != "kdat" or "jamb" in member.child_key:
                 continue
@@ -116,7 +129,7 @@ def test_an_outrigger_lands_on_the_stud_line_it_is_screwed_to(catlin_model):
         f"only a band's two END strips may sit off the stud module: {per_wall}")
 
 
-def test_a_block_covers_the_whole_stud_it_is_screwed_to(catlin_model):
+def test_a_block_covers_the_whole_stud_it_is_screwed_to(swinburne_model):
     """Two screws per block, both over the stud — which needs the stud's full 1-1/2".
 
     The block is 3-1/2" wide on a 1-1/2" outrigger and slid so one side face is flush with
@@ -143,12 +156,12 @@ def test_a_block_covers_the_whole_stud_it_is_screwed_to(catlin_model):
     """
     laps: list[float] = []
     thin: list[tuple[str, float, float]] = []
-    for wall in _truss_walls(catlin_model):
+    for wall in _truss_walls(swinburne_model):
         studs = [_station(m, wall) for m in _studlike(wall)]
         if len(studs) < 4:
             continue
         run = max(studs)
-        openings = _opening_spans(catlin_model, wall)
+        openings = _opening_spans(swinburne_model, wall)
         for block in _by_category(wall, "truss_block"):
             centre = _station(block, wall)
             if centre < 6.0 * IN or centre > run - 6.0 * IN:
@@ -170,13 +183,13 @@ def test_a_block_covers_the_whole_stud_it_is_screwed_to(catlin_model):
             laps.append(overlap)
             if overlap < 0.75 * IN - 1e-6:
                 thin.append((wall.tag, round(centre / IN, 2), round(overlap / IN, 3)))
-    # 717 today. The floor is a vacuity guard, not a quantity, and it has come down twice for
-    # reasons that are both improvements: 800 -> 750 when blocks inside a rough opening
-    # started being excluded by the rule above rather than by a coincidence of spacing, and
-    # 750 -> 700 on 2026-08-25 when the doubled outrigger at every wall seam went away
-    # (``solver.continuation_roles``) and took its blocks with it. Fewer blocks measured,
-    # none of them thin — which is the thing this actually asserts.
-    assert len(laps) > 700, "the field of the wall is what this measures"
+    # A vacuity guard, never a quantity. On catlin it stood at 700 and came down twice for
+    # reasons that were both improvements (blocks inside an RO excluded by rule rather than
+    # by a coincidence of spacing; the doubled outrigger at every wall seam going away with
+    # ``solver.continuation_roles``). It came down again on 2026-08-26 with the fixture: two
+    # 24-foot walls carry a few dozen field blocks, not seven hundred. What is asserted is
+    # unchanged — none of them thin, and nearly all of them lapping the whole stud.
+    assert len(laps) > 20, "the field of the wall is what this measures"
     assert not thin, f"blocks lapping under 3/4\" of stud: {thin[:6]}"
     full = sum(1 for lap in laps if lap >= 1.5 * IN - 1e-6)
     assert full / len(laps) >= 0.85, (
@@ -184,7 +197,7 @@ def test_a_block_covers_the_whole_stud_it_is_screwed_to(catlin_model):
         "has drifted off the 16\" module again")
 
 
-def test_every_outrigger_is_actually_fastened_to_the_wall(catlin_model):
+def test_every_outrigger_is_actually_fastened_to_the_wall(swinburne_model):
     """A block and a tab, or the model is drawing a stick of wood held on by air.
 
     A handful may legitimately share the pack beside them where two verticals stand within a
@@ -192,20 +205,20 @@ def test_every_outrigger_is_actually_fastened_to_the_wall(catlin_model):
     (``structural.truss_wall_unpacked_outrigger``). More than a handful is this pass broken.
     """
     total = unpacked = 0
-    for wall in _truss_walls(catlin_model):
+    for wall in _truss_walls(swinburne_model):
         outriggers = [m for m in _by_category(wall, "strapping") if m.material == "kdat"]
         packs = {m.child_key.split("-")[2] for m in _by_category(wall, "truss_tab")}
         total += len(outriggers)
         unpacked += max(0, len(outriggers) - len(packs))
-    assert total > 300
-    assert unpacked <= 10, f"{unpacked} of {total} outriggers took no block or tab"
+    assert total > 30, "vacuity guard: the fixture's two bands are a few dozen outriggers"
+    assert unpacked <= 4, f"{unpacked} of {total} outriggers took no block or tab"
 
 
-def test_head_and_sill_blocking_spans_its_opening(catlin_model):
+def test_head_and_sill_blocking_spans_its_opening(swinburne_model):
     """The window's flange bears on this. A 60" door needs about 63", not 15-1/2"."""
     widest = {}
-    for wall in _truss_walls(catlin_model):
-        openings = [op for op in catlin_model.openings if op.host_wall == wall.tag]
+    for wall in _truss_walls(swinburne_model):
+        openings = [op for op in swinburne_model.openings if op.host_wall == wall.tag]
         for opening in openings:
             pieces = [m for m in _by_category(wall, "truss_blocking")
                       if abs(m.z0_m - (wall.z0_m + opening.sill_m + opening.height_m)) < 1e-6]
@@ -213,12 +226,12 @@ def test_head_and_sill_blocking_spans_its_opening(catlin_model):
                 widest[opening.tag] = sum(m.length_m for m in pieces) / IN
     assert widest, "every opening in a truss wall takes head blocking"
     for tag, span in widest.items():
-        opening = next(op for op in catlin_model.openings if op.tag == tag)
+        opening = next(op for op in swinburne_model.openings if op.tag == tag)
         assert span >= opening.width_m / IN - 4.0, (
             f"{tag}: head blocking spans {span:.1f}\" of a {opening.width_m / IN:.0f}\" RO")
 
 
-def test_blocks_climb_an_outrigger_at_no_more_than_the_stated_spacing(catlin_model):
+def test_blocks_climb_an_outrigger_at_no_more_than_the_stated_spacing(swinburne_model):
     """`takeoff/fasteners.py` prints this spacing as the screw count's basis.
 
     A gap may be LONGER than the spacing where a block was dropped for landing inside a
@@ -238,8 +251,8 @@ def test_blocks_climb_an_outrigger_at_no_more_than_the_stated_spacing(catlin_mod
     flat 120" bound allowed only two.
     """
     gaps: list[float] = []
-    for wall in _truss_walls(catlin_model):
-        tallest = max((op.height_m for op in catlin_model.openings
+    for wall in _truss_walls(swinburne_model):
+        tallest = max((op.height_m for op in swinburne_model.openings
                        if op.host_wall == wall.tag), default=0.0)
         ceiling = max(3.0, tallest / BLOCK_SPACING.meters + 2.0) * BLOCK_SPACING.meters
         by_pack: dict[str, list[float]] = {}
@@ -260,16 +273,16 @@ def test_blocks_climb_an_outrigger_at_no_more_than_the_stated_spacing(catlin_mod
         f"{BLOCK_SPACING.inches:g}\"")
 
 
-def test_the_buck_lines_the_rough_opening_out_to_the_truss_plane(catlin_model):
+def test_the_buck_lines_the_rough_opening_out_to_the_truss_plane(swinburne_model):
     """4 sides per opening, 3/8" plywood, sheathing face to the truss plane."""
-    for wall in _truss_walls(catlin_model):
-        openings = [op for op in catlin_model.openings if op.host_wall == wall.tag]
+    for wall in _truss_walls(swinburne_model):
+        openings = [op for op in swinburne_model.openings if op.host_wall == wall.tag]
         bucks = _by_category(wall, "buck")
         assert len(bucks) == 4 * len(openings), wall.tag
         assert all(m.profile == "5x0.375 panel" for m in bucks), wall.tag
 
 
-def test_every_owned_truss_wall_l_corner_carries_a_clear_plywood_corner_cap(catlin_model):
+def test_every_owned_truss_wall_l_corner_carries_a_clear_plywood_corner_cap(swinburne_model):
     """The Larsen/Swinburne corner box: two 1/2" rips per owned L corner between two truss
     walls, standing clear of the end outriggers on both sides of it.
 
@@ -282,13 +295,13 @@ def test_every_owned_truss_wall_l_corner_carries_a_clear_plywood_corner_cap(catl
 
     from typehaus.resolve.framing.footprint import member_footprint
 
-    truss_tags = {wall.tag for wall in _truss_walls(catlin_model)}
-    corners = [j for j in catlin_model.junctions
+    truss_tags = {wall.tag for wall in _truss_walls(swinburne_model)}
+    corners = [j for j in swinburne_model.junctions
               if j.kind == "l" and j.framing_owner
               and all(item.wall_tag in truss_tags for item in j.incidents)]
-    assert corners, "catlin's exterior L corners are all truss-wall corners"
-    by_tag = {w.tag: w for w in catlin_model.walls}
-    by_uid = {w.uid: w for w in catlin_model.walls}
+    assert corners, "the fixture's one L corner is a truss-wall corner"
+    by_tag = {w.tag: w for w in swinburne_model.walls}
+    by_uid = {w.uid: w for w in swinburne_model.walls}
     checked = 0
     for junction in corners:
         owner = by_tag[junction.framing_owner]
@@ -313,13 +326,13 @@ def test_every_owned_truss_wall_l_corner_carries_a_clear_plywood_corner_cap(catl
     assert checked == 2 * len(corners)
 
 
-def test_the_frame_reads_the_band_the_same_way_the_check_does(catlin_model):
+def test_the_frame_reads_the_band_the_same_way_the_check_does(swinburne_model):
     """One datum. The check re-derives stations off the band centreline; so does the frame."""
-    wall = next(w for w in _truss_walls(catlin_model) if len(w.members) > 40)
-    layer_name = truss_layer_name(catlin_model.plan, wall.assembly)
+    wall = next(w for w in _truss_walls(swinburne_model) if len(w.members) > 40)
+    layer_name = truss_layer_name(swinburne_model.plan, wall.assembly)
     band = next(layer for layer in wall.layers
                 if layer.name == layer_name and layer.polygon)
-    frame = TrussFrame.build(catlin_model.plan, wall, band)
+    frame = TrussFrame.build(swinburne_model.plan, wall, band)
     assert frame is not None
     outrigger = next(m for m in _by_category(wall, "strapping") if m.material == "kdat")
     assert frame.station_of(outrigger) == pytest.approx(_station(outrigger, wall), abs=1e-6)

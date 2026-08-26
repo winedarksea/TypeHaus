@@ -21,6 +21,12 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "lining": (0.90, 0.89, 0.86, 1.0),
     "finish": (0.90, 0.89, 0.86, 1.0),
     "membrane": (0.30, 0.45, 0.55, 1.0),
+    # ``LayerFunction.AIRGAP`` spells itself "airgap"; "air_gap" beside it has never matched
+    # anything and is kept only so a caller reaching for the old key still gets a colour.
+    # Nothing exercised the difference until the catlin truss (2026-08-26) made the vent gap
+    # a layer of its own and ``roof_edge.py`` emitted the first ``airgap`` closure band.
+    # Translucent, because a gap is air: it should read as the void it is behind the girts.
+    "airgap": (0.80, 0.85, 0.90, 0.35),
     "air_gap": (0.80, 0.85, 0.90, 0.35),
     "furring": (0.68, 0.52, 0.34, 1.0),
     # framing member categories

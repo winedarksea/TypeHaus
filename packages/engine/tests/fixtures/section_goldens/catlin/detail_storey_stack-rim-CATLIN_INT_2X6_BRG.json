@@ -575,6 +575,118 @@
       "node": "polyline",
       "points": [
         [
+          216.63500000000002,
+          107.50000000000001
+        ],
+        [
+          229.2275196850394,
+          107.50000000000001
+        ],
+        [
+          229.2275196850394,
+          108.125
+        ],
+        [
+          216.63500000000002,
+          108.125
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMR401AAAA-ceiling",
+      "tag": "CEIL-RM-M-LIVING"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          216.63500000000002,
+          107.50000000000001
+        ],
+        [
+          229.2275196850394,
+          107.50000000000001
+        ],
+        [
+          229.2275196850394,
+          108.125
+        ],
+        [
+          216.63500000000002,
+          108.125
+        ]
+      ],
+      "pattern": "gwb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          202.77248031496066,
+          107.50000000000001
+        ],
+        [
+          215.365,
+          107.50000000000001
+        ],
+        [
+          215.365,
+          108.125
+        ],
+        [
+          202.77248031496066,
+          108.125
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMR407AAAA-ceiling",
+      "tag": "CEIL-RM-M-CLOSET"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          202.77248031496066,
+          107.50000000000001
+        ],
+        [
+          215.365,
+          107.50000000000001
+        ],
+        [
+          215.365,
+          108.125
+        ],
+        [
+          202.77248031496066,
+          108.125
+        ]
+      ],
+      "pattern": "gwb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           215.37500000000003,
           108.125
         ],

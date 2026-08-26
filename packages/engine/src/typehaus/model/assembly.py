@@ -65,6 +65,19 @@ class FramingSpec(HausModel):
     # wall, 1-1/2" on the wall and 3-1/2" out from it. The default is what keeps every
     # existing FURRING spec framing exactly as it did.
     laid: Literal["flat", "edge"] = "flat"
+    # FURRING only: the band is held off the layer behind it by 1-1/2" blocks fastened
+    # through at the framing module, rather than lying on it. "none" (the default) is every
+    # furring band ever authored — a batten screwed flat to the sheathing, an outrigger
+    # standing on a plywood tab. "block" is the *catlin truss* girt band: a flat 2x4 course
+    # that bears on a 3-1/2" block at every stud station and takes one long structural screw
+    # per block through girt + block into what is behind it (→ ``framing/truss_girts.py``).
+    #
+    # It is the girt frame's whole selector, and it is deliberately not ``laid``: a girt is
+    # laid FLAT like an ordinary batten and only the standoff distinguishes it. Stood on
+    # edge as well (``laid="edge"``) it is neither one thing nor the other — that is the
+    # Swinburne outrigger, which frames on a tab, not on blocks — and
+    # ``integrity.assembly_layers`` refuses the pair.
+    standoff: Literal["none", "block"] = "none"
     corner_style: Literal["3-stud", "4-stud"] = "3-stud"
     # FURRING only — the Larsen/Swinburne plywood corner box (FHB Jan 2024) that closes an
     # owned L corner's two outboard faces outboard of the sheathing, where the band's own
@@ -156,7 +169,12 @@ class Layer(HausModel):
     framing: FramingSpec | None = None
     masonry: MasonrySpec | None = None
     control: frozenset[ControlLayer] = frozenset()
-    # STRUCTURE layers only: insulation in the framing bays (non-additive, → CavityFill).
+    # Insulation in this layer's framing bays (non-additive, → CavityFill). STRUCTURE
+    # layers (a batt between studs) and FURRING layers alike: a furring band's fill resolves
+    # as a cavity layer of its own sharing the band's depth position
+    # (``resolve/topology.py``), bills as ``insulation (cavity)`` and parallel-paths against
+    # the sticks in ``analysis._layer_rsi`` exactly as a stud bay does. That is what lets a
+    # truss wall's foam be authored band by band instead of as one slab that hides the wood.
     cavity: CavityFill | None = None
     # Vertical extent, when this layer does not run the wall's full height — a protection
     # panel above grade, a splash course at the base, a water table. ``None`` is full height,

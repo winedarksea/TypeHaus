@@ -50,8 +50,9 @@ def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
         assert 0 < sticks <= row["pieces"]
         assert row["order_length_ft"] >= row["cut_length_ft"]  # ordered >= cut
 
-    # Nesting is what keeps a short-piece row honest: 1,285 eight-inch truss-wall blocks are
-    # about 857 lineal feet of 2x4, and must not order 10,280.
+    # Nesting is what keeps a short-piece row honest: the catlin truss's ~4,150 three-and-a-
+    # half-inch girt blocks are about 1,212 lineal feet of 2x4 between them, and must not
+    # order one 8-ft stick apiece.
     blocks = [row for row in rows if row["category"] == "truss_block"]
     assert blocks
     for row in blocks:

@@ -1303,7 +1303,7 @@
       "node": "polyline",
       "points": [
         [
-          -5.0,
+          -3.0000000000000004,
           -13.437499999999998
         ],
         [
@@ -1315,7 +1315,7 @@
           -4.720964566929135
         ],
         [
-          -5.0,
+          -3.0000000000000004,
           -4.720964566929135
         ]
       ],
@@ -1324,26 +1324,194 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMW102AAAA",
-      "tag": "W-M-S2/outrigger"
+      "tag": "W-M-S2/inner-girt"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -3.0000000000000004,
+          -13.437499999999998
+        ],
+        [
+          -1.5000000000000002,
+          -13.437499999999998
+        ],
+        [
+          -1.5000000000000002,
+          -4.720964566929135
+        ],
+        [
+          -3.0000000000000004,
+          -4.720964566929135
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
     },
     {
       "space": "model",
       "node": "polyline",
       "points": [
         [
-          -5.5,
+          -4.0,
           -13.437499999999998
         ],
         [
-          -5.0,
+          -3.0000000000000004,
           -13.437499999999998
         ],
         [
-          -5.0,
+          -3.0000000000000004,
           -4.720964566929135
         ],
         [
-          -5.5,
+          -4.0,
+          -4.720964566929135
+        ]
+      ],
+      "layer": "A-WALL-INSU",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW102AAAA",
+      "tag": "W-M-S2/foam-vent"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -4.0,
+          -13.437499999999998
+        ],
+        [
+          -3.0000000000000004,
+          -13.437499999999998
+        ],
+        [
+          -3.0000000000000004,
+          -4.720964566929135
+        ],
+        [
+          -4.0,
+          -4.720964566929135
+        ]
+      ],
+      "pattern": "batt",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "closed-cell-spray-foam"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -4.5,
+          -13.437499999999998
+        ],
+        [
+          -4.0,
+          -13.437499999999998
+        ],
+        [
+          -4.0,
+          -4.720964566929135
+        ],
+        [
+          -4.5,
+          -4.720964566929135
+        ]
+      ],
+      "layer": "A-WALL-PATT",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW102AAAA",
+      "tag": "W-M-S2/vent-gap"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -4.5,
+          -13.437499999999998
+        ],
+        [
+          -4.0,
+          -13.437499999999998
+        ],
+        [
+          -4.0,
+          -4.720964566929135
+        ],
+        [
+          -4.5,
+          -4.720964566929135
+        ]
+      ],
+      "pattern": "membrane",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "air-barrier"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -6.000000000000001,
+          -13.437499999999998
+        ],
+        [
+          -4.5,
+          -13.437499999999998
+        ],
+        [
+          -4.5,
+          -4.720964566929135
+        ],
+        [
+          -6.000000000000001,
+          -4.720964566929135
+        ]
+      ],
+      "layer": "A-WALL",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW102AAAA",
+      "tag": "W-M-S2/outer-girt"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -6.5,
+          -13.437499999999998
+        ],
+        [
+          -6.000000000000001,
+          -13.437499999999998
+        ],
+        [
+          -6.000000000000001,
+          -4.720964566929135
+        ],
+        [
+          -6.5,
           -4.720964566929135
         ]
       ],
@@ -1359,19 +1527,19 @@
       "node": "hatch",
       "boundary": [
         [
-          -5.5,
+          -6.5,
           -13.437499999999998
         ],
         [
-          -5.0,
+          -6.000000000000001,
           -13.437499999999998
         ],
         [
-          -5.0,
+          -6.000000000000001,
           -4.720964566929135
         ],
         [
-          -5.5,
+          -6.5,
           -4.720964566929135
         ]
       ],
@@ -1415,7 +1583,7 @@
       "node": "hatch",
       "boundary": [
         [
-          -5.0,
+          -2.9999999999999996,
           -13.437499999999998
         ],
         [
@@ -1427,7 +1595,7 @@
           -4.720964566929135
         ],
         [
-          -5.0,
+          -2.9999999999999996,
           -4.720964566929135
         ]
       ],
@@ -1835,7 +2003,7 @@
       "node": "polyline",
       "points": [
         [
-          -5.0,
+          -6.000000000000001,
           -13.437499999999998
         ],
         [
@@ -1847,7 +2015,7 @@
           -11.9375
         ],
         [
-          -5.0,
+          -6.000000000000001,
           -11.9375
         ]
       ],
@@ -1863,7 +2031,7 @@
       "node": "hatch",
       "boundary": [
         [
-          -5.0,
+          -6.000000000000001,
           -13.437499999999998
         ],
         [
@@ -1875,7 +2043,7 @@
           -11.9375
         ],
         [
-          -5.0,
+          -6.000000000000001,
           -11.9375
         ]
       ],
@@ -1885,6 +2053,62 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          0.0,
+          -12.5
+        ],
+        [
+          17.84251968503937,
+          -12.5
+        ],
+        [
+          17.84251968503937,
+          -11.875
+        ],
+        [
+          0.0,
+          -11.875
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CBR405AAAA-ceiling-FS-M-EAST",
+      "tag": "CEIL-RM-B-GYM-FS-M-EAST"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.0,
+          -12.5
+        ],
+        [
+          17.84251968503937,
+          -12.5
+        ],
+        [
+          17.84251968503937,
+          -11.875
+        ],
+        [
+          0.0,
+          -11.875
+        ]
+      ],
+      "pattern": "gwb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
     },
     {
       "space": "model",
@@ -2192,6 +2416,118 @@
     },
     {
       "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -3.0000000000000004,
+          -13.437499999999998
+        ],
+        [
+          -1.5000000000000002,
+          -13.437499999999998
+        ],
+        [
+          -1.5000000000000002,
+          -9.9375
+        ],
+        [
+          -3.0000000000000004,
+          -9.9375
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW102AAAA",
+      "tag": "strapping-inner-girt-000"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -3.0000000000000004,
+          -13.437499999999998
+        ],
+        [
+          -1.5000000000000002,
+          -13.437499999999998
+        ],
+        [
+          -1.5000000000000002,
+          -9.9375
+        ],
+        [
+          -3.0000000000000004,
+          -9.9375
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -6.000000000000001,
+          -13.437499999999998
+        ],
+        [
+          -4.5,
+          -13.437499999999998
+        ],
+        [
+          -4.5,
+          -9.9375
+        ],
+        [
+          -6.000000000000001,
+          -9.9375
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW102AAAA",
+      "tag": "strapping-outer-girt-000"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -6.000000000000001,
+          -13.437499999999998
+        ],
+        [
+          -4.5,
+          -13.437499999999998
+        ],
+        [
+          -4.5,
+          -9.9375
+        ],
+        [
+          -6.000000000000001,
+          -9.9375
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -2321,7 +2657,7 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -5.25,
+          -6.25,
           -7.354297900262468
         ],
         "name": ""
@@ -2331,7 +2667,7 @@
         -7.354297900262468
       ],
       "to": [
-        -5.25,
+        -6.25,
         -7.354297900262468
       ],
       "text": "cladding 0.5\"",
@@ -2346,7 +2682,7 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -3.25,
+          -5.25,
           -11.145964566929134
         ],
         "name": ""
@@ -2356,10 +2692,85 @@
         -11.145964566929134
       ],
       "to": [
-        -3.25,
+        -5.25,
         -11.145964566929134
       ],
-      "text": "outrigger 3.5\"",
+      "text": "outer-girt 1.5\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          -4.25,
+          -14.9376312335958
+        ],
+        "name": ""
+      },
+      "at": [
+        -15.392519685039371,
+        -14.9376312335958
+      ],
+      "to": [
+        -4.25,
+        -14.9376312335958
+      ],
+      "text": "vent-gap 0.5\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          -3.5000000000000004,
+          -22.92929790026247
+        ],
+        "name": ""
+      },
+      "at": [
+        -15.392519685039371,
+        -22.92929790026247
+      ],
+      "to": [
+        -3.5000000000000004,
+        -22.92929790026247
+      ],
+      "text": "foam-vent 1\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          -2.2500000000000004,
+          -30.920964566929136
+        ],
+        "name": ""
+      },
+      "at": [
+        -15.392519685039371,
+        -30.920964566929136
+      ],
+      "to": [
+        -2.2500000000000004,
+        -30.920964566929136
+      ],
+      "text": "inner-girt 1.5\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2372,17 +2783,17 @@
         "kind": "point",
         "xy": [
           -0.7500000000000001,
-          -14.9376312335958
+          -38.912631233595796
         ],
         "name": ""
       },
       "at": [
         -15.392519685039371,
-        -14.9376312335958
+        -38.912631233595796
       ],
       "to": [
         -0.7500000000000001,
-        -14.9376312335958
+        -38.912631233595796
       ],
       "text": "spray-foam 1.5\"",
       "height": 1.6,
@@ -2397,17 +2808,17 @@
         "kind": "point",
         "xy": [
           0.25,
-          -22.92929790026247
+          -46.904297900262456
         ],
         "name": ""
       },
       "at": [
         -15.392519685039371,
-        -22.92929790026247
+        -46.904297900262456
       ],
       "to": [
         0.25,
-        -22.92929790026247
+        -46.904297900262456
       ],
       "text": "sheathing 0.5\"",
       "height": 1.6,
@@ -2422,17 +2833,17 @@
         "kind": "point",
         "xy": [
           3.25,
-          -30.920964566929136
+          -54.895964566929116
         ],
         "name": ""
       },
       "at": [
         -15.392519685039371,
-        -30.920964566929136
+        -54.895964566929116
       ],
       "to": [
         3.25,
-        -30.920964566929136
+        -54.895964566929116
       ],
       "text": "stud 5.5\"",
       "height": 1.6,
@@ -2447,17 +2858,17 @@
         "kind": "point",
         "xy": [
           6.312500000000001,
-          -38.912631233595796
+          -58.891797900262446
         ],
         "name": ""
       },
       "at": [
         -15.392519685039371,
-        -38.912631233595796
+        -58.891797900262446
       ],
       "to": [
         6.312500000000001,
-        -38.912631233595796
+        -58.891797900262446
       ],
       "text": "gwb-int 0.625\"",
       "height": 1.6,
@@ -2472,17 +2883,17 @@
         "kind": "point",
         "xy": [
           6.63,
-          -46.904297900262456
+          -62.887631233595776
         ],
         "name": ""
       },
       "at": [
         -15.392519685039371,
-        -46.904297900262456
+        -62.887631233595776
       ],
       "to": [
         6.63,
-        -46.904297900262456
+        -62.887631233595776
       ],
       "text": "paint 0.01\"",
       "height": 1.6,
@@ -3051,7 +3462,7 @@
     "NOTES:",
     "• Detail intent: schematic section showing basement exterior wall and transition to wood-framed exterior wall above.",
     "• Above-grade wall: 2x6 framing (LSL recommended) with R-19 cavity insulation and continuous exterior insulation totaling 4\".",
-    "• **The CI is SPRAYED now, not boarded (2026-08-23).** It was 2\" polyiso + 2\" EPS with staggered, taped seams over a sheet WRB, held off by 1/2\" furring on 8\" structural screws. `CATLIN_EXT_2X6` is now a Swinburne **truss wall**: 4\" of 2 lb closed-cell spray foam around an intermittent 2x4 truss (a flat block on the sheathing, a 1/2\" plywood tab, a KDAT 2x4 outrigger on edge at 16\" o.c.), with the cladding clipped to the outriggers. Still 4\" of CI, still a rainscreen — but **there is no WRB**, because the foam is the water plane, and the cladding face therefore stands 5-1/2\" proud of the sheathing instead of 5.02\". See `notes/outie_window_truss_detail.md`, which also carries the build order this change makes non-negotiable: the window bucks go in BEFORE the foam is sprayed.",
+    "• **The CI is SPRAYED now, not boarded (2026-08-23), and the stand-off is HORIZONTAL (2026-08-26).** It was 2\" polyiso + 2\" EPS with staggered, taped seams over a sheet WRB, held off by 1/2\" furring on 8\" structural screws. `CATLIN_EXT_2X6` is now the **catlin truss**: 4\" of 2 lb closed-cell spray foam around two tiers of flat horizontal 2x4 girts at 24\" o.c., each course bearing on 3-1/2\" blocks at the 16\" stud module — inner girt SPF and buried in the foam, outer girt KDAT standing in a 1/2\" vent gap, with the cladding on the outer girt. It replaced the Swinburne truss of 2026-08-23 (a flat block, a 1/2\" plywood tab and a KDAT 2x4 outrigger *on edge*, vertical, at 16\" o.c.), which is kept unreferenced as `CATLIN_EXT_2X6_SWINBURNE` for the revert. Still 4\" of CI, still a rainscreen — but **there is no WRB**, because the foam is the water plane, and the cladding face therefore stands 6-1/2\" proud of the sheathing instead of 5.02\". See `notes/outie_window_truss_detail.md`, which also carries the build order this change makes non-negotiable: the window bucks go in BEFORE the foam is sprayed, and band A is sprayed BEFORE the inner girts (foam cannot reach behind a flat girt).",
     "• Foundation waterproofing / air barrier: liquid-applied membrane on sheathing and on concrete foundation wall; maintain continuity at the sill/rim transition with overlap, sealant, and/or additional liquid membrane as needed.",
     "• Basement CI: 4\" XPS in two layers with staggered seams; tape seams on the outer layer. Use lower water-absorption XPS types (most are) and confirm compressive strength / below-grade suitability.",
     "• Exposed XPS (top portion above grade): protect with appropriate elastomeric coating or rigid metal/PVC trim per manufacturer.",

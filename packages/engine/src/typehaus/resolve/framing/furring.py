@@ -127,10 +127,16 @@ def _furring_module_signature(plan: PlanModel, rw: ResolvedWall | None, line: ob
                  and layer.framing is not None), None)
     if spec is None or getattr(spec, "layout_origin", "wall-start") != "line":
         return None
-    if (spec.direction or VERTICAL).strip().lower() != VERTICAL:
-        return None
+    # ``direction`` is part of the signature rather than a filter, and that is the whole of
+    # what lets a HORIZONTAL band continue. Two collinear segments of one facade carry the
+    # same courses at the same elevations, and a course that stops half a board short of the
+    # seam on each side leaves a 3" notch in a girt that is one continuous stick on the job —
+    # exactly the pair of end studs ``continuation_roles`` exists to collapse, turned on its
+    # side. A band that changes direction across a seam does not continue: the two grids are
+    # not the same grid in any sense, so the mismatch has to be visible in the tuple.
     return (getattr(line, "tag", None), (spec.spacing or DEFAULT_SPACING).meters,
-            spec.member, spec.laid)
+            spec.member, spec.laid,
+            (spec.direction or VERTICAL).strip().lower())
 
 
 def frame_wall_furring(
@@ -164,13 +170,14 @@ def frame_wall_furring(
         if direction not in (VERTICAL, HORIZONTAL):
             findings.append(_direction_finding(rw, resolved.name, spec.direction))
             direction = VERTICAL
+        roles = roles_for(resolved.name) if roles_for is not None else {}
+        continuations = (roles.get((rw.tag, "start")), roles.get((rw.tag, "end")))
         if direction == VERTICAL:
-            roles = roles_for(resolved.name) if roles_for is not None else {}
             members.extend(_layout_vertical(
-                rw, resolved, spec, openings, line,
-                (roles.get((rw.tag, "start")), roles.get((rw.tag, "end")))))
+                rw, resolved, spec, openings, line, continuations))
         else:
-            members.extend(_layout_horizontal(rw, resolved, spec, openings, line))
+            members.extend(_layout_horizontal(
+                rw, resolved, spec, openings, line, continuations))
     return tuple(members), findings
 
 
@@ -243,14 +250,67 @@ def _layout_vertical(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpeni
     return out
 
 
+#: How far a girt band's field courses stand clear of a rough opening, along the wall and
+#: in elevation alike. It is the width of the jamb POST — a 3-1/2" flat 2x4 whose inner face
+#: is on the RO edge — and equally the height of the head and sill COURSES the girt frame
+#: sets on it (``framing/truss_girts.py``). Those three pieces are the window's bearing, and
+#: a field course that ran to the RO edge would land in exactly their plan: the head course
+#: sits at ``z_head .. z_head + 3-1/2"``, which is where the field course above a low window
+#: often wants to be. Holding the field back by one piece width in both axes leaves the
+#: opening's own frame the room it is built in, and the courses resume beyond it.
+#:
+#: Zero for every furring band that is not a girt band, so a rainscreen batten course still
+#: stops exactly at the RO the way ``layer_solids`` notches the band's solid.
+OPENING_MARGIN_IN = 3.5
+
+
+def opening_margin(spec: Any) -> float:
+    """The clearance :data:`OPENING_MARGIN_IN` names, in metres, or 0.0 for a plain band."""
+    if getattr(spec, "standoff", "none") != "block":
+        return 0.0
+    return OPENING_MARGIN_IN * 0.0254
+
+
+def course_elevations(rw: ResolvedWall, spec: Any, face: float) -> list[float]:
+    """The BOTTOM elevation of every course of a horizontal band on one wall.
+
+    One list, computed once, because two different passes need to agree about it exactly.
+    ``_layout_horizontal`` frames the courses; ``framing/truss_girts.py`` puts a block under
+    each of them and pairs the inner band's course with the outer band's at the same
+    elevation. A block half an inch below the girt it carries is not a tolerance, it is a
+    block bearing on nothing, so the two readings cannot be allowed to be two readings.
+
+    A raked wall carries a course only where its top is above it, and the courses thin out
+    toward the high end: below the *lower* of the two tops every course is full length, and
+    above it only the raked part of the wall is still there to nail to.
+    """
+    spacing = (spec.spacing or DEFAULT_SPACING).meters
+    top_start, top_end = _wall_top_elevations(rw)
+    top_low, top_high = min(top_start, top_end), max(top_start, top_end)
+    elevations = _module_stations(rw.z0_m, top_low - face, spacing, face)
+    elevation = elevations[-1] + spacing if elevations else rw.z0_m
+    while elevation + face <= top_high + 1e-9:
+        elevations.append(elevation)
+        elevation += spacing
+    return elevations
+
+
 def _layout_horizontal(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpening],
-                       _line: object | None = None) -> list[FramedMember]:
+                       _line: object | None = None,
+                       continuations: tuple[str | None, str | None] = (None, None),
+                       ) -> list[FramedMember]:
     """Batten courses at the spec's spacing up the wall, split around any opening they cross.
 
     A raked wall carries a course only where its top is above that course; the clipped
     sub-span is closed-form because the top varies linearly between the two endpoints. A
     course whose elevation band overlaps a window or door is further split around the
     opening's width, so it frames the piece(s) flanking it rather than the piece over it.
+
+    ``continuations`` is the same reading ``_layout_vertical`` takes, and it does the same
+    job one axis over: an end that is not an end runs to the seam and butts its neighbour's
+    course rather than being held half a board back from it. Two collinear segments of one
+    facade otherwise leave a 3" notch in every course at every tee — a girt is one stick on
+    the job, and the seam is a modelling artifact of where the partitions land inside.
     """
     p0, direction, axis_len = _band_geometry(rw, layer)
     if axis_len <= 0.0:
@@ -267,31 +327,31 @@ def _layout_horizontal(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpe
     # A course ends against whatever crosses its band at the corner — the neighbouring
     # wall's course, whose centreline runs half a board inside the mitre. The member IR
     # has no mitre and no butt cut, so hold each end back half a thickness and the two
-    # courses abut there instead of lapping through each other.
+    # courses abut there instead of lapping through each other. A CONTINUED end has no
+    # such neighbour to lap: the course on the far side of the seam is this same course.
     plan_face = section.depth_m if on_edge else section.width_m
-    first, last = first + plan_face / 2.0, last - plan_face / 2.0
-    spacing = (spec.spacing or DEFAULT_SPACING).meters
+    start_cont, end_cont = continuations
+    if not start_cont:
+        first = first + plan_face / 2.0
+    if not end_cont:
+        last = last - plan_face / 2.0
     top_start, top_end = _wall_top_elevations(rw)
-    top_low, top_high = min(top_start, top_end), max(top_start, top_end)
-
-    elevations = _module_stations(rw.z0_m, top_low - face, spacing, face)
-    # A course that clears the *lower* top is full length; above it only the raked part of
-    # the wall is still there to nail to, so the courses thin out toward the high end.
-    elevation = elevations[-1] + spacing if elevations else rw.z0_m
-    while elevation + face <= top_high + 1e-9:
-        elevations.append(elevation)
-        elevation += spacing
+    margin = opening_margin(spec)
 
     out: list[FramedMember] = []
     index = 0
-    for z in elevations:
+    for z in course_elevations(rw, spec, face):
         lo, hi = _course_span(z + face, top_start, top_end, axis_len, first, last)
         if hi - lo <= face:
             continue
-        cuts = [(op.center_along_m - op.width_m / 2.0, op.center_along_m + op.width_m / 2.0)
+        # ``margin`` widens the void to the opening's own FRAME — the jamb posts beside the
+        # RO and the head and sill courses above and below it — for a girt band, and is zero
+        # for every other, which leaves a rainscreen batten stopping exactly at the RO.
+        cuts = [(op.center_along_m - op.width_m / 2.0 - margin,
+                 op.center_along_m + op.width_m / 2.0 + margin)
                 for op in openings
-                if _overlaps(z, z + face, rw.base_ref_z_m + op.sill_m,
-                            rw.base_ref_z_m + op.sill_m + op.height_m)]
+                if _overlaps(z, z + face, rw.base_ref_z_m + op.sill_m - margin,
+                            rw.base_ref_z_m + op.sill_m + op.height_m + margin)]
         for seg_lo, seg_hi in _subtract_spans(lo, hi, cuts):
             if seg_hi - seg_lo <= face:
                 continue

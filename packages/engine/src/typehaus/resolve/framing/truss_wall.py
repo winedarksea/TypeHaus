@@ -37,44 +37,81 @@ outermost FURRING layer, so it follows the assembly.
 The placement geometry — where each of those pieces goes on one wall, and every dimension of
 them — is ``framing/truss_frame.py``. This module is the pass: which walls, in what order,
 and what it reports. The names other packages use are re-exported here.
+
+**There are two truss walls now.** The Swinburne pack above is one; the **catlin truss**
+(``framing/truss_girts.py``, 2026-08-26) is the other — two tiers of flat horizontal 2x4
+girts at 24" o.c., each bearing on 3-1/2" blocks at the stud module, no tab and no
+chirality. Nothing vertical was deleted for it: the two are siblings, selected per wall off
+the assembly by :func:`truss_kind` (``laid="edge"`` + vertical → the outrigger pack,
+``standoff="block"`` → the girts), and reverting is swapping one assembly's layer tuple.
+This module dispatches; neither frame imports the other, and what they share is
+``framing/truss_common.py``.
 """
 
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import replace
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.framing.corners import CornerJunctions, corner_junctions
-from typehaus.resolve.framing.furring import EDGE, VERTICAL
-from typehaus.resolve.framing.truss_frame import (  # noqa: F401 - the package's public names
+from typehaus.resolve.framing.furring import (
+    EDGE,
+    VERTICAL,
+    _furring_module_signature,
+    course_elevations,
+    opening_margin,
+)
+from typehaus.resolve.framing.solver import continuation_roles
+from typehaus.resolve.framing.truss_common import (  # noqa: F401 - the package's public names
     BLOCK_CATEGORY,
-    BLOCK_LENGTH,
-    BLOCK_SPACING,
     BUCK_CATEGORY,
     BUCK_THICKNESS_IN,
+    FLANGE_BEARING,
+    JAMB_PREFIX,
+    LADDER_CATEGORY,
+    Vec,
+    nearest_bearing_gap,
+)
+from typehaus.resolve.framing.truss_frame import (  # noqa: F401 - the package's public names
+    BLOCK_LENGTH,
+    BLOCK_SPACING,
     CORNER_CAP_CATEGORY,
     CORNER_CAP_THICKNESS_IN,
     DOUBLE_HEADER_SPAN,
     FILLER_CATEGORY,
     FILLER_LIMIT,
-    FLANGE_BEARING,
-    LADDER_CATEGORY,
     TAB_CATEGORY,
     TAB_THICKNESS_IN,
     TRUSS_CATEGORIES,
     TrussFrame,
-    Vec,
-    nearest_bearing_gap,
+)
+from typehaus.resolve.framing.truss_girts import (  # noqa: F401 - the package's public names
+    GIRT_MEMBER,
+    INNER,
+    OUTER,
+    STUDLIKE,
+    GirtFrame,
+    _by_elevation,
+    _standoff_layers,
+    girt_block_tier,
+    truss_girt_bands,
 )
 from typehaus.resolve.model import (
     FramedMember,
+    ResolvedLayer,
     ResolvedModel,
     ResolvedOpening,
     ResolvedWall,
 )
+
+#: What ``_girt_context`` hands back: ``wall_tag -> (layout line, continuation roles)``.
+#: Named because the pass threads it straight into ``frame_wall_girts``'s last two
+#: parameters and an unnamed nested callable type reads as noise at the call site.
+_GirtContext = Callable[[str], tuple[object | None, tuple[str | None, str | None]]]
 
 #: The package face. Everything a caller outside ``resolve/framing`` needs is importable from
 #: here whichever side of the truss_wall/truss_frame split it actually lives on, so the split
@@ -91,6 +128,9 @@ __all__ = [
     "FILLER_CATEGORY",
     "FILLER_LIMIT",
     "FLANGE_BEARING",
+    "GIRT_MEMBER",
+    "GirtFrame",
+    "JAMB_PREFIX",
     "LADDER_CATEGORY",
     "TAB_CATEGORY",
     "TAB_THICKNESS_IN",
@@ -99,7 +139,12 @@ __all__ = [
     "Vec",
     "frame_truss_walls",
     "frame_wall_truss",
+    "frame_wall_girts",
+    "girt_band_findings",
+    "girt_block_tier",
     "nearest_bearing_gap",
+    "truss_girt_bands",
+    "truss_kind",
     "truss_layer_name",
 ]
 
@@ -132,10 +177,18 @@ def frame_truss_walls(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     for opening in model.openings:
         by_host.setdefault(opening.host_wall, []).append(opening)
     corner_caps = _frame_corner_caps(plan, model, corner_junctions(model))
+    girts = _girt_context(plan, model)
 
     findings: list[Finding] = []
     framed: list[ResolvedWall] = []
     for wall in model.walls:
+        if truss_kind(plan, wall.assembly) == "girt":
+            members, wall_findings = frame_wall_girts(
+                plan, wall, by_host.get(wall.tag, []), *girts(wall.tag))
+            findings.extend(wall_findings)
+            framed.append(replace(wall, members=wall.members + members)
+                          if members else wall)
+            continue
         members, loose, dropped = frame_wall_truss(plan, wall, by_host.get(wall.tag, []))
         members = members + tuple(corner_caps.get(wall.tag, ()))
         kept = (tuple(member for member in wall.members
@@ -156,13 +209,41 @@ def frame_truss_walls(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     return findings
 
 
-def truss_layer_name(plan: PlanModel, assembly_tag: str | None) -> str | None:
-    """The name of the FURRING layer that is a truss wall's outrigger band, or ``None``.
+def truss_kind(plan: PlanModel, assembly_tag: str | None) -> str | None:
+    """Which truss an assembly builds: ``"outrigger"``, ``"girt"``, or ``None``.
 
-    The signature is a vertical FURRING layer whose ``FramingSpec`` stands the stick on edge:
-    a batten laid flat is a rainscreen strip and frames nothing but itself. Read off the
-    *authored* assembly, so a check can ask the question without a resolved wall in hand.
+    One reading, so the four places that branch on it — this pass, the fastener take-off,
+    the opening-support check and the outie-window detail — cannot come to four different
+    answers about the same wall. The girt band is tested first because it is the more
+    specific signature: ``standoff="block"`` says the band bears on blocks, which no
+    outrigger band ever says, while ``laid`` alone is a property an ordinary batten has too.
     """
+    if truss_girt_bands(plan, assembly_tag) is not None:
+        return "girt"
+    return "outrigger" if _outrigger_layer_name(plan, assembly_tag) else None
+
+
+def truss_layer_name(plan: PlanModel, assembly_tag: str | None) -> str | None:
+    """The FURRING layer that IS the truss wall — outrigger band, or OUTER girt, or ``None``.
+
+    One spelling for both frames, because every caller outside this package wants the same
+    thing from it: the band the cladding lands on and the window's mount plane is the outer
+    face of. ``takeoff/fasteners.py`` uses it as the "this wall has no screwed-strip
+    condition" predicate, ``checks/structural/truss_wall.py`` as the band to read jamb
+    bearing off, and the outie-window detail as the layer to draw from.
+
+    The outrigger signature is a vertical FURRING layer whose ``FramingSpec`` stands the
+    stick on edge: a batten laid flat is a rainscreen strip and frames nothing but itself.
+    The girt signature is ``truss_girt_bands``. Both read off the *authored* assembly, so a
+    check can ask the question without a resolved wall in hand.
+    """
+    bands = truss_girt_bands(plan, assembly_tag)
+    if bands is not None:
+        return bands[1].name
+    return _outrigger_layer_name(plan, assembly_tag)
+
+
+def _outrigger_layer_name(plan: PlanModel, assembly_tag: str | None) -> str | None:
     assembly = plan.library.resolve_assembly(assembly_tag) if assembly_tag else None
     if assembly is None:
         return None
@@ -175,7 +256,42 @@ def truss_layer_name(plan: PlanModel, assembly_tag: str | None) -> str | None:
     return None
 
 
-def _outrigger_band(wall: ResolvedWall, layer_name: str):
+def _girt_context(plan: PlanModel, model: ResolvedModel) -> _GirtContext:
+    """``wall_tag -> (layout line, continuation roles)`` for the girt bands, computed once.
+
+    A girt course runs THROUGH a collinear seam, and knowing which seams those are is a
+    whole-model reading (``solver.continuation_roles``) that would be wasteful to redo per
+    wall and wrong to skip: without it every tee in a facade puts a 3" notch in every course
+    and doubles the block at the seam. The layout line comes along because the blocks land
+    on the STUD module, whose phase is a property of the line and not of the wall.
+    """
+    from typehaus.resolve.layout_lines import lines_by_wall
+
+    lines_for_wall = lines_by_wall(model.layout_lines)
+    resolved_by_tag = {wall.tag: wall for wall in model.walls}
+    roles_by_layer: dict[str, dict[tuple[str, str], str]] = {}
+
+    def roles_for(layer_name: str) -> dict[tuple[str, str], str]:
+        if layer_name not in roles_by_layer:
+            roles_by_layer[layer_name] = continuation_roles(
+                model, lambda tag: _furring_module_signature(
+                    plan, resolved_by_tag.get(tag), lines_for_wall.get(tag), layer_name))
+        return roles_by_layer[layer_name]
+
+    def context(wall_tag: str) -> tuple[object | None,
+                                        tuple[str | None, str | None]]:
+        wall = resolved_by_tag.get(wall_tag)
+        bands = truss_girt_bands(plan, wall.assembly) if wall is not None else None
+        if bands is None:
+            return lines_for_wall.get(wall_tag), (None, None)
+        roles = roles_for(bands[1].name)
+        return (lines_for_wall.get(wall_tag),
+                (roles.get((wall_tag, "start")), roles.get((wall_tag, "end"))))
+
+    return context
+
+
+def _outrigger_band(wall: ResolvedWall, layer_name: str) -> ResolvedLayer | None:
     return next((layer for layer in wall.layers
                 if layer.name == layer_name and layer.polygon), None)
 
@@ -314,3 +430,83 @@ def _frame_field(frame: TrussFrame, wall: ResolvedWall,
     return tuple(members), loose
 
 
+# --- the girt wall (``framing/truss_girts.py`` places the pieces; this drives it) ------
+
+
+def girt_band_findings(plan: PlanModel, wall_tag: str,
+                       assembly_tag: str | None) -> list[Finding]:
+    """WARN for an assembly that asks for girts but does not describe a pair of them.
+
+    A girt band is only meaningful as one of two: the inner tier is what block-2 screws into
+    and the outer tier is what the cladding lands on, and either alone is a band of wood
+    standing in foam holding nothing. Turning one on edge, or laying it vertically, is the
+    same mistake spelled differently — ``integrity.assembly_layers`` already refuses
+    ``laid="edge"`` outright, and this catches the rest at the wall that uses it, where the
+    tag an owner can act on is in hand.
+    """
+    bands = _standoff_layers(plan, assembly_tag)
+    if not bands or truss_girt_bands(plan, assembly_tag) is not None:
+        return []
+    names = ", ".join(layer.name for layer in bands)
+    return [Finding(
+        check_id="structural.truss_girt_bands",
+        severity=Severity.WARN, result=Result.UNKNOWN,
+        message=(f"{wall_tag}: assembly {assembly_tag} carries {len(bands)} "
+                 f'standoff="block" FURRING layer(s) ({names}); a catlin truss is exactly '
+                 "two, both horizontal and both laid flat — no girts were framed"),
+        element_tags=(wall_tag,),
+        fix_hint=('author an inner and an outer girt band, each with '
+                  'direction="horizontal" and the default laid="flat"'))]
+
+
+# --- the girt wall's per-wall entry point ---------------------------------------------
+
+
+def frame_wall_girts(plan: PlanModel, wall: ResolvedWall, openings: list[ResolvedOpening],
+                     line: object | None,
+                     continuations: tuple[str | None, str | None],
+                     ) -> tuple[tuple[FramedMember, ...], list[Finding]]:
+    """Every catlin-truss piece on one wall: blocks, jamb posts, head/sill courses, bucks.
+
+    ``()`` if the wall is not a girt wall, or if either band failed to resolve a polygon —
+    a band mitred away to nothing at a corner frames nothing, and that is not an error.
+    """
+    bands = truss_girt_bands(plan, wall.assembly)
+    if bands is None:
+        return (), girt_band_findings(plan, wall.tag, wall.assembly)
+    resolved = {layer.name: layer for layer in wall.layers if layer.polygon}
+    inner = resolved.get(bands[0].name)
+    outer = resolved.get(bands[1].name)
+    if inner is None or outer is None:
+        return (), []
+    frame = GirtFrame.build(plan, wall, inner, outer, line, continuations)
+    if frame is None:
+        return (), []
+
+    field = {tier: [member for member in wall.members
+                    if member.child_key.startswith(f"strapping-{name}-")]
+             for tier, name in ((INNER, inner.name), (OUTER, outer.name))}
+    voids = [(op.center_along_m - op.width_m / 2.0,
+              op.center_along_m + op.width_m / 2.0,
+              wall.base_ref_z_m + op.sill_m,
+              wall.base_ref_z_m + op.sill_m + op.height_m)
+             for op in openings]
+    # Where a field course stops against an opening's jamb post rather than in open wall —
+    # the post's outer face, which is the RO edge plus exactly the margin the field is held
+    # back by (``furring.opening_margin``). Read from the same function the courses were cut
+    # with, so the two cannot drift apart by a sixteenth and quietly reinstate the end block.
+    margin = opening_margin(bands[1].framing)
+    butts = tuple(x for op in openings
+                  for x in (op.center_along_m - op.width_m / 2.0 - margin,
+                            op.center_along_m + op.width_m / 2.0 + margin))
+    # The wall's own vertical framing, so a block near an opening lands on the stick that
+    # is actually there rather than on the module station the opening displaced.
+    verticals = tuple(
+        (frame.station_of(member), member.z0_m, member.z1_m)
+        for member in wall.members if member.category in STUDLIKE)
+    members, findings = frame.blocks(field, voids, butts, verticals)
+    elevations = course_elevations(wall, bands[1].framing, frame.stock_face)
+    for index, opening in enumerate(openings):
+        members.extend(frame.opening_frame(opening, index, elevations))
+        members.extend(frame.buck(opening, index))
+    return tuple(members), findings

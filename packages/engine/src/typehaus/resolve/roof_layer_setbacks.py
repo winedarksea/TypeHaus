@@ -122,17 +122,31 @@ def _wall_clip_setbacks(wall) -> dict[str, float]:
     if furring_index is not None:
         batten = sum(layer.thickness_m for layer in layers[furring_index + 1:])
         # The roof's foam runs out to the back of the wall's VENT, not to the back of the
-        # band that holds it open. On a rainscreen those are the same plane, because the band
-        # is empty. On a truss wall they are 2-1/2" apart: the outrigger band is 3-1/2" deep
-        # with closed-cell foam packed behind the stick, and clipping the roof foam at the
-        # band's inner face would hold it 4" back from the footprint edge to clear a gap that
-        # is only 1" — leaving a 3" thermal notch all round the eave that is not in the
-        # building. Same reading ``accessories.rainscreen_cavity_m`` gives the same band.
+        # band that holds it open. On a plain rainscreen those are the same plane, because
+        # the band is empty. On a truss wall they are not, and in two different ways:
+        #
+        # * the SWINBURNE outrigger band is 3-1/2" deep with closed-cell foam packed behind
+        #   the stick, so the vent is the front 1". Clipping the roof foam at the band's
+        #   inner face would hold it 4" back from the footprint edge to clear a gap that is
+        #   only 1" — a 3" thermal notch all round the eave that is not in the building;
+        # * the CATLIN TRUSS's outer girt is 1-1/2" of SOLID KDAT with its 1/2" vent
+        #   authored BEHIND it as its own AIRGAP layer. Read band-minus-fill, that wall
+        #   reports 1-1/2" of wood as vent and misses the half inch of actual air, holding
+        #   the roof foam half an inch proud of the wall's foam face.
+        #
+        # ``accessories.rainscreen_cavity_m`` answers both — it is the same question the bug
+        # screen and the envelope take-off ask — so this reads it rather than re-deriving it.
+        # The band-minus-fill walk stays as the fallback for a stack it declines (a band with
+        # no cladding outboard of it is not a rainscreen and vents nothing).
+        from typehaus.resolve.accessories import rainscreen_cavity_m
+
         band = layers[furring_index]
-        fill = next((layer for layer in wall.layers
-                     if layer.is_cavity and layer.cavity_host == band.name), None)
-        vent = band.thickness_m - (fill.thickness_m if fill is not None else 0.0)
-        foam = batten + max(0.0, vent)
+        cavity = rainscreen_cavity_m(wall.layers)
+        if cavity is None:
+            fill = next((layer for layer in wall.layers
+                         if layer.is_cavity and layer.cavity_host == band.name), None)
+            cavity = band.thickness_m - (fill.thickness_m if fill is not None else 0.0)
+        foam = batten + max(0.0, cavity)
     else:
         batten = foam = cladding
     if sheathing_index is not None:

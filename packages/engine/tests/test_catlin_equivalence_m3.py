@@ -354,9 +354,9 @@ def test_house_walls_gain_layers_rather_than_lose_them(equivalence):
 
     It carried 9 until the 2026-08-23 truss wall, and the two it gave up are the point of
     this test rather than a hole in it: the WRB went because closed-cell foam is the water
-    plane now, and the two rigid-CI courses became ONE sprayed layer plus a ``CavityFill``
-    inside the outrigger band — a fill is not a layer, deliberately, because it is the other
-    path through a depth and not a course of its own. The latex-paint film over the interior
+    plane now, and the two rigid-CI courses became sprayed bands plus a ``CavityFill`` inside
+    the inner girt — a fill is not a layer, deliberately, because it is the other path
+    through a depth and not a course of its own. The latex-paint film over the interior
     gypsum is still a layer the old model never drew (IRC R702.7 counts it as the wall's
     Class III warm-side vapour retarder), and the 4" of exterior insulation is still there.
 
@@ -372,16 +372,24 @@ def test_house_walls_gain_layers_rather_than_lose_them(equivalence):
         assert item.current_layer_count >= item.reference_layer_count, item.as_dict()
     exterior = [item for item in house_walls if item.reference_layer_count == 7]
     assert exterior, [item.reference_name for item in house_walls]
+    # TEN since the catlin truss (2026-08-26), and it was seven before: paint, gwb, stud,
+    # sheathing, then FOUR stand-off layers where the outrigger band was one — 1-1/2" band-A
+    # foam, the inner girt, 1" band-C foam, the 1/2" vent gap, the outer girt — then the
+    # cladding. Three of the four are what a rigid-CI wall would have spelled as one slab of
+    # foam and one furring strip; splitting them is what lets `analysis._layer_rsi`
+    # parallel-path each tier's wood instead of crediting foam over 100% of the area, and
+    # what lets `rainscreen_band` find a vent gap that is not inside the band.
+    #
     # The plant room's two exterior walls carry PLANT_EXT_2X6_HUMID (2026-08-18): the same
-    # seven layers outboard of the studs, with a three-layer sealed liner (PVC panel /
-    # drainage strapping / Class I membrane) in place of the two-layer painted-gypsum
-    # lining. Ten, not nine — and still strictly gaining, which is what this test is about.
+    # layers outboard of the studs, with a three-layer sealed liner (PVC panel / drainage
+    # strapping / Class I membrane) in place of the two-layer painted-gypsum lining. One
+    # more than the rest — and still strictly gaining, which is what this test is about.
     _HUMID_LINED = {"House Second Stud Wall 1", "House Second Stud Wall 4"}
-    expected = {name: 8 for name in _HUMID_LINED}
-    assert all(item.current_layer_count == expected.get(item.reference_name, 7)
+    expected = {name: 11 for name in _HUMID_LINED}
+    assert all(item.current_layer_count == expected.get(item.reference_name, 10)
                for item in exterior), [
         item.as_dict() for item in exterior
-        if item.current_layer_count != expected.get(item.reference_name, 7)]
+        if item.current_layer_count != expected.get(item.reference_name, 10)]
 
 
 def test_house_footprint_still_measures_thirty_six_feet(reference_model, current_model):

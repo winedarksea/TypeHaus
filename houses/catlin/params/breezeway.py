@@ -125,13 +125,18 @@ from plan.storeys.garage import GARAGE_STEM_REVEAL, GARAGE_Y_SOUTH
 # ============================================================================
 # Plan geometry — every number here is derived, never repeated.
 # ============================================================================
-# North face of the house's outsulated wall: the y=36' sheathing plane plus 1 1/2" of spray
-# foam, the 3 1/2" truss/outrigger band and 1/2" of standing seam (plan/assemblies.py
-# CATLIN_EXT_2X6). This is what the breezeway's south end butts. It moved north 0.48" on
-# 2026-08-23 with the truss wall — the WRB + 2" polyiso + 2" EPS + 1/2" furring it replaced
-# stood 5.02" proud, and the truss stands 5.5" — and the garage moved 1/2" north the same
-# day so the slot below did not lose its reveal (plan/storeys/garage.py).
-_HOUSE_CLADDING_Y = 36.0 + (1.5 + 3.5 + 0.5) / 12.0  # 36.4583'
+# North face of the house's outsulated wall: the y=36' sheathing plane plus the whole
+# catlin-truss stack — 1 1/2" band A foam, the 1 1/2" inner girt, 1" of band C foam, the
+# 1/2" vent gap, the 1 1/2" outer girt and 1/2" of standing seam (plan/assemblies.py
+# CATLIN_EXT_2X6, and params/roof_trim.py::_WALL_OUTBOARD_IN, which is the same number).
+# This is what the breezeway's south end butts.
+#
+# It has moved north twice. On 2026-08-23 by 0.48", when the Swinburne truss (5.5" proud)
+# replaced the WRB + 2" polyiso + 2" EPS + 1/2" furring stack (5.02"), and the garage moved
+# 1/2" north the same day so the slot below did not lose its reveal. On 2026-08-26 by a
+# further 1", when the girts replaced the outriggers and the stack went to 6.5" — and the
+# garage moved 1" north again, for the identical reason (plan/storeys/garage.py).
+_HOUSE_CLADDING_Y = 36.0 + 6.5 / 12.0  # 36.5417'
 
 # South face of the garage's ICF stem: the wall line itself. The 11" section is aligned so
 # its exterior EPS face lands on the node line, coplanar with the zip-R of the wood wall
@@ -142,7 +147,7 @@ _GARAGE_STEM_Y = GARAGE_Y_SOUTH.feet  # 40.57292'
 # South face of the garage's wood wall above the stem: rainscreen + standing seam over the
 # zip-R plane. That is the obstruction now, at deck level and at roof level both, so it is
 # what sets the clear gap.
-_GARAGE_CLADDING_Y = GARAGE_Y_SOUTH.feet - (0.375 + 0.5) / 12.0  # 40.5000'
+_GARAGE_CLADDING_Y = GARAGE_Y_SOUTH.feet - (0.375 + 0.5) / 12.0  # 40.5833'
 
 _CLEAR_GAP_FT = _GARAGE_CLADDING_Y - _HOUSE_CLADDING_Y  # 4.04167' = 4'-0 1/2"
 _PANEL_FT = 4.0  # one 4'x8' sheet, UNCUT in the N-S direction
@@ -164,8 +169,8 @@ _REVEAL_FT = _CLEAR_GAP_FT - _PANEL_FT  # 0.04167' = 1/2"
 # N-S: post outer faces snug to the house cladding and the garage cladding — the
 # most-proud face at each end is what a post has to clear.
 _POST_HALF_FT = 5.5 / 24.0  # half a dressed 6x6
-_POST_Y0 = _HOUSE_CLADDING_Y + _POST_HALF_FT  # 36.6875'
-_POST_Y1 = _GARAGE_CLADDING_Y - _POST_HALF_FT  # 40.2708'
+_POST_Y0 = _HOUSE_CLADDING_Y + _POST_HALF_FT  # 36.7708'
+_POST_Y1 = _GARAGE_CLADDING_Y - _POST_HALF_FT  # 40.3542'
 
 # The glazing runs from the house cladding north and stops one panel later — so the reveal
 # lands at the garage end rather than at the house, where the door is. The sheet's N-S

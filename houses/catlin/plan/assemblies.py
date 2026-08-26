@@ -149,6 +149,97 @@ CATLIN_EXT_2X6 = Assembly(
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
+        # BAND A, 0 - 1.5" off the sheathing. Continuous ccSPF, crossed only by the
+        # block-1s the pass frames on the stud module. There is no WRB above it because
+        # there is nothing left for one to do — ccSPF is air, water, vapour and thermal in
+        # one bonded, seamless application. Sprayed FIRST, flush to the block-1 faces and
+        # before the inner girts go on: a flat girt lying 1.5" off the sheathing shadows the
+        # pocket behind it and the foam would void there otherwise.
+        Layer(name="spray-foam", material_ref="closed-cell-spray-foam", thickness=inch(1.5),
+              function=LayerFunction.INSULATION,
+              control={ControlLayer.AIR, ControlLayer.WATER,
+                       ControlLayer.VAPOR, ControlLayer.THERMAL}),
+        # BAND B, 1.5 - 3.0". The INNER GIRT: plain SPF 2x4 laid flat, horizontal, 24" o.c.,
+        # buried in the second foam lift and never wet. One 5" SDWS per block-1 through
+        # girt + block + sheathing into the stud. `standoff="block"` is the whole selector
+        # for `resolve/framing/truss_girts.py`; `layout_origin="line"` puts its blocks on
+        # the same unified stud module the facade's studs and windows already sit on.
+        #
+        # Wood and foam here are a PARALLEL path, which is the whole reason the 4" of foam
+        # is authored as three bands rather than one layer: a single 4" layer would credit
+        # foam over 100% of the area and hide both girt tiers entirely. Split,
+        # `analysis._layer_rsi` parallel-paths each band exactly as it already does a stud
+        # bay, and the take-off bills the fills as `insulation (cavity)`.
+        # ff 0.146 is 3.5" of flat girt per 24" course. The band A/C BLOCKS (3.2% each) are
+        # modelled by the pass and are deliberately NOT authored as a fill — a plain
+        # INSULATION layer carries no framing factor — so the card reads a little high and
+        # notes/catlin_truss_engineering.md states the honest number.
+        Layer(name="inner-girt", material_ref="spf", thickness=inch(1.5),
+              function=LayerFunction.FURRING,
+              framing=FramingSpec(member="2x4", direction="horizontal", laid="flat",
+                                  spacing=inch(24), layout_origin="line",
+                                  standoff="block"),
+              cavity=CavityFill(material_ref="closed-cell-spray-foam",
+                                thickness=inch(1.5), framing_factor=0.146,
+                                control={ControlLayer.AIR, ControlLayer.WATER,
+                                         ControlLayer.VAPOR, ControlLayer.THERMAL})),
+        # BAND C, 3.0 - 4.5", authored as its two halves. The last 1" of the 4" foam total,
+        # then the 1/2" vented gap the block-2s stand in. The applicator shaves this lift to
+        # a gauge — inner girt face + 1" — because 1/2" is inside ccSPF surface tolerance;
+        # the alternative margins are a 2" block-2 (1" gap) or 3-3/4" of foam. See the
+        # engineering note's Risks.
+        Layer(name="foam-vent", material_ref="closed-cell-spray-foam", thickness=inch(1.0),
+              function=LayerFunction.INSULATION,
+              control={ControlLayer.AIR, ControlLayer.WATER,
+                       ControlLayer.VAPOR, ControlLayer.THERMAL}),
+        Layer(name="vent-gap", material_ref="air-barrier", thickness=inch(0.5),
+              function=LayerFunction.AIRGAP),
+        # BAND D, 4.5 - 6.0". The OUTER GIRT: the cladding nailer, the window mount plane,
+        # and the one treated layer in the wall — block-2 inherits its material, which is
+        # what puts the two block tiers on two BOM rows. Same 24" courses at the SAME
+        # elevations as the inner girt; one 5" SDWS per block-2 into the inner girt. It is
+        # a 3-1/2"-deep horizontal ledge behind the cladding that will wet-cycle for the
+        # life of the wall, which is why KDAT and not the vent alone carries it. No fill:
+        # the gap behind it is the drainage plane and it vents.
+        Layer(name="outer-girt", material_ref="kdat", thickness=inch(1.5),
+              function=LayerFunction.FURRING,
+              framing=FramingSpec(member="2x4", direction="horizontal", laid="flat",
+                                  spacing=inch(24), layout_origin="line",
+                                  standoff="block")),
+        Layer(name="cladding", material_ref="standing-seam-snaplock", thickness=inch(0.5),
+              function=LayerFunction.CLADDING),
+    ),
+    interfaces=(_STUD_BEARING,),
+    default_lining=_GWB_LINING,
+    source="catlin-house ifcplot/catlin_house.py wall siding stack; main-storey studs are LSL, second/attic standard dimensional 2x6",
+)
+
+# --- the Swinburne truss wall, kept one swap away (2026-08-26) ----------------
+#
+# What CATLIN_EXT_2X6 was from 2026-08-23 to 2026-08-26, verbatim: a 3-piece chiral pack —
+# a 2x4 flat block on the sheathing, a 1/2" plywood tab, a KDAT 2x4 outrigger stood on edge
+# and lap-screwed to the tab, vertical, 16" o.c. — inside 4" of ccSPF. It works. It is
+# fussy to build (tab lap-screws that were never even billed, a pack the engine has to slide
+# and sometimes drop), and its vertical outriggers give a vertical standing-seam clip no
+# horizontal nailer at all, which is why the girts replaced it.
+#
+# **Referenced by nothing, and that is the point** — like `glazed-green-brick`, it is here so
+# the revert is a swap and not an archaeology exercise. To go back: give CATLIN_EXT_2X6 and
+# PLANT_EXT_2X6_HUMID this layer tuple, restore `_WALL_OUTBOARD_IN` in params/roof_trim.py
+# and `_HOUSE_CLADDING_Y` in params/breezeway.py to their 5.5"-proud values, and uncomment
+# the 2026-08-23 rows in prices.toml. `resolve/framing/truss_frame.py` and its branch of the
+# pass never went anywhere: they are selected by `laid="edge"` + vertical, which is exactly
+# what this tuple says.
+CATLIN_EXT_2X6_SWINBURNE = Assembly(
+    tag="CATLIN_EXT_2X6_SWINBURNE",
+    layers=(
+        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625),
+                                  layout_origin="line", corner_style="4-stud"),
+              cavity=CavityFill(material_ref="mineral-wool")),
+        Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
+              function=LayerFunction.SHEATHING),
         # The band behind the outrigger: continuous, crossed by nothing but the blocks and
         # the tabs. There is no WRB above it because there is nothing left for one to do —
         # ccSPF is air, water, vapour and thermal in one bonded, seamless application.
@@ -179,7 +270,7 @@ CATLIN_EXT_2X6 = Assembly(
     ),
     interfaces=(_STUD_BEARING,),
     default_lining=_GWB_LINING,
-    source="catlin-house ifcplot/catlin_house.py wall siding stack; main-storey studs are LSL, second/attic standard dimensional 2x6",
+    source="the 2026-08-23 CATLIN_EXT_2X6 outrigger stack, retired 2026-08-26 in favour of the catlin truss; kept unreferenced so the revert is a swap",
 )
 
 # --- hot roof (unvented; no batten framing grows — → 30 §WP3.11) --------------
@@ -1570,28 +1661,63 @@ PLANT_EXT_2X6_HUMID = Assembly(
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
-        # The band behind the outrigger: continuous, crossed by nothing but the blocks and
-        # the tabs. There is no WRB above it because there is nothing left for one to do —
-        # ccSPF is air, water, vapour and thermal in one bonded, seamless application.
+        # BAND A, 0 - 1.5" off the sheathing. Continuous ccSPF, crossed only by the
+        # block-1s the pass frames on the stud module. There is no WRB above it because
+        # there is nothing left for one to do — ccSPF is air, water, vapour and thermal in
+        # one bonded, seamless application. Sprayed FIRST, flush to the block-1 faces and
+        # before the inner girts go on: a flat girt lying 1.5" off the sheathing shadows the
+        # pocket behind it and the foam would void there otherwise.
         Layer(name="spray-foam", material_ref="closed-cell-spray-foam", thickness=inch(1.5),
               function=LayerFunction.INSULATION,
               control={ControlLayer.AIR, ControlLayer.WATER,
                        ControlLayer.VAPOR, ControlLayer.THERMAL}),
-        # The outrigger band. 3.5" deep (2x4 on edge), of which the inner 2.5" is foam and
-        # the outer 1" is the drained rainscreen gap to the clip line. Wood and foam here
-        # are a PARALLEL path, which is the whole reason the foam is authored as two bands
-        # rather than one 4" layer: a single layer would credit 4" of foam over 100% of the
-        # area and hide the outrigger entirely. Split, `analysis._layer_rsi` parallel-paths
-        # this band exactly as it already does a stud bay, and the take-off bills the outer
-        # band as `insulation (cavity)`. ff 0.094 is 1.5" of outrigger per 16" bay.
-        Layer(name="outrigger", material_ref="kdat", thickness=inch(3.5),
+        # BAND B, 1.5 - 3.0". The INNER GIRT: plain SPF 2x4 laid flat, horizontal, 24" o.c.,
+        # buried in the second foam lift and never wet. One 5" SDWS per block-1 through
+        # girt + block + sheathing into the stud. `standoff="block"` is the whole selector
+        # for `resolve/framing/truss_girts.py`; `layout_origin="line"` puts its blocks on
+        # the same unified stud module the facade's studs and windows already sit on.
+        #
+        # Wood and foam here are a PARALLEL path, which is the whole reason the 4" of foam
+        # is authored as three bands rather than one layer: a single 4" layer would credit
+        # foam over 100% of the area and hide both girt tiers entirely. Split,
+        # `analysis._layer_rsi` parallel-paths each band exactly as it already does a stud
+        # bay, and the take-off bills the fills as `insulation (cavity)`.
+        # ff 0.146 is 3.5" of flat girt per 24" course. The band A/C BLOCKS (3.2% each) are
+        # modelled by the pass and are deliberately NOT authored as a fill — a plain
+        # INSULATION layer carries no framing factor — so the card reads a little high and
+        # notes/catlin_truss_engineering.md states the honest number.
+        Layer(name="inner-girt", material_ref="spf", thickness=inch(1.5),
               function=LayerFunction.FURRING,
-              framing=FramingSpec(member="2x4", direction="vertical", laid="edge",
-                                  layout_origin="line", corner_cap="plywood-box"),
+              framing=FramingSpec(member="2x4", direction="horizontal", laid="flat",
+                                  spacing=inch(24), layout_origin="line",
+                                  standoff="block"),
               cavity=CavityFill(material_ref="closed-cell-spray-foam",
-                                thickness=inch(2.5), framing_factor=0.094,
+                                thickness=inch(1.5), framing_factor=0.146,
                                 control={ControlLayer.AIR, ControlLayer.WATER,
                                          ControlLayer.VAPOR, ControlLayer.THERMAL})),
+        # BAND C, 3.0 - 4.5", authored as its two halves. The last 1" of the 4" foam total,
+        # then the 1/2" vented gap the block-2s stand in. The applicator shaves this lift to
+        # a gauge — inner girt face + 1" — because 1/2" is inside ccSPF surface tolerance;
+        # the alternative margins are a 2" block-2 (1" gap) or 3-3/4" of foam. See the
+        # engineering note's Risks.
+        Layer(name="foam-vent", material_ref="closed-cell-spray-foam", thickness=inch(1.0),
+              function=LayerFunction.INSULATION,
+              control={ControlLayer.AIR, ControlLayer.WATER,
+                       ControlLayer.VAPOR, ControlLayer.THERMAL}),
+        Layer(name="vent-gap", material_ref="air-barrier", thickness=inch(0.5),
+              function=LayerFunction.AIRGAP),
+        # BAND D, 4.5 - 6.0". The OUTER GIRT: the cladding nailer, the window mount plane,
+        # and the one treated layer in the wall — block-2 inherits its material, which is
+        # what puts the two block tiers on two BOM rows. Same 24" courses at the SAME
+        # elevations as the inner girt; one 5" SDWS per block-2 into the inner girt. It is
+        # a 3-1/2"-deep horizontal ledge behind the cladding that will wet-cycle for the
+        # life of the wall, which is why KDAT and not the vent alone carries it. No fill:
+        # the gap behind it is the drainage plane and it vents.
+        Layer(name="outer-girt", material_ref="kdat", thickness=inch(1.5),
+              function=LayerFunction.FURRING,
+              framing=FramingSpec(member="2x4", direction="horizontal", laid="flat",
+                                  spacing=inch(24), layout_origin="line",
+                                  standoff="block")),
         Layer(name="cladding", material_ref="standing-seam-snaplock", thickness=inch(0.5),
               function=LayerFunction.CLADDING),
     ),
@@ -1737,6 +1863,7 @@ CONSTRUCTION_RULES = [
 
 ASSEMBLIES = [
     CATLIN_EXT_2X6,
+    CATLIN_EXT_2X6_SWINBURNE,
     CATLIN_ROOF,
     CATLIN_BASEMENT_12,
     CATLIN_BASEMENT_8,

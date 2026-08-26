@@ -20,8 +20,8 @@ import {
 } from "../materials";
 import { buildMembers, isRoofFramingMember, memberColor } from "../members";
 import {
-  applyPlankPlaneUv, createPlankMaterial, isWoodPlank, planLongAxis, plankStyleFor,
-  plankTileSizeM,
+  applyPlankPlaneUv, applyPlankWallUv, createPlankMaterial, isWoodPlank, planLongAxis,
+  plankStyleFor, plankTileSizeM,
 } from "../plankMaterial";
 import {
   createPlanPrismGeometry, createProjectedSurfaceGeometry, rectBetween, type PlanCenter,

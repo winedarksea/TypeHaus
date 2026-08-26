@@ -19,6 +19,7 @@
   ],
   "memberColors": {
     "air_gap": 13425126,
+    "airgap": 13425126,
     "backflow_preventer": 12096583,
     "barge_rafter": 9200184,
     "beam": 10384711,
@@ -129,6 +130,7 @@
   },
   "solidColors": {
     "air_gap": 13425126,
+    "airgap": 13425126,
     "backflow_preventer": 12096583,
     "barge_rafter": 9200184,
     "beam": 10384711,

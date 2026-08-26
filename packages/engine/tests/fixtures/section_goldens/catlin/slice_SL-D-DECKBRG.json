@@ -763,6 +763,174 @@
       "node": "polyline",
       "points": [
         [
+          180.0,
+          -12.5
+        ],
+        [
+          216.0,
+          -12.5
+        ],
+        [
+          216.0,
+          -11.875
+        ],
+        [
+          180.0,
+          -11.875
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CBR407AAAA-ceiling",
+      "tag": "CEIL-RM-B-BATH"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          180.0,
+          -12.5
+        ],
+        [
+          216.0,
+          -12.5
+        ],
+        [
+          216.0,
+          -11.875
+        ],
+        [
+          180.0,
+          -11.875
+        ]
+      ],
+      "pattern": "gwb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          180.0,
+          -12.5
+        ],
+        [
+          216.0,
+          -12.5
+        ],
+        [
+          216.0,
+          -11.875
+        ],
+        [
+          180.0,
+          -11.875
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CBR402AAAA-ceiling",
+      "tag": "CEIL-RM-B-WORKSHOP"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          180.0,
+          -12.5
+        ],
+        [
+          216.0,
+          -12.5
+        ],
+        [
+          216.0,
+          -11.875
+        ],
+        [
+          180.0,
+          -11.875
+        ]
+      ],
+      "pattern": "gwb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          216.0,
+          -14.062499999999996
+        ],
+        [
+          252.00000000000003,
+          -14.062499999999996
+        ],
+        [
+          252.00000000000003,
+          -13.437499999999996
+        ],
+        [
+          216.0,
+          -13.437499999999996
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CBR404AAAA-ceiling",
+      "tag": "CEIL-RM-B-PLAY-N"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          216.0,
+          -14.062499999999996
+        ],
+        [
+          252.00000000000003,
+          -14.062499999999996
+        ],
+        [
+          252.00000000000003,
+          -13.437499999999996
+        ],
+        [
+          216.0,
+          -13.437499999999996
+        ]
+      ],
+      "pattern": "gwb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           215.37500000000003,
           -11.875
         ],
@@ -1548,62 +1716,6 @@
       "points": [
         [
           213.25,
-          1.4999999999999998
-        ],
-        [
-          218.75000000000003,
-          1.4999999999999998
-        ],
-        [
-          218.75000000000003,
-          18.0
-        ],
-        [
-          213.25,
-          18.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW113AAAA",
-      "tag": "stud-004"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          213.25,
-          1.4999999999999998
-        ],
-        [
-          218.75000000000003,
-          1.4999999999999998
-        ],
-        [
-          218.75000000000003,
-          18.0
-        ],
-        [
-          213.25,
-          18.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          213.25,
           0.0
         ],
         [
@@ -1645,62 +1757,6 @@
         [
           213.25,
           1.4999999999999998
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          213.25,
-          1.4999999999999998
-        ],
-        [
-          218.75000000000003,
-          1.4999999999999998
-        ],
-        [
-          218.75000000000003,
-          18.0
-        ],
-        [
-          213.25,
-          18.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW114AAAA",
-      "tag": "stud-000"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          213.25,
-          1.4999999999999998
-        ],
-        [
-          218.75000000000003,
-          1.4999999999999998
-        ],
-        [
-          218.75000000000003,
-          18.0
-        ],
-        [
-          213.25,
-          18.0
         ]
       ],
       "pattern": "lumber",

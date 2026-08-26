@@ -142,11 +142,12 @@ def test_catlin_bills_wall_and_roof_screws_as_separate_longer_line(catlin_model)
     what stops the grid walk from silently re-finding a screwed strip in the stack and
     ordering 537 eight-inch screws for a wall that needs none.
     """
+    from typehaus.resolve.framing.truss_wall import girt_block_tier
+
     rows = [row for row in hardware_takeoff(catlin_model)
             if row["role"] == ROLE_EXTERIOR_INSULATION_SCREW]
     assert not [row for row in rows if row["scope"] == "exterior wall furring"], \
         "a truss wall has no screwed furring strip — see takeoff/fasteners.py"
-    wall = next(row for row in rows if row["scope"] == "truss wall blocks")
     roof = next(row for row in rows if row["scope"] == "roof top deck")
 
     # The roof: 0.625 + 6 + 0.54 = 7.165 in of penetration + 1.5 in of embedment = 8.665 in,
@@ -155,19 +156,37 @@ def test_catlin_bills_wall_and_roof_screws_as_separate_longer_line(catlin_model)
     assert roof["size"] == "10 in" and roof["part_number"] == "SDWH191000DB"
     assert "16 in o.c." in roof["basis"] and "24 in o.c." in roof["basis"]
 
-    # The wall: 1.5 in block + 0.5 in sheathing + 1.5 in embedment = 3.50 in, so a 4 in screw.
-    assert wall["size"] == "4 in"
-    assert wall["part_number"] != roof["part_number"]
-    assert "2 per block" in wall["basis"] and "40 in o.c." in wall["basis"]
+    # The wall is TWO rows since the catlin truss (2026-08-26), because the two girt tiers
+    # land in different things and each is billed at what it actually passes through:
+    #   block-1: 1.5 girt + 1.5 block + 0.5 sheathing + 1.5 into the stud       = 5.00 in
+    #   block-2: 1.5 girt + 1.5 block           + 1.5 into the inner girt       = 4.50 in
+    # Both round up to the same 5 in part, and neither is the 4 in screw the Swinburne pack
+    # took — that wall drove through one block, this one drives through a girt as well.
+    tiers = {"1": next(r for r in rows if r["scope"] == "girt wall block-1"),
+             "2": next(r for r in rows if r["scope"] == "girt wall block-2")}
+    for tier, row in tiers.items():
+        assert row["size"] == "5 in" and row["part_number"] == "SDWS22500DB"
+        assert row["part_number"] != roof["part_number"]
+        # ONE screw per block, not two: the girt lying across the block is continuous and
+        # screwed at every block along its run, so there is no rotation for a second to
+        # resist. And the two tiers are OFFSET half a bay, never through-screwed.
+        assert "1 per block" in row["basis"], (tier, row["basis"])
+        assert "16 in o.c." in row["basis"]
+        assert set(row["by_storey"]) == {"main", "second", "attic"}
+        assert row["count"] == sum(row["by_storey"].values())
+    assert "into the stud" in tiers["1"]["basis"]
+    assert "into the inner girt" in tiers["2"]["basis"]
+    assert "8 in off the block-1 line" in tiers["2"]["basis"]
 
-    # Counted across every floor that has a truss wall, not just the first, and exactly two
-    # per resolved block — the count is the model's, not a grid's.
-    assert set(wall["by_storey"]) == {"main", "second", "attic"}
-    assert wall["count"] == sum(wall["by_storey"].values())
-    blocks = sum(1 for w in catlin_model.walls for m in w.members
-                 if m.category == "truss_block")
-    assert wall["count"] == 2 * blocks > 0
-    assert wall["count"] > roof["count"] > 0
+    # Counted off the resolved blocks, not off a grid — exactly one screw per block, per
+    # tier, and the two counts differ because the two modules are half a bay apart and so
+    # land differently against course ends and rough openings.
+    for tier, row in tiers.items():
+        blocks = sum(1 for w in catlin_model.walls for m in w.members
+                     if m.category == "truss_block"
+                     and girt_block_tier(m.child_key) == tier)
+        assert row["count"] == blocks > 0, tier
+    assert sum(row["count"] for row in tiers.values()) > roof["count"] > 0
 
 
 # --- hangers -------------------------------------------------------------------------

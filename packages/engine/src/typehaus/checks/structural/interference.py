@@ -137,8 +137,13 @@ _TRUSS_KINDS = frozenset({"top_chord", "bottom_chord", "truss_web", "truss_heel"
 # volume with the member they nail to, or with each other where an eave and a rake miter,
 # is the fastening. None of them carries load, so none of them can be the
 # elevation-arithmetic bug this check exists to catch.
-# "insulation"/"membrane" appear only as closure-band layers (a wall stack like the catlin
-# siding carries CI foam + WRB outboard of its sheathing), never as framing members.
+# "insulation"/"membrane"/"airgap" appear only as closure-band layers (a wall stack like the
+# catlin siding carries foam, a vent gap and a WRB outboard of its sheathing), never as
+# framing members. "airgap" joined them with the catlin truss (2026-08-26), which is the
+# first wall stack to author the vent cavity as a layer of its own rather than as the unused
+# outer inch of a furring band: the 1/2" gap band mitres at an outside corner like every
+# other skin layer, and at the attic's four corners the two walls' bands shared 0.3 square
+# inches of plan — an air gap overlapping an air gap, which is not a bug about wood.
 # "ridge_cap" is the vented ridge cap riding the roofing at the peak; "corner_trim" is the
 # formed angle capping a wrapped standing-seam edge; "gutter" is the three-band hung
 # channel outboard of the fascia — all pure trim.
@@ -161,8 +166,8 @@ _TRUSS_KINDS = frozenset({"top_chord", "bottom_chord", "truss_web", "truss_heel"
 # that already clears every stud and plate below — so a contact there reports that datum, not
 # the elevation-arithmetic bug this check exists to catch.
 _ENVELOPE_SKIN_KINDS = frozenset({"sheathing", "furring", "strapping", "cladding", "fascia",
-                                  "soffit", "insulation", "membrane", "gutter", "ridge_cap",
-                                  "corner_trim"}) | TRUSS_CATEGORIES
+                                  "soffit", "insulation", "membrane", "airgap", "gutter",
+                                  "ridge_cap", "corner_trim"}) | TRUSS_CATEGORIES
 # Rake framing (resolve/framing/roof_gable.py): outlookers run *over* the dropped gable
 # truss and land on the barge rafter. Interpenetration there is the joint the drop creates.
 _RAKE_KINDS = frozenset({"outlooker", "barge_rafter"})

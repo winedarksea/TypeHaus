@@ -34,28 +34,32 @@ from typehaus import (
 # The garage's two N-S wall lines, published so the ICF stem (params/foundations.py), the
 # slab, and the breezeway (params/breezeway.py) all derive from one number.
 #
-# 40'-6 7/8" is set by the breezeway off the *cladding*, not the stem: the stem's exterior
+# 40'-7 7/8" is set by the breezeway off the *cladding*, not the stem: the stem's exterior
 # EPS face is coplanar with the wood wall's zip-R face (both land on this line), so the
-# most-proud plane is the 7/8" of rainscreen + standing seam at y = 40'-6" — what the
+# most-proud plane is the 7/8" of rainscreen + standing seam at y = 40'-7" — what the
 # breezeway deck/glazing butt against, 4'-0 1/2" north of the house's cladding face
-# (y = 36'-5 1/2"): one UNCUT 4'-0" polycarbonate panel with a 1/2" reveal.
+# (y = 36'-6 1/2"): one UNCUT 4'-0" polycarbonate panel with a 1/2" reveal.
 #
 # Moved 5 5/8" south from 41'-0" on 2026-08-15 when the stem was aligned to it and dropped
 # from an 8" core to 6". Moving the wall lines with the stem (rather than aligning the stem
 # alone) keeps the breezeway slot and its uncut panel unchanged — see CLAUDE.md's ICF
 # stem/wood-wall coplanarity note; do not move these nodes independently of the stem.
 #
-# ** MOVED 1/2" NORTH ON 2026-08-23, and the whole 24'x24' went with it. ** The truss wall
-# put the house's cladding face 1/2" further out (5.02" -> 5.5" proud of the y=36' sheathing
-# plane), which spent the breezeway's reveal exactly: the slot closed to 4'-0" on the nose
-# and an uncut 4'-0" sheet cannot be glazed into an opening it exactly fills. Ripping the
-# sheet 1/2" was the detail-scale answer and is retired; this is the site-scale one, and it
-# is the better trade because the reveal is the only thing in the slot that was ever free.
+# ** MOVED 1/2" NORTH ON 2026-08-23, THEN A FURTHER 1" ON 2026-08-26, and the whole
+# 24'x24' went with it both times. ** The Swinburne truss wall put the house's cladding face
+# 1/2" further out (5.02" -> 5.5" proud of the y=36' sheathing plane); the catlin truss then
+# put it another 1" out (5.5" -> 6.5"), the four flat girt layers standing where the 3 1/2"
+# outrigger band did. Each move spends the breezeway's reveal exactly: the slot closes to
+# 4'-0" on the nose and an uncut 4'-0" sheet cannot be glazed into an opening it exactly
+# fills. Ripping the sheet was the detail-scale answer and is retired; this is the
+# site-scale one, and it is the better trade because the reveal is the only thing in the
+# slot that was ever free.
 # BOTH lines move together — the garage stays 24'-0" square, the stem, footings, slab and
 # breezeway all derive from these two numbers, and nothing north of the house is dimensioned
-# to a property line closer than 40'.
-GARAGE_Y_SOUTH = ft(40, 6.875)
-GARAGE_Y_NORTH = ft(64, 6.875)
+# to a property line closer than 40'. Do NOT move the stem alone: CLAUDE.md's 1/2"
+# ``_axis_match`` tolerance means the whole foundation follows via ``Footing.center_on``.
+GARAGE_Y_SOUTH = ft(40, 7.875)
+GARAGE_Y_NORTH = ft(64, 7.875)
 
 # ICF stem height above grade == this storey's elevation (wood walls sit on the stem top).
 # Published so the storey table, the stem (params/foundations.py) and the overhead door's

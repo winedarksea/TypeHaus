@@ -201,20 +201,26 @@ export function buildWall(
   byUid.set(w.uid, mats);
 }
 
-// A skin member continuing the furring band (a truss wall's outrigger closure) is still real
-// lumber — the carpenter's work — so it stays with the studs on the Framing trade. Every other
-// skin category (cladding, sheathing, membrane, insulation, airgap, finish) is envelope skin
-// and belongs with the wall body it continues, on the Walls trade, or a cladding closure band
-// running up to the roof reads as framing while the wall's own cladding prism below it reads
-// as walls.
+// A skin member continuing the furring band (a truss wall's outrigger or girt closure) is
+// still real lumber — the carpenter's work — so it stays with the studs on the Framing trade.
+// Every other skin category (cladding, sheathing, membrane, insulation, airgap, finish) is
+// envelope skin and belongs with the wall body it continues, on the Walls trade, or a cladding
+// closure band running up to the roof reads as framing while the wall's own cladding prism
+// below it reads as walls.
+//
+// The catlin truss (2026-08-26) put THREE furring closure bands on a wall where the Swinburne
+// outrigger put one — the inner girt, the outer girt and, beside them, foam and vent-gap bands
+// that are NOT furring and correctly stay on Walls. The rule did not have to change for that,
+// which is the point of routing on the layer group rather than on a wall type.
 const FRAMING_SKIN_GROUPS = new Set<LayerVisibilityGroup>(["furring"]);
 
 /** Which trade draws one wall member: the stick trade, or the envelope the member continues.
  *
  * `isSkinMember` asks the member's *category*, and that is the whole of it. Naming a material
- * is not the test and never was: every piece of the Swinburne truss pack names one — the
- * block is spf, the outrigger and the ladder blocking are kdat, the tab and the buck are
- * struct-1-plywood — and all of them are lumber. Routing on `member.material` sent the entire
+ * is not the test and never was: every piece of either truss pack names one — the Swinburne
+ * block is spf, its outrigger and ladder blocking are kdat, its tab and buck are
+ * struct-1-plywood; the catlin truss's block-1 and inner girt are spf, its block-2 and outer
+ * girt are kdat — and all of them are lumber. Routing on `member.material` sent the entire
  * truss wall to the Walls trade under the "Other" layer group, which took it out of the
  * framing view: present in the model and in 2D, gone from 3D.
  */
@@ -224,8 +230,8 @@ function memberTrade(member: Member, tradeGroups: Record<Trade, THREE.Group>,
     ? tradeGroups.framing : tradeGroups.walls;
 }
 
-// Wall members split two ways for visibility: lumber and a furring skin band (the outrigger
-// closure) answer to the Framing trade, while every other skin band (a cladding/sheathing/
+// Wall members split two ways for visibility: lumber and a furring skin band (the outrigger or
+// girt closure) answer to the Framing trade, while every other skin band (a cladding/sheathing/
 // membrane closure, a trim run) is a derived envelope skin and answers to the assembly-layer
 // control that governs the layer it continues, on the Walls trade. Both halves still carry
 // their layer-group tag, so a member that names a material stays reachable from the per-layer

@@ -171,13 +171,26 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   `corner_stud_stations`, not just a count change like 3-stud -> 4-stud was.
 
 - **Plywood ordered by the sheet.** `takeoff/framing.py:117-141` bills every framing member
-  by lineal foot, so the corner box's 24 rips (`resolve/framing/truss_frame.py::corner_box`,
-  2026-08-25) are billed as nested 8-ft sticks of `"NxN corner panel"` with a board-foot
-  figure — exactly as the existing 1/2" tabs and 3/8" bucks already are. There is no
-  member-fed sheet-goods path (`sheet_goods_takeoff` at `takeoff/framing.py:253-310` reads
-  **layers** only, never `model.all_members()`). Ordering plywood by the sheet — nesting
-  panel-profile members onto 4x8 stock the way `_bucket_cut_lengths` nests lumber onto stock
-  lengths — is separate work.
+  by lineal foot, so a panel-profile member is billed as nested 8-ft sticks of
+  `"NxN panel"` with a board-foot figure. There is no member-fed sheet-goods path
+  (`sheet_goods_takeoff` at `takeoff/framing.py:253-310` reads **layers** only, never
+  `model.all_members()`). Ordering plywood by the sheet — nesting panel-profile members onto
+  4x8 stock the way `_bucket_cut_lengths` nests lumber onto stock lengths — is separate work.
+  **Shrunk on 2026-08-26 by the catlin truss**, which is why this is worth less than it was:
+  the corner box and the plywood tab both went with the Swinburne outrigger band, so the
+  only panel members left on an exterior wall are the 176 window **bucks** (`6x0.375 panel`,
+  560 LF ordered). The item stands, but it is now a ~$300 line, not a ~$1,200 one.
+
+- **The girt bands have no RAKE NAILER at an attic gable.** `furring.course_elevations` runs
+  the horizontal courses up a raked wall and they thin out toward the high end — correct as
+  far as it goes — but nothing runs *along* the rake, so the top foot or so of cladding on a
+  gable end has a nailer only where the last full course reaches it. On the Swinburne wall
+  the vertical outriggers ran to the raked top and this did not arise. What it wants is one
+  raked `strapping-{band}-rake` member per band from the topmost full course to the peak
+  (`FramedMember`'s `z0_end_m`/`z1_end_m` already carry a raked member), with blocks at the
+  module along it. Deferred out of the 2026-08-26 girt work deliberately: it is its own step,
+  it touches only the four attic gables, and it is a construction note today rather than a
+  hole in the model.
 
 **Deliberately not done, and why:**
 

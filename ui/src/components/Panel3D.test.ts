@@ -573,6 +573,35 @@ export function runSelectionRegistrationTests() {
   assert(trussGroups.framing.children.length > 0,
     "The truss pack draws with the studs, on the framing toggle");
 
+  // The CATLIN TRUSS pack, beside it, for the same reason and with different keys. Two tiers
+  // of flat girts, so two blocks (block-1 spf, block-2 kdat), two jamb posts per RO named for
+  // their band, head and sill courses per band, and a 6" buck. It has no tab and no filler at
+  // all. Every piece names a material and every piece is lumber, so the walls group must take
+  // none of it either — the routing rule is the member's category, not its wall type, and
+  // this is what proves the second truss wall did not need a second rule.
+  const girtGroups = Object.fromEntries(
+    ALL_TRADES.map((trade) => [trade, new THREE.Group()]),
+  ) as Record<Trade, THREE.Group>;
+  const girtWall = wall([[0, 0], [4, 0]]);
+  girtWall.members = [
+    { ...member("stud-000"), category: "stud", material: null },
+    { ...member("strapping-inner-girt-000"), category: "strapping", material: "spf" },
+    { ...member("strapping-outer-girt-000"), category: "strapping", material: "kdat" },
+    { ...member("block-1-000-00"), category: "truss_block", material: "spf" },
+    { ...member("block-2-000-00"), category: "truss_block", material: "kdat" },
+    { ...member("strapping-jamb-inner-girt-000-0"), category: "strapping", material: "spf" },
+    { ...member("strapping-jamb-outer-girt-000-1"), category: "strapping", material: "kdat" },
+    { ...member("ladder-head-outer-girt-000"), category: "truss_blocking", material: "kdat" },
+    { ...member("ladder-sill-inner-girt-000"), category: "truss_blocking", material: "spf" },
+    { ...member("buck-head-000"), category: "buck", material: "struct-1-plywood" },
+  ];
+  buildWall(girtGroups, girtWall, [], [0, 0], "schematic", PALETTE, registry().picks,
+    registry().byUid);
+  assert(girtGroups.walls.children.length === 0,
+    "No piece of the girt pack is envelope skin — the walls group takes none of it");
+  assert(girtGroups.framing.children.length > 0,
+    "The girt pack draws with the studs, on the framing toggle");
+
   const roofGroup = new THREE.Group();
   const roofs = registry();
   buildRoof(roofGroup, {

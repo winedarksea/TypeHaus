@@ -310,16 +310,24 @@ class OpeningDetailConfig:
     buck_in: float = 1.5
 
     # --- outie window in a truss wall (``outie-window-truss``) ----------------------
-    #: Building fact: the head/sill blocking the flange bears on is a 2x4 ON EDGE, so it
-    #: stands 1-1/2" above the head and below the sill in the truss plane.
+    #: Building fact: on a SWINBURNE truss wall the head/sill blocking the flange bears on
+    #: is a 2x4 ON EDGE, so it stands 1-1/2" above the head and below the sill in the truss
+    #: plane.
     truss_blocking_in: float = 1.5
+    #: The same fact on a CATLIN TRUSS wall, where that piece is a 2x4 laid FLAT — the same
+    #: board turned 90 degrees, so it stands 3-1/2". Both are here rather than one derived
+    #: number because they are two different walls, and ``resolve.truss_kind`` is what picks
+    #: between them; a detail that guessed would draw the head flashing 2" low on one of
+    #: them and there is no way to see that on a sheet.
+    girt_blocking_in: float = 3.5
     #: How far the head flashing laps UP the spray-foam face before it turns out. Shorter
     #: than the innie head's 3" rise: it starts above the head blocking rather than behind a
     #: WRB, and the foam it laps is the water plane, bonded and seamless.
     outie_head_rise_in: float = 2.0
     #: How far the sill pan's outboard leg turns DOWN past the truss plane. It stops inside
-    #: the 1" rainscreen gap and discharges behind the cladding — an outie pan that ran out
-    #: past the panel face would be a visible metal lip under every window.
+    #: the rainscreen gap and discharges behind the cladding — an outie pan that ran out
+    #: past the panel face would be a visible metal lip under every window. The gap is 1" on
+    #: the Swinburne wall and 2" on the girt wall, and this clears either.
     outie_pan_drop_in: float = 0.75
 
 

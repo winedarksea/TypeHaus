@@ -49,13 +49,13 @@ DECLARED_DIVERGENCES = {
         "reference 2\" polyiso as the inner course of a 4\" rigid-CI stack; Catlin sprays "
         "1-1/2\" of closed-cell foam there instead (2026-08-23 truss wall). The 4\" of "
         "exterior insulation is unchanged and is asserted below — what moved is HOW it is "
-        "applied: two sprayed bands around an intermittent 2x4 truss, no boards, no WRB"
+        "applied: three sprayed bands around two tiers of flat 2x4 girts, no boards, no WRB"
     ),
     "wall/furring_in": (
         "reference 1/2\" furring held off the studs through 4\" of board by 8\" screws; "
-        "Catlin's cladding now stands off on a 3-1/2\" KDAT 2x4 outrigger on edge, whose "
-        "back 2-1/2\" is packed with the second band of that same foam and whose front 1\" "
-        "is the rainscreen vent"
+        "Catlin's cladding now stands off on the catlin truss's OUTER GIRT (2026-08-26) — a "
+        "KDAT 2x4 laid flat, horizontal, 24\" o.c., 1-1/2\" deep, with a 1/2\" vented gap "
+        "authored behind it and a second SPF girt tier buried in the foam behind that"
     ),
 }
 
@@ -66,13 +66,14 @@ WALL_PARITY = [
     ("basementtoframedwalldetail", "wall/stud_depth_in", ("CATLIN_EXT_2X6", "stud")),
     ("basementtoframedwalldetail", "wall/sheathing_in", ("CATLIN_EXT_2X6", "sheathing")),
     ("basementtoframedwalldetail", "wall/polyiso_in", ("CATLIN_EXT_2X6", "spray-foam")),
-    ("basementtoframedwalldetail", "wall/furring_in", ("CATLIN_EXT_2X6", "outrigger")),
+    ("basementtoframedwalldetail", "wall/furring_in", ("CATLIN_EXT_2X6", "outer-girt")),
     # ``wall/eps_in`` (the reference's outer 2" CI course) has no layer to name any more.
-    # Its replacement — the second 2-1/2" band of spray foam — lives INSIDE the outrigger
-    # layer as a ``CavityFill``, deliberately, so the engine parallel-paths the wood through
-    # it. A CavityFill is not a Layer, so it cannot be resolved by name here; the depth it
-    # carries is asserted by ``test_the_wall_still_carries_four_inches_of_exterior_insulation``
-    # below, which is the fact the reference was actually fixing.
+    # Its replacement is spread across the catlin truss's three foam bands: 1-1/2" continuous
+    # (``spray-foam``), 1-1/2" INSIDE the inner girt as a ``CavityFill`` so the engine
+    # parallel-paths the wood through it, and 1" continuous again (``foam-vent``). A
+    # CavityFill is not a Layer, so it cannot be resolved by name here; the total is asserted
+    # by ``test_the_wall_still_carries_four_inches_of_exterior_insulation`` below, which is
+    # the fact the reference was actually fixing.
     ("basementtoframedwalldetail", "wall/cladding_in", ("CATLIN_EXT_2X6", "cladding")),
     ("basementconstruction", "foundation/wall_thickness_in",
      ("CATLIN_BASEMENT_12", "concrete")),

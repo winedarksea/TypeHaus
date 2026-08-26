@@ -133,30 +133,59 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   attic, sheathing plane continuous, no stud-depth jog. Main-storey studs are LSL,
   the upper storeys standard dimensional 2x6 (a purchasing note recorded in the
   assembly's `source`, not a separate assembly).
-- **It is a SWINBURNE TRUSS WALL outboard of that sheathing (2026-08-23).** 4" of 2 lb
-  closed-cell spray foam around an intermittent 2x4 truss — a flat block on the sheathing
-  over a stud, a 1/2" plywood tab, a KDAT 2x4 outrigger on edge at 16" o.c. — with the
-  standing seam clipped to the outriggers. It replaced a sheet WRB + 2" polyiso + 2" EPS +
-  1/2" furring on 537 eight-inch screws. Three things follow, each load-bearing elsewhere:
+- **It is a CATLIN TRUSS WALL outboard of that sheathing (2026-08-26).** 4" of 2 lb
+  closed-cell spray foam around **two tiers of flat horizontal 2x4 girts**, each course
+  bearing on 3-1/2" blocks at the stud module: band A foam over block-1 (SPF), the inner
+  girt (SPF, 24" o.c., buried), band C foam + a 1/2" vent gap over block-2 (KDAT), the outer
+  girt (KDAT, same courses at the same elevations), then the standing seam. It replaced the
+  **Swinburne truss** of 2026-08-23 — a chiral block + plywood tab + KDAT outrigger *on edge*
+  at 16" o.c. — which had in turn replaced a sheet WRB + 2" polyiso + 2" EPS + 1/2" furring on
+  537 eight-inch screws. Five things follow, each load-bearing elsewhere:
   - **There is no WRB.** The foam is air + water + vapour + thermal, bonded and seamless,
     and `plan/transitions.py` names `spray-foam-ext` as the water and thermal plane. The
-    build order is therefore part of the spec: **bucks before foam**, always.
-  - **Windows are OUTIE**, in the truss plane 5" out from the sheathing, flanges bearing on
-    the outriggers. Derived, never authored — the mount plane is the outermost FURRING
-    layer's outer face. `structural.truss_wall_opening_support` keeps every RO jamb within a
+    build order is therefore part of the spec: **bucks before foam**, always — and now also
+    **band A before the inner girts**, because spray foam cannot reach behind a flat girt
+    lying 1-1/2" off the sheathing.
+  - **Materials are by exposure.** Inboard of the foam face (block-1, inner girt, inner jamb
+    posts and courses) is plain SPF — encapsulated, never wet. In or outboard of the vent gap
+    (block-2, outer girt, outer posts and courses) is KDAT — the outer girt is a horizontal
+    ledge behind the cladding that wet-cycles for the life of the wall. The two blocks are two
+    BOM rows because of it.
+  - **The blocks are on the STUD module; block-2 is offset half a bay.** Girts climb their own
+    24" elevation module from the wall base; the blocks land on 16" stud stations, and block-2
+    on those stations plus 8". No screw passes through both tiers, so every fastener is
+    wood-to-wood with continuous lateral support and nothing bears on foam — which is why
+    IRC R703.15's through-foam furring table is not the applicable provision. See
+    `notes/catlin_truss_engineering.md`.
+  - **Windows are OUTIE**, in the mount plane **6"** out from the sheathing (was 5"), flanges
+    bearing on the jamb posts and the head/sill courses. Derived, never authored — the mount
+    plane is the outermost FURRING layer's outer face, which is why not one window moved when
+    the stack changed. `structural.truss_wall_opening_support` keeps every RO jamb within a
     flange's bearing of wood.
-  - **The cladding face moved out 1/2"** (5.5", was 5.02"). Nothing interior moved — walls
-    align on `face("sheathing-ext")` — but `params/roof_trim.py`, `params/breezeway.py` and
-    the exterior electrical all measure off the cladding and moved with it.
-  See `notes/outie_window_truss_detail.md`.
+  - **The cladding face moved out 1"** (6.5", was 5.5", was 5.02"). Nothing interior moved —
+    walls align on `face("sheathing-ext")` — but `params/roof_trim.py` (one named constant,
+    `_WALL_OUTBOARD_IN`, with both older values beside it), `params/breezeway.py`, the garage
+    wall lines and the exterior electrical all measure off the cladding and moved with it.
+  - **The Swinburne truss is one swap away.** Nothing vertical was deleted:
+    `resolve/framing/truss_frame.py` and its branch of the pass are untouched behind their own
+    predicate (`laid="edge"` + vertical), the girt frame is a sibling selected by
+    `standoff="block"`, and the old layer tuple is kept verbatim as `CATLIN_EXT_2X6_SWINBURNE`,
+    referenced by nothing. `notes/outie_window_truss_detail.md` has the three-edit revert.
+  **The card reads R-40.7 and the honest number is ≈R-37.5** — the blocks are framed rather
+  than authored as a `CavityFill`, and the outer girt is credited its own R although it stands
+  outboard of the vent gap. `wall_r = 40` is NOT met. See the engineering note §7.
+  See `notes/outie_window_truss_detail.md` and `notes/catlin_truss_engineering.md`.
 - **Every exterior corner is construction-correct, 4-stud, with a plywood box outboard of
   it (2026-08-25 audit).** Three findings and their fix:
   - **The grid is struck from the building's outside sheathing corner.** All four facade
     layout lines have an along-axis origin of `+0.0000"` from a building corner; 217 of 241
     exterior module studs sit on exact 16" multiples from that corner (the 24 exceptions are
     the corner posts themselves); all 31 exterior windows centre exactly on that grid; the
-    outrigger band runs the same grid, so the standing-seam clip line and the stud line are
-    one line. This was already correct and the audit did not touch it.
+    stand-off band runs the same grid, so the cladding's own line and the stud line are one
+    line. This was already correct and the audit did not touch it. It survived the catlin
+    truss: the girts are horizontal, so what phase-locks to the 16" module now is their
+    BLOCKS rather than the band itself, and the promise is the same one — the screw lands
+    on the stud.
   - **The house's corner is 4-stud, not 3.** `CATLIN_EXT_2X6` and `PLANT_EXT_2X6_HUMID`
     (the only two truss-wall assemblies) both carry `corner_style="4-stud"` on the STRUCTURE
     `FramingSpec`, and `preferences.toml`'s `[framing] corner` states it once for the whole
@@ -174,14 +203,15 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     it has no continuous exterior foam, so the thermal objection still applies there, and
     `structural.corner_style_matches_preference` is scoped to assemblies whose own
     `FramingSpec.corner_style` already matches the house preference for exactly this reason.
-  - **The corner is now boxed in with plywood, outboard of the sheathing** — the
-    Larsen/Swinburne detail (FHB, Jan 2024): two 1/2" OSB rips per corner per storey (24
-    total), one along each wall's own outrigger band, meeting at the true building corner
-    to close both outboard faces of the ~5"x5" full-height void the band's own 45° mitre
-    otherwise leaves standing open there (`FramingSpec.corner_cap="plywood-box"` on the
-    outrigger FURRING layer; `TrussFrame.corner_box`, category `truss_corner_cap`). Dense-
-    pack insulation still fills the cavity behind the box, per the FHB detail — that part is
-    a construction note, not modelled geometry.
+  - **The corner box is RETIRED with the outrigger band it closed (2026-08-26), and the
+    machinery is kept.** It was the Larsen/Swinburne detail (FHB, Jan 2024): two 1/2" OSB
+    rips per corner per storey (24 total), one along each wall's own outrigger band, meeting
+    at the true building corner to close both outboard faces of the ~5"x5" full-height void
+    the band's own 45° mitre left standing open there. A girt band has no such void — the
+    courses are horizontal and **butt at the corner**, so each course closes its own band as
+    it goes and there is nothing full-height to cap. `FramingSpec.corner_cap` and
+    `TrussFrame.corner_box` are untouched and still fire for any band that asks for them;
+    `CATLIN_EXT_2X6_SWINBURNE` still does.
   - **The 1/2" sheathing lap at the corner is still undeclared** (all layers mitre 45°
     today; a real lap has one wall's sheet run long and the other stop short by its
     thickness) — logged in `plans/TODO.md`, not built.
@@ -387,10 +417,16 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
       split somewhere else. Those seams are gone — where two collinear segments provably
       share one grid, `framing/solver.py::continuation_roles` drops both end studs and lets
       the module run through, one `"owner"` claiming a seam that lands on the grid. The same
-      reading now runs the **outrigger band** (`framing/furring.py`), which is the line the
-      standing seam clips to. All four facades now frame an identical 28-strip outrigger grid
-      on main, second and attic — 15-1/4" pan at each corner, then 25 even 16" bays.
-      `test_catlin_contract_m3.py::test_each_facade_outrigger_band_is_one_grid_on_every_storey`
+      reading now runs the **stand-off band** (`framing/furring.py`), which is the line the
+      cladding lands on.
+      **The catlin truss turned that band on its side and the reading followed it there
+      (2026-08-26)**: `_furring_module_signature` carries `direction`, so a HORIZONTAL band
+      continues through a seam too. Without it every tee in a facade would put a 3" notch in
+      every girt course — a course is one stick on the job, and the seam is an artifact of
+      where the partitions land inside. What phase-locks to the 16" module is now the girts'
+      **blocks**, one under every course at every stud station, and block-2 on the same
+      stations plus 8".
+      `test_catlin_contract_m3.py::test_each_facade_block_grid_is_one_grid_on_every_storey`
       and `::test_no_facade_stud_stands_off_the_module_except_at_a_corner` pin it, per facade.
       The only members left off the grid are the corner packs (identical on every storey) and
       the jamb packs, which sit where their rough openings put them and always did.

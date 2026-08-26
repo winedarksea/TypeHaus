@@ -36,6 +36,7 @@ def truss_wall_opening_support(ctx: CheckContext) -> list[Finding]:
     from typehaus.resolve.framing.truss_wall import (
         FLANGE_BEARING,
         nearest_bearing_gap,
+        truss_kind,
         truss_layer_name,
     )
 
@@ -49,7 +50,8 @@ def truss_wall_opening_support(ctx: CheckContext) -> list[Finding]:
         openings = [op for op in ctx.model.openings if op.host_wall == wall.tag]
         if not openings:
             continue
-        spans = _truss_stations(wall, layer_name)
+        spans = _truss_stations(wall, layer_name,
+                                truss_kind(ctx.plan, wall.assembly) == "girt")
         if spans is None:
             continue
         for opening in openings:
@@ -83,20 +85,42 @@ def truss_wall_opening_support(ctx: CheckContext) -> list[Finding]:
     return out
 
 
-def _truss_stations(wall: object,
-                    layer_name: str) -> list[tuple[float, float, float, float]] | None:
+def _truss_stations(wall: object, layer_name: str, girt: bool = False
+                    ) -> list[tuple[float, float, float, float]] | None:
     """Plan spans of everything in one truss wall's band a window flange can bear on.
 
     Measured off the band's own centreline, the same datum the emitter placed the members
     on, so the check cannot drift from the geometry by re-deriving it from the wall axis.
-    Field outriggers, jamb outriggers and jamb fillers all count and each is measured at its
-    OWN width — a two-ply filler is 3" of wood, and reading it as 1-1/2" would report a gap
-    that is not there. Each carries its elevation band too, so an outrigger cut around the
-    very opening being measured is not counted as wood at that opening's jamb.
+    Each span carries its elevation band too, so a member cut around the very opening being
+    measured is not counted as wood at that opening's jamb.
+
+    **What counts differs by which truss the wall is**, and only by that.
+
+    On a Swinburne wall the field outriggers themselves are jamb bearing — they are vertical,
+    16" o.c., and a window lands on whichever two it falls between — so the field prefix,
+    the jamb outriggers and the jamb fillers all count, each at its OWN width: a two-ply
+    filler is 3" of wood and reading it as 1-1/2" would report a gap that is not there.
+
+    On a girt wall the field courses are HORIZONTAL and cannot bear a jamb at all — they run
+    across the wall, are cut a post's width clear of every RO, and a window falls *between*
+    two of them, not beside them. The bearing there is the pair of jamb POSTS the girt frame
+    stands at each RO edge, in the OUTER band, which is the mount plane. The outer band's
+    head and sill courses are read too, and cost nothing either way: they sit entirely above
+    the head and below the sill, so ``nearest_bearing_gap``'s elevation filter drops them
+    from every jamb measurement it is actually asked to make.
+
+    And the width is read off the right axis for each: an outrigger stands ON EDGE, so its
+    plan width is the 1-1/2" face; a girt jamb post is laid FLAT, so its plan width is the
+    3-1/2" one. Taking ``width_m`` for both would report a 3-1/2" post as 1-1/2" of wood and
+    fail an opening that is fully supported.
     """
     from typehaus.resolve.framing.profiles import cross_section
     from typehaus.resolve.framing.solver import band_axis
-    from typehaus.resolve.framing.truss_wall import FILLER_CATEGORY
+    from typehaus.resolve.framing.truss_wall import (
+        FILLER_CATEGORY,
+        JAMB_PREFIX,
+        LADDER_CATEGORY,
+    )
     from typehaus.resolve.geometry import length, sub, unit
 
     band = next((layer for layer in wall.layers  # type: ignore[attr-defined]
@@ -107,15 +131,32 @@ def _truss_stations(wall: object,
     if length(sub(end, start)) <= 1e-9:
         return None
     direction = unit(sub(end, start))
-    prefix = f"strapping-{layer_name}-"
+    jamb_prefix = f"{JAMB_PREFIX}{layer_name}-" if girt else JAMB_PREFIX
+    ladder_prefix = f"ladder-head-{layer_name}-", f"ladder-sill-{layer_name}-"
     spans: list[tuple[float, float, float, float]] = []
     for member in wall.members:  # type: ignore[attr-defined]
-        if not (member.child_key.startswith(prefix)
-                or member.child_key.startswith("strapping-jamb-")
-                or member.category == FILLER_CATEGORY):
+        if girt:
+            bears = (member.child_key.startswith(jamb_prefix)
+                     or (member.category == LADDER_CATEGORY
+                         and member.child_key.startswith(ladder_prefix)))
+        else:
+            bears = (member.child_key.startswith(f"strapping-{layer_name}-")
+                     or member.child_key.startswith(jamb_prefix)
+                     or member.category == FILLER_CATEGORY)
+        if not bears:
             continue
         station = ((member.p0[0] - start[0]) * direction[0]
                    + (member.p0[1] - start[1]) * direction[1])
-        half = cross_section(member.profile).width_m / 2.0
+        if member.p0 != member.p1:
+            # A head or sill course runs ALONG the wall, so its plan span is its own two
+            # ends and not a cross-section about ``p0``. Reading it the vertical way put a
+            # phantom 3-1/2" of wood at one RO corner and none at the other.
+            far = ((member.p1[0] - start[0]) * direction[0]
+                   + (member.p1[1] - start[1]) * direction[1])
+            spans.append((min(station, far), max(station, far),
+                          member.z0_m, member.z1_m))
+            continue
+        section = cross_section(member.profile)
+        half = (section.depth_m if girt else section.width_m) / 2.0
         spans.append((station - half, station + half, member.z0_m, member.z1_m))
     return sorted(spans) or None

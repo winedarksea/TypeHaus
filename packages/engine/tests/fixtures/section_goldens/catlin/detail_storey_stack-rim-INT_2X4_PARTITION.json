@@ -399,6 +399,118 @@
       "node": "polyline",
       "points": [
         [
+          216.0,
+          -12.5
+        ],
+        [
+          228.2175196850394,
+          -12.5
+        ],
+        [
+          228.2175196850394,
+          -11.875
+        ],
+        [
+          216.0,
+          -11.875
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CBR407AAAA-ceiling",
+      "tag": "CEIL-RM-B-BATH"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          216.0,
+          -12.5
+        ],
+        [
+          228.2175196850394,
+          -12.5
+        ],
+        [
+          228.2175196850394,
+          -11.875
+        ],
+        [
+          216.0,
+          -11.875
+        ]
+      ],
+      "pattern": "gwb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          203.78248031496068,
+          -12.5
+        ],
+        [
+          216.0,
+          -12.5
+        ],
+        [
+          216.0,
+          -11.875
+        ],
+        [
+          203.78248031496068,
+          -11.875
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CBR402AAAA-ceiling",
+      "tag": "CEIL-RM-B-WORKSHOP"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          203.78248031496068,
+          -12.5
+        ],
+        [
+          216.0,
+          -12.5
+        ],
+        [
+          216.0,
+          -11.875
+        ],
+        [
+          203.78248031496068,
+          -11.875
+        ]
+      ],
+      "pattern": "gwb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           206.75000000000003,
           -11.875
         ],

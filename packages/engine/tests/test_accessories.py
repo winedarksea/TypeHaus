@@ -616,12 +616,21 @@ def test_every_rainscreen_wall_base_is_screened(catlin_model) -> None:
 
 def test_a_screen_sits_in_the_cavity_it_closes_at_the_cladding_start(catlin_model) -> None:
     """Depth is the rainscreen cavity's own thickness and elevation is the wall base — both
-    read off the wall, so re-sizing the battens moves the strip with them.
+    read off the wall, so re-sizing the stand-off moves the strip with it.
 
-    A band PACKED WITH INSULATION vents only the unfilled remainder in front of the fill, so
-    the strip is the outer slice of the band and not the whole of it. On the catlin truss
-    wall that is 1" of a 3-1/2" outrigger band; drawing the band would order a 3-1/2" insect
-    closure where a 1" one goes, and claim 42.7 SF of it where 12.2 SF is bought.
+    Three ways a wall can spell that cavity, and this house has used two of them:
+
+    * a band PACKED WITH INSULATION vents only the unfilled remainder in front of the fill —
+      the Swinburne outrigger wall (2026-08-23), 1" of a 3-1/2" band, where drawing the whole
+      band would have ordered a 3-1/2" insect closure for a 1" job;
+    * a SOLID band with its gap authored BEHIND it as its own AIRGAP layer — the catlin truss
+      (2026-08-26). Its outer girt is 1-1/2" of solid KDAT with a 1/2" vent behind it, and
+      between the 24" courses that gap opens into the 1-1/2" the girts stand off. So the
+      cavity is **2.0"**, and reading the band alone would report 1-1/2" of wood as air and
+      miss the air entirely.
+
+    Both are one function (``rainscreen_band``), and the strip the model draws spans exactly
+    what it reports — the two polygons unioned — or the order and the drawing disagree.
     """
     from typehaus.resolve.accessories import (
         BUG_SCREEN_HEIGHT_IN,
@@ -634,15 +643,14 @@ def test_a_screen_sits_in_the_cavity_it_closes_at_the_cladding_start(catlin_mode
                   if s.tag == "W-M-S1-BUGSCREEN")
     assert screen.z0_m == pytest.approx(wall.z0_m)
     assert screen.z1_m - screen.z0_m == pytest.approx(inch(BUG_SCREEN_HEIGHT_IN).meters)
-    furring = next(ly for ly in wall.depth_layers() if ly.function == "furring")
-    fill = next(ly for ly in wall.layers
-                if ly.is_cavity and ly.cavity_host == furring.name)
-    vent_m = furring.thickness_m - fill.thickness_m
-    assert vent_m == pytest.approx(inch(1.0).meters)
+    furring = [ly for ly in wall.depth_layers() if ly.function == "furring"][-1]
+    airgap = next(ly for ly in wall.depth_layers() if ly.function == "airgap")
+    vent_m = furring.thickness_m + airgap.thickness_m
+    assert vent_m == pytest.approx(inch(2.0).meters)
     assert rainscreen_cavity_m(wall.layers) == pytest.approx(vent_m)
-    # The strip is the vent slice of the band, in the band's own footprint: same run, the
-    # vent's depth. Compared by area rather than by vertex list, because the band is mitred
-    # at its corners and the clip inherits that shape.
+    # The strip spans both bands, in their own footprint: same run, the cavity's depth.
+    # Compared by area rather than by vertex list, because the bands are mitred at their
+    # corners and the union inherits that shape.
     band_area = abs(polygon_area(list(furring.polygon)))
     assert abs(polygon_area(list(screen.outline))) == pytest.approx(
         band_area * vent_m / furring.thickness_m, rel=0.02)

@@ -29,7 +29,8 @@
 # `test_catlin_contract_m3.py::test_wall_mounted_devices_resolve_against_a_wall_face`,
 # except ED-M-LIVING-KGF4 (mounts on the island, not a Wall) and ED-M-PORCH-FLOOD (a
 # pillar). CATLIN_EXT_2X6's inside face is 6 5/8" in from the sheathing datum, cladding
-# face 5 1/2" outboard of that (was 5" until the 2026-08-23 truss wall).
+# face 6 1/2" outboard of that (5" until the 2026-08-23 Swinburne truss, 5 1/2" until
+# the 2026-08-26 catlin truss laid four flat girt layers where the outrigger band was).
 #
 # Positions worth knowing (project-north frame, house sheathing SW corner at 0,0):
 # - Meter: exterior face of west wall (W-M-W1), outside ED-B-PANEL at (2', 29') in the
@@ -315,11 +316,12 @@ EQUIPMENT_TYPES = (
 
 # --- Service entrance + backup enclosure ---------------------------------------------
 SERVICE_DEVICES = [
-    # Exterior west wall at y=29', 6" outside the sheathing plane, 5' up. Moved out 1/2"
-    # on 2026-08-23 with the truss wall: the cladding face went from 5.02" to 5.5" proud of
-    # the sheathing plane, and the meter's back was left inside it.
+    # Exterior west wall at y=29', 7" outside the sheathing plane, 5' up. Moved out 1/2"
+    # on 2026-08-23 with the Swinburne truss (cladding face 5.02" -> 5.5" proud) and a
+    # further 1" on 2026-08-26 with the catlin truss (5.5" -> 6.5"); each time the meter's
+    # back was left inside the cladding it is surface-mounted on.
     ElectricalDevice(uid="CEE001AAAA", tag="ED-M-METER", kind=DeviceKind.METER,
-                     position=pt(ft(0, -8.5), ft(29, 9.125)), type_ref="ED-T-METER",
+                     position=pt(ft(0, -9.5), ft(29, 9.125)), type_ref="ED-T-METER",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room=None, rotation=deg(270)),
 ]
 
@@ -506,10 +508,11 @@ MAIN_DEVICES = [
     # System 3 (Sapphire, backup battery circuit): its outdoor unit stands on the north
     # side beside the mudroom door, so the disconnect goes on W-M-N2's exterior face west
     # of the breezeway — clear of ED-M-HP1-DISC's condenser gap.
-    # Moved out 1/2" on 2026-08-23 with the truss wall's cladding face, and 3/8" back in on
-    # 2026-08-25 with the can's true 3 1/4" depth (see ED-M-HP1-DISC).
+    # Moved out 1/2" on 2026-08-23 with the Swinburne truss's cladding face, 3/8" back in
+    # on 2026-08-25 with the can's true 3 1/4" depth (see ED-M-HP1-DISC), and out 1" again
+    # on 2026-08-26 with the catlin truss (5.5" -> 6.5" proud).
     ElectricalDevice(uid="CEE026AAAA", tag="ED-M-HP3-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(4), ft(36, 7.125)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
+                     position=pt(ft(4), ft(36, 8.125)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     # FH-M-BATH2's thermostat: inside the room on its south wall (W-M-BDN1, interior face
     # y=13'-0 11/16"), 8" east of D-M-BATH2's opening (x 1'-6 1/2"..4'-0 1/2") — the wall
@@ -600,16 +603,17 @@ SECOND_DEVICES = [
     # HP2's east of D-S-DECK-E (its unit sits 7' away in plain sight — 440.14 needs sight,
     # not reach). Both on the wall's exterior face (y=-7 1/2"), corrected 2026-08-03 from
     # y=+6" which put a 3R disconnect on the interior side of the wall from its condenser,
-    # and moved out a further 1/2" on 2026-08-23 when the truss wall took the cladding face
-    # from 5.02" to 5.5" proud of the sheathing plane. Pulled 3/8" back in on 2026-08-25:
+    # and moved out a further 1/2" on 2026-08-23 when the Swinburne truss took the cladding
+    # face from 5.02" to 5.5" proud of the sheathing plane, and 1" more on 2026-08-26 when
+    # the catlin truss took it to 6.5". Pulled 3/8" back in on 2026-08-25:
     # ED-T-DISCONNECT-3R is a 3 1/4"-deep can, so its centre belongs 1 5/8" off the cladding
     # face, and the 2" these were authored with dates from the type's old placeholder 4"
     # depth. Same correction on ED-M-HP3-DISC and ED-B-SPA-DISC.
     ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(6), ft(0, -7.125)), type_ref="ED-T-DISCONNECT-3R",
+                     position=pt(ft(6), ft(0, -8.125)), type_ref="ED-T-DISCONNECT-3R",
                      circuit="CKT-HP1", mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(25, 6.5), ft(0, -7.125)), type_ref="ED-T-DISCONNECT-3R",
+                     position=pt(ft(25, 6.5), ft(0, -8.125)), type_ref="ED-T-DISCONNECT-3R",
                      circuit="CKT-HP2", mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     # FH-S-BATH1's thermostat, inside the room on its south wall (W-S-BD-N1B, interior
     # face y=26'-4 11/16"), 9" west of D-S-BATH1's opening (x 7'-3"..9'-9"). Same
@@ -700,12 +704,16 @@ SECOND_EQUIPMENT = [
 ]
 
 # --- Garage: both EV receptacles on the south wall, east of the service door ----------
+# ED-G-EV-1450 is on W-G-S's INTERIOR face, so it followed the wall 1" north on 2026-08-26
+# when the catlin truss pushed the house's cladding out and the whole 24'x24' garage moved
+# with it (plan/storeys/garage.py::GARAGE_Y_SOUTH). Same move as ED-G-SW and ED-G-EXT-SW in
+# plan/lighting.py, and the same 1/2" move all three made on 2026-08-23.
 GARAGE_DEVICES = [
     ElectricalDevice(uid="CEE008AAAA", tag="ED-G-EV-620", kind=DeviceKind.RECEPTACLE_240,
                      position=pt(ft(0, 9.625), ft(56, 0.75)), type_ref="ED-T-EV-620", circuit="CKT-EV-620",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE", rotation=deg(90)),
     ElectricalDevice(uid="CEE009AAAA", tag="ED-G-EV-1450", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(19, 11.375), ft(41, 4.5)), type_ref="ED-T-EV-1450", circuit="CKT-EV-1450",
+                     position=pt(ft(19, 11.375), ft(41, 5.5)), type_ref="ED-T-EV-1450", circuit="CKT-EV-1450",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE"),
 ]
 
@@ -727,10 +735,11 @@ GARAGE_EQUIPMENT = [
 
 # --- Attic: PV junction box beside the radon riser (ED-A-NEMA-JB at (6', 37')) --------
 PV_JBOX = [
-    # Moved out 1/2" on 2026-08-23 with the truss wall's cladding face, and 3/8" back in on
-    # 2026-08-25 with the can's true 3 1/4" depth (see ED-M-HP1-DISC).
+    # Moved out 1/2" on 2026-08-23 with the Swinburne truss's cladding face, 3/8" back in
+    # on 2026-08-25 with the can's true 3 1/4" depth (see ED-M-HP1-DISC), and out 1" again
+    # on 2026-08-26 with the catlin truss (5.5" -> 6.5" proud).
     ElectricalDevice(uid="CEE014AAAA", tag="ED-A-PV-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(9), ft(36, 8.5)), type_ref="ED-T-PV-JB", circuit="CKT-ESS-GRID",
+                     position=pt(ft(9), ft(36, 9.5)), type_ref="ED-T-PV-JB", circuit="CKT-ESS-GRID",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
 ]
 PV_JBOX_CLAMP = [

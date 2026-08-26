@@ -122,14 +122,24 @@ def rainscreen_band(
     the layer as well as the number so a caller cannot pick a different one by taking the
     first it finds.
 
-    A furring band packed with insulation vents only what is left over. A truss wall's
-    outrigger is 3-1/2" deep with 2-1/2" of closed-cell foam behind it, so the drained and
-    vented cavity in front of the foam is 1" — not 3-1/2", which is what the band's own
+    A furring band packed with insulation vents only what is left over. The Swinburne truss
+    wall's outrigger is 3-1/2" deep with 2-1/2" of closed-cell foam behind it, so the drained
+    and vented cavity in front of the foam is 1" — not 3-1/2", which is what the band's own
     thickness says and what would size a 3-1/2" insect closure at the bottom of every wall.
     The fill resolves as a cavity layer of its own (``topology.py``) sharing the band's
     depth position, so subtract it where it names the band as its host. A band packed SOLID
     vents nothing, and is no more a rainscreen than a stud bay is: ``None``, not zero, or the
     take-off ships a run of 0"-deep insect strip and the resolver draws the whole band.
+
+    **An AIRGAP layer immediately inboard of the band belongs to the same cavity**, and this
+    is where the catlin truss (2026-08-26) parts company with the outrigger it replaced. Its
+    outer girt band is 1-1/2" of solid KDAT — nothing vents inside it — with the 1/2" vent
+    gap authored as its own layer behind it. Read band-only, that wall would report a 1-1/2"
+    cavity that is actually wood, and no cavity at all where the air is. Read together they
+    are the 2" of drained, vented, insect-screened space the wall really has, open to the
+    outside between the girt courses: 1/2" behind the girts plus the 1-1/2" between them.
+    Everything downstream — the bug screen, ``vent_face``, the envelope take-off, the roof
+    layer setbacks — follows this one number.
 
     ``layers`` is ``ResolvedWall.layers`` — every resolved layer interior→exterior,
     cavity fills included, since a fill is exactly what this has to subtract. Passing
@@ -137,15 +147,23 @@ def rainscreen_band(
     """
     band = None
     depth = 0.0
+    airgap = 0.0
     for layer in layers:
         if getattr(layer, "is_cavity", False):
             if band is not None and layer.cavity_host == band.name:
                 depth -= layer.thickness_m
             continue
+        if layer.function == LayerFunction.AIRGAP.value:
+            # Held, not returned: it only counts as part of the rainscreen if the very next
+            # body layer is the furring band it feeds. An air gap anywhere else in a stack
+            # (the brick veneer's 1" cavity behind its own wythe) is a different cavity.
+            airgap = layer.thickness_m
+            continue
         if layer.function == LayerFunction.FURRING.value:
-            band, depth = layer, layer.thickness_m
+            band, depth = layer, layer.thickness_m + airgap
         elif layer.function == LayerFunction.CLADDING.value and band is not None:
             return (band, depth) if depth > 1e-9 else None
+        airgap = 0.0
     return None
 
 
@@ -212,7 +230,7 @@ def _resolve_bug_screens(model: ResolvedModel) -> None:
         if found is None:
             continue
         furring, vent = found
-        outline = _vented_band(wall, furring, vent)
+        outline = _vented_band(wall, furring, vent, _cavity_airgap(wall.layers, furring))
         if len(outline) < 3:
             continue
         model.solids.append(ResolvedSolid(
@@ -222,22 +240,57 @@ def _resolve_bug_screens(model: ResolvedModel) -> None:
         ))
 
 
-def _vented_band(wall, furring, vent: float) -> list[tuple[float, float]]:
-    """The furring band's plan polygon less whatever cavity fill packs it.
+def _cavity_airgap(layers: Sequence[ResolvedLayer],
+                   furring: ResolvedLayer) -> ResolvedLayer | None:
+    """The AIRGAP layer immediately inboard of ``furring``, or ``None``.
 
-    An unfilled band vents over its whole depth, which is every rainscreen wall built
-    before the truss wall and is why this returns the band unchanged there. A band packed
-    with 2-1/2" of closed-cell foam vents only the 1" in front of it, and drawing the
-    screen across the foam too would put a 3-1/2" insect closure where a 1" one goes —
-    the same overstatement :func:`rainscreen_cavity_m` corrects for the order.
+    The other half of the reading :func:`rainscreen_band` takes: it adds that gap's depth to
+    the cavity, and this is the polygon that depth is actually in, so the screen the model
+    draws and the screen the take-off bills are one strip.
+    """
+    previous = None
+    for layer in layers:
+        if getattr(layer, "is_cavity", False):
+            continue
+        if layer is furring:
+            return (previous if previous is not None
+                    and previous.function == LayerFunction.AIRGAP.value else None)
+        previous = layer
+    return None
 
-    The fill's own polygon is no help here: ``topology._synchronize_cavity_polygons`` makes
-    every cavity layer share its host's ring by convention, so the fill's *depth* is the
-    only thing it can be measured by. Which end of the band that depth is packed against is
-    read off the stack — the cladding is outboard, so the vent is the slice nearest it.
+
+def _vented_band(wall, furring, vent: float,
+                 airgap: ResolvedLayer | None = None) -> list[tuple[float, float]]:
+    """The plan polygon of the cavity actually open at the base of the cladding.
+
+    Three cases, and each is a wall the house has actually built:
+
+    * **An unfilled band** vents over its whole depth — every rainscreen wall built before
+      the truss wall, and why this returns the band unchanged there.
+    * **A band packed with 2-1/2" of closed-cell foam** (the Swinburne outrigger) vents only
+      the 1" in front of it, and drawing the screen across the foam too would put a 3-1/2"
+      insect closure where a 1" one goes — the same overstatement
+      :func:`rainscreen_cavity_m` corrects for the order.
+    * **A solid band with its gap authored behind it** (the catlin truss's outer girt, with
+      the 1/2" vent as its own AIRGAP layer) vents over BOTH, and the strip has to span the
+      two polygons or the model draws a 1-1/2" closure where a 2" one goes.
+
+    The fill's own polygon is no help in the second case:
+    ``topology._synchronize_cavity_polygons`` makes every cavity layer share its host's ring
+    by convention, so the fill's *depth* is the only thing it can be measured by. Which end
+    of the band that depth is packed against is read off the stack — the cladding is
+    outboard, so the vent is the slice nearest it.
     """
     ring = list(furring.polygon)
-    if vent >= furring.thickness_m - 1e-9:
+    if airgap is not None and airgap.polygon:
+        # Two adjacent bands of one cavity. Unioned through ``resolve/overlay`` rather than
+        # with a bare ``unary_union``: the grid-size guard there is what keeps this from
+        # being fatal on the web app's GEOS 3.12 and silently wrong on the venv's 3.13.
+        merged = _merge_bands(ring, list(airgap.polygon))
+        if merged is not None:
+            ring = merged
+    if vent >= furring.thickness_m + (airgap.thickness_m if airgap is not None else 0.0) \
+            - 1e-9:
         return ring
     _origin, _tangent, across, axis_length = wall_frame(wall)
     if axis_length <= 0.0:
@@ -252,6 +305,19 @@ def _vented_band(wall, furring, vent: float) -> list[tuple[float, float]]:
         else (-across[0], -across[1])
     cut = max(x * outward[0] + y * outward[1] for x, y in ring) - vent
     return clip_half_plane(ring, (outward[0] * cut, outward[1] * cut), outward)
+
+
+def _merge_bands(a: list[tuple[float, float]],
+                 b: list[tuple[float, float]]) -> list[tuple[float, float]] | None:
+    """``a`` and ``b`` as one ring, or ``None`` if they do not merge into a simple one."""
+    from shapely.geometry import Polygon
+
+    from typehaus.resolve.overlay import union_all
+
+    merged = union_all([Polygon(a), Polygon(b)])
+    if merged.is_empty or merged.geom_type != "Polygon":
+        return None
+    return [(float(x), float(y)) for x, y in merged.exterior.coords[:-1]]
 
 
 def screens_rainscreen_base(model: ResolvedModel, wall) -> bool:

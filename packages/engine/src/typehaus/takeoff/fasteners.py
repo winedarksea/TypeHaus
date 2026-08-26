@@ -14,7 +14,13 @@ from dataclasses import dataclass
 
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.resolve.framing.truss_wall import BLOCK_SPACING, truss_layer_name
+from typehaus.resolve.framing.truss_girts import INNER
+from typehaus.resolve.framing.truss_wall import (
+    BLOCK_SPACING,
+    girt_block_tier,
+    truss_kind,
+    truss_layer_name,
+)
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.hardware_catalog import (
@@ -36,6 +42,14 @@ _MEMBRANE_FUNCTIONS = frozenset({"membrane"})
 #: rather than centred on it: the outrigger is on the stud line, so that face is the stud's
 #: face too, and both screws land inside the 1-1/2" the block laps the stud by.
 TRUSS_BLOCK_SCREWS = 2
+
+#: Screws per catlin-truss block. ONE, and that is a design decision rather than an
+#: economy: the block cannot rotate because the girt lying across it is continuous and
+#: screwed at every block along its run, so a second screw would be resisting a rotation
+#: the course itself already prevents. The two tiers are OFFSET half a bay rather than
+#: through-screwed, so every screw here is wood-to-wood with continuous lateral support —
+#: girt → block → sheathing → stud, or girt → block → girt — and nothing bears on foam.
+GIRT_BLOCK_SCREWS = 1
 
 
 @dataclass(frozen=True)
@@ -209,50 +223,91 @@ def exterior_insulation_screw_rows(model: ResolvedModel,
 
 def truss_wall_block_screw_rows(model: ResolvedModel,
                                 rules: ExteriorInsulationFastenerRules) -> list:
-    """The structural screws holding a truss wall's blocks to its studs.
+    """The structural screws holding a truss wall's blocks back to what carries them.
 
-    Counted off the resolved blocks rather than off a grid, because the blocks ARE the grid:
-    ``resolve/framing/truss_wall.py`` puts one every 40" up every outrigger, on the 16" stud
-    module, and two screws land squarely over the stud behind each. A rigid-CI wall's
-    16 x 24 x one-screw schedule is the wrong shape *and* the wrong count for that, which is
-    why this does not go through :func:`fastener_grid_count`.
+    Counted off the resolved blocks rather than off a grid, because the blocks ARE the grid.
+    A rigid-CI wall's 16 x 24 x one-screw schedule is the wrong shape *and* the wrong count
+    for either truss, which is why this does not go through :func:`fastener_grid_count`.
 
-    Length is derived the same way every other screw here is: through the block and the
-    sheathing, plus the embedment rule. No foam is in the path — the block is screwed on
-    bare sheathing and the ccSPF is sprayed around it afterwards — so this lands on an
-    ordinary structural screw rather than the 8" one the boards it replaced needed.
+    **Two walls, two stories, and the branch is worth stating.** A Swinburne wall
+    (``truss_frame.py``) puts a block every 40" up every outrigger on the 16" stud module and
+    takes two screws through block + sheathing into the stud. A catlin-truss wall
+    (``truss_girts.py``) puts a block under every girt course at every stud station and takes
+    ONE screw per block — but the two tiers land in different things, so they are two rows and
+    two lengths: block-1 goes through girt + block + sheathing into the stud (5"), block-2
+    through girt + block into the inner girt (4-1/2"). Both round up to the same part.
+
+    Length is derived the same way every other screw here is: everything the screw passes
+    through, plus the embedment rule. No foam is in the path in either case — every screw is
+    wood-to-wood with continuous lateral support, and the ccSPF is sprayed around it
+    afterwards — so both land on ordinary structural screws rather than the 8" ones the
+    boards they replaced needed.
     """
     from typehaus.resolve.framing.truss_wall import BLOCK_CATEGORY
 
     groups: dict = {}
     for wall in model.walls:
-        if truss_layer_name(model.plan, wall.assembly) is None:
+        kind = truss_kind(model.plan, wall.assembly)
+        if kind is None:
             continue
         sheathing_m = sum(layer.thickness_m for layer in wall.depth_layers()
                           if layer.function == "sheathing")
         for member in wall.members:
             if member.category != BLOCK_CATEGORY:
                 continue
-            through_in = (cross_section(member.profile).width_m + sheathing_m) / M_PER_IN
+            block_m = cross_section(member.profile).width_m
+            if kind == "girt":
+                tier = girt_block_tier(member.child_key)
+                if tier is None:
+                    continue
+                # The screw's head bears on the GIRT and its point lands in the stud (inner
+                # tier) or in the inner girt (outer tier), so what it passes through is the
+                # girt, then the block, then — for block-1 only — the sheathing.
+                through_in = (block_m + block_m
+                              + (sheathing_m if tier == INNER else 0.0)) / M_PER_IN
+                scope, screws = f"girt wall block-{tier}", GIRT_BLOCK_SCREWS
+            else:
+                through_in = (block_m + sheathing_m) / M_PER_IN
+                scope, screws = "truss wall blocks", TRUSS_BLOCK_SCREWS
             required_in = through_in + rules.minimum_structural_embedment_in
             item, length_in, part_number = screw_for_required_length(
                 ROLE_EXTERIOR_INSULATION_SCREW, required_in)
-            group = groups.setdefault((part_number, round(required_in, 3)), {
+            group = groups.setdefault((scope, part_number, round(required_in, 3)), {
                 "item": item, "length_in": length_in, "part_number": part_number,
                 "count": 0, "by_storey": Counter(), "required_in": required_in,
-                "through_in": through_in,
+                "through_in": through_in, "scope": scope, "kind": kind, "tier": tier
+                if kind == "girt" else None,
             })
-            group["count"] += TRUSS_BLOCK_SCREWS
-            group["by_storey"][wall.storey] += TRUSS_BLOCK_SCREWS
+            group["count"] += screws
+            group["by_storey"][wall.storey] += screws
 
     return [hardware_row(
-        group["item"], scope="truss wall blocks", count=int(group["count"]),
+        group["item"], scope=group["scope"], count=int(group["count"]),
         part_number=group["part_number"], size=f"{group['length_in']:g} in",
         by_storey=dict(sorted(group["by_storey"].items())),
-        basis=(f"{TRUSS_BLOCK_SCREWS} per block; one block at each end of every outrigger "
-               f"run and the rest spread at max {BLOCK_SPACING.inches:g} in o.c., "
-               f"outriggers at {rules.strip_spacing_in:g} in o.c. "
-               f"({group['through_in']:.2f} in through block + sheathing + "
-               f"{rules.minimum_structural_embedment_in:g} in embedment = "
-               f"{group['required_in']:.2f} in required)"),
+        basis=_block_screw_basis(group, rules),
     ) for _key, group in sorted(groups.items())]
+
+
+def _block_screw_basis(group: dict, rules: ExteriorInsulationFastenerRules) -> str:
+    """The honest sentence behind one block-screw row: what it goes through, and why that many.
+
+    Two different fastening stories share this function because they share the row shape,
+    and an estimator reading either one has to be able to re-derive the count from the
+    model without opening it.
+    """
+    penetration = (f"({group['through_in']:.2f} in through + "
+                   f"{rules.minimum_structural_embedment_in:g} in embedment = "
+                   f"{group['required_in']:.2f} in required)")
+    if group["kind"] != "girt":
+        return (f"{TRUSS_BLOCK_SCREWS} per block; one block at each end of every outrigger "
+                f"run and the rest spread at max {BLOCK_SPACING.inches:g} in o.c., "
+                f"outriggers at {rules.strip_spacing_in:g} in o.c. "
+                f"{penetration.replace('in through', 'in through block + sheathing')}")
+    lands = ("the stud, through girt + block + sheathing" if group["tier"] == INNER
+             else "the inner girt, through girt + block")
+    offset = ("on the stud line" if group["tier"] == INNER
+              else f"mid-bay, {rules.strip_spacing_in / 2:g} in off the block-1 line")
+    return (f"{GIRT_BLOCK_SCREWS} per block into {lands}; one block under every girt course "
+            f"at each stud station ({rules.strip_spacing_in:g} in o.c., {offset}) plus one "
+            f"at each free course end {penetration}")

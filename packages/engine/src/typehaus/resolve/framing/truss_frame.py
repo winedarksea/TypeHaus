@@ -22,7 +22,19 @@ from typehaus.resolve.framing.corners import neighbour_band_insets
 from typehaus.resolve.framing.furring import band_extent
 from typehaus.resolve.framing.profiles import cross_section, panel_profile
 from typehaus.resolve.framing.solver import _wall_top_elevations, band_axis
-from typehaus.resolve.geometry import add, length, scale, sub, unit, wall_frame
+from typehaus.resolve.framing.truss_common import (  # noqa: F401 - re-exported by truss_wall
+    BLOCK_CATEGORY,
+    BUCK_CATEGORY,
+    BUCK_THICKNESS_IN,
+    FLANGE_BEARING,
+    JAMB_PREFIX,
+    LADDER_CATEGORY,
+    BandFrame,
+    Vec,
+    nearest_bearing_gap,
+    outward_across,
+)
+from typehaus.resolve.geometry import length, sub, unit, wall_frame
 from typehaus.resolve.intervals import subtract as subtract_spans
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.model import (
@@ -32,22 +44,10 @@ from typehaus.resolve.model import (
     ResolvedWall,
 )
 
-#: A plan-frame point or unit vector, in metres (``resolve/geometry``'s convention).
-Vec = tuple[float, float]
-
-#: Categories the truss pieces bill under. Each is its own rather than folded into the
-#: existing ``blocking``/``strapping`` rows, for two reasons that point the same way. A
-#: 3-1/2" block, a 1/2" plywood tab, a 3/8" buck and a doubled ladder head are four different
-#: purchases, and one ``blocking`` row over all of them says nothing an estimator can act on.
-#: And none of them carries structural load — they carry cladding and a window — which
-#: ``checks/structural/interference`` has to know: they sit OUTBOARD of the sheathing, where
-#: the model's floor joists and eave stiffeners are laid to the wall's *axis* rather than its
-#: face (defect D3), so a shared square inch there is that datum offset and not the
-#: elevation-arithmetic bug that check exists to catch.
-BLOCK_CATEGORY = "truss_block"
+#: The two categories only the Swinburne pack has. The three both frames share —
+#: ``BLOCK_CATEGORY``, ``LADDER_CATEGORY``, ``BUCK_CATEGORY`` — live in ``truss_common`` and
+#: are imported above, so a girt's block and an outrigger's block bill on one row.
 TAB_CATEGORY = "truss_tab"
-LADDER_CATEGORY = "truss_blocking"
-BUCK_CATEGORY = "buck"
 #: A jamb FILLER: the rip that closes a gap too small to stand another outrigger in. It is
 #: laminated to the outrigger beside it and carries no pack of its own — that outrigger's
 #: block and tab hold both — so it is not "held on by air" the way a free-standing member
@@ -72,19 +72,11 @@ BLOCK_LENGTH = inch(8.0)
 BLOCK_SPACING = inch(40.0)
 
 #: Tab stock. 1/2" plywood, cut to the full truss depth so it laps the block over the whole
-#: 1-1/2" the block projects and the outrigger over its whole 3-1/2". Buck stock is 3/8",
-#: non-structural, lining the RO from the sheathing face out to the truss plane.
+#: 1-1/2" the block projects and the outrigger over its whole 3-1/2".
 TAB_THICKNESS_IN = 0.5
-BUCK_THICKNESS_IN = 0.375
 #: Corner box stock — the FHB Jan 2024 detail's "rips of plywood or OSB" — the same 1/2"
 #: as the tab, so ``family_of`` resolves it to the same OSB finish.
 CORNER_CAP_THICKNESS_IN = 0.5
-
-#: How far a rough-opening jamb may sit from the nearest outrigger face and still have the
-#: window's nailing flange land on wood. A flange is about 1-1/4" wide, so 1" of gap is the
-#: last position where a screw through it still bites. ``checks/structural`` reads the same
-#: constant, so the check and the emitter cannot disagree about which jambs are supported.
-FLANGE_BEARING = inch(1.0)
 
 #: Clear span past which head/sill blocking doubles up. A 60" French door's head blocking
 #: spans about 63" between flanking outriggers, which is more than a single 2x4 on edge
@@ -103,12 +95,13 @@ FILLER_LIMIT = inch(6.0)
 _TOL = 1e-9
 
 
-class TrussFrame:
+class TrussFrame(BandFrame):
     """The plan frame of one truss wall's outrigger band, and the pieces measured off it.
 
     Holding it as an object rather than threading eight floats through six functions: every
     piece here is placed by the same two numbers — a station along the wall and a depth out
-    from the sheathing — and they are worth deriving once.
+    from the sheathing — and they are worth deriving once. The datum itself, and the two
+    pieces that do not care which frame placed them, are ``truss_common.BandFrame``.
     """
 
     strapping_category = "strapping"
@@ -117,25 +110,7 @@ class TrussFrame:
                  first: float, last: float, band_depth: float,
                  block_material: str | None, band_material: str,
                  run: float = 0.0) -> None:
-        self.wall = wall
-        self.origin = origin            # band centreline start, in plan
-        self.direction = direction      # unit vector along the wall
-        self.across = across            # unit vector, sheathing -> cladding
-        # The band's own first and last station, mitred into its neighbours — the same
-        # extent ``frame_furring`` holds the outriggers inside. A block is 3-1/2" wide and
-        # sits 1" off its outrigger's centre, so without this it would happily reach past
-        # the mitre and into the next wall's truss.
-        self.first, self.last = first, last
-        # The band's own RAW axis length, before the mitre clips it to ``first``/``last`` —
-        # what ``corner_box`` needs to read the neighbour's band in this same coordinate
-        # frame, since the true building corner it reaches for sits outside ``[first, last]``.
-        self.run = run
-        # Every depth in this class is a signed offset along ``across`` in the plan frame,
-        # measured from the same origin the band centreline is on. One datum, so a block and
-        # a buck cannot disagree about where the sheathing face is.
-        self.band_mid = origin[0] * across[0] + origin[1] * across[1]
-        self.band_depth = band_depth
-        self.band_in = self.band_mid - band_depth / 2.0
+        super().__init__(wall, origin, direction, across, first, last, band_depth, run)
         self.block_material = block_material
         self.band_material = band_material
         self.outrigger_width = cross_section("2x4").width_m
@@ -143,7 +118,10 @@ class TrussFrame:
         self.block_depth = cross_section("2x4").width_m
         self.tab_thickness = inch(TAB_THICKNESS_IN).meters
         self.truss_depth = self.block_depth + band_depth
-        self.buck_thickness = inch(BUCK_THICKNESS_IN).meters
+        # The buck lines the RO from the sheathing face out to the truss plane: 1-1/2" of
+        # block plus the 3-1/2" band, so 5" on this wall.
+        self.buck_depth = self.truss_depth
+        self.buck_centre = self.band_in - self.block_depth + self.truss_depth / 2.0
 
     @classmethod
     def build(cls, plan: PlanModel, wall: ResolvedWall,
@@ -156,31 +134,14 @@ class TrussFrame:
         if run <= _TOL:
             return None
         direction = unit(sub(end, start))
-        # Which way is out. The stack resolves interior -> exterior, so the outermost body
-        # layer is further along the wall's own normal than the innermost by exactly the
-        # amount that names the sign. Reading it off the geometry rather than off
-        # ``outward_sign`` keeps this pass independent of how the topology solver spelled it.
-        bodies = [layer for layer in wall.layers if not layer.is_cavity and layer.polygon]
-        if len(bodies) < 2:
+        turned = outward_across(wall, across)
+        if turned is None:
             return None
-        inner, outer = _mean_offset(bodies[0], across), _mean_offset(bodies[-1], across)
-        if outer < inner:
-            across = (-across[0], -across[1])
+        across = turned
         first, last = band_extent(band.polygon, start, direction, run)
         return cls(wall, start, direction, across, first, last, band.thickness_m,
                    assembly_structure_material(plan, wall.assembly), band.material_ref,
                    run=run)
-
-    # --- placement -----------------------------------------------------------------
-    def point(self, station: float, depth: float) -> Vec:
-        """The plan point at ``station`` along the band, at signed ``depth`` across it."""
-        return add(add(self.origin, scale(self.direction, station)),
-                   scale(self.across, depth - self.band_mid))
-
-    def station_of(self, member: FramedMember) -> float:
-        """Where along the band a vertical member of this frame stands."""
-        offset = sub(member.p0, self.origin)
-        return float(offset[0] * self.direction[0] + offset[1] * self.direction[1])
 
     # --- the corner box --------------------------------------------------------------
     def corner_box(self, at_start: bool, neighbour_band_polygon) -> FramedMember | None:
@@ -495,7 +456,7 @@ class TrussFrame:
             faces.append(station + inward * self.outrigger_width / 2.0)
             point = self.point(station, self.band_mid)
             added.append((FramedMember(
-                self.wall.uid, f"strapping-jamb-{index:03d}-{side}",
+                self.wall.uid, f"{JAMB_PREFIX}{index:03d}-{side}",
                 self.strapping_category, "2x4", point, point,
                 self.wall.z0_m, z_head, z_head - self.wall.z0_m,
                 orient=self.direction, material=self.band_material), outward))
@@ -546,71 +507,6 @@ class TrussFrame:
                     z0, z1, span, material=self.band_material))
         return out
 
-    def buck(self, opening: ResolvedOpening, index: int) -> list[FramedMember]:
-        """3/8" plywood lining the RO on all four sides, sheathing face out to the truss plane.
-
-        Non-structural — it closes the foam at the reveal, gives the reveal a face, and
-        carries the sill pan and the head flashing. Bills as a panel, never as lumber. And it
-        goes in BEFORE the foam: with no WRB in the stack, the ccSPF is the water plane, and
-        it can only be continuous around an opening if the buck is already there to spray to.
-        """
-        profile = panel_profile(self.truss_depth / 0.0254, BUCK_THICKNESS_IN)
-        thickness = self.buck_thickness
-        centre = self.band_in - self.block_depth + self.truss_depth / 2.0
-        half = opening.width_m / 2.0
-        lo, hi = opening.center_along_m - half, opening.center_along_m + half
-        z_sill = self.wall.base_ref_z_m + opening.sill_m
-        z_head = z_sill + opening.height_m
-        p_a, p_b = self.point(lo, centre), self.point(hi, centre)
-        out: list[FramedMember] = []
-        # Head and sill line the RO from *inside* it, so the flashing above and the blocking
-        # below land on the buck's back rather than clashing through it.
-        for name, z0 in (("head", z_head - thickness), ("sill", z_sill)):
-            out.append(FramedMember(
-                self.wall.uid, f"buck-{name}-{index:03d}", BUCK_CATEGORY, profile,
-                p_a, p_b, z0, z0 + thickness, hi - lo, material="struct-1-plywood"))
-        z0, z1 = z_sill + thickness, z_head - thickness
-        if z1 - z0 > _TOL:
-            for side, jamb in enumerate((lo, hi)):
-                inward = 1.0 if side == 0 else -1.0
-                point = self.point(jamb + inward * thickness / 2.0, centre)
-                out.append(FramedMember(
-                    self.wall.uid, f"buck-jamb-{index:03d}-{side}", BUCK_CATEGORY, profile,
-                    point, point, z0, z1, z1 - z0,
-                    orient=self.across, material="struct-1-plywood"))
-        return out
-
-
-
-def nearest_bearing_gap(jamb: float, spans: list[tuple[float, float, float, float]],
-                        z0: float, z1: float) -> tuple[float, float] | None:
-    """``(clear gap, that member's near face)`` from an RO jamb, or ``None`` if nothing bears.
-
-    Zero gap when a member straddles the jamb — the flange lands squarely on wood — and the
-    distance to the nearer face otherwise.
-
-    Two things this has to get right and a station list cannot. Plan **spans**, because not
-    everything at a jamb is 1-1/2" wide: a jamb filler is one or two plies of 2x4 laminated
-    to the outrigger beside it. And the **elevation band** ``(z0, z1)`` the flange is at,
-    because an outrigger standing inside this very opening's width has been cut around it —
-    it exists below the sill and above the head and nowhere in between, so counting it as
-    wood at the jamb reports a bearing the window would fall straight through. That is not a
-    hypothetical: D-S-DECK-E's east jamb measured 1-1/4" to an outrigger 2" inside the door.
-    """
-    reachable = [(lo, hi) for lo, hi, mz0, mz1 in spans
-                 if mz0 < z1 - _TOL and z0 < mz1 - _TOL]
-    if not reachable:
-        return None
-    best: tuple[float, float] | None = None
-    for lo, hi in reachable:
-        if lo - _TOL <= jamb <= hi + _TOL:
-            return 0.0, jamb
-        face = lo if abs(lo - jamb) < abs(hi - jamb) else hi
-        gap = abs(face - jamb)
-        if best is None or gap < best[0]:
-            best = (gap, face)
-    return best
-
 
 def _stations(z0: float, z1: float, spacing: float, piece: float) -> list[float]:
     """Block bottoms up one outrigger run: one at each end, the rest spread evenly between.
@@ -634,12 +530,3 @@ def _stations(z0: float, z1: float, spacing: float, piece: float) -> list[float]
     bays = max(1, math.ceil(run / spacing - _TOL))
     step = run / bays
     return [z0 + index * step for index in range(bays + 1)]
-
-
-def _mean_offset(layer: ResolvedLayer, across: Vec) -> float:
-    """A layer band's mean signed offset along ``across``, in the plan frame."""
-    points = list(layer.polygon)
-    return float(sum(x * across[0] + y * across[1] for x, y in points) / len(points))
-
-
-

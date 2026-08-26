@@ -49,12 +49,14 @@ GARAGE_SIZE_FT = 24.0
 # are exactly what they were. The *cladding* is the controlling face now, where the stem
 # used to be.
 #
-# It grew 1/2" on 2026-08-23. The truss wall put the HOUSE's cladding 1/2" further north
-# (5.02" -> 5.5" proud of y=36'), which would have closed the breezeway's clear slot to
-# 4'-0" on the nose and left an uncut 4'-0" panel with nowhere to go; the garage moved with
-# it so the slot, and the panel's 1/2" reveal, are again exactly what they were. Both wall
-# lines moved — the garage is still 24'-0" square.
-GARAGE_GAP_FT = 4.5729166666666665
+# It grew 1/2" on 2026-08-23 and another 1" on 2026-08-26, for the identical reason both
+# times. The Swinburne truss put the HOUSE's cladding 1/2" further north (5.02" -> 5.5"
+# proud of y=36'); the catlin truss's four flat girt layers put it 1" further again
+# (5.5" -> 6.5"). Either move alone would have closed the breezeway's clear slot to 4'-0" on
+# the nose and left an uncut 4'-0" panel with nowhere to go, so the garage moved with it and
+# the slot — and the panel's 1/2" reveal — are again exactly what they were. Both wall lines
+# moved each time; the garage is still 24'-0" square.
+GARAGE_GAP_FT = 4.65625
 GARAGE_OVERHANG_IN = 16.0
 # eave_z_m is the rafter-top (deck) plane: the 11.875" I-joist rises above the knee-wall
 # plate by its depth less the seat drop across the stud (5.5" 2x6 depth x 4:12 pitch =
@@ -375,11 +377,13 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
     # eave rides the deck plane, ~10.04" (0.2551 m) above the plate.
     assert roof.eave_z_m - roof.bearing_z_m == pytest.approx(ft(DECK_RISE_FT).meters)
 
-    # 1.333" = the 4:12 rise over the horizontal distance from the footprint edge to
-    # the heel. It was 1.17" until 2026-08-23: the truss wall put the cladding face
-    # 0.48" further out, the zero-overhang roof laps the cladding, so the rafter tail
-    # and the deck plane above it went with it and the notch deepened by 0.48" x 4/12.
-    birdsmouth = inch(1.333).meters
+    # 1.667" = the 4:12 rise over the horizontal distance from the footprint edge to the
+    # heel. It has deepened twice, both times by the same arithmetic: the zero-overhang roof
+    # laps the CLADDING, so the rafter tail and the deck plane above it follow the cladding
+    # face out and the notch deepens by the move times 4/12. 1.17" under the rigid-CI stack;
+    # 1.333" from 2026-08-23, when the Swinburne truss moved the face 0.48"; 1.667" since
+    # 2026-08-26, when the catlin truss moved it a further 1.0".
+    birdsmouth = inch(1.667).meters
     rafters = [m for m in roof.members if m.category == "rafter"]
     assert not [m for m in roof.members if m.category == "seat_cut"], \
         "the seat is part of the rafter's own solid now, not a block beside it"
@@ -411,14 +415,18 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
         deck, foam = setbacks["zip"][edge], setbacks["polyiso-1"][edge]
         batten, metal = setbacks["top-deck"][edge], setbacks["roofing"][edge]
         assert deck >= foam >= batten >= metal
-        # Wall stack per the reference: deck clips at the wall-sheathing face (spray foam +
-        # the on-edge outrigger band + cladding), metal runs 0.6" proud of the truss plane.
-        # 0.02 + 2 + 2 + 0.5 + 0.5 = 5.02" until the truss wall replaced that stack.
-        assert deck == pytest.approx(inch(1.5 + 3.5 + 0.5).meters)
-        # 1/2" cladding + the 1" rainscreen vent. It was 1/2" + 1/2" of furring until the
-        # truss wall; the outrigger band that replaced the furring is 3-1/2" deep but 2-1/2"
-        # of that is packed with foam, and only the vent is a gap the roof's foam clears.
-        assert foam == pytest.approx(inch(1.5).meters)
+        # Wall stack per the reference: the deck clips at the wall-sheathing face (the whole
+        # catlin-truss stand-off plus the cladding), metal runs 0.6" proud of the mount
+        # plane. 0.02 + 2 + 2 + 0.5 + 0.5 = 5.02" for the rigid-CI stack, 5.5" for the
+        # Swinburne truss, 6.5" since the catlin truss laid four flat layers where the
+        # outrigger band was.
+        assert deck == pytest.approx(inch(1.5 + 1.5 + 1.0 + 0.5 + 1.5 + 0.5).meters)
+        # 1/2" cladding + the 2" vented cavity the roof's foam clears. It was 1/2" + 1/2" of
+        # furring under the rigid-CI stack, and 1/2" + a 1" vent under the Swinburne truss
+        # (whose 3-1/2" band was 2-1/2" packed with foam). The catlin truss's cavity is the
+        # 1/2" gap PLUS the 1-1/2" between girt courses — ``accessories.rainscreen_band``
+        # reads both, and this is the number that follows it.
+        assert foam == pytest.approx(inch(2.5).meters)
         assert batten == pytest.approx(inch(0.5).meters)
         assert metal == pytest.approx(inch(-0.1).meters)
         # The nailbase deck is the case that made _layer_group position-aware (2026-08-20).
@@ -1771,8 +1779,9 @@ def _facade_stations(model, wall_tag: str, category: str, child_prefix: str = ""
     """``{storey: [station in inches]}`` for one facade line's members of ``category``.
 
     ``child_prefix`` narrows a category that more than one layer writes into: ``strapping``
-    carries both the exterior outrigger band and the plant room's horizontal liner courses,
-    and only the first is a facade grid.
+    carries both the exterior stand-off band and the plant room's horizontal liner courses,
+    and ``truss_block`` carries both girt tiers, of which only the inner one is on the stud
+    module (block-2 is deliberately half a bay off it).
     """
     from typehaus.resolve.layout_lines import lines_by_wall
 
@@ -1799,27 +1808,34 @@ def _off_module(stations) -> list[float]:
 
 
 @pytest.mark.parametrize("wall_tag", FACADE_WALLS)
-def test_each_facade_outrigger_band_is_one_grid_on_every_storey(catlin_model, wall_tag):
-    """The line the standing seam clips to, and so the one the eye reads off the street.
+def test_each_facade_block_grid_is_one_grid_on_every_storey(catlin_model, wall_tag):
+    """The screws that hold the cladding on, and so the line the eye reads off the street.
 
-    The outriggers are a 16" module and the panel above them is a 16" module, so the two are
-    the same line or the facade is wrong. Every storey of a facade must therefore lay out the
-    *identical* set of stations: the module itself, plus one end strip held in at each true
-    building corner. What this rules out is the old behaviour, where each of the six or seven
-    wall segments a facade is authored as framed its own end strip at the tee it was split
-    at — a doubled panel line on main that the storey above put somewhere else entirely.
+    The catlin truss (2026-08-26) turned the stand-off on its side: the girts are horizontal
+    and it is their BLOCKS that phase-lock to the 16" stud module, one under every course at
+    every stud station. So the facade's vertical grid is the block grid now, and the claim is
+    the one the outrigger band used to carry — every storey of a facade lays out the identical
+    module. What it rules out is the old behaviour, where each of the six or seven wall
+    segments a facade is authored as framed its own end piece at the tee it was split at: a
+    doubled fastening line on main that the storey above put somewhere else entirely.
+
+    **On-module stations only**, and the exclusion is the interesting half. A girt wall
+    carries three kinds of deliberately off-module block: the one at each free course end,
+    the pair under every jamb post, and the ones SNAPPED onto a cripple that the opening's
+    own rhythm put two inches off the wall's (``GirtFrame.snap``). All three are the
+    openings' business, and the openings differ storey to storey. The module underneath them
+    does not — 26 stations at 16" o.c. on every facade of every storey, unbroken.
     """
-    by_storey = _facade_stations(catlin_model, wall_tag, "strapping",
-                                 "strapping-outrigger-")
+    by_storey = _facade_stations(catlin_model, wall_tag, "truss_block", "block-1-")
     assert set(by_storey) == {"main", "second", "attic"}, by_storey.keys()
-    main, second, attic = (by_storey["main"], by_storey["second"], by_storey["attic"])
+    on_module = {storey: [s for s in stations if s not in _off_module(stations)]
+                 for storey, stations in by_storey.items()}
+    main, second, attic = (on_module["main"], on_module["second"], on_module["attic"])
     assert main == second == attic, (
-        f"{wall_tag}: the outrigger grid differs storey to storey\n"
+        f"{wall_tag}: the block grid differs storey to storey\n"
         f"  main   {main}\n  second {second}\n  attic  {attic}")
-    # Two off-module strips and no more: the end strip held inside each corner.
-    assert len(_off_module(main)) == 2, _off_module(main)
-    interior = [s for s in main if s not in _off_module(main)]
-    gaps = {round(b - a, 3) for a, b in zip(interior, interior[1:], strict=False)}
+    assert len(main) >= 20, f"{wall_tag}: only {len(main)} module blocks on a facade"
+    gaps = {round(b - a, 3) for a, b in zip(main, main[1:], strict=False)}
     assert gaps <= {16.0}, f"{wall_tag}: the module breaks at {sorted(gaps)}"
 
 

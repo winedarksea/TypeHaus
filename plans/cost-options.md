@@ -230,7 +230,7 @@ the total. Those rows say **built**. The rest are arithmetic on named `prices.to
 |---|---|---|---|
 | 1 | **Attic level → trussed cold attic + blown R-60** | **$89,000–160,000** | see above |
 | 2 | ⏳ Driveway apron + walks — defer to a later contract | $18,000–44,000 | allowance |
-| 3 | **House-wall cladding: standing-seam snap-lock → lap siding on the same outriggers** | **$15,600–29,000** | built |
+| 3 | **House-wall cladding: standing-seam snap-lock → lap or panel siding on the same girts** | **$15,600–29,000** | built |
 | 4 | Excavation: reuse spoil on site instead of hauling off | $10,000–25,000 | allowance note |
 | 5 | Roofs (house + garage, 2,186 SF): standing seam → architectural asphalt | $9,700–18,200 <br>+$1,500–3,000 of snow retention | built |
 | 6 | Garage ICF stem → conventional formed frost wall | $9,400–16,900 | arithmetic |
@@ -281,11 +281,14 @@ Re-priced at $5.00–9.00/SF installed (steel or engineered-wood lap, or a fibre
 the band published for metal siding and for LP SmartSide alike): total
 $951,336–1,992,450 → **$935,575–1,963,226**, **−$15,600 / −$29,000**.
 
-- **The outriggers decide what can go on.** They are KDAT 2x4 on edge, **vertical**, at 16"
-  o.c. That is a direct nailer for *horizontal* lap or panel and takes it with no extra
-  framing. A vertical ribbed or corrugated panel wants horizontal girts and would need a
-  second layer, which eats a third of the saving — price that version separately before
-  choosing it.
+- **The girts decide what can go on, and since 2026-08-26 they decide in favour of more.**
+  The wall's stand-off is now two tiers of KDAT/SPF 2x4 laid **flat and horizontal** at 24"
+  o.c. (the catlin truss), not the vertical outriggers this row was written against. A
+  vertical ribbed or corrugated panel wants exactly this — horizontal girts — so the "would
+  need a second layer, which eats a third of the saving" caveat is **gone**: the substrate is
+  already there. Horizontal lap is the one that now wants thought, since its nailer would
+  want to be vertical; a lap panel spanning 24" between girts is ordinary, but check the
+  product's span rating before assuming it.
 - **A half version exists.** Keeping standing seam on the south and west elevations
   (~1,212 SF) and lapping north and east (~2,300 SF) is roughly **−$10,000 / −$17,600**.
 - **Cost of the cut:** this is a metal-clad house whose roof, walls, corner trim and edge
@@ -392,10 +395,16 @@ $951,336–1,992,450 → **$945,604–1,984,213**, **−$5,600 / −$8,000**.
   clear of the MN prescriptive R-20+5ci and still inside the Pretty Good House band for
   zone 6. It is the row on this list that most directly spends building performance for
   money, and it is the smallest saving of the four built rows — **weigh it last, not first.**
-- **The lumber does not come back with it.** The outrigger stays a 2x4 on edge and the
-  rainscreen gap grows 1.0" → 2.5". A 2x3 outrigger (1.5" foam + 1" gap, R-35 total) would
-  take the KDAT line down too, but `[framing]` has no 2x3 row and the truss-wall geometry
-  tests are written against the 3.5" member — price that separately.
+- **RESTATE THIS ROW BEFORE COSTING IT (2026-08-26).** It was written against the Swinburne
+  outrigger band, where the foam and the vent shared one 3-1/2" layer and the saving was a
+  single `CavityFill` thickness. The catlin truss authors the 4" as three separate bands
+  (1-1/2" band A, the inner girt's own 1-1/2" fill, and 1" of band C in front of it), so the
+  same move is now "drop `foam-vent` to zero and the inner girt's fill to 1-1/2"" — mostly
+  the same foam, spelled in a different place. The R numbers above are stale for the same
+  reason: the baseline is R-40.7 on the card and ≈R-37.5 honest, not R-38.7.
+- **The lumber does not come back with it.** Both girt tiers stay 2x4 flat; what grows is the
+  vent gap. Taking the KDAT line down means a narrower OUTER girt, not a narrower foam band,
+  and `[framing]` has no 2x3 row — price that separately.
 
 ### 12 — the plant room
 

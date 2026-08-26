@@ -539,6 +539,118 @@
       "node": "polyline",
       "points": [
         [
+          59.772480314960646,
+          -12.5
+        ],
+        [
+          72.0,
+          -12.5
+        ],
+        [
+          72.0,
+          -11.875
+        ],
+        [
+          59.772480314960646,
+          -11.875
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CBR401AAAA-ceiling",
+      "tag": "CEIL-RM-B-FURNACE"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          59.772480314960646,
+          -12.5
+        ],
+        [
+          72.0,
+          -12.5
+        ],
+        [
+          72.0,
+          -11.875
+        ],
+        [
+          59.772480314960646,
+          -11.875
+        ]
+      ],
+      "pattern": "gwb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          72.0,
+          -12.5
+        ],
+        [
+          84.22751968503937,
+          -12.5
+        ],
+        [
+          84.22751968503937,
+          -11.875
+        ],
+        [
+          72.0,
+          -11.875
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CBR408AAAA-ceiling",
+      "tag": "CEIL-RM-B-ESS"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          72.0,
+          -12.5
+        ],
+        [
+          84.22751968503937,
+          -12.5
+        ],
+        [
+          84.22751968503937,
+          -11.875
+        ],
+        [
+          72.0,
+          -11.875
+        ]
+      ],
+      "pattern": "gwb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           70.25,
           -109.4375
         ],
@@ -708,19 +820,19 @@
       "points": [
         [
           70.5,
-          -27.9375
+          -29.4375
         ],
         [
           73.5,
-          -27.9375
+          -29.4375
         ],
         [
           73.5,
-          -20.6875
+          -22.1875
         ],
         [
           70.5,
-          -20.6875
+          -22.1875
         ]
       ],
       "layer": "S-FRAM",
@@ -736,19 +848,19 @@
       "boundary": [
         [
           70.5,
-          -27.9375
+          -29.4375
         ],
         [
           73.5,
-          -27.9375
+          -29.4375
         ],
         [
           73.5,
-          -20.6875
+          -22.1875
         ],
         [
           70.5,
-          -20.6875
+          -22.1875
         ]
       ],
       "pattern": "lumber",

@@ -231,6 +231,118 @@
       "node": "polyline",
       "points": [
         [
+          196.65748031496068,
+          -15.374999999999998
+        ],
+        [
+          216.0,
+          -15.374999999999998
+        ],
+        [
+          216.0,
+          -11.875
+        ],
+        [
+          196.65748031496068,
+          -11.875
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CBR403AAAA-ceiling",
+      "tag": "CEIL-RM-B-SAUNA"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          196.65748031496068,
+          -15.374999999999998
+        ],
+        [
+          216.0,
+          -15.374999999999998
+        ],
+        [
+          216.0,
+          -11.875
+        ],
+        [
+          196.65748031496068,
+          -11.875
+        ]
+      ],
+      "pattern": "sauna-tg",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "sauna-tg"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          216.0,
+          -12.5
+        ],
+        [
+          231.8425196850394,
+          -12.5
+        ],
+        [
+          231.8425196850394,
+          -11.875
+        ],
+        [
+          216.0,
+          -11.875
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CBR405AAAA-ceiling-FS-M-EAST",
+      "tag": "CEIL-RM-B-GYM-FS-M-EAST"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          216.0,
+          -12.5
+        ],
+        [
+          231.8425196850394,
+          -12.5
+        ],
+        [
+          231.8425196850394,
+          -11.875
+        ],
+        [
+          216.0,
+          -11.875
+        ]
+      ],
+      "pattern": "gwb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           215.37500000000003,
           -11.875
         ],
@@ -1190,6 +1302,78 @@
         0.8880000000000001
       ],
       "content": "concrete  12\"",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.5,
+          0.6480000000000001
+        ],
+        [
+          0.64,
+          0.6480000000000001
+        ],
+        [
+          0.64,
+          0.7880000000000001
+        ],
+        [
+          0.5,
+          0.7880000000000001
+        ]
+      ],
+      "pattern": "gypsum",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "paper",
+      "node": "polyline",
+      "points": [
+        [
+          0.5,
+          0.6480000000000001
+        ],
+        [
+          0.64,
+          0.6480000000000001
+        ],
+        [
+          0.64,
+          0.7880000000000001
+        ],
+        [
+          0.5,
+          0.7880000000000001
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.2,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        0.7,
+        0.7180000000000002
+      ],
+      "content": "gwb  0.625\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

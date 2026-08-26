@@ -116,10 +116,11 @@ def outie_window_truss(model, wall, opening, crop, direction, station) -> list[I
 
     The innie recipe above measures both pieces from ``sheath_out``, because that is where an
     innie unit sits: in the stud plane, behind the insulation, with the flashing lapped onto
-    the WRB. A truss wall has neither of those things. The unit sits 5" further out, in the
-    truss plane, its flanges bearing on the outriggers and the head/sill blocking; the water
-    plane is the spray foam, not a sheet; and between the truss plane and the cladding there
-    is a 1" drained and back-vented gap for the pan to discharge into.
+    the WRB. A truss wall has neither of those things. The unit sits five or six inches
+    further out, in the MOUNT plane, its flanges bearing on the standoff framing and on the
+    head/sill blocking; the water plane is the spray foam, not a sheet; and between the
+    mount plane and the cladding there is a drained and back-vented gap for the pan to
+    discharge into.
 
     So both pieces move out with the window:
 
@@ -135,11 +136,20 @@ def outie_window_truss(model, wall, opening, crop, direction, station) -> list[I
       discharges BEHIND the cladding, not past it: an outie pan that ran out to a visible
       drip would put a metal lip under every window on the facade.
 
-    The buck, the head/sill blocking and the outriggers themselves are not drawn here. They
-    are real resolved members now (``resolve/framing/truss_wall.py``), so the cut already
-    carries them, and convention linework over a solid is a second, disagreeing drawing of
-    the same wood.
+    The buck, the head/sill blocking and the standoff framing itself are not drawn here.
+    They are real resolved members now (``resolve/framing/truss_wall.py``), so the cut
+    already carries them, and convention linework over a solid is a second, disagreeing
+    drawing of the same wood.
+
+    **One recipe, two truss walls.** Everything above is read off the resolved stack rather
+    than named — the mount plane is the outermost furring band's outer face (5" on a
+    Swinburne wall, 6" on a girt wall), and the foam face is whatever the vent gap exposes
+    (1" behind the plane, or 2") — so the catlin truss needed exactly one number telling it
+    apart: how tall the head/sill blocking is, which is 1-1/2" for a 2x4 on edge and 3-1/2"
+    for the same board laid flat. ``truss_kind`` picks it.
     """
+    from typehaus.resolve.framing.truss_wall import truss_kind
+
     if not is_weather_exposed(wall):
         return []
     is_outboard_high = outboard_is_high(wall, direction, station)
@@ -154,7 +164,7 @@ def outie_window_truss(model, wall, opening, crop, direction, station) -> list[I
     out_sign = 1.0 if is_outboard_high else -1.0
     sheath_out = face_of(sheath, is_outboard_high, outer=True)
     foam_face = vent_face(wall, band, is_outboard_high)        # what the vent gap exposes
-    truss_plane = face_of(band, is_outboard_high, outer=True)  # where the flanges land
+    truss_plane = face_of(band, is_outboard_high, outer=True)  # the mount plane
     clad_out = face_of(clad, is_outboard_high, outer=True)
     clad_in = face_of(clad, is_outboard_high, outer=False)
     sill_z, head_z = opening_z_in(wall, opening)
@@ -162,7 +172,10 @@ def outie_window_truss(model, wall, opening, crop, direction, station) -> list[I
 
     nodes: list[IRNode] = []
     if _in_crop_z(head_z, crop):
-        block_top = head_z + cfg.truss_blocking_in
+        blocking_in = (cfg.girt_blocking_in
+                       if truss_kind(model.plan, wall.assembly) == "girt"
+                       else cfg.truss_blocking_in)
+        block_top = head_z + blocking_in
         path = path_from_steps((foam_face, block_top + cfg.outie_head_rise_in), [
             (0.0, -cfg.outie_head_rise_in),
             ((clad_out - foam_face) + out_sign * cfg.head_flashing_lip_in, 0.0),
@@ -170,7 +183,7 @@ def outie_window_truss(model, wall, opening, crop, direction, station) -> list[I
         ])
         nodes += flashing_nodes(path, tag="opening-head-flashing")
         # Sealant at the cladding-to-frame joint, tucked under the flashing's drip. The
-        # joint is at the truss plane now, which is the cladding's own inner face.
+        # joint is at the mount plane now, which is the cladding's own inner face.
         nodes += rect_region(clad_in - out_sign * cfg.sealant_bead_in,
                              head_z - cfg.sealant_bead_in, clad_in, head_z,
                              "opening-sealant", "sealant", "metal", lineweight=0.3)
