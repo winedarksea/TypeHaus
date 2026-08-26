@@ -230,7 +230,7 @@ the total. Those rows say **built**. The rest are arithmetic on named `prices.to
 |---|---|---|---|
 | 1 | **Attic level → trussed cold attic + blown R-60** | **$89,000–160,000** | see above |
 | 2 | ⏳ Driveway apron + walks — defer to a later contract | $18,000–44,000 | allowance |
-| 3 | **House-wall cladding: standing-seam snap-lock → exposed-fastener PBR panel on the same girts** | **$14,025–30,249** | **TAKEN 2026-08-26**, 0 FAIL |
+| 3 | **House-wall cladding: standing-seam snap-lock → exposed-fastener PBR panel on the same girts** | **$14,043–30,279** | **TAKEN 2026-08-26**, 0 FAIL |
 | 4 | Excavation: reuse spoil on site instead of hauling off | $10,000–25,000 | allowance note |
 | 5 | Roofs (house + garage, 2,186 SF): standing seam → architectural asphalt | $9,700–18,200 <br>+$1,500–3,000 of snow retention | built |
 | 6 | Garage ICF stem → conventional formed frost wall | $9,400–16,900 | arithmetic |
@@ -269,8 +269,8 @@ and it is the smallest of the four built rows, which is the argument for weighin
 ### 3 — the wall cladding is the biggest lever that is not a feature
 
 > **TAKEN on 2026-08-26.** The house walls are `pbr-panel-26`, a 26 ga exposed-fastener PBR
-> panel at $4.50–7.25/SF installed. The realised saving is **−$14,025 / −$30,249** on
-> `subtotal_net` and **−$16,756 / −$36,281** on the full marked-up total — the low end lands
+> panel at $4.50–7.25/SF installed. The realised saving is **−$14,043 / −$30,279** on
+> `subtotal_net` and **−$16,778 / −$36,318** on the full marked-up total — the low end lands
 > on this row's pre-flight estimate and the high end runs past it, because the pre-flight
 > was written against 3,512 SF and the resolved area is 3,672 SF. The garage was **excluded**;
 > see the note at the end of this section. Figures and caveats below are the original
@@ -324,9 +324,9 @@ structural screws, and that cost cancels the saving over 631 SF. It keeps
 |---|---|---|---|
 | house-wall cladding, 3,670.7 → 3,672.2 SF | $32,119–58,731 | $16,525–26,623 | **−$15,594 / −$32,108** |
 | 48 `S-5-S` wall wind clamps | $300–492 | — | −$300 / −$492 |
-| 11 CanDuit rings + the 11 seam clamps they required | $209–407 | $32–58 | −$178 / −$350 |
+| 11 CanDuit rings + 13 S-5! seam clamps (11 carried, 2 on enclosures) | $227–437 | $32–58 | −$195 / −$379 |
 | 3,098 T09150HWAM panel screws | — | $1,794–2,246 | **+$1,794 / +$2,246** |
-| **net on `subtotal_net`** | | | **−$14,025 / −$30,249** |
+| **net on `subtotal_net`** | | | **−$14,043 / −$30,279** |
 
 The `S-5-S` clamps and the CanDuit rings went because they *cannot work* on a seamless panel,
 not to save money: the S clamp closes on a snap-lock leg, and `S5_CANDUIT_PIPE_CLAMP` declares
@@ -348,7 +348,7 @@ Split honestly, both built:
 | swap | area | current | saves |
 |---|---|---|---|
 | **roofs only** → architectural asphalt, both roofs | 2,186 SF (`RF-HOUSE` 1,436.6 + `RF-GARAGE` 749.6) | $20,331–36,322 | **$9,700–18,200** |
-| **house walls only** → PBR panel (row 3 above, TAKEN) | 3,672.2 SF | $32,119–58,731 | **$14,025–30,249** *(realised)* |
+| **house walls only** → PBR panel (row 3 above, TAKEN) | 3,672.2 SF | $32,119–58,731 | **$14,043–30,279** *(realised)* |
 | *garage walls, left alone* | 663.3 SF (`standing-seam-nailstrip-26`) | $3,980–7,296 | *under threshold on its own* |
 
 Plus, on the roof swap only, the S-5! seam clamp family and the formed ridge cap go away:

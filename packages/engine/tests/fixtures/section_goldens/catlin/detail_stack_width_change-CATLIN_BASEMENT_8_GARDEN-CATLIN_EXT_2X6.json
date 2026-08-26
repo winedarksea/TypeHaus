@@ -707,7 +707,7 @@
       "node": "polyline",
       "points": [
         [
-          -6.5,
+          -7.250000000000001,
           -13.437499999999998
         ],
         [
@@ -719,7 +719,7 @@
           6.247539370078742
         ],
         [
-          -6.5,
+          -7.250000000000001,
           6.247539370078742
         ]
       ],
@@ -735,7 +735,7 @@
       "node": "hatch",
       "boundary": [
         [
-          -6.5,
+          -7.250000000000001,
           -13.437499999999998
         ],
         [
@@ -747,7 +747,7 @@
           6.247539370078742
         ],
         [
-          -6.5,
+          -7.250000000000001,
           6.247539370078742
         ]
       ],
@@ -756,7 +756,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "standing-seam-snaplock"
+      "material": "pbr-panel-26"
     },
     {
       "space": "model",
@@ -1417,7 +1417,7 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -6.25,
+          -6.625000000000001,
           4.158650481189853
         ],
         "name": ""
@@ -1427,10 +1427,10 @@
         4.158650481189853
       ],
       "to": [
-        -6.25,
+        -6.625000000000001,
         4.158650481189853
       ],
-      "text": "cladding 0.5\"",
+      "text": "cladding 1.25\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2630,7 +2630,7 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "standing-seam-snaplock"
+      "material": "pbr-panel-26"
     },
     {
       "space": "paper",
@@ -2667,7 +2667,7 @@
         2.85,
         0.8880000000000001
       ],
-      "content": "standing-seam-snaplock  0.5\"",
+      "content": "pbr-panel-26  1.25\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

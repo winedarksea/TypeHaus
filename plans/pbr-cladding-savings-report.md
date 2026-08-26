@@ -24,24 +24,24 @@ Figures are the takeoff's own, before and after, from `haus takeoff houses/catli
 | `envelope_layers` house-wall cladding, 3,670.7 → 3,672.2 SF | $32,119 – $58,731 | $16,525 – $26,623 | **−$15,594 / −$32,108** |
 | 48 `S-5-S` wall wind clamps | $300 – $492 | — | −$300 / −$492 |
 | 11 `S-5! CanDuit` rings (#11 ×3, #13 ×8) | $110 – $242 | — | −$110 / −$242 |
-| the 11 `S-5!` seam clamps those rings *required* | $99 – $165 | — | −$99 / −$165 |
+| 13 `S-5!` seam clamps: 11 carried under those rings, plus the 2 wall-mounted enclosure clamps | $117 – $195 | — | −$117 / −$195 |
 | 11 `SS316-STANDOFF-STRAP` through-panel straps | — | $32 – $58 | +$32 / +$58 |
 | 3,098 `T09150HWAM` panel screws (2,473 field + 625 sidelap) | — | $1,794 – $2,246 | **+$1,794 / +$2,246** |
-| roof metal + polyiso, from the grown cladding lap | $22,759 – $39,574 | $22,912 – $39,839 | +$153 / +$265 |
-| **net, before waste / contingency / tax** | **$850,207 – $1,778,149** | **$836,182 – $1,747,900** | **−$14,025 / −$30,249** |
+| roof layers (metal, polyiso, ZIP, OSB, deck barrier), from the grown cladding lap | $31,021 – $54,939 | $31,231 – $55,307 | +$210 / +$368 |
+| **net, before waste / contingency / tax** | **$850,207 – $1,778,149** | **$836,164 – $1,747,870** | **−$14,043 / −$30,279** |
 
 **Marked up**, the saving grows, because every stage of the ladder scales with it:
 
 | stage | before | after | delta |
 |---|---|---|---|
-| `subtotal_net` | $850,207 – $1,778,149 | $836,182 – $1,747,900 | −$14,025 / −$30,249 |
-| waste | $13,752 – $25,153 | $13,069 – $23,655 | −$683 / −$1,498 |
-| `subtotal_ordered` | $863,959 – $1,803,301 | $849,251 – $1,771,555 | −$14,709 / −$31,746 |
-| contingency (10%) | $86,396 – $180,330 | $84,925 – $177,156 | −$1,471 / −$3,175 |
-| tax (8.53%) | $25,825 – $49,801 | $25,249 – $48,441 | −$577 / −$1,360 |
-| **total** | **$976,181 – $2,033,432** | **$959,424 – $1,997,151** | **−$16,756 / −$36,281** |
+| `subtotal_net` | $850,207 – $1,778,149 | $836,164 – $1,747,870 | −$14,043 / −$30,279 |
+| waste | $13,752 – $25,153 | $13,068 – $23,654 | −$684 / −$1,499 |
+| `subtotal_ordered` | $863,959 – $1,803,301 | $849,232 – $1,771,524 | −$14,727 / −$31,777 |
+| contingency (10%) | $86,396 – $180,330 | $84,923 – $177,152 | −$1,473 / −$3,178 |
+| tax (8.53%) | $25,825 – $49,801 | $25,247 – $48,438 | −$579 / −$1,363 |
+| **total** | **$976,181 – $2,033,432** | **$959,402 – $1,997,114** | **−$16,778 / −$36,318** |
 
-The material/labour split of the net delta is **−$5,911 / −$13,992 material** and
+The material/labour split of the net delta is **−$5,929 / −$14,022 material** and
 **−$8,114 / −$16,257 labour**. That split is not decoration: per `takeoff/cost_model.py`
 waste applies to material and to merged lines but **never** to declared labour, so the waste
 line above moves on the material half only — which is why waste falls by roughly 12% of the
@@ -73,8 +73,9 @@ written against 3,512 SF and the resolved area is 3,672 SF.
   guard: the four seam profiles' fixings stay inside their own rates, and `[basis_notes]`
   records that the five rows must never be re-merged.
 - **A small counter-effect, honestly reported.** The roof laps the cladding, so a face 3/4"
-  further out grows the roof footprint slightly: +$153 / +$265 across the roofing metal and
-  the roof polyiso. It is inside the noise of the saving but it is not zero.
+  further out grows the roof footprint slightly: +$210 / +$368 across every roof layer —
+  the metal, both polyiso courses, the ZIP, the OSB top deck and the deck vapour barrier.
+  It is inside the noise of the saving but it is not zero.
 
 ## What it cost that is not money
 

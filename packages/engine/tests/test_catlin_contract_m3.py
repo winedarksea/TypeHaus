@@ -441,7 +441,17 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
         # since the PBR panel (2026-08-26). It moves with the panel and never with the
         # stand-off behind it.
         assert batten == pytest.approx(inch(1.25).meters)
-        assert metal == pytest.approx(inch(-0.1).meters)
+        # ``metal`` is ``batten - _METAL_PROUD_M``: the roofing is clipped 0.6" proud of
+        # the FURRING, which is a roof-side dimension and does not know how thick the wall
+        # panel is. So a thicker panel does not push the roofing out — it leaves the wall
+        # standing proud of it. 1/2" of snap-lock pan put the roofing 0.1" OUTSIDE the
+        # cladding face (a negative setback, shedding outward); 1-1/4" of PBR leaves the
+        # panel 0.65" proud of the roofing instead.
+        #
+        # That is honest geometry rather than a regression, and it is a DETAILING note for
+        # the zero-overhang edge: the corner trim now covers a 0.65" step rather than
+        # overhanging the wall by 0.1", so its lower leg has to kick out over the panel.
+        assert metal == pytest.approx(inch(0.65).meters)
         # The nailbase deck is the case that made _layer_group position-aware (2026-08-20).
         # It is a SHEATHING layer like the ZIP below the foam, but it stands where a vented
         # roof's battens stood, so it must clip with the battens and not inherit the deck's

@@ -425,7 +425,12 @@
 # the row billed nothing. A price row for a part the model does not contain is not harmless:
 # it reads as coverage.
 "MASA" = { low = 1.75, high = 3 }  # 109 ea
-"S-5!" = { low = 9, high = 15 }  # 19 ea
+# 6 ea, all of them CARRIED under the ColorGard rail (`requires_role`) — none directly
+# modeled any more. It was 19: two wall-mounted enclosure clamps (CN-A-NEMA-CLAMP,
+# CN-A-PV-CLAMP) plus 11 carried under the CanDuit rings, and all thirteen went on
+# 2026-08-26 when the house walls became an exposed-fastener panel with no seam to clamp.
+# The row stays for the ColorGard's carriers and for the revert.
+"S-5!" = { low = 9, high = 15 }  # 6 ea
 # The two CanDuit rings are NOT TAKEN as of 2026-08-26 — 0 ea each. The house walls went to
 # `pbr-panel-26`, an exposed-fastener panel with no seam, and the ring mounts on a seam
 # clamp by its M8 shaft (`requires_role`): it would arrive with a bracket that has nothing
