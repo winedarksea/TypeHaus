@@ -264,6 +264,9 @@ _GLAZED_GREEN_BRICK_BASE = "#1b4332"  # materials.ts GLAZED_GREEN_BRICK_STYLE.ba
 _GLAZED_LAPIS_BRICK_BASE = "#10386a"
 _GLAZED_GOLD_BRICK_BASE = "#c08a12"
 _BROWN_BRICK_BASE = "#a07c5c"  # lightened + de-jittered 2026-08-21; see materials.ts
+# The garage east wainscot (2026-08-26) — materials.ts BUFF_BRICK_STYLE.base. A retint of
+# the brown-brick recipe, not the glazed one: an unglazed single-body buff.
+_BUFF_BRICK_BASE = "#ded3bd"
 _DECK_BOARD_BASE = "#b9bcc0"    # materials.ts ALUMINUM_DECK_BASE_COLOR (0xb9bcc0)
 
 _EXTERIOR_DARK = "#1c1f24"      # the house's one exterior dark; see window_trim above
@@ -276,6 +279,7 @@ _FINISH_BASE: dict[str, str] = {
     "glazed-lapis-brick": _GLAZED_LAPIS_BRICK_BASE,
     "glazed-gold-brick": _GLAZED_GOLD_BRICK_BASE,
     "brown-brick": _BROWN_BRICK_BASE,
+    "buff-brick": _BUFF_BRICK_BASE,
     # Formed edge trim ordered in a second coil colour (Roof.edge_trim_material). Without an
     # entry it falls to the "metal" family's blue-grey, and the accent that makes a
     # zero-overhang rake legible would differ between the .glb and the viewer.

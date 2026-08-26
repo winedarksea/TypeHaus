@@ -36,6 +36,7 @@ from typehaus.takeoff.framing import (
     structural_solids_takeoff,
 )
 from typehaus.takeoff.edge_trim import edge_trim_takeoff
+from typehaus.takeoff.fasteners import exposed_fastener_cladding_screw_rows
 from typehaus.takeoff.glazing import (
     glazing_fastener_rows,
     glazing_panel_takeoff,
@@ -60,6 +61,7 @@ from typehaus.takeoff.wall_structure import wall_structure_takeoff
 
 __all__ = [
     "glazing_panel_takeoff", "glazing_trim_takeoff", "glazing_fastener_rows",
+    "exposed_fastener_cladding_screw_rows",
     "backup_component_rows", "backup_equipment", "backup_runtime_summary",
     "conduit_takeoff", "electrical_device_takeoff",
     "panel_schedule", "service_load_summary", "solar_takeoff",

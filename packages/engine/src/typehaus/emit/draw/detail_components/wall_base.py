@@ -35,6 +35,10 @@ from typehaus.quantities import M_PER_IN
 from typehaus.resolve.accessories import BUG_SCREEN_HEIGHT_IN, BUG_SCREEN_MATERIAL
 from typehaus.resolve.model import ResolvedLayer, ResolvedWall
 
+# How near a banded layer's top must land on the wall top to read as "runs to the top" —
+# a protection panel is ordered flush with the wall it faces, not to a course line.
+_PANEL_TOP_TOL_M = 0.5 * M_PER_IN
+
 
 def basement_framed_wall(model, framed, concrete, crop, direction,
                          station) -> list[IRNode]:
@@ -274,11 +278,31 @@ def _authored_protection_band(wall: ResolvedWall) -> ResolvedLayer | None:
     drawing showed 2'-6" of trim while the order billed a parge coat over the whole 9'.
     Consolidating here is the same move ``wall_base`` already made for the bug screen, whose
     material and height it imports straight from ``resolve/accessories.py``.
+
+    **"The last banded layer" is not the test, and used to be.** A band is a general
+    mechanism — an interior thermal barrier above grade, a brick ledge below it — and only
+    a band that both stands OUTBOARD OF THE INSULATION it protects and runs UP TO THE WALL
+    TOP is the panel this component draws. Catlin's garage ICF stem carries an interior
+    ``gwb-stem`` band (code.R316_4) and, on its two brick-ledged east segments, an outboard
+    ``brick-ledge`` band that runs from the wall base up to one course above grade. The old
+    rule read the gypsum on one and the concrete ledge on the other, drawing a "protection
+    board" over a buried shelf. Neither is a protection panel; both walls fall through to
+    the derived band below, which is grade-to-top on the outboard foam face — the same
+    answer the gypsum coincidentally gave.
     """
-    banded = [layer for layer in wall.layers
-              if getattr(layer, "is_banded", False)
-              and not getattr(layer, "is_cavity", False)]
-    return banded[-1] if banded else None
+    layers = [layer for layer in wall.layers if not getattr(layer, "is_cavity", False)]
+    last_foam = max((index for index, layer in enumerate(layers)
+                     if layer.function == "insulation"), default=None)
+    if last_foam is None:
+        return None
+    wall_top = wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m
+    for layer in reversed(layers[last_foam + 1:]):
+        if not getattr(layer, "is_banded", False):
+            continue
+        _band_z0, band_z1 = layer.band(wall)
+        if abs(band_z1 - wall_top) <= _PANEL_TOP_TOL_M:
+            return layer
+    return None
 
 
 def _foam_is_already_covered(wall: ResolvedWall) -> bool:

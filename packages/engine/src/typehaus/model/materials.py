@@ -58,6 +58,13 @@ class Material(HausModel):
     # changes no quantity, no price and no building-science number. Leave it None and the old
     # tag comparison is exactly what happens, so no existing house moves.
     skin_family: str | None = None
+    # This cladding panel is fixed by screws driven through its FACE into the substrate,
+    # rather than by concealed clips or a folded seam. It is what lets ``takeoff.fasteners``
+    # bill the panel screws as a counted part: on a clipped or seamed panel the fixings ride
+    # inside the $/SF cladding rate and counting them again would double-bill them. So the
+    # default is False and only a panel that really is face-fastened opts in — the flag is
+    # the double-billing guard, not a description of the profile.
+    exposed_fastener: bool = False
     # Gypsum board grade, where the material *is* gypsum board. Not a general fire-rating
     # field: residential construction has exactly two rated assemblies (the garage/dwelling
     # separation and a dwelling-unit separation), and putting a fire-resistance rating on

@@ -206,7 +206,7 @@ CATLIN_EXT_2X6 = Assembly(
               framing=FramingSpec(member="2x4", direction="horizontal", laid="flat",
                                   spacing=inch(24), layout_origin="line",
                                   standoff="block")),
-        Layer(name="cladding", material_ref="standing-seam-snaplock", thickness=inch(0.5),
+        Layer(name="cladding", material_ref="pbr-panel-26", thickness=inch(1.25),
               function=LayerFunction.CLADDING),
     ),
     interfaces=(_STUD_BEARING,),
@@ -901,6 +901,103 @@ GARAGE_ICF_6 = Assembly(
     source="library GARAGE_ICF's 6\" concrete core (ICF-6, matching masonry spec) + this house's 2.5\" EPS facing (thinner than library's 2.625\" generic default) and gwb-stem interior banding above grade (code.R316_4)",
 )
 
+# --- garage east brick wainscot (2026-08-26) ---------------------------------------------
+#
+# The two 4'-0" strips of east wall flanking the overhead door carry a short buff-brick
+# wainscot: the most-abused surface on the building (apron splash, snow piled off the drive,
+# trimmers, car doors) gets the one face that does not care. Full 3 5/8" brick, not thin
+# brick, which means real bearing — hence the ledge below and the veneer wall in
+# plan/storeys/garage.py rather than a WallPaneling band (a band carries neither a wythe
+# thickness nor an air gap, and the wood-surfaces rollup only bills materials with a
+# `species`, so a brick band would produce no BOM line at all).
+#
+# Coursing, modular 2 2/3", working up from grade (-2'-10"):
+#     ledge/shelf top   2 2/3" above grade   (-2'-7 1/3")
+#     15 courses field  40"                  (+0'-8 2/3")
+#     rowlock cap       4"                   (+1'-0 2/3")
+#     metal cap flash   1 1/3"               (+1'-2" == 4'-0" above grade, on the nose)
+# The shelf sits one course module ABOVE finish grade rather than at it — the cheapest
+# durability move available in a 40+ freeze-thaw-cycle climate, lifting the base course
+# clear of the worst splash and snow-contact zone.
+GARAGE_BRICK_LEDGE_RISE = inch(2.66667)  # one modular course; shelf top above grade
+# 1" air space (IRC R703.8 minimum) + a 3 5/8" wythe: how far east of the node line the
+# bearing shelf has to project. Below the shelf the concrete section widens from 11" to
+# ~15 5/8" — all of it below grade and backfilled, so none of it is visible.
+GARAGE_BRICK_LEDGE = inch(4.625)
+
+# GARAGE_ICF_6 with a brick ledge appended as one extra OUTERMOST layer. Brick-ledge ICF
+# forms are catalog items for 6" and 8" cores (Amvic, Nudura, Alliance), and the ICF Brick
+# Ledge Extension is rated for "any height, angle and side of an ICF wall"; ours lands near
+# grade, well below the top of the stack — the easy case. A 4' welded-wire reinforcer
+# dropped into the ledge is the standard way to develop it.
+#
+# OUTERMOST is not a style choice, it is the only thing that works. A banded layer with no
+# `slot` still occupies its full depth over the whole wall (see model/assembly.py's note on
+# `extent`): a general stepped section — thicker core below, thinner above — is not
+# expressible, because a stack whose total thickness varies with elevation is not something
+# `Wall.alignment` can answer. As the LAST layer nothing outboard of it is displaced, and
+# params/foundations.py's `face("concrete-ext", offset=GARAGE_ICF_EPS)` measures from the
+# INTERIOR, so `_ALIGN` is unchanged and the ledge grows east exactly as wanted.
+#
+# NOT a `slot`: every member of a slot must carry the same thickness
+# (integrity.assembly_layers), so a slot cannot express a 4 5/8" step against an 11" wall
+# and would only add a finding.
+#
+# The band top is the GRADE datum, not a literal elevation — the same mechanism the
+# `gwb-stem` layer already uses, so the ledge tracks `Site.grade` and follows the next grade
+# lift instead of silently detaching from it. Everything above the ledge is GARAGE_ICF_6
+# restated verbatim; above the shelf this is the same wall.
+GARAGE_ICF_6_BRICKLEDGE = Assembly(
+    tag="GARAGE_ICF_6_BRICKLEDGE",
+    layers=(
+        Layer(name="gwb-stem", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH,
+              extent=LayerExtent(bottom=LayerBound(datum=LayerDatum.GRADE))),
+        Layer(name="eps-int", material_ref="icf-eps", thickness=GARAGE_ICF_EPS,
+              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+        Layer(name="concrete", material_ref="concrete", thickness=GARAGE_ICF_CORE,
+              function=LayerFunction.STRUCTURE,
+              masonry=MasonrySpec(unit_size="ICF-6", core_fill=True,
+                                  rebar_spacing=inch(16))),
+        Layer(name="eps-ext", material_ref="icf-eps", thickness=GARAGE_ICF_EPS,
+              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+        Layer(name="brick-ledge", material_ref="concrete", thickness=GARAGE_BRICK_LEDGE,
+              function=LayerFunction.STRUCTURE,
+              extent=LayerExtent(bottom=LayerBound(datum=LayerDatum.WALL_BASE),
+                                 top=LayerBound(datum=LayerDatum.GRADE,
+                                                offset=GARAGE_BRICK_LEDGE_RISE))),
+    ),
+    source="GARAGE_ICF_6 + a mid-stack ICF brick-ledge form (Amvic/Nudura/Alliance brick-ledge block, or the ICF Brick Ledge Extension rated for any height) carrying the east wainscot's 3 5/8\" wythe on a shelf one modular course above grade; 4' welded-wire reinforcer in the ledge; ledge and the widened section below it are backfilled and not visible",
+)
+
+# The wainscot itself: a short veneer wall standing in front of the existing stem/wood wall,
+# exactly W-B-BRICK's precedent (plan/storeys/basement.py). ONE flat field, no `slot`-banded
+# courses — BASEMENT_BRICK_VENEER's banding exists to serve the Ishtar scheme; this wall is
+# one brick, and the rowlock cap is a separate element, not a band.
+#
+# STRUCTURE, not CLADDING, on the wythe — the same reason BASEMENT_BRICK_VENEER gives, and
+# RETAINING_BLOCK_12's precedent: this wythe has nothing behind it IN THIS ASSEMBLY (the
+# backer is a different wall), so it has to be the structure layer or
+# integrity.assembly_layers finds none.
+#
+# The detailing that keeps this alive is in the veneer wall's own notes and the house
+# CLAUDE.md: through-wall flashing + weeps at the base course on the ledge, a second
+# through-wall flashing under the cap, and ties that DIFFER BY BACKING — the storey datum is
+# -1'-0", so ~19 3/8" of brick backs onto the ICF stem and ~24 5/8" onto the wood wall above
+# it. Corrugated ties are only valid where the brick back is within 1" of framing, and
+# across the zip-R it is not: screw-on adjustable two-piece ties above the datum
+# (IRC R703.8.4).
+GARAGE_BRICK_WAINSCOT = Assembly(
+    tag="GARAGE_BRICK_WAINSCOT",
+    layers=(
+        Layer(name="air-gap", material_ref="air-barrier", thickness=inch(1.0),
+              function=LayerFunction.AIRGAP),
+        Layer(name="brick", material_ref="buff-brick", thickness=inch(3.625),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="garage east wainscot flanking the overhead door — full-wythe buff face brick on a 1\" drained cavity (IRC R703.8), borne on GARAGE_ICF_6_BRICKLEDGE's shelf; through-wall flashing + weeps at 33\" o.c. max at the base course and again under the cap; two-piece adjustable ties into studs above the storey datum, ICF ties below",
+)
+
 # --- frost-protected shallow foundation, sunken-garden side -----------------------------
 #
 # The condition, measured 2026-08-22: the sunken garden's floor is at -9'-4", the south house
@@ -1462,6 +1559,32 @@ MATERIALS = [
              color="#6b7076",
              skin_family="standing-seam",
              source="26 ga. PVDF-coated steel, nail-strip seam profile — the detached garage's wall spec; same white as the house, one gauge thinner"),
+    # `pbr-panel-26` (2026-08-26) — 26 ga, EXPOSED-FASTENER PBR. The house walls,
+    # CATLIN_EXT_2X6 and PLANT_EXT_2X6_HUMID, taking over from `standing-seam-snaplock`.
+    # The fifth metal skin and the only one that is not a concealed-fixing product: 36" net
+    # coverage with 1-1/4" major ribs at 12" o.c., screwed through its face into the girts.
+    #
+    # It is here because the 2026-08-26 truss-girt work built the substrate for it — flat
+    # horizontal 2x4 girts at 24" o.c. are exactly what a PBR panel wants and are the
+    # reason this stops at the house: GARAGE_WALL_2X6 has no furring at all (cladding
+    # straight on Zip-R), so PBR there would need a whole new girt layer, and that cost
+    # cancels the saving over 631 SF. The garage stays on `standing-seam-nailstrip-26`.
+    #
+    # `exposed_fastener=True` is not decoration: it is what lets `takeoff.fasteners` bill
+    # the panel screws as a counted part. On the four skins above the fixings ride inside
+    # the $/SF rate and counting them again would double-bill them.
+    #
+    # `skin_family="standing-seam"` is load-bearing for the ROOF EDGE, not the appearance:
+    # `resolve.roof_edge_geometry.continuous_skin_cladding` returns True only when every
+    # wall under a roof reads as one skin with the roofing, and without it the flush
+    # zero-overhang edge silently reverts to a fascia-and-drip-edge detail nobody drew.
+    # This is precisely the case that field's docstring describes — one white steel skin,
+    # several specifications.
+    Material(tag="pbr-panel-26", name="PBR exposed-fastener steel panel, 26 ga.",
+             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
+             color="#6b7076", finish="ribbed-panel",
+             skin_family="standing-seam", exposed_fastener=True,
+             source="26 ga. PVDF-coated steel PBR (purlin-bearing rib) wall panel, 36\" net coverage, 1-1/4\" major ribs at 12\" o.c., face-fastened with gasketed screws; same white paint and the same vapour-impermeable sheet steel as the four skins above"),
     Material(tag="polyiso-foil", name="Foil-faced polyisocyanurate", r_per_inch=6.0,
              perm_rating=0.03, hatch="rigid", color="#d9d2a8", foam_plastic=True,
              source="foil facer is the sauna's vapour retarder as well as its CI"),
@@ -1569,6 +1692,21 @@ MATERIALS = [
              r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
              color="#a07c5c", finish="brown-brick",
              source="basement south veneer, the Ishtar plinth (2026-08-20) — standard unglazed face brick, no special order"),
+    # Light buff face brick for the garage east wainscot (2026-08-26). Same clay physics as
+    # every other brick here — a brick is a brick and only the face differs, which is the
+    # whole reason `finish` and `color` are separate fields from `r_per_inch`/`density`.
+    #
+    # Deliberately NOT `white-brick`: a warmer stock buff unit is a commodity at Twin Cities
+    # yards where true white is a special order, and that price gap is the entire reason this
+    # material exists separately rather than reusing the porch railing's white.
+    #
+    # Colour is authored a step DARKER than the target tone — the viewer's lighting lifts
+    # albedo well above what is written here (the lesson recorded on glazed-lapis-brick and
+    # #1c1f24). `finish` names the recipe explicitly so no renderer infers "buff" from the tag.
+    Material(tag="buff-brick", name="Light buff face brick (ASTM C216 Grade SW)",
+             r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
+             color="#ded3bd", finish="buff-brick",
+             source="garage east wainscot — ASTM C216 Grade SW (severe weathering), through-body light buff, a SINGLE light body and not a blend: a chip or a trimmer scar exposes the same colour rather than a red core, and Grade SW is not optional at 40+ freeze-thaw cycles a year; stock buff, not the special-order true white of white-brick"),
     # cmu, grout (porch railing wythe/balcony post bases) were promoted to
     # library/materials.py on 2026-08-22 (CONTRIBUTING §Promotion flow); they arrive here
     # through STARTER_MATERIALS above.
@@ -1718,7 +1856,7 @@ PLANT_EXT_2X6_HUMID = Assembly(
               framing=FramingSpec(member="2x4", direction="horizontal", laid="flat",
                                   spacing=inch(24), layout_origin="line",
                                   standoff="block")),
-        Layer(name="cladding", material_ref="standing-seam-snaplock", thickness=inch(0.5),
+        Layer(name="cladding", material_ref="pbr-panel-26", thickness=inch(1.25),
               function=LayerFunction.CLADDING),
     ),
     interfaces=(_STUD_BEARING,),
@@ -1887,6 +2025,8 @@ ASSEMBLIES = [
     PIER_CONCRETE_12,
     RAILING_DARK_METAL,
     GARAGE_ICF_6,
+    GARAGE_ICF_6_BRICKLEDGE,
+    GARAGE_BRICK_WAINSCOT,
     GARAGE_WALL_2X6,
     GARAGE_SLAB_ON_GRADE,
     SG_FROST_WING_XPS1,

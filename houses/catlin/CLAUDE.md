@@ -686,6 +686,53 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   either FAILS `code.R311_3_exterior_landing` on both doors or lays a joist through
   `PT-BW-1..4`. It was tried and reverted on 2026-08-22; the reasoning is in
   `params/breezeway.py`.
+- **The garage's east elevation carries a 4'-0" buff brick wainscot, and the cap flashing
+  is the part not to value-engineer away.** The two 4'-0" strips of wall flanking the 16'
+  overhead door are the most-abused surface on the building — apron splash, snow piled off
+  the drive, trimmers, car doors — so they get full 3 5/8" face brick (`buff-brick`, ASTM
+  C216 **Grade SW**, through-body single light body; a chip exposes the same colour, and
+  Grade SW is not optional at 40+ freeze-thaw cycles a year). Not thin brick, so real
+  bearing: `W-GF-E1`/`W-GF-E2` are formed with a mid-stack ICF brick-ledge block
+  (`GARAGE_ICF_6_BRICKLEDGE`), and the veneer itself is its own short wall
+  (`W-G-BRICK-S`/`-N`, `GARAGE_BRICK_WAINSCOT`) standing in front of the existing one,
+  exactly `W-B-BRICK`'s precedent.
+  - **The 4'-0" pier widths are not a free choice.** Those two stem segments exist only
+    because the stem drops to a grade beam under the door, so their width IS
+    `OVERHEAD_DOOR_OFFSET` and their inboard ends ARE the door jambs. Moving the door
+    moves the brick. Held by
+    `test_catlin_contract_m3.py::test_garage_brick_wainscot_piers_are_the_door_jambs_and_cap_at_four_feet`.
+  - **Coursing, modular 2 2/3", off grade at -2'-10":** shelf top 2 2/3" (-2'-7 1/3"),
+    15 courses of field brick 40" (+0'-8 2/3"), sloped rowlock cap 4" (+1'-0 2/3"), metal
+    cap flashing 1 1/3" — **top of cap 4'-0" above grade on the nose**, every course a
+    whole module. The shelf sits one module *above* finish grade rather than at it: the
+    cheapest durability move available, lifting the base course clear of the worst splash
+    and snow-contact zone.
+  - **The backing changes mid-wainscot and so do the ties.** The garage storey datum is
+    -1'-0", so ~19 3/8" of brick backs onto the ICF stem and ~24 5/8" onto the wood wall
+    above it. Corrugated ties are valid only where the brick back is within 1" of framing,
+    and across the zip-R it is not: **screw-on adjustable two-piece ties into studs above
+    the datum** (IRC R703.8.4), ICF ties below. Easiest thing on this wall to get wrong.
+  - **The cap is the durability crux.** A 4' wainscot that stops mid-wall is a horizontal
+    termination, and that is where these details fail here. Through-wall flashing + weeps
+    at 33" o.c. max at the base course on the ledge (IRC R703.8 — a weep near each end at
+    this length), a second through-wall flashing under the cap, and a formed metal cap
+    flashing with a **drip edge** in the house's `#1c1f24`, kicked out over the rainscreen
+    above so water leaves the wall instead of tracking behind the cladding. The cap is a
+    modelled `Flashing` (`TR-G-BRICK-CAP-S/N`, `TrimKind.DRIP_FLASHING`); the inboard
+    kick-out is not — `DRIP_FLASHING` has only the one outboard turn-down and `TrimKind`
+    has no coping kind. Do not invent one.
+  - The veneer is filed on the **garage** storey, never `basement`. `RM-GARAGE` is
+    unconditioned, so it drops out of the block load cleanly; on `basement` it would read
+    as an envelope foundation wall and silently inflate `building_science.energy_load` and
+    `mep.heating_capacity` instead of erroring. Its four nodes are new, local and
+    `open_end=True` — node lookup is storey-scoped and the stem's nodes are filed on
+    `basement`, so a `N-GF-*` reference would resolve to nothing with no finding at all.
+  - Its layout line runs on the **brick face**, not the node line, and `face("brick-ext")`
+    is why: on x = 24'-0" it would sit on top of the stem's and W-G-E's layout lines,
+    inside `_axis_match`'s 1/2" tolerance, and `integrity.stack_ambiguous` is a hard ERROR.
+  - `FT-GF-E1`/`FT-GF-E2` widened 20" -> 24" and sit **2" east** of their un-ledged
+    neighbours: `center_on="wall"` re-centres on the stepped section, ledge band included.
+    Correct, but nothing downstream may be dimensioned off their edges.
 - **The garage ICF stem is boarded above grade, and `code.R316_4` is why.** `GARAGE_ICF_6`
   carries a 5/8" gypsum layer on its INSIDE face, banded from the `GRADE` datum up — the
   2.5" of interior EPS stood bare from the slab to the stem top, ~176 SF of foam plastic

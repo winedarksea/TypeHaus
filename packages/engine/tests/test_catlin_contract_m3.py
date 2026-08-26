@@ -1311,6 +1311,55 @@ def test_garage_overhead_door_opens_from_the_slab_at_grade(catlin_model):
         assert cripple.z0_m == pytest.approx(backing.z1_m)
 
 
+def test_garage_brick_wainscot_piers_are_the_door_jambs_and_cap_at_four_feet(catlin_model):
+    """The two things about the east brick wainscot a future edit could silently break.
+
+    **The piers are not a free choice.** W-G-BRICK-S/N stand on the two stem segments that
+    exist only because the stem drops to a grade beam under the overhead door, so their
+    4'-0" width IS ``OVERHEAD_DOOR_OFFSET`` and their inboard ends ARE the door jambs. The
+    editable-plan dialect bans arithmetic, so plan/storeys/garage.py spells the four node y
+    values as literals and nothing but this test ties them back to the door.
+
+    **Top of cap is 4'-0" above grade on the nose**, and every course below it is a whole
+    2 2/3" module: shelf at grade + 1 course, 15 courses of field brick, a 4" rowlock, then
+    1 1/3" of cap flashing. Read off ``site.grade`` for the same reason the stem test does —
+    the wainscot is a property of the ground, and the house datum is not the ground.
+
+    Neither fact has a check behind it. A veneer wall whose node fails to resolve comes back
+    ``None`` silently — no geometry and no finding — so the first assertion here is simply
+    that the two walls exist at all.
+    """
+    grade_m = catlin_model.plan.project.site.grade.meters
+    south = catlin_model.wall("W-G-BRICK-S")
+    north = catlin_model.wall("W-G-BRICK-N")
+    assert south is not None and north is not None
+
+    # W-G-E runs south -> north, so ``center_along_m`` is measured from its south end and
+    # the two jambs are absolute y values on the same line the piers stand on.
+    door = next(o for o in catlin_model.openings if o.tag == "D-G-OVERHEAD")
+    host = catlin_model.wall("W-G-E")
+    (_, ya), (_, yb) = host.axis[0], host.axis[-1]
+    assert yb > ya, "W-G-E is authored south -> north; the jamb maths below assumes it"
+    jamb_lo = ya + door.center_along_m - door.width_m / 2.0
+    jamb_hi = ya + door.center_along_m + door.width_m / 2.0
+
+    for wall, jamb, end in ((south, jamb_lo, "north"), (north, jamb_hi, "south")):
+        ys = sorted(p[1] for p in wall.axis)
+        assert ys[1] - ys[0] == pytest.approx(ft(4.0).meters), "pier is the door offset"
+        # The pier's inboard end lands on the jamb it flanks.
+        inboard = ys[1] if end == "north" else ys[0]
+        assert inboard == pytest.approx(jamb)
+
+    # Whole modules all the way up, and the cap 4'-0" over grade.
+    course = inch(2.0 + 2.0 / 3.0).meters
+    for wall in (south, north):
+        assert wall.z0_m == pytest.approx(grade_m + course), "base course one module up"
+        assert wall.z1_m - wall.z0_m == pytest.approx(inch(44.0).meters)  # 15 courses + rowlock
+    caps = [s for s in catlin_model.solids if str(s.tag).startswith("TR-G-BRICK-CAP-")]
+    assert caps, "the cap flashing is a modelled element, not just a note"
+    assert max(c.z1_m for c in caps) == pytest.approx(grade_m + ft(4.0).meters)
+
+
 def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_model):
     """D-G-SERVICE follows the *deck*, and D-G-OVERHEAD follows the *slab*. That split is
     the whole shape of the 2026-08-18 lift at the garage.

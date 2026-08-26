@@ -19,8 +19,10 @@ from typehaus.takeoff.hardware_catalog import (
     ROLE_MUDSILL_ANCHOR,
     ROLE_POST_BASE,
     ROLE_BEAM_HOLD_DOWN,
+    ROLE_EXPOSED_FASTENER_PANEL_SCREW,
     ROLE_GLAZING_PANEL_FASTENER,
     ROLE_PIPE_CLAMP,
+    ROLE_THROUGH_PANEL_PIPE_STRAP,
     ROLE_POCKET_DOOR_FRAME_KIT,
     ROLE_PV_SEAM_CLAMP,
     ROLE_SLOPED_JOIST_HANGER,
@@ -284,6 +286,50 @@ KBS_BEAM_HOLD_DOWN = StructuralHardware(
            "beam-to-post uplift, which is the joint it is used for here",
 )
 
+# The screw an exposed-fastener wall panel is hung on. Driven through the panel flat (not
+# the rib) into the support behind, it is the ONLY penetration in the water plane, so the
+# gasket — not the steel — sets the service life of the wall.
+#
+# 316, not 304: this is a lakeside/road-salt exposure, and a stainless screw head that
+# streaks or pits is both the leak path and the thing you look at from the driveway.
+#
+# Length arithmetic, so the choice is auditable: 1-1/2" through a ~0.02" 26 ga panel into
+# the flat 1.5" KDAT outer girt leaves ~1.4" of embedment — the full thickness of the
+# nailer, with the tip breaking through into the blind 0.5" vent gap behind it rather than
+# stopping in the sheathing. Longer is not better here: a screw that reaches the WRB adds a
+# second penetration in a plane that is meant to stay unbroken.
+EXPOSED_FASTENER_PANEL_SCREW = StructuralHardware(
+    tag="simpson-t09150hwam-panel-screw",
+    name="#9 x 1-1/2\" 316 stainless metal-panel screw, EPDM washer",
+    role=ROLE_EXPOSED_FASTENER_PANEL_SCREW,
+    manufacturer=_SIMPSON,
+    model="T09150HWAM",
+    part_number_by_length_in={1.5: "T09150HWAM"},
+    source="Simpson Strong-Tie T09150HWAM (strongtie.com) — #9 x 1-1/2\" Type 316 stainless "
+           "metal-panel screw, hex washer head with a bonded EPDM sealing washer, for "
+           "through-fastening metal panel to a wood support",
+)
+
+# The strap that carries a round pipe on an exposed-fastener panel. The CanDuit ring above
+# cannot serve here: it mounts on a seam clamp by its M8 shaft (``requires_role``), and a
+# PBR wall has no seam to clamp. This one reaches the building the other way — two panel
+# screws straight through the panel flat into the girt — so it declares no ``requires_role``
+# and brings its own fixings instead of a bracket.
+#
+# The standoff block is what makes it legal on a ribbed panel: without it the strap would
+# bear on the rib crowns and either crush them or hold the pipe off the wall unevenly.
+THROUGH_PANEL_PIPE_STRAP = StructuralHardware(
+    tag="through-panel-standoff-pipe-strap",
+    name="316 stainless two-hole pipe strap on standoff block",
+    role=ROLE_THROUGH_PANEL_PIPE_STRAP,
+    manufacturer="generic",
+    model="SS316-STANDOFF-STRAP",
+    source="generic Type 316 stainless two-hole pipe strap on a moulded standoff block, "
+           "sized on pipe OUTER diameter the way the CanDuit ring is; fixed with two "
+           "T09150HWAM gasketed panel screws per point. No single manufacturer system is "
+           "specified, so this record is deliberately generic",
+)
+
 # Multiwall polycarbonate is fastened through oversize holes so the sheet can move: the
 # washer seals, the screw does not clamp. Stainless because the fastener sits in the wet
 # zone of an exterior roof for the life of the sheet.
@@ -378,6 +424,8 @@ STRUCTURAL_HARDWARE: tuple = (
     S5_COLORGARD_SNOW_RETENTION,
     KBS_BEAM_HOLD_DOWN,
     POLY_PANEL_FASTENER,
+    EXPOSED_FASTENER_PANEL_SCREW,
+    THROUGH_PANEL_PIPE_STRAP,
     POCKET_FRAME_KIT_1500PF,
     POCKET_FRAME_KIT_HEAVY,
 )

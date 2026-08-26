@@ -224,6 +224,17 @@ _ALIGN = face("concrete-ext", offset=GARAGE_ICF_EPS)
 
 _STEM = dict(assembly="GARAGE_ICF_6", alignment=_ALIGN, top_elevation=_STEM_TOP,
              bottom_elevation=ft(_GRADE_FT - _FROST))
+# The two east segments flanking the overhead door carry the brick wainscot
+# (plan/storeys/garage.py's W-G-BRICK-S/N), so their stem is the brick-ledge form: the same
+# wall above the shelf, widened below it to bear a full 3 5/8" wythe. A sibling dict rather
+# than a mutation of _STEM, which every other segment shares.
+#
+# These walls are NOT conceptually new — they exist today only because the stem drops to a
+# grade beam under the door, and they already happen to be exactly the 4'-0" piers the
+# wainscot wants. Only the assembly string changes; the uids stay.
+_STEM_BRICKLEDGE = dict(assembly="GARAGE_ICF_6_BRICKLEDGE", alignment=_ALIGN,
+                        top_elevation=_STEM_TOP,
+                        bottom_elevation=ft(_GRADE_FT - _FROST))
 _GRADE_BEAM = dict(assembly="GARAGE_ICF_6", alignment=_ALIGN,
                    top_elevation=_GRADE_BEAM_TOP,
                    bottom_elevation=ft(_GRADE_FT - _FROST))
@@ -239,11 +250,11 @@ GARAGE_STEM_WALLS = [
     FoundationWall(uid="CGF108AAAA", tag="W-GF-S2", start_node="N-GF-S-DRE",
                    end_node="N-GF-SE", **_STEM),
     FoundationWall(uid="CGF102AAAA", tag="W-GF-E1", start_node="N-GF-SE",
-                   end_node="N-GF-E-DRS", **_STEM),
+                   end_node="N-GF-E-DRS", **_STEM_BRICKLEDGE),
     FoundationWall(uid="CGF105AAAA", tag="W-GF-E-DR", start_node="N-GF-E-DRS",
                    end_node="N-GF-E-DRN", **_GRADE_BEAM),
     FoundationWall(uid="CGF106AAAA", tag="W-GF-E2", start_node="N-GF-E-DRN",
-                   end_node="N-GF-NE", **_STEM),
+                   end_node="N-GF-NE", **_STEM_BRICKLEDGE),
     FoundationWall(uid="CGF103AAAA", tag="W-GF-N", start_node="N-GF-NE",
                    end_node="N-GF-NW", **_STEM),
     FoundationWall(uid="CGF104AAAA", tag="W-GF-W", start_node="N-GF-NW",
@@ -258,14 +269,29 @@ GARAGE_STEM_WALLS = [
 # centred on the node line (the default) would leave 10" of toe under nothing. Centred on
 # the resolved section instead, the toe is a symmetric 4 1/2" each side.
 _GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall")
+# FT-GF-E1/E2 are wider because their stems are (GARAGE_ICF_6_BRICKLEDGE, above). Two facts
+# worth stating rather than rediscovering:
+#
+# 1. `center_on="wall"` takes `band_axis` over EVERY resolved layer polygon
+#    (resolve/envelope.py), and the ledge band is now one of them — so these two footings
+#    re-centre on the stepped section (276 3/8" .. 292 5/8", 16 1/4" wide once the gwb band
+#    is counted) and sit 2" east of their un-ledged neighbours: FT-GF-E-DR centres on
+#    x = 282 1/2", these two on 284 1/2". That is the correct behaviour — the footing wants
+#    to be under the ledge — but nothing downstream may be dimensioned off their edges.
+# 2. It also drops the toe. At the shared 20" a symmetric toe under an 11" section is
+#    4 1/2"; under the stepped section it would be ~1 7/8". 24" gives 3 7/8" outboard of
+#    the ledge (272 1/2" .. 296 1/2") and 4 1/2" inboard, back in the same range.
+_GARAGE_FOOTING_BRICKLEDGE = dict(width=inch(24), depth=inch(8), center_on="wall")
 
 GARAGE_FOOTINGS = [
     Footing(uid="CGF201AAAA", tag="FT-GF-S1", under="W-GF-S1", **_GARAGE_FOOTING),
     Footing(uid="CGF207AAAA", tag="FT-GF-S-DR", under="W-GF-S-DR", **_GARAGE_FOOTING),
     Footing(uid="CGF208AAAA", tag="FT-GF-S2", under="W-GF-S2", **_GARAGE_FOOTING),
-    Footing(uid="CGF202AAAA", tag="FT-GF-E1", under="W-GF-E1", **_GARAGE_FOOTING),
+    Footing(uid="CGF202AAAA", tag="FT-GF-E1", under="W-GF-E1",
+            **_GARAGE_FOOTING_BRICKLEDGE),
     Footing(uid="CGF205AAAA", tag="FT-GF-E-DR", under="W-GF-E-DR", **_GARAGE_FOOTING),
-    Footing(uid="CGF206AAAA", tag="FT-GF-E2", under="W-GF-E2", **_GARAGE_FOOTING),
+    Footing(uid="CGF206AAAA", tag="FT-GF-E2", under="W-GF-E2",
+            **_GARAGE_FOOTING_BRICKLEDGE),
     Footing(uid="CGF203AAAA", tag="FT-GF-N", under="W-GF-N", **_GARAGE_FOOTING),
     Footing(uid="CGF204AAAA", tag="FT-GF-W", under="W-GF-W", **_GARAGE_FOOTING),
 ]

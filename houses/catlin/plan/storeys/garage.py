@@ -12,6 +12,8 @@ from typehaus import (
     EaveGutter,
     EaveTrim,
     FasciaBoard,
+    Flashing,
+    FoundationWall,
     Node,
     Occupancy,
     Pitch,
@@ -22,6 +24,7 @@ from typehaus import (
     Room,
     Stair,
     StructuralRole,
+    TrimKind,
     Wall,
     Window,
     face,
@@ -93,6 +96,151 @@ WALLS = [
     Wall(uid="CGW104AAAA", tag="W-G-W", start_node="N-G-NW", end_node="N-G-SW",
          assembly="GARAGE_WALL_2X6", alignment=face("zip-r-ext"), top=ft(8, 4),
          structural_role=StructuralRole.NONBEARING),
+]
+
+# --- east brick wainscot (2026-08-26) ----------------------------------------------------
+#
+# A short buff-brick wainscot on the two 4'-0" strips of east wall flanking the overhead
+# door — the most-seen, most-abused surface on the building. Modelled as its own short
+# veneer wall standing in front of the existing wall, exactly W-B-BRICK's precedent
+# (storeys/basement.py), because a full 3 5/8" wythe on a 1" cavity is not something a
+# WallPaneling band can carry. Assemblies, the coursing table and the ledge form:
+# plan/assemblies.py's GARAGE_BRICK_WAINSCOT / GARAGE_ICF_6_BRICKLEDGE.
+#
+# ** FILED ON THE GARAGE STOREY, NEVER ON `basement`, and that is load bearing. **
+# `_storey_is_conditioned` (checks/building_science/energy_scope.py) returns False for the
+# garage (RM-GARAGE conditioned=False), so the veneer drops out of the block load cleanly.
+# Filed on `basement` it would read as a foundation wall not between two conditioned rooms,
+# `_is_envelope_wall` would return True, and this wythe would be summed into
+# `building_science.energy_load` and `mep.heating_capacity` — silently inflating the
+# heating/cooling load rather than erroring. The only escape would be adding the tag to the
+# hard-coded `_FREESTANDING_WALL_PREFIXES` in engine code, i.e. leaking a house naming fact
+# into the engine. Don't go there.
+#
+# ** THE NODES MUST BE NEW AND LOCAL. ** Node lookup is storey-scoped
+# (resolve/topology.py's `_storey_nodes` filters `plan.storey_elements(storey_tag)`), and
+# the garage stem is filed on the BASEMENT storey (params/foundations.py puts
+# GARAGE_STEM_NODES into BASEMENT_ELEMENTS), so `N-GF-*` is invisible from here twice over
+# — and a wall whose node does not resolve comes back None SILENTLY: no geometry, no
+# finding. Even if the storeys matched, joining the stem's closed loop would hand this
+# veneer that loop's outward sign and create tee junctions. `open_end=True` for the same
+# reason W-B-BRICK's nodes carry it: two open ends, its own wall-graph component, no
+# `integrity.wall_loop_open` ERROR.
+#
+# The y values are literals because this file is `# haus: editable` and the dialect bans
+# arithmetic — they are GARAGE_Y_SOUTH, GARAGE_Y_SOUTH + OVERHEAD_DOOR_OFFSET (4'-0"),
+# that + OVERHEAD_DOOR_WIDTH (16'-0"), and GARAGE_Y_NORTH, in that order. The two piers
+# are 4'-0" flush with the door jambs BECAUSE the door offset is 4'-0"; they are not a free
+# choice, and test_catlin_contract_m3.py pins them.
+#
+# ** x is the BRICK FACE, ft(24, 4.625), not the east node line, and that is deliberate. **
+# The obvious authoring — nodes on x = 24'-0" with `alignment=face("air-gap-int")`, so the
+# 1" cavity begins exactly on the plane where the wood wall's zip-R face and the stem's
+# exterior EPS face already land (they are deliberately coplanar) — is geometrically right
+# and puts the veneer's LAYOUT LINE on top of the stem's and the wood wall's. `_axis_match`
+# (resolve/stacking.py) matches collinear axes within a 1/2" tolerance, so W-GF-E1 then had
+# two candidates above it (W-G-E and this veneer) and `integrity.stack_ambiguous` was a hard
+# ERROR. W-B-BRICK never hits this only because its own node line happens to sit 4.55" off
+# the wall it stands against.
+#
+# Aligning on `face("brick-ext")` off a node line at the brick face says the same thing from
+# the other end and puts the layout line 4 5/8" clear of the tolerance. Back of brick still
+# lands at 24'-1" and the cavity still starts on 24'-0". Nothing in the 40'-7 7/8"
+# breezeway chain is touched — that is a y-axis constraint and this projects on x.
+BRICK_NODES = [
+    Node(uid="9XGFXC1W6Y", tag="N-G-BRICK-S-S", position=pt(ft(24, 4.625), ft(40, 7.875)),
+         open_end=True),
+    Node(uid="1AVRM4GDPB", tag="N-G-BRICK-S-N", position=pt(ft(24, 4.625), ft(44, 7.875)),
+         open_end=True),
+    Node(uid="SDYMFBKVJ6", tag="N-G-BRICK-N-S", position=pt(ft(24, 4.625), ft(60, 7.875)),
+         open_end=True),
+    Node(uid="ESY1X83CXW", tag="N-G-BRICK-N-N", position=pt(ft(24, 4.625), ft(64, 7.875)),
+         open_end=True),
+]
+
+# Absolute elevations, off a garage grade of -2'-10". The shelf sits one modular course
+# (2 2/3") ABOVE finish grade — the cheapest durability move there is, lifting the base
+# course clear of the worst splash and snow-contact zone. 15 courses of field brick (40")
+# then a sloped rowlock cap (4") land the top of brick at +1'-0 2/3", and 1 1/3" of metal
+# cap flashing over it puts the top of cap at 4'-0" above grade ON THE NOSE with every
+# course a whole module.
+WAINSCOT_LEDGE_TOP = inch(-31.33333)   # -2'-7 1/3": the shelf, and the base course on it
+WAINSCOT_BRICK_TOP = inch(12.66667)    # +1'-0 2/3": top of the sloped rowlock
+WAINSCOT_CAP_TOP = inch(14.0)          # +1'-2" == 4'-0" above grade
+
+# ** AUTHORED NORTH NODE -> SOUTH NODE, and nothing will catch a flip. ** A lone component
+# with no closed loop gets UNRECOVERABLE_WINDING_OUTWARD_SIGN = 1.0
+# (resolve/orientation.py). The interior face sits at `-sign * normal(start->end)` where
+# `normal(d) = (-dy, dx)` (resolve/geometry.py). The interior here is the air gap, which
+# must be on the WEST side — n = (+1, 0) — which requires dy = -1: north node first.
+#
+# This is the OPPOSITE winding from W-B-BRICK, which runs E->W. That checks out: E->W puts
+# n south, interior north into the concrete and brick facing south, which is what its own
+# comment describes. Copying its node order would have put this brick INSIDE the garage.
+# `advisory.cladding_side_mismatch` cannot flag it — that rule needs a shared node and a
+# CLADDING-function layer, and this wythe is STRUCTURE. Confirm it in the viewer instead.
+#
+# FoundationWall elevations are ABSOLUTE and replace the storey z entirely
+# (resolve/topology.py), which is exactly what lets the wainscot cross the garage datum at
+# -1'-0" — ~19 3/8" of it backs onto the ICF stem and ~24 5/8" onto the wood wall above.
+# THE BACKING CHANGES AND SO DO THE TIES: two-piece adjustable screw-on ties into studs
+# above the datum (corrugated ties are only valid where the brick back is within 1" of
+# framing, and across the zip-R it is not), ICF ties below. `unbalanced_fill=ft(0)` keeps
+# `structural.foundation_unbalanced_fill` quiet, as W-B-BRICK does — this wythe retains no
+# soil.
+BRICK_WALLS = [
+    FoundationWall(uid="7X5HA9829P", tag="W-G-BRICK-S", start_node="N-G-BRICK-S-N",
+                   end_node="N-G-BRICK-S-S", assembly="GARAGE_BRICK_WAINSCOT",
+                   alignment=face("brick-ext"), unbalanced_fill=ft(0),
+                   top_elevation=WAINSCOT_BRICK_TOP,
+                   bottom_elevation=WAINSCOT_LEDGE_TOP),
+    FoundationWall(uid="SG7W4PEBAJ", tag="W-G-BRICK-N", start_node="N-G-BRICK-N-N",
+                   end_node="N-G-BRICK-N-S", assembly="GARAGE_BRICK_WAINSCOT",
+                   alignment=face("brick-ext"), unbalanced_fill=ft(0),
+                   top_elevation=WAINSCOT_BRICK_TOP,
+                   bottom_elevation=WAINSCOT_LEDGE_TOP),
+]
+
+# The cap is the durability crux and the thing not to value-engineer away: a 4' wainscot
+# that stops mid-wall is a HORIZONTAL TERMINATION, and that is where these details fail in a
+# freeze-thaw climate. Formed metal cap flashing with a drip edge over the sloped rowlock,
+# in the house's one exterior dark (#1c1f24), which every other envelope metal shares.
+#
+# `DRIP_FLASHING` resolves as a bent angle — a flat leg with a turn-down at the outboard end
+# — which is precisely this. `thickness` is the projection out from the edge (over the
+# 3 5/8" wythe plus a bit of throw), `depth` the vertical turn-down face. Precedent:
+# params/sunken_garden.py's TR-SG-DRIP.
+#
+# ONE HONEST LIMITATION: DRIP_FLASHING has only the one OUTBOARD turn-down, and no
+# coping/sill/cap kind exists in TrimKind. The inboard kick-out — the leg that runs up
+# behind the rainscreen above so water leaves the wall instead of tracking down behind the
+# cladding — cannot be modelled by the same run and is carried in `source=` below. Do not
+# invent a new TrimKind for it.
+#
+# The paths run north->south to match their walls. `thickness` is the flat leg's full
+# width and it is CENTRED ON THE PATH, so the path is NOT the brick face: it is the
+# mid-line of what the cap has to cover, which is the whole 4 5/8" of cavity + wythe
+# (24'-0" to 24'-4 5/8") plus about 1" of throw past the face — 5 5/8" spanning 24'-0" to
+# 24'-5 5/8", whose middle is 24'-2 13/16". Run on the brick face instead, the cap would
+# hang 2 3/4" out in the air and leave the cavity's back open.
+# `Flashing` carries no `source=` field, so the rest of the specification lives here: a
+# second through-wall flashing under the cap, and through-wall flashing + weeps at 33" o.c.
+# max at the BASE course on the ledge (IRC R703.8) — with only 4'-0" of wall each side that
+# is a weep near each end. Both are also recorded in the house CLAUDE.md.
+#
+# `back_side="right"`: the paths run north->south, d = (0, -1), so the LEFT-hand normal
+# `normal(d) = (-dy, dx)` points EAST. The building is west of these runs, so the back is
+# the right-hand side and the drip's turn-down hangs off the east (outboard) end, throwing
+# water clear of the brick instead of back at it.
+BRICK_CAP_FLASHING = [
+    Flashing(uid="91QT40BPXE", tag="TR-G-BRICK-CAP-S", kind=TrimKind.DRIP_FLASHING,
+             path=(pt(ft(24, 2.8125), ft(44, 7.875)), pt(ft(24, 2.8125), ft(40, 7.875))),
+             top_elevation=WAINSCOT_CAP_TOP, depth=inch(1.33333), thickness=inch(5.625),
+             material="metal-dark-exterior", back_side="right"),
+    Flashing(uid="HJEFTKKFG6", tag="TR-G-BRICK-CAP-N", kind=TrimKind.DRIP_FLASHING,
+             path=(pt(ft(24, 2.8125), ft(64, 7.875)), pt(ft(24, 2.8125), ft(60, 7.875))),
+             top_elevation=WAINSCOT_CAP_TOP, depth=inch(1.33333), thickness=inch(5.625),
+             material="metal-dark-exterior", back_side="right"),
 ]
 
 # Published so params/foundations.py can gap the ICF stem under the overhead door instead
@@ -333,5 +481,6 @@ RAILINGS = [
             graspable_profile="1.5in round — Type I"),
 ]
 
-ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ROOFS, _GARAGE_LEADER,
-            *SNOW_GUARDS, *ALARMS, *STAIRS, *RAILINGS]
+ELEMENTS = [*NODES, *BRICK_NODES, *WALLS, *BRICK_WALLS, *OPENINGS, *ROOMS, *ROOFS,
+            _GARAGE_LEADER, *SNOW_GUARDS, *ALARMS, *STAIRS, *RAILINGS,
+            *BRICK_CAP_FLASHING]

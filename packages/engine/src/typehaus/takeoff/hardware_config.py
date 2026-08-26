@@ -44,6 +44,35 @@ class ExteriorInsulationFastenerRules:
 
 
 @dataclass(frozen=True)
+class ExposedFastenerCladdingRules:
+    """The screw schedule for a face-fastened (exposed-fastener) metal wall panel.
+
+    A clipped or seamed panel has no schedule here at all: its fixings ride inside the $/SF
+    cladding rate. Only a material carrying ``Material.exposed_fastener`` reaches these
+    rules, and that flag is the double-billing guard.
+
+    Two independent terms make the count. The FIELD grid is the panel screwed down onto its
+    supports — one screw in each flat between major ribs, at every support crossing. The
+    SIDELAP is a separate line of stitch screws down each panel-to-panel joint, which the
+    field grid cannot see because the joint is not a support.
+    """
+
+    # PBR major ribs at 12 in o.c.; the screws land in the flats between them, so the rib
+    # pitch is also the horizontal screw pitch.
+    rib_pitch_in: float = 12.0
+    # The support crossing — for this house the horizontal girt course.
+    support_pitch_in: float = 24.0
+    # One panel's net coverage, which is the horizontal spacing of the sidelap joints.
+    panel_coverage_in: float = 36.0
+    # Stitch screws down a sidelap, between the supports.
+    sidelap_stitch_pitch_in: float = 24.0
+    # Panel + support embedment sets the screw length. The screw is meant to take the full
+    # thickness of the nailer it lands in, not to stop part-way through it.
+    panel_thickness_in: float = 0.02
+    support_embedment_in: float = 1.4
+
+
+@dataclass(frozen=True)
 class SillPlateAnchorRules:
     """Anchorage of a wood sill plate to the concrete/ICF wall under it."""
 
@@ -124,6 +153,8 @@ class HardwareTakeoffConfig:
 
     exterior_insulation_fasteners: ExteriorInsulationFastenerRules = field(
         default_factory=ExteriorInsulationFastenerRules)
+    exposed_fastener_cladding: ExposedFastenerCladdingRules = field(
+        default_factory=ExposedFastenerCladdingRules)
     sill_plate_anchors: SillPlateAnchorRules = field(default_factory=SillPlateAnchorRules)
     wall_ties: WallTieRules = field(default_factory=WallTieRules)
     hanger_detection: HangerDetectionRules = field(default_factory=HangerDetectionRules)

@@ -24,11 +24,15 @@ from typehaus.resolve.framing.truss_wall import (
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.hardware_catalog import (
+    ROLE_EXPOSED_FASTENER_PANEL_SCREW,
     ROLE_EXTERIOR_INSULATION_SCREW,
     hardware_row,
     screw_for_required_length,
 )
-from typehaus.takeoff.hardware_config import ExteriorInsulationFastenerRules
+from typehaus.takeoff.hardware_config import (
+    ExposedFastenerCladdingRules,
+    ExteriorInsulationFastenerRules,
+)
 
 # Float slack when a run divides evenly into its spacing (an 18 ft wall at 16 in o.c.).
 _GRID_EPSILON = 1e-9
@@ -311,3 +315,88 @@ def _block_screw_basis(group: dict, rules: ExteriorInsulationFastenerRules) -> s
     return (f"{GIRT_BLOCK_SCREWS} per block into {lands}; one block under every girt course "
             f"at each stud station ({rules.strip_spacing_in:g} in o.c., {offset}) plus one "
             f"at each free course end {penetration}")
+
+
+def _exposed_fastener_cladding_layer(model: ResolvedModel, wall):
+    """The wall's outermost CLADDING layer, if its material is face-fastened.
+
+    The gate is ``Material.exposed_fastener`` and nothing else — not the tag, not the
+    finish. A clipped or seamed panel's fixings are already inside its $/SF cladding rate,
+    so a wall that does not opt in must bill NOTHING here or the screws are billed twice.
+    """
+    cladding = [layer for layer in wall.depth_layers() if layer.function == "cladding"]
+    if not cladding:
+        return None
+    outermost = cladding[-1]
+    material = model.plan.library.material(outermost.material_ref)
+    if material is None or not material.exposed_fastener:
+        return None
+    return outermost
+
+
+def exposed_fastener_cladding_screw_rows(model: ResolvedModel,
+                                         rules: ExposedFastenerCladdingRules) -> list:
+    """Panel screws for face-fastened metal wall cladding, one row per screw length.
+
+    Two terms, because they answer to different geometry:
+
+    *Field* — the panel screwed to its supports. One screw per flat between major ribs at
+    every support crossing, which is exactly the rectangular grid
+    :func:`fastener_grid_count` walks: rib pitch across the run, support pitch up the rise.
+
+    *Sidelap* — a stitch line down each panel-to-panel joint, at one joint per panel
+    coverage width, spaced along its height. The field grid cannot produce these: a sidelap
+    is not a support, so no support crossing lands on it.
+
+    Openings are not deducted, following the convention of
+    :func:`exterior_insulation_screw_rows`: trim, closures and jamb returns take those
+    screws back, so the gross count is what a crew orders against.
+    """
+    rib_pitch_m = rules.rib_pitch_in * M_PER_IN
+    support_pitch_m = rules.support_pitch_in * M_PER_IN
+    coverage_m = rules.panel_coverage_in * M_PER_IN
+    stitch_pitch_m = rules.sidelap_stitch_pitch_in * M_PER_IN
+
+    required_in = rules.panel_thickness_in + rules.support_embedment_in
+    item, length_in, part_number = screw_for_required_length(
+        ROLE_EXPOSED_FASTENER_PANEL_SCREW, required_in)
+
+    field_by_storey: Counter = Counter()
+    sidelap_by_storey: Counter = Counter()
+    for wall in model.walls:
+        if _exposed_fastener_cladding_layer(model, wall) is None:
+            continue
+        run_m = length(sub(wall.axis[1], wall.axis[0]))
+        rise_m = _wall_height_m(wall)
+        if run_m <= 0.0 or rise_m <= 0.0:
+            continue
+        field_by_storey[wall.storey] += fastener_grid_count(
+            run_m, rise_m, rib_pitch_m, support_pitch_m)
+        # Joints, not panels: a run one coverage wide has no sidelap at all, which is why
+        # this floors rather than rounding up the way a panel count would.
+        joints = int(math.floor(run_m / coverage_m + _GRID_EPSILON))
+        per_joint = int(math.floor(rise_m / stitch_pitch_m + _GRID_EPSILON)) + 1
+        sidelap_by_storey[wall.storey] += joints * per_joint
+
+    embedment = (f"{rules.panel_thickness_in:g} in panel + "
+                 f"{rules.support_embedment_in:g} in support embedment = "
+                 f"{required_in:.2f} in required")
+    rows = []
+    for scope, by_storey, basis in (
+        ("exposed-fastener panel field", field_by_storey,
+         f"{rules.rib_pitch_in:g} in o.c. flats between major ribs x "
+         f"{rules.support_pitch_in:g} in o.c. supports, openings not deducted "
+         f"({embedment})"),
+        ("exposed-fastener panel sidelap", sidelap_by_storey,
+         f"one stitch line per {rules.panel_coverage_in:g} in panel coverage at "
+         f"{rules.sidelap_stitch_pitch_in:g} in o.c. ({embedment})"),
+    ):
+        count = sum(by_storey.values())
+        if count <= 0:
+            continue
+        rows.append(hardware_row(
+            item, scope=scope, count=int(count), part_number=part_number,
+            size=f"{length_in:g} in", by_storey=dict(sorted(by_storey.items())),
+            basis=basis,
+        ))
+    return rows

@@ -244,6 +244,17 @@ const BROWN_BRICK_STYLE: MasonryStyle = {
   jointFraction: 0.05, halfLap: 0.5, mortar: "#cfc8ba", base: "#a07c5c",
   jitterHSL: [0.004, 0.015, 0.04],
 };
+// The garage east wainscot (2026-08-26): light buff, ASTM C216 Grade SW, THROUGH-BODY and a
+// single light body rather than a blend — so it takes the brown plinth's unglazed recipe
+// retinted, not the glazes' low-jitter one. Same near-zero jitter for the same reason the
+// plinth has it: at a 4' wainscot's scale a wide jitter reads as mixed pallets, not as clay.
+// Kept in step with _FINISH_BASE in packages/engine/src/typehaus/emit/gltf/palette.py BY
+// HAND — the two tables mirror each other and nothing enforces it.
+const BUFF_BRICK_STYLE: MasonryStyle = {
+  key: "buff-brick", unitM: BRICK_UNIT_M, unitsPerTile: 3, coursesPerTile: 6,
+  jointFraction: 0.05, halfLap: 0.5, mortar: "#cfc8ba", base: "#ded3bd",
+  jitterHSL: [0.004, 0.015, 0.04],
+};
 // Concrete block: the large face module, a fixed neutral grey, tighter joints and very low
 // jitter so it reads as cast block rather than laid brick.
 const CMU_STYLE: MasonryStyle = {
@@ -281,6 +292,7 @@ export const MASONRY_STYLES: Readonly<Record<string, MasonryStyle>> = {
   "glazed-lapis-brick": GLAZED_LAPIS_BRICK_STYLE,
   "glazed-gold-brick": GLAZED_GOLD_BRICK_STYLE,
   "brown-brick": BROWN_BRICK_STYLE,
+  "buff-brick": BUFF_BRICK_STYLE,
   cmu: CMU_STYLE,
 };
 

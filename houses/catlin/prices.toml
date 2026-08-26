@@ -1631,6 +1631,23 @@
 # 2026-08-21: was "CATLIN_CONC_12_INT". Same 12" interior pour, now drawn from library
 # FOUNDATION_WALL_12_INT rather than minted a second time here; the rate is untouched.
 "FOUNDATION_WALL_12_INT" = { low = 470, high = 780 }  # 22.18 CY — was $320-600
+# ** SAME CATEGORY ERROR AS BASEMENT_BRICK_VENEER: zero ready-mix on this line. ** It is a
+# full 3 5/8" clay wythe on a 1" cavity, priced by the SF OF FACE like every other brick row
+# here, and it must not be escalated with a concrete index. The gross-wall-volume basis this
+# section's header documents (units not deducted) applies to the $/cy rows; this one is $/SF.
+#
+# 29.3 SF of face — two 4'-0" piers, 3'-8" of brick each. STOCK BUFF, and that is the whole
+# point of the material: an off-the-shelf ASTM C216 Grade SW body brick from a Twin Cities
+# yard, no special order, no lead time — which is why this prices BELOW the glazed rows and
+# at the brown plinth's basis rather than the lapis field's.
+#
+# Above the plinth's $15-28 all the same, and not because the brick is dearer: 29 SF is a
+# mobilisation-dominated job. A mason sets up, lays two short piers with a sloped rowlock cap
+# and two runs of through-wall flashing, and leaves. Ties, weeps, both flashings and the
+# rowlock are in this rate. The cap flashing itself is NOT — it is modelled as
+# TR-G-BRICK-CAP-S/N and bills by length through [edge_trim]. The ICF brick ledge that
+# carries the wythe is not here either: it is concrete in the GARAGE_ICF_6_BRICKLEDGE stem.
+"GARAGE_BRICK_WAINSCOT" = { low = 18, high = 34, unit = "SF" }  # 29.3 SF of face
 # 6" core is 0.01852 cy/SF = 54 SF of wall per cy, so 8.82 cy is 476 SF of wall. The old
 # $480-1,000/cy was $8.89-18.52/SF; $756-1,296 is $14-24/SF. Market is $13-25/SF typical with
 # the cheapest published Midwest band at $8.50-14 — the old LOW sat on the absolute floor of
@@ -1638,6 +1655,20 @@
 # reach. KEYING WARNING: ICF is bought per SF OF WALL, not per cy. If the core thickness ever
 # changes this rate silently becomes wrong while still looking reasonable.
 "GARAGE_ICF_6" = { low = 756, high = 1296 }  # 8.82 CY = 476 SF — was $480-1,000
+# The two east stem segments flanking the overhead door, formed with a brick-ledge block so
+# they carry the wainscot's wythe. Same KEYING WARNING as GARAGE_ICF_6 above — ICF is bought
+# per SF OF WALL and this row is $/cy — with a second twist: the takeoff splits this assembly
+# into two rows against ONE key, the 6" core (0.79 cy) and the 4 5/8" ledge band (0.43 cy),
+# so the rate is struck across their sum, 1.22 cy over 42.7 SF of wall (35 SF/cy, not
+# GARAGE_ICF_6's 54 — the ledge is real extra concrete).
+#
+# Derivation, so the number can be re-struck rather than re-guessed:
+#   42.7 SF of wall at GARAGE_ICF_6's own $14-24/SF          = $598 - 1,025
+#   brick-ledge form premium, 8 LF at $8-15/LF               =   $65 -   120
+#   the ledge's own ready-mix + the 4' welded-wire reinforcer =   $90 -   140
+#   ------------------------------------------------------------------------
+#   $753 - 1,285 over 1.22 cy                                = $617 - 1,053/cy
+"GARAGE_ICF_6_BRICKLEDGE" = { low = 620, high = 1050 }  # 1.22 CY = 42.7 SF of wall
 # ** CATEGORY ERROR, same as BASEMENT_BRICK_VENEER: this line contains ZERO ready-mix. ** It
 # is dry-stacked segmental block. The cost drivers are SF of exposed face and wall HEIGHT,
 # and the model tracks neither — 9.07 cy is 245 SF of face at 27 SF/cy. Market for SRW
@@ -2862,7 +2893,7 @@ duct_fittings   = "material only, and derived rather than quoted, exactly as [pi
 pipe_fittings   = "material only, and derived rather than quoted — see the table's own note. Its arrival RE-BASED [pipe_runs] drain/vent to bare pipe; restoring the old fitting adder there would double-bill every elbow in the house"
 concrete        = "$/cy PLACED and MERGED — ready-mix plus placement, rebar and forming; never divided into a guessed split. Raised across the board 2026-08-20; slab-on-grade was ~2.5x low and drain_tile ~5x"
 timber          = "$/cy, but built from $/LF and shown divided in every row's comment — the join measures volume and lumber is bought by the foot. Material and labour are split because a stick of LVL is a purchase and hanging it is a wage, unlike the merged pours in [concrete]"
-wall_structure  = "$/cy PLACED and MERGED, same reason as [concrete]. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and BASEMENT_BRICK_VENEER (including its per-material rows BASEMENT_BRICK_VENEER:brown-brick / :glazed-lapis-brick / :glazed-gold-brick) contain no ready-mix at all and must not be escalated with a concrete index"
+wall_structure  = "$/cy PLACED and MERGED, same reason as [concrete]. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and BASEMENT_BRICK_VENEER (including its per-material rows BASEMENT_BRICK_VENEER:brown-brick / :glazed-lapis-brick / :glazed-gold-brick) contain no ready-mix at all and must not be escalated with a concrete index. GARAGE_BRICK_WAINSCOT is the same case and the same warning. GARAGE_ICF_6_BRICKLEDGE is NOT — it is mostly ICF wall, and its rate is struck across the core row and the brick-ledge band row together, which share one key"
 footing_bedding = "$/cy delivered — material only. Spreading and compacting is in the excavator's number, which is not in this file. Confirmed 2026-08-20 against MnDOT 2025 average bid prices"
 openings        = "material and labour are now SEPARATE quantities. The old single 55-65% back-out factor is gone: the real material share runs 70-85% for windows, 60-70% for exterior doors, 40-55% for interior doors and 10-25% for a cased opening"
 hardware        = "material only, and deliberately so — the labour to drive a screw or set a hanger is inside the [framing] labour rate. HUCQ410-SDS is the exception and says why"
