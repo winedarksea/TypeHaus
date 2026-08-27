@@ -343,7 +343,9 @@ def test_catlin_zone_loads_do_not_exceed_the_whole_house_load(catlin_model) -> N
     # RM-M-PANTRY joined them 2026-08-24 for exactly RM-M-MUD-CLOSET's reason: a framed
     # reach-in off a conditioned room, with no register and no need of one — it borrows the
     # kitchen's air through a 60" bypass that is open whenever anyone is in there.
-    assert set(unclaimed) == {"RM-A-DEN", "RM-B-ESS", "RM-M-MUD-CLOSET", "RM-M-PANTRY"}
+    # RM-A-DEN was in this set until 2026-08-27; the room was deleted and its space is
+    # inside RM-A-WEST-UNFIN, which EQ-S-HP1-AH's zone_rooms already names.
+    assert set(unclaimed) == {"RM-B-ESS", "RM-M-MUD-CLOSET", "RM-M-PANTRY"}
 
 
 # --- supplemental resistance heat ------------------------------------------------------

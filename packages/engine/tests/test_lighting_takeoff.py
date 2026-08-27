@@ -152,7 +152,8 @@ def test_multiway_and_control_kinds_survive_into_the_schedule(catlin_model):
     # The plant-room tubes are on a timer, and the theatre sconces on a dimmer.
     assert rows["ED-S-PLANT-TUBE1"]["controls"] == ["timer"]
     assert rows["ED-B-PLAY-N-SCONCE1"]["controls"] == ["dimmer"]
-    # The attic den's sconce is switched at the fixture and names nothing.
+    # The west loft's sconce (RM-A-DEN's until that room was deleted 2026-08-27, tag
+    # unchanged) is switched at the fixture and names nothing.
     assert rows["ED-A-DEN-SCONCE"]["integral_switch"] and not rows["ED-A-DEN-SCONCE"]["switches"]
     # A 24V run reports its supply where a fixture reports a circuit.
     assert rows["LR-S-HALL-GAP"]["circuit"] is None

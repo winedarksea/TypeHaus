@@ -71,6 +71,11 @@ DEVICE_TYPES = (
     ElectricalDeviceType(tag="ED-T-METER", name="200A meter socket (meter separate from panel)",
                           service_amps=200,
                           footprint=(inch(12), inch(6)), height=inch(16),
+                          # A meter socket is a plain galvanised can with a glass register,
+                          # not the yellow slab the electrical-domain fallback colour draws
+                          # (same reason ED-T-DISCONNECT-3R names a symbol) — `plan_symbol`
+                          # gives it both the steel grey and the round dial.
+                          plan_symbol="meter",
                           ports=(ServicePort(tag="service", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
     # A 60A NEMA 3R safety switch is a small hooded grey can with a lever on its right side,
@@ -314,13 +319,18 @@ EQUIPMENT_TYPES = (
 
 # --- Service entrance + backup enclosure ---------------------------------------------
 SERVICE_DEVICES = [
-    # Exterior west wall at y=29', 7" outside the sheathing plane, 5' up. Moved out 1/2"
+    # Exterior west wall at y=29', 7" outside the sheathing plane. Moved out 1/2"
     # on 2026-08-23 with the Swinburne truss (cladding face 5.02" -> 5.5" proud) and a
     # further 1" on 2026-08-26 with the catlin truss (5.5" -> 6.5"); each time the meter's
     # back was left inside the cladding it is surface-mounted on.
+    #
+    # Height (2026-08-27): the elevation is the *base* of the 16" socket and the project
+    # datum is the main floor, so the authored 5'-0" put the glass 8'-6" above SITE_GRADE
+    # (-2'-10") — a ladder job, not a meter. 1'-6" here is grade + 4'-4" to the base and so
+    # grade + 5'-0" to the register centre, mid-band of the utility's 4'-0"..6'-0" window.
     ElectricalDevice(uid="CEE001AAAA", tag="ED-M-METER", kind=DeviceKind.METER,
                      position=pt(ft(0, -10.25), ft(29, 9.125)), type_ref="ED-T-METER",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room=None, rotation=deg(270)),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(1, 6)), room=None, rotation=deg(270)),
 ]
 
 # --- the backup microgrid (2026-08-02, notes/backup_power.md) ------------------------
@@ -662,7 +672,9 @@ SECOND_EQUIPMENT = [
     #
     # zone_rooms covers the whole conditioned second storey plus RM-A-STUDY/RM-A-EAST-UNFIN (short
     # attic branches) and RM-A-WEST-UNFIN (suite branch's REG-A-HP-WEST boot, 2026-07-30).
-    # RM-A-DEN is deliberately excluded — nothing serves it (plans/TODO.md).
+    # RM-A-DEN used to be excluded here — nothing served it — but the room was deleted
+    # 2026-08-27 and its 43 sf is inside RM-A-WEST-UNFIN, which this zone already names.
+    # The old gap in the zone closed by itself; the TODO entry it pointed at is moot.
     Equipment(uid="CEE032AAAA", tag="EQ-S-HP1-AH",
               kind=EquipmentKind.DUCTED_AIR_HANDLER,
               position=pt(ft(20), ft(7, 9.5)), footprint=(inch(21), inch(43)),
@@ -1444,8 +1456,9 @@ NEC_FILL_SECOND = [
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
 ]
-# Same treatment for the attic's two habitable rooms. RM-A-WEST-UNFIN (media) and RM-A-DEN
-# (storage) are outside `_HABITABLE`, so 210.52 spacing is not evaluated for them.
+# Same treatment for the attic's lofts. RM-A-WEST-UNFIN and RM-A-EAST-UNFIN are STORAGE,
+# outside `_HABITABLE`, so 210.52 spacing is not evaluated for them. (RM-A-DEN stood in
+# this sentence until 2026-08-27; it was STORAGE too, and it is now part of the west loft.)
 NEC_FILL_ATTIC = [
     ElectricalDevice(uid="NEC048AAAA", tag="ED-A-EAST-RC1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(18, 4.375), ft(13, 8.25)), type_ref="ED-T-RECEPTACLE",

@@ -76,8 +76,9 @@ SECOND_LINES = (
 )
 
 ATTIC_LINES = (
-    ("N-A-C1", "y", 5, 7, 5.611),      # Den north wall
-    ("N-A-D1", "y", 5, 7, 5.611),
+    ("N-A-C1", "y", 5, 7, 5.611),      # the source's Den north wall line
+    # N-A-D1 (the Den's NW corner, same 5.611 line) stood here until 2026-08-27, when
+    # RM-A-DEN was deleted and the node with it. N-A-C1 still pins this survey line.
     # The band wall's SOUTH FACE is set on FO-A-STAIR's north edge — the relationship the
     # source itself draws — so its centreline is wherever that face plus half the assembly
     # lands, and the survey line is a check on the face, not on the axis. At 4 1/2" thick

@@ -211,9 +211,12 @@ LUMINAIRE_TYPES = (
                   footprint=(inch(5), inch(4)), height=inch(9), plan_symbol="sconce-spot",
                   lamp="LED integrated", watts=8.0, lumens=600.0, cct_k=3000, cri=90,
                   dimmable=True, load_va=8.0, ports=_POWER_120),
-    # Same fixture with the switch on it. RM-A-DEN is a 43 ft2 attic nook reached by a
-    # hatch — there is no wall on the way in to put a switch on, so the fixture carries it.
+    # Same fixture with the switch on it. It was specified for RM-A-DEN, a 43 ft2 attic
+    # nook with no wall on the way in to put a switch on, so the fixture carried its own.
     # ``integral_switch`` is what exempts it from ``electrical.lighting_controls``.
+    # THE NOOK IS GONE (2026-08-27) and ED-A-DEN-SCONCE now sits in RM-A-WEST-UNFIN, so the
+    # integral switch is a convenience rather than a necessity there — kept, because the
+    # loft's own switching is at the far end and this fixture is 30' from it.
     # J2: the plant room's spot. Same adjustable down-spot as J, wet-location listed with a
     # gasketed lens and a corrosion-resistant housing — RM-S-PLANT is a damp location
     # throughout and a wet one where it is misted, and this one is 6'-0" up a wall the room

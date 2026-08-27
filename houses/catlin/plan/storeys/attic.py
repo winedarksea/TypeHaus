@@ -36,7 +36,18 @@ from typehaus import (
 
 NODES = [
     Node(uid="CAN001AAAA", tag="N-A-SW", position=pt(ft(0), ft(0))),
-    Node(uid="CAN002AAAA", tag="N-A-S1", position=pt(ft(10), ft(0))),
+    # x 8'-8" since 2026-08-27 (was 10'-0"). This node's only remaining job is to split two
+    # otherwise identical collinear gable walls — RM-A-DEN was deleted the same day and
+    # W-A-DW, which used to tee in here, went with it.
+    #
+    # ** IT MOVED BY EXACTLY 16", AND THAT IS THE WHOLE POINT. ** A wall's stud grid lays
+    # out from its start node, so W-A-S2's grid is phased off this x. 10'-0" = 120" and
+    # 8'-8" = 104", and 120 - 104 = 16, so the phase is unchanged and every bay under
+    # WIN-A-S-JUL-W/E stays exactly where it was. Merging W-A-S1/W-A-S2 instead (the
+    # 2026-08-24 W-M-E1/E2 precedent) would have rephased that half by 8" — 120 mod 16 = 8
+    # — moving the framing under a 27" RO pair whose 21" clear pier carries RB-HOUSE's
+    # south bearing point. Moving the node was the cheap way to the same place.
+    Node(uid="CAN002AAAA", tag="N-A-S1", position=pt(ft(8, 8), ft(0))),
     Node(uid="CAN003AAAA", tag="N-A-S2", position=pt(ft(18), ft(0))),
     # Vestibule screen line, 22'-8" not the source's 22.31 (2026-08-01 gable pass): W-A-S4
     # starts here and a wall's stud grid lays out from its start node, so this x sets the
@@ -71,7 +82,6 @@ NODES = [
     # belongs on the loft side.
     Node(uid="CAN009AAAA", tag="N-A-C1", position=pt(ft(18), ft(5, 7))),
     Node(uid="CAN012AAAA", tag="N-A-C2", position=pt(ft(18), ft(9, 4))),
-    Node(uid="CAN010AAAA", tag="N-A-D1", position=pt(ft(10), ft(5, 7))),
     Node(uid="CAN013AAAA", tag="N-A-V2", position=pt(ft(22, 8), ft(5, 7))),
     # A legitimate wing-wall terminus: the vestibule's north screen stops at the stair
     # well's west edge, exactly as the source's Den north wall does.
@@ -131,19 +141,22 @@ WALLS = [
     Wall(uid="CAW110AAAA", tag="W-A-C2", start_node="N-A-C2", end_node="N-A-N1",
          assembly="CATLIN_INT_2X6_BRG", top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-C4B"),
-    # South rooms: den (west of center) + study (east of center), framed to the roof deck.
-    # Since 2026-07-31 the den follows the roof too (Room.ceiling below) — it lost its
-    # 7'-6" dropped ceiling, which would have buried the south gable juliet pair's 8'-0" head.
+    # ** THE DEN IS GONE (2026-08-27, by decision). ** W-A-DN (N-A-D1 -> N-A-C1) and W-A-DW
+    # (N-A-S1 -> N-A-D1) stood here, boxing a 43 sf nook at x 10'-0"..18'-0", y 0..5'-7"
+    # out of the south end of the west loft, with D-A-DEN in the north wall and node
+    # N-A-D1 at their corner. All five are deleted and the space folds back into
+    # RM-A-WEST-UNFIN, which now runs the full x 0..18' width of the storey.
     #
-    # THE DEN MOVED WEST off its source footprint (x 13'-9"..22'-4") because that straddles
-    # the RB-HOUSE bearing line (W-A-C1/C1B/C2), which cannot open up. Shifted to
-    # x 10'-0"..18'-0", y 0..5'-7", it keeps both source dimensions (8'-0" x 4'-10 1/2" clear)
-    # and lets RM-A-WEST-UNFIN run full depth for x 0..10' — the source's 588.12 sf west loft.
-    # Costs ~21 sf: the Den now takes 8' of the west loft's south end vs. the source's 4'-3".
-    Wall(uid="CAW111AAAA", tag="W-A-DN", start_node="N-A-D1", end_node="N-A-C1",
-         assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE")),
-    Wall(uid="CAW112AAAA", tag="W-A-DW", start_node="N-A-S1", end_node="N-A-D1",
-         assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE")),
+    # The Den had already been moved west off its source footprint (x 13'-9"..22'-4",
+    # which straddles the RB-HOUSE bearing line W-A-C1/C1B/C2 and so could not open up)
+    # and had lost its 7'-6" dropped ceiling on 2026-07-31 because that ceiling buried
+    # WIN-A-S-JUL-W's 8'-0" head. What it never got was a reason to be a room: it was
+    # tagged STORAGE like both lofts, and its only fixture needed an integral switch
+    # because the way in had no wall to put a switch on. Deleting it also freed N-A-S1
+    # to move (see that node) and, with it, WIN-A-S2.
+    #
+    # RM-A-WEST-UNFIN inherits the space at ITS finish, which is none — the 43 sf of
+    # carpet the Den carried is not billed any more. See the ROOMS note below.
     # THE STUDY'S BOOKCASE WALL (2026-08-27). 12 3/4" of built-in shelving, not a partition:
     # the owner wanted a bookcase wall at the stair head with D-A-STUDY hidden inside it.
     # ** DO NOT MOVE THIS WALL AND DO NOT SPLIT IT. ** Its SOUTH face is the only thing
@@ -199,8 +212,6 @@ WALLS = [
 OPENINGS = [
     Door(uid="CAD201AAAA", tag="D-A-HALVES", host="W-A-C1B", type_ref="DT-INT-SWING32",
          position=from_node("N-A-C1", ft(0, 5.0625))),
-    Door(uid="CAD202AAAA", tag="D-A-DEN", host="W-A-DN", type_ref="DT-INT-SWING30",
-         position=from_node("N-A-D1", ft(1))),
     # The band wall's opening onto the stair head — the source's 2'-7 1/2" gap at
     # x 18'-6"..21'-1 3/4", the only way between the east loft and the stair vestibule.
     # THE MURPHY BOOKCASE DOOR (2026-08-27). A RETYPE IN PLACE — everything that says
@@ -249,10 +260,20 @@ OPENINGS = [
     Window(uid="P411E2J64J", tag="WIN-A-S1", host="W-A-S1", type_ref="WT-1424",
            position=from_node("N-A-SW", ft(2, 9)), sill_height=ft(2, 8)),   # x 3'-4"
     # 2026-08-27: the flanker pair drawn 16" INWARD, 8'-8"/27'-4" -> 10'-0"/26'-0". Still an
-    # exact mirror about x=18'-0", and still bay centres on their own walls' grids (120" off
-    # N-A-SW and 40" off N-A-V1, both 8 mod 16), so neither breaks a stud or takes a header.
-    Window(uid="CAX302AAAA", tag="WIN-A-S2", host="W-A-S1", type_ref="WT-1448",
-           position=from_node("N-A-SW", ft(9, 5)), sill_height=ft(2, 8)),   # x 10'-0"
+    # exact mirror about x=18'-0" (10 + 26 = 36), and still bay centres on their hosts'
+    # grids — 16" off N-A-S1 and 40" off N-A-V1, both 8 mod 16 — so neither breaks a stud
+    # or takes a header, which is the whole reason the WT-1448 flankers are 14" wide.
+    #
+    # ** S2 CHANGED HOSTS TO GET HERE, AND IT HAD TO. ** It sat on W-A-S1, which used to end
+    # at x=10'-0"; a 14" RO centred on that end needs 7" of wall that isn't there, and
+    # `integrity.opening_fits` (2" minimum edge distance) is an ERROR on exactly that. The
+    # fix was three moves that had to happen together: RM-A-DEN deleted, which freed N-A-S1;
+    # N-A-S1 moved 10'-0" -> 8'-8", which is 16" and so leaves W-A-S2's stud phase alone
+    # (see the node); and this window rehosted onto W-A-S2, where it now stands 9" off the
+    # start node with 7'-5" of wall to spare on the far side. The centre never depended on
+    # any of it — 10'-0" is 10'-0" either way.
+    Window(uid="CAX302AAAA", tag="WIN-A-S2", host="W-A-S2", type_ref="WT-1448",
+           position=from_node("N-A-S1", ft(0, 9)), sill_height=ft(2, 8)),   # x 10'-0"
     Window(uid="CAX303AAAA", tag="WIN-A-S3", host="W-A-S4", type_ref="WT-1448",
            position=from_node("N-A-V1", ft(2, 9)), sill_height=ft(2, 8)),   # x 26'-0"
     Window(uid="BM8GAX9FBG", tag="WIN-A-S4", host="W-A-S4", type_ref="WT-1424",
@@ -279,7 +300,11 @@ OPENINGS = [
     # Tags are descriptive, not positional, since a mid-sequence insertion couldn't join the
     # west→east WIN-A-S* numbering without renumbering (and breaking IFC GlobalIds) the rest.
     Window(uid="CAX311AAAA", tag="WIN-A-S-JUL-W", host="W-A-S2", type_ref="WT-2764",
-           position=from_node("N-A-S1", ft(4, 10.5)), sill_height=ft(2, 8)),  # ctr x 16'-0"
+           # +16" on 2026-08-27, and it is NOT a move: N-A-S1 went 10'-0" -> 8'-8" that day
+           # (see the node), and this offset is measured off it, so 4'-10 1/2" would have
+           # dragged the unit to 14'-8". 6'-2 1/2" holds the CENTRE on 16'-0" where it has
+           # always been. The pier, the jambs and the bearing arithmetic below are unchanged.
+           position=from_node("N-A-S1", ft(6, 2.5)), sill_height=ft(2, 8)),  # ctr x 16'-0"
     Window(uid="CAX312AAAA", tag="WIN-A-S-JUL-E", host="W-A-S3", type_ref="WT-2764",
            position=from_node("N-A-S2", ft(0, 10.5)), sill_height=ft(2, 8)),  # ctr x 20'-0"
     # The source attic has no north, east or west opening at all; these three are kept for
@@ -326,7 +351,7 @@ OPENINGS = [
 ROOMS = [
     # STORAGE, not MEDIA (2026-08-01, by decision): 598 sf under a 4:12 cathedral with two
     # 14" knee-wall units can't meet R303.1's 47.8 sf glazing requirement for a habitable
-    # room. Joins RM-A-EAST-UNFIN and RM-A-DEN, STORAGE for the same reason — only RM-A-STUDY has
+    # room. Joins RM-A-EAST-UNFIN, STORAGE for the same reason — only RM-A-STUDY has
     # the gable to glaze. Retagging is honest; it keeps the permit set from claiming a
     # bedroom-grade room the daylight can't support.
     # ** NO FLOOR FINISH ON PURPOSE (2026-08-25). ** These two lofts are unfinished bulk
@@ -335,7 +360,15 @@ ROOMS = [
     # walking surface is FS-ATTIC's own deck and nothing goes over it.
     # `floor_finish=None` is the honest way to say that: `takeoff/finishes.py` skips a room
     # with no finish entirely, so no carpet, no pad and no tack strip bill for 1,080 sf that
-    # will never be laid. RM-A-DEN keeps its carpet — it is the one loft used as a room.
+    # will never be laid. RM-A-DEN used to keep its carpet as the one loft used as a room;
+    # it was deleted 2026-08-27 (see the WALLS note above) and its 43 sf came here, to
+    # `floor_finish=None`, so that carpet is off the BOM as well.
+    #
+    # RM-A-WEST-UNFIN now runs the full x 0..18' width, y 0..36', and picks up the west
+    # half of the south gable with it: WIN-A-S-JUL-W and WIN-A-S2 stand in this room now.
+    # That is glazing a STORAGE room does not need and does not have to justify — R303.1
+    # asks nothing of it — but the seed at (9', 20') is still inside the merged face, so
+    # nothing about the claim had to move.
     #
     # What the deck IS, therefore, matters here in a way it does not on any other storey:
     # FS-ATTIC below is specified `plywood-underlayment-sanded` — a sanded-face, plugged
@@ -347,13 +380,6 @@ ROOMS = [
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),
     Room(uid="CAR402AAAA", tag="RM-A-EAST-UNFIN", seed=pt(ft(27), ft(20)),
          occupancy=Occupancy.STORAGE, floor_finish=None,
-         ceiling=FollowRoof(roof_ref="RF-HOUSE")),
-    # Cathedral like the other three (2026-07-31): the 7'-6" dropped ceiling it used to
-    # carry would have buried the 8'-0" head of WIN-A-S-JUL-W, which stands in this room's
-    # stretch of the south gable. Under RF-HOUSE the Den's clear face (x 10'-18') runs
-    # 9'-4" to 12'-0" of headroom, so R305 is satisfied with room to spare.
-    Room(uid="CAR403AAAA", tag="RM-A-DEN", seed=pt(ft(14), ft(4)),
-         occupancy=Occupancy.STORAGE, floor_finish="carpet",
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),
     Room(uid="CAR404AAAA", tag="RM-A-STUDY", seed=pt(ft(27), ft(4)),
          occupancy=Occupancy.OFFICE, floor_finish="oak",
@@ -420,8 +446,8 @@ FLOOR = [
                 # RM-A-WEST-UNFIN and RM-A-EAST-UNFIN take no covering, so this sheet is
                 # their finished floor and is specified as the sanded-face underlayment
                 # grade it has to be. Same 3/4" (23/32 Performance Category), same species
-                # and R-value — a grade and a price change, not a section change. RM-A-DEN
-                # and RM-A-STUDY get carpet and oak over it and are indifferent.
+                # and R-value — a grade and a price change, not a section change.
+                # RM-A-STUDY gets oak over it and is indifferent.
                 subfloor=DeckLayer(material_ref="plywood-underlayment-sanded",
                                    thickness=inch(0.75)),
                 # The SECOND storey's ceiling, and the last deck in the house to get one:

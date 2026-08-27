@@ -304,6 +304,15 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     asymmetric (millwork south, gwb north); without it `orientation.wall_outward_sign` may
     put the gwb face on the well edge and the case pocket in the storage loft.
 
+  **`RM-A-STUDY` grew 159 sf -> 165 sf, and that is the engine, not the geometry.**
+  `resolve/rooms.py` builds a room's face from wall **centrelines** and then insets it by the
+  room-wide lining thickness, so the study's north boundary tracks the AXIS — which moved 4"
+  north — even though the wall's south face did not move at all. The built face is still on
+  the well edge, which is why `code.R312_1_guard` (which reads the wall footprint union)
+  still passes. R303.1 gets better, not worse: 21.3 sf of glazing against a 13.2 sf
+  requirement. `RM-A-EAST-UNFIN` loses the same 6 sf and is `STORAGE`, where no glazing rule
+  binds.
+
   The casework is **not** a placeable and must not become one: both catalog bookcases are
   1'-0" deep against a 9 7/8" pocket, so each would stand 2 1/8" proud — out over the well,
   the exact lie the built-in exists to avoid. Five bays from x=22'-8" stepping 7'-6" down to

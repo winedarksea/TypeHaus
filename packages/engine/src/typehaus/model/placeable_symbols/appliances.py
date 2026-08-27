@@ -175,6 +175,34 @@ def sauna_heater(*, stone_columns: int = 3, stone_rows: int = 3) -> Builder:
     return build
 
 
+def meter_socket() -> Builder:
+    """A utility meter socket: a grey ringless can with the glass register on its face.
+
+    Not ``panel_board`` at a smaller size and not ``safety_switch`` either — what identifies a
+    meter from the driveway is the round glass register on the cover, which neither of those
+    has, and the can itself is plain galvanised steel rather than the domain fallback yellow.
+    The dome is drawn *into* the front face rather than standing proud of it: the authored
+    footprint is the product's overall size, which is what a clearance check measures.
+    """
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        # The plan circle is the can's register seen from above, so it is sized off the
+        # footprint alone — strokes are height-independent by contract. The massed dome takes
+        # the same radius, capped so it cannot run off the top or bottom of a shallow can.
+        dome_r = min(width, depth) * 0.42
+        dome_cz = height * 0.6
+        dome_rz = min(dome_r, height * 0.35)
+        dome_t = min(depth * 0.5, dome_r)
+        strokes = [rect(0, 0, width, depth, fill="metal"),
+                   circle(0, 0, dome_r, fill="glass", weight=DETAIL_WEIGHT)]
+        parts = [box(0, 0, 0.0, height, width, depth, "metal"),
+                 box(0, -depth / 2 + dome_t / 2, dome_cz - dome_rz, dome_cz + dome_rz,
+                     dome_r * 2, dome_t, "glass")]
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
 def panel_board() -> Builder:
     """A load centre: the enclosure outline plus its breaker columns."""
 
@@ -260,6 +288,7 @@ APPLIANCE_SYMBOLS: dict[str, Builder] = {
     "water-heater": tank(),
     "sauna-heater": sauna_heater(),
     "panel": panel_board(),
+    "meter": meter_socket(),
     "disconnect": safety_switch(),
     "register": grille(louvers=5),
 }

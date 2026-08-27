@@ -4,7 +4,7 @@ Every branch of the priority order (room override -> covering deck's ``ceiling_b
 the room's roof's ``default_lining`` for a room with no deck above -> nothing) has a real
 instance in catlin, so these tests read the resolved model rather than constructing a
 synthetic plan: `RM-M-LIVING` (plain deck default), `RM-B-SAUNA`/`RM-S-PLANT` (room
-override), `RM-GARAGE` (no-deck, flat roof fallback), `RM-A-DEN` (no-deck, sloped
+override), `RM-GARAGE` (no-deck, flat roof fallback), `RM-A-WEST-UNFIN` (no-deck, sloped
 ``FollowRoof`` — no flat plane to draw), `RM-B-PLAY-N` (a ``Slab.ceiling_below``).
 
 `RM-B-GYM` and `RM-M-LIVING` cover the other axis — how many ceilings ONE room resolves.
@@ -161,10 +161,13 @@ def test_two_decks_at_one_elevation_stay_one_ceiling(catlin_model) -> None:
 
 
 def test_a_sloped_follow_roof_ceiling_resolves_layers_but_no_flat_solid(catlin_model) -> None:
-    """``RM-A-DEN`` follows ``RF-HOUSE``'s slope (``Room.ceiling=FollowRoof(...)``) — there
-    is no single flat plane to draw, so the layer stack resolves for the BOM/checks but no
-    ``ResolvedSolid`` is emitted for it."""
-    ceiling = _ceiling(catlin_model, "RM-A-DEN")
+    """``RM-A-WEST-UNFIN`` follows ``RF-HOUSE``'s slope (``Room.ceiling=FollowRoof(...)``)
+    — there is no single flat plane to draw, so the layer stack resolves for the BOM/checks
+    but no ``ResolvedSolid`` is emitted for it.
+
+    This case was ``RM-A-DEN`` until 2026-08-27, when that room was deleted and its space
+    folded into ``RM-A-WEST-UNFIN``. Same roof, same ``FollowRoof``, same branch."""
+    ceiling = _ceiling(catlin_model, "RM-A-WEST-UNFIN")
     assert ceiling is not None
     assert ceiling.layers  # RF-HOUSE's default_lining (paint + gwb)
     assert ceiling.z0_m is None and ceiling.z1_m is None

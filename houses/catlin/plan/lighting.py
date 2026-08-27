@@ -721,8 +721,8 @@ SECOND_LIGHTING = [
              controlled_by=("ED-S-SUITEBATH-SW",),
              mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     ElectricalDevice(uid="QTS000E1AA", tag="ED-S-NICHE-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(16, 6), ft(21, 6)), type_ref="ED-T-LT-PSU-60",
-                     circuit="CKT-LT-UPPER", room="RM-S-SUITEBATH",
+                     position=pt(m(5.74792), m(6.74617)), type_ref="ED-T-LT-PSU-60",
+                     circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      mount=Mount(kind=MountKind.CEILING)),
 
     # RM-S-VANITY: two lavatories, two mirror lights, both on the north wet wall.
@@ -921,14 +921,19 @@ SECOND_LIGHTING = [
 # 9'-8" is x=22' or x=14'; 8'-0" is x=27' or x=9'. Sloped-ceiling trims, and the housings
 # sit in the rafter bay rather than a joist bay.
 ATTIC_LIGHTING = [
-    # RM-A-DEN: a 43 ft2 nook with no wall on the way in to put a switch on, so the
+    # Was RM-A-DEN's: a 43 ft2 nook with no wall on the way in to put a switch on, so the
     # fixture carries its own (notes: "spotlight sconce with switch on sconce"). No
     # `controlled_by`, deliberately — `integral_switch` on the type exempts it from
     # `electrical.lighting_controls`. Back at x=14'-0" (2026-07-31) after WIN-A-S-JUL-W's
     # width settled at 18": the original position clears the window jamb by 1'-11".
+    #
+    # ** REASSIGNED TO RM-A-WEST-UNFIN 2026-08-27 ** when the Den was deleted and its space
+    # folded into the west loft. Position, type, mount, elevation and circuit are all
+    # unchanged — the wall it hangs on (the south gable at x=14'-0") did not move, only the
+    # room claim around it did. The integral switch is kept: see the type's note.
     ElectricalDevice(uid="QTA0001AAA", tag="ED-A-DEN-SCONCE", kind=DeviceKind.LIGHT,
                      position=pt(ft(14), ft(0, 8.625)), type_ref="ED-T-LT-SPOT-SW",
-                     circuit="CKT-LT-UPPER", room="RM-A-DEN", rotation=deg(180),
+                     circuit="CKT-LT-UPPER", room="RM-A-WEST-UNFIN", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
 
     ElectricalDevice(uid="QTA0002AAA", tag="ED-A-EAST-CAN2", kind=DeviceKind.LIGHT,

@@ -710,7 +710,7 @@ def test_catlin_window_openings_follow_the_sixteen_inch_framing_module():
 
 
 def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_height(catlin_model):
-    """The gable peak's composition: two 24x64 casements symmetric about the x=18' ridge.
+    """The gable peak's composition: two 27x64 casements symmetric about the x=18' ridge.
 
     Every number here is load-bearing on the design. The rake is what makes this worth
     pinning: ``resolve/geometry_openings.py`` *shortens* an opening that runs into the roof
@@ -740,11 +740,16 @@ def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_heigh
     assert west_x == pytest.approx(ft(16).meters, abs=1e-6)
     assert east_x == pytest.approx(ft(20).meters, abs=1e-6)
     assert ft(18).meters - west_x == pytest.approx(east_x - ft(18).meters, abs=1e-9)
-    # Each RO now sits centred on its own stud line with a full clear bay to the next one
-    # out (17'-4" west, 18'-8"... east reads 21'-4"), so one stud breaks and no jamb crowds
-    # a neighbour — the 1/4" squeeze the outward-only widening had left is gone.
-    assert west_x - inch(12).meters == pytest.approx(ft(15).meters, abs=1e-6)
-    assert east_x + inch(12).meters == pytest.approx(ft(21).meters, abs=1e-6)
+    # Each RO sits centred on its own stud line and breaks exactly that one stud. Widened
+    # 24" -> 27" on 2026-08-27 to close the clear pier between the pair from 24" to 21"
+    # (14" is what RB-HOUSE's south bearing point needs), which is why the half-width here
+    # is 13 1/2" and not 12": the units grew 1 1/2" PER SIDE and the centres did not move.
+    # Outboard jambs land 14'-10 1/2" and 21'-1 1/2", each 2 1/2" inside the next stud line
+    # out (14'-8" and 21'-4"), so the king packs against that stud rather than standing free.
+    assert west_x - inch(13.5).meters == pytest.approx(ft(14, 10.5).meters, abs=1e-6)
+    assert east_x + inch(13.5).meters == pytest.approx(ft(21, 1.5).meters, abs=1e-6)
+    assert west.width_m == pytest.approx(inch(27).meters, abs=1e-6)
+    assert east.width_m == pytest.approx(inch(27).meters, abs=1e-6)
 
     for opening in (west, east):
         # The storey-wide south sill line, held here deliberately — and 8" above the 24"
