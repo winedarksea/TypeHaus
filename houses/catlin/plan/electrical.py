@@ -1475,8 +1475,13 @@ NEC_FILL_ATTIC = [
                      position=pt(ft(35, 4.375), ft(10, 3.75)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
+    # y 9'-3 3/8" -> 9'-11 3/8" (2026-08-27): W-A-SN thickened to 12 3/4" for the study's
+    # bookcase wall, and at the old y this device sat INSIDE the wall. Nothing checks that,
+    # which is why it is written down. 9'-11 3/8" is the same 3/8" off the new north face
+    # that 9'-3 3/8" was off the old one, so it is still a face-mounted receptacle in
+    # RM-A-EAST-UNFIN looking south.
     ElectricalDevice(uid="NEC055AAAA", tag="ED-A-EAST-RC8", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(26, 6.375), ft(9, 3.375)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(26, 6.375), ft(9, 11.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     # RC1/RC2 moved 2026-07-31: both used to sit over the FO-A-STAIR well (1 3/4"/6 5/8" of

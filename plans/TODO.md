@@ -363,6 +363,7 @@ the future.
 - Small windows on corners?
 - Improve the symmetry of the windows on the east and west side
 - Permit drawings
+- Make sure the floor trusses (of the first to second floor) are modeled more accurately in 3d and make sure their measurements in the BOM are very exact for manufacturing
 - The house's own strip footings are eccentric under their walls, the same way the garage
   stem's were before 2026-08-15: `FT-B-*` is a 20" strip centred on the y=0 node line,
   under a `face("concrete-ext")` wall whose concrete runs inboard from it. **The -2" north

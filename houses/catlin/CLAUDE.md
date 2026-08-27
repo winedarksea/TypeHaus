@@ -291,6 +291,29 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   resolved open to the I-joists, absent from the 3D model and from the order. The one
   exception is `RM-S-PLANT`, whose `Room.ceiling_lining` humidity liner replaces it over
   that room's own face.
+- **`W-A-SN` IS A 12 3/4" BOOKCASE WALL, AND ITS SOUTH FACE IS PINNED** (2026-08-27,
+  `CATLIN_INT_2X4_BOOKCASE_12`). That face is the only thing covering `FO-A-STAIR`'s north
+  edge: move the wall north and `code.R312_1_guard` FAILs with ~14'-3" of unguarded well.
+  So the wall was **thickened, never moved** — the face stayed at 8'-9 5/8" and the depth
+  grew north, which is the whole reason `N-A-C2`/`N-A-E1` sit at **y=9'-4"**
+  (`105.625 + 12.75/2 = 112.000"`). The 2026-08-15 pass tried y=9'-4" by MOVING a 4 3/4"
+  partition and had to revert the same day; same axis, opposite meaning. Two rules follow:
+  - **Do not split the wall** to give its west 1'-6" a thinner assembly — a 4 3/4" wall on
+    this axis puts its south face 4" north of the well edge and re-opens the same FAIL.
+  - **`interior_room="RM-A-STUDY"` is load-bearing on that `Wall`.** The stack-up is
+    asymmetric (millwork south, gwb north); without it `orientation.wall_outward_sign` may
+    put the gwb face on the well edge and the case pocket in the storage loft.
+
+  The casework is **not** a placeable and must not become one: both catalog bookcases are
+  1'-0" deep against a 9 7/8" pocket, so each would stand 2 1/8" proud — out over the well,
+  the exact lie the built-in exists to avoid. Five bays from x=22'-8" stepping 7'-6" down to
+  4'-6" under the rake, recorded in the `W-A-SN` comment and paid for by the
+  `prices.toml [allowances]` lump `study-bookcase-wall-casework`. The BOM legitimately sees
+  only the `case-back` sheet and the nailers. `D-A-STUDY` is hidden in the run as
+  `DT-INT-BOOKCASE30`, a Murphy-style bookcase door — a **retype in place**, so it keeps its
+  uid and IFC GlobalId. Its `trimless=True` means a millwork case, **not** the drywall
+  return jamb it means everywhere else in this house; do not price it off the
+  `DT-INT-SWING30-TRIMLESS` row.
 - **The roof is a screwed nailbase, and three of its layers exist only because the
   condensation gate says so** (2026-08-20; it was a vented batten roof before). Stack above
   the rafters: 1/2" taped ZIP -> self-adhered deck vapour barrier -> 3" + 3" polyiso
@@ -357,14 +380,15 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   `structural.window_framing_module` (asserted clean by
   `test_catlin_contract_m3.py::test_catlin_window_openings_follow_the_sixteen_inch_framing_module`)
   is what says so. Resize windows to fit the grid, not vice versa. One type per width
-  family — WT-1424, WT-2464 (the attic gable's juliet pair, head at 8'-0"; an 18" WT-1864
-  family until 2026-08-24), WT-2736, WT-3036 (north gables/hall), WT-3048 (the
-  south-glazing size, head at 6'-8") — each family sharing the one height that fits its
-  most constrained wall. Five WIDTHS carry the whole house, and after the 2026-08-25
-  narrowing the 27" family carries three of the nine heights (36"/48"/54"): the bearing cap
-  is the width every bearing wall has to meet, so when a bearing-wall opening needs area or
-  a head line, HEIGHT is the only dimension left to spend. That is a consequence of the
-  ladder, not a drift away from "one type per width family".
+  family — WT-1424, WT-2736, WT-3036 (north gables/hall), WT-3048 (the south-glazing size,
+  head at 6'-8") — each family sharing the one height that fits its most constrained wall.
+  Five WIDTHS carry the whole house, and the 27" family now carries FOUR of the heights
+  (36"/48"/54"/64", the last being WT-2764, the attic juliets since 2026-08-27; WT-2464 is
+  catalog-only from that date, and was an 18" WT-1864 family until 2026-08-24). The bearing
+  cap is the width every bearing wall has to meet, so when an opening needs area, a head
+  line or composition, HEIGHT is the only dimension left to spend. That is a consequence of
+  the ladder, not a drift away from "one type per width family" — but the exception list
+  below grows every time it happens, which is the honest cost of the rule.
   **Every window in the house is on its ideal station (2026-08-25), and the exception list
   is empty.** The juliet family was the last holdout: it centred on a stud line at 18" wide,
   and widening it to 24" on 2026-08-24 could only go outward — the 14" bearing pier under
@@ -375,10 +399,11 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   retype. `test_catlin_contract_m3.py::test_catlin_window_openings_follow_the_sixteen_inch_framing_module`
   asserts the empty list; keep it empty, and see **ONE GRID PER FACADE** under Facade rules
   before concluding a window cannot reach its station.
-  **Four exceptions**, each an extra height on an existing width family because the rule's
+  **Five exceptions**, each an extra height on an existing width family because the rule's
   own remedy — give it its own width family — costs more than the extra height does. The
-  first two are 2026-08-01 and are about a HEAD LINE; the last two are 2026-08-25 and are
-  the 27" bearing cap being paid for in height (see the RO ladder above):
+  first two are 2026-08-01 and are about a HEAD LINE; the next two are 2026-08-25 and are
+  the 27" bearing cap being paid for in height (see the RO ladder above); the fifth is
+  2026-08-27 and is composition, on a NONBEARING wall:
   - **WT-1448** (the south gable's flankers): the 4:12 rake forbids the remedy outright.
     Any width over 14" breaks a stud and takes a header, and the header is what hits the
     rake (the juliet family at the nearest usable stud line misses by 1.8"). 14" fits in a bay
@@ -393,6 +418,12 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     single-window BEDROOMS, so R303.1 binds on area and 27x48 is 9.00 sf against BED2's
     9.945 sf requirement — it would FAIL. 54" is the height that makes 27" legal
     (10.125 sf), which is why this one is a code necessity and not a composition choice.
+  - **WT-2764** (`WIN-A-S-JUL-W`/`-E`, 2026-08-27): the only one of the five that is a
+    composition choice outright, and the only one on NONBEARING walls (W-A-S2/W-A-S3, cap
+    30"). The juliet pair had to grow to close the gap between the two units without moving
+    either centre off its stud line; 27" is what closes it to a 21" pier with the bearing
+    point still covered, and 64" is the height the pair has carried since 2026-07-31. A
+    fourth height on the 27" family rather than a sixth width — same trade as the others.
 - Facade rules (2026-07-30 pass, gable revised 2026-08-01, E/W revised 2026-08-15).
   Windows line up or they are not there:
   - **ONE GRID PER FACADE (2026-08-25). The residue rule is dead — read this instead.**
@@ -558,20 +589,39 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     The pair is now **6'-8" / 29'-4"** (2026-08-26): the three-storey column moved to bring
     WIN-M-KITCH onto the kitchen sink below (see **Columns** above), and WIN-A-N1 moved
     with it to hold the mirror about x=18'-0".
-    It had never been, and the reason was phase, not composition. The south gable carries
-    four openings, exactly mirrored about x=18': WT-1448 flankers at 8'-8"/27'-4"
-    (head 6'-8") around the WT-2464 juliet pair at **16'-0"/20'-0"** (head 8'-0"), one 2'-8"
-    sill under all four, heads stepping with the rake. The juliet centres were 16'-8"/19'-4"
-    until the 2026-08-24 widening pushed each unit 3" outward onto a non-module station —
-    the house's one accepted off-module pair — and 5" further out on 2026-08-25, where the
-    unified grid puts a stud line and the exception ends. The clear bearing pier between
-    them went 14" -> 24" with that move; 14" is the requirement, so it is spent slack, not a
-    new constraint. The mirror about x=18' is the rule that actually governs a gable and is
-    the one thing that survived all three positions. The corner pair at 3'-4"/33'-8" was
-    retired — the rake leaves ~6'-0" of wall there and nothing stands in it without reading
-    as a stamp. Mirroring the east half once required moving N-A-V1 from 22'-4" to 22'-8",
-    because W-A-S4's bay centres were then 4" out of phase with a mirror of W-A-S1's; that
-    node no longer sets any grid, so the move is now only a wall-segmentation choice.
+    It had never been, and the reason was phase, not composition. **The south gable carries
+    SIX openings as of 2026-08-27**, exactly mirrored about x=18' and reading west→east as
+    S1, S2, JUL-W, JUL-E, S3, S4:
+
+    | station | tag | type | head |
+    |---|---|---|---|
+    | 3'-4" / 32'-8" | `WIN-A-S1` / `WIN-A-S4` | WT-1424 (14x24) | 4'-8" |
+    | 8'-8" / 27'-4" | `WIN-A-S2` / `WIN-A-S3` | WT-1448 (14x48) | 6'-8" |
+    | 16'-0" / 20'-0" | `WIN-A-S-JUL-W` / `-E` | WT-2764 (27x64) | 8'-0" |
+
+    One 2'-8" sill under all six, heads stepping with the rake.
+
+    The juliet centres were 16'-8"/19'-4" until the 2026-08-24 widening pushed each unit 3"
+    outward onto a non-module station — the house's one accepted off-module pair — and 5"
+    further out on 2026-08-25, where the unified grid puts a stud line and the exception
+    ends. Widening again 24" -> 27" on 2026-08-27 grew each unit 1 1/2" PER SIDE, so the
+    centres did not move at all; the clear bearing pier closed 24" -> 21", against a 14"
+    requirement. That is still spent slack, not a new constraint.
+
+    **The corner pair came back on 2026-08-27, and its 8" column miss is permanent.** The
+    2026-08-01 pass retired 3'-4"/32'-8" because "the rake leaves ~6'-0" of wall there and
+    nothing stands in it without reading as a stamp"; what changed is that a unit there is
+    now the THIRD member of a group rather than a lone stamp, and the gable reads as one
+    six-opening composition. It does NOT cap the 4'-0"/32'-0" column the storeys below
+    stack, and it never can: a 14" RO must sit on a BAY CENTRE (8" mod 16") and every south
+    column below is on a STUD LINE. **Do not "fix" that 8" by moving these two** — it trades
+    a clean framing module for a header the 4:12 rake will not take.
+
+    The mirror about x=18' is the rule that actually governs a gable and is the one thing
+    that survived every one of these positions. Mirroring the east half once required moving
+    N-A-V1 from 22'-4" to 22'-8", because W-A-S4's bay centres were then 4" out of phase
+    with a mirror of W-A-S1's; that node no longer sets any grid, so the move is now only a
+    wall-segmentation choice.
   - WT-1424 still does the work wherever a bigger unit will not fit — in the 5' knee
     walls, where its 2'-0" height is the only one that clears the plate, and in the
     mudroom. Under the south rake it handed off to WT-1448.

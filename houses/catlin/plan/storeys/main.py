@@ -60,6 +60,12 @@ DOOR_TYPES = [
              tempered=True),
     # Frameless jamb system (no applied casing — drywall return jamb), flush with the gwb.
     DoorType(tag="DT-INT-SWING30-TRIMLESS", width=ft(2, 6), height=ft(6, 8), trimless=True),
+    # The study's bookcase door — a leaf that IS a bookcase, hung in W-A-SN's built-in.
+    # Everything that says "Murphy" lives here on the type, which is what let D-A-STUDY be a
+    # retype in place and keep its uid and IFC GlobalId. See source= for the trimless trap.
+    DoorType(tag="DT-INT-BOOKCASE30", width=ft(2, 6), height=ft(6, 8), core="solid",
+             trimless=True, product_ref="PROD-MURPHY-BOOKCASE-30",
+             source="plans/TODO.md — D-A-STUDY only: a flush-mount Murphy-style BOOKCASE DOOR in W-A-SN's built-in (CATLIN_INT_2X4_BOOKCASE_12). Same 2'-6\"x6'-8\" RO as DT-INT-SWING30, so nothing re-phases and the jamb pack is unchanged; operation stays SWING because a bookcase door IS a swinging door. core=\"solid\" is the only schema field that says a ~250 lb leaf. ** trimless=True HERE MEANS A MILLWORK CASE, NOT THE DRYWALL RETURN JAMB IT MEANS EVERYWHERE ELSE IN THIS HOUSE ** — a flush bookcase door has no casing, and a drawn frame box is the one thing that gives it away in 3D; do not price it off the DT-INT-SWING30-TRIMLESS row. No header_spec: the real requirement is the HINGE-SIDE JAMB (a 250 lb leaf on a 10\" moment arm is torsion, not bending) — a full-depth 3-ply post through-bolted to the sole plate and the assembly's 4'-0\" blocking row, for which there is no field. The case depth must match case-pocket + stud-case (9 7/8\" clear); see that assembly's note for what moves if the ordered unit needs a full 12\" case"),
     DoorType(tag="DT-INT-SWING24", width=ft(2), height=ft(6, 8)),
     DoorType(tag="DT-INT-BIFOLD60", width=ft(5), height=ft(6, 8), operation="bifold"),
     DoorType(tag="DT-INT-BIFOLD56", width=ft(4, 8), height=ft(6, 8), operation="bifold"),
@@ -120,6 +126,10 @@ WINDOW_TYPES = [
     # was under the hardware's minimum frame width, but the family is casement throughout.
     # 24" also clears Andersen 400's 20-11/16" narrowest casement, which 18" did not — see
     # the "BELOW A STOCK LINE'S MINIMUM SIZE" note in prices.toml.
+    # Catalog-only since 2026-08-27: WT-2764 took over both juliets when the pair widened
+    # again (24" -> 27" each), and WT-2464 is now referenced by nothing. Kept rather than
+    # deleted, the convention WT-3660, glazed-green-brick and CATLIN_EXT_2X6_SWINBURNE are
+    # all held under — a retired size is a priced, available product, not dead code.
     WindowType(tag="WT-2464", width=inch(24), height=ft(5, 4), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # 27" RO — bearing-wall size (N*2-9): one stud broken, jacks added. 36" tall
@@ -146,6 +156,16 @@ WINDOW_TYPES = [
     # of cripple left over, which is what disproves that note's "27" cannot reach it at
     # any height that fits under the 9'-0" plate".
     WindowType(tag="WT-2754", width=inch(27), height=ft(4, 6), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="casement"),
+    # 27" RO x 64" — the attic gable's juliet size since 2026-08-27, replacing WT-2464 at
+    # WIN-A-S-JUL-W/E. Each unit widened 1 1/2" per side so the pair's CENTRES stayed on the
+    # 16'-0"/20'-0" stud lines and the clear pier between them closed 24" -> 21", 7" over
+    # what RB-HOUSE's south bearing point needs (see the juliet note in storeys/attic.py).
+    # W-A-S2/W-A-S3 are NONBEARING, whose width cap is 30", so 27" is inside it with room.
+    # FOURTH height in the 27" family (36/48/54/64) and the fourth deliberate break of "one
+    # height per family" — which is the RO ladder working as designed, not a drift: the cap
+    # is on WIDTH, so composition has to be bought in HEIGHT (see WT-1448's note).
+    WindowType(tag="WT-2764", width=inch(27), height=ft(5, 4), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # 30" RO — non-load-bearing size (N*2-6): one stud broken. 36" tall keeps the
     # attic-gable heads below the cathedral-roof framing. Since the 2026-07-30 south
@@ -185,6 +205,8 @@ WINDOW_TYPES = [
     WindowType(tag="WT-1424-T", width=inch(14), height=ft(2), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="awning", tempered=True),
     WindowType(tag="WT-2736-T", width=inch(27), height=ft(3), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="casement", tempered=True),
+    WindowType(tag="WT-2748-T", width=inch(27), height=ft(4), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement", tempered=True),
     WindowType(tag="WT-2754-T", width=inch(27), height=ft(4, 6), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement", tempered=True),
@@ -715,11 +737,20 @@ OPENINGS = [
     # 4'-0" / 12'-0" (the true-even 11'-8" middle isn't a stud line on W-M-E1). Both sills
     # stay 2'-6": the BESTA run tops out at 29 3/4" (placeables.py), clearing the
     # countertop by 1/4".
+    #
+    # 2026-08-27: both retyped WT-2736 -> WT-2748, 36" -> 48" tall. Same 27" bearing width,
+    # so the near-jamb offsets and the row's 4'-0"/12'-0" beat are untouched; the head
+    # moves 5'-6" -> 6'-6", onto WIN-M-EAST-MID's line. The sill stays 2'-6" over the BESTA
+    # run, and the row now carries one head line where it carried two.
     Window(uid="CMX309AAAA", tag="WIN-M-LIV-E1", host="W-M-E1",
-           type_ref="WT-2736", position=from_node("N-M-SE", ft(2, 10.5)),
+           type_ref="WT-2748", position=from_node("N-M-SE", ft(2, 10.5)),
            sill_height=ft(2, 6)),
+    # E2 moved one stud line north 2026-08-27, 12'-0" -> 13'-4" centre: it now stacks under
+    # WIN-S-BED1. The row's within-storey beat goes 4'-0"/12'-0" -> 4'-0"/13'-4" (8'-0" ->
+    # 9'-4" apart), which is the trade the 2026-07-30 note above priced the other way — a
+    # two-storey column is worth more here now that E1 columns with WIN-S-STUDY3.
     Window(uid="CMX310AAAA", tag="WIN-M-LIV-E2", host="W-M-E1",
-           type_ref="WT-2736", position=from_node("N-M-SE", ft(10, 10.5)),
+           type_ref="WT-2748", position=from_node("N-M-SE", ft(12, 2.5)),
            sill_height=ft(2, 6)),
     # WIN-M-LIV-E2 (old, 12'-0") and WIN-M-DIN-E2 (19'-4") retired 2026-08-24, replaced by
     # one WT-3048 unit centred as close as the 16" module allows to y=18'-0" — the exact

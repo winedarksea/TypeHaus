@@ -78,11 +78,14 @@ SECOND_LINES = (
 ATTIC_LINES = (
     ("N-A-C1", "y", 5, 7, 5.611),      # Den north wall
     ("N-A-D1", "y", 5, 7, 5.611),
-    # The band wall lands 2 3/4" south of its source line, because its south face is set on
-    # FO-A-STAIR's north edge — which is the relationship the source itself draws, with a
-    # 6 3/4" wall where ours is 4 1/2".
-    ("N-A-C2", "y", 9, 0, 9.228, 3.0),
-    ("N-A-E1", "y", 9, 0, 9.228, 3.0),
+    # The band wall's SOUTH FACE is set on FO-A-STAIR's north edge — the relationship the
+    # source itself draws — so its centreline is wherever that face plus half the assembly
+    # lands, and the survey line is a check on the face, not on the axis. At 4 1/2" thick
+    # the axis fell 2 3/4" south of the source and needed a 3.0" override here. Since
+    # 2026-08-27 the wall is the 12 3/4" bookcase assembly, the same face puts the axis at
+    # 9'-4", and the error is 1 1/4" — inside the default band, so the override is gone.
+    ("N-A-C2", "y", 9, 4, 9.228),
+    ("N-A-E1", "y", 9, 4, 9.228),
     # Stair vestibule east screen. 4 1/4" east of its source line since 2026-08-01, and the
     # one node in this table that is off its source for a reason outside the survey: N-A-V1
     # is where W-A-S4 starts, so it sets the phase of every bay centre on the east half of

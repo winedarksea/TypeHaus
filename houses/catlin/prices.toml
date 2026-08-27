@@ -360,7 +360,7 @@
 # split — FS-SECOND before that), by the sheet. Distinct from the
 # `[envelope_layers]` "gwb" row, which is wall lining priced by the net SF.
 "gwb" = { material = { low = 17, high = 26 }, labour = { low = 48, high = 85 } }  # 64 sheets — +25 with the basement ceiling (2026-08-21)
-"plywood-subfloor" = { material = { low = 42, high = 62 }, labour = { low = 18, high = 32 } }  # 104 sheets — +26 with the two new decks (2026-08-21)
+"plywood-subfloor" = { material = { low = 42, high = 62 }, labour = { low = 18, high = 32 } }  # 64 sheets — was 104 until FS-ATTIC's 40 moved to the sanded row below (2026-08-27)
 # FS-ATTIC only (2026-08-27). Same 23/32 T&G panel as the row above in every structural
 # sense, but ordered sanded-face and plugged because the two unfinished lofts walk on it
 # bare — a grade premium of roughly a third over CDX (CDX 23/32 runs $45-65/sheet mid-2026;
@@ -368,7 +368,7 @@
 # for the same reason: on a covered deck the fasteners are driven and forgotten, and here
 # they are set below the face and the T&G joints are walked flat before anything is stacked
 # on them. CONFIDENCE: MEDIUM — the grade premium is a retail-shelf comparison, not a quote.
-"plywood-underlayment-sanded" = { material = { low = 58, high = 88 }, labour = { low = 22, high = 38 } }
+"plywood-underlayment-sanded" = { material = { low = 58, high = 88 }, labour = { low = 22, high = 38 } }  # 40 sheets (FS-ATTIC, 1,253 SF net)
 # The nailbase top deck (CATLIN_ROOF). Labour is well above the plywood row below it and
 # that is not padding: every sheet is set on 6" of foam with nothing under it but the screw
 # being driven, so it is a two-man lay-and-hold operation with a 10" screw on a 16 x 24 grid.
@@ -1934,7 +1934,12 @@
 "WT-1424-FIX" = { material = { low = 400, high = 780 }, labour = { low = 105, high = 215 } }  # 1 ea — fixed runs 75-80% of an operable casement
 "WT-1424-T" = { material = { low = 670, high = 1250 }, labour = { low = 115, high = 240 } }  # 5 ea — +$150/250 flat tempered
 "WT-1448" = { material = { low = 550, high = 1050 }, labour = { low = 135, high = 275 } }  # 2 ea — 62 UI, same band as WT-2736
-"WT-2464" = { material = { low = 760, high = 1430 }, labour = { low = 170, high = 370 } }  # 2 ea — 88 UI, over the band. Was WT-1864 (18x64, 82 UI) until 2026-08-24; +6" of width is ~8% of material here, and 24" clears Andersen 400's 20-11/16" casement minimum, so this row is no longer an availability risk
+"WT-2464" = { material = { low = 760, high = 1430 }, labour = { low = 170, high = 370 } }  # 0 ea — 88 UI, over the band. CATALOG-ONLY since 2026-08-27, when both juliets retyped to WT-2764; kept priced so the retired size stays an orderable option. Was WT-1864 (18x64, 82 UI) until 2026-08-24; +6" of width is ~8% of material here, and 24" clears Andersen 400's 20-11/16" casement minimum, so this row is no longer an availability risk
+# 27x64, the juliet size since 2026-08-27 (WT-2464 + 3" of width). 91 UI, the widest unit
+# in the house and past the 0-71 UI band, so it carries WT-2464's over-band premium plus
+# ~4% for the extra glass and frame. Still one-man set — 27" is narrow and the sill is
+# 2'-8" off a finished attic floor.
+"WT-2764" = { material = { low = 790, high = 1490 }, labour = { low = 175, high = 380 } }  # 2 ea — 91 UI
 # The mid units — ordinary 17-26% corrections.
 "WT-2736" = { material = { low = 550, high = 1050 }, labour = { low = 155, high = 320 } }  # 10 ea — the production unit, 63 UI
 "WT-2736-T" = { material = { low = 700, high = 1300 }, labour = { low = 160, high = 330 } }  # 1 ea
@@ -1994,6 +1999,17 @@
 # subs frequently exclude cracking at a reveal from their warranty, so carry a rework
 # contingency this file cannot express.
 "DT-INT-SWING30-TRIMLESS" = { material = { low = 600, high = 1400 }, labour = { low = 620, high = 1400 } }  # 1 ea
+
+# D-A-STUDY's Murphy-style bookcase door in W-A-SN's built-in. ** DO NOT PRICE THIS OFF THE
+# TRIMLESS ROW ABOVE. ** Both types carry `trimless=True` and they mean different things: that
+# one is a drywall return jamb, this one is a millwork case with no casing because it is a
+# piece of furniture. What is being bought here is a ~250 lb solid-core leaf, a concealed
+# pivot or heavy-duty hinge set, a latch and release, and factory shelving on the leaf.
+# Labour is high for a 2'-6" opening and is NOT drywall labour: it is a finish carpenter
+# hanging and shimming a door that must sit flush with fixed casework on both sides, plus
+# the hinge-side jamb (a full-depth 3-ply post through-bolted to the sole plate and the
+# 4'-0" blocking row) that no schema field carries — see the type's source=.
+"DT-INT-BOOKCASE30" = { material = { low = 1400, high = 3500 }, labour = { low = 500, high = 1150 } }  # 1 ea
 
 # --- cased openings -----------------------------------------------------------------------------
 # Priced 2026-08-20 where they used to be blank. "no product to buy" was true and was the wrong
@@ -2674,6 +2690,22 @@ site-survey-staking-and-erosion-control = { low = 2000, high = 6000 }
 # 1,430.3 SF at roughly $1.00-1.85/SF installed. It is not optional: it is the assembly's
 # only drying path, and without it the condensation gate cannot pass at any foam thickness.
 roof-ventilated-underlayment-mat = { low = 1450, high = 2650 }
+# --- millwork -------------------------------------------------------------------------------
+# THE STUDY BOOKCASE WALL's casework (W-A-SN, CATLIN_INT_2X4_BOOKCASE_12). Same shape of
+# problem as the vent mat above: the wall IS modelled, but what the BOM legitimately sees is
+# only the `case-back` plywood sheet and the `nailer-n` sticks — the shelves, the face frames,
+# the end panel and the finish are not layers and cannot be, because the case is the AIRGAP.
+# Nothing is placed in plan/placeables.py for it either, and deliberately: both catalog
+# bookcases are 1'-0" deep against a 9 7/8" pocket, so every case would stand 2 1/8" proud of
+# the wall — out over the stair well, the exact lie the built-in exists to avoid.
+#
+# ~12'-9" of run in five bays, stepping 7'-6" down to 4'-6" under the 4:12 rake, so every bay
+# is a different height and none of it is a stock module. Paint-grade custom built-in runs
+# $175-350 per linear foot of face for shop work of this kind, and the stepped tops, the
+# scribe to the rake and the flush end panel sit at the top of that. The door leaf itself is
+# NOT here — it is `openings."DT-INT-BOOKCASE30"`, and billing it twice is the one failure
+# mode this section cannot catch.
+study-bookcase-wall-casework = { low = 2400, high = 5200 }
 # THE CODE MINIMUM ONLY — eaves to 24" inside the wall line, plus valleys, per MN. CONFIRMED
 # AS BASE SCOPE by the owner 2026-08-20, and for a stated reason rather than to save money:
 # this roof is a highly insulated assembly under a low-friction standing seam over a quality

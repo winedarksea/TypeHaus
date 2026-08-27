@@ -420,7 +420,11 @@ OPENINGS = [
     # phase — see NODES), not four window moves; BED2/BED3's authored offsets never changed.
     # Bonus: WIN-S-STUDY3 now lands over WIN-M-LIV-E1, the east face's first two-storey
     # column; WIN-A-E-N at 32'-4" is the one alignment given up (attic.py).
-    Window(uid="CSX314AAAA", tag="WIN-S-STUDY3", host="W-S-E1", type_ref="WT-2736-T",
+    # 2026-08-27: retyped WT-2736-T -> WT-2748-T, 36" -> 48" tall. Same 27" bearing width,
+    # so the mirrored 4'-0"/13'-4"/22'-8"/32'-0" beat and every offset below are untouched;
+    # the head moves 6'-0" -> 7'-0". It still columns with WIN-M-LIV-E1 below, which took
+    # the same retype the same day.
+    Window(uid="CSX314AAAA", tag="WIN-S-STUDY3", host="W-S-E1", type_ref="WT-2748-T",
            position=from_node("N-S-SE", ft(2, 10.5)), sill_height=ft(3)),     # y 4'-0"
     # BED1/BED2 ARE BACK ON THE 27" BEARING CAP (2026-08-25), AND THE 2026-08-01 NOTE THAT
     # PUT THEM ON 30" WAS WRONG ABOUT WHY IT HAD TO. That note read: "a 27x36 falls a third
@@ -458,12 +462,33 @@ OPENINGS = [
     # BED1 lost 4" of depth in the 2026-08-15 node move (it had the margin to spare); BED3
     # gained 4" (it has a second window, 14.2 sf). BED1 carries the -T twin because at
     # y=13'-4" the glass falls inside 60" of ST-S2A, R308.4.5's stair band.
-    Window(uid="CSX301AAAA", tag="WIN-S-BED1", host="W-S-E2", type_ref="WT-2754-T",
+    #
+    # ** 2026-08-27, BY DECISION: BED1/BED2 RETYPED WT-2754 -> WT-2748, 54" -> 48" TALL. **
+    # This gives back exactly the height the 2026-08-25 note above bought R303.1 with, and
+    # that note's arithmetic still holds: 27x48 = 9.00 sf against 9.6 sf required for BED1
+    # and 9.9 sf for BED2, so both rooms are short on GLAZED AREA again. Neither fails.
+    # Both are carried by R303.1 Exception 1 — 3600 lm gives 14.4 / 13.9 fc and the ERV
+    # delivers 210 cfm of outdoor air — the same exception RM-M-LIVING has always leaned
+    # on. What the 54" bought was compliance without the exception; that is what is spent
+    # here, not compliance itself. R310 egress is unaffected (9.00 sf > 5.7 net).
+    # Head drops 7'-6" -> 7'-0"; width, sill, centres and the mirror about the house
+    # centreline are unchanged (same 27" bearing RO), so nothing on the facade or in the
+    # framing moved. BED1 keeps the -T twin for R308.4.5's stair band.
+    Window(uid="CSX301AAAA", tag="WIN-S-BED1", host="W-S-E2", type_ref="WT-2748-T",
            position=from_node("N-S-E1", ft(3, 2.5)), sill_height=ft(3)),    # y 13'-4"
-    Window(uid="CSX302AAAA", tag="WIN-S-BED2", host="W-S-E3", type_ref="WT-2754",
+    Window(uid="CSX302AAAA", tag="WIN-S-BED2", host="W-S-E3", type_ref="WT-2748",
            position=from_node("N-S-E2", ft(3, 10.5)), sill_height=ft(3)),   # y 22'-8"
-    Window(uid="CSX303AAAA", tag="WIN-S-BED3", host="W-S-E4", type_ref="WT-2736",
-           position=from_node("N-S-E3", ft(4, 2.5)), sill_height=ft(3)),    # y 32'-0"
+    # BED3 MOVED OFF THE ROW (2026-08-27): retyped WT-2736 -> WT-1424 and moved 32'-0" ->
+    # 34'-0" centre, matching WIN-M-KIT-E below in both size and station so the two column.
+    # RM-S-BED3 loses 4.4 sf of glass by it (6.75 -> 2.33) and joins BED1/BED2 on R303.1
+    # Exception 1; its R310 egress was never this window's job — WIN-S-HALL-N carries it.
+    # WIN-A-E-N moved 32'-8" -> 34'-0" the same day (attic.py) to complete a three-storey
+    # 14" column on the east face. ``from_node`` is the near jamb, so 34'-0" - 7" = 33'-5"
+    # off N-S-E3 at y=26'-8" -> 6'-9". The east second-storey row is now three units, and
+    # the mirror test's north member is gone with it. Sill stays on the 3'-0" east-face
+    # datum; WIN-M-KIT-E's own 3'-6" is a counter height and does not travel up.
+    Window(uid="CSX303AAAA", tag="WIN-S-BED3", host="W-S-E4", type_ref="WT-1424",
+           position=from_node("N-S-E3", ft(6, 9)), sill_height=ft(4)),      # y 34'-0"
     # West suite (bearing wall). SUITE1 moved 13'-0" -> 10'-4" for the third exact
     # main/second west column. Its header crosses W-S-W3's top ladder-backing rung, so the
     # solver omits that nonstructural rung while preserving the header and every other rung.

@@ -1261,6 +1261,72 @@ CATLIN_INT_2X6_BRG = Assembly(
     source="catlin-house centerline bearing wall (2x6)",
 )
 
+
+# --- the study's bookcase wall ----------------------------------------------------
+# W-A-SN only (2026-08-27). The owner wanted a bookcase wall at the stair head with
+# D-A-STUDY hidden inside it as a Murphy-style bookcase door. The obvious move — push the
+# wall north to make room — is the one thing that cannot happen: W-A-SN's SOUTH FACE IS THE
+# ONLY THING COVERING FO-A-STAIR's NORTH EDGE, and moving it north FAILs code.R312_1_guard
+# with ~14'-3" of unguarded well. So the wall is THICKENED, NOT MOVED: the south face stays
+# pinned on the well edge at 8'-9 5/8" and the extra depth grows north.
+#
+# 12 3/4" total is not a round number chosen for looks. With the wall centred on its axis,
+# 105.625 + 12.75/2 = 112.000" puts the axis at y = 9'-4" exactly, which is also a 16"
+# station — so FS-ATTIC (joists at y = 16k) has a joist directly under the sole plate where
+# the old 4 3/4" partition had none, and the source-survey error at N-A-C2/N-A-E1 drops from
+# 2.74" to 1.26". Do not "simplify" the stack-up without re-deriving that number.
+#
+# Clear shelf depth is 9 7/8" (the 6 3/8" pocket plus the 3 1/2" case face). The five bay
+# stations and their tops are on W-A-SN in plan/storeys/attic.py; the casework itself is a
+# prices.toml [allowances] lump, since a 1'-0"-deep catalog bookcase would stand 2 1/8"
+# proud of this pocket — out over the well, the exact lie this wall exists to avoid.
+#
+# Four engine traps, each verified and each avoided on purpose:
+#   * ONE STRUCTURE LAYER. `framing/solver.py::structure_layer` frames the FIRST one; a
+#     second draws a solid and bills nothing. The case is the cavity, not a second frame.
+#   * `laid` STAYS AT ITS DEFAULT "flat". A vertical FURRING band with `laid="edge"` is the
+#     selector for the Swinburne truss wall (`truss_wall.py::_outrigger_layer_name`) and
+#     would reframe this partition with blocks, tabs, KDAT outriggers and plywood bucks.
+#   * `direction="vertical"` IS STATED. `framing/furring.py` reports an unstated direction
+#     rather than guessing one.
+#   * `PartitionLayout.DOUBLE` is declared but UNIMPLEMENTED (`solver.py` branches on
+#     STAGGERED only). It is the shape this wall superficially resembles. Do not use it.
+#
+# `blocking_heights` is one row at 4'-0" and stops there: `framing/backing.py` does not clip
+# blocking to a raked top, and this wall's top runs 11'-0" at x=18' down to 5'-0" at x=36'.
+# That row is also the through-bolt line for the bookcase door's hinge-side jamb.
+#
+# No CavityFill (the cavity is the shelf), no `default_lining` and no paint layer (the study
+# face is millwork — the CATLIN_MUDROOM_INT_2X6_EXPOSED precedent above), and no `stc=`:
+# STC in this house is a transcribed lab test, never a computed number.
+# The "INT" token is load-bearing as everywhere else (`_is_interior_assembly` in
+# mn_energy.py splits the tag on "_") — without it an uninsulated bay grades against R-21.
+CATLIN_INT_2X4_BOOKCASE_12 = Assembly(
+    tag="CATLIN_INT_2X4_BOOKCASE_12",
+    layers=(
+        Layer(name="stud-case", material_ref="spf", thickness=inch(3.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x4", spacing=inch(16),
+                                  blocking_heights=(inch(48),))),
+        Layer(name="case-pocket", material_ref="air-barrier", thickness=inch(6.375),
+              function=LayerFunction.AIRGAP),
+        Layer(name="case-back", material_ref="cabinet-plywood", thickness=inch(0.75),
+              function=LayerFunction.FINISH),
+        Layer(name="nailer-n", material_ref="spf", thickness=inch(1.5),
+              function=LayerFunction.FURRING,
+              framing=FramingSpec(member="2x4", spacing=inch(16),
+                                  direction="vertical")),
+        Layer(name="gwb-n", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+    ),
+    # NOT `_STUD_BEARING`: that one names the layer "stud", and this assembly's structure
+    # layer is "stud-case". The role must resolve to a real layer — `topology._bearing_layer`
+    # would otherwise fall through to "the first STRUCTURE layer" and get the right answer by
+    # accident, which is exactly the layer-index coupling the role mechanism exists to avoid.
+    interfaces=(AssemblyInterface(role="bearing", layer_name="stud-case", outboard=False),),
+    source="plans/TODO.md — study bookcase wall at the stair head: a 12 3/4\" built-in whose SOUTH face is pinned on FO-A-STAIR's north edge (the wall is thickened, never moved) and whose axis therefore lands on y=9'-4\", a 16\" station with an FS-ATTIC joist directly under it. 9 7/8\" clear shelf depth; five bays from x=22'-8\" stepping down the rake; the casework itself is a prices.toml [allowances] lump, so the BOM sees only the case-back sheet and the nailers. D-A-STUDY is hidden in this wall as DT-INT-BOOKCASE30 — its hinge-side jamb wants a full-depth 3-ply post through-bolted to the sole plate and the 4'-0\" blocking row (a 250 lb leaf on a 10\" moment arm is torsion, not bending), for which there is no schema field",
+)
+
 # INT_2X6_PLUMBING and INT_2X6_STAGGERED_PLUMBING (generic wet-wall partitions, no
 # house-specific geometry or owner data) were promoted to library/assemblies.py on
 # 2026-08-22 (CONTRIBUTING §Promotion flow) and are imported above. The staggered
@@ -2140,6 +2206,7 @@ ASSEMBLIES = [
     FOOTING_FPSF_20,
     GARAGE_ROOF,
     CATLIN_INT_2X6_BRG,
+    CATLIN_INT_2X4_BOOKCASE_12,
     INT_2X6_PLUMBING,
     INT_2X6_STAGGERED_PLUMBING,
     INT_2X4_PARTITION,

@@ -130,10 +130,14 @@ REGISTERS_HVAC_ATTIC = [
              type_ref="REG-T-HP-SUP",
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # Directly above the hall soffit (2026-07-30): the boot rises straight through
-    # FS-ATTIC off the x=19'-4" trunk below, no attic duct run needed. y=10' keeps the
-    # grille inside RM-A-EAST-UNFIN's south wall and clear of FO-A-STAIR's walkway.
+    # FS-ATTIC off the x=19'-4" trunk below, no attic duct run needed.
+    # y 10'-0" -> 11'-4" (2026-08-27): W-A-SN thickened to 12 3/4" for the study's bookcase
+    # wall, putting its north face at 9'-10 3/8" — a floor boot at 10'-0" was 1 5/8" off the
+    # new sole plate. 11'-4" is the next FS-ATTIC bay centre north and is still over
+    # DU-S-HP-SUP, so the boot rises straight as before; the grille stays inside
+    # RM-A-EAST-UNFIN and clear of FO-A-STAIR's walkway with more room than it had.
     Register(uid="CARH02AAAA", tag="REG-A-HP-EAST", kind=DuctSystem.SUPPLY,
-             room="RM-A-EAST-UNFIN", position=pt(ft(19, 4), ft(10)), duct_ref="DU-S-HP-SUP",
+             room="RM-A-EAST-UNFIN", position=pt(ft(19, 4), ft(11, 4)), duct_ref="DU-S-HP-SUP",
              type_ref="REG-T-HP-SUP",
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # RM-A-WEST-UNFIN's supply (2026-07-30): a floor boot straight up off DU-S-HP-SUITE through
