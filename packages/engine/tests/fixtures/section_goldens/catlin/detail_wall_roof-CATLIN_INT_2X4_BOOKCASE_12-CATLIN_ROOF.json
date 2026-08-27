@@ -1,0 +1,1619 @@
+{
+  "name": "detail-D-wall_roof-CATLIN_INT_2X4_BOOKCASE-bce0f9",
+  "units": "in",
+  "nodes": [
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          105.62500000000001,
+          282.93077427821527
+        ],
+        [
+          109.125,
+          282.93077427821527
+        ],
+        [
+          109.125,
+          341.9858923884515
+        ],
+        [
+          105.62500000000001,
+          341.9858923884515
+        ]
+      ],
+      "layer": "A-WALL",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAW113AAAA",
+      "tag": "W-A-SN/stud-case"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          105.62500000000001,
+          282.93077427821527
+        ],
+        [
+          109.125,
+          282.93077427821527
+        ],
+        [
+          109.125,
+          341.9858923884515
+        ],
+        [
+          105.62500000000001,
+          341.9858923884515
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          109.125,
+          282.93077427821527
+        ],
+        [
+          115.5,
+          282.93077427821527
+        ],
+        [
+          115.5,
+          341.9858923884515
+        ],
+        [
+          109.125,
+          341.9858923884515
+        ]
+      ],
+      "layer": "A-WALL-PATT",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAW113AAAA",
+      "tag": "W-A-SN/case-pocket"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          109.125,
+          282.93077427821527
+        ],
+        [
+          115.5,
+          282.93077427821527
+        ],
+        [
+          115.5,
+          341.9858923884515
+        ],
+        [
+          109.125,
+          341.9858923884515
+        ]
+      ],
+      "pattern": "membrane",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "air-barrier"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          115.5,
+          282.93077427821527
+        ],
+        [
+          116.25,
+          282.93077427821527
+        ],
+        [
+          116.25,
+          341.9858923884515
+        ],
+        [
+          115.5,
+          341.9858923884515
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAW113AAAA",
+      "tag": "W-A-SN/case-back"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          116.25,
+          282.93077427821527
+        ],
+        [
+          117.75,
+          282.93077427821527
+        ],
+        [
+          117.75,
+          341.9858923884515
+        ],
+        [
+          116.25,
+          341.9858923884515
+        ]
+      ],
+      "layer": "A-WALL",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAW113AAAA",
+      "tag": "W-A-SN/nailer-n"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          116.25,
+          282.93077427821527
+        ],
+        [
+          117.75,
+          282.93077427821527
+        ],
+        [
+          117.75,
+          341.9858923884515
+        ],
+        [
+          116.25,
+          341.9858923884515
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          117.75,
+          282.93077427821527
+        ],
+        [
+          118.375,
+          282.93077427821527
+        ],
+        [
+          118.375,
+          341.9858923884515
+        ],
+        [
+          117.75,
+          341.9858923884515
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAW113AAAA",
+      "tag": "W-A-SN/gwb-n"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          117.75,
+          282.93077427821527
+        ],
+        [
+          118.375,
+          282.93077427821527
+        ],
+        [
+          118.375,
+          341.9858923884515
+        ],
+        [
+          117.75,
+          341.9858923884515
+        ]
+      ],
+      "pattern": "gypsum",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          93.81397637795277,
+          341.9858923884515
+        ],
+        [
+          132.15452755905514,
+          341.9858923884515
+        ],
+        [
+          132.15452755905517,
+          336.5833333333334
+        ],
+        [
+          93.81397637795277,
+          336.5833333333334
+        ]
+      ],
+      "pattern": "batt",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": "CARF01AAAA",
+      "material": "fiberglass-r19"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          105.62500000000001,
+          289.5
+        ],
+        [
+          109.125,
+          289.5
+        ],
+        [
+          109.125,
+          291.0
+        ],
+        [
+          105.62500000000001,
+          291.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAW113AAAA",
+      "tag": "blocking-0-004"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          105.62500000000001,
+          289.5
+        ],
+        [
+          109.125,
+          289.5
+        ],
+        [
+          109.125,
+          291.0
+        ],
+        [
+          105.62500000000001,
+          291.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          97.25,
+          341.9858923884515
+        ],
+        [
+          94.75,
+          341.9858923884515
+        ],
+        [
+          94.75,
+          336.5833333333334
+        ],
+        [
+          95.99179104477612,
+          336.5833333333334
+        ],
+        [
+          97.25,
+          336.5833333333334
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CARF01AAAA",
+      "tag": "rafter-013"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          97.25,
+          341.9858923884515
+        ],
+        [
+          94.75,
+          341.9858923884515
+        ],
+        [
+          94.75,
+          336.5833333333334
+        ],
+        [
+          95.99179104477612,
+          336.5833333333334
+        ],
+        [
+          97.25,
+          336.5833333333334
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": "CARF01AAAA",
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          94.75,
+          337.95833333333337
+        ],
+        [
+          97.25,
+          337.95833333333337
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CARF01AAAA",
+      "tag": "rafter-013/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          113.25,
+          341.9858923884515
+        ],
+        [
+          110.75,
+          341.9858923884515
+        ],
+        [
+          110.75,
+          336.5833333333334
+        ],
+        [
+          111.99179104477612,
+          336.5833333333334
+        ],
+        [
+          113.25,
+          336.5833333333334
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CARF01AAAA",
+      "tag": "rafter-015"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          113.25,
+          341.9858923884515
+        ],
+        [
+          110.75,
+          341.9858923884515
+        ],
+        [
+          110.75,
+          336.5833333333334
+        ],
+        [
+          111.99179104477612,
+          336.5833333333334
+        ],
+        [
+          113.25,
+          336.5833333333334
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": "CARF01AAAA",
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          110.75,
+          337.95833333333337
+        ],
+        [
+          113.25,
+          337.95833333333337
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CARF01AAAA",
+      "tag": "rafter-015/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          129.25,
+          341.9858923884515
+        ],
+        [
+          126.75000000000001,
+          341.9858923884515
+        ],
+        [
+          126.75000000000001,
+          336.5833333333334
+        ],
+        [
+          127.99179104477614,
+          336.5833333333334
+        ],
+        [
+          129.25,
+          336.5833333333334
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CARF01AAAA",
+      "tag": "rafter-017"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          129.25,
+          341.9858923884515
+        ],
+        [
+          126.75000000000001,
+          341.9858923884515
+        ],
+        [
+          126.75000000000001,
+          336.5833333333334
+        ],
+        [
+          127.99179104477614,
+          336.5833333333334
+        ],
+        [
+          129.25,
+          336.5833333333334
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": "CARF01AAAA",
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          126.75000000000001,
+          337.95833333333337
+        ],
+        [
+          129.25,
+          337.95833333333337
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CARF01AAAA",
+      "tag": "rafter-017/flange"
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          107.375,
+          337.2331146106737
+        ],
+        "name": ""
+      },
+      "at": [
+        92.81397637795277,
+        337.2331146106737
+      ],
+      "to": [
+        107.375,
+        337.2331146106737
+      ],
+      "text": "stud-case 3.5\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          112.3125,
+          334.5692257217848
+        ],
+        "name": ""
+      },
+      "at": [
+        92.81397637795277,
+        334.5692257217848
+      ],
+      "to": [
+        112.3125,
+        334.5692257217848
+      ],
+      "text": "case-pocket 6.38\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          115.875,
+          329.241447944007
+        ],
+        "name": ""
+      },
+      "at": [
+        92.81397637795277,
+        329.241447944007
+      ],
+      "to": [
+        115.875,
+        329.241447944007
+      ],
+      "text": "case-back 0.75\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          117.0,
+          326.5775590551181
+        ],
+        "name": ""
+      },
+      "at": [
+        92.81397637795277,
+        326.5775590551181
+      ],
+      "to": [
+        117.0,
+        326.5775590551181
+      ],
+      "text": "nailer-n 1.5\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          118.0625,
+          323.9136701662292
+        ],
+        "name": ""
+      },
+      "at": [
+        92.81397637795277,
+        323.9136701662292
+      ],
+      "to": [
+        118.0625,
+        323.9136701662292
+      ],
+      "text": "gwb-n 0.625\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          124.48641732283467,
+          339.2846128608925
+        ],
+        "name": ""
+      },
+      "at": [
+        92.81397637795277,
+        339.8970034995626
+      ],
+      "to": [
+        124.48641732283467,
+        339.2846128608925
+      ],
+      "text": "rafter fill 6.25\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          124.48641732283467,
+          339.2846128608925
+        ],
+        "name": ""
+      },
+      "at": [
+        92.81397637795277,
+        331.9053368328959
+      ],
+      "to": [
+        124.48641732283467,
+        339.2846128608925
+      ],
+      "text": "rafter 11.9\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          115.15,
+          356.5876751699196
+        ],
+        [
+          117.80000000000001,
+          356.5876751699196
+        ],
+        [
+          117.80000000000001,
+          353.3376751699196
+        ],
+        [
+          117.30000000000001,
+          353.3376751699196
+        ],
+        [
+          117.30000000000001,
+          356.0876751699196
+        ],
+        [
+          115.15,
+          356.0876751699196
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "metal"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          115.15,
+          356.5876751699196
+        ],
+        [
+          117.80000000000001,
+          356.5876751699196
+        ],
+        [
+          117.80000000000001,
+          353.3376751699196
+        ],
+        [
+          117.30000000000001,
+          353.3376751699196
+        ],
+        [
+          117.30000000000001,
+          356.0876751699196
+        ],
+        [
+          115.15,
+          356.0876751699196
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.45,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:apron-flashing"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          117.25,
+          356.5876751699196
+        ],
+        [
+          119.1,
+          356.5876751699196
+        ],
+        [
+          119.1,
+          353.9376751699196
+        ],
+        [
+          118.6,
+          353.9376751699196
+        ],
+        [
+          118.6,
+          356.0876751699196
+        ],
+        [
+          117.25,
+          356.0876751699196
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "metal"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          117.25,
+          356.5876751699196
+        ],
+        [
+          119.1,
+          356.5876751699196
+        ],
+        [
+          119.1,
+          353.9376751699196
+        ],
+        [
+          118.6,
+          353.9376751699196
+        ],
+        [
+          118.6,
+          356.0876751699196
+        ],
+        [
+          117.25,
+          356.0876751699196
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.45,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:drip-edge"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          118.64999999999999,
+          354.8376751699196
+        ],
+        [
+          118.64999999999999,
+          350.1376751699196
+        ],
+        [
+          123.05,
+          350.1376751699196
+        ],
+        [
+          123.05,
+          355.3376751699196
+        ],
+        [
+          123.64999999999999,
+          355.3376751699196
+        ],
+        [
+          123.64999999999999,
+          349.53767516991957
+        ],
+        [
+          118.05,
+          349.53767516991957
+        ],
+        [
+          118.05,
+          354.8376751699196
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "gutter"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          118.64999999999999,
+          354.8376751699196
+        ],
+        [
+          118.64999999999999,
+          350.1376751699196
+        ],
+        [
+          123.05,
+          350.1376751699196
+        ],
+        [
+          123.05,
+          355.3376751699196
+        ],
+        [
+          123.64999999999999,
+          355.3376751699196
+        ],
+        [
+          123.64999999999999,
+          349.53767516991957
+        ],
+        [
+          118.05,
+          349.53767516991957
+        ],
+        [
+          118.05,
+          354.8376751699196
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.45,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:box-gutter"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          115.75,
+          356.0741520315722
+        ],
+        [
+          117.75,
+          356.0741520315722
+        ],
+        [
+          117.75,
+          356.67415203157225
+        ],
+        [
+          115.75,
+          356.67415203157225
+        ]
+      ],
+      "pattern": "rigid",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          115.75,
+          356.0741520315722
+        ],
+        [
+          117.75,
+          356.0741520315722
+        ],
+        [
+          117.75,
+          356.67415203157225
+        ],
+        [
+          115.75,
+          356.67415203157225
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.3,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:insect-screen"
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          111.75,
+          356.60119830826693
+        ],
+        "name": ""
+      },
+      "at": [
+        132.75,
+        355.68694366883653
+      ],
+      "to": [
+        111.75,
+        356.60119830826693
+      ],
+      "text": "standing seam on concealed floating\nclips",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          114.75,
+          356.2059136007459
+        ],
+        "name": ""
+      },
+      "at": [
+        132.75,
+        351.0397214466143
+      ],
+      "to": [
+        114.75,
+        356.2059136007459
+      ],
+      "text": "vent mat intake, insect screened — the\nroof's only outward drying path",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          118.55,
+          356.5647214466143
+        ],
+        "name": ""
+      },
+      "at": [
+        132.75,
+        346.39249922439205
+      ],
+      "to": [
+        118.55,
+        356.5647214466143
+      ],
+      "text": "drip edge lies ON the top deck;\nunderlayment laps OVER it",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          120.85,
+          352.3376751699196
+        ],
+        "name": ""
+      },
+      "at": [
+        132.75,
+        341.7452770021698
+      ],
+      "to": [
+        120.85,
+        352.3376751699196
+      ],
+      "text": "box gutter, back edge tucked BEHIND the\ntrim face",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          118.95,
+          354.8376751699196
+        ],
+        "name": ""
+      },
+      "at": [
+        132.75,
+        337.0980547799476
+      ],
+      "to": [
+        118.95,
+        354.8376751699196
+      ],
+      "text": "apron flashing over the cladding head,\nbehind the drip",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        123.37500000000001,
+        332.2563881132809
+      ],
+      "content": "air continuity — sheathing-ext →\nsheathing-ext",
+      "height": 3.0,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        123.37500000000001,
+        327.4147214466142
+      ],
+      "content": "water continuity — spray-foam-ext →\nspray-foam-ext",
+      "height": 3.0,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        123.37500000000001,
+        322.5730547799475
+      ],
+      "content": "thermal continuity — spray-foam-ext →\nspray-foam-ext",
+      "height": 3.0,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        93.81397637795277,
+        278.93077427821527
+      ],
+      "content": "TR-CATLIN-EAVE  ·  zero-overhang-eave",
+      "height": 3.0,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            105.62500000000001,
+            304.45833333333337
+          ],
+          "name": ""
+        },
+        {
+          "kind": "point",
+          "xy": [
+            109.12500000000001,
+            304.45833333333337
+          ],
+          "name": ""
+        }
+      ],
+      "p0": [
+        105.62500000000001,
+        304.45833333333337
+      ],
+      "p1": [
+        109.12500000000001,
+        304.45833333333337
+      ],
+      "offset": 3.0,
+      "height_pt": 6.5,
+      "layer": "A-ANNO-DIMS",
+      "text": "3.5\" stud",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        0.5,
+        7.763888888888889
+      ],
+      "content": "Catlin House",
+      "height": 3.0,
+      "height_pt": 13.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        0.5,
+        7.597222222222222
+      ],
+      "content": "TR-CATLIN-EAVE  ·  zero-overhang-eave",
+      "height": 3.0,
+      "height_pt": 8.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        0.5,
+        7.451388888888889
+      ],
+      "content": "Type:Haus — derived transition detail",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        0.5,
+        1.532
+      ],
+      "content": "MATERIALS",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.5,
+          1.328
+        ],
+        [
+          0.64,
+          1.328
+        ],
+        [
+          0.64,
+          1.468
+        ],
+        [
+          0.5,
+          1.468
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "paper",
+      "node": "polyline",
+      "points": [
+        [
+          0.5,
+          1.328
+        ],
+        [
+          0.64,
+          1.328
+        ],
+        [
+          0.64,
+          1.468
+        ],
+        [
+          0.5,
+          1.468
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.2,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        0.7,
+        1.3980000000000001
+      ],
+      "content": "spf  3.5\"",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.5,
+          1.158
+        ],
+        [
+          0.64,
+          1.158
+        ],
+        [
+          0.64,
+          1.298
+        ],
+        [
+          0.5,
+          1.298
+        ]
+      ],
+      "pattern": "membrane",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "air-barrier"
+    },
+    {
+      "space": "paper",
+      "node": "polyline",
+      "points": [
+        [
+          0.5,
+          1.158
+        ],
+        [
+          0.64,
+          1.158
+        ],
+        [
+          0.64,
+          1.298
+        ],
+        [
+          0.5,
+          1.298
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.2,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        0.7,
+        1.228
+      ],
+      "content": "air-barrier  6.38\"",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.5,
+          0.988
+        ],
+        [
+          0.64,
+          0.988
+        ],
+        [
+          0.64,
+          1.1280000000000001
+        ],
+        [
+          0.5,
+          1.1280000000000001
+        ]
+      ],
+      "pattern": "gypsum",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "paper",
+      "node": "polyline",
+      "points": [
+        [
+          0.5,
+          0.988
+        ],
+        [
+          0.64,
+          0.988
+        ],
+        [
+          0.64,
+          1.1280000000000001
+        ],
+        [
+          0.5,
+          1.1280000000000001
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.2,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        0.7,
+        1.058
+      ],
+      "content": "gwb  0.625\"",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    }
+  ],
+  "notes": [
+    "NOTES:",
+    "• Roof framing: 11-7/8\" I-joists at 16\" o.c. on the double top plate; birdsmouth seat cut with beveled bearing stiffeners (APA D710 10h) or a beveled plate (D710 10q, extra uplift fasteners). Structural ridge beam per D710 10c — not a rafter-tie roof. 4:12, zero overhang.",
+    "• Cavity: R-19 fiberglass batt (6-1/4\") held to the ceiling side. The remaining ~5-5/8\" is left open deliberately — the exterior foam keeps the sheathing above dew point, so that depth is condensation margin, not a shortfall.",
+    "• AIR barrier: 1/2\" ZIP sheathing, seams taped, lapping the wall sheathing membrane for continuity.",
+    "• VAPOR barrier: self-adhered sheet over the taped ZIP, under the foam. NOT OPTIONAL — ZIP is Class III (2 perm) and does not replace it. Without this layer the dew point lands inside the polyiso. With it, every control layer is outboard of the structure and the interior finish is PAINT ONLY: no ceiling poly, no smart membrane, no vapour-retarder primer.",
+    "• Roof CI: two courses of 3\" polyiso, 6\" total. STAGGER the seams between courses and tape each course — a single 6\" board leaves a joint running unbroken from deck to deck.",
+    "• Nailbase top deck: 5/8\" OSB screwed through the foam into the rafters on a 16\" x 24\" grid. 7.165\" of penetration + 1-1/2\" embedment = 10\" SDWH191000DB. The 8\" SDWS used on the walls is short here.",
+    "• Field underlayment: vapour-PERMEABLE synthetic, NOT peel-and-stick. Full-field self-adhered (0.05 perm) matches the deck vapour barrier and seals the foam and OSB on both faces with no way to dry. Self-adhered ice barrier still runs at eaves and valleys per MN code — that band is narrow enough not to close the field's drying path.",
+    "• Vent mat: ~1/4\" ventilated nylon-matrix mat, panel clips screwed through it into the top deck. Not a furring strip, and not optional — standing seam is vapour-impermeable, so this is the assembly's only outward drying path.",
+    "• Roofing: 24 ga architectural standing seam, mechanically field-seamed, concealed floating clips.",
+    "• Eave bay blocking: close every rafter bay over the top plate with rigid foam blocking set in the plane of the wall sheathing, sealed to the joist webs and the plate with canned foam. This is what carries the air barrier across the eave from the wall sheathing up to the roof ZIP. With a paint-only interior there is no second line of defence inboard of it, so an unblocked bay vents the ceiling straight into the vent mat.",
+    "• Wall: 2x6 studs (LSL on the main storey), 1/2\" sheathing, then **4\" of closed-cell spray foam around an intermittent 2x4 truss** — a flat block on the sheathing, a 1/2\" plywood tab, a KDAT 2x4 outrigger on edge at 16\" o.c. — and standing-seam cladding clipped to the outriggers. Class III interior paint on drywall. **No WRB:** the foam is the water plane (2026-08-23; was a liquid membrane over the sheathing under 2\" polyiso + 2\" EPS and 1/2\" furring). The cladding face is 5-1/2\" proud of the sheathing, not 5.02\", which is what `params/roof_trim.py::_WALL_OUTBOARD_IN` carries and what moved the whole eave water chain out with it.",
+    "• Foam interface: leave the angled mismatch between roof foam and wall foam; fill with closed-cell spray polyurethane foam. Avoid high-expansion foams — they lift the roof foam off the deck barrier.",
+    "• Drip edge: its flange lies ON the top deck (underside at 7.55\" vertical above the deck datum), running 1-1/2\" back onto the deck from the roof edge, with the field underlayment lapped OVER it. Nothing ELSE in the eave chain may reach that plane — the underlayment has to ride over exactly one thing to bond to the deck. The turn-down hangs at the trough mid-width, throwing runoff into the middle of the gutter rather than down the wall behind it.",
+    "• Gutter: 6\" box gutter, back sheet tucked a lap BEHIND the corner trim's formed face — behind the sheet itself, not merely inboard of the 1.25\" of plan depth it hangs at the end of. Rim 4.38\" above the deck datum, a lap under the trim's lower edge (the trim's leg is 4\", not the 2\" this chain was first derived from). Downspout steadied with conduit pipe clamps (not primary support).",
+    "• No fascia and no soffit: roof and wall are one continuous standing-seam skin over a flush zero-overhang edge, so the resolver draws a corner trim angle instead. Every eave offset is measured off that trim's face.",
+    "• Build order (water laps downhill, so the eave chain is the part that gets built backwards): frame and block the eave bays -> ZIP, taped -> deck vapour barrier -> polyiso course 1, taped -> polyiso course 2, staggered and taped -> OSB top deck on the 10\" screws -> ice barrier at eaves and valleys only -> DRIP EDGE -> field underlayment lapped OVER the drip -> vent mat -> standing seam -> gutter, back sheet behind the trim. The drip edge goes on before the field underlayment, not after."
+  ],
+  "frame": {
+    "paper": [
+      11.0,
+      8.5
+    ],
+    "viewport": [
+      0.5,
+      1.75,
+      6.45,
+      5.199999999999999
+    ],
+    "center": [
+      122.98425196850395,
+      312.45833333333337
+    ],
+    "scale": 0.75,
+    "scale_label": "3/4\" = 1'-0\"",
+    "bands": {
+      "title": [
+        0.5,
+        7.1,
+        10.0,
+        0.9
+      ],
+      "legend": [
+        0.5,
+        0.5,
+        6.45,
+        1.1
+      ],
+      "notes": [
+        7.1,
+        0.5,
+        3.4,
+        6.449999999999999
+      ]
+    }
+  }
+}

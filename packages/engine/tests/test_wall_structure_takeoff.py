@@ -43,8 +43,12 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # more — six tags, not eight, because W-GF-E1/E2 already existed (only their assembly
     # changed, from `GARAGE_ICF_6` to the brick-ledge form) and add no new tag.
     assert len({tag for row in rows for tag in row["tags"]}) == 40
+    # `off-white-brick` since 2026-08-26, not `black-brick`: the garage wainscot is the
+    # Columbia colourway of the same Glen-Gery Roman Maximus unit, and it wore Black for
+    # part of that day. Same body, same size, same Grade SW Type FBA — a colourway swap, so
+    # the row it bills on moves and its quantity does not.
     assert {row["material"] for row in rows} == {
-        "concrete", "retaining-block", "brown-brick", "black-brick",
+        "concrete", "retaining-block", "brown-brick", "off-white-brick",
         "glazed-lapis-brick", "glazed-gold-brick"}
     # Bigger than the entire priced concrete order (footings + slab) the estimate used to
     # know about, which is the measure of what was missing. It was >100 cy until 2026-08-23:

@@ -720,9 +720,16 @@ def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_heigh
     west = next(item for item in catlin_model.openings if item.tag == "WIN-A-S-JUL-W")
     east = next(item for item in catlin_model.openings if item.tag == "WIN-A-S-JUL-E")
 
-    # W-A-S2 starts at N-A-S1 (x 10'), W-A-S3 at N-A-S2 (x 18'), and since 2026-08-25 both
-    # take their module from the layout line rather than from those nodes, so the stud lines
-    # here are the house grid itself: x 16'-0", 17'-4", 18'-8", 20'-0".
+    # W-A-S2 starts at N-A-S1, W-A-S3 at N-A-S2 (x 18'), and since 2026-08-25 both take
+    # their module from the layout line rather than from those nodes, so the stud lines here
+    # are the house grid itself: x 16'-0", 17'-4", 18'-8", 20'-0".
+    #
+    # N-A-S1's own x is read off the model rather than written down, because it moved
+    # 10'-0" -> 8'-8" on 2026-08-27 when RM-A-DEN was deleted and it did not disturb one
+    # number below: a wall's stud grid lays out from its start node, 120 - 104 = 16, so the
+    # phase is unchanged, and the authored offset moved with it to hold the centre. That is
+    # precisely the claim worth keeping — this pair is fixed to the RIDGE, not to a node —
+    # so the test pins the resolved x and lets the node be wherever it is.
     #
     # The centres sat on 16'-8"/19'-4" until the 2026-08-24 widening 18" -> 24" pushed them
     # OUTWARD ONLY to 16'-5"/19'-7" — the inboard jambs being held by the bearing pier — and
@@ -733,10 +740,13 @@ def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_heigh
     # ridge, which is the gable rule that governs this composition.
     assert west.host_wall == "W-A-S2"
     assert east.host_wall == "W-A-S3"
-    assert west.center_along_m == pytest.approx(ft(6).meters, abs=1e-6)
+    def wall_start_x(tag):
+        return next(w for w in catlin_model.walls if w.tag == tag).axis[0][0]
+
     assert east.center_along_m == pytest.approx(ft(2).meters, abs=1e-6)
-    west_x = ft(10).meters + west.center_along_m
-    east_x = ft(18).meters + east.center_along_m
+    west_x = wall_start_x("W-A-S2") + west.center_along_m
+    east_x = wall_start_x("W-A-S3") + east.center_along_m
+    assert wall_start_x("W-A-S3") == pytest.approx(ft(18).meters, abs=1e-6)
     assert west_x == pytest.approx(ft(16).meters, abs=1e-6)
     assert east_x == pytest.approx(ft(20).meters, abs=1e-6)
     assert ft(18).meters - west_x == pytest.approx(east_x - ft(18).meters, abs=1e-9)
@@ -760,19 +770,20 @@ def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_heigh
         # Unclipped: the rake did not silently eat the head.
         assert opening.height_m == pytest.approx(inch(64).meters, abs=1e-6)
         assert opening.sill_m + opening.height_m == pytest.approx(ft(8).meters, abs=1e-6)
-        assert opening.width_m == pytest.approx(inch(24).meters, abs=1e-6)
 
     # The clear pier between the two ROs, centred on W-A-C1 / the RB-HOUSE south bearing
     # point: W-A-C1's 5-1/2" stud body plus a jack and king each side is 11-1/2", so 14"
     # carries the bearing with 2-1/2" to spare. It is also the composition's mullion, and
     # between the two it is what forbids the pair from growing INWARD — which is why the
-    # 2026-08-24 widening is one-sided. Unchanged by that widening, and asserted here so a
-    # future "just make them a bit wider" cannot quietly spend it.
-    pier = (east_x - inch(12).meters) - (west_x + inch(12).meters)
-    assert pier == pytest.approx(inch(24).meters, abs=1e-6)
-    # 14" is the requirement — W-A-C1's 5-1/2" stud body plus a jack and king each side is
-    # 11-1/2". The pair moving back onto the grid spent its 5" of outward travel here, so
-    # the clear pier is 24" and the bearing has 12-1/2" to spare rather than 2-1/2".
+    # 2026-08-24 widening was one-sided.
+    #
+    # **21", not 24": the 2026-08-27 widening to 27" was spent here, and deliberately.**
+    # The pair moving back onto the grid on 2026-08-25 had banked 12 1/2" of slack over the
+    # 14" the bearing needs, and closing the gap is what the owner asked the extra 3" per
+    # unit for. 7" of that slack is left. Asserted as an exact number so the next "just make
+    # them a bit wider" has to come back through this line rather than spending the rest.
+    pier = (east_x - inch(13.5).meters) - (west_x + inch(13.5).meters)
+    assert pier == pytest.approx(inch(21).meters, abs=1e-6)
     assert pier >= inch(14).meters
 
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
@@ -888,7 +899,7 @@ def test_the_west_facade_stacks_five_two_storey_window_columns(catlin_model):
 
 
 def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(catlin_model):
-    """4'-0" / 13'-4" / 22'-8" / 32'-0" — 4+32 = 13'-4"+22'-8" = 36'-0", exactly.
+    """13'-4" / 22'-8" — the inner pair, mirrored about the 36'-0" face exactly.
 
     The row it replaced ran a perfectly even 9'-0" beat that sat 10" north of centre: 5'-4"
     of wall at the south end against 3'-8" at the north. An even beat is invisible; a 20"
@@ -896,53 +907,71 @@ def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(ca
     two halves are the same picture — that is the claim, and it is pinned in all three
     dimensions because holding only the stations would let a retype break it silently.
 
-    The inner pair moved 4" outward on 2026-08-25 with the line-based stud module, and the
-    row got *more* regular for it: the beat is now 9'-4" three times over, even and centred
-    at once, where 4/13/23/32 was centred with a 9'-0"/10'-0"/9'-0" beat.
+    **The row was four units until 2026-08-27 and is three now.** WIN-S-BED3 left it: it
+    retyped 27x36 -> 14x24 and moved 32'-0" -> 34'-0" to column with WIN-M-KIT-E below and
+    WIN-A-E-N above, a three-storey 14" column on the east face. So the outer *pair* is
+    gone — WIN-S-STUDY3 at 4'-0" has no partner — and this test stops asserting one rather
+    than asserting a mirror the design no longer claims. What it asserts instead is both
+    halves of the trade: the inner pair still mirrors, and BED3 really is in the column it
+    left the row for. A test that only dropped the dead assertion would let the column it
+    was traded for go unbuilt.
 
-    Later the same day the inner pair went 30x48 -> 27x54 (WT-2754): the east wall is
-    BEARING, so it takes the 27" rung of the RO ladder, and R303.1's area had to be bought
-    back in height. Every claim above survived it unchanged — same stations, same mirror,
-    same 3'-0" sill, same equal widths and equal heads within the pair — because the width
-    came off both jambs symmetrically (``from_node`` is the NEAR jamb, so both authored
-    offsets moved +1 1/2", half of the 3" lost). Only the inner head reads 7'-6" now
-    instead of 7'-0". That is the test earning its keep: it let the narrowing through and
-    caught the one thing the narrowing actually moved.
+    (The inner pair moved 4" outward on 2026-08-25 with the line-based stud module, and
+    then went 30x48 -> 27x54 the same day: the east wall is BEARING, so it takes the 27"
+    rung of the RO ladder, and R303.1's area came back in height. Both survived every claim
+    below unchanged — ``from_node`` is the NEAR jamb, so the 3" of lost width came off both
+    offsets symmetrically and held the centres.)
     """
     house = ft(36).meters
-    pairs = (("WIN-S-STUDY3", "WIN-S-BED3", ft(4).meters),
-             ("WIN-S-BED1", "WIN-S-BED2", ft(13, 4).meters))
-    tags = []
-    for south_tag, north_tag, expected_south_y in pairs:
-        south_y, south = _opening_plan_y(catlin_model, south_tag)
-        north_y, north = _opening_plan_y(catlin_model, north_tag)
-        tags += [south_tag, north_tag]
-        assert south_y == pytest.approx(expected_south_y, abs=1e-6), south_tag
-        assert south_y + north_y == pytest.approx(house, abs=1e-6), (south_tag, north_tag)
-        assert south.width_m == pytest.approx(north.width_m, abs=1e-6)
-        assert south.sill_m == pytest.approx(ft(3).meters, abs=1e-6)
-        assert north.sill_m == pytest.approx(ft(3).meters, abs=1e-6)
-        assert (south.sill_m + south.height_m
-                == pytest.approx(north.sill_m + north.height_m, abs=1e-6))
 
-    # And the row really is a row: the outer pair reads 6'-0" at the head, the inner 7'-6",
-    # so the composition steps up toward the middle rather than wandering.
-    #
-    # The inner head was 7'-0" until 2026-08-25 and moved with the 27" bearing cap, not for
-    # a compositional reason: W-S-E2/E3 are BEARING, the bearing rung of the RO ladder is
-    # 27", and BED1/BED2 are single-window rooms where R303.1 binds on AREA — so the 3" of
-    # width had to come back as 6" of height (30x48 -> 27x54) or the rooms fail R303.1:
-    # 27x48 is 9.00 sf against BED2's 9.945 sf requirement, 27x54 is 10.125 sf.
-    # The step-up this pins is therefore still the claim; only its size changed. Pinned
-    # exactly, because the whole point of this test is that a retype cannot move the
-    # picture silently.
-    heads = {tag: _opening_plan_y(catlin_model, tag)[1].sill_m
-                  + _opening_plan_y(catlin_model, tag)[1].height_m
-             for tag in tags}
-    assert heads["WIN-S-STUDY3"] == pytest.approx(ft(6).meters, abs=1e-6)
-    assert heads["WIN-S-BED1"] == pytest.approx(ft(7, 6).meters, abs=1e-6)
+    # --- the inner pair, still a mirror ------------------------------------------------
+    south_y, south = _opening_plan_y(catlin_model, "WIN-S-BED1")
+    north_y, north = _opening_plan_y(catlin_model, "WIN-S-BED2")
+    assert south_y == pytest.approx(ft(13, 4).meters, abs=1e-6)
+    assert south_y + north_y == pytest.approx(house, abs=1e-6)
+    assert south.width_m == pytest.approx(north.width_m, abs=1e-6)
+    assert south.sill_m == pytest.approx(ft(3).meters, abs=1e-6)
+    assert north.sill_m == pytest.approx(ft(3).meters, abs=1e-6)
+    assert (south.sill_m + south.height_m
+            == pytest.approx(north.sill_m + north.height_m, abs=1e-6))
 
-    assert not _framing_offenders(tags)
+    # --- WIN-S-STUDY3 holds its station, unpartnered -----------------------------------
+    study_y, study = _opening_plan_y(catlin_model, "WIN-S-STUDY3")
+    assert study_y == pytest.approx(ft(4).meters, abs=1e-6)
+    assert study.sill_m == pytest.approx(ft(3).meters, abs=1e-6)
+
+    # --- and the column BED3 was traded for actually exists ----------------------------
+    # Same station and same width on all three storeys, which is the whole return on
+    # breaking the row. Sills deliberately do NOT column: WIN-M-KIT-E's 3'-6" is a counter
+    # height and does not travel up, so asserting it would pin the wrong thing.
+    column = ("WIN-M-KIT-E", "WIN-S-BED3", "WIN-A-E-N")
+    stations = {}
+    for tag in column:
+        y, opening = _opening_plan_y(catlin_model, tag)
+        stations[tag] = y
+        assert opening.width_m == pytest.approx(inch(14).meters, abs=1e-6), tag
+    for tag, y in stations.items():
+        assert y == pytest.approx(ft(34).meters, abs=1e-6), tag
+
+    # The row really is a row: **all three units now read 7'-0" at the head**, on the one
+    # 3'-0" sill. It stepped up to the middle until 2026-08-27 (6'-0" outer, 7'-6" inner)
+    # and levelled that day from both ends at once — STUDY3 went 36" -> 48" tall to keep
+    # columning with WIN-M-LIV-E1, which took the same retype the same day, and BED1/BED2
+    # came 54" -> 48" giving back the height that had bought R303.1 without Exception 1.
+    # Two unrelated decisions landing on one head line is exactly the kind of thing nobody
+    # notices until it is pinned, so it is pinned: a level row is a stronger claim than a
+    # stepped one and a later retype must not undo it by accident.
+    def head(tag):
+        _, opening = _opening_plan_y(catlin_model, tag)
+        return opening.sill_m + opening.height_m
+
+    for tag in ("WIN-S-STUDY3", "WIN-S-BED1", "WIN-S-BED2"):
+        assert head(tag) == pytest.approx(ft(7).meters, abs=1e-6), tag
+    # BED3 is not on it, and should not be: it left the row for the 14" column, where its
+    # 4'-0" sill is set by WIN-M-KIT-E's counter below rather than by this face.
+    assert head("WIN-S-BED3") == pytest.approx(ft(6).meters, abs=1e-6)
+
+    assert not _framing_offenders(["WIN-S-STUDY3", "WIN-S-BED1", "WIN-S-BED2", "WIN-S-BED3"])
 
 
 def test_every_catlin_boundary_condition_has_a_transition_binding():
@@ -1258,11 +1287,18 @@ def test_the_brick_standoff_is_independent_of_the_pour(catlin_model):
 
 def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):
     stem = [w for w in catlin_model.walls if w.tag.startswith("W-GF-")]
-    # 8, not 4: both stems that carry a door gap at it rather than running a continuous 22"
-    # band across it — the east at the overhead door (W-GF-E1/W-GF-E-DR/W-GF-E2) and, since
-    # 2026-08-01, the south at the service door (W-GF-S1/W-GF-S-DR/W-GF-S2). A person will
-    # not climb a 22" curb any more happily than a car will.
-    assert len(stem) == 8
+    # 10, not 4. Two splits are door gaps, in stems that carry one rather than running a
+    # continuous 22" band across it — the east at the overhead door (W-GF-E1/W-GF-E-DR/
+    # W-GF-E2) and, since 2026-08-01, the south at the service door (W-GF-S1/W-GF-S-DR/
+    # W-GF-S2). A person will not climb a 22" curb any more happily than a car will.
+    #
+    # The other two are the brick returns (2026-08-26): the veneer wraps 4'-0" around the
+    # SE and NE corners off the east elevation, and a stem under veneer needs the ledge.
+    # W-GF-S3 and W-GF-N2 are those corner pieces, on GARAGE_ICF_6_BRICKLEDGE like the
+    # whole east run; their parents keep their uids on the remnants.
+    assert len(stem) == 10
+    ledged = {w.tag for w in stem if w.assembly == "GARAGE_ICF_6_BRICKLEDGE"}
+    assert ledged == {"W-GF-S3", "W-GF-E1", "W-GF-E2", "W-GF-N2"}
     ys = [p[1] for w in stem for p in w.axis]
     assert min(ys) == pytest.approx(ft(HOUSE_SIZE_FT + GARAGE_GAP_FT).meters)
     assert max(ys) == pytest.approx(ft(HOUSE_SIZE_FT + GARAGE_GAP_FT + GARAGE_SIZE_FT).meters)
@@ -2054,7 +2090,12 @@ def test_upper_storey_studs_stand_over_studs(catlin_model):
     module stud suppressed under a window on one storey and not the other, and jamb packs at
     different stations because the windows differ, are both correct framing. What the pin
     catches is the whole house drifting back apart — it fell from 113 to 94 when the five
-    interior bearing assemblies joined the four facades on `layout_origin="line"`.
+    interior bearing assemblies joined the four facades on `layout_origin="line"`, and to
+    81 on 2026-08-27 with the attic work (RM-A-DEN deleted, W-A-SN rebuilt as the 12 3/4"
+    bookcase wall, W-A-C2/W-A-E2 changing length with the two node moves). The population
+    shrank with it, 237 studs to 224, so the ratio is what actually moved: 39.7% standing
+    over nothing became 36.2%. Both numbers are re-pinned rather than one loosened — a
+    smaller house at the same ratio would slip past a ceiling still held at 94.
     """
     walls = {w.tag: w for w in catlin_model.walls}
 
@@ -2085,7 +2126,7 @@ def test_upper_storey_studs_stand_over_studs(catlin_model):
             if not any(abs(station(stud) - b) <= tol for b in below):
                 orphans.append(f"{upper_tag}/{stud.child_key}")
 
-    assert total >= 230, f"fixture regression: only {total} stacked studs found"
-    assert len(orphans) <= 94, (
+    assert total >= 220, f"fixture regression: only {total} stacked studs found"
+    assert len(orphans) <= 81, (
         f"{len(orphans)}/{total} upper-storey studs stand over no stud below "
-        f"(was 94/237); first offenders {orphans[:12]}")
+        f"(was 81/224); first offenders {orphans[:12]}")

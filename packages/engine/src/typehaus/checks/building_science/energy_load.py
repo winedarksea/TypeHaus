@@ -373,10 +373,26 @@ def _two_by_four_vs_six(
     at its full depth. Scanning the raw library instead pairs whatever 2x4-framed item
     comes first (a garage roof, a partition) against an exterior wall, which answers a
     question nobody asked: the M5 acceptance is a *wall* assembly swap on the same run.
+
+    **Which 2x4 and which 2x6, when a house builds several of each: the one it builds the
+    MOST of, by resolved wall area.** This used to take whichever tag sorted first, which
+    is arbitrary in exactly the way that goes unnoticed until it doesn't — catlin gained a
+    12 3/4" built-in bookcase wall on 2026-08-27, one wall of it, and it displaced the
+    house's ~46-wall interior partition as the "2x4 stock" this comparison reports simply
+    by starting with a C. A one-off piece of millwork is not what a reader of an energy
+    sheet means by "the 2x4 wall". Area is the honest tiebreak and it is stable; the tag
+    breaks a genuine tie, so the result is still deterministic.
     """
-    wall_tags = sorted({wall.assembly for wall in model.walls if not wall.is_foundation})
-    candidates: dict[str, tuple[str, float]] = {}
-    for tag in wall_tags:
+    areas: dict[str, float] = {}
+    for wall in model.walls:
+        if wall.is_foundation:
+            continue
+        (ax, ay), (bx, by) = wall.axis
+        length = ((bx - ax) ** 2 + (by - ay) ** 2) ** 0.5
+        areas[wall.assembly] = areas.get(wall.assembly, 0.0) + length * max(
+            0.0, wall.z1_m - wall.z0_m)
+    candidates: dict[str, tuple[float, str, float]] = {}
+    for tag in sorted(areas):
         assembly = model.plan.library.resolve_assembly(tag)
         if assembly is None:
             continue
@@ -387,12 +403,19 @@ def _two_by_four_vs_six(
         if member is None:
             continue
         r_value = assembly_r_value(assembly, model.plan.library)
-        if r_value.value is not None and r_value.value.r_us > 0:
-            candidates.setdefault(member, (assembly.tag, r_value.value.r_us))
+        if r_value.value is None or r_value.value.r_us <= 0:
+            continue
+        contender = (areas[tag], assembly.tag, r_value.value.r_us)
+        best = candidates.get(member)
+        # Most area wins; on a true tie the lexically-first tag does, so the answer never
+        # depends on iteration order.
+        if best is None or (contender[0], [-ord(c) for c in contender[1]]) > (
+                best[0], [-ord(c) for c in best[1]]):
+            candidates[member] = contender
     if set(candidates) != {"2x4", "2x6"}:
         return None
-    tag_4, r_4 = candidates["2x4"]
-    tag_6, r_6 = candidates["2x6"]
+    _area_4, tag_4, r_4 = candidates["2x4"]
+    _area_6, tag_6, r_6 = candidates["2x6"]
     return {"baseline_assembly": tag_4, "upgrade_assembly": tag_6,
             "area_ft2": 100.0,
             "heating_savings_btu_per_hour": (1 / r_4 - 1 / r_6) * 100 * heating_delta_f}

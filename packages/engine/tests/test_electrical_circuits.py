@@ -680,19 +680,28 @@ def test_a_combination_receptacle_counts_by_its_125v_half():
     model, _ = resolve(plan)
     assert _room_result(model, "RM-M-LIVING") == "pass"
 
-    # ED-M-LIVING-KDS1 comes out with it. That is the disposer outlet inside the sink base
-    # (2026-08-07): 18" up in a cabinet, so nobody's idea of kitchen-counter coverage, but
-    # this check grades 210.52(A)'s *wall* rule, where a 125V receptacle below the 5'-6"
-    # cut-off counts wherever it stands. It happens to sit in the stretch this test empties,
-    # so leaving it would hold the north wall covered for a reason that has nothing to do
-    # with the kettle outlet under test. Removing the device, not demoting its type: a plain
-    # RECEPTACLE kind counts on the kind alone, and only the combination kind consults ports
-    # — which is the asymmetry this test exists to pin.
-    without_disposer = tuple(
+    # ED-M-LIVING-KDS1 and ED-M-LIVING-KDW1 come out with it — the disposer outlet and the
+    # dishwasher cord, both inside the sink base at 18" up. Neither is anybody's idea of
+    # kitchen-counter coverage, but this check grades 210.52(A)'s *wall* rule, where a 125V
+    # receptacle below the 5'-6" cut-off counts wherever it stands, and both happen to sit
+    # in the stretch this test empties. Leaving either would hold the north wall covered
+    # for a reason that has nothing to do with the kettle outlet under test.
+    #
+    # KDW1 joined the list on 2026-08-27: it did not move house, the SINK did. The base run
+    # was re-composed on 2026-08-26 to centre the bowl under WIN-M-KITCH, the dishwasher
+    # went to the sink base's west side with it, and its cord outlet landed 3'-0" from the
+    # wall space's start — inside the 6' this test needs empty. Nothing about the check or
+    # the kettle changed; a piece of casework moved 15" and quietly took over the coverage
+    # the assertion was reading.
+    #
+    # Removing the devices, not demoting their types: a plain RECEPTACLE kind counts on the
+    # kind alone, and only the combination kind consults ports — which is the asymmetry this
+    # test exists to pin.
+    without_appliance_outlets = tuple(
         element for element in plan.storey_elements("main")
-        if getattr(element, "tag", None) != "ED-M-LIVING-KDS1")
+        if getattr(element, "tag", None) not in ("ED-M-LIVING-KDS1", "ED-M-LIVING-KDW1"))
     plan = plan.model_copy(update={
-        "elements": {**plan.elements, "main": without_disposer}})
+        "elements": {**plan.elements, "main": without_appliance_outlets}})
 
     library = plan.library
     demoted = tuple(

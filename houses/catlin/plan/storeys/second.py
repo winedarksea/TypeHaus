@@ -458,7 +458,9 @@ OPENINGS = [
     # 13'-0"/23'-0" until this edit. The row is a mirror — 13'-4" + 22'-8" = 36'-0" — and
     # `test_catlin_contract_m3.py::test_the_east_second_storey_window_row_mirrors_about_
     # the_house_centreline` pins it.) The one thing the narrowing moved is the head, from
-    # 7'-0" to 7'-6"; the outer pair stays at 6'-0", so the row still steps up to the middle.
+    # 7'-0" to 7'-6"; the outer pair stayed at 6'-0", so the row stepped up to the middle.
+    # (Both halves of that sentence were undone later the same day — see the retype note
+    # below and WIN-S-STUDY3's — and the row is level at 7'-0" now.)
     # BED1 lost 4" of depth in the 2026-08-15 node move (it had the margin to spare); BED3
     # gained 4" (it has a second window, 14.2 sf). BED1 carries the -T twin because at
     # y=13'-4" the glass falls inside 60" of ST-S2A, R308.4.5's stair band.

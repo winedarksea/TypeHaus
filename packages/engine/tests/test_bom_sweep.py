@@ -173,12 +173,20 @@ def test_every_finish_row_resolved_a_real_material(bom):
 
 def test_the_unfinished_rooms_are_the_two_attic_lofts_and_bill_nothing(bom):
     """RM-A-WEST-UNFIN and RM-A-EAST-UNFIN lost their carpet on 2026-08-25: unfinished bulk storage
-    walks on FS-ATTIC's plywood and nothing goes over it. The row exists so 1,079 SF of
+    walks on FS-ATTIC's plywood and nothing goes over it. The row exists so 1,118 SF of
     floor is not silently missing from the schedule — but it orders zero, because there is
-    nothing to order."""
+    nothing to order.
+
+    It was 1,079 SF until 2026-08-27, and the +39 SF is two edits pulling opposite ways.
+    RM-A-DEN was deleted and its 43 SF folded into RM-A-WEST-UNFIN, which is a *saving*:
+    the Den was the one loft used as a room and it carried carpet, so that 43 SF moved from
+    a billed row to this one. RM-A-EAST-UNFIN then gave ~6 SF back to RM-A-STUDY when
+    W-A-SN's axis moved 4" north to become the 12 3/4" bookcase wall. So the number going
+    up is the schedule getting *smaller* — which is exactly why the row is asserted on area
+    and separately on ordering zero, rather than on either alone."""
     row = next(row for row in bom["floor_finishes"] if row["finish"] is None)
     assert row["rooms"] == ["RM-A-EAST-UNFIN", "RM-A-WEST-UNFIN"]
-    assert float(row["net_area_sqft"]) == pytest.approx(1078.8, abs=1.0)
+    assert float(row["net_area_sqft"]) == pytest.approx(1117.6, abs=1.0)
     assert float(row["order_area_sqft"]) == 0.0
 
 

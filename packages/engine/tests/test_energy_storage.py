@@ -54,6 +54,20 @@ def _retype_battery(plan, **updates):
     return plan.model_copy(update={"library": library})
 
 
+def _recircuit(plan, tag: str, circuit):
+    """The Catlin plan with one placed element's ``circuit`` edited in place."""
+    found = False
+    for storey in plan.storeys:
+        elements = plan.storey_elements(storey.tag)
+        edited = [e.model_copy(update={"circuit": circuit}) if e.tag == tag else e
+                  for e in elements]
+        if any(e.tag == tag for e in elements):
+            plan = plan.with_elements(storey.tag, edited)
+            found = True
+    assert found, f"fixture regression: the Catlin house has no {tag}"
+    return plan
+
+
 def _without_alarm(plan, tag: str):
     found = False
     for storey in plan.storeys:
@@ -228,6 +242,35 @@ def test_a_plain_gypsum_partition_fails_the_enclosure_standard(catlin_plan):
 def test_nothing_stands_in_the_batterys_separation_zone(catlin_plan, catlin_model):
     findings = ess_clearance(_context(catlin_plan, catlin_model))
     assert len(findings) == 1 and findings[0].result is Result.PASS
+
+
+def test_the_batterys_own_inverter_is_not_an_other_device(catlin_plan, catlin_model):
+    """EQ-B-ESS-INV stands 18 1/4" from EQ-B-ESS-BATT — half the separation the owner's rule
+    asks of an *other* device, and deliberately so: a 12kPV and the pack it charges are one
+    listed ESS, and the DC run between them is the highest-amperage circuit in the house.
+    The exemption is named in the PASS message rather than applied silently."""
+    findings = ess_clearance(_context(catlin_plan, catlin_model))
+    assert len(findings) == 1 and findings[0].result is Result.PASS
+    assert "EQ-B-ESS-INV is its own power-conversion equipment" in findings[0].message
+    assert "EQ-B-ESS-INV" in findings[0].element_tags
+
+
+def test_an_inverter_on_a_foreign_circuit_is_an_other_device(catlin_plan):
+    """The smallest edit that makes the model wrong: move EQ-B-ESS-INV onto some other
+    circuit and it stops being the battery's own power-conversion equipment. Nothing about
+    the geometry changes, so this proves the exemption reads the authored link and not the
+    inverter's kind, its tag or its distance."""
+    plan = _recircuit(catlin_plan, "EQ-B-ESS-INV", "CKT-RC-BASEMENT")
+    fails = _fails(ess_clearance(_context(plan)))
+    assert len(fails) == 1 and "EQ-B-ESS-INV" in fails[0].message
+
+
+def test_a_battery_with_no_circuit_exempts_nothing(catlin_plan):
+    """A battery that names no circuit has no declared pairing, so the exemption cannot
+    fire — an unauthored link must never be inferred from the inverter alone."""
+    plan = _recircuit(catlin_plan, "EQ-B-ESS-BATT", None)
+    fails = _fails(ess_clearance(_context(plan)))
+    assert len(fails) == 1 and "EQ-B-ESS-INV" in fails[0].message
 
 
 def test_a_battery_with_no_required_zone_is_reported(catlin_plan):

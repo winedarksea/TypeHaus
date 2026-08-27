@@ -65,6 +65,31 @@ def _is_separable_device(obj, panels: set) -> bool:
     return obj.kind == "Equipment" or obj.tag in panels
 
 
+def _paired_conversion_equipment(ctx: CheckContext, battery) -> set:
+    """The battery's own power-conversion equipment, which is not an "other device".
+
+    A hybrid inverter and the pack it charges are one listed ESS, not two appliances that
+    happened to be hung near each other: they are sold as a pair, the manufacturer's
+    install instructions govern the gap between them, and the DC conductors between them
+    carry enough current that *separating* them is its own hazard — every inch of
+    separation is voltage drop on the highest-amperage run in the house. Applying a
+    separation rule written about foreign heat sources to the battery's own inverter would
+    make the model worse by enforcing it.
+
+    The link is the circuit both elements declare. That is an authored fact, not an
+    inference from tag spelling: catlin's ``CKT-ESS-GRID`` is the EG4 12kPV's grid port
+    (a source, not a branch), and ``EQ-B-ESS-BATT`` names it too. A battery with no
+    circuit, or an inverter on a different one, exempts nothing.
+    """
+    circuit = getattr(battery, "circuit", None)
+    if not circuit:
+        return set()
+    return {element.tag for element in ctx.plan.all_elements()
+            if element.element_kind == "Equipment"
+            and getattr(element, "kind", None) is EquipmentKind.INVERTER
+            and getattr(element, "circuit", None) == circuit}
+
+
 def _batteries(ctx: CheckContext) -> list:
     return [element for element in ctx.plan.all_elements()
             if element.element_kind == "Equipment"
@@ -170,6 +195,10 @@ def ess_clearance(ctx: CheckContext) -> list[Finding]:
     literally true of a 3' sphere and useless to the person reading it, which is how an
     advisory finding gets ignored.
 
+    The battery's **own** inverter is not an other device either, and that exemption is the
+    one worth arguing for: see ``_paired_conversion_equipment``. It is named in the PASS
+    message rather than dropped silently, so the reader can disagree with it.
+
     It also reports a battery that declares no REQUIRED zone at all. A separation nobody
     authored is a separation nothing defends.
     """
@@ -197,6 +226,7 @@ def ess_clearance(ctx: CheckContext) -> list[Finding]:
                 (battery.tag,)))
             continue
         own = Polygon(obj.footprint)
+        paired = _paired_conversion_equipment(ctx, battery)
         intruders: list[str] = []
         for zone in obj.required_clearances:
             shape = Polygon(zone)
@@ -209,6 +239,8 @@ def ess_clearance(ctx: CheckContext) -> list[Finding]:
                     continue
                 if not _is_separable_device(peer, panels):
                     continue
+                if peer.tag in paired:
+                    continue
                 if shape.intersection(Polygon(peer.footprint)).area > 1e-3:
                     intruders.append(peer.tag)
         if intruders:
@@ -218,7 +250,12 @@ def ess_clearance(ctx: CheckContext) -> list[Finding]:
                      + " — the wall between them does not make the distance",
                 tuple([battery.tag] + sorted(set(intruders)))))
         else:
+            note = ""
+            if paired:
+                note = (f" ({', '.join(sorted(paired))} is its own power-conversion "
+                        f"equipment on {battery.circuit}, not an other device)")
             out.append(_pass(
                 cid, f"nothing stands in {battery.tag}'s REQUIRED separation zone, in its "
-                     f"room or through the walls of it", (battery.tag,)))
+                     f"room or through the walls of it{note}",
+                tuple([battery.tag] + sorted(paired))))
     return out

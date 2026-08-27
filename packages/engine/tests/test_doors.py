@@ -86,6 +86,12 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
         # where W-M-PAN-S offers 71 1/2".
         "DT-INT-BYPASS60": (60.0, DoorOperation.SLIDE, False, False),
         "DT-INT-DOUBLE60": (60.0, DoorOperation.DOUBLE_SWING, False, False),
+        # D-A-STUDY's Murphy-style bookcase door (2026-08-27), hidden in W-A-SN's built-in.
+        # Its RO is DT-INT-SWING30's exactly, which is the point of the retype — nothing
+        # re-phases and the jamb pack is unchanged — and `operation` stays SWING, because a
+        # bookcase door IS a swinging door and inventing an enum member for the millwork it
+        # is faced with would put a finish choice in a framing field.
+        "DT-INT-BOOKCASE30": (30.0, DoorOperation.SWING, False, False),
         "DT-EXT-OVERHEAD192": (192.0, DoorOperation.OVERHEAD, True, False),
     }
     # The house catalog is the union of its own types and the library's shared pocket

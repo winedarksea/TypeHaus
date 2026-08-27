@@ -217,11 +217,24 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
     # what is still asserted against the source here is the *band* — each window is within
     # 16" of the opening the survey draws for its room, which is what makes it the same
     # window rather than a new one somewhere else in the wall.
-    for tag, source_y in (("WIN-S-BED1", 13.75), ("WIN-S-BED2", 22.75),
-                          ("WIN-S-BED3", 31 + 8 / 12)):
+    for tag, source_y in (("WIN-S-BED1", 13.75), ("WIN-S-BED2", 22.75)):
         x, y = centres[tag]
         assert x == pytest.approx(ft(36).meters, abs=ft(1).meters), tag
         assert abs(y - ft(source_y).meters) <= ft(1, 4).meters, tag
+
+    # **WIN-S-BED3 left the band on 2026-08-27 and is asserted as a departure, not held in
+    # it.** It retyped 27x36 -> 14x24 and moved to y=34'-0" to make a three-storey 14"
+    # column with WIN-M-KIT-E below and WIN-A-E-N above — 2'-4" north of the survey's
+    # 31'-8" opening, which is 12" past the 16" band the other three sit inside. Pinned to
+    # the exact new station rather than loosened to a wider tolerance: the reason it moved
+    # is a column, and a column is an equality. RM-S-BED3 pays 4.4 sf of glazing for it and
+    # joins BED1/BED2 on R303.1 Exception 1; its R310 egress was never this window's job
+    # (WIN-S-HALL-N carries it).
+    x, y = centres["WIN-S-BED3"]
+    assert x == pytest.approx(ft(36).meters, abs=ft(1).meters)
+    assert y == pytest.approx(ft(34).meters, abs=TOL_M)
+    assert abs(y - ft(31 + 8 / 12).meters) > ft(1, 4).meters, \
+        "BED3 back inside the survey band — the 14\" column it left the band for is gone"
 
     # The east row is a mirror, not a survey reading and no longer a rhythm either. It ran
     # the source's stations until 2026-07-30, then an exact 9'-0" beat off y=5'-4", and
@@ -229,7 +242,11 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
     # a row 10" off the centre of the face it sits on is not. The facade's own regularity
     # outranks a survey position the way the 16" module already does; what changed is which
     # regularity. Asserted as the mirror, since that is now the load-bearing claim.
-    for near, far in (("WIN-S-STUDY3", "WIN-S-BED3"), ("WIN-S-BED1", "WIN-S-BED2")):
+    #
+    # The mirror is the INNER pair only since 2026-08-27: BED3's move to the 14" column
+    # took the outer pair's north member with it, so WIN-S-STUDY3 keeps its station and
+    # loses its partner (see the departure asserted above).
+    for near, far in (("WIN-S-BED1", "WIN-S-BED2"),):
         assert centres[near][0] == pytest.approx(ft(36).meters, abs=ft(1).meters), near
         assert centres[far][0] == pytest.approx(ft(36).meters, abs=ft(1).meters), far
         assert centres[near][1] + centres[far][1] == pytest.approx(ft(36).meters,

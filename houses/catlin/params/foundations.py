@@ -212,8 +212,8 @@ GARAGE_STEM_NODES = [
     # The SE/NE brick-ledge corner returns (garage.py's W-G-BRICK-SRET/NRET, 2026-08-26)
     # need 4'-0" of widened, brick-ledged stem under them too, same as the east piers. These
     # split the last 4'-0" off the corner end of W-GF-S2/W-GF-N.
-    Node(tag="N-GF-S-BRICK", position=pt(ft(20), GARAGE_Y_SOUTH)),
-    Node(tag="N-GF-N-BRICK", position=pt(ft(20), GARAGE_Y_NORTH)),
+    Node(uid="CGF009AAAA", tag="N-GF-S-BRICK", position=pt(ft(20), GARAGE_Y_SOUTH)),
+    Node(uid="CGF010AAAA", tag="N-GF-N-BRICK", position=pt(ft(20), GARAGE_Y_NORTH)),
 ]
 
 # Aligns the stem's exterior EPS face to the 24'x24' node line, which is also the wood
@@ -257,7 +257,7 @@ GARAGE_STEM_WALLS = [
     # (SERVICE_DOOR side); W-GF-S3 is the new corner piece.
     FoundationWall(uid="CGF108AAAA", tag="W-GF-S2", start_node="N-GF-S-DRE",
                    end_node="N-GF-S-BRICK", **_STEM),
-    FoundationWall(tag="W-GF-S3", start_node="N-GF-S-BRICK",
+    FoundationWall(uid="CGF109AAAA", tag="W-GF-S3", start_node="N-GF-S-BRICK",
                    end_node="N-GF-SE", **_STEM_BRICKLEDGE),
     FoundationWall(uid="CGF102AAAA", tag="W-GF-E1", start_node="N-GF-SE",
                    end_node="N-GF-E-DRS", **_STEM_BRICKLEDGE),
@@ -269,7 +269,7 @@ GARAGE_STEM_WALLS = [
     # on the remnant (west side); W-GF-N2 is the new corner piece.
     FoundationWall(uid="CGF103AAAA", tag="W-GF-N", start_node="N-GF-N-BRICK",
                    end_node="N-GF-NW", **_STEM),
-    FoundationWall(tag="W-GF-N2", start_node="N-GF-NE",
+    FoundationWall(uid="CGF110AAAA", tag="W-GF-N2", start_node="N-GF-NE",
                    end_node="N-GF-N-BRICK", **_STEM_BRICKLEDGE),
     FoundationWall(uid="CGF104AAAA", tag="W-GF-W", start_node="N-GF-NW",
                    end_node="N-GF-SW", **_STEM),
@@ -302,14 +302,14 @@ GARAGE_FOOTINGS = [
     Footing(uid="CGF201AAAA", tag="FT-GF-S1", under="W-GF-S1", **_GARAGE_FOOTING),
     Footing(uid="CGF207AAAA", tag="FT-GF-S-DR", under="W-GF-S-DR", **_GARAGE_FOOTING),
     Footing(uid="CGF208AAAA", tag="FT-GF-S2", under="W-GF-S2", **_GARAGE_FOOTING),
-    Footing(tag="FT-GF-S3", under="W-GF-S3", **_GARAGE_FOOTING_BRICKLEDGE),
+    Footing(uid="CGF209AAAA", tag="FT-GF-S3", under="W-GF-S3", **_GARAGE_FOOTING_BRICKLEDGE),
     Footing(uid="CGF202AAAA", tag="FT-GF-E1", under="W-GF-E1",
             **_GARAGE_FOOTING_BRICKLEDGE),
     Footing(uid="CGF205AAAA", tag="FT-GF-E-DR", under="W-GF-E-DR", **_GARAGE_FOOTING),
     Footing(uid="CGF206AAAA", tag="FT-GF-E2", under="W-GF-E2",
             **_GARAGE_FOOTING_BRICKLEDGE),
     Footing(uid="CGF203AAAA", tag="FT-GF-N", under="W-GF-N", **_GARAGE_FOOTING),
-    Footing(tag="FT-GF-N2", under="W-GF-N2", **_GARAGE_FOOTING_BRICKLEDGE),
+    Footing(uid="CGF210AAAA", tag="FT-GF-N2", under="W-GF-N2", **_GARAGE_FOOTING_BRICKLEDGE),
     Footing(uid="CGF204AAAA", tag="FT-GF-W", under="W-GF-W", **_GARAGE_FOOTING),
 ]
 

@@ -76,7 +76,20 @@ DRAINS = [
             # 2026-08-23) and drops clear of the deck's SOFFIT, which is the bearing seat at
             # -13 7/16" and 1 9/16" lower than it was — a drop that stops inside the pour is
             # what `mep.sleeve_coverage` reads as a sleeve serving nothing.
-            elevations=(ft(9, 2.375), ft(7, 9.9375), ft(7, 5.25), ft(6, 11.57)),
+            #
+            # **The two horizontal legs were re-solved 2026-08-27.** The tie-in invert had
+            # read 6'-11 9/16" since the run was authored, when it started 9" further west
+            # and 3 1/4" higher; the 2026-08-23 re-level of the drop left it behind and the
+            # last leg fell 0.243"/ft — under P3005.3's 1/4" and a real `mep.drain_slope`
+            # FAIL, not a rounding one. 10'-3 3/8" of head over 41'-10" of run buys 0.245"/ft
+            # if it is spent evenly, which is why BOTH numbers move: 7'-5 3/16" at the turn
+            # and 6'-11 1/4" at the collector put the legs on 0.257"/ft and 0.254"/ft rather
+            # than 0.253"/ft and 0.243"/ft. The end still lands 1 13/16" above
+            # PR-B-MAIN-DRAIN's 6'-9 7/16" invert — a side entry into the 4" barrel's upper
+            # half, which is what a 2" branch wants. Neither number is pinned to a sleeve
+            # (SP-B-CS2-KITCH is matched in plan, not elevation), so this is free head to
+            # spend; the drop above it is not, and did not move.
+            elevations=(ft(9, 2.375), ft(7, 9.9375), ft(7, 5.1875), ft(6, 11.25)),
             serves=("FX-M-KITCH-SINK",)),
     # BATH2's WC, at its re-pointed flange on the wet wall (→ SP-M-WC2).
     PipeRun(uid="CBPD01AAAA", tag="PR-B-WC2-DRAIN", system=PipeSystem.DRAIN,

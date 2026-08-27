@@ -448,8 +448,19 @@ BASEMENT_EQUIPMENT = [
     # and `pan_drain_ref` names the condensate line a cold-climate core makes water into
     # (plan/mep_drainage.py). The footprint on the element is documentation; the TYPE's
     # 24.8" x 21" is what resolves.
+    #
+    # **Moved 12 5/8" south 2026-08-27, to (3'-11 1/2", 30'-6").** The Broan's real case is
+    # 24.8" x 21" where the placeholder's was 24" x 24", and at the drag-authored
+    # (3'-11 7/16", 31'-6 5/8") its north-east corner stood 35.5" from EQ-B-ESS-BATT — half
+    # an inch inside the battery's 36" REQUIRED separation zone (x 49 1/4"..145 1/4",
+    # y 378"..460"), which `advisory.ess_clearance` grades as a rectangle, not a radius. The
+    # y=30'-6" line puts the case's north edge at 376 1/2", 1 1/2" clear of it, and buys a
+    # second thing for free: at the old y the case overlapped ED-B-BACKUP-ENCL's 36" NEC
+    # 110.26 working space, and it no longer does. Nothing downstream moves — every ERV
+    # branch is authored off the two manifolds (plan/mep_erv.py), not off the machine, and
+    # PR-B-ERV-COND's drop at (3'-11", 30'-9") is still under the case.
     Equipment(uid="CEE016AAAA", tag="EQ-B-ERV", kind=EquipmentKind.ERV,
-              position=pt(m(1.2053), m(9.61783)), footprint=(inch(24.8), inch(21)),
+              position=pt(ft(3, 11.5), ft(30, 6)), footprint=(inch(24.8), inch(21)),
               room="RM-B-FURNACE", type_ref="EQ-T-BROAN-B210E75RT", circuit="CKT-ERV",
               # HUNG, not floor-standing (2026-08-25). Two reasons and the second is the
               # binding one: a Broan ships with hanging straps and this is how the unit
@@ -617,12 +628,22 @@ SECOND_DEVICES = [
     # ED-T-DISCONNECT-3R is a 3 1/4"-deep can, so its centre belongs 1 5/8" off the cladding
     # face, and the 2" these were authored with dates from the type's old placeholder 4"
     # depth. Same correction on ED-M-HP3-DISC and ED-B-SPA-DISC.
+    #
+    # **Both slid east/west 2026-08-27 to stand beside the units they kill**, which is what
+    # NEC 440.14 asks of them and what neither did before: HP1's box was 24" west of
+    # EQ-M-HP1-OD (x 96"..112") and HP2's was 88" *east* of EQ-M-HP2-OD (x 202"..218"),
+    # around a corner from it. They now sit 7 1/4" off HP1-OD's west edge and on HP2-OD's
+    # east edge respectively. y stays at -8 7/8": that is the 3 1/4" case's back edge exactly
+    # on W-S-S1/W-S-S2's cladding face at y=-7 1/4", and the drag that moved the x had left
+    # both boxes floating 3/8" proud of it (`test_wall_mounted_devices_resolve_against_a_wall_face`).
+    # ED-M-HP2-DISC straddles the W-S-S1/W-S-S2 break at x=18'-0" — collinear walls with the
+    # W-S-C1 tee's framing behind the joint, so the backing is there.
     ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(6), ft(0, -8.875)), type_ref="ED-T-DISCONNECT-3R",
-                     circuit="CKT-HP1", mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
+                     position=pt(ft(7, 1.5), ft(0, -8.875)), type_ref="ED-T-DISCONNECT-3R",
+                     circuit="CKT-HP1", mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room=None),
     ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(25, 6.5), ft(0, -8.875)), type_ref="ED-T-DISCONNECT-3R",
-                     circuit="CKT-HP2", mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
+                     position=pt(ft(18, 0.25), ft(0, -8.875)), type_ref="ED-T-DISCONNECT-3R",
+                     circuit="CKT-HP2", mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room=None),
     # FH-S-BATH1's thermostat, inside the room on its south wall (W-S-BD-N1B, interior
     # face y=26'-4 11/16"), 9" west of D-S-BATH1's opening (x 7'-3"..9'-9"). Same
     # reach-as-the-door-shuts position as ED-M-BATH2-FH-STAT, and clear of the fixture
@@ -1336,7 +1357,7 @@ NEC_FILL_SECOND = [
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC023AAAA", tag="ED-S-PLANT-RC3", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(0, 8.75), ft(4, 7.625)), type_ref="ED-T-RECEPTACLE-WR-GFCI",
+                     position=pt(ft(0, 8.75), ft(3, 6.75)), type_ref="ED-T-RECEPTACLE-WR-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), room="RM-S-PLANT", rotation=deg(90)),
     ElectricalDevice(uid="NEC024AAAA", tag="ED-S-PLANT-RC4", kind=DeviceKind.RECEPTACLE_GFCI,

@@ -378,18 +378,7 @@ def _material_finish_color(material_ref: str | None,
     if named is not None:
         return _hex_rgba(named)
     material = authored.get(material_ref or "") if authored else None
-    # A material's DECLARED ``finish`` is consulted next, before the coil-white branch below
-    # (2026-08-26). The ref lookup above only fires for a material whose tag *is* its finish,
-    # which is true of the glazed bricks and the trim coil by coincidence of naming and is
-    # not a rule — so a second coil colour of an existing panel (a green nail-strip beside
-    # the white one) could not state its own colour at all: it declares a finish, keeps
-    # "seam" in its tag so it still gets the seam normal map, and was then painted the coil
-    # white anyway. Naming a finish is the mechanism for "this material knows what it looks
-    # like", and this is what makes it work for a cladding layer too.
     declared = (getattr(material, "finish", None) or "").lower()
-    named_finish = _FINISH_BASE.get(declared)
-    if named_finish is not None:
-        return _hex_rgba(named_finish)
     # A cladding layer that reads as one of the house's metal skins is painted the coil
     # white BEFORE its authored ``color`` is consulted. All five skins author
     # ``color="#6b7076"`` — that is the *drawing* hatch tone `material_color` pairs with
@@ -401,12 +390,24 @@ def _material_finish_color(material_ref: str | None,
     # The skin is DECLARED first and guessed second, the same precedence
     # `ui/src/three/builders/walls.ts` takes: `pbr-panel-26` declares
     # ``finish="ribbed-panel"`` and deliberately keeps "seam" out of its tag, so the
-    # substring test below cannot see it. Only these two finishes — a finish that names its
-    # own colour (a glazed brick, a charcoal trim coil) is matched by ref above and never
-    # reaches here, and one that authors a specific colour (the two CMUs) still keeps it.
-    declared_skin = (getattr(material, "finish", None) or "").lower() in _METAL_PANEL_FINISHES
+    # substring test below cannot see it.
+    #
+    # **The DECLARED finish is consulted HERE, inside the skin branch, and not before it.**
+    # It named the colour unconditionally for a day (2026-08-26), which is how a second coil
+    # colour of an existing panel — a green nail-strip beside the white one — first got to
+    # state its own paint, and it took two things with it. It broke the parity it was added
+    # to serve: `walls.ts` reads `finishBaseColor(appearance.finish)` only on the `seam`
+    # branch and every other layer goes through `materialColor`, which consults the ref and
+    # the authored colour and never the finish. And a finish is a SPEC, not a colourway, so
+    # a rule that lets it win collapses every material sharing one — `cmu-8`, `cmu-12` and
+    # `retaining-block` all declare `finish="cmu"` and author three different greys, and all
+    # three came out of the exporter as one. Scoped here, `pbr-panel-26` still gets the coil
+    # white on a cladding layer (its finish is in `_METAL_PANEL_FINISHES`), the green coil
+    # still gets its green (its tag carries "seam", and the lookup below finds
+    # "classic-green-seam"), and everything else keeps what it authored.
+    declared_skin = declared in _METAL_PANEL_FINISHES
     if function == "cladding" and (declared_skin or _is_standing_seam(material_ref)):
-        return _hex_rgba(_SEAM_BASE)
+        return _hex_rgba(_FINISH_BASE.get(declared, _SEAM_BASE))
     if material is not None:
         return _hex_rgba(material_color(material.hatch, material.color))
     if _is_aluminum_deck_board(material_ref):

@@ -443,6 +443,17 @@ the future.
     `plan/electrical.py`; a real voltage-drop question on an EG4 12kPV, and the one argument
     that could still send this back. Against it: the battery hangs on cast concrete again
     rather than on the steel studs the 2026-08-21 overhaul left it on.
+  - **ANSWERED 2026-08-27, and the answer went the other way: the pair stays close.** The
+    check had begun FAILing with `EQ-B-ESS-INV` and `EQ-B-ERV` in the zone, and the obvious
+    reading — move the inverter ~18" west to buy the 36" — was rejected by the owner: EG4
+    ships the 12kPV and the PowerPro as a pair and shows them mounted side by side, and the
+    DC conductors between them are the highest-amperage run in the house, so separating them
+    is its own hazard. `advisory.ess_clearance` now **exempts the battery's own
+    power-conversion equipment**, linked by the circuit both elements declare
+    (`CKT-ESS-GRID`), and names the exemption in its PASS message rather than applying it
+    silently. A battery with no circuit, or an inverter on a different one, exempts nothing.
+    `EQ-B-ERV` is a genuine other device and moved instead — 12 5/8" south to y=30'-6",
+    which also took its case out of `ED-B-BACKUP-ENCL`'s NEC 110.26 working space.
   - There was never a pan (`mep_drainage.py` explains why P2801.6 needs none) and never a
     vent. The item said both; neither was ever authored.
  - Sunken garden slab (is it needed above footing) and make sure 7" threshold to basement from sunken garden

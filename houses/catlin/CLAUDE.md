@@ -317,7 +317,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   1'-0" deep against a 9 7/8" pocket, so each would stand 2 1/8" proud — out over the well,
   the exact lie the built-in exists to avoid. Five bays from x=22'-8" stepping 7'-6" down to
   4'-6" under the rake, recorded in the `W-A-SN` comment and paid for by the
-  `prices.toml [allowances]` lump `study-bookcase-wall-casework`. The BOM legitimately sees
+  `prices.toml [allowances]` lump `cabinet-study-bookcase-wall`. The BOM legitimately sees
   only the `case-back` sheet and the nailers. `D-A-STUDY` is hidden in the run as
   `DT-INT-BOOKCASE30`, a Murphy-style bookcase door — a **retype in place**, so it keeps its
   uid and IFC GlobalId. Its `trimless=True` means a millwork case, **not** the drywall
@@ -669,6 +669,14 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     one FS-S-WEST/EAST cavity; level 3 is the FS-ATTIC deck at the chase head. A terminal is
     fed from whichever cavity it sits in — moving a terminal between storeys is free, moving
     it between cavities is a new radial off a different manifold.
+  - **The machine cannot go back north.** It sits at (3'-11 1/2", 30'-6") since 2026-08-27,
+    12 5/8" south of where a UI drag left it, because `EQ-B-ESS-BATT`'s 36" REQUIRED
+    separation zone (x 49 1/4"..145 1/4", y 378"..460") reaches into the furnace room and
+    `advisory.ess_clearance` grades it as a RECTANGLE, not a radius — at the old station the
+    Broan's north-east corner stood 35.5" away and failed by half an inch. The y=30'-6" line
+    leaves 1 1/2" of clear and also takes the case out of `ED-B-BACKUP-ENCL`'s 36" NEC
+    110.26 working space. Nothing downstream is anchored to the machine — every branch comes
+    off the two manifolds — so the move cost nothing, and moving it back would cost a FAIL.
   - **The radon/plumbing chase at (1', 34'-6") is the only riser, and it is now full.** Four
     6" insulated ducts share it with six plumbing vents, `VR-M-RADON-VENT` and eight
     conduits: a row of three at y=33'-7 1/2" and a fourth at (5", 35'-6"), ~25% fill of a

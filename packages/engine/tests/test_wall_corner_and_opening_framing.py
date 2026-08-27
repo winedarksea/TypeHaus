@@ -445,7 +445,18 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     # a bay centre on the merged W-M-E1's own grid, so a 14" RO drops into the bay whole.
     # 15 after the west-facade recomposition: WIN-M-BATH1-W and WIN-S-VANITY-W form the
     # exact y=24'-4" service-window column, each wholly inside the corresponding clear bay.
-    assert len(framed) == 15, [o.tag for o in framed]
+    #
+    # **18 on 2026-08-27, and all three additions are the same argument the family was
+    # bought for.** WIN-A-S1/WIN-A-S4 revive the south gable's corner pair — the tags the
+    # 2026-08-01 pass retired — at 3'-4"/32'-8", bay centres on their hosts' grids and an
+    # exact mirror about the ridge; they can never column with the 4'-0"/32'-0" stud line
+    # every storey below sits on, and that 8" miss is the permanent price of a 14" RO, not
+    # an authoring slip. WIN-S-BED3 retyped 27x36 -> 14x24 and left the east second-storey
+    # row for exactly the opposite reason: at y=34'-0" it columns with WIN-M-KIT-E, which
+    # is already in this list for choosing that station, and with WIN-A-E-N above it.
+    # A three-storey column is available to this family only on a bay centre, which is why
+    # BED3 had to become a 14" unit to join one.
+    assert len(framed) == 18, [o.tag for o in framed]
     for opening in framed:
         wall = walls[opening.host_wall]
         start, end = _framing_axis(wall)
