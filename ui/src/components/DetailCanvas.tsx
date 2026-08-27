@@ -116,6 +116,10 @@ function hatchFill(pattern: string): string {
 const DETAIL_FILL: Record<string, string> = {
   concrete: "#bfbfbf", spf: "#c8a26a", lsl: "#bb955c",
   osb: "#d9c8a0", "struct-1-plywood": "#d9c8a0", "plywood-subfloor": "#d9c8a0",
+  // Paler than the covered subfloor sheet: catlin's attic deck is the sanded-face
+  // underlayment grade because two unfinished lofts walk on it bare, and the detail is
+  // where that shows. Mirrors emit/draw/palette.py DETAIL_FILL.
+  "plywood-underlayment-sanded": "#e7d8b4",
   "zip-r": "#3f6d3a", gwb: "#e6e6e6",
   polyiso: "#f4e6b1", "polyiso-foil": "#efdf9e",
   eps: "#c8e0f8", "icf-eps": "#d8e8fa", xps: "#a7d7c5",

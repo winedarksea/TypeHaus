@@ -56,11 +56,12 @@ VENT_BRANCHES_MAIN = [
                     "FX-M-BATH2-TUB", "FX-M-BATH1-LAV", "FX-M-LAUNDRY-SINK")),
     # Kitchen sink. Re-routed 2026-07-30 with the sink's move to the north wall: W-M-N1
     # *does* continue to the storey above at this x (W-S-N1 stacks on it, into RM-S-BED3's
-    # wall), so `mep.vent_reachability` is still satisfied by the wet-wall path. x=32'-8" is
-    # the riser's bay — clear of WIN-M-KITCH's RO (29'-5".."31'-8"), WIN-M-KITCH-N's RO
-    # (33'-5".."34'-7") and, one storey up, WIN-S-HALL-N's RO (26'-9".."29'-3" since the
-    # 2026-07-30 facade pass stacked it on WIN-M-KITCH's column) — rather than
-    # x=30'-7" under the sink itself, which sits inside two stacked window ROs. From there it
+    # wall), so `mep.vent_reachability` is still satisfied by the wet-wall path. x=32'-8"
+    # does not move with the 2026-08-26 sink/column move — it stays clear of WIN-M-KITCH's
+    # RO (28'-2 1/2".."30'-5 1/2"), WIN-M-KITCH-N's RO (33'-5".."34'-7", unaffected — that
+    # corner window did not move) and, one storey up, WIN-S-HALL-N's RO (28'-1".."30'-7"
+    # since its column moved to 29'-4" with WIN-M-KITCH) — rather than under the sink
+    # itself, which sits inside two stacked window ROs. From there it
     # turns west in the same joist bay as before (FS-S-EAST here, FS-S-WEST once it crosses
     # x=18'), y=24'-8" (bays are 8"+n*16"; this
     # one passes south of FO-S-STAIR, which starts at y=25'-2 3/8", and north of both trunk

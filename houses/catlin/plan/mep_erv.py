@@ -136,13 +136,13 @@ EQUIPMENT_ERV_MAIN = [
 ]
 
 # LEVEL 3 — sitting ON the FS-ATTIC deck beside the chase head at (1', 34'-6"), fully
-# accessible in RM-A-WEST. Extract only: the level's fresh-air duty is the mixing-box feed,
+# accessible in RM-A-WEST-UNFIN. Extract only: the level's fresh-air duty is the mixing-box feed,
 # which stays a full-size 6" branch off the supply riser rather than a radial, because it
 # carries ~100 of the machine's 210 cfm on its own.
 EQUIPMENT_ERV_ATTIC = [
     Equipment(uid="3QT1F3F01A", tag="EQ-A-ERV-MAN-EXH", kind=EquipmentKind.DUCT_MANIFOLD,
               position=pt(ft(2, 6), ft(34, 6)), footprint=(inch(24), inch(8)),
-              room="RM-A-WEST", type_ref="EQ-T-ERV-MANIFOLD-6",
+              room="RM-A-WEST-UNFIN", type_ref="EQ-T-ERV-MANIFOLD-6",
               mount=Mount(kind=MountKind.FLOOR)),
 ]
 
@@ -183,11 +183,11 @@ EQUIPMENT_ERV_SECOND = [
 EQUIPMENT_ERV_HOODS = [
     Equipment(uid="0NF97ZR9Z3", tag="EQ-A-ERV-HOOD-OA", kind=EquipmentKind.DUCT_MANIFOLD,
               position=pt(ft(12), ft(35, 6)), footprint=(inch(12), inch(12)),
-              room="RM-A-WEST", type_ref="EQ-T-ERV-HOOD-6",
+              room="RM-A-WEST-UNFIN", type_ref="EQ-T-ERV-HOOD-6",
               mount=Mount(kind=MountKind.WALL, elevation=ft(3))),
     Equipment(uid="38M0D2FNXH", tag="EQ-A-ERV-HOOD-EA", kind=EquipmentKind.DUCT_MANIFOLD,
               position=pt(ft(24), ft(35, 6)), footprint=(inch(12), inch(12)),
-              room="RM-A-EAST", type_ref="EQ-T-ERV-HOOD-6",
+              room="RM-A-EAST-UNFIN", type_ref="EQ-T-ERV-HOOD-6",
               mount=Mount(kind=MountKind.WALL, elevation=ft(3))),
 ]
 

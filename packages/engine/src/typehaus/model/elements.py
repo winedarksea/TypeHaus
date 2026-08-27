@@ -6,7 +6,7 @@ from typing import Literal
 
 from typehaus.model.base import Element
 from typehaus.model.enums import StructuralRole
-from typehaus.model.refs import Arch, FaceRef, OpeningPosition, ToRoof
+from typehaus.model.refs import Arch, FaceRef, LayerMaterial, OpeningPosition, ToRoof
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D
 
@@ -55,6 +55,10 @@ class Wall(Element):
     # carry it (structural.masonry_guard_bearing). Marked rather than inferred: "short wall
     # at a floor edge" describes a knee wall, a planter and a stair curb just as well.
     guard: bool = False
+    # Per-layer material substitution: appearance only, and the alternative to duplicating
+    # a whole Assembly to restate one `material_ref` (see LayerMaterial in model/refs.py).
+    # A tuple rather than a mapping because the editable dialect has no mapping literal.
+    layer_materials: tuple[LayerMaterial, ...] = ()
     # Fork/variant provenance (#38).
     forked_from: str | None = None
 

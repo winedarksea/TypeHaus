@@ -530,11 +530,12 @@ OPENINGS = [
     # that one is centred on FURN-M-MUD-BENCH's aisle, which did not move.
     Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424-T",
            position=from_node("N-S-CH3", ft(1, 1.875)), sill_height=ft(4)),
-    # Moved 29'-4" -> 28'-0" (2026-07-30 facade pass): WIN-M-KITCH below and WIN-A-N2
-    # above are both centred at x 28'-0", and 28'-0" is a stud line on W-S-N1's own
-    # grid too, so the north facade gets one exact three-storey column.
+    # Moved 29'-4" -> 28'-0" (2026-07-30 facade pass), then back to 29'-4" (2026-08-26)
+    # when the whole three-storey column returned there to bring WIN-M-KITCH onto the
+    # kitchen sink below. WIN-A-N2 above moved with it, so the north facade keeps its one
+    # exact three-storey column at the new station.
     Window(uid="CSX313AAAA", tag="WIN-S-HALL-N", host="W-S-N1", type_ref="WT-3036",
-           position=from_node("N-S-NE", ft(6, 9)), sill_height=ft(3)),        # x 28'-0"
+           position=from_node("N-S-NE", ft(5, 5)), sill_height=ft(3)),        # x 29'-4"
     # Stairwell daylight (2026-07-30 facade pass): the north facade was blank from the
     # entry column to x=21'-11". Centre x 12'-8" is the stud line inside the arriving
     # upper flight's lane. WIN-A-N1 could stack on this (12'-8" is a stud line on W-A-N2

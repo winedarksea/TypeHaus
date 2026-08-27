@@ -233,6 +233,13 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
 
     grade_m = site_grade_elevation_m_from_plan(plan)
     datums = band_datums(z0, z1, grade_m, line)
+    # Per-wall material substitution (Wall.layer_materials). Appearance only: it swaps the
+    # material a named layer reports and touches nothing else, so every span, band and
+    # framing decision above is computed from the assembly and is unaffected. This is what
+    # lets one wall carry a second coil colour or a second brick body without duplicating
+    # the whole Assembly to restate one `material_ref`. An override naming a layer the
+    # assembly does not have is reported by `checks.integrity.wall_layer_material`.
+    overrides = {lm.layer: lm.material for lm in getattr(wall, "layer_materials", ())}
     layers: list[ResolvedLayer] = []
     for index, (layer, _add_t, cavity) in enumerate(added):
         host_index = _cavity_host(stack, index) if cavity else None
@@ -264,7 +271,7 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
         layers.append(
             ResolvedLayer(
                 name=layer.name,
-                material_ref=layer.material_ref,
+                material_ref=overrides.get(layer.name, layer.material_ref),
                 function=layer.function.value,
                 thickness_m=layer.thickness.meters,
                 polygon=_ring(span_in, span_out),

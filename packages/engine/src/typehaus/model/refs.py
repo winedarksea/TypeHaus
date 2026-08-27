@@ -25,6 +25,29 @@ def face(role: str, offset: Length | None = None) -> FaceRef:
     return FaceRef(role=role, offset=offset)
 
 
+class LayerMaterial(HausModel):
+    """Swaps the material of ONE named layer on ONE wall, leaving the assembly alone.
+
+    An assembly states the whole stack, materials included, so before this a wall that
+    wanted a different cladding *colour* — the same panel in a second coil colour, the same
+    brick in a second body — needed a duplicate Assembly tag differing in one
+    ``material_ref``. That duplicate is not free: it is a new key in every table keyed by
+    assembly (``prices.toml``, the condition gates, the section goldens), all to say
+    "same wall, different paint".
+
+    Deliberately NOT a mapping: ``Wall`` is a movable element and must live in a
+    ``# haus: editable`` file, and the dialect has no mapping literal
+    (``source/dialect.py``). A tuple of these is dialect-legal and reads the same.
+
+    It substitutes a material and nothing else — thickness, function, framing, banding and
+    every derived geometry stay the assembly's. Use it for appearance; a layer that needs a
+    different *thickness* or *function* is a different wall and wants its own assembly.
+    """
+
+    layer: str      # Layer.name within the wall's assembly
+    material: str   # Material.tag to use instead of that layer's material_ref
+
+
 class ToRoof(HausModel):
     """Wall top constraint terminating against a roof plane (#43; resolves in M3)."""
 

@@ -62,9 +62,13 @@ SUPPLY_DEVICES_BASEMENT = [
                   serves=("FX-M-LAUNDRY",)),
     # The dishwasher's fill solenoid is the other quick-closing valve in the house. It takes
     # hot water only, so it takes one arrestor, on the kitchen hot branch at the sink base.
+    # Held at the sink base's WEST face (2026-08-26) rather than sliding +9" with the rest
+    # of the kitchen hot branch: the dishwasher moved to the sink base's west side in the
+    # same re-composition, and +9" would have put this 41" east of it — across the whole
+    # carcass — instead of at the point the branch actually reaches the machine.
     PipeAccessory(uid="W4NL8QSJ0M", tag="PA-M-DW-WHA-HW",
                   kind=PipeAccessoryKind.WATER_HAMMER_ARRESTOR, pipe_ref="PR-B-HW-KITCH",
-                  position=pt(ft(29, 6.6), ft(33, 7.2)), room="RM-M-LIVING",
+                  position=pt(ft(27, 10), ft(33, 7.2)), room="RM-M-LIVING",
                   model="Sioux Chief MiniRester 660-G class, size A",
                   serves=("APPL-M-DW",)),
     # Branch isolation for both wall hydrants, at the tee off the cold trunk. Not a code
@@ -174,12 +178,12 @@ SUPPLY_STOPS = [
     # That is a stop for the kitchen, not a second main: PA-B-MAIN-SHUTOFF is upstream of
     # everything and this is the last 3'-6" of the run.
     PipeAccessory(uid="09MWB7MH7K", tag="PA-M-KITCH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-TRUNK", position=pt(ft(29, 0.6), ft(34, 1.2)),
+                  pipe_ref="PR-B-CW-TRUNK", position=pt(ft(29, 9.6), ft(34, 1.2)),
                   accessible=True, room="RM-M-LIVING",
                   model='1 1/4" quarter-turn ball valve, in the sink base cabinet',
                   serves=("FX-M-KITCH-SINK",)),
     PipeAccessory(uid="JPFD6JQM44", tag="PA-M-KITCH-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-HW-KITCH", position=pt(ft(29, 6.6), ft(33, 7.2)),
+                  pipe_ref="PR-B-HW-KITCH", position=pt(ft(30, 3.6), ft(33, 7.2)),
                   accessible=True, room="RM-M-LIVING",
                   model='3/4" quarter-turn ball valve, in the sink base cabinet',
                   serves=("FX-M-KITCH-SINK", "APPL-M-DW")),
@@ -275,7 +279,7 @@ SUPPLY_DEVICES_MAIN = [
     # left for a reverse-osmosis unit nobody has bought yet. No fixture/fixture units since
     # a capped stub draws no water; it just saves opening the wall the day one arrives.
     PipeAccessory(uid="L8CY2WRT4K", tag="PA-M-RO-STUB", kind=PipeAccessoryKind.RO_STUB,
-                  pipe_ref="PR-B-CW-TRUNK", position=pt(ft(29, 0.6), ft(34, 1.2)),
+                  pipe_ref="PR-B-CW-TRUNK", position=pt(ft(29, 9.6), ft(34, 1.2)),
                   elevation=ft(2, 6), room="RM-M-LIVING", accessible=True,
                   model='1/4" compression stop on a capped tee, in the sink base'),
     # The cold-storage bay's twin of the row above, at the far end of

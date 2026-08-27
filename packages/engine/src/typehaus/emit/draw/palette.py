@@ -93,6 +93,11 @@ DETAIL_FILL: dict[str, str] = {
     "osb": "#d9c8a0",
     "struct-1-plywood": "#d9c8a0",
     "plywood-subfloor": "#d9c8a0",
+    # A shade paler than the subfloor sheet above it, deliberately: catlin's attic deck is
+    # the sanded-face underlayment grade because two rooms walk on it bare, and a cut detail
+    # that draws it identically to the covered decks below hides the one fact the tag exists
+    # to record. Same osb hatch — it is still a veneer panel.
+    "plywood-underlayment-sanded": "#e7d8b4",
     "zip-r": "#3f6d3a",
     # The roof rebuild's six new tags (2026-08-20). Every one of them was drawing as the
     # #e8e4da fallback with no hatch — six near-white bands stacked on each other in the
@@ -178,6 +183,7 @@ DETAIL_HATCH: dict[str, str] = {
     "osb": "osb",
     "struct-1-plywood": "osb",
     "plywood-subfloor": "osb",
+    "plywood-underlayment-sanded": "osb",
     "zip-r": "osb",
     "zip-sheathing": "osb",
     "gwb": "gypsum",

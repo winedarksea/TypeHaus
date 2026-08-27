@@ -93,6 +93,12 @@ WALLS = [
     Wall(uid="CGW101AAAA", tag="W-G-S", start_node="N-G-SW", end_node="N-G-SE",
          assembly="GARAGE_WALL_2X6", alignment=face("zip-r-ext"), top=ft(8, 4),
          structural_role=StructuralRole.BEARING),
+    # The overhead-door wall carried Western States "Classic Green" nail-strip for part of
+    # 2026-08-26 and is back to the house white. The revert is one line: drop the
+    # `layer_materials=` override and it is `GARAGE_WALL_2X6` like its three neighbours.
+    # `standing-seam-nailstrip-26-green` is still in the catalog, referenced by nothing —
+    # the same convention `glazed-green-brick` is kept under, so going green again is a
+    # one-line change rather than a re-derivation.
     Wall(uid="CGW102AAAA", tag="W-G-E", start_node="N-G-SE", end_node="N-G-NE",
          assembly="GARAGE_WALL_2X6", alignment=face("zip-r-ext"), top=ft(8, 4),
          structural_role=StructuralRole.NONBEARING),
@@ -106,14 +112,16 @@ WALLS = [
 
 # --- east brick wainscot (2026-08-26) ----------------------------------------------------
 #
-# A short black-brick wainscot on the two 4'-0" strips of east wall flanking the overhead
-# door, wrapped 4'-0" further around each of the SE/NE corners onto the south and north
-# walls (2026-08-26) — the most-seen, most-abused surface on the building. Modelled as its
-# own short veneer wall standing in front of the existing wall, exactly W-B-BRICK's
+# A short off-white-brick wainscot on the two 4'-0" strips of east wall flanking the
+# overhead door, wrapped 4'-0" further around each of the SE/NE corners onto the south and
+# north walls (2026-08-26) — the most-seen, most-abused surface on the building. Modelled as
+# its own short veneer wall standing in front of the existing wall, exactly W-B-BRICK's
 # precedent (storeys/basement.py), because a full 3 5/8" wythe on a 1" cavity is not
 # something a WallPaneling band can carry. Assemblies, the coursing table and the ledge
 # form: plan/assemblies.py's GARAGE_BRICK_WAINSCOT / GARAGE_ICF_6_BRICKLEDGE. Brick unit:
-# Glen-Gery Black Roman Maximus (glengery.com/brick-catalog/black-roman-maximus).
+# Glen-Gery Columbia Roman Maximus (glengery.com/brick-catalog/columbia-roman-maximus),
+# swapped 2026-08-26 for the black colourway of the same unit — see assemblies.py's
+# off-white-brick Material comment.
 #
 # ** FILED ON THE GARAGE STOREY, NEVER ON `basement`, and that is load bearing. **
 # `_storey_is_conditioned` (checks/building_science/energy_scope.py) returns False for the
@@ -402,11 +410,24 @@ ROOMS = [
 # Gable roof, ridge E-W (rotated 90° vs the house), 16" overhangs. E/W walls stay flat 8'
 # rather than `top=ToRoof`: a raked wall top must split at the ridge, but the 16' overhead
 # door is centered on the ridge, so W-G-E can't be split. Both gable triangles are instead
-# closed by the wall→roof closure in resolve/roof_edge.py.
-# Eave + rake trim is two-layer: a 2x6 wood sub-fascia (structural nailer) lapped by a 5/4
-# cellular-PVC fascia (weather face). A vented PVC soffit closes the overhang and feeds the
-# vent channel. Elevations derive from the resolved roof plane so the raised-heel lift
-# carries the trim with it.
+# closed by the wall→roof closure in resolve/roof_edge.py, which reads its cladding
+# material straight off the host wall's own layers — so a `Wall.layer_materials` override
+# on one of these walls would carry into its gable triangle with nothing authored for the
+# closure itself. None is authored today; W-G-E's green was reverted 2026-08-26.
+# Eave + rake trim is two-layer: a 2x6 wood sub-fascia (structural nailer) lapped by the
+# weather face. That face was 5/4 cellular PVC until 2026-08-26 and is now brake-formed
+# PVDF metal in "Copper Penny" — six pieces, two eaves and four rakes, THE SAME COIL AS THE
+# RIDGE CAP (2026-08-27; it was Western States "Regal Blue" for a day in between). One coil
+# and one order for both: a cap in a different colour from the fascia under it reads as a
+# mistake rather than as a choice. The substrate changed with the colour on purpose — a
+# PVDF metallic is a metal coil finish PVC cannot be ordered in, and a dark trim colour on
+# cellular PVC is the classic failure (PVC's thermal movement forces a solar-reflective
+# vinyl-safe coating and an LRV cap). See the `metal-copper-penny` Material comment in
+# plan/assemblies.py.
+# The SOFFIT stays cellular PVC and stays white: vented, out of the weather, and a white
+# soffit is what keeps an overhang from reading as a shadow. A vented PVC soffit closes the
+# overhang and feeds the vent channel. Elevations derive from the resolved roof plane so the
+# raised-heel lift carries the trim with it.
 # The SOUTH eave gets a 5" aluminum gutter: that slope faces the 4' breezeway gap and the
 # house wall people walk under, and now also catches what sheds off the breezeway roof.
 # North eave stays free-draining onto open ground. Declared here rather than in params/
@@ -414,7 +435,7 @@ ROOMS = [
 # envelope stage, so an absolute elevation would drift off the eave.
 _GARAGE_EAVE_TRIM = EaveTrim(
     fascia=(FasciaBoard(material="spf", thickness=inch(1.5), depth=inch(5.5)),
-            FasciaBoard(material="pvc-cellular", thickness=inch(1), depth=inch(6))),
+            FasciaBoard(material="metal-copper-penny", thickness=inch(1), depth=inch(6))),
     soffit_material="pvc-cellular", soffit_thickness=inch(0.5), soffit_vented=True,
     gutter=EaveGutter(material="aluminum", depth=inch(5), thickness=inch(5),
                       top_drop=inch(0.5), edges=("south",),
@@ -440,9 +461,18 @@ _GARAGE_LEADER = Downspout(
 )
 
 ROOFS = [
+    # `edge_trim_material` names the coil the FORMED EDGE TRIM is ordered in, which on this
+    # roof is the vented ridge cap and nothing else (2026-08-26). The field drives the ridge
+    # cap and the corner trim (resolve/roof_trim.py::_edge_trim_material); a 16" overhang
+    # frames fascia + soffit and no corner trim, so this recolours exactly one member.
+    # The fascia is NOT reached by this field — it names its own material on the FasciaBoard
+    # above — so the two must be kept in step BY HAND. They are the same coil since
+    # 2026-08-27; change one and change the other, or the cap and the fascia under it drift
+    # apart with nothing to catch it.
     Roof(uid="CGRF01AAAA", tag="RF-GARAGE", form=RoofForm.GABLE,
          pitch=Pitch(4, 12), bearing_refs=("W-G-S", "W-G-N"),
          assembly="GARAGE_ROOF", overhang=ft(1, 4), ridge_direction="x",
+         edge_trim_material="metal-copper-penny",
          eave_trim=_GARAGE_EAVE_TRIM),
 ]
 

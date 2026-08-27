@@ -265,10 +265,21 @@ _GLAZED_GREEN_BRICK_BASE = "#1b4332"  # materials.ts GLAZED_GREEN_BRICK_STYLE.ba
 _GLAZED_LAPIS_BRICK_BASE = "#10386a"
 _GLAZED_GOLD_BRICK_BASE = "#c08a12"
 _BROWN_BRICK_BASE = "#a07c5c"  # lightened + de-jittered 2026-08-21; see materials.ts
-# The garage wainscot's Glen-Gery Black Roman Maximus brick (2026-08-26) — materials.ts
-# ROMAN_MAXIMUS_BRICK_STYLE.base. Authored a step lighter than pure black; see the Material
-# comment in plan/assemblies.py for why.
-_ROMAN_MAXIMUS_BRICK_BASE = "#26221f"
+# The garage wainscot's Glen-Gery Columbia Roman Maximus brick (2026-08-26) — materials.ts
+# ROMAN_MAXIMUS_BRICK_STYLE.base. The off-white colourway of the Roman Maximus unit; the
+# `finish` key names the UNIT GEOMETRY, so a colour swap moves this value and nothing else.
+_ROMAN_MAXIMUS_BRICK_BASE = "#e4ddc9"
+# The garage's east (overhead-door) wall accent coil (2026-08-26) — Western States Metal
+# Roofing "Classic Green", materials.ts CLASSIC_GREEN_SEAM_BASE. A second colourway of the
+# same 26 ga. nail-strip panel, so it keeps the seam profile and only the paint differs.
+_CLASSIC_GREEN_SEAM_BASE = "#2f5233"
+# The garage's formed-trim accent coil (2026-08-27): "Copper Penny" PVDF metallic on BOTH the
+# vented ridge cap and the six fascia pieces. Mirrored by FINISH_BASE in
+# ui/src/nordic/palette.ts.
+_COPPER_PENNY_METAL_BASE = "#8a4f2a"
+# Referenced by nothing since 2026-08-27 — the fascia wore Regal Blue for a day. Kept so the
+# swap back is one word; see the Material comment in houses/catlin/plan/assemblies.py.
+_REGAL_BLUE_METAL_BASE = "#1e3a5c"
 _DECK_BOARD_BASE = "#b9bcc0"    # materials.ts ALUMINUM_DECK_BASE_COLOR (0xb9bcc0)
 
 _EXTERIOR_DARK = "#1c1f24"      # the house's one exterior dark; see window_trim above
@@ -287,6 +298,9 @@ _FINISH_BASE: dict[str, str] = {
     "glazed-gold-brick": _GLAZED_GOLD_BRICK_BASE,
     "brown-brick": _BROWN_BRICK_BASE,
     "roman-maximus-brick": _ROMAN_MAXIMUS_BRICK_BASE,
+    "classic-green-seam": _CLASSIC_GREEN_SEAM_BASE,
+    "metal-copper-penny": _COPPER_PENNY_METAL_BASE,
+    "metal-fascia-regal-blue": _REGAL_BLUE_METAL_BASE,
     # Formed edge trim ordered in a second coil colour (Roof.edge_trim_material). Without an
     # entry it falls to the "metal" family's blue-grey, and the accent that makes a
     # zero-overhang rake legible would differ between the .glb and the viewer.
@@ -297,7 +311,8 @@ _FINISH_BASE: dict[str, str] = {
     # to the bare "brace" category lumber while the pillars it braces render white.
     # Value = the material's authored colour in houses/catlin/plan/assemblies.py.
     "post-paint-white": "#f4f2ee",
-    # Cellular PVC trim (garage fascia/soffit) is factory-white, not the "siding" family's
+    # Cellular PVC trim (the garage SOFFIT; its fascia went to formed metal on 2026-08-26)
+    # is factory-white, not the "siding" family's
     # blue-grey the substring guess falls to. Same white as post-paint-white — both are
     # painted trim, just different substrates.
     "pvc-cellular": "#f4f2ee",
@@ -363,6 +378,18 @@ def _material_finish_color(material_ref: str | None,
     if named is not None:
         return _hex_rgba(named)
     material = authored.get(material_ref or "") if authored else None
+    # A material's DECLARED ``finish`` is consulted next, before the coil-white branch below
+    # (2026-08-26). The ref lookup above only fires for a material whose tag *is* its finish,
+    # which is true of the glazed bricks and the trim coil by coincidence of naming and is
+    # not a rule — so a second coil colour of an existing panel (a green nail-strip beside
+    # the white one) could not state its own colour at all: it declares a finish, keeps
+    # "seam" in its tag so it still gets the seam normal map, and was then painted the coil
+    # white anyway. Naming a finish is the mechanism for "this material knows what it looks
+    # like", and this is what makes it work for a cladding layer too.
+    declared = (getattr(material, "finish", None) or "").lower()
+    named_finish = _FINISH_BASE.get(declared)
+    if named_finish is not None:
+        return _hex_rgba(named_finish)
     # A cladding layer that reads as one of the house's metal skins is painted the coil
     # white BEFORE its authored ``color`` is consulted. All five skins author
     # ``color="#6b7076"`` — that is the *drawing* hatch tone `material_color` pairs with

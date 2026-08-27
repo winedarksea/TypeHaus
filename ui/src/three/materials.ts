@@ -257,7 +257,7 @@ export function disposeStandingSeamTextures(): void {
 export const BRICK_UNIT_M: readonly [number, number] = [0.2032, 0.0679]; // [length, course]
 /** Nominal CMU face module including joints: a standard block is 16" × 8" with ⅜" joints. */
 export const CMU_UNIT_M: readonly [number, number] = [0.4064, 0.2032]; // [length, course]
-/** Glen-Gery Black Roman Maximus including joints: 23⅝" × 1⅝" unit + ⅜" joints both ways
+/** Glen-Gery Roman Maximus including joints: 23⅝" × 1⅝" unit + ⅜" joints both ways
  * (garage wainscot, 2026-08-26) — a 24" × 2" module, long and low next to modular's 8" × 2⅔". */
 export const ROMAN_MAXIMUS_UNIT_M: readonly [number, number] = [0.6096, 0.0508]; // [length, course]
 const MASONRY_TEX_PX = 512;
@@ -329,9 +329,9 @@ const BROWN_BRICK_STYLE: MasonryStyle = {
   jointFraction: 0.05, halfLap: 0.5, mortar: "#cfc8ba", base: "#a07c5c",
   jitterHSL: [0.004, 0.015, 0.04],
 };
-// The garage wainscot (2026-08-26; Roman Maximus 2026-08-26): Glen-Gery Black Roman
-// Maximus, ASTM C216 Grade SW Type FBA, THROUGH-BODY and a single body rather than a
-// blend — so it takes the brown plinth's unglazed recipe retinted, not the glazes'
+// The garage wainscot (2026-08-26; Roman Maximus 2026-08-26, recoloured Columbia the same
+// day): Glen-Gery Columbia Roman Maximus, ASTM C216 Grade SW Type FBA, THROUGH-BODY and a
+// single body rather than a blend — so it takes the brown plinth's unglazed recipe retinted, not the glazes'
 // low-jitter one. Same near-zero jitter for the same reason the plinth has it: at a 4'
 // wainscot's scale a wide jitter reads as mixed pallets, not as clay. `unitsPerTile: 1`
 // because the Maximus unit is itself 24" long — modular's 3-per-tile grouping is how a
@@ -340,7 +340,7 @@ const BROWN_BRICK_STYLE: MasonryStyle = {
 // HAND — the two tables mirror each other and nothing enforces it.
 const ROMAN_MAXIMUS_BRICK_STYLE: MasonryStyle = {
   key: "roman-maximus-brick", unitM: ROMAN_MAXIMUS_UNIT_M, unitsPerTile: 1, coursesPerTile: 8,
-  jointFraction: 0.016, halfLap: 0.5, mortar: "#cfc8ba", base: "#26221f",
+  jointFraction: 0.016, halfLap: 0.5, mortar: "#b9b2a2", base: "#e4ddc9",
   jitterHSL: [0.004, 0.015, 0.04],
 };
 // Concrete block: the large face module, a fixed neutral grey, tighter joints and very low

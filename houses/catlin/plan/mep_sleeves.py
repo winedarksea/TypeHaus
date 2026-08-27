@@ -28,9 +28,10 @@ from typehaus.model import m
 
 SLEEVES = [
     # Authored at FX-M-KITCH-SINK's `drain_position` (0.00" alignment). Moved to the north
-    # wall 2026-07-30 with the sink, re-centred the same day for the sink/dishwasher flip.
+    # wall 2026-07-30 with the sink, re-centred the same day for the sink/dishwasher flip,
+    # then +9" east (2026-08-26) with the sink to x=29'-4" — see fixtures.py.
     SleevePenetration(uid="BFQH6F04VQ", tag="SP-M-KITCH", host_ref="SL-M-DECK",
-                      position=pt(ft(28, 7), ft(35)), pipe_diameter=inch(2),
+                      position=pt(ft(29, 4), ft(35)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-M-KITCH-SINK"),
 ]
 
@@ -39,13 +40,13 @@ SLEEVES = [
 # bath, laundry and suite risers all rise through joist bays now.
 SUPPLY_SLEEVES = [
     # Moved to the north wall 2026-07-30 with the sink, then re-centred with the sink/
-    # dishwasher flip: same offset magnitude from the sink centre, but the along-wall
-    # component now points *east* (toward the dishwasher's new spot) instead of west.
+    # dishwasher flip, then +9" east (2026-08-26) with the sink — same offset magnitude
+    # from the sink centre throughout.
     SleevePenetration(uid="CMPS07AAAA", tag="SP-M-CW-KITCH", host_ref="SL-M-DECK",
-                      position=pt(ft(29, 0.6), ft(34, 1.2)), pipe_diameter=inch(0.75),
+                      position=pt(ft(29, 9.6), ft(34, 1.2)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.WATER_COLD),
     SleevePenetration(uid="CMPS08AAAA", tag="SP-M-HW-KITCH", host_ref="SL-M-DECK",
-                      position=pt(ft(29, 6.6), ft(33, 7.2)), pipe_diameter=inch(0.75),
+                      position=pt(ft(30, 3.6), ft(33, 7.2)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.WATER_HOT),
 ]
 

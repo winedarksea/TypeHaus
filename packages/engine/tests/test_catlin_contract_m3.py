@@ -1625,7 +1625,7 @@ def test_wall_and_room_counts_by_storey(catlin_model):
     # 2026-08-26).
     assert by_storey["garage"] == 8
     rooms = {r.tag for r in catlin_model.rooms}
-    assert {"RM-B-SAUNA", "RM-M-LIVING", "RM-S-PLANT", "RM-A-WEST",
+    assert {"RM-B-SAUNA", "RM-M-LIVING", "RM-S-PLANT", "RM-A-WEST-UNFIN",
             "RM-GARAGE"} <= rooms
 
 

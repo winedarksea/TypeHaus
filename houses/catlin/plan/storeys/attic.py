@@ -123,7 +123,7 @@ WALLS = [
     # THE DEN MOVED WEST off its source footprint (x 13'-9"..22'-4") because that straddles
     # the RB-HOUSE bearing line (W-A-C1/C1B/C2), which cannot open up. Shifted to
     # x 10'-0"..18'-0", y 0..5'-7", it keeps both source dimensions (8'-0" x 4'-10 1/2" clear)
-    # and lets RM-A-WEST run full depth for x 0..10' — the source's 588.12 sf west loft.
+    # and lets RM-A-WEST-UNFIN run full depth for x 0..10' — the source's 588.12 sf west loft.
     # Costs ~21 sf: the Den now takes 8' of the west loft's south end vs. the source's 4'-3".
     Wall(uid="CAW111AAAA", tag="W-A-DN", start_node="N-A-D1", end_node="N-A-C1",
          assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE")),
@@ -143,8 +143,8 @@ WALLS = [
 ]
 
 OPENINGS = [
-    Door(uid="CAD201AAAA", tag="D-A-HALVES", host="W-A-C2", type_ref="DT-INT-SWING32",
-         position=from_node("N-A-N1", ft(4))),
+    Door(uid="CAD201AAAA", tag="D-A-HALVES", host="W-A-C1B", type_ref="DT-INT-SWING32",
+         position=from_node("N-A-C1", ft(0, 5.0625))),
     Door(uid="CAD202AAAA", tag="D-A-DEN", host="W-A-DN", type_ref="DT-INT-SWING30",
          position=from_node("N-A-D1", ft(1))),
     # The band wall's opening onto the stair head — the source's 2'-7 1/2" gap at
@@ -199,10 +199,13 @@ OPENINGS = [
            position=from_node("N-A-S2", ft(1, 0)), sill_height=ft(2, 8)),   # x 19'-7"
     # The source attic has no north, east or west opening at all; these three are kept for
     # daylight and cross-ventilation and are this storey's only openings with no counterpart.
+    # WIN-A-N1 moved 7'-4" -> 8'-0" (2026-08-25) to mirror WIN-A-N2, then WIN-A-N2's whole
+    # three-storey column moved 28'-0" -> 29'-4" (2026-08-26) to bring WIN-M-KITCH onto the
+    # kitchen sink below; WIN-A-N1 moved to 6'-8" to hold the mirror about x=18'-0".
     Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2", type_ref="WT-3036",
-           position=from_node("N-A-NW", ft(6, 9)), sill_height=ft(2)),
+           position=from_node("N-A-NW", ft(5, 5)), sill_height=ft(2)),
     Window(uid="CAX305AAAA", tag="WIN-A-N2", host="W-A-N1", type_ref="WT-3036",
-           position=from_node("N-A-NE", ft(6, 9)), sill_height=ft(2)),
+           position=from_node("N-A-NE", ft(5, 5)), sill_height=ft(2)),
     # Knee-wall windows, one at each end of the east and west walls (2026-07-30 facade
     # pass). The 5' knee walls are the one place the 14" family is chosen for height, not
     # width: at sill 2'-6" the head sits at 4'-6", 3" under the double top plate — all a
@@ -227,19 +230,26 @@ OPENINGS = [
 ROOMS = [
     # STORAGE, not MEDIA (2026-08-01, by decision): 598 sf under a 4:12 cathedral with two
     # 14" knee-wall units can't meet R303.1's 47.8 sf glazing requirement for a habitable
-    # room. Joins RM-A-EAST and RM-A-DEN, STORAGE for the same reason — only RM-A-STUDY has
+    # room. Joins RM-A-EAST-UNFIN and RM-A-DEN, STORAGE for the same reason — only RM-A-STUDY has
     # the gable to glaze. Retagging is honest; it keeps the permit set from claiming a
     # bedroom-grade room the daylight can't support.
     # ** NO FLOOR FINISH ON PURPOSE (2026-08-25). ** These two lofts are unfinished bulk
-    # storage — the STORAGE tag above is not a hedge, it is what they are — so the walking
-    # surface is FS-ATTIC's own 3/4" plywood-subfloor deck and nothing goes over it.
+    # storage — the STORAGE tag above is not a hedge, it is what they are, and since
+    # 2026-08-27 the tags say -UNFIN so nobody has to read this comment to find out — so the
+    # walking surface is FS-ATTIC's own deck and nothing goes over it.
     # `floor_finish=None` is the honest way to say that: `takeoff/finishes.py` skips a room
     # with no finish entirely, so no carpet, no pad and no tack strip bill for 1,080 sf that
     # will never be laid. RM-A-DEN keeps its carpet — it is the one loft used as a room.
-    Room(uid="CAR401AAAA", tag="RM-A-WEST", seed=pt(ft(9), ft(20)),
+    #
+    # What the deck IS, therefore, matters here in a way it does not on any other storey:
+    # FS-ATTIC below is specified `plywood-underlayment-sanded` — a sanded-face, plugged
+    # T&G panel — precisely because these two rooms walk on it bare. The lower decks are
+    # `plywood-subfloor`, which is a covered sheet and, at a Minnesota supply house, quietly
+    # interchangeable with OSB.
+    Room(uid="CAR401AAAA", tag="RM-A-WEST-UNFIN", seed=pt(ft(9), ft(20)),
          occupancy=Occupancy.STORAGE, floor_finish=None,
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),
-    Room(uid="CAR402AAAA", tag="RM-A-EAST", seed=pt(ft(27), ft(20)),
+    Room(uid="CAR402AAAA", tag="RM-A-EAST-UNFIN", seed=pt(ft(27), ft(20)),
          occupancy=Occupancy.STORAGE, floor_finish=None,
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),
     # Cathedral like the other three (2026-07-31): the 7'-6" dropped ceiling it used to
@@ -255,7 +265,7 @@ ROOMS = [
 ]
 
 ALARMS = [
-    Alarm(uid="CAA701AAAA", tag="AL-A-COMBO", kind=AlarmKind.COMBO, room="RM-A-WEST",
+    Alarm(uid="CAA701AAAA", tag="AL-A-COMBO", kind=AlarmKind.COMBO, room="RM-A-WEST-UNFIN",
           circuit="CKT-LT-BACKUP"),
 ]
 
@@ -310,7 +320,14 @@ FLOOR = [
                                  # either side of the hall opening hang off it.
                                  bearing_refs=("W-S-W3", "W-S-C1", "W-S-E2",
                                                "BM-S-HALL")),
-                subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=inch(0.75)),
+                # NOT `plywood-subfloor` like every other deck in the house (2026-08-27):
+                # RM-A-WEST-UNFIN and RM-A-EAST-UNFIN take no covering, so this sheet is
+                # their finished floor and is specified as the sanded-face underlayment
+                # grade it has to be. Same 3/4" (23/32 Performance Category), same species
+                # and R-value — a grade and a price change, not a section change. RM-A-DEN
+                # and RM-A-STUDY get carpet and oak over it and are indifferent.
+                subfloor=DeckLayer(material_ref="plywood-underlayment-sanded",
+                                   thickness=inch(0.75)),
                 # The SECOND storey's ceiling, and the last deck in the house to get one:
                 # the same 5/8" board FS-M-* / SL-M-DECK hang over the basement and
                 # FS-S-WEST/EAST over the main floor. Without it every bedroom, the study

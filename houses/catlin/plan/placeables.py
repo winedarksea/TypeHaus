@@ -306,22 +306,24 @@ MAIN_PLACEABLES = [
               position=pt(ft(19, 3.375), ft(28, 9.3125)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
 
-    # North run — the sink wall. Sink and dishwasher flipped 2026-07-30 (owner's call): sink
-    # now sits where the dishwasher used to (closer to run centre, pantry side), dishwasher
-    # takes the sink's old spot immediately east. Bases 24" deep, centre y=34'-5 3/8".
-    # FURN-M-KIT-PANTRY-E (a 48" CASE-PANTRY-CLOSET-48 at x 20'-7"..24'-7") stood here and
-    # is deleted 2026-08-24: it is inside RM-M-PANTRY now. W-M-PAN-E's east face at
-    # 24'-6 3/8" lands 5/8" off FURN-M-KIT-E1's carcass below, which is a scribe, so the
-    # north counter run reads as starting at the pantry wall exactly as it used to start at
-    # the pantry cabinet.
-    Furniture(uid="49B0RDP4NW", tag="FURN-M-KIT-E1", type_ref="CASE-B30", room="RM-M-LIVING",
-              position=pt(ft(25, 10), ft(34, 5.375))),
-    # The 36" sink base centres close to WIN-M-KITCH (moved with it — see OPENINGS in
-    # storeys/main.py), 7" off true centre so the RO still lands on a stud line.
+    # North run — the sink wall. Re-composed 2026-08-26 to centre the sink under
+    # WIN-M-KITCH: the run is exactly full (5/8" scribe + B15 + DW + SINK-36 + B30 =
+    # 105 5/8", pantry wall to corner) with no slack to slide the sink, so the window's
+    # three-storey column moved to the sink instead — see storeys/main.py's OPENINGS.
+    # B30 and B15 swapped ends and the dishwasher moved to the sink's west side. Bases 24"
+    # deep, centre y=34'-5 3/8". FURN-M-KIT-PANTRY-E (a 48" CASE-PANTRY-CLOSET-48 at x
+    # 20'-7"..24'-7") stood here and is deleted 2026-08-24: it is inside RM-M-PANTRY now.
+    # W-M-PAN-E's east face at 24'-6 3/8" lands 5/8" off FURN-M-KIT-E1's carcass below,
+    # which is a scribe, so the north counter run reads as starting at the pantry wall
+    # exactly as it used to start at the pantry cabinet.
+    Furniture(uid="49B0RDP4NW", tag="FURN-M-KIT-E1", type_ref="CASE-B15", room="RM-M-LIVING",
+              position=pt(ft(25, 2.5), ft(34, 5.375))),
+    # The 36" sink base is dead-centred under WIN-M-KITCH now that the window's column
+    # moved to it (see storeys/main.py's OPENINGS) — no more off-centre split.
     Furniture(uid="F8A30SK31X", tag="FURN-M-KIT-SINKBASE", type_ref="CASE-SINK-BASE-36", room="RM-M-LIVING",
-              position=pt(ft(28, 7), ft(34, 5.375))),
+              position=pt(ft(29, 4), ft(34, 5.375))),
     # Disposer hangs off FX-M-KITCH-SINK's drain fitting, at the sink's `drain_position`
-    # (28'-7", 35'-0") — the flange, where the trap and SP-M-KITCH already are — not the
+    # (29'-4", 35'-0") — the flange, where the trap and SP-M-KITCH already are — not the
     # bowl centre. 14 1/2" mount = base of body (27" bowl bottom minus 12 1/2" cylinder).
     # Mount kind WALL is this file's idiom for "hangs at a stated height," same as the
     # uppers and APPL-M-HOOD.
@@ -331,7 +333,7 @@ MAIN_PLACEABLES = [
     # not a 120V toggle over a wet sink. Route isn't designed, so only the seven known part
     # numbers are modelled, billed through `[install_parts]`.
     Appliance(uid="ADCW7VPPC1", tag="APPL-M-DISP", type_ref="APPL-DISPOSAL", room="RM-M-LIVING",
-              position=pt(ft(28, 7), ft(35)),
+              position=pt(ft(29, 4), ft(35)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(14.5)),
               install_parts=("24V Class-2 control transformer, 40 VA",
                              "double-pole contactor, 30 A, 24V coil",
@@ -344,18 +346,17 @@ MAIN_PLACEABLES = [
     # 23 3/4"x24 5/8" against the allowance's 24"x24" — the nominal-vs-actual quarter inch
     # a 24" cabinet opening already carries, so the run's arithmetic is unaffected.
     Appliance(uid="XPA5ZCQM5Q", tag="APPL-M-DW", type_ref="APPL-LG-DISHWASHER", room="RM-M-LIVING",
-              position=pt(ft(31, 1), ft(34, 5.375))),
-    Furniture(uid="3QTQ2NFWYD", tag="FURN-M-KIT-E2", type_ref="CASE-B15", room="RM-M-LIVING",
-              position=pt(ft(32, 8.5), ft(34, 5.375))),
+              position=pt(ft(26, 10), ft(34, 5.375))),
+    Furniture(uid="3QTQ2NFWYD", tag="FURN-M-KIT-E2", type_ref="CASE-B30", room="RM-M-LIVING",
+              position=pt(ft(32, 1), ft(34, 5.375))),
 
-    # North wall uppers — WE1 stays over the base; WE2 followed the dishwasher to its new
-    # spot. Nothing over the sink (the window's there), the pantry (already full height) or
-    # the corner filler.
-    Furniture(uid="AQTQJBTXRR", tag="FURN-M-KIT-WE1", type_ref="CASE-W30", room="RM-M-LIVING",
-              position=pt(ft(25, 10), ft(34, 10.875)),
+    # North wall uppers — re-ordered with the base run (2026-08-26). Nothing over the sink
+    # (the window's there), the pantry (already full height) or the corner filler.
+    Furniture(uid="AQTQJBTXRR", tag="FURN-M-KIT-WE1", type_ref="CASE-W15", room="RM-M-LIVING",
+              position=pt(ft(25, 2.5), ft(34, 10.875)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
     Furniture(uid="VKP909PNS6", tag="FURN-M-KIT-WE2", type_ref="CASE-W24", room="RM-M-LIVING",
-              position=pt(ft(31, 1), ft(34, 10.875)),
+              position=pt(ft(26, 10), ft(34, 10.875)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
     # ** THE STACKER COURSE (2026-08-24). ** The uppers stopped at 96" under a 108" ceiling
     # and the owner asked for them to reach it. 12" is a STOCK wall-cabinet height (the
@@ -369,11 +370,11 @@ MAIN_PLACEABLES = [
     # question was whether FURN-M-KIT-PANTRYC and the two east pantry closets should stop
     # 12" short of uppers that do not. They do not: each carries a CASE-TS24-12, so every
     # cabinet in this kitchen now lands on 108" and there is no step anywhere in the room.
-    Furniture(uid="H3N6SVBPQY", tag="FURN-M-KIT-WE1-ST", type_ref="CASE-WS30-12", room="RM-M-LIVING",
-              position=pt(ft(25, 10), ft(34, 10.875)),
+    Furniture(uid="H3N6SVBPQY", tag="FURN-M-KIT-WE1-ST", type_ref="CASE-WS15-12", room="RM-M-LIVING",
+              position=pt(ft(25, 2.5), ft(34, 10.875)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
     Furniture(uid="PVRA77ZM2N", tag="FURN-M-KIT-WE2-ST", type_ref="CASE-WS24-12", room="RM-M-LIVING",
-              position=pt(ft(31, 1), ft(34, 10.875)),
+              position=pt(ft(26, 10), ft(34, 10.875)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
     # ** THE COURSE RUNS ACROSS THE SINK WINDOW (owner, 2026-08-24). ** WE1-ST and WE2-ST
     # were laid one-per-upper, which left the 36" between them empty — because the uppers
@@ -382,28 +383,27 @@ MAIN_PLACEABLES = [
     # nothing up there to stop for. Filling it turns three floating boxes into one band at
     # the ceiling, which is what the course was for.
     #
-    # 36" exactly: x 27'-1" to 30'-1", which is FURN-M-KIT-SINKBASE's own width carried up,
-    # so the band's joints land on the base joints below. One stock bridge box, no filler.
+    # 36" exactly: x 27'-10" to 30'-10", which is FURN-M-KIT-SINKBASE's own width carried
+    # up, so the band's joints land on the base joints below. One stock bridge box, no
+    # filler.
     Furniture(uid="RSP5MTPXPM", tag="FURN-M-KIT-WE4-ST", type_ref="CASE-WS36-12", room="RM-M-LIVING",
-              position=pt(ft(28, 7), ft(34, 10.875)),
+              position=pt(ft(29, 4), ft(34, 10.875)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
-    # ** THE LAST BLANK ON THIS WALL, OVER FURN-M-KIT-E2 (owner, 2026-08-24). ** 15 1/8"
-    # ran floor-to-ceiling between WE2's east end (32'-1") and WE3's west end (33'-4 3/16"),
-    # left over when WE2 followed the dishwasher and WE3 was sized to the window bridge.
-    # Nothing put it there; it was remainder. CASE-W15 takes x 32'-1"..33'-4" — E2's own
-    # width carried up, so the joint lands on the base joint below — and stops 1" clear of
-    # WIN-M-KITCH-N's RO at 33'-5", the same jamb condition WE3 already has on its far side.
+    # ** EAST FLANK, OVER FURN-M-KIT-E2 (re-ordered 2026-08-26). ** CASE-W30 (E2's own
+    # width carried up) takes x 30'-10"..33'-4", so the joint lands on the base joint below
+    # and stops 1" clear of WIN-M-KITCH-N's RO at 33'-5", the same jamb condition WE3
+    # already has on its far side.
     #
     # Hung at 54" WITH a stacker, not at 66" flush with WE3: the owner's call, and it keeps
     # the whole run's bottom on one line at 54" and buys a full extra shelf. WE3 stays the
     # single box stepped up to 66", which now reads as the window's bridge rather than as
     # one cabinet at an odd height. Tags are chronological here, not west-to-east — WE4-ST
-    # is the window stacker at 28'-7".
-    Furniture(uid="2V68CXXCNR", tag="FURN-M-KIT-WE5", type_ref="CASE-W15", room="RM-M-LIVING",
-              position=pt(ft(32, 8.5), ft(34, 10.875)),
+    # is the window stacker at 29'-4".
+    Furniture(uid="2V68CXXCNR", tag="FURN-M-KIT-WE5", type_ref="CASE-W30", room="RM-M-LIVING",
+              position=pt(ft(32, 1), ft(34, 10.875)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
-    Furniture(uid="T0QD4C4KHD", tag="FURN-M-KIT-WE5-ST", type_ref="CASE-WS15-12",
-              room="RM-M-LIVING", position=pt(ft(32, 8.5), ft(34, 10.875)),
+    Furniture(uid="T0QD4C4KHD", tag="FURN-M-KIT-WE5-ST", type_ref="CASE-WS30-12",
+              room="RM-M-LIVING", position=pt(ft(32, 1), ft(34, 10.875)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
     # ** A CABINET OVER THE EXISTING NORTH WINDOW. ** The owner asked for cabinets above
     # BOTH small windows and WIN-M-KITCH-N has never had one. CASE-W12 spans the 12 3/8"

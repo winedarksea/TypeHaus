@@ -746,13 +746,14 @@ OPENINGS = [
     Window(uid="QPNDT7TF6G", tag="WIN-M-EAST-MID", host="W-M-E1",
            type_ref="WT-2748", position=from_node("N-M-SE", ft(17, 6.5)),
            sill_height=ft(2, 6)),
-    # Moved to the north wall 2026-07-30 with the sink (plan/placeables.py's kitchen header),
-    # then re-centred the same day when the sink flipped with the dishwasher toward the
-    # middle of the run: still directly in front of the sink, still 42" sill = counter
-    # height, centred at x=28'-0" — 7" off FURN-M-KIT-SINKBASE's x=28'-7" so the RO lands on
-    # a stud line instead. Host is W-M-N1.
+    # Moved to the north wall 2026-07-30 with the sink (plan/placeables.py's kitchen header).
+    # The north three-storey column moved 28'-0" -> 29'-4" (2026-08-26) so the window could
+    # land dead-centre on FURN-M-KIT-SINKBASE: the counter run was exactly full and had no
+    # slack to slide the sink, while the window had 16" stations to choose from — see
+    # plan/placeables.py's kitchen header for the cabinet re-composition. 42" sill = counter
+    # height. Host is W-M-N1.
     Window(uid="CMX313AAAA", tag="WIN-M-KITCH", host="W-M-N1",
-           type_ref="WT-2736", position=from_node("N-M-NE", ft(6, 10.5)),
+           type_ref="WT-2736", position=from_node("N-M-NE", ft(5, 6.5)),
            sill_height=ft(3, 6)),
     # Relocated to the NE corner 2026-07-30 with the range/sink wall swap. Kept as a small
     # corner window rather than dropped: centre x=34'-0" is a bay centre off N-M-NE, clear

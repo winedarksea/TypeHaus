@@ -131,17 +131,17 @@ REGISTERS_HVAC_ATTIC = [
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # Directly above the hall soffit (2026-07-30): the boot rises straight through
     # FS-ATTIC off the x=19'-4" trunk below, no attic duct run needed. y=10' keeps the
-    # grille inside RM-A-EAST's south wall and clear of FO-A-STAIR's walkway.
+    # grille inside RM-A-EAST-UNFIN's south wall and clear of FO-A-STAIR's walkway.
     Register(uid="CARH02AAAA", tag="REG-A-HP-EAST", kind=DuctSystem.SUPPLY,
-             room="RM-A-EAST", position=pt(ft(19, 4), ft(10)), duct_ref="DU-S-HP-SUP",
+             room="RM-A-EAST-UNFIN", position=pt(ft(19, 4), ft(10)), duct_ref="DU-S-HP-SUP",
              type_ref="REG-T-HP-SUP",
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    # RM-A-WEST's supply (2026-07-30): a floor boot straight up off DU-S-HP-SUITE through
+    # RM-A-WEST-UNFIN's supply (2026-07-30): a floor boot straight up off DU-S-HP-SUITE through
     # FS-ATTIC. Retired REG-A-SUP1/DU-A-ERV-SUP: the room now gets conditioned air off
-    # System 1 like RM-A-STUDY/RM-A-EAST, returning stale air at REG-A-RET1, so the ERV's
+    # System 1 like RM-A-STUDY/RM-A-EAST-UNFIN, returning stale air at REG-A-RET1, so the ERV's
     # attic side is extract-only — the same pattern as the second storey.
     Register(uid="CARH03AAAA", tag="REG-A-HP-WEST", kind=DuctSystem.SUPPLY,
-             room="RM-A-WEST", position=pt(ft(16, 6), ft(14, 1.875)),
+             room="RM-A-WEST-UNFIN", position=pt(ft(16, 6), ft(14, 1.875)),
              duct_ref="DU-S-HP-SUITE", type_ref="REG-T-HP-SUP",
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
 ]
@@ -387,11 +387,11 @@ REGISTERS_BASEMENT = [
 # One attic ERV terminal now (2026-07-30): the extract. Four became a balanced pair on
 # 2026-07-29 (REG-A-SUP2/SUP3 gone), then the supply half went too when REG-A-SUP1 was
 # retired by REG-A-HP-WEST (the floor boot off System 1, REGISTERS_HVAC_ATTIC above), which
-# conditions RM-A-WEST instead of just ventilating it. What's left is the stale pickup on a
+# conditions RM-A-WEST-UNFIN instead of just ventilating it. What's left is the stale pickup on a
 # 4'-0" branch off the maintenance shaft — fresh in off System 1, stale out here, same
 # pattern as every other storey. The attic is one cathedral volume, so one extract suffices.
 REGISTERS_ATTIC = [
-    Register(uid="CARV04AAAA", tag="REG-A-RET1", kind=DuctSystem.RETURN, room="RM-A-WEST",
+    Register(uid="CARV04AAAA", tag="REG-A-RET1", kind=DuctSystem.RETURN, room="RM-A-WEST-UNFIN",
             position=pt(m(0.671896), m(10.6354)), duct_ref="DU-A-ERV-R-ATTIC",
             type_ref="REG-T-ERV-EXH", design_cfm=9,
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),

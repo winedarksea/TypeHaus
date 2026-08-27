@@ -361,6 +361,14 @@
 # `[envelope_layers]` "gwb" row, which is wall lining priced by the net SF.
 "gwb" = { material = { low = 17, high = 26 }, labour = { low = 48, high = 85 } }  # 64 sheets — +25 with the basement ceiling (2026-08-21)
 "plywood-subfloor" = { material = { low = 42, high = 62 }, labour = { low = 18, high = 32 } }  # 104 sheets — +26 with the two new decks (2026-08-21)
+# FS-ATTIC only (2026-08-27). Same 23/32 T&G panel as the row above in every structural
+# sense, but ordered sanded-face and plugged because the two unfinished lofts walk on it
+# bare — a grade premium of roughly a third over CDX (CDX 23/32 runs $45-65/sheet mid-2026;
+# the sanded underlayment/Sturd-I-Floor grade sits above it). Labour is up a few dollars
+# for the same reason: on a covered deck the fasteners are driven and forgotten, and here
+# they are set below the face and the T&G joints are walked flat before anything is stacked
+# on them. CONFIDENCE: MEDIUM — the grade premium is a retail-shelf comparison, not a quote.
+"plywood-underlayment-sanded" = { material = { low = 58, high = 88 }, labour = { low = 22, high = 38 } }
 # The nailbase top deck (CATLIN_ROOF). Labour is well above the plywood row below it and
 # that is not padding: every sheet is set on 6" of foam with nothing under it but the screw
 # being driven, so it is a two-man lay-and-hold operation with a 10" screw on a 16 x 24 grid.
@@ -1717,7 +1725,7 @@
 #
 # 61.5 SF of face — the two 4'-0" east piers PLUS a 4'-0" return around each of the SE/NE
 # corners onto the south/north walls (2026-08-26), four short wall segments in all. Glen-Gery
-# Black Roman Maximus, ASTM C216 Grade SW Type FBA — a special-order handmade unit, not the
+# Columbia Roman Maximus, ASTM C216 Grade SW Type FBA — a special-order handmade unit, not the
 # stock buff body this wythe originally specified, which is why this now prices ABOVE the
 # glazed rows rather than at the brown plinth's basis: special-order unit cost plus a
 # handmade FBA body's wider dimensional tolerance (more mason time per unit fitting the joint).
@@ -1730,6 +1738,10 @@
 # NOT — it is modelled as TR-G-BRICK-CAP-S/N/SRET/NRET and bills by length through
 # [edge_trim]. The ICF brick ledge that carries the wythe is not here either: it is concrete
 # in the GARAGE_ICF_6_BRICKLEDGE stem.
+#
+# The 2026-08-26 swap from the Black colourway to Columbia does NOT move this rate: same
+# unit, same size, same ASTM grade, same handmade FBA body, off-white instead of black.
+# A colourway is not a cost driver here; the special-order handling already in the rate is.
 "GARAGE_BRICK_WAINSCOT" = { low = 24, high = 42, unit = "SF" }  # 61.5 SF of face
 # 6" core is 0.01852 cy/SF = 54 SF of wall per cy, so 8.82 cy is 476 SF of wall. The old
 # $480-1,000/cy was $8.89-18.52/SF; $756-1,296 is $14-24/SF. Market is $13-25/SF typical with
@@ -2254,10 +2266,21 @@
 #
 # Each key blends more than one product, because the price key is the CATEGORY and the BOM
 # puts several materials under one:
-#   fascia        38.3 LF of 9"x1" PVC + 107.0 LF of cellular-PVC 1x6.8 + 106.2 LF of SPF
-#                 1.5x5.5. PVC trim is $3-7/LF and the SPF is ~$1-1.6/LF, so the range is
-#                 the blend and the mix matters if it changes.
-#   ridge_cap     36.8 LF dark formed metal + 26.7 LF standing-seam.
+#   fascia        38.3 LF of 9"x1" PVC (sunken garden) + ~107 LF of formed PVDF metallic
+#                 (garage, "Copper Penny") + 106.2 LF of SPF 1.5x5.5 sub-fascia. PVC trim is
+#                 $3-7/LF, prefinished formed metal fascia is $4-9/LF, and the SPF is
+#                 ~$1-1.6/LF, so the range is the blend and the mix matters if it changes.
+#                 **The garage's ~107 LF was cellular-PVC 1x6.8 until 2026-08-26** and is
+#                 metal now (see houses/catlin/CLAUDE.md for why the substrate changed with
+#                 the colour); the blend moved up slightly inside the same range rather than
+#                 out of it, so the numbers below did not move.
+#   ridge_cap     36.8 LF dark formed metal + 26.7 LF "Copper Penny" formed metal (garage,
+#                 2026-08-26 — was the roof's own standing-seam stock).
+#   THE METALLIC UPCHARGE SPANS BOTH ROWS. "Copper Penny" is a PVDF METALLIC (mica), a
+#   premium coil at typically a 10-20% upcharge over solid-colour PVDF, and since 2026-08-27
+#   it carries the garage fascia as well as the cap — ~134 LF between the two rows, not the
+#   26.7 LF the cap alone was. Both blends still land inside their ranges below, so no number
+#   moved; it is the reason to check BOTH rows against a real quote rather than the blend.
 #   drip_flashing 21.0 LF plain aluminium + 73.7 LF dark formed metal.
 # Basis: aluminium soffit material $0.50-2.00/LF and fascia $7-22/LF installed against
 # $10-24/LF total (so material is the lower third); aluminium drip edge $0.50-1.00/LF
@@ -2268,7 +2291,7 @@
 "corner_trim" = { material = { low = 3, high = 8 }, labour = { low = 2.5, high = 5 } }  # 147.8 LF — corner boards are the easy trim. MAY NOT BE A LINE AT ALL if the siding sub carries them in their $/SF
 "drip_flashing" = { material = { low = 1, high = 3 }, labour = { low = 1, high = 2 } }  # 94.7 LF — $1-2/LF on a NEW roof (retrofit is $3-7). Material is high for mill aluminium and right for the prefinished dark Kynar this house uses. Commonly inside the roofer's price — check for a double count against any roofing bid
 "edge_cladding" = { material = { low = 3, high = 8 }, labour = { low = 3.5, high = 7 } }  # 243.9 LF — add $2-4/LF if it is site-brake-formed rather than shop stock
-"fascia" = { material = { low = 3, high = 9 }, labour = { low = 4, high = 8 } }  # 251.5 LF — material low raised from $2.50, which only buys primed pine or coil-wrap; this run is PVC and cellular PVC over SPF
+"fascia" = { material = { low = 3, high = 9 }, labour = { low = 4, high = 8 } }  # 251.5 LF — material low raised from $2.50, which only buys primed pine or coil-wrap; this run is PVC (sunken garden) and formed PVDF metallic (garage "Copper Penny", metal since 2026-08-26) over SPF
 "ridge_cap" = { material = { low = 4, high = 10 }, labour = { low = 4, high = 8 } }  # 63.5 LF — metal cap (a shingle ridge would be $1.50-3.50 to lay). Also commonly in the roofer's scope
 "soffit" = { material = { low = 3.5, high = 9 }, labour = { low = 3, high = 5.5 } }  # 101.1 LF — the depth question is SETTLED by the model: the profile is 13.625" wide, so this is the 12-16" overhang band at $3-5.50/LF. Every published $/LF silently assumes a depth; at 24" it would be $5-9 and at 36" $8-13, and the material rate would be understated ~2x
 "wrb_counterflashing" = { material = { low = 1.5, high = 4 }, labour = { low = 9.5, high = 19 } }  # 21 LF — 21 feet is below any sub's minimum, so the labour here is a $200-400 LUMP spread over the run, not a real per-foot rate

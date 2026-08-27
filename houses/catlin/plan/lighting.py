@@ -295,15 +295,16 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(1.5))),
-    # Moved x 22'-6" -> 25'-10" (2026-08-24). At 22'-6" it resolved INSIDE W-M-PAN-S, the
-    # new pantry's south partition (axis y=32'-9"), which is also where it drew
-    # integrity.placeable_room_mismatch. It is NOT retagged into RM-M-PANTRY: its
-    # controlled_by is ED-M-KITCH-SW and the kitchen needs the can. 25'-10" is
-    # FURN-M-KIT-E1's centre — the north counter run's new west end, now that the run
-    # starts at the pantry wall instead of at FURN-M-KIT-PANTRY-E. y is unchanged, so it
-    # stays on CAN2's line, 8" south of the counter front, which is the composition.
+    # Moved x 22'-6" -> 25'-10" (2026-08-24), then -> 25'-2 1/2" (2026-08-26) with the base
+    # run's re-composition. At 22'-6" it resolved INSIDE W-M-PAN-S, the new pantry's south
+    # partition (axis y=32'-9"), which is also where it drew integrity.placeable_room_mismatch.
+    # It is NOT retagged into RM-M-PANTRY: its controlled_by is ED-M-KITCH-SW and the kitchen
+    # needs the can. It still follows FURN-M-KIT-E1's centre — the north counter run's west
+    # end, now that the run starts at the pantry wall instead of at FURN-M-KIT-PANTRY-E. y is
+    # unchanged, so it stays on CAN2's line, 8" south of the counter front, which is the
+    # composition.
     ElectricalDevice(uid="QTM0009AAA", tag="ED-M-KITCH-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(25, 10), m(9.9884)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(25, 2.5), m(9.9884)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -352,13 +353,16 @@ MAIN_LIGHTING = [
     # the deep frosted diffuser are on the type, and both are spec: a bare diode line is
     # visible from a seated position at the peninsula and reflects as a row of dots in a
     # polished counter.
+    # Endpoints are literal base joints (2026-08-26 re-composition): WE1 now runs the full
+    # W-of-window bay 24'-7"..27'-10" (3'-3", was 2'-6") and WE2 the E-of-window bay
+    # 30'-10"..33'-4" (2'-6", was 2'-0") — see plan/placeables.py's kitchen header.
     LightRun(uid="63DMV159RN", tag="LR-M-KIT-N-WE1", type_ref="ED-T-LT-STRIP24-TASK",
-             path=(pt(ft(24, 7), ft(34, 5.375)), pt(ft(27, 1), ft(34, 5.375))),
+             path=(pt(ft(24, 7), ft(34, 5.375)), pt(ft(27, 10), ft(34, 5.375))),
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
     LightRun(uid="0ZE5GQV7CQ", tag="LR-M-KIT-N-WE2", type_ref="ED-T-LT-STRIP24-TASK",
-             path=(pt(ft(30, 1), ft(34, 5.375)), pt(ft(32, 1), ft(34, 5.375))),
+             path=(pt(ft(30, 10), ft(34, 5.375)), pt(ft(33, 4), ft(34, 5.375))),
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
@@ -378,11 +382,12 @@ MAIN_LIGHTING = [
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
-    # 10'-2" of tape at 5 W/ft = 50.8 W; x1.25 = 63.5 W. ** That is already past
+    # 11'-5" of tape (2026-08-26: was 10'-2" before the north pair grew 15" with the base
+    # run's re-composition) at 5 W/ft = 57.1 W; x1.25 = 71.3 W. ** That is already past
     # ED-T-LT-PSU-60's 60 VA ** — it cleared by 4.3 VA at the 8'-11" this run was first
     # drawn at, and one 15" cabinet (FURN-M-KIT-WN4) spent that margin and 3.5 VA more,
     # which is exactly why the 200 W supply was specified instead of the 60. It loads to
-    # ~32%. NOT a share of
+    # ~36%. NOT a share of
     # ED-M-LIVING-LT-PSU: that one is on CKT-LT-MAIN, and electrical_notes.md line 24 puts
     # kitchen lighting behind the backup relay.
     ElectricalDevice(uid="7VSVT7B8ZS", tag="ED-M-KITCH-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
@@ -928,19 +933,19 @@ ATTIC_LIGHTING = [
 
     ElectricalDevice(uid="QTA0002AAA", tag="ED-A-EAST-CAN2", kind=DeviceKind.LIGHT,
                      position=pt(ft(22), ft(28)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-EAST",
+                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
                      controlled_by=("ED-A-EAST-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(9, 8),
                                  recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTA0003AAA", tag="ED-A-EAST-CAN3", kind=DeviceKind.LIGHT,
                      position=pt(ft(27), ft(15)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-EAST",
+                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
                      controlled_by=("ED-A-EAST-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8),
                                  recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTA0004AAA", tag="ED-A-EAST-CAN4", kind=DeviceKind.LIGHT,
                      position=pt(ft(27), ft(28)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-EAST",
+                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
                      controlled_by=("ED-A-EAST-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8),
                                  recessed_into_host_surface=True)),
@@ -965,38 +970,38 @@ ATTIC_LIGHTING = [
                      controlled_by=("ED-A-STUDY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
 
-    # RM-A-WEST: 598 ft2 of media room under the west rake. Three cans down the ridge side
+    # RM-A-WEST-UNFIN: 598 ft2 of media room under the west rake. Three cans down the ridge side
     # where the ceiling is high, one out at 8' toward the knee wall.
     ElectricalDevice(uid="QTA0008AAA", tag="ED-A-WEST-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(14), ft(10)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-WEST",
+                     circuit="CKT-LT-UPPER", room="RM-A-WEST-UNFIN",
                      controlled_by=("ED-A-WEST-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(9, 8),
                                  recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTA0009AAA", tag="ED-A-WEST-CAN2", kind=DeviceKind.LIGHT,
                      position=pt(ft(14), ft(20)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-WEST",
+                     circuit="CKT-LT-UPPER", room="RM-A-WEST-UNFIN",
                      controlled_by=("ED-A-WEST-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(9, 8),
                                  recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTA000AAAA", tag="ED-A-WEST-CAN3", kind=DeviceKind.LIGHT,
                      position=pt(ft(14), ft(30)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-WEST",
+                     circuit="CKT-LT-UPPER", room="RM-A-WEST-UNFIN",
                      controlled_by=("ED-A-WEST-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(9, 8),
                                  recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTA000BAAA", tag="ED-A-WEST-CAN4", kind=DeviceKind.LIGHT,
                      position=pt(ft(9), ft(20)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-WEST",
+                     circuit="CKT-LT-UPPER", room="RM-A-WEST-UNFIN",
                      controlled_by=("ED-A-WEST-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8),
                                  recessed_into_host_surface=True)),
     # On W-A-C1B's west face at 6'-0", not W-A-C1's: the two segments are collinear, but
-    # the centre wall south of y=5'-7" faces RM-A-STUDY, and RM-A-WEST does not start until
+    # the centre wall south of y=5'-7" faces RM-A-STUDY, and RM-A-WEST-UNFIN does not start until
     # that line. A station 5" further south is a switch in the wrong room.
     ElectricalDevice(uid="QTA000CAAA", tag="ED-A-WEST-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(17, 7.625), ft(6)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-UPPER", room="RM-A-WEST", rotation=deg(-90),
+                     circuit="CKT-LT-UPPER", room="RM-A-WEST-UNFIN", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 ]
 

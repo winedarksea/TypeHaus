@@ -507,8 +507,12 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     off it and **the backing is complete again**. The west attic pair sits at 4'-8" /
     31'-4", symmetric about y=18'-0"; it caps the outer lower-floor groups without
     introducing another width family.
-    The north face stacks one three-storey column at x=28'-0" (WIN-M-KITCH /
-    WIN-S-HALL-N / WIN-A-N2).
+    The north face stacks one three-storey column, moved x=28'-0" -> 29'-4" (2026-08-26,
+    WIN-M-KITCH / WIN-S-HALL-N / WIN-A-N2), to bring WIN-M-KITCH onto
+    FURN-M-KIT-SINKBASE below. The sink is the harder-pinned of the two: its counter run is
+    exactly full (5/8" scribe + B15 + DW + SINK-36 + B30, pantry wall to corner, no slack
+    to slide it), while the window has 16" stations to choose from — so the column moved to
+    the sink rather than the other way round. See `plan/placeables.py`'s kitchen header.
   - **Rows.** Where a column is impossible, the storey's own rhythm wins instead — but a
     row must be *centred*, not merely even. The east second storey ran a perfect 9'-0" beat
     that sat 10" north of the centreline until 2026-08-15 (5'-4" of wall south, 3'-8"
@@ -551,6 +555,9 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     that is why WIN-A-N1 does not stack on WIN-S-STAIR-N, and why the 2026-08-01 pass gave
     the south gable up as a column-capper. **The north gable became symmetric on
     2026-08-25** — WIN-A-N1 moved 7'-4" -> 8'-0", mirroring WIN-A-N2 at 28'-0" about x=18'.
+    The pair is now **6'-8" / 29'-4"** (2026-08-26): the three-storey column moved to bring
+    WIN-M-KITCH onto the kitchen sink below (see **Columns** above), and WIN-A-N1 moved
+    with it to hold the mirror about x=18'-0".
     It had never been, and the reason was phase, not composition. The south gable carries
     four openings, exactly mirrored about x=18': WT-1448 flankers at 8'-8"/27'-4"
     (head 6'-8") around the WT-2464 juliet pair at **16'-0"/20'-0"** (head 8'-0"), one 2'-8"
@@ -696,15 +703,21 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   either FAILS `code.R311_3_exterior_landing` on both doors or lays a joist through
   `PT-BW-1..4`. It was tried and reverted on 2026-08-22; the reasoning is in
   `params/breezeway.py`.
-- **The garage's east elevation carries a 4'-0" black brick wainscot, wrapped 4'-0" further
+- **The garage's east elevation carries a 4'-0" off-white brick wainscot, wrapped 4'-0" further
   around each of the SE/NE corners onto the south and north walls (2026-08-26), and the cap
   flashing is the part not to value-engineer away.** The two 4'-0" strips of wall flanking
   the 16' overhead door — plus the two corner returns — are the most-abused surface on the
   building — apron splash, snow piled off the drive, trimmers, car doors — so they get full
-  3 5/8" face brick: Glen-Gery **Black Roman Maximus**
-  (glengery.com/brick-catalog/black-roman-maximus), 3 5/8" x 1 5/8" x 23 5/8", ASTM C216
+  3 5/8" face brick: Glen-Gery **Columbia Roman Maximus**
+  (glengery.com/brick-catalog/columbia-roman-maximus), 3 5/8" x 1 5/8" x 23 5/8", ASTM C216
   **Grade SW Type FBA**, through-body single body; a chip exposes the same colour, and
-  Grade SW is not optional at 40+ freeze-thaw cycles a year. Not thin brick, so real
+  Grade SW is not optional at 40+ freeze-thaw cycles a year. It was the **Black** colourway
+  of the same unit for part of 2026-08-26; Columbia is off-white/ivory and is the same body,
+  size and grade, so the swap moved three things and nothing else — the `Material`'s
+  `color`, the `MasonryStyle.base` in ui/src/three/materials.ts, and the `_FINISH_BASE` entry
+  in emit/gltf/palette.py. The `finish` key ("roman-maximus-brick") names the UNIT GEOMETRY,
+  not a colourway, so it did not move; the mortar in the viewer's recipe did, because a tan
+  joint is invisible against an off-white brick. Not thin brick, so real
   bearing: `W-GF-E1`/`W-GF-E2`/`W-GF-S3`/`W-GF-N2` are formed with a mid-stack ICF
   brick-ledge block (`GARAGE_ICF_6_BRICKLEDGE`), and the veneer itself is its own short
   wall per side (`W-G-BRICK-S`/`-N`/`-SRET`/`-NRET`, `GARAGE_BRICK_WAINSCOT`) standing in
@@ -766,6 +779,78 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     of their un-ledged neighbours: `center_on="wall"` re-centres on the stepped section,
     ledge band included. Correct, but nothing downstream may be dimensioned off their
     edges.
+- **The garage is white again, and the machinery that briefly made its east wall green is
+  worth keeping.** `W-G-E` carried Western States Metal Roofing **"Classic Green"**
+  (westernstatesmetalroofing.com/classic-green) nail-strip for part of 2026-08-26 and was
+  reverted the same day; all four garage walls are `GARAGE_WALL_2X6` in white today.
+  `standing-seam-nailstrip-26-green` is still in the catalog, **referenced by nothing** —
+  the same convention `glazed-green-brick` is kept under, so going green again is a one-line
+  `layer_materials=` change rather than a re-derivation. Two things were built to make it
+  work, both new on 2026-08-26 and both still live:
+  - **`Wall.layer_materials`** (`model/refs.py::LayerMaterial`) swaps the material of ONE
+    named layer on ONE wall. Before it, a colour change *was* a duplicate Assembly restating
+    one `material_ref` — and a duplicate assembly tag is also a new `prices.toml` row, a new
+    `condition_gates` key and fresh section goldens, all to say "same wall, different paint".
+    It is a TUPLE of constructors, not a mapping, because `Wall` is a movable element and the
+    editable dialect has no mapping literal. **Appearance only** — thickness, function,
+    framing and banding all stay the assembly's; a layer that needs a different *thickness*
+    is a different wall and wants its own assembly. A typo in either half is otherwise
+    silent (the wall just resolves unchanged), so `integrity.wall_layer_material` FAILs on
+    an unknown layer name or material tag.
+  - **Both renderers hardcoded the coil white** and had to stop. Every metal skin authors
+    `color="#6b7076"` — that is the *drawing hatch* tone, not the paint — so the viewer and
+    the GLB emitter both painted seam cladding 0xE8E8E2 unconditionally, and no panel could
+    ever state its own colour. Both now consult the material's **declared `finish`** first
+    (the mechanism `metal-dark-exterior` already used): `classic-green-seam` → `#2f5233` in
+    `FINISH_BASE` (ui/src/nordic/palette.ts) and `_FINISH_BASE` (emit/gltf/palette.py), kept
+    in step BY HAND. The green material keeps "seam" in its tag so it still gets the seam
+    normal map, and keeps `skin_family="standing-seam"` so the roof edge still reads the
+    garage as one continuous skin.
+  - The **gable triangle above a wall comes along for free**: `resolve/roof_edge.py` builds
+    the wall→roof closure from the host wall's own layers, so an override picks up in the
+    closure with nothing authored for it.
+- **The garage's roof edge is one Copper Penny coil — fascia and ridge cap both
+  (2026-08-27).** The garage is the one place on the site that does not follow the house's
+  single `#1c1f24` exterior dark. `metal-copper-penny` is a PVDF *metallic* (mica) coil and
+  it carries seven members: the six fascia pieces and the vented ridge cap. **The two are
+  named through DIFFERENT fields and nothing keeps them in step but this line.**
+  - **The fascia is six pieces** — two eaves and four rakes — named on the `FasciaBoard`
+    inside `_GARAGE_EAVE_TRIM` (`plan/storeys/garage.py`); the 2x6 spf sub-fascia nailer
+    behind it is unchanged.
+  - **The ridge cap is `Roof.edge_trim_material`** on RF-GARAGE, not a fascia field. That
+    field drives the ridge cap **and the corner trim**
+    (`resolve/roof_trim.py::_edge_trim_material`); a 16" overhang frames fascia + soffit and
+    **no** corner trim, which is the only reason naming it recolours exactly one member.
+    Give this roof a zero overhang and the copper would spread to the corner trim as well.
+  - **So changing the accent colour is a TWO-PLACE edit.** Change one and the cap and the
+    fascia under it drift apart, with no check to catch it — a cap in a different colour
+    from its own fascia reads as a mistake rather than as a choice.
+  - **The fascia's SUBSTRATE changed with its colour, and that half must not be reverted.**
+    The weather face was 5/4 cellular PVC; a PVDF metallic is a metal coil finish PVC cannot
+    be ordered in, and a dark trim colour on cellular PVC is the classic failure — PVC's
+    thermal movement forces a solar-reflective vinyl-safe coating and trim makers cap the
+    LRV outright. Formed metal over a wood nailer has neither problem and is the ordinary
+    detail on a metal-roofed building. **The SOFFIT stays cellular PVC and stays white**:
+    vented, out of the weather, and white is what keeps an overhang from reading as a
+    shadow.
+  - **Tag-keyed in the two renderer palettes**, not keyed by a declared `finish`: a fascia
+    and a ridge cap are framed MEMBERS, and `memberColor` is handed the palette and no
+    catalog, so a material's authored `color` is invisible to it and only the tag lookup
+    reaches. `_FINISH_BASE` (`emit/gltf/palette.py`) and `FINISH_BASE`
+    (`ui/src/nordic/palette.ts`), kept in step **by hand**. Same reason
+    `metal-dark-exterior` is tag-keyed.
+  - The tag does not contain **"seam"**, deliberately: both renderers key the ribbed
+    standing-seam finish off that substring and this is flat formed stock. It carries no
+    `skin_family` either — that field is about the wall/roof continuous-skin reading at a
+    zero-overhang edge, and trim is not skin.
+  - `#8a4f2a` is an **approximation**. The manufacturer publishes no RGB and its own page
+    warns the on-screen swatch differs from the panel, and a metallic's colour is
+    angle-dependent in a way a flat albedo cannot express, so this is a mid-tone. A physical
+    chip governs.
+  - **`metal-fascia-regal-blue` is kept and referenced by nothing.** The fascia wore Western
+    States "Regal Blue" for part of 2026-08-26. Same product, same substrate, so going blue
+    again is a one-word `material=` swap on the FasciaBoard — the same convention
+    `glazed-green-brick` and `standing-seam-nailstrip-26-green` are kept under.
 - **The garage ICF stem is boarded above grade, and `code.R316_4` is why.** `GARAGE_ICF_6`
   carries a 5/8" gypsum layer on its INSIDE face, banded from the `GRADE` datum up — the
   2.5" of interior EPS stood bare from the slab to the stem top, ~176 SF of foam plastic

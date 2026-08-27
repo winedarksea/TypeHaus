@@ -9,7 +9,7 @@ import type { LayerVisibilityGroup } from "../../model/visibility";
 import { layerVisibilityGroupOf } from "../../model/visibility";
 import type { DoorOperation, MaterialSpec, Member, Opening, Wall } from "../../model/types";
 import {
-  authoredAppearance, materialColor, type ResolvedNordicPalette,
+  authoredAppearance, finishBaseColor, materialColor, type ResolvedNordicPalette,
 } from "../../nordic/palette";
 import {
   applyMasonryWallUv, applyStandingSeamWallUv, createMasonryMaterial,
@@ -111,11 +111,18 @@ export function buildWall(
     // (resolve/topology.py `_board_run`), so the boards land the way they are fastened.
     const plankStyle = !seam && !masonryStyle && isWoodPlank(ly.material)
       ? plankStyleFor(ly.material, appearance?.finish) : null;
+    // The coil white is the DEFAULT, not the only option (2026-08-26). A metal panel that
+    // declares a finish naming its own paint gets that paint; everything else keeps
+    // 0xE8E8E2, which is what all five of the house's white skins author (their catalog
+    // `color` is the drawing hatch tone, not the paint, so it must not be read here).
+    // Mirrors the declared-finish branch in emit/gltf/palette.py::_material_finish_color.
+    const seamPaint = finishBaseColor(appearance?.finish);
     const mat = seam
       ? createStandingSeamMaterial(mode, [
         Math.hypot(w.axis[1][0] - w.axis[0][0], w.axis[1][1] - w.axis[0][1]),
         Math.max(0.1, w.z1_m - w.z0_m),
-      ], 0xE8E8E2, true, seamProfile ?? SEAM_PROFILE)
+      ], seamPaint ? new THREE.Color(seamPaint).getHex() : 0xE8E8E2, true,
+      seamProfile ?? SEAM_PROFILE)
       : masonryStyle
         ? createMasonryMaterial(mode, masonryStyle,
           materialColor(ly.material, palette, materials), appearance?.color)

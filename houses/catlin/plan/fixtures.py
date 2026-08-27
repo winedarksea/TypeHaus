@@ -140,15 +140,17 @@ MAIN_FIXTURES = (
             position=pt(m(3.62083), m(5.82791)), rotation=deg(180), wall_ref="W-M-BA2E",
             drain_position=pt(ft(11, 9), ft(18, 9))),
     # Kitchen sink moved to the north wall 2026-07-30 with the range/sink swap, then
-    # flipped with the dishwasher to sit mid-run. Centred near WIN-M-KITCH (7" off true
-    # centre so the RO lands on a stud line) at y=34'-5 3/8" (24" counter depth). W-M-N1 is
+    # flipped with the dishwasher to sit mid-run, then moved +9" east (2026-08-26) to
+    # x=29'-4" when the base run was re-composed and the window's column moved onto it
+    # instead — see storeys/main.py's OPENINGS and plan/placeables.py's kitchen header.
+    # Dead-centred under WIN-M-KITCH now, at y=34'-5 3/8" (24" counter depth). W-M-N1 is
     # the wet wall (CATLIN_EXT_2X6, same as the old W-M-E2 — see mep.py's PR-M-KITCH-VENT).
     # The 27" mount is restated here (not just on the type) because the resolver reads the
     # instance Mount; it lands the rim on the 36" counter with 9" of bowl below.
     Fixture(uid="WZRCBGNDFW", tag="FX-M-KITCH-SINK", type_ref="FX-KITCHEN-SINK-33", room="RM-M-LIVING",
-            position=pt(ft(28, 7), ft(34, 5.375)), wall_ref="W-M-N1",
+            position=pt(ft(29, 4), ft(34, 5.375)), wall_ref="W-M-N1",
             mount=Mount(kind=MountKind.WALL, elevation=inch(27)),
-            drain_position=pt(ft(28, 7), ft(35))),
+            drain_position=pt(ft(29, 4), ft(35))),
 )
 
 

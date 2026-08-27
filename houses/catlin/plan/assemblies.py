@@ -904,7 +904,7 @@ GARAGE_ICF_6 = Assembly(
 # --- garage east/south/north brick wainscot (2026-08-26; Roman Maximus 2026-08-26) -------
 #
 # The two 4'-0" strips of east wall flanking the overhead door, plus a 4'-0" return around
-# each of the SE and NE corners, carry a short black-brick wainscot: the most-abused surface
+# each of the SE and NE corners, carry a short off-white-brick wainscot: the most-abused surface
 # on the building (apron splash, snow piled off the drive, trimmers, car doors) gets the one
 # face that does not care. Full 3 5/8" brick, not thin brick, which means real bearing —
 # hence the ledge below and the veneer wall in plan/storeys/garage.py rather than a
@@ -912,13 +912,18 @@ GARAGE_ICF_6 = Assembly(
 # wood-surfaces rollup only bills materials with a `species`, so a brick band would produce
 # no BOM line at all).
 #
-# Glen-Gery "Black Roman Maximus" (glengery.com/brick-catalog/black-roman-maximus):
-# 3 5/8" x 1 5/8" x 23 5/8", ASTM C216 Grade SW Type FBA. The bed depth (3 5/8") is the same
-# as a modular unit, so the wythe thickness, air gap, ledge width and every tie/flashing
-# dimension below are UNCHANGED from the original buff-modular spec — only the coursing
-# (unit height 1 5/8" + 3/8" joint = 2" per course, not 2 2/3") and the unit length/color
-# change. `finish="roman-maximus-brick"` on the Material tells the renderer's masonry
-# recipe about both: an elongated unit AND the black colourway.
+# Glen-Gery "Columbia Roman Maximus" (glengery.com/brick-catalog/columbia-roman-maximus),
+# swapped in 2026-08-26 for the black colourway of the same unit: 3 5/8" x 1 5/8" x 23 5/8",
+# ASTM C216 Grade SW Type FBA. The bed depth (3 5/8") is the same as a modular unit, so the
+# wythe thickness, air gap, ledge width and every tie/flashing dimension below are
+# UNCHANGED from the original buff-modular spec — only the coursing (unit height 1 5/8" +
+# 3/8" joint = 2" per course, not 2 2/3") and the unit length/color change. Columbia and
+# Black are the same body/size/ASTM grade, an off-white vs. black glaze only, so nothing
+# below this comment (ledge rise, ledge depth, or the coursing table) moves for the swap —
+# only the Material's `color`/`source` and the renderer's `finish` recipe. `finish=
+# "roman-maximus-brick"` on the Material tells the renderer's masonry recipe about the unit
+# geometry (an elongated unit); the colourway itself lives in the style's `base` colour
+# (ui/src/three/materials.ts) and the palette's `_FINISH_BASE` entry (emit/gltf/palette.py).
 #
 # Coursing, Roman 2", working up from grade (-2'-10"):
 #     ledge/shelf top   2" above grade       (-2'-8")
@@ -1004,10 +1009,10 @@ GARAGE_BRICK_WAINSCOT = Assembly(
     layers=(
         Layer(name="air-gap", material_ref="air-barrier", thickness=inch(1.0),
               function=LayerFunction.AIRGAP),
-        Layer(name="brick", material_ref="black-brick", thickness=inch(3.625),
+        Layer(name="brick", material_ref="off-white-brick", thickness=inch(3.625),
               function=LayerFunction.STRUCTURE),
     ),
-    source="garage east wainscot flanking the overhead door, wrapped 4' around each of the SE/NE corners onto the south and north walls — full-wythe Glen-Gery Black Roman Maximus face brick (3 5/8\" bed, ASTM C216 Grade SW Type FBA) on a 1\" drained cavity (IRC R703.8), borne on GARAGE_ICF_6_BRICKLEDGE's shelf; through-wall flashing + weeps at 33\" o.c. max at the base course and again under the cap; two-piece adjustable ties into studs above the storey datum, ICF ties below",
+    source="garage east wainscot flanking the overhead door, wrapped 4' around each of the SE/NE corners onto the south and north walls — full-wythe Glen-Gery Columbia Roman Maximus face brick (3 5/8\" bed, ASTM C216 Grade SW Type FBA) on a 1\" drained cavity (IRC R703.8), borne on GARAGE_ICF_6_BRICKLEDGE's shelf; through-wall flashing + weeps at 33\" o.c. max at the base course and again under the cap; two-piece adjustable ties into studs above the storey datum, ICF ties below",
 )
 
 # --- frost-protected shallow foundation, sunken-garden side -----------------------------
@@ -1504,6 +1509,25 @@ MATERIALS = [
              r_per_inch=1.25, density=610.0, perm_rating=0.30, hatch="lumber",
              color="#c8a97a", finish="clear-satin-hardwax-oil",
              source="plans/TODO.md — mudroom wall's stair face; 3/4\" is structural backing so coat hooks screw directly into it (a 1/2\" panel would need blocking); permeability per the plywood series used for struct-1-plywood"),
+    # FS-ATTIC's deck sheet, and only FS-ATTIC's (2026-08-27). The two unfinished lofts
+    # RM-A-WEST-UNFIN / RM-A-EAST-UNFIN take no floor covering at all, so this panel IS the
+    # walking surface — it is walked on, swept and stacked on with nothing over it. A
+    # subfloor sheet is not specified to be walked on: it is specified to be covered, and
+    # what is stocked as "3/4 subfloor" on a Minnesota job is OSB as often as plywood.
+    # Naming the panel here is what stops that substitution at the lumberyard, and it is
+    # why this is a separate tag from `plywood-subfloor` rather than a comment on it: every
+    # other deck in the house gets a covering and does not care.
+    #
+    # 23/32" Performance Category is the trade designation for what the model carries as
+    # 3/4"; the Span Rating of 24 oc is well inside FS-ATTIC's 16" I-joist spacing. The
+    # numbers are the plywood series' (r_per_inch, permeability) — it is the same veneer
+    # panel as `plywood-subfloor`, sanded on one face and plugged, so nothing thermal or
+    # hygric moves. Only the grade, the price and the drawing do.
+    Material(tag="plywood-underlayment-sanded",
+             name="23/32\" sanded-face underlayment plywood, T&G (Sturd-I-Floor 24 oc)",
+             r_per_inch=1.25, density=600.0, perm_rating=0.30, hatch="osb",
+             color="#dcc79a",
+             source="APA Underlayment/Subfloor (apawood.org/underlayment-subfloor): \"Underlayment C-C Plugged or veneer-faced Sturd-I-Floor with sanded face\" is the grade specified where the panel takes resilient flooring or is left exposed; 23/32 Performance Category = 24 oc Span Rating (APA RATED STURD-I-FLOOR datasheet). Thermal/vapour fields per the plywood series used for plywood-subfloor and struct-1-plywood"),
     Material(tag="sauna-tg", name="Basswood/aspen T&G sauna liner (5/4)", r_per_inch=1.3,
              perm_rating=20.0, hatch="lumber", color="#e6d4ae",
              species="basswood", stock_bf_per_sqft=1.25,
@@ -1576,6 +1600,20 @@ MATERIALS = [
              color="#6b7076",
              skin_family="standing-seam",
              source="26 ga. PVDF-coated steel, nail-strip seam profile — the detached garage's wall spec; same white as the house, one gauge thinner"),
+    # `standing-seam-nailstrip-26-green` (2026-08-26) — the same 26 ga. nail-strip panel as
+    # the rest of the garage, in Western States Metal Roofing "Classic Green"
+    # (westernstatesmetalroofing.com/classic-green) instead of white, on W-G-E only (the
+    # overhead-door wall) via that wall's own `layer_materials=` override — no second
+    # assembly, because nothing but the paint differs. The manufacturer publishes no
+    # hex/RGB for the colour (page disclaimer: screen colour may differ from the physical
+    # panel — order a sample), so this is an approximate PVDF forest-green swatch, not a
+    # spec'd value; keeps `skin_family="standing-seam"` so the wall still reads as one
+    # continuous skin with the garage roof at the closure edge.
+    Material(tag="standing-seam-nailstrip-26-green", name="Nail-strip standing-seam steel, 26 ga., Classic Green",
+             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
+             color="#2f5233", finish="classic-green-seam",
+             skin_family="standing-seam",
+             source="26 ga. PVDF-coated steel, nail-strip seam profile, Western States Metal Roofing \"Classic Green\" (westernstatesmetalroofing.com/classic-green) — an accent colourway for the garage's overhead-door (east) wall only; every other garage wall stays standing-seam-nailstrip-26 white"),
     # `pbr-panel-26` (2026-08-26) — 26 ga, EXPOSED-FASTENER PBR. The house walls,
     # CATLIN_EXT_2X6 and PLANT_EXT_2X6_HUMID, taking over from `standing-seam-snaplock`.
     # The fifth metal skin and the only one that is not a concealed-fixing product: 36" net
@@ -1709,26 +1747,27 @@ MATERIALS = [
              r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
              color="#a07c5c", finish="brown-brick",
              source="basement south veneer, the Ishtar plinth (2026-08-20) — standard unglazed face brick, no special order"),
-    # Glen-Gery "Black Roman Maximus" for the garage wainscot (2026-08-26), replacing an
-    # earlier light-buff stock spec of the same wythe. Same clay physics as every other
-    # brick here — a brick is a brick and only the face differs, which is the whole reason
-    # `finish` and `color` are separate fields from `r_per_inch`/`density`. The unit itself
-    # is 3 5/8" x 1 5/8" x 23 5/8" (glengery.com/brick-catalog/black-roman-maximus): the bed
-    # depth matches a modular unit exactly (this material drops into the same 3 5/8" `brick`
-    # layer unchanged), but it is a handmade Type FBA unit — coursing runs on its 1 5/8" +
-    # 3/8" joint = 2" module, not modular's 2 2/3", and the 23 5/8" length reads as long,
-    # widely-spaced vertical joints rather than a standard running bond. See
-    # GARAGE_BRICK_LEDGE_RISE above for the recomputed coursing this drives.
+    # Glen-Gery "Columbia Roman Maximus" for the garage wainscot (2026-08-26), replacing
+    # the black colourway of the same unit (which itself replaced an earlier light-buff
+    # stock spec). Same clay physics as every other brick here — a brick is a brick and
+    # only the face differs, which is the whole reason `finish` and `color` are separate
+    # fields from `r_per_inch`/`density`. The unit itself is 3 5/8" x 1 5/8" x 23 5/8"
+    # (glengery.com/brick-catalog/columbia-roman-maximus): the bed depth matches a modular
+    # unit exactly (this material drops into the same 3 5/8" `brick` layer unchanged), but
+    # it is a handmade Type FBA unit — coursing runs on its 1 5/8" + 3/8" joint = 2" module,
+    # not modular's 2 2/3", and the 23 5/8" length reads as long, widely-spaced vertical
+    # joints rather than a standard running bond. See GARAGE_BRICK_LEDGE_RISE above for the
+    # recomputed coursing this drives — unchanged by this colour swap.
     #
-    # Colour is authored a step LIGHTER than pure black — the viewer's lighting lifts
-    # albedo well above what is written here (the lesson recorded on glazed-lapis-brick and
-    # #1c1f24), and a literal #000000/#1c1f24 body would read as the same flat void as the
-    # envelope's dark trim metal instead of a fired clay black. `finish` names the recipe
-    # explicitly so no renderer infers a generic dark from the tag.
-    Material(tag="black-brick", name="Black Roman Maximus face brick (ASTM C216 Grade SW)",
+    # `finish` stays "roman-maximus-brick": that key names the UNIT GEOMETRY recipe (the
+    # 23 5/8" elongated unit and its coursing), not a colourway, so the black-to-Columbia
+    # swap only touches `color`/`source` here and the style's `base` colour in
+    # ui/src/three/materials.ts / emit/gltf/palette.py — nothing about the masonry recipe
+    # itself changes.
+    Material(tag="off-white-brick", name="Columbia Roman Maximus face brick (ASTM C216 Grade SW)",
              r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
-             color="#26221f", finish="roman-maximus-brick",
-             source="garage wainscot — Glen-Gery Black Roman Maximus, ASTM C216 Grade SW Type FBA (severe weathering; Type FBA rather than FBS because the handmade process gives it intentional dimensional variation), through-body black, a SINGLE body and not a blend: a chip or a trimmer scar exposes the same colour rather than a red core, and Grade SW is not optional at 40+ freeze-thaw cycles a year"),
+             color="#e4ddc9", finish="roman-maximus-brick",
+             source="garage wainscot — Glen-Gery Columbia Roman Maximus, ASTM C216 Grade SW Type FBA (severe weathering; Type FBA rather than FBS because the handmade process gives it intentional dimensional variation), an off-white/ivory through-body colour, a SINGLE body and not a blend: a chip or a trimmer scar exposes the same colour rather than a red core, and Grade SW is not optional at 40+ freeze-thaw cycles a year"),
     # cmu, grout (porch railing wythe/balcony post bases) were promoted to
     # library/materials.py on 2026-08-22 (CONTRIBUTING §Promotion flow); they arrive here
     # through STARTER_MATERIALS above.
@@ -1744,6 +1783,51 @@ MATERIALS = [
              r_per_inch=0.0, density=7850.0, perm_rating=0.0, hatch="metal",
              color="#1c1f24",
              source="RF-HOUSE rake/eave/ridge trim coil, opening casings, exterior guards"),
+    # The garage's accent coil (2026-08-26, settled 2026-08-27). Brake-formed PVDF-coated
+    # stock in the same family as `metal-dark-exterior` above, sharing its reasoning: colour
+    # is an albedo, so it is authored a step darker than the chip reads in hand, and it is
+    # NOT named "*seam*" — renderers key the ribbed standing-seam finish off that substring
+    # and this is flat formed trim. It is keyed into the two renderer palettes BY TAG
+    # (`_FINISH_BASE` in emit/gltf/palette.py, `FINISH_BASE` in ui/src/nordic/palette.ts,
+    # kept in step by hand) rather than by a declared `finish`, because a fascia and a ridge
+    # cap are framed MEMBERS: `memberColor` is handed the palette and no catalog, so a
+    # material's authored `color` is invisible to it and only the tag lookup reaches. That is
+    # the same reason `metal-dark-exterior` above is tag-keyed.
+    #
+    # `metal-copper-penny` — the garage's ONE accent coil, carrying both the vented ridge cap
+    # and all six fascia pieces (2026-08-27). Two members, one coil, one order: the fascia is
+    # named on the `FasciaBoard` in `_GARAGE_EAVE_TRIM` and the cap through
+    # `Roof.edge_trim_material` on RF-GARAGE, and the two paths landing on one material is
+    # the point — a cap in a different colour from the fascia under it reads as a mistake
+    # rather than as a choice. The fascia wore Western States "Regal Blue" for part of
+    # 2026-08-26 (see `metal-fascia-regal-blue` below, kept and unreferenced).
+    #
+    # THE FASCIA'S SUBSTRATE CHANGED WITH ITS COLOUR, and that is the durable half of this.
+    # The weather face was 5/4 cellular PVC; a PVDF metallic is a metal coil finish PVC
+    # cannot be ordered in, and a dark trim colour on cellular PVC is the classic failure —
+    # PVC's thermal movement is high enough that trim makers require a solar-reflective
+    # vinyl-safe coating for dark colours and cap the LRV outright. Formed metal over the
+    # existing 2x6 spf sub-fascia nailer has neither problem and is the ordinary detail on a
+    # metal-roofed building. The SOFFIT stays cellular PVC: it is vented, out of the weather,
+    # and white under an overhang is what keeps a soffit from reading as a shadow.
+    #
+    # A metallic PVDF is a two-coat mica/pearl system, so it reads differently by viewing
+    # angle in a way a flat albedo cannot express — this is the mid-tone of that range.
+    Material(tag="metal-copper-penny", name="Copper Penny PVDF-coated formed metal trim",
+             r_per_inch=0.0, density=7850.0, perm_rating=0.0, hatch="metal",
+             color="#8a4f2a",
+             source="RF-GARAGE vented ridge cap + the six garage eave/rake fascia pieces — \"Copper Penny\" PVDF/Kynar metallic (mica) coil over 24 ga. steel, the standard trade colour for a copper look without copper's cost or its runoff staining; brake-formed, and on the fascia lapped over a 2x6 spf sub-fascia nailer. A metallic is angle-dependent and this hex is the mid-tone, so a physical chip governs"),
+    # `metal-fascia-regal-blue` — Western States "Regal Blue"
+    # (westernstatesmetalroofing.com/regal-blue), PVDF. **Referenced by nothing**: the garage
+    # fascia wore it for part of 2026-08-26 and went to the copper penny above on 2026-08-27.
+    # Kept the way `glazed-green-brick` and `standing-seam-nailstrip-26-green` are kept — a
+    # solid-colour PVDF is the same product on the same substrate as the metallic, so going
+    # blue again is a one-word `material=` swap on the FasciaBoard rather than a
+    # re-derivation. The substrate argument above is what must NOT be reverted with it.
+    Material(tag="metal-fascia-regal-blue", name="Regal Blue PVDF-coated formed metal fascia",
+             r_per_inch=0.0, density=7850.0, perm_rating=0.0, hatch="metal",
+             color="#1e3a5c",
+             source="garage eave + rake fascia weather face, 2026-08-26 only — Western States Metal Roofing \"Regal Blue\", PVDF/Kynar over 24 ga. steel; the manufacturer publishes no hex (its own page warns the on-screen swatch differs from the panel), so this value is an approximation and a physical chip governs"),
     # The above-grade foundation band on CATLIN_BASEMENT_8/_12 (2026-08-18). Aluminium-faced
     # rigid protection panel — the trade product for exactly this, and what
     # notes/basement_to_framed_wall_detail.md already called for in prose ("rigid metal/PVC

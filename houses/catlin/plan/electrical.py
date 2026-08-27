@@ -660,8 +660,8 @@ SECOND_EQUIPMENT = [
     # x moved 19'-10" -> 20'-0", the box's own centreline, so the 21" case sits central with
     # ~4 7/8" either side. The check prints those clearances now; do not restate them here.
     #
-    # zone_rooms covers the whole conditioned second storey plus RM-A-STUDY/RM-A-EAST (short
-    # attic branches) and RM-A-WEST (suite branch's REG-A-HP-WEST boot, 2026-07-30).
+    # zone_rooms covers the whole conditioned second storey plus RM-A-STUDY/RM-A-EAST-UNFIN (short
+    # attic branches) and RM-A-WEST-UNFIN (suite branch's REG-A-HP-WEST boot, 2026-07-30).
     # RM-A-DEN is deliberately excluded — nothing serves it (plans/TODO.md).
     Equipment(uid="CEE032AAAA", tag="EQ-S-HP1-AH",
               kind=EquipmentKind.DUCTED_AIR_HANDLER,
@@ -673,7 +673,7 @@ SECOND_EQUIPMENT = [
               zone_rooms=("RM-S-STUDY2", "RM-S-PLANT", "RM-S-BED1", "RM-S-BED2",
                           "RM-S-BED3", "RM-S-SUITE", "RM-S-SUITEBATH", "RM-S-VANITY",
                           "RM-S-BATH1", "RM-S-HALL", "RM-S-CLOSET", "RM-S-NCLOSET",
-                          "RM-A-EAST", "RM-A-STUDY", "RM-A-WEST")),
+                          "RM-A-EAST-UNFIN", "RM-A-STUDY", "RM-A-WEST-UNFIN")),
     # The duct heater above, in the supply plenum immediately north of the air handler's
     # discharge — inside SF-S-DUCT's soffit box, 8" past the y=9'-7" line DU-S-HP-SUP leaves
     # from, so it heats every branch the trunk feeds rather than one room's boot.
@@ -987,12 +987,12 @@ DATA_SLEEVES = [
 ]
 
 ATTIC_DATA_DEVICES = [
-    # High on the north gable in the NE corner of RM-A-EAST. Mount elevation is
+    # High on the north gable in the NE corner of RM-A-EAST-UNFIN. Mount elevation is
     # storey-relative (attic datum 20'), so 4' here is 24' absolute — under the 4:12 rake,
     # which at x=33' carries the roof to 26'.
     ElectricalDevice(uid="CND004AAAA", tag="ED-A-EAST-AP", kind=DeviceKind.DATA_OUTLET,
                      position=pt(ft(33), ft(35, 1.375)), type_ref="ED-T-AP-CEILING",
-                     room="RM-A-EAST", wall_ref="W-A-N1",
+                     room="RM-A-EAST-UNFIN", wall_ref="W-A-N1",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
 ]
 
@@ -1184,7 +1184,7 @@ NEC_FILL_MAIN = [
     # RM-M-PANTRY's reach-in outlet (2026-08-24). NEC 210.52(B)(1) puts a pantry receptacle
     # on a small-appliance branch circuit, so CKT-KITCH-SA1 and not CKT-RC-MAIN. NOT GFCI:
     # E3902 keys on room occupancy (STORAGE is not in the map) and on the 6' sink reach, and
-    # FX-M-KITCH-SINK is 7'-4" away.
+    # FX-M-KITCH-SINK is 8'-1" away (2026-08-26: was 7'-4" before the sink moved +9" east).
     #
     # The NORTH wall at 48" — over the second shelf, which is what "reach-in height" means.
     # Not the south wall (3 1/2"/4 1/8" of jamb pack is all there is), not the west (KRF1
@@ -1444,7 +1444,7 @@ NEC_FILL_SECOND = [
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
 ]
-# Same treatment for the attic's two habitable rooms. RM-A-WEST (media) and RM-A-DEN
+# Same treatment for the attic's two habitable rooms. RM-A-WEST-UNFIN (media) and RM-A-DEN
 # (storage) are outside `_HABITABLE`, so 210.52 spacing is not evaluated for them.
 NEC_FILL_ATTIC = [
     ElectricalDevice(uid="NEC048AAAA", tag="ED-A-EAST-RC1", kind=DeviceKind.RECEPTACLE,

@@ -54,9 +54,10 @@ DRAINS = [
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2",
                     "FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
-    # Re-routed twice 2026-07-30 (sink to north wall, then sink/dishwasher flip): runs
-    # straight down the deck sleeve's own column, through the same W-B-CE/W-B-CS2 crossings,
-    # west to the main tie-in — the route is fixed by basement framing, not sink position.
+    # Re-routed twice 2026-07-30 (sink to north wall, then sink/dishwasher flip), then +9"
+    # east 2026-08-26 with the sink: runs straight down the deck sleeve's own column,
+    # through the same W-B-CE/W-B-CS2 crossings, west to the main tie-in — the route is
+    # fixed by basement framing, not sink position.
     # Elevations re-solved onto both sleeves' cast centerlines at >= 0.25"/ft.
     #
     # These are BASEMENT-relative, so ft(9, 4.75) is project +3/4" — the main floor's
@@ -68,8 +69,8 @@ DRAINS = [
     # the constant, but nothing here can drift quietly: `mep.sleeve_coverage` fails the build
     # the moment this run stops passing through its sleeve.
     PipeRun(uid="S0Y00EZNNG", tag="PR-B-KITCH-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(28, 7), ft(35)), pt(ft(28, 7), ft(35)),
-                  pt(ft(28, 7), ft(16, 6)), pt(ft(6), ft(16, 6))),
+            path=(pt(ft(29, 4), ft(35)), pt(ft(29, 4), ft(35)),
+                  pt(ft(29, 4), ft(16, 6)), pt(ft(6), ft(16, 6))),
             diameter=inch(2), material="pvc",
             # Starts on the cap's own top (+15/16" project = 9'-2 3/8" basement-relative,
             # 2026-08-23) and drops clear of the deck's SOFFIT, which is the bearing seat at

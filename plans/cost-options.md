@@ -114,7 +114,7 @@ market rate, not a house number):
 **Read this before treating it as a saving.** $89,000 over 1,281 sf is **$69–125 / sf**,
 against **$138–289 / gross sf** for the house as a whole. *The attic is the cheapest square
 footage in the building* — it buys no foundation, no site work and no extra stair run, and
-1,079 sf of it (`RM-A-WEST` 598, `RM-A-EAST` 481) is already typed `storage`, i.e. the
+1,079 sf of it (`RM-A-WEST-UNFIN` 598, `RM-A-EAST-UNFIN` 481) is already typed `storage`, i.e. the
 cheapest finish level in the house. If square footage is wanted anywhere, it is wanted here
 before anywhere else.
 
@@ -384,7 +384,7 @@ forms in the rate.
 ### 10 — the eight discretionary attic windows
 
 **Built: 699 pass, 0 fail, 45 not evaluable** — deleting all eight breaks no rule in the
-registry. `RM-A-WEST` and `RM-A-EAST` are `storage` occupancy, so R303.1's natural-light
+registry. `RM-A-WEST-UNFIN` and `RM-A-EAST-UNFIN` are `storage` occupancy, so R303.1's natural-light
 rule never applied to them, and none of the eight is an emergency escape opening.
 
 | unit | ×  | what it is |

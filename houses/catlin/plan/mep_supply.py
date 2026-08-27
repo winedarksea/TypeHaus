@@ -56,8 +56,8 @@ WATER_SUPPLY = [
 SUPPLY = [
     PipeRun(uid="CBPW30AAAA", tag="PR-B-CW-TRUNK", system=PipeSystem.WATER_COLD,
             path=(pt(ft(5), ft(1)), pt(ft(5), ft(1)), pt(ft(5), ft(16)),
-                  pt(ft(8), ft(16)), pt(ft(29, 0.6), ft(16)),
-                  pt(ft(29, 0.6), ft(34, 1.2)), pt(ft(29, 0.6), ft(34, 1.2))),
+                  pt(ft(8), ft(16)), pt(ft(29, 9.6), ft(16)),
+                  pt(ft(29, 9.6), ft(34, 1.2)), pt(ft(29, 9.6), ft(34, 1.2))),
             diameter=inch(1.25), material="copper", finish="lacquered",
             elevations=(ft(2, 9.4375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(12, 7.4375)),
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV", "FX-M-BATH2-WC",
@@ -143,8 +143,8 @@ SUPPLY = [
             wall_refs=(None, None, "W-M-BA2E"),
             serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
     PipeRun(uid="CBPW39AAAA", tag="PR-B-HW-KITCH", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(6, 6), ft(15, 6)), pt(ft(29, 6.6), ft(15, 6)),
-                  pt(ft(29, 6.6), ft(33, 7.2)), pt(ft(29, 6.6), ft(33, 7.2))),
+            path=(pt(ft(6, 6), ft(15, 6)), pt(ft(30, 3.6), ft(15, 6)),
+                  pt(ft(30, 3.6), ft(33, 7.2)), pt(ft(30, 3.6), ft(33, 7.2))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(12, 7.4375)),
             serves=("FX-M-KITCH-SINK", "APPL-M-DW")),
@@ -315,7 +315,7 @@ HYDRANT_BRANCH_MAIN = [
 # it. A line fed from *below* would need a cast-in sleeve set before the pour, and coring a
 # structural band afterwards is a different kind of job. This one never goes below the floor:
 # it tees off the kitchen cold where it has already surfaced, at the riser head in the sink
-# base (SP-M-CW-KITCH, ft(29, 0.6) / ft(34, 1.2)) where PA-M-KITCH-STOP-CW and PA-M-RO-STUB
+# base (SP-M-CW-KITCH, ft(29, 9.6) / ft(34, 1.2)) where PA-M-KITCH-STOP-CW and PA-M-RO-STUB
 # already sit, and runs at 2'-6" through the backs of cabinets that are being built anyway —
 # west along the north run, then south down the west run. No penetration, no sleeve, no
 # concrete, and every inch of it behind a removable cabinet back.
@@ -345,7 +345,7 @@ HYDRANT_BRANCH_MAIN = [
 # above is actually protecting.
 KITCHEN_STUB_MAIN = [
     PipeRun(uid="N0D5ATAN07", tag="PR-M-CW-COLDSTORE-STUB", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(29, 0.6), ft(34, 1.2)),
+            path=(pt(ft(29, 9.6), ft(34, 1.2)),
                   pt(ft(24, 5), ft(34, 1.2)),
                   pt(ft(24, 5), ft(34, 1.2)),
                   pt(ft(18), ft(34, 1.2)),

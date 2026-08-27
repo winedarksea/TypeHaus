@@ -172,12 +172,12 @@ def test_every_finish_row_resolved_a_real_material(bom):
 
 
 def test_the_unfinished_rooms_are_the_two_attic_lofts_and_bill_nothing(bom):
-    """RM-A-WEST and RM-A-EAST lost their carpet on 2026-08-25: unfinished bulk storage
+    """RM-A-WEST-UNFIN and RM-A-EAST-UNFIN lost their carpet on 2026-08-25: unfinished bulk storage
     walks on FS-ATTIC's plywood and nothing goes over it. The row exists so 1,079 SF of
     floor is not silently missing from the schedule — but it orders zero, because there is
     nothing to order."""
     row = next(row for row in bom["floor_finishes"] if row["finish"] is None)
-    assert row["rooms"] == ["RM-A-EAST", "RM-A-WEST"]
+    assert row["rooms"] == ["RM-A-EAST-UNFIN", "RM-A-WEST-UNFIN"]
     assert float(row["net_area_sqft"]) == pytest.approx(1078.8, abs=1.0)
     assert float(row["order_area_sqft"]) == 0.0
 

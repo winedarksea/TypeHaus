@@ -163,7 +163,10 @@ MAIN_DEVICES = [
     # schedule. Counter outlets at 42" (6" backsplash over the 36" counter, under 54"
     # cabinets). KRF1 is an ordinary duplex — the fridge's future battery-backup circuit
     # isn't modeled. Positions reflect the 2026-07-30 range/sink/dishwasher wall swaps
-    # (KGF1 moved onto the dishwasher's spot, KGF3 followed the range north with N3).
+    # (KGF3 followed the range north with N3). KGF1 and KGF2 both still fall inside the
+    # 2026-08-26 base run's B30 bay (30'-10".."33'-4") after the sink/dishwasher
+    # re-composition, so neither moved — KGF1 is no longer "on the dishwasher's spot"
+    # (the dishwasher moved to the sink base's west side).
     ElectricalDevice(uid="VDGMBY3YW7", tag="ED-M-LIVING-KET1", kind=DeviceKind.RECEPTACLE_240,
                      position=pt(ft(25, 6), ft(35, 3.375)), type_ref="ED-T-RECEPTACLE-620", circuit="CKT-KETTLE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
@@ -201,8 +204,9 @@ MAIN_DEVICES = [
     # wall-hosted boxes, not floating in-cabinet ones. y=25'-9" and 26'-8" are inside the
     # garage's y 25'-2 3/8"..27'-2 3/8" after it was bumped south against the tall bank.
     #
-    # ** GFCI, and it is not merely belt-and-braces here. ** These sit 5'-6" from
-    # FX-M-KITCH-SINK, outside E3902.10's 6' reach, and CKT-KITCH-SA1 is a GFCI breaker
+    # ** GFCI, and it is not merely belt-and-braces here. ** These sit ~10'-7" from
+    # FX-M-KITCH-SINK (2026-08-26: ~11'-0" before the sink moved +9" east), outside
+    # E3902.10's 6' reach, and CKT-KITCH-SA1 is a GFCI breaker
     # anyway — but a receptacle serving a countertop appliance a step from a sink is exactly
     # where an inspector will want the device, and a GFCI device costs less than an argument.
     #
@@ -241,18 +245,19 @@ MAIN_DEVICES = [
     ElectricalDevice(uid="D9EBW2FJTX", tag="ED-M-LIVING-KRF1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(18, 4.375), ft(31, 4.625)), type_ref="ED-T-RECEPTACLE", circuit="CKT-FRIDGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
-    # Inside the sink base, 18" up: the dishwasher's cord. Used to share this box with the
-    # disposer, which moved to its own circuit and single receptacle 9" west (2026-08-07),
-    # so this one now serves APPL-M-DW alone (position follows APPL-M-DW's sink-flip spot).
+    # Inside the sink base, 18" up: the dishwasher's cord. Follows APPL-M-DW, which moved
+    # to the sink base's west side (2026-08-26) when the base run was re-composed to centre
+    # the sink under WIN-M-KITCH — see storeys/main.py's OPENINGS and plan/placeables.py's
+    # kitchen header.
     ElectricalDevice(uid="WK41TSMA97", tag="ED-M-LIVING-KDW1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(31, 1), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE", circuit="CKT-DISHWASHER",
+                     position=pt(ft(28, 6), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE", circuit="CKT-DISHWASHER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
-    # The disposer outlet, 9" west of KDW1 at the sink base's east end and the same 18" up
-    # on the same wall face — a second box in the same cabinet run, reachable by the cord
-    # from APPL-M-DISP hanging under the bowl at 28'-7". Single 5-20R on CKT-DISPOSAL; the
-    # wall control is the 24V loop billed with the appliance, not a switch on this branch.
+    # The disposer outlet, in the sink base, the same 18" up on the same wall face —
+    # reachable by the cord from APPL-M-DISP hanging under the bowl at 29'-4" (2026-08-26,
+    # moved with the sink). Single 5-20R on CKT-DISPOSAL; the wall control is the 24V loop
+    # billed with the appliance, not a switch on this branch.
     ElectricalDevice(uid="N4A3YD3680", tag="ED-M-LIVING-KDS1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(30, 4), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE-520S",
+                     position=pt(ft(29, 9), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE-520S",
                      circuit="CKT-DISPOSAL",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
 ]
@@ -362,10 +367,10 @@ SECOND_DEVICES = [
 # off a 5' knee wall, so at x=27' the roof plane is 5' + 9'/3 = 8' — the same 8' the rest of
 # the house's ceiling boxes sit at, which is why these lights need no special elevation.
 ATTIC_DEVICES = [
-    # RM-A-EAST (x 18'-36', y 8'-8"-36'): switch inside D-A-HALVES, the door at (18', 32').
+    # RM-A-EAST-UNFIN (x 18'-36', y 8'-8"-36'): switch inside D-A-HALVES, the door at (18', 32').
     ElectricalDevice(uid="CED011K1AA", tag="ED-A-EAST-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(22), ft(15)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
-                     room="RM-A-EAST", controlled_by=("ED-A-EAST-SW",),
+                     room="RM-A-EAST-UNFIN", controlled_by=("ED-A-EAST-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(9, 8),
                                  recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED011K2AA", tag="ED-A-EAST-SW", kind=DeviceKind.SWITCH,

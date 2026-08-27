@@ -1,3 +1,5 @@
 from __future__ import annotations
 
-from typehaus.checks.integrity import catalog_tags, checks  # noqa: F401 - registers checks
+from typehaus.checks.integrity import (  # noqa: F401 - registers checks
+    catalog_tags, checks, wall_layer_material,
+)
