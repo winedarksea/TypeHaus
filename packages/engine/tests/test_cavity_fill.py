@@ -40,20 +40,23 @@ def test_cavity_shares_its_host_polygon_and_adds_no_depth(catlin_model):
     depth = sum(ly.thickness_m for ly in wall.depth_layers())
     assert wall.thickness_m == pytest.approx(depth)
     # 0.01 paint + 0.625 gwb + 5.5 stud + 0.5 sheathing + 1.5 spray foam + 1.5 inner girt
-    # + 1.0 band-C foam + 0.5 vent gap + 1.5 outer girt + 0.5 standing seam. The paint film
+    # + 1.0 band-C foam + 0.5 vent gap + 1.5 outer girt + 1.25 PBR panel. The paint film
     # is the interior lining's Class III vapour retarder (IRC R702.7), so it is a layer with
     # a thickness, not a colour note.
     #
     # 11.655" until the Swinburne truss (2026-08-23), when the WRB + 2" polyiso + 2" EPS +
     # 1/2" furring became 1-1/2" of spray foam and a 3-1/2" on-edge outrigger band: 12.135".
-    # 13.135" since the catlin truss (2026-08-26) laid four 1-1/2"-and-under layers where
-    # that band was — the whole change is one inch of wall, and this is where it shows.
+    # 13.135" after the catlin truss (2026-08-26) laid four 1-1/2"-and-under layers where
+    # that band was — that change was one inch of wall, and this is where it showed.
+    # **13.885" since the exposed-fastener swap** later the same day: the cladding layer went
+    # from a 1/2" snap-lock pan to a 1-1/4" PBR panel, whose declared thickness is the RIB
+    # height and not the sheet's. Nothing inboard of it moved; the whole 3/4" is the skin.
     #
     # The INNER GIRT's own 1-1/2" of foam is a CavityFill and adds no depth, which is exactly
     # what this test is for, one layer further out than it used to reach. Note the outer girt
     # carries no fill at all: nothing vents inside a solid KDAT band, and its gap is the
     # AIRGAP layer behind it.
-    assert wall.thickness_m * 39.3701 == pytest.approx(13.135, abs=0.01)
+    assert wall.thickness_m * 39.3701 == pytest.approx(13.885, abs=0.01)
 
 
 def test_no_wall_layer_overlaps_another(catlin_model):

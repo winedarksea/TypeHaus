@@ -313,6 +313,13 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
     with it. N-B-STR is still a change and still one key, now INT_2X4_PARTITION against
     INT_2X6_PLUMBING: the playroom partition meeting the furnace room's wet wall is a real
     4 3/4"-to-6 3/4" jog on one line whatever the studs on either side are made of.
+
+    **To nine on 2026-08-26**, the garage east stem: W-GF-E1/E2 (the ICF segments flanking
+    the overhead door) took the mid-stack brick-ledge form (`GARAGE_ICF_6_BRICKLEDGE`) to
+    carry the new brick wainscot, while the rest of the stem stayed plain `GARAGE_ICF_6`.
+    Real change of construction — the ledged segments bear a full 3 5/8" wythe the plain
+    ones do not — at the nodes where they meet their un-ledged neighbours (N-GF-SE,
+    N-GF-E-DRS, N-GF-E-DRN, N-GF-NE), all collapsing to the one key.
     """
     keys = sorted({c.key for c in catlin_model.conditions
                    if c.key.startswith("assembly_change:")})
@@ -342,6 +349,11 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # W-B-STR2 its neighbour's assembly closed the x-line too, so the node changes
         # construction on neither and there is nothing here to tell a builder.
         "assembly_change:FOUNDATION_WALL_12_INT|SAUNA_LINER_ON_CONCRETE",
+        # The garage east stem, 2026-08-26: W-GF-E1/E2 took the brick-ledge form to carry
+        # the new wainscot's wythe, W-GF-E-DR (the grade beam under the overhead door) and
+        # the rest of the stem did not. Collapses to one key at all four collinear nodes
+        # where a ledged segment meets a plain one.
+        "assembly_change:GARAGE_ICF_6|GARAGE_ICF_6_BRICKLEDGE",
         "assembly_change:INT_2X4_PARTITION|INT_2X4_STAGGERED_DOUBLE_GWB",
         # N-B-STR, the y=18' line's surviving change: W-B-CW2's playroom partition against
         # W-B-CW3, which took W-B-CW's wet wall on 2026-08-25. This key read

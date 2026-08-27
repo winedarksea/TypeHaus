@@ -265,9 +265,10 @@ _GLAZED_GREEN_BRICK_BASE = "#1b4332"  # materials.ts GLAZED_GREEN_BRICK_STYLE.ba
 _GLAZED_LAPIS_BRICK_BASE = "#10386a"
 _GLAZED_GOLD_BRICK_BASE = "#c08a12"
 _BROWN_BRICK_BASE = "#a07c5c"  # lightened + de-jittered 2026-08-21; see materials.ts
-# The garage east wainscot (2026-08-26) — materials.ts BUFF_BRICK_STYLE.base. A retint of
-# the brown-brick recipe, not the glazed one: an unglazed single-body buff.
-_BUFF_BRICK_BASE = "#ded3bd"
+# The garage wainscot's Glen-Gery Black Roman Maximus brick (2026-08-26) — materials.ts
+# ROMAN_MAXIMUS_BRICK_STYLE.base. Authored a step lighter than pure black; see the Material
+# comment in plan/assemblies.py for why.
+_ROMAN_MAXIMUS_BRICK_BASE = "#26221f"
 _DECK_BOARD_BASE = "#b9bcc0"    # materials.ts ALUMINUM_DECK_BASE_COLOR (0xb9bcc0)
 
 _EXTERIOR_DARK = "#1c1f24"      # the house's one exterior dark; see window_trim above
@@ -285,7 +286,7 @@ _FINISH_BASE: dict[str, str] = {
     "glazed-lapis-brick": _GLAZED_LAPIS_BRICK_BASE,
     "glazed-gold-brick": _GLAZED_GOLD_BRICK_BASE,
     "brown-brick": _BROWN_BRICK_BASE,
-    "buff-brick": _BUFF_BRICK_BASE,
+    "roman-maximus-brick": _ROMAN_MAXIMUS_BRICK_BASE,
     # Formed edge trim ordered in a second coil colour (Roof.edge_trim_material). Without an
     # entry it falls to the "metal" family's blue-grey, and the accent that makes a
     # zero-overhang rake legible would differ between the .glb and the viewer.
@@ -301,6 +302,11 @@ _FINISH_BASE: dict[str, str] = {
     # painted trim, just different substrates.
     "pvc-cellular": "#f4f2ee",
 }
+
+
+# The `Material.finish` values that mean "one of the house's white steel wall skins". The
+# declaration side of `_is_standing_seam` below, which can only guess from a tag.
+_METAL_PANEL_FINISHES = frozenset({"standing-seam", "ribbed-panel"})
 
 
 def _is_standing_seam(material_ref: str | None) -> bool:
@@ -356,12 +362,26 @@ def _material_finish_color(material_ref: str | None,
     named = _FINISH_BASE.get((material_ref or "").lower())
     if named is not None:
         return _hex_rgba(named)
-    if authored:
-        material = authored.get(material_ref or "")
-        if material is not None:
-            return _hex_rgba(material_color(material.hatch, material.color))
-    if function == "cladding" and _is_standing_seam(material_ref):
+    material = authored.get(material_ref or "") if authored else None
+    # A cladding layer that reads as one of the house's metal skins is painted the coil
+    # white BEFORE its authored ``color`` is consulted. All five skins author
+    # ``color="#6b7076"`` — that is the *drawing* hatch tone `material_color` pairs with
+    # hatch="metal", not the paint — while the viewer paints every one of them 0xE8E8E2
+    # (`createStandingSeamMaterial`'s base). Reading the authored value first made the .glb
+    # disagree with the live viewer about the whole house's cladding, which is the one thing
+    # `glb-emitter-parity` exists to prevent.
+    #
+    # The skin is DECLARED first and guessed second, the same precedence
+    # `ui/src/three/builders/walls.ts` takes: `pbr-panel-26` declares
+    # ``finish="ribbed-panel"`` and deliberately keeps "seam" out of its tag, so the
+    # substring test below cannot see it. Only these two finishes — a finish that names its
+    # own colour (a glazed brick, a charcoal trim coil) is matched by ref above and never
+    # reaches here, and one that authors a specific colour (the two CMUs) still keeps it.
+    declared_skin = (getattr(material, "finish", None) or "").lower() in _METAL_PANEL_FINISHES
+    if function == "cladding" and (declared_skin or _is_standing_seam(material_ref)):
         return _hex_rgba(_SEAM_BASE)
+    if material is not None:
+        return _hex_rgba(material_color(material.hatch, material.color))
     if _is_aluminum_deck_board(material_ref):
         return _hex_rgba(_DECK_BOARD_BASE)
     if family_of(material_ref) == "masonry":

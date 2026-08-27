@@ -337,6 +337,22 @@ KDAT is not optional for that reason.
 spec. Cladding fasteners land in KDAT and must be treated-rated: exposed-fastener panel
 screws already are, snap-lock clip screws generally are not (§5).
 
+**Two owner-optional upgrades, not material swaps.** A 2026-08-26 assessment of switching
+the outer girt to 20 ga hat channel or a composite/FRP section concluded KDAT 2x4 stays —
+steel loses too much screw pullout margin for the 2,473-count PBR field fastening (§5) and
+still needs KDAT jamb posts and head/sill courses at every opening either way, and FRP runs
+4-6x the KDAT rate for durability this wall's vent gap and PBR rib voids already cover. Two
+narrower, cheaper items from that review are worth carrying as options, applied at the
+owner's discretion rather than changing `assemblies.py`:
+
+- **Brush-treat field-cut ends** with copper naphthenate as they're cut. KDAT's .15 pcf
+  retention doesn't follow the saw, and a 2,432 LF field course puts a fresh untreated cut
+  at every course-to-course butt.
+- **Acetylated wood (e.g. Accoya) for the jamb posts and head/sill courses at openings**
+  (~192 LF) — the hardest KDAT to inspect or replace later, sitting behind the window
+  returns where the sill pan and panel jamb closure meet. Also drops the DB-coating
+  requirement on fasteners into it.
+
 **Field courses stop clear of every opening.** The girt frame holds field courses one piece
 width (3-1/2") clear of each rough opening in both axes, and fills that zone with the
 opening's own frame — a jamb post on each side with its inner face on the RO edge, and head

@@ -443,16 +443,22 @@ def test_a_part_that_mounts_on_another_also_bills_that_carrier(catlin_model) -> 
     The CanDuit ring exercised this rule too, until the 2026-08-26 cladding swap took the
     house's pipe fixings off the seam. ColorGard is now the only ``requires_role`` part the
     model contains, and it pins the rule the same way.
+
+    That swap also emptied the *modeled* side of the split: an S-5! closes on a seam, and the
+    only seam left in the house is the roof's, where nothing is authored as a bare clamp. So
+    the carried row is now the whole S-5! story, and this test asserts that rather than
+    comparing two rows — see test_solar.py for the same fact from the count's side.
     """
     rows = hardware_takeoff(catlin_model)
     rails = sum(row["count"] for row in rows if row["role"] == "snow_retention")
     seam = [row for row in rows if row["role"] == "standing_seam_clamp"]
-    modeled = next(row for row in seam if row["scope"] == "modeled connector")
+    assert not [row for row in seam if row["scope"] == "modeled connector"], \
+        "no bare seam clamp is authored any more; every S-5! is implied by the rail"
     # One carried-mount row per *requiring* part, so two parts riding the same clamp never
     # collapse into one row with a right count and a wrong reason. Pick by basis text.
     mounts = next(row for row in seam
                   if row["scope"] == "carried-mount" and "ColorGard" in row["basis"])
-    assert modeled["part_number"] == mounts["part_number"] == "S-5!"
+    assert mounts["part_number"] == "S-5!"
     assert mounts["count"] == rails > 0
     assert "required to mount a modeled S-5! ColorGard snow-retention rail" in mounts["basis"]
 

@@ -40,10 +40,15 @@ def test_foundation_plan_draws_basement_walls_and_slab(catlin_model):
     assert "A-SLAB" in layers
     slab_tags = {n.tag for n in layers["A-SLAB"] if isinstance(n, Polyline)}
     assert "SL-B-FLOOR" in slab_tags
-    # Walls drawn are all on the lowest (basement) storey — never a re-render of "main".
+    # Walls drawn are basement-storey, or the garage brick wainscot's veneer — never a
+    # re-render of "main". The wainscot (W-G-BRICK-*, 2026-08-26) is filed on "garage" for
+    # an unrelated reason (RM-GARAGE's conditioned=False, so it must not be mistaken for an
+    # envelope wall between conditioned rooms — see houses/catlin/CLAUDE.md), but it is a
+    # real `FoundationWall` with an absolute elevation, so `foundation_walls()` picks it up
+    # by `is_foundation` regardless of storey and it legitimately belongs on S-100 too.
     wall_tags = {n.tag for n in layers["S-FNDN"] if isinstance(n, Polyline)}
     assert {"W-B-S1", "W-B-CS", "W-GF-N"} <= wall_tags
-    assert all(catlin_model.wall(tag).storey == "basement" for tag in wall_tags)
+    assert all(catlin_model.wall(tag).storey in ("basement", "garage") for tag in wall_tags)
 
 
 def test_foundation_plan_has_footing_leaders(catlin_model):

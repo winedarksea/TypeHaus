@@ -901,25 +901,37 @@ GARAGE_ICF_6 = Assembly(
     source="library GARAGE_ICF's 6\" concrete core (ICF-6, matching masonry spec) + this house's 2.5\" EPS facing (thinner than library's 2.625\" generic default) and gwb-stem interior banding above grade (code.R316_4)",
 )
 
-# --- garage east brick wainscot (2026-08-26) ---------------------------------------------
+# --- garage east/south/north brick wainscot (2026-08-26; Roman Maximus 2026-08-26) -------
 #
-# The two 4'-0" strips of east wall flanking the overhead door carry a short buff-brick
-# wainscot: the most-abused surface on the building (apron splash, snow piled off the drive,
-# trimmers, car doors) gets the one face that does not care. Full 3 5/8" brick, not thin
-# brick, which means real bearing — hence the ledge below and the veneer wall in
-# plan/storeys/garage.py rather than a WallPaneling band (a band carries neither a wythe
-# thickness nor an air gap, and the wood-surfaces rollup only bills materials with a
-# `species`, so a brick band would produce no BOM line at all).
+# The two 4'-0" strips of east wall flanking the overhead door, plus a 4'-0" return around
+# each of the SE and NE corners, carry a short black-brick wainscot: the most-abused surface
+# on the building (apron splash, snow piled off the drive, trimmers, car doors) gets the one
+# face that does not care. Full 3 5/8" brick, not thin brick, which means real bearing —
+# hence the ledge below and the veneer wall in plan/storeys/garage.py rather than a
+# WallPaneling band (a band carries neither a wythe thickness nor an air gap, and the
+# wood-surfaces rollup only bills materials with a `species`, so a brick band would produce
+# no BOM line at all).
 #
-# Coursing, modular 2 2/3", working up from grade (-2'-10"):
-#     ledge/shelf top   2 2/3" above grade   (-2'-7 1/3")
-#     15 courses field  40"                  (+0'-8 2/3")
-#     rowlock cap       4"                   (+1'-0 2/3")
-#     metal cap flash   1 1/3"               (+1'-2" == 4'-0" above grade, on the nose)
+# Glen-Gery "Black Roman Maximus" (glengery.com/brick-catalog/black-roman-maximus):
+# 3 5/8" x 1 5/8" x 23 5/8", ASTM C216 Grade SW Type FBA. The bed depth (3 5/8") is the same
+# as a modular unit, so the wythe thickness, air gap, ledge width and every tie/flashing
+# dimension below are UNCHANGED from the original buff-modular spec — only the coursing
+# (unit height 1 5/8" + 3/8" joint = 2" per course, not 2 2/3") and the unit length/color
+# change. `finish="roman-maximus-brick"` on the Material tells the renderer's masonry
+# recipe about both: an elongated unit AND the black colourway.
+#
+# Coursing, Roman 2", working up from grade (-2'-10"):
+#     ledge/shelf top   2" above grade       (-2'-8")
+#     20 courses field  40"                  (+0'-8")
+#     rowlock cap       4" (unit bed depth, unaffected by the coursing change)
+#     metal cap flash   2"                   (+1'-2" == 4'-0" above grade, on the nose)
 # The shelf sits one course module ABOVE finish grade rather than at it — the cheapest
 # durability move available in a 40+ freeze-thaw-cycle climate, lifting the base course
-# clear of the worst splash and snow-contact zone.
-GARAGE_BRICK_LEDGE_RISE = inch(2.66667)  # one modular course; shelf top above grade
+# clear of the worst splash and snow-contact zone. The wall height (ledge top to brick top,
+# 44") and the cap top (4'-0" above grade, on the nose) are both unchanged from the original
+# modular scheme — only the internal course count and the cap flashing's face height moved,
+# to keep both anchors exact with a 2" module instead of a 2 2/3" one.
+GARAGE_BRICK_LEDGE_RISE = inch(2.0)  # one Roman course; shelf top above grade
 # 1" air space (IRC R703.8 minimum) + a 3 5/8" wythe: how far east of the node line the
 # bearing shelf has to project. Below the shelf the concrete section widens from 11" to
 # ~15 5/8" — all of it below grade and backfilled, so none of it is visible.
@@ -992,10 +1004,10 @@ GARAGE_BRICK_WAINSCOT = Assembly(
     layers=(
         Layer(name="air-gap", material_ref="air-barrier", thickness=inch(1.0),
               function=LayerFunction.AIRGAP),
-        Layer(name="brick", material_ref="buff-brick", thickness=inch(3.625),
+        Layer(name="brick", material_ref="black-brick", thickness=inch(3.625),
               function=LayerFunction.STRUCTURE),
     ),
-    source="garage east wainscot flanking the overhead door — full-wythe buff face brick on a 1\" drained cavity (IRC R703.8), borne on GARAGE_ICF_6_BRICKLEDGE's shelf; through-wall flashing + weeps at 33\" o.c. max at the base course and again under the cap; two-piece adjustable ties into studs above the storey datum, ICF ties below",
+    source="garage east wainscot flanking the overhead door, wrapped 4' around each of the SE/NE corners onto the south and north walls — full-wythe Glen-Gery Black Roman Maximus face brick (3 5/8\" bed, ASTM C216 Grade SW Type FBA) on a 1\" drained cavity (IRC R703.8), borne on GARAGE_ICF_6_BRICKLEDGE's shelf; through-wall flashing + weeps at 33\" o.c. max at the base course and again under the cap; two-piece adjustable ties into studs above the storey datum, ICF ties below",
 )
 
 # --- frost-protected shallow foundation, sunken-garden side -----------------------------
@@ -1697,21 +1709,26 @@ MATERIALS = [
              r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
              color="#a07c5c", finish="brown-brick",
              source="basement south veneer, the Ishtar plinth (2026-08-20) — standard unglazed face brick, no special order"),
-    # Light buff face brick for the garage east wainscot (2026-08-26). Same clay physics as
-    # every other brick here — a brick is a brick and only the face differs, which is the
-    # whole reason `finish` and `color` are separate fields from `r_per_inch`/`density`.
+    # Glen-Gery "Black Roman Maximus" for the garage wainscot (2026-08-26), replacing an
+    # earlier light-buff stock spec of the same wythe. Same clay physics as every other
+    # brick here — a brick is a brick and only the face differs, which is the whole reason
+    # `finish` and `color` are separate fields from `r_per_inch`/`density`. The unit itself
+    # is 3 5/8" x 1 5/8" x 23 5/8" (glengery.com/brick-catalog/black-roman-maximus): the bed
+    # depth matches a modular unit exactly (this material drops into the same 3 5/8" `brick`
+    # layer unchanged), but it is a handmade Type FBA unit — coursing runs on its 1 5/8" +
+    # 3/8" joint = 2" module, not modular's 2 2/3", and the 23 5/8" length reads as long,
+    # widely-spaced vertical joints rather than a standard running bond. See
+    # GARAGE_BRICK_LEDGE_RISE above for the recomputed coursing this drives.
     #
-    # Deliberately NOT `white-brick`: a warmer stock buff unit is a commodity at Twin Cities
-    # yards where true white is a special order, and that price gap is the entire reason this
-    # material exists separately rather than reusing the porch railing's white.
-    #
-    # Colour is authored a step DARKER than the target tone — the viewer's lighting lifts
+    # Colour is authored a step LIGHTER than pure black — the viewer's lighting lifts
     # albedo well above what is written here (the lesson recorded on glazed-lapis-brick and
-    # #1c1f24). `finish` names the recipe explicitly so no renderer infers "buff" from the tag.
-    Material(tag="buff-brick", name="Light buff face brick (ASTM C216 Grade SW)",
+    # #1c1f24), and a literal #000000/#1c1f24 body would read as the same flat void as the
+    # envelope's dark trim metal instead of a fired clay black. `finish` names the recipe
+    # explicitly so no renderer infers a generic dark from the tag.
+    Material(tag="black-brick", name="Black Roman Maximus face brick (ASTM C216 Grade SW)",
              r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
-             color="#ded3bd", finish="buff-brick",
-             source="garage east wainscot — ASTM C216 Grade SW (severe weathering), through-body light buff, a SINGLE light body and not a blend: a chip or a trimmer scar exposes the same colour rather than a red core, and Grade SW is not optional at 40+ freeze-thaw cycles a year; stock buff, not the special-order true white of white-brick"),
+             color="#26221f", finish="roman-maximus-brick",
+             source="garage wainscot — Glen-Gery Black Roman Maximus, ASTM C216 Grade SW Type FBA (severe weathering; Type FBA rather than FBS because the handmade process gives it intentional dimensional variation), through-body black, a SINGLE body and not a blend: a chip or a trimmer scar exposes the same colour rather than a red core, and Grade SW is not optional at 40+ freeze-thaw cycles a year"),
     # cmu, grout (porch railing wythe/balcony post bases) were promoted to
     # library/materials.py on 2026-08-22 (CONTRIBUTING §Promotion flow); they arrive here
     # through STARTER_MATERIALS above.

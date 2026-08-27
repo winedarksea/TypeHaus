@@ -45,8 +45,6 @@
 
 from typehaus import (
     ConduitRun,
-    Connector,
-    ConnectorKind,
     DeviceKind,
     ElectricalDevice,
     ElectricalDeviceType,

@@ -209,6 +209,11 @@ GARAGE_STEM_NODES = [
     Node(uid="CGF008AAAA", tag="N-GF-S-DRE",
          position=pt(SERVICE_DOOR_OFFSET + SERVICE_DOOR_WIDTH + _SERVICE_GAP_MARGIN,
                      GARAGE_Y_SOUTH)),
+    # The SE/NE brick-ledge corner returns (garage.py's W-G-BRICK-SRET/NRET, 2026-08-26)
+    # need 4'-0" of widened, brick-ledged stem under them too, same as the east piers. These
+    # split the last 4'-0" off the corner end of W-GF-S2/W-GF-N.
+    Node(tag="N-GF-S-BRICK", position=pt(ft(20), GARAGE_Y_SOUTH)),
+    Node(tag="N-GF-N-BRICK", position=pt(ft(20), GARAGE_Y_NORTH)),
 ]
 
 # Aligns the stem's exterior EPS face to the 24'x24' node line, which is also the wood
@@ -247,16 +252,25 @@ GARAGE_STEM_WALLS = [
                    end_node="N-GF-S-DRW", **_STEM),
     FoundationWall(uid="CGF107AAAA", tag="W-GF-S-DR", start_node="N-GF-S-DRW",
                    end_node="N-GF-S-DRE", **_GRADE_BEAM),
+    # W-GF-S2 split again (2026-08-26): its corner-adjacent 4'-0" now carries the SE brick
+    # return, so it needs the brick-ledge stem too. W-GF-S2 keeps its uid on the remnant
+    # (SERVICE_DOOR side); W-GF-S3 is the new corner piece.
     FoundationWall(uid="CGF108AAAA", tag="W-GF-S2", start_node="N-GF-S-DRE",
-                   end_node="N-GF-SE", **_STEM),
+                   end_node="N-GF-S-BRICK", **_STEM),
+    FoundationWall(tag="W-GF-S3", start_node="N-GF-S-BRICK",
+                   end_node="N-GF-SE", **_STEM_BRICKLEDGE),
     FoundationWall(uid="CGF102AAAA", tag="W-GF-E1", start_node="N-GF-SE",
                    end_node="N-GF-E-DRS", **_STEM_BRICKLEDGE),
     FoundationWall(uid="CGF105AAAA", tag="W-GF-E-DR", start_node="N-GF-E-DRS",
                    end_node="N-GF-E-DRN", **_GRADE_BEAM),
     FoundationWall(uid="CGF106AAAA", tag="W-GF-E2", start_node="N-GF-E-DRN",
                    end_node="N-GF-NE", **_STEM_BRICKLEDGE),
-    FoundationWall(uid="CGF103AAAA", tag="W-GF-N", start_node="N-GF-NE",
+    # W-GF-N split (2026-08-26) the same way, for the NE brick return: W-GF-N keeps its uid
+    # on the remnant (west side); W-GF-N2 is the new corner piece.
+    FoundationWall(uid="CGF103AAAA", tag="W-GF-N", start_node="N-GF-N-BRICK",
                    end_node="N-GF-NW", **_STEM),
+    FoundationWall(tag="W-GF-N2", start_node="N-GF-NE",
+                   end_node="N-GF-N-BRICK", **_STEM_BRICKLEDGE),
     FoundationWall(uid="CGF104AAAA", tag="W-GF-W", start_node="N-GF-NW",
                    end_node="N-GF-SW", **_STEM),
 ]
@@ -269,8 +283,9 @@ GARAGE_STEM_WALLS = [
 # centred on the node line (the default) would leave 10" of toe under nothing. Centred on
 # the resolved section instead, the toe is a symmetric 4 1/2" each side.
 _GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall")
-# FT-GF-E1/E2 are wider because their stems are (GARAGE_ICF_6_BRICKLEDGE, above). Two facts
-# worth stating rather than rediscovering:
+# FT-GF-E1/E2 (and, since the SE/NE brick returns, FT-GF-S3/N2) are wider because their
+# stems are (GARAGE_ICF_6_BRICKLEDGE, above). Two facts worth stating rather than
+# rediscovering:
 #
 # 1. `center_on="wall"` takes `band_axis` over EVERY resolved layer polygon
 #    (resolve/envelope.py), and the ledge band is now one of them — so these two footings
@@ -287,12 +302,14 @@ GARAGE_FOOTINGS = [
     Footing(uid="CGF201AAAA", tag="FT-GF-S1", under="W-GF-S1", **_GARAGE_FOOTING),
     Footing(uid="CGF207AAAA", tag="FT-GF-S-DR", under="W-GF-S-DR", **_GARAGE_FOOTING),
     Footing(uid="CGF208AAAA", tag="FT-GF-S2", under="W-GF-S2", **_GARAGE_FOOTING),
+    Footing(tag="FT-GF-S3", under="W-GF-S3", **_GARAGE_FOOTING_BRICKLEDGE),
     Footing(uid="CGF202AAAA", tag="FT-GF-E1", under="W-GF-E1",
             **_GARAGE_FOOTING_BRICKLEDGE),
     Footing(uid="CGF205AAAA", tag="FT-GF-E-DR", under="W-GF-E-DR", **_GARAGE_FOOTING),
     Footing(uid="CGF206AAAA", tag="FT-GF-E2", under="W-GF-E2",
             **_GARAGE_FOOTING_BRICKLEDGE),
     Footing(uid="CGF203AAAA", tag="FT-GF-N", under="W-GF-N", **_GARAGE_FOOTING),
+    Footing(tag="FT-GF-N2", under="W-GF-N2", **_GARAGE_FOOTING_BRICKLEDGE),
     Footing(uid="CGF204AAAA", tag="FT-GF-W", under="W-GF-W", **_GARAGE_FOOTING),
 ]
 

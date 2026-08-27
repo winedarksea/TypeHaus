@@ -36,9 +36,15 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # segments, W-B-STR and W-B-STR3, are 2x6 bearing stud walls now. They hold back no
     # earth, and what they carry is joists and a wall stack — a stud-wall job on a footing.
     # ~9.8 cy out of this table and into [framing] (plan/storeys/basement.py).
-    assert len({tag for row in rows for tag in row["tags"]}) == 34
+    # **40 from 2026-08-26**, the garage east/south/north brick wainscot: W-G-BRICK-S/N (the
+    # two east piers) plus W-G-BRICK-SRET/NRET (their SE/NE corner returns) are four new
+    # `GARAGE_BRICK_WAINSCOT` wall tags, and W-GF-S3/W-GF-N2 (the corner returns' own
+    # widened `GARAGE_ICF_6_BRICKLEDGE` stem segments, split off W-GF-S2/W-GF-N) are two
+    # more — six tags, not eight, because W-GF-E1/E2 already existed (only their assembly
+    # changed, from `GARAGE_ICF_6` to the brick-ledge form) and add no new tag.
+    assert len({tag for row in rows for tag in row["tags"]}) == 40
     assert {row["material"] for row in rows} == {
-        "concrete", "retaining-block", "brown-brick",
+        "concrete", "retaining-block", "brown-brick", "black-brick",
         "glazed-lapis-brick", "glazed-gold-brick"}
     # Bigger than the entire priced concrete order (footings + slab) the estimate used to
     # know about, which is the measure of what was missing. It was >100 cy until 2026-08-23:

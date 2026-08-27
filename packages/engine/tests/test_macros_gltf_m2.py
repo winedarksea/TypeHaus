@@ -601,6 +601,44 @@ def test_material_finish_colour_mirrors_viewer_families():
     assert _material_finish_color(None, "structure") == _color("structure")
 
 
+def test_a_metal_wall_skin_exports_the_coil_white_not_its_hatch_tone():
+    """Every one of the house's five metal wall skins reaches the .glb as the same white the
+    viewer paints it (`createStandingSeamMaterial`, 0xE8E8E2) — including the exposed-fastener
+    PBR panel, which declares ``finish="ribbed-panel"`` and deliberately keeps "seam" out of
+    its tag so the substring guess cannot see it.
+
+    All five author ``color="#6b7076"``: that is the *drawing* hatch tone, paired with
+    hatch="metal" for the section, and reading it here painted the whole house's cladding
+    blue-grey in the export while the live viewer showed it white. That is exactly the
+    disagreement `glb-emitter-parity` exists to catch.
+    """
+    from typehaus.emit.gltf.emitter import _SEAM_BASE, _hex_rgba, _material_finish_color
+
+    class _Authored:
+        def __init__(self, hatch: str, color: str, finish: str | None = None) -> None:
+            self.hatch, self.color, self.finish = hatch, color, finish
+
+    hatch_tone = "#6b7076"
+    authored = {
+        "standing-seam-snaplock": _Authored("metal", hatch_tone),
+        "standing-seam-nailstrip-26": _Authored("metal", hatch_tone),
+        # The one that cannot be guessed: no "seam" in the tag, so only the declaration finds it.
+        "pbr-panel-26": _Authored("metal", hatch_tone, "ribbed-panel"),
+        # Two CMU specs that author DIFFERENT greys on purpose. A finish-wins rule would
+        # collapse both onto _CMU_BASE; the authored colour has to keep winning for them.
+        "cmu-8": _Authored("concrete", "#b8b3ab", "cmu"),
+        "cmu-12": _Authored("concrete", "#a8a49c", "cmu"),
+    }
+    for skin in ("standing-seam-snaplock", "standing-seam-nailstrip-26", "pbr-panel-26"):
+        assert _material_finish_color(skin, "cladding", authored) == _hex_rgba(_SEAM_BASE), skin
+
+    # Scoped to a cladding layer: the same ref naming a structural layer keeps its own colour,
+    # and so does a material whose finish states a real colour of its own.
+    assert _material_finish_color("pbr-panel-26", "structure", authored) == _hex_rgba(hatch_tone)
+    assert _material_finish_color("cmu-8", "structure", authored) == _hex_rgba("#b8b3ab")
+    assert _material_finish_color("cmu-12", "structure", authored) == _hex_rgba("#a8a49c")
+
+
 def test_raked_wall_body_follows_the_rake():
     """A gable/ToRoof wall extrudes to its per-vertex raked top, not the flat z1_m bounding box
     that engulfs (and z-fights) the roof — the 'buzzing wall' fix."""

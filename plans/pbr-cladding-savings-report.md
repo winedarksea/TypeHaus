@@ -113,3 +113,24 @@ The flush zero-overhang roof edge survives because both the wall panel and the r
 declare `skin_family="standing-seam"`, which is what
 `resolve/roof_edge_geometry.continuous_skin_cladding` actually reads. Drop it on either and
 the edge silently reverts to a fascia-and-drip-edge detail nobody has drawn.
+
+## Exports
+
+**IFC (`out/model.ifc`, `haus build`) is the Revit / SketchUp path**, and the panel arrives
+in it the same way every other cladding does: `IFCMATERIAL('pbr-panel-26')` inside each
+exterior wall's `IfcMaterialLayerSet`, as a 0.03175 m (1-1/4") layer named "cladding". Revit
+reads that layer set natively on IFC link/import; SketchUp reads it through its IFC importer.
+The 11 pipe fixings that replaced the CanDuit rings come through as `IfcDiscreteAccessory`
+with a `category` of `panel_strap` — *not* `pipe_strap`, because `emit/trades.py` reads any
+`pipe_*` category as a routed pipe run and would have filed a wall strap under plumbing.
+
+**The `.glb` (`/model.glb`) needed a fix to match the viewer.** All five metal skins author
+`color="#6b7076"` — that is the *drawing* hatch tone `material_color` pairs with
+`hatch="metal"`, not the coil paint — and `_material_finish_color` read it before it reached
+its standing-seam test, so the export painted the whole house's cladding blue-grey while the
+live viewer painted it 0xE8E8E2 white. The seam test now runs first for a cladding layer, and
+it dispatches on the DECLARED finish before falling back to guessing from the tag, which is
+the only way it can see `pbr-panel-26` (no "seam" in the tag, on purpose). 45 wall meshes now
+carry the coil white in the `.glb`; the two CMU specs, which author two different greys
+deliberately, still keep their own. This was a pre-existing parity break that the new panel
+inherited rather than caused — `standing-seam-snaplock` exported grey too.

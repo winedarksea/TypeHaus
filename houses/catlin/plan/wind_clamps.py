@@ -20,7 +20,8 @@
 # uninstallable. What resisted corner uplift through those clamps is now resisted by the
 # panel's own face-fastened screws, which pass through the panel into the girt at every
 # rib flat and every course: `takeoff.fasteners.exposed_fastener_cladding_screw_rows`
-# bills 3,098 of them, and they are already denser at a corner than the 8"/4'-0" grid below ever was.
+# bills 3,098 of them, and they are already denser at a corner than the 8"/4'-0" grid
+# below ever was.
 #
 # **The layout that remains, and what it assumes.**
 #   garage walls   4 corners x 2 faces x 2 levels = 16 clamps, `S-5-N`. The garage wall is

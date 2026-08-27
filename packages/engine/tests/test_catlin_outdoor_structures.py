@@ -178,16 +178,31 @@ def test_nema_box_sits_with_the_vent_clamps_not_at_eye_level(catlin_model) -> No
     assert box_z > 20 * FT  # up on the gable, not on the main-storey wall it used to ride
 
 
-def test_nema_box_and_its_clamp_ride_the_same_gable_wall_at_the_same_height(catlin_model) -> None:
-    clamp = catlin_model.plan.by_tag("CN-A-NEMA-CLAMP")
-    box = catlin_model.plan.by_tag("ED-A-NEMA-JB")
+def test_the_gable_enclosures_carry_no_seam_clamp_on_an_exposed_fastener_wall(
+    catlin_model,
+) -> None:
+    """The NEMA box and the PV junction box keep their gable perch; their clamps do not.
+
+    Until the 2026-08-26 cladding swap each was fixed with an `S-5!` seam clamp, and this
+    test pinned the clamp to the box: same wall, same xy, same elevation. An S-5! closes on
+    a standing-seam leg, and `pbr-panel-26` has no leg — the fixing is uninstallable on the
+    wall it was authored against, so both clamps were deleted rather than re-sized.
+
+    Neither box sits on the roof: the 4:12 rake at x=4' and x=9' is well above their ~25'-6"
+    elevation, so this really is wall and the seam really is gone. What still has to hold is
+    the part the clamp was never responsible for — that the boxes ride W-A-N2's gable, below
+    its rake — so that is what is asserted now.
+    """
     attic = next(s for s in catlin_model.plan.storeys if s.tag == "attic")
-    assert clamp.connects == ("ED-A-NEMA-JB", "W-A-N2")
-    assert clamp.position.xy_m == box.position.xy_m
-    assert abs(clamp.elevation.meters - resolved_mount_elevation(attic, box)) < 1e-9
-    # The gable siding must still reach it: the 4:12 rake is highest toward the x=18' ridge.
     gable = _wall(catlin_model, "W-A-N2")
-    assert clamp.elevation.meters < gable.z1_m
+    for tag in ("CN-A-NEMA-CLAMP", "CN-A-PV-CLAMP"):
+        assert catlin_model.plan.by_tag(tag) is None, (
+            f"{tag} clamps a seam the wall no longer has; see plan/wind_clamps.py")
+    for tag in ("ED-A-NEMA-JB", "ED-A-PV-JB"):
+        box = catlin_model.plan.by_tag(tag)
+        assert box is not None, f"{tag} is the enclosure itself and must survive the swap"
+        # The gable siding must still reach it: the 4:12 rake is highest toward the x=18' ridge.
+        assert resolved_mount_elevation(attic, box) < gable.z1_m
 
 
 # --- raised garden ------------------------------------------------------------

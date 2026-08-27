@@ -1715,18 +1715,22 @@
 # here, and it must not be escalated with a concrete index. The gross-wall-volume basis this
 # section's header documents (units not deducted) applies to the $/cy rows; this one is $/SF.
 #
-# 29.3 SF of face — two 4'-0" piers, 3'-8" of brick each. STOCK BUFF, and that is the whole
-# point of the material: an off-the-shelf ASTM C216 Grade SW body brick from a Twin Cities
-# yard, no special order, no lead time — which is why this prices BELOW the glazed rows and
-# at the brown plinth's basis rather than the lapis field's.
+# 61.5 SF of face — the two 4'-0" east piers PLUS a 4'-0" return around each of the SE/NE
+# corners onto the south/north walls (2026-08-26), four short wall segments in all. Glen-Gery
+# Black Roman Maximus, ASTM C216 Grade SW Type FBA — a special-order handmade unit, not the
+# stock buff body this wythe originally specified, which is why this now prices ABOVE the
+# glazed rows rather than at the brown plinth's basis: special-order unit cost plus a
+# handmade FBA body's wider dimensional tolerance (more mason time per unit fitting the joint).
 #
-# Above the plinth's $15-28 all the same, and not because the brick is dearer: 29 SF is a
-# mobilisation-dominated job. A mason sets up, lays two short piers with a sloped rowlock cap
-# and two runs of through-wall flashing, and leaves. Ties, weeps, both flashings and the
-# rowlock are in this rate. The cap flashing itself is NOT — it is modelled as
-# TR-G-BRICK-CAP-S/N and bills by length through [edge_trim]. The ICF brick ledge that
-# carries the wythe is not here either: it is concrete in the GARAGE_ICF_6_BRICKLEDGE stem.
-"GARAGE_BRICK_WAINSCOT" = { low = 18, high = 34, unit = "SF" }  # 29.3 SF of face
+# Still a mobilisation-dominated job at 61.5 SF, and now with FOUR corners/terminations
+# instead of two straight run-ends: two mitred outside corners (SE, NE) in addition to the
+# two horizontal terminations at the door jambs. A mason sets up, lays four short wall
+# segments with a sloped rowlock cap and through-wall flashing throughout, and leaves. Ties,
+# weeps, all four flashing runs and the rowlock are in this rate. The cap flashing itself is
+# NOT — it is modelled as TR-G-BRICK-CAP-S/N/SRET/NRET and bills by length through
+# [edge_trim]. The ICF brick ledge that carries the wythe is not here either: it is concrete
+# in the GARAGE_ICF_6_BRICKLEDGE stem.
+"GARAGE_BRICK_WAINSCOT" = { low = 24, high = 42, unit = "SF" }  # 61.5 SF of face
 # 6" core is 0.01852 cy/SF = 54 SF of wall per cy, so 8.82 cy is 476 SF of wall. The old
 # $480-1,000/cy was $8.89-18.52/SF; $756-1,296 is $14-24/SF. Market is $13-25/SF typical with
 # the cheapest published Midwest band at $8.50-14 — the old LOW sat on the absolute floor of
@@ -1734,20 +1738,22 @@
 # reach. KEYING WARNING: ICF is bought per SF OF WALL, not per cy. If the core thickness ever
 # changes this rate silently becomes wrong while still looking reasonable.
 "GARAGE_ICF_6" = { low = 756, high = 1296 }  # 8.82 CY = 476 SF — was $480-1,000
-# The two east stem segments flanking the overhead door, formed with a brick-ledge block so
-# they carry the wainscot's wythe. Same KEYING WARNING as GARAGE_ICF_6 above — ICF is bought
-# per SF OF WALL and this row is $/cy — with a second twist: the takeoff splits this assembly
-# into two rows against ONE key, the 6" core (0.79 cy) and the 4 5/8" ledge band (0.43 cy),
-# so the rate is struck across their sum, 1.22 cy over 42.7 SF of wall (35 SF/cy, not
-# GARAGE_ICF_6's 54 — the ledge is real extra concrete).
+# Four stem segments now (2026-08-26): the two east segments flanking the overhead door
+# PLUS the two SE/NE corner segments that carry the brick's 4'-0" corner returns
+# (W-GF-S3/N2) — all four formed with a brick-ledge block so they carry the wainscot's
+# wythe. Same KEYING WARNING as GARAGE_ICF_6 above — ICF is bought per SF OF WALL and this
+# row is $/cy — with a second twist: the takeoff splits this assembly into two rows against
+# ONE key, the 6" core (1.58 cy) and the 4 5/8" ledge band (0.84 cy), so the rate is struck
+# across their sum, 2.42 cy over 85.3 SF of wall (35 SF/cy, not GARAGE_ICF_6's 54 — the
+# ledge is real extra concrete).
 #
 # Derivation, so the number can be re-struck rather than re-guessed:
-#   42.7 SF of wall at GARAGE_ICF_6's own $14-24/SF          = $598 - 1,025
-#   brick-ledge form premium, 8 LF at $8-15/LF               =   $65 -   120
-#   the ledge's own ready-mix + the 4' welded-wire reinforcer =   $90 -   140
+#   85.3 SF of wall at GARAGE_ICF_6's own $14-24/SF          = $1,194 - 2,047
+#   brick-ledge form premium, 16 LF at $8-15/LF              =   $128 -   240
+#   the ledge's own ready-mix + four 4' welded-wire reinforcers = $180 -   280
 #   ------------------------------------------------------------------------
-#   $753 - 1,285 over 1.22 cy                                = $617 - 1,053/cy
-"GARAGE_ICF_6_BRICKLEDGE" = { low = 620, high = 1050 }  # 1.22 CY = 42.7 SF of wall
+#   $1,502 - 2,567 over 2.42 cy                              = $621 - 1,061/cy
+"GARAGE_ICF_6_BRICKLEDGE" = { low = 620, high = 1060 }  # 2.42 CY = 85.3 SF of wall
 # ** CATEGORY ERROR, same as BASEMENT_BRICK_VENEER: this line contains ZERO ready-mix. ** It
 # is dry-stacked segmental block. The cost drivers are SF of exposed face and wall HEIGHT,
 # and the model tracks neither — 9.07 cy is 245 SF of face at 27 SF/cy. Market for SRW
