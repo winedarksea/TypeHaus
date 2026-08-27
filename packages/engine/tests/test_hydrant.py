@@ -444,15 +444,12 @@ def test_the_hydrant_does_not_trip_the_drain_sleeve_rule(catlin_model):
 
 # --- 5. the export ------------------------------------------------------------------------
 
-def test_the_hydrant_reaches_ifc_as_a_flow_terminal(catlin_model, tmp_path):
+def test_the_hydrant_reaches_ifc_as_a_flow_terminal(catlin_ifc_path):
     """A fixture with no IFC class falls to IfcBuildingElementProxy, which no downstream
     plumbing schedule reads as a fixture."""
     ifcopenshell = pytest.importorskip("ifcopenshell")
-    from typehaus.emit.ifc import emit_ifc
 
-    path = tmp_path / "model.ifc"
-    emit_ifc(catlin_model, path)
-    model = ifcopenshell.open(str(path))
+    model = ifcopenshell.open(str(catlin_ifc_path))
     hydrant = next(e for e in model.by_type("IfcProduct") if e.Name == "FX-G-HYDRANT")
     # IfcSanitaryTerminal is an IfcFlowTerminal subtype — the family a plumbing schedule
     # collects, and specifically not IfcBuildingElementProxy.

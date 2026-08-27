@@ -110,12 +110,10 @@ def test_shallower_fill_only_counts_its_own_thickness():
         assembly_r_value(deep, library).value.r_us
 
 
-def test_ifc_material_layer_set_sums_to_the_wall_thickness(catlin_model, tmp_path):
+def test_ifc_material_layer_set_sums_to_the_wall_thickness(catlin_model_ro, catlin_ifc_path):
     ifcopenshell = pytest.importorskip("ifcopenshell")
-    from typehaus.emit.ifc import emit_ifc
 
-    path = emit_ifc(catlin_model, tmp_path / "cavity.ifc")
-    f = ifcopenshell.open(str(path))
+    f = ifcopenshell.open(str(catlin_ifc_path))
     walls = {w.Name: w for w in f.by_type("IfcWall")}
     assert "W-M-S1" in walls
 
@@ -127,7 +125,7 @@ def test_ifc_material_layer_set_sums_to_the_wall_thickness(catlin_model, tmp_pat
     assert usages, "wall should carry an IfcMaterialLayerSetUsage for Revit import"
     layer_set = usages[0].ForLayerSet
     total = sum(ly.LayerThickness for ly in layer_set.MaterialLayers)
-    assert total == pytest.approx(catlin_model.wall("W-M-S1").thickness_m, abs=1e-6)
+    assert total == pytest.approx(catlin_model_ro.wall("W-M-S1").thickness_m, abs=1e-6)
     # the batt is not a layer — it rides as a property set instead
     assert "mineral-wool" not in [
         ly.Material.Name for ly in layer_set.MaterialLayers
@@ -146,7 +144,7 @@ def test_ifc_material_layer_set_sums_to_the_wall_thickness(catlin_model, tmp_pat
     # only while no layer of this wall is banded. Stated rather than assumed — the emitter
     # now walks ``body_layers()`` for the parts, and the two lists differ on a wall with a
     # ``Layer.slot`` (→ test_emitter_band_parity.py).
-    wall_ir = catlin_model.wall("W-M-S1")
+    wall_ir = catlin_model_ro.wall("W-M-S1")
     assert not any(layer.is_banded for layer in wall_ir.layers), \
         "W-M-S1 gained a banded layer; this assertion is about the unbanded body"
     assert len(body.Items) == len(wall_ir.depth_layers())

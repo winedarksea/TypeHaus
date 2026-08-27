@@ -10,6 +10,11 @@ from typehaus.emit.draw.sheets import build_sheet_index, write_permit_set
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
 
+# ``slow`` (→ pyproject.toml, AGENTS.md §3): the permit-set PDF: 37 s to render and diff
+# the whole sheet index. `scripts/verify.sh --fast` deselects it; the full gate still
+# runs it.
+pytestmark = pytest.mark.slow
+
 
 @pytest.fixture(scope="module")
 def starter_model(starter_dir: Path):

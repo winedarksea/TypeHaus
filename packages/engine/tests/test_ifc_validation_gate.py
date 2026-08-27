@@ -19,12 +19,17 @@ from pathlib import Path
 import ifcopenshell
 import ifcopenshell.validate
 import pytest
+from _helpers import HOUSES
 from ifctester import ids, reporter
 
 from typehaus.emit.ifc import emit_ifc
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
-from _helpers import HOUSES
+
+# ``slow`` (→ pyproject.toml, AGENTS.md §3): four full house builds plus ifctester — 48
+# s, and its own docstring already calls it the CI budget. `scripts/verify.sh --fast`
+# deselects it; the full gate still runs it.
+pytestmark = pytest.mark.slow
 
 BASELINE_IDS = Path(__file__).resolve().parent / "data" / "baseline.ids"
 

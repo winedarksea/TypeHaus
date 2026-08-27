@@ -100,20 +100,18 @@ def test_missing_roof_ref_is_an_error(catlin_model):
     assert errors and errors[0].severity.value == "error"
 
 
-def test_ifc_solar_devices(catlin_model, tmp_path: Path):
+def test_ifc_solar_devices(catlin_model_ro, catlin_ifc_path: Path):
     ifcopenshell = pytest.importorskip("ifcopenshell")
-    from typehaus.emit.ifc.emitter import emit_ifc
     from typehaus.model.ids import derive_guid
 
-    out = emit_ifc(catlin_model, tmp_path / "solar.ifc")
-    f = ifcopenshell.open(str(out))
+    f = ifcopenshell.open(str(catlin_ifc_path))
     devices = f.by_type("IfcSolarDevice")
     assert len(devices) == 12
     assert all(d.PredefinedType == "SOLARPANEL" for d in devices)
     by_name = {d.Name: d for d in devices}
-    panel = next(p for p in catlin_model.solar_panels if p.tag == "SP-A-PV-W1")
+    panel = next(p for p in catlin_model_ro.solar_panels if p.tag == "SP-A-PV-W1")
     # Guids derive from the uid, so a Revit reload updates in place.
-    project_uuid = catlin_model.plan.project.project_uuid
+    project_uuid = catlin_model_ro.plan.project.project_uuid
     assert by_name["SP-A-PV-W1"].GlobalId == derive_guid(project_uuid, panel.uid)
     # The watts ride along as a pset for downstream consumers.
     pset = next(rel.RelatingPropertyDefinition for rel in by_name["SP-A-PV-W1"].IsDefinedBy

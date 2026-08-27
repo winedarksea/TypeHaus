@@ -31,4 +31,16 @@ This document provides guidelines for agents working on the TypeHaus codebase.
 ## 3. Testing & Benchmarking
 - **Shared Fixtures:** Place reusable fixtures into a shared helper module if reused across 3+ files.
 - **Avoid Test Duplication:** If the same setup appears in multiple test files, factor it into a fixture or a helper module.
+- **The catlin fixture ladder** (`packages/engine/tests/conftest.py`), cheapest first:
+  `catlin_plan` (session, frozen) → `catlin_model_ro` (session, **read-only**) →
+  `catlin_ifc_path` (session, the emitted framed IFC, **read-only**) → `catlin_model`
+  (module, the mutable copy). Take the highest one you can. Mutating a session fixture
+  corrupts whatever module runs next, which is a failure that lands nowhere near its cause —
+  if a test edits the model, it takes `catlin_model`. A test that emits a *mutated* model,
+  another house, or a non-default LOD calls `emit_ifc` itself.
+- **The `slow` marker:** one marker, registered in the root `pyproject.toml`, applied at
+  module level (`pytestmark = pytest.mark.slow`). `scripts/verify.sh --fast` deselects it;
+  the full gate runs everything, so `slow` is a fast-loop convenience and never a
+  quarantine. Earn it by measuring — `pytest --durations=40` — and un-mark a module that
+  stops being slow, or it becomes a test nobody runs.
 - **Refactor When Useful:** Code base is not deployed in production. Breaking changes are fine when they add clear value.

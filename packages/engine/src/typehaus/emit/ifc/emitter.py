@@ -220,6 +220,10 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
     if sequence:
         _emit_work_schedule(f, ifc_project, model, house_dir, element_entities)
 
+    # Containment was collected rather than written as it went (→ ll.assign_container);
+    # this is where it becomes entities, and it must happen before the file is serialized.
+    ll.flush_containers(f)
+
     f.write(str(out_path))
     return out_path
 

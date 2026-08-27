@@ -37,7 +37,6 @@ from typehaus.diff.equivalence import (
 )
 from typehaus.diff.semantic import semantic_model_from_ifc
 from typehaus.quantities import ft
-from _helpers import CATLIN as CATLIN_DIR, REPO_ROOT
 
 REFERENCE_ARCHIVE = (Path(__file__).parent / "fixtures" / "catlin_reference"
                      / "catlin_house_reference.ifc.gz")
@@ -198,19 +197,11 @@ def reference_model(tmp_path_factory):
 
 
 @pytest.fixture(scope="module")
-def current_ifc_path(tmp_path_factory):
-    """The engine's own catlin IFC at framed LOD."""
+def current_ifc_path(catlin_ifc_path):
+    """The engine's own catlin IFC at framed LOD — the shared session emission."""
     pytest.importorskip("ifcopenshell")
-    from typehaus.emit.ifc import emit_ifc
-    from typehaus.resolve import resolve
-    from typehaus.source import load_plan
 
-    result = load_plan(CATLIN_DIR)
-    assert result.plan is not None, [f.message for f in result.findings]
-    model, findings = resolve(result.plan)
-    errors = [f for f in findings if f.severity.value == "error"]
-    assert not errors, [f.message for f in errors]
-    return emit_ifc(model, tmp_path_factory.mktemp("current") / "catlin.ifc", lod="framed")
+    return catlin_ifc_path
 
 
 @pytest.fixture(scope="module")

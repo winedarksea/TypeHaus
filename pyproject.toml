@@ -34,3 +34,13 @@ mypy_path = "packages/engine/src"
 [tool.pytest.ini_options]
 testpaths = ["packages/engine/tests"]
 addopts = "-q -n 6 --dist loadfile -p no:cacheprovider"
+# The one marker. `scripts/verify.sh --fast` deselects it; the full gate runs everything, so
+# `slow` is a fast-loop convenience and never a quarantine. Mark a MODULE (module-level
+# `pytestmark = pytest.mark.slow`) rather than scattering per-test marks: the unit that costs
+# real time here is a module's shared fixture, and `--dist loadfile` schedules by module too.
+#
+# Earn the mark — measure with `--durations` first. A module marked `slow` that is no longer
+# slow is just a test nobody runs.
+markers = [
+  "slow: full IFC emission, permit-set rendering, golden comparison, subprocess benchmarks",
+]

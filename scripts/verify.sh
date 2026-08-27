@@ -2,9 +2,10 @@
 # The CI gate. Run it before every commit that touches the engine, the library, or a house.
 #
 # Usage: scripts/verify.sh [--fast] [--baseline-dir DIR]
-#   --fast          tests + checks-as-tests + ruff + mypy only. Skips the two full house
-#                   builds, the bench, and the npm build — the slow half — so the edit /
-#                   verify loop stays short. Run the full gate before committing.
+#   --fast          tests + checks-as-tests + ruff + mypy only, and the tests deselect the
+#                   `slow` marker. Skips the two full house builds and the npm build — the
+#                   slow half — so the edit / verify loop stays short. The full gate runs
+#                   every test including `slow`; run it before committing.
 #   --baseline-dir  diff houses/{catlin,starter}/out/model.json against
 #                   DIR/{catlin,starter}-model.json instead of only building them.
 set -euo pipefail
@@ -25,7 +26,15 @@ done
 
 echo "== engine tests =="
 # Flags come from [tool.pytest.ini_options] in the root pyproject (-n 6 --dist loadfile).
-$PY -m pytest packages/engine/tests
+#
+# --fast deselects `slow` (full IFC emission, permit-set rendering, golden comparison,
+# subprocess benchmarks — see the marker's definition in pyproject.toml). The full gate
+# below runs everything, which is what keeps `slow` from becoming where tests go to die.
+if [[ "$FAST" == "1" ]]; then
+  $PY -m pytest packages/engine/tests -m "not slow"
+else
+  $PY -m pytest packages/engine/tests
+fi
 
 echo "== starter house checks-as-tests =="
 # pytest_plugin.py is also registered as the `typehaus_checks` pytest11 entry point
@@ -73,11 +82,15 @@ echo "== haus check: catlin =="
 # above says the same thing from the other side; keep the two in step.
 $HAUS check houses/catlin | tail -3
 
-echo "== full build: catlin (IFC + glTF + permit PDFs) =="
-$HAUS build houses/catlin
+# `build` emits model.json + model.ifc + the vocabulary manifest, and nothing else: GLB
+# comes from `haus render`, the permit PDFs from `haus print`. The label here claimed all
+# three for a long time.
+echo "== full build: catlin (model.json + IFC) =="
+$HAUS build houses/catlin --timing
 
-echo "== perf: bench_rebuild =="
-$PY packages/engine/scripts/bench_rebuild.py --house houses/catlin --iters 15
+# bench_rebuild is deliberately NOT run standalone here: test_resolve_perf_guard.py in the
+# engine tests above already subprocesses the same benchmark and asserts on its result, so
+# this stage was measuring the same thing a second time and a slower way.
 
 echo "== ui: typecheck, test, build =="
 (cd ui && npm run typecheck && npm test && npm run build)

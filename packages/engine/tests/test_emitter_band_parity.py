@@ -36,15 +36,13 @@ def _banded_part_names(wall) -> set[str]:
 
 
 @pytest.fixture(scope="module")
-def catlin_ifc(catlin_model, tmp_path_factory):
+def catlin_ifc(catlin_ifc_path):
     ifcopenshell = pytest.importorskip("ifcopenshell")
-    from typehaus.emit.ifc import emit_ifc
 
-    path = emit_ifc(catlin_model, tmp_path_factory.mktemp("parity") / "catlin.ifc")
-    return ifcopenshell.open(str(path))
+    return ifcopenshell.open(str(catlin_ifc_path))
 
 
-def test_every_wall_exports_one_ifc_part_per_banded_body_layer(catlin_model, catlin_ifc):
+def test_every_wall_exports_one_ifc_part_per_banded_body_layer(catlin_model_ro, catlin_ifc):
     """Wall by wall, over the whole house — not just the one that regressed."""
     parts_by_parent: dict[str, set[str]] = {}
     for rel in catlin_ifc.by_type("IfcRelAggregates"):
@@ -56,7 +54,7 @@ def test_every_wall_exports_one_ifc_part_per_banded_body_layer(catlin_model, cat
                 parts_by_parent.setdefault(parent.Name, set()).add(child.Name)
 
     mismatches = []
-    for wall in catlin_model.walls:
+    for wall in catlin_model_ro.walls:
         expected = _banded_part_names(wall)
         actual = parts_by_parent.get(wall.tag, set())
         if expected != actual:
@@ -64,10 +62,10 @@ def test_every_wall_exports_one_ifc_part_per_banded_body_layer(catlin_model, cat
     assert not mismatches, mismatches
 
 
-def test_the_split_wythe_exports_all_five_regions_not_just_the_plinth(catlin_model,
+def test_the_split_wythe_exports_all_five_regions_not_just_the_plinth(catlin_model_ro,
                                                                      catlin_ifc):
     """The regression itself, named. ``depth_layers()`` here shipped the plinth alone."""
-    wall = catlin_model.wall(_SLOT_WALL)
+    wall = catlin_model_ro.wall(_SLOT_WALL)
     assert [ly.name for ly in wall.depth_layers()] == ["air-gap", "brick-plinth"]
     assert [ly.name for ly in wall.body_layers()] == ["air-gap", *_VENEER_REGIONS]
 
@@ -76,7 +74,7 @@ def test_the_split_wythe_exports_all_five_regions_not_just_the_plinth(catlin_mod
         f"{_SLOT_WALL}:{name}" for name in _VENEER_REGIONS}
 
 
-def test_the_glb_draws_every_body_layer_of_every_wall(catlin_model):
+def test_the_glb_draws_every_body_layer_of_every_wall(catlin_model_ro):
     """glTF buckets its primitives by colour, so the count a wall's node carries is the
     number of *distinct* colours among the layers drawn — which is exactly what a dropped
     layer changes when it is a colour of its own. The Ishtar wythe is four colours over one
@@ -86,8 +84,8 @@ def test_the_glb_draws_every_body_layer_of_every_wall(catlin_model):
     from typehaus.emit.gltf import emit_gltf_dict
     from typehaus.emit.gltf.palette import _layer_color, authored_colors
 
-    gltf, _blob = emit_gltf_dict(catlin_model)
-    authored = authored_colors(catlin_model)
+    gltf, _blob = emit_gltf_dict(catlin_model_ro)
+    authored = authored_colors(catlin_model_ro)
     # A wall emits two nodes with one uid — its body and, at the framed LOD, its members —
     # so the trade is what picks the body out.
     nodes = {n["extras"]["uid"]: n for n in gltf["nodes"]
@@ -95,7 +93,7 @@ def test_the_glb_draws_every_body_layer_of_every_wall(catlin_model):
              and n["extras"].get("trade") == "walls"}
 
     mismatches = []
-    for wall in catlin_model.walls:
+    for wall in catlin_model_ro.walls:
         node = nodes.get(wall.uid)
         if node is None or "mesh" not in node:
             continue

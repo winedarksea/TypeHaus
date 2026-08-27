@@ -14,12 +14,10 @@ from typehaus.model import (Building, ElectricalDevice, ElectricalDeviceType, Eq
                             ServicePort, Site, Storey, DeviceKind, m, pt)
 
 
-def test_ifc_has_pipe_segments_and_sleeve_proxies(catlin_model, tmp_path: Path):
+def test_ifc_has_pipe_segments_and_sleeve_proxies(catlin_model_ro, catlin_ifc_path: Path):
     ifcopenshell = pytest.importorskip("ifcopenshell")
-    from typehaus.emit.ifc.emitter import emit_ifc
 
-    out = emit_ifc(catlin_model, tmp_path / "model.ifc")
-    f = ifcopenshell.open(str(out))
+    f = ifcopenshell.open(str(catlin_ifc_path))
 
     # Authored PipeRuns are the segments with no PredefinedType. Drainage now emits real
     # IfcPipeSegments too — a gutter is GUTTER, a leader RIGIDSEGMENT, buried tile
@@ -27,44 +25,40 @@ def test_ifc_has_pipe_segments_and_sleeve_proxies(catlin_model, tmp_path: Path):
     # the untyped one, not every pipe segment in the file.
     pipes = [p for p in f.by_type("IfcPipeSegment")
              if p.PredefinedType in (None, "NOTDEFINED")]
-    total_segments = sum(len(run.path) - 1 for run in catlin_model.pipe_runs)
+    total_segments = sum(len(run.path) - 1 for run in catlin_model_ro.pipe_runs)
     assert len(pipes) == total_segments
     assert all(p.GlobalId for p in pipes)
 
     proxies = f.by_type("IfcBuildingElementProxy")
-    sleeve_tags = {s.tag for s in catlin_model.sleeves}
+    sleeve_tags = {s.tag for s in catlin_model_ro.sleeves}
     proxy_names = {p.Name for p in proxies}
     assert sleeve_tags <= proxy_names
 
 
-def test_ifc_has_duct_segments_and_air_terminals(catlin_model, tmp_path: Path):
+def test_ifc_has_duct_segments_and_air_terminals(catlin_model_ro, catlin_ifc_path: Path):
     ifcopenshell = pytest.importorskip("ifcopenshell")
-    from typehaus.emit.ifc.emitter import emit_ifc
 
-    out = emit_ifc(catlin_model, tmp_path / "model2.ifc")
-    f = ifcopenshell.open(str(out))
+    f = ifcopenshell.open(str(catlin_ifc_path))
 
     ducts = f.by_type("IfcDuctSegment")
-    total_segments = sum(len(duct.path) - 1 for duct in catlin_model.ducts)
+    total_segments = sum(len(duct.path) - 1 for duct in catlin_model_ro.ducts)
     assert len(ducts) == total_segments
     assert all(d.GlobalId for d in ducts)
 
     terminals = f.by_type("IfcAirTerminal")
-    expected = sum(1 for storey in catlin_model.plan.storeys
-                   for e in catlin_model.plan.storey_elements(storey.tag)
+    expected = sum(1 for storey in catlin_model_ro.plan.storeys
+                   for e in catlin_model_ro.plan.storey_elements(storey.tag)
                    if e.element_kind == "Register")
     assert len(terminals) == expected  # every authored Register, all four storeys
 
 
-def test_ifc_has_footing_bedding_proxies(catlin_model, tmp_path: Path):
+def test_ifc_has_footing_bedding_proxies(catlin_model_ro, catlin_ifc_path: Path):
     ifcopenshell = pytest.importorskip("ifcopenshell")
-    from typehaus.emit.ifc.emitter import emit_ifc
 
-    out = emit_ifc(catlin_model, tmp_path / "model3.ifc")
-    f = ifcopenshell.open(str(out))
+    f = ifcopenshell.open(str(catlin_ifc_path))
 
     proxies = f.by_type("IfcBuildingElementProxy")
-    bedding_tags = {fb.tag for fb in catlin_model.footing_beddings}
+    bedding_tags = {fb.tag for fb in catlin_model_ro.footing_beddings}
     assert bedding_tags
     proxy_names = {p.Name for p in proxies}
     assert bedding_tags <= proxy_names

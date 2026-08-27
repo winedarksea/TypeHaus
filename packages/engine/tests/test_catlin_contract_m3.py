@@ -1821,12 +1821,17 @@ def test_wall_mounted_devices_resolve_against_a_wall_face(catlin_model):
     assert not offenders, offenders
 
 
-def test_ifc_emission_when_available(catlin_model, tmp_path):
+# The one `slow` test in an otherwise fast module, so the mark is per-test rather than
+# module-level (→ AGENTS.md §3): emission itself is now shared and cheap, but
+# `validate(express_rules=True)` over the whole catlin file is 22 s on its own — and
+# test_ifc_validation_gate.py asserts exactly this for [catlin-framed], among three other
+# (house, LOD) combinations. Nothing is lost from the --fast tier by deselecting it here.
+@pytest.mark.slow
+def test_ifc_emission_when_available(catlin_ifc_path):
     ifcopenshell = pytest.importorskip("ifcopenshell")
     import ifcopenshell.validate
-    from typehaus.emit.ifc import emit_ifc
 
-    path = emit_ifc(catlin_model, tmp_path / "catlin.ifc", lod="framed")
+    path = catlin_ifc_path
     assert path.exists() and path.stat().st_size > 0
     logger = ifcopenshell.validate.json_logger()
     ifcopenshell.validate.validate(str(path), logger, express_rules=True)

@@ -7,8 +7,11 @@ A house is *any* directory containing ``plan/manifest.py`` (+ ``brief.md``,
 from __future__ import annotations
 
 import ast
+import contextlib
 import hashlib
 import importlib.util
+import json
+import os
 import sys
 import threading
 import time
@@ -16,6 +19,8 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterator
+
+from pydantic import ValidationError
 
 from typehaus.findings import Finding, Severity, SourceLoc
 from typehaus.model.base import Element, set_construction_observer
@@ -110,6 +115,102 @@ def lint_only(house_dir: Path) -> list[Finding]:
 _SCAN_CACHE: dict[str, tuple[str, list[Finding], list[tuple[str, "SourceLoc"]]]] = {}
 
 
+# ---------------------------------------------------------------------------------------
+# Disk-backed scan cache.
+#
+# ``_SCAN_CACHE`` above only helps a *long-lived* process (``haus serve``). Every one-shot
+# CLI invocation — build, check, fmt, takeoff, tasks — starts cold and pays the full libcst
+# scan: 4.9 ms warm against up to 7.3 s cold on catlin, which was the whole of the build's
+# non-IFC time. This mirrors the dict to one JSON file per house so the second invocation is
+# as warm as the second rebuild.
+#
+# The safety argument is the in-memory one, unchanged: the key is the file's own content
+# SHA, so a stale entry can never be served — an edited file simply misses. What disk adds
+# is an *engine* axis. The lint rules and the provenance scanner are engine code, so a cache
+# written by a different engine describes different rules; the file header pins the engine
+# version plus a hash of those modules' source, and any mismatch discards the whole file.
+#
+# Every read and write is best-effort. A corrupt, unreadable, or unwritable cache must cost
+# a full scan and nothing else — a read-only ``out/`` may never fail a build.
+_CACHE_FORMAT = 1
+_CACHE_RELPATH = Path("out") / ".scan-cache.json"
+
+# What one file's scan is worth remembering: its content sha, its findings, its provenance.
+ScanEntry = tuple[str, list[Finding], list[tuple[str, SourceLoc]]]
+
+
+def _scanner_identity() -> str:
+    """Engine version + a hash of the modules whose output is being cached.
+
+    Version alone is too coarse during development, where the engine version does not move
+    between edits to ``dialect.py``; the source hash is what actually invalidates a cache
+    written by yesterday's lint rules.
+    """
+    from typehaus import _meta
+    from typehaus.source import dialect, provenance
+
+    h = hashlib.sha256(_meta.engine_version().encode())
+    for module in (dialect, provenance):
+        source = getattr(module, "__file__", None)
+        if source is None:  # pragma: no cover - namespace/zip import
+            return "unpinnable"
+        try:
+            h.update(Path(source).read_bytes())
+        except OSError:  # pragma: no cover - unreadable engine source
+            return "unpinnable"
+    return h.hexdigest()[:16]
+
+
+def _read_disk_cache(house_dir: Path) -> dict[str, ScanEntry]:
+    """Load the house's persisted scan cache, or ``{}`` for any reason at all."""
+    path = house_dir / _CACHE_RELPATH
+    try:
+        raw = json.loads(path.read_text())
+    except (OSError, ValueError):
+        return {}
+    if not isinstance(raw, dict) or raw.get("format") != _CACHE_FORMAT:
+        return {}
+    if raw.get("scanner") != _scanner_identity():
+        return {}
+    out: dict[str, ScanEntry] = {}
+    try:
+        for rel, entry in raw["files"].items():
+            findings = [Finding.model_validate(f) for f in entry["findings"]]
+            prov = [(tag, SourceLoc.model_validate(loc)) for tag, loc in entry["provenance"]]
+            out[str(house_dir / rel)] = (entry["sha"], findings, prov)
+    except (KeyError, TypeError, ValidationError):
+        return {}
+    return out
+
+
+def _write_disk_cache(house_dir: Path, entries: dict[str, ScanEntry]) -> None:
+    """Persist the house's scan results. Silent on every failure — this is a cache."""
+    path = house_dir / _CACHE_RELPATH
+    payload = {
+        "format": _CACHE_FORMAT,
+        "scanner": _scanner_identity(),
+        "files": {
+            Path(key).relative_to(house_dir).as_posix(): {
+                "sha": sha,
+                "findings": [f.model_dump(mode="json") for f in findings],
+                "provenance": [[tag, loc.model_dump(mode="json")] for tag, loc in prov],
+            }
+            for key, (sha, findings, prov) in entries.items()
+        },
+    }
+    # Write-and-rename so a concurrent reader never sees a half-written file, and a crash
+    # mid-write leaves the previous cache intact rather than a corrupt one. The pid in the
+    # temp name keeps two houses (or two workers) from clobbering each other's rename.
+    tmp = path.with_suffix(f".{os.getpid()}.tmp")
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp.write_text(json.dumps(payload))
+        tmp.replace(path)
+    except (OSError, ValueError, TypeError):
+        with contextlib.suppress(OSError):
+            tmp.unlink(missing_ok=True)
+
+
 def _scan_file(rel: str, src: str) -> tuple[list[Finding], list[tuple[str, SourceLoc]]]:
     import libcst as cst
 
@@ -189,6 +290,11 @@ def load_plan(house_dir: Path) -> LoadResult:
 
     t0 = time.perf_counter()
     live_keys: set[str] = set()
+    # The in-process dict stays in front of the disk file: ``haus serve`` rebuilds on every
+    # keystroke-ish save and must not read JSON each time. Disk is consulted only for keys
+    # this process has not already scanned, which for a one-shot CLI run is all of them.
+    on_disk: dict[str, ScanEntry] | None = None
+    scanned_any = False
     for f in editable_files(house_dir):
         rel = f.relative_to(house_dir).as_posix()
         src = f.read_text()
@@ -196,17 +302,30 @@ def load_plan(house_dir: Path) -> LoadResult:
         live_keys.add(key)
         sha = hashlib.sha256(src.encode()).hexdigest()
         cached = _SCAN_CACHE.get(key)
-        if cached is not None and cached[0] == sha:
+        if cached is None or cached[0] != sha:
+            if on_disk is None:
+                on_disk = _read_disk_cache(house_dir)
+            from_disk = on_disk.get(key)
+            cached = from_disk if from_disk is not None and from_disk[0] == sha else None
+        if cached is not None:
             file_findings, prov_pairs = cached[1], cached[2]
         else:
             file_findings, prov_pairs = _scan_file(rel, src)
-            _SCAN_CACHE[key] = (sha, file_findings, prov_pairs)
+            scanned_any = True
+        _SCAN_CACHE[key] = (sha, file_findings, prov_pairs)
         findings.extend(file_findings)
         for tag, loc in prov_pairs:
             prov.add(tag, loc)
     # Evict entries for files that no longer exist (renames/deletes) to bound the cache.
+    house_entries = {k: v for k, v in _SCAN_CACHE.items() if k in live_keys}
     for stale in [k for k in _SCAN_CACHE if k not in live_keys and k.startswith(str(house_dir))]:
         del _SCAN_CACHE[stale]
+    # Rewrite only when the file on disk is actually out of date: something re-scanned, or
+    # the house gained/lost a file. A cold run over an unchanged house reads the cache and
+    # writes nothing, and a warm ``haus serve`` rebuild touches disk at all only when a save
+    # invalidated an entry.
+    if scanned_any or (on_disk is not None and set(on_disk) != set(house_entries)):
+        _write_disk_cache(house_dir, house_entries)
     timings["lint_provenance"] = (time.perf_counter() - t0) * 1000.0
 
     if any(f.severity is Severity.ERROR for f in findings):

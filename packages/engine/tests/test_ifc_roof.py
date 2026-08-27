@@ -10,11 +10,8 @@ every other view of the same building:
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import pytest
 
-from typehaus.emit.ifc import emit_ifc
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 
 pytest.importorskip("ifcopenshell")
@@ -23,17 +20,10 @@ _ROOF_TAG = "RF-HOUSE"
 
 
 @pytest.fixture(scope="module")
-def catlin_roof_ifc(catlin_model, tmp_path_factory) -> Path:
-    out = tmp_path_factory.mktemp("ifc-roof") / "catlin.ifc"
-    emit_ifc(catlin_model, out, lod="framed")
-    return out
-
-
-@pytest.fixture(scope="module")
-def ifc_file(catlin_roof_ifc):
+def ifc_file(catlin_ifc_path):
     import ifcopenshell
 
-    return ifcopenshell.open(str(catlin_roof_ifc))
+    return ifcopenshell.open(str(catlin_ifc_path))
 
 
 def _roof_product(ifc_file, tag: str = _ROOF_TAG):
@@ -62,15 +52,15 @@ def _children(ifc_file, product) -> dict:
 
 # --- the shell -----------------------------------------------------------------------------
 
-def test_the_roof_is_a_pitched_layer_stack_not_a_flat_plate(catlin_model, ifc_file):
+def test_the_roof_is_a_pitched_layer_stack_not_a_flat_plate(catlin_model_ro, ifc_file):
     """One closed polyhedron per above-structure layer, spanning the pitch.
 
     It used to be one per (layer x roof plane): the shell was built plane by plane with
     vertical sides, so the two halves of a gable met at a vertical joint. The IR mitres the
     ridge instead — one band crosses it — which is why the count is now per layer.
     """
-    roof = next(item for item in catlin_model.roofs if item.tag == _ROOF_TAG)
-    assembly = catlin_model.plan.library.resolve_assembly(roof.assembly)
+    roof = next(item for item in catlin_model_ro.roofs if item.tag == _ROOF_TAG)
+    assembly = catlin_model_ro.plan.library.resolve_assembly(roof.assembly)
     layers = above_structure_layers(assembly)
     assert len(layers) > 1  # the catlin roof is a real build-up, not a single skin
     solids = _brep_solids(_roof_product(ifc_file))
@@ -83,7 +73,7 @@ def test_the_roof_is_a_pitched_layer_stack_not_a_flat_plate(catlin_model, ifc_fi
     assert max(zs) - min(zs) > (roof.ridge_z_m - roof.eave_z_m) * 0.9
 
 
-def test_each_layer_clips_at_its_own_serialized_plan_setback(catlin_model, ifc_file):
+def test_each_layer_clips_at_its_own_serialized_plan_setback(catlin_model_ro, ifc_file):
     """The clip faces the glTF export and the viewer honor, which IFC used to ignore.
 
     A band's edge is no longer a vertical face at the authored plan position: the layer is
@@ -92,10 +82,10 @@ def test_each_layer_clips_at_its_own_serialized_plan_setback(catlin_model, ifc_f
     — IFC used to build vertical sides here and disagree with both other views of the roof —
     so the clip is checked as the band between those two, with the bottom edge exact.
     """
-    roof = next(item for item in catlin_model.roofs if item.tag == _ROOF_TAG)
+    roof = next(item for item in catlin_model_ro.roofs if item.tag == _ROOF_TAG)
     setbacks = {entry["layer"]: entry for entry in roof.layer_edge_setbacks}
     assert setbacks, "the catlin house roof serializes per-layer setbacks"
-    assembly = catlin_model.plan.library.resolve_assembly(roof.assembly)
+    assembly = catlin_model_ro.plan.library.resolve_assembly(roof.assembly)
     layers = above_structure_layers(assembly)
     west_edge = min(point[0] for point in roof.footprint)
     solids = _brep_solids(_roof_product(ifc_file))
@@ -115,9 +105,9 @@ def test_each_layer_clips_at_its_own_serialized_plan_setback(catlin_model, ifc_f
 
 # --- the members ---------------------------------------------------------------------------
 
-def test_every_roof_member_carries_a_swept_solid(catlin_model, ifc_file):
+def test_every_roof_member_carries_a_swept_solid(catlin_model_ro, ifc_file):
     """They used to aggregate as identities with no geometry — invisible in any viewer."""
-    roof = next(item for item in catlin_model.roofs if item.tag == _ROOF_TAG)
+    roof = next(item for item in catlin_model_ro.roofs if item.tag == _ROOF_TAG)
     children = _children(ifc_file, _roof_product(ifc_file))
     assert len(children) == len(roof.members) > 0
     without_geometry = [key for key, child in children.items()
@@ -173,12 +163,12 @@ def test_members_land_in_the_ifc_class_their_trade_calls_for(ifc_file):
 
 # --- the garage gutter ---------------------------------------------------------------------
 
-def test_the_garage_south_eave_carries_a_derived_gutter(catlin_model):
+def test_the_garage_south_eave_carries_a_derived_gutter(catlin_model_ro):
     """Deferred with the truss roof; derived now, so the raised-heel lift carries it.
 
     The channel is an open-top U of three thin bands (back/bottom/front), not a solid bar.
     """
-    roof = next(item for item in catlin_model.roofs if item.tag == "RF-GARAGE")
+    roof = next(item for item in catlin_model_ro.roofs if item.tag == "RF-GARAGE")
     gutters = [member for member in roof.members if member.category == "gutter"]
     assert [member.child_key for member in gutters] == [
         "eave-lo-gutter-back", "eave-lo-gutter-bottom", "eave-lo-gutter-front"]
@@ -190,7 +180,7 @@ def test_the_garage_south_eave_carries_a_derived_gutter(catlin_model):
         assert gutter.z1_m > roof.eave_z_m - 0.2
 
 
-def test_the_garage_gutter_reaches_the_ifc_export(catlin_model, ifc_file):
+def test_the_garage_gutter_reaches_the_ifc_export(catlin_model_ro, ifc_file):
     children = _children(ifc_file, _roof_product(ifc_file, "RF-GARAGE"))
     for band in ("back", "bottom", "front"):
         gutter = children[f"eave-lo-gutter-{band}"]

@@ -124,14 +124,13 @@ def test_the_takeoff_bills_the_band_and_not_the_wall(catlin_model):
     assert rows["stucco"]["net_area_sqft"] < 500.0
 
 
-def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_model, tmp_path):
+def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
     """``IfcMaterialLayerSet`` has no vertical variation and its thicknesses must sum to the
     wall's — so a partial layer cannot be a member of one. It goes out the way Revit sends a
     vertically compound wall: ``IfcBuildingElementPart`` bodies under ``IfcRelAggregates``."""
     ifcopenshell = pytest.importorskip("ifcopenshell")
-    from typehaus.emit.ifc import emit_ifc
 
-    model = ifcopenshell.open(str(emit_ifc(catlin_model, tmp_path / "banded.ifc")))
+    model = ifcopenshell.open(str(catlin_ifc_path))
 
     parts = {p.Name: p for p in model.by_type("IfcBuildingElementPart")}
     assert f"W-B-N1:{_PANEL}" in parts

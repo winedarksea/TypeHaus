@@ -97,9 +97,20 @@ def build(
              "derived work packages. Off by default: the permit IFC stays lean."),
     only: Optional[str] = typer.Option(None, help="ifc | json | card"),
     inspect: bool = typer.Option(False, help="parse-only; never imports params/"),
+    timing: bool = typer.Option(
+        False, "--timing",
+        help="Print where the build spent its time, slowest stage first."),
 ) -> None:
     """Build outputs from a plan (IFC / model.json)."""
+    import time
+
     from typehaus.source import lint_only, load_plan
+
+    # The loader and the resolver already measure their own stages and hand them back
+    # (``LoadResult.timings`` / ``ResolvedModel.timings``); nothing ever read them, so the
+    # only way to answer "why is the build slow" was a throwaway script. The emit stages
+    # below are the missing half — and are, in practice, the answer.
+    stages: dict[str, float] = {}
 
     d = _resolve_house(house)
     if inspect:
@@ -107,15 +118,23 @@ def build(
         _print_findings(findings)
         raise typer.Exit(1 if any(f.severity is Severity.ERROR for f in findings) else 0)
 
+    t0 = time.perf_counter()
     result = load_plan(d)
+    load_total = (time.perf_counter() - t0) * 1000.0
     _print_findings(result.findings)
     if not result.ok or result.plan is None:
         console.print("[red]build failed[/red]")
         raise typer.Exit(1)
+    stages.update({f"load.{name}": ms for name, ms in result.timings.items()})
+    # Whatever the loader does not attribute to a named stage (module import machinery,
+    # the manifest walk) still belongs to the load — otherwise the table silently loses it.
+    stages["load.other"] = load_total - sum(result.timings.values())
 
     from typehaus.resolve import resolve
 
+    t0 = time.perf_counter()
     model, rfindings = resolve(result.plan)
+    stages["resolve"] = (time.perf_counter() - t0) * 1000.0
     _print_findings(rfindings)
     out = d / "out"
     out.mkdir(exist_ok=True)
@@ -128,26 +147,42 @@ def build(
     from typehaus.emit.vocabulary_manifest import write_vocabulary_manifest
 
     vocab_path = out / "vocabulary.json"
+    t0 = time.perf_counter()
     write_vocabulary_manifest(vocab_path)
+    stages["write_vocabulary_manifest"] = (time.perf_counter() - t0) * 1000.0
     console.print(f"wrote {vocab_path}")
 
     if only in (None, "json"):
         from typehaus.checks import load_preferences
         from typehaus.server.model_json import load_variant_catalog, write_model_json
 
+        t0 = time.perf_counter()
         p = write_model_json(model, out / "model.json", content_hash=result.content_hash,
                              preferences=load_preferences(d), variants=load_variant_catalog(d))
+        stages["write_model_json"] = (time.perf_counter() - t0) * 1000.0
         console.print(f"wrote {p}")
     if only in (None, "ifc"):
         try:
             from typehaus.emit.ifc import emit_ifc
 
+            t0 = time.perf_counter()
             p = emit_ifc(model, out / "model.ifc", lod=lod,
                           sequence=with_schedule, house_dir=d)
+            stages["emit_ifc"] = (time.perf_counter() - t0) * 1000.0
             extra = " + schedule" if with_schedule else ""
             console.print(f"wrote {p} (lod={lod}{extra})")
         except RuntimeError as exc:
             console.print(f"[yellow]skipped IFC: {exc}[/yellow]")
+    if timing:
+        # Resolve's own sub-stages are reported as one line: it is ~0.3 s of the build, and
+        # unfolding it here would bury the stages that are not.
+        table = Table(title="build timing", box=None)
+        table.add_column("stage")
+        table.add_column("ms", justify="right")
+        for name, ms in sorted(stages.items(), key=lambda kv: -kv[1]):
+            table.add_row(name, f"{ms:.1f}")
+        table.add_row("[bold]total[/bold]", f"[bold]{sum(stages.values()):.1f}[/bold]")
+        console.print(table)
     console.print("[green]build ok[/green]")
 
 

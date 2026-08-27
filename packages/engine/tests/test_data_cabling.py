@@ -110,13 +110,12 @@ def test_a_raceway_cannot_claim_a_plumbing_sleeve(catlin_model):
         assert purposes[crossing["sleeve"]] not in plumbing, crossing
 
 
-def test_low_voltage_devices_export_as_communications_appliances(catlin_model, tmp_path):
+def test_low_voltage_devices_export_as_communications_appliances(catlin_ifc_path):
     """DeviceKind is the symbol axis; the IFC class rides the product type, which is what
     keeps a PoE camera a catalog entry instead of a patch to five engine maps."""
     ifcopenshell = pytest.importorskip("ifcopenshell")
-    from typehaus.emit.ifc import emit_ifc
 
-    f = ifcopenshell.open(str(emit_ifc(catlin_model, tmp_path / "data.ifc")))
+    f = ifcopenshell.open(str(catlin_ifc_path))
     appliances = {p.Name: p.PredefinedType for p in f.by_type("IfcCommunicationsAppliance")}
     assert appliances == {
         "ED-B-NET-PATCH": "NETWORKHUB",

@@ -7,7 +7,6 @@ import uuid
 from pathlib import Path
 
 import pytest
-
 from _helpers import CATLIN, HOUSE_IGNORE, HOUSES, REPO_ROOT, STARTER, copy_house
 
 __all__ = ["CATLIN", "HOUSE_IGNORE", "HOUSES", "REPO_ROOT", "STARTER", "copy_house"]
@@ -52,6 +51,48 @@ def catlin_plan():
     errors = [f for f in result.findings if f.severity.value == "error"]
     assert not errors, [f.message for f in errors]
     return result.plan
+
+
+@pytest.fixture(scope="session")
+def catlin_model_ro(catlin_plan):
+    """The resolved catlin model, once for the whole suite — for **read-only** use.
+
+    ``catlin_model`` below is module-scoped because ``ResolvedModel`` is mutable and one
+    module's edits must not leak into another's. That is the right default, but it made the
+    house resolve 112 times for a suite in which the large majority of consumers only read.
+    Take this one when the test does not mutate the model (emitting, taking off, asserting
+    on geometry); take ``catlin_model`` the moment it might.
+
+    Handing this to a mutating test is the failure mode, and it is a quiet one — the damage
+    lands in whatever module runs next. When in doubt use ``catlin_model``: a resolve is
+    ~290 ms, cheaper than a ``copy.deepcopy`` of the result (~475 ms, measured), so there is
+    no defensive-copy shortcut to reach for here.
+    """
+    from typehaus.resolve import resolve
+
+    model, findings = resolve(catlin_plan)
+    errors = [f for f in findings if f.severity.value == "error"]
+    assert not errors, errors
+    return model
+
+
+@pytest.fixture(scope="session")
+def catlin_ifc_path(catlin_model_ro, tmp_path_factory) -> Path:
+    """The framed-LOD catlin IFC, emitted once per xdist worker — **read-only**.
+
+    IFC emission was the single largest cost in this suite: ~25 modules each emitted the
+    *unmodified* catlin model at the default LOD, and ``--durations`` was a wall of them.
+    Under ``-n 6 --dist loadfile`` a session fixture is per worker, so this collapses those
+    to six emissions.
+
+    Open it, never write to it — every test that takes this shares one file on disk. A test
+    that emits a *mutated* model, another house, or a non-default LOD must call ``emit_ifc``
+    itself; so must ``test_ifc_openings.py``'s self-diff, which emits twice on purpose.
+    """
+    from typehaus.emit.ifc import emit_ifc
+
+    out = tmp_path_factory.mktemp("catlin-ifc") / "catlin.ifc"
+    return emit_ifc(catlin_model_ro, out)
 
 
 @pytest.fixture(scope="module")

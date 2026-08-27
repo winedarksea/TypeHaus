@@ -82,14 +82,12 @@ def test_model_json_publishes_the_same_rings(catlin_model) -> None:
     assert [[tuple(point) for point in ring] for ring in serialized] == derived
 
 
-def test_ifc_lot_slab_carries_the_voids(catlin_model, tmp_path: Path) -> None:
+def test_ifc_lot_slab_carries_the_voids(catlin_model_ro, catlin_ifc_path: Path) -> None:
     ifcopenshell = pytest.importorskip("ifcopenshell")
-    from typehaus.emit.ifc.emitter import emit_ifc
 
-    out = emit_ifc(catlin_model, tmp_path / "site_voids.ifc")
-    f = ifcopenshell.open(str(out))
+    f = ifcopenshell.open(str(catlin_ifc_path))
     site = f.by_type("IfcSite")[0]
     solid = site.Representation.Representations[0].Items[0]
     profile = solid.SweptArea
     assert profile.is_a("IfcArbitraryProfileDefWithVoids")
-    assert len(profile.InnerCurves) == len(earth_plane_void_rings(catlin_model))
+    assert len(profile.InnerCurves) == len(earth_plane_void_rings(catlin_model_ro))

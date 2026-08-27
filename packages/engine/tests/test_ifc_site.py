@@ -8,12 +8,10 @@ import pytest
 
 
 
-def test_ifc_site_has_representation_and_pset(catlin_model, tmp_path: Path):
+def test_ifc_site_has_representation_and_pset(catlin_ifc_path: Path):
     ifcopenshell = pytest.importorskip("ifcopenshell")
-    from typehaus.emit.ifc.emitter import emit_ifc
 
-    out = emit_ifc(catlin_model, tmp_path / "model.ifc")
-    f = ifcopenshell.open(str(out))
+    f = ifcopenshell.open(str(catlin_ifc_path))
 
     sites = f.by_type("IfcSite")
     assert len(sites) == 1
@@ -28,33 +26,30 @@ def test_ifc_site_has_representation_and_pset(catlin_model, tmp_path: Path):
     assert props["parcel_area_m2"] > 0
 
 
-def test_ifc_has_utility_proxies(catlin_model, tmp_path: Path):
+def test_ifc_has_utility_proxies(catlin_model_ro, catlin_ifc_path: Path):
     ifcopenshell = pytest.importorskip("ifcopenshell")
-    from typehaus.emit.ifc.emitter import emit_ifc
 
-    out = emit_ifc(catlin_model, tmp_path / "model2.ifc")
-    f = ifcopenshell.open(str(out))
+    f = ifcopenshell.open(str(catlin_ifc_path))
 
     proxies = [p for p in f.by_type("IfcBuildingElementProxy")
               if (p.Name or "").startswith("UTIL-")]
-    assert len(proxies) == len(catlin_model.plan.project.site.utilities)
+    assert len(proxies) == len(catlin_model_ro.plan.project.site.utilities)
 
 
-def test_the_site_sheet_hangs_below_grade_rather_than_standing_on_it(catlin_model, tmp_path: Path):
+def test_the_site_sheet_hangs_below_grade_rather_than_standing_on_it(catlin_model_ro,
+                                                                    catlin_ifc_path: Path):
     """The IFC switch-over's blessed diff: soil is what is *under* the grade plane.
 
     The pad used to be extruded 5cm upward from grade, so the ground Revit received sat 5cm
     above the ground the viewer drew and every slab-on-grade stood proud of its own site.
     """
     ifcopenshell = pytest.importorskip("ifcopenshell")
-    from typehaus.emit.ifc.emitter import emit_ifc
     from typehaus.resolve.geometry_build import EARTH_SHEET_THICKNESS_M
     from typehaus.resolve.site_earth import site_grade_elevation_m
 
-    out = emit_ifc(catlin_model, tmp_path / "model.ifc")
-    site = ifcopenshell.open(str(out)).by_type("IfcSite")[0]
+    site = ifcopenshell.open(str(catlin_ifc_path)).by_type("IfcSite")[0]
     solid = site.Representation.Representations[0].Items[0]
-    grade = site_grade_elevation_m(catlin_model)
+    grade = site_grade_elevation_m(catlin_model_ro)
     assert solid.Depth == pytest.approx(EARTH_SHEET_THICKNESS_M, abs=1e-9)
     assert solid.Position.Location.Coordinates[2] == pytest.approx(
         grade - EARTH_SHEET_THICKNESS_M, abs=1e-9)
@@ -62,15 +57,13 @@ def test_the_site_sheet_hangs_below_grade_rather_than_standing_on_it(catlin_mode
     assert solid.SweptArea.is_a("IfcArbitraryProfileDefWithVoids")
 
 
-def test_a_subfloor_deck_reaches_the_ifc_export(catlin_model, tmp_path: Path):
+def test_a_subfloor_deck_reaches_the_ifc_export(catlin_model_ro, catlin_ifc_path: Path):
     """Blessed diff: no emitter drew a deck, so a floor exported as joists under nothing."""
     ifcopenshell = pytest.importorskip("ifcopenshell")
-    from typehaus.emit.ifc.emitter import emit_ifc
 
-    decked = [floor for floor in catlin_model.floors if floor.deck_outline]
+    decked = [floor for floor in catlin_model_ro.floors if floor.deck_outline]
     assert decked, "the catlin house has floor systems with a subfloor"
-    out = emit_ifc(catlin_model, tmp_path / "model.ifc")
-    f = ifcopenshell.open(str(out))
+    f = ifcopenshell.open(str(catlin_ifc_path))
     decks = {slab.Name for slab in f.by_type("IfcSlab") if slab.Name.endswith("/deck")}
     assert decks == {f"{floor.tag}/deck" for floor in decked}
     for slab in (item for item in f.by_type("IfcSlab") if item.Name.endswith("/deck")):

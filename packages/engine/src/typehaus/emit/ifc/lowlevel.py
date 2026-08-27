@@ -35,6 +35,10 @@ def new_file(app_name: str) -> Any:
     import ifcopenshell.api
 
     f = ios.file(schema="IFC4")
+    # Drop any containment stranded by an emit that raised before its flush; ``id()`` is
+    # reused by the allocator, so an inherited entry would contain the wrong file's
+    # elements (→ _PENDING_CONTAINMENT).
+    _PENDING_CONTAINMENT.pop(id(f), None)
     # Pin OwnerHistory / timestamps for byte-determinism (SOURCE_DATE_EPOCH style).
     ifcopenshell.api.run("owner.add_person", f, identification="typehaus")
     ifcopenshell.api.run("owner.add_organisation", f, identification=app_name)
@@ -319,12 +323,67 @@ def ensure_pset(f: Any, element: Any, name: str, props: dict[str, Any]) -> None:
     ifcopenshell.api.run("pset.edit_pset", f, pset=pset, properties=props)
 
 
-def assign_container(f: Any, element: Any, container: Any) -> None:
-    import ifcopenshell.api
+# Deferred containment, keyed by ``id(file)`` → ``id(container)`` → (container, elements).
+#
+# Every one of the 25 ``assign_container`` call sites passes a single element, and IFC
+# attribute assignment replaces a whole tuple rather than appending to it — so writing each
+# element straight through rebuilds ``RelatedElements`` once per element, 2,311 times, and
+# the largest catlin storey holds 712. Collecting instead and writing one tuple per
+# container turns that quadratic into a single assignment each.
+#
+# Keyed on the file rather than threaded through the emitter modules because the alternative
+# is a collector parameter on every one of those call sites and their callers. Nothing reads
+# ``IfcSpatialStructureElement.ContainsElements`` mid-emission, so the deferral is invisible;
+# ``flush_containers`` is what makes it real.
+#
+# An emit that raises between collection and flush would strand its entry under an ``id()``
+# a later file could be handed again by the allocator, which would silently contain one
+# house's elements in another's storey. ``new_file`` — the only way to get a file here —
+# clears the slot it is about to hand out, so a stranded entry can never be inherited.
+_PENDING_CONTAINMENT: dict[int, dict[int, tuple[Any, list[Any]]]] = {}
 
-    ifcopenshell.api.run(
-        "spatial.assign_container", f, products=[element], relating_structure=container
-    )
+
+def assign_container(f: Any, element: Any, container: Any) -> None:
+    """``IfcRelContainedInSpatialStructure`` container ← element, authored directly.
+
+    Deliberately *not* ``ifcopenshell.api.spatial.assign_container``: that API re-derives
+    the product's ``ObjectPlacement`` so it becomes relative to the new container, via
+    ``geometry.edit_object_placement``. Every product this emitter writes carries an
+    identity placement in the world frame (see ``ensure_local_placement``) and a storey
+    placement "re-bases nothing" (``set_storey_elevation``), so the re-derived matrix lands
+    exactly where it started — while each call ends in a ``remove_deep2`` whose
+    ``file.remove()`` is O(file size). On catlin that was 20.9 s of a 35.5 s emit for a
+    provably identical result.
+
+    The relationship is *collected*, not written; ``flush_containers`` writes it.
+    """
+    by_container = _PENDING_CONTAINMENT.setdefault(id(f), {})
+    _, elements = by_container.setdefault(id(container), (container, []))
+    elements.append(element)
+
+
+def flush_containers(f: Any) -> None:
+    """Write every deferred containment as one assignment per container. Idempotent."""
+    for container, elements in _PENDING_CONTAINMENT.pop(id(f), {}).values():
+        rel = next(iter(container.ContainsElements), None)
+        existing = set(rel.RelatedElements) if rel is not None else set()
+        fresh: list[Any] = []
+        for element in elements:
+            # An element already contained here — or queued twice — must not be listed
+            # twice: the api version this replaces re-homed such an element instead.
+            if element in existing:
+                continue
+            existing.add(element)
+            fresh.append(element)
+        if not fresh:
+            continue
+        if rel is None:
+            f.create_entity(
+                "IfcRelContainedInSpatialStructure", GlobalId=new_guid(),
+                RelatedElements=fresh, RelatingStructure=container,
+            )
+        else:
+            rel.RelatedElements = (*rel.RelatedElements, *fresh)
 
 
 def assign_type(f: Any, occurrence: Any, type_object: Any) -> None:
@@ -368,11 +427,26 @@ def serves_building(f: Any, system: Any, building: Any) -> Any:
 
 
 def aggregate(f: Any, parent: Any, children: list[Any]) -> None:
-    """IfcRelAggregates parent ← children (framed-LOD member aggregation)."""
-    import ifcopenshell.api
+    """``IfcRelAggregates`` parent ← children (framed-LOD member aggregation).
 
-    ifcopenshell.api.run("aggregate.assign_object", f, products=children,
-                         relating_object=parent)
+    Authored directly rather than through ``ifcopenshell.api.aggregate.assign_object``, for
+    the same reason ``assign_container`` is — the API re-bases each child's placement onto
+    its new parent, which is a no-op against this emitter's world-frame geometry and costs
+    a ``remove_deep2`` per child.
+    """
+    if not children:
+        return
+    rel = next(iter(parent.IsDecomposedBy), None)
+    if rel is None:
+        f.create_entity(
+            "IfcRelAggregates", GlobalId=new_guid(),
+            RelatedObjects=list(children), RelatingObject=parent,
+        )
+        return
+    existing = set(rel.RelatedObjects)
+    fresh = [child for child in children if child not in existing]
+    if fresh:
+        rel.RelatedObjects = (*rel.RelatedObjects, *fresh)
 
 
 def assign_material_layer_set(f: Any, element: Any, layers: list[dict[str, Any]],

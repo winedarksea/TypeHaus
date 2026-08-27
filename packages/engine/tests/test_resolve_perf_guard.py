@@ -16,7 +16,13 @@ import os
 import subprocess
 import sys
 
+import pytest
 from _helpers import CATLIN, REPO_ROOT
+
+# ``slow`` (→ pyproject.toml, AGENTS.md §3): subprocesses bench_rebuild.py in a cold
+# interpreter; a tripwire for an order-of-magnitude regression, not a correctness test.
+# `scripts/verify.sh --fast` deselects it; the full gate still runs it.
+pytestmark = pytest.mark.slow
 
 BENCH = REPO_ROOT / "packages" / "engine" / "scripts" / "bench_rebuild.py"
 

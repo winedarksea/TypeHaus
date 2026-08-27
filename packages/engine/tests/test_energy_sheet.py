@@ -4,8 +4,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 
 from typehaus.checks.code.mn_energy import MN_ZONE_6, evaluate_envelope
+
+# ``slow`` (→ pyproject.toml, AGENTS.md §3): the permit-set PDF: 21 s to render the
+# energy sheet. `scripts/verify.sh --fast` deselects it; the full gate still runs it.
+pytestmark = pytest.mark.slow
 
 
 def test_prescriptive_rows_cover_every_envelope_role(catlin_model):
