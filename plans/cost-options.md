@@ -1107,3 +1107,8 @@ Not cost swaps — places the *estimate* was wrong or fragile, found in the 2026
 | 6 | **The PV allowance prices 5.28 kW at $4.55–8.71 per watt.** Published 2026 US residential installed cost is $2.60–3.60/W, and a sub-6 kW Twin Cities system $3.50–4.50/W — i.e. $18,500–23,800 for this array. One quote settles it | $6,000–22,000, and the second-highest-value phone call on the list after the roofer's |
 | 7 | Cladding: is this a metal-clad house on all four elevations, or on the two that are seen? | $10,000–29,000 |
 | 8 | The balcony plank: one call to Versadeck, (651) 356-1870, turns the least certain row in the file into a real one | $3,400–10,000 |
+
+Our original 16" OC spacing for studs and joists was built around the idea that we had to directly support 16" OC standing seam siding. Now that we are using exposed fastener siding, can we trim down the stud spacing (especially perhaps for the attic level?). This would also bump up the window width for betweeen studs.
+Maybe swap out the concrete wall across the sunken garden side of the basement for wood framing (avoids formwork for the doors and windows) but might violate the cross-bracing needed for concrete basement walls per tables.
+Are there any locations where it is worth specifying built up columns/beams (ie stacks of 2x6s)? As long as they don't need heavy duty bolts, this can be a cheaper option. Also perhaps LSL instead of LVL in some places.
+Resilient membrane under subfloor for better STC?

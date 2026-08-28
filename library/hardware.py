@@ -8,29 +8,32 @@ manufacturer system the record describes; no rating here is estimated.
 from __future__ import annotations
 
 from typehaus.takeoff.hardware_catalog import (
+    ROLE_BEAM_HOLD_DOWN,
+    ROLE_BRACE_THROUGH_BOLT,
     ROLE_COIL_STRAP,
     ROLE_CONCRETE_FACE_MOUNT_HANGER,
     ROLE_EMBEDDED_STRAP_HOLDOWN,
+    ROLE_EXPOSED_FASTENER_PANEL_SCREW,
     ROLE_EXTERIOR_INSULATION_SCREW,
     ROLE_FACE_MOUNT_JOIST_HANGER,
-    ROLE_BRACE_THROUGH_BOLT,
+    ROLE_GLAZING_PANEL_FASTENER,
     ROLE_HURRICANE_TIE,
     ROLE_KNEE_BRACE,
+    ROLE_LATERAL_TIE_PLATE,
     ROLE_MUDSILL_ANCHOR,
-    ROLE_POST_BASE,
-    ROLE_BEAM_HOLD_DOWN,
-    ROLE_EXPOSED_FASTENER_PANEL_SCREW,
-    ROLE_GLAZING_PANEL_FASTENER,
-    ROLE_PIPE_CLAMP,
-    ROLE_THROUGH_PANEL_PIPE_STRAP,
-    ROLE_POCKET_DOOR_FRAME_KIT,
-    ROLE_PV_SEAM_CLAMP,
-    ROLE_SLOPED_JOIST_HANGER,
-    ROLE_SNOW_RETENTION,
     ROLE_NAIL_STRIP_SEAM_CLAMP,
+    ROLE_PIPE_CLAMP,
+    ROLE_POCKET_DOOR_FRAME_KIT,
+    ROLE_POST_BASE,
+    ROLE_POST_CAP,
+    ROLE_PV_SEAM_CLAMP,
+    ROLE_SILL_ANCHOR_BOLT,
+    ROLE_SLOPED_JOIST_HANGER,
     ROLE_SNAP_LOCK_SEAM_CLAMP,
+    ROLE_SNOW_RETENTION,
     ROLE_STANDING_SEAM_CLAMP,
     ROLE_STUD_PLATE_TIE,
+    ROLE_THROUGH_PANEL_PIPE_STRAP,
     StructuralHardware,
 )
 
@@ -179,6 +182,56 @@ ABU_POST_BASE = StructuralHardware(
     fits_nominal=("6x6",),
     source="Simpson Strong-Tie ABU adjustable standoff post base (strongtie.com/abu) — "
            "1 in standoff keeps the post end off the wet slab",
+)
+
+ABU44_POST_BASE = StructuralHardware(
+    tag="simpson-abu44-standoff-post-base",
+    name="ABU44 standoff post base (4x4)",
+    role=ROLE_POST_BASE,
+    manufacturer=_SIMPSON,
+    model="ABU44",
+    fits_nominal=("4x4",),
+    source="Simpson Strong-Tie ABU adjustable standoff post base (strongtie.com/abu) — "
+           "the 4x4 size of the same family as ABU66; a post base is size-selected, so "
+           "the role carries a ladder rather than one part",
+)
+
+PC6Z_POST_CAP = StructuralHardware(
+    tag="simpson-pc6z-post-cap",
+    name="PC6Z post cap (6x6)",
+    role=ROLE_POST_CAP,
+    manufacturer=_SIMPSON,
+    model="PC6Z",
+    fits_nominal=("6x6",),
+    source="Simpson Strong-Tie PC post cap (strongtie.com/pc) — ZMAX cap seating a beam on "
+           "a 6x6 post and carrying the uplift at that joint; published for equal post and "
+           "beam widths, which is the condition it is selected for here",
+)
+
+LTP4_LATERAL_TIE_PLATE = StructuralHardware(
+    tag="simpson-ltp4-lateral-tie-plate",
+    name="LTP4 lateral tie plate",
+    role=ROLE_LATERAL_TIE_PLATE,
+    manufacturer=_SIMPSON,
+    model="LTP4",
+    source="Simpson Strong-Tie LTP4 lateral tie plate (strongtie.com/ltp) — transfers "
+           "lateral load between a plate and the framing or rim under it",
+)
+
+# A threaded rod set in wet concrete, plus the square plate washer that IRC R602.11.1 makes
+# mandatory. Two parts, one joint: they are catalogued as one item because neither is
+# ordered without the other and a bolt counted without its washer is not a buildable line.
+# The model string leads with "AB-" so ``cost_codes.KEY_PATTERNS`` can file it with the
+# concrete sub who sets it, not with the framer who lands on it.
+SILL_ANCHOR_BOLT = StructuralHardware(
+    tag="sill-anchor-bolt-half-inch",
+    name="1/2 in x 10 in sill anchor bolt with BP1/2 plate washer",
+    role=ROLE_SILL_ANCHOR_BOLT,
+    manufacturer=_SIMPSON,
+    model="AB-050-10-BP",
+    source="IRC R403.1.6 anchor bolt (1/2 in diameter, 7 in embedment) with the "
+           "Simpson Strong-Tie BP 1/2 plate washer R602.11.1 requires "
+           "(strongtie.com/bp) — set in wet concrete between the mudsill anchors",
 )
 
 H25A_HURRICANE_TIE = StructuralHardware(
@@ -415,6 +468,10 @@ STRUCTURAL_HARDWARE: tuple = (
     SP6_STUD_PLATE_TIE,
     CS16_COIL_STRAP,
     ABU_POST_BASE,
+    ABU44_POST_BASE,
+    PC6Z_POST_CAP,
+    LTP4_LATERAL_TIE_PLATE,
+    SILL_ANCHOR_BOLT,
     H25A_HURRICANE_TIE,
     S5_SEAM_CLAMP,
     S5_S_SNAP_LOCK_CLAMP,

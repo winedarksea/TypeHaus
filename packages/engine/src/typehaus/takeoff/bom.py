@@ -49,6 +49,7 @@ from typehaus.takeoff.placeables import floor_heat_takeoff, placeables_takeoff
 from typehaus.takeoff.railings import railing_takeoff
 from typehaus.takeoff.drainage import drainage_takeoff
 from typehaus.takeoff.edge_trim import edge_trim_takeoff
+from typehaus.takeoff.member_protection import member_protection_takeoff
 from typehaus.takeoff.sitework import footing_bedding_takeoff
 from typehaus.takeoff.stairs import stair_finish_takeoff
 from typehaus.takeoff.wall_structure import wall_structure_takeoff
@@ -121,6 +122,11 @@ def bill_of_materials(
         # roof's derived formed trim. Same gap as drainage — flashing billed as cubic feet
         # of aluminium is not an order.
         "edge_trim": edge_trim_takeoff(model),
+        # Joist/beam tape by the foot of member it covers (2026-08-27). Neither
+        # `framing` (sticks by profile, house-wide) nor `structural_solids` (beams by
+        # the yard) can address "the two garden decks' joists", so nothing could bill
+        # the membrane that keeps water out of a built-up beam's ply seams.
+        "member_protection": member_protection_takeoff(model),
         "pipe_runs": pipe_run_takeoff(model),
         # Fittings by the piece, counted off the runs' own 3D polylines and the drainage
         # graph — not estimated. Its arrival re-based [pipe_runs]: the drain and vent $/LF

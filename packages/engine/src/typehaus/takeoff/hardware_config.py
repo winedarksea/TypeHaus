@@ -102,6 +102,12 @@ class WallTieRules:
     coil_strap_coil_length_ft: float = 150.0
     # Junction kinds that read as a building corner for cross-floor strapping.
     corner_junction_kinds: frozenset = frozenset({"l"})
+    # Strapping along the RUN between those corners. Corners alone gave catlin eight straps
+    # for a three-storey house: two per 36 ft facade, with the middle thirty-two feet holding
+    # the storey above it by nails through a rim board. Matched to the mudsill pitch on
+    # purpose, so anchors, tie plates and straps share one 4 ft rhythm on the drawings.
+    wall_strap_pitch_ft: float = 4.0
+    minimum_straps_per_wall: int = 1
 
 
 @dataclass(frozen=True)
@@ -148,6 +154,45 @@ class KneeBraceRules:
 
 
 @dataclass(frozen=True)
+class UpliftTieRules:
+    """The bearing/post hardware that makes the uplift load path continuous.
+
+    Its sibling ``HangerDetectionRules`` recognises a *hung* end; these recognise the ends
+    that **bear**, which is every other end in the house and none of the same ones.
+    """
+
+    # A rafter roof seats on its rafters. A truss roof seats on its HEELS: a truss's top
+    # chord runs on past the plate to the overhang and crosses it more than a foot up, so a
+    # rule that tied top chords would tie the wrong member at the wrong elevation.
+    tied_roof_categories: frozenset = frozenset({"rafter", "truss_heel"})
+    # Floors tie the joist only. A rim closes the joist ends and a trimmer frames an
+    # opening; neither lands on a bearing line of its own.
+    tied_floor_categories: frozenset = frozenset({"joist"})
+    # One tie per bearing joint. Two joists lapping over an interior bearing wall are one
+    # joint: the lap is nailed and the tie holds the pair to the plate. Raise this to two
+    # for a schedule that ties each member of a lap separately.
+    ties_per_bearing: int = 1
+    # How far above a support's top face a member's underside may sit and still be bearing
+    # ON it. It has to admit two real conditions and reject a third: a birdsmouthed I-joist
+    # rafter's uncut underside stands ~3/4" proud of the plate, and a joist landing on a
+    # foundation wall sits a 1-1/2" sill plate above the concrete the wall solid stops at.
+    # A HUNG member's underside is ~11-7/8" *below* its carrier's top, and the test is
+    # one-sided, so no tolerance in this range can confuse the two.
+    bearing_seat_tolerance_in: float = 3.0
+    # Plan allowance where a support has no width of its own to measure (a beam solid).
+    # A wall uses half its own thickness instead, which is the real landing area.
+    bearing_plan_tolerance_in: float = 8.0
+    # Two member ends closer than this in plan are the same bearing joint.
+    coincident_bearing_tolerance_in: float = 6.0
+    # One strap per beam end that lands on a post — not the matched pair. See
+    # ``uplift.post_beam_strap_rows`` for why, and ``KneeBraceRules`` for the same lesson.
+    straps_per_post_beam_joint: int = 1
+    # Lateral tie plates along a bottom plate standing on a floor band.
+    tie_plate_pitch_ft: float = 4.0
+    minimum_tie_plates_per_wall: int = 2
+
+
+@dataclass(frozen=True)
 class HardwareTakeoffConfig:
     """The complete rule set behind :func:`typehaus.takeoff.hardware_takeoff`."""
 
@@ -159,6 +204,7 @@ class HardwareTakeoffConfig:
     wall_ties: WallTieRules = field(default_factory=WallTieRules)
     hanger_detection: HangerDetectionRules = field(default_factory=HangerDetectionRules)
     knee_braces: KneeBraceRules = field(default_factory=KneeBraceRules)
+    uplift: UpliftTieRules = field(default_factory=UpliftTieRules)
     # The construction-return take-off category that marks a wood sill plate on concrete.
     sill_plate_takeoff_category: str = "pt-sill-plate"
 

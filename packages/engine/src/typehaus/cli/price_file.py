@@ -54,6 +54,8 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "pl
              # kits, and hot-line insulation by the foot.
              "plumbing_specialties", "install_parts", "pipe_insulation",
              "edge_trim",
+             # Joist/beam tape by the foot (2026-08-27). See ``Prices.member_protection``.
+             "member_protection",
              # Monolithic wall structure (2026-08-03): concrete/masonry walls by the yard.
              "wall_structure",
              # Structural WOOD solids by the yard (2026-08-22) — the other half of
@@ -250,6 +252,13 @@ class Prices:
     # Edge trim by the lineal foot (2026-08-02), keyed on the row category — fascia,
     # soffit, drip_flashing, edge_cladding, corner_trim, ridge_cap ...
     edge_trim: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Self-adhered framing-top membrane by the lineal foot (2026-08-27), keyed on the
+    # catalog material tag the deck or beam names in ``top_protection``. Priced per foot of
+    # MEMBER, not per foot of roll: the tape width comes off the member's own cross-section
+    # and rides on the BOM row, so a beam that gains a ply orders wider tape rather than
+    # silently under-covering. A 3-ply 2x12 is 4 1/2" across; the common 3 1/8" roll is not
+    # enough, and that is a real ordering mistake this row exists to prevent.
+    member_protection: Mapping[str, PriceRange] = field(default_factory=dict)
     # Monolithic wall structure (2026-08-03), keyed on the *assembly* tag rather than the
     # material: a placed yard of SUNKEN_GARDEN_WALL and a yard of CATLIN_BASEMENT_12 are
     # both "concrete" and are not the same price. Priced by the cubic yard; the rows also

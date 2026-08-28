@@ -145,6 +145,10 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         # Edge trim by the lineal foot: the fascia/soffit/flashing family,
                         # authored runs and derived roof trim alike (→ takeoff/edge_trim.py).
                         "edge_trim",
+                        # Framing-top membrane by the foot (2026-08-27): joist/beam tape,
+                        # which `framing` (sticks by profile, house-wide) and
+                        # `structural_solids` (beams by the yard) both cannot address.
+                        "member_protection",
                         # Monolithic wall structure (2026-08-03): a STRUCTURE layer that
                         # frames no members and is not a solid reached no row at all —
                         # 43 of catlin's 154 walls, ~131 cy (→ takeoff/wall_structure.py).

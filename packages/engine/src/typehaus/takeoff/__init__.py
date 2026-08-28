@@ -36,6 +36,7 @@ from typehaus.takeoff.framing import (
     structural_solids_takeoff,
 )
 from typehaus.takeoff.edge_trim import edge_trim_takeoff
+from typehaus.takeoff.member_protection import member_protection_takeoff
 from typehaus.takeoff.fasteners import exposed_fastener_cladding_screw_rows
 from typehaus.takeoff.glazing import (
     glazing_fastener_rows,
@@ -68,6 +69,7 @@ __all__ = [
     "bill_of_materials",
     "construction_returns_takeoff",
     "edge_trim_takeoff",
+    "member_protection_takeoff",
     "floor_heat_takeoff",
     "framing_bom_by_size",
     "framing_takeoff",

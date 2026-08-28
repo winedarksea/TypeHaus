@@ -246,6 +246,24 @@ _ret_top = ft(SPEC.retaining_top_ft)
 _porch_walking_surface = inch(SPEC.porch_deck_thickness_in)
 _balcony = ft(SPEC.balcony_level_ft)
 
+# Self-adhered butyl over every framing top in this structure — both decks' joists, all
+# seven built-up beams, all four girts. One tag because it is one product and one order;
+# the BOM splits it by member width, which is the number that decides which roll to buy.
+#
+# The reason it is here and not in a note: a site-built multi-ply beam has an open seam
+# running its whole length between each pair of plies, and that seam holds water and the
+# grit that stops it drying. Every beam in this structure is three plies of 2x12 standing
+# in weather over open ground, so there are fourteen such seams, none of which anything in
+# the model could see or bill before this. Butyl also self-seals around the fasteners
+# driven through it, which is what a joist top mostly is.
+_BEAM_TAPE = "butyl-tape"
+# The same butyl in the roll width a 3-ply beam actually needs. A 3-2x12 is 4 1/2" across,
+# so the 1 5/8" joist roll and even the common 3 1/8" "double joist" roll leave the outer
+# plies — and both ply seams — uncovered. Two tags rather than one because these are two
+# SKUs at a 2-3x difference in price per foot, and the BOM's own width column is what says
+# which member takes which: 1.5" and 1.25" members take ``_BEAM_TAPE``, the 4.5" ones this.
+_BEAM_TAPE_WIDE = "butyl-tape-beam"
+
 # ============================================================================
 # Basement: garden retaining walls, footings, back + front columns.
 # ============================================================================
@@ -557,9 +575,11 @@ MAIN_NODES = [
 BACK_BEAMS = [
     Beam(uid="SGBM01AAAA", tag="BM-SG-BKW", start_node="N-SGM-COL", end_node="N-SGM-NW",
          size=SPEC.back_beam, assembly="BEAM_KDAT",
+         top_protection=_BEAM_TAPE_WIDE,
          bearing_refs=("PT-SG-COL", "W-SG-W1")),
     Beam(uid="SGBM02AAAA", tag="BM-SG-BKE", start_node="N-SGM-COL", end_node="N-SGM-NE",
          size=SPEC.back_beam, assembly="BEAM_KDAT",
+         top_protection=_BEAM_TAPE_WIDE,
          bearing_refs=("PT-SG-COL", "W-SG-E1")),
 ]
 
@@ -579,9 +599,11 @@ BACK_BEAMS = [
 FRONT_BEAMS = [
     Beam(uid="SGBM03AAAA", tag="BM-SG-FRW", start_node="N-SGM-FCOL", end_node="N-SGM-FW",
          size=SPEC.back_beam, top_elevation=_porch_top, assembly="BEAM_WHITE_PAINT",
+         top_protection=_BEAM_TAPE_WIDE,
          bearing_refs=("PT-SG-FCOL", "W-SG-W1")),
     Beam(uid="SGBM04AAAA", tag="BM-SG-FRE", start_node="N-SGM-FCOL", end_node="N-SGM-FE",
          size=SPEC.back_beam, top_elevation=_porch_top, assembly="BEAM_WHITE_PAINT",
+         top_protection=_BEAM_TAPE_WIDE,
          bearing_refs=("PT-SG-FCOL", "W-SG-E1")),
 ]
 
@@ -689,15 +711,24 @@ SECOND_NODES = [
 ]
 
 # Three N-S three-ply 2x12 beams over the west / center / east pillar lines.
+#
+# The two OUTER beams are white-painted (BEAM_WHITE_PAINT, 2026-08-27): they are the balcony's
+# west and east elevations, seen in profile from either side of the garden, in the same plane
+# as the pillars under them and the rim band that closes the joists over them. BM-SG-BLC is
+# the centre beam — it sits inside the deck with a joist bay either side of it and reads only
+# as a shadow line from below, so it stays bare KDAT with the rest of the hidden frame.
 BALCONY_BEAMS = [
     Beam(uid="SGBB01AAAA", tag="BM-SG-BLW", start_node="N-SGB-NW", end_node="N-SGB-SW",
-         size=SPEC.balcony_beam, assembly="BEAM_KDAT",
+         size=SPEC.balcony_beam, assembly="BEAM_WHITE_PAINT",
+         top_protection=_BEAM_TAPE_WIDE,
          bearing_refs=("PT-SG-BR1", "PT-SG-BF1")),
     Beam(uid="SGBB02AAAA", tag="BM-SG-BLC", start_node="N-SGB-NC", end_node="N-SGB-SC",
          size=SPEC.balcony_beam, assembly="BEAM_KDAT",
+         top_protection=_BEAM_TAPE_WIDE,
          bearing_refs=("PT-SG-BR2", "PT-SG-BF2")),
     Beam(uid="SGBB03AAAA", tag="BM-SG-BLE", start_node="N-SGB-NE", end_node="N-SGB-SE",
-         size=SPEC.balcony_beam, assembly="BEAM_KDAT",
+         size=SPEC.balcony_beam, assembly="BEAM_WHITE_PAINT",
+         top_protection=_BEAM_TAPE_WIDE,
          bearing_refs=("PT-SG-BR3", "PT-SG-BF3")),
 ]
 
@@ -733,15 +764,19 @@ GIRT_NODES = [
 BALCONY_GIRTS = [
     Beam(uid="SGBG01AAAA", tag="BM-SG-GIRT-RW", start_node="N-SGG-RW1", end_node="N-SGG-RW2",
          size=SPEC.balcony_girt, top_elevation=_girt_top, assembly="BEAM_KDAT",
+         top_protection=_BEAM_TAPE,
          bearing_refs=("PT-SG-BR1", "PT-SG-BR2")),
     Beam(uid="SGBG03AAAA", tag="BM-SG-GIRT-RE", start_node="N-SGG-RE1", end_node="N-SGG-RE2",
          size=SPEC.balcony_girt, top_elevation=_girt_top, assembly="BEAM_KDAT",
+         top_protection=_BEAM_TAPE,
          bearing_refs=("PT-SG-BR2", "PT-SG-BR3")),
     Beam(uid="SGBG02AAAA", tag="BM-SG-GIRT-FW", start_node="N-SGG-FW1", end_node="N-SGG-FW2",
          size=SPEC.balcony_girt, top_elevation=_girt_top, assembly="BEAM_WHITE_PAINT",
+         top_protection=_BEAM_TAPE,
          bearing_refs=("PT-SG-BF1", "PT-SG-BF2")),
     Beam(uid="SGBG04AAAA", tag="BM-SG-GIRT-FE", start_node="N-SGG-FE1", end_node="N-SGG-FE2",
          size=SPEC.balcony_girt, top_elevation=_girt_top, assembly="BEAM_WHITE_PAINT",
+         top_protection=_BEAM_TAPE,
          bearing_refs=("PT-SG-BF2", "PT-SG-BF3")),
 ]
 
@@ -793,6 +828,10 @@ PORCH_JOISTS = FloorSystem(
     # bills. This is the deleted slab's one-inch PORCH_DECK_COMPOSITE layer, in place.
     subfloor=DeckLayer(material_ref="composite-deck",
                        thickness=inch(SPEC.porch_deck_thickness_in)),
+    # Butyl over every joist, rim and block top. This deck is the one that needs it most in
+    # the whole house: the composite plank above it is GAPPED, so rain reaches the framing
+    # tops directly, and it does so on a deck that is a roof over occupied space.
+    top_protection=_BEAM_TAPE,
     # ``service="deck"`` is what puts this under IRC R507 / AWC DCA6 instead of the interior
     # 40-psf floor table — see checks/structural/deck.py.
     service="deck",
@@ -828,6 +867,11 @@ BALCONY_JOISTS = FloorSystem(
     outline=_DECK_OUTLINE,
     subfloor=DeckLayer(material_ref="aluminum-deck",
                        thickness=inch(SPEC.balcony_deck_thickness_in)),
+    # Butyl here is doing the SECOND job in ``FloorSystem.top_protection``'s docstring more
+    # than the first: the plank over these joists is watertight, but it is aluminium laid
+    # straight onto copper-treated pine, which AWC DCA6 warns against outright. The tape is
+    # the dielectric. That it also keeps the fastener penetrations sealed is the bonus.
+    top_protection=_BEAM_TAPE,
     # ``service="deck"`` is what puts this under IRC R507 / AWC DCA6 instead of the interior
     # 40-psf floor table — see checks/structural/deck.py.
     service="deck",
@@ -1074,6 +1118,84 @@ BALCONY_REAR_FLASH = Flashing(
     material="aluminum", host_ref="FS-SG-DECK")
 
 # ============================================================================
+# Beam cap flashing — formed metal over the top of all seven built-up beams.
+# ============================================================================
+# The tape (``_BEAM_TAPE``, on every beam's ``top_protection``) is the primary defence and
+# the cap is the second one. Both, not either: they fail differently. The tape is a bonded
+# membrane that seals the fastener holes and cannot be dislodged; the cap is a shed surface
+# that keeps UV and standing debris off the tape, which is what ages a butyl membrane.
+#
+# ** THE CAP IS BEDDED ON THE TAPE, AND THAT ORDER IS STRUCTURAL TO THE DETAIL. ** Aluminium
+# laid directly on copper-treated pine corrodes — AWC DCA6 says not to do it — so an
+# aluminium cap on bare KDAT would be a new defect rather than a fix. The tape under it is
+# the dielectric. Anything that removes the tape from these beams must change this metal too.
+#
+# ** FIVE OF THE SEVEN GO ON BEFORE THE JOISTS DO, AND THAT IS NOT A PREFERENCE. ** The
+# balcony's three beams and the porch's back pair carry their joists ON TOP; only the porch's
+# front pair is flush-framed with an unobstructed top (see FRONT_BEAMS). A cap over a beam
+# that will be joisted has to be laid while the beam top is still open, and the joists then
+# bear on it — which is fine for a 0.019" coil cap under a 2x8's bearing area, and impossible
+# to retrofit without pulling the deck. That sequencing is the whole labour half of the
+# `beam_cap` price row in prices.toml; it is not a return-visit trade.
+#
+# The run is authored the way ``BALCONY_DRIP`` is: ``top_elevation`` is the surface the metal
+# laps — here the beam's own top — and ``depth`` runs DOWNWARD from it. So the resolved band
+# occupies the beam's top 1 1/2", which is where the turn-down legs are, and reads in section
+# as "this beam's top is clad". Authored the other way up (top + leg) it drew a 1 1/2" slab
+# of aluminium in the joist bearing plane, which is both wrong and the kind of wrong that
+# looks right in plan. The cap's top sheet is ~1/16" and is elided, exactly as the fascia's is.
+#
+# Section: the cap laps 1/2" past each beam face and turns down 1 1/2", so ``thickness`` is
+# the beam's own width plus the two laps and is read off ``SPEC`` rather than written down —
+# a beam that gains a ply widens its cap instead of leaving its outer plies uncapped.
+_CAP_LAP_IN = 0.5          # cap overhang past each beam face, before the turn-down
+_CAP_LEG_IN = 1.5          # turn-down leg depth
+_porch_beam_width_ft = cross_section(SPEC.back_beam).width_m / 0.3048
+_balcony_beam_width_ft = cross_section(SPEC.balcony_beam).width_m / 0.3048
+_porch_cap_thickness = ft(_porch_beam_width_ft) + inch(2 * _CAP_LAP_IN)
+_balcony_cap_thickness = ft(_balcony_beam_width_ft) + inch(2 * _CAP_LAP_IN)
+
+# Each beam's resolved TOP — the plane the cap sits on. Three different derivations, because
+# the three beam families hang three different ways, and a cap authored on the storey datum
+# would float above the beam exactly the way the porch hangers did before 2026-08-25.
+_back_beam_top = _porch_top - ft(_porch_joist_depth_ft)   # joists bear on top
+_front_beam_top = _porch_top                              # flush-framed, pinned at the datum
+_balcony_beam_top = _girt_top                             # = beam soffit + beam depth
+
+# (uid, tag, node pair, top, section width). The paths are the beams' own node coordinates,
+# so a cap cannot drift off the beam it caps.
+_BEAM_CAP_AT = (
+    ("SGCP01AAAA", "TR-SG-CAP-BKW", (_cx, _y_col), (_x_ax_w, _y_col),
+     _back_beam_top, _porch_cap_thickness, "BM-SG-BKW"),
+    ("SGCP02AAAA", "TR-SG-CAP-BKE", (_cx, _y_col), (_x_ax_e, _y_col),
+     _back_beam_top, _porch_cap_thickness, "BM-SG-BKE"),
+    ("SGCP03AAAA", "TR-SG-CAP-FRW", (_cx, _y_ax_front), (_x_ax_w, _y_ax_front),
+     _front_beam_top, _porch_cap_thickness, "BM-SG-FRW"),
+    ("SGCP04AAAA", "TR-SG-CAP-FRE", (_cx, _y_ax_front), (_x_ax_e, _y_ax_front),
+     _front_beam_top, _porch_cap_thickness, "BM-SG-FRE"),
+    # The balcony's three run N-S on the deck's own 2"-in-8'-8" southward fall (the rear
+    # pillars are ``rear_pillar_rise_in`` taller), so each cap sheds to its south end — which
+    # is the front edge, where TR-SG-GUTTER already hangs. The caps discharge into the
+    # trough rather than onto the pillar tops and the front girts below them.
+    ("SGCP05AAAA", "TR-SG-CAP-BLW", (_x_ax_w, _y_in_n), (_x_ax_w, _y_ax_front),
+     _balcony_beam_top, _balcony_cap_thickness, "BM-SG-BLW"),
+    ("SGCP06AAAA", "TR-SG-CAP-BLC", (_cx, _y_in_n), (_cx, _y_ax_front),
+     _balcony_beam_top, _balcony_cap_thickness, "BM-SG-BLC"),
+    ("SGCP07AAAA", "TR-SG-CAP-BLE", (_x_ax_e, _y_in_n), (_x_ax_e, _y_ax_front),
+     _balcony_beam_top, _balcony_cap_thickness, "BM-SG-BLE"),
+)
+BEAM_CAPS = [
+    Flashing(uid=uid, tag=tag, kind=TrimKind.BEAM_CAP,
+             path=(pt(ft(p0[0]), ft(p0[1])), pt(ft(p1[0]), ft(p1[1]))),
+             top_elevation=top, depth=inch(_CAP_LEG_IN),
+             thickness=thickness, material="aluminum", host_ref=host)
+    for uid, tag, p0, p1, top, thickness, host in _BEAM_CAP_AT
+]
+PORCH_BEAM_CAPS = [c for c in BEAM_CAPS if c.host_ref in
+                   ("BM-SG-BKW", "BM-SG-BKE", "BM-SG-FRW", "BM-SG-FRE")]
+BALCONY_BEAM_CAPS = [c for c in BEAM_CAPS if c not in PORCH_BEAM_CAPS]
+
+# ============================================================================
 # Per-storey exports (spliced into plan/manifest.py).
 # ============================================================================
 BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
@@ -1081,7 +1203,8 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
 # Every remaining connector is porch hardware at the deck (post bases, hangers, the column
 # tie), so main takes them whole; the knee braces are the only second-storey hardware.
 MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, *FRONT_BEAMS, PORCH_JOISTS, PORCH_GUARD,
-                 *CONNECTORS]
+                 *CONNECTORS, *PORCH_BEAM_CAPS]
 SECOND_ELEMENTS = [*SECOND_NODES, *GIRT_NODES, *BALCONY_BEAMS, *BALCONY_GIRTS, *PILLARS,
                    BALCONY_JOISTS, *KNEE_BRACES, BALCONY_GUARD, BALCONY_FASCIA,
-                   BALCONY_GUTTER, BALCONY_LEADER, BALCONY_DRIP, BALCONY_REAR_FLASH]
+                   BALCONY_GUTTER, BALCONY_LEADER, BALCONY_DRIP, BALCONY_REAR_FLASH,
+                   *BALCONY_BEAM_CAPS]

@@ -221,9 +221,12 @@ def roof_framing_findings(model: ResolvedModel, roof: ResolvedRoof) -> list[Find
         findings.append(Finding(
             severity=Severity.WARN, check_id="sheet.roof_framing.uplift_restraint",
             message="rafter/truss uplift restraint is not modelled for this roof — no "
-                    "Connector hurricane tie references its members, so no tie schedule is "
-                    "shown", element_tags=(roof.tag,), result=Result.UNKNOWN,
-            fix_hint="add Connector elements (HURRICANE_TIE) naming the rafters and plates"))
+                    "Connector hurricane tie references its members and no tie is derived "
+                    "at its bearings, so no tie schedule is shown",
+            element_tags=(roof.tag,), result=Result.UNKNOWN,
+            fix_hint=("declare the roof's bearing_refs so takeoff/uplift.py can derive a "
+                      "tie at every seated rafter or truss heel, or author Connector "
+                      "elements (HURRICANE_TIE) naming the rafters and plates")))
     if roof_framing_spec(model, roof) is None:
         findings.append(Finding(
             severity=Severity.WARN, check_id="sheet.roof_framing.spacing_unknown",
@@ -233,13 +236,26 @@ def roof_framing_findings(model: ResolvedModel, roof: ResolvedRoof) -> list[Find
 
 
 def _has_uplift_connector(model: ResolvedModel, roof: ResolvedRoof) -> bool:
+    """Is this roof's uplift restraint modelled — authored by hand OR derived?
+
+    Authored connectors were the only answer until 2026-08-28, which meant a roof whose ties
+    the take-off bills at every bearing (``takeoff/uplift.py``) still reported "uplift
+    restraint is not modelled". The BOM and the sheet were describing two different roofs.
+    Derived ties count here for the same reason ``checks/structural/uplift_path.py`` reads
+    the take-off rather than re-deriving: one answer, two readers.
+    """
     member_keys = {member.child_key for member in roof.members} | {roof.tag}
     for element in model.plan.all_elements():
         if element.element_kind != "Connector":
             continue
         if set(element.connects) & member_keys:
             return True
-    return False
+    from typehaus.takeoff.hardware_config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
+    from typehaus.takeoff.uplift import bearing_connections
+
+    rules = DEFAULT_HARDWARE_TAKEOFF_CONFIG.uplift
+    return any(connection.assembly_tag == roof.tag
+               for connection in bearing_connections(model, rules))
 
 
 def _emit_schedule_column(b: SceneBuilder, model: ResolvedModel, roof: ResolvedRoof,

@@ -403,12 +403,25 @@
 # posts are not in fact in a wet/corrosive location, this is the wrong part and the row
 # drops by a factor of four.
 "ABU66SS" = { low = 150, high = 230 }  # 10 ea
+# The 4x4 rung of the same ladder, ZMAX rather than stainless: the posts it would
+# serve are the interior stairwell ones, which are dry. Priced so a 4x4 post that
+# declares a bearing cannot land unpriced; nothing bills it today (the three 4x4
+# posts declare no `supported_by`, and `structural.uplift_load_path` says so).
+"ABU44" = { low = 22, high = 40 }  # 0 ea
 "APVB12-6" = { low = 4, high = 9 }  # 16 ea — Outdoor Accents 1/2"x6" hex through-bolt + washer
 "APVKB45-6" = { low = 22, high = 45 }  # 8 ea — Outdoor Accents Avant 45-deg knee brace, 6x
-# The takeoff bills CS16 by the COIL (unit: "coil", 29.3 LF cut from a 150 ft coil), so
-# this is a whole coil, not a strap.
-"CS16" = { low = 130, high = 200 }  # 1 ea
-"H2.5A" = { low = 0.8, high = 1.75 }  # 2 ea
+# The takeoff bills CS16 by the COIL (unit: "coil"), so this is a whole coil, not a strap.
+# 2026-08-28: 1 coil -> 2. The strap rule fired only at stacked framed-exterior CORNERS, which
+# is eight straps and 29.3 LF on a three-storey house; it now also straps the runs between
+# them at 4 ft o.c. (72 straps, 264 LF). See notes/uplift_load_path.md.
+"CS16" = { low = 130, high = 200 }  # 2 ea
+# 2026-08-28: was "# 2 ea" — the three hand-authored sunken-garden ties. The bearing
+# rule in takeoff/uplift.py now derives a tie at every rafter, truss heel and floor
+# joist that SEATS on a declared bearing (the complement of the hung ends hangers.py
+# already bills), which is what makes the roof-to-foundation uplift path continuous.
+# Material only, like every row in this table: driving two nails into a plate is
+# inside the framing rate, and billing it again here would double-count it.
+"H2.5A" = { low = 0.8, high = 1.75 }  # 351 ea — 3 authored + 348 derived
 # HUCQ into concrete/masonry. G90 to ZMAX; the stainless variant would be ~$170 and is
 # not what the plan calls for.
 "HUCQ" = { low = 45, high = 95 }  # 4 ea
@@ -433,7 +446,15 @@
 # hanger does not change: HUCQ410 takes a 4x10 seat, and 3 x 1 1/2" is 4 1/2" against the
 # old 3 1/2" — still inside the 4x width the -410 designates, and the same 11 1/4" depth.
 "HUCQ410-SDS" = { material = { low = 92, high = 120 }, labour = { low = 60, high = 150 } }  # 4 ea
-"KBS1Z" = { low = 3.5, high = 6.5 }  # 4 ea
+"KBS1Z" = { low = 3.5, high = 6.5 }  # 22 ea — 4 authored (breezeway roof beams) + 18 derived
+# Lateral tie plate at the bottom plate of a framed wall standing on a framed floor
+# band. NOT on a wall standing on concrete: that plate is a sill and its MASA anchors
+# already make the connection, so the takeoff excludes it rather than paying twice.
+"LTP4" = { low = 1.1, high = 2.2 }  # 108 ea
+# Post cap for a beam that STOPS on a 6x6 rather than running past it. Nothing derives
+# it — the derived rule uses the cheaper, stronger KBS1Z strap (see houses/catlin/
+# notes/uplift_load_path.md) — so this row prices the authored one-offs only.
+"PC6Z" = { low = 14, high = 26 }  # 0 ea
 "LSSR" = { low = 12, high = 22 }  # 56 ea
 "LUS" = { low = 2, high = 6 }  # 42 ea
 # "LUS210" retired 2026-08-23. It priced the two back-beam hangers until the 2026-08-22
@@ -441,6 +462,11 @@
 # the row billed nothing. A price row for a part the model does not contain is not harmless:
 # it reads as coverage.
 "MASA" = { low = 1.75, high = 3 }  # 109 ea
+# 1/2" x 10" cast-in anchor bolt with the BP1/2 plate washer R602.11.1 requires,
+# priced as the pair because neither is ordered without the other. Set by the concrete
+# sub, not the framer, which is why cost_codes.py files "AB-*" under 03 15 00 rather
+# than the 06 05 23 the rest of this table defaults to.
+"AB-050-10-BP" = { low = 2.4, high = 4.5 }  # authored only
 # 6 ea, all of them CARRIED under the ColorGard rail (`requires_role`) — none directly
 # modeled any more. It was 19: two wall-mounted enclosure clamps (CN-A-NEMA-CLAMP,
 # CN-A-PV-CLAMP) plus 11 carried under the CanDuit rings, and all thirteen went on
@@ -854,26 +880,30 @@
 # labour — four narrow faces with cut-in at cap and base.
 "column:POST_WHITE_PAINT" = { material = { low = 1130, high = 2830 }, labour = { low = 1700, high = 4240 } }  # 0.40 cy = 51.4 LF
 #
-# WHITE-PAINTED GARDEN FRONT FRAME — 39.2 LF over four members, 0.34 cy. BM-SG-FRW/FRE (the
-# porch's front pair, 3-2x12 at 10'-0") and BM-SG-GIRT-FW/FE (the balcony's two front E-W
-# girts, 2x12 at 9'-7 1/2"). Priced HERE and not in [timber] for the same reason the pillars
-# above are: `cli/prices.MATERIAL_ONLY` admits a solid to [timber] on its structure material,
-# and "post-paint-white" is not one of the three lumber tags it names — so the row prices by
+# WHITE-PAINTED GARDEN FRAME — 56.5 LF over six members, 0.57 cy. Every stick of the garden's
+# frame that anybody actually sees: BM-SG-FRW/FRE (the porch's front pair, 3-2x12 at 10'-0"),
+# BM-SG-BLW/BLE (the balcony's west and east beams, 3-2x12 at 8'-8" — its two elevations in
+# profile), and BM-SG-GIRT-FW/FE (the two front E-W girts, 2x12 at 9'-7 1/2"). All six stand
+# in the plane of the six white 6x6 pillars and the white knee braces, so all six are painted
+# with them. Priced HERE and not in [timber] for the same reason the pillars above are:
+# `cli/prices.MATERIAL_ONLY` admits a solid to [timber] on its structure material, and
+# "post-paint-white" is not one of the three lumber tags it names — so the row prices by
 # QUALIFIED key, which is the documented escape hatch. It is not double-counted: a Beam bills
 # in no other table.
 #
-# Same stock and the same sections as "beam:BEAM_KDAT" in [timber], which these four left on
+# Same stock and the same sections as "beam:BEAM_KDAT" in [timber], which these six left on
 # 2026-08-27, so the lumber half is that row's own rates, member for member:
-#   20.0 LF  3-2x12 KDAT at $7.77-12.87 mat + $1.50-3.00 lab = $155-257 mat, $30-60 lab.
-#   19.2 LF  2x12 KDAT at $2.59-4.29 mat + $1.40-2.60 lab = $50-83 mat, $27-50 lab.
+#   37.3 LF  3-2x12 KDAT at $7.77-12.87 mat + $1.50-3.00 lab = $290-480 mat, $56-112 lab.
+#   19.2 LF  2x12 KDAT at $2.59-4.29 mat + $1.40-2.60 lab = $50-82 mat, $27-50 lab.
 # Then primer + 2 coats at $2.00-4.50/SF, the same paint the pillars carry, over the faces a
 # beam under a deck actually shows — two sides plus the soffit, the top being covered by the
-# joists: 2.25 SF/LF on the 4 1/2" pair and 2.0 SF/LF on the 1 1/2" girts = 83.5 SF, i.e.
-# $167-376. Painting narrow faces with cut-in at every bearing is ~85% labour (the pillar
-# note above), so that splits $29-63 material and $138-313 labour.
-# -> material $234-403 and labour $195-423, i.e. $429-826 over 0.34 cy. The paint is roughly
-# half of it: this is a finish line item wearing a beam's clothes.
-"beam:BEAM_WHITE_PAINT" = { material = { low = 688, high = 1185 }, labour = { low = 574, high = 1244 } }  # 0.34 cy = 39.2 LF
+# joists: 2.25 SF/LF on the 4 1/2" members and 2.0 SF/LF on the 1 1/2" girts = 122 SF, i.e.
+# $245-551. Painting narrow faces with cut-in at every bearing is ~85% labour (the pillar
+# note above), so that splits $37-83 material and $208-468 labour.
+# -> material $376-645 and labour $291-630, i.e. $667-1,275 over 0.57 cy. The paint is more
+# than half the labour and a fifth of the material: a finish line item wearing a beam's
+# clothes.
+"beam:BEAM_WHITE_PAINT" = { material = { low = 660, high = 1132 }, labour = { low = 511, high = 1105 } }  # 0.57 cy = 56.5 LF
 #
 # FRAMED DUCT SOFFITS — SF-S-DUCT and SF-S-SUITE, 4.38 cy of 2x framing with gypsum on three
 # sides, taped and finished to paint-ready. At a 14"x12" section that is 101.4 LF and 3.17 SF of
@@ -1869,11 +1899,12 @@
 # -> material $252-468 and labour $180-360, i.e. $432-828 over 0.19 cy.
 "beam:BEAM_LVL" = { material = { low = 1326, high = 2463 }, labour = { low = 947, high = 1895 } }  # 0.19 cy = 12.0 LF
 #
-# BEAM, KDAT — 91.3 LF over fourteen members, 0.79 cy. The breezeway's whole frame, the
-# balcony's two REAR E-W girts, and five of the garden's seven beams. Four members left this
-# row on 2026-08-27 for "beam:BEAM_WHITE_PAINT" in [concrete] — the garden's FRONT frame,
-# painted white with the six pillars it stands beside. Nothing about the framing changed
-# with them: same stock, same sections, same lineal feet, just paint and a row of its own.
+# BEAM, KDAT — 74.0 LF over twelve members, 0.56 cy. The breezeway's whole frame, the
+# balcony's two REAR E-W girts, and three of the garden's seven beams. Six members left this
+# row on 2026-08-27 for "beam:BEAM_WHITE_PAINT" in [concrete] — everything in the garden's
+# frame that is SEEN, painted white with the six pillars. What is left is what nobody looks
+# at. Nothing about the framing changed with them: same stock, same sections, same lineal
+# feet, just paint and a row of its own.
 # (The volume moved 1.04 -> 1.13 cy for the eighteen-member row on 2026-08-23, when the
 # balcony beams and the girts each went 2" deeper (2x10 -> 2x12) to clear IRC Table
 # R507.5(1) prescriptively — see params/sunken_garden.py::SPEC.balcony_beam.)
@@ -1886,16 +1917,17 @@
 #            pair stops at the pillar faces and the front pair at the beam faces.)
 #   20.0 LF  3-2x12, the porch's BACK pair at 10'-0" each. Three plies of that same 2x12 are
 #            $5.55-7.80/LF in SPF and $7.77-12.87 in KDAT. (The front pair is painted.)
-#   26.0 LF  3-2x12, the three balcony beams at 8'-8", the identical member to the porch
-#            pair above and carried at the identical rate.
+#    8.7 LF  3-2x12, BM-SG-BLC alone — the balcony's CENTRE beam, the only one of the three
+#            with a joist bay either side of it. The west and east beams are the balcony's
+#            two elevations and are painted; this one reads as a shadow line from below.
 #
 # The KDAT premium used throughout these two built-up rows is the same one the girt line
 # above already carries: +40%/+65% on MATERIAL, labour unchanged. Labour on a built-up
 # beam is per LF of assembled member, not per ply — that is why [framing] prices "2-2x10"
 # labour at $1-2 while a single "2x10" joist is $1.30-2.40. A 3-ply is heavier to set than a
 # 2-ply, so it is carried at $1.50-3.00/LF; that step is a judgement, not a quote.
-# -> material $464-768 and labour $121-235, i.e. $585-1,003 over 0.79 cy.
-"beam:BEAM_KDAT" = { material = { low = 587, high = 972 }, labour = { low = 153, high = 297 } }  # 0.79 cy = 91.3 LF
+# -> material $330-545 and labour $95-183, i.e. $425-728 over 0.56 cy.
+"beam:BEAM_KDAT" = { material = { low = 589, high = 973 }, labour = { low = 170, high = 327 } }  # 0.56 cy = 74.0 LF
 #
 # COLUMN, KDAT — the four breezeway 6x6 posts, 28.4 LF, 0.22 cy. [framing] "6x6" is $5-8.50
 # mat + $2.50-5 lab; these are GROUND-CONTACT rated (the brief) and stand on standoff bases
@@ -2443,6 +2475,7 @@
 # Sources: homeguide.com 2026 soffit and fascia replacement, angi.com aluminum soffit cost,
 # homewyse.com aluminum fascia, homeguide.com drip edge cost 2026.
 # $/LF, by trim category (fascia, soffit, flashings, formed roof trim)
+"beam_cap" = { material = { low = 1.50, high = 4 }, labour = { low = 2, high = 4.50 } }  # 66.0 LF — formed aluminium cap over all seven built-up 3-2x12 beams (sunken garden). ~8" of coil girth: a 5.5" top plus two 1.5" turn-downs, so material sits just above `drip_flashing`'s narrower bend. Labour is the dear half and it is a SEQUENCING cost, not a fabrication one — five of the seven beams carry joists on top, so their caps go on before the deck frames and a cap missed at that moment costs a torn-out joist field, not a return trip. See params/sunken_garden.py::_BEAM_CAP_AT
 "corner_trim" = { material = { low = 3, high = 8 }, labour = { low = 2.5, high = 5 } }  # 147.8 LF — corner boards are the easy trim. MAY NOT BE A LINE AT ALL if the siding sub carries them in their $/SF
 "drip_flashing" = { material = { low = 1, high = 3 }, labour = { low = 1, high = 2 } }  # 94.7 LF — $1-2/LF on a NEW roof (retrofit is $3-7). Material is high for mill aluminium and right for the prefinished dark Kynar this house uses. Commonly inside the roofer's price — check for a double count against any roofing bid
 "edge_cladding" = { material = { low = 3, high = 8 }, labour = { low = 3.5, high = 7 } }  # 243.9 LF — add $2-4/LF if it is site-brake-formed rather than shop stock
@@ -2450,6 +2483,36 @@
 "ridge_cap" = { material = { low = 4, high = 10 }, labour = { low = 4, high = 8 } }  # 63.5 LF — metal cap (a shingle ridge would be $1.50-3.50 to lay). Also commonly in the roofer's scope
 "soffit" = { material = { low = 3.5, high = 9 }, labour = { low = 3, high = 5.5 } }  # 101.1 LF — the depth question is SETTLED by the model: the profile is 13.625" wide, so this is the 12-16" overhang band at $3-5.50/LF. Every published $/LF silently assumes a depth; at 24" it would be $5-9 and at 36" $8-13, and the material rate would be understated ~2x
 "wrb_counterflashing" = { material = { low = 1.5, high = 4 }, labour = { low = 9.5, high = 19 } }  # 21 LF — 21 feet is below any sub's minimum, so the labour here is a $200-400 LUMP spread over the run, not a real per-foot rate
+
+[member_protection]
+# RESEARCHED 2026-08-27 — [low, high] $/LF of MEMBER covered, by material tag. New section,
+# and new BOM table behind it (takeoff/member_protection.py): self-adhered butyl over the
+# framing tops of the two sunken-garden decks and all eleven of their beams and girts.
+#
+# ** NOTHING PRICED THIS BEFORE, BECAUSE NOTHING COULD MEASURE IT. ** [framing] counts sticks
+# by (profile, category) across the whole house, so "the two garden decks' joists" is not a
+# row you can address; [timber] bills the standalone beams by the cubic yard. Neither can
+# answer "how many feet of tape", and the membrane that keeps water out of a built-up beam's
+# ply seams was carried nowhere at all — not as a quantity, not as a dollar, not as a note.
+#
+# TWO TAGS, NOT ONE, AND THE WIDTH IS WHY. The BOM carries each row's member width, taken off
+# the member's own cross-section, and the widths are 1.25"/1.5" (joists, rims, blocking, the
+# four single-ply girts) against 4.5" (the seven 3-ply 2x12 beams). Those are different rolls
+# at a 2-3x difference per foot, and buying the narrow roll for a 3-ply beam leaves both ply
+# seams — the whole point of the exercise — uncovered. A beam that gains a ply re-reads its
+# width from `cross_section` and the order follows; that is the trap this split closes.
+#
+# Basis: Trex Protect butyl 1-5/8" x 50' at $23.88/roll = $0.48/LF and the 3-1/8" beam roll
+# at $42.88/roll = $0.86/LF (Dunn Lumber, Aug 2026 — both real transacted shelf prices).
+# The 11" rim/beam roll a 4.5" beam wants is quoted anywhere from $26 to $65 for the same
+# 50', which is not a price, so the wide row is built the reliable way instead: TWO runs of
+# the 3-1/8" roll, $1.72/LF, as the top of its range. Labour is a framer peeling backing
+# ahead of the crew, not a trade call — it is minutes per stick, and the wide row is dearer
+# only because two runs is two passes.
+# CONFIDENCE: HIGH on the narrow row, MEDIUM on the wide one (the 11" roll is unpriceable).
+# $/LF of member, by material tag
+"butyl-tape" = { material = { low = 0.40, high = 0.75 }, labour = { low = 0.30, high = 0.75 } }  # 402.4 LF — joists, rims and blocking on FS-SG-PORCH and FS-SG-DECK, plus the four single-ply 2x12 girts. 1-5/8" roll
+"butyl-tape-beam" = { material = { low = 0.85, high = 1.75 }, labour = { low = 0.40, high = 1 } }  # 66.0 LF — the seven 3-ply 2x12 beams at 4 1/2" across: the porch's back and front pairs and the balcony's three. Wide roll, or two runs of the 3-1/8"
 
 [railings]
 # RESEARCHED 2026-08-08b — [low, high] $/LF of guard line, MATERIALS including posts, caps
@@ -3168,6 +3231,7 @@ wall_structure       = 0.05   # same, plus block breakage on RETAINING_BLOCK_12
 footing_bedding      = 0.10   # aggregate compacts and is lost into the subgrade
 envelope_layers      = 0.10   # board cuts, membrane laps, and the offcut at every opening
 edge_trim            = 0.10   # trim is cut from stock lengths and the drop is not reusable
+member_protection    = 0.10   # tape comes in 50' rolls and the tail of one is not the start of the next; laps eat a little more
 pipe_insulation      = 0.10   # split sleeve cut to fittings
 construction_returns = 0.10   # short pieces cut from stock: sill, channel, blocking
 floor_heat           = 0.05
@@ -3305,6 +3369,7 @@ plumbing_specialties = "material"
 install_parts        = "material"
 pipe_insulation      = "material"
 edge_trim            = "material"
+member_protection    = "material"
 wall_structure       = "installed"
 timber               = "material"
 railings             = "material"
@@ -3332,6 +3397,7 @@ solar_modules   = "$/W DC installed, split 65/35 on the industry norm. Modules, 
 data_raceways   = "material plus installed labour, $/LF of EMPTY PIPE. It is not the drops: cable, boxes, jacks and termination are the driven electrical-structured-low-voltage-drops allowance. Disjoint from [conduit] by construction — conduit_takeoff and data_raceway_takeoff partition model.conduits on service"
 ducts           = "material plus installed labour, UN-BLENDED 2026-08-27 by qualifying on `material`: `supply:semi_rigid` is the 3-inch and 6-inch radial and a bare `supply` is the 14x8 galvanized trunk, which the model leaves unnamed. The blended rates it replaces were sheet-metal rates carried over the radial pass, so the section fell rather than rose. What is STILL blended is diameter — 3-inch and 6-inch radial share one rate — because a section may qualify on one field and `material` is the bigger of the two differences"
 edge_trim       = "material plus installed labour. Two rows, drip_flashing and ridge_cap, are commonly inside a roofer's price — check for a double count against any roofing bid"
+member_protection = "material plus installed labour. Applied by the framer WITH the framing, not by a trade on a return visit — five of the seven capped beams carry joists on top, so the tape and the cap over it go on before the deck frames or not at all"
 railings        = "material plus installed labour. RAILING-INT-STAIR-GUARD is priced as a COMPONENT system; a shop-welded guard moves cost from labour into material and the two models must not be stacked"
 drainage        = "material plus installed labour, BLENDED over two products that differ 3x (seamless K-style vs fabricated box gutter). Seamless is roll-formed on site, so its own split is inseparable and every quote will come back merged"
 floor_heat      = "material plus installed labour, backed out of published $/SF-of-floor prices. The 3 floor sensors are not in it"

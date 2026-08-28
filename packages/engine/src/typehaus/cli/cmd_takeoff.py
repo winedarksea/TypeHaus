@@ -115,7 +115,8 @@ def takeoff(
                "railings": bom["railings"],
                "bug_screens": bom["bug_screens"],
                "drainage": bom["drainage"],
-               "edge_trim": bom["edge_trim"]}
+               "edge_trim": bom["edge_trim"],
+               "member_protection": bom["member_protection"]}
     if prices is not None:
         # $/sf needs a denominator, and the only honest ones are the space summary's:
         # conditioned area is what the energy code grades, gross is what a builder means

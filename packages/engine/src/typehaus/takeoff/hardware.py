@@ -22,6 +22,7 @@ from typehaus.takeoff.hardware_config import (
     DEFAULT_HARDWARE_TAKEOFF_CONFIG,
     HardwareTakeoffConfig,
 )
+from typehaus.takeoff.uplift import uplift_rows
 
 
 def hardware_takeoff(model: ResolvedModel,
@@ -36,6 +37,7 @@ def hardware_takeoff(model: ResolvedModel,
         *exterior_insulation_screw_rows(model, config.exterior_insulation_fasteners),
         *exposed_fastener_cladding_screw_rows(model, config.exposed_fastener_cladding),
         *joist_hanger_rows(model, config.hanger_detection),
+        *uplift_rows(model, config.uplift),
         *anchorage_rows(model, config),
         *glazing_fastener_rows(model),
         *door_hardware_rows(model),

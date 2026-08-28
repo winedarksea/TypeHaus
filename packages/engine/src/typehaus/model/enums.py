@@ -428,6 +428,16 @@ class ConnectorKind(Enum):
     KNEEBRACE = "kneebrace"                # e.g. Simpson APVKB angled knee brace
     POST_BASE = "post_base"                # standoff post base (e.g. Simpson ABU/CBSQ)
     HOLD_DOWN = "hold_down"                # beam-to-post uplift strap (e.g. Simpson KBS/LSTA)
+    # The cap a beam lands ON at the top of a post. Its own kind, not HOLD_DOWN: a strap
+    # ties a beam down to a post it runs past, a cap seats a beam that stops there. They
+    # are different parts for different joints and a drawing that calls one the other is
+    # telling the framer to build the wrong connection.
+    POST_CAP = "post_cap"                  # post-to-beam cap (e.g. Simpson PC/CC/CCQ)
+    # A cast-in threaded rod with its plate washer. Kept apart from the MASA mudsill anchor
+    # (which the take-off derives from the sill run and no house authors) because a bolt is
+    # what the FOUNDATION schedule has to name a diameter, an embedment and a spacing for —
+    # see ``emit/draw/foundation_schedule.py``, which reported the absence of this kind.
+    ANCHOR_BOLT = "anchor_bolt"            # cast-in sill anchor bolt + plate washer
     STANDING_SEAM_CLAMP = "standing_seam_clamp"  # S-5!-style seam clamp on the siding
     # A pipe/conduit/leader strap that reaches the building THROUGH an exposed-fastener
     # panel, on a standoff block, rather than by gripping a seam. Its own kind because the
@@ -456,6 +466,12 @@ class TrimKind(Enum):
     DOWNSPOUT = "downspout"              # vertical leader carrying a gutter down to grade
     DRIP_FLASHING = "drip_flashing"      # front-edge drip flashing into the gutter
     WRB_COUNTERFLASHING = "wrb_counterflashing"  # rear flashing tucked into the house WRB
+    # Formed cap over the top of a built-up beam. The seams between the plies of a site-built
+    # multi-ply beam hold water and the debris that stops it drying, which is the documented
+    # rot path on an exposed deck beam; a cap sheds it before it reaches the seam. It runs
+    # ALONG a member rather than along a deck edge, which is the only way it differs from the
+    # rest of this family — same authored polyline, same lineal-foot billing.
+    BEAM_CAP = "beam_cap"
     # Multiwall-glazing extrusions. A panel edge is never left open: an open flute end wicks
     # water and grows algae, so every edge is capped by one of these.
     GLAZING_CHANNEL = "glazing_channel"  # U / H / F extrusion capping a panel edge

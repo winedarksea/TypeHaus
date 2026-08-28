@@ -10,9 +10,8 @@ returns a :class:`Finding` naming the missing input instead of printing a plausi
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from typehaus.emit.draw.schedule_block import ScheduleTable
 from typehaus.emit.draw.structural_common import (
@@ -31,6 +30,7 @@ from typehaus.emit.draw.structural_common import (
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.assembly import Layer
 from typehaus.model.enums import ControlLayer, LayerFunction
+
 if TYPE_CHECKING:
     from typehaus.checks.jurisdiction import JurisdictionProfile
 
@@ -279,7 +279,7 @@ def _mark_order(mark: str) -> tuple[str, int]:
 
 
 def foundation_general_notes(model: ResolvedModel,
-                             profile: "JurisdictionProfile | None" = None) -> list[str]:
+                             profile: JurisdictionProfile | None = None) -> list[str]:
     """Sheet notes derived from the code profile and the resolved bedding/drainage records.
 
     The profile is passed in by the sheet that prints these notes, so the frost depth on
@@ -409,6 +409,49 @@ def _drainage_note(model: ResolvedModel) -> str:
             f" DRAINING {destination}.")
 
 
+def _sill_anchorage_findings(model: ResolvedModel) -> list[Finding]:
+    """What S-100 can say about sill anchorage, which depends on what the model carries.
+
+    Until 2026-08-28 this was a flat "not modelled — ConnectorKind has no anchor bolt". Two
+    things changed: ``ConnectorKind.ANCHOR_BOLT`` exists, so a house that wants cast-in bolts
+    can author them with a diameter and an embedment; and the take-off derives MASA mudsill
+    anchors off the sill runs at a stated pitch, which IS modelled anchorage even though it
+    is not a bolt. Reporting "not modelled" over a hundred and twenty-five derived anchors
+    told the reader something untrue about the drawing set they were holding.
+    """
+    from typehaus.model.enums import ConnectorKind
+    from typehaus.takeoff.anchors import mudsill_anchor_rows
+    from typehaus.takeoff.hardware_config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
+
+    walls = tuple(wall.tag for wall in foundation_walls(model))[:1]
+    if [e for e in model.plan.all_elements()
+            if e.element_kind == "Connector" and e.kind is ConnectorKind.ANCHOR_BOLT]:
+        return []  # a modelled bolt carries its own diameter/embedment; the schedule reads it
+
+    config = DEFAULT_HARDWARE_TAKEOFF_CONFIG
+    rows = mudsill_anchor_rows(model, config.sill_plate_anchors,
+                               config.sill_plate_takeoff_category)
+    if rows:
+        pitch = config.sill_plate_anchors.mudsill_anchor_pitch_ft
+        return [Finding(
+            severity=Severity.WARN, check_id="sheet.foundation.sill_anchorage",
+            message=(f"sill-plate anchorage is {rows[0]['count']} {rows[0]['part_number']} "
+                     f"mudsill anchors at {pitch:g} ft o.c.; a cast strap has no bolt "
+                     "diameter or embedment to schedule, so S-100 shows the pitch and not a "
+                     "bolt spacing"),
+            element_tags=walls, result=Result.UNKNOWN,
+            fix_hint=("author Connector elements of kind ANCHOR_BOLT where a cast-in bolt is "
+                      "wanted instead of, or beside, the strap"))]
+    return [Finding(
+        severity=Severity.WARN, check_id="sheet.foundation.sill_anchorage",
+        message="sill-plate anchorage is not modelled — no sill-plate construction return "
+                "reaches the anchor rule and no anchor-bolt Connector is authored, so S-100 "
+                "shows no anchor spacing",
+        element_tags=walls, result=Result.UNKNOWN,
+        fix_hint="give the wall a sill-plate ConstructionRule, or author ANCHOR_BOLT "
+                 "Connector elements with a diameter and an embedment")]
+
+
 def foundation_sheet_findings(model: ResolvedModel) -> list[Finding]:
     """Permit-set datums S-100 must show that the model does not carry.
 
@@ -439,15 +482,7 @@ def foundation_sheet_findings(model: ResolvedModel) -> list[Finding]:
                      "layer in the slab assembly",
         ))
     if foundation_walls(model):
-        findings.append(Finding(
-            severity=Severity.WARN, check_id="sheet.foundation.sill_anchorage",
-            message="sill-plate anchorage is not modelled — no anchor-bolt element exists "
-                    "(ConnectorKind has no anchor bolt), so S-100 shows no bolt spacing",
-            element_tags=tuple(wall.tag for wall in foundation_walls(model))[:1],
-            result=Result.UNKNOWN,
-            fix_hint="add an anchor-bolt ConnectorKind (or a WallAnchorage element) so the "
-                     "mudsill note can name a modelled diameter, embedment, and spacing",
-        ))
+        findings.extend(_sill_anchorage_findings(model))
     unscheduled = [solid.tag for solid in bearing_solids(model)
                    if solid.category == "footing" and model.plan.by_tag(solid.tag) is None]
     if unscheduled:

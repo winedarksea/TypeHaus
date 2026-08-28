@@ -77,6 +77,12 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     # the allowance note below: the key prefix is the trade declaration, and a kit filed
     # under framing lands the carpenter's number in the framer's work package.
     ("hardware", "pocket-frame-*", CostCode("2400", "08 71 00", "openings")),
+    # A cast-in anchor bolt is Concrete Accessories (03 15 00), set by the sub who
+    # pours the wall, hours before the framer who lands a plate on it exists on site.
+    # Same reasoning as the pocket-frame row above: the key prefix declares the trade,
+    # and filing this under the framer's 06 05 23 would put a bolt that has to be in
+    # wet concrete into a work package that starts after the concrete has cured.
+    ("hardware", "ab-*", CostCode("1000", "03 15 00", "concrete")),
     # Openings: doors and windows are one NAHB account but two CSI divisions.
     ("openings", "*door*", CostCode("2400", "08 10 00", "openings")),
     ("openings", "*window*", CostCode("2400", "08 50 00", "openings")),
@@ -166,6 +172,10 @@ SECTION_CODES: dict[str, CostCode] = {
     "install_parts": CostCode("3100", "22 05 00", "plumbing"),
     "pipe_insulation": CostCode("3100", "22 07 00", "plumbing"),
     "edge_trim": CostCode("2500", "07 62 00", "roof"),
+    # Self-adhered membrane on framing tops. 07 26 00 (weather barriers) rather than
+    # the roof's 07 62 00: it is applied by the framer, with the framing, and it is
+    # gone under the deck sheet before the roof trade arrives.
+    "member_protection": CostCode("2000", "07 26 00", "framing"),
     "wall_structure": CostCode("1200", "03 30 00", "concrete"),
     # Structural wood solids (2026-08-22) — free-standing beams and posts, which is rough
     # carpentry however they are measured. Reached only when ``_solid_code`` declines,

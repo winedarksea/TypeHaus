@@ -46,7 +46,10 @@ from typehaus.resolve.vent_termination import (
 )
 
 # Round-section faceting lives in resolve/round_solids.py, shared with pipe runs.
-from typehaus.resolve.round_solids import (
+# ``_PIPE_SWEEP_BANDS`` is re-exported rather than used here: ``test_accessories.py`` imports
+# it from this module to assert the horizontal jog is swept on the SAME band boundaries as the
+# vertical risers. A tidy-up that drops it as an unused import breaks that test.
+from typehaus.resolve.round_solids import (  # noqa: F401
     PIPE_BUNDLE_SPACING as _PIPE_BUNDLE_SPACING,
     PIPE_FACETS as _PIPE_FACETS,
     PIPE_SWEEP_BANDS as _PIPE_SWEEP_BANDS,
@@ -61,6 +64,7 @@ _TRIM_CATEGORY = {
     "downspout": "downspout",
     "drip_flashing": "flashing",
     "wrb_counterflashing": "flashing",
+    "beam_cap": "flashing",
     # The glazing extrusions share the edge-run shape but not the flashing category: they
     # are an aluminium order billed by the lineal foot, and the take-off groups on this.
     "glazing_channel": "glazing_trim",
@@ -403,6 +407,9 @@ _CONNECTOR_MARKER_IN = {
     # the pipe, and deeper because the block holds it off the rib crowns. Still far short
     # of the 5" default box, which is what matters — these run down a wall in fours.
     ConnectorKind.PIPE_STRAP: (1.50, 1.25, 0.50),
+    # A 1/2" rod through a 3" square plate washer, drawn as the 10" bolt it is. The default
+    # box would draw a bolt the size of a post base, along every sill run in the house.
+    ConnectorKind.ANCHOR_BOLT: (1.50, 1.50, 5.00),
 }
 _CONNECTOR_MARKER_DEFAULT = (2.5, 2.5, 3.0)
 

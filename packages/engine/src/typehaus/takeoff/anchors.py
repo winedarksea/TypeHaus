@@ -151,17 +151,34 @@ def stud_plate_tie_rows(model: ResolvedModel, rules: WallTieRules) -> list:
     return rows
 
 
-def coil_strap_rows(model: ResolvedModel, rules: WallTieRules) -> list:
-    """Coiled strapping lapping the floor band at corners where framed walls stack.
+def _band_strap_m(wall, lap_m: float) -> float:
+    """One strap: across the floor band, plus a lap onto the framing at each end."""
+    return (wall.z1_m - (wall.plate_top_z_m or wall.z1_m)) + 2.0 * lap_m
 
-    A corner qualifies when every wall meeting there is a framed exterior wall *and* carries
-    another wall above it — that is the joint the strap has to make continuous.
+
+def coil_strap_rows(model: ResolvedModel, rules: WallTieRules) -> list:
+    """Coiled strapping carrying tension across the floor band where framed walls stack.
+
+    Two terms, because a corner and a wall run are different conditions:
+
+    * a **corner** where every wall meeting there is a framed exterior wall carrying another
+      wall above it — the four-stud packs, which is where the two facades hand off to each
+      other and where the strap has the most to do;
+    * the **run between** those corners, strapped at ``wall_strap_pitch_ft``.
+
+    The run term is why this reads 80 straps rather than 8 (2026-08-28). Corners alone put
+    two straps on a 36 ft facade and left thirty-two feet of it holding the storey above by
+    nails through a rim board — the whole middle of every elevation, which is where uplift
+    is largest on a low-slope roof. The pitch matches the 4 ft the mudsill anchors and the
+    LTP4 tie plates already run at, so the three of them read as one rhythm on the drawings
+    instead of three schedules a framer has to hold apart.
     """
     exterior_framed = {wall.tag: wall for wall in model.walls if _is_exterior_framed_wall(wall)}
     stacked_below = {edge.lower_wall for edge in model.stack_edges}
     lap_m = rules.coil_strap_lap_in * M_PER_IN
 
     straps: list = []
+    corners = 0
     for junction in model.junctions:
         if junction.kind not in rules.corner_junction_kinds:
             continue
@@ -169,11 +186,23 @@ def coil_strap_rows(model: ResolvedModel, rules: WallTieRules) -> list:
         if not tags or any(tag not in exterior_framed or tag not in stacked_below
                            for tag in tags):
             continue
-        # The strap crosses the floor band: from the top plate of the wall below to the
-        # underside of the wall above, plus a lap onto the framing at each end.
         walls = [exterior_framed[tag] for tag in tags]
-        band_m = max((wall.z1_m - (wall.plate_top_z_m or wall.z1_m)) for wall in walls)
-        straps.append(band_m + 2.0 * lap_m)
+        straps.append(max(_band_strap_m(wall, lap_m) for wall in walls))
+        corners += 1
+
+    # The run between the corners. Counted per wall rather than per junction, and the corner
+    # straps above are NOT subtracted: a wall's own end is where its neighbour's corner strap
+    # lands, which laps the return face, not this one.
+    runs = 0
+    pitch_m = rules.wall_strap_pitch_ft * FT_TO_M
+    for tag, wall in sorted(exterior_framed.items()):
+        if tag not in stacked_below:
+            continue
+        (x0, y0), (x1, y1) = wall.axis
+        length_m = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
+        count = max(rules.minimum_straps_per_wall, int(length_m / pitch_m))
+        straps.extend([_band_strap_m(wall, lap_m)] * count)
+        runs += count
 
     if not straps:
         return []
@@ -183,8 +212,11 @@ def coil_strap_rows(model: ResolvedModel, rules: WallTieRules) -> list:
     # Coiled strapping is ordered by the coil, so the purchasable count *is* the coil count;
     # the straps it is cut into stay visible in the basis.
     return [hardware_row(
-        item, scope="stacked corner", count=coils, length_ft=total_ft, coils=coils,
-        basis=(f"{len(straps)} straps, one per stacked framed-exterior corner: floor band + "
+        item, scope="stacked wall", count=coils, length_ft=total_ft, coils=coils,
+        basis=(f"{len(straps)} straps across the floor band: {corners} at stacked "
+               f"framed-exterior corners and {runs} along the runs between them at "
+               f"{rules.wall_strap_pitch_ft:g} ft o.c. (min "
+               f"{rules.minimum_straps_per_wall} per wall); floor band + "
                f"{rules.coil_strap_lap_in:g} in lap each side, up to "
                f"{max(straps) * _M_TO_FT:.2f} ft each; "
                f"{total_ft:.1f} LF cut from {rules.coil_strap_coil_length_ft:g} ft coils"))]

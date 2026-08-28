@@ -104,6 +104,19 @@ class FloorSystem(Element):
     # frames a freestanding sub-structure sharing a storey with the main building.
     outline: tuple[Point2D, ...] = ()
     iic: int | None = None  # empirical lookup (#50)
+    # Self-adhered membrane over the joist and rim TOPS — butyl "joist tape" and its kin.
+    # A catalog material ref, so the house prices it and the engine ships no number for it.
+    #
+    # It is not a ``DeckLayer``: a subfloor is a sheet spanning the joist field and bills by
+    # the square foot, while this follows each stick and bills by the lineal foot. Modelling
+    # it as a thin layer would put a 6" strip's price on the whole deck's area.
+    #
+    # Two jobs, on an exterior deck: it keeps water out of the fastener holes and off the
+    # end grain, and — where the decking or the flashing is aluminium over copper-treated
+    # lumber — it is the dielectric that stops the treatment corroding the metal (AWC DCA6
+    # warns against that contact outright). ``None`` is bare framing, which is every
+    # interior floor.
+    top_protection: str | None = None
     source: str | None = None
 
 

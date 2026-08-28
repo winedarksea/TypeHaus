@@ -112,6 +112,9 @@ ESTIMATE_PLANS = (
     ("install_parts", "install_parts", "part", "count", "ea"),
     ("pipe_insulation", "pipe_insulation", "spec", "length_ft", "LF"),
     ("edge_trim", "edge_trim", "category", "length_ft", "LF"),
+    # Framing-top membrane by the foot, keyed on the material tag (2026-08-27). It
+    # mirrors nothing: `framing` bills the stick the tape covers, not the tape.
+    ("member_protection", "member_protection", "material", "length_ft", "LF"),
     # Placed by the yard, keyed on the assembly — see the field comment on ``Prices``.
     ("wall_structure", "wall_structure", "assembly", "volume_cubic_yards", "cy"),
     # The wood half of ``structural_solids`` (2026-08-22). Identical join to ``concrete``,

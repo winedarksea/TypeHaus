@@ -211,6 +211,28 @@ def test_every_catlin_bom_table_is_priced_declared_or_unpriced(
     assert "light_run_materials" in listed
 
 
+def test_every_catlin_hardware_part_reaches_a_price(catlin_model) -> None:
+    """No connector may reach the BOM without a dollar figure in the house's price file.
+
+    The orphan sweep above is per-TABLE: `hardware` is priced, so a new part number inside it
+    is invisible there — it lands in `unpriced` as one row among fifty and nobody reads it.
+    This is the per-PART twin, and it is the acceptance test for adding hardware: a rule that
+    bills an LTP4 the price file has never heard of fails here, at the part, by name.
+
+    Deliberately asserted against `houses/catlin` rather than a fixture. The engine ships no
+    prices (`plans/01-decisions.md` #28), so "is this part priced" is only ever a question
+    about a real house, and the reference house is the one held to a complete answer.
+    """
+    from typehaus.takeoff.hardware import hardware_takeoff
+
+    prices = load_prices(Path("houses/catlin"))
+    missing = sorted({str(row["part_number"]) for row in hardware_takeoff(catlin_model)
+                      if row["count"] and str(row["part_number"]) not in prices.hardware})
+    assert not missing, (
+        "hardware billed but not priced — add a [hardware] row keyed on the part number "
+        f"in houses/catlin/prices.toml: {missing}")
+
+
 # --- 2026-08-27: three tables the model resolved and nothing priced ---------------------------
 #
 # ``UNPRICED_VIEWS`` used to say of ``conductors`` that "the model resolves the route but not

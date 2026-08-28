@@ -211,6 +211,10 @@ class Beam(Element):
     # forwards it to the beam's solid so render/IFC read the finish instead of the bare
     # per-category palette colour. Unset leaves the beam its structural wood colour.
     assembly: str | None = None
+    # Self-adhered membrane over the beam's top face — the same field, and the same reasons,
+    # as ``FloorSystem.top_protection``; see that docstring. A built-up beam is the member
+    # that wants it most: every ply seam is an open joint running the beam's whole length.
+    top_protection: str | None = None
 
 
 @register_element

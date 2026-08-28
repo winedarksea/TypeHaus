@@ -24,6 +24,20 @@ ROLE_STUD_PLATE_TIE = "stud_plate_tie"
 ROLE_COIL_STRAP = "coil_strap"
 ROLE_POST_BASE = "post_base"
 ROLE_HURRICANE_TIE = "hurricane_tie"
+# The cap over a post that a beam lands ON (rather than continues past). Its own role, not
+# ROLE_BEAM_HOLD_DOWN: the KBS strap ties a beam DOWN to a post whose sides it can reach,
+# while a cap seats the beam and takes uplift in one part. Both serve a post/beam joint and
+# ``hardware_for_role`` holds exactly one product per role, so they cannot share.
+ROLE_POST_CAP = "post_cap"
+# Plate-to-plate / plate-to-rim lateral tie. The SP tie and the H tie above both resist
+# UPLIFT at a stud or a rafter; this one resists the horizontal shear that walks a plate off
+# its band, which is a different joint with a different part and no size ladder.
+ROLE_LATERAL_TIE_PLATE = "lateral_tie_plate"
+# The cast-in bolt anchoring a sill plate between the mudsill anchors. Distinct from
+# ROLE_MUDSILL_ANCHOR: a MASA is a formed strap set in wet concrete and a bolt is a threaded
+# rod with a plate washer, priced and installed differently, and the foundation schedule has
+# to name a diameter and an embedment the strap does not have.
+ROLE_SILL_ANCHOR_BOLT = "sill_anchor_bolt"
 ROLE_STANDING_SEAM_CLAMP = "standing_seam_clamp"
 # The two profile-specific seam clamps. Their own roles, and keyed on the PANEL PROFILE
 # rather than on what they are for, because the profile is what decides the part: an S-5-S
