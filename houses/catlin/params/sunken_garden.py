@@ -11,7 +11,7 @@ Vertical stack (project-north frame; +X east, +Y north, +Z up):
 - The north 8' of that U is the *porch*: two 12" side walls and, on both the north (house)
   and south (front) edges, NO concrete wall. Each of those edges is carried the same way —
   one column at midspan plus two LVL beams hung into the side walls: a 12" sonotube at the
-  back, a 16" square cast column at the front. The back line sits a SPEC south-offset
+  back, a 16" round cast column at the front. The back line sits a SPEC south-offset
   inside the north edge (so the tube and its bell footing clear the house) and the deck
   cantilevers over it; the front beams are flush-framed, so the joists hang into their
   north face rather than bearing on top. PT 2x8 joists span N-S between the two beam
@@ -75,7 +75,8 @@ class SunkenGardenSpec:
     porch_clear_depth_ft: float = 8.0  # N-S inside the porch box
     gap_to_house_in: float = 5.0  # house cladding face -> north edge (insulation gap)
     wall_thickness_in: float = 12.0  # side + retaining walls
-    front_column_size_in: float = 16.0  # square cast column on the porch's front edge
+    # Round cast column on the porch's front edge; it was a 16" SQUARE until 2026-08-28.
+    front_column_size_in: float = 16.0
     footing_width_in: float = 84.0  # 36" toe + 12" wall + 36" heel
     footing_thickness_in: float = 12.0
     aggregate_bedding_depth_in: float = 42.0
@@ -378,14 +379,14 @@ PORCH_FRONT_AXIS_Y_FT = _y_ax_front
 _back_beam_depth_ft = 11.25 / 12.0  # 2x12 actual depth
 _y_col = _y_in_n - SPEC.column_south_offset_in / 12.0
 _col_footing_width_in = 30.0  # spread footing (bell) under the sonotube
-_front_footing_width_in = 36.0  # spread footing under the 16" square front column
+_front_footing_width_in = 36.0  # spread footing under the 16" round front column
 COLUMN = Post(uid="SGP001AAAA", tag="PT-SG-COL",
               position=pt(ft(_cx), ft(_y_col)), size="12 round",
               height=ft(SPEC.basement_depth_ft - _back_beam_depth_ft),
               assembly="PIER_CONCRETE_12",
               supported_by="FT-SG-COL")
 
-# The front column: 16" square cast concrete on its own spread footing, replacing the 16"
+# The front column: 16" round cast concrete on its own spread footing, replacing the 16"
 # arched cross-wall that used to close this edge. Its top is the *soffit* of the two front
 # beams, exactly as PT-SG-COL's is the soffit of the back pair — and that is not a style
 # choice. A 16"-o.c. joist grid cannot miss a 16" column (the nearest line is at most 8"
@@ -395,9 +396,10 @@ COLUMN = Post(uid="SGP001AAAA", tag="PT-SG-COL",
 # ``_reinforcement_members``, so PT-SG-BR2's sister plies run straight through anything cut
 # here. Stopping at the soffit puts the whole pour below every floor member's underside.
 #
-# ``size="16.0x16.0"``, never "16x16": the nominal form matches ``_RE_NOMINAL`` in
-# resolve/framing/profiles.py, misses LUMBER_ACTUAL and silently resolves to 1.5x5.5. The
-# decimal form hits ``_RE_ACTUAL`` first and yields a true 16" square.
+# ``size="16 round"`` since 2026-08-28. It was ``"16.0x16.0"`` — never "16x16", because the
+# nominal form matches ``_RE_NOMINAL`` in resolve/framing/profiles.py, misses LUMBER_ACTUAL
+# and silently resolves to 1.5x5.5. The round spelling sidesteps that trap entirely and is
+# the same one the five 12" sonotubes use.
 #
 # Detailing that the model has no field for, so it lives here and in the assembly's
 # ``source``: 3/4" chamfer on the four arrises; a >=15 degree wash struck on the top (BIA
@@ -405,13 +407,23 @@ COLUMN = Post(uid="SGP001AAAA", tag="PT-SG-COL",
 # 4,000-4,500 psi, w/cm <= 0.45, 6.0-6.5% air at 3/4" aggregate (Minn. R. 1309.0402 plus
 # ACI 318-19 class F2); broom or float finish, never steel-trowelled (troweling drives the
 # entrained air out of exactly the layer that scales — NRMCA CIP 2); silane/siloxane
-# repellent. The square earns its keep on connector side cover, not bearing: a 6x6 at
-# Fc-parallel 1,000 psi is ~30 kip, long before the concrete governs, but a CBSQ66 wants 3"
-# of side cover and an MPB66Z 5", and a 12" round leaves ~2.1" at a square connector's
-# corners.
+# repellent. Bearing was never the question: a 6x6 at Fc-parallel 1,000 psi is ~30 kip, long
+# before the concrete governs.
+#
+# **It was square until 2026-08-28, and the reason it stopped being square is cost.** The
+# square earned its keep on connector SIDE COVER — a CBSQ66 wants 3" and an MPB66Z 5", and a
+# centred 6" plate leaves 5.00" at its corners in a 16" square, 3.76" in a 16" round, 2.1"
+# in a 12" round. But that cover was being bought at $478-1,327 against $304-633 for a
+# disposable fibre tube of the same height, because a square column is formed in built
+# panels with chamfer strips and rubbed and patched after strip. Nothing is bolted to this
+# column's top: the two front beams land on the pour and CN-SG-TIE-FCOL holds them down.
+# The cover was reserved for a moment base that plans/TODO.md has never specified, and the
+# choice made here is to spend the ~$175-695 elsewhere and foreclose it. An 18" tube (4.76")
+# or a 20" (5.76") would have kept the option and still beaten the square — that is the
+# revert if the lateral design ever calls for one. See notes/uplift_load_path.md.
 _front_beam_depth_ft = _back_beam_depth_ft  # same member (SPEC.back_beam), same soffit drop
 FRONT_COLUMN = Post(uid="SGP002AAAA", tag="PT-SG-FCOL",
-                    position=pt(ft(_cx), ft(_y_ax_front)), size="16.0x16.0",
+                    position=pt(ft(_cx), ft(_y_ax_front)), size="16 round",
                     height=ft(SPEC.basement_depth_ft - _front_beam_depth_ft),
                     supported_by="FT-SG-FCOL",
                     assembly="SUNKEN_GARDEN_COLUMN_16")
@@ -956,6 +968,16 @@ CONNECTORS += [
     Connector(uid="SGCH02AAAA", tag="CN-SG-HGR-E", kind=ConnectorKind.JOIST_HANGER,
               position=pt(ft(_x_ax_e), ft(_y_col)), elevation=_back_beam_mid,
               size="HUCQ410-SDS", connects=("BM-SG-BKE", "W-SG-E1")),
+    # ** OPEN: the SKU here reaches wood, and one side of this joint is concrete. **
+    # An H2.5A is a wood-to-wood tie — library/hardware.py's own record says
+    # "rafter/joist-to-plate", and its published values are nails into lumber on BOTH legs.
+    # Here one leg has the 3-ply KDAT beam and the other has a cast column top it cannot
+    # nail to, so as drawn this splices the two beam ends across the pour rather than
+    # holding either down to it. The part that reaches concrete at this joint is a gusset
+    # angle anchored with a Titen HD (the HGAM10 / A34-A44 family), and the catalog stocks
+    # nothing of it. Left as-is deliberately: swapping in a part number nobody has priced
+    # would be worse than a recorded open item. Same at CN-SG-TIE-FCOL below.
+    # See notes/uplift_load_path.md.
     Connector(uid="SGCT01AAAA", tag="CN-SG-TIE-COL", kind=ConnectorKind.HURRICANE_TIE,
               position=pt(ft(_cx), ft(_y_col)), elevation=_back_beam_soffit, size="H2.5A",
               connects=("BM-SG-BKW", "BM-SG-BKE", "PT-SG-COL")),

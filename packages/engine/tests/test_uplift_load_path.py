@@ -80,25 +80,74 @@ def test_a_cast_column_is_not_evaluable_rather_than_broken(findings) -> None:
 
     Grading it against a wood post base reported a break at a joint that has none — and
     handed the reader an ABU that does not fit a 12" round pour.
+
+    There are SIX of these, not the two the sunken garden's columns make: the four breezeway
+    sonotube piers are the same joint. The message has to say two things and the assertions
+    pin both — that the connection is a doweled lap, and that the steel making it is inside
+    the column's own $/cy rate rather than missing from the order. A reader who takes
+    "carries no rebar" as "unpriced scope" goes looking for money that is already there.
     """
-    for column in ("PT-SG-COL", "PT-SG-FCOL"):
+    for column in ("PT-SG-COL", "PT-SG-FCOL", "PR-BW-1", "PR-BW-4"):
         finding = next(f for f in findings
                        if f.element_tags[:1] == (column,) and "cannot be graded" in f.message)
         assert finding.result is Result.UNKNOWN
-        assert "reinforcement" in finding.message
+        assert "doweled lap" in finding.message, column
+        assert "$/cy rate" in finding.message, column
 
 
-def test_a_post_with_no_declared_bearing_is_not_evaluable(findings) -> None:
-    """The three stairwell posts declare no ``supported_by``: a gap, not a missing connector.
+def test_the_stairwell_posts_are_graded_now_that_they_declare_a_bearing(findings) -> None:
+    """These were the check's three un-gradeable posts until 2026-08-28.
 
-    Keeping these out of the FAIL column is what the tri-state is for (#32). Reporting a
-    thing the model never said as a thing the model got wrong would exit ``haus check`` 1
-    over an omission.
+    All three always stood on something — the slab under the two columns, W-B-CN under the
+    landing block — and their own comment said so in prose while ``supported_by`` sat empty.
+    Filling it in is what closed the item, and it split the three two ways: the columns take
+    a derived ABU44, the 13 7/16" block takes nothing because it is not a column.
     """
-    for post in ("P-M-STRWELL-S", "P-M-STRWELL-N", "P-M-STRLAND-SE"):
-        finding = next(f for f in findings if f.element_tags[:1] == (post,))
-        assert finding.result is Result.UNKNOWN
-        assert "declares no `supported_by`" in finding.message
+    graded = {f.element_tags[0]: f for f in findings}
+    for column in ("P-M-STRWELL-S", "P-M-STRWELL-N"):
+        assert "derived standoff post base" in graded[column].message, column
+        assert graded[column].result is Result.UNKNOWN
+    block = graded["P-M-STRLAND-SE"]
+    assert block.result is Result.UNKNOWN
+    assert "squash block" in block.message
+    assert "post base" not in block.message, \
+        "a block bears; buying it a base is the error blocking_max_height_ft prevents"
+    assert not [f for f in findings if "declares no `supported_by`" in f.message], \
+        "nothing in catlin is un-gradeable for want of a bearing any more"
+
+
+def test_an_undeclared_bearing_is_still_reported_as_un_gradeable(ctx) -> None:
+    """The tri-state branch must stay alive now that no real post exercises it.
+
+    Closing the last un-gradeable post in the house left this code path with no witness, and
+    an untested branch is one refactor from reporting a modelling gap as a FAIL — which
+    would exit ``haus check`` 1 over an omission, the exact thing the tri-state is for (#32).
+    So strip the bearing back off one post and confirm the branch still answers.
+    """
+    from typehaus.model.structure import Post
+
+    posts = [e for e in ctx.plan.all_elements()
+             if isinstance(e, Post) and e.tag == "P-M-STRWELL-S"]
+    stripped = posts[0].model_copy(update={"supported_by": None})
+    by_tag = {e.tag: e for e in ctx.plan.all_elements()}
+    by_tag["P-M-STRWELL-S"] = stripped
+
+    class _Plan:
+        def __init__(self, real):
+            self._real = real
+
+        def all_elements(self):
+            return list(by_tag.values())
+
+        def __getattr__(self, name):
+            return getattr(self._real, name)
+
+    gapped = type(ctx)(plan=_Plan(ctx.plan), model=ctx.model, preferences=ctx.preferences,
+                       profile=ctx.profile, resolve_findings=ctx.resolve_findings)
+    finding = next(f for f in uplift_load_path(gapped)
+                   if f.element_tags[:1] == ("P-M-STRWELL-S",))
+    assert finding.result is Result.UNKNOWN, "a modelling gap is never a FAIL"
+    assert "declares no `supported_by`" in finding.message
 
 
 def test_an_authored_hurricane_tie_connects_a_beam_to_its_column(findings) -> None:

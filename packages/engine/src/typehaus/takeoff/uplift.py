@@ -38,21 +38,22 @@ from collections import Counter
 from dataclasses import dataclass
 
 from typehaus.model.enums import ConnectorKind
-from typehaus.model.structure import Beam, Connector, Post
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.hardware_catalog import (
-    ROLE_BEAM_HOLD_DOWN,
     ROLE_HURRICANE_TIE,
     ROLE_LATERAL_TIE_PLATE,
-    ROLE_POST_BASE,
     hardware_for_role,
-    hardware_for_role_and_nominal,
     hardware_row,
-    structural_hardware_catalog,
 )
 from typehaus.takeoff.hardware_config import FT_TO_M, UpliftTieRules
 from typehaus.takeoff.plan_geometry import centerline_endpoints, distance_point_to_segment
+from typehaus.takeoff.uplift_joints import (
+    post_base_anchor_rows,
+    post_base_rows,
+    post_beam_strap_rows,
+    tags_covered_by,
+)
 
 _M_TO_FT = 3.280839895013123
 
@@ -174,31 +175,6 @@ def _member_ends(member) -> list:
     ]
 
 
-# --- the authored-connector guard ----------------------------------------------------
-
-
-def _authored_connectors(model: ResolvedModel) -> list:
-    return [element for storey in model.plan.storeys
-            for element in model.plan.storey_elements(storey.tag)
-            if isinstance(element, Connector)]
-
-
-def tags_covered_by(model: ResolvedModel, kinds: frozenset) -> set:
-    """Every element tag an authored connector of one of ``kinds`` already names.
-
-    Tag-based rather than geometric on purpose: ``Connector.connects`` is the plan's own
-    statement of which members the hardware joins, it is what
-    ``emit/draw/roofframingplan.py`` reads for the tie schedule, and it survives a member
-    being re-resolved at a slightly different coordinate.
-    """
-    covered: set = set()
-    for element in _authored_connectors(model):
-        if element.kind in kinds:
-            covered.update(element.connects)
-    return covered
-
-
-# --- rule 1: bearing ties ------------------------------------------------------------
 
 
 def _tied_assemblies(model: ResolvedModel, elements_by_tag: dict, rules: UpliftTieRules):
@@ -221,24 +197,6 @@ def _tied_assemblies(model: ResolvedModel, elements_by_tag: dict, rules: UpliftT
         refs = tuple(getattr(joists, "bearing_refs", ()) or ())
         if refs:
             yield floor, refs, rules.tied_floor_categories
-
-
-def authored_joints(model: ResolvedModel, kinds: frozenset) -> set:
-    """Every PAIR of tags one authored connector of ``kinds`` names together.
-
-    The coarser :func:`tags_covered_by` answers "is this element mentioned at all", which is
-    the right question for a post base (a post has exactly one) and the wrong one for a
-    beam/post joint (a post carries several beams, and they are not all strapped).
-    """
-    joints: set = set()
-    for element in _authored_connectors(model):
-        if element.kind not in kinds:
-            continue
-        tags = list(element.connects)
-        for index, left in enumerate(tags):
-            for right in tags[index + 1:]:
-                joints.add(frozenset({left, right}))
-    return joints
 
 
 def bearing_line_tags(model: ResolvedModel, refs: tuple, rules: UpliftTieRules) -> set:
@@ -333,105 +291,6 @@ def bearing_uplift_tie_rows(model: ResolvedModel, rules: UpliftTieRules) -> list
     return rows
 
 
-# --- rule 2: post bases --------------------------------------------------------------
-
-
-def catalogued_post_sizes() -> set:
-    return {nominal for item in structural_hardware_catalog()
-            if item.role == ROLE_POST_BASE for nominal in item.fits_nominal}
-
-
-def _posts(model: ResolvedModel) -> list:
-    return [(storey.tag, element) for storey in model.plan.storeys
-            for element in model.plan.storey_elements(storey.tag)
-            if isinstance(element, Post)]
-
-
-def post_base_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
-    """A standoff base under every wood post that declares what it bears on.
-
-    Three conditions are deliberately out of reach of this rule, and each is a real one
-    rather than a rounding decision:
-
-    * a post inside a wall (``within_wall``) is developed by the wall's own plates and studs,
-      which the SP tie already bills — a base under it would be a second connection at a
-      joint that already has one;
-    * a post with no ``supported_by`` has nothing declared to fasten a base to;
-    * a concrete column is not a section this catalog stocks a wood base for.
-
-    All three are reported by ``structural.uplift_load_path`` rather than being quietly
-    absent from the order.
-    """
-    stocked = catalogued_post_sizes()
-    covered = tags_covered_by(model, frozenset({ConnectorKind.POST_BASE}))
-    by_size: dict = {}
-    for storey, post in _posts(model):
-        if post.tag in covered or post.within_wall or not post.supported_by:
-            continue
-        if post.size not in stocked:
-            continue
-        entry = by_size.setdefault(post.size, {"by_storey": Counter(), "tags": []})
-        entry["by_storey"][storey] += 1
-        entry["tags"].append(post.tag)
-
-    rows = []
-    for size in sorted(by_size):
-        entry = by_size[size]
-        item = hardware_for_role_and_nominal(ROLE_POST_BASE, size)
-        by_storey = entry["by_storey"]
-        rows.append(hardware_row(
-            item, scope="post base", count=int(sum(by_storey.values())), size=size,
-            by_storey=dict(sorted(by_storey.items())),
-            basis=(f"one per {size} post that declares what it bears on: "
-                   + ", ".join(sorted(entry["tags"])))))
-    return rows
-
-
-# --- rule 3: post/beam straps --------------------------------------------------------
-
-
-def post_beam_strap_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
-    """A strap at every beam end that lands on a wood post.
-
-    ``Beam.bearing_refs`` already names the post, so this counts declarations rather than
-    searching for coincident geometry. One strap per beam end by default, not the matched
-    pair: a pair only fits where the beam *stops* at the post, and a beam that runs past its
-    post has one reachable face — the same lesson ``KneeBraceRules`` learned when a pair rule
-    billed twelve unbuildable braces. A joint that wants two authors the second by hand.
-    """
-    stocked = catalogued_post_sizes()
-    posts = {post.tag: post for _storey, post in _posts(model)}
-    # A joint is covered only when one authored connector names BOTH its members. Matching
-    # on either alone credits the wrong joint: the breezeway straps its two ROOF beams to
-    # PT-BW-1..4, and a post-only test would hand those straps to the two FLOOR beams landing
-    # on the same four posts, which carry nothing at all.
-    covered = authored_joints(model, frozenset({ConnectorKind.HOLD_DOWN,
-                                                ConnectorKind.POST_CAP,
-                                                ConnectorKind.HURRICANE_TIE}))
-    by_storey: Counter = Counter()
-    joints: list = []
-    for storey in model.plan.storeys:
-        for element in model.plan.storey_elements(storey.tag):
-            if not isinstance(element, Beam):
-                continue
-            for ref in element.bearing_refs:
-                post = posts.get(ref)
-                if post is None or post.size not in stocked:
-                    continue
-                if frozenset({element.tag, post.tag}) in covered:
-                    continue
-                by_storey[storey.tag] += rules.straps_per_post_beam_joint
-                joints.append(f"{element.tag}->{post.tag}")
-    if not joints:
-        return []
-    item = hardware_for_role(ROLE_BEAM_HOLD_DOWN)
-    return [hardware_row(
-        item, scope="beam on post", count=int(sum(by_storey.values())),
-        by_storey=dict(sorted(by_storey.items())),
-        basis=(f"{rules.straps_per_post_beam_joint} per beam end landing on a wood post "
-               f"({len(joints)} joints: " + ", ".join(sorted(joints)) + ")"))]
-
-
 # --- rule 4: lateral tie plates ------------------------------------------------------
 
 
@@ -483,6 +342,7 @@ def uplift_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
     return [
         *bearing_uplift_tie_rows(model, rules),
         *post_base_rows(model, rules),
+        *post_base_anchor_rows(model, rules),
         *post_beam_strap_rows(model, rules),
         *lateral_tie_plate_rows(model, rules),
     ]

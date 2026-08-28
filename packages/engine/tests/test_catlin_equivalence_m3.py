@@ -120,8 +120,9 @@ DECLARED_DIVERGENCES = {
     ),
     "Sunken Garden Porch South Arch Wall (Lower)": (
         "the porch's south edge carries no wall at all since 2026-08-18: PT-SG-FCOL, a 16\" "
-        "square cast column, and two flush LVL beams into the side walls replaced the arched "
-        "cross-wall, and the 42\" masonry parapet over it became RL-SG-PORCH (→ contract test)"
+        "round cast column (square until 2026-08-28), and two flush LVL beams into the "
+        "side walls replaced the arched cross-wall, and the 42\" masonry parapet over it "
+        "became RL-SG-PORCH (→ contract test)"
     ),
     # "Sunken Garden North Wall Footing" was declared here until 2026-08-03 — the garden's
     # north wall was removed in the redesign and nothing stood on its footing line. It is

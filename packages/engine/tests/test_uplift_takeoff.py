@@ -20,10 +20,9 @@ from typehaus.takeoff.hardware_config import UpliftTieRules
 from typehaus.takeoff.uplift import (
     bearing_connections,
     lateral_tie_plate_rows,
-    post_base_rows,
-    post_beam_strap_rows,
     uplift_rows,
 )
+from typehaus.takeoff.uplift_joints import post_base_rows, post_beam_strap_rows
 
 RULES = CONFIG.uplift
 
@@ -139,21 +138,90 @@ def test_a_tie_row_names_the_bearings_it_came_from(rows) -> None:
 
 
 def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> None:
-    """Ten posts already carry a hand-authored ABU66SS; none may be bought twice."""
+    """Ten posts already carry a hand-authored ABU66SS; none may be bought twice.
+
+    Until 2026-08-28 this asserted an EMPTY list, because every 6x6 that declared a bearing
+    was authored and the three 4x4s declared none. The stairwell posts now declare theirs
+    (``SL-B-FLOOR``), so the rule derives its first real row — and the guard it is here to
+    protect is now visible rather than vacuous: the derived row must be the 4x4 ladder rung
+    only, and no authored tag may appear in its basis.
+    """
     from typehaus.model.enums import ConnectorKind
     from typehaus.model.structure import Post
-    from typehaus.takeoff.uplift import tags_covered_by
+    from typehaus.takeoff.uplift_joints import tags_covered_by
 
     authored = tags_covered_by(catlin_model_ro, frozenset({ConnectorKind.POST_BASE}))
     assert authored >= AUTHORED_POST_BASES, "the fixture's authored bases moved"
-    assert post_base_rows(catlin_model_ro, RULES) == [], (
-        "every wood post that declares a bearing is already authored a base — a row here "
-        "means the Connector.connects guard stopped matching")
-    # And the ten really are all of them, so the empty list above is coverage, not silence.
+    rows = post_base_rows(catlin_model_ro, RULES)
+    assert [row["part_number"] for row in rows] == ["ABU44"], (
+        "an ABU66SS row means the Connector.connects guard stopped matching and the ten "
+        "authored bases are being bought a second time")
+    assert rows[0]["count"] == 2
+    for tag in AUTHORED_POST_BASES:
+        assert tag not in rows[0]["basis"]
+    # And the twelve really are all of them, so what is NOT in the row above is coverage
+    # rather than silence: ten authored, two derived, one squash block.
     wood = {e.tag for e in catlin_model_ro.plan.all_elements()
             if isinstance(e, Post) and e.supported_by and not e.within_wall
             and e.size in {"6x6", "4x4"}}
-    assert wood == AUTHORED_POST_BASES
+    assert wood == AUTHORED_POST_BASES | {"P-M-STRWELL-S", "P-M-STRWELL-N",
+                                          "P-M-STRLAND-SE"}
+
+
+def test_a_squash_block_is_not_bought_a_post_base(catlin_model_ro) -> None:
+    """P-M-STRLAND-SE is 13 7/16" of blocking in a joist bay, not a column.
+
+    It declares a bearing (``W-B-CN``) and its section is one the catalog stocks a base for,
+    so nothing but ``blocking_max_height_ft`` keeps it out of the order — and a base under a
+    block is hardware at a joint whose connection is the bearing itself.
+    """
+    from typehaus.model.structure import Post
+    from typehaus.takeoff.uplift_joints import is_squash_block
+
+    posts = {e.tag: e for e in catlin_model_ro.plan.all_elements() if isinstance(e, Post)}
+    assert is_squash_block(posts["P-M-STRLAND-SE"], RULES)
+    assert not is_squash_block(posts["P-M-STRWELL-S"], RULES), \
+        "a 9 ft stairwell post is a column; only the 13 in block is blocking"
+    row = post_base_rows(catlin_model_ro, RULES)[0]
+    assert "P-M-STRLAND-SE" not in row["basis"]
+
+
+# --- rule 2b: the bolt under every base ----------------------------------------------
+
+
+def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> None:
+    """Simpson ship the ABU without the 5/8" bolt its published capacity is taken through.
+
+    Ten of catlin's twelve bases land on concrete — four breezeway piers, four sunken-garden
+    wall tops, two on the basement slab — and each needs one cast-in anchor.
+    """
+    from typehaus.takeoff.uplift_joints import post_base_anchor_rows
+
+    row = post_base_anchor_rows(catlin_model_ro, RULES)[0]
+    assert row["part_number"] == "AB-058-10-SS"
+    assert row["count"] == 10
+
+
+def test_a_base_standing_on_framing_is_not_bought_a_cast_in_bolt(catlin_model_ro) -> None:
+    """PT-SG-BR2/BF2 stand on FS-SG-PORCH — a deck, not a pour.
+
+    This is the reason the rule is a derivation over joints and not a
+    ``StructuralHardware.requires_role`` on the base: that field is a flat property of the
+    PART, so it would bill a cast-in bolt into porch decking. A base on framing is bolted or
+    screwed to it, and those fixings are inside the framing rate.
+
+    The four sonotube piers are the same trap from the other side. ``CN-BW-BASE-*`` names
+    both members of its joint, so ``tags_covered_by`` returns PR-BW-1..4 as well as the
+    posts on them, and a rule that trusted that set bought four bolts for four piers that
+    have no base at all.
+    """
+    from typehaus.takeoff.uplift_joints import post_base_anchor_rows
+
+    basis = post_base_anchor_rows(catlin_model_ro, RULES)[0]["basis"]
+    for on_framing in ("PT-SG-BR2", "PT-SG-BF2"):
+        assert on_framing not in basis, f"{on_framing} stands on the porch deck"
+    for pier in ("PR-BW-1", "PR-BW-2", "PR-BW-3", "PR-BW-4"):
+        assert pier not in basis, f"{pier} is a cast pier, not a based post"
 
 
 def test_authored_post_beam_straps_are_not_derived_a_second_time(catlin_model_ro) -> None:

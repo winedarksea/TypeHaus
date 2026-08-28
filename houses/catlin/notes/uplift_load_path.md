@@ -24,9 +24,13 @@ wall that moves takes its hardware with it.
 | Beam landing on a wood post | KBS1Z | 18 | one per beam end |
 | Bottom plate of a framed wall on a framed floor band | LTP4 | 108 | 4' o.c., min 2 per wall |
 | Across the floor band where framed walls stack | CS16 | 72 straps (2 coils) | 8 at the corners + 64 along the runs at 4' o.c. |
+| Wood post standing on concrete | ABU44 | 2 | one per 4x4 that declares a bearing |
+| Cast-in bolt under a post base landing on concrete | AB-058-10-SS | 10 | one per base, authored or derived |
 
-Roughly **$590–1,160 of material** on a house whose hardware line was already $11.9k. That
-ratio is the argument for doing it: it is the cheapest structural money in the estimate.
+Roughly **$590–1,160 of material** on a house whose hardware line was already $11.9k, plus
+**$120–280** for the ten post-base anchors and **$44–80** for the two ABU44s the second pass
+added. That ratio is the argument for doing it: it is the cheapest structural money in the
+estimate.
 
 The strapping row is an *extension* of a rule that already existed, not a new one. It used to
 fire only at stacked framed-exterior corners, which gave this three-storey house **eight**
@@ -62,6 +66,72 @@ now, and S-100 can schedule a diameter and an embedment for one. This house does
 MASA at 4' o.c. already exceeds IRC R403.1.6's 6' maximum on every sill run, and bolting the
 same plate again would be double-anchoring. The parts are there for a house that wants bolts.
 
+## The 2026-08-28 second pass — the open items, closed
+
+The first pass left four joints reported as **not evaluable** and a note saying so. Three of
+them were a modelling gap and are now closed; the fourth is not a gap and is staying open on
+purpose. A fifth thing turned up on the way, and it was the largest of the five.
+
+**The three stairwell posts had a bearing all along.** `P-M-STRWELL-S`/`N` and
+`P-M-STRLAND-SE` (plan/storeys/main.py) declared no `supported_by`, so the check could only
+say it could not look. Their own comment had described what they stand on in prose since
+2026-08-24 — the basement slab under the two columns, `W-B-CN` under the landing block — and
+the field was simply never filled in. Filling it in did three things:
+
+* **It found a cut-length error.** With the field unset the resolver hangs a post's TOP at
+  the storey datum and lets its bottom fall where `height` puts it. `ft(9, 4)` put it at
+  -9'-4", which is 2 9/16" **inside** a 3 1/2" slab whose top is at -9'-1 7/16". Nothing
+  reported it, because nothing had been told the post was meant to reach the slab. Both are
+  9'-1 7/16" now, and `structural.landing_post_bearing` was the check that noticed — it
+  looks for a column topping out at the landing post's base, and the wrong length moved the
+  top 2 9/16" off it. The same 1/16" correction applied to the block: the hole is 13 7/16",
+  it was cut at 13.4", and its comment said 13 3/8".
+* **The two columns now derive an ABU44** — the 4x4 rung of the same ladder the ten ABU66SS
+  outside sit on, ZMAX rather than stainless because a basement slab is dry.
+* **The block does not, and that is a rule now.** `UpliftTieRules.blocking_max_height_ft`
+  reads a `Post` under 2'-0" as a squash block: a short piece filling a joist bay to carry a
+  point reaction into concrete. It bears, and bearing IS its connection. 2'-0" is
+  DCA6-2015 p.10's own threshold, the height above which a post needs bracing — i.e. where
+  the industry already says a stick starts behaving like a column. The check reports the
+  block as covered by direct bearing rather than as un-gradeable.
+
+**The cast columns stay not evaluable, and that is the right answer.** There are six of
+them, not two — `PR-BW-1..4` as well as `PT-SG-COL` and `PT-SG-FCOL` — and every one is a
+concrete pour on a concrete pour. That joint is a doweled lap into the pier's own bar cage;
+there is no connector to specify and no part to leave out. It is not even unpriced: the
+`[concrete]` table's `column:PIER_CONCRETE_12` rate is struck itemised and names "a 4-bar #4
+cage with ties $3-6/LF" inside it. What the model lacks is rebar as an *element*, which is a
+much larger question than this work, and the `Dowel` primitive it does have is built for a
+horizontal bar across a footing thermal break, not a vertical column lap. Reporting the joint
+as broken would hand the reader an ABU that does not fit a 12" round pour; reporting it as
+covered would claim a check on something never modelled. Un-gradeable is the honest third
+answer, and the message now says the lap is inside the pier rate rather than just saying the
+model has no rebar.
+
+**And the one that was missed: every post base was billed without its bolt.** An ABU is a
+stirrup with a hole in it. Simpson's published uplift and lateral values are taken *through*
+a 5/8" anchor, and they ship none — "anchor bolt by others". Ten ABU66SS had been on the BOM
+for two years with no anchor under any of them, which is a schedule that reads as complete
+while being short the part its capacity is measured through. `post_base_anchor_rows` bills
+one per base landing on concrete: ten of the twelve.
+
+The two it skips are the point of the rule. `PT-SG-BR2`/`BF2` stand on **`FS-SG-PORCH`** —
+the porch deck, not a pour — and a base on framing is bolted or screwed to it, fixings that
+live inside the framing rate exactly as a joist hanger's nails do. That is why this is a
+derivation over joints and **not** a `StructuralHardware.requires_role` on the base, which is
+the mechanism that already puts an S-5! clamp under every CanDuit ring: `requires_role` is a
+flat property of the *part*, and whether a base needs a cast-in bolt is a property of the
+*joint*. The four sonotube piers are the same trap from the other side — `CN-BW-BASE-*` names
+both members of its joint, so the authored-connector guard returns `PR-BW-1..4` alongside the
+posts on them, and a first cut of this rule bought four bolts for four piers that have no
+base at all.
+
+The bolt is **304 stainless**, and that is not gold-plating: ten of the twelve fasten an
+ABU66SS at grade, and a hot-dip bolt under a stainless stirrup in standing water corrodes
+preferentially — the anchor, not the stirrup. The two on the dry basement slab can take a
+galvanised bolt at $3-7. That is a ~$25 purchasing swap, filed with the MiTek ones below
+rather than split into a second product for one role.
+
 ## What is still authored by hand
 
 The derived rules skip any joint an authored `Connector` already names — that guard is what
@@ -78,15 +148,45 @@ keeps the sunken garden's and the breezeway's twenty connectors from being bough
 `structural.uplift_load_path` reports every joint as covered or broken, and reports these as
 **not evaluable** rather than pretending either way:
 
-- **The two cast columns** (`PT-SG-COL` 12" round, `PT-SG-FCOL` 16" square) on their cast
-  footings. That joint is made by reinforcement and this model carries no rebar. The user's
-  own hardware notes list the intended detail — an STHD on each axis with an SM1 holder, an
-  HGAM10 angle, A34/A44 angles to the beam, a KGLB5B beam seat, and stainless or G-10
-  isolation between column and concrete. None of it is modelled yet.
-- **Three 4x4 stairwell posts** (`P-M-STRWELL-S/N`, `P-M-STRLAND-SE`) declare no
-  `supported_by`, so there is no joint to grade. Giving them one would let the ABU44 rung of
-  the post-base ladder derive a base — but an interior dry post wants a different part than a
-  standoff base, so this is left open deliberately rather than answered with the wrong SKU.
+- **The six cast columns** on their cast footings — see the second-pass section above. The
+  joint is a doweled lap, priced inside the pier rate, and there is no connector to name.
+- **A lateral system for the porch and balcony.** `plans/TODO.md` carries this as an open
+  question and it is *not* an uplift item, but it is the one thing that would put new
+  hardware on `PT-SG-FCOL`. Today nothing bolts to that column: two beams land on its top and
+  an authored H2.5A on the bearing plane holds them down. The MPB66Z moment base the TODO
+  weighs is the only detail that would want the 5" of side cover the old 16" square section was
+  chosen for, and it is not specified. Worth knowing before anyone reshapes that column —
+  and the column was reshaped on 2026-08-28: it is a **16" round** now, which leaves 3.76"
+  and forecloses the MPB66Z there. That was priced, not overlooked — the square cost
+  $478-1,327 against $304-633 for a fibre tube of the same height, because a square column
+  is formed in built panels with chamfer strips and rubbed and patched after strip. If the
+  lateral design ever wants the moment base, the revert is *cheaper than the square was*: an
+  18" tube gives 4.76" at $335-705 and a 20" gives 5.76" at $369-781.
+- **The SKU at the two beam-on-column bearings, and it is a real question.**
+  `CN-SG-TIE-COL` and `CN-SG-TIE-FCOL` are authored `H2.5A` on the bearing plane (the beam
+  soffit = the column top), and `structural.uplift_load_path` reports both columns as
+  covered because of them. But an H2.5A is a **wood-to-wood** tie — its own catalog record
+  says so, "rafter/joist-to-plate", and its published values are taken through nails into
+  lumber on both legs. At these two joints one leg has a 3-ply KDAT 2x12 to nail into and
+  the other has a cast concrete column top, which it cannot reach. What the tie actually
+  does as drawn is splice the two beam ends to each other across the pour; it does not hold
+  either of them *down* to it.
+
+  This is a specification gap at a joint the model already carries, not a missing joint, and
+  it is exactly what the raw hardware notes were pointing at with **HGAM10** and **A34/A44**:
+  a gusset angle screwed to the beam and anchored into the pour with a Titen HD is the part
+  that reaches concrete here. `library/hardware.py` stocks nothing of that family today — the
+  only concrete-reaching parts in it are HUCQ, MASA, STHD and the new AB-058-10-SS — so
+  closing this needs a new catalogued role plus a call on the detail, and it is left open
+  deliberately rather than answered by swapping a part number nobody has priced.
+
+  The rest of that notes list — an STHD on each axis with an SM1 holder, a KGLB5B beam seat,
+  isolation between column and wood — is a menu for the lateral design above, not an
+  outstanding uplift item.
+
+  Worth saying what this does **not** affect: the column-to-footing joint below is the
+  doweled lap already described, and every other H2.5A in the house (348 derived, at rafter,
+  truss-heel and floor-joist bearings) lands wood-on-wood exactly as published.
 - **Capacity, everywhere.** The check reports coverage as UNKNOWN, never PASS. The model
   carries no design wind speed (`sheet.roof_framing.design_loads` says so), so "there is
   hardware here" is the only claim being made.
@@ -103,6 +203,7 @@ usually cheaper:
 | LTP4 | TP37 class | plate to band |
 | KBS1Z | — (use the strap tie family) | beam to post |
 | ABU66 / ABU44 | ABU-equivalent standoff base | post to pier |
+| AB-058-10-SS | any 5/8 in cast-in anchor + nut/washer | post base to concrete |
 | MASA | MA-series mudsill anchor | sill to concrete |
 
 Swapping is a purchasing decision, not a modelling one: `prices.toml` can carry the cheaper

@@ -23,6 +23,15 @@ ROLE_EMBEDDED_STRAP_HOLDOWN = "embedded_strap_holdown"
 ROLE_STUD_PLATE_TIE = "stud_plate_tie"
 ROLE_COIL_STRAP = "coil_strap"
 ROLE_POST_BASE = "post_base"
+# The cast-in bolt that fastens a post base to the concrete under it. Its own role, and not
+# an attribute of the base: an ABU ships as a stirrup with a hole in it and Simpson's tables
+# say "anchor bolt by others", so a BOM listing bases and no bolts reads as orderable while
+# being short every anchor. Deliberately NOT expressed as ``StructuralHardware.requires_role``
+# — that field is a flat property of the *part*, and whether a base needs a cast-in bolt is a
+# property of the *joint*: two of catlin's ten ABU66SS land on porch decking, where the base
+# is through-bolted into framing and the fixings are inside the framing rate. See
+# ``takeoff/uplift.py::post_base_anchor_rows``.
+ROLE_POST_BASE_ANCHOR = "post_base_anchor"
 ROLE_HURRICANE_TIE = "hurricane_tie"
 # The cap over a post that a beam lands ON (rather than continues past). Its own role, not
 # ROLE_BEAM_HOLD_DOWN: the KBS strap ties a beam DOWN to a post whose sides it can reach,

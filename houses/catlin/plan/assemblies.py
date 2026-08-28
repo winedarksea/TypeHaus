@@ -550,14 +550,35 @@ SUNKEN_GARDEN_WALL = Assembly(
     source="catlin-house sunken_garden_retaining_wall_detail.py",
 )
 
-# PT-SG-FCOL, the 16" square cast column carrying the porch's front beams (it replaced a
-# 16" arched cross-wall and a 42" masonry parapet).
+# PT-SG-FCOL, the 16" ROUND cast column carrying the porch's front beams (it replaced a
+# 16" arched cross-wall and a 42" masonry parapet, and was itself a 16" SQUARE until
+# 2026-08-28).
 #
-# The assembly is required, not cosmetic. Without one, ``emit/draw/section.py::
-# _solid_material`` sees a "column" whose size does not end in "round" and falls back to
-# "spf" — a 16" pour would hatch as lumber in every section. One concrete STRUCTURE layer
-# resolves it correctly in all three renderers (section hatch, glTF palette, the viewer's
-# solidColor).
+# **Why it stopped being square.** The square was chosen for connector side cover — a
+# CBSQ66 wants 3" and an MPB66Z 5", and a centred 6" plate leaves 5.00" at its corners in a
+# 16" square against 3.76" in a 16" round. Costed out, that cover was being bought at a
+# steep rate: a square column is formed in built panels with chamfer strips, struck with a
+# wash, and rubbed and patched after strip, which is $478-1,327 here against $304-633 for a
+# disposable fibre tube of the same height. And nothing at this column's top is bolted to
+# it — two 3-2x12 beams land on the pour and an authored H2.5A (CN-SG-TIE-FCOL) holds them
+# down — so the cover was reserved for the MPB66Z moment base that plans/TODO.md weighs and
+# has never specified. That option is now foreclosed at this column, deliberately and with
+# the money written down; see notes/uplift_load_path.md. An 18" or 20" tube would have kept
+# it AND still beaten the square, and is the revert if the lateral design ever wants it.
+#
+# What the round keeps: the >=15 degree top wash with its drip lip, the grout island under
+# the beam bearing, the mix, the finish and the repellent. What it drops is only what a
+# tube makes meaningless — the chamfered arrises and the rubbing after strip.
+#
+# The assembly is required, not cosmetic — but for a different reason now that the section
+# reads "16 round". ``emit/draw/section.py::_solid_material`` would hatch it correctly on
+# the size string alone; what the assembly does is put ``structure_material="concrete"`` on
+# the BOM row so the [concrete] price table's material guard admits it, the same job
+# PIER_CONCRETE_12 does for the five 12" tubes.
+#
+# The TAG is unchanged. It names a 16" sunken-garden column, which is still exactly what
+# this is, and keeping it holds the prices.toml key and every GlobalId steady across a
+# change that is about the FORM, not the element.
 SUNKEN_GARDEN_COLUMN_16 = Assembly(
     tag="SUNKEN_GARDEN_COLUMN_16",
     layers=(
@@ -566,7 +587,7 @@ SUNKEN_GARDEN_COLUMN_16 = Assembly(
     ),
     interfaces=(_CONCRETE_BEARING,),
     # (single literal: the editable dialect forbids concatenated strings)
-    source="catlin-house porch front column — 16\" square cast concrete, 3/4\" chamfered arrises, >=15 degree top wash with a >=1\" drip lip (BIA Tech Note 36A), beam bearing on a level non-shrink-grout island (Five Star TB-411: 45 degree shoulders, shoulder width <= grout depth, <= 3\"); 4,000-4,500 psi, w/cm <= 0.45, 6.0-6.5% air at 3/4\" aggregate (Minn. R. 1309.0402 + ACI 318-19 class F2); broom or float finish, never steel-trowelled (NRMCA CIP 2); silane/siloxane repellent",
+    source="catlin-house porch front column — 16\" round cast concrete in a disposable fibre form, stripped to the form line; >=15 degree top wash with a >=1\" drip lip (BIA Tech Note 36A), beam bearing on a level non-shrink-grout island (Five Star TB-411: 45 degree shoulders, shoulder width <= grout depth, <= 3\"); 4,000-4,500 psi, w/cm <= 0.45, 6.0-6.5% air at 3/4\" aggregate (Minn. R. 1309.0402 + ACI 318-19 class F2); broom or float finish on the wash, never steel-trowelled (NRMCA CIP 2); silane/siloxane repellent",
 )
 
 # Glazed-brick veneer over the exposed basement wall (sunken garden excavated against it).

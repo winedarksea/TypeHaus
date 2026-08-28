@@ -1112,3 +1112,8 @@ Our original 16" OC spacing for studs and joists was built around the idea that 
 Maybe swap out the concrete wall across the sunken garden side of the basement for wood framing (avoids formwork for the doors and windows) but might violate the cross-bracing needed for concrete basement walls per tables.
 Are there any locations where it is worth specifying built up columns/beams (ie stacks of 2x6s)? As long as they don't need heavy duty bolts, this can be a cheaper option. Also perhaps LSL instead of LVL in some places.
 Resilient membrane under subfloor for better STC?
+
+Attic swap:
+Open space over stairs
+One bathroom (note cheap spec). Note around 42" height for vent stack
+Increase joist spacing

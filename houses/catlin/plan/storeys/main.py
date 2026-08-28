@@ -1202,10 +1202,21 @@ CONNECTORS = [
 # still 1/4" inside the post — the column carries the corner and the trimmer stays a
 # separate member, which is what the framer would build.
 POSTS = [
+    # ``supported_by`` authored 2026-08-28, and it corrected the CUT LENGTH as well. Both
+    # stand the basement's full height, so the thing under them is SL-B-FLOOR — the note
+    # above always said so in prose and the field was simply never filled in. With it unset
+    # the resolver hung each post's TOP at the 0' datum and let its bottom fall where the
+    # height put it, and ft(9, 4) put it at -9'-4" — 2 9/16" INSIDE a 3 1/2" slab whose top
+    # is at -9'-1 7/16". Nothing reported that, because nothing had been told the post was
+    # supposed to reach the slab. It is 9'-1 7/16" of clear height, so that is the post.
+    #
+    # Now that the bearing is declared, `takeoff/uplift.py::post_base_rows` derives an ABU44
+    # under each — the 4x4 rung of the same size ladder the ten ABU66SS outside sit on, ZMAX
+    # rather than stainless because this is a dry interior slab.
     Post(uid="A9J80KK6AE", tag="P-M-STRWELL-S", position=pt(ft(14), ft(31, 10.374)), size="4x4",
-         height=ft(9, 4), assembly="POST_WHITE_PAINT"),
+         height=ft(9, 1.4375), assembly="POST_WHITE_PAINT", supported_by="SL-B-FLOOR"),
     Post(uid="CZE3N5C14R", tag="P-M-STRWELL-N", position=pt(ft(14), ft(34, 8.9)), size="4x4",
-         height=ft(9, 4), assembly="POST_WHITE_PAINT"),
+         height=ft(9, 1.4375), assembly="POST_WHITE_PAINT", supported_by="SL-B-FLOOR"),
     # ST-M2S's lower landing gained a THIRD corner post on 2026-08-24, and it is a direct
     # consequence of splitting W-M-C5 for RM-M-PANTRY.
     #
@@ -1220,7 +1231,7 @@ POSTS = [
     # south of the rim would push FURN-M-KIT-PANTRYC 19 3/4" past the end of the wall it
     # backs onto — a worse trade than a 4x4.
     #
-    # ** IT IS BLOCKING, NOT A COLUMN, WHICH IS WHY IT IS 13 3/8" AND NOT 9'-4". ** The two
+    # ** IT IS BLOCKING, NOT A COLUMN, WHICH IS WHY IT IS 13 7/16" AND NOT 9'-4". ** The two
     # P-M-STRWELL posts above stand the basement's full height because FO-M-STAIR's hole is
     # under them. This corner is not over the hole: FO-M-STAIR stops at x=17'-6" and the
     # post lands at 17'-8 5/8", on FS-M-WEST's joists — which
@@ -1234,8 +1245,21 @@ POSTS = [
     # 5/8" gypsum, which is scribed to it, and touches no stud — while still containing the
     # rim end at 17'-8 5/8". Move ST-M2S and this moves with it, exactly as the note above
     # says of the other two.
+    #
+    # ``supported_by="W-B-CN"`` is the concrete this delivers into, named above in prose
+    # since 2026-08-24 and authored 2026-08-28 — with the same 1/16" correction the two
+    # posts above took. The gap it fills is the datum down to W-B-CN's top at -1'-1 7/16",
+    # so the block is 13 7/16"; it was cut at 13.4" against a comment that said 13 3/8",
+    # and neither number was the hole.
+    #
+    # Naming the bearing does NOT buy this one a post base. At 13 7/16" it is under the
+    # 2'-0" DCA6-2015 p.10 uses as the height at which a stick starts behaving like a
+    # column, so `UpliftTieRules.blocking_max_height_ft` reads it as the squash block the
+    # paragraph above calls it. A block bears; it needs no base to bear through, and
+    # `structural.uplift_load_path` says exactly that rather than reporting it un-gradeable.
     Post(uid="0Q6WK11T26", tag="P-M-STRLAND-SE", position=pt(ft(17, 7.5), ft(31, 10.374)),
-         size="4x4", height=inch(13.4), assembly="POST_WHITE_PAINT"),
+         size="4x4", height=inch(13.4375), assembly="POST_WHITE_PAINT",
+         supported_by="W-B-CN"),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT,

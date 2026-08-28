@@ -42,11 +42,11 @@ from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.takeoff.anchors import coil_strap_rows, mudsill_anchor_rows
 from typehaus.takeoff.hangers import hung_connections
 from typehaus.takeoff.hardware_config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
-from typehaus.takeoff.uplift import (
+from typehaus.takeoff.uplift import bearing_connections, bearing_line_tags
+from typehaus.takeoff.uplift_joints import (
     authored_joints,
-    bearing_connections,
-    bearing_line_tags,
     catalogued_post_sizes,
+    is_squash_block,
     tags_covered_by,
 )
 
@@ -241,18 +241,31 @@ def _post_links(ctx: CheckContext) -> list:
         if post.within_wall:
             continue  # developed by the wall's own plates and studs; the SP tie bills that
         if _is_concrete(ctx, post):
-            # A cast column on a cast footing is joined by reinforcement, not by a connector,
-            # and this model carries no rebar. Grading it against a post base would report a
-            # break at a joint that has none and hand the reader a part that does not fit it.
+            # A cast column on a cast footing is joined by a doweled lap into the column's
+            # own bar cage. There is no connector to specify, so grading it against a post
+            # base would report a break at a joint that has none and hand the reader an ABU
+            # that does not fit a 12" round pour. Nor is the joint unpriced: a house's
+            # [concrete] column rate is struck including the cage. What is missing is rebar
+            # as an ELEMENT, which is why this is un-gradeable rather than covered.
             links.append(Link(
                 f"column {tag} ({post.size}) to {post.supported_by or 'its footing'}",
                 (tag,), None,
-                not_evaluable=("it is cast concrete on concrete, a joint made by "
-                               "reinforcement rather than by a connector, and this model "
-                               "carries no rebar")))
+                not_evaluable=("it is cast concrete on concrete — a doweled lap into the "
+                               "column's own bar cage, not a connector, and this model "
+                               "carries no rebar to point at (the steel is inside the "
+                               "column's own $/cy rate, not missing from the order)")))
         elif tag in based:
             links.append(Link(f"post {tag} to {post.supported_by or 'its bearing'}",
                               (tag,), "an authored post base"))
+        elif is_squash_block(post, _RULES):
+            # Short enough that it is blocking, not a column (see blocking_max_height_ft).
+            # Its joint IS the bearing, so it is covered rather than un-gradeable — the
+            # take-off skips it for the same reason and the two must agree.
+            links.append(Link(
+                f"block {tag} ({post.height.inches:.0f} in) to "
+                f"{post.supported_by or 'its bearing'}", (tag,),
+                "direct bearing — under 2 ft it is a squash block, and a block needs no "
+                "base to bear through"))
         elif not post.supported_by:
             # Not a FAIL: a post that never says what it stands on is a modelling gap, not
             # evidence of a missing connector, and the two must not share a column.

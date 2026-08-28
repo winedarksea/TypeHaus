@@ -190,6 +190,13 @@ class UpliftTieRules:
     # Lateral tie plates along a bottom plate standing on a floor band.
     tie_plate_pitch_ft: float = 4.0
     minimum_tie_plates_per_wall: int = 2
+    # Below this height a ``Post`` is a squash block, not a column: a short piece filling a
+    # joist bay to carry a point reaction down to the concrete. It bears and that is all it
+    # does, so it takes no base and no uplift connector. 2'-0" is DCA6-2015 p.10's own
+    # threshold — the height above which a deck post needs bracing, i.e. where the industry
+    # already says a stick starts behaving like a column. catlin's case is P-M-STRLAND-SE, a
+    # 13.4" block under the stair landing's third corner (plan/storeys/main.py).
+    blocking_max_height_ft: float = 2.0
 
 
 @dataclass(frozen=True)

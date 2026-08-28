@@ -403,11 +403,12 @@
 # posts are not in fact in a wet/corrosive location, this is the wrong part and the row
 # drops by a factor of four.
 "ABU66SS" = { low = 150, high = 230 }  # 10 ea
-# The 4x4 rung of the same ladder, ZMAX rather than stainless: the posts it would
-# serve are the interior stairwell ones, which are dry. Priced so a 4x4 post that
-# declares a bearing cannot land unpriced; nothing bills it today (the three 4x4
-# posts declare no `supported_by`, and `structural.uplift_load_path` says so).
-"ABU44" = { low = 22, high = 40 }  # 0 ea
+# The 4x4 rung of the same ladder, ZMAX rather than stainless: the posts it serves are
+# the interior stairwell ones, which are dry. 2026-08-28: 0 ea -> 2. P-M-STRWELL-S/N
+# gained the `supported_by="SL-B-FLOOR"` their own comment had always described in
+# prose, so the derived rule can see the joint. The third 4x4, P-M-STRLAND-SE, is a
+# 13 7/16" squash block and takes no base (UpliftTieRules.blocking_max_height_ft).
+"ABU44" = { low = 22, high = 40 }  # 2 ea
 "APVB12-6" = { low = 4, high = 9 }  # 16 ea — Outdoor Accents 1/2"x6" hex through-bolt + washer
 "APVKB45-6" = { low = 22, high = 45 }  # 8 ea — Outdoor Accents Avant 45-deg knee brace, 6x
 # The takeoff bills CS16 by the COIL (unit: "coil"), so this is a whole coil, not a strap.
@@ -461,12 +462,22 @@
 # retype moved them onto HUCQ410-SDS, after which nothing in the house authored a LUS210 and
 # the row billed nothing. A price row for a part the model does not contain is not harmless:
 # it reads as coverage.
-"MASA" = { low = 1.75, high = 3 }  # 109 ea
+"MASA" = { low = 1.75, high = 3 }  # 125 ea
 # 1/2" x 10" cast-in anchor bolt with the BP1/2 plate washer R602.11.1 requires,
 # priced as the pair because neither is ordered without the other. Set by the concrete
 # sub, not the framer, which is why cost_codes.py files "AB-*" under 03 15 00 rather
 # than the 06 05 23 the rest of this table defaults to.
 "AB-050-10-BP" = { low = 2.4, high = 4.5 }  # authored only
+# The bolt every ABU sits on, added 2026-08-28. Simpson publish the ABU's uplift and
+# lateral values THROUGH a 5/8" anchor and ship none ("anchor bolt by others"), so the
+# ten bases above billed for two years without the part their capacity is measured
+# through. 304 stainless because ten of the twelve fasten an ABU66SS at grade, and a
+# hot-dip bolt under a stainless stirrup in standing water corrodes preferentially —
+# the anchor, not the stirrup. The two on the dry basement slab can take a galvanised
+# bolt at $3-7; that is a ~$25 purchasing swap, noted with the MiTek ones in
+# notes/uplift_load_path.md rather than split into a second product for one role.
+# Files under CSI 03 15 00 like its "AB-" sibling above: the concrete sub sets it.
+"AB-058-10-SS" = { low = 12, high = 28 }  # 10 ea — 8 authored bases + 2 derived
 # 6 ea, all of them CARRIED under the ColorGard rail (`requires_role`) — none directly
 # modeled any more. It was 19: two wall-mounted enclosure clamps (CN-A-NEMA-CLAMP,
 # CN-A-PV-CLAMP) plus 11 carried under the CanDuit rings, and all thirteen went on
@@ -583,7 +594,7 @@
 "SDWS22800DB" = { low = 1.15, high = 1.75 }  # 1865 ea
 "SP6" = { low = 1.5, high = 2.75 }  # 424 ea
 "SS-GASKET-12" = { low = 0.35, high = 0.9 }  # 32 ea — generic 304 SS #12 screw, bonded EPDM washer
-"STHD" = { low = 18, high = 32 }  # 40 ea
+"STHD" = { low = 18, high = 32 }  # 41 ea
 
 [concrete]
 # RESEARCHED 2026-08-07 — [low, high] $/cy PLACED (ready-mix delivered + placement
@@ -627,14 +638,23 @@
 # They do now (plan/assemblies.py: BEAM_LVL, BEAM_KDAT, POST_KDAT, PIER_CONCRETE_12), which
 # splits both categories into `category:assembly` groups — so a bare key matches nothing any
 # more, and the wood goes to the new [timber] table. What stays here is what is actually a
-# pour: the five 12" sonotube piers and the 16" square front column. Both are keyed
+# pour: the five 12" sonotube piers and the 16" round front column. Both are keyed
 # explicitly; leaving them on a bare "column" would have been a rate looking for a row.
 #
-# A 16"x16" column 9' tall is 0.593 cy, so this is $530-1,480 each. Column forms, plumbing,
-# bracing and rubbing/patching after strip dominate; ready-mix is under 15% of the cost.
-# Rate carried across unchanged from the bare "column" row it replaces, so the front column
-# costs exactly what it cost before the split.
-"column:SUNKEN_GARDEN_COLUMN_16" = { low = 900, high = 2500 }  # 0.55 cy = 8.4 LF — PT-SG-FCOL
+# 2026-08-28: PT-SG-FCOL WENT ROUND, and this row is re-struck, not escalated. It was
+# $900-2,500/cy over 0.531 cy — $478-1,327 — for a 16" SQUARE, where column forms, plumbing,
+# bracing and the rubbing/patching after strip dominate and ready-mix is under 15% of the
+# cost. A 16" fibre tube deletes most of that: no built panels, no chamfer strips, no arrises
+# to rub. Priced from the same itemised basis as the 12" tubes below, scaled to 0.0517 cy/LF:
+# form $5-12/LF, ready-mix $10.30-16.50/LF, a #4 cage with ties $4-8/LF (material $19-37/LF),
+# then $19-43/LF to lay out, set and brace the tube plumb, place and vibrate, and strip.
+# $38-79/LF installed x 8.06 LF = $306-637, against $478-1,327 square.
+#
+# The ~$175-695 saved is the whole reason for the change and it is not free: a 16" round
+# leaves 3.76" of side cover at a 6" plate's corners where the square left 5.00", which
+# forecloses the MPB66Z moment base plans/TODO.md weighs at this column. An 18" tube would
+# have kept it at $335-705. See plan/assemblies.py and notes/uplift_load_path.md.
+"column:SUNKEN_GARDEN_COLUMN_16" = { material = { low = 373, high = 706 }, labour = { low = 368, high = 832 } }  # 0.417 cy = 8.06 LF — PT-SG-FCOL
 # The five 12" round sonotube piers: PR-BW-1..4 under the breezeway posts and PT-SG-COL at
 # the garden back-beam midspan, 25.9 LF between them. A round pier is cheaper per yard than
 # the square column above because the form is a disposable tube rather than built panels and

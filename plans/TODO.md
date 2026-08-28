@@ -68,9 +68,16 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     `PT-SG-BR2`, the one pillar bearing on porch decking. That reasoning is still right, so
     this is the cheap option and not obviously the correct one.
   - **A moment base at the four corner pillars.** `MPB66Z`, ESR-3050 Table 11: 2,680 lb-ft
-    unreinforced — but it needs **5" of side cover**, which the new 16" square `PT-SG-FCOL`
-    has and the 12" round `PT-SG-COL` does not. The four pillars that want it bear on 12"
-    concrete wall tops, so it is not free there either.
+    unreinforced — but it needs **5" of side cover**, and *no column in this structure has
+    it any more*. `PT-SG-FCOL` did while it was a 16" square (5.00" at a centred 6" plate's
+    corners); it went to a **16" round on 2026-08-28**, which leaves 3.76", because the
+    square was costing $478-1,327 against $304-633 for a fibre tube and nothing was bolted
+    to its top. That was a deliberate trade with this option written down as its price —
+    see `houses/catlin/notes/uplift_load_path.md` and `plan/assemblies.py`. It is also a
+    cheap revert: an **18" tube gives 4.76" at $335-705** and a **20" gives 5.76" at
+    $369-781**, so the cover comes back for *less* than the square cost, not more. The four
+    pillars that actually want the base bear on 12" concrete wall tops and were never
+    covered either, so this option always needed a pour change somewhere.
   - **An engineer's lateral design.** The honest answer, and the same consultant the two
     side walls below already need.
 

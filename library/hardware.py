@@ -25,6 +25,7 @@ from typehaus.takeoff.hardware_catalog import (
     ROLE_PIPE_CLAMP,
     ROLE_POCKET_DOOR_FRAME_KIT,
     ROLE_POST_BASE,
+    ROLE_POST_BASE_ANCHOR,
     ROLE_POST_CAP,
     ROLE_PV_SEAM_CLAMP,
     ROLE_SILL_ANCHOR_BOLT,
@@ -194,6 +195,34 @@ ABU44_POST_BASE = StructuralHardware(
     source="Simpson Strong-Tie ABU adjustable standoff post base (strongtie.com/abu) — "
            "the 4x4 size of the same family as ABU66; a post base is size-selected, so "
            "the role carries a ladder rather than one part",
+)
+
+# The bolt every ABU sits on. Simpson publish the ABU's uplift and lateral values against a
+# 5/8 in anchor and supply none — "anchor bolt by others" — so a schedule of bases with no
+# bolts is short the part the published capacity is measured through.
+#
+# **304 stainless, and that is not gold-plating.** Ten of the twelve bases this serves are
+# ABU66SS, stainless because they stand at grade in a wet location; bolting a stainless
+# stirrup down with a hot-dip bolt puts a noble metal in contact with an active one in
+# standing water, which corrodes the bolt preferentially — the anchor, not the stirrup. The
+# two ZMAX ABU44s on the dry basement slab can take a $3-7 galvanised bolt instead; that is a
+# purchasing swap worth about $25 on the job, recorded in the house note beside the MiTek
+# ones rather than split into a second catalogue product (``hardware_for_role`` holds exactly
+# one item per role).
+#
+# The model string leads with "AB-" so ``cost_codes.KEY_PATTERNS`` files it under CSI
+# 03 15 00 with the concrete sub who sets it, not with the framer who lands on it — the same
+# reason SILL_ANCHOR_BOLT above is named the way it is.
+POST_BASE_ANCHOR_BOLT = StructuralHardware(
+    tag="post-base-anchor-bolt-five-eighths",
+    name="5/8 in x 10 in cast-in post-base anchor bolt, 304 stainless, with nut and washer",
+    role=ROLE_POST_BASE_ANCHOR,
+    manufacturer=_SIMPSON,
+    model="AB-058-10-SS",
+    source="Simpson Strong-Tie ABU/ABU-Z adjustable post base installation "
+           "(strongtie.com/abu) — the published uplift and lateral values are taken through "
+           "a 5/8 in anchor bolt, which the base does not include; 304 stainless to match "
+           "the ABU66SS stirrups it fastens at grade",
 )
 
 PC6Z_POST_CAP = StructuralHardware(
@@ -469,6 +498,7 @@ STRUCTURAL_HARDWARE: tuple = (
     CS16_COIL_STRAP,
     ABU_POST_BASE,
     ABU44_POST_BASE,
+    POST_BASE_ANCHOR_BOLT,
     PC6Z_POST_CAP,
     LTP4_LATERAL_TIE_PLATE,
     SILL_ANCHOR_BOLT,

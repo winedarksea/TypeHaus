@@ -1572,7 +1572,7 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     three balcony beams, and a 19x28 garden.
 
     The porch's south edge was a 16" arched cross-wall under a 42" masonry parapet until
-    2026-08-18. It is a 16" square cast column and two flush LVL beams now — the same
+    2026-08-18. It is a 16" round cast column and two flush LVL beams now — the same
     detail the north edge has carried all along — with RL-SG-PORCH in place of the parapet.
     """
     walls = [w for w in catlin_model.walls if w.tag.startswith("W-SG-")]
@@ -1584,12 +1584,20 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     assert not any(w.tag.startswith("W-SG-RAIL-") for w in walls)
 
     # Both open porch edges are a column at midspan carrying two beams into the side walls.
+    # The front one went from a 16" SQUARE to a 16" ROUND on 2026-08-28 — a fibre tube is
+    # $175-695 cheaper than built panels for the same height, at the cost of the side cover
+    # a moment base would want (params/sunken_garden.py). The width assertions survive the
+    # change unaltered: a 16" circle's bounding box is still 16" on both axes, and they were
+    # here to catch ``size="16x16"`` silently resolving to a 1.5x5.5 stud through
+    # ``_RE_NOMINAL``. The round spelling cannot hit that trap at all, so the round-count
+    # assertion below is what now pins the section.
     front = next(s for s in catlin_model.solids if s.tag == "PT-SG-FCOL")
     assert front.category == "column" and front.assembly == "SUNKEN_GARDEN_COLUMN_16"
     xs = [p[0] for p in front.outline]
     ys = [p[1] for p in front.outline]
-    assert max(xs) - min(xs) == pytest.approx(inch(16).meters)   # a true 16" square:
-    assert max(ys) - min(ys) == pytest.approx(inch(16).meters)   # "16x16" would read 1.5x5.5
+    assert max(xs) - min(xs) == pytest.approx(inch(16).meters, rel=1e-3)
+    assert max(ys) - min(ys) == pytest.approx(inch(16).meters, rel=1e-3)
+    assert len(front.outline) > 8, "a round column is a polygonised circle, not a rectangle"
     front_beams = {b.tag: b for b in catlin_model.solids
                    if b.tag in ("BM-SG-FRW", "BM-SG-FRE")}
     assert len(front_beams) == 2
