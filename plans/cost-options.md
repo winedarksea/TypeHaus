@@ -795,6 +795,187 @@ bearing wall on the same footing is still a bearing line, and `FT-B-STR`/`FT-B-S
 not move), and the stair re-dimension is not a cost — the well's west face lands on the
 plane `FO-S-STAIR` already used, and the flights got wider.
 
+## The framing sweep — BUILT 2026-08-28
+
+Four unpriced framing ideas sat at the foot of this file (and in `plans/TODO.md`'s "potential
+cost cutting" bucket) with no numbers against them. All four have numbers now. Three were
+built, one was declined, and one item was re-scoped from a saving into a spec finding for the
+engineer. Baseline for every delta below is the 2026-08-28 pre-sweep run:
+**$943,562 – $1,952,673** bid total (`subtotal_net` $820,324 – $1,706,816).
+
+Combined result: **−$1,342 / −$3,302** on the bid total, `haus check` at **0 FAIL**
+throughout, the full suite green, two engine defects fixed, one check stopped reading a
+house-wide preference where it should read the wall, and one new engine capability
+(`Wall.base_elevation`) that item C could not be built without.
+
+### A. The real backfill on the south walls — BUILT, worth $0, and that was the point
+
+None of `W-B-S1/S2/S3` authored `unbalanced_fill`, so
+`checks/structural/foundation.py::_unbalanced_fill_ft` fell back to its documented proxy —
+grade (−2'-10") minus the wall bottom (−9'-1 7/16") = **6.29 ft on all three** — and rounded
+up to IRC Table R404.1.2(8)'s 7' row, which is what bought them `#5 @ 41" o.c.` The proxy's
+own docstring warns about exactly this case: *"it over-reports a walkout wall whose exterior
+grade falls away."*
+
+The sunken garden is excavated from x=8'-10" to x=28'-0" (`params/sunken_garden._x_ax_e`) with
+its floor flush with the basement slab, so:
+
+| wall | x range | retains |
+|---|---|---|
+| `W-B-S1` | 0'-0" → 8'-10" | 6'-4" — buried |
+| `W-B-S2` | 8'-10" → 18'-0" | **0** — inside the court |
+| `W-B-S3` | 18'-0" → 28'-0" | **0** — inside the court |
+| `W-B-S4` | 28'-0" → 36'-0" | 6'-4" — buried |
+
+`W-B-S4` is new: the old `W-B-S3` was one wall carrying two conditions, split at the
+excavation edge on a new node `N-B-S3`. It joined `params/foundations._HOUSE_WALL_TAGS` (index
+22) and `_FROST_FORMED`, so `FT-B-S4` keeps its `FOOTING_FPSF_20` insulated form and
+`structural.frost_depth` still PASSes on it at 8" of cover below `SL-SG-FLOOR`. The two
+zero-fill segments dropped out of `structural.foundation_unbalanced_fill` entirely (the check
+skips at `fill <= 0`) and dropped their vertical steel with the load — on the merits, not
+because the check went quiet. **No dollars: `[wall_structure]`'s note says vertical steel has
+no line of its own, it is inside the $/cy rate.** The one measurable move is ~$20–46 of extra
+drain tile, because the split adds one more footing-bedding record over the same run.
+
+Worth building anyway: it makes the model true, and C could not be authored without the split.
+
+### B. `W-B-CS`, the sauna's east wall, 12" concrete → 2x6 bearing studs — BUILT, **−$886 / −$1,467**
+
+The last of the four 12" segments `basement.py`'s WALLS header defends, and the one it already
+admitted *"carries wood on both faces and COULD go to 8"."* It could go to nothing: what it
+carries is `FS-M-WEST` and `FS-M-EAST` (two 18' I-joist spans) and the
+`W-M-C1 → W-S-C1/C2 → W-A-C1 → RB-HOUSE` stack to the footing, which is a 2x6 bearing wall's
+job on every storey above. Same trade `W-B-STR`/`W-B-STR3` made on 2026-08-24.
+
+- **Out:** 4.1 cy of `SAUNA_LINER_ON_CONCRETE`, `$1,722 – $2,870`. The `[wall_structure]` row
+  is retired with the assembly; no replacement row is needed, because
+  `takeoff/wall_structure.py` skips framed structure layers and the wall bills through
+  `[framing] "2x6"` plus its faces.
+- **Back:** +146 LF of 2x6 (`$256 – $402`), plus gypsum, mineral wool, and a longer liner —
+  `[envelope_layers]` moves `$662 – $1,150`. Hardware picks up 4 LTP4, 1 MASA and 1 STHD.
+- New assembly `SAUNA_LINER_INT_2X6_BRG`. **The "INT" token is load-bearing** —
+  `mn_energy._is_interior_assembly` is literally `"INT" in tag.split("_")`, and the retired
+  concrete assembly never carried one because a 12" interior pour was never reaching the R-21
+  table.
+- **The trap, caught in the same commit:** `alignment=face("concrete-ext", offset=inch(-6))`
+  is a hand-written HALF of the 12" thickness. On 5 1/2" studs it is
+  `face("stud-ext", offset=inch(-2.75))`. Leaving the −6 would have slid the x=18' bearing
+  line 3 1/4" west without touching a node. `integrity.floor_bearing_grid` stays PASS on all
+  seven floor systems and `structural.mixed_deck_bearing_seat` did not move.
+- `SP-B-CS-COND`/`-COND2` retired: a framed wall takes a bored hole on the day, not a sleeve
+  set before a pour — the same reading that retired eighteen sleeves on 2026-08-21.
+- `prices.toml`'s `pt-sill-plate` note shrank: `W-B-CS`'s 0.83 LF was one of the stretches
+  named as under-billed, and a framed wall now stands on that run.
+
+**The cost of the cut, for the record:** 12" of concrete between a sauna and `RM-B-PLAY-N` is
+real acoustic and thermal mass, and the sauna's vapour control moves from liner-on-pour to a
+framed stack.
+
+**One thing it bought, on the record rather than hidden:** `integrity.junction_fallback` now
+reports `N-B-C1` UNKNOWN. `W-B-CS` is spf and `W-B-CS2`, collinear with it on the x=18' line,
+is still 12" concrete under the cast band — so the junction's *through* pair is two different
+bearing materials and the solver has no interface rule for it. It is a real detail (a stud
+wall landing in line against the end of a pour wants a bearing plate and dowels drawn), not a
+modelling artefact. The house answered the same finding at `N-B-CW-E` by running one wall type
+down the whole line; that answer is not available here, because `W-B-CS2` carries `SL-M-DECK`.
+
+### C. The framed walkout at the sunken garden — BUILT, **−$456 / −$1,835**, a third of the prediction
+
+`W-B-S2` and `W-B-S3` — 19'-2" of the south wall standing inside the court — are a 2x6 framed
+wall (`W-B-S2-FR`, `W-B-S3-FR`) on a 7 1/4" concrete curb since 2026-08-28.
+
+**The prediction was −$1,400 / −$2,700 and the model says a third of that at the low end.**
+The prediction counted 3.69 cy of pour out against "~180 LF of 2x6" back. What it did not
+count is everything else a framed wall needs and a concrete wall does not: sheathing, gypsum,
+mineral wool, an air barrier, and the curb that stays. Measured, against the post-B run:
+
+| | low | high |
+|---|---|---|
+| `[wall_structure]` concrete out (~2.9 cy net of the door and window openings) | −$1,436 | −$2,349 |
+| the two 7 1/4" curbs back in | +$210 | +$420 |
+| `[framing]` — +196 LF of 2x6, +24 LF of 1x4, one 2-2x10 header | +$394 | +$621 |
+| `[envelope_layers]` — sheathing, gypsum, mineral wool, liner, less XPS and parge | +$475 | +$844 |
+| hardware (4 LTP4, 1 MASA, 1 STHD) | +$11 | +$22 |
+| allowances (damp-proofing area, vapour retarder) | −$70 | −$1,240 |
+| **`subtotal_net`** | **−$415** | **−$1,682** |
+| **bid total** | **−$456** | **−$1,835** |
+
+**The strongest argument is still invisible to the estimate, and it is now measured.**
+`takeoff/wall_structure.py` bills wall volume *net of openings* and adds nothing back for the
+buck or the extra forming — the 5'-0" french door and the sauna window are a **0.84 cy
+credit** in the numbers above, when forming two holes in a wall is exactly the cost this swap
+removes. So the true saving is the table plus whatever two formed openings cost, and the model
+cannot say what that is.
+
+Built the way the owner's constraint asks:
+
+- **The curb is kept and it is 7 1/4"** — the actual width of a 2x8 — so heavy rain standing
+  in the court reaches concrete and not a bottom plate. `W-B-S2`/`W-B-S3` keep their tags,
+  uids and footings and *become* the curbs, which is what keeps `FT-B-S2`/`FT-B-S3`,
+  `_FROST_FORMED`, `structural.frost_depth`, `CN-M-HD-BALC-W/E`'s STHD embedments and
+  `W-B-BRICK`'s dimensions all naming a piece of concrete on a footing that did not move.
+- **The curb is 6" and not 8", and the reason is a plane, not a load.** 6" of concrete is
+  exactly stud-plus-sheathing, so the curb's outboard face lands where the sheathing's does
+  and its inboard face where the studs' does. An 8" curb would have left a 2" shelf on the wet
+  side of a sauna wall. Verified in the resolved model: every south segment — `W-B-S1`, both
+  curbs, both framed walls, `W-B-S4` — still presents its parge face at **y = −4.55"**, and
+  `W-B-BRICK`'s 1" air gap still starts there. The veneer did not move. *(The tie hardware
+  does change in reality — corrugated ties into framing rather than anchors into concrete.
+  Veneer over wood framing is ordinary; it is said here because the model cannot say it.)*
+- **`Wall.base_elevation` is new** (see the engine notes under E): a framed wall standing on
+  something inside its own storey. `W-B-S2-FR`/`W-B-S3-FR` base on −102 3/16" and the studs
+  resolve at **7'-0 1/4"** rather than the 8'-0" they would be off the slab — confirmed in the
+  built members, bottom plate at −102.19" and top plates closing at −13.44".
+- **The framed run is its own wall-graph component.** Two wall edges between one pair of nodes
+  is a junction with no answer, and the solver said so — eight `integrity.junction_polygon`
+  ERRORs, one per layer. It has its own nodes at the same three stations with `open_end` at
+  both ends, the same device `W-B-BRICK` uses, which is also why both framed walls author
+  `interior_room` rather than trust the winding.
+- **`D-B-PATIO`'s `sill_height` went `inch(7)` → `inch(0)`, and the threshold did not move.**
+  A sill is measured from its host wall's base, and that base is the curb top now. The door
+  sits *on* the curb instead of 7" up a pour with a quarter inch of concrete still above it.
+- **`WIN-B-SAUNA` moved 9" east, 2'-6" → 3'-3" off the corner** — the framed wall asking, not
+  the design changing. A hole in a pour lands where you form it; a 14" RO in a stud wall wants
+  a **bay centre**, where the bay's own two studs carry the rough sill and head nailer and it
+  needs no header, no jacks and no kings (`preferences.toml`'s `max_window_ro_unbroken_in`).
+  `structural.window_framing_module` said so at 7" off the moment the wall stopped being
+  concrete. `AO-B-BRICK-WIN` followed it; both sills still land at −65 7/16".
+- The sauna's curb carries the liner down over its face rather than stopping at the curb top:
+  `building_science.humid_room_liner` FAILed the bare 7 1/4" strip immediately, and it was
+  right to — a hole in the hot side's vapour control is a hole.
+
+### D. Declined without building — the two that were already taken
+
+- **Built-up beams and columns.** There is no PSL and no glulam in this house: every multi-ply
+  beam is *already* built-up sawn (seven 3-2x12 KDAT, four 2-2x8), and
+  `params/sunken_garden.py` records the 2026-08-23 LVL → 3-2x12 swap that did it, worth about
+  $850–2,100 *and* an improved check (3-2x12 is in IRC Table R507.5(1) where an LVL returns
+  UNKNOWN). Replacing the ten 6x6 posts with 3-2x6 built-ups saves $150–300 of material and
+  gives it straight back: NDS 15.3.3 wants two rows of 30d nails at 8" o.c. (0.207", not
+  gun-drivable), the `ABU66SS` bases do not fit a 4 1/2" x 5 1/2" section, and six of the ten
+  are white-painted architectural pillars where laminations would show.
+- **LSL for LVL is worth ~$0.** The rim boards are *already* LSL — `resolve/floors.py`
+  hardcodes the 1.25" TimberStrand dimension and `prices.toml` priced them off I-joist-and-LSL
+  builder-guide surveys. The whole house contains **12 LF** of LVL beam (0.19 cy, $252–468 of
+  material), and `BM-S-HALL`/`BM-M-HALL` are genuinely governed — shear governs `BM-M-HALL` —
+  where LSL's lower Fv is worse. `resolve/framing/profiles.py` also has no LSL grammar:
+  `"3-1.75x11.875 LSL"` falls through every regex to the silent 1.5x5.5 stud fallback.
+- **Floor joists at 24" o.c. — the only $3,000+ item on the list, and declined.** A third of
+  4,580 LF of I-joist is $6,700–11,300, but every deck spans 18'-0", so it needs a heavier
+  series or 14" depth — and depth moves `BEARING_SEAT` and the whole 2026-08-23 flat-seat
+  chain, guarded by `structural.mixed_deck_bearing_seat` at FAIL tier. Add a 24"-rated
+  subfloor over ~2,000 SF and `structural.ijoist_span` going UNKNOWN at any spacing but 16"
+  (`checks/structural/checks.py`), and the saving is gone along with the guard.
+
+### `RB-HOUSE` — a spec finding for the engineer, not a saving
+
+Recorded here rather than built. `RB-HOUSE` is three plies of LVL bearing **continuously** on
+`W-A-C1/C1B/C2` for its full 36' (`plan/storeys/attic.py`), so it answers no span, and no
+check grades it — `_resolve_ridge_beam` emits `structural.ridge_support` only when a ridge
+`Beam` is *absent*. Re-specifying it honestly runs **deeper, not lighter**: an 11 7/8" I-joist
+rafter at 4:12 has a 12.52" plumb cut, so the current ridge is fractionally too shallow.
+`2-1.75x14` LVL is ~$460–800 back. **For the engineer to settle, not this file.**
+
 ## Taken
 
 ### Metal skin: one rate to four, garage rainscreen dropped — 2026-08-20
@@ -1108,9 +1289,9 @@ Not cost swaps — places the *estimate* was wrong or fragile, found in the 2026
 | 7 | Cladding: is this a metal-clad house on all four elevations, or on the two that are seen? | $10,000–29,000 |
 | 8 | The balcony plank: one call to Versadeck, (651) 356-1870, turns the least certain row in the file into a real one | $3,400–10,000 |
 
-Our original 16" OC spacing for studs and joists was built around the idea that we had to directly support 16" OC standing seam siding. Now that we are using exposed fastener siding, can we trim down the stud spacing (especially perhaps for the attic level?). This would also bump up the window width for betweeen studs.
-Maybe swap out the concrete wall across the sunken garden side of the basement for wood framing (avoids formwork for the doors and windows) but might violate the cross-bracing needed for concrete basement walls per tables.
-Are there any locations where it is worth specifying built up columns/beams (ie stacks of 2x6s)? As long as they don't need heavy duty bolts, this can be a cheaper option. Also perhaps LSL instead of LVL in some places.
+~~Our original 16" OC spacing for studs and joists was built around the idea that we had to directly support 16" OC standing seam siding. Now that we are using exposed fastener siding, can we trim down the stud spacing (especially perhaps for the attic level?). This would also bump up the window width for betweeen studs.~~ — SETTLED 2026-08-28, see "The framing sweep" above. **The 16"-for-standing-seam premise is dead and was always wrong:** cladding is `pbr-panel-26` on *horizontal* girts at 24" o.c. and `takeoff/hardware_config.py` fixes the screw grid at 12" rib x 24" support pitch, into the girt — no fastener has ever landed on a stud. **IRC Table R602.3(5) is the real bound**, and it stops the main storey dead (2x6 bearing at 24" is permitted for roof-ceiling only, or one floor + roof-ceiling; the main storey carries the second floor, the attic floor and a habitable attic). The attic knee walls would qualify and stay at 16" by owner decision; the six nonbearing gables are permitted at 24" to a 20' height with no load argument and are the only live candidate — **not yet built.** The two engine defects that had to be fixed before any wall in this house could be a spacing other than 16" are fixed (item E in the sweep above). Floor joists at 24" were priced and declined.
+~~Maybe swap out the concrete wall across the sunken garden side of the basement for wood framing (avoids formwork for the doors and windows) but might violate the cross-bracing needed for concrete basement walls per tables.~~ — BUILT 2026-08-28, item C above. The bracing worry does not arise: those two segments retain **nothing** (the garden floor is flush with the basement slab), which item A established by authoring `unbalanced_fill=ft(0)` on them. Net effect on the estimate −$456/−$1,835, a third of the prediction — and the formwork the idea is really about is exactly what the takeoff cannot see.
+~~Are there any locations where it is worth specifying built up columns/beams (ie stacks of 2x6s)? As long as they don't need heavy duty bolts, this can be a cheaper option. Also perhaps LSL instead of LVL in some places.~~ — DECLINED 2026-08-28, item D above. Both moves are already taken: every multi-ply beam in the house is built-up sawn already, and the rim boards are already LSL. The whole house holds 12 LF of LVL.
 Resilient membrane under subfloor for better STC?
 
 Attic swap:

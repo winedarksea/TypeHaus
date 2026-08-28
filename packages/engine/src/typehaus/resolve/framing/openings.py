@@ -17,7 +17,6 @@ from typehaus.quantities import m as _m
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.stud_module import OpeningStudModule, opening_stud_module
 from typehaus.resolve.framing.tables import (
-    DEFAULT_SPACING,
     OVERHEAD_TRACK_MEMBER,
     POCKET_SPLIT_STUD_MEMBER,
     POCKET_SPLIT_STUD_SPACING,
@@ -165,9 +164,19 @@ def _rough_sill_bottom(sill_top: float, z0: float) -> float | None:
 def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
                   z0: float, top_at, opening_index: int, spacing: float,
                   stud_stations: tuple[float, ...] = (),
-                  phase_m: float = 0.0) -> list[FramedMember]:
-    """King/jack/header/cripple pack for one opening, plus its operation's extras."""
+                  phase_m: float = 0.0,
+                  cripple_spacing: float | None = None) -> list[FramedMember]:
+    """King/jack/header/cripple pack for one opening, plus its operation's extras.
+
+    ``spacing`` is the module the jamb-pack verdict is asked against, which a STAGGERED
+    wall halves (its two faces interleave). ``cripple_spacing`` is the pitch of the sill
+    and head cripples, which is the wall's own ``FramingSpec.spacing`` undivided: opening
+    framing is full plate depth even on a staggered wall, so its cripples are full-depth
+    members on the nominal module rather than on the interleaved half-module. It defaults
+    to ``spacing`` for callers with no stagger to distinguish.
+    """
     out: list[FramedMember] = []
+    cripples_at = spacing if cripple_spacing is None else cripple_spacing
     pattern = opening_framing_pattern(opening.operation)
     thickness = member_actual(member)[0] * M_PER_IN  # stud face dimension along the wall
     kings, jacks = jamb_pack_counts(_m(opening.width_m), pattern)
@@ -281,12 +290,12 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
         # framing through the opening itself.
         _append_sill_cripples(out, rw.uid, opening_index, direction, wall_start, center,
                               half, z0, sill_bottom if sill_bottom is not None else z0,
-                              member)
+                              member, cripples_at)
     # Head cripples depend only on the gap between the header (or its nailer) and the
     # plate underside — a door has no rough sill, but it has the same head condition a
     # window does.
     _append_head_cripples(out, rw.uid, opening_index, direction, wall_start, center,
-                          half, cripple_bottom, top_at, member)
+                          half, cripple_bottom, top_at, member, cripples_at)
     return out
 
 
@@ -405,13 +414,19 @@ def _frame_inside_one_bay(rw, direction, wall_start, opening: WallOpening, membe
     return out
 
 
-def _cripple_stations(center: float, half: float) -> list[tuple[int, float]]:
-    """Interior 16 in. o.c. stations across a rough opening, as (index, station).
+def _cripple_stations(center: float, half: float,
+                      spacing: float) -> list[tuple[int, float]]:
+    """Interior stations across a rough opening, as (index, station).
+
+    The pitch is the host wall's own ``FramingSpec.spacing``. It was hardcoded to
+    ``DEFAULT_SPACING`` until 2026-08-28, which framed a 16" cripple grid under every
+    rough sill in the house no matter what module the wall was actually built on — a
+    bug rather than a limitation, and the thing that had to move before any wall here
+    could be a spacing other than 16".
 
     The two edge stations coincide with jack framing and are dropped: a cripple there
     would be a second member on the trimmer's own centreline.
     """
-    spacing = DEFAULT_SPACING.meters
     start, end = center - half, center + half
     stations = [start + index * spacing for index in range(int((end - start) // spacing) + 1)]
     if not stations or stations[-1] < end - 1e-6:
@@ -423,12 +438,12 @@ def _cripple_stations(center: float, half: float) -> list[tuple[int, float]]:
 def _append_sill_cripples(out: list[FramedMember], parent_uid: str, opening_index: int,
                           direction: tuple[float, float], wall_start: tuple[float, float],
                           center: float, half: float, bottom: float, sill: float,
-                          member: str) -> None:
-    """Cripples under a rough sill, at a 16 in. maximum spacing. Windows only — a door
-    has no rough sill to carry."""
+                          member: str, spacing: float) -> None:
+    """Cripples under a rough sill, at the host wall's own maximum spacing. Windows
+    only — a door has no rough sill to carry."""
     if sill - bottom <= _MIN_CRIPPLE_M:
         return
-    for index, station in _cripple_stations(center, half):
+    for index, station in _cripple_stations(center, half, spacing):
         position = add(wall_start, scale(direction, station))
         out.append(FramedMember(parent_uid, f"cripple-sill-{opening_index}-{index:02d}",
                                 "cripple", member, position, position, bottom, sill,
@@ -438,14 +453,15 @@ def _append_sill_cripples(out: list[FramedMember], parent_uid: str, opening_inde
 def _append_head_cripples(out: list[FramedMember], parent_uid: str, opening_index: int,
                           direction: tuple[float, float], wall_start: tuple[float, float],
                           center: float, half: float, header_top: float,
-                          top_at: Callable[[float], float], member: str) -> None:
+                          top_at: Callable[[float], float], member: str,
+                          spacing: float) -> None:
     """Cripples between the header (or its track nailer) and the plate underside.
 
     Every opening with a jamb pack gets these, doors included: what governs is the
     arithmetic gap above the header, not the operation. An opening whose header runs to
     the plate line simply has no gap and emits none.
     """
-    for index, station in _cripple_stations(center, half):
+    for index, station in _cripple_stations(center, half, spacing):
         position = add(wall_start, scale(direction, station))
         wall_top = top_at(station)
         if wall_top - header_top <= _MIN_CRIPPLE_M:

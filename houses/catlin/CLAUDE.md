@@ -746,8 +746,9 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     reasons written on the walls themselves, not for bearing. There were four until
     2026-08-24; `W-B-STR` and `W-B-STR3` are 2x6 bearing stud walls now — `unbalanced_fill`
     was already `ft(0)` on both, and what they carry is joists and a wall stack, which is a
-    stud-wall job on a footing. The centre line's three interior segments
-    `W-B-CS`/`W-B-CS2`/`W-B-CN` are the interior pour that remains.) Drop that string on any of the nine and
+    stud-wall job on a footing. `W-B-CS` followed on 2026-08-28 for the same reason — it
+    carried wood on both faces — leaving `W-B-CS2`/`W-B-CN`/`W-B-CN2` as the interior pour
+    that remains.) Drop that string on any of the nine and
     `structural.foundation_unbalanced_fill` FAILs, correctly.
   Every one of the four carries exactly 4.55" outboard of the concrete face — the panel is
   the same 1/2" as the parge it replaces, and neither is part of the pour — which is what

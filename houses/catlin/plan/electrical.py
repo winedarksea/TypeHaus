@@ -1107,12 +1107,17 @@ CONDUIT_SLEEVES = [
 # receptacles close every wall-space gap the 6-foot rule found. Positions sit on the
 # room boundary and are draggable like any other device.
 NEC_FILL_BASEMENT = [
+    # RC1/RC2 hang on the x=18' line's west face and moved 3 1/4" east on 2026-08-28, from
+    # 17'-1 1/2" to 17'-4 3/4". The wall moved, not the design: W-B-CS went from 12" of
+    # concrete with the liner on it to a 2x6 stud wall with the same liner, so its west face
+    # went 17'-2 1/2" -> 17'-5 3/4" and these two were left floating 3.2" off it. They keep
+    # the same 1" the whole NEC fill sets its bodies back from the face it hangs on.
     ElectricalDevice(uid="NEC001AAAA", tag="ED-B-GYM-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(17, 1.5), ft(2, 7.5)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(17, 4.75), ft(2, 7.5)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC002AAAA", tag="ED-B-GYM-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(17, 1.5), ft(10, 6.5)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(17, 4.75), ft(10, 6.5)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC003AAAA", tag="ED-B-GYM-RC3", kind=DeviceKind.RECEPTACLE,

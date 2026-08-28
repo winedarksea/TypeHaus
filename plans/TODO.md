@@ -853,5 +853,13 @@ Architectural lighting on facade (try to aim to be dark sky friendly)
 $89,000-160,000 off the bid total, and moved to `plans/cost-options.md` per the rule below,
 along with 17 other rows worth $3,000 or more each (the 2026-08-24 cost-reduction sweep).
 
+~~Trim the stud spacing now that the cladding is exposed-fastener; frame the sunken-garden
+basement wall instead of pouring it; built-up beams and columns; LSL instead of LVL~~ —
+the last four unpriced framing ideas, SETTLED 2026-08-28 and written up under "The framing
+sweep" in `plans/cost-options.md`. Two built (the sauna's east wall and the sunken-garden
+walkout), two declined as already taken, floor joists at 24" o.c. declined on the deck
+spans, and the attic gables at 24" left as the one live candidate. Combined **−$1,342 /
+−$3,302** on the bid total, `haus check` at 0 FAIL.
+
 Once an idea here has a number against it, it moves to `plans/cost-options.md` — the
 priced upgrade/downgrade menu (started 2026-08-08).

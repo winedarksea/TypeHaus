@@ -167,7 +167,11 @@ def test_the_basement_mudsill_covers_every_bearing_wall_end_to_end(catlin_model)
     # W-B-STR was the fourth until 2026-08-24, when it was framed: it is a 2x6 bearing wall
     # on a footing now, so its plate is a ``_framed_on_slab`` return keyed on SL-B-FLOOR
     # rather than a wall stack. W-B-E1 replaces it as the east wall's floor-bearing pour.
-    for tag in ("W-B-CN", "W-B-CS", "W-B-W1", "W-B-E1"):
+    # **W-B-CS left the same way on 2026-08-28**, for the same reason and by the same route,
+    # which is why the docstring above still names it and this loop no longer does: there is
+    # no pour left under it to carry a mudsill. Its 0.83 LF was the stretch prices.toml
+    # named as under-billed under the pt-sill-plate note, and framing it closed that gap.
+    for tag in ("W-B-CN", "W-B-W1", "W-B-E1"):
         wall = catlin_model.wall(tag)
         assert tag in plate, f"{tag} bears a floor and carries no mudsill"
         run = ((wall.axis[1][0] - wall.axis[0][0]) ** 2

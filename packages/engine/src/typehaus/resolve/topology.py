@@ -224,8 +224,16 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
         # can differ from the storey's ordinary wall height without a shadow model.
         z0 = wall.bottom_elevation.meters if wall.bottom_elevation is not None else z0
         z1 = wall.top_elevation.meters if wall.top_elevation is not None else z1
-    elif getattr(wall, "top", None) is not None and hasattr(wall.top, "meters"):
-        z1 = z0 + wall.top.meters
+    else:
+        # ``Wall.base_elevation`` lifts a framed wall off the storey datum — a stud wall
+        # standing on a concrete curb within its own storey. ``top`` stays relative to
+        # whatever base the wall ends up with, which is what makes it a height and not an
+        # elevation, so the order here matters.
+        base = getattr(wall, "base_elevation", None)
+        if base is not None:
+            z0 = base.meters
+        if getattr(wall, "top", None) is not None and hasattr(wall.top, "meters"):
+            z1 = z0 + wall.top.meters
 
     def _ring(span_in: float, span_out: float):
         return rect_between(p0, p1, (span_in - axis_from_int) * outward_sign,
@@ -416,6 +424,13 @@ def _wall_z_range(storey, wall) -> tuple[float, float]:
         z0 = wall.bottom_elevation.meters if wall.bottom_elevation is not None else base
         z1 = wall.top_elevation.meters if wall.top_elevation is not None else base
         return (z0, z1) if z0 <= z1 else (z1, z0)
+    # ``base_elevation`` lifts a framed wall off the storey datum (a stud wall on a
+    # concrete curb), and this range is what splits a node's incidents into bearing TIERS —
+    # so reading it here is what keeps the curb and the wall standing on it from being
+    # graded as one junction.
+    wall_base = getattr(wall, "base_elevation", None)
+    if wall_base is not None:
+        base = wall_base.meters
     top = getattr(wall, "top", None)
     height = top.meters if top is not None and hasattr(top, "meters") else (
         storey.default_ceiling_height.meters if storey is not None else 0.0)

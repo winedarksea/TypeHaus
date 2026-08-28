@@ -1418,6 +1418,28 @@ _SAUNA_LINER = (
           control={ControlLayer.THERMAL, ControlLayer.VAPOR, ControlLayer.AIR}),
 )
 
+# **The sauna's ceiling is 7'-6" over the basement slab**, and the two walls that run past
+# it band their liner to it so the takeoff does not buy basswood, furring and foil-faced
+# polyiso for the space above a ceiling.
+#
+# Measured off WALL_BASE and not WALL_TOP since 2026-08-28, and the reason is worth stating
+# because the old datum was silently wrong the moment these walls were framed:
+# ``resolve/platform.py`` grows a framed bearing wall's solid UP to meet the wall stacking
+# on it, so the top of both of these is the main-floor datum now rather than the -13 7/16"
+# bearing seat a pour stopped at. A band hung off the top would have run the liner
+# 13 7/16" past the ceiling. A base is also the datum a ceiling height is actually stated
+# from, which is why the offsets below read as the number a builder would recognise.
+#
+# PROVISIONAL: if the basement ever goes to a joist ceiling running the full width, the
+# liner would run the wall's whole height and these extents should come back off.
+_SAUNA_CEILING_OVER_SLAB = LayerExtent(
+    top=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(90.0)))
+# The same ceiling seen from the framed walkout, whose base is the top of the 7 1/4" curb:
+# 7'-6" less 7 1/4" is 82 3/4". The curb's own liner below it is unbanded and carries the
+# missing 7 1/4", so the two together are the room's full height.
+_SAUNA_CEILING_OVER_CURB = LayerExtent(
+    top=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(82.75)))
+
 # Sauna partition: hot side liner, 2x4 framing, gwb on the cold side.
 SAUNA_2X4 = Assembly(
     tag="SAUNA_2X4",
@@ -1433,57 +1455,198 @@ SAUNA_2X4 = Assembly(
     source="catlin-house sauna_basement_wall_detail.py + notes/sauna_basement_wall_detail.md",
 )
 
-# Where the sauna's hot side lands on the center concrete wall there is no framing to
-# fill — the liner stack applies directly to the concrete.
-SAUNA_LINER_ON_CONCRETE = Assembly(
-    tag="SAUNA_LINER_ON_CONCRETE",
-    layers=(
-        *_SAUNA_LINER,
-        Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
-              function=LayerFunction.STRUCTURE),
-    ),
-    interfaces=(_CONCRETE_BEARING,),
-    source="catlin-house sauna_basement_wall_detail.py (liner on the center bearing wall)",
-)
-
-# W-B-S2 only: the sauna's south side is a segment of the sunken-garden foundation wall,
-# whose every non-structural layer sits *outboard* of the pour — so without this variant the
-# room's fourth face is bare concrete while the other three carry the liner. Same liner, same
-# order, on concrete instead of studs: the furring is fastened to the pour, not to framing.
+# W-B-CS, the sauna's east face on the x=18' bearing line — **framed since 2026-08-28**,
+# where it was 12" of cast concrete (``SAUNA_LINER_ON_CONCRETE``, retired with it).
 #
-# The three liner layers are restated here rather than splatted from _SAUNA_LINER because
-# they carry a vertical extent that is specific to this wall and must not leak onto the
-# partitions: the sauna's ceiling is at 7'-6" (W-B-SA-W/-N are `top=ft(7, 6)`) while the
-# foundation wall runs the full 9'-4" from bottom_elevation=ft(-9, -4) to top_elevation=ft(0).
-# Bounding the liner below the wall top keeps the takeoff from billing basswood T&G, furring
-# and foil-faced polyiso over the concrete above the sauna's ceiling. The offset is 6", not
-# the 1'-6" it was until 2026-08-23: the pour used to run to 0'-0" and stops on the bearing
-# seat at -13 7/16" now, so the same 7'-6" ceiling is 6" down from the top of the wall
-# instead of eighteen. The number to keep true is the *ceiling*, not the offset — if the
-# seat moves again, this moves with it.
-# PROVISIONAL: if the basement ever goes to a joist ceiling running the full width, the liner
-# would run the wall's whole height and this extent should come back off.
-_SAUNA_CEILING_EXTENT = LayerExtent(
-    top=LayerBound(datum=LayerDatum.WALL_TOP, offset=inch(-6.0)))
-
-SAUNA_LINER_ON_BASEMENT_8_GARDEN = Assembly(
-    tag="SAUNA_LINER_ON_BASEMENT_8_GARDEN",
+# basement.py's WALLS header had already written the argument down: this segment "carries
+# wood on both faces and COULD go to 8"". The honest reading is that it needs no concrete
+# at all. What it carries is FS-M-WEST and FS-M-EAST — two 18' I-joist spans landing on
+# the line — and the W-M-C1 -> W-S-C1/C2 -> W-A-C1 -> RB-HOUSE stack down to the footing,
+# and a 2x6 bearing wall carries exactly that on every storey above this one. ~4.6 cy of
+# ready-mix out. It is the same move W-B-STR/W-B-STR3 made on 2026-08-24, and the detail
+# is already drawn: notes/basement_to_framed_wall_detail.md.
+#
+# What is paid for it, so it is not discovered later: 12" of concrete between a sauna and
+# RM-B-PLAY-N is real acoustic and thermal mass, and the sauna's vapour control moves from
+# liner-on-pour to a framed stack. Both are the trade W-B-STR already made.
+#
+# The three liner layers are restated rather than splatted from ``_SAUNA_LINER`` because
+# they carry a vertical extent that must not leak onto the partitions: the sauna's ceiling
+# is 7'-6" over the slab (W-B-SA-W/-N are `top=ft(7, 6)`) and ``resolve/platform.py`` grows
+# this wall's solid up to the main-floor datum to meet W-M-C1, so without the band the
+# liner would run 13 7/16" past the ceiling and bill basswood for it.
+#
+# **"INT" in the tag is load-bearing.** ``_is_interior_assembly`` in mn_energy.py is
+# literally ``"INT" in tag.split("_")``, so an interior assembly without the token is
+# graded against the R-21 exterior wall row. SAUNA_LINER_ON_CONCRETE carried no such token
+# and never needed one — a 12" interior pour is not in that table's population — which is
+# exactly the kind of thing that only bites on the day the assembly changes.
+#
+# ``layout_origin="line"`` matches CATLIN_INT_2X6_BRG above it, so the studs on the x=18'
+# line stack basement-to-attic instead of each segment restarting its own module.
+SAUNA_LINER_INT_2X6_BRG = Assembly(
+    tag="SAUNA_LINER_INT_2X6_BRG",
     layers=(
         Layer(name="tg-liner", material_ref="sauna-tg", thickness=inch(1.0),
-              function=LayerFunction.FINISH, extent=_SAUNA_CEILING_EXTENT),
+              function=LayerFunction.FINISH, extent=_SAUNA_CEILING_OVER_SLAB),
         Layer(name="liner-furring", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.FURRING,
               framing=FramingSpec(member="1x4", direction="horizontal"),
-              extent=_SAUNA_CEILING_EXTENT),
+              extent=_SAUNA_CEILING_OVER_SLAB),
         Layer(name="foil-polyiso", material_ref="polyiso-foil", thickness=inch(2.0),
               function=LayerFunction.INSULATION,
               control={ControlLayer.THERMAL, ControlLayer.VAPOR, ControlLayer.AIR},
-              extent=_SAUNA_CEILING_EXTENT),
-        *FOUNDATION_WALL_8_XPS4_CORE,
+              extent=_SAUNA_CEILING_OVER_SLAB),
+        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x6", spacing=inch(16),
+                                  sill_gasket=inch(0.0625),
+                                  layout_origin="line"),
+              cavity=CavityFill(material_ref="mineral-wool")),
+        Layer(name="gwb-cold", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+    ),
+    interfaces=(_STUD_BEARING,),
+    source="catlin basement sauna east wall (W-B-CS), framed 2026-08-28: SAUNA_2X4's liner and cold-side gwb over 2x6 spf bearing studs at 16 in. o.c. on a PT sill, per notes/sauna_basement_wall_detail.md and notes/basement_to_framed_wall_detail.md",
+)
+
+# SAUNA_LINER_ON_BASEMENT_8_GARDEN stood here from 2026-08-18. RETIRED 2026-08-28 with the
+# wall it described: W-B-S2 is a 7 1/4" curb under a framed wall now, so the liner-on-a-
+# full-height-pour case has no instance left in this house. SAUNA_LINER_ON_GARDEN_CURB and
+# SAUNA_LINER_ON_GARDEN_FRAMED are what replaced it, between them.
+
+# --- the framed walkout at the sunken garden (2026-08-28) ------------------------
+# W-B-S2-FR and W-B-S3-FR: the 19'-2" of south wall that stands *inside* the sunken garden
+# court, from x=8'-10" (where the excavation starts) to x=28'-0" (where grade comes back
+# up). It retains nothing — `unbalanced_fill` is `ft(0)` on both segments since 2026-08-28
+# — so it was 8" of formed concrete holding back air, with a 5'-0" french door and a sauna
+# window formed through it.
+#
+# What the estimate cannot see is the better half of the argument:
+# `takeoff/wall_structure.py` bills wall volume NET of openings and adds nothing back for
+# the buck or the extra forming, so the model actually books a CREDIT for those two holes
+# where forming two openings in a pour is the very cost this swap removes. The modelled
+# saving is the floor, not the number.
+#
+# **The stack is the concrete one with studs where the pour was**, not CATLIN_EXT_2X6: the
+# outboard face has to stay exactly where it is. The damp-proofing, the 4" of XPS and the
+# full-height parge all continue from W-B-S1 and W-B-S4 either side, and W-B-BRICK stands
+# 4.55" off that finished face on its own footing with two arched reveals dimensioned to
+# it. `alignment=face("sheathing-ext")` puts the sheathing's outboard face on the node
+# line exactly where `face("concrete-ext")` put the pour's, so the whole outboard tail —
+# and the brick's 1" cavity — lands on the plane it always did. The rooms inside gain
+# 1 3/8" (8" of pour becomes 6 5/8" of stud and gypsum), and the 6" curb below leaves only
+# the gypsum's own 5/8" oversailing it, which is what drywall over a curb does everywhere.
+#
+# NO "INT" token here, and that is not an oversight: this is an envelope wall between
+# conditioned space and open air, and `mn_energy._is_interior_assembly` must NOT skip it.
+# R-21 of mineral wool between the studs plus the same continuous 4" of XPS the pour
+# carried reads better than the 8"-concrete stack it replaces.
+_GARDEN_FRAMED_OUTBOARD = (
+    Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
+          function=LayerFunction.SHEATHING),
+    Layer(name="damp-proof", material_ref="air-barrier", thickness=inch(0.05),
+          function=LayerFunction.MEMBRANE,
+          control={ControlLayer.AIR, ControlLayer.WATER}),
+    Layer(name="xps-a", material_ref="xps", thickness=inch(2.0),
+          function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+    Layer(name="xps-b", material_ref="xps", thickness=inch(2.0),
+          function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+    _GARDEN_PARGE,
+)
+
+_GARDEN_FRAMED_STUD = Layer(
+    name="stud", material_ref="spf", thickness=inch(5.5),
+    function=LayerFunction.STRUCTURE,
+    framing=FramingSpec(member="2x6", spacing=inch(16), sill_gasket=inch(0.0625),
+                        layout_origin="line"),
+    cavity=CavityFill(material_ref="mineral-wool"))
+
+# The curbs the framed run stands on: W-B-S2 and W-B-S3, 7 1/4" of pour on the existing
+# footings. **6" and not the 8" the rest of the south wall is**, and the reason is a plane
+# and not a load: 6" of concrete is exactly stud-plus-sheathing, so the curb's outboard
+# face lands on the node line where the sheathing's does — keeping the damp-proofing, the
+# XPS, the parge and W-B-BRICK's 1" cavity on one plane top to bottom — AND its inboard
+# face lands where the studs' does, so there is no shelf inside the room to collect water.
+# An 8" curb would have bought a 2" ledge on the wet side of a sauna wall. The curb
+# retains nothing (`unbalanced_fill=ft(0)`), so no table asks it for thickness.
+#
+# The three outboard layers are restated rather than sliced off
+# FOUNDATION_WALL_8_XPS4_CORE: this file is `# haus: editable` and the dialect allows no
+# subscripting. They are the same damp-proofing and 2 x 2" of XPS, in the same order.
+_GARDEN_CURB_CORE = (
+    Layer(name="concrete", material_ref="concrete", thickness=inch(6.0),
+          function=LayerFunction.STRUCTURE),
+    Layer(name="damp-proof", material_ref="air-barrier", thickness=inch(0.05),
+          function=LayerFunction.MEMBRANE,
+          control={ControlLayer.AIR, ControlLayer.WATER}),
+    Layer(name="xps-a", material_ref="xps", thickness=inch(2.0),
+          function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+    Layer(name="xps-b", material_ref="xps", thickness=inch(2.0),
+          function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+)
+
+CATLIN_GARDEN_CURB_6 = Assembly(
+    tag="CATLIN_GARDEN_CURB_6",
+    layers=(
+        *_GARDEN_CURB_CORE,
         _GARDEN_PARGE,
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="catlin-house sauna_basement_wall_detail.py + CATLIN_BASEMENT_8_GARDEN (liner on the sunken-garden foundation wall)",
+    source="catlin sunken-garden curb (W-B-S3), 2026-08-28: 6 in. of the south pour kept 7 1/4 in. above the slab under the framed walkout, on CATLIN_BASEMENT_8_GARDEN's own damp-proofing, 4 in. XPS and parge",
+)
+
+# The same curb under the sauna's south face. The liner runs DOWN over it — it is not
+# banded off at the curb top — because the hot side's foil-faced polyiso is the room's
+# vapour control and a 7 1/4" strip of bare concrete at the bottom of it is a hole in that
+# control, which is exactly what `building_science.humid_room_liner` said the moment the
+# curb was authored without it. With the curb at 6" the liner faces above and below the
+# joint are flush, so this is one continuous plane and not a return.
+SAUNA_LINER_ON_GARDEN_CURB = Assembly(
+    tag="SAUNA_LINER_ON_GARDEN_CURB",
+    layers=(
+        *_SAUNA_LINER,
+        *_GARDEN_CURB_CORE,
+        _GARDEN_PARGE,
+    ),
+    interfaces=(_CONCRETE_BEARING,),
+    source="catlin sunken-garden curb under the sauna (W-B-S2), 2026-08-28: CATLIN_GARDEN_CURB_6 with the sauna liner carried down over its face so the hot side's vapour control is continuous to the slab",
+)
+
+CATLIN_GARDEN_FRAMED_2X6 = Assembly(
+    tag="CATLIN_GARDEN_FRAMED_2X6",
+    layers=(
+        Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        _GARDEN_FRAMED_STUD,
+        *_GARDEN_FRAMED_OUTBOARD,
+    ),
+    interfaces=(_STUD_BEARING,),
+    source="catlin basement south walkout (W-B-S3-FR), framed 2026-08-28: 2x6 spf at 16 in. o.c. with mineral wool, on the SAME outboard tail CATLIN_BASEMENT_8_GARDEN carries (damp-proofing, 4 in. XPS, full-height parge) so the sunken garden's finished face does not move",
+)
+
+# The sauna's south face, on the framed run. The liner instead of gypsum, and
+# `_SAUNA_CEILING_OVER_CURB` stopping it at the room's 7'-6" ceiling — 82 3/4" above this
+# wall's own base, because its base is the top of the curb and the curb's liner carries the
+# first 7 1/4".
+SAUNA_LINER_ON_GARDEN_FRAMED = Assembly(
+    tag="SAUNA_LINER_ON_GARDEN_FRAMED",
+    layers=(
+        Layer(name="tg-liner", material_ref="sauna-tg", thickness=inch(1.0),
+              function=LayerFunction.FINISH, extent=_SAUNA_CEILING_OVER_CURB),
+        Layer(name="liner-furring", material_ref="struct-1-plywood", thickness=inch(0.5),
+              function=LayerFunction.FURRING,
+              framing=FramingSpec(member="1x4", direction="horizontal"),
+              extent=_SAUNA_CEILING_OVER_CURB),
+        Layer(name="foil-polyiso", material_ref="polyiso-foil", thickness=inch(2.0),
+              function=LayerFunction.INSULATION,
+              control={ControlLayer.THERMAL, ControlLayer.VAPOR, ControlLayer.AIR},
+              extent=_SAUNA_CEILING_OVER_CURB),
+        _GARDEN_FRAMED_STUD,
+        *_GARDEN_FRAMED_OUTBOARD,
+    ),
+    interfaces=(_STUD_BEARING,),
+    source="catlin basement sauna south wall (W-B-S2-FR), framed 2026-08-28: the sauna liner over CATLIN_GARDEN_FRAMED_2X6's studs and outboard tail",
 )
 
 # --- mudroom exposed-stud wall ---------------------------------------------------
@@ -2257,8 +2420,11 @@ ASSEMBLIES = [
     INT_2X4_STAGGERED_DOUBLE_GWB,
     INT_ESS_CLOSET_STEEL,
     SAUNA_2X4,
-    SAUNA_LINER_ON_CONCRETE,
-    SAUNA_LINER_ON_BASEMENT_8_GARDEN,
+    SAUNA_LINER_INT_2X6_BRG,
+    CATLIN_GARDEN_CURB_6,
+    SAUNA_LINER_ON_GARDEN_CURB,
+    CATLIN_GARDEN_FRAMED_2X6,
+    SAUNA_LINER_ON_GARDEN_FRAMED,
     PLANT_EXT_2X6_HUMID,
     PLANT_INT_2X6_BRG_HUMID,
     PLANT_INT_2X4_HUMID,

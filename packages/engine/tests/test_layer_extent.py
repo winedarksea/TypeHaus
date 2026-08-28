@@ -41,12 +41,22 @@ def test_the_panel_band_runs_from_six_inches_under_grade_to_the_wall_top(catlin_
         assert (z1 - z0) * _M_TO_FT == pytest.approx((34.0 + 6.0 - 13.4375) / 12.0, abs=1e-6)
 
 
-# W-B-S2 carries the sauna's liner variant of the same outboard stack since 2026-08-18, so
-# the assembly tag differs per segment; everything the parge assertions say is unchanged.
+# The assembly tag differs per segment and always has; everything the parge assertions say
+# is unchanged, which is the point of listing them rather than one tag.
+#
+# **Five segments since 2026-08-28.** W-B-S3 split at the excavation edge (x=28'-0") so each
+# half could author the backfill it actually retains, and W-B-S2/W-B-S3 became the 7 1/4"
+# CURBS under a framed walkout — so the parge over the sunken garden is now carried by a
+# curb below and a stud wall above on the same plane, which is exactly what these assertions
+# are here to hold. Every one of the five still runs its parge full height and carries no
+# above-grade protection band: the sunken garden is not a grade band.
 _SOUTH_ASSEMBLIES = {
     "W-B-S1": "CATLIN_BASEMENT_8_GARDEN",
-    "W-B-S2": "SAUNA_LINER_ON_BASEMENT_8_GARDEN",
-    "W-B-S3": "CATLIN_BASEMENT_8_GARDEN",
+    "W-B-S2": "SAUNA_LINER_ON_GARDEN_CURB",
+    "W-B-S2-FR": "SAUNA_LINER_ON_GARDEN_FRAMED",
+    "W-B-S3": "CATLIN_GARDEN_CURB_6",
+    "W-B-S3-FR": "CATLIN_GARDEN_FRAMED_2X6",
+    "W-B-S4": "CATLIN_BASEMENT_8_GARDEN",
 }
 
 
@@ -62,19 +72,34 @@ def test_the_south_wall_keeps_a_full_height_parge_and_no_band(catlin_model):
 
 
 def test_the_sauna_liner_stops_at_the_room_ceiling_not_the_wall_top(catlin_model):
-    """W-B-S2 is an 8'-0" foundation wall bounding a 7'-6" room. The liner is banded off
-    WALL_TOP so the takeoff does not buy basswood, furring and foil-faced polyiso for the
-    concrete above the sauna's ceiling. The offset is 6" since 2026-08-23 — the pour stops
-    on the bearing seat now rather than at 0'-0", so the same ceiling is that much nearer
-    the top of the wall. What is pinned here is the CEILING, at 7'-6" over the slab."""
-    wall = catlin_model.wall("W-B-S2")
+    """The sauna's south wall runs past the room's 7'-6" ceiling to the bearing seat, and
+    the liner is banded off WALL_TOP so the takeoff does not buy basswood, furring and
+    foil-faced polyiso for the wall above the ceiling. The offset is 6" since 2026-08-23 —
+    the wall stops on the bearing seat rather than at 0'-0". What is pinned is the CEILING,
+    at 7'-6" over the slab.
+
+    **The wall is W-B-S2-FR since 2026-08-28**: the south face is a 2x6 stud wall on a
+    7 1/4" curb now. The band did not have to move with it, and that is the interesting
+    part — a ``LayerExtent`` is measured off the wall TOP, and the top did not move. What
+    did move is the wall's base, so the banded run is 7'-6" less the curb, and the curb
+    (W-B-S2, checked below) carries the missing 7 1/4" unbanded. The ceiling is still at
+    7'-6" over the slab, which is the number that matters.
+    """
+    wall = catlin_model.wall("W-B-S2-FR")
+    curb = catlin_model.wall("W-B-S2")
     for name in ("tg-liner", "liner-furring", "foil-polyiso"):
         layer = next(ly for ly in wall.layers if ly.name == name)
         assert layer.is_banded
         z0, z1 = layer.band(wall)
         assert z0 == pytest.approx(wall.z0_m)
-        assert z1 == pytest.approx(wall.z1_m - inch(6).meters)
-        assert (z1 - z0) * _M_TO_FT == pytest.approx(7.5, abs=1e-6)
+        assert z1 == pytest.approx(wall.z0_m + inch(82.75).meters)
+        # The curb's own liner is NOT banded: it runs the curb's full 7 1/4", because a
+        # strip of bare concrete at the bottom of a sauna wall is a hole in the hot side's
+        # vapour control (`building_science.humid_room_liner` said so when it was authored
+        # without one). The two together are the room's 7'-6".
+        below = next(ly for ly in curb.layers if ly.name == name)
+        assert not below.is_banded
+        assert (z1 - z0 + curb.z1_m - curb.z0_m) * _M_TO_FT == pytest.approx(7.5, abs=1e-6)
 
 
 def test_both_basement_assemblies_stand_the_same_distance_off_the_concrete(catlin_model):
@@ -136,10 +161,13 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
     assert f"W-B-N1:{_PANEL}" in parts
     # No south segment gets a protection panel — the sunken garden is not a grade band.
     assert not any(name.endswith(_PANEL) for name in parts if name.startswith("W-B-S"))
-    # W-B-S2's sauna liner is the other banded stack in the house, and it exports the same
-    # way: three parts stopping at the sauna's 7'-6" ceiling, not at the wall's 9'-0" top.
+    # The sauna's south liner is the other banded stack in the house, and it exports the
+    # same way: three parts stopping at the room's 7'-6" ceiling, not at the wall's top.
+    # On W-B-S2-FR since 2026-08-28 — the south face is a framed wall on a curb now, and
+    # the curb's own liner is unbanded (it runs the curb's full 7 1/4"), so only the
+    # framed wall's three layers are partial and only they aggregate.
     assert {n for n in parts if n.startswith("W-B-S")} == {
-        "W-B-S2:tg-liner", "W-B-S2:liner-furring", "W-B-S2:foil-polyiso"}
+        "W-B-S2-FR:tg-liner", "W-B-S2-FR:liner-furring", "W-B-S2-FR:foil-polyiso"}
 
     part = parts[f"W-B-N1:{_PANEL}"]
     parents = [rel.RelatingObject for rel in model.by_type("IfcRelAggregates")

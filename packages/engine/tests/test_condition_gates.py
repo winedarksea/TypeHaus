@@ -324,8 +324,11 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
     keys = sorted({c.key for c in catlin_model.conditions
                    if c.key.startswith("assembly_change:")})
     assert keys == [
+        # N-B-S1, where the buried south wall meets the sunken garden's sauna curb. The
+        # key's right half moved on 2026-08-28 (the curb assembly replaced the full-height
+        # liner wall) but the condition is the one it always was: the liner starts here.
         ("assembly_change:CATLIN_BASEMENT_8_GARDEN|"
-         "SAUNA_LINER_ON_BASEMENT_8_GARDEN"),
+         "SAUNA_LINER_ON_GARDEN_CURB"),
         # The plant room's liner, 2026-08-18, and the same kind of transition as the sauna's
         # two lines down: a humid-side wall type starting partway along a wall line. On the
         # south wall it is CATLIN_EXT_2X6 handing off to PLANT_EXT_2X6_HUMID at x=18'; at
@@ -333,6 +336,12 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # which is one node and therefore one key. Real changes of construction, and the
         # returns they imply are what TR-CATLIN-ASSEMBLY-JOG records.
         "assembly_change:CATLIN_EXT_2X6|PLANT_EXT_2X6_HUMID",
+        # The framed walkout's two new nodes, 2026-08-28, and they are the same condition
+        # one storey down from each other: N-B-S2 where the two 7 1/4" curbs meet, and
+        # N-B-S2F where the two framed walls on them do. The liner starts at x=18' on both,
+        # so both are real changes of construction and each wants telling once.
+        "assembly_change:CATLIN_GARDEN_CURB_6|SAUNA_LINER_ON_GARDEN_CURB",
+        "assembly_change:CATLIN_GARDEN_FRAMED_2X6|SAUNA_LINER_ON_GARDEN_FRAMED",
         ("assembly_change:CATLIN_INT_2X6_BRG|INT_2X4_PARTITION|"
          "PLANT_INT_2X4_HUMID|PLANT_INT_2X6_BRG_HUMID"),
         # N-B-ESS-SE. The stair wall's own split, and a real change of construction: W-B-STR
@@ -348,7 +357,13 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # single wall again when the ESS closet left for the NE corner on 2026-08-23. Giving
         # W-B-STR2 its neighbour's assembly closed the x-line too, so the node changes
         # construction on neither and there is nothing here to tell a builder.
-        "assembly_change:FOUNDATION_WALL_12_INT|SAUNA_LINER_ON_CONCRETE",
+        #
+        # N-B-C1, and the right half of the key moved on 2026-08-28 with W-B-CS: the sauna's
+        # east face is a framed bearing wall against the 12" pour that carries SL-M-DECK, so
+        # the change of construction is now wood against concrete rather than one pour
+        # against another. `integrity.junction_fallback` reports the same node UNKNOWN for
+        # exactly that reason, and this key is the drawing that answers it.
+        "assembly_change:FOUNDATION_WALL_12_INT|SAUNA_LINER_INT_2X6_BRG",
         # The garage east stem, 2026-08-26: W-GF-E1/E2 took the brick-ledge form to carry
         # the new wainscot's wythe, W-GF-E-DR (the grade beam under the overhead door) and
         # the rest of the stem did not. Collapses to one key at all four collinear nodes

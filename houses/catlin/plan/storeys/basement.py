@@ -61,6 +61,31 @@ NODES = [
     Node(uid="CBN001AAAA", tag="N-B-SW", position=pt(ft(0), ft(0))),
     Node(uid="CBN002AAAA", tag="N-B-S1", position=pt(ft(8, 10), ft(0))),
     Node(uid="CBN003AAAA", tag="N-B-S2", position=pt(ft(18), ft(0))),
+    # x=28'-0" is the excavation edge (params/sunken_garden's ``_x_ax_e``), where the
+    # sunken garden ends and grade comes back up to the -2'-10" site plane. It splits the
+    # south wall at the one place on that line where the backfill condition changes, so
+    # each segment can author the fill it actually retains instead of one wall carrying
+    # two conditions. It is also W-B-BRICK's east end, which was already dimensioned to
+    # this x.
+    Node(uid="NW1W09NAD2", tag="N-B-S3", position=pt(ft(28), ft(0))),
+    # **The framed walkout's own node chain (2026-08-28).** W-B-S2-FR and W-B-S3-FR stand
+    # ON W-B-S2/W-B-S3, which are 7 1/4" curbs now, so they are a second run of wall over
+    # the same three stations. They cannot share those nodes: two wall edges between one
+    # pair of nodes is a junction with no answer, and the solver said so — eight
+    # `integrity.junction_polygon` ERRORs, one per layer, the moment they did.
+    #
+    # So the framed run is its own wall-graph component with its own nodes at the same
+    # three x stations, both ends `open_end` — the same device W-B-BRICK uses for the
+    # veneer wythe standing in front of this very wall. `open_end` is what tells
+    # `integrity.wall_loop_open` that a single wall edge at a node is intended and not a
+    # gap. The middle node carries two edges and needs no flag.
+    #
+    # A component with no closed loop resolves at outward sign +1 rather than the
+    # perimeter's -1 (resolve/orientation.py), which is exactly why both framed walls
+    # author `interior_room` explicitly instead of trusting the winding.
+    Node(uid="QEDBCR7NYR", tag="N-B-S1F", position=pt(ft(8, 10), ft(0)), open_end=True),
+    Node(uid="PGQVHV2VRH", tag="N-B-S2F", position=pt(ft(18), ft(0))),
+    Node(uid="Z44TJSW6JJ", tag="N-B-S3F", position=pt(ft(28), ft(0)), open_end=True),
     Node(uid="CBN004AAAA", tag="N-B-SE", position=pt(ft(36), ft(0))),
     Node(uid="CBN005AAAA", tag="N-B-E1", position=pt(ft(36), ft(18))),
     Node(uid="CBN006AAAA", tag="N-B-NE", position=pt(ft(36), ft(36))),
@@ -166,8 +191,9 @@ WALLS = [
     # segments carry SL-M-DECK on 12" because they always did, and an 8" wall would carry it
     # just as well.
     #
-    # So the four that stay 12" stay for reasons that are no longer about bearing width, and
-    # each is worth stating:
+    # So the three that stay 12" stay for reasons that are no longer about bearing width,
+    # and each is worth stating. (It was four until 2026-08-28: W-B-CS, the one this list
+    # already admitted "COULD go to 8"", is a 2x6 bearing stud wall now — see its own note.)
     #
     #   W-B-E1/E2 — the east perimeter. SL-M-DECK is a 414 SF cast slab and its east edge
     #     lands here; 12" is not needed for the seat, but this is the one perimeter run with
@@ -177,12 +203,12 @@ WALLS = [
     #     rather than a derivation, so it is the first candidate the next time this line is
     #     opened.
     #   W-B-CS2, W-B-CN2, W-B-CN — the centre line under the cast band, same reading.
-    #   W-B-CS — carries wood on both faces and COULD go to 8". Left at 12" deliberately: it
-    #     is 13'-10" (~1.5 cy), it is the sauna's east face with a tile splash on it, and its
-    #     alignment `face("concrete-ext", offset=inch(-6))` is a hardcoded HALF of the
-    #     thickness — thinning it silently moves the bearing grid unless that number moves
-    #     with it. `integrity.floor_bearing_grid` FAILs if it ever does, now that three
-    #     FloorSystems name this wall.
+    #   W-B-CS — FRAMED since 2026-08-28, and no longer on this list at all. It carried
+    #     wood on both faces, so what it actually needed was a bearing wall and not a pour.
+    #     The alignment trap that guarded it while it was concrete is still live and moved
+    #     with it: the offset is a hardcoded HALF of the structure thickness, now
+    #     `face("stud-ext", offset=inch(-2.75))`. `integrity.floor_bearing_grid` FAILs if
+    #     the two ever part company, and three FloorSystems name this wall.
     #   W-B-STR — three dimensions are measured off its east face (see its own note below).
     #
     # The other nine segments — 108 LF, ~12.4 cy — are 8" carrying #5 @ 41" o.c. vertical,
@@ -202,9 +228,29 @@ WALLS = [
     # `center_on="axis"`, so a 12" pour overhung its inside edge by 2" and an 8" one has a
     # 2" inboard toe. The footings follow the slab up 2 9/16" (params/foundations.py) but do
     # not move in plan — the brick plinth FT-B-BRICK is dimensioned off the strip's -10" edge.
+    # **The south wall retains four different amounts of soil, and now says so.**
+    # None of these segments authored ``unbalanced_fill`` until 2026-08-28, so
+    # ``structural.foundation_unbalanced_fill`` fell back to its documented proxy —
+    # grade (-2'-10") minus the wall bottom (-9'-1 7/16") = 6.29' on every one of them,
+    # rounded up to the table's 7' row. Its own docstring warns about exactly this
+    # ("it over-reports a walkout wall whose exterior grade falls away ... author
+    # ``unbalanced_fill`` where it matters"), and this is the walkout side: the sunken
+    # garden is excavated from x=8'-10" to x=28'-0" with its floor flush with the basement
+    # slab, so two of the four segments retain nothing at all.
+    #
+    #   W-B-S1   0'-0" .. 8'-10"   6'-4"  genuinely buried, west of the excavation
+    #   W-B-S2   8'-10" .. 18'-0"  0      entirely inside the court
+    #   W-B-S3   18'-0" .. 28'-0"  0      entirely inside the court
+    #   W-B-S4   28'-0" .. 36'-0"  6'-4"  buried again, east of the excavation
+    #
+    # 6'-4" is the measured 6.29' rounded UP to the nearest inch, the same direction
+    # footnote f rounds the table row. It changes no grade: 6.3' still lands on the 7' row
+    # and the two buried segments keep ``#5 @ 41" o.c.`` The two zero-fill segments drop
+    # the bar with the load — see W-B-S2 below.
     FoundationWall(uid="CBW101AAAA", tag="W-B-S1", start_node="N-B-SW",
                    end_node="N-B-S1", assembly="CATLIN_BASEMENT_8_GARDEN",
                    alignment=face("concrete-ext"),
+                   unbalanced_fill=ft(6, 4),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
                    vertical_reinforcement='#5 @ 41" o.c.'),
@@ -219,16 +265,80 @@ WALLS = [
     # returns the concrete's outboard face, which on this wall *is* the datum, so the
     # concrete band stays at y 0"-8" exactly as the bare garden segments do. W-B-CS needs
     # its offset only to re-centre the concrete on the 18' bearing grid.
+    # No vertical steel on these two: R404.1.2(8) is a table of *lateral earth pressure*,
+    # and a wall standing in an open court retains none. The check stops grading them
+    # either way at ``fill <= 0`` (foundation.py:146), so the bar comes out on the merits
+    # and not because the check went quiet — the same reading that leaves W-B-CS2, W-B-CN
+    # and the other interior cross walls bare. No dollars move with it: prices.toml notes
+    # vertical steel has no line of its own, it is inside the $/cy rate.
+    #
+    # **W-B-S2 and W-B-S3 are 7 1/4" CURBS since 2026-08-28**, not full-height walls. The
+    # 8'-0" of pour above them is a 2x6 framed wall — W-B-S2-FR and W-B-S3-FR below — for
+    # the reason this comment block already gives twice over: they hold back nothing. Both
+    # keep their tag, their uid and their footing, which is the whole point of putting the
+    # curb on the old element rather than the framing: FT-B-S2/FT-B-S3, `_FROST_FORMED`,
+    # `structural.frost_depth`, CN-M-HD-BALC-W/E's STHD embedments and W-B-BRICK's
+    # dimensions all still name a piece of concrete on a footing, and none of them moved.
+    #
+    # **Why the curb is kept and why it is 7 1/4".** The sunken garden is a court whose
+    # floor is FLUSH with the basement slab (both -9'-1 7/16" since 2026-08-23) with no way
+    # out but a drain; heavy rain can stand in it. A concrete curb runs under the whole framed run so standing water
+    # reaches concrete and not a bottom plate. 7 1/4" is the actual width of a 2x8, so the
+    # curb is one board deep and the framed plate lands on it flat. It is also exactly
+    # D-B-PATIO's old raised threshold — the door used to carry `sill_height=inch(7)` off
+    # this same base — so the curb top IS the threshold now and the door's sill_height
+    # goes to zero rather than to 7 1/4" (see D-B-PATIO in OPENINGS).
     FoundationWall(uid="CBW102AAAA", tag="W-B-S2", start_node="N-B-S1",
-                   end_node="N-B-S2", assembly="SAUNA_LINER_ON_BASEMENT_8_GARDEN",
-                   alignment=face("concrete-ext"),
+                   end_node="N-B-S2", assembly="SAUNA_LINER_ON_GARDEN_CURB",
                    interior_room="RM-B-SAUNA",
-                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
-                   lateral_support="top_and_bottom",
-                   vertical_reinforcement='#5 @ 41" o.c.'),
+                   alignment=face("concrete-ext"),
+                   unbalanced_fill=ft(0),
+                   top_elevation=inch(-102.1875), bottom_elevation=inch(-109.4375),
+                   lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW103AAAA", tag="W-B-S3", start_node="N-B-S2",
+                   end_node="N-B-S3", assembly="CATLIN_GARDEN_CURB_6",
+                   interior_room="RM-B-GYM",
+                   alignment=face("concrete-ext"),
+                   unbalanced_fill=ft(0),
+                   top_elevation=inch(-102.1875), bottom_elevation=inch(-109.4375),
+                   lateral_support="top_and_bottom"),
+    # The framed run itself: base on the curb top (-102 3/16"), 88 3/4" to the same
+    # -13 7/16" bearing seat every other wall in this basement stops on. `base_elevation`
+    # is what lets a framed wall stand on something inside its own storey; `top` stays a
+    # height measured from it, so the studs are 88 3/4" less the plates — about 7'-0 1/4",
+    # not the 8'-0" they would be off the slab.
+    #
+    # `face("sheathing-ext")` is the deliberate mirror of the pour's `face("concrete-ext")`:
+    # it pins the sheathing's outboard face on the node line, so the damp-proofing, the 4"
+    # of XPS and the parge continue on exactly the plane they occupy on W-B-S1 and W-B-S4
+    # either side, and W-B-BRICK's 4.55" stand-off and its two arched reveals do not move.
+    # The tie hardware does change in reality — corrugated ties into framing instead of
+    # anchors into concrete — which is ordinary for veneer over wood, and is said out loud
+    # here because the model cannot say it.
+    #
+    # `interior_room` is authored on both rather than left to the storey's outward sign:
+    # there are two wall edges on each of these node pairs now (the curb and the framing),
+    # and an asymmetric stack should not depend on how the loop happens to wind.
+    Wall(uid="3BF9ZDQPT1", tag="W-B-S2-FR", start_node="N-B-S1F", end_node="N-B-S2F",
+         assembly="SAUNA_LINER_ON_GARDEN_FRAMED",
+         alignment=face("sheathing-ext"),
+         interior_room="RM-B-SAUNA",
+         base_elevation=inch(-102.1875), top=inch(88.75),
+         structural_role=StructuralRole.BEARING),
+    Wall(uid="Z4NRTGEDY5", tag="W-B-S3-FR", start_node="N-B-S2F", end_node="N-B-S3F",
+         assembly="CATLIN_GARDEN_FRAMED_2X6",
+         alignment=face("sheathing-ext"),
+         interior_room="RM-B-GYM",
+         base_elevation=inch(-102.1875), top=inch(88.75),
+         structural_role=StructuralRole.BEARING),
+    # The east 8'-0" of the old W-B-S3, split off at the excavation edge on 2026-08-28.
+    # Buried like W-B-S1, so it keeps the 7'-row bar — and it must join
+    # ``params/foundations._FROST_FORMED`` with it, or FT-B-S4 loses the insulated
+    # FOOTING_FPSF_20 form the garden floor's low adjacent grade is the reason for.
+    FoundationWall(uid="72HXFS8M11", tag="W-B-S4", start_node="N-B-S3",
                    end_node="N-B-SE", assembly="CATLIN_BASEMENT_8_GARDEN",
                    alignment=face("concrete-ext"),
+                   unbalanced_fill=ft(6, 4),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
                    vertical_reinforcement='#5 @ 41" o.c.'),
@@ -292,14 +402,38 @@ WALLS = [
     # 12" for the reasons set out in the WALLS header above, none of which is bearing width
     # any more.
     #
-    # This segment is the sauna's east boundary, carrying the liner stack directly on the
-    # concrete. Aligned on the concrete's far face so the bearing grid stays put and the
-    # liner grows into the sauna.
-    FoundationWall(uid="CBW111AAAA", tag="W-B-CS", start_node="N-B-C1",
-                   end_node="N-B-S2", assembly="SAUNA_LINER_ON_CONCRETE", unbalanced_fill=ft(0),
-                   alignment=face("concrete-ext", offset=inch(-6)),
-                   interior_room="RM-B-SAUNA",
-                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375)),
+    # **W-B-CS is framed since 2026-08-28** — the last of the four 12" segments this header
+    # defends, and the one it already admitted "carries wood on both faces and COULD go to
+    # 8"". It could go to nothing: FS-M-WEST and FS-M-EAST land on it and W-M-C1 stacks on
+    # it, which is a 2x6 bearing wall's job on every storey above. ~4.6 cy out, the same
+    # trade W-B-STR/W-B-STR3 made on 2026-08-24. Keeps its tag and uid, so the IFC
+    # GlobalId does not move (decision #16). FT-B-CS and its bedding need no edit, for the
+    # reason spelled out on W-B-STR3 below.
+    #
+    # **The alignment offset is a hand-written HALF of the structure thickness and it had
+    # to move in the same edit.** It was `face("concrete-ext", offset=inch(-6))` — six
+    # being half of twelve — which re-centred the pour on the x=18' grid; on 5 1/2" studs
+    # the same intent is `face("stud-ext", offset=inch(-2.75))`. Leaving the -6 would have
+    # slid the bearing line 3 1/4" west without changing a single node.
+    # `integrity.floor_bearing_grid` is the guard, and three FloorSystems name this wall.
+    # The liner still grows east into the sauna, and `interior_room` still says so
+    # explicitly rather than letting the component winding decide.
+    #
+    # **One thing this buys, and it is on the record rather than hidden:**
+    # `integrity.junction_fallback` reports N-B-C1 UNKNOWN now — W-B-CS is spf and
+    # W-B-CS2, collinear with it on the x=18' line, is still 12" concrete under the cast
+    # band, so the junction's THROUGH pair is two different bearing materials and the
+    # solver has no interface rule for that. It is a real detail and not a modelling
+    # artefact: a stud wall landing in line against the end of a 12" pour wants a bearing
+    # plate and dowels drawn, which is exactly what the UNKNOWN is asking for. The house
+    # answered the same finding at N-B-CW-E in 2026-08-25 by running ONE wall type down
+    # the whole line; that answer is not available here, because W-B-CS2 carries
+    # SL-M-DECK and stays a pour.
+    Wall(uid="CBW111AAAA", tag="W-B-CS", start_node="N-B-C1",
+         end_node="N-B-S2", assembly="SAUNA_LINER_INT_2X6_BRG", top=ft(8),
+         alignment=face("stud-ext", offset=inch(-2.75)),
+         interior_room="RM-B-SAUNA",
+         structural_role=StructuralRole.BEARING),
     FoundationWall(uid="CBW112AAAA", tag="W-B-CS2", start_node="N-B-C1",
                    end_node="N-B-C", assembly="FOUNDATION_WALL_12_INT", unbalanced_fill=ft(0),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375)),
@@ -442,8 +576,8 @@ WALLS = [
          alignment=face("stud-ext", offset=inch(-2.625)),
          interior_room="RM-B-FURNACE"),
     # Sauna partitions — SAUNA_2X4 carries the hot-side liner (T&G/furring/foil-faced
-    # polyiso) as part of the wall type, not a room finish override; the east wall (center
-    # concrete) takes it via SAUNA_LINER_ON_CONCRETE. Both are interior partitions, so
+    # polyiso) as part of the wall type, not a room finish override; the east wall (the
+    # x=18' bearing line) takes it via SAUNA_LINER_INT_2X6_BRG. Both are interior walls, so
     # `interior_room` is what names which side the liner lands on.
     Wall(uid="CBW117AAAA", tag="W-B-SA-W", start_node="N-B-S1",
          end_node="N-B-SA1", assembly="SAUNA_2X4", top=ft(7, 6),
@@ -554,8 +688,14 @@ OPENINGS = [
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-SA-W", type_ref="DT-INT-SWING24",
          position=from_node("N-B-S1", ft(10, 10.4375))),
     # Raise the exterior threshold above the basement floor to resist sunken-garden flooding.
-    Door(uid="CBD206AAAA", tag="D-B-PATIO", host="W-B-S3", type_ref="DT-EXT-FRENCH60",
-         position=from_node("N-B-S2", ft(1, 4)), sill_height=inch(7), flip_swing=True),
+    # Hosted on the framed wall since 2026-08-28, and `sill_height` went inch(7) -> inch(0)
+    # in the same edit — NOT because the threshold dropped, but because the datum did. A
+    # sill is measured from the host wall's own base, and W-B-S3-FR's base is the top of
+    # the 7 1/4" curb. The threshold is at the same absolute elevation it always was, a
+    # quarter inch higher: the door now sits ON the curb rather than 7" up a pour with a
+    # quarter inch of concrete still above it.
+    Door(uid="CBD206AAAA", tag="D-B-PATIO", host="W-B-S3-FR", type_ref="DT-EXT-FRENCH60",
+         position=from_node("N-B-S2F", ft(1, 4)), sill_height=inch(0), flip_swing=True),
     # WT-1424, down from WT-3660 (2026-07-30): a sauna wants a small window, less glass to
     # lose heat through. The 14" family's one appearance in a concrete wall, where the usual
     # 16" stud-module reason for that width doesn't apply — size is the point here. Retires
@@ -565,9 +705,22 @@ OPENINGS = [
     # (assemblies.py BASEMENT_BRICK_VENEER), and the window goes up with its reveal rather
     # than let the register band cut across the glass. Still well above the 18" bench top
     # (placeables.py).
-    Window(uid="CBX301AAAA", tag="WIN-B-SAUNA", host="W-B-S2",
-           type_ref="WT-1424-T", position=from_node("N-B-S1", ft(2, 6)),
-           sill_height=ft(3, 8)),
+    # Host and datum both moved 2026-08-28 with the framed walkout: W-B-S2-FR's base is
+    # the curb top, 7 1/4" above the slab this sill used to be measured from, so ft(3, 8)
+    # becomes inch(36.75). The glass does not move — the head stays where AO-B-BRICK-WIN's
+    # arched reveal in front of it expects it, and that reveal is datumed off W-B-BRICK's
+    # own base and needed no edit.
+    # It also moved 9" east, 2'-6" -> 3'-3" off the corner, and that is the framed wall
+    # asking rather than the design changing: a hole in a pour lands where you form it,
+    # while a 14" RO in a stud wall wants a BAY CENTRE, where the bay's own two studs carry
+    # the rough sill and head nailer and it needs no header, no jacks and no kings at all
+    # (preferences.toml's `max_window_ro_unbroken_in`). W-B-S2-FR lays out from layout line
+    # LL-W-A-S1 and reaches the module 6" along itself, so its bay centres are 14" + n x 16"
+    # and 3'-3" puts the 14" opening on the 46" one. `structural.window_framing_module`
+    # said so, at 7" off, the moment the wall stopped being concrete.
+    Window(uid="CBX301AAAA", tag="WIN-B-SAUNA", host="W-B-S2-FR",
+           type_ref="WT-1424-T", position=from_node("N-B-S1F", ft(3, 3)),
+           sill_height=inch(36.75)),
     # --- reveals through the brick veneer -------------------------------------------
     # WIN-B-SAUNA and D-B-PATIO stay on the concrete walls; these are RoughOpenings for the
     # holes the wythe in front of them needs, each with its own segmental brick arch — not a
@@ -576,8 +729,11 @@ OPENINGS = [
     # rise is ~1/7 of clear width, and ``height`` includes it, so the springline is
     # ``height - rise``. ``sill_height`` is re-datumed off W-B-BRICK's own base
     # (-8'-5", not -9'): the window's 3'-8" becomes 3'-1", the door's 7" threshold becomes 0.
+    # 3'-3" since 2026-08-28, following WIN-B-SAUNA onto its stud bay centre. The reveal
+    # and the window it reveals must stay concentric; only the offset moved, and the
+    # elevations did not (both sills still land at -65 7/16").
     RoughOpening(uid="CBO601AAAA", tag="AO-B-BRICK-WIN", host="W-B-BRICK",
-                 position=from_node("N-B-BRICK-W", ft(2, 6)),
+                 position=from_node("N-B-BRICK-W", ft(3, 3)),
                  width=inch(14), height=inch(20), sill_height=inch(37),
                  arch=Arch(rise=inch(2))),
     # Both reveals were taken down 6" at the head on 2026-08-21, on the eye rather than on a
@@ -615,9 +771,11 @@ ROOMS = [
          occupancy=Occupancy.BATHROOM, floor_finish="tile"),
     Room(uid="CBR402AAAA", tag="RM-B-WORKSHOP", seed=pt(ft(5), ft(8)),
          occupancy=Occupancy.UTILITY, floor_finish="sealed-concrete"),
-    # No wall_lining override: the liner is part of SAUNA_2X4 / SAUNA_LINER_ON_CONCRETE /
-    # SAUNA_LINER_ON_BASEMENT_8_GARDEN. WET as of 2026-08-18, once W-B-S2 got the liner
-    # variant and the vapour control became continuous on all four faces.
+    # No wall_lining override: the liner is part of SAUNA_2X4 / SAUNA_LINER_INT_2X6_BRG /
+    # SAUNA_LINER_ON_GARDEN_FRAMED / SAUNA_LINER_ON_GARDEN_CURB. WET as of 2026-08-18, once
+    # the south wall got the liner variant and the vapour control became continuous on all
+    # four faces; it stayed continuous through the 2026-08-28 framing of the east and south
+    # walls, which is why the curb under the south run carries the liner too.
     # `design_temperature_f` stays unset on purpose — it defaults to the 70 F setpoint, which
     # is what HumidityClass prescribes: a Glaser walk screens the daily mean, not the löyly
     # peak, and authoring 175 F would turn four passing rules into noise.

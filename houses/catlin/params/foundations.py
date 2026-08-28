@@ -93,6 +93,9 @@ _HOUSE_WALL_TAGS = (
     # Each keeps its own strip because each is still a wall on the same footing line — the
     # split is where a partition tees in, not where the pour stops.
     (20, "W-B-N4"), (21, "W-B-STR3"),
+    # 22 is the east 8'-0" of the old W-B-S3, split off at the excavation edge (x=28'-0")
+    # on 2026-08-28 so each half could author the backfill it actually retains.
+    (22, "W-B-S4"),
 )
 
 # The three south strips are formed in an insulated footing form, the rest are poured
@@ -114,7 +117,7 @@ _HOUSE_WALL_TAGS = (
 # ``Footing`` had no assembly field at all before that date — no material, no reinforcement —
 # so every footing in every house priced and scheduled as plain cast concrete out of a
 # hardcoded category row, and this detail was not expressible.
-_FROST_FORMED = {"W-B-S1", "W-B-S2", "W-B-S3"}
+_FROST_FORMED = {"W-B-S1", "W-B-S2", "W-B-S3", "W-B-S4"}
 
 HOUSE_FOOTINGS = [
     Footing(uid=f"CF{i:03d}AAAAA", tag=f"FT-{t[2:]}", under=t,

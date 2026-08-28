@@ -252,8 +252,13 @@ def test_catlin_basement_passes_and_the_free_garden_walls_stay_engineered(catlin
     # dropped: without the authored string the check still reports, but as a FAIL, and
     # `fails == ""` above would catch it — this catches the subtler regression where the
     # walls quietly go back to 12" instead.
-    for tag in ("CATLIN_BASEMENT_8", "CATLIN_BASEMENT_8_GARDEN",
-                "SAUNA_LINER_ON_BASEMENT_8_GARDEN"):
+    # SAUNA_LINER_ON_BASEMENT_8_GARDEN was the third until 2026-08-28. W-B-S2 authors
+    # `unbalanced_fill=ft(0)` now — it stands inside the sunken garden's court and retains
+    # nothing, which the derived proxy could not know — so the check skips it entirely at
+    # `fill <= 0` and it has no steel to report. That is the finding, not a gap: an
+    # assembly leaves this list by ceasing to retain earth, and W-B-S4 (the east 8'-0" of
+    # the old W-B-S3, split off at the excavation edge) is the segment that still does.
+    for tag in ("CATLIN_BASEMENT_8", "CATLIN_BASEMENT_8_GARDEN"):
         assert tag in passes, tag
     assert 'is reinforced #5 @ 41" o.c. against the #5 @ 41" o.c.' in passes
     assert "the 8' wall x 7' backfill row" in passes

@@ -68,8 +68,13 @@ def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
                    if any(ly.function == LayerFunction.FINISH.value
                           and ly.material_ref == "sauna-tg" for ly in w.layers)]
     # W-B-S2, the sauna's south face, joined the set on 2026-08-18 — a liner variant of the
-    # sunken-garden foundation wall, banded to the room's 7'-6" ceiling.
-    assert {w.tag for w in liner_walls} == {"W-B-SA-W", "W-B-SA-N", "W-B-CS", "W-B-S2"}
+    # sunken-garden foundation wall, banded to the room's 7'-6" ceiling. **It became two
+    # walls on 2026-08-28**: the south face is a framed wall (W-B-S2-FR) on a 7 1/4" curb
+    # (W-B-S2), and BOTH carry the liner, because stopping it at the curb top would leave a
+    # strip of bare concrete at the bottom of the hot side's vapour control. Four walls
+    # became five; the liner area did not gain a face, it gained a joint.
+    assert {w.tag for w in liner_walls} == {"W-B-SA-W", "W-B-SA-N", "W-B-CS",
+                                            "W-B-S2", "W-B-S2-FR"}
     gross = sum(_liner_net_ft2(catlin_model, w) for w in liner_walls)
     splash = sum(p.area_m2 for p in catlin_model.panelings
                  if p.replaces_wall_finish) * _M2_TO_FT2

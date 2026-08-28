@@ -549,9 +549,12 @@ def test_opening_and_ridge_conditions_scaffold_detail_slices(catlin_model):
     """
     keys = {d.key for d in derive_detail_slices(catlin_model)}
     assert "opening_perimeter:CATLIN_EXT_2X6" in keys
-    # The south wall's assembly: the basement's openings (D-B-PATIO, WIN-B-SAUNA) are all
-    # in the sunken-garden face. TR-CATLIN-BASEMENT-OPENING binds both with a `*` pattern.
-    assert "opening_perimeter:CATLIN_BASEMENT_8_GARDEN" in keys
+    # The south wall's openings (D-B-PATIO, WIN-B-SAUNA) are all in the sunken-garden face,
+    # and that face is FRAMED since 2026-08-28 — so the key moved with the assembly. The
+    # door's perimeter is bound by TR-CATLIN-GARDEN-FRAMED-OPENING (an innie opening in a
+    # 2x6 wall, `window-head-jamb-sill`); the sauna window's is still
+    # TR-CATLIN-SAUNA-OPENING, whose `SAUNA_*` pattern reaches the framed variant unchanged.
+    assert "opening_perimeter:CATLIN_GARDEN_FRAMED_2X6" in keys
     assert "roof_ridge:RF-HOUSE" in keys
 
 

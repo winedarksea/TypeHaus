@@ -103,36 +103,43 @@ MAX_NONREQUIRED_STEP_DOWN_IN = 7.75
 
 
 def test_the_patio_door_keeps_its_seven_inch_flood_threshold(catlin_model):
-    """`D-B-PATIO` stands 7" above the basement floor, and nothing else says so.
+    """`D-B-PATIO` stands 7 1/4" above the basement floor, and nothing else says so.
 
     The sunken garden is a walled well with a drywell at the bottom and one door out of the
-    basement into it. The 7" is flood resistance: a blocked outlet, a cloudburst, or a spring
-    thaw ponding against the house, and the threshold is the only thing between that and the
-    finished basement. It is one keyword in plan/storeys/basement.py — `sill_height=inch(7)`
-    — carried in a comment and asserted by nothing, so any edit that retyped the door or
-    rebuilt the wall could have dropped it to the floor silently.
+    basement into it. The threshold is flood resistance: a blocked outlet, a cloudburst, or a
+    spring thaw ponding against the house, and it is the only thing between that and the
+    finished basement. It used to be one keyword in plan/storeys/basement.py —
+    `sill_height=inch(7)` — carried in a comment and asserted by nothing, so any edit that
+    retyped the door or rebuilt the wall could have dropped it to the floor silently.
 
-    Derived from the resolved model rather than read off the source: the number that matters
-    is where the threshold LANDS, and the door's sill is measured from its host wall's base.
+    Derived from the resolved model rather than read off the source, and 2026-08-28 is
+    exactly why: `sill_height` went `inch(7)` -> `inch(0)` that day and the threshold went
+    UP. The door's host wall is the framed walkout now and its base is the top of a 7 1/4"
+    concrete curb — the threshold is built rather than authored, and it is a quarter inch
+    higher than the number it replaced because 7 1/4" is the actual width of a 2x8. Reading
+    the source would have called that a regression; reading the model calls it what it is.
     """
     door = next(o for o in catlin_model.openings if o.tag == PATIO_DOOR)
     wall = next(w for w in catlin_model.walls if w.tag == door.host_wall)
     floor = next(s for s in catlin_model.solids if s.tag == "SL-B-FLOOR")
 
     threshold = wall.z0_m + door.sill_m
-    assert threshold - floor.z1_m == pytest.approx(7.0 * INCH, abs=0.05 * INCH), (
+    assert threshold - floor.z1_m == pytest.approx(7.25 * INCH, abs=0.05 * INCH), (
         f"{PATIO_DOOR} stands {(threshold - floor.z1_m) / INCH:.2f}\" above SL-B-FLOOR; "
-        "the sunken garden's flood threshold is 7\" (plan/storeys/basement.py)"
+        "the sunken garden's flood threshold is 7 1/4\" (plan/storeys/basement.py)"
     )
 
 
 def test_the_flood_threshold_stays_under_one_riser_of_step_down(catlin_model):
-    """...and the 7" cannot grow, because R311.3.1 is 3/4" away.
+    """...and the threshold cannot grow, because R311.3.1 is half an inch away.
 
     `code.R311_3_exterior_landing` allows a non-required exterior door 7.75" — one riser —
-    down to its landing. The garden floor outside this door is the landing, so the flood
-    threshold IS that step. At 7" it passes with 3/4" to spare; at 8" it FAILS, and the
+    down to its landing. The garden floor outside this door is flush with the basement slab
+    and is the landing, so the flood threshold IS that step. At 7 1/4" — the 2026-08-28
+    curb, up from a 7" authored sill — it passes with 1/2" to spare; at 8" it FAILS, and the
     failure would read as a landing problem rather than as the threshold decision it is.
+    That half inch is the whole remaining budget, and it is why the curb is one board deep
+    and not two.
     This is the pin that makes raising the threshold a conscious trade rather than a
     surprise, and the reason the two live in one test file.
     """

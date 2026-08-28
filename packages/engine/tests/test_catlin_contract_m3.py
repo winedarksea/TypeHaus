@@ -1216,7 +1216,9 @@ def test_catlin_is_all_electric_with_no_gas_appliance(catlin_model):
 
 
 _PERIMETER_ASSEMBLIES = ("CATLIN_BASEMENT_12", "CATLIN_BASEMENT_8",
-                         "CATLIN_BASEMENT_8_GARDEN", "SAUNA_LINER_ON_BASEMENT_8_GARDEN")
+                         "CATLIN_BASEMENT_8_GARDEN", "CATLIN_GARDEN_CURB_6",
+                         "SAUNA_LINER_ON_GARDEN_CURB", "CATLIN_GARDEN_FRAMED_2X6",
+                         "SAUNA_LINER_ON_GARDEN_FRAMED")
 
 
 def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
@@ -1236,9 +1238,19 @@ def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
     """
     perimeter = [w for w in catlin_model.walls
                  if w.storey == "basement" and w.assembly in _PERIMETER_ASSEMBLIES]
-    assert len(perimeter) == 11  # same wall line, split at grid/tee nodes
-    garden = [w for w in perimeter if w.assembly.endswith("BASEMENT_8_GARDEN")]
-    assert len(garden) == 2 + 1  # W-B-S1/W-B-S3 bare + W-B-S2 on the liner variant
+    # **14 on 2026-08-28.** W-B-S3 split at the excavation edge into W-B-S3 + W-B-S4 so
+    # each half could author the backfill it actually retains; then W-B-S2 and W-B-S3
+    # became the 7 1/4" curbs under the framed walkout and took two new assemblies with
+    # them, and the framed walls on those curbs carry the identical outboard tail. The foam
+    # is still identical on every one and still 4.05" outboard of whatever is behind it,
+    # which is what this test is actually about.
+    assert len(perimeter) == 14  # same wall line, split at grid/tee/curb nodes
+    # Six south segments since 2026-08-28, in three pairs: two buried 8" pours either side
+    # of the excavation (W-B-S1, W-B-S4), the two 7 1/4" curbs inside it, and the two framed
+    # walls standing on those curbs. One of each pair carries the sauna's liner inboard.
+    south = [w for w in perimeter if w.tag.startswith("W-B-S")]
+    assert len(south) == 6, sorted(w.tag for w in south)
+    assert len([w for w in south if w.assembly.endswith("BASEMENT_8_GARDEN")]) == 2
     for wall in perimeter:
         xps = [l for l in wall.layers if l.name.startswith("xps")]
         assert len(xps) == 2
@@ -1251,22 +1263,37 @@ def test_only_the_deck_bearing_perimeter_stays_twelve_inches(catlin_model):
     else (2026-08-21). SL-M-DECK spans east-west onto the east wall and the centre line, so
     W-B-E1/E2 keep the 12" pour and the other eight segments are 8" — which IRC Table
     R404.1.2(8) allows at 45 psf/ft on the 10' x 7' row only with vertical steel, so each of
-    the eight must declare it or ``structural.foundation_unbalanced_fill`` FAILs."""
+    the eight must declare it or ``structural.foundation_unbalanced_fill`` FAILs.
+
+    **Three of the perimeter assemblies carry no pour at all since 2026-08-28** — the
+    sunken garden's framed walkout is a 2x6 wall on the same outboard tail — so the sweep
+    is over pours, not over the assembly set. And the two 7 1/4" curbs under that walkout
+    are 6": not a thinning, a plane. 6" of concrete is exactly stud-plus-sheathing, so the
+    curb's two faces land where the framed wall's do. They retain nothing and declare no
+    steel, which is the same reading that leaves every interior cross wall bare."""
     from typehaus.model.structure import FoundationWall
 
     perimeter = {w.tag: w for w in catlin_model.walls
                  if w.storey == "basement" and w.assembly in _PERIMETER_ASSEMBLIES}
-    thick = {tag for tag, w in perimeter.items()
+    pours = {tag: w for tag, w in perimeter.items()
+             if any(l.name == "concrete" for l in w.layers)}
+    assert set(perimeter) - set(pours) == {"W-B-S2-FR", "W-B-S3-FR"}
+    thick = {tag for tag, w in pours.items()
              if next(l for l in w.layers if l.name == "concrete").thickness_m
              == pytest.approx(inch(12.0).meters)}
     assert thick == {"W-B-E1", "W-B-E2"}
-    for tag, wall in perimeter.items():
+    curbs = {"W-B-S2", "W-B-S3"}
+    for tag, wall in pours.items():
+        concrete = next(l for l in wall.layers if l.name == "concrete")
         if tag in thick:
             continue
-        concrete = next(l for l in wall.layers if l.name == "concrete")
-        assert concrete.thickness_m == pytest.approx(inch(8.0).meters)
         source = next(w for w in catlin_model.plan.all_elements()
                       if isinstance(w, FoundationWall) and w.tag == tag)
+        if tag in curbs:
+            assert concrete.thickness_m == pytest.approx(inch(6.0).meters)
+            assert source.vertical_reinforcement is None, tag
+            continue
+        assert concrete.thickness_m == pytest.approx(inch(8.0).meters)
         assert source.vertical_reinforcement == '#5 @ 41" o.c.', tag
 
 
@@ -2005,6 +2032,13 @@ def test_each_facade_block_grid_is_one_grid_on_every_storey(catlin_model, wall_t
     assert gaps <= {16.0}, f"{wall_tag}: the module breaks at {sorted(gaps)}"
 
 
+#: Facade stations, in inches from the wall line's origin, where a framed run legitimately
+#: starts or stops partway along a facade and must plant an end stud off the module. One
+#: entry: the sunken garden's framed walkout, whose west end is the excavation edge at
+#: 8'-10" (its east end, 28'-0", lands on the module by luck and needs no allowance).
+_FRAMED_RUN_ENDS = {"W-M-S1": (106.0,)}
+
+
 @pytest.mark.parametrize("wall_tag", FACADE_WALLS)
 def test_no_facade_stud_stands_off_the_module_except_at_a_corner(catlin_model, wall_tag):
     """Studs stack up a facade, and the seam studs were the last thing stopping them.
@@ -2014,13 +2048,21 @@ def test_no_facade_stud_stands_off_the_module_except_at_a_corner(catlin_model, w
     it identically. Anywhere else an off-module stud is a wall segment that framed its own
     end at a tee. (King and jack studs are a different category and are not swept here: a
     jamb pack is deliberately off-module, sitting where its rough opening puts it.)
+
+    ``_FRAMED_RUN_ENDS`` is the second allowance, opened 2026-08-28. The basement's south
+    facade is not one wall: it is buried pour, then 19'-2" of 2x6 framing standing inside
+    the sunken garden on a curb, then buried pour again. The framed run has to put a stud at
+    each of its own ends, and its west end is x=8'-10" — the excavation edge, which is where
+    grade says it is and not where the module does. That is a real building corner in every
+    sense but the plan one, so it is named here rather than allowed by a tolerance.
     """
     by_storey = _facade_stations(catlin_model, wall_tag, "stud")
     corners = (min(min(v) for v in by_storey.values()),
                max(max(v) for v in by_storey.values()))
+    allowed = corners + _FRAMED_RUN_ENDS.get(wall_tag, ())
     for storey, stations in sorted(by_storey.items()):
         strays = [s for s in _off_module(stations)
-                  if min(abs(s - corners[0]), abs(s - corners[1])) > inch(6).inches]
+                  if min(abs(s - a) for a in allowed) > inch(6).inches]
         assert not strays, f"{wall_tag} on {storey}: studs off the facade grid at {strays}"
 
 
@@ -2140,6 +2182,13 @@ def test_upper_storey_studs_stand_over_studs(catlin_model):
                 orphans.append(f"{upper_tag}/{stud.child_key}")
 
     assert total >= 220, f"fixture regression: only {total} stacked studs found"
-    assert len(orphans) <= 81, (
+    # **89/246 on 2026-08-28, and the ratio did not move: 36.16% -> 36.18%.** Two more
+    # pours became lumber (W-B-CS, and the sunken garden's framed walkout), so W-M-S1 and
+    # W-M-S2 entered the population for the first time — a stud cannot stack on concrete,
+    # and until that day there was concrete under them. Their studs are on the facade's own
+    # grid, so most of them stack; the ones that do not are where the basement's framed run
+    # is shorter than the main storey's wall above it and there is simply nothing below.
+    # Both numbers re-pinned rather than one loosened, per the docstring.
+    assert len(orphans) <= 89, (
         f"{len(orphans)}/{total} upper-storey studs stand over no stud below "
-        f"(was 81/224); first offenders {orphans[:12]}")
+        f"(was 89/246); first offenders {orphans[:12]}")

@@ -42,6 +42,12 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # widened `GARAGE_ICF_6_BRICKLEDGE` stem segments, split off W-GF-S2/W-GF-N) are two
     # more — six tags, not eight, because W-GF-E1/E2 already existed (only their assembly
     # changed, from `GARAGE_ICF_6` to the brick-ledge form) and add no new tag.
+    # **Still 40 on 2026-08-28, and one wall in it changed identity.** W-B-CS was framed —
+    # the last 12" pour on the x=18' line that carried wood on both faces — and left this
+    # table for [framing]; W-B-S3 split at the excavation edge into W-B-S3 + W-B-S4 so each
+    # half could author its own backfill, which put one back. W-B-S2 and W-B-S3 are 7 1/4"
+    # curbs under a framed walkout rather than full-height walls, but a curb is still a
+    # pour and still counted here — the yardage moved, the tag count did not.
     assert len({tag for row in rows for tag in row["tags"]}) == 40
     # `off-white-brick` since 2026-08-26, not `black-brick`: the garage wainscot is the
     # Columbia colourway of the same Glen-Gery Roman Maximus unit, and it wore Black for
@@ -55,7 +61,10 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # the flat bearing seat took every basement wall from 9'-4" to exactly 8'-0", which is
     # ~14% of the tallest pour in the house. Then ~9.8 cy more on 2026-08-24, when W-B-STR
     # and W-B-STR3 were framed — 89.0 cy now.
-    assert sum(float(row["volume_cubic_yards"]) for row in rows) > 85
+    # ~83.9 cy since 2026-08-28: ~4.1 cy of W-B-CS and ~2.9 cy of the sunken-garden
+    # walkout out, ~0.2 cy of curb back. Still bigger than the entire priced concrete order
+    # the estimate used to know about, which is what this floor is for.
+    assert sum(float(row["volume_cubic_yards"]) for row in rows) > 80
     assert all(float(row["net_area_sqft"]) > 0 for row in rows)
 
 
@@ -130,8 +139,11 @@ def test_the_garden_walls_are_distinguishable_from_house_concrete(catlin_model) 
                | set(by_assembly["CATLIN_BASEMENT_8_GARDEN"]["tags"]))
     # W-B-N4 is the west 6'-0" of the old W-B-N3, split off on 2026-08-23 for the ESS
     # closet's west partition. Same assembly, same thickness, its own strip footing.
+    # W-B-S4 is the east 8'-0" of the old W-B-S3, split off on 2026-08-28 at the excavation
+    # edge — and it, not W-B-S3, is the segment that is still a full-height 8" pour: the
+    # west half stands inside the sunken garden and is a 7 1/4" curb under a framed wall.
     assert thinned == {"W-B-N1", "W-B-N2", "W-B-N3", "W-B-N4", "W-B-W1", "W-B-W2",
-                       "W-B-S1", "W-B-S3"}
+                       "W-B-S1", "W-B-S4"}
 
 
 def test_openings_are_deducted_from_area_and_volume(catlin_model) -> None:

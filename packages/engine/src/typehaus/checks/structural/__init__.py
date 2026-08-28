@@ -12,4 +12,5 @@ from typehaus.checks.structural import (
     stairs,  # noqa: F401 - registers checks
     truss_wall,  # noqa: F401 - registers checks
     uplift_path,  # noqa: F401 - registers checks
+    window_module,  # noqa: F401 - registers checks
 )

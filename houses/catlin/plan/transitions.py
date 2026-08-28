@@ -47,7 +47,10 @@ TRANSITIONS = (
                    # and W-B-STR3 are framed now, so W-M-STRW/W-M-STRW2 are framed-on-framed
                    # and derive no wall_foundation condition at all — see the rim band below,
                    # which is where those two stacks moved.
-                   "wall_foundation:CATLIN_INT_2X6_BRG|SAUNA_LINER_ON_CONCRETE",
+                   # ...|SAUNA_LINER_ON_CONCRETE was here until 2026-08-28. W-B-CS is
+                   # framed now, so W-M-C1 is framed-on-framed and derives no
+                   # wall_foundation condition at all — it moved to the rim band below,
+                   # exactly as the stair-wall stack did on 2026-08-24.
                )),
     # Same curation as the foundation above: the rim band is a sheet because it is where
     # the air barrier and the insulation cross a floor line. An interior partition's rim
@@ -64,7 +67,7 @@ TRANSITIONS = (
                    "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|CATLIN_STAIRWALL_INT_2X6_BRG",
                    "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX",
                    "storey_stack:rim:CATLIN_INT_2X6_BRG",
-                   "storey_stack:rim:CATLIN_INT_2X6_BRG|SAUNA_LINER_ON_CONCRETE",
+                   "storey_stack:rim:CATLIN_INT_2X6_BRG|SAUNA_LINER_INT_2X6_BRG",
                    "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|INT_2X6_STAGGERED_PLUMBING",
                    "storey_stack:rim:INT_2X4_PARTITION",
                    "storey_stack:rim:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",
@@ -121,6 +124,19 @@ TRANSITIONS = (
                suppress=True,
                # (single literal: the editable dialect forbids concatenated strings)
                suppress_reason="the veneer reveal is an open segmental arch in a freestanding brick wythe standing 1\" off the basement wall — no buck, no frame, no flashing lands at its perimeter, and the opening that does get all three is the window/door in the concrete wall behind it, detailed by TR-CATLIN-BASEMENT-OPENING"),
+    # The sunken garden's framed walkout (2026-08-28). D-B-PATIO used to be a hole formed
+    # in an 8" pour and TR-CATLIN-BASEMENT-OPENING drew it; it is an ordinary innie opening
+    # in a 2x6 wall now — buck, pan, jamb flashing — standing on the 7 1/4" concrete curb.
+    # `window-head-jamb-sill` rather than the `outie-window-truss` the above-grade
+    # CATLIN_EXT_* walls take: there is no truss plane down here, the unit sits in the stud
+    # plane, and the wall's water plane is the damp-proofing over the sheathing.
+    # SAUNA_LINER_ON_GARDEN_FRAMED needs nothing here — WIN-B-SAUNA's perimeter is the
+    # vapour-control return TR-CATLIN-SAUNA-OPENING already draws, and its `SAUNA_*`
+    # pattern reaches the framed variant unchanged.
+    Transition(uid="6997Z5EY26", tag="TR-CATLIN-GARDEN-FRAMED-OPENING",
+               condition_pattern="opening_perimeter:CATLIN_GARDEN_FRAMED_2X6",
+               notes="notes/basement_to_framed_wall_detail.md",
+               overlay="window-head-jamb-sill", continuity=AIR_WATER_THERMAL),
     Transition(uid="CATR009AAAA", tag="TR-CATLIN-GARAGE-OPENING",
                condition_pattern="opening_perimeter:GARAGE_WALL_2X6",
                notes="notes/garage_wall_detail_side.md", overlay="garage-opening",

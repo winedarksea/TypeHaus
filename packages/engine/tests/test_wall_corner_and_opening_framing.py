@@ -410,22 +410,25 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     small = [o for o in catlin_resolved.openings
              if not o.is_door and o.width_m <= inch(14).meters + 1e-9]
     # This is a stud-framing rule, so it only applies to windows in framed walls. A 14" RO
-    # in a poured wall has no bay to fit between and no stud to avoid breaking: WIN-B-SAUNA
-    # took WT-1424 on 2026-07-30 for its *size*, and its host W-B-S2 is 12" concrete.
-    # The split is on *stud-bearing* members, not on having any member at all: since
-    # 2026-08-18 W-B-S2 carries the sauna liner's horizontal 1x4 furring strapping, which is
-    # fastened to the pour and frames nothing — a wall can have members and still have no bay
-    # to fit a window between. Split rather than filtered so a framed wall can never quietly
-    # drop out of the checks below by losing its framing.
+    # in a poured wall has no bay to fit between and no stud to avoid breaking.
+    # The split is on *stud-bearing* members, not on having any member at all: the sauna
+    # liner's horizontal 1x4 furring strapping frames nothing — a wall can have members and
+    # still have no bay to fit a window between. Split rather than filtered so a framed wall
+    # can never quietly drop out of the checks below by losing its framing.
     def _is_framed(wall):
         return any(member.category in _VERTICAL_CATEGORIES for member in wall.members)
 
     concrete = [o for o in small if not _is_framed(walls[o.host_wall])]
     framed = [o for o in small if _is_framed(walls[o.host_wall])]
-    # AO-B-BRICK-WIN joined it on 2026-08-03: the reveal through the glazed-brick veneer in
-    # front of WIN-B-SAUNA. Same 14", same reason — a single brick wythe has no members
-    # either, so there is no bay to fit between and no stud to break.
-    assert [o.tag for o in concrete] == ["WIN-B-SAUNA", "AO-B-BRICK-WIN"], \
+    # AO-B-BRICK-WIN, the reveal through the glazed-brick veneer, is the only one left:
+    # a single brick wythe has no members, so there is no bay to fit between and no stud to
+    # break. **WIN-B-SAUNA crossed over on 2026-08-28** — it took WT-1424 in 2026-07-30 for
+    # its *size* while its host was concrete, and its host is a 2x6 stud wall now. That is
+    # not a loosening: it means the window is held to every per-window rule below, and
+    # putting it there is what moved it 9" onto its bay centre (2'-6" -> 3'-3" off the
+    # corner). A 14" RO chosen for size and a 14" RO chosen for the module are the same
+    # window; only now the module has an opinion about where it sits.
+    assert [o.tag for o in concrete] == ["AO-B-BRICK-WIN"], \
         [o.tag for o in concrete]
     # The original 5 became 15 as the 14" family took over the places where a bigger unit
     # never fit, then 13 when the 2026-08-01 gable pass retired the south gable's corner
@@ -456,7 +459,8 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     # is already in this list for choosing that station, and with WIN-A-E-N above it.
     # A three-storey column is available to this family only on a bay centre, which is why
     # BED3 had to become a 14" unit to join one.
-    assert len(framed) == 18, [o.tag for o in framed]
+    # 19 on 2026-08-28: WIN-B-SAUNA, per the note above.
+    assert len(framed) == 19, [o.tag for o in framed]
     for opening in framed:
         wall = walls[opening.host_wall]
         start, end = _framing_axis(wall)

@@ -47,7 +47,10 @@ def test_foundation_plan_draws_basement_walls_and_slab(catlin_model):
     # real `FoundationWall` with an absolute elevation, so `foundation_walls()` picks it up
     # by `is_foundation` regardless of storey and it legitimately belongs on S-100 too.
     wall_tags = {n.tag for n in layers["S-FNDN"] if isinstance(n, Polyline)}
-    assert {"W-B-S1", "W-B-CS", "W-GF-N"} <= wall_tags
+    # W-B-CS was here until 2026-08-28, when it was framed — it is not a FoundationWall any
+    # more and has no business on S-100's foundation layer. W-B-S2 replaces it: the sunken
+    # garden's sauna curb, a real 7 1/4" pour on FT-B-S2.
+    assert {"W-B-S1", "W-B-S2", "W-GF-N"} <= wall_tags
     assert all(catlin_model.wall(tag).storey in ("basement", "garage") for tag in wall_tags)
 
 

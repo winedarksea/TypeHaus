@@ -243,7 +243,7 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
         opening_framing_members.extend(
             frame_opening(rw, d, p0, opening, frame_member, stud_z0, top_at,
                           opening_index, module_spacing, tuple(stud_stations),
-                          module_phase)
+                          module_phase, cripple_spacing=spacing)
         )
 
     # Opening framing is computed first because it is structural and takes precedence over

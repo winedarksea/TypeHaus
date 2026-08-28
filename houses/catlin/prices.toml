@@ -1695,18 +1695,19 @@
 # divided by the wall's own thickness, because that is how walls are actually quoted:
 #   poured 12" wall   $90-280/LF of a ~9' wall = 0.333 cy/LF -> $270-840/cy. Formwork, not
 #                     concrete, is the cost, which is why this is 2x the [concrete] footing
-#                     rate. CATLIN_BASEMENT_12, FOUNDATION_WALL_12_INT, SAUNA_LINER_ON_CONCRETE
-#                     (the concrete backing only — its sauna-tg liner bills in
-#                     [envelope_layers]) and SUNKEN_GARDEN_WALL sit on this basis.
+#                     rate. CATLIN_BASEMENT_12, FOUNDATION_WALL_12_INT and
+#                     SUNKEN_GARDEN_WALL sit on this basis. SAUNA_LINER_ON_CONCRETE did
+#                     too until 2026-08-28, when W-B-CS was framed and the row retired.
 #   poured 8" wall    $110-180/LF of a 9'-0" wall is the market's OWN quote (the 12" row above
 #                     is the extrapolation, not this one). The wall is **8'-0"** since the
 #                     2026-08-23 flat-bearing-seat rework, not the 9'-4" it was, so the quote
 #                     scales DOWN: $98-160/LF over 0.1975 cy/LF -> $495-810/cy. The $/cy is
 #                     unchanged, which is the point of quoting per cubic yard — the wall lost
 #                     15% of its height and 15% of its money, and the rate did not move.
-#                     CATLIN_BASEMENT_8, CATLIN_BASEMENT_8_GARDEN
-#                     and SAUNA_LINER_ON_BASEMENT_8_GARDEN sit on this basis. Never price
-#                     these off the 12" row — see the block comment on the rows themselves.
+#                     CATLIN_BASEMENT_8 and CATLIN_BASEMENT_8_GARDEN sit on this basis
+#                     (SAUNA_LINER_ON_BASEMENT_8_GARDEN did too, until 2026-08-28, when
+#                     W-B-S2 became a curb). Never price these off the 12" row — see the
+#                     block comment on the rows themselves.
 #   8" ICF            $12-25/SF of face installed; 1 SF of 8" wall = 0.0247 cy -> $486-1012/cy.
 #   16" arch          curved formwork, roughly double a straight wall of the same yardage.
 #   block retaining   $20-55/SF of face; 12" thick = 0.037 cy/SF -> $540-1485/cy.
@@ -1801,7 +1802,9 @@
 # to its parent above, because this table prices PLACED CONCRETE by the yard and the concrete
 # is the same concrete — the liner it gained is basswood, furring and foil-polyiso, and all
 # three are already bought by the square foot in [envelope_layers].
-"SAUNA_LINER_ON_BASEMENT_8_GARDEN" = { low = 495, high = 810 }
+# "SAUNA_LINER_ON_BASEMENT_8_GARDEN" = { low = 495, high = 810 } stood here for 1.8 cy.
+# RETIRED 2026-08-28 with the assembly: W-B-S2 is a 7 1/4" curb under a framed wall now and
+# bills on "SAUNA_LINER_ON_GARDEN_CURB" above.
 # Interior bearing walls carry a 10-20% premium over the perimeter: both faces need forming
 # AND stripping in a confined excavation, there is no backfill to brace against, pump and
 # crane access is tighter, and a face that will be visible often gets rubbed or patched.
@@ -1876,7 +1879,29 @@
 # $12-20/SF of face and the geogrid and drainage stone behind them $3-6/SF, both pre-tax
 # yard prices. There is no ready-mix in this row at all — see the [basis_notes] warning.
 "RETAINING_BLOCK_12" = { material = { low = 15, high = 26 }, labour = { low = 15, high = 34 }, unit = "SF" }  # 245.0 SF of face
-"SAUNA_LINER_ON_CONCRETE" = { low = 420, high = 700 }  # 4.61 CY
+# THE TWO SUNKEN-GARDEN CURBS (2026-08-28), and they are the most expensive concrete in
+# the house per cubic yard by a wide margin — correctly, because there is almost no
+# concrete in them. W-B-S2 and W-B-S3 are 7 1/4" x 6" curbs under the framed walkout, about
+# 0.013 cy per LF, so a yard of curb is ~74 LF of two-sided form work, dowelling into the
+# existing footing and a screeded top, and the ready-mix is a rounding error inside it.
+#
+# Struck per LF and converted, which is how a curb is actually quoted:
+#   forming both faces of a low curb on an existing footing   $9 - 18/LF
+#   dowels/keyway + placing, screeding and stripping          $3 -  7/LF
+#   ready-mix at 0.013 cy/LF, $180-260/cy delivered           $2 -  3/LF
+#   ---------------------------------------------------------------------
+#   $14 - 28/LF over 0.0134 cy/LF                       = $1,045 - 2,090/cy
+# Rounded to $1,000-2,000. DO NOT read this row as a wall rate or escalate it against one:
+# it is the same trade priced per foot of edge rather than per yard of volume, and the $/cy
+# is only high because the denominator is small. ~19'-2" of it in total.
+"CATLIN_GARDEN_CURB_6" = { low = 1000, high = 2000 }
+"SAUNA_LINER_ON_GARDEN_CURB" = { low = 1000, high = 2000 }
+# "SAUNA_LINER_ON_CONCRETE" = { low = 420, high = 700 } stood here for 4.1 cy. RETIRED
+# 2026-08-28 with the assembly: W-B-CS is a 2x6 bearing stud wall now (plan/assemblies.py
+# SAUNA_LINER_INT_2X6_BRG), so there is no pour left on it to price. It needs no
+# replacement row — takeoff/wall_structure.py skips framed structure layers, so the wall
+# bills through [framing] "2x6" plus its faces in [envelope_layers]. Worth $1,722-2,870 of
+# ready-mix out against ~$255-400 of studs and plates back.
 # 27 SF of face per cy, so $500-900/cy is $18.52-33.33/SF of ONE face. Market for a poured
 # freestanding site wall is $15-35/SF of face, and this one has two exposed architectural
 # faces, its own footing, and site-access constraints. Third-largest wall line in the house.
@@ -2703,11 +2728,15 @@
 # of the framed-wall runs and the floor systems' bearing runs on the same pour
 # (resolve/construction_sills.py), because the mudsill is one board carrying both the studs
 # and the joists. Argument (1) covers the framed part and only the framed part: on the ~10 LF
-# where a floor bears and no wall stacks over it — W-B-CN's north 4.05 LF, W-B-CS's 0.83 LF
-# and the like — [framing] has bought no plate, so those feet are being priced at the delta
+# where a floor bears and no wall stacks over it — W-B-CN's north 4.05 LF and the like —
+# [framing] has bought no plate, so those feet are being priced at the delta
 # when they want the full assembly. That is roughly $13-25 understated on a $1,100-2,300 row.
 # It is recorded rather than fudged: the clean fix is for the takeoff to split the return by
 # whether a framed wall stands on it, which is a schema question and not a rate.
+# The gap SHRANK on 2026-08-28: W-B-CS's 0.83 LF was named here too, and framing that wall
+# put a stud wall over its own footing run, so those feet are now covered by argument (1)
+# like every other framed run. The remaining understatement is W-B-CN's north 4.05 LF and
+# the like.
 "pt-sill-plate" = { material = { low = 0.92, high = 1.83 }, labour = { low = 2, high = 4 } }  # 370.0 LF — the PT/anchor DELTA only, sealer moved to [sill_gaskets] (see the notes above)
 
 # resilient-channel, 522.2 LF. The 2026-08-18 guess of $0.45-0.90/LF material is CONFIRMED and

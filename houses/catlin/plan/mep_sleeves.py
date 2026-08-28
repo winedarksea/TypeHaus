@@ -92,8 +92,8 @@ SLAB_STUBS = [
 # 2026-08-23); positions along y=18' keep >= 5" between neighbours so the 4"-tolerance
 # matcher stays unambiguous.
 #
-# **Three of them rose 2 9/16" on 2026-08-23** — SP-B-CS2-KITCH, SP-B-CS-COND and
-# SP-B-SEWER-EXIT, the three the drains actually land in. Nothing about the drainage moved:
+# **Three of them rose 2 9/16" on 2026-08-23** — SP-B-CS2-KITCH, SP-B-CS-COND (retired
+# 2026-08-28 when W-B-CS was framed) and SP-B-SEWER-EXIT, the three the drains land in. Nothing about the drainage moved:
 # every ``PipeRun.elevations`` in this house is basement-storey-relative, the basement floor
 # came up 2 9/16" to meet the flat bearing seat, and a drain laid to a fall off that floor
 # came up with it. These sleeves are the only absolute numbers in the drainage path, so they
@@ -104,7 +104,8 @@ SLAB_STUBS = [
 # and steel-stud partitions since the basement-ceiling overhaul (the deck no longer spans
 # between them), and a framed wall takes a bored hole on the day, not a sleeve set before a
 # pour. What is left crosses concrete that is still concrete: the x=18' bearing line
-# (W-B-CS/W-B-CS2/W-B-CN), the perimeter, and the footings.
+# (W-B-CS2/W-B-CN — W-B-CS joined the framed list on 2026-08-28), the perimeter, and the
+# footings.
 WALL_SLEEVES = [
     # W-B-CS2 (x=18', y 13'-10"..18') — the kitchen drain's crossing of the centre line,
     # up at the ceiling well above D-B-GYM's 6'-8" head.
@@ -120,16 +121,11 @@ WALL_SLEEVES = [
                       position=pt(ft(18), ft(15, 6)), pipe_diameter=inch(1),
                       sleeve_diameter=inch(2), axis="horizontal",
                       purpose=Service.WATER_HOT, center_elevation=ft(-1.3033)),
-    # W-B-CS (x=18', y 0..13'-10") — condensate collector's two crossings. Re-levelled
-    # 2026-07-30 with PR-B-COND's new termination: same hole, 3/8" lower.
-    SleevePenetration(uid="CBPW16AAAA", tag="SP-B-CS-COND", host_ref="W-B-CS",
-                      position=pt(ft(18), ft(9)), pipe_diameter=inch(0.75),
-                      sleeve_diameter=inch(1.5), axis="horizontal",
-                      center_elevation=inch(-22.8036)),
-    SleevePenetration(uid="CBPW17AAAA", tag="SP-B-CS-COND2", host_ref="W-B-CS",
-                      position=pt(ft(18), ft(1, 5.3)), pipe_diameter=inch(0.75),
-                      sleeve_diameter=inch(1.5), axis="horizontal",
-                      center_elevation=ft(-1.3203)),
+    # SP-B-CS-COND and SP-B-CS-COND2 were here — the condensate collector's two crossings
+    # of W-B-CS at (18', 9') and (18', 1'-5.3"). They went on 2026-08-28 for exactly the
+    # reason the eighteen above them went: W-B-CS is a 2x6 stud wall now, and a framed wall
+    # takes a bored hole on the day, not a sleeve set before a pour. PR-B-COND's route is
+    # unchanged; only the hole's provenance is.
     # Perimeter exits.
     # Building drain leaves *under* FT-B-S1, not through W-B-S1 (2026-07-30): the walls stop
     # at -9'-4" (the slab top), below the sewer connection, so this is an under-footing

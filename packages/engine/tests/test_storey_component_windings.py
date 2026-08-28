@@ -112,7 +112,15 @@ def test_catlin_basement_structures_resolve_independently(catlin_model) -> None:
     # The house basement, the garage foundation, the retaining garden, the sunken garden —
     # and, since 2026-08-03, the glazed-brick veneer over the exposed south wall, which is a
     # two-node open run standing off the house and so traces as its own component.
-    assert len(windings.sign_by_component_key) == 5
+    #
+    # **Six since 2026-08-28**: the sunken garden's framed walkout (W-B-S2-FR/W-B-S3-FR)
+    # stands ON the south wall's two curbs, and two wall edges between one pair of nodes is
+    # a junction with no answer — the solver said so with eight `integrity.junction_polygon`
+    # ERRORs. So the framed run has its own nodes at the same three x stations with
+    # `open_end` at each end, the same device W-B-BRICK uses, and traces as its own
+    # component keyed on N-B-S1F. Like the veneer it winds at +1 rather than the
+    # perimeter's -1, which is why both framed walls author `interior_room` explicitly.
+    assert len(windings.sign_by_component_key) == 6
     basement_walls = [e for e in catlin_model.plan.storey_elements("basement")
                       if e.element_kind in ("Wall", "FoundationWall")]
     sunken_garden = next(w for w in basement_walls if w.start_node.startswith("N-SG-"))

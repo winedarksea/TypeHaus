@@ -37,6 +37,20 @@ class Wall(Element):
     # silently invert a flip, and does not touch this.
     interior_room: str | None = None  # None => follow the storey's outward sign
     structural_role: StructuralRole = StructuralRole.UNKNOWN
+    # Where the wall's base sits, as an absolute project elevation. ``None`` — every wall
+    # written before 2026-08-28 — means the storey datum, which is what a framed wall
+    # standing on the floor does. It is authored where a wall stands on something *within*
+    # its own storey: a framed wall on a concrete curb, where the studs start a curb's
+    # height above the slab and are that much shorter. ``FoundationWall`` has carried
+    # ``bottom_elevation`` for the walkout condition since day one and this is the same
+    # idea for the framed case — deliberately a separate field, because a FoundationWall's
+    # pair is bottom+top absolute while a framed wall keeps stating its height with ``top``
+    # relative to its own base.
+    #
+    # Everything downstream follows for free: ``ResolvedWall.z0_m`` is what the framing
+    # solver measures plates and studs from, what ``base_ref_z_m`` (and so every opening
+    # sill) is datumed on, and what ``Footing.under`` reads for its own top.
+    base_elevation: Length | None = None
     # Vertical stacking (#43).
     vertical_datum: FaceRef | None = None  # None => storey default
     stacks_on: str | None = None  # tiebreaker: tag of the wall below

@@ -114,33 +114,55 @@ def test_the_bearing_grid_holds_every_joist_cut_over_its_own_wall(
 
 def test_an_alignment_offset_that_stops_matching_the_thickness_is_caught(
         catlin_plan, catlin_model):
-    """W-B-CS's ``face("concrete-ext", offset=inch(-6))`` is a hand-written HALF of a 12"
-    pour. Thin the wall and leave the number and the concrete slides off the x=18' grid
-    while the joists keep stopping on it — the silent failure the check is for."""
-    # -11" against a 12" pour: the concrete then runs 17'-11"..18'-11" and the joists that
-    # stop on x=18' have 1" of it on the near side, under the 1 1/2" the check wants. (-6",
-    # the authored number, is a genuine half of 12". Even at 8" it would still leave 2" and
-    # pass — which is the honest answer: the rule is bearing, not tidiness.)
+    """W-B-CS's alignment offset is a hand-written HALF of its structure thickness. Change
+    the structure and leave the number and the bearing layer slides off the x=18' grid while
+    the joists keep stopping on it — the silent failure the check is for.
+
+    It read ``face("concrete-ext", offset=inch(-6))`` against a 12" pour until 2026-08-28,
+    when the wall was framed and it became ``face("stud-ext", offset=inch(-2.75))`` against
+    5 1/2" of stud. The trap did not go away with the concrete; it followed the wall, which
+    is why this test did too."""
+    # -5" against 5 1/2" of stud: the studs then run 17'-9 1/4"..18'-2 3/4" shifted 2 1/4"
+    # west, so the joists that stop on x=18' have well under the 1 1/2" the check wants on
+    # the near side. (-2.75", the authored number, is a genuine half of 5.5". The rule is
+    # bearing, not tidiness — a small error still passes, and should.)
     from typehaus.model.refs import face
     from typehaus.resolve import resolve
 
-    plan = _nudged(catlin_plan, "W-B-CS", alignment=face("concrete-ext", offset=inch(-11)))
+    plan = _nudged(catlin_plan, "W-B-CS", alignment=face("stud-ext", offset=inch(-5)))
     model, _findings = resolve(plan)
     fails = _results(floor_bearing_grid(_context(plan, model)), Result.FAIL)
-    assert fails, "an 8\" pour under a -6\" offset is 2\" off the grid and must be caught"
+    assert fails, "a 5 1/2\" stud under a -5\" offset is off the grid and must be caught"
     assert any("W-B-CS" in f.element_tags for f in fails)
 
 
 def test_the_seat_is_the_number_the_basement_walls_are_authored_to(catlin_model):
     """``plan/storeys/basement.py`` is editable-dialect and cannot import the arithmetic, so
     it repeats -13 7/16" and -9'-1 7/16" as literals. This is the tie between the copies."""
+    # W-B-S2 and W-B-S3 are the 7 1/4" curbs under the framed walkout since 2026-08-28.
+    # They stand on the same slab and the same footings as every other pour here, but they
+    # stop at -102 3/16" by design and have nothing to say about the seat — the framed
+    # walls on them do, and they reach it. Excluded by name rather than by height so a wall
+    # cannot quietly leave this assertion by getting shorter.
+    _CURBS = {"W-B-S2", "W-B-S3"}
     walls = [w for w in catlin_model.walls
-             if w.tag.startswith("W-B-") and w.is_foundation and w.tag != "W-B-BRICK"]
+             if w.tag.startswith("W-B-") and w.is_foundation
+             and w.tag != "W-B-BRICK" and w.tag not in _CURBS]
     # 15 since 2026-08-24: W-B-STR and W-B-STR3 are framed 2x6 bearing walls now, not
     # FoundationWalls, so they are no longer pours authored to the seat. What they stand
     # on did not move — their own z0 is still the basement floor and their footings are
-    # unchanged — but they have nothing to say about the pour's top.
-    assert len(walls) == 15
+    # unchanged — but they have nothing to say about the pour's top. **14 on 2026-08-28**:
+    # W-B-CS was framed the same way, and W-B-S3 split into W-B-S3 + W-B-S4 at the
+    # excavation edge, of which only W-B-S4 is a full-height pour.
+    assert len(walls) == 13
+    # The two curbs, separately: same base, same 7 1/4" of pour, top on the framed walls'
+    # own base so the chain footing -> curb -> plate is continuous.
+    for tag in sorted(_CURBS):
+        curb = catlin_model.wall(tag)
+        assert curb.z0_m / M_PER_IN == pytest.approx(-109.4375, abs=1e-6), tag
+        assert curb.z1_m / M_PER_IN == pytest.approx(-102.1875, abs=1e-6), tag
+        framed = catlin_model.wall(f"{tag}-FR")
+        assert framed.z0_m == pytest.approx(curb.z1_m), tag
     for wall in walls:
         assert wall.z1_m / M_PER_IN == pytest.approx(-13.4375, abs=1e-6), wall.tag
         assert wall.z0_m / M_PER_IN == pytest.approx(-109.4375, abs=1e-6), wall.tag
