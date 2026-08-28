@@ -12,8 +12,12 @@ import {
   type PlanCenter,
 } from "../planGeometry";
 import { makeSurfaceMesh, NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
+import { DEFAULT_EARTH_OPACITY } from "../../state/vocabulary";
 
-export const EARTH_PLANE_OPACITY = 0.28;
+/** The default translucency of the site sheet (→ state/vocabulary DEFAULT_EARTH_OPACITY, which
+ * owns the number so the store can default to it without importing three). The Views panel can
+ * drive it anywhere from here to fully opaque (→ `applyEarthOpacity`). */
+export const EARTH_PLANE_OPACITY = DEFAULT_EARTH_OPACITY;
 export const EARTH_PLANE_THICKNESS_M = 0.01;
 export const EARTH_FALLBACK_HALF_SIZE_M = 50;
 
@@ -46,7 +50,10 @@ export function earthVoids(model: Model): [number, number][][] {
     .map((ring) => ring.map(([x, y]) => [x, y] as [number, number]));
 }
 
-export function buildEarth(parent: THREE.Group, model: Model, center: PlanCenter, mode: "nordic" | "schematic") {
+export function buildEarth(
+  parent: THREE.Group, model: Model, center: PlanCenter, mode: "nordic" | "schematic",
+  opacity: number = EARTH_PLANE_OPACITY,
+) {
   const outline = earthOutline(model, center);
   const grade = earthElevation(model);
   const geometry = createPlanPrismGeometry(
@@ -55,13 +62,31 @@ export function buildEarth(parent: THREE.Group, model: Model, center: PlanCenter
   );
   if (!geometry) return;
   const material = standardMaterial(0x806040, mode, {
-    transparent: true,
-    opacity: EARTH_PLANE_OPACITY,
-    depthWrite: false,
     side: THREE.DoubleSide,
     roughness: mode === "nordic" ? NORDIC_ROUGHNESS.ground : 1,
   });
-  parent.add(new THREE.Mesh(geometry, material));
+  applyEarthOpacity(material, opacity);
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.userData.earthSheet = true;
+  parent.add(mesh);
+}
+
+/**
+ * Point the sheet's material at an opacity, live — the Views panel slider drives this without
+ * a scene rebuild (→ Panel3D setEarthOpacity).
+ *
+ * `depthWrite` is the part that is not decoration. A translucent sheet must stay out of the
+ * depth buffer or it z-fights the slabs poking through it; a fully opaque one must write depth,
+ * or the basement keeps drawing straight through the dirt that is supposed to bury it — which
+ * is the whole point of dragging the slider to 100%.
+ */
+export function applyEarthOpacity(material: THREE.Material, opacity: number): void {
+  const clamped = Math.min(1, Math.max(0, opacity));
+  const solid = clamped >= 1;
+  material.opacity = clamped;
+  material.transparent = !solid;
+  material.depthWrite = solid;
+  material.needsUpdate = true;
 }
 
 export function buildCanvasObject(

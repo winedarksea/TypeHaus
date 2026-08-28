@@ -26,6 +26,7 @@ import type { PanelId } from "./panels";
 import { createMutationActions, type MutationActions } from "./mutations";
 import {
   ALL_TRADES,
+  DEFAULT_EARTH_OPACITY,
   type Conflict, type DetailView, type LabelMode, type Lens, type Representation, type Selection,
   type ThreeMode, type Toast, type Tool, type Trade,
   type ViewMode, type ViewTransform, type Workspace,
@@ -72,6 +73,10 @@ export interface StoreState extends MutationActions {
   // answer "which discipline", layer groups answer "which band of the assembly".
   visibleTrades: Record<Trade, boolean>;
   visibleLayerGroups: Record<LayerVisibilityGroup, boolean>;
+  // How solid the 3D site sheet is drawn, 0..1. Independent of `visibleTrades.earth`, which
+  // is still what turns the ground off entirely: this only says how much of the basement the
+  // ground you *are* showing lets through, from the translucent default up to real dirt.
+  earthOpacity: number;
   detailView: DetailView; // assembly-details / BOM reader over the canvas
   conflict: Conflict | null;
   // Set when the engine reports a queued source writeback failed: the edit the user saw
@@ -106,6 +111,7 @@ export interface StoreState extends MutationActions {
   setLabelMode: (v: LabelMode) => void;
   setTradeVisible: (trade: Trade, visible: boolean) => void;
   setLayerGroupVisible: (group: LayerVisibilityGroup, visible: boolean) => void;
+  setEarthOpacity: (opacity: number) => void;
   showEverything: () => void; // one-tap escape from an over-filtered view
   setDetailView: (v: DetailView) => void;
   select: (kind: Selection["kind"], uid: string | null) => void;
@@ -171,6 +177,7 @@ export const useStore = create<StoreState>((set, get) => ({
   visibleLayerGroups: Object.fromEntries(
     ALL_LAYER_VISIBILITY_GROUPS.map((group) => [group, true]),
   ) as Record<LayerVisibilityGroup, boolean>,
+  earthOpacity: DEFAULT_EARTH_OPACITY,
   detailView: "none",
   conflict: null,
   writebackFailure: null,
@@ -296,6 +303,7 @@ export const useStore = create<StoreState>((set, get) => ({
     set((s) => ({ visibleTrades: { ...s.visibleTrades, [trade]: visible } })),
   setLayerGroupVisible: (group, visible) =>
     set((s) => ({ visibleLayerGroups: { ...s.visibleLayerGroups, [group]: visible } })),
+  setEarthOpacity: (opacity) => set({ earthOpacity: Math.min(1, Math.max(0, opacity)) }),
   showEverything: () =>
     set({
       visibleTrades: Object.fromEntries(ALL_TRADES.map((trade) => [trade, true])) as Record<Trade, boolean>,

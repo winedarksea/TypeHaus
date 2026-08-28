@@ -37,6 +37,8 @@ export interface PopulateSceneOptions {
   center: PlanCenter;
   mode: "nordic" | "schematic";
   palette: ResolvedNordicPalette;
+  /** Site-sheet opacity at build time; the panel slider retargets it live afterwards. */
+  earthOpacity: number;
   registry: SceneRegistry;
   /** The scene generation at call time; an async glb that resolves after a rebuild is dropped. */
   generation: number;
@@ -123,8 +125,8 @@ function instantiatePlaceableAsset(prototype: THREE.Object3D): THREE.Object3D {
 
 export function populateScene(options: PopulateSceneOptions) {
   const {
-    tradeGroups, model, center, mode, palette, registry, generation, currentGeneration,
-    requestRender,
+    tradeGroups, model, center, mode, palette, earthOpacity, registry, generation,
+    currentGeneration, requestRender,
   } = options;
 
   for (const wall of model.walls) {
@@ -139,7 +141,7 @@ export function populateScene(options: PopulateSceneOptions) {
   }
   // The site sheet is context, not an element: it has no uid in model.json, so it stays out
   // of the raycast set and a click through it falls to whatever building geometry is behind.
-  buildEarth(tradeGroups.earth, model, center, mode);
+  buildEarth(tradeGroups.earth, model, center, mode, earthOpacity);
   // A solid is not automatically concrete: a standalone beam or post is framing (the same
   // lumber as the studs and rafters it carries), a routed pipe run is plumbing, roof edge trim
   // is roof. The mapping is shared with the exporter — see solidTrade / emit/trades.py.

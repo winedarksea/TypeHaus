@@ -41,6 +41,17 @@ export const ALL_TRADES: Trade[] = [
   "walls", "openings", "framing", "floors", "concrete", "roof", "stairs", "furniture", "plumbing", "electrical", "mechanical", "earth", "drainage",
 ];
 
+// How solid the site sheet is drawn, 0..1 — the Views panel's Ground opacity slider. It sits
+// here, not with the builder that consumes it (three/builders/site.ts re-exports it as
+// EARTH_PLANE_OPACITY), so the store can hold the default without importing three: the 3D
+// panel is code-split, and reaching into a builder for one number would drag the whole
+// renderer back into the main bundle.
+//
+// The default is the long-standing translucent reference — enough earth to read grade, still
+// see-through to the basement. 1 buries the basement behind real dirt; the Site discipline
+// checkbox still turns the sheet off outright, which is a different question.
+export const DEFAULT_EARTH_OPACITY = 0.28;
+
 // The work surfaces that replaced the old DESIGN/ANALYZE topbar buttons: the assembly /
 // transition reader, the whole-model bill of parts, the panel schedule, and the luminaire
 // schedule. Only one is up at a time — they are full-width readers, not inspectors, so

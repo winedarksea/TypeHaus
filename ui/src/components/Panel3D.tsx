@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { useStore } from "../state/store";
-import { ALL_TRADES, type SelectionKind, type Trade } from "../state/vocabulary";
+import { ALL_TRADES, DEFAULT_EARTH_OPACITY, type SelectionKind, type Trade } from "../state/vocabulary";
 import { ALL_LAYER_VISIBILITY_GROUPS, type LayerVisibilityGroup } from "../model/visibility";
 import type { Model } from "../model/types";
 import type { EngineClient } from "../engine/EngineClient";
@@ -20,6 +20,7 @@ import {
 } from "../three/wholeHouseGlb";
 import { isRenderedInScene } from "../three/builders/registry";
 import { planCenterOf, populateScene, type SceneRegistry } from "../three/builders/scene";
+import { applyEarthOpacity } from "../three/builders/site";
 import {
   geographicBearingToSceneDirection,
   geographicSoutheastSceneAzimuthRadians,
@@ -63,6 +64,7 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
   const selection = useStore((s) => s.selection);
   const visibleTrades = useStore((s) => s.visibleTrades);
   const visibleLayerGroups = useStore((s) => s.visibleLayerGroups);
+  const earthOpacity = useStore((s) => s.earthOpacity);
   const client = useStore((s) => s.client);
   const { theme } = useTheme();
   const mountRef = useRef<HTMLDivElement>(null);
@@ -129,6 +131,12 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
     }
   }, [visibleLayerGroups]);
 
+  // Retarget the site sheet's material in place. Deliberately not a setModel dependency: a
+  // slider drag would otherwise rebuild every wall, stick and placeable per frame.
+  useEffect(() => {
+    api.current?.setEarthOpacity(earthOpacity);
+  }, [earthOpacity]);
+
   return (
     <div style={{ position: "absolute", inset: 0 }}>
       <div ref={mountRef} style={{ position: "absolute", inset: 0 }} />
@@ -189,6 +197,7 @@ interface SceneApi {
   highlight: (uid: string | null) => void;
   setVisibility: (trade: Trade, visible: boolean) => void;
   setLayerGroupVisibility: (group: LayerVisibilityGroup, visible: boolean) => void;
+  setEarthOpacity: (opacity: number) => void;
   dispose: () => void;
 }
 
@@ -271,6 +280,9 @@ function createScene(
   // groups, which persist. Remembering the hidden set here is what lets a rebuild land with
   // the user's per-layer filter still applied.
   const hiddenLayerGroups = new Set<LayerVisibilityGroup>();
+  // Ground opacity is remembered here for the same reason: the sheet is one of the meshes a
+  // rebuild throws away, so populateScene reads this rather than the default.
+  let earthOpacity = DEFAULT_EARTH_OPACITY;
 
   // Lighting: soft neutral environment (Nordic). Hemisphere + a key light.
   //
@@ -661,7 +673,7 @@ function createScene(
     highlightSourceModel = m;
     highlightPlanCenter = center;
     populateScene({
-      tradeGroups, model: m, center, mode, palette, registry,
+      tradeGroups, model: m, center, mode, palette, earthOpacity, registry,
       generation: sceneGeneration, currentGeneration: () => sceneGeneration, requestRender,
     });
 
@@ -803,6 +815,20 @@ function createScene(
     });
   };
 
+  // Retarget the live material rather than rebuilding: a drag is many events a second, and the
+  // remembered value above means a rebuild mid-drag (an edit, a theme flip) does not snap the
+  // ground back to the default.
+  const setEarthOpacity = (opacity: number) => {
+    earthOpacity = Math.min(1, Math.max(0, opacity));
+    tradeGroups.earth.traverse((object) => {
+      if (!(object instanceof THREE.Mesh) || !object.userData.earthSheet) return;
+      for (const material of Array.isArray(object.material) ? object.material : [object.material]) {
+        applyEarthOpacity(material, earthOpacity);
+      }
+    });
+    requestRender();
+  };
+
   const setLayerGroupVisibility = (group: LayerVisibilityGroup, visible: boolean) => {
     if (visible) hiddenLayerGroups.delete(group);
     else hiddenLayerGroups.add(group);
@@ -820,6 +846,7 @@ function createScene(
     highlight,
     setVisibility,
     setLayerGroupVisibility,
+    setEarthOpacity,
     dispose: () => {
       cancelAnimationFrame(raf);
       stopTween();

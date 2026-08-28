@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { useStore } from "../state/store";
-import { ALL_TRADES, type LabelMode, type Representation, type Trade, type ViewMode, type ThreeMode, type ViewTransform, type Workspace } from "../state/vocabulary";
+import { ALL_TRADES, DEFAULT_EARTH_OPACITY, type LabelMode, type Representation, type Trade, type ViewMode, type ThreeMode, type ViewTransform, type Workspace } from "../state/vocabulary";
 import {
   ALL_LAYER_VISIBILITY_GROUPS,
   LAYER_VISIBILITY_GROUP_LABEL,
@@ -65,6 +65,9 @@ interface SavedView {
   // Optional for the same reason: recipes saved before per-layer visibility existed simply
   // restore every layer group on, which is what they were captured with.
   visibleLayerGroups?: Record<LayerVisibilityGroup, boolean>;
+  // Optional for the same reason again: a recipe saved before the ground slider existed
+  // restores the translucent default it was captured at.
+  earthOpacity?: number;
   workspace?: Workspace;
   view: ViewTransform;
 }
@@ -103,6 +106,8 @@ export function ViewsPanel() {
   const visibleLayerGroups = useStore((s) => s.visibleLayerGroups);
   const setLayerGroupVisible = useStore((s) => s.setLayerGroupVisible);
   const showEverything = useStore((s) => s.showEverything);
+  const earthOpacity = useStore((s) => s.earthOpacity);
+  const setEarthOpacity = useStore((s) => s.setEarthOpacity);
   const workspace = useStore((s) => s.activeWorkspace);
   const setWorkspace = useStore((s) => s.setActiveWorkspace);
   const viewMode = useStore((s) => s.viewMode);
@@ -123,6 +128,7 @@ export function ViewsPanel() {
       representation: s.representation,
       visibleTrades: { ...s.visibleTrades },
       visibleLayerGroups: { ...s.visibleLayerGroups },
+      earthOpacity: s.earthOpacity,
       labelMode: s.labelMode,
       workspace: s.activeWorkspace,
       view: { ...s.view },
@@ -143,6 +149,7 @@ export function ViewsPanel() {
     for (const group of ALL_LAYER_VISIBILITY_GROUPS) {
       s.setLayerGroupVisible(group, v.visibleLayerGroups?.[group] ?? true);
     }
+    s.setEarthOpacity(v.earthOpacity ?? DEFAULT_EARTH_OPACITY);
     // Backward compat: a pre-labelMode recipe only knew "space labels on/off".
     s.setLabelMode(v.labelMode ?? (v.showSpaceLabels === false ? "off" : "all"));
     s.setActiveWorkspace(v.workspace ?? "design");
@@ -245,6 +252,36 @@ export function ViewsPanel() {
       {viewMode === "2d" && (
         <div className="muted views-hint">Trades marked 3D have no plan geometry to hide.</div>
       )}
+
+      {/* Ground opacity is a companion to the Site checkbox above, not a replacement for it:
+          the checkbox answers "is there ground at all", this answers "how much of the basement
+          does it let through". The default is the translucent reference the sheet has always
+          been drawn at; 100% is real dirt, which is the only way to read the above-grade model
+          without the below-grade storey showing through it. */}
+      <h3>Ground</h3>
+      <div className={`slider-row${visibleTrades.earth ? "" : " disabled"}`}
+        style={{ "--slider-fill": `${Math.round(earthOpacity * 100)}%` } as CSSProperties}>
+        <label className="slider-label" htmlFor="earth-opacity">Opacity</label>
+        <input
+          id="earth-opacity"
+          type="range"
+          min={0}
+          max={100}
+          step={1}
+          value={Math.round(earthOpacity * 100)}
+          disabled={!visibleTrades.earth}
+          onChange={(e) => setEarthOpacity(Number(e.target.value) / 100)}
+          aria-label="Ground opacity"
+        />
+        <output className="slider-value" htmlFor="earth-opacity">
+          {Math.round(earthOpacity * 100)}%
+        </output>
+      </div>
+      <div className="muted views-hint">
+        {visibleTrades.earth
+          ? "Site sheet only, in 3D. At 100% the earth is solid and hides everything below grade."
+          : "Site is hidden — turn it on under Disciplines to use this."}
+      </div>
 
       <h3>Assembly layers</h3>
       {/* Per-layer visibility (→ TODO "a per-layer visibility control would settle it"): drop

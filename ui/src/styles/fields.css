@@ -162,6 +162,107 @@
   line-height: 1.5;
 }
 
+/* MD3 continuous slider. One label / track / value row, so the number the handle is at is
+   readable without hovering it — a percentage that has to be inferred from a handle position
+   is not a setting anyone can return to.
+
+   The filled half of the track is a gradient driven by `--slider-fill`, which the component
+   sets from the same value the input carries: WebKit has no ::-moz-range-progress equivalent,
+   and an unfilled track gives no sense of where in the range the handle sits. */
+.slider-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--hit);
+}
+.slider-label {
+  font-size: var(--text-sm);
+  color: var(--md-on-surface);
+}
+.slider-value {
+  min-width: 4ch;
+  text-align: right;
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--md-on-surface-variant);
+}
+.slider-row.disabled .slider-label,
+.slider-row.disabled .slider-value {
+  opacity: 0.38; /* MD3 disabled content opacity */
+}
+
+/* The panel's outlined-text-field rule matches every `input`; a range control wants none of
+   it — no box, no padding, no border. */
+.views-panel input[type="range"],
+.inspector input[type="range"],
+.sheet-body input[type="range"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  min-height: 0;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.slider-row input[type="range"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.38;
+}
+.slider-row input[type="range"]:focus-visible {
+  outline: 2px solid var(--md-primary);
+  outline-offset: 4px;
+  border-radius: var(--md-shape-full);
+}
+
+/* Track — WebKit. The gradient stop is the fill; the handle rides on top of it. */
+.slider-row input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: var(--md-shape-full);
+  background: linear-gradient(
+    to right,
+    var(--md-primary) 0 var(--slider-fill, 0%),
+    var(--md-surface-container-highest) var(--slider-fill, 0%) 100%
+  );
+}
+.slider-row input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  /* (track height - thumb height) / 2, so the handle centres on a 4px track. */
+  margin-top: -8px;
+  border: 0;
+  border-radius: var(--md-shape-full);
+  background: var(--md-primary);
+  box-shadow: var(--md-elev-1);
+  transition: transform var(--dur-fast) var(--ease);
+}
+.slider-row input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+
+/* Track — Firefox, which fills ::-moz-range-progress natively. */
+.slider-row input[type="range"]::-moz-range-track {
+  height: 4px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-surface-container-highest);
+}
+.slider-row input[type="range"]::-moz-range-progress {
+  height: 4px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-primary);
+}
+.slider-row input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--md-shape-full);
+  background: var(--md-primary);
+}
+
 /* On a phone the density trim comes off everything in a panel: the desktop's compact
    rhythm is a reasonable trade at a mouse, and no trade at all under a thumb. */
 @media (max-width: 679px) {
