@@ -111,6 +111,21 @@ def catlin_model(catlin_plan):
     return model
 
 
+@pytest.fixture(scope="session")
+def catlin_areas(catlin_model_ro):
+    """The $/sf denominators, and what a ``space_summary.*`` allowance driver reads.
+
+    Every production caller of ``estimate_costs`` passes these since 2026-08-27 (see
+    ``server/space_summary.estimate_areas``), because catlin drives two allowances off
+    gross and conditioned area. A test that prices catlin's real ``prices.toml`` without
+    them is testing a call shape nothing makes any more — and gets a ValueError saying so,
+    which is the intended failure: a driven quantity must never quietly become zero.
+    """
+    from typehaus.server.space_summary import estimate_areas
+
+    return estimate_areas(catlin_model_ro)
+
+
 @pytest.fixture(scope="module")
 def swinburne_model(catlin_plan):
     """A two-wall L of ``CATLIN_EXT_2X6_SWINBURNE`` walls with one window.

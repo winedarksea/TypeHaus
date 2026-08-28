@@ -107,7 +107,11 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         "sheet_goods", "glazing_panels",
                         "glazing_trim", "hardware", "placeables", "floor_heat",
                         "electrical_devices", "panel_schedule", "service_load",
-                        "conduit", "conductors", "solar", "backup_power",
+                        "conduit", "conductors", "solar",
+                        # The list view of ``solar["by_product"]`` that
+                        # [solar_modules] prices (2026-08-27) — every price plan
+                        # reads a list and ``solar`` is a dict of summaries.
+                        "solar_modules", "backup_power",
                         "luminaire_schedule", "lighting_controls", "light_runs",
                         "light_run_materials", "lighting_load",
                         # Structured cabling (2026-08-02).

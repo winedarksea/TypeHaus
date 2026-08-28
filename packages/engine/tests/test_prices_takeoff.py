@@ -185,7 +185,8 @@ def test_a_declared_view_is_not_reported_as_a_hole(tmp_path) -> None:
     assert not [row for row in estimate["unpriced"] if row["section"] == "electrical_devices"]
 
 
-def test_every_catlin_bom_table_is_priced_declared_or_unpriced(catlin_model) -> None:
+def test_every_catlin_bom_table_is_priced_declared_or_unpriced(
+        catlin_model, catlin_areas) -> None:
     """The completeness guarantee, against the real house.
 
     This is the test a *new* takeoff table trips: it will be neither read by a plan nor
@@ -197,7 +198,7 @@ def test_every_catlin_bom_table_is_priced_declared_or_unpriced(catlin_model) -> 
 
     bom = bill_of_materials(catlin_model)
     prices = load_prices(Path("houses/catlin"))
-    estimate = estimate_costs(bom, prices)
+    estimate = estimate_costs(bom, prices, catlin_areas)
     read = {bom_key for _, bom_key, *_ in ESTIMATE_PLANS}
     listed = {row["section"] for row in estimate["unpriced"]}
     orphans = {
@@ -208,3 +209,62 @@ def test_every_catlin_bom_table_is_priced_declared_or_unpriced(catlin_model) -> 
     assert not orphans, f"BOM tables reaching no cost surface at all: {sorted(orphans)}"
     # And the table that motivated the sweep is really there, not merely not-an-orphan.
     assert "light_run_materials" in listed
+
+
+# --- 2026-08-27: three tables the model resolved and nothing priced ---------------------------
+#
+# ``UNPRICED_VIEWS`` used to say of ``conductors`` that "the model resolves the route but not
+# the wire", and an allowance stood in for each of these three. It resolves both; what was
+# missing was a price section, not a quantity.
+
+def test_the_three_new_electrical_sections_join_their_tables(tmp_path) -> None:
+    (tmp_path / "prices.toml").write_text("""
+[conductors]
+"1" = 0.30
+"2" = 0.80
+[solar_modules]
+"Aptos 440 W module" = 3.00
+[data_raceways]
+"data" = 4.00
+"spare" = 5.00
+""")
+    prices = load_prices(tmp_path)
+    assert prices is not None
+    from typehaus.cli.prices import estimate_costs
+
+    estimate = estimate_costs({
+        "conductors": [{"poles": 1, "length_ft": 2_000.0},
+                       {"poles": 2, "length_ft": 1_000.0}],
+        "solar_modules": [{"product": "Aptos 440 W module", "panels": 12, "watts": 5_280.0}],
+        "data_raceways": [{"service": "data", "length_ft": 200.0},
+                          {"service": "spare", "length_ft": 28.0}],
+    }, prices)
+    assert estimate["sections"]["conductors"]["subtotal"]["low"] == 1_400.0
+    # $/W, which is how the trade quotes and the one place a modelled quantity meets the
+    # trade's own unit exactly.
+    solar = estimate["sections"]["solar_modules"]["rows"][0]
+    assert (solar["quantity"], solar["unit"]) == (5_280.0, "W")
+    assert estimate["sections"]["data_raceways"]["subtotal"]["low"] == 940.0
+
+
+def test_solar_is_a_dict_and_solar_modules_is_the_priced_view(catlin_model) -> None:
+    """Every ``ESTIMATE_PLANS`` entry reads a LIST, and ``solar`` is a dict of summaries —
+    panel and watt totals and the per-string cold-Voc check. Both keys ship: the dict is the
+    UI's contract and the list is what carries a price."""
+    from typehaus.takeoff.bom import bill_of_materials
+
+    bom = bill_of_materials(catlin_model)
+    assert isinstance(bom["solar"], dict) and isinstance(bom["solar_modules"], list)
+    assert bom["solar_modules"] == bom["solar"]["by_product"]
+
+
+def test_data_raceways_and_conduit_partition_the_runs(catlin_model) -> None:
+    """The double-count this section could make, checked against the house rather than
+    asserted in a comment. ``conduit_takeoff`` skips every run whose service is data or
+    unset; ``data_raceway_takeoff`` takes exactly those. No run may bill in both."""
+    from typehaus.takeoff.bom import bill_of_materials
+
+    bom = bill_of_materials(catlin_model)
+    power = {tag for row in bom["conduit"] for tag in row["tags"]}
+    low_voltage = {tag for row in bom["data_raceways"] for tag in row["tags"]}
+    assert power and low_voltage and not (power & low_voltage)

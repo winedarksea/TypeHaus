@@ -23,6 +23,7 @@ owner's call, made by which table a type is written into, and no type may sit in
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -44,6 +45,11 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "pl
              # air-side twin until ``DuctRun`` carried elevations and an insulation spec.
              "duct_fittings", "duct_insulation",
              "sleeves", "conduit",
+             # The three electrical tables the model resolved and nothing priced (2026-08-27):
+             # branch-circuit wire by the foot, the PV array by the watt, and the low-voltage
+             # raceways [conduit] deliberately excludes. Each replaces a lump sum — see
+             # ``Prices.conductors``.
+             "conductors", "solar_modules", "data_raceways",
              # Plumbing specialties (2026-08-01): devices by the piece, their loose install
              # kits, and hot-line insulation by the foot.
              "plumbing_specialties", "install_parts", "pipe_insulation",
@@ -164,6 +170,17 @@ class UnitPrice(PriceRange):
     #: The unit this rate is *per*, when the row overrides its section's default — a key of
     #: :data:`ALTERNATE_UNITS` for the section. ``None`` means the section's own unit.
     unit: str | None = None
+    #: An ``[allowances]`` row's QUANTITY SOURCE (2026-08-27), and the only place in the file
+    #: where a rate is joined to something without a BOM plan behind it. ``None`` — every row
+    #: in every other section, and every undriven allowance — means the historical behaviour:
+    #: quantity 1, unit "ls", the number written is the line total.
+    #:
+    #: A driver turns a lump sum into rate x model quantity WITHOUT moving it out of
+    #: [allowances]. That matters because the two facts an allowance carries are separable:
+    #: "nobody has quoted this scope" (still true, so it stays an allowance with an allowance's
+    #: range and an allowance's cost code) and "the model cannot measure it" (no longer true).
+    #: Grammar and resolution live in :func:`typehaus.cli.prices._resolve_driver`.
+    driver: str | None = None
 
     @property
     def is_split(self) -> bool:
@@ -205,6 +222,26 @@ class Prices:
     duct_insulation: Mapping[str, PriceRange] = field(default_factory=dict)
     sleeves: Mapping[str, PriceRange] = field(default_factory=dict)
     conduit: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Branch-circuit conductors by the lineal foot (2026-08-27), keyed on ``poles`` — "1" for
+    # a 120 V circuit (3 conductors: hot, neutral, ground), "2" for a 240 V one (4). The
+    # takeoff has reported this length since the panel schedule existed; until now the wire
+    # was carried as the ``electrical-branch-circuit-conductors`` lump sum, because
+    # ``UNPRICED_VIEWS`` said "the model resolves the route but not the wire". It resolves
+    # both — the route is [conduit] and this is the wire in it. Mind the mirror: the two are
+    # separate purchases at separate rates, and neither includes the other.
+    conductors: Mapping[str, PriceRange] = field(default_factory=dict)
+    # The PV array by the WATT (2026-08-27), keyed on the module product. Solar is the one
+    # trade that quotes in $/W rather than $/each, and the model carries the watts, so this
+    # is the closest a modelled quantity ever gets to how the trade actually prices. Reads
+    # ``solar_modules``, the list view of ``solar["by_product"]``. The inverter, battery and
+    # PV junction box stay in [placeables]; this is modules, racking and rapid shutdown.
+    solar_modules: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Low-voltage raceway by the lineal foot (2026-08-27), keyed on ``service`` — "data" or
+    # "spare". Its own table rather than more rows in [conduit]: ``data_raceway_takeoff``
+    # deliberately excludes these from the power raceway table, and the two tag families
+    # (``CD-*-DATA-*`` / ``CD-*-SPARE-*`` against the power ``CD-B-KITCHEN``-style tags) are
+    # disjoint, so pricing here bills each run exactly once.
+    data_raceways: Mapping[str, PriceRange] = field(default_factory=dict)
     # Plumbing specialties (2026-08-01). Keyed on the accessory *kind* / part name / spec
     # rather than a model number: a price list is written before the model is chosen.
     plumbing_specialties: Mapping[str, PriceRange] = field(default_factory=dict)
@@ -312,12 +349,29 @@ _VALUE_SHAPES = (
     '   "2x6"  = { low = 1.10, high = 1.40 }                 # a range, section-default basis\n'
     '   "2x10" = { low = 2.8, high = 3.4, basis = "installed" }   # a real merged quote\n'
     '   "LVL"  = { material = { low = 7, high = 9 }, labour = { low = 3, high = 5 } }\n'
-    '   "sump" = { low = 900, high = 2200, unit = "ea" }     # priced per object, not per yard'
+    '   "sump" = { low = 900, high = 2200, unit = "ea" }     # priced per object, not per yard\n'
+    '   "finish-door-hardware" = { low = 60, high = 220, unit = "ea",\n'
+    '                              driver = "openings.count[kind=door]" }  # [allowances] only'
 )
 
 
-def _unit(section: str, key: str, raw: object, path: Path) -> str:
-    """Validate a row's ``unit =`` override against :data:`ALTERNATE_UNITS`."""
+def _unit(section: str, key: str, raw: object, path: Path, driven: bool = False) -> str:
+    """Validate a row's ``unit =`` override against :data:`ALTERNATE_UNITS`.
+
+    ``driven`` — a :data:`DRIVER_SECTION` row that named a ``driver =`` — takes the unit as a
+    free LABEL instead. The two mean different things: everywhere else a unit *selects* which
+    BOM field the rate multiplies, and there is exactly one right answer per section, so an
+    unoffered unit is a hard error. A driven allowance has already chosen its field, in the
+    driver; the unit only says what to print beside the quantity, and "SF" or "ea" or "drop"
+    are all equally honest there.
+    """
+    if driven:
+        label = str(raw).strip()
+        if not label or len(label) > 12 or any(c.isspace() for c in label):
+            raise ValueError(f"{path}: [{section}] {key!r} sets unit = {raw!r}; a driven "
+                             f"allowance's unit is a short printed LABEL (\"SF\", \"ea\", "
+                             f"\"LF\"), not a phrase")
+        return label
     offered = ALTERNATE_UNITS.get(section) or {}
     unit = str(raw)
     if unit not in offered:
@@ -331,6 +385,54 @@ def _unit(section: str, key: str, raw: object, path: Path) -> str:
             f"{sorted(offered)}. A unit is only offered where the BOM row already carries "
             f"the field — nothing here converts or derives a quantity.")
     return unit
+
+
+#: The one section a ``driver =`` may appear in. Every other section already has a BOM join
+#: authored in :data:`~typehaus.cli.prices.ESTIMATE_PLANS` — a second, per-row quantity source
+#: there would silently override it, and two ways to reach the same quantity is one too many.
+DRIVER_SECTION = "allowances"
+
+#: ``"<bom_table>.<field>"`` with an optional ``[<field>=<value>,...]`` equality filter.
+#:
+#: Filters are comma-separated and ANDed. One was not enough for the rows this mechanism
+#: exists to convert: ``envelope_layers`` reports a layer, not a plane, so "the roof" is
+#: ``[scope=roof,function=cladding]`` and ``[scope=roof]`` alone sums nine stacked layers
+#: into 12,464 SF of a 2,209 SF roof — a driver that looks right and is 5.6x wrong. A value
+#: may therefore not contain a comma (none of the BOM's own do; they are tags and slugs).
+_DRIVER_GRAMMAR = re.compile(
+    r"^(?P<table>[A-Za-z_][A-Za-z0-9_]*)"
+    r"\.(?P<field>[A-Za-z_][A-Za-z0-9_]*)"
+    r"(?:\[(?P<filters>[A-Za-z_][A-Za-z0-9_]*=[^,\]]*"
+    r"(?:,[A-Za-z_][A-Za-z0-9_]*=[^,\]]*)*)\])?$")
+
+_DRIVER_SHAPES = (
+    '   driver = "envelope_layers.net_area_sqft[material=standing-seam]"\n'
+    '   driver = "envelope_layers.net_area_sqft[scope=roof,function=cladding]"\n'
+    '   driver = "openings.count[kind=door]"\n'
+    '   driver = "panel_schedule.rows"            # `rows` counts rows: a table with no count\n'
+    '   driver = "space_summary.gross_sf"         # the two addressable scalars')
+
+
+def _driver(section: str, key: str, raw: object, path: Path) -> str:
+    """Validate a ``driver =``'s SHAPE. Whether it resolves is the BOM's business.
+
+    Split deliberately: this file never sees a bill of materials, so "is ``openings`` a real
+    table" is a question it cannot answer and must not pretend to. What it can answer — is
+    this section allowed a driver at all, and is the string even a driver — it answers here,
+    at load, where the error can name the file and the key.
+    """
+    if section != DRIVER_SECTION:
+        raise ValueError(
+            f"{path}: [{section}] {key!r} sets a driver, but only [{DRIVER_SECTION}] may. "
+            f"Every other section already joins the BOM through ESTIMATE_PLANS, and a "
+            f"per-row second quantity source would silently shadow it.")
+    spec = str(raw)
+    if not _DRIVER_GRAMMAR.match(spec):
+        raise ValueError(
+            f"{path}: [{section}] {key!r} has driver {spec!r}, which is not "
+            f"\"<bom_table>.<field>\" with an optional [<field>=<value>] filter. "
+            f"For example:\n{_DRIVER_SHAPES}")
+    return spec
 
 
 def _range(section: str, key: str, raw: object, path: Path, what: str = "") -> PriceRange:
@@ -358,10 +460,17 @@ def _price(section: str, key: str, raw: object, path: Path,
     anything the old file could not.
     """
     unit: str | None = None
+    driver: str | None = None
+    if isinstance(raw, dict) and "driver" in raw:
+        # Stripped first, and for the same reason `unit` is: a driver says where the QUANTITY
+        # comes from and says nothing about the shape of the RATE, so it has to compose with
+        # a bare number, a range and a split alike rather than being a shape of its own.
+        driver = _driver(section, key, raw["driver"], path)
+        raw = {k: v for k, v in raw.items() if k != "driver"}
     if isinstance(raw, dict) and "unit" in raw:
         # Stripped before every other shape check, so `unit` composes with all of them rather
         # than being a fifth shape of its own.
-        unit = _unit(section, key, raw["unit"], path)
+        unit = _unit(section, key, raw["unit"], path, driven=driver is not None)
         raw = {k: v for k, v in raw.items() if k != "unit"}
     if isinstance(raw, dict) and ("material" in raw or "labour" in raw):
         missing = {"material", "labour"} - set(raw)
@@ -373,7 +482,7 @@ def _price(section: str, key: str, raw: object, path: Path,
         material = _range(section, key, raw["material"], path, " material")
         labour = _range(section, key, raw["labour"], path, " labour")
         merged = material.plus(labour)
-        return UnitPrice(merged.low, merged.high, INSTALLED, material, labour, unit)
+        return UnitPrice(merged.low, merged.high, INSTALLED, material, labour, unit, driver)
     basis = default_basis
     if isinstance(raw, dict) and "basis" in raw:
         basis = str(raw["basis"])
@@ -386,7 +495,7 @@ def _price(section: str, key: str, raw: object, path: Path,
                          f"{sorted(set(raw) - {'low', 'high'})}; accepted shapes are:\n"
                          f"{_VALUE_SHAPES}")
     value = _range(section, key, raw, path)
-    return UnitPrice(value.low, value.high, basis, None, None, unit)
+    return UnitPrice(value.low, value.high, basis, None, None, unit, driver)
 
 
 #: Tables that are *not* price sections: they describe the file rather than price a row.

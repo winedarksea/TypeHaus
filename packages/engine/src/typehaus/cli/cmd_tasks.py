@@ -51,7 +51,13 @@ def _load_priced_model(
     except ValueError as exc:
         console.print(f"[red]{exc}[/red]")
         raise typer.Exit(2) from exc
-    estimate = (estimate_costs(bom, prices, None, product_labels(loaded.plan))
+    # ``estimate_areas``, not ``None``: a ``space_summary.*`` allowance driver needs the same
+    # denominators ``haus takeoff`` passes, and ``test_work_packages`` pins the two totals
+    # equal. See ``server/space_summary.estimate_areas``.
+    from typehaus.server.space_summary import estimate_areas
+
+    estimate = (estimate_costs(bom, prices, estimate_areas(model),
+                               product_labels(loaded.plan))
                 if prices is not None else None)
     return model, bom, estimate, load_costs(directory)
 

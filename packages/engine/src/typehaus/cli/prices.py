@@ -99,6 +99,15 @@ ESTIMATE_PLANS = (
     ("duct_insulation", "duct_insulation", "spec", "length_ft", "LF"),
     ("sleeves", "sleeves", "sleeve_diameter_in", "count", "ea"),
     ("conduit", "conduit", "trade_size_in", "length_ft", "LF"),
+    # The three tables the model resolved and nothing priced until 2026-08-27, each
+    # replacing a lump sum in [allowances]. ``conductors`` keys on ``poles`` (1 = a 120 V
+    # circuit's three wires, 2 = a 240 V circuit's four); ``solar_modules`` is billed by the
+    # WATT, which is how the PV trade quotes and what the model carries; ``data_raceways``
+    # keys on ``service`` and reads a table ``conduit`` deliberately excludes, so the two
+    # tag families stay disjoint and no run bills twice.
+    ("conductors", "conductors", "poles", "length_ft", "LF"),
+    ("solar_modules", "solar_modules", "product", "watts", "W"),
+    ("data_raceways", "data_raceways", "service", "length_ft", "LF"),
     ("plumbing_specialties", "plumbing_specialties", "kind", "count", "ea"),
     ("install_parts", "install_parts", "part", "count", "ea"),
     ("pipe_insulation", "pipe_insulation", "spec", "length_ft", "LF"),
@@ -218,9 +227,19 @@ MATERIAL_ONLY: dict[str, frozenset[str | None]] = {
 #: they are one $/SF rate only if a 2-1/2" spray costs what a 1-1/2" spray costs, which it
 #: does not. Qualifying by ``thickness_in`` prices each band at its own rate; a house that
 #: keeps its bare ``polyiso`` key keeps one rate over every thickness, unchanged.
+#: ``ducts`` needs it a sixth time, and it is the case [basis_notes] had been asking for in
+#: writing since the 2026-08-25 radial pass: one ``supply`` rate covering a 6" insulated
+#: riser, a 3" semi-rigid radial and a 14x8 galvanized trunk, because ``ducts`` keys on
+#: ``system`` alone. Semi-rigid is roughly half the material of sheet metal and installs in a
+#: fraction of the time — that speed IS the argument for a radial system — so one blended
+#: rate is weighted for today's mix and silently wrong the moment the mix moves. The takeoff
+#: has reported ``material`` per row since that pass; a row whose material the model never
+#: named (the sheet-metal trunks) has an empty string there, which is falsy, so it keeps
+#: pricing on the bare key exactly as before.
 QUALIFIED_KEY_FIELD = {"concrete": "assembly", "timber": "assembly",
                        "drainage": "product", "wall_structure": "material",
-                       "framing": "material", "envelope_layers": "thickness_in"}
+                       "framing": "material", "envelope_layers": "thickness_in",
+                       "ducts": "material"}
 
 
 #: Sections priced and reported but held out of the construction total. They stay in
@@ -257,8 +276,10 @@ UNPRICED_VIEWS: dict[str, str] = {
     "glazing_panels": "priced in [concrete] as glazing:<assembly> (structural_solids)",
     "glazing_trim": "priced in [concrete] as glazing_trim (structural_solids)",
     "bug_screens": "priced in [concrete] as bug_screen:<assembly> (structural_solids)",
-    # Tread and riser stock is lumber; the nosings and transitions are an allowance.
-    "stair_finish": "treads bill in [framing]; nosings in the finish-transitions allowance",
+    # Tread and riser stock is lumber; the nosings and transitions are an allowance — and
+    # since 2026-08-27 an allowance DRIVEN off this very table's ``tread_lf``, so the
+    # quantity is no longer unread, only unpriced by a section of its own.
+    "stair_finish": "treads bill in [framing]; nosings drive the finish-transitions allowance",
     # Every one of these is a schedule *view* of ElectricalDevice placeables, which price
     # per type in [placeables] (the ED-T-* families). Pricing them again would double-count.
     "electrical_devices": "priced in [placeables] as the ED-T-* types",
@@ -267,15 +288,18 @@ UNPRICED_VIEWS: dict[str, str] = {
     "lighting_controls": "priced in [placeables] as the ED-T-* types",
     # Schedule and engineering summaries — a panel schedule is not a thing you buy. The
     # breakers behind it are the electrical-afci-gfci-breakers allowance.
-    "panel_schedule": "schedule data; breakers are the electrical-afci-gfci allowance",
+    "panel_schedule": ("schedule data; its row COUNT drives the electrical-afci-gfci "
+                       "allowance (2026-08-27)"),
     "service_load": "engineering summary, not a purchase",
     "lighting_load": "engineering summary, not a purchase",
     "poe_budget": "engineering summary, not a purchase",
     "light_runs": "run geometry; its materials are light_run_materials",
-    # Covered by a named allowance, because the model resolves the route but not the wire.
-    "conductors": "the electrical-branch-circuit-conductors allowance",
-    "data_raceways": "the electrical-structured-low-voltage-drops allowance",
-    "solar": "the electrical-pv-array-modules-and-racking allowance",
+    # ``solar`` is a dict of summaries (panel/watt totals, the per-string voltage check);
+    # the priced view of it is the ``solar_modules`` list beside it — see ``takeoff/bom.py``.
+    # ``conductors`` and ``data_raceways`` are priced in their own sections since 2026-08-27:
+    # the model resolves the route *and* the wire, and the three allowances that stood in for
+    # them are gone from houses/catlin/prices.toml.
+    "solar": "priced as solar_modules (the by_product view of this dict)",
     "backup_power": "priced in [placeables] as the EQ-T-* types",
 }
 
@@ -308,14 +332,166 @@ def _unread_table_rows(bom_key: str, table: list[Any]) -> list[dict[str, Any]]:
 
 
 
-def _allowance_rows(prices: Prices) -> list[dict[str, Any]]:
-    """One synthetic BOM row per authored allowance, at quantity 1.
+#: The two scalars a driver may address that are not a BOM table: the ``areas`` denominators
+#: ``estimate_costs`` is already given. Spelled ``space_summary.<name>`` because that is the
+#: module they come from (``server/space_summary.build_space_summary``), and because a house
+#: reading its own file should not have to know that the engine calls the mapping "areas".
+DRIVER_SCALARS = {"space_summary.conditioned_sf": "conditioned",
+                  "space_summary.gross_sf": "gross"}
+
+#: The pseudo-field a driver names to COUNT rows rather than sum a number off them. Some
+#: tables are one row per thing and carry no count column — ``panel_schedule`` is one row per
+#: circuit, ``data_devices`` one row per device — and "36 circuits" is exactly the quantity a
+#: breaker allowance wants. Reserved rather than inferred: a table that really has a ``rows``
+#: column would otherwise change meaning silently.
+DRIVER_ROW_COUNT = "rows"
+
+
+def _driver_parts(spec: str) -> tuple[str, str, dict[str, str]]:
+    """``"openings.count[kind=door]"`` -> ``("openings", "count", {"kind": "door"})``.
+
+    The shape was validated at load (``price_file._driver``); this is the same grammar read
+    for its parts, and a spec that reaches here has already matched it.
+    """
+    from typehaus.cli.price_file import _DRIVER_GRAMMAR
+
+    match = _DRIVER_GRAMMAR.match(spec)
+    assert match is not None, spec  # load-time validation is what makes this safe
+    raw = match["filters"] or ""
+    filters = dict(clause.split("=", 1) for clause in raw.split(",")) if raw else {}
+    return match["table"], match["field"], filters
+
+
+def _resolve_driver(bom: Mapping[str, Any], areas: Optional[Mapping[str, float]],
+                    key: str, spec: str) -> tuple[float, list[tuple[str, Mapping[str, Any]]]]:
+    """A driven allowance's quantity, and the BOM rows it was measured off.
+
+    The second half of the return is not decoration: it is what the double-count guard reads.
+    [allowances]'s one rule is that an allowance must be scope NO OTHER SECTION PRICES, and a
+    driver makes a breach easy to write by accident — pointing at
+    ``envelope_layers.net_area_sqft[material=gwb]`` is a perfectly valid driver that bills the
+    drywall a second time. Nothing can decide that
+    automatically (measuring a vent mat off the roof cladding's area is right; billing the
+    cladding twice is wrong, and the two drivers look identical), so the rows are carried out
+    and :func:`estimate_costs` reports the overlap for a human to judge.
+
+    Raises ``ValueError`` naming the key for an unresolvable driver — an unknown table, a
+    field no row carries, a scalar with no ``areas`` behind it. Deliberately the same class of
+    failure as a malformed price: a quantity that cannot be found must never quietly become
+    zero, which would print the row as free rather than as unpriced.
+    """
+    if spec in DRIVER_SCALARS:
+        if not areas:
+            raise ValueError(
+                f"[{ALLOWANCES}] {key!r} has driver {spec!r}, but this estimate was built "
+                f"without areas. Pass the space summary's conditioned/gross denominators to "
+                f"estimate_costs, or drive the row off a BOM table instead.")
+        name = DRIVER_SCALARS[spec]
+        if name not in areas:
+            raise ValueError(f"[{ALLOWANCES}] {key!r} has driver {spec!r}; the areas mapping "
+                             f"offers {sorted(areas)}")
+        return float(areas[name]), []
+    table_name, field, filters = _driver_parts(spec)
+    if table_name == "space_summary":
+        raise ValueError(f"[{ALLOWANCES}] {key!r} has driver {spec!r}; the addressable "
+                         f"scalars are {sorted(DRIVER_SCALARS)}")
+    table = bom.get(table_name)
+    if not isinstance(table, list):
+        raise ValueError(
+            f"[{ALLOWANCES}] {key!r} has driver {spec!r}, but the BOM has no LIST table "
+            f"{table_name!r}. A driver reads a table of rows; "
+            f"{'that key is a summary dict' if table_name in bom else 'no such key exists'}. "
+            f"Tables: {sorted(k for k, v in bom.items() if isinstance(v, list))}")
+    for filter_field in filters:
+        if not any(filter_field in row for row in table if isinstance(row, Mapping)):
+            raise ValueError(f"[{ALLOWANCES}] {key!r} has driver {spec!r}, but no row of "
+                             f"{table_name!r} carries a {filter_field!r} field")
+    matched = [row for row in table if isinstance(row, Mapping)
+               and all(str(row.get(f)) == v for f, v in filters.items())]
+    if field == DRIVER_ROW_COUNT:
+        return float(len(matched)), [(table_name, row) for row in matched]
+    if not any(field in row for row in table if isinstance(row, Mapping)):
+        raise ValueError(
+            f"[{ALLOWANCES}] {key!r} has driver {spec!r}, but no row of {table_name!r} "
+            f"carries a {field!r} field. Its fields are "
+            f"{sorted({f for row in table if isinstance(row, Mapping) for f in row})}, and "
+            f"{DRIVER_ROW_COUNT!r} counts rows.")
+    total = 0.0
+    consumed: list[tuple[str, Mapping[str, Any]]] = []
+    for row in matched:
+        value = row.get(field)
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            total += float(value)
+            consumed.append((table_name, row))
+    return total, consumed
+
+
+def _allowance_rows(prices: Prices, bom: Mapping[str, Any],
+                    areas: Optional[Mapping[str, float]]
+                    ) -> tuple[list[dict[str, Any]],
+                               dict[str, list[tuple[str, Mapping[str, Any]]]]]:
+    """One synthetic BOM row per authored allowance, and what each driven one consumed.
+
+    An UNDRIVEN row is quantity 1 and unit "ls", exactly as every allowance was before
+    2026-08-27: the number in the file is the line total. A DRIVEN row carries the model
+    quantity its ``driver =`` resolved instead, so the same rate now moves when the house
+    does — and it is still an allowance, with an allowance's basis, cost code, CSV row and
+    work package. Nothing downstream needs to know which kind it got.
 
     Sorted so the estimate, the CSV and the task export list them in the same order run to
     run; a lump-sum block that reshuffles between exports is one no reviewer can diff.
     """
-    return [{ALLOWANCE_KEY_FIELD: key, "count": 1, "description": key}
-            for key in sorted(prices.allowances)]
+    rows: list[dict[str, Any]] = []
+    consumed: dict[str, list[tuple[str, Mapping[str, Any]]]] = {}
+    for key in sorted(prices.allowances):
+        price = prices.allowances[key]
+        spec = getattr(price, "driver", None)
+        if not spec:
+            rows.append({ALLOWANCE_KEY_FIELD: key, "count": 1, "description": key})
+            continue
+        quantity, used = _resolve_driver(bom, areas, key, spec)
+        consumed[key] = used
+        rows.append({ALLOWANCE_KEY_FIELD: key, "count": quantity,
+                     "description": key, "driver": spec})
+    return rows, consumed
+
+
+def _driver_overlaps(consumed: Mapping[str, list[tuple[str, Mapping[str, Any]]]],
+                     priced: Mapping[str, set[str]]) -> list[dict[str, Any]]:
+    """Driven allowances whose quantity was measured off rows another section also PRICED.
+
+    ** THE GUARD [allowances] NEVER HAD. ** Its header says an allowance must be scope no
+    other section prices and admits that nothing in the loader can catch a breach; the BOM
+    join that protects every other table from a mirror does not exist for a lump sum. A
+    driver does not create that risk but it does make it one line of TOML away, so this is
+    the reporting the mechanism owes.
+
+    An overlap is a FINDING, not an error, and that is the whole design: measuring the roof
+    vent mat off the standing seam's area is correct and reports an overlap, while billing
+    the standing seam twice is wrong and reports the identical shape. Only a reader knows
+    which one is written, so name it and let them look.
+    """
+    findings = []
+    for key in sorted(consumed):
+        hits: dict[str, set[str]] = {}
+        for bom_key, row in consumed[key]:
+            for name, plan_key, key_field, *_ in ESTIMATE_PLANS:
+                if plan_key != bom_key or name == ALLOWANCES:
+                    continue
+                # Both spellings, because a section may price a row under a QUALIFIED key
+                # ("supply:semi_rigid") — checking only the bare one under-reports exactly
+                # where a section has taken the trouble to price precisely.
+                qualifier = row.get(QUALIFIED_KEY_FIELD.get(name, ""))
+                bare = str(row.get(key_field))
+                for row_key in ({bare, f"{bare}:{qualifier}"} if qualifier else {bare}):
+                    if row_key in priced.get(bom_key, ()):
+                        hits.setdefault(name, set()).add(row_key)
+        if hits:
+            findings.append({
+                "item": key,
+                "sections": {name: sorted(keys) for name, keys in sorted(hits.items())},
+            })
+    return findings
 
 
 def estimate_costs(bom: dict[str, Any], prices: Prices,
@@ -376,8 +552,10 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
     adjustments = prices.adjustments
     # The allowances "BOM" is the price table itself — see ``ALLOWANCES``. Written into a
     # local copy so a caller's payload is never mutated by having been priced.
+    driver_consumed: dict[str, list[tuple[str, Mapping[str, Any]]]] = {}
     if prices.allowances:
-        bom = {**bom, ALLOWANCES: _allowance_rows(prices)}
+        allowance_rows, driver_consumed = _allowance_rows(prices, bom, areas)
+        bom = {**bom, ALLOWANCES: allowance_rows}
     for name, bom_key, key_field, section_quantity_field, section_unit in ESTIMATE_PLANS:
         table = getattr(prices, _PLAN_TABLE[name])
         alternates = ALTERNATE_UNITS.get(name) or {}
@@ -427,14 +605,28 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
             # row — see ``ALTERNATE_UNITS``. Resolved per row rather than per section, because
             # `sump` is priced each while `footing` beside it is still priced by the yard.
             quantity_field, unit = section_quantity_field, section_unit
+            driver = getattr(price, "driver", None) if price is not None else None
             if price is not None and getattr(price, "unit", None):
                 unit = price.unit
-                quantity_field = alternates[unit]
+                # A driven allowance's unit is a printed LABEL — the driver already chose the
+                # field, and the resolved quantity is on the synthetic row's ``count``. Every
+                # other section's unit SELECTS a field, which is what ``alternates`` maps.
+                if not driver:
+                    quantity_field = alternates[unit]
             quantity = float(row.get(quantity_field) or 0.0)
             if price is None:
                 if quantity:
                     misses.append((bom_key, {"section": name, "key": key,
                                              "quantity": round(quantity, 2), "unit": unit}))
+                continue
+            if driver and not quantity:
+                # A driver that resolved to zero is not a free line, it is a line this house
+                # has none of — or a filter that matched nothing, which is the same report to
+                # the reader and a different fix. Reported as unpriced, never at $0: an
+                # allowance for scope the model says does not exist is exactly the claim the
+                # reader has to see to disagree with.
+                misses.append((bom_key, {"section": name, "key": key, "quantity": 0.0,
+                                         "unit": unit, "driver": driver}))
                 continue
             priced.setdefault(bom_key, set()).add(key)
             # Rounded to the cent *before* it is split or summed, so the three basis
@@ -459,6 +651,7 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
             specified = specified_product(name, key, row, products)
             rows.append({"key": key, "description": _describe(row, name, key),
                          **({"product": specified} if specified else {}),
+                         **({"driver": driver} if driver else {}),
                          "quantity": round(quantity, 2), "unit": unit,
                          "unit_price": price.as_dict(), "cost": cost.as_dict(),
                          "cost_fmt": cost.fmt(),
@@ -512,6 +705,9 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
                "basis_declared": prices.basis_declared,
                "basis": dict(prices.basis), "basis_notes": dict(prices.basis_notes),
                "bid": bid,
+               # Driven allowances measured off rows another section also priced. A finding
+               # for a reader, not an error — see ``_driver_overlaps``.
+               "driver_overlaps": _driver_overlaps(driver_consumed, priced),
                "unpriced": unpriced}
     if areas:
         payload["areas"] = dict(areas)

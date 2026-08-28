@@ -198,7 +198,7 @@ def test_payload_totals_include_extras_and_actuals(bom):
     assert "combined" not in totals
 
 
-def test_payload_per_sf_needs_areas(bom):
+def test_payload_per_sf_needs_areas(bom, tmp_path):
     """$/sf is opt-in on the payload, exactly as it is on ``estimate_costs``: supplied
     denominators produce it, absent ones omit it. The browser reads the same estimate the
     terminal prints, so a payload without ``areas`` was the reason ``/costs`` had no $/sf
@@ -211,9 +211,33 @@ def test_payload_per_sf_needs_areas(bom):
     with_areas = costs_payload(bom, prices, CostsState(), areas)["estimate"]
     assert with_areas["areas"] == areas
     assert with_areas["per_sf"]["total"]["conditioned"]["high"] > 0
-    # And absent — never zero — when the caller has no honest denominator.
-    without = costs_payload(bom, prices, CostsState())["estimate"]
+    # And absent — never zero — when the caller has no honest denominator. Read against a
+    # minimal price file rather than catlin's since 2026-08-27: the reference house drives
+    # two allowances off ``space_summary.*``, so calling it without areas is now an error
+    # (asserted below) rather than a payload with one key fewer.
+    from typehaus.cli.prices import load_prices as _load
+
+    (tmp_path / "prices.toml").write_text('[framing]\n"2x6" = 1.0\n')
+    plain = _load(tmp_path)
+    assert plain is not None
+    without = costs_payload(bom, plain, CostsState())["estimate"]
     assert "per_sf" not in without and "areas" not in without
+
+
+def test_the_reference_house_now_needs_its_areas(bom):
+    """The cost of driving an allowance off the space summary, stated where it can be read.
+
+    ``envelope-air-sealing-and-blower-door`` is $/SF of gross floor area, so an estimate
+    built without the denominator has no quantity for it — and a driven quantity that cannot
+    be found must never quietly become zero. Every production caller passes areas
+    (``server/space_summary.estimate_areas``); this pins that a caller who forgets is told,
+    rather than handed a house that air-seals for free."""
+    from typehaus.cli.prices import load_prices
+
+    prices = load_prices(CATLIN)
+    assert prices is not None
+    with pytest.raises(ValueError, match="without areas"):
+        costs_payload(bom, prices, CostsState())
 
 
 def test_payload_join_mirrors_estimate_plans(bom):

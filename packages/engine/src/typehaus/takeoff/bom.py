@@ -78,6 +78,7 @@ def bill_of_materials(
     ``test_framing_takeoff`` holds a coverage meta-test over ``ResolvedModel``'s own
     collections so anything the IR learns to resolve cannot quietly go unbilled.
     """
+    solar = solar_takeoff(model)
     return {
         "framing": framing_takeoff(model),
         "framing_by_size": framing_bom_by_size(model),
@@ -150,7 +151,15 @@ def bill_of_materials(
         "service_load": service_load_summary(model),
         "conduit": conduit_takeoff(model),
         "conductors": conductor_takeoff(model),
-        "solar": solar_takeoff(model),
+        "solar": solar,
+        # The priced view of the dict above (2026-08-27). Every ``ESTIMATE_PLANS`` entry
+        # reads a LIST of rows, and ``solar`` is a dict of summaries — panel and watt
+        # totals, the per-string cold-Voc check — so it could not be joined to a price
+        # without either flattening it (and losing the string check) or teaching the join
+        # about dicts (and inviting every future summary to be priced by accident). A
+        # second top-level key costs nothing and leaves the existing ``solar`` contract,
+        # which the UI reads, exactly as it was.
+        "solar_modules": solar["by_product"],
         # The backup microgrid (→ takeoff/electrical.py + takeoff/backup_calc.py): the
         # placed ESS hardware and shed-tier switching gear, plus the runtime estimate that
         # says whether the system as sized actually carries the house.

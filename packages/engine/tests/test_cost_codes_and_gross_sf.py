@@ -171,7 +171,8 @@ def test_every_trade_a_solid_category_can_name_has_an_account() -> None:
     assert set(SOLID_CATEGORY_TRADE.values()) <= set(_SOLID_TRADE_CODES)
 
 
-def test_no_catlin_solid_reaches_the_concrete_sub_unless_it_is_concrete(catlin_model) -> None:
+def test_no_catlin_solid_reaches_the_concrete_sub_unless_it_is_concrete(
+        catlin_model, catlin_areas) -> None:
     """End to end, against the real house: every priced solid filed under the concrete trade
     is either a pour or a row that never said what it was made of."""
     from typehaus.cli.prices import estimate_costs, load_prices
@@ -182,7 +183,7 @@ def test_no_catlin_solid_reaches_the_concrete_sub_unless_it_is_concrete(catlin_m
     material_of = {(row["category"], row.get("assembly")): row.get("structure_material")
                    for row in bom["structural_solids"]}
     concrete_keys = {row["key"] for row in
-                     estimate_costs(bom, prices)["sections"]["concrete"]["rows"]
+                     estimate_costs(bom, prices, catlin_areas)["sections"]["concrete"]["rows"]
                      if row["trade"] == "concrete"}
     for key in concrete_keys:
         category, _, assembly = key.partition(":")

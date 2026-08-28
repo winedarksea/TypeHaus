@@ -619,7 +619,10 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         "ducts", "duct_fittings", "duct_insulation", "sleeves", "floor_heat", "drainage",
         # Electrical
         "electrical_devices", "panel_schedule", "service_load", "conduit", "conductors",
-        "solar", "backup_power",
+            # `solar_modules` (2026-08-27) is the list view of `solar["by_product"]` that
+            # [solar_modules] prices — every ESTIMATE_PLANS entry reads a list, and `solar`
+            # is a dict of summaries. Both keys ship: the dict is the UI's contract.
+            "solar", "solar_modules", "backup_power",
         # Lighting
         "luminaire_schedule", "lighting_controls", "light_runs", "light_run_materials",
         "lighting_load",

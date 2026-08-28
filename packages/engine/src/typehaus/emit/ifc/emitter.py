@@ -251,7 +251,10 @@ def _emit_work_schedule(f: Any, ifc_project: Any, model: ResolvedModel,
         except ValueError:
             prices = None  # a malformed prices.toml must not stop the IFC export
         if prices is not None:
-            estimate = estimate_costs(bill_of_materials(model), prices)
+            from typehaus.server.space_summary import estimate_areas
+
+            estimate = estimate_costs(bill_of_materials(model), prices,
+                                      estimate_areas(model))
     bom = bill_of_materials(model)
     emit_sequence(f, ifc_project, model, build_work_items(model, bom, estimate),
                   element_entities)

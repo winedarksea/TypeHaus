@@ -40,7 +40,11 @@ def build_tasks_payload(model: Any, house_dir: Path) -> dict[str, Any]:
     except ValueError as exc:
         raise TasksRequestError(str(exc)) from exc
     bom = bill_of_materials(model)
-    estimate = (estimate_costs(bom, prices, None, product_labels(model.plan))
+    # Same denominators ``haus takeoff`` uses — see ``cmd_tasks._load_priced_model``.
+    from typehaus.server.space_summary import estimate_areas
+
+    estimate = (estimate_costs(bom, prices, estimate_areas(model),
+                               product_labels(model.plan))
                 if prices is not None else None)
     items = [item.as_dict() | {"status": state.status_of(item.slug),
                                "entry": (state.entries[item.slug].as_dict()

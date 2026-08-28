@@ -186,6 +186,14 @@
 # "1.25x0.416667 panel" =    # 156 LF — corner_trim, billed in [edge_trim]
 "1.25x11.875 rim" = { material = { low = 3, high = 4.75 }, labour = { low = 1.1, high = 2.1 } }  # 144 LF
 "1.25x7.25 rim" = { material = { low = 2, high = 3.25 }, labour = { low = 0.9, high = 1.7 } }  # 76 LF
+# The balcony's two rim bands (FS-SG-DECK, `JoistSpec.rim_material`), 20 LF of that same
+# stock, WHITE-PAINTED with the pillars, girts and knee braces they close the deck over
+# (2026-08-27). Qualified key, so the 48 LF of bare band above keeps its own rate. The delta
+# over that rate is primer + 2 coats at $2.00-4.50/SF, the same paint the pillars carry in
+# [concrete] "column:POST_WHITE_PAINT", over 0.75 SF of face per LF (the 7 1/4" outer face
+# plus the 1 1/4" bottom edge) = $1.50-3.38/LF. Painting a narrow band is ~85% labour, as
+# the pillar note says of a 6x6, so that splits $0.25-0.50 material and $1.30-2.90 labour.
+"1.25x7.25 rim:post-paint-white" = { material = { low = 2.25, high = 3.75 }, labour = { low = 2.2, high = 4.6 } }  # 20 LF
 # 96 LF of this is sheathing blocking. The other 474 LF arrived on 2026-08-26: three of the
 # catlin truss's four stand-off layers are 1-1/2" deep, so each carries its own eave/rake
 # return run (~158 LF ordered apiece) where the outrigger band used to carry one 3-1/2" one.
@@ -635,7 +643,10 @@
 # table back-solves to a consistent $256-267/cy but on a $137/cy ready-mix basis; Twin Cities
 # 2026 ready-mix is $180-200 and placement labour is up ~20-25% since. MN adds 42" frost depth
 # and footings stepped down the walk-out side. Rebar is IN this rate (see the [basis_notes]).
-"footing" = { low = 280, high = 450 }  # 38.63 cy — was $190-300
+# SPLIT 2026-08-27. Material is the Twin Cities 2026 ready-mix quote this comment already
+# names ($180-200/cy, a YARD'S PRE-TAX SHEET) plus the rebar and form lumber consumed in the
+# pour; labour is the residual. That order matters — see the [basis_notes] on this section.
+"footing" = { material = { low = 195, high = 240 }, labour = { low = 85, high = 210 } }  # 38.63 cy — was $190-300, then merged $280-450
 "pad" = { low = 500, high = 1000 }  # 0.59 cy — all setup, no volume; really a $300-600 minimum charge
 # ** SECOND-LARGEST ERROR. ** $175-280/cy is $2.16-3.46/SF at 4" — bare ready-mix with no
 # labour in it. Minnesota installed slab is $6.60-13.20/SF (CalcShed by-state, Aug 2026);
@@ -654,7 +665,10 @@
 #   * the base course bills there too, as "capillary-break-stone". [footing_bedding] is the
 #     washed rock in the 7" undercut BESIDE each footing and always was — a different
 #     quantity from the 4" course under the slab field, which nothing was ordering at all.
-"slab" = { low = 390, high = 685 }  # 26.37 cy — SLAB-ON-GRADE ONLY, was $400-700
+# SPLIT 2026-08-27: ready-mix $180-200/cy plus the wire mesh already named above
+# ($0.20-0.50/SF, $16-40/cy at 3.5"); placing, screeding and finishing are the residual, and
+# finishing is why a slab's labour half is wider than a footing's.
+"slab" = { material = { low = 200, high = 250 }, labour = { low = 190, high = 435 } }  # 26.37 cy — SLAB-ON-GRADE ONLY, was merged $390-685
 # The FPSF wings under the sunken-garden slab (IRC R403.3) are `Slab` elements because a
 # horizontal band of rigid foam has no other element kind to be — see
 # params/sunken_garden.FROST_WINGS. They are 1" and 2" XPS and nothing else, so pricing them
@@ -839,6 +853,27 @@
 # and primer + 2 coats at $2.00-4.50/SF over 1.833 SF of face per LF. Painting a 6x6 is ~85%
 # labour — four narrow faces with cut-in at cap and base.
 "column:POST_WHITE_PAINT" = { material = { low = 1130, high = 2830 }, labour = { low = 1700, high = 4240 } }  # 0.40 cy = 51.4 LF
+#
+# WHITE-PAINTED GARDEN FRONT FRAME — 39.2 LF over four members, 0.34 cy. BM-SG-FRW/FRE (the
+# porch's front pair, 3-2x12 at 10'-0") and BM-SG-GIRT-FW/FE (the balcony's two front E-W
+# girts, 2x12 at 9'-7 1/2"). Priced HERE and not in [timber] for the same reason the pillars
+# above are: `cli/prices.MATERIAL_ONLY` admits a solid to [timber] on its structure material,
+# and "post-paint-white" is not one of the three lumber tags it names — so the row prices by
+# QUALIFIED key, which is the documented escape hatch. It is not double-counted: a Beam bills
+# in no other table.
+#
+# Same stock and the same sections as "beam:BEAM_KDAT" in [timber], which these four left on
+# 2026-08-27, so the lumber half is that row's own rates, member for member:
+#   20.0 LF  3-2x12 KDAT at $7.77-12.87 mat + $1.50-3.00 lab = $155-257 mat, $30-60 lab.
+#   19.2 LF  2x12 KDAT at $2.59-4.29 mat + $1.40-2.60 lab = $50-83 mat, $27-50 lab.
+# Then primer + 2 coats at $2.00-4.50/SF, the same paint the pillars carry, over the faces a
+# beam under a deck actually shows — two sides plus the soffit, the top being covered by the
+# joists: 2.25 SF/LF on the 4 1/2" pair and 2.0 SF/LF on the 1 1/2" girts = 83.5 SF, i.e.
+# $167-376. Painting narrow faces with cut-in at every bearing is ~85% labour (the pillar
+# note above), so that splits $29-63 material and $138-313 labour.
+# -> material $234-403 and labour $195-423, i.e. $429-826 over 0.34 cy. The paint is roughly
+# half of it: this is a finish line item wearing a beam's clothes.
+"beam:BEAM_WHITE_PAINT" = { material = { low = 688, high = 1185 }, labour = { low = 574, high = 1244 } }  # 0.34 cy = 39.2 LF
 #
 # FRAMED DUCT SOFFITS — SF-S-DUCT and SF-S-SUITE, 4.38 cy of 2x framing with gypsum on three
 # sides, taped and finished to paint-ready. At a 14"x12" section that is 101.4 LF and 3.17 SF of
@@ -1692,7 +1727,10 @@
 # which is why $320-600 was defensible ONLY IF those were modelled separately. THEY ARE NOT IN
 # THE MODEL AT ALL, so the all-in rate is the honest one. See plans/cost-options.md for the
 # rebar question, which is the largest single thing this file still does not name.
-"CATLIN_BASEMENT_12" = { low = 420, high = 700 }  # W-B-E1/E2 only since 2026-08-21
+# SPLIT 2026-08-27 on the same pre-tax ready-mix anchor as [concrete]: $180-200/cy plus the
+# rebar this all-in rate absorbs. Forming, bracing, placing and stripping are the residual and
+# are most of the number, which is exactly the paragraph above's point about thickness.
+"CATLIN_BASEMENT_12" = { material = { low = 210, high = 260 }, labour = { low = 210, high = 440 } }  # W-B-E1/E2 only since 2026-08-21
 # 2026-08-21: the eight non-deck-bearing perimeter segments went 12" -> 8" (108 LF, -12.4 cy).
 # ** DO NOT price these off the 12" row. ** $420-700/cy was derived per-CY at 12"; applied to
 # an 8" volume it books the saving as ~$5,200-8,700, when the trade only gives back ~$25-45/LF
@@ -1702,11 +1740,13 @@
 #   8" x 9'-4" = 0.2305 cy/LF;  $110-180/LF at 9'-0" -> $114-187/LF at 9'-4" -> ~$495-810/cy
 # Vertical steel (#6 @ 48" o.c., ~27 bars / ~245 LF, which 12" did not need) has no line item
 # of its own — the same all-in rate that already absorbs the 12" wall's rebar absorbs this.
-"CATLIN_BASEMENT_8" = { low = 495, high = 810 }  # W-B-N1/N2/N3, W-B-W1/W2
+# SPLIT 2026-08-27. Slightly more material per yard than the 12" row because the vertical #6
+# steel this wall needs and that one did not is inside the same all-in rate.
+"CATLIN_BASEMENT_8" = { material = { low = 215, high = 270 }, labour = { low = 280, high = 540 } }  # W-B-N1/N2/N3, W-B-W1/W2
 # The south wall, split out 2026-08-18 so its full-height parge could stay while the others
 # took an above-grade panel instead. Identical pour, identical formwork, so identical basis —
 # the assemblies differ only outboard of the concrete.
-"CATLIN_BASEMENT_8_GARDEN" = { low = 495, high = 810 }
+"CATLIN_BASEMENT_8_GARDEN" = { material = { low = 215, high = 270 }, labour = { low = 280, high = 540 } }
 # 2026-08-18: the same pour with the sauna's liner inboard of it (W-B-S2). Priced identically
 # to its parent above, because this table prices PLACED CONCRETE by the yard and the concrete
 # is the same concrete — the liner it gained is basswood, furring and foil-polyiso, and all
@@ -1749,7 +1789,11 @@
 # the cheapest number anywhere, which a 476 SF garage carrying its own mobilisation will not
 # reach. KEYING WARNING: ICF is bought per SF OF WALL, not per cy. If the core thickness ever
 # changes this rate silently becomes wrong while still looking reasonable.
-"GARAGE_ICF_6" = { low = 756, high = 1296 }  # 8.82 CY = 476 SF — was $480-1,000
+# SPLIT 2026-08-27, and this is the row where the split says the most: an ICF wall is BOUGHT,
+# not formed. The blocks are $5.00-7.00/SF of face and at ~54 SF/cy that is $270-378/cy of
+# permanent formwork on top of the ready-mix and steel — over half the rate is material, where
+# a site-formed wall is under a third. Taxing it as merged was leaving real money out.
+"GARAGE_ICF_6" = { material = { low = 460, high = 600 }, labour = { low = 296, high = 696 } }  # 8.82 CY = 476 SF — was merged $756-1,296
 # Four stem segments now (2026-08-26): the two east segments flanking the overhead door
 # PLUS the two SE/NE corner segments that carry the brick's 4'-0" corner returns
 # (W-GF-S3/N2) — all four formed with a brick-ledge block so they carry the wainscot's
@@ -1778,12 +1822,17 @@
 # block, the geogrid, the drainage stone behind the wall and the compacted lifts; the levelling
 # pad below it is billed in [footing_bedding] as MnDOT Class 5. Money is within 2% of the rate
 # it replaces — this is a legibility change, not a repricing.
-"RETAINING_BLOCK_12" = { low = 30, high = 60, unit = "SF" }  # 245.0 SF of face
+# SPLIT 2026-08-27, on a delivered-block price rather than a back-out: SRW units run
+# $12-20/SF of face and the geogrid and drainage stone behind them $3-6/SF, both pre-tax
+# yard prices. There is no ready-mix in this row at all — see the [basis_notes] warning.
+"RETAINING_BLOCK_12" = { material = { low = 15, high = 26 }, labour = { low = 15, high = 34 }, unit = "SF" }  # 245.0 SF of face
 "SAUNA_LINER_ON_CONCRETE" = { low = 420, high = 700 }  # 4.61 CY
 # 27 SF of face per cy, so $500-900/cy is $18.52-33.33/SF of ONE face. Market for a poured
 # freestanding site wall is $15-35/SF of face, and this one has two exposed architectural
 # faces, its own footing, and site-access constraints. Third-largest wall line in the house.
-"SUNKEN_GARDEN_WALL" = { low = 500, high = 900 }  # 28.91 CY — was $350-650
+# SPLIT 2026-08-27: same ready-mix anchor, and the widest labour half in the section — two
+# exposed architectural faces, its own footing and constrained site access are all wage.
+"SUNKEN_GARDEN_WALL" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # 28.91 CY — was merged $500-900
 
 [timber]
 # NEW 2026-08-22 — [low, high] $/cy, by solid category, qualified by assembly. This is the
@@ -1820,31 +1869,33 @@
 # -> material $252-468 and labour $180-360, i.e. $432-828 over 0.19 cy.
 "beam:BEAM_LVL" = { material = { low = 1326, high = 2463 }, labour = { low = 947, high = 1895 } }  # 0.19 cy = 12.0 LF
 #
-# BEAM, KDAT — 130.5 LF over eighteen members, 1.13 cy. The breezeway's whole frame, the
-# balcony's four E-W girts, and the garden's seven beams. Same eighteen members and the same
-# 130.5 LF as the 2026-08-23 morning file; the volume moved 1.04 -> 1.13 cy because the
+# BEAM, KDAT — 91.3 LF over fourteen members, 0.79 cy. The breezeway's whole frame, the
+# balcony's two REAR E-W girts, and five of the garden's seven beams. Four members left this
+# row on 2026-08-27 for "beam:BEAM_WHITE_PAINT" in [concrete] — the garden's FRONT frame,
+# painted white with the six pillars it stands beside. Nothing about the framing changed
+# with them: same stock, same sections, same lineal feet, just paint and a row of its own.
+# (The volume moved 1.04 -> 1.13 cy for the eighteen-member row on 2026-08-23, when the
 # balcony beams and the girts each went 2" deeper (2x10 -> 2x12) to clear IRC Table
-# R507.5(1) prescriptively — see params/sunken_garden.py::SPEC.balcony_beam.
+# R507.5(1) prescriptively — see params/sunken_garden.py::SPEC.balcony_beam.)
 #   14.2 LF  2-2x8, the four breezeway floor and roof beams at 3'-7". [framing] "2-2x8" is
 #            $2.20-3.10 mat + $1-2 lab; KDAT is $3.00-5.00 mat = $4.00-7.00/LF.
 #   12.0 LF  2x6, the three breezeway rafters at 4'-0". $1.20-1.90 mat + $0.90-1.60 lab.
-#   38.3 LF  2x12, the four E-W balcony girts. [framing] "2x12" is $1.85-2.60 mat, so KDAT
-#            is $2.59-4.29 mat + $1.40-2.60 lab. (Two of the four lost 1/2" each when the
-#            beams they butt went from 3 1/2" to 4 1/2" wide; that is unchanged — the 2x12
-#            swap moved their depth, not their length.)
-#   40.0 LF  3-2x12, the porch's back and front pairs at 10'-0" each. Three plies of that
-#            same 2x12 are $5.55-7.80/LF in SPF and $7.77-12.87 in KDAT.
-#   26.0 LF  3-2x12, the three balcony beams at 8'-8", now the identical member to the
-#            porch pairs above and carried at the identical rate.
+#   19.1 LF  2x12, the two REAR E-W balcony girts at 9'-6 1/2". [framing] "2x12" is
+#            $1.85-2.60 mat, so KDAT is $2.59-4.29 mat + $1.40-2.60 lab. (The two FRONT
+#            segments, 19.2 LF, are the painted row — 1" longer apiece, because the rear
+#            pair stops at the pillar faces and the front pair at the beam faces.)
+#   20.0 LF  3-2x12, the porch's BACK pair at 10'-0" each. Three plies of that same 2x12 are
+#            $5.55-7.80/LF in SPF and $7.77-12.87 in KDAT. (The front pair is painted.)
+#   26.0 LF  3-2x12, the three balcony beams at 8'-8", the identical member to the porch
+#            pair above and carried at the identical rate.
 #
 # The KDAT premium used throughout these two built-up rows is the same one the girt line
 # above already carries: +40%/+65% on MATERIAL, labour unchanged. Labour on a built-up
 # beam is per LF of assembled member, not per ply — that is why [framing] prices "2-2x10"
 # labour at $1-2 while a single "2x10" joist is $1.30-2.40. A 3-ply is heavier to set than a
 # 2-ply, so it is carried at $1.50-3.00/LF; that step is a judgement, not a quote.
-# -> material $669-1,108 and labour $178-345, i.e. $847-1,453 over 1.13 cy. The deepening
-# costs the house about $60-125 in material and nothing in labour.
-"beam:BEAM_KDAT" = { material = { low = 592, high = 980 }, labour = { low = 157, high = 305 } }  # 1.13 cy = 130.5 LF
+# -> material $464-768 and labour $121-235, i.e. $585-1,003 over 0.79 cy.
+"beam:BEAM_KDAT" = { material = { low = 587, high = 972 }, labour = { low = 153, high = 297 } }  # 0.79 cy = 91.3 LF
 #
 # COLUMN, KDAT — the four breezeway 6x6 posts, 28.4 LF, 0.22 cy. [framing] "6x6" is $5-8.50
 # mat + $2.50-5 lab; these are GROUND-CONTACT rated (the brief) and stand on standoff bases
@@ -2163,20 +2214,30 @@
 # vs rigid duct comparison.
 # $/LF, by system
 #
-# ** THESE RATES ARE NOW A BLEND, AND THAT IS THE ONE THING WRONG WITH THIS SECTION. **
-# The 2026-08-25 ERV pass replaced nine rectangular sheet-metal trunks with 75 mm semi-rigid
-# radials, which are a different product at a different price: semi-rigid runs about
-# $2.50-5.00/LF in material and installs far faster than sheet metal (that is the whole
-# labour argument for a radial system). The BOM keys `[ducts]` on `system` alone, so a
-# supply row is one rate over 6" insulated riser, 3" semi-rigid radial and 14x8 galvanized
-# trunk together. The takeoff DOES report `material` and `diameter_in` per row, so this
-# section wants the qualified-key treatment `[drainage]` and `[wall_structure]` already have
-# (cli/prices.QUALIFIED_KEY_FIELD) — recorded in plans/TODO.md rather than half-done here.
-# Until then the rates below are weighted for today's mix and will drift if it changes.
-"exhaust" = { material = { low = 3, high = 8 }, labour = { low = 5, high = 12 } }  # 246.4 LF
-"outdoor_air" = { material = { low = 6, high = 13 }, labour = { low = 8.5, high = 19 } }  # 37.6 LF
-"return" = { material = { low = 5, high = 11 }, labour = { low = 7, high = 16 } }  # 198.6 LF
-"supply" = { material = { low = 5, high = 11 }, labour = { low = 7, high = 16 } }  # 300.6 LF
+# ** UN-BLENDED 2026-08-27. ** The 2026-08-25 ERV pass replaced nine rectangular sheet-metal
+# trunks with 75 mm semi-rigid radials, and until today `[ducts]` keyed on `system` alone, so
+# one `supply` rate covered a 6" insulated riser, a 3" semi-rigid radial and a 14x8 galvanized
+# trunk together. `ducts` now takes the qualified-key treatment `[drainage]` and
+# `[wall_structure]` already have (cli/prices.QUALIFIED_KEY_FIELD, qualifier `material`), so a
+# `"supply:semi_rigid"` row prices the radial and a bare `"supply"` row prices the sheet metal.
+#
+# ** A ROW WHOSE MATERIAL THE MODEL NEVER NAMED PRICES ON THE BARE KEY. ** The four sheet-metal
+# supply segments and the one return stub carry an empty `material`, which is falsy, so they
+# fall through to the bare rows below — and those bare rows are therefore RE-BASED to sheet
+# metal alone rather than left at the old blend.
+#
+# Semi-rigid is about half the material of sheet metal and installs in a fraction of the time;
+# that speed is the whole labour argument for a radial system, and it is why the section total
+# falls when the blend is taken out. It was over-priced, not the radial under-priced.
+# $/LF, by system, optionally qualified by material
+"exhaust" = { material = { low = 3, high = 8 }, labour = { low = 5, high = 12 } }  # sheet-metal fallback, 0 LF today
+"exhaust:semi_rigid" = { material = { low = 2.5, high = 5 }, labour = { low = 3, high = 7 } }  # 246.4 LF of 3" and 6" ERV branch
+"outdoor_air" = { material = { low = 6, high = 13 }, labour = { low = 8.5, high = 19 } }  # sheet-metal fallback, 0 LF today
+"outdoor_air:semi_rigid" = { material = { low = 3.5, high = 7 }, labour = { low = 3.5, high = 8 } }  # 37.6 LF of 6" insulated — dearer than a bare radial, it is the run that sweats
+"return" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # 0.5 LF of galvanized stub
+"return:semi_rigid" = { material = { low = 2.5, high = 5 }, labour = { low = 3, high = 7 } }  # 198.1 LF of 3" radial
+"supply" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # 53.9 LF of galvanized trunk
+"supply:semi_rigid" = { material = { low = 2.75, high = 5.5 }, labour = { low = 3, high = 7 } }  # 246.7 LF of 3" and 6" radial
 
 [duct_fittings]
 # NEW 2026-08-25, and it could not have existed a day earlier: a duct elbow is counted off
@@ -2227,6 +2288,84 @@
 "1.0" = { material = { low = 1.3, high = 2.4 }, labour = { low = 5, high = 10 } }  # 60.3 LF
 "1.25" = { material = { low = 1.9, high = 3.4 }, labour = { low = 6, high = 12 } }  # 36.3 LF
 "1.5" = { material = { low = 2.3, high = 4.2 }, labour = { low = 7, high = 14.5 } }  # 35.0 LF
+
+[conductors]
+# NEW SECTION 2026-08-27 — [low, high] $/CONDUCTOR-FOOT, split material/labour.
+# ** REPLACES the `electrical-branch-circuit-conductors` allowance ($10,000-25,000). **
+# The wire in the pipe [conduit] above buys. `UNPRICED_VIEWS` used to say of this table "the
+# model resolves the route but not the wire"; it resolves both, and the route and the wire
+# are two separate orders at two separate rates. Neither includes the other.
+#
+# ** READ THE UNIT TWICE: this is per CONDUCTOR-foot, not per cable-foot. ** The takeoff
+# reports `length_ft` as pull length x conductors-per-circuit x circuits, and NM-B is bought
+# as a CABLE carrying three or four of them. So a 12/2 cable at $0.60-1.05/ft of cable is
+# $0.20-0.35 per conductor-foot, and that division is the whole derivation below. Quoting a
+# cable rate here would triple the section.
+#   "1"  120 V branch circuit — 3 conductors (hot, neutral, ground). 14/2 and 12/2 NM-B
+#        copper at $0.60-1.05/cable-ft; rough-in labour $0.90-2.25/cable-ft.
+#   "2"  240 V branch circuit — 4 conductors. Range, dryer, EV and the heat pump, so 10/3,
+#        8/3 and 6/3 at $1.80-4.40/cable-ft; labour $1.40-3.20, heavier cable to pull and
+#        terminate but fewer of them.
+#
+# ** THE QUANTITY IS THE TAKEOFF'S OWN ESTIMATE AND IT IS CONSERVATIVE. ** `mean_pull_ft` is
+# the mean POWER RACEWAY run plus a 10 ft make-up allowance (34.3 ft here), used as a proxy
+# for a branch-circuit pull — but most circuits in this house are cabled, not in raceway, so
+# the raceways in the model are a subset and a short one. The retired allowance assumed
+# 4,500-6,500 cable-feet; 4,218 conductor-feet is about 1,235 cable-feet, roughly a fifth of
+# that. THE ESTIMATE THEREFORE FALLS by $7-19k on this line, and the fall is a MEASUREMENT
+# QUESTION, not a saving: if the real pull length is wanted, lengthen `mean_pull_ft`'s basis
+# in takeoff/electrical.py::conductor_takeoff, do not inflate these rates to compensate — a
+# $/LF nobody can sanity-check against a supplier list is exactly what this file refuses.
+# $/conductor-LF, by circuit pole count
+"1" = { material = { low = 0.20, high = 0.35 }, labour = { low = 0.30, high = 0.75 } }  # 2,160.6 conductor-LF, 21 circuits x 3
+"2" = { material = { low = 0.45, high = 1.10 }, labour = { low = 0.35, high = 0.80 } }  # 2,057.7 conductor-LF, 15 circuits x 4
+
+[solar_modules]
+# NEW SECTION 2026-08-27 — [low, high] $/WATT DC, split material/labour.
+# ** REPLACES the `electrical-pv-array-modules-and-racking` allowance ($24,000-46,000). **
+# The clearest conversion in the file: solar is the one trade that quotes in $/W rather than
+# $/each, and the model carries the watts. Reads `solar_modules`, the by-product view of the
+# `solar` BOM dict (takeoff/bom.py) — the dict itself stays as it was for the UI.
+#
+# SCOPE IS MODULES, RACKING AND RAPID-SHUTDOWN HARDWARE, and the labour to set them. The
+# inverter, the battery and the PV junction box are placed elements and bill in [placeables];
+# billing them here as well is the one double-count this section can make.
+#
+# $3.00-5.20/W. The low end is the 2026 MN competitive full-scope installed rate the retired
+# allowance quoted ($3.00-3.82/W); the high end is the SMALL-ARRAY premium, which the old
+# lump could not express — permitting, interconnection, the crane day and the design fee are
+# nearly fixed, so a 5.3 kW array carries them on a fifth of the watts a 25 kW array does.
+# Split 65/35 on the industry norm, the same figure the allowance used.
+#
+# ** THE ARRAY IS SMALLER THAN THE ALLOWANCE ASSUMED. ** $24,000 at $3.00/W is an 8 kW array;
+# the model has 5,280 W. That drift is the whole reason for this section: the line now moves
+# when a module is added or deleted, and the old lump never did.
+# $/W DC, by module product
+"Aptos 440 W module, 69.4 x 44.6 x 1.2 in" = { material = { low = 1.95, high = 3.38 }, labour = { low = 1.05, high = 1.82 } }  # 12 modules, 5,280 W
+
+[data_raceways]
+# NEW SECTION 2026-08-27 — [low, high] $/LF, split material/labour.
+# ** PARTLY replaces `electrical-structured-low-voltage-drops`. READ THIS BEFORE ASSUMING IT
+# REPLACED THE WHOLE THING. ** This table is the PIPE, not the cable: `data_raceway_takeoff`
+# bills raceway the low-voltage installer pulls Cat 6A through, and buying 268 LF of ENT does
+# not buy a single jack. The drops themselves — cable, box, jack and termination — stay in
+# [allowances], now DRIVEN off the modelled data-device count rather than a lump. See
+# `electrical-structured-low-voltage-drops` there.
+#
+# Disjoint from [conduit] by construction, not by convention: `conduit_takeoff` skips every
+# run whose service is "data" or unset and this table takes exactly those, so the two
+# partition `model.conduits` and no run can bill twice. Tag families read the same way —
+# CD-*-DATA-* and CD-*-SPARE-* here, CD-B-KITCHEN and CD-B-PV-INV there.
+#
+# Rates are below [conduit]'s: a data raceway is ENT/smurf rather than EMT, it is pulled
+# empty, and it is inspected as a low-voltage system, so the labour is a comms installer's
+# and not an electrician's.
+#   "data"   208.7 LF of 3/4" plus 28.0 LF of 1-1/4" chase, blended.
+#   "spare"  28.0 LF of 2" capped chase — the cheapest line in the file to install and the
+#            most expensive one to add later, which is why it is in the model at all.
+# $/LF, by service
+"data" = { material = { low = 0.55, high = 1.40 }, labour = { low = 2.25, high = 5.00 } }  # 240.1 LF over 7 runs
+"spare" = { material = { low = 1.10, high = 2.60 }, labour = { low = 2.00, high = 4.50 } }  # 28.0 LF, 1 run
 
 [plumbing_specialties]
 # RESEARCHED 2026-08-08 — [low, high] $ each, device only, no installation. Keyed on the
@@ -2597,9 +2736,37 @@
 # says what a yard of concrete costs. What changes is only that the total finally includes the
 # excavator — and a total that omits the excavator is a subtotal wearing the wrong label.
 #
+# ** A ROW MAY NOW NAME A DRIVER (2026-08-27), and most of the block does. ** A driver is a
+# numeric field on a BOM table the model already resolves:
+#
+#     roof-ventilated-underlayment-mat = { low = 1.00, high = 1.85, unit = "SF",
+#                                          driver = "envelope_layers.net_area_sqft[material=standing-seam]" }
+#
+# The row stops being a lump sum and becomes RATE x MODEL QUANTITY without leaving this table,
+# which is exactly right: the two facts an allowance carries are separable. "Nobody has quoted
+# this scope" is still true, so it keeps an allowance's range, an allowance's cost code and an
+# allowance's place in the work package. "The model cannot measure it" is no longer true, so
+# the line moves when the house moves. 17 of these rows are driven and 30 are not.
+#
+# Grammar is "<bom_table>.<field>" with an optional [<field>=<value>,...] filter; the two
+# addressable scalars are space_summary.conditioned_sf and space_summary.gross_sf; and the
+# pseudo-field `rows` COUNTS rows for a table that carries no count column (panel_schedule is
+# one row per circuit). ** MIND THE STACKED-LAYER TRAP: ** envelope_layers reports a LAYER, not
+# a plane, so [scope=roof] sums nine layers into 12,464 SF of a 2,209 SF roof. Two filters.
+#
+# An undriven row is unchanged in every way: quantity 1, unit "ls", the number written is the
+# line total. A driver that resolves to ZERO reports the row as unpriced rather than as $0 —
+# an allowance for scope the model says does not exist is a claim the reader has to see.
+#
 # ** THE ONE RULE: an allowance must be scope NO OTHER SECTION PRICES. ** The BOM join that
-# protects every other table from a mirror does not exist here, and nothing in the loader can
-# catch a double-count. Two rows from the register are therefore deliberately ABSENT:
+# protects every other table from a mirror does not exist here. Drivers make a breach one line
+# away — pointing at envelope_layers.net_area_sqft[material=gwb] bills the drywall twice — and
+# they also brought this table its first automatic check: `haus takeoff` now lists every driven
+# allowance whose quantity was measured off rows another section PRICED. It is a finding, not
+# an error, and it cannot be anything else: measuring the vent mat off the standing seam's area
+# is right and billing the standing seam twice is wrong, and the two drivers are the same
+# shape. Twelve rows report an overlap today and every one of them is a measurement.
+# Two rows from the register are deliberately ABSENT:
 #
 #   Rebar, $10,000-18,000.  [basis_notes] concrete says rebar is INSIDE the $/cy rates, and
 #                           those rates were raised on 2026-08-20 on exactly that assumption.
@@ -2658,11 +2825,27 @@ concrete-pumping = { low = 4600, high = 7800 }
 # MN code minimum is DAMP-proofing only (IRC R406.1) at $1,200-3,200; +dimple board is
 # $3,500-7,000; a full membrane is $8,000-16,000. The range spans all three deliberately —
 # this is a decision nobody has made yet, not an uncertainty in a price.
-foundation-damp-or-waterproofing = { low = 1200, high = 16000 }
+# DRIVEN 2026-08-27 off the foundation wall's own air-barrier area — 1,116.3 SF, the below-
+# grade face this is applied to. $1.08-14.33/SF, and the width of that is not uncertainty in a
+# price: it is three different products. Damp-proofing alone is ~$1.00-1.75/SF, +dimple board
+# ~$3.00-6.00, a full membrane ~$7.00-14.00. THE DECISION IS STILL UNMADE — what the driver
+# changed is only that the number now follows the wall.
+foundation-damp-or-waterproofing = { low = 1.08, high = 14.33, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=foundation wall,material=air-barrier]" }
+# NOT DRIVEN, and the missing quantity is named rather than proxied (2026-08-27): nothing in
+# the BOM says an opening lands in a CONCRETE wall. `openings` reports kind, operation and
+# size; the wall's assembly is not on the row. `openings.count[kind=rough_opening]` is 4 and
+# looks right until you read the tags — two are brick (AO-B-BRICK-*) and two are interior
+# cased openings. Give `opening_takeoff` the host wall's assembly and this converts in a line.
 concrete-window-bucks-and-blockouts = { low = 1500, high = 4500 }
 # Minnesota has required radon-resistant new construction since June 2009. The [concrete]
 # `sump` row is the basin only; this is the sub-slab mat, the stack and the window wells.
-radon-roughin-and-egress-window-wells = { low = 3400, high = 10200 }
+# DRIVEN 2026-08-27 off sub-slab area — 1,783.7 SF of capillary-break stone, which is exactly
+# the mat a passive radon system is laid in. $1.91-5.72/SF is the retired lump over that area.
+# ** THE WINDOW WELLS RIDE INSIDE THAT RATE and they are a COUNT, not an area. ** Left that way
+# on purpose rather than split: the model has no egress-well element to count, so splitting
+# would mean inventing one quantity to make the other honest. If wells are ever placed, take
+# them out of this rate the same day.
+radon-roughin-and-egress-window-wells = { low = 1.91, high = 5.72, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=slab,material=capillary-break-stone]" }
 # ** ANSWERED 2026-08-20: SUMMER POUR, so this is ZERO. ** Foundation and suspended deck go in
 # May-Oct. The row is kept at zero rather than deleted, because it is the reminder of what a
 # schedule slip costs: if the pour lands Nov-Apr instead, this is 10-25% of the whole concrete
@@ -2689,7 +2872,14 @@ site-survey-staking-and-erosion-control = { low = 2000, high = 6000 }
 # true of a 1x4 batten and false of a rolled mat. So it is carried here, priced off the same
 # 1,430.3 SF at roughly $1.00-1.85/SF installed. It is not optional: it is the assembly's
 # only drying path, and without it the condensation gate cannot pass at any foam thickness.
-roof-ventilated-underlayment-mat = { low = 1450, high = 2650 }
+# DRIVEN 2026-08-27 off the standing seam it sits under — 1,459.3 SF, the house roof plane.
+# The rate is the row's own $1.00-1.85/SF, which is where the retired $1,450-2,650 lump came
+# from, so the line total barely moves. What moved is that it now FOLLOWS THE ROOF: shrink the
+# main roof and this shrinks with it, which the lump never did.
+# `standing-seam` matches only the house roof — the garage is `standing-seam-nailstrip` and
+# the walls are `standing-seam-nailstrip-26` — and that is correct: CATLIN_ROOF carries the
+# vent mat, RF-GARAGE does not.
+roof-ventilated-underlayment-mat = { low = 1.00, high = 1.85, unit = "SF", driver = "envelope_layers.net_area_sqft[material=standing-seam]" }
 # --- millwork -------------------------------------------------------------------------------
 # THE STUDY BOOKCASE WALL's casework (W-A-SN, CATLIN_INT_2X4_BOOKCASE_12). Same shape of
 # problem as the vent mat above: the wall IS modelled, but what the BOM legitimately sees is
@@ -2726,7 +2916,17 @@ cabinet-study-bookcase-wall = { low = 2400, high = 5200 }
 # ** DO NOT let the modelled synthetic field underlayment be value-engineered out while this
 # row stays at the minimum — together they are the strategy, and dropping one of the two
 # leaves the roof with neither defence. **
-roof-ice-and-water-barrier-code-minimum = { low = 5000, high = 11000 }
+# DRIVEN 2026-08-27 off BOTH roof planes — 2,208.9 SF (house 1,459.3 + garage 749.6). Two
+# filters, not one: `[scope=roof]` alone sums nine stacked layers into 12,464 SF of a 2,209 SF
+# roof, which is the exact mistake the driver grammar's comment warns about.
+# ** RE-SOURCED, AND IT LANDS WELL BELOW THE RETIRED LUMP ($5,000-11,000). ** That lump works
+# out at $2.26-4.98 per SF of ROOF for a band that covers only the eaves and valleys. Self-
+# adhered membrane is $0.55-1.10/SF of COVERED area with $0.70-1.40 of labour on it, and a
+# code-minimum band on a simple gable pair is 35-45% of the plane. $1.20-2.60 per SF of roof
+# is that arithmetic. ** THE OLD NUMBER WAS A FULL-DECK PRICE ON A BAND'S SCOPE ** — the
+# full-deck alternative is a separate $17,400-38,300 UPGRADE entry in plans/cost-options.md,
+# and the note below still explains why this roof does not take it.
+roof-ice-and-water-barrier-code-minimum = { low = 1.20, high = 2.60, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=roof,function=cladding]" }
 # Partly overlaps [edge_trim]; this is the balance — valley metal, boots, custom flashings
 # and snow retention over a walking surface.
 roof-flashings-boots-and-snow-retention = { low = 6000, high = 14000 }
@@ -2738,11 +2938,26 @@ roof-flashings-boots-and-snow-retention = { low = 6000, high = 14000 }
 # mirror this section's header warns about. Deliberately zero, not deleted.
 # envelope-rainscreen-furring =    # was $4,400-8,800; now modelled in [framing] + [hardware]
 # 45 openings. Tape, sill pans and the air-sealing detail at each one.
-envelope-opening-flashing-and-sill-pans = { low = 5100, high = 11800 }
+# DRIVEN 2026-08-27 off the window count — 45. The row's own comment said "45 openings" and
+# that is what `openings.count[kind=door]` would NOT have given (36 doors, and an interior door
+# takes no sill pan); windows are the openings this scope wraps. $113-262 each is the retired
+# lump divided by the same 45, re-checked against flashing tape, a formed pan and the hour it
+# takes to detail one, and it holds.
+envelope-opening-flashing-and-sill-pans = { low = 113, high = 262, unit = "ea", driver = "openings.count[kind=window]" }
 # MN limits to 3.0 ACH50, so the second blower-door test is not optional.
-envelope-air-sealing-and-blower-door = { low = 3100, high = 7200 }
+# DRIVEN 2026-08-27 off gross floor area — 6,098 SF, one of the two addressable scalars. Air
+# sealing is priced per SF of house in every published guide, and the second blower-door test
+# is a fixed fee inside that. $0.50-1.20/SF reproduces the retired $3,100-7,200 almost exactly
+# and now scales when the house does.
+envelope-air-sealing-and-blower-door = { low = 0.50, high = 1.20, unit = "SF", driver = "space_summary.gross_sf" }
 # Poly at the low end, a smart membrane at the high — see the upgrade entry in cost-options.
-envelope-interior-vapour-retarder = { low = 2200, high = 10700 }
+# DRIVEN 2026-08-27 off exterior wall area — 4,328.0 SF, read as the SHEATHING rows because
+# sheathing is the one layer every exterior wall has exactly one of. (Cavity insulation would
+# have caught the interior sound batts; cladding would have missed nothing here but will the
+# moment a wall is clad in two products.) The 0.35-2.20/SF range is the retired lump's own
+# span, still deliberate: poly at the low end, a smart membrane at the high, and nobody has
+# decided which. See the upgrade entry in cost-options.
+envelope-interior-vapour-retarder = { low = 0.35, high = 2.20, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=wall,function=sheathing]" }
 # REMOVED 2026-08-20: envelope-attic-blown-insulation, $2,700-4,700. It existed because
 # "the batt quantities in [envelope_layers] read as WALLS ONLY; the attic is blown and is in
 # no key today" — a true statement about a takeoff bug, not about this house. The roof loop
@@ -2751,7 +2966,10 @@ envelope-interior-vapour-retarder = { low = 2200, high = 10700 }
 # fill is a real 576 SF line under the "blown-fiberglass" key in [envelope_layers], and
 # CATLIN_ROOF's rafter batts and gypsum ceiling arrived with it. Keeping the allowance would
 # pay for the same insulation twice.
-envelope-exterior-sealants-and-caulking = { low = 1800, high = 4500 }
+# DRIVEN 2026-08-27 off clad wall area — 4,328.0 SF of PBR panel and nail-strip seam.
+# $0.42-1.04/SF is the retired $1,800-4,500 over that area, and it is the right axis: what a
+# caulking gun follows is the cladding's joints, laps and terminations.
+envelope-exterior-sealants-and-caulking = { low = 0.42, high = 1.04, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=wall,function=cladding]" }
 # REMOVED 2026-08-22: envelope-subslab-vapour-barrier-and-capillary-break, $1,255-2,760. It
 # was the placeholder for two layers the model did not have. It has them now — a 10-mil ASTM
 # E1745 Class A retarder on a 4" open-graded course, 1,783.7 SF of each across the basement
@@ -2764,34 +2982,60 @@ site-scaffolding-and-lift-rental = { low = 3000, high = 8000 }
 envelope-exterior-hoods-and-flashing = { low = 800, high = 2000 }
 
 # --- MEP ------------------------------------------------------------------------------------
-# Only the inverter, the battery and the PV junction box are in [placeables] today. This is
-# the array itself at $3.00-3.82/W installed in MN. Split on the industry norm: modules,
-# racking and rapid-shutdown hardware are roughly 60-65% of an installed residential PV price.
-electrical-pv-array-modules-and-racking = { material = { low = 15600, high = 29900 }, labour = { low = 8400, high = 16100 } }
-# ** THE LARGEST MEP OMISSION, and easy to miss precisely because conduit IS priced. **
-# ~4,500-6,500 LF of NM-B plus service-entrance and sub-feeders. Split roughly 45/55: copper
-# is a commodity and a real material cost, and the taxable half of it is worth naming.
-electrical-branch-circuit-conductors = { material = { low = 4500, high = 11250 }, labour = { low = 5500, high = 13750 } }
+# REMOVED 2026-08-27: electrical-pv-array-modules-and-racking, $24,000-46,000. The money went
+# to the new [solar_modules] section, which prices the SAME scope — modules, racking and
+# rapid shutdown — at $3.00-5.20/W against the 5,280 W the model resolves. It is the same
+# derivation the lump used ($/W x an array size), except the array size is now measured
+# instead of assumed, and the assumption was wrong: $24,000 at the quoted $3.00/W is an 8 kW
+# array and this one is 5.28 kW. The line falls, and it now moves when a module does.
+# REMOVED 2026-08-27: electrical-branch-circuit-conductors, $10,000-25,000. The money went to
+# the new [conductors] section, 4,218 conductor-feet at a $/conductor-foot rate. It does NOT
+# land at the same number and the shortfall is a MEASUREMENT gap, named in that section's
+# header and in [basis_notes]: `mean_pull_ft` is a conservative proxy for a branch pull.
+# Fix it in takeoff/electrical.py if it wants fixing; do not restore the lump beside the
+# section, because that is the double-count this table's header warns about.
 # VERIFY THE 2026 MET COUNCIL SAC RATE DIRECTLY before trusting this. Unsewered would be a
 # different number entirely: well $12-25k plus septic/mound $18-45k.
 plumbing-municipal-water-sewer-and-sac = { low = 6000, high = 18000 }
 # Includes temporary construction power.
 electrical-service-entrance-and-utility = { low = 3500, high = 9000 }
-# 5 pairings, ~145 LF. Entirely absent today.
+# 5 pairings, ~145 LF. Entirely absent today. NOT DRIVEN (2026-08-27): `pipe_runs` carries
+# drain, vent, water_cold and water_hot and no refrigerant system, so there is no line-set
+# length to read. This is a MODELLING gap, not a pricing one — the day a refrigerant
+# `PipeRun` exists, this becomes `pipe_runs.length_ft[system=refrigerant]` at ~$26-49/LF.
 hvac-refrigerant-line-sets = { low = 3735, high = 7090 }
 # Optional on Minneapolis municipal water; essential on a well.
 plumbing-water-softener-and-filtration = { low = 2500, high = 6000 }
-# The enclosure is in [placeables]; the 20-35 drops are not.
-electrical-structured-low-voltage-drops = { low = 2000, high = 6000 }
+# DRIVEN 2026-08-27 off the low-voltage device count — 7 today. The scope is the CABLE AND
+# TERMINATION per device: the jack and the access point themselves are ED-T-* types priced in
+# [placeables], and the raceway they are pulled through is now the [data_raceways] section.
+# ** THE MODEL HAS 6 DROPS AND A HEAD END; THIS ROW USED TO ASSUME 20-35. ** That is the whole
+# argument for drivers in one line — the lump was a guess about a design that was never drawn,
+# and this number will rise the moment the jacks are placed. $200-450 per drop is a Cat 6A home
+# run, box, termination and test.
+electrical-structured-low-voltage-drops = { low = 200, high = 450, unit = "ea", driver = "data_devices.rows" }
 # Not optional on a tight all-electric house — MN code makeup air follows the hood.
 hvac-range-hood-and-makeup-air = { low = 1500, high = 4500 }
-# A "load centre" price is the can and the main only.
-electrical-afci-gfci-breakers = { low = 1400, high = 2900 }
+# DRIVEN 2026-08-27 off the panel schedule — 36 circuits, counted with the `rows` pseudo-field
+# because a schedule is one row per circuit and carries no count column. A "load centre" price
+# is the can and the main only; every branch breaker in a 2026 MN dwelling is AFCI, GFCI or
+# both, at $39-81 apiece. The retired $1,400-2,900 was this arithmetic on the same 36.
+electrical-afci-gfci-breakers = { low = 39, high = 81, unit = "ea", driver = "panel_schedule.rows" }
 hvac-controls-and-zoning = { low = 1200, high = 3000 }
-# Required for the MN energy-code duct leakage test.
-hvac-duct-insulation-mastic-and-test = { low = 1000, high = 2500 }
-# There are 20.7 LF of exhaust duct in the model and no fans on either end of it.
-hvac-bath-exhaust-fans = { low = 750, high = 2400 }
+# DRIVEN 2026-08-27 off total duct run — 783.2 LF. Mastic and sealing are per foot of duct and
+# the leakage test is a fixed fee inside the rate; $1.28-3.19/LF is the retired lump over
+# today's run. Note [duct_insulation] already bills the R-8 WRAP on the four ERV risers by the
+# foot — this row is the mastic, the sealing and the MN energy-code test, and must not grow to
+# cover wrap.
+hvac-duct-insulation-mastic-and-test = { low = 1.28, high = 3.19, unit = "LF", driver = "ducts.length_ft" }
+# DRIVEN 2026-08-27 off the exhaust runs — 10, each of which terminates at a grille and a fan
+# or an ERV pickup that no section buys. $75-240 per termination is the retired $750-2,400 over
+# the same 10. (The row's old comment said "20.7 LF of exhaust duct"; the 2026-08-25 radial
+# pass took that to 246.4 LF over 10 runs, which is the kind of drift a lump cannot follow.)
+hvac-bath-exhaust-fans = { low = 75, high = 240, unit = "ea", driver = "ducts.runs[system=exhaust]" }
+# NOT DRIVEN (2026-08-27), same gap as the line sets above: no condensate system in
+# `pipe_runs`, and the count that would otherwise drive it — air handlers and the ERV — is
+# spread across [placeables] types rather than reported as a coil count.
 plumbing-condensate-drains-and-pumps = { low = 600, high = 1600 }
 electrical-radon-fan-smoke-co-surge-and-commissioning = { low = 2450, high = 8000 }
 # Separate from the building permit, which is in the soft-cost row below.
@@ -2799,9 +3043,17 @@ permits-mep = { low = 1500, high = 4000 }
 
 # --- interior finishes -----------------------------------------------------------------------
 # ~1,400-1,800 LF, in no key today. Split: finger-joint or MDF stock against the carpenter.
+# NOT DRIVEN (2026-08-27): baseboard follows ROOM PERIMETER, and no BOM table reports it —
+# `floor_finishes` gives area by finish and `envelope_layers` gives wall face area, neither of
+# which is a perimeter. Deliberately not proxied off sqrt(area) or a wall-area ratio: both are
+# shape assumptions dressed as measurements. A `room_perimeter_lf` field on the finishes
+# takeoff converts this row and `paint-trim-and-doors` below in the same change.
 finish-interior-trim-and-baseboard = { material = { low = 4200, high = 7000 }, labour = { low = 7800, high = 13000 } }
 # [envelope_layers] `latex-paint` is WALL AND CEILING AREA ONLY — it cannot see a lineal foot
 # of trim or the face of a door. Painting is labour-dominated; the paint itself is ~20%.
+# NOT DRIVEN (2026-08-27): it wants the same room-perimeter LF the trim row above wants, plus
+# a door-leaf FACE area the openings table does not report (it has count, width and height,
+# but painting a bifold is not painting a slab). See the note on that row.
 paint-trim-and-doors = { material = { low = 1600, high = 3600 }, labour = { low = 6400, high = 14400 } }
 # ** LANE PICKED 2026-08-20: WIRE. ** Ventilated wire shelving on standards, set by the trim
 # carpenter. The alternative was a semi-custom laminate system at $12-40k, and dropping it took
@@ -2809,16 +3061,34 @@ paint-trim-and-doors = { material = { low = 1600, high = 3600 }, labour = { low 
 # any decision on this file produced. If it is ever reconsidered, the laminate number is
 # { low = 12000, high = 40000 } and it belongs in plans/cost-options.md as an UPGRADE first.
 cabinet-closet-shelving-and-rod = { low = 3000, high = 5000 }
-finish-floor-prep-and-self-levelling = { low = 4500, high = 11700 }
-# Explicitly NOT inside the tile labour rate in [floor_finishes].
+# DRIVEN 2026-08-27 off CONDITIONED area — 5,113 SF, not gross: the garage slab is the finish
+# and takes no prep under one. $0.88-2.29/SF is the retired lump over that area.
+finish-floor-prep-and-self-levelling = { low = 0.88, high = 2.29, unit = "SF", driver = "space_summary.conditioned_sf" }
+# Explicitly NOT inside the tile labour rate in [floor_finishes]. NOT DRIVEN (2026-08-27):
+# the quantity this wants is WET-WALL area, and a shower surround is not a modelled finish —
+# `floor_finishes` has 119 SF of floor tile and `wood_surfaces` 45 SF of wall tile, which
+# together are a fifth of what this row is buying. Driving it off the floor alone would
+# implicitly re-scope the row to floors, which is worse than a lump. The lump stands until a
+# shower surround is a layer.
 finish-tile-backer-and-waterproofing = { low = 4000, high = 8000 }
-# ~36 doors. [openings] prices the door and its install, not the lockset.
-finish-door-hardware = { low = 3000, high = 11000 }
-# 41 windows.
-finish-window-stools-and-aprons = { low = 3300, high = 7400 }
-# Seven finishes meeting each other.
-finish-transitions-and-stair-nosings = { low = 1000, high = 3000 }
-finish-garage-door-opener = { low = 500, high = 1400 }
+# DRIVEN 2026-08-27 off the door count — 36. [openings] prices the leaf and its install, not
+# the lockset, the hinges or the stop. $84-306 each spans a builder-grade passage set and a
+# solid-brass privacy set on a solid-core door, which is why the range is 3.6x.
+finish-door-hardware = { low = 84, high = 306, unit = "ea", driver = "openings.count[kind=door]" }
+# DRIVEN 2026-08-27 off the window count — 45 (the "41 windows" this comment used to claim was
+# already four out of date, which is the point). $73-164 per window of stool stock, apron,
+# jamb extension and the carpenter's hour.
+finish-window-stools-and-aprons = { low = 73, high = 164, unit = "ea", driver = "openings.count[kind=window]" }
+# DRIVEN 2026-08-27 off stair tread length — 143.4 LF over four stairs, which is what a nosing
+# is bought by. `stair_finish` is one of the two tables UNPRICED_VIEWS declares: the tread and
+# riser STOCK bills in [framing], and this is the nosing on its edge. $7-21/LF; the seven
+# finishes meeting each other ride inside the rate, because a threshold is a count the model
+# does not carry and inventing one to make the other honest is worse than saying so.
+finish-transitions-and-stair-nosings = { low = 7, high = 21, unit = "LF", driver = "stair_finish.tread_lf" }
+# DRIVEN 2026-08-27 off the overhead-door count — 1. The smallest conversion in the file and
+# the clearest: the number was already per-door, it just had no door behind it. A second
+# overhead door now doubles the line by itself.
+finish-garage-door-opener = { low = 500, high = 1400, unit = "ea", driver = "openings.count[operation=overhead]" }
 # ** TWO KITCHEN HARDWARE LINES WITH NO ELEMENT TO HANG ON (2026-08-24). ** The model has one
 # solid CARCASS per cabinet, not a fitting-out, so a pull-out mechanism inside a box is scope
 # no [casework] row can reach — and the allowance rule at the head of this section is
@@ -2981,8 +3251,13 @@ material_rate = 0.08525   # suburban Hennepin County  <- ACTIVE
 # NOT FLAGGED, and each for a checked reason: [framing] and [footing_bedding] are yard and
 # MnDOT bid prices; [placeables] is retail device/appliance listings; [sheet_goods] and most of
 # [envelope_layers] are per-sheet and per-SF shelf prices; [hardware] is Simpson list.
-# [concrete] and [wall_structure] are the likeliest tax-inclusive rates in the whole file and
-# need no entry — they are MERGED, and the tax stage already cannot reach a merged row.
+# [concrete] and [wall_structure] were the likeliest tax-inclusive rates in the whole file and
+# needed no entry while they were MERGED, because the tax stage cannot reach a merged row. That
+# shield came off on 2026-08-27 when their largest rows were split, and it was replaced rather
+# than lost: those splits take their MATERIAL half from a pre-tax ready-mix / delivered-block
+# quote and leave labour as the residual, which is the "re-source it from a pre-tax list" fix
+# note 2 below calls the better answer. So still no entry — but for a new reason, and a split
+# row added here on a back-out PERCENTAGE instead would need one.
 
 # (openings was flagged here on 2026-08-20a and the flag is GONE as of 2026-08-20b: the
 # section was re-sourced from pre-tax shelf and manufacturer list prices, which is the better
@@ -2991,11 +3266,18 @@ material_rate = 0.08525   # suburban Hennepin County  <- ACTIVE
 # HomeGuide / Angi 2026 flooring cost charts, which are installed prices.
 floor_finishes = true
 
-# Only the six SPLIT allowance rows have a material bucket at all (the rest are merged and
-# unreachable by tax anyway), and all six had their material share taken out of an installed
-# industry figure: excavation, the driveway, the PV array at $/W installed, branch-circuit
-# conductors, interior trim and paint.
+# Only the SPLIT allowance rows have a material bucket at all (the rest are merged and
+# unreachable by tax anyway), and each had its material share taken out of an installed
+# industry figure: excavation, the driveway, interior trim and paint. (The PV array and the
+# branch-circuit conductors were two more until 2026-08-27, when both left this table for
+# sections of their own — see [solar_modules] below for where the PV flag went, and
+# [conductors], whose rates are pre-tax cable prices and so needs none.)
 allowances = true
+
+# $/W back-derived from an installed residential PV price, exactly as the allowance it
+# replaced was. Re-sourcing from a module list price and a separate racking price is the
+# better fix and would take this line out.
+solar_modules = true
 
 [basis]
 framing              = "material"
@@ -3016,6 +3298,9 @@ duct_fittings        = "material"
 duct_insulation      = "material"
 sleeves              = "material"
 conduit              = "material"
+conductors           = "installed"
+solar_modules        = "installed"
+data_raceways        = "installed"
 plumbing_specialties = "material"
 install_parts        = "material"
 pipe_insulation      = "material"
@@ -3036,13 +3321,16 @@ allowances           = "installed"
 [basis_notes]
 duct_fittings   = "material only, and derived rather than quoted, exactly as [pipe_fittings] is: an elbow is counted off the run's own 3D polyline, so the count is geometry and the rate is a catalogue price. No tees — there is no parent inference for an air-side system the way drain_tie_ins gives one for drainage, and a radial install barely has any"
 pipe_fittings   = "material only, and derived rather than quoted — see the table's own note. Its arrival RE-BASED [pipe_runs] drain/vent to bare pipe; restoring the old fitting adder there would double-bill every elbow in the house"
-concrete        = "$/cy PLACED and MERGED — ready-mix plus placement, rebar and forming; never divided into a guessed split. Raised across the board 2026-08-20; slab-on-grade was ~2.5x low and drain_tile ~5x"
+concrete        = "$/cy PLACED. Merged everywhere until 2026-08-27, when the three largest rows (footing, slab, drain_tile's siblings aside) gained a REAL split — and the rule that produced them is the one that kept the rest merged: the MATERIAL half is an independently sourced pre-tax number (Twin Cities ready-mix $180-200/cy, wire mesh $0.20-0.50/SF, rebar) and the labour half is the residual. That is a back-out, and it is honest only in that direction. A percentage guess at the split would read exactly like a real one, which is why the smaller rows still carry none. Raised across the board 2026-08-20; slab-on-grade was ~2.5x low and drain_tile ~5x"
 timber          = "$/cy, but built from $/LF and shown divided in every row's comment — the join measures volume and lumber is bought by the foot. Material and labour are split because a stick of LVL is a purchase and hanging it is a wage, unlike the merged pours in [concrete]"
-wall_structure  = "$/cy PLACED and MERGED, same reason as [concrete]. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and BASEMENT_BRICK_VENEER (including its per-material rows BASEMENT_BRICK_VENEER:brown-brick / :glazed-lapis-brick / :glazed-gold-brick) contain no ready-mix at all and must not be escalated with a concrete index. GARAGE_BRICK_WAINSCOT is the same case and the same warning. GARAGE_ICF_6_BRICKLEDGE is NOT — it is mostly ICF wall, and its rate is struck across the core row and the brick-ledge band row together, which share one key"
+wall_structure  = "$/cy PLACED. The five largest rows are SPLIT since 2026-08-27 on the same rule as [concrete] — material sourced pre-tax (ready-mix, rebar, and for GARAGE_ICF_6 the ICF blocks at $5-7/SF of face, which is why that row is over half material where a site-formed wall is under a third), labour the residual. RETAINING_BLOCK_12 is split off a delivered block-and-geogrid price and contains no ready-mix at all. The remaining rows stay merged. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and BASEMENT_BRICK_VENEER (including its per-material rows BASEMENT_BRICK_VENEER:brown-brick / :glazed-lapis-brick / :glazed-gold-brick) contain no ready-mix at all and must not be escalated with a concrete index. GARAGE_BRICK_WAINSCOT is the same case and the same warning. GARAGE_ICF_6_BRICKLEDGE is NOT — it is mostly ICF wall, and its rate is struck across the core row and the brick-ledge band row together, which share one key"
 footing_bedding = "$/cy delivered — material only. Spreading and compacting is in the excavator's number, which is not in this file. Confirmed 2026-08-20 against MnDOT 2025 average bid prices"
 openings        = "material and labour are now SEPARATE quantities. The old single 55-65% back-out factor is gone: the real material share runs 70-85% for windows, 60-70% for exterior doors, 40-55% for interior doors and 10-25% for a cased opening"
 hardware        = "material only, and deliberately so — the labour to drive a screw or set a hanger is inside the [framing] labour rate. HUCQ410-SDS is the exception and says why"
-ducts           = "material plus installed labour, and BLENDED ACROSS PRODUCTS since the 2026-08-25 radial pass — this is the section's known weakness. One `supply` rate now covers 6-inch insulated riser, 3-inch semi-rigid radial and 14x8 galvanized trunk, because the BOM keys [ducts] on `system` alone. The takeoff already reports `material` and `diameter_in` per row, so the qualified-key treatment [drainage] and [wall_structure] use would fix it; until then these rates are weighted for today's mix"
+conductors      = "material plus installed labour, per CONDUCTOR-foot — NOT per cable-foot. Derived by dividing a published $/ft of 12/2, 10/3 and 8/3 NM-B by the conductors in the cable, because the takeoff measures conductor-feet. The QUANTITY is the weak half, not the rate: mean_pull_ft is the mean power-raceway run + 10 ft, a conservative proxy for a branch pull, and it reads about a fifth of the cable-feet the retired allowance assumed"
+solar_modules   = "$/W DC installed, split 65/35 on the industry norm. Modules, racking and rapid shutdown ONLY — the inverter, battery and PV junction box are placed elements and bill in [placeables]. The high end is a small-array premium: permitting, interconnection and design are near-fixed and this array is 5.28 kW"
+data_raceways   = "material plus installed labour, $/LF of EMPTY PIPE. It is not the drops: cable, boxes, jacks and termination are the driven electrical-structured-low-voltage-drops allowance. Disjoint from [conduit] by construction — conduit_takeoff and data_raceway_takeoff partition model.conduits on service"
+ducts           = "material plus installed labour, UN-BLENDED 2026-08-27 by qualifying on `material`: `supply:semi_rigid` is the 3-inch and 6-inch radial and a bare `supply` is the 14x8 galvanized trunk, which the model leaves unnamed. The blended rates it replaces were sheet-metal rates carried over the radial pass, so the section fell rather than rose. What is STILL blended is diameter — 3-inch and 6-inch radial share one rate — because a section may qualify on one field and `material` is the bigger of the two differences"
 edge_trim       = "material plus installed labour. Two rows, drip_flashing and ridge_cap, are commonly inside a roofer's price — check for a double count against any roofing bid"
 railings        = "material plus installed labour. RAILING-INT-STAIR-GUARD is priced as a COMPONENT system; a shop-welded guard moves cost from labour into material and the two models must not be stacked"
 drainage        = "material plus installed labour, BLENDED over two products that differ 3x (seamless K-style vs fabricated box gutter). Seamless is roll-formed on site, so its own split is inseparable and every quote will come back merged"

@@ -242,7 +242,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
             r0, r1 = (perp0, boundary), (perp1, boundary)
         members.append(FramedMember(
             system.uid, f"rim-{rim_index}", "rim", rim_profile, r0, r1, z0, z1,
-            perp1 - perp0,
+            perp1 - perp0, material=spec.rim_material,
         ))
 
     # The subfloor sheet over the joist field. Its extent is the framed field itself —

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from typehaus.resolve.model import ResolvedModel
 
 
@@ -140,3 +142,17 @@ def _rounded(row: dict[str, float]) -> dict[str, float]:
 
 def _ratio(row: dict[str, float]) -> float:
     return round(row["storage_sf"] / row["usable_sf"], 4) if row["usable_sf"] else 0.0
+
+
+def estimate_areas(model: Any) -> dict[str, float]:
+    """The two $/sf denominators — and, since 2026-08-27, a driver's addressable scalars.
+
+    Every caller of ``estimate_costs`` that holds a resolved model passes these. It used to
+    be optional decoration ("$/sf against a guessed area is worse than none"), and three
+    callers therefore passed ``None``: ``haus tasks``, the tasks API and the IFC emitter. A
+    ``space_summary.gross_sf`` driver made that divergence load-bearing — the same house
+    would price one way through ``haus takeoff`` and another through ``haus tasks``, and
+    ``test_work_packages`` pins those two to the same total. One helper, one answer.
+    """
+    overall = build_space_summary(model)["overall"]
+    return {"conditioned": overall["conditioned_sf"], "gross": overall["gross_sf"]}

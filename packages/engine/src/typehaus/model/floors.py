@@ -29,6 +29,13 @@ class JoistSpec(HausModel):
     # "start"/"end" are the low/high ends along the joist span direction.
     cantilever_start: Length | None = None
     cantilever_end: Length | None = None
+    # Catalog material for the two rim (band) boards alone, when the band is a *finished*
+    # face rather than framing hidden behind a skin — an exposed deck band painted with the
+    # posts it sits over, say. ``None`` (the ordinary case) leaves the rims coloured by
+    # category and billed on the bare profile key, exactly as before. It is deliberately
+    # narrower than a whole-system material: the joists behind the band are still bare
+    # lumber, and saying so per member is the only honest way to bill the paint.
+    rim_material: str | None = None
 
 
 class JoistReinforcement(HausModel):

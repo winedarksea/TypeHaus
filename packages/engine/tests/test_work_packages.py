@@ -25,9 +25,9 @@ from _helpers import CATLIN
 
 
 @pytest.fixture(scope="module")
-def packages(catlin_model):
+def packages(catlin_model, catlin_areas):
     bom = bill_of_materials(catlin_model)
-    estimate = estimate_costs(bom, load_prices(CATLIN))
+    estimate = estimate_costs(bom, load_prices(CATLIN), catlin_areas)
     return build_work_items(catlin_model, bom, estimate), estimate
 
 

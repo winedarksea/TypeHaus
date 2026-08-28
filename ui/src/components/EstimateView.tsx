@@ -19,6 +19,7 @@ import {
   SORTS,
   SORT_KEYS,
   barWidths,
+  defaultCollapsed,
   flattenEstimate,
   groupRows,
   maxHigh,
@@ -147,10 +148,33 @@ function rowColumns(widest: number): ReaderColumn<EstimateRow>[] {
   ];
 }
 
-function GroupHeader({ group, showLabel }: { group: EstimateGroup; showLabel: boolean }) {
+/** The headline for one group, and the control that opens it.
+ *
+ *  A `<button>` rather than a div with an onClick: this is the page's primary navigation now
+ *  that groups start closed, so it has to be reachable by keyboard and has to announce its
+ *  state. `aria-expanded` is what says "closed" to a screen reader; the caret is what says it
+ *  to everyone else.
+ *
+ *  When the header is not shown (grouping by "none", where the single group is the whole
+ *  table) there is nothing to collapse and no control is rendered — the caller keeps the
+ *  table open in that case. */
+function GroupHeader({ group, showLabel, collapsed, onToggle }: {
+  group: EstimateGroup;
+  showLabel: boolean;
+  collapsed: boolean;
+  onToggle: () => void;
+}) {
   if (!showLabel) return null;
   return (
-    <div className="estimate-group-head">
+    <button
+      type="button"
+      className="estimate-group-head"
+      aria-expanded={!collapsed}
+      onClick={onToggle}
+    >
+      <span className="estimate-group-caret" aria-hidden="true">
+        {collapsed ? "\u25b8" : "\u25be"}
+      </span>
       <span className="estimate-group-label">{group.label}</span>
       <span className="reader-mono">
         {formatRange({ low: group.mid, high: group.mid })}
@@ -161,7 +185,7 @@ function GroupHeader({ group, showLabel }: { group: EstimateGroup; showLabel: bo
           : "beside the total"}
       </span>
       <span className="muted">{group.rows.length} rows</span>
-    </div>
+    </button>
   );
 }
 
@@ -183,6 +207,16 @@ export function EstimateView() {
   // several may be open at once — comparing two rows' splits is the whole point.
   const [opened, setOpened] = useState<ReadonlySet<string>>(() => new Set());
   const toggleRow = (id: string) => setOpened((prev) => {
+    const next = new Set(prev);
+    if (!next.delete(id)) next.add(id);
+    return next;
+  });
+  // Collapsed GROUPS, deliberately separate state from `opened` above, which is per-row
+  // detail. They answer different questions ("which trades am I reading" against "which rows
+  // am I comparing") and merging them would make closing a trade forget every split a reader
+  // had open inside it.
+  const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(() => new Set());
+  const toggleGroup = (id: string) => setCollapsed((prev) => {
     const next = new Set(prev);
     if (!next.delete(id)) next.add(id);
     return next;
@@ -216,6 +250,17 @@ export function EstimateView() {
   // One denominator for every bar on screen, so bars stay comparable across groups. Taken
   // from the filtered set: a filter that leaves only small rows should still use the width.
   const widest = useMemo(() => maxHigh(filtered), [filtered]);
+  // Re-seeded on a grouping or filter change, NOT merged with what the reader had open: the
+  // group ids change meaning under a new grouping ("electrical" the trade against
+  // "envelope_layers" the block), so carrying the old set across would reopen an arbitrary
+  // subset. Typing in the filter expands everything, or a filter with matches would look
+  // exactly like a filter with none.
+  useEffect(() => {
+    setCollapsed(defaultCollapsed(groups, view.group, needle !== ""));
+    // `groups` is deliberately absent: it changes identity on every sort, and re-seeding on a
+    // sort would slam shut the group the reader just opened.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [view.group, needle]);
   const columns = useMemo(() => rowColumns(widest), [widest]);
 
   if (!model) return null;
@@ -278,13 +323,20 @@ export function EstimateView() {
               its waste treatment, and the accounts it books to."
             count={filtered.length}
           >
-            {groups.map((group) => (
+            {groups.map((group) => {
+              // A group with no header has no control to reopen it, so it must never be
+              // closed — that is the "none" grouping, where the one group IS the table.
+              const showsHeader = view.group !== "none" || !group.inTotal;
+              const isCollapsed = showsHeader && collapsed.has(group.id);
+              return (
               <div key={group.id} className="estimate-group">
                 <GroupHeader
                   group={group}
-                  showLabel={view.group !== "none" || !group.inTotal}
+                  showLabel={showsHeader}
+                  collapsed={isCollapsed}
+                  onToggle={() => toggleGroup(group.id)}
                 />
-                <ReaderTable
+                {!isCollapsed && <ReaderTable
                   columns={columns}
                   rows={group.rows}
                   expand={{
@@ -306,9 +358,10 @@ export function EstimateView() {
                   // keys rendered one of them twice.
                   rowKey={(row, index) => `${row.section}:${row.key}:${index}`}
                   sort={sort}
-                />
+                />}
               </div>
-            ))}
+              );
+            })}
           </ReaderSection>
           <UnpricedBlock estimate={estimate} />
         </>

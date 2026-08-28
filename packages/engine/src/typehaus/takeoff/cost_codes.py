@@ -155,6 +155,13 @@ SECTION_CODES: dict[str, CostCode] = {
     "duct_insulation": CostCode("3200", "23 07 13", "mechanical"),
     "sleeves": CostCode("3100", "22 05 17", "plumbing"),
     "conduit": CostCode("3300", "26 05 33", "electrical"),
+    # The wire in that raceway (2026-08-27). CSI 26 05 19 is "Low-Voltage Electrical Power
+    # Conductors and Cables", the section a branch circuit's NM-B belongs to; 26 31 00 is
+    # "Photovoltaic Collectors"; and a data raceway is the same 26 05 33 as a power one,
+    # because a raceway is a raceway — what differs is the service pulled through it.
+    "conductors": CostCode("3300", "26 05 19", "electrical"),
+    "solar_modules": CostCode("3300", "26 31 00", "electrical"),
+    "data_raceways": CostCode("3300", "26 05 33", "electrical"),
     "plumbing_specialties": CostCode("3100", "22 40 00", "plumbing"),
     "install_parts": CostCode("3100", "22 05 00", "plumbing"),
     "pipe_insulation": CostCode("3100", "22 07 00", "plumbing"),

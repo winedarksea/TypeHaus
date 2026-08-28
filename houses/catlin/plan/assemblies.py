@@ -806,6 +806,26 @@ BEAM_KDAT = Assembly(
     source="catlin-house KDAT 2x framing — ply count per Beam.size: the breezeway frame (2-2x8 beams, single 2x6 rafters), the balcony's four E-W girts (2x10), and since 2026-08-23 the sunken garden's seven beams (3-2x12 porch, 3-2x10 balcony)",
 )
 
+# The four members of the garden's FRONT frame that read as trim rather than as structure
+# (2026-08-27): the porch's front beam pair BM-SG-FRW/FRE and the balcony's two front E-W
+# girts BM-SG-GIRT-FW/FE. Same KDAT stock and the same sections as BEAM_KDAT — nothing about
+# the framing changes — but these four are the sticks you see from the garden, in the same
+# plane as the six white 6x6 pillars and their knee braces, so they are painted the same
+# white. The rear girts stay on BEAM_KDAT: they sit against the house behind the deck.
+#
+# A SEPARATE ASSEMBLY, not a `POST_WHITE_PAINT` reuse: that one's single 5.5" layer is the
+# 6x6 body, and `[timber]` prices it per cubic yard off a 6x6's lineal-foot rate. A beam's
+# real section is `Beam.size`, so the layer here is one 1 1/2" ply exactly as BEAM_KDAT's is,
+# and the price row below it in `houses/catlin/prices.toml` is the KDAT beam rate plus paint.
+BEAM_WHITE_PAINT = Assembly(
+    tag="BEAM_WHITE_PAINT",
+    layers=(
+        Layer(name="beam-paint-white", material_ref="post-paint-white", thickness=inch(1.5),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="catlin-house sunken-garden front frame — KDAT 2x plies, white-painted to match the pillars: BM-SG-FRW/FRE (3-2x12) and BM-SG-GIRT-FW/FE (2x12)",
+)
+
 # The breezeway's four 6x6 posts. NOT POST_WHITE_PAINT: that assembly is white-painted and
 # is shared with the balcony pillars and the stairwell posts, which stay white (CLAUDE.md,
 # "One exterior dark"), so pointing these at it would either recolour six pillars or claim a
@@ -2193,6 +2213,7 @@ ASSEMBLIES = [
     ELM_TIMBER,
     BEAM_LVL,
     BEAM_KDAT,
+    BEAM_WHITE_PAINT,
     POST_KDAT,
     PIER_CONCRETE_12,
     RAILING_DARK_METAL,

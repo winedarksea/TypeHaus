@@ -77,6 +77,9 @@ def takeoff(
                "service_load": bom["service_load"],
                "conduit": bom["conduit"],
                "solar": bom["solar"],
+               # The priced by-product view beside the summary dict — a section the payload
+               # drops is invisible to the estimate and to `haus variants compare`.
+               "solar_modules": bom["solar_modules"],
                "backup_power": bom["backup_power"],
                "luminaire_schedule": bom["luminaire_schedule"],
                # lighting_controls was the one section bill_of_materials produced and this
@@ -117,10 +120,10 @@ def takeoff(
         # $/sf needs a denominator, and the only honest ones are the space summary's:
         # conditioned area is what the energy code grades, gross is what a builder means
         # by "$/sf". Both come from the model, neither from a constant.
-        from typehaus.server.space_summary import build_space_summary
+        from typehaus.server.space_summary import build_space_summary, estimate_areas
 
         space_summary = build_space_summary(model)["overall"]
-        areas = {"conditioned": space_summary["conditioned_sf"], "gross": space_summary["gross_sf"]}
+        areas = estimate_areas(model)
         payload["cost_estimate"] = estimate_costs(bom, prices, areas,
                                                   product_labels(loaded.plan))
         payload["space_summary"] = space_summary
@@ -309,6 +312,34 @@ def takeoff(
             missing = ", ".join(f"{row['section']}:{row['key']}"
                                 for row in estimate["unpriced"])
             console.print(f"  [yellow]not priced (add to prices.toml): {missing}[/yellow]")
+        _print_driver_overlaps(estimate, console)
+
+
+def _print_driver_overlaps(estimate: dict, console: Console) -> None:
+    """Driven allowances measured off BOM rows another section also priced.
+
+    Not an error and deliberately not silent. [allowances]'s one rule is that an allowance
+    must be scope no other section prices, and until drivers existed nothing could even
+    look — so this is the only automatic check that rule has ever had. It cannot decide:
+    measuring a roof vent mat off the standing seam's square footage is right, and billing
+    the standing seam twice is wrong, and the two are the same shape. It names them so a
+    reader can look at the one line where it matters.
+    """
+    overlaps = estimate.get("driver_overlaps") or []
+    if not overlaps:
+        return
+    console.print(f"  [yellow]{len(overlaps)} driven allowance(s) measured off rows another "
+                  f"section prices — confirm each is a MEASUREMENT, not a second "
+                  f"bill:[/yellow]")
+    for finding in overlaps:
+        parts = []
+        for name, keys in finding["sections"].items():
+            # Truncated on purpose: the reader needs to know WHICH SECTION, not to read 14
+            # window types. The full list is in the --json payload's `driver_overlaps`.
+            shown = ", ".join(keys[:3])
+            more = f" +{len(keys) - 3}" if len(keys) > 3 else ""
+            parts.append(f"{name} ({shown}{more})")
+        console.print(f"    [yellow]{finding['item']} <- {'; '.join(parts)}[/yellow]")
 
 
 # Sections whose full-detail rows this rollup never speaks for — the giant nested payloads

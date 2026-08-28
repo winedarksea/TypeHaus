@@ -123,7 +123,8 @@ def test_product_labels_key_on_the_section_and_the_price_key(catlin_plan) -> Non
     assert ("placeables", "APPL-DISPOSAL") not in labels
 
 
-def test_the_estimate_row_carries_the_specified_product_and_no_price_moves(catlin_plan) -> None:
+def test_the_estimate_row_carries_the_specified_product_and_no_price_moves(
+        catlin_plan, catlin_areas) -> None:
     """The label rides along and changes nothing: same totals, same rows, one more field."""
     from typehaus.cli.prices import estimate_costs, load_prices
     from typehaus.resolve import resolve
@@ -134,8 +135,8 @@ def test_the_estimate_row_carries_the_specified_product_and_no_price_moves(catli
     bom = bill_of_materials(model)
     prices = load_prices(CATLIN)
     assert prices is not None, "catlin ships a prices.toml"
-    plain = estimate_costs(bom, prices)
-    labelled = estimate_costs(bom, prices, None, product_labels(catlin_plan))
+    plain = estimate_costs(bom, prices, catlin_areas)
+    labelled = estimate_costs(bom, prices, catlin_areas, product_labels(catlin_plan))
     assert labelled["total"] == plain["total"]
     row = next(r for r in labelled["sections"]["placeables"]["rows"]
                if r["key"] == "APPL-LG-WASHTOWER")
@@ -151,7 +152,7 @@ def test_the_estimate_row_carries_the_specified_product_and_no_price_moves(catli
                for r in body["rows"])
 
 
-def test_hardware_reads_its_product_off_the_bom_row(catlin_plan) -> None:
+def test_hardware_reads_its_product_off_the_bom_row(catlin_plan, catlin_areas) -> None:
     """``StructuralHardware`` already carries manufacturer + model, so the hardware section
     answers "which product is this line?" with no ``Product`` record and no map."""
     from typehaus.cli.prices import estimate_costs, load_prices
@@ -161,6 +162,6 @@ def test_hardware_reads_its_product_off_the_bom_row(catlin_plan) -> None:
     model, _findings = resolve(catlin_plan)
     prices = load_prices(CATLIN)
     assert prices is not None
-    estimate = estimate_costs(bill_of_materials(model), prices)
+    estimate = estimate_costs(bill_of_materials(model), prices, catlin_areas)
     rows = estimate["sections"]["hardware"]["rows"]
     assert rows and any(r.get("product", "").startswith("Simpson Strong-Tie") for r in rows)

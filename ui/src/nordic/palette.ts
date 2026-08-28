@@ -146,6 +146,13 @@ const FINISH_BASE: Readonly<Record<string, string>> = {
   // is factory-white, not the "siding" family's blue-grey the substring guess falls to.
   // Mirrors _FINISH_BASE in emit/gltf/palette.py.
   "pvc-cellular": "#f4f2ee",
+  // White-painted exterior lumber: POST_WHITE_PAINT's structure layer, the knee-brace
+  // diagonals that carry it as a FramedMember material, the balcony rim band, and (since
+  // 2026-08-27) the four white beams of the garden's front frame. No familyOf needle
+  // matches the ref, so without an entry the member path painted a brace its bare "brace"
+  // category lumber while the .glb — which HAS had this row for months — drew it white.
+  // Mirrors _FINISH_BASE in emit/gltf/palette.py.
+  "post-paint-white": "#f4f2ee",
   // A second coil colour of the same 26 ga. nail-strip panel: Western States "Classic Green"
   // on the garage's east (overhead-door) wall only. It keeps "seam" in its tag so it still
   // gets the seam normal map, and declares this finish so the coil-white default in

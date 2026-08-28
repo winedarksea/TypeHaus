@@ -240,6 +240,31 @@ export function groupRows(
     || a.label.localeCompare(b.label));
 }
 
+/**
+ * The groups that start COLLAPSED, so the page opens on the 13 trade headlines rather than
+ * on ~470 rows.
+ *
+ * Here rather than in the component for the same reason every other ordering decision on
+ * this page is: it is a rule with cases, and a rule with cases belongs somewhere a test can
+ * reach without a DOM (`engineEstimate.test.ts`).
+ *
+ * Three cases:
+ *  - `"none"` is one group holding the whole table. Collapsing it collapses the page, which
+ *    is not a summary, it is a blank screen.
+ *  - An ACTIVE FILTER expands everything. A reader who typed "gwb" and got a page of closed
+ *    headlines has no way to tell a filter that found nothing from one that found plenty,
+ *    and would reasonably conclude the filter is broken.
+ *  - Otherwise every group starts closed, including the excluded (furnishings) one.
+ */
+export function defaultCollapsed(
+  groups: readonly EstimateGroup[],
+  group: GroupKey,
+  filtered = false,
+): Set<string> {
+  if (group === "none" || filtered) return new Set();
+  return new Set(groups.map((entry) => entry.id));
+}
+
 // --- the numbers a mark needs -------------------------------------------------------------
 
 /** This row's share of the construction total, as a fraction. 0 when there is no total. */

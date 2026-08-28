@@ -265,11 +265,13 @@ two elevations, which is exactly how a drain drop has always been written.
 
 ### ERV residuals (2026-08-25)
 
-- **`[ducts]` is priced on a blend.** The BOM keys that section on `system` alone, so one
-  `supply` rate covers 6" insulated riser, 3" semi-rigid radial and 14x8 galvanized trunk —
-  three products at three prices. `duct_takeoff` already reports `material` and
-  `diameter_in` per row, so this wants the qualified-key treatment `[drainage]` and
-  `[wall_structure]` already have (`cli/prices.QUALIFIED_KEY_FIELD`).
+- ~~**`[ducts]` is priced on a blend.**~~ DONE 2026-08-27. `ducts` joined
+  `cli/prices.QUALIFIED_KEY_FIELD` on `material`, so `"supply:semi_rigid"` prices the radial
+  and a bare `"supply"` prices the galvanized trunk (whose `material` the model leaves empty,
+  which is falsy, so it falls through to the bare key unchanged). The blended rates were
+  sheet-metal rates carried over the radial pass, so the section FELL by ~$3k rather than
+  rose. **Still blended: diameter.** 3" and 6" radial share one rate, because a section may
+  qualify on one field and `material` was the larger of the two differences.
 - **The ERV's condensate shares FX-B-SAUNA-FD rather than tying into `PR-B-COND`.** The
   arithmetic is in `plan/mep_drainage.py`: the condensate main is at 85"-and-change where it
   passes x=13'-6", and the highest a 21.6" case can put its spigot under an 8'-0 15/16"

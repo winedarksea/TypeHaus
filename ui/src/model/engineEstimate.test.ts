@@ -7,6 +7,7 @@
 import type { EngineEstimate } from "../engine/EngineClient";
 import {
   barWidths,
+  defaultCollapsed,
   rowDescription,
   basisSlices,
   estimateSubtitle,
@@ -147,6 +148,21 @@ export function runEngineEstimateTests(): void {
     "'none' is one flat ranked list — plus the excluded rows, which never rank among the "
     + "things the construction total is made of");
   assert(flat[0].rows[0].key === "site-excavation", "…ranked by the same measure");
+  // --- what starts collapsed ---------------------------------------------------------------
+
+  assert(defaultCollapsed(byCost, "trade").size === byCost.length,
+    "Grouped by trade, every group starts closed — the page opens on the headlines, not on "
+    + "470 rows");
+  assert([...defaultCollapsed(bySection, "section")].sort().join(",")
+    === bySection.map((g) => g.id).sort().join(","),
+    "…and by section the same, ids and all");
+  assert(defaultCollapsed(flat, "none").size === 0,
+    "'none' is never collapsed: its one group IS the table, and closing it leaves a blank "
+    + "page rather than a summary");
+  assert(defaultCollapsed(byCost, "trade", true).size === 0,
+    "An active filter expands everything — a page of closed headlines cannot tell a filter "
+    + "that matched from one that did not");
+
   assert(flat[1].label === "Beside the total" && flat[1].rows[0].key === "sofa",
     "…and the trailing block says what it is");
 

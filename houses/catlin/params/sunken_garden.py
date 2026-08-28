@@ -572,12 +572,16 @@ BACK_BEAMS = [
 #
 # Both runs end on the side-wall axes, exactly mirroring BM-SG-BKW/BKE: the 6" pocket inside
 # the 12" wall band is the modelled hanger detail already in use at the back.
+# BEAM_WHITE_PAINT, not BEAM_KDAT: this pair faces the garden in the same plane as the six
+# white pillars, so it is painted with them (2026-08-27). Same KDAT stock, same section —
+# see plan/assemblies.py::BEAM_WHITE_PAINT. The BACK pair keeps BEAM_KDAT: it is behind the
+# porch deck against the house and nobody sees it.
 FRONT_BEAMS = [
     Beam(uid="SGBM03AAAA", tag="BM-SG-FRW", start_node="N-SGM-FCOL", end_node="N-SGM-FW",
-         size=SPEC.back_beam, top_elevation=_porch_top, assembly="BEAM_KDAT",
+         size=SPEC.back_beam, top_elevation=_porch_top, assembly="BEAM_WHITE_PAINT",
          bearing_refs=("PT-SG-FCOL", "W-SG-W1")),
     Beam(uid="SGBM04AAAA", tag="BM-SG-FRE", start_node="N-SGM-FCOL", end_node="N-SGM-FE",
-         size=SPEC.back_beam, top_elevation=_porch_top, assembly="BEAM_KDAT",
+         size=SPEC.back_beam, top_elevation=_porch_top, assembly="BEAM_WHITE_PAINT",
          bearing_refs=("PT-SG-FCOL", "W-SG-E1")),
 ]
 
@@ -723,6 +727,9 @@ GIRT_NODES = [
     Node(uid="SGNG07AAAA", tag="N-SGG-FE1", position=pt(ft(_cx + _beam_face_ft), ft(_y_ax_front))),
     Node(uid="SGNG08AAAA", tag="N-SGG-FE2", position=pt(ft(_x_ax_e - _beam_face_ft), ft(_y_ax_front))),
 ]
+# The two FRONT segments are white-painted (BEAM_WHITE_PAINT) and the two REAR ones are not:
+# the front pair stands over the garden beside the white pillars, the rear pair sits against
+# the house behind the deck. Same stock and same section either way.
 BALCONY_GIRTS = [
     Beam(uid="SGBG01AAAA", tag="BM-SG-GIRT-RW", start_node="N-SGG-RW1", end_node="N-SGG-RW2",
          size=SPEC.balcony_girt, top_elevation=_girt_top, assembly="BEAM_KDAT",
@@ -731,10 +738,10 @@ BALCONY_GIRTS = [
          size=SPEC.balcony_girt, top_elevation=_girt_top, assembly="BEAM_KDAT",
          bearing_refs=("PT-SG-BR2", "PT-SG-BR3")),
     Beam(uid="SGBG02AAAA", tag="BM-SG-GIRT-FW", start_node="N-SGG-FW1", end_node="N-SGG-FW2",
-         size=SPEC.balcony_girt, top_elevation=_girt_top, assembly="BEAM_KDAT",
+         size=SPEC.balcony_girt, top_elevation=_girt_top, assembly="BEAM_WHITE_PAINT",
          bearing_refs=("PT-SG-BF1", "PT-SG-BF2")),
     Beam(uid="SGBG04AAAA", tag="BM-SG-GIRT-FE", start_node="N-SGG-FE1", end_node="N-SGG-FE2",
-         size=SPEC.balcony_girt, top_elevation=_girt_top, assembly="BEAM_KDAT",
+         size=SPEC.balcony_girt, top_elevation=_girt_top, assembly="BEAM_WHITE_PAINT",
          bearing_refs=("PT-SG-BF2", "PT-SG-BF3")),
 ]
 
@@ -811,6 +818,12 @@ BALCONY_JOISTS = FloorSystem(
     uid="SGFS02AAAA", tag="FS-SG-DECK",
     joists=JoistSpec(member=SPEC.balcony_joist, spacing=inch(SPEC.balcony_joist_oc_in),
                      direction="x", cantilever=inch(SPEC.joist_cantilever_in),
+                     # The two rim bands close the joist tips on the garden's front and rear
+                     # faces, at eye level from the walk below and in the same plane as the
+                     # white pillars, girts and knee braces — so they are painted with them
+                     # (2026-08-27). The joists behind them stay bare KDAT: nothing sees a
+                     # joist once the band and the fascia are on.
+                     rim_material="post-paint-white",
                      bearing_refs=("BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE")),
     outline=_DECK_OUTLINE,
     subfloor=DeckLayer(material_ref="aluminum-deck",
