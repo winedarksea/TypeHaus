@@ -41,15 +41,71 @@ def test_floorplan_has_framing_and_aia_layers(scene: Scene):
     assert fram and all(n.uid for n in fram)
 
 
-def test_floorplan_marks_windows_by_tag_and_carries_door_handing(scene: Scene):
+def test_floorplan_marks_windows_by_schedule_mark_and_carries_door_handing(scene: Scene,
+                                                                          model):
+    """The plan says which A-601 row, not which plan-source element.
+
+    It printed ``WIN-101`` — the authoring tag — beside every unit, which at 2.2" of
+    building is under the writers' 4 pt legibility floor at any scale a floor plan is drawn
+    at. What is there now is the type's schedule mark, in a bubble.
+    """
+    from typehaus.emit.draw.plan_marks import opening_type_marks
+
     symbols = [node for node in scene.nodes if isinstance(node, Symbol)]
     windows = [node for node in symbols if node.name == "window-mark"]
     doors = [node for node in symbols if node.name == "door-swing"]
-    labels = [node.content for node in scene.nodes if isinstance(node, Text)]
+    labels = {node.content for node in scene.nodes if isinstance(node, Text)}
     assert windows and doors
     assert all(node.layer == "A-GLAZ" and node.params["width_in"] > 0 for node in windows)
     assert all(node.params["swing_sign"] in {-1, 1} for node in doors)
-    assert "WIN-101" in labels
+
+    marks = opening_type_marks(model)
+    window = next(op for op in model.openings if op.tag == "WIN-101")
+    assert "WIN-101" not in labels
+    assert marks[window.type_ref] in labels
+
+
+def test_the_architectural_plan_carries_no_raw_element_tag(scene: Scene):
+    """No node's *text* may be an authoring tag — the drawing is not the plan source.
+
+    The whole failure mode this replaced: openings printed ``op.tag``, placeables printed
+    ``type_ref``, rooms printed ``room.tag`` and floor-heat zones printed ``zone.tag``, so
+    a 1/4"-scale plan was a field of dashed uppercase nobody could read. Element provenance
+    still travels on ``Polyline.tag``/``uid`` for XDATA and hit-testing, which is where it
+    belongs.
+    """
+    tagged = {node.tag for node in scene.nodes if getattr(node, "tag", None)}
+    printed = {node.content for node in scene.nodes if isinstance(node, Text)}
+    assert tagged, "the drawing must still carry element provenance"
+    assert not (printed & tagged), printed & tagged
+
+
+def test_every_plan_label_is_a_printed_size(scene: Scene):
+    """``height_pt`` throughout: annotation is paper, not building (→ scene.py, typography).
+
+    A ``Text.height`` of 2.2 model inches is 4.7 pt at 3/16" = 1'-0" and 1.6 pt at 1/16" —
+    which is why the old plan's lettering vanished at small scale and swamped the drawing
+    at large. Every label the plan builds now states the size it prints at.
+    """
+    unsized = [node.content for node in scene.nodes
+               if isinstance(node, Text) and node.height_pt is None]
+    assert not unsized, unsized
+
+
+def test_the_architectural_plan_leaves_the_trade_devices_to_their_own_sheets() -> None:
+    """No ``E-POWR`` / ``M-EQPT`` content on A-1xx (→ ``ARCHITECTURAL_DOMAINS``).
+
+    ``emit_fixtures`` was called with no domain filter, so every electrical device and every
+    mechanical register drew on the architectural plan as well as on E-10x/M-10x — ~90
+    glyphs and captions over catlin's main-floor room plan. Floor heat went the same way,
+    to ``_shared.emit_floor_heat`` for the HVAC plan to adopt.
+    """
+    house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
+    model, _ = resolve(load_plan(house).plan)
+    for storey in ("main", "second", "basement"):
+        layers = build_floorplan(model, storey).by_layer()
+        assert "E-POWR" not in layers and "M-EQPT" not in layers, storey
+        assert "A-FLR-HEAT" not in layers, storey
 
 
 def test_floorplan_door_symbol_reflects_both_handing_flips(model):
@@ -141,3 +197,59 @@ def test_emit_fixtures_draws_the_generated_glyph_as_plain_polylines() -> None:
     center = [part * 39.37007874015748 for part in sofa.position]
     assert max(abs(x - center[0]) for x, _ in inches) < 60
     assert max(abs(y - center[1]) for _, y in inches) < 60
+
+
+def test_room_blocks_say_name_area_and_ceiling_height() -> None:
+    """A room label is three things, and the plan used to print one and a half of them.
+
+    ``RM-M-LIVING`` was the *name* — an authoring tag — and the ceiling height was on no
+    drawing in the set although ``ResolvedCeiling`` has carried it per deck region since
+    2026-08-25. 8'-10 9/16" is what the main floor's 9'-0" nominal actually resolves to
+    under 5/8" gypsum on the second floor's deck.
+    """
+    from typehaus.emit.draw.plan_labels import room_display_name
+
+    house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
+    model, _ = resolve(load_plan(house).plan)
+    printed = {node.content for node in build_floorplan(model, "main").nodes
+               if isinstance(node, Text) and node.layer == "A-AREA-IDEN"}
+    assert room_display_name("RM-M-LIVING") == "LIVING"
+    assert {"LIVING", "748 SF", 'CLG 8\'-10 9/16"'} <= printed
+
+
+def test_a_room_over_two_ceiling_planes_labels_both() -> None:
+    """``RM-B-GYM`` resolves TWO ceilings and the plan states both, on their own regions.
+
+    234 SF at 8'-0 15/16" under ``FS-M-EAST``'s I-joists and 90 SF at 7'-11 3/8" under
+    ``SL-M-DECK``'s cast deck — the 1 9/16" step one flat bearing seat costs
+    (houses/catlin/CLAUDE.md). Collapsing them to one number, or picking the bigger, would
+    put a step the house is built with on no drawing at all.
+
+    ``RM-M-LIVING`` is the control: it resolves FOUR ceiling records across the second
+    floor's truss/I-joist split, all on one plane, and gets ONE caption — a deck seam is
+    not a step.
+    """
+    house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
+    model, _ = resolve(load_plan(house).plan)
+    printed = [node.content for node in build_floorplan(model, "basement").nodes
+               if isinstance(node, Text) and node.layer == "A-AREA-IDEN"]
+    assert 'CLG 8\'-0 15/16" / 234 SF' in printed
+    assert 'CLG 7\'-11 3/8" / 90 SF' in printed
+
+    assert len([c for c in model.ceilings if c.room_ref == "RM-M-LIVING"]) == 4
+    main = [node.content for node in build_floorplan(model, "main").nodes
+            if isinstance(node, Text) and node.layer == "A-AREA-IDEN"]
+    # The per-region caption form (``CLG <height> / <area> SF``) is what a split looks like,
+    # and no main-storey room has one: LIVING's four records are one plane.
+    assert 'CLG 8\'-10 9/16"' in main
+    assert not [c for c in main if c.startswith("CLG") and " / " in c], main
+
+
+def test_a_follow_roof_ceiling_states_that_rather_than_a_number() -> None:
+    """The whole attic is ``FollowRoof``: ``z0_m`` is None and there is no plane to print."""
+    house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
+    model, _ = resolve(load_plan(house).plan)
+    printed = {node.content for node in build_floorplan(model, "attic").nodes
+               if isinstance(node, Text) and node.layer == "A-AREA-IDEN"}
+    assert "CLG FOLLOWS ROOF" in printed
+    assert not any(c.startswith("CLG ") and c != "CLG FOLLOWS ROOF" for c in printed)

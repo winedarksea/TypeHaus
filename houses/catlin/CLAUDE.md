@@ -346,8 +346,13 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   to be whatever the headroom wanted, and 6:12 is the shallowest standard pitch that carries
   the rooms. **The building got 1'-9 1/2" SHORTER** (ridge 32'-0 5/8" -> 30'-3"), the
   envelope lost ~572 sf of `CATLIN_EXT_2X6` for +89 sf of roof, and six windows came out.
-  Measured, not asserted: `haus takeoff --csv` before and after puts it at roughly
-  **-$18,600 to -$34,500**. Its deck `FS-ATTIC` is also **the second storey's
+  Measured, not asserted: `haus takeoff --csv` before and after puts the redesign at
+  **-$19,400 to -$36,200**. (The same before/after run also moves by three PRICING fixes
+  found in passing and unrelated to the attic — an `icf-eps` double-bill removed, and the
+  missing `closed-cell-spray-foam:1.0` and `WT-2748`/`WT-2748-T` rows added — which net
+  **+$3,100** of previously invisible cost. The all-in line-to-line delta between the two
+  CSVs is therefore **-$17,200 to -$32,300**; the attic itself is the bigger number.)
+  Its deck `FS-ATTIC` is also **the second storey's
   ceiling**, and it authors that board (`ceiling_below`, 5/8" gypsum, restated inline
   because `plan/storeys/attic.py` is `# haus: editable` and cannot import `params/`). It
   was the last deck in the house without one: until 2026-08-25 every second-storey room

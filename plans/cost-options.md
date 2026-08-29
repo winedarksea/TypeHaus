@@ -77,7 +77,66 @@ inverter and battery — **$34,500–69,500** deferred for ~$1,500–3,500 of in
 
 Deferring both ⏳ rows takes **$43,200–86,900** out of the first build.
 
-### Habitable cathedral attic — $89,000–160,000
+### Habitable cathedral attic — **$73,000–141,000** (re-measured 2026-08-29)
+
+> **RE-MEASURED AFTER THE ATTIC REWORK.** The $89,000–160,000 below was struck 2026-08-24
+> against the 5'-0" knee-wall / 4:12 attic and a hand-tabulated put-back. It has been
+> re-run end to end against the built 6:12 rafter-plate attic, this time with the trussed
+> cold attic **modelled** rather than tabulated — a `CATLIN_TRUSS_ROOF` assembly (4:12,
+> energy-heel truss, 19 1/4" of blown fibreglass to R-60, one 3/4" plywood deck, the same
+> mechanically-seamed panel) carrying the same gable-end walls, with the PV array and the
+> eave water chain held constant on both sides so only the roof system and the habitable
+> storey move.
+>
+> | | low | high |
+> |---|---|---|
+> | built, cathedral attic | $809,859 | $1,690,900 |
+> | trussed cold attic | $737,123 | $1,550,079 |
+> | **premium** | **$72,736** | **$140,822** |
+>
+> Split, with the `11.875 I-joist` row divided by measured length (1,115 LF of rafter vs
+> 987 LF of `FS-ATTIC` joist and trimmer) rather than guessed:
+>
+> | | low | high |
+> |---|---|---|
+> | roof SYSTEM swap (rafter + polyiso cathedral → truss + blown-in) | −$27,900 | −$49,000 |
+> |   · insulation: 6" polyiso + R-19 rafter batt → R-60 blown | −$8,476 | −$13,813 |
+> |   · deck: ZIP + OSB nailbase → one 3/4" plywood deck | −$7,449 | −$13,007 |
+> |   · membranes, underlayment, vent mat | −$3,576 | −$7,247 |
+> |   · rafters out (I-joist share) | −$5,144 | −$8,651 |
+> |   · **trusses IN, ridge beam + hangers + ridge cap OUT** | **+$290** | **−$243** |
+> |   · roofing panel, same skin over ~90 SF less roof | −$930 | −$1,639 |
+> | habitable storey fit-out (deck, finishes, openings, stair, MEP, interior walls) | −$45,300 | −$94,300 |
+>
+> **The truss framing is a wash, and it is not the crane that makes it one.** 2,368 LF of
+> truss lumber costs almost exactly what the I-joist rafters, the `2-1.75x16 LVL` ridge beam,
+> its `LSSR` hangers and the ridge cap cost together. And the model is *generous* to the
+> truss here: `[framing]` still has no roof-truss row, so 36'-0" shop-fabricated trusses are
+> billed at the `2x4` stick rate ($1.20–2.00/LF installed = $2,842–4,736) against a market
+> $5.00–9.00/SF of footprint ($6,480–11,664). Carry that correction and the framing swap goes
+> to roughly break-even and the premium to **$69,100–133,900**. **A truss row belongs in
+> `prices.toml`** — this is the second time it has had to be hand-sourced.
+>
+> The saving is in the *insulation and the deck*, not the framing: a vented attic does not
+> need 6" of continuous polyiso, a nailbase deck over it, a deck vapour barrier or a vent
+> mat. That is $19,500–34,100 of the $27,900–49,000.
+>
+> **Per square foot it is still the cheapest floor area in the building.** $72,736–140,822
+> buys back 1,170.9 conditioned SF (5,001.3 → 3,830.4), i.e. **$62–120/SF** — against
+> **$134–279 per gross SF** and **$162–338 per conditioned SF** for the house as a whole.
+> 609.5 SF of what goes is already `storage`-typed; ~561 SF is finished habitable room.
+>
+> **And it is an air-barrier decision, not only a money one.** The cathedral roof keeps every
+> control layer outboard of structure and unpenetrated. A blown attic moves the air barrier
+> to the ceiling plane, where every can light, partition top plate and attic hatch crosses it.
+> Cheaper per R, harder to keep tight.
+>
+> Method: `houses/_ablate_attic`, a full house copy with `.with_elements("attic", ...)`
+> replaced by a `plan/storeys/attic_truss.py` that reuses `attic.NODES` and the six gable
+> walls by tag and adds one `CATLIN_TRUSS_ROOF` roof. Deleted after measuring; re-create it
+> the same way.
+
+#### The 2026-08-24 measurement, superseded — $89,000–160,000
 
 The single largest optional thing in the house, and this is the number
 `plans/TODO.md`'s "remove the attic level and switch to truss/blown-in" line has been
@@ -233,7 +292,7 @@ the total. Those rows say **built**. The rest are arithmetic on named `prices.to
 | 3 | **House-wall cladding: standing-seam snap-lock → exposed-fastener PBR panel on the same girts** | **$14,043–30,279** | **TAKEN 2026-08-26**, 0 FAIL |
 | 4 | Excavation: reuse spoil on site instead of hauling off | $10,000–25,000 | allowance note |
 | 5 | Roofs (house + garage, 2,186 SF): standing seam → architectural asphalt | $9,700–18,200 <br>+$1,500–3,000 of snow retention | built |
-| 6 | Garage ICF stem → conventional formed frost wall | $9,400–16,900 | arithmetic |
+| 6 | ~~Garage ICF stem → conventional formed frost wall~~ | ~~$9,400–16,900~~ **WITHDRAWN 2026-08-29 — real figure ~$1,000–1,800** | arithmetic on a double-billed rate |
 | 7 | ⏳ Raised garden apron — defer | $8,700–17,400 | ablation |
 | 8 | Windows: mid-range clad/fibreglass → vinyl or entry fibreglass, same U-0.25 | $6,500–11,000 | the `[openings]` note's own number |
 | 9 | Concrete deck over the theatre → I-joists | $6,300–10,700 | see above |
@@ -361,15 +420,27 @@ Everything the old row says about the *cost of the cut* stands, and the PV argum
 strongest part of it: `S-5-PVKIT` clamps to a standing seam with zero penetrations, and
 asphalt needs 48 flashed penetrating feet instead.
 
-### 6 — the garage ICF stem
+### 6 — the garage ICF stem — **WITHDRAWN 2026-08-29. KEEP THE ICF.**
 
-`GARAGE_ICF_6` is 8.8 cy of core at $758–1,299/cy plus 952.5 SF of EPS form at
+> **This row was arithmetic on a double bill, and the double bill is now gone.** The $27–47
+> per SF of wall it convicted the ICF of was never a real price — it was `GARAGE_ICF_6`
+> (an **installed** ICF wall rate, blocks included, by its own comment) plus
+> `[envelope_layers]."icf-eps"` billing the same blocks a second time at $6.50–11.50 per
+> face-SF over 952.5 SF, which is **both faces** of one 476 SF stem. `icf-eps` is zeroed as
+> of 2026-08-29 (see *Refactors*), and `GARAGE_ICF_6`'s labour half came down 30% the same
+> day for wall height. The stem now prices at **$12.31–19.63/SF**, inside every published
+> band. Against a conventional formed 8" wall the honest saving is about **$1,000–1,800**,
+> in exchange for R-22 → R-10 on the garage's only below-grade thermal layer. **Under the
+> threshold, and not worth taking.** The paragraph below is kept for the record; its
+> concrete comparison still holds, its ICF number does not.
+
+~~`GARAGE_ICF_6` is 8.8 cy of core at $758–1,299/cy plus 952.5 SF of EPS form at
 $6.50–11.50/SF — **$12,859–22,385**, or **$27–47 per SF of wall**, for a 476 SF frost wall
-under an unheated-by-default detached garage. A conventional formed 8" wall at this file's
+under an unheated-by-default detached garage.~~ A conventional formed 8" wall at this file's
 own re-derived $495–810/cy (see the 12"→8" entry) is $4,851–7,938 for the same 9.8 cy,
 forms in the rate.
 
-**−$8,000 / −$14,400 net, −$9,400 / −$16,900 after the ladder.**
+~~**−$8,000 / −$14,400 net, −$9,400 / −$16,900 after the ladder.**~~
 
 - **Cost of the cut:** R-21.9 → R-1.8 on the stem, and the stem is the garage's only
   below-grade thermal layer. If the garage stays heated, ~64 LF × 5' of uninsulated frost
@@ -450,6 +521,10 @@ $951,336–1,992,450 → **$945,604–1,984,213**, **−$5,600 / −$8,000**.
   same move is now "drop `foam-vent` to zero and the inner girt's fill to 1-1/2"" — mostly
   the same foam, spelled in a different place. The R numbers above are stale for the same
   reason: the baseline is R-40.7 on the card and ≈R-37.5 honest, not R-38.7.
+- **RE-PRICE IT AGAIN AFTER 2026-08-29.** Band C (`foam-vent`, the 1" this row proposes to
+  delete) was **not being billed at all** when the −$5,600/−$8,000 above was measured — it
+  matched no price key. It is priced now, so this row's saving is *larger* than the figure
+  above, not smaller. See *Refactors*.
 - **The lumber does not come back with it.** Both girt tiers stay 2x4 flat; what grows is the
   vent gap. Taking the KDAT line down means a narrower OUTER girt, not a narrower foam band,
   and `[framing]` has no 2x3 row — price that separately.
@@ -1039,6 +1114,216 @@ check grades it — `_resolve_ridge_beam` emits `structural.ridge_support` only 
 rafter at 4:12 has a 12.52" plumb cut, so the current ridge is fractionally too shallow.
 `2-1.75x14` LVL is ~$460–800 back. **For the engineer to settle, not this file.**
 
+> **SETTLED 2026-08-28 — the section above is history.** `RB-HOUSE` is `2-1.75x14` LVL now,
+> not `3-1.75x11.875`: three plies answered no load and the depth they came with was 1.5"
+> short of the rafter's plumb cut. The full derivation, the hanger and strap schedule and the
+> three-piece splice are in `notes/ridge_beam_detail.md`. **Deeper is cheaper than wider**,
+> in fasteners as well as in LVL — the third ply would have wanted 5" screws from both faces.
+
+## The crane-free / heavy-lift audit — 2026-08-29
+
+Asked for: whether this house needs a crane, and whether anything excessively heavy or bulky
+has an easy swap that takes real money out. Priced from the resolved model, the BOM and
+market research; **nothing in this section is built** except the four price-file corrections
+recorded under *Refactors* below, which are estimate fixes and not design changes.
+
+**The crane question is settled, and it was never really open.** No piece in the resolved
+model exceeds about **340 lb**. The two heaviest objects in the project — the 1,656 lb
+sunken-garden column `PT-SG-FCOL` and the 932 lb pier — are cast in disposable fibre tubes
+and never lifted at all. The two elements that *would* have forced a pick were engineered
+out on purpose long before this audit, with the reasoning written down: `RB-HOUSE` buys its
+36' as three 12-footers (`notes/ridge_beam_detail.md` §4), and the column is a tube, not a
+precast.
+
+**So crane-free is a tiebreaker, not a constraint, and it should stop driving decisions.** A
+30–40 ton metro boom truck is **$1,500–2,500** for a half or full day, operator and in-metro
+mobilisation included. `[allowances] site-scaffolding-and-lift-rental` already carries
+**$3,000–8,000** — the crane is inside the money the file has already set aside. On a bid of
+this size a crane day is 0.1–0.2% of the build. Where staying crane-free is free — splicing a
+beam that bears everywhere, casting a column in a tube — take it, as this design already
+does. Where preserving it would cost more than a couple of thousand dollars, it is false
+economy.
+
+> **READ THE RANGES BELOW AGAINST THE RIGHT BASELINE.** They were struck while the bid stood
+> at $948k–1.97M; it is $810k–1.69M now. **Do not read that whole drop as the attic rework** —
+> that attribution was wrong and is corrected here. Measured before-and-after CSVs put the
+> 2026-08-29 attic rework at **−$19,400/−$36,200** (−$17,200/−$32,300 all-in, net of three
+> pricing corrections made in the same pass); the rest of the $948k → $810k is the cost
+> sweep, the framing sweep and the price fixes recorded elsewhere in this file. Anything
+> below that scales with the attic — roof area, wall area, continuous insulation — is still
+> quoted **high** and has to be re-read before it is spent. The four price corrections under
+> *Refactors* are exact; these are not.
+
+### The candidates this file did not already carry
+
+Same convention as the sweep above: every number is a **bid-total** delta, and **none of
+these is built**. The threshold is relaxed to $1,500 here because two of the rows are
+thermally positive and one is free.
+
+| change | saves | what it costs you |
+|---|---|---|
+| **Shorten the sunken court, 28' → 16' north–south** | **$9,700–16,600** | Garden area, and nothing else |
+| **Roof: standing seam → exposed-fastener PBR** | $7,400–14,500 | The PV mounting — **see the warning below** |
+| **Single-tier girt on 5.5" blocks** (deletes the inner SPF tier) | $6,400–10,300 | A new failure mode and an engineer's fee |
+| **Exterior-wall cavity mineral wool → fiberglass** | $4,900–7,200 | ~0.8 whole-wall R; verify the row split first |
+| **Girt courses 24" → 32" o.c.** | $4,100–6,900 | Two re-checks — and it is worth **+R-0.8** |
+| **Engineer the garden footing base and stone bed** | $3,200–8,000 | Nothing, if it stamps |
+| **Refrigerator columns → one 36" side-by-side** | $3,000–4,500 | All-fridge/all-freezer capacity and a 21" of layout |
+| **Garage stem → frost-protected shallow foundation** | $2,000–3,900 | The option of ever leaving the garage unheated |
+| **Drop the interior vapour-retarder allowance on the truss walls** | $1,500–9,600 | Arguably nothing |
+| French doors → sliders where the swing isn't needed | ~15–25% of $7,000–15,800 | Double-leaf swing. **Unpriced — needs a quote** |
+
+**These do not add up either.** The 32" girt row and the single-tier girt row are mutually
+exclusive. Court-shortening and footing engineering overlap. The girt rows and the
+mineral-wool row all shrink if the attic goes (sweep row 1). Taking only the independent
+ones — court, 32" girts, vapour retarder, refrigerators — is roughly **$18,000–37,000**.
+
+**Shortening the court is the highest-value item on the list, and it is not "delete the
+garden."** The sunken garden is a third of the entire cast-concrete package: 29.2 cy of 10'
+retaining wall, 63% of all footing concrete in the project, and 100% of the 71.8 cy stone
+line. Taking 12' out of it leaves the porch, the balcony and the walkout untouched, still
+gives a 19x16 = 304 sf court, and cuts roughly 60 cy of excavation on top of the concrete.
+**Do not extend the logic to deleting it:** `D-B-PATIO` and `WIN-B-SAUNA` are the only
+exterior openings in the entire basement, and without the court the theatre, gym, sauna and
+shop are all windowless with no direct exit.
+
+**The girt respacing is the best value-to-risk row here and the only one that pays twice.**
+32" is exactly 2x the 16" stud module, so every block stays where it is and only the course
+count drops 25% — about 941 LF of SPF, 928 LF of KDAT and 1,049 structural screws. Re-running
+`notes/catlin_truss_engineering.md`'s own arithmetic at the larger tributary puts screw
+withdrawal at 36% (was 27%) and girt bending under 14%; nothing crosses half. It is also
+thermally **positive**, worth roughly +R-0.8 whole-wall, in a wall that currently misses its
+target. Two things to re-check before spending it: the 26 ga PBR panel's published purlin-span
+table at −26.7 psf, and every window head and sill against the new course phase (see
+`notes/` on girt courses vs. window elevations — no window has to move at 24", and that has
+to be re-established at 32").
+
+**The roof swap is the largest single lever and the worst trade in the file.** The flush
+zero-overhang edge survives it — `pbr-panel-26` already declares the same `skin_family` — but
+`S-5-PVKIT` clamps to a *seam* with **zero penetrations**, and on PBR 48 attachments have to
+pierce the water plane and the vent mat that is the assembly's only drying path, under a
+$15.8–27.5k array. Add ~3,700 gaskets on the primary roof plane of a Minnesota house at 4:12
+with no overhang, at 20–30 year gasket life against a seam that would not need re-roofing in
+25. **Under a PV array, leave the roof alone.** (This is a different row from sweep #5, which
+is roof → asphalt, and from sweep #3, which is the *wall* cladding and is already taken.)
+
+**The single-tier girt is bigger than the 32" respacing and much more dangerous.** It deletes
+the inner SPF tier and carries the outer girt on deeper blocks straight off the studs, and on
+the engineering note's own method it would actually *meet* the R-40 target. But the
+sequencing argument inverts — all 4" now has to be sprayed around blocks standing 5.5" proud
+and shaved 1.5" below their faces, where the note already calls a 1/2" shave "inside ccSPF
+surface tolerance" — and it creates a failure mode the wall does not have today: the current
+block bears in compression, a 5.5" block **cantilevers**, so block bending and screw prying
+become the design case and §4 of the note no longer describes the wall. Not without an
+engineer.
+
+**Two rows need a number confirmed before they are spent.** The mineral-wool row depends on
+splitting 6,313 SF between the exterior walls (the candidate) and the acoustic and humid
+walls (`INT_2X4_PARTITION` / `INT_2X6_STAGGERED` at STC 36/52, the sauna, the plant room) that
+must **not** be touched; the BOM reports mineral wool as two rows that were not attributable
+without re-running the model. The vapour-retarder row is an allowance driven off sheathing
+area at $0.35–2.20/SF whose own comment admits "nobody has decided which" — on the truss
+walls the decision is already made by 4" of exterior ccSPF, far past IRC R702.7.1's
+exterior-CI exemption for a 2x6 wall in zone 6, and adding a retarder would sandwich the
+mineral wool between two Class II layers with no drying direction. Keep the allowance for the
+garage's Zip-R only, and have whoever stamps the envelope confirm it.
+
+### Do not do these
+
+Each looks like a saving and isn't. Two were already settled the other way in the project's
+own notes; they are recorded here so they do not get reopened a third time.
+
+| idea | why not |
+|---|---|
+| **Swap the ccSPF for rigid board** | Reclaimed polyiso looks like −$6,900/−$8,600. Then a WRB comes back (+$2,200/+$4,900), opening flashing gets harder, the ACH50 1.0 target loses the layer that made it nearly automatic (+$1,500/+$4,000), the wall drops R-2, and you either cut ~4,200 holes in rigid foam or go back to through-foam furring — which puts the wall **back under IRC R703.15 and its 4" foam limit**, the exact provision the current wood-to-wood detail was engineered to escape. Virgin polyiso is a wash |
+| **Outer girt KDAT → plain SPF** | $2,968–4,452, and already settled the other way in the engineering note's Risks. That girt is a 3-1/2" horizontal ledge inside the vent gap that will wet-cycle for the life of the wall |
+| **Buy a proprietary clip-and-rail standoff** | $14,700–29,300 over 3,665 SF for clip and rail *alone*, against $16,028–26,118 for the entire current standoff **including window bucks**. Costs more, and reintroduces a through-foam fastener |
+| **"Simplify" `RB-HOUSE` to one 36' stick** | The one place a well-meant simplification would actually put a crane on the job: **277 lb per ply** landing 11–12 ft above the attic deck at +32', against 92 lb as three 12-footers. Identical lineal feet, zero offcut — 36' divides three ways exactly |
+| **Precast the 16" garden column** | 1,656 lb. The disposable fibre tube is a wheelbarrow of concrete; precast is a crane pick and a delivery problem. Even an 18" or 20" tube revert stays crane-free. Precast is the only version of this element that does not |
+
+### What the build actually needs — three things nothing in this file names
+
+No crane. But the plan and the price file are silent on all three of these, and the third one
+costs nothing to fix now and a lot to discover late.
+
+- **A telehandler, for the roof — not for the frame.** The roof plane is the largest
+  material-handling problem in the project: ZIP, two staggered 3" polyiso courses, 5/8" OSB
+  nailbase, standing seam and the PV modules, onto a 4:12 plane with a 26' eave and a 32'
+  ridge and **zero overhang to stage on**. No single piece is over 67 lb, but the polyiso is
+  a sail. Budget a telehandler or ladder conveyor — $700–1,000/day or $3,500–5,000/month —
+  plus the same machine for the 26'-long PBR wall panels.
+- **A boom pump, several days.** Forced by the sunken garden: 29.2 cy of 10' wall and its
+  footings at the bottom of a 9' court, 5" from the house on the north side. A ready-mix
+  chute cannot reach it. The main-floor deck's cap 9' in the air adds a day. Shortening the
+  court trims this; only deleting it would remove the pump.
+- **A sequencing note.** There is **no exterior stair** to the balcony and none into the
+  sunken garden — every stair in the model is interior. So the two outdoor heat pumps
+  (`EQ-M-HP1-OD` 92.6 lb, `EQ-M-HP2-OD` 145.5 lb) have to go up the interior stair and out
+  through a 5' French pair **before the balcony guard rail goes up**. The alternative is a
+  machine reaching 13 ft over an open 9' excavation with fresh footings in it.
+
+**And one stubborn framing pick, for the record.** The garage overhead-door header —
+`2-ply 14" LVL` over the 16' opening, `plan/storeys/garage.py:366` — is 258 lb assembled and,
+unlike the ridge, **cannot be spliced, because it spans**. Not a crane job at a 7' lift, but
+it is the heaviest non-spliceable member on site. If it ever becomes awkward, two 8' doors
+halve it.
+
+### An engine finding — the order sheet asks for lumber that does not exist
+
+**No dollars attached**: the lineal feet and the rates are identical either way. But it is
+the wrong order sheet and the wrong lift, and it is the same mistake `RB-HOUSE` was already
+fixed for.
+
+`FramedMember.continuously_supported` is set in **exactly one place** in the engine —
+`resolve/framing/roof.py:468`, for roof beams. Wall plates (`resolve/framing/solver.py:450`),
+rim boards (`resolve/floors.py:244`) and girts never receive it, so they miss
+`takeoff/framing.py`'s splice path entirely and fall through `_order_length_ft`'s over-length
+branch (`framing.py:52-55`), which returns `ceil(len/2)*2` — **inventing** even-foot sticks
+past the 20' stock ladder. The current order sheet asks for **105 pieces over 20 ft**,
+including six 36' LSL rim boards (LSL tops out at 24' at most yards), three 36' 2x6 plates
+and eight 36' 2x4 girts (SPF 2x6 maxes at 20'; 24' is special order). Metal trim runs are
+legitimately long; the dimensional lumber is not.
+
+The real-world answer for all of them is a lapped joint over bearing, which the model builds
+correctly but the takeoff does not express. Extending `continuously_supported` to plates, rim
+and girts would fix it — a real engine change with golden-test churn, so it is recorded here
+rather than done inside a costing pass.
+
+### Housekeeping — found along the way
+
+Four of these were fixed on 2026-08-29 and are recorded under *Refactors* below. The rest are
+open.
+
+| finding | detail | impact |
+|---|---|---|
+| ~~`brief.md` is stale~~ | ~~"4" exterior polyiso+EPS", "2x4 upper walls", "standing seam" walls~~ | **FIXED 2026-08-29** — the model builds ccSPF, 2x6 throughout, PBR walls. Not evidence of a cheaper abandoned spec, just an out-of-date document |
+| ~~Missing window price rows~~ | ~~`WT-2748` / `WT-2748-T`, six units, unpriced since the 2026-08-27 retype~~ | **FIXED 2026-08-29**, +$5,604/+$11,030 |
+| ~~Stale row-comment quantities~~ | ~~`footing` 38.63 cy, `FOUNDATION_WALL_12_INT` 22.18 cy, `xps` 2,520 SF~~ | **FIXED 2026-08-29** — BOM is 33.25 cy, 5.25 cy, 4,182 SF (+66%) |
+| Cold-weather protection is $0 | An explicit calendar bet. The file itself names the suspended deck as the worst case — "tenting the underside of a slab 9 feet in the air" | $8,000–21,000 |
+| Second sprayer mobilisation | 2,448 LF of girt course and 45 openings' worth of jamb posts go on **between** the two foam passes; no sprayer waits through that. No row carries the second set-up | $500–1,500 |
+| `FT-BOOKCASE-32-90` unpriced | Four units, `placeables` and `furnishings` both. An owner price, not one to invent | small |
+| Garden slab priced as interior | The slab rate is justified as "the cheapest slab there is — no perimeter forming, no edge finish, no exposure", then applied to 5.75 cy of **exposed exterior** slab at the bottom of a 9' court | under ~$460–930 |
+| Garden footings priced as strips | The `footing` rate derives from a 16"x8" strip, then covers the garden's 84"-wide reinforced retaining bases — 20.9 of 33.25 cy | under ~$1,500–2,100 |
+| Garage slab may be thin | 3-1/2" carrying vehicle loads through MN freeze–thaw; 4"–5" is normal | +$343–1,810 |
+| Excavation is one lump | $24,000–55,000 with no quantity anywhere in the model, so no design change can ever demonstrate a saving against it. The sunken garden alone implies ~200–250 cy of extra cut | the weakest number in the file |
+
+### Provenance
+
+Verified directly in the repo: the four price corrections and their measured takeoff deltas,
+the over-20-ft order-sheet count, the single site where `continuously_supported` is set, the
+unpriced window rows, and a 749 pass / 0 fail baseline. Crane and machine rates are sourced
+market research — the crane figure is a published Chicago rate card used as a Midwest proxy,
+since no Twin Cities firm posts rates. The concrete, envelope and equipment ranges come from
+specialist analysis that was reviewed but not re-derived end to end; treat them as
+well-argued estimates, not quotes, particularly the girt respacing arithmetic and the
+mineral-wool row split.
+
+Also worth knowing when any steel-vs-wood comparison in this file is re-read: 2026 tariffs
+put steel at 50% (25% on derivatives, locked in) while Canadian softwood duties are
+provisionally being cut to ~24.8%. The basis has shifted toward wood since these rates were
+struck.
+
+
 ## Taken
 
 ### Metal skin: one rate to four, garage rainscreen dropped — 2026-08-20
@@ -1287,6 +1572,55 @@ assumed away; MN taxes materials only, not construction labour, per DOR Fact She
 ## Refactors — where the price model itself was the problem
 
 Not cost swaps — places the *estimate* was wrong or fragile, found in the 2026-08-20 pass.
+
+**FOUR CORRECTIONS APPLIED 2026-08-29**, during the crane-free audit above. Each was
+verified against the file's own stated basis and measured as a takeoff delta. **Net effect
+on the bid: +$2,276 / +$3,494 — the estimate went UP.** The two silent under-bills were
+bigger than the two over-bills, which is the point of doing this before anyone quotes it.
+(The first two deltas were measured on the pre-attic-rework tree; the last two on
+`355c207`.)
+
+- **An inch of spray foam was free — `+$3,665 / +$5,497`, the bid was UNDER.** The truss wall
+  is 4" of ccSPF in **two passes**, authored as **three bands** in `plan/assemblies.py`
+  (1.5" band A, the girt's 1.5" `CavityFill`, and 1.0" `foam-vent`) so `analysis._layer_rsi`
+  can parallel-path the wood through band B and still credit foam over 100% of band C. That
+  split is R-value bookkeeping, not a third lift. `prices.toml` carried only `:1.5` and a
+  retired `:2.5`, so band C emitted `closed-cell-spray-foam:1.0`, matched no key, and dropped
+  into the take-off's own "not priced" list — **the bid was carrying 3" of a 4" wall**.
+  Adding `:1.0` at the same $1.00–1.50/board-foot basis costs the same as the retired `:2.5`
+  spelling of pass 2 did ($1.50–2.25 + $1.00–1.50 = $2.50–3.75/SF), because the ladder is
+  linear in board-feet and carries no set-up. **The set-up is the part still missing** — the
+  girts go on between the passes, so budget a second sprayer mobilisation, ~$500–1,500.
+- **The garage ICF blocks were billed twice — `−$6,191 / −$10,954`.** The file convicted
+  itself: `GARAGE_ICF_6`'s own comment calls it the **installed** ICF wall rate and spells
+  out that the blocks are "$5.00–7.00/SF of face … on top of the ready-mix and steel." Then
+  `[envelope_layers]."icf-eps"` billed them again at $6.50–11.50 per face-SF over 952.5 SF —
+  both faces of the same stem. The house was paying $27–47/SF for a 6" ICF frost wall against
+  a $13–25/SF market. `icf-eps` is zeroed, following the `SG_FROST_WING_XPS1/2` precedent
+  already in the file. This is what withdrew sweep row 6 above.
+- **The ICF stem was paying for bracing it does not need — `−$802 / −$2,079`.** $14–24/SF is
+  the band a **full-height** ICF wall earns, and its labour half is priced around a
+  turnbuckle alignment system every ~6 LF with an integral walk-through scaffold platform,
+  staged lifts and a two-level crew. `W-G-STEM*` is **5'-4" — four 16" courses** — set from
+  grade, braced with corner and end kickers only, poured in one low lift and consolidated by
+  hand off the top of the wall. There is no platform to build, strip and move. Material does
+  not move (blocks are blocks); labour comes off ~30%, $296–696 → $205–460/cy, giving
+  **$665–1,060/cy = $12.31–19.63/SF** — inside $8–18/SF for the ICF wall system and
+  $10–25/SF for an ICF foundation, where the old low sat *above* the middle of both.
+  `GARAGE_ICF_6_BRICKLEDGE` is re-struck off it, $620–1,060 → $561–907/cy.
+- **Six windows were free — `+$5,604 / +$11,030`, the bid was UNDER.** `WT-2748` was minted
+  2026-08-27 when BED1/BED2 came down from 54" and STUDY3 went up from 36", and no price row
+  followed it; `WT-2748` (4 ea) and `WT-2748-T` (2 ea) sat in the take-off's "not priced"
+  list. Derived, not invented: 27x48 is **75 UI**, past the 0–71 flat band, so it keeps the
+  over-band premium, and the nearest unit on the table is its own width — `WT-2754` (27x54)
+  with 6" of height off, ~7% less glass and frame and still a one-man set. The result
+  brackets correctly against `WT-3048` (30x48, 78 UI): three inches narrower, four percent
+  under. The delta is larger than the rows themselves because
+  `envelope-opening-flashing-and-sill-pans` is **driven off** `openings` — a measurement, not
+  a second bill.
+- **Not applied, recorded instead:** the mineral-wool row split, the exposed garden slab
+  priced at an interior rate, the garden's 84"-wide retaining bases priced off a 16"x8" strip
+  rate, and `FT-BOOKCASE-32-90`. See the housekeeping table in the crane-free audit above.
 
 - **`PORCH_DECK_COMPOSITE` "disagreed with itself" — not a bug, closed.** The 0.05cy solid
   and the 164.7 SF sheet_goods row are two different decks (sunken-garden porch vs. breezeway

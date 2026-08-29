@@ -7,14 +7,21 @@ from datetime import date
 import pytest
 
 from typehaus.emit.draw.floorplan import build_floorplan
+from typehaus.emit.draw.paper import ARCH_SCALES
 from typehaus.emit.draw.pdf_writer import _scene_bounds
 from typehaus.emit.draw.scene import Polyline, Scene
 from typehaus.emit.draw.sheet_writer import (
     ARCH_D,
     LEDGER,
     NTS_LABEL,
+    PORTRAIT_LEDGER,
     compose_sheet,
+    frame_for_scene,
+    paper_for,
+    resolve_paper,
+    schedule_sheet,
     select_scale,
+    set_paper,
     viewport_box,
 )
 from typehaus.emit.draw.sheets import SheetSpec, build_sheet_index
@@ -187,4 +194,96 @@ def test_authored_sections_join_the_a301_series(catlin_model, monkeypatch):
 
 
 def test_every_sheet_has_the_same_paper_size(catlin_model):
-    assert all(s.size == LEDGER for s in build_sheet_index(catlin_model))
+    sheets = build_sheet_index(catlin_model)
+    assert all(s.paper == LEDGER for s in sheets)
+    # E-602 is the one deliberate orientation exception, and it is a *rotation* of the
+    # set's paper rather than a second preset — so it follows the set onto any paper.
+    assert {s.size for s in sheets} <= {LEDGER, PORTRAIT_LEDGER}
+    assert [s.number for s in sheets if s.portrait] == ["E-602"]
+
+
+# --- paper, threaded through the whole set ------------------------------------
+
+
+def test_paper_is_stamped_on_every_sheet_in_the_set(catlin_model):
+    sheets = build_sheet_index(catlin_model, paper=ARCH_D)
+    assert all(s.paper == ARCH_D for s in sheets)
+    assert {s.size for s in sheets} == {ARCH_D, paper_for(ARCH_D, portrait=True)}
+    e602 = next(s for s in sheets if s.number == "E-602")
+    assert e602.size == (24.0, 36.0)
+
+
+def test_paper_for_turns_any_paper_either_way():
+    assert paper_for(ARCH_D) == ARCH_D
+    assert paper_for(PORTRAIT_LEDGER) == LEDGER          # already portrait, wanted landscape
+    assert paper_for(LEDGER, portrait=True) == PORTRAIT_LEDGER
+    assert resolve_paper("arch-d") == ARCH_D
+    with pytest.raises(ValueError, match="unknown paper"):
+        resolve_paper("a4")
+
+
+def test_arch_d_buys_a_bigger_scale_for_the_same_plan(catlin_model):
+    """The point of the paper argument: a bigger viewport, so a bigger standard scale."""
+    scene = build_floorplan(catlin_model, "main")
+    on_ledger = frame_for_scene(scene, LEDGER)
+    on_arch_d = frame_for_scene(scene, ARCH_D)
+    assert on_arch_d.scale > on_ledger.scale
+    assert on_arch_d.scale >= 0.25  # at least 1/4" = 1'-0", the sheet a builder reads
+
+
+def test_schedule_sheet_follows_the_paper_the_set_is_on(catlin_model):
+    """A table page names a preset in ``schedules/``; the set decides how big it is."""
+
+    class _Pdf:
+        def __init__(self):
+            self.sizes = []
+
+        def savefig(self, fig):
+            self.sizes.append(tuple(fig.get_size_inches()))
+
+    pdf = _Pdf()
+    with set_paper(ARCH_D):
+        with schedule_sheet(pdf, catlin_model, "S-103", "Landscape table"):
+            pass
+        with schedule_sheet(pdf, catlin_model, "E-602", "Portrait table",
+                            size=PORTRAIT_LEDGER):
+            pass
+    assert pdf.sizes == [ARCH_D, (24.0, 36.0)]
+
+
+# --- forcing a scale ----------------------------------------------------------
+
+
+def test_frame_for_scene_forces_a_named_scale():
+    scene = _tiny_scene()
+    frame = frame_for_scene(scene, LEDGER, scale_label="1/8\"=1'-0\"")
+    assert frame.scale == 0.125
+    assert frame.scale_label == "1/8\" = 1'-0\""  # canonical spacing, not what was typed
+
+
+def test_frame_for_scene_fit_is_labelled_nts():
+    frame = frame_for_scene(_tiny_scene(), LEDGER, scale_label="fit")
+    assert frame.scale_label == NTS_LABEL
+    assert frame.scale not in {s for s, _label in ARCH_SCALES}
+
+
+def test_frame_for_scene_rejects_a_scale_off_the_ladder():
+    with pytest.raises(ValueError, match="unknown scale"):
+        frame_for_scene(_tiny_scene(), LEDGER, scale_label="1/5\" = 1'-0\"")
+
+
+def test_frame_for_scene_is_none_without_geometry():
+    assert frame_for_scene(Scene(name="empty"), LEDGER) is None
+
+
+def test_composed_sheet_honours_the_frame_it_is_given(catlin_model):
+    """A forced scale survives composition — the title block prints what was drawn."""
+    scene = _tiny_scene()
+    framed = scene.model_copy(update={
+        "frame": frame_for_scene(scene, LEDGER, scale_label="1/16\"=1'-0\"")})
+    fig = compose_sheet(framed, SheetSpec("A-903", "Forced"), catlin_model)
+    ax = fig.axes[0]
+    width_in = ax.get_position().width * fig.get_size_inches()[0]
+    x0, x1 = ax.get_xlim()
+    assert (x1 - x0) / width_in == pytest.approx(12.0 / 0.0625)
+    assert "1/16\" = 1'-0\"" in _fig_texts(fig)

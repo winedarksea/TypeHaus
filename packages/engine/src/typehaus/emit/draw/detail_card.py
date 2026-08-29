@@ -24,8 +24,8 @@ that never said how big it is.
 
 from __future__ import annotations
 
+from typehaus.emit.draw.paper import ARCH_SCALES, NTS_LABEL, fit_scale
 from typehaus.emit.draw.scene import Frame
-from typehaus.emit.draw.sheet_writer import ARCH_SCALES, NTS_LABEL
 
 #: Card presets. Portrait first — a wall junction is taller than it is wide far more often
 #: than not, and ties go to the first entry.
@@ -140,7 +140,9 @@ def _select(span_u_in: float, span_z_in: float, view_w: float, view_h: float):
 
 
 def _fit(span_u_in: float, span_z_in: float, view_w: float, view_h: float) -> float:
-    """The non-standard scale that just fits — only ever reached under an N.T.S. label."""
-    if span_u_in <= 0.0 or span_z_in <= 0.0:
-        return ARCH_SCALES[-1][0]
-    return min(view_w * 12.0 / span_u_in, view_h * 12.0 / span_z_in)
+    """The non-standard scale that just fits — only ever reached under an N.T.S. label.
+
+    No pad: a card's drawing box already sits inside the ladder and callout gutters, so the
+    border it has to clear is two inches away. A sheet has no such gutters and pads.
+    """
+    return fit_scale(span_u_in, span_z_in, view_w, view_h)

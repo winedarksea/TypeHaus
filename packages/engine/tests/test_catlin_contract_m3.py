@@ -120,17 +120,24 @@ def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables(
     findings = [finding for finding in report.findings
                 if finding.check_id in {"structural.ijoist_span", "structural.frost_depth"}]
     assert findings
-    # Nothing FAILS. The seven sunken-garden footings report UNKNOWN — they retain the
-    # excavation they stand in, which IRC R404.4 sends to an engineered design rather than to
-    # any prescriptive table — and the four house footings the garden reaches PASS through
-    # IRC R403.3's frost-protected path on the wing insulation under the garden slab. Every
-    # one of the eleven read a comfortable 7'-2" and passed until 2026-08-22, because the
-    # rule measured them against a grade plane six and a half feet over their heads.
+    # Nothing FAILS and nothing is UNKNOWN. Every one of the eleven footings the sunken
+    # garden reaches read a comfortable 7'-2" and passed until 2026-08-22, because the rule
+    # measured them against a grade plane six and a half feet over their heads; deriving a
+    # local grade found four house footings with 8" of cover (one with -2") and the
+    # garden's own seven with 12"-21". Both groups are answered, by two different drawn
+    # things: the house four by the IRC R403.3 wing insulation under the garden slab, the
+    # garden's seven by the 42" drained non-frost-susceptible aggregate section they bear
+    # on, whose thickness counts toward the frost depth under ASCE 32 (IRC R403.1.4.1).
+    # Pinning the citation, not just the verdict, is what keeps this from going green off
+    # a check that stopped measuring.
     assert not [f for f in findings if f.result is Result.FAIL]
-    unknown = [f for f in findings if f.result is Result.UNKNOWN]
-    assert {tag for f in unknown for tag in f.element_tags if tag.startswith("FT-")} == {
-        "FT-SG-W1", "FT-SG-W2", "FT-SG-E1", "FT-SG-E2", "FT-SG-S",
-        "FT-SG-COL", "FT-SG-FCOL"}
+    assert not [f for f in findings if f.result is Result.UNKNOWN], \
+        [f.message for f in findings if f.result is Result.UNKNOWN]
+    by_tag = {tag: f for f in findings for tag in f.element_tags}
+    for tag in ("FT-SG-W1", "FT-SG-W2", "FT-SG-E1", "FT-SG-E2", "FT-SG-S",
+                "FT-SG-COL", "FT-SG-FCOL"):
+        assert by_tag[tag].result is Result.PASS, tag
+        assert "ASCE 32" in by_tag[tag].message, tag
 
 
 def test_catlin_sunken_garden_decks_are_graded_and_the_guard_rule_resolves():
@@ -192,26 +199,34 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset():
     # the gate itself — an item that gates today and stops passing tomorrow.
     # tests/test_permit_gate_catlin.py pins the size of that lane so it cannot grow.
     #
-    # ONE gating item is UNKNOWN and is pinned rather than waived. "Foundation frost depth"
-    # became evaluable-against-the-real-condition on 2026-08-22, when `structural.frost_depth`
-    # stopped comparing every footing to a single global grade plane and started deriving a
-    # local one. It found four house footings with 8" of cover — and one with 2" of NEGATIVE
-    # cover — below the sunken garden's floor; those are answered, by the R403.3 wings under
-    # the garden slab, and they pass. It also found the garden's OWN seven footings 12"-21"
-    # below the floor of the court they retain. Those are not a table's business: a structure
-    # holding up the hole it stands in is an engineered design under IRC R404.4, which is
-    # where `structural.foundation_unbalanced_fill` already sends the same five walls. The
-    # honest checklist entry for a permit set is therefore "engineered — see the consultant's
-    # drawings", not a green tick.
+    # EVERY gating item now passes, "Foundation frost depth" included — and that one is
+    # asserted positively rather than merely counted, because it is the item this checklist
+    # spent a week red on. It became evaluable-against-the-real-condition on 2026-08-22,
+    # when `structural.frost_depth` stopped comparing every footing to a single global grade
+    # plane and started deriving a local one. It found four house footings with 8" of cover
+    # — and one with 2" of NEGATIVE cover — below the sunken garden's floor, answered by the
+    # R403.3 wings under the garden slab. It also found the garden's OWN seven footings
+    # 12"-21" below the court floor and reported UNKNOWN, on the reading that a structure
+    # holding up the hole it stands in is an engineered design under IRC R404.4.
     #
-    # Pinned tightly on purpose: any OTHER gating item regressing still fails this test, and
-    # so does this one changing shape.
+    # That reading was wrong twice over (2026-08-29). Two of the seven are spread bells
+    # under freestanding porch columns and retain nothing. And for all seven the frost
+    # protection was already drawn and simply was not being counted: they bear on a 42"
+    # compacted washed-stone section, declared non-frost-susceptible and drained by a
+    # sock-wrapped tile, whose thickness counts toward the design frost depth under ASCE 32
+    # — one of the frost-protection methods IRC R403.1.4.1 lists, and which MN Rules
+    # 1309.0403 keeps. The gradation and the drainage are the assembly's authored claim;
+    # the check measures that the excavation reaches the depth.
+    #
+    # Pinned tightly on purpose: any OTHER gating item regressing still fails the empty
+    # assertion below, and this one silently going UNKNOWN again fails the two after it.
     gating = [item for item in checklist.items if item.blocking]
     unresolved = [item for item in gating if item.result is not Result.PASS]
-    assert [item.label for item in unresolved] == ["Foundation frost depth"], \
+    assert not unresolved, \
         [(item.label, item.result, item.detail) for item in unresolved]
-    assert unresolved[0].result is Result.UNKNOWN
-    assert "R404.4" in unresolved[0].detail
+    frost = [item for item in gating if item.label == "Foundation frost depth"]
+    assert len(frost) == 1, [item.label for item in gating]
+    assert frost[0].result is Result.PASS
 
 
 def test_site_plan_keeps_freestanding_roofs_and_foundation_supports_visible(catlin_model):

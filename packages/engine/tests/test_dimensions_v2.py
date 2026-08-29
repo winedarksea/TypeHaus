@@ -1,9 +1,16 @@
-"""Auto-dimensioner v2 — per-facade dimension strings + annotated roof plan.
+"""Auto-dimensioner v2/v3 — plan dimension tiers + annotated roof plan.
 
-Permit reviewers must be able to locate every opening and wall from the plan sheet, so
-the floorplan now carries a second dimension tier (14" off each facade) inside the
-overall bbox chain (24"), and the roof plan carries slope arrows, pitch notes, dashed
-ridges, and eave-overhang dimensions.
+Permit reviewers must be able to locate every opening and wall from the plan sheet, so the
+floorplan carries a dimension LADDER, inner to outer: the per-facade opening strings at
+14", the face-to-face interior partition chains at 44", and the overall bbox chain at 76".
+The roof plan carries slope arrows, pitch notes, dashed ridges, and eave-overhang
+dimensions.
+
+Two things moved under these tests when the interior tier landed. Every exterior chain is
+struck on the SHEATHING FACE rather than the wall axis — a builder pulls a tape to a face —
+so the extents here come from ``_shared.wall_face_bounds``. And a crowded string staggers
+onto one of ``STAGGER_ROWS`` rows rather than printing through its neighbour, so a tier is
+now an offset *band* (base to base + 2 rows) rather than one literal offset.
 """
 
 from __future__ import annotations
@@ -12,14 +19,22 @@ import math
 
 import pytest
 
-from typehaus.emit.draw._shared import _FACADE_TOL_M, _MIN_STATION_GAP_IN
+from typehaus.emit.draw._shared import (
+    _FACADE_TOL_M,
+    _MIN_STATION_GAP_IN,
+    wall_face_bounds,
+)
 from typehaus.emit.draw.floorplan import build_floorplan
 from typehaus.emit.draw.roofplan import build_roof_plan
 from typehaus.emit.draw.scene import ArchDimension, Polyline, Symbol, Text
 from typehaus.quantities import M_PER_IN
 
 STRING_OFFSET = 14.0
-OVERALL_OFFSET = 24.0
+INTERIOR_OFFSET = 44.0
+OVERALL_OFFSET = 76.0
+# A staggered string sits up to two rows outside its tier's base offset; the tiers are 30"
+# apart so a row can never be mistaken for the next tier down.
+TIER_BAND = 25.0
 
 
 @pytest.fixture(scope="module")
@@ -37,11 +52,14 @@ def _dims(scene):
 
 
 def _axis_bbox_in(catlin_model, storey):
-    pts = [p for w in catlin_model.walls if w.storey == storey
-           for p in (w.axis[0], w.axis[1])]
-    xs = [p[0] / M_PER_IN for p in pts]
-    ys = [p[1] / M_PER_IN for p in pts]
-    return min(xs), max(xs), min(ys), max(ys)
+    """The FACE bbox, inches — what the exterior chains are struck on since the third tier.
+
+    Still named for the axis it used to read, because every caller here wants the same
+    thing: the four coordinates a facade chain lies on.
+    """
+    walls = [w for w in catlin_model.walls if w.storey == storey]
+    minx, maxx, miny, maxy = wall_face_bounds(walls)
+    return minx / M_PER_IN, maxx / M_PER_IN, miny / M_PER_IN, maxy / M_PER_IN
 
 
 def _facade_chain(scene, bbox, facade):
@@ -49,7 +67,7 @@ def _facade_chain(scene, bbox, facade):
     minx, maxx, miny, maxy = bbox
     out = []
     for d in _dims(scene):
-        if abs(abs(d.offset) - STRING_OFFSET) > 1e-6:
+        if not STRING_OFFSET - 1e-6 <= abs(d.offset) <= STRING_OFFSET + TIER_BAND:
             continue
         horizontal = abs(d.p1[0] - d.p0[0]) >= abs(d.p1[1] - d.p0[1])
         if facade == "S" and horizontal and d.offset < 0 and abs(d.p0[1] - miny) < 1e-6:
@@ -69,6 +87,56 @@ def _facade_chain(scene, bbox, facade):
 def test_overall_chain_moved_outside_the_string_tier(main_scene):
     overall = [d for d in _dims(main_scene) if abs(d.offset) == OVERALL_OFFSET]
     assert len(overall) == 2  # E-W + N-S bbox dims, now stacked outside the strings
+    # ...and outside the interior tier too, which is the one that landed between them.
+    interior = [d for d in _dims(main_scene)
+                if INTERIOR_OFFSET - 1e-6 <= abs(d.offset) <= INTERIOR_OFFSET + TIER_BAND]
+    assert interior, "the interior partition chains must reach the plan"
+    assert max(abs(d.offset) for d in interior) < OVERALL_OFFSET
+
+
+def test_the_overall_chain_measures_the_sheathing_face(catlin_model, main_scene):
+    """The overall chain is struck on the SHEATHING FACE — a builder pulls a tape to a face.
+
+    catlin reads 36'-0" either way and that is not a coincidence to lean on: the house
+    aligns every exterior wall on ``face("sheathing-ext")``, so its sheathing plane sits
+    exactly on the node line and the axis bbox happens to agree. A house authored on
+    centrelines would be half a wall short at each end, which is a dimension nobody can
+    pull, and the reference is what makes that case right too.
+    """
+    walls = [w for w in catlin_model.walls if w.storey == "main"]
+    face_minx, face_maxx, face_miny, face_maxy = wall_face_bounds(walls)
+    assert (face_maxx - face_minx) / M_PER_IN == pytest.approx(432.0, abs=1e-6)
+    assert (face_maxy - face_miny) / M_PER_IN == pytest.approx(432.0, abs=1e-6)
+
+    overall = [d for d in _dims(main_scene) if abs(d.offset) == OVERALL_OFFSET]
+    horizontal = next(d for d in overall if abs(d.p1[0] - d.p0[0]) > abs(d.p1[1] - d.p0[1]))
+    assert horizontal.p1[0] - horizontal.p0[0] == pytest.approx(
+        (face_maxx - face_minx) / M_PER_IN, abs=1e-6)
+
+
+def test_interior_chains_measure_partition_faces_and_close_on_the_envelope(catlin_model):
+    """Both bearing directions, face to face, and each chain still sums to the overall.
+
+    The sum is the property that makes a chain a chain: ``plan_dimensions`` merges crowded
+    stations at a coarser gap rather than dropping any, precisely so this holds.
+    """
+    walls = [w for w in catlin_model.walls if w.storey == "main"]
+    minx, maxx, miny, maxy = (v / M_PER_IN for v in wall_face_bounds(walls))
+    scene = build_floorplan(catlin_model, "main")
+    chains = [d for d in _dims(scene)
+              if INTERIOR_OFFSET - 1e-6 <= abs(d.offset) <= INTERIOR_OFFSET + TIER_BAND]
+    for horizontal, lo, hi in ((True, minx, maxx), (False, miny, maxy)):
+        axis = 0 if horizontal else 1
+        chain = sorted((d for d in chains
+                        if (abs(d.p1[0] - d.p0[0]) >= abs(d.p1[1] - d.p0[1])) is horizontal),
+                       key=lambda d: d.p0[axis])
+        assert chain, ("no interior chain on axis", axis)
+        assert chain[0].p0[axis] == pytest.approx(lo, abs=1e-6)
+        assert chain[-1].p1[axis] == pytest.approx(hi, abs=1e-6)
+        for prev, nxt in zip(chain, chain[1:], strict=False):
+            assert prev.p1[axis] == pytest.approx(nxt.p0[axis], abs=1e-6)  # contiguous
+        total = sum(d.p1[axis] - d.p0[axis] for d in chain)
+        assert total == pytest.approx(hi - lo, abs=1e-6)
 
 
 def test_every_facade_chain_is_contiguous_sorted_and_sums_to_overall(

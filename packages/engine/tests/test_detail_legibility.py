@@ -16,9 +16,14 @@ import math
 
 import re
 
+from typehaus.emit.draw.detail_components.geometry import flashing_nodes
 from typehaus.emit.draw.details import build_detail, derive_detail_slices
-from typehaus.emit.draw.palette import detail_hatch
-from typehaus.emit.draw.pdf_writer import _band_linewidth, _min_printed_width_pt
+from typehaus.emit.draw.palette import detail_fill, detail_hatch
+from typehaus.emit.draw.pdf_writer import (
+    _band_linewidth,
+    _is_convex,
+    _min_printed_width_pt,
+)
 from typehaus.emit.draw.scene import Hatch, Leader, Polyline, Text
 
 
@@ -152,6 +157,33 @@ def test_a_band_thinner_than_its_own_stroke_keeps_a_visible_fill():
     assert _band_linewidth(quarter_inch, 1.2, None) == 1.2
 
 
+def test_the_cap_reads_a_flashing_profile_and_not_the_span_of_its_own_leg():
+    """Rotating calipers is exact on a convex ring and **wrong in the dangerous direction**
+    on the ones a detail component draws.
+
+    A flashing profile is a thickened polyline — an L, a Z, a five-leg step — and every edge
+    normal of an L projects the *whole* shape, so a 1/2" leg reported as the 3-1/2" reach of
+    the leg it turns off. The cap therefore never fired on the one family of shapes carrying
+    the heaviest line in the drawing: the head flashing below is 1.5 pt of printed band under
+    a 1.98 pt outline, and its own fill was painted out by its own edge. Zero red pixels
+    reached the page on a card whose subject is where the water goes.
+
+    A strip's mean width — twice the area over the perimeter — is what the shape actually
+    means by "how wide", and it is ``t`` exactly for a constant-thickness strip.
+    """
+    head_flashing = [(436.25, 85.5), (436.25, 83.75), (440.0, 83.75), (440.0, 81.9),
+                     (439.5, 81.9), (439.5, 83.25), (435.75, 83.25), (435.75, 85.5)]
+    assert not _is_convex(head_flashing)
+    # 1/2" of sheet metal at 1/2" = 1'-0" is 1.5 pt of paper; the profile reads within 7%.
+    assert abs(_min_printed_width_pt(head_flashing, 0.5) - 1.5) < 0.11
+    # So a 0.7 mm (1.98 pt) flashing pen prints at 0.70 and leaves the band its own colour.
+    assert abs(_band_linewidth(head_flashing, 0.7 * 72.0 / 25.4, 0.5) - 0.702) < 5e-4
+
+    # And the convex case is untouched: a layer band still gets the exact caliper answer,
+    # which is the assertion immediately above this one.
+    assert _is_convex([(0.0, 0.0), (0.25, 0.0), (0.25, 10.0), (0.0, 10.0)])
+
+
 # --- the legend names what was drawn -----------------------------------------------------
 
 def test_the_eave_legend_names_the_roof_it_is_mostly_made_of(catlin_model):
@@ -253,3 +285,71 @@ def test_a_leader_points_where_its_arrowhead_lands(catlin_model):
         assert node.anchor.xy == node.to, (
             f"{node.text!r} claims to point at {node.anchor.xy} but its arrowhead lands at "
             f"{node.to}")
+
+
+# --- flashing has to be visible before it can be read ------------------------------------
+
+def test_flashing_is_drawn_in_the_flashing_colour_and_not_as_a_white_shape():
+    """``flashing_nodes`` defaulted to ``material="metal"``, and ``metal`` is ``#ffffff``.
+
+    So every apron, drip edge, sill pan, L- and Z-flashing and shelf flashing in the house
+    was a *white* shape inside a 0.45 hairline — invisible against the page it sits on, on
+    the one drawing whose whole subject is where the water goes. ``"flashing"`` was in the
+    palette, in the engine and in ``DetailCanvas.tsx``, and reached by nothing.
+    """
+    assert detail_fill("metal") == "#ffffff"
+    assert detail_fill("flashing") == "#7a0c0c"
+    nodes = flashing_nodes([(0.0, 0.0), (4.0, 0.0), (4.0, -3.0)])
+    fills = [n.material for n in nodes if isinstance(n, Hatch)]
+    assert fills == ["flashing"]
+
+
+def test_flashing_takes_the_heavy_continuous_line_it_is_drawn_with_by_convention():
+    """0.7 mm, up from 0.45. It is a *default* weight and not a printed one — the band cap
+    still thins the outline of a leg narrower than the stroke asked for."""
+    outlines = [n for n in flashing_nodes([(0.0, 0.0), (4.0, 0.0)]) if isinstance(n, Polyline)]
+    assert [n.lineweight for n in outlines] == [0.7]
+
+
+def test_the_ridge_hanger_stays_metal_because_it_is_hardware(catlin_model):
+    """Same emitter, different meaning. A hanger carries load and sheds no water, so it may
+    not join the dark-red flashing family — the colour is the drawing's one way of saying
+    which pieces are the water management and which are the connection."""
+    detail = next(d for d in derive_detail_slices(catlin_model) if d.key.startswith("roof_ridge"))
+    scene = build_detail(catlin_model, detail)[0]
+    hangers = [n for n in scene.nodes if isinstance(n, Hatch) and n.material == "metal"]
+    assert hangers, "the ridge detail draws its hangers with the metal fill"
+    assert not [n for n in scene.nodes if isinstance(n, Hatch) and n.material == "flashing"]
+
+
+def test_the_dark_exterior_coil_is_dark(catlin_model):
+    """``metal-dark-exterior`` is the house's one exterior dark — the roof edge trim, the
+    drip edge, the box gutter, the downspouts and the guards all name it — and it had no
+    entry in either palette table. ``section.py`` hands a material tag straight through as
+    the hatch *pattern*, so an unknown one also picked up the fallback dotted stipple: the
+    box gutter printed as a pale speckled ghost beside the flashing it laps."""
+    assert detail_fill("metal-dark-exterior") == "#2f2f2f"
+    assert detail_hatch("metal-dark-exterior") == "metal"
+
+
+def test_the_treated_half_of_the_truss_wall_is_told_from_the_untreated_half():
+    """``kdat`` hit no entry and no family needle, so the catlin truss wall's outer girts and
+    its block-2 course — the half that wet-cycles for the life of the wall — drew as blank
+    cream boxes with no hatch and no fill of their own."""
+    assert detail_hatch("kdat") == "lumber"
+    assert detail_fill("kdat") != detail_fill("spf")
+
+
+def test_the_legend_names_the_flashing_it_drew(catlin_model):
+    """A dark red band the legend does not name is a band the reader has to guess at.
+
+    ``_participating_layers`` walks *assembly layers*, and flashing is drawn by a detail
+    component, so it could never appear there. It carries **no thickness**: components draw
+    sheet metal at a schematic 0.5" against the real ~0.025", and printing that number would
+    put one twenty-fold lie on a sheet of true ones.
+    """
+    scene = _eave(catlin_model)
+    assert any(isinstance(n, Hatch) and n.material == "flashing" for n in scene.nodes)
+    labels = {t.content for t in scene.nodes if isinstance(t, Text) and t.space == "paper"}
+    assert "flashing" in labels, sorted(labels)
+    assert not any(c.startswith("flashing ") for c in labels), "no schematic thickness"

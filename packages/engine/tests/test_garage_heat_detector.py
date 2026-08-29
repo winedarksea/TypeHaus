@@ -151,10 +151,15 @@ def test_the_detector_draws_as_HD_at_the_room_seed(catlin_model):
     assert len(labels) == 1
     garage = catlin_model.plan.by_tag("RM-GARAGE")
     seed_x, seed_y = garage.seed.xy_m
-    # Drawn just off the seed, the same offset every alarm label uses.
-    expected = _in((seed_x + 0.08, seed_y + 0.08))
-    assert labels[0].anchor[0] == pytest.approx(expected[0], abs=1e-6)
-    assert labels[0].anchor[1] == pytest.approx(expected[1], abs=1e-6)
+    # Drawn beside the glyph, which is at the seed. The label used to be pinned here to an
+    # exact ``+0.08, +0.08`` — but a room's seed and its label block are both derived from
+    # the room, so on a small room the caption printed straight through the block ("SD/CO"
+    # over "CLOSET / 48 SF"). It now takes the first side of the glyph that clears every
+    # block, so WHICH side is a layout outcome and only the distance is the contract: the
+    # caption stays attached to its symbol.
+    seed = _in((seed_x, seed_y))
+    assert abs(labels[0].anchor[0] - seed[0]) < 12.0, "HD label drifted off its glyph"
+    assert abs(labels[0].anchor[1] - seed[1]) < 12.0, "HD label drifted off its glyph"
     # ...and no smoke label snuck into the garage alongside it.
     assert not [node for node in scene.nodes
                 if getattr(node, "content", None) in ("SD", "SD/CO")]

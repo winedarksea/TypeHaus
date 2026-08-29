@@ -9,7 +9,10 @@ come from the ``ResolvedModel`` (→ 20 "the UI never re-measures" rule, applied
 
 from __future__ import annotations
 
+from shapely.geometry import Point, Polygon
+
 from typehaus.emit.draw._shared import (
+    PLAN_RESERVATION_SCALE,
     emit_bbox_dimension_chain,
     emit_facade_dimension_strings,
     emit_fixtures,
@@ -23,12 +26,32 @@ from typehaus.emit.draw.door_symbols import (
     symbol_is_centre_anchored,
     symbol_name_for_operation,
 )
+from typehaus.emit.draw.plan_dimensions import emit_interior_dimension_chains
+from typehaus.emit.draw.plan_labels import emit_room_blocks
+from typehaus.emit.draw.plan_marks import (
+    emit_opening_mark,
+    opening_type_marks,
+    preferred_normal,
+)
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Symbol, Text
+from typehaus.emit.draw.typography import (
+    CHAR_ASPECT,
+    DIM_TEXT_PT,
+    TEXT_PT,
+    model_in_per_pt,
+)
 from typehaus.model.enums import DoorOperation
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
 from typehaus.resolve.geometry import opening_center, rect_between, wall_frame
 from typehaus.resolve.model import ResolvedModel
+
+#: The placeable domains an ARCHITECTURAL plan draws. Electrical (``E-POWR``) and mechanical
+#: (``M-EQPT``) devices are drawn here only because ``emit_fixtures`` used to be called with
+#: no filter at all, and they have their own sheets — E-10x, E-20x and M-10x already build
+#: from the same resolved objects. Leaving them on A-1xx put ~90 ``ED-T-LT-CAN4`` and
+#: ``REG-T-ERV-SUP`` glyphs over catlin's main-floor room plan.
+ARCHITECTURAL_DOMAINS = frozenset({"plumbing", "appliance", "furniture"})
 
 
 def build_floorplan(model: ResolvedModel, storey: str) -> Scene:
@@ -39,17 +62,30 @@ def build_floorplan(model: ResolvedModel, storey: str) -> Scene:
     for wall in walls:
         emit_wall(b, wall)
     _emit_slabs(b, model, storey)
-    _emit_openings(b, model, {w.tag for w in walls})
+    mark_boxes = _emit_openings(b, model, {w.tag for w in walls}, storey)
     _emit_stairs(b, model, storey)
     _emit_railings(b, model, storey)
-    _emit_rooms(b, model, storey)
-    _emit_floor_heat(b, model, storey)
-    _emit_alarms(b, model, storey)
-    emit_fixtures(b, model, storey)
-    # Two dimension tiers: the per-facade strings sit 14" off each facade, the overall
-    # bbox chain stacks outside them at 24" (auto-dimensioner v2).
+    # Order is the whole argument here. A mark bubble is pinned to its opening and an alarm
+    # glyph to its device — neither can move — so the room block, which is the one thing on
+    # the plan free to sit anywhere inside its own room, is placed last among the three and
+    # told where the other two already are. Its caption then goes back the other way: the
+    # block is fixed by the time the alarm's SD/CO label picks a side.
+    room_boxes = emit_room_blocks(b, model, storey,
+                                  avoid=mark_boxes + _alarm_glyph_boxes(model, storey))
+    # Floor heat is MECHANICAL and now lives in ``_shared.emit_floor_heat`` for the HVAC
+    # plan to adopt; the smoke/CO alarms stay, because A-1xx is where a plan reviewer looks
+    # for them and ``code.R314``/``R315`` reconcile against the same elements.
+    _emit_alarms(b, model, storey, room_boxes)
+    emit_fixtures(b, model, storey, domains=ARCHITECTURAL_DOMAINS, labels=False)
+    # Three dimension tiers, inner to outer: per-facade opening strings at 14", the
+    # face-to-face interior partition chains at 44", the overall bbox chain at 76". Each
+    # sits outside the last so a reader walks from the detail to the extent, and the two
+    # exterior tiers now measure to the sheathing face rather than to a wall centreline.
+    # The 30" of pitch between tiers is what ``_shared.STAGGER_ROWS`` costs: a crowded
+    # string steps out up to two rows (~20") and must not land on the tier outside it.
     emit_facade_dimension_strings(b, model, walls, offset=14.0)
-    emit_bbox_dimension_chain(b, walls, offset=-24.0)
+    emit_interior_dimension_chains(b, walls, offset=44.0)
+    emit_bbox_dimension_chain(b, walls, offset=-76.0, reference="face")
     return b.build()
 
 
@@ -61,7 +97,19 @@ def _door_operation(model: ResolvedModel, type_ref: str | None) -> DoorOperation
     return door_type.operation if door_type is not None else DoorOperation.SWING
 
 
-def _emit_openings(b: SceneBuilder, model: ResolvedModel, wall_tags: set[str]) -> None:
+def _emit_openings(b: SceneBuilder, model: ResolvedModel, wall_tags: set[str],
+                   storey: str) -> list[tuple[float, float, float, float]]:
+    """Draw every opening's plan glyph and its A-601 schedule mark.
+
+    The mark replaced ``op.tag``. A tag is what the plan source calls the element and it is
+    the wrong thing to print on a drawing: ``WIN-M-EAST-MID`` is thirteen characters of
+    authoring vocabulary next to a 27" unit, and the plan carried one for every window in
+    the house. What a reader needs is the schedule row — see ``plan_marks``.
+    """
+    marks = opening_type_marks(model)
+    boxes: list[tuple[float, float, float, float]] = []
+    rooms = [Polygon(room.clear_face) for room in model.rooms
+             if room.storey == storey and len(room.clear_face) >= 3]
     for op in model.openings:
         if op.host_wall not in wall_tags:
             continue
@@ -73,18 +121,22 @@ def _emit_openings(b: SceneBuilder, model: ResolvedModel, wall_tags: set[str]) -
         length = axis_length or 1.0
         cx, cy = opening_center(wall, op) or (sx, sy)
         angle = _angle(sx, sy, ex, ey)
+        mark = marks.get(op.type_ref or "")
         if op.is_door:
             _emit_door_symbol(b, model, op, (cx, cy), (ex - sx, ey - sy), length, angle,
                               wall.thickness_m / M_PER_IN)
-            continue
-        b.add(Symbol(
-            name="window-mark", insert=_in((cx, cy)), rotation=angle,
-            scale=op.width_m / M_PER_IN, layer="A-GLAZ", uid=op.uid,
-            params={"width_in": op.width_m / M_PER_IN},
-        ))
-        # Keep labels clear of the glazed opening while retaining the wall orientation.
-        b.add(Text(anchor=_in((cx + normal_x * 0.18, cy + normal_y * 0.18)),
-                   content=op.tag, height=2.2, layer="A-GLAZ", align="center"))
+        else:
+            b.add(Symbol(
+                name="window-mark", insert=_in((cx, cy)), rotation=angle,
+                scale=op.width_m / M_PER_IN, layer="A-GLAZ", uid=op.uid,
+                params={"width_in": op.width_m / M_PER_IN},
+            ))
+        if mark is not None:
+            boxes.append(emit_opening_mark(
+                b, mark, (cx, cy),
+                preferred_normal((cx, cy), (normal_x, normal_y), rooms),
+                op.is_door, op.uid))
+    return boxes
 
 
 def _emit_door_symbol(b: SceneBuilder, model: ResolvedModel, op, center: tuple[float, float],
@@ -115,19 +167,6 @@ def _emit_door_symbol(b: SceneBuilder, model: ResolvedModel, op, center: tuple[f
     ))
 
 
-def _emit_rooms(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
-    for room in model.rooms:
-        if room.storey != storey or not room.clear_face:
-            continue
-        cx = sum(p[0] for p in room.clear_face) / len(room.clear_face)
-        cy = sum(p[1] for p in room.clear_face) / len(room.clear_face)
-        area_sf = room.area_m2 * 10.7639
-        b.add(Text(anchor=_in((cx, cy)), content=room.tag, height=4.0,
-                   layer="A-AREA-IDEN", align="center"))
-        b.add(Text(anchor=_in((cx, cy - 0.3)), content=f"{area_sf:.0f} SF", height=3.0,
-                   layer="A-AREA-IDEN", align="center"))
-
-
 def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
     """Draw every walking surface's outline on its storey's plan.
 
@@ -145,6 +184,8 @@ def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
     silent regression in the 2D set.
     """
     seen_outlines: set[tuple[tuple[float, float], ...]] = set()
+    rooms = [Polygon(room.clear_face) for room in model.rooms
+             if room.storey == storey and len(room.clear_face) >= 3]
 
     def _draw(outline, uid: str, tag: str) -> None:
         outline_key = tuple(sorted((round(x, 6), round(y, 6)) for x, y in outline))
@@ -155,8 +196,15 @@ def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
                        closed=True, lineweight=0.35, uid=uid, tag=tag))
         cx = sum(p[0] for p in outline) / len(outline)
         cy = sum(p[1] for p in outline) / len(outline)
-        b.add(Text(anchor=_in((cx, cy)), content=tag, height=2.2, layer="A-SLAB",
-                   align="center"))
+        # ONLY A SURFACE NO ROOM ALREADY NAMES. A slab under a room is that room's floor,
+        # and a second caption over ``LIVING / 748 SF`` saying ``SL-M-DECK`` names the same
+        # ground twice — in authoring vocabulary the second time. What is left is what a
+        # reader genuinely needs named because nothing else on the sheet does: the porch,
+        # the balcony, the breezeway deck, a landing pad at a threshold.
+        if any(room.contains(Point(cx, cy)) for room in rooms):
+            return
+        b.add(Text(anchor=_in((cx, cy)), content=_surface_name(tag), height_pt=TEXT_PT,
+                   layer="A-SLAB", align="center"))
 
     for slab in sorted((s for s in model.solids
                         if s.category == "slab" and s.storey == storey),
@@ -171,6 +219,21 @@ def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
         if floor.storey in walled and _has_enclosing_walls(model, floor):
             continue
         _draw(floor.deck_outline, floor.uid, floor.tag)
+
+
+def _surface_name(tag: str) -> str:
+    """``FS-SG-PORCH`` → ``PORCH``; ``SL-G-STEP-0`` → ``STEP 0``.
+
+    Same derivation ``plan_labels.room_display_name`` makes, and for the same reason: the
+    element prefix and the storey/structure code are authoring vocabulary, and what belongs
+    on the drawing is the surface's name.
+    """
+    parts = tag.split("-")
+    if parts and parts[0] in {"SL", "FS"}:
+        parts = parts[1:]
+    if len(parts) > 1 and len(parts[0]) <= 2 and parts[0].isalpha():
+        parts = parts[1:]
+    return " ".join(parts) if parts else tag
 
 
 def _has_enclosing_walls(model: ResolvedModel, floor) -> bool:
@@ -202,6 +265,18 @@ def _member_footprint(member) -> list[tuple[float, float]]:
     half = plan_cross_section_m(cross_section(member.profile),
                                 member.z1_m - member.z0_m) / 2.0
     return rect_between(member.p0, member.p1, -half, half)
+
+
+#: How far a descending flight's label sits below an ascending one sharing the same well,
+#: metres. One line of plan lettering at the scale plan annotation reserves against.
+_STAIR_LABEL_PITCH_M = TEXT_PT * model_in_per_pt(PLAN_RESERVATION_SCALE) * M_PER_IN * 1.6
+
+#: Gap between the flight's travel line and the near edge of its label, metres. The line is
+#: the heaviest thing drawn on the flight (0.5 mm against the treads' 0.25) and it ran
+#: through the middle of the lettering. The label is CENTRED on its anchor, so clearing the
+#: line means moving it half its own width plus this — a fixed offset only clears a label
+#: of one particular length, and "DN 15 R" and "UP 6 R" are not that length.
+_STAIR_LABEL_GAP_M = TEXT_PT * model_in_per_pt(PLAN_RESERVATION_SCALE) * M_PER_IN * 0.5
 
 
 def _emit_stairs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
@@ -255,9 +330,27 @@ def _emit_stairs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
             start, end = end, start
         b.add(Polyline(points=(_in(start), _in(end)), layer="A-STAIR", lineweight=0.5,
                        uid=stair.uid, tag=f"{stair.tag}-direction"))
-        label = f"UP {stair.riser_count} R"
-        b.add(Text(anchor=_in(((minx + maxx) / 2, (miny + maxy) / 2)), content=label,
-                   height=3.0, layer="A-STAIR", align="center"))
+        # Which way the flight goes is a fact about the READER's storey, not about the
+        # stair. A stair is authored departing ``storey`` and arriving ``to_storey``, and it
+        # is drawn on both plans — so on the plan it arrives at, it descends. Both flights
+        # through catlin's stair hall read "UP" until now: "UP 16 R" for the flight to the
+        # second floor, and "UP 15 R" for the one down to the basement, printed on top of
+        # each other in the middle of the same well.
+        going_up = stair.storey == storey
+        label = f"{'UP' if going_up else 'DN'} {stair.riser_count} R"
+        # Placed on two axes, for two different reasons. ALONG the run, the descending
+        # flight steps clear of the ascending one — two flights sharing a well share a bbox
+        # centre, which is how "UP 16 R" and "UP 15 R" came to be printed on top of each
+        # other. ACROSS it, both step off the travel line, which is the heaviest thing on
+        # the flight and otherwise runs straight through the lettering.
+        anchor = [(minx + maxx) / 2, (miny + maxy) / 2]
+        run_axis = 0 if along_x else 1
+        anchor[run_axis] -= _STAIR_LABEL_PITCH_M * (0 if going_up else 1)
+        half_label = (len(label) * TEXT_PT * CHAR_ASPECT
+                      * model_in_per_pt(PLAN_RESERVATION_SCALE) * M_PER_IN / 2.0)
+        anchor[1 - run_axis] += half_label + _STAIR_LABEL_GAP_M
+        b.add(Text(anchor=_in((anchor[0], anchor[1])), content=label,
+                   height_pt=TEXT_PT, layer="A-STAIR", align="center"))
 
 
 def _emit_railings(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
@@ -304,8 +397,67 @@ def _emit_railings(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
                        layer="A-RAIL", lineweight=0.25, uid=solid.uid, tag=solid.tag))
 
 
-def _emit_alarms(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
-    """Place code-life-safety symbols at their hosted room seed points."""
+#: Candidate caption offsets around an alarm glyph, in glyph-radii, first that clears wins.
+#: Right first because that is where a reader looks for a symbol's label; below-right last
+#: because it is the direction a room block already occupies.
+_ALARM_LABEL_SIDES = ((1.0, 0.0), (-1.0, 0.0), (0.0, 1.0), (0.0, -1.0))
+
+#: How far off the glyph a caption sits, metres. The glyph is drawn by the writer at a fixed
+#: printed size, so this is the model-space room that size takes at the scale plan annotation
+#: reserves against — the same convention every other label on this sheet uses.
+_ALARM_LABEL_GAP_M = 0.14
+
+
+#: Half-width of the reserved box around an alarm glyph, metres. The symbol draws at a
+#: fixed printed size, so this is the room it takes on the sheet at the scale plan
+#: annotation reserves against — enough that a label block placed clear of it does not sit
+#: on its shoulder either.
+_ALARM_GLYPH_HALF_M = 0.11
+
+
+def _alarm_positions(model: ResolvedModel, storey: str) -> list[tuple[float, float]]:
+    """Where each alarm symbol will be drawn on ``storey`` — the same rule ``_emit_alarms`` uses.
+
+    Read before the room blocks are placed and again when the symbols are drawn. The two
+    must agree, which is why the seed-or-authored-position rule lives here once instead of
+    being spelled out at both call sites.
+    """
+    rooms = {element.tag: element for element in model.plan.storey_elements(storey)
+             if element.element_kind == "Room"}
+    out: list[tuple[float, float]] = []
+    for alarm in (element for element in model.plan.storey_elements(storey)
+                  if element.element_kind == "Alarm"):
+        room = rooms.get(alarm.room)
+        if room is None:
+            continue
+        out.append(alarm.position.xy_m if alarm.position is not None else room.seed.xy_m)
+    return out
+
+
+def _alarm_glyph_boxes(model: ResolvedModel,
+                       storey: str) -> list[tuple[float, float, float, float]]:
+    """The boxes the alarm SYMBOLS will occupy, for the room block to place itself around.
+
+    The caption dodges the block and the block dodges the glyph, which is not circular: a
+    glyph cannot move at all, a block can move anywhere inside its room, and a caption can
+    only pick a side. Ordering them by how much freedom each has is what stopped ``BED``
+    and ``231 SF`` printing above and below a symbol sitting between them.
+    """
+    return [(x - _ALARM_GLYPH_HALF_M, y - _ALARM_GLYPH_HALF_M,
+             x + _ALARM_GLYPH_HALF_M, y + _ALARM_GLYPH_HALF_M)
+            for x, y in _alarm_positions(model, storey)]
+
+
+def _emit_alarms(b: SceneBuilder, model: ResolvedModel, storey: str,
+                 avoid: list[tuple[float, float, float, float]] = ()) -> None:
+    """Place code-life-safety symbols at their hosted room seed points.
+
+    ``avoid`` is the room label blocks' boxes (``plan_labels.emit_room_blocks`` returns
+    them). A room's seed and its label block are both derived from the room, so on a small
+    room they land on each other: ``SD/CO`` printed straight through ``CLOSET / 48 SF`` and
+    through ``PLAY N``'s ceiling line. The SYMBOL stays where it is — its position is a
+    statement about where the alarm goes — and only the caption steps aside.
+    """
     rooms = {element.tag: element for element in model.plan.storey_elements(storey)
              if element.element_kind == "Room"}
     for alarm in (element for element in model.plan.storey_elements(storey)
@@ -321,25 +473,25 @@ def _emit_alarms(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
         # there — e.g. a hall lobe of a big open room rather than that room's centroid.
         at = alarm.position.xy_m if alarm.position is not None else room.seed.xy_m
         b.add(Symbol(name="alarm", insert=_in(at), layer="A-ANNO-SYMB"))
-        b.add(Text(anchor=_in((at[0] + 0.08, at[1] + 0.08)),
-                   content=label, height=2.0, layer="A-ANNO-TEXT"))
+        b.add(Text(anchor=_in(_alarm_label_anchor(at, label, avoid)),
+                   content=label, height_pt=DIM_TEXT_PT, layer="A-ANNO-TEXT"))
 
 
-def _emit_floor_heat(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
-    """Draw a serpentine guide from the resolved zone, not a generic fixture icon."""
-    for zone in (item for item in model.floor_heat if item.storey == storey):
-        xs, ys = [point[0] for point in zone.zone], [point[1] for point in zone.zone]
-        minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
-        lines = max(1, int((maxy - miny) / zone.spacing_m))
-        points: list[tuple[float, float]] = []
-        for index in range(lines + 1):
-            y = min(maxy, miny + index * zone.spacing_m)
-            points.extend(((minx, y), (maxx, y)) if index % 2 == 0 else ((maxx, y), (minx, y)))
-        b.add(Polyline(points=tuple(_in(point) for point in points), layer="A-FLR-HEAT",
-                       lineweight=0.25, uid=zone.uid, tag=zone.tag))
-        b.add(Text(anchor=_in(((minx + maxx) / 2, (miny + maxy) / 2)),
-                   content=f"{zone.tag} {zone.wire_length_m / 0.3048:.0f} LF", height=2.5,
-                   layer="A-ANNO-TEXT", align="center"))
+def _alarm_label_anchor(at: tuple[float, float], label: str,
+                        avoid: list[tuple[float, float, float, float]]
+                        ) -> tuple[float, float]:
+    """The first side of the glyph whose caption clears every room block, else the right."""
+    half_w = (len(label) * DIM_TEXT_PT * CHAR_ASPECT
+              * model_in_per_pt(PLAN_RESERVATION_SCALE) * M_PER_IN / 2.0)
+    half_h = _ALARM_LABEL_GAP_M / 2.0
+    for dx, dy in _ALARM_LABEL_SIDES:
+        cx = at[0] + dx * (_ALARM_LABEL_GAP_M + half_w)
+        cy = at[1] + dy * (_ALARM_LABEL_GAP_M + half_h)
+        if not any(cx + half_w > minx and cx - half_w < maxx
+                   and cy + half_h > miny and cy - half_h < maxy
+                   for minx, miny, maxx, maxy in avoid):
+            return (cx - half_w, cy - half_h)
+    return (at[0] + _ALARM_LABEL_GAP_M, at[1] + _ALARM_LABEL_GAP_M)
 
 
 def _angle(sx: float, sy: float, ex: float, ey: float) -> float:

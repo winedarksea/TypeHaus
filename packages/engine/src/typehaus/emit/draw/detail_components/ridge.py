@@ -69,7 +69,11 @@ def lvl_ridge_hanger(model, roof, crop, direction, station) -> list[IRNode]:
             (0.0, -plate_drop),
             (out_sign * cfg.seat_in, 0.0),
         ])
-        nodes += flashing_nodes(path, tag="ridge-hanger")
+        # A hanger is HARDWARE, not flashing: it carries load and sheds no water, so it
+        # keeps the pale ``metal`` fill and must not join the dark-red flashing family the
+        # emitter now defaults to. Same emitter because the geometry is the same thickened
+        # leg profile; different material because the drawing means a different thing by it.
+        nodes += flashing_nodes(path, material="metal", tag="ridge-hanger")
     return nodes
 
 

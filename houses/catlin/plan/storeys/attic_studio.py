@@ -252,23 +252,31 @@ OPENINGS = [
     # Into the bath off the studio. `flip_hinge` parks the leaf against the wall, clear of the
     # shower's SW corner.
     #
-    # ** THE SWING FLIPPED ON 2026-08-29: IT OPENS INTO THE BATH NOW, NOT INTO THE STUDIO. **
-    # The wet bar moved to W-A-C2's west face at (17'-0", 16'-8") on the same pass (the 6:12
-    # rake left nothing usable at the old wet-wall station), which put the sink and the
-    # under-counter fridge directly in this leaf's arc — `integrity.door_swing_conflict`
-    # named both. Swinging inward is free here because the fixtures it used to sweep have
-    # gone the other way: the water closet is on the north wall at x 13'-6" now, well clear
-    # of the arc, so the P2705.1 note this comment used to carry no longer applies either.
-    # ** MOVED EAST 2026-08-29, 11'-3 5/8" -> 14'-0" (leading jamb), FOR THE SAME RAKE. **
-    # W-A-BATH-S runs in x from 9'-7 1/2" to 18'-0" and the 6:12 underside is `1 1/2" + x/2`,
-    # so a 6'-8" head plus its header needs 2 x (80 + 2) = 13'-8" of x at the LOW (west) jamb.
-    # It stood at 11'-3 5/8", where there are only 5'-9 1/2", and the header came out through
-    # the raked plate. At 14'-0" there are 7'-1 1/2" — 4" of margin — and the leaf ends at
-    # 16'-6", clear of N-A-BW-E. This is also the move the bath wanted anyway: the fixtures
-    # went east into the tall half on the same pass (plan/fixtures.py), so the door now opens
-    # onto them rather than into the low strip behind them.
+    # ** IT MOVED 2" WEST AND ITS SWING WAS SETTLED BY ELIMINATION ON 2026-08-29. ** Three
+    # arrangements were tried and `integrity.door_swing_conflict` / `mep.pocket_occupancy`
+    # decided between them:
+    #   * INWARD, into the bath, sweeps FX-A-STUBATH-SH. The 36" pan is already in the NE
+    #     corner — 16'-2 5/8"/20'-7 5/8" is the maximum x and y the bath box allows — and the
+    #     door cannot move far enough west to miss it, because the 6:12 rake needs its low
+    #     jamb at x >= 13'-8".
+    #   * A POCKET has nowhere to go either way: 18" short of cavity to the east, and to the
+    #     west the cavity is where PR-A-STUBATH-DRAIN, PR-A-CW/HW-STUBATH and
+    #     PR-S-SUITEBATH-VENT all cross W-A-BATH-S. `mep.pocket_occupancy` named all four.
+    #   * OUTWARD, into the studio, is what is left, and it works with 2" to spare once the
+    #     leaf moves from x 14'-0" to 13'-10" — the arc then stops at 16'-4", clear of
+    #     FX-A-STUDIO-BAR-SINK's 16'-5". APPL-A-STUDIO-FRIDGE moved south with it (see
+    #     plan/placeables.py); the sink, its drain, its vent and its GFCI did not move.
+    #
+    # ** IT ALSO MOVED EAST ON THE SAME PASS, 11'-3 5/8" -> 13'-10" (leading jamb), FOR THE
+    # RAKE ITSELF. ** W-A-BATH-S runs in x from 9'-7 1/2" to 18'-0" and the 6:12 underside is
+    # `1 1/2" + x/2`, so a 6'-8" head plus its header needs 2 x (80 + 2) = 13'-8" of x at the
+    # LOW (west) jamb. It stood at 11'-3 5/8", where there are only 5'-9 1/2", and the header
+    # came out through the raked plate. At 13'-10" there are 7'-0 1/2" — 2" of margin — and
+    # the leaf ends at 16'-4", clear of N-A-BW-E. This is also the move the bath wanted
+    # anyway: the fixtures went east into the tall half on the same pass (plan/fixtures.py),
+    # so the door now opens onto them rather than into the low strip behind them.
     Door(uid="ENHDGC87MN", tag="D-A-STUBATH", host="W-A-BATH-S", type_ref="DT-INT-SWING30",
-         position=from_node("N-A-WW-S", ft(4, 4.5)), flip_hinge=False, flip_swing=False),
+         position=from_node("N-A-WW-S", ft(4, 2.5)), flip_hinge=False, flip_swing=True),
 ]
 
 # ============================== ROOMS =================================================

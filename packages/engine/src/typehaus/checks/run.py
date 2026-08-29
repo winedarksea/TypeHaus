@@ -115,8 +115,17 @@ def run(plan: PlanModel, house_dir: Path | None = None, profile: str | None = No
 
 def run_from_model(model: ResolvedModel, resolve_findings: list[Finding],
                    house_dir: Path | None = None, profile: str | None = None,
-                   tier: Tier | None = None) -> CheckReport:
-    prefs = load_preferences(house_dir) if house_dir else Preferences()
+                   tier: Tier | None = None,
+                   preferences: Preferences | None = None) -> CheckReport:
+    """Run the registry against an already-resolved model.
+
+    ``preferences`` wins over ``house_dir`` for callers that have already loaded them and
+    hold no directory. The cover sheet is exactly that caller, and passing neither is what
+    made it disagree with the gate: an empty ``Preferences()`` hides ``[envelope].ach50``,
+    so A-000 lettered "NOT READY" over a set ``haus print`` had just certified — the one
+    sheet whose whole job is to state the verdict, stating a different one.
+    """
+    prefs = preferences or (load_preferences(house_dir) if house_dir else Preferences())
     ctx = CheckContext(plan=model.plan, model=model, preferences=prefs,
                        profile=resolve_profile(prefs, profile),
                        resolve_findings=resolve_findings)

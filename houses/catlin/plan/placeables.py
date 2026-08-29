@@ -971,16 +971,18 @@ SECOND_PLACEABLES = [
 #     starts at x 22'-6", clear of the desk pair — `integrity.placeable_recommended_
 #     clearance_conflict` is what settled that number.
 ATTIC_PLACEABLES = [
+    # y=4'-6" and not 5'-0": D-A-STUDY's leaf sweeps x 18'-8 7/8"..21'-2 7/8", y 6'-10" to
+    # the wall, and a desk at 5'-0" put 2" of itself under it (`integrity.door_swing_conflict`).
     Furniture(uid="DAK701AAAA", tag="FURN-A-STUDY-DESK", type_ref="FURN-DESK-48",
-              room="RM-A-STUDY", position=pt(ft(19, 8), ft(5)), rotation=deg(90)),
+              room="RM-A-STUDY", position=pt(ft(19, 6), ft(4, 6)), rotation=deg(90)),
     Furniture(uid="CAK701AAAA", tag="FURN-A-STUDY-DESK-CHAIR", type_ref="FURN-DESK-CHAIR",
-              room="RM-A-STUDY", position=pt(ft(21), ft(5)), rotation=deg(90)),
+              room="RM-A-STUDY", position=pt(ft(20, 10), ft(4, 6)), rotation=deg(90)),
     Furniture(uid="TAK701AAAA", tag="FURN-A-STUDY-TABLE", type_ref="FURN-DINING-2-36",
-              room="RM-A-STUDY", position=pt(ft(26), ft(2, 6))),
+              room="RM-A-STUDY", position=pt(ft(26, 6), ft(2, 6))),
     Furniture(uid="CAK702AAAA", tag="FURN-A-STUDY-CHAIR1", type_ref="FURN-DINING-CHAIR",
-              room="RM-A-STUDY", position=pt(ft(26), ft(0, 10)), rotation=deg(180)),
+              room="RM-A-STUDY", position=pt(ft(26, 6), ft(0, 10)), rotation=deg(180)),
     Furniture(uid="CAK703AAAA", tag="FURN-A-STUDY-CHAIR2", type_ref="FURN-DINING-CHAIR",
-              room="RM-A-STUDY", position=pt(ft(26), ft(4, 2)), rotation=deg(0)),
+              room="RM-A-STUDY", position=pt(ft(26, 6), ft(4, 2)), rotation=deg(0)),
     # --- the guest studio's wet bar (2026-08-29) ---------------------------------------
     # The other half of the wet bar; FX-A-STUDIO-BAR-SINK is in plan/fixtures.py. Both stand on
     # W-A-C2's WEST face in a single counter run: the sink over the north half, this box under
@@ -988,11 +990,17 @@ ATTIC_PLACEABLES = [
     #
     # ** MOVED WITH THE SINK ON 2026-08-29, x 8'-6" -> 17'-0". ** The pair used to back the
     # x 9'-7 1/2" wet wall; at 6:12 off a plate the roof underside there is 4'-11" and you
-    # cannot stand at a counter under it. y=15'-2" keeps it 1'-6" south of the sink's
-    # centreline with its back on the same wall — a 24" box under a 24" opening. ** SINK AND FRIDGE, AND NOTHING THAT COOKS: ** a range or a
+    # cannot stand at a counter under it.
+    #
+    # y=13'-6", NOT the 1'-6" south of the sink a 24" box under a 24" opening wants: that
+    # put it inside D-A-STUBATH's outward arc, which `integrity.door_swing_conflict` named.
+    # The bath door has nowhere else to swing (see plan/storeys/attic_studio.py's OPENINGS),
+    # so the fridge yields and the counter run reads as sink-then-gap-then-fridge over
+    # 3'-2" rather than as one 4'-0" bank. The sink did not move: it is the fixture with a
+    # trap arm, and Table 1002.2's 5'-0" for a 2" arm is what pins it to y 16'-8". ** SINK AND FRIDGE, AND NOTHING THAT COOKS: ** a range or a
     # cooktop here turns the studio into a second dwelling unit and brings IRC R302.3's
     # two-family separation down on the attic floor and the centre wall. The type carries the
     # same warning and it is written twice on purpose.
     Appliance(uid="7B10E5QBCF", tag="APPL-A-STUDIO-FRIDGE", type_ref="APPL-BAR-FRIDGE-24",
-              room="RM-A-STUDIO", position=pt(ft(17), ft(15, 2)), rotation=deg(-90)),
+              room="RM-A-STUDIO", position=pt(ft(17), ft(13, 6)), rotation=deg(-90)),
 ]

@@ -8,7 +8,7 @@ page).
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable
@@ -22,7 +22,13 @@ from typehaus.emit.draw.hvacplan import build_hvac_plan, has_hvac_content
 from typehaus.emit.draw.lightingplan import build_lighting_plan, has_lighting_content
 from typehaus.emit.draw.drainageplan import build_drainage_plan, has_drainage_content
 from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content
-from typehaus.emit.draw.sheet_writer import LEDGER, PORTRAIT_LEDGER, compose_sheet
+from typehaus.emit.draw.sheet_writer import (
+    LEDGER,
+    PORTRAIT_LEDGER,
+    compose_sheet,
+    paper_for,
+    set_paper,
+)
 from typehaus.emit.draw.roofframingplan import build_roof_framing_plan
 from typehaus.emit.draw.roofplan import build_roof_plan
 from typehaus.emit.draw.pdf_writer import _close
@@ -63,6 +69,28 @@ __all__ = [
     "write_plan_dxfs",
 ]
 
+def _derived_detail_title(derived: DerivedDetail) -> str:
+    """A derived detail's sheet title, distinguished by the assemblies it actually cuts.
+
+    ``derived.view.title`` is the *transition's* title, and a transition spawns one detail
+    per distinct bound condition — so catlin printed fourteen consecutive sheets all called
+    "TR-CATLIN-RIM-BAND", seven called "TR-CATLIN-FOUNDATION" and six "TR-CATLIN-EAVE". On
+    the sheet index that is 27 of 98 rows saying nothing, and in the title block it means a
+    sheet pulled off the pile cannot say which condition it is.
+
+    ``derived.key`` is exactly the missing half — it is the bound condition, and it is
+    unique by construction, which is why the detail set is keyed on it. ``condition:A|B``
+    becomes "A / B" appended to the transition's own name.
+    """
+    title = derived.view.title or derived.key
+    # ``rpartition``: a key is ``condition:A|B`` but a storey stack qualifies itself first
+    # ("storey_stack:rim:A|B"), and splitting on the leading colon leaves that qualifier
+    # stranded in front of the assemblies. The assembly list is always the last field.
+    _, _, bound = derived.key.rpartition(":")
+    pair = " / ".join(part for part in bound.split("|") if part)
+    return f"{title} · {pair}" if pair else title
+
+
 def _derived_detail_scene(model: ResolvedModel, derived: "DerivedDetail") -> Scene:
     scene, _findings = build_detail(model, derived)
     return scene
@@ -82,22 +110,41 @@ class SheetSpec:
     scale_note: str = "1/4\" = 1'-0\""  # hint only — compose_sheet prints the TRUE scale
     scene: SceneFn | None = None       # IR-backed sheets
     page: PageFn | None = None         # table/cover pages
-    size: tuple[float, float] = LEDGER  # paper preset (width, height) in inches
+    # The paper the whole *set* is on, landscape (w, h) in inches — ``build_sheet_index``
+    # stamps every spec with the one it was asked for, so a set cannot be half 11x17.
+    paper: tuple[float, float] = LEDGER
+    # Orientation is the sheet's own business: E-602's four stacked tables need portrait on
+    # whatever paper the set is printing on, which is a rotation of ``paper`` and not a
+    # second preset. ``size`` resolves the two.
+    portrait: bool = False
     north_arrow: bool = False          # stamp a north arrow in the viewport (plan sheets)
     # Whether the sheet belongs in the *primary* set. Plans/sections/schedules and
     # authored details always do; a derived transition detail only when its Transition
     # is starred (model/views.py). ``build_sheet_index(details="primary")`` filters on it.
     primary: bool = True
 
+    @property
+    def size(self) -> tuple[float, float]:
+        """The figure size this sheet composes at — ``paper``, turned if it is portrait."""
+        return paper_for(self.paper, self.portrait)
+
 
 def build_sheet_index(model: ResolvedModel,
                       preferences: "Preferences | None" = None,
                       profile: "JurisdictionProfile | None" = None,
-                      details: str = "all") -> list[SheetSpec]:
+                      details: str = "all",
+                      paper: tuple[float, float] = LEDGER) -> list[SheetSpec]:
     """Assemble the ordered permit-set sheet list — the one place sheet order/content lives.
 
     ``details="all"`` (default) keeps every derived transition detail; ``"primary"``
-    keeps only starred ones (the curated set a builder actually opens)."""
+    keeps only starred ones (the curated set a builder actually opens).
+
+    ``paper`` is stamped onto every spec on the way out rather than threaded through the
+    thirty-odd constructors below: sheet *content* has no opinion about sheet size, and a
+    set printed half on 11x17 and half on 24x36 should not be expressible. A bigger sheet
+    is not just a bigger picture — ``select_scale`` gets a bigger viewport, so the drawing
+    climbs the ladder for free: catlin's A-101 goes from 1/16" = 1'-0" on ledger to
+    3/16" = 1'-0" on ARCH D, and its main floor plan from 1/8" to 3/8"."""
     sheets: list[SheetSpec] = [SheetSpec("A-000", "Cover / code summary")]
     sheets.append(SheetSpec("G-002", "General notes",
                             page=partial(_write_general_notes, profile=profile)))
@@ -179,7 +226,7 @@ def build_sheet_index(model: ResolvedModel,
         starred = bool(tr.stars(derived.key)) if tr is not None else False
         if details == "primary" and not starred:
             continue
-        sheets.append(SheetSpec(f"A-{next_detail}", derived.view.title or derived.key,
+        sheets.append(SheetSpec(f"A-{next_detail}", _derived_detail_title(derived),
                                 scene=partial(_derived_detail_scene, derived=derived),
                                 primary=starred))
         next_detail += 1
@@ -226,7 +273,7 @@ def build_sheet_index(model: ResolvedModel,
 
     if lighting_storeys:
         sheets.append(SheetSpec("E-602", "Luminaire schedule / lighting controls",
-                                page=_write_luminaire_schedule))
+                                page=_write_luminaire_schedule, portrait=True))
 
     if _has_data_content(model):
         sheets.append(SheetSpec("E-603", "Data / low-voltage schedule",
@@ -234,7 +281,7 @@ def build_sheet_index(model: ResolvedModel,
 
     sheets.append(SheetSpec("EN-1", "Energy compliance summary",
                             page=partial(_write_energy_sheet, preferences=preferences)))
-    return sheets
+    return [replace(sheet, paper=paper) for sheet in sheets]
 
 
 def _storey_elevation(model: ResolvedModel, storey_tag: str) -> float:
@@ -246,13 +293,17 @@ def write_permit_set(model: ResolvedModel, output: Path,
                      preferences: "Preferences | None" = None,
                      profile: "JurisdictionProfile | None" = None,
                      details: str = "all",
+                     paper: tuple[float, float] = LEDGER,
                      ) -> tuple[Path, dict[str, object]]:
     """Compose the permit-set baseline into one multi-page PDF.
 
     The source plan remains authoritative: plans are drawing-IR scenes and schedules are
-    derived from the same resolved openings. Every page is a real sheet — a fixed 11x17
-    ledger with border and title block (→ sheet_writer); scene sheets print at TRUE
-    architectural scale with a graphic scale bar, table pages get the same chrome.
+    derived from the same resolved openings. Every page is a real sheet — ``paper`` with a
+    border and title block (→ sheet_writer), 11x17 ledger by default; scene sheets print
+    at TRUE architectural scale with a graphic scale bar, table pages get the same chrome.
+
+    The PDF is vector: it has no resolution and plots at whatever the plotter can do, which
+    is why 24x36 is a *paper* choice here and a ``--dpi`` choice only for ``haus render``.
     """
     from matplotlib.backends.backend_pdf import PdfPages
 
@@ -264,12 +315,15 @@ def write_permit_set(model: ResolvedModel, output: Path,
     if profile is None:
         profile = resolve_profile(preferences or Preferences())
     output.parent.mkdir(parents=True, exist_ok=True)
-    sheets = build_sheet_index(model, preferences, profile, details=details)
+    sheets = build_sheet_index(model, preferences, profile, details=details, paper=paper)
     index = [(sheet.number, sheet.title) for sheet in sheets]
-    with PdfPages(output) as pdf:
+    # ``set_paper`` is how the table pages learn the paper: they compose their own figures
+    # inside ``schedules/`` against a preset name, and this is the only place that knows
+    # which paper the *set* is on (→ sheet_writer.schedule_sheet).
+    with PdfPages(output) as pdf, set_paper(paper):
         for sheet in sheets:
             if sheet.number == "A-000":
-                _write_cover(pdf, model, index, profile)
+                _write_cover(pdf, model, index, profile, preferences)
             elif sheet.page is not None:
                 sheet.page(pdf, model, sheet.number, sheet.title)
             elif sheet.scene is not None:

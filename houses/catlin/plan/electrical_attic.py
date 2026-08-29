@@ -47,10 +47,11 @@ NEC_FILL_ATTIC = [
     # `electrical.receptacle_spacing` is purely 2D — it unrolls the room's clear_face and
     # projects each device onto it — so DELETING these would leave the check green and the
     # rooms genuinely short of outlets along their longest walls. They are not deleted and
-    # they are not moved in plan: each becomes a FLOOR box on the same station, 12" in from
-    # the eave line. NEC 210.52(A)(3) is explicit that a floor receptacle counts toward the
-    # 6'-0" rule when it is within 18" of the wall, and 12" is what a cathedral eave with no
-    # knee wall gives you. `_perimeter_position`'s `_NEAR_WALL_M` still claims them.
+    # they are not moved in plan: each becomes a FLOOR box on its own authored station,
+    # 19 5/8" off the node line either side — which is 8 1/8" clear of the rafter plate's
+    # inner face (the plate runs x 6"..11 1/2"). NEC 210.52(A)(3) is explicit that a floor
+    # receptacle counts toward the 6'-0" rule when it is within 18" of the wall, and 8 1/8"
+    # is well inside that. `_perimeter_position`'s `_NEAR_WALL_M` still claims them.
     #
     # `Mount(kind=FLOOR)` carries no elevation, deliberately: the box is IN the deck.
     ElectricalDevice(uid="NEC052AAAA", tag="ED-A-EAST-RC5", kind=DeviceKind.RECEPTACLE,
@@ -108,8 +109,10 @@ NEC_FILL_ATTIC = [
     # ends of that and caught four of these at 1.38" buried on the first pass. The 1" is half
     # the box depth and is the offset every other device in this file carries.
     #
-    # ** THE WEST KNEE WALL CARRIES A RECEPTACLE AGAIN (ED-A-STUDIO-RC8, below). ** It briefly
-    # did not: the x=1'-0" chase used to carry DU-S-ERV-HP-FEED's 6" beside a 3", a box roughly
+    # ** THE WEST EAVE LINE CARRIES A RECEPTACLE AGAIN (ED-A-STUDIO-RC8, below). ** It was a
+    # 5'-0" knee wall when this was written and it is a flat rafter plate now, but the 210.52
+    # wall line the check unrolls is the same line either way. It briefly carried nothing:
+    # the x=1'-0" chase used to carry DU-S-ERV-HP-FEED's 6" beside a 3", a box roughly
     # 12" wide by 8-9" tall for the wall's whole length, and the answer to that was a 21'-8"
     # bench (FURN-A-STUDIO-PLINTH) whose `work_surface=False` broke the 210.52 wall line the way
     # a doorway does. The 6" was rerouted out of this room on 2026-08-29 (plan/mep_erv.py), the
@@ -154,14 +157,18 @@ NEC_FILL_ATTIC = [
     # EVERY fixture whose type declares Service.DRAIN, not just from sinks. ** That is
     # `_sink_points`' actual behaviour and it is wider than it sounds: the shower and the water
     # closet project circles too. RC6 lands 3'-8" from FX-A-STUBATH-SH through the bath wall, so
-    # it is a GFCI device whatever it is called; RC7 is a GFCI device for the same
-    # reason: at x=3'-0" it is 5'-11" from the bar sink, and moving it west to 1'-6" to escape
-    # that circle opened a 210.52 gap in the middle of W-A-STU-N. The receptacle has to be
-    # where the wall space is; the protection is what moves.
-    # The west knee wall's pair. x=7 5/8" is that wall's gwb face (6 5/8") plus the same 1" every
-    # other box in this file carries; deg(90) turns them east into the room, mirroring RC4/RC5's
-    # deg(270) on the centre wall opposite. Plain, not GFCI: the nearest Service.DRAIN fixture is
-    # the bar sink, and at 8'-1" and 9'-3" neither is inside E3902.10's 6'-0" circle.
+    # it is a GFCI device whatever it is called. ** RC7 IS GFCI BY CHOICE NOW, NOT BY RULE
+    # (2026-08-29). ** It used to sit 5'-11" from the bar sink; the bar moved east to
+    # (17'-0", 16'-8") and the nearest Service.DRAIN fixture to RC7's (3'-0", 21'-0 5/8") is
+    # the water closet at 10'-6", so E3902.10 no longer reaches it. The device stays GFCI:
+    # it is a FLOOR box in a room with a wet bar, and dropping protection off an in-deck
+    # receptacle to save a few dollars is the wrong trade. Over-protection is never a
+    # violation; the comment is what had to be corrected, not the part.
+    # The west eave line's pair. x=1'-7 5/8" is the floor-box station described in the
+    # eave-line note above, 8 1/8" clear of the rafter plate; deg(90) turns them east into
+    # the room, mirroring RC4/RC5's deg(270) on the centre wall opposite. Plain, not GFCI:
+    # the nearest Service.DRAIN fixture is the bar sink at (17'-0", 16'-8"), and at 18'-9"
+    # (RC8) and 15'-5" (RC9) neither is inside E3902.10's 6'-0" circle.
     ElectricalDevice(uid="F1MW3S3JD5", tag="ED-A-STUDIO-RC8", kind=DeviceKind.RECEPTACLE,
                      position=pt(inch(19.625), ft(6)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",

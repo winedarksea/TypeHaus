@@ -62,12 +62,33 @@ def fmt(house: Optional[Path] = typer.Argument(None)) -> None:
 @app.command()
 def render(
     house: Optional[Path] = typer.Argument(None),
-    view: str = typer.Option("plan", help="plan | site | section | elevation | details | 3d (#52 agent eyes)"),
+    view: str = typer.Option(
+        "plan", help="plan | site | section | elevation | details | 3d | all (#52 agent eyes)"),
     fmt: str = typer.Option("png", help="png | svg"),
+    dpi: Optional[int] = typer.Option(
+        None, help="raster resolution; default 110 (screen), 300 for details. An ARCH D "
+                   "sheet at plate quality is --dpi 300 → 10800 x 7200 px"),
+    paper: Optional[str] = typer.Option(
+        None, help="ledger | arch-d — compose onto a real sheet (border, title block, "
+                   "graphic scale bar, north arrow) at TRUE architectural scale"),
+    scale: Optional[str] = typer.Option(
+        None, help="force a scale, e.g. '1/4\" = 1\'-0\"' or 'fit'; implies --paper ledger"),
+    underlay: bool = typer.Option(
+        True, "--underlay/--no-underlay",
+        help="draw the preferences.toml reference underlays behind the linework. On for "
+             "the look-at-it loop; --no-underlay for anything anybody else reads"),
 ) -> None:
-    """Emit headless plan/section snapshots for the edit→build→check→look loop (#52)."""
+    """Emit headless plan/section snapshots for the edit→build→check→look loop (#52).
+
+    Two kinds of output, and ``--paper`` is the switch: without it a frameless snapshot
+    fitted to its content (fast, for looking at), with it a real sheet whose printed scale
+    is chosen from the standard ladder and true by construction. The PDF from ``haus
+    print`` remains the large-format deliverable — it is vector and has no resolution at
+    all; a raster only ever approximates it.
+    """
     from typehaus.checks import load_preferences
     from typehaus.emit.draw import render_views, resolve_underlays
+    from typehaus.emit.draw.sheet_writer import LEDGER, resolve_paper
     from typehaus.resolve import resolve
     from typehaus.source import load_plan
 
@@ -77,11 +98,20 @@ def render(
         _print_findings(result.findings)
         raise typer.Exit(1)
     model, _ = resolve(result.plan)
+    # A forced scale is meaningless without a sheet to print it on — the frameless path has
+    # no viewport to hold the drawing to — so asking for one asks for the default sheet.
+    size = LEDGER if (paper is None and scale is not None) else None
     # The plans go out over the reference underlays configured in preferences.toml, so
     # "look at it" can mean look at it *against the survey* rather than at linework alone.
-    underlays = resolve_underlays(d, load_preferences(d).underlays)
-    paths = render_views(model, d / "out" / "render", view=view, fmt=fmt,
-                         underlays=underlays)
+    underlays = resolve_underlays(d, load_preferences(d).underlays) if underlay else ()
+    try:
+        if paper is not None:
+            size = resolve_paper(paper)
+        paths = render_views(model, d / "out" / "render", view=view, fmt=fmt,
+                             underlays=underlays, dpi=dpi, paper=size, scale=scale)
+    except ValueError as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(1) from None
     for p in paths:
         console.print(f"wrote {p}")
 
@@ -97,15 +127,31 @@ def print_sheets(
         "primary", help="primary | all — 'primary' (default) keeps only starred transition "
                         "details (Transition.star) in the composed set; 'all' composes "
                         "every derived detail sheet"),
+    paper: str = typer.Option(
+        "ledger", help="ledger (11x17) | arch-d (24x36). The paper decides the drawn "
+                       "scale: a bigger sheet gives select_scale a bigger viewport, so "
+                       "catlin's A-101 goes from 1/16\" = 1'-0\" to 3/16\" = 1'-0\""),
 ) -> None:
-    """Compose the permit-set PDF, plan DXFs, and optional architect handoff (M3)."""
+    """Compose the permit-set PDF, plan DXFs, and optional architect handoff (M3).
+
+    The PDF is vector, so ``--paper`` is a statement about the sheet the set is drawn for
+    and not about resolution — it plots at whatever the plotter can do. Each paper writes
+    its own file (``permit_set.pdf``, ``permit_set_24x36.pdf``) so a set already sent out
+    is never silently replaced by one at a different scale.
+    """
     from typehaus.checks import evaluate_permit_checklist, load_preferences, run
     from typehaus.checks.run import resolve_profile
     from typehaus.emit.draw import write_permit_set, write_plan_dxfs
+    from typehaus.emit.draw.sheet_writer import PAPER_SUFFIX, resolve_paper
     from typehaus.resolve import resolve
     from typehaus.source import load_plan
 
     d = _resolve_house(house)
+    try:
+        size = resolve_paper(paper)
+    except ValueError as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(1) from None
     result = load_plan(d)
     if result.plan is None:
         _print_findings(result.findings)
@@ -128,23 +174,29 @@ def print_sheets(
         for path in write_plan_dxfs(model, out / "sheets"):
             console.print(f"wrote {path}")
     if fmt in ("pdf", "both"):
-        path, _ = write_permit_set(model, out / "permit_set.pdf", preferences,
-                                   profile=jurisdiction, details=details)
+        name = f"permit_set{PAPER_SUFFIX[paper]}.pdf"
+        path, _ = write_permit_set(model, out / name, preferences,
+                                   profile=jurisdiction, details=details, paper=size)
         console.print(f"wrote {path}")
     if handoff:
-        _write_handoff_bundle(d, model, preferences, jurisdiction)
+        _write_handoff_bundle(d, model, preferences, jurisdiction, size)
 
 
-def _write_handoff_bundle(house: Path, model, preferences=None, profile=None) -> None:
+def _write_handoff_bundle(house: Path, model, preferences=None, profile=None,
+                          paper=None) -> None:
     """Copy only generated/project-owned artifacts into the architect handoff."""
     import shutil
 
     from typehaus.emit.draw import write_permit_set, write_plan_dxfs
+    from typehaus.emit.draw.sheet_writer import LEDGER
     from typehaus.server.model_json import write_model_json
 
     handoff = house / "out" / "handoff"
     handoff.mkdir(parents=True, exist_ok=True)
-    write_permit_set(model, handoff / "permit_set.pdf", preferences, profile=profile)
+    # The bundle carries one set, under one name: whoever opens it wants *the* drawings,
+    # not a choice between two papers. It is the paper the command was asked for.
+    write_permit_set(model, handoff / "permit_set.pdf", preferences, profile=profile,
+                     paper=paper or LEDGER)
     write_plan_dxfs(model, handoff / "dxfs")
     write_model_json(model, handoff / "model.json")
     for source, destination in ((house / "brief.md", handoff / "brief.md"),

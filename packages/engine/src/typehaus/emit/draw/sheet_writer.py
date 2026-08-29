@@ -10,8 +10,13 @@ The truth rule: the scale printed in the title block is the scale the sheet is a
 drawn at — ``SheetSpec.scale_note`` is a hint only. When no standard scale fits the
 viewport, the drawing is fit-to-page and honestly labeled N.T.S.
 
+``frame_for_scene`` is the same decision taken *ahead* of composing, so a caller that is
+not the permit set — ``haus render --paper`` — can put a plan, elevation or section on the
+same paper at the same true scale, and know which scale it got.
+
 Rendering the IR stays in ``pdf_writer`` (imported read-only); this module only owns the
-paper: where the viewport sits, what the data limits are, and what the chrome says.
+paper: where the viewport sits, what the data limits are, and what the chrome says. The
+sizes themselves and the scale ladder live in ``paper.py`` and are re-exported here.
 """
 
 from __future__ import annotations
@@ -20,25 +25,47 @@ import math
 import textwrap
 from collections.abc import Iterator
 from contextlib import contextmanager
+from contextvars import ContextVar
 from datetime import date
 from typing import TYPE_CHECKING
 
-from typehaus.emit.draw.pdf_writer import _apply_text_scale, _render_nodes, _scene_bounds
-from typehaus.emit.draw.scene import Scene
+from typehaus.emit.draw.paper import (
+    ARCH_D,
+    ARCH_SCALES,
+    ENG_SCALES,
+    FIT_LABEL,
+    LEDGER,
+    NTS_LABEL,
+    PAPER_SUFFIX,
+    PAPERS,
+    PORTRAIT_LEDGER,
+    fit_scale,
+    paper_for,
+    resolve_paper,
+    scale_for_label,
+    select_scale,
+)
+from typehaus.emit.draw.pdf_writer import (
+    _apply_text_scale,
+    _draw_underlays,
+    _render_nodes,
+    _scene_bounds,
+)
+from typehaus.emit.draw.scene import Frame, Scene
 from typehaus.emit.draw.typography import NOTES_PT, wrap_columns_for
 
 if TYPE_CHECKING:  # pragma: no cover — SheetSpec lives in sheets.py (which imports us)
     from typehaus.resolve.model import ResolvedModel
 
-# Paper presets, landscape (width, height) in inches.
-LEDGER = (17.0, 11.0)
-ARCH_D = (36.0, 24.0)
-# E-602 carries four stacked tables (22 luminaire types, ~120 control rows in two columns,
-# the 24V runs and the connected load) — more vertical content than an 11x17 landscape sheet
-# holds at a legible type size. It prints portrait rather than shrinking the control schedule
-# to unreadable. Every other table sheet is LEDGER; this is the one deliberate exception, and
-# it still gets the same border and title block.
-PORTRAIT_LEDGER = (11.0, 17.0)
+# The paper presets and the scale ladder moved to ``paper.py``; they are re-exported here
+# because "the sheet writer owns the paper" is how every caller (and every test) already
+# spells it, and a module split is not a reason to churn their imports.
+__all__ = [
+    "ARCH_D", "ARCH_SCALES", "ENG_SCALES", "FIT_LABEL", "LEDGER", "NTS_LABEL", "PAPERS",
+    "PAPER_SUFFIX", "PORTRAIT_LEDGER", "compose_sheet", "fit_scale", "frame_for_scene",
+    "paper_for", "resolve_paper", "scale_for_label", "schedule_sheet", "section",
+    "select_scale", "set_paper", "sheet_chrome", "viewport_box",
+]
 
 _MARGIN = 0.25       # border inset from the paper edge, inches
 _TITLE_H = 0.75      # title-block strip height above the bottom border line, inches
@@ -47,49 +74,26 @@ _BAR_LANE = 0.30     # reserved strip below the viewport for the graphic scale b
 _NOTES_W = 3.4       # reserved right-hand notes panel width, inches
 _NOTES_PT = NOTES_PT  # fixed notes lettering size, points (monospace)
 _INK = "#1a1a1a"
+# Shrink applied when nothing on the ladder fits and the drawing is fitted to the page, so
+# linework and its lettering clear the border instead of touching it.
+_FIT_PAD = 1.04
 
-# Standard architectural scales as (sheet inches per model foot, printed label),
-# largest first so "first that fits" is "largest that fits".
-ARCH_SCALES = (
-    (3.0, "3\" = 1'-0\""),
-    (1.5, "1-1/2\" = 1'-0\""),
-    (1.0, "1\" = 1'-0\""),
-    (0.75, "3/4\" = 1'-0\""),
-    (0.5, "1/2\" = 1'-0\""),
-    (0.375, "3/8\" = 1'-0\""),
-    (0.25, "1/4\" = 1'-0\""),
-    (0.1875, "3/16\" = 1'-0\""),
-    (0.125, "1/8\" = 1'-0\""),
-    (0.09375, "3/32\" = 1'-0\""),
-    (0.0625, "1/16\" = 1'-0\""),
-)
-# Civil/engineering scales, tried only after the architectural ladder is exhausted —
-# a parcel-scale site plan is the sheet that needs them (1" = 20' is the residential norm).
-ENG_SCALES = (
-    (0.05, "1\" = 20'"),
-    (1.0 / 30.0, "1\" = 30'"),
-    (0.025, "1\" = 40'"),
-    (0.02, "1\" = 50'"),
-    (1.0 / 60.0, "1\" = 60'"),
-    (0.01, "1\" = 100'"),
-)
-NTS_LABEL = "N.T.S."
+#: The paper the *set currently being written* is on. A schedule page composes its own
+#: matplotlib figure inside ``schedules/`` and names a preset there, which is the right
+#: place for "this sheet is portrait" and the wrong place for "this set is 24x36". The set
+#: writer parks its paper here (``set_paper``) and ``schedule_sheet`` resolves the two: the
+#: caller's size decides the *orientation*, this decides the *size*.
+_SET_PAPER: "ContextVar[tuple[float, float]]" = ContextVar("_SET_PAPER", default=LEDGER)
 
 
-def select_scale(span_u_in: float, span_z_in: float, view_w_in: float,
-                 view_h_in: float) -> "tuple[float | None, str]":
-    """Largest standard scale whose printed drawing fits the viewport.
-
-    Spans are model-space inches; the viewport is paper inches. At scale ``s`` (sheet
-    inches per model foot) a model span of ``x`` inches prints ``x / 12 * s`` inches.
-    Architectural scales are preferred; engineering scales only continue the ladder below
-    1/16" = 1'-0" for parcel-scale drawings. Returns ``(None, "N.T.S.")`` when nothing
-    fits — the caller then fits-to-page and must label the sheet not-to-scale.
-    """
-    for s, label in (*ARCH_SCALES, *ENG_SCALES):
-        if span_u_in / 12.0 * s <= view_w_in and span_z_in / 12.0 * s <= view_h_in:
-            return s, label
-    return None, NTS_LABEL
+@contextmanager
+def set_paper(paper: "tuple[float, float]") -> "Iterator[None]":
+    """Make ``paper`` the paper every ``schedule_sheet`` in this block composes onto."""
+    token = _SET_PAPER.set(paper)
+    try:
+        yield
+    finally:
+        _SET_PAPER.reset(token)
 
 
 def viewport_box(size: "tuple[float, float]", notes_panel: bool = False,
@@ -110,13 +114,56 @@ def viewport_box(size: "tuple[float, float]", notes_panel: bool = False,
     return (x, y, w, h)
 
 
+def frame_for_scene(scene: Scene, size: "tuple[float, float]" = LEDGER, *,
+                    scale_label: "str | None" = None) -> "Frame | None":
+    """The paper a plan/elevation/section lands on, decided before anything is drawn.
+
+    ``compose_sheet`` already made this decision internally for the permit set. Pulling it
+    out means a caller can ask *which* scale a sheet got without composing it, and can
+    force one: ``scale_label`` takes an ``ARCH_SCALES``/``ENG_SCALES`` label, or ``"fit"``
+    to fill the viewport under an honest N.T.S. A forced scale larger than fits is
+    honoured and overflows — that is what asking for it means, and the alternative
+    (silently substituting a smaller one) is the lie the truth rule exists to prevent.
+
+    ``None`` when the scene has no measurable geometry: there is nothing to place, so the
+    frameless fit stays the right answer and the caller keeps it.
+    """
+    bounds = _scene_bounds(scene)
+    if bounds is None:
+        return None
+    view = viewport_box(size, notes_panel=bool(_scene_note_lines(scene)))
+    u0, z0, u1, z1 = bounds
+    span_u, span_z = max(u1 - u0, 1e-6), max(z1 - z0, 1e-6)
+    if scale_label is None:
+        scale, label = select_scale(span_u, span_z, view[2], view[3])
+    elif "".join(scale_label.split()).lower() == FIT_LABEL:
+        scale, label = None, NTS_LABEL
+    else:
+        entry = scale_for_label(scale_label)
+        if entry is None:
+            raise ValueError(f"unknown scale {scale_label!r} — expected one of "
+                             f"{', '.join(name for _s, name in ARCH_SCALES)}, "
+                             f"{', '.join(name for _s, name in ENG_SCALES)}, or "
+                             f"{FIT_LABEL!r}")
+        scale, label = entry
+    if scale is None:
+        scale, label = fit_scale(span_u, span_z, view[2], view[3], _FIT_PAD), NTS_LABEL
+    return Frame(paper=size, viewport=view, center=((u0 + u1) / 2.0, (z0 + z1) / 2.0),
+                 scale=scale, scale_label=label)
+
+
 def compose_sheet(scene: Scene, spec: object, model: "ResolvedModel",
-                  size: "tuple[float, float] | None" = None):
+                  size: "tuple[float, float] | None" = None, underlays=()):
     """Compose one Scene onto a fixed-size sheet at true printed scale.
 
     ``spec`` is duck-typed (``sheets.SheetSpec``): ``number``/``title`` are required,
     ``size`` and ``north_arrow`` are honoured when present. Returns the Figure; the
     caller saves and closes it.
+
+    ``underlays`` are reference rasters drawn behind the linework, and they exist for the
+    ``haus render`` snapshot loop only — ``write_permit_set`` never passes any, because a
+    survey drawing is reference material and must not print on a permit sheet
+    (→ 30 §Scaled underlays).
     """
     import matplotlib
 
@@ -130,42 +177,40 @@ def compose_sheet(scene: Scene, spec: object, model: "ResolvedModel",
     ax = fig.add_axes([view[0] / size[0], view[1] / size[1],
                        view[2] / size[0], view[3] / size[1]])
     ax.axis("off")
-    scaled_text = _render_nodes(ax, scene)
+    if underlays:
+        _draw_underlays(ax, underlays)
 
-    scale_in: "float | None" = None
+    # A scene that arrived with its own Frame keeps it — a detail card chose its paper
+    # before it was cut, and re-choosing here would print one scale over a drawing laid
+    # out at another. Everything else gets the same decision made now, from the same
+    # viewport and the same ladder.
+    #
+    # THE FRAME IS DECIDED BEFORE THE NODES ARE DRAWN, and the order is load-bearing. Every
+    # scale-dependent decision the writer makes — the plan poché, and ``_band_linewidth``'s
+    # cap on a band's outline — reads ``scene.frame``, so with the frame computed *after*
+    # ``_render_nodes`` the only scenes that ever saw a scale were the detail cards that
+    # brought their own. Neither fired on a single plan, elevation or section sheet in the
+    # permit set. The scene the nodes are drawn from therefore carries the frame.
+    frame = scene.frame if scene.frame is not None else frame_for_scene(scene, size)
+    if frame is not None and scene.frame is None:
+        scene = scene.model_copy(update={"frame": frame})
+    scaled_text = _render_nodes(ax, scene)
     scale_label = NTS_LABEL
-    frame = getattr(scene, "frame", None)
-    if frame is not None:
-        # The scene has already chosen a scale — honour it rather than choosing a second
-        # one from a bbox. This is what makes "a rendered detail and a sheeted detail agree"
-        # true by construction instead of by coincidence: the same Frame drives both.
-        scale_in, scale_label = frame.scale, frame.scale_label
-        per_paper_in = 12.0 / scale_in
+    if frame is None:  # nothing measurable on the sheet — nothing to scale
+        ax.set_aspect("equal")
+        ax.autoscale_view()
+    else:
+        scale_label = frame.scale_label
+        per_paper_in = 12.0 / frame.scale  # model inches per sheet inch — exact
         cu, cz = frame.center
         ax.set_xlim(cu - view[2] * per_paper_in / 2.0, cu + view[2] * per_paper_in / 2.0)
         ax.set_ylim(cz - view[3] * per_paper_in / 2.0, cz + view[3] * per_paper_in / 2.0)
         ax.set_aspect("equal", adjustable="box")
-        _draw_scale_bar(fig, scale_in, scale_label, view, size)
-        bounds = None
-    else:
-        bounds = _scene_bounds(scene)
-    if bounds is not None:
-        u0, z0, u1, z1 = bounds
-        span_u, span_z = max(u1 - u0, 1e-6), max(z1 - z0, 1e-6)
-        scale_in, scale_label = select_scale(span_u, span_z, view[2], view[3])
-        if scale_in is not None:
-            per_paper_in = 12.0 / scale_in  # model inches per sheet inch — exact
-        else:  # fit-to-page fallback, small pad so linework clears the border
-            per_paper_in = max(span_u / view[2], span_z / view[3]) * 1.04
-        cu, cz = (u0 + u1) / 2.0, (z0 + z1) / 2.0
-        ax.set_xlim(cu - view[2] * per_paper_in / 2.0, cu + view[2] * per_paper_in / 2.0)
-        ax.set_ylim(cz - view[3] * per_paper_in / 2.0, cz + view[3] * per_paper_in / 2.0)
-        ax.set_aspect("equal", adjustable="box")
-        if scale_in is not None:
-            _draw_scale_bar(fig, scale_in, scale_label, view, size)
-    else:
-        ax.set_aspect("equal")
-        ax.autoscale_view()
+        # The bar is drawn even under N.T.S., which is the one case it is indispensable:
+        # a reader who cannot name the scale can still measure against a bar that was
+        # plotted at the scale the drawing actually got.
+        _draw_scale_bar(fig, frame.scale, scale_label, view, size)
+
     # Text artists default to clip_on=False; a label whose extent the bounds estimator
     # undershot would otherwise print across the border and title block.
     for artist in ax.texts:
@@ -197,9 +242,15 @@ def schedule_sheet(pdf, model: "ResolvedModel", number: str, name: str, *,
 
     ``heading`` defaults to ``"{number} · {name}"``; pass ``""`` for a page that letters
     its own title (the cover), or an explicit string to override it.
+
+    ``size`` names a *preset*, and by the time it gets here only its orientation still
+    matters: the set writer has parked the paper the whole set is printing on in
+    ``set_paper``, and the two are resolved by ``paper_for``. That is what lets E-602 stay
+    portrait on 24x36 without every schedule writer growing a paper argument.
     """
     import matplotlib.pyplot as plt
 
+    size = paper_for(_SET_PAPER.get(), portrait=size[1] > size[0])
     fig = plt.figure(figsize=size)
     if heading is None:
         heading = f"{number} · {name}"
@@ -223,6 +274,29 @@ def section(fig, x: float, y: float, title: str, *, fontsize: float = 10, **kwar
     """
     return fig.text(x, y, title, fontsize=fontsize, family="monospace", weight="bold",
                     **kwargs)
+
+
+def content_box(size: tuple[float, float]) -> tuple[float, float, float, float]:
+    """The area a table page may letter into: ``(x0, y0, x1, y1)`` in paper inches.
+
+    :func:`sheet_chrome` states this bound in its docstring as "above ~0.10 on ledger" and
+    every schedule writer then hard-codes figure *fractions* against it. A fraction is the
+    wrong unit for a bound that is really the border plus the title strip — both fixed
+    inches — so a layout tuned on 11x17 either crashes into the title block or floats a
+    long way above it when the same page is composed on 24x36. Returning inches lets a page
+    ask how much room it actually has, which is what the cover's sheet index needs in order
+    to choose a column count instead of silently drawing rows off the edge.
+
+    The extra ``_GUTTER`` inside the border is breathing room, not structure: lettering
+    hard against a drawn border reads as an error even when it is inside it.
+    """
+    width, height = size
+    return (_MARGIN + _GUTTER, _MARGIN + _TITLE_H + _GUTTER,
+            width - _MARGIN - _GUTTER, height - _MARGIN - _GUTTER)
+
+
+#: Clear space between the drawn border and any lettering, inches.
+_GUTTER = 0.35
 
 
 def sheet_chrome(fig, model: "ResolvedModel", number: str, title: str,
@@ -307,8 +381,12 @@ def _draw_chrome(fig, model: "ResolvedModel", number: str, title: str,
     # Cell 4 — sheet number + title.
     ax.text(dividers[2] + pad, top_y, number, fontsize=13, family="monospace",
             va="center", color=_INK, weight="bold")
-    ax.text(dividers[2] + pad, low_y + 0.08, _shorten(title, 46), fontsize=6.5,
-            family="monospace", va="center", color=_INK)
+    # The cell is as wide as the paper made it, so that — not a constant — is the limit.
+    # A fixed 46 was a ledger number: it clipped a title at the same place on 24x36, where
+    # cell 4 is more than twice as wide and had the room to print it whole.
+    ax.text(dividers[2] + pad, low_y + 0.08,
+            _shorten(title, wrap_columns_for(width - m - pad - dividers[2] - pad, 6.5)),
+            fontsize=6.5, family="monospace", va="center", color=_INK)
 
 
 def _shorten(text: str, limit: int) -> str:

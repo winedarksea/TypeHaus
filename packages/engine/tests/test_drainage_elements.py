@@ -111,9 +111,15 @@ def test_the_hydrant_pit_is_a_drywell_and_no_longer_bills_phantom_tile(catlin_mo
 
 
 def test_the_garden_drywell_sits_below_the_bearing_bed_it_is_not_part_of(catlin_model):
-    """The 42" of aggregate under the garden footings is a *bearing* course that happens to
-    drain. The soakaway is a separate, deeper hole beneath it — and the garden needs one,
-    because its floor is 9' down with no downhill side for anything to daylight to."""
+    """The 42" of aggregate under the garden's five WALL footings is a *bearing* course
+    that happens to drain. The soakaway is a separate, deeper hole beneath it — and the
+    garden needs one, because its floor is 9' down with no downhill side for anything to
+    daylight to.
+
+    ``min`` over the beds is what pins the well: since 2026-08-29 the two porch piers'
+    bells are augered to frost depth and take a 7" levelling course instead, so their beds
+    stop 2'-9" above this plane. They still drain here, which is the other half of the
+    assertion below — every FT-SG-* bed discharges to DRW-SG-MAIN, deep section or not."""
     well = next(s for s in catlin_model.solids if s.tag == "DRW-SG-MAIN")
     assert well.category == "drywell"
     beds = [b for b in catlin_model.footing_beddings if b.host.startswith("FT-SG-")]

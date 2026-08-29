@@ -7,7 +7,10 @@ compacted footing bed, with the footings doweled together through a fiberglass-r
 
 Vertical stack (project-north frame; +X east, +Y north, +Z up):
 - Sunken garden floor at the basement storey (-9'): a U-shaped cantilever-T retaining
-  wall (open to the north) on a 42" compacted-aggregate base down to frost.
+  wall (open to the north) on a 42" compacted-aggregate base down to frost. The wall
+  footings reach frost depth by soil replacement (that drained non-frost-susceptible
+  section, ASCE 32 / IRC R403.1.4.1); the two porch columns, since 2026-08-29, reach it by
+  excavation instead — bell-bottom piers augered 42" below the garden floor.
 - The north 8' of that U is the *porch*: two 12" side walls and, on both the north (house)
   and south (front) edges, NO concrete wall. Each of those edges is carried the same way —
   one column at midspan plus two LVL beams hung into the side walls: a 12" sonotube at the
@@ -79,7 +82,20 @@ class SunkenGardenSpec:
     front_column_size_in: float = 16.0
     footing_width_in: float = 84.0  # 36" toe + 12" wall + 36" heel
     footing_thickness_in: float = 12.0
+    # The MN profile's design frost depth (``checks/code/mn_residential/profile.py``:
+    # ``frost_depth_in=42.0``), transcribed here because this module has to derive two
+    # different things from it and a house may not import a jurisdiction profile. Both of
+    # the numbers below ARE this number, for the same reason, and neither is a coincidence
+    # to be tidied into one field: the wall footings reach frost by *soil replacement*
+    # (42" of stone, see FOOTING_BEDDING), the two column piers reach it by *excavation*
+    # (a 42" augered shaft, see _pier_bell_bottom_ft).
+    frost_depth_in: float = 42.0
     aggregate_bedding_depth_in: float = 42.0
+    # The nominal levelling / drainage course under a footing that already bears where it
+    # is meant to bear. 7" is the house's own bearing-prep depth (``params/foundations.py``,
+    # every FT-B-* bedding) and is what the two belled piers take now that their bells
+    # bottom out on undisturbed soil at frost depth rather than on a replacement section.
+    pier_levelling_bedding_in: float = 7.0
     house_size_ft: float = 36.0
     house_ext_layers_in: float = 5.0  # polyiso+EPS+furring+cladding beyond sheathing
     # 9'-1 7/16" since 2026-08-23, 9'-4" before it, 9'-0" before that. The 2026-08-21 lift
@@ -107,7 +123,12 @@ class SunkenGardenSpec:
     # Sonotube centre set south of the deck's north-edge line. Centred on that line, the 12"
     # tube would poke 6" into the house cladding and its 30" bell footing would run 15" into
     # FT-B-S2, whose south face lands exactly on this north-edge line. 15" (bell reach) + 2"
-    # (clearance for the 40 psi XPS thermal-break block the dowels cross) = 17". Cannot shrink.
+    # = 17". Cannot shrink. The 2" was sized as the 40 psi XPS thermal-break block the
+    # dowels crossed; that block went with DW-SG-COL when the bell was augered to frost
+    # depth (2026-08-29), and the 2" stays as what it now is — plain clearance between the
+    # bell's north face and the house footing's excavation face. Same number, and the
+    # column does NOT move: the whole back-beam line, the deck edge and the pockets are
+    # anchored to this offset.
     column_south_offset_in: float = 17.0
     porch_joist: str = "2x8"
     porch_joist_oc_in: float = 16.0
@@ -375,14 +396,49 @@ PORCH_FRONT_AXIS_Y_FT = _y_ax_front
 # ``column_south_offset_in``). The whole back-beam line re-anchors to the same offset —
 # nodes, hangers, tie all at ``_y_col`` — so the beams stay collinear and the deck edge
 # cantilevers over them to the house gap. Column top lands on the back-beam soffit (one
-# beam depth below the 0' porch deck); base at the footing top (-9').
+# beam depth below the 0' porch deck); base at the bell top, 2'-6" under the garden floor
+# (see _pier_bell_bottom_ft).
 _back_beam_depth_ft = 11.25 / 12.0  # 2x12 actual depth
 _y_col = _y_in_n - SPEC.column_south_offset_in / 12.0
-_col_footing_width_in = 30.0  # spread footing (bell) under the sonotube
-_front_footing_width_in = 36.0  # spread footing under the 16" round front column
+_col_footing_width_in = 30.0  # bell diameter under the 12" sonotube
+_front_footing_width_in = 36.0  # bell diameter under the 16" round front column
+
+# --- the two porch piers are BELL-BOTTOM PIERS, augered to frost depth (2026-08-29) ------
+#
+# The owner's call, verbatim: "We can perhaps do 'bell bottom' piers as part of the
+# sonotube installation, so going to 42" here (with an auger) is likely easier and less of
+# a concern." What that buys is the whole point of the change: **these two reach frost
+# depth by EXCAVATION rather than by relying on the aggregate section**. Every other
+# footing in this structure stands short in concrete (21") and is frost-protected because
+# the 42" of drained non-frost-susceptible stone under it counts as soil replacement under
+# ASCE 32 — a real and admitted path (see FOOTING_BEDDING below), but one that rests on a
+# gradation and a drainage claim staying true for the life of the building. A bell bearing
+# on undisturbed soil 42" down needs neither claim: ``structural.frost_depth`` grades it on
+# cover, the way it grades a footing in an ordinary trench.
+#
+# What a belled augered pier is, since the model has no single element for one: a 12"
+# (16" at the front) hole augered to 42" below the garden floor, its base under-reamed out
+# to the bell diameter, a fibre tube dropped in the shaft and the whole thing poured
+# monolithically. So it is TWO elements here — the ``Footing`` is the bell (the bearing
+# element, 12" thick at the bottom of the hole) and the ``Post`` is the shaft above it.
+#
+# **The bell MOVED DOWN; the bell did not GROW.** Deepening the ``Footing`` instead — the
+# only lever this file had before ``Footing.bottom_elevation`` landed — would have drawn a
+# 30"x30"x42" (and 36"x36"x42") prism of concrete: 1.41 cy against the 0.20 cy of extra
+# 12"/16" shaft the real pour adds, a ~7x over-bill, and a foundation schedule printing a
+# 30" footing where a 12" auger hole gets drilled. Quantities are the product; a bell in
+# the wrong place is a wrong quantity, not a drafting nicety.
+_pier_bell_bottom_ft = -(SPEC.basement_depth_ft + SPEC.frost_depth_in / 12.0)
+_pier_bell_top_ft = _pier_bell_bottom_ft + SPEC.footing_thickness_in / 12.0
+# How much further down the bell top sits than the old one, which was flush with the garden
+# floor. Every shaft above a bell grows by exactly this, so no column top moves — the two
+# beam soffits (-1'-6 1/2" back, -0'-11 1/4" front) are load-bearing elevations for the
+# porch frame and are asserted in test_catlin_outdoor_structures.py.
+_pier_shaft_extension_ft = -SPEC.basement_depth_ft - _pier_bell_top_ft
 COLUMN = Post(uid="SGP001AAAA", tag="PT-SG-COL",
               position=pt(ft(_cx), ft(_y_col)), size="12 round",
-              height=ft(SPEC.basement_depth_ft - _back_beam_depth_ft),
+              height=ft(SPEC.basement_depth_ft - _back_beam_depth_ft
+                        + _pier_shaft_extension_ft),
               assembly="PIER_CONCRETE_12",
               supported_by="FT-SG-COL")
 
@@ -422,9 +478,13 @@ COLUMN = Post(uid="SGP001AAAA", tag="PT-SG-COL",
 # or a 20" (5.76") would have kept the option and still beaten the square — that is the
 # revert if the lateral design ever calls for one. See notes/uplift_load_path.md.
 _front_beam_depth_ft = _back_beam_depth_ft  # same member (SPEC.back_beam), same soffit drop
+# Belled to frost depth on the same terms as PT-SG-COL, and the shaft grows by the same
+# ``_pier_shaft_extension_ft`` so this column's top stays exactly on the front-beam soffit.
+# It is the 16" tube that goes 2'-6" further, not the 36" bell that gets thicker.
 FRONT_COLUMN = Post(uid="SGP002AAAA", tag="PT-SG-FCOL",
                     position=pt(ft(_cx), ft(_y_ax_front)), size="16 round",
-                    height=ft(SPEC.basement_depth_ft - _front_beam_depth_ft),
+                    height=ft(SPEC.basement_depth_ft - _front_beam_depth_ft
+                              + _pier_shaft_extension_ft),
                     supported_by="FT-SG-FCOL",
                     assembly="SUNKEN_GARDEN_COLUMN_16")
 
@@ -449,23 +509,58 @@ FOOTINGS = [
             depth=inch(_PORCH_FOOTING_THICKNESS_IN.get(w.tag, SPEC.footing_thickness_in)))
     for w in WALLS
 ]
-# Spread footings under the two porch columns. FT-SG-COL keeps SGF199AAAA; the front
-# column's is appended after it, so nothing already in the IFC moves.
+# The two porch piers' BELLS. FT-SG-COL keeps SGF199AAAA; the front column's is appended
+# after it, so nothing already in the IFC moves.
+#
+# ``bottom_elevation`` is what makes these bells rather than plinths: a post-hosted footing
+# tops out on its storey datum unless it says otherwise, which put both of these flush with
+# the garden floor on 12" of cover. Authored, the UNDERSIDE is the fixed end — the bell
+# bears at ``_pier_bell_bottom_ft`` and is ``depth`` thick above it — which is exactly how
+# a hole is dug. Width and thickness are untouched: only the elevation changed.
 FOOTINGS.append(
     Footing(uid="SGF199AAAA", tag="FT-SG-COL", under="PT-SG-COL",
-            width=inch(_col_footing_width_in), depth=inch(12))
+            width=inch(_col_footing_width_in),
+            depth=inch(SPEC.footing_thickness_in),
+            bottom_elevation=ft(_pier_bell_bottom_ft))
 )
 FOOTINGS.append(
     Footing(uid="SGF198AAAA", tag="FT-SG-FCOL", under="PT-SG-FCOL",
-            width=inch(_front_footing_width_in), depth=inch(12))
+            width=inch(_front_footing_width_in),
+            depth=inch(SPEC.footing_thickness_in),
+            bottom_elevation=ft(_pier_bell_bottom_ft))
 )
 
-# All footings bear on a shared 42" compacted-aggregate section. The footings adjacent to
-# the house (the two porch side walls + the column, along the north edge) are additionally
-# doweled to the house footing with fiberglass rebar across a 40 psi XPS foam block that
-# breaks the thermal bridge; ``cast_foam_in_aggregate`` records that foam in the resolved
-# geometry / IFC (the dowels themselves are annotation-only — see plans/TODO.md).
-_HOUSE_ADJACENT = {"FT-SG-W1", "FT-SG-E1", "FT-SG-COL"}
+# The five WALL footings bear on a shared 42" compacted-aggregate section, and that section
+# is their frost design — see ``non_frost_susceptible`` below. The two column BELLS do not:
+# they were augered to frost depth on 2026-08-29 and bear on undisturbed soil there, so
+# what goes under them is a levelling course, not a replacement section (see
+# ``_PIER_BELL`` at the undercut).
+#
+# The footings adjacent to the house (the two porch side walls, along the north edge) are
+# additionally doweled to the house footing with fiberglass rebar across a 40 psi XPS foam
+# block that breaks the thermal bridge; ``cast_foam_in_aggregate`` records that foam in the
+# resolved geometry / IFC (the dowels themselves are annotation-only — see plans/TODO.md).
+#
+# **FT-SG-COL LEFT THIS SET WHEN ITS BELL WENT TO FROST DEPTH (2026-08-29), and there is
+# nothing to replace it with.** A dowel-and-foam joint needs two concretes meeting at one
+# plane: it broke a bridge that existed because the garden bell and FT-B-S2 sat at the same
+# elevation, 2" apart, with the block between them. The bell bears 2'-6" lower now, so its
+# top is 1'-10" below FT-B-S2's underside and the two pours no longer face each other at
+# all — there is no joint to dowel and no bridge to break, because the separation itself is
+# the break. Leaving the flag on would cast a foam block into aggregate with nothing on the
+# far side of it. The two side walls are unchanged and keep theirs; their footings never
+# moved. See DOWELS below, where DW-SG-COL went for the same reason.
+_HOUSE_ADJACENT = {"FT-SG-W1", "FT-SG-E1"}
+# The two bells reach frost depth on their own, so their beds are levelling courses. A
+# footing bearing where it is meant to bear still wants a few inches of clean stone under
+# it — a flat, free-draining seat at the bottom of an augered hole, and the host for the
+# tile that has to get water out of these two excavations — but 42" of soil REPLACEMENT
+# under a bell that is already at 42" is stone bought twice for one result. It is also
+# stone that does not fit: 42" under the new bell underside would bottom the excavation at
+# -16'-1 7/16", which is 1'-9" BELOW _SG_DRYWELL_TOP, so the bearing bed and the soakaway
+# it is supposed to sit on top of would swap places and intersect. Measured, not assumed —
+# the old bed bottomed at -13'-7 7/16" and cleared the well's stone by 9".
+_PIER_BELL = {"FT-SG-COL", "FT-SG-FCOL"}
 _BEDDING_UID = {"FT-SG-W1": "SGB002AAAA", "FT-SG-E1": "SGB003AAAA",
                 "FT-SG-W2": "SGB004AAAA", "FT-SG-E2": "SGB005AAAA",
                 "FT-SG-S": "SGB006AAAA", "FT-SG-COL": "SGB007AAAA",
@@ -475,7 +570,38 @@ FOOTING_BEDDING = [
         uid=_BEDDING_UID[f.tag],
         tag=f"FB-{f.tag[3:]}",
         host_ref=f.tag,
-        undercut=inch(SPEC.aggregate_bedding_depth_in),
+        undercut=inch(SPEC.pier_levelling_bedding_in if f.tag in _PIER_BELL
+                      else SPEC.aggregate_bedding_depth_in),
+        # **This flag is what makes the garden's WALL footings frost-protected**, and it is
+        # an authored claim about the stone, not a derived property of it. It says the
+        # ``aggregate`` above — ASTM C33 #57 washed crushed stone — is non-frost-
+        # susceptible: an open-graded single-size (nominal 1" to #4) washed coarse
+        # aggregate carries essentially nothing through a #200 sieve, far inside the <6%
+        # by mass that ASTM D422 gradation analysis sets for NFS. Washed is load-bearing
+        # in that sentence; the same stone unwashed is not the same claim.
+        #
+        # Why it matters here: every footing in this structure stands INSIDE the court it
+        # helps retain, so its cover is measured from SL-SG-FLOOR 9' down, not from the
+        # site plane, and the five WALL footings have 21" of concrete against a 42"
+        # minimum. What reaches the minimum is the excavation: a 42" section of drained
+        # NFS stone under a 12-13" footing bottoms out 63" below that same floor. ASCE 32
+        # counts a *well-drained* NFS layer's thickness toward the design frost depth —
+        # soil replacement — and IRC R403.1.4.1 admits a foundation built to ASCE 32 as one
+        # of its listed frost-protection methods, which MN Rules 1309.0403 keeps. The
+        # drainage half of "well-drained" is the tile below and the DRW-SG-MAIN discharge
+        # it runs to; drop either and the claim is not ASCE 32's and
+        # ``structural.frost_depth`` stops counting the section.
+        #
+        # The two BELLS keep the flag and no longer need it: they carry 42" of true cover
+        # since 2026-08-29 and pass on depth, in the check's plain ``covered`` bucket. It
+        # stays because it is still a true statement about the stone under them, and
+        # because the levelling course is drained to the same well — an authored fact
+        # should not blink out because a second, better one arrived.
+        #
+        # Scoped deliberately to this structure. The house's own beddings
+        # (params/foundations.py) are the same order of stone but have not been reasoned
+        # about here, and an unstated section is worth nothing rather than being assumed.
+        non_frost_susceptible=True,
         cast_foam_in_aggregate=f.tag in _HOUSE_ADJACENT,
         # Same 4" sock-wrapped tile as the house footings (params/foundations.py). Unlike
         # the house's, this tile cannot daylight — the garden floor is 9' down with no grade
@@ -489,10 +615,13 @@ FOOTING_BEDDING = [
 # below (not part of) the 42" bearing bed. The garden floor sits 9' down with no downhill
 # side, so everything landing here (perimeter tile, the slab itself) has nowhere to go but
 # down. The balcony leader used to be on that list; it hangs outside the east wall now and
-# discharges to the terrace, so the well is left carrying only the water it cannot avoid. Top of stone sits at the bearing bed's underside so the two stack
-# rather than intersect; 6' of fabric-wrapped stone below (unwrapped, this clay silts its
-# voids shut in a season). Tagged DRW-, not DW-, because DW- is the dowel prefix and the
-# two collided.
+# discharges to the terrace, so the well is left carrying only the water it cannot avoid.
+# Top of stone sits at the WALL beds' underside so the two stack rather than intersect —
+# and it is derived from the wall beds on purpose, ``SPEC.aggregate_bedding_depth_in``
+# being their number: the two column bells took a 7" levelling course on 2026-08-29 and
+# their beds now stop 2'-9" short of this plane, which is clearance, not a gap to close.
+# 6' of fabric-wrapped stone below (unwrapped, this clay silts its voids shut in a
+# season). Tagged DRW-, not DW-, because DW- is the dowel prefix and the two collided.
 _SG_DRYWELL_TOP = ft(-(SPEC.basement_depth_ft + 0.75)
                      - SPEC.footing_thickness_in / 12.0
                      - SPEC.aggregate_bedding_depth_in / 12.0)
@@ -1069,17 +1198,22 @@ BALCONY_JOISTS = FloorSystem(
 
 # ============================================================================
 # Fiberglass (GFRP) rebar dowels + 40 psi XPS foam thermal break between the shared
-# house/garden footings. The three house-adjacent footings (two porch side walls + the
-# sonotube column, along the north edge) pin to the house footing across a 2" XPS block so
-# the joint transfers shear without a thermal bridge. Bars at mid-footing (-9.25').
+# house/garden footings. The two house-adjacent footings (the porch side walls, along the
+# north edge) pin to the house footing across a 2" XPS block so the joint transfers shear
+# without a thermal bridge. Bars at mid-footing (-9.25'), on the north-edge line.
+#
+# **DW-SG-COL was the third and is retired (2026-08-29), with its bell.** It crossed the
+# joint between FT-SG-COL and FT-B-S2 while the two sat at the same elevation 2" apart.
+# The bell now bears 2'-6" lower — its top is 1'-10" under FT-B-S2's underside — so the
+# bars would have spanned open ground at -9'-4 7/16" with no garden concrete at that
+# height to develop into, and the foam block would have had one face and no joint. A
+# separated pier does not need a thermal break; it IS one. Nothing renumbered: COL was the
+# LAST entry, so W1 keeps SGDW01AAAA and E1 keeps SGDW02AAAA and no IFC GlobalId moves —
+# which is the only reason removing an ``enumerate``-minted uid was safe to do in place
+# (compare _WALL_FOOTING_UID above, where it was not).
 # ============================================================================
 _dowel_z = ft(-(SPEC.basement_depth_ft + 0.75) + SPEC.footing_thickness_in / 24.0)
-# Side-wall dowels sit on the north-edge line; the column's follow to its bell footing's
-# north face, the plane that actually abuts FT-B-S2 (whose south face sits ON the
-# north-edge line). At the 17" column offset the bell's north face lands 2" south of it,
-# so the bars cross exactly the 2" XPS block — the old 15" offset left no room for the foam.
-_col_joint_y = _y_col + _col_footing_width_in / 24.0
-_DOWEL_AT = (("W1", _x_ax_w, _y_in_n), ("E1", _x_ax_e, _y_in_n), ("COL", _cx, _col_joint_y))
+_DOWEL_AT = (("W1", _x_ax_w, _y_in_n), ("E1", _x_ax_e, _y_in_n))
 DOWELS = [
     Dowel(uid=f"SGDW0{i}AAAA", tag=f"DW-SG-{name}", position=pt(ft(x), ft(y)),
           axis="y", length=inch(24), diameter=inch(0.625), elevation=_dowel_z,

@@ -1,7 +1,8 @@
 # haus: editable
 # Attic — habitable hot-roofed cathedral storey (WP3.1, WP3.11); 2x6 envelope walls.
-# 5' knee walls east/west (eave sides), gable walls north/south frame ToRoof,
-# ridge runs N-S over the center wall line, 4:12, zero overhang (first-class).
+# Flat 2x6 rafter plates east/west (eave sides) — no knee walls since 2026-08-29 —
+# gable walls north/south frame ToRoof, ridge runs N-S over the center wall line,
+# 6:12, zero overhang (first-class). Roof underside above this floor: 1 1/2" + x/2.
 from typehaus import (
     Alarm,
     AlarmKind,
@@ -436,9 +437,11 @@ OPENINGS = [
 ]
 
 ROOMS = [
-    # STORAGE, not MEDIA (2026-08-01, by decision): 598 sf under a 4:12 cathedral with two
-    # 14" knee-wall units can't meet R303.1's 47.8 sf glazing requirement for a habitable
-    # room. Joins RM-A-EAST-UNFIN, STORAGE for the same reason — only RM-A-STUDY has
+    # STORAGE, not MEDIA (2026-08-01, by decision): 598 sf under a cathedral ceiling with
+    # two 14" knee-wall units couldn't meet R303.1's 47.8 sf glazing requirement for a
+    # habitable room. ** The decision only hardened on 2026-08-29: ** those two knee-wall
+    # units are gone with the knee wall itself, so this loft now has NO glazing at all.
+    # Joins RM-A-EAST-UNFIN, STORAGE for the same reason — only RM-A-STUDY has
     # the gable to glaze. Retagging is honest; it keeps the permit set from claiming a
     # bedroom-grade room the daylight can't support.
     # ** NO FLOOR FINISH ON PURPOSE (2026-08-25). ** These two lofts are unfinished bulk

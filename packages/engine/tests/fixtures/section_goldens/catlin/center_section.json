@@ -1032,6 +1032,34 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          436.5,
+          -13.437499999999998
+        ],
+        [
+          438.0,
+          -13.437499999999998
+        ],
+        [
+          438.0,
+          120.0
+        ],
+        [
+          436.5,
+          120.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1589,6 +1617,34 @@
       "closed": true,
       "uid": "CMW110AAAA",
       "tag": "W-M-W3/outer-girt"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -6.000000000000001,
+          -13.437499999999998
+        ],
+        [
+          -4.5,
+          -13.437499999999998
+        ],
+        [
+          -4.5,
+          120.0
+        ],
+        [
+          -6.000000000000001,
+          120.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
     },
     {
       "space": "model",
@@ -2628,6 +2684,34 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          436.5,
+          120.0
+        ],
+        [
+          438.0,
+          120.0
+        ],
+        [
+          438.0,
+          240.75
+        ],
+        [
+          436.5,
+          240.75
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -3185,6 +3269,34 @@
       "closed": true,
       "uid": "CSW112AAAA",
       "tag": "W-S-W3/outer-girt"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -6.000000000000001,
+          120.0
+        ],
+        [
+          -4.5,
+          120.0
+        ],
+        [
+          -4.5,
+          240.75
+        ],
+        [
+          -6.000000000000001,
+          240.75
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
     },
     {
       "space": "model",
@@ -10979,7 +11091,7 @@
           260.452795568718
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -11371,7 +11483,7 @@
           260.452795568718
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",

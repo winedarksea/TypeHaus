@@ -136,6 +136,25 @@ const DETAIL_FILL: Record<string, string> = {
   "spray-foam": "#ffd966", sealant: "#6e4f2a", flashing: "#7a0c0c",
   metal: "#ffffff", "metal-dark": "#2f2f2f", rubber: "#3a3a3a",
   glass: "#bee3f8", gutter: "#8b8b8b",
+  // The house's one exterior dark: the roof edge trim, the eave water chain (drip edge,
+  // box gutter, downspouts) and the guards all name it. With no entry it fell through to
+  // the near-white fallback and the box gutter drew as a pale ghost beside the apron
+  // flashing it laps. Same ink as the five metal skins above, for the reason stated there.
+  "metal-dark-exterior": "#2f2f2f",
+  // Pressure-treated: the catlin truss wall's outer girts and its block-2 course are KDAT,
+  // and with no entry every one of them drew as a blank box — the wet-cycling half of a
+  // wall whose whole point is which stick is treated. Greener and greyer than `spf` so the
+  // two woods are told apart. Mirrors emit/draw/palette.py DETAIL_FILL.
+  kdat: "#b7ad7a",
+  // The roof stack, which is the eave detail's whole subject and drew as four near-white
+  // boxes in the app. The two membranes are DELIBERATELY different inks: the deck vapour
+  // barrier is vapour-TIGHT and the field underlayment must stay vapour-OPEN, and a detail
+  // that showed them alike would hide the one substitution that breaks this roof.
+  "zip-sheathing": "#3f6d3a", "roof-deck-vapor-barrier": "#1e3a5f",
+  "roof-underlayment-synthetic": "#8f8578", "roof-vent-mat": "#dfe6ea",
+  "fiberglass-r19": "#ddecc8", "blown-fiberglass": "#e7f2d8",
+  polyethylene: "#3f4246", "composite-deck": "#8a7f70",
+  "aluminum-extrusion": "#b6bac0", "polycarbonate-multiwall": "#cfe3e8",
 };
 
 function materialFill(material: string | null | undefined): string | null {

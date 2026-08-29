@@ -1771,6 +1771,34 @@
       "node": "hatch",
       "boundary": [
         [
+          -5.999999999999999,
+          -13.437499999999998
+        ],
+        [
+          -4.5,
+          -13.437499999999998
+        ],
+        [
+          -4.5,
+          120.0
+        ],
+        [
+          -5.999999999999999,
+          120.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
           0.4999999999999996,
           -13.437499999999998
         ],
@@ -2804,6 +2832,34 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -5.999999999999999,
+          120.0
+        ],
+        [
+          -4.5,
+          120.0
+        ],
+        [
+          -4.5,
+          152.00000000000003
+        ],
+        [
+          -5.999999999999999,
+          152.00000000000003
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -2829,6 +2885,34 @@
       "closed": true,
       "uid": "CSW101AAAA",
       "tag": "W-S-S1/outer-girt"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -5.999999999999999,
+          200.0
+        ],
+        [
+          -4.5,
+          200.0
+        ],
+        [
+          -4.5,
+          240.0
+        ],
+        [
+          -5.999999999999999,
+          240.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
     },
     {
       "space": "model",
@@ -3609,6 +3693,34 @@
       "closed": true,
       "uid": "CAW102AAAA",
       "tag": "W-A-S2/outer-girt"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -5.999999999999999,
+          240.0
+        ],
+        [
+          -4.5,
+          240.0
+        ],
+        [
+          -4.5,
+          309.0
+        ],
+        [
+          -5.999999999999999,
+          309.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
     },
     {
       "space": "model",
@@ -7791,7 +7903,7 @@
           -9.9375
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -7847,7 +7959,7 @@
           14.062499999999998
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -7903,7 +8015,7 @@
           38.0625
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -7959,7 +8071,7 @@
           62.06249999999999
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -8015,7 +8127,7 @@
           86.0625
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -8071,7 +8183,7 @@
           108.00000000000001
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -8911,7 +9023,7 @@
           123.50000000000001
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -8967,7 +9079,7 @@
           147.5
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -9023,7 +9135,7 @@
           219.5
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -9079,7 +9191,7 @@
           228.0
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -9247,7 +9359,7 @@
           203.5
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -9303,7 +9415,7 @@
           152.00000000000003
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -9863,7 +9975,7 @@
           243.5
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -9919,7 +10031,7 @@
           267.5
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -9975,7 +10087,7 @@
           291.5
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -10031,7 +10143,7 @@
           307.00000000000006
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
@@ -10951,7 +11063,7 @@
           317.077795568718
         ]
       ],
-      "pattern": "metal",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",

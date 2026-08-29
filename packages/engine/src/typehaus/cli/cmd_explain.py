@@ -82,6 +82,7 @@ def explain(
     if detail:
         from typehaus.emit.draw.details import build_detail, derive_detail_slices
         from typehaus.emit.draw.pdf_writer import write_raster
+        from typehaus.emit.draw.render import DETAIL_DPI
         from typehaus.resolve import resolve
 
         model, _ = resolve(plan)
@@ -96,8 +97,11 @@ def explain(
             scene, findings = build_detail(model, derived)
             _print_findings(findings)
             slug = derived.view.tag.replace("/", "_")
+            # DETAIL_DPI, the same as ``haus render --view details`` — a detail carries
+            # the finest hatch and lettering in the set, and the two commands drawing the
+            # same card at two resolutions made one of them look like a different drawing.
             path = write_raster(scene, dest_dir / f"detail_{slug}.png",
-                                title=f"detail · {derived.key}")
+                                title=f"detail · {derived.key}", dpi=DETAIL_DPI)
             console.print(f"wrote {path}")
         return
 

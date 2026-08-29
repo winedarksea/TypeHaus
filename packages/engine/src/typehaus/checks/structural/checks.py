@@ -9,6 +9,7 @@ from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import LayerFunction
+from typehaus.model.structure import Footing, FoundationWall
 
 # Simplified allowable joist spans (ft) at 16" o.c., residential floor (40 psf live).
 # I-joists by depth; dimensional lumber per IRC R502.3.1(1), SPF #2.
@@ -217,7 +218,7 @@ def footing_frost_depth(ctx: CheckContext) -> list[Finding]:
     is a strict refinement — a site with nothing dug beside it gets the same single plane it
     always did, and no existing house moves.
 
-    Three outcomes rather than two, because "shallow" turns out to cover three different
+    Four outcomes rather than two, because "shallow" turns out to cover several different
     conditions:
 
     * **PASS** — full cover below the local grade, or short of it but protected by drawn
@@ -226,10 +227,21 @@ def footing_frost_depth(ctx: CheckContext) -> list[Finding]:
       citation; this check grades that the protection is drawn and adjacent, not that it is
       sized. Saying so is the point — a check that claimed to size an FPSF would be the
       engineering this tier promises it is not doing.
-    * **UNKNOWN** — the footing stands *inside* the excavation that lowered its own grade.
-      That is a retaining structure holding up the hole it sits in, which IRC R404.4 sends
-      to an engineered design rather than to any prescriptive table; its frost protection
-      belongs to the same design and to the same consultant.
+    * **PASS** — short of cover in *concrete*, but bearing on a drained non-frost-
+      susceptible section that reaches the required depth on its own. That is soil
+      replacement: ASCE 32 counts a well-drained NFS layer's thickness toward the design
+      frost depth, and IRC R403.1.4.1 lists a foundation built to ASCE 32 among its
+      frost-protection methods. The gradation and the drainage are the ``FootingBedding``'s
+      authored claim (``non_frost_susceptible`` + ``drain_tile``); what this check measures
+      is that the excavation actually bottoms out a frost depth below the same local grade
+      every other branch is measured from.
+    * **UNKNOWN** — the footing both stands *inside* the excavation that lowered its own
+      grade and carries a ``FoundationWall``. That is a retaining structure holding up the
+      hole it sits in, which IRC R404.4 sends to an engineered design rather than to any
+      prescriptive table; its frost protection belongs to the same design and to the same
+      consultant. Standing inside the hole is not by itself enough to say so: a spread bell
+      under a freestanding porch column is in the open court too, and retains nothing, so
+      what the footing is authored to be *under* has to agree.
     * **FAIL** — a building footing beside an open excavation, short of cover, with no
       protection drawn.
 
@@ -263,6 +275,13 @@ def footing_frost_depth(ctx: CheckContext) -> list[Finding]:
     floors = open_excavation_floors(ctx.model)
     sheltered_by = heated_floor_footprint(ctx.model)
     protection = _frost_protection_footprints(ctx)
+    # What each footing is authored to sit *under*, and which of those hosts can retain
+    # anything. Built once: both are whole-plan scans and neither depends on the footing.
+    supported_host = {el.tag: el.under for el in ctx.plan.all_elements()
+                      if isinstance(el, Footing)}
+    retaining_hosts = {el.tag for el in ctx.plan.all_elements()
+                       if isinstance(el, FoundationWall)}
+    bedding_by_host = {bed.host: bed for bed in ctx.model.footing_beddings}
 
     out: list[Finding] = []
     covered = []
@@ -275,14 +294,43 @@ def footing_frost_depth(ctx: CheckContext) -> list[Finding]:
             covered.append(solid)
             continue
 
+        # Soil replacement: the concrete stops short, the stone under it does not. Only a
+        # *drained* section counts (ASCE 32 is about a well-drained NFS layer), and only
+        # one whose own excavation bottom clears the requirement below the same local
+        # grade every other branch here is measured from.
+        bed = bedding_by_host.get(solid.tag)
+        section_in = ((grade_m - bed.z0_m) / 0.0254) if bed is not None else 0.0
+        if (bed is not None and bed.non_frost_susceptible is True and bed.drain_tile
+                and section_in >= minimum_in - 1e-6):
+            out.append(_advisory(
+                cid,
+                f"{solid.tag} has {cover_in:.0f}\"{where} against the "
+                f"{minimum_in:.0f}\" MN profile minimum, and bears on {bed.tag}, a "
+                f"drained non-frost-susceptible section excavated to {section_in:.0f}\" "
+                f"below that same grade — the required depth is reached by soil "
+                f"replacement (ASCE 32, listed as a frost-protection method by IRC "
+                f"R403.1.4.1). That the {bed.aggregate} is non-frost-susceptible and that "
+                f"the section drains are the bedding's own authored claim, not this "
+                f"check's finding",
+                (solid.tag, bed.tag), Result.PASS,
+            ))
+            continue
+
         here = Polygon(solid.outline) if len(solid.outline) >= 3 else None
-        inside = source_tag is not None and here is not None and any(
+        # Standing in the hole is only half of "retains the hole". A spread bell under a
+        # freestanding column sits in the open court at 100% overlap and holds nothing
+        # back, so R404.4 has nothing to say about it; what the footing is authored to be
+        # under decides. Anything that is not a FoundationWall falls through to the depth
+        # branches below rather than being called an engineered retaining structure.
+        retains = supported_host.get(solid.tag) in retaining_hosts
+        inside = retains and source_tag is not None and here is not None and any(
             tag == source_tag and here.intersection(polygon).area > 1e-6
             for tag, polygon, _z in floors)
         if inside:
             out.append(_advisory(
                 cid,
-                f"UNKNOWN — {solid.tag} stands inside the {source_tag} excavation with "
+                f"UNKNOWN — {solid.tag} carries "
+                f"{supported_host.get(solid.tag)} inside the {source_tag} excavation with "
                 f"{cover_in:.0f}\" of cover against the {minimum_in:.0f}\" MN profile "
                 f"minimum; a structure retaining the excavation it sits in is outside the "
                 f"prescriptive path (IRC R404.4) and its frost protection belongs to that "

@@ -1695,7 +1695,7 @@
         ]
       ],
       "layer": "A-DETL-CMPT",
-      "lineweight": 0.45,
+      "lineweight": 0.7,
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": null,
@@ -1767,7 +1767,7 @@
         ]
       ],
       "layer": "A-DETL-CMPT",
-      "lineweight": 0.45,
+      "lineweight": 0.7,
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": null,

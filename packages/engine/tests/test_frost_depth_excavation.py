@@ -126,18 +126,49 @@ def test_without_the_wing_insulation_the_same_four_footings_fail(catlin_plan, ca
         assert "SL-SG-FLOOR" in by_tag[tag].message, tag
 
 
-def test_the_gardens_own_retaining_footings_route_to_the_engineer(frost_by_tag):
-    """A structure retaining the hole it stands in is R404.4, not a table — so UNKNOWN.
+#: The garden's own seven footings. Five carry the retaining walls; two are spread bells
+#: under freestanding porch columns. All seven bear on the same 42" aggregate section.
+_THE_GARDENS_OWN = ("FT-SG-W1", "FT-SG-W2", "FT-SG-E1", "FT-SG-E2", "FT-SG-S",
+                    "FT-SG-COL", "FT-SG-FCOL")
 
-    FAIL would be the wrong verdict and the wrong instruction: these are already outside
-    Table R404.1.2(8) in ``structural.foundation_unbalanced_fill`` for the same reason, and
-    they go to the same consultant rather than getting 21" more concrete under them.
+#: The two of those seven that stand under a ``Post``, not a ``FoundationWall``.
+_THE_FREESTANDING_COLUMN_PADS = ("FT-SG-COL", "FT-SG-FCOL")
+
+
+def test_the_gardens_own_footings_pass_on_the_aggregate_section(frost_by_tag):
+    """They pass, and — as with the R403.3 wings — the reason is the thing to pin.
+
+    Not by depth: none of the seven has more than 21" of concrete cover below the court
+    floor. They pass because the 42" compacted washed-stone section they bear on is
+    declared non-frost-susceptible and is drained, so its thickness counts toward the
+    design frost depth (ASCE 32, listed as a frost-protection method by IRC R403.1.4.1).
+    Asserting only ``PASS`` here would go green again the moment the check started
+    measuring the wrong thing, so the section and the citation are asserted too.
+
+    These read UNKNOWN until 2026-08-29, on the reading that a footing standing inside the
+    excavation is retaining it. That was true of five of them and irrelevant: the frost
+    protection was already modelled and simply was not being counted.
     """
     found = frost_by_tag
-    for tag in ("FT-SG-W1", "FT-SG-W2", "FT-SG-E1", "FT-SG-E2", "FT-SG-S",
-                "FT-SG-COL", "FT-SG-FCOL"):
-        assert found[tag].result is Result.UNKNOWN, tag
-        assert "R404.4" in found[tag].message
+    for tag in _THE_GARDENS_OWN:
+        finding = found[tag]
+        assert finding.result is Result.PASS, (tag, finding.message)
+        assert "ASCE 32" in finding.message, tag
+        assert "IRC R403.1.4.1" in finding.message, tag
+        assert any(name.startswith("FB-SG-") for name in finding.element_tags), tag
+
+
+def test_a_freestanding_column_pad_is_not_called_a_retaining_structure(frost_by_tag):
+    """R404.4 is about a structure holding up the hole it sits in. A spread bell under a
+    freestanding porch column sits in the open court at 100% overlap and holds nothing
+    back — the geometric "stands inside the excavation" test could not tell the two apart,
+    and called both retaining. What the footing is authored to be *under* can: these two
+    name ``Post`` elements, the other five name ``FoundationWall``s.
+    """
+    for tag in _THE_FREESTANDING_COLUMN_PADS:
+        message = frost_by_tag[tag].message
+        assert "R404.4" not in message, tag
+        assert "retaining" not in message, tag
 
 
 def test_footings_away_from_the_excavation_are_unmoved(frost_by_tag):
@@ -173,3 +204,71 @@ def test_the_sheet_note_no_longer_claims_every_footing_bears_42_below_grade(catl
     assert "LOWEST ADJACENT FINISHED GRADE" in notes
     assert "SL-SG-FLOOR" in notes
     assert 'FT-B-S2 (8" COVER)' in notes
+
+
+def _frost_by_tag(model):
+    """``structural.frost_depth`` findings from a hand-altered model, indexed by tag."""
+    from typehaus.checks import run_from_model
+
+    report = run_from_model(model, [], tier=Tier.STRUCTURAL)
+    out: dict[str, object] = {}
+    for finding in report.findings:
+        if finding.check_id == CHECK_ID:
+            for tag in finding.element_tags:
+                out.setdefault(tag, finding)
+    return out
+
+
+def _garden_beddings(catlin_model, edit):
+    """The catlin model with ``edit`` applied to every sunken-garden bedding record."""
+    import copy
+
+    model = copy.copy(catlin_model)
+    model.footing_beddings = [edit(bed) if bed.host.startswith("FT-SG-") else bed
+                              for bed in catlin_model.footing_beddings]
+    return model
+
+
+def test_the_aggregate_section_only_counts_when_drained_deep_and_declared(catlin_model):
+    """The falsifiable half of the soil-replacement branch.
+
+    ASCE 32 counts a *well-drained*, *non-frost-susceptible* layer, and counts the depth it
+    actually reaches. Take away any one of the three and the section stops counting: an
+    undrained bed is not what the standard describes, a 12" bed does not reach a 42" frost
+    depth, and an unstated gradation is not a claim at all (``None`` is not ``True`` —
+    every bedding in every other house leaves it unset, and none of them may quietly start
+    passing on stone nobody has graded).
+    """
+    import dataclasses
+
+    undrained = _garden_beddings(
+        catlin_model, lambda bed: dataclasses.replace(
+            bed, non_frost_susceptible=True, drain_tile=False))
+    shallow = _garden_beddings(
+        catlin_model, lambda bed: dataclasses.replace(
+            bed, non_frost_susceptible=True, z0_m=bed.z1_m - 12 * 0.0254))
+    unstated = _garden_beddings(
+        catlin_model, lambda bed: dataclasses.replace(bed, non_frost_susceptible=None))
+
+    for label, model in (("undrained", undrained), ("too shallow", shallow),
+                         ("unstated", unstated)):
+        found = _frost_by_tag(model)
+        for tag in _THE_GARDENS_OWN:
+            assert "ASCE 32" not in found[tag].message, (label, tag)
+        # And the pads, which have no other protection to fall back on, are then FAIL
+        # rather than silently green.
+        assert found["FT-SG-FCOL"].result is Result.FAIL, label
+
+
+def test_the_declared_section_is_what_moves_the_verdict(catlin_model):
+    """The before-and-after, on one model: strip only the declaration and FT-SG-FCOL flips.
+
+    This is the pair that stops the branch from being unfalsifiable — if the check passed
+    the pad for some other reason, clearing the flag would not change the answer.
+    """
+    import dataclasses
+
+    assert _frost_by_tag(catlin_model)["FT-SG-FCOL"].result is Result.PASS
+    cleared = _garden_beddings(
+        catlin_model, lambda bed: dataclasses.replace(bed, non_frost_susceptible=None))
+    assert _frost_by_tag(cleared)["FT-SG-FCOL"].result is Result.FAIL

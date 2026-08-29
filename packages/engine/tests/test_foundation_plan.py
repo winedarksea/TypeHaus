@@ -79,6 +79,13 @@ def test_footing_bedding_undercut_and_insulation(catlin_model):
     assert "#57" in bedding.aggregate
 
 
+#: The two porch piers. Their bells were augered to frost depth on 2026-08-29, so they
+#: bear on undisturbed soil and take a levelling course rather than the wall footings'
+#: 42" replacement section — see
+#: test_catlin_outdoor_structures.py::test_the_two_porch_piers_are_belled_to_frost_depth...
+_SUNKEN_GARDEN_PIER_BELLS = {"FT-SG-COL", "FT-SG-FCOL"}
+
+
 def test_sunken_garden_t_wall_footings_bear_on_42_inches_of_aggregate(catlin_model):
     garden_footings = {
         solid.tag for solid in catlin_model.solids
@@ -92,9 +99,23 @@ def test_sunken_garden_t_wall_footings_bear_on_42_inches_of_aggregate(catlin_mod
 
     assert garden_footings
     assert garden_footings == set(garden_bedding)
-    for bedding in garden_bedding.values():
+    # Every FT-SG-* still gets a bed; only the five WALL footings get the 42" section.
+    assert _SUNKEN_GARDEN_PIER_BELLS.issubset(garden_footings)
+    wall_bedding = {host: bed for host, bed in garden_bedding.items()
+                    if host not in _SUNKEN_GARDEN_PIER_BELLS}
+    assert len(wall_bedding) == 5
+    for bedding in wall_bedding.values():
         assert bedding.z1_m - bedding.z0_m == pytest.approx(inch(42).meters)
         assert "#57" in bedding.aggregate
+        # The 42" is not merely a bearing course here — it IS these five footings' frost
+        # design. Each stands inside the court it retains, so its cover is measured from
+        # SL-SG-FLOOR and reaches only 21" in concrete against a 42" minimum. What reaches
+        # the minimum is this section, and ``structural.frost_depth`` counts a section only
+        # where BOTH halves of ASCE 32's "well-drained non-frost-susceptible" are authored.
+        # Drop either and five findings go from PASS to UNKNOWN without a line of geometry
+        # moving.
+        assert bedding.non_frost_susceptible is True
+        assert bedding.drain_tile
 
 
 def test_bedding_drain_tile_resolves_as_a_ring_of_solids(catlin_model):

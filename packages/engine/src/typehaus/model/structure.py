@@ -66,6 +66,21 @@ class Footing(Element):
     # centres on the midline of the *resolved* layer band instead, which is the wall the
     # concrete is actually poured as, giving a symmetric toe either side.
     center_on: Literal["axis", "wall"] = "axis"
+    # Where the underside bears, for a footing that does NOT hang off the thing above it.
+    # A strip footing's top follows its wall's bottom and a post-hosted spread footing's
+    # top was pinned to the storey datum, which is right for a pad poured in the same lift
+    # as the slab and wrong for the other way a column gets founded: an augered shaft with
+    # a belled base, where the bell bears at frost depth and the sonotube above it simply
+    # gets longer. That was inexpressible — the only way to reach 42" was ``depth=42"`` at
+    # the *bell's* width, which draws a 30"x30"x42" prism and bills 1.41 cy where 0.20 cy
+    # of extra shaft gets built. ``Pad`` has carried exactly this field for exactly this
+    # reason ("at frost depth, typically"); a Footing under a Post now can too. The hosted
+    # Post follows, because ``_resolve_post`` reads its support's top — so authoring this
+    # means also lengthening the post by the same amount, or its top leaves its beam.
+    #
+    # Ignored for a wall-hosted footing: there the wall's underside IS the datum, and two
+    # sources for one elevation is how they disagree.
+    bottom_elevation: Length | None = None
 
 
 @register_element
@@ -118,6 +133,22 @@ class FootingBedding(Element):
     # footprint, which is always what a footing-hosted bedding wants.
     width: Length | None = None
     aggregate: str = "ASTM C33 #57 washed crushed stone"
+    # Is that aggregate section non-frost-susceptible? NFS is a *gradation* claim — under
+    # an ASTM D422 sieve analysis, less than 6% by mass passing the #200 sieve — and it is
+    # authored here rather than derived, because ``aggregate`` above is free text and
+    # reading a soil classification out of a substring is guessing (the same reason
+    # ``emit/draw/elevation_finish._recipe_for`` wants two authored fields instead of one
+    # string to match on). ``None`` therefore means nobody has stated it, and an unstated
+    # section counts for nothing.
+    #
+    # It matters because ASCE 32 treats a *well-drained* NFS layer's thickness as counting
+    # toward the design frost depth — soil replacement — and IRC R403.1.4.1 admits a
+    # foundation "constructed in accordance with ASCE 32" as one of its listed
+    # frost-protection methods (MN Rules 1309.0403 keeps it). So a footing whose concrete
+    # stops short of frost depth can still be protected, by the stone under it reaching
+    # down instead. ``structural.frost_depth`` counts a section only where this is True
+    # *and* ``drain_tile`` runs one: an undrained NFS layer is not what ASCE 32 describes.
+    non_frost_susceptible: bool | None = None
     geotextile: bool = True
     drain_tile: bool = True
     # Optional product spec for the tile above; None keeps the bool's bare annotation.

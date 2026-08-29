@@ -104,9 +104,23 @@ def thicken_polyline(points, thickness: float,
 
 
 def flashing_nodes(centerline, thickness: float | None = None, *,
-                   material: str = "metal", tag: str = "flashing",
-                   lineweight: float = 0.45) -> list[IRNode]:
-    """Sheet-metal flashing as a thickened polyline: metal fill plus a closed outline."""
+                   material: str = "flashing", tag: str = "flashing",
+                   lineweight: float = 0.7) -> list[IRNode]:
+    """Sheet-metal flashing as a thickened polyline: a filled band plus a closed outline.
+
+    **The default material is ``"flashing"``, not ``"metal"``.** ``DETAIL_FILL["metal"]`` is
+    ``#ffffff`` with no hatch, so every apron, drip edge, sill pan and shelf flashing in the
+    house drew as a *white* shape inside a hairline — invisible against the page it sits on,
+    on the one drawing whose subject is where the water goes. ``"flashing"`` (``#7a0c0c``,
+    already in both the engine palette and ``DetailCanvas.tsx``) was in the table and reached
+    by nothing. ``"metal"`` stays the right answer for sheet-metal *hardware* drawn with this
+    same emitter — see ``ridge.py``'s hanger — which is why it is still a parameter.
+
+    0.7 mm, not 0.45: flashing is drawn with a heavy continuous line by convention, and the
+    weight is now honoured by both writers (``pdf_writer._stroke_pt``). It is a *default*
+    weight, not a printed one — ``pdf_writer._band_linewidth`` still caps the outline at half
+    the band's own printed width, so a thin leg gets a thin line rather than a smear.
+    """
     from typehaus.emit.draw.detail_components.config import SHEET_METAL
 
     if len(centerline) < 2:

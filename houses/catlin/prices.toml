@@ -760,7 +760,7 @@
 # SPLIT 2026-08-27. Material is the Twin Cities 2026 ready-mix quote this comment already
 # names ($180-200/cy, a YARD'S PRE-TAX SHEET) plus the rebar and form lumber consumed in the
 # pour; labour is the residual. That order matters — see the [basis_notes] on this section.
-"footing" = { material = { low = 195, high = 240 }, labour = { low = 85, high = 210 } }  # 38.63 cy — was $190-300, then merged $280-450
+"footing" = { material = { low = 195, high = 240 }, labour = { low = 85, high = 210 } }  # 33.25 cy (31.52 strip + 1.73 FOOTING_FPSF_20) — comment was stale at 38.63 until 2026-08-29 — was $190-300, then merged $280-450
 "pad" = { low = 500, high = 1000 }  # 0.59 cy — all setup, no volume; really a $300-600 minimum charge
 # ** SECOND-LARGEST ERROR. ** $175-280/cy is $2.16-3.46/SF at 4" — bare ready-mix with no
 # labour in it. Minnesota installed slab is $6.60-13.20/SF (CalcShed by-state, Aug 2026);
@@ -1564,37 +1564,45 @@
 # no membrane to hang there. What is left is the foundation-wall sheet and the roof's.
 "air-barrier" = { material = { low = 0.25, high = 0.6 }, labour = { low = 0.35, high = 0.75 } }  # 2057.9 SF
 # THE TRUSS WALL'S 4" OF CLOSED-CELL SPRAY FOAM (2026-08-23), keyed by MATERIAL:THICKNESS —
-# see `cli/prices.QUALIFIED_KEY_FIELD`. It is one product sprayed in two lifts, and the two
-# lifts do not cost the same per square foot, which is the whole reason the key carries the
-# thickness: only the board-feet scale, and a sprayer's mobilisation and set-up do not.
+# see `cli/prices.QUALIFIED_KEY_FIELD`.
+#
+# ** TWO PASSES, THREE AUTHORED BANDS, 4" OF FOAM. ** That distinction is the whole reason
+# this block needs a note. The applicator makes exactly TWO lifts:
+#   pass 1 — 1-1/2", flush to the block-1 faces, before the inner girts go on
+#   pass 2 — 2-1/2", burying the inner girt and finishing 1" proud of it
+# `plan/assemblies.py` splits pass 2 into two LAYERS — the girt's 1.5" CavityFill (band B)
+# and the 1.0" `foam-vent` in front of it (band C) — so `analysis._layer_rsi` can parallel-
+# path the wood through band B and still credit foam over 100% of band C. That is R-value
+# bookkeeping, NOT a third pass. Nobody sprays a 1" lift on this wall.
 #
 # Basis, the same one `[construction_returns]."rim-spray-foam"` already derives from: 2 lb
 # ccSPF is $1.00-1.50 per BOARD-FOOT installed, and a board-foot is 1 SF at 1". So
-#   1-1/2" lift  -> 1.5 bd-ft/SF -> $1.50-2.25/SF
-#   1"     lift  -> 1.0 bd-ft/SF -> $1.00-1.50/SF
-#   2-1/2" lift  -> 2.5 bd-ft/SF -> $2.50-3.75/SF   (DEAD — see below)
+#   pass 1, 1-1/2"  -> 1.5 bd-ft/SF -> $1.50-2.25/SF
+#   pass 2, 2-1/2"  -> 2.5 bd-ft/SF -> $2.50-3.75/SF
+#                      billed as :1.5 + :1.0 = $1.50-2.25 + $1.00-1.50, the same money
 # split here roughly 40/60 material/labour, which is where a sprayed-in-place product with a
-# rig, a crew and a cure window sits. Total for the wall: 3,512 SF x 4" = 14,050 board-feet.
+# rig, a crew and a cure window sits. ** THE LADDER IS LINEAR IN BOARD-FEET AND CARRIES NO
+# SET-UP **, so spelling one lift across two rows bills neither more nor less than the lift
+# does. Total for the wall: 3,093 SF x 4" = 12,370 board-feet.
 #
-# ** THE WALL IS THREE BANDS, NOT TWO, AND HAS BEEN SINCE THE GIRT REWORK. **
-# `plan/assemblies.py` authors 1.5" (band A) + a 1.5" CavityFill (band B) + 1.0" (band C).
-# The `:2.5` row below is the retired 1.5+2.5 split and now matches nothing; `:1.0` was
-# MISSING until 2026-08-29, so band C emitted `closed-cell-spray-foam:1.0`, matched no key,
-# and fell into the take-off's "not priced" list — roughly $3,700-5,500 of foam absent from
-# the bid on CATLIN_EXT_2X6 and PLANT_EXT_2X6_HUMID together. Added at the same
-# $1.00-1.50/bd-ft basis as every other row here.
+# The `:1.0` row was MISSING until 2026-08-29. Band C emitted `closed-cell-spray-foam:1.0`,
+# matched no key, and fell into the take-off's "not priced" list — the bid was carrying 3"
+# of a 4" wall, about $3,700-5,500 short across CATLIN_EXT_2X6 and PLANT_EXT_2X6_HUMID
+# together. Priced at the same $1.00-1.50/bd-ft as every other row here. `:2.5` is the
+# retired one-row spelling of pass 2 and now matches nothing; it is kept only as the
+# cross-check that `:1.5` + `:1.0` still lands on it.
 #
 # ** IT IS NOT ONE MOBILISATION. ** The earlier claim here (one visit, two lifts, same day)
 # does not survive `notes/catlin_truss_engineering.md` §8: step 5 puts 2,448 LF of inner
-# girt course, plus jamb posts and head/sill courses at 45 openings, BETWEEN lift 1 and
-# lift 2, and step 7 shaves lift 2 to a gauge before the outer girts. No sprayer waits
+# girt course, plus jamb posts and head/sill courses at 45 openings, BETWEEN pass 1 and
+# pass 2, and step 7 shaves pass 2 to a gauge before the outer girts. No sprayer waits
 # through a framing operation of that size. Budget a SECOND set-up, ~$500-1,500; the rows
 # below carry board-feet only, so that mobilisation is not in any of them.
 # Sources: 2026 published ccSPF $/board-foot surveys (homeguide.com, retrofoamofmichigan) —
 # the same two the rim row cites; the board-feet are this assembly's own geometry.
-"closed-cell-spray-foam:1.5" = { material = { low = 0.6, high = 0.95 }, labour = { low = 0.9, high = 1.3 } }  # 3512.2 SF — the continuous band behind the outriggers
-"closed-cell-spray-foam:1.0" = { material = { low = 0.4, high = 0.6 }, labour = { low = 0.6, high = 0.9 } }  # band C, the last 1" before the vent gap
-"closed-cell-spray-foam:2.5" = { material = { low = 1.0, high = 1.55 }, labour = { low = 1.5, high = 2.2 } }  # 3512.2 SF — the fill between them, billed as insulation (cavity)
+"closed-cell-spray-foam:1.5" = { material = { low = 0.6, high = 0.95 }, labour = { low = 0.9, high = 1.3 } }  # 3092.6 SF twice — pass 1 (band A) and the girt fill that opens pass 2 (band B)
+"closed-cell-spray-foam:1.0" = { material = { low = 0.4, high = 0.6 }, labour = { low = 0.6, high = 0.9 } }  # 3092.6 SF — the rest of pass 2 (band C). NOT a third lift
+"closed-cell-spray-foam:2.5" = { material = { low = 1.0, high = 1.55 }, labour = { low = 1.5, high = 2.2 } }  # DEAD — pass 2 as one row; kept as the cross-check on :1.5 + :1.0
 # RESEARCHED 2026-08-20 — GARAGE_ROOF's attic fill, 576 SF at 14.5" settled (R-38). A
 # separate key from "fiberglass" above because that row is a 5.5" stud-bay BATT and this is
 # loose fill three times as deep: same fibre, different product, different trade, and this
@@ -1801,7 +1809,7 @@
 "stucco" = { material = { low = 0.9, high = 2 }, labour = { low = 3.5, high = 7 } }  # 422.1 SF (was 1394.1 SF: the N/E/W walls' parge was
 # replaced 2026-08-18 by `foundation-protection-panel` over the exposed band only)
 "white-brick" = { material = { low = 6, high = 12 }, labour = { low = 15, high = 26 } }  # 133.8 SF — labour is really a $2,000-3,500 minimum-mobilisation lump
-"xps" = { material = { low = 0.9, high = 1.8 }, labour = { low = 0.75, high = 1.45 } }  # 2520.7 SF
+"xps" = { material = { low = 0.9, high = 1.8 }, labour = { low = 0.75, high = 1.45 } }  # 4182.2 SF — comment was stale at 2520.7 (+66%) until 2026-08-29; a $/SF rate against a $/cy-keyed section re-prices silently when geometry moves
 "zip-sheathing" = { material = { low = 1.1, high = 1.85 }, labour = { low = 1.0, high = 1.9 } }  # 1430.3 SF — 1/2" plain ZIP, taped; the roof's air-barrier plane
 "zip-r" = { material = { low = 2.2, high = 4.2 }, labour = { low = 1.3, high = 2.4 } }  # 631.3 SF
 
@@ -1927,7 +1935,7 @@
 # crane access is tighter, and a face that will be visible often gets rubbed or patched.
 # 2026-08-21: was "CATLIN_CONC_12_INT". Same 12" interior pour, now drawn from library
 # FOUNDATION_WALL_12_INT rather than minted a second time here; the rate is untouched.
-"FOUNDATION_WALL_12_INT" = { low = 470, high = 780 }  # 22.18 CY — was $320-600
+"FOUNDATION_WALL_12_INT" = { low = 470, high = 780 }  # 5.25 CY — was $320-600; comment was stale at 22.18 CY until 2026-08-29
 # ** SAME CATEGORY ERROR AS BASEMENT_BRICK_VENEER: zero ready-mix on this line. ** It is a
 # full 3 5/8" clay wythe on a 1" cavity, priced by the SF OF FACE like every other brick row
 # here, and it must not be escalated with a concrete index. The gross-wall-volume basis this
@@ -1953,17 +1961,38 @@
 # unit, same size, same ASTM grade, same handmade FBA body, off-white instead of black.
 # A colourway is not a cost driver here; the special-order handling already in the rate is.
 "GARAGE_BRICK_WAINSCOT" = { low = 24, high = 42, unit = "SF" }  # 61.5 SF of face
-# 6" core is 0.01852 cy/SF = 54 SF of wall per cy, so 8.82 cy is 476 SF of wall. The old
-# $480-1,000/cy was $8.89-18.52/SF; $756-1,296 is $14-24/SF. Market is $13-25/SF typical with
-# the cheapest published Midwest band at $8.50-14 — the old LOW sat on the absolute floor of
-# the cheapest number anywhere, which a 476 SF garage carrying its own mobilisation will not
-# reach. KEYING WARNING: ICF is bought per SF OF WALL, not per cy. If the core thickness ever
-# changes this rate silently becomes wrong while still looking reasonable.
+# HISTORY, so the number can be re-struck rather than re-guessed. 2026-08-20: $480-1,000/cy
+# was $8.89-18.52/SF and its LOW sat on the absolute floor of the cheapest published number
+# anywhere; it went to $756-1,296 = $14-24/SF against a $13-25/SF typical installed market.
 # SPLIT 2026-08-27, and this is the row where the split says the most: an ICF wall is BOUGHT,
 # not formed. The blocks are $5.00-7.00/SF of face and at ~54 SF/cy that is $270-378/cy of
 # permanent formwork on top of the ready-mix and steel — over half the rate is material, where
 # a site-formed wall is under a third. Taxing it as merged was leaving real money out.
-"GARAGE_ICF_6" = { material = { low = 460, high = 600 }, labour = { low = 296, high = 696 } }  # 8.82 CY = 476 SF — was merged $756-1,296
+# 2026-08-29: the EPS double-bill came off `[envelope_layers]."icf-eps"` (see the note there),
+# and the labour half came down for wall height — below.
+# ** RE-STRUCK 2026-08-29 — THIS STEM IS FOUR COURSES TALL AND WAS PAYING FOR NINE. **
+# $14-24/SF is the band a full-height ICF wall earns, and the labour half of it is priced
+# around work this stem does not do. A storey-height ICF pour carries a turnbuckle alignment
+# system every ~6 LF WITH an integral walk-through scaffold platform, staged lifts, a pump
+# and a two-level crew. `W-G-STEM*` is 5'-4" — four 16" courses — set from grade, braced
+# with corner and end kickers only, poured in ONE low lift and consolidated by hand off the
+# top of the wall. There is no platform to build, strip and move, and the blowout exposure a
+# tall lift's bracing exists to control is not present at 64".
+# The MATERIAL half does not move: blocks are blocks, $5.00-7.00/SF of face, ~$270-378/cy at
+# 54 SF/cy, and that is why over half this rate is material where a site-formed wall is under
+# a third (SPLIT 2026-08-27). What comes off is LABOUR, ~30%: $296-696 -> $205-460/cy.
+#   new rate  $665-1,060/cy = $12.31-19.63/SF of wall
+# which sits inside every published band rather than at the top of one: $8-18/SF for the ICF
+# wall system, $10-25/SF for an ICF foundation, $13-25/SF typical installed. The old low of
+# $14/SF was ABOVE the middle of the wall-system band for a wall that is mostly below grade
+# and never braced above a man's reach.
+# KEYING WARNING: ICF is bought per SF OF WALL, not per cy. If the core thickness ever
+# changes this rate silently becomes wrong while still looking reasonable. 6" core is
+# 0.01852 cy/SF = 54 SF of wall per cy.
+# Sources: icfinsider.com and latestcost.com 2026 ICF cost guides ($8-18/SF wall system);
+# foxblocks.com ICF foundation cost ($10-25/SF of wall surface); icfmag.com "Build Stem Walls
+# or Frost Walls" on the minimum-crew, one-to-three-course stem case.
+"GARAGE_ICF_6" = { material = { low = 460, high = 600 }, labour = { low = 205, high = 460 } }  # 7.20 CY = 389 SF — was $756-1,296 merged, then $756-1,296 split
 # Four stem segments now (2026-08-26): the two east segments flanking the overhead door
 # PLUS the two SE/NE corner segments that carry the brick's 4'-0" corner returns
 # (W-GF-S3/N2) — all four formed with a brick-ledge block so they carry the wainscot's
@@ -1974,12 +2003,15 @@
 # ledge is real extra concrete).
 #
 # Derivation, so the number can be re-struck rather than re-guessed:
-#   85.3 SF of wall at GARAGE_ICF_6's own $14-24/SF          = $1,194 - 2,047
+#   85.3 SF of wall at GARAGE_ICF_6's own $12.31-19.63/SF    = $1,050 - 1,674
 #   brick-ledge form premium, 16 LF at $8-15/LF              =   $128 -   240
 #   the ledge's own ready-mix + four 4' welded-wire reinforcers = $180 -   280
 #   ------------------------------------------------------------------------
-#   $1,502 - 2,567 over 2.42 cy                              = $621 - 1,061/cy
-"GARAGE_ICF_6_BRICKLEDGE" = { low = 620, high = 1060 }  # 2.42 CY = 85.3 SF of wall
+#   $1,358 - 2,194 over 2.42 cy                              = $561 -   907/cy
+# RE-STRUCK 2026-08-29 with GARAGE_ICF_6 (was $620-1,060 off its old $14-24/SF). The two
+# addends below the first line are unchanged — a brick ledge is a block swap and a bit of
+# extra ready-mix, and neither one gets cheaper because the wall is short.
+"GARAGE_ICF_6_BRICKLEDGE" = { low = 561, high = 907 }  # 2.42 CY = 85.3 SF of wall
 # ** CATEGORY ERROR, same as BASEMENT_BRICK_VENEER: this line contains ZERO ready-mix. ** It
 # is dry-stacked segmental block. The cost drivers are SF of exposed face and wall HEIGHT,
 # and the model tracks neither — 9.07 cy is 245 SF of face at 27 SF/cy. Market for SRW
@@ -2200,6 +2232,16 @@
 "WT-2736-T" = { material = { low = 700, high = 1300 }, labour = { low = 160, high = 330 } }  # 1 ea
 "WT-3036" = { material = { low = 560, high = 1080 }, labour = { low = 160, high = 330 } }  # 3 ea — 66 UI
 "WT-3036-T" = { material = { low = 710, high = 1330 }, labour = { low = 165, high = 340 } }  # 1 ea
+# ADDED 2026-08-29 — these six units were UNPRICED and fell into the take-off's own
+# "not priced" list. `WT-2748` was minted 2026-08-27 when BED1/BED2 came down from 54" and
+# STUDY3 went up from 36", and no row followed it. Derived, not invented: 27x48 is 75 UI, so
+# it is past the 0-71 flat band and keeps the over-band premium, and the nearest unit on this
+# table is its own width — `WT-2754`, 27x54, at $720-1,360 — with 6" of height taken off.
+# That sheds ~7% of glass and frame and nothing else; 27" is still a one-man set, so labour
+# barely moves. The result brackets correctly against `WT-3048` (30x48, 78 UI, $700-1,320):
+# three inches narrower, four percent under. Tempered is this table's flat $150/$250 adder.
+"WT-2748" = { material = { low = 670, high = 1265 }, labour = { low = 168, high = 358 } }  # 4 ea — 75 UI
+"WT-2748-T" = { material = { low = 820, high = 1515 }, labour = { low = 173, high = 365 } }  # 2 ea
 "WT-3048" = { material = { low = 700, high = 1320 }, labour = { low = 185, high = 390 } }  # 7 ea — 78 UI, over the band; two-man set
 "WT-3048-T" = { material = { low = 850, high = 1570 }, labour = { low = 190, high = 405 } }  # 2 ea — was 3 until WIN-M-LIV-S2 was deleted (2026-08-24)
 # The plant room's U-0.14 units. Same dimensions as their parents, a different MANUFACTURER.

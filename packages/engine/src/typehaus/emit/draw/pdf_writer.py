@@ -9,6 +9,7 @@ Neither writer computes geometry; placement math already happened IR-side.
 from __future__ import annotations
 
 import math
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -17,8 +18,10 @@ from typehaus.emit.draw.palette import detail_fill
 from typehaus.emit.draw.scene import (
     ArchDimension,
     Hatch,
+    IRNode,
     Leader,
     Polyline,
+    Pt,
     Scene,
     Symbol,
     Text,
@@ -106,6 +109,18 @@ _LAYER_STYLE = {
     "A-ANNO-TABL": ("#333333", 0.5),
     "A-DETL-CMPT": ("#444444", 0.5),
     "A-DETL-TRMT": ("#7a5a3a", 0.5),
+    # Elevation projection (→ elevation.py). A hidden-line elevation needs to say
+    # how far away a thing is, and the only vocabulary a writer has for that is the
+    # layer: the facade plane keeps A-WALL's weight, anything on a receding plane
+    # goes lighter and greyer, and below-grade keeps the existing A-WALL-BELW.
+    "A-WALL-BEYD": ("#8a8a8a", 0.5),
+    # Roof edge trim in ELEVATION — drip edge, box gutter, downspout, corner trim.
+    # Not A-DETL-TRMT: that is the detail-card treatment layer, drawn at 3/4"=1'-0"
+    # where a 1/2" leg is visible. Here the whole chain is one line on the eave.
+    "A-ROOF-TRIM": ("#2d3b46", 0.7),
+    # Sash frame, muntins and the dashed operation triangle, lighter than the
+    # A-GLAZ opening outline they sit inside.
+    "A-GLAZ-SASH": ("#5a8098", 0.4),
 }
 _HATCH_MPL = {
     "batt": "....", "osb": "//", "lumber": "\\\\", "concrete": "..", "SOLID": None,
@@ -551,15 +566,49 @@ def _apply_text_scale(fig, ax, scaled_text) -> None:
 #: drawn as a bar.
 _HAIRLINE_PT = 0.15
 
+#: Points per millimetre — the **one** conversion between the IR's lineweights and this
+#: writer's pens, and the reason a builder's 0.18 / 0.25 / 0.35 / 0.5 / 0.7 finally means
+#: something on screen and on paper.
+#:
+#: ``Polyline.lineweight`` is millimetres: that is the DXF convention, and ``dxf_writer``
+#: writes it straight out as 1/100 mm. ``_LAYER_STYLE`` above is printed **points** at final
+#: scale. A point is 1/72", a millimetre is 1/25.4", so the conversion is arithmetic and
+#: there is nothing here to tune — an 0.35 mm line in the IR is the 0.35 mm line a plotter
+#: draws from the DXF of the same scene. That is the point: the two writers now agree about
+#: weight the way they already agree about geometry and linetype.
+#:
+#: It belongs beside ``typography.model_in_per_pt`` — it is the third of that family of
+#: model-space/paper-space conversions, and that module's own doctrine ("a constant that
+#: three modules have to agree on is not three constants") says where it goes. It is here
+#: only because ``typography.py`` is owned by nobody this round; move it when that changes.
+_PT_PER_MM = 72.0 / 25.4
 
-def _min_printed_width_pt(points, scale: float) -> float:
-    """The narrowest dimension of a closed band, in printed points on a sheet at ``scale``.
 
-    Rotating calipers, one turn: for a convex band the narrowest direction is always
-    perpendicular to one of its own edges, so projecting every vertex onto each edge normal
-    and keeping the smallest spread is exact. A non-convex outline under-reports, which is
-    the safe way to be wrong here — it thins the stroke rather than letting it swallow the
-    band.
+def _is_convex(points: Sequence[Pt]) -> bool:
+    """Whether the ring turns the same way at every vertex."""
+    sign = 0
+    n = len(points)
+    for i in range(n):
+        (x0, y0), (x1, y1), (x2, y2) = points[i], points[(i + 1) % n], points[(i + 2) % n]
+        cross = (x1 - x0) * (y2 - y1) - (y1 - y0) * (x2 - x1)
+        if abs(cross) < 1e-12:
+            continue
+        turn = 1 if cross > 0 else -1
+        if sign and turn != sign:
+            return False
+        sign = turn
+    return True
+
+
+def _caliper_width_in(points: Sequence[Pt]) -> float:
+    """Rotating calipers, one turn — **exact, and only for a convex ring.**
+
+    The narrowest direction across a convex band is always perpendicular to one of its own
+    edges, so projecting every vertex onto each edge normal and keeping the smallest spread
+    is the answer. On a *non*-convex ring it is not merely approximate, it is wrong in the
+    dangerous direction: for an L-shaped flashing profile every edge normal projects the
+    whole shape, so a 1/2" leg reports as the 3-1/2" reach of the leg it turns off — which
+    is why :func:`_min_printed_width_pt` does not call this on one.
     """
     best = float("inf")
     n = len(points)
@@ -572,12 +621,48 @@ def _min_printed_width_pt(points, scale: float) -> float:
         nx, ny = -dy / length, dx / length
         spread = [px * nx + py * ny for (px, py) in points]
         best = min(best, max(spread) - min(spread))
-    if best == float("inf"):
+    return 0.0 if best == float("inf") else best
+
+
+def _strip_width_in(points: Sequence[Pt]) -> float:
+    """Twice the area over the perimeter — the mean width of a strip of constant thickness.
+
+    The measure for the shapes calipers cannot read: a flashing profile is a *thickened
+    polyline*, an L or a Z or a five-leg step, and what "how wide is this band" means for one
+    is the thickness of its legs. For a strip of thickness ``t`` whose legs total ``L``, the
+    area is ``t·L`` and the perimeter is ``2L``, so ``2A/P`` returns ``t`` — near exactly for
+    the long thin profiles this is reached for, and low rather than high for a stubby one,
+    which is the safe way to be wrong: it thins the stroke instead of letting it swallow the
+    band.
+    """
+    n = len(points)
+    twice_area = 0.0
+    perimeter = 0.0
+    for i in range(n):
+        (x0, y0), (x1, y1) = points[i], points[(i + 1) % n]
+        twice_area += x0 * y1 - x1 * y0
+        perimeter += ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
+    if perimeter < 1e-9:
         return 0.0
-    return best * paper_in_per_model_in(scale) * 72.0
+    return abs(twice_area) / perimeter
 
 
-def _band_linewidth(points, lw: float, scale: float | None) -> float:
+def _min_printed_width_pt(points: Sequence[Pt], scale: float) -> float:
+    """The narrowest dimension of a closed band, in printed points on a sheet at ``scale``.
+
+    Two measures, because one ring vocabulary covers two shapes. A **layer band** is convex —
+    a rectangle, or a rectangle with a sloped top — and rotating calipers answers it exactly.
+    A **detail component** is a thickened polyline and is not convex; calipers reads a 1/2"
+    flashing leg as the 3-1/2" span of the leg it turns off, so the cap never fired on the one
+    family of shapes drawn with the heaviest line in the drawing. Every apron, drip edge, sill
+    pan, L- and Z-flashing on the sheet had its own fill painted out by its own outline.
+    """
+    width_in = (_caliper_width_in(points) if _is_convex(points)
+                else _strip_width_in(points))
+    return width_in * paper_in_per_model_in(scale) * 72.0
+
+
+def _band_linewidth(points: Sequence[Pt], lw: float, scale: float | None) -> float:
     """Cap a cut band's outline at half its own printed width.
 
     **A band's outline may never be thicker than the band.** The roof taught this one: at
@@ -596,6 +681,166 @@ def _band_linewidth(points, lw: float, scale: float | None) -> float:
     return max(_HAIRLINE_PT, min(lw, width_pt * 0.5))
 
 
+def _stroke_pt(node: Polyline) -> tuple[str, float]:
+    """A polyline's ink and printed weight: **its own lineweight when it set one, the
+    layer's default otherwise.**
+
+    Until this existed the node's ``lineweight`` was dead data everywhere but the DXF: this
+    writer resolved ``_LAYER_STYLE[layer]`` and threw the node's own weight away, so the 0.18
+    the section clipper sets for a background band and the 0.5 a grade line asks for both
+    printed at whatever single weight their layer carried. A drawing with one weight per
+    layer cannot say which of two things on the same layer is nearer, and that is the whole
+    vocabulary a hidden-line elevation, a plan poché and a detail depend on.
+
+    A layer whose default weight is ``0.0`` is a layer that is **not stroked** — ``A-AREA-IDEN``
+    carries room identification, not linework — and stays unstroked whatever a node asks for.
+    That entry is a suppression, not a thin pen.
+    """
+    color, layer_pt = _LAYER_STYLE.get(node.layer, ("#333", 0.6))
+    if layer_pt <= 0.0:
+        return color, 0.0
+    if "lineweight" not in node.model_fields_set:
+        return color, layer_pt
+    return color, node.lineweight * _PT_PER_MM
+
+
+#: The AIA layers a wall's own cut sandwich is filed on — ``_shared.FUNCTION_LAYER`` and
+#: ``palette.aia_layer``, which are the same table read from two sides: structure, sheathing,
+#: cladding and furring on ``A-WALL``, finish on ``A-WALL-FINI``, insulation on
+#: ``A-WALL-INSU``, membrane and air gap on ``A-WALL-PATT``.
+_POCHE_LAYERS = frozenset({"A-WALL", "A-WALL-FINI", "A-WALL-INSU", "A-WALL-PATT"})
+
+#: The scale at or below which a wall prints as one poché instead of as its layer stack
+#: (→ 20 §143's never-built per-sheet ``simplified_poche``). **1/4" = 1'-0" and smaller.**
+#:
+#: The arithmetic first: at 1/4" a 1/2" gypsum finish layer is 0.75 printed points wide and
+#: ``A-WALL-FINI``'s own 0.6 pt stroke is drawn twice across it, so the band is narrower than
+#: its own outline — the "layer" is two touching lines and whatever it was meant to say is
+#: gone before the ink is dry. Catlin's truss wall stacks EIGHT of those inside 12-1/4", with
+#: batt/osb/lumber hatch between them.
+#:
+#: The line is drawn at 1/4" and not at 3/8", where the same arithmetic still holds (1.13 pt
+#: of band against 1.2 pt of stroke), because **3/8" is where catlin's eight
+#: foundation-to-wall detail cards land**, and a detail card is precisely the drawing whose
+#: subject IS the stack. A rule that collapses the drawing made to show the layers has
+#: mistaken its own scope. Detail scales keep everything; plans get the poché.
+_POCHE_MAX_SCALE = 0.25
+
+#: The poché's own fill. Light, because a plan poché is read *through* — the dimension
+#: strings, door swings and fixtures that land on a wall have to stay legible over it.
+_POCHE_FILL = "#dcd7cd"
+
+
+def _ring_ccw(points: Sequence[Pt]) -> list[Pt]:
+    """``points`` wound counter-clockwise — the shoelace sign, nothing more.
+
+    The compound path below is filled with matplotlib's nonzero winding rule, so two rings
+    of *opposite* orientation cancel where they overlap: a junction polygon lying over a
+    wall band would punch a hole in the poché instead of merging into it. Normalising every
+    ring to one direction is what makes "fill them all" mean union.
+    """
+    twice_area = 0.0
+    count = len(points)
+    for index in range(count):
+        (x0, y0), (x1, y1) = points[index], points[(index + 1) % count]
+        twice_area += x0 * y1 - x1 * y0
+    return list(points) if twice_area >= 0.0 else list(reversed(points))
+
+
+class _WallPoche:
+    """A scene's wall sandwiches, collected and printed as one figure rather than as layers.
+
+    Collapsing is a *writer* decision and belongs here: the IR still carries every layer, the
+    DXF still exports every layer on its own AIA layer for a reader who wants to switch them
+    on, and the same scene drawn at 3/4" still prints the full stack. What changes is what a
+    1/4" sheet spends ink on.
+
+    **The union without a geometry library.** The rings are drawn twice into one compound
+    path: once stroked at double weight, then once filled on top of that stroke. The fill
+    covers every edge interior to the union — an interface between two abutting layers is
+    inside the poché, so it disappears — and covers exactly the inner half of the outline on
+    the boundary, which is why the stroke is doubled to arrive at the weight asked for. One
+    path, one fill operation, so there are no seams between the bands either.
+    """
+
+    def __init__(self, ax: object) -> None:
+        self._ax = ax
+        self._rings: list[list[Pt]] = []
+        self._ink, self._weight = _LAYER_STYLE["A-WALL"]
+
+    def absorbs(self, node: IRNode) -> bool:
+        """True when ``node`` is part of a wall sandwich and has been taken for the poché.
+
+        A ``Hatch`` on one of these layers *is* the wall pattern — the batt/osb/lumber
+        stipple inside the sandwich — so it is swallowed and never drawn. An **open**
+        polyline on a wall layer is not a band and is left alone: it is a line somebody drew
+        across a wall, and the poché has nothing to say about it.
+        """
+        if node.layer not in _POCHE_LAYERS or getattr(node, "space", "model") != "model":
+            return False
+        if isinstance(node, Hatch):
+            return len(node.boundary) >= 3
+        if not isinstance(node, Polyline) or not node.closed or len(node.points) < 3:
+            return False
+        self._rings.append(_ring_ccw(node.points))
+        return True
+
+    def draw(self) -> None:
+        from matplotlib.patches import PathPatch
+        from matplotlib.path import Path as MplPath
+
+        if not self._rings:
+            return
+        verts: list[Pt] = []
+        codes: list[int] = []
+        for ring in self._rings:
+            verts.extend(ring)
+            verts.append(ring[0])
+            codes.append(int(MplPath.MOVETO))
+            codes.extend([int(MplPath.LINETO)] * (len(ring) - 1))
+            codes.append(int(MplPath.CLOSEPOLY))
+        path = MplPath(verts, codes)
+        self._ax.add_patch(PathPatch(path, facecolor="none", edgecolor=self._ink,
+                                     linewidth=self._weight * 2.0, zorder=0.80))
+        self._ax.add_patch(PathPatch(path, facecolor=_POCHE_FILL, edgecolor="none",
+                                     linewidth=0.0, zorder=0.85))
+
+
+#: ``floorplan.build_floorplan``'s scene name (``plan-<storey>``) — the architectural floor
+#: plan, and the only drawing the poché applies to.
+#:
+#: A per-sheet toggle was the → 20 §143 sketch, and a writer has no sheet: what it is handed
+#: is a :class:`Scene`, so the scene's own name is the only place the sheet's identity
+#: survives. Sniffing a name is a weak signal and this one is picked to be *narrow* rather
+#: than clever — every other scene that carries a wall sandwich is a drawing whose subject IS
+#: the sandwich. Measured on catlin's permit set: the four exterior elevations (``A-201``…,
+#: 1/8"), the building section (``A-301``, 3/16"), the typical exterior wall section
+#: (``A-403``, 3/16") and six detail cards (``A-408``/``409``/``411``/``424``/``439``/``440``,
+#: 1/4") all sit at or under ``_POCHE_MAX_SCALE`` and all must keep every layer they draw. A
+#: scale test alone would have flattened all twelve.
+#:
+#: The trade plans need no entry: ``_shared.emit_ghost_walls`` already draws their walls as a
+#: single 0.15 mm outline on ``A-WALL-BELW``, which is this same collapse arrived at from the
+#: other direction.
+_PLAN_SCENE_PREFIX = "plan-"
+
+
+def _poche_for(scene: Scene, ax: object) -> _WallPoche | None:
+    """A :class:`_WallPoche` when this scene is a floor plan at plan scale, else ``None``.
+
+    Two conditions and neither is optional. **A floor plan** (``_PLAN_SCENE_PREFIX``) — see
+    there for why the other twelve small-scale sandwich drawings on the set must not be
+    touched. **And a chosen scale at or below** ``_POCHE_MAX_SCALE``: a frameless scene has no
+    paper, therefore no printed width to judge a band against, so it keeps exactly the
+    behaviour it had before this existed.
+    """
+    if scene.frame is None or scene.frame.scale > _POCHE_MAX_SCALE:
+        return None
+    if not scene.name.startswith(_PLAN_SCENE_PREFIX):
+        return None
+    return _WallPoche(ax)
+
+
 def _render_nodes(ax: object, scene: Scene) -> None:
     from matplotlib.patches import Arc, PathPatch, Polygon
     from matplotlib.path import Path as MplPath
@@ -606,10 +851,13 @@ def _render_nodes(ax: object, scene: Scene) -> None:
     # would otherwise get identical, and in the detail's case invisible, lettering.
     # ``height_pt`` is the annotative case and needs no conversion at all.
     scaled_text: list[tuple[object, float, float | None]] = []
+    poche = _poche_for(scene, ax)
 
     for node in scene.nodes:
         if isinstance(node, Polyline):
-            color, lw = _LAYER_STYLE.get(node.layer, ("#333", 0.6))
+            if poche is not None and poche.absorbs(node):
+                continue
+            color, lw = _stroke_pt(node)
             xs = [p[0] for p in node.points]
             ys = [p[1] for p in node.points]
             # The DXF writer has always honoured ``linetype``; this one did not, so a dashed
@@ -625,6 +873,8 @@ def _render_nodes(ax: object, scene: Scene) -> None:
                 ax.plot(xs, ys, color=color, linewidth=lw, solid_capstyle="round",
                         linestyle=style)
         elif isinstance(node, Hatch):
+            if poche is not None and poche.absorbs(node):
+                continue
             # Fill by material, then overlay the hatch — an unfilled hatch alone makes
             # concrete, XPS, EPS and polyiso read as the same grey stipple.
             hatch = _HATCH_MPL.get(node.pattern, "..")
@@ -662,6 +912,8 @@ def _render_nodes(ax: object, scene: Scene) -> None:
                                   pad=0.5)),
                 node.height or _LEADER_TEXT_H, node.height_pt,
             ))
+    if poche is not None:
+        poche.draw()
     _ = (PathPatch, MplPath)  # imported for parity with richer node kinds
     return scaled_text
 

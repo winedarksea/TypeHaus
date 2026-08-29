@@ -53,6 +53,43 @@ def _participating_layers(model, derived):
     return out
 
 
+#: Materials a detail **component** draws with rather than an assembly layer, so
+#: :func:`_participating_layers` — which walks walls and roofs — can never see them and the
+#: legend never named them. The dark red band lapping the cladding head is the drawing's
+#: answer to "where does the water go", and until this list existed a reader had no way to
+#: learn what it was.
+#:
+#: **They carry no thickness, deliberately.** Every other row states its layer's resolved
+#: thickness; these are drawn at ``SHEET_METAL.thickness_in``, which is a *schematic* 0.5"
+#: against real flashing's ~0.025" (``config.SheetMetalConfig`` says so in as many words).
+#: Printing that number would put one twenty-fold lie on a sheet of true ones. The swatch and
+#: the name are what the reader needs; the gauge belongs in the notes.
+#:
+#: Bounded on purpose: ``metal`` (which is hardware — the ridge hanger), ``sealant``, ``soil``
+#: and the rest stay out. The strip is finite, and it says what the CUT is made of rather than
+#: what every schematic overlay in the drawing happens to be drawn with.
+_COMPONENT_MATERIALS = ("flashing", "gutter")
+
+
+def _with_component_materials(seen: dict[str, float | None],
+                              drawn: set[str] | None) -> None:
+    """Append the component materials this drawing actually reached, in a fixed order.
+
+    Only when ``drawn`` is known: a legend may name nothing the cut did not reach
+    (``test_detail_legibility.test_the_legend_only_names_materials_the_cut_actually_reached``),
+    and without the scene there is no way to tell.
+    """
+    if drawn is None:
+        return
+    for material in _COMPONENT_MATERIALS:
+        if material in drawn and material not in seen:
+            seen[material] = None
+
+
+def _legend_label(material: str, thickness: float | None) -> str:
+    return material if thickness is None else f'{material}  {thickness:.3g}"'
+
+
 def drawn_materials(scene) -> set[str]:
     """Every material that actually reaches the page, off the ``Hatch`` nodes themselves.
 
@@ -78,12 +115,14 @@ def material_legend(model, derived, u_left: float, z_top: float,
     """
     if band is not None:
         return _paper_legend(model, derived, band, drawn)
-    seen: dict[str, float] = {}
+    seen: dict[str, float | None] = {}
     order: list[str] = []
     for material, thickness, _function in _participating_layers(model, derived):
         if material and material not in seen:
             seen[material] = thickness
             order.append(material)
+    _with_component_materials(seen, drawn)
+    order.extend(m for m in seen if m not in order)
     if not order:
         return []
     from typehaus.emit.draw.palette import detail_hatch
@@ -103,7 +142,7 @@ def material_legend(model, derived, u_left: float, z_top: float,
                            material=material))
         nodes.append(Polyline(points=boundary, layer=LAYER, closed=True, lineweight=0.2))
         nodes.append(Text(anchor=(u_left + LEGEND_SWATCH_IN + 1.5, (y0 + y1) / 2),
-                          content=f'{material}  {seen[material]:.3g}"',
+                          content=_legend_label(material, seen[material]),
                           height=TEXT_HEIGHT_IN, layer="A-ANNO-TEXT"))
     return nodes
 
@@ -121,10 +160,11 @@ _LEGEND_PT = 6.5
 def _paper_legend(model, derived, band, drawn=None) -> list[IRNode]:
     from typehaus.emit.draw.palette import detail_hatch
 
-    seen: dict[str, float] = {}
+    seen: dict[str, float | None] = {}
     for material, thickness, _function in _participating_layers(model, derived):
         if material and material not in seen and (drawn is None or material in drawn):
             seen[material] = thickness
+    _with_component_materials(seen, drawn)
     if not seen:
         return []
     x, y, w, h = band
@@ -152,7 +192,7 @@ def _paper_legend(model, derived, band, drawn=None) -> list[IRNode]:
         nodes.append(Polyline(points=boundary, layer=LAYER, closed=True, lineweight=0.2,
                               space="paper"))
         nodes.append(Text(anchor=(cx + _SWATCH_IN + 0.06, cy + _SWATCH_IN / 2),
-                          content=f'{material}  {thickness:.3g}"',
+                          content=_legend_label(material, thickness),
                           height_pt=_LEGEND_PT, layer="A-ANNO-TEXT", space="paper"))
     return nodes
 

@@ -41,6 +41,13 @@ TEXT_PT = 7.0          #: general annotation (layer ladders, seed callouts, eave
 LEADER_TEXT_PT = 7.0   #: leader notes
 DIM_TEXT_PT = 6.5      #: dimension strings — the literal `_draw_dimension` hardcoded
 NOTES_PT = 9.0         #: the paper-space notes column
+#: Subordinate lines under a primary label — a room block's area and ceiling under its
+#: name, and the placeable caption on a trade plan. The ladder above has no genuine
+#: *secondary* step: 9 / 7 / 6.5 / 4-floor puts a room's area at 6.5 pt against a 7.0 pt
+#: name, which is a rounding difference rather than a hierarchy, so a plan label block read
+#: as one undifferentiated paragraph. Deliberately NOT in the vocabulary manifest — the
+#: viewer's DetailCanvas draws details, and a detail has no label block to subordinate.
+SUB_TEXT_PT = 5.5
 
 #: Columns a long leader note wraps at.
 LEADER_WRAP_COLUMNS = 40

@@ -934,6 +934,9 @@ class ResolvedFootingBedding:
     cast_foam_in_aggregate: bool
     # None where the bedding only carries the bool — see ResolvedDrainTile.
     drain_tile_spec: ResolvedDrainTile | None = None
+    # The authored non-frost-susceptible gradation claim — see FootingBedding. None = not
+    # stated, which is not the same as False and never counts toward a frost depth.
+    non_frost_susceptible: bool | None = None
 
 
 @dataclass(frozen=True)

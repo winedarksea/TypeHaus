@@ -375,10 +375,16 @@ def test_sonotube_column_and_bell_tuck_south_of_the_house_gap(catlin_model) -> N
     the house cladding and its 30" bell footing stops short of the house's own footing.
 
     How far short is not a free number: FT-B-S2's south face already lands on the deck's
-    north-edge line, and the dowels cross a 40 psi XPS block between the two footings, so
-    the bell's north face has to sit back by exactly that block's thickness. Everything
-    here is read off the model — the offset itself included — so the assertion tracks
+    north-edge line, and the bell's north face sits back 2" from it. Everything here is
+    read off the model — the offset itself included — so the assertion tracks
     ``SPEC.column_south_offset_in`` instead of restating it.
+
+    That 2" used to BE the 40 psi XPS block DW-SG-COL's bars crossed, and the test read it
+    off the dowel. The dowel retired on 2026-08-29 when the bell was augered to frost
+    depth: the two footings no longer meet at one elevation, so there is no joint to dowel
+    and no bridge to break. The clearance survives its reason — 17" of column offset less
+    the bell's own 15" reach — and the plan geometry is unchanged, which is the thing worth
+    asserting either way.
     """
     deck_edge_y = max(y for _, y in _porch_outline(catlin_model))
     column = _solid(catlin_model, "PT-SG-COL")
@@ -391,8 +397,13 @@ def test_sonotube_column_and_bell_tuck_south_of_the_house_gap(catlin_model) -> N
 
     bell = _solid(catlin_model, "FT-SG-COL")
     house_footing_s = min(y for _, y in _solid(catlin_model, "FT-B-S2").outline)
-    foam = catlin_model.plan.by_tag("DW-SG-COL").foam_thickness.meters
-    assert max(p[1] for p in bell.outline) == pytest.approx(house_footing_s - foam)
+    bell_north = max(p[1] for p in bell.outline)
+    assert bell_north < house_footing_s, "the bell stops short of the house's own footing"
+    assert house_footing_s - bell_north == pytest.approx(2 * INCH)
+    # And the joint it used to be doweled across is gone with the dowel, not merely unused.
+    assert catlin_model.plan.by_tag("DW-SG-COL") is None
+    assert {d.tag for d in catlin_model.plan.all_elements()
+            if d.element_kind == "Dowel"} == {"DW-SG-W1", "DW-SG-E1"}
     # The back-beam line (and its midspan node) re-anchors to the same offset, collinear.
     # The tolerance IS the beam's own half-width, and it is READ off the member rather than
     # written out: the pair went from a 3 1/2" two-ply LVL to a 4 1/2" three-ply KDAT 2x12
@@ -405,6 +416,60 @@ def test_sonotube_column_and_bell_tuck_south_of_the_house_gap(catlin_model) -> N
         beam = _solid(catlin_model, tag)
         for _, y in beam.outline:
             assert y == pytest.approx(column_y, abs=half_width + 1e-9)
+
+
+def test_the_two_porch_piers_are_belled_to_frost_depth_without_moving_a_beam_soffit(
+        catlin_model) -> None:
+    """The bell moved DOWN to frost depth and the shaft grew to suit — 2026-08-29.
+
+    The owner's call was to auger these two to 42" rather than lean on the aggregate
+    section the wall footings lean on ("bell bottom piers as part of the sonotube
+    installation"). What makes that a two-element change rather than a one-number change is
+    that a ``Footing`` under a ``Post`` tops out on its storey datum unless it authors a
+    ``bottom_elevation``, and a ``Post`` starts at whatever its support's top is. Move the
+    bell without growing the shaft and both columns drop 2'-6" off their beams; grow the
+    ``Footing.depth`` instead of moving it and the model bills a 30"x30"x42" prism of
+    concrete for a 12" auger hole. So this asserts both ends: the bells bear at frost
+    depth, AND the two soffits they carry did not move by so much as a hair.
+    """
+    from typehaus.checks.code.mn_residential.profile import MN_2024
+
+    frost_m = MN_2024.frost_depth_in * INCH
+    floor_top = _solid(catlin_model, "SL-SG-FLOOR").z1_m
+
+    for bell_tag, post_tag, beam_tag in (("FT-SG-COL", "PT-SG-COL", "BM-SG-BKW"),
+                                         ("FT-SG-FCOL", "PT-SG-FCOL", "BM-SG-FRW")):
+        bell = _solid(catlin_model, bell_tag)
+        post = _solid(catlin_model, post_tag)
+        beam = _solid(catlin_model, beam_tag)
+        # The bell bears a full frost depth under the court floor its cover is measured
+        # from — which is the whole point: ``structural.frost_depth`` grades these two on
+        # COVER now, in its plain "at least 42 inches below their lowest adjacent grade"
+        # bucket, not on the soil replacement the five wall footings still rely on.
+        assert bell.z0_m == pytest.approx(floor_top - frost_m)
+        assert bell.z1_m - bell.z0_m == pytest.approx(12 * INCH), "12\" bell, not 42\""
+        # The shaft picks up exactly where the bell stops...
+        assert post.z0_m == pytest.approx(bell.z1_m)
+        # ...and still dies on its beam's soffit. THESE TWO MUST NOT MOVE: the back beams
+        # carry a joist drop and the front pair are flush-framed, so the porch frame hangs
+        # off -1'-6 1/2" and -0'-11 1/4" respectively and nothing here is free to slide.
+        assert post.z1_m == pytest.approx(beam.z0_m)
+
+    assert _solid(catlin_model, "PT-SG-COL").z1_m == pytest.approx(-18.5 * INCH)
+    assert _solid(catlin_model, "PT-SG-FCOL").z1_m == pytest.approx(-11.25 * INCH)
+
+    # A bell bearing on undisturbed soil at frost depth takes a levelling course, not a
+    # 42" replacement section. 42" under the NEW underside would bottom the excavation
+    # 1'-9" below the soakaway it is meant to stack on top of.
+    beds = {b.host: b for b in catlin_model.footing_beddings}
+    well_top = _solid(catlin_model, "DRW-SG-MAIN").z1_m
+    for host in ("FT-SG-COL", "FT-SG-FCOL"):
+        bed = beds[host]
+        assert bed.z1_m - bed.z0_m == pytest.approx(7 * INCH)
+        assert bed.z0_m > well_top, "the levelling course clears the drywell's stone"
+        # The claim and the outlet both survive the section shrinking.
+        assert bed.non_frost_susceptible is True
+        assert bed.drain_tile_spec.discharge == "DRW-SG-MAIN"
 
 
 def test_porch_joists_reach_the_deck_edge_without_oversailing_the_front_wall(

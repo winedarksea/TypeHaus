@@ -119,6 +119,10 @@ _LAYER_STYLE = {
     "A-ANNO-TABL": (2, 15),
     "A-DETL-CMPT": (8, 18),
     "A-DETL-TRMT": (33, 18),
+    # Elevation projection — see pdf_writer._LAYER_STYLE for why these three exist.
+    "A-WALL-BEYD": (8, 13),
+    "A-ROOF-TRIM": (9, 18),
+    "A-GLAZ-SASH": (4, 9),
 }
 
 

@@ -266,7 +266,7 @@ def _resolve_footing_bedding(
         bedding.uid, bedding.tag, storey, bedding.host_ref, outline,
         z0, z1, bedding.aggregate,
         bedding.geotextile, bedding.drain_tile, perimeter_m, bedding.cast_foam_in_aggregate,
-        spec,
+        spec, bedding.non_frost_susceptible,
     ), []
 
 
@@ -333,9 +333,17 @@ def _resolve_footing(model: ResolvedModel, footing: Footing, storey: str) -> Res
                (x + half, y + half), (x - half, y + half)]
     storey_def = model.plan.storey(storey)
     assert storey_def is not None
-    z1 = storey_def.elevation.meters
+    # An authored underside wins over the storey datum: that is the belled-pier case, where
+    # the bell bears at frost depth and the shaft above it grows to suit (→ Footing
+    # .bottom_elevation). Absent one, the top stays on the datum it has always been on.
+    if footing.bottom_elevation is not None:
+        z0 = footing.bottom_elevation.meters
+        z1 = z0 + footing.depth.meters
+    else:
+        z1 = storey_def.elevation.meters
+        z0 = z1 - footing.depth.meters
     return ResolvedSolid(footing.uid, footing.tag, storey, "footing", outline,
-                         z1 - footing.depth.meters, z1, assembly=footing.assembly)
+                         z0, z1, assembly=footing.assembly)
 
 
 def _resolve_roof(

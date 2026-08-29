@@ -823,8 +823,10 @@ FLOOR_OPENINGS = [
 
 # The beam that lets the centre line be open (2026-07-28). Per CLAUDE.md, x=18' is a
 # bearing line footings-to-ridge, and opening it *without a beam* would dump ~1.5 klf of
-# ridge thrust into 5' knee walls rated for ~0.1 klf; this LVL is that bearing line for its
-# 8'-6", and W-A-C2 lands on it.
+# ridge thrust into the attic eave line rated for ~0.1 klf; this LVL is that bearing line
+# for its 8'-6", and W-A-C2 lands on it. (That eave line was a 5'-0" knee wall when this was
+# written and is a flat rafter plate since 2026-08-29 — which takes even less thrust, so the
+# argument for the beam only got stronger.)
 #
 # Load, per foot: FS-ATTIC's 18' tributary (~990 plf) + RB-HOUSE's 18' tributary at the
 # site's Pf = 35 psf snow load (~900 plf, corrected 2026-08-01 from an under-counted

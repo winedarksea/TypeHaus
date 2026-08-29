@@ -1,13 +1,19 @@
 """HVAC plan → drawing IR (→ 20 §Drawing IR, Permit-ready plan set Phase 3).
 
-One sheet per storey owning duct content. Ducts draw as a double-line plan rectangle
-(``rect_between`` — the same wall-band helper the resolver's geometry module uses);
-bearing-line crossings get a Leader calling out fire blocking per R302.11.
+One sheet per storey owning duct or floor-heat content. Ducts draw as a double-line plan
+rectangle (``rect_between`` — the same wall-band helper the resolver's geometry module
+uses); bearing-line crossings get a Leader calling out fire blocking per R302.11.
+
+Electric floor heat lives here rather than on the architectural plan. It is mechanical, and
+a serpentine sweeping a whole bathroom floor buries the room it is drawn over — see
+``_shared.emit_floor_heat``, which this sheet is the intended home for. A storey can own
+floor heat and no duct at all, so ``has_hvac_content`` tests both, or the sheet that would
+have carried the mat never gets composed.
 """
 
 from __future__ import annotations
 
-from typehaus.emit.draw._shared import emit_ghost_walls
+from typehaus.emit.draw._shared import emit_floor_heat, emit_ghost_walls
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.scene import Leader, NamedPoint, Polyline, Scene, SceneBuilder, Symbol, Text
 from typehaus.quantities import M_PER_IN
@@ -25,7 +31,8 @@ def _system_layer(system: str) -> str:
 
 
 def has_hvac_content(model: ResolvedModel, storey_tag: str) -> bool:
-    return any(duct.storey == storey_tag for duct in model.ducts)
+    return (any(duct.storey == storey_tag for duct in model.ducts)
+            or any(zone.storey == storey_tag for zone in model.floor_heat))
 
 
 def build_hvac_plan(model: ResolvedModel, storey: str) -> Scene:
@@ -66,6 +73,7 @@ def build_hvac_plan(model: ResolvedModel, storey: str) -> Scene:
 
     _emit_registers(b, model, storey)
     _emit_equipment(b, model, storey)
+    emit_floor_heat(b, model, storey)
     return b.build()
 
 

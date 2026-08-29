@@ -149,6 +149,20 @@ DETAIL_FILL: dict[str, str] = {
     "flashing": "#7a0c0c",
     "metal": "#ffffff",
     "metal-dark": "#2f2f2f",
+    # The house's one exterior dark (houses/catlin/CLAUDE.md) — the roof edge trim, the eave
+    # water chain (drip edge, box gutter, downspouts) and the guards all name it. It had no
+    # entry, so every one of them fell through to the near-white fallback AND, because
+    # ``section.py`` hands the raw material tag through as the hatch pattern, picked up the
+    # unknown-pattern dotted stipple: a box gutter drawn as a pale speckled ghost beside the
+    # apron flashing it laps. Same ink as the five seam profiles above, for the reason stated
+    # there — the drawing shows metal, and formed dark coil is metal.
+    "metal-dark-exterior": "#2f2f2f",
+    # Pressure-treated lumber: the catlin truss wall's outer girts and its block-2 course are
+    # KDAT, and with no entry here (no ``_FAMILY_NEEDLES`` needle hits "kdat" either) every
+    # one of them drew as a blank cream box with no hatch — the wet-cycling half of a wall
+    # whose whole point is which stick is treated and which is not. Greener and greyer than
+    # ``spf`` so the two woods are told apart at a glance, which is the distinction.
+    "kdat": "#b7ad7a",
     "rubber": "#3a3a3a",
     "glass": "#bee3f8",
     "gutter": "#8b8b8b",
@@ -207,6 +221,8 @@ DETAIL_HATCH: dict[str, str] = {
     "standing-seam-nailstrip": "metal",
     "standing-seam-nailstrip-26": "metal",
     "pbr-panel-26": "metal",
+    "metal-dark-exterior": "metal",
+    "kdat": "lumber",
     "aggregate": "gravel",
     "river-rock": "gravel",
     "soil": "soil",
