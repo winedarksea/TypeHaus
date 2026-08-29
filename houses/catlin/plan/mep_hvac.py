@@ -318,10 +318,12 @@ DUCTS_HVAC_SECOND = [
     # exists — and its rise into the soffit was undrawn because `DuctRun` had no elevation
     # field. It now comes off the attic sub-manifold, drops into SF-S-DUCT, and lands on the
     # new EQ-S-ERV-MIX mixing box instead of wyeing into the return plenum by comment.
-    # DU-S-PLANT-EXH moved to plan/mep_erv.py as DU-A-ERV-R-PLANT (2026-08-25). It was
-    # never System 1's — it is the ERV's stale pull out of RM-S-PLANT — and the plan's port
-    # budget puts REG-S-ERV-PLANT-EXH on the attic sub-manifold, which is the cavity its
-    # terminal actually opens into. The reasoning that survives the move is in the new run's
+    # DU-S-PLANT-EXH moved to plan/mep_erv.py as DU-A-ERV-R-PLANT (2026-08-25), and moved
+    # again on 2026-08-29 to DU-M-ERV-R-PLANT on the LEVEL-2 manifold, running in FS-S-WEST's
+    # open-web trusses and rising inside W-S-C1 to a high sidewall grille. Same uid throughout.
+    # The second move was not about air at all: the attic route ran the length of the new guest
+    # studio's knee wall. It was never System 1's — it is the ERV's stale pull out of
+    # RM-S-PLANT. The reasoning that survives the move is in the new run's
     # comment and in notes/plant_room.md: 25 cfm against ~20 of makeup, extract-biased on
     # purpose, and an ERV is damage limitation rather than humidity control.
 ]

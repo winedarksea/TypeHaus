@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 from dataclasses import replace
 
-from typehaus.findings import Finding, element_error
+from typehaus.findings import Finding, Result, Severity, element_error
 from typehaus.model.floors import FloorOpening, FloorSystem, Slab, Soffit
 from typehaus.model.spatial import Roof, Stair
 from typehaus.model.refs import ToRoof
@@ -24,7 +24,9 @@ from typehaus.resolve.model import (
     ResolvedRoof,
     ResolvedSoffit,
     ResolvedSolid,
+    ResolvedWall,
 )
+from typehaus.resolve.roof_edge_geometry import skin_layers, skin_stand_ins
 from typehaus.resolve.stairs import _resolve_stair
 
 
@@ -351,8 +353,24 @@ def _resolve_roof(
         )]
     points = [point for wall in walls if wall is not None for point in wall.axis]
     # The bearing walls' outermost layer, for the cladding lap below.
+    #
+    # A bearing wall with no weather skin stands in for the wall it stacks on. Without that,
+    # a rafter plate laid flat on a deck — a story-and-a-half's whole eave — reports its own
+    # 5 1/2" structure band as the outermost layer, and the footprint SILENTLY COLLAPSES by
+    # the wall stack's outboard depth on both sides: the ridge drops, the rafter tails stop
+    # short of the cladding they are supposed to lap, and the storey below stands proud of
+    # its own roof. Everything downstream is then wrong by a plausible-looking amount, which
+    # is the worst way for geometry to be wrong.
+    clad_walls: list[ResolvedWall] = []
+    for wall in walls:
+        if wall is None:
+            continue
+        if skin_layers(wall):
+            clad_walls.append(wall)
+        else:
+            clad_walls.extend(skin_stand_ins(model, wall, lambda _wall: True) or (wall,))
     clad = [
-        point for wall in walls if wall is not None and wall.depth_layers()
+        point for wall in clad_walls if wall.depth_layers()
         for point in wall.depth_layers()[-1].polygon
     ] or points
     xs, ys = [point[0] for point in points], [point[1] for point in points]
@@ -381,7 +399,12 @@ def _resolve_roof(
     # golden eave detail). Truss roofs keep eave == plate top here — ``_frame_trusses``
     # self-corrects via its raised-heel delta.
     roof_assembly = model.plan.library.resolve_assembly(roof.assembly)
-    bearing_assembly = model.plan.library.resolve_assembly(walls[0].assembly)
+    # The birdsmouth is cut into the roof's structure against the BEARING wall's own
+    # structure depth, so which bearing wall answers has to be a decision, not the order
+    # somebody happened to type `bearing_refs` in. They agree on every roof here; where they
+    # would not, say so rather than let list position pick.
+    bearing_assemblies = sorted({wall.assembly for wall in walls if wall is not None})
+    bearing_assembly = model.plan.library.resolve_assembly(bearing_assemblies[0])
     rise_to_deck = deck_rise_m(roof_assembly, bearing_assembly, roof.pitch)
     eave = plate_top + (rise_to_deck or 0.0)
     rise = roof.pitch.rise / roof.pitch.run * (run / 2 if roof.form.value == "gable" else run)
@@ -394,7 +417,17 @@ def _resolve_roof(
     if rise_to_deck is not None:
         # Only rafter-framed roofs get the reference clip setbacks (garage/truss deferred).
         resolved = replace(resolved, layer_edge_setbacks=layer_edge_setbacks(model, resolved))
-    return resolved, []
+    findings: list[Finding] = []
+    if len(bearing_assemblies) > 1:
+        findings.append(Finding(
+            severity=Severity.WARN, check_id="integrity.roof_bearing", result=Result.UNKNOWN,
+            message=(f"roof {roof.tag} bears on more than one wall assembly "
+                     f"({', '.join(bearing_assemblies)}); its birdsmouth is cut against "
+                     f"{bearing_assemblies[0]} alone, so the seat is right on that line only"),
+            element_tags=(roof.tag,),
+            fix_hint="bear the roof on one assembly, or split it into roofs that each do",
+        ))
+    return resolved, findings
 
 
 # --- point + linear structural members (columns / beams) --------------------------

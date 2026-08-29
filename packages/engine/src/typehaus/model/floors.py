@@ -36,6 +36,19 @@ class JoistSpec(HausModel):
     # narrower than a whole-system material: the joists behind the band are still bare
     # lumber, and saying so per member is the only honest way to bill the paint.
     rim_material: str | None = None
+    # The band board's own SECTION, where the derived 1 1/4" rim is not enough stick. A rim
+    # under a *bearing* line is a squash block a hundred feet long: the load crossing it is
+    # not the deck's own but whatever stands on the plate above — a story-and-a-half's
+    # rafter plate over the attic deck, a wall stacking over a floor — and 1 1/4" of OSB
+    # band has no business carrying it in crush. ``None`` (every deck written before this
+    # field) keeps the derived ``1.25x<depth> rim``, which is right for a band that only
+    # caps joist ends.
+    #
+    # Authored, not derived, and deliberately so: deciding "this rim is under a bearing
+    # line" would mean the engine knowing what stacks two storeys above it, and being wrong
+    # in either direction is worse than a field. The section is the engine's to carry; the
+    # reason is the house's to state.
+    rim_member: str | None = None
 
 
 class JoistReinforcement(HausModel):

@@ -7,7 +7,12 @@ applicability test is the whole difficulty, and it is answerable from the resolv
 
 from __future__ import annotations
 
-from typehaus.checks.code.mn_residential._common import _fail, _pass, _unknown
+from typehaus.checks.code.mn_residential._common import (
+    SF_PER_M2,
+    _fail,
+    _pass,
+    _unknown,
+)
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.quantities import inch
@@ -17,7 +22,7 @@ _MIN_ATTIC_AREA_SF = 30.0  # R807.1 applicability
 _MIN_ATTIC_HEIGHT = inch(30)  # R807.1 applicability, and the headroom above the opening
 _MIN_HATCH_LONG = inch(30)  # R807.1: rough opening 22" x 30"
 _MIN_HATCH_SHORT = inch(22)
-_SF_PER_M2 = 10.7639
+_SF_PER_M2 = SF_PER_M2
 
 
 @check(Tier.CODE, "code.R807_1_attic_access")

@@ -105,15 +105,37 @@ REGISTERS_HVAC_SECOND = [
     # and leaves at the far end rather than short-circuiting. Ceiling at 9'-0" because
     # humid air stratifies — the wettest air in the room is the air at the ceiling, which is
     # also the air directly under FS-ATTIC's I-joists.
-    # Repointed 2026-08-25 onto DU-A-ERV-R-PLANT: the plant extract was never System 1's, it
-    # is the ERV's stale pull, and the plan's port budget puts it on the attic sub-manifold,
-    # which is the cavity this grille actually opens into. Position moved 1 1/2" onto the
-    # FS-ATTIC bay centre at y=0'-8" that the radial rides.
+    # Repointed 2026-08-25 onto the ERV: the plant extract was never System 1's, it is the
+    # ERV's stale pull.
+    #
+    # ** CEILING -> HIGH SIDEWALL, 2026-08-29, AND THE ARGUMENT ABOVE IS WHY IT IS *HIGH*. **
+    # Its radial moved off the attic manifold and down into FS-S-WEST's open-web trusses
+    # (DU-M-ERV-R-PLANT) to get 21'-8" of duct out of the guest studio's knee wall. That put the
+    # duct BELOW this room instead of above it, so a ceiling grille is no longer reachable — but
+    # the stratification argument does not care whether the boot comes from above or from the
+    # side, only that the terminal is in the warm wet air at the top of the room. 8'-6" is six
+    # inches under the 9'-0" ceiling.
+    #
+    # In W-S-C1 because that wall is PLANT_INT_2X6_BRG_HUMID — 5 1/2" of cavity, which takes a
+    # 75 mm riser and a vapour-tight boot through the Class I liner. The room's north wall
+    # W-S-PS1 is 2x4 and would take the duct but not the boot.
+    #
+    # x=17'-7" is that wall's room-side pvc-panel face (17'-7.96") plus the same ~1" inboard
+    # offset the electrical devices carry, NOT the wall axis at 18'-0". Authored on the axis it
+    # resolves with its footprint centre outside the room and
+    # `integrity.placeable_room_mismatch` says so. (REG-A-STUBATH-EXH and ED-A-POCKET-SW still
+    # carry that UNKNOWN and want the same treatment.) The duct's riser is still on the axis,
+    # inside the stud cavity; the boot is the 5" of horizontal that crosses the liner.
+    #
+    # y=4'-8" is the radial's own bay centre. It leaves 6'-9" between this grille and
+    # REG-S-HP-PLANT at (6'-8", 3'-4") — a foot MORE separation than the old ceiling position
+    # had — so conditioned air still lands on the south glass and crosses the planting before it
+    # is pulled out, rather than short-circuiting.
     Register(uid="C7LM4KAP2X", tag="REG-S-ERV-PLANT-EXH", kind=DuctSystem.EXHAUST,
-             room="RM-S-PLANT", position=pt(ft(11, 10.3), ft(0, 8)),
-             duct_ref="DU-A-ERV-R-PLANT",
+             room="RM-S-PLANT", position=pt(ft(17, 7), ft(4, 8)),
+             duct_ref="DU-M-ERV-R-PLANT",
              type_ref="REG-T-ERV-PLANT-EXH", design_cfm=25,
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+             mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
     # The one return, at the hall's south end right AT EQ-S-HP1-AH (2026-07-30), 1" north
     # of the unit's rear face, feeding its bottom-return through DU-S-HP-RET's plenum stub.
     # DU-S-ERV-HP-FEED's wye injects the ERV's fresh air into this return plenum (not a
@@ -435,7 +457,12 @@ REGISTERS_ATTIC = [
     Register(uid="N989VQP3T8", tag="REG-A-STUBATH-EXH", kind=DuctSystem.EXHAUST, room="RM-A-STUBATH",
             # 19'-0" -> 19'-4" on 2026-08-29, following DU-A-ERV-R-STUBATH onto the
             # 232" bay centre so its east leg could leave the studio floor for the joist bay.
-            position=pt(ft(9, 7.5), ft(19, 4)), duct_ref="DU-A-ERV-R-STUBATH",
+            # x=9'-11 7/8" is W-A-STU-W's bath-side paint face (9'-10 7/8") plus the ~1" inboard
+            # offset every wall device here carries. Authored on the wall AXIS until 2026-08-29,
+            # which put its footprint centre inside the wall and outside the room —
+            # `integrity.placeable_room_mismatch` said so. The riser stays on the axis in the
+            # staggered cavity; the offset is the boot crossing the finish.
+            position=pt(ft(9, 11.875), ft(19, 4)), duct_ref="DU-A-ERV-R-STUBATH",
             type_ref="REG-T-ERV-EXH", design_cfm=20,
             mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
 ]

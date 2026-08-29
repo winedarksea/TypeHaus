@@ -3145,18 +3145,18 @@ cabinet-studio-wet-bar = { low = 850, high = 2300 }
 # at the house's existing carpet rate, roughly $1,200, and this allowance goes away. That is
 # an owner decision, not a modelling one; it is written here so it can be put to them.
 finish-studio-floor-sealer = { low = 350, high = 900 }
-# THE KNEE-WALL DUCT SHOE (2026-08-29). ** THIS REPLACED A $1,400-$3,200 BENCH ALLOWANCE ON THE
-# SAME DAY IT WAS WRITTEN, AND THE DIFFERENCE IS A DUCT REROUTE, NOT A CHEAPER SPEC. ** The
-# first version of the x=1'-0" attic chase carried DU-S-ERV-HP-FEED's 6" beside a 3" for the
-# studio's whole length — a box that needed to become joinery (FURN-A-STUDIO-PLINTH, a 21'-8"
-# bench) before it was habitable. Rerouting the 6" out of the room through the y=22'-0" joist
-# bay and RM-A-EAST-UNFIN's deck, at no change in developed length, left ONE 75 mm duct.
+# THE KNEE-WALL CHASE COST $0 IN THE END, AND THE TRAIL IS WORTH KEEPING (2026-08-29).
+# It was priced three ways in one day. First as FURN-A-STUDIO-PLINTH, a 21'-8" x 18" x 16"
+# bench at $1,400-$3,200, because the x=1'-0" chase carried DU-S-ERV-HP-FEED's 6" beside a 3"
+# for the studio's whole length and a box that size has to become joinery. Then, when the 6"
+# was rerouted out through the y=22'-0" joist bay at no change in developed length, as a ~5"
+# site-built shoe at $260-$620 over the one 75 mm duct left. Then that duct left too —
+# DU-A-ERV-R-PLANT went down to the FS-S-WEST trusses as DU-M-ERV-R-PLANT — and the wall is
+# bare. There is no allowance here now because there is nothing to enclose.
 #
-# What is priced here is what that actually needs: a site-built shoe, roughly 5" x 5" x 21'-8",
-# scribed to the deck along the base of the knee wall, with an access panel at each duct joint.
-# There is no Furniture element behind it and there should not be — a 5" shoe is trim, and the
-# model does not carry trim as placeables.
-cabinet-studio-knee-duct-shoe = { low = 260, high = 620 }
+# ** THE LESSON IS THE ORDER. ** Each of those three was the right price for the design in
+# front of it; what was actually wrong was routing a mechanical trunk along the base of a
+# finished room's knee wall and then pricing the box. Reroute first, price second.
 # THE CODE MINIMUM ONLY — eaves to 24" inside the wall line, plus valleys, per MN. CONFIRMED
 # AS BASE SCOPE by the owner 2026-08-20, and for a stated reason rather than to save money:
 # this roof is a highly insulated assembly under a low-friction standing seam over a quality

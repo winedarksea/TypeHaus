@@ -487,3 +487,72 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
                    and abs((station(m.p0) + station(m.p1)) / 2
                            - opening.center_along_m) < 1.0]
         assert not headers, opening.tag
+
+
+# --------------------------------------------------- FramingSpec.wall_frame="plate"
+#
+# A course of lumber laid flat is not a short stud wall. In a story-and-a-half the roof
+# bears on a 2x laid flat on the attic subfloor and there is no knee wall at all — but that
+# course still has to be a Wall, because it closes the storey's room loop and it is what the
+# roof's bearing_refs name. At 1 1/2" tall the ordinary solver emits a sole plate, two top
+# plates stacked down through it, and studs of negative length, silently.
+
+def _flat_plate_wall(height_m: float) -> ResolvedWall:
+    half = _STUD_DEPTH / 2.0
+    polygon = ((0.0, -half), (0.0, half), (2.0, half), (2.0, -half))
+    layer = ResolvedLayer(name="plate", material_ref="spf", function="structure",
+                          thickness_m=_STUD_DEPTH, polygon=polygon)
+    return ResolvedWall(uid="W9", tag="W-PLATE", storey="ATTIC", assembly="PLATE_ASM",
+                        axis=((0.0, 0.0), (2.0, 0.0)), layers=(layer,),
+                        z0_m=0.0, z1_m=height_m)
+
+
+def _plan_plate(wall_frame: str = "plate"):
+    layer = Layer(name="plate", material_ref="spf", thickness=inch(3.5),
+                  function=LayerFunction.STRUCTURE,
+                  framing=FramingSpec(member="2x4", wall_frame=wall_frame))
+    return SimpleNamespace(
+        library=SimpleNamespace(resolve_assembly=lambda tag: SimpleNamespace(layers=(layer,)))
+    )
+
+
+def test_a_plate_framed_wall_is_one_course_and_no_studs():
+    members = frame_wall(_plan_plate(), _flat_plate_wall(inch(1.5).meters), openings=[])
+    assert [m.child_key for m in members] == ["plate-bottom"]
+    assert not [m for m in members if m.category != "plate"]
+
+
+def test_the_plate_course_fills_the_wall_rather_than_assuming_a_2x_thickness():
+    """The wall's height IS the lumber's thickness for this layer, so a 3" course draws 3"
+    — not a 1 1/2" plate with a 1 1/2" void above it."""
+    members = frame_wall(_plan_plate(), _flat_plate_wall(inch(3).meters), openings=[])
+    plate = members[0]
+    assert plate.z0_m == pytest.approx(0.0)
+    assert plate.z1_m == pytest.approx(inch(3).meters)
+
+
+def test_a_stud_wall_shorter_than_its_plate_stack_would_frame_negative_studs():
+    """The bug the field exists to make unnecessary: without wall_frame="plate", a 1 1/2"
+    wall's studs come out with a negative length and its top courses stack down through the
+    sole plate. Pinned so nobody 'fixes' the plate arm by clamping this instead."""
+    members = frame_wall(_plan_plate(wall_frame="studs"),
+                         _flat_plate_wall(inch(1.5).meters), openings=[])
+    studs = [m for m in members if m.category == "stud"]
+    assert studs, "expected the ordinary solver to still emit module studs"
+    assert all(m.z1_m < m.z0_m for m in studs)
+
+
+def test_a_too_short_stud_wall_reports_unknown_rather_than_framing_in_silence():
+    from typehaus.resolve.framing.solver import _short_wall_finding
+
+    findings = _short_wall_finding(_plan_plate(wall_frame="studs"),
+                                   _flat_plate_wall(inch(1.5).meters))
+    assert [f.check_id for f in findings] == ["integrity.wall_shorter_than_plates"]
+    assert findings[0].result.name == "UNKNOWN"
+    assert "wall_frame='plate'" in findings[0].fix_hint
+
+
+def test_a_plate_framed_wall_does_not_trip_the_short_wall_finding():
+    from typehaus.resolve.framing.solver import _short_wall_finding
+
+    assert _short_wall_finding(_plan_plate(), _flat_plate_wall(inch(1.5).meters)) == []

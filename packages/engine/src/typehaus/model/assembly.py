@@ -35,6 +35,19 @@ class FramingSpec(HausModel):
     # (top + bottom chord + web members with a raised heel at the eave bearing). Declarative,
     # so a roof assembly asks for engineered trusses without touching the framing solver.
     roof_frame: Literal["rafter", "truss"] = "rafter"
+    # Wall STRUCTURE layers only: "studs" (a sole plate, studs, and top plate(s) — the
+    # default, and every wall written before this field existed) or "plate" — the layer IS
+    # one course of lumber laid flat, and nothing stands on it.
+    #
+    # A rafter plate on an attic subfloor is the case that needed it: in a story-and-a-half
+    # the roof lands on a 2x laid flat over the wall below, and there is no knee wall at all.
+    # That course still has to exist as a wall — it closes the storey's room loop and it is
+    # what the roof bears on — but it is 1 1/2" tall, and the solver's sole plate plus double
+    # top plate is already 4 1/2" of hard floor. Below that, `top_at` hands out NEGATIVE stud
+    # lengths and `_append_plates` stacks courses through each other, silently, with no
+    # finding. A course of lumber is not a short stud wall; it is a different thing, and this
+    # says which one the layer means rather than leaving the solver to guess from a height.
+    wall_frame: Literal["studs", "plate"] = "studs"
     # truss only — the raised-heel height (top of plate → underside of the top chord at the
     # bearing) so full insulation depth carries over the wall. None uses the solver default.
     heel_height: Length | None = None

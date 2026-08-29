@@ -15,8 +15,22 @@ from __future__ import annotations
 from typehaus.checks._authoring import failed, passed, unknown
 from typehaus.checks.registry import CheckContext
 from typehaus.findings import Finding
+from typehaus.model.enums import Occupancy
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import opening_center
+
+#: R202's definition of habitable space — "a space in a building for living, sleeping, eating
+#: or cooking" — whose very next sentence excludes bathrooms, toilet rooms, closets, halls,
+#: storage and utility spaces. Every rule that says "habitable" takes this same subject
+#: (R303.1 glazing, R305.1 ceiling height, R304's minimum areas), so it is defined once here
+#: rather than re-typed per module, where the copies drift.
+HABITABLE_OCCUPANCIES = frozenset({
+    Occupancy.BEDROOM, Occupancy.LIVING, Occupancy.DINING, Occupancy.KITCHEN,
+    Occupancy.MEDIA, Occupancy.OFFICE,
+})
+
+#: Square feet per square metre. Findings are read by people who think in feet.
+SF_PER_M2 = 10.7639
 
 
 # Thin, signature-preserving adapters over ``checks._authoring``: every call site in this

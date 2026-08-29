@@ -42,6 +42,57 @@ def skin_layers(wall: ResolvedWall):
     return () if start is None else layers[start:]
 
 
+def skin_stand_ins(model: ResolvedModel, wall: ResolvedWall,
+                   inside_footprint) -> tuple[ResolvedWall, ...]:
+    """The walls whose weather skin closes against the roof, when ``wall`` has none.
+
+    A bearing element with no skin is a real thing: in a story-and-a-half the roof lands on
+    a 2x plate laid flat on the deck, and that plate has no sheathing, no foam and no
+    cladding. The skin the roof edge actually laps and closes against belongs to the wall
+    the plate STANDS ON — which is authored, as ``Wall.stacks_on``, so no elevation band or
+    collinearity search has to guess at it.
+
+    The substitution is by STOREY rather than one-for-one down the ``stacks_on`` link, and
+    that is deliberate: a bearing ref names one segment of an eave line that is authored as
+    several (catlin's west eave is five walls, and its roof names one of them), so following
+    single links leaves the closure band gapped between segments. Taking the storey gets the
+    whole line at once.
+
+    Walls on that storey that something skinned already stacks on are excluded — their skin
+    is superseded by the wall standing on them, which is in the list in its own right. That
+    is what keeps a gable's wall below out: the attic gable stands on the second-storey
+    gable wall and carries the skin up itself, so only the eave lines, where nothing but a
+    bare plate stands above, come back.
+    """
+    authored = model.plan.by_tag(wall.tag)
+    below_tag = getattr(authored, "stacks_on", None) if authored is not None else None
+    below = model.wall(below_tag) if below_tag else None
+    if below is None:
+        return ()
+    superseded = {
+        stacked for other in model.walls if skin_layers(other)
+        if (element := model.plan.by_tag(other.tag)) is not None
+        and (stacked := getattr(element, "stacks_on", None)) is not None
+    }
+    return tuple(candidate for candidate in model.walls
+                 if candidate.storey == below.storey
+                 and skin_layers(candidate)
+                 and candidate.tag not in superseded
+                 and inside_footprint(candidate))
+
+
+def footprint_test(roof: ResolvedRoof):
+    """A predicate: does this wall's plan axis lie inside the roof's footprint?"""
+    minx, miny, maxx, maxy = bbox(roof.footprint)
+    tol = FOOTPRINT_TOLERANCE_M
+
+    def inside(wall: ResolvedWall) -> bool:
+        return all(minx - tol <= x <= maxx + tol and miny - tol <= y <= maxy + tol
+                   for x, y in wall.axis)
+
+    return inside
+
+
 def roof_slope(roof: ResolvedRoof) -> float:
     """Rise over run of the roof plane, derived from the resolved envelope.
 

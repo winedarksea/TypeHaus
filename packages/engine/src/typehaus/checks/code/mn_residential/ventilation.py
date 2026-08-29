@@ -9,7 +9,14 @@ from __future__ import annotations
 
 from shapely.geometry import Point, Polygon
 
-from typehaus.checks.code.mn_residential._common import (_fail, _pass, _room_windows, _unknown)
+from typehaus.checks.code.mn_residential._common import (
+    HABITABLE_OCCUPANCIES,
+    SF_PER_M2,
+    _fail,
+    _pass,
+    _room_windows,
+    _unknown,
+)
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import DuctSystem, EquipmentKind, Occupancy
@@ -28,15 +35,13 @@ _MIN_BATH_OPENABLE_SF = 1.5
 _VENT_CFM_PER_FT2 = 0.03
 _VENT_CFM_PER_OCCUPANT = 7.5
 
-_SF_PER_M2 = 10.7639
+_SF_PER_M2 = SF_PER_M2
 
-# R303.1 binds *habitable* rooms — R202's list. Bathrooms, halls, storage, utility and
-# mechanical space are explicitly outside it, which is why a windowless mechanical room is
-# not a violation and a windowless bedroom is.
-_HABITABLE = frozenset({
-    Occupancy.BEDROOM, Occupancy.LIVING, Occupancy.DINING, Occupancy.KITCHEN,
-    Occupancy.MEDIA, Occupancy.OFFICE,
-})
+# R303.1 binds *habitable* rooms — R202's list, which lives in `_common` because R305.1 and
+# R304 take the same subject and three copies of one sentence drift. Bathrooms, halls,
+# storage, utility and mechanical space are explicitly outside it, which is why a windowless
+# mechanical room is not a violation and a windowless bedroom is.
+_HABITABLE = HABITABLE_OCCUPANCIES
 
 # R303.1 Exception 1 — the way a below-grade room or an interior room is legally lit and
 # ventilated at all. The glazing is not required where BOTH halves are replaced:

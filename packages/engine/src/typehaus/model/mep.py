@@ -315,7 +315,9 @@ class VentRun(Element):
     Encodes the Catlin routing intent: up the chase to ``exit_elevation`` (below the roof
     plane, so the jog stays inside), a 90° turn out through the wall by ``exit_offset``,
     then 90° back up the siding — clamped to the standing seam — terminating 12" above the
-    roof. The resolver derives the 4-point 3D polyline from these fields; it never invents
+    roof. Optionally with one horizontal jog taken inside first (``chase_offset`` at
+    ``chase_offset_elevation``), for a chase that surfaces where the roof leaves no height
+    to rise in. The resolver derives the 3D polyline from these fields; it never invents
     the route. ``systems`` is typically (RADON, VENT).
 
     The termination height is *derived* from the roof plane at the exterior riser
@@ -329,7 +331,20 @@ class VentRun(Element):
     chase_position: Point2D  # plan location of the chase
     start_elevation: Length  # where the riser starts (project-frame absolute)
     exit_elevation: Length  # below the roof plane at the chase, where it turns out
-    exit_offset: Point2D  # horizontal delta chase -> exterior riser plan location
+    exit_offset: Point2D  # horizontal delta chase top -> exterior riser plan location
+    # An OPTIONAL horizontal jog taken *inside*, before the riser continues up to
+    # ``exit_elevation`` and turns out through the wall — the same "rise to here, then step
+    # sideways" pair ``exit_elevation``/``exit_offset`` already is, one storey earlier.
+    #
+    # A chase that is fine for its whole height can still surface somewhere it cannot rise:
+    # under a story-and-a-half's rake the roof underside at the eave is inches above the
+    # deck, and a riser in that chase has nowhere to go. Jogging it across the floor band to
+    # a station with height is the cheap fix, and it is a fix the model could not express —
+    # the alternative was moving ``chase_position`` and dragging the stack through every
+    # storey below. Both fields must be set for the jog to take; ``None`` (every riser
+    # written before this) resolves the original four-point route unchanged.
+    chase_offset: Point2D | None = None
+    chase_offset_elevation: Length | None = None
     roof_termination_elevation: Length | None = None  # optional; normally derived
     wall_ref: str | None = None  # exterior wall the riser penetrates / rides
     attachment: str = "standing_seam_clamp"  # how the exterior riser is fixed to the siding

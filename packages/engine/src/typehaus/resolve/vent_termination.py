@@ -23,11 +23,26 @@ from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 VENT_TERMINATION_CLEARANCE_M = inch(12).meters
 
 
+def chase_top_point(vent: VentRun) -> tuple[float, float]:
+    """Plan location the riser rises at above its optional in-building jog.
+
+    The chase itself when there is no jog, which is every riser written before ``chase_offset``
+    existed; the jogged station when there is one. Everything above the jog — the wall exit,
+    the exterior riser, the termination and its separation from openings — is measured from
+    here rather than from the chase, because that is where the pipe actually is.
+    """
+    chase_x, chase_y = vent.chase_position.xy_m
+    if vent.chase_offset is None or vent.chase_offset_elevation is None:
+        return chase_x, chase_y
+    jog_x, jog_y = vent.chase_offset.xy_m
+    return chase_x + jog_x, chase_y + jog_y
+
+
 def exterior_riser_point(vent: VentRun) -> tuple[float, float]:
     """Plan location of the riser leg that runs up the siding, past the roof edge."""
-    chase_x, chase_y = vent.chase_position.xy_m
+    top_x, top_y = chase_top_point(vent)
     offset_x, offset_y = vent.exit_offset.xy_m
-    return chase_x + offset_x, chase_y + offset_y
+    return top_x + offset_x, top_y + offset_y
 
 
 def roof_cleared_by(model: ResolvedModel, vent: VentRun) -> ResolvedRoof | None:

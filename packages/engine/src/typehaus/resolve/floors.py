@@ -233,7 +233,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     # of the parallel edge joists above. When the outer spans cantilever, the band rides
     # out to the joist tips (the fascia line), not the beam axis it oversails.
     depth_in = depth / inch(1).meters
-    rim_profile = f"1.25x{depth_in:g} rim"
+    rim_profile = spec.rim_member or f"1.25x{depth_in:g} rim"
     for rim_index, boundary in enumerate((boundaries[0] - cant_start_m,
                                           boundaries[-1] + cant_end_m)):
         if along_x:

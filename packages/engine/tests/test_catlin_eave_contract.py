@@ -151,3 +151,25 @@ def _plan_point(eave, u_m: float):
     if eave.derived.direction == "x":
         return (u_m, eave.derived.station)
     return (eave.derived.station, u_m)
+
+
+def test_the_roof_footprint_laps_the_wall_cladding_and_does_not_collapse_to_the_structure(
+        catlin_model):
+    """The cladding lap, pinned by its bounds.
+
+    `_resolve_roof` builds the footprint from the bearing walls' OUTERMOST layer so a
+    zero-overhang roof reaches past the cladding it has to cover. When a bearing wall has no
+    weather skin — a rafter plate laid flat on a deck, which is what a story-and-a-half
+    lands its roof on — that read finds the bare 5 1/2" structure band instead, and the
+    footprint silently shrinks by the wall stack's whole outboard depth on every side. The
+    ridge drops with it, the rafter tails stop short of the cladding, and nothing errors.
+
+    36'-0" of wall axis plus 7 1/4" of stack outboard of the structure face, both sides.
+    """
+    roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
+    xs = [point[0] / M_PER_IN for point in roof.footprint]
+    ys = [point[1] / M_PER_IN for point in roof.footprint]
+    assert min(xs) == pytest.approx(-7.25, abs=1e-3)
+    assert max(xs) == pytest.approx(439.25, abs=1e-3)
+    assert min(ys) == pytest.approx(-7.25, abs=1e-3)
+    assert max(ys) == pytest.approx(439.25, abs=1e-3)

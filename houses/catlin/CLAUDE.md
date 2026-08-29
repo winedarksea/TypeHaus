@@ -393,9 +393,9 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   - **`DU-A-ERV-R-BED3` and `CD-A-DATA-NE` both go SOUTH**, and there is no alternative: the
     void spans the full band to the north gable (`FO-A-HALL`'s maxy IS `W-A-N2`'s gwb face), so
     every west→east route north of the studio is severed. BED3 goes 32'-8" → ~53'-6" and
-    overtakes `DU-A-ERV-R-PLANT` as the longest radial — **which is fine, and length is not the
+    briefly became the longest radial — **which is fine, and length is not the
     criterion**: BED3 carries 5 cfm and PLANT carries 25, so PLANT is still the run whose
-    pressure drop the installer must check.
+    pressure drop the installer must check, and PLANT retook the title at 55'-8" the same day.
   - **The x=1'-0" chase is inside a finished bedroom, so the 6" left the room instead.**
     `DU-S-ERV-HP-FEED` (100 cfm, the mixing-box feed) used to run that chase for 10'-11",
     a 6" beside a 3", and it alone set the box's section — wide enough that the first answer
@@ -405,17 +405,27 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     (−11'-7" west, +10'-8" east), so nothing was traded for it. `DU-A-ERV-R-STUBATH`'s east leg
     went into the `y=19'-4"` bay in the same pass; it had been lying across 8'-7" of the
     studio's floor.
-  - **`DU-A-ERV-R-PLANT` is the one that stays, and its terminal is why.**
-    `REG-S-ERV-PLANT-EXH` is a CEILING grille at 9'-0" in `RM-S-PLANT` because humid air
-    stratifies. Feeding it from `FS-S-WEST`'s open-web trusses one storey down — where the
-    second-storey radials genuinely do pass through the webs for free — would make it a floor
-    boot and give that up. So one 75 mm duct still runs the knee wall, standing 3 7/8" clear of
-    the gwb at ankle height: a ~5" site-built shoe (`cabinet-studio-knee-duct-shoe`), not
-    joinery, and a receptacle at 16" passes a foot over it. `FURN-A-STUDIO-PLINTH` and
-    `FT-STUDIO-PLINTH-260` are **deleted**, and the west knee wall is back in the 210.52 test
-    on its own merits: `ED-A-STUDIO-RC8`/`RC9` at y=6'-0"/16'-0". One mid-wall device is not
-    enough — `RC1`/`RC7` carry the corners in, but a single box left gaps at both ends of its
-    12' reach.
+  - **`DU-A-ERV-R-PLANT` left too, and the knee wall is bare.** It is `DU-M-ERV-R-PLANT` now,
+    on the LEVEL-2 manifold: south through `FS-S-WEST`'s **open-web trusses** at x=2'-10",
+    east along the y=4'-8" bay, then **up inside `W-S-C1`** to a high sidewall grille at 8'-6".
+    Both floors span x, so a north-south run crosses every joist in either — but FS-S-WEST is
+    truss, where crossings go through the webs, and `FS-ATTIC` is I-joist, where the same
+    crossing at x=1'-0" means ~16 bored webs all within a foot of their west bearing.
+    `W-S-C1` is `PLANT_INT_2X6_BRG_HUMID` (5 1/2" cavity, room for the riser **and** a
+    vapour-tight boot); the room's north wall `W-S-PS1` is 2x4 and is not.
+  - **The terminal went CEILING → HIGH SIDEWALL, and that does not give up the 2026-08-18
+    argument.** Humid air stratifies, so the extract must be in the warm wet air at the top of
+    the room; 8'-6" is six inches under the ceiling. The argument was about height, not about
+    which direction the boot arrives from. Separation from `REG-S-HP-PLANT` actually improves,
+    5'-9" → 6'-9".
+  - **It is LONGER, not shorter — 55'-8" against 47'-5"** (9'-4" of that is the rise, which an
+    eyeballed estimate misses). Affordable because **the machine's rating point is 0.4" w.g.,
+    not the 0.2" several comments still quote**: HVI certifies the B210E75RT at 206 cfm net
+    supply at 0.4" (HVI ID 2004940). It is still the radial whose drop wants checking, and it
+    is the longest in the house again.
+  - **`EQ-M-ERV-MAN-EXH` IS NOW FULL, 10 of 10.** The x=2'-10" lane was chosen, not inherited:
+    going south there crosses exactly ONE sibling radial (`DU-M-ERV-R-BATH1`'s westward leg at
+    y=24'-8"); the obvious lane at the manifold's east end would have crossed EIGHT.
   - **`AL-A-COMBO` moved to `RM-A-STUDY`, and `AL-A-STUDIO` is the new one.** Getting the pair
     round the wrong way is a FAIL, not a preference: `code.R315_co_every_sleeping_area` fails
     outright if every CO alarm on a storey is inside a bedroom.

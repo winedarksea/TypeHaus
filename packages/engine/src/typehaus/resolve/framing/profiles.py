@@ -52,6 +52,14 @@ _RE_SINGLE_LVL = re.compile(
     r"^(?P<width>\d+(?:\.\d+)?)x(?P<depth>\d+(?:\.\d+)?)\s+LVL$"
 )
 _RE_RIM = re.compile(r"^(?P<width>\d+(?:\.\d+)?)x(?P<depth>\d+(?:\.\d+)?)\s+rim$")
+# Laminated strand lumber, e.g. a 1 3/4" LSL rim board under a bearing line: "1.75x11.875
+# LSL". Its own family rather than a spelling of LVL — they are different products at
+# different prices, and the BOM keys off this string. Without a pattern the string falls
+# through to the rectangular FALLBACK below and silently resolves 1 1/2" x 5 1/2", which is
+# the same trap a nominal-looking post size sets.
+_RE_LSL = re.compile(
+    r"^(?:(?P<plies>\d+)-)?(?P<width>\d+(?:\.\d+)?)x(?P<depth>\d+(?:\.\d+)?)\s+LSL$"
+)
 # Stair-landing deck surface, e.g. "deck 42x1.5": a platform-wide walking board whose
 # ``width_m`` is the platform width (so it renders full-width, not as a 1.5" strip).
 _RE_DECK = re.compile(r"^deck\s+(?P<width>\d+(?:\.\d+)?)x(?P<depth>\d+(?:\.\d+)?)$")
@@ -166,6 +174,10 @@ def cross_section(profile: str) -> CrossSection:
 
     if match := _RE_RIM.match(text):
         return _rect(float(match["width"]), float(match["depth"]))
+
+    if match := _RE_LSL.match(text):
+        plies = int(match["plies"] or 1)
+        return _rect(float(match["width"]) * plies, float(match["depth"]), plies=plies)
 
     if match := _RE_DECK.match(text):
         return _rect(float(match["width"]), float(match["depth"]))

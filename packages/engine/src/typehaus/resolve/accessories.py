@@ -41,6 +41,7 @@ from typehaus.resolve.model import (
 from typehaus.resolve.railings import resolve_railing
 from typehaus.resolve.trim_bands import drip_edge_bands, open_channel_bands
 from typehaus.resolve.vent_termination import (
+    chase_top_point,
     derived_termination_elevation,
     exterior_riser_point,
 )
@@ -513,8 +514,14 @@ def _resolve_sump(model: ResolvedModel, el: Sump, storey) -> None:
 def _resolve_vent(model: ResolvedModel, el: VentRun, storey: str) -> list[Finding]:
     cx, cy = el.chase_position.xy_m
     ox, oy = el.exit_offset.xy_m
+    # The station the riser rises at above its optional in-building jog: the chase itself
+    # unless ``chase_offset`` moves it. Everything from the wall exit upward hangs off this.
+    tx, ty = chase_top_point(el)
     ex, ey = exterior_riser_point(el)
     z_start, z_exit = el.start_elevation.meters, el.exit_elevation.meters
+    z_jog = (el.chase_offset_elevation.meters
+             if el.chase_offset is not None and el.chase_offset_elevation is not None
+             else None)
     # The termination is a *derived* dimension: 12" above the roof plane at the riser, not
     # an independent input. Authored elevations only stand in where no roof is derivable.
     derived_top = derived_termination_elevation(model, el)
@@ -536,14 +543,26 @@ def _resolve_vent(model: ResolvedModel, el: VentRun, storey: str) -> list[Findin
         dx, dy = (d, 0.0) if perp_x else (0.0, d)
         sysname = system.value if system is not None else "vent"
         key = f"{el.uid}-{sysname}"
-        # 1) up the chase
+        # 1) up the chase — to the jog if there is one, else straight to the wall exit
         model.solids.append(ResolvedSolid(
             uid=f"{key}-riser", tag=f"{el.tag}-{sysname}-CHASE", storey=storey,
             category="vent", outline=circle_outline((cx + dx, cy + dy), radius, _PIPE_FACETS),
-            z0_m=z_start, z1_m=z_exit))
+            z0_m=z_start, z1_m=z_jog if z_jog is not None else z_exit))
+        if z_jog is not None:
+            # 1a) the horizontal jog, inside, and 1b) the rest of the rise at the new station
+            for band, (outline, z0, z1) in enumerate(
+                    _round_run_bands((cx + dx, cy + dy), (tx + dx, ty + dy), radius, z_jog)):
+                model.solids.append(ResolvedSolid(
+                    uid=f"{key}-jog{band:02d}", tag=f"{el.tag}-{sysname}-JOG{band + 1}",
+                    storey=storey, category="vent", outline=outline, z0_m=z0, z1_m=z1))
+            model.solids.append(ResolvedSolid(
+                uid=f"{key}-riser2", tag=f"{el.tag}-{sysname}-CHASE2", storey=storey,
+                category="vent",
+                outline=circle_outline((tx + dx, ty + dy), radius, _PIPE_FACETS),
+                z0_m=z_jog, z1_m=z_exit))
         # 2) 90° out through the wall
         for band, (outline, z0, z1) in enumerate(
-                _round_run_bands((cx + dx, cy + dy), (ex + dx, ey + dy), radius, z_exit)):
+                _round_run_bands((tx + dx, ty + dy), (ex + dx, ey + dy), radius, z_exit)):
             model.solids.append(ResolvedSolid(
                 uid=f"{key}-out{band:02d}", tag=f"{el.tag}-{sysname}-OUT{band + 1}", storey=storey,
                 category="vent", outline=outline, z0_m=z0, z1_m=z1))

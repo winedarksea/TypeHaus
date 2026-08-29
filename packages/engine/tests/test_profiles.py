@@ -150,3 +150,20 @@ def test_the_flat_test_tolerates_only_a_hair():
     just_outside = section.width_m + FLAT_LAID_TOLERANCE_M * 1.1
     assert plan_cross_section_m(section, just_inside) == pytest.approx(section.depth_m)
     assert plan_cross_section_m(section, just_outside) == pytest.approx(section.width_m)
+
+
+def test_lsl_is_its_own_family_and_does_not_fall_through_to_the_stud_fallback():
+    """An LSL rim board is not a spelling of LVL and not a nominal size. Before it had a
+    pattern, "1.75x11.875 LSL" hit the rectangular fallback and silently came back
+    1 1/2" x 5 1/2" — a rim under a bearing line, drawn and billed as a stud."""
+    from typehaus.resolve.framing.profiles import cross_section
+    from typehaus.quantities import inch
+
+    section = cross_section("1.75x11.875 LSL")
+    assert section.width_m == pytest.approx(inch(1.75).meters)
+    assert section.depth_m == pytest.approx(inch(11.875).meters)
+    assert section.plies == 1
+
+    two_ply = cross_section("2-1.75x11.875 LSL")
+    assert two_ply.width_m == pytest.approx(inch(3.5).meters)
+    assert two_ply.plies == 2

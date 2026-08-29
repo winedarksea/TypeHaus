@@ -26,6 +26,7 @@ from typehaus.checks.code.mn_residential.attic_ventilation import attic_ventilat
 from typehaus.checks.code.mn_residential.glazing import safety_glazing
 from typehaus.checks.code.mn_residential.stairs import stair_handrail
 from typehaus.checks.code.mn_residential.circulation import hallway_width
+from typehaus.checks.code.mn_residential.rules import ceiling_height
 from typehaus.checks.code.mn_residential.alarms import (
     alarm_on_every_storey,
     co_alarm_outside_sleeping_areas,
@@ -57,6 +58,7 @@ from typehaus.checks.mep.water_heater import water_heater_relief
 from typehaus.checks.registry import Preferences
 from typehaus.findings import Result
 from typehaus.model.enums import AlarmKind, Occupancy
+from typehaus.model.refs import FollowRoof
 from typehaus.quantities import ft, inch
 from typehaus.source import load_plan
 from _helpers import CATLIN as CATLIN_DIR
@@ -791,3 +793,86 @@ def test_catlin_exterior_doors_clear_the_height_bar(catlin_ctx):
     """Both breezeway-adjacent doors carry 6'-8" (80") leaves — everything passes."""
     findings = egress_door_height(catlin_ctx)
     assert findings and all(f.result is Result.PASS for f in findings)
+
+
+# --- R305.1 sloped ceilings, graded against the REQUIRED floor area -----------------------
+#
+# Minn. R. 1309.0305 Exception 1 measures BOTH clauses against "the required floor area" —
+# R304.1's 70 sf — and R304.3 says floor under 5'-0" "shall not be considered as contributing
+# to the minimum required habitable area for that room". The check used to read both clauses
+# against the whole room, which fails any room whose ceiling reaches the floor at the eave.
+# That is a story-and-a-half, and it is legal; the misreading is what put 5'-0" knee walls in
+# catlin. These pin the corrected predicate so it cannot quietly regress.
+
+def _sloped_ctx(*, room_wide_ft: float, room_deep_ft: float, eave_ft: float, ridge_ft: float,
+                span_ft: float = 36.0, occupancy=Occupancy.BEDROOM):
+    """A gable ridged in y, so headroom varies with x. Storey datum is 0."""
+    half, deep = span_ft / 2.0, room_deep_ft
+    ring = tuple((ft(x).meters, ft(y).meters)
+                 for x, y in ((0.0, 0.0), (room_wide_ft, 0.0),
+                              (room_wide_ft, deep), (0.0, deep)))
+    footprint = tuple((ft(x).meters, ft(y).meters)
+                      for x, y in ((0.0, 0.0), (span_ft, 0.0), (span_ft, deep), (0.0, deep)))
+    roof = SimpleNamespace(tag="RF", form="gable", footprint=footprint,
+                           eave_z_m=ft(eave_ft).meters, ridge_z_m=ft(ridge_ft).meters,
+                           ridge_direction="y")
+    resolved = SimpleNamespace(tag="RM-A", storey="attic", clear_face=ring,
+                               area_m2=ft(room_wide_ft).meters * ft(deep).meters)
+    authored = SimpleNamespace(element_kind="Room", tag="RM-A", occupancy=occupancy,
+                               ceiling=FollowRoof(roof_ref="RF"))
+    storey = SimpleNamespace(tag="attic", elevation=ft(0))
+    plan = SimpleNamespace(storeys=[storey], storey_elements=lambda _t: [authored],
+                           all_elements=lambda: [authored],
+                           project=SimpleNamespace(site=SimpleNamespace(grade=ft(-9))))
+    ctx = SimpleNamespace(plan=plan, model=SimpleNamespace(rooms=[resolved], roofs=[roof]))
+    assert half > 0
+    return ctx, authored
+
+
+def test_r305_sloped_ceiling_passes_when_the_room_reaches_the_floor_at_the_eave():
+    """The story-and-a-half case. Eave at the deck, 6:12 to a 9'-0" ridge over an 18' half
+    span: the west 10' of this room is under 5'-0" and contributes nothing, and the room is
+    still compliant because the 70 sf it owes sits in the tall half."""
+    ctx, room = _sloped_ctx(room_wide_ft=18.0, room_deep_ft=20.0, eave_ft=0.0, ridge_ft=9.0)
+    finding = ceiling_height(ctx)[0]
+    assert finding.result is Result.PASS
+    assert "required floor area" in finding.message
+
+
+def test_r305_sloped_ceiling_fails_when_seventy_good_feet_cannot_be_assembled():
+    """A shallow room in the same roof: only 3'-6" of depth, so even the whole tall half is
+    under 70 sf at 5'-0". This is the clause that should fail, and the only one."""
+    ctx, room = _sloped_ctx(room_wide_ft=18.0, room_deep_ft=3.5, eave_ft=0.0, ridge_ft=9.0)
+    finding = ceiling_height(ctx)[0]
+    assert finding.result is Result.FAIL
+    assert "cannot assemble" in finding.message
+
+
+def test_r305_sloped_ceiling_fails_when_half_the_required_area_misses_seven_feet():
+    """A roof that clears 5'-0" everywhere but 7'-0" almost nowhere: 70 sf assembles, but
+    less than 35 sf of it is tall enough."""
+    ctx, room = _sloped_ctx(room_wide_ft=18.0, room_deep_ft=20.0, eave_ft=5.0, ridge_ft=7.1)
+    finding = ceiling_height(ctx)[0]
+    assert finding.result is Result.FAIL
+    assert "50%" in finding.message
+
+
+def test_r305_does_not_reach_a_storage_room():
+    """R305.1's subject is habitable space, hallways, bathrooms, toilet rooms and laundry
+    rooms. An eave storage pocket is none of them, and grading one is a category error — the
+    same argument that already excused the garage."""
+    ctx, room = _sloped_ctx(room_wide_ft=18.0, room_deep_ft=20.0, eave_ft=0.0, ridge_ft=9.0,
+                            occupancy=Occupancy.STORAGE)
+    assert ceiling_height(ctx) == []
+
+
+def test_r305_is_unknown_for_a_non_subject_room_when_the_site_states_no_grade():
+    """R305.1.1's 6'-8" tier is a *basement* rule, so a storage room's applicable minimum
+    depends on where grade is. With no grade datum that is undecidable, and undecidable is
+    UNKNOWN — not a silent pass out of scope."""
+    ctx, _room = _sloped_ctx(room_wide_ft=18.0, room_deep_ft=20.0, eave_ft=0.0, ridge_ft=9.0,
+                             occupancy=Occupancy.STORAGE)
+    ctx.plan.project.site.grade = None
+    findings = ceiling_height(ctx)
+    assert _results(findings) == [Result.UNKNOWN]
+    assert "no grade datum" in findings[0].message

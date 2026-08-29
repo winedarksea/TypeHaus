@@ -449,6 +449,53 @@ DUCTS_ERV_LEVEL2 = [
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
             diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="semi_rigid", design_cfm=5),
+    # THE PLANT ROOM'S EXTRACT, MOVED DOWN HERE FROM THE ATTIC MANIFOLD 2026-08-29 (it was
+    # DU-A-ERV-R-PLANT, and before that DU-S-PLANT-EXH; it keeps the uid through both moves).
+    #
+    # ** IT LEFT THE ATTIC BECAUSE ITS DECK CHASE BECAME A BEDROOM. ** Off EQ-A-ERV-MAN-EXH it
+    # ran the x=1'-0" chase 21'-8" down the base of RM-A-STUDIO's west knee wall — the last duct
+    # on that wall, and the whole reason the wall needed a shoe. Down here it never enters the
+    # attic at all.
+    #
+    # ** THE TRUSSES ARE WHY THIS WORKS AND FS-ATTIC IS WHY IT DID NOT. ** Both floors span x,
+    # so a north-south run crosses every joist in either — but FS-S-WEST is 11 7/8" OPEN-WEB
+    # TRUSS, chosen (params/second_deck.py) precisely "so every second-floor plumbing stack,
+    # supply riser and the radon/plumbing chase can cross the deck through the webs instead of a
+    # soffit or chase". FS-ATTIC is I-joist, where the same crossing means ~16 bored webs, all
+    # of them within a foot of the joists' west bearing, which is the one place the hole chart
+    # does not allow.
+    #
+    # ** THE x=2'-10" LANE IS CHOSEN, NOT INHERITED. ** Going south there crosses exactly ONE
+    # sibling radial (DU-M-ERV-R-BATH1's westward leg at y=24'-8", x 1'-2"..3'-0"). The obvious
+    # lane at the manifold's east end, x=6'-0", would have crossed EIGHT. It is the tenth and
+    # LAST free port on EQ-M-ERV-MAN-EXH, which is now full at 10 of 10.
+    #
+    # East leg at y=4'-8" (56" = 8 + 3 x 16, a bay centre) runs ALONG the trusses and is clear
+    # of everything: no sibling radial reaches south of y=6'-0" except DU-M-ERV-R-BED, which
+    # terminates at (9'-0", 6'-0").
+    #
+    # ** IT STAYS A HIGH TERMINAL, WHICH IS THE POINT THE 2026-08-18 NOTE ARGUED. ** Humid air
+    # stratifies, so the wettest air in RM-S-PLANT is the air overhead. The grille cannot be in
+    # the ceiling any more — this duct is below the room now, not above it — so it rises inside
+    # W-S-C1 and discharges at 8'-6", six inches under the 9'-0" ceiling. W-S-C1 is
+    # PLANT_INT_2X6_BRG_HUMID at 7.43": a 5 1/2" cavity, room for a 75 mm riser AND a
+    # vapour-tight boot through the liner. W-S-PS1, the room's north wall, is 2x4 and is not.
+    #
+    # ** IT IS LONGER, NOT SHORTER: 55'-8" against the attic route's 47'-5". ** 45'-6" of plan
+    # run plus a 9'-4" rise from the truss bottom chord to the grille, which is the part an
+    # eyeballed estimate misses. That is affordable and it is worth saying why: HVI certifies
+    # this machine at 206 cfm net supply at 0.4" w.g. (B210E75RT, HVI 2004940), so the "0.2"
+    # w.g." this file quotes elsewhere is the model-name point off the fan curve, not the rating
+    # point, and the real static budget is about double what those comments assume. This is
+    # still the radial whose drop the installer must check — 25 cfm, and longest again now.
+    # -20" is the manifold port, -10 3/8" a 3" duct on the truss bottom chord.
+    DuctRun(uid="CWMB7Q4E3W", tag="DU-M-ERV-R-PLANT", system=DuctSystem.EXHAUST,
+            path=(pt(ft(2, 10), ft(35)), pt(ft(2, 10), ft(35)),
+                  pt(ft(2, 10), ft(4, 8)), pt(ft(18), ft(4, 8)),
+                  pt(ft(18), ft(4, 8))),
+            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z, inch(102)),
+            diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
+            material="semi_rigid", design_cfm=25),
 ]
 
 # ============================== LEVEL 3 — ATTIC RADIALS ==============================
@@ -471,16 +518,18 @@ DUCTS_ERV_LEVEL2 = [
 # east one bay sooner (y=22'-0") and reaches SF-S-DUCT down RM-A-EAST-UNFIN's deck instead —
 # same developed length, and the exposed run moved from a guest bedroom to an unfinished loft.
 # DU-A-ERV-R-STUBATH's east leg went into the y=19'-4" bay in the same pass, where it travels
-# ALONG the joists and bores nothing. What is left against the knee wall is ONE 75 mm duct,
-# DU-A-ERV-R-PLANT, whose west face stands 3 7/8" clear of the gwb at ankle height: a shoe, not
-# joinery, and a receptacle at 16" passes a foot over it (ED-A-STUDIO-RC8/RC9).
+# ALONG the joists and bores nothing. The knee wall then carried ONE 75 mm duct for a few hours,
+# and now carries none — see the next paragraph. ED-A-STUDIO-RC8/RC9 stay: the wall is in the
+# 210.52 test on its own merits whatever is or is not lying at its foot.
 #
-# ** DU-A-ERV-R-PLANT IS THE ONE THAT CANNOT LEAVE, AND THE REASON IS ITS TERMINAL. **
-# REG-S-ERV-PLANT-EXH is a CEILING grille at 9'-0" in RM-S-PLANT, sited there because humid air
-# stratifies and the wettest air in that room is the air under FS-ATTIC's joists. Feeding it
-# from FS-S-WEST's open-web trusses — which is where the second storey's radials do run, freely
-# through the webs — would make it a floor boot and give up that argument. It travels the west
-# knee wall instead.
+# ** AND THEN THE LAST ONE LEFT TOO, SO THE KNEE WALL IS BARE. ** This block used to say
+# DU-A-ERV-R-PLANT could not move, on the grounds that feeding it from FS-S-WEST's trusses would
+# turn its ceiling grille into a floor boot and give up the stratification argument. That was
+# half right: the duct did move down to the trusses (it is DU-M-ERV-R-PLANT in DUCTS_ERV_LEVEL2
+# now), but the terminal did NOT become a floor boot — it rises inside W-S-C1's 5 1/2" cavity to
+# a HIGH SIDEWALL grille at 8'-6", six inches under the ceiling, still in the warm wet air at the
+# top of the room. The argument was about height, not about which direction the boot arrives
+# from. What is left on the studio's west knee wall is nothing at all.
 #
 # The remaining rejected alternative is unchanged: bore the FS-ATTIC I-joists and run
 # north-south in the bays. The hole chart permits it, but at x=1'-0" every hole would fall
@@ -505,11 +554,12 @@ DUCTS_ERV_ATTIC = [
     # the walled storage pocket on 2026-08-29, extracting a guest bedroom's air through a
     # closed door. Both moved to the studio's NW corner together.
     #
-    # It takes the SAME x=1'-0" boxed floor chase DU-A-ERV-R-PLANT and DU-S-ERV-HP-FEED already
-    # run in, south past W-A-STU-N to the boot at (1'-0", 20'-8"). All of it is ON the deck:
-    # FS-ATTIC is I-joist, so there is no crossing bays here and the north-south travel costs
-    # nothing in depth. Developed length goes from ~4' to about 15' — still the shortest radial
-    # on the machine, so it takes none of DU-A-ERV-R-PLANT's pressure headroom.
+    # It takes the x=1'-0" chase south past W-A-STU-N to the boot at (1'-0", 20'-8"). It had two
+    # companions there, DU-A-ERV-R-PLANT and DU-S-ERV-HP-FEED; both left on 2026-08-29 and this
+    # run's 1'-7" inside the studio is now most of what is left of that chase. All of it is ON
+    # the deck: FS-ATTIC is I-joist, so there is no crossing bays here and the north-south travel
+    # costs nothing in depth. Developed length goes from ~4' to about 15' — still the shortest
+    # radial on this manifold, so it takes nobody's pressure headroom.
     DuctRun(uid="DYNQDC9ZMJ", tag="DU-A-ERV-R-ATTIC", system=DuctSystem.RETURN,
             path=(pt(ft(2, 6), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(20, 8)),
                   pt(ft(1), ft(20, 8))),
@@ -553,12 +603,14 @@ DUCTS_ERV_ATTIC = [
     # So it goes down the x=1'-0" chase to y=22'-0" (264" = 8 + 16 x 16, a bay centre, and below
     # W-A-STU-N's sole plate so the partition is irrelevant), east under the studio floor to
     # x=29', then north on the east loft's deck to the existing grille, which does not move.
-    # ** 32'-8" -> ~53'-6", and it overtakes DU-A-ERV-R-PLANT as the longest radial. ** That is
-    # acceptable and it is why this is the run to lengthen: BED3 carries 5 cfm (~102 fpm in
-    # 75 mm, where 21 extra feet costs hundredths of an inch w.g.), while PLANT carries 25 cfm
-    # and therefore remains the run whose drop the installer must check against the Broan's
-    # 0.2" w.g. The alternative — re-filing BED3 onto the main-storey manifold — is still
-    # blocked by FO-S-STAIR, which is what pushed it up here in the first place.
+    # ** 32'-8" -> ~53'-6", and for a few days that made it the longest radial in the house. **
+    # It is not any more: DU-M-ERV-R-PLANT went to 55'-8" on 2026-08-29 when it moved down to the
+    # FS-S-WEST trusses. Length was never the criterion anyway — BED3 carries 5 cfm (~102 fpm in
+    # 75 mm, where 21 extra feet costs hundredths of an inch w.g.), while PLANT carries 25 cfm and
+    # is the run whose drop the installer must check. Note the two are no longer even on the same
+    # machine port: BED3 is on EQ-A-ERV-MAN-EXH, PLANT on EQ-M-ERV-MAN-EXH. The alternative —
+    # re-filing BED3 onto the main-storey manifold — is still blocked by FO-S-STAIR, which is what
+    # pushed it up here in the first place, and that manifold is now full at 10 of 10.
     DuctRun(uid="73FJZH564X", tag="DU-A-ERV-R-BED3", system=DuctSystem.RETURN,
             path=(pt(ft(2, 6), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(22)),
                   pt(ft(1), ft(22)), pt(ft(29), ft(22)),
@@ -567,21 +619,6 @@ DUCTS_ERV_ATTIC = [
                         _ATTIC_BAY_Z, _ATTIC_BAY_Z,
                         _ATTIC_DECK_Z, _ATTIC_DECK_Z),
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=5),
-    # The plant room's dedicated extract, RH-controlled at the terminal (the damper is on
-    # REG-T-ERV-PLANT-EXH, not here). The manifold is at the north end of the attic and the
-    # plant room is at the south.
-    #
-    # ** IT STOPPED BEING THE LONGEST RADIAL ON 2026-08-29 AND IT IS STILL THE CRITICAL ONE. **
-    # DU-A-ERV-R-BED3 overtook it (~53'-6" against this run's ~40') when FO-A-HALL severed
-    # every west-to-east route north of the studio. Length is not the criterion, though: BED3
-    # carries 5 cfm and this run carries 25, so THIS is still the one whose pressure drop the
-    # installer must check against the machine's 0.2" w.g. before committing to 75 mm.
-    DuctRun(uid="CWMB7Q4E3W", tag="DU-A-ERV-R-PLANT", system=DuctSystem.EXHAUST,
-            path=(pt(ft(2, 6), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(0, 8)),
-                  pt(ft(1), ft(0, 8)), pt(ft(11, 10.3), ft(0, 8))),
-            elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
-                        _ATTIC_BAY_Z, _ATTIC_BAY_Z),
-            diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=25),
 ]
 
 # THE MIXING-BOX FEED — the one place fresh air enters the heat-pump loop, and the last of
@@ -613,7 +650,7 @@ DUCTS_ERV_ATTIC = [
 #
 # ** THE DEVELOPED LENGTH IS UNCHANGED — 11'-7" comes off the west leg and 10'-8" goes onto the
 # east one. ** So this is not a trade of pressure for joinery: the machine sees the same run,
-# and DU-A-ERV-R-PLANT (25 cfm) remains the radial whose drop the installer must check.
+# and DU-M-ERV-R-PLANT (25 cfm) remains the radial whose drop the installer must check.
 DUCTS_ERV_MIX_FEED = [
     DuctRun(uid="CSDV02AAAA", tag="DU-S-ERV-HP-FEED", system=DuctSystem.SUPPLY,
             path=(pt(ft(0, 5), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)), pt(ft(1), ft(22)),

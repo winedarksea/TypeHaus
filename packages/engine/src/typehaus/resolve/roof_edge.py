@@ -32,13 +32,14 @@ from typehaus.resolve.framing.profiles import panel_profile
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedRoof, ResolvedWall
 from typehaus.resolve.roof_edge_geometry import (
     CLOSURE_TOLERANCE_M,
-    FOOTPRINT_TOLERANCE_M,
     MatingFaces,
     bbox,
     continuous_skin_cladding,
+    footprint_test,
     mating_faces,
     roof_slope,
     skin_layers,
+    skin_stand_ins,
 )
 from typehaus.resolve.roof_geometry import roof_height_at, roof_structure_depth_m
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
@@ -59,20 +60,34 @@ def resolve_roof_edges(model: ResolvedModel) -> None:
 # --- shared geometry ---------------------------------------------------------------------
 
 def _walls_under_roof(model: ResolvedModel, roof: ResolvedRoof) -> tuple[ResolvedWall, ...]:
-    """The roof's storey's *exterior* walls whose plan axis lies inside its footprint.
+    """The *exterior* walls this roof closes against, by plan axis inside its footprint.
 
     Exterior means "has a sheathing layer": an interior partition has no weather skin to
     carry up, and framing a closure band over one would invent construction.
+
+    Normally those are the walls on the roof's own storey. The exception is a bearing wall
+    with NO skin — a rafter plate laid flat on a floor deck, which is how a story-and-a-half
+    lands its roof with no knee wall at all. That plate closes the storey's room loop and
+    carries the roof, but there is no cladding on a 2x on its side, and without a stand-in
+    the eave silently loses its whole closure band and drip trim. The skin on that line
+    belongs to the wall the plate stands on (:func:`skin_stand_ins`).
     """
-    minx, miny, maxx, maxy = bbox(roof.footprint)
-    tol = FOOTPRINT_TOLERANCE_M
+    inside = footprint_test(roof)
     walls: list[ResolvedWall] = []
+    seen: set[str] = set()
     for wall in model.walls:
-        if wall.storey != roof.storey or not skin_layers(wall):
+        if wall.storey != roof.storey or not inside(wall):
             continue
-        if all(minx - tol <= x <= maxx + tol and miny - tol <= y <= maxy + tol
-               for x, y in wall.axis):
-            walls.append(wall)
+        if skin_layers(wall):
+            candidates: tuple[ResolvedWall, ...] = (wall,)
+        elif wall.tag in getattr(model.plan.by_tag(roof.tag), "bearing_refs", ()):
+            candidates = skin_stand_ins(model, wall, inside)
+        else:
+            continue
+        for candidate in candidates:
+            if candidate.tag not in seen:
+                seen.add(candidate.tag)
+                walls.append(candidate)
     return tuple(walls)
 
 

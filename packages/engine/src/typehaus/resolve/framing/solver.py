@@ -149,6 +149,19 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
 
     # --- plates ---------------------------------------------------------------
     top_start, top_end = _wall_top_elevations(rw)
+    if spec.wall_frame == "plate":
+        # One flat course and nothing else. `_append_plates` with `top_plates=0` emits
+        # exactly the sole plate, and does it through the same corner-lap rule every other
+        # wall's sole plate uses — so two plates meeting at an L still lap rather than
+        # doubling in the corner square. The course fills the wall: for this layer the
+        # wall's height IS the lumber's thickness, which is why it is read off the wall
+        # rather than assumed to be 1 1/2".
+        course_h = min(top_start, top_end) - z0
+        plate_only: list[FramedMember] = []
+        _append_plates(plate_only, rw, plate_member, p0, d, axis_len, z0, course_h, 0,
+                       top_start, top_end, structure_polygon, start_role, end_role,
+                       thickness, neighbour_insets_start, neighbour_insets_end)
+        return tuple(plate_only)
     top_plates = 2 if spec.double_top_plate and not spec.advanced_framing else 1
     _append_plates(members, rw, plate_member, p0, d, axis_len, z0, plate_h, top_plates,
                    top_start, top_end, structure_polygon, start_role, end_role, thickness,
@@ -437,6 +450,43 @@ def _plate(rw: ResolvedWall, p0, p1, key: str, z0: float, z1: float,
     return FramedMember(rw.uid, key, "plate", profile, p0, p1, z0, z1, length(sub(p1, p0)))
 
 
+def _short_wall_finding(plan: PlanModel, rw: ResolvedWall) -> list[Finding]:
+    """A stud wall shorter than its own plate stack frames to nonsense — say so.
+
+    `top_at` subtracts the top plate course(s) from the wall's top to find where the studs
+    stop, and `_append_plates` places each top course downward from the same top. Neither
+    clamps. Under 4 1/2" — a 1 1/2" sole plate plus a 3" double top plate — the studs come
+    out with a NEGATIVE length and the top courses stack down through the sole plate, and
+    until this finding existed all of that happened silently: the geometry drew, the BOM
+    billed, nothing failed. The wall that wants to be this short is a course of lumber laid
+    flat, and there is a field that says so.
+
+    WARN/UNKNOWN rather than ERROR on purpose. It is a modelling gap, not a violation, and
+    the tri-state is what this repo uses to say "cannot evaluate" without turning a house red.
+    """
+    layer = structure_layer(plan, rw.assembly)
+    if not frames_as_members(layer):
+        return []
+    spec = layer.framing
+    assert spec is not None  # frames_as_members
+    if spec.wall_frame != "studs":
+        return []
+    courses = 1 + (2 if spec.double_top_plate and not spec.advanced_framing else 1)
+    stack_m = courses * 1.5 * 0.0254
+    height_m = min(_wall_top_elevations(rw)) - rw.base_ref_z_m
+    if height_m + 1e-9 >= stack_m:
+        return []
+    return [Finding(
+        severity=Severity.WARN, check_id="integrity.wall_shorter_than_plates",
+        message=(f"wall {rw.tag} is {height_m / 0.0254:.4g}\" tall — shorter than its own "
+                 f"{courses}-course plate stack ({stack_m / 0.0254:.4g}\"), so its studs "
+                 "frame to a negative length"),
+        element_tags=(rw.tag,), result=Result.UNKNOWN,
+        fix_hint=("a course of lumber laid flat is not a stud wall: set the assembly's "
+                  "STRUCTURE FramingSpec.wall_frame='plate'"),
+    )]
+
+
 def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     """Attach members using the shared junction decisions; return configuration findings."""
     # The framing pattern is a property of the *product type*, not of the resolved
@@ -573,6 +623,7 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                                      at_start=endpoint == "start")
 
     for rw in model.walls:
+        findings.extend(_short_wall_finding(plan, rw))
         framing_start, framing_end = _framing_axis(rw)
         framing_direction = unit(sub(framing_end, framing_start))
         framing_len = length(sub(framing_end, framing_start))

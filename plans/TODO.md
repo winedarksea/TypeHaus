@@ -334,10 +334,14 @@ two elevations, which is exactly how a drain drop has always been written.
   grades duct-against-duct outside a modeled `Soffit`; an 11 7/8" bay with an 8 7/8" web
   opening has room for one 3" duct to pass under another, so it builds, but the model cannot
   say so. `mep.duct_soffit_occupancy` is the shape the joist-bay version would take.
-- **`DU-A-ERV-R-PLANT` is the longest radial in the house** — attic manifold at the north
-  end to the plant room at the south. Its pressure drop wants checking against the machine's
-  0.2" w.g. before 75 mm is committed to; there is no airflow solver here and there will not
-  be one.
+- **`DU-M-ERV-R-PLANT` is the longest radial in the house at 55'-8"** — level-2 manifold at
+  the north end, south through the `FS-S-WEST` trusses, then up inside `W-S-C1` to a high
+  sidewall grille (it moved off the attic manifold and out of the guest studio 2026-08-29,
+  and 9'-4" of that length is the rise). Its pressure drop wants checking before 75 mm is
+  committed to; there is no airflow solver here and there will not be one. **Check it against
+  0.4" w.g., not 0.2":** HVI certifies the B210E75RT at 206 cfm net supply at 0.4" (HVI ID
+  2004940), and the 0.2"/210 cfm figure several comments quote is the model-name point off
+  the manufacturer's fan curve, not the rating point. Those comments want correcting.
 
 ## Phase 2 — Complete Catlin junctions (deferred by decision 2026-08-02 — construction-rule authoring)
 

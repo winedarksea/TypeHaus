@@ -30,8 +30,14 @@ from __future__ import annotations
 from typehaus.model.enums import LayerFunction
 from typehaus.quantities import inch
 
-# Reference birdsmouth fallback when the bearing wall's stud depth is unknown.
-_BIRDSMOUTH_FALLBACK_M = inch(1.17).meters
+# Reference bearing-plate DEPTH for the birdsmouth when the bearing wall's own structure
+# layer cannot be read — a nominal 2x4 laid flat. It was written as `inch(1.17)`, which is
+# this depth times a 4:12 pitch: the PITCH WAS FUSED INTO THE CONSTANT, so a roof at any
+# other pitch whose bearing wall did not resolve got a 4:12 seat cut and nothing said so.
+# The two only ever agreed by the accident of this repo having had one roof pitch. Every
+# roof here resolves a STRUCTURE layer, so splitting them changes no result today — it
+# stops the fallback from being silently wrong the first time one does not.
+_BIRDSMOUTH_FALLBACK_PLATE_M = inch(3.5).meters
 # The metal roofing runs 0.6" past the wall furring's outer face (reference drip lap).
 _METAL_PROUD_M = inch(0.6).meters
 
@@ -86,23 +92,29 @@ def deck_rise_m(roof_assembly, bearing_wall_assembly, pitch) -> float | None:
     """Deck-plane rise above the bearing plate top for a rafter-framed roof.
 
     ``structure depth − birdsmouth`` where ``birdsmouth = bearing stud depth × (rise/run)``
-    (fallback: the reference 1.17"). Returns ``None`` for truss-framed roofs and roofs
-    without a framed STRUCTURE layer — those keep ``eave_z_m == plate top`` (the truss
-    framer self-corrects via its raised-heel delta).
+    (fallback depth: a nominal 2x4 plate, taken at the roof's own pitch). Returns ``None``
+    for truss-framed roofs, roofs without a framed STRUCTURE layer, and roofs with no pitch
+    — those keep ``eave_z_m == plate top`` (the truss framer self-corrects via its
+    raised-heel delta).
     """
     if roof_assembly is None:
         return None
     structure = next((layer for layer in roof_assembly.layers
                       if layer.function is LayerFunction.STRUCTURE
                       and layer.framing is not None), None)
-    if structure is None or structure.framing.roof_frame == "truss":
+    if structure is None or structure.framing.roof_frame == "truss" or pitch is None:
+        # No pitch, no seat cut: the birdsmouth IS the plate depth times the slope, so a
+        # missing pitch cannot be defaulted without inventing one. Falling back to 4:12
+        # here is the same fusion this module just removed from the plate constant.
         return None
-    birdsmouth = _BIRDSMOUTH_FALLBACK_M
-    if bearing_wall_assembly is not None and pitch is not None:
+    slope = pitch.rise / pitch.run
+    depth = _BIRDSMOUTH_FALLBACK_PLATE_M
+    if bearing_wall_assembly is not None:
         stud = next((layer for layer in bearing_wall_assembly.layers
                      if layer.function is LayerFunction.STRUCTURE), None)
         if stud is not None:
-            birdsmouth = stud.thickness.meters * (pitch.rise / pitch.run)
+            depth = stud.thickness.meters
+    birdsmouth = depth * slope
     return max(structure.thickness.meters - birdsmouth, 0.0)
 
 

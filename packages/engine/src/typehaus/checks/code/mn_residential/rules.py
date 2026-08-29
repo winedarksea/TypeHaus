@@ -14,31 +14,54 @@ from __future__ import annotations
 from typing import Any
 
 from typehaus.checks.code.mn_residential._common import (
+    HABITABLE_OCCUPANCIES,
+    SF_PER_M2,
     _fail,
     _foundation_footprint,
     _pass,
     _room_storey,
+    _storey_is_below_grade,
     _unknown,
 )
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import Occupancy
 from typehaus.model.refs import FollowRoof
-from typehaus.quantities import Length, ft, m
+from typehaus.quantities import Length, ft, inch, m
 from typehaus.resolve.roof_geometry import roof_headroom_areas
 
-#: Occupancies R305.1 does not reach. The rule's subject is "habitable space, hallways and
-#: portions of basements containing them", plus bathrooms, toilet rooms and laundry rooms —
-#: a garage is none of those, and grading one against a habitable-space minimum is a
-#: category error, not a strict reading. It also has no deck over it here (its ceiling is
-#: GARAGE_ROOF), so since the height became a derived measurement rather than the storey's
-#: authored default it could only ever answer UNKNOWN — a blocking UNKNOWN, on a permit item,
-#: about a rule that does not apply.
-_OUT_OF_R305_SCOPE = frozenset({Occupancy.UNCONDITIONED, Occupancy.GARAGE})
+#: Who R305.1 is *about*, as Minn. R. 1309.0305 names them: "habitable space, hallways,
+#: bathrooms, toilet rooms, and laundry rooms". This is an ALLOWLIST on purpose. It used to
+#: be a denylist of {UNCONDITIONED, GARAGE}, which meant every occupancy anyone added later
+#: was silently graded against a habitable-space minimum without a decision being taken —
+#: and it is how a storage pocket under an eave came to be judged by a rule that does not
+#: reach it. A closet, a workshop, a pantry and a mechanical room are none of the five
+#: things the sentence names, and grading one here is a category error, not strict reading.
+_R305_SUBJECT = HABITABLE_OCCUPANCIES | frozenset({
+    Occupancy.HALLWAY, Occupancy.BATHROOM, Occupancy.LAUNDRY,
+})
+
+#: The rooms outside that subject are not simply ungraded: Minn. R. 1309.0305 R305.1.1 gives
+#: them their own, lower floor — "portions of basements that do not contain habitable space,
+#: hallways, bathrooms, toilet rooms, and laundry rooms shall have a ceiling height of not
+#: less than 6 feet 8 inches". So a basement utility space is still graded, at 6'-8". Above
+#: grade the code says nothing about a closet's head height and neither does this check;
+#: stairs have their own rule and their own finding (code.R311_7_2_stair_headroom).
+_MIN_BASEMENT_CEILING = inch(80)
 
 _MIN_CEILING = ft(7)
 _MIN_SLOPED_CEILING = ft(5)
 _MIN_SLOPED_CEILING_FRACTION = 0.5
+
+#: R304.1 — the minimum floor area of a habitable room, and the base R305.1's sloped-ceiling
+#: exception measures against. THIS IS THE WHOLE POINT OF THE EXCEPTION: both of its clauses
+#: read "the *required* floor area", not "the room", and R304.3 says outright that floor
+#: under 5'-0" "shall not be considered as contributing to the minimum required habitable
+#: area". A 356 sf attic room has to find 70 good square feet inside itself; the other 286
+#: may be any height at all, including none. Grading both clauses against the whole room —
+#: as this check did until now — makes a story-and-a-half impossible to draw, and that is a
+#: check bug, not a design constraint. It is the reason catlin carried 5'-0" knee walls.
+_MIN_HABITABLE_AREA_M2 = 70.0 / SF_PER_M2
 
 # R401.3 lot drainage: grade must fall away from the foundation within the first 10'. Pervious
 # ground needs 5% (6" per 10'), measured from spot elevations (code.R401_3_grading). Impervious
@@ -74,29 +97,65 @@ def ceiling_height(ctx: CheckContext) -> list[Finding]:
     """
     out: list[Finding] = []
     for room in ctx.plan.all_elements():
-        if room.element_kind != "Room" or room.occupancy in _OUT_OF_R305_SCOPE:
+        if room.element_kind != "Room":
+            continue
+        minimum, unknown_reason = _applicable_minimum(ctx, room)
+        if unknown_reason is not None:
+            out.append(_unknown("code.R305_ceiling_height", unknown_reason,
+                                (room.tag,), "R305.1"))
+            continue
+        if minimum is None:
             continue
         if isinstance(room.ceiling, FollowRoof):
-            out.append(_follow_roof_ceiling_finding(ctx, room))
+            out.append(_follow_roof_ceiling_finding(ctx, room, minimum))
             continue
         if room.ceiling is not None and hasattr(room.ceiling, "meters"):
-            out.append(_graded_ceiling(room.tag, room.ceiling, "authored"))
+            out.append(_graded_ceiling(room.tag, room.ceiling, "authored", minimum))
             continue
         derived, source = _derived_clear_height(ctx, room)
         if derived is None:
             out.append(_unknown("code.R305_ceiling_height", source, (room.tag,), "R305.1"))
         else:
-            out.append(_graded_ceiling(room.tag, derived, source))
+            out.append(_graded_ceiling(room.tag, derived, source, minimum))
     return out
 
 
-def _graded_ceiling(room_tag: str, height: Length, source: str) -> Finding:
-    if height < _MIN_CEILING:
+def _applicable_minimum(ctx: CheckContext,
+                       room: Any) -> tuple[Length | None, str | None]:
+    """``(clear height this room owes, UNKNOWN reason)``; both ``None`` where R305 is silent.
+
+    Two tiers and a gap, which is exactly what the amended section says: R305.1's 7'-0" for
+    its five named subjects, R305.1.1's 6'-8" for everything else *in a basement*, and
+    nothing at all for a closet or a pantry above grade. The gap is deliberate and is not a
+    coverage hole to be filled by grading those rooms anyway — a rule invented to keep a
+    finding count up is worse than no finding.
+
+    The one genuine unknown is the basement test. ``_storey_is_below_grade`` answers ``None``
+    — not ``False`` — where the site states no grade datum, and "we do not know where grade
+    is" is not "this storey is above it". A non-subject room on a storey we cannot place is
+    a room whose applicable minimum we cannot name, so it reports UNKNOWN rather than
+    silently passing out of scope.
+    """
+    if room.occupancy in _R305_SUBJECT:
+        return _MIN_CEILING, None
+    storey = _room_storey(ctx, room.tag)
+    if storey is None:
+        return None, None
+    below = _storey_is_below_grade(ctx, storey)
+    if below is None:
+        return None, ("the site states no grade datum, so whether R305.1.1's 6'-8\" basement "
+                      "minimum reaches this room cannot be decided")
+    return (_MIN_BASEMENT_CEILING, None) if below else (None, None)
+
+
+def _graded_ceiling(room_tag: str, height: Length, source: str,
+                    minimum: Length) -> Finding:
+    if height < minimum:
         return _fail("code.R305_ceiling_height",
-                     f"{room_tag} ceiling {height.fmt()} < 7'-0\" minimum ({source})",
+                     f"{room_tag} ceiling {height.fmt()} < {minimum.fmt()} minimum ({source})",
                      (room_tag,), "R305.1")
     return _pass("code.R305_ceiling_height",
-                 f"{room_tag} ceiling {height.fmt()} ({source})", "R305.1")
+                 f"{room_tag} ceiling {height.fmt()} >= {minimum.fmt()} ({source})", "R305.1")
 
 
 def _derived_clear_height(ctx: CheckContext,
@@ -132,33 +191,77 @@ def _derived_clear_height(ctx: CheckContext,
     return m(min(undersides) - storey.elevation.meters), f"clear under {tags}"
 
 
-def _follow_roof_ceiling_finding(ctx: CheckContext, room) -> Finding:
+def _follow_roof_ceiling_finding(ctx: CheckContext, room, minimum: Length) -> Finding:
+    """R305.1's sloped-ceiling exception, graded against the REQUIRED floor area.
+
+    Minn. R. 1309.0305, Exception 1: "at least 50 percent of the required floor area of the
+    room shall have a ceiling height of at least 7 feet and no portion of the required floor
+    area may have a ceiling height of less than 5 feet." Both clauses take *the required
+    floor area* as their subject — R304.1's 70 sf — not the room. R304.3 completes the
+    thought from the other side: floor under 5'-0" "shall not be considered as contributing
+    to the minimum required habitable area for that room". So the sub-5' strip under a rake
+    does not disqualify the room; it simply does not count, and a room only has to assemble
+    70 good square feet somewhere inside itself.
+
+    That makes the test decidable in closed form. ``roof_headroom_areas`` returns NESTED
+    regions — the ≥7' area is inside the ≥5' area is inside the room — so the required floor
+    area may always be taken from the tallest part of the room downward, and the best
+    achievable fraction is ``min(at_seven, required) / required``. There is no packing
+    problem to solve.
+
+    NOT tested here, and the docstring is the only place that says so:
+
+    * **R304.2's 7'-0" minimum horizontal dimension** over that required area.
+      ``roof_headroom_areas`` returns scalars, not the qualifying polygon, so there is
+      nothing here to measure a width on — a room could satisfy the area test with a 3'-wide
+      ribbon and pass. That is a ``code.R304_2_*`` check with a geometry return, not a clause
+      bolted onto this one. Do not read a pass here as a pass on R304.2.
+    * The thresholds are compared against ``eave_z_m``/``ridge_z_m``, which are the roof
+      DECK plane — the rafter-top, not the ceiling somebody stands under. The honest clear
+      height is a rafter depth lower, so this check reads GENEROUS, by about two feet of
+      station on a 6:12. Fixing it means adding the structure depth at both call sites and
+      re-blessing ``code.R807_1_attic_access`` with it, which is its own change.
+    """
     roof = next((item for item in ctx.model.roofs if item.tag == room.ceiling.roof_ref), None)
     resolved_room = next((item for item in ctx.model.rooms if item.tag == room.tag), None)
     storey = _room_storey(ctx, room.tag)
     if roof is None or resolved_room is None or storey is None:
         return _unknown("code.R305_ceiling_height", "unresolved roof-following ceiling",
                         (room.tag,), "R305.1")
-    area, at_seven = roof_headroom_areas(
-        resolved_room.clear_face, roof, storey.elevation.meters, _MIN_CEILING.meters,
+    elevation = storey.elevation.meters
+    area, at_min = roof_headroom_areas(
+        resolved_room.clear_face, roof, elevation, minimum.meters,
     )
     _, at_five = roof_headroom_areas(
-        resolved_room.clear_face, roof, storey.elevation.meters, _MIN_SLOPED_CEILING.meters,
+        resolved_room.clear_face, roof, elevation, _MIN_SLOPED_CEILING.meters,
     )
     if area <= 1e-9:
         return _unknown("code.R305_ceiling_height", "room has no area beneath referenced roof",
                         (room.tag,), "R305.1")
-    fraction = at_seven / area
-    if at_five + 1e-9 < area or fraction + 1e-9 < _MIN_SLOPED_CEILING_FRACTION:
+    # A room smaller than R304.1's 70 sf has to make the whole of itself work; a larger one
+    # only has to find 70 sf, and may spend the remainder on rake.
+    required = min(area, _MIN_HABITABLE_AREA_M2)
+    achieved = min(at_min, required) / required
+    detail = (f"{required * SF_PER_M2:.0f} sf required floor area, "
+              f"{at_five * SF_PER_M2:.0f} sf at or above 5'-0\", "
+              f"{at_min * SF_PER_M2:.0f} sf at or above {minimum.fmt()} "
+              f"(room is {area * SF_PER_M2:.0f} sf)")
+    if at_five + 1e-9 < required:
         return _fail(
             "code.R305_ceiling_height",
-            f"{room.tag} has {fraction:.0%} of floor at or above 7'-0\"; "
-            "R305.1 requires at least 50% with no habitable area below 5'-0\"",
+            f"{room.tag} cannot assemble a required floor area above 5'-0\" — {detail}",
+            (room.tag,), "R305.1",
+        )
+    if achieved + 1e-9 < _MIN_SLOPED_CEILING_FRACTION:
+        return _fail(
+            "code.R305_ceiling_height",
+            f"{room.tag} has {achieved:.0%} of its required floor area at or above "
+            f"{minimum.fmt()}; R305.1's sloped-ceiling exception needs 50% — {detail}",
             (room.tag,), "R305.1",
         )
     return _pass("code.R305_ceiling_height",
-                 f"{room.tag} follows {roof.tag}: {fraction:.0%} of floor at or above 7'-0\"",
-                 "R305.1")
+                 f"{room.tag} follows {roof.tag}: {achieved:.0%} of its required floor area "
+                 f"at or above {minimum.fmt()} — {detail}", "R305.1")
 
 
 @check(Tier.CODE, "code.R401_3_grading")
