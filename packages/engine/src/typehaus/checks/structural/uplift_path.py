@@ -231,7 +231,16 @@ def _post_links(ctx: CheckContext) -> list:
     concrete column no wood base fits.
     """
     stocked = catalogued_post_sizes()
-    based = tags_covered_by(ctx.model, frozenset({ConnectorKind.POST_BASE}))
+    # Two kinds satisfy "this post is held down to what it stands on", and the second is not
+    # a variant of the first. An ``EQUIPMENT_ANCHOR`` is a gasketed lag through a deck rather
+    # than a formed stirrup, and it exists precisely because a bracket is the wrong part
+    # there — but the joint it makes is the same joint, so the load path is developed and
+    # this must say so. Omitting it does not merely mislabel: a 12" equipment stand leg falls
+    # past this branch to ``is_squash_block`` and is reported as blocking whose "joint IS the
+    # bearing", which is exactly backwards for a leg whose governing load is uplift.
+    anchored = tags_covered_by(ctx.model, frozenset({ConnectorKind.EQUIPMENT_ANCHOR}))
+    stirruped = tags_covered_by(ctx.model, frozenset({ConnectorKind.POST_BASE}))
+    based = stirruped | anchored
     topped = authored_joints(ctx.model, _POST_TOP_KINDS)
     posts = {e.tag: e for e in ctx.plan.all_elements() if isinstance(e, Post)}
 
@@ -255,8 +264,14 @@ def _post_links(ctx: CheckContext) -> list:
                                "carries no rebar to point at (the steel is inside the "
                                "column's own $/cy rate, not missing from the order)")))
         elif tag in based:
-            links.append(Link(f"post {tag} to {post.supported_by or 'its bearing'}",
-                              (tag,), "an authored post base"))
+            # Named, not generalised to "a base": printing "an authored post base" against a
+            # gasketed lag would be the same misreport in prose that the shared
+            # ``ConnectorKind`` was in the BOM. A post named by both keeps the base, which
+            # is the stronger claim about the joint.
+            links.append(Link(
+                f"post {tag} to {post.supported_by or 'its bearing'}", (tag,),
+                "an authored equipment anchor"
+                if tag in anchored and tag not in stirruped else "an authored post base"))
         elif is_squash_block(post, _RULES):
             # Short enough that it is blocking, not a column (see blocking_max_height_ft).
             # Its joint IS the bearing, so it is covered rather than un-gradeable — the

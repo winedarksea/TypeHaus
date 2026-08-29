@@ -472,7 +472,7 @@ POLY_PANEL_FASTENER = StructuralHardware(
 # ``hardware_for_role(ROLE_POST_BASE)`` ambiguous.
 DECK_EQUIPMENT_ANCHOR = StructuralHardware(
     tag="stainless-through-deck-equipment-anchor",
-    name="3/8 in x 4 in 316 stainless lag with EPDM-bonded washer, through-deck",
+    name="3/8 in x 4 in 316 stainless hex lag, 1 in EPDM-bonded washer, through-deck",
     role=ROLE_DECK_EQUIPMENT_ANCHOR,
     manufacturer="generic",
     model="SS316-LAG-38x4-EPDM",
@@ -480,7 +480,12 @@ DECK_EQUIPMENT_ANCHOR = StructuralHardware(
            "washer; the fastener in Wahoo's own AridDek guardrail-post detail is a 3/8 in "
            "lag through the deck board into added timber blocking, and this is that "
            "connection made stainless for a copper-treated host — no single manufacturer "
-           "system is specified, so this record is deliberately generic",
+           "system is specified, so this record is deliberately generic. INSTALLATION is "
+           "most of what this part is: a 1/4 in pilot through the plank and the full depth "
+           "of the blocking, the pilot wetted with sealant before the lag is driven, butyl "
+           "under the base plate, and the washer seated but not crushed — a flattened EPDM "
+           "washer has stopped sealing. 1 1/2 in of plank leaves ~2 1/2 in of thread in the "
+           "2x8 blocking",
 )
 
 # PV module mounting on the standing seam: the S-5! PVKIT clamp+bracket assembly grips a

@@ -1392,9 +1392,16 @@ HP_STAND_LEGS = [
 #
 # ``connects`` names the BLOCKING's host deck rather than a joist or a beam, which is the
 # whole point of the detail and is what ``mep.deck_equipment_support`` reads.
+#
+# ``EQUIPMENT_ANCHOR``, not ``POST_BASE`` — these were filed as post bases until 2026-08-28
+# and the BOM printed "8 modeled post base connector(s)" against a lag screw's part number,
+# three lines under ten real ABU66SS. Nobody could order from that and no framer could build
+# it: a post base is a formed stirrup you set the post into, and what is actually here is a
+# 3/8" lag through a bonded washer, chosen for its seal and its alloy rather than for the
+# section above it. The part is ``SS316-LAG-38x4-EPDM`` in library/hardware.py.
 HP_STAND_ANCHORS = [
     Connector(uid=f"SGHC{_hk}{_hi}AAAA", tag=f"CN-SG-HP{_hk}{_hi}",
-              kind=ConnectorKind.POST_BASE, position=pt(ft(_hx), ft(_hy)),
+              kind=ConnectorKind.EQUIPMENT_ANCHOR, position=pt(ft(_hx), ft(_hy)),
               elevation=_deck_walking_surface, size="SS316-LAG-38x4-EPDM",
               connects=(f"PT-SG-HP{_hk}{_hi}", "FS-SG-DECK"))
     for _hk, _hi, _hx, _hy in _HP_STAND_AT

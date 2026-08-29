@@ -410,6 +410,11 @@ _CONNECTOR_MARKER_IN = {
     # A 1/2" rod through a 3" square plate washer, drawn as the 10" bolt it is. The default
     # box would draw a bolt the size of a post base, along every sill run in the house.
     ConnectorKind.ANCHOR_BOLT: (1.50, 1.50, 5.00),
+    # A 3/8" lag through a ~1" bonded sealing washer, drawn as the 4" fastener it is. The
+    # default box would put a 5" x 5" x 6" grey cube on the deck under each 2" stand leg —
+    # a marker wider than the thing it holds down, over a detail whose whole point is that
+    # the penetration is small and countable.
+    ConnectorKind.EQUIPMENT_ANCHOR: (0.50, 0.50, 2.00),
 }
 _CONNECTOR_MARKER_DEFAULT = (2.5, 2.5, 3.0)
 

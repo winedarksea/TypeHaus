@@ -438,6 +438,16 @@ class ConnectorKind(Enum):
     # what the FOUNDATION schedule has to name a diameter, an embedment and a spacing for —
     # see ``emit/draw/foundation_schedule.py``, which reported the absence of this kind.
     ANCHOR_BOLT = "anchor_bolt"            # cast-in sill anchor bolt + plate washer
+    # A sealed fastener holding a piece of MECHANICAL EQUIPMENT (or its stand) down through
+    # a deck. Its own kind, and deliberately not POST_BASE, which is what it was filed as
+    # until 2026-08-28: a post base is a formed stirrup selected by the post SECTION, and it
+    # is bought, drawn and inspected as a bracket. This is a gasketed lag selected by the
+    # SEAL and the alloy, and the BOM printed both under one heading — "8 modeled post base
+    # connector(s)" against a lag screw's part number, next to ten real ABU66SS. A reader
+    # cannot order from that, and a framer reading the schedule would look for a bracket
+    # that does not exist. See ROLE_DECK_EQUIPMENT_ANCHOR in takeoff/hardware_catalog.py for
+    # the same split on the catalog side, and library/hardware.py for the part.
+    EQUIPMENT_ANCHOR = "equipment_anchor"  # gasketed through-deck equipment fastener
     STANDING_SEAM_CLAMP = "standing_seam_clamp"  # S-5!-style seam clamp on the siding
     # A pipe/conduit/leader strap that reaches the building THROUGH an exposed-fastener
     # panel, on a standoff block, rather than by gripping a seam. Its own kind because the
