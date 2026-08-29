@@ -164,7 +164,7 @@ Ablating `RM-B-SAUNA`, `W-B-SA-W/N`, `EQ-B-SAUNA-HTR`, the two benches, `D-B-SAU
 −$1,460/−$3,358, `openings` −$1,065/−$2,250).
 
 Plus what the ablation cannot reach: the liner that rides on concrete rather than on a
-sauna-only wall — 177.1 SF of `sauna-tg` ($1,860–3,542) + `polyiso-foil` ($460–832) on
+sauna-only wall — 177.1 SF of `sauna-shiplap` ($1,860–3,542) + `polyiso-foil` ($460–832) on
 `W-B-S2` and `W-B-CS`, less the $549–1,001 of gwb + paint those walls would carry instead.
 **+$2,000–3,950** after the ladder.
 

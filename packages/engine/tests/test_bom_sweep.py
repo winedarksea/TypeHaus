@@ -531,7 +531,7 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     # The sauna's own ceiling — T&G over foil-polyiso, over furring — bills under its own
     # materials at its clear-face area, not under the blanket gwb row it carved itself out
     # of.
-    sauna_tg = ceiling[("sauna-tg", 1.0)]
+    sauna_tg = ceiling[("sauna-shiplap", 1.0)]
     assert float(sauna_tg["net_area_sqft"]) == pytest.approx(sauna_net, abs=0.5)
 
 
@@ -612,7 +612,10 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         # frame no members and are not solids, so no other section could see them.
         "wall_structure",
         # Envelope & openings
-        "envelope_layers", "wood_surfaces", "glazing_panels", "glazing_trim", "edge_trim",
+        "envelope_layers", "wood_surfaces",
+        # The milling schedule (2026-08-28) — the same wood as a rough-stock cut list.
+        "hardwood",
+        "glazing_panels", "glazing_trim", "edge_trim",
         # Self-adhered membrane over framing tops, by the foot of member (2026-08-27).
         "member_protection",
         # Self-regulating heater cable by the foot of run traced (2026-08-28).

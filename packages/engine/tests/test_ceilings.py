@@ -59,9 +59,9 @@ def test_room_override_wins_over_the_covering_decks_ceiling_below(catlin_model) 
     ceiling = _ceiling(catlin_model, "RM-B-SAUNA")
     assert ceiling is not None
     assert [layer.material_ref for layer in ceiling.layers] == [
-        "sauna-tg", "struct-1-plywood", "polyiso-foil"]
+        "sauna-shiplap", "struct-1-plywood", "polyiso-foil"]
     solid = _solid(catlin_model, ceiling.tag)
-    assert solid is not None and solid.material == "sauna-tg"
+    assert solid is not None and solid.material == "sauna-shiplap"
 
 
 def test_room_override_wins_under_a_deck_that_lines_the_rest_of_the_storey(catlin_model) -> None:

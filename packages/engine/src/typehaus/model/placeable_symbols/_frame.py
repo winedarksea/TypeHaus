@@ -70,7 +70,7 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     # Sauna joinery. A sauna bench is not the stained casegood ``wood``: the species is
     # picked for low conductivity — basswood, aspen, Canadian poplar — and left unfinished,
     # which is what makes it touchable at löyly temperatures and what makes it pale. Matches
-    # the ``sauna-tg`` liner material so the benches read as the same stock as the walls.
+    # the ``sauna-shiplap`` liner material so the benches read as the same stock as the walls.
     "sauna-wood": (0.90, 0.82, 0.68, 1.0),
     "sauna-wood-dark": (0.78, 0.69, 0.54, 1.0),
     # The heater's stone bed. Grey basalt/olivine, the one part of a sauna that is not wood.

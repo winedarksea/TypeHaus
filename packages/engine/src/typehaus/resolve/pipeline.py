@@ -29,6 +29,7 @@ from typehaus.resolve.framing.truss_wall import frame_truss_walls
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.layout_lines import lines_by_wall, resolve_layout_lines
 from typehaus.resolve.mep import resolve_mep
+from typehaus.resolve.millwork import resolve_millwork
 from typehaus.resolve.model import BoundaryCondition, ResolvedModel, ResolvedOpening
 from typehaus.resolve.paneling import resolve_paneling
 from typehaus.resolve.placeables import resolve_placeables
@@ -141,6 +142,10 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_paneling(plan, model))
     with _stage("placeables"):
         findings.extend(resolve_placeables(plan, model))
+    with _stage("millwork"):
+        # After placeables and rooms: a shelf bank hosted on a carcass reads that
+        # placeable's resolved type, and a stool's room scope reads the resolved rooms.
+        findings.extend(resolve_millwork(plan, model))
     with _stage("floor_heat"):
         findings.extend(resolve_floor_heat(model))
     with _stage("stacking"):

@@ -72,6 +72,14 @@ class WindowType(HausModel):
     # guard at the window. "none" is the honest default — most windows have nothing, and
     # most windows do not need anything.
     fall_protection: Literal["none", "limiter", "guard", "screen_rated"] = "none"
+    # Frame depth — the unit's jamb dimension, front of frame to back. A house whose windows
+    # are *outie* derives the mount plane from the wall (notes/outie_window_truss_detail.md:
+    # "no window in this house carries a depth dimension"), which fixes where the OUTSIDE of
+    # the frame lands and says nothing about where the inside does. That difference is the
+    # interior return the stool has to cover, so a derived ``WindowStool`` depth cannot be
+    # computed without it. None means not authored: the stool reports UNKNOWN and carries no
+    # depth rather than guessing one (#32).
+    frame_depth: Length | None = None
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
     product_ref: str | None = None
     source: str | None = None

@@ -157,6 +157,9 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         # Species wood rollup (2026-08-02): sauna liner, panelings,
                         # timber posts and species floors in sf/bf.
                         "wood_surfaces",
+                        # The milling schedule (2026-08-28): the same wood as a cut list in
+                        # rough stock, plus the derived stools and shelf boards.
+                        "hardwood",
                         "footing_bedding", "pipe_runs", "pipe_fittings", "ducts", "sleeves",
                         # Railings got their own takeoff category in 33bac47; this list and
                         # the `haus takeoff` payload both missed it, so guard rail and cable
@@ -258,6 +261,11 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     # The resolved layer stack per room; billed off the deck/roof/room fields it was
     # derived from (``sheet_goods``'s "ceiling" scope), not off this record directly.
     "ceilings": ("sheet_goods",),
+    # Derived interior millwork — the stools and the shelf banks — scheduled as a cut list
+    # in rough stock. Unpriced by design (see ``UNPRICED_VIEWS``), but not unread: this is
+    # the section that says how much oak the mill has to saw.
+    "window_stools": ("hardwood",),
+    "shelf_banks": ("hardwood",),
 }
 
 

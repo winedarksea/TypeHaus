@@ -18,8 +18,8 @@ from _helpers import CATLIN, copy_house
 
 EXPECTED_COMMANDS = {
     "build", "check", "compare", "diff", "doctor", "energy", "explain", "export", "fmt",
-    "import", "import-project", "ls", "new", "permit-check", "print", "render", "serve",
-    "takeoff", "tasks", "version",
+    "import", "import-project", "ls", "millwork", "new", "permit-check", "print", "render",
+    "serve", "takeoff", "tasks", "version",
 }
 
 runner = CliRunner()

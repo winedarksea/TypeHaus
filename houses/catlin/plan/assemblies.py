@@ -813,7 +813,7 @@ EQUIP_STAND_ALUM = Assembly(
         Layer(name="equip-stand-alum", material_ref="aluminum-extrusion", thickness=inch(2.0),
               function=LayerFunction.STRUCTURE),
     ),
-    source="catlin-house balcony heat-pump stands — 2\" mill-finish extruded aluminium legs and cross-rails under EQ-M-HP1-OD/EQ-M-HP2-OD, 12\" clear above FS-SG-DECK; aluminium on aluminium so the plank and the stand are not a galvanic couple, with butyl under every base plate between the stand and the KDAT blocking",
+    source="catlin-house balcony heat-pump stands — 2\" mill-finish extruded aluminium legs and cross-rails under EQ-M-HP1-OD/EQ-M-HP2-OD, 12\" clear above FS-SG-DECK; aluminium on aluminium so the plank and the stand are not a galvanic couple, with butyl under every base plate between the stand and the KDAT blocking. TWO FRAMES, TWO SIZES, and neither equals its leg spacing: HP1 is 14 5/8 in (depth) x 22 7/16 in (width) and HP2 is 24 in x 25 in, each sized to Gree's published foot-hole pattern for that capacity (VIR24HP230V1R32AO 22 7/16 x 14 39/64; MUL30HP230V1R32AO 25 x 15 19/32). The legs are on the DECK's grid instead — bay centres, 6 in off every beam axis — because HP1's west foot line lands on BM-SG-BLW and so cannot also be a leg line. The frame is what spans between the two, which makes the rails under the feet continuous and lands the deck-facing members only on the eight legs. The depth-direction spacing has NO adjustment: the cast foot's obround slot runs the WIDTH way, about 1/4 in of travel there and none across the depth",
 )
 
 # Guards were split off POST_WHITE_PAINT on 2026-08-01 (they shared it with the balcony's
@@ -1470,7 +1470,7 @@ INT_ESS_CLOSET_STEEL = Assembly(
 # low-conductivity species chosen so the boards stay touchable at löyly temperatures.
 # Per notes/sauna_basement_wall_detail.md.
 _SAUNA_LINER = (
-    Layer(name="tg-liner", material_ref="sauna-tg", thickness=inch(1.0),
+    Layer(name="shiplap-liner", material_ref="sauna-shiplap", thickness=inch(1.0),
           function=LayerFunction.FINISH),
     Layer(name="liner-furring", material_ref="struct-1-plywood", thickness=inch(0.5),
           function=LayerFunction.FURRING,
@@ -1549,7 +1549,7 @@ SAUNA_2X4 = Assembly(
 SAUNA_LINER_INT_2X6_BRG = Assembly(
     tag="SAUNA_LINER_INT_2X6_BRG",
     layers=(
-        Layer(name="tg-liner", material_ref="sauna-tg", thickness=inch(1.0),
+        Layer(name="shiplap-liner", material_ref="sauna-shiplap", thickness=inch(1.0),
               function=LayerFunction.FINISH, extent=_SAUNA_CEILING_OVER_SLAB),
         Layer(name="liner-furring", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.FURRING,
@@ -1694,7 +1694,7 @@ CATLIN_GARDEN_FRAMED_2X6 = Assembly(
 SAUNA_LINER_ON_GARDEN_FRAMED = Assembly(
     tag="SAUNA_LINER_ON_GARDEN_FRAMED",
     layers=(
-        Layer(name="tg-liner", material_ref="sauna-tg", thickness=inch(1.0),
+        Layer(name="shiplap-liner", material_ref="sauna-shiplap", thickness=inch(1.0),
               function=LayerFunction.FINISH, extent=_SAUNA_CEILING_OVER_CURB),
         Layer(name="liner-furring", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.FURRING,
@@ -1862,21 +1862,72 @@ MATERIALS = [
              r_per_inch=1.25, density=600.0, perm_rating=0.30, hatch="osb",
              color="#dcc79a",
              source="APA Underlayment/Subfloor (apawood.org/underlayment-subfloor): \"Underlayment C-C Plugged or veneer-faced Sturd-I-Floor with sanded face\" is the grade specified where the panel takes resilient flooring or is left exposed; 23/32 Performance Category = 24 oc Span Rating (APA RATED STURD-I-FLOOR datasheet). Thermal/vapour fields per the plywood series used for plywood-subfloor and struct-1-plywood"),
-    Material(tag="sauna-tg", name="Basswood/aspen T&G sauna liner (5/4)", r_per_inch=1.3,
-             perm_rating=20.0, hatch="lumber", color="#e6d4ae",
-             species="basswood", stock_bf_per_sqft=1.25,
-             source="notes/sauna_basement_wall_detail.md — low-conductivity species (American basswood, Canadian poplar, aspen); 5/4 stock = 1.25 bf/sf"),
+    # SHIPLAP, not T&G, since 2026-08-28 — a profile change and nothing else. The SPECIES
+    # does not move and must not: American basswood / Canadian poplar / aspen is a BURN-SAFETY
+    # spec (low thermal conductivity, a bench you can sit on at 190 F), not a finish choice.
+    # Shiplap because a rabbeted lap is a simpler knife grind than a tongue and groove and
+    # dries and moves more forgivingly in a room that cycles 60 F to 190 F; the board still
+    # reads as a board.
+    #
+    # `stock_bf_per_sqft` is RE-DERIVED, not carried over: it is thickness x (face width /
+    # coverage width), and the lap loses more face than the tongue did. 5/4 stock on a
+    # 5-1/2" face over a 5" coverage is 1.25 x 1.10 = 1.375 bf/sf, against 1.25 for the T&G
+    # (which was authored as bare thickness, with no face allowance at all). The order goes
+    # up; the wall area does not.
+    Material(tag="sauna-shiplap", name="Basswood/aspen shiplap sauna liner (5/4)",
+             r_per_inch=1.3,
+             perm_rating=20.0, hatch="lumber", color="#e6d4ae", finish="shiplap",
+             species="basswood", stock_bf_per_sqft=1.375,
+             nominal_quarters=5, milling_profile="shiplap",
+             source="notes/sauna_basement_wall_detail.md — low-conductivity species (American basswood, Canadian poplar, aspen); 5/4 stock, 5-1/2\" face over 5\" coverage = 1.375 bf/sf"),
     # --- species wood finishes (plans/TODO.md §Hardwood, 2026-08-02) -----------
     # RM-M-STUDY wainscot to 36". 4/4 stock: board feet = square feet.
     Material(tag="walnut-tg", name="Black walnut T&G wainscot (4/4)", r_per_inch=1.1,
              density=610.0, hatch="lumber", color="#5d4433",
              finish="clear-satin-hardwax-oil", species="walnut", stock_bf_per_sqft=1.0,
+             nominal_quarters=4, milling_profile="T&G",
              source="plans/TODO.md — first-floor study walnut paneling to 36\""),
     # The suite's four 6-1/8\" square tudor posts, ordered as 10' sections and cut down.
-    Material(tag="elm-timber", name="Elm timber 6-1/8\" square, S4S", r_per_inch=1.1,
+    # `nominal_quarters=8` is not decoration: a clear 6\" elm timber would check badly
+    # drying, so these are GLUED UP from 8/4 board stock (prices.toml records the same
+    # thing in prose). Five laminations of a 1-1/2\" dressed board make the 6-1/8\" face,
+    # and `takeoff/hardwood.py` derives that count from this field rather than scheduling
+    # four timbers nobody can saw.
+    Material(tag="elm-timber", name="Elm timber 6-1/8\" square, S4S (glue-up from 8/4)",
+             r_per_inch=1.1,
              density=560.0, hatch="lumber", color="#b08d5e",
              finish="clear-satin-hardwax-oil", species="elm",
+             nominal_quarters=8, milling_profile="S4S",
              source="plans/TODO.md — suite bedroom tudor posts, 10' sections cut to fit"),
+    # --- owner-milled white-oak stock (2026-08-28) -----------------------------------
+    #
+    # White oak off family land in southern Minnesota, rough-milled: boards commonly 12\"+
+    # wide and out to 18\", in 4/4 and 8/4. Owner-supplied stock wins on WIDTH and FLATNESS
+    # — a one-piece stool, shelf or tread — and loses on PROFILE, where a knife grind plus a
+    # molder setup cannot amortise over one house. That is why there is no oak baseboard or
+    # casing tag here and `finish-interior-trim-and-baseboard` stays a lump.
+    #
+    # These are PIECE goods, not coverage goods: each one is cut to a finished T x W x L, so
+    # they carry `nominal_quarters` (the stock a mill saws) and deliberately no
+    # `stock_bf_per_sqft` (a coverage factor, which would be meaningless on a stool). They
+    # appear in no assembly layer, no room finish and no paneling, so they enter no other
+    # take-off section — `haus millwork` is where they are ordered from.
+    Material(tag="oak-stool", name="White oak window stool, 8/4 S4S", hatch="lumber",
+             color="#c69c6d", finish="clear-satin-hardwax-oil", species="oak",
+             nominal_quarters=8, milling_profile="eased",
+             source="owner-milled white oak, ~$2/sf rough. 8/4 because the interior return on an outie window runs most of a 13 7/8\" wall and a 3/4\" board that wide will cup; the front edge is eased, not moulded (see the profile note above)"),
+    Material(tag="oak-shelf-8q", name="White oak shelving, 8/4 S4S", hatch="lumber",
+             color="#c69c6d", finish="clear-satin-hardwax-oil", species="oak",
+             nominal_quarters=8, milling_profile="S4S",
+             source="owner-milled white oak. 8/4 wherever the shelf is visible or LOADED: 1-1/2\" needs no stiffener and no edge banding at a 2'-6\" bay, and it is the thickness a climbable shelf wants (notes/pantry_climbable_shelving.md)"),
+    Material(tag="oak-shelf-4q", name="White oak shelving, 4/4 S4S", hatch="lumber",
+             color="#c69c6d", finish="clear-satin-hardwax-oil", species="oak",
+             nominal_quarters=4, milling_profile="S4S",
+             source="owner-milled white oak. 4/4 for the light-duty cases — a 12\"-deep bookcase shelf and a bath alcove shelf carry books and towels, not people"),
+    Material(tag="oak-tread", name="White oak stair tread, 8/4 bullnose", hatch="lumber",
+             color="#c69c6d", finish="clear-satin-hardwax-oil", species="oak",
+             nominal_quarters=8, milling_profile="bullnose",
+             source="owner-milled white oak. The one place a profile IS worth a setup: a tread nosing is R311.7.5.3 geometry, not decoration, and 28 identical pieces amortise one bullnose grind"),
     # --- the metal skins (2026-08-20; a fifth added 2026-08-26) ------------------
     # The house is clad in metal in FIVE specifications. They are all the same white PVDF
     # steel to look at; what separates them is SEAM PROFILE and GAUGE, and both are labour

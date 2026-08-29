@@ -27,8 +27,8 @@ from library import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES, STARTER_DO
 from params import (breezeway, foundations, main_deck, raised_garden, roof_trim,
                     second_deck, solar, sunken_garden)
 from plan import (appliance_types, assemblies, circuits, electrical, fixtures,
-                  furniture_types, lighting, lighting_types, mep, placeables, products,
-                  site, transitions, views, wind_clamps)
+                  furniture_types, lighting, lighting_types, mep, millwork, placeables,
+                  products, site, transitions, views, wind_clamps)
 from plan.storeys import attic, basement, garage, main, second
 
 format_version = 1
@@ -138,7 +138,7 @@ PLAN = (
          *raised_garden.BASEMENT_ELEMENTS, *foundations.BASEMENT_ELEMENTS,
          *mep.BASEMENT_ELEMENTS, *electrical.BASEMENT_ELEMENTS,
          *lighting.BASEMENT_LIGHTING,
-         *placeables.BASEMENT_PLACEABLES],
+         *placeables.BASEMENT_PLACEABLES, *millwork.BASEMENT_SHELVES],
     )
     .with_elements(
         "main",
@@ -146,7 +146,8 @@ PLAN = (
          *sunken_garden.MAIN_ELEMENTS,
          *breezeway.MAIN_ELEMENTS, *main_deck.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS,
          *electrical.MAIN_ELEMENTS, *lighting.MAIN_LIGHTING,
-         *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES],
+         *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES,
+         *millwork.MILLWORK, *millwork.MAIN_SHELVES],
     )
     .with_elements("garage", [*garage.ELEMENTS, *foundations.GARAGE_ELEMENTS,
                               *electrical.GARAGE_ELEMENTS,
@@ -160,9 +161,11 @@ PLAN = (
                                 *sunken_garden.SECOND_ELEMENTS, *mep.SECOND_ELEMENTS,
                                 *electrical.SECOND_ELEMENTS, *lighting.SECOND_LIGHTING,
                                 *placeables.SECOND_PLACEABLES,
-                                *second_deck.SECOND_ELEMENTS])
+                                *second_deck.SECOND_ELEMENTS,
+                                *millwork.SECOND_SHELVES])
     .with_elements("attic", [*attic.ELEMENTS, *roof_trim.ATTIC_ELEMENTS,
                              *mep.ATTIC_ELEMENTS, *electrical.ATTIC_ELEMENTS,
                              *solar.ATTIC_ELEMENTS, *lighting.ATTIC_LIGHTING,
-                             *placeables.ATTIC_PLACEABLES])
+                             *placeables.ATTIC_PLACEABLES,
+                             *millwork.ATTIC_SHELVES])
 )

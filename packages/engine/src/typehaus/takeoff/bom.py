@@ -54,6 +54,7 @@ from typehaus.takeoff.member_protection import member_protection_takeoff
 from typehaus.takeoff.sitework import footing_bedding_takeoff
 from typehaus.takeoff.stairs import stair_finish_takeoff
 from typehaus.takeoff.wall_structure import wall_structure_takeoff
+from typehaus.takeoff.hardwood import hardwood_takeoff
 from typehaus.takeoff.wood_surfaces import wood_surfaces_takeoff
 
 
@@ -110,6 +111,13 @@ def bill_of_materials(
         # carry ``also_in_envelope_layers`` / ``also_in_structural_solids`` /
         # ``also_in_floor_finishes``; the primary billing stays in those sections.
         "wood_surfaces": wood_surfaces_takeoff(model),
+        # The milling schedule: the same wood as a CUT LIST in rough stock — finished
+        # T x W x L, nominal quarters, rough board feet, and the glue-up flag. A view of
+        # ``wood_surfaces``, ``framing`` and ``stair_finish`` for everything it shares with
+        # them (the rows say which, ``also_in_*``); the stools and shelf boards are its own
+        # and are unpriced by design — the fabrication labour is a prices.toml allowance and
+        # the stock is owner-milled (→ takeoff/hardwood.py, ``haus millwork``).
+        "hardwood": hardwood_takeoff(model),
         # The rainscreen's base closure, by the lineal foot — the solids sweep counts the
         # strip, but in cubic feet, which is not how it is bought.
         "bug_screens": bug_screen_takeoff(model),

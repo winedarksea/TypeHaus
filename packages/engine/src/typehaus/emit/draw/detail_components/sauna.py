@@ -159,9 +159,9 @@ def sauna_benches(u_lo: float, u_hi: float, floor_z: float) -> list[IRNode]:
         z_top = floor_z + top_in
         z_bottom = z_top - cfg.SAUNA_BENCH_THK_IN
         nodes += rect_region(front, z_bottom, wall_u, z_top,
-                             "sauna-bench", "sauna-tg", "lumber", lineweight=0.4)
+                             "sauna-bench", "sauna-shiplap", "lumber", lineweight=0.4)
         nodes += rect_region(front, floor_z, front + cfg.SAUNA_BENCH_THK_IN, z_bottom,
-                             "sauna-bench-leg", "sauna-tg", "lumber", lineweight=0.3)
+                             "sauna-bench-leg", "sauna-shiplap", "lumber", lineweight=0.3)
     return nodes
 
 
@@ -205,7 +205,7 @@ def sauna_drop_ceiling(u_lo: float, u_hi: float,
     z_top = ceiling_underside_z - cfg.SAUNA_DROP_GAP_IN
     z_bottom = z_top - cfg.SAUNA_DROP_DEPTH_IN
     nodes = rect_region(u_lo, z_bottom, u_hi, z_top,
-                        "sauna-drop-ceiling", "sauna-tg", "lumber", lineweight=0.4)
+                        "sauna-drop-ceiling", "sauna-shiplap", "lumber", lineweight=0.4)
     for fraction in cfg.SAUNA_HANGER_FRACTIONS:
         u = u_lo + (u_hi - u_lo) * fraction
         nodes.append(Polyline(points=((u, z_top), (u, ceiling_underside_z)),

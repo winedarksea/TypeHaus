@@ -205,7 +205,7 @@ BOOKCASE = FurnitureType(
 #
 # Not "furniture" the way a sofa is — sauna benches are site-built joinery, scribed to the
 # room and made from the same low-conductivity stock as the wall liner (basswood/aspen, see
-# the ``sauna-tg`` material). They are catalogued here anyway because they are placed,
+# the ``sauna-shiplap`` material). They are catalogued here anyway because they are placed,
 # counted and dragged like every other free-standing object, and because the two dimensions
 # that matter are the same two a catalog carries: the run and the depth.
 #

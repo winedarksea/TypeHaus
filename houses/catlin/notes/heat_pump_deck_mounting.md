@@ -84,30 +84,61 @@ years before it is structural.
 
 ## Geometry, and why the legs are not under the feet
 
-The stand's legs are deliberately **not** at the cabinets' own bolt pattern. They are placed to
-land in joist bays clear of the three balcony beams, and the cabinet bolts to the cross-rails
-above them. Every leg is at least **6" off the nearest beam axis**.
+Gree publishes a foot-hole pattern per capacity, and it is not negotiable in one direction:
+the cast foot's obround slot runs the **width** way, so width has about 1/4" of travel and
+depth has none. Both drawings name the exact part number on the sheet.
 
 | | `EQ-M-HP1-OD` | `EQ-M-HP2-OD` |
 |---|---|---|
-| leg x | 8'-6", 9'-6" | 16'-6", 18'-6" |
-| leg y | -1'-3", -3'-11" (bay centres) | same |
+| part | `VIR24HP230V1R32AO` (Vireo **R32**) | `MUL30HP230V1R32AO` (Multi R32) |
+| cabinet W x H x D | 37 23/32 x 25 63/64 x 15 53/64 | 40 5/32 x 32 33/64 x 16 13/16 |
+| net weight | 92.6 lb | 145.5 lb |
+| feet, width / depth | 22 7/16" / **14 39/64"** | 25" / **15 19/32"** |
+| centre | x 9'-2", y -2'-10" | x 17'-6", y -2'-10" |
+| **frame** | **14 5/8" x 22 7/16"** | **24" x 25"** |
+| leg x | 8'-7", 9'-9" | 16'-6", 18'-6" |
+| leg y | -2'-2", -3'-6" (bay centres) | same |
 | nearest beam | `BM-SG-BLW` at 8'-0" | `BM-SG-BLC` at 18'-0" |
-| clear of its axis | 6" / 18" | 18" / 6" |
-| frame vs cabinet centre | 4" east (see below) | centred |
+| clear of its axis | 7" / 21" | 18" / 6" |
+| clear of a joist line | 8" | 8" |
 
-**HP1's frame is 4" east of its cabinet's centreline.** `BM-SG-BLW` runs under the cabinet's
-west edge, so a centred stand would put a leg on the beam. The legs carry the load and the
-anchors carry the wind, so eccentricity is the cheap side of that trade.
+**The frame is not the leg spacing, and conflating the two was the original error.** The legs
+answer to the *deck* — bay centres, six inches off a beam — and the feet answer to the
+*cabinet*. They cannot be the same four points: HP1's west foot line lands on `BM-SG-BLW`.
+The frame is the part that reconciles them, which is why it has its own dimensions above and
+why the rails under the feet must be continuous while the deck-facing members land only on
+the eight legs.
 
-**Six inches is the floor, not four.** The first cut put three legs 4" off a beam axis — only
-1 3/4" of clear to the face of a 4 1/2" 3-ply, which is not room for a base plate and its
-gasket. `mep.deck_equipment_support` failed them and the legs moved. The check caught the
-error that wrote it.
+The first cut of this file spaced the legs **12" apart in the depth direction**. That is
+shorter than either foot pattern: HP1's feet sit at ±7.30" and HP2's at ±7.80", so a pair of
+2x4 rails at 12" centres would have caught HP1's feet on the outer arris and **missed HP2's
+entirely**. Nothing in the model could have caught it, because until 2026-08-28 nothing in
+the model knew what the cabinets' feet measured.
 
-**The anchors sit in bays, not on joist lines.** `_reinforcement_members` snaps each
-reinforcement to the *nearest* joist line and blocks the bay either side at the load's own x.
-An anchor authored *on* a line lands on the joist and defeats the whole rule.
+**Two of the published cabinet dimensions were also wrong in the model.** `EQ-M-HP1-OD` was
+recorded as a Vireo **GEN3** — a different, R410A product line with a different foot pattern
+and a slot running the other way — and 6" too tall. `EQ-M-HP2-OD` was recorded at 37" wide,
+which is the width of the cabinet's *top*; its base is 40 5/32". With the true width and the
+old y, that unit stood within an inch of the balcony rim. Both are corrected in
+`plan/electrical.py`, with the document and page cited on the record.
+
+**Six inches from a beam axis is the floor, not four.** An early cut put three legs 4" off a
+centreline — 1 3/4" of clear to the face of a 4 1/2" 3-ply, not room for a base plate and its
+gasket. `mep.deck_equipment_support` failed them and the legs moved.
+
+**The reinforcement sits on the joist line; the anchors sit at the bay centres.** These are
+deliberately different points. `_reinforcement_members` snaps each reinforcement to the
+*nearest* joist line and blocks the bay either side at the load's own x — so one
+reinforcement on the line yields two blocks, and one anchor goes at the centre of each. Four
+reinforcements serve eight anchors. Authoring one per anchor instead needs eight, and where
+two of them straddle a single bay it emits that bay's block **twice**, at the same x: double
+lumber, double butyl, two coincident solids. This house did that until 2026-08-28.
+
+Every anchor was also 3" off a joist line in the first cut — inside the bay, but with 2 1/4"
+of clear to the joist face. The check reported all eight as correctly hosted, because it
+tested only that the anchor fell inside a *block's bounding box*, and a block spans the full
+bay from one joist line to the next. Blocking being present is not the anchor being in it.
+The check measures the distance to the joist lines directly now.
 
 ## 12", and what it costs
 
@@ -162,3 +193,33 @@ each other. The 12" in one and `_HP_STAND_HEIGHT_IN` in the other are one dimens
 twice. **Mind the datum** — `mount.elevation` measures from the storey datum (the joist tops),
 while the stand bears on the plank 1 1/2" higher, so the authored mount is 13 1/2" for a 12"
 stand. Authoring 12" put both cabinets below the tops of their own legs.
+
+Two holes in it were found on 2026-08-28 by using it, and both had the same shape — a
+plausible answer from a missing filter:
+
+* **It read the wrong deck.** The porch and the balcony share one plan footprint, so a
+  whole-plan outline search matched both condensers to the porch ten feet below them, and
+  then graded the *porch pillars'* post bases as the condensers' anchors.
+* **It read beams on the wrong storey.** The porch's back beams run east-west directly under
+  the balcony's anchors. Four anchors were reported as landing on a beam that no lag through
+  this deck could reach. The deck collector had been storey-scoped to fix the first bug; the
+  beam collector, one function away, had not.
+
+A check that reports confidently about geometry it has not scoped is worse than no check.
+Both are pinned by tests.
+
+## Still open
+
+* **Clearances are still not authored.** They are now known — Gree publishes air-outlet 78",
+  above 20", to a wall 20", coil side 12" for the Vireo R32, and 200/50/50/30 cm for the
+  Multi R32 — but `EquipmentType.clearance` is a `(front, back, left, right)` tuple and the
+  cabinets are rotated 90°, so which published face maps to which tuple slot has to be
+  established before authoring, not guessed. `advisory.clearance_overlap` would grade them
+  for free once it is.
+* **The two units face each other across 84".** Worth checking against the 78" air-outlet
+  figure once the orientation above is settled.
+* **The MUL30's expansion-screw count falls in a gap** in Gree's own ladder (it covers
+  2300–5000 W, 6000–8000 W and 10000–16000 W; this unit is 8.3 kW). Eight is the defensible
+  read. That ladder governs fixing the *support* to the structure, not the unit to the
+  support — the unit-to-support connection is four bolts, one per cast foot, with no torque
+  or size published for it anywhere in either manual.

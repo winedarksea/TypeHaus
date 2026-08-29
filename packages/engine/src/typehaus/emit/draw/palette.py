@@ -135,7 +135,7 @@ DETAIL_FILL: dict[str, str] = {
     "pbr-panel-26": "#2f2f2f",
     "fiber-cement": "#e6e6e6",
     "cedar-tg": "#c8a26a",
-    "sauna-tg": "#e6d4ae",
+    "sauna-shiplap": "#e6d4ae",
     "resilient-channel": "#91979d",
     # detail components + context, not assembly layers
     "aggregate": "#7f7f7f",
@@ -179,7 +179,7 @@ DETAIL_HATCH: dict[str, str] = {
     "spf": "lumber",
     "lsl": "lumber",
     "cedar-tg": "lumber",
-    "sauna-tg": "lumber",
+    "sauna-shiplap": "lumber",
     "osb": "osb",
     "struct-1-plywood": "osb",
     "plywood-subfloor": "osb",

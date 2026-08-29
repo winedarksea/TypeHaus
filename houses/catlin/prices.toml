@@ -329,18 +329,25 @@
 "6x6" = { material = { low = 5, high = 8.5 }, labour = { low = 2.5, high = 5 } }  # 8 LF
 # The stair members, repriced 2026-08-08b now that species is settled: RED OAK everywhere
 # except the basement flight (ST-B2M), which is heavy-duty carpet over a plain substrate.
-# `stair_finish` splits the three flights — ST-B2M 11 treads, ST-M2S 13, ST-S2A 15 — but
-# `framing_by_size` aggregates all 39 into one `deck 11x1.5` row, so this rate is a
-# deliberate blend and moves if the split does:
+# `stair_finish` splits the three house flights — ST-B2M 12 treads, ST-M2S 13, ST-S2A 15 —
+# but `framing_by_size` aggregates all 40 into one `deck 11x1.5` row, so this rate is a
+# deliberate blend and moves if the split does. CORRECTED 2026-08-28: this read "ST-B2M 11
+# ... = 39, 28 oak / 11 carpet" and was one revision behind the model, which resolves 12.
+# The OAK count was right; the carpet count and the total were not.
 #   28 red-oak treads at $60-120 each. A 48" x 11-1/2" x 1" unfinished red oak tread is
 #   $50-56 (floormechanics, homedepot EVERMARK, woodstairco); this profile is 1-1/2"
 #   thick and up to 44" wide, so it needs the thicker blank at the top of that.
-#   11 carpeted treads at $30-70 each all-in: a plain 1-1/2" tread substrate ($15-25) plus
+#   12 carpeted treads at $30-70 each all-in: a plain 1-1/2" tread substrate ($15-25) plus
 #   heavy-duty stair carpet and pad over tread and riser (~5 SF each at $3-8/SF).
-#   -> $2,030-4,110 over the 288 LF ordered = $7.05-14.27/LF.
-# The order quantity is generous (36 pieces of 8' stock for 39 treads ~3.3' wide, one
+#   -> $2,040-4,200 over the 288 LF ordered = $7.08-14.58/LF.
+# The order quantity is generous (36 pieces of 8' stock for 40 treads ~3.3' wide, one
 # tread per piece) which is why the $/LF looks low against a $/LF of finished tread.
-"deck 11x1.5" = { material = { low = 7, high = 14.5 }, labour = { low = 11.5, high = 23 } }  # 288 LF — stair treads (blend: 28 oak, 11 carpet)
+# ** The 28 oak treads are ALSO on `haus millwork` now (2026-08-28) ** — as owner-milled
+# rough stock, in board feet, which is a different question from what a tread costs
+# installed. The milling schedule is a VIEW and adds nothing to this estimate; if the owner
+# mills the treads rather than buying them, the MATERIAL half of this row is what falls
+# away, not the labour half.
+"deck 11x1.5" = { material = { low = 7, high = 14.5 }, labour = { low = 11.5, high = 23 } }  # 288 LF — stair treads (blend: 28 oak, 12 carpet)
 # The two landing decks, one per flight that has one. `stair_finish` gives ST-B2M a widest
 # tread of 3.31' and ST-M2S 3.53', each ~2" narrower than one of these decks, which is how
 # the 42" deck is read as the carpeted basement flight and the 44.625" as the oak one.
@@ -1635,7 +1642,7 @@
 # foam. What is left is the ROOF's two 3" courses, which are untouched by the truss wall.
 "polyiso" = { material = { low = 1.5, high = 2.3 }, labour = { low = 1.1, high = 2.1 } }  # 2873.1 SF — roof CI only, ~2x the labour of cavity batt
 "polyiso-foil" = { material = { low = 1.3, high = 2.4 }, labour = { low = 1.3, high = 2.3 } }  # 297.4 SF
-"sauna-tg" = { material = { low = 4.5, high = 9 }, labour = { low = 6, high = 11 } }  # 297.4 SF
+"sauna-shiplap" = { material = { low = 4.5, high = 9 }, labour = { low = 6, high = 11 } }  # 297.4 SF — retagged from `sauna-tg` 2026-08-28 (T&G -> shiplap). Same species, same 5/4 stock, same $/SF band: the profile changes the mill's face-width yield, not the installed rate
 # ** THE BIGGEST LINE IN THE HOUSE, and as of 2026-08-20 it is FOUR lines. ** One
 # `standing-seam` row used to carry all 6,322 SF at one rate. That was wrong in a specific,
 # expensive way: it billed the whole house at the mechanically-seamed roof's labour, and
@@ -2047,7 +2054,7 @@
 # and the BOM says which by carrying `also_in_*`. Only `walnut-tg` is priced here, because
 # only `walnut-tg` is billed nowhere else.
 #   oak          also_in_floor_finishes  -> priced in [floor_finishes], 351 SF, same number
-#   sauna-tg     also_in_envelope_layers -> priced in [envelope_layers]
+#   sauna-shiplap also_in_envelope_layers -> priced in [envelope_layers]
 #   elm-timber   also_in_structural_solids, and carries no order_area_sqft (bills as timber)
 #   tile         the RM-B-SAUNA override, 52 SF of the same tile [floor_finishes] prices
 # Basis for walnut: hardwood T&G paneling material $2-6/SF for common species, and walnut is
@@ -2056,7 +2063,7 @@
 # $/SF on the order quantity, by material tag
 # "elm-timber" =    # 0 SF — timber, bills in structural_solids
 # "oak" =    # 351 SF — billed in [floor_finishes]
-# "sauna-tg" =    # 278 SF — billed in [envelope_layers]
+# "sauna-shiplap" =    # 278 SF — billed in [envelope_layers]
 # "tile" =    # 52 SF — billed in [floor_finishes]
 "walnut-tg" = { material = { low = 8, high = 18 }, labour = { low = 6, high = 12 } }  # 51 SF
 
@@ -3094,7 +3101,16 @@ roof-ventilated-underlayment-mat = { low = 1.00, high = 1.85, unit = "SF", drive
 # for it (takeoff/cost_codes.py::KEY_PATTERNS), and a key matching no prefix falls through
 # to the section default and gets SCHEDULED AS EARTHWORK. This is shop-built casework —
 # 12 30 00, the same trade as the `cabinet-plywood` envelope row that bills its case backs.
-cabinet-study-bookcase-wall = { low = 2400, high = 5200 }
+# ** REDUCED TO ITS LABOUR/FABRICATION SHARE, 2026-08-28, for the vent mat's reason. ** The
+# five bays' SHELF STOCK is modelled now — `SB-A-STUDY` (plan/millwork.py) carries 32 boards
+# of 8/4 white oak, which `haus millwork` orders as rough board feet. What is left here is the
+# shop work the model still cannot see: the partitions, the dados, the face frames, the flush
+# end panel, the scribe to the 4:12 rake, the finish, and the delivery and set. That is the
+# bulk of a $175-350/LF custom built-in and it does not move. ~$300-800 of the old band was
+# shelf boards, so the row goes to $2,100-4,400. The door leaf is still NOT here — it is
+# `openings."DT-INT-BOOKCASE30"`, and billing it twice is still the one failure mode this
+# section cannot catch.
+cabinet-study-bookcase-wall = { low = 2100, high = 4400 }
 # THE CODE MINIMUM ONLY — eaves to 24" inside the wall line, plus valleys, per MN. CONFIRMED
 # AS BASE SCOPE by the owner 2026-08-20, and for a stated reason rather than to save money:
 # this roof is a highly insulated assembly under a low-friction standing seam over a quality
@@ -3270,9 +3286,19 @@ finish-tile-backer-and-waterproofing = { low = 4000, high = 8000 }
 # solid-brass privacy set on a solid-core door, which is why the range is 3.6x.
 finish-door-hardware = { low = 84, high = 306, unit = "ea", driver = "openings.count[kind=door]" }
 # DRIVEN 2026-08-27 off the window count — 45 (the "41 windows" this comment used to claim was
-# already four out of date, which is the point). $73-164 per window of stool stock, apron,
-# jamb extension and the carpenter's hour.
-finish-window-stools-and-aprons = { low = 73, high = 164, unit = "ea", driver = "openings.count[kind=window]" }
+# already four out of date, which is the point). It was $73-164 per window covering stool
+# STOCK, apron, jamb extension and the carpenter's hour.
+# ** REDUCED TO ITS LABOUR/FABRICATION SHARE, 2026-08-28. ** The stool stock is modelled now:
+# `MillworkStandard` (plan/millwork.py) derives one `WindowStool` per CATLIN_EXT_2X6 window —
+# 39 of the 45 — and `haus millwork` orders the 8/4 white oak they are cut from. Leaving this
+# row whole would bill that board twice. The same split the vent-mat row above documents:
+#   stool board, 39 windows, ~10 1/8" x 8/4 oak      -> modelled, ordered by `haus millwork`
+#   apron, jamb extension, mitres, scribe, install   -> here, and still real
+#   the 6 out-of-scope stools (plant/sauna/garage)   -> here, bought not milled; their board
+#                                                       is the residual at the top of the band
+# ~$18-45 of the old band was stool stock, so the row goes to $55-125. It stays PER WINDOW
+# and stays on all 45: the fabrication is the same work whoever sawed the board.
+finish-window-stools-and-aprons = { low = 55, high = 125, unit = "ea", driver = "openings.count[kind=window]" }
 # DRIVEN 2026-08-27 off stair tread length — 143.4 LF over four stairs, which is what a nosing
 # is bought by. `stair_finish` is one of the two tables UNPRICED_VIEWS declares: the tread and
 # riser STOCK bills in [framing], and this is the nosing on its edge. $7-21/LF; the seven

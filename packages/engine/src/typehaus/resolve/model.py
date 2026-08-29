@@ -652,6 +652,70 @@ class ResolvedPaneling:
 
 
 @dataclass(frozen=True)
+class ResolvedWindowStool:
+    """One window's interior sill board, sized (→ model/millwork.py).
+
+    ``depth_m`` is ``None`` when the window type authors no ``frame_depth``: the derivation
+    has an unknown term, so the stool reports UNKNOWN and carries no depth rather than
+    guessing one (#32). ``return_m`` and ``frame_depth_m`` are the derivation's two terms,
+    carried so a schedule can show its own arithmetic instead of asserting a number.
+    """
+
+    uid: str
+    tag: str
+    storey: str
+    window_ref: str
+    wall_tag: str
+    assembly: str
+    material_ref: str
+    thickness_m: float
+    length_m: float          # finished length: rough opening width + 2 x horn
+    depth_m: float | None    # finished depth, front edge to back
+    overhang_m: float
+    horn_m: float
+    profile: str
+    # Interior finish face -> window mount plane, off the host wall's own layers. This is
+    # why the four host assemblies give four different stool depths, and why nothing here
+    # is authored per window.
+    return_m: float | None
+    frame_depth_m: float | None
+    # True when derived from the house's ``MillworkStandard`` rather than authored as its
+    # own ``WindowStool``. An authored stool always wins for its window.
+    derived: bool = True
+
+
+@dataclass(frozen=True)
+class ResolvedShelf:
+    """One bay's worth of identical shelf boards inside a :class:`ResolvedShelfBank`."""
+
+    bay_index: int
+    width_m: float
+    depth_m: float | None
+    clear_height_m: float
+    count: int
+
+
+@dataclass(frozen=True)
+class ResolvedShelfBank:
+    """A run of shelves in one case, bay by bay (→ model/millwork.py).
+
+    ``depth_m`` is ``None`` only when the bank authors none and its host resolves to
+    neither a wall pocket nor a placeable footprint — UNKNOWN, not a default depth.
+    """
+
+    uid: str
+    tag: str
+    storey: str
+    host: str
+    host_kind: str  # "wall" | "placeable"
+    material_ref: str
+    thickness_m: float
+    depth_m: float | None
+    profile: str
+    shelves: tuple[ResolvedShelf, ...]
+
+
+@dataclass(frozen=True)
 class ResolvedRoom:
     uid: str
     tag: str
@@ -970,6 +1034,9 @@ class ResolvedModel:
     rooms: list[ResolvedRoom] = field(default_factory=list)
     ceilings: list[ResolvedCeiling] = field(default_factory=list)
     panelings: list[ResolvedPaneling] = field(default_factory=list)
+    # Interior millwork: derived stools and shelf banks (→ resolve/millwork.py).
+    window_stools: list[ResolvedWindowStool] = field(default_factory=list)
+    shelf_banks: list[ResolvedShelfBank] = field(default_factory=list)
     conditions: list[BoundaryCondition] = field(default_factory=list)
     stack_edges: list[StackEdge] = field(default_factory=list)
     # Derived wall-line chains (#43): collinear within a storey, stacked across them,
@@ -1010,7 +1077,8 @@ class ResolvedModel:
         for collection in (
             self.walls, self.openings, self.solids, self.construction_returns, self.roofs,
             self.stairs, self.floors, self.soffits, self.braces, self.floor_heat, self.rooms,
-            self.panelings, self.pipe_runs, self.pipe_accessories, self.sleeves, self.ducts,
+            self.panelings, self.window_stools, self.shelf_banks,
+            self.pipe_runs, self.pipe_accessories, self.sleeves, self.ducts,
             self.conduits, self.light_runs, self.solar_panels, self.footing_beddings,
             self.canvas_objects,
         ):

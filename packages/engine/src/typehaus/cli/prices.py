@@ -286,6 +286,12 @@ UNPRICED_VIEWS: dict[str, str] = {
     # since 2026-08-27 an allowance DRIVEN off this very table's ``tread_lf``, so the
     # quantity is no longer unread, only unpriced by a section of its own.
     "stair_finish": "treads bill in [framing]; nosings drive the finish-transitions allowance",
+    # The milling schedule. Everything it shares with another section says so (``also_in_*``)
+    # and bills there; what is only here — the stool and shelf boards — is deliberately
+    # unpriced: the stock is owner-milled at a rate that is not a market price, and the
+    # fabrication labour is already in the finish-window-stools and cabinet-study-bookcase
+    # allowances. Pricing it would bill that work twice (→ takeoff/hardwood.py).
+    "hardwood": "a rough-stock VIEW; shared rows bill in their own sections, stools and shelves in [allowances]",
     # Every one of these is a schedule *view* of ElectricalDevice placeables, which price
     # per type in [placeables] (the ED-T-* families). Pricing them again would double-count.
     "electrical_devices": "priced in [placeables] as the ED-T-* types",

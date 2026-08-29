@@ -55,7 +55,7 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
     .some((layer) => isAluminumDeckBoard(layer.material));
   if (deckBoards) applyDeckBoardUv(geo, center);
   // A boarded ceiling: `resolve/ceilings.py` puts the ceiling stack's FINISH layer material
-  // straight on the solid, so the sauna's T&G arrives here as `material: "sauna-tg"` with no
+  // straight on the solid, so the sauna's shiplap arrives here as `material: "sauna-shiplap"` with no
   // assembly to walk. Boards run along the room's long axis — a ceiling's furring is
   // authored "horizontal", which says nothing about which horizontal.
   const plankStyle = !deckBoards && isWoodPlank(solid.material)

@@ -89,7 +89,7 @@ WALL_PARITY = [
     ("basementconstruction", "slab/slab_thickness_in", ("CATLIN_SLAB_FLOOR", "concrete")),
     ("basementconstruction", "slab/xps_under_in", ("CATLIN_SLAB_FLOOR", "xps-below")),
     # Sauna liner, per notes/sauna_basement_wall_detail.md + the shower detail's params.
-    ("saunashowerdetail", "finish/tg_in", ("SAUNA_2X4", "tg-liner")),
+    ("saunashowerdetail", "finish/tg_in", ("SAUNA_2X4", "shiplap-liner")),
     ("saunashowerdetail", "finish/furring_in", ("SAUNA_2X4", "liner-furring")),
     ("saunashowerdetail", "finish/polyiso_in", ("SAUNA_2X4", "foil-polyiso")),
     ("saunashowerdetail", "adjacent_wall/stud_depth_in", ("SAUNA_2X4", "stud")),

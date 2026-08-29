@@ -31,6 +31,7 @@ from typehaus.cli.cmd_serve import _find_ui_dist, serve  # noqa: E402,F401
 from typehaus.cli.cmd_new import new  # noqa: E402,F401
 from typehaus.cli.cmd_doctor import doctor  # noqa: E402,F401
 from typehaus.cli.cmd_tasks import costs_import, tasks  # noqa: E402,F401
+from typehaus.cli.cmd_millwork import millwork  # noqa: E402,F401
 
 
 def main() -> None:

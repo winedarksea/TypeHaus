@@ -18,7 +18,7 @@ source:
 
 - Interior sauna liner (walls + ceiling): 2" foil-faced polyiso (taped seams). Polyiso is held in place with 1/2" plywood furring strips; fasten per IRC Table R703.15.2 (table is for exterior cladding attachment—verify applicability and embedment for interior concrete/framing substrates).
 
-- Interior finish over furring: 5/4 tongue-and-groove boards (1" actual). Use low thermal conductivity species such as American basswood, Canadian poplar, or aspen.
+- Interior finish over furring: 5/4 **shiplap** boards (1" actual), rabbeted lap, 5-1/2" face over 5" coverage. Use low thermal conductivity species such as American basswood, Canadian poplar, or aspen — **the species is the burn-safety spec and does not change with the profile.** It was tongue-and-groove until 2026-08-28; the swap is a simpler knife grind for the mill and a profile that moves more forgivingly through a 60 F to 190 F cycle. It changes the board-feet ordered (a lap buries more face width than a tongue) and nothing else: same species, same 5/4 stock, same wall area, same installed $/SF.
 
 - Wall/ceiling junction: detail as continuous layers (insulation meets insulation, wood meets wood). Tape/flash seams as required for vapor control and durability.
 

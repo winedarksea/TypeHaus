@@ -10,6 +10,9 @@
 // Two recipes, because a paneling board and a floor strip are not the same product:
 //   • `tg-board` — 3½" exposed face, a V-groove at each joint, continuous runs. The sauna
 //     liner is 7'-6" and the wainscot 3', so neither has end joints worth drawing.
+//   • `shiplap` — 5½" exposed face, a wider reveal at each joint, continuous runs. The sauna
+//     liner became shiplap on 2026-08-28 and would otherwise have gone on rendering as T&G
+//     forever: the `*-tg` ref inference below cannot see a profile change that renames the tag.
 //   • `strip-floor` — 2¼" strip with butt end joints on a hashed stagger, and the highest
 //     tone jitter in the house: strip oak is genuinely that variegated.
 //
@@ -67,21 +70,36 @@ const STRIP_FLOOR_STYLE: PlankStyle = {
  * The finish recipes a wood material can name via its authored `Material.finish`. Keys are the
  * engine's finish vocabulary (model/materials.py), the same contract MASONRY_STYLES follows.
  */
+// 5/4 shiplap: a 1x6 board shows ~5½" of face once the rabbet is lapped, so the module is
+// wider than the T&G's and the reveal at each joint is a broader shadow line. Drawn with the
+// same `vee` joint the T&G uses — a square reveal and a V-groove are the same channel at this
+// scale, and adding a third joint profile to `buildPlankMaps` would buy nothing visible.
+const SHIPLAP_STYLE: PlankStyle = {
+  key: "shiplap", faceWidthM: 0.1397, boardsPerTile: 4, boardLenM: 0, lengthsPerTile: 1,
+  jointFraction: 0.045, jointProfile: "vee", jitter: 0.07, grain: 0.35,
+};
+
 export const WOOD_PLANK_STYLES: Readonly<Record<string, PlankStyle>> = {
   "tg-board": TG_BOARD_STYLE,
+  "shiplap": SHIPLAP_STYLE,
   "strip-floor": STRIP_FLOOR_STYLE,
 };
 
 // Flooring refs that are laid as strips rather than as paneling. Deliberately explicit: the
 // `familyOf` substring table in nordic/palette.ts has no wood-species needles at all (it
-// returns null for `oak`, `sauna-tg`, `walnut-tg` and `cedar-tg` alike), and adding some there
+// returns null for `oak`, `sauna-shiplap`, `walnut-tg` and `cedar-tg` alike), and adding some there
 // would move colour resolution too — plus its Python mirror in emit/draw/palette.py.
 const STRIP_FLOOR_REFS = new Set(["oak", "lvp"]);
 
-/** True when a T&G paneling ref: the library names these `<species>-tg` by convention. */
-function isTongueAndGrooveRef(materialRef: string | null | undefined): boolean {
+/**
+ * True when a solid-board paneling ref. The library names T&G `<species>-tg` by convention;
+ * a shiplap says so in the tag (`sauna-shiplap`). The shiplap needle is not optional — the
+ * tag no longer ends in `-tg`, so without it a lined sauna would fall out of `isWoodPlank`
+ * entirely and render as flat fill, which is worse than rendering as the wrong profile.
+ */
+function isBoardPanelingRef(materialRef: string | null | undefined): boolean {
   const s = (materialRef ?? "").toLowerCase();
-  return s.endsWith("-tg") || s.includes("tongue");
+  return s.endsWith("-tg") || s.includes("tongue") || s.includes("shiplap");
 }
 
 /** True when a surface's material should be finished as wood boards. */
@@ -89,7 +107,7 @@ export function isWoodPlank(materialRef: string | null | undefined): boolean {
   if (!materialRef) return false;
   const s = materialRef.toLowerCase();
   if (WOOD_PLANK_STYLES[s]) return true;
-  return isTongueAndGrooveRef(s) || STRIP_FLOOR_REFS.has(s);
+  return isBoardPanelingRef(s) || STRIP_FLOOR_REFS.has(s);
 }
 
 /**
@@ -103,8 +121,9 @@ export function plankStyleFor(
 ): PlankStyle {
   const declared = finish ? WOOD_PLANK_STYLES[finish] : undefined;
   if (declared) return declared;
-  return STRIP_FLOOR_REFS.has((materialRef ?? "").toLowerCase())
-    ? STRIP_FLOOR_STYLE : TG_BOARD_STYLE;
+  const ref = (materialRef ?? "").toLowerCase();
+  if (STRIP_FLOOR_REFS.has(ref)) return STRIP_FLOOR_STYLE;
+  return ref.includes("shiplap") ? SHIPLAP_STYLE : TG_BOARD_STYLE;
 }
 
 /**

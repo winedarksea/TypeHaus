@@ -950,34 +950,68 @@ PORCH_JOISTS = FloorSystem(
 # `notes/beam_water_protection.md` exists to close. A fastener that penetrates the waterproof
 # plane goes into something we can cut out from below and put back. Blocking is that thing.
 #
-# ** THE ANCHORS SIT IN THE BAYS, NOT ON THE JOIST LINES. ** ``_reinforcement_members``
-# (resolve/floors.py) snaps each reinforcement to the NEAREST joist line and lays one block
-# in the bay either side of it, at the load's own x. An anchor authored on a joist line
-# therefore lands on the joist and defeats the rule. Every y below is inside a bay, 3" clear
-# of the joist faces either side; the joist lines on this deck fall at
-# -0'-10", -1'-6", -2'-10", -4'-2", -5'-6", -6'-10", -8'-2", -9'-6".
+# ** THE ANCHORS SIT AT BAY CENTRES, AND THE REINFORCEMENT SITS ON THE JOIST LINE. **
+# ``_reinforcement_members`` (resolve/floors.py) snaps each reinforcement to the NEAREST
+# joist line and lays one block in the bay either side of it, at the load's own x. So the
+# reinforcement and the anchor are deliberately NOT the same point: put the reinforcement on
+# a joist line and it hands you two blocks, one either side; put an anchor at the centre of
+# each of those blocks and both holes are 8" from any joist. Authoring a reinforcement AT
+# each anchor instead — which is what this file did until 2026-08-28 — costs twice the
+# reinforcements for the same eight holes, and where two of them straddle one bay it emits
+# the same block twice, at the same x, and bills the lumber and the butyl for both.
+#
+# The joist lines on this deck fall at -0'-10" (rim), -1'-6", -2'-10", -4'-2", -5'-6",
+# -6'-10", -8'-2", -9'-6". One reinforcement per x-line at y = -2'-10" therefore blocks the
+# bays -1'-6"..-2'-10" and -2'-10"..-4'-2", and the two anchors go at their centres,
+# -2'-2" and -3'-6".
+#
+# The first cut of this put every anchor 3" off a joist line — inside the bay, but with only
+# 2 1/4" of clear to the joist face, which is not room for a sealed base plate and is one
+# layout error from the joist itself. Nothing caught it, because
+# ``mep.deck_equipment_support`` tested only that the anchor fell inside a BLOCK's bounding
+# box — and a block spans the full bay, so an anchor sitting on a joist line is inside it
+# too. The check now measures the distance to the joist lines directly. Both mistakes were
+# the same mistake: proving a host exists is not proving the anchor found it.
 #
 # ** AND CLEAR OF THE THREE BEAM BANDS. ** A 3-2x12 is 4 1/2" wide, so BM-SG-BLW/BLC/BLE
-# occupy x 7'-9 3/4"..8'-2 1/4", 17'-9 3/4"..18'-2 1/4" and 27'-9 3/4"..28'-2 1/4". Every leg
-# below clears its nearest band by at least 1 3/4".
-#
-# ** SIX INCHES FROM A BEAM AXIS IS THE FLOOR, NOT FOUR. ** The first cut of these
-# coordinates put three legs 4" off a beam centreline, which is only 1 3/4" of clear to the
-# face of a 4 1/2" 3-ply, and `mep.deck_equipment_support` failed them. It was right to: a
+# occupy x 7'-9 3/4"..8'-2 1/4", 17'-9 3/4"..18'-2 1/4" and 27'-9 3/4"..28'-2 1/4". Six
+# inches from a beam AXIS is the floor, not four: the first cut put three legs 4" off a
+# centreline, which is 1 3/4" of clear to the face of a 3-ply, and the check failed them. A
 # base plate that has to seal against the plank needs room for the plate and its butyl
 # gasket, and a plate lapping onto the beam puts the next fastener back where this whole
-# detail is trying not to be. Every leg below is at least 6" off the nearest beam axis.
+# detail is trying not to be.
 #
-# HP2 straddles BM-SG-BLC symmetrically, 12" either side of the cabinet's own centreline.
-# HP1 cannot: BM-SG-BLW runs under its west edge, so its frame sits 4" east of the cabinet
-# centre with both legs east of the beam. The legs carry the load and the ANCHORS carry the
-# wind, so 4" of eccentricity under a bolted-down 125 lb cabinet is the cheap side of this
-# trade — the expensive side is a hole in a beam.
-_HP_STAND_LEG_X = {"A": (8.5, 9.5),      # EQ-M-HP1-OD — both east of BM-SG-BLW at x=8'-0"
-                   "B": (16.5, 18.5)}    # EQ-M-HP2-OD — straddling BM-SG-BLC at x=18'-0"
-# Both cabinets are rotated 90 deg, so each is ~38" long in y; these two lines sit 3" inside
-# its north and south faces and 32" apart, which is the cross-rail spacing.
-_HP_STAND_LEG_Y = (-1.25, -(3.0 + 11.0 / 12.0))
+# ** THE LEGS ARE NOT UNDER THE FEET, AND THE FRAME IS WHAT RECONCILES THEM. ** These are the
+# numbers this file got wrong for a day, so they are written out. Gree publishes a foot-hole
+# pattern per capacity, and it is not adjustable in the depth direction — the cast foot's
+# obround slot runs the WIDTH way, so width has about 1/4" of travel and depth has none:
+#
+#   EQ-M-HP1-OD  VIR24HP230V1R32AO   feet 22 7/16" (width) x 14 39/64" (depth)   92.6 lb
+#   EQ-M-HP2-OD  MUL30HP230V1R32AO   feet 25"      (width) x 15 19/32" (depth)  145.5 lb
+#
+# The legs below are on NEITHER of those patterns, and that is correct rather than sloppy:
+# leg positions are decided by the deck (bay centres, beam clearance) and foot positions by
+# the cabinet, and the two cannot both be satisfied by one set of points — HP1's west foot
+# line lands on BM-SG-BLW. The frame is the part that spans between them, so it is sized to
+# reach the feet and land on the legs, and each frame's real size is recorded on
+# ``EQUIP_STAND_ALUM`` in plan/assemblies.py:
+#
+#   HP1 frame 14 5/8" (depth) x 22 7/16" (width) — legs 14" x 16", feet essentially over them
+#   HP2 frame 24"     (depth) x 25"      (width) — legs 24" x 16", feet inboard of the legs
+#
+# A 12" leg spacing, which is what this file carried first, is SHORTER than either foot
+# pattern: HP2's feet would have missed a 12"-spaced pair of rails outright.
+#
+# Both units moved to centre their own mass over their legs (2026-08-28). HP1 went 6" east
+# and both went 3" south; the alternative was a frame 4" eccentric under a bolted-down
+# cabinet, and moving a condenser on an open balcony costs nothing.
+_HP_STAND_LEG_X = {"A": (103.0 / 12.0, 117.0 / 12.0),   # EQ-M-HP1-OD, centred on x = 9'-2"
+                   "B": (198.0 / 12.0, 222.0 / 12.0)}   # EQ-M-HP2-OD, centred on x = 17'-6"
+# Bay centres, 8" clear of the joist lines either side, symmetric about y = -2'-10" — which
+# is both the units' own centreline and the joist line the reinforcements sit on.
+_HP_STAND_LEG_Y = (-26.0 / 12.0, -42.0 / 12.0)
+#: The joist line each frame's two blocks straddle. One reinforcement per x-line, here.
+_HP_BLOCK_LINE_Y = -34.0 / 12.0
 _HP_STAND_HEIGHT_IN = 12.0
 # Which unit each frame carries, for the reinforcement `source` and the check's cross-ref.
 _HP_STAND_UNIT = {"A": "EQ-M-HP1-OD", "B": "EQ-M-HP2-OD"}
@@ -986,6 +1020,8 @@ _HP_STAND_AT = tuple(
     for key in ("A", "B")
     for index, (x, y) in enumerate(
         ((lx, ly) for lx in _HP_STAND_LEG_X[key] for ly in _HP_STAND_LEG_Y), start=1))
+#: One reinforcement per (unit, x-line) — four, not eight. See the block comment above.
+_HP_BLOCK_AT = tuple((key, x) for key in ("A", "B") for x in _HP_STAND_LEG_X[key])
 
 BALCONY_JOISTS = FloorSystem(
     uid="SGFS02AAAA", tag="FS-SG-DECK",
@@ -1007,7 +1043,11 @@ BALCONY_JOISTS = FloorSystem(
     # the dielectric. That it also keeps the fastener penetrations sealed is the bonus.
     top_protection=_BEAM_TAPE,
     # One block per heat-pump stand leg — the sacrificial member every anchor lands in, and
-    # the reason the eight penetrations are survivable. ``plies=1`` is load-bearing: it makes
+    # the reason the eight penetrations are survivable. FOUR reinforcements make those eight
+    # blocks, not eight: each sits ON the y = -2'-10" joist line and lays a block in the bay
+    # either side, and the anchors go at those blocks' centres. See ``_HP_BLOCK_AT`` above
+    # for why authoring one per anchor instead double-emits a block.
+    # ``plies=1`` is load-bearing: it makes
     # ``_reinforcement_members`` lay ZERO sister joists (``range(plies - 1)`` is empty) and
     # only the two blocks, because what this needs is a fastener host, not a stiffened joist.
     # The blocks inherit ``top_protection`` above — "blocking" is in
@@ -1015,10 +1055,12 @@ BALCONY_JOISTS = FloorSystem(
     # with no further wiring, and the butyl is under the base plate by construction.
     reinforcements=tuple(
         JoistReinforcement(
-            at=pt(ft(_hx), ft(_hy)), plies=1, member=SPEC.balcony_joist,
-            source=f"anchor host for {_HP_STAND_UNIT[_hk]} stand leg {_hi} — sacrificial, "
-                   f"replaceable from the porch below without touching a joist or a beam")
-        for _hk, _hi, _hx, _hy in _HP_STAND_AT),
+            at=pt(ft(_hx), ft(_HP_BLOCK_LINE_Y)), plies=1, member=SPEC.balcony_joist,
+            source=f"anchor host for the {_HP_STAND_UNIT[_hk]} stand's x={_hx * 12:.0f}in "
+                   f"leg pair — one block either side of this joist line, an anchor at the "
+                   f"centre of each. Sacrificial: replaceable from the porch below without "
+                   f"touching a joist or a beam")
+        for _hk, _hx in _HP_BLOCK_AT),
     # ``service="deck"`` is what puts this under IRC R507 / AWC DCA6 instead of the interior
     # 40-psf floor table — see checks/structural/deck.py.
     service="deck",

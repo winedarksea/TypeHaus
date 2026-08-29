@@ -344,7 +344,7 @@ CONDENSATE = [
 # part this model cannot hold — TR-SG-LEADER-SE is a Downspout, not a PipeRun.
 HP_CONDENSATE = [
     PipeRun(uid="SGPC01AAAA", tag="PR-S-HP1-COND", system=PipeSystem.DRAIN,
-            path=(pt(ft(8, 8), ft(-4, -2)), pt(ft(8, 8), ft(-9, -6))),
+            path=(pt(ft(9, 2), ft(-4, -2)), pt(ft(9, 2), ft(-9, -6))),
             diameter=inch(0.75), material="pvc",
             elevations=(inch(2), inch(-2)),
             freeze_protection="5 W/ft self-regulating, 120 V"),

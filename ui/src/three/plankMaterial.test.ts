@@ -18,7 +18,7 @@ function assert(condition: unknown, message: string): asserts condition {
 // the board module, the recipe routing and the UV frames the map builder consumes.
 export function runPlankMaterialTests() {
   // --- what counts as a board surface -------------------------------------------------
-  assert(isWoodPlank("sauna-tg") && isWoodPlank("walnut-tg") && isWoodPlank("cedar-tg"),
+  assert(isWoodPlank("sauna-shiplap") && isWoodPlank("walnut-tg") && isWoodPlank("cedar-tg"),
     "the library's `<species>-tg` paneling refs are all board surfaces");
   assert(isWoodPlank("oak") && isWoodPlank("lvp"),
     "the plank floor finishes are board surfaces");
@@ -38,7 +38,7 @@ export function runPlankMaterialTests() {
   // to inference rather than to a default that is not paneling.
   assert(plankStyleFor("walnut-tg", "clear-satin-hardwax-oil").key === "tg-board",
     "a finish naming no known recipe falls through to inference, not to an error");
-  assert(plankStyleFor("sauna-tg").key === "tg-board",
+  assert(plankStyleFor("sauna-shiplap").key === "shiplap",
     "a `-tg` ref infers tongue-and-groove paneling");
   assert(plankStyleFor("oak").key === "strip-floor",
     "a flooring ref infers strip flooring even with no authored finish");

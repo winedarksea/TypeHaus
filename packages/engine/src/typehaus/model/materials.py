@@ -97,6 +97,17 @@ class Material(HausModel):
     # 4/4 stock, 1.25 for 5/4. None means "no board-feet figure" — the takeoff omits the
     # column rather than inventing a thickness (#32).
     stock_bf_per_sqft: float | None = None
+    # Nominal rough thickness in quarters: 4 for 4/4, 8 for 8/4. ``stock_bf_per_sqft``
+    # answers "how many board feet per square foot of coverage", which is what a *sheet*
+    # or *liner* material is ordered by; it cannot express the thickness of a discrete
+    # board a mill cuts one at a time. A shelf, a stool and a tread are ordered by naming
+    # the stock, and 4/4 and 8/4 at the same coverage are two different orders.
+    nominal_quarters: int | None = None
+    # What the mill runs on the piece: "S4S", "T&G", "shiplap", "bullnose", "eased".
+    # It is a property of the product — the column a milling schedule actually needs, and
+    # the one thing about a board a coverage factor cannot carry (a T&G board's face width
+    # exceeds its coverage width by the tongue; a shiplap's by the lap).
+    milling_profile: str | None = None
     # The chosen product this material *is*, by ``Product.tag`` (model/product.py).
     # ``None`` is the ordinary case: "5/8\" type X gypsum board" is a specification, and a
     # specification is what most of a house is bought against. Naming a product narrows it

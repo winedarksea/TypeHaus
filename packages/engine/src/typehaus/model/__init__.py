@@ -63,6 +63,7 @@ from typehaus.model.floors import (
 )
 from typehaus.model.electrical import Circuit, LoadManagement
 from typehaus.model.materials import Material
+from typehaus.model.millwork import MillworkStandard, ShelfBank, ShelfBay, WindowStool
 from typehaus.model.paneling import PanelingSpan, WallPaneling
 from typehaus.model.mep import (
     ConduitRun,
@@ -237,6 +238,7 @@ __all__ = [
     "Soffit",
     "FloorHeat", "FinishZone",
     "PanelingSpan", "WallPaneling",
+    "MillworkStandard", "ShelfBank", "ShelfBay", "WindowStool",
     "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture", "Appliance",
     "Alarm",
     "WallLiningException",

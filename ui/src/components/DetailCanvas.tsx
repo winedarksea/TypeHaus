@@ -131,7 +131,7 @@ const DETAIL_FILL: Record<string, string> = {
   "standing-seam-snaplock": "#2f2f2f", "standing-seam-nailstrip": "#2f2f2f",
   "standing-seam-nailstrip-26": "#2f2f2f", "pbr-panel-26": "#2f2f2f",
   "fiber-cement": "#e6e6e6",
-  "cedar-tg": "#c8a26a", "sauna-tg": "#e6d4ae", "resilient-channel": "#91979d",
+  "cedar-tg": "#c8a26a", "sauna-shiplap": "#e6d4ae", "resilient-channel": "#91979d",
   aggregate: "#7f7f7f", "river-rock": "#a9a9a9", soil: "#d2b48c",
   "spray-foam": "#ffd966", sealant: "#6e4f2a", flashing: "#7a0c0c",
   metal: "#ffffff", "metal-dark": "#2f2f2f", rubber: "#3a3a3a",

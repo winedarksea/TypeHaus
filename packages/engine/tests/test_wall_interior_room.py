@@ -20,7 +20,7 @@ from typehaus.quantities import inch
 
 # The sauna's hot-side liner package (houses/catlin/plan/assemblies.py _SAUNA_LINER). Every
 # one of these must land inside the sauna; the studs and the cold-side gwb must not.
-_LINER_LAYERS = {"tg-liner", "liner-furring", "foil-polyiso"}
+_LINER_LAYERS = {"shiplap-liner", "liner-furring", "foil-polyiso"}
 # Five since 2026-08-28: the south face is a framed wall (W-B-S2-FR) on a 7 1/4" curb
 # (W-B-S2), and both carry the liner so the hot side's vapour control reaches the slab.
 _SAUNA_WALLS = {"W-B-SA-W", "W-B-SA-N", "W-B-CS", "W-B-S2", "W-B-S2-FR"}
@@ -34,7 +34,7 @@ def _sauna(catlin_model) -> Polygon:
 def test_sauna_liner_lands_inside_the_sauna(catlin_model) -> None:
     """Every liner layer of the four sauna-facing walls lies inside RM-B-SAUNA.
 
-    Before ``interior_room``, all of them landed on the far side: ``W-B-SA-W``'s ``tg-liner``
+    Before ``interior_room``, all of them landed on the far side: ``W-B-SA-W``'s ``shiplap-liner``
     west of its studs, ``W-B-SA-N``'s north of them, and ``W-B-CS``'s east of the concrete,
     in the gym. ``W-B-S2``, the south face, joined them on 2026-08-18 — the same question
     asked of a foundation wall whose finish layers all sit outboard of the pour.

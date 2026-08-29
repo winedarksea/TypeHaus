@@ -36,7 +36,7 @@ def _wall_net_ft2(catlin_model, wall) -> float:
     return max(0.0, run * (mean_top - wall.z0_m) - openings) * _M2_TO_FT2
 
 
-def _liner_net_ft2(catlin_model, wall, material_ref="sauna-tg") -> float:
+def _liner_net_ft2(catlin_model, wall, material_ref="sauna-shiplap") -> float:
     """The same convention for a *banded* liner layer: run x band height, net of the
     openings inside the band. W-B-S2's liner stops at the sauna's 7'-6" ceiling while its
     host foundation wall runs 9'-0", so billing the wall's face would buy 13.7 sf of
@@ -63,10 +63,10 @@ def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
     """Basswood = the three liner walls' envelope area minus the two 3' x 7'-6" tile
     bands; the tile bills beside it as an override. Recomputed, not hard-coded."""
     rows = bom["wood_surfaces"]
-    basswood = next(row for row in rows if row["material"] == "sauna-tg")
+    basswood = next(row for row in rows if row["material"] == "sauna-shiplap")
     liner_walls = [w for w in catlin_model.walls
                    if any(ly.function == LayerFunction.FINISH.value
-                          and ly.material_ref == "sauna-tg" for ly in w.layers)]
+                          and ly.material_ref == "sauna-shiplap" for ly in w.layers)]
     # W-B-S2, the sauna's south face, joined the set on 2026-08-18 — a liner variant of the
     # sunken-garden foundation wall, banded to the room's 7'-6" ceiling. **It became two
     # walls on 2026-08-28**: the south face is a framed wall (W-B-S2-FR) on a 7 1/4" curb
@@ -82,13 +82,18 @@ def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
     assert float(basswood["net_area_sqft"]) == pytest.approx(gross - splash, abs=0.05)
     assert basswood["species"] == "basswood"
     assert basswood["also_in_envelope_layers"] is True
-    # 5/4 stock: 1.25 bf per ordered square foot. The tolerance is 0.06, not 0.05: the
+    # 5/4 shiplap: 1.375 bf per ordered square foot — 5/4 thickness x a 5-1/2" face over 5"
+    # of coverage. It was 1.25 while the liner was T&G, which was the bare stock thickness
+    # with no face allowance at all; the 2026-08-28 profile change re-derived it
+    # (plan/assemblies.py). The wall AREA did not move and must not: this assertion pairs
+    # with the net-area one above precisely so a profile change cannot smuggle one in.
+    # The tolerance is 0.06, not 0.05: the
     # takeoff rounds board_feet to one decimal, so half a rounding step is 0.05 exactly and
     # a tolerance of 0.05 fails on float slop whenever the true value lands on the step —
     # which it did on 2026-08-15, when the sauna's north partition stopped being extended
     # to the deck and the liner area moved onto the boundary.
     assert float(basswood["board_feet"]) == pytest.approx(
-        float(basswood["order_area_sqft"]) * 1.25, abs=0.06)
+        float(basswood["order_area_sqft"]) * 1.375, abs=0.06)
 
     tile = next(row for row in rows if row["kind"] == "override")
     assert tile["material"] == "tile"
@@ -101,11 +106,11 @@ def test_envelope_layers_stays_gross_of_the_splash(catlin_model, bom):
     """The overlap contract from the other side: ``envelope_layers`` keeps billing the
     liner at the full assembly-truth area, and only ``wood_surfaces`` nets the splash —
     the ``also_in_envelope_layers`` flag is what says the two rows overlap on purpose."""
-    liner_rows = [row for row in bom["envelope_layers"] if row["material"] == "sauna-tg"]
+    liner_rows = [row for row in bom["envelope_layers"] if row["material"] == "sauna-shiplap"]
     assert liner_rows, "the liner must keep its envelope_layers billing"
     liner_walls = [w for w in catlin_model.walls
                    if any(ly.function == LayerFunction.FINISH.value
-                          and ly.material_ref == "sauna-tg" for ly in w.layers)]
+                          and ly.material_ref == "sauna-shiplap" for ly in w.layers)]
     gross = sum(_liner_net_ft2(catlin_model, w) for w in liner_walls)
     assert sum(float(r["net_area_sqft"]) for r in liner_rows) == pytest.approx(
         gross, abs=0.1)

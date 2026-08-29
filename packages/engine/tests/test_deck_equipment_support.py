@@ -54,10 +54,11 @@ def _unit(**kwargs) -> Equipment:
         drain_pan=True, **kwargs)
 
 
-def _anchor(x_ft: float, tag: str = "CN-T-HP1") -> Connector:
+def _anchor(x_ft: float, tag: str = "CN-T-HP1", y_ft: float = 4.0) -> Connector:
     return Connector(
-        uid=f"TSTCN{abs(hash(tag)) % 100000:05d}", tag=tag, kind=ConnectorKind.POST_BASE,
-        position=Point2D(x=ft(x_ft), y=ft(4)), size="SS316-LAG-38x4-EPDM",
+        uid=f"TSTCN{abs(hash(tag)) % 100000:05d}", tag=tag,
+        kind=ConnectorKind.EQUIPMENT_ANCHOR,
+        position=Point2D(x=ft(x_ft), y=ft(y_ft)), size="SS316-LAG-38x4-EPDM",
         connects=("PT-T-HP1", "FS-T-DECK"))
 
 
@@ -68,6 +69,12 @@ def _run(freeze: str | None = "5 W/ft self-regulating, 120 V") -> PipeRun:
         diameter=inch(0.75), freeze_protection=freeze)
 
 
+def _joist(y_ft: float) -> SimpleNamespace:
+    """One resolved joist line running in x at this y."""
+    return SimpleNamespace(category="joist", parent_uid="TSTFS02AAA",
+                           p0=(0.0, y_ft * _M_PER_FT), p1=(21.0 * _M_PER_FT, y_ft * _M_PER_FT))
+
+
 def _block(x_ft: float) -> SimpleNamespace:
     """One resolved blocking member spanning a joist bay at this x."""
     return SimpleNamespace(category="blocking", parent_uid="TSTFS02AAA",
@@ -75,13 +82,13 @@ def _block(x_ft: float) -> SimpleNamespace:
                            p1=(x_ft * _M_PER_FT, 4.5 * _M_PER_FT))
 
 
-def _ctx(elements, blocks=(), storey="second") -> SimpleNamespace:
+def _ctx(elements, blocks=(), storey="second", joists=()) -> SimpleNamespace:
     beam_nodes = [Node(uid="TSTN001AAA", tag="N-T-BN", position=Point2D(x=ft(_BEAM_X), y=ft(0))),
                   Node(uid="TSTN002AAA", tag="N-T-BS", position=Point2D(x=ft(_BEAM_X), y=ft(9)))]
     beam = Beam(uid="TSTBM01AAA", tag="BM-T-DECK", start_node="N-T-BN", end_node="N-T-BS",
                 size="3-2x12")
     everything = [*elements, *beam_nodes, beam]
-    resolved = SimpleNamespace(tag="FS-T-DECK", members=list(blocks))
+    resolved = SimpleNamespace(tag="FS-T-DECK", members=[*blocks, *joists])
     return SimpleNamespace(
         plan=SimpleNamespace(
             storeys=[SimpleNamespace(tag=storey)],
@@ -162,3 +169,55 @@ def test_matches_the_deck_on_the_units_own_storey():
 def test_no_deck_is_silence_not_an_unknown():
     ctx = _ctx([_unit()], blocks=[])
     assert deck_equipment_support(ctx) == []
+
+
+# --- the two holes the check had, and the geometry each one hid ------------------------
+def test_flags_an_anchor_sitting_on_a_joist_line():
+    """** BLOCKING PRESENT IS NOT THE ANCHOR IN IT. **
+
+    A ``JoistReinforcement`` blocks the bays *either side* of the joist line nearest its load,
+    so each block's bounding box runs from one joist line to the next. Testing only that the
+    anchor falls inside a block therefore passes an anchor sitting dead on a joist — the
+    block is right there, on both sides of it. Every one of catlin's eight real anchors sat
+    3" off a joist line, inside the bay but with 2 1/4" of clear to the joist face, and this
+    check reported all eight as correctly hosted until the distance to the line was measured
+    directly.
+    """
+    ctx = _ctx([_deck(), _unit(), _anchor(_BLOCK_X, y_ft=3.5), _run()],
+               blocks=[_block(_BLOCK_X)], joists=[_joist(3.5)])
+    finding = _one(deck_equipment_support(ctx))
+    assert finding.result is Result.FAIL
+    assert "of a joist line" in finding.message
+
+
+def test_a_beam_on_another_storey_does_not_reach_this_deck():
+    """The wrong-deck bug had a twin: the beams were never storey-scoped either.
+
+    catlin stacks a porch under this balcony, and the porch's back beams run east-west
+    directly beneath the balcony's anchors, ten feet down. A whole-plan beam search reported
+    four anchors as landing on a beam no lag through this deck could ever reach — the same
+    shape of wrong answer, from the same missing filter, one function away.
+    """
+    other = Beam(uid="TSTBM02AAA", tag="BM-T-BELOW", start_node="N-T-LW", end_node="N-T-LE",
+                 size="3-2x12")
+    nodes = [Node(uid="TSTN003AAA", tag="N-T-LW", position=Point2D(x=ft(0), y=ft(4))),
+             Node(uid="TSTN004AAA", tag="N-T-LE", position=Point2D(x=ft(21), y=ft(4)))]
+    here = [_deck(), _unit(), _anchor(_BLOCK_X), _run()]
+    below = [*nodes, other]
+    resolved = SimpleNamespace(tag="FS-T-DECK", members=[_block(_BLOCK_X)])
+    beam_nodes = [Node(uid="TSTN001AAA", tag="N-T-BN",
+                       position=Point2D(x=ft(_BEAM_X), y=ft(0))),
+                  Node(uid="TSTN002AAA", tag="N-T-BS",
+                       position=Point2D(x=ft(_BEAM_X), y=ft(9)))]
+    beam = Beam(uid="TSTBM01AAA", tag="BM-T-DECK", start_node="N-T-BN", end_node="N-T-BS",
+                size="3-2x12")
+    per_storey = {"second": [*here, *beam_nodes, beam], "main": below}
+    ctx = SimpleNamespace(
+        plan=SimpleNamespace(
+            storeys=[SimpleNamespace(tag="second"), SimpleNamespace(tag="main")],
+            storey_elements=lambda tag: per_storey.get(tag, []),
+            all_elements=lambda: [*per_storey["second"], *per_storey["main"]]),
+        model=SimpleNamespace(floors=[resolved], walls=[], solids=[]))
+    finding = _one(deck_equipment_support(ctx))
+    assert finding.result is Result.UNKNOWN, finding.message
+    assert "BM-T-BELOW" not in finding.message

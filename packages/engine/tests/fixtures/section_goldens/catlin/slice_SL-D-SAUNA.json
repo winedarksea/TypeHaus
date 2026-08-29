@@ -28,7 +28,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CBW111AAAA",
-      "tag": "W-B-CS/tg-liner"
+      "tag": "W-B-CS/shiplap-liner"
     },
     {
       "space": "model",
@@ -56,7 +56,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "sauna-tg"
+      "material": "sauna-shiplap"
     },
     {
       "space": "model",
@@ -336,7 +336,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CBW117AAAA",
-      "tag": "W-B-SA-W/tg-liner"
+      "tag": "W-B-SA-W/shiplap-liner"
     },
     {
       "space": "model",
@@ -364,7 +364,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "sauna-tg"
+      "material": "sauna-shiplap"
     },
     {
       "space": "model",
@@ -759,12 +759,12 @@
           -11.875
         ]
       ],
-      "pattern": "sauna-tg",
+      "pattern": "sauna-shiplap",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "sauna-tg"
+      "material": "sauna-shiplap"
     },
     {
       "space": "model",
@@ -1961,7 +1961,7 @@
         210.25,
         -2.12
       ],
-      "text": "tg-liner 1\" (NTS)",
+      "text": "shiplap-liner 1\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2136,7 +2136,7 @@
         109.3125,
         -26.757500000000004
       ],
-      "text": "tg-liner 1\" (NTS)",
+      "text": "shiplap-liner 1\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",

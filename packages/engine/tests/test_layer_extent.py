@@ -87,7 +87,7 @@ def test_the_sauna_liner_stops_at_the_room_ceiling_not_the_wall_top(catlin_model
     """
     wall = catlin_model.wall("W-B-S2-FR")
     curb = catlin_model.wall("W-B-S2")
-    for name in ("tg-liner", "liner-furring", "foil-polyiso"):
+    for name in ("shiplap-liner", "liner-furring", "foil-polyiso"):
         layer = next(ly for ly in wall.layers if ly.name == name)
         assert layer.is_banded
         z0, z1 = layer.band(wall)
@@ -167,7 +167,7 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
     # the curb's own liner is unbanded (it runs the curb's full 7 1/4"), so only the
     # framed wall's three layers are partial and only they aggregate.
     assert {n for n in parts if n.startswith("W-B-S")} == {
-        "W-B-S2-FR:tg-liner", "W-B-S2-FR:liner-furring", "W-B-S2-FR:foil-polyiso"}
+        "W-B-S2-FR:shiplap-liner", "W-B-S2-FR:liner-furring", "W-B-S2-FR:foil-polyiso"}
 
     part = parts[f"W-B-N1:{_PANEL}"]
     parents = [rel.RelatingObject for rel in model.by_type("IfcRelAggregates")

@@ -28,7 +28,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CBW111AAAA",
-      "tag": "W-B-CS/tg-liner"
+      "tag": "W-B-CS/shiplap-liner"
     },
     {
       "space": "model",
@@ -56,7 +56,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "sauna-tg"
+      "material": "sauna-shiplap"
     },
     {
       "space": "model",
@@ -359,12 +359,12 @@
           -11.875
         ]
       ],
-      "pattern": "sauna-tg",
+      "pattern": "sauna-shiplap",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "sauna-tg"
+      "material": "sauna-shiplap"
     },
     {
       "space": "model",
@@ -777,7 +777,7 @@
         210.25,
         -1.8166666666666664
       ],
-      "text": "tg-liner 1\"",
+      "text": "shiplap-liner 1\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1109,7 +1109,7 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "sauna-tg"
+      "material": "sauna-shiplap"
     },
     {
       "space": "paper",
@@ -1146,7 +1146,7 @@
         0.7,
         1.3980000000000001
       ],
-      "content": "sauna-tg  1\"",
+      "content": "sauna-shiplap  1\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

@@ -213,11 +213,20 @@ def test_the_balcony_blocking_hosts_the_heat_pump_anchors(catlin_model):
     quantity behind it, so blocking cannot silently disappear and leave the check grading
     anchors that no longer have a host.
 
-    Two blocks per reinforcement, one either side of the nearest joist line — the anchor sits
-    in one of them. ``FS-SG-PORCH`` must still carry none.
+    **Eight blocks for eight anchors, from FOUR reinforcements — not eight.** Each
+    reinforcement sits ON a joist line and lays one block in the bay either side, so one of
+    them serves two anchors. Authoring one per anchor instead (which this house did until
+    2026-08-28) needs eight, and where two of those straddle a single bay it emits that bay's
+    block twice at the same x — double lumber, double butyl, two coincident solids. Sixteen
+    blocks here is that bug, which is why the count is asserted and not merely bounded.
+
+    ``FS-SG-PORCH`` must still carry none.
     """
     by_tag = {floor.tag: floor for floor in catlin_model.floors}
     deck_blocks = [m for m in by_tag["FS-SG-DECK"].members if m.category == "blocking"]
-    assert len(deck_blocks) == 16, len(deck_blocks)
+    assert len(deck_blocks) == 8, len(deck_blocks)
     assert {m.profile for m in deck_blocks} == {"2x8"}
+    # No two blocks may share a span: that is precisely the double-emit above.
+    spans = {(round(m.p0[0], 4), round(m.p0[1], 4), round(m.p1[1], 4)) for m in deck_blocks}
+    assert len(spans) == len(deck_blocks), "two blocking members share one span"
     assert [m for m in by_tag["FS-SG-PORCH"].members if m.category == "blocking"] == []

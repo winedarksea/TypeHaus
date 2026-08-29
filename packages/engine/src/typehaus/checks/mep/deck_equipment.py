@@ -102,7 +102,6 @@ def deck_equipment_support(ctx: CheckContext) -> list[Finding]:
 
     connectors = [e for e in ctx.plan.all_elements() if isinstance(e, Connector)]
     runs = {e.tag: e for e in ctx.plan.all_elements() if isinstance(e, PipeRun)}
-    beams = [e for e in ctx.plan.all_elements() if isinstance(e, Beam)]
     nodes = {e.tag: e.position.xy_m for e in ctx.plan.all_elements()
              if e.element_kind == "Node"}
 
@@ -111,7 +110,16 @@ def deck_equipment_support(ctx: CheckContext) -> list[Finding]:
         outlines = {d.tag: [p.xy_m for p in d.outline] for d in decks if d.outline}
         if not outlines:
             continue
-        blocking = _blocking_by_deck(ctx, decks)
+        # Beams from THIS STOREY only, for the same reason the decks are storey-scoped: the
+        # porch's back beams run east-west directly under the balcony's anchors, ten feet
+        # below them, and a whole-plan search reported four anchors as landing on a beam that
+        # a lag through this deck cannot reach. The wrong-deck bug this collector was written
+        # to fix had a twin one function away.
+        beams = [e for e in ctx.plan.storey_elements(storey_tag) if isinstance(e, Beam)]
+        blocking = _members_by_deck(ctx, decks, frozenset({"blocking"}))
+        # "rim" as well as "joist": the rim IS a joist line as far as an anchor is concerned
+        # — full depth, at the field edge, and just as unreplaceable.
+        joists = _members_by_deck(ctx, decks, frozenset({"joist", "rim"}))
         units = [e for e in ctx.plan.storey_elements(storey_tag) if isinstance(e, Equipment)]
         for unit in sorted(units, key=lambda e: e.tag):
             here = next((tag for tag, ring in outlines.items()
@@ -119,17 +127,18 @@ def deck_equipment_support(ctx: CheckContext) -> list[Finding]:
             if here is None:
                 continue  # not on a deck — this rule is not about it
             out.extend(_grade_unit(unit, here, connectors, runs, beams, nodes,
-                                   blocking.get(here, [])))
+                                   blocking.get(here, []), joists.get(here, [])))
     return out
 
 
-def _blocking_by_deck(ctx: CheckContext, decks: list[FloorSystem]) -> dict:
-    """Resolved ``"blocking"`` member spans per deck, as (x0, y0, x1, y1) in metres."""
+def _members_by_deck(ctx: CheckContext, decks: list[FloorSystem],
+                     categories: frozenset) -> dict:
+    """Resolved member spans per deck, as (x0, y0, x1, y1) in metres."""
     by_uid = {d.uid: d.tag for d in decks}
     out: dict[str, list[tuple[float, float, float, float]]] = {}
     for floor in ctx.model.floors:
         for member in getattr(floor, "members", ()):
-            if member.category != "blocking":
+            if member.category not in categories:
                 continue
             tag = by_uid.get(member.parent_uid)
             if tag is not None:
@@ -144,6 +153,30 @@ def _on_a_block(point: tuple[float, float], blocks: list) -> bool:
     for x0, y0, x1, y1 in blocks:
         if (min(x0, x1) - _MEMBER_CLEAR_M <= x <= max(x0, x1) + _MEMBER_CLEAR_M
                 and min(y0, y1) - _MEMBER_CLEAR_M <= y <= max(y0, y1) + _MEMBER_CLEAR_M):
+            return True
+    return False
+
+
+def _on_a_joist(point: tuple[float, float], joists: list) -> bool:
+    """Is this anchor sitting on a joist line rather than in the bay between two?
+
+    ** THIS IS NOT REDUNDANT WITH ``_on_a_block``, AND ASSUMING IT WAS LEFT A HOLE. **
+    A ``JoistReinforcement`` lays its blocking in the bays *either side of the joist line
+    nearest the load*, spanning the full clear gap — so the block's bounding box reaches from
+    one joist line to the next, and the anchor is inside it whether it sits mid-bay or dead
+    on a joist. Blocking presence therefore proves a host exists; it cannot prove the anchor
+    found it. Only the distance to a joist line can, which is the same test ``_on_a_beam``
+    already makes against the beams for the same reason.
+    """
+    x, y = point
+    for x0, y0, x1, y1 in joists:
+        dx, dy = x1 - x0, y1 - y0
+        length_sq = dx * dx + dy * dy
+        if length_sq < 1e-9:
+            continue
+        t = max(0.0, min(1.0, ((x - x0) * dx + (y - y0) * dy) / length_sq))
+        nx, ny = x0 + t * dx, y0 + t * dy
+        if (x - nx) ** 2 + (y - ny) ** 2 <= _MEMBER_CLEAR_M ** 2:
             return True
     return False
 
@@ -166,7 +199,8 @@ def _on_a_beam(point: tuple[float, float], beams: list, nodes: dict) -> str | No
     return None
 
 
-def _grade_unit(unit, deck_tag: str, connectors, runs, beams, nodes, blocks) -> list[Finding]:
+def _grade_unit(unit, deck_tag: str, connectors, runs, beams, nodes, blocks,
+                joists) -> list[Finding]:
     ux, uy = unit.position.xy_m
     reach = _ANCHOR_REACH_M + max(unit.footprint[0].meters, unit.footprint[1].meters)
     anchors = [c for c in connectors
@@ -195,6 +229,16 @@ def _grade_unit(unit, deck_tag: str, connectors, runs, beams, nodes, blocks) -> 
                 (unit.tag, anchor.tag, beam_tag),
                 fix="move the stand leg into a joist bay and add a JoistReinforcement "
                     "(plies=1, blocking=True) at that point"))
+        elif _on_a_joist(anchor.position.xy_m, joists):
+            out.append(_fail(
+                f"anchor {anchor.tag} for {unit.tag} lands within "
+                f"{_MEMBER_CLEAR_M / 0.0254:.0f}\" of a joist line on {deck_tag}: the "
+                f"blocking either side of that line is the intended host, and a lag driven "
+                f"on the line goes into the joist instead — a member that cannot be cut out "
+                f"and replaced from the porch below",
+                (unit.tag, anchor.tag, deck_tag),
+                fix="move the stand leg to a bay centre and put the JoistReinforcement at "
+                    "the same point"))
         elif not _on_a_block(anchor.position.xy_m, blocks):
             out.append(_fail(
                 f"anchor {anchor.tag} for {unit.tag} lands on no modeled blocking: it is "

@@ -101,13 +101,21 @@ DOOR_TYPES = [
 # any width over 14", which takes a header that hits the rake — see WT-1448's own note) and
 # WT-3048 (the 30" family's committed 36" height would drop the south head off the shared
 # 6'-8" door-head line).
+# ``frame_depth`` (2026-08-28) — the unit's jamb dimension, front of frame to back. Nothing
+# else in the model knows it: these windows are OUTIE (notes/outie_window_truss_detail.md,
+# "no window in this house carries a depth dimension"), so the wall fixes where the OUTSIDE
+# of the frame lands and says nothing about where the INSIDE does. That difference is the
+# interior return, which is what a WindowStool is cut to cover — see plan/millwork.py.
+# 3-1/4" is the ordinary double-glazed unit; the three plant-room `-HP` types are 4",
+# because a triple pack on a warm-edge spacer in a thermally broken frame is a deeper
+# section. Both are product facts, and both are the term the derived stool subtracts.
 WINDOW_TYPES = [
     # 14" RO — falls between studs on the 16" grid without breaking a stud line, so it
     # frames with no header, no jacks and no kings. 24" tall because the 5' attic knee
     # walls (WIN-A-W-S/W-N, WIN-A-E-S/E-N) have only that much room under the top plate
     # — the same 24" is what lets this size duck under the 4:12 south rake as well.
     # That combination makes it the house's fallback wherever a bigger unit will not go.
-    WindowType(tag="WT-1424", width=inch(14), height=ft(2), u_factor=u_us(0.25),
+    WindowType(tag="WT-1424", width=inch(14), height=ft(2), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="awning"),
     # 14" RO, 48" tall — the south gable's flanker size (2026-08-01), and the one deliberate
     # break of "one height per family". The juliet family doesn't fit: it breaks a stud, taking a
@@ -115,7 +123,7 @@ WINDOW_TYPES = [
     # 4:12 roof underside by 1.8". 14" lands wholly inside a bay so no header forms, and the
     # 6'-8" head (the main storey's head line) clears the rake by 2'-0". Casement, not
     # WT-1424's awning: a 48"-tall leaf is past what an awning projects.
-    WindowType(tag="WT-1448", width=inch(14), height=ft(4), u_factor=u_us(0.25),
+    WindowType(tag="WT-1448", width=inch(14), height=ft(4), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # 24" RO — the attic gable's juliet size (2026-07-31 as an 18x64, narrowed that day from
     # a 32" tilt-turn; widened 18" -> 24" on 2026-08-24). Still one stud broken, but the pair
@@ -130,19 +138,19 @@ WINDOW_TYPES = [
     # again (24" -> 27" each), and WT-2464 is now referenced by nothing. Kept rather than
     # deleted, the convention WT-3660, glazed-green-brick and CATLIN_EXT_2X6_SWINBURNE are
     # all held under — a retired size is a priced, available product, not dead code.
-    WindowType(tag="WT-2464", width=inch(24), height=ft(5, 4), u_factor=u_us(0.25),
+    WindowType(tag="WT-2464", width=inch(24), height=ft(5, 4), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # 27" RO — bearing-wall size (N*2-9): one stud broken, jacks added. 36" tall
     # because the garage's 8' wall can't take a 60" height at a 42" sill (header would
     # land above the top plate). 27x36 still clears R310 egress (6.75 sf > 5.7).
-    WindowType(tag="WT-2736", width=inch(27), height=ft(3), u_factor=u_us(0.25),
+    WindowType(tag="WT-2736", width=inch(27), height=ft(3), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # 27" RO x 48" — the same bearing cap as WT-2736 at WT-3048's height, for the one
     # bearing-wall unit whose head line had to survive the 2026-08-25 narrowing:
     # WIN-M-EAST-MID, the east living row's feature window, keeps its 2'-6" sill and
     # 6'-6" head while the width comes off. Third break of "one height per family", and
     # the cheapest of the three — a retype that moves neither datum.
-    WindowType(tag="WT-2748", width=inch(27), height=ft(4), u_factor=u_us(0.25),
+    WindowType(tag="WT-2748", width=inch(27), height=ft(4), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # 27" RO x 54" — the bearing-wall BEDROOM size (2026-08-25). WIN-S-BED1/BED2 are
     # single-window rooms, so R303.1 binds on AREA and the 27" cap has to be paid for in
@@ -155,7 +163,7 @@ WINDOW_TYPES = [
     # 9'-0" plate — room for a 2-2x8 header (7 1/4") and the double top plate with 7 3/4"
     # of cripple left over, which is what disproves that note's "27" cannot reach it at
     # any height that fits under the 9'-0" plate".
-    WindowType(tag="WT-2754", width=inch(27), height=ft(4, 6), u_factor=u_us(0.25),
+    WindowType(tag="WT-2754", width=inch(27), height=ft(4, 6), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # 27" RO x 64" — the attic gable's juliet size since 2026-08-27, replacing WT-2464 at
     # WIN-A-S-JUL-W/E. Each unit widened 1 1/2" per side so the pair's CENTRES stayed on the
@@ -165,12 +173,12 @@ WINDOW_TYPES = [
     # FOURTH height in the 27" family (36/48/54/64) and the fourth deliberate break of "one
     # height per family" — which is the RO ladder working as designed, not a drift: the cap
     # is on WIDTH, so composition has to be bought in HEIGHT (see WT-1448's note).
-    WindowType(tag="WT-2764", width=inch(27), height=ft(5, 4), u_factor=u_us(0.25),
+    WindowType(tag="WT-2764", width=inch(27), height=ft(5, 4), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # 30" RO — non-load-bearing size (N*2-6): one stud broken. 36" tall keeps the
     # attic-gable heads below the cathedral-roof framing. Since the 2026-07-30 south
     # enlargement this is the north-side size (attic gable pair, hall).
-    WindowType(tag="WT-3036", width=inch(30), height=ft(3), u_factor=u_us(0.25),
+    WindowType(tag="WT-3036", width=inch(30), height=ft(3), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # 30" RO — the south-glazing size, narrowed from the 42" WT-4248 (2026-08-01). One stud
     # broken, not two: the module's ideal position moves with RO width, so the four facade
@@ -178,41 +186,41 @@ WINDOW_TYPES = [
     # 27'-4"/32'-8"); head line and storey stacking are untouched. Second deliberate break of
     # "one height per family" (see WT-1448) — WT-3036's 36" would drop the head off the
     # shared 6'-8" door-head line. Non-bearing walls only (preferences [framing]).
-    WindowType(tag="WT-3048", width=inch(30), height=ft(4), u_factor=u_us(0.25),
+    WindowType(tag="WT-3048", width=inch(30), height=ft(4), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # 36" RO — concrete basement wall only (no stud module to respect down there).
     # Catalog-only since 2026-07-30: WIN-B-SAUNA was its last instance and took WT-1424.
     # Kept as an available product for the next basement opening rather than deleted.
-    WindowType(tag="WT-3660", width=ft(3), height=ft(5), u_factor=u_us(0.25),
+    WindowType(tag="WT-3660", width=ft(3), height=ft(5), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # Same unit, same glass, no sash: a picture window for the openings that are there for
     # daylight and view only. It is a separate *type* rather than a note on WT-3660 because
     # a fixed unit is a different product on the quote and carries no ventilation or egress
     # credit — the existing tags stay as they are, since they are referenced house-wide.
-    WindowType(tag="WT-3660-FIX", width=ft(3), height=ft(5), u_factor=u_us(0.25),
+    WindowType(tag="WT-3660-FIX", width=ft(3), height=ft(5), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="fixed"),
     # The mudroom's picture unit: same 14" RO / 24" tall glass as WT-1424 (still the one
     # size that clears a 16" stud bay unbroken), no sash — it is there for daylight over
     # the bench, not ventilation. A separate type for the same reason WT-3660-FIX is
     # separate from WT-3660: fixed vs. operable is a different product on the schedule.
-    WindowType(tag="WT-1424-FIX", width=inch(14), height=ft(2), u_factor=u_us(0.25),
+    WindowType(tag="WT-1424-FIX", width=inch(14), height=ft(2), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="fixed"),
     # --- tempered twins (2026-08-01, code.R308_4_safety_glazing) ----------------------
     # Four types, identical to their parent but for the glass — R308.4 makes a *location*
     # hazardous (wet room, within 24" of a door, within 60" of a stair), so only the unit
     # that lands there gets tempered. Not new width families; no facade/framing rule sees
     # them. Adding a tempered unit is a retype, never a move.
-    WindowType(tag="WT-1424-T", width=inch(14), height=ft(2), u_factor=u_us(0.25),
+    WindowType(tag="WT-1424-T", width=inch(14), height=ft(2), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="awning", tempered=True),
-    WindowType(tag="WT-2736-T", width=inch(27), height=ft(3), u_factor=u_us(0.25),
+    WindowType(tag="WT-2736-T", width=inch(27), height=ft(3), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="casement", tempered=True),
-    WindowType(tag="WT-2748-T", width=inch(27), height=ft(4), u_factor=u_us(0.25),
+    WindowType(tag="WT-2748-T", width=inch(27), height=ft(4), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="casement", tempered=True),
-    WindowType(tag="WT-2754-T", width=inch(27), height=ft(4, 6), u_factor=u_us(0.25),
+    WindowType(tag="WT-2754-T", width=inch(27), height=ft(4, 6), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="casement", tempered=True),
-    WindowType(tag="WT-3036-T", width=inch(30), height=ft(3), u_factor=u_us(0.25),
+    WindowType(tag="WT-3036-T", width=inch(30), height=ft(3), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="casement", tempered=True),
-    WindowType(tag="WT-3048-T", width=inch(30), height=ft(4), u_factor=u_us(0.25),
+    WindowType(tag="WT-3048-T", width=inch(30), height=ft(4), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="casement", tempered=True),
     # --- high-performance twins (2026-08-18, building_science.glazing_dew_point) -------
     # Three types for the plant room, identical in every dimension to their parents and
@@ -232,16 +240,16 @@ WINDOW_TYPES = [
     # SHGC is deliberately unchanged at 0.35: this room is south-glazed for plants, and a
     # triple unit that bought its U with a low SHGC would take the light the room exists
     # for. VT likewise.
-    WindowType(tag="WT-2736-HP", width=inch(27), height=ft(3), u_factor=u_us(0.14),
+    WindowType(tag="WT-2736-HP", width=inch(27), height=ft(3), u_factor=u_us(0.14), frame_depth=inch(4),
                shgc=0.35, vt=0.5, operation="casement",
                source="notes/plant_room.md — WT-2736 dimensions, triple/low-e warm-edge thermally broken frame at U-0.14 for RM-S-PLANT"),
-    WindowType(tag="WT-3048-HP", width=inch(30), height=ft(4), u_factor=u_us(0.14),
+    WindowType(tag="WT-3048-HP", width=inch(30), height=ft(4), u_factor=u_us(0.14), frame_depth=inch(4),
                shgc=0.35, vt=0.5, operation="casement",
                source="notes/plant_room.md — WT-3048 dimensions at U-0.14 for RM-S-PLANT"),
     # WIN-S-PLANT2 sits within 24" of D-S-DECK-W, so R308.4 makes its location hazardous
     # regardless of what the glass costs: it needs the tempered pane AND the U-0.14 package,
     # which is a fourth product, not a choice between the two.
-    WindowType(tag="WT-3048-HP-T", width=inch(30), height=ft(4), u_factor=u_us(0.14),
+    WindowType(tag="WT-3048-HP-T", width=inch(30), height=ft(4), u_factor=u_us(0.14), frame_depth=inch(4),
                shgc=0.35, vt=0.5, operation="casement", tempered=True,
                source="notes/plant_room.md — WT-3048-HP with tempered glazing for WIN-S-PLANT2 (R308.4, within 24\" of D-S-DECK-W)"),
 ]

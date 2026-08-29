@@ -797,7 +797,7 @@ ROOMS = [
          occupancy=Occupancy.BATHROOM, humidity_class=HumidityClass.WET,
          floor_finish="sealed-concrete",
          ceiling_lining=(
-             Layer(name="tg-liner", material_ref="sauna-tg", thickness=inch(1.0),
+             Layer(name="shiplap-liner", material_ref="sauna-shiplap", thickness=inch(1.0),
                    function=LayerFunction.FINISH),
              Layer(name="liner-furring", material_ref="struct-1-plywood", thickness=inch(0.5),
                    function=LayerFunction.FURRING,
@@ -850,7 +850,7 @@ FLOOR_OPENINGS = [
 
 # The sauna's corner-shower splash walls (plans/TODO.md §Hardwood): the 36"x36" pan's two
 # closed sides are tile for the full 7'-6" liner height, not basswood T&G — an override
-# that bills as tile and is subtracted from the SAUNA assemblies' sauna-tg liner area.
+# that bills as tile and is subtracted from the SAUNA assemblies' sauna-shiplap liner area.
 # W-B-CS runs from N-B-C1 (the shower corner), so its splash is the first 3'; W-B-SA-N
 # runs west→east into that corner, so its splash is the last 3' of its 9'-2" run.
 PANELING = [
