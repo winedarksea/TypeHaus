@@ -238,6 +238,64 @@ GARAGE_FIXTURES = (
             room="RM-GARAGE", position=pt(ft(5), ft(59, 6))),
 )
 
+# --- the guest studio: bath + wet bar (2026-08-29) -------------------------------------
+# The bath box is x 9'-10 7/8"..17'-8 5/8", y 17'-6 3/8"..22'-1 5/8" — ENTIRELY INSIDE
+# RM-S-SUITEBATH's footprint one storey down, which is the whole point of where it is.
+#
+# ** `wall_ref="W-A-STU-W"` ON ALL THREE FIXTURES, INCLUDING THE SHOWER THAT BACKS W-A-C2. **
+# That is FX-B-BATH-WC/FX-B-BATH-LAV's exact idiom above ("it's the room's only stud cavity,
+# carries their shared vent"), and it is load-bearing for both `mep.vent_reachability` and
+# `mep.trap_arm_length`: W-A-STU-W is the 5 1/2" staggered wet wall stacked on W-S-DC2, and
+# every drop in this suite lands in it.
+#
+# ** advisory.fixture_overlap PASSES, AND THE TIGHT DIMENSION IS 2". ** FX-TOILET-STD's one
+# REQUIRED ClearanceZone (library/placeables/fixtures.py) is 15" each side of centreline and
+# depth/2 + 21" in front; at rotation=deg(90) that projects east to x 9'-10 7/8"..13'-11 7/8",
+# y 19'-5"..21'-11". The lavatory clears its south edge by 2", the shower clears its east edge
+# by 8 3/4", and all three footprints are pairwise disjoint. The finding trigger is ~1.55 in2,
+# so 2" over an 18" face is not much slack — ** IF THE LAV MOVES, MOVE IT SOUTH AND RE-CHECK. **
+ATTIC_FIXTURES = (
+    # Floor-mount, not FX-TOILET-WH: a wall-hung carrier costs a 6" chase this room need not buy.
+    Fixture(uid="WCM0PV9H71", tag="FX-A-STUBATH-WC", type_ref="FX-TOILET-STD", room="RM-A-STUBATH",
+            position=pt(ft(11, 0.875), ft(20, 8)), rotation=deg(90),
+            wall_ref="W-A-STU-W"),
+    # 18" x 14", the cheapest lavatory in the catalog — not the 24" FX-LAV-24 the second storey
+    # uses. This is a guest bath specified as cheaply as the code allows, and the 6" saved is
+    # part of what keeps the water closet's clearance zone clear.
+    Fixture(uid="N2BDQ3T63Z", tag="FX-A-STUBATH-LAV", type_ref="FX-LAV-COMPACT", room="RM-A-STUBATH",
+            position=pt(ft(10, 5.875), ft(18, 6)), rotation=deg(90),
+            wall_ref="W-A-STU-W"),
+    # A 36" pan in the NE corner. ** NOT FX-TUBSHOWER-60 ** — a 60" insert costs more, needs
+    # three nailable walls (the 2026-08-21 alcove audit above), and a guest suite does not want
+    # a tub. R305 is not the constraint here either: the roof underside over this corner is
+    # 10'-6" and up.
+    Fixture(uid="P63E8HB7WZ", tag="FX-A-STUBATH-SH", type_ref="FX-SHOWER-36", room="RM-A-STUBATH",
+            position=pt(ft(16, 2.625), ft(20, 7.625)), wall_ref="W-A-STU-W"),
+    # ** THE WET BAR'S SINK, BACK-TO-BACK WITH THE BATH THROUGH THE SAME WET WALL. ** It is on
+    # W-A-STU-W's WEST face, so the bar and the bathroom share one stack, one vent and one
+    # 5 1/2" cavity instead of running a second branch across the studio floor.
+    #
+    # It is an FX-LAV-COMPACT used as a bar sink, and that is deliberate rather than lazy: 18" x
+    # 14" is dimensionally exact for a bar bowl, it is the cheapest wet fixture in the catalog,
+    # and the house already runs the trade in the other direction (FX-M-BATH2-SINK is an
+    # FX-KITCHEN-SINK-33). Adding a dedicated FX-BAR-SINK-15 to the shared catalog is the
+    # cleaner alternative and costs one entry; either is defensible, and this one costs nothing.
+    #
+    # ** SINK AND UNDERCOUNTER FRIDGE, AND NOTHING THAT COOKS. ** That is what keeps this a wet
+    # bar rather than a kitchen, and it is the entire IRC R302.3 argument: with no cooking
+    # appliance this is not a second dwelling unit, so R302.3's two-family separation does not
+    # land on D-A-HALVES or on FS-ATTIC. **The engine has no R302.3 rule at all**, so that
+    # argument exists only here and in the permit narrative. The alcove is also deliberately NOT
+    # `Occupancy.KITCHEN` — that would put a 25 sf nook in `_HABITABLE` (graded for 8% glazing on
+    # its own), in `_GFCI_OCCUPANCIES` and in `_STALE_OCCUPANCIES` (demanding its own exhaust
+    # terminal). It is part of RM-A-STUDIO and it stays that way.
+    Fixture(uid="11TZJE81BZ", tag="FX-A-STUDIO-BAR-SINK", type_ref="FX-LAV-COMPACT", room="RM-A-STUDIO",
+            position=pt(ft(8, 6), ft(20)), rotation=deg(-90), wall_ref="W-A-STU-W",
+            mount=Mount(kind=MountKind.WALL, elevation=inch(27)),
+            drain_position=pt(ft(9, 3), ft(20))),
+)
+
+
 # --- the two south-face wall hydrants (2026-08-01) -------------------------------------
 # Unlike FX-G-HYDRANT (a *yard* hydrant, 6' bury, self-draining below frost), these are
 # *wall* hydrants: seat inside the envelope at the inboard end of a ~10" barrel that

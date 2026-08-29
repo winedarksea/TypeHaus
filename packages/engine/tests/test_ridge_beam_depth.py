@@ -130,7 +130,12 @@ def test_continuous_support_is_measured_not_taken_on_trust(catlin_model_ro) -> N
     start, end = (5.4864, 0.0), (5.4864, 10.9728)  # x=18', y 0'->36'
 
     assert _continuously_supported(catlin_model_ro, beam, start, end)
-    assert beam.bearing_refs == ("W-A-C1", "W-A-C1B", "W-A-C2")
+    # Five segments since 2026-08-29, three before it: W-A-C2 split twice when the guest
+    # studio's bath corner (N-A-B2, y=15'-11") and the stair void's south partition
+    # (N-A-C3, y=22'-4") both landed on this line and needed shared endpoints. The centreline
+    # itself did not move an inch — the beam still bears on it continuously — which is the
+    # whole point of asserting the refs rather than the geometry.
+    assert beam.bearing_refs == ("W-A-C1", "W-A-C1B", "W-A-C2", "W-A-C2M", "W-A-C2B")
 
     gapped = beam.model_copy(update={"bearing_refs": ("W-A-C1", "W-A-C2")})
     assert not _continuously_supported(catlin_model_ro, gapped, start, end)

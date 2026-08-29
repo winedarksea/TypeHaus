@@ -366,3 +366,34 @@ HYDRANT_BRANCH_SECOND = [
             elevations=(ft(2), ft(2)),
             serves=("FX-S-BALC-HYD",)),
 ]
+
+
+# --- the attic guest studio, 2026-08-29 -------------------------------------------------
+# Both runs TEE OFF THE EXISTING SUITE RISERS at their heads and carry on up W-S-DC2 into
+# W-A-STU-W — the same 5 1/2" staggered cavity the drain and the vent use, and the reason the
+# bath is on the x=9'-7 1/2" line at all. 3/4" copper, matching PR-B-CW-SUITE/PR-B-HW-SUITE
+# rather than stepping down: the run is short and the pair already carries a three-fixture
+# bath, so there is nothing to gain by narrowing and a pressure-drop argument to lose.
+#
+# ** `serves` IS LOAD-BEARING ON THESE TWO. ** Unlike the drains — which `mep.pipe_sizing`
+# grades on the geometric upstream subtree — supply runs grade on the AUTHORED tuple. A fixture
+# missing from it is an unfed fixture as far as the checks are concerned.
+#
+# The hot run copies PR-B-HW-SUITE's insulation string VERBATIM so `mep.hot_water_insulation`
+# passes the way every other hot run in the house passes; do not paraphrase it.
+STUDIO_SUPPLY = [
+    PipeRun(uid="WJZGK0YFHY", tag="PR-A-CW-STUBATH", system=PipeSystem.WATER_COLD,
+            path=(pt(ft(13, 7.2), ft(16, 10.8)), pt(ft(9, 7.5), ft(19)),
+                  pt(ft(9, 7.5), ft(19))),
+            diameter=inch(0.75), material="copper", finish="lacquered",
+            elevations=(ft(21, 7.4375), ft(21, 7.4375), ft(22, 6)),
+            serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
+                    "FX-A-STUDIO-BAR-SINK")),
+    PipeRun(uid="TCWF4YDZTW", tag="PR-A-HW-STUBATH", system=PipeSystem.WATER_HOT,
+            path=(pt(ft(14, 2.4), ft(16, 10.8)), pt(ft(9, 7.5), ft(19, 6)),
+                  pt(ft(9, 7.5), ft(19, 6))),
+            diameter=inch(0.75), material="copper",
+            insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
+            elevations=(ft(21, 7.4375), ft(21, 7.4375), ft(22, 6)),
+            serves=("FX-A-STUBATH-LAV", "FX-A-STUBATH-SH", "FX-A-STUDIO-BAR-SINK")),
+]

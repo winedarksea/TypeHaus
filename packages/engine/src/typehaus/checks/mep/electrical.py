@@ -210,9 +210,41 @@ def _fixed_cabinet_intervals(ctx: CheckContext, ring: list,
         # Projected rather than buffered: a buffer wide enough to reach the boundary (which
         # is the room polygon, not the drywall face — see _NEAR_WALL_M) would also run that
         # far past each end of the carcass and swallow the wall either side of it.
-        offsets = [boundary.project(Point(coord)) for coord in carcass.exterior.coords]
-        intervals.append((min(offsets), max(offsets)))
+        #
+        # ** THE ARC IS CHOSEN CYCLICALLY, NOT AS min..max, AND THAT IS NOT A REFINEMENT. **
+        # A perimeter is a closed ring, so a cabinet sitting on the wall that happens to
+        # contain the ring's START projects some corners near 0 and the rest near the full
+        # length. `min..max` then reports the interval the cabinet does NOT occupy — the whole
+        # rest of the room — which is far worse than reporting nothing: every real receptacle
+        # gap inside that span is silently swallowed and the room passes. Catlin's attic
+        # studio hit exactly this (a 21'-8" knee-wall plinth projecting to 22.7 and 79.7 on an
+        # 80.2 ft ring, claiming 57 ft of break and missing the 11 ft gap it was meant to
+        # cover). Pick the SHORT arc instead, and split it when it wraps the seam.
+        offsets = sorted(boundary.project(Point(coord))
+                         for coord in carcass.exterior.coords)
+        intervals.extend(_cyclic_span(offsets, boundary.length))
     return intervals
+
+
+def _cyclic_span(offsets: list[float], perimeter: float) -> list[tuple[float, float]]:
+    """The shortest arc of a closed ring covering ``offsets``, as 1 or 2 linear intervals.
+
+    The covered arc is the complement of the LARGEST gap between consecutive offsets, taken
+    cyclically. Where that arc crosses the ring's seam it comes back as two intervals, which
+    is what every caller here wants anyway — they are merged into a flat list of breaks.
+    """
+    if not offsets:
+        return []
+    if len(offsets) == 1 or perimeter <= 0:
+        return [(offsets[0], offsets[0])]
+    gaps = [(offsets[i + 1] - offsets[i], i) for i in range(len(offsets) - 1)]
+    gaps.append((perimeter - offsets[-1] + offsets[0], len(offsets) - 1))
+    _, widest = max(gaps)
+    start = offsets[(widest + 1) % len(offsets)]
+    end = offsets[widest]
+    if start <= end:
+        return [(start, end)]
+    return [(start, perimeter), (0.0, end)]
 
 
 def _merged_intervals(intervals: list[tuple[float, float]],

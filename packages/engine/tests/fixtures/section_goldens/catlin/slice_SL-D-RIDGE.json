@@ -27,8 +27,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CAW110AAAA",
-      "tag": "W-A-C2/paint-a"
+      "uid": "78VGE6A81J",
+      "tag": "W-A-C2M/paint-a"
     },
     {
       "space": "model",
@@ -55,8 +55,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CAW110AAAA",
-      "tag": "W-A-C2/gwb-a"
+      "uid": "78VGE6A81J",
+      "tag": "W-A-C2M/gwb-a"
     },
     {
       "space": "model",
@@ -111,8 +111,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CAW110AAAA",
-      "tag": "W-A-C2/stud"
+      "uid": "78VGE6A81J",
+      "tag": "W-A-C2M/stud"
     },
     {
       "space": "model",
@@ -167,8 +167,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CAW110AAAA",
-      "tag": "W-A-C2/gwb-b"
+      "uid": "78VGE6A81J",
+      "tag": "W-A-C2M/gwb-b"
     },
     {
       "space": "model",
@@ -223,8 +223,128 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CAW110AAAA",
-      "tag": "W-A-C2/paint-b"
+      "uid": "78VGE6A81J",
+      "tag": "W-A-C2M/paint-b"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          142.1585138987958,
+          357.94254336783047
+        ],
+        [
+          142.42834576560762,
+          357.1827267330674
+        ],
+        [
+          143.16554013523864,
+          356.6087005650944
+        ],
+        [
+          144.17256637168143,
+          356.3742747120543
+        ],
+        [
+          145.17959260812427,
+          356.5422633919542
+        ],
+        [
+          145.91678697775527,
+          357.0676541736772
+        ],
+        [
+          146.18661884456705,
+          357.80966902155006
+        ],
+        [
+          145.91678697775527,
+          358.5694856563132
+        ],
+        [
+          145.17959260812424,
+          359.1435118242862
+        ],
+        [
+          144.17256637168143,
+          359.3779376773262
+        ],
+        [
+          143.1655401352386,
+          359.20994899742635
+        ],
+        [
+          142.4283457656076,
+          358.6845582157033
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "HTZ1RGAGXP-run",
+      "tag": "PR-A-STUBATH-DRAIN-RUN"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          142.1585138987958,
+          357.94254336783047
+        ],
+        [
+          142.42834576560762,
+          357.1827267330674
+        ],
+        [
+          143.16554013523864,
+          356.6087005650944
+        ],
+        [
+          144.17256637168143,
+          356.3742747120543
+        ],
+        [
+          145.17959260812427,
+          356.5422633919542
+        ],
+        [
+          145.91678697775527,
+          357.0676541736772
+        ],
+        [
+          146.18661884456705,
+          357.80966902155006
+        ],
+        [
+          145.91678697775527,
+          358.5694856563132
+        ],
+        [
+          145.17959260812424,
+          359.1435118242862
+        ],
+        [
+          144.17256637168143,
+          359.3779376773262
+        ],
+        [
+          143.1655401352386,
+          359.20994899742635
+        ],
+        [
+          142.4283457656076,
+          358.6845582157033
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "concrete"
     },
     {
       "space": "model",
@@ -863,7 +983,7 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CAW110AAAA",
+      "uid": "78VGE6A81J",
       "tag": "plate-top-0"
     },
     {
@@ -919,7 +1039,7 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CAW110AAAA",
+      "uid": "78VGE6A81J",
       "tag": "plate-top-1"
     },
     {

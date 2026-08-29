@@ -198,7 +198,7 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # 36: 36 after the 2026-08-02 microgrid refactor retired CKT-BACKUP-FEED, plus
     # CKT-DISPOSAL (2026-08-07), minus CKT-WH-HP folded into CKT-WH-240 (2026-08-15) when
     # the two-tank water heater became one.
-    assert len(rows) == 36
+    assert len(rows) == 37
     # Each radiant floor zone is its own 120V circuit with breaker-level GFCI, controlled
     # by one thermostat (NEC 424.44(G) — heating cable in a bathroom or kitchen floor; the
     # dining zone takes the same protection because every mat maker asks for it).
@@ -266,7 +266,11 @@ def test_catlin_receptacle_spacing_passes_after_fill(catlin_model):
     fails = [f for f in findings if f.result.value == "fail"]
     assert not fails, [f.message for f in fails]
     passes = [f for f in findings if f.result.value == "pass"]
-    assert len(passes) == 11  # every habitable room (RM-A-EAST-UNFIN is storage, not living)
+    # 12 since 2026-08-29: RM-A-STUDIO. The west attic loft was STORAGE and outside
+    # `_HABITABLE`, so 210.52 spacing was not evaluated for it at all; as a guest BEDROOM it
+    # is, and seven new receptacles (plan/electrical.py) are what close the gaps the check
+    # named. RM-A-EAST-UNFIN and RM-A-POCKET are still storage and still not counted.
+    assert len(passes) == 12
     # The kitchen-counter rule stays visibly unevaluated.
     assert any(f.result.value == "unknown" for f in findings)
 
@@ -472,7 +476,7 @@ def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
     main = spaces("ED-B-PANEL", "ED-T-PANEL")
     backup = spaces("ED-B-BACKUP-PANEL", "ED-T-BACKUP-PANEL")
     assert main[0] <= main[1] and backup[0] <= backup[1]
-    assert main == (43, 54)  # CKT-DISPOSAL spent one, CKT-WH-240's move to backup freed two
+    assert main == (44, 54)  # CKT-DISPOSAL spent one, CKT-WH-240's move to backup freed two
     assert backup == (8, 12)
     required = sum(circuit.poles for circuit in circuits)
     declared = main[1]
@@ -593,7 +597,7 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     assert payload["solar"] == solar_takeoff(catlin_model)
     # 36: the 36 that survived the 2026-08-02 microgrid refactor plus CKT-DISPOSAL
     # (2026-08-07), minus CKT-WH-HP folded into CKT-WH-240 (2026-08-15).
-    assert len(payload["panel_schedule"]) == 36
+    assert len(payload["panel_schedule"]) == 37
 
 
 def test_model_json_canvas_objects_carry_their_circuit(catlin_model):

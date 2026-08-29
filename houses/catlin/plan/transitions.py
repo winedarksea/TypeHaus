@@ -68,7 +68,13 @@ TRANSITIONS = (
                    "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX",
                    "storey_stack:rim:CATLIN_INT_2X6_BRG",
                    "storey_stack:rim:CATLIN_INT_2X6_BRG|SAUNA_LINER_INT_2X6_BRG",
-                   "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|INT_2X6_STAGGERED_PLUMBING",
+                   # Was ...|INT_2X6_STAGGERED_PLUMBING until 2026-08-29, when W-S-BA-E1B
+                   # was retyped to carry FO-A-HALL's cut attic joists. Same stack, same
+                   # rim, same reason to leave it off the primary set — a different
+                   # assembly on top of it (plan/assemblies.py).
+                   "storey_stack:rim:CATLIN_INT_2X6_BRG_PLUMBING|CATLIN_MUDROOM_INT_2X6_EXPOSED",
+                   # W-S-BD-N1B over W-M-STOS2, the other half of the same retype.
+                   "storey_stack:rim:CATLIN_INT_2X6_BRG_PLUMBING|INT_2X4_PARTITION",
                    "storey_stack:rim:INT_2X4_PARTITION",
                    "storey_stack:rim:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",
                    "storey_stack:rim:INT_2X4_PARTITION|INT_2X4_STAGGERED_DOUBLE_GWB",
@@ -156,6 +162,15 @@ TRANSITIONS = (
     Transition(uid="QZCDFYBATE", tag="TR-CATLIN-BOOKCASE-OPENING",
                condition_pattern="opening_perimeter:CATLIN_INT_2X4_BOOKCASE_12",
                overlay="interior-opening"),
+    # D-S-BATH1's opening in the hall bath's east wet wall, which became BEARING on
+    # 2026-08-29 and was retyped with it. Its own binding for the third time in this file's
+    # history, and the third time for the same reason: the tag starts "CATLIN_", so
+    # TR-CATLIN-INTERIOR-OPENING's `INT_*` glob never sees it. The overlay is the bearing
+    # partition's, not the plain interior one — the jack/king studs at a door in a wall
+    # carrying an attic joist field are the point of the sheet.
+    Transition(uid="KNP02ZZ5WC", tag="TR-CATLIN-WETWALL-OPENING",
+               condition_pattern="opening_perimeter:CATLIN_INT_2X6_BRG_PLUMBING",
+               overlay="bearing-partition-opening"),
     # Two legitimate in-plan assembly changes survive the resolver's derivation gates
     # (the sauna liner starting along the interior concrete run, and the masonry railing
     # meeting the retaining wall's 6" upstand). They are bound — covered, continuity

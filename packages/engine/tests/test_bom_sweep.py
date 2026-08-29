@@ -172,21 +172,28 @@ def test_every_finish_row_resolved_a_real_material(bom):
 
 
 def test_the_unfinished_rooms_are_the_two_attic_lofts_and_bill_nothing(bom):
-    """RM-A-WEST-UNFIN and RM-A-EAST-UNFIN lost their carpet on 2026-08-25: unfinished bulk storage
-    walks on FS-ATTIC's plywood and nothing goes over it. The row exists so 1,118 SF of
-    floor is not silently missing from the schedule — but it orders zero, because there is
-    nothing to order.
+    """The unfinished attic rooms lost their carpet on 2026-08-25: bulk storage walks on
+    FS-ATTIC's plywood and nothing goes over it. The row exists so the floor is not silently
+    missing from the schedule — but it orders zero, because there is nothing to order.
 
-    It was 1,079 SF until 2026-08-27, and the +39 SF is two edits pulling opposite ways.
-    RM-A-DEN was deleted and its 43 SF folded into RM-A-WEST-UNFIN, which is a *saving*:
-    the Den was the one loft used as a room and it carried carpet, so that 43 SF moved from
-    a billed row to this one. RM-A-EAST-UNFIN then gave ~6 SF back to RM-A-STUDY when
-    W-A-SN's axis moved 4" north to become the 12 3/4" bookcase wall. So the number going
-    up is the schedule getting *smaller* — which is exactly why the row is asserted on area
-    and separately on ordering zero, rather than on either alone."""
+    It was 1,079 SF, then 1,118 SF on 2026-08-27 (RM-A-DEN deleted into the west loft, and
+    ~6 SF given back to RM-A-STUDY by W-A-SN's thickening), and it is 609 SF now.
+
+    ** THE 2026-08-29 MOVEMENT IS THE POINT OF THIS TEST. ** RM-A-WEST-UNFIN was 598 SF of
+    this row; it became RM-A-STUDIO (356 SF, still bare), RM-A-STUBATH (vinyl-sheet, 50 SF)
+    and RM-A-POCKET (134 SF, still bare), and
+    103 SF of it stopped being floor at all — that is FO-A-HALL, the stair-hall void. So
+    RM-A-STUDIO is deliberately left BARE — `floor_finish=None` — so it stays in this row
+    rather than leaving it: FS-ATTIC's deck is `plywood-underlayment-sanded`, authored that
+    grade because these rooms walk on it, and a clear sealer is a `prices.toml` allowance
+    rather than a finish. Only the 50 SF bath left for a billed row (vinyl-sheet), and the
+    void's ~109 SF left the schedule entirely because there is no deck there any more.
+
+    That is why this row is asserted on its area AND separately on ordering zero AND on its
+    room list: any one of the three alone would have read this change as a saving."""
     row = next(row for row in bom["floor_finishes"] if row["finish"] is None)
-    assert row["rooms"] == ["RM-A-EAST-UNFIN", "RM-A-WEST-UNFIN"]
-    assert float(row["net_area_sqft"]) == pytest.approx(1117.6, abs=1.0)
+    assert row["rooms"] == ["RM-A-EAST-UNFIN", "RM-A-POCKET", "RM-A-STUDIO"]
+    assert float(row["net_area_sqft"]) == pytest.approx(965.3, abs=1.5)
     assert float(row["order_area_sqft"]) == 0.0
 
 
@@ -516,7 +523,15 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     # room-level liner overrides carve their clear faces back out of the decks they hang
     # under (the sauna out of FS-M-WEST, the plant room out of FS-ATTIC).
     sl_m_deck_net = 414.0  # 18' x 23', no floor openings (params/main_deck.py)
-    attic_net = _gross_sqft("FS-ATTIC") - _opening_sqft("FO-A-STAIR")
+    # FS-ATTIC has TWO holes in it since 2026-08-29. FO-A-HALL (103 SF) opened the deck
+    # over the ST-M2S well so the stair hall runs to the roof — and because this deck's
+    # underside IS the second storey's ceiling, the board stops at the void exactly as the
+    # deck does. `takeoff/framing.py` has always billed `gross - openings`; what changed on
+    # the same day is that the GEOMETRY finally agrees with it (`resolve/ceilings.py` used
+    # to draw a gypsum plane straight across a stair shaft). This line is the arithmetic
+    # half of that fix; test_ceilings.py has the geometric half.
+    attic_net = (_gross_sqft("FS-ATTIC") - _opening_sqft("FO-A-STAIR")
+                 - _opening_sqft("FO-A-HALL"))
     sauna_net = _room_sqft("RM-B-SAUNA")
     plant_net = _room_sqft("RM-S-PLANT")
     total = (west_second_net + east_second_net + others + sl_m_deck_net + attic_net

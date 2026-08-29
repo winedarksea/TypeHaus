@@ -26,10 +26,10 @@ from library import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES, STARTER_DO
 
 from params import (breezeway, foundations, main_deck, raised_garden, roof_trim,
                     second_deck, solar, sunken_garden)
-from plan import (appliance_types, assemblies, circuits, electrical, fixtures,
-                  furniture_types, lighting, lighting_types, mep, millwork, placeables,
-                  products, site, transitions, views, wind_clamps)
-from plan.storeys import attic, basement, garage, main, second
+from plan import (appliance_types, assemblies, circuits, electrical, electrical_attic,
+                  fixtures, furniture_types, lighting, lighting_attic, lighting_types, mep,
+                  millwork, placeables, products, site, transitions, views, wind_clamps)
+from plan.storeys import attic, attic_studio, basement, garage, main, second
 
 format_version = 1
 requires_engine = ">=0.1,<0.2"
@@ -156,16 +156,20 @@ PLAN = (
                               *placeables.GARAGE_PLACEABLES,
                               *wind_clamps.GARAGE_WALL_WIND_CLAMPS,
                               *wind_clamps.GARAGE_ROOF_WIND_CLAMPS])
-    .with_elements("second", [*second.ELEMENTS, *fixtures.SECOND_FIXTURES,
+    .with_elements("second", [*second.ELEMENTS, *attic_studio.SECOND_ELEMENTS,
+                                *fixtures.SECOND_FIXTURES,
                                 *fixtures.BALCONY_HYDRANT,
                                 *sunken_garden.SECOND_ELEMENTS, *mep.SECOND_ELEMENTS,
                                 *electrical.SECOND_ELEMENTS, *lighting.SECOND_LIGHTING,
                                 *placeables.SECOND_PLACEABLES,
                                 *second_deck.SECOND_ELEMENTS,
                                 *millwork.SECOND_SHELVES])
-    .with_elements("attic", [*attic.ELEMENTS, *roof_trim.ATTIC_ELEMENTS,
+    .with_elements("attic", [*attic.ELEMENTS, *attic_studio.ATTIC_ELEMENTS,
+                             *fixtures.ATTIC_FIXTURES,
+                             *roof_trim.ATTIC_ELEMENTS,
                              *mep.ATTIC_ELEMENTS, *electrical.ATTIC_ELEMENTS,
-                             *solar.ATTIC_ELEMENTS, *lighting.ATTIC_LIGHTING,
+                             *solar.ATTIC_ELEMENTS, *lighting_attic.ATTIC_LIGHTING,
+                             *electrical_attic.NEC_FILL_ATTIC,
                              *placeables.ATTIC_PLACEABLES,
                              *millwork.ATTIC_SHELVES])
 )

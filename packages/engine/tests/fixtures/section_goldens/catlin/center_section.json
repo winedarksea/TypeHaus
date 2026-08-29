@@ -3792,11 +3792,11 @@
         ],
         [
           112.125,
-          228.0
+          240.0
         ],
         [
           112.11500000000001,
-          228.0
+          240.0
         ]
       ],
       "layer": "A-WALL-FINI",
@@ -3820,11 +3820,11 @@
         ],
         [
           112.62500000000001,
-          228.0
+          240.0
         ],
         [
           112.125,
-          228.0
+          240.0
         ]
       ],
       "layer": "A-WALL-FINI",
@@ -3848,11 +3848,11 @@
         ],
         [
           112.62500000000001,
-          228.0
+          240.0
         ],
         [
           112.125,
-          228.0
+          240.0
         ]
       ],
       "pattern": "gypsum",
@@ -4615,8 +4615,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CAW108AAAA",
-      "tag": "W-A-W1/paint"
+      "uid": "8PJW960EK6",
+      "tag": "W-A-W1B/paint"
     },
     {
       "space": "model",
@@ -4643,8 +4643,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CAW108AAAA",
-      "tag": "W-A-W1/gwb-int"
+      "uid": "8PJW960EK6",
+      "tag": "W-A-W1B/gwb-int"
     },
     {
       "space": "model",
@@ -4699,8 +4699,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CAW108AAAA",
-      "tag": "W-A-W1/stud"
+      "uid": "8PJW960EK6",
+      "tag": "W-A-W1B/stud"
     },
     {
       "space": "model",
@@ -4755,8 +4755,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CAW108AAAA",
-      "tag": "W-A-W1/sheathing"
+      "uid": "8PJW960EK6",
+      "tag": "W-A-W1B/sheathing"
     },
     {
       "space": "model",
@@ -4811,8 +4811,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CAW108AAAA",
-      "tag": "W-A-W1/spray-foam"
+      "uid": "8PJW960EK6",
+      "tag": "W-A-W1B/spray-foam"
     },
     {
       "space": "model",
@@ -4867,8 +4867,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CAW108AAAA",
-      "tag": "W-A-W1/inner-girt"
+      "uid": "8PJW960EK6",
+      "tag": "W-A-W1B/inner-girt"
     },
     {
       "space": "model",
@@ -4923,8 +4923,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CAW108AAAA",
-      "tag": "W-A-W1/foam-vent"
+      "uid": "8PJW960EK6",
+      "tag": "W-A-W1B/foam-vent"
     },
     {
       "space": "model",
@@ -4979,8 +4979,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CAW108AAAA",
-      "tag": "W-A-W1/vent-gap"
+      "uid": "8PJW960EK6",
+      "tag": "W-A-W1B/vent-gap"
     },
     {
       "space": "model",
@@ -5035,8 +5035,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CAW108AAAA",
-      "tag": "W-A-W1/outer-girt"
+      "uid": "8PJW960EK6",
+      "tag": "W-A-W1B/outer-girt"
     },
     {
       "space": "model",
@@ -5063,8 +5063,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CAW108AAAA",
-      "tag": "W-A-W1/cladding"
+      "uid": "8PJW960EK6",
+      "tag": "W-A-W1B/cladding"
     },
     {
       "space": "model",
@@ -12076,7 +12076,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CARF01AAAA",
-      "tag": "W-A-W1-closure-0-sheathing"
+      "tag": "W-A-W1B-closure-0-sheathing"
     },
     {
       "space": "model",
@@ -12132,7 +12132,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CARF01AAAA",
-      "tag": "W-A-W1-closure-0-spray-foam"
+      "tag": "W-A-W1B-closure-0-spray-foam"
     },
     {
       "space": "model",
@@ -12188,7 +12188,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CARF01AAAA",
-      "tag": "W-A-W1-closure-0-inner-girt"
+      "tag": "W-A-W1B-closure-0-inner-girt"
     },
     {
       "space": "model",
@@ -12244,7 +12244,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CARF01AAAA",
-      "tag": "W-A-W1-closure-0-foam-vent"
+      "tag": "W-A-W1B-closure-0-foam-vent"
     },
     {
       "space": "model",
@@ -12300,7 +12300,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CARF01AAAA",
-      "tag": "W-A-W1-closure-0-vent-gap"
+      "tag": "W-A-W1B-closure-0-vent-gap"
     },
     {
       "space": "model",
@@ -12356,7 +12356,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CARF01AAAA",
-      "tag": "W-A-W1-closure-0-outer-girt"
+      "tag": "W-A-W1B-closure-0-outer-girt"
     },
     {
       "space": "model",
@@ -12412,7 +12412,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CARF01AAAA",
-      "tag": "W-A-W1-closure-0-cladding"
+      "tag": "W-A-W1B-closure-0-cladding"
     },
     {
       "space": "model",

@@ -249,7 +249,13 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
     #  - the porch deck's joists at their *south* end (2026-08-18), where BM-SG-FRW/FRE
     #    replaced the 16" arched cross-wall. Those two are flush so PT-SG-FCOL can top out at
     #    their soffit and stay clear of the 16"-o.c. joist band — a column reaching the deck
-    #    datum cannot miss it. The same joists still bear on BM-SG-BKW/BKE at their north end.
+    #    datum cannot miss it. The same joists still bear on BM-SG-BKW/BKE at their north end;
+    #  - the four FS-ATTIC joists over BM-S-BATH-E (2026-08-29), which is the same case as
+    #    BM-S-HALL one line up. It carries FO-A-HALL's west edge across the 4'-0" hall stub
+    #    by the vanity, where the x=10'-0" bearing line has no wall under it and can never
+    #    have one — a partition there would seal the hall bath off from the landing. Flush
+    #    (`top_elevation=ft(20)`) so the stub keeps its unbroken 9'-0" ceiling, which is
+    #    again exactly what makes the joists hang rather than bear.
     #
     # Nothing else may hang.
     breezeway = next(f for f in catlin_model.floors if f.tag == "FS-BW-FLOOR")
@@ -257,7 +263,7 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
     breezeway_joists = {f"{m.parent_uid}:{m.child_key}" for m in breezeway.members
                         if m.category == "joist"}
     assert breezeway_joists <= hung_keys, "flush-framed deck joists must be billed hangers"
-    flush_beams = ("BM-S-HALL", "BM-M-HALL", "BM-SG-FRW", "BM-SG-FRE")
+    flush_beams = ("BM-S-HALL", "BM-M-HALL", "BM-SG-FRW", "BM-SG-FRE", "BM-S-BATH-E")
     flush_beam_keys = {item.member_key for item in connections
                        if item.carrier_tag in flush_beams}
     for beam in flush_beams:

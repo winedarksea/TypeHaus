@@ -73,9 +73,12 @@ def test_every_rafter_is_tied_at_its_eave(catlin_model_ro, connections) -> None:
 
     tied = [c for c in connections if c.member_category == "rafter"]
     assert len(tied) == len(rafters)
-    # The ridge end is HUNG on RB-HOUSE and billed an LSSR by hangers.py, so only the three
-    # attic side walls appear here — never the ridge beam.
-    assert {c.support_tag for c in tied} == {"W-A-W1", "W-A-E1", "W-A-E2"}
+    # The ridge end is HUNG on RB-HOUSE and billed an LSSR by hangers.py, so only the attic
+    # side walls appear here — never the ridge beam. FOUR of them since 2026-08-29: W-A-W1
+    # split at N-A-W2 (y=22'-4") when the guest studio walled its storage pocket off, so the
+    # west knee wall is W-A-W1 north of that line and W-A-W1B south of it. Same wall, same
+    # rafters landing on it, one more tag.
+    assert {c.support_tag for c in tied} == {"W-A-W1", "W-A-W1B", "W-A-E1", "W-A-E2"}
 
 
 def test_a_truss_roof_is_tied_at_its_heels_not_its_top_chords(catlin_model_ro,

@@ -344,8 +344,14 @@ def test_catlin_zone_loads_do_not_exceed_the_whole_house_load(catlin_model) -> N
     # reach-in off a conditioned room, with no register and no need of one — it borrows the
     # kitchen's air through a 60" bypass that is open whenever anyone is in there.
     # RM-A-DEN was in this set until 2026-08-27; the room was deleted and its space is
-    # inside RM-A-WEST-UNFIN, which EQ-S-HP1-AH's zone_rooms already names.
-    assert set(unclaimed) == {"RM-B-ESS", "RM-M-MUD-CLOSET", "RM-M-PANTRY"}
+    # inside what is now RM-A-STUDIO, which EQ-S-HP1-AH's zone_rooms names.
+    # RM-A-STUBATH joined 2026-08-29 for the third variant of the same reason: the attic guest
+    # bath is a 50 sf room off a conditioned bedroom with no supply of its own, deliberately.
+    # It has an EXHAUST terminal (REG-A-STUBATH-EXH, 20 cfm continuous, R303.3) and takes its
+    # make-up air under the door — which is what that extract is FOR. A supply boot as well
+    # would short-circuit the bath's own exhaust. "Unclaimed" here means served by no zone,
+    # which is the true statement rather than a gap to fill.
+    assert set(unclaimed) == {"RM-B-ESS", "RM-M-MUD-CLOSET", "RM-M-PANTRY", "RM-A-STUBATH"}
 
 
 # --- supplemental resistance heat ------------------------------------------------------

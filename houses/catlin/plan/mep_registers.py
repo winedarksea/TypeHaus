@@ -140,12 +140,21 @@ REGISTERS_HVAC_ATTIC = [
              room="RM-A-EAST-UNFIN", position=pt(ft(19, 4), ft(11, 4)), duct_ref="DU-S-HP-SUP",
              type_ref="REG-T-HP-SUP",
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    # RM-A-WEST-UNFIN's supply (2026-07-30): a floor boot straight up off DU-S-HP-SUITE through
-    # FS-ATTIC. Retired REG-A-SUP1/DU-A-ERV-SUP: the room now gets conditioned air off
+    # The west loft's supply (2026-07-30): a floor boot straight up off DU-S-HP-SUITE through
+    # FS-ATTIC. Retired REG-A-SUP1/DU-A-ERV-SUP: the room gets conditioned air off
     # System 1 like RM-A-STUDY/RM-A-EAST-UNFIN, returning stale air at REG-A-RET1, so the ERV's
     # attic side is extract-only — the same pattern as the second storey.
+    #
+    # ** RE-POINTED TO RM-A-STUDIO ON 2026-08-29, AND IT IS LOAD-BEARING TWICE OVER. ** The
+    # boot has not moved an inch — (16'-6", 14'-1 7/8") is inside the studio's face — but
+    # the room it names is a BEDROOM now, and this one register answers two different
+    # checks for it: `mep.ventilation_distribution` wants a fresh-air supply in a
+    # conditioned bedroom, and R303.1 Exception 1 (which is how this room gets out of its
+    # 8% glazing shortfall — see plan/lighting.py) requires a mechanical fresh-air SUPPLY
+    # Register in the room as one of its four conditions. NO MINI-SPLIT WAS ADDED and none
+    # is wanted: reusing this boot is the whole reason the studio costs what it costs.
     Register(uid="CARH03AAAA", tag="REG-A-HP-WEST", kind=DuctSystem.SUPPLY,
-             room="RM-A-WEST-UNFIN", position=pt(ft(16, 6), ft(14, 1.875)),
+             room="RM-A-STUDIO", position=pt(ft(16, 6), ft(14, 1.875)),
              duct_ref="DU-S-HP-SUITE", type_ref="REG-T-HP-SUP",
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
 ]
@@ -388,15 +397,43 @@ REGISTERS_BASEMENT = [
             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
 ]
 
-# One attic ERV terminal now (2026-07-30): the extract. Four became a balanced pair on
+# The attic ERV terminals (2026-07-30): extract only. Four became a balanced pair on
 # 2026-07-29 (REG-A-SUP2/SUP3 gone), then the supply half went too when REG-A-SUP1 was
 # retired by REG-A-HP-WEST (the floor boot off System 1, REGISTERS_HVAC_ATTIC above), which
-# conditions RM-A-WEST-UNFIN instead of just ventilating it. What's left is the stale pickup on a
-# 4'-0" branch off the maintenance shaft — fresh in off System 1, stale out here, same
-# pattern as every other storey. The attic is one cathedral volume, so one extract suffices.
+# conditions the west loft instead of just ventilating it. What is left is stale pickup —
+# fresh in off System 1, stale out here, the same pattern as every other storey.
+#
+# ** THE ATTIC STOPPED BEING ONE CATHEDRAL VOLUME ON 2026-08-29. ** "One extract suffices"
+# was true while the west half was a single open loft; it is not true of a guest bedroom, a
+# closed bathroom and a walled storage pocket with three doors between them. REG-A-RET1
+# moves out of the pocket and into the studio, and the bath gets its own terminal, because
+# R303.3 requires local exhaust from a bathroom and a grille in the next room is not it.
 REGISTERS_ATTIC = [
-    Register(uid="CARV04AAAA", tag="REG-A-RET1", kind=DuctSystem.RETURN, room="RM-A-WEST-UNFIN",
-            position=pt(m(0.671896), m(10.6354)), duct_ref="DU-A-ERV-R-ATTIC",
+    # RELOCATED 2026-08-29. It sat at (2'-2.6", 34'-10.7"), which is inside the storage pocket
+    # now — a room nobody occupies, extracting a guest bedroom's air through a closed door.
+    # (1'-0", 20'-8") is a floor boot in the studio's NW corner, on the existing x=1'-0" chase,
+    # at a bay centre (248" = 8 + 15 x 16), diagonally opposite REG-A-HP-WEST's supply at
+    # (16'-6", 14'-1 7/8"). Fresh in at one corner, stale out at the other, which is the
+    # arrangement every other storey already has.
+    Register(uid="CARV04AAAA", tag="REG-A-RET1", kind=DuctSystem.RETURN, room="RM-A-STUDIO",
+            position=pt(ft(1), ft(20, 8)), duct_ref="DU-A-ERV-R-ATTIC",
             type_ref="REG-T-ERV-EXH", design_cfm=9,
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
+    # ** THE BATH'S EXHAUST, AND ITS design_cfm IS NOT OPTIONAL. ** R303.3 accepts an operable
+    # window OR a local exhaust; this room has no exterior wall, so it is the exhaust — and
+    # `checks/.../ventilation.py` reads the AUTHORED number on the GRILLE (the run's is only a
+    # fallback for a single-terminal branch, and None on both is UNKNOWN, never a pass).
+    #
+    # 20 cfm lands in R303.3's CONTINUOUS band, which is what every other bath terminal in this
+    # house runs at — 50 cfm intermittent would pass the same check and would be the odd one
+    # out on a balanced machine whose whole attic side is continuous extract.
+    #
+    # ** A WALL MOUNT AT 7'-0" IS WHAT MAKES A HIGH PICKUP POSSIBLE HERE. ** There is no ceiling
+    # plenum under a cathedral: the room follows the roof. W-A-STU-W's 5 1/2" staggered cavity
+    # is the only place a duct can drop from a high grille into the FS-ATTIC bay, which is
+    # exactly why the wet wall carries this as well as every drain in the suite.
+    Register(uid="N989VQP3T8", tag="REG-A-STUBATH-EXH", kind=DuctSystem.EXHAUST, room="RM-A-STUBATH",
+            position=pt(ft(9, 7.5), ft(19)), duct_ref="DU-A-ERV-R-STUBATH",
+            type_ref="REG-T-ERV-EXH", design_cfm=20,
+            mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
 ]

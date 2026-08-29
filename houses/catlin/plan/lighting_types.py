@@ -214,7 +214,7 @@ LUMINAIRE_TYPES = (
     # Same fixture with the switch on it. It was specified for RM-A-DEN, a 43 ft2 attic
     # nook with no wall on the way in to put a switch on, so the fixture carried its own.
     # ``integral_switch`` is what exempts it from ``electrical.lighting_controls``.
-    # THE NOOK IS GONE (2026-08-27) and ED-A-DEN-SCONCE now sits in RM-A-WEST-UNFIN, so the
+    # THE NOOK IS GONE (2026-08-27) and ED-A-STUDIO-SCONCE now sits in RM-A-STUDIO, so the
     # integral switch is a convenience rather than a necessity there — kept, because the
     # loft's own switching is at the far end and this fixture is 30' from it.
     # J2: the plant room's spot. Same adjustable down-spot as J, wet-location listed with a

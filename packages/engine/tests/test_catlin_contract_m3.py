@@ -685,7 +685,12 @@ def test_exterior_corners_include_strength_first_third_stud(catlin_model):
 def test_bedroom_egress_is_associated_with_its_own_bounding_wall():
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
     findings = [finding for finding in report.findings if finding.check_id == "code.R310_egress"]
-    assert len(findings) == 5
+    # Six sleeping rooms since 2026-08-29: RM-A-STUDIO, the west attic loft retyped to
+    # Occupancy.BEDROOM as a guest studio. It is the reason R310 reaches the attic at all —
+    # a STORAGE loft is out of this rule's scope — and it passes on WIN-A-S-JUL-W with
+    # nothing added: WT-2764's raw opening is 27" x 64" = 12.0 sf against 5.7, width 27"
+    # against 20", height 64" against 24", sill 2'-8" against 44".
+    assert len(findings) == 6
     assert all(finding.result is Result.PASS for finding in findings)
     assert all("WIN-B-SAUNA" not in finding.message for finding in findings)
 
@@ -1711,8 +1716,10 @@ def test_wall_and_room_counts_by_storey(catlin_model):
     # 2026-08-26).
     assert by_storey["garage"] == 8
     rooms = {r.tag for r in catlin_model.rooms}
-    assert {"RM-B-SAUNA", "RM-M-LIVING", "RM-S-PLANT", "RM-A-WEST-UNFIN",
-            "RM-GARAGE"} <= rooms
+    # RM-A-WEST-UNFIN was retyped and renamed RM-A-STUDIO in place on 2026-08-29 (same uid,
+    # CAR401AAAA), and split off RM-A-STUBATH and RM-A-POCKET as new rooms.
+    assert {"RM-B-SAUNA", "RM-M-LIVING", "RM-S-PLANT", "RM-A-STUDIO",
+            "RM-A-STUBATH", "RM-A-POCKET", "RM-GARAGE"} <= rooms
 
 
 def test_stairs_resolve_with_code_risers(catlin_model):
@@ -2161,6 +2168,11 @@ def test_upper_storey_studs_stand_over_studs(catlin_model):
     shrank with it, 237 studs to 224, so the ratio is what actually moved: 39.7% standing
     over nothing became 36.2%. Both numbers are re-pinned rather than one loosened — a
     smaller house at the same ratio would slip past a ceiling still held at 94.
+
+    It went the OTHER way on 2026-08-29, 36.2% to 43.3%, and the assertion below says why
+    in full. Short version: the west attic's guest studio added three nonbearing screens
+    that stand on a trimmer pair rather than on a wall, and two second-storey walls entered
+    the population for the first time because declaring them BEARING gave them a stack edge.
     """
     walls = {w.tag: w for w in catlin_model.walls}
 
@@ -2192,13 +2204,25 @@ def test_upper_storey_studs_stand_over_studs(catlin_model):
                 orphans.append(f"{upper_tag}/{stud.child_key}")
 
     assert total >= 220, f"fixture regression: only {total} stacked studs found"
-    # **89/246 on 2026-08-28, and the ratio did not move: 36.16% -> 36.18%.** Two more
-    # pours became lumber (W-B-CS, and the sunken garden's framed walkout), so W-M-S1 and
-    # W-M-S2 entered the population for the first time — a stud cannot stack on concrete,
-    # and until that day there was concrete under them. Their studs are on the facade's own
-    # grid, so most of them stack; the ones that do not are where the basement's framed run
-    # is shorter than the main storey's wall above it and there is simply nothing below.
+    # **126/291 on 2026-08-29, and this one IS a real worsening: 36.2% -> 43.3%.** Say so
+    # rather than round it off. The west attic became a guest studio, and the six walls it
+    # added or split account for the great majority of the 37 new orphans between them:
+    #   * W-A-BATH-S (12), W-A-BA-E (10), W-A-HALL-S (7) — NONBEARING attic screens that
+    #     stand on FO-A-HALL's doubled trimmer pair, on BM-S-BATH-E, or on a second-storey
+    #     wall that was retyped the same day. A partition delivered to two points by a
+    #     trimmer has no stud line below it to stack on, and asking it to would be asking
+    #     for the wrong thing.
+    #   * W-A-W1B (9), W-A-C2B (7) — the halves of W-A-W1 and W-A-C2. Both are on
+    #     `layout_origin="line"` families and their grids are unchanged; what changed is
+    #     that each half is now measured against ITS OWN lower wall rather than against the
+    #     union the undivided wall saw.
+    #   * W-S-BA-E1B and W-S-SN3 entered the population for the FIRST time, exactly as
+    #     W-M-S1/W-M-S2 did on 2026-08-28: they had no `stacks_on` until the x=10'-0" line
+    #     was declared BEARING, and a wall with no stack edge is not walked at all.
+    # None of that is drift and none of it is fixable by re-phasing a grid — but the ratio
+    # moving six points is the kind of thing this pin exists to make somebody look at, so
+    # the reason is written down instead of the number being quietly raised.
     # Both numbers re-pinned rather than one loosened, per the docstring.
-    assert len(orphans) <= 89, (
+    assert len(orphans) <= 126, (
         f"{len(orphans)}/{total} upper-storey studs stand over no stud below "
-        f"(was 89/246); first offenders {orphans[:12]}")
+        f"(was 126/291); first offenders {orphans[:12]}")

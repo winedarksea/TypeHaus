@@ -962,4 +962,23 @@ ATTIC_PLACEABLES = [
               room="RM-A-STUDY", position=pt(m(8.93626), m(0.532453)), rotation=deg(-90)),
     Furniture(uid="CAK703AAAA", tag="FURN-A-STUDY-CHAIR2", type_ref="FURN-DINING-CHAIR",
               room="RM-A-STUDY", position=pt(m(7.35127), m(0.57089)), rotation=deg(90)),
+    # --- the guest studio's wet bar (2026-08-29) ---------------------------------------
+    # The other half of the wet bar; FX-A-STUDIO-BAR-SINK is in plan/fixtures.py. Both stand on
+    # W-A-STU-W's WEST face in a single counter run: the sink over the north half, this box
+    # under the south half, its power off ED-A-STUDIO-BAR-GFCI.
+    #
+    # y=18'-6" puts it 1'-6" south of the sink's centreline with its back on the same wall — a
+    # 24" box under a 24" opening. ** SINK AND FRIDGE, AND NOTHING THAT COOKS: ** a range or a
+    # cooktop here turns the studio into a second dwelling unit and brings IRC R302.3's
+    # two-family separation down on the attic floor and the centre wall. The type carries the
+    # same warning and it is written twice on purpose.
+    # The knee-wall plinth that boxes the x=1'-0" ERV chase — see FT-STUDIO-PLINTH-260's own
+    # note in plan/furniture_types.py for why its `work_surface=False` is load-bearing on
+    # `electrical.receptacle_spacing`. Its back is against the west knee wall's finish face and
+    # it runs the chase's length; that is what takes the west wall out of the spacing test
+    # honestly instead of putting an outlet in behind a duct box.
+    Furniture(uid="PKZHEMXG7E", tag="FURN-A-STUDIO-PLINTH", type_ref="FT-STUDIO-PLINTH-260",
+              room="RM-A-STUDIO", position=pt(ft(1, 3.625), ft(11, 2))),
+    Appliance(uid="7B10E5QBCF", tag="APPL-A-STUDIO-FRIDGE", type_ref="APPL-BAR-FRIDGE-24",
+              room="RM-A-STUDIO", position=pt(ft(8, 6), ft(18, 6)), rotation=deg(-90)),
 ]

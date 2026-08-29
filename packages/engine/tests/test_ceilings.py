@@ -4,7 +4,7 @@ Every branch of the priority order (room override -> covering deck's ``ceiling_b
 the room's roof's ``default_lining`` for a room with no deck above -> nothing) has a real
 instance in catlin, so these tests read the resolved model rather than constructing a
 synthetic plan: `RM-M-LIVING` (plain deck default), `RM-B-SAUNA`/`RM-S-PLANT` (room
-override), `RM-GARAGE` (no-deck, flat roof fallback), `RM-A-WEST-UNFIN` (no-deck, sloped
+override), `RM-GARAGE` (no-deck, flat roof fallback), `RM-A-STUDIO` (no-deck, sloped
 ``FollowRoof`` — no flat plane to draw), `RM-B-PLAY-N` (a ``Slab.ceiling_below``).
 
 `RM-B-GYM` and `RM-M-LIVING` cover the other axis — how many ceilings ONE room resolves.
@@ -148,26 +148,62 @@ def test_a_room_straddling_two_decks_resolves_a_ceiling_per_plane(catlin_model) 
 
 
 def test_two_decks_at_one_elevation_stay_one_ceiling(catlin_model) -> None:
-    """A deck SEAM is not a step, and must not split a room.
+    """A deck SEAM is not a step, and must not split a room into two PLANES.
 
     `RM-M-LIVING` spans both halves of the second floor's truss/I-joist split and
     `RM-B-FURNACE` both of the west basement's joisted bays. Both pairs are the same depth
-    carrying the same board, deliberately (`houses/catlin/CLAUDE.md`), so each room keeps
-    one flat ceiling under its unsuffixed tag.
+    carrying the same board, deliberately (`houses/catlin/CLAUDE.md`), so neither room
+    steps: every piece hangs at one elevation with one stack.
+
+    `RM-B-FURNACE` has nothing punched through the deck over it and keeps the plain
+    unsuffixed tag outright. `RM-M-LIVING` does not, and the reason is not a step: the
+    second floor's `FO-S-STAIR` well is open above it, and a hole in the deck is a hole in
+    the ceiling under it. A `Ring` carries no interior loop, so the piece around the well
+    is delivered as several simple outlines rather than one donut — same plane, same board,
+    same elevation, which is what this test is about.
     """
     for room_tag in ("RM-M-LIVING", "RM-B-FURNACE"):
         ceilings = _ceilings(catlin_model, room_tag)
-        assert [c.tag for c in ceilings] == [f"CEIL-{room_tag}"]
+        assert ceilings
+        assert ceilings[0].tag == f"CEIL-{room_tag}"
+        assert len({c.z1_m for c in ceilings}) == 1
+        assert len({tuple(l.material_ref for l in c.layers) for c in ceilings}) == 1
+
+    assert [c.tag for c in _ceilings(catlin_model, "RM-B-FURNACE")] == [
+        "CEIL-RM-B-FURNACE"]
+
+
+def test_a_deck_opening_is_not_ceilinged_over(catlin_model) -> None:
+    """A hole in the deck is a hole in the ceiling hung under it.
+
+    `FO-S-STAIR` is open through the second floor over `RM-M-LIVING`, and `FO-A-STAIR`
+    through the attic deck over `RM-S-STUDY2`. Before 2026-08-29 both rooms resolved a
+    gypsum plane straight across the shaft: `resolve/ceilings.py` substituted the room's
+    whole clear face whenever its ceiling came back as a single plane. The take-off was
+    always right (`takeoff/framing.py` bills ``gross - openings``); the geometry was not,
+    so every section cut through a stair well showed a board across it.
+    """
+    for room_tag, opening_tag in (("RM-S-STUDY2", "FO-A-STAIR"),
+                                  ("RM-M-LIVING", "FO-S-STAIR")):
+        opening = catlin_model.plan.by_tag(opening_tag)
+        well = Polygon([point.xy_m for point in opening.outline])
+        for ceiling in _ceilings(catlin_model, room_tag):
+            assert Polygon(ceiling.outline).intersection(well).area < 1e-3
+            solid = _solid(catlin_model, ceiling.tag)
+            assert solid is None or Polygon(solid.outline).intersection(well).area < 1e-3
 
 
 def test_a_sloped_follow_roof_ceiling_resolves_layers_but_no_flat_solid(catlin_model) -> None:
-    """``RM-A-WEST-UNFIN`` follows ``RF-HOUSE``'s slope (``Room.ceiling=FollowRoof(...)``)
+    """``RM-A-STUDIO`` follows ``RF-HOUSE``'s slope (``Room.ceiling=FollowRoof(...)``)
     — there is no single flat plane to draw, so the layer stack resolves for the BOM/checks
     but no ``ResolvedSolid`` is emitted for it.
 
     This case was ``RM-A-DEN`` until 2026-08-27, when that room was deleted and its space
-    folded into ``RM-A-WEST-UNFIN``. Same roof, same ``FollowRoof``, same branch."""
-    ceiling = _ceiling(catlin_model, "RM-A-WEST-UNFIN")
+    folded into ``RM-A-WEST-UNFIN``; that loft was in turn retyped and renamed in place to
+    ``RM-A-STUDIO`` on 2026-08-29 when it became a guest bedroom. Three room tags, one uid
+    (``CAR401AAAA``), same roof, same ``FollowRoof``, same branch — which is most of the
+    argument for retyping in place rather than authoring a new room."""
+    ceiling = _ceiling(catlin_model, "RM-A-STUDIO")
     assert ceiling is not None
     assert ceiling.layers  # RF-HOUSE's default_lining (paint + gwb)
     assert ceiling.z0_m is None and ceiling.z1_m is None

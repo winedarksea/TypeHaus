@@ -1439,6 +1439,51 @@ CATLIN_INT_2X4_BOOKCASE_12 = Assembly(
 # decoupled staggered studs so a stack never needs a stud bored on the way through —
 # lives with it there now.
 
+# --- the bearing wet wall (2026-08-29) --------------------------------------------
+# W-S-BA-E, W-S-BA-E1B and W-S-BD-N1B, and nothing else. Opening the stair hall to the roof
+# (plan/storeys/stair_hall_void.py) made the x=10'-0\" line on the second storey pick up the
+# cut ends of FO-A-HALL's attic joists, so those three walls had to be declared BEARING.
+#
+# ** THE ROLE KWARG ALONE IS NOT ENOUGH — THE ASSEMBLY HAS TO CHANGE WITH IT. ** All three
+# were INT_2X6_STAGGERED_PLUMBING, whose own `source=` reads "wet wall, non-bearing", and
+# `structural.wet_wall_bearing` (checks/mep/plumbing_dwv.py) FAILs any BEARING wall framed
+# with staggered studs: neither face's studs carry the plates' load. The fix is a
+# continuous-stud wall, and the cost is the staggered wall's uninterrupted cavity — studs
+# get bored where FX-S-BATH1-LAV's stack passes. That is the real, honest price of making
+# this line bearing, and it is why the swap is stated here rather than hidden in a kwarg.
+#
+# WHY NOT PLAIN INT_2X6_PLUMBING, WHICH IS ALREADY IMPORTED. It has no `CavityFill`, so the
+# swap would silently strip these walls' 3.5" batt as well as their decoupling — and they
+# now separate RM-S-BATH1 from a DOUBLE-HEIGHT hall, which is acoustically worse than what
+# they separated before, not better. Five lines of fiberglass buys most of it back. It is
+# NOT a substitute for the retype: the staggered LAYOUT is what fails the check, not the
+# insulation.
+#
+# Total thickness is identical either way — 0.01 + 0.625 + 5.5 + 0.625 + 0.01 = 6.77" — so
+# NO FACE MOVES, no room area changes, no fixture moves, and FX-S-BATH1-LAV's `wall_ref` is
+# untouched. `plan/fixtures.py`'s comment already described this wall AS INT_2X6_PLUMBING;
+# the swap makes that true rather than aspirational.
+#
+# `layout_origin` is deliberately left at its default, unlike CATLIN_INT_2X6_BRG: this is a
+# 5.5" cavity a 3" stack runs down, and phase-locking its studs to a global line is the one
+# thing that could put a stud where the drain has to go.
+CATLIN_INT_2X6_BRG_PLUMBING = Assembly(
+    tag="CATLIN_INT_2X6_BRG_PLUMBING",
+    layers=(
+        _PAINT_FINISH_A,
+        Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6"),
+              cavity=CavityFill(material_ref="fiberglass", thickness=inch(5.5))),
+        Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        _PAINT_FINISH_B,
+    ),
+    interfaces=(_STUD_BEARING,),
+    source="catlin-house bearing wet wall (2x6, continuous studs): the x=10 ft line on the second storey, which carries the cut ends of FO-A-HALL's attic joists. INT_2X6_PLUMBING plus a 5.5 in. fiberglass batt, to keep the batt the staggered assembly it replaces already had",
+)
+
 # --- energy storage closet -------------------------------------------------------
 # The ESS closet's partitions (notes/backup_power.md, 2026-08-02), an owner decision not a
 # code requirement (IRC R327 permits an ESS in an ordinary utility closet; that's why
@@ -2527,6 +2572,7 @@ ASSEMBLIES = [
     FOOTING_FPSF_20,
     GARAGE_ROOF,
     CATLIN_INT_2X6_BRG,
+    CATLIN_INT_2X6_BRG_PLUMBING,
     CATLIN_INT_2X4_BOOKCASE_12,
     INT_2X6_PLUMBING,
     INT_2X6_STAGGERED_PLUMBING,

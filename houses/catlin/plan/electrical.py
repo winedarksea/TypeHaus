@@ -728,7 +728,13 @@ SECOND_EQUIPMENT = [
     # zone_rooms covers the whole conditioned second storey plus RM-A-STUDY/RM-A-EAST-UNFIN (short
     # attic branches) and RM-A-WEST-UNFIN (suite branch's REG-A-HP-WEST boot, 2026-07-30).
     # RM-A-DEN used to be excluded here — nothing served it — but the room was deleted
-    # 2026-08-27 and its 43 sf is inside RM-A-WEST-UNFIN, which this zone already names.
+    # 2026-08-27 and its 43 sf is inside what is now RM-A-STUDIO, which this zone names.
+    #
+    # THE WEST LOFT BECAME THREE ROOMS ON 2026-08-29 and all three are named here, because
+    # the one boot (REG-A-HP-WEST, still on the suite branch) is what conditions the whole
+    # of the old room's footprint. The studio is the room that wanted it; the bath and the
+    # storage pocket are on the same air, through the same branch, and dropping either from
+    # this list would report them as unheated rather than as what they are.
     # The old gap in the zone closed by itself; the TODO entry it pointed at is moot.
     Equipment(uid="CEE032AAAA", tag="EQ-S-HP1-AH",
               kind=EquipmentKind.DUCTED_AIR_HANDLER,
@@ -740,7 +746,8 @@ SECOND_EQUIPMENT = [
               zone_rooms=("RM-S-STUDY2", "RM-S-PLANT", "RM-S-BED1", "RM-S-BED2",
                           "RM-S-BED3", "RM-S-SUITE", "RM-S-SUITEBATH", "RM-S-VANITY",
                           "RM-S-BATH1", "RM-S-HALL", "RM-S-CLOSET", "RM-S-NCLOSET",
-                          "RM-A-EAST-UNFIN", "RM-A-STUDY", "RM-A-WEST-UNFIN")),
+                          "RM-A-EAST-UNFIN", "RM-A-STUDY", "RM-A-STUDIO",
+                          "RM-A-STUDIO-BATH", "RM-A-POCKET")),
     # The duct heater above, in the supply plenum immediately north of the air handler's
     # discharge — inside SF-S-DUCT's soffit box, 8" past the y=9'-7" line DU-S-HP-SUP leaves
     # from, so it heats every branch the trunk feeds rather than one room's boot.
@@ -946,9 +953,27 @@ MAIN_DATA_TRUNKS = [
 
 ATTIC_DATA_TRUNKS = [
     # Along the attic floor to the NE corner, then up the gable to the access point.
+    #
+    # ** REROUTED 2026-08-29: THE OLD LINE RAN ACROSS OPEN AIR. ** It went straight east on
+    # the deck at y=34'-6" from x=2'-0" to x=33'-0", and x 10'..18' of that is FO-A-HALL —
+    # 8'-0" of 3/4" conduit spanning a 13'-1" shaft with a 9'-0" drop under it and no deck
+    # to strap to. Nothing in the model would have said so: a ConduitRun carries no
+    # floor_ref, so it is drawn wherever it is authored.
+    #
+    # There is no way round the north: FO-A-HALL's north edge IS W-A-N2's inside gwb face,
+    # so the strip between the void and the wall is wall, not deck. It goes south instead,
+    # down the same x=2'-0" line to y=20'-8", east across the studio and the centre line —
+    # the same crossing DU-A-ERV-R-BED3 now makes, and for exactly the same reason — then
+    # back north up the east loft to the NE corner and up the gable.
+    #
+    # It stays ON the deck for the whole run (`start_elevation` ft(20, 6) is 6" above it).
+    # Inside RM-A-STUDIO that means a surface conduit in a finished bedroom, so it runs the
+    # x=2'-0" line beside the ERV chase and is boxed in with it — see DU-A-ERV-R-ATTIC's
+    # note on the knee-wall bench. It is data, not power: no shared-cavity question.
     ConduitRun(uid="CDT012AAAA", tag="CD-A-DATA-NE", trade_size=inch(0.75),
                service=Service.DATA,
-               path=(pt(ft(2), ft(34, 6)), pt(ft(33), ft(34, 6)), pt(ft(33), ft(35, 5))),
+               path=(pt(ft(2), ft(34, 6)), pt(ft(2), ft(20, 8)), pt(ft(33), ft(20, 8)),
+                     pt(ft(33), ft(34, 6)), pt(ft(33), ft(35, 5))),
                start_elevation=ft(20, 6), end_elevation=ft(24),
                from_ref="ED-B-NET-PATCH", to_ref="ED-A-EAST-AP"),
 ]
@@ -1516,72 +1541,17 @@ NEC_FILL_SECOND = [
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
 ]
-# Same treatment for the attic's lofts. RM-A-WEST-UNFIN and RM-A-EAST-UNFIN are STORAGE,
+# Same treatment for the attic's lofts. RM-A-EAST-UNFIN and RM-A-POCKET are STORAGE,
 # outside `_HABITABLE`, so 210.52 spacing is not evaluated for them. (RM-A-DEN stood in
-# this sentence until 2026-08-27; it was STORAGE too, and it is now part of the west loft.)
-NEC_FILL_ATTIC = [
-    ElectricalDevice(uid="NEC048AAAA", tag="ED-A-EAST-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18, 4.375), ft(13, 8.25)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
-    ElectricalDevice(uid="NEC049AAAA", tag="ED-A-EAST-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18, 4.375), ft(24, 0.875)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
-    ElectricalDevice(uid="NEC050AAAA", tag="ED-A-EAST-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(19, 5.375), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    ElectricalDevice(uid="NEC051AAAA", tag="ED-A-EAST-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(29, 11.25), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    ElectricalDevice(uid="NEC052AAAA", tag="ED-A-EAST-RC5", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35, 4.375), ft(31, 3.25)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
-    ElectricalDevice(uid="NEC053AAAA", tag="ED-A-EAST-RC6", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35, 4.375), ft(20, 9.625)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
-    ElectricalDevice(uid="NEC054AAAA", tag="ED-A-EAST-RC7", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35, 4.375), ft(10, 3.75)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
-    # y 9'-3 3/8" -> 9'-11 3/8" (2026-08-27): W-A-SN thickened to 12 3/4" for the study's
-    # bookcase wall, and at the old y this device sat INSIDE the wall. Nothing checks that,
-    # which is why it is written down. 9'-11 3/8" is the same 3/8" off the new north face
-    # that 9'-3 3/8" was off the old one, so it is still a face-mounted receptacle in
-    # RM-A-EAST-UNFIN looking south.
-    ElectricalDevice(uid="NEC055AAAA", tag="ED-A-EAST-RC8", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(26, 6.375), ft(9, 11.375)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    # RC1/RC2 moved 2026-07-31: both used to sit over the FO-A-STAIR well (1 3/4"/6 5/8" of
-    # deck, a 9' drop to reach). RC1 -> south wall between RC4/RC3; RC2 -> east wall south of
-    # the well, closing the 7'-10" run from RC3 round the corner.
-    ElectricalDevice(uid="NEC056AAAA", tag="ED-A-STUDY-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(29), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    ElectricalDevice(uid="NEC057AAAA", tag="ED-A-STUDY-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35, 4.375), ft(2)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
-    ElectricalDevice(uid="NEC058AAAA", tag="ED-A-STUDY-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(33, 10.75), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    ElectricalDevice(uid="NEC059AAAA", tag="ED-A-STUDY-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(23, 10.5), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    ElectricalDevice(uid="NEC060AAAA", tag="ED-A-STUDY-RC5", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18, 4.375), ft(4, 6.375)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
-]
-
+# this sentence until 2026-08-27; it was STORAGE too, and it became part of the west loft.)
+#
+# ** THE WEST LOFT LEFT THAT SENTENCE ON 2026-08-29. ** RM-A-STUDIO is a habitable bedroom
+# now and takes full 210.52 spacing; only the pocket it was split from stayed STORAGE. The
+# room was already most of the way there — the east loft's ring and the study's devices
+# cover its long walls — and `electrical.receptacle_spacing` named the two gaps that were
+# left, both of them around the inside corner the new bathroom cut out of it at (9.9',
+# 17.7'). The three devices at the end of this list are those two gaps and the bath.
+ATTIC_ELEMENTS = [*PV_JBOX, *PV_JBOX_CLAMP, *ATTIC_DATA_DEVICES, *ATTIC_DATA_TRUNKS]
 BASEMENT_ELEMENTS = [*BACKUP_ENCLOSURE, *ESS_EQUIPMENT, *BASEMENT_DEVICES,
                      *BASEMENT_EQUIPMENT, *CONDUIT_TRUNKS, *DATA_HEAD_END, *DATA_TRUNKS,
                      *BASEMENT_DATA_DEVICES, *BASEMENT_DATA_TRUNKS, *DATA_SLEEVES,
@@ -1591,5 +1561,3 @@ MAIN_ELEMENTS = [*SERVICE_DEVICES, *MAIN_DEVICES, *MAIN_EQUIPMENT, *MAIN_DATA_DE
                  *MAIN_DATA_TRUNKS, *CONDUIT_SLEEVES, *NEC_FILL_MAIN]
 GARAGE_ELEMENTS = [*GARAGE_DEVICES, *GARAGE_EQUIPMENT]
 SECOND_ELEMENTS = [*SECOND_DEVICES, *SECOND_EQUIPMENT, *NEC_FILL_SECOND]
-ATTIC_ELEMENTS = [*PV_JBOX, *PV_JBOX_CLAMP, *ATTIC_DATA_DEVICES, *ATTIC_DATA_TRUNKS,
-                  *NEC_FILL_ATTIC]

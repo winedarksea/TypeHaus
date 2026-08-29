@@ -68,4 +68,28 @@ DETAIL_SLICES = [
          cut_origin=pt(ft(0), ft(DETAIL_CUT_Y_FT)), cut_direction="x",
          crop=(pt(ft(1, 6), ft(-4)), pt(ft(7, 6), ft(8, 6))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(1))),
+    # ** THE DRAWING THAT PROVES THE 2026-08-29 CHANGE, AND THE ONE THAT WOULD CATCH IT
+    # COMING UNDONE. ** FO-A-HALL takes the attic deck away over x 10'-0"..18'-0", so the
+    # stair hall runs open from the second floor to the roof underside. Nothing about that
+    # is visible in plan — a hole in a deck and a deck look identical from above — and a
+    # single number in `FS-ATTIC.openings` is all that stands between this volume and a
+    # gypsum lid at 9'-0". This cut is where that shows.
+    #
+    # y=30'-0" is chosen, not rounded to: it is inside the void (y 22'-6 3/8"..35'-5 3/8")
+    # and clear of both trimmer pairs, north of BM-S-HALL's end at 30'-10" and south of the
+    # north gable, so the cut crosses open air rather than framing at both x=10' and x=18'.
+    #
+    # The crop spans x 6'-0"..22'-0" and z 8'-0"..33'-0", and every bound earns its place:
+    # west of the void it takes in W-A-BA-E and the storage pocket's deck, so the section
+    # shows the deck STOPPING rather than simply being absent; east of it, W-A-C2B and
+    # RB-HOUSE at the ridge (soffit ~30'-10"). The bottom at 8'-0" reaches below the second
+    # floor so the full 9'-0"-to-roof height of the volume reads at once.
+    #
+    # ** WHAT TO LOOK FOR: NO CEILING PLANE ACROSS x 10'..18' AT z ~19'-11". ** One drawn
+    # there means `resolve/ceilings.py` has stopped subtracting deck openings (the fix of
+    # 2026-08-29) or FO-A-HALL has fallen out of `FS-ATTIC.openings`.
+    Slice(uid="CVD907AAAA", tag="SL-D-STAIRVOID", kind=SliceKind.DETAIL,
+         title="Stair hall void section",
+         cut_origin=pt(ft(0), ft(30)), cut_direction="x",
+         crop=(pt(ft(6), ft(8)), pt(ft(22), ft(33)))),
 ]

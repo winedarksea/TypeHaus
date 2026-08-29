@@ -1155,6 +1155,13 @@
 # carried over unchanged from the allowance rows: naming the model tells you what the box
 # costs, not what the trade charges to set and connect it.
 "APPL-FRIG-PRO-ALLFREEZER" = { material = { low = 3293, high = 3699 }, labour = { low = 75, high = 200 } }  # 1 ea. FPFU19F8WF, ~$3,293-3,299 street against a $3,699 pre-promo list
+# ADDED 2026-08-29 with the attic guest studio's wet bar. ** THE RANGE IS WIDE BECAUSE THE
+# APPLIANCE IS UNCHOSEN, ** which is the honest state of it — APPL-BAR-FRIDGE-24 is the one
+# type in plan/appliance_types.py that is a class allowance rather than a model number, so
+# this row cannot be a manufacturer's price the way the Frigidaire columns below are. $250 is
+# a builder-grade 24" beverage box; $1,400 is a specified undercounter unit. Labour is a plug
+# and a levelling — no water, deliberately: the type states no ice-maker connection.
+"APPL-BAR-FRIDGE-24" = { material = { low = 250, high = 1400 }, labour = { low = 60, high = 160 } }  # 1 ea
 "APPL-FRIG-PRO-ALLFRIDGE" = { material = { low = 3299, high = 3699 }, labour = { low = 75, high = 200 } }  # 1 ea. FPRU19F8WF, $3,299 at Home Depot/Lowe's against a $3,699 pre-promo list. The pair is ~$6,600, roughly 2x the old fridge+freezer allowance — a Professional column pair is what that costs, and the Bosch alternative was ~$13,000
 "APPL-LG-DISHWASHER" = { material = { low = 679, high = 1149 }, labour = { low = 150, high = 350 } }  # 1 ea. LDTS5552S, $679 stainless on LG.com against a $1,149 MSRP
 "APPL-LG-INDUCTION-RANGE" = { material = { low = 1150, high = 2999 }, labour = { low = 100, high = 250 } }  # 1 ea. LSIL6336FE. The widest bracket of the three and deliberately so: $1,150 was a Labor Day promo, typical street is $1,800-2,300, list is $2,999. Budget to the middle, not the low
@@ -3111,6 +3118,40 @@ roof-ventilated-underlayment-mat = { low = 1.00, high = 1.85, unit = "SF", drive
 # `openings."DT-INT-BOOKCASE30"`, and billing it twice is still the one failure mode this
 # section cannot catch.
 cabinet-study-bookcase-wall = { low = 2100, high = 4400 }
+# THE GUEST STUDIO'S WET BAR CABINET (2026-08-29). A single 24" base with a counter over it,
+# against W-A-BATH-S: the sink drops into the west half and APPL-BAR-FRIDGE-24 stands under
+# the east half. The MODEL sees the sink (`plumbing."FX-BAR-SINK-15"`) and the fridge
+# (`placeables."APPL-BAR-FRIDGE-24"`) and nothing else — there is no casework element and no
+# counter element behind this — so the box, the counter, the splash and the toe kick are
+# what this row is, and it must not also be read as covering either appliance.
+#
+# $850 is a stock 24" RTA base with a laminate top; $2,300 is a made-to-fit cabinet with a
+# solid-surface counter. That is the same $75-200/LF RTA basis the [placeables] CASE-* rows
+# use, taken to one box, plus the top.
+cabinet-studio-wet-bar = { low = 850, high = 2300 }
+# THE GUEST STUDIO'S FLOOR (2026-08-29). RM-A-STUDIO carries `floor_finish=None`, which is a
+# SPEC and not an omission: FS-ATTIC's deck is `plywood-underlayment-sanded`, authored that
+# grade precisely because these rooms walk on it, and `takeoff/finishes.py` correctly orders
+# no carpet, pad or tack strip for the room. But a sanded plugged panel is WALKABLE, not
+# FINISHED — unsealed it greys, stains and telegraphs its joints — so the sealer is real scope
+# with no BOM row behind it. Two coats of clear penetrating floor sealer over ~357 SF.
+#
+# ** THE PRICED ALTERNATIVE IS ONE WORD. ** `floor_finish="carpet"` on the Room bills ~357 SF
+# at the house's existing carpet rate, roughly $1,200, and this allowance goes away. That is
+# an owner decision, not a modelling one; it is written here so it can be put to them.
+finish-studio-floor-sealer = { low = 350, high = 900 }
+# THE KNEE-WALL PLINTH (2026-08-29). FURN-A-STUDIO-PLINTH is a site-built box, 21'-8" x 18" x
+# 16", and the BOM sees a Furniture instance with no casework behind it. It is not decoration:
+# it encloses the x=1'-0" ERV chase where that chase runs the length of a finished bedroom, and
+# it is what takes the west knee wall out of the 210.52 receptacle test honestly (a counterless
+# fixed cabinet is a break in the wall line) instead of stranding an outlet behind a duct box.
+# Plywood carcass, applied face, seat top, two access panels at the duct joints.
+#
+# FT-STUDIO-PLINTH-260 is therefore left UNPRICED in [placeables] deliberately, and `haus
+# takeoff` lists it as such. That is this table's existing idiom, not an oversight: it is
+# exactly how `cabinet-study-bookcase-wall` carries FT-BOOKCASE-32-90. Pricing the type as well
+# would bill the same box twice, which is the one failure mode this section cannot catch.
+cabinet-studio-knee-plinth = { low = 1400, high = 3200 }
 # THE CODE MINIMUM ONLY — eaves to 24" inside the wall line, plus valleys, per MN. CONFIRMED
 # AS BASE SCOPE by the owner 2026-08-20, and for a stated reason rather than to save money:
 # this roof is a highly insulated assembly under a low-friction standing seam over a quality

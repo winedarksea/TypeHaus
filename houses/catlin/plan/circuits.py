@@ -290,6 +290,16 @@ CIRCUITS = (
             afci=True, load_va=1000, description="General receptacles — attic rooms"),
     Circuit(uid="CKT030AAAA", tag="CKT-RC-GARAGE", slot=48, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, load_va=1500, description="Garage general receptacles"),
+    # ADDED 2026-08-29 with the attic guest bath. NEC 210.11(C)(3) / IRC E3901.6 wants a
+    # dedicated 20A circuit for bathroom receptacles, and ** THE ENGINE HAS NO E3901 RULE **,
+    # so this is judgement rather than a finding — taken anyway, because it is cheap in exactly
+    # the two currencies that are scarce here. It costs one of nine spare 1-pole spaces (let
+    # `electrical.panel_spaces` reconcile the count; do not hand-count), and it adds 0 VA to the
+    # 220.82 summary because bathroom branch circuits are not in 220.82(B)(1)'s list — which
+    # matters when `electrical.service_load` has 7.9A of margin against the 200A service.
+    Circuit(tag="CKT-BATH-ATTIC", slot=41, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            gfci=True, afci=True, load_va=0,
+            description="Attic guest bath receptacle"),
 )
 
 # --- Load management (NEC 625.42 / 220.82) ---------------------------------------------

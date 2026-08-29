@@ -259,5 +259,46 @@ FRIGIDAIRE_ALL_FREEZER = ApplianceType(
 )
 
 
+# --- the guest studio's wet bar (2026-08-29) -------------------------------------------
+# ** THIS IS THE ONE APPLIANCE IN THE HOUSE THAT IS A CLASS, NOT A PRODUCT, AND IT IS
+# DELIBERATE. ** Every other type in this file is a chosen model off its own spec sheet,
+# with a `product_ref` a machine can follow. This one is not, because the catalog had no
+# undercounter refrigerator at all — `library.placeables.appliances` carries a 36"x34"
+# "Refrigerator" and nothing smaller — and the owner has chosen no bar fridge. A generic
+# 24" box IS the correct model of an undecided one; inventing a model number would be the
+# lie. Give it a `product_ref` when somebody buys something.
+#
+# It lives here rather than in an editable file for the reason this module's header gives:
+# `ApplianceType.needs` is a `frozenset`, which the editable dialect forbids. The placed
+# instance is in `plan/placeables.py`, which is editable, so a UI drag round-trips.
+#
+# 24" x 24" x 34" is the standard undercounter envelope — it fits a 24" cabinet opening under a
+# 36" counter with the toe kick and the compressor clearance the class needs. Nothing in the
+# shared catalog is under 6' tall, which is why this entry exists at all.
+#
+# POWER_120 only — no water, no drain, NO ICE MAKER LINE. That is the whole point of the entry:
+# a bar fridge plumbed for ice is a second water line and a second drain in an attic, and the
+# studio's plumbing budget is one stack. No water also means no `quick_closing`, so
+# `mep.water_hammer_arrestor` does not fire on it.
+#
+# ** AND THERE IS NO COOKING APPLIANCE, WHICH IS THE POINT OF THE WHOLE WET BAR. ** Sink
+# plus fridge is a bar; add a range or a cooktop and the studio becomes a second dwelling
+# unit, and IRC R302.3's two-family separation lands on the floor and the centre wall.
+# Do not add one here.
+BAR_REFRIGERATOR = ApplianceType(
+    tag="APPL-BAR-FRIDGE-24",
+    name='24" undercounter beverage refrigerator (class allowance)',
+    footprint=(inch(24), inch(24)), height=inch(34),
+    plan_symbol="refrigerator",
+    needs=frozenset({Service.POWER_120}),
+    ports=(ServicePort(tag="power", service=Service.POWER_120,
+                       position=(ft(0), ft(0), ft(1))),),
+    source='Undercounter all-refrigerator, 24" nominal (24" x 24" x 34"), 120V/15A '
+           "cord-and-plug, no water connection. CLASS ALLOWANCE: final appliance selection by "
+           "owner, unlike every other type in this file.",
+)
+
+
 APPLIANCE_TYPES = (LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER,
-                   FRIGIDAIRE_ALL_REFRIGERATOR, FRIGIDAIRE_ALL_FREEZER)
+                   FRIGIDAIRE_ALL_REFRIGERATOR, FRIGIDAIRE_ALL_FREEZER,
+                   BAR_REFRIGERATOR)

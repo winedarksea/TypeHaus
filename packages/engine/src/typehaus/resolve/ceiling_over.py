@@ -23,7 +23,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from shapely.geometry import MultiPolygon, Polygon
+from shapely.geometry import GeometryCollection, MultiPolygon, Polygon
 
 from typehaus.model.assembly import Layer
 from typehaus.model.enums import LayerFunction
@@ -198,15 +198,45 @@ class CeilingRegion:
     deck: Any
     face: Polygon
     structure_z_m: float
+    #: True where a deck opening was cut out of this region — the face below is open to the
+    #: storey above and there is no ceiling to hang there. Callers that would otherwise
+    #: substitute the room's whole clear face (:mod:`typehaus.resolve.ceilings`) have to
+    #: use ``face`` instead once this is set, or they draw gypsum across a stair shaft.
+    voided: bool = False
 
 
 def polygon_parts(geometry: Any) -> list[Polygon]:
-    """``geometry`` as a list of real polygons — an overlay result may be neither."""
+    """``geometry`` as a list of real polygons — an overlay result may be neither.
+
+    A ``GeometryCollection`` is unwrapped rather than discarded: cutting a face along a
+    line that grazes a hole's edge returns the polygons *and* the degenerate edge itself,
+    and dropping the whole collection loses a real piece of ceiling with it.
+    """
     if isinstance(geometry, Polygon):
         return [geometry] if geometry.area > _MIN_REGION_M2 else []
     if isinstance(geometry, MultiPolygon):
         return [part for part in geometry.geoms if part.area > _MIN_REGION_M2]
+    if isinstance(geometry, GeometryCollection):
+        return [part for member in geometry.geoms for part in polygon_parts(member)]
     return []
+
+
+def deck_void_face(plan: PlanModel, storey_tag: str, deck: Any) -> Polygon | None:
+    """The union of the ``FloorOpening`` faces this deck carries, or None if it carries none.
+
+    A hole in the deck is a hole in the ceiling hung under it. The take-off has always
+    known this — :mod:`typehaus.takeoff.framing` bills ``gross - openings`` — but the
+    geometry did not, so a room under a stair well resolved a gypsum plane straight across
+    the shaft, in the 3D model and in every section cut through it.
+    """
+    faces = []
+    for tag in getattr(deck, "openings", ()):
+        opening = plan.by_tag(tag)
+        outline = getattr(opening, "outline", ())
+        if len(outline) < 3:
+            continue
+        faces.append(Polygon([point.xy_m for point in outline]))
+    return union_all(faces) if faces else None
 
 
 def ceiling_regions(plan: PlanModel, room_storey_tag: str,
@@ -230,24 +260,76 @@ def ceiling_regions(plan: PlanModel, room_storey_tag: str,
         return []
     if len(usable) == 1:
         storey, deck, z = usable[0]
-        return [CeilingRegion(storey, deck, face, z)]
+        return _cut_voids(plan, storey, deck, z, [face])
     regions: list[CeilingRegion] = []
     taken: list[Polygon] = []
     for storey, deck, z in usable:
         if not getattr(deck, "outline", ()):
             continue
         outline = Polygon([point.xy_m for point in deck.outline])
-        for part in polygon_parts(intersection(face, outline)):
-            regions.append(CeilingRegion(storey, deck, part, z))
-            taken.append(part)
+        parts = polygon_parts(intersection(face, outline))
+        regions.extend(_cut_voids(plan, storey, deck, z, parts))
+        taken.extend(parts)
     for storey, deck, z in usable:
         if getattr(deck, "outline", ()):
             continue
         rest = difference(face, union_all(taken)) if taken else face
-        for part in polygon_parts(rest):
-            regions.append(CeilingRegion(storey, deck, part, z))
-            taken.append(part)
+        parts = polygon_parts(rest)
+        regions.extend(_cut_voids(plan, storey, deck, z, parts))
+        taken.extend(parts)
     return regions
+
+
+def _cut_voids(plan: PlanModel, storey: Any, deck: Any, z: float,
+               parts: Sequence[Polygon]) -> list[CeilingRegion]:
+    """``parts`` as regions, less whatever ``deck``'s openings take out of them.
+
+    The share the deck's outline apportions is taken FIRST and the voids come out of that
+    share, so a room straddling two decks loses the hole only from the deck that has it.
+    """
+    voids = deck_void_face(plan, storey.tag, deck)
+    if voids is None:
+        return [CeilingRegion(storey, deck, part, z) for part in parts]
+    out: list[CeilingRegion] = []
+    for part in parts:
+        if not voids.intersects(part) or intersection(part, voids).area <= _MIN_REGION_M2:
+            out.append(CeilingRegion(storey, deck, part, z))
+            continue
+        for piece in polygon_parts(difference(part, voids)):
+            for simple in split_holes(piece):
+                out.append(CeilingRegion(storey, deck, simple, z, voided=True))
+    return out
+
+
+def split_holes(part: Polygon) -> list[Polygon]:
+    """``part`` as one or more polygons with no interior rings.
+
+    A ``Ring`` — the shape every consumer of a resolved outline carries — is a single
+    closed loop with no holes, so a ceiling with a stair well punched through its middle
+    cannot be expressed as one. Dropping the interior ring is not an option: that is
+    exactly the bug this whole subtraction exists to fix, and it fails silently.
+
+    So the donut is sliced into simple pieces along the vertical lines through each hole's
+    x-bounds. Cutting at *every* hole bound guarantees each band's x-interval either
+    contains a hole's whole width — in which case the hole severs the band into disjoint
+    pieces and no interior survives — or misses it entirely. Openings are rectangular and
+    axis-aligned, so the seam this leaves runs along the well's own edge, which is where a
+    reader would draw it anyway.
+    """
+    if not part.interiors:
+        return [part]
+    minx, miny, maxx, maxy = part.bounds
+    cuts = sorted({minx, maxx} | {value for interior in part.interiors
+                                  for value in (interior.bounds[0], interior.bounds[2])
+                                  if minx < value < maxx})
+    if len(cuts) < 3:
+        return [part]  # the hole spans the full width — nothing to cut against
+    out: list[Polygon] = []
+    for lo, hi in zip(cuts, cuts[1:], strict=False):
+        band = Polygon([(lo, miny), (hi, miny), (hi, maxy), (lo, maxy)])
+        for piece in polygon_parts(intersection(part, band)):
+            out.extend(split_holes(piece) if piece.interiors else [piece])
+    return out
 
 
 def finish_layer(layers: tuple[Layer, ...]) -> Layer | None:

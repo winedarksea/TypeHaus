@@ -8,6 +8,20 @@ proposing any design change.
 ## Project map
 - `plan/manifest.py` — plain-Python assembler (NOT editable); wires modules + params.
 - `plan/storeys/{basement,main,second,attic,garage}.py` — `# haus: editable` elements.
+- `plan/storeys/attic_studio.py` — `# haus: editable`, new 2026-08-29 with the west attic's
+  guest studio: every new node, wall and door, `FO-A-HALL`, the three Rooms (including
+  `RM-A-STUDIO`, which is `RM-A-WEST-UNFIN` moved here whole — **a uid follows the element,
+  not the file**), `AL-A-STUDIO`, and the second-storey beam `BM-S-BATH-E` with its tee node.
+  It feeds **two** storeys from one file, exporting `ATTIC_ELEMENTS` and `SECOND_ELEMENTS` —
+  the `plan/mep_erv.py` precedent — because `attic.py` was already 565 lines against
+  `AGENTS.md`'s 500. **What deliberately stayed in `attic.py`:** every WALL SPLIT the change
+  forced — `W-A-C2`/`W-A-C2M`/`W-A-C2B`, `W-A-N2`/`W-A-N2B`, `W-A-W1`/`W-A-W1B` — so nobody
+  reading a line has to look in two files for a segment of it, and `RB-HOUSE.bearing_refs`
+  sits beside the walls it names.
+- `plan/lighting_attic.py`, `plan/electrical_attic.py` — `# haus: editable`, split off on the
+  same day for the same reason (`lighting.py` was 1,158 lines, `electrical.py` 1,700). Split
+  by STOREY, which is how `plan/manifest.py` already consumes both. An editable file cannot
+  `from plan import ...`, so the manifest composes; nothing imports across.
 - `plan/assemblies.py`, `plan/site.py`, `plan/placeables.py` — editable assemblies/site/placeables.
 - `plan/mep*.py` — MEP *instances*, split by system so no file runs past ~400 lines:
   `mep_sleeves` (cast penetrations), `mep_drainage`, `mep_venting`, `mep_supply` +
@@ -50,6 +64,10 @@ proposing any design change.
   movable instances that reference them live in the editable modules above. The house-local
   `plan/fixture_types.py` this line used to name was deleted in the `3d3973a` library
   dedupe; only `plan/furniture_types.py` (the two mudroom closets) is still house-local.
+  It was briefly re-created on 2026-08-29 for a bar sink and then deleted again: the guest
+  studio's wet bar uses `FX-LAV-COMPACT` (18" x 14"), which is dimensionally exact for a bar
+  bowl and costs no catalog entry — the same trade the house already runs in the other
+  direction, `FX-M-BATH2-SINK` being an `FX-KITCHEN-SINK-33`.
 - `params/sunken_garden.py` — the freestanding arched porch/garden structure (math OK here).
 - `params/foundations.py` — house footings, garage ICF stem + slab.
 - `params/breezeway.py` — the enclosed breezeway: pads, piers, posts, deck, roof, glazing.
@@ -227,6 +245,29 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     thickness) — logged in `plans/TODO.md`, not built.
 - Bearing lines: west wall, center N-S wall (x=18'), east wall; 18' spans E-W, on every
   storey and in both materials.
+- **The SECOND storey has a fourth bearing line, x=10'-0", and it is new (2026-08-29).**
+  `W-S-BA-E`, `W-S-BA-E1B` and `W-S-BD-N1B` carry the cut ends of `FO-A-HALL`'s attic joists
+  now, so all three are declared `structural_role=BEARING` — and **the assembly had to change
+  with the role.** All three were `INT_2X6_STAGGERED_PLUMBING`, and
+  `structural.wet_wall_bearing` FAILs any BEARING wall framed with staggered studs: neither
+  face's studs carry the plates' load. They are `CATLIN_INT_2X6_BRG_PLUMBING` — continuous
+  2x6 studs plus the 5 1/2" fiberglass batt the staggered wall's cavity had, so the swap does
+  not silently strip the insulation as bare `INT_2X6_PLUMBING` would. Total thickness is
+  identical (6.77" both ways), so **no face moved, no room area changed, and
+  `FX-S-BATH1-LAV`'s `wall_ref` is untouched.** The cost is real and is the honest price of
+  the line: studs get bored where the hall bath's stack passes.
+  - `stacks_on` is MANDATORY on this line, not decorative. Both x=10' walls have two
+    collinear candidates below (`W-M-STRW` y 36'→26'-4" and `W-M-STRW2` y 26'-4"→25'-10")
+    and `integrity.stack_ambiguous` is a hard ERROR without a tiebreaker. `W-S-BA-E1B` names
+    `W-M-STRW`; **only one upper wall may claim one lower wall**, so `W-S-BA-E` carries none
+    at all and stands on the same wall regardless. Do not "fix" that by pointing it there too.
+  - Between y=22'-4" and 26'-4" the line has **no wall under it and can never have one** —
+    that 4'-0" gap is the mouth of the hall stub you stand in to open `D-S-BATH1`. `BM-S-BATH-E`
+    is there instead: `3-1.75x11.875 LVL`, and **the ply count is a BEARING-WIDTH dimension,
+    not a bending one.** The demand is ~600 lb; two plies carry it many times over but are
+    3.5" wide, and the 4.77" attic partition standing on the beam would overhang 0.65" each
+    side. Three plies is 5.25" — the same section as `BM-S-HALL`, one LVL depth on the job.
+    Flush (`top_elevation=ft(20)`) so the vanity stub keeps an unbroken 9'-0" ceiling.
 - **The basement's ceiling is mixed, and what the two halves share is ONE FLAT BEARING SEAT
   at -13 7/16" (2026-08-23), not one depth.** `FS-M-WEST`, `FS-M-MECH`, `FS-M-STAIR` (x 0'-18')
   and `FS-M-EAST` (x 18'-36', y 0'-13') are 11 7/8" I-joists at 16" o.c.; `SL-M-DECK` is what
@@ -291,6 +332,81 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   resolved open to the I-joists, absent from the 3D model and from the order. The one
   exception is `RM-S-PLANT`, whose `Room.ceiling_lining` humidity liner replaces it over
   that room's own face.
+- **THE WEST ATTIC IS A GUEST STUDIO AND A STAIR-HALL VOID (2026-08-29).** `RM-A-WEST-UNFIN`
+  was 598 sf of loft nothing used. It is now four things, and the fourth is the one to
+  understand first:
+  - **`FO-A-HALL`, x 10'-0"..18'-0", y 22'-6 3/8"..35'-5 3/8"** — ~109 sf of deck REMOVED, so
+    the `ST-M2S` well and the hall band south of it run open from the second floor to the roof
+    underside (9'-0" at the void's west edge, ~20'-4" at the ridge). Its four edges are each
+    chosen against the resolver, and the two that get "tidied" if they are not read are **miny
+    on the partition's north FACE** (on the axis the wall hangs 1.15" over the hole) and
+    **`purpose=STAIR`, explicitly** — `code.R312_1_guard` filters on exactly that, and
+    `code.R312_1_guard_height` never walks a void, so with `CHASE` this hole would get no
+    fall-protection check at all. It passes on WALLS, not a railing. **Never add x=10' to
+    `FS-ATTIC.joists.bearing_refs`** to "support" it: that field is global to the deck and
+    would cut all ~34 joist lines there, including the 17 over the suite where nothing stands
+    below, and `integrity.floor_bearing_grid` does not test across the joist axis.
+  - **`RM-A-STUDIO`** — `Occupancy.BEDROOM`, **`floor_finish=None`**, the old room retagged in
+    place so uid `CAR401AAAA` and its GlobalId survive. Bare sanded deck is the cheap answer
+    and a spec rather than an omission (`FS-ATTIC` is `plywood-underlayment-sanded` *because*
+    these rooms walk on it); the sealer is a `prices.toml` allowance and `floor_finish="carpet"`
+    is the ~$1,200 alternative to put to the owner. BEDROOM is load-bearing four times: R310
+    (PASSing on `WIN-A-S-JUL-W` with nothing added), the whole-house ventilation count,
+    R314/R315, and `electrical.receptacle_spacing` evaluating the room at all.
+    **R303.1 is answered by Exception 1, not by glazing** — 21.3 sf against 28.5 sf, and no
+    glazing is added because the south gable's mirror about x=18' is not negotiable. Exception 1
+    needs a fresh-air SUPPLY register in the room (`REG-A-HP-WEST`, re-pointed — **no
+    mini-split**) and **lumens ≥ 12.5 × the room's sq ft**: 4,457 lm at 356.6 sf. Six cans plus
+    the sconce give 6,000 lm = **8.08 fc**, chosen over five cans' 6.9 fc so the margin survives
+    the room growing 30%. **A `LightRun` counts for nothing here** — `_room_lumens` excludes
+    cove and tape by its own docstring.
+  - **`RM-A-STUBATH`**, x 9'-10 7/8"..17'-8 5/8", y 17'-6 3/8"..22'-1 5/8", `vinyl-sheet`.
+    **The tag is not `RM-A-STUDIO-BATH`, and that is not cosmetic**: `electrical.room_lighting`
+    matches devices by `ED-{room.tag[3:]}-*`, so that name would prefix-match the studio and
+    merge the two rooms' luminaire sets. **Both of its wall lines are chosen, not rounded:**
+    x=9'-7 1/2" is `W-S-DC2`'s axis — the suite bath's staggered drain wall one storey down,
+    5.5" of continuous cavity with **no stud to bore** — and y=17'-4" (208" = 13×16) is a joist
+    line, so `W-A-BATH-S` gets a joist under its sole plate. All three fixtures take
+    `wall_ref="W-A-STU-W"`, the shower included, and the vent **starts over the shower**:
+    starting it at the wet-wall axis gives that fixture a 6'-7" trap arm against Table 1002.2's
+    5'-0" for 2". **No `humidity_class`** — every other bath in the house is `NORMAL`, and `WET`
+    would pull `CATLIN_ROOF` into the humid-room condensation walk for nothing.
+  - **`RM-A-POCKET`**, x 0..9'-7 1/2", y 22'-4"..36' — `STORAGE`, bare deck, entered through
+    `D-A-POCKET` in `W-A-STU-N`. **The door is in the SOUTH wall, not the x=10' one**: the far
+    side of that wall is the void, a shaft. Its station is set by HEADROOM — the wall is raked
+    at 5'-0" + x/3 and a 6'-8" head needs x ≥ 5'-9"; the first attempt put jacks and header
+    through the raked top plate and `structural.member_interference` said so. It is a door
+    rather than a scuttle because the ERV manifold, the OA hood and `VR-M-RADON-VENT`'s head
+    all sit inside it and IRC M1305.1.3 wants a passageway, light and receptacle at the
+    appliance (`ED-A-POCKET-LT1`, `ED-A-POCKET-RC1`).
+  - **Three walls SPLIT for it** — `W-A-C2` (twice, at N-A-BW-E and N-A-C3), `W-A-N2` and
+    `W-A-W1` — because a partition teeing in mid-span leaves `resolve/topology.py`'s junction
+    solver without a shared endpoint. In each case the TAG AND UID stay on the piece keeping a
+    hosted opening. `W-A-STU-W`'s own north end is the exception: it dies into `W-A-STU-N`'s
+    face 4 1/2" short of that wall's end, so **`N-A-WW-N` carries `open_end=True`** rather than
+    splitting off a stub nobody can build. `RB-HOUSE.bearing_refs` names all FIVE centreline
+    segments and `test_ridge_beam_depth.py` asserts the exact tuple.
+  - **The ERV hoods MOVED, 12'/24' → 8'/28'.** `EQ-A-ERV-HOOD-OA` stood inside the void's plan
+    footprint with 2'-0" of 6" duct at +276" over a 10'-deep hole — the house's fresh-air
+    INTAKE, over an open well, unreachable. 8'/28' keeps the gable mirror (8+28=36), puts the
+    hood back over the pocket's deck, and takes M1602.2 separation from 12'-0" to 20'-0".
+  - **`DU-A-ERV-R-BED3` and `CD-A-DATA-NE` both go SOUTH**, and there is no alternative: the
+    void spans the full band to the north gable (`FO-A-HALL`'s maxy IS `W-A-N2`'s gwb face), so
+    every west→east route north of the studio is severed. BED3 goes 32'-8" → ~53'-6" and
+    overtakes `DU-A-ERV-R-PLANT` as the longest radial — **which is fine, and length is not the
+    criterion**: BED3 carries 5 cfm and PLANT carries 25, so PLANT is still the run whose
+    pressure drop the installer must check.
+  - **The x=1'-0" chase is now inside a finished bedroom, and it is furniture.**
+    `FURN-A-STUDIO-PLINTH` boxes it as a 21'-8" knee-wall bench. Its type states
+    **`work_surface=False`**, which is load-bearing: a counterless fixed cabinet within 6" of
+    the floor is a BREAK in the 210.52 wall line, so the plinth takes that wall out of the
+    receptacle test honestly rather than stranding an outlet behind a duct box.
+  - **`AL-A-COMBO` moved to `RM-A-STUDY`, and `AL-A-STUDIO` is the new one.** Getting the pair
+    round the wrong way is a FAIL, not a preference: `code.R315_co_every_sleeping_area` fails
+    outright if every CO alarm on a storey is inside a bedroom.
+  - ** THE ERV'S HEADROOM IS NEARLY GONE. ** The sixth bedroom took
+    `code.N1103_6_whole_house_ventilation` to **210 cfm provided against 203 required**. A
+    seventh bedroom, or ~250 sf more conditioned floor, fails it and wants a bigger machine.
 - **`W-A-SN` IS A 12 3/4" BOOKCASE WALL, AND ITS SOUTH FACE IS PINNED** (2026-08-27,
   `CATLIN_INT_2X4_BOOKCASE_12`). That face is the only thing covering `FO-A-STAIR`'s north
   edge: move the wall north and `code.R312_1_guard` FAILs with ~14'-3" of unguarded well.

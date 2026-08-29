@@ -136,13 +136,17 @@ EQUIPMENT_ERV_MAIN = [
 ]
 
 # LEVEL 3 — sitting ON the FS-ATTIC deck beside the chase head at (1', 34'-6"), fully
-# accessible in RM-A-WEST-UNFIN. Extract only: the level's fresh-air duty is the mixing-box feed,
+# accessible in RM-A-POCKET. Extract only: the level's fresh-air duty is the mixing-box feed,
 # which stays a full-size 6" branch off the supply riser rather than a radial, because it
 # carries ~100 of the machine's 210 cfm on its own.
 EQUIPMENT_ERV_ATTIC = [
     Equipment(uid="3QT1F3F01A", tag="EQ-A-ERV-MAN-EXH", kind=EquipmentKind.DUCT_MANIFOLD,
               position=pt(ft(2, 6), ft(34, 6)), footprint=(inch(24), inch(8)),
-              room="RM-A-WEST-UNFIN", type_ref="EQ-T-ERV-MANIFOLD-6",
+              # RM-A-POCKET since 2026-08-29: the west loft became a guest studio and this
+              # end of it was walled off as a storage pocket. The manifold did not move —
+              # the room around it did, and D-A-POCKET is a door rather than a scuttle
+              # precisely so this stays serviceable.
+              room="RM-A-POCKET", type_ref="EQ-T-ERV-MANIFOLD-6",
               mount=Mount(kind=MountKind.FLOOR)),
 ]
 
@@ -172,21 +176,38 @@ EQUIPMENT_ERV_SECOND = [
 # its west wall are 4'-8" apart corner to corner, and carrying one hood south down the west
 # facade means running a 6" insulated duct through 2x6 walls that have a 5 1/2" cavity.
 # Against that, the gable costs ~30 ft of insulated riser each way and buys:
-#   * 12'-0" of separation (x=12'-0" and x=24'-0", mirrored about the ridge);
+#   * 20'-0" of separation (x=8'-0" and x=28'-0", mirrored about the ridge — 12'/24' until
+#     2026-08-29, when FO-A-HALL opened the deck under the OA hood's old station);
 #   * 25'-10" above grade, which is not a snow question at all — the main-storey rim band
 #     the plan warned about is only 20"-34" above grade and was rightly rejected;
 #   * distance from EQ-M-HP3-OD's slot at (11'-3 5/8", 37'-4 5/8") and from the garage
 #     4'-0" north of it, both of which are ground-level conditions;
 #   * distance from VR-M-RADON-VENT, which terminates above the roof at the chase.
 # The mirror about x=18'-0" is what the facade rules ask of a gable (houses/catlin/CLAUDE.md),
-# and it is the reason these two are at 12' and 24' rather than nearer each other.
+# and it is the reason these two are paired at all rather than sitting nearer each other.
 EQUIPMENT_ERV_HOODS = [
     Equipment(uid="0NF97ZR9Z3", tag="EQ-A-ERV-HOOD-OA", kind=EquipmentKind.DUCT_MANIFOLD,
-              position=pt(ft(12), ft(35, 6)), footprint=(inch(12), inch(12)),
-              room="RM-A-WEST-UNFIN", type_ref="EQ-T-ERV-HOOD-6",
+              position=pt(ft(8), ft(35, 6)), footprint=(inch(12), inch(12)),
+              # ** MOVED 12'-0" -> 8'-0" ON 2026-08-29, AND THE MOVE IS THE POINT. ** At
+              # x=12'-0" this hood stood INSIDE FO-A-HALL's plan footprint, with DU-ERV-OA
+              # running 2'-0" west at +276" over a 10'-deep open well and no deck to service
+              # either from. The house's outdoor-air INTAKE cannot live over a shaft.
+              #
+              # 8'-0" puts it back over the pocket's deck, reachable from D-A-POCKET, and it
+              # KEEPS THE FACADE RULE that put the pair at 12'/24' in the first place: the
+              # mirror about x=18'-0" holds because 8 + 28 = 36. IRC M1602.2's 10'-0"
+              # intake/discharge separation goes from 12'-0" to 20'-0" — better, not merely
+              # preserved. It costs +4'-0" on this duct and -4'-0" on the other: a wash.
+              #
+              # The cheap alternative — strut the duct off the rafters and leave the hood
+              # where it was — is genuinely cheaper today and leaves this house's fresh-air
+              # intake permanently over an open well. It was rejected on those terms.
+              room="RM-A-POCKET", type_ref="EQ-T-ERV-HOOD-6",
               mount=Mount(kind=MountKind.WALL, elevation=ft(3))),
     Equipment(uid="38M0D2FNXH", tag="EQ-A-ERV-HOOD-EA", kind=EquipmentKind.DUCT_MANIFOLD,
-              position=pt(ft(24), ft(35, 6)), footprint=(inch(12), inch(12)),
+              position=pt(ft(28), ft(35, 6)), footprint=(inch(12), inch(12)),
+              # Mirrored to 28'-0" with the OA hood's move to 8'-0" — the pair keeps its
+              # mirror about x=18'-0" (8 + 28 = 36) and gains 8'-0" of M1602.2 separation.
               room="RM-A-EAST-UNFIN", type_ref="EQ-T-ERV-HOOD-6",
               mount=Mount(kind=MountKind.WALL, elevation=ft(3))),
 ]
@@ -242,15 +263,25 @@ DUCTS_ERV_RISERS = [
     # `mep.erv_outdoor_terminals` reads an OUTDOOR_AIR run from its hood inward and an
     # EXHAUST run outward to its hood, which is the direction the air goes and the direction
     # a plan reader traces.
+    # Follows EQ-A-ERV-HOOD-OA from x=12'-0" to x=8'-0" (2026-08-29). Its west leg at
+    # y=35'-6" now runs x 1'-11"..8'-0", entirely over RM-A-POCKET's deck — it used to start
+    # at x=12'-0", inside FO-A-HALL, which put 2'-0" of 6" insulated duct at +276" over a
+    # 10'-deep open well with nothing to service it from. +4'-0" of duct, and DU-ERV-EA
+    # gives 4'-0" back.
     DuctRun(uid="MW0MY7GDME", tag="DU-ERV-OA", system=DuctSystem.OUTDOOR_AIR,
-            path=(pt(ft(12), ft(36, 6)), pt(ft(12), ft(35, 6)), pt(ft(1, 11), ft(35, 6)),
+            path=(pt(ft(8), ft(36, 6)), pt(ft(8), ft(35, 6)), pt(ft(1, 11), ft(35, 6)),
                   pt(ft(1, 11), ft(33, 7.5)), pt(ft(1, 11), ft(33, 7.5))),
             elevations=(inch(276), inch(276), inch(276), inch(276), inch(-19.4375)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
             insulation="R-8 wrap, vapour-sealed", design_cfm=210),
+    # Follows EQ-A-ERV-HOOD-EA from x=24'-0" to x=28'-0" — the mirror move, and the -4'-0"
+    # that makes the pair's relocation a wash. This run DOES still cross the void band at
+    # y=35'-6", and that is fine where the OA hood's station was not: it rides at +276",
+    # 6" off the north gable for its whole length, so it straps to gable framing rather than
+    # spanning open air, and nothing has to be reached from a deck that is no longer there.
     DuctRun(uid="BYAVBJKRS6", tag="DU-ERV-EA", system=DuctSystem.EXHAUST,
-            path=(pt(ft(0, 5), ft(35, 6)), pt(ft(0, 5), ft(35, 6)), pt(ft(24), ft(35, 6)),
-                  pt(ft(24), ft(36, 6))),
+            path=(pt(ft(0, 5), ft(35, 6)), pt(ft(0, 5), ft(35, 6)), pt(ft(28), ft(35, 6)),
+                  pt(ft(28), ft(36, 6))),
             elevations=(inch(-19.4375), inch(276), inch(276), inch(276)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
             insulation="R-8 wrap, vapour-sealed", design_cfm=210),
@@ -427,7 +458,22 @@ DUCTS_ERV_LEVEL2 = [
 # west wall, then drops into its FS-ATTIC bay and rides it east to the terminal. `CHASE`,
 # for the reason in the header — one run, two cavities, and the declaration is the honest
 # one. FS-ATTIC is I-joist, so unlike level 2 there is no crossing the bays: all the
-# north-south travel happens ON the deck, above the joists, where it costs nothing.
+# north-south travel happens ON the deck, above the joists, where it costs nothing in DEPTH.
+#
+# ** THAT LAST CLAUSE NEEDED AMENDING ON 2026-08-29 AND HERE IS WHAT IT COSTS. ** The x=1'-0"
+# chase now runs the length of a FINISHED BEDROOM. Through RM-A-STUDIO the box carries a 6"
+# beside a 3" — roughly 12" wide by 8-9" tall — for 21'-8" along the base of a 5'-0" knee wall,
+# about 22 sf of the studio's 357 (6%), all of it under the rake where clear height is 5'-0" to
+# 5'-8", and it swallows the west wall's receptacle band. In an unfinished loft that box was
+# invisible; in a guest room it is joinery.
+#
+# WHAT WAS BOUGHT WITH IT: not boring the I-joists. The rejected alternative is to run
+# north-south in the FS-ATTIC bays, which the hole chart permits — at ~16 bored webs per duct,
+# twice, plus a manufacturer sign-off, against a one-time built-in the room wants anyway. Build
+# the chase as the base of a knee-wall plinth/bench (FURN-A-STUDIO-PLINTH, plan/placeables.py):
+# it swallows the duct, it is the seat and under-rake storage a guest room wants, and because a
+# counterless fixed cabinet within 6" of the floor is a BREAK in the 210.52 wall line, it takes
+# that wall out of the receptacle test honestly rather than forcing an outlet behind a duct box.
 #
 # +4" is a 3" duct lying on the attic deck at 240"; -10 3/8" is its centreline sitting on
 # FS-ATTIC's bottom chord at 228 1/8". Both are attic-relative, and negative because the
@@ -442,26 +488,70 @@ DUCTS_ERV_ATTIC = [
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
                         _ATTIC_BAY_Z, _ATTIC_BAY_Z),
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=20),
-    # The attic's own pickup is two feet from the manifold and never leaves the deck.
+    # THE ATTIC'S OWN PICKUP WAS TWO FEET FROM THE MANIFOLD AND NEVER LEFT THE DECK. It does
+    # now, and the reason is a wall rather than a duct: REG-A-RET1's terminal ended up inside
+    # the walled storage pocket on 2026-08-29, extracting a guest bedroom's air through a
+    # closed door. Both moved to the studio's NW corner together.
+    #
+    # It takes the SAME x=1'-0" boxed floor chase DU-A-ERV-R-PLANT and DU-S-ERV-HP-FEED already
+    # run in, south past W-A-STU-N to the boot at (1'-0", 20'-8"). All of it is ON the deck:
+    # FS-ATTIC is I-joist, so there is no crossing bays here and the north-south travel costs
+    # nothing in depth. Developed length goes from ~4' to about 15' — still the shortest radial
+    # on the machine, so it takes none of DU-A-ERV-R-PLANT's pressure headroom.
     DuctRun(uid="DYNQDC9ZMJ", tag="DU-A-ERV-R-ATTIC", system=DuctSystem.RETURN,
-            path=(pt(ft(2, 6), ft(34, 6)), pt(ft(2, 2.6), ft(34, 10.7)),
-                  pt(ft(2, 2.6), ft(34, 10.7))),
-            elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, inch(-2)),
+            path=(pt(ft(2, 6), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(20, 8)),
+                  pt(ft(1), ft(20, 8))),
+            elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z, inch(-2)),
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=9),
-    # RM-S-BED3's extract, forced up here by FO-S-STAIR — see the header. It becomes a
-    # ceiling grille rather than a floor boot, which for stale air is the better end of the
-    # room anyway.
-    DuctRun(uid="73FJZH564X", tag="DU-A-ERV-R-BED3", system=DuctSystem.RETURN,
-            path=(pt(ft(2, 6), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(31, 4)),
-                  pt(ft(1), ft(31, 4)), pt(ft(29), ft(31, 4))),
+    # THE GUEST BATH'S EXTRACT, added 2026-08-29 with the bath. Same chase south to y=19'-0",
+    # then east on the deck to the W-A-STU-W axis at x=9'-7 1/2" and UP inside that wall's
+    # 5 1/2" staggered cavity to REG-A-STUBATH-EXH at 7'-0". The rise is the whole reason the
+    # terminal is a wall grille rather than a floor boot: this room follows the roof and has no
+    # ceiling plenum, and the wet wall is the only chase between a high pickup and the deck.
+    #
+    # 20 cfm continuous, matching every other bath terminal in the house — and small enough
+    # that the extra run costs the machine nothing measurable.
+    DuctRun(uid="WCH6Z4DZX0", tag="DU-A-ERV-R-STUBATH", system=DuctSystem.EXHAUST,
+            path=(pt(ft(2, 6), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(19)),
+                  pt(ft(9, 7.5), ft(19)), pt(ft(9, 7.5), ft(19))),
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
-                        _ATTIC_BAY_Z, _ATTIC_BAY_Z),
+                        _ATTIC_DECK_Z, inch(84)),
+            diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid",
+            design_cfm=20),
+    # RM-S-BED3's extract, forced up here by FO-S-STAIR — see the header. It becomes a ceiling
+    # grille rather than a floor boot, which for stale air is the better end of the room anyway.
+    #
+    # ** REROUTED 2026-08-29, AND THERE IS NO WAY ROUND THE NORTH. ** Its bay leg crossed
+    # x 10'..18' at y=31'-4", and FO-A-HALL now spans that whole band to the north gable —
+    # FO-A-HALL's maxy IS W-A-N2's inside gwb face, so the strip between the void and the wall
+    # is wall, not deck. EVERY west-to-east route north of the studio is severed.
+    #
+    # So it goes down the x=1'-0" chase to y=22'-0" (264" = 8 + 16 x 16, a bay centre, and below
+    # W-A-STU-N's sole plate so the partition is irrelevant), east under the studio floor to
+    # x=29', then north on the east loft's deck to the existing grille, which does not move.
+    # ** 32'-8" -> ~53'-6", and it overtakes DU-A-ERV-R-PLANT as the longest radial. ** That is
+    # acceptable and it is why this is the run to lengthen: BED3 carries 5 cfm (~102 fpm in
+    # 75 mm, where 21 extra feet costs hundredths of an inch w.g.), while PLANT carries 25 cfm
+    # and therefore remains the run whose drop the installer must check against the Broan's
+    # 0.2" w.g. The alternative — re-filing BED3 onto the main-storey manifold — is still
+    # blocked by FO-S-STAIR, which is what pushed it up here in the first place.
+    DuctRun(uid="73FJZH564X", tag="DU-A-ERV-R-BED3", system=DuctSystem.RETURN,
+            path=(pt(ft(2, 6), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(22)),
+                  pt(ft(1), ft(22)), pt(ft(29), ft(22)),
+                  pt(ft(29), ft(22)), pt(ft(29), ft(31, 4))),
+            elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
+                        _ATTIC_BAY_Z, _ATTIC_BAY_Z,
+                        _ATTIC_DECK_Z, _ATTIC_DECK_Z),
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=5),
     # The plant room's dedicated extract, RH-controlled at the terminal (the damper is on
-    # REG-T-ERV-PLANT-EXH, not here). It is the longest radial in the house — the manifold is
-    # at the north end of the attic and the plant room is at the south — and it is the one
-    # run whose pressure drop the installer should check against the machine's 0.2" w.g.
-    # before committing to 75 mm.
+    # REG-T-ERV-PLANT-EXH, not here). The manifold is at the north end of the attic and the
+    # plant room is at the south.
+    #
+    # ** IT STOPPED BEING THE LONGEST RADIAL ON 2026-08-29 AND IT IS STILL THE CRITICAL ONE. **
+    # DU-A-ERV-R-BED3 overtook it (~53'-6" against this run's ~40') when FO-A-HALL severed
+    # every west-to-east route north of the studio. Length is not the criterion, though: BED3
+    # carries 5 cfm and this run carries 25, so THIS is still the one whose pressure drop the
+    # installer must check against the machine's 0.2" w.g. before committing to 75 mm.
     DuctRun(uid="CWMB7Q4E3W", tag="DU-A-ERV-R-PLANT", system=DuctSystem.EXHAUST,
             path=(pt(ft(2, 6), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(0, 8)),
                   pt(ft(1), ft(0, 8)), pt(ft(11, 10.3), ft(0, 8))),

@@ -312,3 +312,23 @@ SUPPLY_DEVICES_SECOND = [
                                  'closed-cell spray foam, 1/4" annulus around the barrel'),
                   serves=("FX-S-BALC-HYD",)),
 ]
+
+
+# --- the attic guest studio, 2026-08-29 -------------------------------------------------
+# One accessible stop per riser at its head inside W-A-STU-W, following this file's own
+# per-group pattern. `accessible=True` is the whole point of authoring them: an attic bath fed
+# from a riser two storeys down has no other isolation short of the basement trunk, and the
+# access is the wall cavity behind D-A-STUBATH's jamb.
+STUDIO_SUPPLY_DEVICES = [
+    PipeAccessory(uid="5KSHNN2HVJ", tag="PA-A-STUBATH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-A-CW-STUBATH", position=pt(ft(9, 7.5), ft(19)),
+                  elevation=ft(22, 6), accessible=True, room="RM-A-STUBATH",
+                  model='3/4" quarter-turn ball valve',
+                  serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
+                          "FX-A-STUDIO-BAR-SINK")),
+    PipeAccessory(uid="MA4EXBFW5G", tag="PA-A-STUBATH-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-A-HW-STUBATH", position=pt(ft(9, 7.5), ft(19, 6)),
+                  elevation=ft(22, 6), accessible=True, room="RM-A-STUBATH",
+                  model='3/4" quarter-turn ball valve',
+                  serves=("FX-A-STUBATH-LAV", "FX-A-STUBATH-SH", "FX-A-STUDIO-BAR-SINK")),
+]

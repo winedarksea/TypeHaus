@@ -631,8 +631,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CSR402AAAA-ceiling",
-      "tag": "CEIL-RM-S-STUDY2"
+      "uid": "CSR402AAAA-ceiling-2",
+      "tag": "CEIL-RM-S-STUDY2-2"
     },
     {
       "space": "model",

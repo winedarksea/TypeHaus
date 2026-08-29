@@ -307,6 +307,9 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     # 742.1 until 2026-08-25, when the hall band came out of the living room's LVP field and
     # became an authored vinyl-sheet zone — the one change here that is a finish DECISION
     # rather than a consequence of the structure under the floor.
+    # UNCHANGED by the 2026-08-29 attic work, and that is worth a line: the guest bath takes
+    # `vinyl-sheet`, not LVP — the house's cheaper waterproof answer, already used in
+    # RM-M-BATH1, RM-M-LAUNDRY and the main hall band, with no grout, backer or threshold.
     assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(695.6, abs=0.5)
     assert "RM-M-PANTRY" in rows["lvp"]["rooms"]
     assert rows["lvp-underlayment"]["net_area_sqft"] == rows["lvp"]["net_area_sqft"]

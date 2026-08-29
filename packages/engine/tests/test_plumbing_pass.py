@@ -170,7 +170,13 @@ def _invert_at(run, point):
 def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
     """The building drain grades on the union of every run that discharges into it —
     the FX-1 serves convention (slab branches not re-listed on the main) can no longer
-    hide load. 34 authored + 8 slab-branch DFU = 42, which is what forced the 4" main."""
+    hide load. 34 authored + 8 slab-branch DFU = 42, which is what forced the 4" main.
+
+    49 since 2026-08-29: the attic guest studio added a water closet, a lavatory, a shower and
+    a wet-bar sink on PR-A-STUBATH-DRAIN and PR-A-BAR-DRAIN, both of which discharge into the
+    same stack. The 4" main is unaffected and not close — IPC Table 710.1(2) gives a 4" building
+    drain 180 DFU at 1/8"/ft — but the rollup is the thing being tested, and a new branch
+    that did NOT move this number would mean the union had stopped seeing it."""
     from typehaus.resolve.mep import accumulated_serves, drain_tie_ins
     from typehaus.takeoff.plumbing_calc import branch_load, fixture_units
 
@@ -184,7 +190,7 @@ def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
         assert fx in main, fx
     load, unresolved = branch_load(main, units, "drain")
     assert not unresolved
-    assert load == 42.0
+    assert load == 49.0
     # Every drain run discharges somewhere except the building drain itself and the runs
     # that terminate at an air gap — the two condensate lines, and the water heater's TPR
     # relief discharge, which P2804.6.1 requires to end 6"-24" over the floor and forbids

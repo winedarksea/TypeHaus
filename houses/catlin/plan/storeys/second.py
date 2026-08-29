@@ -296,22 +296,76 @@ WALLS = [
          assembly="INT_2X4_STAGGERED_DOUBLE_GWB", top=ft(9)),
     Wall(uid="CSW146AAAA", tag="W-S-SN2", start_node="N-S-V1", end_node="N-S-D4",
          assembly="INT_2X4_STAGGERED_DOUBLE_GWB", top=ft(9)),
+    # BEARING SINCE 2026-08-29, and for a POINT reaction, not a line load. FO-A-HALL
+    # (plan/storeys/stair_hall_void.py) opens the attic deck over the stair hall, and the
+    # attic partition W-A-HALL-S stands on the opening's doubled trimmer pair — which spans
+    # the 8'-0" from x=10' to x=18' and delivers that wall to TWO POINTS. This wall takes
+    # the one at x=10' (and plate contact under the trimmer), and it is also BM-S-BATH-E's
+    # south bearing. It is fortunate the load arrives that way: the east half of this wall
+    # sits over W-M-HS4, which is D-M-LAUN's 4'-0" pocket and could not have taken a
+    # continuous line load at all.
+    #
+    # INT_2X4_PARTITION stays — continuous studs, so `structural.wet_wall_bearing` has no
+    # quarrel with it (unlike the three staggered walls on the x=10' line, which had to be
+    # retyped; see plan/assemblies.py's CATLIN_INT_2X6_BRG_PLUMBING).
+    #
+    # `stacks_on` names W-M-HS3 because the load path below has to be picked, not guessed:
+    # the main storey carries an unbroken wall band on y=22'-4" from x=0 to x=18'
+    # (W-M-HS1/HS2/HS3/HS4), so this wall has two collinear candidates under it and
+    # `resolve/stacking.py` raises `integrity.stack_ambiguous` — a hard ERROR — without a
+    # tiebreaker. W-M-HS3 runs x 8'-0"..13'-4", which brackets the x=10' reaction with 2'
+    # to spare. W-M-HS4 is D-M-LAUN's 4'-0" pocket, which CLAUDE.md forbids putting
+    # anything in.
     Wall(uid="CSW147AAAA", tag="W-S-SN3", start_node="N-S-D4", end_node="N-S-C2C",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_PARTITION", top=ft(9),
+         structural_role=StructuralRole.BEARING, stacks_on="W-M-HS3"),
     Wall(uid="CSW148AAAA", tag="W-S-VE", start_node="N-S-V1", end_node="N-S-V2",
          assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CSW132AAAA", tag="W-S-BD-N", start_node="N-S-W1", end_node="N-S-V2",
          assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
+    # Retyped and declared BEARING on 2026-08-29 with the two x=10' segments below: it
+    # carries BM-S-BATH-E's north end at N-S-BA1. Same swap, same reason, same price —
+    # plan/assemblies.py's CATLIN_INT_2X6_BRG_PLUMBING has the whole argument.
     Wall(uid="CSW149AAAA", tag="W-S-BD-N1B", start_node="N-S-V2", end_node="N-S-BA1",
-         assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
+         assembly="CATLIN_INT_2X6_BRG_PLUMBING", top=ft(9),
+         structural_role=StructuralRole.BEARING, stacks_on="W-M-STOS2"),
     # W-S-BD-N2 (the stair's south wall on y=25', with the 6'-0" O-S-STAIRTOP through it)
     # came out on 2026-07-28 with the centre line: a wall pierced by a 6' hole between two
     # halves of what is now one room was doing nothing but hiding the stair. The well head
     # is guarded by RL-S-STAIRHEAD instead, which stops at the flight's own throat.
+    # ** THE x=10'-0" LINE IS A BEARING LINE SINCE 2026-08-29. ** FO-A-HALL opens the attic
+    # deck over the stair hall (plan/storeys/stair_hall_void.py), so these two segments now
+    # carry the cut ends of the attic joists over y 26'-4"..36'-0" — a light load (a 10'
+    # half-span of an 11 7/8" I-joist field, plus W-A-BA-E standing on them), which is what
+    # "load bearing, slightly" means. It still has to be DECLARED: nothing in the model
+    # infers bearing (model/enums.py), and without the kwarg both
+    # `integrity.floor_bearing_grid` and FO-A-HALL's opening-edge test come up empty.
+    #
+    # The assembly changed with the role, and that is not decoration —
+    # `structural.wet_wall_bearing` FAILs any BEARING wall framed with staggered studs.
+    # CATLIN_INT_2X6_BRG_PLUMBING is the same 6.77" total, so no face moves, no room area
+    # changes, and FX-S-BATH1-LAV's `wall_ref` is untouched. Read that assembly's own note.
+    #
+    # `stacks_on="W-M-STRW"` is MANDATORY, not decorative: both segments have two collinear
+    # candidates below — W-M-STRW (y 36'->26'-4") and W-M-STRW2 (y 26'-4"->25'-10") — and
+    # `resolve/stacking.py` raises `integrity.stack_ambiguous` as a hard ERROR without a
+    # tiebreaker. W-M-STRW is already BEARING, already a bearing ref of FO-S-STAIR, and
+    # already `stacks_on="W-B-STR"`, so the path runs footings -> W-B-STR -> W-M-STRW ->
+    # here -> attic joists, unbroken and already built. Its `alignment=face(...)` on a 6.75"
+    # assembly puts its axis on x=10'-0" exactly, inside `_axis_match`'s 1/2" tolerance.
+    # ** ONLY ONE UPPER SEGMENT MAY CLAIM IT ** — the resolver links one upper wall per
+    # lower wall (resolve/stacking.py) — so W-S-BA-E1B takes it and W-S-BA-E carries NO
+    # `stacks_on` at all. That is a limit of the link, not a gap in the building: W-M-STRW
+    # runs the whole y 26'-4"..36'-0" line, so W-S-BA-E (y 33'-4"..36'-0") is standing on
+    # exactly the same wall its neighbour names. Do not "fix" it by pointing W-S-BA-E at
+    # W-M-STRW too; that is the ambiguity the tiebreaker exists to resolve, from the other
+    # side.
     Wall(uid="CSW134AAAA", tag="W-S-BA-E", start_node="N-S-N2", end_node="N-S-BA-SPLIT",
-         assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
+         assembly="CATLIN_INT_2X6_BRG_PLUMBING", top=ft(9),
+         structural_role=StructuralRole.BEARING),
     Wall(uid="CSW150AAAA", tag="W-S-BA-E1B", start_node="N-S-BA-SPLIT", end_node="N-S-BA1",
-         assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
+         assembly="CATLIN_INT_2X6_BRG_PLUMBING", top=ft(9),
+         structural_role=StructuralRole.BEARING, stacks_on="W-M-STRW"),
     # W-S-BA-E2 (N-S-BA1 to the stair shaft's freed N-S-STR2 corner) came out with this
     # edit: since W-S-BD-N2 came out it was a stub dead-ending on an open node, poking into
     # the hallway with nothing on its far end to tie into.

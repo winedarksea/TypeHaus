@@ -408,6 +408,30 @@ def _wall_footprint_span(wall, across: int) -> tuple[float, float] | None:
     return (min(values), max(values)) if values else None
 
 
+def _bearing_footprint_span(model: ResolvedModel, tag: str,
+                            across: int) -> tuple[float, float] | None:
+    """The plan extent across the member's axis, for a wall *or* a standalone ``Beam``.
+
+    A wall reads its resolved layer polygons (``alignment=face(...)`` means the axis is not
+    the centreline). A ``Beam`` has no layers — it is not a resolved wall at all — so its
+    width comes off ``Beam.size`` and straddles the axis, which is how the resolver places
+    it. Without this, a beam named in ``FloorOpening.bearing_refs`` was skipped outright and
+    the edge read as unsupported, putting a header under a beam that plainly carries it.
+    """
+    wall = model.wall(tag)
+    if wall is not None:
+        return _wall_footprint_span(wall, across)
+    beam = model.plan.by_tag(tag)
+    if not isinstance(beam, Beam):
+        return None
+    axis = _bearing_axis(model, tag)
+    if axis is None:
+        return None
+    half = cross_section(beam.size).width_m / 2.0
+    centre = axis[0][across]
+    return (centre - half, centre + half)
+
+
 def _opening_edge_has_declared_bearing(model: ResolvedModel, opening: FloorOpening,
                                        p0: tuple[float, float], p1: tuple[float, float]) -> bool:
     """Does a declared bearing wall carry this whole opening edge?
@@ -422,13 +446,13 @@ def _opening_edge_has_declared_bearing(model: ResolvedModel, opening: FloorOpeni
     vertical = abs(p0[0] - p1[0]) < 1e-9
     across, along = (0, 1) if vertical else (1, 0)
     for tag in opening.bearing_refs:
-        wall = model.wall(tag)
-        if wall is None:
+        axis = _bearing_axis(model, tag)
+        if axis is None:
             continue
-        a0, a1 = wall.axis
+        a0, a1 = axis
         if abs(a0[across] - a1[across]) > 1e-9:
             continue  # runs across the edge, not along it — it cannot carry its length
-        footprint = _wall_footprint_span(wall, across)
+        footprint = _bearing_footprint_span(model, tag, across)
         if footprint is None or not (footprint[0] - 1e-9 <= p0[across] <= footprint[1] + 1e-9):
             continue
         covered.append((min(a0[along], a1[along]), max(a0[along], a1[along])))

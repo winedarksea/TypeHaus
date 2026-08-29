@@ -890,20 +890,36 @@ SECOND_LIGHTING = [
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
 
     # The landing end of RM-S-HALL + the stairwell chandelier, hung over the ST-M2S
-    # opening so it reads from both the stair and the landing. 4' assembly off the 9'
-    # ceiling leaves the shade bottom 5' above the floor, clear of the landing and
-    # reachable from the flight. All three name RM-S-HALL — landing, well and east hall
-    # are one room since the centre line opened under BM-S-HALL.
-    ElectricalDevice(uid="QTS0019AAA", tag="ED-S-LANDING-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(13), ft(24, 4)), type_ref="ED-T-LT-CAN3",
-                     circuit="CKT-LT-UPPER", room="RM-S-HALL",
-                     controlled_by=("ED-S-LANDING-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # opening so it reads from both the stair and the landing. Both name RM-S-HALL —
+    # landing, well and east hall are one room since the centre line opened under
+    # BM-S-HALL.
+    #
+    # ** ED-S-LANDING-CAN2 IS GONE (2026-08-29), AND IT IS NOT A LOSS. ** It was a
+    # ED-T-LT-CAN3 recessed at (13'-0", 24'-4"), which is inside FO-A-HALL: there is no
+    # ceiling over that point any more, and a can with `recessed_into_host_surface=True`
+    # needs a host surface to be recessed into. It could have become a pendant; it did not,
+    # because the chandelier two lines down is now a double-height fixture hanging four feet
+    # from where this can was, and two pendants over one stair well is one too many. The
+    # landing's own switch (ED-S-LANDING-SW) still runs the chandelier.
+    #
+    # ** THE CHANDELIER IS THE FIXTURE THIS CHANGE IS FOR. ** It used to hang 4'-0" off the
+    # 9'-0" ceiling and put its shade bottom 5'-0" over the landing. Its ceiling is gone and
+    # the volume above it now runs to the roof underside: at x=13'-11 7/8" that is
+    # 5'-0" + x/3 = 9'-8" above the attic deck, so 19'-8" above the second floor.
+    #
+    # It is authored with an EXPLICIT `elevation` and NOT with `drop`, and the difference
+    # matters. `resolve/placeables.py` subtracts a `drop` from `floor +
+    # storey.default_ceiling_height` — the 9'-0" plane that no longer exists over this
+    # point. `elevation` is read as the body's BASE directly, so ft(5) puts the shade bottom
+    # exactly where it always was: 5'-0" over the second floor, clear of the landing and
+    # reachable from the flight. What changed is everything above it — the fitting hangs on
+    # about 14'-8" of stem from the rafters, which is the ORDER, and it is why the well now
+    # wants a fixture that reads from the main floor as well as from the landing.
     ElectricalDevice(uid="QTS001AAAA", tag="ED-S-STAIR-CHAND", kind=DeviceKind.LIGHT,
                      position=pt(m(4.26405), m(9.3355)), type_ref="ED-T-LT-CHANDELIER",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      controlled_by=("ED-S-STAIR-SW", "ED-S-LANDING-SW"),
-                     mount=Mount(kind=MountKind.CEILING, drop=ft(4))),
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(5))),
     # Moved twice as walls it rode came out; home is now W-S-SN3's north face at
     # y=22'-6 1/4", the wall you walk straight at off the flight — a two-gang box with
     # ED-S-LANDING-SW. Slid west to x=12' on 2026-07-28: ST-M2S now turns left, so the
@@ -920,96 +936,6 @@ SECOND_LIGHTING = [
 # states its elevation: 5' + d/3, where d is the plan distance from the x=18' ridge.
 # 9'-8" is x=22' or x=14'; 8'-0" is x=27' or x=9'. Sloped-ceiling trims, and the housings
 # sit in the rafter bay rather than a joist bay.
-ATTIC_LIGHTING = [
-    # Was RM-A-DEN's: a 43 ft2 nook with no wall on the way in to put a switch on, so the
-    # fixture carries its own (notes: "spotlight sconce with switch on sconce"). No
-    # `controlled_by`, deliberately — `integral_switch` on the type exempts it from
-    # `electrical.lighting_controls`. Back at x=14'-0" (2026-07-31) after WIN-A-S-JUL-W's
-    # width settled at 18": the original position clears the window jamb by 1'-11".
-    #
-    # ** REASSIGNED TO RM-A-WEST-UNFIN 2026-08-27 ** when the Den was deleted and its space
-    # folded into the west loft. Position, type, mount, elevation and circuit are all
-    # unchanged — the wall it hangs on (the south gable at x=14'-0") did not move, only the
-    # room claim around it did. The integral switch is kept: see the type's note.
-    ElectricalDevice(uid="QTA0001AAA", tag="ED-A-DEN-SCONCE", kind=DeviceKind.LIGHT,
-                     position=pt(ft(14), ft(0, 8.625)), type_ref="ED-T-LT-SPOT-SW",
-                     circuit="CKT-LT-UPPER", room="RM-A-WEST-UNFIN", rotation=deg(180),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
-
-    ElectricalDevice(uid="QTA0002AAA", tag="ED-A-EAST-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(22), ft(28)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
-                     controlled_by=("ED-A-EAST-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(9, 8),
-                                 recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTA0003AAA", tag="ED-A-EAST-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(27), ft(15)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
-                     controlled_by=("ED-A-EAST-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8),
-                                 recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTA0004AAA", tag="ED-A-EAST-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(27), ft(28)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
-                     controlled_by=("ED-A-EAST-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8),
-                                 recessed_into_host_surface=True)),
-
-    # RM-A-STUDY: the second of the notes' two studies. Its spot sconce goes on the knee
-    # wall, which is only 5' tall — hence a 4' mount, not the 6' used downstairs. The
-    # stair sconce lights ST-S2A's landing at the top of the flight.
-    ElectricalDevice(uid="QTA0005AAA", tag="ED-A-STUDY-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(27), ft(3)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDY",
-                     controlled_by=("ED-A-STUDY-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8),
-                                 recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTA0006AAA", tag="ED-A-STUDY-SPOT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(35, 3.375), ft(2, 3)), type_ref="ED-T-LT-SCONCE-SPOT",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDY", rotation=deg(-90),
-                     controlled_by=("ED-A-STUDY-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
-    ElectricalDevice(uid="QTA0007AAA", tag="ED-A-STUDY-STAIR-SC", kind=DeviceKind.LIGHT,
-                     position=pt(m(8.32505), m(0.222461)), type_ref="ED-T-LT-SCONCE-STAIR",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDY", rotation=deg(180),
-                     controlled_by=("ED-A-STUDY-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
-
-    # RM-A-WEST-UNFIN: 598 ft2 of media room under the west rake. Three cans down the ridge side
-    # where the ceiling is high, one out at 8' toward the knee wall.
-    ElectricalDevice(uid="QTA0008AAA", tag="ED-A-WEST-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(14), ft(10)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-WEST-UNFIN",
-                     controlled_by=("ED-A-WEST-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(9, 8),
-                                 recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTA0009AAA", tag="ED-A-WEST-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(14), ft(20)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-WEST-UNFIN",
-                     controlled_by=("ED-A-WEST-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(9, 8),
-                                 recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTA000AAAA", tag="ED-A-WEST-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(14), ft(30)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-WEST-UNFIN",
-                     controlled_by=("ED-A-WEST-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(9, 8),
-                                 recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTA000BAAA", tag="ED-A-WEST-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(9), ft(20)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-WEST-UNFIN",
-                     controlled_by=("ED-A-WEST-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8),
-                                 recessed_into_host_surface=True)),
-    # On W-A-C1B's west face at 6'-0", not W-A-C1's: the two segments are collinear, but
-    # the centre wall south of y=5'-7" faces RM-A-STUDY, and RM-A-WEST-UNFIN does not start until
-    # that line. A station 5" further south is a switch in the wrong room.
-    ElectricalDevice(uid="QTA000CAAA", tag="ED-A-WEST-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(17, 7.625), ft(6)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-UPPER", room="RM-A-WEST-UNFIN", rotation=deg(-90),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
-]
-
 # --- Garage ---------------------------------------------------------------------------
 # Two 4' shop lights on their own switch by the service door, on the house's main lighting
 # circuit (garage is freestanding but fed from ED-B-PANEL) rather than the GFCI receptacle

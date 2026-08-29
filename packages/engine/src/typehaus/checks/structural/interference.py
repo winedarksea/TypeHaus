@@ -301,6 +301,12 @@ def _column_within_wall(a: _Candidate, b: _Candidate,
     return False
 
 
+#: Deck stock that hangs IN a beam rather than on top of it, where the author has pinned
+#: the beam flush. A joist and its sister run the field; a trimmer and a header frame an
+#: opening in that same field, out of the same stock and into the same hangers.
+_FLUSH_HUNG_KINDS = ("joist", "sister_joist", "trimmer", "header")
+
+
 def _flush_framed_pairs(plan) -> set[tuple[str, str]]:
     """``(floor uid, beam tag)`` pairs the author declared as flush-framed.
 
@@ -315,19 +321,36 @@ def _flush_framed_pairs(plan) -> set[tuple[str, str]]:
     from an explicit ``Beam.top_elevation``. So the pair is cleared only where the deck names
     the beam as bearing *and* the beam's top is pinned by hand. A beam left to the derived
     datum arithmetic is still policed exactly as before.
+
+    A ``FloorOpening``'s ``bearing_refs`` count for the same reason its header does. A joist
+    cut at an opening edge, and the doubled trimmer that runs along it, land in hangers on
+    whatever carries that edge — a wall plate, or a beam. Reading only ``joists.bearing_refs``
+    here meant the beam under an opening edge had to be added THERE to clear the check, and
+    that field is global to the deck: ``resolve/floors.py`` cuts every joist line on the
+    storey at every one of its axes. Naming a beam to silence a clash would splice thirty
+    joists over rooms that have nothing under them. The opening already declares the beam;
+    this reads that declaration instead.
     """
-    from typehaus.model.floors import FloorSystem
+    from typehaus.model.floors import FloorOpening, FloorSystem
     from typehaus.model.structure import Beam
 
     if plan is None:  # geometry-only fixtures pass a bare model, with no authored plan
         return set()
     pinned = {el.tag for el in plan.all_elements()
               if isinstance(el, Beam) and el.top_elevation is not None}
-    return {
-        (el.uid, ref)
-        for el in plan.all_elements() if isinstance(el, FloorSystem)
-        for ref in el.joists.bearing_refs if ref in pinned
-    }
+    openings = {el.tag: el for el in plan.all_elements()
+                if isinstance(el, FloorOpening)}
+    pairs: set[tuple[str, str]] = set()
+    for el in plan.all_elements():
+        if not isinstance(el, FloorSystem):
+            continue
+        refs = list(el.joists.bearing_refs)
+        for tag in el.openings:
+            opening = openings.get(tag)
+            if opening is not None:
+                refs.extend(opening.bearing_refs)
+        pairs.update((el.uid, ref) for ref in refs if ref in pinned)
+    return pairs
 
 
 def _flush_framed_into_beam(a: _Candidate, b: _Candidate,
@@ -335,10 +358,12 @@ def _flush_framed_into_beam(a: _Candidate, b: _Candidate,
     """True for a joist of a deck hung flush into one of that deck's own pinned beams.
 
     ``sister_joist`` counts as a joist here: a reinforcing ply is the same stock in the same
-    hanger as the line it doubles, so it hangs flush wherever that line does.
+    hanger as the line it doubles, so it hangs flush wherever that line does. So do
+    ``trimmer`` and ``header``: both are the deck's own stock framing an opening, and both
+    die into whatever carries that opening's edge — which is the beam this pair names.
     """
     for joist, beam in ((a, b), (b, a)):
-        if joist.kind in ("joist", "sister_joist") and beam.kind == "beam" \
+        if joist.kind in _FLUSH_HUNG_KINDS and beam.kind == "beam" \
                 and (joist.parent, beam.label) in flush_pairs:
             return True
     return False

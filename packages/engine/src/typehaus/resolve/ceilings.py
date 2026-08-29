@@ -44,6 +44,7 @@ from typehaus.resolve.ceiling_over import (
     finish_layer,
     polygon_parts,
     room_roof_over,
+    split_holes,
 )
 from typehaus.resolve.model import ResolvedCeiling, ResolvedModel, ResolvedSolid, Ring
 from typehaus.resolve.overlay import union_all
@@ -115,9 +116,21 @@ def _pieces(plan: PlanModel, storey_tag: str, room: Any, face: Polygon,
         planes.setdefault((round(region.structure_z_m, 6), _stack_key(layers)),
                           []).append((region, layers))
     if len(planes) == 1:
-        (region, layers), = [group[0] for group in planes.values()]
-        yield (f"{room.uid}-ceiling", f"CEIL-{room.tag}", clear_face, layers,
-               region.structure_z_m)
+        group, = planes.values()
+        region, layers = group[0]
+        if not any(part.voided for part, _ in group):
+            yield (f"{room.uid}-ceiling", f"CEIL-{room.tag}", clear_face, layers,
+                   region.structure_z_m)
+            return
+        # A deck opening took a bite out of the plane, so the room's clear face is no
+        # longer the ceiling's outline — a stair well is open to the storey above and has
+        # no board across it. Keep the plain uid/tag on the first (largest) piece so the
+        # IFC GlobalId survives the correction; only a plane broken into genuinely
+        # disjoint patches by the hole needs an ordinal to tell them apart.
+        for index, part in enumerate(_merged(group), start=1):
+            nth = "" if index == 1 else f"-{index}"
+            yield (f"{room.uid}-ceiling{nth}", f"CEIL-{room.tag}{nth}", part, layers,
+                   region.structure_z_m)
         return
     for group in planes.values():
         region, layers = group[0]
@@ -139,9 +152,18 @@ def _stack_key(layers: Stack) -> StackKey:
 
 
 def _merged(group: list[tuple[Any, Stack]]) -> list[Ring]:
-    """One ring per connected patch of a plane's regions, dissolving any shared edge."""
+    """One ring per connected patch of a plane's regions, dissolving any shared edge.
+
+    Largest first, so the piece that keeps the un-suffixed tag is the main body of the
+    ceiling rather than whichever patch the overlay happened to emit first.
+    """
     merged = union_all([region.face for region, _ in group])
-    return [_ring(part) for part in polygon_parts(merged)]
+    # Dissolving the seams can hand a hole back: two regions either side of a stair well
+    # re-close around it into a donut, and ``_ring`` keeps only an exterior loop. Split
+    # again after the union so the hole survives being merged.
+    parts = [simple for part in polygon_parts(merged) for simple in split_holes(part)]
+    parts.sort(key=lambda part: part.area, reverse=True)
+    return [_ring(part) for part in parts]
 
 
 def _ring(polygon: Polygon) -> Ring:

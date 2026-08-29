@@ -295,7 +295,12 @@ def test_catlin_stair_wells_are_guarded(catlin_ctx):
     # y=30'-10", which is exactly the split this check exists to measure. FO-M-STAIR joined
     # the list on 2026-08-21: the main floor's hole used to be cut in a concrete pour and is
     # framed in FS-M-WEST's joists now, which is what makes it a well this rule can see.
-    assert set(by_msg) == {"FO-M-STAIR", "FO-S-STAIR", "FO-A-STAIR"}
+    # FO-A-HALL joined them on 2026-08-29 — the west attic's deck opened over the ST-M2S
+    # well so the stair hall runs to the roof. It is `purpose=STAIR` deliberately (this
+    # check filters on exactly that, and `code.R312_1_guard_height` never walks a void at
+    # all), and it passes on WALLS rather than on a railing: W-A-BA-E, W-A-HALL-S, W-A-C2B
+    # and W-A-N2B close all four sides.
+    assert set(by_msg) == {"FO-M-STAIR", "FO-S-STAIR", "FO-A-STAIR", "FO-A-HALL"}
     assert "RL-S-STAIR" in by_msg["FO-S-STAIR"]
     assert "RL-A-STAIR" in by_msg["FO-A-STAIR"]
 

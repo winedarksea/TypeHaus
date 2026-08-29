@@ -111,7 +111,21 @@ WALLS = [
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-N1"),
-    Wall(uid="CAW105AAAA", tag="W-A-N2", start_node="N-A-N1", end_node="N-A-NW",
+    # SPLIT AT N-A-N3 (x=10'-0") ON 2026-08-29, because W-A-BA-E tees in there and
+    # `resolve/topology.py`'s junction solver needs a shared endpoint or the two bands'
+    # solids overlap. N-A-N3 mirrors N-S-N2 exactly, so the attic north wall finally
+    # segments where the storey below already does.
+    #
+    # ** THE TAG AND UID STAY ON THE WEST PIECE. ** That is what preserves WIN-A-N1's
+    # `host` and its `from_node("N-A-NW", ...)` verbatim, and what preserves
+    # test_catlin_outdoor_structures.py's assertion that the PV/NEMA boxes ride W-A-N2.
+    # Its `stacks_on` had to move with the split: W-S-N2 is now under W-A-N2B, and the
+    # west piece spans W-S-N3 and W-S-N3B, so it names W-S-N3 to break the tie.
+    Wall(uid="CAW105AAAA", tag="W-A-N2", start_node="N-A-N3", end_node="N-A-NW",
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
+         top=ToRoof(roof_ref="RF-HOUSE"),
+         structural_role=StructuralRole.NONBEARING, stacks_on="W-S-N3"),
+    Wall(uid="03GPR9ZAA5", tag="W-A-N2B", start_node="N-A-N1", end_node="N-A-N3",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-N2"),
@@ -122,9 +136,29 @@ WALLS = [
     Wall(uid="CAW107AAAA", tag="W-A-E2", start_node="N-A-E1", end_node="N-A-NE",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(5),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-E2"),
-    Wall(uid="CAW108AAAA", tag="W-A-W1", start_node="N-A-NW", end_node="N-A-SW",
+    # SPLIT AT N-A-PK-W (y=22'-4") ON 2026-08-29 — the third split this change forces, and
+    # the third for one reason: W-A-STU-N (storeys/attic_studio.py) tees in here, and a
+    # mid-span tee leaves `resolve/topology.py`'s junction solver without a shared endpoint.
+    # N-A-PK-W mirrors N-S-W2 below it exactly.
+    #
+    # The split is SAFE for the two windows on this wall, and that is worth stating rather
+    # than hoping: `CATLIN_EXT_2X6` sets `layout_origin="line"`, so the stud module runs
+    # THROUGH the seam from the facade's own layout line — "moving a node no longer
+    # re-phases anything", as CLAUDE.md puts it. Both keep their bay centres and take no
+    # header. `structural.window_framing_module` is re-run anyway.
+    #
+    # ** TAG AND UID STAY ON THE NORTH PIECE **, which preserves WIN-A-W-N's `host` and its
+    # `from_node("N-A-NW", ...)` offset verbatim. Both pieces keep start->end running north
+    # to south, as the undivided wall did: `alignment=face("sheathing-ext")` and the outward
+    # sign are read off the wall's own direction, so reversing a segment would turn its
+    # stack-up around. `stacks_on` splits with them — W-S-W2 is y 22'-4"..29'-4" and W-S-W3
+    # is y 9'-0"..22'-4", so each piece names the one actually under it.
+    Wall(uid="CAW108AAAA", tag="W-A-W1", start_node="N-A-NW", end_node="N-A-PK-W",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(5),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-W1"),
+    Wall(uid="8PJW960EK6", tag="W-A-W1B", start_node="N-A-PK-W", end_node="N-A-SW",
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(5),
+         structural_role=StructuralRole.BEARING, stacks_on="W-S-W3"),
     # Center bearing wall under the ridge, full length. NOT a partition: RB-HOUSE bears on
     # it continuously, making this a structural-ridge roof (rafters simply span ridge->knee
     # wall, no thrust on the 5' knee walls). Opening this line without a beam would dump
@@ -135,10 +169,34 @@ WALLS = [
     Wall(uid="CAW115AAAA", tag="W-A-C1B", start_node="N-A-C1", end_node="N-A-C2",
          assembly="CATLIN_INT_2X6_BRG", top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-C2"),
-    # y 9'..36'. Between y=22'-4" and 30'-10" the storey below carries no wall — BM-S-HALL
-    # (three plies 11-7/8" LVL) is there instead — so this wall (and RB-HOUSE through it)
-    # lands on that beam. `stacks_on` names W-S-C4B since the tiebreaker needs a *wall*.
-    Wall(uid="CAW110AAAA", tag="W-A-C2", start_node="N-A-C2", end_node="N-A-N1",
+    # SPLIT AT N-A-C3 (y=22'-4") ON 2026-08-29, for the same reason W-A-N2 was: W-A-HALL-S
+    # tees in there, and a mid-span tee leaves the junction solver without a shared
+    # endpoint. The split is free on the stud grid — CATLIN_INT_2X6_BRG is
+    # `layout_origin="line"`, so both segments lay out from the same global line rather
+    # than from their own start nodes.
+    #
+    # It also makes the note below TRUE SEGMENT BY SEGMENT for the first time. The old
+    # single wall ran y 9'-4"..36'-0" and had to describe two different load paths in one
+    # comment: south of y=22'-4" it stands on W-S-C2C, north of it there is no wall at all
+    # for 8'-6" and BM-S-HALL carries it. Now each segment says its own.
+    #
+    # It splits TWICE, not once: the guest bath's SE corner N-A-BW-E lands on this line at
+    # y=17'-4" — a joist line, 208" = 13 x 16 (storeys/attic_studio.py) — and needs the same
+    # shared endpoint W-A-HALL-S
+    # needs at N-A-C3, or `integrity.wall_loop_open` reports the bath as an unclosed face.
+    # Both southern pieces stand on W-S-C2C (y ..22'-4") and both keep BEARING: this is the
+    # ridge line, and RB-HOUSE names every segment of it.
+    Wall(uid="CAW110AAAA", tag="W-A-C2", start_node="N-A-C2", end_node="N-A-BW-E",
+         assembly="CATLIN_INT_2X6_BRG", top=ToRoof(roof_ref="RF-HOUSE"),
+         structural_role=StructuralRole.BEARING, stacks_on="W-S-C2C"),
+    Wall(uid="78VGE6A81J", tag="W-A-C2M", start_node="N-A-BW-E", end_node="N-A-C3",
+         assembly="CATLIN_INT_2X6_BRG", top=ToRoof(roof_ref="RF-HOUSE"),
+         structural_role=StructuralRole.BEARING, stacks_on="W-S-C2C"),
+    # y 22'-4"..36'-0". Between y=22'-4" and 30'-10" the storey below carries no wall —
+    # BM-S-HALL (three plies 11-7/8" LVL) is there instead — so this wall (and RB-HOUSE
+    # through it) lands on that beam. `stacks_on` names W-S-C4B since the tiebreaker needs
+    # a *wall*. It is also the east edge of FO-A-HALL: the void's maxx is this wall's axis.
+    Wall(uid="S9N320V34H", tag="W-A-C2B", start_node="N-A-C3", end_node="N-A-N1",
          assembly="CATLIN_INT_2X6_BRG", top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-C4B"),
     # ** THE DEN IS GONE (2026-08-27, by decision). ** W-A-DN (N-A-D1 -> N-A-C1) and W-A-DW
@@ -329,8 +387,13 @@ OPENINGS = [
     # N-A-E1 IS AT 9'-4" AS OF 2026-08-27 — but by THICKENING W-A-SN, not by moving it, so
     # the guard is untouched (see N-A-C2). The grid on this wall shifted 4" with it; the
     # windows below hold their centres and their offsets absorbed the move.
-    Window(uid="CAX308AAAA", tag="WIN-A-W-S", host="W-A-W1", type_ref="WT-1424",
-           position=from_node("N-A-NW", ft(30, 9)), sill_height=ft(2, 6)),   # y 4'-8"
+    # RE-ANCHORED 2026-08-29 WITHOUT MOVING: the west wall split at N-A-PK-W and this window
+    # fell on the south piece. `from_node` measures to the opening's LEADING edge along the
+    # wall's own direction, which still runs north to south, so the offset is
+    # 22'-4" - 5'-3" = 17'-1" and the centre stays at y = 4'-8" to the millimetre. The old
+    # 30'-9" was the same edge measured from N-A-NW over the undivided 36'-0" run.
+    Window(uid="CAX308AAAA", tag="WIN-A-W-S", host="W-A-W1B", type_ref="WT-1424",
+           position=from_node("N-A-PK-W", ft(17, 1)), sill_height=ft(2, 6)),   # y 4'-8"
     Window(uid="CAX306AAAA", tag="WIN-A-W-N", host="W-A-W1", type_ref="WT-1424",
            position=from_node("N-A-NW", ft(4, 1)), sill_height=ft(2, 6)),    # y 31'-4"
     Window(uid="CAX309AAAA", tag="WIN-A-E-S", host="W-A-E1", type_ref="WT-1424-T",
@@ -375,9 +438,10 @@ ROOMS = [
     # T&G panel — precisely because these two rooms walk on it bare. The lower decks are
     # `plywood-subfloor`, which is a covered sheet and, at a Minnesota supply house, quietly
     # interchangeable with OSB.
-    Room(uid="CAR401AAAA", tag="RM-A-WEST-UNFIN", seed=pt(ft(9), ft(20)),
-         occupancy=Occupancy.STORAGE, floor_finish=None,
-         ceiling=FollowRoof(roof_ref="RF-HOUSE")),
+    # RM-A-STUDIO — the old RM-A-WEST-UNFIN, retagged and re-occupied — moved to
+    # plan/storeys/attic_studio.py on 2026-08-29 with the rest of the guest suite, keeping
+    # uid CAR401AAAA and therefore its IFC GlobalId. A uid follows the ELEMENT, not the file
+    # it is authored in, and ~30 lines of comment here about an unfinished loft went with it.
     Room(uid="CAR402AAAA", tag="RM-A-EAST-UNFIN", seed=pt(ft(27), ft(20)),
          occupancy=Occupancy.STORAGE, floor_finish=None,
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),
@@ -387,7 +451,15 @@ ROOMS = [
 ]
 
 ALARMS = [
-    Alarm(uid="CAA701AAAA", tag="AL-A-COMBO", kind=AlarmKind.COMBO, room="RM-A-WEST-UNFIN",
+    # ** RE-POINTED TO RM-A-STUDY ON 2026-08-29, AND NOT TO THE STUDIO. ** Same device, same
+    # place; only the room claim moved. Sending it the OTHER way — following the retag into
+    # what is now a bedroom — is the failure this comment exists to prevent:
+    # `code.R315_co_every_sleeping_area` FAILs outright if every CO alarm on a storey sits
+    # inside a bedroom, and `code.R314_R315_alarms` wants one outside the sleeping area
+    # besides. RM-A-STUDY is the stair head, which is literally R315.3's "immediate vicinity
+    # of the bedrooms, outside the separate sleeping area". The bedroom's own alarm is
+    # AL-A-STUDIO, in storeys/attic_studio.py. Tag, uid and CKT-LT-BACKUP all unchanged.
+    Alarm(uid="CAA701AAAA", tag="AL-A-COMBO", kind=AlarmKind.COMBO, room="RM-A-STUDY",
           circuit="CKT-LT-BACKUP"),
 ]
 
@@ -458,7 +530,7 @@ BEAMS = [
     # missing until 2026-08-28; nothing read it then, and the splice rule reads it now.
     Beam(uid="CABM01AAAA", tag="RB-HOUSE", start_node="N-A-S2",
          end_node="N-A-N1", size="2-1.75x14 LVL",
-         bearing_refs=("W-A-C1", "W-A-C1B", "W-A-C2")),
+         bearing_refs=("W-A-C1", "W-A-C1B", "W-A-C2", "W-A-C2M", "W-A-C2B")),
 ]
 
 # The well is the source's, snapped to the *finished* faces around it like FO-S-STAIR: east
@@ -501,7 +573,10 @@ FLOOR = [
                     Layer(name="gwb-ceil", material_ref="gwb", thickness=inch(0.625),
                           function=LayerFunction.FINISH),
                 ),
-                openings=("FO-A-STAIR",)),
+                # FO-A-HALL joins FO-A-STAIR on 2026-08-29: the stair hall is open to the
+                # roof now. Its outline, its four chosen edges and the reason x=10'-0" is
+                # NOT in `joists.bearing_refs` are all in plan/storeys/stair_hall_void.py.
+                openings=("FO-A-STAIR", "FO-A-HALL")),
 ]
 
 # Guard the open south edge of the attic stair well in RM-A-STUDY. This reuses the balcony

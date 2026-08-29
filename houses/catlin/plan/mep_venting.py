@@ -100,6 +100,52 @@ VENT_BRANCHES_SECOND = [
                     "FX-S-SUITEBATH-TUBSH")),
 ]
 
+VENT_BRANCHES_ATTIC = [
+    # The guest studio's bath and wet bar (2026-08-29).
+    #
+    # ** AN OFFSET VENT IS MANDATORY HERE, NOT A CHOICE. ** `mep.vent_reachability` passes a
+    # fixture outright when its `wall_ref` is in `stacked_lower` — and NO ATTIC WALL CAN EVER
+    # BE, because nothing stacks on the top storey. Every fixture up here needs an authored run.
+    #
+    # ** IT STARTS OVER THE SHOWER, AND THAT IS `mep.trap_arm_length`, NOT AESTHETICS. ** The
+    # check measures to the nearest point of the serving run. Starting it at the wet-wall axis
+    # x=9'-7 1/2" would give the shower a 6'-7 1/8" arm against Table 1002.2's 5'-0" for 2" — a
+    # FAIL. Starting at (16'-2 5/8", 20'-8"), directly over the pan, makes the shower's arm ~0
+    # and leaves the others clear: WC 1'-5 3/8" (limit 6'-0"), lav 10 3/8" (limit 3'-6"), bar
+    # sink ~1'-0".
+    #
+    # From there it runs west to the W-A-STU-W axis, north through the pocket at ~7'-0", and
+    # west to VR-M-RADON-VENT at (1'-0", 34'-6"), which carries PipeSystem.VENT to the roof. It
+    # mirrors PR-S-SUITEBATH-VENT one storey down — same x=9'-7 1/2" leg, same y=34'-6" turn,
+    # same chase.
+    #
+    # ** DO NOT INSTEAD ADD THESE FIXTURES TO PR-S-SUITEBATH-VENT.serves. ** `vent_path.py` is
+    # purely 2D and would PASS it — but that run sits at 9'-3", BELOW these fixtures' flood-level
+    # rims. That is gaming the check. This run is 32' of 2" PVC and it is real.
+    # ** ELEVATIONS ARE STOREY-RELATIVE AND THE ATTIC DATUM IS ft(20). ** Authored as project
+    # elevations (27'-0"/27'-6") until 2026-08-29, this run resolved 20'-0" too high and hung
+    # over the roof. Nothing caught it: `_resolve_pipe_run` adds the datum silently and no check
+    # grades a pipe against the roof plane it sits under.
+    #
+    # The profile is per-vertex rather than a start/end ramp because THE RAKE FORCES A DUCK AT
+    # THE WEST END. RF-HOUSE bears at 25'-0" over a 5'-0" knee wall and rises 4:12 to the x=18'
+    # ridge, so its underside is 28'-10" at x=9'-7 1/2" but only 25'-4 3/4" at x=1'-0". The
+    # plan's "~7'-0" through the pocket" holds on the north leg and cannot hold on the last one.
+    #
+    # Every vertex clears the flood-level rims by more than P3104.4's 6": the highest rim served
+    # is the lavatory at ~2'-10" AFF (22'-10"), so 23'-4" is the floor for a dry horizontal vent
+    # and the lowest vertex here is 23'-6". Vertex 3 is the high point; condensate drains off it
+    # both ways — back to the fixtures on one side, into the stack on the other — so there is no
+    # pocket to hold water.
+    PipeRun(uid="STFQKR8Q95", tag="PR-A-STUBATH-VENT", system=PipeSystem.VENT,
+            path=(pt(ft(16, 2.625), ft(20, 8)), pt(ft(9, 7.5), ft(20, 8)),
+                  pt(ft(9, 7.5), ft(34, 6)), pt(ft(1), ft(34, 6))),
+            diameter=inch(2),
+            elevations=(ft(3, 6), ft(6, 6), ft(7), ft(4)),
+            serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
+                    "FX-A-STUDIO-BAR-SINK")),
+]
+
 VENT_RISERS = [
     VentRun(uid="CMVR01AAAA", tag="VR-M-RADON-VENT",
             systems=(PipeSystem.RADON, PipeSystem.VENT), diameter=inch(3),

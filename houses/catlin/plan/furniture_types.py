@@ -423,7 +423,35 @@ DINING_8_OPEN_CORNERS = FurnitureType(
 )
 
 
-FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, CURTAIN_ROD_OUTDOOR_114,
+# --- the guest studio's knee-wall plinth (2026-08-29) ----------------------------------
+# ** `work_surface=False` IS NOT COSMETIC, IT IS THE WHOLE REASON THIS IS A TYPE. **
+# `_fixed_cabinet_intervals` (checks/mep/electrical.py) treats a COUNTERLESS fixed cabinet
+# within 6" of the floor as a BREAK in the 210.52 wall line, exactly as a doorway is. Declare a
+# work surface and it stops being a break and starts being a countertop that wants receptacles
+# above it — the opposite of what this piece does.
+#
+# What it is: the x=1'-0" ERV chase, boxed. Through RM-A-STUDIO that duct run is ~12" wide by
+# 8-9" tall for 21'-8" along the base of a 5'-0" knee wall, in a guest bedroom. Building it as a
+# bench/storage plinth swallows the duct AND gives the room the seat and under-rake storage it
+# wants, instead of leaving a duct box in a bedroom and an outlet stranded behind it. 18" deep
+# by 16" tall is bench height over a 12" duct.
+#
+# The alternative was to bore the FS-ATTIC I-joists and run north-south in the bays — permitted
+# by the hole chart, at ~16 bored webs per duct, twice, plus a manufacturer sign-off. See
+# plan/mep_erv.py's amended note.
+STUDIO_PLINTH = FurnitureType(
+    tag="FT-STUDIO-PLINTH-260", name="Knee-wall duct plinth / bench (21'-8\")",
+    # Authored (depth, length) rather than (length, depth): this piece runs NORTH-SOUTH along
+    # the west knee wall, and stating the footprint in the orientation it is built in is more
+    # legible than carrying a rotation on the instance.
+    footprint=(inch(18), inch(260)), height=inch(16), plan_symbol="bench",
+    storage=True, work_surface=False,
+    source="Site-built plinth boxing the attic ERV chase along the west knee wall; doubles as "
+           "bench and under-rake storage. Priced as a prices.toml [allowances] lump.",
+)
+
+
+FURNITURE_TYPES = (STUDIO_PLINTH, CURTAIN_ROD_48, CURTAIN_ROD_84, CURTAIN_ROD_OUTDOOR_114,
                    CURTAIN_ROD_OUTDOOR_98,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, BATH1_SHELF_2030,
                    MEDIA_SECTIONAL_U, THEATER_BOOKCASE, OVER_COLD_3278, MIXER_GARAGE_24,

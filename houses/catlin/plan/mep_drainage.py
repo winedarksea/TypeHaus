@@ -399,3 +399,40 @@ RADON_SUMP = [
          pump=SumpPump(model="1/3 hp cast-iron submersible", horsepower=0.33,
                        discharge="daylight", circuit_ref="CKT-SUMP")),
 ]
+
+
+# --- the guest studio, 2026-08-29 -------------------------------------------------------
+# ** THIS RUN IS WHY THE BATHROOM IS WHERE IT IS, NOT THE OTHER WAY ROUND. ** The attic bath was
+# sited on the x=9'-7 1/2" line precisely so its stack could drop inside W-S-DC2 — the suite
+# bath's own INT_2X6_STAGGERED_PLUMBING wet wall, 5 1/2" of continuous cavity with NO STUD TO
+# BORE — and land on PR-M-S-SUITE-DRAIN's existing head at (13'-0", 16'-10.8"). Nothing new is
+# cut through a finished storey and no new riser is bought.
+#
+# The route, and every leg of it is chosen: WC flange -> down into the FS-ATTIC bay -> west
+# along y=20'-8" (248" = 8 + 15 x 16, a BAY CENTRE, so it runs between joists rather than
+# through them) -> down 10'-0" inside W-S-DC2 -> east in the FS-S-WEST truss field to the stack
+# head. The truss leg passes freely: open-web chord-to-chord is 8 7/8".
+#
+# ** DO NOT HAND-EDIT PR-M-S-SUITE-DRAIN.serves OR PR-B-MAIN-DRAIN.serves TO MATCH. **
+# `mep.pipe_sizing` grades a drain on the geometric upstream subtree, not on authored `serves`,
+# so connecting the endpoint IS the connection. What it does change is the load those two
+# carry: PR-B-MAIN-DRAIN goes ~42 -> ~51 DFU on its 4" barrel, and the table is the arbiter of
+# whether that still fits, not this comment. `elevations` is authored explicitly so
+# `mep.drain_slope` has something to grade; 1/4"/ft is trivially available on both legs.
+STUDIO_DRAINS = [
+    PipeRun(uid="HTZ1RGAGXP", tag="PR-A-STUBATH-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(ft(11, 0.875), ft(20, 8)), pt(ft(9, 7.5), ft(20, 8)),
+                  pt(ft(9, 7.5), ft(20, 8)), pt(ft(13), ft(16, 10.8))),
+            diameter=inch(3), material="pvc",
+            elevations=(ft(19, 4), ft(19), ft(10), ft(9, 9)),
+            serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH")),
+    # The wet bar drains into the same wall from its WEST face, back-to-back with the bath, so
+    # it joins the stack rather than crossing the studio floor to find one. 2" for a single
+    # lavatory-class bowl.
+    PipeRun(uid="ZY2V3KWMVK", tag="PR-A-BAR-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(ft(9, 3), ft(20)), pt(ft(9, 7.5), ft(20)),
+                  pt(ft(9, 7.5), ft(20, 8))),
+            diameter=inch(2), material="pvc",
+            elevations=(ft(19, 6), ft(19, 5), ft(19, 4)),
+            serves=("FX-A-STUDIO-BAR-SINK",)),
+]

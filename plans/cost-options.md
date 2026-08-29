@@ -383,6 +383,17 @@ forms in the rate.
 
 ### 10 — the eight discretionary attic windows
 
+> **STALE SINCE 2026-08-29 — THIS OPTION IS NO LONGER FREE, AND THE SENTENCE BELOW IS WHY.**
+> `RM-A-WEST-UNFIN` became `RM-A-STUDIO`, a guest bedroom, when the west attic was finished.
+> Three of these eight windows now do real work and cannot be deleted:
+> `WIN-A-S-JUL-W` is the studio's **R310 emergency escape opening** — its 27" x 64" raw
+> opening is the only thing satisfying that rule on the storey; and `WIN-A-S2` and `WIN-A-W-S`
+> are 7.0 of the 21.3 sf of glazing the room already falls short with. The room passes R303.1
+> only under **Exception 1**, on 6,000 lm of artificial light delivering 8.08 fc against a
+> 6 fc floor — so removing glazing does not merely fail the natural-light test, it removes
+> area from a room that is already relying on the exception. Re-price this option against
+> five windows, not eight, and never against `WIN-A-S-JUL-W`.
+
 **Built: 699 pass, 0 fail, 45 not evaluable** — deleting all eight breaks no rule in the
 registry. `RM-A-WEST-UNFIN` and `RM-A-EAST-UNFIN` are `storage` occupancy, so R303.1's natural-light
 rule never applied to them, and none of the eight is an emergency escape opening.
