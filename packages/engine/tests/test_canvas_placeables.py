@@ -403,8 +403,9 @@ def test_catlin_ceiling_lights_resolve_to_their_authored_mount_height() -> None:
     # living room's own floor, and so from its own ceiling plane.
     assert above_floor("ED-M-DINING-PEND") == pytest.approx(
         living_floor + ceiling["main"] - ft(3, 6).meters)
-    # A stated elevation wins: the attic ceiling is a 4:12 rake, not the storey default.
-    assert above_floor("ED-A-EAST-CAN3") == pytest.approx(ft(8).meters)
+    # A stated elevation wins: the attic ceiling is a 6:12 rake, not the storey default.
+    # 7'-1 1/2" is `1 1/2" + x/2` at this can's x=22'-0" — the plane it is recessed into.
+    assert above_floor("ED-A-EAST-CAN3") == pytest.approx(ft(7, 1.5).meters)
 
     switch = next(item for item in model.canvas_objects if item.tag == "ED-M-LIVING-SW")
     assert switch.z_m == pytest.approx(living_floor + inch(48).meters)

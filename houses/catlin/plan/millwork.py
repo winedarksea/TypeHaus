@@ -57,12 +57,18 @@ MILLWORK = [
 #
 # The five bays and their tops were already worked out in the comment table at
 # plan/storeys/attic.py; this promotes that table from prose to data. Each bay is topped off
-# the usable height at its EAST end as the 4:12 rake steps down:
-#     1  22'-8"  -> 25'-4"      case top 7'-6"
-#     2  25'-4"  -> 28'-0"      case top 7'-0"
-#     3  28'-0"  -> 30'-8"      case top 6'-0"
-#     4  30'-8"  -> 33'-4"      case top 5'-6"
-#     5  33'-4"  -> 35'-5 3/8"  case top 4'-6"
+# the usable height at its EAST end as the rake steps down. ** RE-DERIVED 2026-08-29 FOR THE
+# 6:12 ROOF. ** The tops came from `5'-0" + (36' - x)/3` and are now `1 1/2" + (36' - x)/2`,
+# less the same ~3" of build-up and seat, rounded down to the nearest 6":
+#     1  22'-8"  -> 25'-4"      usable 5'-5 1/2"   case top 5'-0"
+#     2  25'-4"  -> 28'-0"      usable 4'-1 1/2"   case top 3'-6"
+#     3  28'-0"  -> 30'-8"      usable 2'-9 1/2"   case top 2'-6"
+#     4  30'-8"  -> 33'-4"      usable 1'-5 1/2"   case top 1'-0"
+#     5  33'-4"  -> 35'-5 3/8"  usable 4 1/8"      NO CASE — the rake closes this bay out
+# ** THE RUN IS A LOW BOOKCASE NOW, NOT A WALL OF SHELVES. ** That is the honest consequence
+# of taking the knee wall out: the study's east end is under the rake rather than under a
+# 5'-0" wall, and four short bays plus a closed-out fifth is what the geometry leaves. The
+# cut list below still bills what is drawn; nobody should read the old 7'-6" tops into it.
 # Widths are CLEAR between 3/4" partitions: 2'-8" pitch less 3/4" is 2'-7 1/4"; bay 5's
 # 2'-1 3/8" pitch less 3/4" is 2'-0 5/8".
 #
@@ -81,12 +87,15 @@ ATTIC_SHELVES = [
         material_ref="oak-shelf-8q",
         thickness=inch(1.5),
         profile="S4S",
+        # ** RE-CUT 2026-08-29 FOR THE 6:12 RAKE — FOUR BAYS, NOT FIVE. ** The tops above
+        # are `1 1/2" + (36' - x)/2` less the build-up, rounded down to 6"; bay 5 (x 33'-4"
+        # to 35'-5 3/8") has 4 1/8" of usable height and is closed out rather than shelved.
+        # Counts stay a ~12" pitch over each bay's own height, the case top included.
         bays=(
-            ShelfBay(width=ft(2, 7.25), clear_height=ft(7, 6), shelf_count=8),
-            ShelfBay(width=ft(2, 7.25), clear_height=ft(7), shelf_count=7),
-            ShelfBay(width=ft(2, 7.25), clear_height=ft(6), shelf_count=6),
-            ShelfBay(width=ft(2, 7.25), clear_height=ft(5, 6), shelf_count=6),
-            ShelfBay(width=ft(2, 0.625), clear_height=ft(4, 6), shelf_count=5),
+            ShelfBay(width=ft(2, 7.25), clear_height=ft(5), shelf_count=5),
+            ShelfBay(width=ft(2, 7.25), clear_height=ft(3, 6), shelf_count=4),
+            ShelfBay(width=ft(2, 7.25), clear_height=ft(2, 6), shelf_count=3),
+            ShelfBay(width=ft(2, 7.25), clear_height=ft(1), shelf_count=2),
         ),
     ),
 ]

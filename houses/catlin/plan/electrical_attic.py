@@ -36,18 +36,35 @@ NEC_FILL_ATTIC = [
                      position=pt(ft(29, 11.25), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    # ** THE SEVEN EAVE-LINE RECEPTACLES ARE FLOOR BOXES SINCE 2026-08-29. ** Every one of
+    # them — ED-A-STUDIO-RC8/RC9 on the west line, ED-A-EAST-RC5/RC6/RC7 and ED-A-STUDY-RC2
+    # on the east, ED-A-POCKET-RC1 in the pocket, plus ED-A-STUDY-RC3 in the south gable's
+    # low east corner — was a box at 16" on a 5'-0" knee wall. There is no knee wall: those
+    # hosts are 1 1/2" rafter plates now and the roof underside at the eave line is
+    # `1 1/2" + x/2`, which is 5 1/4" at 7 5/8" off the wall. A 16" box there is not tight,
+    # it is outside the building.
+    #
+    # `electrical.receptacle_spacing` is purely 2D — it unrolls the room's clear_face and
+    # projects each device onto it — so DELETING these would leave the check green and the
+    # rooms genuinely short of outlets along their longest walls. They are not deleted and
+    # they are not moved in plan: each becomes a FLOOR box on the same station, 12" in from
+    # the eave line. NEC 210.52(A)(3) is explicit that a floor receptacle counts toward the
+    # 6'-0" rule when it is within 18" of the wall, and 12" is what a cathedral eave with no
+    # knee wall gives you. `_perimeter_position`'s `_NEAR_WALL_M` still claims them.
+    #
+    # `Mount(kind=FLOOR)` carries no elevation, deliberately: the box is IN the deck.
     ElectricalDevice(uid="NEC052AAAA", tag="ED-A-EAST-RC5", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35, 4.375), ft(31, 3.25)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(34, 4.375), ft(31, 3.25)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
+                     mount=Mount(kind=MountKind.FLOOR), rotation=deg(270)),
     ElectricalDevice(uid="NEC053AAAA", tag="ED-A-EAST-RC6", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35, 4.375), ft(20, 9.625)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(34, 4.375), ft(20, 9.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
+                     mount=Mount(kind=MountKind.FLOOR), rotation=deg(270)),
     ElectricalDevice(uid="NEC054AAAA", tag="ED-A-EAST-RC7", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35, 4.375), ft(10, 3.75)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(34, 4.375), ft(10, 3.75)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
+                     mount=Mount(kind=MountKind.FLOOR), rotation=deg(270)),
     # y 9'-3 3/8" -> 9'-11 3/8" (2026-08-27): W-A-SN thickened to 12 3/4" for the study's
     # bookcase wall, and at the old y this device sat INSIDE the wall. Nothing checks that,
     # which is why it is written down. 9'-11 3/8" is the same 3/8" off the new north face
@@ -65,13 +82,16 @@ NEC_FILL_ATTIC = [
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC057AAAA", tag="ED-A-STUDY-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35, 4.375), ft(2)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(34, 4.375), ft(2)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
+                     mount=Mount(kind=MountKind.FLOOR), rotation=deg(270)),
+    # RC3 is a floor box for the same reason one wall further round: it stands at x 33'-10 3/4"
+    # in the SOUTH gable, where the rake gives 14 1/8" of wall — less than the 16" the box was
+    # authored at. Its plan station does not move; the gable is what shrank under it.
     ElectricalDevice(uid="NEC058AAAA", tag="ED-A-STUDY-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(33, 10.75), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(33, 10.75), ft(1, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.FLOOR)),
     ElectricalDevice(uid="NEC059AAAA", tag="ED-A-STUDY-RC4", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(23, 10.5), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
@@ -99,10 +119,15 @@ NEC_FILL_ATTIC = [
     # It takes TWO boxes, not one: RC1 and RC7 carry the corners in from the south and north
     # ends, and a single mid-wall device left the check reporting gaps at both ends of its 12'
     # reach. RC8 at 6'-0" and RC9 at 16'-0" close them with 2'-0" of overlap in the middle.
+    # ** RC1 AND RC7 ARE FLOOR BOXES TOO (2026-08-29), for the reason in the eave-line note
+    # above and one wall further round. ** Both stand at x=3'-0" — RC1 in the south gable,
+    # RC7 in W-A-STU-N — and both those walls are `ToRoof`, so at x=3'-0" they are 19 1/2"
+    # tall. A 16" box in a 19 1/2" wall puts its top 1" through the raked plate. They keep
+    # their stations and their place in the 210.52 line; only the mounting moved.
     ElectricalDevice(uid="923GJB648D", tag="ED-A-STUDIO-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(3), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(3), ft(1, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.FLOOR)),
     ElectricalDevice(uid="AN95ADVNCZ", tag="ED-A-STUDIO-RC2", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(8), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
@@ -116,8 +141,13 @@ NEC_FILL_ATTIC = [
                      position=pt(ft(17, 7.625), ft(3)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
-    ElectricalDevice(uid="CX9R0H14DZ", tag="ED-A-STUDIO-RC5", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(17, 7.625), ft(12)), type_ref="ED-T-RECEPTACLE",
+    # ** RC5 BECAME A GFCI DEVICE ON 2026-08-29 ** — not because it moved, but because the
+    # wet bar did: FX-A-STUDIO-BAR-SINK is on this same wall at y 16'-8" now, 4'-8" north of
+    # this box, and `_sink_points` projects E3902.10's 6'-0" radius from every Service.DRAIN
+    # fixture. CKT-RC-ATTIC stays `gfci=False` and the protection rides the device, which is
+    # the house rule (circuits.py). RC4 at y 3'-0" is 13'-8" away and stays ordinary.
+    ElectricalDevice(uid="CX9R0H14DZ", tag="ED-A-STUDIO-RC5", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(17, 7.625), ft(12)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     # On the bath's south wall and the pocket wall. ** E3902.10's 6'-0" radius is measured from
@@ -133,31 +163,35 @@ NEC_FILL_ATTIC = [
     # deg(270) on the centre wall opposite. Plain, not GFCI: the nearest Service.DRAIN fixture is
     # the bar sink, and at 8'-1" and 9'-3" neither is inside E3902.10's 6'-0" circle.
     ElectricalDevice(uid="F1MW3S3JD5", tag="ED-A-STUDIO-RC8", kind=DeviceKind.RECEPTACLE,
-                     position=pt(inch(7.625), ft(6)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(inch(19.625), ft(6)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
+                     mount=Mount(kind=MountKind.FLOOR), rotation=deg(90)),
     ElectricalDevice(uid="P0RCVAG1XM", tag="ED-A-STUDIO-RC9", kind=DeviceKind.RECEPTACLE,
-                     position=pt(inch(7.625), ft(16)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(inch(19.625), ft(16)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
+                     mount=Mount(kind=MountKind.FLOOR), rotation=deg(90)),
     ElectricalDevice(uid="TBSBS6V58H", tag="ED-A-STUDIO-RC6", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(15, 6), ft(17, 0.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(180)),
     ElectricalDevice(uid="NZQNA1VMKW", tag="ED-A-STUDIO-RC7", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(3), ft(22, 0.625)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(3), ft(21, 0.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(180)),
+                     mount=Mount(kind=MountKind.FLOOR), rotation=deg(180)),
     # ** THE WET BAR'S RECEPTACLE, GFCI UNDER E3902.10. ** `_sink_points` collects every fixture
     # whose TYPE declares Service.DRAIN regardless of what the fixture is called, so the bar
     # sink projects a 6'-0" radius into the studio whether it is a bar sink or a lavatory —
     # and it is a lavatory here. CKT-RC-ATTIC is `gfci=False` deliberately (circuits.py: "the
     # handful in an E3902 location … are GFCI devices instead"), so this follows the house rule
     # and is a GFCI DEVICE rather than a re-typed circuit.
+    # Follows the bar to W-A-C2's west face on 2026-08-29 (see plan/fixtures.py), onto the
+    # same x 17'-7 5/8" line RC4/RC5 already stand on and turned west into the room the same
+    # way. `test_wall_mounted_devices_resolve_against_a_wall_face` is what settles that
+    # number — authored an inch further west it resolved floating 1" clear of the finish.
     ElectricalDevice(uid="K9XVXZ9XZ3", tag="ED-A-STUDIO-BAR-GFCI", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(9, 3.125), ft(20)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(17, 7.625), ft(16, 8)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)), rotation=deg(90)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)), rotation=deg(270)),
     # The bath's own, GFCI under E3902.1 — every 125V receptacle in a bathroom, sink or no
     # sink — and on the new CKT-BATH-ATTIC rather than the general attic circuit.
     ElectricalDevice(uid="N2Z2AA6EGB", tag="ED-A-STUBATH-GFCI", kind=DeviceKind.RECEPTACLE_GFCI,
@@ -167,8 +201,11 @@ NEC_FILL_ATTIC = [
     # At the ERV, in the pocket. IRC M1305.1.3 wants a receptacle (and a light — see
     # ED-A-POCKET-LT1) at the appliance; the pocket is STORAGE so 210.52 spacing never asks
     # for one, which is exactly why it has to be authored deliberately.
+    # ** MOVED TO THE MANIFOLD AND MADE A FLOOR BOX, 2026-08-29. ** M1305.1.3's receptacle
+    # has to be AT the appliance, and the appliance moved east to x 7'-0" where a person can
+    # reach it (see EQ-A-ERV-MAN-EXH). At its old x 7 5/8" the roof underside is 5 1/4".
     ElectricalDevice(uid="E6RNBJBD76", tag="ED-A-POCKET-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(0, 7.625), ft(33)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(8, 6), ft(33)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
+                     mount=Mount(kind=MountKind.FLOOR), rotation=deg(90)),
 ]

@@ -49,13 +49,11 @@ NODES = [
     # south bearing point. Moving the node was the cheap way to the same place.
     Node(uid="CAN002AAAA", tag="N-A-S1", position=pt(ft(8, 8), ft(0))),
     Node(uid="CAN003AAAA", tag="N-A-S2", position=pt(ft(18), ft(0))),
-    # Vestibule screen line, 22'-8" not the source's 22.31 (2026-08-01 gable pass): W-A-S4
-    # starts here and a wall's stud grid lays out from its start node, so this x sets the
-    # phase of the east gable's bay centres. 22'-8" = 272" = 16x17, keeping W-A-S4 and
-    # W-A-S1 in phase so they mirror exactly about x=18' (22'-4" was 4" out of phase). The
-    # screen closes no room polygon (see W-A-VE), so the move is free and only widens the
-    # gap to the stair well at x 21'-1 3/4".
-    Node(uid="CAN011AAAA", tag="N-A-V1", position=pt(ft(22, 8), ft(0))),
+    # N-A-V1 (x 22'-8", CAN011AAAA) DELETED 2026-08-29 with the vestibule. It existed to
+    # start W-A-S4 and set the phase of the east gable's bay centres; W-A-S3 now runs the
+    # whole east half N-A-S2 -> N-A-SE, and `layout_origin="line"` lays that grid out from
+    # the facade's own global line rather than from a start node, so removing the seam
+    # re-phases nothing.
     Node(uid="CAN004AAAA", tag="N-A-SE", position=pt(ft(36), ft(0))),
     # y 9'-4" since 2026-08-27 (was 9'-0"), moved with N-A-C2 when W-A-SN became the study's
     # 12 3/4" bookcase wall — see that node's comment for the whole derivation.
@@ -82,11 +80,7 @@ NODES = [
     # belongs on the loft side.
     Node(uid="CAN009AAAA", tag="N-A-C1", position=pt(ft(18), ft(5, 7))),
     Node(uid="CAN012AAAA", tag="N-A-C2", position=pt(ft(18), ft(9, 4))),
-    Node(uid="CAN013AAAA", tag="N-A-V2", position=pt(ft(22, 8), ft(5, 7))),
-    # A legitimate wing-wall terminus: the vestibule's north screen stops at the stair
-    # well's west edge, exactly as the source's Den north wall does.
-    Node(uid="CAN014AAAA", tag="N-A-V3", position=pt(ft(21, 2), ft(5, 7)),
-         open_end=True),
+    # N-A-V2 (CAN013AAAA) and N-A-V3 (CAN014AAAA) DELETED 2026-08-29 with W-A-VE/W-A-VN.
 ]
 
 WALLS = [
@@ -99,11 +93,15 @@ WALLS = [
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-S1"),
-    Wall(uid="CAW103AAAA", tag="W-A-S3", start_node="N-A-S2", end_node="N-A-V1",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
-         top=ToRoof(roof_ref="RF-HOUSE"),
-         structural_role=StructuralRole.NONBEARING, stacks_on="W-S-S2"),
-    Wall(uid="CAW114AAAA", tag="W-A-S4", start_node="N-A-V1", end_node="N-A-SE",
+    # MERGED 2026-08-29: W-A-S3 now runs the whole east half of the south gable,
+    # N-A-S2 (x=18') -> N-A-SE (x=36'). W-A-S4 (CAW114AAAA) and node N-A-V1 are deleted —
+    # the seam between them only ever existed to terminate the vestibule screen, and both
+    # pieces already named the same `stacks_on="W-S-S2"`. It is free on the stud grid
+    # because CATLIN_EXT_2X6 is `layout_origin="line"`: the module runs through the old
+    # seam from the facade's global layout line, so WIN-A-S3's 23'-4" is the same bay
+    # centre either way. The merge is what gives WIN-A-S3 the wall it needs — a 14" RO at
+    # 23'-4" needs 2" of edge distance and the old 18'..22'-8" piece had none to give.
+    Wall(uid="CAW103AAAA", tag="W-A-S3", start_node="N-A-S2", end_node="N-A-SE",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-S2"),
@@ -129,12 +127,36 @@ WALLS = [
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-N2"),
-    # Knee walls (east/west eave sides) — 5', carry the low roof edge.
+    # RAFTER PLATES (east/west eave sides) — 2026-08-29. These were 5'-0" knee walls,
+    # built around a misreading of R305: that every square foot of a sloped-ceiling room
+    # needed 5'-0" of headroom. Minn. R. 1309.0305 R305.1 Exception 1 and IRC R304.1/R304.3
+    # scope both clauses to the *required* floor area (70 sf), not the whole room, and
+    # R304.3 says floor under 5'-0" simply does not count rather than disqualifying the
+    # room. With that read the knee walls have no job left, so they are gone: what stands
+    # here now is a single 2x6 laid FLAT on the attic subfloor, over the second-storey wall
+    # line, and the rafters birdsmouth straight onto it. See CATLIN_RAFTER_PLATE.
+    #
+    # ** TAGS AND UIDS ARE PRESERVED ** — test_uplift_takeoff.py asserts the tag set, and
+    # mep_electrical.py connects to W-A-W1 and W-A-E2. They stay Walls (rather than
+    # vanishing) because a Room polygon is strictly wall-bounded: delete these four and all
+    # five attic rooms go `integrity.room_unclaimed`, the storey loses its only closed walk,
+    # and every attic wall's outward_sign flips to +1. The plate is not fiction anyway —
+    # it is what actually gets built, it has to be in the BOM, and it genuinely is the
+    # enclosure's edge on this line.
+    #
+    # base_elevation is ABSOLUTE — ft(20, 0.75) is the 20'-0" storey datum plus 3/4" subfloor; `top` is a height
+    # above it, so the plate top is 20'-2 1/4" and the roof's bearing_z_m follows.
+    # The alignment moves the axis 1/2" outboard of the plate's own outer face, which puts
+    # the plate over the STUDS below rather than out on the sheathing line: CATLIN_EXT_2X6
+    # is datumed at sheathing-ext, so its 5.5" studs run 0.5"..6.0" in from the node line
+    # and the plate now covers exactly that.
     Wall(uid="CAW106AAAA", tag="W-A-E1", start_node="N-A-SE", end_node="N-A-E1",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(5),
+         assembly="CATLIN_RAFTER_PLATE", alignment=face("plate-ext", inch(0.5)),
+         base_elevation=ft(20, 0.75), top=inch(1.5),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-E1"),
     Wall(uid="CAW107AAAA", tag="W-A-E2", start_node="N-A-E1", end_node="N-A-NE",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(5),
+         assembly="CATLIN_RAFTER_PLATE", alignment=face("plate-ext", inch(0.5)),
+         base_elevation=ft(20, 0.75), top=inch(1.5),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-E2"),
     # SPLIT AT N-A-PK-W (y=22'-4") ON 2026-08-29 — the third split this change forces, and
     # the third for one reason: W-A-STU-N (storeys/attic_studio.py) tees in here, and a
@@ -154,10 +176,12 @@ WALLS = [
     # stack-up around. `stacks_on` splits with them — W-S-W2 is y 22'-4"..29'-4" and W-S-W3
     # is y 9'-0"..22'-4", so each piece names the one actually under it.
     Wall(uid="CAW108AAAA", tag="W-A-W1", start_node="N-A-NW", end_node="N-A-PK-W",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(5),
+         assembly="CATLIN_RAFTER_PLATE", alignment=face("plate-ext", inch(0.5)),
+         base_elevation=ft(20, 0.75), top=inch(1.5),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-W1"),
     Wall(uid="8PJW960EK6", tag="W-A-W1B", start_node="N-A-PK-W", end_node="N-A-SW",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(5),
+         assembly="CATLIN_RAFTER_PLATE", alignment=face("plate-ext", inch(0.5)),
+         base_elevation=ft(20, 0.75), top=inch(1.5),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-W3"),
     # Center bearing wall under the ridge, full length. NOT a partition: RB-HOUSE bears on
     # it continuously, making this a structural-ridge roof (rafters simply span ridge->knee
@@ -256,15 +280,21 @@ WALLS = [
     Wall(uid="CAW113AAAA", tag="W-A-SN", start_node="N-A-C2", end_node="N-A-E1",
          assembly="CATLIN_INT_2X4_BOOKCASE_12", interior_room="RM-A-STUDY",
          top=ToRoof(roof_ref="RF-HOUSE")),
-    # Stair vestibule screen: the source's Den east + north walls, kept near their source
-    # position (y 5.611 exact; x moved 22.31 -> 22'-8" by the 2026-08-01 gable pass, see
-    # N-A-V1) even though the Den itself moved west. Wraps ST-S2A's head so the arrival is
-    # enclosed on the Study side. A dangling pair closing no polygonized face, so
-    # RM-A-STUDY still reads as one room — matching the source's 123.39 sf "Study".
-    Wall(uid="CAW116AAAA", tag="W-A-VE", start_node="N-A-V1", end_node="N-A-V2",
-         assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE")),
-    Wall(uid="CAW117AAAA", tag="W-A-VN", start_node="N-A-V3", end_node="N-A-V2",
-         assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE")),
+    # ** THE STAIR VESTIBULE SCREEN IS GONE (2026-08-29). ** W-A-VE (CAW116AAAA),
+    # W-A-VN (CAW117AAAA) and D-A-VEST (CAD204AAAA) were the source's Den east and north
+    # walls, wrapping ST-S2A's head so the arrival read as enclosed on the Study side. They
+    # were always a dangling pair closing no polygonized face, so deleting them changes no
+    # room polygon and no outward sign.
+    #
+    # The 6:12 roof is what retires them: they stood at x 21'-2"..22'-8" where the roof
+    # underside is now 11'-4" (west) sloping to... nothing useful — a full-height partition
+    # under a rake that low is a soffit, not a screen, and D-A-VEST's 6'-8" head has no
+    # room at all. Their footprint (x 21'-2"..22'-8", y 0..5'-7") is the natural home for
+    # FURN-A-STUDY-DESK, which the low east strip evicted (see plan/placeables.py).
+    #
+    # Two prose citations pointed here as the free-end and slip-gap precedent
+    # (attic_studio.py); they are repointed to W-A-STU-N, which is the storey's remaining
+    # open-ended wall.
 ]
 
 OPENINGS = [
@@ -280,62 +310,47 @@ OPENINGS = [
     # out toward the well. See W-A-SN above for the hinge-side jamb this leaf's weight needs.
     Door(uid="CAD203AAAA", tag="D-A-STUDY", host="W-A-SN", type_ref="DT-INT-BOOKCASE30",
          position=from_node("N-A-C2", ft(0, 8.875)), flip_hinge=True),  # x 19'-11 7/8"
-    Door(uid="CAD204AAAA", tag="D-A-VEST", host="W-A-VE", type_ref="DT-INT-SWING30",
-         position=from_node("N-A-V1", ft(0, 11.25))),                 # y 2'-2 1/4"
-    # South gable, SIX openings west→east: S1, S2, JUL-W, JUL-E, S3, S4 — mirror-symmetric
-    # about the ridge (CLAUDE.md's "gables read symmetric" rule).
+    # South gable, FOUR openings west→east: S2, JUL-W, JUL-E, S3 — mirror-symmetric about
+    # the ridge (CLAUDE.md's "gables read symmetric" rule).
     #
-    # The 2026-08-01 pass left four: two WT-1448 flankers at x 8'-8"/27'-4" and the juliet
-    # pair. It cut the corner pair (x 3'-4"/32'-8") on the grounds that the 4:12 rake leaves
-    # only ~6' of wall there, "not enough for anything that doesn't look like a stamp".
-    # 2026-08-27 revives exactly those two stations, because two things changed: the juliets
-    # grew to 27" (below), and a corner unit is now the THIRD member of a group rather than a
-    # lone stamp — the gable reads as one six-opening composition instead of a pair plus two.
-    # The tags come back too, so the west→east sequence is whole again and S2/S3 keep their
-    # uids/IFC GlobalIds.
+    # ** REBUILT 2026-08-29 FOR THE 6:12 RAKE. ** The gable carried six until this pass: a
+    # corner pair (WIN-A-S1/S4, WT-1424 at x 3'-4"/32'-8"), a WT-1448 flanker pair at
+    # 10'-0"/26'-0", and the juliets. The rake is the whole story. The roof underside above
+    # the attic floor is now
     #
-    # ** THE 8" COLUMN MISS IS PERMANENT, not an authoring accident. ** A 14" RO must sit on
-    # a BAY CENTRE (8" mod 16", structural.window_framing_module), and every south column the
-    # storeys below stack is on a STUD LINE (48", 112", 176", 256", 320", 384"). So no 14"
-    # unit can ever column with 4'-0"/32'-0"; 3'-4"/32'-8" (40"/392", each ≡ 8 mod 16) are the
-    # nearest bay centres and are an exact mirror about x=18'-0". Do not "fix" this by moving
-    # them 8" — that trades a clean framing module for a header the rake will not take.
+    #     H(x) = 1 1/2" + x/2,   mirrored past x = 18'-0"
     #
-    # Rake clearance at both stations: the roof plane is 5'-0" + (36' − x)/3 above the attic
-    # datum, ~6'-1 1/3" there, less ~3" of floor build-up and rafter seat — the 4'-8" head
-    # clears by about 1'-2". WT-1424 needs no header, no jack and no king: the RO lands wholly
-    # inside one bay. Sill 2'-8", the gable's shared sill.
+    # and a window's OUTER jamb is where that bites: a head at h needs h + 2" of rake (the
+    # raked plate plus a flat 2x4 nonbearing header), so the rule is
     #
-    # WIN-A-S1 lands in RM-A-WEST-UNFIN and WIN-A-S4 in RM-A-STUDY. Neither loft becomes
-    # habitable — 2.33 sf does not move a 598 sf STORAGE room near R303.1 — so neither room
-    # is retagged.
+    #     x_outer_jamb >= 2 x (head + 2")
     #
-    # The WT-1448 flankers took that type rather than the juliet family (which they would
-    # otherwise share) because an 18" RO needs a jamb pack whose header, at the nearest stud
-    # line, is 1.8" too tall to clear the rake there. WIN-A-S3 at x 27'-4" mirrors WIN-A-S2's
-    # 8'-8" only because N-A-V1 moved to 22'-8" (see its node note); both are bay centres, as
-    # a 14" RO must be. Cost: no flanker caps a lower-storey column — the ridge wins.
-    Window(uid="P411E2J64J", tag="WIN-A-S1", host="W-A-S1", type_ref="WT-1424",
-           position=from_node("N-A-SW", ft(2, 9)), sill_height=ft(2, 8)),   # x 3'-4"
-    # 2026-08-27: the flanker pair drawn 16" INWARD, 8'-8"/27'-4" -> 10'-0"/26'-0". Still an
-    # exact mirror about x=18'-0" (10 + 26 = 36), and still bay centres on their hosts'
-    # grids — 16" off N-A-S1 and 40" off N-A-V1, both 8 mod 16 — so neither breaks a stud
-    # or takes a header, which is the whole reason the WT-1448 flankers are 14" wide.
+    # The corner pair dies outright — at x 3'-4" there is 21 1/2" of roof over the floor and
+    # nothing fits under it. The flankers survive by MOVING INWARD AND SHORTENING: WT-1448
+    # (head 6'-8" = 80", so it needs 164" = 13'-8" of jamb clearance) becomes WT-1436
+    # (head 5'-8" = 68", needing 140"), and the stations go 10'-0"/26'-0" -> 12'-8"/23'-4",
+    # where the outer jambs stand at 12'-1" (145") and 12'-0" from the east eave (144").
+    # Four inches of margin each, and still an exact mirror about x=18'-0"
+    # (12'-8" + 23'-4" = 36'-0"). Both are bay centres — 152" and 280", each = 8 mod 16 —
+    # so like every 14" RO in this house they break no stud and take no header.
     #
-    # ** S2 CHANGED HOSTS TO GET HERE, AND IT HAD TO. ** It sat on W-A-S1, which used to end
-    # at x=10'-0"; a 14" RO centred on that end needs 7" of wall that isn't there, and
-    # `integrity.opening_fits` (2" minimum edge distance) is an ERROR on exactly that. The
-    # fix was three moves that had to happen together: RM-A-DEN deleted, which freed N-A-S1;
-    # N-A-S1 moved 10'-0" -> 8'-8", which is 16" and so leaves W-A-S2's stud phase alone
-    # (see the node); and this window rehosted onto W-A-S2, where it now stands 9" off the
-    # start node with 7'-5" of wall to spare on the far side. The centre never depended on
-    # any of it — 10'-0" is 10'-0" either way.
-    Window(uid="CAX302AAAA", tag="WIN-A-S2", host="W-A-S2", type_ref="WT-1448",
-           position=from_node("N-A-S1", ft(0, 9)), sill_height=ft(2, 8)),   # x 10'-0"
-    Window(uid="CAX303AAAA", tag="WIN-A-S3", host="W-A-S4", type_ref="WT-1448",
-           position=from_node("N-A-V1", ft(2, 9)), sill_height=ft(2, 8)),   # x 26'-0"
-    Window(uid="BM8GAX9FBG", tag="WIN-A-S4", host="W-A-S4", type_ref="WT-1424",
-           position=from_node("N-A-V1", ft(9, 5)), sill_height=ft(2, 8)),   # x 32'-8"
+    # ** S3 REHOSTED FROM W-A-S4 TO W-A-S3, WHICH IS NOW THE WHOLE EAST HALF. ** W-A-S4 and
+    # node N-A-V1 went with the vestibule (see WALLS). `layout_origin="line"` means the merge
+    # re-phases nothing: the stud module runs through the old seam from the facade's own
+    # layout line, so 23'-4" is the same bay centre it would have been either way.
+    #
+    # TAGS AND UIDS: S2 keeps CAX302AAAA and S3 keeps CAX303AAAA through the retype and the
+    # move, so both keep their IFC GlobalIds. S1 (P411E2J64J) and S4 (BM8GAX9FBG) are gone.
+    # The west→east sequence is S2, JUL-W, JUL-E, S3 — a gap at S1/S4 rather than a
+    # renumbering, because renumbering would break the GlobalIds of the two that survive.
+    #
+    # WIN-A-S2 stands in RM-A-STUDIO and WIN-A-S3 in RM-A-STUDY. The study is the one that
+    # NEEDS them: at 165 sf R303.1 asks 13.2 sf and the single WT-1436 gives 13.625 sf, which
+    # is why the flanker is 36" and not WT-1424's 24" (see WT-1436's own note in main.py).
+    Window(uid="CAX302AAAA", tag="WIN-A-S2", host="W-A-S2", type_ref="WT-1436",
+           position=from_node("N-A-S1", ft(3, 5)), sill_height=ft(2, 8)),   # ctr x 12'-8"
+    Window(uid="CAX303AAAA", tag="WIN-A-S3", host="W-A-S3", type_ref="WT-1436",
+           position=from_node("N-A-S2", ft(4, 9)), sill_height=ft(2, 8)),   # ctr x 23'-4"
     # The blank middle of the same gable: a pair of 27x64 casements straddling the ridge,
     # reading like a juliet balcony without being one (no door/guard/walking surface — the
     # 2'-8" sill clears R312.2's 24" fall-protection trigger by 8"). Shrank from an initial
@@ -357,58 +372,67 @@ OPENINGS = [
     # NONBEARING, so the governing width cap is 30" and 27" sits inside it with room.
     # Tags are descriptive, not positional, since a mid-sequence insertion couldn't join the
     # west→east WIN-A-S* numbering without renumbering (and breaking IFC GlobalIds) the rest.
-    Window(uid="CAX311AAAA", tag="WIN-A-S-JUL-W", host="W-A-S2", type_ref="WT-2764",
+    # ** RETYPED WT-2764 -> WT-2754 ON 2026-08-29, 64" -> 54" TALL. ** Width-identical, so
+    # the centres, the from_node offsets and the 21" clear pier carrying RB-HOUSE's south
+    # bearing point are all untouched — this is a retype that moves no datum. The 6:12 rake
+    # is what asks for it: at the outer jambs (x 14'-10 1/2" / 21'-1 1/2", i.e. 178 1/2"
+    # from the nearer eave) the roof underside is 90 3/4" over the floor, and a 64" unit on
+    # the gable's 2'-8" sill wants 98". At 54" the head lands at 7'-2" and needs 88" —
+    # 2 3/4" of margin. If a framer wants air, WT-2748 buys another 6".
+    Window(uid="CAX311AAAA", tag="WIN-A-S-JUL-W", host="W-A-S2", type_ref="WT-2754",
            # +16" on 2026-08-27, and it is NOT a move: N-A-S1 went 10'-0" -> 8'-8" that day
            # (see the node), and this offset is measured off it, so 4'-10 1/2" would have
            # dragged the unit to 14'-8". 6'-2 1/2" holds the CENTRE on 16'-0" where it has
            # always been. The pier, the jambs and the bearing arithmetic below are unchanged.
            position=from_node("N-A-S1", ft(6, 2.5)), sill_height=ft(2, 8)),  # ctr x 16'-0"
-    Window(uid="CAX312AAAA", tag="WIN-A-S-JUL-E", host="W-A-S3", type_ref="WT-2764",
+    Window(uid="CAX312AAAA", tag="WIN-A-S-JUL-E", host="W-A-S3", type_ref="WT-2754",
            position=from_node("N-A-S2", ft(0, 10.5)), sill_height=ft(2, 8)),  # ctr x 20'-0"
-    # The source attic has no north, east or west opening at all; these three are kept for
-    # daylight and cross-ventilation and are this storey's only openings with no counterpart.
-    # WIN-A-N1 moved 7'-4" -> 8'-0" (2026-08-25) to mirror WIN-A-N2, then WIN-A-N2's whole
-    # three-storey column moved 28'-0" -> 29'-4" (2026-08-26) to bring WIN-M-KITCH onto the
-    # kitchen sink below; WIN-A-N1 moved to 6'-8" to hold the mirror about x=18'-0".
-    Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2", type_ref="WT-3036",
-           position=from_node("N-A-NW", ft(5, 5)), sill_height=ft(2)),
+    # NORTH GABLE, a mirrored pair. The source attic has no north opening at all; these two
+    # are kept for daylight and cross-ventilation.
+    #
+    # ** BOTH MOVED INWARD ON 2026-08-29 FOR THE 6:12 RAKE, NEITHER SHRANK. ** They were at
+    # x 6'-8" / 29'-4" — a mirror the 2026-08-26 kitchen-sink column had already spent, and
+    # a station the new roof cannot host: WT-3036 on the gable's 2'-0" sill puts the head at
+    # 5'-0" (60"), which needs 2 x (60 + 2) = 124" of clearance to the outer jamb, and at
+    # 6'-8" there are 65".
+    #
+    # 12'-0" / 24'-0" is the nearest legal mirrored pair, and it is legal for two separate
+    # reasons that both have to hold: a 30" RO BREAKS studs and so must centre on a STUD
+    # LINE (144" and 288", each = 0 mod 16 — unlike the 14" family, which must sit on a bay
+    # CENTRE), and the outer jambs land at 129" from their eaves against the 124" the rake
+    # allows. Five inches. No shrink is needed, and shrinking would not buy much: the height
+    # is what the rake charges for and 30x36 is already the shortest unit in the 30" family.
+    #
+    # ** WIN-A-N1 REHOSTS W-A-N2 -> W-A-N2B. ** x=12'-0" is east of N-A-N3 (x=10'-0"), where
+    # the north wall split on 2026-08-29, so the window is simply on the other piece now.
+    # W-A-N2's own comment spends a paragraph arguing that keeping the tag on the WEST piece
+    # is what preserves this window's host and its from_node offset verbatim — that argument
+    # is now spent, and the tag stays on the west piece for the PV/NEMA boxes alone
+    # (test_catlin_outdoor_structures.py). W-A-N2B runs N-A-N1 (x=18') -> N-A-N3 (x=10'), so
+    # the offset is measured east-to-west: 18'-0" - 4'-9" - 15" = the 12'-0" centre.
+    #
+    # At x=12'-0" the west unit fronts FO-A-HALL, the stair void — it daylights a
+    # double-height space rather than a room. That is an amenity, not a code problem: the
+    # sill is 11'-0" above the floor below and nowhere near R312.2's 24" fall-protection
+    # trigger, and R303.1 asks nothing of a hall.
+    Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2B", type_ref="WT-3036",
+           position=from_node("N-A-N1", ft(4, 9)), sill_height=ft(2)),   # ctr x 12'-0"
     Window(uid="CAX305AAAA", tag="WIN-A-N2", host="W-A-N1", type_ref="WT-3036",
-           position=from_node("N-A-NE", ft(5, 5)), sill_height=ft(2)),
-    # Knee-wall windows, one at each end of the east and west walls (2026-07-30 facade
-    # pass). The 5' knee walls are the one place the 14" family is chosen for height, not
-    # width: at sill 2'-6" the head sits at 4'-6", 3" under the double top plate — all a
-    # 5' wall has to give. West moved one bay inward for the facade pass and is symmetric
-    # at 4'-8" / 31'-4" about y=18'. East is 4" off (32'-4" vs. 32'-8") because W-A-E2's
-    # grid starts at N-A-E1 (y=9'), not the corner, so 32'-8" isn't a bay centre there.
-    # 2026-08-15: left as-is after pricing the alternative — moving N-A-E1 to 8'-8" (to
-    # column WIN-A-E-N with WIN-S-BED3 at 32'-0") or 9'-4" (for the pair's own mirror) both
-    # drag N-A-C2/W-A-SN with them, and 9'-4" was tried and reverted the same day when
-    # code.R312_1_guard flagged 3'-0" of unguarded well at FO-A-STAIR.
-    # N-A-E1 IS AT 9'-4" AS OF 2026-08-27 — but by THICKENING W-A-SN, not by moving it, so
-    # the guard is untouched (see N-A-C2). The grid on this wall shifted 4" with it; the
-    # windows below hold their centres and their offsets absorbed the move.
-    # RE-ANCHORED 2026-08-29 WITHOUT MOVING: the west wall split at N-A-PK-W and this window
-    # fell on the south piece. `from_node` measures to the opening's LEADING edge along the
-    # wall's own direction, which still runs north to south, so the offset is
-    # 22'-4" - 5'-3" = 17'-1" and the centre stays at y = 4'-8" to the millimetre. The old
-    # 30'-9" was the same edge measured from N-A-NW over the undivided 36'-0" run.
-    Window(uid="CAX308AAAA", tag="WIN-A-W-S", host="W-A-W1B", type_ref="WT-1424",
-           position=from_node("N-A-PK-W", ft(17, 1)), sill_height=ft(2, 6)),   # y 4'-8"
-    Window(uid="CAX306AAAA", tag="WIN-A-W-N", host="W-A-W1", type_ref="WT-1424",
-           position=from_node("N-A-NW", ft(4, 1)), sill_height=ft(2, 6)),    # y 31'-4"
-    Window(uid="CAX309AAAA", tag="WIN-A-E-S", host="W-A-E1", type_ref="WT-1424-T",
-           position=from_node("N-A-SE", ft(2, 9)), sill_height=ft(2, 6)),    # y 3'-4"
-    # 2026-08-27: WIN-A-E-N pushed 32'-8" -> 34'-0" centre to column with WIN-S-BED3
-    # (retyped to a 14" unit and moved to 34'-0" the same day) and WIN-M-KIT-E below it —
-    # the east face's first three-storey 14" column. This spends the east pair's own mirror
-    # about y=18'-0" (WIN-A-E-S stays at 3'-4"), which the 2026-08-15 note above priced and
-    # declined; the column is what was bought with it. It stays a BAY CENTRE on this wall's
-    # grid — 34'-0" - 9'-4" = 296", 296 mod 16 = 8 — so like the other three WT-1424s it
-    # breaks no stud and takes no header. (It did not at N-A-E1's old y=9'-0", where the
-    # residue was 12"; the bookcase-wall node move fixed that for free.) Near jamb: 34'-0" - 7" - 9'-4" = 24'-1" (the offset dropped 4" on
-    # 2026-08-27 when N-A-E1 moved 9'-0" -> 9'-4"; the CENTRE did not move).
-    Window(uid="CAX310AAAA", tag="WIN-A-E-N", host="W-A-E2", type_ref="WT-1424",
-           position=from_node("N-A-E1", ft(24, 1)), sill_height=ft(2, 6)),   # y 34'-0"
+           position=from_node("N-A-NE", ft(10, 9)), sill_height=ft(2)),  # ctr x 24'-0"
+    # ** THE FOUR EAVE WINDOWS ARE GONE (2026-08-29). ** WIN-A-W-S (CAX308AAAA), WIN-A-W-N
+    # (CAX306AAAA), WIN-A-E-S (CAX309AAAA) and WIN-A-E-N (CAX310AAAA) were the knee-wall
+    # pair on each side — WT-1424s chosen for HEIGHT rather than width, because a 5'-0" knee
+    # wall at a 2'-6" sill has exactly 24" under its double top plate. There is no knee wall
+    # any more; their hosts are 1 1/2" plates laid flat (see WALLS), and a plate has nothing
+    # to glaze. This is where most of the ~595 sf of deleted CATLIN_EXT_2X6 goes, and with
+    # it four units, four bucks, four flashings and eight jamb returns.
+    #
+    # What it costs: RM-A-STUDIO's daylight drops about a third (21.3 sf -> 13.6 sf, the
+    # south pair alone), so R303.1 Exception 1's electric-light substitute is now doing real
+    # work there — the studio's six cans plus sconce, 6,000 lm against the 4,450 lm the
+    # exception needs at 6 fc. RELOCATE THOSE FIXTURES, NEVER DELETE ONE (lighting.py).
+    # The only levers that would give the daylight back are a shed dormer or a roof
+    # penetration, and both are excluded.
 ]
 
 ROOMS = [
@@ -463,7 +487,20 @@ ALARMS = [
           circuit="CKT-LT-BACKUP"),
 ]
 
-# The hot roof itself: gable, 4:12, ridge N-S, zero overhang (first-class #29).
+# The hot roof itself: gable, 6:12, ridge N-S, zero overhang (first-class #29).
+#
+# 6:12 SINCE 2026-08-29. It was 4:12, and that pitch was never chosen — it FELL OUT of the
+# 5'-0" knee walls, which in turn fell out of the R305 misreading the plate walls above
+# describe. With the eave down on a 1 1/2" plate, the pitch is free to be whatever the
+# headroom wants, and 6:12 is the shallowest standard pitch that carries the attic rooms:
+#
+#     roof underside above the attic finished floor:  H(x) = 1 1/2" + x/2
+#
+# mirrored past x=18'. 9'-1 1/2" at the ridge, 7'-0" at x=13'-9", 5'-0" at x=9'-9".
+# ** EVERY ATTIC STATION ANSWERS TO THAT ONE LINE ** — window heads, can lights, the
+# receptacle band, the ERV manifold, both vent runs. The building also got 1'-9 1/2"
+# SHORTER than it was at 4:12 with 5' knee walls (ridge 32'-0 5/8" -> 30'-3"), because the
+# eave dropped 4'-11" and the extra rise only bought back 3'-1 1/2".
 # No fascia: the standing-seam siding and roofing are one continuous skin over the flush
 # edge — the resolver carries the wall metal to the roofing underside and caps the joint
 # with corner trim (resolve/roof_trim.py), and the ridge cap derives from the roof's vent
@@ -472,7 +509,12 @@ ALARMS = [
 
 ROOFS = [
     Roof(uid="CARF01AAAA", tag="RF-HOUSE", form=RoofForm.GABLE,
-         pitch=Pitch(4, 12), bearing_refs=("W-A-E1", "W-A-E2", "W-A-W1"),
+         # bearing_refs names all FOUR plates. W-A-W1B was missing here — a stale artifact
+         # of the 2026-08-29 west split that nothing read while the knee walls carried the
+         # edge, and that resolve/envelope.py's birdsmouth and roof_edge's closure both read
+         # now.
+         pitch=Pitch(6, 12),
+         bearing_refs=("W-A-E1", "W-A-E2", "W-A-W1", "W-A-W1B"),
          assembly="CATLIN_ROOF", overhang=ft(0), ridge_direction="y",
          # The barge-board answer for a roof that cannot have a barge board (2026-08-01).
          # With zero overhang the formed corner trim is the only piece standing at the rake,
@@ -484,7 +526,7 @@ ROOFS = [
 ]
 
 BEAMS = [
-    # Ridge beam over the center wall line: 2 plies of 1.75x14 LVL (3.5x14), 36'-0".
+    # Ridge beam over the center wall line: 2 plies of 1.75x16 LVL (3.5x16), 36'-0".
     #
     # ** IT SPANS NOTHING, AND ITS DEPTH IS A HANGER DIMENSION, NOT A BENDING ONE. **
     # W-A-C1/C1B/C2 hold it up end to end, so there is no clear span between the gables and
@@ -496,12 +538,18 @@ BEAMS = [
     #
     # What sets the depth: the resolver pins this beam's TOP to the roof plane at the peak
     # (the ZIP deck bears across it) and trims each rafter back to its face, where the
-    # rafter is cut PLUMB and hung on an LSSR. An 11 7/8" I-joist at 4:12 has a 12.52"
-    # plumb face (11.875 x 1.0541), and the face sits 1.75" off the peak, another 0.58"
-    # down the plane — so the beam has to reach 13.10" below the ridge line. At 11 7/8" the
-    # bottom flange and the hanger's seat hung 1.52" past the soffit, with nothing behind
-    # them. LVL is made in 9.5/11.875/14/16/18", so 14" is the answer; there is no 13.5".
-    # `structural.ridge_beam_depth` holds it now and reports the 0.90" that is left.
+    # rafter is cut PLUMB and hung on an LSSR. RE-DERIVED AT 6:12 ON 2026-08-29: an
+    # 11 7/8" I-joist on a 6:12 plane has a 13.28" plumb face (11.875 x 1.1180), and the
+    # face sits 1.75" off the peak, another 0.875" down the plane — so the beam has to
+    # reach 14.15" below the ridge line. ** 14" FAILS THAT BY 0.15" **, which is exactly
+    # the sort of miss that reads as fine on a drawing and leaves the hanger seat hanging
+    # in air. LVL is made in 9.5/11.875/14/16/18", so 16" is the answer and it leaves
+    # 1.85". `structural.ridge_beam_depth` holds it and reports what is left.
+    #
+    # The beam now hangs 16" into the room, so the clear height under the ridge reads
+    # ~9'-1 1/2" between beams and ~7'-9 1/2" directly under it. Backing the pitch off to
+    # 5.5:12 would hold the 14" beam and save a couple hundred dollars, at the cost of
+    # 5 1/2" of ridge, a nonstandard pitch and tighter R305 margins. Not worth it.
     #
     # THREE THINGS A FRAMER HAS TO BE TOLD, all in notes/ridge_beam_detail.md:
     #  - 3.5" is only defensible because the demand is small. LSSR header fasteners are
@@ -529,7 +577,7 @@ BEAMS = [
     # prints and what the continuity derivation measures. W-A-C1B (y 5'-7"..9'-4") was
     # missing until 2026-08-28; nothing read it then, and the splice rule reads it now.
     Beam(uid="CABM01AAAA", tag="RB-HOUSE", start_node="N-A-S2",
-         end_node="N-A-N1", size="2-1.75x14 LVL",
+         end_node="N-A-N1", size="2-1.75x16 LVL",
          bearing_refs=("W-A-C1", "W-A-C1B", "W-A-C2", "W-A-C2M", "W-A-C2B")),
 ]
 
@@ -550,6 +598,28 @@ FLOOR = [
     FloorSystem(uid="CAF602AAAA", tag="FS-ATTIC",
                 joists=JoistSpec(member="11.875 I-joist", spacing=inch(16),
                                  direction="x",
+                                 # ** LSL RIM SINCE 2026-08-29, AND THE REASON IS BEARING,
+                                 # NOT BANDING — BUT READ THE GEOMETRY BEFORE BELIEVING
+                                 # THAT. ** The joists run in x, so this deck's rims land at
+                                 # x=0 and x=432 running in y, on the sheathing datum. The
+                                 # rafter plates above them are aligned 1/2" INBOARD of that
+                                 # datum so they sit over the second-storey studs, so plate
+                                 # and rim overlap by only about 3/8" (see the blessed
+                                 # detail_wall_roof-CATLIN_EXT_2X6-CATLIN_ROOF golden: the
+                                 # rim runs u 431.13..432.88 and the plate u 426..431.5).
+                                 #
+                                 # So the rafter reaction is NOT carried by the rim alone.
+                                 # It lands on the subfloor over the joist ends and the rim
+                                 # together, directly above the stud line below. That is a
+                                 # legitimate story-and-a-half detail and it is what a
+                                 # framer will build, but it is a bearing question rather
+                                 # than a banding one, and a 1 1/4" OSB band board on this
+                                 # line would crush under the perimeter share of it. ** IF
+                                 # THE RAFTER EVER DEEPENS OR THE SNOW LOAD RISES, THE
+                                 # ANSWER IS SQUASH BLOCKS AT EACH RAFTER, NOT A DEEPER
+                                 # RIM. ** The engine models neither; this note is the
+                                 # record.
+                                 rim_member="1.75x11.875 LSL",
                                  # BM-S-HALL is the centre line for its 8'-6"; the joists
                                  # either side of the hall opening hang off it.
                                  bearing_refs=("W-S-W3", "W-S-C1", "W-S-E2",
@@ -579,13 +649,23 @@ FLOOR = [
                 openings=("FO-A-STAIR", "FO-A-HALL")),
 ]
 
-# Guard the open south edge of the attic stair well in RM-A-STUDY. This reuses the balcony
-# guard's 42" metal fascia-mounted railing family and post spacing, but starts at the attic
-# walking surface rather than the exterior deck datum.
+# Guard the open south AND EAST edges of the attic stair well in RM-A-STUDY. This reuses
+# the balcony guard's 42" metal fascia-mounted railing family and post spacing, but starts
+# at the attic walking surface rather than the exterior deck datum.
+#
+# ** THE EAST LEG IS NEW ON 2026-08-29, AND IT IS NOT AN ADDITION — IT IS A REPLACEMENT. **
+# That 3'-0" edge (x 35'-5 3/8", y 5'-9 5/8"..8'-9 5/8") was guarded by the inside gwb face
+# of the W-A-E1 knee wall, which landed on it exactly: CATLIN_EXT_2X6 is 13 1/4" deep off
+# a sheathing datum at x=36'-0", so its finish face stood at 35'-5 3/8". W-A-E1 is a 1 1/2"
+# rafter plate now, 5 1/2" of lumber laid flat starting 6" in from the node line, and a
+# plate guards nothing. `code.R312_1_guard` named this the moment the wall changed, which
+# is exactly what that check is for. 3'-0" of railing is the honest price of the ~360 sf of
+# knee wall the storey stopped building.
 STAIR_GUARD = Railing(
     uid="CARL01AAAA", tag="RL-A-STAIR", type_ref="RAILING-INT-STAIR-GUARD", path=(
         pt(ft(21, 2), ft(5, 9.625)),
         pt(ft(35, 5.375), ft(5, 9.625)),
+        pt(ft(35, 5.375), ft(8, 9.625)),
     ),
     kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
     base_elevation=ft(20), post_spacing=inch(60), post_size="2x2", rail_count=2,

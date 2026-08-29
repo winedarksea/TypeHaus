@@ -87,15 +87,16 @@ ATTIC_LINES = (
     # 9'-4", and the error is 1 1/4" — inside the default band, so the override is gone.
     ("N-A-C2", "y", 9, 4, 9.228),
     ("N-A-E1", "y", 9, 4, 9.228),
-    # Stair vestibule east screen. 4 1/4" east of its source line since 2026-08-01, and the
-    # one node in this table that is off its source for a reason outside the survey: N-A-V1
-    # is where W-A-S4 starts, so it sets the phase of every bay centre on the east half of
-    # the south gable. 36' - 22'-4" is not a multiple of 16", so at the source line the
-    # gable could not mirror about the ridge; 22'-8" is 16 x 17 and it can. The screen is a
-    # dangling pair that dimensions nothing else, which is what makes the trade payable.
-    ("N-A-V1", "x", 22, 8, 22.31, 4.5),
-    ("N-A-V2", "x", 22, 8, 22.31, 4.5),
-    ("N-A-V3", "x", 21, 2, 21.14),     # its north screen, stopping at the well
+    # ** THE STAIR VESTIBULE'S THREE NODES ARE GONE (2026-08-29). ** N-A-V1 (22'-8"),
+    # N-A-V2 (22'-8") and N-A-V3 (21'-2") carried W-A-VE, W-A-VN and D-A-VEST, the source's
+    # Den east and north walls, wrapping ST-S2A's head. The 6:12 roof retired them: at
+    # x 21'-2"..22'-8" a full-height screen under a `1 1/2" + (36' - x)/2` rake is a soffit,
+    # and D-A-VEST's 6'-8" head has no room at all. They were always a dangling pair closing
+    # no polygonized face, so nothing else in the survey depends on them — which is what made
+    # the 2026-08-01 4 1/4" trade payable and what makes the deletion payable now. N-A-V1
+    # additionally set the phase of the east gable's bay centres by starting W-A-S4; W-A-S3
+    # runs the whole east half since the merge, and `layout_origin="line"` lays that grid out
+    # from the facade's global line rather than from a start node.
 )
 
 

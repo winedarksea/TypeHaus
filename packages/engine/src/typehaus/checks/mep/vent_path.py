@@ -20,6 +20,7 @@ from typehaus.model.enums import PipeSystem
 from typehaus.model.mep import VentRun
 from typehaus.quantities import inch
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
+from typehaus.resolve.vent_termination import chase_top_point
 
 # A vent run is drawn to the centerline of the wall it rises in and of the chase it lands
 # in, but an author may just as reasonably snap it to a wall face or a chase corner.  One
@@ -79,8 +80,14 @@ def _chase_at_either_end(model: ResolvedModel, path) -> str | None:
     for element in model.plan.all_elements():
         if not isinstance(element, VentRun) or PipeSystem.VENT not in element.systems:
             continue
-        chase = element.chase_position.xy_m
-        if any(_distance(end, chase) <= VENT_CONNECTION_TOLERANCE_M for end in ends):
+        # BOTH stations count. A riser that authors ``chase_offset`` jogs sideways part way
+        # up and stands somewhere else above that jog, so a branch tying in high lands on
+        # the jogged station and a branch tying in low lands on the chase — and the run is
+        # one pipe either way. Testing only ``chase_position`` failed the high branch and
+        # said "reaches no chase", which is a modelling artefact, not a plumbing fact.
+        stations = {element.chase_position.xy_m, chase_top_point(element)}
+        if any(_distance(end, chase) <= VENT_CONNECTION_TOLERANCE_M
+               for end in ends for chase in stations):
             return element.tag
     return None
 

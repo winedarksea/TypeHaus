@@ -254,16 +254,39 @@ GARAGE_FIXTURES = (
 # y 19'-5"..21'-11". The lavatory clears its south edge by 2", the shower clears its east edge
 # by 8 3/4", and all three footprints are pairwise disjoint. The finding trigger is ~1.55 in2,
 # so 2" over an 18" face is not much slack — ** IF THE LAV MOVES, MOVE IT SOUTH AND RE-CHECK. **
+# ** BOTH THE WATER CLOSET AND THE LAVATORY MOVED EAST ON 2026-08-29, AND THEY CHANGED
+# WALLS TO DO IT. ** The bath used to run WC and lav down the wet wall at x 11'-0 7/8" and
+# 10'-5 7/8", facing east into the room. With the attic at 6:12 off a 1 1/2" plate the roof
+# underside is `1 1/2" + x/2` above the floor, which is 5'-7 1/2" and 5'-4 1/2" over those
+# two stations — under a rake you cannot stand up at, let alone use a fixture under.
+#
+# Minn. R. 1309.0305 Exception 2 asks 6'-8" over the fixture and its front clearance, which
+# arrives at x 13'-1". That leaves x 13'-1"..17'-8 5/8" as the bath's usable band, and the
+# 36" shower already holds 15'-2 5/8"..17'-2 5/8" of it — so the WC and the lav cannot BOTH
+# sit on the west wall's line and still clear the rake. They go on the room's other two
+# walls instead, at the tall end of each:
+#   * WC on the north wall at x 13'-6" (6'-10 1/2" of ceiling), facing south. Its 15"+15"
+#     x 21" clearance zone runs x 12'-3"..14'-9", clear of the shower's 15'-2 5/8" west edge
+#     by 5 5/8" and of D-A-STUBATH's 14'-0" jamb.
+#   * lav on the south wall at x 13'-2" (6'-8 1/2"), facing north, its east edge 1" short of
+#     that same door jamb.
+#
+# ** `wall_ref` STAYS `W-A-STU-W` ON ALL THREE, AND THAT IS NOT A LEFTOVER. ** In this file
+# wall_ref names the WET wall a fixture plumbs into, not the wall it physically hangs on —
+# the shower has read that way since the suite was authored ("including the shower that
+# backs W-A-C2", above). W-A-STU-W is still the one 5 1/2" staggered cavity in the attic and
+# every drop still lands in it; `mep.vent_reachability` and `mep.trap_arm_length` both key
+# off that, and PR-A-STUBATH-VENT still has a vertex on its axis.
 ATTIC_FIXTURES = (
     # Floor-mount, not FX-TOILET-WH: a wall-hung carrier costs a 6" chase this room need not buy.
     Fixture(uid="WCM0PV9H71", tag="FX-A-STUBATH-WC", type_ref="FX-TOILET-STD", room="RM-A-STUBATH",
-            position=pt(ft(11, 0.875), ft(20, 8)), rotation=deg(90),
+            position=pt(ft(13, 6), ft(21, 4)), rotation=deg(180),
             wall_ref="W-A-STU-W"),
     # 18" x 14", the cheapest lavatory in the catalog — not the 24" FX-LAV-24 the second storey
     # uses. This is a guest bath specified as cheaply as the code allows, and the 6" saved is
     # part of what keeps the water closet's clearance zone clear.
     Fixture(uid="N2BDQ3T63Z", tag="FX-A-STUBATH-LAV", type_ref="FX-LAV-COMPACT", room="RM-A-STUBATH",
-            position=pt(ft(10, 5.875), ft(18, 6)), rotation=deg(90),
+            position=pt(ft(13, 2), ft(18, 1.375)), rotation=deg(0),
             wall_ref="W-A-STU-W"),
     # A 36" pan in the NE corner. ** NOT FX-TUBSHOWER-60 ** — a 60" insert costs more, needs
     # three nailable walls (the 2026-08-21 alcove audit above), and a guest suite does not want
@@ -289,10 +312,18 @@ ATTIC_FIXTURES = (
     # `Occupancy.KITCHEN` — that would put a 25 sf nook in `_HABITABLE` (graded for 8% glazing on
     # its own), in `_GFCI_OCCUPANCIES` and in `_STALE_OCCUPANCIES` (demanding its own exhaust
     # terminal). It is part of RM-A-STUDIO and it stays that way.
+    # ** THE BAR MOVED TO THE CENTRE WALL ON 2026-08-29 (x 8'-6" -> 17'-0"). ** It stood on
+    # W-A-STU-W's WEST face, which put the person using it at x ~7'-6" under 4'-3" of roof.
+    # There is no station near that wall the 6:12 rake makes usable, and the wall itself only
+    # runs y 17'-4"..22'-4" — inside the bath's own band — so the bar could not simply slide
+    # north or south. It goes to W-A-C2's west face at y 16'-8", SOUTH of the bath box, where
+    # the ceiling is 8'-7 1/2" and the counter is against the one full-height wall the studio
+    # has. `wall_ref` still names the wet wall (see the block above): the drain crosses the
+    # joist field west to the same stack and the bar is still on one branch, one vent.
     Fixture(uid="11TZJE81BZ", tag="FX-A-STUDIO-BAR-SINK", type_ref="FX-LAV-COMPACT", room="RM-A-STUDIO",
-            position=pt(ft(8, 6), ft(20)), rotation=deg(-90), wall_ref="W-A-STU-W",
+            position=pt(ft(17), ft(16, 8)), rotation=deg(-90), wall_ref="W-A-STU-W",
             mount=Mount(kind=MountKind.WALL, elevation=inch(27)),
-            drain_position=pt(ft(9, 3), ft(20))),
+            drain_position=pt(ft(17, 6), ft(16, 8))),
 )
 
 

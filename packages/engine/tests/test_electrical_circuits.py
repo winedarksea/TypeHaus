@@ -327,16 +327,23 @@ def test_conduit_emits_cable_carrier_segments(project, tmp_path: Path):
 def test_catlin_conduit_trunks(catlin_model):
     from typehaus.takeoff import conduit_takeoff
 
-    # 4 power trunks + the 3 ESS microgrid runs + the 8 structured-cabling runs. The last
+    # 5 power trunks + the 3 ESS microgrid runs + the 8 structured-cabling runs. The fifth
+    # power trunk is CD-A-PV-EAST (2026-08-29): a ConduitRun travels flat at its
+    # `start_elevation` and rises only at its LAST point, so "up the chase, then east along
+    # the attic deck, then up the gable" is two runs. It became two when the 6:12 roof put
+    # the old single riser's 25'-6" head 3'-10" outside the building at x=1'-6". The last
     # three arrived 2026-08-22 with the workshop, study and media-room drops — and one of
     # them, CD-B-DATA-SHOP, is the answer to "can it share the spa conduit": it runs 6" east
     # of CD-B-SPA and parallel to it the whole way, because NEC 800.133/725 forbids comms
     # sharing a RACEWAY with power and `ConduitRun.service` is one value, never a set.
-    assert len(catlin_model.conduits) == 15
+    assert len(catlin_model.conduits) == 16
     # Not all from the panel any more: the three 2026-08-02 microgrid runs start at the PV
     # junction box and at the inverter, and every data run starts at the patch enclosure.
+    # CD-A-PV-EAST's from_ref is the RUN it continues rather than a device, which is the
+    # honest statement for a second leg of one raceway: there is no junction box at the
+    # elbow, the conduit simply turns.
     assert {run.from_ref for run in catlin_model.conduits} == {
-        "ED-B-PANEL", "ED-A-PV-JB", "EQ-B-ESS-INV", "ED-B-NET-PATCH"}
+        "ED-B-PANEL", "ED-A-PV-JB", "EQ-B-ESS-INV", "ED-B-NET-PATCH", "CD-B-ATTIC-RISER"}
     rows = conduit_takeoff(catlin_model)
     # Power only — data and the capped spare are billed by takeoff/data.py, because comms
     # and power are separate orders pulled by separate trades and may not share a raceway.
@@ -346,9 +353,17 @@ def test_catlin_conduit_trunks(catlin_model):
     assert all(20 < row["length_ft"] < 70 for row in rows)
     assert not [run.tag for row in rows for run in catlin_model.conduits
                 if run.tag in row["tags"] and run.service in ("data", None)]
-    # The PV riser reaches the attic junction box.
+    # The PV feed reaches the attic junction box — in two legs since 2026-08-29. The riser
+    # tops out on the attic DECK (20'-6"), because the 6:12 roof underside at its x=1'-6"
+    # chase is 20'-8 1/4" and it cannot rise to the box's 25'-6" there; CD-A-PV-EAST carries
+    # it east under the north rake and up the gable. Both are asserted, so a future pass
+    # cannot quietly drop the second leg and leave the box unfed.
     riser = next(run for run in catlin_model.conduits if run.tag == "CD-B-ATTIC-RISER")
-    assert riser.to_ref == "ED-A-PV-JB" and riser.z_end_m > 7.0
+    assert riser.to_ref == "ED-A-PV-JB" and riser.z_end_m > 6.0
+    east = next(run for run in catlin_model.conduits if run.tag == "CD-A-PV-EAST")
+    assert east.to_ref == "ED-A-PV-JB" and east.from_ref == riser.tag
+    assert east.z_start_m == pytest.approx(riser.z_end_m, abs=1e-6)
+    assert east.z_end_m > 7.5
 
 
 def test_bill_of_materials_carries_the_electrical_sections(catlin_model):

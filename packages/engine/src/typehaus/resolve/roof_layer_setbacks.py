@@ -192,12 +192,37 @@ def _layer_group(function: LayerFunction, previous: str | None) -> str | None:
     return previous
 
 
+def _skinned(model, wall):
+    """``wall`` if it carries a weather skin, else the wall whose skin stands in for it.
+
+    A bearing element with no SHEATHING layer and nothing outboard of one has no stack for
+    a clip rule to read: every setback comes back 0.0, the roof deck runs out to the
+    footprint edge, and the metal ends up 0.6" PROUD of a deck that should be well behind
+    it. That is not a hypothetical — a story-and-a-half roof lands on a 2x plate laid flat
+    on the deck, which is exactly such an element.
+
+    The skin the roof actually clips against belongs to the wall the plate STANDS ON, which
+    is authored as ``Wall.stacks_on``, so ``skin_stand_ins`` resolves it without an
+    elevation band or a collinearity search. It returns the whole eave line (a bearing ref
+    names one segment of a line authored as several); every segment of one line carries the
+    same assembly, so the first is the clip rule for all of them — and where they do NOT,
+    ``envelope._resolve_roof`` already raises ``integrity.roof_bearing``.
+    """
+    from typehaus.resolve.roof_edge_geometry import skin_layers, skin_stand_ins
+
+    if wall is None or skin_layers(wall):
+        return wall
+    stand_ins = skin_stand_ins(model, wall, lambda _wall: True)
+    return stand_ins[0] if stand_ins else wall
+
+
 def _edge_wall(model, roof, edge: str, bearing_walls: list):
     """The wall whose stack governs one footprint edge.
 
     Eave edges use the nearest bearing wall. Rake edges use the exterior wall whose
     outermost-layer polygon touches that footprint edge (the same cladding polygon
     ``_resolve_roof`` laps the footprint out to); fallback: the first bearing wall.
+    A skinless result is replaced by its stand-in (:func:`_skinned`).
     """
     xs = [point[0] for point in roof.footprint]
     ys = [point[1] for point in roof.footprint]
@@ -237,7 +262,7 @@ def layer_edge_setbacks(model, roof) -> tuple[dict, ...]:
     bearing_walls = [wall for tag in bearing_refs if (wall := model.wall(tag)) is not None]
     clips: dict[str, dict[str, float]] = {}
     for edge in ("west", "east", "south", "north"):
-        wall = _edge_wall(model, roof, edge, bearing_walls)
+        wall = _skinned(model, _edge_wall(model, roof, edge, bearing_walls))
         clips[edge] = (_wall_clip_setbacks(wall) if wall is not None
                        else {"deck": 0.0, "foam": 0.0, "batten": 0.0, "metal": 0.0})
     entries: list[dict] = []

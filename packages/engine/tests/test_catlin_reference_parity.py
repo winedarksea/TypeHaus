@@ -174,14 +174,24 @@ def test_framing_matches_the_reference(catlin_model):
             assert (member.z1_m - member.z0_m) * 39.37007874015748 == pytest.approx(
                 joist_depth, abs=0.01)
 
+    # ** THE PITCH DELIBERATELY NO LONGER MATCHES THE REFERENCE (2026-08-29). ** The old
+    # model is 4:12 because the attic was designed around 5'-0" knee walls, which came from
+    # a misreading of R305 (Minn. R. 1309.0305 Exception 1 and IRC R304.1/R304.3 scope the
+    # sloped-ceiling rule to the REQUIRED floor area, not the whole room). With the knee
+    # walls deleted the pitch is free, and 6:12 is the shallowest standard pitch that
+    # carries the attic rooms. So this asserts the DIVERGENCE rather than deleting the
+    # check: the reference's number is still read, and the house is held to being steeper
+    # than it — a silent revert to 4:12 would fail here as loudly as drift ever did.
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
-    rise_over_run = float(params["roof_joists"]["pitch_rise_over_run"])
+    reference_pitch = float(params["roof_joists"]["pitch_rise_over_run"])
     xs = [p[0] for p in roof.footprint]
     ys = [p[1] for p in roof.footprint]
     half_span = (max(ys) - min(ys) if roof.ridge_direction == "x"
                  else max(xs) - min(xs)) / 2.0
-    assert (roof.ridge_z_m - roof.eave_z_m) / half_span == pytest.approx(
-        rise_over_run, abs=0.005)
+    rise_over_run = (roof.ridge_z_m - roof.eave_z_m) / half_span
+    assert reference_pitch == pytest.approx(4.0 / 12.0, abs=0.005)
+    assert rise_over_run == pytest.approx(6.0 / 12.0, abs=0.005)
+    assert rise_over_run > reference_pitch
 
 
 # Shares the house's FT-B- prefix but is not one of its strip footings, so the 20"x8" rule

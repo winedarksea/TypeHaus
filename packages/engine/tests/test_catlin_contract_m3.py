@@ -34,8 +34,13 @@ from _helpers import CATLIN as CATLIN_DIR, frames_structure
 HOUSE_SIZE_FT = 36.0
 FRAMING_SPACING_IN = 16.0
 GRID_FT = 18.0
-KNEE_FT = 5.0
-RIDGE_OVER_ATTIC_FT = 11.0
+# ** THE KNEE WALL IS GONE (2026-08-29). ** What stands on the attic deck at the eave is a
+# 2x6 laid FLAT — CATLIN_RAFTER_PLATE, 1 1/2" on 3/4" of subfloor — so the bearing datum is
+# 20'-2 1/4" rather than 25'-0". PLATE_FT is that 2.25" expressed in feet above the attic
+# datum, and it replaces KNEE_FT everywhere KNEE_FT was the eave's height.
+PLATE_FT = 2.25 / 12.0
+# 6:12 over an 18'-0" half-run: 9'-0" of rise, plus the cladding lap the footprint takes.
+RIDGE_OVER_ATTIC_FT = 9.0
 ATTIC_ELEV_FT = 20.0
 GARAGE_SIZE_FT = 24.0
 # House sheathing plane to garage wall line. The finished gap is tighter: the house's 7 1/4"
@@ -64,11 +69,12 @@ GARAGE_SIZE_FT = 24.0
 # of where it stands for six days. Fixing that gave back exactly half the move.
 GARAGE_GAP_FT = 4.6875
 GARAGE_OVERHANG_IN = 16.0
-# eave_z_m is the rafter-top (deck) plane: the 11.875" I-joist rises above the knee-wall
-# plate by its depth less the seat drop across the stud (5.5" 2x6 depth x 4:12 pitch =
-# 1.8333" — the knee walls went 2x6 with the rest of the envelope), per the golden eave
-# detail (roof_wall_eave_detail_ifc.py). The birdsmouth notch itself stays 1.17" deep.
-DECK_RISE_FT = (11.875 - 5.5 / 3.0) / 12.0
+# eave_z_m is the rafter-top (deck) plane: the 11.875" I-joist rises above the RAFTER PLATE
+# by its depth less the seat drop across the plate (5.5" depth x 6:12 pitch = 2.75" — the
+# plate is a 2x6 to match the stud wall under it, which is what sets this term), per the
+# golden eave detail (roof_wall_eave_detail_ifc.py). 6:12 since 2026-08-29; it was
+# 11.875 - 5.5/3 at 4:12.
+DECK_RISE_FT = (11.875 - 5.5 / 2.0) / 12.0
 
 
 def test_floor_joist_counts_match_old_model(catlin_model):
@@ -318,22 +324,23 @@ def test_roof_matches_old_pitch_knee_and_ridge(catlin_model):
     eave_ft = roof.eave_z_m / ft(1).meters
     ridge_ft = roof.ridge_z_m / ft(1).meters
     # eave_z_m is the deck plane: knee-wall plate top + the I-joist's rise above it.
-    assert eave_ft == pytest.approx(ATTIC_ELEV_FT + KNEE_FT + DECK_RISE_FT)
+    assert eave_ft == pytest.approx(ATTIC_ELEV_FT + PLATE_FT + DECK_RISE_FT)
     # The old builder set the roof out from the bearing-wall axes, giving an 11' ridge over
     # a 36' run. A zero-overhang roof that stops at the axis leaves the cladding standing
     # proud of its own edge, so the footprint now laps the outermost wall layer — the run,
     # and with it the ridge, grows by that lap on each side. The whole plane also rides
-    # DECK_RISE_FT higher now that the eave is the deck. The 4:12 pitch is unchanged.
+    # DECK_RISE_FT higher now that the eave is the deck. The pitch is 6:12 since 2026-08-29,
+    # so the lap buys HALF its length in ridge height rather than a third.
     lap = _cladding_lap(catlin_model)
-    assert ATTIC_ELEV_FT + RIDGE_OVER_ATTIC_FT + DECK_RISE_FT < ridge_ft <= \
-        ATTIC_ELEV_FT + RIDGE_OVER_ATTIC_FT + DECK_RISE_FT + (lap / 3.0) / ft(1).meters + 1e-6
+    base = ATTIC_ELEV_FT + PLATE_FT + RIDGE_OVER_ATTIC_FT + DECK_RISE_FT
+    assert base < ridge_ft <= base + (lap / 2.0) / ft(1).meters + 1e-6
     assert roof.ridge_direction == "y"
     xs = [p[0] for p in roof.footprint]
     ys = [p[1] for p in roof.footprint]
     for span in (max(xs) - min(xs), max(ys) - min(ys)):
         assert ft(HOUSE_SIZE_FT).meters < span <= ft(HOUSE_SIZE_FT).meters + 2 * lap + 1e-6
     rise_over_run = (roof.ridge_z_m - roof.eave_z_m) / ((max(xs) - min(xs)) / 2)
-    assert rise_over_run == pytest.approx(4.0 / 12.0)
+    assert rise_over_run == pytest.approx(6.0 / 12.0)
     rafters = [member for member in roof.members if member.category == "rafter"]
     # 28 station lines at 16" o.c. over two gable planes: stations span the bearing walls'
     # 36' extent (not the cladding-lapped footprint), with the end stations inset half a
@@ -344,14 +351,14 @@ def test_roof_matches_old_pitch_knee_and_ridge(catlin_model):
     assert stations[0] == pytest.approx(flange_half, abs=1e-6)
     assert stations[-1] == pytest.approx(ft(HOUSE_SIZE_FT).meters - flange_half, abs=1e-6)
     # The rafter sinks only the birdsmouth below the plate top — never its full depth.
-    plate_top = ft(ATTIC_ELEV_FT + KNEE_FT).meters
-    birdsmouth = inch(3.5 / 3.0).meters
+    plate_top = ft(ATTIC_ELEV_FT + PLATE_FT).meters
+    birdsmouth = inch(3.5 / 2.0).meters
     assert all(member.z0_m >= plate_top - birdsmouth - 1e-6 for member in rafters)
     # WP4: rafter ridge ends are trimmed back to bear on the ridge beam rather than
     # crossing to the exact ridge centerline — z1_end drops by half the beam width
     # times the roof slope, staying on the roof plane.
     beam_width_m = cross_section(RIDGE_BEAM_DEFAULT).width_m
-    expected_z1_end = roof.ridge_z_m - (4.0 / 12.0) * (beam_width_m / 2.0)
+    expected_z1_end = roof.ridge_z_m - (6.0 / 12.0) * (beam_width_m / 2.0)
     assert all(member.z1_end_m == pytest.approx(expected_z1_end) for member in rafters)
     assert all(member.connection == "ridge:adjustable-slope-hanger;eave:birdsmouth"
               for member in rafters)
@@ -365,7 +372,10 @@ def test_ridge_beam_member_and_condition(catlin_model):
     beams = [member for member in roof.members if member.category == "ridge_beam"]
     assert len(beams) == 1
     beam = beams[0]
-    assert beam.profile == RIDGE_BEAM_DEFAULT
+    # NOT RIDGE_BEAM_DEFAULT: the house authors its own section, and at 6:12 an 11 7/8"
+    # rafter needs 14.15" below the plane, which 14" misses by 0.15". See
+    # test_ridge_beam_depth.py and plan/storeys/attic.py's derivation.
+    assert beam.profile == "2-1.75x16 LVL"
     assert beam.z1_m == pytest.approx(roof.ridge_z_m)
     section = cross_section(beam.profile)
     assert beam.z0_m == pytest.approx(roof.ridge_z_m - section.depth_m)
@@ -383,14 +393,13 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
     # eave rides the deck plane, ~10.04" (0.2551 m) above the plate.
     assert roof.eave_z_m - roof.bearing_z_m == pytest.approx(ft(DECK_RISE_FT).meters)
 
-    # 1.917" = the 4:12 rise over the horizontal distance from the footprint edge to the
-    # heel. It has deepened three times, every time by the same arithmetic: the zero-overhang
-    # roof laps the CLADDING, so the rafter tail and the deck plane above it follow the
-    # cladding face out and the notch deepens by the move times 4/12. 1.17" under the
-    # rigid-CI stack; 1.333" from 2026-08-23, when the Swinburne truss moved the face 0.48";
-    # 1.667" when the catlin truss moved it a further 1.0"; 1.917" since the exposed-fastener
-    # PBR panel moved it 0.75" more (2026-08-26, 0.75 x 4/12 = 0.25").
-    birdsmouth = inch(1.917).meters
+    # 2.75" = the seat cut across the 5.5" rafter plate at 6:12 (5.5 x 6/12), which is what
+    # `deck_rise_m` subtracts from the 11.875" rafter to get DECK_RISE_FT. It was 1.917" at
+    # 4:12 against the same plate depth, and had deepened three times before that as the
+    # zero-overhang roof's cladding lap grew: 1.17" under the rigid-CI stack, 1.333" from
+    # 2026-08-23 (Swinburne truss, +0.48"), 1.667" (catlin truss, +1.0"), 1.917" (PBR panel,
+    # +0.75"). The pitch change is the fourth and much the largest.
+    birdsmouth = inch(2.75).meters
     rafters = [m for m in roof.members if m.category == "rafter"]
     assert not [m for m in roof.members if m.category == "seat_cut"], \
         "the seat is part of the rafter's own solid now, not a block beside it"
@@ -404,7 +413,10 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
         # exactly the stud depth from there) — not out in the cladding lap. The heel sits one
         # seat run inboard of that.
         heel_offset = min(abs(seat.heel[0] - x) for x in bearing_x)
-        assert abs(heel_offset - inch(0.5).meters) <= seat.seat_run_m + 1e-6
+        # 1/2" was the offset while the plate sat on the sheathing datum. The rafter plate
+        # is aligned 1/2" further in (over the studs below rather than over the sheathing),
+        # so the heel walks in with it — the tolerance is the seat run either way.
+        assert abs(heel_offset - inch(1.0).meters) <= seat.seat_run_m + 1e-6
 
         # The notch: the rafter's solid has a flat seat at the plate top over the run, and a
         # plumb heel rising to the underside — one birdsmouth's worth, once.
@@ -413,7 +425,12 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
         assert zs[0] == pytest.approx(plate_top)
         assert zs[1] == pytest.approx(plate_top)
         heel_height = zs[2] - plate_top
-        assert heel_height == pytest.approx(birdsmouth, abs=1e-3)
+        # 2.875", not the 2.75" `deck_rise_m` cuts: `deck_rise_m` measures the seat across
+        # the assembly's 5.5" STRUCTURE layer, while the drawn heel is measured from the
+        # footprint edge — which laps the cladding — in to the plumb cut. The 1/8" between
+        # them is that lap resolved against the plate's 1/2" inboard alignment, and it is
+        # the same term the 4:12 history above describes.
+        assert heel_height == pytest.approx(inch(2.875).meters, abs=1e-3)
 
     setbacks = {entry["layer"]: entry for entry in roof.layer_edge_setbacks}
     assert set(setbacks) == {"zip", "deck-vb", "polyiso-1", "polyiso-2",
@@ -507,10 +524,10 @@ def test_garage_gable_roof_frames_raised_heel_trusses(catlin_model):
 def test_attic_to_roof_walls_frame_with_raked_studs_and_plates(catlin_model):
     """The gable ends are true raked walls, not 11' rectangular placeholders."""
     gable = next(w for w in catlin_model.walls if w.tag == "W-A-S1")
-    # Knee height above the attic floor plus the deck rise (eave_z_m is the deck plane),
+    # Rafter-plate top above the attic floor plus the deck rise (eave_z_m is the deck plane),
     # plus the roof plane's cladding lap (see test_roof_matches_old_pitch_knee_and_ridge).
-    knee = ft(5 + DECK_RISE_FT).meters + ft(ATTIC_ELEV_FT).meters
-    assert knee < gable.top_z0_m <= knee + _cladding_lap(catlin_model) / 3.0 + 1e-6
+    eave = ft(PLATE_FT + DECK_RISE_FT).meters + ft(ATTIC_ELEV_FT).meters
+    assert eave < gable.top_z0_m <= eave + _cladding_lap(catlin_model) / 2.0 + 1e-6
     assert gable.top_z1_m > gable.top_z0_m
     studs = [member for member in gable.members if member.category == "stud"]
     assert len(studs) >= 2
@@ -528,7 +545,16 @@ def test_floors_get_two_rim_boards_at_the_outer_bearing_lines(catlin_model):
         floor = next(f for f in catlin_model.floors if f.tag == tag)
         rims = [m for m in floor.members if m.category == "rim"]
         assert len(rims) == 2, tag
-        assert all(m.profile.endswith(" rim") for m in rims)
+    # FS-ATTIC's rims are LSL since 2026-08-29 and say so in their profile: they are the
+    # bearing line under the rafter plates now, not a band board capping joist ends, and a
+    # 1 1/4" OSB rim would crush. The other decks keep the derived band-board profile.
+    for tag in ("FS-S-WEST", "FS-S-EAST"):
+        floor = next(f for f in catlin_model.floors if f.tag == tag)
+        assert all(m.profile.endswith(" rim")
+                   for m in floor.members if m.category == "rim"), tag
+    attic = next(f for f in catlin_model.floors if f.tag == "FS-ATTIC")
+    assert all(m.profile == "1.75x11.875 LSL"
+               for m in attic.members if m.category == "rim")
 
 
 def test_exterior_wall_spans_floor_to_floor_across_the_rim(catlin_model):
@@ -604,13 +630,17 @@ def test_raked_gable_king_studs_match_roof_plane_at_own_station(catlin_model):
     # to be the subject here, but the 2026-07-30 facade pass moved them to the 14" family
     # — a 14" RO fits a stud bay unbroken and frames with no header and no kings at all,
     # leaving nothing on those walls for this rule to bite on. The north gables rake
-    # 6'-0" over their 18', so a single window's two kings land at clearly different
-    # heights, which is all this regression needs.
+    # 9'-0" over their 18' (6:12 since 2026-08-29), so a single window's two kings land at
+    # clearly different heights, which is all this regression needs.
+    #
+    # ** W-A-N2 CARRIES NO WINDOW ANY MORE. ** WIN-A-N1 moved to x=12'-0" on the same pass —
+    # the rake at 6'-8" could not take a 5'-0" head — which puts it east of the x=10'-0"
+    # split, on W-A-N2B. W-A-N2B is the raked wall to check now.
     plate_h = inch(1.5).meters
     top_plates = 2  # CATLIN_EXT_2X6 double top plate, not advanced framing
     checked = 0
 
-    for tag in ("W-A-N1", "W-A-N2"):
+    for tag in ("W-A-N1", "W-A-N2B"):
         wall = next(w for w in catlin_model.walls if w.tag == tag)
         assert wall.top_z0_m is not None and wall.top_z1_m is not None
         (x0, y0), (x1, y1) = wall.axis
@@ -783,8 +813,11 @@ def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_heigh
         assert opening.sill_m == pytest.approx(ft(2, 8).meters, abs=1e-6)
         assert opening.sill_m > inch(24).meters
         # Unclipped: the rake did not silently eat the head.
-        assert opening.height_m == pytest.approx(inch(64).meters, abs=1e-6)
-        assert opening.sill_m + opening.height_m == pytest.approx(ft(8).meters, abs=1e-6)
+        # 54", not 64", since 2026-08-29: WT-2764 -> WT-2754. The 6:12 rake gives 7'-6 3/4"
+        # over the outer jambs and a 64" unit on this sill wants 8'-2". Width-identical, so
+        # everything above about centres, jambs and the pier is untouched.
+        assert opening.height_m == pytest.approx(inch(54).meters, abs=1e-6)
+        assert opening.sill_m + opening.height_m == pytest.approx(ft(7, 2).meters, abs=1e-6)
 
     # The clear pier between the two ROs, centred on W-A-C1 / the RB-HOUSE south bearing
     # point: W-A-C1's 5-1/2" stud body plus a jack and king each side is 11-1/2", so 14"
@@ -883,12 +916,15 @@ def test_the_west_facade_stacks_five_two_storey_window_columns(catlin_model):
     assert vanity.host_wall == "W-S-W2" and vanity.type_ref == "WT-1424-T"
     assert bath.host_wall == "W-M-W2" and bath.type_ref == "WT-1424-T"
 
-    attic_south_y, attic_south = _opening_plan_y(catlin_model, "WIN-A-W-S")
-    attic_north_y, attic_north = _opening_plan_y(catlin_model, "WIN-A-W-N")
-    assert attic_south_y == pytest.approx(ft(4, 8).meters, abs=1e-6)
-    assert attic_north_y == pytest.approx(ft(31, 4).meters, abs=1e-6)
-    assert attic_south_y + attic_north_y == pytest.approx(ft(36).meters, abs=1e-6)
-    assert attic_south.width_m == pytest.approx(attic_north.width_m, abs=1e-6)
+    # ** THE ATTIC PAIR IS GONE (2026-08-29), AND THE COLUMN IS TWO STOREYS NOW. **
+    # WIN-A-W-S and WIN-A-W-N hung on the 5'-0" knee walls at y 4'-8"/31'-4" — the one place
+    # in the house the 14" family was chosen for HEIGHT rather than width, because a 5'
+    # wall at a 2'-6" sill has exactly 24" under its plate. Those walls are 1 1/2" rafter
+    # plates now (CATLIN_RAFTER_PLATE) and a plate has nothing to glaze. Asserted as an
+    # ABSENCE rather than deleted silently: if a future pass puts glazing back on this
+    # facade's top storey it has to come back through this test.
+    assert not [o for o in catlin_model.openings
+                if o.tag in ("WIN-A-W-S", "WIN-A-W-N", "WIN-A-E-S", "WIN-A-E-N")]
 
     # The recovered column, asserted as a pair rather than as two separate stations: the
     # 3 1/8" that used to sit between them was the per-segment phase drift, and there is no
@@ -959,7 +995,10 @@ def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(ca
     # Same station and same width on all three storeys, which is the whole return on
     # breaking the row. Sills deliberately do NOT column: WIN-M-KIT-E's 3'-6" is a counter
     # height and does not travel up, so asserting it would pin the wrong thing.
-    column = ("WIN-M-KIT-E", "WIN-S-BED3", "WIN-A-E-N")
+    # Two storeys, not three, since 2026-08-29: WIN-A-E-N was the attic's half of this
+    # column and it hung on the east knee wall, which is a rafter plate now. The column it
+    # was traded for still exists on the two storeys that have walls to carry it.
+    column = ("WIN-M-KIT-E", "WIN-S-BED3")
     stations = {}
     for tag in column:
         y, opening = _opening_plan_y(catlin_model, tag)
@@ -2036,16 +2075,26 @@ def test_each_facade_block_grid_is_one_grid_on_every_storey(catlin_model, wall_t
     openings' business, and the openings differ storey to storey. The module underneath them
     does not — 26 stations at 16" o.c. on every facade of every storey, unbroken.
     """
+    # ** THE EAST AND WEST FACADES STOP AT THE SECOND STOREY (2026-08-29). ** Their attic
+    # segments were 5'-0" knee walls in CATLIN_EXT_2X6, girts and all; they are 1 1/2" of
+    # 2x6 laid flat now (CATLIN_RAFTER_PLATE), which carries no cladding, no girt and so no
+    # block grid. That is ~360 sf of the priciest wall in the house deleted, and the grid
+    # claim simply has nothing to say about a course of lumber. The NORTH and SOUTH facades
+    # are gables and still run all three storeys, which is what keeps this test honest — it
+    # would otherwise be asserting nothing after the change.
+    expected = ({"main", "second"} if wall_tag in ("W-M-E1", "W-M-W1")
+                else {"main", "second", "attic"})
     by_storey = _facade_stations(catlin_model, wall_tag, "truss_block", "block-1-")
-    assert set(by_storey) == {"main", "second", "attic"}, by_storey.keys()
+    assert set(by_storey) == expected, by_storey.keys()
     on_module = {storey: [s for s in stations if s not in _off_module(stations)]
                  for storey, stations in by_storey.items()}
-    main, second, attic = (on_module["main"], on_module["second"], on_module["attic"])
-    assert main == second == attic, (
+    grids = [on_module[storey] for storey in sorted(expected)]
+    assert all(grid == grids[0] for grid in grids), (
         f"{wall_tag}: the block grid differs storey to storey\n"
-        f"  main   {main}\n  second {second}\n  attic  {attic}")
-    assert len(main) >= 20, f"{wall_tag}: only {len(main)} module blocks on a facade"
-    gaps = {round(b - a, 3) for a, b in zip(main, main[1:], strict=False)}
+        + "\n".join(f"  {storey:7s}{on_module[storey]}" for storey in sorted(expected)))
+    assert len(grids[0]) >= 20, f"{wall_tag}: only {len(grids[0])} module blocks on a facade"
+    grid = grids[0]
+    gaps = {round(b - a, 3) for a, b in zip(grid, grid[1:], strict=False)}
     assert gaps <= {16.0}, f"{wall_tag}: the module breaks at {sorted(gaps)}"
 
 

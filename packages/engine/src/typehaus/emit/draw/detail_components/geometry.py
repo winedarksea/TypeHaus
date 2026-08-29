@@ -137,8 +137,24 @@ def condition_opening(model, cond):
 
 
 def condition_walls(model, cond) -> list:
-    """Every resolved wall a condition names — directly, or via its opening's host."""
-    walls = [w for w in (model.wall(tag) for tag in cond.element_tags) if w is not None]
+    """Every resolved wall a condition names — directly, or via its opening's host.
+
+    A condition is keyed on the ASSEMBLIES whose faces meet, and the detail it derives is a
+    section through those assemblies. Normally the wall it names is one of them. It is not
+    when the element terminating at the junction carries no weather skin: a story-and-a-half
+    roof lands on a 2x plate laid flat on the deck, and ``envelope._roof_wall_conditions``
+    correctly keys that condition on the wall the plate STANDS ON — the stack that actually
+    meets the roof — while still naming the plate, because the plate is the element that
+    terminates there.
+
+    Cutting the plate produces a detail with no cladding, no CI and no sheathing in it, so
+    every component the eave recipe derives from the weather face (apron flashing, insect
+    screen, the spray-foam wedge, the continuity callouts) silently produced nothing. So:
+    a named wall whose assembly is NOT one the condition is keyed on is replaced by the
+    wall below it that is. One authored ``stacks_on`` link, no search.
+    """
+    walls = [_assembly_match(model, w, cond)
+             for w in (model.wall(tag) for tag in cond.element_tags) if w is not None]
     if not walls:
         opening = condition_opening(model, cond)
         if opening is not None:
@@ -146,6 +162,16 @@ def condition_walls(model, cond) -> list:
             if host is not None:
                 walls = [host]
     return walls
+
+
+def _assembly_match(model, wall, cond):
+    """``wall`` if its assembly is one the condition names, else the wall under it that is."""
+    assemblies = set(getattr(cond, "assemblies", ()) or ())
+    if not assemblies or wall.assembly in assemblies:
+        return wall
+    authored = model.plan.by_tag(wall.tag)
+    below = model.wall(getattr(authored, "stacks_on", None) or "")
+    return below if below is not None and below.assembly in assemblies else wall
 
 
 def wall_cut_bounds_m(wall, direction: str, station: float):

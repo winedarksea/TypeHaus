@@ -161,13 +161,13 @@ def test_a_beam_that_bears_everywhere_is_tied_at_a_pitch_not_at_its_ends(rows) -
     ``bearing_connections`` ties member ENDS, and the ridge does not meaningfully have two —
     it sits on W-A-C1/C1B/C2 for all 36'. ``uplift_path.py`` walks ``Beam.bearing_refs`` but
     skips a ref that resolves to a wall, and ``uplift.py`` walked the roof's own bearing_refs,
-    which name the three knee walls. So the member carrying the whole roof down the centre of
+    which name the eave line. So the member carrying the whole roof down the centre of
     the house was in neither. Ten is the fencepost count, not 36/4.
     """
     ridge = [row for row in rows
              if row["part_number"] == "H2.5A" and row["scope"].endswith("continuous bearing")]
     assert len(ridge) == 1
-    assert ridge[0]["size"] == "2-1.75x14 LVL"
+    assert ridge[0]["size"] == "2-1.75x16 LVL"  # 14 -> 16 with the 6:12 pitch
     assert ridge[0]["count"] == int(36.0 / 4.0) + 1 == 10
 
 

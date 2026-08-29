@@ -23,7 +23,8 @@ from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section
 
 # 4:12. Roof-stack offsets are perpendicular to the slope; elevations are vertical.
-SLOPE_FACTOR = math.hypot(1.0, 4.0 / 12.0)
+# 6:12 since 2026-08-29 (params/roof_trim.py hand-copies these; they move together).
+SLOPE_FACTOR = math.hypot(1.0, 6.0 / 12.0)
 #: Top-deck surface — the plane the drip flashing lies on and the underlayment laps over.
 DRIP_CEILING_IN = 7.165 * SLOPE_FACTOR
 #: Roofing underside == the head of the wall cladding on a continuous-skin edge.
@@ -118,7 +119,12 @@ def test_corner_trim_hangs_outboard_of_the_wall_it_laps(eave) -> None:
     trim = eave.member("eave-hi-corner-trim")
     assert trim[0] == pytest.approx(0.0, abs=1e-6), "inner face sits on the footprint edge"
     assert trim[1] > 0.0, "the trim must stand outboard of the edge, not inside the cladding"
-    cladding = eave.member("W-A-E1-closure-0-cladding")
+    # ** W-S-E1, NOT W-A-E1, SINCE 2026-08-29. ** The attic's east eave wall is a 1 1/2"
+    # rafter plate now and carries no skin at all, so the closure band the roof edge laps is
+    # the one belonging to the wall the plate STANDS ON — the second storey's own
+    # CATLIN_EXT_2X6 run (`roof_edge.skin_stand_ins`, keyed off the authored `stacks_on`).
+    # The band is in the same place it always was; only the member's parent changed.
+    cladding = eave.member("W-S-E1-closure-0-cladding")
     assert cladding[1] <= trim[0] + 1e-6, "the wall panels run up inboard of the trim"
     assert trim[2] < cladding[3] < trim[3], "the trim's leg laps down over the panel heads"
 

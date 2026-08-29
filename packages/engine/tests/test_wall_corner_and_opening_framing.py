@@ -397,6 +397,15 @@ def test_every_framed_catlin_corner_carries_a_three_stud_pack(catlin_resolved):
     assert corners, "catlin must still have framed L corners to check"
     for junction in corners:
         pack = _corner_pack(catlin_resolved, junction, inch(10).meters)
+        # A RAFTER PLATE frames no studs (FramingSpec.wall_frame="plate"), so an L where a
+        # gable meets one of the attic's four plates has only the gable's own pack to find —
+        # and a corner post the plate cannot contribute to is not a corner this rule can
+        # grade. Skipped rather than weakened: the framed corners still carry three.
+        incident_walls = [wall for incident in junction.incidents
+                          if (wall := catlin_resolved.wall(incident.wall_tag)) is not None]
+        if any(not any(m.category == "stud" for m in wall.members)
+               for wall in incident_walls):
+            continue
         assert len(pack) >= 3, (junction.node_tag, [m.child_key for _t, m in pack])
         # The studs of a corner pack touch; they must never share plan area.
         polygons = [Polygon(member_footprint(member)[0]) for _tag, member in pack]
@@ -438,8 +447,9 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     # unit can never stack in a column with a 27" one — and BATH2 had to join a column.
     # What is left on 14": the garage pair (WIN-G-N1/S1), the two
     # surviving gable flankers (WIN-A-S2/S3, now WT-1448 — 48" tall but still a 14" RO, so
-    # still headerless and still counted here), and the four 5' knee-wall windows
-    # (WIN-A-W-S/W-N, WIN-A-E-S/E-N). Every one of them still passes the per-window checks
+    # still headerless and still counted here — WT-1436 since 2026-08-29), and the four
+    # 5' knee-wall windows (WIN-A-W-S/W-N, WIN-A-E-S/E-N), which are gone with the knee
+    # walls. Every one of them still passes the per-window checks
     # below — which is the whole reason the facade work could use this size so freely, and
     # why growing the flankers 24" taller cost the framing nothing.
     # 13 since 2026-08-24: WIN-M-KIT-E, the kitchen's second small window, on the east
@@ -460,7 +470,20 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     # A three-storey column is available to this family only on a bay centre, which is why
     # BED3 had to become a 14" unit to join one.
     # 19 on 2026-08-28: WIN-B-SAUNA, per the note above.
-    assert len(framed) == 19, [o.tag for o in framed]
+    #
+    # ** 13 ON 2026-08-29, AND SIX OF THE SEVENTEEN WERE THE ATTIC'S. ** The attic went 6:12
+    # on a rafter plate: the four eave units (WIN-A-W-S/W-N, WIN-A-E-S/E-N) lost their hosts
+    # outright — a 1 1/2" plate has nothing to glaze — and the south gable's corner pair
+    # (WIN-A-S1/S4) lost its wall to the rake, which leaves 21 1/2" at x 3'-4". The two
+    # surviving flankers retyped WT-1448 -> WT-1436 and moved 10'-0"/26'-0" -> 12'-8"/23'-4",
+    # which is a shorter unit on a new bay centre and changes nothing about this rule: a 14"
+    # RO lands wholly inside a bay at either station, headerless.
+    #
+    # The 14" family is doing LESS work in this house than it was, and the reason is the one
+    # this whole list documents — the family exists for places a bigger unit will not fit,
+    # and the attic stopped being such a place by losing the walls rather than by gaining
+    # room.
+    assert len(framed) == 13, [o.tag for o in framed]
     for opening in framed:
         wall = walls[opening.host_wall]
         start, end = _framing_axis(wall)

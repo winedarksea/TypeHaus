@@ -136,12 +136,19 @@ EQUIPMENT_ERV_MAIN = [
 ]
 
 # LEVEL 3 — sitting ON the FS-ATTIC deck beside the chase head at (1', 34'-6"), fully
-# accessible in RM-A-POCKET. Extract only: the level's fresh-air duty is the mixing-box feed,
+# accessible in RM-A-POCKET.
+#
+# ** THE MANIFOLD MOVED x 2'-6" -> 5'-0" ON 2026-08-29, AND M1305.1.3 IS WHY. ** At 6:12 off
+# a rafter plate the roof underside is `1 1/2" + x/2`, so its old station had 16 1/2" of
+# clearance — the 8"-deep box fits, but the code wants a PASSAGEWAY not less than 30" high to
+# reach it and a level working space in front. 5'-0" gives 31 1/2" at the box and 46 1/2" at
+# the far side of a 30" working space, so a person can crawl to it and kneel at it. The four
+# radials below each gained 2'-6" of run to the x=1'-0" chase head and nothing else changed. Extract only: the level's fresh-air duty is the mixing-box feed,
 # which stays a full-size 6" branch off the supply riser rather than a radial, because it
 # carries ~100 of the machine's 210 cfm on its own.
 EQUIPMENT_ERV_ATTIC = [
     Equipment(uid="3QT1F3F01A", tag="EQ-A-ERV-MAN-EXH", kind=EquipmentKind.DUCT_MANIFOLD,
-              position=pt(ft(2, 6), ft(34, 6)), footprint=(inch(24), inch(8)),
+              position=pt(ft(5), ft(34, 6)), footprint=(inch(24), inch(8)),
               # RM-A-POCKET since 2026-08-29: the west loft became a guest studio and this
               # end of it was walled off as a storage pocket. The manifold did not move —
               # the room around it did, and D-A-POCKET is a door rather than a scuttle
@@ -544,7 +551,7 @@ _ATTIC_BAY_Z = inch(-10.375)
 
 DUCTS_ERV_ATTIC = [
     DuctRun(uid="4YT114ADP3", tag="DU-A-ERV-R-BATH1", system=DuctSystem.EXHAUST,
-            path=(pt(ft(2, 6), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(32, 8)),
+            path=(pt(ft(5), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(32, 8)),
                   pt(ft(1), ft(32, 8)), pt(ft(5), ft(32, 8))),
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
                         _ATTIC_BAY_Z, _ATTIC_BAY_Z),
@@ -561,7 +568,7 @@ DUCTS_ERV_ATTIC = [
     # costs nothing in depth. Developed length goes from ~4' to about 15' — still the shortest
     # radial on this manifold, so it takes nobody's pressure headroom.
     DuctRun(uid="DYNQDC9ZMJ", tag="DU-A-ERV-R-ATTIC", system=DuctSystem.RETURN,
-            path=(pt(ft(2, 6), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(20, 8)),
+            path=(pt(ft(5), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(20, 8)),
                   pt(ft(1), ft(20, 8))),
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z, inch(-2)),
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=9),
@@ -585,7 +592,7 @@ DUCTS_ERV_ATTIC = [
     # well inside RM-A-STUBATH (y 17'-4 3/4" .. 22'-3 3/8"), and it is a different bay from the
     # one PR-A-STUBATH-DRAIN takes at 20'-8", so the two do not share a cavity.
     DuctRun(uid="WCH6Z4DZX0", tag="DU-A-ERV-R-STUBATH", system=DuctSystem.EXHAUST,
-            path=(pt(ft(2, 6), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(19, 4)),
+            path=(pt(ft(5), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(19, 4)),
                   pt(ft(1), ft(19, 4)), pt(ft(9, 7.5), ft(19, 4)),
                   pt(ft(9, 7.5), ft(19, 4))),
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
@@ -612,7 +619,7 @@ DUCTS_ERV_ATTIC = [
     # re-filing BED3 onto the main-storey manifold — is still blocked by FO-S-STAIR, which is what
     # pushed it up here in the first place, and that manifold is now full at 10 of 10.
     DuctRun(uid="73FJZH564X", tag="DU-A-ERV-R-BED3", system=DuctSystem.RETURN,
-            path=(pt(ft(2, 6), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(22)),
+            path=(pt(ft(5), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(22)),
                   pt(ft(1), ft(22)), pt(ft(29), ft(22)),
                   pt(ft(29), ft(22)), pt(ft(29), ft(31, 4))),
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,

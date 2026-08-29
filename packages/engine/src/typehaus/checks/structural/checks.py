@@ -373,6 +373,14 @@ def corner_style_matches_preference(ctx: CheckContext) -> list[Finding]:
                     if ly.function is LayerFunction.STRUCTURE), None)
         if spec is None or spec.corner_style != rules.corner:
             continue
+        # A course of lumber laid flat frames no studs, so "how many SUPPLEMENTAL corner
+        # studs did this end build" has no answer for it — the corner there is a plate lap,
+        # which `_append_plates` already resolves by the same rule every sole plate uses.
+        # Such a wall still declares a corner_style (the junction solver wants one rule at
+        # a node where a plate meets a stud wall, not two that disagree), so it reaches this
+        # loop; it is scoped out here rather than being told to build studs it has none of.
+        if spec.wall_frame != "studs":
+            continue
         for endpoint in sorted(endpoints):
             built = sum(1 for m in wall.members
                        if m.category == "corner"

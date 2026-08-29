@@ -27,6 +27,7 @@ from typehaus.resolve.roof_edge_geometry import (
     continuous_skin_cladding,
     mating_faces,
     roof_slope,
+    skin_layers,
 )
 from typehaus.resolve.roof_geometry import roof_height_at
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
@@ -40,17 +41,38 @@ def eave(catlin_model):
     derived = next(d for d in derive_detail_slices(catlin_model) if d.key == _KEY)
     scene, _findings = build_detail(catlin_model, derived)
     wall = next(w for w in catlin_model.walls if w.tag in derived.condition.element_tags)
+    # ** THE CONDITION NAMES THE PLATE; THE SKIN BELONGS TO THE WALL UNDER IT. ** Since
+    # 2026-08-29 the attic's eave is a 1 1/2" CATLIN_RAFTER_PLATE laid flat on the deck, and
+    # `envelope._roof_wall_conditions` keys the condition on the assembly whose faces
+    # actually meet the roof — the CATLIN_EXT_2X6 run the plate `stacks_on` — while still
+    # naming the plate in `element_tags`, because the plate is the element that terminates
+    # at the roof. This fixture wants the SKIN, so it follows the same authored link.
+    bearing = wall
+    if not skin_layers(wall):
+        below = catlin_model.wall(catlin_model.plan.by_tag(wall.tag).stacks_on or "")
+        assert below is not None and skin_layers(below), wall.tag
+        wall = below
     roof = next(r for r in catlin_model.roofs if r.tag in derived.condition.element_tags)
-    return _Eave(catlin_model, derived, scene, wall, roof)
+    return _Eave(catlin_model, derived, scene, wall, roof, bearing)
 
 
 class _Eave:
-    def __init__(self, model, derived, scene, wall, roof) -> None:
+    def __init__(self, model, derived, scene, wall, roof, bearing=None) -> None:
         self.model, self.derived, self.scene = model, derived, scene
         self.wall, self.roof = wall, roof
+        # The element the rafters actually seat on. Identical to ``wall`` on an ordinary
+        # eave; the rafter PLATE where a story-and-a-half puts a skinless bearing course on
+        # the deck and the skin belongs to the wall below (see the fixture).
+        self.bearing = bearing if bearing is not None else wall
 
     @property
     def plate_top_m(self) -> float:
+        wall = self.bearing
+        return wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m
+
+    @property
+    def skin_top_m(self) -> float:
+        """Where the SKIN stops — the top of the wall whose closure band this eave carries."""
         return self.wall.top_z1_m if self.wall.top_z1_m is not None else self.wall.z1_m
 
     def polylines(self, layer: str, prefix: str = "") -> list[Polyline]:
@@ -124,7 +146,7 @@ def test_the_wall_ci_stops_at_its_own_mating_face(eave):
         perpendicular = mating.for_layer(band.category, continuous_cladding=continuous)
         want = roof_height_at(eave.roof, band.p0) + perpendicular * slope
         assert band.z1_m == pytest.approx(want, abs=1e-6), band.child_key
-        assert band.z0_m == pytest.approx(eave.plate_top_m, abs=1e-6), \
+        assert band.z0_m == pytest.approx(eave.skin_top_m, abs=1e-6), \
             "the closure starts somewhere other than the wall top it closes"
         node = drawn.get(band.child_key)
         if node is None:

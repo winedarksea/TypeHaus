@@ -324,8 +324,30 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   fabricator quote, and the span-table row it borrows from the I-joist
   (`checks/structural/checks.py::_IJOIST_SPAN_FT`) is explicitly advisory at this 18'-0"
   span — the fabricator's own table governs.
-- Attic is a habitable hot-roofed cathedral space: 5' knee walls E/W, gables N/S,
-  ridge N-S, 4:12, **zero overhang**. Its deck `FS-ATTIC` is also **the second storey's
+- Attic is a habitable hot-roofed cathedral space: **rafter plates E/W** (not knee walls —
+  2026-08-29), gables N/S, ridge N-S, **6:12**, **zero overhang**.
+
+  > **THE ONE LINE EVERY ATTIC STATION ANSWERS TO:**
+  > **the roof underside is `1 1/2" + x/2` above the attic finished floor**, mirrored past
+  > x = 18'-0". 9'-1 1/2" at the ridge, 7'-0" at x = 13'-9", 5'-0" at x = 9'-9", 3'-0" at
+  > x = 5'-9". A window head, a can light, a receptacle, a door, a duct, a piece of
+  > furniture, a vent riser — each one is legal or it is not against that line, and every
+  > attic comment in `plan/` that quotes a height quotes it from there.
+  >
+  > The corollary for an opening: a head at `h` needs `h + 2"` of rake (the raked plate plus
+  > a flat 2x4 nonbearing header), so **`x_outer_jamb >= 2 x (head + 2")`**.
+
+  It was 5'-0" knee walls at 4:12 until 2026-08-29, and those came from a MISREADING of
+  R305 — that every square foot of a sloped-ceiling room needs 5'-0" of headroom. Minn. R.
+  1309.0305 R305.1 Exception 1 and IRC R304.1/R304.3 scope both clauses to the *required*
+  floor area (70 sf), not the whole room, and R304.3 says floor under 5'-0" simply does not
+  count rather than disqualifying the room. `code.R305_ceiling_height` graded the whole room
+  until that day and was fixed in the same pass. With the knee walls gone the pitch was free
+  to be whatever the headroom wanted, and 6:12 is the shallowest standard pitch that carries
+  the rooms. **The building got 1'-9 1/2" SHORTER** (ridge 32'-0 5/8" -> 30'-3"), the
+  envelope lost ~572 sf of `CATLIN_EXT_2X6` for +89 sf of roof, and six windows came out.
+  Measured, not asserted: `haus takeoff --csv` before and after puts it at roughly
+  **-$18,600 to -$34,500**. Its deck `FS-ATTIC` is also **the second storey's
   ceiling**, and it authors that board (`ceiling_below`, 5/8" gypsum, restated inline
   because `plan/storeys/attic.py` is `# haus: editable` and cannot import `params/`). It
   was the last deck in the house without one: until 2026-08-25 every second-storey room
@@ -353,8 +375,13 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     is the ~$1,200 alternative to put to the owner. BEDROOM is load-bearing four times: R310
     (PASSing on `WIN-A-S-JUL-W` with nothing added), the whole-house ventilation count,
     R314/R315, and `electrical.receptacle_spacing` evaluating the room at all.
-    **R303.1 is answered by Exception 1, not by glazing** — 21.3 sf against 28.5 sf, and no
-    glazing is added because the south gable's mirror about x=18' is not negotiable. Exception 1
+    **R303.1 is answered by Exception 1, not by glazing** — **13.6 sf against 28.5 sf since
+    2026-08-29** (it was 21.3: the four eave windows went with the knee walls), and no
+    glazing is added because the south gable's mirror about x=18' is not negotiable and the
+    only levers left are a shed dormer or a roof penetration, both excluded. **The studio's
+    daylight dropped about a third and the owner should see that stated rather than discover
+    it.** Legal, and unchanged in KIND from before — but the lumens below are doing more
+    work than they were. Exception 1
     needs a fresh-air SUPPLY register in the room (`REG-A-HP-WEST`, re-pointed — **no
     mini-split**) and **lumens ≥ 12.5 × the room's sq ft**: 4,457 lm at 356.6 sf. Six cans plus
     the sconce give 6,000 lm = **8.08 fc**, chosen over five cans' 6.9 fc so the margin survives
@@ -399,13 +426,13 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   - **The x=1'-0" chase is inside a finished bedroom, so the 6" left the room instead.**
     `DU-S-ERV-HP-FEED` (100 cfm, the mixing-box feed) used to run that chase for 10'-11",
     a 6" beside a 3", and it alone set the box's section — wide enough that the first answer
-    was a 21'-8" knee-wall bench. **It turns east one bay sooner now, in `y=22'-0"`** — the bay
+    was a 21'-8" bench along the eave (then a knee wall, a rafter plate since 2026-08-29). **It turns east one bay sooner now, in `y=22'-0"`** — the bay
     `DU-A-ERV-R-BED3` already uses, the last one south of `FO-A-HALL` — and reaches the same
     `SF-S-DUCT` drop down `RM-A-EAST-UNFIN`'s deck. **The developed length is unchanged**
     (−11'-7" west, +10'-8" east), so nothing was traded for it. `DU-A-ERV-R-STUBATH`'s east leg
     went into the `y=19'-4"` bay in the same pass; it had been lying across 8'-7" of the
     studio's floor.
-  - **`DU-A-ERV-R-PLANT` left too, and the knee wall is bare.** It is `DU-M-ERV-R-PLANT` now,
+  - **`DU-A-ERV-R-PLANT` left too, and the eave line is bare.** It is `DU-M-ERV-R-PLANT` now,
     on the LEVEL-2 manifold: south through `FS-S-WEST`'s **open-web trusses** at x=2'-10",
     east along the y=4'-8" bay, then **up inside `W-S-C1`** to a high sidewall grille at 8'-6".
     Both floors span x, so a north-south run crosses every joist in either — but FS-S-WEST is
@@ -493,15 +520,19 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   `_CLADDING_HEAD_IN`) and into `test_catlin_eave_water.py`; move a layer and those move.
 - **Structural ridge, not a rafter-tie roof.** `RB-HOUSE` bears continuously on the
   `W-A-C1/C1B/C2` bearing wall, which stacks unbroken to the footings. That is what makes the
-  rafters simple spans and keeps thrust off the 5' knee walls. Opening that center line up
-  without a beam under it dumps ~1.5 klf of thrust into knee walls that can take ~0.1.
-  **Its section is `2-1.75x14 LVL`, and the depth is a HANGER dimension** (2026-08-28, was
-  `3-1.75x11.875`). Because it bears everywhere it spans nothing, so ply count buys nothing;
+  rafters simple spans and keeps thrust off the eave line. Opening that center line up
+  without a beam under it dumps ~1.5 klf of thrust into a 1 1/2" rafter plate that can take
+  none of it. **Its section is `2-1.75x16 LVL`, and the depth is a HANGER dimension**
+  (2026-08-29, was `2-1.75x14` at 4:12 and `3-1.75x11.875` before that). At 6:12 an 11 7/8"
+  I-joist cuts 13.28" plumb and the face sits 1.75" off the peak plus 0.875" down the plane,
+  so the beam has to reach **14.15"** below the ridge line — **14" misses by 0.15"** and 16"
+  clears by 1.85". The beam hangs 16" into the room: ~9'-1 1/2" clear between beams,
+  ~7'-9 1/2" under it. Because it bears everywhere it spans nothing, so ply count buys nothing;
   what sets the depth is the rafter's plumb cut, which the resolver hangs on the beam's FACE
-  with the beam's top pinned to the roof plane. An 11 7/8" I-joist at 4:12 cuts 12.52" plumb
-  and its face sits another 0.58" down the plane, so the beam has to reach 13.10" — and the
-  old one reached 11.875", leaving the hanger seat and the bottom flange 1.52" past the
-  soffit. LVL is made in 9.5/11.875/**14**/16/18"; there is no 13 1/2". Three things follow,
+  with the beam's top pinned to the roof plane. The same arithmetic at 4:12 gave 13.10" and
+  put the answer at 14"; before that the beam reached 11.875", leaving the hanger seat and
+  the bottom flange 1.52" past the soffit. LVL is made in 9.5/11.875/14/**16**/18"; there is
+  no 14 1/4". Three things follow,
   and `notes/ridge_beam_detail.md` is where they live:
   - **3 1/2" wide is only available because the demand is small.** 28 rafter PAIRS land
     opposite each other and LSSR header nails are 2 1/2", so mirrored patterns overlap; the
@@ -512,12 +543,15 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     the ridge (56, derived — the house modelled only the eave's 56 until 2026-08-28) and an
     LSTA24 over the top per pair (28), which Weyerhaeuser's H5S makes mandatory above 3:12.
     Plus 10 H2.5A tying the beam to its plate at 4' o.c. — that joint had NO connector and no
-    uplift-path link at all, because `uplift.py` walks the roof's own `bearing_refs` (the knee
-    walls) and `uplift_path.py` skips a `Beam.bearing_ref` that resolves to a wall.
+    uplift-path link at all, because `uplift.py` walks the roof's own `bearing_refs` (the
+    eave line — the knee walls then, the rafter plates now) and `uplift_path.py` skips a
+    `Beam.bearing_ref` that resolves to a wall.
   - **It is ordered as three 12s, not one 36' stick.** A beam supported everywhere splices
     over any bearing point, so `FramedMember.continuously_supported` (derived from the refs
     actually reaching) sends it to the stock ladder — same lineal feet, no offcut at 36', and
-    a 92 lb ply instead of a 153 lb one. The cap is handling, not stock: `_MAX_SPLICE_PIECE_FT`
+    a 92 lb ply instead of a 277 lb one (36' at the 7.7 lb/ft/ply this section runs; the
+    153 lb in `notes/ridge_beam_detail.md` is the 20-FOOTER, not the one-piece alternative).
+    The cap is handling, not stock: `_MAX_SPLICE_PIECE_FT`
     in `takeoff/framing.py`. Stagger the plies (6+12+12+6 against 12+12+12).
     `structural.ridge_beam_depth` grades the depth; nothing did before.
 - Window rules — **the RO ladder**. Three caps, one rule, and the rule is arithmetic on the
@@ -557,9 +591,12 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   is what says so. Resize windows to fit the grid, not vice versa. One type per width
   family — WT-1424, WT-2736, WT-3036 (north gables/hall), WT-3048 (the south-glazing size,
   head at 6'-8") — each family sharing the one height that fits its most constrained wall.
-  Five WIDTHS carry the whole house, and the 27" family now carries FOUR of the heights
-  (36"/48"/54"/64", the last being WT-2764, the attic juliets since 2026-08-27; WT-2464 is
-  catalog-only from that date, and was an 18" WT-1864 family until 2026-08-24). The bearing
+  Five WIDTHS carry the whole house; the 27" family carries FOUR heights (36"/48"/54"/64")
+  and the 14" family THREE (24"/36"/48"). **WT-2764 and WT-1448 are both CATALOG-ONLY since
+  2026-08-29**, when the attic's 6:12 rake shortened the juliets to WT-2754 and the gable
+  flankers to WT-1436; WT-2464 has been catalog-only since 2026-08-27, and was an 18"
+  WT-1864 family until 2026-08-24. A retired size stays priced, which is the convention
+  `glazed-green-brick` and `CATLIN_EXT_2X6_SWINBURNE` are also held under. The bearing
   cap is the width every bearing wall has to meet, so when an opening needs area, a head
   line or composition, HEIGHT is the only dimension left to spend. That is a consequence of
   the ladder, not a drift away from "one type per width family" — but the exception list
@@ -574,15 +611,26 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   retype. `test_catlin_contract_m3.py::test_catlin_window_openings_follow_their_walls_framing_module`
   asserts the empty list; keep it empty, and see **ONE GRID PER FACADE** under Facade rules
   before concluding a window cannot reach its station.
-  **Five exceptions**, each an extra height on an existing width family because the rule's
+  **Six exceptions**, each an extra height on an existing width family because the rule's
   own remedy — give it its own width family — costs more than the extra height does. The
   first two are 2026-08-01 and are about a HEAD LINE; the next two are 2026-08-25 and are
   the 27" bearing cap being paid for in height (see the RO ladder above); the fifth is
-  2026-08-27 and is composition, on a NONBEARING wall:
-  - **WT-1448** (the south gable's flankers): the 4:12 rake forbids the remedy outright.
-    Any width over 14" breaks a stud and takes a header, and the header is what hits the
-    rake (the juliet family at the nearest usable stud line misses by 1.8"). 14" fits in a bay
-    and takes no pack, so only the glass has to clear.
+  2026-08-27 and is composition, on a NONBEARING wall; the sixth is 2026-08-29 and is the
+  6:12 rake:
+  - **WT-1448** (the south gable's flankers until 2026-08-29, now catalog-only): the rake
+    forbids the remedy outright. Any width over 14" breaks a stud and takes a header, and
+    the header is what hits the rake (the juliet family at the nearest usable stud line
+    missed by 1.8" at 4:12). 14" fits in a bay and takes no pack, so only the glass has to
+    clear.
+  - **WT-1436** (the south gable's flankers SINCE 2026-08-29): a THIRD height on the 14"
+    family, and the 6:12 rake is the whole reason. `x_outer_jamb >= 2 x (head + 2")` gives
+    WT-1448's 6'-8" head 13'-8" of required clearance, which the gable does not have at any
+    station a mirrored pair could use; WT-1436's 5'-8" head needs 11'-8" and fits at
+    12'-8"/23'-4" with 4" to spare. **It is also what keeps `RM-A-STUDY` on daylight**: at
+    165 sf R303.1 asks 13.2 sf and one WT-1436 gives 13.625. Dropping to WT-1424 instead
+    would save the type and push a habitable office onto R303.1 Exception 1's electric-light
+    substitute — not a trade a high-performance house should make. Same 14" width family, so
+    same buck, same header (none), same flashing: the SKU premium is near zero.
   - **WT-3048** (the south glazing): the 30" family's committed height (WT-3036's 36")
     would drop the south head off the 6'-8" door-head line the whole face is built on.
   - **WT-2748** (`WIN-M-EAST-MID`, 2026-08-25): the east living row's feature window had to
@@ -593,7 +641,10 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     single-window BEDROOMS, so R303.1 binds on area and 27x48 is 9.00 sf against BED2's
     9.945 sf requirement — it would FAIL. 54" is the height that makes 27" legal
     (10.125 sf), which is why this one is a code necessity and not a composition choice.
-  - **WT-2764** (`WIN-A-S-JUL-W`/`-E`, 2026-08-27): the only one of the five that is a
+  - **WT-2764** (`WIN-A-S-JUL-W`/`-E`, 2026-08-27 to 2026-08-29; catalog-only since — at
+    6:12 the rake gives 7'-6 3/4" over the outer jambs and a 64" unit on the gable's 2'-8"
+    sill wants 8'-2", so the pair retyped to the width-identical WT-2754): the only one of
+    the six that is a
     composition choice outright, and the only one on NONBEARING walls (W-A-S2/W-A-S3, cap
     30"). The juliet pair had to grow to close the gap between the two units without moving
     either centre off its stud line; 27" is what closes it to a 21" pier with the bearing
@@ -747,14 +798,15 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     16") so it breaks no stud and takes no header — see the 8" rule above for why a 14" unit
     can never column with the 27"/30" family beside it. WIN-S-STUDY3 at 4'-0" still columns
     with WIN-M-LIV-E1.
-  - **Knee band.** Both 5' knee walls carry a WT-1424 pair, and **both are now exactly
-    mirrored at 3'-4" / 32'-8"** (2026-08-25). The east end had been 4" off at 32'-4" since
-    it was built, and the entry here used to explain why it had to stay off: W-A-E2's grid
-    started at N-A-E1 (y=9'-0"), and the only fixes moved that node, dragging N-A-C2 and
-    therefore W-A-SN, whose south face closes FO-A-STAIR's north edge — 9'-4" put 3'-0" of
-    unguarded stair well on `code.R312_1_guard`. The line-based module removed the premise:
-    W-A-E2's grid is the house grid now, so the window moved 4" on its own and the stair
-    was never touched. A worked example of what "one grid per facade" buys.
+  - **Knee band — GONE (2026-08-29).** The east and west knee walls each carried a WT-1424
+    pair, mirrored at 3'-4" / 32'-8"; the walls are 1 1/2" rafter plates now and a plate has
+    nothing to glaze, so `WIN-A-W-S`, `WIN-A-W-N`, `WIN-A-E-S` and `WIN-A-E-N` are all
+    deleted. That is where most of the ~572 sf of deleted `CATLIN_EXT_2X6` goes, and with it
+    four units, four bucks, four flashings and eight jamb returns. The east/west facades now
+    stop at the second storey — `test_each_facade_block_grid_is_one_grid_on_every_storey`
+    expects two storeys there and three on the gables. **The stair well's east edge lost its
+    guard with the wall**, and `code.R312_1_guard` said so immediately: `RL-A-STAIR` gained a
+    3'-0" east leg, which is the honest price of the deletion.
   - **Head lines.** The west face puts every main and second head on one 6'-0" line —
     27" units at a 3'-0" sill, 14" units at 4'-0". The south face shares a 2'-8" sill.
   - **Gables** read symmetric about the ridge before they answer to anything below:
@@ -763,18 +815,29 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     2026-08-25** — WIN-A-N1 moved 7'-4" -> 8'-0", mirroring WIN-A-N2 at 28'-0" about x=18'.
     The pair is now **6'-8" / 29'-4"** (2026-08-26): the three-storey column moved to bring
     WIN-M-KITCH onto the kitchen sink below (see **Columns** above), and WIN-A-N1 moved
-    with it to hold the mirror about x=18'-0".
-    It had never been, and the reason was phase, not composition. **The south gable carries
-    SIX openings as of 2026-08-27**, exactly mirrored about x=18' and reading west→east as
-    S1, S2, JUL-W, JUL-E, S3, S4:
+    with it to hold the mirror about x=18'-0". **The pair moved to 12'-0" / 24'-0" on
+    2026-08-29** and it was the rake that moved it: WT-3036 on the gable's 2'-0" sill puts
+    the head at 5'-0", which needs 2 x (60 + 2) = 124" of clearance to the outer jamb, and
+    6'-8" gives 65". 12'-0" / 24'-0" is the nearest legal mirrored pair — a 30" RO BREAKS
+    studs so it must centre on a STUD LINE (144"/288", each 0 mod 16), unlike the 14" family
+    which must sit on a bay CENTRE — and it needs no shrink. `WIN-A-N1` rehosted W-A-N2 ->
+    W-A-N2B with the move; at x=12'-0" it fronts `FO-A-HALL` and daylights the double-height
+    stair void rather than a room, which is an amenity and not a code problem.
 
-    | station | tag | type | head |
-    |---|---|---|---|
-    | 3'-4" / 32'-8" | `WIN-A-S1` / `WIN-A-S4` | WT-1424 (14x24) | 4'-8" |
-    | 8'-8" / 27'-4" | `WIN-A-S2` / `WIN-A-S3` | WT-1448 (14x48) | 6'-8" |
-    | 16'-0" / 20'-0" | `WIN-A-S-JUL-W` / `-E` | WT-2764 (27x64) | 8'-0" |
+    **The south gable carries FOUR openings as of 2026-08-29** (it was six), exactly mirrored
+    about x=18' and reading west→east as S2, JUL-W, JUL-E, S3. The tags gap at S1/S4 rather
+    than renumbering, because renumbering would break the surviving units' GlobalIds:
 
-    One 2'-8" sill under all six, heads stepping with the rake.
+    | station | tag | type | head | outer jamb | allowed | margin |
+    |---|---|---|---|---|---|---|
+    | 12'-8" / 23'-4" | `WIN-A-S2` / `WIN-A-S3` | **WT-1436** (14x36) | 5'-8" | 145" / 144" | 140" | ✓ 4" |
+    | 16'-0" / 20'-0" | `WIN-A-S-JUL-W` / `-E` | **WT-2754** (27x54) | 7'-2" | 178 1/2" | 176" | ✓ 2 1/2" |
+
+    One 2'-8" sill under all four, heads stepping with the rake. The corner pair
+    (`WIN-A-S1`/`S4` at 3'-4"/32'-8") died outright — 21 1/2" of roof over the floor there.
+    The flankers moved inward AND shortened, WT-1448 -> WT-1436; the juliets are a
+    width-identical retype, WT-2764 -> WT-2754, so the centres, the `from_node` offsets and
+    the 21" clear pier under `RB-HOUSE`'s south bearing point are all untouched.
 
     The juliet centres were 16'-8"/19'-4" until the 2026-08-24 widening pushed each unit 3"
     outward onto a non-module station — the house's one accepted off-module pair — and 5"
@@ -790,16 +853,20 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     six-opening composition. It does NOT cap the 4'-0"/32'-0" column the storeys below
     stack, and it never can: a 14" RO must sit on a BAY CENTRE (8" mod 16") and every south
     column below is on a STUD LINE. **Do not "fix" that 8" by moving these two** — it trades
-    a clean framing module for a header the 4:12 rake will not take.
+    a clean framing module for a header the rake will not take. (Both corner units were
+    deleted on 2026-08-29 — at 6:12 there are 21 1/2" of roof over the floor at x=3'-4" —
+    so the gable reads as a FOUR-opening composition now; see the table above.)
 
     The mirror about x=18' is the rule that actually governs a gable and is the one thing
     that survived every one of these positions. Mirroring the east half once required moving
     N-A-V1 from 22'-4" to 22'-8", because W-A-S4's bay centres were then 4" out of phase
     with a mirror of W-A-S1's; that node no longer sets any grid, so the move is now only a
     wall-segmentation choice.
-  - WT-1424 still does the work wherever a bigger unit will not fit — in the 5' knee
-    walls, where its 2'-0" height is the only one that clears the plate, and in the
-    mudroom. Under the south rake it handed off to WT-1448.
+  - WT-1424 still does the work wherever a bigger unit will not fit — chiefly the mudroom.
+    It used to do it in the 5' knee walls as well, where its 2'-0" height was the only one
+    that cleared the plate; those walls are 1 1/2" rafter plates since 2026-08-29 and carry
+    no glazing at all. Under the south rake it handed off to WT-1448, and since the same
+    date to WT-1436.
   - **Tempered twins (2026-08-01).** `WT-1424-T`, `WT-2736-T`, `WT-3036-T` and `WT-3048-T`
     are their parents in every dimension and differ only in the glass, for the ten units
     R308.4 puts in a hazardous location (a wet room, within 24" of a door, within 60" of a

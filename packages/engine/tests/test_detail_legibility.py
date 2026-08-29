@@ -12,6 +12,8 @@ module is only about what survives the trip to paper.
 
 from __future__ import annotations
 
+import math
+
 import re
 
 from typehaus.emit.draw.details import build_detail, derive_detail_slices
@@ -51,8 +53,22 @@ def _rungs(scene):
     return out
 
 
+#: How far outside a band an arrow tip may land and still count as inside it: 1/64", the
+#: finest line a builder can resolve on a printed detail. It exists because a tip can land
+#: exactly ON a band's own boundary — the 2026-08-29 stack-width detail at the attic's
+#: rafter plate puts the deck-vb arrow on that band's outboard corner, 0.003" out — and a
+#: strict even-odd test calls a point on the edge of the band it names "outside" it. The
+#: bug this test was written for is a whole band's width of error (5.4% of the stack per
+#: layer, cumulative), not three thousandths.
+_CONTAINMENT_TOLERANCE_IN = 1.0 / 64.0
+
+
 def _contains(points, point) -> bool:
-    """Even-odd point-in-polygon, on the outline exactly as it was drawn."""
+    """Even-odd point-in-polygon, on the outline exactly as it was drawn.
+
+    Tolerant at the boundary by ``_CONTAINMENT_TOLERANCE_IN``: a tip within that of the
+    outline counts as contained however the even-odd rule falls on the edge itself.
+    """
     u, z = point
     inside = False
     count = len(points)
@@ -60,7 +76,23 @@ def _contains(points, point) -> bool:
         (u0, z0), (u1, z1) = points[index], points[(index + 1) % count]
         if (z0 > z) != (z1 > z) and u < u0 + (u1 - u0) * (z - z0) / (z1 - z0):
             inside = not inside
-    return inside
+    if inside:
+        return True
+    return _distance_to_outline(points, point) <= _CONTAINMENT_TOLERANCE_IN
+
+
+def _distance_to_outline(points, point) -> float:
+    """Shortest distance from ``point`` to the closed polyline through ``points``."""
+    u, z = point
+    best = float("inf")
+    count = len(points)
+    for index in range(count):
+        (u0, z0), (u1, z1) = points[index], points[(index + 1) % count]
+        du, dz = u1 - u0, z1 - z0
+        span = du * du + dz * dz
+        t = 0.0 if span == 0 else max(0.0, min(1.0, ((u - u0) * du + (z - z0) * dz) / span))
+        best = min(best, math.hypot(u - (u0 + t * du), z - (z0 + t * dz)))
+    return best
 
 
 # --- the boards go bare ----------------------------------------------------------------

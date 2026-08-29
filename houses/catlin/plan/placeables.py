@@ -945,35 +945,54 @@ SECOND_PLACEABLES = [
               mount=Mount(kind=MountKind.WALL, elevation=ft(2))),
 ]
 # The attic study uses the same compact work-and-meeting program as the second-storey
-# study, but the stair opening occupies the north side of the room. Keep the desk in the
-# west strip and put the two-person table in the southeast bay, clear of the stair head and
-# the study door. The desk's back is against the west side (rotation 90); the table and
-# chairs reuse the Study 2 catalog family and arrangement.
+# study, but the stair opening occupies the north side of the room.
+#
+# ** THE WHOLE PROGRAM MOVED WEST ON 2026-08-29, AND THE RAKE IS THE ONLY REASON. ** It used
+# to read "keep the desk in the west strip and put the two-person table in the southeast
+# bay" — where "west strip" meant x ~33'-4", because under a 4:12 roof off a 5'-0" knee wall
+# the whole room had 5'-0" or better. At 6:12 off a rafter plate the roof underside east of
+# the ridge is `1 1/2" + (36' - x)/2`, so the old desk station has 1'-5 1/2" of roof over it
+# and the old desk chair 1'-4 5/8". Furniture does not fit under a rake by being pushed
+# against it.
+#
+# The furniture answers to the same line every attic station does. A 30" work surface with a
+# person seated at it wants ~5'-6" of ceiling, which arrives at 10'-3" from the eave, i.e.
+# x <= 25'-9" on this side. So:
+#   * the DESK PAIR takes the room's WEST LEG (x 18'-4"..21'-2", the full y 0..9'-4" strip
+#     west of FO-A-STAIR), turned to run its 4'-0" length in y. At x=19'-8" the ceiling is
+#     8'-3 1/2" — the best in the room — and it is the one part of the study that is neither
+#     under the rake nor over the well. The vestibule's freed footprint next door
+#     (x 21'-2"..22'-8", W-A-VE/W-A-VN/D-A-VEST, deleted the same pass) is what makes the
+#     leg wide enough to work in.
+#   * the TABLE SET goes to x=26'-0" (5'-1 1/2" of ceiling) with its two chairs flanking it
+#     in Y rather than in X — north and south of the table on the same x, so both sit under
+#     the same height instead of one of them being 2'-6" further down the slope. That is the
+#     arrangement change; the catalog family is still Study 2's. Its 3'-0" chair surround
+#     starts at x 22'-6", clear of the desk pair — `integrity.placeable_recommended_
+#     clearance_conflict` is what settled that number.
 ATTIC_PLACEABLES = [
     Furniture(uid="DAK701AAAA", tag="FURN-A-STUDY-DESK", type_ref="FURN-DESK-48",
-              room="RM-A-STUDY", position=pt(m(10.1656), m(0.489306)), rotation=deg(0)),
+              room="RM-A-STUDY", position=pt(ft(19, 8), ft(5)), rotation=deg(90)),
     Furniture(uid="CAK701AAAA", tag="FURN-A-STUDY-DESK-CHAIR", type_ref="FURN-DESK-CHAIR",
-              room="RM-A-STUDY", position=pt(m(10.205), m(1.10716)), rotation=deg(0)),
-    # The table set moved 4" west on 2026-07-31. Its 3'-0" chair surround reached 2 1/4" past
-    # the desk's west end, which is the one direction the desk cannot give: its own east end
-    # is against ED-A-STUDY-SPOT's wall. 4" west costs the set nothing — the room runs on to
-    # x=18'-0 5/8" and CHAIR2 still stands 5'-3" clear of the west knee wall.
+              room="RM-A-STUDY", position=pt(ft(21), ft(5)), rotation=deg(90)),
     Furniture(uid="TAK701AAAA", tag="FURN-A-STUDY-TABLE", type_ref="FURN-DINING-2-36",
-              room="RM-A-STUDY", position=pt(m(8.13979), m(0.65023))),
+              room="RM-A-STUDY", position=pt(ft(26), ft(2, 6))),
     Furniture(uid="CAK702AAAA", tag="FURN-A-STUDY-CHAIR1", type_ref="FURN-DINING-CHAIR",
-              room="RM-A-STUDY", position=pt(m(8.93626), m(0.532453)), rotation=deg(-90)),
+              room="RM-A-STUDY", position=pt(ft(26), ft(0, 10)), rotation=deg(180)),
     Furniture(uid="CAK703AAAA", tag="FURN-A-STUDY-CHAIR2", type_ref="FURN-DINING-CHAIR",
-              room="RM-A-STUDY", position=pt(m(7.35127), m(0.57089)), rotation=deg(90)),
+              room="RM-A-STUDY", position=pt(ft(26), ft(4, 2)), rotation=deg(0)),
     # --- the guest studio's wet bar (2026-08-29) ---------------------------------------
     # The other half of the wet bar; FX-A-STUDIO-BAR-SINK is in plan/fixtures.py. Both stand on
-    # W-A-STU-W's WEST face in a single counter run: the sink over the north half, this box
-    # under the south half, its power off ED-A-STUDIO-BAR-GFCI.
+    # W-A-C2's WEST face in a single counter run: the sink over the north half, this box under
+    # the south half, its power off ED-A-STUDIO-BAR-GFCI.
     #
-    # y=18'-6" puts it 1'-6" south of the sink's centreline with its back on the same wall — a
-    # 24" box under a 24" opening. ** SINK AND FRIDGE, AND NOTHING THAT COOKS: ** a range or a
+    # ** MOVED WITH THE SINK ON 2026-08-29, x 8'-6" -> 17'-0". ** The pair used to back the
+    # x 9'-7 1/2" wet wall; at 6:12 off a plate the roof underside there is 4'-11" and you
+    # cannot stand at a counter under it. y=15'-2" keeps it 1'-6" south of the sink's
+    # centreline with its back on the same wall — a 24" box under a 24" opening. ** SINK AND FRIDGE, AND NOTHING THAT COOKS: ** a range or a
     # cooktop here turns the studio into a second dwelling unit and brings IRC R302.3's
     # two-family separation down on the attic floor and the centre wall. The type carries the
     # same warning and it is written twice on purpose.
     Appliance(uid="7B10E5QBCF", tag="APPL-A-STUDIO-FRIDGE", type_ref="APPL-BAR-FRIDGE-24",
-              room="RM-A-STUDIO", position=pt(ft(8, 6), ft(18, 6)), rotation=deg(-90)),
+              room="RM-A-STUDIO", position=pt(ft(17), ft(15, 2)), rotation=deg(-90)),
 ]

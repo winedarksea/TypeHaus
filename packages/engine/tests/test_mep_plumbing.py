@@ -611,3 +611,83 @@ def test_missing_sleeve_over_slab_fails():
                                                     irc_base="t", coverage_statement="t"))
     findings = _missing_sleeve_findings(ctx)
     assert findings and findings[0].result.value == "fail"
+
+
+# --- VentRun.chase_offset: the in-attic jog ---------------------------------
+def _jog_model(**vent_kwargs):
+    """One vent in a one-roof model, resolved through the accessories pass.
+
+    Gable over a 10x10 footprint, eave 3 m / ridge 5 m, ridge along y — the same
+    shape ``_vent_termination_context`` uses, so the derived termination is real
+    geometry rather than an authored elevation.
+    """
+    from typehaus.model.enums import PipeSystem
+    from typehaus.model.mep import VentRun
+    from typehaus.quantities import inch, m, pt
+    from typehaus.resolve.accessories import _resolve_vent
+    from typehaus.resolve.model import ResolvedModel, ResolvedRoof
+
+    kwargs = dict(chase_position=pt(m(2), m(2)), start_elevation=m(0),
+                  exit_elevation=m(3), exit_offset=pt(m(0), m(1)))
+    kwargs.update(vent_kwargs)
+    vent = VentRun(uid="V1", tag="VR-TEST", systems=(PipeSystem.VENT,),
+                   diameter=inch(3), **kwargs)
+
+    class _FakePlan:
+        storeys: list = []
+
+        def by_tag(self, tag):
+            return vent if tag == vent.tag else None
+
+    model = ResolvedModel(plan=_FakePlan())
+    model.roofs.append(ResolvedRoof(
+        uid="R1", tag="RF-TEST", storey="attic", form="gable",
+        footprint=[(0.0, 0.0), (10.0, 0.0), (10.0, 10.0), (0.0, 10.0)],
+        eave_z_m=3.0, ridge_z_m=5.0, ridge_direction="y", assembly="A",
+        surface_area_m2=100.0,
+    ))
+    assert _resolve_vent(model, vent, "attic") == []
+    return {s.tag: s for s in model.solids}
+
+
+def test_a_vent_without_a_jog_resolves_the_original_four_point_route():
+    """``chase_offset=None`` — every riser authored before the field existed."""
+    solids = _jog_model()
+    assert not [tag for tag in solids if "JOG" in tag or "CHASE2" in tag]
+    chase = solids["VR-TEST-vent-CHASE"]
+    assert chase.z0_m == pytest.approx(0.0) and chase.z1_m == pytest.approx(3.0)
+
+
+def test_an_elevation_without_an_offset_is_not_half_a_jog():
+    """Both halves of the pair, or none: one alone must not move the riser."""
+    from typehaus.quantities import m
+
+    assert set(_jog_model(chase_offset_elevation=m(2))) == set(_jog_model())
+
+
+def test_a_jog_steps_the_riser_over_inside_before_it_exits_the_wall():
+    from typehaus.quantities import m, pt
+
+    solids = _jog_model(chase_offset=pt(m(3), m(0)), chase_offset_elevation=m(2))
+    # The chase now stops at the jog, and a second riser carries on above it.
+    assert solids["VR-TEST-vent-CHASE"].z1_m == pytest.approx(2.0)
+    assert solids["VR-TEST-vent-CHASE2"].z0_m == pytest.approx(2.0)
+    assert solids["VR-TEST-vent-CHASE2"].z1_m == pytest.approx(3.0)
+    assert "VR-TEST-vent-JOG1" in solids
+    # ...at the jogged station, x = 2 + 3, not the chase's own x = 2.
+    xs = [x for x, _ in solids["VR-TEST-vent-CHASE2"].outline]
+    assert sum(xs) / len(xs) == pytest.approx(5.0, abs=1e-6)
+
+
+def test_the_wall_exit_leaves_from_the_jogged_station_not_the_chase():
+    """The exit offset is measured from wherever the riser actually stands."""
+    from typehaus.resolve.vent_termination import exterior_riser_point
+    from typehaus.model.enums import PipeSystem
+    from typehaus.model.mep import VentRun
+    from typehaus.quantities import inch, m, pt
+
+    vent = VentRun(uid="V1", tag="VR-TEST", systems=(PipeSystem.VENT,), diameter=inch(3),
+                   chase_position=pt(m(2), m(2)), start_elevation=m(0), exit_elevation=m(3),
+                   exit_offset=pt(m(0), m(1)),
+                   chase_offset=pt(m(3), m(0)), chase_offset_elevation=m(2))
+    assert exterior_riser_point(vent) == pytest.approx((5.0, 3.0))

@@ -221,8 +221,13 @@ def test_block_one_lands_on_the_stud_it_is_screwed_to(catlin_model):
     # without standing half its width out past the girt it carries (``GirtFrame.snap``'s
     # ``bounds``), so it takes half the post and that is the right trade. If this ratio ever
     # falls, the grid has drifted rather than a few gable stubs having been crowded.
+    # The band came down from 0.99 to 0.98 on 2026-08-29 and the reason is arithmetic, not
+    # drift: the attic's east and west girt walls left the model entirely (the knee walls
+    # became 1 1/2" rafter plates), so the FIELD shrank ~15% while the gable stubs — which
+    # are the whole population of legitimate half-laps — did not. The same nine blocks are
+    # now nine out of 807 rather than nine out of a larger number.
     full = sum(1 for lap in laps if lap >= 1.5 * IN - 1e-6)
-    assert full / len(laps) >= 0.99, (
+    assert full / len(laps) >= 0.98, (
         f"only {full}/{len(laps)} block-1s lap their whole stud")
 
 

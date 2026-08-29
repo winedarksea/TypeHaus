@@ -48,11 +48,13 @@ Geometry facts this module derives from (see plan/storeys/attic.py + plan/assemb
   wrb 0.02" + polyiso 2" + eps 2" + furring 0.5" + cladding 0.5" = 5.02" (cladding face
   == roof footprint edge, where eave_z_m is defined) — and the footprint runs to that same
   face in **y** as well, which is how far the eave runs have to reach to close the corner;
-- knee-wall plate top at 25'; deck plane (eave_z_m) rides the I-joist rise above it:
-  11.875" - 5.5" x 4/12 seat drop (2x6 knee walls) = 10.0417";
+- RAFTER-PLATE top at 20'-2 1/4" (2026-08-29: attic datum 20'-0" + 3/4" subfloor +
+  1 1/2" of 2x6 laid flat — there is no knee wall any more, see plan/assemblies.py's
+  CATLIN_RAFTER_PLATE); deck plane (eave_z_m) rides the I-joist rise above it:
+  11.875" - 5.5" x 6/12 seat drop = 9.125", so eave_z is 20'-11 3/8";
 - roof stack above the deck (perpendicular): zip 0.5" + deck vapour barrier 0.04" -> foam
   3" + 3" -> top deck 0.625" (top-deck surface at 7.165") -> underlayment 0.06" -> vent mat
-  0.25" -> metal 0.5"; the 4:12 slope factor turns those perpendicular offsets into the
+  0.25" -> metal 0.5"; the 6:12 slope factor turns those perpendicular offsets into the
   vertical ones an authored elevation is measured in;
 - the wall cladding's head lands at the roofing's own underside (MatingFaces with a
   continuous skin), 7.475" perpendicular above the deck plane.
@@ -92,17 +94,21 @@ _WALL_OUTBOARD_IN = 1.5 + 1.5 + 1.0 + 0.5 + 1.5 + 1.25  # 7.25"
 _EAVE_X_W = ft(0) - inch(_WALL_OUTBOARD_IN)
 _EAVE_X_E = ft(_HOUSE_FT) + inch(_WALL_OUTBOARD_IN)
 
-_PLATE_TOP = ft(25)  # attic elevation 20' + 5' knee walls
-_DECK_RISE_IN = 11.875 - 5.5 * (4.0 / 12.0)  # I-joist depth - 2x6 seat drop = 10.0417"
+# ** 20'-2 1/4", NOT 25'-0", SINCE 2026-08-29. ** The eave was a 5'-0" knee wall on the attic
+# deck; it is a 2x6 laid FLAT on the deck now (CATLIN_RAFTER_PLATE), so the plate top is the
+# attic datum plus 3/4" of subfloor plus 1 1/2" of plate. Everything in this module hangs off
+# it, which is why the building came down 1'-9 1/2" at the ridge while the roof grew 86 sf.
+_PLATE_TOP = ft(20, 2.25)
+_DECK_RISE_IN = 11.875 - 5.5 * (6.0 / 12.0)  # I-joist depth - 2x6 seat drop = 9.125"
 _EAVE_DECK = _PLATE_TOP + inch(_DECK_RISE_IN)  # deck plane at the eave edge (eave_z_m)
 
 # The roof stack is offset perpendicular to the slope; an authored elevation is vertical.
-_SLOPE_FACTOR = math.hypot(1.0, 4.0 / 12.0)  # 4:12 -> 1.0541
+_SLOPE_FACTOR = math.hypot(1.0, 6.0 / 12.0)  # 6:12 -> 1.1180
 # The top deck's upper surface: the drip flashing lies on it and the underlayment laps over
 # the flashing, so nothing in the chain may stand above this plane or the underlayment
 # cannot bond to the deck it is sealing.
-_DRIP_CEILING_IN = 7.165 * _SLOPE_FACTOR     # 7.55" — top-deck surface, vertical
-_CLADDING_HEAD_IN = 7.475 * _SLOPE_FACTOR    # 7.88" — roofing underside == wall panel heads
+_DRIP_CEILING_IN = 7.165 * _SLOPE_FACTOR     # 8.01" — top-deck surface, vertical
+_CLADDING_HEAD_IN = 7.475 * _SLOPE_FACTOR    # 8.36" — roofing underside == wall panel heads
 
 # The derived corner trim (resolve/roof_trim.py::_corner_trim_members): a formed angle 1.25"
 # deep in plan, hung outboard of the footprint edge, with a leg down over the wall panel

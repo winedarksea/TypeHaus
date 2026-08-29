@@ -93,6 +93,11 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
         # is faced with would put a finish choice in a framing field.
         "DT-INT-BOOKCASE30": (30.0, DoorOperation.SWING, False, False),
         "DT-EXT-OVERHEAD192": (192.0, DoorOperation.OVERHEAD, True, False),
+        # The house's one sub-6'-8" leaf (2026-08-29): RM-A-POCKET's service access under
+        # the attic's 6:12 west rake, where no full-height door fits anywhere on its host
+        # wall. 24 x 36 still clears IRC M1305.1.3's 30" x 22" passageway minimum, and no
+        # habitable room is reached through it.
+        "DT-INT-ACCESS24": (24.0, DoorOperation.SWING, False, False),
     }
     # The house catalog is the union of its own types and the library's shared pocket
     # family (2026-08-21), which is what D-M-LAUN is typed from. The two tag sets must

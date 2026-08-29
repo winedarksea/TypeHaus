@@ -214,6 +214,36 @@ CATLIN_EXT_2X6 = Assembly(
     source="catlin-house ifcplot/catlin_house.py wall siding stack; main-storey studs are LSL, second/attic standard dimensional 2x6",
 )
 
+# --- the attic rafter plate (2026-08-29) --------------------------------------
+#
+# The attic eave is not a knee wall any more, it is a 2x6 laid FLAT on the attic subfloor
+# over the second-storey wall line, and the rafters birdsmouth onto it. One layer, no
+# lining, no sheathing, no cladding: a plate on a deck has no faces to finish, and the
+# empty `skin_layers()` is exactly what `resolve/roof_edge.py` and `resolve/envelope.py`
+# read to know this bearing element laps the cladding of the wall it `stacks_on` rather
+# than carrying a weather skin of its own.
+#
+# 5.5" of structure is not a coincidence: `deck_rise_m` cuts the birdsmouth as
+# structure_depth x pitch, so this depth has to match CATLIN_EXT_2X6's stud layer or the
+# seat lands off the wall below. That coupling is why the assembly belongs to the house
+# and not to `library/`.
+#
+# `wall_frame="plate"` is what stops the framing solver treating 1 1/2" of wall as a stud
+# wall and framing a top plate inside the bottom plate with negative-length studs between.
+CATLIN_RAFTER_PLATE = Assembly(
+    tag="CATLIN_RAFTER_PLATE",
+    layers=(
+        Layer(name="plate", material_ref="spf", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE,
+              # corner_style is inert here — a plate frames no studs to pack a corner
+              # with — but it is stated to match CATLIN_EXT_2X6 so the junction solver
+              # sees one rule at N-A-NE/NW/SE/SW rather than two that disagree.
+              framing=FramingSpec(member="2x6", wall_frame="plate", corner_style="4-stud",
+                                  double_top_plate=False, layout_origin="line")),
+    ),
+    source="2026-08-29 attic redesign: rafter bearing plate laid flat on the attic deck",
+)
+
 # --- the Swinburne truss wall, kept one swap away (2026-08-26) ----------------
 #
 # What CATLIN_EXT_2X6 was from 2026-08-23 to 2026-08-26, verbatim: a 3-piece chiral pack —
@@ -2537,6 +2567,7 @@ CONSTRUCTION_RULES = [
 
 ASSEMBLIES = [
     CATLIN_EXT_2X6,
+    CATLIN_RAFTER_PLATE,
     CATLIN_EXT_2X6_SWINBURNE,
     CATLIN_ROOF,
     CATLIN_BASEMENT_12,

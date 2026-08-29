@@ -234,24 +234,42 @@ def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
     assert len(chases) == len(terms) == 2  # radon + plumbing vent
     assert len(outs) == 2 * _PIPE_SWEEP_BANDS  # each horizontal jog is one swept stack
     exit_z = ft(23, 10).meters
-    # Chase rises from below grade to the turn-out, which stays *under* the rake.
+    jog_z = ft(19, 6).meters
+    # ** THE CHASE STOPS AT THE JOG SINCE 2026-08-29, AND -CHASE2 CARRIES ON ABOVE IT. **
+    # The riser rises from below grade at x=1'-0" as it always did, but the attic's 6:12
+    # roof underside there is 20'-8 1/4" — it cannot reach the 23'-10" wall exit at that
+    # station. `VentRun.chase_offset` steps it 12'-4" east inside FS-ATTIC's I-joist band
+    # (through the webs) and it stands up again at x=13'-4". No roof penetration, and the
+    # chase itself does not move through any storey below.
+    chase2 = [s for s in vent if s.tag.endswith("CHASE2")]
+    assert len(chase2) == 2
     for c in chases:
-        assert c.z0_m < -2.0 and abs(c.z1_m - exit_z) < 0.05
+        assert c.z0_m < -2.0 and abs(c.z1_m - jog_z) < 0.05
+    for c in chase2:
+        assert abs(c.z0_m - jog_z) < 0.05 and abs(c.z1_m - exit_z) < 0.05
+    jogs = [s for s in vent if "-JOG" in s.tag]
+    assert len(jogs) == 2 * _PIPE_SWEEP_BANDS
+    for j in jogs:
+        assert abs((j.z0_m + j.z1_m) / 2 - jog_z) < inch(2).meters
     for o in outs:
         assert abs((o.z0_m + o.z1_m) / 2 - exit_z) < inch(2).meters
-    # Termination is derived: 12" above the true roof surface at the exterior riser (moved
-    # to the NW corner, x=1', 2026-07-28), not the 33' that was once authored — that sat 2'
-    # above the ridge of this 4:12 gable.
+    # Termination is derived: 12" above the true roof surface at the exterior riser — now at
+    # x=13'-4" with the jog — not the 33' that was once authored.
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
     assembly = catlin_model.plan.library.resolve_assembly(roof.assembly)
     skin = sum(layer.thickness.meters for layer in above_structure_layers(assembly))
-    expected = roof_height_at(roof, (ft(1).meters, ft(37).meters)) + skin + inch(12).meters
-    # ~27.9': eave_z_m is the deck plane, and the CATLIN_ROOF skin (zip + vapour barrier +
+    expected = roof_height_at(roof, (ft(13, 4).meters, ft(37).meters)) + skin + inch(12).meters
+    # eave_z_m is the deck plane, and the CATLIN_ROOF skin (zip + vapour barrier +
     # foam + nailbase deck + underlayment + vent mat + standing seam) adds another 7.975"
     # above that deck plane, so the derived termination rides that much higher than the
     # bare-plate datum. The skin is summed here rather than written down, so a roof rebuild
     # moves the vent with it — 2026-08-20 took it from 8.5" to 7.975" and nothing broke.
-    assert expected < 29 * FT
+    # ~29'-7" since 2026-08-29: the jog stands the riser at x=13'-4", four feet closer to
+    # the ridge, and a 6:12 plane climbs twice as fast as the 4:12 it replaced. It is still
+    # BELOW the 30'-3" ridge, which is the claim that matters — a termination over the ridge
+    # is a pipe with no roof under it.
+    assert expected < 30 * FT
+    assert expected < roof.ridge_z_m
     for t in terms:
         assert abs(t.z0_m - exit_z) < 0.05
         assert abs(t.z1_m - expected) < 1e-6

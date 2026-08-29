@@ -18,7 +18,8 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.energy import _storey_is_conditioned
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.plan import PlanModel
-from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.model import ResolvedModel, ResolvedWall
+from typehaus.resolve.roof_edge_geometry import skin_layers
 
 
 @dataclass(frozen=True)
@@ -109,6 +110,31 @@ def _is_freestanding_exterior_slab(tag: str) -> bool:
     return tag.startswith(_FREESTANDING_SLAB_PREFIXES)
 
 
+def _carries_a_weather_skin(wall: ResolvedWall) -> bool:
+    """Whether this wall has an outboard side for the prescriptive table to bind.
+
+    ``_walls_bounding_conditioned_space`` asks a PLAN question — does this wall run along a
+    conditioned room's boundary — and that is the right question for a wall. It is the
+    wrong one for a bearing element that is not a wall in the enclosure sense: a 2x plate
+    laid flat on a deck under a story-and-a-half roof runs along the room's edge and
+    encloses nothing, because there is no sheathing, no foam and no cladding on it. The
+    thermal envelope at that line runs from the wall BELOW the plate up to the roof
+    ABOVE it, and the plate sits inside both.
+
+    Grading such a course against R-21 is a category error, and it is the same category
+    error whichever way it is dressed: a bare plate cannot reach R-21 at any thickness,
+    so the row is a permanent FAIL that says nothing about the building.
+
+    The signal is the one ``resolve/roof_edge.py`` and ``resolve/envelope.py`` already use
+    for exactly this element — an empty ``skin_layers()``, i.e. no SHEATHING layer and so
+    nothing outboard of one. A wall with a skin is checked as it always was; this only
+    reaches the framing courses. Note that a *forgotten* cladding is not silently excused:
+    an assembly with a SHEATHING layer and nothing over it still carries a skin and still
+    earns its row.
+    """
+    return bool(skin_layers(wall))
+
+
 def _is_interior_assembly(tag: str) -> bool:
     """Interior partitions/cross-walls carry no prescriptive R-value requirement — they
     aren't part of the thermal envelope. This codebase's own naming convention already
@@ -142,7 +168,8 @@ def evaluate_envelope(model: ResolvedModel, plan: PlanModel,
         rows.append(_row_for_assembly(plan, tag, "roof", envelope.ceiling_r))
     envelope_walls = _walls_bounding_conditioned_space(model)
     for tag in sorted({w.assembly for w in model.walls
-                       if not w.is_foundation and w.uid in envelope_walls}):
+                       if not w.is_foundation and w.uid in envelope_walls
+                       and _carries_a_weather_skin(w)}):
         if _is_interior_assembly(tag):
             continue
         rows.append(_row_for_assembly(plan, tag, "above-grade wall", envelope.wood_wall_r))

@@ -48,7 +48,11 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
         by_type[row["type"]] = by_type.get(row["type"], 0.0) + float(row["length_ft"])
     assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(74.6, abs=0.1)
     # 23.4 since 2026-08-24, not 23.0: RL-M-STAIRHEAD's 4 1/2" joins the same product group.
-    assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(23.4, abs=0.1)
+    # 26.4 since 2026-08-29: RL-A-STAIR gained a 3'-0" east leg. That edge of FO-A-STAIR was
+    # guarded by the inside face of the W-A-E1 knee wall, which is a 1 1/2" rafter plate now
+    # — `code.R312_1_guard` named it the moment the wall changed. Three feet of railing is
+    # the honest price of ~360 sf of knee wall the storey stopped building.
+    assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(26.4, abs=0.1)
     # 36.7, not 30.0, since 2026-08-22, in two parts: RL-A-HANDRAIL gained 3'-0" at its east
     # end so it runs beside ST-S2A's winder fan as well as its straight flight (which is what
     # R311.7.8.2 asks of it, and what `code.R311_7_8_handrail` started measuring rather than

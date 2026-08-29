@@ -153,9 +153,16 @@ def test_roof_plan_has_downslope_arrows_with_pitch_notes(catlin_model, roof_scen
         expected = 90.0 if roof.ridge_direction == "x" else 0.0
         rotations = {a.rotation for a in arrows if a.uid == roof.uid}
         assert rotations == {expected, (expected + 180.0) % 360.0}
-    pitch_notes = [n for n in roof_scene.nodes if isinstance(n, Text)
-                   and n.content == "4:12"]
-    assert len(pitch_notes) == len(arrows)  # catlin's roofs are all 4:12
+    # ** THE TWO ROOFS DIFFER IN PITCH SINCE 2026-08-29. ** RF-HOUSE went 4:12 -> 6:12 with
+    # the attic redesign; RF-GARAGE is untouched. So the note is per-plane and per-roof, not
+    # one string for the house — which is what this now reads.
+    for roof in gables:
+        pitch = catlin_model.plan.by_tag(roof.tag).pitch
+        note = f"{pitch.rise:g}:{pitch.run:g}"
+        notes = [n for n in roof_scene.nodes if isinstance(n, Text) and n.content == note]
+        assert len(notes) == 2, (roof.tag, note, [n.content for n in roof_scene.nodes
+                                                 if isinstance(n, Text)])
+    assert {"4:12", "6:12"} <= {n.content for n in roof_scene.nodes if isinstance(n, Text)}
 
 
 def test_roof_plan_ridge_is_dashed(catlin_model, roof_scene):
@@ -179,8 +186,19 @@ def test_roof_plan_dimensions_the_garage_overhang_once(catlin_model, roof_scene)
     for d in garage_dims:
         length = math.hypot(d.p1[0] - d.p0[0], d.p1[1] - d.p0[1])
         assert 6.0 <= length <= 16.0 + 1e-6  # 16" less the cladding the eave clears
-    # The zero-overhang house roof gets no fabricated eave dimension.
-    assert not [d for d in dims if d.uid == house.uid]
+    # The zero-overhang house roof gets no fabricated eave dimension — except the one the
+    # cladding LAP produces, which is not an overhang: the footprint runs 7 1/4" past the
+    # sheathing datum to cover the wall panel, and the roof plan dimensions that face-to-edge
+    # distance like any other. It appeared on 2026-08-29 because the attic's bearing walls
+    # became skinless rafter plates and `roof_layer_setbacks._skinned` now resolves their
+    # stand-in, so the lap is drawn where before it collapsed to nothing.
+    house_dims = [d for d in dims if d.uid == house.uid]
+    for d in house_dims:
+        length = math.hypot(d.p1[0] - d.p0[0], d.p1[1] - d.p0[1])
+        # 7 3/4": the 7 1/4" wall stack outboard of the sheathing datum plus the 1/2" the
+        # rafter plate's axis sits inboard of that datum (it stands over the studs below,
+        # not over the sheathing). Anything larger would be a real fabricated overhang.
+        assert length <= 7.75 + 1e-6, (length, "that is an overhang, not a cladding lap")
 
 
 def test_roof_plan_symbols_are_known_to_both_writers(roof_scene):

@@ -462,8 +462,15 @@ def _seed_nodes(model: ResolvedModel, derived: DerivedDetail,
     # Either side of a junction may own the layer being claimed — at a foundation detail the
     # sheathing and WRB belong to the framed wall above, not the concrete below. An opening
     # condition names no wall at all, so its host carries every claim.
-    candidates = [w for w in (model.wall(t) for t in derived.condition.element_tags)
-                  if w is not None]
+    # ``condition_walls`` rather than the raw tags: a condition may NAME an element that
+    # carries none of the faces it is keyed on — the story-and-a-half eave names its rafter
+    # plate, whose only layer is 1 1/2" of framing, while the sheathing/CI/cladding faces the
+    # continuity claims are about belong to the wall it stands on. Anchoring on the plate
+    # resolved every face to None and the callouts vanished from the one detail that exists
+    # to show that handoff.
+    from typehaus.emit.draw.detail_components.geometry import condition_walls
+
+    candidates = condition_walls(model, derived.condition)
     if not candidates and wall is not None:
         candidates = [wall]
 

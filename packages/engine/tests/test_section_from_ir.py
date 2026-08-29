@@ -273,8 +273,13 @@ def test_the_spray_foam_wedge_sits_in_the_foam_mismatch(catlin_model):
               if isinstance(node, Polyline) and node.tag == "spray-foam-wedge"]
     assert wedges, "no wedge at the eave"
 
-    wall = next(w for w in catlin_model.walls
-                if w.tag in derived.condition.element_tags)
+    # ``condition_walls`` rather than element_tags: since 2026-08-29 the attic eave's
+    # condition NAMES the rafter plate (the element that terminates at the roof) but is
+    # KEYED on CATLIN_EXT_2X6 (the stack that meets it, one storey down). A plate has no
+    # insulation layer at all, so reading element_tags here found a wall with no CI.
+    from typehaus.emit.draw.detail_components.geometry import condition_walls
+
+    wall = condition_walls(catlin_model, derived.condition)[0]
     roof = next(r for r in catlin_model.roofs
                 if r.tag in derived.condition.element_tags)
     plate_top = (wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m) / 0.0254

@@ -127,40 +127,75 @@ VENT_BRANCHES_ATTIC = [
     # over the roof. Nothing caught it: `_resolve_pipe_run` adds the datum silently and no check
     # grades a pipe against the roof plane it sits under.
     #
-    # The profile is per-vertex rather than a start/end ramp because THE RAKE FORCES A DUCK AT
-    # THE WEST END. RF-HOUSE bears at 25'-0" over a 5'-0" knee wall and rises 4:12 to the x=18'
-    # ridge, so its underside is 28'-10" at x=9'-7 1/2" but only 25'-4 3/4" at x=1'-0". The
-    # plan's "~7'-0" through the pocket" holds on the north leg and cannot hold on the last one.
+    # ** REWRITTEN THE SAME DAY FOR THE 6:12 ROOF, AND THE DUCK IS GONE. ** The profile used to
+    # run 3'-6" / 6'-6" / 7'-0" / 4'-0", ducking 3'-0" at the last vertex because the old 4:12
+    # roof over a 5'-0" knee wall left only 25'-4 3/4" at x=1'-0". The underside is
+    # `20'-0" + 1 1/2" + x/2` now, which is 20'-8 1/4" at x=1'-0" — there is no duck deep
+    # enough. So the run does not go to x=1'-0" at all: it ends on the riser at its JOGGED
+    # station, x=13'-4" (see VR-M-RADON-VENT below), 3'-8" east of the wet-wall leg it
+    # already runs. The whole profile flattens to a 4" rise over 32', which is what a dry
+    # vent wants anyway.
+    #
+    # The vertex at (9'-7 1/2", 20'-8") is NOT redundant even though the run doubles back
+    # east afterwards: `mep.vent_reachability` requires a vertex ON the served fixtures' wet
+    # wall (W-A-STU-W's axis), and that is the one.
     #
     # Every vertex clears the flood-level rims by more than P3104.4's 6": the highest rim served
     # is the lavatory at ~2'-10" AFF (22'-10"), so 23'-4" is the floor for a dry horizontal vent
-    # and the lowest vertex here is 23'-6". Vertex 3 is the high point; condensate drains off it
-    # both ways — back to the fixtures on one side, into the stack on the other — so there is no
-    # pocket to hold water.
+    # and the lowest vertex here is 23'-5". It rises monotonically into the stack, so condensate
+    # drains back to the fixtures and there is no pocket to hold water. The last vertex at
+    # 23'-9" ties in 1" BELOW the riser's 23'-10" exit, on the vertical part of the stack.
     PipeRun(uid="STFQKR8Q95", tag="PR-A-STUBATH-VENT", system=PipeSystem.VENT,
             path=(pt(ft(16, 2.625), ft(20, 8)), pt(ft(9, 7.5), ft(20, 8)),
-                  pt(ft(9, 7.5), ft(34, 6)), pt(ft(1), ft(34, 6))),
+                  pt(ft(9, 7.5), ft(34, 6)), pt(ft(13, 4), ft(34, 6))),
             diameter=inch(2),
-            elevations=(ft(3, 6), ft(6, 6), ft(7), ft(4)),
+            elevations=(ft(3, 5), ft(3, 6), ft(3, 8), ft(3, 9)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
                     "FX-A-STUDIO-BAR-SINK")),
 ]
 
+# ** THE STACK JOGS EAST INSIDE THE ATTIC SINCE 2026-08-29, AND IT DOES NOT MOVE. **
+# `chase_position` is still (1'-0", 34'-6"): the shaft runs the full height of the house
+# through RM-M-MECH's framed closet and RM-S-BATH1's NW notch, and relocating it would drag
+# a penetration through every storey below to solve a problem that only exists in the top
+# one. What changed is the top one. At x=1'-0" the 6:12 roof underside is 20'-8 1/4" — the
+# riser cannot rise there at all, let alone reach the 23'-10" wall exit.
+#
+# So it jogs, and it jogs BELOW THE DECK: `chase_offset_elevation` 19'-6" is inside
+# FS-ATTIC's 11 7/8" I-joist band (19'-0 7/8"..20'-0"), so the 3" pipe crosses through the
+# joist WEBS — the ordinary place a stack offsets, and 12'-4" of it in a bay that already
+# carries PR-A-STUBATH-VENT's line. It comes up at x=13'-4" and everything above is as it
+# was: exit at 23'-10" through the gable, 2'-6" out, up the cladding to a derived
+# termination. ** NO ROOF PENETRATION ANYWHERE **, which was the point.
+#
+# x=13'-4" is not free choice. Three things pick it:
+#   * MN 1303.2402 subp. 5 — WIN-A-N1's head is at 25'-0" and the exhaust must clear it by
+#     2'-0" or stand 10'-0" away in plan. The termination is 12" over the rake, i.e.
+#     20'-11 3/8" + x/2 + 12", so it clears 27'-0" once x >= 10'-1 1/4". At 13'-4" the
+#     exhaust is 28'-7 3/8", 3'-7 3/8" over the window head.
+#   * the wall it exits through is W-A-N2B (x 10'..18'), not W-A-N2 — the north gable split
+#     at x=10'-0" on 2026-08-29.
+#   * 160" is 0 mod 16, so the jog and the riser both land on the framing module.
 VENT_RISERS = [
     VentRun(uid="CMVR01AAAA", tag="VR-M-RADON-VENT",
             systems=(PipeSystem.RADON, PipeSystem.VENT), diameter=inch(3),
             chase_position=pt(ft(1), ft(34, 6)), start_elevation=ft(-8, -10),
+            chase_offset=pt(ft(12, 4), ft(0)), chase_offset_elevation=ft(19, 6),
             exit_elevation=ft(23, 10), exit_offset=pt(ft(0), ft(2, 6)),
-            wall_ref="W-A-N2", attachment="pipe_strap"),
+            wall_ref="W-A-N2B", attachment="pipe_strap"),
 ]
 
 # Through-panel straps fixing the exterior riser to the north gable siding. The riser spans
-# 23'-10" to its derived termination, and the gable siding at x=1' stops at the 25'-5.7"
+# 23'-10" to its derived termination, and the gable siding at x=13'-4" runs to the 27'-7 3/8"
 # rake — so all three fixings, at 24'-4" / 24'-10" / 25'-4", sit on the pipe *and* on WALL
-# cladding, not on roof. That is the question that decides the part, and it was checked:
-# a fixing that had landed above the rake would be on `standing-seam` roofing and would
-# have stayed on the CanDuit ring. The riser rides W-A-N2, the west half of the north gable
-# wall (x=0..18); W-A-N1 is the east half.
+# cladding, not on roof, with 2'-3" to spare. That is the question that decides the part, and
+# it was checked: a fixing that had landed above the rake would be on `standing-seam` roofing
+# and would have stayed on the CanDuit ring.
+#
+# ** ALL THREE MOVED x 1'-0" -> 13'-4" ON 2026-08-29 ** with the riser's in-attic jog, and
+# the wall they connect to is W-A-N2B — the EAST piece of the split north gable (x 10'..18').
+# The 6:12 rake is what bought the headroom back: at the old x=1'-0" the gable stopped at
+# 20'-8 1/4" and none of these three had any cladding at all to grip.
 #
 # These hold a *pipe*, and until 2026-08-26 the part was an S-5! CanDuit #11 ring on an
 # S-5! seam clamp. The gable wall is now `pbr-panel-26`, an exposed-fastener panel with no
@@ -173,14 +208,14 @@ VENT_RISERS = [
 # billed brackets and no rings, which is why the size suffix stays.
 VENT_CLAMPS = [
     Connector(uid="CMVC01AAAA", tag="CN-M-VENT-CLAMP1", kind=ConnectorKind.PIPE_STRAP,
-              position=pt(ft(1), ft(37)), elevation=ft(24, 4), size="SS316-STANDOFF-STRAP #11",
-              connects=("VR-M-RADON-VENT", "W-A-N2")),
+              position=pt(ft(13, 4), ft(37)), elevation=ft(24, 4), size="SS316-STANDOFF-STRAP #11",
+              connects=("VR-M-RADON-VENT", "W-A-N2B")),
     Connector(uid="CMVC02AAAA", tag="CN-M-VENT-CLAMP2", kind=ConnectorKind.PIPE_STRAP,
-              position=pt(ft(1), ft(37)), elevation=ft(24, 10), size="SS316-STANDOFF-STRAP #11",
-              connects=("VR-M-RADON-VENT", "W-A-N2")),
+              position=pt(ft(13, 4), ft(37)), elevation=ft(24, 10), size="SS316-STANDOFF-STRAP #11",
+              connects=("VR-M-RADON-VENT", "W-A-N2B")),
     Connector(uid="CMVC03AAAA", tag="CN-M-VENT-CLAMP3", kind=ConnectorKind.PIPE_STRAP,
-              position=pt(ft(1), ft(37)), elevation=ft(25, 4), size="SS316-STANDOFF-STRAP #11",
-              connects=("VR-M-RADON-VENT", "W-A-N2")),
+              position=pt(ft(13, 4), ft(37)), elevation=ft(25, 4), size="SS316-STANDOFF-STRAP #11",
+              connects=("VR-M-RADON-VENT", "W-A-N2B")),
 ]
 # The basement's two plumbing vents. Both are offset vents to VR-M-RADON-VENT's shared
 # radon/plumbing chase at (1', 34'-6"), because neither room has a wet wall that continues to

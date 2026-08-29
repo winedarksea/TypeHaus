@@ -433,6 +433,12 @@ REGISTERS_BASEMENT = [
 REGISTERS_ATTIC = [
     # RELOCATED 2026-08-29. It sat at (2'-2.6", 34'-10.7"), which is inside the storage pocket
     # now — a room nobody occupies, extracting a guest bedroom's air through a closed door.
+    # ** IT STAYS AT x=1'-0" AFTER THE 2026-08-29 ROOF CHANGE, DELIBERATELY. ** The 6:12
+    # underside there is 7 1/2" above the deck — a wedge nothing else can use, no furniture
+    # can stand in and nobody walks through — which is exactly what makes it the right home
+    # for a boxed-in 3" surface duct and a floor grille at its end. A return picks up at the
+    # floor anyway. Moving it inboard would put a duct across a finished bedroom to buy
+    # headroom a floor boot has no use for.
     # (1'-0", 20'-8") is a floor boot in the studio's NW corner, on the existing x=1'-0" chase,
     # at a bay centre (248" = 8 + 15 x 16), diagonally opposite REG-A-HP-WEST's supply at
     # (16'-6", 14'-1 7/8"). Fresh in at one corner, stale out at the other, which is the
@@ -450,10 +456,14 @@ REGISTERS_ATTIC = [
     # house runs at — 50 cfm intermittent would pass the same check and would be the odd one
     # out on a balanced machine whose whole attic side is continuous extract.
     #
-    # ** A WALL MOUNT AT 7'-0" IS WHAT MAKES A HIGH PICKUP POSSIBLE HERE. ** There is no ceiling
-    # plenum under a cathedral: the room follows the roof. W-A-STU-W's 5 1/2" staggered cavity
-    # is the only place a duct can drop from a high grille into the FS-ATTIC bay, which is
-    # exactly why the wet wall carries this as well as every drain in the suite.
+    # ** A WALL MOUNT IS WHAT MAKES A HIGH PICKUP POSSIBLE HERE, AND 4'-4" IS AS HIGH AS THE
+    # WALL GOES. ** There is no ceiling plenum under a cathedral: the room follows the roof.
+    # W-A-STU-W's 5 1/2" staggered cavity is the only place a duct can drop from a high grille
+    # into the FS-ATTIC bay, which is exactly why the wet wall carries this as well as every
+    # drain in the suite. That wall is `ToRoof`, so its own top is the rake: at x=9'-7 1/2" the
+    # 6:12 underside is 4'-11 1/4" above the deck, and the 7'-0" this grille carried until
+    # 2026-08-29 was two feet above the wall it is cut into. 4'-4" leaves 7 1/4" of wall over
+    # the boot. It is still the highest pickup this room can have.
     Register(uid="N989VQP3T8", tag="REG-A-STUBATH-EXH", kind=DuctSystem.EXHAUST, room="RM-A-STUBATH",
             # 19'-0" -> 19'-4" on 2026-08-29, following DU-A-ERV-R-STUBATH onto the
             # 232" bay centre so its east leg could leave the studio floor for the joist bay.
@@ -464,5 +474,5 @@ REGISTERS_ATTIC = [
             # staggered cavity; the offset is the boot crossing the finish.
             position=pt(ft(9, 11.875), ft(19, 4)), duct_ref="DU-A-ERV-R-STUBATH",
             type_ref="REG-T-ERV-EXH", design_cfm=20,
-            mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+            mount=Mount(kind=MountKind.WALL, elevation=ft(4, 4))),
 ]

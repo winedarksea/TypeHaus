@@ -154,12 +154,15 @@ NODES = [
 
 # ============================== WALLS =================================================
 # Five, all ToRoof, all NONBEARING. NONBEARING is a statement about the roof rather than a guess:
-# RF-HOUSE is a structural ridge on x=18' with knee walls at x=0/36, so the rafters span ridge ->
-# knee wall and nothing needs support at x=10' or anywhere else in here.
+# RF-HOUSE is a structural ridge on x=18' bearing on the rafter PLATES at x=0/36 (2026-08-29 —
+# they were 5'-0" knee walls), so the rafters span ridge -> plate and nothing needs support at
+# x=10' or anywhere else in here. The plates carry no less than the knee walls did; what
+# changed is that the load lands on the deck and the second-storey studs directly.
 #
 # ** DETAIL EVERY ToRoof TOP WITH A SLIP/DEFLECTION GAP ** so no partition picks up rafter load as
 # the ridge deflects. The model has no field for it, so it lives here — exactly as it does for
-# W-A-VE/W-A-VN, the attic's other two roof-height screens and the precedent for all five of these.
+# W-A-STU-N, the attic's other open-ended roof-height screen. (W-A-VE/W-A-VN were the precedent
+# cited here until 2026-08-29; the 6:12 rake retired both — see plan/storeys/attic.py's WALLS.)
 WALLS = [
     # VOID | POCKET. Stands on W-S-BA-E1B / W-S-BA-E and, over the 4'-0" hall stub, on BM-S-BATH-E.
     Wall(uid="9WC345CCP1", tag="W-A-BA-E", start_node="N-A-H1", end_node="N-A-N3",
@@ -219,26 +222,53 @@ WALLS = [
 # second-storey baths already use. R311.2's 32"-clear rule governs the EGRESS door, not these.
 OPENINGS = [
     # Into the storage pocket, and its station is set by HEADROOM. W-A-STU-N is raked: it runs in x
-    # under the west half of the gable, where the roof underside is 5'-0" + x/3 above the attic
-    # deck. A 6'-8" head plus its plate needs about 6'-11", which arrives at x=5'-9". The first
-    # attempt put the leaf at x 1'-10"..4'-8", where the rake is 5'-8" to 6'-6", and
-    # `structural.member_interference` said so immediately: the jacks and the header came out
-    # through the raked top plate. At x 6'-6"..9'-0" the rake runs 7'-2" to 8'-0".
+    # under the west half of the gable, and since 2026-08-29 the roof underside there is
     #
-    # It is a DOOR and not a scuttle because this pocket is the ERV's service access — the manifold
-    # EQ-A-ERV-MAN-EXH, the outdoor-air hood and VR-M-RADON-VENT's head all sit inside it, and IRC
-    # M1305.1.3 wants a passageway, a platform, a light and a receptacle at the appliance (hence
-    # ED-A-POCKET-LT1 and ED-A-POCKET-RC1). `code.R807_1_attic_access` is storey-level and is
-    # satisfied by ST-S2A either way — walling off the pocket CANNOT make that rule fail — so this
-    # door is a buildability call, not a code one.
-    Door(uid="Y3R3YMXFVJ", tag="D-A-POCKET", host="W-A-STU-N", type_ref="DT-INT-SWING30",
-         position=from_node("N-A-PK-W", ft(6, 6))),
+    #     H(x) = 1 1/2" + x/2
+    #
+    # above the attic deck. ** THIS DOOR SHRANK RATHER THAN MOVED, AND IT HAD TO. ** It was a
+    # 6'-8" DT-INT-SWING30 at x 6'-6"..9'-0", derived when the rake was 5'-0" + x/3 and gave
+    # 7'-2"..8'-0" there. The same stations now give 4'-9" to 6'-0", and a 6'-8" head plus its
+    # header needs 2 x (80 + 2) = 13'-8" of x — which this 10'-0" wall does not have ANYWHERE.
+    # There is no station on W-A-STU-N that takes a full-height leaf.
+    #
+    # So it becomes a low ACCESS door: DT-INT-ACCESS24, 2'-0" x 3'-0", whose head needs
+    # 2 x (36 + 2) = 76" and sits at x 6'-4"..8'-4" — with 5'-1 1/2" of rake over its east
+    # jamb and 3'-11 1/2" over its west one, and 1'-3 1/2" clear of W-A-STU-W's tee studs at
+    # x 9'-4 3/4". Going taller is what forces it east into that tee. `structural.member_interference` is the rule that decides this
+    # — it named the old jacks and header coming out through the raked top plate the moment the
+    # pitch changed, exactly as it did on this door's first attempt in 2026-08.
+    #
+    # It is still a DOOR and not a scuttle because this pocket is the ERV's service access — the
+    # manifold EQ-A-ERV-MAN-EXH, the outdoor-air hood and VR-M-RADON-VENT's head all sit inside
+    # it, and IRC M1305.1.3 wants a passageway, a platform, a light and a receptacle at the
+    # appliance (hence ED-A-POCKET-LT1 and ED-A-POCKET-RC1). M1305.1.3's passageway minimum is
+    # 30" high x 22" wide, so 24 x 42 clears it with room; the door is SMALLER but not
+    # sub-code. `code.R807_1_attic_access` is storey-level and is satisfied by ST-S2A either way
+    # — walling off the pocket CANNOT make that rule fail — so the leaf size is a buildability
+    # call, not a code one.
+    Door(uid="Y3R3YMXFVJ", tag="D-A-POCKET", host="W-A-STU-N", type_ref="DT-INT-ACCESS24",
+         position=from_node("N-A-PK-W", ft(6, 4))),
     # Into the bath off the studio. `flip_hinge` parks the leaf against the wall, clear of the
-    # shower's SW corner. The leaf sweeps part of the water closet's clear space; that is NOT graded
-    # (a leaf is not a fixture) and is ordinary practice — P2705.1 asks for the space to exist, not
-    # for it to be unswept. Noted so nobody chases a non-finding.
+    # shower's SW corner.
+    #
+    # ** THE SWING FLIPPED ON 2026-08-29: IT OPENS INTO THE BATH NOW, NOT INTO THE STUDIO. **
+    # The wet bar moved to W-A-C2's west face at (17'-0", 16'-8") on the same pass (the 6:12
+    # rake left nothing usable at the old wet-wall station), which put the sink and the
+    # under-counter fridge directly in this leaf's arc — `integrity.door_swing_conflict`
+    # named both. Swinging inward is free here because the fixtures it used to sweep have
+    # gone the other way: the water closet is on the north wall at x 13'-6" now, well clear
+    # of the arc, so the P2705.1 note this comment used to carry no longer applies either.
+    # ** MOVED EAST 2026-08-29, 11'-3 5/8" -> 14'-0" (leading jamb), FOR THE SAME RAKE. **
+    # W-A-BATH-S runs in x from 9'-7 1/2" to 18'-0" and the 6:12 underside is `1 1/2" + x/2`,
+    # so a 6'-8" head plus its header needs 2 x (80 + 2) = 13'-8" of x at the LOW (west) jamb.
+    # It stood at 11'-3 5/8", where there are only 5'-9 1/2", and the header came out through
+    # the raked plate. At 14'-0" there are 7'-1 1/2" — 4" of margin — and the leaf ends at
+    # 16'-6", clear of N-A-BW-E. This is also the move the bath wanted anyway: the fixtures
+    # went east into the tall half on the same pass (plan/fixtures.py), so the door now opens
+    # onto them rather than into the low strip behind them.
     Door(uid="ENHDGC87MN", tag="D-A-STUBATH", host="W-A-BATH-S", type_ref="DT-INT-SWING30",
-         position=from_node("N-A-WW-S", ft(1, 8.125)), flip_hinge=False, flip_swing=True),
+         position=from_node("N-A-WW-S", ft(4, 4.5)), flip_hinge=False, flip_swing=False),
 ]
 
 # ============================== ROOMS =================================================

@@ -184,7 +184,14 @@
 # the gap is ever respecified as something other than a closure strip.
 "0.5x5 panel" = { low = 1.5, high = 5 }  # 56 LF — formed gutter stock
 # "1.25x0.416667 panel" =    # 156 LF — corner_trim, billed in [edge_trim]
-"1.25x11.875 rim" = { material = { low = 3, high = 4.75 }, labour = { low = 1.1, high = 2.1 } }  # 144 LF
+"1.25x11.875 rim" = { material = { low = 3, high = 4.75 }, labour = { low = 1.1, high = 2.1 } }  # 72 LF — FS-ATTIC's two went to LSL on 2026-08-29, see below
+# FS-ATTIC's two rims, 2026-08-29. They are the perimeter bearing line under the attic's
+# rafter plates now rather than a band board capping joist ends, and a 1 1/4" OSB rim on that
+# line would crush. 1 3/4" LSL is the ordinary answer and it is roughly double the band
+# board's material: TimberStrand 1.75x11.875 runs about $5.50-8.00/LF against $3.00-4.75 for
+# the 1 1/4" stock. Labour is unchanged — it is the same nailing, the same crew, the same
+# 72 LF, and it is set with the deck either way.
+"1.75x11.875 LSL" = { material = { low = 5.5, high = 8 }, labour = { low = 1.1, high = 2.1 } }  # 72 LF
 "1.25x7.25 rim" = { material = { low = 2, high = 3.25 }, labour = { low = 0.9, high = 1.7 } }  # 76 LF
 # The balcony's two rim bands (FS-SG-DECK, `JoistSpec.rim_material`), 20 LF of that same
 # stock, WHITE-PAINTED with the pillars, girts and knee braces they close the deck over
@@ -234,7 +241,15 @@
 # bears continuously, so it splices over any bearing point, and a 12' piece is a two-man lift
 # where a 36' one is a crane pick. Same lineal feet either way, which is why the rate did not
 # move; 36' also divides three ways with no offcut, so there is no waste to price.
-"2-1.75x14 LVL" = { material = { low = 16, high = 30 }, labour = { low = 9, high = 20 } }  # 56 LF
+"2-1.75x14 LVL" = { material = { low = 16, high = 30 }, labour = { low = 9, high = 20 } }  # 20 LF — the 16.7' opening header only since 2026-08-29
+# RB-HOUSE moved 14" -> 16" on 2026-08-29 with the attic's 4:12 -> 6:12 pitch. The depth is a
+# HANGER dimension, not a bending one: an 11 7/8" I-joist on a 6:12 plane cuts 13.28" plumb
+# and the face sits 1.75" off the peak plus 0.875" down the plane, so the beam has to reach
+# 14.15" below the ridge line and 14" misses by 0.15". Material scales with section — 16/14 is
+# +14% — and the labour does not: same three 12' sticks, same two-man lift (a 12' ply of this
+# section is about 105 lb against 92 lb at 14"), same splice-over-any-bearing-point rule
+# because it bears continuously. 36 LF, three 12s, no offcut, no waste to price.
+"2-1.75x16 LVL" = { material = { low = 18, high = 34 }, labour = { low = 9, high = 20 } }  # 36 LF
 "2-2x10" = { material = { low = 3, high = 4 }, labour = { low = 1, high = 2 } }  # 24 LF
 "2-2x6" = { material = { low = 1.7, high = 2.3 }, labour = { low = 0.9, high = 1.8 } }  # 16 LF
 "2-2x8" = { material = { low = 2.2, high = 3.1 }, labour = { low = 1, high = 2 } }  # 440 LF
@@ -1556,18 +1571,29 @@
 # Basis, the same one `[construction_returns]."rim-spray-foam"` already derives from: 2 lb
 # ccSPF is $1.00-1.50 per BOARD-FOOT installed, and a board-foot is 1 SF at 1". So
 #   1-1/2" lift  -> 1.5 bd-ft/SF -> $1.50-2.25/SF
-#   2-1/2" lift  -> 2.5 bd-ft/SF -> $2.50-3.75/SF
+#   1"     lift  -> 1.0 bd-ft/SF -> $1.00-1.50/SF
+#   2-1/2" lift  -> 2.5 bd-ft/SF -> $2.50-3.75/SF   (DEAD — see below)
 # split here roughly 40/60 material/labour, which is where a sprayed-in-place product with a
 # rig, a crew and a cure window sits. Total for the wall: 3,512 SF x 4" = 14,050 board-feet.
 #
-# ** THIS IS ONE MOBILISATION, NOT TWO. ** The two rows are two lifts of one visit — the
-# second is sprayed over the first once it has cured, in the same day — so do NOT let a
-# quote carry set-up twice. At 14,050 bd-ft the job is well past any sprayer's minimum
-# charge, unlike the 81 LF rim, which is why neither range is widened at the top the way
-# `rim-spray-foam`'s is.
+# ** THE WALL IS THREE BANDS, NOT TWO, AND HAS BEEN SINCE THE GIRT REWORK. **
+# `plan/assemblies.py` authors 1.5" (band A) + a 1.5" CavityFill (band B) + 1.0" (band C).
+# The `:2.5` row below is the retired 1.5+2.5 split and now matches nothing; `:1.0` was
+# MISSING until 2026-08-29, so band C emitted `closed-cell-spray-foam:1.0`, matched no key,
+# and fell into the take-off's "not priced" list — roughly $3,700-5,500 of foam absent from
+# the bid on CATLIN_EXT_2X6 and PLANT_EXT_2X6_HUMID together. Added at the same
+# $1.00-1.50/bd-ft basis as every other row here.
+#
+# ** IT IS NOT ONE MOBILISATION. ** The earlier claim here (one visit, two lifts, same day)
+# does not survive `notes/catlin_truss_engineering.md` §8: step 5 puts 2,448 LF of inner
+# girt course, plus jamb posts and head/sill courses at 45 openings, BETWEEN lift 1 and
+# lift 2, and step 7 shaves lift 2 to a gauge before the outer girts. No sprayer waits
+# through a framing operation of that size. Budget a SECOND set-up, ~$500-1,500; the rows
+# below carry board-feet only, so that mobilisation is not in any of them.
 # Sources: 2026 published ccSPF $/board-foot surveys (homeguide.com, retrofoamofmichigan) —
 # the same two the rim row cites; the board-feet are this assembly's own geometry.
 "closed-cell-spray-foam:1.5" = { material = { low = 0.6, high = 0.95 }, labour = { low = 0.9, high = 1.3 } }  # 3512.2 SF — the continuous band behind the outriggers
+"closed-cell-spray-foam:1.0" = { material = { low = 0.4, high = 0.6 }, labour = { low = 0.6, high = 0.9 } }  # band C, the last 1" before the vent gap
 "closed-cell-spray-foam:2.5" = { material = { low = 1.0, high = 1.55 }, labour = { low = 1.5, high = 2.2 } }  # 3512.2 SF — the fill between them, billed as insulation (cavity)
 # RESEARCHED 2026-08-20 — GARAGE_ROOF's attic fill, 576 SF at 14.5" settled (R-38). A
 # separate key from "fiberglass" above because that row is a 5.5" stud-bay BATT and this is
@@ -1632,7 +1658,18 @@
 "humid-room-membrane" = { material = { low = 0.55, high = 0.95 }, labour = { low = 1.2, high = 2.2 } }  # 445.2 SF
 "pvc-panel" = { material = { low = 3.5, high = 7 }, labour = { low = 3, high = 5.5 } }  # 445.2 SF
 "gwb-x" = { material = { low = 0.6, high = 1 }, labour = { low = 1.3, high = 2.2 } }  # 92.3 SF
-"icf-eps" = { material = { low = 3, high = 5 }, labour = { low = 3.5, high = 6.5 } }  # 952.5 SF — forms only; ready-mix is in [wall_structure]
+# ZEROED 2026-08-29 — THIS WAS A DOUBLE BILL, $6,191-10,954. The old comment ("forms only;
+# ready-mix is in [wall_structure]") was wrong about what [wall_structure] carries.
+# `GARAGE_ICF_6` is NOT a ready-mix rate: its own note below calls it "$14-24/SF. Market is
+# $13-25/SF typical" and spells out that "the blocks are $5.00-7.00/SF of face ... on top of
+# the ready-mix and steel — over half the rate is material". The blocks are INSIDE that rate.
+# Billing them again here, at $6.50-11.50 per face-SF over 952.5 SF (= both faces of the same
+# 476 SF stem), put the house at $27-47/SF for a 6" ICF frost wall against a $13-25 market.
+# `icf-eps` is used by nothing but GARAGE_ICF_6 and GARAGE_ICF_6_BRICKLEDGE (plan/assemblies.py
+# 1024/1030 and 1105/1111), so zeroing it here is complete. The deck's stay-in-place form is a
+# DIFFERENT material (`eps-deck-form`, assemblies.py:1856) and is untouched.
+# Same pattern as "slab:SG_FROST_WING_XPS1/2" above: priced in one section, zeroed in the other.
+"icf-eps" = { material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }  # 952.5 SF — billed inside GARAGE_ICF_6 in [wall_structure]
 # The main floor's EPS deck forms (2026-08-21), the horizontal cousin of the row above and
 # split the same way: **forms only**, with the ready-mix, reinforcing, pump and finish in
 # [concrete] under "slab:CATLIN_DECK_EPS_INT". LiteDeck/BuildDeck base sections list around
@@ -2141,13 +2178,23 @@
 "WT-1424" = { material = { low = 520, high = 1000 }, labour = { low = 115, high = 235 } }  # 6 ea — 38 UI; 14" is under the awning minimum, see above
 "WT-1424-FIX" = { material = { low = 400, high = 780 }, labour = { low = 105, high = 215 } }  # 1 ea — fixed runs 75-80% of an operable casement
 "WT-1424-T" = { material = { low = 670, high = 1250 }, labour = { low = 115, high = 240 } }  # 5 ea — +$150/250 flat tempered
-"WT-1448" = { material = { low = 550, high = 1050 }, labour = { low = 135, high = 275 } }  # 2 ea — 62 UI, same band as WT-2736
+# 14x36, the south gable's flanker size since 2026-08-29 (WT-1448 shortened for the 6:12
+# rake). 50 UI, INSIDE the 0-71 UI band, so it prices between WT-1424's 38 UI and WT-1448's
+# 62 UI on the same glass-and-frame curve — a third height in a width family whose buck,
+# header (none — a 14" RO lands inside a bay) and flashing are already bought.
+"WT-1436" = { material = { low = 535, high = 1025 }, labour = { low = 125, high = 255 } }  # 2 ea — 50 UI
+"WT-1448" = { material = { low = 550, high = 1050 }, labour = { low = 135, high = 275 } }  # 0 ea — CATALOG-ONLY since 2026-08-29, when both gable flankers shortened to WT-1436 for the 6:12 rake. Kept priced, like WT-2464 below, so the retired size stays an orderable option
 "WT-2464" = { material = { low = 760, high = 1430 }, labour = { low = 170, high = 370 } }  # 0 ea — 88 UI, over the band. CATALOG-ONLY since 2026-08-27, when both juliets retyped to WT-2764; kept priced so the retired size stays an orderable option. Was WT-1864 (18x64, 82 UI) until 2026-08-24; +6" of width is ~8% of material here, and 24" clears Andersen 400's 20-11/16" casement minimum, so this row is no longer an availability risk
 # 27x64, the juliet size since 2026-08-27 (WT-2464 + 3" of width). 91 UI, the widest unit
 # in the house and past the 0-71 UI band, so it carries WT-2464's over-band premium plus
 # ~4% for the extra glass and frame. Still one-man set — 27" is narrow and the sill is
 # 2'-8" off a finished attic floor.
-"WT-2764" = { material = { low = 790, high = 1490 }, labour = { low = 175, high = 380 } }  # 2 ea — 91 UI
+"WT-2764" = { material = { low = 790, high = 1490 }, labour = { low = 175, high = 380 } }  # 0 ea — CATALOG-ONLY since 2026-08-29: at 6:12 the rake gives 7'-6 3/4" over the juliets' outer jambs and a 64" unit on the gable's 2'-8" sill wants 8'-2". Kept priced for the same reason WT-2464 is
+# 27x54, the juliet size since 2026-08-29 — WT-2764 with 10" taken off the height and nothing
+# else changed. 81 UI, still past the 0-71 band, so it keeps the over-band premium but sheds
+# ~9% of glass and frame against the 64" unit. Width-identical, so the pier, the centres and
+# the from_node offsets in storeys/attic.py are all untouched by the retype.
+"WT-2754" = { material = { low = 720, high = 1360 }, labour = { low = 170, high = 365 } }  # 2 ea — 81 UI
 # The mid units — ordinary 17-26% corrections.
 "WT-2736" = { material = { low = 550, high = 1050 }, labour = { low = 155, high = 320 } }  # 10 ea — the production unit, 63 UI
 "WT-2736-T" = { material = { low = 700, high = 1300 }, labour = { low = 160, high = 330 } }  # 1 ea
@@ -2181,6 +2228,13 @@
 # high is solid-core MDF prehung ($519 Masonite 5-panel, $548 Stile 7-lite).
 # ** THE SAME MINIMUM-SIZE FLOOR APPLIES: a 24" door is barely cheaper than a 30". **
 "DT-INT-SWING24" = { material = { low = 145, high = 480 }, labour = { low = 135, high = 280 } }  # 3 ea — was 26% low at the top for exactly the floor reason
+# 24x36, RM-A-POCKET's ERV service access under the attic's 6:12 west rake (2026-08-29). The
+# ONE place the minimum-size floor above does NOT apply: this is not a prehung passage door in
+# a smaller leaf, it is an access panel with hinges and a knob — a flush hollow-core blank cut
+# to size in a site-built jamb — so it prices as millwork rather than as a door SKU. Labour is
+# most of it, and it is less than a passage door's because there is no casing to run and no
+# strike to set square. It still clears IRC M1305.1.3's 30" x 22" passageway minimum.
+"DT-INT-ACCESS24" = { material = { low = 60, high = 190 }, labour = { low = 95, high = 200 } }  # 1 ea
 "DT-INT-SWING30" = { material = { low = 150, high = 520 }, labour = { low = 145, high = 305 } }  # 12 ea — high end is solid-core paint-grade
 "DT-INT-SWING32" = { material = { low = 155, high = 540 }, labour = { low = 145, high = 305 } }  # 9 ea
 "DT-INT-SWING30-GLAZED" = { material = { low = 350, high = 900 }, labour = { low = 165, high = 350 } }  # 1 ea — was 38% low; a solid-core divided-lite is a real door

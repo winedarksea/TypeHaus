@@ -36,6 +36,7 @@ from typehaus.model.enums import DeviceKind, PipeSystem
 from typehaus.model.mep import Sump, VentRun
 from typehaus.quantities import ft
 from typehaus.resolve.geometry import opening_center
+from typehaus.resolve.vent_termination import exterior_riser_point
 
 _CODE = "MN 1303.2402"
 _CID = "code.MN_1303_2402_radon"
@@ -57,12 +58,17 @@ def _exterior_riser_point(vent: VentRun) -> tuple[float, float]:
     """Plan point of the riser *outside* the wall, which is what subpart 5 measures from.
 
     The chase point is inside the building; the pipe leaves through ``wall_ref`` and rises
-    up the cladding at ``chase_position + exit_offset``. Measuring separation from the chase
-    would answer a question about a pipe nobody can smell.
+    up the cladding. Measuring separation from the chase would answer a question about a
+    pipe nobody can smell.
+
+    This DELEGATES rather than re-deriving. It used to compute ``chase_position +
+    exit_offset`` itself, which was the same arithmetic the resolver does — and it stopped
+    being the same the moment ``VentRun`` grew ``chase_offset``: a riser that jogs inside
+    before it rises leaves the wall somewhere the chase point does not predict, and this
+    check would have gone on grading the separation of a pipe that is not there. One
+    derivation, one place: :func:`typehaus.resolve.vent_termination.exterior_riser_point`.
     """
-    cx, cy = vent.chase_position.xy_m
-    ox, oy = vent.exit_offset.xy_m
-    return cx + ox, cy + oy
+    return exterior_riser_point(vent)
 
 
 @check(Tier.CODE, _CID)

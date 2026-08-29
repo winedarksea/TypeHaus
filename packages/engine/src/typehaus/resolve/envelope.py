@@ -6,27 +6,27 @@ import math
 from dataclasses import replace
 
 from typehaus.findings import Finding, Result, Severity, element_error
-from typehaus.model.floors import FloorOpening, FloorSystem, Slab, Soffit
-from typehaus.model.spatial import Roof, Stair
-from typehaus.model.refs import ToRoof
 from typehaus.model.enums import ConditionKind
+from typehaus.model.floors import FloorOpening, FloorSystem, Slab, Soffit
+from typehaus.model.refs import ToRoof
+from typehaus.model.spatial import Roof, Stair
 from typehaus.model.structure import Beam, Footing, FootingBedding, GlazingPanel, Pad, Post
+from typehaus.resolve.drain_tile import drain_tile_solids, resolved_spec
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.solver import band_axis
 from typehaus.resolve.geometry import circle_outline, polygon_area, rect_between
-from typehaus.resolve.roof_layer_setbacks import deck_rise_m, layer_edge_setbacks
-from typehaus.resolve.drain_tile import drain_tile_solids, resolved_spec
 from typehaus.resolve.model import (
     BoundaryCondition,
-    Ring,
     ResolvedFootingBedding,
     ResolvedModel,
     ResolvedRoof,
     ResolvedSoffit,
     ResolvedSolid,
     ResolvedWall,
+    Ring,
 )
 from typehaus.resolve.roof_edge_geometry import skin_layers, skin_stand_ins
+from typehaus.resolve.roof_layer_setbacks import deck_rise_m, layer_edge_setbacks
 from typehaus.resolve.stairs import _resolve_stair
 
 
@@ -281,7 +281,27 @@ def _roof_wall_conditions(model: ResolvedModel, authored_roof: Roof,
         wall = model.wall(wall_tag)
         if wall is None:
             continue
-        assemblies = tuple(sorted((wall.assembly, roof.assembly)))
+        # A skinless BEARING element states no wall-to-roof condition of its own. What this
+        # condition binds is the weather and thermal handoff at the junction — where the
+        # wall's WRB, CI and cladding meet the roof's — and a 2x plate laid flat on the deck
+        # has none of those to hand off. Left as authored, a story-and-a-half eave emitted
+        # `wall_roof:<PLATE>|<ROOF>`: a new, unbound key drawing a detail with no wall stack
+        # in it, while the real condition — the wall the plate stands on meeting the same
+        # roof — disappeared from the drawing set along with its Transition and its golden.
+        #
+        # Scoped to bearing refs, and followed ONE link down ``stacks_on``. An interior wall
+        # that runs up to the roof (a centre bearing wall, a partition) has no weather skin
+        # either and needs no substitution: its junction with the roof is its own condition,
+        # correctly keyed on its own assembly. And a single authored link is the right reach
+        # here — unlike the closure band, which needs the whole eave line — because a
+        # condition is a DETAIL KEY, and one key per assembly pair is the whole point.
+        skinned = wall
+        if wall_tag in authored_roof.bearing_refs and not skin_layers(wall):
+            authored_wall = model.plan.by_tag(wall_tag)
+            below = model.wall(getattr(authored_wall, "stacks_on", None) or "")
+            if below is not None and skin_layers(below):
+                skinned = below
+        assemblies = tuple(sorted((skinned.assembly, roof.assembly)))
         model.conditions.append(
             BoundaryCondition(
                 kind=ConditionKind.WALL_ROOF, assemblies=assemblies, detail="roof-bearing",

@@ -40,8 +40,9 @@
 # - Sunken-garden porch: west wall W-SG-W1 axis x=8', inner face x=8.5', north end
 #   y=-0.833'. Hot tub disconnect 7' south of that, under the deck — basement storey, so
 #   Mount elevation 5' is -4' absolute.
-# - PV junction box on the north gable (W-A-N2) beside the radon riser clamp cluster; at
-#   x=9' the 4:12 rake carries siding to 28', so 25'-6" absolute has cladding to grip.
+# - PV junction box on the north gable (W-A-N2B since 2026-08-29) beside the radon riser
+#   clamp cluster; at x=11' the 6:12 rake carries siding to 26'-5 3/8", so 25'-6" absolute
+#   has cladding to grip. It was at x=9' under a 4:12 rake reaching 28'.
 
 from typehaus import (
     ConduitRun,
@@ -805,13 +806,24 @@ GARAGE_EQUIPMENT = [
               mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
 ]
 
-# --- Attic: PV junction box beside the radon riser (ED-A-NEMA-JB at (6', 37')) --------
+# --- Attic: PV junction box beside the radon riser -----------------------------------
 PV_JBOX = [
     # Moved out 1/2" on 2026-08-23 with the Swinburne truss's cladding face, 3/8" back in
     # on 2026-08-25 with the can's true 3 1/4" depth (see ED-M-HP1-DISC), and out 1" again
     # on 2026-08-26 with the catlin truss (5.5" -> 6.5" proud).
+    #
+    # ** MOVED x 9'-0" -> 11'-0" ON 2026-08-29, and it had to. ** The gable's rake follows
+    # the roof, and at 6:12 off a 20'-11 3/8" eave the plane stands at 25'-5 3/8" at x=9'-0"
+    # — 1/2" BELOW this box's own 25'-6", i.e. the enclosure was on the roofing rather than
+    # the siding. At x=11'-0" the plane is 26'-5 3/8" and the box hangs with 11" of cladding
+    # over it. It follows VR-M-RADON-VENT's riser east on the same pass (mep_venting.py) and
+    # is still beside it: the riser jogs to x 9'-7 1/2", so the box is 1'-4 1/2" east of it.
+    #
+    # ** IT SITS ON W-A-N2B NOW, NOT W-A-N2 ** — the north gable split at x=10'-0" on
+    # 2026-08-29 and 11'-0" is east of that. test_catlin_outdoor_structures.py names the
+    # wall it must ride below; that assertion follows the box.
     ElectricalDevice(uid="CEE014AAAA", tag="ED-A-PV-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(9), ft(36, 10.25)), type_ref="ED-T-PV-JB", circuit="CKT-ESS-GRID",
+                     position=pt(ft(11), ft(36, 10.25)), type_ref="ED-T-PV-JB", circuit="CKT-ESS-GRID",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
 ]
 # ** CN-A-PV-CLAMP is GONE (2026-08-26), for the same reason as CN-A-NEMA-CLAMP **
@@ -834,10 +846,26 @@ CONDUIT_TRUNKS = [
     # Up the mechanical chase beside the radon vent to the PV junction box. Corrected
     # 2026-08-02 to (1'-6", 34'-6") — the old (3', 33') sat 4" south of W-M-MECH-S, out in
     # the open mudroom floor with no enclosure.
+    # ** THE RISER STOPS AT THE ATTIC DECK SINCE 2026-08-29, AND CD-A-PV-EAST FINISHES IT. **
+    # It used to run all the way to 25'-6" at x=1'-6". That worked under the old 4:12 roof off
+    # 5'-0" knee walls, where the plane at x=1'-6" stood at 25'-6" exactly; at 6:12 off a
+    # 20'-11 3/8" eave the plane there is 21'-8 3/8", so the last 3'-10" of this run was
+    # simply outside the building. The chase does NOT move — moving it would drag the
+    # mechanical-room penetration through every storey below, which is the same reason
+    # VR-M-RADON-VENT jogs in the attic instead of relocating (mep_venting.py). A ConduitRun
+    # travels flat at `start_elevation` and rises only at its LAST point, so "up, then over"
+    # is two runs, not one polyline.
     ConduitRun(uid="CDT001AAAA", tag="CD-B-ATTIC-RISER", trade_size=inch(1.5),
                path=(pt(ft(2), ft(29)), pt(ft(1, 6), ft(34, 6))),
-               start_elevation=ft(-4), end_elevation=ft(25, 6),
+               start_elevation=ft(-4), end_elevation=ft(20, 6),
                from_ref="ED-B-PANEL", to_ref="ED-A-PV-JB"),
+    # The over-and-up leg: east along the attic deck under the north rake to x=11'-0", then
+    # up the gable to ED-A-PV-JB at 25'-6". 6" above the deck for the flat part, which is
+    # what CD-A-DATA-NE does on the same storey and for the same reason.
+    ConduitRun(uid="XJR4KE400J", tag="CD-A-PV-EAST", trade_size=inch(1.5),
+               path=(pt(ft(1, 6), ft(34, 6)), pt(ft(11), ft(34, 6))),
+               start_elevation=ft(20, 6), end_elevation=ft(25, 6),
+               from_ref="CD-B-ATTIC-RISER", to_ref="ED-A-PV-JB"),
     # --- the backup microgrid's three raceways (2026-08-02) --------------------------
     #
     # The PV string conductors no longer terminate at the panel: they land on the
@@ -972,8 +1000,8 @@ ATTIC_DATA_TRUNKS = [
     # note on the knee-wall bench. It is data, not power: no shared-cavity question.
     ConduitRun(uid="CDT012AAAA", tag="CD-A-DATA-NE", trade_size=inch(0.75),
                service=Service.DATA,
-               path=(pt(ft(2), ft(34, 6)), pt(ft(2), ft(20, 8)), pt(ft(33), ft(20, 8)),
-                     pt(ft(33), ft(34, 6)), pt(ft(33), ft(35, 5))),
+               path=(pt(ft(2), ft(34, 6)), pt(ft(2), ft(20, 8)), pt(ft(27), ft(20, 8)),
+                     pt(ft(27), ft(34, 6)), pt(ft(27), ft(35, 5))),
                start_elevation=ft(20, 6), end_elevation=ft(24),
                from_ref="ED-B-NET-PATCH", to_ref="ED-A-EAST-AP"),
 ]
@@ -1079,11 +1107,19 @@ DATA_SLEEVES = [
 ]
 
 ATTIC_DATA_DEVICES = [
-    # High on the north gable in the NE corner of RM-A-EAST-UNFIN. Mount elevation is
-    # storey-relative (attic datum 20'), so 4' here is 24' absolute — under the 4:12 rake,
-    # which at x=33' carries the roof to 26'.
+    # High on the north gable in RM-A-EAST-UNFIN. Mount elevation is storey-relative (attic
+    # datum 20'), so 4' here is 24' absolute.
+    #
+    # ** MOVED x 33'-0" -> 27'-0" ON 2026-08-29. ** It was in the NE corner, "under the 4:12
+    # rake, which at x=33' carries the roof to 26'". At 6:12 off a plate the north gable's
+    # inside face at x=33' stands 1'-7 1/2" above the deck and a 4'-0" mount is three feet of
+    # fresh air. The rule is `x_mount <= 2 x (head + 2")` read backwards: a 4'-0" device needs
+    # 8'-8" of run from the eave, so anywhere in x 8'-8"..27'-4" holds it. 27'-0" is the
+    # easternmost bay that does, which keeps the AP where its coverage was wanted — over the
+    # east loft — rather than dragging it to the ridge. CD-A-DATA-NE's last two vertices
+    # follow it.
     ElectricalDevice(uid="CND004AAAA", tag="ED-A-EAST-AP", kind=DeviceKind.DATA_OUTLET,
-                     position=pt(ft(33), ft(35, 1.375)), type_ref="ED-T-AP-CEILING",
+                     position=pt(ft(27), ft(35, 1.375)), type_ref="ED-T-AP-CEILING",
                      room="RM-A-EAST-UNFIN", wall_ref="W-A-N1",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
 ]

@@ -356,9 +356,17 @@ def test_house_walls_gain_layers_rather_than_lose_them(equivalence):
     layer-walls than the reference. Comparing layer *counts* per run is what makes the
     layer-per-wall and layerset-per-wall conventions commensurable.
     """
+    # ** THE FOUR ATTIC KNEE WALLS ARE OUT OF SCOPE SINCE 2026-08-29. ** The reference drew
+    # them as 7-layer exterior stud walls 5'-0" tall; what stands there now is
+    # CATLIN_RAFTER_PLATE — one structure layer, 1 1/2" of 2x6 laid flat on the deck, with
+    # no lining, sheathing or cladding because a plate on a subfloor has no faces. Comparing
+    # its layer count to a stud wall's is a category error, not a regression: the wall did
+    # not lose six layers, it stopped being a wall. The gables and every other storey are
+    # still held to "never fewer than the reference", which is what this test defends.
     house_walls = [item for item in _paired(equivalence, "wall")
                    if item.reference_name.startswith("House ")
-                   and "Centerline" not in item.reference_name]
+                   and "Centerline" not in item.reference_name
+                   and "Knee" not in item.reference_name]
     assert house_walls
     for item in house_walls:
         assert item.current_layer_count >= item.reference_layer_count, item.as_dict()
@@ -411,8 +419,11 @@ def test_framing_survives_as_aggregated_members_and_only_grows(reference_model,
     """
     assert reference_model.framing_member_total() > 0
     assert current_model.framing_member_total() >= reference_model.framing_member_total()
+    # "Knee" is excluded for the reason in test_house_walls_gain_layers_rather_than_lose_them:
+    # a rafter plate frames one plate member where a 5'-0" stud wall framed 31, and that is
+    # the change rather than a loss of framing. The house total still only grows.
     framed_pairs = [item for item in _paired(equivalence, "wall")
-                    if item.reference_framing_count]
+                    if item.reference_framing_count and "Knee" not in item.reference_name]
     assert framed_pairs
     for item in framed_pairs:
         assert item.current_framing_count >= item.reference_framing_count, item.as_dict()

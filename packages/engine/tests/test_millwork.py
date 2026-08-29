@@ -55,11 +55,16 @@ def test_a_window_type_can_carry_a_frame_depth(catlin_plan) -> None:
 # --- the derivation ------------------------------------------------------------------------
 
 def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catlin_model_ro):
-    """39 of 45 windows. The plant room, the sauna and the garage are deliberately out."""
+    """33 of 39 windows. The plant room, the sauna and the garage are deliberately out."""
     assert {stool.assembly for stool in stools} == {"CATLIN_EXT_2X6"}
-    assert len(stools) == 39
+    # ** 33 SINCE 2026-08-29, NOT 39. ** The attic lost six windows with the knee walls:
+    # the four eave units (WIN-A-W-S/W-N, WIN-A-E-S/E-N, hosted on walls that are 1 1/2"
+    # rafter plates now) and the south gable's corner pair (WIN-A-S1/S4, at x 3'-4"/32'-8"
+    # where the 6:12 rake leaves 21 1/2" of wall). 39 windows remain in the house, 33 of them
+    # in CATLIN_EXT_2X6 and so stooled.
+    assert len(stools) == 33
     windows = [o for o in catlin_model_ro.openings if o.kind == "window"]
-    assert len(windows) == 45, "the six out-of-scope windows still exist; they get no oak"
+    assert len(windows) == 39, "the six out-of-scope windows still exist; they get no oak"
     assert all(stool.derived for stool in stools)
     assert all(stool.material_ref == "oak-stool" for stool in stools)
 
@@ -125,11 +130,16 @@ def test_a_stools_length_is_the_opening_plus_two_horns(stools, catlin_model_ro):
 
 
 def test_the_stool_cut_list_collapses_to_the_three_window_widths(stools):
-    """39 stools, three sizes — which is what makes them worth milling from one setup."""
+    """33 stools, four sizes — which is what makes them worth milling from few setups.
+
+    A fourth width arrived on 2026-08-29 with WT-1436 replacing the south gable's WT-1448
+    flankers... except it did not: WT-1436 is the same 14" RO in a third height, so the
+    STOOL is width-identical. What changed is only the count.
+    """
     sizes = {round(stool.length_m * M_TO_IN, 2) for stool in stools}
     assert len(sizes) == 3
     counts = _by_assembly(stools)
-    assert sum(len(v) for v in counts.values()) == 39
+    assert sum(len(v) for v in counts.values()) == 33
 
 
 # --- shelf banks --------------------------------------------------------------------------
@@ -147,14 +157,22 @@ def test_the_attic_built_in_derives_its_depth_from_the_wall_pocket(catlin_model_
     assert bank.depth_m < wall.thickness_m
 
 
-def test_the_attic_bays_are_five_stepped_bays_with_their_own_counts(catlin_model_ro):
-    """A uniform spacing does not divide into a raked case; per-bay counts are the point."""
+def test_the_attic_bays_are_stepped_bays_with_their_own_counts(catlin_model_ro):
+    """A uniform spacing does not divide into a raked case; per-bay counts are the point.
+
+    ** FOUR BAYS SINCE 2026-08-29, NOT FIVE, AND 14 SHELVES RATHER THAN 32. ** The bay
+    tops came from `5'-0" + (36' - x)/3` off a knee wall; at 6:12 off a rafter plate they
+    are `1 1/2" + (36' - x)/2`, which is 5'-0" down to 1'-0" across bays 1-4 and leaves
+    bay 5 (x 33'-4"..35'-5 3/8") with 4 1/8" — closed out rather than shelved. What the
+    test is defending is unchanged and is the reason it exists: the bays STEP, and the
+    counts are per-bay because one pitch does not divide into a rake.
+    """
     bank = next(b for b in catlin_model_ro.shelf_banks if b.tag == "SB-A-STUDY")
-    assert len(bank.shelves) == 5
+    assert len(bank.shelves) == 4
     heights = [round(shelf.clear_height_m * M_TO_IN, 1) for shelf in bank.shelves]
     assert heights == sorted(heights, reverse=True), "the bays step down under the rake"
     assert len({shelf.count for shelf in bank.shelves}) > 1
-    assert sum(shelf.count for shelf in bank.shelves) == 32
+    assert sum(shelf.count for shelf in bank.shelves) == 14
 
 
 def test_a_carcass_hosted_bank_derives_its_depth_from_the_furniture_type(catlin_model_ro):

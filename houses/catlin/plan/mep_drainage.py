@@ -385,8 +385,12 @@ TPR_DISCHARGE = [
 # --- Radon sump + shared radon/plumbing vent riser ---------------------------------
 # A sealed radon sump in the NW basement furnace room, riding RM-M-MECH's framed shaft
 # closet (moved into RM-S-BATH1's notch 2026-07-28; was floating unenclosed at (3',33')).
-# Its passive radon vent shares the plumbing vent's chase up to 23'-10" (under the 4:12
-# rake at 25'-5.7"), then turns out through the north gable siding and back up. Termination
+# Its passive radon vent shares the plumbing vent's chase up to 23'-10", then turns out
+# through the north gable siding and back up. ** SINCE 2026-08-29 IT JOGS EAST INSIDE THE
+# ATTIC FIRST ** — at x=1'-0" the 6:12 roof underside is 20'-8 1/4" and the riser cannot
+# stand up there at all, so `VentRun.chase_offset` steps it 12'-4" through the FS-ATTIC
+# joist webs to x=13'-4" before it rises (mep_venting.py). The chase itself does not move
+# through any storey below, and there is still no roof penetration. Termination
 # is derived (12" above the true roof surface, resolve/vent_termination.py), not authored —
 # an authored absolute can't follow a rake, which is how it once drifted 2' above the ridge.
 RADON_SUMP = [
@@ -424,19 +428,29 @@ RADON_SUMP = [
 # second floor's, where PR-M-S-SUITE-DRAIN's head is waiting. Filed on ``attic`` until
 # 2026-08-29, which resolved the whole stack 20'-0" high, hanging over the roof.
 STUDIO_DRAINS = [
+    # The WC flange moved to (13'-6", 21'-4") on 2026-08-29 when the 6:12 rake pushed both
+    # fixtures onto the room's north and south walls (plan/fixtures.py). The stack head does
+    # not move — it is still (9'-7 1/2", 20'-8"), inside W-S-DC2 — so this run simply gains
+    # its first leg: south-west out of the flange onto the y=20'-8" bay centre, then west as
+    # before. The lavatory's 1 1/2" arm ties into the same leg 2'-7" along it.
     PipeRun(uid="HTZ1RGAGXP", tag="PR-A-STUBATH-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(11, 0.875), ft(20, 8)), pt(ft(9, 7.5), ft(20, 8)),
+            path=(pt(ft(13, 6), ft(21, 4)), pt(ft(13, 6), ft(20, 8)),
                   pt(ft(9, 7.5), ft(20, 8)), pt(ft(13), ft(16, 10.8))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(19, 4), ft(19), ft(10), ft(9, 9)),
+            elevations=(ft(19, 4), ft(19, 3.5), ft(19), ft(9, 9)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH")),
-    # The wet bar drains into the same wall from its WEST face, back-to-back with the bath, so
-    # it joins the stack rather than crossing the studio floor to find one. 2" for a single
-    # lavatory-class bowl.
+    # ** THE BAR IS NO LONGER BACK-TO-BACK WITH THE BATH (2026-08-29). ** It moved to
+    # W-A-C2's west face at (17'-0", 16'-8") because the 6:12 rake left nothing usable at the
+    # wet wall, so its 2" branch now crosses the joist field west on the y=16'-8" bay centre
+    # (200" = 8 + 12 x 16) and turns north to the same stack head. Seven feet of extra 2" PVC
+    # in a bay it shares with nothing — the price of a counter you can stand at.
     PipeRun(uid="ZY2V3KWMVK", tag="PR-A-BAR-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(9, 3), ft(20)), pt(ft(9, 7.5), ft(20)),
+            path=(pt(ft(17, 6), ft(16, 8)), pt(ft(9, 7.5), ft(16, 8)),
                   pt(ft(9, 7.5), ft(20, 8))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(19, 6), ft(19, 5), ft(19, 4)),
+            # 2" over the 7'-11" west leg and 1" over the 4'-0" north one — 1/4"/ft on both,
+            # which `mep.drain_slope` grades segment by segment. The whole profile sits inside
+            # FS-ATTIC's 11 7/8" joist band (19'-0 1/8"..20'-0"), through the webs.
+            elevations=(ft(19, 7.5), ft(19, 5.5), ft(19, 4.5)),
             serves=("FX-A-STUDIO-BAR-SINK",)),
 ]

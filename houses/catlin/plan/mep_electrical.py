@@ -363,15 +363,21 @@ SECOND_DEVICES = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
 ]
 
-# Attic habitable rooms, both east of the ridge. The cathedral ceiling follows the 4:12 roof
-# off a 5' knee wall, so at x=27' the roof plane is 5' + 9'/3 = 8' — the same 8' the rest of
-# the house's ceiling boxes sit at, which is why these lights need no special elevation.
+# Attic habitable rooms, both east of the ridge. ** THE CATHEDRAL PLANE CHANGED ON 2026-08-29
+# AND BOTH CEILING BOXES CAME DOWN WITH IT. ** It used to follow a 4:12 roof off a 5'-0" knee
+# wall, so at x=27' the plane was 5' + 9'/3 = 8' — "the same 8' the rest of the house's
+# ceiling boxes sit at, which is why these lights need no special elevation". At 6:12 off a
+# 1 1/2" rafter plate the underside is `1 1/2" + x/2` mirrored about x=18', which at these
+# two fittings' x=22'-0" is 7'-1 1/2". A recessed can sits IN that plane, so that is the
+# elevation; the 9'-8" they carried was 2'-6 1/2" of fresh air. The stations do not move —
+# x=22'-0" is inside the 13'-9"..22'-3" band where the ceiling clears 7'-0" (see
+# plan/lighting_attic.py, which relocated the rest of the storey's fittings).
 ATTIC_DEVICES = [
     # RM-A-EAST-UNFIN (x 18'-36', y 8'-8"-36'): switch inside D-A-HALVES, the door at (18', 32').
     ElectricalDevice(uid="CED011K1AA", tag="ED-A-EAST-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(22), ft(15)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-A-EAST-UNFIN", controlled_by=("ED-A-EAST-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(9, 8),
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 1.5),
                                  recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED011K2AA", tag="ED-A-EAST-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(18, 4.375), ft(32, 5.5)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
@@ -380,7 +386,7 @@ ATTIC_DEVICES = [
     ElectricalDevice(uid="CED012K1AA", tag="ED-A-STUDY-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(22), ft(3)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-A-STUDY", controlled_by=("ED-A-STUDY-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(9, 8),
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 1.5),
                                  recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED012K2AA", tag="ED-A-STUDY-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(21, 8.375), ft(8, 8.625)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
@@ -388,15 +394,25 @@ ATTIC_DEVICES = [
 ]
 
 # --- Outdoor NEMA 3R weatherproof junction box on the north gable siding -------------
-# Gasketed blank cover plate on a standing-seam clamp, beside the CN-M-VENT-CLAMP riser
-# cluster (24'-4"/24'-10"/25'-4" at x=1') it serves — filed on the attic storey since at
-# x=4' the 4:12 rake carries siding to ~26'-5.7", giving a 25'-6" box cladding to grip.
-# 3' east of the riser (2026-07-28: riser moved x=3'->1', box followed to stay clear).
+# Gasketed blank cover plate, beside the CN-M-VENT-CLAMP riser cluster (24'-4"/24'-10"/
+# 25'-4") it serves — filed on the attic storey because the gable carries siding well above
+# it there, giving a 25'-6" box cladding to grip. 3' east of the riser (2026-07-28: riser
+# moved x=3'->1', box followed to stay clear).
+#
+# ** MOVED x 4'-0" -> 16'-4" ON 2026-08-29, AND IT IS STILL 3'-0" EAST OF THE RISER. **
+# Both numbers changed for one reason: the riser jogged east inside the attic to x 13'-4"
+# (mep_venting.py) and the gable's rake dropped to `20'-11 3/8" + x/2`. At the old x=4'-0"
+# the plane now stands at 22'-11 3/8" — three feet BELOW this box — so the enclosure had
+# nothing to hang on. At 16'-4" the plane is 29'-1 3/8" and the box hangs with 3'-7" of
+# cladding over it, beside the clamps exactly as it was drawn to be. MN 1303.2402 subp. 6
+# wants the fan's box within reach of the riser and `code.MN_1303_2402_radon` grades that
+# at 8'-0"; 3'-0" holds it.
+#
 # Both heights below are the same 25'-6": Mount elevation is storey-relative (attic datum
 # 20'), Connector elevation is project-frame absolute.
 NEMA_BOX = [
     ElectricalDevice(uid="CEJ901AAAA", tag="ED-A-NEMA-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(4), ft(36, 10.25)), type_ref="ED-T-JBOX",
+                     position=pt(ft(16, 4), ft(36, 10.25)), type_ref="ED-T-JBOX",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
 ]
 # ** CN-A-NEMA-CLAMP is GONE (2026-08-26), and this list is empty on purpose. **
@@ -439,10 +455,15 @@ NEMA_CLAMP = []
 # The ring is still catalogued and still priced, untouched, so reverting the cladding is a
 # `size=` change here and nothing more. The strap is sized on pipe OUTER diameter exactly
 # the way the ring was: a 4" round leader is 4.0" OD, hence **#13**, and `size` bills it
-# through `hardware_by_model`'s family-prefix match. Four per leader at ~6' o.c.
-# (5'/11'/17'/23') — 6' apart is three 24" girt courses, so every strap lands on a course
-# and none of them needs its own blocking. Each on the wall with
-# cladding at that elevation. Plan position is the leader's own centreline, 8.77" outboard
+# through `hardware_by_model`'s family-prefix match. ** THREE per leader at ~6' o.c.
+# (5'/11'/17') SINCE 2026-08-29 — it was four, and the fourth is gone with the knee wall. **
+# CN-A-LEADER-W4/E4 stood at 23'-0" on W-A-W1/W-A-E2, which were 5'-0" walls carrying the
+# eave to 25'-0". The eave is 20'-11 3/8" now (6:12 off a 1 1/2" rafter plate), so there is
+# no leader at 23'-0" to strap and no wall behind it either — those two walls are plates.
+# Each leader is ~4'-11" shorter and the 17'-0" strap is 3'-11" below its new head, which is
+# inside the same ~6' spacing the other three keep. 6' apart is three 24" girt courses, so
+# every strap lands on a course and none of them needs its own blocking. Each on the wall
+# with cladding at that elevation. Plan position is the leader's own centreline, 8.77" outboard
 # of the sheathing datum (trough mid-width, params/roof_trim.py::_TROUGH_MID_IN) — literal
 # offsets below, not arithmetic, since the editable-plan dialect forbids binary operators.
 _LEADER_X_W = inch(-8.77)
@@ -459,9 +480,6 @@ LEADER_CLAMPS = [
     Connector(uid="CMLC03AAAA", tag="CN-A-LEADER-W3", kind=ConnectorKind.PIPE_STRAP,
               position=pt(_LEADER_X_W, _LEADER_Y), elevation=ft(17), size="SS316-STANDOFF-STRAP #13",
               connects=("TR-RF-LEADER-W", "W-S-W1B")),
-    Connector(uid="CMLC04AAAA", tag="CN-A-LEADER-W4", kind=ConnectorKind.PIPE_STRAP,
-              position=pt(_LEADER_X_W, _LEADER_Y), elevation=ft(23), size="SS316-STANDOFF-STRAP #13",
-              connects=("TR-RF-LEADER-W", "W-A-W1")),
     Connector(uid="CMLC05AAAA", tag="CN-A-LEADER-E1", kind=ConnectorKind.PIPE_STRAP,
               position=pt(_LEADER_X_E, _LEADER_Y), elevation=ft(5), size="SS316-STANDOFF-STRAP #13",
               connects=("TR-RF-LEADER-E", "W-M-E1")),
@@ -471,7 +489,4 @@ LEADER_CLAMPS = [
     Connector(uid="CMLC07AAAA", tag="CN-A-LEADER-E3", kind=ConnectorKind.PIPE_STRAP,
               position=pt(_LEADER_X_E, _LEADER_Y), elevation=ft(17), size="SS316-STANDOFF-STRAP #13",
               connects=("TR-RF-LEADER-E", "W-S-E4")),
-    Connector(uid="CMLC08AAAA", tag="CN-A-LEADER-E4", kind=ConnectorKind.PIPE_STRAP,
-              position=pt(_LEADER_X_E, _LEADER_Y), elevation=ft(23), size="SS316-STANDOFF-STRAP #13",
-              connects=("TR-RF-LEADER-E", "W-A-E2")),
 ]

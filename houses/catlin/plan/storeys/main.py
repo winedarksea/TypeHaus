@@ -67,6 +67,20 @@ DOOR_TYPES = [
              trimless=True, product_ref="PROD-MURPHY-BOOKCASE-30",
              source="plans/TODO.md — D-A-STUDY only: a flush-mount Murphy-style BOOKCASE DOOR in W-A-SN's built-in (CATLIN_INT_2X4_BOOKCASE_12). Same 2'-6\"x6'-8\" RO as DT-INT-SWING30, so nothing re-phases and the jamb pack is unchanged; operation stays SWING because a bookcase door IS a swinging door. core=\"solid\" is the only schema field that says a ~250 lb leaf. ** trimless=True HERE MEANS A MILLWORK CASE, NOT THE DRYWALL RETURN JAMB IT MEANS EVERYWHERE ELSE IN THIS HOUSE ** — a flush bookcase door has no casing, and a drawn frame box is the one thing that gives it away in 3D; do not price it off the DT-INT-SWING30-TRIMLESS row. No header_spec: the real requirement is the HINGE-SIDE JAMB (a 250 lb leaf on a 10\" moment arm is torsion, not bending) — a full-depth 3-ply post through-bolted to the sole plate and the assembly's 4'-0\" blocking row, for which there is no field. The case depth must match case-pocket + stud-case (9 7/8\" clear); see that assembly's note for what moves if the ordered unit needs a full 12\" case"),
     DoorType(tag="DT-INT-SWING24", width=ft(2), height=ft(6, 8)),
+    # 2'-0" x 3'-6" — the attic pocket's ACCESS door (2026-08-29), and the house's only
+    # door that is not 6'-8" tall. D-A-POCKET hosts on W-A-STU-N, which runs in x under the
+    # west rake at y=22'-4"; with the attic at 6:12 the roof underside there is
+    # `1 1/2" + x/2` above the deck, so at the wall's far end (x=10'-0") there are 5'-1 1/2"
+    # and no full-height leaf fits anywhere on it. A 3'-6" head needs 2 x (42 + 2) = 88" of
+    # clearance to its LOW (west) jamb, which arrives at x 7'-4" with the leaf ending at
+    # 9'-4" and 8" of wall to spare.
+    #
+    # This is a code-legal service opening, not a compromise: the pocket is the ERV's access
+    # (EQ-A-ERV-MAN-EXH, the outdoor-air hood, VR-M-RADON-VENT's head), and IRC M1305.1.3
+    # asks a passageway of not less than 30" high and 22" wide — 24 x 42 clears both. No
+    # habitable room is reached through it, so R311's door rules have nothing to say.
+    DoorType(tag="DT-INT-ACCESS24", width=ft(2), height=ft(3),
+             source="2026-08-29 attic 6:12 redesign — M1305.1.3 service access to RM-A-POCKET under the west rake"),
     DoorType(tag="DT-INT-BIFOLD60", width=ft(5), height=ft(6, 8), operation="bifold"),
     DoorType(tag="DT-INT-BIFOLD56", width=ft(4, 8), height=ft(6, 8), operation="bifold"),
     # RM-M-MUD-CLOSET's bypass pair (2026-08-02): no floor for a swing, same reasoning as
@@ -117,6 +131,21 @@ WINDOW_TYPES = [
     # That combination makes it the house's fallback wherever a bigger unit will not go.
     WindowType(tag="WT-1424", width=inch(14), height=ft(2), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="awning"),
+    # 14" RO, 36" tall — the south gable's flanker size SINCE 2026-08-29, and a THIRD
+    # height in the 14" family. It exists because the attic went 6:12 with the eave on a
+    # 1 1/2" plate: the roof underside is now `1 1/2" + x/2` above the attic floor, so a
+    # flanker at x 12'-8" has 74" of rake over its outer jamb and the WT-1448 that used to
+    # sit there wants 80" (2'-8" sill + 48" + 2" of raked plate and flat header). 36" fits
+    # with 4" to spare and keeps RM-A-STUDY on daylight: 13.625 sf of glazing against the
+    # 13.2 sf R303.1 asks of a 165 sf room. Dropping to WT-1424 instead would save the type
+    # and push a habitable office onto R303.1 Exception 1's electric-light substitute —
+    # not a trade a high-performance house should make.
+    #
+    # The SKU premium is near zero: same 14" width family, same buck, same header (none —
+    # a 14" RO lands wholly inside a 16" bay), same flashing. Casement like WT-1448, not
+    # WT-1424's awning; 36" is past what an awning projects.
+    WindowType(tag="WT-1436", width=inch(14), height=ft(3), u_factor=u_us(0.25), frame_depth=inch(3.25),
+               shgc=0.35, vt=0.5, operation="casement"),
     # 14" RO, 48" tall — the south gable's flanker size (2026-08-01), and the one deliberate
     # break of "one height per family". The juliet family doesn't fit: it breaks a stud, taking a
     # 5.5"-deep header that at the nearest usable stud line (x 8'-0"/28'-0") clashes with the

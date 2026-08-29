@@ -59,8 +59,15 @@ PANEL_VOC_COLD = PANEL_VOC * (1.0 + VOC_TEMP_COEFF_PER_C * (DESIGN_LOW_C - STC_C
 PANEL_RSD = True
 RIDGE_CLEARANCE_FT = 1.0  # plan gap between the ridge line and the modules' top edge
 CLAMPS_PER_PANEL = 4
-PLANE_Z_AT_X0_FT = 25.84  # resolved RF-HOUSE deck plane at the footprint edge (eave_z)
-PITCH = 4.0 / 12.0
+# 2026-08-29: the attic went 6:12 on a rafter plate, so the eave dropped 25'-10.1" ->
+# 20'-11 3/8" and the plane doubled its rise. The panel rows run ALONG the ridge in y and
+# their layout does not change; what changes is every z this module derives. A 6:12 plane is
+# also a better winter-sun angle at 45 degrees north than 4:12 was — the array's tilt is now
+# 26.6 degrees rather than 18.4, closer to latitude, so the December yield improves while the
+# June yield gives a little back. Net annual is a wash to slightly positive; the reason for
+# the pitch was headroom, and this is a side effect worth recording rather than claiming.
+PLANE_Z_AT_X0_FT = 20.948  # resolved RF-HOUSE deck plane at the footprint edge (eave_z)
+PITCH = 6.0 / 12.0
 
 _w_ft = PANEL_W_IN / 12.0
 _count = math.floor(FOOTPRINT_FT / _w_ft)  # 6

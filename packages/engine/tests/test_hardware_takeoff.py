@@ -431,7 +431,11 @@ def test_pipe_fixings_bill_by_size_not_as_a_bare_family(catlin_model) -> None:
                for row in rows)
     # Selected on the pipe's OD, so the size suffix is the part number and must reach the BOM.
     by_part = {row["part_number"]: row["count"] for row in rows}
-    assert by_part == {"SS316-STANDOFF-STRAP #11": 3, "SS316-STANDOFF-STRAP #13": 8}
+    # Six #13, not eight, since 2026-08-29: the roof leaders lost their top strap at each
+    # end (CN-A-LEADER-W4/E4 at 23'-0") when the eave came down to 20'-11 3/8" and the knee
+    # walls they were fixed to became rafter plates. Three per leader at 5'/11'/17' still
+    # holds the ~6' spacing on a leader that is 4'-11" shorter.
+    assert by_part == {"SS316-STANDOFF-STRAP #11": 3, "SS316-STANDOFF-STRAP #13": 6}
     # And the strap reaches the wall by itself: nothing is carried under it.
     assert not [row for row in hardware_takeoff(catlin_model)
                 if row["scope"] == "carried-mount" and "strap" in row["basis"]]

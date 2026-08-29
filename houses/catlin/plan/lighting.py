@@ -15,7 +15,8 @@
 #   deg(180) south, deg(-90) east (local +y is the object's back).
 # - `Mount(CEILING, recessed_into_host_surface=True)` with no elevation puts a can's base
 #   on the ceiling plane, housing in the joist bay above. Attic cans state an elevation
-#   (5' + d/3, d = distance from the x=18' ridge) because that ceiling is a 4:12 cathedral.
+#   (1 1/2" + x/2, x = distance from the nearer eave) because that ceiling is a 6:12
+#   cathedral off a rafter plate. Those fittings live in plan/lighting_attic.py.
 # - `Mount(CEILING, drop=<type height>)` lands a pendant's canopy on the ceiling; shade
 #   bottom = ceiling minus the type's full assembly height.
 # - `controlled_by` names switch(es) on the *load*. Two tags is a 3-way pair. A fixture
@@ -932,10 +933,12 @@ SECOND_LIGHTING = [
 ]
 
 # --- Attic ----------------------------------------------------------------------------
-# The attic ceiling is the 4:12 cathedral off a 5' knee wall, so every ceiling fixture
-# states its elevation: 5' + d/3, where d is the plan distance from the x=18' ridge.
-# 9'-8" is x=22' or x=14'; 8'-0" is x=27' or x=9'. Sloped-ceiling trims, and the housings
-# sit in the rafter bay rather than a joist bay.
+# ** THE ATTIC'S FITTINGS MOVED TO plan/lighting_attic.py ON 2026-08-29 ** (this file was
+# 1,158 lines against AGENTS.md's 500), and the plane they answer to changed with the roof
+# the same day: the attic is a 6:12 cathedral off a 1 1/2" rafter plate now, so the ceiling
+# is `1 1/2" + x/2` above the attic floor, mirrored past x=18'. It was `5' + d/3` off a
+# 5'-0" knee wall. Every attic ceiling fixture states its elevation, sloped-ceiling trims,
+# housings in the rafter bay rather than a joist bay — see that file's own header.
 # --- Garage ---------------------------------------------------------------------------
 # Two 4' shop lights on their own switch by the service door, on the house's main lighting
 # circuit (garage is freestanding but fed from ED-B-PANEL) rather than the GFCI receptacle

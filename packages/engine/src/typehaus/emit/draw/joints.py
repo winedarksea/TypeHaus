@@ -76,11 +76,19 @@ def build_joint_plan(model: ResolvedModel, condition, transition,
 
 
 def _representative_wall(model, condition) -> ResolvedWall | None:
-    for tag in getattr(condition, "element_tags", ()):
-        w = model.wall(tag)
-        if w is not None:
-            return w
-    return None
+    """The wall whose LAYERS this joint is about.
+
+    ``condition_walls`` is the single place that answers "which wall does this condition's
+    assembly key belong to", including the story-and-a-half case where the element naming
+    the junction is a skinless rafter plate and the stack meeting the roof belongs to the
+    wall it stands on. Reading ``element_tags`` directly here got the plate, and a plate has
+    no insulation closure band — so the spray-foam wedge and every continuity callout that
+    hangs off it silently produced nothing at the one junction they exist for.
+    """
+    from typehaus.emit.draw.detail_components.geometry import condition_walls
+
+    walls = condition_walls(model, condition)
+    return walls[0] if walls else None
 
 
 def _representative_roof(model, condition) -> ResolvedRoof | None:
