@@ -381,12 +381,29 @@ HYDRANT_BRANCH_SECOND = [
 #
 # The hot run copies PR-B-HW-SUITE's insulation string VERBATIM so `mep.hot_water_insulation`
 # passes the way every other hot run in the house passes; do not paraphrase it.
+#
+# ** FILED ON ``main`` (datum 0'-0"), SO THESE ELEVATIONS ARE PROJECT ELEVATIONS. ** Same
+# convention, and the same reason, as SECOND_DRAINS in plan/mep_drainage.py: the run spans
+# three storeys and the numbers are only readable if they read off the drawing set. Authored
+# against the attic datum ft(20) until 2026-08-29, which put them 20'-0" above the roof.
+#
+# ** THE TEE IS IN THE TRUSS FLOOR, NOT AT THE RISER HEAD, AND THAT IS NOT A REFINEMENT. **
+# PR-B-CW-SUITE/-HW-SUITE surface at (13'-7.2"/14'-2.4", 16'-10.8") at 12'-6" — 2'-6" above the
+# second floor, inside RM-S-SUITEBATH. Teeing there and running west to the W-S-DC2 axis meant
+# 4'-5" of exposed copper across that bathroom at chest height. So the branch tees LOWER, where
+# the suite risers are already passing through FS-S-WEST, and makes the whole east-west jog in
+# the truss floor — through the open webs, boring nothing. That is the same crossing
+# PR-A-STUBATH-DRAIN makes, in the same floor, for the same reason.
+#
+# Cold rides at 9'-4" and hot at 9'-7" so the two jogs cannot foul each other where they
+# converge on the wet wall; both sit inside the trusses (8'-11 3/8" to 9'-11 1/4"). From
+# (9'-7 1/2", 19'-0"/19'-6") each rises straight up W-S-DC2 and W-A-STU-W to its stop at 22'-6".
 STUDIO_SUPPLY = [
     PipeRun(uid="WJZGK0YFHY", tag="PR-A-CW-STUBATH", system=PipeSystem.WATER_COLD,
             path=(pt(ft(13, 7.2), ft(16, 10.8)), pt(ft(9, 7.5), ft(19)),
                   pt(ft(9, 7.5), ft(19))),
             diameter=inch(0.75), material="copper", finish="lacquered",
-            elevations=(ft(21, 7.4375), ft(21, 7.4375), ft(22, 6)),
+            elevations=(ft(9, 4), ft(9, 4), ft(22, 6)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
                     "FX-A-STUDIO-BAR-SINK")),
     PipeRun(uid="TCWF4YDZTW", tag="PR-A-HW-STUBATH", system=PipeSystem.WATER_HOT,
@@ -394,6 +411,6 @@ STUDIO_SUPPLY = [
                   pt(ft(9, 7.5), ft(19, 6))),
             diameter=inch(0.75), material="copper",
             insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(21, 7.4375), ft(21, 7.4375), ft(22, 6)),
+            elevations=(ft(9, 7), ft(9, 7), ft(22, 6)),
             serves=("FX-A-STUBATH-LAV", "FX-A-STUBATH-SH", "FX-A-STUDIO-BAR-SINK")),
 ]

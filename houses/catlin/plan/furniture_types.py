@@ -331,49 +331,69 @@ MIXER_GARAGE_24 = FurnitureType(
 # an unreviewed tag — to bill some 40 bf of 2x4. So the build lives on ``source`` (the
 # FT-BATH1-SHELF-2030 precedent) and in notes/pantry_climbable_shelving.md.
 #
-# ** THE MID-SPAN GABLE IS NOT OPTIONAL, AT EITHER DEPTH. ** A 3/4" ply shelf cannot span
-# 70 1/4" under a person. At the 24" width below, 250 lb at midspan gives M = PL/4 =
-# 4,391 in-lb on S = 2.25 in^3 — about 1,950 psi against a 1,500-2,000 psi flatwise
-# allowable — and 1.65" of sag. The stress is borderline and the DEFLECTION is an outright
-# failure. A full-height centre gable halves the span to ~34 3/4": ~965 psi and ~0.20".
-# The 1x3 hardwood nose glued on edge is what takes the rest of the spring out — a
-# 3/4" x 2 1/2" edge nearly triples the shelf's effective I and is the cheapest stiffener
-# there is. (At the 16" depth this was first drawn at, the same numbers are 2,900 psi and
-# 2.4" full-span, 1,460 psi and 0.30" gabled: going deeper HELPS the shelf, because b grows
-# with the depth while the span does not.)
+# ** THE MID-SPAN GABLE IS NOT OPTIONAL, AND THE REASON CHANGED ON 2026-08-29. ** It used
+# to be a strength argument about plywood: a 3/4" ply shelf cannot span 70 1/4" under a
+# person (about 1,950 psi against a 1,500-2,000 psi flatwise allowable, and 1.65" of sag —
+# the stress borderline, the DEFLECTION an outright failure), and halving the span fixed
+# both. The shelves are 1 1/2" solid white oak now (plan/millwork.py, owner stock), and at
+# that thickness the full 70 1/4" span carries 250 lb at midspan on S = 6.75 in^3 at only
+# ~650 psi. STRENGTH IS NO LONGER THE ARGUMENT. Deflection still is: I = 5.06 in^4 gives
+# ~0.223" full-span, and this shelf is graded as a FLOOR, so the criterion is L/360 =
+# 0.195" and the full span misses it. Gabled to ~34 3/4" it is ~322 psi and ~0.027", which
+# is not close to any limit. The gable also stays because the cleat and blocking layout is
+# built around it, and because it is what makes the bottom bay a step rather than a plank.
 #
-# ** 24" DEEP IS THE OWNER'S CALL, 2026-08-24, AND IT IS PAST THE PUBLISHED GUIDANCE. **
-# 16" is the usual practical maximum for a reach-in (14" is better) and 20"+ is normally
-# called too deep to see into. At 24" in a 30"-deep room there is 6" of floor left in front
-# of the stack: this is a walk-UP pantry reached from the doorway, not a walk-in, and the
-# back 8" of every shelf is a second row you have to move the front row to reach. That is
-# the trade, made deliberately for the volume. Two things make it work rather than merely
-# fit: the shelves are STANDABLE, so the bottom bay is a step and the back of the top shelf
-# is reachable; and ED-M-PANTRY-LT is a vertical slot, which is the one fixture that lights
-# the depth behind what is on each shelf.
+# ** THE 1x3 HARDWOOD NOSE IS GONE, and that is a consequence, not an omission. ** It was a
+# stiffener — a 3/4" x 2 1/2" edge nearly triples a ply shelf's effective I, and it was the
+# cheapest way to take the spring out of 0.20" of gabled ply sag. There is 0.027" to take
+# out now. Its other job, giving a ply edge a hardwood face, is done by the shelf being
+# hardwood. This also closes a quantity gap: the nose was ~41 LF of hardwood that nothing
+# in the model counted.
+#
+# ** SOLID WOOD ON CLEATS MOVES, AND THE FASTENING HAS TO LET IT. ** Boards run the 34 3/4"
+# bay, so the grain is along the bay and the 18" of seasonal movement is FRONT TO BACK —
+# along the side cleats, across their line of screws. Roughly 1/4" of tangential movement
+# across 18" of white oak over a Minnesota RH swing. Screw tight at the FRONT only;
+# elongate every side-cleat and back-cleat hole rearward. A solid shelf pinned hard on
+# three sides splits, and it splits in year two, not on the day it goes in.
+#
+# ** 18" DEEP, 2026-08-29, and it replaces the 24" of 2026-08-24. ** The room is 26" clear
+# N-S, so 24" left 2" of floor and 18" leaves 8". What bought the change is the milling
+# supply, not the ergonomics: the owner's white oak runs to 18" wide, a finished 18" board
+# needs about 18 3/4" in the rough once an edge is straight-lined and the other jointed, and
+# 24" was two boards edge-glued on every shelf. 18" is one hand-picked wide board per shelf.
+# The published guidance was always against 24" anyway — 16" is the usual practical maximum
+# for a reach-in and 20"+ is called too deep to see into — so the depth that made the stock
+# work is also the depth that makes the pantry work. What is given up is real and is
+# ~25% of the shelf area. Two things still make an 18" reach-in good rather than merely
+# legal: the shelves are STANDABLE, so the bottom bay is a step and the top shelf is
+# reachable; and ED-M-PANTRY-LT is a vertical slot, the one fixture that lights the depth
+# behind what is on each shelf.
 #
 # Shelf pitch is GRADUATED, not uniform — uniform spacing wastes about two shelves' worth of
 # volume, and since every shelf is rated to be stood on regardless of pitch, climbing does
 # not need even rungs.
 PANTRY_SHELVES_70 = FurnitureType(
-    tag="FT-KIT-PANTRY-SHELVES-70", name='Pantry shelf stack, 70 1/4" x 24"',
-    footprint=(inch(70.25), inch(24)), height=ft(7),
+    tag="FT-KIT-PANTRY-SHELVES-70", name='Pantry shelf stack, 70 1/4" x 18"',
+    footprint=(inch(70.25), inch(18)), height=ft(7),
     storage=True, work_surface=False, plan_symbol="bookcase",
     source="Site-built millwork, DESIGNED TO BE CLIMBED — see "
-           "notes/pantry_climbable_shelving.md. 3/4\" birch ply shelves on continuous 1x3 "
-           "cleats on three sides, glued and screwed DOWN onto the cleats (load path is "
-           "cleat -> fastener -> stud, never shelf -> pin); NO adjustable standards and no "
-           "shelf pins — a pin carries a jar, not a person. A full-height 3/4\" ply centre "
-           "gable at mid-span, notched around the cleats, floor to top shelf, is what makes "
-           "the 70 1/4\" span legal to stand on and is not optional. 1x3 hardwood nose glued "
-           "and screwed on edge at each shelf front. Two #10 x 3\" structural screws per "
-           "cleat into solid wood at EVERY bay, over flat 2x4 blocking laid in each bay "
-           "BEFORE the gypsum. Design load: treat as floor, not shelf — 40 psf uniform PLUS "
-           "a 250-300 lb concentrated load anywhere, which governs. Graduated spacing: "
-           "~20\" bottom bay (small appliances, bulk), 12\"-14\" middle (boxes, bottles), "
-           "8\"-10\" top (cans, jars). 24\" DEEP by owner's decision (2026-08-24), which "
-           "leaves 6\" of floor in front of the stack — reached from the doorway, not "
-           "walked into.",
+           "notes/pantry_climbable_shelving.md. 1 1/2\" solid white oak shelves (owner "
+           "stock, scheduled in plan/millwork.py as SB-M-PANTRY) on continuous 1x3 cleats "
+           "on three sides, screwed DOWN onto the cleats (load path is cleat -> fastener "
+           "-> stud, never shelf -> pin); NO adjustable standards and no shelf pins — a "
+           "pin carries a jar, not a person. Screwed tight at the FRONT only, with every "
+           "side- and back-cleat hole elongated rearward so 18\" of solid oak can move "
+           "without splitting. A full-height 3/4\" ply centre gable at mid-span, notched "
+           "around the cleats, floor to top shelf, halves the span to ~34 3/4\" and is not "
+           "optional — the full span deflects ~0.223\" under 250 lb, past the L/360 this "
+           "is graded to as a floor. Two #10 x 3\" structural screws per cleat into solid "
+           "wood at EVERY bay, over flat 2x4 blocking laid in each bay BEFORE the gypsum. "
+           "Design load: treat as floor, not shelf — 40 psf uniform PLUS a 250-300 lb "
+           "concentrated load anywhere, which governs. Graduated spacing: ~20\" bottom bay "
+           "(small appliances, bulk), 12\"-14\" middle (boxes, bottles), 8\"-10\" top (cans, "
+           "jars). 18\" DEEP by owner's decision (2026-08-29, replacing 24\"), which leaves "
+           "8\" of floor in front of the stack and puts each shelf on one board.",
 )
 
 
@@ -423,35 +443,7 @@ DINING_8_OPEN_CORNERS = FurnitureType(
 )
 
 
-# --- the guest studio's knee-wall plinth (2026-08-29) ----------------------------------
-# ** `work_surface=False` IS NOT COSMETIC, IT IS THE WHOLE REASON THIS IS A TYPE. **
-# `_fixed_cabinet_intervals` (checks/mep/electrical.py) treats a COUNTERLESS fixed cabinet
-# within 6" of the floor as a BREAK in the 210.52 wall line, exactly as a doorway is. Declare a
-# work surface and it stops being a break and starts being a countertop that wants receptacles
-# above it — the opposite of what this piece does.
-#
-# What it is: the x=1'-0" ERV chase, boxed. Through RM-A-STUDIO that duct run is ~12" wide by
-# 8-9" tall for 21'-8" along the base of a 5'-0" knee wall, in a guest bedroom. Building it as a
-# bench/storage plinth swallows the duct AND gives the room the seat and under-rake storage it
-# wants, instead of leaving a duct box in a bedroom and an outlet stranded behind it. 18" deep
-# by 16" tall is bench height over a 12" duct.
-#
-# The alternative was to bore the FS-ATTIC I-joists and run north-south in the bays — permitted
-# by the hole chart, at ~16 bored webs per duct, twice, plus a manufacturer sign-off. See
-# plan/mep_erv.py's amended note.
-STUDIO_PLINTH = FurnitureType(
-    tag="FT-STUDIO-PLINTH-260", name="Knee-wall duct plinth / bench (21'-8\")",
-    # Authored (depth, length) rather than (length, depth): this piece runs NORTH-SOUTH along
-    # the west knee wall, and stating the footprint in the orientation it is built in is more
-    # legible than carrying a rotation on the instance.
-    footprint=(inch(18), inch(260)), height=inch(16), plan_symbol="bench",
-    storage=True, work_surface=False,
-    source="Site-built plinth boxing the attic ERV chase along the west knee wall; doubles as "
-           "bench and under-rake storage. Priced as a prices.toml [allowances] lump.",
-)
-
-
-FURNITURE_TYPES = (STUDIO_PLINTH, CURTAIN_ROD_48, CURTAIN_ROD_84, CURTAIN_ROD_OUTDOOR_114,
+FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, CURTAIN_ROD_OUTDOOR_114,
                    CURTAIN_ROD_OUTDOOR_98,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, BATH1_SHELF_2030,
                    MEDIA_SECTIONAL_U, THEATER_BOOKCASE, OVER_COLD_3278, MIXER_GARAGE_24,

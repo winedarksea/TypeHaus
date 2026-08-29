@@ -93,25 +93,28 @@ ATTIC_SHELVES = [
 
 # --- the main pantry, FURN-M-PANTRY-SHELVES --------------------------------------------
 #
-# TWO OPEN DECISIONS LIVE HERE, and both are deliberately left visible rather than answered
-# quietly. See notes/pantry_climbable_shelving.md and the FT-KIT-PANTRY-SHELVES-70 source.
+# BOTH OF THIS BANK'S OPEN QUESTIONS WERE ANSWERED ON 2026-08-29. See
+# notes/pantry_climbable_shelving.md and the FT-KIT-PANTRY-SHELVES-70 source.
 #
 # 1. THIS SHELF IS DESIGNED TO BE CLIMBED, so its thickness is a STRUCTURAL decision, not a
-#    finish one. The type as built is 3/4" birch ply on continuous 1x3 cleats with a
-#    full-height mid-span gable and a 1x3 hardwood nose — the only hardwood in it today is
-#    ~41 LF of nose that nothing quantifies. Scheduling solid oak instead is what is
-#    authored here, at 8/4 rather than the 4/4 the other light-duty cases get: a climbing
+#    finish one. It is 8/4 rather than the 4/4 the other light-duty cases get: a climbing
 #    250 lb point load over the gabled ~34 3/4" half-span is what governs, and 4/4 is the
-#    wrong answer to that question. THE CLEATS AND THE MID-SPAN GABLE STAY EITHER WAY —
-#    they are what make the 70 1/4" run legal to stand on, and the bays below are the two
-#    half-spans the gable creates, not one 70" shelf.
-# 2. THE CARCASS IS 24" DEEP, which is past the 18" the supply can produce, so every shelf
-#    is a two-board edge glue-up. `depth` is deliberately NOT authored here: the bank
-#    inherits the type's 24" footprint and `haus millwork` raises the glue_up flag, which
-#    is the flag existing for exactly this. Reducing the shelf to 17 1/2" would make each
-#    one a single board (and make the back of the stack reachable), but 24" is the owner's
-#    recorded decision of 2026-08-24 with a written rationale, so it is not something this
-#    file gets to quietly overturn.
+#    wrong answer to that question. What the 8/4 bought, beyond passing, is that STRENGTH
+#    stopped being the argument for the gable — 1 1/2" oak carries the full 70 1/4" span at
+#    ~650 psi. THE GABLE STAYS ANYWAY, on deflection: the full span is ~0.223" under
+#    250 lb and this shelf is graded as a FLOOR, so L/360 is 0.195" and it misses. Gabled
+#    it is ~0.027". THE CLEATS AND THE BLOCKING STAY EITHER WAY, and the bays below are the
+#    two half-spans the gable creates, not one 70" shelf.
+# 2. THE CARCASS IS 18" DEEP, down from 24" — and the mill is what moved it. 24" was past
+#    the 18" the supply can produce, so every shelf was a two-board edge glue-up; 18" is one
+#    hand-picked wide board. `depth` is still deliberately NOT authored here — the bank
+#    inherits the type's footprint, so the carcass and the shelf can never disagree.
+#    18" is the EDGE of the supply and the schedule says so: a finished 18" face needs an
+#    18 3/4" rough board once an edge is straight-lined and the other jointed, so
+#    `haus millwork` still raises the flag, now reading "needs a 18.75" rough board; the
+#    supply is 18.00"". That is the honest instruction — hand-pick the widest boards in the
+#    stack for this bank — and not the same statement as the 24" two-board glue-up it
+#    replaced.
 #
 # Six boards per bay, the case top included, on the graduated pitch the type specifies —
 # ~20" bottom bay, 12"-14" middle, 8"-10" top — over the 7'-0" carcass.
@@ -173,8 +176,13 @@ BASEMENT_SHELVES = [
 #
 # 4/4 like the bookcases, and for the same reason. Its DEPTH is the one surprise: the
 # carcass is scribed to the tub alcove and is 30" deep to match the tub, not 20" — the
-# footprint reads (20" wide, 30" deep). That is 12" past the 18" supply, so this one glues
-# up too, which is a fact worth seeing on the schedule rather than discovering at the mill.
+# footprint reads (20" wide, 30" deep), so this is the one shelf in the house that is
+# DEEPER THAN IT IS WIDE. The boards therefore run FRONT TO BACK: grain along the 30", a
+# glue-up 18 1/2" wide rather than a 30" panel, which is two boards with one narrow rip
+# instead of a full-width layup. `takeoff/hardwood.py` derives that orientation rather than
+# taking it on faith — it mills every shelf with the grain on the longer plan dimension —
+# so nothing here authors it. It still carries the flag (18 1/2" finished wants a 19 1/4"
+# rough board), and that is a fact worth seeing on the schedule rather than at the mill.
 SECOND_SHELVES = [
     ShelfBank(
         uid="JBAEDPFV5Q", tag="SB-S-BATH1",

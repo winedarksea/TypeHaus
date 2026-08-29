@@ -38,6 +38,8 @@ MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
                  *mep_sleeves.SUPPLY_SLEEVES,
                  *mep_sleeves.STACK_SLEEVES,
                  *mep_drainage.SECOND_DRAINS,
+                 *mep_drainage.STUDIO_DRAINS,
+                 *mep_supply.STUDIO_SUPPLY,
                  *mep_drainage.CONDENSATE_MAIN,
                  *mep_drainage.LAUNDRY_MAIN,
                  *mep_venting.VENT_BRANCHES_MAIN,
@@ -92,9 +94,10 @@ SECOND_ELEMENTS = [*mep_hvac.DUCTS,
                    # `second` because the deck they cross IS this storey's datum.
                    *mep_drainage.HP_CONDENSATE]
 ATTIC_ELEMENTS = [*mep_venting.VENT_BRANCHES_ATTIC,
-                  *mep_supply.STUDIO_SUPPLY,
+                  # STUDIO_SUPPLY and STUDIO_DRAINS are NOT here — both are filed on `main`
+                  # with the rest of the project-frame plumbing (see MAIN_ELEMENTS). Only the
+                  # two accessible stops, which really do stand on the attic deck, stay.
                   *mep_supply_devices.STUDIO_SUPPLY_DEVICES,
-                  *mep_drainage.STUDIO_DRAINS,
                   *mep_erv.EQUIPMENT_ERV_ATTIC,
                   *mep_erv.EQUIPMENT_ERV_HOODS,
                   *mep_erv.DUCTS_ERV_ATTIC,

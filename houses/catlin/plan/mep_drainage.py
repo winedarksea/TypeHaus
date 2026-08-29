@@ -419,6 +419,10 @@ RADON_SUMP = [
 # carry: PR-B-MAIN-DRAIN goes ~42 -> ~51 DFU on its 4" barrel, and the table is the arbiter of
 # whether that still fits, not this comment. `elevations` is authored explicitly so
 # `mep.drain_slope` has something to grade; 1/4"/ft is trivially available on both legs.
+# ** FILED ON ``main`` (datum 0'-0"), like SECOND_DRAINS above and for the same reason: **
+# these are project elevations, so +19'-4" is the attic floor's underside and +9'-9" is the
+# second floor's, where PR-M-S-SUITE-DRAIN's head is waiting. Filed on ``attic`` until
+# 2026-08-29, which resolved the whole stack 20'-0" high, hanging over the roof.
 STUDIO_DRAINS = [
     PipeRun(uid="HTZ1RGAGXP", tag="PR-A-STUBATH-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(11, 0.875), ft(20, 8)), pt(ft(9, 7.5), ft(20, 8)),

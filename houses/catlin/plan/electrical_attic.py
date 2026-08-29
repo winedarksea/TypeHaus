@@ -88,11 +88,17 @@ NEC_FILL_ATTIC = [
     # ends of that and caught four of these at 1.38" buried on the first pass. The 1" is half
     # the box depth and is the offset every other device in this file carries.
     #
-    # ** THE WEST KNEE WALL CARRIES NO RECEPTACLE, AND THAT IS BY DESIGN. ** The x=1'-0" ERV
-    # chase runs its whole length, and FURN-A-STUDIO-PLINTH (plan/placeables.py) boxes it. A
-    # counterless fixed cabinet within 6" of the floor is a BREAK in the 210.52 wall line
-    # (`_fixed_cabinet_intervals`), exactly as a doorway is — so the plinth removes that wall
-    # from the spacing test HONESTLY, rather than forcing an outlet in behind a duct box.
+    # ** THE WEST KNEE WALL CARRIES A RECEPTACLE AGAIN (ED-A-STUDIO-RC8, below). ** It briefly
+    # did not: the x=1'-0" chase used to carry DU-S-ERV-HP-FEED's 6" beside a 3", a box roughly
+    # 12" wide by 8-9" tall for the wall's whole length, and the answer to that was a 21'-8"
+    # bench (FURN-A-STUDIO-PLINTH) whose `work_surface=False` broke the 210.52 wall line the way
+    # a doorway does. The 6" was rerouted out of this room on 2026-08-29 (plan/mep_erv.py), the
+    # bench went with it, and what is left is ONE 75 mm duct whose west face stands 3 7/8" clear
+    # of the gwb at ankle height. A box at 16" passes a foot over it. No cabinet, no break — and
+    # so the wall is back in the 210.52 test on its own merits, which is the honest place for it.
+    # It takes TWO boxes, not one: RC1 and RC7 carry the corners in from the south and north
+    # ends, and a single mid-wall device left the check reporting gaps at both ends of its 12'
+    # reach. RC8 at 6'-0" and RC9 at 16'-0" close them with 2'-0" of overlap in the middle.
     ElectricalDevice(uid="923GJB648D", tag="ED-A-STUDIO-RC1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(3), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
@@ -122,6 +128,18 @@ NEC_FILL_ATTIC = [
     # reason: at x=3'-0" it is 5'-11" from the bar sink, and moving it west to 1'-6" to escape
     # that circle opened a 210.52 gap in the middle of W-A-STU-N. The receptacle has to be
     # where the wall space is; the protection is what moves.
+    # The west knee wall's pair. x=7 5/8" is that wall's gwb face (6 5/8") plus the same 1" every
+    # other box in this file carries; deg(90) turns them east into the room, mirroring RC4/RC5's
+    # deg(270) on the centre wall opposite. Plain, not GFCI: the nearest Service.DRAIN fixture is
+    # the bar sink, and at 8'-1" and 9'-3" neither is inside E3902.10's 6'-0" circle.
+    ElectricalDevice(uid="F1MW3S3JD5", tag="ED-A-STUDIO-RC8", kind=DeviceKind.RECEPTACLE,
+                     position=pt(inch(7.625), ft(6)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-ATTIC",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
+    ElectricalDevice(uid="P0RCVAG1XM", tag="ED-A-STUDIO-RC9", kind=DeviceKind.RECEPTACLE,
+                     position=pt(inch(7.625), ft(16)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-ATTIC",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
     ElectricalDevice(uid="TBSBS6V58H", tag="ED-A-STUDIO-RC6", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(15, 6), ft(17, 0.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-ATTIC",

@@ -606,13 +606,15 @@ MAIN_PLACEABLES = [
     # worth repeating here: a 3/4" ply shelf CANNOT span this room under a person, so the
     # mid-span gable is structure, not joinery, and it is not optional.
     #
-    # 24" and not the 16" this was first drawn at — the owner's call, 2026-08-24. In a 30"
-    # room that leaves 6" of floor in front of it: y 33'-5 3/8"..35'-5 3/8" is shelf and
-    # 32'-11 3/8"..33'-5 3/8" is all that is left to stand in, so RM-M-PANTRY is reached
-    # from the doorway rather than walked into. Recorded here because the plan reads as a
-    # room and the section does not.
+    # 18", 2026-08-29, replacing the 24" of 2026-08-24 (and the 16" it was first drawn at).
+    # The room is 26" clear N-S, so the stack runs y 33'-11 3/8"..35'-5 3/8" and leaves 8"
+    # of floor to stand in at 33'-3 3/8"..33'-11 3/8" — RM-M-PANTRY is still reached from
+    # the doorway rather than walked into, but it is no longer a 2" ledge. What moved the
+    # depth was the MILL, not the plan: 18" is the widest shelf that comes off one board of
+    # the owner's white oak, and 24" was a two-board glue-up on every shelf. Recorded here
+    # because the plan reads as a room and the section does not.
     Furniture(uid="J49EW9WWTQ", tag="FURN-M-PANTRY-SHELVES", type_ref="FT-KIT-PANTRY-SHELVES-70",
-              room="RM-M-PANTRY", position=pt(ft(21, 2.5), ft(34, 5.375))),
+              room="RM-M-PANTRY", position=pt(ft(21, 2.5), ft(34, 8.375))),
 
     # The main-floor bedroom's queen, head north (rotation 0) against the interior wall, so
     # the two window walls — west (WIN-M-BED-W1/W2) and south (WIN-M-BED-S1/S2) — stay free.
@@ -972,13 +974,6 @@ ATTIC_PLACEABLES = [
     # cooktop here turns the studio into a second dwelling unit and brings IRC R302.3's
     # two-family separation down on the attic floor and the centre wall. The type carries the
     # same warning and it is written twice on purpose.
-    # The knee-wall plinth that boxes the x=1'-0" ERV chase — see FT-STUDIO-PLINTH-260's own
-    # note in plan/furniture_types.py for why its `work_surface=False` is load-bearing on
-    # `electrical.receptacle_spacing`. Its back is against the west knee wall's finish face and
-    # it runs the chase's length; that is what takes the west wall out of the spacing test
-    # honestly instead of putting an outlet in behind a duct box.
-    Furniture(uid="PKZHEMXG7E", tag="FURN-A-STUDIO-PLINTH", type_ref="FT-STUDIO-PLINTH-260",
-              room="RM-A-STUDIO", position=pt(ft(1, 3.625), ft(11, 2))),
     Appliance(uid="7B10E5QBCF", tag="APPL-A-STUDIO-FRIDGE", type_ref="APPL-BAR-FRIDGE-24",
               room="RM-A-STUDIO", position=pt(ft(8, 6), ft(18, 6)), rotation=deg(-90)),
 ]

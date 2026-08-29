@@ -124,22 +124,53 @@ def test_the_oak_floor_finally_carries_board_feet(rows):
 
 # --- the glue-up flag -------------------------------------------------------------------
 
-def test_a_piece_wider_than_the_available_board_is_flagged(rows):
-    """The flag the schedule exists to raise. 18" is the owner's stock; these are past it."""
-    flagged = {(row["use"], row["finished_width_in"])
-               for row in rows if row["glue_up"]}
-    widths = {width for use, width in flagged if use in ("shelf", "stair landing deck")}
-    assert 24.0 in widths, "the 24\"-deep pantry shelf cannot come off one board"
-    assert 30.0 in widths, "the 30\"-deep bath alcove shelf cannot either"
+def test_the_flag_tests_the_ROUGH_width_not_the_finished_one(rows):
+    """The distinction the whole flag turns on, and the one that is easy to get wrong.
+
+    A mill has to find a board it can straight-line and joint DOWN to the finished face, so
+    the question is never "is the finished piece under 18-inch" — it is "is the rough piece".
+    The pantry is the case that proves it: 18" finished against an 18" supply reads clear on
+    the finished number and is 3/4" short on the real one.
+    """
+    from typehaus.takeoff.hardwood import _WIDTH_LOSS_IN
+
+    pantry = next(row for row in _use(rows, "shelf")
+                  if "SB-M-PANTRY" in row["tags"])
+    assert pantry["finished_width_in"] == pytest.approx(18.0)
+    assert pantry["rough_width_in"] == pytest.approx(18.0 + _WIDTH_LOSS_IN)
+    assert pantry["glue_up"], "18\" finished is not one 18\" board"
     for row in rows:
-        if row["glue_up"] and row["finished_width_in"] > 18.0:
-            assert "width" in row["glue_up_reason"]
+        if row.get("rough_width_in") is None:
+            continue
+        assert row["glue_up"] == (row["rough_width_in"] > 18.0
+                                  or row["laminations"] > 1)
+
+
+def test_a_flagged_piece_names_the_board_it_actually_needs(rows):
+    """A bare "too wide" tells a sawyer nothing; the shortfall is the actionable number."""
+    for row in rows:
+        if row["glue_up"] and row.get("rough_width_in", 0) > 18.0:
+            assert f'{row["rough_width_in"]:.2f}" rough board' in row["glue_up_reason"]
+            assert '18.00"' in row["glue_up_reason"]
 
 
 def test_a_shelf_inside_the_board_width_is_not_flagged(rows):
     """The complement, and the assertion that keeps the flag from being vacuously true."""
-    narrow = [row for row in _use(rows, "shelf") if row["finished_width_in"] <= 18.0]
+    narrow = [row for row in _use(rows, "shelf") if row["rough_width_in"] <= 18.0]
     assert narrow and not any(row["glue_up"] for row in narrow)
+
+
+def test_a_shelf_deeper_than_it_is_wide_is_milled_front_to_back(rows):
+    """RM-S-BATH1's alcove is 18-1/2" wide in a 30"-deep carcass — the one shelf in the
+    house whose depth is its LONGER plan dimension. Grain runs the long way, so the board's
+    width is 18-1/2" and the layup is two boards, not a 30" panel."""
+    bath = next(row for row in _use(rows, "shelf") if "SB-S-BATH1" in row["tags"])
+    assert bath["finished_width_in"] == pytest.approx(18.5)
+    assert bath["finished_length_in"] == pytest.approx(30.0)
+    # And the rule is derived, not authored for this one case: every shelf in the house
+    # has its width on the shorter of the two plan dimensions.
+    for row in _use(rows, "shelf"):
+        assert row["finished_width_in"] <= row["finished_length_in"]
 
 
 def test_the_elm_posts_schedule_as_a_glue_up_not_as_four_timbers(rows):
@@ -153,7 +184,7 @@ def test_the_elm_posts_schedule_as_a_glue_up_not_as_four_timbers(rows):
     assert post["material"] == "elm-timber" and post["pieces"] == 4
     assert post["nominal_stock"] == "8/4"
     assert post["laminations"] == 5
-    assert post["glue_up"] and "thickness" in post["glue_up_reason"]
+    assert post["glue_up"] and "5 laminations" in post["glue_up_reason"]
     # Five 1-1/2" laminae make 7-1/2" of stock for a 6-1/8" finished face, and the width
     # loss and length allowance ride on top — so the rough order is comfortably more than
     # the finished volume ``wood_surfaces`` reports, and that gap IS the glue-up.

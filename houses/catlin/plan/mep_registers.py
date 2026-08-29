@@ -433,7 +433,9 @@ REGISTERS_ATTIC = [
     # is the only place a duct can drop from a high grille into the FS-ATTIC bay, which is
     # exactly why the wet wall carries this as well as every drain in the suite.
     Register(uid="N989VQP3T8", tag="REG-A-STUBATH-EXH", kind=DuctSystem.EXHAUST, room="RM-A-STUBATH",
-            position=pt(ft(9, 7.5), ft(19)), duct_ref="DU-A-ERV-R-STUBATH",
+            # 19'-0" -> 19'-4" on 2026-08-29, following DU-A-ERV-R-STUBATH onto the
+            # 232" bay centre so its east leg could leave the studio floor for the joist bay.
+            position=pt(ft(9, 7.5), ft(19, 4)), duct_ref="DU-A-ERV-R-STUBATH",
             type_ref="REG-T-ERV-EXH", design_cfm=20,
             mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
 ]

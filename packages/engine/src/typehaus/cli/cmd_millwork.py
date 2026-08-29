@@ -21,8 +21,8 @@ from typehaus.findings import Severity
 #: with what profile — and whether it can come off one board.
 MILLWORK_COLUMNS = ("use", "species", "material", "pieces", "finished_size",
                     "coverage_sqft", "nominal_stock", "milling_profile",
-                    "rough_board_feet", "rough_surface_sqft", "laminations", "glue_up",
-                    "glue_up_reason", "element_tags")
+                    "rough_width_in", "rough_board_feet", "rough_surface_sqft",
+                    "laminations", "glue_up", "glue_up_reason", "element_tags")
 
 
 def _as_tags(value: object) -> list[str]:

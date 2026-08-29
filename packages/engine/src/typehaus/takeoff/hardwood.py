@@ -131,7 +131,12 @@ def _piece_row(use: str, material_ref: str, materials: Mapping[str, object], pie
     rough_length_in = length_in * (1.0 + _LENGTH_ALLOWANCE)
     rough_sf = pieces * laminations * rough_width_in * rough_length_in / _SQIN_PER_BF_IN
     rough_bf = rough_sf * rough_thickness_in if rough_thickness_in else None
-    over_width = (max_board_width_in is not None and width_in > max_board_width_in + 1e-9)
+    # The flag tests the ROUGH width, not the finished one. What the mill has to find is a
+    # board it can straight-line and joint down to the finished face, so a 18" shelf out of
+    # an 18" supply is not a single board — it is 3/4" short of one, and reporting it as
+    # clear would send someone to the yard for stock that is not there.
+    over_width = (max_board_width_in is not None
+                  and rough_width_in > max_board_width_in + 1e-9)
     over_thickness = yield_in is not None and thickness_in > yield_in + 1e-9
     row: dict[str, object] = {
         "use": use,
@@ -147,14 +152,16 @@ def _piece_row(use: str, material_ref: str, materials: Mapping[str, object], pie
         "nominal_quarters": quarters,
         "nominal_stock": f"{quarters}/4" if quarters else None,
         "laminations": laminations,
+        "rough_width_in": round(rough_width_in, 3),
         "rough_surface_sqft": round(rough_sf, 1),
         "rough_board_feet": round(rough_bf, 1) if rough_bf is not None else None,
         "milling_profile": milling,
         "glue_up": bool(over_width or over_thickness),
-        "glue_up_reason": ("finished width exceeds the available board width"
-                           if over_width else
-                           "finished thickness exceeds the nominal stock" if over_thickness
-                           else None),
+        "glue_up_reason": (
+            f'needs a {rough_width_in:.2f}" rough board; the supply is '
+            f'{max_board_width_in:.2f}"' if over_width else
+            f'{thickness_in:.2f}" finished is {laminations} laminations of '
+            f'{yield_in:.2f}" stock' if over_thickness else None),
         "tags": sorted(set(tags)),
     }
     row.update(also)
@@ -237,9 +244,14 @@ def _shelf_rows(model: ResolvedModel, materials: Mapping[str, object],
             count, tags = groups.get(key, (0, []))
             groups[key] = (count + shelf.count, tags + [bank.tag])
     rows = []
-    for (material_ref, profile, thickness, depth, length), (count, tags) in groups.items():
+    for (material_ref, profile, thickness, depth, bay_width), (count, tags) in groups.items():
+        # Grain runs the LONGER of the two plan dimensions, so the board's width is the
+        # shorter one. Usually that is the depth and this is a no-op; where a shelf is
+        # deeper than it is wide (RM-S-BATH1's alcove: 18-1/2" wide in a 30" deep carcass)
+        # it is the difference between gluing up an 18-1/2" panel and a 30" one.
+        width, length = sorted((depth, bay_width))
         rows.append(_piece_row(
-            "shelf", material_ref, materials, count, thickness, depth, length,
+            "shelf", material_ref, materials, count, thickness, width, length,
             max_board_width_in, tags, {}, profile=profile))
     return rows
 

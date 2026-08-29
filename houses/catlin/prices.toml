@@ -1369,15 +1369,20 @@
 # height. The pull-out shelf and the door hardware are [allowances], not this row.
 "FT-KIT-MIXER-GARAGE-24" = { material = { low = 240, high = 650 }, labour = { low = 140, high = 340 } }  # 1 ea
 # RM-M-PANTRY's shelf stack, and it is NOT a closet system — see the type's `source` and
-# notes/pantry_climbable_shelving.md. What is being bought at the owner's 24" depth
-# (2026-08-24, up from 16"): ~75 SF of 3/4" birch ply in shelves plus a full-height centre
-# gable, continuous 1x3 cleats on three sides, a 1x3 hardwood nose glued on edge at every
-# shelf front, and structural screws into blocking that has to be laid in each bay BEFORE
-# the gypsum. The high end is a cabinetmaker building it as casework; the low end is a good
-# carpenter building it in place. A wire or melamine system is 1/4 of this and CANNOT be
-# substituted — it is not standable. Material rose ~40% with the depth; labour did not,
-# because the piece count and the fitting are the same.
-"FT-KIT-PANTRY-SHELVES-70" = { material = { low = 450, high = 1250 }, labour = { low = 350, high = 950 } }  # 1 ea
+# notes/pantry_climbable_shelving.md. ** MATERIAL FELL BY ~2/3 ON 2026-08-29 AND THE SHELVES
+# DID NOT GET CHEAPER. ** The twelve shelves are 1 1/2" solid white oak off the owner's own
+# stock now, so they are scheduled by `haus millwork` (SB-M-PANTRY) and carry NO dollar
+# anywhere in this file — the hardwood section is a deliberate unpriced view, and the oak's
+# real cost is the owner's ~$2/sf rough-milling rate, which the engine does not model.
+# What is left here is everything that is not the shelf: the full-height 3/4" ply centre
+# gable, continuous 1x3 cleats on three sides, structural screws, and the flat 2x4 blocking
+# that has to be laid in each bay BEFORE the gypsum. The 1x3 hardwood nose is gone with the
+# ply — it was a stiffener. Labour went the other way: solid stock has to be flattened,
+# fitted and fastened with slotted holes so 18" of oak can move, which is more careful work
+# than dropping a ply shelf on a cleat. The high end is a cabinetmaker building it as
+# casework; the low end is a good carpenter building it in place. A wire or melamine system
+# is a fraction of this and CANNOT be substituted — it is not standable.
+"FT-KIT-PANTRY-SHELVES-70" = { material = { low = 160, high = 420 }, labour = { low = 400, high = 1050 } }  # 1 ea
 "FT-BATH1-SHELF-2030" = { material = { low = 200, high = 750 }, labour = { low = 150, high = 450 } }  # 1 ea
 "FT-CURTAIN-ROD-48" = { material = { low = 25, high = 90 }, labour = { low = 35, high = 90 } }  # 8 ea
 "FT-CURTAIN-ROD-84" = { material = { low = 40, high = 140 }, labour = { low = 35, high = 90 } }  # 1 ea
@@ -3140,18 +3145,18 @@ cabinet-studio-wet-bar = { low = 850, high = 2300 }
 # at the house's existing carpet rate, roughly $1,200, and this allowance goes away. That is
 # an owner decision, not a modelling one; it is written here so it can be put to them.
 finish-studio-floor-sealer = { low = 350, high = 900 }
-# THE KNEE-WALL PLINTH (2026-08-29). FURN-A-STUDIO-PLINTH is a site-built box, 21'-8" x 18" x
-# 16", and the BOM sees a Furniture instance with no casework behind it. It is not decoration:
-# it encloses the x=1'-0" ERV chase where that chase runs the length of a finished bedroom, and
-# it is what takes the west knee wall out of the 210.52 receptacle test honestly (a counterless
-# fixed cabinet is a break in the wall line) instead of stranding an outlet behind a duct box.
-# Plywood carcass, applied face, seat top, two access panels at the duct joints.
+# THE KNEE-WALL DUCT SHOE (2026-08-29). ** THIS REPLACED A $1,400-$3,200 BENCH ALLOWANCE ON THE
+# SAME DAY IT WAS WRITTEN, AND THE DIFFERENCE IS A DUCT REROUTE, NOT A CHEAPER SPEC. ** The
+# first version of the x=1'-0" attic chase carried DU-S-ERV-HP-FEED's 6" beside a 3" for the
+# studio's whole length — a box that needed to become joinery (FURN-A-STUDIO-PLINTH, a 21'-8"
+# bench) before it was habitable. Rerouting the 6" out of the room through the y=22'-0" joist
+# bay and RM-A-EAST-UNFIN's deck, at no change in developed length, left ONE 75 mm duct.
 #
-# FT-STUDIO-PLINTH-260 is therefore left UNPRICED in [placeables] deliberately, and `haus
-# takeoff` lists it as such. That is this table's existing idiom, not an oversight: it is
-# exactly how `cabinet-study-bookcase-wall` carries FT-BOOKCASE-32-90. Pricing the type as well
-# would bill the same box twice, which is the one failure mode this section cannot catch.
-cabinet-studio-knee-plinth = { low = 1400, high = 3200 }
+# What is priced here is what that actually needs: a site-built shoe, roughly 5" x 5" x 21'-8",
+# scribed to the deck along the base of the knee wall, with an access panel at each duct joint.
+# There is no Furniture element behind it and there should not be — a 5" shoe is trim, and the
+# model does not carry trim as placeables.
+cabinet-studio-knee-duct-shoe = { low = 260, high = 620 }
 # THE CODE MINIMUM ONLY — eaves to 24" inside the wall line, plus valleys, per MN. CONFIRMED
 # AS BASE SCOPE by the owner 2026-08-20, and for a stated reason rather than to save money:
 # this roof is a highly insulated assembly under a low-friction standing seam over a quality

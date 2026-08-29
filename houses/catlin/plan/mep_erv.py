@@ -460,20 +460,32 @@ DUCTS_ERV_LEVEL2 = [
 # one. FS-ATTIC is I-joist, so unlike level 2 there is no crossing the bays: all the
 # north-south travel happens ON the deck, above the joists, where it costs nothing in DEPTH.
 #
-# ** THAT LAST CLAUSE NEEDED AMENDING ON 2026-08-29 AND HERE IS WHAT IT COSTS. ** The x=1'-0"
-# chase now runs the length of a FINISHED BEDROOM. Through RM-A-STUDIO the box carries a 6"
-# beside a 3" — roughly 12" wide by 8-9" tall — for 21'-8" along the base of a 5'-0" knee wall,
-# about 22 sf of the studio's 357 (6%), all of it under the rake where clear height is 5'-0" to
-# 5'-8", and it swallows the west wall's receptacle band. In an unfinished loft that box was
-# invisible; in a guest room it is joinery.
+# ** THAT LAST CLAUSE NEEDED AMENDING ON 2026-08-29, AND THEN THE THING IT WAS APOLOGISING FOR
+# WAS MOSTLY REMOVED. ** The x=1'-0" chase now runs the length of a FINISHED BEDROOM, and the
+# first version of that chase carried DU-S-ERV-HP-FEED's 6" beside a 3" for 21'-8" along the
+# base of a 5'-0" knee wall — roughly 12" wide by 8-9" tall, about 22 sf of the studio's 357,
+# and wide enough to swallow the west wall's receptacle band. The answer then was to box it as
+# a bench (FURN-A-STUDIO-PLINTH) whose `work_surface=False` broke the 210.52 wall line.
 #
-# WHAT WAS BOUGHT WITH IT: not boring the I-joists. The rejected alternative is to run
-# north-south in the FS-ATTIC bays, which the hole chart permits — at ~16 bored webs per duct,
-# twice, plus a manufacturer sign-off, against a one-time built-in the room wants anyway. Build
-# the chase as the base of a knee-wall plinth/bench (FURN-A-STUDIO-PLINTH, plan/placeables.py):
-# it swallows the duct, it is the seat and under-rake storage a guest room wants, and because a
-# counterless fixed cabinet within 6" of the floor is a BREAK in the 210.52 wall line, it takes
-# that wall out of the receptacle test honestly rather than forcing an outlet behind a duct box.
+# ** THE 6" DID NOT HAVE TO BE THERE, AND THE BENCH IS GONE WITH IT. ** DU-S-ERV-HP-FEED turns
+# east one bay sooner (y=22'-0") and reaches SF-S-DUCT down RM-A-EAST-UNFIN's deck instead —
+# same developed length, and the exposed run moved from a guest bedroom to an unfinished loft.
+# DU-A-ERV-R-STUBATH's east leg went into the y=19'-4" bay in the same pass, where it travels
+# ALONG the joists and bores nothing. What is left against the knee wall is ONE 75 mm duct,
+# DU-A-ERV-R-PLANT, whose west face stands 3 7/8" clear of the gwb at ankle height: a shoe, not
+# joinery, and a receptacle at 16" passes a foot over it (ED-A-STUDIO-RC8/RC9).
+#
+# ** DU-A-ERV-R-PLANT IS THE ONE THAT CANNOT LEAVE, AND THE REASON IS ITS TERMINAL. **
+# REG-S-ERV-PLANT-EXH is a CEILING grille at 9'-0" in RM-S-PLANT, sited there because humid air
+# stratifies and the wettest air in that room is the air under FS-ATTIC's joists. Feeding it
+# from FS-S-WEST's open-web trusses — which is where the second storey's radials do run, freely
+# through the webs — would make it a floor boot and give up that argument. It travels the west
+# knee wall instead.
+#
+# The remaining rejected alternative is unchanged: bore the FS-ATTIC I-joists and run
+# north-south in the bays. The hole chart permits it, but at x=1'-0" every hole would fall
+# within a foot of the joists' west bearing, which is the one place the chart does not — and
+# that is before ~16 bored webs and a manufacturer sign-off.
 #
 # +4" is a 3" duct lying on the attic deck at 240"; -10 3/8" is its centreline sitting on
 # FS-ATTIC's bottom chord at 228 1/8". Both are attic-relative, and negative because the
@@ -511,11 +523,23 @@ DUCTS_ERV_ATTIC = [
     #
     # 20 cfm continuous, matching every other bath terminal in the house — and small enough
     # that the extra run costs the machine nothing measurable.
+    #
+    # ** ITS EAST LEG USED TO LIE ON THE DECK AND THAT WAS WRONG. ** From x=1'-0" to the wet
+    # wall it crossed 8'-7" of RM-A-STUDIO's floor at y=19'-0" — a duct laid across the middle
+    # of a bedroom, not against a knee wall where the rest of the chase at least has a rake to
+    # hide under. It rides the FS-ATTIC bay instead, which costs nothing: the leg runs EAST, and
+    # FS-ATTIC's I-joists span x, so travelling east is travelling ALONG a bay. Nothing is bored.
+    #
+    # y moved 19'-0" -> 19'-4" (232" = 8 + 14 x 16) to land on a bay centre, and
+    # REG-A-STUBATH-EXH moved the same 4" with it so the riser still meets its grille. 19'-4" is
+    # well inside RM-A-STUBATH (y 17'-4 3/4" .. 22'-3 3/8"), and it is a different bay from the
+    # one PR-A-STUBATH-DRAIN takes at 20'-8", so the two do not share a cavity.
     DuctRun(uid="WCH6Z4DZX0", tag="DU-A-ERV-R-STUBATH", system=DuctSystem.EXHAUST,
-            path=(pt(ft(2, 6), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(19)),
-                  pt(ft(9, 7.5), ft(19)), pt(ft(9, 7.5), ft(19))),
+            path=(pt(ft(2, 6), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(19, 4)),
+                  pt(ft(1), ft(19, 4)), pt(ft(9, 7.5), ft(19, 4)),
+                  pt(ft(9, 7.5), ft(19, 4))),
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
-                        _ATTIC_DECK_Z, inch(84)),
+                        _ATTIC_BAY_Z, _ATTIC_BAY_Z, inch(84)),
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid",
             design_cfm=20),
     # RM-S-BED3's extract, forced up here by FO-S-STAIR — see the header. It becomes a ceiling
@@ -574,13 +598,30 @@ DUCTS_ERV_ATTIC = [
 # the house's fresh air arriving in one place, and a radial would run it at ~5,000 fpm.
 # -8 7/8" is a 6" duct on FS-ATTIC's bottom chord; -20 7/8" is a 6" duct on SF-S-DUCT's clear
 # underside at 216 1/8".
+#
+# ** REROUTED 2026-08-29 SO IT NEVER ENTERS THE GUEST STUDIO, AND IT COST NOTHING. ** It used
+# to run the x=1'-0" deck chase south all the way to y=11'-4" — 10'-11" of 6" duct along the
+# base of a finished bedroom's knee wall, and the single item that set that chase's SECTION.
+# Everything else on that wall is 75 mm.
+#
+# It now turns east one bay sooner, in **y=22'-0"** — the same bay DU-A-ERV-R-BED3 takes, and
+# for the same reason: 264" = 8 + 16 x 16 is a bay centre, it sits under W-A-STU-N's sole plate
+# so the partition is irrelevant, and it is the last bay south of FO-A-HALL, which severs every
+# west-to-east route north of it. From x=20'-8" it rises back onto RM-A-EAST-UNFIN's deck and
+# runs south to the same SF-S-DUCT drop it always used. An UNFINISHED loft is where a 6" duct
+# lying on a deck belongs.
+#
+# ** THE DEVELOPED LENGTH IS UNCHANGED — 11'-7" comes off the west leg and 10'-8" goes onto the
+# east one. ** So this is not a trade of pressure for joinery: the machine sees the same run,
+# and DU-A-ERV-R-PLANT (25 cfm) remains the radial whose drop the installer must check.
 DUCTS_ERV_MIX_FEED = [
     DuctRun(uid="CSDV02AAAA", tag="DU-S-ERV-HP-FEED", system=DuctSystem.SUPPLY,
-            path=(pt(ft(0, 5), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)), pt(ft(1), ft(11, 4)),
-                  pt(ft(1), ft(11, 4)), pt(ft(20, 8), ft(11, 4)),
+            path=(pt(ft(0, 5), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)), pt(ft(1), ft(22)),
+                  pt(ft(1), ft(22)), pt(ft(20, 8), ft(22)),
+                  pt(ft(20, 8), ft(22)), pt(ft(20, 8), ft(11, 4)),
                   pt(ft(20, 8), ft(11, 4))),
             elevations=(inch(4), inch(4), inch(4), inch(-8.875), inch(-8.875),
-                        inch(-20.875)),
+                        inch(4), inch(4), inch(-20.875)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
             design_cfm=100),
 ]

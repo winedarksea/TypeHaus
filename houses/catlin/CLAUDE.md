@@ -396,11 +396,26 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     overtakes `DU-A-ERV-R-PLANT` as the longest radial — **which is fine, and length is not the
     criterion**: BED3 carries 5 cfm and PLANT carries 25, so PLANT is still the run whose
     pressure drop the installer must check.
-  - **The x=1'-0" chase is now inside a finished bedroom, and it is furniture.**
-    `FURN-A-STUDIO-PLINTH` boxes it as a 21'-8" knee-wall bench. Its type states
-    **`work_surface=False`**, which is load-bearing: a counterless fixed cabinet within 6" of
-    the floor is a BREAK in the 210.52 wall line, so the plinth takes that wall out of the
-    receptacle test honestly rather than stranding an outlet behind a duct box.
+  - **The x=1'-0" chase is inside a finished bedroom, so the 6" left the room instead.**
+    `DU-S-ERV-HP-FEED` (100 cfm, the mixing-box feed) used to run that chase for 10'-11",
+    a 6" beside a 3", and it alone set the box's section — wide enough that the first answer
+    was a 21'-8" knee-wall bench. **It turns east one bay sooner now, in `y=22'-0"`** — the bay
+    `DU-A-ERV-R-BED3` already uses, the last one south of `FO-A-HALL` — and reaches the same
+    `SF-S-DUCT` drop down `RM-A-EAST-UNFIN`'s deck. **The developed length is unchanged**
+    (−11'-7" west, +10'-8" east), so nothing was traded for it. `DU-A-ERV-R-STUBATH`'s east leg
+    went into the `y=19'-4"` bay in the same pass; it had been lying across 8'-7" of the
+    studio's floor.
+  - **`DU-A-ERV-R-PLANT` is the one that stays, and its terminal is why.**
+    `REG-S-ERV-PLANT-EXH` is a CEILING grille at 9'-0" in `RM-S-PLANT` because humid air
+    stratifies. Feeding it from `FS-S-WEST`'s open-web trusses one storey down — where the
+    second-storey radials genuinely do pass through the webs for free — would make it a floor
+    boot and give that up. So one 75 mm duct still runs the knee wall, standing 3 7/8" clear of
+    the gwb at ankle height: a ~5" site-built shoe (`cabinet-studio-knee-duct-shoe`), not
+    joinery, and a receptacle at 16" passes a foot over it. `FURN-A-STUDIO-PLINTH` and
+    `FT-STUDIO-PLINTH-260` are **deleted**, and the west knee wall is back in the 210.52 test
+    on its own merits: `ED-A-STUDIO-RC8`/`RC9` at y=6'-0"/16'-0". One mid-wall device is not
+    enough — `RC1`/`RC7` carry the corners in, but a single box left gaps at both ends of its
+    12' reach.
   - **`AL-A-COMBO` moved to `RM-A-STUDY`, and `AL-A-STUDIO` is the new one.** Getting the pair
     round the wrong way is a FAIL, not a preference: `code.R315_co_every_sleeping_area` fails
     outright if every CO alarm on a storey is inside a bedroom.
