@@ -705,6 +705,9 @@ class ResolvedPipeRun:
     material: str | None = None
     finish: str | None = None      # applied coating, e.g. "lacquered" over copper
     insulation: str | None = None  # pipe-insulation spec, billed by the foot; None -> bare
+    # Self-regulating heater cable on the run, billed by the foot beside the insulation.
+    # Separate from it on purpose: a traced AND lagged run is the normal outdoor spec.
+    freeze_protection: str | None = None
 
 
 @dataclass(frozen=True)

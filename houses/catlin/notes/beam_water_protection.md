@@ -96,6 +96,18 @@ labour half of the `beam_cap` price row; it is not a return-visit trade.
 - **No post wrap.** A PVC wrap over a post that gets wet is a moisture trap; it hides the
   post without drying it.
 
+## The beam tops are now also an anchor question
+
+Two balcony heat-pump stands were bolted through `FS-SG-DECK` on 2026-08-28, eight lags
+through the waterproof plank. **None of them lands on a beam, and that is deliberate**: a lag
+into a beam top would pierce `TR-SG-CAP-BL*` and the butyl under it and seat in the very ply
+seams this note exists to close. Every anchor lands in sacrificial 2x8 blocking instead, which
+inherits `FS-SG-DECK.top_protection` and so is taped by the same rule and the same roll.
+
+`mep.deck_equipment_support` FAILs an anchor that lands on a beam, so the cap/tape order here
+is now enforced rather than merely written down. See `notes/heat_pump_deck_mounting.md` and
+decision #64. **Anything that moves a stand leg has to re-check that.**
+
 ## Still open
 
 - **`structural.deck_beam_span` grades a roof deck against a deck table.** AWC DCA6 does not

@@ -320,6 +320,41 @@ CONDENSATE = [
             slope_in_per_ft=0.3),
 ]
 
+# --- Balcony heat-pump defrost condensate (2026-08-28) -------------------------------
+#
+# EQ-M-HP1-OD and EQ-M-HP2-OD stand on FS-SG-DECK, which is the roof of an occupied porch.
+# In heating mode a cold-climate heat pump is a condensate factory: every defrost cycle dumps
+# the melted frost load out of the base pan, all winter. Until now nothing carried it.
+#
+# ** LETTING IT RUN ONTO THE DECK IS NOT THE CHEAP OPTION, IT IS THE EXPENSIVE ONE. ** The
+# plank is watertight and falls 2" to a drip edge, so the water does leave — but it leaves by
+# sheeting 8'-8" across bare aluminium at ambient, in February, on a surface D-S-DECK-W and
+# D-S-DECK-E open onto. It refreezes on the way. What it does not freeze on the deck it
+# freezes in the box gutter and the 3" leader, and a plugged leader overflows TR-SG-DRIP onto
+# the porch below. So each unit gets a piped line to the trough instead.
+#
+# Filed on ``second`` (datum 10'-0" = the deck joist tops, so +2" is 1/2" above the plank).
+# Straight south, on the deck's own fall, discharging over TR-SG-GUTTER's rim at -2" — an air
+# gap above the trough, never into it. 0.75"/ft over the run, well past P3005.3's 1/4"/ft.
+#
+# ``freeze_protection`` is the whole point of the pipe and not an accessory to it: an
+# untraced condensate line in this climate is a line full of ice by December, which puts the
+# meltwater straight back on the deck and loses everything the pipe was for. The cable runs
+# the pipe AND is specified onto the leader in notes/heat_pump_deck_mounting.md, which is the
+# part this model cannot hold — TR-SG-LEADER-SE is a Downspout, not a PipeRun.
+HP_CONDENSATE = [
+    PipeRun(uid="SGPC01AAAA", tag="PR-S-HP1-COND", system=PipeSystem.DRAIN,
+            path=(pt(ft(8, 8), ft(-4, -2)), pt(ft(8, 8), ft(-9, -6))),
+            diameter=inch(0.75), material="pvc",
+            elevations=(inch(2), inch(-2)),
+            freeze_protection="5 W/ft self-regulating, 120 V"),
+    PipeRun(uid="SGPC02AAAA", tag="PR-S-HP2-COND", system=PipeSystem.DRAIN,
+            path=(pt(ft(17, 6), ft(-4, -1)), pt(ft(17, 6), ft(-9, -6))),
+            diameter=inch(0.75), material="pvc",
+            elevations=(inch(2), inch(-2)),
+            freeze_protection="5 W/ft self-regulating, 120 V"),
+]
+
 # --- TPR relief discharge (P2804.6.1) ------------------------------------------------
 #
 # The pipe that stops the tank exploding; the model had no instance until 2026-08-15, when

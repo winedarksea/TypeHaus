@@ -77,6 +77,22 @@ class PipeRun(Element):
     # an authored second polyline tracking a first is a second source of truth for one
     # length. ``None`` means bare pipe, which for a hot line is what N1103.4.2 fails.
     insulation: str | None = None  # e.g. '1" fiberglass, ASJ'
+    # Self-regulating heater cable on the run, billed by the foot exactly as ``insulation``
+    # is, and a field for the same reason: a heat trace has no route of its own, it is as
+    # long as the pipe it follows, and a second authored polyline tracking the first would be
+    # a second source of truth for one length.
+    #
+    # It is a SEPARATE field from ``insulation`` and not a value of it. The two are different
+    # purchases, different trades and different failure modes — cable is an electrical item on
+    # a circuit, lagging is a thermal one — and a run very often wants both, the insulation
+    # over the cable. Folding them into one string would make "traced AND insulated"
+    # unsayable, which is the normal specification for an outdoor drain in this climate.
+    #
+    # ``None`` means no cable, which is the right answer for every interior run and the wrong
+    # one for a condensate line leaving a cold-climate heat pump: defrost meltwater running
+    # in an unheated pipe in February is how the pipe, and then whatever it discharges into,
+    # plugs with ice.
+    freeze_protection: str | None = None  # e.g. '5 W/ft self-regulating, 120 V'
 
 
 @register_element

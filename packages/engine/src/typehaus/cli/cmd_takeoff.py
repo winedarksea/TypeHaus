@@ -107,6 +107,7 @@ def takeoff(
                "plumbing_specialties": bom["plumbing_specialties"],
                "install_parts": bom["install_parts"],
                "pipe_insulation": bom["pipe_insulation"],
+               "freeze_protection": bom["freeze_protection"],
                "ducts": bom["ducts"],
                "duct_fittings": bom["duct_fittings"],
                "duct_insulation": bom["duct_insulation"],

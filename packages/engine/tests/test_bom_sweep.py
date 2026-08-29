@@ -615,6 +615,8 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         "envelope_layers", "wood_surfaces", "glazing_panels", "glazing_trim", "edge_trim",
         # Self-adhered membrane over framing tops, by the foot of member (2026-08-27).
         "member_protection",
+        # Self-regulating heater cable by the foot of run traced (2026-08-28).
+        "freeze_protection",
         "bug_screens", "openings", "floor_finishes", "stair_finish", "railings",
         # Mechanical & plumbing
         "pipe_runs", "pipe_fittings", "plumbing_specialties", "install_parts", "pipe_insulation",

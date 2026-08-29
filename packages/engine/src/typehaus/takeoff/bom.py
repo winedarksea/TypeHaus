@@ -39,7 +39,8 @@ from typehaus.takeoff.hardware_config import (
     HardwareTakeoffConfig,
 )
 from typehaus.takeoff.mep import (duct_fitting_takeoff, duct_insulation_takeoff,
-                                  duct_takeoff, pipe_insulation_takeoff, pipe_run_takeoff,
+                                  duct_takeoff, freeze_protection_takeoff,
+                                  pipe_insulation_takeoff, pipe_run_takeoff,
                                   sleeve_takeoff)
 from typehaus.takeoff.plumbing import fitting_takeoff
 from typehaus.takeoff.plumbing_specialties import (install_parts_takeoff,
@@ -140,6 +141,10 @@ def bill_of_materials(
         # Hot-water line insulation by the foot (IRC N1103.4.2). A field on the run, so it
         # cannot drift out of length with the pipe it sleeves.
         "pipe_insulation": pipe_insulation_takeoff(model),
+        # Heater cable by the foot (2026-08-28), the electrical twin of the row above.
+        # Kept apart from it because a traced AND lagged run is the normal outdoor spec
+        # in this climate, and one blended row cannot say that.
+        "freeze_protection": freeze_protection_takeoff(model),
         "ducts": duct_takeoff(model),
         # Elbows by the piece off the ducts' own 3D polylines, the same derivation
         # [pipe_fittings] uses. Only possible since DuctRun gained elevations: a plan

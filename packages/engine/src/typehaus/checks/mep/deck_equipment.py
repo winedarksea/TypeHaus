@@ -1,0 +1,244 @@
+"""Mechanical equipment standing on an exterior deck — is it held down, and where (→ 12).
+
+An outdoor unit on a deck is three problems the rest of the model does not see:
+
+1. **It has to be bolted down.** Not a preference — Gree's service manual (and every other
+   manufacturer's) says to fix the unit's foot holes to a support rated well past the unit's
+   own weight, and IRC M1401.4 makes a manufacturer's installation instruction mandatory.
+   Section M1401.4 says it directly as well: *"supports and foundations shall prevent
+   excessive vibration, settlement or movement of the equipment."* A cabinet standing loose
+   on a deck at storey height satisfies none of that.
+
+2. **The fastener has to land in the right member.** A deck that is also a roof over occupied
+   space has a waterproof plane, and an equipment anchor is a hole through it. Where the hole
+   goes is a hundred-year decision: into blocking it is replaceable from below, and into a
+   beam or a joist it is not. This check is the only thing in the model that states that rule,
+   because nothing about the geometry distinguishes the two — both are lumber under a plank.
+
+3. **It makes water all winter.** A cold-climate heat pump sheds defrost meltwater every time
+   it reverses, over whatever is under the deck, in a climate that freezes it.
+
+** THIS CHECK GRADES COVERAGE, NOT CAPACITY. ** It reports whether a joint has hardware and
+where that hardware lands. It never says the hardware is big enough, because nothing in this
+model carries a design wind speed — ``Site`` has ``ground_snow_load_psf`` and no wind field,
+and a restraint schedule without a load is a drawing, not a calculation. So a fully covered
+unit is reported UNKNOWN, exactly as ``checks/structural/uplift_path.py`` reports a covered
+link, and for the same reason: "there is an anchor here" is a different claim from "this
+anchor holds", and folding the first into a PASS would retire a question an engineer still
+has to answer.
+
+An **uncovered** unit is a FAIL. No anchor at all is not a judgement call.
+"""
+
+from __future__ import annotations
+
+from typehaus.checks._authoring import advisory
+from typehaus.checks._authoring import unknown as _unknown
+from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.findings import Finding, Result
+from typehaus.model.floors import FloorSystem
+from typehaus.model.mep import Equipment, PipeRun
+from typehaus.model.structure import Beam, Connector
+
+_CID = "mep.deck_equipment_support"
+
+#: Plan distance within which an authored ``Connector`` counts as anchoring a unit. Generous
+#: on purpose: a stand's legs are deliberately NOT under the cabinet's own feet (they dodge
+#: beams), so a tight radius would report a correctly-built stand as unanchored. Half the
+#: cabinet's own diagonal plus a foot is the honest reading of "this hardware is this unit's".
+_ANCHOR_REACH_M = 0.30
+#: How close an anchor may come to a joist or beam centreline before it stops being "in the
+#: bay". A 2x is 1 1/2" wide and a 3-ply beam 4 1/2"; 4" clears the widest of them with room
+#: for a base plate, and is tight enough that an anchor authored *on* a line is caught.
+_MEMBER_CLEAR_M = 4.0 * 0.0254
+
+
+def _fail(msg: str, tags: tuple[str, ...], fix: str | None = None) -> Finding:
+    """WARN severity with a FAIL result — shows as a failure without gating the permit.
+
+    Deliberate, and the same call ``checks/mep/data.py`` makes: the permit integrity gate
+    keys off ERROR severity alone, and how a condenser is bolted down is not a question the
+    permit set answers.
+    """
+    return advisory(_CID, msg, tags, Result.FAIL, fix=fix)
+
+
+def _inside(point: tuple[float, float], ring: list[tuple[float, float]]) -> bool:
+    """Ray cast. The deck outlines here are rectangles, but nothing guarantees that."""
+    x, y = point
+    hit = False
+    for (x0, y0), (x1, y1) in zip(ring, ring[1:] + ring[:1], strict=True):
+        if (y0 > y) != (y1 > y) and x < (x1 - x0) * (y - y0) / (y1 - y0) + x0:
+            hit = not hit
+    return hit
+
+
+def _decks_by_storey(ctx: CheckContext) -> dict[str, list[FloorSystem]]:
+    """Authored exterior decks that resolved, KEYED BY STOREY.
+
+    Storey-scoped, and that is not tidiness. This house stacks two exterior decks on one plan
+    footprint — the porch at 0'-0" and the balcony 10' above it — so a point inside one is
+    inside both, and a whole-plan search matched every balcony condenser to the porch it is
+    standing over rather than to the deck it is standing on. It then read the porch pillars'
+    own post bases as the condensers' anchors and graded those. Two wrong answers from one
+    missing filter, and both of them looked plausible.
+    """
+    resolved = {f.tag for f in ctx.model.floors}
+    out: dict[str, list[FloorSystem]] = {}
+    for storey in ctx.plan.storeys:
+        decks = [e for e in ctx.plan.storey_elements(storey.tag)
+                 if isinstance(e, FloorSystem) and e.service == "deck" and e.tag in resolved]
+        if decks:
+            out[storey.tag] = decks
+    return out
+
+
+@check(Tier.ADVISORY, _CID)
+def deck_equipment_support(ctx: CheckContext) -> list[Finding]:
+    """Equipment on an exterior deck is anchored, anchored into blocking, and drained."""
+    by_storey = _decks_by_storey(ctx)
+    if not by_storey:
+        return []  # no exterior deck — nothing to stand on; not an unknown
+
+    connectors = [e for e in ctx.plan.all_elements() if isinstance(e, Connector)]
+    runs = {e.tag: e for e in ctx.plan.all_elements() if isinstance(e, PipeRun)}
+    beams = [e for e in ctx.plan.all_elements() if isinstance(e, Beam)]
+    nodes = {e.tag: e.position.xy_m for e in ctx.plan.all_elements()
+             if e.element_kind == "Node"}
+
+    out: list[Finding] = []
+    for storey_tag, decks in by_storey.items():
+        outlines = {d.tag: [p.xy_m for p in d.outline] for d in decks if d.outline}
+        if not outlines:
+            continue
+        blocking = _blocking_by_deck(ctx, decks)
+        units = [e for e in ctx.plan.storey_elements(storey_tag) if isinstance(e, Equipment)]
+        for unit in sorted(units, key=lambda e: e.tag):
+            here = next((tag for tag, ring in outlines.items()
+                         if _inside(unit.position.xy_m, ring)), None)
+            if here is None:
+                continue  # not on a deck — this rule is not about it
+            out.extend(_grade_unit(unit, here, connectors, runs, beams, nodes,
+                                   blocking.get(here, [])))
+    return out
+
+
+def _blocking_by_deck(ctx: CheckContext, decks: list[FloorSystem]) -> dict:
+    """Resolved ``"blocking"`` member spans per deck, as (x0, y0, x1, y1) in metres."""
+    by_uid = {d.uid: d.tag for d in decks}
+    out: dict[str, list[tuple[float, float, float, float]]] = {}
+    for floor in ctx.model.floors:
+        for member in getattr(floor, "members", ()):
+            if member.category != "blocking":
+                continue
+            tag = by_uid.get(member.parent_uid)
+            if tag is not None:
+                out.setdefault(tag, []).append(
+                    (member.p0[0], member.p0[1], member.p1[0], member.p1[1]))
+    return out
+
+
+def _on_a_block(point: tuple[float, float], blocks: list) -> bool:
+    """Is this anchor inside one of the deck's blocking spans (plus a base-plate margin)?"""
+    x, y = point
+    for x0, y0, x1, y1 in blocks:
+        if (min(x0, x1) - _MEMBER_CLEAR_M <= x <= max(x0, x1) + _MEMBER_CLEAR_M
+                and min(y0, y1) - _MEMBER_CLEAR_M <= y <= max(y0, y1) + _MEMBER_CLEAR_M):
+            return True
+    return False
+
+
+def _on_a_beam(point: tuple[float, float], beams: list, nodes: dict) -> str | None:
+    """The tag of a beam this anchor lands on, if any — the case the rule exists to catch."""
+    x, y = point
+    for beam in beams:
+        p0, p1 = nodes.get(beam.start_node), nodes.get(beam.end_node)
+        if p0 is None or p1 is None:
+            continue
+        dx, dy = p1[0] - p0[0], p1[1] - p0[1]
+        length_sq = dx * dx + dy * dy
+        if length_sq < 1e-9:
+            continue
+        t = max(0.0, min(1.0, ((x - p0[0]) * dx + (y - p0[1]) * dy) / length_sq))
+        near = (p0[0] + t * dx, p0[1] + t * dy)
+        if (x - near[0]) ** 2 + (y - near[1]) ** 2 <= _MEMBER_CLEAR_M ** 2:
+            return beam.tag
+    return None
+
+
+def _grade_unit(unit, deck_tag: str, connectors, runs, beams, nodes, blocks) -> list[Finding]:
+    ux, uy = unit.position.xy_m
+    reach = _ANCHOR_REACH_M + max(unit.footprint[0].meters, unit.footprint[1].meters)
+    anchors = [c for c in connectors
+               if (c.position.xy_m[0] - ux) ** 2 + (c.position.xy_m[1] - uy) ** 2
+               <= reach ** 2 and deck_tag in c.connects]
+    out: list[Finding] = []
+
+    if not anchors:
+        return [_fail(
+            f"{unit.tag} stands on deck {deck_tag} with no anchor: no Connector within "
+            f"{reach / 0.0254:.0f}\" of it names {deck_tag}. IRC M1401.4 adopts the "
+            f"manufacturer's instruction, and every outdoor-unit instruction requires the "
+            f"foot holes bolted to a rated support",
+            (unit.tag, deck_tag),
+            fix="author a Connector per stand leg naming the deck it anchors into")]
+
+    # Where each anchor lands. A beam or a joist is a FAIL even though it is stiffer — the
+    # rule is about what can be replaced, not about what carries best.
+    for anchor in sorted(anchors, key=lambda c: c.tag):
+        beam_tag = _on_a_beam(anchor.position.xy_m, beams, nodes)
+        if beam_tag is not None:
+            out.append(_fail(
+                f"anchor {anchor.tag} for {unit.tag} lands on beam {beam_tag}: a fastener "
+                f"through this deck's waterproof plane must land in sacrificial blocking, "
+                f"not in a primary member that cannot be cut out and replaced from below",
+                (unit.tag, anchor.tag, beam_tag),
+                fix="move the stand leg into a joist bay and add a JoistReinforcement "
+                    "(plies=1, blocking=True) at that point"))
+        elif not _on_a_block(anchor.position.xy_m, blocks):
+            out.append(_fail(
+                f"anchor {anchor.tag} for {unit.tag} lands on no modeled blocking: it is "
+                f"either on a joist or in an unblocked bay, and either way the penetration "
+                f"is hosted by a member the deck cannot spare",
+                (unit.tag, anchor.tag, deck_tag),
+                fix="add a JoistReinforcement (plies=1, blocking=True) at the anchor point"))
+
+    # Condensate. Only asked of equipment that makes it.
+    out.extend(_grade_condensate(unit, deck_tag, runs))
+
+    if not out:
+        out.append(_unknown(
+            _CID,
+            f"{unit.tag} on deck {deck_tag} is held by {len(anchors)} authored anchor(s), "
+            f"every one of them landing in blocking rather than a joist or a beam, and its "
+            f"condensate is piped and freeze-protected; coverage only — this model carries "
+            f"no design wind speed, so the restraint's capacity is not evaluated",
+            (unit.tag, deck_tag)))
+    return out
+
+
+def _grade_condensate(unit, deck_tag: str, runs) -> list[Finding]:
+    """A heat pump over occupied space needs its defrost water piped, and the pipe traced."""
+    if unit.kind.value != "heat_pump":
+        return []
+    if not unit.pan_drain_ref:
+        return [_fail(
+            f"{unit.tag} stands on deck {deck_tag} with no pan_drain_ref: a heat pump sheds "
+            f"defrost meltwater through every winter, and this one sheds it over whatever is "
+            f"under the deck",
+            (unit.tag, deck_tag),
+            fix="author a condensate PipeRun to a receptor and name it in pan_drain_ref")]
+    run = runs.get(unit.pan_drain_ref)
+    if run is None:
+        return [_fail(
+            f"{unit.tag} names pan_drain_ref {unit.pan_drain_ref}, which is not a PipeRun in "
+            f"the plan",
+            (unit.tag, unit.pan_drain_ref))]
+    if not run.freeze_protection:
+        return [_fail(
+            f"condensate run {run.tag} from {unit.tag} carries no freeze_protection: an "
+            f"untraced defrost line on an exposed deck is a line full of ice by midwinter, "
+            f"which puts the meltwater back on the deck the pipe was added to keep it off",
+            (unit.tag, run.tag),
+            fix="author freeze_protection on the run (self-regulating heater cable)")]
+    return []

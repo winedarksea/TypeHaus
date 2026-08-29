@@ -664,13 +664,47 @@ SECOND_EQUIPMENT = [
     # x 8'-0"..9'-4" (below WIN-S-PLANT2's sill, so no glass conflict), HP2 in the 2'-8" gap
     # between the French doors at x 16'-10"..18'-2", clear of both leaf sweeps. Both keep
     # 1'-0" standoff from the wall for the linesets.
+    #
+    # BOTH STAND 12" CLEAR OF THE PLANK (2026-08-28), on the aluminium frames authored as
+    # PT-SG-HPA1..4 / PT-SG-HPB1..4 in params/sunken_garden.py, bolted down through the deck
+    # into blocking. Three facts about that, none of which is visible from this file:
+    #
+    #  * The stand is REQUIRED, not a nicety. Gree's service manual §8.6 says to fix the foot
+    #    holes with bolts onto a support rated to four times unit weight, and IRC M1401.4
+    #    makes a manufacturer instruction mandatory. A condenser at +10' on an open deck also
+    #    overturns and slides long before its own weight holds it.
+    #  * The stand's legs DO NOT sit under the cabinets' own feet. They are placed to land in
+    #    joist bays clear of the three balcony beams, because the anchors must reach
+    #    sacrificial blocking rather than a beam or a joist — see `_HP_STAND_AT`.
+    #  * 12" is the owner's number against a guide's 18"-24". It still clears the 42" guard
+    #    once the cabinet is on it (12 + 32/34 = 44"/46"), which is what the airflow needed.
+    #
+    # ``mount.elevation`` is the whole height change: `resolved_mount_elevation` returns
+    # floor + elevation for a FLOOR mount. THE TWO NUMBERS ARE COUPLED — this and
+    # `_HP_STAND_HEIGHT_IN` in params/sunken_garden.py describe one dimension in two modules
+    # that cannot import each other. `mep.deck_equipment_support` is what holds them
+    # together; do not change one without the other.
+    #
+    # ** 13 1/2", NOT 12", AND THE 1 1/2" IS THE PLANK. ** A FLOOR mount measures from the
+    # storey datum, and on `second` that datum is FS-SG-DECK's JOIST TOPS at 10'-0". The
+    # stand does not stand there — it stands on the aluminium plank laid over them, 1 1/2"
+    # higher, which is also where its base plate is bedded and where the lag crosses the
+    # waterproof plane. Authoring 12" here put both cabinets 1 1/2" below the tops of their
+    # own legs. This is the same trap the porch beam hangers fell into at `_porch_top`.
+    #
+    # `drain_pan`/`pan_drain_ref`: a cold-climate heat pump in heating mode sheds defrost
+    # meltwater all winter, and this one does it over an occupied porch. Left to run onto the
+    # deck it sheets 8'-8" of bare aluminium to the drip edge and refreezes on the way, on a
+    # surface two doors open onto, then ices the box gutter and plugs the 3" leader.
     Equipment(uid="CEE017AAAA", tag="EQ-M-HP1-OD", kind=EquipmentKind.HEAT_PUMP,
               position=pt(ft(8, 8), ft(-2, -7)), footprint=(inch(38), inch(16)),
-              rotation=deg(90),
+              rotation=deg(90), mount=Mount(kind=MountKind.FLOOR, elevation=inch(13.5)),
+              drain_pan=True, pan_drain_ref="PR-S-HP1-COND",
               type_ref="EQ-T-GREE-VIREO-GEN3", circuit="CKT-HP1", room=None),
     Equipment(uid="CEE018AAAA", tag="EQ-M-HP2-OD", kind=EquipmentKind.HEAT_PUMP,
               position=pt(ft(17, 6), ft(-2, -6.5)), footprint=(inch(37), inch(16)),
-              rotation=deg(90),
+              rotation=deg(90), mount=Mount(kind=MountKind.FLOOR, elevation=inch(13.5)),
+              drain_pan=True, pan_drain_ref="PR-S-HP2-COND",
               type_ref="EQ-T-GREE-MULTI-U30", circuit="CKT-HP2", room=None),
     # System 1's concealed ducted AH, inside SF-S-DUCT's dropped box at the south end of the
     # hallway trunk (2026-07-30). Can't sit in the floor structure — 21"x11" case vs. ~14 1/2"

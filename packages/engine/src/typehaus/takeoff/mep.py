@@ -72,6 +72,41 @@ def pipe_insulation_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     ]
 
 
+def freeze_protection_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
+    """Lineal feet of self-regulating heater cable, grouped by spec and pipe diameter.
+
+    The twin of ``pipe_insulation_takeoff`` above, and keyed the same way for the same
+    reason: cable is sold by the foot in a wattage, and the pipe it wraps decides both how
+    much cable a foot of run takes and whether it spirals. The length is the host run's
+    developed length, because the cable follows the pipe through its drops.
+
+    Kept apart from the insulation row rather than folded into it. They are two purchases by
+    two trades — the cable is an electrical item that lands on a circuit, the lagging is a
+    thermal one that goes over it — and a run in this climate normally wants both. One
+    blended row could not say that, and would bill whichever spec was written last.
+
+    Runs with no ``freeze_protection`` are absent rather than billed at zero: an untraced
+    outdoor drain is a finding, not a row of nothing.
+    """
+    specs: dict[tuple[str, float], dict[str, object]] = {}
+    for run in model.pipe_runs:
+        if not run.freeze_protection:
+            continue
+        key = (run.freeze_protection, round(run.diameter_m / M_PER_IN, 3))
+        entry = specs.setdefault(key, {"length_m": 0.0, "count": 0, "tags": []})
+        entry["length_m"] = float(entry["length_m"]) + run.length_m
+        entry["count"] = int(entry["count"]) + 1
+        tags = entry["tags"]
+        assert isinstance(tags, list)
+        tags.append(run.tag)
+    return [
+        {"spec": spec, "pipe_diameter_in": diameter, "runs": int(entry["count"]),
+         "length_ft": round(float(entry["length_m"]) * _M_TO_FT, 1),
+         "tags": sorted(entry["tags"])}
+        for (spec, diameter), entry in sorted(specs.items())
+    ]
+
+
 def duct_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Lineal feet of duct, grouped by system, section, routing and material.
 

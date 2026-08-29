@@ -107,3 +107,45 @@ def test_a_truss_roof_is_not_this_check_s_business(catlin_model_ro) -> None:
     """
     tagged = {tag for f in _findings(catlin_model_ro) for tag in f.element_tags}
     assert "RF-GARAGE" not in tagged
+
+
+# --- the derivation both the splice and the tie rest on -------------------------------
+
+
+def test_continuous_support_is_measured_not_taken_on_trust(catlin_model_ro) -> None:
+    """Dropping W-A-C1B opens a 3'-9" hole, and the beam stops reading as continuous.
+
+    This is the historical bug as a test. ``RB-HOUSE`` named W-A-C1 and W-A-C2 and omitted the
+    middle third of its own bearing line for a year — harmless while nothing read the tuple,
+    and not harmless now that two rules do: a beam wrongly believed continuous would be bought
+    in spliced pieces it cannot be built from, and tied at a pitch instead of at the ends it
+    actually has. So the refs are the claim and the walls are the evidence.
+    """
+    from typehaus.model.structure import Beam
+    from typehaus.resolve.framing.roof import _continuously_supported
+
+    beam = next(e for storey in catlin_model_ro.plan.storeys
+                for e in catlin_model_ro.plan.storey_elements(storey.tag)
+                if isinstance(e, Beam) and e.tag == "RB-HOUSE")
+    start, end = (5.4864, 0.0), (5.4864, 10.9728)  # x=18', y 0'->36'
+
+    assert _continuously_supported(catlin_model_ro, beam, start, end)
+    assert beam.bearing_refs == ("W-A-C1", "W-A-C1B", "W-A-C2")
+
+    gapped = beam.model_copy(update={"bearing_refs": ("W-A-C1", "W-A-C2")})
+    assert not _continuously_supported(catlin_model_ro, gapped, start, end)
+
+    # ...and a line that stops short of the far end is not continuous either.
+    short = beam.model_copy(update={"bearing_refs": ("W-A-C1", "W-A-C1B")})
+    assert not _continuously_supported(catlin_model_ro, short, start, end)
+
+
+def test_a_beam_read_as_spanning_is_bought_and_tied_as_one_piece(catlin_model_ro) -> None:
+    """The two consequences, asserted where they are actually spent."""
+    from typehaus.resolve.framing.roof import _continuously_supported  # noqa: F401
+    from typehaus.takeoff.framing import framing_takeoff
+
+    ridge = next(row for row in framing_takeoff(catlin_model_ro)
+                 if row["category"] == "ridge_beam")
+    assert ridge["spliceable"]
+    assert [(b["length_ft"], b["count"]) for b in ridge["stock"]] == [(12, 3)]

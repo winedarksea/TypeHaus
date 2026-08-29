@@ -53,6 +53,8 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "pl
              # Plumbing specialties (2026-08-01): devices by the piece, their loose install
              # kits, and hot-line insulation by the foot.
              "plumbing_specialties", "install_parts", "pipe_insulation",
+             # Self-regulating heater cable by the foot (2026-08-28).
+             "freeze_protection",
              "edge_trim",
              # Joist/beam tape by the foot (2026-08-27). See ``Prices.member_protection``.
              "member_protection",
@@ -249,6 +251,12 @@ class Prices:
     plumbing_specialties: Mapping[str, PriceRange] = field(default_factory=dict)
     install_parts: Mapping[str, PriceRange] = field(default_factory=dict)
     pipe_insulation: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Self-regulating heater cable by the lineal foot (2026-08-28), keyed on the spec
+    # string the run names in ``PipeRun.freeze_protection``. Deliberately its own table
+    # rather than more rows in [pipe_insulation]: cable and lagging are two purchases by
+    # two trades, they go on the SAME run one over the other, and a single table keyed on
+    # one spec field could only ever hold whichever was written last.
+    freeze_protection: Mapping[str, PriceRange] = field(default_factory=dict)
     # Edge trim by the lineal foot (2026-08-02), keyed on the row category — fascia,
     # soffit, drip_flashing, edge_cladding, corner_trim, ridge_cap ...
     edge_trim: Mapping[str, PriceRange] = field(default_factory=dict)

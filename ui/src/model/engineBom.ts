@@ -37,8 +37,13 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
     // `sill_gaskets` sits next to `construction_returns` for the same reason it is a
     // separate section at all: it is the seal under the plates that table bills the boards
     // of, and that table reconciles 1:1 with the resolved returns.
+    // `member_protection` is the butyl over framing TOPS, by the foot of member — it belongs
+    // beside the sticks it wraps, not with the envelope layers, because it is bought and
+    // installed by the framer with the framing and is gone under the deck sheet before any
+    // other trade sees it.
     sections: ["framing", "framing_by_size", "structural_solids", "wall_structure",
-      "sheet_goods", "construction_returns", "sill_gaskets", "hardware", "footing_bedding"],
+      "sheet_goods", "member_protection", "construction_returns", "sill_gaskets", "hardware",
+      "footing_bedding"],
   },
   {
     id: "envelope",
@@ -51,8 +56,12 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
     id: "mep",
     note: "Pipe, valves, insulation, duct, cast-in sleeves, radiant floor element and the storm run.",
     title: "Mechanical & plumbing",
+    // `freeze_protection` shows next to `pipe_insulation`: they are the two things that go ON
+    // a run rather than being one, they are billed the same way, and a cold-climate outdoor
+    // run normally carries both — the cable first, the lagging over it.
     sections: ["pipe_runs", "plumbing_specialties", "install_parts", "pipe_insulation",
-      "ducts", "duct_fittings", "duct_insulation", "sleeves", "floor_heat", "drainage"],
+      "freeze_protection", "ducts", "duct_fittings", "duct_insulation", "sleeves",
+      "floor_heat", "drainage"],
   },
   {
     id: "electrical",

@@ -38,6 +38,11 @@ ROLE_POST_BASE = "post_base"
 # is through-bolted into framing and the fixings are inside the framing rate. See
 # ``takeoff/uplift.py::post_base_anchor_rows``.
 ROLE_POST_BASE_ANCHOR = "post_base_anchor"
+#: The one fastener in this catalog that deliberately pierces a waterproof plane: the
+#: through-deck anchor holding a mechanical stand down to blocking under a dry-below
+#: deck. Its own role rather than a ``post_base`` variant, because what it is selected
+#: for is the SEAL and the alloy, not the post section — see library/hardware.py.
+ROLE_DECK_EQUIPMENT_ANCHOR = "deck_equipment_anchor"
 ROLE_HURRICANE_TIE = "hurricane_tie"
 # A wood member held down to CONCRETE or masonry by a gusset angle — one leg screwed into
 # the wood, the other anchored with a concrete screw. Its own role and not a second product

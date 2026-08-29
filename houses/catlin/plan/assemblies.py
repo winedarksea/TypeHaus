@@ -796,6 +796,26 @@ POST_WHITE_PAINT = Assembly(
     source="catlin-house balcony 6x6 pillars — white-painted finish; chamfer or bevel the 1/2\" of upward end grain left proud on the east and west faces of every pillar top by the narrower beam over it, and seal the cut before standing; at the two centre pillars cut a 4\" square through the composite porch plank so the post base bears on framing, not on decking (Trex: composite decking is not structural material)",
 )
 
+# The two balcony heat-pump stands (2026-08-28). Mill-finish extruded aluminium, and the
+# alloy is the point rather than a preference: the stand lands on `FS-SG-DECK`'s aluminium
+# plank and is lagged through it into KDAT blocking, so it sits in the middle of the one
+# galvanic problem this whole structure has. Aluminium on aluminium is no couple at all;
+# the butyl under the base plate is what separates the stand from the copper-treated wood
+# below, exactly as it separates the plank from the joists (see notes/beam_water_protection.md).
+# A galvanised or plain-steel stand would have re-introduced the couple the tape exists to break.
+#
+# 2" square section, authored as "2.0x2.0" and NOT "2x2": a bare nominal string is matched by
+# `_RE_NOMINAL` in resolve/framing/profiles.py and would silently resolve to a 1.5x1.5 stick
+# of lumber (→ memory: post size nominal is silently wrong).
+EQUIP_STAND_ALUM = Assembly(
+    tag="EQUIP_STAND_ALUM",
+    layers=(
+        Layer(name="equip-stand-alum", material_ref="aluminum-extrusion", thickness=inch(2.0),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="catlin-house balcony heat-pump stands — 2\" mill-finish extruded aluminium legs and cross-rails under EQ-M-HP1-OD/EQ-M-HP2-OD, 12\" clear above FS-SG-DECK; aluminium on aluminium so the plank and the stand are not a galvanic couple, with butyl under every base plate between the stand and the KDAT blocking",
+)
+
 # Guards were split off POST_WHITE_PAINT on 2026-08-01 (they shared it with the balcony's
 # 6x6 pillars/knee braces, which must stay white) — same 5.5" body, only the colour differs.
 # Metal, not painted PT: `_solid_color` reads the STRUCTURE layer's material, so
@@ -2438,6 +2458,7 @@ ASSEMBLIES = [
     BREEZEWAY_GLAZED_WALL,
     BALCONY_DECK_ALUMINUM,
     POST_WHITE_PAINT,
+    EQUIP_STAND_ALUM,
     ELM_TIMBER,
     BEAM_LVL,
     BEAM_KDAT,

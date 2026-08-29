@@ -171,6 +171,9 @@ SECTION_CODES: dict[str, CostCode] = {
     "plumbing_specialties": CostCode("3100", "22 40 00", "plumbing"),
     "install_parts": CostCode("3100", "22 05 00", "plumbing"),
     "pipe_insulation": CostCode("3100", "22 07 00", "plumbing"),
+    # Heater cable is an ELECTRICAL buy on a plumbing run: 26 05 33 raceway/boxes, and
+    # the electrical trade, not the plumber who hung the pipe it wraps.
+    "freeze_protection": CostCode("3200", "26 05 33", "electrical"),
     "edge_trim": CostCode("2500", "07 62 00", "roof"),
     # Self-adhered membrane on framing tops. 07 26 00 (weather barriers) rather than
     # the roof's 07 62 00: it is applied by the framer, with the framing, and it is

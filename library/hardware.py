@@ -12,6 +12,7 @@ from typehaus.takeoff.hardware_catalog import (
     ROLE_BRACE_THROUGH_BOLT,
     ROLE_COIL_STRAP,
     ROLE_CONCRETE_FACE_MOUNT_HANGER,
+    ROLE_DECK_EQUIPMENT_ANCHOR,
     ROLE_EMBEDDED_STRAP_HOLDOWN,
     ROLE_EXPOSED_FASTENER_PANEL_SCREW,
     ROLE_EXTERIOR_INSULATION_SCREW,
@@ -452,6 +453,36 @@ POLY_PANEL_FASTENER = StructuralHardware(
            "system is specified, so this record is deliberately generic",
 )
 
+# The balcony heat-pump stands' hold-down (2026-08-28). THIS IS THE ONE FASTENER IN THIS
+# FILE THAT IS MEANT TO PIERCE A WATERPROOF PLANE, and every part of the spec is about that:
+#
+# * **3/8" x 4", so it reaches.** Wahoo's own AridDek guardrail detail is a 3/8" lag through
+#   the deck board into timber blocking below, which is the precedent this borrows — the
+#   plank is 1 1/2", leaving ~2 1/2" of thread in the 2x8 blocking, well past the ~100-150 lb
+#   of wind uplift a condenser at +10' develops.
+# * **316 stainless, not 304 and not galvanised.** It passes through copper-treated KDAT
+#   blocking and lands under an aluminium stand on an aluminium plank. Plain or galvanised
+#   steel in MCA-treated wood is the corrosion case AWC DCA6 warns about outright.
+# * **Bonded EPDM washer, and butyl under the base plate.** The washer seals the shank at the
+#   plank; the butyl seals the plate to the plank. Neither alone is the detail — a sealed
+#   surface with an unsealed hole is how this joint fails.
+#
+# It is NOT a ``post_base``: a post base is selected by the post section, and this is selected
+# by the seal and the alloy. Sharing the role would also have made
+# ``hardware_for_role(ROLE_POST_BASE)`` ambiguous.
+DECK_EQUIPMENT_ANCHOR = StructuralHardware(
+    tag="stainless-through-deck-equipment-anchor",
+    name="3/8 in x 4 in 316 stainless lag with EPDM-bonded washer, through-deck",
+    role=ROLE_DECK_EQUIPMENT_ANCHOR,
+    manufacturer="generic",
+    model="SS316-LAG-38x4-EPDM",
+    source="generic 316 stainless 3/8 in x 4 in hex lag screw with a bonded EPDM sealing "
+           "washer; the fastener in Wahoo's own AridDek guardrail-post detail is a 3/8 in "
+           "lag through the deck board into added timber blocking, and this is that "
+           "connection made stainless for a copper-treated host — no single manufacturer "
+           "system is specified, so this record is deliberately generic",
+)
+
 # PV module mounting on the standing seam: the S-5! PVKIT clamp+bracket assembly grips a
 # panel rib without penetration and takes the module frame directly (no rails). Distinct
 # model string so ``Connector(size="S-5-PVKIT")`` bills this kit, not the plain clamp.
@@ -539,6 +570,7 @@ STRUCTURAL_HARDWARE: tuple = (
     S5_COLORGARD_SNOW_RETENTION,
     KBS_BEAM_HOLD_DOWN,
     POLY_PANEL_FASTENER,
+    DECK_EQUIPMENT_ANCHOR,
     EXPOSED_FASTENER_PANEL_SCREW,
     THROUGH_PANEL_PIPE_STRAP,
     POCKET_FRAME_KIT_1500PF,

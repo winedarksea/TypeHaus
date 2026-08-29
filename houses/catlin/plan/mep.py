@@ -87,7 +87,10 @@ SECOND_ELEMENTS = [*mep_hvac.DUCTS,
                    *mep_venting.VENT_BRANCHES_SECOND,
                    *mep_electrical.SECOND_DEVICES,
                    *mep_supply.HYDRANT_BRANCH_SECOND,
-                   *mep_supply_devices.SUPPLY_DEVICES_SECOND]
+                   *mep_supply_devices.SUPPLY_DEVICES_SECOND,
+                   # The two balcony condensers' defrost lines (2026-08-28) — filed on
+                   # `second` because the deck they cross IS this storey's datum.
+                   *mep_drainage.HP_CONDENSATE]
 ATTIC_ELEMENTS = [*mep_erv.EQUIPMENT_ERV_ATTIC,
                   *mep_erv.EQUIPMENT_ERV_HOODS,
                   *mep_erv.DUCTS_ERV_ATTIC,

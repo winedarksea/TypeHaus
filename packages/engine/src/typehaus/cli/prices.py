@@ -111,6 +111,9 @@ ESTIMATE_PLANS = (
     ("plumbing_specialties", "plumbing_specialties", "kind", "count", "ea"),
     ("install_parts", "install_parts", "part", "count", "ea"),
     ("pipe_insulation", "pipe_insulation", "spec", "length_ft", "LF"),
+    # Heater cable by the foot, keyed on the spec (2026-08-28). Mirrors nothing:
+    # [pipe_runs] bills the pipe the cable follows, never the cable.
+    ("freeze_protection", "freeze_protection", "spec", "length_ft", "LF"),
     ("edge_trim", "edge_trim", "category", "length_ft", "LF"),
     # Framing-top membrane by the foot, keyed on the material tag (2026-08-27). It
     # mirrors nothing: `framing` bills the stick the tape covers, not the tape.

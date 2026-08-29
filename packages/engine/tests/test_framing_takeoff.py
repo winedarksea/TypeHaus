@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import pytest
 
-from typehaus.takeoff.framing import _bucket_cut_lengths
 from typehaus.takeoff import (
     _board_feet_per_ft,
     _order_length_ft,
@@ -13,6 +12,7 @@ from typehaus.takeoff import (
     framing_takeoff,
     structural_solids_takeoff,
 )
+from typehaus.takeoff.framing import _bucket_cut_lengths
 
 from _helpers import frames_structure
 
@@ -185,6 +185,9 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         # which `framing` (sticks by profile, house-wide) and
                         # `structural_solids` (beams by the yard) both cannot address.
                         "member_protection",
+                        # Heater cable by the foot (2026-08-28), the electrical twin of
+                        # `pipe_insulation` — a traced AND lagged run is the outdoor norm.
+                        "freeze_protection",
                         # Monolithic wall structure (2026-08-03): a STRUCTURE layer that
                         # frames no members and is not a solid reached no row at all —
                         # 43 of catlin's 154 walls, ~131 cy (→ takeoff/wall_structure.py).

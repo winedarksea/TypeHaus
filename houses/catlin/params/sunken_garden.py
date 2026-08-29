@@ -50,6 +50,7 @@ from typehaus import (
     FootingBedding,
     FoundationWall,
     Gutter,
+    JoistReinforcement,
     JoistSpec,
     KneeBrace,
     Node,
@@ -931,6 +932,61 @@ PORCH_JOISTS = FloorSystem(
 # draws the deck sheet bearing-line to bearing-line PLUS both cantilevers, by the joists'
 # perpendicular extent — that is _x_ax_w - 6" to _x_ax_e + 6" by _y_ax_front to _y_in_n,
 # which is the deleted slab's outline term for term.
+# ============================================================================
+# Heat-pump stands on the balcony deck (2026-08-28).
+# ============================================================================
+# EQ-M-HP1-OD and EQ-M-HP2-OD (authored in plan/electrical.py) stand on this deck, 12" clear
+# of the plank on a small aluminium frame. The frame has to be BOLTED DOWN — Gree's service
+# manual §8.6 requires the foot holes fixed and the support rated to four times unit weight,
+# and IRC M1401.4 makes a manufacturer instruction mandatory — so eight fasteners pass
+# through a watertight plank that is also the roof of an occupied porch. Everything below is
+# about where those eight holes land.
+#
+# ** THE ANCHORS LAND IN BLOCKING, NEVER IN A JOIST AND NEVER IN A BEAM. ** That is the whole
+# rule, and it is the opposite of the instinct. Both units sit within an inch of the rear
+# pillar line, so a 3-ply beam directly over a pillar and its footing is right there and is
+# the stiffest thing on the deck. It is also the one member here that cannot be replaced, it
+# carries `TR-SG-CAP-BL*` and the butyl under it, and its ply seams are exactly the wet joint
+# `notes/beam_water_protection.md` exists to close. A fastener that penetrates the waterproof
+# plane goes into something we can cut out from below and put back. Blocking is that thing.
+#
+# ** THE ANCHORS SIT IN THE BAYS, NOT ON THE JOIST LINES. ** ``_reinforcement_members``
+# (resolve/floors.py) snaps each reinforcement to the NEAREST joist line and lays one block
+# in the bay either side of it, at the load's own x. An anchor authored on a joist line
+# therefore lands on the joist and defeats the rule. Every y below is inside a bay, 3" clear
+# of the joist faces either side; the joist lines on this deck fall at
+# -0'-10", -1'-6", -2'-10", -4'-2", -5'-6", -6'-10", -8'-2", -9'-6".
+#
+# ** AND CLEAR OF THE THREE BEAM BANDS. ** A 3-2x12 is 4 1/2" wide, so BM-SG-BLW/BLC/BLE
+# occupy x 7'-9 3/4"..8'-2 1/4", 17'-9 3/4"..18'-2 1/4" and 27'-9 3/4"..28'-2 1/4". Every leg
+# below clears its nearest band by at least 1 3/4".
+#
+# ** SIX INCHES FROM A BEAM AXIS IS THE FLOOR, NOT FOUR. ** The first cut of these
+# coordinates put three legs 4" off a beam centreline, which is only 1 3/4" of clear to the
+# face of a 4 1/2" 3-ply, and `mep.deck_equipment_support` failed them. It was right to: a
+# base plate that has to seal against the plank needs room for the plate and its butyl
+# gasket, and a plate lapping onto the beam puts the next fastener back where this whole
+# detail is trying not to be. Every leg below is at least 6" off the nearest beam axis.
+#
+# HP2 straddles BM-SG-BLC symmetrically, 12" either side of the cabinet's own centreline.
+# HP1 cannot: BM-SG-BLW runs under its west edge, so its frame sits 4" east of the cabinet
+# centre with both legs east of the beam. The legs carry the load and the ANCHORS carry the
+# wind, so 4" of eccentricity under a bolted-down 125 lb cabinet is the cheap side of this
+# trade — the expensive side is a hole in a beam.
+_HP_STAND_LEG_X = {"A": (8.5, 9.5),      # EQ-M-HP1-OD — both east of BM-SG-BLW at x=8'-0"
+                   "B": (16.5, 18.5)}    # EQ-M-HP2-OD — straddling BM-SG-BLC at x=18'-0"
+# Both cabinets are rotated 90 deg, so each is ~38" long in y; these two lines sit 3" inside
+# its north and south faces and 32" apart, which is the cross-rail spacing.
+_HP_STAND_LEG_Y = (-1.25, -(3.0 + 11.0 / 12.0))
+_HP_STAND_HEIGHT_IN = 12.0
+# Which unit each frame carries, for the reinforcement `source` and the check's cross-ref.
+_HP_STAND_UNIT = {"A": "EQ-M-HP1-OD", "B": "EQ-M-HP2-OD"}
+_HP_STAND_AT = tuple(
+    (key, index, x, y)
+    for key in ("A", "B")
+    for index, (x, y) in enumerate(
+        ((lx, ly) for lx in _HP_STAND_LEG_X[key] for ly in _HP_STAND_LEG_Y), start=1))
+
 BALCONY_JOISTS = FloorSystem(
     uid="SGFS02AAAA", tag="FS-SG-DECK",
     joists=JoistSpec(member=SPEC.balcony_joist, spacing=inch(SPEC.balcony_joist_oc_in),
@@ -950,6 +1006,19 @@ BALCONY_JOISTS = FloorSystem(
     # straight onto copper-treated pine, which AWC DCA6 warns against outright. The tape is
     # the dielectric. That it also keeps the fastener penetrations sealed is the bonus.
     top_protection=_BEAM_TAPE,
+    # One block per heat-pump stand leg — the sacrificial member every anchor lands in, and
+    # the reason the eight penetrations are survivable. ``plies=1`` is load-bearing: it makes
+    # ``_reinforcement_members`` lay ZERO sister joists (``range(plies - 1)`` is empty) and
+    # only the two blocks, because what this needs is a fastener host, not a stiffened joist.
+    # The blocks inherit ``top_protection`` above — "blocking" is in
+    # ``takeoff/member_protection._TAPED_CATEGORIES`` — so each one tapes and bills itself
+    # with no further wiring, and the butyl is under the base plate by construction.
+    reinforcements=tuple(
+        JoistReinforcement(
+            at=pt(ft(_hx), ft(_hy)), plies=1, member=SPEC.balcony_joist,
+            source=f"anchor host for {_HP_STAND_UNIT[_hk]} stand leg {_hi} — sacrificial, "
+                   f"replaceable from the porch below without touching a joist or a beam")
+        for _hk, _hi, _hx, _hy in _HP_STAND_AT),
     # ``service="deck"`` is what puts this under IRC R507 / AWC DCA6 instead of the interior
     # 40-psf floor table — see checks/structural/deck.py.
     service="deck",
@@ -1292,6 +1361,46 @@ PORCH_BEAM_CAPS = [c for c in BEAM_CAPS if c.host_ref in
 BALCONY_BEAM_CAPS = [c for c in BEAM_CAPS if c not in PORCH_BEAM_CAPS]
 
 # ============================================================================
+# The heat-pump stands themselves — legs and through-deck anchors.
+# ============================================================================
+# Geometry, and the reasoning for every coordinate, is at ``_HP_STAND_AT`` above; the
+# blocking each anchor lands in is on ``FS-SG-DECK.reinforcements``. This block is only the
+# metal.
+#
+# Twelve inches, an owner decision (2026-08-28) against the 18"-24" a cold-climate guide
+# would ask for. The trade is recorded rather than argued: the guidance is written for a
+# unit at grade, and this balcony is swept by wind that keeps its snow depth low in a way a
+# ground-level stand cannot rely on. What 12" already buys, and what the taller number was
+# mostly for anyway, is airflow: a 12" stand under a 32"/34" cabinet puts the coil at
+# 44"/46", clear of the 42" guard, so neither unit sits in the stagnation pocket behind it.
+#
+# The legs are aluminium and that is not a finish choice — see ``EQUIP_STAND_ALUM`` in
+# plan/assemblies.py. They stand on an aluminium plank and are lagged through it into
+# copper-treated blocking, which is the one place in this structure where three metals and a
+# treated wood meet. Aluminium on aluminium is no couple; the butyl under each base plate is
+# what keeps the stand off the KDAT; the lag is 316 stainless for the same reason.
+_hp_stand_height = inch(_HP_STAND_HEIGHT_IN)
+HP_STAND_LEGS = [
+    Post(uid=f"SGHP{_hk}{_hi}AAAA", tag=f"PT-SG-HP{_hk}{_hi}",
+         position=pt(ft(_hx), ft(_hy)), size="2.0x2.0", height=_hp_stand_height,
+         supported_by="FS-SG-DECK", assembly="EQUIP_STAND_ALUM")
+    for _hk, _hi, _hx, _hy in _HP_STAND_AT
+]
+# One anchor per leg, at the walking surface — the plank's top, which is the plane the base
+# plate is bedded on and the plane the lag crosses. NOT ``_deck_top``: that is the joist
+# tops, 1 1/2" of plank below where this connection actually happens.
+#
+# ``connects`` names the BLOCKING's host deck rather than a joist or a beam, which is the
+# whole point of the detail and is what ``mep.deck_equipment_support`` reads.
+HP_STAND_ANCHORS = [
+    Connector(uid=f"SGHC{_hk}{_hi}AAAA", tag=f"CN-SG-HP{_hk}{_hi}",
+              kind=ConnectorKind.POST_BASE, position=pt(ft(_hx), ft(_hy)),
+              elevation=_deck_walking_surface, size="SS316-LAG-38x4-EPDM",
+              connects=(f"PT-SG-HP{_hk}{_hi}", "FS-SG-DECK"))
+    for _hk, _hi, _hx, _hy in _HP_STAND_AT
+]
+
+# ============================================================================
 # Per-storey exports (spliced into plan/manifest.py).
 # ============================================================================
 BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
@@ -1303,4 +1412,4 @@ MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, *FRONT_BEAMS, PORCH_JOISTS, PORCH_GUA
 SECOND_ELEMENTS = [*SECOND_NODES, *GIRT_NODES, *BALCONY_BEAMS, *BALCONY_GIRTS, *PILLARS,
                    BALCONY_JOISTS, *KNEE_BRACES, BALCONY_GUARD, BALCONY_FASCIA,
                    BALCONY_GUTTER, BALCONY_LEADER, BALCONY_DRIP, BALCONY_REAR_FLASH,
-                   *BALCONY_BEAM_CAPS]
+                   *BALCONY_BEAM_CAPS, *HP_STAND_LEGS, *HP_STAND_ANCHORS]

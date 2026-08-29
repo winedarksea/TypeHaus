@@ -280,6 +280,7 @@ def _resolve_pipe_run(model: ResolvedModel, run: PipeRun, storey) -> list[Findin
         z_m=tuple(z) if z is not None else None,
         wall_refs=wall_refs, material=run.material,
         finish=run.finish, insulation=run.insulation,
+        freeze_protection=run.freeze_protection,
     ))
     return findings
 

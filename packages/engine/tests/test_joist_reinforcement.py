@@ -181,9 +181,9 @@ def test_a_deck_with_no_reinforcement_emits_nothing() -> None:
                                   0.0, 6.0, -0.2, 0.0) == []
 
 
-# --- the catlin porch, end to end -----------------------------------------------------
-def test_no_catlin_deck_authors_a_reinforcement_any_more(catlin_model):
-    """The house drove this feature and no longer does — assert that, don't assume it.
+# --- the catlin decks, end to end -----------------------------------------------------
+def test_no_catlin_deck_sisters_a_joist(catlin_model):
+    """No deck in this house stiffens a joist any more — and that survived a second use.
 
     ``FS-SG-PORCH`` carried a 3-ply + solid-blocking cluster under ``PT-SG-BR2`` while that
     pillar stood on the deck's 17" north overhang. On 2026-08-28 the rear balcony pillar row
@@ -191,17 +191,33 @@ def test_no_catlin_deck_authors_a_reinforcement_any_more(catlin_model):
     the mitigation had nothing left to mitigate. It came out with the condition — 2 sister
     2x8s, 2 blocks and the CN-SG-TIE-BR2 uplift tie.
 
-    Two things this pins. The resolver must emit neither category anywhere in the house, so a
-    reinforcement re-appearing by accident is a failure and not a silent BOM change; and
-    ``framing_takeoff`` must bill neither, because a vacuous ``all(...)`` over an empty member
-    list is exactly how the tests that used to live here would have gone on passing.
+    ``FS-SG-DECK`` then took the feature up again on 2026-08-28 for a completely different
+    reason (the heat-pump anchors below), so "no catlin deck authors a reinforcement" is no
+    longer the thing to pin. **The sister ply is.** Every reinforcement in this house is now
+    ``plies=1`` — a fastener host, not a stiffened joist — and a stray ``plies=3`` would
+    quietly add sixteen sisters and their lumber to the BOM. That is what this catches.
     """
     for floor in catlin_model.floors:
         assert [m for m in floor.members if m.category == "sister_joist"] == [], floor.tag
-        assert [m for m in floor.members if m.category == "blocking"] == [], floor.tag
     rows = {(row["profile"], row["category"]) for row in framing_takeoff(catlin_model)}
     assert not [key for key in rows if key[1] == "sister_joist"]
-    # "blocking" alone is not the assertion — walls and the roof bill plenty of it. What the
-    # reinforcement produced was blocking in the porch joists' own 2x8 stock, and that key is
-    # the one that has to be gone.
-    assert ("2x8", "blocking") not in rows
+
+
+def test_the_balcony_blocking_hosts_the_heat_pump_anchors(catlin_model):
+    """``FS-SG-DECK``'s blocking exists to be drilled, and nothing else in the house does.
+
+    Eight through-deck anchors hold the two condensers' stands down, and every one of them
+    must land in a block rather than in a joist or a beam — a fastener through this deck's
+    waterproof plane has to be hosted by a member that can be cut out and replaced from the
+    porch below. ``mep.deck_equipment_support`` grades that on the real house; this pins the
+    quantity behind it, so blocking cannot silently disappear and leave the check grading
+    anchors that no longer have a host.
+
+    Two blocks per reinforcement, one either side of the nearest joist line — the anchor sits
+    in one of them. ``FS-SG-PORCH`` must still carry none.
+    """
+    by_tag = {floor.tag: floor for floor in catlin_model.floors}
+    deck_blocks = [m for m in by_tag["FS-SG-DECK"].members if m.category == "blocking"]
+    assert len(deck_blocks) == 16, len(deck_blocks)
+    assert {m.profile for m in deck_blocks} == {"2x8"}
+    assert [m for m in by_tag["FS-SG-PORCH"].members if m.category == "blocking"] == []
