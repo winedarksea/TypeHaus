@@ -1,9 +1,15 @@
 """Sistered joist plies + solid blocking under a concentrated load (WP1).
 
-``PT-SG-BR2`` — the one balcony pillar that misses the masonry railing — bears on the
-*cantilevered* north tip of the porch deck, i.e. on the free end of a single PT 2x8. The
-answer is a ``JoistReinforcement`` on the FloorSystem: the resolver sisters the nearest
-joist line up to the authored ply count and blocks it out to the lines either side.
+The feature: a ``JoistReinforcement`` on a FloorSystem makes the resolver sister the joist
+line nearest an authored load point up to the ply count and block it out to the lines either
+side.
+
+It was built for ``PT-SG-BR2``, the balcony pillar that bore on the *cantilevered* north tip
+of catlin's porch deck — a 6x6 on the free end of a single PT 2x8. **No house drives it as
+of 2026-08-28**: moving the rear pillar row onto the back-beam line put that post over a
+bearing and the reinforcement was deleted with the condition. The synthetic fixtures below
+are the whole coverage now, and the catlin test at the bottom pins the absence so the
+feature cannot quietly come back unnoticed.
 
 These lock the three things the geometry has to get right, because each one is a way the
 reinforcement can look present and do nothing:
@@ -176,39 +182,26 @@ def test_a_deck_with_no_reinforcement_emits_nothing() -> None:
 
 
 # --- the catlin porch, end to end -----------------------------------------------------
-def test_the_porch_deck_resolves_the_cluster_under_its_cantilevered_pillar(catlin_model):
-    floor = next(f for f in catlin_model.floors if f.tag == "FS-SG-PORCH")
-    post = catlin_model.plan.by_tag("PT-SG-BR2")
-    post_x, _post_y = post.position.xy_m
-    sisters = [m for m in floor.members if m.category == "sister_joist"]
-    blocks = [m for m in floor.members if m.category == "blocking"]
-    assert len(sisters) == 2 and len(blocks) == 2
-    # Arm (a) of the check contract: sisters within half a joist spacing of the post.
-    assert all(abs(m.p0[0] - post_x) < SPACING_M / 2 for m in sisters)
-    # Arm (b): blocking within 0.3 m of it.
-    assert all(abs(m.p0[1] - _post_y) < 0.3 for m in blocks)
+def test_no_catlin_deck_authors_a_reinforcement_any_more(catlin_model):
+    """The house drove this feature and no longer does — assert that, don't assume it.
 
+    ``FS-SG-PORCH`` carried a 3-ply + solid-blocking cluster under ``PT-SG-BR2`` while that
+    pillar stood on the deck's 17" north overhang. On 2026-08-28 the rear balcony pillar row
+    moved onto the back-beam line, 3" south of the bearing, so the post is over a support and
+    the mitigation had nothing left to mitigate. It came out with the condition — 2 sister
+    2x8s, 2 blocks and the CN-SG-TIE-BR2 uplift tie.
 
-def test_the_sisters_carry_the_cantilever_they_were_added_for(catlin_model):
-    """Full joist length: the 7'-3" back span (arch-wall axis to the back-beam line)
-    plus the 17" north overhang the post stands on."""
-    floor = next(f for f in catlin_model.floors if f.tag == "FS-SG-PORCH")
-    joists = [m for m in floor.members if m.category == "joist"]
-    sisters = [m for m in floor.members if m.category == "sister_joist"]
-    field_lo = min(min(m.p0[1], m.p1[1]) for m in joists)
-    field_hi = max(max(m.p0[1], m.p1[1]) for m in joists)
-    expected = ft(7, 3).meters + inch(17).meters
-    assert all(m.length_m == pytest.approx(expected) for m in sisters)
-    assert all(m.length_m == pytest.approx(field_hi - field_lo) for m in sisters)
-    # The single-span joists on that line are each shorter than the sister doubling them.
-    assert max(m.length_m for m in joists) < expected
-
-
-def test_the_cluster_bills_itself(catlin_model):
-    """No new take-off wiring: ``framing_takeoff`` groups by (profile, category)."""
-    rows = {(row["profile"], row["category"]): row for row in framing_takeoff(catlin_model)}
-    sisters = rows[("2x8", "sister_joist")]
-    assert sisters["pieces"] == 2
-    assert sisters["board_feet"] > 0 and sisters["order_length_ft"] > 0
-    blocks = rows[("2x8", "blocking")]
-    assert blocks["pieces"] == 2
+    Two things this pins. The resolver must emit neither category anywhere in the house, so a
+    reinforcement re-appearing by accident is a failure and not a silent BOM change; and
+    ``framing_takeoff`` must bill neither, because a vacuous ``all(...)`` over an empty member
+    list is exactly how the tests that used to live here would have gone on passing.
+    """
+    for floor in catlin_model.floors:
+        assert [m for m in floor.members if m.category == "sister_joist"] == [], floor.tag
+        assert [m for m in floor.members if m.category == "blocking"] == [], floor.tag
+    rows = {(row["profile"], row["category"]) for row in framing_takeoff(catlin_model)}
+    assert not [key for key in rows if key[1] == "sister_joist"]
+    # "blocking" alone is not the assertion — walls and the roof bill plenty of it. What the
+    # reinforcement produced was blocking in the porch joists' own 2x8 stock, and that key is
+    # the one that has to be gone.
+    assert ("2x8", "blocking") not in rows

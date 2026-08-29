@@ -560,8 +560,9 @@ SUNKEN_GARDEN_WALL = Assembly(
 # steep rate: a square column is formed in built panels with chamfer strips, struck with a
 # wash, and rubbed and patched after strip, which is $478-1,327 here against $304-633 for a
 # disposable fibre tube of the same height. And nothing at this column's top is bolted to
-# it — two 3-2x12 beams land on the pour and an authored H2.5A (CN-SG-TIE-FCOL) holds them
-# down — so the cover was reserved for the MPB66Z moment base that plans/TODO.md weighs and
+# it — two 3-2x12 beams land on the pour and an authored HGAM10 masonry gusset angle
+# (CN-SG-TIE-FCOL, an H2.5A until 2026-08-28) holds them down — so the cover was reserved
+# for the MPB66Z moment base that plans/TODO.md weighs and
 # has never specified. That option is now foreclosed at this column, deliberately and with
 # the money written down; see notes/uplift_load_path.md. An 18" or 20" tube would have kept
 # it AND still beaten the square, and is the revert if the lateral design ever wants it.
@@ -587,7 +588,15 @@ SUNKEN_GARDEN_COLUMN_16 = Assembly(
     ),
     interfaces=(_CONCRETE_BEARING,),
     # (single literal: the editable dialect forbids concatenated strings)
-    source="catlin-house porch front column — 16\" round cast concrete in a disposable fibre form, stripped to the form line; >=15 degree top wash with a >=1\" drip lip (BIA Tech Note 36A), beam bearing on a level non-shrink-grout island (Five Star TB-411: 45 degree shoulders, shoulder width <= grout depth, <= 3\"); 4,000-4,500 psi, w/cm <= 0.45, 6.0-6.5% air at 3/4\" aggregate (Minn. R. 1309.0402 + ACI 318-19 class F2); broom or float finish on the wash, never steel-trowelled (NRMCA CIP 2); silane/siloxane repellent",
+    # The 1/2"-1" STANDOFF added 2026-08-28, BESIDE the grout island and not instead of it:
+    # a grout island is a levelling bed and it still leaves the beam soffit in contact with
+    # concrete that wicks. AITC/WoodWorks call for a bearing plate or shim holding exposed
+    # wood clear of the pour so the joint drains and dries. It must be STAINLESS, or hot-dip
+    # with an isolator — this beam is copper-treated KDAT and will corrode plain steel. The
+    # standoff is at the beam SOFFIT, so it does not touch the cap-and-butyl-tape order at
+    # the beam TOP (TR-SG-CAP-FRW/FRE); those are two different joints on the same member.
+    # (single literal: the editable dialect forbids concatenated strings)
+    source="catlin-house porch front column — 16\" round cast concrete in a disposable fibre form, stripped to the form line; >=15 degree top wash with a >=1\" drip lip (BIA Tech Note 36A), beam bearing on a level non-shrink-grout island (Five Star TB-411: 45 degree shoulders, shoulder width <= grout depth, <= 3\") with a 1/2\"-1\" stainless or isolated hot-dip standoff plate over it so the KDAT soffit never touches the pour (AITC/WoodWorks); beam held down by an HGAM10 masonry gusset angle, #14 screws to the wood and Titen Turbo to the concrete at >=1-1/2\" edge distance; 4,000-4,500 psi, w/cm <= 0.45, 6.0-6.5% air at 3/4\" aggregate (Minn. R. 1309.0402 + ACI 318-19 class F2); broom or float finish on the wash, never steel-trowelled (NRMCA CIP 2); silane/siloxane repellent",
 )
 
 # Glazed-brick veneer over the exposed basement wall (sunken garden excavated against it).
@@ -752,13 +761,39 @@ BALCONY_DECK_ALUMINUM = Assembly(
 
 # Finish-only assembly for the balcony 6x6 pillars so they render (glTF) and read (IFC) as
 # white-painted rather than the default bare-wood post colour. Single 5.5" layer = the 6x6.
+#
+# **The pillar TOP is the detail this assembly exists to carry (2026-08-28).** These six
+# pillars are the most expensive-per-LF elements in the whole frame — 51.4 LF of them costs
+# more than both cast columns and all four porch beams combined — and they are the only
+# elements in the structure carrying a recurring repaint cost against a 100-year brief. So
+# the durability attention belongs here, not on the columns.
+#
+# Two field details the model has no field for:
+#
+# 1. END GRAIN AT THE PILLAR TOP. A 6x6 tops out 5.5" square; the 3-2x12 beam landing on it
+#    is 4.5" wide. That leaves 1/2" of exposed UPWARD end grain on the east and west faces
+#    of all six pillar tops, directly under a beam whose faces shed onto it. Six joints,
+#    upward end grain, in the weather, on the priciest wood in the structure —
+#    notes/beam_water_protection.md covers beam tops exhaustively and never mentions these.
+#    Chamfer or bevel the exposed rim, or form a small drip under the beam seat, and seal
+#    the cut before the pillar is stood. Highest durability-per-dollar item in the porch.
+# 2. PLANK CUT-OUT AT THE TWO CENTRE PILLARS. PT-SG-BR2 and PT-SG-BF2 bear on FS-SG-PORCH.
+#    Cut a 4" square through the composite plank at each so the ABU66SS lands on framing:
+#    Trex's own spec says composite decking "cannot be used as structural material". Not a
+#    strength question (~50 psi on the plank) — it is CREEP at a 140-160 degF summer surface
+#    temperature settling those two pillars relative to the four on concrete and taking the
+#    balcony's watertight aluminium plank out of plane, and REPLACEABILITY, because the
+#    plank is a wear layer and you cannot pull a board from under a loaded 6x6 without
+#    shoring. See params/sunken_garden.py, which records why ``supported_by`` stays the
+#    floor system.
 POST_WHITE_PAINT = Assembly(
     tag="POST_WHITE_PAINT",
     layers=(
         Layer(name="post-paint-white", material_ref="post-paint-white", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE),
     ),
-    source="catlin-house balcony 6x6 pillars — white-painted finish",
+    # (single literal: the editable dialect forbids concatenated strings)
+    source="catlin-house balcony 6x6 pillars — white-painted finish; chamfer or bevel the 1/2\" of upward end grain left proud on the east and west faces of every pillar top by the narrower beam over it, and seal the cut before standing; at the two centre pillars cut a 4\" square through the composite porch plank so the post base bears on framing, not on decking (Trex: composite decking is not structural material)",
 )
 
 # Guards were split off POST_WHITE_PAINT on 2026-08-01 (they shared it with the balcony's
@@ -877,7 +912,14 @@ PIER_CONCRETE_12 = Assembly(
               function=LayerFunction.STRUCTURE),
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="catlin-house 12\" round sonotube piers — cast in a fibre form on a spread pad, stripped to the form line; 4,000 psi, 6.0-6.5% air (Minn. R. 1309.0402, ACI 318-19 class F2)",
+    # One of these five, PT-SG-COL, is the only pier in the set with WOOD landing on it: the
+    # two porch back beams share its top. It gets the same beam-seat detail the 16" front
+    # column carries — a top wash, a levelling grout island, a 1/2"-1" stainless (or isolated
+    # hot-dip) standoff so the KDAT soffit stands clear of the pour, and an HGAM10 masonry
+    # gusset angle rather than the wood-to-wood H-tie that used to be drawn here. The other
+    # four take breezeway posts on ABU66SS standoff bases and need none of it.
+    # (single literal: the editable dialect forbids concatenated strings)
+    source="catlin-house 12\" round sonotube piers — cast in a fibre form on a spread pad, stripped to the form line; 4,000 psi, 6.0-6.5% air (Minn. R. 1309.0402, ACI 318-19 class F2); at PT-SG-COL, where the two porch back beams bear: >=15 degree top wash, level non-shrink-grout island, a 1/2\"-1\" stainless or isolated hot-dip standoff under the KDAT soffit, and an HGAM10 gusset angle anchored with Titen Turbo at >=1-1/2\" edge distance",
 )
 
 RAILING_DARK_METAL = Assembly(

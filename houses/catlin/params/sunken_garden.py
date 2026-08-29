@@ -50,7 +50,6 @@ from typehaus import (
     FootingBedding,
     FoundationWall,
     Gutter,
-    JoistReinforcement,
     JoistSpec,
     KneeBrace,
     Node,
@@ -692,7 +691,44 @@ _WALL_UNDER_PILLAR = {
     ("R", 1): ("W-SG-W1", _porch_top), ("R", 3): ("W-SG-E1", _porch_top),
     ("F", 1): ("W-SG-W1", _porch_top), ("F", 3): ("W-SG-E1", _porch_top),
 }
-_PILLAR_ROWS = (("R", _y_in_n, inch(SPEC.rear_pillar_rise_in)), ("F", _y_ax_front, ft(0)))
+# The rear pillar row rides on the *back-beam* line, not on the deck's north edge
+# (2026-08-28). It used to sit at ``_y_in_n``, which put PT-SG-BR2 on the cantilevered tip
+# of the porch joists — a 6x6 carrying a third of the balcony, standing on the free end of
+# one 1 1/2" ply. That was mitigated (3-ply sisters + blocking + an uplift tie) rather than
+# deleted. Moving the row south to the beam line deletes it: PT-SG-BR2 now lands directly
+# over PT-SG-COL, on the shared bearing of BM-SG-BKW/BKE, so the load runs plank -> joist
+# -> back beam -> cast column -> footing. That mirrors PT-SG-BF2 over PT-SG-FCOL, and the
+# design is symmetric in kind for the first time. BR1/BR3 stay on W-SG-W1/E1 (those walls
+# run _y_in_n -> _y_ax_s), so ``_WALL_UNDER_PILLAR`` is unchanged and they gain edge cover.
+#
+# The 3" south of the beam axis is deliberate and is NOT slop. ``_band`` in
+# checks/structural/cantilever.py tests ``post_axis >= axis_hi - end - _EPS``, so a pillar
+# landed exactly on the bearing line still reads as inside the overhang and reports a 0"
+# overhang with ``past_m = 0.0`` — a finding about a joint that no longer exists. 3" into
+# an 87" back span is structurally indistinguishable and lets the check go silent honestly.
+# **Do not widen ``_EPS`` instead**; the offset is the statement, not a workaround.
+#
+# What moves with the row: GIRT_NODES' four rear nodes and ``_ROW_Y["R"]`` (the knee-brace
+# origins). What does NOT move: SECOND_NODES, the deck outline, guard, fascia, gutter and
+# rear counter-flashing, all keyed to ``_y_in_n``. So the three balcony beams keep their
+# full length and gain a north cantilever past the rear pillars:
+#
+#     back span   = _y_rear_pillar - _y_ax_front = -2.5 - (-9.5)  = 7.00' = 84"
+#     overhang    = _y_in_n - _y_rear_pillar     = -0.833 - (-2.5) = 1.667' = 20.0"
+#     R507.5.1 limit = back span / 4             = 84" / 4         = 21.0"   -> OK by 1"
+#
+# That arithmetic is written down because nothing checks it: checks/structural/deck.py
+# grades beam *span* only and has no beam-cantilever rule, so this overhang would pass
+# silently either way. See notes/beam_water_protection.md, which carries the missing check
+# as an open item. IRC Table R507.5(1) is keyed on the JOIST span, which is unchanged at
+# FS-SG-DECK's 10.00' (limit 9.17' for a 3-2x12), so what this buys is margin: the three
+# balcony beams go from 8.667' against 9.17' — 6" of headroom — to 7.00' against 9.17',
+# 26". That retires a knife-edge where any increase in the deck's joist span at all would
+# have dropped the lookup to the 12' row (8.33') and failed all three beams at once.
+_REAR_PILLAR_SOUTH_OF_COL_IN = 3.0
+_y_rear_pillar = _y_col - _REAR_PILLAR_SOUTH_OF_COL_IN / 12.0  # -2.5'
+_PILLAR_ROWS = (("R", _y_rear_pillar, inch(SPEC.rear_pillar_rise_in)),
+                ("F", _y_ax_front, ft(0)))
 PILLARS = []
 PILLAR_BEARINGS = {}  # pillar tag -> (bearing tag, base elevation) — reused by the bases
 for _i, _x in enumerate(_PILLAR_X, start=1):
@@ -707,11 +743,36 @@ for _i, _x in enumerate(_PILLAR_X, start=1):
                             supported_by=_bears_on,
                             assembly="POST_WHITE_PAINT"))
 
-# PT-SG-BR2 (rear-centre) misses every wall and bears on the porch decking, on the
-# *cantilevered* tip of the porch joists (they run the column's 17" south-offset past the
-# back-beam line). That load path is what the joist reinforcement below answers; read the
-# post's authored point back off the loop so the two can't drift apart.
-_BR2_AT = next(p for p in PILLARS if p.tag == "PT-SG-BR2").position
+# The two CENTRE pillars — PT-SG-BR2 and PT-SG-BF2 — miss every wall and name the porch
+# deck in ``supported_by``. Since 2026-08-28 both stand over a beam line rather than over a
+# joist tip (BR2 3" south of BM-SG-BKW/BKE over PT-SG-COL, BF2 on BM-SG-FRW/FRE over
+# PT-SG-FCOL), so the load path is a full stack to concrete at both.
+#
+# A field detail the model has no field for, so it lives here and in POST_WHITE_PAINT's
+# ``source``: **cut a 4"-square hole through the composite plank at each centre pillar so
+# the ABU66SS bears on the framing below, not on the plank.** Trex's own specification says
+# composite decking "cannot be used as structural material; any load bearing area will need
+# to be framed and supported before the composite material can be attached". Strength is
+# not the issue — the base spreads ~50 psi on the plank. The two that are:
+#   * CREEP. Sustained load at the 140-160 degF summer surface temperature of a dark
+#     composite plank settles these two pillars relative to the four that bear on concrete
+#     wall tops, and that differential takes the balcony's watertight aluminium plank out
+#     of plane. Nothing in the model would see it.
+#   * REPLACEABILITY. The plank is a wear layer. You cannot pull a board out from under a
+#     6x6 carrying a balcony without shoring the balcony first.
+#
+# **Keep ``supported_by="FS-SG-PORCH"``.** Retargeting a Post to a Beam is an untested path
+# with a silent-wrong fallback: ``resolve/envelope.py::resolve_columns_and_beams`` snapshots
+# ``solid_top`` before the beams exist and never republishes, so the post falls back to its
+# storey datum — PT-SG-BF2 would resolve floating ~11" above the porch with its top inside
+# BM-SG-BLC, i.e. ``structural.member_interference`` FAILs. ``supported_by="PT-SG-FCOL"`` is
+# wrong for a different reason: that column's top is the beam *soffit*, not the deck.
+#
+# And at BF2 the aluminium cap is in the way. TR-SG-CAP-FRW/FRE sit on the front-beam tops;
+# a 304-stainless base bearing on 0.019" aluminium coil in a wet exterior location pits the
+# aluminium (it is anodic), and anchoring through it penetrates the butyl tape that IS the
+# dielectric between that coil and the copper-treated KDAT. If a base ever has to cross a
+# cap it needs an EPDM or HDPE isolator pad and a written detail.
 
 SECOND_NODES = [
     Node(uid="SGNB01AAAA", tag="N-SGB-NW", position=pt(ft(_x_ax_w), ft(_y_in_n))),
@@ -761,14 +822,22 @@ BALCONY_BEAMS = [
 _beam_face_ft = cross_section(SPEC.balcony_beam).width_m / 2 / 0.3048
 _pillar_face_ft = 2.75 / 12.0  # half the 5.5" actual 6x6
 GIRT_NODES = [
-    Node(uid="SGNG01AAAA", tag="N-SGG-RW1", position=pt(ft(_x_ax_w + _pillar_face_ft), ft(_y_in_n))),
-    Node(uid="SGNG02AAAA", tag="N-SGG-RW2", position=pt(ft(_cx - _pillar_face_ft), ft(_y_in_n))),
-    Node(uid="SGNG03AAAA", tag="N-SGG-RE1", position=pt(ft(_cx + _pillar_face_ft), ft(_y_in_n))),
-    Node(uid="SGNG04AAAA", tag="N-SGG-RE2", position=pt(ft(_x_ax_e - _pillar_face_ft), ft(_y_in_n))),
-    Node(uid="SGNG05AAAA", tag="N-SGG-FW1", position=pt(ft(_x_ax_w + _beam_face_ft), ft(_y_ax_front))),
-    Node(uid="SGNG06AAAA", tag="N-SGG-FW2", position=pt(ft(_cx - _beam_face_ft), ft(_y_ax_front))),
-    Node(uid="SGNG07AAAA", tag="N-SGG-FE1", position=pt(ft(_cx + _beam_face_ft), ft(_y_ax_front))),
-    Node(uid="SGNG08AAAA", tag="N-SGG-FE2", position=pt(ft(_x_ax_e - _beam_face_ft), ft(_y_ax_front))),
+    Node(uid="SGNG01AAAA", tag="N-SGG-RW1",
+         position=pt(ft(_x_ax_w + _pillar_face_ft), ft(_y_rear_pillar))),
+    Node(uid="SGNG02AAAA", tag="N-SGG-RW2",
+         position=pt(ft(_cx - _pillar_face_ft), ft(_y_rear_pillar))),
+    Node(uid="SGNG03AAAA", tag="N-SGG-RE1",
+         position=pt(ft(_cx + _pillar_face_ft), ft(_y_rear_pillar))),
+    Node(uid="SGNG04AAAA", tag="N-SGG-RE2",
+         position=pt(ft(_x_ax_e - _pillar_face_ft), ft(_y_rear_pillar))),
+    Node(uid="SGNG05AAAA", tag="N-SGG-FW1",
+         position=pt(ft(_x_ax_w + _beam_face_ft), ft(_y_ax_front))),
+    Node(uid="SGNG06AAAA", tag="N-SGG-FW2",
+         position=pt(ft(_cx - _beam_face_ft), ft(_y_ax_front))),
+    Node(uid="SGNG07AAAA", tag="N-SGG-FE1",
+         position=pt(ft(_cx + _beam_face_ft), ft(_y_ax_front))),
+    Node(uid="SGNG08AAAA", tag="N-SGG-FE2",
+         position=pt(ft(_x_ax_e - _beam_face_ft), ft(_y_ax_front))),
 ]
 # The two FRONT segments are white-painted (BEAM_WHITE_PAINT) and the two REAR ones are not:
 # the front pair stands over the garden beside the white pillars, the rear pair sits against
@@ -823,16 +892,13 @@ PORCH_JOISTS = FloorSystem(
                      # Member count is unchanged from the single-wall bearing.
                      bearing_refs=("BM-SG-FRW", "BM-SG-FRE",
                                    "BM-SG-BKW", "BM-SG-BKE")),
-    # Three plies (the authored joist + two sisters) and solid blocking under PT-SG-BR2.
-    # The pillar lands on the cantilever, so the single 2x8 under it is both over-stressed
-    # in bending and free to roll; the cluster runs the joist's whole length back to the
-    # front-beam hangers, and the blocking ties it to the lines either side so the load
-    # is shared rather than hung on one member. Paired with CN-SG-TIE-BR2 below, which
-    # holds the back-span bearing down against the uplift the overhang puts there
-    # (~0.45 kip). ``structural.cantilever_point_load`` reads all three.
-    reinforcements=(JoistReinforcement(
-        at=_BR2_AT, plies=3,
-        source="PT-SG-BR2 lands on the porch cantilever — 3-ply PT 2x8 + solid blocking"),),
+    # No ``reinforcements``. Until 2026-08-28 this carried a 3-ply + solid-blocking cluster
+    # under PT-SG-BR2, because that pillar stood on the cantilevered joist tip. The pillar
+    # row moved onto the back-beam line (see ``_y_rear_pillar``), so the point load is over
+    # a bearing, not over an overhang, and the mitigation has nothing left to mitigate:
+    # 2 sister 2x8s, 2 blocks and the CN-SG-TIE-BR2 H2.5A come out of the take-off with it.
+    # ``structural.cantilever_point_load`` now finds no post inside either band and is
+    # silent — which is the honest report, not a suppressed one.
     outline=_PORCH_OUTLINE,
     # The composite plank *is* this deck's sheet: with SL-SG-PORCH gone the boards are the
     # floor system's own surface layer, which is both what a person stands on (the balcony
@@ -968,30 +1034,37 @@ CONNECTORS += [
     Connector(uid="SGCH02AAAA", tag="CN-SG-HGR-E", kind=ConnectorKind.JOIST_HANGER,
               position=pt(ft(_x_ax_e), ft(_y_col)), elevation=_back_beam_mid,
               size="HUCQ410-SDS", connects=("BM-SG-BKE", "W-SG-E1")),
-    # ** OPEN: the SKU here reaches wood, and one side of this joint is concrete. **
-    # An H2.5A is a wood-to-wood tie — library/hardware.py's own record says
-    # "rafter/joist-to-plate", and its published values are nails into lumber on BOTH legs.
-    # Here one leg has the 3-ply KDAT beam and the other has a cast column top it cannot
-    # nail to, so as drawn this splices the two beam ends across the pour rather than
-    # holding either down to it. The part that reaches concrete at this joint is a gusset
-    # angle anchored with a Titen HD (the HGAM10 / A34-A44 family), and the catalog stocks
-    # nothing of it. Left as-is deliberately: swapping in a part number nobody has priced
-    # would be worse than a recorded open item. Same at CN-SG-TIE-FCOL below.
-    # See notes/uplift_load_path.md.
+    # HGAM10, not H2.5A (2026-08-28) — the OPEN item recorded here since the connectors
+    # were first modeled, now closed. An H2.5A is a wood-to-wood tie; library/hardware.py's
+    # own record says "rafter/joist-to-plate" and its published values are nails into lumber
+    # on BOTH legs. At this joint one leg has the 3-ply KDAT beam and the other has a cast
+    # column top it cannot nail to, so as drawn the tie spliced the two beam ends across the
+    # pour rather than holding either down to it. The HGAM masonry gusset angle is the part
+    # that actually reaches: #14 screws into the wood leg, Titen Turbo into the concrete,
+    # 1 1/2" minimum edge distance — which both rounds satisfy as cast (a 12" round gives
+    # 6" to its centre, a 16" round 8"). It is catalogued now under ROLE_MASONRY_GUSSET_ANGLE
+    # and priced in prices.toml, which is what the old note was waiting for.
+    #
+    # This is a CORRECTNESS change, not a check improvement: ``takeoff/uplift.py`` keys the
+    # beam-to-post link on ``ConnectorKind``, never on ``size``, so every uplift finding is
+    # byte-identical afterward. What moves is the BOM — ``authored_connector_rows`` groups by
+    # ``(kind, size)``, and before the catalog entry existed ``hardware_by_model("HGAM10")``
+    # would have returned None and dropped the row into ``unpriced`` with ``role=None``.
+    #
+    # NOT the CCQM/CCTQM embedded column-cap family: Simpson publish its loads for solid
+    # concrete piers a minimum of 14" SQUARE with (4) #7 verticals. PT-SG-COL is a 12" round
+    # (113 in^2) and the price basis carries a 4-bar #4 cage. And do NOT delete these two
+    # Connectors instead — ``_is_concrete(seat)`` is true here and "12 round"/"16 round" are
+    # not stocked post sizes, so with no ``_POST_TOP_KINDS`` connector at the joint all four
+    # beam-end links go ``hardware=None`` and the check reports four FAILs.
+    # Same part at CN-SG-TIE-FCOL below. See notes/uplift_load_path.md.
     Connector(uid="SGCT01AAAA", tag="CN-SG-TIE-COL", kind=ConnectorKind.HURRICANE_TIE,
-              position=pt(ft(_cx), ft(_y_col)), elevation=_back_beam_soffit, size="H2.5A",
+              position=pt(ft(_cx), ft(_y_col)), elevation=_back_beam_soffit, size="HGAM10",
               connects=("BM-SG-BKW", "BM-SG-BKE", "PT-SG-COL")),
-    # Uplift tie at the *front* bearing of the sistered joist line. Loading the cantilever
-    # tip (PT-SG-BR2) pries the far end of that joist up out of its front-beam hanger;
-    # nothing but its own weight holds it there. H2.5A is ~455 lb of uplift against a
-    # ~0.45 kip demand — the same part already used over the column, so no new hardware.
-    # It shares the reinforced line's x, at the south bearing rather than the north edge.
-    # Same datum correction as its neighbours: this one holds a *joist* into a beam, so it
-    # rides the joist's mid-depth rather than a beam soffit.
-    Connector(uid="J6XRAXQG5T", tag="CN-SG-TIE-BR2", kind=ConnectorKind.HURRICANE_TIE,
-              position=pt(_BR2_AT.x, ft(_y_ax_front)),
-              elevation=_porch_top - ft(_porch_joist_depth_ft / 2.0), size="H2.5A",
-              connects=("FS-SG-PORCH", "BM-SG-FRW", "BM-SG-FRE")),
+    # CN-SG-TIE-BR2 (uid J6XRAXQG5T) was retired 2026-08-28 with the joist reinforcement
+    # above. It held the *front* bearing of PT-SG-BR2's joist line down against the prying
+    # a loaded cantilever tip put there; with the pillar row moved onto the back-beam line
+    # there is no cantilever tip to load. The uid is spent — do not reuse it.
     # Front-beam pockets, the same concrete-face-mount detail as the back pair above.
     Connector(uid="SGCH03AAAA", tag="CN-SG-HGR-FW", kind=ConnectorKind.JOIST_HANGER,
               position=pt(ft(_x_ax_w), ft(_y_ax_front)), elevation=_front_beam_mid,
@@ -1000,7 +1073,8 @@ CONNECTORS += [
               position=pt(ft(_x_ax_e), ft(_y_ax_front)), elevation=_front_beam_mid,
               size="HUCQ410-SDS", connects=("BM-SG-FRE", "W-SG-E1")),
     Connector(uid="SGCT02AAAA", tag="CN-SG-TIE-FCOL", kind=ConnectorKind.HURRICANE_TIE,
-              position=pt(ft(_cx), ft(_y_ax_front)), elevation=_front_beam_soffit, size="H2.5A",
+              position=pt(ft(_cx), ft(_y_ax_front)), elevation=_front_beam_soffit,
+              size="HGAM10",
               connects=("BM-SG-FRW", "BM-SG-FRE", "PT-SG-FCOL")),
 ]
 
@@ -1030,7 +1104,7 @@ _NS_BRACE_UID = {("R", 1): "SGCK1RAAAA", ("R", 3): "SGCK3RAAAA",
                  ("F", 1): "SGCK1FAAAA", ("F", 3): "SGCK3FAAAA"}
 _EW_BRACE_UID = {("R", 1): "SGKX1RAAAA", ("R", 3): "SGKX3RAAAA",
                  ("F", 1): "SGKX1FAAAA", ("F", 3): "SGKX3FAAAA"}
-_ROW_Y = {"R": _y_in_n, "F": _y_ax_front}
+_ROW_Y = {"R": _y_rear_pillar, "F": _y_ax_front}
 _NS_BEAM = {1: "BM-SG-BLW", 3: "BM-SG-BLE"}
 # The west pillar of each row braces east into its row's west girt segment; the east
 # pillar braces west into the east segment.

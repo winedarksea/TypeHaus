@@ -140,7 +140,7 @@ keeps the sunken garden's and the breezeway's twenty connectors from being bough
 - 6 × ABU66SS under the balcony pillars, 4 × under the breezeway posts (`params/`)
 - 4 × KBS1Z at the breezeway **roof** beams (its floor beams are derived)
 - 4 × HUCQ410-SDS into the sunken garden's concrete beam pockets
-- 3 × H2.5A at the two cast columns and the sistered porch bearing
+- 2 × HGAM10 masonry gusset angles at the two cast columns (`H2.5A` until 2026-08-28)
 - 4 × STHD holdowns at the exterior door jambs (main storey)
 
 ## What the model still cannot answer
@@ -153,7 +153,7 @@ keeps the sunken garden's and the breezeway's twenty connectors from being bough
 - **A lateral system for the porch and balcony.** `plans/TODO.md` carries this as an open
   question and it is *not* an uplift item, but it is the one thing that would put new
   hardware on `PT-SG-FCOL`. Today nothing bolts to that column: two beams land on its top and
-  an authored H2.5A on the bearing plane holds them down. The MPB66Z moment base the TODO
+  an authored HGAM10 gusset angle on the bearing plane holds them down. The MPB66Z moment base the TODO
   weighs is the only detail that would want the 5" of side cover the old 16" square section was
   chosen for, and it is not specified. Worth knowing before anyone reshapes that column —
   and the column was reshaped on 2026-08-28: it is a **16" round** now, which leaves 3.76"
@@ -162,31 +162,42 @@ keeps the sunken garden's and the breezeway's twenty connectors from being bough
   is formed in built panels with chamfer strips and rubbed and patched after strip. If the
   lateral design ever wants the moment base, the revert is *cheaper than the square was*: an
   18" tube gives 4.76" at $335-705 and a 20" gives 5.76" at $369-781.
-- **The SKU at the two beam-on-column bearings, and it is a real question.**
-  `CN-SG-TIE-COL` and `CN-SG-TIE-FCOL` are authored `H2.5A` on the bearing plane (the beam
-  soffit = the column top), and `structural.uplift_load_path` reports both columns as
-  covered because of them. But an H2.5A is a **wood-to-wood** tie — its own catalog record
-  says so, "rafter/joist-to-plate", and its published values are taken through nails into
-  lumber on both legs. At these two joints one leg has a 3-ply KDAT 2x12 to nail into and
-  the other has a cast concrete column top, which it cannot reach. What the tie actually
-  does as drawn is splice the two beam ends to each other across the pour; it does not hold
-  either of them *down* to it.
+- ~~**The SKU at the two beam-on-column bearings.**~~ **Closed 2026-08-28.**
+  `CN-SG-TIE-COL` and `CN-SG-TIE-FCOL` sit on the bearing plane (the beam soffit = the
+  column top) and were authored `H2.5A`, which `structural.uplift_load_path` accepted as
+  coverage. But an H2.5A is a **wood-to-wood** tie — its own catalog record says so,
+  "rafter/joist-to-plate", and its published values are taken through nails into lumber on
+  both legs. At these two joints one leg has a 3-ply KDAT 2x12 to nail into and the other has
+  a cast concrete column top, which it cannot reach. What the tie did as drawn was splice the
+  two beam ends to each other across the pour; it did not hold either of them *down* to it.
 
-  This is a specification gap at a joint the model already carries, not a missing joint, and
-  it is exactly what the raw hardware notes were pointing at with **HGAM10** and **A34/A44**:
-  a gusset angle screwed to the beam and anchored into the pour with a Titen HD is the part
-  that reaches concrete here. `library/hardware.py` stocks nothing of that family today — the
-  only concrete-reaching parts in it are HUCQ, MASA, STHD and the new AB-058-10-SS — so
-  closing this needs a new catalogued role plus a call on the detail, and it is left open
-  deliberately rather than answered by swapping a part number nobody has priced.
+  Both are now **HGAM10**, the part the raw hardware notes were pointing at all along: a
+  masonry gusset angle, #14 screws into the wood leg and Titen Turbo into the concrete, with
+  a 1½" minimum edge distance that both rounds satisfy as cast (6" to centre on the 12"
+  round, 8" on the 16"). `library/hardware.py` stocks it under the new
+  `ROLE_MASONRY_GUSSET_ANGLE`, and `prices.toml` carries a `[hardware]` row for it — the two
+  things the open item was waiting for. It is its own role and not a second product on
+  `ROLE_HURRICANE_TIE` because `hardware_for_role` holds exactly one item per role.
 
-  The rest of that notes list — an STHD on each axis with an SM1 holder, a KGLB5B beam seat,
-  isolation between column and wood — is a menu for the lateral design above, not an
-  outstanding uplift item.
+  **This is a correctness change, and it moves no finding.** `takeoff/uplift.py` keys the
+  beam-to-post link on `ConnectorKind`, never on `Connector.size`, so every uplift finding is
+  byte-identical either way; what changed is the BOM, where `authored_connector_rows` groups
+  by `(kind, size)`. And the two Connectors were retyped, never deleted: `_is_concrete(seat)`
+  is true at both and `"12 round"`/`"16 round"` are not stocked post sizes, so removing them
+  would send all four beam-end links to `hardware=None` — four FAILs.
+
+  Not the CCQM/CCTQM embedded column-cap family, which Simpson publish for solid concrete
+  piers a minimum of 14" **square** with (4) #7 verticals; `PT-SG-COL` is a 12" round (113 in²)
+  on a 4-bar #4 cage.
+
+  Still open from that same raw notes list — an STHD on each axis with an SM1 holder, a
+  KGLB5B beam seat, isolation between column and wood — is a menu for the lateral design
+  above, not an outstanding uplift item.
 
   Worth saying what this does **not** affect: the column-to-footing joint below is the
-  doweled lap already described, and every other H2.5A in the house (348 derived, at rafter,
-  truss-heel and floor-joist bearings) lands wood-on-wood exactly as published.
+  doweled lap already described, and every H2.5A left in the house (348, all derived, at
+  rafter, truss-heel and floor-joist bearings) lands wood-on-wood exactly as published.
+  After this change there are no authored H2.5A ties at all.
 - **Capacity, everywhere.** The check reports coverage as UNKNOWN, never PASS. The model
   carries no design wind speed (`sheet.roof_framing.design_loads` says so), so "there is
   hardware here" is the only claim being made.
@@ -200,6 +211,7 @@ usually cheaper:
 | Simpson | MiTek | Joint |
 |---|---|---|
 | H2.5A | H2.5 | rafter / joist to plate |
+| HGAM10 | — (masonry angle family) | wood beam down to a cast column top |
 | LTP4 | TP37 class | plate to band |
 | KBS1Z | — (use the strap tie family) | beam to post |
 | ABU66 / ABU44 | ABU-equivalent standoff base | post to pier |

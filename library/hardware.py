@@ -20,6 +20,7 @@ from typehaus.takeoff.hardware_catalog import (
     ROLE_HURRICANE_TIE,
     ROLE_KNEE_BRACE,
     ROLE_LATERAL_TIE_PLATE,
+    ROLE_MASONRY_GUSSET_ANGLE,
     ROLE_MUDSILL_ANCHOR,
     ROLE_NAIL_STRIP_SEAM_CLAMP,
     ROLE_PIPE_CLAMP,
@@ -273,6 +274,17 @@ H25A_HURRICANE_TIE = StructuralHardware(
            "uplift connection",
 )
 
+HGAM10_MASONRY_GUSSET = StructuralHardware(
+    tag="simpson-hgam10-masonry-gusset-angle",
+    name="HGAM10 masonry gusset angle",
+    role=ROLE_MASONRY_GUSSET_ANGLE,
+    manufacturer=_SIMPSON,
+    model="HGAM10",
+    source="Simpson Strong-Tie HGAM masonry/concrete gusset angle (strongtie.com/hgam) — "
+           "#14 screws into the wood leg, Titen Turbo concrete screws into the masonry leg; "
+           "1-1/2 in minimum edge distance to the anchors",
+)
+
 S5_SEAM_CLAMP = StructuralHardware(
     tag="s5-standing-seam-clamp",
     name="S-5! standing-seam clamp",
@@ -503,6 +515,7 @@ STRUCTURAL_HARDWARE: tuple = (
     LTP4_LATERAL_TIE_PLATE,
     SILL_ANCHOR_BOLT,
     H25A_HURRICANE_TIE,
+    HGAM10_MASONRY_GUSSET,
     S5_SEAM_CLAMP,
     S5_S_SNAP_LOCK_CLAMP,
     S5_N_NAIL_STRIP_CLAMP,

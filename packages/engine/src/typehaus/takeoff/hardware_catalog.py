@@ -33,6 +33,14 @@ ROLE_POST_BASE = "post_base"
 # ``takeoff/uplift.py::post_base_anchor_rows``.
 ROLE_POST_BASE_ANCHOR = "post_base_anchor"
 ROLE_HURRICANE_TIE = "hurricane_tie"
+# A wood member held down to CONCRETE or masonry by a gusset angle — one leg screwed into
+# the wood, the other anchored with a concrete screw. Its own role and not a second product
+# on ROLE_HURRICANE_TIE, which ``hardware_for_role`` would refuse anyway: an H-tie is a
+# wood-to-wood part whose published values are nails into lumber on BOTH legs, so at a beam
+# landing on a cast column top there is nothing for the second leg to bite. The deciding
+# question is the same one that splits the seam clamps above — HOW THE PART REACHES THE
+# BUILDING — and a screw into concrete is not a nail into a plate.
+ROLE_MASONRY_GUSSET_ANGLE = "masonry_gusset_angle"
 # The cap over a post that a beam lands ON (rather than continues past). Its own role, not
 # ROLE_BEAM_HOLD_DOWN: the KBS strap ties a beam DOWN to a post whose sides it can reach,
 # while a cap seats the beam and takes uplift in one part. Both serve a post/beam joint and

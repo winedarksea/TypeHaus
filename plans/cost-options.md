@@ -944,6 +944,58 @@ Built the way the owner's constraint asks:
   `building_science.humid_room_liner` FAILed the bare 7 1/4" strip immediately, and it was
   right to — a hole in the hot side's vapour control is a hole.
 
+### E. The engine work the 24" module needs — DONE; the attic gables are NOT built
+
+Per owner decision the gables stay at **16" o.c.** for now, so this item moves no money yet.
+What is done is the part that had to come first: **before 2026-08-28 no wall in this house
+could have been a spacing other than 16", and neither defect would have announced itself.**
+
+1. **`resolve/framing/openings.py::_cripple_stations` hardcoded `DEFAULT_SPACING`.** Sill and
+   head cripples were framed on a 16" grid in every wall in the house regardless of what the
+   wall was actually built on. A bug, not a limitation; it reads the host wall's own spacing
+   now. `frame_opening` grew a `cripple_spacing` argument to keep it honest on a STAGGERED
+   wall, where the jamb-pack module is half the nominal one but the opening is framed full
+   plate depth — so its cripples are full-depth members on the nominal module, which is
+   exactly what they were before and must stay.
+2. **`structural.window_framing_module` read `preferences.toml` house-wide.** The solver has
+   always laid a wall out on its own `FramingSpec.spacing`; the check read the preference.
+   They agreed only because every spacing in this house is 16 — a latent split brain that
+   would have graded a 24" wall against a grid nobody built. The check reads the wall's
+   spacing now with the preference as fallback, and `_ro_caps` re-derives the whole RO ladder
+   at that module: the ladder's three rungs are arithmetic on the module and a stud (one
+   clear bay; two bays less the broken stud; that again less a jack each side), so at 24"
+   the unbroken bay is 22 1/2" and the nonbearing cap 46 1/2". The authored numbers are the
+   geometric ones rounded down for a window schedule, and that rounding is carried across
+   rather than re-invented — at the declared module the function returns the authored values
+   unchanged, which is what keeps a 16" house's results identical. The rule moved to its own
+   module, `checks/structural/window_module.py`, which put `checks.py` back under the
+   500-line bound. `test_catlin_window_openings_follow_the_sixteen_inch_framing_module` is
+   `..._follow_their_walls_framing_module` now — renamed, not loosened; the assertion is
+   still an empty exception list.
+3. **`Wall.base_elevation` is new, and item C could not be built without it.** A framed wall
+   standing on something *inside* its own storey — a stud wall on a concrete curb — had no
+   way to say so: `FoundationWall` has carried absolute `bottom_elevation`/`top_elevation`
+   since day one, and a plain `Wall` started at the storey datum, full stop. Everything
+   downstream follows for free, because `ResolvedWall.z0_m` is what the framing solver
+   measures plates and studs from and what every opening sill is datumed on — which is why
+   `W-B-S3-FR`'s studs resolve at 7'-0 1/4" and `D-B-PATIO`'s threshold landed on the curb
+   top with `sill_height=inch(0)`. `_wall_z_range` reads it too, so the curb and the wall on
+   it split into two bearing tiers at a shared node rather than fighting over one junction.
+
+**What the gables would buy when they are taken: −$490 / −$860**, and the money is not the
+reason. IRC Table R602.3(5) permits a *nonbearing* 2x6 at 24" o.c. to a 20' height with no
+load argument at all, so the six gable walls need no plan reviewer's judgement — while the
+knee walls and every bearing wall below stay at 16". The interesting part is the RO ladder:
+at 24" the unbroken bay goes 14 1/2" → 22 1/2", which turns the two `WT-1448` south flankers
+— 14" wide *only because that is what fits a 16" bay* — into ~22" stock casements with no
+header, no jacks and no kings, clearing Andersen 400's 20-11/16" narrowest casement.
+`WT-1448`'s own note says the 4:12 rake forbids the usual remedy because any width over 14"
+takes a header that hits the rake; at 24" o.c. that constraint dissolves. 48" is the saving
+grace on the re-grid — `CATLIN_EXT_2X6` sets `layout_origin="line"`, so the 24" and 16" grids
+strike from one origin and coincide every 48", 36'-0" is 9 × 48", and the juliet pair's stud
+lines at 16'-0" and 20'-0" are stations on both. Two nodes to check when it is taken:
+`N-A-V1` at 22'-8" (a 16" station but not a 24" one) and `N-A-S1` at 8'-8" (on neither).
+
 ### D. Declined without building — the two that were already taken
 
 - **Built-up beams and columns.** There is no PSL and no glulam in this house: every multi-ply

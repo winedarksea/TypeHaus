@@ -59,6 +59,26 @@ plank laid straight onto copper-treated pine, and the tape is what separates the
 `FS-SG-PORCH` the tape is doing the ordinary job instead — the composite plank above it is
 **gapped**, so rain reaches the framing tops directly, on a deck that is a roof over a porch.
 
+**2a. The pillar tops were never covered here.** This note is exhaustive about beam tops and
+says nothing about the six pillar tops under them. A 6x6 tops out 5.5" square and the
+3-2x12 on it is 4.5" wide, so every one of the six leaves **1/2" of exposed upward end grain
+on its east and west faces, directly under a beam whose faces shed onto it**. Six joints,
+upward end grain, in the weather, on 51.4 LF of the most expensive-per-LF wood in the
+structure — the six painted pillars cost more than both cast columns and all four porch
+beams combined, and they are the only elements carrying a recurring repaint cost against a
+100-year brief. The answer is a chamfer or bevel on the exposed rim, or a small formed drip
+under the beam seat, and sealing the cut before the pillar is stood: $0–120, and the highest
+durability-per-dollar item in the whole porch. Recorded in `POST_WHITE_PAINT.source`.
+
+**2b. The beam soffit at the two cast columns.** `SUNKEN_GARDEN_COLUMN_16.source` already
+specified a >=15° top wash and a level non-shrink-grout island, so the column top sheds. What
+was missing is the AITC/WoodWorks **1/2"–1" standoff** — a grout island is a levelling bed,
+not a standoff, and without one the KDAT soffit sits on concrete that wicks. Added 2026-08-28
+*beside* the grout island, not instead of it, on both `SUNKEN_GARDEN_COLUMN_16` and
+`PIER_CONCRETE_12` (PT-SG-COL is the only one of the five piers with wood landing on it). It
+must be stainless, or hot-dip with an isolator: KDAT is copper-treated and eats plain steel.
+This is at the beam *soffit* and so does not touch the cap/tape order at the beam *top*.
+
 **3. Sequencing — five of the seven caps go on before the joists do.** The balcony's three
 beams and the porch's back pair carry their joists on top; only the porch's front pair is
 flush-framed with an open top. A cap over a beam that will be joisted has to be laid while
@@ -82,9 +102,40 @@ labour half of the `beam_cap` price row; it is not a return-visit trade.
   cover a deck that is also a roof and its snow envelope stops at 40 psf against the Twin
   Cities' ~50 psf ground snow. The knee braces are outside every prescriptive table. This
   belongs on the same consultant scope as the E-W bracing and the `FT-SG-*` frost design.
-- **There is no beam-cantilever check** (`checks/structural/deck.py` grades span only), so a
-  future south overhang would pass silently rather than be graded against R507.5.1's
-  quarter-span limit — 26" on these beams.
+- **There is no beam-cantilever check** (`checks/structural/deck.py` grades span only), so
+  an overhang on a beam passes silently rather than being graded against R507.5.1's
+  quarter-of-back-span limit. **This is now live, not hypothetical.** The 2026-08-28 move of
+  the rear balcony pillar row onto the back-beam line left the three balcony beams with a
+  real north overhang, and the arithmetic is checked by hand in `params/sunken_garden.py`
+  beside `_y_rear_pillar` because nothing in the engine checks it:
+
+  | | |
+  |---|---|
+  | back span (`_y_rear_pillar` → `_y_ax_front`) | 7.00' = 84" |
+  | north overhang (`_y_rear_pillar` → `_y_in_n`) | 20.0" |
+  | R507.5.1 limit (back span / 4) | 21.0" |
+  | margin | 1.0" |
+
+  A 1" margin is thin enough that it has to be re-checked by hand if either the rear pillar
+  row or the porch depth ever moves again.
+
+## Two span knife-edges
+
+Both found 2026-08-28 while checking whether a longer beam was possible. Neither is a
+finding today; both are one dimension change away from a red suite, and neither was written
+down anywhere before. `structural.deck_beam_span` looks IRC Table R507.5(1) up on the
+**joist** span the beam carries, and the table's rows are 6/8/10/12/14/16/18', so the lookup
+steps down in cliffs rather than sliding.
+
+- **Porch — 9" of joist-span headroom.** `FS-SG-PORCH`'s joists span 7.25', which reads the
+  8' row → a 10.25' limit against the four porch beams' 10.00' span. At a joist span of
+  8.01' the lookup drops to the 10' row (9.17') and **all four porch beams FAIL by 10"**
+  at once. The 9" of headroom is the distance from 7.25' to 8.00'.
+- **Balcony — the knife-edge that change retired.** `FS-SG-DECK`'s joist span is *exactly*
+  10.00', reading the 10' row (9.17'). Any increase at all drops it to the 12' row (8.33').
+  Against the old 8.667' beam span that was a fail on the next inch; against today's 7.00'
+  there is 16" of room even after the step down. Moving the rear pillar row is what bought
+  that, and it is the durability change's least visible benefit.
 - **PWT treated LVL may exist after all.** `params/sunken_garden.py` rejects treated
   engineered beams on the grounds that only Parallam Plus PSL is made treated, in depths that
   exclude 11 1/4". Pro Deck Supply (Minneapolis) appears to list PWT treated LVL 1 3/4" x

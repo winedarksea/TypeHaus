@@ -64,9 +64,16 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   open question. The options, in ascending cost:
   - **Extend the knee-brace rule to the centre pillars.** DCA6-2015 p.10 wants a brace on any
     post over 2'-0"; `PT-SG-BR2`/`BF2` are deliberately left as leaning columns today
-    (`params/sunken_garden.py`, KNEE_BRACES) because bracing them pushes thrust into
-    `PT-SG-BR2`, the one pillar bearing on porch decking. That reasoning is still right, so
-    this is the cheap option and not obviously the correct one.
+    (`params/sunken_garden.py`, KNEE_BRACES). **The stated reason for that is gone as of
+    2026-08-28**, and this entry has to say so: the objection was that bracing them pushes
+    thrust into `PT-SG-BR2`, the one pillar standing on the *cantilevered tip* of the porch
+    joists. The rear pillar row has since moved onto the back-beam line, so `PT-SG-BR2` now
+    lands over `PT-SG-COL` on a full stack to concrete, and `PT-SG-BF2` always did over
+    `PT-SG-FCOL`. Both centre pillars are over a beam-and-column line now. That makes this
+    the cheapest option on the list at **$120-250** and removes the reason it was rejected —
+    it does **not** make it the answer. **Do not author bracing here.** The lateral design
+    stays the consultant's call, per the doctrine at the head of this item: a number invented
+    in the model is worse than an open question. What changed is the premise, not the verdict.
   - **A moment base at the four corner pillars.** `MPB66Z`, ESR-3050 Table 11: 2,680 lb-ft
     unreinforced — but it needs **5" of side cover**, and *no column in this structure has
     it any more*. `PT-SG-FCOL` did while it was a 16" square (5.00" at a centred 6" plate's
@@ -78,8 +85,46 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     $369-781**, so the cover comes back for *less* than the square cost, not more. The four
     pillars that actually want the base bear on 12" concrete wall tops and were never
     covered either, so this option always needed a pour change somewhere.
+
+    **Correction 2026-08-28: the "18"/20" revert" above is cheaper than it looks only in
+    concrete, and this entry understated it.** `SPEC.front_column_size_in` is not just a
+    member size — it feeds `_y_ax_front = _y_in_n - porch_clear_depth_ft -
+    front_column_size_in/24`, which sets the balcony's *front pillar row*, the deck outline,
+    `RL-SG-BALCONY`, the gutter and leader line, and is published as `PORCH_FRONT_AXIS_Y_FT`
+    and consumed by `params/raised_garden.py`. Widening that column moves another module's
+    geometry. The tube price is the small half of the bill. And widening it does not reopen
+    the MPB66Z where the option is actually wanted: `PT-SG-FCOL` carries `PT-SG-BF2`, a
+    *centre* pillar. The four that want the base are the corner ones on the wall tops, which
+    is the pour change this entry already names.
   - **An engineer's lateral design.** The honest answer, and the same consultant the two
     side walls below already need.
+
+- **Two porch/balcony span knife-edges, written down 2026-08-28.** Neither is a finding
+  today and neither had been recorded anywhere before. `structural.deck_beam_span` looks IRC
+  Table R507.5(1) up on the **joist** span the beam carries, and the table's rows are
+  6/8/10/12/14/16/18', so the lookup steps down in cliffs rather than sliding — a small
+  change in a joist span can fail four beams at once.
+  - **Porch: 9" of joist-span headroom.** `FS-SG-PORCH`'s joists span 7.25', which reads the
+    8' row → a 10.25' limit against the four porch beams' 10.00' span. At a joist span of
+    8.01' the lookup drops to the 10' row (9.17') and **all four porch beams FAIL by 10"**.
+    Deepening the porch, or moving the back-beam line north, is what would do it.
+  - **Balcony: retired, and worth keeping visible.** `FS-SG-DECK`'s joist span is *exactly*
+    10.00', reading the 10' row (9.17'). Any increase drops it to the 12' row (8.33'). Until
+    2026-08-28 the balcony beams spanned 8.667' and that step would have failed all three;
+    moving the rear pillar row onto the back-beam line took the span to 7.00', so there is
+    now 16" of room even after the step. The knife-edge is gone, the cliff is not.
+  Anything that changes a beam section here — including the PWT LVL lead below — has to be
+  re-checked against both. Also in `houses/catlin/notes/beam_water_protection.md`.
+
+- **Verify the PWT treated LVL lead — one phone call.** `notes/beam_water_protection.md`
+  records that the real durability defect in these beams is **fourteen site-built ply seams**
+  that hold water and grit and freeze ~100×/year, and an *unverified* Pro Deck Supply
+  (Minneapolis) listing for PWT treated LVL 1¾" × 11⅞" at $223.20/12'. Two plies over the
+  three balcony beams is ≈ $970 against ~$242-413 for the 3-2x12s: a **~$550-725 delta that
+  removes the seams rather than taping them**. If it holds, the "Treated LVL is not a
+  product" answer immediately below — and the 2026-08-23 note that carries it in
+  `params/sunken_garden.py` — needs rewriting, because it was about Parallam Plus PSL depths
+  and says nothing about LVL. Not verified; nothing should move until it is.
 
 - **DONE 2026-08-23 — the three sunken-garden items that stood here are closed.** Kept as a
   paragraph rather than deleted outright, because two of the three answers are worth

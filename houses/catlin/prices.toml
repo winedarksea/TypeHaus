@@ -301,7 +301,11 @@
 # with the outrigger band it followed; restore with CATLIN_EXT_2X6_SWINBURNE.
 # "3.5x3.5 panel" = { material = { low = 3, high = 4.4 }, labour = { low = 0.8, high = 1.5 } }  # was 158 LF
 "2x6" = { material = { low = 0.85, high = 1.15 }, labour = { low = 0.9, high = 1.6 } }  # 9132 LF
-"2x8" = { material = { low = 1.1, high = 1.55 }, labour = { low = 1.3, high = 2.4 } }  # 708 LF
+# 2026-08-28: 492 -> 464 LF ordered (80 -> 76 pc). The porch joist reinforcement under
+# PT-SG-BR2 — 2 sister 2x8s and 2 blocks, 28 LF — came out when the rear balcony pillar row
+# moved onto the back-beam line and the pillar stopped standing on a cantilevered joist tip.
+# The comment previously read "# 708 LF", which was several revisions stale.
+"2x8" = { material = { low = 1.1, high = 1.55 }, labour = { low = 1.3, high = 2.4 } }  # 464 LF
 # D-G-SERVICE's continuous header (2026-08-18). Three plies at $3-5/LF per 1.75" ply, on
 # the same basis as the rows above; shallow stock, so the low end of that band.
 "3-1.75x5.5 LVL" = { material = { low = 12, high = 22 }, labour = { low = 9, high = 18 } }
@@ -422,7 +426,21 @@
 # already bills), which is what makes the roof-to-foundation uplift path continuous.
 # Material only, like every row in this table: driving two nails into a plate is
 # inside the framing rate, and billing it again here would double-count it.
-"H2.5A" = { low = 0.8, high = 1.75 }  # 351 ea — 3 authored + 348 derived
+# 2026-08-28: 351 -> 348. All three authored ties left in one change. CN-SG-TIE-BR2 was
+# retired with the porch joist reinforcement when the rear balcony pillar row moved onto the
+# back-beam line, and CN-SG-TIE-COL/-FCOL were retyped to the HGAM10 below — an H-tie is a
+# wood-to-wood part and both of those joints land on a cast column top. What is left is the
+# 348 the bearing rule derives, and no authored one at all.
+"H2.5A" = { low = 0.8, high = 1.75 }  # 348 ea — all derived
+# The masonry gusset angle at the two beam-on-column joints (CN-SG-TIE-COL, CN-SG-TIE-FCOL),
+# closing the OPEN item that stood in params/sunken_garden.py: those two ties reach a cast
+# column top, and an H2.5A has nothing to nail to there. #14 screws into the 3-ply KDAT beam
+# leg, Titen Turbo into the pour. RANGE, NOT A VERIFIED SKU PRICE — this is the $10-40 the
+# porch durability review budgeted for the pair, per-each, and it should be replaced with a
+# quoted number the next time this table is refreshed against a supplier list. Material only,
+# like every row here; the driving is inside the framing rate. The Titen Turbo screws are a
+# concrete anchor bought with the angle and are inside this range.
+"HGAM10" = { low = 5.0, high = 20.0 }  # 2 ea — both authored
 # HUCQ into concrete/masonry. G90 to ZMAX; the stainless variant would be ~$170 and is
 # not what the plan calls for.
 "HUCQ" = { low = 45, high = 95 }  # 4 ea

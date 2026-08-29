@@ -6,10 +6,12 @@ whole value is in never going quiet: a post on the overhang is a finding whateve
 authored — FAIL with nothing carrying it, UNKNOWN once the reinforcement contract is met,
 never PASS.
 
-The fixtures are synthetic because catlin has exactly one such post (PT-SG-BR2, on the
-porch's 17" north overhang) and it is fully mitigated: it can pin the landed verdict but not
-the boundaries, and the boundaries are where a mitigation arm silently stops matching. The
-last test pins catlin itself.
+The fixtures are synthetic, and since 2026-08-28 they are the *only* coverage of the arms:
+catlin had exactly one such post (PT-SG-BR2, on the porch's 17" north overhang), and moving
+the rear balcony pillar row onto the back-beam line deleted the condition rather than
+mitigating it. So these fixtures now carry the whole contract — every arm, and both sides of
+every boundary, which is where a mitigation arm silently stops matching. The last test pins
+catlin as the empty report it should be.
 """
 
 from __future__ import annotations
@@ -296,23 +298,20 @@ def test_the_check_is_registered_in_the_structural_tier() -> None:
         check_id for check_id, _fn in registered(Tier.STRUCTURAL)}
 
 
-def test_the_catlin_porch_pillar_is_the_one_finding_and_it_is_reinforced(catlin_findings):
-    """PT-SG-BR2 stands on the porch's 17" north overhang and is the only post in the house
-    that does. WP1 answered it — 3-ply PT 2x8, solid blocking, and CN-SG-TIE-BR2 at the far
-    bearing — so all three arms match and the verdict is UNKNOWN, not FAIL.
+def test_catlin_has_no_post_on_a_cantilever_at_all(catlin_findings):
+    """Catlin used to be this check's one real subject and is no longer.
 
-    Two ties are named since 2026-08-18, not one: retiring the arched cross-wall put
-    PT-SG-FCOL at the same midspan x, so CN-SG-TIE-FCOL (beams down to the column) lands on
-    the same point as CN-SG-TIE-BR2 (joist line down to the beams). Both are genuinely
-    uplift hardware at that bearing; the check lists what it finds and sums no capacity."""
-    assert len(catlin_findings) == 1, [f.message for f in catlin_findings]
-    finding = catlin_findings[0]
-    assert finding.result is Result.UNKNOWN, finding.message
-    assert finding.element_tags == ("FS-SG-PORCH", "PT-SG-BR2",
-                                    "CN-SG-TIE-BR2", "CN-SG-TIE-FCOL")
-    assert '17" cantilever at its high-y edge' in finding.message
-    # Each arm of the contract, named — a silently-unmatched arm is how this check rots.
-    assert "an authored 3-ply JoistReinforcement" in finding.message
-    assert "2 sistered 2x8 plies" in finding.message
-    assert "2 solid blocks" in finding.message
-    assert "uplift hardware CN-SG-TIE-BR2 (H2.5A)" in finding.message
+    PT-SG-BR2 stood on FS-SG-PORCH's 17" north overhang — the only post in the house that
+    did — and the finding read UNKNOWN because all three mitigation arms matched: an
+    authored 3-ply JoistReinforcement, 2 sistered plies and 2 blocks off the geometry, and
+    CN-SG-TIE-BR2 at the far bearing. On 2026-08-28 the rear balcony pillar row moved onto
+    the back-beam line, 3" south of the bearing, and the mitigation was deleted with the
+    condition rather than kept.
+
+    An empty report is the honest one here, and the 3" is what makes it honest: ``_band``
+    is closed at the bearing line (``post_axis >= axis_hi - end - _EPS``), so a pillar
+    landed exactly on that line would still be *inside* the overhang and would report a 0"
+    one — a finding about a joint that no longer exists. The synthetic fixtures above are
+    what keep every arm of the contract exercised now that no house drives it.
+    """
+    assert catlin_findings == [], [f.message for f in catlin_findings]

@@ -25,8 +25,11 @@ INCH = 0.0254
 # bear on the decking.
 PILLAR_BEARING_WALL = {"PT-SG-BR1": "W-SG-W1", "PT-SG-BR3": "W-SG-E1",
                        "PT-SG-BF1": "W-SG-W1", "PT-SG-BF3": "W-SG-E1"}
+# Both centre pillars still name the porch deck in ``supported_by``, and since 2026-08-28
+# both stand over a beam-and-column line rather than over a joist tip: BF2 always did (the
+# front beams over PT-SG-FCOL), and BR2 does now that the rear row moved onto the back-beam
+# line. There is no longer a "the one on the cantilever" pillar, which is the point.
 DECK_BORNE_PILLAR_TAGS = ("PT-SG-BR2", "PT-SG-BF2")
-DECK_BORNE_PILLAR_TAG = "PT-SG-BR2"  # the one on the *cantilever*, not merely on the deck
 
 
 def _solid(model, tag):
@@ -127,43 +130,58 @@ def test_post_bases_are_abu66ss_at_each_pillar_base(catlin_model) -> None:
                         **{t: "FS-SG-PORCH" for t in DECK_BORNE_PILLAR_TAGS}}
 
 
-def test_the_deck_borne_pillar_stands_on_a_sistered_and_blocked_joist_line(catlin_model) -> None:
-    """PT-SG-BR2 is the only pillar landing on framing, and it lands on the *cantilever*.
+def test_the_deck_borne_pillars_stand_over_a_bearing_not_a_joist_tip(catlin_model) -> None:
+    """The 2026-08-28 durability move, asserted as the load path it created.
 
-    A 6x6 on the free tip of one PT 2x8 is the load path that reinforcement answers, so
-    the cluster is asserted where the post is, not merely somewhere on the deck: three
-    plies (the authored joist plus two sisters) inside half a joist spacing of it, and
-    solid blocking out to the neighbouring lines. ``structural.cantilever_point_load``
-    reads exactly these two categories.
+    PT-SG-BR2 used to stand on the *cantilevered* tip of the porch joists — a 6x6 carrying
+    a third of the balcony on the free end of one PT 2x8 — and that was mitigated with a
+    3-ply sistered cluster, solid blocking and an uplift tie rather than deleted. Moving the
+    rear pillar row onto the back-beam line deletes it: both centre pillars now sit south of
+    the deck's north edge, over the beams that run to their cast columns. The mitigation is
+    gone with the condition, so the deck resolves no sisters and no blocking at all.
     """
     floor = _floor(catlin_model, "FS-SG-PORCH")
-    post_x, post_y = catlin_model.plan.by_tag(DECK_BORNE_PILLAR_TAG).position.xy_m
-    spacing = 16 * INCH
-    sisters = [m for m in floor.members if m.category == "sister_joist"]
-    blocks = [m for m in floor.members if m.category == "blocking"]
-    assert len(sisters) == 2, "3-ply cluster = the joist + two sisters"
-    assert all(abs(m.p0[0] - post_x) < spacing / 2 for m in sisters)
-    assert len(blocks) == 2
-    assert all(abs(m.p0[1] - post_y) < 0.3 for m in blocks)
-    # The sisters run past the back-beam line the joists are split at, out to the tip the
-    # post stands on — a ply stopping at the support would carry nothing under the load.
+    assert [m for m in floor.members if m.category == "sister_joist"] == []
+    assert [m for m in floor.members if m.category == "blocking"] == []
+
     joist_tip = max(max(m.p0[1], m.p1[1]) for m in floor.members if m.category == "joist")
-    assert all(max(m.p0[1], m.p1[1]) == pytest.approx(joist_tip) for m in sisters)
+    back_beam_y = max(p[1] for p in _solid(catlin_model, "BM-SG-BKW").outline)
+    for tag in DECK_BORNE_PILLAR_TAGS:
+        post_y = catlin_model.plan.by_tag(tag).position.xy_m[1]
+        assert post_y < back_beam_y < joist_tip, tag
+    # 3" south of the back-beam axis at BR2, and that clearance is the whole point: the band
+    # in checks/structural/cantilever.py is closed at the bearing line, so a pillar landed
+    # exactly on it still reads as inside the overhang and reports a 0" one.
+    column_y = catlin_model.plan.by_tag("PT-SG-COL").position.xy_m[1]
+    br2_y = catlin_model.plan.by_tag("PT-SG-BR2").position.xy_m[1]
+    assert (column_y - br2_y) == pytest.approx(3 * INCH, abs=1e-9)
 
 
-def test_the_reinforced_line_is_tied_down_at_its_back_span_bearing(catlin_model) -> None:
-    """Loading a cantilever tip pries the far end of that joist off its bearing; H2.5A
-    (~455 lb) answers the ~0.45 kip of uplift, in the front-beam hangers the back span
-    lands in. It named W-SG-ARCH until 2026-08-18, when that wall became two flush beams —
-    the bearing is the same joint, held by the same part, in a different member."""
-    tie = catlin_model.plan.by_tag("CN-SG-TIE-BR2")
-    assert tie.kind.value == "hurricane_tie"
-    assert tie.size == "H2.5A"
-    assert set(tie.connects) == {"FS-SG-PORCH", "BM-SG-FRW", "BM-SG-FRE"}
-    post_x, post_y = catlin_model.plan.by_tag(DECK_BORNE_PILLAR_TAG).position.xy_m
-    tie_x, tie_y = tie.position.xy_m
-    assert abs(tie_x - post_x) < 16 * INCH / 2, "not on the reinforced joist line"
-    assert tie_y < post_y, "the tie belongs at the back-span bearing, not the loaded tip"
+def test_the_two_beam_on_column_ties_reach_concrete(catlin_model) -> None:
+    """CN-SG-TIE-COL and CN-SG-TIE-FCOL hold two beam ends down to a cast column top.
+
+    They were authored ``H2.5A`` — a wood-to-wood part whose published values are nails into
+    lumber on BOTH legs — so as drawn each spliced its two beam ends across the pour instead
+    of holding either down to it. Both are HGAM10 masonry gusset angles since 2026-08-28:
+    #14 screws into the wood leg, Titen Turbo into the concrete. The ``ConnectorKind`` is
+    unchanged on purpose — ``takeoff/uplift.py`` keys the beam-to-post link on the kind and
+    never on the size, so this moves the BOM and no finding.
+
+    CN-SG-TIE-BR2, the third authored tie, was retired in the same change: it held the back-
+    span bearing of PT-SG-BR2's joist line down against a cantilever tip that no longer
+    exists. No authored H2.5A is left in the house.
+    """
+    for tag, column in (("CN-SG-TIE-COL", "PT-SG-COL"), ("CN-SG-TIE-FCOL", "PT-SG-FCOL")):
+        tie = catlin_model.plan.by_tag(tag)
+        assert tie.kind.value == "hurricane_tie", tag
+        assert tie.size == "HGAM10", tag
+        assert column in tie.connects, tag
+
+    authored = [el for el in catlin_model.plan.all_elements()
+                if el.element_kind == "Connector" and getattr(el, "size", None) == "H2.5A"]
+    assert authored == []
+    assert not any(el.tag == "CN-SG-TIE-BR2"
+                   for el in catlin_model.plan.all_elements())
 
 
 # --- NEMA 3R weatherproof junction box ---------------------------------------

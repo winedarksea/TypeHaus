@@ -690,7 +690,7 @@ def test_bedroom_egress_is_associated_with_its_own_bounding_wall():
     assert all("WIN-B-SAUNA" not in finding.message for finding in findings)
 
 
-def test_catlin_window_openings_follow_the_sixteen_inch_framing_module():
+def test_catlin_window_openings_follow_their_walls_framing_module():
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
     findings = [finding for finding in report.findings
                 if finding.check_id == "structural.window_framing_module"]
@@ -706,6 +706,16 @@ def test_catlin_window_openings_follow_the_sixteen_inch_framing_module():
     #
     # Keep this empty. An exception here is now evidence of a genuinely constrained wall,
     # not of an accident of authoring order, and deserves the argument written out.
+    #
+    # **Renamed 2026-08-28, from ...follow_the_sixteen_inch_framing_module.** The rule is
+    # not "16"" and never was: `structural.window_framing_module` reads the HOST WALL's own
+    # `FramingSpec.spacing` now, with `preferences.toml`'s `[framing] module_in` only as the
+    # fallback, and re-derives the whole RO ladder at that module (`checks/structural/
+    # window_module._ro_caps`). It read the preference house-wide until then, which agreed
+    # with the solver only because every spacing in this house is 16 — a latent split brain,
+    # since the solver has always laid a wall out on the assembly field. Every window here
+    # is still on a 16" wall; the assertion is what it always was, and it is now a statement
+    # about walls rather than about a number.
     assert not findings, [finding.message for finding in findings]
 
 

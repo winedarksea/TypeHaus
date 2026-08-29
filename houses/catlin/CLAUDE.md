@@ -387,7 +387,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   **The ideal position is a
   property of the RO width, not of the wall** — narrowing a unit can move it, and
   `structural.window_framing_module` (asserted clean by
-  `test_catlin_contract_m3.py::test_catlin_window_openings_follow_the_sixteen_inch_framing_module`)
+  `test_catlin_contract_m3.py::test_catlin_window_openings_follow_their_walls_framing_module`)
   is what says so. Resize windows to fit the grid, not vice versa. One type per width
   family — WT-1424, WT-2736, WT-3036 (north gables/hall), WT-3048 (the south-glazing size,
   head at 6'-8") — each family sharing the one height that fits its most constrained wall.
@@ -405,7 +405,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   `structural.window_framing_module` reported both. What ended it was not a fifth attempt at
   the width but the grid moving under it: with the exterior assembly laying out from the
   layout line, 16'-0"/20'-0" are stud lines, 5" further out, and the pair fits with no
-  retype. `test_catlin_contract_m3.py::test_catlin_window_openings_follow_the_sixteen_inch_framing_module`
+  retype. `test_catlin_contract_m3.py::test_catlin_window_openings_follow_their_walls_framing_module`
   asserts the empty list; keep it empty, and see **ONE GRID PER FACADE** under Facade rules
   before concluding a window cannot reach its station.
   **Five exceptions**, each an extra height on an existing width family because the rule's
@@ -448,7 +448,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
       2026-08-15 E/W pass); the "spent" 31'-4" west column; the east knee band's 4" miss;
       the north gable's asymmetry; and the juliet pair's accepted 3" off-module exception.
       All five dissolved when the grid was unified, at a cost of 20 windows moving 3"–8".
-      **`test_catlin_contract_m3.py::test_catlin_window_openings_follow_the_sixteen_inch_framing_module`
+      **`test_catlin_contract_m3.py::test_catlin_window_openings_follow_their_walls_framing_module`
       now asserts an EMPTY exception list.** Keep it empty.
     - **The 8" rule survives, and is now the only phase rule left.**
       `structural.window_framing_module` puts a 14" RO on a **bay centre** and a 27"/30" RO
