@@ -192,6 +192,14 @@ class FramedMember:
     # The birdsmouth, when this member has one. ``geometry_members.member_solid`` reads it and
     # nothing else does: its guard is a single attribute read, because it sits on the hot path.
     seat: SeatCut | None = None
+    # Held up along its WHOLE length rather than reaching between supports — derived from the
+    # bearings actually reaching, never assumed from a category. Two things read it and they
+    # are why it names the fact rather than either consequence: the takeoff buys such a member
+    # in ordinary stock lengths and splices it over a bearing point (no over-length special
+    # order, no crane), and the uplift pass ties it down at a pitch instead of at two ends,
+    # because it does not have two ends in any meaningful sense. Catlin's 36' ridge is the
+    # case — it bears on W-A-C1/C1B/C2 end to end.
+    continuously_supported: bool = False
 
 
 @dataclass(frozen=True)

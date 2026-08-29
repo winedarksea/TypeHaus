@@ -412,13 +412,53 @@ ROOFS = [
 ]
 
 BEAMS = [
-    # Ridge beam over the center wall line: 3 plies of 1.75x11.875 LVL (5.25x11.875).
-    # Continuously supported by the W-A-C1/C2 bearing wall directly beneath it — not a
-    # 36' clear span between the gables (no LVL spans that at ~500 plf). bearing_refs
-    # names the wall it seats on, which is what the framing schedule prints.
+    # Ridge beam over the center wall line: 2 plies of 1.75x14 LVL (3.5x14), 36'-0".
+    #
+    # ** IT SPANS NOTHING, AND ITS DEPTH IS A HANGER DIMENSION, NOT A BENDING ONE. **
+    # W-A-C1/C1B/C2 hold it up end to end, so there is no clear span between the gables and
+    # no moment to size for — ply count here buys strength nobody is asking for. It was
+    # 3-1.75x11.875 until 2026-08-28, and that section was wrong in BOTH directions: three
+    # plies answered no load, and 11 7/8" was too SHALLOW. The 5.25" was never an
+    # engineering result either — resolve/framing/roof.py's RIDGE_BEAM_DEFAULT recorded it
+    # as "approximating the user's 6x12 ask".
+    #
+    # What sets the depth: the resolver pins this beam's TOP to the roof plane at the peak
+    # (the ZIP deck bears across it) and trims each rafter back to its face, where the
+    # rafter is cut PLUMB and hung on an LSSR. An 11 7/8" I-joist at 4:12 has a 12.52"
+    # plumb face (11.875 x 1.0541), and the face sits 1.75" off the peak, another 0.58"
+    # down the plane — so the beam has to reach 13.10" below the ridge line. At 11 7/8" the
+    # bottom flange and the hanger's seat hung 1.52" past the soffit, with nothing behind
+    # them. LVL is made in 9.5/11.875/14/16/18", so 14" is the answer; there is no 13.5".
+    # `structural.ridge_beam_depth` holds it now and reports the 0.90" that is left.
+    #
+    # THREE THINGS A FRAMER HAS TO BE TOLD, all in notes/ridge_beam_detail.md:
+    #  - 3.5" is only defensible because the demand is small. LSSR header fasteners are
+    #    (14) 10d x 2.5" and 28 rafter PAIRS land opposite each other, so two mirrored
+    #    patterns overlap through a 1.5" band and the usual escape — clinch the tips on the
+    #    back face — is blocked by the other hanger. IAPMO-ES ER-280 sec 3.2.2 allows a
+    #    support thinner than the fastener when the NDS penetration reduction is taken; at
+    #    ~600 lb per rafter against an LSSR2.37's 1,565 lb there is room several times over.
+    #    On a beam that was actually working, this width would not be available.
+    #  - Beveled web stiffeners both sides at this end (Weyerhaeuser H5, APA D710 10c), and
+    #    an LSTA24 over the peak per pair — H5S makes the strap mandatory above 3:12.
+    #  - The two plies are stitched with SDW22 3-3/4" (Trus Joist SE-N101 Assembly A, side
+    #    loaded, 4 per hanger, one face). A 3-ply would want 5" screws from BOTH faces.
+    #
+    # ORDERED IN THREE 12s, NOT ONE 36. A beam supported everywhere may be butt-spliced over
+    # any bearing point, so the takeoff buys the run off the ordinary ladder instead of as one
+    # over-length special order that needs a crane: 36'-0" divides exactly three ways with no
+    # waste, and a 12' ply of this section is about 92 lb — two framers, no lift. Same lineal
+    # feet, same money. `FramedMember.continuously_supported` is derived from bearing_refs
+    # actually reaching, not claimed. STAGGER the two plies: cut one stick of ply B in half so
+    # it reads 6+12+12+6, putting its joints at 6'/18'/30' against ply A's 12'/24'. Same three
+    # sticks per ply, no offcut, and the beam is continuous in one ply at every station.
+    #
+    # bearing_refs names all THREE segments of the line, which is what the framing schedule
+    # prints and what the continuity derivation measures. W-A-C1B (y 5'-7"..9'-4") was
+    # missing until 2026-08-28; nothing read it then, and the splice rule reads it now.
     Beam(uid="CABM01AAAA", tag="RB-HOUSE", start_node="N-A-S2",
-         end_node="N-A-N1", size="3-1.75x11.875 LVL",
-         bearing_refs=("W-A-C1", "W-A-C2")),
+         end_node="N-A-N1", size="2-1.75x14 LVL",
+         bearing_refs=("W-A-C1", "W-A-C1B", "W-A-C2")),
 ]
 
 # The well is the source's, snapped to the *finished* faces around it like FO-S-STAIR: east

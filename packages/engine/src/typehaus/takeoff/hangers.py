@@ -9,6 +9,7 @@ on the plate). No member is billed because of what it is called.
 
 from __future__ import annotations
 
+import math
 from collections import Counter
 from dataclasses import dataclass
 
@@ -17,6 +18,7 @@ from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.hardware_catalog import (
     ROLE_CONCRETE_FACE_MOUNT_HANGER,
     ROLE_FACE_MOUNT_JOIST_HANGER,
+    ROLE_RIDGE_TIE_STRAP,
     ROLE_SLOPED_JOIST_HANGER,
     hardware_for_role,
     hardware_row,
@@ -34,6 +36,7 @@ class CarryingElement:
     p1: tuple
     z0_m: float
     z1_m: float
+    category: str = "beam"
 
 
 @dataclass(frozen=True)
@@ -44,12 +47,20 @@ class HungConnection:
     member_profile: str
     carrier_tag: str
     sloped: bool
+    # What the carrier IS, not what it is called. A ridge beam takes a strap across it that
+    # a girder does not, and reading that off the tag string would be reading a uid.
+    carrier_category: str = "beam"
+    # Where along the carrier the hung end lands. Two rafters meeting over a ridge share this
+    # station, which is what lets a per-PAIR part be counted without dividing by two and
+    # hoping.
+    station_m: float = 0.0
 
 
 def _member_carriers(model: ResolvedModel, rules: HangerDetectionRules) -> list:
     carriers = [
         CarryingElement(tag=f"{member.parent_uid}:{member.child_key}", p0=member.p0,
-                        p1=member.p1, z0_m=member.z0_m, z1_m=member.z1_m)
+                        p1=member.p1, z0_m=member.z0_m, z1_m=member.z1_m,
+                        category=member.category)
         for member in model.all_members()
         if member.category in rules.carrier_member_categories
     ]
@@ -98,9 +109,69 @@ def hung_connections(model: ResolvedModel, rules: HangerDetectionRules) -> list:
                     continue
                 found.append(HungConnection(
                     member_key=f"{member.parent_uid}:{member.child_key}",
-                    member_profile=member.profile, carrier_tag=carrier.tag, sloped=sloped))
+                    member_profile=member.profile, carrier_tag=carrier.tag, sloped=sloped,
+                    carrier_category=carrier.category,
+                    station_m=_station_along(point, carrier)))
                 break  # one hanger per end, even where carriers overlap in plan
     return found
+
+
+def _station_along(point, carrier: CarryingElement) -> float:
+    """How far along the carrier's own axis a hung end lands, in meters from its start."""
+    (ax, ay), (bx, by) = carrier.p0, carrier.p1
+    dx, dy = bx - ax, by - ay
+    run = math.hypot(dx, dy)
+    if run < 1e-9:
+        return 0.0
+    return ((point[0] - ax) * dx + (point[1] - ay) * dy) / run
+
+
+#: Two rafter ends this close along the ridge are the same station — one opposing pair, one
+#: strap. They are trimmed to opposite faces of the beam, so they never share a plan point;
+#: what they share is the station, and half an inch is far tighter than the 16" that separates
+#: one station from the next.
+_PAIR_STATION_TOL_M = 0.5 * M_PER_IN
+
+
+def ridge_tie_strap_rows(model: ResolvedModel, rules: HangerDetectionRules) -> list:
+    """One strap per opposing rafter pair over a ridge beam.
+
+    The sloped hanger holds a rafter up in the beam's depth and does nothing across the peak.
+    Weyerhaeuser's H5S ridge detail adds an LSTA24 rafter-to-rafter over the top for any slope
+    above 3:12 (catlin's 4:12 is squarely in it) and APA D710 10c calls for the same from
+    1/4:12. It was missing from this house entirely: 56 hangers and no strap.
+
+    Counted per PAIR by station rather than as ``hangers // 2``, so a rafter that has lost its
+    opposite number shows up as an uncounted end rather than half a strap.
+    """
+    stations: dict[str, list[float]] = {}
+    for connection in hung_connections(model, rules):
+        if connection.carrier_category != "ridge_beam":
+            continue
+        stations.setdefault(connection.carrier_tag, []).append(connection.station_m)
+
+    rows = []
+    for carrier_tag in sorted(stations):
+        values = sorted(stations[carrier_tag])
+        pairs, unpaired, index = 0, 0, 0
+        while index < len(values):
+            if (index + 1 < len(values)
+                    and values[index + 1] - values[index] <= _PAIR_STATION_TOL_M):
+                pairs += 1
+                index += 2
+            else:
+                unpaired += 1
+                index += 1
+        if not pairs:
+            continue
+        item = hardware_for_role(ROLE_RIDGE_TIE_STRAP)
+        carrier_name = carrier_tag.split(":")[-1]
+        note = f" ({unpaired} unpaired rafter end(s) take none)" if unpaired else ""
+        rows.append(hardware_row(
+            item, scope="roof ridge", count=pairs,
+            basis=(f"{pairs} opposing rafter pairs over {carrier_name}, one strap each "
+                   f"(station-matched across the beam, not hangers/2){note}")))
+    return rows
 
 
 def _explicit_hanger_rows(model: ResolvedModel) -> list:

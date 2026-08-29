@@ -32,7 +32,8 @@ DETAIL_SLICES = [
          crop=(pt(ft(0, -6), ft(-10)), pt(ft(6), ft(30)))),
     # Ridge beam connection — cut perpendicular to the N-S ridge (direction="x" at
     # y=18') so the section shows the ridge's peak, cropped past the beam band at
-    # 31'-32' (ridge_z_m = 9.763 m ≈ 32').
+    # 31'-32' (ridge_z_m = 9.7652 m = 32.04'). The beam's soffit went from 31.05' to
+    # 30.87' when it deepened to 14" (2026-08-28) and is still well inside the 26'-33' crop.
     Slice(uid="CVD904AAAA", tag="SL-D-RIDGE", kind=SliceKind.DETAIL,
          title="Ridge beam connection",
          cut_origin=pt(ft(0), ft(18)), cut_direction="x",

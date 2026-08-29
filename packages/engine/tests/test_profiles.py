@@ -4,6 +4,8 @@ today parses into a sane cross-section, and the parser never mutates the string
 
 from __future__ import annotations
 
+import math
+
 import pytest
 
 from typehaus.quantities import inch
@@ -68,11 +70,27 @@ def test_single_ply_lvl(profile, width_in, depth_in):
 
 def test_multi_ply_lvl_ridge_beam_default():
     section = cross_section(RIDGE_BEAM_DEFAULT)
-    assert RIDGE_BEAM_DEFAULT == "3-1.75x11.875 LVL"
+    assert RIDGE_BEAM_DEFAULT == "2-1.75x14 LVL"
     assert section.shape == "rect"
-    assert section.plies == 3
-    assert section.width_m == pytest.approx(0.13335, abs=1e-5)
-    assert section.depth_m == pytest.approx(0.3016, abs=1e-4)
+    assert section.plies == 2
+    assert section.width_m == pytest.approx(inch(3.5).meters, abs=1e-5)
+    assert section.depth_m == pytest.approx(inch(14).meters, abs=1e-5)
+
+
+def test_the_default_ridge_backs_an_i_joist_rafters_plumb_cut():
+    """The depth is a hanger dimension, and this is the arithmetic that sets it.
+
+    An 11 7/8" I-joist at 4:12 is cut PLUMB at the beam face, and the hanger's seat is at the
+    bottom of that cut. 11.875 x hypot(1, 4/12) = 12.52", and the face sits half a beam width
+    off the peak, another half-width x 4/12 down the plane. The old 3-1.75x11.875 default
+    missed by an inch and a half and nothing noticed for a year.
+    """
+    section = cross_section(RIDGE_BEAM_DEFAULT)
+    slope_factor = math.hypot(1.0, 4.0 / 12.0)
+    plumb_in = 11.875 * slope_factor
+    face_drop_in = (section.width_m / inch(1).meters / 2.0) * (4.0 / 12.0)
+    assert plumb_in == pytest.approx(12.517, abs=1e-3)
+    assert section.depth_m / inch(1).meters >= plumb_in + face_drop_in
 
 
 def test_rim_board():

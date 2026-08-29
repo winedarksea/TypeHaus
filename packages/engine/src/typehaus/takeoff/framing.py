@@ -5,6 +5,7 @@ from __future__ import annotations
 import math
 import re
 from collections import Counter, defaultdict
+from functools import lru_cache
 
 from shapely.geometry import Polygon
 
@@ -65,13 +66,55 @@ _NEST_FRACTION = 0.5
 _KERF_FT = 0.125 / 12.0
 
 
-def _bucket_cut_lengths(lengths: list[float], profile: str | None) -> Counter:
+#: The longest stick a spliceable member is bought in. Not a stock limit — 16 ft and 20 ft are
+#: both on the ladder — but a HANDLING one: this is the piece two people carry up a wall and
+#: set without a lift. A 14"-deep LVL ply runs about 7.7 lb per foot, so a 20-footer is 153 lb
+#: a ply and a 12-footer is 92 lb, and the whole reason to splice a continuously supported beam
+#: is to keep a crane off the job. 12 ft also divides catlin's 36 ft ridge exactly three ways,
+#: with no waste and no odd stick, which is luck rather than design — the cap is set by what a
+#: pair of framers can lift, and the arithmetic happens to be kind here.
+_MAX_SPLICE_PIECE_FT = 12
+
+
+@lru_cache(maxsize=128)
+def _splice_into_stock(length_ft: int) -> tuple[int, ...]:
+    """Stock lengths that cover a spliceable run, fewest ordered feet then fewest pieces.
+
+    A member supported along its whole length can be butt-spliced over any bearing point, so
+    it does not have to be bought as one long stick. Pieces are capped at
+    ``_MAX_SPLICE_PIECE_FT``: every extra joint lands over bearing and costs nothing
+    structurally, while a stick over the cap costs a lift. 36 ft of ridge is three 12s.
+
+    Greedy longest-first would be wrong often enough to matter (21 ft greedily is 12+12 = 24
+    ordered; the answer is 12+10 = 22), so this is a small exact DP over whole feet: cover at
+    least ``length_ft`` minimising ordered feet, breaking ties on piece count. Splices STAGGER
+    between plies on a built-up member — a detail note, not a quantity, because the lineal feet
+    are the same either way.
+    """
+    ladder = tuple(s for s in _STOCK_LENGTHS_FT if s <= _MAX_SPLICE_PIECE_FT)
+    best: list[tuple[int, int, tuple[int, ...]]] = [(0, 0, ())] * (length_ft + 1)
+    for target in range(1, length_ft + 1):
+        best[target] = min(
+            (best[max(0, target - stock)][0] + stock,
+             best[max(0, target - stock)][1] + 1,
+             (*best[max(0, target - stock)][2], stock))
+            for stock in ladder)
+    return best[length_ft][2]
+
+
+def _bucket_cut_lengths(lengths: list[float], profile: str | None,
+                        spliceable: bool = False) -> Counter:
     """The stock sticks one ``(profile, category, material)`` group is actually bought in.
 
     Long pieces bucket one-for-one, exactly as before. Short ones are packed first-fit-
     decreasing into the shortest stock, kerf included, so the order reflects the sticks a
     framer carries to the saw rather than one per cut. A fabricated member (a floor truss)
     is never nested: it is made to its length, and two of them do not come off one blank.
+
+    ``spliceable`` is the third case and the newest: a member the model has derived to be
+    ``continuously_supported`` is bought in stock lengths and joined on site, rather than
+    ordered as a single over-length stick that needs a crane and a freight charge. The lineal
+    feet do not change — the order sheet and the lift do.
     """
     buckets: Counter = Counter()
     stock = _STOCK_LENGTHS_FT[0]
@@ -84,7 +127,18 @@ def _bucket_cut_lengths(lengths: list[float], profile: str | None) -> Counter:
         else:
             own_stick.append(cut_ft)
     for cut_ft in own_stick:
-        buckets[_order_length_ft(cut_ft, profile)] += 1
+        whole = _order_length_ft(cut_ft, profile)
+        if spliceable and cut_ft > _MAX_SPLICE_PIECE_FT + 1e-6:
+            pieces = _splice_into_stock(int(math.ceil(cut_ft - 1e-9)))
+            # Splicing wins ties and loses when it costs wood. A 36' run is three 12s either
+            # way, so it splices; a 13' one is a single 14' stick against 8+8, so it does not.
+            # Without this the cap would turn a one-foot overshoot into three feet of offcut
+            # to avoid a lift nobody needed.
+            if sum(pieces) <= whole:
+                for piece in pieces:
+                    buckets[piece] += 1
+                continue
+        buckets[whole] += 1
     remaining: list[float] = []
     for cut_ft in sorted(nestable, reverse=True):
         need = cut_ft + _KERF_FT
@@ -119,18 +173,30 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     stairs, braces), so the pieces here reconcile 1:1 with what the 3D model frames.
     """
     cuts: dict[tuple[str, str, str], list[float]] = defaultdict(list)
+    # Continuous support is a property of the member; ordering is a property of the group. A
+    # group orders as spliceable only when EVERY member in it is — one member that spans,
+    # sharing a profile and a category with ones that do not, would otherwise be silently
+    # bought in pieces it cannot be built from.
+    splice: dict[tuple[str, str, str], bool] = {}
     for member in model.all_members():
-        cuts[(member.profile, member.category, member.material or "")].append(
-            member.length_m * _M_TO_FT)
+        key = (member.profile, member.category, member.material or "")
+        cuts[key].append(member.length_m * _M_TO_FT)
+        splice[key] = splice.get(key, True) and member.continuously_supported
 
     rows: list[dict[str, object]] = []
     for (profile, category, material), lengths in sorted(cuts.items()):
-        buckets = _bucket_cut_lengths(lengths, profile)
+        buckets = _bucket_cut_lengths(lengths, profile, splice[(profile, category, material)])
         order_ft_total = sum(length_ft * count for length_ft, count in buckets.items())
         bf_per_ft = _board_feet_per_ft(profile)
         rows.append({
             "profile": profile,
             "category": category,
+            # Bought in stock lengths and joined on site, because the model derived that
+            # every member here is ``continuously_supported``. It is the one case where a
+            # group's stick count can EXCEED its piece count — nesting packs many cuts into
+            # one stick, splicing spends many sticks on one member. Named for the purchasing
+            # consequence, because that is what an estimator reads this row for.
+            "spliceable": splice[(profile, category, material)],
             # The species/product the member is cut from, when the model knows it — a KDAT
             # outrigger and an SPF stud are both "2x4" and are not the same purchase. ``None``
             # for ordinary framing, which is what every row said before truss walls existed.

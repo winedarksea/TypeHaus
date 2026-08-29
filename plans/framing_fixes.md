@@ -41,6 +41,19 @@ In `floors.py:_resolve_floor`: emit 2 band-joist members capping joist ends alon
 **Accept:** catlin FS-SECOND/FS-ATTIC each get exactly 2 `rim` members; joist-count tests (which filter `category=="joist"`) still pass.
 
 ### WP4 — Ridge beam + rafter connections (engine + catlin authoring)
+
+> **SUPERSEDED 2026-08-28 — read as a record of what was planned, not of what stands.** Three
+> things in this section are now stale, and they are left in place rather than edited because
+> a plan doc that quietly matches the code stops being evidence of anything. (1) The table row
+> above says "no resolver consumes Beam elements" and gives `attic.py:144`; WP4 is what made
+> `resolve/framing/roof.py` consume them, and the line has moved. (2) "RB-HOUSE spans
+> y=8'8"→36'" was wrong when written — `N-A-S2` is at y=0, so the run is the full 36'.
+> (3) The section change on the last bullet landed, and has since been undone in the other
+> direction: the ridge is **`2-1.75x14 LVL`**. Three plies answered no load, and 11 7/8" was
+> too shallow for an 11 7/8" I-joist's 12.52" plumb cut at 4:12 — the defect this WP's own
+> "trim rafter ridge ends back by half beam width" geometry created and nothing graded until
+> `structural.ridge_beam_depth`. See `houses/catlin/notes/ridge_beam_detail.md`.
+
 - `FramedMember` ([model.py:32](packages/engine/src/typehaus/resolve/model.py#L32)): add `orient: tuple[float,float] | None` (plan-frame axis for vertical members with p0==p1 — set from `d` in `frame_wall`; solves UI cross-section orientation without reaching back to the wall) and `connection: str | None`.
 - `resolve/framing/roof.py`: resolve authored `Beam` elements whose node axis is coincident+parallel with the ridge line (match on line, not endpoints — RB-HOUSE spans y=8'8"→36') → emit `category="ridge_beam"` member, `z1=ridge_z_m`, `z0=z1−depth`. Trim rafter ridge ends back by half beam width with plane-consistent `z*_end_m`; annotate rafters `connection="ridge:adjustable-slope-hanger"` and `connection="eave:birdsmouth-1.17in"` (annotation only — box geometry doesn't carry seat cuts; the 2D detail pipeline owns that, per the eave-detail reference).
 - Add `ConditionKind.ROOF_RIDGE` + emit a `BoundaryCondition` (`detail="lvl-ridge-hanger"`) for the transitions/detail pipeline to bind later.

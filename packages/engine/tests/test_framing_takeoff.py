@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import pytest
+
+from typehaus.takeoff.framing import _bucket_cut_lengths
 from typehaus.takeoff import (
     _board_feet_per_ft,
     _order_length_ft,
@@ -45,10 +48,23 @@ def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
 
     for row in rows:
         # Sticks, not pieces: short cuts nest several to a stock length, so a group's bucket
-        # count is at most its piece count and is only equal when nothing nested.
+        # count is at most its piece count and is only equal when nothing nested. A
+        # SPLICEABLE group is the one exception and runs the other way — a continuously
+        # supported member is bought in stock lengths and joined on site, so one 36' ridge
+        # is two sticks rather than one over-length special order.
         sticks = sum(bucket["count"] for bucket in row["stock"])
-        assert 0 < sticks <= row["pieces"]
+        assert sticks > 0
+        if not row["spliceable"]:
+            assert sticks <= row["pieces"]
         assert row["order_length_ft"] >= row["cut_length_ft"]  # ordered >= cut
+
+    # The ridge is the house's only spliceable row, and it must not have quietly gone back to
+    # one over-length stick: 36 ft is three 12s, exact, each about 92 lb a ply — a two-man
+    # lift rather than a crane pick.
+    ridge = next(row for row in rows if row["category"] == "ridge_beam")
+    assert ridge["spliceable"] and ridge["pieces"] == 1
+    assert [(b["length_ft"], b["count"]) for b in ridge["stock"]] == [(12, 3)]
+    assert ridge["order_length_ft"] == pytest.approx(36.0)
 
     # Nesting is what keeps a short-piece row honest: the catlin truss's ~4,150 three-and-a-
     # half-inch girt blocks are about 1,212 lineal feet of 2x4 between them, and must not
@@ -68,6 +84,26 @@ def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
     # A known dimensional profile carries a board-foot rollup; every stud is a real size.
     studs = [row for row in rows if row["category"] == "stud"]
     assert studs and all(row["board_feet"] for row in studs)
+
+
+def test_splicing_never_buys_more_wood_than_one_stick_would() -> None:
+    """The handling cap is a preference, not a licence to waste offcut.
+
+    A run past ``_MAX_SPLICE_PIECE_FT`` splices only when the pieces order no more feet than
+    the single stick would have. 36 ft is three 12s against one 36 — a tie, so it splices and
+    the crane goes away. 13 ft is one 14 against 8+8 — three feet of offcut to avoid a lift
+    nobody needed, so it stays whole.
+    """
+    def ordered(length_ft: float, spliceable: bool) -> float:
+        buckets = _bucket_cut_lengths([length_ft], "2-1.75x14 LVL", spliceable)
+        return sum(k * v for k, v in buckets.items())
+
+    assert ordered(36.0, True) == 36 == ordered(36.0, False)
+    assert dict(_bucket_cut_lengths([36.0], "2-1.75x14 LVL", True)) == {12: 3}
+    assert ordered(13.0, True) == ordered(13.0, False) == 14
+    for length in (13.0, 18.0, 21.0, 25.0, 30.0, 36.0, 41.0):
+        assert ordered(length, True) <= ordered(length, False)
+        assert ordered(length, True) >= length
 
 
 def test_framing_by_size_rolls_up_types(catlin_model) -> None:

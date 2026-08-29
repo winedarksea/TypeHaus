@@ -351,9 +351,34 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   The stack depth is transcribed by hand into `params/roof_trim.py` (`_DRIP_CEILING_IN`,
   `_CLADDING_HEAD_IN`) and into `test_catlin_eave_water.py`; move a layer and those move.
 - **Structural ridge, not a rafter-tie roof.** `RB-HOUSE` bears continuously on the
-  `W-A-C1/C2` bearing wall, which stacks unbroken to the footings. That is what makes the
+  `W-A-C1/C1B/C2` bearing wall, which stacks unbroken to the footings. That is what makes the
   rafters simple spans and keeps thrust off the 5' knee walls. Opening that center line up
   without a beam under it dumps ~1.5 klf of thrust into knee walls that can take ~0.1.
+  **Its section is `2-1.75x14 LVL`, and the depth is a HANGER dimension** (2026-08-28, was
+  `3-1.75x11.875`). Because it bears everywhere it spans nothing, so ply count buys nothing;
+  what sets the depth is the rafter's plumb cut, which the resolver hangs on the beam's FACE
+  with the beam's top pinned to the roof plane. An 11 7/8" I-joist at 4:12 cuts 12.52" plumb
+  and its face sits another 0.58" down the plane, so the beam has to reach 13.10" — and the
+  old one reached 11.875", leaving the hanger seat and the bottom flange 1.52" past the
+  soffit. LVL is made in 9.5/11.875/**14**/16/18"; there is no 13 1/2". Three things follow,
+  and `notes/ridge_beam_detail.md` is where they live:
+  - **3 1/2" wide is only available because the demand is small.** 28 rafter PAIRS land
+    opposite each other and LSSR header nails are 2 1/2", so mirrored patterns overlap; the
+    escape is ER-280 §3.2.2's NDS penetration reduction (~600 lb per rafter against 1,565 lb),
+    which means a SHORTER header nail has to reach the schedule. A ridge sized by bending
+    rather than by a plumb cut wants 5 1/4" and the full nail.
+  - **The peak carries hardware the eave already had.** Beveled web stiffeners both sides at
+    the ridge (56, derived — the house modelled only the eave's 56 until 2026-08-28) and an
+    LSTA24 over the top per pair (28), which Weyerhaeuser's H5S makes mandatory above 3:12.
+    Plus 10 H2.5A tying the beam to its plate at 4' o.c. — that joint had NO connector and no
+    uplift-path link at all, because `uplift.py` walks the roof's own `bearing_refs` (the knee
+    walls) and `uplift_path.py` skips a `Beam.bearing_ref` that resolves to a wall.
+  - **It is ordered as three 12s, not one 36' stick.** A beam supported everywhere splices
+    over any bearing point, so `FramedMember.continuously_supported` (derived from the refs
+    actually reaching) sends it to the stock ladder — same lineal feet, no offcut at 36', and
+    a 92 lb ply instead of a 153 lb one. The cap is handling, not stock: `_MAX_SPLICE_PIECE_FT`
+    in `takeoff/framing.py`. Stagger the plies (6+12+12+6 against 12+12+12).
+    `structural.ridge_beam_depth` grades the depth; nothing did before.
 - Window rules — **the RO ladder**. Three caps, one rule, and the rule is arithmetic on the
   16" module and a 1.5" stud rather than anything in the code book: *how wide can the RO get
   before it costs one more stud line?* `preferences.toml [framing]` holds the numbers and

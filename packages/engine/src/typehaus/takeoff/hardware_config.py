@@ -190,6 +190,11 @@ class UpliftTieRules:
     # Lateral tie plates along a bottom plate standing on a floor band.
     tie_plate_pitch_ft: float = 4.0
     minimum_tie_plates_per_wall: int = 2
+    # A beam that bears on a wall for its WHOLE length has no two ends to tie, so it is tied
+    # at a pitch instead. 4' is the rhythm the mudsill anchors, the tie plates and the wall
+    # straps already share — three schedules a framer would otherwise have to hold separately.
+    # Ends are always tied, so a 36' run at 4' o.c. is ten ties, not nine.
+    continuous_bearing_pitch_ft: float = 4.0
     # Below this height a ``Post`` is a squash block, not a column: a short piece filling a
     # joist bay to carry a point reaction down to the concrete. It bears and that is all it
     # does, so it takes no base and no uplift connector. 2'-0" is DCA6-2015 p.10's own

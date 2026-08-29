@@ -650,13 +650,8 @@ MAIN_PLACEABLES = [
     # y=10" (or x, on side walls) centres the rod 10" off the wall line: 6 1/2" finish face
     # + ~3 1/2" bracket projection. Each rod centres on its opening's RO centre.
     Furniture(uid="EYJ3ZHXFSF", tag="FURN-M-LIV-ROD-S1", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
-              position=pt(ft(32, 8), ft(0, 10)), rotation=deg(180),
+              position=pt(m(9.7859), m(0.260305)), rotation=deg(180),
               mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
-    Furniture(uid="RECH3F3R45", tag="FURN-M-LIV-ROD-S2", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
-              position=pt(ft(27, 4), ft(0, 10)), rotation=deg(180),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
-    # The french pair takes the 84": a 60" RO with 12" of stackback each side, so the
-    # leaves clear the glass and the doors still swing.
     Furniture(uid="WJTG6V6T09", tag="FURN-M-LIV-ROD-BALC", type_ref="FT-CURTAIN-ROD-84", room="RM-M-LIVING",
               position=pt(ft(21, 10), ft(0, 10)), rotation=deg(180),
               mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
@@ -664,7 +659,7 @@ MAIN_PLACEABLES = [
               position=pt(ft(35, 2), ft(4)), rotation=deg(-90),
               mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
     Furniture(uid="94TRP24ZX6", tag="FURN-M-LIV-ROD-E2", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
-              position=pt(ft(35, 2), ft(12)), rotation=deg(-90),
+              position=pt(m(10.7243), m(4.05294)), rotation=deg(-90),
               mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
     # "Master bedroom" is read as RM-M-BED, the main-storey bedroom — not the second-storey
     # suite. Flag if that was the wrong room: the four rods move, nothing else does.

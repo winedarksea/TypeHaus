@@ -228,7 +228,13 @@
 "2-1x4" = { material = { low = 0.9, high = 1.4 }, labour = { low = 0.35, high = 0.7 } }  # 20 LF
 # "1x6.81165 panel" =    # 112 LF — cellular-PVC fascia, billed in [edge_trim]
 "2-1.75x11.875 LVL" = { material = { low = 14, high = 26 }, labour = { low = 8, high = 18 } }  # 16 LF
-"2-1.75x14 LVL" = { material = { low = 16, high = 30 }, labour = { low = 9, high = 20 } }  # 20 LF
+# 56 LF over TWO pieces since 2026-08-28: one 16.7' opening header, plus RB-HOUSE, which
+# moved onto this row when the ridge went 3-ply 11 7/8" -> 2-ply 14" (see attic.py). The
+# ridge is 36 LF of it and is bought as THREE 12s rather than one over-length stick — it
+# bears continuously, so it splices over any bearing point, and a 12' piece is a two-man lift
+# where a 36' one is a crane pick. Same lineal feet either way, which is why the rate did not
+# move; 36' also divides three ways with no offcut, so there is no waste to price.
+"2-1.75x14 LVL" = { material = { low = 16, high = 30 }, labour = { low = 9, high = 20 } }  # 56 LF
 "2-2x10" = { material = { low = 3, high = 4 }, labour = { low = 1, high = 2 } }  # 24 LF
 "2-2x6" = { material = { low = 1.7, high = 2.3 }, labour = { low = 0.9, high = 1.8 } }  # 16 LF
 "2-2x8" = { material = { low = 2.2, high = 3.1 }, labour = { low = 1, high = 2 } }  # 440 LF
@@ -243,7 +249,7 @@
 # jamb posts and head/sill courses, and every block-1 all bill here rather than on the KDAT
 # row below. That is 2,432 LF of course + post, 571 LF of block-1 and 192 LF of head/sill
 # course on top of the 6,630 LF of ordinary framing.
-"2x4" = { material = { low = 0.55, high = 0.8 }, labour = { low = 0.65, high = 1.2 } }  # 10216 LF — SPF (6,630 framing + 3,586 of inner girt tier)
+"2x4" = { material = { low = 0.55, high = 0.8 }, labour = { low = 0.65, high = 1.2 } }  # 10244 LF — SPF (6,490 framing + 3,754 of inner girt tier)
 # THE CATLIN TRUSS'S OUTER TIER (2026-08-26), and the single biggest cost lever in the wall.
 # 3,265 LF net of KDAT southern yellow pine 2x4, all of it laid FLAT: 2,432 LF of outer girt
 # course and outer jamb post, 641 LF of block-2, and 192 LF of outer head/sill course. It
@@ -309,7 +315,14 @@
 # D-G-SERVICE's continuous header (2026-08-18). Three plies at $3-5/LF per 1.75" ply, on
 # the same basis as the rows above; shallow stock, so the low end of that band.
 "3-1.75x5.5 LVL" = { material = { low = 12, high = 22 }, labour = { low = 9, high = 18 } }
-"3-1.75x11.875 LVL" = { material = { low = 21, high = 39 }, labour = { low = 15, high = 30 } }  # 36 LF
+# ** BILLS NOTHING SINCE 2026-08-28, AND STAYS ANYWAY. ** Its only [framing] consumer was
+# RB-HOUSE, which went to "2-1.75x14 LVL". Every other row that stopped billing has been
+# retired on the LUS210 principle a few sections down — a price row for a part the model
+# does not contain reads as coverage — and this one is the exception, because [timber]'s
+# "beam:BEAM_LVL" $/cy is DERIVED from it: see the conversion comment above that row,
+# which turns this $36-69/LF into the yard price for BM-M-HALL and BM-S-HALL. Delete this
+# and that derivation is left pointing at nothing.
+"3-1.75x11.875 LVL" = { material = { low = 21, high = 39 }, labour = { low = 15, high = 30 } }  # 0 LF — see above
 "3x6 rim" = { material = { low = 1.9, high = 3.1 }, labour = { low = 1.3, high = 2.4 } }  # 8 LF
 "4x0.5 panel" = { low = 1.5, high = 5 }  # 28 LF — formed gutter stock
 "4x4" = { material = { low = 2.2, high = 3.6 }, labour = { low = 1.5, high = 3 } }  # 32 LF
@@ -475,6 +488,11 @@
 # notes/uplift_load_path.md) — so this row prices the authored one-offs only.
 "PC6Z" = { low = 14, high = 26 }  # 0 ea
 "LSSR" = { low = 12, high = 22 }  # 56 ea
+# Rafter-to-rafter over the peak, one per opposing pair — the piece the LSSR above does
+# NOT do. A 24" x 1-1/4" 20ga strap tie is $3.50-4.50 single-piece retail (Fasteners Plus /
+# Home Depot, 2026); the low end is the contractor carton this section discounts to
+# throughout, the high end carries the twelve 10d x 1-1/2" nails H5S specifies per strap.
+"LSTA24" = { low = 2.75, high = 5.5 }  # 28 ea
 "LUS" = { low = 2, high = 6 }  # 42 ea
 # "LUS210" retired 2026-08-23. It priced the two back-beam hangers until the 2026-08-22
 # retype moved them onto HUCQ410-SDS, after which nothing in the house authored a LUS210 and

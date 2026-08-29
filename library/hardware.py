@@ -29,6 +29,7 @@ from typehaus.takeoff.hardware_catalog import (
     ROLE_POST_BASE_ANCHOR,
     ROLE_POST_CAP,
     ROLE_PV_SEAM_CLAMP,
+    ROLE_RIDGE_TIE_STRAP,
     ROLE_SILL_ANCHOR_BOLT,
     ROLE_SLOPED_JOIST_HANGER,
     ROLE_SNAP_LOCK_SEAM_CLAMP,
@@ -80,6 +81,19 @@ LSSR_SLOPED_HANGER = StructuralHardware(
     source="Simpson Strong-Tie LSSR adjustable slope/skew joist and rafter hanger "
            "(strongtie.com/lssr) — the hanger published for a raked member framing into "
            "the face of a ridge beam",
+)
+
+LSTA24_RIDGE_STRAP = StructuralHardware(
+    tag="simpson-lsta24-ridge-tie-strap",
+    name="LSTA24 twist-free strap tie, rafter to rafter over the ridge",
+    role=ROLE_RIDGE_TIE_STRAP,
+    manufacturer=_SIMPSON,
+    model="LSTA24",
+    source="Weyerhaeuser TJI roof detail H5S (sloped hanger at a ridge beam, required for "
+           "slopes over 3:12) — \"LSTA24 (Simpson or USP) strap with twelve 10d "
+           "(0.148\" x 1-1/2\") nails\", 2-3/8\" minimum end distance; APA EWS D710 detail "
+           "10c calls for the same strap from 1/4:12 to 12:12. The sloped hanger carries the "
+           "rafter's weight into the beam; this carries its tension across the peak.",
 )
 
 LUS_FACE_MOUNT_HANGER = StructuralHardware(
@@ -499,6 +513,7 @@ STRUCTURAL_HARDWARE: tuple = (
     SDWS_TIMBER_SCREW,
     SDWH_TIMBER_HEX_SCREW,
     LSSR_SLOPED_HANGER,
+    LSTA24_RIDGE_STRAP,
     LUS_FACE_MOUNT_HANGER,
     HUCQ_CONCRETE_HANGER,
     APVKB_KNEE_BRACE,

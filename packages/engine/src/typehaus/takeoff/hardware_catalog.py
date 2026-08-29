@@ -14,6 +14,12 @@ from dataclasses import dataclass, field
 # model, never a product: several products may serve one role, and the catalog decides.
 ROLE_EXTERIOR_INSULATION_SCREW = "exterior_insulation_screw"
 ROLE_SLOPED_JOIST_HANGER = "sloped_joist_hanger"
+# The strap that carries a rafter's tension THROUGH the ridge to its opposite number.
+# Its own role, not a variant of the sloped hanger: the hanger holds one rafter up in
+# the beam's depth and does nothing across the peak, which is why Weyerhaeuser's H5S
+# ridge detail adds the strap outright above a 3:12 slope and APA D710 10c calls for it
+# from 1/4:12. One per opposing PAIR, so it can never be derived per hung end.
+ROLE_RIDGE_TIE_STRAP = "ridge_tie_strap"
 ROLE_FACE_MOUNT_JOIST_HANGER = "face_mount_joist_hanger"
 ROLE_CONCRETE_FACE_MOUNT_HANGER = "concrete_face_mount_hanger"
 ROLE_KNEE_BRACE = "knee_brace"

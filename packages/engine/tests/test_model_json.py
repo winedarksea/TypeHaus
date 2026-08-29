@@ -199,7 +199,7 @@ def test_ridge_beam_member_carries_multi_ply_width(catlin_payload):
     roof = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-HOUSE")
     beams = [m for m in roof["members"] if m["category"] == "ridge_beam"]
     assert len(beams) == 1
-    assert beams[0]["plies"] == 3
+    assert beams[0]["plies"] == 2
     assert beams[0]["shape"] == "rect"
 
 

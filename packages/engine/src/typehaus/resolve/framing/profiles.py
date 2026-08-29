@@ -24,9 +24,20 @@ from typehaus.model.assembly import FramingSpec
 from typehaus.quantities import inch
 from typehaus.resolve.framing.tables import LUMBER_ACTUAL
 
-# Multi-ply ridge/girder LVL beam approximating the user's "6x12" ask: 3 plies of
-# 1.75" LVL stock (5.25" combined width) x 11.875" depth.
-RIDGE_BEAM_DEFAULT = "3-1.75x11.875 LVL"
+# Default ridge/girder section: 2 plies of 1.75" LVL stock (3.5" combined) x 14" deep.
+#
+# The depth is a HANGER dimension, not a bending one, and 14" is not a round number picked
+# for comfort. A ridge beam's top is pinned to the roof plane at the peak, the rafters are
+# cut plumb at its face and hung there, and the hanger's seat is at the bottom of that cut —
+# so the beam must reach at least the plumb-cut depth below the ridge line or the seat has no
+# wood behind it. An 11 7/8" I-joist rafter at 4:12 cuts 12.52" plumb (11.875 x 1.0541) and
+# its face sits half a beam width off the peak, another 0.58" down the plane: 13.10" needed,
+# and LVL is made in 9.5/11.875/14/16/18". ``checks/structural/ridge.py`` grades it.
+#
+# This was "3-1.75x11.875 LVL" until 2026-08-28, and the comment here recorded the reason
+# honestly enough to convict it: *approximating the user's "6x12" ask*. Three plies were
+# never a load answer, and the depth they came with was 1.5" short.
+RIDGE_BEAM_DEFAULT = "2-1.75x14 LVL"
 
 # Matches tables.member_actual's fallback for an unrecognized nominal size.
 _FALLBACK_ACTUAL_IN = (1.5, 5.5)

@@ -17,7 +17,7 @@ from typehaus.takeoff.fasteners import (
     exterior_insulation_screw_rows,
 )
 from typehaus.takeoff.glazing import glazing_fastener_rows
-from typehaus.takeoff.hangers import joist_hanger_rows
+from typehaus.takeoff.hangers import joist_hanger_rows, ridge_tie_strap_rows
 from typehaus.takeoff.hardware_config import (
     DEFAULT_HARDWARE_TAKEOFF_CONFIG,
     HardwareTakeoffConfig,
@@ -37,6 +37,7 @@ def hardware_takeoff(model: ResolvedModel,
         *exterior_insulation_screw_rows(model, config.exterior_insulation_fasteners),
         *exposed_fastener_cladding_screw_rows(model, config.exposed_fastener_cladding),
         *joist_hanger_rows(model, config.hanger_detection),
+        *ridge_tie_strap_rows(model, config.hanger_detection),
         *uplift_rows(model, config.uplift),
         *anchorage_rows(model, config),
         *glazing_fastener_rows(model),

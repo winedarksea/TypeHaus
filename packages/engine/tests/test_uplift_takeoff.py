@@ -54,16 +54,22 @@ def connections(catlin_model_ro):
 def test_every_rafter_is_tied_at_its_eave(catlin_model_ro, connections) -> None:
     """One tie per rafter, reconciled against the roof's own bearing-stiffener census.
 
-    ``resolve/framing/roof.py::_bearing_stiffeners`` emits exactly one stiffener per I-joist
-    rafter, at ``rafter.p0``, for the express purpose of making the eave bearing countable.
-    It is derived by a different rule, from a different field, in a different module — so it
-    is an independent witness that this count is the number of bearings and not the number of
-    something adjacent to them.
+    ``resolve/framing/roof.py::_bearing_stiffeners`` emits one stiffener per I-joist rafter
+    END — at ``rafter.p0`` for the eave bearing, and since 2026-08-28 at the ridge too, where
+    the sloped hanger requires it. It is derived by a different rule, from a different field,
+    in a different module — so the EAVE half is an independent witness that this count is the
+    number of bearings and not the number of something adjacent to them. Filter on the
+    connection rather than counting both: only the eave ends are tied here, and a bare
+    ``len(stiffeners)`` would have started passing for the wrong reason the day the peak got
+    its own.
     """
     roof = next(roof for roof in catlin_model_ro.roofs if roof.tag == "RF-HOUSE")
     rafters = [m for m in roof.members if m.category == "rafter"]
     stiffeners = [m for m in roof.members if m.category == "bearing_stiffener"]
-    assert len(rafters) == len(stiffeners) > 0
+    eave = [m for m in stiffeners if m.connection == "eave:beveled-web-stiffener"]
+    ridge = [m for m in stiffeners if m.connection == "ridge:beveled-web-stiffener"]
+    assert len(rafters) == len(eave) == len(ridge) > 0
+    assert len(stiffeners) == 2 * len(rafters)
 
     tied = [c for c in connections if c.member_category == "rafter"]
     assert len(tied) == len(rafters)
@@ -125,13 +131,41 @@ def test_a_hung_end_is_never_also_a_bearing(catlin_model_ro, connections) -> Non
 
 
 def test_a_tie_row_names_the_bearings_it_came_from(rows) -> None:
-    """A hardware count is only auditable if the row carries the rule that produced it."""
+    """A hardware count is only auditable if the row carries the rule that produced it.
+
+    Two rules buy the same part and they are told apart by scope, not by part number: ends
+    that BEAR take one tie per joint, and a member that bears along its whole length takes
+    them at a pitch instead. Asserting one basis string over every H2.5A row would have
+    forced the second rule to lie about which rule it was.
+    """
     ties = [row for row in rows if row["part_number"] == "H2.5A"]
     assert ties
-    for row in ties:
+    per_joint = [row for row in ties if not row["scope"].endswith("continuous bearing")]
+    assert per_joint
+    for row in per_joint:
         assert row["count"] > 0
         assert "per bearing joint" in row["basis"]
         assert row["by_storey"] and sum(row["by_storey"].values()) == row["count"]
+    for row in ties:
+        if row["scope"].endswith("continuous bearing"):
+            assert row["count"] > 0
+            assert "o.c. plus both ends" in row["basis"]
+
+
+def test_a_beam_that_bears_everywhere_is_tied_at_a_pitch_not_at_its_ends(rows) -> None:
+    """RB-HOUSE had no uplift connector at all until 2026-08-28.
+
+    ``bearing_connections`` ties member ENDS, and the ridge does not meaningfully have two —
+    it sits on W-A-C1/C1B/C2 for all 36'. ``uplift_path.py`` walks ``Beam.bearing_refs`` but
+    skips a ref that resolves to a wall, and ``uplift.py`` walked the roof's own bearing_refs,
+    which name the three knee walls. So the member carrying the whole roof down the centre of
+    the house was in neither. Ten is the fencepost count, not 36/4.
+    """
+    ridge = [row for row in rows
+             if row["part_number"] == "H2.5A" and row["scope"].endswith("continuous bearing")]
+    assert len(ridge) == 1
+    assert ridge[0]["size"] == "2-1.75x14 LVL"
+    assert ridge[0]["count"] == int(36.0 / 4.0) + 1 == 10
 
 
 # --- the double-billing guard ---------------------------------------------------------
@@ -309,5 +343,18 @@ def test_the_rules_are_configurable_without_editing_the_derivation(catlin_model_
     """
     doubled = uplift_rows(catlin_model_ro, UpliftTieRules(ties_per_bearing=2))
     def ties(source):
-        return sum(row["count"] for row in source if row["part_number"] == "H2.5A")
+        # Per-JOINT rows only. The continuous-bearing rule buys the same part off a pitch,
+        # so it does not scale with this lever and folding it in would make the assertion
+        # measure two rules at once and pass for neither.
+        return sum(row["count"] for row in source
+                   if row["part_number"] == "H2.5A"
+                   and not row["scope"].endswith("continuous bearing"))
     assert ties(doubled) == 2 * ties(rows) > 0
+
+    # And the pitch IS the other lever: halve it and the continuous run doubles its ties.
+    def pitched(source):
+        return sum(row["count"] for row in source
+                   if row["part_number"] == "H2.5A"
+                   and row["scope"].endswith("continuous bearing"))
+    tighter = uplift_rows(catlin_model_ro, UpliftTieRules(continuous_bearing_pitch_ft=2.0))
+    assert pitched(tighter) == 19 and pitched(rows) == 10

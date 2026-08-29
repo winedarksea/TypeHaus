@@ -34,6 +34,7 @@ post with no declared bearing, or an unstocked section shows up.
 
 from __future__ import annotations
 
+import math
 from collections import Counter
 from dataclasses import dataclass
 
@@ -291,6 +292,52 @@ def bearing_uplift_tie_rows(model: ResolvedModel, rules: UpliftTieRules) -> list
     return rows
 
 
+# --- rule 3b: a beam that bears everywhere -------------------------------------------
+
+
+def continuous_bearing_tie_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
+    """Ties along a beam whose bearing runs its whole length.
+
+    ``bearing_connections`` above ties member ENDS, which is the right rule for every rafter,
+    truss heel and joist in the house and the wrong one for a beam that never leaves its wall.
+    Catlin's ridge is the case, and until 2026-08-28 it produced nothing at all: ``uplift.py``
+    walks ``Roof.bearing_refs`` (the three knee walls) and ``FloorSystem.joists.bearing_refs``,
+    and ``checks/structural/uplift_path.py`` walks ``Beam.bearing_refs`` but skips a ref that
+    resolves to a wall rather than a post. So the single member carrying the whole roof down
+    the centre of the house had no connector on the report and none in the order — the path
+    was continuous in compression and stopped dead in tension.
+
+    An H2.5A is what the rest of this schedule buys and what a 3-1/2" beam on a 5-1/2" plate
+    takes; the pitch is the house's own 4'. Both are commodity choices recorded in
+    ``houses/catlin/notes/ridge_beam_detail.md``, not an engineered uplift design — the model
+    still carries no design wind speed.
+    """
+    pitch_m = max(rules.continuous_bearing_pitch_ft, 0.5) * FT_TO_M
+    groups: dict = {}
+    for member in model.all_members():
+        if not member.continuously_supported:
+            continue
+        # Ends included: a run is a fencepost count, not a division.
+        count = int(math.floor(member.length_m / pitch_m + 1e-9)) + 1
+        entry = groups.setdefault((member.category, member.profile),
+                                  {"count": 0, "runs": Counter()})
+        entry["count"] += count
+        entry["runs"][f"{member.length_m * _M_TO_FT:.4g}'"] += 1
+    if not groups:
+        return []
+
+    item = hardware_for_role(ROLE_HURRICANE_TIE)
+    rows = []
+    for (category, profile), entry in sorted(groups.items()):
+        runs = ", ".join(f"{length} x{n}" for length, n in sorted(entry["runs"].items()))
+        rows.append(hardware_row(
+            item, scope=f"{category.replace('_', ' ')} continuous bearing", size=profile,
+            count=entry["count"],
+            basis=(f"{rules.continuous_bearing_pitch_ft:g}' o.c. plus both ends along "
+                   f"{runs} of {profile} bearing on a wall for its whole length")))
+    return rows
+
+
 # --- rule 4: lateral tie plates ------------------------------------------------------
 
 
@@ -341,6 +388,7 @@ def uplift_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
     """Every uplift line, in the order the load path runs: roof down to the band."""
     return [
         *bearing_uplift_tie_rows(model, rules),
+        *continuous_bearing_tie_rows(model, rules),
         *post_base_rows(model, rules),
         *post_base_anchor_rows(model, rules),
         *post_beam_strap_rows(model, rules),

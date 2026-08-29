@@ -13,9 +13,14 @@ Two declarative framing modes, chosen per roof assembly's STRUCTURE ``FramingSpe
   so the plane this module frames to is already final. The two end trusses are gable-end
   trusses carrying the rake overhang (``roof_gable``).
 
-Also resolves an authored ridge :class:`Beam` (WP4) for *rafter* roofs: trims the rafter
-ridge ends back by half the beam's width so they land on top of it, and records the ridge
-condition. A truss roof carries its own ridge, so it emits no ridge Beam advisory.
+Also resolves an authored ridge :class:`Beam` (WP4) for *rafter* roofs. The beam's TOP is
+pinned to the roof plane at the peak — the deck bears across it — and each rafter is trimmed
+back by half the beam's width, so the rafter is cut plumb at the beam's FACE and hangs there
+on a sloped hanger, its own top ending half-a-width-times-the-slope below the beam's. It does
+not land on top of the beam; this paragraph said it did until 2026-08-28, and the arithmetic
+never has. What that geometry demands of the beam's DEPTH is
+``checks/structural/ridge.py``'s business. A truss roof carries its own ridge, so it emits no
+ridge Beam advisory.
 """
 
 from __future__ import annotations
@@ -46,10 +51,16 @@ from typehaus.resolve.model import (
 from typehaus.resolve.roof_geometry import roof_structure_framing
 
 _RAFTER_CONNECTION = "ridge:adjustable-slope-hanger;eave:birdsmouth"
+# How much of a beam's run its declared bearing walls may miss and still read as
+# continuous support. A stud bay — below it the beam is bridging a gap no wider than
+# the plate already spans, above it there is a real span the refs are not describing.
+_SUPPORT_GAP_TOL_M = inch(16.0).meters
 # Reference birdsmouth seat (roof_wall_eave_detail_ifc.py): seated over the width of the top
 # plate the rafter bears on. The reference's 1.17" notch depth is not a second constant —
 # it is this run times the rafter's slope, and stating it twice is how the two drifted.
 _SEAT_LEN_M = inch(3.5).meters
+#: The beveled web stiffener stock, at both ends of an I-joist rafter.
+_STIFFENER_PROFILE = "2x4"
 
 
 def frame_roofs(model: ResolvedModel) -> list[Finding]:
@@ -70,7 +81,7 @@ def frame_roofs(model: ResolvedModel) -> list[Finding]:
             model.conditions.append(_ridge_condition(roof, beam_member))
         rafters = _seat_rafters(model, roof, rafters)
         rafters = tuple(replace(r, connection=_RAFTER_CONNECTION) for r in rafters)
-        members = (rafters + _bearing_stiffeners(rafters)
+        members = (rafters + _bearing_stiffeners(rafters, beam_member is not None)
                    + ((beam_member,) if beam_member is not None else ()))
         # ``replace`` (not reconstruction) so bearing_z_m / layer_edge_setbacks survive.
         framed.append(replace(roof, members=members))
@@ -213,11 +224,20 @@ def _bearing_along_extent(model: ResolvedModel, roof: ResolvedRoof) -> tuple[flo
     return lo, hi
 
 
-def _bearing_stiffeners(rafters: tuple[FramedMember, ...]) -> tuple[FramedMember, ...]:
-    """Model the I-joist eave web stiffener as a distinct bearing member.
+def _bearing_stiffeners(rafters: tuple[FramedMember, ...],
+                        hung_at_ridge: bool) -> tuple[FramedMember, ...]:
+    """Model the I-joist web stiffeners as distinct bearing members, at BOTH ends.
 
-    The seat itself is part of the rafter's own solid (see ``_seat_rafters``); this member
-    makes the required beveled bearing reinforcement visible and countable in every emitter.
+    The seat itself is part of the rafter's own solid (see ``_seat_rafters``); these members
+    make the required beveled bearing reinforcement visible and countable in every emitter.
+
+    The RIDGE end is emitted only where the rafter is actually hung on a beam, and it is not
+    optional there: Weyerhaeuser's roof general notes require web stiffeners wherever the
+    hanger's sides do not laterally support the top flange, its H5/H5S ridge details call for
+    "beveled web stiffener required both sides", APA D710 10c says the same, and Simpson's own
+    connector guide conditions the LSSR on them. The house emitted 56 of these at the eave and
+    none at the peak until 2026-08-28 — one end of every rafter had its reinforcement modelled
+    and the other did not.
     """
     stiffeners: list[FramedMember] = []
     for rafter in rafters:
@@ -228,10 +248,41 @@ def _bearing_stiffeners(rafters: tuple[FramedMember, ...]) -> tuple[FramedMember
             continue
         stiffeners.append(FramedMember(
             rafter.parent_uid, f"{rafter.child_key}-eave-stiffener", "bearing_stiffener",
-            "2x4", rafter.p0, rafter.p0, rafter.z0_m, rafter.z1_m,
+            _STIFFENER_PROFILE, rafter.p0, rafter.p0, rafter.z0_m, rafter.z1_m,
             rafter.z1_m - rafter.z0_m, connection="eave:beveled-web-stiffener",
         ))
+        if not hung_at_ridge:
+            continue
+        # The ridge end carries its own elevations on a raked member; reading z0_m/z1_m here
+        # would put the peak's stiffener down at the eave.
+        z0 = rafter.z0_m if rafter.z0_end_m is None else rafter.z0_end_m
+        z1 = rafter.z1_m if rafter.z1_end_m is None else rafter.z1_end_m
+        stiffeners.append(FramedMember(
+            rafter.parent_uid, f"{rafter.child_key}-ridge-stiffener", "bearing_stiffener",
+            _STIFFENER_PROFILE, *(_stiffener_station(rafter),) * 2, z0, z1, z1 - z0,
+            connection="ridge:beveled-web-stiffener",
+        ))
     return tuple(stiffeners)
+
+
+def _stiffener_station(rafter: FramedMember) -> tuple[float, float]:
+    """Where the ridge-end web stiffener sits: INBOARD of the plumb cut, not straddling it.
+
+    The block fills the I-joist's own web cavity with its outer face flush against the cut,
+    so its centre is half a block back down the rafter. Modelling it at ``p1`` — the cut
+    plane, which is also the beam's face — put half of every one of them inside the ridge
+    beam and drew 56 ``structural.member_interference`` FAILs that were the placement's fault
+    and not the framing's. Half of the larger plan dimension clears it whichever axis the
+    ridge runs on, and is where a 4"-wide stiffener's centre genuinely is.
+    """
+    section = cross_section(_STIFFENER_PROFILE)
+    back = max(section.width_m, section.depth_m) / 2.0
+    (x0, y0), (x1, y1) = rafter.p0, rafter.p1
+    dx, dy = x1 - x0, y1 - y0
+    run = math.hypot(dx, dy)
+    if run < 1e-9:
+        return rafter.p1
+    return (x1 - dx / run * back, y1 - dy / run * back)
 
 
 def _seat_rafters(
@@ -414,8 +465,42 @@ def _resolve_ridge_beam(
     length = math.hypot(end[0] - start[0], end[1] - start[1])
     member = FramedMember(
         beam.uid, "ridge-beam", "ridge_beam", beam.size, start, end, z1 - depth, z1, length,
+        continuously_supported=_continuously_supported(model, beam, start, end),
     )
     return member, []
+
+
+def _continuously_supported(
+    model: ResolvedModel, beam: Beam, start: tuple[float, float], end: tuple[float, float],
+) -> bool:
+    """Do the walls this beam declares bearing on cover its whole run?
+
+    A beam held up everywhere is spanning nowhere, so it may be butt-spliced over any bearing
+    point and bought in stock lengths, and it is tied down at a pitch rather than at two ends
+    (see ``FramedMember.continuously_supported``). One that reaches between supports is
+    neither of those things.
+
+    The refs are the authored claim; this measures whether they actually reach. A bearing line
+    written as three wall segments is easy to leave a third of a gap in — catlin's
+    ``RB-HOUSE`` named W-A-C1 and W-A-C2 and omitted W-A-C1B, the middle 3'-9", for a year.
+    """
+    axis = 0 if abs(end[0] - start[0]) >= abs(end[1] - start[1]) else 1
+    lo, hi = sorted((start[axis], end[axis]))
+    spans: list[tuple[float, float]] = []
+    for ref in beam.bearing_refs:
+        wall = model.wall(ref)
+        if wall is None:
+            continue
+        (w0, w1) = wall.axis
+        spans.append(tuple(sorted((w0[axis], w1[axis]))))  # type: ignore[arg-type]
+    if not spans:
+        return False
+    reach = lo
+    for span_lo, span_hi in sorted(spans):
+        if span_lo > reach + _SUPPORT_GAP_TOL_M:
+            return False  # a gap: the beam spans it, whatever the refs claim
+        reach = max(reach, span_hi)
+    return reach >= hi - _SUPPORT_GAP_TOL_M
 
 
 def _trim_rafter_to_beam(rafter: FramedMember, roof: ResolvedRoof, beam_width_m: float) -> FramedMember:

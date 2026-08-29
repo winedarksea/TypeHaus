@@ -11,7 +11,7 @@ its own any more; the inverter's grid port does, on CKT-ESS-GRID (plan/circuits.
 Generated — max fit is computed, so this cannot live in a ``# haus: editable`` module
 (the dialect forbids loops); ``SolarPanel`` is not a UI-movable kind, so a params home is
 legal. The resolver (resolve/solar.py) owns the tilt math; clamp elevations here follow
-the resolved deck plane (RF-HOUSE eave_z 25.84' at the footprint edge, ridge 31.98',
+the resolved deck plane (RF-HOUSE eave_z 25.84' at the footprint edge, ridge 32.04',
 4:12), good to an inch — the clamps are count-and-marker hardware, not located geometry.
 """
 
