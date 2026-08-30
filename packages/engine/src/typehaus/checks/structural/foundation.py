@@ -26,9 +26,13 @@ unstated wall is not quietly run through a table that presumes bracing.
 
 from __future__ import annotations
 
+from functools import partial
+
+from typehaus.checks._authoring import engineered as _engineered
 from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.checks.soil import site_soil_class
 from typehaus.checks.structural._r404_table import (
     BACKFILL_HEIGHTS_FT,
     DESIGN_REQUIRED,
@@ -38,6 +42,7 @@ from typehaus.checks.structural._r404_table import (
     VERTICAL_REINFORCEMENT,
     WALL_HEIGHTS_FT,
 )
+from typehaus.engineering import item_id
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import LayerFunction
 
@@ -113,11 +118,14 @@ def foundation_unbalanced_fill(ctx: CheckContext) -> list[Finding]:
 
     cid = "structural.foundation_unbalanced_fill"
     profile = ctx.profile
-    soil_class = getattr(profile, "soil_class", None) if profile is not None else None
+    # The SITE's own soil first, the profile's presumption second. A profile is shared by
+    # every house that names it, so the class it carries can only ever be a presumptive
+    # regional value; a parcel with a soils report states its own and that has to win.
+    soil_class = site_soil_class(ctx.plan, profile)
     if soil_class is None:
-        return [_unknown(cid, "the jurisdiction profile declares no soil_class, so no "
-                              "equivalent-fluid pressure column of IRC Table R404.1.2(8) "
-                              "applies")]
+        return [_unknown(cid, "neither the site nor the jurisdiction profile declares a "
+                              "soil_class, so no equivalent-fluid pressure column of IRC "
+                              "Table R404.1.2(8) applies")]
     lateral = SOIL_LATERAL_PSF_PER_FT.get(soil_class.upper())
     if lateral is None:
         return [_unknown(cid, f"soil class {soil_class!r} is not one of the IRC Table R405.1 "
@@ -158,50 +166,86 @@ def foundation_unbalanced_fill(ctx: CheckContext) -> list[Finding]:
     for key, tags in sorted(groups.items(), key=lambda item: (item[0][0], -item[0][2])):
         assembly, thickness, fill_ft, height_ft, support, rebar, spec = key
         tags = sorted(tags)
-        where = (f"{len(tags)} {assembly} wall(s) at {thickness:.0f}\" concrete retaining "
-                 f"{fill_ft:.1f}' of unbalanced fill ({soil_class}, {lateral} psf/ft)")
-        out.append(_grade_one(cid, where, tuple(tags), thickness, lateral, fill_ft,
-                              height_ft, support, rebar, spec))
+        # Two phrasings of one condition. The grouped rows are per-*condition* and say how
+        # many walls share it; an engineered handoff is per-*element*, because that is what
+        # gets sealed, so it needs the same sentence in the singular.
+        condition = (f"{assembly} wall at {thickness:.0f}\" concrete retaining "
+                     f"{fill_ft:.1f}' of unbalanced fill ({soil_class}, {lateral} psf/ft)")
+        where = f"{len(tags)} {condition.replace(' wall at ', ' wall(s) at ', 1)}"
+        out.extend(_grade_one(ctx, cid, where, tuple(tags), thickness, lateral, fill_ft,
+                              height_ft, support, rebar, spec, condition=condition))
     return out
 
 
-def _grade_one(cid: str, where: str, tags: tuple[str, ...], thickness: float, lateral: int,
-               fill_ft: float, height_ft: float, support: str | None, rebar: str | None,
-               spec: str | None) -> Finding:
-    """One condition, graded. Split out to keep the aggregation loop readable."""
+#: One item id per wall, ``retaining_wall/<tag>``. The identity is deliberately
+#: per-element even though the *grading* is per-condition: a group of three identical walls
+#: is one row in this check's output and three things an engineer seals, and keeping the
+#: item per-element is what lets moving one of them stale that one alone.
+_KIND = "retaining_wall"
+
+
+def _handoff(ctx, cid: str, reason: str, tags: tuple[str, ...], *,
+             spec: str | None = None) -> list[Finding]:
+    """This condition is outside the prescriptive path — delegate it, one item per wall.
+
+    Every branch below that used to hard-code ``Result.UNKNOWN`` and end its sentence with
+    the word "engineered" now comes here. Nothing about the gate moves: with no calculation
+    registered for ``retaining_wall`` the finding is still UNKNOWN and still blocks. What it
+    gains is a *name* — ``retaining_wall/W-SG-E2`` — that ``engineering.toml`` can seal and
+    that ``structural.frost_depth`` can point at too, so one engineer's design over these
+    walls answers both checks instead of each carrying its own untraceable paragraph.
+    """
+    return [_engineered(ctx, cid, item_id(_KIND, tag), f"{tag}: {reason}", (tag,),
+                        code="IRC R404.4", authored=spec)
+            for tag in tags]
+
+
+def _grade_one(ctx, cid: str, where: str, tags: tuple[str, ...], thickness: float,
+               lateral: int, fill_ft: float, height_ft: float, support: str | None,
+               rebar: str | None, spec: str | None, *,
+               condition: str = "") -> list[Finding]:
+    """One condition, graded. Split out to keep the aggregation loop readable.
+
+    ``condition`` is ``where`` in the singular, for the per-element engineered handoffs.
+    """
+    _handoff_here = partial(_handoff, ctx, cid, tags=tags)
+    # Every engineered branch below reads `single` where the prescriptive ones read `where`:
+    # a handoff is per-element and its sentence must be singular, since the finding it
+    # becomes names one wall and one sealable item.
+    single = condition or where
     # An authored engineer's design IS the design — the table stops applying, exactly as
-    # Door.header_spec stops the header tables.
+    # Door.header_spec stops the header tables. It routes through the register now so that
+    # the PASS says *authored*, not computed, and so the wall is a nameable item either way.
     if spec:
-        return _advisory(cid, f"{where} — engineered design authored: {spec}", tags,
-                         Result.PASS)
+        return _handoff_here(single, spec=spec)
 
     # Below 4' of fill neither R404.1.1 nor R404.4 engages and the table publishes no row.
     if fill_ft < _SCREEN_THRESHOLD_FT:
-        return _advisory(
+        return [_advisory(
             cid, f"{where} — under the 4' at which IRC R404.1.1 and Table R404.1.2(8) "
-                 f"engage at all", tags, Result.PASS)
+                 f"engage at all", tags, Result.PASS)]
 
     if int(thickness) not in NOMINAL_THICKNESSES_IN or thickness != int(thickness):
         thickest = max(NOMINAL_THICKNESSES_IN)
         beyond = (f"thicker than the table's {thickest}\" maximum" if thickness > thickest
                   else "not a tabulated nominal section")
-        return _unknown(cid, f"{where}: {beyond}, so IRC Table R404.1.2(8) does not answer "
-                             "it — engineered", tags)
+        return _handoff_here(f"{single}: {beyond}, so IRC Table R404.1.2(8) does not "
+                             f"answer it")
 
     # The table presumes a wall braced top and bottom (footnote g). Without that, R404.1.1
     # (>48" of fill, no permanent lateral support) and R404.4 (a retaining wall unsupported
     # at the top) both send the wall to an engineered design instead.
     if support == "unsupported":
-        return _unknown(
-            cid, f"{where} is not laterally supported top and bottom, so IRC R404.1.1 and "
-                 "R404.4 require an engineered design (safety factor 1.5 against sliding "
-                 "and overturning) rather than Table R404.1.2(8) — engineered", tags)
+        return _handoff_here(
+            f"{single} is not laterally supported top and bottom, so IRC R404.1.1 and "
+            f"R404.4 require an engineered design (safety factor 1.5 against sliding and "
+            f"overturning) rather than Table R404.1.2(8)")
     if support is None:
-        return _unknown(
+        return [_unknown(
             cid, f"{where}: the wall does not declare whether it is permanently braced top "
                  "and bottom, which is what Table R404.1.2(8) presumes (footnote g) and "
                  "what IRC R404.1.1 turns on above 48\" of fill — author "
-                 "FoundationWall.lateral_support", tags)
+                 "FoundationWall.lateral_support", tags)]
 
     row_h = _round_up(height_ft, WALL_HEIGHTS_FT)
     row_f = _round_up(fill_ft, BACKFILL_HEIGHTS_FT)
@@ -209,16 +253,16 @@ def _grade_one(cid: str, where: str, tags: tuple[str, ...], thickness: float, la
         beyond = ("retains more fill than its own height" if row_h is not None
                   and row_f is not None and row_f > row_h else
                   f"is outside the table's {max(WALL_HEIGHTS_FT)}' maximum")
-        return _unknown(cid, f"{where}, {height_ft:.1f}' tall, {beyond}, so IRC Table "
-                             "R404.1.2(8) does not answer it — engineered", tags)
+        return _handoff_here(f"{single}, {height_ft:.1f}' tall, {beyond}, so IRC Table "
+                             f"R404.1.2(8) does not answer it")
 
     cell, notes = VERTICAL_REINFORCEMENT[(int(thickness), lateral, row_h, row_f)]
     cited = (f"IRC Table R404.1.2(8) at {thickness:.0f}\"/{lateral} psf/ft, the {row_h}' wall "
              f"x {row_f}' backfill row")
 
     if cell == DESIGN_REQUIRED:
-        return _unknown(cid, f"{where}, {height_ft:.1f}' tall — {cited} reads DR, design "
-                             "required per ACI 318 — engineered", tags)
+        return _handoff_here(f"{single}, {height_ft:.1f}' tall — {cited} reads DR, "
+                             f"design required per ACI 318")
 
     if cell == NOT_REQUIRED:
         # Footnote d: a 6" nominal wall in a stay-in-place form (an ICF) is the one NR that
@@ -226,18 +270,21 @@ def _grade_one(cid: str, where: str, tags: tuple[str, ...], thickness: float, la
         icf_note = ("; note footnote d — a 6\" wall formed with a stay-in-place system still "
                     "takes #4 @ 48\" o.c." if int(thickness) == 6 else "")
         plain = f" (plain concrete, f'c >= 2,500 psi{_note_suffix(notes)})"
-        return _advisory(cid, f"{where}, {height_ft:.1f}' tall, needs no vertical "
-                              f"reinforcement{plain} — {cited}{icf_note}", tags, Result.PASS)
+        return [_advisory(cid, f"{where}, {height_ft:.1f}' tall, needs no vertical "
+                               f"reinforcement{plain} — {cited}{icf_note}", tags,
+                          Result.PASS)]
 
     required = f"{cell}\" o.c."
     if rebar:
-        return _advisory(cid, f"{where}, {height_ft:.1f}' tall, is reinforced {rebar} against "
-                              f"the {required} {cited} requires", tags, Result.PASS)
-    return _advisory(
+        return [_advisory(cid, f"{where}, {height_ft:.1f}' tall, is reinforced {rebar} "
+                               f"against the {required} {cited} requires", tags,
+                          Result.PASS)]
+    return [_advisory(
         cid, f"{where}, {height_ft:.1f}' tall, needs {required} vertical reinforcement "
              f"({cited}{_note_suffix(notes)}) and the wall declares none", tags, Result.FAIL,
         fix_hint=f"author FoundationWall.vertical_reinforcement='{cell}\" o.c.' — bars at "
-                 "1 1/4\" cover from the inside face per footnote h, Grade 60 per footnote b")
+                 "1 1/4\" cover from the inside face per footnote h, Grade 60 per "
+                 "footnote b")]
 
 
 def _note_suffix(notes: str) -> str:

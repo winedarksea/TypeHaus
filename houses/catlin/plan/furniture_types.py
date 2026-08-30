@@ -636,9 +636,63 @@ DINING_8_OPEN_CORNERS = FurnitureType(
 )
 
 
+# --- Closet shelf-and-rod, the four dedicated closets (2026-08-30) ------------------------
+#
+# Ventilated ("wire") shelving on a rod, the standard closet fit-out, and the reason it is
+# a ``FurnitureType`` rather than a ``ShelfBank``: a ShelfBank reaches exactly one consumer,
+# ``takeoff/hardwood.py``, whose whole subject is BOARDS out of the family's own stock. An
+# epoxy-coated steel shelf has no species, no board feet and no cut list — putting one
+# through the milling schedule would ask the mill to saw a ventilated shelf. As a placeable
+# it bills where it belongs, in ``[placeables]``, and it draws in the closet it fills.
+#
+# One type per closet because a FurnitureType carries a fixed footprint and these four runs
+# are four different lengths. 16" deep is the standard ventilated shelf and the depth a
+# jacket on a hanger actually needs; 12" is the linen depth and is what RM-S-NCLOSET's
+# 40 3/4" of wall takes without crowding its door.
+#
+# ``plan_symbol="bookcase"`` for the same reason PANTRY_SHELVES_70 uses it: a shelf run is a
+# depth of floor the room does not have, and a plan that draws the closet empty reads as
+# room that is there. They are WALL-mounted at rod height, so nothing stands on the floor —
+# the symbol is the reach, not an obstruction.
+_CLOSET_SOURCE = (
+    "Ventilated epoxy-coated steel shelf on 12 ga. wall standards and brackets, with the "
+    "integral hang rod — ClosetMaid/Rubbermaid-class, the ordinary reach-in fit-out. "
+    "Standards land on studs; a 16\" shelf on 24\" bracket spacing carries a loaded rod. "
+    "Mounted at 66\" so a full-length coat (54\"-58\") hangs clear of the floor with the "
+    "shelf above it, which is what the mudroom closet is for (plans/TODO.md)."
+)
+
+CLOSET_SHELF_ROD_60 = FurnitureType(
+    tag="FT-CLOSET-SHELFROD-60", name='Closet shelf and rod, 60" x 16"',
+    footprint=(inch(60), inch(16)), height=inch(1),
+    storage=True, work_surface=False, plan_symbol="bookcase",
+    mount=_WALL_MOUNT, source=_CLOSET_SOURCE,
+)
+CLOSET_SHELF_ROD_96 = FurnitureType(
+    tag="FT-CLOSET-SHELFROD-96", name='Closet shelf and rod, 96" x 16"',
+    footprint=(inch(96), inch(16)), height=inch(1),
+    storage=True, work_surface=False, plan_symbol="bookcase",
+    mount=_WALL_MOUNT, source=_CLOSET_SOURCE,
+)
+CLOSET_SHELF_ROD_84 = FurnitureType(
+    tag="FT-CLOSET-SHELFROD-84", name='Closet shelf and rod, 84" x 16"',
+    footprint=(inch(84), inch(16)), height=inch(1),
+    storage=True, work_surface=False, plan_symbol="bookcase",
+    mount=_WALL_MOUNT, source=_CLOSET_SOURCE,
+)
+CLOSET_SHELF_36 = FurnitureType(
+    tag="FT-CLOSET-SHELF-36", name='Closet linen shelf, 36" x 12"',
+    footprint=(inch(36), inch(12)), height=inch(1),
+    storage=True, work_surface=False, plan_symbol="bookcase",
+    mount=_WALL_MOUNT, source=_CLOSET_SOURCE,
+)
+
+
 FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, CURTAIN_ROD_OUTDOOR_114,
                    CURTAIN_ROD_OUTDOOR_98,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, BATH1_SHELF_2030,
                    MEDIA_SECTIONAL_U, THEATER_BOOKCASE, OVER_COLD_3278, MIXER_GARAGE_24,
                    PANTRY_SHELVES_70, DINING_8_OPEN_CORNERS,
-                   STUDY_BENCH, STUDY_DESK, FOLD_LEAF)
+                   STUDY_BENCH, STUDY_DESK, FOLD_LEAF,
+                   CLOSET_SHELF_ROD_60, CLOSET_SHELF_ROD_84, CLOSET_SHELF_ROD_96,
+                   CLOSET_SHELF_36)

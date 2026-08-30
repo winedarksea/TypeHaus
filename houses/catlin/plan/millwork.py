@@ -282,6 +282,39 @@ MAIN_SHELVES = [
         profile="S4S",
         bays=(ShelfBay(width=inch(18), clear_height=inch(28), shelf_count=1),),
     ),
+    # --- the mudroom bench's seat, FURN-M-MUD-BENCH (2026-08-30) ----------------------
+    #
+    # Same reason as the two above, and the same shape of fix. FURN-M-MUD-BENCH is a
+    # `Furniture` on a library FurnitureType, and `takeoff/hardwood.py` admits exactly five
+    # sources — window stools, ShelfBanks, stair treads, `wood_surfaces` rows and timber
+    # solids. A Furniture is none of them, so the biggest single oak board on this floor
+    # was reaching `haus millwork` as nothing at all. A ShelfBank hosted on the furniture
+    # tag is how a BOARD gets into the cut list.
+    #
+    # `shelf_count=1` for the reason spelled out at SB-M-STUDY-BENCH: a ShelfBay counts
+    # horizontal boards INCLUDING the case top, and on a bench the seat IS the top.
+    #
+    # `depth` deliberately omitted — the host is a FurnitureType, so `_carcass_depth_m`
+    # inherits its 18" footprint depth and the board can never disagree with the carcass.
+    # At 18" the seat is past `MW-STANDARD.max_board_width` once jointing loss is taken, so
+    # it lays up as an edge-glued panel of 2 boards at ~9 1/2", which is how a solid seat
+    # this wide is actually made.
+    #
+    # `clear_height` is the void under it: the type's 18" of bench less the 1 1/2" seat.
+    #
+    # No dollar here, and that is deliberate: `haus millwork` is an UNPRICED VIEW and a
+    # "shelf" row may reference no other priced section (a test enforces it). The bench's
+    # money is already in its `[placeables]` row in prices.toml, which is written to
+    # include the seat — the same accounting as FT-STUDY-BENCH, not the owner-milled
+    # family-stock case the pantry shelves are.
+    ShelfBank(
+        uid="STDXY9J49R", tag="SB-M-MUD-BENCH",
+        host="FURN-M-MUD-BENCH",
+        material_ref="oak-shelf-8q",
+        thickness=inch(1.5),
+        profile="S4S",
+        bays=(ShelfBay(width=inch(36), clear_height=inch(16.5), shelf_count=1),),
+    ),
 ]
 
 # --- the theatre bookcases, FT-BOOKCASE-32-90 x4 ---------------------------------------

@@ -144,6 +144,11 @@ export interface Wall {
   // body and its framing share a base, so z0_m is the datum. Every sill is measured from
   // `baseRefZ(wall)`, never from z0_m — mirrors ResolvedWall.base_ref_z_m.
   plate_base_z_m: number | null;
+  // The mirror at the top: where the double top plate stops when the wall body grew up
+  // through the joist band (→ resolve/platform.py::extend_walls_to_platform). The band
+  // between this and z1_m is rim board and joists, not wall. null = the wall body and its
+  // framing share a top, so z1_m is the datum.
+  plate_top_z_m: number | null;
   // The facade datum this wall subdivides against — [origin, origin + unit direction] of its
   // layout line (→ resolve/layout_lines.py). The standing-seam pan module is 16" and has to
   // run corner to corner; measuring it from `w.axis` restarts it at every tee the facade
@@ -1306,7 +1311,9 @@ export interface Stair {
 
 export type Severity = "error" | "warn" | "info";
 
-export type CheckResult = "pass" | "fail" | "unknown";
+// Mirrors typehaus.findings.Result. "not_applicable" is a verdict, not a gap: the
+// condition the rule governs does not exist in this building.
+export type CheckResult = "pass" | "fail" | "unknown" | "not_applicable";
 
 export interface Finding {
   // The checks framework's Finding (→ 12 §Checks). Fields are permissive because

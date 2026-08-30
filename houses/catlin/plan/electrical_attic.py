@@ -177,6 +177,23 @@ NEC_FILL_ATTIC = [
                      position=pt(inch(19.625), ft(16)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.FLOOR), rotation=deg(90)),
+    # ** RC10, NEW 2026-08-30, BECAUSE ED-A-STUBATH-GFCI STOPPED COVERING FOR IT. **
+    # W-A-STU-W is the bath's west wall and the studio's east wall at once. The bathroom
+    # receptacle used to stand on its bath face at x 9'-11 7/8", 5" from the studio's own
+    # finish plane — and `electrical.receptacle_spacing` accepts any device within 0.5 m of
+    # a room's boundary, so one box was silently answering 210.52(A) for BOTH rooms through
+    # 6 3/4" of staggered partition. Moving it to serve E3901.6 exposed the studio's real
+    # gap: 5'-0" of wall from the jog at (9'-7 1/2", 17'-3 3/8") north to W-A-HALL-S with
+    # nothing on it.
+    # x 9'-3 1/8" is one inch proud of that face (the wall's layers band x 112.115"..
+    # 118.885"), y 18'-6" is centred in the run so 6'-0" each way reaches both ends and
+    # turns the north corner. Plain, not GFCI: the nearest Service.DRAIN fixture is the bar
+    # sink, and the bath's own fixtures are behind a wall a cord cannot pierce.
+    ElectricalDevice(uid="SZ4K3PX817", tag="ED-A-STUDIO-RC10", kind=DeviceKind.RECEPTACLE,
+                     position=pt(inch(111.125), ft(18, 6)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-ATTIC", room="RM-A-STUDIO",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     rotation=deg(270)),
     ElectricalDevice(uid="TBSBS6V58H", tag="ED-A-STUDIO-RC6", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(15, 6), ft(17, 0.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-ATTIC",
@@ -207,10 +224,21 @@ NEC_FILL_ATTIC = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)), rotation=deg(270)),
     # The bath's own, GFCI under E3902.1 — every 125V receptacle in a bathroom, sink or no
     # sink — and on the new CKT-BATH-ATTIC rather than the general attic circuit.
+    # ** MOVED 2026-08-30, FROM (9'-11 7/8", 18'-6") ON THE WEST WALL. ** It was the only
+    # 125V receptacle in this bathroom and it stood 44.4" from FX-A-STUBATH-LAV's carcass,
+    # so the new `code.E3901_6_bathroom_receptacle` (IRC E3901.6 / NEC 210.52(D), one
+    # receptacle within 36" of each lavatory basin) failed the room. Right room, right
+    # height, right circuit, wrong wall.
+    # It goes on W-A-HALL-S's south face instead, in the 6 1/8" of clear wall between
+    # FX-A-STUBATH-WC (ends x 146 7/8") and the lavatory (starts x 153"): x 150" centres a
+    # 4" plate in that gap, and y 264 5/8" puts the body's back on the face at 265 5/8"
+    # (the wall's axis is y 268", its layers band 265 5/8"..270 3/8"). The EAST end of the
+    # basin was not available — only 5.6" between the lavatory and FX-A-STUBATH-SH, and the
+    # shower's own clearance stands in it.
     ElectricalDevice(uid="N2Z2AA6EGB", tag="ED-A-STUBATH-GFCI", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(9, 11.875), ft(18, 6)), type_ref="ED-T-RECEPTACLE-GFCI",
-                     circuit="CKT-BATH-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)), rotation=deg(270)),
+                     position=pt(inch(150), inch(264.625)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     circuit="CKT-BATH-ATTIC", room="RM-A-STUBATH",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)), rotation=deg(180)),
     # At the ERV, in the pocket. IRC M1305.1.3 wants a receptacle (and a light — see
     # ED-A-POCKET-LT1) at the appliance; the pocket is STORAGE so 210.52 spacing never asks
     # for one, which is exactly why it has to be authored deliberately.

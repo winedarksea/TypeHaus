@@ -10,6 +10,7 @@ happens to do. Any change here that moves them is a bug in here until proven oth
 from types import SimpleNamespace
 
 import pytest
+from pydantic import ValidationError
 
 from typehaus import Site, degF, ft
 from typehaus.wind import (
@@ -62,7 +63,7 @@ def test_an_authored_site_round_trips_all_three():
 @pytest.mark.parametrize("exposure", ["A", "b", "", "E"])
 def test_an_exposure_outside_the_asce_set_is_rejected_at_construction(exposure):
     """``Literal["B","C","D"]`` is the whole point: Exposure A was deleted in ASCE 7-10."""
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         _site(design_wind_speed_mph=_V_ULT, wind_exposure=exposure, risk_category="II")
 
 

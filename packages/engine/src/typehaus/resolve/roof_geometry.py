@@ -253,11 +253,13 @@ def apply_to_roof_wall_tops(model: ResolvedModel) -> None:
         roof = roofs[top.roof_ref]
         start_top = roof_height_at(roof, wall.axis[0])
         end_top = roof_height_at(roof, wall.axis[1])
-        resolved.append(ResolvedWall(
-            uid=wall.uid, tag=wall.tag, storey=wall.storey, assembly=wall.assembly,
-            axis=wall.axis, layers=wall.layers, z0_m=wall.z0_m,
-            z1_m=max(start_top, end_top), is_foundation=wall.is_foundation,
-            members=wall.members, top_z0_m=start_top, top_z1_m=end_top,
+        # ``replace``, not a fresh ``ResolvedWall``: an explicit constructor silently
+        # reverts every field it does not list to its default, and by this stage
+        # ``extend_walls_to_foundation`` has already written ``plate_base_z_m`` on any
+        # clad gable that got the rim drop. Framing, anchors and uplift all read it.
+        resolved.append(replace(
+            wall, z1_m=max(start_top, end_top),
+            top_z0_m=start_top, top_z1_m=end_top,
         ))
     model.walls = resolved
 

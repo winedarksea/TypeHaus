@@ -114,27 +114,48 @@ def _one(findings):
     return findings[0]
 
 
-def test_a_fully_covered_unit_is_unknown_not_pass():
-    """Coverage is not capacity, and a silent site says so in the plainest terms."""
+def test_a_fully_covered_unit_passes_and_names_where_capacity_went():
+    """Inverted on 2026-08-30 along with ``structural.uplift_path_coverage``.
+
+    This asserted UNKNOWN so that "the anchors are all in blocking" could not be read as
+    "the anchorage is adequate". Right concern, wrong instrument: the rule is now named
+    ``mep.deck_equipment_support_coverage``, so a covered unit is an honest PASS of the rule
+    that ran, and the capacity question is a named item a seal has to cover rather than a
+    disclaimer at the end of a row. See ``test_the_capacity_question_is_a_named_item``.
+    """
     ctx = _ctx([_deck(), _unit(), _anchor(_BLOCK_X), _run()], blocks=[_block(_BLOCK_X)])
     finding = _one(deck_equipment_support(ctx))
-    assert finding.result is Result.UNKNOWN
+    assert finding.result is Result.PASS
+    assert "CAPACITY is not graded here" in finding.message
     assert "no design wind speed" in finding.message
 
 
-def test_a_covered_unit_with_a_wind_basis_is_still_unknown():
+def test_the_capacity_question_is_a_named_item_not_a_retired_one():
+    """The concern the inversion above must not lose: one ENGINEERED item per unit."""
+    from typehaus.checks.mep.deck_equipment import deck_equipment_anchorage_capacity
+    from typehaus.findings import Authority
+
+    ctx = _ctx([_deck(), _unit(), _anchor(_BLOCK_X), _run()], blocks=[_block(_BLOCK_X)])
+    items = deck_equipment_anchorage_capacity(ctx)
+    assert [f.engineering_item for f in items] == ["equipment_anchorage/EQ-T-HP-OD"]
+    assert all(f.authority is Authority.ENGINEERED for f in items)
+    # Still blocking, exactly as the UNKNOWN it replaced was.
+    assert all(f.result is Result.UNKNOWN for f in items)
+
+
+def test_a_covered_unit_with_a_wind_basis_still_names_the_ungraded_capacity():
     """Carrying a wind speed is not computing a demand, and the message must say which.
 
     This is the regression that matters after 2026-08-30: the easy mistake is to read
     "the site now has a wind speed" as "the restraint is now checked". It is not — nothing
     here derives the cabinet's projected area or an ASCE 7 §29.4 force coefficient — so the
-    verdict stays UNKNOWN and the sentence has to name the site's actual basis rather than
-    claim an absence that is no longer true.
+    sentence has to name the site's actual basis rather than claim an absence that is no
+    longer true, and the capacity itself belongs to the engineering item, not to this PASS.
     """
     ctx = _ctx([_deck(), _unit(), _anchor(_BLOCK_X), _run()], blocks=[_block(_BLOCK_X)],
                site=_AUTHORED_SITE)
     finding = _one(deck_equipment_support(ctx))
-    assert finding.result is Result.UNKNOWN
+    assert finding.result is Result.PASS
     assert "no design wind speed" not in finding.message
     assert "V_ult = 115 mph, Exposure B, Risk Category II" in finding.message
     assert "derives no demand from it" in finding.message
@@ -191,7 +212,7 @@ def test_matches_the_deck_on_the_units_own_storey():
     ctx = _ctx([_deck(), _unit(), _anchor(_BLOCK_X), _run(), porch_anchor],
                blocks=[_block(_BLOCK_X)])
     finding = _one(deck_equipment_support(ctx))
-    assert finding.result is Result.UNKNOWN
+    assert finding.result is Result.PASS
     assert "FS-T-DECK" in finding.message
     assert "FS-T-PORCH" not in finding.message
 
@@ -250,5 +271,5 @@ def test_a_beam_on_another_storey_does_not_reach_this_deck():
             all_elements=lambda: [*per_storey["second"], *per_storey["main"]]),
         model=SimpleNamespace(floors=[resolved], walls=[], solids=[]))
     finding = _one(deck_equipment_support(ctx))
-    assert finding.result is Result.UNKNOWN, finding.message
+    assert finding.result is Result.PASS, finding.message
     assert "BM-T-BELOW" not in finding.message

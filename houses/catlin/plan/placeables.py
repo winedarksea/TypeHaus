@@ -832,6 +832,28 @@ MAIN_PLACEABLES = [
     Furniture(uid="D9X6HWW4DZ", tag="FURN-M-PORCH-ROD-SE", type_ref="FT-CURTAIN-ROD-OUTDOOR-98",
               position=pt(ft(27), ft(-5)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
+
+    # --- the dedicated closets' shelf-and-rod runs (2026-08-30) ----------------------
+    #
+    # plans/TODO.md: "wire shelves and racks in the dedicated closets", aimed at jackets in
+    # the mudroom closet. All four closets were modelled as empty boxes, which reads on the
+    # plan as usable floor and bills as nothing.
+    #
+    # Each run hangs on the closet's longest uninterrupted wall, 8" (half the 16" depth)
+    # off its finish face — measured off the wall's own layer polygons, NOT off
+    # `Room.clear_face`, which is inset from the wall AXIS and would bury each unit ~3" in
+    # the studs. Elevation 66" is the shelf; a full-length coat hangs clear beneath it.
+    #
+    # RM-M-MUD-CLOSET: 63" of clear wall between x 6 5/8" and 5'-9 5/8", north wall
+    # (W-M-MUDC-N, face y 29'-5 1/8"). A 60" run centres in it with 1 1/2" either side.
+    Furniture(uid="1HYRGFZMA0", tag="FURN-M-MUDC-SHELF", type_ref="FT-CLOSET-SHELFROD-60",
+              room="RM-M-MUD-CLOSET", position=pt(inch(38.125), inch(345.125)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
+    # RM-M-CLOSET: 113 1/4" of clear wall on the north side (W-M-CLN/W-M-CLN2, face
+    # y 17'-8 5/8"). A 96" run leaves 8 5/8" either end — the walk-in's turn-in space.
+    Furniture(uid="TM01W8E003", tag="FURN-M-CLOSET-SHELF", type_ref="FT-CLOSET-SHELFROD-96",
+              room="RM-M-CLOSET", position=pt(inch(156), inch(204.625)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
 ]
 GARAGE_PLACEABLES = [
     # The 60"-wide work surface runs along the west wall directly below the infrared
@@ -1035,6 +1057,19 @@ SECOND_PLACEABLES = [
     Furniture(uid="7MW8644E5H", tag="FURN-S-BATH1-CH-AP", type_ref="FT-ACCESS-PANEL-1429", room="RM-S-BATH1",
               position=pt(ft(1, 4), ft(32, 10.5)),
               mount=Mount(kind=MountKind.WALL, elevation=ft(2))),
+
+    # The second storey's two closets, same rule as the main floor's pair above.
+    # RM-S-CLOSET: 94 3/4" of clear wall on the north side (W-S-CLN, face y 12'-2 5/8");
+    # an 84" run leaves 5 3/8" either end clear of W-S-DC1's jamb.
+    Furniture(uid="CMWJ7Q6Y7H", tag="FURN-S-CLOSET-SHELF", type_ref="FT-CLOSET-SHELFROD-84",
+              room="RM-S-CLOSET", position=pt(inch(165.25), inch(138.625)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
+    # RM-S-NCLOSET is the odd one: 40 3/4" wide, so a 16" shelf plus a hang rod would leave
+    # under 2' of standing room in front of it. It takes the 12"-deep LINEN shelf instead,
+    # no rod — this closet is off the north hall and stores goods, not coats.
+    Furniture(uid="XBBM4XVJ8Q", tag="FURN-S-NCLOSET-SHELF", type_ref="FT-CLOSET-SHELF-36",
+              room="RM-S-NCLOSET", position=pt(inch(239.75), inch(419.375)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
 ]
 # The attic study uses the same compact work-and-meeting program as the second-storey
 # study, but the stair opening occupies the north side of the room.

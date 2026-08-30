@@ -583,62 +583,6 @@
       "node": "polyline",
       "points": [
         [
-          281.0,
-          -12.000000000000005
-        ],
-        [
-          286.5,
-          -12.000000000000005
-        ],
-        [
-          286.5,
-          -10.500000000000007
-        ],
-        [
-          281.0,
-          -10.500000000000007
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CGW102AAAA",
-      "tag": "plate-bottom"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          281.0,
-          -12.000000000000005
-        ],
-        [
-          286.5,
-          -12.000000000000005
-        ],
-        [
-          286.5,
-          -10.500000000000007
-        ],
-        [
-          281.0,
-          -10.500000000000007
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           282.0,
           49.99999999999999
         ],

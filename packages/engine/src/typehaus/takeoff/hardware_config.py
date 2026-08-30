@@ -145,9 +145,17 @@ class KneeBraceRules:
     rather than inferring a multiplier the plan cannot see.
     """
 
-    # One connector per modeled brace. Raise it only for a hardware family that takes more
-    # than one piece per brace.
-    braces_per_location: int = 1
+    # Pieces of knee-brace hardware per modeled brace. **Two since 2026-08-30**, when the
+    # role moved from Simpson's Outdoor Accents APVKB (a single decorative saddle, and — as
+    # the reports turned out to say — unrated) to the KBS1Z, whose installation instruction
+    # is one connector at EACH END of the brace: "For 2x knee brace, install single KBS1Z on
+    # each end (see connection type 2)". The published F1 this catalog records is measured
+    # through that pair, so billing one would order half the connection the capacity assumes.
+    #
+    # It is a property of the hardware family, which is why it lives here beside the bolt
+    # count rather than on the element: every brace in every house takes whatever the
+    # catalogued part for ROLE_KNEE_BRACE takes.
+    braces_per_location: int = 2
     # A 2x diagonal is through-bolted at each end — one 1/2" bolt per end. A second bolt per
     # end would split the 2x rather than strengthen the joint, so this is 2, not 4.
     bolts_per_brace: int = 2

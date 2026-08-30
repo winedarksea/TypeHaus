@@ -39,6 +39,7 @@ __all__ = [
     "ALLOWANCE_KEY_FIELD", "ALLOWANCES", "Adjustments",
     "ESTIMATE_PLANS", "EXCLUDED_FROM_TOTAL", "MATERIAL_ONLY", "PriceRange", "Prices", "UnitPrice",
     "QUALIFIED_KEY_FIELD", "UNPRICED_VIEWS", "WASTE_IN_QUANTITY", "ZERO",
+    "candidate_keys", "qualifier_fields",
     "estimate_costs", "load_prices",
     "waste_in_quantity",
 ]
@@ -242,10 +243,55 @@ MATERIAL_ONLY: dict[str, frozenset[str | None]] = {
 #: has reported ``material`` per row since that pass; a row whose material the model never
 #: named (the sheet-metal trunks) has an empty string there, which is falsy, so it keeps
 #: pricing on the bare key exactly as before.
-QUALIFIED_KEY_FIELD = {"concrete": "assembly", "timber": "assembly",
-                       "drainage": "product", "wall_structure": "material",
-                       "framing": "material", "envelope_layers": "thickness_in",
-                       "ducts": "material"}
+#:
+#: A value may be a TUPLE, in which case the qualifiers stack most-significant first and a
+#: lookup tries progressively less specific keys: ``supply:semi_rigid:3.0`` →
+#: ``supply:semi_rigid`` → ``supply``. Because it falls back, every price file that was
+#: written against the older, shorter key keeps its exact meaning — a house opts into the
+#: finer grain by authoring the finer key and not otherwise. ``[ducts]`` is the case that
+#: forced it: a 3" radial branch and a 6" trunk are not the same article at all, and one
+#: blended per-foot rate across 246 LF of each was the standing admission in prices.toml.
+QUALIFIED_KEY_FIELD: dict[str, str | tuple[str, ...]] = {
+    "concrete": "assembly", "timber": "assembly",
+    "drainage": "product", "wall_structure": "material",
+    "framing": "material", "envelope_layers": "thickness_in",
+    "ducts": ("material", "diameter_in"),
+}
+
+
+def qualifier_fields(section: str) -> tuple[str, ...]:
+    """The BOM-row fields whose values qualify ``section``'s price key, most significant
+    first. Empty when the section prices on the bare key."""
+    field = QUALIFIED_KEY_FIELD.get(section)
+    if not field:
+        return ()
+    return (field,) if isinstance(field, str) else tuple(field)
+
+
+def candidate_keys(key: object, qualifiers: object = None) -> list[str]:
+    """Price-table keys to try for ``key``, most specific first, bare key last.
+
+    ``qualifiers`` is one value or a sequence of them. A falsy qualifier TRUNCATES the
+    chain rather than being skipped: the takeoff writes an empty string where the model
+    never named a material, and ``supply::3.0`` is not a key anybody would author. That
+    truncation is also what keeps a section whose rows have no material pricing on the bare
+    key exactly as it did before.
+
+    Values are stringified with ``str()``, which is the same conversion the takeoff row
+    carries — ``diameter_in`` is rounded to 2 dp there, so the key is ``:3.0``, never
+    ``:3``. Getting that wrong misses SILENTLY and falls back to the blend with no error,
+    which is why ``test_duct_prices_qualify_on_diameter`` pins the exact spelling.
+    """
+    base = str(key)
+    values = () if qualifiers is None else (
+        (qualifiers,) if isinstance(qualifiers, str | bytes) or not isinstance(
+            qualifiers, (list, tuple)) else tuple(qualifiers))
+    parts: list[str] = []
+    for value in values:
+        if not value:
+            break
+        parts.append(str(value))
+    return [f"{base}:{':'.join(parts[:i])}" for i in range(len(parts), 0, -1)] + [base]
 
 
 def rate_for(prices: Prices, section: str, key: object,
@@ -257,20 +303,21 @@ def rate_for(prices: Prices, section: str, key: object,
     :func:`typehaus.takeoff.runs.run_schedule` uses it to put a $ on a single run — and
     they have to be the same lookup or the per-run cost and the estimate line it rolls into
     will disagree. ``[ducts]`` is the case that forces the point: its key is qualified by
-    ``material`` (see :data:`QUALIFIED_KEY_FIELD`), so a second, hand-rolled
-    ``table.get(system)`` would price a 3" semi-rigid radial at the sheet-metal rate.
+    ``material`` and then ``diameter_in`` (see :data:`QUALIFIED_KEY_FIELD`), so a second,
+    hand-rolled ``table.get(system)`` would price a 3" semi-rigid radial at the sheet-metal
+    rate. ``qualifier`` may be one value or a sequence of them; the lookup walks
+    :func:`candidate_keys` most-specific first and returns the first key the table has.
 
     Returns ``(resolved_key, price_or_None)``. The key is returned because the caller needs
     to *name* what it looked up — in ``unpriced``, in a CSV, in a schedule row.
     """
     table = getattr(prices, _PLAN_TABLE[section])
-    resolved = str(key)
-    qualifier_field = QUALIFIED_KEY_FIELD.get(section)
-    if qualifier_field and qualifier:
-        candidate = f"{resolved}:{qualifier}"
+    candidates = (candidate_keys(key, qualifier) if QUALIFIED_KEY_FIELD.get(section)
+                  else [str(key)])
+    for candidate in candidates:
         if table.get(candidate) is not None:
-            resolved = candidate
-    return resolved, table.get(resolved)
+            return candidate, table[candidate]
+    return candidates[-1], table.get(candidates[-1])
 
 
 #: Sections priced and reported but held out of the construction total. They stay in
@@ -519,9 +566,10 @@ def _driver_overlaps(consumed: Mapping[str, list[tuple[str, Mapping[str, Any]]]]
                 # Both spellings, because a section may price a row under a QUALIFIED key
                 # ("supply:semi_rigid") — checking only the bare one under-reports exactly
                 # where a section has taken the trouble to price precisely.
-                qualifier = row.get(QUALIFIED_KEY_FIELD.get(name, ""))
+                fields = qualifier_fields(name)
+                qualifiers = tuple(row.get(field) for field in fields)
                 bare = str(row.get(key_field))
-                for row_key in ({bare, f"{bare}:{qualifier}"} if qualifier else {bare}):
+                for row_key in set(candidate_keys(bare, qualifiers)):
                     if row_key in priced.get(bom_key, ()):
                         hits.setdefault(name, set()).add(row_key)
         if hits:
@@ -612,10 +660,13 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
                     # statement that the house wants this row priced here — the only table
                     # that bills `structural_solids` at all. Honour that; skip only when the
                     # house has stayed silent.
-                    qualifier_field = QUALIFIED_KEY_FIELD.get(name)
-                    qualified = (f"{row.get(key_field)}:{row.get(qualifier_field)}"
-                                 if qualifier_field else str(row.get(key_field)))
-                    if not (qualifier_field and table.get(qualified) is not None):
+                    fields = qualifier_fields(name)
+                    keys = candidate_keys(row.get(key_field),
+                                          tuple(row.get(f) for f in fields))
+                    # The most specific spelling, for the miss report; the opt-in test
+                    # accepts ANY qualified spelling the house actually authored.
+                    qualified = keys[0]
+                    if not (fields and any(table.get(k) is not None for k in keys[:-1])):
                         # Recorded, never silent — but recorded ONCE. Two guarded sections
                         # now read ``structural_solids`` (concrete and timber), and a row
                         # that plainly belongs to the other one is not a hole in this one:
@@ -632,9 +683,9 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
                                     "section": name, "key": qualified,
                                     "quantity": round(quantity, 2), "unit": section_unit}))
                         continue
-            qualifier_field = QUALIFIED_KEY_FIELD.get(name)
+            fields = qualifier_fields(name)
             key, price = rate_for(prices, name, row.get(key_field),
-                                  row.get(qualifier_field) if qualifier_field else None)
+                                  tuple(row.get(f) for f in fields) if fields else None)
             # A row that names its own unit is read against a DIFFERENT field of the same BOM
             # row — see ``ALTERNATE_UNITS``. Resolved per row rather than per section, because
             # `sump` is priced each while `footing` beside it is still priced by the yard.

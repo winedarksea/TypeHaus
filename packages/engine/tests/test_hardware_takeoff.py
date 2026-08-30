@@ -356,22 +356,42 @@ def test_exterior_door_jambs_are_strapped_to_the_foundation(catlin_model) -> Non
 # --- knee braces, ties, straps, catalog ----------------------------------------------
 
 
-def test_each_modeled_knee_brace_takes_one_connector(catlin_model) -> None:
-    """One APVKB per brace the plan models — no per-joint multiplier the plan cannot see.
+def test_each_modeled_knee_brace_takes_two_connectors_one_per_end(catlin_model) -> None:
+    """Two KBS1Z per brace the plan models — no per-JOINT multiplier the plan cannot see.
 
     The rule used to bill a matched pair per braced *joint*, which only holds where a beam
     runs past its post. Every balcony pillar is a beam end, so the pair rule billed twice
-    the braces that fit."""
+    the braces that fit. The multiplier is now a property of the HARDWARE instead: Simpson's
+    KBS1Z installation is one connector at each end of the brace, and the F1 the code report
+    publishes is measured through that pair, so billing one would order half the connection
+    the capacity assumes.
+
+    The part changed on 2026-08-30. It was `APVKB45-6`, Simpson's Outdoor Accents Avant
+    decorative knee brace, which has no published allowable load in any code report — IAPMO
+    UES ER-102's AP-series index does not list it and ER-280 has no table for it. On catlin
+    those braces are the entire lateral system of a freestanding deck at storey height."""
     from typehaus.model.structure import KneeBrace
 
     braces = [element for storey in catlin_model.plan.storeys
               for element in catlin_model.plan.storey_elements(storey.tag)
               if isinstance(element, KneeBrace)]
     row = knee_brace_rows(catlin_model, CONFIG.knee_braces)[0]
-    assert row["part_number"] == "APVKB45-6"
-    assert CONFIG.knee_braces.braces_per_location == 1
-    assert row["count"] == len(braces)
+    assert row["part_number"] == "KBS1Z"
+    assert CONFIG.knee_braces.braces_per_location == 2
+    assert row["count"] == 2 * len(braces)
     assert row["role"] == ROLE_KNEE_BRACE
+
+
+def test_the_knee_brace_role_serves_a_part_with_a_published_capacity() -> None:
+    """The substitution, pinned at the role rather than at the house.
+
+    Any house authoring a knee brace gets whatever this role resolves to. Putting an unrated
+    part back on it would silently un-brace every deck in the world that uses it."""
+    from typehaus.takeoff.hardware_catalog import hardware_for_role
+
+    item = hardware_for_role(ROLE_KNEE_BRACE)
+    assert item.allowable is not None
+    assert item.allowable.lateral_f1_lb == 540.0   # ER-280 Table 7, type 2, 45 deg, SPF/HF
 
 
 def test_the_balcony_is_braced_at_its_four_corners_in_both_directions(catlin_model) -> None:
@@ -394,7 +414,8 @@ def test_the_balcony_is_braced_at_its_four_corners_in_both_directions(catlin_mod
     # Every brace names the post it stiffens *and* the member it reaches, so the connector
     # schedule can key the joint. The old records named only the post.
     assert all(len(b.connects) == 2 for b in braces.values())
-    assert knee_brace_rows(catlin_model, CONFIG.knee_braces)[0]["count"] == 8
+    # Two KBS1Z per brace, one at each end — see the test above.
+    assert knee_brace_rows(catlin_model, CONFIG.knee_braces)[0]["count"] == 16
 
 
 def test_stud_plate_ties_are_sized_to_the_stud_they_tie(catlin_model) -> None:

@@ -261,8 +261,16 @@ def hardware_by_model(model: str) -> StructuralHardware | None:
     return max(family, key=lambda item: len(item.model)) if family else None
 
 
-def allowable_for_model(model: str) -> AllowableLoads | None:
+def allowable_for_model(model: str, *, role: str | None = None) -> AllowableLoads | None:
     """The published allowables for an EXACT part designation, or ``None``.
+
+    ``role`` disambiguates a part catalogued for more than one joint. The KBS1Z is the case:
+    ER-280 Table 7 tabulates it by *connection type*, and a beam-to-post cap and a knee brace
+    read different rows of the same table — 1,000 lbf uplift for one, 540 lbf F1 for the
+    other. Two catalog records carry the two rows, so a lookup by model alone gets whichever
+    is listed first, which is a coin flip dressed as an answer. Pass the role of the joint
+    being checked and the right row comes back; omit it and the first record wins, which is
+    correct for every part catalogued once.
 
     **Exact, and that is the whole reason this is not ``hardware_by_model(...).allowable``.**
     ``hardware_by_model`` falls back to a family-prefix match so a plan may author "LUS210"
@@ -272,10 +280,13 @@ def allowable_for_model(model: str) -> AllowableLoads | None:
     galvanised steel and its Table 2 lists no stainless model at all. A near-miss on a part
     number is exactly how an unevaluated connector acquires a capacity.
     """
-    for item in (*structural_hardware_catalog(), *hardware_capacity_records()):
-        if item.model == model:
-            return item.allowable
-    return None
+    records = [item for item in (*structural_hardware_catalog(), *hardware_capacity_records())
+               if item.model == model]
+    if role is not None:
+        for item in records:
+            if item.role == role:
+                return item.allowable
+    return records[0].allowable if records else None
 
 
 def hardware_row(item: StructuralHardware | None, *, scope: str, count: int, basis: str,

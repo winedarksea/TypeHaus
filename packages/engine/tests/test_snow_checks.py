@@ -14,7 +14,7 @@ from _helpers import check_context
 
 from typehaus.checks.registry import CheckContext, Preferences
 from typehaus.checks.structural.snow import rafter_span, sliding_snow
-from typehaus.findings import Result
+from typehaus.findings import Authority, Result
 from typehaus.model import (
     Assembly,
     Building,
@@ -193,7 +193,18 @@ def test_rafter_span_reports_unknown_rather_than_borrowing_a_row(catlin_model) -
     assert findings
     assert all(f.result is Result.UNKNOWN for f in findings), \
         [f.message for f in findings]
-    assert any("I-joist" in f.message and "engineered" in f.message for f in findings)
+    # Since 2026-08-30 the handoff is *named* rather than described: the message says which
+    # engineering item governs, and the finding carries the authority beside its verdict.
+    # The gate is unmoved — still UNKNOWN, still blocking — and the only thing that changed
+    # is that the outstanding work has an id a professional seal can cover.
+    assert all(f.authority is Authority.ENGINEERED for f in findings)
+    assert {f.engineering_item for f in findings} == {"rafter/RF-HOUSE", "rafter/RF-GARAGE"}
+    assert any("I-joist" in f.message for f in findings)
+    # The trussed garage roof is the case the two-gate split exists for: this engine will
+    # never compute it, so the item can never reach draft and correctly blocks a *sealed*
+    # submittal without pretending anything was computed.
+    garage = next(f for f in findings if f.engineering_item == "rafter/RF-GARAGE")
+    assert "this engine computes none" in garage.message
 
 
 def test_catlin_sliding_snow_is_screened_and_retained(catlin_model) -> None:

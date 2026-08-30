@@ -12,7 +12,9 @@ from dataclasses import dataclass
 
 from typehaus.checks.jurisdiction import JurisdictionProfile
 from typehaus.checks.registry import CheckReport
-from typehaus.findings import Finding, Result, Severity
+from typehaus.engineering.fingerprint import Freshness
+from typehaus.engineering.register import EngineeringRegister, Signoff
+from typehaus.findings import Authority, Finding, Result, Severity
 
 
 @dataclass(frozen=True)
@@ -26,6 +28,40 @@ class PermitChecklistItem:
     # Mirrors PermitItemSpec.blocking — see the reasoning there. A non-blocking item is
     # evaluated and printed exactly like any other; it just does not hold the gate shut.
     blocking: bool = True
+    # Derived from the matched findings, never declared by the profile: whether *this*
+    # house's geometry puts the requirement outside the prescriptive path is a fact about
+    # 7 feet of unbalanced fill here and 3 feet next door, so a jurisdiction profile cannot
+    # know it in advance and PermitItemSpec deliberately gains nothing.
+    authority: Authority = Authority.PRESCRIPTIVE
+    # The engineering item ids behind this line, when it is ENGINEERED — what a seal in
+    # engineering.toml has to cover for the final gate to open.
+    engineering_items: tuple[str, ...] = ()
+    # How the seals on those items stand *right now*. The worst of them, since one stale
+    # item on a line of four is a stale line. None on a prescriptive item, which has no
+    # seal to be fresh or otherwise.
+    seal: Freshness | None = None
+    # Who sealed it, for the sheet's credit line. Only set when every item on this line is
+    # covered by one and the same signoff — the common case, and the only one a single
+    # credit line can honestly letter.
+    signoff: Signoff | None = None
+
+    @property
+    def sealed(self) -> bool:
+        """Whether this line satisfies the *final* gate.
+
+        A prescriptive item needs no seal and so always does. An engineered one needs a
+        signoff that is FRESH: not merely present. UNPINNED is deliberately not enough — a
+        stamp with no fingerprint behind it cannot go stale, so it says nothing at all
+        about the model in front of the reader, and treating it as final would make the
+        seal a decoration.
+        """
+        if self.authority is not Authority.ENGINEERED:
+            return True
+        return self.seal is Freshness.FRESH
+
+
+#: The two verdicts that leave nothing outstanding on a permit line.
+_GATE_OK = frozenset({Result.PASS, Result.NOT_APPLICABLE})
 
 
 @dataclass(frozen=True)
@@ -37,7 +73,47 @@ class PermitChecklist:
 
     @property
     def ok(self) -> bool:
-        return all(item.result is Result.PASS for item in self.items if item.blocking)
+        """The **draft** gate — semantics unchanged, plus N/A.
+
+        An engineered item satisfies this on its own local calculation alone: that is
+        exactly the requirement that draft approval permits a permit-ready printoff. The
+        seal is the *separate*, final gate — see :attr:`sealed`.
+
+        N/A satisfies it because a requirement whose governed condition does not exist in
+        this building has nothing left to answer.
+        """
+        return all(item.result in _GATE_OK for item in self.items if item.blocking)
+
+    @property
+    def sealed(self) -> bool:
+        """The **final** gate: :attr:`ok`, *and* every engineered item FRESH-sealed.
+
+        Strictly stronger than :attr:`ok`, and separate from it on purpose. ``haus print``
+        goes on gating at :attr:`ok` — a draft approval is exactly what permits a
+        permit-ready printoff, and holding the printer hostage until a PE has signed would
+        make the engine useless for the months before one does. ``haus print --sealed`` is
+        the submittal gate.
+        """
+        # Every engineered item, blocking or not. A requirement in the staging lane is
+        # still a requirement a professional has to sign; "not yet gating" is a statement
+        # about this engine's confidence in its own rule, not about whether a 10-foot
+        # cantilever retaining wall needs a stamp before anyone pours it.
+        return self.ok and not self.unsealed
+
+    @property
+    def unsealed(self) -> tuple[PermitChecklistItem, ...]:
+        """Engineered items still waiting on a fresh professional seal."""
+        return tuple(item for item in self.engineered if not item.sealed)
+
+    @property
+    def stale_seals(self) -> tuple[PermitChecklistItem, ...]:
+        """Items sealed once, whose model or calculation has moved since."""
+        return tuple(item for item in self.items if item.seal is Freshness.STALE)
+
+    @property
+    def engineered(self) -> tuple[PermitChecklistItem, ...]:
+        """Items whose verdict rests on an engineered design rather than a prescriptive table."""
+        return tuple(item for item in self.items if item.authority is Authority.ENGINEERED)
 
     @property
     def under_review(self) -> tuple[PermitChecklistItem, ...]:
@@ -64,26 +140,70 @@ def evaluate_permit_checklist(report: CheckReport,
 
         profile = get_profile(profile)
     items = [_item_from_findings(spec.label, spec.check_ids, report.findings,
-                                 blocking=spec.blocking)
+                                 blocking=spec.blocking, report=report)
              for spec in profile.permit_items]
     items.append(_integrity_item(report.findings, profile.permit_check_ids()))
     return PermitChecklist(profile_name=profile.name, items=tuple(items))
 
 
 def _item_from_findings(label: str, check_ids: tuple[str, ...], findings: list[Finding],
-                        *, blocking: bool = True) -> PermitChecklistItem:
+                        *, blocking: bool = True,
+                        report: CheckReport | None = None) -> PermitChecklistItem:
     matched = [finding for finding in findings if finding.check_id in check_ids]
     failed = [finding for finding in matched if finding.result is Result.FAIL]
     unknown = [finding for finding in matched if finding.result is Result.UNKNOWN]
+    na = [finding for finding in matched if finding.result is Result.NOT_APPLICABLE]
+    authority = (Authority.ENGINEERED
+                 if any(x.authority is Authority.ENGINEERED for x in matched)
+                 else Authority.PRESCRIPTIVE)
+    items = tuple(sorted({x.engineering_item for x in matched if x.engineering_item}))
+
+    seal, signoff = _seal_state(items, report)
+
+    def _item(result: Result, detail: str) -> PermitChecklistItem:
+        return PermitChecklistItem(label, result, detail, check_ids, blocking, authority,
+                                   items, seal, signoff)
+
+    # Precedence: FAIL beats UNKNOWN beats all-N/A beats PASS. N/A only wins when *every*
+    # matched finding is N/A — one real result on the line means the requirement did apply.
     if failed:
-        return PermitChecklistItem(label, Result.FAIL, failed[0].message, check_ids, blocking)
+        return _item(Result.FAIL, failed[0].message)
     if unknown:
-        return PermitChecklistItem(label, Result.UNKNOWN, unknown[0].message, check_ids, blocking)
+        return _item(Result.UNKNOWN, unknown[0].message)
     if not matched:
-        return PermitChecklistItem(label, Result.UNKNOWN, "no evaluable model input", check_ids,
-                                   blocking)
-    return PermitChecklistItem(label, Result.PASS, f"{len(matched)} evaluated result(s) pass",
-                               check_ids, blocking)
+        # Distinct from "every matched finding is N/A" on purpose: no findings at all means
+        # nobody looked, which is not the same claim as "this does not apply here".
+        return _item(Result.UNKNOWN, "no evaluable model input")
+    if len(na) == len(matched):
+        return _item(Result.NOT_APPLICABLE, na[0].message)
+    return _item(Result.PASS, f"{len(matched)} evaluated result(s) pass")
+
+
+#: Worst-first. One stale item on a line of four makes the whole line stale, and an
+#: unsealed one outranks an unpinned one because it is the further from done.
+_SEAL_ORDER = (Freshness.UNSEALED, Freshness.STALE, Freshness.UNPINNED, Freshness.FRESH)
+
+
+def _seal_state(items: tuple[str, ...],
+                report: CheckReport | None) -> tuple[Freshness | None, Signoff | None]:
+    """How the seals on one permit line's engineering items stand right now."""
+    if not items or report is None:
+        return None, None
+    register: EngineeringRegister = report.engineering_register
+    states: list[Freshness] = []
+    signoffs: set[str] = set()
+    found: Signoff | None = None
+    for item in items:
+        record = report.engineering[item]
+        state, signoff = register.freshness(record)
+        states.append(state)
+        if signoff is not None:
+            signoffs.add(signoff.id)
+            found = signoff
+    worst = min(states, key=_SEAL_ORDER.index)
+    # One credit line can only name one engineer. Two signoffs on a line is a real and
+    # legitimate arrangement; it just is not something a single "sealed by" can letter.
+    return worst, (found if len(signoffs) == 1 else None)
 
 
 def _integrity_item(findings: list[Finding],

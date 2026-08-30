@@ -57,6 +57,20 @@ class Site(HausModel):
     # Below-grade boundary temperature, °F (≈ annual mean deep-ground temperature).
     # Below-grade envelope ΔT uses this instead of treating soil as 99% design-hour air.
     soil_temp_f: float | None = None
+    # The site's own soil, when it has been established for THIS parcel — the same class of
+    # fact as ``ground_snow_load_psf`` and ``design_wind_speed_mph`` above, and stated here
+    # for the same reason: a code profile is shared by every house that names it, so a
+    # county's soil survey does not belong in one. The engine profile keeps a presumptive
+    # value and the site's answer wins where it is given; a house with no soils report
+    # states neither and gets the profile's presumption, unchanged.
+    #
+    # ``soil_class`` is the IRC Table R405.1 / Unified group ("GM", "SC", "CL", …), which
+    # selects the equivalent-fluid lateral pressure the foundation checks read.
+    soil_class: str | None = None
+    # Presumptive load-bearing value, psf (IRC Table R401.4.1), or a geotechnical report's
+    # allowable. Stated apart from ``soil_class`` because a report routinely gives one
+    # without the other.
+    soil_bearing_psf: float | None = None
     parcel: tuple[Point2D, ...] = ()  # closed CCW ring, plan frame
     setbacks: tuple[SetbackSpec, ...] = ()
     spot_elevations: tuple[SpotElevation, ...] = ()

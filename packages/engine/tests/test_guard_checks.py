@@ -50,17 +50,21 @@ def catlin_ctx():
 
 
 def test_catlin_has_no_masonry_guard_left_to_grade(catlin_ctx):
-    """One UNKNOWN, and it says why rather than silently returning nothing.
+    """One NOT_APPLICABLE, and it says why rather than silently returning nothing.
 
     A rule that emits no findings is indistinguishable from a rule that never ran, which is
     the failure mode this asserts against: the house has no ``Wall.guard`` since 2026-08-18
     and the check has to say so, and to name the two rules that do grade the stick guard
     that replaced it.
+
+    The verdict is N/A rather than UNKNOWN since 2026-08-30, and the distinction is the
+    point: nothing here is missing from the model or waiting on an author. Every wall was
+    read, and none of them is a guard.
     """
     findings = masonry_guard_bearing(catlin_ctx)
     assert len(findings) == 1, [f.message for f in findings]
     finding = findings[0]
-    assert finding.result is Result.UNKNOWN
+    assert finding.result is Result.NOT_APPLICABLE
     assert "no wall" in finding.message and "guard" in finding.message
     assert "structural.deck_guard" in finding.message
     assert "code.R312_1_guard_height" in finding.message
@@ -165,7 +169,7 @@ def test_nothing_under_the_guard_reports_unknown():
     assert "nothing modeled under it" in findings[0].message
 
 
-def test_a_house_with_no_guard_wall_reports_unknown():
+def test_a_house_with_no_guard_wall_reports_not_applicable():
     ctx = SimpleNamespace(
         plan=SimpleNamespace(all_elements=lambda: [],
                              library=SimpleNamespace(materials=_MATERIALS)),
@@ -173,7 +177,7 @@ def test_a_house_with_no_guard_wall_reports_unknown():
         preferences=Preferences(),
     )
     findings = masonry_guard_bearing(ctx)
-    assert [f.result for f in findings] == [Result.UNKNOWN]
+    assert [f.result for f in findings] == [Result.NOT_APPLICABLE]
 
 
 def test_the_deck_guard_rule_counts_a_masonry_parapet_as_a_guard(catlin_ctx):
@@ -231,13 +235,19 @@ def test_the_allowance_tightens_a_quarter_inch_per_foot_of_span_over_four_feet()
     assert max_cable_spacing_in(40.0) == pytest.approx(2.0), "floors out"
 
 
-def test_a_house_with_no_cable_guard_reports_unknown(catlin_ctx):
+def test_a_house_with_no_cable_guard_reports_not_applicable(catlin_ctx):
     """Never a pass by absence: this rule has nothing to say about a picket guard, and
-    saying "fine" about a thing it never looked at is how an advisory stops being read."""
+    saying "fine" about a thing it never looked at is how an advisory stops being read.
+
+    N/A rather than UNKNOWN since 2026-08-30, and the distinction is not cosmetic: the
+    check *did* look. It read every Railing in the plan and found none cable-filled, which
+    is a verdict about the building, not a confession that an input is missing. A PASS
+    would still be the wrong answer, and still is not what this returns.
+    """
     from typehaus.checks.advisory.guards import cable_guard_deflection
 
     findings = cable_guard_deflection(catlin_ctx)
-    assert [f.result for f in findings] == [Result.UNKNOWN]
+    assert [f.result for f in findings] == [Result.NOT_APPLICABLE]
 
 
 # --- code.R308_4_4_glass_guard ---------------------------------------------------------------
@@ -297,5 +307,5 @@ def test_an_opaque_sheet_guard_is_not_glazing_and_gets_no_finding():
     from typehaus.checks.code.mn_residential.glazing import structural_glass_guard
 
     findings = structural_glass_guard(_glass_ctx("tempered", materials={"lite": "#8fb7c9"}))
-    assert [f.result for f in findings] == [Result.UNKNOWN]
+    assert [f.result for f in findings] == [Result.NOT_APPLICABLE]
     assert "no guard in the plan is filled with a glass panel" in findings[0].message

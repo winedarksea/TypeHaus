@@ -7,14 +7,17 @@ UNKNOWN is counted in its own column, never folded into passes.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from enum import Enum
 
 # JurisdictionProfile lived here before it grew into its own module; it is still imported
 # from this one by existing call sites, so the name stays bound here deliberately.
 from typehaus.checks.jurisdiction import JurisdictionProfile, PermitItemSpec  # noqa: F401
-from typehaus.findings import Finding, Result, Severity
+from typehaus.engineering.item import EngineeringRecord
+from typehaus.engineering.register import EngineeringRegister
+from typehaus.engineering.registry import NO_ENGINEERING
+from typehaus.findings import Authority, Finding, Result, Severity
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.model import ResolvedModel
 
@@ -166,6 +169,15 @@ class CheckContext:
     preferences: Preferences
     profile: JurisdictionProfile
     resolve_findings: list[Finding] = field(default_factory=list)
+    #: The engineering suite's results, keyed ``<kind>/<element-tag>``. Lazily memoising,
+    #: so ``haus check --tier code`` never pays to design a retaining wall; every lookup
+    #: succeeds, returning a NO_CALC record where nothing is registered. Built in
+    #: ``checks/run.py::build_context`` so ``run``, ``run_from_model`` and the pytest
+    #: plugin share one construction point. Defaults to an empty map for the handful of
+    #: test fixtures that build a context by hand.
+    engineering: Mapping[str, EngineeringRecord] = field(default_factory=lambda: NO_ENGINEERING)
+    #: The house's ``engineering.toml``. Absent file -> empty register, never an error.
+    engineering_register: EngineeringRegister = field(default_factory=EngineeringRegister)
 
 
 CheckFn = Callable[[CheckContext], list[Finding]]
@@ -186,6 +198,26 @@ def registered(tier: Tier | None = None) -> list[tuple[str, CheckFn]]:
     return [pair for t in Tier for pair in _REGISTRY[t]]
 
 
+@dataclass(frozen=True)
+class ResultTally:
+    """One bucket per :class:`Result`, plus how many findings rest on engineered design.
+
+    ``engineered`` cuts across the others rather than partitioning them — it is an
+    :class:`Authority`, not a verdict — so it is *not* included in :attr:`total`.
+    """
+
+    passed: int = 0
+    failed: int = 0
+    unknown: int = 0
+    not_applicable: int = 0
+    engineered: int = 0
+
+    @property
+    def total(self) -> int:
+        """Encoded rules that produced a verdict. ``engineered`` is orthogonal, not a bucket."""
+        return self.passed + self.failed + self.unknown + self.not_applicable
+
+
 @dataclass
 class CheckReport:
     findings: list[Finding]
@@ -193,18 +225,35 @@ class CheckReport:
     # indistinguishable from one that never ran at all, so no coverage claim built on
     # `findings` alone can be honest (→ checks/jurisdiction.py).
     ran: tuple[str, ...] = ()
+    # Carried through from the context so the *final* permit gate can be evaluated from a
+    # report alone. A finding says "this rests on engineered design"; only the register can
+    # say whether a PE has sealed it and whether that seal still matches the model, and a
+    # caller holding a report and no context (the cover sheet is exactly that caller) would
+    # otherwise have to rebuild the whole world to ask.
+    engineering: Mapping[str, EngineeringRecord] = field(default_factory=lambda: NO_ENGINEERING)
+    engineering_register: EngineeringRegister = field(default_factory=EngineeringRegister)
 
-    def counts(self) -> tuple[int, int, int]:
-        """(pass, fail, unknown) rule-result counts (#32 tri-state)."""
-        p = f = u = 0
+    def counts(self) -> ResultTally:
+        """Rule-result counts (#32), one bucket per :class:`Result` member.
+
+        Deliberately *not* a 3-tuple any more. The old form ended in ``else: p += 1``,
+        which would have silently counted every ``NOT_APPLICABLE`` as a pass — the exact
+        sin #32 exists to forbid — and would have done so without a single test failing.
+        A tally that names its buckets cannot acquire that bug when a member is added.
+        """
+        tally = {result: 0 for result in Result}
+        engineered = 0
         for finding in self.findings:
-            if finding.result is Result.UNKNOWN:
-                u += 1
-            elif finding.result is Result.FAIL:
-                f += 1
-            else:
-                p += 1
-        return p, f, u
+            tally[finding.result] += 1
+            if finding.authority is Authority.ENGINEERED:
+                engineered += 1
+        return ResultTally(
+            passed=tally[Result.PASS],
+            failed=tally[Result.FAIL],
+            unknown=tally[Result.UNKNOWN],
+            not_applicable=tally[Result.NOT_APPLICABLE],
+            engineered=engineered,
+        )
 
     @property
     def errors(self) -> list[Finding]:
@@ -232,4 +281,6 @@ def run_checks(ctx: CheckContext, tier: Tier | None = None) -> CheckReport:
             if _suppressed(finding, ctx.preferences.suppressed):
                 continue
             findings.append(finding)
-    return CheckReport(findings=findings, ran=tuple(ran))
+    return CheckReport(findings=findings, ran=tuple(ran),
+                       engineering=ctx.engineering,
+                       engineering_register=ctx.engineering_register)

@@ -104,11 +104,14 @@ export function locateUid(model: Model, uid: string): LocatedElement | null {
 
 // Selector helpers ----------------------------------------------------------
 
-// Passing checks still travel through model.findings (the tri-state PASS/FAIL/UNKNOWN
-// result is tracked separately from severity), but the UI only surfaces the ones that
-// need attention.
+// Passing checks still travel through model.findings (the result is tracked separately
+// from severity), but the UI only surfaces the ones that need attention. "not_applicable"
+// is a verdict, not a problem — the governed condition does not exist in this building —
+// so it is filtered out beside "pass" rather than badged on an element in the editor.
+const RESOLVED = new Set(["pass", "not_applicable"]);
+
 export function visibleFindings(findings: Finding[]): Finding[] {
-  return findings.filter((f) => f.result !== "pass");
+  return findings.filter((f) => !RESOLVED.has(f.result));
 }
 
 export function findingsFor(model: Model | null, uid: string | null): Finding[] {

@@ -8,6 +8,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     drainage,
     electrical,
     electrical_code,
+    electrical_receptacles,
     erv_terminals,
     exhaust,
     hvac,

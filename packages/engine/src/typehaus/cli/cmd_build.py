@@ -26,7 +26,8 @@ from typehaus.cli._shared import (
     app,
     console,
 )
-from typehaus.findings import Result, Severity
+from typehaus.engineering import Freshness
+from typehaus.findings import Authority, Result, Severity
 
 # `--only` accepts these result names, or `all`. Default is failures + unevaluable rules:
 # on catlin that is 1451 lines of output down to ~30, and the 716 passing checks it drops
@@ -49,30 +50,34 @@ def _parse_only(only: str) -> frozenset[Result] | None:
         raise typer.Exit(2) from None
 
 
-def _check_json_summary(p: int, f: int, u: int, findings: list) -> dict:
+def _check_json_summary(tally, findings: list) -> dict:
     """`haus check --json-summary` payload: counts by category/severity, not every finding.
 
     ``--json`` dumps every ``Finding`` in full (~230KB on catlin) — the honest machine
     surface a diff or a report generator needs. Most agent callers only ask "did anything
     fail, and where" — this is that answer, an order of magnitude smaller. The top-level
     ``pass``/``fail``/``unknown`` keys are the same ones ``--json`` and the tests already
-    assert on, kept identical here on purpose.
+    assert on, kept identical here on purpose; ``not_applicable`` and ``engineered`` were
+    added beside them rather than replacing anything.
 
     Category is the ``check_id`` namespace before its first dot (``structural.foo`` ->
     ``structural``) — the same grouping every check module already encodes into its ids.
     """
     from collections import Counter
 
+    # Keyed off Result itself: a bucket dict spelled out by hand here is one member-add
+    # away from a KeyError on real house output.
     categories: dict[str, dict[str, int]] = {}
     for finding in findings:
         category = finding.check_id.split(".", 1)[0]
-        bucket = categories.setdefault(category, {"pass": 0, "fail": 0, "unknown": 0})
+        bucket = categories.setdefault(category, {r.value: 0 for r in Result})
         bucket[finding.result.value] += 1
     failing = sorted({x.check_id for x in findings if x.result is Result.FAIL})
     unknown = sorted({x.check_id for x in findings if x.result is Result.UNKNOWN})
     fail_severity = Counter(x.severity.value for x in findings if x.result is Result.FAIL)
     return {
-        "pass": p, "fail": f, "unknown": u,
+        "pass": tally.passed, "fail": tally.failed, "unknown": tally.unknown,
+        "not_applicable": tally.not_applicable, "engineered": tally.engineered,
         "categories": dict(sorted(categories.items())),
         "fail_severity": dict(sorted(fail_severity.items())),
         "failing_check_ids": failing,
@@ -193,11 +198,11 @@ def check(
     as_json: bool = typer.Option(False, "--json"),
     json_summary: bool = typer.Option(
         False, "--json-summary",
-        help="Compact JSON: pass/fail/unknown counts by category, not every finding's "
+        help="Compact JSON: result counts by category, not every finding's "
              "full model_dump() (#52). --json stays the complete machine surface."),
     only: str = typer.Option(_ONLY_DEFAULT, "--only",
                              help=f"Results to print: `{_ONLY_ALL}`, or a comma-separated "
-                                  "subset of pass,fail,unknown."),
+                                  "subset of pass,fail,unknown,not_applicable."),
     exit_on: ExitOn = typer.Option(ExitOn.fail, "--exit-on",
                                    help="What makes the command exit 1."),
     plain: bool = typer.Option(False, "--plain",
@@ -223,28 +228,35 @@ def check(
         _print_findings(result.findings, plain=plain_out)
     tier_enum = Tier(tier.value) if tier else None
     report = run(result.plan, d, profile=profile, tier=tier_enum)
-    p, f, u = report.counts()
+    tally = report.counts()
     if as_json:
         import json
 
         # --json is the machine surface and stays complete regardless of --only.
         console.print_json(json.dumps({
-            "pass": p, "fail": f, "unknown": u,
+            "pass": tally.passed, "fail": tally.failed, "unknown": tally.unknown,
+            "not_applicable": tally.not_applicable, "engineered": tally.engineered,
             "findings": [x.model_dump(mode="json") for x in report.findings],
         }))
     elif json_summary:
         import json
 
-        console.print_json(json.dumps(_check_json_summary(p, f, u, report.findings)))
+        console.print_json(json.dumps(_check_json_summary(tally, report.findings)))
     else:
         shown = report.findings if keep is None else [
             x for x in report.findings if x.result in keep]
         _print_findings(shown, plain=plain_out)
         hidden = len(report.findings) - len(shown)
         suffix = f"; {hidden} hidden by --only {only} (--only all shows them)" if hidden else ""
+        # #32's wording survives with two clauses inserted, and each prints only when
+        # non-zero — a house with neither regresses no pinned line.
+        na = f", {tally.not_applicable} not applicable" if tally.not_applicable else ""
+        eng = (f"; {tally.engineered} of the results rest on engineered design "
+               f"(see haus engineering)" if tally.engineered else "")
         console.print(
-            f"\n[bold]{p} pass, {f} fail, {u} not evaluable[/bold] of "
-            f"{p + f + u} encoded rules; this profile covers a declared subset of the "
+            f"\n[bold]{tally.passed} pass, {tally.failed} fail, "
+            f"{tally.unknown} not evaluable{na}[/bold] of "
+            f"{tally.total} encoded rules{eng}; this profile covers a declared subset of the "
             f"code{suffix}.",
             soft_wrap=True,
         )
@@ -254,7 +266,7 @@ def check(
         raise typer.Exit(0)
     gated = bool(report.errors) or load_errors
     if exit_on is ExitOn.fail:
-        gated = gated or f > 0
+        gated = gated or tally.failed > 0
     raise typer.Exit(1 if gated else 0)
 
 
@@ -263,6 +275,10 @@ def permit_check(
     house: Path | None = typer.Argument(None),
     profile: str = typer.Option("mn-2024"),
     as_json: bool = typer.Option(False, "--json"),
+    sealed: bool = typer.Option(
+        False, "--sealed",
+        help="Gate on the FINAL state instead of the draft one: every engineered item must "
+             "also carry a professional seal that still matches the model."),
 ) -> None:
     """Gate the declared M3 permit subset; unknowns and failures stop printing."""
     import json
@@ -281,32 +297,70 @@ def permit_check(
         console.print_json(json.dumps({
             "profile": checklist.profile_name,
             "ok": checklist.ok,
-            "items": [item.__dict__ | {"result": item.result.value}
-                      for item in checklist.items],
+            "sealed": checklist.sealed,
+            # Built field by field rather than from __dict__: the item now carries two
+            # objects (a Freshness and a Signoff) that json.dumps cannot encode, and a
+            # dataclass whose new field silently breaks the machine surface is worse than
+            # a few lines of spelling it out.
+            "items": [{
+                "label": item.label,
+                "result": item.result.value,
+                "detail": item.detail,
+                "check_ids": list(item.check_ids),
+                "blocking": item.blocking,
+                "authority": item.authority.value,
+                "engineering_items": list(item.engineering_items),
+                "seal": item.seal.value if item.seal else None,
+                "signoff": item.signoff.id if item.signoff else None,
+            } for item in checklist.items],
         }))
     else:
-        colors = {Result.PASS: "green", Result.FAIL: "red", Result.UNKNOWN: "yellow"}
+        colors = {Result.PASS: "green", Result.FAIL: "red", Result.UNKNOWN: "yellow",
+                  Result.NOT_APPLICABLE: "dim"}
 
-        def _render(rows, title: str) -> None:
-            table = Table("Result", "Requirement", "Detail", title=title)
+        seal_colors = {Freshness.FRESH: "green", Freshness.STALE: "red",
+                       Freshness.UNPINNED: "yellow", Freshness.UNSEALED: "yellow"}
+
+        def _render(rows, title: str, *, seals: bool = False) -> None:
+            columns = ["Result", "Requirement", "Detail"] + (["Seal"] if seals else [])
+            table = Table(*columns, title=title)
             for item in rows:
                 color = colors[item.result]
-                table.add_row(f"[{color}]{item.result.value.upper()}[/{color}]",
-                              item.label, item.detail)
+                cells = [f"[{color}]{item.result.value.upper()}[/{color}]",
+                         item.label, item.detail]
+                if seals:
+                    tone = seal_colors.get(item.seal, "dim")
+                    label = item.seal.value if item.seal else "—"
+                    cells.append(f"[{tone}]{label}[/{tone}]")
+                table.add_row(*cells)
             console.print(table)
 
         gating = [item for item in checklist.items if item.blocking]
-        _render(gating, "Permit gate")
+        _render(gating, "Permit gate", seals=any(item.seal for item in gating))
+        # The third section. An engineered requirement is not "under review" — it is done
+        # or it is not, by a person this engine cannot stand in for — and mixing it into
+        # the staging lane loses exactly the distinction this section exists to draw.
+        if checklist.engineered:
+            _render(checklist.engineered,
+                    "Engineered — requires a professional seal", seals=True)
         # Encoded, running, and deliberately not yet gating — see PermitItemSpec.blocking.
         # Printed separately rather than hidden: a rule this house cannot answer yet is a
         # real coverage statement, and burying it would repeat the drift the profile
         # mechanism exists to stop.
-        if checklist.under_review:
-            _render(checklist.under_review, "Under review — encoded, not gating")
+        review = [item for item in checklist.under_review
+                  if item.authority is not Authority.ENGINEERED]
+        if review:
+            _render(review, "Under review — encoded, not gating")
         console.print(
             "Declared MN subset only; local amendments, engineering, MEP, and energy "
             "review remain external."
         )
+    if sealed and not checklist.sealed:
+        console.print(
+            f"[red]--sealed: {len(checklist.unsealed)} engineered item(s) carry no fresh "
+            f"professional seal: "
+            f"{', '.join(item.label for item in checklist.unsealed)}[/red]")
+        raise typer.Exit(1)
     raise typer.Exit(0 if checklist.ok else 1)
 
 

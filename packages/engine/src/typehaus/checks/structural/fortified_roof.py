@@ -36,7 +36,7 @@ from __future__ import annotations
 
 from typehaus.checks.building_science.condensation import conditioned_envelope_assemblies
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.checks.structural.uplift_path import uplift_load_path
+from typehaus.checks.structural.uplift_path import uplift_path_coverage
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import ControlLayer, LayerFunction, RoofForm, TrimKind
 from typehaus.model.spatial import Roof
@@ -44,8 +44,16 @@ from typehaus.model.trim import Flashing
 
 _ADVISORY = "[advisory, not engineering] "
 
-_CHECK_SEALED_DECK = "structural.fortified_roof_sealed_deck"
-_CHECK_DRIP_EDGE = "structural.fortified_roof_drip_edge"
+#: Renamed 2026-08-30, and the rename is what lets the PASS below be honest. These
+#: two rules grade PRESENCE — is a sealed underlayment layer in the assembly, is a
+#: drip flashing on record — and cannot grade FORTIFIED compliance, because the
+#: gauge, the ASTM/ICC listing and the fastening schedule are documentation facts
+#: no model carries. Under the old names a PASS would have claimed the standard was
+#: met. Deliberately NOT hoisted into the engineering register: what is outstanding
+#: here is a submittal document, not a calculation, and an engineer's seal is the
+#: wrong instrument for it.
+_CHECK_SEALED_DECK = "structural.fortified_roof_sealed_deck_present"
+_CHECK_DRIP_EDGE = "structural.fortified_roof_drip_edge_present"
 _CHECK_LOAD_PATH = "structural.fortified_roof_load_path"
 
 #: FORTIFIED §4.4 applies at 2:12 and steeper; a low-slope membrane roof is a different
@@ -107,7 +115,7 @@ def fortified_roof_sealed_deck(ctx: CheckContext) -> list[Finding]:
                           "schedule")))
         else:
             out.append(Finding(
-                severity=Severity.WARN, check_id=_CHECK_SEALED_DECK, result=Result.UNKNOWN,
+                severity=Severity.WARN, check_id=_CHECK_SEALED_DECK, result=Result.PASS,
                 message=(f"{_ADVISORY}{roof.tag}'s assembly {assembly.tag} carries a sealed "
                          f"underlayment layer ('{sealed[0].name}') — presence only; ASTM/ICC "
                          "compliance and the tape/fastening schedule are documentation facts "
@@ -162,9 +170,10 @@ def fortified_roof_drip_edge(ctx: CheckContext) -> list[Finding]:
             # scheme a shed roof does not have.
             if hosted:
                 out.append(Finding(
-                    severity=Severity.WARN, check_id=_CHECK_DRIP_EDGE, result=Result.UNKNOWN,
+                    severity=Severity.WARN, check_id=_CHECK_DRIP_EDGE, result=Result.PASS,
                     message=(f"{_ADVISORY}{roof.tag} carries {len(hosted)} drip flashing(s) "
-                             "on record — presence only"),
+                             "on record — presence only; gauge and fastener spacing are "
+                             "documentation facts this model does not carry"),
                     element_tags=(roof.tag,)))
             else:
                 out.append(Finding(
@@ -181,7 +190,7 @@ def fortified_roof_drip_edge(ctx: CheckContext) -> list[Finding]:
             label = "eave" if side in eave_sides else "rake"
             if side in covered:
                 out.append(Finding(
-                    severity=Severity.WARN, check_id=_CHECK_DRIP_EDGE, result=Result.UNKNOWN,
+                    severity=Severity.WARN, check_id=_CHECK_DRIP_EDGE, result=Result.PASS,
                     message=(f"{_ADVISORY}{roof.tag}'s {side} {label} edge carries a drip "
                              "flashing — presence only; gauge and fastener spacing are "
                              "documentation facts this model does not carry"),
@@ -215,10 +224,10 @@ def _relabel(finding: Finding) -> Finding:
 def fortified_roof_load_path(ctx: CheckContext) -> list[Finding]:
     """The roof-bearing subset of ``uplift_path``'s findings, reframed under this checklist.
 
-    Not a re-derivation: ``uplift_load_path`` already walks every roof's seated members
+    Not a re-derivation: ``uplift_path_coverage`` already walks every roof's seated members
     against its declared bearings, and a second opinion here would drift from it within a
     month exactly the way ``uplift_path``'s own docstring warns against for its own inputs.
     """
     roof_tags = {roof.tag for roof in ctx.model.roofs}
-    return [_relabel(finding) for finding in uplift_load_path(ctx)
+    return [_relabel(finding) for finding in uplift_path_coverage(ctx)
             if finding.element_tags[:1] and finding.element_tags[0] in roof_tags]

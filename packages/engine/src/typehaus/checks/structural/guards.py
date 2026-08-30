@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import math
 
+from typehaus.checks._authoring import not_applicable as _not_applicable
 from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
@@ -62,9 +63,12 @@ def masonry_guard_bearing(ctx: CheckContext) -> list[Finding]:
     guards = [element for element in ctx.plan.all_elements()
               if isinstance(element, Wall) and element.guard]
     if not guards:
-        return [_unknown(_CHECK_ID, "no wall in the plan is marked as a guard "
-                         "(Wall.guard); a stick guard is graded by structural.deck_guard "
-                         "and code.R312_1_guard_height instead")]
+        # N/A, not UNKNOWN: the plan was read and states positively that no wall is a
+        # guard. There is no missing input here and nothing for anyone to author.
+        return [_not_applicable(_CHECK_ID, "no wall in the plan is marked as a guard "
+                                "(Wall.guard); a stick guard is graded by "
+                                "structural.deck_guard and code.R312_1_guard_height "
+                                "instead")]
     allowance = ctx.preferences.structural.max_guard_dead_load_on_wood_plf
     out: list[Finding] = []
     for element in guards:

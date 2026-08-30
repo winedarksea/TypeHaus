@@ -8,7 +8,7 @@ in feet and elbows; the other two are relationships between runs.
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import failed, passed, unknown
+from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import DuctSystem
@@ -23,6 +23,8 @@ _MIN_TURN_DEGREES = 20.0
 
 
 def _finding(cid, result, message, tags, code, fix=None) -> Finding:
+    if result is Result.NOT_APPLICABLE:
+        return not_applicable(cid, message, tags, code=code)
     if result is Result.PASS:
         return passed(cid, message, tags, code=code)
     if result is Result.UNKNOWN:
@@ -37,9 +39,18 @@ def dryer_exhaust(ctx: CheckContext) -> list[Finding]:
 
     cid, code = "code.M1502_dryer_exhaust", "M1502"
     appliance_types = {t.tag: t for t in ctx.plan.library.appliance_types}
+    # The product's *name* is part of the population text, not only its tag and type_ref.
+    # Without it catlin's dryer was invisible to this check: the element is FX-M-LAUNDRY and
+    # the type is APPL-LG-WASHTOWER, neither of which contains the word, so the house
+    # reported "no dryer is modeled" while a heat-pump dryer stood in the laundry — and the
+    # ductless exemption below, which the type was chosen for and which the type's own
+    # comment says this check reads, never ran. A substring match is a blunt population
+    # rule, but it is blunt over everything the model actually says the appliance is.
     dryers = [e for e in ctx.plan.all_elements()
               if e.element_kind == "Appliance"
-              and "dryer" in f"{e.tag} {e.type_ref or ''}".lower()]
+              and "dryer" in " ".join((
+                  e.tag, e.type_ref or "",
+                  getattr(appliance_types.get(e.type_ref), "name", "") or "")).lower()]
     # M1502.1 — the section does not reach a listed condensing (ductless) dryer. Its moisture
     # leaves as condensate down a drain, so there is no duct to be too long, to share, or to
     # terminate in the wrong place, and demanding one would be demanding a hole in the
@@ -55,6 +66,10 @@ def dryer_exhaust(ctx: CheckContext) -> list[Finding]:
                              f"{', '.join(sorted(d.tag for d in ductless))} is a condensing "
                              "(ductless) dryer — M1502.1 exempts it from this section", (),
                              "M1502.1")]
+        # UNKNOWN, deliberately not N/A. A dwelling does laundry; "no dryer is modeled"
+        # in a house with a laundry room is a gap in the model, not a fact about the
+        # building, and calling it N/A would be exactly the unearned use of that verdict
+        # Result.NOT_APPLICABLE's own docstring rules out.
         return [_finding(cid, Result.UNKNOWN, "no dryer and no dryer exhaust run are "
                          "modeled", (), code)]
     if not runs:

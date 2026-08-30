@@ -22,6 +22,7 @@ from typehaus.checks.registry import (
     PlumbingPreferences,
     Preferences,
     ReferenceUnderlay,
+    ResultTally,
     Tier,
     check,
     registered,
@@ -33,6 +34,6 @@ __all__ = [
     "run", "run_from_model", "build_context", "load_preferences", "run_checks", "registered",
     "check",
     "CheckContext", "CheckReport", "Preferences", "FramingPreferences", "PlumbingPreferences",
-    "ReferenceUnderlay", "JurisdictionProfile", "Tier",
+    "ReferenceUnderlay", "JurisdictionProfile", "ResultTally", "Tier",
     "PermitChecklist", "PermitChecklistItem", "evaluate_permit_checklist",
 ]

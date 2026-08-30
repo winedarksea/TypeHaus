@@ -23,6 +23,7 @@ from typehaus.emit.draw.schedules.electrical import (
 )
 from typehaus.emit.draw.schedules.structural import (
     _write_framing_bom,
+    _write_engineering_register,
     _write_hardware_schedule,
 )
 from typehaus.emit.draw.schedules.tables import _add_table
@@ -35,6 +36,7 @@ __all__ = [
     "_write_energy_sheet",
     "_write_framing_bom",
     "_write_general_notes",
+    "_write_engineering_register",
     "_write_hardware_schedule",
     "_write_luminaire_schedule",
     "_write_opening_schedule",

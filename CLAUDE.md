@@ -59,6 +59,39 @@ three `structural.deck_beam_span` advisories stood against the sunken garden's b
 beams. Those are fixed, not accepted — see `houses/starter/CLAUDE.md` for the one house
 that *does* carry deliberate reds, and why a template is the right place for them.)
 
+## Engineering, and the two gates
+
+Some requirements fall outside the prescriptive tables — a 10' cantilever retaining wall, a
+round column with no IRC R507.4 row, a trussed roof. Those are not UNKNOWNs. A finding
+carries an `Authority` (PRESCRIPTIVE or ENGINEERED) *orthogonal to* its `Result`, and names
+an item id `<kind>/<element-tag>` that a professional seal can cover (decision #65).
+
+```
+.venv/bin/haus engineering houses/catlin                  # what needs a seal, and what governs
+.venv/bin/haus engineering houses/catlin --item retaining_wall/W-SG-E2   # term by term
+.venv/bin/haus engineering houses/catlin --fingerprint retaining_wall/W-SG-E2
+.venv/bin/haus print houses/catlin --sealed               # the submittal gate
+```
+
+- `typehaus/engineering/` is a **leaf package**: it imports `model`/`resolve`/`quantities`/
+  `wind` and **never `checks`**. Its output is an `EngineeringRecord` (demand, capacity,
+  ratio, governing limit state, citation), not a `Finding` — `Finding` has nowhere to hold
+  numbers. `checks/_authoring.engineered()` is the one bridge between them.
+- **Every calculation is oracled against an independently hand-worked note** in
+  `houses/<name>/notes/`, the way `typehaus/wind.py` is oracled against
+  `catlin_truss_engineering.md`. A calc that only agrees with itself is not verified.
+- **draft** = this engine computed it and it checks out; `haus print` gates here, because
+  draft approval is exactly what a permit-ready printoff is for. **sealed** = a licensed PE
+  stamped it *and* the pinned fingerprint still matches the model.
+- The seal lives in `houses/<name>/engineering.toml` (`docs/engineering-toml-format.md`),
+  never on the elements: those are `# haus: editable` and undoable, and `_content_hash`
+  hashes every `plan/**/*.py`, so a stamp written into plan source would change the hash it
+  is pinned against. **The engine reads that file and never writes it.**
+- `Result.NOT_APPLICABLE` is a fourth verdict — "the condition this rule governs does not
+  exist in this building" — and must be **earned** from positive evidence of absence. "No
+  masonry guard anywhere in the plan" is N/A. "No dryer modeled" in a house with a laundry
+  is a real gap, and stays UNKNOWN.
+
 ## Costs and schedule
 
 Dollars are opt-in and live in the house: `houses/<name>/prices.toml` (unit prices, plus

@@ -70,6 +70,23 @@ SITE = Site(
     # monthly TAVG normals above, rounded to 47. Below-grade walls and slabs see this, not
     # the -15 F design air.
     soil_temp_f=47.0,
+    # ** THE PARCEL'S OWN SOIL, STATED HERE RATHER THAN INHERITED (2026-08-30). ** The
+    # mn-2024 profile carries GM as a Twin Cities presumption, and until today it cited the
+    # **Hennepin County** soil survey for it — the same wrong-county citation as the snow
+    # load below, in the shared engine where no house could correct it.
+    #
+    # GM (silty gravel to inorganic silt), IRC Table R405.1's 45 psf/ft equivalent-fluid
+    # group, is right for this site for the same reason it is right regionally: the whole
+    # Ramsey/Hennepin uplands are Des Moines-lobe glacial till, and the **Ramsey County**
+    # soil survey reads the same GM/ML as its neighbour's. The number does not move; what
+    # moves is that it is now this parcel's statement about itself rather than a borrowed
+    # one, and it will not silently follow a change made for some other house.
+    #
+    # ** IT IS STILL PRESUMPTIVE, NOT A SOILS REPORT. ** No geotechnical investigation has
+    # been done here. The sunken garden's retaining walls are the walls this number decides,
+    # and they are the walls a real report would be commissioned for
+    # (structural.foundation_unbalanced_fill).
+    soil_class="GM",
     # Ground snow load, **MN Rules 1303.1700**, corrected 2026-08-23. It read "Hennepin
     # County / Minneapolis, IRC Table R301.2(1)" — the right number from the wrong document
     # and the wrong county. The IRC table is the blank the state fills in, not the source,

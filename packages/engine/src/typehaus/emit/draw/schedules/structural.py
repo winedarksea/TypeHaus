@@ -81,3 +81,94 @@ def _write_hardware_schedule(pdf, model: ResolvedModel, number: str, name: str) 
         _add_table(fig, solid_rows,
                    ("Category", "Assembly", "Count", "Plan sf", "Cu yd"),
                    bbox=(0.04, 0.11, 0.7, 0.25))
+
+
+def _write_engineering_register(pdf, model: ResolvedModel, number: str, name: str, *,
+                                house_dir=None) -> None:
+    """S-105 — the engineered requirements, what governs each, and who sealed it.
+
+    The model carries a *reference* to a sealed document and never a seal graphic. Drawing
+    a stamp would be forging one; naming the engineer, the licence, the date and the
+    document is what a set is actually for.
+
+    Emitted only when the house has engineering items at all, so a house answered entirely
+    by prescriptive tables gets no empty page (``build_sheet_index``).
+    """
+    from typehaus.checks import run_from_model
+    from typehaus.engineering import Freshness, Status, load_register
+
+    with schedule_sheet(pdf, model, number, name) as fig:
+        report = run_from_model(model, [], house_dir)
+        register = load_register(house_dir)
+        item_ids = sorted({x.engineering_item for x in report.findings
+                           if x.engineering_item})
+        rows = []
+        for item_id in item_ids:
+            record = report.engineering[item_id]
+            state, signoff = register.freshness(record)
+            governing = record.governing
+            rows.append((
+                item_id,
+                ", ".join(record.element_tags) or record.key,
+                record.basis or "—",
+                governing.name if governing else "—",
+                f"{governing.ratio:.2f}" if governing else "—",
+                _LOCAL_LABEL[record.status],
+                signoff.id if signoff else "—",
+                state.value.upper() if state is Freshness.STALE else state.value,
+            ))
+        section(fig, 0.04, 0.90, "ENGINEERED REQUIREMENTS")
+        _add_table(fig, rows,
+                   ("Item", "Elements", "Basis", "Governing", "d/c", "Local", "Signoff",
+                    "Seal"),
+                   bbox=(0.04, 0.58, 0.92, 0.30))
+
+        section(fig, 0.04, 0.535, "SIGNOFFS")
+        line = 0.515
+        if not register.signoffs:
+            fig.text(0.04, line, "None recorded. Every item above rests on this engine's "
+                                 "own calculation, or on none — NOT FOR CONSTRUCTION.",
+                     fontsize=6, family="monospace")
+        for signoff in register.signoffs:
+            fig.text(0.04, line, f"{signoff.id} — {signoff.scope}",
+                     fontsize=6, family="monospace")
+            fig.text(0.06, line - 0.016, f"{signoff.credit()}"
+                     + (f"  ·  {signoff.document}" if signoff.document else ""),
+                     fontsize=5.5, family="monospace")
+            if signoff.note:
+                fig.text(0.06, line - 0.030, signoff.note, fontsize=5.5,
+                         family="monospace")
+            line -= 0.055
+
+        section(fig, 0.04, 0.16, "WHAT THIS PAGE DOES AND DOES NOT SAY")
+        for offset, text in enumerate((
+            "\"draft\" means this engine computed the item from first principles and it "
+            "checks out. It is NOT a professional seal.",
+            "\"sealed\" means the named engineer stamped the referenced document AND the "
+            "pinned inputs still match this model.",
+            "\"STALE\" means the model or the calculation changed after the seal was "
+            "made: the stamp no longer describes what is drawn.",
+            "This set encodes a declared subset of the code. Verify local amendments "
+            "with the authority having jurisdiction.",
+        )):
+            fig.text(0.04, 0.14 - offset * 0.016, f"\u2022 {text}", fontsize=5.5,
+                     family="monospace")
+
+
+#: How each local status letters on the sheet. Deliberately the same four words the CLI
+#: prints, so a reader moving between `haus engineering` and S-105 sees one vocabulary.
+_LOCAL_LABEL = {}
+
+
+def _init_labels() -> None:
+    from typehaus.engineering import Status
+
+    _LOCAL_LABEL.update({
+        Status.OK: "draft",
+        Status.OVER: "OVER",
+        Status.INCOMPLETE: "incomplete",
+        Status.NO_CALC: "no local calc",
+    })
+
+
+_init_labels()

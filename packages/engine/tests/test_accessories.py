@@ -118,13 +118,18 @@ def test_knee_brace_resolves_to_a_raked_wood_member(catlin_model) -> None:
 
 
 def test_knee_brace_hardware_resolves_as_a_band_at_each_end(catlin_model) -> None:
-    """The APVKB kit is a pair of wrap-around straps, so the hardware reads at both
-    joints — a band hugging the member's z-band at the beam/rail end and another at the
-    post end — instead of the single floating marker box the old spelling drew."""
+    """The connector reads at BOTH joints — a band hugging the member's z-band at the
+    beam/rail end and another at the post end — instead of the single floating marker box
+    the old spelling drew.
+
+    The part is `KBS1Z` since 2026-08-30 (it was the Outdoor Accents `APVKB45-6`, which has
+    no published allowable load in any code report). One connector per end is Simpson's own
+    installation for a 2x brace into a wider member, so the geometry the resolver draws and
+    the count `knee_brace_rows` bills now agree — two bands, two pieces."""
     member = next(b for b in catlin_model.braces if b.tag == "KB-SG-R1-NS").members[0]
     solids = {s.tag: s for s in catlin_model.solids}
-    top = solids["KB-SG-R1-NS-APVKB45-6-TOP"]
-    bottom = solids["KB-SG-R1-NS-APVKB45-6-BOT"]
+    top = solids["KB-SG-R1-NS-KBS1Z-TOP"]
+    bottom = solids["KB-SG-R1-NS-KBS1Z-BOT"]
     assert top.category == bottom.category == "connector"
     soffit = 8.4583333 * FT  # the pillar-top plane, 2" down since the 3-2x12 beams
     assert top.z1_m == pytest.approx(soffit)

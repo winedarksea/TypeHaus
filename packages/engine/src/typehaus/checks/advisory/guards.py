@@ -14,7 +14,14 @@ spacing that will not pass.
 from __future__ import annotations
 
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result, Severity, passed, unknown
+from typehaus.findings import (
+    Finding,
+    Result,
+    Severity,
+    not_applicable,
+    passed,
+    unknown,
+)
 
 _CHECK_ID = "advisory.cable_guard_deflection"
 
@@ -49,8 +56,9 @@ def cable_guard_deflection(ctx: CheckContext) -> list[Finding]:
                     if isinstance(e, Railing) and e.infill == "cable"
                     and e.role in ("guard", "guard_and_handrail")]
     if not cable_guards:
-        return [unknown(_CHECK_ID, "no guard in the plan is cable-filled, so cable "
-                        "deflection has nothing to grade")]
+        # N/A, not UNKNOWN: every Railing in the plan was read and none is cable-filled.
+        return [not_applicable(_CHECK_ID, "no guard in the plan is cable-filled, so cable "
+                               "deflection has nothing to grade")]
     out: list[Finding] = []
     for guard in cable_guards:
         span_ft = guard.post_spacing.meters / 0.3048

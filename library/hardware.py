@@ -30,7 +30,6 @@ from __future__ import annotations
 
 from typehaus.takeoff.hardware_catalog import (
     ROLE_BEAM_HOLD_DOWN,
-    AllowableLoads,
     ROLE_BRACE_THROUGH_BOLT,
     ROLE_COIL_STRAP,
     ROLE_CONCRETE_FACE_MOUNT_HANGER,
@@ -60,6 +59,7 @@ from typehaus.takeoff.hardware_catalog import (
     ROLE_STANDING_SEAM_CLAMP,
     ROLE_STUD_PLATE_TIE,
     ROLE_THROUGH_PANEL_PIPE_STRAP,
+    AllowableLoads,
     StructuralHardware,
 )
 
@@ -139,9 +139,20 @@ HUCQ_CONCRETE_HANGER = StructuralHardware(
            "published for wood members hung on concrete or masonry",
 )
 
+# **Retired from the knee-brace role on 2026-08-30, and kept as a capacity record.** It
+# served ROLE_KNEE_BRACE from the day the balcony was framed, and the 2026-08-30 research
+# pass established that it has no published allowable load of any kind (the citation below
+# traces the whole chain). The balcony's knee braces are its *entire* lateral system —
+# `checks/structural/lateral_racking.py` computes the demand — so an unrated connector there
+# is not a documentation gap, it is a hole in the load path.
+#
+# ``KBS1Z_KNEE_BRACE`` below took the role. The rationale, the arithmetic and what it costs
+# are in `houses/catlin/notes/balcony_lateral_bracing_design.md`. This record stays because
+# deleting it would delete the finding: a later reader reaching for the Outdoor Accents part
+# again should meet the report trail, not a blank.
 APVKB_KNEE_BRACE = StructuralHardware(
     tag="simpson-apvkb45-6-knee-brace",
-    name="Outdoor Accents Avant 45-degree knee brace, 6 in",
+    name="Outdoor Accents Avant 45-degree knee brace, 6 in (NOT LOAD-RATED)",
     role=ROLE_KNEE_BRACE,
     manufacturer=_SIMPSON,
     model="APVKB45-6",
@@ -655,21 +666,57 @@ KBS_BEAM_HOLD_DOWN = StructuralHardware(
     # pair is what `takeoff/uplift.py` derives this part for today.
     allowable=AllowableLoads(
         uplift_lb=1000.0,        # connection type 3, 4 connectors per joint, SPF/HF
-        lateral_f1_lb=1010.0,    # connection type 1, 2 connectors, brace angle 45 deg, SPF/HF
         lateral_f2_lb=1480.0,    # "Lateral", connection type 3, 4 connectors, SPF/HF
         load_duration_factor=1.6,
-        species="SPF/HF — the column recorded; DF/SP is 1,160 uplift / 1,175 F1 / 1,725 "
-                "lateral for the same rows",
-        fasteners="12 - 8d (0.131 x 2-1/2 in) per connector; F1 is connection type 1 "
-                  "(two connectors per joint, equal-width members) at a 45 deg brace angle; "
-                  "uplift/lateral are connection type 3 (continuous beam-to-post, four "
-                  "connectors). SD9x1-1/2 screws substitute with no load reduction "
-                  "(ER-280 Table 7 footnote 1)",
+        species="SPF/HF — the column recorded; DF/SP is 1,160 uplift / 1,725 lateral "
+                "for the same rows",
+        fasteners="12 - 8d (0.131 x 2-1/2 in) per connector, connection type 3 "
+                  "(continuous beam-to-post, four connectors per joint). SD9x1-1/2 screws "
+                  "substitute with no load reduction (ER-280 Table 7 footnote 1)",
         citation=("IAPMO UES ER-280 rev. 04/28/2026 §3.1.7 and Table 7, read 2026-08-30, "
-                  "cross-read against Simpson C-C-2019 for the SPF/HF split. F1 by brace "
-                  "angle: 1,010 lbf at 45 deg, 720 lbf at 30 or 60 deg (SPF/HF); footnote 3 "
-                  "permits interpolation between them for intermediate angles. Footnote 2: "
-                  "already increased for wind/earthquake at C_D 1.60, no further increase"),
+                  "cross-read against Simpson C-C-2019 for the SPF/HF split. This record is "
+                  "the BEAM-to-post rows; the knee-brace F1 rows are on "
+                  "KBS1Z_KNEE_BRACE. Footnote 2: already increased for wind/earthquake at "
+                  "C_D 1.60, no further increase allowed"),
+    ),
+)
+
+# The same part, serving the knee-brace role, and carrying a DIFFERENT row of the same table.
+# Two records rather than one because ``hardware_for_role`` holds exactly one item per role
+# and because the load that matters is not the same number: ER-280 Table 7 tabulates the
+# KBS1Z by CONNECTION TYPE, and a beam-to-post cap (types 3 and 4) and a knee brace (types 1
+# and 2) read different rows. Collapsing them would have handed the balcony's braces the
+# 1,010 lbf of the two-connector equal-width row when what they get is 540.
+#
+# **Connection type 2, and that is the one judgement in this record.** Type 1 is "for
+# equal-width members, install (2) KBS1Z on each end of brace"; type 2 is "for 2x knee brace,
+# install single KBS1Z on each end". These braces are 2x6 diagonals into 6x6 posts — not
+# equal width — so type 2 governs, at 540 lbf SPF/HF against type 1's 1,010. Taking the
+# larger number would have been an 87 % overstatement of capacity on the only lateral
+# elements this structure has.
+KBS1Z_KNEE_BRACE = StructuralHardware(
+    tag="simpson-kbs1z-knee-brace",
+    name="KBS1Z knee-brace stabilizer (ZMAX), one per brace end",
+    role=ROLE_KNEE_BRACE,
+    manufacturer=_SIMPSON,
+    model="KBS1Z",
+    source="Simpson Strong-Tie KBS1Z knee-brace stabilizer (strongtie.com/kbs) — the only "
+           "knee-brace connector in this catalog with a code-report allowable load, and the "
+           "one Simpson publish by brace angle. Factory-formed at 45 degrees with a "
+           "one-time field bend for other angles",
+    allowable=AllowableLoads(
+        lateral_f1_lb=540.0,     # connection type 2, single connector, 45 deg, SPF/HF
+        load_duration_factor=1.6,
+        species="SPF/HF — the column recorded; DF/SP is 630 lbf for the same row",
+        fasteners="12 - 8d x 1-1/2 in per connector, one connector at each end of the "
+                  "brace (connection type 2, a 2x knee brace into a wider member). "
+                  "SD9x1-1/2 screws substitute with no load reduction",
+        citation=("IAPMO UES ER-280 rev. 04/28/2026 Table 7, connection type 2, read "
+                  "2026-08-30; SPF/HF split from Simpson C-C-2019. F1 by brace angle: "
+                  "540 lbf at 45 deg, 440 lbf at 30 or 60 deg (SPF/HF, in-service moisture "
+                  "<= 19 %; the > 19 % columns are 385 and 330). Footnote 3 permits "
+                  "interpolation between the two angles. Footnote 2: values already include "
+                  "C_D = 1.60 for wind, no further increase allowed"),
     ),
 )
 
@@ -830,7 +877,6 @@ STRUCTURAL_HARDWARE: tuple = (
     LSTA24_RIDGE_STRAP,
     LUS_FACE_MOUNT_HANGER,
     HUCQ_CONCRETE_HANGER,
-    APVKB_KNEE_BRACE,
     APVB_BRACE_BOLT,
     MASA_MUDSILL_ANCHOR,
     STHD_STRAP_HOLDOWN,
@@ -852,6 +898,7 @@ STRUCTURAL_HARDWARE: tuple = (
     S5_PV_KIT,
     S5_COLORGARD_SNOW_RETENTION,
     KBS_BEAM_HOLD_DOWN,
+    KBS1Z_KNEE_BRACE,
     POLY_PANEL_FASTENER,
     DECK_EQUIPMENT_ANCHOR,
     EXPOSED_FASTENER_PANEL_SCREW,
@@ -875,4 +922,5 @@ STRUCTURAL_HARDWARE: tuple = (
 #: lookup and price row exactly where it was.
 CAPACITY_ONLY_RECORDS: tuple = (
     ABU66SS_POST_BASE,
+    APVKB_KNEE_BRACE,
 )

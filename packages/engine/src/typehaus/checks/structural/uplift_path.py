@@ -21,11 +21,19 @@ narrowed rather than gone away — *this* check still derives no demand from it.
 tributary area, no force coefficient, and no share of the storey shear for any joint it
 walks, and a connector schedule without a load is a drawing, not a calculation. ``wind.py``
 owns the wording, so the site's actual basis is quoted rather than a stale absence claim.
-So a covered link is reported UNKNOWN, not PASS, for the same reason ``cantilever.py``
-refuses to pass a mitigated cantilever: "there is hardware here" is a different claim from
-"this joint is adequate", and folding the first into a PASS would retire a question an
-engineer still has to answer. ``checks/structural/lateral_racking.py`` is the one place that
-does compute a wind demand, and it covers the balcony's braced bays only.
+Until 2026-08-30 a covered link therefore reported UNKNOWN, never PASS, so that "there is
+hardware here" could not be mistaken for "this joint is adequate" (#64). The concern was
+right; the mechanism was not. It put the sentence an engineer must act on at the end of 59
+identical rows — the shape a reader scans past — and it spent the UNKNOWN column, which is
+supposed to mean "a real input is missing", on a scope disclaimer.
+
+**The rule is now named for what it grades and passes when it passes**, and the capacity
+question is hoisted into one ENGINEERED item per roof (``lateral_uplift/RF-HOUSE``,
+``lateral_uplift/RF-GARAGE``): two rows a reviewer must act on, that a professional seal has
+to cover and that ``haus engineering`` lists. That is decision #64's refinement, not its
+reversal — the question stays open and is more visible, not less.
+``checks/structural/lateral_racking.py`` is the one place that does compute a wind demand,
+and it covers the balcony's braced bays only.
 
 An **uncovered** link is a FAIL. A joint with no connector at all is not a judgement call.
 
@@ -39,6 +47,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from typehaus.checks._authoring import engineered as _engineered
+from typehaus.checks._authoring import not_applicable
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import ConnectorKind
@@ -48,15 +58,24 @@ from typehaus.takeoff.anchors import coil_strap_rows, mudsill_anchor_rows
 from typehaus.takeoff.hangers import hung_connections
 from typehaus.takeoff.hardware_config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
 from typehaus.takeoff.uplift import bearing_connections, bearing_line_tags
-from typehaus.wind import capacity_caveat
 from typehaus.takeoff.uplift_joints import (
     authored_joints,
     catalogued_post_sizes,
     is_squash_block,
     tags_covered_by,
 )
+from typehaus.wind import capacity_caveat
 
-_CHECK_ID = "structural.uplift_load_path"
+#: Renamed from ``structural.uplift_load_path`` on 2026-08-30, and the rename IS the fix.
+#: The old id promised to grade the load path; the rule grades whether every joint in it is
+#: *covered*, which is a different and narrower claim. Under the honest name a covered joint
+#: is an honest PASS of the rule that actually ran, and the capacity question moves to where
+#: it can be tracked — the engineering register (see ``uplift_capacity_items`` below).
+_CHECK_ID = "structural.uplift_path_coverage"
+
+#: The house-level items the capacity question now lives on, one per roof. Two rows a
+#: reviewer must act on, instead of 59 identical UNKNOWNs a reviewer scrolls past.
+_CAPACITY_KIND = "lateral_uplift"
 _CONFIG = DEFAULT_HARDWARE_TAKEOFF_CONFIG
 _RULES = _CONFIG.uplift
 
@@ -85,11 +104,30 @@ class Link:
     #: missing connector, and reporting it as one would put a modelling gap in the same
     #: column as a real break — and take ``haus check`` to exit 1 over it.
     not_evaluable: str | None = None
+    #: Why this joint is outside what a *connector-coverage* rule governs at all — as
+    #: opposed to ``not_evaluable``, which is "I could not look". The two used to share one
+    #: field and one UNKNOWN, and they are different sentences: a post that never declares
+    #: what it stands on is a hole in the model somebody can fill, while a cast column on a
+    #: cast footing has no connector by design and never will. The first is UNKNOWN; the
+    #: second is NOT_APPLICABLE, which is a verdict about the building.
+    not_governed: str | None = None
 
 
 def _finding(link: Link, site) -> Finding:
-    """Covered -> UNKNOWN, uncovered -> FAIL, un-gradeable -> UNKNOWN. See the docstring."""
+    """Covered -> PASS, uncovered -> FAIL, outside the rule -> N/A. See the docstring."""
+    if link.not_governed is not None:
+        # N/A, and it is earned rather than assumed: a cast column on a cast footing is
+        # joined by a doweled lap into the column's own bar cage, so it has no connector by
+        # design and never will. A connector-coverage rule does not govern it — a verdict
+        # about the building, not a confession that an input is missing.
+        return not_applicable(
+            _CHECK_ID,
+            f"[advisory, not engineering] {link.name} is outside what a connector-coverage "
+            f"rule governs: {link.not_governed}",
+            link.tags)
     if link.not_evaluable is not None:
+        # Still UNKNOWN, and the contrast with the branch above is the whole point: this is
+        # a hole in the model somebody can fill, not a joint the rule does not reach.
         return Finding(
             severity=Severity.WARN, check_id=_CHECK_ID, result=Result.UNKNOWN,
             message=(f"[advisory, not engineering] {link.name} cannot be graded: "
@@ -104,10 +142,18 @@ def _finding(link: Link, site) -> Finding:
             fix_hint=("declare the joint so a rule can derive it (a Roof/FloorSystem "
                       "bearing_ref, a Post.supported_by, a Beam.bearing_ref), or author a "
                       "Connector naming both members"))
+    # PASS, since 2026-08-30 — of a rule now named for what it grades. This used to be an
+    # UNKNOWN so that "there is hardware here" could not be mistaken for "this joint is
+    # adequate" (#64). That concern was right and the mechanism was wrong: the sentence it
+    # protected ran at the end of 59 identical rows, which is exactly what a reader scans
+    # past. It is now one named ENGINEERED item per roof, which a signoff has to cover and
+    # `haus engineering` lists — more visible, not less. See decision #64's refinement.
     return Finding(
-        severity=Severity.WARN, check_id=_CHECK_ID, result=Result.UNKNOWN,
-        message=(f"[advisory, not engineering] {link.name} is connected by {link.hardware}; "
-                 f"coverage only — {capacity_caveat(site)}"),
+        severity=Severity.WARN, check_id=_CHECK_ID, result=Result.PASS,
+        message=(f"[advisory, not engineering] {link.name} is connected by {link.hardware} "
+                 f"— the joint is covered; its CAPACITY is not graded here and belongs to "
+                 f"`{_CAPACITY_KIND}/<roof>` in the engineering register "
+                 f"({capacity_caveat(site)})"),
         element_tags=link.tags)
 
 
@@ -264,7 +310,7 @@ def _post_links(ctx: CheckContext) -> list:
             links.append(Link(
                 f"column {tag} ({post.size}) to {post.supported_by or 'its footing'}",
                 (tag,), None,
-                not_evaluable=("it is cast concrete on concrete — a doweled lap into the "
+                not_governed=("it is cast concrete on concrete — a doweled lap into the "
                                "column's own bar cage, not a connector, and this model "
                                "carries no rebar to point at (the steel is inside the "
                                "column's own $/cy rate, not missing from the order)")))
@@ -320,7 +366,7 @@ def _post_links(ctx: CheckContext) -> list:
 
 
 @check(Tier.STRUCTURAL, _CHECK_ID)
-def uplift_load_path(ctx: CheckContext) -> list[Finding]:
+def uplift_path_coverage(ctx: CheckContext) -> list[Finding]:
     """Every joint in the roof-to-footing chain, covered or broken."""
     site = ctx.plan.project.site
     return [_finding(link, site) for link in (
@@ -328,3 +374,34 @@ def uplift_load_path(ctx: CheckContext) -> list[Finding]:
         *_stack_and_sill_links(ctx),
         *_post_links(ctx),
     )]
+
+
+@check(Tier.STRUCTURAL, "structural.uplift_capacity")
+def uplift_capacity_items(ctx: CheckContext) -> list[Finding]:
+    """The question ``uplift_path_coverage`` deliberately does not answer, named per roof.
+
+    One row per roof rather than one per joint, and that is the whole design. A connector
+    schedule is sized as a system against a storey's share of the wind demand; a per-joint
+    item would invite 59 seals for one calculation, and the register's identity rule
+    (one item per element) would then be working against the thing being sealed. A roof is
+    the smallest unit an uplift design is actually done for.
+
+    No calculation is registered, by decision — no wind capacity calc is in scope. So each
+    item reports UNKNOWN and blocks exactly as the 59 UNKNOWNs it replaced did. What changed
+    is that the outstanding work is now *two named things* instead of 59 identical
+    disclaimers, and `haus engineering` will list them until somebody seals them.
+    """
+    from typehaus.engineering import item_id
+
+    out: list[Finding] = []
+    for roof in sorted(ctx.model.roofs, key=lambda r: r.tag):
+        out.append(_engineered(
+            ctx, "structural.uplift_capacity", item_id(_CAPACITY_KIND, roof.tag),
+            f"the uplift connection schedule over {roof.tag} is covered joint by joint "
+            f"(structural.uplift_path_coverage) but its CAPACITY is not evaluated: this "
+            f"engine derives no tributary area, no force coefficient and no share of the "
+            f"storey shear for any joint in it, and a connector schedule without a load is "
+            f"a drawing rather than a calculation",
+            (roof.tag,), code="ASCE 7-16 §26-30 / IRC R802.11",
+            fix=f"seal `{_CAPACITY_KIND}/{roof.tag}` in engineering.toml"))
+    return out

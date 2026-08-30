@@ -309,6 +309,11 @@ _wall_bottom = ft(-(SPEC.basement_depth_ft + 0.75))
 _porch_wall_bottom = ft(-(SPEC.basement_depth_ft + 8.0 / 12.0))
 _porch_top = ft(SPEC.porch_top_ft)  # storey datum = top of joist; the masonry bears here
 _ret_top = ft(SPEC.retaining_top_ft)
+# Top of wall to underside of footing — the true unbalanced fill on the three free retaining
+# walls, because the raised garden's apron holds a terrace against them at their own top
+# elevation. See the long note in WALLS below; this is `_ret_top - _wall_bottom` written so it
+# cannot drift from either.
+_ret_unbalanced_fill = ft(SPEC.retaining_top_ft + SPEC.basement_depth_ft + 0.75)
 # Top of the composite boards laid over FS-SG-PORCH: the joist tops are the 0' storey datum
 # and the plank sits on them. This is the surface underfoot — what RL-SG-PORCH's 42" is
 # measured from, and what the two centre balcony pillars bear on.
@@ -402,6 +407,30 @@ WALLS = [
                    vertical_reinforcement='#6 @ 38" o.c.'),
     # Garden retaining run (to just above grade), the U south of the porch.
     #
+    # ** THE FILL AGAINST THESE THREE IS AUTHORED, AND IT IS A CORRECTNESS FIX (2026-08-30). **
+    # Left derived, `structural.foundation_unbalanced_fill` measured from the single global
+    # `Site.grade` (-2'-10") down to the footing and reported **7.0'**. That number is wrong
+    # here, and the model already contained everything needed to see it: `params/
+    # raised_garden.py` builds an SRW apron whose `TOP = ft(RETAINING_WALL_TOP_FT)` — level
+    # with these walls' own tops at +0'-6" — standing 3'-0" out from their outer faces and
+    # holding a terrace of soil at that level *against them*. Grade is a plane, and a plane
+    # cannot describe a terrace sitting 3'-4" above it. The real retained height is the wall's
+    # full top-to-footing dimension, **10.37'**.
+    #
+    # It is deliberately written as the same arithmetic `_wall_bottom` and `_ret_top` are
+    # built from rather than as a literal, so it moves with either. There is no separate
+    # "terrace top" number and there must not be: `SPEC.retaining_top_ft` IS the terrace top,
+    # because `raised_garden.py` reads that very constant to place its own apron. A second
+    # copy would be exactly the divergence the "publish, do not re-derive" note further down
+    # this file exists to prevent.
+    #
+    # **This changes no verdict, and that was checked before and after.** All three were
+    # UNKNOWN — engineered before, and are UNKNOWN — engineered after; only the fill number in
+    # the message moves. Both figures are far past the 48" at which R404.1.1 sends a wall to
+    # an engineered design, so the correction cannot flip anything — but it changes what the
+    # engineer is asked to design for by nearly half again, which is the whole point.
+    # `notes/sunken_garden_retaining_screening.md` works the consequences.
+    #
     # `lateral_support="unsupported"` is the honest statement of what these three are: free
     # retaining walls, open to the sky along their whole top, holding 9'-9" of fill with
     # nothing bracing the head. That is IRC R404.4's case exactly — a retaining wall not
@@ -413,13 +442,16 @@ WALLS = [
     FoundationWall(uid="SGW105AAAA", tag="W-SG-W2", start_node="N-SG-MW",
                    end_node="N-SG-SW", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom,
+                   unbalanced_fill=_ret_unbalanced_fill,
                    lateral_support="unsupported"),
     FoundationWall(uid="SGW106AAAA", tag="W-SG-E2", start_node="N-SG-SE",
                    end_node="N-SG-ME", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom,
+                   unbalanced_fill=_ret_unbalanced_fill,
                    lateral_support="unsupported"),
     FoundationWall(uid="SGW107AAAA", tag="W-SG-S", start_node="N-SG-SW",
                    end_node="N-SG-SE", assembly="SUNKEN_GARDEN_WALL",
+                   unbalanced_fill=_ret_unbalanced_fill,
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom,
                    lateral_support="unsupported"),
 ]
@@ -1521,7 +1553,29 @@ CONNECTORS += [
 
 # ============================================================================
 # Knee braces at the balcony pillar tops: 2x6 wood diagonals with a 3' leg, through-bolted,
-# Simpson Outdoor Accents APVKB45-6 at each joint.
+# **Simpson KBS1Z at each end of each brace** (16 pieces over the eight braces).
+#
+# ** THE CONNECTOR CHANGED ON 2026-08-30, AND IT IS A LOAD-PATH FIX, NOT A PREFERENCE. **
+# These joints carried `APVKB45-6`, Simpson's Outdoor Accents Avant decorative knee brace,
+# from the day the balcony was framed. It has no published allowable load. That was traced
+# through the reports rather than assumed: IAPMO UES ER-102 (the stamped-connector index,
+# rev. 08/21/2026) enumerates the whole AP/APV series it covers — post bases, ledgers, tees,
+# angles, joist ties, hangers — and APVKB is not among them; ER-280, the report ER-102 points
+# that series at, has no APVKB section, table or figure. Simpson's own Outdoor Accents load
+# tables print uplift and download for the Avant POST BASES and no load row for the brace.
+#
+# These eight braces are the **entire** lateral system of a freestanding deck at storey
+# height on pinned standoff bases. An unrated connector there is a hole in the load path,
+# not a documentation gap. `KBS1Z` is Simpson's purpose-built structural knee-brace
+# stabilizer, is already in this house's catalog and price file for the breezeway beams, and
+# is the only knee-brace connector anywhere in the catalog with a code-report allowable —
+# published BY BRACE ANGLE, which is exactly the capacity a 45-degree brace needs
+# (ER-280 Table 7, connection type 2: 540 lbf F1 at 45 degrees in SPF/HF).
+#
+# `structural.lateral_racking` computes the demand these have to carry and reports the
+# margin; the full worked chain, and what the swap costs, is in
+# `notes/balcony_lateral_bracing_design.md`. The 2x6 diagonal, its 3' leg, its geometry and
+# its 1/2" through-bolts are all unchanged — only the steel at the ends moved.
 #
 # The four corner pillars are braced in both plan directions; the two centre pillars
 # (PT-SG-BR2/BF2) are deliberately left as leaning columns. This is a freestanding deck
@@ -1541,6 +1595,10 @@ CONNECTORS += [
 _BRACED_CORNERS = (("R", 1, -1, +1), ("R", 3, -1, -1),
                    ("F", 1, +1, +1), ("F", 3, +1, -1))
 _BRACE_LEG = ft(3.0)
+# See the 2026-08-30 note at the head of this block. `KneeBrace.connector` is the model
+# string `structural.lateral_racking` looks the allowable up by, so it has to be the part
+# that is actually installed, not the family the brace was first drawn with.
+_BRACE_CONNECTOR = "KBS1Z"
 # The N-S brace uid is the one the retired Connector carried at this same pillar, so the
 # brace keeps its IFC GlobalId across this change.
 _NS_BRACE_UID = {("R", 1): "SGCK1RAAAA", ("R", 3): "SGCK3RAAAA",
@@ -1564,12 +1622,12 @@ for _row, _i, _ns, _ew in _BRACED_CORNERS:
         uid=_NS_BRACE_UID[(_row, _i)], tag=f"KB-SG-{_row}{_i}-NS", position=_at,
         soffit_elevation=_balcony_beam_soffit, leg=_BRACE_LEG, axis="y", direction=_ns,
         member="2x6", post_size=SPEC.pillar_size, assembly="POST_WHITE_PAINT",
-        connects=(_post, _NS_BEAM[_i])))
+        connector=_BRACE_CONNECTOR, connects=(_post, _NS_BEAM[_i])))
     KNEE_BRACES.append(KneeBrace(
         uid=_EW_BRACE_UID[(_row, _i)], tag=f"KB-SG-{_row}{_i}-EW", position=_ew_at,
         soffit_elevation=_rail_soffit, leg=_BRACE_LEG, axis="x", direction=_ew,
         member="2x6", post_size=SPEC.pillar_size, assembly="POST_WHITE_PAINT",
-        connects=(_post, _EW_RAIL[_row])))
+        connector=_BRACE_CONNECTOR, connects=(_post, _EW_RAIL[_row])))
 
 # ============================================================================
 # Balcony guard + edge trim. The metal fascia-mounted guardrail is a first-class Railing

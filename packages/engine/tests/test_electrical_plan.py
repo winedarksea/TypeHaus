@@ -283,7 +283,7 @@ def test_an_unshielded_cool_exterior_luminaire_is_reported(catlin_model):
 
 
 def test_a_wall_attached_peninsula_is_not_graded_as_an_island(catlin_model):
-    """``electrical.island_receptacle`` returns UNKNOWN on catlin, and that is correct.
+    """``electrical.island_receptacle`` returns NOT_APPLICABLE on catlin, and that is correct.
 
     This test asserted a PASS on FURN-M-KIT-ISLAND until 2026-08-24, when the island became
     FURN-M-KIT-PENINSULA and landed its east end on the east wall. The check's own
@@ -291,7 +291,11 @@ def test_a_wall_attached_peninsula_is_not_graded_as_an_island(catlin_model):
     boundary" — a peninsula reads as near-wall and is deliberately not graded, because a
     carcass against a wall is ``receptacle_spacing``'s beat, not this one. With no
     freestanding work-surface carcass left in the house the check has nothing to grade and
-    says so.
+    says so. Since 2026-08-30 it says so as N/A rather than UNKNOWN, and it earns that by
+    counting: eight work-surface units were read and every one of them stands against a
+    boundary, so "this house has no island" is a fact about the building. Had *no*
+    work-surface casework been modeled at all the answer would still be UNKNOWN, because
+    then the question would be unanswerable rather than answered.
 
     ** THIS IS AN HONEST REGRESSION IN COVERAGE, NOT A FIX. ** The peninsula still has
     countertop-serving receptacles — ED-M-LIVING-KGF4 and KMX1, both inside
@@ -304,8 +308,8 @@ def test_a_wall_attached_peninsula_is_not_graded_as_an_island(catlin_model):
 
     report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
     findings = [f for f in report.findings if f.check_id == "electrical.island_receptacle"]
-    assert [f.result.value for f in findings] == ["unknown"]
-    assert "no freestanding work-surface casework" in findings[0].message
+    assert [f.result.value for f in findings] == ["not_applicable"]
+    assert "no freestanding island" in findings[0].message
     tags = {item.tag for item in catlin_model.canvas_objects}
     assert "FURN-M-KIT-PENINSULA" in tags and "FURN-M-KIT-ISLAND" not in tags
 

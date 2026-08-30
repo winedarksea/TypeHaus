@@ -108,6 +108,43 @@ def test_corner_plates_lap_opposite_ways_so_they_never_double_in_the_corner():
     assert plates["plate-top-1"].p0[0] == pytest.approx(band, abs=1e-9)
 
 
+# -------------------------------------------------------- sole-plate break unit tests
+def _door_wall(sill_m: float):
+    """A 4 m wall with a 3 ft door centred at 2 m, whose sill sits at ``sill_m``."""
+    rw = _mitred_wall(4.0, 0.0, at_start=True)
+    opening = SimpleNamespace(center_m=2.0, width_m=ft(3).meters, height_m=ft(6, 8).meters,
+                              sill_m=sill_m, is_door=True, operation=None,
+                              header_spec=None, pocket_run_m=0.0, pocket_sign=0)
+    return opening, frame_wall(_plan_double(), rw, openings=[opening])
+
+
+def test_an_opening_below_the_framing_base_cuts_the_sole_plate_at_its_jambs():
+    """A garage door onto a slab has no floor under it, so it has no bottom plate either."""
+    opening, members = _door_wall(sill_m=-0.5)
+    plates = sorted((m for m in members if m.child_key.startswith("plate-bottom")),
+                    key=lambda m: m.p0[0])
+    assert [m.child_key for m in plates] == ["plate-bottom-0", "plate-bottom-1"]
+    half = opening.width_m / 2.0
+    # The cut lands exactly on the rough-opening edges, so each jamb pack still has a plate
+    # end to bear on.
+    assert plates[0].p1[0] == pytest.approx(opening.center_m - half, abs=1e-9)
+    assert plates[1].p0[0] == pytest.approx(opening.center_m + half, abs=1e-9)
+    assert plates[1].p0[0] - plates[0].p1[0] == pytest.approx(opening.width_m, abs=1e-9)
+
+
+def test_a_door_on_the_framing_base_leaves_the_sole_plate_whole():
+    """The regression that stops a looser reading of the rule.
+
+    An ordinary door's threshold sits ON the bottom plate — ``sill_m == 0`` — and the plate
+    runs through underneath it. Reading the predicate as "at or below the plate top" would
+    re-frame every door in the house and churn every member id with it, so the key is
+    asserted exactly: one member, still called ``plate-bottom``.
+    """
+    _opening, members = _door_wall(sill_m=0.0)
+    plates = [m for m in members if m.child_key.startswith("plate-bottom")]
+    assert [m.child_key for m in plates] == ["plate-bottom"]
+
+
 # ---------------------------------------------------------- small-opening unit tests
 def _fourteen_inch_window_wall():
     """A 4 m wall with a 14" window centred on the bay between the 4th and 5th studs."""

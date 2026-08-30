@@ -15,7 +15,7 @@ from __future__ import annotations
 from typehaus.checks.jurisdiction import JurisdictionProfile
 from typehaus.checks.registry import CheckContext, Preferences
 from typehaus.checks.structural.foundation import foundation_unbalanced_fill
-from typehaus.findings import Result
+from typehaus.findings import Authority, Result
 from typehaus.model import (
     Assembly,
     Building,
@@ -131,6 +131,18 @@ def test_a_reinforced_cell_fails_until_the_wall_declares_the_bars() -> None:
     assert "is reinforced" in reinforced[0].message
 
 
+# --- one condition, many walls -----------------------------------------------------------
+#
+# The prescriptive branches aggregate: four identical walls are ONE condition and one
+# decision, and reporting it four times would be four copies of the same sentence
+# (`test_identical_walls_aggregate_into_one_finding` below pins that).
+#
+# The engineered branches do NOT aggregate, and the asymmetry is deliberate. An engineered
+# handoff names an item — `retaining_wall/<tag>` — that a signoff in `engineering.toml` has
+# to cover, and item identity is per element so that moving one wall stales that wall's seal
+# and leaves its neighbours' alone. A grouped handoff would have to name one item for four
+# walls, which is the thing the register exists to avoid.
+
 def test_an_unsupported_wall_goes_to_r404_4_rather_than_the_table() -> None:
     """The table is a *basement* wall table; it presumes bracing top and bottom (note g).
 
@@ -139,8 +151,13 @@ def test_an_unsupported_wall_goes_to_r404_4_rather_than_the_table() -> None:
     """
     findings = foundation_unbalanced_fill(
         _context(bottom_ft=-9.0, lateral_support="unsupported"))
-    assert [f.result for f in findings] == [Result.UNKNOWN]
+    # One finding per wall — see the note above on why the engineered branches do not group.
+    assert {f.result for f in findings} == {Result.UNKNOWN}
+    assert len(findings) == 4
+    assert all(len(f.element_tags) == 1 for f in findings)
     assert "R404.4" in findings[0].message
+    assert findings[0].authority is Authority.ENGINEERED
+    assert findings[0].engineering_item == f"retaining_wall/{findings[0].element_tags[0]}"
 
 
 def test_a_wall_that_does_not_say_whether_it_is_braced_is_unknown() -> None:
@@ -165,8 +182,13 @@ def test_an_authored_engineering_spec_is_the_design() -> None:
     """
     spec = "#5 @ 16\" o.c. vertical, EF, per S-2.1 rev. B"
     findings = foundation_unbalanced_fill(_context(bottom_ft=-9.0, engineering_spec=spec))
-    assert [f.result for f in findings] == [Result.PASS]
-    assert f"engineered design authored: {spec}" in findings[0].message
+    assert {f.result for f in findings} == {Result.PASS}
+    assert len(findings) == 4
+    # It routes through the register now, so the wall is a nameable item either way — and
+    # the message says AUTHORED, never computed, so a quotation is not mistaken for a calc.
+    assert all(f.authority is Authority.ENGINEERED for f in findings)
+    assert f"AUTHORED (not computed by this engine)" in findings[0].message
+    assert spec in findings[0].message
 
 
 def test_an_authored_unbalanced_fill_beats_the_derived_proxy() -> None:
@@ -198,8 +220,8 @@ def test_unknown_without_a_soil_class() -> None:
 def test_unknown_off_the_published_thickness() -> None:
     findings = foundation_unbalanced_fill(
         _context(thickness_in=16.0, lateral_support="top_and_bottom"))
-    assert [f.result for f in findings] == [Result.UNKNOWN]
-    assert "thicker than the table's 12\" maximum" in findings[0].message
+    assert {f.result for f in findings} == {Result.UNKNOWN}
+    assert all("thicker than the table's 12\" maximum" in f.message for f in findings)
 
 
 def test_identical_walls_aggregate_into_one_finding() -> None:

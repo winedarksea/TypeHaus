@@ -46,9 +46,12 @@ MN_2024 = JurisdictionProfile(
         "Plumbing: rough-in geometry and MN ch. 4714 sizing tables (sleeving, drain slope, "
         "wall occupancy, under-slab and footing clearance, sewer invert, DFU/WSFU sizing, "
         "trap-arm length) — no gas, no fixture venting beyond trap arms, no testing. "
-        "Electrical: E3902 GFCI receptacle locations and E3902.16 AFCI branch-circuit "
-        "coverage only — no conductor sizing, box fill, or load calculation, none of which "
-        "is claimed as a code result. "
+        "Electrical: E3902 GFCI receptacle locations, E3902.16 AFCI branch-circuit "
+        "coverage, and E3901.6 / NEC 210.52(D) the receptacle required at each lavatory "
+        "basin — with the basin taken as the whole vanity carcass, since no basin extent "
+        "is modeled, which makes that reach test permissive rather than exact. No "
+        "conductor sizing, box fill, or load calculation, none of which is claimed as a "
+        "code result. "
         "Energy storage: R327.2 UL 9540 listing, R327.5 per-unit and aggregate energy "
         "ratings, and R327.7 smoke and heat detection at the system. R327.3 installation "
         "per the manufacturer's instructions and R327.6 protection from impact are NOT "
@@ -79,10 +82,17 @@ MN_2024 = JurisdictionProfile(
     # IRC Table R401.4.1 presumptive value for sandy/silty clay, the conservative default
     # where no soils report exists. A real geotechnical report supersedes it.
     soil_bearing_psf=1500.0,
-    # Twin Cities glacial till backfill reads as GM/ML (silty gravel to inorganic silt) on
-    # the Hennepin County soil survey — IRC Table R405.1's 45 psf/ft equivalent-fluid group,
-    # the middle of the three columns. Like soil_bearing_psf above this is the presumptive
-    # value where no soils report exists, and a real geotechnical report supersedes it.
+    # Twin Cities metro glacial till backfill reads as GM/ML (silty gravel to inorganic
+    # silt) — IRC Table R405.1's 45 psf/ft equivalent-fluid group, the middle of the three
+    # columns. Like soil_bearing_psf above this is the PRESUMPTIVE value where no soils
+    # report exists, and a real geotechnical report supersedes it.
+    #
+    # ** IT NO LONGER CITES ONE COUNTY'S SOIL SURVEY (2026-08-30). ** It used to name
+    # Hennepin County's, which is the same class of wrong-source citation as the ground snow
+    # load fixed on 2026-08-23 — except that a profile is shared by every house that names
+    # it, so no house could correct it from where it stood. A parcel states its own soil on
+    # ``Site.soil_class`` now and that wins; this stays as the regional presumption for a
+    # house that has no soils report (→ ``checks/soil.py``).
     soil_class="GM",
     climate=MN_ZONE_6,
     permit_items=(
@@ -142,7 +152,7 @@ MN_2024 = JurisdictionProfile(
         # the guard itself has the redundancy that section wants. A reviewer asks those two
         # questions of different drawings.
         PermitItemSpec("Structural glass guards", ("code.R308_4_4_glass_guard",),
-                       ("IRC R308.4.4",), blocking=False),
+                       ("IRC R308.4.4",)),
         PermitItemSpec("Garage / dwelling separation",
                        ("code.R302_5_garage_separation",),
                        ("IRC R302.5.1", "IRC R302.5.2", "IRC R302.6"), blocking=False),
@@ -177,6 +187,12 @@ MN_2024 = JurisdictionProfile(
                        ("IRC R806.2",), blocking=False),
         PermitItemSpec("GFCI receptacle locations", ("code.E3902_gfci_locations",),
                        ("IRC E3902",), blocking=False),
+        # Blocking, unlike the two beside it: the staging lane exists for a rule the
+        # reference house cannot answer yet, and this one it can — every basin in the plan
+        # resolves, and the receptacle serving it either exists or does not.
+        PermitItemSpec("Bathroom basin receptacle",
+                       ("code.E3901_6_bathroom_receptacle",),
+                       ("IRC E3901.6", "NEC 210.52(D)")),
         PermitItemSpec("AFCI branch circuits", ("code.E3902_16_afci",),
                        ("IRC E3902.16",), blocking=False),
         # The energy storage system. R327 is the 2018 IRC's article number for it; the 2021
@@ -184,13 +200,13 @@ MN_2024 = JurisdictionProfile(
         PermitItemSpec("Energy storage system",
                        ("code.R327_ess_listing", "code.R327_ess_capacity",
                         "code.R327_ess_detection"),
-                       ("IRC R327.2", "IRC R327.5", "IRC R327.7"), blocking=False),
+                       ("IRC R327.2", "IRC R327.5", "IRC R327.7")),
         # The two source-side NEC rules. Separate item from the ESS: an inspector signs off
         # on a backfeed breaker and a roof shutdown at a different moment than on a battery.
         PermitItemSpec("PV interconnection and rapid shutdown",
                        ("code.NEC_705_12_interconnection",
                         "code.NEC_690_12_rapid_shutdown"),
-                       ("NEC 705.12(B)(3)(2)", "NEC 690.12(B)(2)"), blocking=False),
+                       ("NEC 705.12(B)(3)(2)", "NEC 690.12(B)(2)")),
         PermitItemSpec("Dryer exhaust", ("code.M1502_dryer_exhaust",), ("IRC M1502",),
                        blocking=False),
         PermitItemSpec("Water-heater relief and pan", ("code.P2804_water_heater_relief",),
@@ -273,9 +289,62 @@ MN_2024 = JurisdictionProfile(
         # room the supply side feeds — and both are distances measured off the elevation
         # rather than judgment. Non-blocking: the third thing the check grades, hood height
         # above drifted snow, is a cold-climate rule of thumb with no section behind it.
+        # Gating since 2026-08-30. These four items sat in the staging lane for a
+        # structural reason, not a "not yet" one: their checks no-op'd (or answered
+        # UNKNOWN) for a house that simply has no battery / no PV / no ventilator / no
+        # glass guard, and an item with no matched findings resolves to UNKNOWN. That is
+        # the reason Result.NOT_APPLICABLE now exists — the checks say "this house has
+        # none" out loud, the item resolves N/A, and the line can gate without failing
+        # every house that does not own the equipment.
         PermitItemSpec("ERV outdoor-air intake and exhaust terminations",
                        ("mep.erv_outdoor_terminals",),
-                       ("IRC M1602.2",), blocking=False),
+                       ("IRC M1602.2",)),
+
+        # --- Engineered design (2026-08-30) -------------------------------------------
+        #
+        # Five requirements this house's geometry puts *outside* the prescriptive tables.
+        # They were on no permit line at all until now, which is the thing worth fixing:
+        # a reviewer reading the checklist could not see that a 10' cantilever retaining
+        # wall, two round columns on belled piers, an I-joist rafter and a trussed garage
+        # roof were carrying the submittal, because coverage was scoped to Tier.CODE and
+        # these are STRUCTURAL. `test_permit_coverage.py` now enforces that any finding
+        # carrying `Authority.ENGINEERED` is on one of these lines or explicitly excluded,
+        # so this set cannot silently fall behind the registry again.
+        #
+        # Whether a given house's version of one of these is engineered at all is decided
+        # by the house, not by the profile — 10 feet of unbalanced fill here, 3 feet next
+        # door — which is why PermitItemSpec carries no `engineered` flag and
+        # PermitChecklistItem.authority is derived from the matched findings instead.
+        #
+        # NON-BLOCKING, and for a stated reason rather than a shrug: with no calculation
+        # registered for these kinds every one of them is UNKNOWN, exactly as it was before
+        # the engineering register existed. Gating them today would move the gate on the
+        # day the framework landed, which is precisely what `engineered()`'s NO_CALC branch
+        # is written to avoid. Each flips to blocking in the commit that registers its
+        # calculation — `haus engineering` is the worklist.
+        PermitItemSpec("Retaining walls outside the prescriptive path",
+                       ("structural.foundation_unbalanced_fill",),
+                       ("IRC R404.1.1", "IRC R404.4"), blocking=False),
+        PermitItemSpec("Engineered headers over wide openings",
+                       ("structural.header_prescriptive",),
+                       ("IRC R602.7",), blocking=False),
+        PermitItemSpec("Deck and porch posts and their footings",
+                       ("structural.deck_post_size", "structural.deck_footing_size"),
+                       ("IRC R507.3", "IRC R507.4"), blocking=False),
+        PermitItemSpec("Roof framing outside the rafter span table",
+                       ("structural.rafter_span",),
+                       ("IRC R802.4",), blocking=False),
+        # The uplift and anchorage CAPACITY questions, hoisted out of 61 coverage-only
+        # UNKNOWNs on 2026-08-30 (decision #64's refinement). The coverage rules —
+        # `structural.uplift_path_coverage`, `mep.deck_equipment_support_coverage` — now
+        # PASS honestly under names that say what they grade, and what an engineer still
+        # owes is these two lines instead of a disclaimer at the end of every passing row.
+        PermitItemSpec("Uplift connection capacity",
+                       ("structural.uplift_capacity",),
+                       ("IRC R802.11", "ASCE 7-16 §26-30"), blocking=False),
+        PermitItemSpec("Deck equipment anchorage capacity",
+                       ("mep.deck_equipment_anchorage_capacity",),
+                       ("IRC M1401.4", "ASCE 7-16 §29"), blocking=False),
     ),
     permit_exclusions=(
         ("mep.hydrant_freeze_depth",

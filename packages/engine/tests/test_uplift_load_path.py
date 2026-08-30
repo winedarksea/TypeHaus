@@ -22,7 +22,7 @@ import pytest
 from _helpers import check_context
 
 from typehaus.checks.registry import Tier, registered
-from typehaus.checks.structural.uplift_path import uplift_load_path
+from typehaus.checks.structural.uplift_path import uplift_path_coverage
 from typehaus.findings import Result
 
 
@@ -33,11 +33,11 @@ def ctx(catlin_plan):
 
 @pytest.fixture(scope="module")
 def findings(ctx):
-    return uplift_load_path(ctx)
+    return uplift_path_coverage(ctx)
 
 
 def test_the_check_is_registered_in_the_structural_tier() -> None:
-    assert "structural.uplift_load_path" in {cid for cid, _ in registered(Tier.STRUCTURAL)}
+    assert "structural.uplift_path_coverage" in {cid for cid, _ in registered(Tier.STRUCTURAL)}
 
 
 def test_catlin_reports_no_break_in_the_load_path(findings) -> None:
@@ -46,20 +46,50 @@ def test_catlin_reports_no_break_in_the_load_path(findings) -> None:
     assert not broken, broken
 
 
-def test_no_link_is_ever_reported_as_a_pass(findings) -> None:
-    """Coverage is not capacity, and this model carries no design wind speed.
+def test_a_covered_link_passes_and_says_where_the_capacity_question_went(findings) -> None:
+    """Inverted on 2026-08-30, and the inversion is the point of the rename.
 
-    Same contract as ``cantilever.py``'s mitigated case: hardware being present is a
-    different claim from the joint being adequate, and a PASS would retire a question that
-    still needs an engineer. Every finding is therefore UNKNOWN or FAIL, never PASS.
+    This asserted that no link is EVER a PASS, on the reasoning that hardware being present
+    is a different claim from the joint being adequate, and that a PASS would retire a
+    question an engineer still has to answer (#64). The reasoning was right and the
+    mechanism was wrong: it put that question at the end of 59 identical rows — the shape a
+    reader scans past — and it spent the UNKNOWN column, which is supposed to mean "a real
+    input is missing", on a scope disclaimer.
+
+    The rule is now named ``structural.uplift_path_coverage``, so a covered joint is an
+    honest PASS of the rule that actually ran, and every one of those PASSes still names
+    where the capacity question lives. The test below is what keeps it from being retired.
     """
     assert findings
-    assert not [f for f in findings if f.result is Result.PASS]
+    covered = [f for f in findings if f.result is Result.PASS]
+    assert covered
     assert all("[advisory, not engineering]" in f.message for f in findings)
+    for finding in covered:
+        assert "CAPACITY is not graded here" in finding.message
+        assert "lateral_uplift/<roof>" in finding.message
+
+
+def test_the_capacity_question_is_a_named_item_not_a_retired_one(ctx) -> None:
+    """#64's concern, kept: folding coverage into a PASS must not retire the question.
+
+    It is not retired; it is hoisted. One ENGINEERED item per roof, which a signoff in
+    engineering.toml has to cover and which `haus engineering` lists until somebody does —
+    two rows a reviewer must act on, rather than 59 they scroll past.
+    """
+    from typehaus.checks.structural.uplift_path import uplift_capacity_items
+    from typehaus.findings import Authority
+
+    items = uplift_capacity_items(ctx)
+    assert {f.engineering_item for f in items} == {"lateral_uplift/RF-HOUSE",
+                                                   "lateral_uplift/RF-GARAGE"}
+    assert all(f.authority is Authority.ENGINEERED for f in items)
+    # Still blocking, exactly as the UNKNOWNs it replaced were. Adopting the register moved
+    # no gate; it only gave the outstanding work a name.
+    assert all(f.result is Result.UNKNOWN for f in items)
 
 
 def test_both_roofs_are_covered_at_their_bearings(findings) -> None:
-    covered = {f.element_tags[0]: f for f in findings if f.result is Result.UNKNOWN}
+    covered = {f.element_tags[0]: f for f in findings if f.result is Result.PASS}
     for roof in ("RF-HOUSE", "RF-GARAGE"):
         assert "derived uplift ties" in covered[roof].message, roof
 
@@ -71,7 +101,7 @@ def test_a_flush_framed_deck_is_covered_by_its_hangers(findings) -> None:
     its joist ends carries a LUS hanger and the report called it a break in the load path.
     """
     deck = next(f for f in findings if f.element_tags[:1] == ("FS-BW-FLOOR",))
-    assert deck.result is Result.UNKNOWN
+    assert deck.result is Result.PASS
     assert "hangers" in deck.message
 
 
@@ -89,8 +119,15 @@ def test_a_cast_column_is_not_evaluable_rather_than_broken(findings) -> None:
     """
     for column in ("PT-SG-COL", "PT-SG-FCOL", "PR-BW-1", "PR-BW-4"):
         finding = next(f for f in findings
-                       if f.element_tags[:1] == (column,) and "cannot be graded" in f.message)
-        assert finding.result is Result.UNKNOWN
+                       if f.element_tags[:1] == (column,)
+                       and "outside what a connector-coverage rule governs" in f.message)
+        # N/A since 2026-08-30, not UNKNOWN, and it is earned: the joint is a doweled lap
+        # into the column's own cage, so it has no connector by design and never will. A
+        # connector-coverage rule does not govern it — a verdict about the building rather
+        # than a confession that an input is missing. `Link.not_governed` is the field that
+        # keeps this apart from `not_evaluable`, which is still UNKNOWN (see the undeclared
+        # -bearing test below).
+        assert finding.result is Result.NOT_APPLICABLE
         assert "doweled lap" in finding.message, column
         assert "$/cy rate" in finding.message, column
 
@@ -106,9 +143,9 @@ def test_the_stairwell_posts_are_graded_now_that_they_declare_a_bearing(findings
     graded = {f.element_tags[0]: f for f in findings}
     for column in ("P-M-STRWELL-S", "P-M-STRWELL-N"):
         assert "derived standoff post base" in graded[column].message, column
-        assert graded[column].result is Result.UNKNOWN
+        assert graded[column].result is Result.PASS
     block = graded["P-M-STRLAND-SE"]
-    assert block.result is Result.UNKNOWN
+    assert block.result is Result.PASS
     assert "squash block" in block.message
     assert "post base" not in block.message, \
         "a block bears; buying it a base is the error blocking_max_height_ft prevents"
@@ -144,8 +181,11 @@ def test_an_undeclared_bearing_is_still_reported_as_un_gradeable(ctx) -> None:
 
     gapped = type(ctx)(plan=_Plan(ctx.plan), model=ctx.model, preferences=ctx.preferences,
                        profile=ctx.profile, resolve_findings=ctx.resolve_findings)
-    finding = next(f for f in uplift_load_path(gapped)
+    finding = next(f for f in uplift_path_coverage(gapped)
                    if f.element_tags[:1] == ("P-M-STRWELL-S",))
+    # Still UNKNOWN, and this is the line that shows the N/A above was earned rather than
+    # applied to everything the rule cannot grade: a post that never says what it stands on
+    # is a hole in the model somebody can fill, not a joint outside the rule's scope.
     assert finding.result is Result.UNKNOWN, "a modelling gap is never a FAIL"
     assert "declares no `supported_by`" in finding.message
 
@@ -159,7 +199,7 @@ def test_an_authored_hurricane_tie_connects_a_beam_to_its_column(findings) -> No
     for beam, column in (("BM-SG-BKW", "PT-SG-COL"), ("BM-SG-BKE", "PT-SG-COL"),
                          ("BM-SG-FRW", "PT-SG-FCOL"), ("BM-SG-FRE", "PT-SG-FCOL")):
         finding = next(f for f in findings if f.element_tags == (beam, column))
-        assert finding.result is Result.UNKNOWN
+        assert finding.result is Result.PASS
         assert "an authored strap or cap" in finding.message
 
 
@@ -217,6 +257,6 @@ def test_a_broken_joint_really_does_fail(ctx) -> None:
     broken_ctx = type(ctx)(plan=_Plan(ctx.plan), model=ctx.model,
                            preferences=ctx.preferences, profile=ctx.profile,
                            resolve_findings=ctx.resolve_findings)
-    failed = [f for f in uplift_load_path(broken_ctx) if f.result is Result.FAIL]
+    failed = [f for f in uplift_path_coverage(broken_ctx) if f.result is Result.FAIL]
     assert [f for f in failed if "RF-HOUSE" in f.element_tags], \
         "a roof that declares no bearing has no derivable tie and must FAIL"

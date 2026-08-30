@@ -121,7 +121,7 @@ def post_base_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
       else. Buying it a base would be the same error the tie-plate rule makes on a sill:
       hardware at a joint whose connection is already made another way.
 
-    All four are reported by ``structural.uplift_load_path`` rather than being quietly
+    All four are reported by ``structural.uplift_path_coverage`` rather than being quietly
     absent from the order.
     """
     stocked = catalogued_post_sizes()

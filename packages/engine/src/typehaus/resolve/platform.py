@@ -28,6 +28,7 @@ import math
 from dataclasses import replace
 from typing import Any
 
+from typehaus.model.refs import ToRoof
 from typehaus.quantities import inch
 from typehaus.resolve.layer_bands import reband
 from typehaus.resolve.layout_lines import lines_by_wall
@@ -37,6 +38,28 @@ from typehaus.resolve.topology import site_grade_elevation_m_from_plan
 # A storey line is a joist band. Anything deeper is a real void (a stairwell, a
 # double-height space) and must not be silently absorbed into the wall below.
 _MAX_BAND_M = inch(24).meters
+
+# Two walls are on the same wall line when their bodies overlap in plan *and* they share a
+# real run. These are separate questions and want separate numbers; until 2026-08-30 one
+# number answered both, and it was the lower wall's own thickness — which told a 6" wall
+# that 6" off the line was on it, and that 6" of shared run was enough to lift a whole
+# wall. They are now split:
+#
+# * off-axis: half the sum of the two thicknesses. An axis is a centreline, so that sum is
+#   exactly the distance at which two parallel walls stop sharing any footprint at all —
+#   the honest geometric test, and not the same figure for every pair the way one wall's
+#   thickness was. Catlin stacks walls a full wall off their neighbour's line (W-B-BA-N
+#   under W-M-HS3, 6 5/8" apart at 6 3/4" thick), so this is not academic: a tighter
+#   reading drops four real stacks and re-opens the joist band under each.
+# * shared run: this constant, deliberately independent of how thick the walls happen to
+#   be. A wall lifted through its joist band on 6" of shared run is a coincidence, not a
+#   stack.
+_MIN_OVERLAP_M = inch(6).meters
+
+
+def _axis_tolerance(a: Any, b: Any) -> float:
+    """How far apart two centrelines may be and still describe one wall line."""
+    return max((a.thickness_m + b.thickness_m) / 2.0, 1e-3)
 
 
 def extend_walls_to_platform(model: ResolvedModel) -> None:
@@ -59,7 +82,7 @@ def extend_walls_to_platform(model: ResolvedModel) -> None:
         if band <= 1e-6 or band > _MAX_BAND_M:
             continue
         # A raked top (gable, wall-to-roof) has no flat platform to reach for.
-        if lower.top_z0_m is not None or lower.top_z1_m is not None:
+        if _is_raked(model, lower):
             continue
         _lift(model, lower, upper.z0_m, lines)
         lifted.add(lower.tag)
@@ -70,7 +93,7 @@ def extend_walls_to_platform(model: ResolvedModel) -> None:
     for lower in list(model.walls):
         if lower.tag in lifted or lower.is_foundation:
             continue
-        if lower.top_z0_m is not None or lower.top_z1_m is not None:
+        if _is_raked(model, lower):
             continue
         z = _platform_above(model, lower)
         if z is None:
@@ -119,6 +142,19 @@ def extend_walls_to_foundation(model: ResolvedModel) -> None:
         dropped.add(upper.tag)
 
 
+def _is_raked(model: ResolvedModel, wall: Any) -> bool:
+    """Does ``wall`` rise to a roof plane rather than to a flat plate?
+
+    Read off the *authored* top, not ``top_z0_m``/``top_z1_m``. Those are written by
+    ``roof_geometry.apply_to_roof_wall_tops``, which runs after both of this module's
+    passes (``pipeline.py``), so at guard time every resolved wall still reports ``None``
+    and the guards these back were unreachable. ``ToRoof`` on the plan element is the same
+    predicate ``apply_to_roof_wall_tops`` itself dispatches on.
+    """
+    authored = model.plan.by_tag(wall.tag)
+    return isinstance(getattr(authored, "top", None), ToRoof)
+
+
 def _is_clad(wall: Any) -> bool:
     """Does this wall carry a cladding layer — is it envelope, or is it partition?"""
     return any(layer.function == "cladding" for layer in wall.layers)
@@ -151,15 +187,15 @@ def _foundation_below(model: ResolvedModel, upper: Any) -> Any | None:
     to be a real void is not a joist band to be absorbed, and excluding it lets the next
     candidate close what honestly can be closed.
     """
-    tol = max(upper.thickness_m, 1e-3)
     spans = [
         (lo_t, hi_t, lower)
         for lower in model.walls
         if lower is not upper and lower.is_foundation
         and lower.z1_m <= upper.z0_m + 1e-6
         and upper.z0_m - lower.z1_m <= _MAX_BAND_M
-        for lo_t, hi_t in (_project(upper.axis, lower.axis, tol),)
-        if hi_t - lo_t > tol
+        for lo_t, hi_t in (_project(upper.axis, lower.axis,
+                                    _axis_tolerance(upper, lower)),)
+        if hi_t - lo_t > _MIN_OVERLAP_M
     ]
     if not spans:
         return None
@@ -249,12 +285,12 @@ def _lift(model: ResolvedModel, lower: Any, z1: float,
 
 def _platform_above(model: ResolvedModel, lower: Any) -> float | None:
     """Lowest ``z0_m`` among walls that sit on ``lower``'s axis, from above."""
-    tol = max(lower.thickness_m, 1e-3)
     best: float | None = None
     for upper in model.walls:
         if upper is lower or upper.is_foundation or upper.z0_m < lower.z1_m - 1e-6:
             continue
-        if not _collinear_overlap(lower.axis, upper.axis, tol):
+        if not _collinear_overlap(lower.axis, upper.axis,
+                                  _axis_tolerance(lower, upper), _MIN_OVERLAP_M):
             continue
         if best is None or upper.z0_m < best:
             best = upper.z0_m
@@ -263,8 +299,13 @@ def _platform_above(model: ResolvedModel, lower: Any) -> float | None:
 
 def _collinear_overlap(a: tuple[tuple[float, float], tuple[float, float]],
                        b: tuple[tuple[float, float], tuple[float, float]],
-                       tol: float) -> bool:
-    """Do segments ``a`` and ``b`` share a direction, a line (within ``tol``), and length?"""
+                       axis_tol: float, min_overlap: float) -> bool:
+    """Do segments ``a`` and ``b`` share a direction, a line, and a run?
+
+    ``axis_tol`` is how far off ``a``'s line ``b`` may sit and still be the same wall line;
+    ``min_overlap`` is how much shared run it takes to count. They are separate numbers on
+    purpose — see ``_MIN_OVERLAP_M``.
+    """
     (ax0, ay0), (ax1, ay1) = a
     dx, dy = ax1 - ax0, ay1 - ay0
     span = math.hypot(dx, dy)
@@ -274,8 +315,8 @@ def _collinear_overlap(a: tuple[tuple[float, float], tuple[float, float]],
     ts = []
     for (px, py) in b:
         ex, ey = px - ax0, py - ay0
-        if abs(-uy * ex + ux * ey) > tol:  # perpendicular distance off a's line
+        if abs(-uy * ex + ux * ey) > axis_tol:  # perpendicular distance off a's line
             return False
         ts.append(ux * ex + uy * ey)
     lo, hi = min(ts), max(ts)
-    return bool(min(hi, span) - max(lo, 0.0) > tol)
+    return bool(min(hi, span) - max(lo, 0.0) > min_overlap)

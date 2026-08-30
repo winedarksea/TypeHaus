@@ -43,6 +43,10 @@ def wall_graph_json(
                 # (resolve/platform.extend_walls_to_foundation). The viewer measures
                 # every sill from this, not from z0_m — mirrors ResolvedWall.base_ref_z_m.
                 "plate_base_z_m": w.plate_base_z_m,
+                # The mirror at the top: where the double top plate stops when the wall
+                # body grew up through the joist band (extend_walls_to_platform). The band
+                # between this and z1_m is rim board and joists, not wall.
+                "plate_top_z_m": w.plate_top_z_m,
                 # The facade datum this wall subdivides against, as an axis the viewer can
                 # project onto: [origin, origin + direction] of its layout line. The standing
                 # seam is a 16" module that has to run corner to corner, and the wall's own

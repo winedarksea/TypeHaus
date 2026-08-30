@@ -1448,13 +1448,23 @@ NEC_FILL_BASEMENT = [
                      position=pt(ft(17, 4.75), ft(10, 6.5)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
+    # ** RC3/RC4 CROSSED W-B-CE ON 2026-08-30, FROM y 18'-4.385" TO 17'-7.615". **
+    # They were on the PLAY-ROOM side of the wall the whole time. W-B-CE is 6 3/4" of
+    # staggered partition on the y = 18'-0" centreline, so its gym face is at 17'-8 5/8"
+    # and its play face at 18'-3 3/8": bodies at 18'-4.385" stood 1" north of the play
+    # face, in RM-B-PLAY-N, while counting toward RM-B-GYM's 210.52(A) spacing — because
+    # `electrical.receptacle_spacing` accepts any device within `_NEAR_WALL_M` (0.5 m) of a
+    # room's clear face, and neither carried a `room=` for anything to contradict.
+    # 17'-7.615" is the gym face less the 1" body setback this file sets everywhere, and
+    # `rotation=deg(180)` turns the plate south into the gym. `room=` is authored now so
+    # the two rooms can never trade one box between them again.
     ElectricalDevice(uid="NEC003AAAA", tag="ED-B-GYM-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(20, 7), ft(18, 4.385)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-BSMT",
+                     position=pt(ft(20, 7), ft(17, 7.615)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-BSMT", room="RM-B-GYM", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC004AAAA", tag="ED-B-GYM-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(33, 3.5), ft(18, 4.385)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-BSMT",
+                     position=pt(ft(33, 3.5), ft(17, 7.615)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-BSMT", room="RM-B-GYM", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC005AAAA", tag="ED-B-GYM-RC5", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(34, 11), ft(11, 5.5)), type_ref="ED-T-RECEPTACLE",
@@ -1495,13 +1505,10 @@ NEC_FILL_BASEMENT = [
     # (1" south of it — half the 2" body, the face convention above), plate turned south into
     # the room. Elevation 30" puts it behind the panel's lower edge rather than below it.
     #
-    # ** REPORTED, NOT FIXED: ED-B-GYM-RC3 and ED-B-GYM-RC4 are on the WRONG SIDE of a wall.**
-    # Both sit at y=18'-4.385", which is NORTH of W-B-CE's 18'-3 3/8" finish face, so they
-    # resolve inside this room while counting toward the gym's NEC 210.52 6-foot rule. They
-    # carry no `room=`, so nothing reports the mismatch. This receptacle is deliberately NOT
-    # a duplicate of them: it is on the north wall behind the television, 17' away, and it
-    # would be needed whatever those two turn out to be. Fixing them means re-running the gym
-    # fill, which is its own pass.
+    # ED-B-GYM-RC3/RC4 used to resolve inside THIS room while serving the gym's spacing;
+    # they crossed to the gym face on 2026-08-30 (see the NEC fill above). This receptacle
+    # was never a duplicate of them — it is on the north wall behind the television, 17'
+    # away — which is why nothing here had to move with them.
     ElectricalDevice(uid="GQCPVT59F6", tag="ED-B-PLAY-N-RC1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(26, 9), ft(35, 3)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-BSMT", room="RM-B-PLAY-N", rotation=deg(180),
@@ -1940,15 +1947,20 @@ NEC_FILL_SECOND = [
     # second.py — the suite bath's lav and WC actually back onto it) moved this room's
     # boundary enough to open a >6' gap on the L-arm's south wall, W-S-SBS. None of RC1-RC7
     # reaches it — RC1 is 4'-3" east on the same wall but stops short of the corner where the
-    # arm turns south past W-S-DC2. Plain RECEPTACLE, not GFCI: this stretch is not within
-    # 6' of a sink.
+    # GFCI since 2026-08-30. It was authored plain, on the reading that this stretch is not
+    # within 6' of a sink — which was what `code.E3902_gfci_locations` said at the time,
+    # because that rule measured to a fixture's insertion CENTROID. Measured to the suite
+    # bath vanity's actual edge, as E3902.10 asks, the box is 4'-4" from it, not clear of
+    # the circle at all.
     #
     # y is 15'-7 5/8", not the 15'-6 5/8" first authored: W-S-SBS went the OTHER way in the
     # same pass (INT_2X6_STAGGERED_PLUMBING -> INT_2X4_PARTITION, its wet-wall duty having
     # moved to SN3), so its south face pulled back 1.000" and this box — and RC1 beside it —
     # had to follow or hang in the room.
-    ElectricalDevice(uid="N0F72WZE2H", tag="ED-S-SUITE-RC8", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(11), ft(15, 7.625)), type_ref="ED-T-RECEPTACLE",
+    ElectricalDevice(uid="N0F72WZE2H", tag="ED-S-SUITE-RC8",
+                     kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(11), ft(15, 7.625)),
+                     type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
 ]

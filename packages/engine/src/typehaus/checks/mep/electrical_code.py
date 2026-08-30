@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from typehaus.checks._authoring import failed, passed, unknown
+from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import Occupancy, Service
@@ -40,6 +40,8 @@ _PIERCE_TOL_M = 1 * 0.0254
 
 def _finding(cid: str, result: Result, message: str, tags: tuple[str, ...],
              code: str, fix: str | None = None) -> Finding:
+    if result is Result.NOT_APPLICABLE:
+        return not_applicable(cid, message, tags, code=code)
     if result is Result.PASS:
         return passed(cid, message, tags, code=code)
     if result is Result.UNKNOWN:
@@ -191,10 +193,13 @@ def _pierces_a_wall(point: Any, sink: Any, barrier: Any) -> bool:
     has not actually measured, which is the failure mode worth avoiding.
     """
     from shapely.geometry import LineString
+    from shapely.ops import nearest_points
 
     if barrier is None or barrier.is_empty:
         return False
-    segment = LineString([point, sink])
+    # ``sink`` is a polygon, so the segment to test is the one to its NEAREST point — the
+    # same point ``point.distance(sink)`` reports against.
+    segment = LineString(nearest_points(point, sink))
     if not segment.intersects(barrier):
         return False
     inside = segment.intersection(barrier)
@@ -247,25 +252,33 @@ def _wall_barrier(ctx: CheckContext) -> dict[str, Any]:
 
 
 def _sink_points(ctx: CheckContext) -> dict[str, list]:
-    """Per storey, the plan points of every fixture that drains.
+    """Per storey, the plan FOOTPRINTS of every fixture that drains.
 
     Keyed by storey for the same reason the room lookup is: the 6' reach of E3902.10 is a
     reach across a countertop, not through a floor assembly.
-    """
-    from shapely.geometry import Point
 
+    Polygons, not points. Until 2026-08-30 this returned ``Point(fixture.position)`` — the
+    fixture's insertion centroid — so a 48" vanity was measured to a spot 24" inside
+    itself and every distance in the rule came back long by up to half a fixture. E3902.10
+    is measured to the *outside edge* of the sink, which is what the resolved footprint
+    gives directly: ``point.distance(polygon)`` is edge distance for free. The bug
+    under-reported in the safe direction, which is why it survived; it moved five
+    bathrooms when fixed.
+    """
+    from shapely.geometry import Polygon
+
+    drains = {
+        t.tag for t in ctx.plan.library.fixture_types
+        if any(getattr(need, "value", need) == Service.DRAIN.value
+               for need in getattr(t, "needs", ()))
+    }
     out: dict[str, list] = {}
-    for storey in ctx.plan.storeys:
-        for fixture in ctx.plan.storey_elements(storey.tag):
-            if fixture.element_kind != "Fixture":
-                continue
-            fixture_type = next((t for t in ctx.plan.library.fixture_types
-                                 if t.tag == fixture.type_ref), None)
-            if fixture_type is None:
-                continue
-            needs = getattr(fixture_type, "needs", ())
-            if any(getattr(need, "value", need) == Service.DRAIN.value for need in needs):
-                out.setdefault(storey.tag, []).append(Point(fixture.position.xy_m))
+    for obj in ctx.model.canvas_objects:
+        if obj.kind != "Fixture" or obj.type_ref not in drains:
+            continue
+        if len(obj.footprint) < 3:
+            continue
+        out.setdefault(obj.storey, []).append(Polygon(obj.footprint))
     return out
 
 

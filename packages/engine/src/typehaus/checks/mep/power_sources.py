@@ -20,7 +20,7 @@ rules.
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import failed, passed, unknown
+from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 
@@ -35,6 +35,8 @@ _RAPID_SHUTDOWN_LIMIT_V = 80.0
 
 def _finding(cid: str, result: Result, message: str, tags: tuple[str, ...],
              code: str, fix: str | None = None) -> Finding:
+    if result is Result.NOT_APPLICABLE:
+        return not_applicable(cid, message, tags, code=code)
     if result is Result.PASS:
         return passed(cid, message, tags, code=code)
     if result is Result.UNKNOWN:
@@ -66,7 +68,13 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
     cid, code = "code.NEC_705_12_interconnection", "NEC 705.12(B)(3)(2)"
     sources = [c for c in ctx.plan.library.circuits if c.source]
     if not sources:
-        return []
+        # N/A, not silence: the circuit schedule was read and declares no source circuit,
+        # so there is no interconnection for the 120% rule to size. Returning nothing left
+        # the permit item with no matched findings, which resolves to UNKNOWN — the same
+        # answer as "nobody looked" — and kept the line out of the gate for it.
+        return [not_applicable(cid, "no circuit in the schedule is a power source, so this "
+                                    "house has no interconnected PV or generator for "
+                                    "705.12 to size", (), code)]
 
     types = {t.tag: t for t in ctx.plan.library.electrical_device_types}
     panels = {element.tag: element for element in ctx.plan.all_elements()
@@ -146,7 +154,8 @@ def rapid_shutdown(ctx: CheckContext) -> list[Finding]:
     cid, code = "code.NEC_690_12_rapid_shutdown", "NEC 690.12(B)(2)"
     panels = list(ctx.model.solar_panels)
     if not panels:
-        return []
+        return [not_applicable(cid, "no PV module is modeled, so there is no array for "
+                                    "690.12 rapid shutdown to govern", (), code)]
 
     by_string: dict[str, list] = {}
     for panel in panels:

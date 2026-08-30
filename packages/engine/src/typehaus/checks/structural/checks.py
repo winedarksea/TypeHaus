@@ -5,8 +5,10 @@ Shares one table module with the framing solver (header sizing); adds I-joist sp
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import engineered as _engineered
 from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.engineering import item_id
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import LayerFunction
 from typehaus.model.structure import Footing, FoundationWall
@@ -57,18 +59,17 @@ def header_within_prescriptive(ctx: CheckContext) -> list[Finding]:
                 type_ref = getattr(source, "type_ref", None)
                 door_type = ctx.plan.by_tag(type_ref) if type_ref else None
                 spec = getattr(door_type, "header_spec", None)
-            if spec:
-                out.append(_advisory(
-                    "structural.header_prescriptive",
-                    f"opening {op.tag} width {op.width_m*3.281:.1f}' exceeds the "
-                    f"prescriptive header table; engineered header authored: {spec}",
-                    (op.tag,), Result.PASS))
-            else:
-                out.append(_advisory(
-                    "structural.header_prescriptive",
-                    f"opening {op.tag} width {op.width_m*3.281:.1f}' exceeds "
-                    "prescriptive header table — requires engineered beam",
-                    (op.tag,), Result.FAIL))
+            # Both branches are engineered work; they differ only in whether anyone has
+            # done it. Routing them through the register is what makes the difference
+            # visible as a *state* — the authored one PASSes and says AUTHORED, never
+            # computed, and both become an item a signoff can cover.
+            out.append(_engineered(
+                ctx, "structural.header_prescriptive", item_id("header", op.tag),
+                f"opening {op.tag} width {op.width_m*3.281:.1f}' exceeds the prescriptive "
+                f"header table",
+                (op.tag,), code="IRC R602.7", authored=spec,
+                fix=None if spec else "author Door.header_spec (or DoorType.header_spec) "
+                                     "with the engineered beam"))
     return out
 
 
@@ -327,15 +328,29 @@ def footing_frost_depth(ctx: CheckContext) -> list[Finding]:
             tag == source_tag and here.intersection(polygon).area > 1e-6
             for tag, polygon, _z in floors)
         if inside:
-            out.append(_advisory(
-                cid,
-                f"UNKNOWN — {solid.tag} carries "
-                f"{supported_host.get(solid.tag)} inside the {source_tag} excavation with "
+            # The demonstration case for the whole engineering register, and the reason it
+            # is not a fourth Result. This message already said, in prose, that the frost
+            # protection "belongs to that engineered design" — and had no way to point at
+            # one, so it hard-coded UNKNOWN. It now delegates to the very same item id
+            # `structural.foundation_unbalanced_fill` delegates to: one engineer's design
+            # over the sunken-garden walls answers both checks, across three walls and the
+            # footings under them, with one stamp and one fingerprint.
+            host = supported_host.get(solid.tag)
+            out.append(_engineered(
+                ctx, cid, item_id("retaining_wall", host),
+                f"{solid.tag} carries {host} inside the {source_tag} excavation with "
                 f"{cover_in:.0f}\" of cover against the {minimum_in:.0f}\" MN profile "
                 f"minimum; a structure retaining the excavation it sits in is outside the "
                 f"prescriptive path (IRC R404.4) and its frost protection belongs to that "
                 f"engineered design",
-                (solid.tag,) + ((source_tag,) if source_tag else ()), Result.UNKNOWN,
+                (solid.tag,) + ((source_tag,) if source_tag else ()),
+                code="IRC R404.4",
+                # This rule grades frost cover; the shared item's calculation grades
+                # sliding, overturning and bearing. Sharing the item is the point — one
+                # design, one stamp, two checks — but inheriting its verdict would let a
+                # sliding deficiency be reported as a frost failure, and this check does
+                # not get to call an engineered wall non-compliant, only unevaluated.
+                defer=True,
             ))
             continue
 

@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from typehaus.checks._authoring import engineered as _engineered
 from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
@@ -35,6 +36,7 @@ from typehaus.checks.structural.deck_tables import (
     deck_post_height_limit,
     required_footing_area_ft2,
 )
+from typehaus.engineering import item_id
 from typehaus.findings import Finding, Result
 from typehaus.model.floors import FloorSystem
 from typehaus.model.structure import Beam, GlazingPanel, Pad, Post, Railing
@@ -380,10 +382,15 @@ def deck_post_size(ctx: CheckContext) -> list[Finding]:
             height_ft = (solid.z1_m - solid.z0_m) / _M_PER_FT
             limit = deck_post_height_limit(post.size, tributary)
             if limit is None:
-                out.append(_unknown("structural.deck_post_size",
-                                    f"no IRC Table R507.4 row for a {post.size} post at "
-                                    f"{tributary:.1f} ft2 tributary",
-                                    (deck.tag, post.tag)))
+                # Off the end of R507.4 — a round column, or a tributary the table stops
+                # short of. The table not publishing a row is not the same as the post
+                # being wrong, and it is not something an author can fix by editing the
+                # model: it is a column design, so it is delegated as one.
+                out.append(_engineered(
+                    ctx, "structural.deck_post_size", item_id("deck_post", post.tag),
+                    f"no IRC Table R507.4 row for a {post.size} post at "
+                    f"{tributary:.1f} ft2 tributary",
+                    (deck.tag, post.tag), code="IRC R507.4"))
                 continue
             if post.size != MIN_DECK_POST_NOMINAL and height_ft > limit + 1e-6:
                 undersize = f" (R507.4 wants {MIN_DECK_POST_NOMINAL} nominal minimum)"
@@ -437,9 +444,14 @@ def deck_footing_size(ctx: CheckContext) -> list[Finding]:
             if isinstance(pad, Post) and pad.supported_by:
                 pad = ctx.plan.by_tag(pad.supported_by)
             if not isinstance(pad, Pad):
-                out.append(_unknown("structural.deck_footing_size",
-                                    f"post {post.tag} does not bear on a resolvable Pad",
-                                    (deck.tag, post.tag)))
+                # No Pad under it because there is no pad: these bear on grouted CMU and
+                # belled piers, which R507.3's flat-pad table has no row for. A bearing
+                # design against the site's own allowable pressure, not a lookup.
+                out.append(_engineered(
+                    ctx, "structural.deck_footing_size",
+                    item_id("spread_footing", post.tag),
+                    f"post {post.tag} does not bear on a resolvable Pad",
+                    (deck.tag, post.tag), code="IRC R507.3"))
                 continue
             area_ft2 = abs(_shoelace([p.xy_m for p in pad.outline])) / (_M_PER_FT ** 2)
             thickness_in = pad.thickness.inches

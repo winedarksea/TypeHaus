@@ -143,6 +143,20 @@ BASEMENT_FIXTURES = (
 # y nudged +2" (2026-08-15), same reason as the lavatory's +6" nudge (2026-07-29):
 # N-M-W2/N-M-C2 pushed north onto the west facade's 16" column module, dragging the
 # room's south clear face with it.
+#
+# ** W-M-BAE IS THE WET WALL AND IT IS NOT A TYPO — checked and reverted 2026-08-30. **
+# plans/TODO.md carried this as a stale reference on the reasoning that W-M-BAE is a
+# *vertical* wall on the x = 6'-0" line while this bowl stands at x 1'-6.9"..2'-9.9" and
+# backs onto W-M-HS1. The geometry is right and the conclusion is wrong: `Fixture.wall_ref`
+# is the fixture's WET WALL for venting (`checks/mep/plumbing_dwv.vent_reachability` reads
+# nothing else), not a backing wall the body touches. W-M-BAE stops at its own ceiling, so
+# this WC takes the offset path — `PR-M-WC-VENT`, whose x = 6' leg is W-M-BAE's own stud
+# bay (plan/mep_venting.py, and the comment there names both WC wet walls).
+#
+# Pointing it at W-M-HS1 does not fail: W-S-SN1 stacks over HS1, so the check reports the
+# in-wall path and PASSES — silently orphaning PR-M-WC-VENT's bath1 leg. What catches it is
+# `test_catlin_fixtures_all_reach_a_vent_chase`, which asserts this fixture is in the
+# CHASE-vented set specifically.
 MAIN_FIXTURES = (
     Fixture(uid="CMQ801AAAA", tag="FX-M-BATH1-WC", type_ref="FX-TOILET-WH", room="RM-M-BATH1",
             position=pt(m(0.670778), m(7.138289)), rotation=deg(180), wall_ref="W-M-BAE",

@@ -12,7 +12,7 @@ matters: a rule that cannot evaluate reports UNKNOWN with the reason (#32), neve
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import failed, passed, unknown
+from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.registry import CheckContext
 from typehaus.findings import Finding
 from typehaus.model.enums import Occupancy
@@ -49,6 +49,10 @@ def _fail(cid: str, msg: str, tags: tuple[str, ...], code: str) -> Finding:
 
 def _unknown(cid: str, reason: str, tags: tuple[str, ...], code: str) -> Finding:
     return unknown(cid, reason, tags, code=code)
+
+
+def _na(cid: str, reason: str, tags: tuple[str, ...], code: str) -> Finding:
+    return not_applicable(cid, reason, tags, code=code)
 
 
 def _room_storey(ctx: CheckContext, room_tag: str):

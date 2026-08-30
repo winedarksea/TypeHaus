@@ -17,6 +17,7 @@ Both no-op when no ESS is placed.
 from __future__ import annotations
 
 from typehaus.checks._authoring import advisory
+from typehaus.checks._authoring import not_applicable as _na
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
@@ -92,6 +93,13 @@ def _paired_conversion_equipment(ctx: CheckContext, battery) -> set:
             and getattr(element, "circuit", None) == circuit}
 
 
+#: What both advisory ESS rules say when the house places no storage unit — the same
+#: sentence the R327 code checks use, so the two tiers cannot give different accounts of
+#: one fact. N/A rather than silence: an item with no matched findings resolves to UNKNOWN.
+_NO_ESS = ("no energy storage system is placed in this house, so there is no battery "
+           "enclosure or separation zone to grade")
+
+
 def _batteries(ctx: CheckContext) -> list:
     return [element for element in ctx.plan.all_elements()
             if element.element_kind == "Equipment"
@@ -121,7 +129,7 @@ def ess_enclosure(ctx: CheckContext) -> list[Finding]:
     cid = "advisory.ess_enclosure"
     batteries = _batteries(ctx)
     if not batteries:
-        return []
+        return [_na(cid, _NO_ESS)]
     rooms = {room.tag: room for room in ctx.model.rooms}
     assemblies = {a.tag: a for a in ctx.plan.library.assemblies}
 
@@ -209,7 +217,7 @@ def ess_clearance(ctx: CheckContext) -> list[Finding]:
     cid = "advisory.ess_clearance"
     batteries = _batteries(ctx)
     if not batteries:
-        return []
+        return [_na(cid, _NO_ESS)]
     canvas = {obj.tag: obj for obj in ctx.model.canvas_objects}
     panels = _panel_tags(ctx)
 

@@ -41,18 +41,33 @@ def load_path(ctx):
 
 def test_all_three_checks_are_registered_in_the_structural_tier() -> None:
     ids = {cid for cid, _ in registered(Tier.STRUCTURAL)}
-    assert "structural.fortified_roof_sealed_deck" in ids
-    assert "structural.fortified_roof_drip_edge" in ids
+    assert "structural.fortified_roof_sealed_deck_present" in ids
+    assert "structural.fortified_roof_drip_edge_present" in ids
     assert "structural.fortified_roof_load_path" in ids
 
 
-def test_every_finding_is_advisory_and_never_a_pass(sealed_deck, drip_edge, load_path) -> None:
-    """Same contract as ``uplift_path``: coverage/presence is not capacity, so nothing here
-    is ever a PASS, and every message says so."""
+def test_every_finding_is_advisory_and_says_what_it_did_not_grade(
+        sealed_deck, drip_edge, load_path) -> None:
+    """Inverted on 2026-08-30 with ``structural.uplift_path_coverage``, and for its reason.
+
+    These asserted that nothing here is ever a PASS, so that "presence" could not be read as
+    "FORTIFIED compliance". The rules are now named for what they grade —
+    ``..._sealed_deck_present``, ``..._drip_edge_present`` — so a PASS claims presence and
+    nothing more, and every message still names what it did not grade.
+
+    Deliberately NOT hoisted into the engineering register, unlike the uplift capacity
+    question: what is outstanding here is a gauge, an ASTM/ICC listing and a fastening
+    schedule. Those are submittal documents, and a professional seal is the wrong instrument
+    to track them with.
+    """
     for findings in (sealed_deck, drip_edge, load_path):
         assert findings
-        assert not [f for f in findings if f.result is Result.PASS]
         assert all("[advisory, not engineering]" in f.message for f in findings)
+    for findings in (sealed_deck, drip_edge):
+        for finding in findings:
+            if finding.result is Result.PASS:
+                assert "presence only" in finding.message
+                assert "documentation facts this model does not carry" in finding.message
 
 
 def test_catlin_reports_no_fail_across_all_three(sealed_deck, drip_edge, load_path) -> None:
@@ -72,7 +87,7 @@ def test_the_garage_roof_is_out_of_scope(sealed_deck, drip_edge) -> None:
 
 def test_the_house_roof_deck_is_sealed(sealed_deck) -> None:
     finding = next(f for f in sealed_deck if f.element_tags[:1] == ("RF-HOUSE",))
-    assert finding.result is Result.UNKNOWN
+    assert finding.result is Result.PASS
     assert "carries a sealed underlayment layer" in finding.message
     assert "presence only" in finding.message
 
@@ -82,7 +97,7 @@ def test_the_house_roof_has_a_drip_edge_on_every_footprint_edge(drip_edge) -> No
     gap this closed (2026-08-30): they used to carry only the derived corner-trim angle."""
     house = [f for f in drip_edge if f.element_tags[:1] == ("RF-HOUSE",)]
     assert len(house) == 4
-    assert all(f.result is Result.UNKNOWN for f in house)
+    assert all(f.result is Result.PASS for f in house)
     eave_msgs = [f.message for f in house if "eave edge" in f.message]
     rake_msgs = [f.message for f in house if "rake edge" in f.message]
     assert len(eave_msgs) == 2, "the west/east eaves"
@@ -121,7 +136,7 @@ def test_removing_a_rake_flashing_fails_that_edge_only(ctx) -> None:
     broken = [f for f in house if f.result is Result.FAIL]
     assert len(broken) == 1
     assert "S rake edge" in broken[0].message
-    still_ok = [f for f in house if f.result is Result.UNKNOWN]
+    still_ok = [f for f in house if f.result is Result.PASS]
     assert len(still_ok) == 3
     assert Flashing  # imported for readability of the fixture setup above
 

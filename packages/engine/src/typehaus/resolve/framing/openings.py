@@ -161,6 +161,40 @@ def _rough_sill_bottom(sill_top: float, z0: float) -> float | None:
     return None if bottom <= z0 + 1e-9 else bottom
 
 
+def sole_plate_breaks(
+    openings: tuple[WallOpening, ...],
+) -> list[tuple[float, float]]:
+    """Station ranges where the bottom plate is interrupted, merged and sorted.
+
+    The exact complement of :func:`_rough_sill_bottom`: an opening whose sill lands within
+    a plate of the framing base takes the bottom plate *as* its rough sill, so the plate
+    runs through. An opening whose sill lands **below** the framing base has no bottom
+    plate at all — the floor opens under it. A garage overhead door dropping to a slab
+    22" below the wall's framing base is the case this exists for, and the plate that used
+    to run through it spanned the rough opening with nothing underneath.
+
+    ``sill_m`` is measured from the wall's framing base (``_sill_datum``), so the test is
+    simply ``sill_m < 0``. Every ordinary door in a house sits at exactly 0.0 — a threshold
+    on the plate — and must not be broken; that is what makes the strict inequality, rather
+    than "at or below the plate top", the right predicate.
+
+    Stations are on the same wall axis ``WallOpening.center_m`` uses, which is the axis the
+    plate is stationed on, so no reprojection is needed.
+    """
+    spans = sorted(
+        (o.center_m - o.width_m / 2.0, o.center_m + o.width_m / 2.0)
+        for o in openings
+        if o.sill_m < -1e-9
+    )
+    merged: list[tuple[float, float]] = []
+    for lo, hi in spans:
+        if merged and lo <= merged[-1][1] + 1e-9:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], hi))
+        else:
+            merged.append((lo, hi))
+    return merged
+
+
 def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
                   z0: float, top_at, opening_index: int, spacing: float,
                   stud_stations: tuple[float, ...] = (),

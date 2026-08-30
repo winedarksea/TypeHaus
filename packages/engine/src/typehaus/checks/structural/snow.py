@@ -11,9 +11,11 @@ leaves the rest where the sheet put it.
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import engineered as _engineered
 from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.engineering import item_id
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import ConnectorKind
 
@@ -208,18 +210,25 @@ def rafter_span(ctx: CheckContext) -> list[Finding]:
     for roof in ctx.model.roofs:
         rafters = [member for member in roof.members if member.category == "rafter"]
         if not rafters:
-            out.append(_unknown(cid, f"roof {roof.tag} resolves no rafters (trussed, or "
-                                     "framed on a ridge beam) — engineered", (roof.tag,)))
+            # A trussed roof. The fabricator's sealed design governs it, this engine will
+            # never compute one, and that is the case the two-gate split exists for: the
+            # item can never reach draft, so it correctly blocks a *sealed* submittal while
+            # never pretending the engine computed something it did not.
+            out.append(_engineered(
+                ctx, cid, item_id("rafter", roof.tag),
+                f"roof {roof.tag} resolves no rafters (trussed, or framed on a ridge beam)",
+                (roof.tag,), code="IRC R802.4"))
             continue
         profile = rafters[0].profile
         spacings = {round(_spacing_in(roof, rafters), 1)}
         spacing_in = spacings.pop()
         allowable = _RAFTER_SPAN_FT.get((profile, spacing_in))
         if allowable is None:
-            out.append(_unknown(
-                cid, f"roof {roof.tag} is framed with {profile} at {spacing_in:.0f}\" o.c., "
-                     "which the sawn-lumber rafter table does not publish — engineered",
-                (roof.tag,)))
+            out.append(_engineered(
+                ctx, cid, item_id("rafter", roof.tag),
+                f"roof {roof.tag} is framed with {profile} at {spacing_in:.0f}\" o.c., "
+                f"which the sawn-lumber rafter table does not publish",
+                (roof.tag,), code="IRC R802.4"))
             continue
         span_ft = max(member.length_m for member in rafters) / _M_PER_FT
         within = span_ft <= allowable + 1e-6

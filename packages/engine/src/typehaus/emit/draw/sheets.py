@@ -40,6 +40,7 @@ from typehaus.emit.draw.schedules import (
     _write_energy_sheet,
     _write_framing_bom,
     _write_general_notes,
+    _write_engineering_register,
     _write_hardware_schedule,
     _write_luminaire_schedule,
     _write_opening_schedule,
@@ -133,7 +134,8 @@ def build_sheet_index(model: ResolvedModel,
                       preferences: Preferences | None = None,
                       profile: JurisdictionProfile | None = None,
                       details: str = "all",
-                      paper: tuple[float, float] = LEDGER) -> list[SheetSpec]:
+                      paper: tuple[float, float] = LEDGER,
+                      house_dir: Path | None = None) -> list[SheetSpec]:
     """Assemble the ordered permit-set sheet list — the one place sheet order/content lives.
 
     ``details="all"`` (default) keeps every derived transition detail; ``"primary"``
@@ -187,6 +189,14 @@ def build_sheet_index(model: ResolvedModel,
     if hardware_takeoff(model):
         sheets.append(SheetSpec("S-104", "Connection hardware schedule",
                                 page=_write_hardware_schedule))
+
+    # S-105 only where the house actually has engineering in it. A set answered entirely by
+    # prescriptive tables gets no page saying so — an empty register reads as an omission,
+    # and the cover already states the checklist verdict for that case.
+    if _has_engineered_items(model, house_dir):
+        sheets.append(SheetSpec("S-105", "Engineering register",
+                                page=partial(_write_engineering_register,
+                                             house_dir=house_dir)))
 
     storeys = sorted(model.plan.storeys, key=lambda s: s.elevation.meters)
     floor_pages = [(f"A-{101 + i:03d}", storey.tag) for i, storey in enumerate(storeys)
@@ -294,6 +304,7 @@ def write_permit_set(model: ResolvedModel, output: Path,
                      profile: JurisdictionProfile | None = None,
                      details: str = "all",
                      paper: tuple[float, float] = LEDGER,
+                     house_dir: Path | None = None,
                      ) -> tuple[Path, dict[str, object]]:
     """Compose the permit-set baseline into one multi-page PDF.
 
@@ -315,7 +326,8 @@ def write_permit_set(model: ResolvedModel, output: Path,
     if profile is None:
         profile = resolve_profile(preferences or Preferences())
     output.parent.mkdir(parents=True, exist_ok=True)
-    sheets = build_sheet_index(model, preferences, profile, details=details, paper=paper)
+    sheets = build_sheet_index(model, preferences, profile, details=details,
+                               paper=paper, house_dir=house_dir)
     index = [(sheet.number, sheet.title) for sheet in sheets]
     # ``set_paper`` is how the table pages learn the paper: they compose their own figures
     # inside ``schedules/`` against a preset name, and this is the only place that knows
@@ -344,3 +356,16 @@ def write_plan_dxfs(model: ResolvedModel, output_dir: Path) -> list[Path]:
             paths.append(write_dxf(build_floorplan(model, storey.tag),
                                    output_dir / f"plan_{storey.tag}.dxf"))
     return paths
+
+
+def _has_engineered_items(model: ResolvedModel, house_dir: Path | None) -> bool:
+    """Whether any check in this house delegates to the engineering register.
+
+    Asked by running the registry, not by enumerating the suite: which requirements a house
+    puts outside the prescriptive path is a conclusion the checks reach, and a second
+    enumeration here would be that judgement written twice.
+    """
+    from typehaus.checks import run_from_model
+
+    report = run_from_model(model, [], house_dir)
+    return any(finding.engineering_item for finding in report.findings)

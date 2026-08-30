@@ -38,15 +38,23 @@ An **uncovered** unit is a FAIL. No anchor at all is not a judgement call.
 from __future__ import annotations
 
 from typehaus.checks._authoring import advisory
-from typehaus.checks._authoring import unknown as _unknown
+from typehaus.checks._authoring import engineered as _engineered
+from typehaus.checks._authoring import passed as _pass
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.floors import FloorSystem
 from typehaus.model.mep import Equipment, PipeRun
-from typehaus.wind import capacity_caveat
 from typehaus.model.structure import Beam, Connector
+from typehaus.wind import capacity_caveat
 
-_CID = "mep.deck_equipment_support"
+#: Renamed 2026-08-30 for the reason `structural.uplift_path_coverage` was: this rule
+#: grades whether the anchorage is COVERED — every anchor in blocking rather than a joist
+#: or a beam, condensate piped and traced — and says out loud that it does not grade the
+#: connection's capacity. Under the old name a PASS would have claimed the support was
+#: adequate. The capacity question now has a home instead of a disclaimer: one
+#: `equipment_anchorage/<unit>` item per unit in the engineering register.
+_CID = "mep.deck_equipment_support_coverage"
+_ANCHORAGE_KIND = "equipment_anchorage"
 
 #: Plan distance within which an authored ``Connector`` counts as anchoring a unit. Generous
 #: on purpose: a stand's legs are deliberately NOT under the cabinet's own feet (they dodge
@@ -258,12 +266,14 @@ def _grade_unit(unit, deck_tag: str, connectors, runs, beams, nodes, blocks,
     out.extend(_grade_condensate(unit, deck_tag, runs))
 
     if not out:
-        out.append(_unknown(
+        out.append(_pass(
             _CID,
             f"{unit.tag} on deck {deck_tag} is held by {len(anchors)} authored anchor(s), "
             f"every one of them landing in blocking rather than a joist or a beam, and its "
-            f"condensate is piped and freeze-protected; coverage only — "
-            f"{capacity_caveat(site)}",
+            f"condensate is piped and freeze-protected — the anchorage is covered; its "
+            f"CAPACITY is not graded here and belongs to "
+            f"`{_ANCHORAGE_KIND}/{unit.tag}` in the engineering register "
+            f"({capacity_caveat(site)})",
             (unit.tag, deck_tag)))
     return out
 
@@ -293,3 +303,46 @@ def _grade_condensate(unit, deck_tag: str, runs) -> list[Finding]:
             (unit.tag, run.tag),
             fix="author freeze_protection on the run (self-regulating heater cable)")]
     return []
+
+
+@check(Tier.ADVISORY, "mep.deck_equipment_anchorage_capacity")
+def deck_equipment_anchorage_capacity(ctx: CheckContext) -> list[Finding]:
+    """The question ``deck_equipment_support_coverage`` names and does not answer.
+
+    One item per unit, because that is the thing an anchorage is designed for — a cabinet's
+    published foot-hole pattern, its projected area, and the deck's own share of the storey
+    shear (#64 works through why the frame's grid and the feet's grid are not the same
+    grid). No calculation is registered, by decision: no wind capacity calc is in scope. So
+    each item reports UNKNOWN and blocks exactly as the coverage UNKNOWN it replaced did,
+    and the difference is that it is now a named thing a seal can cover instead of a
+    sentence at the end of a passing row.
+    """
+    from typehaus.engineering import item_id
+
+    out: list[Finding] = []
+    for unit in sorted(_graded_units(ctx), key=lambda e: e.tag):
+        out.append(_engineered(
+            ctx, "mep.deck_equipment_anchorage_capacity",
+            item_id(_ANCHORAGE_KIND, unit.tag),
+            f"{unit.tag}'s anchorage to its deck is covered "
+            f"(mep.deck_equipment_support_coverage) but its CAPACITY is not evaluated: this "
+            f"engine derives no tributary area, force coefficient or load-path share for "
+            f"it, and an anchor schedule without a load is a drawing rather than a "
+            f"calculation",
+            (unit.tag,), code="IRC M1401.4 / ASCE 7-16 §29",
+            fix=f"seal `{_ANCHORAGE_KIND}/{unit.tag}` in engineering.toml"))
+    return out
+
+
+def _graded_units(ctx: CheckContext) -> list:
+    """The equipment ``deck_equipment_support_coverage`` actually grades — same population.
+
+    Derived by asking that check which units it reported on rather than re-deriving the
+    deck-and-storey scoping here. A second opinion about which units stand on a deck would
+    drift from the first within a month, which is the drift this module's own docstring
+    warns about for its inputs.
+    """
+    tags = {finding.element_tags[0] for finding in deck_equipment_support(ctx)
+            if finding.element_tags}
+    return [e for e in ctx.plan.all_elements()
+            if isinstance(e, Equipment) and e.tag in tags]

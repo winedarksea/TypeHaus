@@ -2336,11 +2336,33 @@ MATERIALS = [
     # matches ``FOUNDATION_FACE.protection_board_in`` and the drawing needs no change; the
     # house's one exterior dark (#1c1f24) so the band reads with the rake trim and the
     # opening casings above it rather than as a grey skirt under them.
+    #
+    # Both vapour fields are UNSET, and that is the finding rather than a gap — the same
+    # conclusion `library/materials.py` reached for `pvc-panel` and `fiber-cement`, for the
+    # same reason. ``perm_rating=0.0`` was dropped on 2026-08-30: ``perm_rating`` is a
+    # *permeability* (perms per inch of substance), ``Material.vapor_permeance_at`` treats
+    # 0.0 there as "not authored" because it cannot divide by a thickness and get anything,
+    # so the field was inert — it read as a declared vapour barrier and was never one.
+    #
+    # It was briefly replaced with ``vapor_permeance_perms=0.05``, the published ASHRAE
+    # Handbook—Fundamentals Ch. 24 Table 9 value for 0.00035 in. aluminium foil (dry cup;
+    # 0.001 in. and thicker reads 0.0). That number is real and it is the wrong number to
+    # put here. It is the permeance of the *facer sheet*; this is a rigid protection board
+    # mechanically fastened over exterior XPS with butted, unsealed joints behind trim, and
+    # a butted board's installed permeance is dominated by those joints, not by its face.
+    # Authoring the sheet's rating as the assembly's would have credited a continuous
+    # Class I vapour barrier on the COLD side of a wall whose interior face is vapour-open —
+    # and the Glaser walk, correctly, then reported dew point inside the XPS on January
+    # normals. That FAIL was an artifact of the input, not a defect in the wall.
+    #
+    # So the assembly reports UNKNOWN naming this material, which is the honest answer: no
+    # manufacturer in this product class publishes an ASTM E96 rating for the board as
+    # installed. Authoring one needs that test, not an extrapolation from its foil.
     Material(tag="foundation-protection-panel",
              name="Aluminium-faced foundation protection panel (1/2\")",
-             r_per_inch=0.0, density=1100.0, perm_rating=0.0, hatch="metal",
+             r_per_inch=0.0, density=1100.0, hatch="metal",
              color="#1c1f24",
-             source="above-grade band over basement exterior XPS, N/E/W (CATLIN_BASEMENT_8, CATLIN_BASEMENT_12)"),
+             source="above-grade band over basement exterior XPS, N/E/W (CATLIN_BASEMENT_8, CATLIN_BASEMENT_12); no ASTM E96 rating published for a butted, mechanically-fastened protection board in this class, so the vapour fields are unset and the Glaser walk reports UNKNOWN"),
     # stucco (porch railing CMU back face + basement parge coat), composite-deck (porch
     # floor) and aluminum-deck (balcony plank) were promoted to library/materials.py on
     # 2026-08-22 (CONTRIBUTING §Promotion flow); they arrive here through

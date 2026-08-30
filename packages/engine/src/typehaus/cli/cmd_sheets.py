@@ -96,6 +96,14 @@ def render(
     if result.plan is None:
         _print_findings(result.findings)
         raise typer.Exit(1)
+    if sealed and not checklist.sealed:
+        console.print("[red]permit print blocked: --sealed, and engineered requirements "
+                      "carry no fresh professional seal[/red]")
+        for item in checklist.unsealed:
+            state = item.seal.value if item.seal else "unsealed"
+            console.print(f"  {item.label} [{state}]: "
+                          f"{', '.join(item.engineering_items)}")
+        raise typer.Exit(1)
     model, _ = resolve(result.plan)
     # A forced scale is meaningless without a sheet to print it on — the frameless path has
     # no viewport to hold the drawing to — so asking for one asks for the default sheet.
@@ -130,6 +138,12 @@ def print_sheets(
         "ledger", help="ledger (11x17) | arch-d (24x36). The paper decides the drawn "
                        "scale: a bigger sheet gives select_scale a bigger viewport, so "
                        "catlin's A-101 goes from 1/16\" = 1'-0\" to 3/16\" = 1'-0\""),
+    sealed: bool = typer.Option(
+        False, "--sealed",
+        help="Require the FINAL gate: every engineered requirement sealed by a licensed "
+             "professional, with the seal still matching this model. Without it the set "
+             "prints at DRAFT, which is the point — draft approval is exactly what a "
+             "permit-ready printoff is for."),
 ) -> None:
     """Compose the permit-set PDF, plan DXFs, and optional architect handoff (M3).
 
@@ -165,7 +179,8 @@ def print_sheets(
         console.print(
             "[red]permit print blocked: declared checklist has failures or unknowns[/red]")
         for item in checklist.items:
-            if item.blocking and item.result is not Result.PASS:
+            if item.blocking and item.result is not Result.NOT_APPLICABLE \
+                    and item.result is not Result.PASS:
                 console.print(f"  {item.label}: {item.detail}")
         raise typer.Exit(1)
     model, _ = resolve(result.plan)
@@ -176,7 +191,8 @@ def print_sheets(
     if fmt in ("pdf", "both"):
         name = f"permit_set{PAPER_SUFFIX[paper]}.pdf"
         path, _ = write_permit_set(model, out / name, preferences,
-                                   profile=jurisdiction, details=details, paper=size)
+                                   profile=jurisdiction, details=details, paper=size,
+                                   house_dir=d)
         console.print(f"wrote {path}")
     if handoff:
         _write_handoff_bundle(d, model, preferences, jurisdiction, size)
@@ -196,6 +212,7 @@ def _write_handoff_bundle(house: Path, model, preferences=None, profile=None,
     # The bundle carries one set, under one name: whoever opens it wants *the* drawings,
     # not a choice between two papers. It is the paper the command was asked for.
     write_permit_set(model, handoff / "permit_set.pdf", preferences, profile=profile,
+                     house_dir=house,
                      paper=paper or LEDGER)
     write_plan_dxfs(model, handoff / "dxfs")
     write_model_json(model, handoff / "model.json")

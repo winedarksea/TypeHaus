@@ -108,8 +108,11 @@ def test_missing_assembly_one_finding(project) -> None:
 
 def test_tri_state_counts(project) -> None:
     report = run(_rect_plan(project))
-    p, f, u = report.counts()
-    assert p + f + u == len(report.findings)
+    tally = report.counts()
+    # Every finding lands in exactly one verdict bucket. `engineered` is an Authority, not
+    # a verdict, so it cuts across the buckets and is excluded from `total` on purpose.
+    assert tally.total == len(report.findings)
+    assert tally.engineered == 0
     # The fixture is a bare rectangle of walls, not a house: its minimal "EXT" assembly
     # (R-8, → _lib()) is not a code-compliant wall, it models no Alarm anywhere, and its
     # single room has no windows. All three CODE rules below are working correctly on a

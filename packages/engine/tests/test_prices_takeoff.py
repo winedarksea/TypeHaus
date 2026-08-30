@@ -290,3 +290,53 @@ def test_data_raceways_and_conduit_partition_the_runs(catlin_model) -> None:
     power = {tag for row in bom["conduit"] for tag in row["tags"]}
     low_voltage = {tag for row in bom["data_raceways"] for tag in row["tags"]}
     assert power and low_voltage and not (power & low_voltage)
+
+
+def test_duct_prices_qualify_on_diameter_and_fall_back_through_shorter_keys() -> None:
+    """``[ducts]`` keys on ``system:material:diameter_in``, most specific first.
+
+    Three things are pinned here, and each one has failed silently in this section before:
+
+    * the exact spelling is ``:3.0``, not ``:3``. ``takeoff/mep.py`` rounds ``diameter_in``
+      to 2 dp and the key is built with ``str()`` on that value, so a ``:3`` row matches
+      nothing, falls back to the blend and reports no error at all;
+    * a diameter the house has not priced falls back to the ``material``-qualified row, and
+      a material the model never named (an empty string, which is what the sheet-metal
+      trunks carry) falls back to the bare one. That fallback is why widening the qualifier
+      cannot change the meaning of any price file already written;
+    * the resolved key is *returned*, because ``unpriced`` and the CSV name what they
+      looked up.
+    """
+    from typehaus.cli.prices import candidate_keys, rate_for
+
+    assert candidate_keys("supply", ("semi_rigid", 3.0)) == [
+        "supply:semi_rigid:3.0", "supply:semi_rigid", "supply"]
+    # A falsy qualifier truncates rather than spelling `supply::3.0`.
+    assert candidate_keys("supply", ("", 3.0)) == ["supply"]
+
+    prices = _prices_from("""
+[ducts]
+"supply" = 10.0
+"supply:semi_rigid" = 5.0
+"supply:semi_rigid:3.0" = 2.0
+""")
+    assert rate_for(prices, "ducts", "supply", ("semi_rigid", 3.0))[0] == \
+        "supply:semi_rigid:3.0"
+    assert rate_for(prices, "ducts", "supply", ("semi_rigid", 3.0))[1].low == 2.0
+    # 6" is not priced, so the material row governs — not the bare one.
+    assert rate_for(prices, "ducts", "supply", ("semi_rigid", 6.0))[0] == "supply:semi_rigid"
+    # The trunks name no material at all.
+    assert rate_for(prices, "ducts", "supply", ("", 0.0))[0] == "supply"
+    # And ``:3`` is exactly the miss the comment in prices.toml warns about.
+    assert rate_for(prices, "ducts", "supply", ("semi_rigid", 3))[0] == "supply:semi_rigid"
+
+
+def _prices_from(body: str):
+    """A ``Prices`` built from a literal TOML body, via a throwaway house directory."""
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as tmp:
+        (Path(tmp) / "prices.toml").write_text(body)
+        prices = load_prices(Path(tmp))
+    assert prices is not None
+    return prices

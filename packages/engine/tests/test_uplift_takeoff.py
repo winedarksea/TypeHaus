@@ -287,7 +287,7 @@ def test_a_tie_at_a_beam_s_own_bearing_does_not_stand_down_the_joists_above_it(
     ``CN-SG-TIE-COL`` and ``CN-SG-TIE-FCOL`` hold the porch's four beams down to the two cast
     columns UNDER them. That says nothing about the 32 joists bearing on top, and until this
     was fixed a tag-wide reading stood the derived rule down at all four supports — so the
-    porch bought no uplift hardware at all and ``structural.uplift_load_path`` reported a
+    porch bought no uplift hardware at all and ``structural.uplift_path_coverage`` reported a
     break in the load path with the hardware for a different joint as its reason. It was
     latent only because the front pair was flush-framed and ``hangers.py`` billed those ends.
 

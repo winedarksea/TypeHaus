@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
+from typehaus.checks.soil import site_soil_bearing_psf, site_soil_class
 from typehaus.emit.draw.schedules.tables import _add_table
 from typehaus.emit.draw.sheet_writer import schedule_sheet, section
 from typehaus.emit.draw.typography import wrap_columns_for
@@ -96,7 +97,7 @@ def _write_cover(pdf, model: ResolvedModel, index: list[tuple[str, str]],
         cursor = y1 - 2.70
         section(fig, _x(x0), _y(cursor), "CODE SUMMARY", fontsize=12)
         cursor -= 0.42
-        for label, value in _code_summary_rows(profile):
+        for label, value in _code_summary_rows(profile, model.plan):
             fig.text(_x(x0 + 0.1), _y(cursor), f"{label:<26}{value}", fontsize=8,
                      family="monospace")
             cursor -= _INDEX_PITCH_IN
@@ -168,7 +169,7 @@ def _index_shape(entries: int, *, rows: int, columns: int) -> tuple[int, int]:
     return (min(rows, -(-entries // columns)), columns)
 
 
-def _code_summary_rows(profile: JurisdictionProfile) -> list[tuple[str, str]]:
+def _code_summary_rows(profile: JurisdictionProfile, plan: Any = None) -> list[tuple[str, str]]:
     """The profile's own data, which A-000 has claimed to summarise since it was written.
 
     Every value here is authored on :class:`JurisdictionProfile` and was already deciding
@@ -184,16 +185,31 @@ def _code_summary_rows(profile: JurisdictionProfile) -> list[tuple[str, str]]:
     if profile.frost_depth_in is not None:
         rows.append(("Frost depth", f"{profile.frost_depth_in:.0f}\" below lowest "
                                     f"adjacent finished grade (IRC R403.1.4.1)"))
-    if profile.soil_bearing_psf is not None:
-        rows.append(("Presumptive soil bearing", f"{profile.soil_bearing_psf:.0f} psf "
-                                                 f"(IRC Table R401.4.1)"))
-    if profile.soil_class is not None:
-        rows.append(("Backfill soil class", f"{profile.soil_class} "
-                                            f"(IRC Table R405.1 / R404.1.2)"))
+    # The site's own soil where it states one, the profile's presumption otherwise, and the
+    # row SAYS WHICH — a reviewer reading "GM" needs to know whether that is this parcel's
+    # soils report or a regional default (→ checks/soil.py).
+    site = getattr(getattr(plan, "project", None), "site", None)
+    bearing = site_soil_bearing_psf(plan, profile)
+    if bearing is not None:
+        basis = ("this site" if getattr(site, "soil_bearing_psf", None) is not None
+                 else "presumptive, IRC Table R401.4.1")
+        rows.append(("Soil bearing", f"{bearing:.0f} psf ({basis})"))
+    soil_class = site_soil_class(plan, profile)
+    if soil_class is not None:
+        basis = ("this site" if getattr(site, "soil_class", None) is not None
+                 else "presumptive")
+        rows.append(("Backfill soil class", f"{soil_class} ({basis}, "
+                                            f"IRC Table R405.1 / R404.1.2)"))
     gating = sum(1 for item in profile.permit_items if item.blocking)
     rows.append(("Checklist items", f"{gating} gating, "
                                     f"{len(profile.permit_items) - gating} under review"))
     return rows
+
+
+#: A permit line with nothing left outstanding. N/A belongs here beside PASS: a requirement
+#: whose governed condition does not exist in this building is resolved, not unresolved, and
+#: lettering "NOT READY" over one would be a false statement on a drawing.
+_RESOLVED = frozenset({Result.PASS, Result.NOT_APPLICABLE})
 
 
 def _gate_statement(profile: JurisdictionProfile, checklist: PermitChecklist) -> str:
@@ -205,9 +221,47 @@ def _gate_statement(profile: JurisdictionProfile, checklist: PermitChecklist) ->
     labels are the least it can say.
     """
     unresolved = [item.label for item in checklist.items
-                  if item.blocking and item.result is not Result.PASS]
-    verdict = ("PASS" if checklist.ok
-               else "NOT READY — unresolved: " + ", ".join(unresolved))
+                  if item.blocking and item.result not in _RESOLVED]
+    if not checklist.ok:
+        verdict = "NOT READY — unresolved: " + ", ".join(unresolved)
+        return _gate_sentence(profile, verdict)
+
+    stale = checklist.stale_seals
+    if stale:
+        # A seal that no longer describes the model is worse than no seal: it reads as
+        # done. This is the one PASSING checklist that still letters NOT READY.
+        names = ", ".join(sorted({tag for item in stale for tag in item.engineering_items}))
+        who = next((item.signoff.id for item in stale if item.signoff), "a signoff")
+        return _gate_sentence(
+            profile, f"NOT READY — engineering seal stale: the model changed after {who} "
+                     f"was sealed ({names})")
+
+    engineered = checklist.engineered
+    if not engineered:
+        return _gate_sentence(profile, "PASS")
+
+    unsealed = checklist.unsealed
+    if unsealed:
+        # Draft. The set prints, and says out loud what it is: a requirement this engine
+        # computed, and no licensed professional has signed. "Engineering" used to be one
+        # word in the generic disclaimer below; this replaces the hand-wave with a count.
+        return _gate_sentence(
+            profile,
+            f"PASS — DRAFT, NOT FOR CONSTRUCTION. {len(unsealed)} requirement(s) rest on "
+            f"engineered design computed by this engine and NOT SEALED by a licensed "
+            f"professional engineer: " + ", ".join(item.label for item in unsealed))
+    credits = sorted({item.signoff.credit() for item in engineered if item.signoff})
+    return _gate_sentence(
+        profile, f"PASS. Engineered items sealed by {'; '.join(credits)} — see S-105")
+
+
+def _gate_sentence(profile: JurisdictionProfile, verdict: str) -> str:
+    """The verdict plus the standing scope disclaimer, in one place.
+
+    "engineering" stays in the disclaimer because the *scope* caveat is still true — this
+    engine computes four limit-state families, not a building's whole structural design.
+    What the verdict above no longer does is let that one word stand in for a state.
+    """
     return (f"Declared {profile.name} checklist: {verdict}. This set encodes a declared "
             "subset only; verify local amendments, engineering, MEP, and energy before "
             "construction.")

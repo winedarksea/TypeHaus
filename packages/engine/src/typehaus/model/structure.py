@@ -316,6 +316,18 @@ class KneeBrace(Element):
     connector: str = "APVKB45-6"  # hardware model at the joint
     assembly: str | None = None  # optional finish assembly (paint), same contract as Post.assembly
     connects: tuple[str, ...] = ()  # post + beam/girt tags the brace joins
+    #: A licensed engineer's lateral design for this brace, cited. Verbatim the contract
+    #: ``FoundationWall.engineering_spec`` carries and for the same reason: an authored,
+    #: external, stamped design IS the design, and ``structural.lateral_racking`` stands down
+    #: to a PASS quoting it, exactly as ``checks/structural/foundation.py::_grade_one`` stands
+    #: down from IRC R404.4's tables. Until one exists the check reports UNKNOWN with its own
+    #: worked demand-to-capacity ratio, which is a screening calculation and says so.
+    #:
+    #: **Nothing in this repository may author this field on its own arithmetic.** It is the
+    #: record of a document that exists outside the model, and a value invented to silence an
+    #: UNKNOWN would convert an open question into a fabricated pass — the one failure mode
+    #: the tri-state exists to prevent.
+    engineering_spec: str | None = None
 
 
 @register_element

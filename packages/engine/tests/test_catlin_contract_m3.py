@@ -227,8 +227,15 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset():
     #
     # Pinned tightly on purpose: any OTHER gating item regressing still fails the empty
     # assertion below, and this one silently going UNKNOWN again fails the two after it.
+    #
+    # N/A joined PASS as a resolved verdict on 2026-08-30. Four items flipped into the gate
+    # in that commit — ESS, PV, ERV terminations, structural glass guards — and catlin
+    # answers three of them for real; "Structural glass guards" is N/A, because no guard in
+    # this house is filled with a glass panel. That is a resolved requirement, not an
+    # unresolved one, and lettering it as a gate failure would be a false statement.
     gating = [item for item in checklist.items if item.blocking]
-    unresolved = [item for item in gating if item.result is not Result.PASS]
+    resolved = {Result.PASS, Result.NOT_APPLICABLE}
+    unresolved = [item for item in gating if item.result not in resolved]
     assert not unresolved, \
         [(item.label, item.result, item.detail) for item in unresolved]
     frost = [item for item in gating if item.label == "Foundation frost depth"]
@@ -1509,6 +1516,29 @@ def test_garage_overhead_door_opens_from_the_slab_at_grade(catlin_model):
     for cripple in cripples:
         assert cripple.z0_m == pytest.approx(backing.z1_m)
 
+    # ** AND THE SOLE PLATE STOPS AT THE JAMBS. ** Until 2026-08-30 `_append_plates` was
+    # never handed the wall's openings, so no bottom plate in any house was ever
+    # interrupted: this one ran the full 7.10 m across the 16'-0" hole at z = -0.3048, with
+    # nothing whatever underneath it. The ICF stem is stepped down to a grade beam right
+    # here — N-GF-E-DRS/N-GF-E-DRN in params/foundations.py are the two stations where it
+    # drops — which is exactly why there is no floor for a plate to sit on.
+    plates = sorted((m for m in catlin_model.all_members()
+                     if m.parent_uid == wall.uid
+                     and m.child_key.startswith("plate-bottom")),
+                    key=lambda m: m.p0[1])
+    assert [m.child_key for m in plates] == ["plate-bottom-0", "plate-bottom-1"]
+    # The gap is the rough opening exactly, so every trimmer still bears on a plate end.
+    gap = math.dist(plates[0].p1, plates[1].p0)
+    assert gap == pytest.approx(door.width_m, abs=1e-6)
+    for plate_end, node_tag in ((plates[0].p1, "N-GF-E-DRS"), (plates[1].p0, "N-GF-E-DRN")):
+        node = catlin_model.plan.by_tag(node_tag)
+        assert node is not None, f"{node_tag} is what makes the stem step down here"
+        assert plate_end[1] == pytest.approx(node.position.xy_m[1], abs=1e-6)
+    # Deliberately silent about the track jambs. `_append_track_jamb_legs` still puts
+    # trackjamb-0-l/r inside the rough opening, bottoming on the plate this cut removes —
+    # they were already wrong (they stop 22" above the slab) and fixing them is its own
+    # change (plans/TODO.md).
+
 
 def test_garage_brick_wainscot_piers_are_the_door_jambs_and_cap_at_four_feet(catlin_model):
     """The things about the east brick wainscot (plus its SE/NE corner returns) a future
@@ -1966,6 +1996,94 @@ def test_wall_mounted_devices_resolve_against_a_wall_face(catlin_model):
             offenders.append((item.tag, "buried %.2f\" into the wall" % (reach / inch(1).meters)))
         elif overlap <= 1e-9 and gap > inch(0.25).meters:
             offenders.append((item.tag, "floating %.1f\" off the wall" % (gap / inch(1).meters)))
+    assert not offenders, offenders
+
+
+def _wall_bodies_by_storey(model):
+    """Per storey, the unioned layer footprint of every wall, with its z extent."""
+    from shapely.geometry import Polygon
+    from shapely.ops import unary_union
+
+    walls: dict[str, list] = {}
+    for wall in model.walls:
+        parts = [Polygon(layer.polygon) for layer in wall.layers if len(layer.polygon) >= 3]
+        parts = [p for p in parts if p.is_valid and p.area > 1e-9]
+        if parts:
+            walls.setdefault(wall.storey, []).append(
+                (wall.tag, unary_union(parts), wall.z0_m, wall.z1_m))
+    return walls
+
+
+def test_wall_referenced_fixtures_stand_against_a_finish_face_not_inside_the_studs(
+        catlin_model):
+    """The `clear_face` trap, on the family it has actually bitten (plans/TODO.md).
+
+    ``Room.clear_face`` is inset from each wall's **AXIS** by a constant lining figure
+    (``resolve/rooms.py::_lining_inset``), not from its finish face. Anything authored off
+    the number the model reports for a room therefore lands *inside* the framing by the
+    difference — a 54" vanity stood six inches in the studs at 0 FAIL, and the floor-heat
+    polygon beside it went in the same way (``test_catlin_bath2_vanity_heat_and_joists``).
+
+    Keyed on ``attachment_wall``, NOT on ``mount.kind``: a vanity is ``MountKind.FLOOR`` —
+    it stands on the floor and backs onto a wall — so the receptacle test above never sees
+    it. What makes a fixture gradeable here is that it NAMES a wall.
+    """
+    from shapely.geometry import Polygon
+
+    walls = _wall_bodies_by_storey(catlin_model)
+    offenders = []
+    for item in catlin_model.canvas_objects:
+        if item.kind != "Fixture" or item.attachment_wall is None:
+            continue
+        body = Polygon(item.footprint)
+        named = [entry for entry in walls.get(item.storey, [])
+                 if entry[0] == item.attachment_wall]
+        if not named:
+            offenders.append((item.tag, f"names {item.attachment_wall}, which has no body"))
+            continue
+        _tag, solid, _z0, _z1 = named[0]
+        overlap = solid.intersection(body).area
+        # Graded the same way as the devices above: how far the body reaches PAST the face,
+        # normalised by its own size, rather than whether the two polygons touch at all.
+        reach = overlap / math.sqrt(body.area)
+        if reach > inch(0.5).meters:
+            offenders.append((item.tag, "buried %.2f\" into %s"
+                              % (reach / inch(1).meters, item.attachment_wall)))
+        elif overlap <= 1e-9 and solid.distance(body) > inch(0.5).meters:
+            offenders.append((item.tag, "floating %.1f\" off %s"
+                              % (solid.distance(body) / inch(1).meters,
+                                 item.attachment_wall)))
+    assert not offenders, offenders
+
+
+def test_floor_heat_zones_do_not_run_under_the_walls_that_bound_them(catlin_model):
+    """The other half of the `clear_face` trap, and the one with no z to hide behind.
+
+    A ``ResolvedFloorHeat.zone`` is a plan polygon with no elevation at all, so the test is
+    simply that it must not lie under a wall. It matters here because
+    ``resolve/floor_heat.py`` FALLS BACK to ``room.clear_face`` when no zone is authored —
+    and that fallback *is* the trap: a zone taken from the clear face runs to each wall's
+    centreline, so every mat is billed running two or three inches into the framing on all
+    four sides, under the bottom plate, where no cable may go.
+
+    A sliver is tolerated (the fallback is deliberate and the rings are authored to 1/8"),
+    but a mat that laps a wall by more than half an inch of its own area is the bug.
+    """
+    from shapely.geometry import Polygon
+
+    walls = _wall_bodies_by_storey(catlin_model)
+    offenders = []
+    for zone in catlin_model.floor_heat:
+        if len(zone.zone) < 3:
+            continue
+        mat = Polygon(zone.zone)
+        if not mat.is_valid or mat.area <= 1e-9:
+            continue
+        for _tag, solid, _z0, _z1 in walls.get(zone.storey, []):
+            lap = solid.intersection(mat).area
+            if lap / math.sqrt(mat.area) > inch(0.5).meters:
+                offenders.append((zone.tag, _tag,
+                                  "%.2f\"" % (lap / math.sqrt(mat.area) / inch(1).meters)))
     assert not offenders, offenders
 
 

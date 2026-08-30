@@ -148,11 +148,43 @@ def test_the_knee_brace_capacity_this_house_can_actually_use():
 
     This is the number the balcony's bracing is checked against, and it is pinned here so a
     later edit to the catalog has to argue with the report rather than with a diff.
+
+    **Connection type 2**, at 540 lbf — a 2x6 brace into a 6x6 post is not the equal-width
+    condition type 1 tabulates, and type 1's 1,010 would overstate this joint's capacity by
+    87 %. The role argument is what selects it: the same part number is catalogued twice.
     """
-    kbs = allowable_for_model("KBS1Z")
-    assert kbs.lateral_f1_lb == 1010.0
+    from typehaus.takeoff.hardware_catalog import ROLE_KNEE_BRACE
+
+    kbs = allowable_for_model("KBS1Z", role=ROLE_KNEE_BRACE)
+    assert kbs.lateral_f1_lb == 540.0
     assert kbs.load_duration_factor == 1.6
-    assert "45" in kbs.citation and "720" in kbs.citation  # the interpolation endpoints
+    assert "45" in kbs.citation and "440" in kbs.citation  # the interpolation endpoints
+
+
+def test_one_part_number_two_joints_two_rows():
+    """The KBS1Z is a beam-to-post cap AND a knee brace, and the table gives them different
+    numbers. A lookup by model alone must not decide which one a caller meant."""
+    from typehaus.takeoff.hardware_catalog import ROLE_BEAM_HOLD_DOWN, ROLE_KNEE_BRACE
+
+    cap = allowable_for_model("KBS1Z", role=ROLE_BEAM_HOLD_DOWN)
+    brace = allowable_for_model("KBS1Z", role=ROLE_KNEE_BRACE)
+    assert cap is not brace
+    assert cap.uplift_lb == 1000.0 and cap.lateral_f1_lb is None
+    assert brace.lateral_f1_lb == 540.0 and brace.uplift_lb is None
+
+
+def test_the_knee_brace_role_serves_a_part_with_a_published_capacity():
+    """The 2026-08-30 substitution, pinned at the level that matters: the role, not the house.
+
+    Any house authoring a knee brace gets whatever this role resolves to, and before the swap
+    that was a connector with no allowable load in any code report. Putting an unrated part
+    back on this role would silently un-brace every deck in the world that uses it.
+    """
+    from typehaus.takeoff.hardware_catalog import ROLE_KNEE_BRACE, hardware_for_role
+
+    item = hardware_for_role(ROLE_KNEE_BRACE)
+    assert item.allowable is not None and not item.allowable.is_empty
+    assert item.allowable.lateral_f1_lb is not None
 
 
 # --- the enumeration ---------------------------------------------------------------------

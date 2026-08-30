@@ -16,14 +16,17 @@ R327.6 protection from impact. Both are field/judgement requirements with nothin
 model to grade — an instruction manual is not geometry, and "subject to vehicle damage" is
 a site condition, not a room property.
 
-Every check no-ops (returns nothing) when no ESS is placed, the same guard
-``checks/mep/supply_protection.py`` uses: a house with no battery is not a house failing the
-battery rules.
+Every check reports NOT_APPLICABLE when no ESS is placed: a house with no battery is not a
+house failing the battery rules — and it is not a house that *could not be evaluated* for
+them either. It used to return nothing at all, which is worse than it sounds: a permit item
+with no matched findings resolves to UNKNOWN, so "there is no battery here" and "nobody
+looked" were the same answer, and the R327 line sat in the non-gating staging lane purely
+because of it. An explicit N/A lets the item gate.
 """
 
 from __future__ import annotations
 
-from typehaus.checks.code.mn_residential._common import _fail, _pass, _unknown
+from typehaus.checks.code.mn_residential._common import _fail, _na, _pass, _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import AlarmKind, EquipmentKind, Occupancy
@@ -31,6 +34,11 @@ from typehaus.model.enums import AlarmKind, EquipmentKind, Occupancy
 # R327.5. Per-unit and aggregate ceilings for storage inside a dwelling. The aggregate is
 # what the two-battery future runs into, which is why it is computed over the placements
 # rather than read off a single type.
+#: What every R327 check says when the house places no storage unit. One string so the
+#: three lines cannot drift into three different accounts of the same fact.
+_NO_ESS = ("no energy storage system is placed in this house, so R327 has no stationary "
+           "storage battery to govern")
+
 _MAX_KWH_PER_UNIT = 20.0
 _MAX_KWH_AGGREGATE = 40.0
 
@@ -64,7 +72,7 @@ def ess_listing(ctx: CheckContext) -> list[Finding]:
     cid, code = "code.R327_ess_listing", "R327.2"
     batteries = _batteries(ctx)
     if not batteries:
-        return []
+        return [_na(cid, _NO_ESS, (), code)]
     out: list[Finding] = []
     for battery in batteries:
         product = _type_of(ctx, battery)
@@ -94,7 +102,7 @@ def ess_capacity(ctx: CheckContext) -> list[Finding]:
     cid, code = "code.R327_ess_capacity", "R327.5"
     batteries = _batteries(ctx)
     if not batteries:
-        return []
+        return [_na(cid, _NO_ESS, (), code)]
     occupancy = {room.tag: room.occupancy for room in ctx.model.rooms}
     out: list[Finding] = []
     indoor_kwh = 0.0
@@ -153,7 +161,7 @@ def ess_detection(ctx: CheckContext) -> list[Finding]:
     cid, code = "code.R327_ess_detection", "R327.7"
     batteries = _batteries(ctx)
     if not batteries:
-        return []
+        return [_na(cid, _NO_ESS, (), code)]
     alarms = [element for element in ctx.plan.all_elements()
               if element.element_kind == "Alarm"]
 

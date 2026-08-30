@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typehaus.checks._authoring import advisory
+from typehaus.checks._authoring import not_applicable as _na
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
@@ -410,10 +411,12 @@ def island_receptacle(ctx: CheckContext) -> list[Finding]:
     floor_z = {s.tag: s.elevation.meters for s in ctx.plan.storeys}
     out: list[Finding] = []
     islands = 0
+    work_surfaces = 0
     for item in ctx.model.canvas_objects:
         item_type = furniture_types.get(item.type_ref or "")
         if item_type is None or item_type.work_surface is not True:
             continue
+        work_surfaces += 1
         if item.z_m - floor_z.get(item.storey, 0.0) > _FIXED_CABINET_FLOOR_CONTACT_M:
             continue
         carcass = Polygon(item.footprint)
@@ -437,7 +440,17 @@ def island_receptacle(ctx: CheckContext) -> list[Finding]:
                      f"210.52(C)(3) wants any that serves the countertop on/above/in "
                      f"the counter surface", (item.tag,)))
     if not islands:
-        return [_unknown(cid, "no freestanding work-surface casework modeled")]
+        if work_surfaces:
+            # Positive absence, not a missing input: the house's work-surface casework was
+            # read and every piece of it stands against a room boundary. There is no island
+            # here, so there is no 210.52(C)(2) island receptacle to want.
+            return [_na(cid, f"{work_surfaces} work-surface unit(s) modeled and every one "
+                             f"stands against a room boundary — this house has no "
+                             f"freestanding island for 210.52(C)(2) to govern")]
+        # No work surfaces at all is a *gap*: a dwelling has counters, so their absence
+        # means the casework is unmodeled rather than absent from the design.
+        return [_unknown(cid, "no work-surface casework is modeled at all, so whether this "
+                              "house has an island cannot be answered")]
     return out
 
 

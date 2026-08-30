@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from typehaus.checks.code.mn_residential._common import _fail, _pass, _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding
+from typehaus.findings import Finding, not_applicable
 from typehaus.model.enums import Occupancy
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import opening_center
@@ -207,8 +207,9 @@ def structural_glass_guard(ctx: CheckContext) -> list[Finding]:
         if panels:
             glass_guards.append((element, len(panels)))
     if not glass_guards:
-        return [_unknown(cid, "no guard in the plan is filled with a glass panel, so there "
-                         "is no structural glass baluster to grade", (), code)]
+        # N/A, not UNKNOWN: every Railing was read and none resolved a glass panel.
+        return [not_applicable(cid, "no guard in the plan is filled with a glass panel, so "
+                               "there is no structural glass baluster to grade", (), code)]
 
     out: list[Finding] = []
     for guard, panel_count in glass_guards:

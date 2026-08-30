@@ -29,6 +29,7 @@ from typehaus.resolve.framing.openings import (
     frame_opening,
     in_exclusion,
     opening_exclusions,
+    sole_plate_breaks,
 )
 from typehaus.resolve.framing.pockets import pocket_keepouts
 from typehaus.resolve.framing.tables import DEFAULT_SPACING, member_actual
@@ -158,14 +159,18 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
         # rather than assumed to be 1 1/2".
         course_h = min(top_start, top_end) - z0
         plate_only: list[FramedMember] = []
+        # `openings` is passed for symmetry with the framed arm below; a `wall_frame ==
+        # "plate"` layer is a single flat course with no openings hosted in it, so the
+        # break list is provably empty today.
         _append_plates(plate_only, rw, plate_member, p0, d, axis_len, z0, course_h, 0,
                        top_start, top_end, structure_polygon, start_role, end_role,
-                       thickness, neighbour_insets_start, neighbour_insets_end)
+                       thickness, neighbour_insets_start, neighbour_insets_end,
+                       openings=openings)
         return tuple(plate_only)
     top_plates = 2 if spec.double_top_plate and not spec.advanced_framing else 1
     _append_plates(members, rw, plate_member, p0, d, axis_len, z0, plate_h, top_plates,
                    top_start, top_end, structure_polygon, start_role, end_role, thickness,
-                   neighbour_insets_start, neighbour_insets_end)
+                   neighbour_insets_start, neighbour_insets_end, openings=openings)
 
     # --- studs at spacing, skipping those inside an opening's king/jack pack --
     stud_z0 = z0 + plate_h
@@ -240,9 +245,14 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
                 # drywall need backing where the wall meets its neighbours.
                 profile = frame_member
             else:
-                # Face parity from the station itself (not the loop index) so a dropped
-                # station under an opening never flips the rest of the wall's rhythm.
-                side = 1.0 if round(station / module_spacing) % 2 == 0 else -1.0
+                # Face parity from the module *ordinal* (not the loop index, and not the
+                # raw station) so a dropped station under an opening never flips the rest
+                # of the wall's rhythm. Measuring the ordinal from the layout phase is what
+                # keeps the alternation honest when the phase is not zero: dividing the
+                # bare station lands consecutive studs on half-integers, where `round`'s
+                # ties-to-even sends both to the same face and the decoupling collapses.
+                ordinal = round((station - module_phase) / module_spacing)
+                side = 1.0 if ordinal % 2 == 0 else -1.0
                 point = add(point, scale(perpendicular, side * stagger_offset))
         members.append(FramedMember(rw.uid, f"stud-{index:03d}", "stud", profile,
                                     point, point, stud_z0, stud_top, stud_top - stud_z0,
@@ -274,6 +284,29 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     append_blocking_rows(members, rw, spec, member, d, p0, stud_z0, module_spacing,
                          stud_stations, top_at)
     return tuple(members)
+
+
+def _plate_segments(start: float, end: float, breaks: list[tuple[float, float]],
+                    thickness: float) -> list[tuple[float, float]]:
+    """``[start, end]`` less each break, dropping residues too short to be a member.
+
+    A residue shorter than the wall's own thickness is a sliver, not a plate — a trimmer
+    could not bear on it. Cutting exactly at the break edges is what leaves each jamb pack
+    a plate end to stand on.
+    """
+    segments = [(start, end)]
+    for lo, hi in breaks:
+        cut: list[tuple[float, float]] = []
+        for seg_start, seg_end in segments:
+            if hi <= seg_start + 1e-9 or lo >= seg_end - 1e-9:
+                cut.append((seg_start, seg_end))
+                continue
+            if lo - seg_start > thickness - 1e-9:
+                cut.append((seg_start, lo))
+            if seg_end - hi > thickness - 1e-9:
+                cut.append((hi, seg_end))
+        segments = cut
+    return segments
 
 
 def _module_stations(axis_len: float, spacing: float, thickness: float,
@@ -345,13 +378,19 @@ def _append_plates(members: list[FramedMember], rw: ResolvedWall, member: str, p
                    start_role: str | None, end_role: str | None,
                    thickness: float,
                    neighbour_insets_start: tuple[float, float] | None = None,
-                   neighbour_insets_end: tuple[float, float] | None = None) -> None:
+                   neighbour_insets_end: tuple[float, float] | None = None,
+                   openings: tuple[WallOpening, ...] = ()) -> None:
     """Bottom + top plate course(s), each cut to the corner square that course owns.
 
     The cap plate of a double top plate laps the *opposite* way from the courses below it:
     at a corner the wall that runs through at the bottom stops short at the cap, and the
     neighbour's cap runs over it. That reversal is the tie between the two walls, and
     modelling it is what stops two plates from doubling in the same corner square.
+
+    The bottom plate is additionally cut around any opening that drops below the framing
+    base (``openings.sole_plate_breaks``) — an overhead door onto a slab has no floor under
+    it to carry a plate. With no such opening the course stays a single member keyed
+    ``"plate-bottom"``, which is every wall in every house but the garage's door wall.
     """
     def plate_run(course_start_role: str | None, course_end_role: str | None):
         start = wall_end_framing(structure_polygon, p0, d, axis_len, course_start_role,
@@ -370,8 +409,13 @@ def _append_plates(members: list[FramedMember], rw: ResolvedWall, member: str, p
         return top_start + (top_end - top_start) * fraction
 
     start_station, end_station = plate_run(start_role, end_role)
-    members.append(_plate(rw, point_at(start_station), point_at(end_station),
-                          "plate-bottom", z0, z0 + plate_h, member))
+    segments = _plate_segments(start_station, end_station,
+                               sole_plate_breaks(openings), thickness)
+    single = len(segments) == 1
+    for i, (seg_start, seg_end) in enumerate(segments):
+        key = "plate-bottom" if single else f"plate-bottom-{i}"
+        members.append(_plate(rw, point_at(seg_start), point_at(seg_end),
+                              key, z0, z0 + plate_h, member))
     for i in range(top_plates):
         laps_back = top_plates > 1 and i == top_plates - 1
         roles = ((invert_corner_role(start_role), invert_corner_role(end_role))

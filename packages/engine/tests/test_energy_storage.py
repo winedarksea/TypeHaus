@@ -281,10 +281,16 @@ def test_a_battery_with_no_required_zone_is_reported(catlin_plan):
 
 # --- the guard ------------------------------------------------------------------------
 
-def test_every_ess_rule_no_ops_on_a_house_with_no_battery(catlin_plan):
-    """A house with no ESS is not a house failing the ESS rules. The starter house has no
-    battery, and all five battery-driven rules must return nothing at all rather than a
-    row of UNKNOWNs nobody can clear."""
+def test_every_ess_rule_answers_not_applicable_on_a_house_with_no_battery(catlin_plan):
+    """A house with no ESS is not a house failing the ESS rules — and it is not a house
+    that *could not be evaluated* for them either.
+
+    These five used to return nothing at all, which reads as the right answer and is not:
+    a permit item with no matched findings resolves to UNKNOWN, so "there is no battery
+    here" and "nobody looked" were the same answer, and the R327 line sat in the non-gating
+    staging lane purely because of that. Each rule now says the absence out loud, and the
+    item gates.
+    """
     plan = catlin_plan
     for storey in plan.storeys:
         kept = [e for e in plan.storey_elements(storey.tag)
@@ -293,7 +299,10 @@ def test_every_ess_rule_no_ops_on_a_house_with_no_battery(catlin_plan):
         plan = plan.with_elements(storey.tag, kept)
     ctx = _context(plan)
     for rule in (ess_listing, ess_capacity, ess_detection, ess_enclosure, ess_clearance):
-        assert rule(ctx) == [], rule.__name__
+        findings = rule(ctx)
+        assert len(findings) == 1, rule.__name__
+        assert findings[0].result is Result.NOT_APPLICABLE, rule.__name__
+        assert "no energy storage system" in findings[0].message, rule.__name__
 
 
 def test_the_alarm_kinds_the_detection_rule_looks_for_exist():

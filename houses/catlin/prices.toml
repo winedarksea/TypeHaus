@@ -463,7 +463,13 @@
 # 13 7/16" squash block and takes no base (UpliftTieRules.blocking_max_height_ft).
 "ABU44" = { low = 22, high = 40 }  # 2 ea
 "APVB12-6" = { low = 4, high = 9 }  # 16 ea — Outdoor Accents 1/2"x6" hex through-bolt + washer
-"APVKB45-6" = { low = 22, high = 45 }  # 8 ea — Outdoor Accents Avant 45-deg knee brace, 6x
+# **0 ea since 2026-08-30 — the eight balcony knee braces changed connector.** The APVKB45-6
+# has no published allowable load (IAPMO UES ER-102's AP-series index does not list it, and
+# ER-280 has no table for it), and those eight braces are the whole lateral system of a
+# freestanding deck at storey height. They now take KBS1Z below, two per brace. The row stays
+# so the price research is not lost if the part is ever wanted for a genuinely decorative
+# joint; see params/sunken_garden.py and notes/balcony_lateral_bracing_design.md.
+"APVKB45-6" = { low = 22, high = 45 }  # 0 ea — Outdoor Accents Avant 45-deg knee brace, 6x
 # The takeoff bills CS16 by the COIL (unit: "coil"), so this is a whole coil, not a strap.
 # 2026-08-28: 1 coil -> 2. The strap rule fired only at stacked framed-exterior CORNERS, which
 # is eight straps and 29.3 LF on a three-storey house; it now also straps the runs between
@@ -514,7 +520,12 @@
 # hanger does not change: HUCQ410 takes a 4x10 seat, and 3 x 1 1/2" is 4 1/2" against the
 # old 3 1/2" — still inside the 4x width the -410 designates, and the same 11 1/4" depth.
 "HUCQ410-SDS" = { material = { low = 92, high = 120 }, labour = { low = 60, high = 150 } }  # 4 ea
-"KBS1Z" = { low = 3.5, high = 6.5 }  # 22 ea — 4 authored (breezeway roof beams) + 18 derived
+# 22 ea -> 30 on 2026-08-30: the eight balcony knee braces moved off the unrated APVKB45-6
+# onto this part, two per brace (Simpson's own instruction — "install single KBS1Z on each
+# end" — and the F1 the code report publishes is measured through that pair). Net material
+# effect is a SAVING: 16 KBS1Z at $3.50-6.50 is $56-104 against the 8 APVKB45-6 at
+# $22-45 they replace, $176-360. The stronger, rated part is the cheaper one here.
+"KBS1Z" = { low = 3.5, high = 6.5 }  # 30 ea — 4 authored (breezeway roof beams) + 26 derived
 # Lateral tie plate at the bottom plate of a framed wall standing on a framed floor
 # band. NOT on a wall standing on concrete: that plate is a sill and its MASA anchors
 # already make the connection, so the takeoff excludes it rather than paying twice.
@@ -1449,6 +1460,18 @@
 # is a fraction of this and CANNOT be substituted — it is not standable.
 "FT-KIT-PANTRY-SHELVES-70" = { material = { low = 160, high = 420 }, labour = { low = 400, high = 1050 } }  # 1 ea
 "FT-BATH1-SHELF-2030" = { material = { low = 200, high = 750 }, labour = { low = 150, high = 450 } }  # 1 ea
+# The four closet shelf-and-rod runs (2026-08-30). Ventilated epoxy-coated steel on wall
+# standards — the ordinary reach-in fit-out, and the exact article the pantry note above
+# says CANNOT be substituted there. Material is per-foot shelf, rod, standards, brackets
+# and end caps: roughly $6-$14/LF at 16" depth, so a 60" run lands $30-$70 and the 96" run
+# $50-$115; the 12"-deep linen shelf is cheaper per foot and carries no rod. Labour is a
+# half-day for the lot at the low end, a closet fitter's call-out at the high — finding
+# studs and setting standards plumb is the whole job.
+# CONFIDENCE: MEDIUM — big-box shelf-and-rod kit pricing, not a quote.
+"FT-CLOSET-SHELFROD-60" = { material = { low = 30, high = 70 }, labour = { low = 40, high = 110 } }  # 1 ea
+"FT-CLOSET-SHELFROD-84" = { material = { low = 42, high = 100 }, labour = { low = 50, high = 130 } }  # 1 ea
+"FT-CLOSET-SHELFROD-96" = { material = { low = 50, high = 115 }, labour = { low = 55, high = 145 } }  # 1 ea
+"FT-CLOSET-SHELF-36" = { material = { low = 15, high = 40 }, labour = { low = 30, high = 80 } }  # 1 ea
 # RM-M-STUDY'S CALL BOOTH, 2026-08-29 — two built articles, priced the way the bath alcove
 # shelf and the sauna benches are: what the piece costs in materials and shop time.
 # [placeables] and not [furnishings] because neither can be carried out of the room; both are
@@ -2680,15 +2703,37 @@
 # Semi-rigid is about half the material of sheet metal and installs in a fraction of the time;
 # that speed is the whole labour argument for a radial system, and it is why the section total
 # falls when the blend is taken out. It was over-priced, not the radial under-priced.
-# $/LF, by system, optionally qualified by material
+# ** DIAMETER UN-BLENDED 2026-08-30, WHICH IS WHAT THE 08-27 NOTE SAID WAS STILL LEFT. **
+# `QUALIFIED_KEY_FIELD["ducts"]` is now the TUPLE `("material", "diameter_in")`, and a
+# lookup walks progressively less specific keys — `supply:semi_rigid:3.0` ->
+# `supply:semi_rigid` -> `supply` — so the bare and material-qualified rows below still mean
+# exactly what they meant, and the two `:3.0`/`:6.0` rows are an opt-in on top of them.
+#
+# The split is rate-neutral on today's mix, deliberately: 3" at 2.25/4.50 and 6" at 4.00/8.00
+# re-weight to the 2.50/5.00 and 2.75/5.50 blends they replace at the current 83/17 and 72/28
+# splits. Nothing about this commit moves the section total; what it does is stop the total
+# from being silently wrong the next time a run changes size. 75 mm semi-rigid is roughly
+# half the cost per foot of 6" and pulls in a fraction of the time — a 3" branch is one
+# person feeding it through a joist bay.
+#
+# ** THE KEY IS `:3.0`, NOT `:3`. ** `takeoff/mep.py` rounds `diameter_in` to 2 dp and the
+# key is built with `str()` on that value, so `"supply:semi_rigid:3"` matches NOTHING and
+# falls back to the blend with no error and no warning. `test_duct_prices_qualify_on_diameter`
+# is what pins the spelling.
+#
+# $/LF, by system, optionally qualified by material and then by diameter
 "exhaust" = { material = { low = 3, high = 8 }, labour = { low = 5, high = 12 } }  # sheet-metal fallback, 0 LF today
-"exhaust:semi_rigid" = { material = { low = 2.5, high = 5 }, labour = { low = 3, high = 7 } }  # 246.4 LF of 3" and 6" ERV branch
+"exhaust:semi_rigid:3.0" = { material = { low = 2.25, high = 4.5 }, labour = { low = 2.75, high = 6.5 } }  # 217.5 LF of 75 mm ERV branch
+"exhaust:semi_rigid:6.0" = { material = { low = 4, high = 8 }, labour = { low = 3.5, high = 8 } }  # 43.0 LF of 6" ERV trunk
+"exhaust:semi_rigid" = { material = { low = 2.5, high = 5 }, labour = { low = 3, high = 7 } }  # fallback for a diameter not priced above
 "outdoor_air" = { material = { low = 6, high = 13 }, labour = { low = 8.5, high = 19 } }  # sheet-metal fallback, 0 LF today
 "outdoor_air:semi_rigid" = { material = { low = 3.5, high = 7 }, labour = { low = 3.5, high = 8 } }  # 37.6 LF of 6" insulated — dearer than a bare radial, it is the run that sweats
 "return" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # 0.5 LF of galvanized stub
 "return:semi_rigid" = { material = { low = 2.5, high = 5 }, labour = { low = 3, high = 7 } }  # 198.1 LF of 3" radial
 "supply" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # 53.9 LF of galvanized trunk
-"supply:semi_rigid" = { material = { low = 2.75, high = 5.5 }, labour = { low = 3, high = 7 } }  # 246.7 LF of 3" and 6" radial
+"supply:semi_rigid:3.0" = { material = { low = 2.25, high = 4.5 }, labour = { low = 2.75, high = 6.5 } }  # 181.6 LF of 75 mm radial
+"supply:semi_rigid:6.0" = { material = { low = 4, high = 8 }, labour = { low = 3.5, high = 8 } }  # 68.8 LF of 6" radial riser
+"supply:semi_rigid" = { material = { low = 2.75, high = 5.5 }, labour = { low = 3, high = 7 } }  # fallback for a diameter not priced above
 
 [duct_fittings]
 # NEW 2026-08-25, and it could not have existed a day earlier: a duct elbow is counted off
@@ -3926,7 +3971,7 @@ hardware        = "material only, and deliberately so — the labour to drive a 
 conductors      = "material plus installed labour, per CONDUCTOR-foot — NOT per cable-foot. Derived by dividing a published $/ft of 12/2, 10/3 and 8/3 NM-B by the conductors in the cable, because the takeoff measures conductor-feet. The QUANTITY is the weak half, not the rate: mean_pull_ft is the mean power-raceway run + 10 ft, a conservative proxy for a branch pull, and it reads about a fifth of the cable-feet the retired allowance assumed"
 solar_modules   = "$/W DC installed, split 65/35 on the industry norm. Modules, racking and rapid shutdown ONLY — the inverter, battery and PV junction box are placed elements and bill in [placeables]. The high end is a small-array premium: permitting, interconnection and design are near-fixed and this array is 5.28 kW"
 data_raceways   = "material plus installed labour, $/LF of EMPTY PIPE. It is not the drops: cable, boxes, jacks and termination are the driven electrical-structured-low-voltage-drops allowance. Disjoint from [conduit] by construction — conduit_takeoff and data_raceway_takeoff partition model.conduits on service"
-ducts           = "material plus installed labour, UN-BLENDED 2026-08-27 by qualifying on `material`: `supply:semi_rigid` is the 3-inch and 6-inch radial and a bare `supply` is the 14x8 galvanized trunk, which the model leaves unnamed. The blended rates it replaces were sheet-metal rates carried over the radial pass, so the section fell rather than rose. What is STILL blended is diameter — 3-inch and 6-inch radial share one rate — because a section may qualify on one field and `material` is the bigger of the two differences"
+ducts           = "material plus installed labour, UN-BLENDED 2026-08-27 by qualifying on `material` and 2026-08-30 by qualifying on `diameter_in` as well: `supply:semi_rigid:3.0` is the 75 mm radial, `supply:semi_rigid:6.0` the 6-inch riser, and a bare `supply` the 14x8 galvanized trunk, which the model leaves unnamed. Lookups fall back through the shorter keys, so the `material`-only and bare rows still price anything the finer rows do not name. The 08-27 blend it replaces was a sheet-metal rate carried over the radial pass, so the section fell rather than rose; the 08-30 diameter split is rate-neutral on today's mix and exists so it stays right when the mix moves"
 edge_trim       = "material plus installed labour. Two rows, drip_flashing and ridge_cap, are commonly inside a roofer's price — check for a double count against any roofing bid"
 freeze_protection = "material plus installed labour, and the material half carries a share of the thermostat/controller because 10.8 LF cannot support a line item of its own. Excludes the cable down TR-SG-LEADER-SE, which is a Downspout and not a PipeRun — see notes/heat_pump_deck_mounting.md"
 member_protection = "material plus installed labour. Applied by the framer WITH the framing, not by a trade on a return visit — five of the seven capped beams carry joists on top, so the tape and the cap over it go on before the deck frames or not at all"

@@ -44,7 +44,7 @@ function registry() {
 function wall(axis: Wall["axis"], topZ0: number | null = null, topZ1: number | null = null): Wall {
   return {
     uid: "wall", tag: "W-1", storey: "S-1", assembly: "A-1", provenance: null, axis,
-    z0_m: 0, z1_m: 3, top_z0_m: topZ0, top_z1_m: topZ1, plate_base_z_m: null, layout_axis: null, is_foundation: false,
+    z0_m: 0, z1_m: 3, top_z0_m: topZ0, top_z1_m: topZ1, plate_base_z_m: null, plate_top_z_m: null, layout_axis: null, is_foundation: false,
     layers: [], members: [],
   };
 }

@@ -16,6 +16,7 @@ the thing that can be wrong against R403.1.6, and it is what prints on the sched
 
 from __future__ import annotations
 
+from typehaus.checks.soil import site_soil_class
 from typehaus.checks.code.mn_residential._common import (
     _fail,
     _pass,
@@ -160,7 +161,8 @@ def foundation_drainage(ctx: CheckContext) -> list[Finding]:
     """R405.1 — drains around every foundation retaining earth against usable space.
 
     Scoped by soil group, because R405.1's own exception is: Group I well-drained soils need
-    no drainage system. The profile's ``soil_class`` is the same presumptive value the
+    no drainage system. The soil class is the site's own where it states one and the
+    profile's presumption otherwise (``checks/soil.py``) — the same presumptive value the
     unbalanced-fill table is read at, so the two rules cannot disagree about what is under
     this house.
     """
@@ -173,7 +175,7 @@ def foundation_drainage(ctx: CheckContext) -> list[Finding]:
     if not walls:
         return [_pass(cid, "no foundation wall retains earth against a below-grade space",
                       code)]
-    soil = (getattr(ctx.profile, "soil_class", None) or "").upper()
+    soil = (site_soil_class(ctx.plan, ctx.profile) or "").upper()
     footings = [e for e in ctx.plan.all_elements() if isinstance(e, Footing)]
     beddings = [e for e in ctx.plan.all_elements() if isinstance(e, FootingBedding)]
     tiled_footings = {b.host_ref for b in beddings

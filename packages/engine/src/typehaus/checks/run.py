@@ -23,6 +23,13 @@ from typehaus.checks.registry import (
     Tier,
     run_checks,
 )
+from typehaus.checks.soil import site_soil_class
+from typehaus.engineering import (
+    EngineeringContext,
+    EngineeringRegister,
+    EngineeringResults,
+    load_register,
+)
 from typehaus.findings import Finding
 from typehaus.model.plan import PlanModel
 from typehaus.resolve import ResolvedModel, resolve
@@ -104,13 +111,39 @@ def resolve_profile(preferences: Preferences,
     return get_profile(name)
 
 
+def build_engineering(model: ResolvedModel, prefs: Preferences, house_dir: Path | None,
+                      soil_class: str | None = None) -> tuple[EngineeringResults,
+                                                              EngineeringRegister]:
+    """The suite's result map and the house's seal register, for one CheckContext.
+
+    One construction point, called from both context builders below, so ``haus check``,
+    ``run_from_model`` (the cover sheet's caller) and the pytest plugin cannot disagree
+    about whether a house has engineering in it — the exact class of divergence that once
+    had A-000 lettering "NOT READY" over a set ``haus print`` had just certified.
+
+    The results map is lazy: constructing it computes nothing.
+    """
+    results = EngineeringResults(
+        EngineeringContext(plan=model.plan, model=model, preferences=prefs,
+                           soil_class=soil_class))
+    return results, load_register(house_dir)
+
+
 def build_context(plan: PlanModel, house_dir: Path | None = None,
                   profile: str | None = None) -> tuple[CheckContext, list[Finding]]:
     model, resolve_findings = resolve(plan)
     prefs = load_preferences(house_dir) if house_dir else Preferences()
+    jurisdiction = resolve_profile(prefs, profile)
+    # `site_soil_class`, not `jurisdiction.soil_class`: the site's own soils report wins over
+    # the profile's presumptive regional figure, and the engineering suite must read the
+    # same order the checks do or a wall could be screened against one class and graded
+    # against another.
+    engineering, register = build_engineering(model, prefs, house_dir,
+                                              site_soil_class(plan, jurisdiction))
     ctx = CheckContext(
         plan=plan, model=model, preferences=prefs,
-        profile=resolve_profile(prefs, profile), resolve_findings=resolve_findings,
+        profile=jurisdiction, resolve_findings=resolve_findings,
+        engineering=engineering, engineering_register=register,
     )
     return ctx, resolve_findings
 
@@ -134,7 +167,11 @@ def run_from_model(model: ResolvedModel, resolve_findings: list[Finding],
     sheet whose whole job is to state the verdict, stating a different one.
     """
     prefs = preferences or (load_preferences(house_dir) if house_dir else Preferences())
+    jurisdiction = resolve_profile(prefs, profile)
+    engineering, register = build_engineering(model, prefs, house_dir,
+                                              site_soil_class(model.plan, jurisdiction))
     ctx = CheckContext(plan=model.plan, model=model, preferences=prefs,
-                       profile=resolve_profile(prefs, profile),
-                       resolve_findings=resolve_findings)
+                       profile=jurisdiction,
+                       resolve_findings=resolve_findings,
+                       engineering=engineering, engineering_register=register)
     return run_checks(ctx, tier)

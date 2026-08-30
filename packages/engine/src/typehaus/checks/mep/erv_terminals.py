@@ -22,10 +22,10 @@ from __future__ import annotations
 
 import math
 
-from typehaus.checks._authoring import advisory, failed, passed, unknown
+from typehaus.checks._authoring import advisory, failed, not_applicable, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
-from typehaus.model.enums import DuctSystem
+from typehaus.model.enums import DuctSystem, EquipmentKind
 
 #: IRC M1602.2 / ASHRAE 62.2-2019 §6.8: an outdoor-air intake stands at least 10 ft from
 #: any exhaust outlet. A manufacturer's manual may allow less for its own balanced pair —
@@ -126,8 +126,20 @@ def erv_outdoor_terminals(ctx: CheckContext) -> list[Finding]:
     cid = "mep.erv_outdoor_terminals"
     intakes = [d for d in ctx.model.ducts if d.system == DuctSystem.OUTDOOR_AIR.value]
     if not intakes:
-        return [unknown(cid, "no DuctSystem.OUTDOOR_AIR run is modeled, so there is no "
-                             "intake hood to locate", (), code="M1602.2")]
+        # Two different sentences hide behind "no outdoor-air run". A house that places no
+        # balanced ventilator at all has nothing for M1602.2 to govern — N/A, and the
+        # permit line can gate on it. A house that places an ERV and then models no intake
+        # duct has a real hole in its model, and that stays UNKNOWN.
+        ventilators = [element for element in ctx.plan.all_elements()
+                       if element.element_kind == "Equipment"
+                       and getattr(element, "kind", None) is EquipmentKind.ERV]
+        if not ventilators:
+            return [not_applicable(cid, "this house places no balanced ventilator, so "
+                                        "there is no ERV intake or exhaust hood for "
+                                        "M1602.2 to locate", (), code="M1602.2")]
+        return [unknown(cid, f"{ventilators[0].tag} is placed but no DuctSystem.OUTDOOR_AIR "
+                             f"run is modeled, so there is no intake hood to locate",
+                        tuple(v.tag for v in ventilators), code="M1602.2")]
     out: list[Finding] = []
     grade = ctx.plan.project.site.grade
     grade_m = grade.meters if grade is not None else None

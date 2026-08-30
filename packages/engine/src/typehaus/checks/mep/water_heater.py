@@ -8,7 +8,7 @@ named, which is what ``Equipment.relief_discharge_ref`` is for.
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import failed, passed, unknown
+from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import EquipmentKind
@@ -22,6 +22,8 @@ _RISE_TOLERANCE_M = 0.005  # 5 mm of routing noise is not a trap
 
 
 def _finding(cid, result, message, tags, code, fix=None) -> Finding:
+    if result is Result.NOT_APPLICABLE:
+        return not_applicable(cid, message, tags, code=code)
     if result is Result.PASS:
         return passed(cid, message, tags, code=code)
     if result is Result.UNKNOWN:
