@@ -82,6 +82,22 @@ NODES = [
     Node(uid="CAN009AAAA", tag="N-A-C1", position=pt(ft(18), ft(5, 7))),
     Node(uid="CAN012AAAA", tag="N-A-C2", position=pt(ft(18), ft(9, 4))),
     # N-A-V2 (CAN013AAAA) and N-A-V3 (CAN014AAAA) DELETED 2026-08-29 with W-A-VE/W-A-VN.
+    # The stair well's south closure — see W-A-GC-S for why the guard stops and a wall
+    # takes over at x=29'-4 1/2". Both axes are set by pinning a FACE to the well edge and
+    # growing INT_2X4_PARTITION's 4 3/4" AWAY from the opening, the same rule W-A-SN uses on
+    # the north edge: 5'-9 5/8" - 2 3/8" = 5'-7 1/4" south, 35'-5 3/8" + 2 3/8" = 35'-7 3/4"
+    # east. A wall centred ON the edge would hang half its thickness over the void.
+    #
+    # Both ends are `open_end` and both for a real reason, not to quiet the loop check:
+    # GC1 is where the closure hands over to RL-A-STAIR and the study runs on past it, and
+    # GC2 is the free east end, stopped ON the well edge and so 5/8" short of W-A-E1's rafter
+    # plate. Neither terminus closes a polygon, so `integrity.wall_loop_open` is answering
+    # correctly and the flag is the authored way to say so. N-A-GC3 (SDBE5SHZGH) existed for
+    # a day to carry W-A-GC-E's north end and went with it.
+    Node(uid="BPSA3Z9JYP", tag="N-A-GC1", position=pt(ft(29, 4.5), ft(5, 7.25)),
+         open_end=True),
+    Node(uid="67H4TA4EDQ", tag="N-A-GC2", position=pt(ft(35, 5.375), ft(5, 7.25)),
+         open_end=True),
 ]
 
 WALLS = [
@@ -259,13 +275,26 @@ WALLS = [
     # the millwork). 22'-8" is a 16" station and N-A-V1's own line, which buys three things —
     # RL-A-HANDRAIL's upper return at 22'-5 3/8" gets solid wall to die into, ED-A-STUDY-SW
     # stays exactly where it is, and the run reads as beginning where the vestibule ends.
-    # The 1'-6" west of it is the run's flush end panel. Five bays, each topped off the
-    # usable height at its EAST end (5'-0" + (36' - x)/3, less ~3" of build-up and seat):
-    #     1  22'-8"  -> 25'-4"     usable 8'-3 2/3"    case top 7'-6"
-    #     2  25'-4"  -> 28'-0"     usable 7'-5"        case top 7'-0"
-    #     3  28'-0"  -> 30'-8"     usable 6'-6 1/3"    case top 6'-0"
-    #     4  30'-8"  -> 33'-4"     usable 5'-7 2/3"    case top 5'-6"
-    #     5  33'-4"  -> 35'-5 3/8" usable 4'-11 1/4"   case top 4'-6"
+    # The 1'-6" west of it is the run's flush end panel.
+    #
+    # ** THE RUN IS THREE BAYS, NOT FIVE, SINCE 2026-08-30. ** The five-bay table here was
+    # derived from `5'-0" + (36' - x)/3` — the 4:12 roof over a 5'-0" knee wall — and it was
+    # never re-derived when the storey went to a 6:12 rake on flat plates. Under the governing
+    # `1 1/2" + (36' - x)/2` every one of those five case tops was taller than the roof above
+    # it, the fifth by more than four feet. Bays 4 and 5 do not exist as shelving at all now;
+    # bay 3 is a two-shelf base unit. Re-derived, less ~3" of build-up and seat:
+    #     1  22'-8"  -> 25'-4"     usable 5'-5 1/2"    clear height 5'-0"   5 shelves
+    #     2  25'-4"  -> 28'-0"     usable 4'-1 1/2"    clear height 3'-6"   4 shelves
+    #     3  28'-0"  -> 30'-8"     usable 2'-9 1/2"    clear height 2'-6"   3 shelves
+    # (the heights and counts are authored on SB-A-STUDY in plan/millwork.py, which is what
+    # `haus millwork` cuts from; this table must follow that bank, not lead it)
+    # East of 30'-8" the wall runs on as a raked closure and carries no casework: the usable
+    # height at 33'-4" is 1'-5 1/2" and at the wall's east end 4 3/4". That is a plinth, not a
+    # bookcase, and billing case backs and nailers for it would be billing joinery nobody can
+    # reach past. THE WALL ITSELF DOES NOT SHORTEN — it still has to cover FO-A-STAIR's north
+    # edge to x=36'-0", which is the whole reason it is one wall end to end.
+    #
+    # D-A-STUDY sits in bay 1, the only bay still tall enough to take a leaf.
     # Nothing is placed in plan/placeables.py for this: both catalog bookcases are 1'-0"
     # deep against a 9 7/8" pocket, so every case would stand 2 1/8" PROUD — out over the
     # well, the exact lie this wall exists to avoid — and neither fits bays 4 or 5. The run
@@ -280,6 +309,38 @@ WALLS = [
     # it). There is no schema field for that jamb — it lives here and on the type.
     Wall(uid="CAW113AAAA", tag="W-A-SN", start_node="N-A-C2", end_node="N-A-E1",
          assembly="CATLIN_INT_2X4_BOOKCASE_12", interior_room="RM-A-STUDY",
+         top=ToRoof(roof_ref="RF-HOUSE")),
+    # ** THE STAIR WELL'S SOUTH-EAST CLOSURE (2026-08-30). A GUARD CANNOT STAND HERE. **
+    # RL-A-STAIR was drawn along the whole south edge on 2026-08-29, when the east end of
+    # this storey was still being thought about as if it had a knee wall. It does not. The
+    # roof underside is `1 1/2" + (36' - x)/2` above the finished floor, so a 42" guard
+    # (top at 240" + 42" = 282") only fits while the underside clears 282", i.e. west of
+    # x=29'-4 1/2". East of that the guard was inside the roof — 3 of 5 posts, 20 of 40
+    # balusters and the whole east leg, ending 35 7/8" proud of the rafters at x=35'-5 3/8"
+    # where there is 4 3/4" of clear height. `haus check` reported 0 FAIL through all of it
+    # until `integrity.element_above_roof` was written; only the 3D view showed it.
+    #
+    # So the guard stops at 29'-4 1/2" and a ToRoof partition closes the rest. That is not a
+    # workaround, it is the construction: where a rake meets a floor you sheet the triangle,
+    # and R312.1 is satisfied by a wall exactly as it is by a railing (`stairwell_guard`
+    # reads the wall footprint union). The panel tapers from 3'-6" at its west end to
+    # nothing at the eave, which is what the wedge is.
+    #
+    # ** THE WELL'S EAST EDGE GETS NOTHING, AND THAT IS THE ANSWER RATHER THAN AN OMISSION. **
+    # A W-A-GC-E was drawn up that edge first, and it was wrong twice over: it stood under
+    # 3 5/8" of roof, and at 4 3/4" thick it could not fit the 5/8" between the well edge at
+    # x=35'-5 3/8" and W-A-E1's rafter plate at 35'-6" — `structural.member_interference` put
+    # its studs straight through the plate. The reason it fit nowhere is that it had no job.
+    # R312.1.1 guards WALKING SURFACES, and with 4 3/4" of clear height there is no walking
+    # surface on either side of that edge; the roof plane closes it more completely than a
+    # 36" guard could. `code.R312_1_guard` says so out loud in its PASS message now rather
+    # than being satisfied by a token wall.
+    #
+    # This wall closes a face with nothing: the west end at x=29'-4 1/2" is open to
+    # RM-A-STUDY where the railing continues, so no new room polygon is carved and no outward
+    # sign flips. Non-bearing, no opening, and it stops 5/8" short of the rafter plate.
+    Wall(uid="HKFW104YS3", tag="W-A-GC-S", start_node="N-A-GC1", end_node="N-A-GC2",
+         assembly="INT_2X4_PARTITION", interior_room="RM-A-STUDY",
          top=ToRoof(roof_ref="RF-HOUSE")),
     # ** THE STAIR VESTIBULE SCREEN IS GONE (2026-08-29). ** W-A-VE (CAW116AAAA),
     # W-A-VN (CAW117AAAA) and D-A-VEST (CAD204AAAA) were the source's Den east and north
@@ -656,23 +717,79 @@ FLOOR = [
 # the balcony guard's 42" metal fascia-mounted railing family and post spacing, but starts
 # at the attic walking surface rather than the exterior deck datum.
 #
-# ** THE EAST LEG IS NEW ON 2026-08-29, AND IT IS NOT AN ADDITION — IT IS A REPLACEMENT. **
-# That 3'-0" edge (x 35'-5 3/8", y 5'-9 5/8"..8'-9 5/8") was guarded by the inside gwb face
-# of the W-A-E1 knee wall, which landed on it exactly: CATLIN_EXT_2X6 is 13 1/4" deep off
-# a sheathing datum at x=36'-0", so its finish face stood at 35'-5 3/8". W-A-E1 is a 1 1/2"
-# rafter plate now, 5 1/2" of lumber laid flat starting 6" in from the node line, and a
-# plate guards nothing. `code.R312_1_guard` named this the moment the wall changed, which
-# is exactly what that check is for. 3'-0" of railing is the honest price of the ~360 sf of
-# knee wall the storey stopped building.
+# ** THE RAILING STOPS AT x=29'-4 1/2" AND W-A-GC-S CLOSES THE REST (2026-08-30). **
+# It ran the full south edge and turned north up the east one for a day, which was wrong in
+# 3D and right in plan — the guard check is 2D and never asked whether 42" of railing fits
+# under a 6:12 rake that is 4 3/4" tall at the east end. The whole derivation, and why a
+# wall rather than a shorter railing is the honest answer, is on W-A-GC-S in WALLS above.
+#
+# What the east end used to have was the inside gwb face of the W-A-E1 knee wall, which
+# landed on the well edge exactly: CATLIN_EXT_2X6 is 13 1/4" deep off a sheathing datum at
+# x=36'-0", so its finish face stood at 35'-5 3/8". W-A-E1 is a 1 1/2" rafter plate now and
+# a plate guards nothing, so the closure is the honest price of the ~360 sf of knee wall the
+# storey stopped building — 6'-1" of low partition instead of 9'-1" of railing.
 STAIR_GUARD = Railing(
     uid="CARL01AAAA", tag="RL-A-STAIR", type_ref="RAILING-INT-STAIR-GUARD", path=(
         pt(ft(21, 2), ft(5, 9.625)),
-        pt(ft(35, 5.375), ft(5, 9.625)),
-        pt(ft(35, 5.375), ft(8, 9.625)),
+        pt(ft(29, 4.5), ft(5, 9.625)),
     ),
     kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
     base_elevation=ft(20), post_spacing=inch(60), post_size="2x2", rail_count=2,
     mount="fascia", assembly="RAILING_DARK_METAL",
+    # R312.1.3: 4" clear between balusters — the largest opening the sphere rule admits.
+    infill="balusters", baluster_spacing=inch(4),
+)
+
+# ** THE FLIGHT'S OWN OPEN SIDE (2026-08-29). ** RL-A-STAIR above guards the *attic deck*
+# edge at 20'-0"; W-A-GC-S closes the rest of that line. Neither of them guards ST-S2A
+# itself. The well is cut to exactly the stair's 3'-0" width, and the north face of the
+# flight is W-S-SS2 — but the SOUTH face, y=5'-9 5/8", stands open over RM-S-STUDY2's floor
+# at 10'-0" for the whole straight run. Measured off the resolved nosing line, the walking
+# surface there is 30" above that floor at the first straight riser (x=32'-5 3/8") and 120"
+# at the top, so R312.1.1 asks for a guard over 10'-0" of it and nothing in the plan was
+# providing one. Every check passed: `code.R312_1_guard` grades the four edges of a floor
+# OPENING against the deck that hosts it, and a flight's own open side is not one of them.
+#
+# The three winders below x=32'-5 3/8" are deliberately outside this run. Their treads sit
+# 7 1/2", 15" and 22 1/2" above the study floor — under R312.1.1's 30" trigger — and their
+# south side is the narrow inside of the turn, where a guard would have to be built to the
+# fan rather than to a line. The newel lands on the first straight riser instead, which is
+# both the 30" station and the corner a builder would set it on.
+#
+# ONE ELEMENT, TWO SECTIONS. R312.1.2 exception 1 measures a stair guard from the line
+# joining the nosings and asks 34"; R311.7.8.1 wants a handrail 34"-38" off the same line.
+# A single 36" top bar with a Type I section satisfies both, so this is `guard_and_handrail`
+# rather than a guard with a second rail bolted to it — and it is what makes the run
+# affordable, since RAILING-INT-STAIR-GUARD is priced as a component system in prices.toml
+# and a separately-billed handrail on top of it would double-count the same bar.
+#
+# ** IT OVERLAPS RL-A-STAIR, AND THAT IS THE HONEST READING, NOT A SLIP. ** Both run on
+# y=5'-9 5/8". East of x=26'-5 3/8" the rake's 36" band is entirely under the attic deck
+# and the two never touch; west of it the rake climbs through 20'-0" and the bands cross,
+# 0" at x=26'-5 3/8" growing to the full 36" at the top nosing — 4'-0" of double cover. On
+# site this is ONE balustrade whose cap rakes up and lands on the level run at the top
+# newel; a `Railing` is a path with one height over one base, so two elements is the only
+# way to say it. The alternative — stopping this run at x=26'-5 3/8" — reads tidier and is
+# actually unsafe: RL-A-STAIR's *base* is the attic deck, so the flight below it would then
+# carry 0"-36" of open edge over an 84" fall with nothing but daylight under the rail. The
+# takeoff bills both runs at full length, which over-counts the line by 4'-0" and roughly
+# pays for the raked triangle of infill the box IR cannot draw.
+#
+# RL-A-HANDRAIL below STAYS. It is the rail that reaches the winder fan (R311.7.8.2 wants
+# continuity from above the lowest riser), which this one cannot, and two rails on a 36"
+# flight still clear 32 1/2" — R311.7.1 allows 27" with a rail on both sides, against
+# 31 1/2" with one. `base_elevation` is the second storey's 10'-0", not the attic's 20'-0": the
+# rake comes from `serves_stair`, and the datum is the floor this guard stops a fall onto.
+FLIGHT_GUARD = Railing(
+    uid="C75VZB9VX8", tag="RL-A-FLIGHT-GUARD", type_ref="RAILING-INT-STAIR-GUARD", path=(
+        pt(ft(32, 5.375), ft(5, 9.625)),
+        pt(ft(22, 5.375), ft(5, 9.625)),
+    ),
+    kind=RailingKind.METAL_FASCIA_MOUNT, height=inch(36),
+    base_elevation=ft(10), post_spacing=inch(48), post_size="2x2", rail_count=2,
+    mount="fascia", assembly="RAILING_DARK_METAL",
+    role="guard_and_handrail", serves_stair="ST-S2A", top_height=inch(36),
+    graspable_profile="1.5in round — Type I",
     # R312.1.3: 4" clear between balusters — the largest opening the sphere rule admits.
     infill="balusters", baluster_spacing=inch(4),
 )
@@ -720,4 +837,4 @@ STAIRS = [
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *ROOFS, *BEAMS, *FLOOR_OPENINGS,
-            *FLOOR, STAIR_GUARD, STAIR_HANDRAIL, *STAIRS]
+            *FLOOR, STAIR_GUARD, FLIGHT_GUARD, STAIR_HANDRAIL, *STAIRS]

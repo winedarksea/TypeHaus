@@ -311,12 +311,22 @@ _MECH_Y_S = inch(_MECH_Y.inches - _TRANSITION_DOUBLE.inches)
 # strength. It is also what carries W-M-TUBDK-S, the deck's south knee wall, which runs
 # PARALLEL to the joists at y=196 5/8" and lands in a bay rather than on a line.
 #
-# ``plies=1`` is blocking with no sister (``resolve/floors.py`` runs ``range(plies - 1)``).
-# The third entry adds one sister ply at y=224" -- the line nearest the bath's centre of
-# mass -- which is the belt-and-braces an engineer would most likely add for a few hundred
-# dollars of I-joist and is cheap only while the ceiling is open. It is deliberately at
-# 224" and not 240": PR-B-TUB2-DRAIN drops at (7'-4", 19'-4 4/5") in the 224"..240" bay,
-# and a ply added on that line would land within a couple of inches of the drop.
+# ``plies=1`` is blocking with no sister (``resolve/floors.py`` runs ``range(plies - 1)``);
+# ``plies=2`` is one sister ply plus blocking. The y=240" entry carries the sister, which
+# is the belt-and-braces an engineer would most likely add for a few hundred dollars of
+# I-joist and is cheap only while the basement ceiling is open.
+#
+# ** TWO ENTRIES, NON-ADJACENT LINES, AND THE SISTER RIDES ONE OF THEM -- ALL THREE ARE
+# FORCED BY THE RESOLVER, NOT CHOSEN. ** Each entry blocks to the joist line on BOTH sides,
+# so lines 16" apart would double-block the bay between them and
+# ``structural.member_interference`` FAILs on the duplicate. 208" and 240" are 32" apart
+# and their four blocks tile 192"..256" exactly once. The sister then cannot be a third
+# entry anywhere inside that range for the same reason -- a free-standing ply lands in a
+# bay something else already blocks -- so it is authored ON the 240" line, where
+# ``_reinforcement_members`` computes the blocks off the finished CLUSTER face and steps
+# them clear of the ply by construction. It also happens to put the ply at y=242 1/2",
+# which is 9 3/4" clear of PR-B-TUB2-DRAIN's drop at (7'-4", 19'-4 4/5"); on the 224" line
+# it would have landed within a couple of inches of it.
 #
 # ** THE "97% OF ITS TABLE LIMIT" IN THE OLD TODO ENTRY WAS OVER-PRECISE, AND THAT IS
 # WORTH KNOWING BEFORE ANYONE SPENDS MONEY ON IT. ** ``_IJOIST_SPAN_FT`` in
@@ -334,12 +344,9 @@ _TUB_DECK_REINFORCEMENT = (
     JoistReinforcement(at=pt(_TUB_DECK_X, inch(208)), plies=1, blocking=True,
                        source="RM-M-BATH2 drop-in bath: full-depth blocking in the "
                               "192\"..224\" bays under the bath and under W-M-TUBDK-S"),
-    JoistReinforcement(at=pt(_TUB_DECK_X, inch(240)), plies=1, blocking=True,
-                       source="RM-M-BATH2 drop-in bath: full-depth blocking in the "
-                              "224\"..256\" bays, completing the bath's four-line spread"),
-    JoistReinforcement(at=pt(_TUB_DECK_X, inch(224)), plies=2, blocking=False,
-                       source="RM-M-BATH2 drop-in bath: one sister ply on the line nearest "
-                              "the filled bath's centre of mass, clear of PR-B-TUB2-DRAIN"),
+    JoistReinforcement(at=pt(_TUB_DECK_X, inch(240)), plies=2, blocking=True,
+                       source="RM-M-BATH2 drop-in bath: one sister ply plus full-depth "
+                              "blocking in the 224\"..256\" bays, completing the spread"),
 )
 
 # South bay: full 18'-0" span, wall to centre line, y 0'-0" to the bathroom node line.

@@ -61,13 +61,18 @@ proposing any design change.
 - `library/placeables/*.py` (repo root, not this directory) — the shared FixtureType/
   ApplianceType/FurnitureType *catalog*, wired in by `plan/manifest.py`. NOT editable: it
   uses `frozenset(...)`, which the dialect forbids. Type libraries stay non-editable;
-  movable instances that reference them live in the editable modules above. The house-local
-  `plan/fixture_types.py` this line used to name was deleted in the `3d3973a` library
-  dedupe; only `plan/furniture_types.py` (the two mudroom closets) is still house-local.
-  It was briefly re-created on 2026-08-29 for a bar sink and then deleted again: the guest
-  studio's wet bar uses `FX-LAV-COMPACT` (18" x 14"), which is dimensionally exact for a bar
-  bowl and costs no catalog entry — the same trade the house already runs in the other
-  direction, `FX-M-BATH2-SINK` being an `FX-KITCHEN-SINK-33`.
+  movable instances that reference them live in the editable modules above. **`plan/
+  fixture_types.py` EXISTS again and holds two selections** — `FX-KOHLER-UNDERSCORE-6036`
+  (the drop-in bath) and `FX-VANITY-54-SINGLE` (RM-M-BATH2's vanity), both 2026-08-29. It
+  had been deleted in the `3d3973a` library dedupe, and re-created and deleted once more the
+  same week for a bar sink that did not need it; the guest studio's wet bar still uses
+  `FX-LAV-COMPACT` (18" x 14"), which is dimensionally exact for a bar bowl and costs no
+  catalog entry. **The "borrow a catalog type from the other direction" trade this line used
+  to cite is retired**: `FX-M-BATH2-SINK` was an `FX-KITCHEN-SINK-33` — the library's
+  DOUBLE-BOWL kitchen sink, on a 27" wall mount, drawing two bowls on the bathroom plan and
+  modelling no cabinet — until the owner asked for one basin and real storage. Borrowing a
+  type is free only while the borrowed type's footprint, symbol and schedule line are all
+  still true of the thing in the room.
 - `params/sunken_garden.py` — the freestanding arched porch/garden structure (math OK here).
 - `params/foundations.py` — house footings, garage ICF stem + slab.
 - `params/breezeway.py` — the enclosed breezeway: pads, piers, posts, deck, roof, glazing.

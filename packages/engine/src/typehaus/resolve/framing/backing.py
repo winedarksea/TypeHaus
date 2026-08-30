@@ -54,12 +54,21 @@ def _framing_members_have_positive_volume_overlap(
 
 def append_blocking_rows(members: list[FramedMember], rw: ResolvedWall, spec, member: str,
                          direction, wall_start, stud_bottom: float, spacing: float,
-                         stud_stations: list[float]) -> None:
+                         stud_stations: list[float], top_at=None) -> None:
     """Emit a horizontal blocking course fitted between studs at each configured height.
 
     One block per stud bay, butting the flanking studs (the same-wall blocking/stud
     contact the interference check treats as intended nailing). Bays wider than ~1.5
     modules — an opening — are skipped so a block never spans an opening.
+
+    ``top_at`` is the same stud-top callable the corner, opening and tee-backing framing
+    already take. A course is a horizontal line but the wall it sits in need not be: under
+    a ``ToRoof`` top the stud tops rake, and a bay whose studs are shorter than the course
+    has no bay left to block. Without this the row was emitted at its authored height for
+    the wall's whole length and flew out through the roof — 45" clear of it at catlin's
+    ``W-A-SN``, silently, because nothing grades a member against the roof plane above it.
+    Skipped when the *lower* of the bay's two stud tops cannot accept the block, which is
+    the conservative end of a raking bay.
     """
     heights = getattr(spec, "blocking_heights", ()) or ()
     if not heights or len(stud_stations) < 2:
@@ -74,6 +83,8 @@ def append_blocking_rows(members: list[FramedMember], rw: ResolvedWall, spec, me
             s0, s1 = stations[bi], stations[bi + 1]
             if s1 - s0 > max_bay or s1 - s0 <= thickness:
                 continue  # opening bay, or studs too close to fit a block
+            if top_at is not None and min(top_at(s0), top_at(s1)) < base + block_height:
+                continue  # raking bay: the studs stop below this course
             a = add(wall_start, scale(direction, s0 + thickness / 2))
             b = add(wall_start, scale(direction, s1 - thickness / 2))
             members.append(FramedMember(

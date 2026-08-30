@@ -202,12 +202,32 @@ def _fan_power_finding(ctx: CheckContext, riser: VentRun) -> Finding:
                            "requires the circuit and an approved box to be installed during "
                            "construction so the system can be made active", (riser.tag,),
                      _CODE)
+    # The fan sits in a 3 ft length of the riser, so its box is beside the riser — on the
+    # storey the pipe leaves the building on. The reach test alone is PLAN-ONLY and this
+    # house is four storeys tall, so on its own it collects junction boxes anywhere in the
+    # section: moving VR-M-RADON-VENT 2'-10" west on 2026-08-30 pulled RM-S-BATH1's LED
+    # driver, two floors down, inside 8'-0" of the riser and reported a *bathroom niche
+    # transformer* as the radon fan's box. The room search below then named a BASEMENT room
+    # for a second-storey device, because it too ranges over every storey at once.
+    #
+    # A box that declares no room is kept whatever storey it is on: ED-A-PV-JB is outside
+    # the building entirely, which is exactly where subpart 6 wants this one, and it has no
+    # room to match against. A box that declares a room is only a candidate on the riser's
+    # own exit storey.
+    exit_wall = ctx.model.wall(riser.wall_ref) if riser.wall_ref else None
+    exit_storey = exit_wall.storey if exit_wall is not None else None
+    room_storey = {room.tag: room.storey for room in ctx.model.rooms}
     reach = _FAN_BOX_REACH.meters
     near = []
     for box in boxes:
         bx, by = box.position.xy_m
-        if ((bx - rx) ** 2 + (by - ry) ** 2) ** 0.5 <= reach:
-            near.append(box)
+        if ((bx - rx) ** 2 + (by - ry) ** 2) ** 0.5 > reach:
+            continue
+        declared = getattr(box, "room", None)
+        if (declared and exit_storey is not None
+                and room_storey.get(declared, exit_storey) != exit_storey):
+            continue
+        near.append(box)
     if not near:
         return _fail(_CID, f"the plan's junction box(es) "
                            f"({', '.join(sorted(b.tag for b in boxes))}) stand more than "
@@ -220,6 +240,10 @@ def _fan_power_finding(ctx: CheckContext, riser: VentRun) -> Finding:
         point = Point(*box.position.xy_m)
         for room in ctx.model.rooms:
             if len(room.clear_face) < 3 or not room.conditioned:
+                continue
+            # Same storey only — a plan point is over every storey at once, and a box is on
+            # exactly one of them.
+            if exit_storey is not None and room.storey != exit_storey:
                 continue
             if Polygon(room.clear_face).covers(point):
                 interior.append((box.tag, room.tag))

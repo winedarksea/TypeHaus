@@ -8,6 +8,8 @@ electrical correction written on a residential rough-in, and it fails the inspec
 
 from __future__ import annotations
 
+from typing import Any
+
 from typehaus.checks._authoring import failed, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
@@ -28,6 +30,12 @@ _GFCI_OCCUPANCIES = {
 _UNFINISHED_OCCUPANCIES = {Occupancy.UTILITY.value, Occupancy.STORAGE.value,
                            Occupancy.MECHANICAL.value}
 _SINK_REACH_M = 6 * 0.3048  # E3902.10: within 6' of the top inside edge of a sink bowl
+# How much of the receptacle-to-sink segment may lie inside a wall before the path counts as
+# PIERCING that wall. Not zero: a receptacle's plan point sits on (and sometimes a fraction
+# of an inch inside) the wall face it is mounted to, and a fixture pushed hard against its
+# own wall does the same, so a same-room pair routinely shares a hair of wall footprint.
+# A real wall crossing is the wall's whole thickness — 4 3/4" is the thinnest in this house.
+_PIERCE_TOL_M = 1 * 0.0254
 
 
 def _finding(cid: str, result: Result, message: str, tags: tuple[str, ...],
@@ -76,6 +84,7 @@ def gfci_locations(ctx: CheckContext) -> list[Finding]:
     below_grade = {storey.tag: _storey_is_below_grade(ctx, storey)
                    for storey in ctx.plan.storeys}
     sinks = _sink_points(ctx)
+    barriers = _wall_barrier(ctx)
 
     by_tag = {room.tag: room for room in ctx.model.rooms}
     out: list[Finding] = []
@@ -83,7 +92,8 @@ def gfci_locations(ctx: CheckContext) -> list[Finding]:
         point = Point(device.position.xy_m)
         room = _room_of(device, point, rooms.get(storey_tag, ()), by_tag)
         reason = _why_gfci_required(ctx, device, room, point,
-                                    sinks.get(storey_tag, ()), below_grade)
+                                    sinks.get(storey_tag, ()), below_grade,
+                                    barriers.get(storey_tag))
         if reason is None:
             continue
         tags = (device.tag,) + ((room.tag,) if room is not None else ())
@@ -143,7 +153,7 @@ def _room_of(device, point, storey_rooms, by_tag):
     return None
 
 
-def _why_gfci_required(ctx, device, room, point, sinks, below_grade) -> str | None:
+def _why_gfci_required(ctx, device, room, point, sinks, below_grade, barrier) -> str | None:
     """The E3902 clause that puts this receptacle in scope, or None."""
     if room is None:
         # Outside every resolved room face: an exterior receptacle. E3902.3.
@@ -153,10 +163,87 @@ def _why_gfci_required(ctx, device, room, point, sinks, below_grade) -> str | No
     if (room.occupancy in _UNFINISHED_OCCUPANCIES
             and below_grade.get(room.storey) is True):
         return "E3902.11 (unfinished basement)"
-    near = min((point.distance(sink) for sink in sinks), default=None)
+    reach = [sink for sink in sinks if not _pierces_a_wall(point, sink, barrier)]
+    near = min((point.distance(sink) for sink in reach), default=None)
     if near is not None and near <= _SINK_REACH_M:
         return f"E3902.10 (within 6' of a sink — {near / .3048:.1f}')"
     return None
+
+
+def _pierces_a_wall(point: Any, sink: Any, barrier: Any) -> bool:
+    """True when a cord run straight from receptacle to sink would go THROUGH a wall.
+
+    ** E3902.10's 6 ft is a CORD PATH, not a plan-frame straight line, and until 2026-08-29
+    this check measured the straight line. ** NEC 210.8, which E3902 mirrors, is explicit:
+    the distance "shall be measured as the shortest path the supply cord of an appliance
+    connected to the receptacle would follow WITHOUT PIERCING a floor, wall, ceiling, or
+    fixed barrier." A receptacle in a bedroom 5'-4" from a vanity on the far side of the
+    bathroom wall was being written up for a sink it cannot reach with a cord at all.
+
+    Doors and windows are deliberately NOT barriers here: the 2023 NEC removed them from
+    the exclusion precisely so a measurement through an opening still counts, so
+    ``_wall_barrier`` punches every opening out of the wall it hosts.
+
+    The honest limit: when the straight line IS blocked, the real cord path is some longer
+    way round, and this returns True rather than computing it. So the check can under-report
+    a receptacle whose path around a doorway still comes in under 6 ft. Straight-line
+    distance is only ever a LOWER bound on that path, so nothing here reports a distance it
+    has not actually measured, which is the failure mode worth avoiding.
+    """
+    from shapely.geometry import LineString
+
+    if barrier is None or barrier.is_empty:
+        return False
+    segment = LineString([point, sink])
+    if not segment.intersects(barrier):
+        return False
+    inside = segment.intersection(barrier)
+    return getattr(inside, "length", 0.0) > _PIERCE_TOL_M
+
+
+def _wall_barrier(ctx: CheckContext) -> dict[str, Any]:
+    """Per storey, the wall footprints a cord may not pass through, openings punched out."""
+    from shapely.geometry import LineString
+    from shapely.ops import substring, unary_union
+
+    axes: dict[str, tuple[Any, float, str]] = {}
+    solids: dict[str, list[Any]] = {}
+    for wall in ctx.model.walls:
+        if len(wall.axis) < 2:
+            continue
+        axis = LineString(wall.axis)
+        if axis.length <= 0:
+            continue
+        axes[wall.tag] = (axis, wall.thickness_m, wall.storey)
+        solids.setdefault(wall.storey, []).append(
+            axis.buffer(wall.thickness_m / 2.0, cap_style=2))
+    holes: dict[str, list[Any]] = {}
+    for opening in ctx.model.openings:
+        host = getattr(opening, "host_wall", None)
+        entry = axes.get(host) if isinstance(host, str) else None
+        if entry is None:
+            continue
+        axis, thickness, storey = entry
+        centre = getattr(opening, "center_along_m", None)
+        width = getattr(opening, "width_m", None)
+        if centre is None or not width:
+            continue
+        lo = max(0.0, centre - width / 2.0)
+        hi = min(axis.length, centre + width / 2.0)
+        if hi - lo <= 0:
+            continue
+        # Buffered by the full thickness, not half: the hole has to reach past both faces
+        # or a sliver of wall is left standing in the doorway.
+        holes.setdefault(storey, []).append(
+            substring(axis, lo, hi).buffer(thickness, cap_style=2))
+    out: dict[str, Any] = {}
+    for storey, parts in solids.items():
+        solid = unary_union(parts)
+        cut = holes.get(storey)
+        if cut:
+            solid = solid.difference(unary_union(cut))
+        out[storey] = solid
+    return out
 
 
 def _sink_points(ctx: CheckContext) -> dict[str, list]:

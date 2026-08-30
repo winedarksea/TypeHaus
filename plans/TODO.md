@@ -3,21 +3,71 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Needs your decision
 
-- **RM-M-BATH2's drop-in bath sits on a joist bay already at 97% of its span table
-  (2026-08-29).** The Kohler K-5713-W1 Underscore holds 72.017 gal — 601 lb of water on a
-  91 lb shell. With an occupant that is 892 lb over its 14.8 ft2 footprint, or **60 psf,
-  against the 40 psf live load an IRC residential floor is designed to.** It stands on
-  FS-M-WEST: 11 7/8" I-joists, 16" o.c., spanning 18'-0", which `structural.ijoist_span`
-  passes at 18'-0" of an 18'-6" table limit. Kohler's own install guide asks the installer
-  to "verify the subfloor is adequately supported" for its 49.3 lb/ft2 minimum "plus water
-  and occupant", so this is the manufacturer's question as much as ours.
-  **Nothing in the engine will ever raise this** — `structural.ijoist_span` grades the span
-  against a table and never the load standing on it, which is why it is written down here
-  rather than left to a check. It is probably fine: 14.8 ft2 of a 18'-0" bay distributes,
-  and the deck box's own knee walls bear across four or five joists. "Probably fine" on a
-  bay at 97% is a stamped-drawings question, and the cheap answers if it is not — doubling
-  the three or four joists under the deck, or dropping a squash block line — are cheap only
-  while the basement ceiling is open.
+- ~~**RM-M-BATH2's drop-in bath sits on a joist bay already at 97% of its span table
+  (2026-08-29).**~~ **ANSWERED AND BUILT, 2026-08-29.** Reinforcement is authored on
+  `FS-M-WEST` (`params/main_deck.py::_TUB_DECK_REINFORCEMENT`): four full-depth I-joist
+  blocking panels tiling the bays at y 192"–256" on the bath's own centre axis, plus one
+  sister ply on the y=240" line. Three things came out of the research and are worth keeping
+  when this is read back:
+  - **The "97% of its table limit" was over-precise and the number it cited is not a
+    manufacturer lookup.** `_IJOIST_SPAN_FT` in `checks/structural/checks.py` is a
+    simplified advisory table — one row per depth, no dead-load column, no joist series, no
+    deflection criterion. So "18'-0" of an 18'-6" limit" never meant 97% of capacity. The
+    real answer wants ForteWEB with the actual series and the actual dead load.
+  - **The tub's orientation was already the favourable one, by luck.** It is authored at
+    rotation 90, so its 59 11/16" length runs across four joist lines rather than bearing
+    on two or three: 239 lb per line instead of 399 lb. At that spread the filled bath with
+    a 200 lb occupant generates about 46% of the bending moment the code's own 40 psf
+    already assigns that joist. **The bath fits inside the design assumption rather than
+    breaking it** — the only way to compute it over capacity is to superimpose it on a full
+    40 psf across all 24 ft2 of tributary at the same time, which is not a load case a
+    bathroom has. The governing criterion was never strength; it is stiffness, and blocking
+    is the thing that makes four joists share a patch load instead of one dishing between
+    its neighbours.
+  - **The one input still worth chasing is the DEAD load, not the water.** A 1 1/2" mortar
+    bed plus the platform and its tile is roughly 450–500 lb over ~23 ft2 — permanent, and
+    it creeps for thirty years, where the 601 lb of water is present a few hours a week. If
+    the deck's own weight takes the bay from a 40/10 dead-load basis to 40/20, published
+    TJI tables move by most of a foot of span. That is a question for whoever stamps the
+    drawings, and it is now the ONLY open half of this item.
+  Sources: Boise Cascade Tech Note IJ-12 (the one manufacturer document that addresses tubs
+  directly — "if a whirlpool filled with water or any other object weighs more than the
+  40 psf uniform load placed over its footprint, the floor joists or beams should be
+  designed for the heavier load"); Weyerhaeuser TJ-4000/TJ-9001, which contain no bathtub
+  language at all and refer concentrated loads to their own software; IRC R301.5 and its
+  footnotes, which contain no bathtub or concentrated-floor-load provision; Minn. R.
+  1309.0301, which amends only the climatic criteria and adopts R301.5 unchanged.
+
+- **Two lavatories have no receptacle within NEC 210.52(D)'s 36", and the engine has no
+  E3901 rule to catch a third (2026-08-29).** Found while moving RM-M-BATH2's vanity, whose
+  own outlet was 58" from the new basin and has been moved onto W-M-W3 beside it. Measured
+  from each basin's outside edge to the nearest receptacle:
+  - `FX-S-SUITEBATH-LAV` — **42.9"** to `ED-S-SUITE-RC6`.
+  - `FX-S-VANITY-LAV2` — **37.2"** to `ED-S-SUITE-RC5` (LAV1 is fine at 29.0").
+  Both are pre-existing and both are in rooms this pass had no business redesigning, so
+  they are written down rather than moved. The fix in each case is one receptacle, or
+  sliding an existing one along its wall — cheap while the walls are open, and a correction
+  an inspector writes up.
+  **Encoding the rule is the other half, and it is deliberately NOT done here**: a new CODE
+  check would put two FAILs into a house that `scripts/verify.sh` holds at zero, which is a
+  decision about those two bathrooms rather than about the check. Do them together.
+  One trap for whoever writes it: `ED-M-BATH2-TUB-RC` sits ~32" from RM-M-BATH2's basin and
+  would satisfy a naive distance test, but it is sealed inside `SL-M-TUBDK`'s deck box
+  behind an access panel and serves the bath's heater. A receptacle that cannot be reached
+  is not a receptacle for this rule.
+
+- **`Room.clear_face` is not the wall's finish face, and something should say so louder
+  (2026-08-29).** It is inset from the wall AXIS by the room's lining, so on RM-M-BATH2's
+  13 7/8" exterior wall it reports x=5/8" where the paint is at x=6 5/8". A 54" vanity was
+  authored off the reported number during this pass and stood **six inches inside the
+  studs** — and `haus check` reported 0 FAIL throughout, because nothing in the engine
+  grades a *fixture* against a wall face the way
+  `test_catlin_contract_m3.py::test_wall_mounted_devices_resolve_against_a_wall_face` grades
+  a device. The floor-heat polygon beside it went into the wall the same way, and that has
+  no face check either. Options, cheapest first: extend the existing device test to cover
+  wall-referenced Fixtures and FloorHeat zones; or give `ResolvedRoom` a second polygon that
+  IS the finish face, so the honest number is available to author from. The first is a test
+  and catches regressions; the second removes the trap.
 
 - **Zoning height, after the lift — now 2'-10" (raised 2026-08-18, grew 2026-08-21).**
   Grade moved to -2'-6" so the house stands out of the ground, and to -2'-10" when the
@@ -410,6 +460,15 @@ the future.
     then R303.1, the clear-floor checks and the finishes takeoff all grade RM-S-PLANT on a
     floor slightly larger than the one that gets built (which is the conservative direction
     for the glazing ratio, and the wrong one for clear floor).
+    **Confirmed again on RM-M-STUDY, 2026-08-29, and it bites hardest in a small room.**
+    The study's published area is 19.3 sf on the axis box; measured off the four bounding
+    walls' own resolved layer polygons it is a 48 5/8" x 45 5/8" clear box — **15.4 sf**, a
+    fifth smaller — and off the wainscot faces the joiner actually scribes to, 14.4 sf.
+    Retyping two of its walls to `INT_2X4_STAGGERED_DOUBLE_GWB` took another 1 5/8" off each
+    axis and **`clear_face` did not move at all**, because `_lining_inset` is a constant.
+    No check saw the room shrink. The call booth's bench and desk are therefore dimensioned
+    off `out/model.json`'s wall layer polygons, the way the sauna benches are — nothing in
+    `houses/catlin/plan/` should size millwork off `Room.clear_face`.
   - **A floor drain in RM-S-PLANT** (the room should be hoseable): implies a drain line, a
     trap primer — the trap *will* dry — and slope in `FS-SECOND`. See the Questions list.
   - `SL-SG-DECK` is gone: the aluminium plank is `FS-SG-DECK`'s `subfloor` and bills as
@@ -670,6 +729,49 @@ building, which is why it belongs in a template and a rim-band flashing detail d
     defect. The model has no outdoor-room concept to file them under.
 
 Make sure the basement door keeps the 7" step threshold (reduces flood risk)
+
+## RM-M-STUDY, the call booth (decided and built 2026-08-29)
+
+The house's smallest habitable room and its only windowless one, finished as a booth for
+video calls and homework. Decisions, so they are not relitigated:
+
+- **Desk on the SOUTH wall, bench on the WEST**, and the bench — not the desk — runs the
+  full length. `ED-M-STUDY-RC1` and `-DATA1` were already paired on the south wall as "the
+  pairing a desk actually wants"; the desk honours that wiring. In a booth back support
+  beats desk width, and two facing 18" benches would have left 11 1/4" between them. Both
+  pieces are **fixed** walnut millwork, not a fold-down leaf, and both are on
+  `haus millwork` (`SB-M-STUDY-BENCH`, `SB-M-STUDY-DESK`).
+- **Staggered stud on `W-M-LS` and `W-M-CLN2`, not resilient channel.**
+  `INT_2X4_RC_DOUBLE_GWB` reaches STC 54 in 1 1/2" less room than
+  `INT_2X4_STAGGERED_DOUBLE_GWB`'s STC 52 and is still **wrong for these two walls**: the
+  bench and the desk are fastened *through* them, and a resilient wall you screw millwork
+  into is rigidly bridged back to the bare STC 36. Staggered studs take blocking anywhere.
+- **`W-M-HS4` was deliberately NOT retyped.** It carries a stack edge to `W-S-SN3`;
+  thickening it flips that edge to `width_change=True` and wants a new boundary-condition
+  gate entry. The felt goes on it; the framing does not change. `W-M-CLN2` keeps its
+  `stacks_on="W-B-CW2"` for the same class of reason — it is the tiebreaker on the y=18'
+  run and dropping it re-arms `integrity.stack_ambiguous`.
+- **The retype broke three devices and one placeable, and that is the lesson.** A centred
+  retype moves *both* faces 1 5/8", and a device position is a face position:
+  `ED-M-STUDY-RC1`/`-DATA1` buried 2 3/10" and `FURN-M-LAUNDRY-RACK` 3 3/8" on the far side
+  of the same wall. Always sweep both faces. `ED-M-STUDY-RC2` was deleted (the west wall is
+  now all bench back); `electrical.receptacle_spacing` still passes but **on 6 1/2" of
+  margin** on the `RC1 -> RC3` span — read that finding, do not assume it.
+- **`ED-M-STUDY-SPOT` moved off the north wall** to the east wall's north sliver. Facing
+  south at the desk, a 6' spot behind you is a backlight on camera and a bright blob in the
+  middle of the felt backdrop. Neither it nor `ED-M-STUDY-LT` may be deleted: the room
+  passes `code.R303_1_light_and_ventilation` only on Exception 1's electric-light
+  substitute.
+- **The door stays exactly as it is**, and its undercut is the room's only return path for
+  `REG-M-SUP4`'s 15 cfm. Gasketing it later for the last few STC points needs a transfer
+  grille to come with it. Noted at the register.
+- **The wainscot stays whole** on all four walls; ~20 sf lands behind the millwork on
+  purpose. The box is lined first and the built-ins are set against the lining, which is how
+  a shop builds it — and the west wall's 36" wainscot *is* the bench's back rail.
+- **Open, accepted:** the desk's east end stands in `D-M-STUDY`'s opening. The door swings
+  out, so the leaf is clear, but about 18" of the 30" opening is desk and you enter through
+  the north 12". The alternative is a desk that reaches a wall at neither end. Written up on
+  `FT-STUDY-DESK`.
 
 ## Found while doing the 2026-08-23 batch — recorded so they are not rediscovered
 

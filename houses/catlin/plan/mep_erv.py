@@ -251,9 +251,20 @@ EQUIPMENT_ERV_HOODS = [
 # `code.M1502_dryer_exhaust` uses for M1502.3 and is a fact about the geometry rather than a
 # naming convention.
 DUCTS_ERV_RISERS = [
+    # ** IT STOPS UNDER THE DECK NOW (2026-08-30), AND ONLY THIS ONE DOES. ** +244" is the
+    # centreline of a 6" duct lying on the attic deck, and it is right for the three risers
+    # that surface east of x=11 1/2" — but this column is at x=0'-5", where the 6:12 underside
+    # is 4" above that deck. A 6" duct cannot come up there; it was 1.4" proud of the rafters
+    # and `integrity.element_above_roof` said so. So the riser tops out on FS-ATTIC's bottom
+    # chord instead (231 7/8" = the deck less 8 7/8", the same datum DU-S-ERV-HP-FEED already
+    # uses) and its feed jogs the 7" east in the bay before standing up — the move
+    # VR-M-RADON-VENT makes for the same reason, in the same shaft, at the same rake.
+    #
+    # Moving the column east instead was the other option and it is not available: the chase's
+    # measured clear is 30 1/8" and the three-in-a-row at x=5"/14"/23" already fills it.
     DuctRun(uid="1BMFGSMKJY", tag="DU-ERV-RISER-SUP", system=DuctSystem.SUPPLY,
             path=(pt(ft(0, 5), ft(33, 7.5)), pt(ft(0, 5), ft(33, 7.5))),
-            elevations=(inch(-19.4375), inch(244)),
+            elevations=(inch(-19.4375), inch(231.875)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
             insulation="R-8 wrap", design_cfm=210),
     DuctRun(uid="GFTW5CBARX", tag="DU-ERV-RISER-EXH", system=DuctSystem.EXHAUST,
@@ -275,10 +286,25 @@ DUCTS_ERV_RISERS = [
     # at x=12'-0", inside FO-A-HALL, which put 2'-0" of 6" insulated duct at +276" over a
     # 10'-deep open well with nothing to service it from. +4'-0" of duct, and DU-ERV-EA
     # gives 4'-0" back.
+    # ** REROUTED 2026-08-30 — IT WAS DRAWN INSIDE THE EXHAUST TRUNK. ** Its west leg ran
+    # x 8'-0"..1'-11" at y=35'-6" and +276", which is the SAME LINE, the SAME y and the SAME
+    # elevation DU-ERV-EA takes east out of the chase: six feet of the house's outdoor-air
+    # INTAKE and its discharge occupying one 6" cylinder. Nothing caught it — `interference`
+    # grades framing, not ducts, and `mep.erv_outdoor_terminals` reads each run end to end
+    # without asking what the other one is doing. Both were also proud of the 6:12 rake, and
+    # fixing that is what put the two routes side by side where the clash was visible.
+    #
+    # It leaves the chase on the deck now and stays there, taking its OWN y — the riser's own
+    # y=33'-7 1/2" — east to x=8'-0" before turning north to the hood. Nothing crosses: it
+    # meets DU-ERV-EA's line once, at (8'-0", 35'-6"), and passes 12" clear UNDER it because
+    # the exhaust trunk is still climbing there (see below). +4" is the same "6" duct lying on
+    # the attic deck" centreline the risers are dimensioned to, and it is what the rake allows:
+    # the underside is `20'-0" + 1 1/2" + x/2`, so a duct on the deck needs x >= 11 1/2" and
+    # this leg never goes west of 1'-11".
     DuctRun(uid="MW0MY7GDME", tag="DU-ERV-OA", system=DuctSystem.OUTDOOR_AIR,
-            path=(pt(ft(8), ft(36, 6)), pt(ft(8), ft(35, 6)), pt(ft(1, 11), ft(35, 6)),
+            path=(pt(ft(8), ft(36, 6)), pt(ft(8), ft(35, 6)), pt(ft(8), ft(33, 7.5)),
                   pt(ft(1, 11), ft(33, 7.5)), pt(ft(1, 11), ft(33, 7.5))),
-            elevations=(inch(276), inch(276), inch(276), inch(276), inch(-19.4375)),
+            elevations=(inch(276), inch(276), inch(4), inch(4), inch(-19.4375)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
             insulation="R-8 wrap, vapour-sealed", design_cfm=210),
     # Follows EQ-A-ERV-HOOD-EA from x=24'-0" to x=28'-0" — the mirror move, and the -4'-0"
@@ -286,10 +312,24 @@ DUCTS_ERV_RISERS = [
     # y=35'-6", and that is fine where the OA hood's station was not: it rides at +276",
     # 6" off the north gable for its whole length, so it straps to gable framing rather than
     # spanning open air, and nothing has to be reached from a deck that is no longer there.
+    # ** IT NO LONGER STANDS UP INSIDE THE CHASE, AND IT DUCKS THE OA HOOD (2026-08-30). **
+    # It used to rise at x=0'-5" straight to +276" and run east from there. Neither half
+    # survived the 6:12 rake: at x=5" the roof underside is 4" above the deck, so a 6" duct
+    # cannot surface there at all, and the high leg was 33" proud of the rafters until it
+    # reached x=5'-7". It climbs with the rake instead — out of the chase on the deck at
+    # x=1'-11" (11 1/2" is the minimum a deck-laid 6" duct needs), up to +18" by the OA hood
+    # and to full height at 10'-0", where the underside is 5'-1 1/2" and the trunk has a foot
+    # to spare. From there east it is the run it always was: +276", 6" off the north gable, so
+    # it straps to gable framing across FO-A-HALL rather than spanning open air.
+    #
+    # +18" at x=8'-0" is not a rounding — it is what clears EQ-A-ERV-HOOD-OA. That hood is a
+    # 12" box centred on +276" at (8'-0", 35'-6"), i.e. it OCCUPIES this trunk's old line.
+    # Passing under it keeps both hoods at 3'-0" and so keeps the north gable's mirror about
+    # x=18'-0" (houses/catlin/CLAUDE.md), which dropping the OA hood instead would have broken.
     DuctRun(uid="BYAVBJKRS6", tag="DU-ERV-EA", system=DuctSystem.EXHAUST,
-            path=(pt(ft(0, 5), ft(35, 6)), pt(ft(0, 5), ft(35, 6)), pt(ft(28), ft(35, 6)),
-                  pt(ft(28), ft(36, 6))),
-            elevations=(inch(-19.4375), inch(276), inch(276), inch(276)),
+            path=(pt(ft(1, 11), ft(35, 6)), pt(ft(1, 11), ft(35, 6)), pt(ft(8), ft(35, 6)),
+                  pt(ft(10), ft(35, 6)), pt(ft(28), ft(35, 6)), pt(ft(28), ft(36, 6))),
+            elevations=(inch(-19.4375), inch(4), inch(18), inch(276), inch(276), inch(276)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
             insulation="R-8 wrap, vapour-sealed", design_cfm=210),
 ]
@@ -392,10 +432,28 @@ DUCTS_ERV_LEVEL2 = [
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
             diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="semi_rigid", design_cfm=15),
+    # ** IT ENDS IN A WALL NOW, NOT AT A CEILING GRILLE (2026-08-29). ** REG-M-SUP4 came out
+    # of RM-M-STUDY's ceiling and onto W-M-LS at 5'-0" for the call booth — the argument is
+    # on the register in plan/mep_registers.py, and it is about a 148 cf room's breathing
+    # zone. What that costs here is one extra path point, DU-M-ERV-R-PLANT's idiom exactly:
+    # the plan point repeats and the elevation drops, so the last leg is a pure riser.
+    #
+    # ** THE EAST LEG STOPS AT x=13'-4", NOT 15'-8", AND THAT IS THE WHOLE TRICK. ** 13'-4"
+    # is the centre of W-M-LS's staggered 5 1/2" cavity, and the bay leg already crossed
+    # over that wall at y=20'-8" on its way east. So the riser drops straight out of the
+    # duct into the cavity below it: no jog across FS-S-WEST's joists, no new crossing, and
+    # the run gets 2'-4" SHORTER than the ceiling terminal it replaces. W-M-LS is
+    # NON-bearing, so the 3" through its doubled top plate needs no R602.6.1 tie strap
+    # either — which the bearing wall on the other side of the room would have.
+    #
+    # -60" is storey-relative like every elevation on this run: the run is filed on
+    # FS-S-WEST and therefore on the `second` storey, whose datum is +10'-0", so -60" is
+    # 5'-0" above the main floor. Getting that frame wrong is SILENT — see the PLANT run's
+    # +102", which is the same field reading the same way for a second-storey terminal.
     DuctRun(uid="2ZZ3MF5VAF", tag="DU-M-ERV-R-STUDY", system=DuctSystem.SUPPLY,
             path=(pt(ft(4, 6), ft(34)), pt(ft(4, 6), ft(34)), pt(ft(4, 6), ft(20, 8)),
-                  pt(ft(15, 8), ft(20, 8))),
-            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
+                  pt(ft(13, 4), ft(20, 8)), pt(ft(13, 4), ft(20, 8))),
+            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z, inch(-60)),
             diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="semi_rigid", design_cfm=15),
     DuctRun(uid="K04AT15S97", tag="DU-M-ERV-R-BATH1", system=DuctSystem.EXHAUST,
@@ -595,8 +653,14 @@ DUCTS_ERV_ATTIC = [
             path=(pt(ft(5), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(19, 4)),
                   pt(ft(1), ft(19, 4)), pt(ft(9, 7.5), ft(19, 4)),
                   pt(ft(9, 7.5), ft(19, 4))),
+            # ** THE RISER TOP FOLLOWED ITS GRILLE DOWN ON 2026-08-30. ** It stood at 84"
+            # while REG-A-STUBATH-EXH moved to 4'-4" on 2026-08-29 — the register was
+            # corrected and the duct that feeds it was not, so 32" of 3" duct rose past its
+            # own boot and out through the rake, which at x=9'-7 1/2" is 4'-11 1/4" above the
+            # deck. `integrity.element_above_roof` named it (24.6" proud); nothing else could,
+            # because `mep.register_duct_match` grades the pair in plan and they agree there.
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
-                        _ATTIC_BAY_Z, _ATTIC_BAY_Z, inch(84)),
+                        _ATTIC_BAY_Z, _ATTIC_BAY_Z, inch(52)),
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid",
             design_cfm=20),
     # RM-S-BED3's extract, forced up here by FO-S-STAIR — see the header. It becomes a ceiling
@@ -660,11 +724,19 @@ DUCTS_ERV_ATTIC = [
 # and DU-M-ERV-R-PLANT (25 cfm) remains the radial whose drop the installer must check.
 DUCTS_ERV_MIX_FEED = [
     DuctRun(uid="CSDV02AAAA", tag="DU-S-ERV-HP-FEED", system=DuctSystem.SUPPLY,
-            path=(pt(ft(0, 5), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)), pt(ft(1), ft(22)),
+            # ** ITS FIRST 7" WENT INTO THE BAY ON 2026-08-30. ** It came off the riser head
+            # on the deck at x=0'-5", under 4" of roof. It picks the riser up on FS-ATTIC's
+            # bottom chord instead and stands up at x=1'-0", where the underside is 7 1/2"
+            # and a bare 6" duct on the deck clears by 1/2". The 7" east is ALONG a bay —
+            # FS-ATTIC's I-joists span x — so nothing is bored; the north-south leg that
+            # follows stays on the deck for exactly that reason, as it always has.
+            path=(pt(ft(0, 5), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)),
+                  pt(ft(1), ft(22)),
                   pt(ft(1), ft(22)), pt(ft(20, 8), ft(22)),
                   pt(ft(20, 8), ft(22)), pt(ft(20, 8), ft(11, 4)),
                   pt(ft(20, 8), ft(11, 4))),
-            elevations=(inch(4), inch(4), inch(4), inch(-8.875), inch(-8.875),
+            elevations=(inch(-8.875), inch(-8.875), inch(4), inch(4),
+                        inch(-8.875), inch(-8.875),
                         inch(4), inch(4), inch(-20.875)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
             design_cfm=100),

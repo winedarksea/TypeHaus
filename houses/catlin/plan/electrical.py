@@ -1104,13 +1104,20 @@ BASEMENT_DATA_DEVICES = [
 ]
 
 MAIN_DATA_DEVICES_STUDY = [
-    # RM-M-STUDY is 4'-8" x 4'-2" with its east wall nearly all door, so the south wall is
-    # where anything goes — beside ED-M-STUDY-RC1 and at the same 16", the pairing a desk
-    # actually wants. 1'-0" west of it.
+    # RM-M-STUDY's east wall is nearly all door, so the south wall is where anything goes —
+    # beside ED-M-STUDY-RC1, the pairing a desk actually wants. 1'-0" west of it.
+    #
+    # 2026-08-29, the call-booth fit-out: the desk that pairing was always for now exists
+    # (FURN-M-STUDY-DESK, 20" deep, top at 29 1/2"), so the jack came UP from 16" to 32" —
+    # 2 1/2" over the top, in the last course of WP-M-STUDY-WAINSCOT, at hand height beside
+    # the laptop. A plate cut into a wainscot is ordinary joinery. And y moved 1 5/8" north
+    # with W-M-CLN2's face when that wall was retyped to INT_2X4_STAGGERED_DOUBLE_GWB: a
+    # device position is a FACE position (top of this file), so a retype that moves a face
+    # buries every device on it.
     ElectricalDevice(uid="V51Z24K1AA", tag="ED-M-STUDY-DATA1", kind=DeviceKind.DATA_OUTLET,
-                     position=pt(ft(16), ft(18, 3.375)), type_ref="ED-T-DATA-JACK",
+                     position=pt(ft(16), ft(18, 5)), type_ref="ED-T-DATA-JACK",
                      room="RM-M-STUDY",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(32))),
 ]
 
 BASEMENT_DATA_TRUNKS = [
@@ -1136,8 +1143,8 @@ BASEMENT_DATA_TRUNKS = [
     # penetration: FS-M-WEST is wood.
     ConduitRun(uid="Z9TXYSYKWG", tag="CD-B-DATA-STUDY", trade_size=inch(0.75), service=Service.DATA,
                path=(pt(inch(10), ft(31)), pt(ft(2), ft(31)), pt(ft(2), ft(19)),
-                     pt(ft(16), ft(19)), pt(ft(16), ft(18, 3.375))),
-               start_elevation=ft(-4), end_elevation=ft(1, 4),
+                     pt(ft(16), ft(19)), pt(ft(16), ft(18, 5))),
+               start_elevation=ft(-4), end_elevation=ft(2, 8),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-STUDY-DATA1"),
 ]
 
@@ -1416,23 +1423,38 @@ NEC_FILL_MAIN = [
                      position=pt(ft(6, 10), ft(22, 8.385)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    # RM-M-BATH2's vanity outlet, and the room's only one — the other half of the split
-    # above. W-M-HS1's south face at x=1'-1": the piece of that wall the bathroom still has,
-    # west of FX-M-BATH2-WC (which starts at 1'-8") by 5" and 3'-3" west of the tub deck.
-    # ** THE ENGINE HAS NO E3901 RULE ** (see CKT-BATH-ATTIC in plan/circuits.py), so nothing
-    # would have reported RM-M-BATH2 losing its last receptacle; this is authored because the
-    # room needs one, not because a check asked.
+    # RM-M-BATH2's vanity outlet, and the room's only usable one. ** IT MOVED TO THE VANITY
+    # ON 2026-08-29, OFF W-M-HS1's SOUTH FACE BY THE WATER CLOSET, AND THE REASON IS A CODE
+    # RULE THIS ENGINE DOES NOT ENCODE. ** NEC 210.52(D) / IRC E3901.6 want a receptacle
+    # within 36" of the outside edge of EACH BASIN. At its old station (1'-1", 21'-11 5/8")
+    # it stood 58" from the basin of the new 54" vanity — it was described as the vanity
+    # outlet and had stopped being one. It is now on W-M-W3's finish face beside the bowl:
+    # x=7 5/8" is the face at 6 5/8" plus the device's own 1" half-depth, y=15'-3" is 5 3/8"
+    # south of the basin's south edge. rotation 90 turns the 4" box to run along the wall,
+    # matching ED-M-BATH2-MIRROR directly above it.
+    #
+    # ** 44" PUTS IT 8" ABOVE THE 36" COUNTER **, which is where a backsplash outlet goes;
+    # the old 16" was a baseboard height and would now be behind a cabinet. ** THE ENGINE
+    # HAS NO E3901 RULE AT ALL ** (see CKT-BATH-ATTIC in plan/circuits.py), so nothing
+    # reported this and nothing will report the next one — two other lavatories in this
+    # house are outside the 36" today, and both are written up in plans/TODO.md rather than
+    # moved here, because they are not this room.
+    #
+    # ** ED-M-BATH2-TUB-RC IS NOT AN ANSWER TO 210.52(D) AND MUST NEVER BE READ AS ONE. **
+    # It measures 32" from this basin's east edge, so a naive check would call the rule
+    # satisfied — but it is sealed inside SL-M-TUBDK's deck box behind FURN-M-BATH2-TUBDK-AP,
+    # serving the bath's Bask heater, and nobody plugs a razor into it.
     #
     # GFCI at the DEVICE, not the breaker, which is the exception this house makes in exactly
-    # this location: CKT-RC-MAIN spans the whole storey, and E3902.10 puts this box inside
-    # 6' of FX-M-BATH2-SINK (4'-1" to its nearest edge). The same reasoning as the other
-    # seven storey-circuit GFCI devices in the note above — one splashed bathroom outlet must
-    # not take the floor down with it. Contrast ED-M-BATH2-TUB-RC, which is breaker-protected
-    # because it is sealed inside the deck box and could never be reset.
+    # this location: CKT-RC-MAIN spans the whole storey, and this is a bathroom outlet under
+    # E3902.1 outright. The same reasoning as the other seven storey-circuit GFCI devices in
+    # the note above — one splashed bathroom outlet must not take the floor down with it.
+    # Contrast ED-M-BATH2-TUB-RC, which is breaker-protected because it is sealed inside the
+    # deck box and could never be reset.
     ElectricalDevice(uid="N7TTYA9RV6", tag="ED-M-BATH2-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(1, 1), ft(21, 11.615)), type_ref="ED-T-RECEPTACLE-GFCI",
-                     circuit="CKT-RC-MAIN", room="RM-M-BATH2",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     position=pt(inch(7.635), ft(15, 3)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     circuit="CKT-RC-MAIN", room="RM-M-BATH2", rotation=deg(90),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(44))),
     # y flipped to W-M-STOS's north face (2026-07-28) when W-M-BAE's shift pushed the south
     # face into RM-M-BATH1. Inside RM-M-MUD-CLOSET since 2026-08-02, kept on purpose: NEC
     # 410.16 restricts closet luminaires, not receptacles, and RM-M-MUDROOM is
@@ -1482,16 +1504,25 @@ NEC_FILL_MAIN = [
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
     # 2026-08-03: RC1 sat in D-M-STUDY's rough opening; moved with RC3 onto the study's
-    # south/north walls (RM-M-STUDY is 4'-8"x4'-2", east wall nearly all door), 5'-2"/5'-10"
-    # from FX-M-LAUNDRY-SINK — inside E3902.10's 6', so both are GFCI at the device.
+    # south/north walls (east wall nearly all door), 5'-2"/5'-10" from FX-M-LAUNDRY-SINK —
+    # inside E3902.10's 6', so both are GFCI at the device.
+    #
+    # 2026-08-29, the call-booth fit-out: +1 5/8" north (W-M-CLN2 retyped to
+    # INT_2X4_STAGGERED_DOUBLE_GWB, and a device position is a face position), and up from
+    # 16" to 32" — 2 1/2" over FURN-M-STUDY-DESK's top, still well under NEC 210.52(A)'s
+    # 5'-6". Paired with ED-M-STUDY-DATA1 at the same height 1'-0" west.
+    #
+    # ** ED-M-STUDY-RC2 WAS DELETED HERE, 2026-08-29. ** It sat at 16" on the west wall,
+    # which is now the full length of FURN-M-STUDY-BENCH's back. `electrical.receptacle_spacing`
+    # still passes without it: the surviving RC1 -> RC3 span walks 11.46' against the 12'
+    # limit, and D-M-STUDY's break leaves no point on the ring more than 6' from a
+    # receptacle. ** THE MARGIN IS 6 1/2". ** Anything that lengthens this room's ring or
+    # pushes RC1 and RC3 further apart flips that to a FAIL — re-read the finding, do not
+    # assume it. (Re-snapping RC1 north actually *shortened* the span, so the retype helped.)
     ElectricalDevice(uid="NEC019AAAA", tag="ED-M-STUDY-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(17), ft(18, 3.375)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(17), ft(18, 5)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    ElectricalDevice(uid="NEC020AAAA", tag="ED-M-STUDY-RC2", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(13, 7.375), ft(18, 9.5)), type_ref="ED-T-RECEPTACLE-GFCI",
-                     circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(32))),
     # Fills the >6' gap electrical.receptacle_spacing flags on the centre bearing wall,
     # on the STUDY face opposite ED-M-LIVING-RC7.
     ElectricalDevice(uid="NEC065AAAA", tag="ED-M-STUDY-RC3", kind=DeviceKind.RECEPTACLE_GFCI,

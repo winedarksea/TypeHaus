@@ -1459,7 +1459,7 @@ CATLIN_INT_2X4_BOOKCASE_12 = Assembly(
     # would otherwise fall through to "the first STRUCTURE layer" and get the right answer by
     # accident, which is exactly the layer-index coupling the role mechanism exists to avoid.
     interfaces=(AssemblyInterface(role="bearing", layer_name="stud-case", outboard=False),),
-    source="plans/TODO.md — study bookcase wall at the stair head: a 12 3/4\" built-in whose SOUTH face is pinned on FO-A-STAIR's north edge (the wall is thickened, never moved) and whose axis therefore lands on y=9'-4\", a 16\" station with an FS-ATTIC joist directly under it. 9 7/8\" clear shelf depth; five bays from x=22'-8\" stepping down the rake; the casework itself is a prices.toml [allowances] lump, so the BOM sees only the case-back sheet and the nailers. D-A-STUDY is hidden in this wall as DT-INT-BOOKCASE30 — its hinge-side jamb wants a full-depth 3-ply post through-bolted to the sole plate and the 4'-0\" blocking row (a 250 lb leaf on a 10\" moment arm is torsion, not bending), for which there is no schema field",
+    source="plans/TODO.md — study bookcase wall at the stair head: a 12 3/4\" built-in whose SOUTH face is pinned on FO-A-STAIR's north edge (the wall is thickened, never moved) and whose axis therefore lands on y=9'-4\", a 16\" station with an FS-ATTIC joist directly under it. 9 7/8\" clear shelf depth; three bays from x=22'-8\" to 30'-8\" stepping down the rake, the wall running on east of them as a raked closure; the casework itself is a prices.toml [allowances] lump, so the BOM sees only the case-back sheet and the nailers. D-A-STUDY is hidden in this wall as DT-INT-BOOKCASE30 — its hinge-side jamb wants a full-depth 3-ply post through-bolted to the sole plate and the 4'-0\" blocking row (a 250 lb leaf on a 10\" moment arm is torsion, not bending), for which there is no schema field",
 )
 
 # INT_2X6_PLUMBING and INT_2X6_STAGGERED_PLUMBING (generic wet-wall partitions, no
@@ -1962,6 +1962,31 @@ MATERIALS = [
              finish="clear-satin-hardwax-oil", species="walnut", stock_bf_per_sqft=1.0,
              nominal_quarters=4, milling_profile="T&G",
              source="plans/TODO.md — first-floor study walnut paneling to 36\""),
+    # The call booth's bench seat and desk top (2026-08-29), the same walnut as the wainscot
+    # they sit against. ** `nominal_quarters=8` IS REQUIRED, not decoration: ** both pieces
+    # finish 1-1/2", 4/4 dresses to 3/4", and `takeoff/hardwood.py` flags a finished piece
+    # that cannot come out of the stock it names.
+    #
+    # Deliberately no `stock_bf_per_sqft`: like the oak below, these are PIECE goods cut to a
+    # finished T x W x L, not a coverage good. Unlike the oak below, this walnut is BOUGHT —
+    # so it appears on `haus millwork` for the mill AND its dollars stay inside the
+    # `[placeables]` rows for FT-STUDY-BENCH / FT-STUDY-DESK. See prices.toml; getting that
+    # backwards puts the most expensive material in the room at $0.
+    Material(tag="walnut-shelf-8q", name="Black walnut shelving, 8/4 S4S", hatch="lumber",
+             density=610.0, color="#5d4433", finish="clear-satin-hardwax-oil",
+             species="walnut", nominal_quarters=8, milling_profile="S4S",
+             source="plans/TODO.md — RM-M-STUDY call booth. 8/4 because both pieces are structural millwork on a 45-5/8\" and a 30-5/8\" span with no stiffener: a bench seat someone sits on and a fixed desk top someone leans on"),
+    # The booth's acoustic felt (2026-08-29), band 36" to 9'-0" on the south and north walls
+    # of RM-M-STUDY. ** NO `species`. ** That one field is the gate on `haus millwork`
+    # (takeoff/hardwood.py — "a milling schedule is only about wood"); set it and PET felt is
+    # scheduled as lumber. ** NO `stock_bf_per_sqft` either: ** it is the only input to
+    # `paneling._band_thickness_m`, and leaving it unset draws the band at the 1/2" default,
+    # which is exactly the panel thickness. Bills into prices.toml `[wood_surfaces]` on the
+    # material tag, the same join WP-B-SAUNA-SPLASH's tile takes.
+    Material(tag="pet-felt-panel", name="PET acoustic felt panel, 1/2\" (9mm+ compressed)",
+             r_per_inch=3.5, density=200.0, perm_rating=10.0, hatch="insulation",
+             color="#6f7a72", finish="felted",
+             source="plans/TODO.md — RM-M-STUDY call booth. Recycled-PET needled felt board, the common 1/2\" architectural panel; NRC ~0.5-0.6 at this thickness direct-mounted, which is the first-reflection and flutter treatment the room needs rather than a bass trap"),
     # The suite's four 6-1/8\" square tudor posts, ordered as 10' sections and cut down.
     # `nominal_quarters=8` is not decoration: a clear 6\" elm timber would check badly
     # drying, so these are GLUED UP from 8/4 board stock (prices.toml records the same

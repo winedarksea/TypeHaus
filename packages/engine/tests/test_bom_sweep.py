@@ -41,18 +41,35 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # partition's end where W-M-STRS used to. It bills as a railing row like any other —
     # 0.4 LF is a real line on a real product, and the alternative was leaving a 4 1/2"
     # hole at the head of the stairs off the BOM entirely.
-    assert sum(int(row["count"]) for row in rows) == 12
+    # Thirteen since 2026-08-29: RL-A-FLIGHT-GUARD, 10'-0" of raked guard on ST-S2A's own
+    # open south side. RL-A-STAIR guards the attic *deck* edge on that same plan line; the
+    # flight below it was unguarded over a 30"-120" fall into RM-S-STUDY2 and no check was
+    # asking, because R312.1 is graded against floor-opening edges.
+    assert sum(int(row["count"]) for row in rows) == 13
     assert not [row for row in bom["railings"] if row["style"] == "masonry"]
     by_type = {}
     for row in rows:
         by_type[row["type"]] = by_type.get(row["type"], 0.0) + float(row["length_ft"])
     assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(74.6, abs=0.1)
     # 23.4 since 2026-08-24, not 23.0: RL-M-STAIRHEAD's 4 1/2" joins the same product group.
-    # 26.4 since 2026-08-29: RL-A-STAIR gained a 3'-0" east leg. That edge of FO-A-STAIR was
-    # guarded by the inside face of the W-A-E1 knee wall, which is a 1 1/2" rafter plate now
-    # — `code.R312_1_guard` named it the moment the wall changed. Three feet of railing is
-    # the honest price of ~360 sf of knee wall the storey stopped building.
-    assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(26.4, abs=0.1)
+    # 26.4 on 2026-08-29 when RL-A-STAIR gained a 3'-0" east leg, and **17.3 since 2026-08-30,
+    # which is 9.1 LF LESS THAN BEFORE THE KNEE WALLS CAME OUT AT ALL.** That is not a
+    # regression, it is the rake: a 42" guard's top stands at 282", the roof underside over
+    # this well is `240" + 2 1/4" + (36' - x)/2`, and the two meet at x=29'-4 1/2". East of
+    # that the railing was inside the roof — 3 of 5 posts, 20 of 40 balusters and the whole
+    # east leg, 35 7/8" proud at the far end — and only the 3D view showed it until
+    # `integrity.element_above_roof` was written. W-A-GC-S, a raked ToRoof partition, closes
+    # x 29'-4 1/2"..35'-5 3/8" instead, and the east edge carries nothing because with 4 3/4"
+    # of clear height there is no walking surface for R312.1.1 to reach.
+    #
+    # So this row falls and a partition row rises. The guard product is billed by its RUN, so
+    # a shorter run has to bill shorter — the failure mode this test exists to catch is the
+    # opposite one, a railing that quietly keeps billing a length it no longer runs.
+    #
+    # 27.3 since 2026-08-29: RL-A-FLIGHT-GUARD's 10'-0" raked run down ST-S2A's open side,
+    # the same product bearing its own handrail (role="guard_and_handrail"), so the bar is
+    # billed once inside this component system rather than twice.
+    assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(27.3, abs=0.1)
     # 36.7, not 30.0, since 2026-08-22, in two parts: RL-A-HANDRAIL gained 3'-0" at its east
     # end so it runs beside ST-S2A's winder fan as well as its straight flight (which is what
     # R311.7.8.2 asks of it, and what `code.R311_7_8_handrail` started measuring rather than

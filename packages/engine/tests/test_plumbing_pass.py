@@ -176,7 +176,15 @@ def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
     a wet-bar sink on PR-A-STUBATH-DRAIN and PR-A-BAR-DRAIN, both of which discharge into the
     same stack. The 4" main is unaffected and not close — IPC Table 710.1(2) gives a 4" building
     drain 180 DFU at 1/8"/ft — but the rollup is the thing being tested, and a new branch
-    that did NOT move this number would mean the union had stopped seeing it."""
+    that did NOT move this number would mean the union had stopped seeing it.
+
+    ** 48 LATER THE SAME DAY, AND THE 1 DFU CAME OFF AS A CORRECTION. ** FX-M-BATH2-SINK
+    was typed FX-KITCHEN-SINK-33 — a stand-in for a fixture nobody had chosen yet — and
+    ``_DFU`` is keyed on ``plan_symbol``, where ``kitchen-sink`` is 2.0 DFU (it carries the
+    grinder and dishwasher branch) against ``vanity``/``lavatory`` at 1.0. So the bathroom
+    lavatory had been loading the building drain as a kitchen sink. Retyping it to the real
+    54" vanity took the house to its correct 48. This number going UP by one without a
+    fixture being added would mean that stand-in has crept back somewhere."""
     from typehaus.resolve.mep import accumulated_serves, drain_tie_ins
     from typehaus.takeoff.plumbing_calc import branch_load, fixture_units
 
@@ -190,7 +198,7 @@ def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
         assert fx in main, fx
     load, unresolved = branch_load(main, units, "drain")
     assert not unresolved
-    assert load == 49.0
+    assert load == 48.0
     # Every drain run discharges somewhere except the building drain itself and the runs
     # that terminate at an air gap — the two condensate lines, and the water heater's TPR
     # relief discharge, which P2804.6.1 requires to end 6"-24" over the floor and forbids

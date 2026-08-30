@@ -197,9 +197,15 @@ def test_catlin_flights_have_graded_handrails(catlin_ctx):
     """Every 4+-riser stair carries authored, graded handrails: one wall-mounted rail per
     flight (two per U stair, one along the winder stair's straight flight), each raked
     along the nosing line at resolve and graded here on top_height (34"-38" above the
-    nosings), continuity and graspability."""
+    nosings), continuity and graspability.
+
+    Seven since 2026-08-29: ST-S2A gained a second rail, RL-A-FLIGHT-GUARD, on the open
+    south side its wall rail cannot reach. It is authored as a guard first — the flight
+    stands 30"-120" over RM-S-STUDY2 there — and grades here too because a 36" top bar with
+    a Type I section answers R312.1.2's exception and R311.7.8.1 with one member.
+    """
     findings = stair_handrail(catlin_ctx)
-    assert [f.result for f in findings] == [Result.PASS] * 6, \
+    assert [f.result for f in findings] == [Result.PASS] * 7, \
         [f.message for f in findings]
     assert {f.message.split()[0] for f in findings} == {
         "ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE"}
@@ -210,9 +216,13 @@ def test_handrail_is_unknown_when_no_handrail_is_authored_anywhere(catlin_ctx):
     never a silent pass and never a fabricated deficiency."""
     from typehaus.model.structure import Railing
 
+    # Both roles, not just "handrail": RL-A-FLIGHT-GUARD is a `guard_and_handrail`, and
+    # leaving it standing would leave ST-S2A with a rail while the premise says the house
+    # has none.
     ctx = _ctx_with_elements(
         catlin_ctx,
-        lambda e: None if isinstance(e, Railing) and e.role == "handrail" else e)
+        lambda e: None if isinstance(e, Railing)
+        and e.role in ("handrail", "guard_and_handrail") else e)
     findings = stair_handrail(ctx)
     assert len(findings) == 4  # + ST-G-SERVICE (2026-08-22)
     assert all(f.result is Result.UNKNOWN for f in findings)
@@ -252,13 +262,20 @@ def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
     used to: it is 4 1/2" of guard closing the well partition's end at the head of the main
     stairs, too narrow for a picket bay, so it is ``infill="panel"`` and admits no sphere by
     construction. It is deliberately absent from the drawn-gap census in the next test —
-    a panel has no gap to draw."""
+    a panel has no gap to draw.
+
+    RL-A-FLIGHT-GUARD (2026-08-29) is the seventh and the first raked one: a guard on
+    ST-S2A's open south side whose top bar is also that flight's second handrail. A
+    ``guard_and_handrail`` is a guard for this rule — the census filters on role, and
+    excluding it would let the one guard in the house that stands over a stair go
+    unmeasured."""
     from typehaus.checks.code.mn_residential.fall_protection import guard_opening_limit
 
     findings = guard_opening_limit(catlin_ctx)
     tags = sorted(t for f in findings for t in (f.message.split()[0],))
-    assert tags == ["RL-A-STAIR", "RL-M-STAIRHEAD", "RL-S-STAIR", "RL-S-STAIRHEAD",
-                    "RL-SG-BALCONY", "RL-SG-PORCH"], [f.message for f in findings]
+    assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-M-STAIRHEAD", "RL-S-STAIR",
+                    "RL-S-STAIRHEAD", "RL-SG-BALCONY", "RL-SG-PORCH"], \
+        [f.message for f in findings]
     assert {f.result for f in findings} == {Result.PASS}
 
 
@@ -272,7 +289,8 @@ def test_the_sphere_rule_is_measured_off_the_drawn_infill_not_only_the_field(cat
 
     drawn = [f for f in guard_opening_limit(catlin_ctx) if "draws" in f.message]
     assert sorted(f.message.split()[0] for f in drawn) == [
-        "RL-A-STAIR", "RL-S-STAIR", "RL-S-STAIRHEAD", "RL-SG-BALCONY", "RL-SG-PORCH"]
+        "RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-S-STAIR", "RL-S-STAIRHEAD",
+        "RL-SG-BALCONY", "RL-SG-PORCH"]
 
 
 # --- R312.1 stair-well guards ----------------------------------------------------------

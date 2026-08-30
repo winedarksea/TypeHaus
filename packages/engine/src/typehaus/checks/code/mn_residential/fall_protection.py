@@ -15,7 +15,7 @@ from typehaus.checks.code.mn_residential._common import (_fail, _pass, _rooms_by
 from typehaus.checks.code.mn_residential.stairs import _flight_stations
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
-from typehaus.quantities import inch
+from typehaus.quantities import M_PER_IN, inch
 
 # --- R312.1 guards at stair-well openings ----------------------------------------------
 _GUARD_MIN_HEIGHT = inch(36)  # R312.1.2, at open sides of walking surfaces
@@ -77,6 +77,49 @@ def _edge_cover_intervals(edge_across: float, along0: float, along1: float, acro
         covered.append((min(values), max(values)))
     return covered, short, used
 
+
+
+#: A well edge under a roof lower than this is not an open side. R312.1.1 scopes guards to
+#: *walking surfaces*; where the roof structure stands less than the code's own 30" fall
+#: dimension above the deck there is no walking surface on either side of the edge, and the
+#: roof plane closes the void more completely than the 36" guard it displaces could. 30",
+#: not 36": between the two a guard is unbuildable but a person could still be prone there,
+#: and that should stay a FAIL so it forces a design answer rather than passing quietly.
+_ROOF_CLOSES_EDGE_M = _GUARD_TRIGGER_DROP.meters
+#: Sampling step along an edge when asking whether the roof closes it.
+_ROOF_SAMPLE_STEP_M = 0.25
+
+
+def _roof_closed_interval(ctx: CheckContext, across: int, edge_across: float,
+                          lo: float, hi: float, surface: float) -> bool:
+    """Is this whole stretch of a well edge roofed too low to stand or walk in?
+
+    Sampled rather than tested at the ends: the underside is linear along a rake but an
+    edge may run across the ridge, where the ends are the two LOWEST points. Sampling
+    catches that; two-point testing would exempt a full-height opening under a peak.
+    """
+    from typehaus.resolve.roof_geometry import roof_bearing_footprint, roof_underside_at
+
+    if hi - lo <= 0:
+        return True
+    steps = max(2, int((hi - lo) / _ROOF_SAMPLE_STEP_M) + 1)
+    for index in range(steps + 1):
+        station = lo + (hi - lo) * index / steps
+        point = ((edge_across, station) if across == 0 else (station, edge_across))
+        clear = None
+        for roof in ctx.model.roofs:
+            footprint = roof_bearing_footprint(ctx.model, roof)
+            if footprint is None:
+                continue
+            xs = [corner[0] for corner in footprint]
+            ys = [corner[1] for corner in footprint]
+            if not (min(xs) <= point[0] <= max(xs) and min(ys) <= point[1] <= max(ys)):
+                continue
+            height = roof_underside_at(ctx.model, roof, point) - surface
+            clear = height if clear is None else min(clear, height)
+        if clear is None or clear >= _ROOF_CLOSES_EDGE_M:
+            return False
+    return True
 
 @check(Tier.CODE, "code.R312_1_guard")
 def stairwell_guard(ctx: CheckContext) -> list[Finding]:
@@ -158,6 +201,7 @@ def stairwell_guard(ctx: CheckContext) -> list[Finding]:
         edges = (("west", 0, minx, miny, maxy), ("east", 0, maxx, miny, maxy),
                  ("south", 1, miny, minx, maxx), ("north", 1, maxy, minx, maxx))
         gaps: list[str] = []
+        roof_closed: list[str] = []
         short_guards: list = []
         guarding_tags: set[str] = set()
         for name, across, edge_across, along0, along1 in edges:
@@ -170,9 +214,13 @@ def stairwell_guard(ctx: CheckContext) -> list[Finding]:
             for lo, hi in covered:
                 remaining = _subtract_interval(remaining, lo, hi)
             for lo, hi in remaining:
-                if hi - lo > _GUARD_GAP_TOL_M:
-                    gaps.append(f"{name} edge {lo / .3048:.2f}'..{hi / .3048:.2f}' "
-                                f"({(hi - lo) / .3048:.2f}')")
+                if hi - lo <= _GUARD_GAP_TOL_M:
+                    continue
+                if _roof_closed_interval(ctx, across, edge_across, lo, hi, surface):
+                    roof_closed.append(f"{name} edge {lo / .3048:.2f}'..{hi / .3048:.2f}'")
+                    continue
+                gaps.append(f"{name} edge {lo / .3048:.2f}'..{hi / .3048:.2f}' "
+                            f"({(hi - lo) / .3048:.2f}')")
         if gaps:
             out.append(_fail(cid, f"{opening.tag}: open side(s) with no guard, wall or "
                              f"stair entry — {'; '.join(gaps)}",
@@ -184,9 +232,15 @@ def stairwell_guard(ctx: CheckContext) -> list[Finding]:
                              f"well edge at {worst:.0f}\", under the 36\" R312.1.2 "
                              "minimum", (opening.tag, *names), code))
         else:
+            note = ""
+            if roof_closed:
+                inches = _ROOF_CLOSES_EDGE_M / M_PER_IN
+                note = (f"; {', '.join(roof_closed)} carries no guard because the roof "
+                        f"structure stands under {inches:.0f} inches over the deck there "
+                        "— no walking surface, so R312.1.1 does not reach it")
             out.append(_pass(cid, f"{opening.tag}: every open side is guarded "
                              f"({', '.join(sorted(guarding_tags)) or 'walls'} and the "
-                             "stair throat close the well)", code))
+                             f"stair throat close the well){note}", code))
     return out
 
 

@@ -275,10 +275,50 @@ REGISTERS_MAIN = [
             position=pt(ft(9), ft(6)), duct_ref="DU-M-ERV-R-BED",
             type_ref="REG-T-ERV-SUP", design_cfm=15,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+    # ** RM-M-STUDY'S RETURN PATH IS D-M-STUDY'S UNDERCUT, AND NOTHING MAY CLOSE IT. **
+    # 15 cfm of supply into ~148 cf with no exhaust register; the air leaves under the door.
+    # The room became an acoustically-treated call booth on 2026-08-29 — staggered stud on
+    # two walls, felt on two — and the door was deliberately LEFT AS IT IS for exactly this
+    # reason. A gasket, a sweep or a drop seal added later for the last few STC points would
+    # silently strangle the only outlet this supply has; if one is ever wanted, a transfer
+    # grille or a jump duct has to come with it.
+    #
+    # ** IT CAME OUT OF THE CEILING AND ONTO THE WALL AT 5'-0" (2026-08-29, owner). ** In a
+    # 148 cf sealed box with one person in it, CO2 is the whole ventilation problem, and 15
+    # cfm dumped at 9'-0" mixes into the room's top and reaches the breathing zone last. A
+    # sidewall terminal at head height delivers it where it is breathed. Draft is not the
+    # objection it would be on a heating register: 15 cfm through this type's 7x7 face is
+    # about 45 fpm, which is under the 50 fpm ASHRAE 55 draught threshold before the jet has
+    # travelled a foot.
+    #
+    # ** IT IS ON THE WEST WALL, NOT THE EAST ONE BESIDE ED-M-STUDY-SPOT, AND THAT IS A
+    # DEPARTURE FROM WHAT WAS ASKED FOR. ** The east wall reads better — it is the sliver
+    # the sconce and the switch already share — and it cannot be built:
+    #   * W-M-C3 is BEARING (CATLIN_INT_2X6_BRG). A 3" riser through its doubled top plate
+    #     takes 3" out of 5 1/2", past R602.6.1's half-width limit, so the plate needs a
+    #     steel tie strap on both plies — a detail bought for nothing.
+    #   * Worse, the duct would have to jog 13" NORTH across FS-S-WEST's joists to reach the
+    #     sliver, and it would cross them directly over that bearing line. Boring a joist at
+    #     its bearing end is the one place the hole chart forbids outright.
+    #   * The sliver is 9 15/16" of clear bay inside the room. A 7" grille, a sconce box and
+    #     a switch box do not share it.
+    # W-M-LS costs none of that. It is NON-bearing, its retype gave it a 5 1/2" staggered
+    # cavity, and the existing bay leg of DU-M-ERV-R-STUDY already runs directly over it at
+    # y=20'-8" — the riser drops straight down out of the duct with no jog and no new joist
+    # crossing, and the run gets 2'-4" SHORTER. In a 4-foot room "beside the sconce" and
+    # "opposite the sconce" are three feet apart; the buildability is the part that is not
+    # interchangeable. Nothing opens into RM-M-LAUNDRY on the far side — the riser is soft
+    # semi-rigid inside one leaf's cavity, so the staggered wall's STC 52 is intact.
+    #
+    # x = 13'-8 1/2": the wall's resolved study face is 13'-8", plus half this type's 1"
+    # depth, per the face-position convention in plan/electrical.py. y = 20'-8" is the duct's
+    # own line. `rotation=deg(90)` faces it east into the room, the same way REG-M-XFER-MUD
+    # is turned off W-M-STRW. It lands 5'-0" up, over FURN-M-STUDY-BENCH's west end (seat
+    # 18") and clear of FURN-M-STUDY-DESK (top 29 1/2", and 20" of it is south of here).
     Register(uid="CMRV04AAAA", tag="REG-M-SUP4", kind=DuctSystem.SUPPLY, room="RM-M-STUDY",
-            position=pt(ft(15, 8), ft(20, 8)), duct_ref="DU-M-ERV-R-STUDY",
-            type_ref="REG-T-ERV-SUP", design_cfm=15,
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+            position=pt(inch(164.5), ft(20, 8)), duct_ref="DU-M-ERV-R-STUDY",
+            type_ref="REG-T-ERV-SUP", design_cfm=15, rotation=deg(90),
+            mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     # The two baths are EXHAUST at 20 cfm each, like the second storey's — see the note over
     # REGISTERS_SECOND for why the whole wet-room set changed direction on 2026-08-01.
     Register(uid="CMRV05AAAA", tag="REG-M-EXH1", kind=DuctSystem.EXHAUST, room="RM-M-BATH1",

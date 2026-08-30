@@ -160,19 +160,20 @@ def test_the_attic_built_in_derives_its_depth_from_the_wall_pocket(catlin_model_
 def test_the_attic_bays_are_stepped_bays_with_their_own_counts(catlin_model_ro):
     """A uniform spacing does not divide into a raked case; per-bay counts are the point.
 
-    ** FOUR BAYS SINCE 2026-08-29, NOT FIVE, AND 14 SHELVES RATHER THAN 32. ** The bay
+    ** FIVE BAYS -> FOUR ON 2026-08-29 -> THREE ON 2026-08-30; 32 SHELVES -> 12. ** The bay
     tops came from `5'-0" + (36' - x)/3` off a knee wall; at 6:12 off a rafter plate they
-    are `1 1/2" + (36' - x)/2`, which is 5'-0" down to 1'-0" across bays 1-4 and leaves
-    bay 5 (x 33'-4"..35'-5 3/8") with 4 1/8" — closed out rather than shelved. What the
-    test is defending is unchanged and is the reason it exists: the bays STEP, and the
-    counts are per-bay because one pitch does not divide into a rake.
+    are `1 1/2" + (36' - x)/2`. Bay 5 (x 33'-4"..35'-5 3/8") went first at 4 1/8" of usable
+    height. Bay 4 (x 30'-8"..33'-4") went on the owner's call: 1'-0" of clear is two shelves
+    you cannot see into at the end of a run you stoop to reach. What the test is defending is
+    unchanged and is the reason it exists: the bays STEP, and the counts are per-bay because
+    one pitch does not divide into a rake.
     """
     bank = next(b for b in catlin_model_ro.shelf_banks if b.tag == "SB-A-STUDY")
-    assert len(bank.shelves) == 4
+    assert len(bank.shelves) == 3
     heights = [round(shelf.clear_height_m * M_TO_IN, 1) for shelf in bank.shelves]
     assert heights == sorted(heights, reverse=True), "the bays step down under the rake"
     assert len({shelf.count for shelf in bank.shelves}) > 1
-    assert sum(shelf.count for shelf in bank.shelves) == 14
+    assert sum(shelf.count for shelf in bank.shelves) == 12
 
 
 def test_a_carcass_hosted_bank_derives_its_depth_from_the_furniture_type(catlin_model_ro):
@@ -189,7 +190,20 @@ def test_a_carcass_hosted_bank_derives_its_depth_from_the_furniture_type(catlin_
 
 
 def test_every_shelf_bank_resolves_a_host_and_a_depth(catlin_model_ro):
-    assert len(catlin_model_ro.shelf_banks) == 7
+    """Counted against the PLAN rather than a literal, deliberately (2026-08-29).
+
+    This asserted ``== 7`` and the number was standing in for the real invariant, which is
+    that no authored bank is silently DROPPED — an unresolvable host or an underivable depth
+    makes a bank vanish from the model with a finding nobody reads. Comparing to the
+    authored count says exactly that and needs no edit the next time the house grows a
+    bookcase, which it did three times in one day."""
+    from typehaus.model.millwork import ShelfBank
+
+    authored = [el for storey in catlin_model_ro.plan.storeys
+                for el in catlin_model_ro.plan.storey_elements(storey.tag)
+                if isinstance(el, ShelfBank)]
+    assert authored, "the catlin fixture should carry shelf banks at all"
+    assert len(catlin_model_ro.shelf_banks) == len(authored)
     for bank in catlin_model_ro.shelf_banks:
         assert bank.host_kind in ("wall", "placeable")
         assert bank.depth_m is not None and bank.depth_m > 0.0

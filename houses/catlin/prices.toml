@@ -1412,6 +1412,27 @@
 # is a fraction of this and CANNOT be substituted — it is not standable.
 "FT-KIT-PANTRY-SHELVES-70" = { material = { low = 160, high = 420 }, labour = { low = 400, high = 1050 } }  # 1 ea
 "FT-BATH1-SHELF-2030" = { material = { low = 200, high = 750 }, labour = { low = 150, high = 450 } }  # 1 ea
+# RM-M-STUDY'S CALL BOOTH, 2026-08-29 — two built articles, priced the way the bath alcove
+# shelf and the sauna benches are: what the piece costs in materials and shop time.
+# [placeables] and not [furnishings] because neither can be carried out of the room; both are
+# screwed through W-M-LS and W-M-CLN2, which were retyped to staggered stud FOR that.
+#
+# ** THE WALNUT IS IN THESE TWO ROWS AND NOWHERE ELSE — THIS IS THE INVERSE OF
+# `FT-KIT-PANTRY-SHELVES-70` ABOVE. ** SB-M-STUDY-BENCH and SB-M-STUDY-DESK put the seat and
+# the top on `haus millwork` (13.4 and 9.7 bf of 8/4 walnut, each an edge-glued panel of two
+# boards), and that section is an UNPRICED VIEW. The pantry's oak may carry $0 because it
+# comes off the owner's own ~$2/sf stock; ** THIS WALNUT IS BOUGHT ** at roughly $12-20/bf
+# S4S, so the boards are inside the material low/high here — about $160-270 of the bench and
+# $115-195 of the desk. Strip them out to "avoid double counting the millwork" and the most
+# expensive material in the room bills at $0.
+#
+# The rest of each row: the bench's ply carcass, its cleats and the blocking laid into the
+# staggered bays, the desk's apron and modesty panel, edge treatment, hardwax-oil finish and
+# the fit — every piece is scribed to a 4-foot box with no square corner in it. High end is a
+# cabinetmaker; low end is a good carpenter building it in place. The CUSHION AND PILLOWS are
+# NOT here — see `allowances.cabinet-study-booth-cushions`.
+"FT-STUDY-BENCH" = { material = { low = 350, high = 850 }, labour = { low = 300, high = 750 } }  # 1 ea
+"FT-STUDY-DESK" = { material = { low = 300, high = 700 }, labour = { low = 250, high = 650 } }  # 1 ea
 "FT-CURTAIN-ROD-48" = { material = { low = 25, high = 90 }, labour = { low = 35, high = 90 } }  # 8 ea
 "FT-CURTAIN-ROD-84" = { material = { low = 40, high = 140 }, labour = { low = 35, high = 90 } }  # 1 ea
 "FT-CURTAIN-ROD-OUTDOOR-114" = { material = { low = 90, high = 260 }, labour = { low = 60, high = 150 } }  # 2 ea
@@ -1457,12 +1478,25 @@
 # PipeAccessory(PENETRATION_SEAL), so neither is in these two rows.
 "FX-HYDRANT-SD34" = { material = { low = 110, high = 260 }, labour = { low = 120, high = 310 } }  # 2 ea
 "FX-HYDRANT-Y34SS" = { material = { low = 180, high = 500 }, labour = { low = 140, high = 360 } }  # 1 ea
-"FX-KITCHEN-SINK-33" = { material = { low = 220, high = 800 }, labour = { low = 250, high = 600 } }  # 2 ea
+"FX-KITCHEN-SINK-33" = { material = { low = 220, high = 800 }, labour = { low = 250, high = 600 } }  # 1 ea
 "FX-LAUNDRY-SINK-24" = { material = { low = 130, high = 450 }, labour = { low = 120, high = 290 } }  # 1 ea
 # Read as the lavatory AND its vanity: no CASE-* row covers the bathrooms, so if this were
 # the bowl alone the vanities would be missing from the estimate entirely.
 "FX-LAV-24" = { material = { low = 250, high = 950 }, labour = { low = 200, high = 460 } }  # 5 ea
 "FX-LAV-COMPACT" = { material = { low = 110, high = 420 }, labour = { low = 150, high = 330 } }  # 1 ea
+# RM-M-BATH2's 54" vanity (2026-08-29). Read, like FX-LAV-24 above, as the whole assembly:
+# cabinet, counter, basin and faucet. That is the only reason the numbers are several times
+# a lavatory's — this row carries a 54" carcass with six drawers on soft-close undermount
+# slides, which is the bulk of the cost and has no CASE-* row anywhere covering it.
+# LOW is a stock 60"-class RTA single-sink vanity cut down, with a cultured-marble top.
+# HIGH is a semi-custom 54" box in the house's own millwork, a stone top, and a Kohler
+# Verticyl-class undermount basin. Sources: theRTAstore / Home Depot / Signature Hardware
+# 2026 listings for 54-60" single-sink vanities ($900-2,600 for the cabinet with a top),
+# Willow 72" single-sink line at $1,875-2,250, plus the homeguide 2026 sink-install labour
+# band this section already uses. ** The oak shelf inside the sink base is NOT here ** — it
+# is SB-M-BATH2-VAN and bills as owner-milled hardwood, so counting it again would be a
+# double-bill of the one part of this cabinet the owner is making.
+"FX-VANITY-54-SINGLE" = { material = { low = 950, high = 2900 }, labour = { low = 300, high = 720 } }  # 1 ea
 # 36x36 curbed pan plus its three-wall surround panels, set on a mortar bed. The tiled
 # version of this wall is NOT here — see the basis note above.
 "FX-SHOWER-36" = { material = { low = 300, high = 1000 }, labour = { low = 200, high = 470 } }  # 2 ea
@@ -2186,6 +2220,17 @@
 # "sauna-shiplap" =    # 278 SF — billed in [envelope_layers]
 # "tile" =    # 52 SF — billed in [floor_finishes]
 "walnut-tg" = { material = { low = 8, high = 18 }, labour = { low = 6, high = 12 } }  # 51 SF
+# ADDED 2026-08-29 with RM-M-STUDY's call booth. WP-M-STUDY-FELT, 1/2" recycled-PET acoustic
+# felt board on the south and north walls, band 3'-0" to 9'-0". It is billed here and nowhere
+# else — the material is in no assembly layer and no floor finish, so it carries no
+# `also_in_*` and the mirror warning at the top of this section does not apply to it.
+# NOT an [allowances] row: it is a real resolved area (56 SF net / 62 SF ordered at the 10%
+# default waste), and an allowance would throw that away.
+# Basis: 2026 architectural PET felt board, 9-12mm, $4-9/SF material — the acoustic-panel
+# e-tailers (Acoustimac, Audimute, Kirei/EchoPanel class) bracket the range, cheap imported
+# board at the low end and a named specification at the high. Labour is cut-and-adhere over
+# painted gypsum with a mitred edge at the wainscot cap; no framing, no substrate.
+"pet-felt-panel" = { material = { low = 4, high = 9 }, labour = { low = 2, high = 5 } }  # 62 SF
 
 [openings]
 # ** RE-SOURCED FROM PRE-TAX LIST PRICES, 2026-08-20b. ** This section previously derived its
@@ -3237,8 +3282,9 @@ roof-ventilated-underlayment-mat = { low = 1.00, high = 1.85, unit = "SF", drive
 # bookcases are 1'-0" deep against a 9 7/8" pocket, so every case would stand 2 1/8" proud of
 # the wall — out over the stair well, the exact lie the built-in exists to avoid.
 #
-# ~12'-9" of run in five bays, stepping 7'-6" down to 4'-6" under the 4:12 rake, so every bay
-# is a different height and none of it is a stock module. Paint-grade custom built-in runs
+# ~8'-0" of run in three bays, stepping 5'-0" down to 2'-6" under the 6:12 rake, so every bay
+# is a different height and none of it is a stock module. (It was ~12'-9" in five bays under
+# the old 4:12 roof over a 5'-0" knee wall; see the 2026-08-30 note at the foot of this block.) Paint-grade custom built-in runs
 # $175-350 per linear foot of face for shop work of this kind, and the stepped tops, the
 # scribe to the rake and the flush end panel sit at the top of that. The door leaf itself is
 # NOT here — it is `openings."DT-INT-BOOKCASE30"`, and billing it twice is the one failure
@@ -3257,7 +3303,26 @@ roof-ventilated-underlayment-mat = { low = 1.00, high = 1.85, unit = "SF", drive
 # shelf boards, so the row goes to $2,100-4,400. The door leaf is still NOT here — it is
 # `openings."DT-INT-BOOKCASE30"`, and billing it twice is still the one failure mode this
 # section cannot catch.
-cabinet-study-bookcase-wall = { low = 2100, high = 4400 }
+#
+# ** RE-PRICED 2026-08-30 FOR AN 8'-0" RUN, DOWN FROM 12'-9". ** The five-bay run this row was
+# built for could not exist under the 6:12 rake: bays 4 and 5 sit under 1'-5 1/2" and 4 3/4" of
+# roof. SB-A-STUDY lost bay 5 on 2026-08-29 and bay 4 on 2026-08-30, so the casework is three
+# bays from x=22'-8" to 30'-8". At the same $165-345 per linear foot of face this row already
+# implies, 8'-0" is $1,320-2,760 — call it $1,300-2,800. The flush end panel and the scribe to
+# the rake are fixed and do NOT scale, which is why the band is not cut by the full 37%.
+cabinet-study-bookcase-wall = { low = 1300, high = 2800 }
+# RM-M-STUDY'S BOOTH CUSHION AND PILLOWS (2026-08-29). ** THERE IS NO ELEMENT BEHIND THIS
+# ROW. ** FT-STUDY-BENCH is the seat BOARD; a 44" x 18" foam cushion and three pillows are
+# soft goods the model has no vocabulary for, and inventing a placeable for a cushion would
+# put a 4"-tall box in the collision geometry for nothing.
+# ** THE `cabinet-` PREFIX IS LOAD-BEARING, not decoration. ** An allowance key declares its
+# own trade by being named for it (`takeoff/cost_codes.py::KEY_PATTERNS`); a key matching no
+# prefix falls to the section default and gets SCHEDULED AS EARTHWORK. Upholstered casework
+# is 12 30 00, the same trade as the row above.
+# Basis: 3"-4" high-resilience foam wrapped and covered, made to size, plus three cushions —
+# $200-450 for a made-to-measure bench cushion this size in a mid-weight fabric, $50-350 for
+# the pillows. Owner selection sets where in the band it lands; nothing in the plan does.
+cabinet-study-booth-cushions = { low = 250, high = 800 }
 # THE GUEST STUDIO'S WET BAR CABINET (2026-08-29). A single 24" base with a counter over it,
 # against W-A-BATH-S: the sink drops into the west half and APPL-BAR-FRIDGE-24 stands under
 # the east half. The MODEL sees the sink (`plumbing."FX-BAR-SINK-15"`) and the fridge

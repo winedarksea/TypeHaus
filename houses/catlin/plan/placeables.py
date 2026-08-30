@@ -640,9 +640,47 @@ MAIN_PLACEABLES = [
     # sink as its occupant so the tub groups instead of reading as an encroachment.
     # Instance restates the type's Mount because the resolver reads the instance one (same
     # as FX-M-KITCH-SINK's 27", plan/fixtures.py).
+    # 2026-08-29: x came west 1 5/8" (3.9378 -> 3.896525) with W-M-LS's LAUNDRY face when
+    # that wall was retyped to INT_2X4_STAGGERED_DOUBLE_GWB for the study booth on its far
+    # side (storeys/main.py). The retype is centred, so both faces move and this rack — the
+    # only main-storey object hosted on the laundry side of either retyped wall — went 3 3/8"
+    # into the studs until it followed.
     Furniture(uid="XJSV712BWZ", tag="FURN-M-LAUNDRY-RACK", type_ref="FURN-WALL-RACK-24", room="RM-M-LAUNDRY",
-              position=pt(m(3.9378), m(5.8566)), rotation=deg(90),
+              position=pt(m(3.896525), m(5.8566)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+
+    # --- RM-M-STUDY, the call booth (2026-08-29) --------------------------------------
+    #
+    # ** A FACING PAIR, NOT AN L. ** The first fit-out was an L — bench down the west wall,
+    # desk across the south, sit in the corner and turn right — and the owner turned it 90
+    # degrees the same day: the bench now runs east-west along the NORTH wall and the desk
+    # sits in the SOUTH-WEST corner facing it. You do not walk into this room and turn
+    # around in it; you step into the 18 7/8" pocket east of the desk, sit, and slide west.
+    #
+    # Both are dimensioned to the WAINSCOT faces (the joiner's box), not to node lines and
+    # NOT to `Room.clear_face` — see the derivation on FT-STUDY-BENCH in
+    # plan/furniture_types.py. The lined box is x 164 3/4"..211 7/8", y 220 3/4"..264 7/8".
+    #
+    # Rotation, the thing that goes wrong: the `sauna-bench` and `desk` glyphs both put the
+    # back band at LOCAL +y (plan/furniture_types.py's FURN-B-PLAY-SECTIONAL note is the
+    # cautionary tale). deg(0) leaves +y as +y, so the bench's back lands on the NORTH
+    # wall; deg(180) turns +y to -y, so the desk's back lands on the SOUTH wall.
+    #
+    # Centres, both off the lined box:
+    #   bench  x 164 3/4 + 47/2 = 188 1/4";  y 264 7/8 - 17/2 = 256 3/8"
+    #   desk   x 164 3/4 + 29/2 = 179 1/4";  y 220 3/4 + 20/2 = 230 3/4"
+    # Which leaves the two front faces at y 247 7/8" (bench) and y 240 3/4" (desk):
+    # 7 1/8" of clear floor, and feet pass under the desk's cantilevered top.
+    #
+    # No `room=` mismatch and no clearance zone: neither type declares one, per the casework
+    # rule. The desk clears D-M-STUDY's opening entirely now (its east end is 18 7/8" west
+    # of the east wall), which is the one thing the turn fixed for free.
+    Furniture(uid="AZ3GY4JQFH", tag="FURN-M-STUDY-BENCH", type_ref="FT-STUDY-BENCH",
+              room="RM-M-STUDY", position=pt(inch(188.25), inch(256.375)),
+              rotation=deg(0)),
+    Furniture(uid="90JCARB5PG", tag="FURN-M-STUDY-DESK", type_ref="FT-STUDY-DESK",
+              room="RM-M-STUDY", position=pt(inch(179.25), inch(230.75)),
+              rotation=deg(180)),
 
     # --- curtain rods (2026-08-07) -------------------------------------------
     # One head line for the whole storey: 7'-0", 4" above the tallest main-floor head (6'-8",
@@ -679,20 +717,27 @@ MAIN_PLACEABLES = [
               mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
 
     # --- plumbing access panels (2026-08-07) ---------------------------------
-    # FX-M-BATH1-WC is the house's one wall-hung WC: bowl bolts to a steel carrier in
-    # W-M-BAE's stud bay, waste drops at SP-M-WC1 (6'-0", 22'-7"). A 14x29 panel in BATH1's
-    # face of that wall (3 3/8" off centreline, base 2'-0", spanning 2'-0"..4'-5") is the
-    # only access to the carrier. Centred at 23'-0" rather than on the 22'-7" flange: on the
-    # flange a 14"-wide panel would push 2 5/8" through BATH1's south face (22'-2 3/4") into
-    # the hall (`test_bath1_fixtures_sit_inside_the_room_and_clear_of_each_other`); pushed
-    # 5" north it clears by 2 3/8" while the opening (22'-5"..23'-7") still contains the
-    # flange.
+    # FX-M-BATH1-WC is the house's one wall-hung WC: the china bolts to an in-wall carrier
+    # frame and its 3" waste drops through the deck inside that frame. This 14x29 panel is
+    # the access to it — the frame, its concealed tank and the angle stop behind the
+    # actuator plate are otherwise sealed inside a finished wall.
     #
-    # NOTE unfixed: FX-M-BATH1-WC's authored position (2'-2", 23'-2", rotation 180) stands
-    # its bowl ~3'-10" west of the carrier this panel serves; sleeve/drain/wall_ref all
-    # agree on W-M-BAE, only the bowl doesn't. Panel follows the carrier, not the bowl.
+    # ** MOVED FROM W-M-BAE TO W-M-HS1 ON 2026-08-29, BECAUSE THAT IS WHERE THE CARRIER IS.
+    # ** The old note here said so itself and left it standing: "NOTE unfixed:
+    # FX-M-BATH1-WC's authored position stands its bowl ~3'-10" west of the carrier this
+    # panel serves; sleeve/drain/wall_ref all agree on W-M-BAE, only the bowl doesn't." A
+    # wall-hung bowl cannot stand 3'-10" from its own carrier, so it was the carrier that
+    # was in the wrong wall, not the bowl. The bowl backs W-M-HS1 and always has; the drain
+    # follows it there (plan/fixtures.py, plan/mep_drainage.py::PR-B-WC1-DRAIN) and so does
+    # this panel. On W-M-BAE it opened onto a stud bay with nothing in it.
+    #
+    # Centred on the bowl's own x — the carrier is on that centreline — with the panel body
+    # set fully behind BATH1's south finish face (y 22'-6 3/8"..22'-7 3/8", the face itself
+    # at 22'-7 3/8"), so the recessed frame lands flush and the 1"-deep body never overlaps
+    # the china standing in front of it. Base 2'-0", so the opening spans 2'-0"..4'-5" and
+    # covers the actuator-plate opening, which sits 26 3/8" up the frame.
     Furniture(uid="RSDC92XMBB", tag="FURN-M-BATH1-AP", type_ref="FT-ACCESS-PANEL-1429", room="RM-M-BATH1",
-              position=pt(ft(5, 8.625), ft(23)), rotation=deg(-90),
+              position=pt(m(0.670778), inch(270.885)), rotation=deg(180),
               mount=Mount(kind=MountKind.WALL, elevation=ft(2))),
     # FX-M-BATH2-TUB drains at SP-M-BATH2-TUB (7'-4", 19'-4.8"), 8" off W-M-BA2E and
     # behind the tub rather than at either end of it — so the trap and the waste-and-
@@ -994,13 +1039,13 @@ ATTIC_PLACEABLES = [
     # y=4'-6" and not 5'-0": D-A-STUDY's leaf sweeps x 18'-8 7/8"..21'-2 7/8", y 6'-10" to
     # the wall, and a desk at 5'-0" put 2" of itself under it (`integrity.door_swing_conflict`).
     Furniture(uid="DAK701AAAA", tag="FURN-A-STUDY-DESK", type_ref="FURN-DESK-48",
-              room="RM-A-STUDY", position=pt(ft(19, 6), ft(4, 6)), rotation=deg(90)),
+              room="RM-A-STUDY", position=pt(m(5.90037), m(0.812811)), rotation=deg(90)),
     Furniture(uid="CAK701AAAA", tag="FURN-A-STUDY-DESK-CHAIR", type_ref="FURN-DESK-CHAIR",
-              room="RM-A-STUDY", position=pt(ft(20, 10), ft(4, 6)), rotation=deg(90)),
+              room="RM-A-STUDY", position=pt(ft(20, 10), ft(4, 6)), rotation=deg(-90)),
     Furniture(uid="TAK701AAAA", tag="FURN-A-STUDY-TABLE", type_ref="FURN-DINING-2-36",
-              room="RM-A-STUDY", position=pt(ft(26, 6), ft(2, 6))),
+              room="RM-A-STUDY", position=pt(m(7.83976), m(0.671138))),
     Furniture(uid="CAK702AAAA", tag="FURN-A-STUDY-CHAIR1", type_ref="FURN-DINING-CHAIR",
-              room="RM-A-STUDY", position=pt(ft(26, 6), ft(0, 10)), rotation=deg(180)),
+              room="RM-A-STUDY", position=pt(m(7.18339), m(0.661392)), rotation=deg(90)),
     Furniture(uid="CAK703AAAA", tag="FURN-A-STUDY-CHAIR2", type_ref="FURN-DINING-CHAIR",
               room="RM-A-STUDY", position=pt(ft(26, 6), ft(4, 2)), rotation=deg(0)),
     # --- the guest studio's wet bar (2026-08-29) ---------------------------------------

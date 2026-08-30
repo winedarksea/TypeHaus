@@ -19,6 +19,7 @@ from typehaus.model import (
     Mount,
     MountKind,
     Service,
+    ServicePort,
     ft,
     inch,
     m,
@@ -121,14 +122,85 @@ FLOOR_DRAIN = FixtureType(
 # --- compact bathroom class ---------------------------------------------------------
 # A powder room too small for the standard pair is not a catlin problem: a wall-hung WC on
 # an in-wall carrier plus an 18" lavatory is the standard answer, so both are shared types
-# rather than house-local ones. The carrier frame is why an instance authors its
-# ``drain_position`` on the wall line rather than under the bowl.
+# rather than house-local ones.
+#
+# ** THE WASTE IS A 3" DROP THROUGH THE FLOOR *INSIDE THE WALL*, NOT A CLOSET FLANGE. **
+# This is the whole reason the type carries ``ports``, and it is the thing a plan gets
+# wrong. Three separate mistakes are all ruled out by the numbers below:
+#
+#   * **Size.** A residential in-wall carrier connects at 3" (Geberit Duofix calls out
+#     "3" pipe (90 mm)" at the waste and 2" at the vent; TOTO DuoFit WT171M/WT172M is the
+#     same Ø90 mm outlet). 3" is also the MN minimum — Minn. R. 4714.0702 Table 702.1 gives
+#     a 1.6 gpf water closet a 3" minimum trap size at 3.0 DFU private — so a wall-hung WC
+#     is a 3" branch, never a 1 1/2"/2" one and never a bare tee off the 4" building drain.
+#     (The 4.375"/110 mm fittings in Geberit's table are for floor-mount BACK-OUTLET bowls,
+#     a different product.) Cast-iron commercial carriers — Zurn Z1203-N, Smith 0210 —
+#     ship 4" but catalogue a 3" variant (Z1203-NL3); they also want a 14" chase, which is
+#     why they are not the residential detail.
+#   * **Plan position.** The drop is on the BOWL'S OWN CENTRELINE but 1 3/4" behind the
+#     front of the carrier frame (TOTO SS-01413/SS-01448 dimension it as "Drain Hole C/L:
+#     1-3/4" from front of frame"), and the finished wall covering stands another 1/2"-2"
+#     in front of the frame. That puts it ~2 1/4"-3 3/4" behind the finished wall face —
+#     inside the stud bay, not under the china. ``_expected_drain_point``'s convention
+#     branch (no WATER_HOT => drain under the footprint) is therefore WRONG for this type,
+#     which is why an instance must author ``drain_position``; the waste port below is the
+#     type's statement of where that point belongs relative to the bowl.
+#   * **Elevation.** The bowl's trap is integral and sits above the floor, so there is no
+#     floor trap and no closet bend at deck level: the stub turns down inside the frame and
+#     the long-turn happens BELOW the deck, in the joist bay. A run whose first vertex is at
+#     the fixture's own position and whose first invert is under the finished floor is
+#     describing a floor-mounted WC, whatever type the fixture references.
+#
+# ``mount`` puts the china on the wall rather than the floor: 15" finished rim height, the
+# standard (non-ADA) setting and the low end of the 15"-19" range every in-wall frame
+# publishes — so the body spans 1 3/8" to 15" above the floor and nothing stands on it.
+# The tank is not in ``height`` at all, because the tank is in the wall.
+#
+# Framing depth is a real constraint on specifying this type: a 2x4 (3 1/2") bay is the
+# manufacturers' minimum and needs their 2x4 outlet kit, because 3" DWV is 3.5" OD and
+# 90 mm HDPE is 3.54" — the pipe is as wide as the cavity. A 2x6 (5 1/2") bay is the
+# comfortable detail and the only one that takes Geberit's LH/RH horizontal offset
+# connectors. Grade the host wall against ``advisory.wet_wall_depth`` before using this.
+#
+# Sources: Geberit GNA7225 (Duofix 2x4, 111.798.00.1) and GNA7274 (optional waste fittings);
+# TOTO SS-01413 (WT172M) / SS-01448 (WT171M); Zurn Specification Drainage Engineering Guide,
+# carrier systems; Minn. R. 4714.0702 Table 702.1.
 TOILET_WALL_HUNG = FixtureType(
     tag="FX-TOILET-WH", name="Wall-hung water closet (compact)",
-    footprint=(inch(15), inch(19.3)), height=inch(21),
+    footprint=(inch(15), inch(19.3)), height=inch(13.625),
     plan_symbol="toilet", needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(_water_closet_required_clearance(inch(19.3)),),
-    source='TOTO RP compact wall-hung class, 15" x 19.3", on an in-wall carrier.',
+    mount=Mount(kind=MountKind.WALL, elevation=inch(1.375)),
+    # Local product frame: the bowl faces -y (the clearance zone above is drawn that way),
+    # so +y is into the wall and the back of the china is at +9.65" (half of 19.3"). The
+    # waste and vent are both a further 2 1/4" back — 1/2" of gypsum plus the frame's own
+    # 1 3/4" — which is 11.9" from the bowl centre.
+    ports=(
+        # z=0: the drop crosses the floor plane here. This is the point a ``drain_position``
+        # override and any sleeve/joist-bay penetration must land on.
+        ServicePort(tag="waste", service=Service.DRAIN,
+                    position=(inch(0), inch(11.9), inch(0)), connection_size=inch(3),
+                    notes="3\" (90 mm) vertical drop through the deck inside the carrier "
+                          "frame; the long-turn to the branch is below the floor"),
+        # The individual vent is a tapping ON the waste fitting, just above the bend — 2" NH
+        # on a Zurn carrier, 2" NPTF on the Geberit cast-iron bend — so it rises in the same
+        # bay the drop falls in, not in whatever chase the room happens to have.
+        ServicePort(tag="vent", service=Service.VENT,
+                    position=(inch(0), inch(11.9), inch(4)), connection_size=inch(2),
+                    notes="2\" vent takeoff integral to the carrier's waste fitting"),
+        # Behind the actuator plate, which is the only opening in the finished wall: Geberit
+        # puts that opening 26 3/8" above the base of the frame, and the angle stop is
+        # reached through it. Concealed but accessible, which is what UPC 402.4 is after.
+        ServicePort(tag="cold", service=Service.WATER_COLD,
+                    position=(inch(0), inch(11.9), inch(26.375)), connection_size=inch(0.5),
+                    notes="1/2\" fill supply to the concealed tank, with its angle stop "
+                          "reached through the actuator-plate opening"),
+    ),
+    source='TOTO RP compact wall-hung class, 15" x 19.3" china on a Geberit Duofix / TOTO '
+           'DuoFit class in-wall carrier: 3" (90 mm) waste dropping through the deck '
+           '1 3/4" behind the frame face, 2" vent takeoff at the fitting, 1/2" fill to the '
+           'concealed tank, 15" finished rim height (frames adjust 15"-19"). Needs a '
+           '3 1/2" bay as an absolute minimum and wants a 5 1/2" one.',
 )
 LAVATORY_COMPACT = FixtureType(
     tag="FX-LAV-COMPACT", name="Compact lavatory", footprint=(ft(1, 6), inch(14)),

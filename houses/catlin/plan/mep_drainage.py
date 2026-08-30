@@ -35,8 +35,18 @@ from typehaus.model import m
 # makes every basement slab fixture possible (PR-B-BATH-DRAIN, PR-B-SAUNA-DRAIN below);
 # before 2026-07-30 there was exactly one such fixture, FX-1.
 DRAINS = [
+    #
+    # ** THE LEADING VERTICAL WENT AWAY 2026-08-29. ** This run used to open with the pair
+    # (6'-0", 22'-7") -> (6'-0", 22'-7"), 109 7/16" falling to 93 7/16": a 16" drop through
+    # the deck that WAS FX-M-BATH1-WC's stack, back when that wall-hung bowl's
+    # `drain_position` pointed at this corner instead of at its own carrier. It doesn't any
+    # more (plan/fixtures.py), and nothing else drops here — PR-B-LAV1-DRAIN makes its own
+    # drop at (6'-0", 22'-11 15/16") and arrives horizontally — so the segment was a 16"
+    # riser under an unbroken floor. The collector now simply STARTS at the tie, and both
+    # BATH1 branches (PR-B-WC1-DRAIN 3", PR-B-LAV1-DRAIN 1 1/2") come into it there: one
+    # combination wye at the head of the 4" line, which is what was always going to be built.
     PipeRun(uid="CMP905AAAA", tag="PR-B-MAIN-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(6), ft(22, 7)), pt(ft(6), ft(22, 7)), pt(ft(6), ft(16, 6)),
+            path=(pt(ft(6), ft(22, 7)), pt(ft(6), ft(16, 6)),
                   pt(ft(3), ft(16, 6)), pt(ft(3), ft(15, 6)), pt(ft(3), ft(15, 6)),
                   pt(ft(3), ft(-1))),
             diameter=inch(4), material="pvc",
@@ -45,8 +55,11 @@ DRAINS = [
             # 16'-6" gave only 8". -1.1/-1.55 are basement-relative (-10'-1 1/5"/-10'-6 3/5"
             # project): the under-slab leg falls 5.4" (0.33"/ft, above the 0.125"/ft floor)
             # with its crown 5.7" clear of the slab underside. Sized 4" (2026-07-31): the
-            # rolled-up basement load is 42 DFU, past the 35 a 3" branch carries (Table 703.2).
-            elevations=(ft(9, 1.4375), ft(7, 9.4375), ft(6, 9.4375), ft(6, 8.6375), ft(6, 8.3375), inch(-13.2), inch(-18.6)),
+            # rolled-up basement load is past the 35 a 3" branch carries (Table 703.2). It
+            # read 42 DFU when the upsize was made and is 48 today — the bath and laundry
+            # fixtures added since. Unchanged by PR-B-WC1-DRAIN: `accumulated_serves` unions
+            # the upstream subtree, and that branch's one fixture was already in this list.
+            elevations=(ft(7, 9.4375), ft(6, 9.4375), ft(6, 8.6375), ft(6, 8.3375), inch(-13.2), inch(-18.6)),
             serves=("FX-M-BATH1-WC", "FX-M-BATH2-WC", "FX-M-KITCH-SINK",
                     "FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
                     "FX-M-BATH2-SINK", "FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK",
@@ -103,6 +116,34 @@ DRAINS = [
             diameter=inch(3), material="pvc",
             elevations=(ft(9, 1.4375), ft(7, 9.4375), ft(6, 11.4375), ft(6, 9.4375)),
             serves=("FX-M-BATH2-WC",)),
+    # ** BATH1's WALL-HUNG WC, WHICH HAD NO DRAIN RUN OF ITS OWN UNTIL 2026-08-29. ** Its
+    # waste was the first vertex of PR-B-MAIN-DRAIN: the only water closet in the house
+    # discharging straight into the 4" building drain, with no branch and no size of its own.
+    # Everything about that was wrong for the fixture:
+    #
+    #   * a wall-hung carrier connects at 3" (Geberit Duofix / TOTO DuoFit both call out
+    #     Ø90 mm; Minn. R. 4714.0702 Table 702.1 gives a 1.6 gpf WC a 3" minimum trap at
+    #     3.0 DFU), so 3" is the branch — see library/placeables/fixtures.py, which now
+    #     carries the port that says so;
+    #   * the waste left at (6'-0", 22'-7"), on W-M-BAE's axis, 46" from the china it is
+    #     bolted to;
+    #   * and it started 3 5/16" BELOW the finished floor, which is a closet-flange invert.
+    #     A wall-hung bowl's trap is integral and above the deck: there is no flange, the
+    #     stub turns down inside the carrier frame, and the pipe crosses the floor plane —
+    #     ft(9, 4.75), the main floor's finished surface — on its way into the joist bay.
+    #
+    # Route is the house's standard two-move branch (cf. PR-B-WC2-DRAIN): drop in W-M-HS1's
+    # own bay under the bowl, 6" south to clear the wall's plate line, then 3'-9 5/8" east to
+    # the collector. The tie is at y=21'-10", 9" below PR-B-LAV1-DRAIN's at the head and 22"
+    # above PR-B-WASH-DRAIN's at y=20'-0" — far enough from both to be separate fittings.
+    # Falls 0.375"/ft on the short leg and 0.263"/ft on the long one, arriving 1/2" over the
+    # main's interpolated 91.96" invert: a side entry into the 4" barrel's upper half.
+    PipeRun(uid="5RGKWZZSY0", tag="PR-B-WC1-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(m(0.670778), ft(22, 4)), pt(m(0.670778), ft(22, 4)),
+                  pt(m(0.670778), ft(21, 10)), pt(ft(6), ft(21, 10))),
+            diameter=inch(3), material="pvc",
+            elevations=(ft(9, 4.75), ft(7, 9.625), ft(7, 9.4375), ft(7, 8.4375)),
+            serves=("FX-M-BATH1-WC",)),
     PipeRun(uid="CBPD02AAAA", tag="PR-B-LAV1-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(6), m(7.00891)), pt(ft(6), m(7.00891)), pt(ft(6), ft(22, 7))),
             diameter=inch(1.5), material="pvc",

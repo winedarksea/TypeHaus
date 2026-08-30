@@ -272,7 +272,7 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
 
     # --- in-line blocking courses (fire/backing blocking) ---------------------
     append_blocking_rows(members, rw, spec, member, d, p0, stud_z0, module_spacing,
-                         stud_stations)
+                         stud_stations, top_at)
     return tuple(members)
 
 

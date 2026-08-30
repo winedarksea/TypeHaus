@@ -629,8 +629,23 @@ WALLS = [
          end_node="N-M-D2", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
     Wall(uid="CMW127AAAA", tag="W-M-BA2E2", start_node="N-M-D2",
          end_node="N-M-D3", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
+    # W-M-LS and W-M-CLN2 (below) are RM-M-STUDY's west and south walls, and the study is
+    # now a built-in call booth (FURN-M-STUDY-BENCH / -DESK). STAGGERED_DOUBLE_GWB, STC 52,
+    # not INT_2X4_RC_DOUBLE_GWB, which reaches STC 54 in 1 1/2" less room: a resilient wall
+    # you fasten millwork to is rigidly bridged back to no better than the bare STC 36, and
+    # FURN-M-STUDY-DESK's cleats are screwed THROUGH W-M-CLN2. Staggered studs take blocking
+    # and screws anywhere. Centred (`alignment=None`), so each face moves 1 5/8".
+    #
+    # ** W-M-LS NO LONGER CARRIES ANY MILLWORK, AND THE RETYPE STILL STANDS. ** The owner
+    # turned the booth 90 degrees the same day (plan/furniture_types.py): the bench moved off
+    # this wall onto the north one, as a floor-standing plinth. What this wall is worth is
+    # the thing it was always worth most for and the millwork argument was merely added to —
+    # RM-M-LAUNDRY is on the far side, and a washer and a dryer are the loudest neighbours
+    # any room in this house has. STC 36 to a spin cycle is what a call booth cannot have.
+    # Since 2026-08-29 it also carries DU-M-ERV-R-STUDY's riser and REG-M-SUP4 in its 5 1/2"
+    # cavity, which only a staggered or a 2x6 wall has room for.
     Wall(uid="CMW128AAAA", tag="W-M-LS", start_node="N-M-E2",
-         end_node="N-M-E3", assembly="INT_2X4_PARTITION", top=ft(9)),
+         end_node="N-M-E3", assembly="INT_2X4_STAGGERED_DOUBLE_GWB", top=ft(9)),
     # The closet's north line, y=18'-0" since 2026-08-03 (was 17'-4"). See the NODES note
     # over N-M-D2: the 8" came out of RM-M-LAUNDRY and RM-M-STUDY, and the laundry's 40"
     # stacked pair is what says it could not be more.
@@ -639,8 +654,11 @@ WALLS = [
     # either way — these partitions sit on the 9" cast deck.
     Wall(uid="CMW129AAAA", tag="W-M-CLN", start_node="N-M-D2",
          end_node="N-M-E2", assembly="INT_2X4_PARTITION", top=ft(9), stacks_on="W-B-CW2"),
+    # Staggered per the W-M-LS note. `stacks_on` MUST stay: it is the tiebreaker on the
+    # y=18' run and dropping it re-arms integrity.stack_ambiguous.
     Wall(uid="CMW130AAAA", tag="W-M-CLN2", start_node="N-M-E2",
-         end_node="N-M-E4", assembly="INT_2X4_PARTITION", top=ft(9), stacks_on="W-B-CW2"),
+         end_node="N-M-E4", assembly="INT_2X4_STAGGERED_DOUBLE_GWB", top=ft(9),
+         stacks_on="W-B-CW2"),
     # --- RM-M-BATH2 drop-in tub deck knee walls (2026-08-29) ---------------------
     # The two framed sides of the box FX-M-BATH2-TUB drops into. 2x4 at 16" o.c. with
     # exterior-grade ply both faces and a mineral wool cavity — and that cavity is the one
@@ -751,8 +769,24 @@ OPENINGS = [
     # ``integrity.opening_fits`` sees edge distances of 7 1/2"/8 1/2" against a 1.97" min.
     Door(uid="MSJJGJTJ42", tag="D-M-PANTRY", host="W-M-PAN-S", type_ref="DT-INT-BYPASS60",
          position=from_node("N-M-PAN1", inch(7.5))),
+    # ** SWINGS OUT INTO RM-M-BED SINCE 2026-08-29, AND THE VANITY IS WHY. ** RM-M-BATH2's
+    # 54" x 21" vanity stands hard in the room's south-west corner, and its east face at
+    # x=1'-11 5/8" is 3 5/8" inside this door's 30" opening (x 2'-0"..4'-6"). Hinged east and
+    # swinging IN, the leaf's arc reaches y=14'-2 1/8" where it passes that face, and it
+    # clipped the cabinet by 25 in2 — `integrity.door_swing_conflict` said so. The three ways
+    # out were: shorten the vanity to 45 1/2", thin it to 17", or turn the door around. The
+    # owner chose the door (2026-08-29), which is the only one of the three that costs no
+    # storage at all.
+    #
+    # RM-M-BED's side is clear and that was checked rather than assumed — 30" of floor
+    # behind this opening, x 2'-0"..4'-6", holds no furniture, no device and no fixture. An
+    # out-swinging bathroom door is also the safer arrangement on its own merits: a person
+    # who falls against it inside cannot barricade the room.
+    #
+    # `flip_hinge` stays: the hinge is still the EAST jamb, so the leaf parks along the
+    # bedroom wall east of the opening rather than swinging back across the bedroom.
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING30",
-         position=from_node("N-M-W3", ft(2)), flip_swing=True, flip_hinge=True),
+         position=from_node("N-M-W3", ft(2)), flip_hinge=True),
     # Pocket, not the 56" bifold it was (2026-08-21). The leaf parks east inside W-M-HS4,
     # which hosts nothing and now never may: `mep.pocket_occupancy` refuses a pipe, a
     # register or a wall-mounted device anywhere in the cavity, and nothing hangs on that
@@ -1100,38 +1134,88 @@ FLOOR_HEAT = [
     # Deflection is the real difference — L/360 under an 18'-0" joist span against a slab
     # that barely moves — and `advisory.floor_finish_over_radiant` grades what sits on it.
     #
-    # RM-M-BATH2's floor: an L around WC/shower/tub with >=1" clearance at each fixture
-    # footprint, so `advisory.floor_heat_fixture_keepout` can verify the actual loop
-    # geometry. Redrawn 2026-08-29 for the drop-in bath: SL-M-TUBDK's box takes the east
-    # 3'-4 5/8" of the room from y=16'-2 3/8" north, FX-M-BATH2-WC came off the middle of
-    # the floor onto W-M-HS1, and the old polygon's north leg ran through both. What is
-    # left is the west strip — the floor you stand on at the sink and step onto out of the
-    # bath, which is the floor this zone was for.
+    # ** THIS MAT IS THE ROOM'S ONLY HEAT SOURCE, AND THAT IS WHY IT IS SIZED, NOT TRIMMED.
+    # ** RM-M-BATH2 has no supply register — REG-M-EXH2 is an ERV EXHAUST and takes air out
+    # — so there is no forced-air branch, no radiator and no baseboard in this room. It was
+    # tempting to "correct" the 500 W this zone carried down to the ~80 W its old 6.7 ft2
+    # polygon would justify at 12 W/ft2. That would have left the bathroom with 273 BTU/h
+    # against a design load it cannot meet, i.e. unheated. The old number was wrong; the
+    # answer is a bigger MAT, not a smaller wattage.
     #
-    # ** THE KEEPOUT CHECK IS ROTATION-BLIND AND THIS POLYGON IS DRAWN AROUND THAT. **
-    # `advisory.floor_heat_fixture_keepout` builds each fixture's box from the TYPE's
-    # (width, depth) about its centre and never applies `Fixture.rotation`, so the bath —
-    # 59 11/16" long, authored at rotation 90 running north/south — is graded as a
-    # 59 11/16"-WIDE east/west box spanning x 3'-8 3/4"..8'-8 3/8". The leg's east edge is
-    # at 3'-7" to clear that phantom, not the real bath, which is 13" further east. Same
-    # for FX-M-BATH2-SINK, whose unrotated box reaches x=2'-9 5/8" where the real one stops
-    # at 2'-4 1/8"; the leg starts at 2'-11". Widen either and the check fails on geometry
-    # that is not there.
+    # The load it has to carry, at the -15 F of plan/site.py: RM-M-BATH2 has one exterior
+    # surface, the west wall, and one window in it. 76.4 ft2 of CATLIN_EXT_2X6 at R-40.7
+    # over an 85 F delta is 160 BTU/h; WIN-M-BATH2 is 6.75 ft2 of U-0.25 glass at 143 BTU/h.
+    # Ceiling and floor are both interior. ** ~303 BTU/h, which is small because the
+    # envelope is very good. **
     #
-    # ** `watts` AND CKT-FH-BATH2's `load_va` ARE DELIBERATELY NOT TOUCHED, AND THEY ARE
-    # BOTH WRONG. ** The comment they carried claimed 41.5 ft2; the polygon it described
-    # was already only 9.3 ft2 when this pass found it, so the 498 W was ~5x the mat this
-    # zone has ever drawn. This polygon is 6.7 ft2 (80 W at the 12 W/ft2 of plan/
-    # circuits.py). Correcting it means moving a load in `electrical.service_load`, which
-    # has 7.9 A of margin against the 200 A service and is not a thing to nudge inside a
-    # bathtub change. Left as found, said out loud, and owed a pass of its own.
+    # ** THE ZONE IS 17.85 ft2 AND THE PRODUCT IS A REAL SKU. ** Schluter DITRA-HEAT-E-HK
+    # **DHEHK12016**: 52.9 ft of twisted-pair cable, 16.0 ft2 at 3-stud spacing, 120 V,
+    # **203 W, 1.7 A** (12.7 W/ft2). Cable, not mat, because this floor is an uncoupling
+    # membrane already and because a cable is the only electric floor heat that will follow
+    # a shape like this one — a mat is a fixed rectangle and cannot be cut. **Heating cable
+    # cannot be shortened either**, so Schluter's rule is to buy the largest unit that does
+    # NOT exceed the heated area and park the surplus in a "buffer zone": 17.85 authored
+    # less 16.0 purchased leaves 1.85 ft2 of exactly that. Do not shrink this polygon below
+    # 16.0 ft2 without dropping to DHEHK12011 (10.7 ft2 / 135 W), and do not grow it past
+    # 21.3 without going up to DHEHK12021 — the wattage is a PURCHASED QUANTITY here, not
+    # `area x 12`, and no supplier sells the number that formula produces.
+    #
+    # ** THE HONEST NUMBER: 16.0 ft2 x Schluter's 18.6 BTU/h/ft2 of floor surface (82 F
+    # floor against 72 F operative) IS 298 BTU/h AGAINST 303 — 98%, NOT A MARGIN. ** The
+    # room simply has no more legal floor to heat: the vanity, the water closet, the shower
+    # and the tub deck take it, and the keepouts below are manufacturer minimums rather than
+    # choices. That is acceptable and is not a fudge — -15 F is the 99% design temperature
+    # and a bathroom is occupied in bursts, and tile has no surface-temperature cap, so the
+    # floor can run warmer than 82 F on the coldest morning of the year. But there is NO
+    # headroom left here: if the window ever gets bigger, or the envelope worse, this room
+    # needs a second heat source rather than a bigger mat.
+    #
+    # Keepouts are Schluter's, not invented: 2" off every wall and fixed cabinet, 7" off the
+    # water closet's drain centreline (wax-ring heat), and **nothing under the tub deck** —
+    # the handbook is explicit that cable may NEVER run under a bathtub platform or a
+    # closed-toe vanity, because the trapped air cooks it. The polygon holds exactly 2.00"
+    # at every one of those.
+    #
+    # ** EVERY NUMBER IN THIS POLYGON IS STRUCK OFF A WALL'S FINISH FACE, NOT OFF
+    # `Room.clear_face`. ** RM-M-BATH2 reports a west edge at x=5/8" and a south edge at
+    # y=13'-0 5/8"; the actual painted faces are x=6 5/8" and y=13'-2 3/8", because
+    # `clear_face` insets from the wall AXIS and W-M-W3 is 13 7/8" thick. A first cut of
+    # this zone used the reported numbers and ran six inches into the studs, passing every
+    # check in the house — nothing grades a floor-heat polygon against a wall face.
+    #
+    # ** IT IS DRAWN TO THE REAL FIXTURES NOW. ** Until 2026-08-29
+    # `advisory.floor_heat_fixture_keepout` rebuilt each fixture's box from its TYPE's
+    # (width, depth) and never applied `Fixture.rotation`, so the bath — authored at
+    # rotation 90 — was graded as a 59"-wide EAST/WEST box, and this zone had to be drawn
+    # around a phantom that was not there. The check reads the resolved, rotated footprint
+    # off the canvas object now (checks/advisory/checks.py), which is what lets the polygon
+    # follow the room instead of the bug. A zone drawn to the phantom also *passed* while
+    # running under the actual tub, which is the more dangerous half of that defect.
     FloorHeat(uid="CMH801AAAA", tag="FH-M-BATH2", room_ref="RM-M-BATH2",
-              zone=(pt(ft(0, 11), ft(13, 7)), pt(ft(3, 7), ft(13, 7)),
-                    pt(ft(3, 7), ft(19, 4)), pt(ft(2, 11), ft(19, 4)),
-                    pt(ft(2, 11), ft(15, 0)), pt(ft(0, 11), ft(15, 0))),
-              system=RadiantSystem.ELECTRIC, spacing=inch(3), embed=in_slab(inch(0.5)),
-              watts=500,
-              stat=pt(ft(2), ft(14, 4))),
+              zone=(pt(inch(29.635), inch(160.375)), pt(inch(54.615), inch(160.375)),
+                    pt(inch(54.615), inch(192.375)), pt(inch(50), inch(192.375)),
+                    pt(inch(50), inch(262.615)), pt(inch(42), inch(262.615)),
+                    pt(inch(42), inch(234.615)), pt(inch(18), inch(234.615)),
+                    pt(inch(18), inch(262.615)), pt(inch(8.635), inch(262.615)),
+                    pt(inch(8.635), inch(214.375)), pt(inch(29.635), inch(214.375))),
+              # ** 3 5/8", NOT THE 3" THE OTHER TWO ZONES CARRY, AND IT IS THE PRODUCT'S
+              # OWN NUMBER. ** DHEHK12016 covers 16.0 ft2 with 52.9 ft of cable, which is
+              # 3.63" of effective spacing at DITRA-HEAT's "3-stud" setting — 3" was a
+              # nominal placeholder from before this zone named a product. It does not move
+              # the density claim (203 W / 16.0 ft2 = 12.7 W/ft2 either way), but it is what
+              # `takeoff/placeables.py` divides the zone area by to derive billed cable.
+              #
+              # ** THE BILLED LF IS STILL NOT AN ORDER QUANTITY. ** It is the routing length
+              # over the WHOLE 17.85 ft2 polygon; the cable only covers 16.0 of that, and
+              # the remaining 1.85 ft2 is the buffer zone Schluter wants the surplus parked
+              # in. Order the SKU, not the BOM's feet. (Note also that prices.toml's
+              # [floor_heat] $/LF is derived as "$/SF / 4" from a 3" o.c. assumption; at
+              # 3 5/8" the true figure is 3.3 LF/SF, so this zone's cable is priced very
+              # slightly low. Left alone — it is well inside the low/high band.)
+              system=RadiantSystem.ELECTRIC, spacing=inch(3.625), embed=in_slab(inch(0.5)),
+              # DHEHK12016 as purchased. NOT a computed number — see above.
+              watts=203,
+              stat=pt(inch(40), inch(175))),
     # Under the dining table. FURN-M-DINING covers x 22'-11"..30'-11", y 15'-7"..19'-1"; the
     # zone takes the table's exact width and runs y 13'-9"..21'-0" so it reaches under both
     # chair rows (FURN-M-CHAIR-S* at y=14'-6", -N* at y=20'-2") — feet, not the table legs,
@@ -1356,6 +1440,32 @@ BEAMS = [
 PANELING = [
     WallPaneling(uid="CMK901AAAA", tag="WP-M-STUDY-WAINSCOT", room="RM-M-STUDY",
                  material_ref="walnut-tg", height=ft(3)),
+    # The call booth's acoustic felt (2026-08-29), sitting on top of the wainscot: band
+    # 3'-0" to 9'-0", south and north walls only.
+    #
+    # ** `height` IS A BAND HEIGHT ADDED TO `offset`, NOT A TOP ELEVATION. ** See
+    # resolve/paneling.py:100-102 — it is `offset + height`, then clamped to the wall top.
+    # ft(9) would happen to resolve correctly here only because the clamp catches it, which
+    # is not a thing to rely on. (WP-B-SAUNA-SPLASH reads like a top elevation only because
+    # its offset is 0.) 6'-0" of band on a 3'-0" offset is the 9'-0" ceiling.
+    #
+    # Two walls, not four, and each earns it:
+    #   * W-M-CLN2 (south) is the FIRST-REFLECTION surface — your mouth points at it from
+    #     20" away over FURN-M-STUDY-DESK, and it is what colours your voice on the call.
+    #   * W-M-HS4 (north) is what the camera sees, and what reads through D-M-STUDY's glazing
+    #     from the hall.
+    #   * together they break the N-S parallel pair, which is the flutter path.
+    # The west wall stays walnut with FURN-M-STUDY-BENCH against it; the east wall is door.
+    #
+    # `replaces_wall_finish=False`: INT_2X4_STAGGERED_DOUBLE_GWB and INT_2X4_PARTITION both
+    # carry their gypsum in `layers`, not in `default_lining`, so there is no lining to
+    # replace — and both walls are interior, so there is no envelope or vapour consequence
+    # either way. The band's 3D outline lands on the walls' resolved layer polygons
+    # (`paneling._room_side_offset`), so it followed W-M-CLN2's retype without help; its
+    # billed AREA is axis run x band height, so the retype did not change the square footage.
+    WallPaneling(uid="ESE0EDBW2X", tag="WP-M-STUDY-FELT", room="RM-M-STUDY",
+                 material_ref="pet-felt-panel", offset=ft(3), height=ft(6),
+                 walls=("W-M-CLN2", "W-M-HS4")),
 ]
 
 

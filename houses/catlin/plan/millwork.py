@@ -88,15 +88,18 @@ ATTIC_SHELVES = [
         material_ref="oak-shelf-8q",
         thickness=inch(1.5),
         profile="S4S",
-        # ** RE-CUT 2026-08-29 FOR THE 6:12 RAKE — FOUR BAYS, NOT FIVE. ** The tops above
-        # are `1 1/2" + (36' - x)/2` less the build-up, rounded down to 6"; bay 5 (x 33'-4"
-        # to 35'-5 3/8") has 4 1/8" of usable height and is closed out rather than shelved.
+        # ** RE-CUT 2026-08-29 FOR THE 6:12 RAKE — FIVE BAYS TO FOUR; THREE SINCE 2026-08-30. **
+        # The tops are `1 1/2" + (36' - x)/2` less the build-up, rounded down to 6". Bay 5
+        # (x 33'-4"..35'-5 3/8") went first at 4 1/8" of usable height. Bay 4 (x 30'-8"..33'-4")
+        # follows it on the owner's call: 1'-0" of clear height is two shelves you cannot see
+        # into, at the end of a run you have to stoop to reach, and it reads as a leftover
+        # rather than as storage. East of 30'-8" the wall is a raked closure carrying no
+        # casework — see W-A-SN in storeys/attic.py.
         # Counts stay a ~12" pitch over each bay's own height, the case top included.
         bays=(
             ShelfBay(width=ft(2, 7.25), clear_height=ft(5), shelf_count=5),
             ShelfBay(width=ft(2, 7.25), clear_height=ft(3, 6), shelf_count=4),
             ShelfBay(width=ft(2, 7.25), clear_height=ft(2, 6), shelf_count=3),
-            ShelfBay(width=ft(2, 7.25), clear_height=ft(1), shelf_count=2),
         ),
     ),
 ]
@@ -131,7 +134,41 @@ ATTIC_SHELVES = [
 #
 # Six boards per bay, the case top included, on the graduated pitch the type specifies —
 # ~20" bottom bay, 12"-14" middle, 8"-10" top — over the 7'-0" carcass.
+# --- RM-M-BATH2's vanity sink base, FX-M-BATH2-SINK ------------------------------------
+#
+# One shelf inside the 30" sink base at the north end of the 54" vanity (2026-08-29). The
+# owner asked for drawer AND shelf space; the drawers are the 24" bank at the south end and
+# are NOT modelled — the engine has no drawer vocabulary, and inventing one for six boxes is
+# not the trade. The shelf is, because a shelf IS a board: it has a species, a thickness, a
+# cut length and a mill day, and `takeoff/hardwood.py` bills it with the rest of the
+# owner-milled white oak instead of disappearing into a cabinetry lump.
+#
+# ** `host` IS A FIXTURE, WHICH IS LEGAL AND IS WORTH KNOWING. ** `ShelfBank.host` reads
+# "a wall tag or a placeable tag", and `resolve/millwork.py` builds its placeable map from
+# `model.canvas_objects` — which carries Fixtures alongside Furniture. So a vanity can host
+# its own casework without a shadow FurnitureType standing inside it.
+#
+# ** `depth` IS AUTHORED, AND MUST BE. ** The derivation for a placeable host runs through
+# `_carcass_depth_m(placeable, furniture_types)`, and this host is a FixtureType, which is
+# not in that map — an underived depth is a hard finding, not a silent zero. 18 1/2" is the
+# honest clear anyway: 21" of carcass less a 3/4" back and a 1 3/4" scribe/trap set-off.
+# One board wide (supply runs to 18"+ and this is 18 1/2" long-grain across a 28 1/2" span),
+# 4/4 like the bookcases — it carries towels and bottles, not people.
+#
+# `clear_height` is the sink base's interior: 34 1/2" of carcass less a 4 1/2" toe kick and
+# the 3/4" counter substrate. The shelf sits below the trap, which is why there is ONE and
+# not two — `shelf_count=2` is that shelf plus the case top, the convention `ShelfBay`
+# documents ("the number of HORIZONTAL BOARDS in the bay, the case top included").
 MAIN_SHELVES = [
+    ShelfBank(
+        uid="830F8WP640", tag="SB-M-BATH2-VAN",
+        host="FX-M-BATH2-SINK",
+        material_ref="oak-shelf-4q",
+        thickness=inch(0.75),
+        depth=inch(18.5),
+        profile="S4S",
+        bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
+    ),
     ShelfBank(
         uid="E97F8XSSZ5", tag="SB-M-PANTRY",
         host="FURN-M-PANTRY-SHELVES",
@@ -142,6 +179,46 @@ MAIN_SHELVES = [
             ShelfBay(width=inch(34.75), clear_height=ft(7), shelf_count=6),
             ShelfBay(width=inch(34.75), clear_height=ft(7), shelf_count=6),
         ),
+    ),
+    # --- RM-M-STUDY's call booth, FT-STUDY-BENCH and FT-STUDY-DESK (2026-08-29) --------
+    #
+    # The bench seat and the desk top. Neither is a shelf in the cabinet sense and both are
+    # here for the same reason the pantry's are: a ShelfBank is how a BOARD reaches
+    # `haus millwork`, and these two are the biggest single pieces of hardwood in the house
+    # after the treads. `shelf_count=1` is right and is not an omission — ShelfBay counts
+    # horizontal boards INCLUDING the case top, and on a bench the seat IS the top.
+    #
+    # ** THE WALNUT IS BOUGHT, NOT OWNER-MILLED, WHICH INVERTS THE ACCOUNTING. ** Everything
+    # else in this file comes off the family stock at ~$2/sf and therefore carries no dollar
+    # anywhere in prices.toml (`haus millwork` is an UNPRICED VIEW and a "shelf" row may
+    # reference no other section — a test enforces it). These two boards still carry no
+    # dollar HERE; their money lives in the `[placeables]` rows for FT-STUDY-BENCH and
+    # FT-STUDY-DESK, which are written to include their walnut. Getting that backwards puts
+    # the most expensive material in the room at $0 — see the note on those rows.
+    #
+    # `depth` is deliberately NOT authored on either: both hosts are FurnitureTypes, so
+    # `_carcass_depth_m` inherits the footprint depth (17" and 20") and the board can never
+    # disagree with the carcass. Both are past `MW-STANDARD.max_board_width` once jointing
+    # loss is taken, so both lay up as edge-glued panels — 2 boards at 8 1/2" for the seat,
+    # 2 at 10" for the top. That is correct and is how a solid top this wide is actually made.
+    #
+    # `clear_height` is the void under each board: 18" of bench less the 1 1/2" seat, and
+    # 29 1/2" of desk less the 1 1/2" top — i.e. the knee space.
+    ShelfBank(
+        uid="MJ0P713ABN", tag="SB-M-STUDY-BENCH",
+        host="FURN-M-STUDY-BENCH",
+        material_ref="walnut-shelf-8q",
+        thickness=inch(1.5),
+        profile="S4S",
+        bays=(ShelfBay(width=inch(47), clear_height=inch(16.5), shelf_count=1),),
+    ),
+    ShelfBank(
+        uid="AFXM3DJGX4", tag="SB-M-STUDY-DESK",
+        host="FURN-M-STUDY-DESK",
+        material_ref="walnut-shelf-8q",
+        thickness=inch(1.5),
+        profile="S4S",
+        bays=(ShelfBay(width=inch(29), clear_height=inch(28), shelf_count=1),),
     ),
 ]
 

@@ -67,17 +67,22 @@ KOHLER_UNDERSCORE_6036 = FixtureType(
 # at all -- 33" x 22" of counter with nothing under it. The owner wants one basin and as
 # much drawer and shelf as 54" can hold, so this is a vanity type rather than a sink type.
 #
-# 54" x 21" is set by the room, not by a catalogue: the west wall gives 59" of clear run
-# between W-M-BDN1's face (y=13'-0 5/8") and the start of FX-M-BATH2-WC's 21" P2705.1 front
-# clearance (y=17'-11 5/8"), and 54" leaves 5" of that rather than butting a cabinet into a
-# code envelope. 21" is the standard manufactured vanity depth (KraftMaid, and the 20"-23"
-# band every mass-market line sits in); the counter overhangs it to 22".
+# 54" x 21" is set by the room, not by a catalogue: the west wall gives ** 57 1/4" ** of
+# clear run between W-M-BDN1's finish face (y=13'-2 3/8") and the start of FX-M-BATH2-WC's
+# 21" P2705.1 front clearance (y=17'-11 5/8"), and 54" leaves 3 1/4" of that rather than
+# butting a cabinet into a code envelope. ** Measure that run off the WALLS' finish faces
+# and never off `Room.clear_face` ** -- the latter is inset from the wall AXIS, which on
+# this 13 7/8" exterior wall reads six inches out. 21" is the standard manufactured vanity
+# depth (KraftMaid, and the 20"-23" band every mass-market line sits in); the counter
+# overhangs it to 22".
 #
 # ``height`` is 41 1/2" and that is NOT the counter -- this file's library twin explains
 # why: a fixture's height is OVERALL including the spout, and ``_deck_height`` subtracts a
-# fixed 0.14 m faucet band. 41.5" - 5.512" = 36.0" exactly, which is the comfort-height
+# fixed 0.14 m faucet band. 41.5" - 5.512" = **35.99"**, which is the 36" comfort-height
 # counter the owner chose (the same plane as the kitchen, and inside NKBA Guideline 7's
-# 32"-43" band). Change this number and the counter moves; it is not a round one by accident.
+# 32"-43" band) to within a hundredth of an inch. The band is metric and the height is in
+# inches, so no round inch value lands on 36.000"; 41 1/2" is the closest orderable one.
+# Change this number and the counter moves -- it is not a round one by accident.
 #
 # ** ONE BASIN, AND THE STORAGE IS THE POINT. ** 24" four-drawer bank at the SOUTH end,
 # 30" sink base at the NORTH end with the basin over it, so the counter runs unbroken from
@@ -87,6 +92,13 @@ KOHLER_UNDERSCORE_6036 = FixtureType(
 # SB-M-BATH2-VAN in plan/millwork.py, because a shelf the owner will stand things on is
 # worth billing; the drawer boxes are not modelled (the engine has no drawer vocabulary)
 # and live in the cabinet breakdown below and in prices.toml.
+#
+# WIN-M-BATH2 is not in the way, and the margin is bigger than a first read of the storey
+# file suggests: its comment quotes "y 19'-8"" for a ``from_node`` offset that is the
+# opening's NEAR EDGE, and W-M-W3 is authored north-to-south, so the 27" unit actually runs
+# y 18'-10 1/2"..21'-1 1/2". That leaves 14 1/8" of bare wall between this cabinet's north
+# end and the opening -- comfortable, though the window's 3'-0" sill IS the same plane as
+# the 36" counter, so a cabinet that ever runs north has no height to hide in.
 #
 # The front clearance is the 21" IRC P2705.1 minimum, not NKBA's recommended 30". The room
 # gives 30 5/8" of aisle between this face and the tub deck's west face, so the

@@ -130,6 +130,88 @@ BATH1_SHELF_2030 = FurnitureType(
 )
 
 
+# --- RM-M-STUDY, the call booth (2026-08-29) --------------------------------------------
+#
+# The house's smallest habitable room and its only windowless one, finished as a booth for
+# video calls and homework. Both pieces are house-local by the test at the top of this file —
+# each is scribed to one 4-foot box, and nobody reuses either.
+#
+# ** THE LAYOUT TURNED 90 DEGREES ON THE OWNER'S REVIEW, SAME DAY. ** The first fit-out put
+# the bench down the WEST wall and the desk across the south, which made a room you walk
+# into and turn around in. It is now a bench along the NORTH wall running east-west, facing
+# a desk in the SOUTH-WEST corner: you enter, step into the pocket east of the desk, sit,
+# and slide west. A booth you slide into, not a room you walk into. Two things follow from
+# that turn and neither is cosmetic:
+#
+#   1. The bench and the desk now face each other across the room's SHORT dimension, so
+#      their depths compete for one 44 1/8". The bench lost 1" (18" -> 17", still a full
+#      seat depth against a back) to leave 7 1/8" of clear floor between the two front
+#      faces. Your feet go UNDER the desk, which is why that number can be small: the top
+#      is a cantilevered slab on cleats, and there is no leg or stretcher at the front.
+#   2. The bench is no longer fastened to a wall this house retyped. It stands on the
+#      floor as a plinth, scribed to the wainscot at its back and to the wall at each end.
+#      That matters because its wall is now W-M-HS4, which storeys/main.py deliberately did
+#      NOT retype (it carries a stack edge). A plinth needs no structural fastening, so the
+#      turn costs nothing there. See the W-M-LS note in storeys/main.py for what the west
+#      wall's retype is now earning instead. ** AND IT IS NOT MERELY CONVENIENT, IT IS THE
+#      ONLY LEGAL ANSWER: ** D-M-LAUN's leaf parks inside W-M-HS4 between x 12'-4" and
+#      16'-5", and `mep.pocket_occupancy` refuses a fastener, a device or a pipe anywhere
+#      in that cavity. This bench covers x 13'-8 3/4"..17'-7 3/4", so a cleat screwed to
+#      that wall would be a FAIL as well as a hole in a door pocket.
+#
+# ** EVERY DIMENSION BELOW IS DERIVED FROM out/model.json, NOT FROM A DOCUMENT. ** After
+# W-M-LS and W-M-CLN2 were retyped to INT_2X4_STAGGERED_DOUBLE_GWB (storeys/main.py), the
+# room's four resolved gypsum faces are x 13'-8" .. 17'-8 5/8" and y 18'-4" .. 22'-1 5/8" —
+# a 48 5/8" x 45 5/8" clear box, about 15.4 sf. ** DO NOT MEASURE OFF `Room.clear_face`: **
+# `resolve/rooms.py::_lining_inset` insets a claimed face by one uniform 0.635" whatever the
+# wall actually is, so it still reports the 4'-8" x 4'-4" axis box and the published 19.3 sf
+# (plans/TODO.md, the RM-S-PLANT write-up). The sauna benches in plan/placeables.py are
+# dimensioned the same way, off liner faces.
+#
+# Then the millwork is set against the LINING, not the gypsum: WP-M-STUDY-WAINSCOT keeps all
+# four walls and resolves 3/4" thick, so the box the joiner scribes to is 3/4" smaller on
+# every face: x 164 3/4" .. 211 7/8" and y 220 3/4" .. 264 7/8" off the house origin — a
+# 47 1/8" x 44 1/8" lined box. Lining the box first and setting the built-ins against that
+# is how a shop builds this, and it is why ~20 sf of wainscot lands behind the two pieces
+# on purpose rather than being cut around them.
+#
+# No `clearances` on either, per the casework rule BATH1_SHELF_2030 states: a built-in's
+# back is the wall, its ends are its neighbours, and the floor in front of it is the floor
+# you stand on to use it. A declared zone here would be the room.
+STUDY_BENCH = FurnitureType(
+    tag="FT-STUDY-BENCH", name='Study booth bench, 47" x 17"',
+    footprint=(inch(47), inch(17)), height=inch(18),
+    storage=False, work_surface=False, plan_symbol="sauna-bench",
+    source="Site-built walnut millwork scribed to RM-M-STUDY's NORTH wall, running "
+           "east-west. 47\" of the 47 1/8\" between the wainscot's west and east returns "
+           "(1/16\" of scribe each end), 17\" deep, 18\" seat. ** ITS BACK IS NOT A "
+           "PART: ** the 36\" walnut wainscot already on that wall is the back rail over "
+           "an 18\" seat, which is why the bench runs the full length and the desk does "
+           "not. In a booth, back support beats desk width. ** IT IS A FLOOR-STANDING "
+           "PLINTH, NOT WALL-HUNG: ** W-M-HS4 behind it is the untouched 2x4 partition "
+           "carrying a stack edge, and nothing here asks it to hold a cantilever.",
+)
+
+# ``plan_symbol="desk"`` is exact, not an approximation: `furniture.py`'s desk is
+# ``slab(apron=True, modesty_panel=True)``, which is a fixed top with an apron and a panel
+# closing the knee space — literally what this is. It is NOT a table; there are no legs to
+# draw at the wall ends.
+STUDY_DESK = FurnitureType(
+    tag="FT-STUDY-DESK", name='Study booth desk top, 29" x 20"',
+    footprint=(inch(29), inch(20)), height=inch(29.5),
+    storage=False, work_surface=True, plan_symbol="desk",
+    source="Site-built walnut millwork, fixed (not a fold-down leaf), scribed into "
+           "RM-M-STUDY's SOUTH-WEST corner — the west wall's wainscot at one end, the "
+           "south wall's behind it, 1/16\" of scribe at each. 20\" deep at 29 1/2\", "
+           "cantilevered off cleats screwed through W-M-CLN2's staggered studs, so the "
+           "knee space is open to the wall and the seated occupant's feet pass under it. "
+           "** MOVED TO THE CORNER ON THE OWNER'S REVIEW: ** at its first position, "
+           "centred on the south wall, its east end stood in D-M-STUDY's opening and you "
+           "entered past it. In the corner it stops 18 7/8\" short of the east wall, "
+           "which is the pocket you step into.",
+)
+
+
 # --- the media room's U sectional ---------------------------------------------------------
 #
 # House-local for the reason at the top of this file: it is made to fit this room. 11'-0" of
@@ -447,4 +529,5 @@ FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, CURTAIN_ROD_OUTDOOR_114,
                    CURTAIN_ROD_OUTDOOR_98,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, BATH1_SHELF_2030,
                    MEDIA_SECTIONAL_U, THEATER_BOOKCASE, OVER_COLD_3278, MIXER_GARAGE_24,
-                   PANTRY_SHELVES_70, DINING_8_OPEN_CORNERS)
+                   PANTRY_SHELVES_70, DINING_8_OPEN_CORNERS,
+                   STUDY_BENCH, STUDY_DESK)

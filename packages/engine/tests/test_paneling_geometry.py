@@ -7,8 +7,8 @@ it *against the area the resolver already computed*, so the polygon can never dr
 the number that gets ordered.
 
 The side matters as much as the size. A band is an applied surface on the ROOM side of its
-wall, and the two catlin bands sit on walls whose room is on opposite sides of the axis, so a
-sign error shows up here rather than in a screenshot nobody takes.
+wall, and catlin's bands sit on walls whose room is on opposite sides of the axis, so a sign
+error shows up here rather than in a screenshot nobody takes.
 """
 
 from __future__ import annotations
@@ -130,12 +130,12 @@ def test_band_thickness_comes_from_the_material_stock(bands):
                 "tile states no board stock, so the band takes the default"
 
 
-def test_the_catlin_bands_are_the_two_authored_ones(bands):
+def test_the_catlin_bands_are_the_three_authored_ones(bands):
     """A guard on scope: the reference house authors exactly these, at these heights."""
     by_tag: dict[str, list] = {}
     for band in bands:
         by_tag.setdefault(band.tag, []).append(band)
-    assert set(by_tag) == {"WP-B-SAUNA-SPLASH", "WP-M-STUDY-WAINSCOT"}
+    assert set(by_tag) == {"WP-B-SAUNA-SPLASH", "WP-M-STUDY-WAINSCOT", "WP-M-STUDY-FELT"}
     # Two 3' spans on two walls of the shower corner, full 7'-6" liner height.
     assert len(by_tag["WP-B-SAUNA-SPLASH"]) == 2
     for band in by_tag["WP-B-SAUNA-SPLASH"]:
@@ -144,6 +144,18 @@ def test_the_catlin_bands_are_the_two_authored_ones(bands):
     # Every bounding wall of the study, to 36".
     for band in by_tag["WP-M-STUDY-WAINSCOT"]:
         assert band.z1_m - band.z0_m == pytest.approx(36 * _IN, abs=1e-6)
+    # The call booth's felt: south and north walls only, and the band runs 3'-0" to 9'-0".
+    # ``height`` is a band HEIGHT added to ``offset``, not a top elevation
+    # (resolve/paneling.py) — this is the assertion that catches an author who reads it as
+    # one, because ft(9) would resolve here too, but only because the clamp caught it.
+    assert len(by_tag["WP-M-STUDY-FELT"]) == 2
+    assert {b.wall_tag for b in by_tag["WP-M-STUDY-FELT"]} == {"W-M-CLN2", "W-M-HS4"}
+    for band in by_tag["WP-M-STUDY-FELT"]:
+        assert band.z0_m == pytest.approx(36 * _IN, abs=1e-6)
+        assert band.z1_m == pytest.approx(108 * _IN, abs=1e-6)
+        assert not band.replaces_wall_finish
+        # PET felt states no board stock, so it takes the 1/2" default — which is the panel.
+        assert band.thickness_m == pytest.approx(0.5 * _IN, abs=1e-6)
 
 
 def test_the_bands_still_bill_what_they_billed(bands):

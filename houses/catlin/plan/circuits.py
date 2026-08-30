@@ -132,9 +132,23 @@ CIRCUITS = (
     #
     # Was CKT-FH-SAUNA until 2026-07-25 — RM-B-SAUNA has no floor heat (storeys/
     # basement.py), so that zone, circuit and stat are all gone.
+    # 203 VA, not the 498 this carried until 2026-08-29, and NOT because the zone shrank —
+    # it grew. 498 described a "41.5 ft2" zone that had not existed for some time (the
+    # polygon was 6.7 ft2 when the drop-in bath pass found it), so the panel was carrying a
+    # load two and a half times the mat's. FH-M-BATH2 is now 17.85 ft2 of authored zone
+    # heated by one Schluter DHEHK12016 cable — 16.0 ft2, 120 V, 203 W, 1.7 A as purchased —
+    # and this is that nameplate rather than `area x 12`, because heating cable is sold in
+    # fixed lengths and cannot be cut. NEC 220.51 counts fixed electric space heating at
+    # 100% of connected load, so VA = W here. ** The 295 VA this gives back is real
+    # capacity: the service was at 7.9 A of margin. ** 15 A stays despite a 1.7 A load — the
+    # thermostat is a 15 A device with an integral Class A GFCI and its own box, and a
+    # dedicated home run is what Schluter recommends. NEC 424.44(G) is what makes the GFCI
+    # mandatory; this mat is the ONLY heat in RM-M-BATH2 (no supply register), so the
+    # circuit is not optional comfort.
     Circuit(uid="CKT031AAAA", tag="CKT-FH-BATH2", slot=29, panel_ref=_PANEL, breaker_amps=15, poles=1,
-            gfci=True, load_va=498,
-            description="Radiant floor heat — main bath (FH-M-BATH2, 41.5 ft2)"),
+            gfci=True, load_va=203,
+            description="Radiant floor heat — main bath, sole heat source "
+                        "(FH-M-BATH2, 17.85 ft2, Schluter DHEHK12016)"),
     # AFCI too (2026-08-01): this mat is in RM-M-LIVING, and E3902.16 covers the 120V 15/20A
     # circuits *supplying outlets or devices* in a living room — a heating mat is a device.
     # The two bath mats are not: E3902.16's room list stops at the bathroom door.

@@ -242,9 +242,14 @@ def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
     # ** THE CHASE STOPS AT THE JOG SINCE 2026-08-29, AND -CHASE2 CARRIES ON ABOVE IT. **
     # The riser rises from below grade at x=1'-0" as it always did, but the attic's 6:12
     # roof underside there is 20'-8 1/4" — it cannot reach the 23'-10" wall exit at that
-    # station. `VentRun.chase_offset` steps it 12'-4" east inside FS-ATTIC's I-joist band
-    # (through the webs) and it stands up again at x=13'-4". No roof penetration, and the
-    # chase itself does not move through any storey below.
+    # station. `VentRun.chase_offset` steps it east inside FS-ATTIC's I-joist band (through
+    # the webs) and it stands up again further along. No roof penetration, and the chase
+    # itself does not move through any storey below.
+    #
+    # The jog was 12'-4" to x=13'-4" until 2026-08-30, which stood the pipe pair ON WIN-A-N1:
+    # the pair straddles its station about 7 3/4" overall and that window's rough opening
+    # runs x 10'-9"..13'-3". It is 8'-7 1/2" to x=9'-7 1/2" now — west of the window, and on
+    # PR-A-STUBATH-VENT's own wet-wall line, which deletes that run's last leg entirely.
     chase2 = [s for s in vent if s.tag.endswith("CHASE2")]
     assert len(chase2) == 2
     for c in chases:
@@ -262,16 +267,18 @@ def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
     assembly = catlin_model.plan.library.resolve_assembly(roof.assembly)
     skin = sum(layer.thickness.meters for layer in above_structure_layers(assembly))
-    expected = roof_height_at(roof, (ft(13, 4).meters, ft(37).meters)) + skin + inch(12).meters
+    riser_x = ft(9, 7.5).meters  # the jogged station — see chase_offset above
+    expected = roof_height_at(roof, (riser_x, ft(37).meters)) + skin + inch(12).meters
     # eave_z_m is the deck plane, and the CATLIN_ROOF skin (zip + vapour barrier +
     # foam + nailbase deck + underlayment + vent mat + standing seam) adds another 7.975"
     # above that deck plane, so the derived termination rides that much higher than the
     # bare-plate datum. The skin is summed here rather than written down, so a roof rebuild
     # moves the vent with it — 2026-08-20 took it from 8.5" to 7.975" and nothing broke.
-    # ~29'-7" since 2026-08-29: the jog stands the riser at x=13'-4", four feet closer to
-    # the ridge, and a 6:12 plane climbs twice as fast as the 4:12 it replaced. It is still
-    # BELOW the 30'-3" ridge, which is the claim that matters — a termination over the ridge
-    # is a pipe with no roof under it.
+    # The jog moves the riser toward the ridge and a 6:12 plane climbs twice as fast as the
+    # 4:12 it replaced, so this number is sensitive to the station: ~29'-7" at the 2026-08-29
+    # x=13'-4", ~27'-9" at the x=9'-7 1/2" it took on 2026-08-30. It is BELOW the 30'-3" ridge
+    # either way, which is the claim that matters — a termination over the ridge is a pipe
+    # with no roof under it — and moving WEST buys margin on it rather than spending it.
     assert expected < 30 * FT
     assert expected < roof.ridge_z_m
     for t in terms:

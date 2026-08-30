@@ -453,10 +453,43 @@ MAIN_LIGHTING = [
 
     # RM-M-STUDY has no exterior wall, so the notes' "sconce to the side of the window"
     # applies to the two studies that do (RM-S-STUDY2, RM-A-STUDY). This one gets a down
-    # spot on the centre bearing wall for the desk, over a general can.
+    # spot for the desk, over a general can.
+    #
+    # ** MOVED 2026-08-29 off the NORTH wall (it was at 15'-10 1/2", 21'-11 5/8") for the
+    # call-booth fit-out. ** With FURN-M-STUDY-DESK on the south wall you now face south, so
+    # a 6'-0" spot on the north wall is a BACKLIGHT — a silhouette on camera — and it sat as
+    # a bright blob in the middle of WP-M-STUDY-FELT, which is the backdrop the camera sees.
+    # It cannot go on the south wall either: a 20"-deep desk puts a monitor in front of it.
+    #
+    # So: the EAST wall's north sliver, the 12 15/16" of W-M-C3 north of D-M-STUDY's RO
+    # (y 21'-0 11/16"..22'-1 5/8"). x is 2" — half this type's 4" depth — off that wall's
+    # resolved study face at 17'-8 5/8", per the face-position convention in
+    # plan/electrical.py. `rotation=deg(-90)` backs it onto the east wall and aims it west.
+    # ED-M-STUDY-SW is on the same sliver at 48", so the two are vertically clear.
+    #
+    # ** THE ROOM TURNED UNDER IT LATER THE SAME DAY AND THIS POSITION GOT BETTER, WHICH IS
+    # LUCK AND SHOULD BE READ AS SUCH. ** It was placed to key someone seated in the SW
+    # corner of an L. The booth is a facing pair now — FURN-M-STUDY-BENCH along the north
+    # wall, FURN-M-STUDY-DESK in the SW corner — so the occupant sits with their back to the
+    # north wall and faces south, and the camera on the desk looks north at them. From
+    # (17'-6 5/8", 21'-5") at 6'-0" this is now a SIDE key about 3'-0" off their left cheek,
+    # aimed across the bench: still off the backdrop, still not behind the subject, and no
+    # longer competing with a monitor. It is also above the bench's east end (seat 18") with
+    # 4'-6" of clear, so nothing standing on the bench reaches it.
+    #
+    # It is NOT a locator for anything else. REG-M-SUP4 was asked for "around here" and went
+    # to the opposite wall instead; the reasons — a bearing top plate, a joist bore at a
+    # bearing line, and 9 15/16" of bay already holding this fitting and a switch — are on
+    # the register in plan/mep_registers.py.
+    #
+    # ** NEITHER THIS NOR ED-M-STUDY-LT MAY BE DELETED. ** RM-M-STUDY is windowless and
+    # passes `code.R303_1_light_and_ventilation` only on Exception 1's electric-light
+    # substitute — 1500 lm from the point luminaires carrying room="RM-M-STUDY" (LightRun
+    # coves are excluded by `_room_lumens`). Moving one within the room is safe; removing
+    # one is a FAIL.
     ElectricalDevice(uid="QTM000HAAA", tag="ED-M-STUDY-SPOT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(15, 10.5), ft(21, 11.625)), type_ref="ED-T-LT-SCONCE-SPOT",
-                     circuit="CKT-LT-MAIN", room="RM-M-STUDY", rotation=deg(0),
+                     position=pt(ft(17, 6.625), ft(21, 5)), type_ref="ED-T-LT-SCONCE-SPOT",
+                     circuit="CKT-LT-MAIN", room="RM-M-STUDY", rotation=deg(-90),
                      controlled_by=("ED-M-STUDY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
 

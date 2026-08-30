@@ -193,14 +193,30 @@ def test_no_catlin_deck_sisters_a_joist(catlin_model):
 
     ``FS-SG-DECK`` then took the feature up again on 2026-08-28 for a completely different
     reason (the heat-pump anchors below), so "no catlin deck authors a reinforcement" is no
-    longer the thing to pin. **The sister ply is.** Every reinforcement in this house is now
+    longer the thing to pin. **The sister ply is.** Every DECK reinforcement in this house is
     ``plies=1`` — a fastener host, not a stiffened joist — and a stray ``plies=3`` would
     quietly add sixteen sisters and their lumber to the BOM. That is what this catches.
+
+    ** ONE SISTER EXISTS NOW, AND IT IS NOT ON A DECK (2026-08-29). ** ``FS-M-WEST`` carries
+    a single full-span ply under RM-M-BATH2's drop-in bath, which is the built half of
+    plans/TODO.md's 60 psf item. It is an INTERIOR floor answering a real concentrated load,
+    which is the case ``JoistReinforcement`` was written for; the decks are still the case
+    this test was written for. Pinning the count at one keeps both readings true — a second
+    sister appearing here means somebody raised a deck's ``plies`` without meaning to.
     """
+    decks = {"FS-SG-PORCH", "FS-SG-DECK", "SL-BW-DECK"}
+    sisters = []
     for floor in catlin_model.floors:
-        assert [m for m in floor.members if m.category == "sister_joist"] == [], floor.tag
+        found = [m for m in floor.members if m.category == "sister_joist"]
+        assert floor.tag not in decks or found == [], floor.tag
+        sisters.extend((floor.tag, m) for m in found)
+    assert [tag for tag, _ in sisters] == ["FS-M-WEST"]
+    # Full span, bearing to bearing: a sister that stops short carries nothing where the
+    # load is (``resolve/floors.py::_reinforcement_members``).
+    assert round(sisters[0][1].length_m / 0.3048, 2) == 18.0
     rows = {(row["profile"], row["category"]) for row in framing_takeoff(catlin_model)}
-    assert not [key for key in rows if key[1] == "sister_joist"]
+    assert [key for key in rows if key[1] == "sister_joist"] == [
+        ("11.875 I-joist", "sister_joist")]
 
 
 def test_the_balcony_blocking_hosts_the_heat_pump_anchors(catlin_model):
