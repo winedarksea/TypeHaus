@@ -9,8 +9,7 @@ door-and-handle family can express.
 from __future__ import annotations
 
 from typehaus.model.placeable_symbols._families import Builder, Geometry, appliance_case
-from typehaus.model.placeable_symbols._frame import (DETAIL_WEIGHT, box, circle, clamp, line,
-                                                     rect)
+from typehaus.model.placeable_symbols._frame import DETAIL_WEIGHT, box, circle, clamp, line, rect
 
 __all__ = ["APPLIANCE_SYMBOLS"]
 

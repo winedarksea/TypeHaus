@@ -10,19 +10,20 @@ from __future__ import annotations
 import math
 from dataclasses import replace
 
-from typehaus.findings import Finding, element_error as _error
+from typehaus.findings import Finding
+from typehaus.findings import element_error as _error
 from typehaus.model.floors import FloorOpening, FloorSystem, Slab
 from typehaus.model.spatial import Stair
 from typehaus.quantities import inch
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedStair
 from typehaus.resolve.stairs.bearing import _bear_stair_on_walls, _clip_stair_to_subfloor
 from typehaus.resolve.stairs.common import (
-    _MAX_RISER_M,
     _DEFAULT_NOSING_DEPTH_M,
     _DEFAULT_TREAD_DEPTH_M,
     _MAX_NOSING_DEPTH_M,
-    _MIN_NOSING_DEPTH_M,
+    _MAX_RISER_M,
     _MIN_LANDING_DEPTH_M,
+    _MIN_NOSING_DEPTH_M,
     _MIN_TREAD_M,
     _WELL_PARTITION_THICKNESS_M,
 )
@@ -144,7 +145,8 @@ def _resolve_stair(
                              "when its physical tread is under 11\"", stair.tag)]
     if going_m + 1e-9 < _MIN_TREAD_M:
         return None, [_error("integrity.stair_geometry", f"stair {stair.tag} has "
-                             f"{going_m / 0.0254:.1f}\" going; IRC R311.7 requires 10\"", stair.tag)]
+                             f"{going_m / 0.0254:.1f}\" going; IRC R311.7 requires 10\"",
+                             stair.tag)]
     risers = math.ceil(rise / _MAX_RISER_M)
     treads = max(0, risers - 1)
     straight_treads = treads - stair.winder_count
@@ -173,7 +175,8 @@ def _resolve_stair(
     # footprint is whatever its own risers and going come to, derived below.
     if opening is not None and available_going + 1e-9 < going_m:
         return None, [_error("integrity.stair_geometry", f"stair {stair.tag} needs {risers} "
-                             f"risers but its opening only permits {available_going / 0.0254:.1f}\" "
+                             "risers but its opening only permits "
+                             f"{available_going / 0.0254:.1f}\" "
                              f"going (needs {going_m / 0.0254:.1f}\")", stair.tag)]
     riser = rise / risers
     if opening is not None and not _stair_fits_opening(
@@ -199,7 +202,8 @@ def _resolve_stair(
     members = _in_stair_material(stair, members)
     # A stair declaration lives with its destination deck so it can own the opening, but
     # its resolved plan-storey identity is the floor it rises *from*.
-    return ResolvedStair(stair.uid, stair.tag, stair.from_storey, stair.to_storey, outline, risers, riser,
+    return ResolvedStair(stair.uid, stair.tag, stair.from_storey, stair.to_storey, outline,
+                         risers, riser,
                          physical_tread_m, stair.run_direction, stair.run_reversed, stair.layout,
                          stair.turn_direction, stair.winder_count, members,
                          going_depth_m=going_m, nosing_depth_m=nosing_m,

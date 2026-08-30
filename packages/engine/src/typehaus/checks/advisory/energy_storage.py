@@ -16,7 +16,9 @@ Both no-op when no ESS is placed.
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import advisory, passed as _pass, unknown as _unknown
+from typehaus.checks._authoring import advisory
+from typehaus.checks._authoring import passed as _pass
+from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import EquipmentKind

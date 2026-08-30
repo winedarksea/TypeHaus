@@ -23,9 +23,20 @@ object's back`` convention, so the wall side is ``+y`` and the light throws towa
 from __future__ import annotations
 
 from typehaus.model.placeable_symbols._families import Builder, Geometry
-from typehaus.model.placeable_symbols._frame import (DETAIL_WEIGHT, OUTLINE_WEIGHT, Part,
-                                                     Point, Stroke, arc, box, circle, clamp,
-                                                     line, polygon, rect)
+from typehaus.model.placeable_symbols._frame import (
+    DETAIL_WEIGHT,
+    OUTLINE_WEIGHT,
+    Part,
+    Point,
+    Stroke,
+    arc,
+    box,
+    circle,
+    clamp,
+    line,
+    polygon,
+    rect,
+)
 
 __all__ = ["LIGHTING_SYMBOLS"]
 

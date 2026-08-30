@@ -12,8 +12,17 @@ from typehaus.model.electrical import Circuit, LoadManagement
 from typehaus.model.materials import Material
 from typehaus.model.product import Product
 from typehaus.model.project import Project, Storey
-from typehaus.model.types import (ApplianceType, DoorType, ElectricalDeviceType, EquipmentType,
-                                  FixtureType, FurnitureType, RailingType, RegisterType, WindowType)
+from typehaus.model.types import (
+    ApplianceType,
+    DoorType,
+    ElectricalDeviceType,
+    EquipmentType,
+    FixtureType,
+    FurnitureType,
+    RailingType,
+    RegisterType,
+    WindowType,
+)
 from typehaus.model.views import Transition
 
 

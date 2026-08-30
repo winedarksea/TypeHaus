@@ -340,7 +340,8 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         ) - openings_by_wall[wall.tag]
         for layer in wall.layers:
             if layer.function == "sheathing":
-                areas[("exterior wall", layer.material_ref, layer.thickness_m)] += max(0.0, wall_area)
+                areas[("exterior wall", layer.material_ref, layer.thickness_m)] += max(
+                    0.0, wall_area)
 
     for roof in model.roofs:
         assembly = model.plan.library.resolve_assembly(roof.assembly)
@@ -364,7 +365,8 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             openings = sum(abs(polygon_area([point.xy_m for point in opening.outline]))
                            for opening in model.plan.storey_elements(storey.tag)
                            if isinstance(opening, FloorOpening) and opening.tag in system.openings)
-            areas[("subfloor", system.subfloor.material_ref, system.subfloor.thickness.meters)] += gross - openings
+            areas[("subfloor", system.subfloor.material_ref,
+                   system.subfloor.thickness.meters)] += gross - openings
             # ``FloorSystem.ceiling_below`` is the same kind of sheet on the underside of
             # the same deck, and was simply never read here — a whole storey of ceiling
             # drywall silently absent from the order.

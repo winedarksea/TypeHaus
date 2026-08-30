@@ -23,7 +23,9 @@ class DiffElem:
     attrs: dict[str, str] = field(default_factory=dict)  # authoring-unit attribute strings
 
     def bbox_distance(self, other: DiffElem) -> float:
-        return sum(abs(a - b) for a, b in zip(self.bbox, other.bbox))
+        # Both are 3-tuples by the field's own annotation.
+        return sum(abs(a - b) for a, b in zip(self.bbox, other.bbox, strict=True))
 
     def centroid_distance(self, other: DiffElem) -> float:
-        return sum((a - b) ** 2 for a, b in zip(self.centroid, other.centroid)) ** 0.5
+        return sum((a - b) ** 2
+                   for a, b in zip(self.centroid, other.centroid, strict=True)) ** 0.5

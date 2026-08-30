@@ -26,7 +26,8 @@ unstated wall is not quietly run through a table that presumes bracing.
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import structural_advisory as _advisory, unknown as _unknown
+from typehaus.checks._authoring import structural_advisory as _advisory
+from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.checks.structural._r404_table import (
     BACKFILL_HEIGHTS_FT,

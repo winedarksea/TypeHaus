@@ -18,7 +18,8 @@ FAILs against it would train the reader to ignore them.
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import failed as _fail, passed as _pass
+from typehaus.checks._authoring import failed as _fail
+from typehaus.checks._authoring import passed as _pass
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import PipeAccessoryKind, PipeSystem, Service

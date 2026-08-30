@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import math
 
+from typehaus.model.plan import PlanModel
 from typehaus.quantities import inch
 from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.resolve.framing.corners import neighbour_band_insets
@@ -36,7 +37,6 @@ from typehaus.resolve.framing.truss_common import (  # noqa: F401 - re-exported 
 )
 from typehaus.resolve.geometry import length, sub, unit, wall_frame
 from typehaus.resolve.intervals import subtract as subtract_spans
-from typehaus.model.plan import PlanModel
 from typehaus.resolve.model import (
     FramedMember,
     ResolvedLayer,

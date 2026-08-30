@@ -100,7 +100,7 @@ def poe_budget(model: ResolvedModel) -> dict[str, object]:
     return {
         "devices": len(devices),
         "powered_devices": len(powered),
-        "unknown_devices": sum(1 for d, watts in zip(devices, rated)
+        "unknown_devices": sum(1 for d, watts in zip(devices, rated, strict=True)
                                if watts is None and d.circuit is None),
         "connected_watts": round(sum(powered), 1),
         "basis": "sum of ElectricalDeviceType.poe_watts over data devices",

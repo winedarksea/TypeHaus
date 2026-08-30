@@ -43,9 +43,30 @@ def frames_structure(wall) -> bool:
     return any(member.category in FRAMED_STRUCTURE_CATEGORIES for member in wall.members)
 
 
+#: The one file under ``out/`` a sandbox *does* want: the loader's libcst scan cache
+#: (``source/loader.py::_CACHE_RELPATH``). Excluding it made every sandbox pay a cold scan —
+#: 4.7 s against 0.04 s warm on catlin, and the suite builds 25 sandboxes.
+#:
+#: Seeding it is safe by construction rather than by convention. Each entry is keyed by its
+#: file's own content SHA and the whole file is discarded unless its header matches the
+#: current engine identity (version + a hash of ``dialect.py``/``provenance.py``), so a
+#: sandbox that edits a plan file simply misses on that file and rescans it. A stale entry
+#: cannot be served. Absent at the source (a fresh checkout that has never built), the
+#: sandbox just starts cold as before.
+_SCAN_CACHE_RELPATH = Path("out") / ".scan-cache.json"
+
+
 def copy_house(src: Path, dst: Path) -> Path:
-    """Copy an authored house into a sandbox, leaving build output behind."""
+    """Copy an authored house into a sandbox, leaving build output behind.
+
+    Carries the loader's scan cache across — see :data:`_SCAN_CACHE_RELPATH` for why that is
+    safe — because a cold libcst scan is the dominant cost of every sandboxed test.
+    """
     shutil.copytree(src, dst, ignore=HOUSE_IGNORE)
+    cache = src / _SCAN_CACHE_RELPATH
+    if cache.is_file():
+        (dst / _SCAN_CACHE_RELPATH).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(cache, dst / _SCAN_CACHE_RELPATH)
     return dst
 
 

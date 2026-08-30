@@ -25,9 +25,10 @@ import queue
 import threading
 import time
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from typehaus.checks import load_preferences
 from typehaus.findings import Finding, Severity
@@ -85,7 +86,7 @@ class ProjectState:
     _lock: threading.RLock = field(default_factory=threading.RLock)
     # Background source-writeback worker (lazily started): a single thread applies queued
     # writebacks in order, so disk source is a faithful, serialized replay of the fast edits.
-    _write_q: "queue.Queue[list[PatchOp] | None]" = field(default_factory=queue.Queue)
+    _write_q: queue.Queue[list[PatchOp] | None] = field(default_factory=queue.Queue)
     _worker: threading.Thread | None = None
     _idle: threading.Event = field(default_factory=threading.Event)
     # Optional callback (app-provided) to notify clients when reconciliation adopts source

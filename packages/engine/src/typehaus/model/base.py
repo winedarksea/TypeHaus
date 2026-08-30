@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 
@@ -10,10 +11,10 @@ from pydantic import BaseModel, ConfigDict
 # layer knows nothing about who listens — the source loader injects a callable while it
 # imports a house manifest (runtime authorship capture) and clears it after. Inert
 # (a single `is not None` check per construction) when unset.
-_construction_observer: Optional[Callable[["Element"], None]] = None
+_construction_observer: Callable[[Element], None] | None = None
 
 
-def set_construction_observer(observer: Optional[Callable[["Element"], None]]) -> None:
+def set_construction_observer(observer: Callable[[Element], None] | None) -> None:
     global _construction_observer
     _construction_observer = observer
 

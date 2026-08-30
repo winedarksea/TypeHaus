@@ -10,8 +10,6 @@ re-encoding an authored dimension through a lossy meters round-trip.
 
 from __future__ import annotations
 
-from typing import Union
-
 from typehaus.model.elements import Node, Wall
 from typehaus.model.mep import ElectricalDevice, Equipment, Register
 from typehaus.model.plan import PlanModel
@@ -29,7 +27,7 @@ ROTATION_SNAP_DEGREES = 15.0
 # maximum practical finish/half-wall offset for identifying a room's boundary graph.
 ROOM_BOUNDARY_NODE_TOLERANCE_M = 0.35
 
-XY = tuple[Union[float, str], Union[float, str]]
+XY = tuple[float | str, float | str]
 
 
 class MacroError(ValueError):

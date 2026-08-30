@@ -67,7 +67,7 @@ class VariantSpec:
     assembly_swaps: dict[str, str] = field(default_factory=dict)
     layer_thickness: tuple[LayerThicknessOverride, ...] = ()
 
-    def selection(self, house: Path) -> "VariantSelection":
+    def selection(self, house: Path) -> VariantSelection:
         from typehaus.diff.compare import VariantSelection
 
         return VariantSelection(house=Path(house), swaps=dict(self.assembly_swaps),
@@ -128,8 +128,8 @@ def find_variant(specs: tuple[VariantSpec, ...], name: str) -> VariantSpec:
     return spec
 
 
-def apply_layer_thickness(plan: "PlanModel",
-                          overrides: tuple[LayerThicknessOverride, ...]) -> "PlanModel":
+def apply_layer_thickness(plan: PlanModel,
+                          overrides: tuple[LayerThicknessOverride, ...]) -> PlanModel:
     """Return a copy of ``plan`` whose library carries the retuned layer thicknesses.
 
     The rewrite lands on the authored assembly (both its core ``layers`` and its

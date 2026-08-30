@@ -39,22 +39,22 @@ from typehaus.resolve.model import (
     ResolvedSolid,
 )
 from typehaus.resolve.railings import resolve_railing
-from typehaus.resolve.trim_bands import drip_edge_bands, open_channel_bands
-from typehaus.resolve.vent_termination import (
-    chase_top_point,
-    derived_termination_elevation,
-    exterior_riser_point,
-)
 
 # Round-section faceting lives in resolve/round_solids.py, shared with pipe runs.
 # ``_PIPE_SWEEP_BANDS`` is re-exported rather than used here: ``test_accessories.py`` imports
 # it from this module to assert the horizontal jog is swept on the SAME band boundaries as the
 # vertical risers. A tidy-up that drops it as an unused import breaks that test.
-from typehaus.resolve.round_solids import (  # noqa: F401
+from typehaus.resolve.round_solids import (  # noqa: F401  # isort: skip  (see above)
     PIPE_BUNDLE_SPACING as _PIPE_BUNDLE_SPACING,
     PIPE_FACETS as _PIPE_FACETS,
     PIPE_SWEEP_BANDS as _PIPE_SWEEP_BANDS,
     round_run_bands as _round_run_bands,
+)
+from typehaus.resolve.trim_bands import drip_edge_bands, open_channel_bands
+from typehaus.resolve.vent_termination import (
+    chase_top_point,
+    derived_termination_elevation,
+    exterior_riser_point,
 )
 
 # Trim ``TrimKind`` values collapse onto a small render/IFC category set.
@@ -590,7 +590,7 @@ def _resolve_edge_run(model: ResolvedModel, el, storey: str) -> None:
         _resolve_banded_run(model, el, storey, path, category, top, half,
                             recipe(2.0 * half, el.depth.meters))
         return
-    for i, (a, b) in enumerate(zip(path[:-1], path[1:])):
+    for i, (a, b) in enumerate(zip(path[:-1], path[1:], strict=True)):
         model.solids.append(ResolvedSolid(
             uid=f"{el.uid}-{i:02d}", tag=f"{el.tag}-{i + 1}", storey=storey,
             category=category, outline=rect_between(a, b, -half, half), z0_m=z0, z1_m=top,
@@ -618,7 +618,7 @@ def _resolve_banded_run(model: ResolvedModel, el, storey: str, path, category: s
     """
     for key, offset, band_t, bottom_drop, top_drop in bands:
         left, right = _cross_span(half, offset, band_t, el.back_side)
-        for i, (a, b) in enumerate(zip(path[:-1], path[1:])):
+        for i, (a, b) in enumerate(zip(path[:-1], path[1:], strict=True)):
             model.solids.append(ResolvedSolid(
                 uid=f"{el.uid}-{i:02d}-{key}", tag=f"{el.tag}-{i + 1}-{key.upper()}",
                 storey=storey, category=category,

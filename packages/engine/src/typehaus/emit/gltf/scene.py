@@ -13,7 +13,6 @@ from typehaus.emit.gltf.buffers import (
 from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.trades import TRADES
 
-
 # The selection-kind vocabulary the UI honours — mirrors ``SelectionKind`` in
 # ui/src/state/store.ts and the ``kind`` accepted by Panel3D.wholeHouseGlbAssignment. Held as
 # an explicit set so a typo raises here instead of silently shipping an unselectable node.
@@ -86,7 +85,8 @@ class _SceneBuilder:
         skipped entirely, so it can never become an unclassifiable renderable mesh.
         """
         if kind is not None and kind not in _SELECTION_KINDS:
-            raise ValueError(f"unknown selection kind {kind!r}; expected one of {sorted(_SELECTION_KINDS)}")
+            raise ValueError(f"unknown selection kind {kind!r}; "
+                             f"expected one of {sorted(_SELECTION_KINDS)}")
         # Solids take their trade from a table (emit/trades.py); a typo there has to fail
         # here rather than ship a node whose group the UI has nowhere to put.
         if trade not in TRADES:
@@ -100,8 +100,10 @@ class _SceneBuilder:
             tri_positions, tri_normals = _deindex_with_normals(positions, indices)
             if not tri_positions:
                 continue
-            pos_acc = _append_positions(self._blob, self._buffer_views, self._accessors, tri_positions)
-            nrm_acc = _append_normals(self._blob, self._buffer_views, self._accessors, tri_normals)
+            pos_acc = _append_positions(self._blob, self._buffer_views, self._accessors,
+                                        tri_positions)
+            nrm_acc = _append_normals(self._blob, self._buffer_views, self._accessors,
+                                      tri_normals)
             primitives.append({
                 "attributes": {"POSITION": pos_acc, "NORMAL": nrm_acc},
                 "material": self._material(color),

@@ -13,7 +13,6 @@ from typehaus.model import (
     MasonrySpec,
     PartitionLayout,
     inch,
-    r_us,
 )
 
 # The load-bearing face the junction solver binds a concrete↔concrete return on (#44):
@@ -403,7 +402,10 @@ INT_2X6_STAGGERED_PLUMBING = Assembly(
         _PAINT_FINISH_B,
     ),
     interfaces=(_STUD_BEARING,),
-    source="wet wall, non-bearing — 2x4 staggered on 2x6 plates per USG/GA WP 5530 (16 in. o.c. per face, 8 in. combined), 3.5 in. fiberglass sound batt; the framing geometry is the tested one, the single-layer gypsum face is not, so no STC is claimed",
+    source="wet wall, non-bearing — 2x4 staggered on 2x6 plates per USG/GA WP 5530 "
+           "(16 in. o.c. per face, 8 in. combined), 3.5 in. fiberglass sound batt; the "
+           "framing geometry is the tested one, the single-layer gypsum face is not, so "
+           "no STC is claimed",
 )
 
 STARTER_FLOOR = {"subfloor": "plywood-subfloor", "joist": "11.875 I-joist"}

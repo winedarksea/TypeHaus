@@ -183,7 +183,9 @@ def _as_diff_elem(entity: SemanticEntity) -> DiffElem:
 
 def _classify(reference: SemanticEntity, current: SemanticEntity,
               tolerance: EquivalenceTolerance) -> EntityEquivalence:
-    placement = sum((a - b) ** 2 for a, b in zip(reference.centroid_m, current.centroid_m)) ** 0.5
+    placement = sum(
+        (a - b) ** 2 for a, b in zip(reference.centroid_m, current.centroid_m, strict=True)
+    ) ** 0.5
     size = tuple(current.size_m[axis] - reference.size_m[axis] for axis in range(3))
     reasons: list[str] = []
     if placement > tolerance.placement_m:
@@ -284,8 +286,9 @@ def compare_semantic_models(reference: SemanticModel, current: SemanticModel,
         right_entities = current.in_category(category)
         left_elems = [_as_diff_elem(item) for item in left_entities]
         right_elems = [_as_diff_elem(item) for item in right_entities]
-        left_by_elem = dict(zip((id(elem) for elem in left_elems), left_entities))
-        right_by_elem = dict(zip((id(elem) for elem in right_elems), right_entities))
+        left_by_elem = dict(zip((id(elem) for elem in left_elems), left_entities, strict=True))
+        right_by_elem = dict(
+            zip((id(elem) for elem in right_elems), right_entities, strict=True))
         for match in match_elements(left_elems, right_elems, tolerance.match_threshold):
             if match.baseline is not None and match.external is not None:
                 report.entities.append(_classify(left_by_elem[id(match.baseline)],

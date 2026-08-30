@@ -8,6 +8,13 @@ The budgets are deliberately loose — roughly 2.5x the measured median on the d
 machine — because CI hardware, a loaded laptop and a cold import cache all move the
 number by a factor of two and a flaky perf test gets deleted rather than fixed. It is a
 tripwire for an order-of-magnitude regression, not a benchmark.
+
+Which is why the bench grades these budgets on the *fastest* of its N samples rather than
+the median (→ ``bench_rebuild.py::_min_timings``). This test subprocesses that bench from
+inside a six-way parallel suite, so a median here measures the other five workers as much
+as the engine: ``resolve`` is ~400 ms alone and hit 1704 ms against this 1500 ms budget on
+a loaded run, with nothing regressed. Grading the least-contended sample keeps the tripwire
+honest — an algorithmic regression raises the floor too.
 """
 
 from __future__ import annotations

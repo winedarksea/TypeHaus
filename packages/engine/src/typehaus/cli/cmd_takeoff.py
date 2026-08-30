@@ -7,7 +7,6 @@ command bodies keep their imports inside the function.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
@@ -18,12 +17,12 @@ from typehaus.findings import Severity
 
 @app.command()
 def takeoff(
-    house: Optional[Path] = typer.Argument(None),
+    house: Path | None = typer.Argument(None),
     as_json: bool = typer.Option(False, "--json"),
     summary: bool = typer.Option(False, "--summary",
                                  help="compact per-section counts + $ rollup (#52), instead "
                                       "of the full per-row dump"),
-    csv: Optional[Path] = typer.Option(
+    csv: Path | None = typer.Option(
         None, "--csv", help="Also write the priced estimate as a CSV at this path "
                             "(the RSMeans / Craftsman / Buildertrend intake artifact)."),
     runs: bool = typer.Option(False, "--runs",
@@ -37,8 +36,8 @@ def takeoff(
     :mod:`typehaus.cli.prices` for the format), the report adds a $ / $-range cost
     estimate that is explicit about which rows it could not price.
     """
-    from collections import Counter
     import json
+    from collections import Counter
 
     from typehaus.cli.prices import estimate_costs, load_prices
     from typehaus.resolve import resolve
@@ -219,7 +218,8 @@ def takeoff(
                           f"{item['part_number']}{size} — {item['description']}")
             console.print(f"        [dim]{item['basis']}[/dim]")
     if payload["placeables"]:
-        console.print("[bold]Fixtures, appliances & furniture[/bold]  (count · type: domain · storey)")
+        console.print("[bold]Fixtures, appliances & furniture[/bold]  "
+                      "(count · type: domain · storey)")
         for item in payload["placeables"]:
             console.print(f"  {item['count']:>5} ea    {item['type']} — "
                           f"{item['domain']} · {item['storey']}")

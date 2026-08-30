@@ -16,12 +16,15 @@ the thing that can be wrong against R403.1.6, and it is what prints on the sched
 
 from __future__ import annotations
 
-from typehaus.checks.code.mn_residential._common import (_fail, _pass,
-                                                         _storey_is_below_grade,
-                                                         _unknown)
+from typehaus.checks.code.mn_residential._common import (
+    _fail,
+    _pass,
+    _storey_is_below_grade,
+    _unknown,
+)
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.model.assembly import Layer
 from typehaus.findings import Finding
+from typehaus.model.assembly import Layer
 from typehaus.model.enums import ControlLayer, LayerFunction
 from typehaus.model.structure import Footing, FootingBedding, FoundationWall
 from typehaus.quantities import ft

@@ -54,7 +54,9 @@ def _path_length_ft(railing: Railing) -> float:
     where the true sloped run is reported.
     """
     points = [point.xy_m for point in railing.path]
-    return sum(math.dist(a, b) for a, b in zip(points, points[1:])) * _M_TO_FT
+    # strict=False: the offset-by-one segment walk is deliberately ragged — the tail is
+    # one shorter, and that short pairing is what yields one leg per segment.
+    return sum(math.dist(a, b) for a, b in zip(points, points[1:], strict=False)) * _M_TO_FT
 
 
 def _centroid(outline) -> tuple[float, float]:
@@ -118,7 +120,8 @@ def _top_rail_length_ft(model: ResolvedModel, tag: str) -> float:
         return max(lengths) * _M_TO_FT
     stations = _stations(model, tag)
     total = 0.0
-    for a, b in zip(stations, stations[1:]):
+    # strict=False: same offset-by-one walk, one leg per gap between stations.
+    for a, b in zip(stations, stations[1:], strict=False):
         (ax, ay), (bx, by) = _centroid(a.outline), _centroid(b.outline)
         total += math.hypot(math.dist((ax, ay), (bx, by)), b.z0_m - a.z0_m)
     return total * _M_TO_FT

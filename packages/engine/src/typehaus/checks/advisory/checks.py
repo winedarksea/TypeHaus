@@ -101,16 +101,18 @@ def wet_wall_depth(ctx: CheckContext) -> list[Finding]:
             continue
         wall = ctx.model.wall(fixture.wall_ref)
         if wall is None:
-            out.append(_warn("advisory.wet_wall_depth",
-                             f"drain fixture {fixture.tag} references missing wall {fixture.wall_ref}",
-                             (fixture.tag, fixture.wall_ref)))
+            out.append(_warn(
+                "advisory.wet_wall_depth",
+                f"drain fixture {fixture.tag} references missing wall {fixture.wall_ref}",
+                (fixture.tag, fixture.wall_ref)))
             continue
         structure = next((layer for layer in wall.layers if layer.function == "structure"), None)
         if structure is None or structure.thickness_m + 1e-9 < required:
             actual = structure.thickness_m / 0.0254 if structure is not None else 0.0
             out.append(_warn(
                 "advisory.wet_wall_depth",
-                f"drain fixture {fixture.tag} uses {fixture.wall_ref} with {actual:.1f}\" structure; "
+                f"drain fixture {fixture.tag} uses {fixture.wall_ref} with "
+                f"{actual:.1f}\" structure; "
                 f"planning allowance requires {required / 0.0254:.1f}\" for its drain stack",
                 (fixture.tag, fixture.wall_ref),
             ))
@@ -314,7 +316,9 @@ def clearance_overlap(ctx: CheckContext) -> list[Finding]:
 
     fixtures = {item.tag: item for item in ctx.plan.library.fixture_types}
     furniture = {item.tag: item for item in ctx.plan.library.furniture_types}
-    placed: list[tuple[str, object, tuple[float, float], tuple[float, float, float, float] | None]] = []
+    placed: list[
+        tuple[str, object, tuple[float, float], tuple[float, float, float, float] | None]
+    ] = []
     for storey in ctx.plan.storeys:
         for element in ctx.plan.storey_elements(storey.tag):
             if element.element_kind == "Fixture":
@@ -350,7 +354,8 @@ def clearance_overlap(ctx: CheckContext) -> list[Finding]:
                 reported.add(key)
                 out.append(_warn(
                     "advisory.clearance_overlap",
-                    f"declared clearance for {source.tag} overlaps {other.tag}; review the use zone",
+                    f"declared clearance for {source.tag} overlaps {other.tag}; "
+                    "review the use zone",
                     key,
                 ))
     return out

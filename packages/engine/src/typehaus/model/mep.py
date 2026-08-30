@@ -17,8 +17,8 @@ from typehaus.model.enums import (
     PipeSystem,
     Service,
 )
-from typehaus.model.registry import register_constructor, register_element
 from typehaus.model.placeables import Location, Mount
+from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D
 
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import ConditionKind
 from typehaus.quantities import ft, inch
-from typehaus.resolve.geometry import add, length, scale, sub, unit
+from typehaus.resolve.geometry import length, sub, unit
 from typehaus.resolve.model import BoundaryCondition, ResolvedModel, ResolvedWall, StackEdge
 
 _TOL = inch(0.5).meters  # datum-face alignment tolerance

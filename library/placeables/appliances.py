@@ -6,9 +6,8 @@ appliance kept house-local, so this catalog shipped a dryer with no washer besid
 
 from __future__ import annotations
 
-from typehaus.model import ApplianceType, Service, ServicePort, ft, inch
-
 from library.placeables._zones import front_zone
+from typehaus.model import ApplianceType, Service, ServicePort, ft, inch
 
 REFERENCE = "Residential planning allowance; final appliance selection by owner."
 

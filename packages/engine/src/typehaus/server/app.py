@@ -138,8 +138,11 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
     @app.put("/costs")
     def put_costs(body: dict[str, Any]) -> Any:
         """Fold ``{"ops": [...]}`` over costs.toml, write it, return the fresh payload."""
-        from typehaus.server.costs_api import (CostsRequestError, apply_costs_ops,
-                                               build_costs_payload)
+        from typehaus.server.costs_api import (
+            CostsRequestError,
+            apply_costs_ops,
+            build_costs_payload,
+        )
 
         if state.model is None:
             return JSONResponse({"error": "model does not resolve"}, status_code=409)
@@ -293,7 +296,7 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
         mouseup instead of hand-building dialect PatchOps for a live overlay.
 
         Honours the same ``"rehearse": true`` writeback pre-check as ``/preview``."""
-        from typehaus.server.macros_api import build_macro_ops, MacroRequestError
+        from typehaus.server.macros_api import MacroRequestError, build_macro_ops
 
         if state.model is None:
             return JSONResponse({"error": "model does not resolve"}, status_code=409)
@@ -314,7 +317,7 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
 
     @app.post("/macro")
     async def post_macro(body: dict[str, Any]) -> Any:
-        from typehaus.server.macros_api import build_macro_ops, MacroRequestError
+        from typehaus.server.macros_api import MacroRequestError, build_macro_ops
 
         if state.model is None:
             return JSONResponse({"error": "model does not resolve"}, status_code=409)
@@ -371,7 +374,8 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
         try:
             candidate.relative_to(root)
         except ValueError:
-            return JSONResponse({"error": "underlay path escapes the project reference root"}, status_code=403)
+            return JSONResponse(
+                {"error": "underlay path escapes the project reference root"}, status_code=403)
         if not candidate.is_file():
             return JSONResponse({"error": "underlay file not found"}, status_code=404)
         return FileResponse(candidate)
@@ -522,7 +526,8 @@ async def _watch(state: ProjectState, bus: EventBus) -> None:
     # The event filter below excludes `out/` and other runtime byproducts, while allowing
     # the very first confirmed catalog import to create assets/placeables.json after serve.
     async for changes in awatch(state.house_dir):
-        if not any(_is_project_source_change(state.house_dir, Path(path)) for _kind, path in changes):
+        if not any(_is_project_source_change(state.house_dir, Path(path))
+                   for _kind, path in changes):
             continue
         if state.coordinator.check_external_edit():
             state.rebuild()

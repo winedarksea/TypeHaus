@@ -9,7 +9,6 @@ the cross-machine delivery path can be edited without touching any other command
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import typer
 
@@ -17,7 +16,7 @@ from typehaus.cli._shared import _resolve_house, app, console
 
 
 # --- V6: serve subcommand (cross-machine app delivery) — keep edits localized for V8 merge ---
-def _find_ui_dist(explicit: Optional[Path]) -> Optional[Path]:
+def _find_ui_dist(explicit: Path | None) -> Path | None:
     """Locate a built UI (a directory holding ``index.html``) so one ``haus serve`` command can
     deliver the browser app on another machine (V6). An explicit ``--ui-dir`` is authoritative —
     it is used as-is (returns None if it lacks index.html, so the caller errors) and never falls
@@ -25,7 +24,7 @@ def _find_ui_dist(explicit: Optional[Path]) -> Optional[Path]:
     cwd and this package looks for a repo-root ``ui/dist``. Returns None when nothing is found."""
     import os
 
-    def _valid(path: Path) -> Optional[Path]:
+    def _valid(path: Path) -> Path | None:
         return path.resolve() if (path / "index.html").is_file() else None
 
     if explicit is not None:
@@ -47,13 +46,13 @@ def _find_ui_dist(explicit: Optional[Path]) -> Optional[Path]:
 
 @app.command()
 def serve(
-    house: Optional[Path] = typer.Argument(None),
+    house: Path | None = typer.Argument(None),
     host: str = typer.Option("127.0.0.1"),
     port: int = typer.Option(8765),
-    ui: Optional[bool] = typer.Option(
+    ui: bool | None = typer.Option(
         None, "--ui/--no-ui",
         help="Serve the compiled UI at / (default: on when a built ui/dist is found)."),
-    ui_dir: Optional[Path] = typer.Option(
+    ui_dir: Path | None = typer.Option(
         None, "--ui-dir", help="Explicit built-UI directory (overrides auto-discovery)."),
 ) -> None:
     """Run the FastAPI server: model.json, PATCH /plan, undo/redo, live reload (WP2.1).
@@ -69,7 +68,7 @@ def serve(
 
     d = _resolve_house(house)
 
-    ui_dist: Optional[Path] = None
+    ui_dist: Path | None = None
     if ui is not False:  # None (auto) or True → try to find a built UI
         ui_dist = _find_ui_dist(ui_dir)
         if ui_dist is None:

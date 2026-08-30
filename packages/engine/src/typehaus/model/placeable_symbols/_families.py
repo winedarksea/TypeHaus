@@ -16,13 +16,24 @@ a drawn handle stops at the front face rather than protruding through it.
 from __future__ import annotations
 
 import math
-from typing import Callable, Optional, Tuple
+from collections.abc import Callable
 
-from typehaus.model.placeable_symbols._frame import (DETAIL_WEIGHT, OUTLINE_WEIGHT, Part,
-                                                     Point, Stroke, arc, box, circle, clamp,
-                                                     line, polygon, rect)
+from typehaus.model.placeable_symbols._frame import (
+    DETAIL_WEIGHT,
+    OUTLINE_WEIGHT,
+    Part,
+    Point,
+    Stroke,
+    arc,
+    box,
+    circle,
+    clamp,
+    line,
+    polygon,
+    rect,
+)
 
-Geometry = Tuple[Tuple[Stroke, ...], Tuple[Part, ...]]
+Geometry = tuple[tuple[Stroke, ...], tuple[Part, ...]]
 Builder = Callable[[float, float, float], Geometry]
 
 # Seat height is the one anthropometric constant every seat family shares (17"-19" for lounge
@@ -82,7 +93,7 @@ SECTIONAL_CHAISE_WIDTH_FRACTION = 0.32
 def sectional_points(width: float, depth: float,
                      run_depth_fraction: float = SECTIONAL_RUN_DEPTH_FRACTION,
                      chaise_width_fraction: float = SECTIONAL_CHAISE_WIDTH_FRACTION,
-                     ) -> Tuple[Point, ...]:
+                     ) -> tuple[Point, ...]:
     """The L outline shared by the sectional glyph and its catalog ``footprint_shape``.
 
     Exported so the drawn symbol and the resolver's collision footprint cannot drift.
@@ -338,7 +349,6 @@ def besta() -> Builder:
     frame_height_m = 0.0889  # 2x4 laid flat, 3 1/2"
     besta_body_height_m = 0.64135  # IKEA BESTA with doors, 25 1/4"
     countertop_thickness_m = 0.0254  # continuous 1" top
-    baseboard_height_m = 0.1016  # 4" wall baseboard carried across the plinth
     baseboard_depth_m = 0.01905  # 3/4" proud of the frame, not the cabinet
 
     def build(width: float, depth: float, height: float) -> Geometry:
@@ -570,7 +580,7 @@ def appliance_case(*, doors: int = 1, split: str = "vertical", handle: bool = Tr
         parts = [box(0, front + HANDLE_DEPTH_M + face_d + body_d / 2, 0.0, height, width,
                      body_d, body)]
         count = max(1, doors)
-        glass_cells: list[Tuple[float, float]] = []
+        glass_cells: list[tuple[float, float]] = []
         control_h = min(0.09, height * 0.12) if controls else 0.0
         if controls:  # the console band a washer/dryer wears across its back top
             parts.append(box(0, depth / 2 - face_d, height - control_h, height, width,
@@ -618,7 +628,7 @@ def appliance_case(*, doors: int = 1, split: str = "vertical", handle: bool = Tr
 
 def counter_case(*, top_color: str = "counter", body: str = "wood",
                  kick_color: str = "wood-dark", toe_kick: bool = True,
-                 cutout: Optional[Tuple[float, float]] = None) -> Builder:
+                 cutout: tuple[float, float] | None = None) -> Builder:
     """A cabinet under a counter slab — the carcass a vanity or a sink base is built on.
 
     ``cutout`` turns it into a *sink* base: a fraction of the top's width and depth is left

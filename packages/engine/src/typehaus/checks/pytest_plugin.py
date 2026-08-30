@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from typehaus.checks.registry import CheckContext, Tier, registered
+from typehaus.checks.registry import CheckContext, registered
 from typehaus.checks.run import build_context
 from typehaus.findings import Result, Severity
 from typehaus.source import load_plan

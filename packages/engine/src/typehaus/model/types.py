@@ -6,8 +6,15 @@ from typing import Literal
 
 from typehaus.model.base import HausModel
 from typehaus.model.enums import DoorOperation, LuminaireForm, Service, WindowOperation
-from typehaus.model.placeables import (ClearanceZone, Footprint2D, ModelRepresentation,
-                                       Mount, PlacementStrategy, PlanRepresentation, ServicePort)
+from typehaus.model.placeables import (
+    ClearanceZone,
+    Footprint2D,
+    ModelRepresentation,
+    Mount,
+    PlacementStrategy,
+    PlanRepresentation,
+    ServicePort,
+)
 from typehaus.model.registry import register_constructor
 from typehaus.quantities import Length, UFactor
 

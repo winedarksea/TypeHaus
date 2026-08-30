@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import List, Optional
 
 import typer
 from rich.console import Console
@@ -30,7 +29,7 @@ console = Console()
 _UNKNOWN = "UNKNOWN"
 
 
-def _house(house: Optional[Path]) -> Path:
+def _house(house: Path | None) -> Path:
     return (house or Path.cwd()).resolve()
 
 
@@ -45,13 +44,13 @@ def _declared(house: Path):
     return specs
 
 
-def _number(value: Optional[float], digits: int = 2) -> str:
+def _number(value: float | None, digits: int = 2) -> str:
     return _UNKNOWN if value is None else f"{value:,.{digits}f}"
 
 
 @variants_app.command("list")
 def list_variants(
-    house: Optional[Path] = typer.Argument(None, help="House directory (default: cwd)"),
+    house: Path | None = typer.Argument(None, help="House directory (default: cwd)"),
     as_json: bool = typer.Option(False, "--json"),
 ) -> None:
     """List the variants this house declares and the overrides each one carries."""
@@ -78,7 +77,7 @@ def list_variants(
 def compare_variants_command(
     variant_a: str = typer.Argument(..., help="Baseline variant name"),
     variant_b: str = typer.Argument(..., help="Variant to weigh against it"),
-    house: Optional[Path] = typer.Option(None, help="House directory (default: cwd)"),
+    house: Path | None = typer.Option(None, help="House directory (default: cwd)"),
     as_json: bool = typer.Option(False, "--json"),
     checks: bool = typer.Option(True, "--checks/--no-checks",
                                 help="Run each variant's checks and diff the results"),
@@ -163,9 +162,9 @@ def _print_compare_tables(report, prices=None) -> None:
 
 @variants_app.command("assemblies")
 def compare_assemblies_command(
-    tags: List[str] = typer.Argument(..., help="Two or three assembly tags; the first is the "
+    tags: list[str] = typer.Argument(..., help="Two or three assembly tags; the first is the "
                                               "baseline"),
-    house: Optional[Path] = typer.Option(None, help="House directory (default: cwd)"),
+    house: Path | None = typer.Option(None, help="House directory (default: cwd)"),
     as_json: bool = typer.Option(False, "--json"),
 ) -> None:
     """Assembly delta compare (#53): R-value, thickness, layers, framing and STC side by side."""

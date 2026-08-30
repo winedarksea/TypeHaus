@@ -5,13 +5,13 @@ from __future__ import annotations
 from typehaus.resolve.model import (
     BoundaryCondition,
     FramedMember,
-    ResolvedLayer,
-    ResolvedFloorHeat,
     ResolvedCanvasObject,
+    ResolvedFloorHeat,
+    ResolvedLayer,
     ResolvedModel,
     ResolvedOpening,
-    ResolvedRoom,
     ResolvedRoof,
+    ResolvedRoom,
     ResolvedSolid,
     ResolvedStair,
     ResolvedWall,
@@ -20,7 +20,9 @@ from typehaus.resolve.model import (
 from typehaus.resolve.pipeline import resolve, resolve_preview
 
 __all__ = [
-    "resolve", "resolve_preview", "ResolvedModel", "ResolvedWall", "ResolvedLayer", "ResolvedOpening",
-    "ResolvedRoom", "ResolvedSolid", "ResolvedRoof", "ResolvedStair", "ResolvedFloorHeat", "ResolvedCanvasObject", "FramedMember",
+    "resolve", "resolve_preview", "ResolvedModel", "ResolvedWall", "ResolvedLayer",
+    "ResolvedOpening",
+    "ResolvedRoom", "ResolvedSolid", "ResolvedRoof", "ResolvedStair", "ResolvedFloorHeat",
+    "ResolvedCanvasObject", "FramedMember",
     "BoundaryCondition", "StackEdge",
 ]

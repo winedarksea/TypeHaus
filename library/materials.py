@@ -120,7 +120,9 @@ STARTER_MATERIALS: tuple[Material, ...] = (
     Material(tag="closed-cell-spray-foam", name="Closed-cell spray polyurethane foam (2 lb)",
              r_per_inch=6.5, density=32.0, perm_rating=1.6, hatch="batt", color="#e8d9b5",
              foam_plastic=True,
-             source="published ccSPF range R-5.9 to R-7.0 per inch and ASTM E96 permeance 1.2-2.0 perm at 1 in.; midpoints of the published ranges, per this file's convention"),
+             source="published ccSPF range R-5.9 to R-7.0 per inch and ASTM E96 permeance "
+                    "1.2-2.0 perm at 1 in.; midpoints of the published ranges, per this "
+                    "file's convention"),
     # The wet/humid-room air+vapour barrier: the layer a room run at 55-70% RH depends on,
     # and the one `building_science.humid_room_liner` keys on. Authored as a
     # **specification**, not a datasheet reading — 0.05 perm is the loosest a submitted
@@ -164,7 +166,9 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              name="Self-adhered air/vapour barrier membrane (Class I)",
              r_per_inch=0.0, density=1000.0, vapor_permeance_perms=0.05, hatch="membrane",
              color="#3f4a52",
-             source="specification, not a product datasheet: a fully-adhered sheet air/vapour barrier tested to ASTM E96 desiccant method at 0.05 perm or tighter, i.e. Class I per IRC R702.7.1 with margin"),
+             source="specification, not a product datasheet: a fully-adhered sheet "
+                    "air/vapour barrier tested to ASTM E96 desiccant method at 0.05 perm "
+                    "or tighter, i.e. Class I per IRC R702.7.1 with margin"),
     # Solid PVC tongue-and-groove wall/ceiling panel (Trusscore-class): concealed screw
     # flange, mounts direct to furring, no cellulose substrate anywhere in it, third-party
     # mould-tested to ISO 846. The lining of choice for a room that is deliberately wet.
@@ -180,7 +184,9 @@ STARTER_MATERIALS: tuple[Material, ...] = (
     # and non-compliance voids the warranty.
     Material(tag="pvc-panel", name="Solid PVC T&G wall/ceiling panel (1/2\")",
              r_per_inch=1.0, density=700.0, hatch="rigid", color="#f2f4f3",
-             source="Trusscore-class 1/2\" T&G interlocking PVC panel, concealed screw flange, ISO 846 mould-tested; no ASTM E96 permeance published in this product class, so none is authored"),
+             source="Trusscore-class 1/2\" T&G interlocking PVC panel, concealed screw "
+                    "flange, ISO 846 mould-tested; no ASTM E96 permeance published in "
+                    "this product class, so none is authored"),
     # No published ASTM E96 rating located for modern fibre-cement lap siding; the closest
     # published entry is asbestos-cement board, a different binder/fibre system, so the
     # field is left unset rather than substituted.
@@ -369,5 +375,8 @@ STARTER_MATERIALS: tuple[Material, ...] = (
     # never a layer in a rated assembly.
     Material(tag="vinyl-sheet", name="Heat-welded sheet vinyl, integral flash cove",
              hatch="membrane", color="#8a9a86",
-             source="finish covering, not an assembly layer; thermal/vapour fields unset. Heat-welded seams and a 6\" integral flash cove lapped behind the wall membrane — see houses/catlin/notes/plant_room.md for why the cove replaces a separate waterproofing layer"),
+             source="finish covering, not an assembly layer; thermal/vapour fields unset. "
+                    "Heat-welded seams and a 6\" integral flash cove lapped behind the wall "
+                    "membrane — see houses/catlin/notes/plant_room.md for why the cove "
+                    "replaces a separate waterproofing layer"),
 )

@@ -43,7 +43,9 @@ def render_card(asm: Assembly, library: Library,
         d.add(Text(_LEFT, 48, f"variant of {asm.variant_of}", size=11, fill="#8a857b"))
 
     y = _TOP
-    for i, (layer, h) in enumerate(zip(stack, heights)):
+    # strict=True: `heights` is a comprehension over `stack`, so the two are the same
+    # length by construction — a mismatch means that stopped being true.
+    for layer, h in zip(stack, heights, strict=True):
         mat = library.material(layer.material_ref)
         color = material_color(mat.hatch if mat else None, mat.color if mat else None)
         hatch = mat.hatch if mat and mat.hatch in {
@@ -118,7 +120,9 @@ def _add_condensation_plot(d: Drawing, analysis: CondensationAnalysis, y: float)
         (pressures, lambda p: p.vapor_pressure_pa, "#246a9f"),
         (pressures, lambda p: p.saturation_pressure_pa, "#bf3e36"),
     ):
-        for a, b in zip(points, points[1:]):
+        # strict=False: offset-by-one pairwise walk along the profile — the tail is one
+        # shorter by construction.
+        for a, b in zip(points, points[1:], strict=False):
             d.add(Line(x0 + width * a.position, scaled(values, getter(a)),
                        x0 + width * b.position, scaled(values, getter(b)),
                        stroke=color, stroke_width=1.6))

@@ -66,7 +66,7 @@ def railing_post_stations(path: list[Vec], spacing: float) -> list[Vec]:
     ``spacing`` is a maximum, and no bay now exceeds it.
     """
     placed: list[Vec] = []
-    for a, b in zip(path[:-1], path[1:]):
+    for a, b in zip(path[:-1], path[1:], strict=True):
         seg = length(sub(b, a))
         bays = max(int(math.ceil(seg / spacing - 1e-9)), 1) if seg > 1e-9 else 1
         for k in range(bays):
@@ -199,7 +199,7 @@ def _rail_path(path: list[Vec], surface: RailingSurface, rise_m: float) -> tuple
     follow the flight. ``rise_m`` is this level's height above that surface.
     """
     points: list[Vec3] = []
-    for a, b in zip(path[:-1], path[1:]):
+    for a, b in zip(path[:-1], path[1:], strict=True):
         run = length(sub(b, a))
         steps = max(int(math.ceil(run / RAIL_BAND_STEP_M)), 1)
         for k in range(steps):

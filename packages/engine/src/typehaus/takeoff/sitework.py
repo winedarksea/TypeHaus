@@ -8,8 +8,6 @@ the project was part of the order.
 
 from __future__ import annotations
 
-from collections import defaultdict
-
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
@@ -23,7 +21,8 @@ def _ring_area(ring) -> float:
     if len(ring) < 3:
         return 0.0
     total = 0.0
-    for (x0, y0), (x1, y1) in zip(ring, list(ring[1:]) + [ring[0]]):
+    # The ring against its own rotation-by-one: the same length, always.
+    for (x0, y0), (x1, y1) in zip(ring, list(ring[1:]) + [ring[0]], strict=True):
         total += x0 * y1 - x1 * y0
     return abs(total) / 2.0
 
@@ -32,7 +31,8 @@ def _ring_perimeter(ring) -> float:
     if len(ring) < 2:
         return 0.0
     return sum(((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
-               for (x0, y0), (x1, y1) in zip(ring, list(ring[1:]) + [ring[0]]))
+               for (x0, y0), (x1, y1) in zip(ring, list(ring[1:]) + [ring[0]],
+                                             strict=True))
 
 
 def footing_bedding_takeoff(model: ResolvedModel) -> list[dict[str, object]]:

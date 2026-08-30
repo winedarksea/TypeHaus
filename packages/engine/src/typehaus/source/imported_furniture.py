@@ -5,7 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from typehaus.findings import Finding, failed as _error
+from typehaus.findings import Finding
+from typehaus.findings import failed as _error
 from typehaus.model import Furniture, FurnitureType, MeshRef, deg, m, pt
 from typehaus.model.ids import new_uid
 from typehaus.model.plan import PlanModel

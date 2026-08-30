@@ -10,10 +10,9 @@ The four original tags (``FURN-SOFA-84``, ``FURN-QUEEN-BED``, ``FURN-DINING-6``,
 
 from __future__ import annotations
 
-from typehaus.model import (Footprint2D, FurnitureType, ft, inch, m, pt)
-from typehaus.model.placeable_symbols.furniture import sectional_points
-
 from library.placeables._zones import front_zone, side_zone, surround_zone
+from typehaus.model import Footprint2D, FurnitureType, ft, inch, m, pt
+from typehaus.model.placeable_symbols.furniture import sectional_points
 
 REFERENCE = "plans/furniture_size_reference.md (US residential averages)"
 
@@ -219,7 +218,8 @@ BOOKCASE = FurnitureType(
 SAUNA_BENCH_TIERED_102 = FurnitureType(
     tag="FURN-SAUNA-BENCH-2T-102", name="Two-tier sauna bench, 8'-6\"",
     footprint=(ft(8, 6), ft(3, 6)), height=ft(3), plan_symbol="sauna-bench-tiered",
-    source="Law of Löyly two-tier bench: upper 36\", lower 18\" (notes/sauna_shower_basement_detail.md)",
+    source=("Law of Löyly two-tier bench: upper 36\", lower 18\" "
+            "(notes/sauna_shower_basement_detail.md)"),
 )
 SAUNA_BENCH_54 = FurnitureType(
     tag="FURN-SAUNA-BENCH-54", name='Sauna foot bench, 4\'-6"',

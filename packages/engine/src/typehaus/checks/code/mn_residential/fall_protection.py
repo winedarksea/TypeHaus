@@ -10,8 +10,7 @@ from __future__ import annotations
 
 import math
 
-from typehaus.checks.code.mn_residential._common import (_fail, _pass, _rooms_by_storey,
-                                                         _unknown)
+from typehaus.checks.code.mn_residential._common import _fail, _pass, _unknown
 from typehaus.checks.code.mn_residential.stairs import _flight_stations
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
@@ -54,7 +53,7 @@ def _edge_cover_intervals(edge_across: float, along0: float, along1: float, acro
             continue
         covered.append(span_along)
     for railing, tall_enough in railings:
-        for p, q in zip(railing.path, railing.path[1:]):
+        for p, q in zip(railing.path, railing.path[1:], strict=False):
             pa, qa = p.xy_m, q.xy_m
             if (abs(pa[across] - edge_across) > _GUARD_PLANE_TOL_M
                     or abs(qa[across] - edge_across) > _GUARD_PLANE_TOL_M):
@@ -177,7 +176,7 @@ def stairwell_guard(ctx: CheckContext) -> list[Finding]:
         stair_quads = []
         for stair in ctx.model.stairs:
             for stations in _flight_stations(stair).values():
-                pairs = list(zip(stations, stations[1:]))
+                pairs = list(zip(stations, stations[1:], strict=False))
                 for index, ((a0, b0, z0), (a1, b1, z1)) in enumerate(pairs):
                     if max(z0, z1) < surface - _GUARD_THROAT_Z_WINDOW_M:
                         continue
@@ -279,7 +278,6 @@ def raised_surface_guard_height(ctx: CheckContext) -> list[Finding]:
                          "surface to measure", (), code)]
     grade = ctx.plan.project.site.grade
     railings = [e for e in ctx.plan.all_elements() if isinstance(e, Railing)]
-    rooms_by_storey = _rooms_by_storey(ctx)
     out: list[Finding] = []
     for deck in decks:
         surface = deck.deck_z1_m
@@ -303,7 +301,7 @@ def raised_surface_guard_height(ctx: CheckContext) -> list[Finding]:
         unguarded: list[str] = []
         unknown_edges: list[str] = []
         short: list[str] = []
-        for a, b in zip(ring, ring[1:] + ring[:1]):
+        for a, b in zip(ring, ring[1:] + ring[:1], strict=True):
             seg = LineString([a, b])
             if seg.length <= _EDGE_GAP_TOL_M:
                 continue
@@ -544,7 +542,7 @@ def _largest_drawn_opening_m(ctx: CheckContext, guard) -> float | None:
         return None
     stations = railing_post_stations(path, max(guard.post_spacing.meters, 0.3))
     largest = 0.0
-    for a, b in zip(stations[:-1], stations[1:]):
+    for a, b in zip(stations[:-1], stations[1:], strict=True):
         bay = length(sub(b, a))
         if bay <= 1e-9:
             continue

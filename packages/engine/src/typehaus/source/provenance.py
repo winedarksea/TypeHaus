@@ -51,7 +51,7 @@ class Provenance:
 
 def scan_provenance(
     file: str, source: str, prov: Provenance,
-    wrapper: "cst.MetadataWrapper | None" = None,
+    wrapper: cst.MetadataWrapper | None = None,
 ) -> None:
     """Record the source location of every constructor call carrying a ``tag=`` kwarg.
 

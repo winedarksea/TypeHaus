@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any
 from typehaus.resolve.geometry_prims import arch_soffit_circle
 
 if TYPE_CHECKING:
-    import ifcopenshell
+    pass
 
 
 def require_ifcopenshell() -> Any:
@@ -390,7 +390,8 @@ def assign_type(f: Any, occurrence: Any, type_object: Any) -> None:
     """Keep occurrence/type semantics explicit for BIM consumers and schedules."""
     import ifcopenshell.api
 
-    ifcopenshell.api.run("type.assign_type", f, related_objects=[occurrence], relating_type=type_object)
+    ifcopenshell.api.run("type.assign_type", f, related_objects=[occurrence],
+                         relating_type=type_object)
 
 
 def create_system(f: Any, name: str, predefined_type: str | None = None) -> Any:

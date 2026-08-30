@@ -55,7 +55,6 @@ def basement_framed_wall(model, framed, concrete, crop, direction,
     junction_z = concrete.z1_m / M_PER_IN
     intervals = layer_intervals(framed, direction, station)
     out_sign = 1.0 if is_outboard_high else -1.0
-    cfg = BASEMENT_TO_FRAMED_WALL
 
     nodes: list[IRNode] = []
     nodes += _l_flashing_and_bead(intervals, is_outboard_high, out_sign, junction_z)

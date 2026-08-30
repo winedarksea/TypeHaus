@@ -67,14 +67,14 @@ _ROLE_CONTROL = {"ci": "thermal", "thermal": "thermal", "air": "air",
 
 def _find_layer(wall, name: str):
     """Resolve a layer by name, then by the control-layer role it publishes."""
-    exact = next((l for l in wall.layers if l.name == name), None)
+    exact = next((layer for layer in wall.layers if layer.name == name), None)
     if exact is not None:
         return exact
     control = _ROLE_CONTROL.get(name)
     if control is None:
         return None
     # Outermost layer carrying that control: the plane a transition laps to.
-    matching = [l for l in wall.layers if control in l.control]
+    matching = [layer for layer in wall.layers if control in layer.control]
     return matching[-1] if matching else None
 
 

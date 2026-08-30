@@ -10,10 +10,8 @@ from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.gltf.palette import _color
 from typehaus.emit.gltf.scene import _SceneBuilder
 from typehaus.model.canvas import canvas_object_types
-from typehaus.model.placeable_symbols import (PART_COLORS, lamp_role, model_parts,
-                                              place_local)
+from typehaus.model.placeable_symbols import PART_COLORS, lamp_role, model_parts, place_local
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel
-
 
 _CANVAS_TRADES = {"plumbing": "plumbing", "electrical": "electrical", "mechanical": "mechanical"}
 
@@ -59,7 +57,8 @@ def _add_canvas_objects(scene: _SceneBuilder, model: ResolvedModel) -> None:
                          kind="canvas_object", uid=item.uid)
 
 
-def _add_mesh_sidecar(mb: _MeshBuilder, path: Path, position: tuple[float, float], z0: float) -> bool:
+def _add_mesh_sidecar(mb: _MeshBuilder, path: Path, position: tuple[float, float],
+                      z0: float) -> bool:
     try:
         import trimesh
 

@@ -314,7 +314,9 @@ def _column_widths(table: ScheduleTable) -> list[int]:
 
 def _pad_row(cells: tuple[str, ...], widths: list[int]) -> str:
     gap = " " * SCHEDULE_COLUMN_GAP_SPACES
-    padded = [cell.ljust(width) for cell, width in zip(cells, widths)]
+    # strict=False: a short row is tolerated everywhere else in this module (see
+    # _column_widths' `index < len(row)` guard), so a ragged row pads to what it has.
+    padded = [cell.ljust(width) for cell, width in zip(cells, widths, strict=False)]
     return gap.join(padded).rstrip()
 
 

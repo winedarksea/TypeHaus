@@ -10,7 +10,6 @@ yet, while a permit set that does not pass must not exist.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.table import Table
@@ -21,7 +20,7 @@ from typehaus.findings import Result
 
 @app.command()
 def ls(
-    house: Optional[Path] = typer.Argument(None),
+    house: Path | None = typer.Argument(None),
     summary: bool = typer.Option(False, help="compact whole-plan digest (#52)"),
 ) -> None:
     """List plan elements (or a compact agent-friendly digest with --summary)."""
@@ -46,7 +45,7 @@ def ls(
 
 
 @app.command()
-def fmt(house: Optional[Path] = typer.Argument(None)) -> None:
+def fmt(house: Path | None = typer.Argument(None)) -> None:
     """Normalize editable plan files and assign missing uids (WP2.2)."""
     from typehaus.source import fmt_house
 
@@ -61,17 +60,17 @@ def fmt(house: Optional[Path] = typer.Argument(None)) -> None:
 
 @app.command()
 def render(
-    house: Optional[Path] = typer.Argument(None),
+    house: Path | None = typer.Argument(None),
     view: str = typer.Option(
         "plan", help="plan | site | section | elevation | details | 3d | all (#52 agent eyes)"),
     fmt: str = typer.Option("png", help="png | svg"),
-    dpi: Optional[int] = typer.Option(
+    dpi: int | None = typer.Option(
         None, help="raster resolution; default 110 (screen), 300 for details. An ARCH D "
                    "sheet at plate quality is --dpi 300 → 10800 x 7200 px"),
-    paper: Optional[str] = typer.Option(
+    paper: str | None = typer.Option(
         None, help="ledger | arch-d — compose onto a real sheet (border, title block, "
                    "graphic scale bar, north arrow) at TRUE architectural scale"),
-    scale: Optional[str] = typer.Option(
+    scale: str | None = typer.Option(
         None, help="force a scale, e.g. '1/4\" = 1\'-0\"' or 'fit'; implies --paper ledger"),
     underlay: bool = typer.Option(
         True, "--underlay/--no-underlay",
@@ -118,10 +117,10 @@ def render(
 
 @app.command(name="print")
 def print_sheets(
-    house: Optional[Path] = typer.Argument(None),
+    house: Path | None = typer.Argument(None),
     fmt: str = typer.Option("both", help="dxf | pdf | both"),
     handoff: bool = typer.Option(False, help="also write the architect-handoff bundle"),
-    profile: Optional[str] = typer.Option(
+    profile: str | None = typer.Option(
         None, help="jurisdiction profile (default: preferences.toml, else the engine default)"),
     details: str = typer.Option(
         "primary", help="primary | all — 'primary' (default) keeps only starred transition "
@@ -163,7 +162,8 @@ def print_sheets(
     checklist = evaluate_permit_checklist(run(result.plan, d, profile=jurisdiction.name),
                                           jurisdiction)
     if not checklist.ok:
-        console.print("[red]permit print blocked: declared checklist has failures or unknowns[/red]")
+        console.print(
+            "[red]permit print blocked: declared checklist has failures or unknowns[/red]")
         for item in checklist.items:
             if item.blocking and item.result is not Result.PASS:
                 console.print(f"  {item.label}: {item.detail}")

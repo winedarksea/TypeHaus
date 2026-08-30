@@ -9,22 +9,41 @@ testable without ifcopenshell; the IFC adapter is the thin, optional edge.
 
 from __future__ import annotations
 
-from typehaus.diff.assembly_compare import (AssemblyComparison, MetricDelta,
-                                            compare_assemblies)
-from typehaus.diff.compare import (CheckDelta, CompareReport, EnvelopeDelta, QuantityDelta,
-                                   VariantSelection, apply_assembly_swaps, check_deltas,
-                                   compare_models, compare_variants, envelope_deltas,
-                                   quantity_deltas, resolve_variant, variant_plan)
-from typehaus.diff.equivalence import (EquivalenceReport, EntityEquivalence,
-                                       compare_semantic_models)
+from typehaus.diff.assembly_compare import AssemblyComparison, MetricDelta, compare_assemblies
+from typehaus.diff.compare import (
+                                            CheckDelta,
+                                            CompareReport,
+                                            EnvelopeDelta,
+                                            QuantityDelta,
+                                            VariantSelection,
+                                            apply_assembly_swaps,
+                                            check_deltas,
+                                            compare_models,
+                                            compare_variants,
+                                            envelope_deltas,
+                                            quantity_deltas,
+                                            resolve_variant,
+                                            variant_plan,
+)
+from typehaus.diff.equivalence import EntityEquivalence, EquivalenceReport, compare_semantic_models
 from typehaus.diff.matcher import Match, match_elements
 from typehaus.diff.model import DiffElem
 from typehaus.diff.report import ChangeKind, DiffReport, build_report
-from typehaus.diff.semantic import (AmbiguousStoreyDatum, SemanticEntity, SemanticModel,
-                                    SemanticStorey, pick_datum_storey,
-                                    semantic_model_from_ifc)
-from typehaus.diff.variants import (LayerThicknessOverride, VariantSpec, apply_layer_thickness,
-                                    find_variant, load_variants)
+from typehaus.diff.semantic import (
+                                            AmbiguousStoreyDatum,
+                                            SemanticEntity,
+                                            SemanticModel,
+                                            SemanticStorey,
+                                            pick_datum_storey,
+                                            semantic_model_from_ifc,
+)
+from typehaus.diff.variants import (
+                                            LayerThicknessOverride,
+                                            VariantSpec,
+                                            apply_layer_thickness,
+                                            find_variant,
+                                            load_variants,
+)
 
 __all__ = [
     "DiffElem", "Match", "match_elements",

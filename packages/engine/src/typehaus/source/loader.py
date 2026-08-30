@@ -15,10 +15,10 @@ import os
 import sys
 import threading
 import time
+from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterator
 
 from pydantic import ValidationError
 
@@ -112,7 +112,7 @@ def lint_only(house_dir: Path) -> list[Finding]:
 # that file's exact bytes, so a rebuild after a one-file edit re-scans just the changed file
 # and replays the rest from cache. Source stays the ground truth — the cache key is the file
 # content itself, so a stale entry can never be served.
-_SCAN_CACHE: dict[str, tuple[str, list[Finding], list[tuple[str, "SourceLoc"]]]] = {}
+_SCAN_CACHE: dict[str, tuple[str, list[Finding], list[tuple[str, SourceLoc]]]] = {}
 
 
 # ---------------------------------------------------------------------------------------
@@ -239,9 +239,9 @@ def _capture_authorship(house_dir: Path) -> Iterator[dict[str, SourceLoc]]:
     """
     captured: dict[str, SourceLoc] = {}
     # co_filename → house-relative posix path (or None if outside); resolved once per file.
-    rel_cache: dict[str, "str | None"] = {}
+    rel_cache: dict[str, str | None] = {}
 
-    def _rel(co_filename: str) -> "str | None":
+    def _rel(co_filename: str) -> str | None:
         if co_filename not in rel_cache:
             p = Path(co_filename)
             if not p.is_absolute():

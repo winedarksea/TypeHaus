@@ -32,7 +32,8 @@ def import_furniture_mesh(source: Path, house_dir: Path, *, tag: str | None = No
     try:
         import trimesh
     except ImportError as exc:  # pragma: no cover - environment-dependent dependency
-        raise RuntimeError("furniture import needs trimesh; install typehaus with its mesh dependencies") from exc
+        raise RuntimeError("furniture import needs trimesh; "
+                           "install typehaus with its mesh dependencies") from exc
 
     scene = trimesh.load(source, force="scene")
     bounds = scene.bounds
@@ -56,7 +57,8 @@ def import_furniture_mesh(source: Path, house_dir: Path, *, tag: str | None = No
         "height_m": round(float(extents[2]), 6),
         "storage": storage,
         "mesh": mesh_rel.as_posix(),
-        "source": f"House-local import from {source.name}; verify redistribution rights before library promotion.",
+        "source": (f"House-local import from {source.name}; "
+                   "verify redistribution rights before library promotion."),
         "content_hash": analysis.content_hash,
     }
     catalog["types"].append(record)
@@ -76,7 +78,9 @@ def _load_catalog(path: Path) -> dict[str, list[dict[str, object]]]:
     if not path.exists():
         return {"types": [], "instances": []}
     data = json.loads(path.read_text())
-    if not isinstance(data, dict) or not isinstance(data.get("types", []), list) or not isinstance(data.get("instances", []), list):
+    if (not isinstance(data, dict)
+            or not isinstance(data.get("types", []), list)
+            or not isinstance(data.get("instances", []), list)):
         raise ValueError(f"invalid furniture catalog {path}")
     return {"types": list(data.get("types", [])), "instances": list(data.get("instances", []))}
 

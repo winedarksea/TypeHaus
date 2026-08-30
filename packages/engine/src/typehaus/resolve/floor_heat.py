@@ -20,7 +20,8 @@ def resolve_floor_heat(model: ResolvedModel) -> list[Finding]:
             if not zone:
                 findings.append(Finding(
                     severity=Severity.ERROR, check_id="integrity.floor_heat_zone",
-                    message=f"floor heat {authored.tag} has no resolvable zone", element_tags=(authored.tag,),
+                    message=f"floor heat {authored.tag} has no resolvable zone",
+                    element_tags=(authored.tag,),
                     result=Result.FAIL,
                 ))
                 continue

@@ -183,7 +183,7 @@ def _sweep_bands(solid: ResolvedSolid) -> list[tuple[tuple[float, float], float,
     """One station every :data:`_BAND_SAMPLE_M` along a swept rail's own 3D polyline."""
     path = clean_path(solid.sweep.path)
     bands: list[tuple[tuple[float, float], float, float]] = []
-    for a, b in zip(path[:-1], path[1:]):
+    for a, b in zip(path[:-1], path[1:], strict=True):
         run = math.hypot(b[0] - a[0], b[1] - a[1])
         steps = max(int(math.ceil(run / _BAND_SAMPLE_M)), 1)
         for k in range(steps):

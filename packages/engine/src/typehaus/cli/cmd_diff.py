@@ -9,7 +9,6 @@ swapped). Both render the same element-change table, which is why they sit toget
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.table import Table
@@ -20,7 +19,7 @@ from typehaus.cli._shared import _print_findings, _resolve_house, app, console
 @app.command()
 def diff(
     external: Path = typer.Argument(..., help="architect-modified IFC to compare"),
-    house: Optional[Path] = typer.Argument(None),
+    house: Path | None = typer.Argument(None),
 ) -> None:
     """Semantic diff of an external IFC against the deterministic baseline (WP2.10)."""
     from typehaus.diff import build_report
@@ -52,13 +51,13 @@ def diff(
 @app.command()
 def compare(
     variant_a: Path = typer.Argument(..., help="House A directory (baseline variant)"),
-    variant_b: Optional[Path] = typer.Argument(
+    variant_b: Path | None = typer.Argument(
         None, help="House B directory; omit to compare variant A against itself with --swap"),
     swap: list[str] = typer.Option(
         [], "--swap", "-s",
         help="Assembly swap OLD=NEW applied to variant B's walls (repeatable)"),
-    label_a: Optional[str] = typer.Option(None, help="Display label for variant A"),
-    label_b: Optional[str] = typer.Option(None, help="Display label for variant B"),
+    label_a: str | None = typer.Option(None, help="Display label for variant A"),
+    label_b: str | None = typer.Option(None, help="Display label for variant B"),
     as_json: bool = typer.Option(False, "--json"),
     sheet: bool = typer.Option(False, help="also render a compare sheet PNG"),
 ) -> None:

@@ -80,9 +80,9 @@ def _cavity_host(layers: list, index: int) -> int | None:
     if layer.function is not LayerFunction.INSULATION:
         return None
     for j in (index - 1, index + 1):
-        if 0 <= j < len(layers) and layers[j].function is LayerFunction.STRUCTURE:
-            if abs(layers[j].thickness.meters - layer.thickness.meters) < _EPS:
-                return j
+        if (0 <= j < len(layers) and layers[j].function is LayerFunction.STRUCTURE
+                and abs(layers[j].thickness.meters - layer.thickness.meters) < _EPS):
+            return j
     return None
 
 

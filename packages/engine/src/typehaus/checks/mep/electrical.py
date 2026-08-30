@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import advisory, passed as _pass, unknown as _unknown
+from typehaus.checks._authoring import advisory
+from typehaus.checks._authoring import passed as _pass
+from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import Occupancy
@@ -269,7 +271,9 @@ def _coverage_gaps(space: tuple[float, float], positions: list[float]) -> list[f
     gaps = []
     if inside[0] - a > _MAX_TO_RECEPTACLE_M:
         gaps.append(a)
-    for left, right in zip(inside, inside[1:]):
+    # strict=False: the offset-by-one pairwise walk is deliberately ragged — `inside[1:]`
+    # is always exactly one shorter, so strict=True would raise on every call.
+    for left, right in zip(inside, inside[1:], strict=False):
         if right - left > 2 * _MAX_TO_RECEPTACLE_M:
             gaps.append((left + right) / 2.0)
     if b - inside[-1] > _MAX_TO_RECEPTACLE_M:
@@ -330,12 +334,15 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
                 gaps.append(0.0)
             else:
                 ordered = sorted(positions)
-                for left, right in zip(ordered, ordered[1:] + [ordered[0] + perimeter]):
+                # strict=True: the wrap-around tail restores the length, so both sides are
+                # len(ordered) by construction — a mismatch would mean that stopped holding.
+                for left, right in zip(ordered, ordered[1:] + [ordered[0] + perimeter],
+                                       strict=True):
                     if right - left > 2 * _MAX_TO_RECEPTACLE_M:
                         gaps.append(((left + right) / 2.0) % perimeter)
         else:
             spaces = []
-            for index, (a, b) in enumerate(doors):
+            for index, (_a, b) in enumerate(doors):
                 next_a = doors[index + 1][0] if index + 1 < len(doors) else doors[0][0] + perimeter
                 if next_a - b >= _MIN_WALL_SPACE_M:
                     spaces.append((b, next_a))

@@ -35,7 +35,7 @@ therefore a leader from the margin into the drawing, and the writer maps ``to`` 
 
 from __future__ import annotations
 
-from typing import Literal, Union
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -69,7 +69,7 @@ class NamedPoint(_IRBase):
     name: str = ""
 
 
-AnchorRef = Union[FaceAnchor, NamedPoint]
+AnchorRef = FaceAnchor | NamedPoint
 
 
 # --- primitives --------------------------------------------------------------
@@ -158,7 +158,7 @@ class Viewport(_Node):
     target_slice: str
 
 
-IRNode = Union[Polyline, Hatch, Text, ArchDimension, Leader, Symbol, Viewport]
+IRNode = Polyline | Hatch | Text | ArchDimension | Leader | Symbol | Viewport
 
 
 class Frame(_IRBase):

@@ -75,7 +75,9 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     if not spec.bearing_refs:
         return None, []  # nothing to frame yet — bearing refs are the M3 opt-in
     bearing_axes = [_bearing_axis(model, tag) for tag in spec.bearing_refs]
-    missing = [tag for tag, axis in zip(spec.bearing_refs, bearing_axes) if axis is None]
+    # strict=True: `bearing_axes` is a comprehension over `spec.bearing_refs`.
+    missing = [tag for tag, axis in zip(spec.bearing_refs, bearing_axes, strict=True)
+               if axis is None]
     if missing or len(spec.bearing_refs) < 2:
         return None, [Finding(
             severity=Severity.ERROR, check_id="integrity.floor_bearing",
@@ -125,7 +127,8 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
         if box is None:
             return None, [Finding(
                 severity=Severity.ERROR, check_id="integrity.floor_opening_shape",
-                message=f"floor {system.tag} only frames axis-aligned rectangular opening {opening.tag}",
+                message=f"floor {system.tag} only frames axis-aligned rectangular "
+                        f"opening {opening.tag}",
                 element_tags=(system.tag, opening.tag), result=Result.FAIL,
             )]
         opening_boxes.append((opening, *box))
@@ -183,8 +186,8 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
                 else:
                     p0, p1 = (perp, segment_a), (perp, segment_b)
                 members.append(FramedMember(
-                    system.uid, f"joist-{span_index}-{index:03d}-{segment_index}", "joist", spec.member,
-                    p0, p1, z0, z1, segment_b - segment_a,
+                    system.uid, f"joist-{span_index}-{index:03d}-{segment_index}", "joist",
+                    spec.member, p0, p1, z0, z1, segment_b - segment_a,
                 ))
 
     # Sistered plies + solid blocking under an authored concentrated load. This runs on the
@@ -385,7 +388,8 @@ def _rectangular_opening_box(opening: FloorOpening) -> tuple[float, float, float
     return min(xs), max(xs), min(ys), max(ys)
 
 
-def _subtract_interval(intervals: list[tuple[float, float]], cut0: float, cut1: float) -> list[tuple[float, float]]:
+def _subtract_interval(intervals: list[tuple[float, float]], cut0: float,
+                       cut1: float) -> list[tuple[float, float]]:
     out: list[tuple[float, float]] = []
     for start, end in intervals:
         if cut1 <= start or cut0 >= end:

@@ -12,7 +12,8 @@ stage of the drawing set, which is a note to the author and not a permit blocker
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import advisory, passed as _pass
+from typehaus.checks._authoring import advisory
+from typehaus.checks._authoring import passed as _pass
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.mep import Sump
@@ -28,8 +29,7 @@ def _advisory_fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
 
 def _elements(ctx: CheckContext):
     for storey in ctx.model.plan.storeys:
-        for element in ctx.model.plan.storey_elements(storey.tag):
-            yield element
+        yield from ctx.model.plan.storey_elements(storey.tag)
 
 
 def _gutter_hosts(ctx: CheckContext) -> dict[str, object]:

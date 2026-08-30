@@ -2,15 +2,13 @@
 
 from __future__ import annotations
 
-from typing import Any
 from math import atan2, degrees
+from typing import Any
 
-from typehaus.model.plan import PlanModel
+from typehaus.model.placeable_symbols import lamp_role, model_parts, part_hex, plan_symbol_strokes
 from typehaus.model.placeables import PlacementStrategy
-from typehaus.model.placeable_symbols import (lamp_role, model_parts, part_hex,
-                                              plan_symbol_strokes)
+from typehaus.model.plan import PlanModel
 from typehaus.resolve.geometry import opening_center, wall_frame
-
 
 _TYPE_COLLECTIONS = (
     ("door_types", "opening", "Door", PlacementStrategy.OPENING_HOSTED),
@@ -31,7 +29,8 @@ def canvas_object_types(plan: PlanModel) -> list[dict[str, Any]]:
         for item in getattr(plan.library, collection):
             footprint = getattr(item, "footprint", None)
             result.append({
-                "tag": item.tag, "name": getattr(item, "name", item.tag), "domain": domain, "kind": kind,
+                "tag": item.tag, "name": getattr(item, "name", item.tag),
+                "domain": domain, "kind": kind,
                 "placement": getattr(item, "placement", default_strategy).value,
                 # One line covering all eight type collections — every one of them either
                 # carries ``product_ref`` or inherits it from FurnitureType.
@@ -49,9 +48,11 @@ def canvas_object_types(plan: PlanModel) -> list[dict[str, Any]]:
                 "model_glb": (f"/asset/{item.model_representation.glb}"
                               if getattr(item, "model_representation", None) is not None
                               and item.model_representation.glb else
-                              f"/asset/{item.mesh.path}" if getattr(item, "mesh", None) is not None else None),
-                "model_primitive": (item.model_representation.primitive
-                                    if getattr(item, "model_representation", None) is not None else None),
+                              f"/asset/{item.mesh.path}"
+                              if getattr(item, "mesh", None) is not None else None),
+                "model_primitive": (
+                    item.model_representation.primitive
+                    if getattr(item, "model_representation", None) is not None else None),
                 **_symbol_geometry(item, footprint),
             })
     return result
@@ -108,14 +109,17 @@ def canvas_objects(plan: PlanModel) -> list[dict[str, Any]]:
             objects.append({
                 "uid": item.uid, "tag": item.tag, "storey": storey.tag,
                 "kind": item.element_kind, "type": getattr(item, "type_ref", None),
-                "domain": type_domains.get(getattr(item, "type_ref", ""), item.element_kind.lower()),
+                "domain": type_domains.get(getattr(item, "type_ref", ""),
+                                           item.element_kind.lower()),
                 "room": getattr(item, "room", None),
                 # OpeningPosition is an along-wall topology reference, not a Point2D.
                 "position_m": list(position.xy_m) if hasattr(position, "xy_m") else None,
                 "rotation": _rotation_degrees(getattr(item, "rotation", None)),
                 "host": getattr(item, "host", None),
-                "attachment": ({"wall": location.attachment.wall_ref, "face": location.attachment.face}
-                               if location is not None and location.attachment is not None else None),
+                "attachment": ({"wall": location.attachment.wall_ref,
+                                "face": location.attachment.face}
+                               if location is not None and location.attachment is not None
+                               else None),
             })
     return objects
 
@@ -212,10 +216,13 @@ def _resolved_openings(
             "uid": opening.uid, "tag": opening.tag, "storey": wall.storey,
             "kind": opening.kind, "type": opening.type_ref, "domain": "opening", "room": None,
             "position_m": list(center), "z_m": wall.base_ref_z_m + opening.sill_m,
-            "rotation": degrees(atan2(uy, ux)), "host": opening.host_wall, "attachment": None,
+            "rotation": degrees(atan2(uy, ux)), "host": opening.host_wall,
+            "attachment": None,
             "footprint": [list(point) for point in footprint],
             "required_clearances": [],
-            "recommended_clearances": [[list(point) for point in opening.swing_clearance]] if opening.swing_clearance else [],
+            "recommended_clearances": (
+                [[list(point) for point in opening.swing_clearance]]
+                if opening.swing_clearance else []),
             "framing_bumper": [list(point) for point in opening.framing_bumper], "ports": [],
             "plan_svg": metadata.get("plan_svg"), "model_glb": metadata.get("model_glb"),
             "model_primitive": metadata.get("model_primitive"),

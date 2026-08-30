@@ -76,7 +76,8 @@ def _place_opening(plan: PlanModel, storey: str, body: dict[str, Any]) -> Mutati
 def _place_rough_opening(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
     return macros.place_rough_opening(
         plan, storey, host=body["host"], width=body["width"], height=body["height"],
-        along=body["along"], sill=body.get("sill"), hint_file=body.get("hint_file"), tag=body.get("tag"),
+        along=body["along"], sill=body.get("sill"), hint_file=body.get("hint_file"),
+        tag=body.get("tag"),
     )
 
 
@@ -85,7 +86,8 @@ def _move_opening(plan: PlanModel, storey: str, body: dict[str, Any]) -> Mutatio
 
 
 def _rehost_opening(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
-    return macros.rehost_opening(plan, storey, tag=body["tag"], host=body["host"], along=body["along"])
+    return macros.rehost_opening(plan, storey, tag=body["tag"], host=body["host"],
+                                 along=body["along"])
 
 
 def _place_room(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
@@ -115,7 +117,8 @@ def _rotate_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> Mut
 def _attach_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
     return macros.attach_placeable(plan, storey, tag=body["tag"], wall=body["wall"],
                                    face=body["face"], distance=body["distance"],
-                                   gap=body.get("gap", 0), rotation_offset=float(body.get("rotation_offset", 0)))
+                                   gap=body.get("gap", 0),
+                                   rotation_offset=float(body.get("rotation_offset", 0)))
 
 
 def _set_placeable_mount(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
@@ -123,12 +126,14 @@ def _set_placeable_mount(plan: PlanModel, storey: str, body: dict[str, Any]) -> 
 
 
 def _detach_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
-    return macros.detach_placeable(plan, storey, tag=body["tag"],
-                                   position=_xy(body["position"]) if body.get("position") is not None else None)
+    return macros.detach_placeable(
+        plan, storey, tag=body["tag"],
+        position=_xy(body["position"]) if body.get("position") is not None else None)
 
 
 def _place_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
-    return macros.place_placeable(plan, storey, type_ref=body["type_ref"], position=_xy(body["position"]),
+    return macros.place_placeable(plan, storey, type_ref=body["type_ref"],
+                                  position=_xy(body["position"]),
                                   hint_file=body.get("hint_file"), tag=body.get("tag"))
 
 

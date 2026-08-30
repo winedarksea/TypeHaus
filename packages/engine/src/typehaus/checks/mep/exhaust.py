@@ -73,10 +73,13 @@ def dryer_exhaust(ctx: CheckContext) -> list[Finding]:
             out.append(_finding(cid, Result.UNKNOWN, f"{run.tag} has no routed path to "
                                 "measure", (run.tag,), "M1502.4.5.1"))
             continue
-        straight_ft = sum(math.dist(a, b) for a, b in zip(points, points[1:])) / 0.3048
+        # strict=False on both windows: the tails are deliberately one and two shorter
+        # than ``points`` — that raggedness *is* the sliding window.
+        straight_ft = sum(
+            math.dist(a, b) for a, b in zip(points, points[1:], strict=False)) / 0.3048
         penalty_ft = 0.0
         elbows = 0
-        for a, b, c in zip(points, points[1:], points[2:]):
+        for a, b, c in zip(points, points[1:], points[2:], strict=False):
             turn = _turn_degrees(a, b, c, math)
             if turn < _MIN_TURN_DEGREES:
                 continue

@@ -10,8 +10,9 @@ the project/site preamble, the building-science rollup, and — the load-bearing
 from __future__ import annotations
 
 import json
+from collections.abc import Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Sequence
+from typing import TYPE_CHECKING, Any
 from urllib.parse import quote
 
 from typehaus.checks.registry import Preferences
@@ -135,7 +136,7 @@ def model_to_dict(
     provenance: Provenance | None = None,
     findings: list[Finding] | None = None,
     preferences: Preferences | None = None,
-    variants: Sequence["VariantSpec"] | None = None,
+    variants: Sequence[VariantSpec] | None = None,
 ) -> dict[str, Any]:
     """The whole UI contract, composed from the per-domain serializers.
 
@@ -192,7 +193,7 @@ def write_model_json(
     provenance: Provenance | None = None,
     findings: list[Finding] | None = None,
     preferences: Preferences | None = None,
-    variants: Sequence["VariantSpec"] | None = None,
+    variants: Sequence[VariantSpec] | None = None,
 ) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = model_to_dict(

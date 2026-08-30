@@ -366,15 +366,18 @@ def _emit_registers_equipment_devices(f: Any, body: Any, model: ResolvedModel,
     type_cache: dict[tuple[str, str], Any] = {}
     for storey in model.plan.storeys:
         for element in model.plan.storey_elements(storey.tag):
-            product_type = type_collections.get(element.element_kind, {}).get(getattr(element, "type_ref", None))
+            product_type = type_collections.get(element.element_kind, {}).get(
+                getattr(element, "type_ref", None))
             resolved_item = resolved.get(element.uid)
             if element.element_kind == "Register":
-                _emit_register(f, body, element, storey, storeys, project_uuid, product_type, resolved_item,
+                _emit_register(f, body, element, storey, storeys, project_uuid, product_type,
+                               resolved_item,
                                _placeable_ifc_type(f, type_cache, product_type, "IfcAirTerminal",
                                                    "IfcAirTerminalType", project_uuid))
             elif element.element_kind == "Equipment":
                 ifc_class, type_class = _equipment_ifc_classes(element.kind.value)
-                _emit_equipment(f, body, element, storey, storeys, project_uuid, product_type, resolved_item,
+                _emit_equipment(f, body, element, storey, storeys, project_uuid, product_type,
+                                resolved_item,
                                 _placeable_ifc_type(f, type_cache, product_type, ifc_class,
                                                     type_class, project_uuid),
                                 ifc_class)
@@ -402,8 +405,9 @@ def _emit_register(f: Any, body: Any, register: Any, storey: Any, storeys: dict[
     ll.assign_representation(f, element, ll.add_prism_from_profile(
         f, body, outline, height, z0,
     ))
-    ll.ensure_pset(f, element, PSET_SOURCE, {"uid": register.uid, "tag": register.tag,
-                                               "rotation_degrees": _rotation_metadata(register, resolved)})
+    ll.ensure_pset(f, element, PSET_SOURCE, {
+        "uid": register.uid, "tag": register.tag,
+        "rotation_degrees": _rotation_metadata(register, resolved)})
     ll.ensure_pset(f, element, "TypeHaus_Identity", {"uid": register.uid, "tag": register.tag,
                                                         "source_type": register.type_ref or ""})
     # Which family of terminal this is: a continuous-flow ventilation diffuser on the ERV's
@@ -470,8 +474,9 @@ def _emit_equipment(f: Any, body: Any, equipment: Any, storey: Any, storeys: dic
     ll.assign_representation(f, element, ll.add_prism_from_profile(
         f, body, outline, height, z0,
     ))
-    ll.ensure_pset(f, element, PSET_SOURCE, {"uid": equipment.uid, "tag": equipment.tag,
-                                               "rotation_degrees": _rotation_metadata(equipment, resolved)})
+    ll.ensure_pset(f, element, PSET_SOURCE, {
+        "uid": equipment.uid, "tag": equipment.tag,
+        "rotation_degrees": _rotation_metadata(equipment, resolved)})
     ll.ensure_pset(f, element, "TypeHaus_Identity", {"uid": equipment.uid, "tag": equipment.tag,
                                                         "source_type": equipment.type_ref or ""})
     # The HVAC facts a Revit/SketchUp reader needs to identify the unit and its zone: the
@@ -519,8 +524,9 @@ def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str,
         element.PredefinedType = predefined
     ll.assign_representation(f, element, ll.add_prism_from_profile(
         f, body, outline, product_type.height.meters if product_type is not None else 0.05, z0))
-    ll.ensure_pset(f, element, PSET_SOURCE, {"uid": device.uid, "tag": device.tag,
-                                               "rotation_degrees": _rotation_metadata(device, resolved)})
+    ll.ensure_pset(f, element, PSET_SOURCE, {
+        "uid": device.uid, "tag": device.tag,
+        "rotation_degrees": _rotation_metadata(device, resolved)})
     ll.ensure_pset(f, element, "TypeHaus_Identity", {"uid": device.uid, "tag": device.tag,
                                                         "source_type": device.type_ref or ""})
     ll.ensure_pset(f, element, "TypeHaus_Device", {

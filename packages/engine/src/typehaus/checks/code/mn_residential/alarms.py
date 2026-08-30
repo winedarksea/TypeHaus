@@ -57,7 +57,8 @@ def smoke_and_co_alarm_placement(ctx: CheckContext) -> list[Finding]:
                              tuple(bedroom.tag for bedroom in bedrooms), "R314.3"))
         else:
             out.append(_pass("code.R314_R315_alarms",
-                             f"{storey.tag} has outside-sleeping smoke alarm {shared.tag}", "R314.3"))
+                             f"{storey.tag} has outside-sleeping smoke alarm {shared.tag}",
+                             "R314.3"))
     return out
 
 

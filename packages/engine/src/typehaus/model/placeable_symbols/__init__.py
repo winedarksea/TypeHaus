@@ -22,10 +22,16 @@ a symbol before its builder exists.
 from __future__ import annotations
 
 import math
-from typing import Callable, Optional, Sequence, Tuple
+from collections.abc import Callable, Sequence
 
-from typehaus.model.placeable_symbols._frame import (PART_COLORS, Part, Point, Stroke,
-                                                     lamp_role, part_hex)
+from typehaus.model.placeable_symbols._frame import (
+    PART_COLORS,
+    Part,
+    Point,
+    Stroke,
+    lamp_role,
+    part_hex,
+)
 from typehaus.model.placeable_symbols.appliances import APPLIANCE_SYMBOLS
 from typehaus.model.placeable_symbols.furniture import FURNITURE_SYMBOLS
 from typehaus.model.placeable_symbols.lighting import LIGHTING_SYMBOLS
@@ -36,7 +42,7 @@ __all__ = ["SYMBOL_NAMES", "PART_COLORS", "Part", "Stroke", "lamp_role", "model_
 
 # A builder takes the type's overall size and returns both halves of its glyph at once, so a
 # sofa's drawn arms and its 3D arm boxes cannot drift apart.
-Builder = Callable[[float, float, float], Tuple[Tuple[Stroke, ...], Tuple[Part, ...]]]
+Builder = Callable[[float, float, float], tuple[tuple[Stroke, ...], tuple[Part, ...]]]
 
 _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLUMBING_SYMBOLS,
                                  **LIGHTING_SYMBOLS}
@@ -82,8 +88,8 @@ PENDING_SYMBOLS: frozenset[str] = frozenset()
 _NOMINAL_HEIGHT = 1.0
 
 
-def symbol_geometry(symbol: Optional[str], width_m: float, depth_m: float,
-                    height_m: float) -> Tuple[Tuple[Stroke, ...], Tuple[Part, ...]]:
+def symbol_geometry(symbol: str | None, width_m: float, depth_m: float,
+                    height_m: float) -> tuple[tuple[Stroke, ...], tuple[Part, ...]]:
     """Both halves of a symbol at a concrete size. ``()``/``()`` when it has no builder."""
     builder = _REGISTRY.get(symbol or "")
     if builder is None or width_m <= 0 or depth_m <= 0 or height_m <= 0:
@@ -91,19 +97,19 @@ def symbol_geometry(symbol: Optional[str], width_m: float, depth_m: float,
     return builder(float(width_m), float(depth_m), float(height_m))
 
 
-def plan_symbol_strokes(symbol: Optional[str], width_m: float,
-                        depth_m: float) -> Tuple[Stroke, ...]:
+def plan_symbol_strokes(symbol: str | None, width_m: float,
+                        depth_m: float) -> tuple[Stroke, ...]:
     """The drawn plan glyph for ``symbol`` at a W×D footprint, in the local frame."""
     return symbol_geometry(symbol, width_m, depth_m, _NOMINAL_HEIGHT)[0]
 
 
-def model_parts(symbol: Optional[str], width_m: float, depth_m: float,
-                height_m: float) -> Tuple[Part, ...]:
+def model_parts(symbol: str | None, width_m: float, depth_m: float,
+                height_m: float) -> tuple[Part, ...]:
     """The 3D massing boxes for ``symbol`` at a W×D×H size, in the local frame."""
     return symbol_geometry(symbol, width_m, depth_m, height_m)[1]
 
 
-def place_local(points: Sequence[Point], position: Tuple[float, float],
+def place_local(points: Sequence[Point], position: tuple[float, float],
                 rotation_degrees: float) -> list[Point]:
     """Lift local-frame points into plan space.
 

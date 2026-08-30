@@ -54,6 +54,7 @@ from typehaus.emit.draw.structural_common import (
     outline_center,
     wall_center,
 )
+
 if TYPE_CHECKING:
     from typehaus.checks.jurisdiction import JurisdictionProfile
 
@@ -85,7 +86,7 @@ def _foundation_storey(model: ResolvedModel) -> str | None:
 
 
 def build_foundation_plan(model: ResolvedModel,
-                          profile: "JurisdictionProfile | None" = None) -> Scene:
+                          profile: JurisdictionProfile | None = None) -> Scene:
     """Build the S-100 IR scene: foundation plan plus its keyed schedules and notes."""
     b = SceneBuilder(name="foundation-plan", units="in")
     if not has_foundation_content(model):
@@ -320,7 +321,7 @@ def _schedule_blocks(model: ResolvedModel,
 def _emit_schedule_column(b: SceneBuilder, model: ResolvedModel,
                           plan_points: list[tuple[float, float]],
                           metrics: BlockMetrics,
-                          profile: "JurisdictionProfile | None" = None) -> None:
+                          profile: JurisdictionProfile | None = None) -> None:
     """Reflow the keyed schedules, the general notes and the missing-input list into
     balanced columns beside the plan.
 

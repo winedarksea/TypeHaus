@@ -12,8 +12,16 @@ attachment convention the resolver already uses.
 from __future__ import annotations
 
 from typehaus.model.placeable_symbols._families import Builder, Geometry
-from typehaus.model.placeable_symbols._frame import (DETAIL_WEIGHT, Part, box, circle, clamp,
-                                                     ellipse, line, rect)
+from typehaus.model.placeable_symbols._frame import (
+    DETAIL_WEIGHT,
+    Part,
+    box,
+    circle,
+    clamp,
+    ellipse,
+    line,
+    rect,
+)
 
 __all__ = ["PLUMBING_SYMBOLS"]
 

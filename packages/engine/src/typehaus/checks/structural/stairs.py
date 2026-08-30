@@ -171,7 +171,9 @@ def stair_riser_uniformity(ctx: CheckContext) -> list[Finding]:
         springing = min(member.z0_m for member in stair.members)
         arrival = springing + stair.riser_height_m * stair.riser_count
         ladder = [springing, *surfaces, arrival]
-        risers = [upper - lower for lower, upper in zip(ladder, ladder[1:])]
+        # strict=False: the tail is one shorter than ``ladder`` by construction — the
+        # sliding window is the point.
+        risers = [upper - lower for lower, upper in zip(ladder, ladder[1:], strict=False)]
         spread = max(risers) - min(risers)
         label = (f"{min(risers) / 0.0254:.2f}\"–{max(risers) / 0.0254:.2f}\" over "
                  f"{len(risers)} risers")
@@ -219,7 +221,7 @@ def _winder_gaps(stair: ResolvedStair, offset_m: float) -> list[float]:
 
     points = [point_at(member) for member in winders]
     return [math.hypot(upper[0] - lower[0], upper[1] - lower[1])
-            for lower, upper in zip(points, points[1:])]
+            for lower, upper in zip(points, points[1:], strict=False)]
 
 
 @check(Tier.STRUCTURAL, "structural.winder_walk_line_depth")

@@ -27,7 +27,8 @@ _M3_TO_CY = 1.30795062
 
 
 def _path_length_m(points) -> float:
-    return sum(math.dist(a, b) for a, b in zip(points[:-1], points[1:]))
+    # strict=True: two slices of the same list, both one shorter than it.
+    return sum(math.dist(a, b) for a, b in zip(points[:-1], points[1:], strict=True))
 
 
 class _Rows:

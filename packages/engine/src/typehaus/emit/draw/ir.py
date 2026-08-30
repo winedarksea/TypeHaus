@@ -8,7 +8,6 @@ and permit sheets (M3) — one renderer, many consumers.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Union
 from xml.sax.saxutils import escape
 
 
@@ -54,7 +53,7 @@ class Badge:
     color: str
 
 
-Primitive = Union[Rect, Line, Text, Badge]
+Primitive = Rect | Line | Text | Badge
 
 
 @dataclass

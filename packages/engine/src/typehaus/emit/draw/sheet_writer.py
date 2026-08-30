@@ -24,7 +24,7 @@ from __future__ import annotations
 import math
 import textwrap
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from contextvars import ContextVar
 from datetime import date
 from typing import TYPE_CHECKING
@@ -83,11 +83,11 @@ _FIT_PAD = 1.04
 #: place for "this sheet is portrait" and the wrong place for "this set is 24x36". The set
 #: writer parks its paper here (``set_paper``) and ``schedule_sheet`` resolves the two: the
 #: caller's size decides the *orientation*, this decides the *size*.
-_SET_PAPER: "ContextVar[tuple[float, float]]" = ContextVar("_SET_PAPER", default=LEDGER)
+_SET_PAPER: ContextVar[tuple[float, float]] = ContextVar("_SET_PAPER", default=LEDGER)
 
 
 @contextmanager
-def set_paper(paper: "tuple[float, float]") -> "Iterator[None]":
+def set_paper(paper: tuple[float, float]) -> Iterator[None]:
     """Make ``paper`` the paper every ``schedule_sheet`` in this block composes onto."""
     token = _SET_PAPER.set(paper)
     try:
@@ -96,8 +96,8 @@ def set_paper(paper: "tuple[float, float]") -> "Iterator[None]":
         _SET_PAPER.reset(token)
 
 
-def viewport_box(size: "tuple[float, float]", notes_panel: bool = False,
-                 ) -> "tuple[float, float, float, float]":
+def viewport_box(size: tuple[float, float], notes_panel: bool = False,
+                 ) -> tuple[float, float, float, float]:
     """(x, y, w, h) of the drawing viewport in paper inches: sheet minus chrome.
 
     A ``_BAR_LANE`` strip below the viewport is reserved for the graphic scale bar, so
@@ -114,8 +114,8 @@ def viewport_box(size: "tuple[float, float]", notes_panel: bool = False,
     return (x, y, w, h)
 
 
-def frame_for_scene(scene: Scene, size: "tuple[float, float]" = LEDGER, *,
-                    scale_label: "str | None" = None) -> "Frame | None":
+def frame_for_scene(scene: Scene, size: tuple[float, float] = LEDGER, *,
+                    scale_label: str | None = None) -> Frame | None:
     """The paper a plan/elevation/section lands on, decided before anything is drawn.
 
     ``compose_sheet`` already made this decision internally for the permit set. Pulling it
@@ -152,8 +152,8 @@ def frame_for_scene(scene: Scene, size: "tuple[float, float]" = LEDGER, *,
                  scale=scale, scale_label=label)
 
 
-def compose_sheet(scene: Scene, spec: object, model: "ResolvedModel",
-                  size: "tuple[float, float] | None" = None, underlays=()):
+def compose_sheet(scene: Scene, spec: object, model: ResolvedModel,
+                  size: tuple[float, float] | None = None, underlays=()):
     """Compose one Scene onto a fixed-size sheet at true printed scale.
 
     ``spec`` is duck-typed (``sheets.SheetSpec``): ``number``/``title`` are required,
@@ -227,10 +227,10 @@ def compose_sheet(scene: Scene, spec: object, model: "ResolvedModel",
 
 
 @contextmanager
-def schedule_sheet(pdf, model: "ResolvedModel", number: str, name: str, *,
-                   size: "tuple[float, float]" = LEDGER,
-                   heading: "str | None" = None,
-                   heading_xy: "tuple[float, float]" = (0.04, 0.945)) -> "Iterator":
+def schedule_sheet(pdf, model: ResolvedModel, number: str, name: str, *,
+                   size: tuple[float, float] = LEDGER,
+                   heading: str | None = None,
+                   heading_xy: tuple[float, float] = (0.04, 0.945)) -> Iterator:
     """Open a table page, hand back the figure, then chrome/save/close it.
 
     Every ``_write_*`` schedule repeated the same six lines — create the figure at the
@@ -299,9 +299,9 @@ def content_box(size: tuple[float, float]) -> tuple[float, float, float, float]:
 _GUTTER = 0.35
 
 
-def sheet_chrome(fig, model: "ResolvedModel", number: str, title: str,
+def sheet_chrome(fig, model: ResolvedModel, number: str, title: str,
                  scale_label: str = NTS_LABEL,
-                 size: "tuple[float, float]" = LEDGER) -> None:
+                 size: tuple[float, float] = LEDGER) -> None:
     """Normalize an existing figure to the paper preset and draw border + title block.
 
     For table/cover pages that lay out their own matplotlib content: they keep their
@@ -315,8 +315,8 @@ def sheet_chrome(fig, model: "ResolvedModel", number: str, title: str,
 # --- chrome -------------------------------------------------------------------
 
 
-def _draw_chrome(fig, model: "ResolvedModel", number: str, title: str,
-                 scale_label: str, size: "tuple[float, float]") -> None:
+def _draw_chrome(fig, model: ResolvedModel, number: str, title: str,
+                 scale_label: str, size: tuple[float, float]) -> None:
     """Border rectangle + bottom title-block strip, drawn in paper-inch coordinates."""
     from matplotlib.patches import Rectangle
 
@@ -362,11 +362,11 @@ def _draw_chrome(fig, model: "ResolvedModel", number: str, title: str,
         site_rows.append(f"CRS   {crs}")
     elevation = getattr(site, "elevation", None)
     if elevation is not None:
-        try:
+        with suppress(AttributeError):
             site_rows.append(f"ELEV  {elevation.meters:,.1f} m")
-        except AttributeError:
-            pass
-    for row, text in zip((top_y, mid_y, low_y), site_rows):
+    # Deliberately ragged: any of the three site rows may be absent (no lat/lon, no CRS, no
+    # elevation), so the shorter ``site_rows`` simply fills the title block from the top.
+    for row, text in zip((top_y, mid_y, low_y), site_rows, strict=False):
         ax.text(dividers[0] + pad, row, text, fontsize=6.5, family="monospace",
                 va="center", color=_INK)
 
@@ -401,8 +401,8 @@ _BAR_SEGMENTS = 4
 
 
 def _draw_scale_bar(fig, scale_in_per_ft: float, scale_label: str,
-                    view: "tuple[float, float, float, float]",
-                    size: "tuple[float, float]") -> None:
+                    view: tuple[float, float, float, float],
+                    size: tuple[float, float]) -> None:
     """Alternating filled/open graphic scale in the reserved lane below the viewport.
 
     Drawn in paper inches, so a segment of ``f`` feet is exactly ``f * scale`` sheet
@@ -449,7 +449,7 @@ def _ft_label(feet: float) -> str:
 # --- north arrow --------------------------------------------------------------
 
 
-def _draw_north_arrow(fig, model: "ResolvedModel", view, size) -> None:
+def _draw_north_arrow(fig, model: ResolvedModel, view, size) -> None:
     """A circled north arrow, top-right inside the viewport, rotated by true north.
 
     Same convention as the site plan's authored arrow (``siteplan._emit_north_arrow``):
@@ -484,7 +484,7 @@ def _draw_north_arrow(fig, model: "ResolvedModel", view, size) -> None:
 
 # --- notes panel --------------------------------------------------------------
 
-def _scene_note_lines(scene: Scene) -> "list[str]":
+def _scene_note_lines(scene: Scene) -> list[str]:
     """Wrapped lines for ``Scene.notes`` (str or iterable of str); [] when absent.
 
     Scene-level notes are optional sheet text authored beside the drawing; the composer
@@ -500,7 +500,7 @@ def _scene_note_lines(scene: Scene) -> "list[str]":
         return []
     columns = wrap_columns_for(_NOTES_W, NOTES_PT)
     blocks = [notes] if isinstance(notes, str) else list(notes)
-    lines: "list[str]" = []
+    lines: list[str] = []
     for block in blocks:
         for raw in str(block).splitlines():
             stripped = raw.strip()
@@ -513,7 +513,7 @@ def _scene_note_lines(scene: Scene) -> "list[str]":
     return lines
 
 
-def _draw_notes_panel(fig, lines: "list[str]", view, size) -> None:
+def _draw_notes_panel(fig, lines: list[str], view, size) -> None:
     x_in = view[0] + view[2] + _VIEW_PAD
     top_in = view[1] + view[3] - 0.10
     step_in = _NOTES_PT * 1.5 / 72.0

@@ -13,7 +13,7 @@ duplicating the index rule is how the .glb and the IFC would drift.
 from __future__ import annotations
 
 
-def assembly_structure_material(plan, assembly_tag: "str | None") -> "str | None":
+def assembly_structure_material(plan, assembly_tag: str | None) -> str | None:
     """The material ref of ``assembly_tag``'s STRUCTURE layer (first layer when none is
     marked), or ``None`` for no/unknown assembly. Mirrors the assembly branch of
     ``emit/gltf/palette.py::_solid_color``."""

@@ -72,7 +72,8 @@ def load_preferences(house_dir: Path) -> Preferences:
             interference_tolerance_in=framing.get("interference_tolerance_in", 0.25),
         ),
         plumbing=PlumbingPreferences(
-            drain_stack_required_structure_in=plumbing.get("drain_stack_required_structure_in", 5.5),
+            drain_stack_required_structure_in=plumbing.get(
+                "drain_stack_required_structure_in", 5.5),
             visible_basement_material=plumbing.get("visible_basement_material"),
             visible_basement_finish=plumbing.get("visible_basement_finish"),
         ),

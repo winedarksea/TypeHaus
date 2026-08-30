@@ -14,7 +14,9 @@ As a regression guard (exits non-zero when a budget is blown)::
         --house houses/catlin --iters 10 --skip-macro \
         --assert-under 400 --assert-stage-under resolve=300
 
-Budgets are medians, and a median is only meaningful against a quiet machine: pick a
+Budgets are graded on the *fastest* of the N samples, not the median (→ ``_min_timings``):
+a median is only meaningful against a quiet machine, and the perf guard runs this inside a
+parallel test suite. The tables printed for a human to read are still medians. Pick a
 threshold with real headroom over the measured number (roughly 2x) so the guard catches an
 algorithmic regression rather than whatever else happened to be running.
 """
@@ -35,6 +37,29 @@ def _median_timings(runs: list[dict[str, float]]) -> dict[str, float]:
     return {k: statistics.median([r[k] for r in runs if k in r]) for k in keys}
 
 
+def _min_timings(runs: list[dict[str, float]]) -> dict[str, float]:
+    """The fastest observed sample per stage — what the budgets are asserted against.
+
+    Medians are what a human reads (``_print_table`` still prints them); minima are what the
+    guard grades, because the two want different things from the same samples.
+
+    A median only means something on a quiet machine, and the perf guard's benchmark is
+    subprocessed from a test inside a six-way parallel suite — so the median it measures is
+    part algorithm, part whatever the other five workers were doing. That is not a small
+    effect: ``resolve`` is ~400 ms measured alone and was 1704 ms against a 1500 ms budget
+    under a loaded suite, failing a tripwire nothing had actually regressed. Speeding the
+    suite up made it worse, because a denser suite contends harder.
+
+    The minimum is the sample that got the least interference — the closest thing to the
+    quiet-machine number the budgets were calibrated from. It gives up the ability to see a
+    *distribution* widen, which this guard never claimed to watch, and keeps the one it does:
+    an algorithmic regression raises the floor along with everything else, so an
+    order-of-magnitude tripwire still fires.
+    """
+    keys = sorted({k for r in runs for k in r})
+    return {k: min(r[k] for r in runs if k in r) for k in keys}
+
+
 def _print_table(title: str, timings: dict[str, float]) -> None:
     print(f"\n== {title} ==")
     for k, v in sorted(timings.items(), key=lambda kv: -kv[1]):
@@ -53,10 +78,10 @@ def main() -> None:
                     help="only run the plain rebuilds — the macro paths dominate wall time "
                          "and a perf guard does not need them")
     ap.add_argument("--assert-under", type=float, metavar="MS",
-                    help="exit 1 if the median full-rebuild wall time exceeds MS")
+                    help="exit 1 if the fastest full-rebuild wall time exceeds MS")
     ap.add_argument("--assert-stage-under", action="append", default=[],
                     metavar="STAGE=MS",
-                    help="exit 1 if the median of timing key STAGE exceeds MS; repeatable "
+                    help="exit 1 if the fastest sample of timing key STAGE exceeds MS; repeatable "
                          "(e.g. resolve=300, resolve.junctions=120)")
     args = ap.parse_args()
     budgets = _parse_stage_budgets(args.assert_stage_under)
@@ -77,9 +102,11 @@ def main() -> None:
         wall_times.append((time.perf_counter() - t0) * 1000.0)
         rebuild_runs.append(dict(state.timings))
     rebuild_median = statistics.median(wall_times)
+    rebuild_min = min(wall_times)
     print(f"\nfull rebuild wall time: median {rebuild_median:.1f} ms "
-          f"(min {min(wall_times):.1f}, max {max(wall_times):.1f})")
+          f"(min {rebuild_min:.1f}, max {max(wall_times):.1f})")
     stage_medians = _median_timings(rebuild_runs)
+    stage_minima = _min_timings(rebuild_runs)
     _print_table("rebuild stage medians", stage_medians)
 
     # --- the drawing stage ---------------------------------------------------------
@@ -87,11 +114,12 @@ def main() -> None:
     # a section-drawing regression is invisible to it. Every detail is a full cut of the
     # model; this is the number that moves when the cut changes.
     if state.model is not None and not args.skip_draw:
-        draw_medians = _draw_timings(state.model, args.iters)
+        draw_medians, draw_minima = _draw_timings(state.model, args.iters)
         stage_medians.update(draw_medians)
+        stage_minima.update(draw_minima)
         _print_table("draw stage medians", draw_medians)
 
-    breaches = _budget_breaches(rebuild_median, stage_medians, args.assert_under, budgets)
+    breaches = _budget_breaches(rebuild_min, stage_minima, args.assert_under, budgets)
 
     # --- one simulated move_nodes patch via the slow path (writeback + rebuild), then undo ---
     if plan is not None and not args.skip_macro:
@@ -134,8 +162,8 @@ def main() -> None:
         print("\nall budgets met")
 
 
-def _draw_timings(model, iters: int) -> dict[str, float]:
-    """Median ms for one center section and for the whole derived-detail set."""
+def _draw_timings(model, iters: int) -> tuple[dict[str, float], dict[str, float]]:
+    """(median, min) ms for one center section and for the whole derived-detail set."""
     from typehaus.emit.draw.details import build_detail, derive_detail_slices
     from typehaus.emit.draw.section import build_center_section
 
@@ -150,10 +178,12 @@ def _draw_timings(model, iters: int) -> dict[str, float]:
             build_detail(model, entry)
         detail_times.append((time.perf_counter() - t0) * 1000.0)
     print(f"\ndrawing {len(derived)} derived details")
-    return {
-        "draw.center_section": statistics.median(section_times),
-        "draw.details": statistics.median(detail_times),
-    }
+    return (
+        {"draw.center_section": statistics.median(section_times),
+         "draw.details": statistics.median(detail_times)},
+        {"draw.center_section": min(section_times),
+         "draw.details": min(detail_times)},
+    )
 
 
 def _parse_stage_budgets(raw: list[str]) -> dict[str, float]:
@@ -166,23 +196,27 @@ def _parse_stage_budgets(raw: list[str]) -> dict[str, float]:
     return budgets
 
 
-def _budget_breaches(rebuild_median: float, stage_medians: dict[str, float],
+def _budget_breaches(rebuild_min: float, stage_minima: dict[str, float],
                      rebuild_budget: float | None,
                      stage_budgets: dict[str, float]) -> list[str]:
     """Every budget the run missed, as printable lines.
 
+    Graded on the fastest sample, not the median — see :func:`_min_timings`. A breach here
+    therefore means even the least-contended run was over budget, which is the claim the
+    tripwire wants to make.
+
     Collected rather than raised at the first miss so one run reports every regression.
     """
     breaches: list[str] = []
-    if rebuild_budget is not None and rebuild_median > rebuild_budget:
-        breaches.append(f"full rebuild median {rebuild_median:.1f} ms "
+    if rebuild_budget is not None and rebuild_min > rebuild_budget:
+        breaches.append(f"full rebuild best-of {rebuild_min:.1f} ms "
                         f"> budget {rebuild_budget:.1f} ms")
     for stage, budget in sorted(stage_budgets.items()):
-        if stage not in stage_medians:
+        if stage not in stage_minima:
             breaches.append(f"stage {stage!r} was never timed — "
-                            f"known keys: {', '.join(sorted(stage_medians))}")
-        elif stage_medians[stage] > budget:
-            breaches.append(f"stage {stage} median {stage_medians[stage]:.1f} ms "
+                            f"known keys: {', '.join(sorted(stage_minima))}")
+        elif stage_minima[stage] > budget:
+            breaches.append(f"stage {stage} best-of {stage_minima[stage]:.1f} ms "
                             f"> budget {budget:.1f} ms")
     return breaches
 

@@ -17,30 +17,30 @@ toilet bowl or a round dining table.
 from __future__ import annotations
 
 import math
-from typing import Optional, Sequence, Tuple
+from collections.abc import Sequence
 
 try:  # TypedDict moved out of typing_extensions in 3.8, but total=False support varies.
     from typing import TypedDict
 except ImportError:  # pragma: no cover - 3.7 and older are unsupported anyway
     TypedDict = dict  # type: ignore[assignment,misc]
 
-Point = Tuple[float, float]
+Point = tuple[float, float]
 
 
 class Stroke(TypedDict):
     """One drawn polyline of a plan symbol, in the local frame (metres)."""
 
-    points: Tuple[Point, ...]
+    points: tuple[Point, ...]
     closed: bool
-    fill: Optional[str]  # a PART_COLORS role, or None for an unfilled line
+    fill: str | None  # a PART_COLORS role, or None for an unfilled line
     weight: float
 
 
 class Part(TypedDict):
     """One axis-aligned massing box of a 3D symbol, in the local frame (metres)."""
 
-    center: Tuple[float, float, float]
-    size: Tuple[float, float, float]
+    center: tuple[float, float, float]
+    size: tuple[float, float, float]
     color: str  # a PART_COLORS role
 
 
@@ -116,7 +116,7 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
 LAMP_CCT_BINS = (2700, 3000, 3500, 4000, 5000)
 
 
-def lamp_role(cct_k: Optional[float]) -> str:
+def lamp_role(cct_k: float | None) -> str:
     """The ``lamp`` colour role for a luminaire of colour temperature ``cct_k``.
 
     Symbol builders emit the plain ``lamp`` role because they are handed a size and nothing
@@ -127,7 +127,7 @@ def lamp_role(cct_k: Optional[float]) -> str:
     """
     if not cct_k:
         return "lamp"
-    return "lamp-%d" % min(LAMP_CCT_BINS, key=lambda bin_k: abs(bin_k - cct_k))
+    return f"lamp-{min(LAMP_CCT_BINS, key=lambda bin_k: abs(bin_k - cct_k)):d}"
 
 # Drawn-line weights. Plan symbols read as a hierarchy: the object outline is the heaviest
 # line, interior divisions medium, and detail (seams, grout, burner rings) lightest.
@@ -148,7 +148,7 @@ def clamp(value: float, low: float, high: float) -> float:
 
 
 def rect(cx: float, cy: float, w: float, d: float, *,
-         fill: Optional[str] = None, weight: float = OUTLINE_WEIGHT) -> Stroke:
+         fill: str | None = None, weight: float = OUTLINE_WEIGHT) -> Stroke:
     """A closed axis-aligned rectangle centred on ``(cx, cy)``."""
     hw, hd = w / 2.0, d / 2.0
     return {"points": ((cx - hw, cy - hd), (cx + hw, cy - hd),
@@ -157,13 +157,13 @@ def rect(cx: float, cy: float, w: float, d: float, *,
 
 
 def circle(cx: float, cy: float, r: float, *, segments: int = CIRCLE_SEGMENTS,
-           fill: Optional[str] = None, weight: float = OUTLINE_WEIGHT) -> Stroke:
+           fill: str | None = None, weight: float = OUTLINE_WEIGHT) -> Stroke:
     """A closed polygonised circle — see the module note on why this is not an arc node."""
     return ellipse(cx, cy, r, r, segments=segments, fill=fill, weight=weight)
 
 
 def ellipse(cx: float, cy: float, rx: float, ry: float, *, segments: int = CIRCLE_SEGMENTS,
-            fill: Optional[str] = None, weight: float = OUTLINE_WEIGHT) -> Stroke:
+            fill: str | None = None, weight: float = OUTLINE_WEIGHT) -> Stroke:
     """A closed polygonised ellipse. Toilet bowls and tub basins are ovoid, not round."""
     points = tuple((cx + rx * math.cos(2 * math.pi * index / segments),
                     cy + ry * math.sin(2 * math.pi * index / segments))
@@ -187,7 +187,7 @@ def line(p0: Point, p1: Point, *, weight: float = DETAIL_WEIGHT) -> Stroke:
 
 
 def polygon(points: Sequence[Point], *, closed: bool = True,
-            fill: Optional[str] = None, weight: float = OUTLINE_WEIGHT) -> Stroke:
+            fill: str | None = None, weight: float = OUTLINE_WEIGHT) -> Stroke:
     """An explicit point list, for the glyphs convention draws rather than parameterises."""
     return {"points": tuple((float(x), float(y)) for x, y in points),
             "closed": closed, "fill": fill, "weight": weight}

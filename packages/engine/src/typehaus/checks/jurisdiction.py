@@ -67,7 +67,7 @@ class JurisdictionProfile:
     # The prescriptive envelope table this jurisdiction's climate zone imposes. ``None``
     # means the profile states none, and the energy check reports UNKNOWN rather than
     # silently applying Minnesota's numbers.
-    climate: "PrescriptiveEnvelope | None" = field(default=None)
+    climate: PrescriptiveEnvelope | None = field(default=None)
 
     def permit_check_ids(self) -> frozenset[str]:
         return frozenset(cid for item in self.permit_items for cid in item.check_ids)

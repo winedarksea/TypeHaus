@@ -7,11 +7,24 @@ needs no entry here at all: the same symbol renders at whatever W×D×H the type
 
 from __future__ import annotations
 
-from typehaus.model.placeable_symbols._families import (Builder, bed, besta, case, counter_case,
-                                                        drying_rack, pedestal_seat, potted_plant,
-                                                        round_slab, sauna_bench, screen, seating,
-                                                        sectional, sectional_points, shelving,
-                                                        slab)
+from typehaus.model.placeable_symbols._families import (
+                                                        Builder,
+                                                        bed,
+                                                        besta,
+                                                        case,
+                                                        counter_case,
+                                                        drying_rack,
+                                                        pedestal_seat,
+                                                        potted_plant,
+                                                        round_slab,
+                                                        sauna_bench,
+                                                        screen,
+                                                        seating,
+                                                        sectional,
+                                                        sectional_points,
+                                                        shelving,
+                                                        slab,
+)
 
 __all__ = ["FURNITURE_SYMBOLS", "sectional_points"]
 

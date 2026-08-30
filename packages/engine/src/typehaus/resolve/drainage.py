@@ -52,7 +52,7 @@ def _resolve_french_drain(model: ResolvedModel, el: FrenchDrain,
     half = el.trench_width.meters / 2.0
     z0 = el.invert.meters
     z1 = z0 + el.trench_depth.meters
-    for index, (start, end) in enumerate(zip(path[:-1], path[1:])):
+    for index, (start, end) in enumerate(zip(path[:-1], path[1:], strict=True)):
         if start == end:
             continue
         model.solids.append(ResolvedSolid(

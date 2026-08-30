@@ -111,9 +111,8 @@ def _stair_lines(ctx: CheckContext, line_type):
     out = []
     for stair in ctx.model.stairs:
         for member in stair.members:
-            if member.category in ("tread", "winder", "landing"):
-                if member.p0 != member.p1:
-                    out.append((line_type([member.p0, member.p1]), stair.tag, member.z1_m))
+            if member.category in ("tread", "winder", "landing") and member.p0 != member.p1:
+                out.append((line_type([member.p0, member.p1]), stair.tag, member.z1_m))
     return out
 
 

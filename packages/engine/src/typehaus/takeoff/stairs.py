@@ -14,8 +14,6 @@ closed-riser stair still buys a board for every one of them.
 
 from __future__ import annotations
 
-from collections import defaultdict
-
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import ResolvedModel
 

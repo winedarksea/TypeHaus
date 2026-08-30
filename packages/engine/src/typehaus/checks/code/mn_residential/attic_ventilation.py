@@ -84,8 +84,9 @@ def _ring_area(ring) -> float:
 
 def _run_length_m(run) -> float:
     points = [p.xy_m for p in getattr(run, "path", ())]
+    # Pairwise along the path: ``points[1:]`` is one shorter on purpose.
     return sum(((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5
-               for a, b in zip(points, points[1:]))
+               for a, b in zip(points, points[1:], strict=False))
 
 
 def _intake_area(soffits, trims) -> tuple[float, list[str]]:

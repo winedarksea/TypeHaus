@@ -62,10 +62,9 @@ def _build_element(op: PatchOp) -> tuple[Element, str | None]:
         raise InMemoryApplyError(f"unknown element kind {op.type!r}")
     fields = dict(op.fields)
     minted: str | None = None
-    if _kind_has_uid(op.type):
-        if not fields.get("uid"):
-            minted = new_uid()
-            fields["uid"] = minted
+    if _kind_has_uid(op.type) and not fields.get("uid"):
+        minted = new_uid()
+        fields["uid"] = minted
     kwargs: dict[str, Any] = {"tag": op.tag}
     for name, value in fields.items():
         if name == "tag":

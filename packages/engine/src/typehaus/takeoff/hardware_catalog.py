@@ -172,7 +172,7 @@ def hardware_for_role_and_nominal(role: str, nominal: str) -> StructuralHardware
     return items[0]
 
 
-def hardware_by_model(model: str) -> "StructuralHardware | None":
+def hardware_by_model(model: str) -> StructuralHardware | None:
     """Look a catalog item up by the part designation a plan authored (``Connector.size``).
 
     A plan may author a specific size within a family ("LUS210" of the LUS family), so an
@@ -186,7 +186,7 @@ def hardware_by_model(model: str) -> "StructuralHardware | None":
     return max(family, key=lambda item: len(item.model)) if family else None
 
 
-def hardware_row(item: "StructuralHardware | None", *, scope: str, count: int, basis: str,
+def hardware_row(item: StructuralHardware | None, *, scope: str, count: int, basis: str,
                  part_number: str | None = None, size: str | None = None,
                  length_ft: float | None = None, coils: int | None = None,
                  by_storey: dict | None = None) -> dict:

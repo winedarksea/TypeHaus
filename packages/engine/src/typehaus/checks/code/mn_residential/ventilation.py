@@ -199,7 +199,10 @@ def habitable_light_and_ventilation(ctx: CheckContext) -> list[Finding]:
             out.append(_unknown(cid, f"{room.tag} has a window whose type does not resolve, "
                                 "so openable area cannot be totalled", (room.tag,), code))
             continue
-        openable_sf = sum(w.width_m * w.height_m for w, state in zip(windows, operability)
+        # ``operability`` is built one entry per window just above, so the two are the
+        # same length by construction.
+        openable_sf = sum(w.width_m * w.height_m
+                          for w, state in zip(windows, operability, strict=True)
                           if state) * _SF_PER_M2 / 2.0
         need_glazed = area_sf * _MIN_GLAZING_FRACTION
         need_openable = area_sf * _MIN_OPENABLE_FRACTION
@@ -277,7 +280,8 @@ def bathroom_exhaust(ctx: CheckContext) -> list[Finding]:
                 rate = duct.design_cfm if sole else None
             rates.append(rate)
         if any(rate is None for rate in rates):
-            unrated = [t.tag for t, rate in zip(terminals, rates) if rate is None]
+            # ``rates`` gets exactly one append per terminal in the loop above.
+            unrated = [t.tag for t, rate in zip(terminals, rates, strict=True) if rate is None]
             out.append(_unknown(cid, f"{bath.tag} exhausts through {', '.join(sorted(unrated))} "
                                 "but neither the grille nor a run dedicated to it states a "
                                 "design_cfm, so the 50/20 cfm rate cannot be evaluated",

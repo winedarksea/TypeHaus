@@ -78,7 +78,7 @@ def thicken_polyline(points, thickness: float,
         raise ValueError("need at least 2 points")
 
     seg_norms: list[tuple[float, float]] = []
-    for (u0, z0), (u1, z1) in zip(pts, pts[1:]):
+    for (u0, z0), (u1, z1) in zip(pts, pts[1:], strict=False):  # pairwise: one shorter
         nx, nz = -(z1 - z0), (u1 - u0)
         mag = math.hypot(nx, nz) or 1e-9
         seg_norms.append((nx / mag, nz / mag))
@@ -98,8 +98,11 @@ def thicken_polyline(points, thickness: float,
         vnorms[i] = (mx / denom, mz / denom)
 
     half = thickness / 2.0
-    outer = [(u + half * nx, z + half * nz) for (u, z), (nx, nz) in zip(pts, vnorms)]
-    inner = [(u - half * nx, z - half * nz) for (u, z), (nx, nz) in zip(pts, vnorms)]
+    # ``vnorms`` was sized ``len(pts)`` above: one vertex normal per centreline point.
+    outer = [(u + half * nx, z + half * nz)
+             for (u, z), (nx, nz) in zip(pts, vnorms, strict=True)]
+    inner = [(u - half * nx, z - half * nz)
+             for (u, z), (nx, nz) in zip(pts, vnorms, strict=True)]
     return outer + inner[::-1]
 
 

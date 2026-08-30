@@ -10,7 +10,6 @@ schedule is not a priced view: dollars are opt-in and the mill is quoting, not b
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import typer
 
@@ -87,9 +86,9 @@ def _markdown(rows: list[dict[str, object]]) -> str:
 
 @app.command()
 def millwork(
-    house: Optional[Path] = typer.Argument(None),
-    csv: Optional[Path] = typer.Option(None, "--csv", help="Write the schedule as CSV."),
-    md: Optional[Path] = typer.Option(
+    house: Path | None = typer.Argument(None),
+    csv: Path | None = typer.Option(None, "--csv", help="Write the schedule as CSV."),
+    md: Path | None = typer.Option(
         None, "--md", help="Write the schedule as a Markdown table (emailable)."),
     as_json: bool = typer.Option(False, "--json"),
 ) -> None:

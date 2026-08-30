@@ -30,11 +30,11 @@ PORTRAIT_LEDGER = (11.0, 17.0)
 #: keeps two printings of the same house side by side. Ledger takes the bare name because
 #: it is the default and renaming the file every set already in someone's inbox is worse
 #: than an asymmetric table.
-PAPERS: "dict[str, tuple[float, float]]" = {"ledger": LEDGER, "arch-d": ARCH_D}
-PAPER_SUFFIX: "dict[str, str]" = {"ledger": "", "arch-d": "_24x36"}
+PAPERS: dict[str, tuple[float, float]] = {"ledger": LEDGER, "arch-d": ARCH_D}
+PAPER_SUFFIX: dict[str, str] = {"ledger": "", "arch-d": "_24x36"}
 
 
-def suffix_for_size(size: "tuple[float, float] | None") -> str:
+def suffix_for_size(size: tuple[float, float] | None) -> str:
     """The filename suffix for a paper *size*, the inverse of :data:`PAPER_SUFFIX`.
 
     ``haus print`` names its output by the paper it composed (``permit_set_24x36.pdf``) so a
@@ -52,7 +52,7 @@ def suffix_for_size(size: "tuple[float, float] | None") -> str:
     return ""
 
 
-def resolve_paper(name: str) -> "tuple[float, float]":
+def resolve_paper(name: str) -> tuple[float, float]:
     """``"arch-d"`` → ``ARCH_D``; raises ``ValueError`` naming the known papers."""
     try:
         return PAPERS[name]
@@ -61,8 +61,8 @@ def resolve_paper(name: str) -> "tuple[float, float]":
             f"unknown paper {name!r} (choose from {', '.join(sorted(PAPERS))})") from None
 
 
-def paper_for(paper: "tuple[float, float]", portrait: bool = False,
-              ) -> "tuple[float, float]":
+def paper_for(paper: tuple[float, float], portrait: bool = False,
+              ) -> tuple[float, float]:
     """``paper`` turned to the requested orientation, whatever orientation it arrived in.
 
     The one sheet that prints portrait (E-602) has to stay portrait on *every* paper the
@@ -104,7 +104,7 @@ FIT_LABEL = "fit"
 
 
 def select_scale(span_u_in: float, span_z_in: float, view_w_in: float,
-                 view_h_in: float) -> "tuple[float | None, str]":
+                 view_h_in: float) -> tuple[float | None, str]:
     """Largest standard scale whose printed drawing fits the viewport.
 
     Spans are model-space inches; the viewport is paper inches. At scale ``s`` (sheet
@@ -131,7 +131,7 @@ def fit_scale(span_u_in: float, span_z_in: float, view_w_in: float, view_h_in: f
     return min(view_w_in * 12.0 / span_u_in, view_h_in * 12.0 / span_z_in) / pad
 
 
-def scale_for_label(label: str) -> "tuple[float, str] | None":
+def scale_for_label(label: str) -> tuple[float, str] | None:
     """A typed scale label → its ``(scale, canonical label)`` entry, or ``None``.
 
     Whitespace-insensitive, because nobody types ``1/4" = 1'-0"`` with the spaces in when

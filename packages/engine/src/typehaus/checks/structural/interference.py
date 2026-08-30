@@ -265,9 +265,8 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     if "hanger" in kinds and (kinds - {"hanger"}) <= {"trimmer", "header", "joist", "rim"}:
         return True
     # Cut joists / trimmers bearing on a floor-opening header (the header carries them).
-    if "header" in kinds and (kinds - {"header"}) <= {"joist", "trimmer", "plate", "raked_plate"}:
-        return True
-    return False
+    return ("header" in kinds
+            and (kinds - {"header"}) <= {"joist", "trimmer", "plate", "raked_plate"})
 
 
 def _within_wall_pairs(plan) -> set[tuple[str, str]]:
@@ -384,13 +383,8 @@ def _butt_joint(a: _Candidate, b: _Candidate, tol: float) -> bool:
             or a.kind == "column" or b.kind == "column"
             or (a.kind == "plate" and b.kind == "plate")):
         return False
-    for pt in a.seg:
-        if _point_on_segment(pt, b.seg[0], b.seg[1], tol):
-            return True
-    for pt in b.seg:
-        if _point_on_segment(pt, a.seg[0], a.seg[1], tol):
-            return True
-    return False
+    return (any(_point_on_segment(pt, b.seg[0], b.seg[1], tol) for pt in a.seg)
+            or any(_point_on_segment(pt, a.seg[0], a.seg[1], tol) for pt in b.seg))
 
 
 @check(Tier.STRUCTURAL, "structural.member_interference")

@@ -17,6 +17,33 @@ src = ["packages/engine/src"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
+# UP042 wants `class X(str, Enum)` rewritten as `enum.StrEnum`. Declined, deliberately, for
+# the four classes it fires on (diff.report.ChangeKind; model.placeables.PlacementStrategy,
+# MountKind, ClearancePolicy).
+#
+# The two are not interchangeable: `str(SomeStrEnum.X)` is the bare value, while
+# `str(Mixed.X)` is "Mixed.X". Every one of these enums is on a path where that string is
+# the product rather than a debug convenience — ChangeKind lands in the diff report, and the
+# placeable enums are serialised into model.json and round-tripped back out through source
+# writeback. A silent change to how one of them renders is a corrupted plan file or a golden
+# that no longer matches, which is a bad trade for a style rule.
+ignore = ["UP042"]
+
+[tool.ruff.lint.flake8-bugbear]
+# B008 guards against a *mutable* default being built once and shared across calls. All 41
+# hits in this repo are calls that cannot be mutated, so the rule was firing on correct code:
+#
+#   typer.Argument / typer.Option — the documented way to declare a CLI parameter. Typer
+#     reads these sentinels off the signature, so "call it inside the function instead" is
+#     not available; every `haus` subcommand in cli/ would have to be rewritten against the
+#     framework to silence a warning about a bug it cannot have.
+#   ImportLimits — a @dataclass(frozen=True) (source/placeable_import.py). Frozen is exactly
+#     the property B008 is checking for.
+extend-immutable-calls = [
+    "typer.Argument",
+    "typer.Option",
+    "typehaus.source.placeable_import.ImportLimits",
+]
 
 [tool.mypy]
 python_version = "3.11"

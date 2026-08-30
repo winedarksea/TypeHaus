@@ -222,7 +222,8 @@ def rotate_placeable(plan: PlanModel, storey: str, *, tag: str, degrees: float,
     item = _placeable(plan, storey, tag)
     if item is None:
         raise MacroError(f"no placeable {tag!r} on storey {storey!r}")
-    resolved_degrees = float(degrees) if free_rotation else round(float(degrees) / ROTATION_SNAP_DEGREES) * ROTATION_SNAP_DEGREES
+    resolved_degrees = (float(degrees) if free_rotation
+                        else round(float(degrees) / ROTATION_SNAP_DEGREES) * ROTATION_SNAP_DEGREES)
     return MutationResult(ops=[PatchOp("update", item.element_kind, tag,
                                        {"rotation": RawExpr(deg(resolved_degrees).to_source())})])
 
@@ -279,7 +280,8 @@ def detach_placeable(plan: PlanModel, storey: str, *, tag: str,
     fields: dict[str, object] = {"location": DELETE_FIELD}
     if position is not None:
         fields["position"] = _point_expr(position[0], position[1])
-        fields["room"] = _containing_room(plan, storey, (_meters(position[0]), _meters(position[1])))
+        fields["room"] = _containing_room(
+            plan, storey, (_meters(position[0]), _meters(position[1])))
     return MutationResult(ops=[PatchOp("update", item.element_kind, tag, fields)])
 
 
@@ -409,11 +411,13 @@ def duplicate_canvas_object(plan: PlanModel, storey: str, *, tag: str) -> Mutati
                                       sill_height=opening.sill_height, arch=opening.arch)
                 _validate_opening_station(plan, storey, copied, wall, m(station))
                 op = element_add_op(copied, tag=copied.tag, hint_list="OPENINGS")
-                op.fields["position"] = RawExpr(f'from_node("{wall.start_node}", {m(station).to_source()})')
+                op.fields["position"] = RawExpr(
+                    f'from_node("{wall.start_node}", {m(station).to_source()})')
                 return MutationResult(ops=[op])
             return place_opening(plan, storey, host=wall.tag, type_ref=opening.type_ref,
                                  along=station, is_door=isinstance(opening, Door),
-                                 sill=opening.sill_height.meters if opening.sill_height is not None else None,
+                                 sill=(opening.sill_height.meters
+                                       if opening.sill_height is not None else None),
                                  tag=_copy_tag(plan, tag))
         except MacroError as exc:
             if "does not fit" not in str(exc) and "conflicts" not in str(exc):
@@ -434,8 +438,11 @@ def place_placeable(plan: PlanModel, storey: str, *, type_ref: str, position: XY
         ("register_types", Register, "REGISTERS", "REG-"),
         ("electrical_device_types", ElectricalDevice, "DEVICES", "ED-"),
     )
-    selected = next(((cls, list_name, prefix) for collection, cls, list_name, prefix in collection_map
-                     if any(product.tag == type_ref for product in getattr(plan.library, collection))), None)
+    selected = next(
+        ((cls, list_name, prefix)
+         for collection, cls, list_name, prefix in collection_map
+         if any(product.tag == type_ref for product in getattr(plan.library, collection))),
+        None)
     if selected is None:
         raise MacroError(f"unknown placeable type {type_ref!r}")
     cls, list_name, prefix = selected
@@ -446,7 +453,8 @@ def place_placeable(plan: PlanModel, storey: str, *, type_ref: str, position: XY
     common = {"tag": new_tag, "type_ref": type_ref, "position": pt(x, y),
               "room": _containing_room(plan, storey, (x.meters, y.meters))}
     if cls is Equipment:
-        item = Equipment(**common, kind=EquipmentKind(kind or EquipmentKind.FURNACE.value), footprint=(ft(2), ft(2)))
+        item = Equipment(**common, kind=EquipmentKind(kind or EquipmentKind.FURNACE.value),
+                         footprint=(ft(2), ft(2)))
     elif cls is Register:
         item = Register(**common, kind=DuctSystem(kind or DuctSystem.SUPPLY.value))
     elif cls is ElectricalDevice:
@@ -467,6 +475,7 @@ def _containing_room(plan: PlanModel, storey: str, position: tuple[float, float]
     """
     try:
         from shapely.geometry import Point, Polygon
+
         from typehaus.resolve import resolve
 
         model, _ = resolve(plan)

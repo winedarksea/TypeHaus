@@ -101,7 +101,8 @@ def _roof_rafters(model: ResolvedModel, roof: ResolvedRoof) -> tuple[FramedMembe
     if assembly is None:
         return ()
     structure = next((layer for layer in assembly.layers
-                      if layer.function is LayerFunction.STRUCTURE and layer.framing is not None), None)
+                      if layer.function is LayerFunction.STRUCTURE
+                      and layer.framing is not None), None)
     if structure is None or structure.framing is None:
         return ()
     spacing = (structure.framing.spacing or DEFAULT_SPACING).meters
@@ -503,7 +504,8 @@ def _continuously_supported(
     return reach >= hi - _SUPPORT_GAP_TOL_M
 
 
-def _trim_rafter_to_beam(rafter: FramedMember, roof: ResolvedRoof, beam_width_m: float) -> FramedMember:
+def _trim_rafter_to_beam(rafter: FramedMember, roof: ResolvedRoof,
+                         beam_width_m: float) -> FramedMember:
     """Pull the rafter's ridge end back by half the beam width, staying on the roof plane.
 
     Interpolates along the member's own endpoint elevations (both already on the roof

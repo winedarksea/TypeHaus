@@ -350,7 +350,7 @@ def _resolve_roof(
     model: ResolvedModel, roof: Roof, storey: str
 ) -> tuple[ResolvedRoof | None, list[Finding]]:
     walls = [model.wall(tag) for tag in roof.bearing_refs]
-    missing = [tag for tag, wall in zip(roof.bearing_refs, walls) if wall is None]
+    missing = [tag for tag, wall in zip(roof.bearing_refs, walls, strict=True) if wall is None]
     if missing:
         return None, [element_error("integrity.roof_bearing", f"roof {roof.tag} references missing "
                              f"bearing wall(s): {', '.join(missing)}", roof.tag)]
@@ -361,7 +361,8 @@ def _resolve_roof(
         return None, [element_error("integrity.roof_direction", f"roof {roof.tag} ridge_direction "
                              "must be 'x' or 'y'", roof.tag)]
     if model.plan.library.resolve_assembly(roof.assembly) is None:
-        return None, [element_error("integrity.roof_assembly", f"roof {roof.tag} references unknown "
+        return None, [element_error("integrity.roof_assembly",
+                             f"roof {roof.tag} references unknown "
                              f"assembly {roof.assembly!r}", roof.tag)]
     directions: list[tuple[float, float]] = []
     for wall in walls:
@@ -369,7 +370,8 @@ def _resolve_roof(
         dx, dy = wall.axis[1][0] - wall.axis[0][0], wall.axis[1][1] - wall.axis[0][1]
         magnitude = math.hypot(dx, dy)
         if magnitude <= 1e-6:
-            return None, [element_error("integrity.roof_bearing", f"roof {roof.tag} has a zero-length "
+            return None, [element_error("integrity.roof_bearing",
+                                 f"roof {roof.tag} has a zero-length "
                                  "bearing wall", roof.tag)]
         directions.append((dx / magnitude, dy / magnitude))
     first_x, first_y = directions[0]
@@ -420,7 +422,8 @@ def _resolve_roof(
     footprint = [(minx, miny), (maxx, miny), (maxx, maxy), (minx, maxy)]
     run = (maxy - miny) if roof.ridge_direction == "x" else (maxx - minx)
     if run <= 1e-6:
-        return None, [element_error("integrity.roof_footprint", f"roof {roof.tag} has zero run", roof.tag)]
+        return None, [element_error("integrity.roof_footprint",
+                                    f"roof {roof.tag} has zero run", roof.tag)]
     plate_top = max(wall.z1_m for wall in walls if wall is not None)
     # ``eave_z_m`` is the rafter-top (deck) plane: a rafter-framed roof rises
     # ``deck_rise_m`` above the plate (only the birdsmouth sinks below it, per the

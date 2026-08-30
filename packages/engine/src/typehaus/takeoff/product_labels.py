@@ -18,7 +18,8 @@ paid, both house-owned and both outside the undo journal (paying a bill is not a
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Mapping, Optional
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from typehaus.model.plan import PlanModel
@@ -95,7 +96,7 @@ def hardware_product(row: Mapping[str, Any]) -> str | None:
 
 
 def specified_product(section: str, key: str, row: Mapping[str, Any],
-                      products: Optional[Mapping[tuple[str, str], str]]) -> Optional[str]:
+                      products: Mapping[tuple[str, str], str] | None) -> str | None:
     """The specified brand + model for one priced estimate row, or None for no product.
 
     Hardware reads off the BOM row (see :func:`hardware_product`); everything else comes out

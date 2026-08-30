@@ -19,9 +19,8 @@ type of its own.
 
 from __future__ import annotations
 
-from typehaus.model import FurnitureType, Mount, MountKind, ft, inch
-
 from library.placeables._zones import front_zone
+from typehaus.model import FurnitureType, Mount, MountKind, ft, inch
 
 REFERENCE = "Standard frameless cabinet modules; final millwork selection by owner."
 

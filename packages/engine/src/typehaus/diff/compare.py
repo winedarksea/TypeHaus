@@ -126,7 +126,7 @@ class CompareReport(JsonReport):
         }
 
 
-def apply_assembly_swaps(plan: "PlanModel", swaps: dict[str, str]) -> "PlanModel":
+def apply_assembly_swaps(plan: PlanModel, swaps: dict[str, str]) -> PlanModel:
     """Return a copy of ``plan`` with every element's assembly remapped per ``swaps``.
 
     Any element that references an assembly tag directly (walls, foundation walls, …) is a
@@ -163,7 +163,7 @@ def apply_assembly_swaps(plan: "PlanModel", swaps: dict[str, str]) -> "PlanModel
     return result
 
 
-def variant_plan(selection: VariantSelection) -> "PlanModel":
+def variant_plan(selection: VariantSelection) -> PlanModel:
     """Load the base plan and apply this variant's overrides — the one build entry point."""
     from typehaus.source import load_plan
 
@@ -177,18 +177,18 @@ def variant_plan(selection: VariantSelection) -> "PlanModel":
     return apply_layer_thickness(plan, selection.layer_thickness)
 
 
-def resolve_variant(selection: VariantSelection) -> tuple["ResolvedModel", list["Finding"]]:
+def resolve_variant(selection: VariantSelection) -> tuple[ResolvedModel, list[Finding]]:
     """Load, apply this variant's overrides, and resolve it into a model."""
     from typehaus.resolve import resolve
 
     return resolve(variant_plan(selection))
 
 
-def quantity_deltas(model_a: "ResolvedModel", model_b: "ResolvedModel") -> list[QuantityDelta]:
+def quantity_deltas(model_a: ResolvedModel, model_b: ResolvedModel) -> list[QuantityDelta]:
     """Roll the framing takeoff of both variants up by size and report every changed metric."""
     from typehaus.takeoff import framing_bom_by_size
 
-    def _rows(model: "ResolvedModel") -> dict[str, dict]:
+    def _rows(model: ResolvedModel) -> dict[str, dict]:
         return {str(row["profile"]): row for row in framing_bom_by_size(model)}
 
     rows_a, rows_b = _rows(model_a), _rows(model_b)
@@ -207,7 +207,7 @@ def _num(value: object) -> float:
     return float(value) if isinstance(value, (int, float)) else 0.0
 
 
-def envelope_deltas(model_a: "ResolvedModel", model_b: "ResolvedModel") -> list[EnvelopeDelta]:
+def envelope_deltas(model_a: ResolvedModel, model_b: ResolvedModel) -> list[EnvelopeDelta]:
     """Compare the R-value and built thickness of every wall assembly either variant uses.
 
     This is the "variant B: +R7, +1½″ of wall" row of the compare view (→ 21b). Each side is
@@ -216,7 +216,7 @@ def envelope_deltas(model_a: "ResolvedModel", model_b: "ResolvedModel") -> list[
     """
     from typehaus.analysis import assembly_metrics
 
-    def _metrics(model: "ResolvedModel") -> dict[str, object]:
+    def _metrics(model: ResolvedModel) -> dict[str, object]:
         library = model.plan.library
         used = {wall.assembly for wall in model.walls if wall.assembly}
         resolved = {tag: library.resolve_assembly(tag) for tag in used}
@@ -244,8 +244,8 @@ def envelope_deltas(model_a: "ResolvedModel", model_b: "ResolvedModel") -> list[
     return deltas
 
 
-def check_deltas(model_a: "ResolvedModel", findings_a: list["Finding"], house_a: Path,
-                 model_b: "ResolvedModel", findings_b: list["Finding"],
+def check_deltas(model_a: ResolvedModel, findings_a: list[Finding], house_a: Path,
+                 model_b: ResolvedModel, findings_b: list[Finding],
                  house_b: Path) -> list[CheckDelta]:
     """Run each variant's checks and report every rule whose result moved.
 
@@ -269,7 +269,7 @@ def check_deltas(model_a: "ResolvedModel", findings_a: list["Finding"], house_a:
             if results_a.get(key) != results_b.get(key)]
 
 
-def compare_models(model_a: "ResolvedModel", model_b: "ResolvedModel",
+def compare_models(model_a: ResolvedModel, model_b: ResolvedModel,
                    label_a: str = "A", label_b: str = "B") -> CompareReport:
     """Diff two resolved models. Reuses the external-diff matcher via ``baseline_elems``.
 

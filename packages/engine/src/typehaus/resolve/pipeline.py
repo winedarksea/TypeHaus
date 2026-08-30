@@ -210,7 +210,8 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
                 )
                 continue
             width, height, is_door, type_ref = _opening_size(plan, el)
-            kind = {"Door": "door", "Window": "window", "RoughOpening": "rough_opening"}[el.element_kind]
+            kind = {"Door": "door", "Window": "window",
+                    "RoughOpening": "rough_opening"}[el.element_kind]
             axis_len = length(sub(rw.axis[1], rw.axis[0]))
             center = _opening_center(plan, el, rw, axis_len, width)
             sill = _opening_sill(el)
@@ -297,7 +298,9 @@ def _opening_sill(el) -> float:
     return el.sill_height.meters if getattr(el, "sill_height", None) else 0.0
 
 
-def _opening_framing_bumper(wall, center_along_m: float, width_m: float) -> list[tuple[float, float]]:
+def _opening_framing_bumper(
+    wall, center_along_m: float, width_m: float,
+) -> list[tuple[float, float]]:
     """A thin resolved overlay around a rough opening for framing-aware placement preview."""
     (sx, sy), (ex, ey) = wall.axis
     length = math.hypot(ex - sx, ey - sy) or 1.0
@@ -345,7 +348,8 @@ def _door_swing_clearance(wall, center_along_m: float, width_m: float, door,
     start = (sx + tangent[0] * (center_along_m - width_m / 2),
              sy + tangent[1] * (center_along_m - width_m / 2))
     hinge_at_start = not bool(getattr(door, "flip_hinge", False))
-    hinge = start if hinge_at_start else (start[0] + tangent[0] * width_m, start[1] + tangent[1] * width_m)
+    hinge = start if hinge_at_start else (start[0] + tangent[0] * width_m,
+                                          start[1] + tangent[1] * width_m)
     closed = tangent if hinge_at_start else (-tangent[0], -tangent[1])
     direction = -1 if bool(getattr(door, "flip_swing", False)) else 1
     radius = width_m * sweep

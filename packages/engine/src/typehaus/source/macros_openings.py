@@ -144,11 +144,18 @@ def rehost_opening(plan: PlanModel, storey: str, *, tag: str, host: str,
 
 def _opening_width(plan: PlanModel, opening: object) -> float:
     if isinstance(opening, Door):
-        item = next((candidate for candidate in plan.library.door_types if candidate.tag == opening.type_ref), None)
+        item = next((candidate for candidate in plan.library.door_types
+                     if candidate.tag == opening.type_ref), None)
     elif isinstance(opening, Window):
-        item = next((candidate for candidate in plan.library.window_types if candidate.tag == opening.type_ref), None)
+        item = next((candidate for candidate in plan.library.window_types
+                     if candidate.tag == opening.type_ref), None)
     else:
-        return float(getattr(opening, "width").meters)
+        # Deliberately ``getattr`` rather than ``opening.width``: the parameter is typed
+        # ``object`` and this branch is the duck-typed fallback for an opening that is
+        # neither a Door nor a Window, so the attribute cannot be proven to exist. B009
+        # would rewrite this to a direct access, which reads better but hands mypy an
+        # ``"object" has no attribute "width"`` it is right to complain about.
+        return float(getattr(opening, "width").meters)  # noqa: B009
     if item is None:
         raise MacroError(f"opening {opening.tag!r} references missing type")
     return item.width.meters
@@ -172,10 +179,12 @@ def _validate_opening_station(plan: PlanModel, storey: str, opening: object, wal
         peer_width = _opening_width(plan, peer)
         peer_start = _opening_start_offset(peer, wall, length_m, peer_width)
         if offset.meters < peer_start + peer_width - 1e-9 and candidate_end > peer_start + 1e-9:
-            raise MacroError(f"opening {opening.tag!r} conflicts with {peer.tag!r} on wall {wall.tag!r}")
+            raise MacroError(f"opening {opening.tag!r} conflicts with {peer.tag!r} "
+                             f"on wall {wall.tag!r}")
 
 
-def _opening_start_offset(opening: object, wall: object, wall_length_m: float, width_m: float) -> float:
+def _opening_start_offset(opening: object, wall: object, wall_length_m: float,
+                          width_m: float) -> float:
     position = opening.position
     if position.mode == "centered":
         return (wall_length_m - width_m) / 2

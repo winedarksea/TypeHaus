@@ -127,7 +127,8 @@ def walkline_z_at(lines: list[list[tuple[float, float, float]]],
     beyond: tuple[float, float] | None = None    # (plan distance, z), projection clamped
     px, py = point
     for line in lines:
-        for (x0, y0, z0), (x1, y1, z1) in zip(line, line[1:]):
+        # Pairwise along the polyline: ``line[1:]`` is one shorter on purpose.
+        for (x0, y0, z0), (x1, y1, z1) in zip(line, line[1:], strict=False):
             dx, dy = x1 - x0, y1 - y0
             run2 = dx * dx + dy * dy
             raw = 0.0 if run2 < 1e-18 else ((px - x0) * dx + (py - y0) * dy) / run2

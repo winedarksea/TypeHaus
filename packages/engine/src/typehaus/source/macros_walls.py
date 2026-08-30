@@ -126,7 +126,8 @@ def move_nodes(
         ops.append(PatchOp("update", "Room", room.tag,
                            {"seed": _point_expr_m(x + dxm, y + dym)}))
     for item in plan.storey_elements(storey):
-        if not isinstance(item, _PLACEABLE_KINDS) or getattr(item, "room", None) not in translated_rooms:
+        if (not isinstance(item, _PLACEABLE_KINDS)
+                or getattr(item, "room", None) not in translated_rooms):
             continue
         location = getattr(item, "location", None)
         if location is not None and location.attachment is not None:
@@ -142,6 +143,7 @@ def _rooms_with_moved_boundaries(plan: PlanModel, storey: str, moved_nodes: set[
     """Return rooms whose complete authored boundary node set participates in this move."""
     try:
         from shapely.geometry import Point, Polygon
+
         from typehaus.resolve import resolve
 
         model, _ = resolve(plan)
@@ -151,8 +153,10 @@ def _rooms_with_moved_boundaries(plan: PlanModel, storey: str, moved_nodes: set[
             if room.storey != storey or len(room.clear_face) < 3:
                 continue
             boundary = Polygon(room.clear_face).boundary
-            boundary_nodes = {node.tag for node in nodes
-                              if boundary.distance(Point(node.position.xy_m)) <= ROOM_BOUNDARY_NODE_TOLERANCE_M}
+            boundary_nodes = {
+                node.tag for node in nodes
+                if boundary.distance(Point(node.position.xy_m))
+                <= ROOM_BOUNDARY_NODE_TOLERANCE_M}
             if boundary_nodes and boundary_nodes <= moved_nodes:
                 translated.add(room.tag)
         return translated

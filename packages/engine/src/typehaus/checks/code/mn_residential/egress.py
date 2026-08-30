@@ -9,10 +9,15 @@ from __future__ import annotations
 
 from shapely.geometry import Point, Polygon
 
-from typehaus.checks.code.mn_residential._common import (_fail, _pass, _room_windows,
-                                                         _rooms_by_storey,
-                                                         _storey_is_below_grade, _unknown,
-                                                         _wall_is_exterior)
+from typehaus.checks.code.mn_residential._common import (
+    _fail,
+    _pass,
+    _room_windows,
+    _rooms_by_storey,
+    _storey_is_below_grade,
+    _unknown,
+    _wall_is_exterior,
+)
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import SLEEPING_OCCUPANCIES, Occupancy
@@ -273,7 +278,8 @@ def _landing_patch(ctx: CheckContext, wall, opening, rooms_by_storey):
         sign = -1.0
     half = max(opening.width_m, 0.1) / 2.0
     depth = _MIN_LANDING_DEPTH.meters
-    base_x, base_y = cx + nx * sign * wall.thickness_m / 2.0, cy + ny * sign * wall.thickness_m / 2.0
+    base_x = cx + nx * sign * wall.thickness_m / 2.0
+    base_y = cy + ny * sign * wall.thickness_m / 2.0
     corners = [
         (base_x - ux * half, base_y - uy * half),
         (base_x + ux * half, base_y + uy * half),

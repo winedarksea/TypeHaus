@@ -81,7 +81,7 @@ class _Rows:
 
 
 def _path_length_m(points) -> float:
-    return sum(math.dist(a, b) for a, b in zip(points[:-1], points[1:]))
+    return sum(math.dist(a, b) for a, b in zip(points[:-1], points[1:], strict=True))
 
 
 def _section_profile(depth_m: float, thickness_m: float) -> str:

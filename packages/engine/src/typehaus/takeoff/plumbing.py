@@ -169,7 +169,10 @@ def fitting_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         if run.z_m is None:
             continue
         sweep = SolidSweep(
-            path=clean_path([(x, y, z) for (x, y), z in zip(run.path, run.z_m)]),
+            # strict=True: ResolvedPipeRun documents (and the resolver builds) z_m with
+            # len == len(path); a mismatch would be a resolver bug, not routing data.
+            path=clean_path(
+                [(x, y, z) for (x, y), z in zip(run.path, run.z_m, strict=True)]),
             profile=((run.diameter_m / 2.0, 0.0),))
         for turn in sweep_turns(sweep):
             if turn.angle_deg < _MIN_FITTING_TURN_DEG:

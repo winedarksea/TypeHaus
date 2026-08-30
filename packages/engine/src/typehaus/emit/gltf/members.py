@@ -8,7 +8,6 @@ from typehaus.resolve.geometry_ir import GSweep
 from typehaus.resolve.geometry_members import member_solid
 from typehaus.resolve.model import FramedMember
 
-
 # A roof carries two different kinds of member: sticks (rafters, truss chords and webs, gable
 # studs, outlookers, barge rafters, the fascia nailed to the rafter tails — framing, and they
 # belong under the framing toggle with every other stick) and skin (the wall→roof closure

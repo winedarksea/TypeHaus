@@ -27,9 +27,9 @@ from typehaus.resolve.geometry_prims import (
     _arch_soffit_sample,
     _arch_soffit_segment_count,
     _lerp,
-    arch_soffit_circle,
     _slice,
     _thin_rect_edges,
+    arch_soffit_circle,
 )
 from typehaus.resolve.intervals import subtract as _subtract_spans
 from typehaus.resolve.model import ResolvedWall

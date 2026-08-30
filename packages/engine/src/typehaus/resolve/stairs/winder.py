@@ -164,7 +164,8 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
         outline.extend((nosing_point, narrow))
         out.append(FramedMember(stair.uid, f"winder-{index:03d}", "winder", "tapered tread",
                                 narrow, nosing_point, _notch_z(top), top,
-                                math.hypot(nosing_point[0] - narrow[0], nosing_point[1] - narrow[1]),
+                                math.hypot(nosing_point[0] - narrow[0],
+                                           nosing_point[1] - narrow[1]),
                                 plan_outline=_clean_ring(outline)))
         previous_nosing, previous_narrow = nosing_point, narrow
     tread_profile = _tread_board_profile(tread_depth)
@@ -199,12 +200,10 @@ def _box_perimeter(line: _FanLine, outer_corner: tuple[float, float],
 def _polyline_midpoint(segments: list[tuple[tuple[float, float], tuple[float, float]]]
                        ) -> tuple[float, float]:
     """The point halfway along a run of segments, by arc length."""
-    # NB plain ``zip``: the engine still runs on 3.9 here, where ``strict=`` does not exist
-    # (which is what the repo's standing B905 findings are).
     lengths = [math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in segments]
     remaining = sum(lengths) / 2.0
     last = len(segments) - 1
-    for index, ((a, b), length) in enumerate(zip(segments, lengths)):
+    for index, ((a, b), length) in enumerate(zip(segments, lengths, strict=True)):
         if remaining <= length or index == last:
             t = remaining / length if length > 1e-9 else 0.0
             return (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)

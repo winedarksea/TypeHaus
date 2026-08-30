@@ -70,7 +70,7 @@ class ExteriorInsulationFastening:
 
 def exterior_insulation_fastening(
     layer_stack: list, rules: ExteriorInsulationFastenerRules,
-) -> "ExteriorInsulationFastening | None":
+) -> ExteriorInsulationFastening | None:
     """Find the screwed furring condition in an interior→exterior ``(function, thickness_m,
     name)`` stack, or ``None`` when the assembly has none.
 

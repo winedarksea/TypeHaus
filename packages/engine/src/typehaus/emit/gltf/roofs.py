@@ -22,8 +22,8 @@ from typehaus.resolve.geometry_roofs import (
     _FALLBACK_MATERIAL_REF,
     roof_parts,
 )
-from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 from typehaus.resolve.model import ResolvedModel, ResolvedRoof
+from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 
 
 def _add_roof(mb: _MeshBuilder, roof: ResolvedRoof, model: ResolvedModel,

@@ -10,7 +10,9 @@ two share nothing but the ``ElectricalDevice`` element kind.
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import advisory, passed as _pass, unknown as _unknown
+from typehaus.checks._authoring import advisory
+from typehaus.checks._authoring import passed as _pass
+from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.electrical import luminaire_types
@@ -36,9 +38,7 @@ def _lit_elements(ctx: CheckContext) -> list[tuple[object, str]]:
     for storey in ctx.plan.storeys:
         for element in ctx.plan.storey_elements(storey.tag):
             kind = element.element_kind
-            if kind == "LightRun":
-                out.append((element, storey.tag))
-            elif (kind == "ElectricalDevice"
+            if kind == "LightRun" or (kind == "ElectricalDevice"
                   and getattr(element.kind, "value", None) == "light"):
                 out.append((element, storey.tag))
     return out
@@ -286,14 +286,14 @@ def light_run_psu(ctx: CheckContext) -> list[Finding]:
         rating = getattr(types.get(devices[psu_tag].type_ref or ""), "load_va", None)
         if rating is None:
             out.append(_unknown(cid, "supply " + psu_tag + " states no rating, so the "
-                                     + "{:.0f}".format(required) + " W it has to carry "
+                                     + f"{required:.0f}" + " W it has to carry "
                                      "cannot be checked", (psu_tag,)))
             continue
         if rating + 1e-6 < required:
             out.append(_warn_fail(
-                cid, "supply " + psu_tag + " is rated " + "{:.0f}".format(rating)
-                     + " W but drives " + "{:.0f}".format(demand_by_psu[psu_tag])
-                     + " W of tape, which needs " + "{:.0f}".format(required)
+                cid, "supply " + psu_tag + " is rated " + f"{rating:.0f}"
+                     + " W but drives " + f"{demand_by_psu[psu_tag]:.0f}"
+                     + " W of tape, which needs " + f"{required:.0f}"
                      + " W at the 125% continuous factor", (psu_tag,)))
     if not out:
         out.append(_pass(cid, str(len(runs)) + " light runs resolve to a supply sized for "

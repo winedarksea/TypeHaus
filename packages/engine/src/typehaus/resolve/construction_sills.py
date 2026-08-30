@@ -37,7 +37,6 @@ from typehaus.resolve.model import (
     ResolvedWall,
 )
 
-
 #: The compressed, in-place sill-seal thickness used when an assembly's ``FramingSpec``
 #: does not state one. Matches ``BasementToFramedWallConfig.sill_gasket_in`` — the drawing
 #: config states it in inches for the detail writer, and it is the same building fact.

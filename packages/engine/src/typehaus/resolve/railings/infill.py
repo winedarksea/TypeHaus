@@ -63,7 +63,8 @@ def emit_infill(model: ResolvedModel, el: Railing, storey: str, stations: list[V
     oversize: list[str] = []
     truncated = False
 
-    for a, b in zip(stations[:-1], stations[1:]):
+    # strict=True: two slices of the same station list, both one shorter than it.
+    for a, b in zip(stations[:-1], stations[1:], strict=True):
         bay = length(sub(b, a))
         clear = bay - parts.post_section_m
         if clear <= 1e-6:

@@ -26,9 +26,9 @@ import math
 
 from typehaus.emit.finishes import layer_material_key, layer_visibility_group
 from typehaus.resolve.geometry_ir import GMesh, GPart, PartCatalogRef, Vec3
+from typehaus.resolve.model import ResolvedRoof
 from typehaus.resolve.roof_geometry import roof_plane_z, roof_slope_coordinate
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
-from typehaus.resolve.model import ResolvedRoof
 
 # The roof still has to read as a solid when its assembly declares nothing above the
 # structure — the viewer's ``buildRoof`` fallback, mirrored here so the GLB agrees with it.

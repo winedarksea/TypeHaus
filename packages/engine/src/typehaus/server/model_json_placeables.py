@@ -44,7 +44,8 @@ def placeables_json(
             for storey in model.plan.storeys
             for fixture in model.plan.storey_elements(storey.tag)
             if fixture.element_kind in {"Fixture", "Appliance"}
-            for fixture_type in (*model.plan.library.fixture_types, *model.plan.library.appliance_types)
+            for fixture_type in (*model.plan.library.fixture_types,
+                                 *model.plan.library.appliance_types)
             if fixture_type.tag == fixture.type_ref
         ],
         "furniture": [

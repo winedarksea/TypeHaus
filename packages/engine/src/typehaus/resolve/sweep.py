@@ -137,7 +137,7 @@ def _ring_at(vertex: Vec3, direction: Vec3, right: Vec3, up: Vec3,
     return tuple(points)
 
 
-def sweep_legs(sweep: "SolidSweep") -> list[tuple[Ring3, Ring3]]:
+def sweep_legs(sweep: SolidSweep) -> list[tuple[Ring3, Ring3]]:
     """One ``(start_ring, end_ring)`` pair per leg — each pair is exactly one ``GBox``.
 
     Interior vertices mitre: the shared ring lies in the plane bisecting the two legs, so a
@@ -190,7 +190,7 @@ def profile_radius_m(profile: tuple[Vec2, ...]) -> float:
     return max((math.hypot(u, v) for u, v in profile), default=0.0)
 
 
-def sweep_leg_axes(sweep: "SolidSweep") -> list[tuple[Vec3, Vec3, Vec3, float]]:
+def sweep_leg_axes(sweep: SolidSweep) -> list[tuple[Vec3, Vec3, Vec3, float]]:
     """``(origin, axis, ref_direction, length)`` per leg — an extrusion's four inputs.
 
     The straight-extrusion reading of a run, for IFC: ``origin`` is the leg's start point on
@@ -213,13 +213,13 @@ def sweep_leg_axes(sweep: "SolidSweep") -> list[tuple[Vec3, Vec3, Vec3, float]]:
     return out
 
 
-def sweep_length_m(sweep: "SolidSweep") -> float:
+def sweep_length_m(sweep: SolidSweep) -> float:
     """Developed 3D length of the run — what a rail or a pipe is actually billed by."""
     path = clean_path(sweep.path)
     return sum(_norm3(_sub3(path[i + 1], path[i])) for i in range(len(path) - 1))
 
 
-def sweep_z_extent(sweep: "SolidSweep") -> tuple[float, float]:
+def sweep_z_extent(sweep: SolidSweep) -> tuple[float, float]:
     """``(z0, z1)`` of the whole run *including* the section — the solid's Z extents."""
     zs = [point[2] for leg in sweep_legs(sweep) for ring in leg for point in ring]
     if not zs:
@@ -233,7 +233,7 @@ def _plan_half_width(profile: tuple[Vec2, ...]) -> float:
     return max((abs(u) for u, _v in profile), default=0.0)
 
 
-def sweep_plan_silhouette(sweep: "SolidSweep") -> list[Vec2]:
+def sweep_plan_silhouette(sweep: SolidSweep) -> list[Vec2]:
     """The run's plan footprint, as the ring ``ResolvedSolid.outline`` keeps carrying.
 
     Consumers that have not been taught about sweeps — the plan sheet's railing polylines,
@@ -301,7 +301,7 @@ class Turn:
     plan_angle_deg: float
 
 
-def sweep_turns(sweep: "SolidSweep") -> list[Turn]:
+def sweep_turns(sweep: SolidSweep) -> list[Turn]:
     """Every interior vertex that actually turns — the fitting take-off's input."""
     path = clean_path(sweep.path)
     turns: list[Turn] = []

@@ -9,7 +9,7 @@ here, so ``from typehaus.cli.prices import ...`` keeps working for every caller.
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
-from typing import Any, Optional
+from typing import Any
 
 from typehaus.cli.price_file import (  # noqa: F401  (re-exported: this is the public name)
     _SECTIONS,
@@ -248,7 +248,7 @@ QUALIFIED_KEY_FIELD = {"concrete": "assembly", "timber": "assembly",
                        "ducts": "material"}
 
 
-def rate_for(prices: "Prices", section: str, key: object,
+def rate_for(prices: Prices, section: str, key: object,
              qualifier: object = None) -> tuple[str, Any]:
     """The unit rate a BOM row prices at, and the price-table key it resolved to.
 
@@ -316,7 +316,8 @@ UNPRICED_VIEWS: dict[str, str] = {
     # unpriced: the stock is owner-milled at a rate that is not a market price, and the
     # fabrication labour is already in the finish-window-stools and cabinet-study-bookcase
     # allowances. Pricing it would bill that work twice (→ takeoff/hardwood.py).
-    "hardwood": "a rough-stock VIEW; shared rows bill in their own sections, stools and shelves in [allowances]",
+    "hardwood": ("a rough-stock VIEW; shared rows bill in their own sections, "
+                 "stools and shelves in [allowances]"),
     # Every one of these is a schedule *view* of ElectricalDevice placeables, which price
     # per type in [placeables] (the ED-T-* families). Pricing them again would double-count.
     "electrical_devices": "priced in [placeables] as the ED-T-* types",
@@ -399,7 +400,7 @@ def _driver_parts(spec: str) -> tuple[str, str, dict[str, str]]:
     return match["table"], match["field"], filters
 
 
-def _resolve_driver(bom: Mapping[str, Any], areas: Optional[Mapping[str, float]],
+def _resolve_driver(bom: Mapping[str, Any], areas: Mapping[str, float] | None,
                     key: str, spec: str) -> tuple[float, list[tuple[str, Mapping[str, Any]]]]:
     """A driven allowance's quantity, and the BOM rows it was measured off.
 
@@ -464,7 +465,7 @@ def _resolve_driver(bom: Mapping[str, Any], areas: Optional[Mapping[str, float]]
 
 
 def _allowance_rows(prices: Prices, bom: Mapping[str, Any],
-                    areas: Optional[Mapping[str, float]]
+                    areas: Mapping[str, float] | None
                     ) -> tuple[list[dict[str, Any]],
                                dict[str, list[tuple[str, Mapping[str, Any]]]]]:
     """One synthetic BOM row per authored allowance, and what each driven one consumed.
@@ -532,8 +533,8 @@ def _driver_overlaps(consumed: Mapping[str, list[tuple[str, Mapping[str, Any]]]]
 
 
 def estimate_costs(bom: dict[str, Any], prices: Prices,
-                   areas: Optional[Mapping[str, float]] = None,
-                   products: Optional[Mapping[tuple[str, str], str]] = None
+                   areas: Mapping[str, float] | None = None,
+                   products: Mapping[tuple[str, str], str] | None = None
                    ) -> dict[str, Any]:
     """Price a :func:`typehaus.takeoff.bill_of_materials` payload against ``prices``.
 

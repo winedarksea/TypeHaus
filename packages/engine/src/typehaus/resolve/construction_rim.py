@@ -26,9 +26,9 @@ from collections.abc import Iterator
 from typehaus.model.assembly import ConstructionRule
 from typehaus.model.floors import FloorSystem
 from typehaus.resolve.construction_ceiling import _room_clear_face, _room_storey
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import ResolvedConstructionReturn, ResolvedModel, ResolvedWall
 from typehaus.resolve.room_walls import bounding_walls
-from typehaus.resolve.framing.profiles import cross_section
 
 # A floor band whose near face is within this of a wall's own base or top is a band that wall
 # crosses. Generous enough for the platform-framing offset (#43) between a wall's z extent and

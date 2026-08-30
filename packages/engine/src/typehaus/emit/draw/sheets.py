@@ -8,11 +8,19 @@ page).
 """
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, replace
 from functools import partial
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
+from typehaus.emit.draw.details import (
+    DerivedDetail,
+    build_authored_detail_scene,
+    build_detail,
+    derive_detail_slices,
+)
+from typehaus.emit.draw.drainageplan import build_drainage_plan, has_drainage_content
 from typehaus.emit.draw.electricalplan import build_electrical_plan, has_electrical_content
 from typehaus.emit.draw.elevation import build_elevation
 from typehaus.emit.draw.floorplan import build_floorplan
@@ -20,18 +28,10 @@ from typehaus.emit.draw.foundationplan import build_foundation_plan, has_foundat
 from typehaus.emit.draw.framingplan import build_framing_plan
 from typehaus.emit.draw.hvacplan import build_hvac_plan, has_hvac_content
 from typehaus.emit.draw.lightingplan import build_lighting_plan, has_lighting_content
-from typehaus.emit.draw.drainageplan import build_drainage_plan, has_drainage_content
+from typehaus.emit.draw.pdf_writer import _close
 from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content
-from typehaus.emit.draw.sheet_writer import (
-    LEDGER,
-    PORTRAIT_LEDGER,
-    compose_sheet,
-    paper_for,
-    set_paper,
-)
 from typehaus.emit.draw.roofframingplan import build_roof_framing_plan
 from typehaus.emit.draw.roofplan import build_roof_plan
-from typehaus.emit.draw.pdf_writer import _close
 from typehaus.emit.draw.scene import Scene
 from typehaus.emit.draw.schedules import (
     _has_data_content,
@@ -46,17 +46,17 @@ from typehaus.emit.draw.schedules import (
     _write_panel_schedule,
     write_compare_sheet,
 )
-from typehaus.emit.draw.details import (
-    DerivedDetail,
-    build_authored_detail_scene,
-    build_detail,
-    derive_detail_slices,
-)
 from typehaus.emit.draw.section import build_center_section, build_section
+from typehaus.emit.draw.sheet_writer import (
+    LEDGER,
+    PORTRAIT_LEDGER,
+    compose_sheet,
+    paper_for,
+    set_paper,
+)
 from typehaus.emit.draw.siteplan import build_site_plan
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff import hardware_takeoff
-
 
 # The schedule writers live in ``schedules/`` but are re-exported here: this module is
 # still the one name the rest of the engine (and the tests) import a permit sheet from.
@@ -91,7 +91,7 @@ def _derived_detail_title(derived: DerivedDetail) -> str:
     return f"{title} · {pair}" if pair else title
 
 
-def _derived_detail_scene(model: ResolvedModel, derived: "DerivedDetail") -> Scene:
+def _derived_detail_scene(model: ResolvedModel, derived: DerivedDetail) -> Scene:
     scene, _findings = build_detail(model, derived)
     return scene
 
@@ -130,8 +130,8 @@ class SheetSpec:
 
 
 def build_sheet_index(model: ResolvedModel,
-                      preferences: "Preferences | None" = None,
-                      profile: "JurisdictionProfile | None" = None,
+                      preferences: Preferences | None = None,
+                      profile: JurisdictionProfile | None = None,
                       details: str = "all",
                       paper: tuple[float, float] = LEDGER) -> list[SheetSpec]:
     """Assemble the ordered permit-set sheet list — the one place sheet order/content lives.
@@ -290,8 +290,8 @@ def _storey_elevation(model: ResolvedModel, storey_tag: str) -> float:
 
 
 def write_permit_set(model: ResolvedModel, output: Path,
-                     preferences: "Preferences | None" = None,
-                     profile: "JurisdictionProfile | None" = None,
+                     preferences: Preferences | None = None,
+                     profile: JurisdictionProfile | None = None,
                      details: str = "all",
                      paper: tuple[float, float] = LEDGER,
                      ) -> tuple[Path, dict[str, object]]:

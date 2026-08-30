@@ -10,10 +10,12 @@ from typehaus.findings import Finding, Result, Severity, advisory
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel, Ring
 from typehaus.resolve.placeable_clear_floor_obstruction import (
-    CLEAR_FLOOR_SPACE_OBSTRUCTION_THRESHOLDS, ClearFloorSpaceObstruction,
-    PlaceableBodyProfile, clear_floor_space_obstruction)
-from typehaus.resolve.placeable_groups import (PlacementGroupAnchorZone,
-                                               assign_placement_groups)
+    CLEAR_FLOOR_SPACE_OBSTRUCTION_THRESHOLDS,
+    ClearFloorSpaceObstruction,
+    PlaceableBodyProfile,
+    clear_floor_space_obstruction,
+)
+from typehaus.resolve.placeable_groups import PlacementGroupAnchorZone, assign_placement_groups
 from typehaus.resolve.room_floor import room_floor_elevation
 
 _TYPE_COLLECTIONS = (
@@ -58,11 +60,15 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             type_ref = getattr(item, "type_ref", None)
             type_entry = types.get(type_ref)
             product_type = type_entry[0] if type_entry is not None else None
-            if product_type is None and item.element_kind not in {"Equipment", "Register", "ElectricalDevice"}:
-                findings.append(_finding("integrity.unknown_placeable_type", item.tag,
-                                         f"placeable {item.tag} references missing type {type_ref!r}"))
+            if (product_type is None
+                    and item.element_kind not in {"Equipment", "Register",
+                                                  "ElectricalDevice"}):
+                findings.append(_finding(
+                    "integrity.unknown_placeable_type", item.tag,
+                    f"placeable {item.tag} references missing type {type_ref!r}"))
                 continue
-            center, rotation, attachment, attachment_face = _resolve_location(item, product_type, model, findings)
+            center, rotation, attachment, attachment_face = _resolve_location(
+                item, product_type, model, findings)
             if center is None:
                 continue
             local_footprint = _local_footprint(product_type, item)
@@ -83,18 +89,21 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             if (explicit_room is not None and explicit_room != resolved_room
                     and not _set_into_room_wall(item, explicit_room, center, model, room_shapes)):
                 findings.append(_finding("integrity.placeable_room_mismatch", item.tag,
-                    f"placeable {item.tag} is assigned to {explicit_room} but its footprint center is outside that room",
+                    f"placeable {item.tag} is assigned to {explicit_room} but its "
+                    "footprint center is outside that room",
                     Severity.WARN))
             zones = _resolved_clearance_zones(
                 product_type, center, rotation, plan.project.active_code_profile,
             )
             resolved_objects.append(ResolvedCanvasObject(
-                uid=item.uid, tag=item.tag, storey=storey.tag, domain=domain, kind=item.element_kind, type_ref=type_ref,
+                uid=item.uid, tag=item.tag, storey=storey.tag, domain=domain,
+                kind=item.element_kind, type_ref=type_ref,
                 room=explicit_room or resolved_room, position=center, rotation_degrees=rotation,
                 z_m=mount_elevation,
                 footprint=footprint,
                 required_clearances=tuple(ring for zone, ring in zones if _is_required(zone)),
-                recommended_clearances=tuple(ring for zone, ring in zones if not _is_required(zone)),
+                recommended_clearances=tuple(
+                    ring for zone, ring in zones if not _is_required(zone)),
                 attachment_wall=attachment, attachment_face=attachment_face,
                 circuit=getattr(item, "circuit", None),
                 mount=getattr(item, "mount", None),
@@ -273,19 +282,24 @@ def _local_depth_extent(local_footprint: list[tuple[float, float]]) -> float:
     return max(depths) - min(depths) if depths else 0.0
 
 
-def _resolve_location(item: object, product_type: object | None, model: ResolvedModel,
-                      findings: list[Finding]) -> tuple[tuple[float, float] | None, float, str | None, str | None]:
+def _resolve_location(
+    item: object, product_type: object | None, model: ResolvedModel,
+    findings: list[Finding],
+) -> tuple[tuple[float, float] | None, float, str | None, str | None]:
     location = getattr(item, "location", None)
     attachment = location.attachment if location is not None else None
     rotation = _degrees(getattr(location, "rotation", None) if location is not None else None)
     rotation = _degrees(getattr(item, "rotation", None)) if rotation == 0 else rotation
     if attachment is None:
-        point = location.position if location is not None and location.position is not None else getattr(item, "position", None)
+        point = (location.position
+                 if location is not None and location.position is not None
+                 else getattr(item, "position", None))
         return (point.xy_m if point is not None else None), rotation, None, None
     wall = model.wall(attachment.wall_ref)
     if wall is None:
-        findings.append(_finding("integrity.orphan_wall_attachment", item.tag,
-                                 f"placeable {item.tag} attaches to missing wall {attachment.wall_ref}"))
+        findings.append(_finding(
+            "integrity.orphan_wall_attachment", item.tag,
+            f"placeable {item.tag} attaches to missing wall {attachment.wall_ref}"))
         return None, rotation, attachment.wall_ref, attachment.face
     (x0, y0), (x1, y1) = wall.axis
     dx, dy = x1 - x0, y1 - y0
@@ -304,7 +318,8 @@ def _resolve_location(item: object, product_type: object | None, model: Resolved
                for layer in wall.layers for point in layer.polygon]
     finish_offset = (max(offsets) if sign > 0 else min(offsets)) if offsets else 0.0
     gap = attachment.normal_gap.meters
-    resolved_rotation = math.degrees(math.atan2(tangent[1], tangent[0])) + _degrees(attachment.rotation_offset)
+    resolved_rotation = (math.degrees(math.atan2(tangent[1], tangent[0]))
+                         + _degrees(attachment.rotation_offset))
     # Align the *nearest footprint edge*, not its center, to the resolved finish face.
     # Project the rotated local polygon onto the wall's left-normal: left attachments use
     # the minimum (wallward) edge; right attachments use the maximum edge.
@@ -327,7 +342,8 @@ def _local_footprint(product_type: object | None, item: object) -> list[tuple[fl
     if footprint is None:
         return [(-0.225, -0.225), (0.225, -0.225), (0.225, 0.225), (-0.225, 0.225)]
     width, depth = (part.meters for part in footprint)
-    return [(-width / 2, -depth / 2), (width / 2, -depth / 2), (width / 2, depth / 2), (-width / 2, depth / 2)]
+    return [(-width / 2, -depth / 2), (width / 2, -depth / 2),
+            (width / 2, depth / 2), (-width / 2, depth / 2)]
 
 
 def _is_required(zone: object) -> bool:
@@ -500,13 +516,15 @@ def _door_swing_conflicts(model: ResolvedModel,
                 continue
             findings.append(Finding(
                 severity=Severity.WARN, check_id="integrity.door_swing_conflict",
-                message=f"door swing for {opening.tag} conflicts with physical footprint of {item.tag}",
+                message=f"door swing for {opening.tag} conflicts with physical "
+                        f"footprint of {item.tag}",
                 element_tags=(opening.tag, item.tag), result=Result.UNKNOWN,
             ))
     return findings
 
 
-def _transformed_polygon(points: list[tuple[float, float]], center: tuple[float, float], rotation: float) -> list[tuple[float, float]]:
+def _transformed_polygon(points: list[tuple[float, float]], center: tuple[float, float],
+                         rotation: float) -> list[tuple[float, float]]:
     radians = math.radians(rotation)
     cos, sin = math.cos(radians), math.sin(radians)
     return [(center[0] + x * cos - y * sin, center[1] + x * sin + y * cos) for x, y in points]

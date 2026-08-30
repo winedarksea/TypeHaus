@@ -130,7 +130,8 @@ def build_center_section(model: ResolvedModel) -> Scene:
     """
     house_walls = [wall for wall in model.walls if wall.tag.startswith("W-")
                    and wall.storey in {"basement", "main", "second", "attic"}]
-    stations = [coordinate for wall in house_walls for coordinate in (wall.axis[0][1], wall.axis[1][1])]
+    stations = [coordinate for wall in house_walls
+                for coordinate in (wall.axis[0][1], wall.axis[1][1])]
     station = (min(stations) + max(stations)) / 2.0 if stations else 0.0
     view = Slice(uid="RNDSEC00001", tag="SECTION-HOUSE-CENTER", kind=SliceKind.SECTION,
                  cut_origin=pt(m(0), m(station)), cut_direction="x")

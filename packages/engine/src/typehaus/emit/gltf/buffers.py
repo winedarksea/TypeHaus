@@ -79,7 +79,8 @@ def _deindex_with_normals(positions: list[Vec3],
         # Replace the facet's direction only. The outward sense stays whatever the triangle
         # winding established, so the single-sided-material contract is untouched; all three
         # corners flip together or not at all.
-        agreement = sum(sum(s * f for s, f in zip(corner, normal)) for corner in smooth)
+        agreement = sum(
+            sum(s * f for s, f in zip(corner, normal, strict=True)) for corner in smooth)
         sign = -1.0 if agreement < 0.0 else 1.0
         out_nrm.extend(tuple(sign * component for component in corner) for corner in smooth)
     return out_pos, out_nrm

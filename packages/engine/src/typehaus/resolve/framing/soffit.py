@@ -223,7 +223,7 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
     members: list[FramedMember] = []
 
     # --- ladder rails: continuous top + bottom plate down each long side --------
-    for side_key, across in zip(side_keys, (side_low, side_high)):
+    for side_key, across in zip(side_keys, (side_low, side_high), strict=True):
         start, end = point(0.0, across), point(run_length, across)
         for name, rail_z0 in (("top", z_top - thickness), ("bottom", z_bottom)):
             members.append(FramedMember(
@@ -234,7 +234,7 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
     # --- ladder studs: one per side per station, between the rails --------------
     stud_z0, stud_z1 = z_bottom + thickness, z_top - thickness
     for index, station in enumerate(stations):
-        for side_key, across in zip(side_keys, (side_low, side_high)):
+        for side_key, across in zip(side_keys, (side_low, side_high), strict=True):
             at = point(station, across)
             members.append(FramedMember(
                 soffit.uid, f"soffit-stud-{index:03d}-{side_key}", "stud", profile,
@@ -255,7 +255,7 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
         ))
 
     # --- end blocking: the full-depth piece closing each end of the box ---------
-    for end_key, station in zip(end_keys, end_stations):
+    for end_key, station in zip(end_keys, end_stations, strict=True):
         members.append(FramedMember(
             soffit.uid, f"soffit-end-{end_key}", "blocking", profile,
             point(station, span_low), point(station, span_high),

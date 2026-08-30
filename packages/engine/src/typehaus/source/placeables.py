@@ -6,10 +6,26 @@ import json
 from pathlib import Path
 
 from typehaus.findings import Finding, failed
-from typehaus.model import (ApplianceType, ClearancePolicy, ClearanceZone, ElectricalDeviceType,
-                            EquipmentType, FixtureType, Footprint2D, FurnitureType, ModelRepresentation,
-                            Mount, MountKind, PlacementStrategy, PlanRepresentation, RegisterType, Service,
-                            ServicePort, m, pt)
+from typehaus.model import (
+    ApplianceType,
+    ClearancePolicy,
+    ClearanceZone,
+    ElectricalDeviceType,
+    EquipmentType,
+    FixtureType,
+    Footprint2D,
+    FurnitureType,
+    ModelRepresentation,
+    Mount,
+    MountKind,
+    PlacementStrategy,
+    PlanRepresentation,
+    RegisterType,
+    Service,
+    ServicePort,
+    m,
+    pt,
+)
 from typehaus.model.placeable_symbols import SYMBOL_NAMES
 from typehaus.model.plan import PlanModel
 
@@ -53,7 +69,8 @@ def load_project_placeables(house_dir: Path, plan: PlanModel,
             if tag in existing:
                 raise ValueError(f"duplicate type {tag!r}")
             width, depth = record["footprint_m"]
-            common = dict(tag=tag, name=record["name"], footprint=(m(float(width)), m(float(depth))),
+            common = dict(tag=tag, name=record["name"],
+                          footprint=(m(float(width)), m(float(depth))),
                           height=m(float(record["height_m"])), source=record.get("source"),
                           import_provenance=_provenance(record.get("provenance")),
                           placement=PlacementStrategy(record.get("placement", "free_placed")),
@@ -67,7 +84,8 @@ def load_project_placeables(house_dir: Path, plan: PlanModel,
                     glb=str(record["model"]), primitive=record.get("model_primitive"),
                 )
             elif record.get("model_primitive"):
-                common["model_representation"] = ModelRepresentation(primitive=str(record["model_primitive"]))
+                common["model_representation"] = ModelRepresentation(
+                    primitive=str(record["model_primitive"]))
             if record.get("plan_svg"):
                 common["plan_representation"] = PlanRepresentation(svg=str(record["plan_svg"]))
             if "needs" in record:
@@ -81,7 +99,9 @@ def load_project_placeables(house_dir: Path, plan: PlanModel,
                "register": "register_types", "electrical": "electrical_device_types"}
     changes = {key_map[domain]: (*getattr(plan.library, key_map[domain]), *items)
                for domain, items in additions.items() if items}
-    return plan.model_copy(update={"library": plan.library.model_copy(update=changes)}) if changes else plan
+    if not changes:
+        return plan
+    return plan.model_copy(update={"library": plan.library.model_copy(update=changes)})
 
 
 def _error(message: str) -> Finding:
@@ -134,8 +154,10 @@ def _ports(value: object) -> tuple[ServicePort, ...]:
             raise ValueError(f"ports[{index}].position_m must be [x, y, z]")
         ports.append(ServicePort(tag=str(record["tag"]), service=Service(record["service"]),
                                  position=tuple(m(float(part)) for part in position),
-                                 connection_size=(m(float(record["connection_size_m"]))
-                                                  if record.get("connection_size_m") is not None else None),
+                                 connection_size=(
+                                     m(float(record["connection_size_m"]))
+                                     if record.get("connection_size_m") is not None
+                                     else None),
                                  notes=record.get("notes")))
     return tuple(ports)
 
@@ -146,7 +168,8 @@ def _mount(value: object) -> Mount:
     if not isinstance(value, dict):
         raise ValueError("mount must be an object")
     return Mount(kind=MountKind(value.get("kind", "floor")),
-                 elevation=(m(float(value["elevation_m"])) if value.get("elevation_m") is not None else None),
+                 elevation=(m(float(value["elevation_m"]))
+                            if value.get("elevation_m") is not None else None),
                  drop=m(float(value["drop_m"])) if value.get("drop_m") is not None else None,
                  recessed_into_host_surface=bool(value.get("recessed_into_host_surface", False)))
 

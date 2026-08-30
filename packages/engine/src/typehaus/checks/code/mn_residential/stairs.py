@@ -12,17 +12,17 @@ import math
 from shapely.geometry import Point, Polygon
 
 from typehaus.checks.code.mn_residential._common import _fail, _pass, _unknown
-from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding
-from typehaus.quantities import ft, inch
-from typehaus.resolve.framing.profiles import cross_section
-from typehaus.resolve.roof_geometry import roof_underside_at
 from typehaus.checks.code.mn_residential.handrail_geometry import (
     MAX_HANDRAIL_HEIGHT,
     MIN_HANDRAIL_HEIGHT,
     drawn_handrail_findings,
     flight_continuity_findings,
 )
+from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.findings import Finding
+from typehaus.quantities import ft, inch
+from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.roof_geometry import roof_underside_at
 from typehaus.resolve.stairs.walkline import flight_stations
 
 _MAX_STAIR_RISER = inch(7.75)
@@ -83,7 +83,8 @@ def stair_geometry(ctx: CheckContext) -> list[Finding]:
             stair.riser_height_m <= _MAX_STAIR_RISER.meters + 1e-9
             and stair.going_depth_m >= _MIN_STAIR_GOING.meters - 1e-9
             and len(walking) == len(expected)
-            and all(abs(actual - wanted) <= 1e-6 for actual, wanted in zip(walking, expected))
+            and all(abs(actual - wanted) <= 1e-6
+                    for actual, wanted in zip(walking, expected, strict=True))
             and abs(springing + stair.riser_count * stair.riser_height_m - arrival) <= 1e-6
         )
         if valid:
@@ -108,7 +109,7 @@ _flight_stations = flight_stations
 
 def _walk_samples(stations):
     """Points ``(x, y, z)`` densely covering the sloped walking line between stations."""
-    for (a0, b0, z0), (a1, b1, z1) in zip(stations, stations[1:]):
+    for (a0, b0, z0), (a1, b1, z1) in zip(stations, stations[1:], strict=False):
         span = max(math.hypot(a1[0] - a0[0], a1[1] - a0[1]),
                    math.hypot(b1[0] - b0[0], b1[1] - b0[1]))
         steps = max(1, math.ceil(span / _HEADROOM_SAMPLE_STEP_M))
@@ -163,9 +164,9 @@ def stair_headroom(ctx: CheckContext) -> list[Finding]:
                 point = Point(x, y)
                 lowest: tuple[float, str] | None = None
                 for polygon, underside, tag in floors:
-                    if underside > z + _HEADROOM_OVERHEAD_EPS_M and polygon.contains(point):
-                        if lowest is None or underside < lowest[0]:
-                            lowest = (underside, tag)
+                    if (underside > z + _HEADROOM_OVERHEAD_EPS_M and polygon.contains(point)
+                            and (lowest is None or underside < lowest[0])):
+                        lowest = (underside, tag)
                 for polygon, roof in roofs:
                     if polygon.contains(point):
                         underside = roof_underside_at(ctx.model, roof, (x, y))
@@ -173,9 +174,9 @@ def stair_headroom(ctx: CheckContext) -> list[Finding]:
                                 lowest is None or underside < lowest[0]):
                             lowest = (underside, roof.tag)
                 for polygon, underside, tag in soffits:
-                    if underside > z + _HEADROOM_OVERHEAD_EPS_M and polygon.contains(point):
-                        if lowest is None or underside < lowest[0]:
-                            lowest = (underside, tag)
+                    if (underside > z + _HEADROOM_OVERHEAD_EPS_M and polygon.contains(point)
+                            and (lowest is None or underside < lowest[0])):
+                        lowest = (underside, tag)
                 if lowest is None:
                     continue
                 clearance = lowest[0] - z
@@ -233,10 +234,10 @@ def _flight_rail_projections(stair, rails) -> dict[str, tuple[float, float, floa
         cross = ((x1 - x0) / span, (y1 - y0) / span)  # across the lane
         run = (-cross[1], cross[0])  # along the climb
 
-        def c_of(p):  # noqa: E306 - tiny projection helpers, scoped to this flight
+        def c_of(p, cross=cross):  # noqa: E306 - tiny projection helpers, scoped to this flight
             return p[0] * cross[0] + p[1] * cross[1]
 
-        def r_of(p):
+        def r_of(p, run=run):
             return p[0] * run[0] + p[1] * run[1]
 
         ends = [p for t in treads for p in (t.p0, t.p1)]
@@ -245,7 +246,7 @@ def _flight_rail_projections(stair, rails) -> dict[str, tuple[float, float, floa
         proj0 = proj1 = 0.0
         for rail in rails:
             pts = [p.xy_m for p in rail.path]
-            for a, b in zip(pts[:-1], pts[1:]):
+            for a, b in zip(pts[:-1], pts[1:], strict=True):
                 seg = math.hypot(b[0] - a[0], b[1] - a[1])
                 if seg < 1e-9:
                     continue

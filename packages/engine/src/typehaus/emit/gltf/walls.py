@@ -11,6 +11,7 @@ from __future__ import annotations
 from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.gltf.palette import _layer_color
 from typehaus.resolve.geometry_ir import GMesh, GPrism
+
 # `_wall_top_at` keeps its old name here: openings.py and emitter.py import it from this
 # module, and the rake it answers for is the same one the wall solids are built with.
 from typehaus.resolve.geometry_walls import layer_solids
@@ -23,7 +24,8 @@ def _add_solid(mb: _MeshBuilder, solid, color) -> None:
         if solid.top is None:
             mb.add_prism(list(solid.ring), solid.z0_m, solid.z1_m, color)
         else:
-            tops = dict(zip(solid.ring, solid.top))
+            # ``GPrism.__post_init__`` rejects a ``top`` that is not one per vertex.
+            tops = dict(zip(solid.ring, solid.top, strict=True))
             mb.add_raked_prism(list(solid.ring), solid.z0_m,
                                lambda x, y: tops[(x, y)], color)
     elif isinstance(solid, GMesh):

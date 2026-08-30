@@ -26,11 +26,15 @@ from library.assemblies import (
     INT_2X6_STAGGERED_PLUMBING,
     STARTER_FLOOR,
 )
+from library.doors import STARTER_DOOR_TYPES
 from library.hardware import STRUCTURAL_HARDWARE
 from library.materials import STARTER_MATERIALS
-from library.placeables import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES,
-                                STARTER_FIXTURE_TYPES, STARTER_FURNITURE_TYPES)
-from library.doors import STARTER_DOOR_TYPES
+from library.placeables import (
+    STARTER_APPLIANCE_TYPES,
+    STARTER_CASEWORK_TYPES,
+    STARTER_FIXTURE_TYPES,
+    STARTER_FURNITURE_TYPES,
+)
 from library.railings import STARTER_RAILING_TYPES
 
 __all__ = [

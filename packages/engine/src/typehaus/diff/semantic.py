@@ -121,8 +121,8 @@ class AmbiguousStoreyDatum(ValueError):
     """Several buildings state the same storey key and no datum says which one governs."""
 
 
-def pick_datum_storey(key: str, candidates: list["SemanticStorey"],
-                      datum_buildings: tuple[str, ...] | None) -> "SemanticStorey":
+def pick_datum_storey(key: str, candidates: list[SemanticStorey],
+                      datum_buildings: tuple[str, ...] | None) -> SemanticStorey:
     """Choose the storey that owns ``key``'s datum among same-keyed candidates.
 
     Storey keys are shared vocabulary ("main", "basement"), not identity: a file may state

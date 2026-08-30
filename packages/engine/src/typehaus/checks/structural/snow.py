@@ -11,7 +11,8 @@ leaves the rest where the sheet put it.
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import structural_advisory as _advisory, unknown as _unknown
+from typehaus.checks._authoring import structural_advisory as _advisory
+from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import ConnectorKind
@@ -141,7 +142,6 @@ def sliding_snow(ctx: CheckContext) -> list[Finding]:
     snow-retention manufacturer has to look at this", never "this will collapse"; a PASS means
     "retention is authored here", never "the retention is adequate".
     """
-    from shapely.geometry import Polygon
 
     cid = "structural.sliding_snow"
     ground = ctx.plan.project.site.ground_snow_load_psf
@@ -246,7 +246,7 @@ def _spacing_in(roof, rafters) -> float:
     seats = sorted({round(member.p0[axis], 4) for member in rafters})
     if len(seats) < 2:
         return 16.0
-    gaps = [b - a for a, b in zip(seats[:-1], seats[1:]) if b - a > 1e-6]
+    gaps = [b - a for a, b in zip(seats[:-1], seats[1:], strict=True) if b - a > 1e-6]
     if not gaps:
         return 16.0
     return sorted(gaps)[len(gaps) // 2] / 0.0254

@@ -30,17 +30,24 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass, field, replace
 from pathlib import Path
-from typing import Any, Mapping, Optional
+from typing import Any
 
 try:  # tomllib is stdlib on 3.11+; the engine still supports 3.9
     import tomllib
 except ModuleNotFoundError:  # pragma: no cover - exercised on <3.11 only
     import tomli as tomllib  # type: ignore[no-redef]
 
-from typehaus.cli.prices import (ESTIMATE_PLANS, EXCLUDED_FROM_TOTAL, PriceRange, Prices,
-                                 ZERO, estimate_costs)
+from typehaus.cli.prices import (
+    ESTIMATE_PLANS,
+    EXCLUDED_FROM_TOTAL,
+    ZERO,
+    PriceRange,
+    Prices,
+    estimate_costs,
+)
 
 COSTS_FILENAME = "costs.toml"
 
@@ -55,14 +62,14 @@ class CostEntry:
     at least one of them is set; clearing every field deletes it (→ ``apply_costs_op``)."""
 
     paid: bool = False
-    paid_date: Optional[str] = None      # "YYYY-MM-DD" prose, not validated as a date
+    paid_date: str | None = None      # "YYYY-MM-DD" prose, not validated as a date
     # The exact product BOUGHT — a SKU, a listing, whatever identifies the box that
     # arrived. Worth writing when it DIFFERS from what the plan specified: the estimate row
     # now carries the specification itself (``product_labels``), so re-typing it here would
     # be a second copy of a fact the model already holds, and the two would drift.
-    product: Optional[str] = None
-    actual_cost: Optional[float] = None  # what it really cost, once known
-    note: Optional[str] = None
+    product: str | None = None
+    actual_cost: float | None = None  # what it really cost, once known
+    note: str | None = None
 
     @property
     def is_empty(self) -> bool:
@@ -80,11 +87,11 @@ class ExtraItem:
 
     id: str
     name: str
-    cost: Optional[PriceRange] = None
+    cost: PriceRange | None = None
     paid: bool = False
-    product: Optional[str] = None
-    category: Optional[str] = None
-    note: Optional[str] = None
+    product: str | None = None
+    category: str | None = None
+    note: str | None = None
 
     def as_dict(self) -> dict:
         return {"id": self.id, "name": self.name,
@@ -101,7 +108,7 @@ class CostsState:
 
 # --- load ---------------------------------------------------------------------------------
 
-def _cost_value(raw: Any, where: str) -> Optional[PriceRange]:
+def _cost_value(raw: Any, where: str) -> PriceRange | None:
     if raw is None:
         return None
     if isinstance(raw, (int, float)) and not isinstance(raw, bool):
@@ -202,7 +209,7 @@ def _toml_value(value: Any) -> str:
     if isinstance(value, (int, float)):
         return f"{value:g}"
     if isinstance(value, PriceRange):
-        return ("{ low = %s, high = %s }" % (f"{value.low:g}", f"{value.high:g}")
+        return (f"{{ low = {value.low:g}, high = {value.high:g} }}"
                 if not value.is_exact else f"{value.low:g}")
     return json.dumps(str(value))  # JSON string escaping is valid TOML basic-string
 
@@ -306,9 +313,9 @@ def apply_costs_op(state: CostsState, op: Mapping[str, Any]) -> CostsState:
 
 # --- payload ------------------------------------------------------------------------------
 
-def costs_payload(bom: dict, prices: Optional[Prices], state: CostsState,
-                  areas: Optional[Mapping[str, float]] = None,
-                  products: Optional[Mapping[tuple[str, str], str]] = None) -> dict:
+def costs_payload(bom: dict, prices: Prices | None, state: CostsState,
+                  areas: Mapping[str, float] | None = None,
+                  products: Mapping[tuple[str, str], str] | None = None) -> dict:
     """Everything the costs view needs in one JSON-ready dict.
 
     ``join`` tells the client how each estimate section maps onto BOM rows (bom key, key

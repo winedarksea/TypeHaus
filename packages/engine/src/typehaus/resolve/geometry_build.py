@@ -237,8 +237,8 @@ def build_geometry(model: ResolvedModel) -> GeometryModel:
     # Framing rides its owner, so a wall's studs stay addressable as that wall's parts —
     # which is what lets the exporter merge them into one node per owner and still resolve a
     # pick back to the individual stick.
-    for owner, trade in ((model.walls, "walls"), (model.floors, "floors"),
-                         (model.roofs, "roof"), (getattr(model, "stairs", ()), "stairs")):
+    for owner, _trade in ((model.walls, "walls"), (model.floors, "floors"),
+                          (model.roofs, "roof"), (getattr(model, "stairs", ()), "stairs")):
         for host in owner:
             parts = _member_parts(getattr(host, "members", ()))
             if parts:

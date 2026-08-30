@@ -6,10 +6,8 @@ Registered onto the shared app in :mod:`typehaus.cli._shared`.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import typer
-
 from rich.table import Table
 
 from typehaus.cli._shared import _detail, _print_findings, _resolve_house, app, console
@@ -19,12 +17,13 @@ from typehaus.cli._shared import _detail, _print_findings, _resolve_house, app, 
 def explain(
     target: str = typer.Argument(
         ..., help="element tag | assembly tag | 'transitions' | 'module'"),
-    house: Optional[Path] = typer.Argument(None),
+    house: Path | None = typer.Argument(None),
     card: bool = typer.Option(False, help="render the assembly section card"),
     detail: bool = typer.Option(False, help="render the transition detail(s) for a TR-* tag"),
-    out: Optional[Path] = typer.Option(None, help="write card SVG to this path"),
+    out: Path | None = typer.Option(None, help="write card SVG to this path"),
     transitions: bool = typer.Option(False, help="enumerate derived boundary conditions"),
-    bearing: bool = typer.Option(False, help="show authored bearing walls and resolved stack edges"),
+    bearing: bool = typer.Option(
+        False, help="show authored bearing walls and resolved stack edges"),
 ) -> None:
     """Explain an element, render an assembly card, or list transitions."""
     from typehaus.source import load_plan

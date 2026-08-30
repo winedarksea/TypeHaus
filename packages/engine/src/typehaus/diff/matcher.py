@@ -68,7 +68,9 @@ def match_elements(baseline: list[DiffElem], external: list[DiffElem],
 
     # 2. Hungarian fallback + replace detection over the leftovers (same cost matrix).
     paired_b, paired_e = _hungarian(unkeyed_base, leftover_ext)
-    for bi, ei in zip(paired_b, paired_e):
+    # strict=True: an assignment is pairs — scipy's two index arrays, and _greedy's two
+    # lists, are appended to together and are always the same length.
+    for bi, ei in zip(paired_b, paired_e, strict=True):
         b, e = unkeyed_base[bi], leftover_ext[ei]
         if _pair_cost(b, e) <= threshold:
             matches.append(Match(b, e, keyed=False, cost=_pair_cost(b, e)))

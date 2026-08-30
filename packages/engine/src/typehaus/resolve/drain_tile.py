@@ -61,7 +61,8 @@ def drain_tile_solids(uid: str, tag: str, storey: str, path, floor_z_m: float,
     half = diameter / 2.0
     z0 = floor_z_m + PIPE_BEDDING_M
     solids: list[ResolvedSolid] = []
-    for index, (start, end) in enumerate(zip(points[:-1], points[1:])):
+    # strict=True: two slices of the same list, both length len(points) - 1.
+    for index, (start, end) in enumerate(zip(points[:-1], points[1:], strict=True)):
         if start == end:
             continue
         solids.append(ResolvedSolid(

@@ -36,7 +36,9 @@ def _guid(project_uuid: uuid.UUID, uid: str) -> str:
         return uid
 
 
-def _wall_geometry(w: ResolvedWall) -> tuple[tuple[float, float, float], tuple[float, float, float], tuple[float, float]]:
+def _wall_geometry(
+    w: ResolvedWall,
+) -> tuple[tuple[float, float, float], tuple[float, float, float], tuple[float, float]]:
     _origin, dir_, _normal, _length = wall_frame(w)
     # Banded layers (``Layer.extent``) are excluded, because the IFC wall this is reconciled
     # against excludes them too: a layer that runs only part of the wall's height exports as
@@ -71,11 +73,15 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         centroid, bbox = _bounds(frame_points, host.base_ref_z_m + o.sill_m,
                                  host.base_ref_z_m + o.sill_m + o.height_m)
         elems.append(DiffElem(
-            global_id=(derive_child_guid(puid, o.uid, "void") if o.kind == "rough_opening" else _guid(puid, o.uid)), tag=o.tag,
-            ifc_class=("IfcDoor" if o.is_door else "IfcWindow") if o.kind != "rough_opening" else "IfcOpeningElement",
+            global_id=(derive_child_guid(puid, o.uid, "void") if o.kind == "rough_opening"
+                       else _guid(puid, o.uid)),
+            tag=o.tag,
+            ifc_class=(("IfcDoor" if o.is_door else "IfcWindow") if o.kind != "rough_opening"
+                       else "IfcOpeningElement"),
             storey=host.storey,
             centroid=centroid, bbox=bbox, axis_dir=(0.0, 0.0),
-            attrs={key: value for key, value in {"type": o.type_ref, "host_wall": o.host_wall}.items()
+            attrs={key: value
+                   for key, value in {"type": o.type_ref, "host_wall": o.host_wall}.items()
                    if value},
         ))
     class_for_kind = {
@@ -224,11 +230,14 @@ def _storey_name(prod: object) -> str:
     return ""
 
 
-def _bounds(points: list[tuple[float, float]], z0: float, z1: float) -> tuple[tuple[float, float, float],
-                                                                                tuple[float, float, float]]:
+def _bounds(
+    points: list[tuple[float, float]], z0: float, z1: float,
+) -> tuple[tuple[float, float, float], tuple[float, float, float]]:
     if not points:
         return ((0.0, 0.0, (z0 + z1) / 2), (0.0, 0.0, z1 - z0))
-    xs, ys = zip(*points)
+    # ``points`` is a list of 2-tuples by annotation and by every caller, so the transpose
+    # is square; strict= turns a stray 3-tuple into a loud error instead of a dropped axis.
+    xs, ys = zip(*points, strict=True)
     minimum, maximum = (min(xs), min(ys), z0), (max(xs), max(ys), z1)
     return (tuple((minimum[index] + maximum[index]) / 2 for index in range(3)),
             tuple(maximum[index] - minimum[index] for index in range(3)))  # type: ignore[return-value]
@@ -266,11 +275,13 @@ def _type_ports(model: ResolvedModel, type_ref: str | None) -> str:
     products = (model.plan.library.furniture_types, model.plan.library.fixture_types,
                 model.plan.library.appliance_types, model.plan.library.equipment_types,
                 model.plan.library.register_types, model.plan.library.electrical_device_types)
-    product_type = next((item for collection in products for item in collection if item.tag == type_ref), None)
+    product_type = next(
+        (item for collection in products for item in collection if item.tag == type_ref), None)
     if product_type is None:
         return ""
     return ";".join(sorted(
-        f"{port.tag}:{port.service.value}:{port.position[0].meters:.6f},{port.position[1].meters:.6f},{port.position[2].meters:.6f}"
+        f"{port.tag}:{port.service.value}:{port.position[0].meters:.6f},"
+        f"{port.position[1].meters:.6f},{port.position[2].meters:.6f}"
         for port in product_type.ports
     ))
 
@@ -285,12 +296,14 @@ def _external_ports(product: object) -> str:
             for port in getattr(relation, "RelatedObjects", ()) or ():
                 if not port.is_a("IfcDistributionPort"):
                     continue
-                pset = ifcopenshell.util.element.get_psets(port, psets_only=True).get("TypeHaus_Port", {})
+                pset = ifcopenshell.util.element.get_psets(
+                    port, psets_only=True).get("TypeHaus_Port", {})
                 if not pset:
                     continue
                 ports.append(
                     f"{pset.get('tag', port.Name or '')}:{pset.get('service', '')}:"
-                    f"{float(pset.get('x_m', 0)):.6f},{float(pset.get('y_m', 0)):.6f},{float(pset.get('z_m', 0)):.6f}"
+                    f"{float(pset.get('x_m', 0)):.6f},{float(pset.get('y_m', 0)):.6f},"
+                    f"{float(pset.get('z_m', 0)):.6f}"
                 )
         return ";".join(sorted(ports))
     except Exception:  # noqa: BLE001 - third-party IFCs may omit nested port semantics

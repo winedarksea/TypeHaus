@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from typehaus.diff.variants import VariantSpec
 
 
-def load_variant_catalog(house_dir: Path | str | None) -> tuple["VariantSpec", ...]:
+def load_variant_catalog(house_dir: Path | str | None) -> tuple[VariantSpec, ...]:
     """The declared variant specs for ``house_dir`` — the graceful model.json entry point.
 
     A house without a ``variants.toml`` simply declares no variants, and a *malformed*
@@ -131,5 +131,6 @@ def catalog_json(
         # alternatives this house can build, so the UI's variant picker never shells out.
         # Always present — an empty list *is* the absent-catalog story.
         "variants": [spec.as_dict() for spec in (variants or ())],
-        "catalog": {**_catalog(model, provenance), "canvas_object_types": canvas_object_types(model.plan)},
+        "catalog": {**_catalog(model, provenance),
+                    "canvas_object_types": canvas_object_types(model.plan)},
     }

@@ -58,7 +58,9 @@ def water_heater_relief(ctx: CheckContext) -> list[Finding]:
                                 "to no pipe run", (heater.tag, ref), "P2804.6.1"))
             continue
         elevations = list(run.z_m) if run.z_m else [run.z_start_m, run.z_end_m]
-        rises = [(b - a) for a, b in zip(elevations, elevations[1:])
+        # strict=False: an offset pairwise walk down the run's elevations — the second
+        # iterable is one shorter by construction.
+        rises = [(b - a) for a, b in zip(elevations, elevations[1:], strict=False)
                  if b - a > _RISE_TOLERANCE_M]
         if rises:
             out.append(_finding(cid, Result.FAIL,
@@ -129,7 +131,7 @@ def _stands_on_slab(ctx: CheckContext, heater) -> bool:
 
     probe = Point(heater.position.xy_m)
     for solid in ctx.model.solids:
-        if solid.category == "slab" and len(solid.outline) >= 3:
-            if Polygon(solid.outline).covers(probe):
-                return True
+        if (solid.category == "slab" and len(solid.outline) >= 3
+                and Polygon(solid.outline).covers(probe)):
+            return True
     return False

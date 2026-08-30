@@ -129,7 +129,8 @@ def _opening_for_header(model: ResolvedModel, wall: ResolvedWall, member) -> str
         center = opening_center(wall, opening)
         if center is None:
             continue
-        if abs(center[0] - midpoint[0]) + abs(center[1] - midpoint[1]) < HEADER_TO_OPENING_TOLERANCE_M:
+        if (abs(center[0] - midpoint[0]) + abs(center[1] - midpoint[1])
+                < HEADER_TO_OPENING_TOLERANCE_M):
             return opening.tag
     return ""
 

@@ -73,7 +73,7 @@ def resolve_underlays(house_dir: Path, reference_underlays) -> list[Underlay]:
 
 
 def render_plan(model: ResolvedModel, storey: str, path: Path, dpi: int = DEFAULT_DPI,
-                underlays=(), paper=None, scale: "str | None" = None) -> Path:
+                underlays=(), paper=None, scale: str | None = None) -> Path:
     scene = build_floorplan(model, storey)
     return _write_view(model, scene, path,
                        _SheetId("PLAN", f"{storey.title()} floor plan",
@@ -82,7 +82,7 @@ def render_plan(model: ResolvedModel, storey: str, path: Path, dpi: int = DEFAUL
 
 
 def _write_view(model: ResolvedModel, scene, path: Path, sheet: _SheetId, *,
-                dpi: int, underlays=(), paper=None, scale: "str | None" = None) -> Path:
+                dpi: int, underlays=(), paper=None, scale: str | None = None) -> Path:
     """One snapshot, on paper or not — the single place the two writers are chosen between.
 
     On paper the scene is given a real :class:`Frame` first (``frame_for_scene``) so the
@@ -111,7 +111,7 @@ def _write_view(model: ResolvedModel, scene, path: Path, sheet: _SheetId, *,
 
 def render_views(
     model: ResolvedModel, out_dir: Path, view: str = "plan", fmt: str = "png",
-    underlays=(), dpi: "int | None" = None, paper=None, scale: "str | None" = None,
+    underlays=(), dpi: int | None = None, paper=None, scale: str | None = None,
 ) -> list[Path]:
     """Render one view (or ``"all"``) for every storey; returns the written snapshot paths.
 

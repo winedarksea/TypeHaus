@@ -135,7 +135,8 @@ def shower_glass(u_lo: float, u_hi: float, floor_z: float, height: float,
 
 def _duct_crossing_u(duct, direction: str, station: float):
     """Where (in u, metres) a duct's path crosses the cut plane, or None."""
-    for (x0, y0), (x1, y1) in zip(duct.path, duct.path[1:]):
+    # Pairwise along the run: ``path[1:]`` is one shorter on purpose.
+    for (x0, y0), (x1, y1) in zip(duct.path, duct.path[1:], strict=False):
         cross0, cross1 = (x0, x1) if direction == "y" else (y0, y1)
         u0, u1 = (y0, y1) if direction == "y" else (x0, x1)
         lo, hi = min(cross0, cross1), max(cross0, cross1)

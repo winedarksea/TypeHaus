@@ -26,7 +26,9 @@ _UPRIGHT_TOLERANCE_M = 1e-9
 def _box_is_upright(solid: GBox) -> bool:
     return all(abs(top[0] - bottom[0]) <= _UPRIGHT_TOLERANCE_M
                and abs(top[1] - bottom[1]) <= _UPRIGHT_TOLERANCE_M
-               for bottom, top in zip(solid.corners_bottom, solid.corners_top))
+               # strict=True: a GBox's two rings are the same footprint at two elevations,
+               # so they carry the same corner count — `_box_mesh` indexes on that too.
+               for bottom, top in zip(solid.corners_bottom, solid.corners_top, strict=True))
 
 
 def _box_mesh(solid: GBox) -> GMesh:
@@ -81,7 +83,8 @@ def _box_is_convex(solid: GBox) -> bool:
         if reference is None:
             reference = turn
             continue
-        if sum(x * y for x, y in zip(reference, turn)) < 0.0:
+        # strict=True: both are 3-vectors built right here.
+        if sum(x * y for x, y in zip(reference, turn, strict=True)) < 0.0:
             return False
     return reference is not None
 
@@ -91,7 +94,7 @@ def _hull(points: list[Vec2UZ]) -> tuple[Vec2UZ, ...]:
     ordered = sorted(set(points))
     if len(ordered) < 3:
         return ()
-    def half(sequence: "Iterable[Vec2UZ]") -> list[Vec2UZ]:
+    def half(sequence: Iterable[Vec2UZ]) -> list[Vec2UZ]:
         out: list[Vec2UZ] = []
         for point in sequence:
             while len(out) >= 2:

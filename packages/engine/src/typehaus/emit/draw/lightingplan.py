@@ -120,7 +120,7 @@ def build_lighting_plan(model: ResolvedModel, storey: str) -> Scene:
         mark = getattr(types.get(run.type_ref), "type_mark", None) or run.type_ref
         mid = run.path[len(run.path) // 2]
         b.add(Text(anchor=_in((mid[0] + 0.15, mid[1] + 0.15)),
-                   content=mark + "  " + "{:.1f}".format(run.length_m * _M_TO_FT) + " LF",
+                   content=mark + "  " + f"{run.length_m * _M_TO_FT:.1f}" + " LF",
                    height=2.0, layer="E-LITE-COVE"))
         positions[run.tag] = mid
         _emit_light_run_ticks(b, run)
@@ -140,7 +140,7 @@ def _label_offset(product: object) -> float:
     return product.footprint[0].meters / 2.0 + 0.08
 
 
-def _emit_glyph(b: SceneBuilder, symbol: "str | None", width_m: float, depth_m: float,
+def _emit_glyph(b: SceneBuilder, symbol: str | None, width_m: float, depth_m: float,
                 centre: tuple[float, float], rotation_degrees: float,
                 uid: str = "", tag: str = "") -> None:
     """The fixture's own drawn geometry, placed and rotated like the canvas places it."""
@@ -246,8 +246,7 @@ def _emit_legend(b: SceneBuilder, model: ResolvedModel, storey: str, types: dict
     for product in types.values():
         exemplar.setdefault(product.form.value, product)
 
-    row = 0
-    for form in sorted(forms_present):
+    for row, form in enumerate(sorted(forms_present)):
         y = origin[1] - (row + 1) * 0.75
         product = exemplar.get(form)
         if form == "strip":
@@ -264,7 +263,6 @@ def _emit_legend(b: SceneBuilder, model: ResolvedModel, storey: str, types: dict
                                        if p.form.value == form and p.type_mark])
         b.add(Text(anchor=_in((origin[0] + 0.6, y)), content=label, height=2.5,
                    layer="A-ANNO-TEXT"))
-        row += 1
 
 
 def _label_for_form(form: str, products: list) -> str:
@@ -281,10 +279,10 @@ def _label_for_form(form: str, products: list) -> str:
     marks = sorted(product.type_mark for product in products)
     ccts = {product.cct_k for product in products if product.cct_k}
     if len(ccts) > 1:
-        marks = sorted("%s %dK" % (product.type_mark, product.cct_k) if product.cct_k
+        marks = sorted(f"{product.type_mark} {product.cct_k:d}K" if product.cct_k
                        else product.type_mark for product in products)
     elif len(ccts) == 1:
-        label = "%s, %dK" % (label, ccts.pop())
+        label = f"{label}, {ccts.pop():d}K"
     return "(" + ", ".join(marks) + ")  " + label if marks else label
 
 

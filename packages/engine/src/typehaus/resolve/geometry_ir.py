@@ -23,7 +23,6 @@ Conventions
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Union
 
 # A 2D plan-frame ring (x, y), and a true 3D ring — both closed implicitly (no repeated
 # first point).
@@ -136,9 +135,9 @@ class GSweep:
             raise ValueError("GSweep.extrude must not be the zero vector")
 
 
-# `Union` rather than `X | Y`: this alias is evaluated at import time, and the engine still
-# runs on the interpreters the test venv uses.
-GSolid = Union[GPrism, GBox, GMesh, GSweep]
+# Evaluated at import time (no ``from __future__`` deferral for a module-level alias), so
+# the ``X | Y`` form has to be a real runtime union — which it is on the 3.11 floor.
+GSolid = GPrism | GBox | GMesh | GSweep
 
 
 @dataclass(frozen=True)
@@ -221,7 +220,7 @@ class GeometryModel:
         object.__setattr__(self, "_uid_index_cache", (self.elements, index))
         return index
 
-    def part(self, uid: str, key: str) -> "GPart | None":
+    def part(self, uid: str, key: str) -> GPart | None:
         """One named part of one element, or ``None`` if either is absent.
 
         Both emitters walked ``geometry -> by_uid -> part-by-key`` themselves, each with its

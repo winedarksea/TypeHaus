@@ -364,7 +364,9 @@ def _interior_retarder(layers: list[Layer],
     best_name: str | None = None
     best_class: str | None = None
     best_permeance = math.inf
-    for layer, path in zip(layers[:warm_side], paths[:warm_side]):
+    # strict=False: ``paths`` skips any layer the library could not resolve, so it can be
+    # shorter than ``layers``; pairing off the head is the long-standing behaviour here.
+    for layer, path in zip(layers[:warm_side], paths[:warm_side], strict=False):
         permeance = 0.0 if math.isinf(path.vapor_resistance_rep) else (
             1.0 / path.vapor_resistance_rep if path.vapor_resistance_rep > 0.0 else math.inf
         )
@@ -443,7 +445,7 @@ def analyze_layers(
     points = [CondensationPoint(0.0, surface_c, interior_pressure,
                                 saturation_pressure_pa(surface_c))]
     cumulative_r = INTERIOR_SURFACE_R_US
-    for path, vapor_fraction in zip(paths, vapor_fractions):
+    for path, vapor_fraction in zip(paths, vapor_fractions, strict=True):
         cumulative_r += path.thermal_r_us
         temperature = _temperature_at(cumulative_r)
         pressure = interior_pressure + (exterior_pressure - interior_pressure) * vapor_fraction
@@ -527,7 +529,7 @@ def analyze_layers_monthly(
         return None
     worst: MonthlyAssessment | None = None
     worst_rh = -1.0
-    for month_name, normal in zip(MONTH_NAMES, monthly_normals):
+    for month_name, normal in zip(MONTH_NAMES, monthly_normals, strict=True):
         analysis = analyze_layers(
             assembly_tag, layers, library, heating_design_temp_f=normal.temp_f,
             interior_setpoint_f=interior_setpoint_f,

@@ -214,7 +214,8 @@ def export_house(house_dir: Path, archive_path: Path | None = None) -> ExportRes
             "name": name,
             "engine_version": engine_version(),
             "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            "relinked_underlays": [{"from": key, "to": value} for key, value in sorted(mapping.items())],
+            "relinked_underlays": [
+                {"from": key, "to": value} for key, value in sorted(mapping.items())],
             "missing_underlays": sorted(missing),
         }
 

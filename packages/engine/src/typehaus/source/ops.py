@@ -182,9 +182,9 @@ def _encode_enum(annotation: Any, value: str) -> str | None:
     if "." in value:  # already qualified, e.g. "Occupancy.LIVING"
         return value
     for member in _union_members(annotation):
-        if isinstance(member, type) and issubclass(member, Enum):
-            if value in member.__members__:
-                return f"{member.__name__}.{value}"
+        if (isinstance(member, type) and issubclass(member, Enum)
+                and value in member.__members__):
+            return f"{member.__name__}.{value}"
     return None
 
 

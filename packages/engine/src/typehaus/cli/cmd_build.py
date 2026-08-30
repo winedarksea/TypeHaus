@@ -13,7 +13,6 @@ keep their imports inside the function: `haus --version` must not pay for the re
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.table import Table
@@ -89,13 +88,13 @@ def version() -> None:
 
 @app.command()
 def build(
-    house: Optional[Path] = typer.Argument(None, help="House directory (default: cwd)"),
+    house: Path | None = typer.Argument(None, help="House directory (default: cwd)"),
     lod: str = typer.Option("framed", help="core | framed"),
     with_schedule: bool = typer.Option(
         False, "--with-schedule",
         help="Also emit IfcWorkSchedule/IfcTask + IfcCostSchedule/IfcCostItem for the "
              "derived work packages. Off by default: the permit IFC stays lean."),
-    only: Optional[str] = typer.Option(None, help="ifc | json | card"),
+    only: str | None = typer.Option(None, help="ifc | json | card"),
     inspect: bool = typer.Option(False, help="parse-only; never imports params/"),
     timing: bool = typer.Option(
         False, "--timing",
@@ -188,9 +187,9 @@ def build(
 
 @app.command()
 def check(
-    house: Optional[Path] = typer.Argument(None),
+    house: Path | None = typer.Argument(None),
     profile: str = typer.Option("mn-2024"),
-    tier: Optional[TierName] = typer.Option(None, help="Restrict to one checks tier."),
+    tier: TierName | None = typer.Option(None, help="Restrict to one checks tier."),
     as_json: bool = typer.Option(False, "--json"),
     json_summary: bool = typer.Option(
         False, "--json-summary",
@@ -261,7 +260,7 @@ def check(
 
 @app.command(name="permit-check")
 def permit_check(
-    house: Optional[Path] = typer.Argument(None),
+    house: Path | None = typer.Argument(None),
     profile: str = typer.Option("mn-2024"),
     as_json: bool = typer.Option(False, "--json"),
 ) -> None:
@@ -305,14 +304,15 @@ def permit_check(
         if checklist.under_review:
             _render(checklist.under_review, "Under review — encoded, not gating")
         console.print(
-            "Declared MN subset only; local amendments, engineering, MEP, and energy review remain external."
+            "Declared MN subset only; local amendments, engineering, MEP, and energy "
+            "review remain external."
         )
     raise typer.Exit(0 if checklist.ok else 1)
 
 
 @app.command()
 def energy(
-    house: Optional[Path] = typer.Argument(None),
+    house: Path | None = typer.Argument(None),
     as_json: bool = typer.Option(False, "--json"),
 ) -> None:
     """Estimate a transparent design-day block heating/cooling load (Manual J lite)."""
@@ -339,4 +339,5 @@ def energy(
         console.print(f"  {component.kind:8} {component.area_ft2:,.0f} sf  "
                       f"UA {component.ua_btu_per_hour_f:,.1f}")
     if report.unknown_inputs:
-        console.print("[yellow]Not included / unknown: " + ", ".join(report.unknown_inputs) + "[/yellow]")
+        console.print("[yellow]Not included / unknown: "
+                      + ", ".join(report.unknown_inputs) + "[/yellow]")

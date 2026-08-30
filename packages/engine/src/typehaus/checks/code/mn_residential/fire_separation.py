@@ -156,7 +156,7 @@ def garage_separation(ctx: CheckContext) -> list[Finding]:
         # room rather than a roof — the ceiling is then holding a floor up while it burns.
         overhead = _habitable_above(ctx, garage)
         if overhead:
-            for wall, neighbour in shared:
+            for wall, _neighbour in shared:
                 assembly = assemblies.get(wall.assembly)
                 if assembly is None:
                     continue

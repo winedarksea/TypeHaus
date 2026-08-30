@@ -15,7 +15,6 @@ import os
 import sys
 from enum import StrEnum
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
@@ -71,7 +70,7 @@ class ExitOn(StrEnum):
     none = "none"
 
 
-def _resolve_house(house: Optional[Path]) -> Path:
+def _resolve_house(house: Path | None) -> Path:
     return (house or Path.cwd()).resolve()
 
 

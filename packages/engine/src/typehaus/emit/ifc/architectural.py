@@ -298,14 +298,16 @@ def _emit_opening_types(f: Any, model: ResolvedModel, project_uuid: Any) -> dict
     for kind, items in (("door", model.plan.library.door_types),
                         ("window", model.plan.library.window_types)):
         for item in items:
-            entity = ll.create_entity(f, "IfcDoorType" if kind == "door" else "IfcWindowType", name=item.tag)
+            entity = ll.create_entity(
+                f, "IfcDoorType" if kind == "door" else "IfcWindowType", name=item.tag)
             entity.GlobalId = derive_child_guid(project_uuid, f"{kind}-types", item.tag)
             if kind == "door":
                 # Without these the authored operation is lost on export and every door
                 # reads as a plain swing in the receiving application.
                 entity.PredefinedType = "DOOR"
                 entity.OperationType = _IFC_DOOR_OPERATION[item.operation]
-            ll.ensure_pset(f, entity, "TypeHaus_Identity", {"tag": item.tag, "source_type": item.tag})
+            ll.ensure_pset(f, entity, "TypeHaus_Identity",
+                           {"tag": item.tag, "source_type": item.tag})
             result[item.tag] = entity
     return result
 
@@ -410,7 +412,8 @@ def _emit_furniture(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, 
         type_object.GlobalId = derive_child_guid(project_uuid, "furniture-types", tag)
         ll.ensure_pset(f, type_object, "TypeHaus_Identity", _type_identity(furniture_type))
         ifc_types[tag] = type_object
-    resolved_furniture = {item.uid: item for item in model.canvas_objects if item.domain == "furniture"}
+    resolved_furniture = {item.uid: item for item in model.canvas_objects
+                          if item.domain == "furniture"}
     for storey in model.plan.storeys:
         for furniture in model.plan.storey_elements(storey.tag):
             if furniture.element_kind != "Furniture" or furniture.type_ref not in types:
@@ -479,16 +482,20 @@ def _emit_resolved_placeables(f: Any, body: Any, model: ResolvedModel, storeys: 
     for item in model.canvas_objects:
         if item.domain not in {"plumbing", "appliance"}:
             continue
-        product_type = (fixture_types if item.domain == "plumbing" else appliance_types).get(item.type_ref)
+        product_type = (fixture_types if item.domain == "plumbing"
+                        else appliance_types).get(item.type_ref)
         if product_type is None:
             continue
-        ifc_class = "IfcSanitaryTerminal" if item.domain == "plumbing" else "IfcBuildingElementProxy"
-        type_class = "IfcSanitaryTerminalType" if item.domain == "plumbing" else "IfcBuildingElementProxyType"
+        is_plumbing = item.domain == "plumbing"
+        ifc_class = "IfcSanitaryTerminal" if is_plumbing else "IfcBuildingElementProxy"
+        type_class = ("IfcSanitaryTerminalType" if is_plumbing
+                      else "IfcBuildingElementProxyType")
         type_key = (ifc_class, product_type.tag)
         type_object = type_cache.get(type_key)
         if type_object is None:
             type_object = ll.create_entity(f, type_class, name=product_type.name)
-            type_object.GlobalId = derive_child_guid(project_uuid, f"{item.domain}-types", product_type.tag)
+            type_object.GlobalId = derive_child_guid(
+                project_uuid, f"{item.domain}-types", product_type.tag)
             ll.ensure_pset(f, type_object, "TypeHaus_Identity", _type_identity(product_type))
             type_cache[type_key] = type_object
         element = ll.create_entity(f, ifc_class, name=item.tag)
@@ -496,9 +503,10 @@ def _emit_resolved_placeables(f: Any, body: Any, model: ResolvedModel, storeys: 
         ll.assign_representation(f, element, ll.add_prism_from_profile(
             f, body, item.footprint, product_type.height.meters, item.z_m,
         ))
-        ll.ensure_pset(f, element, PSET_SOURCE, {"uid": item.uid, "tag": item.tag,
-                                                   "type": product_type.tag,
-                                                   "rotation_degrees": f"{item.rotation_degrees:.6f}"})
+        ll.ensure_pset(f, element, PSET_SOURCE,
+                       {"uid": item.uid, "tag": item.tag,
+                        "type": product_type.tag,
+                        "rotation_degrees": f"{item.rotation_degrees:.6f}"})
         ll.ensure_pset(f, element, "TypeHaus_Identity", {"uid": item.uid, "tag": item.tag,
                                                             "source_type": product_type.tag})
         _emit_service_ports(f, element, product_type.ports, project_uuid, item.uid)

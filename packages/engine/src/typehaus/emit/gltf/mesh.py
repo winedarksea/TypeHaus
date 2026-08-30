@@ -10,13 +10,12 @@ from typehaus.emit.gltf.geometry import (
     Vec3,
     _arch_soffit_sample,
     _arch_soffit_segment_count,
-    arch_soffit_circle,
     _dedupe_ring,
     _lerp,
     _ring_signed_area,
     _to_gltf,
+    arch_soffit_circle,
 )
-
 
 if TYPE_CHECKING:  # the IR types are annotations only — importing them at runtime would
     # make the glTF emitter depend on the resolver package it is fed from.
@@ -200,7 +199,7 @@ class _MeshBuilder:
             a, b, c, d = (base + index for index in face)
             indices.extend((a, b, c, a, c, d))
 
-    def add_gbox(self, box: "GBox", color: tuple[float, float, float, float]) -> None:
+    def add_gbox(self, box: GBox, color: tuple[float, float, float, float]) -> None:
         """Add an IR hexahedron: two corresponding rings, bottom and top.
 
         This is the generic primitive the geometry IR emits — a member, a solar module and a
@@ -223,7 +222,7 @@ class _MeshBuilder:
             c, d = base + count + nxt, base + count + index
             indices.extend((a, b, c, a, c, d))
 
-    def add_sweep(self, sweep: "GSweep", color: tuple[float, float, float, float]) -> None:
+    def add_sweep(self, sweep: GSweep, color: tuple[float, float, float, float]) -> None:
         """Add an IR swept solid: a planar profile plus the vector it runs along.
 
         ``add_gbox``'s shape, with the two rings related by a translation instead of stated
@@ -246,7 +245,7 @@ class _MeshBuilder:
             c, d = base + count + nxt, base + count + index
             indices.extend((a, b, c, a, c, d))
 
-    def add_mesh(self, mesh: "GMesh", color: tuple[float, float, float, float]) -> None:
+    def add_mesh(self, mesh: GMesh, color: tuple[float, float, float, float]) -> None:
         """Add pre-tessellated IR geometry, carrying its analytic normals where it has them.
 
         A curved surface (the arch soffit) reads as one curve only if the normals come from the
