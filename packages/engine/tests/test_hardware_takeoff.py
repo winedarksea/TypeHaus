@@ -263,7 +263,11 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
     breezeway_joists = {f"{m.parent_uid}:{m.child_key}" for m in breezeway.members
                         if m.category == "joist"}
     assert breezeway_joists <= hung_keys, "flush-framed deck joists must be billed hangers"
-    flush_beams = ("BM-S-HALL", "BM-M-HALL", "BM-SG-FRW", "BM-SG-FRE", "BM-S-BATH-E")
+    # BM-SG-FRW/FRE left this list on 2026-08-29. The porch's front beams were flush-framed
+    # — their ``top_elevation`` pinned at the 0' datum with the joists hung into their north
+    # face — until dropping them was what put PT-SG-FCOL's top, and PT-SG-BF2 with it, on
+    # concrete. Those 18 hangers are 32 derived uplift ties now; the joists bear on top.
+    flush_beams = ("BM-S-HALL", "BM-M-HALL", "BM-S-BATH-E")
     flush_beam_keys = {item.member_key for item in connections
                        if item.carrier_tag in flush_beams}
     for beam in flush_beams:

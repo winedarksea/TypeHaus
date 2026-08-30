@@ -138,13 +138,13 @@ SUPPLY_STOPS = [
                   serves=("FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-SINK")),
     # RM-S-BATH1 — the second floor's hall bath plus the two vanity lavatories it feeds.
     PipeAccessory(uid="B20MFS2ZH2", tag="PA-S-BATH1-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-SBATH", position=pt(ft(5, 7.2), ft(26, 4)),
+                  pipe_ref="PR-B-CW-SBATH", position=pt(ft(5, 7.2), ft(26, 6)),
                   accessible=True, room="RM-S-BATH1",
                   model='3/4" quarter-turn ball valve, chrome, at the riser head',
                   serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                           "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
     PipeAccessory(uid="P6WSEM39FM", tag="PA-S-BATH1-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-HW-SBATH", position=pt(ft(6, 4), ft(26, 4)),
+                  pipe_ref="PR-B-HW-SBATH", position=pt(ft(6, 4), ft(26, 6)),
                   accessible=True, room="RM-S-BATH1",
                   model='3/4" quarter-turn ball valve, chrome, at the riser head',
                   serves=("FX-S-BATH1-LAV", "FX-S-BATH1-SH", "FX-S-VANITY-LAV1",
@@ -319,18 +319,22 @@ SUPPLY_DEVICES_SECOND = [
 # per-group pattern. `accessible=True` is the whole point of authoring them: an attic bath fed
 # from a riser two storeys down has no other isolation short of the basement trunk, and the
 # access is the wall cavity behind D-A-STUBATH's jamb.
+# ** BOTH MOVED NORTH ON 2026-08-30 (19'-0"/19'-6" -> 20'-6"/21'-0") WITH THEIR RISERS. **
+# FX-A-STUBATH-WC went back onto this wall and stands against y 18'-6"..20'-2"; a stop behind
+# a toilet tank is not an accessible stop, and `accessible=True` is an authored claim that no
+# check can contradict. See plan/mep_supply.py, which carries the same note on the runs.
 # Filed on ``attic`` — an accessory takes ITS OWN storey's datum, not its pipe_ref's, so these
 # read ft(2, 6) against the attic deck while the runs they sit on are filed on ``main``. Both
 # stops stand in RM-A-STUBATH at 2'-6" AFF, which is the project 22'-6" the risers arrive at.
 STUDIO_SUPPLY_DEVICES = [
     PipeAccessory(uid="5KSHNN2HVJ", tag="PA-A-STUBATH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-A-CW-STUBATH", position=pt(ft(9, 7.5), ft(19)),
+                  pipe_ref="PR-A-CW-STUBATH", position=pt(ft(9, 7.5), ft(20, 6)),
                   elevation=ft(2, 6), accessible=True, room="RM-A-STUBATH",
                   model='3/4" quarter-turn ball valve',
                   serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
                           "FX-A-STUDIO-BAR-SINK")),
     PipeAccessory(uid="MA4EXBFW5G", tag="PA-A-STUBATH-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-A-HW-STUBATH", position=pt(ft(9, 7.5), ft(19, 6)),
+                  pipe_ref="PR-A-HW-STUBATH", position=pt(ft(9, 7.5), ft(21)),
                   elevation=ft(2, 6), accessible=True, room="RM-A-STUBATH",
                   model='3/4" quarter-turn ball valve',
                   serves=("FX-A-STUBATH-LAV", "FX-A-STUBATH-SH", "FX-A-STUDIO-BAR-SINK")),

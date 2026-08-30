@@ -294,7 +294,7 @@ NODES = [
     Node(uid="CMN006AAAA", tag="N-M-N1", position=pt(ft(18), ft(36))),
     Node(uid="CMN007AAAA", tag="N-M-N2", position=pt(ft(10), ft(36))),
     Node(uid="CMN008AAAA", tag="N-M-NW", position=pt(ft(0), ft(36))),
-    Node(uid="CMN009AAAA", tag="N-M-W1", position=pt(ft(0), ft(26, 4))),
+    Node(uid="CMN009AAAA", tag="N-M-W1", position=pt(ft(0), ft(26, 6))),
     # W-M-HS1..4 pushed 6" north to y=22'-2" (2026-07-29) for BATH2 shower/tub depth.
     # Both west-wall tees moved again 2026-08-15 for the residue rule: W-M-W4/W-M-W3 lay
     # studs out from N-M-W3/N-M-W2, and at 13'-4"/22'-2" that grid was 4"/2" out of phase
@@ -324,10 +324,18 @@ NODES = [
     # the exposed-stud corner detail with it for no gain.
     Node(uid="CMN015AAAA", tag="N-M-STR1", position=pt(ft(10), ft(25, 10)), open_end=True),
     # W-M-STOS2's tee into the stair wall line, and therefore the W-M-STRW/W-M-STRW2 split.
-    Node(uid="CMN024AAAA", tag="N-M-STRJ", position=pt(ft(10), ft(26, 4))),
+    Node(uid="CMN024AAAA", tag="N-M-STRJ", position=pt(ft(10), ft(26, 6))),
     # W-M-BAE shifts 2' east (2026-07-28); the mudroom door remains at its existing
     # 6" tee clearance.
-    Node(uid="CMN016AAAA", tag="N-M-BA1", position=pt(ft(6), ft(26, 4))),
+    #
+    # y 26'-4" -> 26'-6" on 2026-08-29, with N-M-W1 and N-M-STRJ: the whole line moved 2"
+    # north, on BOTH storeys, so RM-M-BATH1 could make its 24" front clearance. Moving all
+    # three together is what keeps W-M-STOS/STOS2 stacked under W-S-BD-N/W-S-BD-N1B —
+    # `resolve/stacking.py::_axis_match` allows 1/2" axis-to-axis and drops the edge SILENTLY
+    # past it, and W-S-BD-N1B is the BEARING wall carrying BM-S-BATH-E's north reaction.
+    # A jog at x=6' would have needed a 2" wall segment on the x=6' line to keep BATH1's
+    # loop closed; a straight line needs nothing.
+    Node(uid="CMN016AAAA", tag="N-M-BA1", position=pt(ft(6), ft(26, 6))),
     Node(uid="CMN017AAAA", tag="N-M-BA2", position=pt(ft(6), ft(22, 4))),
     Node(uid="CMN018AAAA", tag="N-M-D1", position=pt(ft(8), ft(22, 4))),
     # The closet/laundry line moved north 8" (y 17'-4" -> 18'-0", 2026-08-03), taking
@@ -348,9 +356,17 @@ NODES = [
     Node(uid="CMN027AAAA", tag="N-M-MECH3", position=pt(ft(6), ft(36))),
     # RM-M-MUD-CLOSET: framed south mudroom closet (2026-08-02), replacing
     # FURN-M-MUD-CLOSET-S. Axis y=29'-7 1/2" satisfies two constraints at once: interior
-    # depth of 34 3/4" (inside the 32"-36" reach-in band) and clearing FURN-M-MUD-BENCH's
-    # south end by 1/8". East end reuses N-M-BA1's x=6' line to tee into the existing
-    # W-M-STOS/STOS2 junction.
+    # depth (see below) and clearing FURN-M-MUD-BENCH's south end by 1/8". East end reuses
+    # N-M-BA1's x=6' line to tee into the existing W-M-STOS/STOS2 junction.
+    #
+    # ** THE CLOSET IS 32 3/4" DEEP SINCE 2026-08-29, NOT 34 3/4", AND THESE TWO NODES DID
+    # NOT MOVE. ** Its south wall did: W-M-STOS went to y=26'-6" so RM-M-BATH1 could make
+    # UPC 402.5's 24" in front of its water closet (plan/fixtures.py has the whole argument).
+    # 32 3/4" is the bottom of the 32"-36" reach-in band this comment has always cited, and
+    # the room is a bypass reach-in with no rod or shelf authored in it, so the 2" comes out
+    # of circulation depth rather than out of anything that has to fit. It is the closest
+    # thing in the house to a hard floor under that wall: another inch north and the band
+    # argument fails.
     Node(uid="N9H36K3W70", tag="N-M-MUDC1", position=pt(ft(0), ft(29, 7.5))),
     Node(uid="T374Q35GT9", tag="N-M-MUDC2", position=pt(ft(6), ft(29, 7.5))),
     # RM-M-PANTRY: the framed reach-in pantry in the kitchen's NW corner (2026-08-24),
@@ -652,8 +668,29 @@ WALLS = [
     # Both name W-B-CW2 explicitly: the basement's y=18' line is actually two walls
     # (W-B-CW3 and W-B-CW2), so `integrity.stack_ambiguous` needs a pick. Non-structural
     # either way — these partitions sit on the 9" cast deck.
+    # ** RETYPED TO MATCH W-M-CLN2, 2026-08-29 (owner), AND TWO REAL THINGS CAME WITH THE
+    # CONSISTENCY. ** W-M-CLN and W-M-CLN2 are one wall on the drawing — the y=18'-0" line,
+    # both stacked on W-B-CW2 — and RM-M-CLOSET is a single room whose north boundary they
+    # share. Retyping only CLN2 for the study booth put a 1 5/8" STEP in that boundary at
+    # x=13'-4": the closet's north face read 17'-9 5/8" west of the step and 17'-8" east of
+    # it. Squaring it up costs the closet nothing usable — 17'-8" was already its narrowest
+    # point, so the room only loses the notch it never used.
+    #
+    # ** AND IT IS WHERE THE LAUNDRY SINK'S WATER RUNS. ** FX-M-LAUNDRY-SINK backs onto this
+    # wall (its `wall_ref` names W-M-BA2E, which is the RISER's wall 3'-0" west, not the
+    # wall the basin touches), and PR-B-CW-WASH / PR-B-HW-WASH now turn east out of W-M-BA2E
+    # and travel 3'-8" along this wall to reach it. Through the 2x4 partition that was here
+    # that leg bores every stud on the way and `mep.wet_wall_occupancy` grades it
+    # `long_horizontal`; through a STAGGERED wall the pair threads the 5 1/2" cavity between
+    # two offset stud rows and bores nothing. The consistency was the ask; this is the part
+    # that pays for it.
+    #
+    # Centred like CLN2, so both faces move 1 5/8" — RM-M-LAUNDRY goes 47 1/4" deep to
+    # 45 5/8", and FX-M-LAUNDRY-SINK, ED-M-LAUNDRY-RC1/DR1 and FURN-M-LAUNDRY-RACK all
+    # followed it north. Nothing stood on the closet face.
     Wall(uid="CMW129AAAA", tag="W-M-CLN", start_node="N-M-D2",
-         end_node="N-M-E2", assembly="INT_2X4_PARTITION", top=ft(9), stacks_on="W-B-CW2"),
+         end_node="N-M-E2", assembly="INT_2X4_STAGGERED_DOUBLE_GWB", top=ft(9),
+         stacks_on="W-B-CW2"),
     # Staggered per the W-M-LS note. `stacks_on` MUST stay: it is the tiebreaker on the
     # y=18' run and dropping it re-arms integrity.stack_ambiguous.
     Wall(uid="CMW130AAAA", tag="W-M-CLN2", start_node="N-M-E2",
@@ -750,8 +787,13 @@ OPENINGS = [
     # D-M-ENTRY above it, off the bearing stair wall's jack studs. Renamed with the room.
     Door(uid="CMD204AAAA", tag="D-M-MUD", host="W-M-STOS2", type_ref="DT-INT-SWING32",
          position=from_node("N-M-STRJ", ft(0, 6))),
+    # 1'-2" off N-M-BA1, not the 1'-0" it read until 2026-08-29. The node moved 2" north
+    # with the y=26'-6" line and a `from_node` offset is measured from it, so the leaf would
+    # have slid north with it — the exact silent drift main.py's WIN-M-MUD-W note records.
+    # The opening stays at y 23'-4"..25'-4": it is dimensioned by the hall side (the switch
+    # ED-M-BATH1-SW sits 2 3/8" north of its RO) and BATH1 grew at the other end.
     Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT-SWING24",
-         position=from_node("N-M-BA1", ft(1))),
+         position=from_node("N-M-BA1", ft(1, 2))),
     # RM-M-MECH's hinged utility door (2026-07-28), not the mudroom closets' bypass style.
     # Pulled 2" west of its original 3'-2 15/16" (2026-07-29): at that offset the king stud
     # punched into W-M-MECH-E's corner stud pack. This clears it with margin to spare.
@@ -786,7 +828,7 @@ OPENINGS = [
     # `flip_hinge` stays: the hinge is still the EAST jamb, so the leaf parks along the
     # bedroom wall east of the opening rather than swinging back across the bedroom.
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING30",
-         position=from_node("N-M-W3", ft(2)), flip_hinge=True),
+         position=from_node("N-M-W3", ft(2)), flip_hinge=True, flip_swing=True),
     # Pocket, not the 56" bifold it was (2026-08-21). The leaf parks east inside W-M-HS4,
     # which hosts nothing and now never may: `mep.pocket_occupancy` refuses a pipe, a
     # register or a wall-mounted device anywhere in the cavity, and nothing hangs on that
@@ -895,8 +937,10 @@ OPENINGS = [
     # wholly between studs; the 4'-0" sill preserves privacy and the west face's 6'-0"
     # head line. Tempered because the safety-glazing check treats the wet-room location as
     # hazardous below 60".
+    # 1'-3" off N-M-W1 since 2026-08-29, restoring y=25'-3" after that node moved 2" north
+    # with the y=26'-6" line — same compensation, same reason, as the WIN-M-MUD-W note below.
     Window(uid="FGWPV572DB", tag="WIN-M-BATH1-W", host="W-M-W2", type_ref="WT-1424-T",
-           position=from_node("N-M-W1", ft(1, 1)), sill_height=ft(4)),       # y 24'-4"
+           position=from_node("N-M-W1", ft(1, 3)), sill_height=ft(4)),       # y 24'-4"
     # Picture unit centred y=31'-4", the bench/aisle centreline (FURN-M-MUD-BENCH,
     # plan/placeables.py). Re-authored off N-M-MECH1 (2026-08-02): a `from_node` offset is
     # measured from the host's *start* node, so when the 2026-07-28 MECH split made
@@ -1022,9 +1066,11 @@ ROOMS = [
     # `lvp` yields to. Sheet vinyl, matching RM-M-MUDROOM, RM-M-MECH and RM-M-MUD-CLOSET to
     # the west and RM-M-LAUNDRY and RM-M-BATH1 off it, so the whole wet/dirty spine from
     # the entry through to the laundry is one washable surface with no transition strip.
+    # North edge y=26'-5 3/8" since 2026-08-29 (was 26'-3 3/8"): it IS W-M-STOS*'s south
+    # lining face and that wall moved 2" north.
     # The rectangle IS the hall band of RM-M-LIVING's clear face: W-M-BAE's east lining
     # face at x=6'-0 5/8" to the centre line at x=18'-0", W-M-HS*'s north lining face at
-    # y=22'-4 5/8" to W-M-STOS*'s south lining face at y=26'-3 3/8". It stops at x=18'-0"
+    # y=22'-4 5/8" to W-M-STOS*'s south lining face at y=26'-5 3/8". It stops at x=18'-0"
     # — the BM-M-HALL opening is where hall becomes living room, so that is where the
     # vinyl meets the plank. `resolve/rooms.py` clips the zone to the clear face before
     # billing, so the 1/16" of slop at the beam line costs nothing.
@@ -1048,8 +1094,8 @@ ROOMS = [
          occupancy=Occupancy.LIVING, floor_finish="lvp",
          finish_zones=(FinishZone(outline=(pt(ft(6, 0.625), ft(22, 4.625)),
                                            pt(ft(18), ft(22, 4.625)),
-                                           pt(ft(18), ft(26, 3.375)),
-                                           pt(ft(6, 0.625), ft(26, 3.375))),
+                                           pt(ft(18), ft(26, 5.375)),
+                                           pt(ft(6, 0.625), ft(26, 5.375))),
                                   material_ref="vinyl-sheet"),)),
     Room(uid="CMR402AAAA", tag="RM-M-BED", seed=pt(ft(9), ft(6)),
          occupancy=Occupancy.BEDROOM, floor_finish="carpet"),
@@ -1087,8 +1133,8 @@ ROOMS = [
     Room(uid="CMR411AAAA", tag="RM-M-MECH", seed=pt(ft(3), ft(34, 6)),
          occupancy=Occupancy.STORAGE, floor_finish="vinyl-sheet"),
     # Framed south mudroom closet, replacing FURN-M-MUD-CLOSET-S (2026-08-02): the last
-    # furniture closet becomes a real reach-in — 34 3/4" deep clear, bypass slider in its
-    # north partition. Tagged RM-M-MUD-CLOSET because RM-M-CLOSET (CMR407AAAA) already
+    # furniture closet becomes a real reach-in — 32 3/4" deep clear since W-M-STOS moved
+    # north on 2026-08-29 (34 3/4" before), bypass slider in its north partition. Tagged RM-M-MUD-CLOSET because RM-M-CLOSET (CMR407AAAA) already
     # names the dressing corridor. STORAGE + the mudroom's own floor, the same closed-enum
     # reasoning as RM-M-MUDROOM/RM-M-MECH above — and the same wood deck under it.
     Room(uid="G01HFSH967", tag="RM-M-MUD-CLOSET", seed=pt(ft(3), ft(28)),

@@ -1703,8 +1703,8 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     three balcony beams, and a 19x28 garden.
 
     The porch's south edge was a 16" arched cross-wall under a 42" masonry parapet until
-    2026-08-18. It is a 16" round cast column and two flush LVL beams now — the same
-    detail the north edge has carried all along — with RL-SG-PORCH in place of the parapet.
+    2026-08-18. It is a 20" round cast column and two DROPPED beams now — the same detail
+    the north edge has carried all along — with RL-SG-PORCH in place of the parapet.
     """
     walls = [w for w in catlin_model.walls if w.tag.startswith("W-SG-")]
     # 5 concrete: two porch side walls (W1/E1) + the retaining U (W2/E2/S). No north wall,
@@ -1716,26 +1716,29 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
 
     # Both open porch edges are a column at midspan carrying two beams into the side walls.
     # The front one went from a 16" SQUARE to a 16" ROUND on 2026-08-28 — a fibre tube is
-    # $175-695 cheaper than built panels for the same height, at the cost of the side cover
-    # a moment base would want (params/sunken_garden.py). The width assertions survive the
-    # change unaltered: a 16" circle's bounding box is still 16" on both axes, and they were
-    # here to catch ``size="16x16"`` silently resolving to a 1.5x5.5 stud through
-    # ``_RE_NOMINAL``. The round spelling cannot hit that trap at all, so the round-count
-    # assertion below is what now pins the section.
+    # $175-695 cheaper than built panels for the same height — and from 16" to 20" on
+    # 2026-08-29, when it became the SHARED bearing for the two front beams and PT-SG-BF2
+    # (params/sunken_garden.py has the sizing table; 16" and 18" have no solution at the
+    # balcony's 12" overhang). The width assertions below track the diameter because the
+    # bounding box is the diameter on both axes; they are here to catch a nominal spelling
+    # like "20x20" silently resolving to a 1.5x5.5 stud through ``_RE_NOMINAL``.
     front = next(s for s in catlin_model.solids if s.tag == "PT-SG-FCOL")
-    assert front.category == "column" and front.assembly == "SUNKEN_GARDEN_COLUMN_16"
+    assert front.category == "column" and front.assembly == "SUNKEN_GARDEN_COLUMN_20"
     xs = [p[0] for p in front.outline]
     ys = [p[1] for p in front.outline]
-    assert max(xs) - min(xs) == pytest.approx(inch(16).meters, rel=1e-3)
-    assert max(ys) - min(ys) == pytest.approx(inch(16).meters, rel=1e-3)
+    assert max(xs) - min(xs) == pytest.approx(inch(20).meters, rel=1e-3)
+    assert max(ys) - min(ys) == pytest.approx(inch(20).meters, rel=1e-3)
     assert len(front.outline) > 8, "a round column is a polygonised circle, not a rectangle"
     front_beams = {b.tag: b for b in catlin_model.solids
                    if b.tag in ("BM-SG-FRW", "BM-SG-FRE")}
     assert len(front_beams) == 2
-    # Flush-framed: the beams top out at the 0' joist datum and the column stops at their
-    # soffit, which is what keeps the pour clear of the 16"-o.c. joist band above it.
-    assert all(b.z1_m == pytest.approx(0.0) for b in front_beams.values())
+    # DROPPED since 2026-08-29, not flush: the joists bear on top, so these two top out a
+    # porch-joist depth (7 1/4") below the 0' datum exactly as the back pair do, and the
+    # column stops at their soffit — which keeps the pour clear of the 16"-o.c. joist band
+    # above it AND is what puts PT-SG-BF2 on concrete instead of on a 2x8.
+    assert all(b.z1_m == pytest.approx(inch(-7.25).meters) for b in front_beams.values())
     assert front.z1_m == pytest.approx(min(b.z0_m for b in front_beams.values()))
+    assert front.z1_m == pytest.approx(inch(-18.5).meters)
 
     # The porch guard is a Railing now, matching RL-SG-BALCONY one storey up.
     guard = catlin_model.plan.by_tag("RL-SG-PORCH")

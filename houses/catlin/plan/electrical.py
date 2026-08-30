@@ -499,11 +499,15 @@ MAIN_DEVICES = [
     # tower: FX-M-LAUNDRY is 40" deep x 80" tall, so a surface box there is unreachable and
     # covered by the machine; recessed lets it sit flat with the plug behind it. 43" AFF
     # splits the difference between washer and dryer tops.
+    # 2026-08-29: y +1 5/8" (18'-0 3/8" -> 18'-2") with W-M-CLN's laundry face when that
+    # wall was retyped to INT_2X4_STAGGERED_DOUBLE_GWB (storeys/main.py). Both boxes here
+    # are `recessed_into_host_surface`, so a stale y does not merely float — it resolves
+    # inside the studs. ED-M-LAUNDRY-RC1 below moved the same 1 5/8" for the same reason.
     # CKT-DRYER stays a 30A/14-30R even though the LG DLHC5502V heat-pump dryer only needs
     # 830W/15A minimum branch: it still ships a 4-prong cord needing 30A, and the oversize
     # lets a future conventional vented dryer go in without repulling wire.
     ElectricalDevice(uid="CEE007AAAA", tag="ED-M-LAUNDRY-DR1", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(9, 6), ft(18, 0.375)), type_ref="ED-T-RECEPTACLE-1430",
+                     position=pt(ft(9, 6), ft(18, 2)), type_ref="ED-T-RECEPTACLE-1430",
                      circuit="CKT-DRYER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(43),
                                  recessed_into_host_surface=True)),
@@ -511,7 +515,7 @@ MAIN_DEVICES = [
     # is it: washer half of the stack, 8" east of the dryer box, same 43" band. NEC 210.52(F),
     # the room's only 120V outlet.
     ElectricalDevice(uid="QBSRR1MWVB", tag="ED-M-LAUNDRY-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(10, 2), ft(18, 1.375)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(10, 2), ft(18, 3)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-LAUNDRY",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(43),
                                  recessed_into_host_surface=True)),
@@ -699,7 +703,7 @@ SECOND_DEVICES = [
     # reach-as-the-door-shuts position as ED-M-BATH2-FH-STAT, and clear of the fixture
     # cluster, which all sits north of y=29'-9".
     ElectricalDevice(uid="CEE025AAAA", tag="ED-S-BATH1-FH-STAT", kind=DeviceKind.SWITCH,
-                     position=pt(ft(6, 6), ft(26, 8.375)), type_ref="ED-T-FLOOR-STAT",
+                     position=pt(ft(6, 6), ft(26, 10.375)), type_ref="ED-T-FLOOR-STAT",
                      circuit="CKT-FH-BATH1", room="RM-S-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
 ]
@@ -747,12 +751,12 @@ SECOND_EQUIPMENT = [
     # deck it sheets 8'-8" of bare aluminium to the drip edge and refreezes on the way, on a
     # surface two doors open onto, then ices the box gutter and plugs the 3" leader.
     Equipment(uid="CEE017AAAA", tag="EQ-M-HP1-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(9, 2), ft(-2, -10)), footprint=(inch(37.72), inch(15.83)),
+              position=pt(ft(9, 2), ft(-2, -6)), footprint=(inch(37.72), inch(15.83)),
               rotation=deg(90), mount=Mount(kind=MountKind.FLOOR, elevation=inch(13.5)),
               drain_pan=True, pan_drain_ref="PR-S-HP1-COND",
               type_ref="EQ-T-GREE-VIREO-GEN3", circuit="CKT-HP1", room=None),
     Equipment(uid="CEE018AAAA", tag="EQ-M-HP2-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(17, 6), ft(-2, -10)), footprint=(inch(40.16), inch(16.81)),
+              position=pt(ft(17, 6), ft(-2, -6)), footprint=(inch(40.16), inch(16.81)),
               rotation=deg(90), mount=Mount(kind=MountKind.FLOOR, elevation=inch(13.5)),
               drain_pan=True, pan_drain_ref="PR-S-HP2-COND",
               type_ref="EQ-T-GREE-MULTI-U30", circuit="CKT-HP2", room=None),
@@ -1461,11 +1465,11 @@ NEC_FILL_MAIN = [
     # Occupancy.STORAGE so `electrical.receptacle_spacing` never walks it anyway. Stays GFCI
     # for its unmoved E3902.10 sink-reach location (RM-M-BATH1's lav, through W-M-STOS).
     ElectricalDevice(uid="NEC067AAAA", tag="ED-M-LIVING-RC9", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(4, 6.625), ft(26, 7.375)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(4, 6.625), ft(26, 9.375)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC068AAAA", tag="ED-M-LIVING-RC10", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(9, 6), ft(26, 0.625)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(9, 6), ft(26, 2.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     # ED-M-LIVING-RC11 stood on the 10 3/16" pier at W-M-STRS's east end. That wall was
@@ -1512,19 +1516,39 @@ NEC_FILL_MAIN = [
     # 16" to 32" — 2 1/2" over FURN-M-STUDY-DESK's top, still well under NEC 210.52(A)'s
     # 5'-6". Paired with ED-M-STUDY-DATA1 at the same height 1'-0" west.
     #
-    # ** ED-M-STUDY-RC2 WAS DELETED HERE, 2026-08-29. ** It sat at 16" on the west wall,
-    # which is now the full length of FURN-M-STUDY-BENCH's back. `electrical.receptacle_spacing`
-    # still passes without it: the surviving RC1 -> RC3 span walks 11.46' against the 12'
-    # limit, and D-M-STUDY's break leaves no point on the ring more than 6' from a
-    # receptacle. ** THE MARGIN IS 6 1/2". ** Anything that lengthens this room's ring or
-    # pushes RC1 and RC3 further apart flips that to a FAIL — re-read the finding, do not
-    # assume it. (Re-snapping RC1 north actually *shortened* the span, so the retype helped.)
+    # ** ED-M-STUDY-RC2 WAS DELETED HERE AND CAME BACK THE SAME DAY. READ WHY. ** It sat at
+    # 16" on the west wall. The first booth layout ran FURN-M-STUDY-BENCH down that whole
+    # wall, and `_fixed_cabinet_intervals` breaks a counterless fixed cabinet OUT of the
+    # receptacle ring — so the west wall stopped being wall space, the RC1 -> RC3 span
+    # walked 11.46' against 12', and the outlet was redundant. Then the owner turned the
+    # booth 90 degrees, the bench went to the north wall, and the west wall became 3'-8" of
+    # bare wall again: `electrical.receptacle_spacing` FAILed at (13.4', 20.7') within one
+    # build. It is restored below, on its original uid so the IFC GlobalId survives the
+    # round trip, at the desk's height rather than its old 16".
+    #
+    # ** THE MARGIN ON THE RC1 -> RC3 SPAN IS STILL ONLY 6 1/2", ** and this outlet does not
+    # widen it — it covers a different wall space. Anything that lengthens this room's ring
+    # or pushes RC1 and RC3 apart flips that to a FAIL. Re-read the finding, do not assume.
+    #
+    # ** AND THE THING THIS PAIR TEACHES: a fixed built-in is load-bearing on an ELECTRICAL
+    # check. ** Moving furniture in this house can delete or create a code finding with no
+    # device touched at all. `haus check` after a placeable move, every time.
     ElectricalDevice(uid="NEC019AAAA", tag="ED-M-STUDY-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(17), ft(18, 5)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(32))),
     # Fills the >6' gap electrical.receptacle_spacing flags on the centre bearing wall,
     # on the STUDY face opposite ED-M-LIVING-RC7.
+    # Restored 2026-08-29 (see above). x = 13'-8 1/2" is W-M-LS's resolved study face at
+    # 13'-8" plus half this type's 1" depth; y = 19'-4" centres it on FURN-M-STUDY-DESK,
+    # whose top is 29 1/2" — so 32" puts the box 2 1/2" clear of the desk exactly as
+    # ED-M-STUDY-RC1 does, and the two outlets a seated person reaches are at one height on
+    # two walls. It is 4'-0" south of REG-M-SUP4's riser bay (y=20'-8"), so the box and the
+    # 3" duct in that cavity never meet.
+    ElectricalDevice(uid="NEC020AAAA", tag="ED-M-STUDY-RC2", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(inch(165), ft(19, 4)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     circuit="CKT-RC-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(32)), rotation=deg(90)),
     ElectricalDevice(uid="NEC065AAAA", tag="ED-M-STUDY-RC3", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(17), ft(22, 0.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",

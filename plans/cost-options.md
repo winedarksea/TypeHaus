@@ -611,15 +611,21 @@ plant room", not "cheapen it". The three HP windows are the part that is *not* o
   threshold at the low end, and it is the south facade.
 - **The wall-hung toilet** (`FX-TOILET-WH` $1,010–2,720 against `FX-TOILET-STD`'s $290–960):
   $720–1,760. Under threshold — and **not available at any price**. Re-checked 2026-08-29:
-  RM-M-BATH1 is 61.98" x 42.24" between finish faces (the room's resolved `clear_face` reads
+  RM-M-BATH1 is 61.98" x 44.24" between finish faces (the room's resolved `clear_face` reads
   46.73" deep and is centreline-based, so it is not the number to price against). A 28"-deep
-  `FX-TOILET-STD` needs 49" of depth on the wall the bowl is on, and turned onto the west
-  wall its 15"-each-side band plus 24" front envelope leaves no strip anywhere for
+  `FX-TOILET-STD` needs 52" of depth on the wall the bowl is on — the governing front
+  clearance in Minnesota is UPC 402.5's **24"**, not IRC P2705.1's 21" — and turned onto the
+  west wall its 15"-each-side band plus that envelope leaves no strip anywhere for
   `FX-M-BATH1-LAV`. The 19.3" wall-hung bowl is what makes the room work; this row is a
   saving that cannot be taken, not one that is merely small. See `plan/fixtures.py` for the
-  arithmetic in every orientation — including that the governing front clearance in
-  Minnesota is UPC 402.5's **24"**, not IRC P2705.1's 21", which the room misses by 1.06"
-  even as built.
+  arithmetic in every orientation.
+
+  The same pass found the room 1.06" short of that 24" **as built**, and closed it by moving
+  W-M-STOS (and the whole y=26'-4" line, both storeys) 2" north to y=26'-6". That is a
+  layout change, not a cost line: it spends 2" of `RM-M-MUD-CLOSET`'s depth (34 3/4" ->
+  32 3/4", still inside the 32"-36" reach-in band) and buys nothing billable. No fixture
+  substitution could have done it — the shortest wall-hung bowl obtainable in the US is
+  18.90" against the 18.24" the old room needed.
 - **Lighting.** 306 luminaires, runs and controls total **$285–695** of `placeables` movement
   — the fixture *count* is not where lighting money is. It is in
   `[allowances] electrical-branch-circuit-conductors` ($10,000–25,000), which no fixture

@@ -260,10 +260,19 @@ def test_the_living_room_splits_its_floor_where_its_structure_splits(catlin_mode
     assert zone.area_m2 * _M2_TO_FT2 == pytest.approx(392.7, abs=0.5)
     hall = next(z for z in living.finish_zones if z.source_ref is None)
     assert hall.material_ref == "vinyl-sheet"
-    assert hall.area_m2 * _M2_TO_FT2 == pytest.approx(46.5, abs=0.5)
+    # 46.5 -> 48.5 on 2026-08-29. The zone's north edge IS W-M-STOS*'s south lining face,
+    # and that wall moved 2" north with the whole y=26'-6" line so RM-M-BATH1 could make its
+    # 24" water-closet clearance (houses/catlin/plan/fixtures.py). Only 0.7 sf of the 2.0 sf
+    # is new room: W-M-STOS2 runs to x=10'-0" and the zone to x=18'-0", so east of the wall
+    # the edge simply moved 2" further over the stair head — the same approximation the
+    # rectangle has always carried (see the zone's own note in plan/storeys/main.py), and the
+    # reason the FIELD number below drops while the room grows.
+    assert hall.area_m2 * _M2_TO_FT2 == pytest.approx(48.5, abs=0.5)
     # 355.1 until the hall zone: the field is the room minus BOTH zones now.
+    # 308.4 -> 307.0 with the same move: the room gained 0.7 sf and the vinyl took 2.0 sf,
+    # so 1.4 sf of LVP field became hall vinyl. The polished-concrete half does not move.
     field = (living.area_m2 - zone.area_m2 - hall.area_m2) * _M2_TO_FT2
-    assert field == pytest.approx(308.4, abs=0.5)
+    assert field == pytest.approx(307.0, abs=0.5)
 
 
 def test_a_derived_zone_is_clipped_to_the_room_not_drawn_as_the_slab(catlin_model):
@@ -310,7 +319,11 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     # UNCHANGED by the 2026-08-29 attic work, and that is worth a line: the guest bath takes
     # `vinyl-sheet`, not LVP — the house's cheaper waterproof answer, already used in
     # RM-M-BATH1, RM-M-LAUNDRY and the main hall band, with no grout, backer or threshold.
-    assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(695.6, abs=0.5)
+    # 695.6 -> 694.3 on 2026-08-29 with the y=26'-6" wall move: 1.4 sf of the living room's
+    # LVP field became hall vinyl (see test_the_living_room_splits_its_floor_where_its_
+    # structure_splits). The second storey nets out — RM-S-VANITY gained the 2" that
+    # RM-S-BATH1 lost and both are LVP.
+    assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(694.3, abs=0.5)
     assert "RM-M-PANTRY" in rows["lvp"]["rooms"]
     assert rows["lvp-underlayment"]["net_area_sqft"] == rows["lvp"]["net_area_sqft"]
     # The other half of that move: RM-M-LIVING is now a vinyl-sheet room too, on the zone

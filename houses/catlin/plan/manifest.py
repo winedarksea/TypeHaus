@@ -101,6 +101,14 @@ _project = Project(
     # One pan-button click right + one down from the plain whole-building fit — the start
     # position the model is actually reviewed from (2026-08-03).
     default_view_pan=(1.0, 1.0),
+    # 2026-08-29. Until this was set, EVERY ClearanceZone carrying a ``code_profile`` was
+    # silently dropped by ``resolve/placeables.py::_resolved_clearance_zones`` — which in
+    # this catalog is exactly one zone, the water-closet envelope, and therefore all five of
+    # this house's water closets were graded against no clear space at all. RM-M-BATH1 sat
+    # 1.06" inside UPC 402.5's 24" for weeks and reported 0 FAIL. The blast radius of turning
+    # it on is that one zone family: ``grep -rn 'code_profile=' library/ houses/`` returns a
+    # single hit.
+    active_code_profile="MN/IRC",
 )
 
 _storeys = (

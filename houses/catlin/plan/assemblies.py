@@ -607,13 +607,16 @@ SUNKEN_GARDEN_WALL = Assembly(
 # the BOM row so the [concrete] price table's material guard admits it, the same job
 # PIER_CONCRETE_12 does for the five 12" tubes.
 #
-# The TAG is unchanged. It names a 16" sunken-garden column, which is still exactly what
-# this is, and keeping it holds the prices.toml key and every GlobalId steady across a
-# change that is about the FORM, not the element.
-SUNKEN_GARDEN_COLUMN_16 = Assembly(
-    tag="SUNKEN_GARDEN_COLUMN_16",
+# The TAG went ..._16 -> ..._20 on 2026-08-29, and that rename is NOT optional. The column
+# became a 20" round when it took on PT-SG-BF2's bearing as well as the two front beams'
+# (see params/sunken_garden.py::FRONT_COLUMN), and an assembly tag that says 16 while the
+# section says 20 is a wrong quantity, not a stale label. The prices.toml key moves with it:
+# an UNPRICED type is silently dropped from the BOM, so leaving the old key would make the
+# takeoff total FALL and the "saving" would be an artifact of the missing row.
+SUNKEN_GARDEN_COLUMN_20 = Assembly(
+    tag="SUNKEN_GARDEN_COLUMN_20",
     layers=(
-        Layer(name="concrete", material_ref="concrete", thickness=inch(16.0),
+        Layer(name="concrete", material_ref="concrete", thickness=inch(20.0),
               function=LayerFunction.STRUCTURE),
     ),
     interfaces=(_CONCRETE_BEARING,),
@@ -626,7 +629,7 @@ SUNKEN_GARDEN_COLUMN_16 = Assembly(
     # standoff is at the beam SOFFIT, so it does not touch the cap-and-butyl-tape order at
     # the beam TOP (TR-SG-CAP-FRW/FRE); those are two different joints on the same member.
     # (single literal: the editable dialect forbids concatenated strings)
-    source="catlin-house porch front column — 16\" round cast concrete in a disposable fibre form, stripped to the form line; >=15 degree top wash with a >=1\" drip lip (BIA Tech Note 36A), beam bearing on a level non-shrink-grout island (Five Star TB-411: 45 degree shoulders, shoulder width <= grout depth, <= 3\") with a 1/2\"-1\" stainless or isolated hot-dip standoff plate over it so the KDAT soffit never touches the pour (AITC/WoodWorks); beam held down by an HGAM10 masonry gusset angle, #14 screws to the wood and Titen Turbo to the concrete at >=1-1/2\" edge distance; 4,000-4,500 psi, w/cm <= 0.45, 6.0-6.5% air at 3/4\" aggregate (Minn. R. 1309.0402 + ACI 318-19 class F2); broom or float finish on the wash, never steel-trowelled (NRMCA CIP 2); silane/siloxane repellent",
+    source="catlin-house porch front column — 20\" round cast concrete in a disposable fibre form, stripped to the form line; >=15 degree top wash with a >=1\" drip lip (BIA Tech Note 36A), beam bearing on a level non-shrink-grout island (Five Star TB-411: 45 degree shoulders, shoulder width <= grout depth, <= 3\") with a 1/2\"-1\" stainless or isolated hot-dip standoff plate over it so the KDAT soffit never touches the pour (AITC/WoodWorks); beam held down by an HGAM10 masonry gusset angle, #14 screws to the wood and Titen Turbo to the concrete at >=1-1/2\" edge distance; 4,000-4,500 psi, w/cm <= 0.45, 6.0-6.5% air at 3/4\" aggregate (Minn. R. 1309.0402 + ACI 318-19 class F2); broom or float finish on the wash, never steel-trowelled (NRMCA CIP 2); silane/siloxane repellent",
 )
 
 # Glazed-brick veneer over the exposed basement wall (sunken garden excavated against it).
@@ -2685,7 +2688,7 @@ ASSEMBLIES = [
     CATLIN_DECK_EPS_INT,
     FOUNDATION_WALL_12_INT,
     SUNKEN_GARDEN_WALL,
-    SUNKEN_GARDEN_COLUMN_16,
+    SUNKEN_GARDEN_COLUMN_20,
     BASEMENT_BRICK_VENEER,
     RETAINING_BLOCK_12,
     PORCH_DECK_COMPOSITE,

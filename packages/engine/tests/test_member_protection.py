@@ -50,14 +50,15 @@ def test_built_up_beams_take_the_wide_roll(rows):
 def test_beam_length_is_the_axis_length(rows):
     """Taken off the beam's two nodes, exactly as ``_resolve_beam`` takes it.
 
-    The three balcony beams span 8'-8" node to node. A cap or a tape run measured off
-    anything else — the deck outline, the solid's bounding box — drifts the moment the
-    beam's bearing moves, which is the failure this pins.
+    The three balcony beams span 9'-8" node to node since 2026-08-29 (the balcony's front
+    plane moved 12" south of the porch's; the beams keep both ends and grew with it). A cap
+    or a tape run measured off anything else — the deck outline, the solid's bounding box —
+    drifts the moment the beam's bearing moves, which is the failure this pins.
     """
     beam_rows = [r for r in rows if r["scope"] == "beam" and r["width_in"] == 4.5]
     assert len(beam_rows) == 1
-    # 3 balcony beams at 8.667' + 2 back beams at 10' + 2 front beams at 10' = 66.0'
-    assert beam_rows[0]["length_ft"] == pytest.approx(66.0, abs=0.1)
+    # 3 balcony beams at 9.667' + 2 back beams at 10' + 2 front beams at 10' = 69.0'
+    assert beam_rows[0]["length_ft"] == pytest.approx(69.0, abs=0.1)
     assert beam_rows[0]["count"] == 7
 
 

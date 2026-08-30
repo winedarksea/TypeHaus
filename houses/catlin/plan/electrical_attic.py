@@ -195,8 +195,14 @@ NEC_FILL_ATTIC = [
     # same x 17'-7 5/8" line RC4/RC5 already stand on and turned west into the room the same
     # way. `test_wall_mounted_devices_resolve_against_a_wall_face` is what settles that
     # number — authored an inch further west it resolved floating 1" clear of the finish.
+    # ** y 16'-8" -> 15'-0 1/2" ON 2026-08-30. ** The sink was straightened onto the wall face
+    # and its bowl now spans y 15'-7"..17'-1" (plan/fixtures.py), so 16'-8" stopped being
+    # beside the bowl and became directly behind the faucet. 15'-0 1/2" is the middle of the
+    # 1'-1" gap between the sink's south edge and APPL-A-STUDIO-FRIDGE's 14'-6" north face:
+    # beside both, reachable by both, and `code.E3902_gfci_locations` measures it at 1.4'
+    # against E3902.10's 6'-0".
     ElectricalDevice(uid="K9XVXZ9XZ3", tag="ED-A-STUDIO-BAR-GFCI", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(17, 7.625), ft(16, 8)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(17, 7.625), ft(15, 0.5)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)), rotation=deg(270)),
     # The bath's own, GFCI under E3902.1 — every 125V receptacle in a bathroom, sink or no

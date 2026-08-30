@@ -261,7 +261,7 @@ DRAINS = [
 # +9'-9" is the second floor's underside, the negative inverts are the basement ceiling.
 SECOND_DRAINS = [
     PipeRun(uid="CMPD07AAAA", tag="PR-M-S-BATH1-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(5), ft(26, 4)), pt(ft(5), ft(26, 4)),
+            path=(pt(ft(5), ft(26, 6)), pt(ft(5), ft(26, 6)),
                   pt(ft(4, 6.4), ft(17, 4.8)), pt(ft(3), ft(16, 6))),
             diameter=inch(3), material="pvc",
             elevations=(ft(9, 9), ft(-1.8333), ft(-2.2333), ft(-2.3333)),
@@ -481,29 +481,42 @@ RADON_SUMP = [
 # second floor's, where PR-M-S-SUITE-DRAIN's head is waiting. Filed on ``attic`` until
 # 2026-08-29, which resolved the whole stack 20'-0" high, hanging over the roof.
 STUDIO_DRAINS = [
-    # The WC flange moved to (13'-6", 21'-4") on 2026-08-29 when the 6:12 rake pushed both
-    # fixtures onto the room's north and south walls (plan/fixtures.py). The stack head does
-    # not move — it is still (9'-7 1/2", 20'-8"), inside W-S-DC2 — so this run simply gains
-    # its first leg: south-west out of the flange onto the y=20'-8" bay centre, then west as
-    # before. The lavatory's 1 1/2" arm ties into the same leg 2'-7" along it.
+    # ** THE DOG-LEG IS GONE (2026-08-30) AND THAT IS THE POINT OF THE NEW WC STATION. **
+    # 2026-08-29 pushed the flange out to (13'-6", 21'-4") — off any bay centre — so this run
+    # had to jog south 8" before it could turn west, and the stack head at (9'-7 1/2", 20'-8")
+    # stayed where it was. Putting the water closet back on the wet wall (plan/fixtures.py)
+    # let its c/l land on y=19'-4", 232" = 8 + 14 x 16, a bay centre in its own right: the
+    # flange now drops straight between joists and the run is flange -> west -> down, three
+    # points. The drop moves one bay south with it, from (9'-7 1/2", 20'-8") to
+    # (9'-7 1/2", 19'-4"), which is still deep inside W-S-DC2 (y 15'-11"..22'-4"), and it now
+    # clears the two supply risers at y 20'-6"/21'-0" instead of standing between them.
+    # The lavatory's 1 1/2" arm comes south off the north wall into the same west leg.
     PipeRun(uid="HTZ1RGAGXP", tag="PR-A-STUBATH-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(13, 6), ft(21, 4)), pt(ft(13, 6), ft(20, 8)),
-                  pt(ft(9, 7.5), ft(20, 8)), pt(ft(13), ft(16, 10.8))),
+            path=(pt(ft(11, 0.875), ft(19, 4)), pt(ft(9, 7.5), ft(19, 4)),
+                  pt(ft(13), ft(16, 10.8))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(19, 4), ft(19, 3.5), ft(19), ft(9, 9)),
+            elevations=(ft(19, 4), ft(19, 3.5), ft(9, 9)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH")),
     # ** THE BAR IS NO LONGER BACK-TO-BACK WITH THE BATH (2026-08-29). ** It moved to
     # W-A-C2's west face at (17'-0", 16'-8") because the 6:12 rake left nothing usable at the
     # wet wall, so its 2" branch now crosses the joist field west on the y=16'-8" bay centre
     # (200" = 8 + 12 x 16) and turns north to the same stack head. Seven feet of extra 2" PVC
     # in a bay it shares with nothing — the price of a counter you can stand at.
+    # ** THE HEAD MOVED UNDER THE BOWL ON 2026-08-30 AND GAINED A 4" TAILPIECE LEG. ** The
+    # sink's `drain_position` had drifted 4 3/8" east of the bowl and 9" north of it
+    # (plan/fixtures.py), so this run started under nothing at all. Straightening the sink
+    # onto W-A-C2's face and clear of W-A-BATH-S's 17'-1 5/8" south face lands its c/l on
+    # y 16'-4", which is 4" off the 16'-8" bay centre — so the arm drops at the bowl, turns
+    # 4" north onto the bay, and only then runs west as before. The 16'-8" leg and its
+    # 1/4"/ft are untouched; the new 1/4" over the 4" leg is 0.75"/ft.
+    # Its north leg now ends at (9'-7 1/2", 19'-4") with the stack, not at the old 20'-8".
     PipeRun(uid="ZY2V3KWMVK", tag="PR-A-BAR-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(17, 6), ft(16, 8)), pt(ft(9, 7.5), ft(16, 8)),
-                  pt(ft(9, 7.5), ft(20, 8))),
+            path=(pt(ft(17, 1.625), ft(16, 4)), pt(ft(17, 1.625), ft(16, 8)),
+                  pt(ft(9, 7.5), ft(16, 8)), pt(ft(9, 7.5), ft(19, 4))),
             diameter=inch(2), material="pvc",
             # 2" over the 7'-11" west leg and 1" over the 4'-0" north one — 1/4"/ft on both,
             # which `mep.drain_slope` grades segment by segment. The whole profile sits inside
             # FS-ATTIC's 11 7/8" joist band (19'-0 1/8"..20'-0"), through the webs.
-            elevations=(ft(19, 7.5), ft(19, 5.5), ft(19, 4.5)),
+            elevations=(ft(19, 7.75), ft(19, 7.5), ft(19, 5.5), ft(19, 4.5)),
             serves=("FX-A-STUDIO-BAR-SINK",)),
 ]

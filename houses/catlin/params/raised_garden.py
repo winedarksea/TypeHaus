@@ -68,10 +68,12 @@ Plan — a U whose north corners return three feet to the balcony railing:
   measuring 3' from the axis instead would put the legs *inside* ``FT-SG-W2``/``FT-SG-E2``,
   which span x = [4.5, 11.5] and [24.5, 31.5]. The legs' inner faces land at 4.5 / 31.5 —
   tangent to those footings, no overlap.
-- **North limit** is ``PORCH_FRONT_AXIS_Y_FT`` (-9.5'), the plane ``PT-SG-FCOL`` and
-  ``RL-SG-BALCONY`` both sit on. Consumed from ``params/sunken_garden.py``'s exported
-  contract rather than re-derived — two derivations silently diverge the next time a
-  dimension moves.
+- **North limit** is ``BALCONY_FRONT_AXIS_Y_FT`` (-10.5'), the plane ``RL-SG-BALCONY``
+  sits on. Consumed from ``params/sunken_garden.py``'s exported contract rather than
+  re-derived — two derivations silently diverge the next time a dimension moves. It was
+  ``PORCH_FRONT_AXIS_Y_FT`` until 2026-08-29, when that one constant split into two: the
+  porch's beam plane stayed on -9.5' and the balcony's moved 12" south. The apron closes
+  against the balcony RAILING, so it follows the balcony; both legs shorten 12".
 - **The U's north corners close back to the balcony.** ``W-RG-WEST-BALCONY`` and
   ``W-RG-EAST-BALCONY`` are 3' SRW runs on that same plane. Their block faces meet the
   balcony's side railing faces, closing the two open ends.
@@ -108,7 +110,7 @@ from dataclasses import dataclass
 from typehaus import FootingBedding, FoundationWall, Node, ft, inch, pt
 
 from params.sunken_garden import (
-    PORCH_FRONT_AXIS_Y_FT,
+    BALCONY_FRONT_AXIS_Y_FT,
     RETAINING_WALL_SPAN_X_FT,
     RETAINING_WALL_THICKNESS_IN,
     RETAINING_WALL_TOP_FT,
@@ -150,7 +152,7 @@ _sg_x_west, _sg_x_east = RETAINING_WALL_SPAN_X_FT
 X_WEST = _sg_x_west - _step_out_ft                       # 4.0
 X_EAST = _sg_x_east + _step_out_ft                       # 32.0
 Y_SOUTH = SOUTH_RETAINING_WALL_AXIS_Y_FT - _step_out_ft  # -33.33333
-Y_NORTH = PORCH_FRONT_AXIS_Y_FT                          # -9.5
+Y_NORTH = BALCONY_FRONT_AXIS_Y_FT                        # -10.5
 
 # Level with the sunken-garden wall top, 3' down. The drop is a whole number of 6" courses
 # by construction, which is what lets the run be dry-stacked without a cut course.

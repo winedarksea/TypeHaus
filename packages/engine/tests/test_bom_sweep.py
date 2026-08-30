@@ -50,7 +50,9 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     by_type = {}
     for row in rows:
         by_type[row["type"]] = by_type.get(row["type"], 0.0) + float(row["length_ft"])
-    assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(74.6, abs=0.1)
+    # 76.6 since 2026-08-29, not 74.6: RL-SG-BALCONY's two side legs each grew 12" when the
+    # balcony's front plane moved south of the porch's. RL-SG-PORCH is unchanged.
+    assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(76.6, abs=0.1)
     # 23.4 since 2026-08-24, not 23.0: RL-M-STAIRHEAD's 4 1/2" joins the same product group.
     # 26.4 on 2026-08-29 when RL-A-STAIR gained a 3'-0" east leg, and **17.3 since 2026-08-30,
     # which is 9.1 LF LESS THAN BEFORE THE KNEE WALLS CAME OUT AT ALL.** That is not a

@@ -44,8 +44,33 @@ REGISTER_TYPES = (
                  plan_symbol="register", ventilation_terminal=True,
                  ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
+    # A WALL-ORIENTED SUPPLY TYPE STOOD HERE FOR ONE DAY AND IS GONE (2026-08-30).
+    # REG-M-SUP4 spent 2026-08-29 on W-M-LS at 5'-0" and needed its own type for it; the
+    # owner then put it back in RM-M-STUDY's ceiling over ED-M-STUDY-SPOT and paired it with
+    # a LOW extract, so `REG-T-ERV-SUP-WALL` had no user left and was deleted with its
+    # prices.toml row. **The finding it was minted for outlived it and is stated on
+    # REG-T-ERV-EXH-WALL below**, which is now the house's only wall-oriented ERV terminal
+    # type: `footprint` is a PLAN rectangle, so a ceiling grille authors (face, face) with
+    # `height` as its 1" thickness and a wall grille authors (face, DEPTH) with `height` as
+    # the face. Mount a ceiling type on a wall and 3" of it draws inside the studs.
     RegisterType(tag="REG-T-ERV-EXH", name="ERV stale-air extract diffuser, 6\" round",
                  footprint=(inch(7), inch(7)), height=inch(1),
+                 plan_symbol="register", ventilation_terminal=True,
+                 ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
+                                    position=(ft(0), ft(0), ft(0))),)),
+    # The house's ONE wall-oriented ERV terminal type, and the note above is why it is the
+    # only one: a CEILING diffuser lies in the plane it is cut into, so its type is a 7x7
+    # face 1" deep, and mounting that type on a WALL tells the resolver the body reaches 7"
+    # off the wall into the room. ``_body_profile`` measures a wall mount's projection as
+    # the local y extent of its footprint, so REG-A-STUBATH-EXH — the house's one wall-hung
+    # extract — read as a 7" protrusion, past A117.1 §307.2's 4", and stood as an
+    # obstruction inside FX-A-STUBATH-WC's required clear space. It surfaced the day
+    # ``active_code_profile`` was set (plan/manifest.py) and the water-closet envelope
+    # stopped being dropped; before that the zone did not resolve and nothing could collide
+    # with it. A sidewall grille is a 7" face 1" deep, which is what this says.
+    RegisterType(tag="REG-T-ERV-EXH-WALL",
+                 name="ERV stale-air extract diffuser, 6\" round, sidewall",
+                 footprint=(inch(7), inch(1)), height=inch(7),
                  plan_symbol="register", ventilation_terminal=True,
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),

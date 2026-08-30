@@ -477,10 +477,15 @@ MAIN_LIGHTING = [
     # longer competing with a monitor. It is also above the bench's east end (seat 18") with
     # 4'-6" of clear, so nothing standing on the bench reaches it.
     #
-    # It is NOT a locator for anything else. REG-M-SUP4 was asked for "around here" and went
-    # to the opposite wall instead; the reasons — a bearing top plate, a joist bore at a
-    # bearing line, and 9 15/16" of bay already holding this fitting and a switch — are on
-    # the register in plan/mep_registers.py.
+    # ** IT IS A LOCATOR AFTER ALL, ONE STOREY UP (2026-08-30). ** REG-M-SUP4 was asked for
+    # "around here", spent 2026-08-29 on the opposite wall because this sliver is 9 15/16"
+    # of bay already holding this fitting and a switch, and is now in the CEILING three feet
+    # over it at (17'-2", 20'-8") — 4 5/8" west and 9" south of directly above, the 9" being
+    # a joist line. Nothing in that sliver had to move to make room, which is the whole point
+    # of going overhead. The room's stale-air pickup went the other way and is LOW, on the
+    # south wall's east end: the east wall below this sconce is D-M-STUDY's rough opening
+    # down to 21'-0 11/16" and FURN-M-STUDY-BENCH from there to the corner. See
+    # plan/mep_registers.py for both.
     #
     # ** NEITHER THIS NOR ED-M-STUDY-LT MAY BE DELETED. ** RM-M-STUDY is windowless and
     # passes `code.R303_1_light_and_ventilation` only on Exception 1's electric-light
@@ -769,12 +774,12 @@ SECOND_LIGHTING = [
 
     # RM-S-VANITY: two lavatories, two mirror lights, both on the north wet wall.
     ElectricalDevice(uid="QTS000FAAA", tag="ED-S-VANITY-MIRROR1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(1, 9), ft(25, 11.625)), type_ref="ED-T-LT-MIRROR",
+                     position=pt(ft(1, 9), ft(26, 1.625)), type_ref="ED-T-LT-MIRROR",
                      circuit="CKT-LT-UPPER", room="RM-S-VANITY", rotation=deg(0),
                      controlled_by=("ED-S-VANITY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
     ElectricalDevice(uid="QTS000GAAA", tag="ED-S-VANITY-MIRROR2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(4), ft(25, 11.625)), type_ref="ED-T-LT-MIRROR",
+                     position=pt(ft(4), ft(26, 1.625)), type_ref="ED-T-LT-MIRROR",
                      circuit="CKT-LT-UPPER", room="RM-S-VANITY", rotation=deg(0),
                      controlled_by=("ED-S-VANITY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),

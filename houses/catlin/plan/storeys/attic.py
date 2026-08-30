@@ -785,8 +785,11 @@ FLIGHT_GUARD = Railing(
         pt(ft(32, 5.375), ft(5, 9.625)),
         pt(ft(22, 5.375), ft(5, 9.625)),
     ),
+    # 60" o.c., the spacing RL-A-STAIR, RL-S-STAIR and RL-S-STAIRHEAD all use: over a
+    # 10'-0" run that is 3 posts where 48" is 4, and the baluster count does not move —
+    # 24 either way, because the 4" sphere sets it, not the post rhythm.
     kind=RailingKind.METAL_FASCIA_MOUNT, height=inch(36),
-    base_elevation=ft(10), post_spacing=inch(48), post_size="2x2", rail_count=2,
+    base_elevation=ft(10), post_spacing=inch(60), post_size="2x2", rail_count=2,
     mount="fascia", assembly="RAILING_DARK_METAL",
     role="guard_and_handrail", serves_stair="ST-S2A", top_height=inch(36),
     graspable_profile="1.5in round — Type I",

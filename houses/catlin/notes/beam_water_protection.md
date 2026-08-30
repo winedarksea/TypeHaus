@@ -70,18 +70,20 @@ beams combined, and they are the only elements carrying a recurring repaint cost
 under the beam seat, and sealing the cut before the pillar is stood: $0–120, and the highest
 durability-per-dollar item in the whole porch. Recorded in `POST_WHITE_PAINT.source`.
 
-**2b. The beam soffit at the two cast columns.** `SUNKEN_GARDEN_COLUMN_16.source` already
+**2b. The beam soffit at the two cast columns.** `SUNKEN_GARDEN_COLUMN_20.source` already
 specified a >=15° top wash and a level non-shrink-grout island, so the column top sheds. What
 was missing is the AITC/WoodWorks **1/2"–1" standoff** — a grout island is a levelling bed,
 not a standoff, and without one the KDAT soffit sits on concrete that wicks. Added 2026-08-28
-*beside* the grout island, not instead of it, on both `SUNKEN_GARDEN_COLUMN_16` and
+*beside* the grout island, not instead of it, on both `SUNKEN_GARDEN_COLUMN_20` and
 `PIER_CONCRETE_12` (PT-SG-COL is the only one of the five piers with wood landing on it). It
 must be stainless, or hot-dip with an isolator: KDAT is copper-treated and eats plain steel.
 This is at the beam *soffit* and so does not touch the cap/tape order at the beam *top*.
 
-**3. Sequencing — five of the seven caps go on before the joists do.** The balcony's three
-beams and the porch's back pair carry their joists on top; only the porch's front pair is
-flush-framed with an open top. A cap over a beam that will be joisted has to be laid while
+**3. Sequencing — ALL SEVEN caps go on before the joists do, since 2026-08-29.** It was
+five of seven: the balcony's three beams and the porch's back pair carried their joists on
+top, and only the porch's front pair was flush-framed with an open top. Dropping that pair —
+which is what put `PT-SG-FCOL`'s top, and `PT-SG-BF2` with it, on concrete — put those two
+caps on the same sequence as the rest. A cap over a beam that will be joisted has to be laid while
 the beam top is still open, and the joists then bear on it. That is fine for a coil cap under
 a 2x8's bearing area and **impossible to retrofit without pulling the deck**. It is the whole
 labour half of the `beam_cap` price row; it is not a return-visit trade.

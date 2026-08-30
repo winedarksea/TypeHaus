@@ -706,7 +706,7 @@
 # They do now (plan/assemblies.py: BEAM_LVL, BEAM_KDAT, POST_KDAT, PIER_CONCRETE_12), which
 # splits both categories into `category:assembly` groups — so a bare key matches nothing any
 # more, and the wood goes to the new [timber] table. What stays here is what is actually a
-# pour: the five 12" sonotube piers and the 16" round front column. Both are keyed
+# pour: the five 12" sonotube piers and the 20" round front column. Both are keyed
 # explicitly; leaving them on a bare "column" would have been a rate looking for a row.
 #
 # 2026-08-28: PT-SG-FCOL WENT ROUND, and this row is re-struck, not escalated. It was
@@ -718,11 +718,34 @@
 # then $19-43/LF to lay out, set and brace the tube plumb, place and vibrate, and strip.
 # $38-79/LF installed x 8.06 LF = $306-637, against $478-1,327 square.
 #
-# The ~$175-695 saved is the whole reason for the change and it is not free: a 16" round
+# The ~$175-695 saved was the whole reason for that change and it was not free: a 16" round
 # leaves 3.76" of side cover at a 6" plate's corners where the square left 5.00", which
-# forecloses the MPB66Z moment base plans/TODO.md weighs at this column. An 18" tube would
-# have kept it at $335-705. See plan/assemblies.py and notes/uplift_load_path.md.
-"column:SUNKEN_GARDEN_COLUMN_16" = { material = { low = 373, high = 706 }, labour = { low = 368, high = 832 } }  # 0.417 cy = 8.06 LF — PT-SG-FCOL
+# foreclosed the MPB66Z moment base plans/TODO.md weighs at this column.
+#
+# 2026-08-29: 16" -> 20", AND THE KEY IS RENAMED WITH THE ASSEMBLY. The column took on
+# PT-SG-BF2's bearing as well as the two front beams' when the balcony's front row moved 12"
+# south, and 16" and 18" have no solution at that overhang (the table is in
+# params/sunken_garden.py::FRONT_COLUMN). **The rename must not be skipped**: an unpriced
+# type is silently dropped from the BOM, so an orphaned ..._16 key would make the takeoff
+# total FALL and the saving would be an artifact of the missing row.
+#
+# Same shaft, same itemised basis, RE-STRUCK PER FOOT rather than escalated per yard — the
+# volume goes up 56% but the form and the labour do not. A 20" round is 2.182 sf: form
+# $6.25-15/LF (circumference, +25% on the 16"), ready-mix $16.16-25.86/LF (volume, at
+# $200-320/cy), the same #4 cage with ties $4-8/LF -> material $26.40-48.90/LF. Labour
+# $21-47/LF; the operations are unchanged and a bigger tube is only heavier to brace.
+#
+# The shaft is 10.08 LF, not the 8.06 the old comment carried — it grew 2'-6" on 2026-08-29
+# when the bell was augered to frost depth, and that note was not restruck at the time. So
+# material $266-493 and labour $212-474, $478-967 installed against $393-815 for the 16" at
+# the same length: the ~$85-150 step. The rates below are $/cy because that is what the
+# [concrete] table pays in, so they are those totals over the 0.79 cy the BOM resolves (the
+# faceted circle bills a hair under the true 0.0808 cy/LF).
+#
+# The side cover comes back as a side effect: a 20" round leaves 5.76" at a centred 6"
+# plate's corners, MORE than the 16" square had. plans/TODO.md's MPB66Z arithmetic for this
+# column is stale for it. See plan/assemblies.py and notes/uplift_load_path.md.
+"column:SUNKEN_GARDEN_COLUMN_20" = { material = { low = 337, high = 624 }, labour = { low = 268, high = 600 } }  # 0.79 cy = 10.08 LF — PT-SG-FCOL
 # The five 12" round sonotube piers: PR-BW-1..4 under the breezeway posts and PT-SG-COL at
 # the garden back-beam midspan, 25.9 LF between them. A round pier is cheaper per yard than
 # the square column above because the form is a disposable tube rather than built panels and
@@ -1538,6 +1561,14 @@
 # 2026-08-21 pass.
 "FX-TUBSHOWER-60" = { material = { low = 500, high = 2000 }, labour = { low = 400, high = 950 } }  # 2 ea
 "REG-T-ERV-EXH" = { material = { low = 25, high = 80 }, labour = { low = 18, high = 45 } }  # 13 ea
+# The sidewall extract (plan/mep_hvac.py) — the same 6" round product as REG-T-ERV-EXH
+# above, one field order apart, so the MATERIAL half is copied verbatim from it. The LABOUR
+# half carries a premium: cutting and boxing a grille into a stud bay costs more than
+# dropping one into a ceiling plane. Two of them since 2026-08-30 — REG-A-STUBATH-EXH and
+# RM-M-STUDY's low booth extract REG-M-RET-STUDY, whose boot also has to fall 8'-2" inside
+# W-M-CLN2's staggered cavity past a device box. Without this row the type is silently
+# struck from the bill and the total FALLS by the price of a register.
+"REG-T-ERV-EXH-WALL" = { material = { low = 25, high = 80 }, labour = { low = 28, high = 65 } }  # 2 ea
 # The workshop's over-bench capture hood (2026-08-25), which used to be a REG-T-ERV-EXH
 # ceiling diffuser. A 30" x 12" fabricated capture face on a drop, not a stamped grille: the
 # material is shop sheet metal and the labour is hanging it plumb 24" over a bench top.
@@ -1549,6 +1580,9 @@
 # the pair is not modelled and so is not in this file.
 "REG-T-ERV-PLANT-EXH" = { material = { low = 110, high = 280 }, labour = { low = 180, high = 420 } }  # 1 ea
 "REG-T-ERV-SAUNA-SUP" = { material = { low = 15, high = 60 }, labour = { low = 18, high = 45 } }  # 1 ea
+# 5 ea since 2026-08-30: REG-M-SUP4 came back out of W-M-LS into RM-M-STUDY's ceiling, and
+# the one-day-old sidewall variant REG-T-ERV-SUP-WALL was deleted with its row rather than
+# left priced with no user.
 "REG-T-ERV-SUP" = { material = { low = 25, high = 80 }, labour = { low = 18, high = 45 } }  # 5 ea
 "REG-T-HP-RET" = { material = { low = 30, high = 90 }, labour = { low = 18, high = 45 } }  # 1 ea
 "REG-T-HP-SUP" = { material = { low = 15, high = 50 }, labour = { low = 18, high = 45 } }  # 8 ea

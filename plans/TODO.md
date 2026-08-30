@@ -153,15 +153,24 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     covered either, so this option always needed a pour change somewhere.
 
     **Correction 2026-08-28: the "18"/20" revert" above is cheaper than it looks only in
-    concrete, and this entry understated it.** `SPEC.front_column_size_in` is not just a
-    member size — it feeds `_y_ax_front = _y_in_n - porch_clear_depth_ft -
-    front_column_size_in/24`, which sets the balcony's *front pillar row*, the deck outline,
-    `RL-SG-BALCONY`, the gutter and leader line, and is published as `PORCH_FRONT_AXIS_Y_FT`
-    and consumed by `params/raised_garden.py`. Widening that column moves another module's
-    geometry. The tube price is the small half of the bill. And widening it does not reopen
-    the MPB66Z where the option is actually wanted: `PT-SG-FCOL` carries `PT-SG-BF2`, a
-    *centre* pillar. The four that want the base are the corner ones on the wall tops, which
-    is the pour change this entry already names.
+    concrete, and this entry understated it.** `SPEC.front_column_size_in` fed
+    `_y_ax_front = _y_in_n - porch_clear_depth_ft - front_column_size_in/24`, so widening
+    the column moved the balcony's front pillar row, the deck outline, `RL-SG-BALCONY`, the
+    gutter and leader line, and another module's geometry through
+    `PORCH_FRONT_AXIS_Y_FT`.
+
+    **Superseded 2026-08-29 on both halves, and the numbers here are now stale.**
+    (a) The coupling is gone: `porch_front_edge_offset_in` holds the beam plane at -9.5'
+    and the column's diameter no longer says anything about it, precisely because the
+    column stopped being centred on that plane. (b) `PT-SG-FCOL` **is a 20" round now**,
+    for an unrelated reason — it became the shared bearing for the two front beams AND
+    `PT-SG-BF2` when the balcony's front row moved 12" south — so the 5.76" of side cover
+    arrived as a side effect and the "$369-781 revert" price is not what it cost. The
+    installed line is `$478-967` (10.08 LF of 20" tube; see `prices.toml`), and the step
+    over the 16" was ~`$85-150`, already spent. **What has NOT changed is the verdict:**
+    the four pillars that actually want an MPB66Z are the corner ones on 12" concrete wall
+    tops, and they are still not covered. Re-do the side-cover arithmetic against 20"
+    before quoting any number in this bullet.
   - **An engineer's lateral design.** The honest answer, and the same consultant the two
     side walls below already need.
 
@@ -177,10 +186,23 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   - **Balcony: retired, and worth keeping visible.** `FS-SG-DECK`'s joist span is *exactly*
     10.00', reading the 10' row (9.17'). Any increase drops it to the 12' row (8.33'). Until
     2026-08-28 the balcony beams spanned 8.667' and that step would have failed all three;
-    moving the rear pillar row onto the back-beam line took the span to 7.00', so there is
-    now 16" of room even after the step. The knife-edge is gone, the cliff is not.
+    moving the rear pillar row onto the back-beam line took the span to 7.00'. The front row
+    then moved 12" south on 2026-08-29 and gave 12" of that back — **the back span is 8.00'
+    now**, which still clears the 12' row (8.33') by 4". The knife-edge is gone, the cliff is
+    not, and the margin is a third of what it was a day earlier.
   Anything that changes a beam section here — including the PWT LVL lead below — has to be
   re-checked against both. Also in `houses/catlin/notes/beam_water_protection.md`.
+
+- **Widen `structural.landing_post_bearing` past stair landings.** It is the rule that
+  would *positively confirm* what the 2026-08-29 change bought — `PT-SG-BF2` bearing on
+  concrete rather than through a 2x8 — and it cannot see the joint, because it is scoped to
+  stair landing posts only. Nothing else in the model grades cross-grain bearing under a
+  post, which is why `PT-SG-BR2` stood on a single joist ply for a day with 0 FAIL and why
+  its squash blocks are authored rather than derived. **Not a one-line scope widening:**
+  `_bearing_element_under` has to learn about a FloorSystem's blocking members and its sheet
+  thickness first, or turning it on adds ~10 FAILs to a house that has none — the eight
+  heat-pump stand legs, `PT-SG-BR2` and `PT-SG-BF2` — every one of them a false report about
+  a joint that is answered.
 
 - **Verify the PWT treated LVL lead — one phone call.** `notes/beam_water_protection.md`
   records that the real durability defect in these beams is **fourteen site-built ply seams**
@@ -661,6 +683,9 @@ the future.
  - Access panel FURN-M-BATH1-AP is in the wrong spot, probably needs to be on W-M-HS1
  - Are horizontal hat channels necessary for the siding of the house? (nail flange over 20 ga galvanized hat channels)
  - D-M-BED2 door can likely be moved slightly to optimize the stud line
+ - Perhaps switch the garage to 24" oc spacing (fewer trusses)?
+ - Improve the framing logic of the girts/outriggers holding the insulation and cladding of the catlin house. Especialy on the gable ends, it seems the spacing of these isn't always correct and optimal
+ - Ducts, pipes, wall stud spacing. STC. Drains in the right walls. Use the truss. Shortest/cheapest/easiest labor.  
 
 - **The sunken garden was a real frost defect, not a review item.** `structural.frost_depth`
   compared every footing to one global grade plane (`Site.grade`), so it PASSED all 35 —
@@ -735,43 +760,102 @@ Make sure the basement door keeps the 7" step threshold (reduces flood risk)
 The house's smallest habitable room and its only windowless one, finished as a booth for
 video calls and homework. Decisions, so they are not relitigated:
 
-- **Desk on the SOUTH wall, bench on the WEST**, and the bench — not the desk — runs the
-  full length. `ED-M-STUDY-RC1` and `-DATA1` were already paired on the south wall as "the
-  pairing a desk actually wants"; the desk honours that wiring. In a booth back support
-  beats desk width, and two facing 18" benches would have left 11 1/4" between them. Both
-  pieces are **fixed** walnut millwork, not a fold-down leaf, and both are on
-  `haus millwork` (`SB-M-STUDY-BENCH`, `SB-M-STUDY-DESK`).
-- **Staggered stud on `W-M-LS` and `W-M-CLN2`, not resilient channel.**
-  `INT_2X4_RC_DOUBLE_GWB` reaches STC 54 in 1 1/2" less room than
-  `INT_2X4_STAGGERED_DOUBLE_GWB`'s STC 52 and is still **wrong for these two walls**: the
-  bench and the desk are fastened *through* them, and a resilient wall you screw millwork
-  into is rigidly bridged back to the bare STC 36. Staggered studs take blocking anywhere.
+- **THE LAYOUT TURNED 90 DEGREES ON THE OWNER'S REVIEW, THE SAME DAY IT WAS BUILT.** The
+  first fit-out was an L — bench down the WEST wall, desk across the south, sit in the
+  corner and turn right. It is now a **facing pair**: `FURN-M-STUDY-BENCH` runs east-west
+  along the NORTH wall, `FURN-M-STUDY-DESK` sits in the SOUTH-WEST corner. *"This is not a
+  room you walk into, it is a booth you slide into."* You enter, step into the 18 7/8"
+  pocket east of the desk, sit, and slide west. Both pieces are **fixed** walnut millwork
+  and both are on `haus millwork` (`SB-M-STUDY-BENCH`, `SB-M-STUDY-DESK`).
+- **The turn made the two depths compete, and the bench paid.** Facing each other across
+  the room's 44 1/8" short dimension, bench + desk + clear floor must all fit. The bench
+  went 18" -> **17"** (still a full seat against a back), leaving 7 1/8" of open floor
+  between the front faces — small on purpose, because the desk top is a cantilevered slab
+  with no leg or stretcher and your feet pass under it. A free consequence worth keeping:
+  at 17" the seat comes off **one board** against the 18" supply, where the 18" version was
+  an edge-glued panel.
+- **The turn also FIXED the one thing that was open.** The desk's east end used to stand in
+  `D-M-STUDY`'s opening; in the corner it stops 18 7/8" short of the east wall. That entry
+  was the accepted cost of the L, and the L is gone.
+- **The bench is a floor-standing PLINTH, and that is not a detailing preference.** Its wall
+  is now `W-M-HS4`, which is `D-M-LAUN`'s door pocket: `mep.pocket_occupancy` refuses a
+  fastener, a device or a pipe in that cavity between x 12'-4" and 16'-5", and the bench
+  covers x 13'-8 3/4"..17'-7 3/4". A cleat screwed to that wall is a FAIL *and* a hole in a
+  door pocket. A plinth needs neither.
+- **Staggered stud on `W-M-LS`, `W-M-CLN2` and (since the same day) `W-M-CLN`, not
+  resilient channel.** `INT_2X4_RC_DOUBLE_GWB` reaches STC 54 in 1 1/2" less room than
+  `INT_2X4_STAGGERED_DOUBLE_GWB`'s STC 52 and is still **wrong here**: the desk is fastened
+  *through* `W-M-CLN2`, and a resilient wall you screw millwork into is rigidly bridged back
+  to the bare STC 36. Staggered studs take blocking anywhere.
+  - **`W-M-LS` carries no millwork any more and the retype still stands.** RM-M-LAUNDRY is
+    on its far side, and a washer and dryer are the loudest neighbours any room in this
+    house has. It also now holds `REG-M-SUP4` and its riser, which only a 5 1/2" cavity has
+    room for. The millwork argument was an addition to that case, never the whole of it.
+  - **`W-M-CLN` was retyped for consistency and two real things came with it.** W-M-CLN and
+    W-M-CLN2 are one wall on the drawing — the y=18'-0" line, both on `W-B-CW2` — and
+    `RM-M-CLOSET` is one room whose north boundary they share, so retyping only CLN2 left a
+    **1 5/8" step in that boundary at x=13'-4"**. Squaring it up costs the closet nothing
+    usable: 17'-8" was already its narrowest point. And it is the wall the laundry sink's
+    water runs in — see below.
 - **`W-M-HS4` was deliberately NOT retyped.** It carries a stack edge to `W-S-SN3`;
   thickening it flips that edge to `width_change=True` and wants a new boundary-condition
-  gate entry. The felt goes on it; the framing does not change. `W-M-CLN2` keeps its
-  `stacks_on="W-B-CW2"` for the same class of reason — it is the tiebreaker on the y=18'
-  run and dropping it re-arms `integrity.stack_ambiguous`.
-- **The retype broke three devices and one placeable, and that is the lesson.** A centred
-  retype moves *both* faces 1 5/8", and a device position is a face position:
-  `ED-M-STUDY-RC1`/`-DATA1` buried 2 3/10" and `FURN-M-LAUNDRY-RACK` 3 3/8" on the far side
-  of the same wall. Always sweep both faces. `ED-M-STUDY-RC2` was deleted (the west wall is
-  now all bench back); `electrical.receptacle_spacing` still passes but **on 6 1/2" of
-  margin** on the `RC1 -> RC3` span — read that finding, do not assume it.
-- **`ED-M-STUDY-SPOT` moved off the north wall** to the east wall's north sliver. Facing
-  south at the desk, a 6' spot behind you is a backlight on camera and a bright blob in the
-  middle of the felt backdrop. Neither it nor `ED-M-STUDY-LT` may be deleted: the room
-  passes `code.R303_1_light_and_ventilation` only on Exception 1's electric-light
-  substitute.
+  gate entry. The felt goes on it; the framing does not change. `W-M-CLN`/`W-M-CLN2` keep
+  their `stacks_on="W-B-CW2"` for the same class of reason — it is the tiebreaker on the
+  y=18' run and dropping it re-arms `integrity.stack_ambiguous`.
+- **The retypes broke three devices and three placeables, and THAT is the lesson.** A
+  centred retype moves *both* faces 1 5/8", and a device position is a face position.
+  `W-M-CLN2` buried `ED-M-STUDY-RC1`/`-DATA1` (2 3/10") and `FURN-M-LAUNDRY-RACK` (3 3/8")
+  on the far side; `W-M-CLN` then buried `FX-M-LAUNDRY-SINK` (1 1/16"),
+  `ED-M-LAUNDRY-RC1`/`-DR1`, and `FURN-M-LAUNDRY-RACK` **again, on the other axis**. One
+  object, two retypes, two axes. Always sweep both faces of every wall you thicken.
+- **`ED-M-STUDY-RC2` was deleted and restored within one build, and the reason is worth
+  more than the outlet.** `electrical.receptacle_spacing` breaks a **counterless fixed
+  cabinet** out of the receptacle ring. With the bench on the west wall that wall was not
+  wall space and RC2 was redundant; when the bench moved to the north wall it became 3'-8"
+  of bare wall and the check FAILed at (13.4', 20.7'). **A fixed built-in is load-bearing on
+  an electrical check** — moving furniture in this house can create or delete a code finding
+  with no device touched. Run `haus check` after a placeable move, every time. The
+  `RC1 -> RC3` span still has only **6 1/2"** of margin and this outlet does not widen it.
+- **`ED-M-STUDY-SPOT` moved off the north wall** to the east wall's north sliver, and the
+  turn improved it by luck rather than by design: it was placed to key someone in the SW
+  corner of an L, and it is now a side key about 3'-0" off the seated occupant's left cheek,
+  aimed across the bench and off the backdrop. Neither it nor `ED-M-STUDY-LT` may be
+  deleted: the room passes `code.R303_1_light_and_ventilation` only on Exception 1's
+  electric-light substitute.
+- **`REG-M-SUP4` came out of the ceiling onto the wall at 5'-0".** In a 148 cf sealed box
+  with one person in it CO2 is the whole ventilation problem, and 15 cfm dumped at 9'-0"
+  reaches the breathing zone last. Draft is not the objection it would be on a heating
+  register: 15 cfm through a 7x7 face is ~45 fpm, under ASHRAE 55's 50 fpm threshold before
+  the jet has moved a foot.
+  - **It is on the WEST wall, not the east one beside the sconce, and that WAS the ask.**
+    `W-M-C3` is BEARING, so a 3" riser through its doubled top plate is past R602.6.1's
+    half-width limit and wants a tie strap; worse, reaching the sliver means jogging 13"
+    north across `FS-S-WEST`'s joists **directly over that bearing line**, which is the one
+    place the hole chart forbids outright; and the sliver is 9 15/16" of clear bay already
+    holding the sconce and a switch. `W-M-LS` is non-bearing, has the 5 1/2" cavity, and the
+    duct's bay leg **already crosses over it at y=20'-8"** — so the riser drops straight down
+    with no jog, no new joist crossing, and the run gets 2'-4" **shorter**.
+  - **A register type cannot be reused across the two orientations.** `footprint` is a PLAN
+    rectangle: a ceiling grille authors `(face, face)` with `height` as its 1" thickness, a
+    wall grille authors `(face, DEPTH)` with `height` as the face. `REG-T-ERV-SUP-WALL` was
+    minted for this. Pointing a wall register at `REG-T-ERV-SUP` draws a 7x7 blob with 3" of
+    itself inside the studs — which is exactly the wart `REG-S-ERV-PLANT-EXH` still carries.
+- **The laundry sink's supplies now reach the sink.** `PR-B-CW-WASH`/`PR-B-HW-WASH` have
+  claimed `serves=(..., "FX-M-LAUNDRY-SINK")` since they were drawn and stopped at the
+  **washer box** 3'-0" west of the basin. They now run riser top -> south in `W-M-BA2E` ->
+  east in `W-M-CLN` -> down to **20"**, the stop height inside the tub's own cased base (a
+  stub at the washer box's 36" would come out of the wall above a 34" rim). Three lanes keep
+  them apart — cold 4" below hot, hot jogged 2" west of the cold riser's head, cold stopping
+  8" short — and **the corner segment names no wall on purpose**: `W-M-BA2E` ends where
+  `W-M-CLN` starts, the two only touch, so no point is inside both and either claim is an
+  ERROR. `FX-M-LAUNDRY-SINK.wall_ref` still says `W-M-BA2E`, which is the RISER's wall, not
+  the wall its back is on.
 - **The door stays exactly as it is**, and its undercut is the room's only return path for
   `REG-M-SUP4`'s 15 cfm. Gasketing it later for the last few STC points needs a transfer
   grille to come with it. Noted at the register.
 - **The wainscot stays whole** on all four walls; ~20 sf lands behind the millwork on
   purpose. The box is lined first and the built-ins are set against the lining, which is how
-  a shop builds it — and the west wall's 36" wainscot *is* the bench's back rail.
-- **Open, accepted:** the desk's east end stands in `D-M-STUDY`'s opening. The door swings
-  out, so the leaf is clear, but about 18" of the 30" opening is desk and you enter through
-  the north 12". The alternative is a desk that reaches a wall at neither end. Written up on
-  `FT-STUDY-DESK`.
+  a shop builds it — and the north wall's 36" wainscot *is* the bench's back rail.
 
 ## Found while doing the 2026-08-23 batch — recorded so they are not rediscovered
 

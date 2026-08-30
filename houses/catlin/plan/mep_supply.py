@@ -128,19 +128,65 @@ SUPPLY = [
     # project), like the BATH1 pair above: sleeved concrete crossing below, stud cavity
     # above, each leg naming its own host so `mep.wet_wall_occupancy` doesn't read a single
     # riser as escaping the wall it's actually inside.
+    #
+    # ** BOTH REACH THE SINK NOW, 2026-08-29 (owner). ** They have claimed
+    # `serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")` since they were drawn, and they got as
+    # far as the WASHER BOX at (8'-0", 36") and stopped — the basin is 3'-0" further east
+    # and nothing modelled crossed that ground. What the two runs do beyond the box:
+    #
+    #   riser top 36"  ->  south inside W-M-BA2E  ->  east inside W-M-CLN  ->  drop to 20"
+    #
+    # 20" is the stop height inside the tub's own cabinet (FX-LAUNDRY-SINK-24 is a 34" rim
+    # in a cased base, 43" over the faucet), NOT the 36" the washer box stands at — a stub
+    # above the rim would come out of the wall in front of the basin. Cold lands 4" west of
+    # the bowl centre, hot 4" east: hot on the LEFT of someone facing the faucet, who is
+    # standing north of a sink whose back is on the south wall.
+    #
+    # ** FOUR THINGS KEEP THE PAIR APART AND OFF THE CORNER, AND EVERY ONE IS LOAD-BEARING: **
+    #   * ** the cold drops 36" -> 32" at its own riser head ** and travels the whole way at
+    #     32", 4" under the hot. Both share the y=18'-1" lane, so a shared elevation would be
+    #     one pipe inside the other; stacked is how the pair is actually run in a cavity.
+    #   * ** the hot jogs 2" west to x=7'-10" before turning south. ** The cold riser stands
+    #     at x=8'-0" and tops out at exactly the hot's 36" — same lane, same height, and the
+    #     hot leg would run straight through it on its way south from y=21'-2 2/5".
+    #   * ** the cold stops 8" short of the hot ** (x=11'-6 1/2" against 12'-2 1/2", the bowl
+    #     centre +/-4", hot on the LEFT of someone facing the faucet). So the hot's drop at
+    #     12'-2 1/2" comes down past 32" east of where the cold's leg ends, and misses it.
+    #   * ** THE CORNER SEGMENT NAMES NO WALL, DELIBERATELY. ** W-M-BA2E ends at y=18'-0" and
+    #     W-M-CLN starts at x=8'-3 3/8": the two only TOUCH, so no point is inside both and a
+    #     leg claiming either one leaves its structure footprint — `mep.wet_wall_occupancy` is
+    #     an ERROR about exactly this and said so on the first build. `None` is the honest
+    #     answer, and it is the same `None` the sleeved basement crossing already carries: the
+    #     4 1/2" from x=8'-0" to x=8'-4 1/2" is the corner post, and it is bored.
+    # The wall this all rides in is why W-M-CLN was retyped (storeys/main.py). Through the
+    # 2x4 partition that was there, this leg bores every stud between x=8'-0" and the sink
+    # and `mep.wet_wall_occupancy` grades it `long_horizontal`; through the staggered pair it
+    # threads between two offset stud rows and bores nothing but that one corner post.
     PipeRun(uid="CBPW37AAAA", tag="PR-B-CW-WASH", system=PipeSystem.WATER_COLD,
             path=(pt(ft(8), ft(16)), pt(ft(8), ft(20, 7.2)),
-                  pt(ft(8), ft(20, 7.2)), pt(ft(8), ft(20, 7.2))),
+                  pt(ft(8), ft(20, 7.2)), pt(ft(8), ft(20, 7.2)),
+                  pt(ft(8), ft(20, 7.2)), pt(ft(8), ft(18, 1)),
+                  pt(ft(8, 4.5), ft(18, 1)), pt(ft(11, 6.5), ft(18, 1)),
+                  pt(ft(11, 6.5), ft(18, 1))),
             diameter=inch(0.75), material="copper", finish="lacquered",
-            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(9, 1.4375), ft(12, 1.4375)),
-            wall_refs=(None, None, "W-M-BA2E"),
+            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(9, 1.4375), ft(12, 1.4375),
+                        ft(11, 9.4375), ft(11, 9.4375), ft(11, 9.4375), ft(11, 9.4375),
+                        ft(10, 9.4375)),
+            wall_refs=(None, None, "W-M-BA2E", "W-M-BA2E", "W-M-BA2E", None,
+                       "W-M-CLN", "W-M-CLN"),
             serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
     PipeRun(uid="CBPW38AAAA", tag="PR-B-HW-WASH", system=PipeSystem.WATER_HOT,
             path=(pt(ft(5, 6), ft(24)), pt(ft(8), ft(21, 2.4)),
-                  pt(ft(8), ft(21, 2.4)), pt(ft(8), ft(21, 2.4))),
+                  pt(ft(8), ft(21, 2.4)), pt(ft(8), ft(21, 2.4)),
+                  pt(ft(7, 10), ft(21, 2.4)), pt(ft(7, 10), ft(18, 1)),
+                  pt(ft(8, 4.5), ft(18, 1)), pt(ft(12, 2.5), ft(18, 1)),
+                  pt(ft(12, 2.5), ft(18, 1))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(9, 1.4375), ft(12, 1.4375)),
-            wall_refs=(None, None, "W-M-BA2E"),
+            elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(9, 1.4375), ft(12, 1.4375),
+                        ft(12, 1.4375), ft(12, 1.4375), ft(12, 1.4375), ft(12, 1.4375),
+                        ft(10, 9.4375)),
+            wall_refs=(None, None, "W-M-BA2E", "W-M-BA2E", "W-M-BA2E", None,
+                       "W-M-CLN", "W-M-CLN"),
             serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
     PipeRun(uid="CBPW39AAAA", tag="PR-B-HW-KITCH", system=PipeSystem.WATER_HOT,
             path=(pt(ft(6, 6), ft(15, 6)), pt(ft(30, 3.6), ft(15, 6)),
@@ -153,9 +199,9 @@ SUPPLY = [
     # naming the host wall on each leg. Main-storey leg is in a 2x4 partition (3.5" cavity,
     # ample for 3/4" PEX); only the second-storey leg is in a staggered wet wall.
     PipeRun(uid="CBPW40AAAA", tag="PR-B-CW-SBATH", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(5), ft(16)), pt(ft(4), ft(16, 9.6)), pt(ft(4), ft(26, 4)),
-                  pt(ft(5, 7.2), ft(26, 4)), pt(ft(5, 7.2), ft(26, 4)),
-                  pt(ft(5, 7.2), ft(26, 4)), pt(ft(5, 7.2), ft(26, 4))),
+            path=(pt(ft(5), ft(16)), pt(ft(4), ft(16, 9.6)), pt(ft(4), ft(26, 6)),
+                  pt(ft(5, 7.2), ft(26, 6)), pt(ft(5, 7.2), ft(26, 6)),
+                  pt(ft(5, 7.2), ft(26, 6)), pt(ft(5, 7.2), ft(26, 6))),
             diameter=inch(0.75), material="copper", finish="lacquered",
             elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(9, 1.4375), ft(19, 1.4375), ft(21, 7.4375)),
             wall_refs=(None, None, None, None, "W-M-STOS", "W-S-BD-N"),
@@ -166,9 +212,9 @@ SUPPLY = [
     # first clean bay past the tee (6 1/2" west of D-M-MUD's jamb pack, 8" west of D-S-BATH1's
     # above). SP-M-HW-SBATH moved with it.
     PipeRun(uid="CBPW41AAAA", tag="PR-B-HW-SBATH", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(5, 6), ft(24)), pt(ft(6, 4), ft(26, 4)),
-                  pt(ft(6, 4), ft(26, 4)), pt(ft(6, 4), ft(26, 4)),
-                  pt(ft(6, 4), ft(26, 4))),
+            path=(pt(ft(5, 6), ft(24)), pt(ft(6, 4), ft(26, 6)),
+                  pt(ft(6, 4), ft(26, 6)), pt(ft(6, 4), ft(26, 6)),
+                  pt(ft(6, 4), ft(26, 6))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(9, 1.4375), ft(19, 1.4375), ft(21, 7.4375)),
             wall_refs=(None, None, "W-M-STOS2", "W-S-BD-N1B"),
@@ -397,18 +443,26 @@ HYDRANT_BRANCH_SECOND = [
 #
 # Cold rides at 9'-4" and hot at 9'-7" so the two jogs cannot foul each other where they
 # converge on the wet wall; both sit inside the trusses (8'-11 3/8" to 9'-11 1/4"). From
-# (9'-7 1/2", 19'-0"/19'-6") each rises straight up W-S-DC2 and W-A-STU-W to its stop at 22'-6".
+# (9'-7 1/2", 20'-6"/21'-0") each rises straight up W-S-DC2 and W-A-STU-W to its stop at 22'-6".
+#
+# ** BOTH RISERS MOVED NORTH ON 2026-08-30, 19'-0"/19'-6" -> 20'-6"/21'-0", TO GET OUT FROM
+# BEHIND THE TOILET. ** The water closet went back onto this wall (plan/fixtures.py) and its
+# tank occupies y 18'-6"..20'-2" against it — which would have left both angle stops walled in
+# behind a fixture while `PA-A-STUBATH-STOP-*.accessible` still claimed True. Nothing checks
+# that: `mep.stop_accessibility` grades the FLAG, not the geometry. The 6" of y between the
+# two risers is unchanged, and so is the 3" of z (cold 9'-4", hot 9'-7") that keeps their
+# truss-floor jogs apart. North of the WC they are also nearer the lavatory they feed.
 STUDIO_SUPPLY = [
     PipeRun(uid="WJZGK0YFHY", tag="PR-A-CW-STUBATH", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(13, 7.2), ft(16, 10.8)), pt(ft(9, 7.5), ft(19)),
-                  pt(ft(9, 7.5), ft(19))),
+            path=(pt(ft(13, 7.2), ft(16, 10.8)), pt(ft(9, 7.5), ft(20, 6)),
+                  pt(ft(9, 7.5), ft(20, 6))),
             diameter=inch(0.75), material="copper", finish="lacquered",
             elevations=(ft(9, 4), ft(9, 4), ft(22, 6)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
                     "FX-A-STUDIO-BAR-SINK")),
     PipeRun(uid="TCWF4YDZTW", tag="PR-A-HW-STUBATH", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(14, 2.4), ft(16, 10.8)), pt(ft(9, 7.5), ft(19, 6)),
-                  pt(ft(9, 7.5), ft(19, 6))),
+            path=(pt(ft(14, 2.4), ft(16, 10.8)), pt(ft(9, 7.5), ft(21)),
+                  pt(ft(9, 7.5), ft(21))),
             diameter=inch(0.75), material="copper",
             insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(9, 7), ft(9, 7), ft(22, 6)),

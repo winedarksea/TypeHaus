@@ -342,8 +342,10 @@ SECOND_DEVICES = [
                      position=pt(ft(3), ft(23, 6)), type_ref="ED-T-LT-CAN4-WET", circuit="CKT-LT-UPPER",
                      room="RM-S-VANITY", controlled_by=("ED-S-VANITY-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # On W-S-BD-N's vanity face beside the two mirror lights, so it travels with them:
+    # y 25'-11 5/8" -> 26'-1 5/8" when that wall moved 2" north on 2026-08-29.
     ElectricalDevice(uid="CED014K2AA", tag="ED-S-VANITY-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(5), ft(25, 11.625)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     position=pt(ft(5), ft(26, 1.625)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED015K1AA", tag="ED-S-LANDING-LT", kind=DeviceKind.LIGHT,
                      position=pt(m(2.44371), m(7.41198)), type_ref="ED-T-LT-CAN3", circuit="CKT-LT-UPPER",

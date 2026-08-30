@@ -229,18 +229,20 @@ def test_a_squash_block_is_not_bought_a_post_base(catlin_model_ro) -> None:
 def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> None:
     """Simpson ship the ABU without the 5/8" bolt its published capacity is taken through.
 
-    Ten of catlin's twelve bases land on concrete — four breezeway piers, four sunken-garden
-    wall tops, two on the basement slab — and each needs one cast-in anchor.
+    Eleven of catlin's twelve bases land on concrete — four breezeway piers, four
+    sunken-garden wall tops, two on the basement slab, and since 2026-08-29 PT-SG-BF2 on
+    PT-SG-FCOL's top — and each needs one cast-in anchor. Only PT-SG-BR2 is left standing on
+    framing.
     """
     from typehaus.takeoff.uplift_joints import post_base_anchor_rows
 
     row = post_base_anchor_rows(catlin_model_ro, RULES)[0]
     assert row["part_number"] == "AB-058-10-SS"
-    assert row["count"] == 10
+    assert row["count"] == 11
 
 
 def test_a_base_standing_on_framing_is_not_bought_a_cast_in_bolt(catlin_model_ro) -> None:
-    """PT-SG-BR2/BF2 stand on FS-SG-PORCH — a deck, not a pour.
+    """PT-SG-BR2 stands on FS-SG-PORCH — a deck, not a pour.
 
     This is the reason the rule is a derivation over joints and not a
     ``StructuralHardware.requires_role`` on the base: that field is a flat property of the
@@ -255,8 +257,10 @@ def test_a_base_standing_on_framing_is_not_bought_a_cast_in_bolt(catlin_model_ro
     from typehaus.takeoff.uplift_joints import post_base_anchor_rows
 
     basis = post_base_anchor_rows(catlin_model_ro, RULES)[0]["basis"]
-    for on_framing in ("PT-SG-BR2", "PT-SG-BF2"):
-        assert on_framing not in basis, f"{on_framing} stands on the porch deck"
+    assert "PT-SG-BR2" not in basis, "PT-SG-BR2 stands on the porch deck"
+    # Its opposite number left this test on 2026-08-29: PT-SG-BF2 bears on PT-SG-FCOL, a
+    # cast column, so it DOES want the cast-in bolt and is counted above.
+    assert "PT-SG-BF2" in basis, "PT-SG-BF2 bears on a cast column"
     for pier in ("PR-BW-1", "PR-BW-2", "PR-BW-3", "PR-BW-4"):
         assert pier not in basis, f"{pier} is a cast pier, not a based post"
 
@@ -273,13 +277,26 @@ def test_authored_post_beam_straps_are_not_derived_a_second_time(catlin_model_ro
     assert row["part_number"] == "KBS1Z"
 
 
-def test_a_floor_system_named_by_an_authored_tie_is_left_alone(catlin_model_ro,
-                                                               connections) -> None:
-    """``CN-SG-TIE-BR2`` names ``FS-SG-PORCH``, so the plan owns that floor's uplift."""
+def test_a_tie_at_a_beam_s_own_bearing_does_not_stand_down_the_joists_above_it(
+        catlin_model_ro, connections) -> None:
+    """The authored-connector hand-off is PAIRWISE at a support, not tag-wide (2026-08-29).
+
+    ``CN-SG-TIE-COL`` and ``CN-SG-TIE-FCOL`` hold the porch's four beams down to the two cast
+    columns UNDER them. That says nothing about the 32 joists bearing on top, and until this
+    was fixed a tag-wide reading stood the derived rule down at all four supports — so the
+    porch bought no uplift hardware at all and ``structural.uplift_load_path`` reported a
+    break in the load path with the hardware for a different joint as its reason. It was
+    latent only because the front pair was flush-framed and ``hangers.py`` billed those ends.
+
+    The coarse reading is still right one level up: a tie naming the FLOOR is the plan saying
+    it owns that deck's uplift, and nothing here changes that.
+    """
     porch = next(f for f in catlin_model_ro.floors if f.tag == "FS-SG-PORCH")
     porch_supports = {"BM-SG-FRW", "BM-SG-FRE", "BM-SG-BKW", "BM-SG-BKE"}
     assert [m for m in porch.members if m.category == "joist"]
-    assert not [c for c in connections if c.support_tag in porch_supports]
+    tied = [c for c in connections if c.support_tag in porch_supports]
+    assert tied, "the porch joists bear on their beams and must be tied"
+    assert {c.assembly_tag for c in tied} == {"FS-SG-PORCH"}
 
 
 # --- rule 4: lateral tie plates -------------------------------------------------------

@@ -28,12 +28,33 @@ from typehaus.model import (
 
 REFERENCE = "Residential planning allowance; final fixture selection by owner."
 
-# IRC P2705.1's minimum is measured independently of the bowl: 15" from the
-# water-closet centreline to each side and 21" clear in front.  Keeping this as
-# a separate polygon means a product can use its actual manufactured footprint
-# instead of pretending that the code envelope is the fixture's size.
+# The code envelope is measured independently of the bowl: 15" from the water-closet
+# centreline to each side and 24" clear in front.  Keeping this as a separate polygon means
+# a product can use its actual manufactured footprint instead of pretending that the code
+# envelope is the fixture's size.
+#
+# ** THE FRONT DIMENSION IS 24", NOT IRC P2705.1's 21", AND IN MINNESOTA THAT IS NOT A
+# CHOICE. ** It read 21" until 2026-08-29. The chain: Minn. R. 1309.0010 subp. 3.D deletes
+# IRC chapters 25-33 outright (P2904 is the only survivor), and Minn. R. 1309.0307 replaces
+# R307.1 with one sentence — "Plumbing fixtures shall be installed in accordance with
+# Minnesota Rules, chapter 4714". 4714.0050 adopts the 2018 UPC, and chapter 4714 contains
+# no amendment to section 402 (its Chapter 4 parts are .0405 and up; there is no 4714.0402),
+# so UPC 402.5 stands unamended: "No water closet ... shall be set closer than fifteen (15)
+# inches from its center to any side wall or obstruction ... The clear space in front of any
+# water closet or bidet shall be not less than twenty-four (24) inches." Anoka's and
+# Farmington's residential bathroom handouts both print 15"/24" and cite 402.5. The 21"
+# figure is IRC's, and the 21" *dwelling-unit exception* people cite for it is a Washington
+# state amendment, not a Minnesota one.
+#
+# The side dimension is 15" in both codes and does not move. UPC's other number, 30", is
+# centre-to-centre between two adjacent similar fixtures, NOT a compartment width — the 30"
+# alcove this polygon draws is the 15"+15" restated, which is the same in either code.
+#
+# Cite as UPC 402.5, as adopted by Minn. R. 4714.0050. ``code_profile`` is what gates this
+# zone: a house that sets no ``active_code_profile`` has it dropped in
+# ``resolve/placeables.py::_resolved_clearance_zones`` and is graded against nothing.
 WATER_CLOSET_SIDE_CLEARANCE = ft(1, 3)
-WATER_CLOSET_FRONT_CLEARANCE = ft(1, 9)
+WATER_CLOSET_FRONT_CLEARANCE = ft(2)
 WATER_CLOSET_CODE_PROFILE = "MN/IRC"
 
 
@@ -48,7 +69,8 @@ def _water_closet_required_clearance(depth) -> ClearanceZone:
             pt(m(half_width), m(half_depth)), pt(m(-half_width), m(half_depth)),
         )),
         purpose="water-closet clearance", policy=ClearancePolicy.REQUIRED,
-        source="MN/IRC: 30 in wide clearance and 21 in clear in front of water closet",
+        source="UPC 402.5 (Minn. R. 4714.0050): 15 in from the centreline to any side "
+               "wall or obstruction, 24 in clear in front of the water closet",
         code_profile=WATER_CLOSET_CODE_PROFILE,
     )
 

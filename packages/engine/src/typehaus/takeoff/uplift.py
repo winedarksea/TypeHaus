@@ -50,6 +50,7 @@ from typehaus.takeoff.hardware_catalog import (
 from typehaus.takeoff.hardware_config import FT_TO_M, UpliftTieRules
 from typehaus.takeoff.plan_geometry import centerline_endpoints, distance_point_to_segment
 from typehaus.takeoff.uplift_joints import (
+    authored_joints,
     post_base_anchor_rows,
     post_base_rows,
     post_beam_strap_rows,
@@ -221,8 +222,22 @@ def bearing_connections(model: ResolvedModel, rules: UpliftTieRules) -> list:
     """Every rafter/truss-heel/joist end that bears on a declared support."""
     fallback_m = rules.bearing_plan_tolerance_in * M_PER_IN
     grid_m = max(rules.coincident_bearing_tolerance_in, 1e-6) * M_PER_IN
-    covered = tags_covered_by(model, frozenset({ConnectorKind.HURRICANE_TIE,
-                                                ConnectorKind.HOLD_DOWN}))
+    kinds = frozenset({ConnectorKind.HURRICANE_TIE, ConnectorKind.HOLD_DOWN})
+    # The ASSEMBLY hand-off is coarse and should be: a tie naming a roof or a floor is the
+    # plan saying "I own this deck's uplift", and there is nothing to disambiguate.
+    covered = tags_covered_by(model, kinds)
+    # The SUPPORT hand-off is not, and reading it coarsely was a bug (2026-08-29). A support
+    # was skipped whenever ANY authored hurricane tie mentioned it — including a tie at the
+    # far end of that member, holding it down to what IT bears on. The sunken garden's porch
+    # is the case: CN-SG-TIE-COL/-FCOL tie the four porch beams to the two cast columns
+    # UNDER them, which said nothing about the 32 joists bearing on top, yet stood the
+    # derived rule down at all four. That was latent while the front pair was flush-framed
+    # (hangers.py billed those ends instead); when the front beams dropped on 2026-08-29 and
+    # every joist end started bearing, the porch reported a break in the load path with the
+    # hardware for a different joint as the reason. ``authored_joints`` is the pairwise
+    # answer and exists for exactly this distinction — a support stands the rule down only
+    # when one connector names the support and the thing bearing on it TOGETHER.
+    joints = authored_joints(model, kinds)
     elements_by_tag = {element.tag: element
                        for storey in model.plan.storeys
                        for element in model.plan.storey_elements(storey.tag)}
@@ -234,13 +249,14 @@ def bearing_connections(model: ResolvedModel, rules: UpliftTieRules) -> list:
         supports: list = []
         seen: set = set()
         for tag in refs:
-            if tag in covered:
+            if frozenset({tag, resolved.tag}) in joints:
                 continue
             declared = _support(model, tag, fallback_m)
             if declared is None:
                 continue
             for support in _bearing_line(model, declared, rules):
-                if support.tag in seen or support.tag in covered:
+                if (support.tag in seen
+                        or frozenset({support.tag, resolved.tag}) in joints):
                     continue
                 seen.add(support.tag)
                 supports.append(support)

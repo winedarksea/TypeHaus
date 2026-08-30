@@ -236,7 +236,10 @@ def test_the_balcony_blocking_hosts_the_heat_pump_anchors(catlin_model):
     block twice at the same x — double lumber, double butyl, two coincident solids. Sixteen
     blocks here is that bug, which is why the count is asserted and not merely bounded.
 
-    ``FS-SG-PORCH`` must still carry none.
+    ``FS-SG-PORCH`` carries exactly TWO since 2026-08-29 — the squash blocks under
+    PT-SG-BR2, which is the one balcony pillar still bearing through a porch joist. Same
+    ``plies=1`` idiom, and for a related reason: what that joint needs is a bearing host,
+    not a stiffened joist.
     """
     by_tag = {floor.tag: floor for floor in catlin_model.floors}
     deck_blocks = [m for m in by_tag["FS-SG-DECK"].members if m.category == "blocking"]
@@ -245,4 +248,7 @@ def test_the_balcony_blocking_hosts_the_heat_pump_anchors(catlin_model):
     # No two blocks may share a span: that is precisely the double-emit above.
     spans = {(round(m.p0[0], 4), round(m.p0[1], 4), round(m.p1[1], 4)) for m in deck_blocks}
     assert len(spans) == len(deck_blocks), "two blocking members share one span"
-    assert [m for m in by_tag["FS-SG-PORCH"].members if m.category == "blocking"] == []
+    porch_blocks = [m for m in by_tag["FS-SG-PORCH"].members if m.category == "blocking"]
+    assert len(porch_blocks) == 2, len(porch_blocks)
+    assert [m for m in by_tag["FS-SG-PORCH"].members
+            if m.category == "sister_joist"] == [], "plies=1 must sister nothing"

@@ -250,7 +250,11 @@ def test_the_ceiling_channel_length_is_its_field_over_the_spacing(catlin_model) 
     # corner. The channel field is the room's clear face less the stair hole, so the room
     # losing ~20 sf takes ~17 LF of channel with it — derived from the field above, and
     # pinned here so the number cannot drift without someone reading why.
-    assert rc.length_m / 0.3048 == pytest.approx(506.5, abs=2.0)
+    #
+    # 506.5 -> 508.7 on 2026-08-29: W-M-STOS2 moved 2" north with the whole y=26'-6" line
+    # (houses/catlin/plan/fixtures.py has the reason), so the hall band along the living
+    # room's north edge got 2" deeper and the room gained ~2.9 sf of field.
+    assert rc.length_m / 0.3048 == pytest.approx(508.7, abs=2.0)
 
 
 def test_the_ceiling_channel_hangs_below_the_joist_soffit(catlin_model) -> None:

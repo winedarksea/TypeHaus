@@ -25,7 +25,8 @@ MN_2024 = JurisdictionProfile(
         "Habitability, egress and circulation: R305 ceiling height, R310 emergency escape "
         "openings (sleeping rooms and basements), R311.2 egress door width and height, "
         "R311.3 landings at exterior doors, R311.6 hallway width, R311.7 stairways. "
-        "Fall protection: R312.1 guards at stair wells and raised walking surfaces, "
+        "Fall protection: R312.1 guards at stair wells, at raised walking surfaces and "
+        "at the open sides of a flight, "
         "R312.1.3 guard opening limits, R311.7.8 stair handrails, and R312.2 window fall "
         "protection. Glazing: R308.4 safety glazing in hazardous locations. "
         "Fire safety: R302.5/R302.6 garage-to-dwelling separation (gypsum thickness, doors "
@@ -113,6 +114,15 @@ MN_2024 = JurisdictionProfile(
                        ("IRC R311.7", "IRC R311.7.5.1")),
         PermitItemSpec("Guards at stair-well openings", ("code.R312_1_guard",),
                        ("IRC R312.1",)),
+        # The well rule above grades the *opening's* four edges against the deck that hosts
+        # it. A flight's own side belongs to no deck ring, so it was the one raised walking
+        # surface in the model with no rule on it — see stair_guards.py.
+        # Blocking, like the well rule it sits beside and unlike the raised-edge rule below:
+        # this is the same fall off the same stairway, and a reviewer who would hold a permit
+        # for an unguarded well would hold it for an unguarded flight.
+        PermitItemSpec("Guards at the open side of a stair",
+                       ("code.R312_1_1_stair_open_side",),
+                       ("IRC R312.1.1", "IRC R312.1.2")),
         # The stair-well rule above and structural.deck_guard covered two shapes of the same
         # requirement; every other raised edge went unmeasured.
         PermitItemSpec("Guards at raised walking surfaces", ("code.R312_1_guard_height",),

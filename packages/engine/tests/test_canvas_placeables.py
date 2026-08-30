@@ -70,7 +70,12 @@ from _helpers import CATLIN, copy_house
 ))
 def test_water_closet_fixture_size_is_separate_from_required_code_clearance(
         fixture_type, expected_depth_inches: float) -> None:
-    """A real bowl stays small; its code envelope is a distinct 30" by depth+21" polygon."""
+    """A real bowl stays small; its code envelope is a distinct 30" by depth+24" polygon.
+
+    24", not the 21" this asserted until 2026-08-29: Minn. R. 1309.0010 subp. 3.D deletes
+    the IRC chapter P2705.1 lives in and 1309.0307 sends fixtures to ch. 4714, which adopts
+    UPC 402.5 unamended. See ``library/placeables/fixtures.py`` for the citation trail.
+    """
     assert tuple(dimension.inches for dimension in fixture_type.footprint) == pytest.approx(
         (20 if fixture_type is TOILET else 15, expected_depth_inches))
     zone = fixture_type.clearances[0]
@@ -80,8 +85,8 @@ def test_water_closet_fixture_size_is_separate_from_required_code_clearance(
         coordinate.inches for point in zone.footprint.points for coordinate in (point.x, point.y)
     )
     assert actual_inches == pytest.approx((
-            -15, -(expected_depth_inches / 2 + 21),
-            15, -(expected_depth_inches / 2 + 21),
+            -15, -(expected_depth_inches / 2 + 24),
+            15, -(expected_depth_inches / 2 + 24),
             15, expected_depth_inches / 2,
             -15, expected_depth_inches / 2,
         ))

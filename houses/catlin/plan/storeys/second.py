@@ -71,7 +71,7 @@ NODES = [
     Node(uid="CSN009AAAA", tag="N-S-N1", position=pt(ft(18), ft(36))),
     Node(uid="CSN010AAAA", tag="N-S-N2", position=pt(ft(10), ft(36))),
     Node(uid="CSN011AAAA", tag="N-S-NW", position=pt(ft(0), ft(36))),
-    Node(uid="CSN012AAAA", tag="N-S-W1", position=pt(ft(0), ft(26, 4))),
+    Node(uid="CSN012AAAA", tag="N-S-W1", position=pt(ft(0), ft(26, 6))),
     Node(uid="CSN013AAAA", tag="N-S-W2", position=pt(ft(0), ft(22, 4))),
     Node(uid="CSN014AAAA", tag="N-S-W3", position=pt(ft(0), ft(9))),
     # Center line ties
@@ -97,9 +97,9 @@ NODES = [
     Node(uid="CSN032AAAA", tag="N-S-D4", position=pt(ft(9, 7.5), ft(22, 4))),
     # Vanity alcove (source 5.873 / 26.374)
     Node(uid="CSN033AAAA", tag="N-S-V1", position=pt(ft(5, 10.5), ft(22, 4))),
-    Node(uid="CSN034AAAA", tag="N-S-V2", position=pt(ft(5, 10.5), ft(26, 4))),
+    Node(uid="CSN034AAAA", tag="N-S-V2", position=pt(ft(5, 10.5), ft(26, 6))),
     # Stair shaft west line
-    Node(uid="CSN025AAAA", tag="N-S-BA1", position=pt(ft(10), ft(26, 4))),
+    Node(uid="CSN025AAAA", tag="N-S-BA1", position=pt(ft(10), ft(26, 6))),
     # Plain flush split on the east wall (2026-07-28): used to be the mechanical chase's SE
     # corner (N-S-CH3); kept as its own node so W-S-BA-E1B's wall_ref in fixtures.py (the
     # hall-bath lav) doesn't move now that the chase itself has moved to the NW corner.
@@ -576,8 +576,14 @@ OPENINGS = [
     # Restores west daylight to the double-vanity alcove without competing with its two
     # north-wall sinks and mirror lights. Paired exactly with WIN-M-BATH1-W below; the 14"
     # RO fits one stud bay, and the tempered awning shares the facade's 6'-0" head line.
+    # 1'-3" off N-S-W1 since 2026-08-29, the twin of WIN-M-BATH1-W's identical compensation
+    # one storey down: N-S-W1 moved 2" north with the y=26'-6" line, and a `from_node` offset
+    # rides its node. Left at 1'-1" the unit slid 2" north with it and
+    # `structural.window_framing_module` caught it immediately — W-S-W2 lays out from
+    # LL-W-A-W1, so its legal stations are 14" + n×16" and a 2" drift interrupts a stud.
+    # 1'-3" restores y=25'-3" and with it the exact pairing with WIN-M-BATH1-W below.
     Window(uid="RGC7QGVF7Y", tag="WIN-S-VANITY-W", host="W-S-W2", type_ref="WT-1424-T",
-           position=from_node("N-S-W1", ft(1, 1)), sill_height=ft(4)),       # y 24'-4"
+           position=from_node("N-S-W1", ft(1, 3)), sill_height=ft(4)),       # y 24'-4"
     # Study 2's south pair: centres 27'-4" and 32'-8" are stud lines on W-S-S2's grid,
     # STUDY1 stacking exactly over WIN-M-LIV-S1 (STUDY2's partner below, WIN-M-LIV-S2, was
     # deleted 2026-08-24, so STUDY2 no longer columns with anything). Moved 8" west off the old bay centres with the
@@ -739,7 +745,11 @@ ALARMS = [
 # north of the WC and west of the pan are left unheated rather than run a 3"-wide corridor.
 FLOOR_HEAT = [
     FloorHeat(uid="CSH801AAAA", tag="FH-S-BATH1", room_ref="RM-S-BATH1",
-              zone=(pt(ft(0, 5), ft(26, 9)), pt(ft(9, 7), ft(26, 9)),
+              # South edge 26'-11", not the 26'-9" it read until 2026-08-29: W-S-BD-N moved
+              # 2" north with the y=26'-6" line and at 26'-9" the mat would have run 3/8"
+              # under the wall's own bottom plate. The zone keeps its 1 5/8" standoff and
+              # its area is unchanged everywhere else, so the 42.4 ft2 / 510 W below still holds.
+              zone=(pt(ft(0, 5), ft(26, 11)), pt(ft(9, 7), ft(26, 11)),
                     pt(ft(9, 7), ft(29, 9)), pt(ft(7, 11), ft(29, 9)),
                     pt(ft(7, 11), ft(31, 3)), pt(ft(3, 3), ft(31, 3)),
                     pt(ft(3, 3), ft(28, 6)), pt(ft(0, 5), ft(28, 6))),

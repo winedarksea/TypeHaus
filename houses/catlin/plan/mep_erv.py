@@ -415,7 +415,9 @@ DUCTS_ERV_BASEMENT = [
 #   * Two pairs share part of one bay: STUDY and LAUNDRY both ride 20'-8" east of x=4'-8",
 #     and BATH1/VANITY/KITCH all turn on 24'-8". A 14 1/2" clear bay holds two 3" ducts side
 #     by side without argument; nothing in the engine grades duct-against-duct outside a
-#     modeled Soffit, so this note is the only record that it was looked at.
+#     modeled Soffit, so this note is the only record that it was looked at. The STUDY/
+#     LAUNDRY overlap grew on 2026-08-30 — they now share the 20'-8" bay from x=4'-8" to
+#     x=15'-0" rather than parting at x=10'-6" — and it is still two tubes in one bay.
 _PORT_Z = inch(-20)
 _BAY_Z = inch(-10.375)
 
@@ -432,28 +434,23 @@ DUCTS_ERV_LEVEL2 = [
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
             diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="semi_rigid", design_cfm=15),
-    # ** IT ENDS IN A WALL NOW, NOT AT A CEILING GRILLE (2026-08-29). ** REG-M-SUP4 came out
-    # of RM-M-STUDY's ceiling and onto W-M-LS at 5'-0" for the call booth — the argument is
-    # on the register in plan/mep_registers.py, and it is about a 148 cf room's breathing
-    # zone. What that costs here is one extra path point, DU-M-ERV-R-PLANT's idiom exactly:
-    # the plan point repeats and the elevation drops, so the last leg is a pure riser.
+    # ** IT ENDED IN A WALL FOR ONE DAY AND IS A CEILING RUN AGAIN (2026-08-30). ** The
+    # 2026-08-29 version dropped a riser into W-M-LS for a 5'-0" sidewall supply; the owner
+    # paired RM-M-STUDY with a LOW extract instead (DU-M-ERV-R-LAUNDRY below), which is what
+    # makes a ceiling supply work in a 148 cf box, and asked for this one back overhead by
+    # ED-M-STUDY-SPOT. So the riser point and the -60" elevation are gone and the run is
+    # four points again, the shape every other level-2 ceiling radial has.
     #
-    # ** THE EAST LEG STOPS AT x=13'-4", NOT 15'-8", AND THAT IS THE WHOLE TRICK. ** 13'-4"
-    # is the centre of W-M-LS's staggered 5 1/2" cavity, and the bay leg already crossed
-    # over that wall at y=20'-8" on its way east. So the riser drops straight out of the
-    # duct into the cavity below it: no jog across FS-S-WEST's joists, no new crossing, and
-    # the run gets 2'-4" SHORTER than the ceiling terminal it replaces. W-M-LS is
-    # NON-bearing, so the 3" through its doubled top plate needs no R602.6.1 tie strap
-    # either — which the bearing wall on the other side of the room would have.
-    #
-    # -60" is storey-relative like every elevation on this run: the run is filed on
-    # FS-S-WEST and therefore on the `second` storey, whose datum is +10'-0", so -60" is
-    # 5'-0" above the main floor. Getting that frame wrong is SILENT — see the PLANT run's
-    # +102", which is the same field reading the same way for a second-storey terminal.
+    # ** IT RIDES THE 20'-8" BAY 3'-10" FURTHER EAST THAN IT EVER HAS, AND THAT COSTS
+    # NOTHING BECAUSE IT IS THE SAME BAY. ** FS-S-WEST's joist lines are at 8" + n*16", so
+    # the terminal's 20'-8" sits between the joists at 20'-0" and 21'-4" for the whole ride
+    # from x=4'-6" to x=17'-2" — no jog, no crossing, one straight length of semi-rigid.
+    # Stopping short of the joist at 21'-4" is also why the grille cannot sit on the
+    # sconce's own 21'-5" line; the argument is on REG-M-SUP4 in plan/mep_registers.py.
     DuctRun(uid="2ZZ3MF5VAF", tag="DU-M-ERV-R-STUDY", system=DuctSystem.SUPPLY,
             path=(pt(ft(4, 6), ft(34)), pt(ft(4, 6), ft(34)), pt(ft(4, 6), ft(20, 8)),
-                  pt(ft(13, 4), ft(20, 8)), pt(ft(13, 4), ft(20, 8))),
-            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z, inch(-60)),
+                  pt(ft(17, 2), ft(20, 8))),
+            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
             diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="semi_rigid", design_cfm=15),
     DuctRun(uid="K04AT15S97", tag="DU-M-ERV-R-BATH1", system=DuctSystem.EXHAUST,
@@ -490,12 +487,55 @@ DUCTS_ERV_LEVEL2 = [
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
             diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="semi_rigid", design_cfm=20),
+    # ** THE ONE TWO-HEADED RADIAL IN THE HOUSE (2026-08-30), AND THE PORT BUDGET IS WHY.
+    # ** RM-M-STUDY asked for a stale-air pickup. It could not have its own lane:
+    # EQ-M-ERV-MAN-EXH is an EQ-T-ERV-MANIFOLD-10 and all TEN of its ports are spoken for —
+    # BATH1, VANITY, KITCH, BATH2, SUITEBATH, LAUNDRY, MUD, BED1, BED2, PLANT. There is no
+    # -12 in the catalog, and the closet bay these hang in is 39" x 31" already holding a
+    # 24" box and a 34" one, so a second extract manifold is not a thing that fits either.
+    # The owner's own suggestion is the answer: give one radial two heads.
+    #
+    # ** REG-M-RET3 IS NOW A MID-RUN TAP, NOT THE END OF THE LANE. ** It sits on the fourth
+    # vertex and the run carries on past it to RM-M-STUDY. Physically that is a two-port
+    # grille plenum — the standard radial fitting, one spigot to the grille and one through
+    # — not a sheet-metal tee cut into a trunk, so it costs a box and no fabrication.
+    #
+    # ** OF THE THREE PICKUPS THAT COULD HAVE SHARED, THE LAUNDRY IS THE RIGHT ONE, AND THE
+    # REASON IS ACOUSTIC. ** DU-M-ERV-R-BATH2 already dead-ends at (4'-0", 18'-0") and would
+    # have reached the study's wall along the 18'-0" bay with no jog at all — a shorter,
+    # simpler route. It is the wrong one: a shared duct is a crosstalk path in both
+    # directions, and the room at this end of it is a CALL BOOTH. RM-M-BATH2 is occupied and
+    # wants privacy of its own; RM-M-LAUNDRY is a 4'-3" closet behind a door, unoccupied,
+    # and taking a 5 cfm trickle. Fifteen feet of 3" semi-rigid and four bends to a laundry
+    # closet is the cheapest neighbour this booth could have been given.
+    #
+    # ** THE FLOW IS WHAT CAPS THE STUDY AT 10 cfm. ** 5 + 10 = 15 cfm on the shared length,
+    # ~25 m3/h, comfortably inside a 75 mm tube's ~30 m3/h. The room is 15 cfm supply / 10
+    # extract on purpose (booth stays positive — see REG-M-RET-STUDY), but the headroom to
+    # take it to a balanced 15/15 later is only about 2 cfm, not 5. Anything past that is a
+    # second lane, and there is no port for one.
+    #
+    # ** AND IT IS ALREADY AT THE SMALLEST SIZE THERE IS HERE. ** The owner asked whether a
+    # small room could take a smaller duct: every radial in this house is one 75 mm SKU
+    # already. The step below it (51 mm) would put 10 cfm at ~450 fpm in a tube ten inches
+    # from a seated occupant's feet, against ~200 fpm at 75 mm — in the one room built to be
+    # quiet, downsizing is the expensive direction.
+    #
+    # Route: east along the 20'-8" bay to the laundry head, on east to x=15'-0", SOUTH
+    # across the joists at 20'-0" and 18'-8" — legal and graded, FS-S-WEST is open-web floor
+    # truss with an 8 7/8" chord-to-chord opening — then east along the 18'-0" bay, which is
+    # a bay centre AND sits directly over W-M-CLN2's staggered cavity, so the last point is
+    # a pure riser into the wall. x=15'-0" for the crossing is 3'-0" clear of the trusses'
+    # east bearing at W-M-C2/C3, well out of the end panels; -108" is storey-relative on the
+    # `second` datum (+10'-0"), i.e. 12" above the main floor.
     DuctRun(uid="ANSKB7EGDH", tag="DU-M-ERV-R-LAUNDRY", system=DuctSystem.RETURN,
             path=(pt(ft(4, 8), ft(35)), pt(ft(4, 8), ft(35)), pt(ft(4, 8), ft(20, 8)),
-                  pt(ft(10, 6), ft(20, 8))),
-            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
+                  pt(ft(10, 6), ft(20, 8)), pt(ft(15), ft(20, 8)), pt(ft(15), ft(18)),
+                  pt(ft(16, 6), ft(18)), pt(ft(16, 6), ft(18))),
+            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z, _BAY_Z, _BAY_Z, _BAY_Z,
+                        inch(-108)),
             diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="semi_rigid", design_cfm=5),
+            material="semi_rigid", design_cfm=15),
     DuctRun(uid="YFDV1TGN1W", tag="DU-M-ERV-R-MUD", system=DuctSystem.RETURN,
             path=(pt(ft(5), ft(35)), pt(ft(5), ft(35)), pt(ft(5), ft(31, 4)),
                   pt(ft(4, 0.4), ft(31, 4))),

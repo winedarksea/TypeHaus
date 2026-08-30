@@ -66,9 +66,15 @@ SECOND_LINES = (
     ("N-S-D3", "y", 15, 11, 15.909),
     ("N-S-D4", "y", 22, 4, 22.306),
     ("N-S-W2", "y", 22, 4, 22.306),
-    # Vanity alcove.
+    # Vanity alcove. N-S-V2's line went 26'-4" -> 26'-6" on 2026-08-29, with N-S-W1,
+    # N-S-BA1 and their three main-storey twins: the whole y=26'-4" line moved 2" north so
+    # RM-M-BATH1 one storey down could make UPC 402.5's 24" in front of its water closet
+    # (houses/catlin/plan/fixtures.py). This is the same class of trade as N-S-B2/B3/E2/E3
+    # above — a code dimension outranking an interior partition line — and it is cheaper
+    # than those were: 26'-6" is 1.5" off the survey's 26.374', still inside the default 2"
+    # band, so it needs no override.
     ("N-S-V1", "x", 5, 10.5, 5.873),
-    ("N-S-V2", "y", 26, 4, 26.374),
+    ("N-S-V2", "y", 26, 6, 26.374),
     # North-centre closet. (The hall-bath chase is checked separately: the source gives it
     # as a void, not as centrelines.)
     ("N-S-C3D", "y", 30, 10, 30.853),
@@ -295,9 +301,20 @@ def test_the_survey_rooms_all_exist(catlin_plan):
 
     # Source labels, for reference: our clear faces are inset by the gwb only while the
     # survey measures to its own 4 1/4"/6 3/4" wall faces, so ours read uniformly ~8% high.
+    # A row may carry its own ceiling where we have deliberately left the survey behind.
     area_sf = {room.tag: room.area_m2 / 0.09290304 for room in model.rooms}
-    for tag, source in (("RM-S-BED1", 114.2), ("RM-S-BED2", 114.2), ("RM-S-BED3", 114.2),
-                        ("RM-S-SUITEBATH", 46.01), ("RM-S-CLOSET", 22.05),
-                        ("RM-S-VANITY", 18.23), ("RM-S-BATH1", 80.73),
-                        ("RM-S-PLANT", 146.40), ("RM-S-STUDY2", 146.42)):
-        assert source <= area_sf[tag] <= source * 1.25, (tag, area_sf[tag])
+    for tag, source, *ceiling in (("RM-S-BED1", 114.2), ("RM-S-BED2", 114.2),
+                                  ("RM-S-BED3", 114.2),
+                                  ("RM-S-SUITEBATH", 46.01), ("RM-S-CLOSET", 22.05),
+                                  # 1.30, not the default 1.25: W-S-BD-N moved 2" north on
+                                  # 2026-08-29 with the whole y=26'-6" line, and this alcove
+                                  # is the room that GAINED the 2" (RM-S-BATH1 on the other
+                                  # face lost it and is still well inside its band). At
+                                  # 18.23 sf it is the smallest room on the list, so the
+                                  # clear-face oversizing this whole band exists to absorb
+                                  # already ate most of it before the move.
+                                  ("RM-S-VANITY", 18.23, 1.30),
+                                  ("RM-S-BATH1", 80.73),
+                                  ("RM-S-PLANT", 146.40), ("RM-S-STUDY2", 146.42)):
+        limit = source * (ceiling[0] if ceiling else 1.25)
+        assert source <= area_sf[tag] <= limit, (tag, area_sf[tag])

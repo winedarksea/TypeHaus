@@ -85,7 +85,7 @@ VENT_BRANCHES_SECOND = [
     # Hall-bath takeoff on W-S-BD-N (y=26'-4") -> west to the chase line -> north to the
     # chase.
     PipeRun(uid="CSP901AAAA", tag="PR-S-BATH1-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(9, 8.4), ft(31)), pt(ft(5), ft(26, 4)), pt(ft(1), ft(26, 4)),
+            path=(pt(ft(9, 8.4), ft(31)), pt(ft(5), ft(26, 6)), pt(ft(1), ft(26, 6)),
                   pt(ft(1), ft(34, 6))),
             diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 4),
             serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",

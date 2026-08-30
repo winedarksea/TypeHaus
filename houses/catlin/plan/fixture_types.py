@@ -124,4 +124,163 @@ BATH2_VANITY_54 = FixtureType(
            "type exists for; a wider single-bowl unit will not fit the west wall.",
 )
 
-FIXTURE_TYPES = (KOHLER_UNDERSCORE_6036, BATH2_VANITY_54)
+# ---------------------------------------------------------------------------
+# THE OTHER FIVE BATHROOMS' VANITIES (2026-08-30)
+# ---------------------------------------------------------------------------
+#
+# ** EVERY OTHER BATHROOM IN THIS HOUSE HAD A BASIN AND NO CABINET. ** The library's
+# ``FX-LAV-24`` and ``FX-LAV-COMPACT`` are bare bowls -- a 24"x20" and an 18"x14" footprint
+# with no carcass, no doors and nowhere to put anything. Six instances of them stood in five
+# bathrooms. These five types replace them with real cabinets, sized to the run each room
+# actually has rather than to a catalogue.
+#
+# ** THE TAG SUFFIX IS THE DEPTH, AND IT IS LOAD-BEARING. ** ``-SINGLE`` is 21" deep, the
+# cabinet-line standard (Menards Quality One, KraftMaid, Diamond NOW are all 21" nominal
+# with a 22" top). ``-SHALLOW`` is 18" deep and is NOT a premium product: the cheap big-box
+# combos -- the ones that arrive boxed with the top and bowl already on them -- measure
+# 18.6"-18.75" deep, so 18" is what is on the pallet. Three of these rooms cannot take 21"
+# and lose nothing by it. (``FX-VANITY-54-SINGLE`` above predates the suffix convention and
+# is 54" x 21"; it reads correctly under it.)
+#
+# ** WIDTHS ARE THE CHEAP STOCK LADDER: 24 / 30 / 36 / 48 / 60. ** Those five are stocked
+# by every big-box and every builder cabinet line, assembled, no lead time. 18", 42", 54"
+# and 66" are the one-SKU-or-special-order band, and 21"/27"/33" exist only in semi-custom
+# 3"-increment lines. Widening a room's vanity past its stock size costs more than the
+# storage is worth, so where a wall gave an awkward number the width was rounded DOWN to
+# the ladder rather than made to fit.
+#
+# ** FRONT CLEARANCE IS 21", AND IN MINNESOTA THAT NEEDS SAYING. ** Minnesota does not use
+# the IRC's plumbing chapters: MN Rules ch. 1309 adopts the 2018 IRC but omits Chapters
+# 25-33, and plumbing is ch. 4714, which incorporates the 2018 UPC. UPC 402.5's base rule is
+# 24" clear in front -- but it names only water closets and bidets, and its Exception 1 reads
+# "the clear space in front of a water closet, LAVATORY or bidet in dwelling units and
+# sleeping units shall be not less than 21 inches." This is a dwelling unit, so a lavatory
+# here is a 21" fixture and a water closet is a 24" one. The zones below are 21" and the
+# water closets were checked separately at 24".
+#
+# ** THE ZONES RESOLVE AS *RECOMMENDED*, WHICH IS NOT WHAT A READER EXPECTS. **
+# ``front_zone`` builds a zone at the default policy, and that default is RECOMMENDED, so an
+# encroachment here reports WARN/UNKNOWN rather than FAIL. That is why these were also
+# checked by hand against the walls' own layer polygons. Note that the water-closet zones in
+# this house are inert entirely (they carry a ``code_profile`` and the house sets no
+# ``active_code_profile``), so NOTHING in the engine is enforcing the 15"/24" bands the
+# placements below were designed around -- they are held by arithmetic and by the tests in
+# ``test_catlin_bathroom_vanities.py``, not by a check.
+#
+# ** STORAGE IS DOORS PLUS A SHELF, NOT DRAWERS, AND THAT IS A COST DECISION. ** At equal
+# width a drawer base runs about 1.5x a door base (Home Decorators Cabinetry, 21" wide:
+# sink base VSB2121L $551.61 against drawer base VBD2121 $818.48 -- +$267 on one cabinet).
+# Under a sink the top drawer is a false front anyway, because the trap is in the way, so
+# the premium buys even less there than it does in a kitchen. Each of these carries a
+# full-depth adjustable interior shelf instead (the ``SB-*-VAN`` banks in plan/millwork.py,
+# cut from the owner's own oak), which roughly doubles usable volume for the price of a
+# board. Only the 48" hall-bath unit gets a drawer bank, because it is the one wall wide
+# enough to hold a 30" sink base AND an 18" bank without giving up the sink base.
+
+# RM-M-BATH1, the small main bath: 62" x 42" between finish faces, with a wall-hung water
+# closet already eating the west half of the north wall. 24" is what is left between that
+# bowl's 15" side band (x=41.41") and the east wall's face (x=68.62") -- 27.21", so a 24"
+# cabinet fits with 3.2" to spare and a 30" one does not. 18" deep is forced: at 21" the
+# 21" front zone would reach y=316.39" against a south wall face at 313.63".
+VANITY_24_SHALLOW = FixtureType(
+    tag="FX-VANITY-24-SHALLOW",
+    name='Vanity, 24" single basin, shallow',
+    footprint=(inch(24), inch(18)),
+    height=inch(41.5),
+    plan_symbol="vanity",
+    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
+    clearances=(front_zone(inch(24), inch(18), inch(21), "lavatory front clearance"),),
+    source='Small-bath vanity, owner selection 2026-08-30. 24" x 18" carcass, 25" x 19" '
+           'cultured-marble top with an integral single bowl, finished counter 36" '
+           '(comfort height; NKBA Bathroom Planning Guideline 7 allows 32"-43"). One sink '
+           'base, two doors, one full-depth adjustable shelf (SB-M-BATH1-VAN). This is the '
+           'big-box combo tier -- Glacier Bay GB24P2 class, 25" x 18.6", cabinet and top '
+           'boxed together for roughly the price of the top alone -- which is why 18" is '
+           'the cheap depth here and not a compromise. Replaces an 18" x 14" wall-hung '
+           'basin that had no cabinet at all.',
+)
+
+# RM-S-VANITY, the double-vanity alcove off the second-storey landing, and RM-S-SUITEBATH's
+# west half. 30" is the stock size that fits both. Shallow because the alcove is only 40.62"
+# deep: at 18" the front zone stops at y=273.62" against a north face at y=272.0", and at
+# 21" it would overrun by 1.38".
+VANITY_30_SHALLOW = FixtureType(
+    tag="FX-VANITY-30-SHALLOW",
+    name='Vanity, 30" single basin, shallow',
+    footprint=(inch(30), inch(18)),
+    height=inch(41.5),
+    plan_symbol="vanity",
+    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
+    clearances=(front_zone(inch(30), inch(18), inch(21), "lavatory front clearance"),),
+    source='Vanity, owner selection 2026-08-30. 30" x 18" carcass, 31" x 19" '
+           'cultured-marble top with an integral single bowl, finished counter 36". One '
+           'sink base, two doors, one full-depth adjustable shelf. TWO of these stand side '
+           'by side in RM-S-VANITY under one 61" double top -- which is how a 60" double '
+           'vanity is actually built and bought, and it keeps two drains, two traps and '
+           'two lavatories in the fixture schedule rather than collapsing them into one.',
+)
+
+# RM-S-SUITEBATH's south wall. 31.76" between the water closet's 15" side band (x=149.81")
+# and the tub-shower's west face (x=181.57"), so 30" is the largest stock width that fits.
+# The room is 71" deep, so this one keeps the standard 21".
+VANITY_30_SINGLE = FixtureType(
+    tag="FX-VANITY-30-SINGLE",
+    name='Vanity, 30" single basin',
+    footprint=(inch(30), inch(21)),
+    height=inch(41.5),
+    plan_symbol="vanity",
+    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
+    clearances=(front_zone(inch(30), inch(21), inch(21), "lavatory front clearance"),),
+    source='Primary-suite bath vanity, owner selection 2026-08-30. 30" x 21" carcass '
+           '(Menards Quality One VDB3021 / KraftMaid vanity sink base class), 31" x 22" '
+           'cultured-marble top with an integral single bowl, finished counter 36". One '
+           'sink base, two doors, one full-depth adjustable shelf (SB-S-SUITEBATH-VAN).',
+)
+
+# RM-B-BATH (basement, 86.62" x 39.61") and RM-A-STUBATH (attic guest bath). Both have far
+# more wall than 36" -- the constraint in each is elsewhere. In the basement it is
+# D-B-BATH's swing: the door's arc reaches the east wall, and a 21"-deep cabinet is caught
+# by it at every position on that wall while an 18"-deep one clears from the north face on.
+# In the attic the vanity is held east of the west-wall receptacle and west of the shower.
+VANITY_36_SHALLOW = FixtureType(
+    tag="FX-VANITY-36-SHALLOW",
+    name='Vanity, 36" single basin, shallow',
+    footprint=(inch(36), inch(18)),
+    height=inch(41.5),
+    plan_symbol="vanity",
+    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
+    clearances=(front_zone(inch(36), inch(18), inch(21), "lavatory front clearance"),),
+    source='Vanity, owner selection 2026-08-30. 36" x 18" carcass, 37" x 19" '
+           'cultured-marble top with an integral single bowl, finished counter 36". One '
+           'sink base, two doors, one full-depth adjustable shelf. 36" is the widest of '
+           'the three volume stock sizes (24/30/36) and the last one before the price step '
+           'up to 48". Used twice: RM-B-BATH and RM-A-STUBATH.',
+)
+
+# RM-S-BATH1, the second-storey hall bath. The east wall gives 46.5" of usable run -- bounded
+# north by D-S-BATH1's swing arc and south by FURN-S-BATH1-SHELF, the shower's return panel.
+# 48" fits that, but only just and only as a real arc rather than its bounding box: pushed as
+# far north as the swing allows the cabinet runs y 345.75"..393.75", scribing to the shelf
+# with 0.75" to spare. It is the only vanity in the house wide enough to carry a drawer bank
+# without giving up a full-size sink base, so it is the only one that gets one.
+VANITY_48_SINGLE = FixtureType(
+    tag="FX-VANITY-48-SINGLE",
+    name='Vanity, 48" single basin with drawer bank',
+    footprint=(inch(48), inch(21)),
+    height=inch(41.5),
+    plan_symbol="vanity",
+    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
+    clearances=(front_zone(inch(48), inch(21), inch(21), "lavatory front clearance"),),
+    source='Hall-bath vanity, owner selection 2026-08-30. 48" x 21" carcass, 49" x 22" '
+           'cultured-marble top with an integral single bowl, finished counter 36". '
+           'Cabinet breakdown: 30" sink base at the SOUTH end with two doors and one '
+           'full-depth adjustable shelf (SB-S-BATH1-VAN), plus an 18" three-drawer bank at '
+           'the NORTH end. The drawer bank is the ~1.5x-per-inch cabinet in the house and '
+           'is bought here only because 48" leaves room for it beside a full sink base; '
+           'every other bathroom takes doors and a shelf instead.',
+)
+
+FIXTURE_TYPES = (KOHLER_UNDERSCORE_6036, BATH2_VANITY_54,
+                 VANITY_24_SHALLOW, VANITY_30_SHALLOW, VANITY_30_SINGLE,
+                 VANITY_36_SHALLOW, VANITY_48_SINGLE)
+

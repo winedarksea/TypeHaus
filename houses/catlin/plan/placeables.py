@@ -644,9 +644,13 @@ MAIN_PLACEABLES = [
     # that wall was retyped to INT_2X4_STAGGERED_DOUBLE_GWB for the study booth on its far
     # side (storeys/main.py). The retype is centred, so both faces move and this rack — the
     # only main-storey object hosted on the laundry side of either retyped wall — went 3 3/8"
-    # into the studs until it followed.
+    # into the studs until it followed. Then y went +1 5/8" too (5.8566 -> 5.89789) when
+    # W-M-CLN was retyped the same way: this rack runs 24" north-south off W-M-LS and its
+    # SOUTH end was the thing in the way, 1 7/16" inside the closet wall's new laundry face.
+    # One object, two retypes, two different axes — sweep both faces of every wall you
+    # thicken, not just the room you are working in.
     Furniture(uid="XJSV712BWZ", tag="FURN-M-LAUNDRY-RACK", type_ref="FURN-WALL-RACK-24", room="RM-M-LAUNDRY",
-              position=pt(m(3.896525), m(5.8566)), rotation=deg(90),
+              position=pt(m(3.896525), m(5.89789)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
 
     # --- RM-M-STUDY, the call booth (2026-08-29) --------------------------------------
@@ -904,11 +908,15 @@ SECOND_PLACEABLES = [
     # Linen/towel storage in the hall bath: a 72"x24"x96" pantry-closet carcass
     # (CASE-PANTRY-CLOSET-72) on the south wall, the only run RM-S-BATH1 has free (west has
     # the WC + WIN-S-BATH-W, north the shower pan, east the lav/mirror). Backed to the south
-    # wall out of the SW corner, occupying x 0'-0 5/8"..6'-0 5/8", y 26'-4 5/8"..28'-4 5/8":
+    # wall out of the SW corner, occupying x 0'-0 5/8"..6'-0 5/8", y 26'-6 5/8"..28'-6 5/8":
     # short of D-S-BATH1's opening (x=7'-3") and clear of the WC's REQUIRED zone. The 48" it
     # replaced stopped at x 4'-0 5/8".
+    #
+    # y +2" on 2026-08-29: the south wall it backs (W-S-BD-N) moved 2" north with the whole
+    # y=26'-6" line, and at the old y the carcass would have stood 1 5/8" INSIDE the wall.
+    # The 0.37" scribe it always had off that face is preserved.
     Furniture(uid="CSB707AAAA", tag="FURN-S-BATH1-CLOSET", type_ref="CASE-PANTRY-CLOSET-72",
-              room="RM-S-BATH1", position=pt(m(1.09343), m(8.42656)),
+              room="RM-S-BATH1", position=pt(m(1.09343), m(8.47736)),
               rotation=deg(180)),
     # The tub alcove's east return, built as a shelf (2026-08-21). FX-S-BATH1-SH is a
     # flanged 60x30 insert and was standing in two walls, not three: the chase face at
@@ -1041,7 +1049,7 @@ ATTIC_PLACEABLES = [
     Furniture(uid="DAK701AAAA", tag="FURN-A-STUDY-DESK", type_ref="FURN-DESK-48",
               room="RM-A-STUDY", position=pt(m(5.90037), m(0.812811)), rotation=deg(90)),
     Furniture(uid="CAK701AAAA", tag="FURN-A-STUDY-DESK-CHAIR", type_ref="FURN-DESK-CHAIR",
-              room="RM-A-STUDY", position=pt(ft(20, 10), ft(4, 6)), rotation=deg(-90)),
+              room="RM-A-STUDY", position=pt(m(6.14764), m(0.782959)), rotation=deg(-90)),
     Furniture(uid="TAK701AAAA", tag="FURN-A-STUDY-TABLE", type_ref="FURN-DINING-2-36",
               room="RM-A-STUDY", position=pt(m(7.83976), m(0.671138))),
     Furniture(uid="CAK702AAAA", tag="FURN-A-STUDY-CHAIR1", type_ref="FURN-DINING-CHAIR",
@@ -1066,6 +1074,15 @@ ATTIC_PLACEABLES = [
     # cooktop here turns the studio into a second dwelling unit and brings IRC R302.3's
     # two-family separation down on the attic floor and the centre wall. The type carries the
     # same warning and it is written twice on purpose.
+    #
+    # ** x AND ROTATION CORRECTED 2026-08-30; y IS UNCHANGED AND THE PARAGRAPH ABOVE STILL
+    # HOLDS. ** The 24" box was authored on c/l x 17'-0", which puts its east face on 18'-0" —
+    # W-A-C2's AXIS, not its face. It stood 3 3/8" inside the wall it is supposed to lean on,
+    # and nothing grades an appliance against wall geometry. c/l 16'-8 5/8" is 17'-8 5/8" less
+    # half the 24" depth. `rotation` went deg(-90) -> deg(90) for the same reason the bar sink
+    # did (plan/fixtures.py): deg(-90) backs a placeable onto its WEST side, so this one faced
+    # into the wall. The footprint is square, so only the plan symbol and the door swing read
+    # it — but they do read it.
     Appliance(uid="7B10E5QBCF", tag="APPL-A-STUDIO-FRIDGE", type_ref="APPL-BAR-FRIDGE-24",
-              room="RM-A-STUDIO", position=pt(ft(17), ft(13, 6)), rotation=deg(-90)),
+              room="RM-A-STUDIO", position=pt(ft(16, 8.625), ft(13, 6)), rotation=deg(90)),
 ]

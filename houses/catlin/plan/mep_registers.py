@@ -275,50 +275,85 @@ REGISTERS_MAIN = [
             position=pt(ft(9), ft(6)), duct_ref="DU-M-ERV-R-BED",
             type_ref="REG-T-ERV-SUP", design_cfm=15,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
-    # ** RM-M-STUDY'S RETURN PATH IS D-M-STUDY'S UNDERCUT, AND NOTHING MAY CLOSE IT. **
-    # 15 cfm of supply into ~148 cf with no exhaust register; the air leaves under the door.
-    # The room became an acoustically-treated call booth on 2026-08-29 — staggered stud on
-    # two walls, felt on two — and the door was deliberately LEFT AS IT IS for exactly this
-    # reason. A gasket, a sweep or a drop seal added later for the last few STC points would
-    # silently strangle the only outlet this supply has; if one is ever wanted, a transfer
-    # grille or a jump duct has to come with it.
+    # ================== RM-M-STUDY: THE CALL BOOTH'S TWO TERMINALS ==================
     #
-    # ** IT CAME OUT OF THE CEILING AND ONTO THE WALL AT 5'-0" (2026-08-29, owner). ** In a
-    # 148 cf sealed box with one person in it, CO2 is the whole ventilation problem, and 15
-    # cfm dumped at 9'-0" mixes into the room's top and reaches the breathing zone last. A
-    # sidewall terminal at head height delivers it where it is breathed. Draft is not the
-    # objection it would be on a heating register: 15 cfm through this type's 7x7 face is
-    # about 45 fpm, which is under the 50 fpm ASHRAE 55 draught threshold before the jet has
-    # travelled a foot.
+    # ** THE ROOM HAS AN EXTRACT NOW (2026-08-30, owner), AND THAT IS WHAT PUTS THE SUPPLY
+    # BACK IN THE CEILING. ** For one day (2026-08-29) this was a lone 15 cfm supply on
+    # W-M-LS at 5'-0", and the argument for the sidewall was that 15 cfm dumped at 9'-0"
+    # into a 148 cf sealed box mixes into the room's top and reaches the breathing zone
+    # last. That argument was right about the failure and wrong about the fix. **The reason
+    # a lone ceiling supply strands its air at the ceiling is that the only way out was
+    # D-M-STUDY's undercut, four feet below it and across the room.** Give the room a
+    # LOW extract and the ceiling supply has to cross the whole occupied zone to reach it:
+    # the air is pulled down past a seated head rather than left to find its own way. So
+    # the pair below is strictly better than either terminal alone, and the supply goes
+    # back overhead where the owner asked for it, over ED-M-STUDY-SPOT.
     #
-    # ** IT IS ON THE WEST WALL, NOT THE EAST ONE BESIDE ED-M-STUDY-SPOT, AND THAT IS A
-    # DEPARTURE FROM WHAT WAS ASKED FOR. ** The east wall reads better — it is the sliver
-    # the sconce and the switch already share — and it cannot be built:
-    #   * W-M-C3 is BEARING (CATLIN_INT_2X6_BRG). A 3" riser through its doubled top plate
-    #     takes 3" out of 5 1/2", past R602.6.1's half-width limit, so the plate needs a
-    #     steel tie strap on both plies — a detail bought for nothing.
-    #   * Worse, the duct would have to jog 13" NORTH across FS-S-WEST's joists to reach the
-    #     sliver, and it would cross them directly over that bearing line. Boring a joist at
-    #     its bearing end is the one place the hole chart forbids outright.
-    #   * The sliver is 9 15/16" of clear bay inside the room. A 7" grille, a sconce box and
-    #     a switch box do not share it.
-    # W-M-LS costs none of that. It is NON-bearing, its retype gave it a 5 1/2" staggered
-    # cavity, and the existing bay leg of DU-M-ERV-R-STUDY already runs directly over it at
-    # y=20'-8" — the riser drops straight down out of the duct with no jog and no new joist
-    # crossing, and the run gets 2'-4" SHORTER. In a 4-foot room "beside the sconce" and
-    # "opposite the sconce" are three feet apart; the buildability is the part that is not
-    # interchangeable. Nothing opens into RM-M-LAUNDRY on the far side — the riser is soft
-    # semi-rigid inside one leaf's cavity, so the staggered wall's STC 52 is intact.
+    # ** D-M-STUDY'S UNDERCUT IS STILL THE RELIEF PATH AND STILL MAY NOT BE CLOSED. **
+    # 15 cfm in, 10 cfm out: the booth runs +5 cfm POSITIVE, which is what a call booth
+    # wants — nothing is drawn in under the door from the hall, so the staggered studs and
+    # the felt stay the whole acoustic boundary. The 5 cfm leaves under the door. A gasket,
+    # a sweep or a drop seal added later for the last few STC points still needs a transfer
+    # grille or a jump duct to come with it — OR the extract raised to 15 cfm, which is the
+    # cheap version of that conversation and did not exist yesterday. (It is not free: see
+    # the 3" radial's ~17 cfm ceiling on DU-M-ERV-R-LAUNDRY, which this shares.)
     #
-    # x = 13'-8 1/2": the wall's resolved study face is 13'-8", plus half this type's 1"
-    # depth, per the face-position convention in plan/electrical.py. y = 20'-8" is the duct's
-    # own line. `rotation=deg(90)` faces it east into the room, the same way REG-M-XFER-MUD
-    # is turned off W-M-STRW. It lands 5'-0" up, over FURN-M-STUDY-BENCH's west end (seat
-    # 18") and clear of FURN-M-STUDY-DESK (top 29 1/2", and 20" of it is south of here).
+    # -- the supply, back in the ceiling ---------------------------------------------
+    #
+    # (17'-2", 20'-8") at 9'-0". ED-M-STUDY-SPOT is at (17'-6 5/8", 21'-5"), so this is
+    # 4 5/8" west and 9" south of directly-above-the-sconce, three feet over it. **The 9"
+    # is a joist line, not a preference:** FS-S-WEST's bays centre on 8" + n*16", so 20'-8"
+    # is a bay and the sconce's 21'-5" is 1" past the joist at 21'-4". Reaching the sconce's
+    # own line would mean jogging the radial across that joist directly over W-M-C3, which
+    # is the bearing end of the truss — the one place the hole chart forbids outright, and
+    # the same objection that kept the terminal off the east WALL yesterday. The x is as far
+    # east as a 7" grille goes: the face reaches 17'-5 1/2", 3 1/8" clear of W-M-C3's study
+    # face and 3 3/4" clear of its top plate.
     Register(uid="CMRV04AAAA", tag="REG-M-SUP4", kind=DuctSystem.SUPPLY, room="RM-M-STUDY",
-            position=pt(inch(164.5), ft(20, 8)), duct_ref="DU-M-ERV-R-STUDY",
-            type_ref="REG-T-ERV-SUP", design_cfm=15, rotation=deg(90),
-            mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
+            position=pt(ft(17, 2), ft(20, 8)), duct_ref="DU-M-ERV-R-STUDY",
+            type_ref="REG-T-ERV-SUP", design_cfm=15,
+            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+    # -- the extract, low, and NOT on the east wall -----------------------------------
+    #
+    # ** THE OWNER ASKED FOR THE EAST WALL AND THE EAST WALL DOES NOT EXIST. ** Measured off
+    # the resolved layer polygons rather than off the plan's look:
+    #   * W-M-C3's study face runs y 18'-0"..22'-1 5/8" — 4'-1 5/8" of wall;
+    #   * D-M-STUDY's RO takes y 18'-2 3/8"..21'-0 11/16" of it, leaving one 12 15/16"
+    #     sliver at the north end (the sliver ED-M-STUDY-SPOT and ED-M-STUDY-SW share);
+    #   * FURN-M-STUDY-BENCH is 47" wide and runs wall to wall, y 20'-7 7/8"..22'-0 7/8".
+    # The bench covers the sliver to within 3/4". There is no low east wall to cut a grille
+    # into, and freeing one means shortening the bench by 7" and opening a dead pocket in
+    # the corner — a worse trade than moving the grille one wall.
+    #
+    # So it is the SOUTH wall's east end, which is the only low wall this room has left:
+    # FURN-M-STUDY-DESK holds x 13'-8 3/4"..16'-1 3/4", the east wall is door, the north
+    # wall is bench, and the west wall's one gap between desk and bench is 7 1/8" wide. That
+    # leaves x 16'-1 3/4"..17'-8 5/8" — the 18 7/8" pocket you step into — and this sits in
+    # it at 16'-6", 3/4" east of the desk's end.
+    #
+    # ** IT IS BETTER THERE THAN IT WOULD HAVE BEEN ON THE EAST WALL, WHICH IS LUCK. ** The
+    # pocket is the one piece of this room's floor nobody sits at: the occupant sits on the
+    # bench facing south with their feet under the cantilevered desk top, so a floor-level
+    # grille here is not behind a bag, a chair or a foot the way one under the desk would be.
+    #
+    # y = 18'-4 1/2" is W-M-CLN2's resolved study face at 18'-0" plus half this type's 1"
+    # depth (the face-position convention in plan/electrical.py). No rotation: the type's
+    # footprint is already (7" of face, 1" of depth) in x/y, which is a south wall's
+    # orientation — REG-M-SUP4 needed deg(90) yesterday only because W-M-LS runs the other
+    # way. 12" of elevation puts the face 8 1/2"..15 1/2", above a base and below a knee,
+    # inside the last courses of WP-M-STUDY-WAINSCOT: a grille cut into walnut is ordinary
+    # joinery, and the same plate ED-M-STUDY-DATA1 already asks that wainscot for.
+    #
+    # ** THE RISER IS 6" CLEAR OF ED-M-STUDY-RC1'S BOX AND THAT IS DELIBERATE. ** RC1 is at
+    # (17'-0", 32") on this wall, and the radial has to fall the full 8'-2" past its height
+    # to reach 12". W-M-CLN2 is INT_2X4_STAGGERED_DOUBLE_GWB, so the cavity is 5 1/2" deep
+    # and continuous, but a 2 1/8" device box and a 3" duct do not share one 3 1/2" leaf.
+    # 16'-6" puts the drop in the next bay. CD-B-DATA-STUDY rises at 16'-0" on the same wall
+    # and is 6" clear the other way.
+    Register(uid="H6C6RD9NED", tag="REG-M-RET-STUDY", kind=DuctSystem.RETURN, room="RM-M-STUDY",
+            position=pt(ft(16, 6), ft(18, 4.5)), duct_ref="DU-M-ERV-R-LAUNDRY",
+            type_ref="REG-T-ERV-EXH-WALL", design_cfm=10,
+            mount=Mount(kind=MountKind.WALL, elevation=inch(12))),
     # The two baths are EXHAUST at 20 cfm each, like the second storey's — see the note over
     # REGISTERS_SECOND for why the whole wet-room set changed direction on 2026-08-01.
     Register(uid="CMRV05AAAA", tag="REG-M-EXH1", kind=DuctSystem.EXHAUST, room="RM-M-BATH1",
@@ -513,6 +548,9 @@ REGISTERS_ATTIC = [
             # `integrity.placeable_room_mismatch` said so. The riser stays on the axis in the
             # staggered cavity; the offset is the boot crossing the finish.
             position=pt(ft(9, 11.875), ft(19, 4)), duct_ref="DU-A-ERV-R-STUBATH",
-            type_ref="REG-T-ERV-EXH", design_cfm=20,
+            # REG-T-ERV-EXH-WALL, not the ceiling REG-T-ERV-EXH it carried until 2026-08-29:
+            # this is the house's only WALL-mounted extract, and on the ceiling type the
+            # resolver read its 7" face as 7" of projection into the room. See plan/mep_hvac.py.
+            type_ref="REG-T-ERV-EXH-WALL", design_cfm=20,
             mount=Mount(kind=MountKind.WALL, elevation=ft(4, 4))),
 ]
