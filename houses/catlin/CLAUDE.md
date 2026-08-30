@@ -62,8 +62,28 @@ proposing any design change.
   ApplianceType/FurnitureType *catalog*, wired in by `plan/manifest.py`. NOT editable: it
   uses `frozenset(...)`, which the dialect forbids. Type libraries stay non-editable;
   movable instances that reference them live in the editable modules above. **`plan/
-  fixture_types.py` EXISTS again and holds two selections** — `FX-KOHLER-UNDERSCORE-6036`
-  (the drop-in bath) and `FX-VANITY-54-SINGLE` (RM-M-BATH2's vanity), both 2026-08-29. It
+  fixture_types.py` EXISTS again and holds SEVEN selections** — `FX-KOHLER-UNDERSCORE-6036`
+  (the drop-in bath) and `FX-VANITY-54-SINGLE` (RM-M-BATH2's vanity), both 2026-08-29, plus
+  the five vanities that replaced this house's remaining bare lavatories on 2026-08-30:
+  `FX-VANITY-24-SHALLOW` (RM-M-BATH1), `FX-VANITY-30-SHALLOW` (RM-S-VANITY, TWICE — a 60"
+  double alcove is two 30" bases under one 61" top, which is how one is actually built and
+  which keeps two drains and two lavatories in the schedule instead of collapsing them),
+  `FX-VANITY-30-SINGLE` (RM-S-SUITEBATH), `FX-VANITY-36-SHALLOW` (RM-B-BATH) and
+  `FX-VANITY-48-SINGLE` (RM-S-BATH1).
+  **`-SHALLOW` is 18" deep and `-SINGLE` is 21"**, and shallow is not the premium it sounds
+  like: the cheap big-box combos that arrive boxed with their top and bowl already on them
+  are 18.6"-18.75" deep, so 18" is the pallet depth. Widths are the stock ladder
+  (24/30/36/48/60) — 18/42/54 are one-SKU-or-special-order, which is why RM-S-BATH1 got 48"
+  rather than the 42" that a bounding-box reading of its door swing would have forced.
+  **`FX-LAV-24` now prices ZERO instances and the row is kept anyway** (the
+  `glazed-green-brick` convention). **`RM-A-STUBATH` deliberately keeps its
+  `FX-LAV-COMPACT`**: its water closet moved onto the west wall the same day, and the 24"
+  front envelope that creates crosses the only wall a vanity could have used.
+  **The 21" front zone on every vanity type is a design convention, NOT a Minnesota code
+  minimum** — Minn. R. 1309.0010 subp. 3.D deletes IRC chapters 25-33, ch. 4714 adopts the
+  2018 UPC, and UPC 402.5 names only water closets and bidets, so a lavatory has no MN
+  plumbing front clearance at all. (An earlier comment cited a UPC "Exception 1" giving
+  lavatories 21" in dwelling units; that text is a *Washington* amendment.) It
   had been deleted in the `3d3973a` library dedupe, and re-created and deleted once more the
   same week for a bar sink that did not need it; the guest studio's wet bar still uses
   `FX-LAV-COMPACT` (18" x 14"), which is dimensionally exact for a bar bowl and costs no

@@ -225,8 +225,13 @@ def potted_plant(*, leaves: int = 5, pot_ratio: float = 0.30) -> Builder:
 
 
 def slab(*, leg_inset_m: float = 0.06, apron: bool = True,
-         modesty_panel: bool = False) -> Builder:
-    """Rectangular tables and desks: a top, an optional apron, four corner legs."""
+         modesty_panel: bool = False, legs: bool = True) -> Builder:
+    """Rectangular tables and desks: a top, an optional apron, four corner legs.
+
+    ``legs=False`` is for a top that is carried by the WALL — cleats, a ledger, or fold-down
+    brackets — and so has nothing standing on the floor to draw. Without it a wall-hung desk
+    plots four legs it does not have, which reads in plan as floor the room does not have.
+    """
 
     def build(width: float, depth: float, height: float) -> Geometry:
         inset = clamp(leg_inset_m, 0.02, min(width, depth) * 0.18)
@@ -239,7 +244,7 @@ def slab(*, leg_inset_m: float = 0.06, apron: bool = True,
                                 weight=DETAIL_WEIGHT))
             parts.append(box(0, 0, height - top_t - min(0.10, height * 0.14), height - top_t,
                              width - 2 * inset, depth - 2 * inset, "wood-dark"))
-        for sx in (-1, 1):
+        for sx in (-1, 1) if legs else ():
             for sy in (-1, 1):
                 cx = sx * (width / 2 - inset - leg / 2)
                 cy = sy * (depth / 2 - inset - leg / 2)

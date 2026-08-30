@@ -46,7 +46,7 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
 SYMBOL_NAMES = frozenset({
     # furniture
     "sofa", "loveseat", "sectional", "armchair", "dining-chair", "office-chair",
-    "dining-table", "round-table", "coffee-table", "end-table", "desk",
+    "dining-table", "round-table", "coffee-table", "end-table", "desk", "wall-desk",
     "dresser", "chest", "nightstand", "media-console", "bookcase",
     "bed", "tv", "potted-plant", "wall-rack",
     # sauna joinery — benches are fitted to the room, not bought as a set

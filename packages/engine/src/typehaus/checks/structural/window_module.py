@@ -3,51 +3,26 @@
 Split out of ``checks.py`` on 2026-08-28 when the rule stopped being one function: reading
 the *host wall's* own module instead of the house preference brought the RO ladder's own
 arithmetic (:func:`_ro_caps`) with it, and the file was already over the 500-line bound.
+
+The grid arithmetic itself moved out again on 2026-08-30, to ``_stud_grid.py``, when
+``structural.door_framing_module`` needed the same four answers. What stays here is what is
+specific to a WINDOW: :func:`_ro_caps`, the ladder that says how wide a rough opening may be
+before it breaks more than one stud. That ladder must not be shared — see the note at the top
+of ``door_module.py`` for the four catlin doors it would falsely accuse.
 """
 
 from __future__ import annotations
 
 from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.checks.structural._stud_grid import (
+    module_origin,
+    segment_residue_in,
+    structure_framing,
+    wall_module,
+)
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import StructuralRole
-
-
-def _segment_residue_in(wall: object, module_in: float) -> float:
-    """Where a wall segment's stud grid starts, as a residue in inches mod the module.
-
-    The framing solver lays a segment's studs out from **its own start node**
-    (``resolve.framing.stud_module`` measures every opening from 0 = that node), so the set
-    of stations a window may legally occupy on a wall is a property of that node and not of
-    the facade. Two segments are in phase only when their start nodes share this residue; a
-    column between storeys needs the same residue, a mirror pair needs residues summing to
-    0 mod the module. Reporting it turns "this window is 4" off" into the answer: a facade
-    near-miss is almost always an out-of-phase *segment*, which no window move can fix.
-
-    True only while the assembly lays out from the wall — see :func:`_module_origin`, which
-    is what an opt-in ``FramingSpec.layout_origin="line"`` changes and which this check must
-    follow, or it would report legal stations the solver does not frame.
-    """
-    (x0, y0), (x1, y1) = wall.axis  # type: ignore[attr-defined]
-    # Project the start node onto the segment's own dominant axis — the direction the grid
-    # runs — so the residue is comparable between two segments on the same facade.
-    along_m = x0 if abs(x1 - x0) >= abs(y1 - y0) else y0
-    return (along_m / 0.0254) % module_in
-
-
-def _module_origin(ctx, wall, framing, spacing_m: float) -> tuple[float, str]:
-    """``(phase in metres, how to describe it)`` for this wall's stud grid.
-
-    The framing solver's own arithmetic, asked the same question — the check and the framing
-    it checks must never disagree about where the studs are.
-    """
-    from typehaus.resolve.layout_lines import layout_phase, lines_by_wall
-
-    line = lines_by_wall(ctx.model.layout_lines).get(wall.tag)
-    phase = layout_phase(framing, line, wall.tag, spacing_m)
-    if getattr(framing, "layout_origin", "wall-start") != "line" or line is None:
-        return phase, "segment"
-    return phase, line.tag
 
 
 def _ro_caps(rules, module_in: float, stud_in: float) -> tuple[float, float, float]:
@@ -115,12 +90,13 @@ def window_framing_module(ctx: CheckContext) -> list[Finding]:
         if structure is None or ctx.plan.library.resolve_assembly(wall.assembly) is None:
             continue
         assembly = ctx.plan.library.resolve_assembly(wall.assembly)
-        framing = next((layer.framing for layer in assembly.layers
-                        if layer.function is LayerFunction.STRUCTURE), None)
+        framing = structure_framing(assembly)
         if framing is None:
             continue  # concrete / masonry openings do not consume stud bays
-        module_in = (framing.spacing.inches if framing.spacing is not None
-                     else rules.module_in)
+        # The module the wall is FRAMED on, which halves on a staggered partition — see
+        # _stud_grid.wall_module. Read straight off ``framing.spacing`` until 2026-08-30,
+        # which disagreed with the solver by a factor of two on every staggered wall.
+        module_in = wall_module(framing, rules.module_in)
         spacing = module_in * 0.0254
         stud_in = member_actual(framing.member)[0]
         unbroken_in, nonbearing_in, bearing_in = _ro_caps(rules, module_in, stud_in)
@@ -128,7 +104,7 @@ def window_framing_module(ctx: CheckContext) -> list[Finding]:
         width_in = opening.width_m / 0.0254
         # The stud *body*, not just its centreline, decides whether the RO clears the bay,
         # so the analysis needs the wall's own member thickness.
-        phase, origin = _module_origin(ctx, wall, framing, spacing)
+        phase, origin = module_origin(ctx, wall, framing, spacing)
         module = opening_stud_module(opening.center_along_m, opening.width_m, spacing,
                                      stud_in * 0.0254, phase)
         break_note = module.describe()
@@ -158,7 +134,7 @@ def window_framing_module(ctx: CheckContext) -> list[Finding]:
             if width_in <= unbroken_in else "")
         if module.straddles_awkwardly or module.offset_from_ideal_m > tolerance:
             if origin == "segment":
-                residue = _segment_residue_in(wall, module_in)
+                residue = segment_residue_in(wall, module_in)
                 where = (f"its host segment {wall.tag} lays out from a {residue:.1f}\" "
                          f"residue mod {module_in:.0f}\"")
                 hint_tail = ("If the miss is against a window on another segment, move the "

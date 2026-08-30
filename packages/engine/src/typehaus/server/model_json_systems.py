@@ -32,6 +32,7 @@ from typehaus.takeoff.lighting import (
     luminaire_schedule,
 )
 from typehaus.takeoff.plumbing import plumbing_takeoff
+from typehaus.takeoff.runs import conduit_schedule
 
 
 def systems_json(
@@ -84,6 +85,12 @@ def systems_json(
             "service_load": (service_load_summary(model)
                              if model.plan.library.circuits else None),
             "conduit": conduit_takeoff(model),
+            # The per-RUN view beside the by-trade-size bill. conduit_takeoff groups power
+            # and takeoff/data.py groups comms, each into a handful of order lines; neither
+            # can answer "what is in this raceway and where does it go", which is what the
+            # 3D inspector asks when a conduit is picked. Lives in takeoff/runs.py — see the
+            # note there on why not takeoff/electrical.py.
+            "conduit_schedule": conduit_schedule(model),
             "devices": electrical_device_takeoff(model),
             "solar": solar_takeoff(model),
             "backup_components": backup_component_rows(model),

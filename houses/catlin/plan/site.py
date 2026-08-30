@@ -179,8 +179,15 @@ SITE = Site(
     utilities=(
         UtilityLine(kind=UtilityKind.SEWER, path=(pt(ft(3), ft(-20)), pt(ft(3), ft(0))),
                     entry=pt(ft(3), ft(0)), depth=ft(5)),
-        UtilityLine(kind=UtilityKind.WATER, path=(pt(ft(5), ft(-20)), pt(ft(5), ft(0))),
-                    entry=pt(ft(5), ft(0)), depth=ft(6)),
+        # ** MOVED TO THE FRONT OF THE LOT (2026-08-30). ** It came in at the REAR — a path
+        # from (5', -20') to a (5', 0') entry on the south basement wall — while this same
+        # file declares the street on the NORTH (SetbackSpec(edge=2, label="FRONT")) and
+        # grade "at the street/north side". A municipal water main does not run behind the
+        # house, and that single wrong-side placeholder was the entire reason the service
+        # lateral crossed the whole basement to reach the garage hydrant. It now enters
+        # from the front and terminates at the hydrant, which is the first thing it reaches.
+        UtilityLine(kind=UtilityKind.WATER, path=(pt(ft(5), ft(72)), pt(ft(5), ft(59, 6))),
+                    entry=pt(ft(5), ft(59, 6)), depth=ft(6)),
         UtilityLine(kind=UtilityKind.POWER, path=(pt(ft(-32), ft(18)), pt(ft(0), ft(18))),
                     entry=pt(ft(0), ft(18)), depth=ft(3)),
     ),

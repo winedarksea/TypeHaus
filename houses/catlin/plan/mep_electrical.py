@@ -293,8 +293,12 @@ SECOND_DEVICES = [
     ElectricalDevice(uid="CED006K2AA", tag="ED-S-BED1-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(22, 2.375), ft(13, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
+    # y follows W-S-BD1's south face, which came 1/2" into this room on 2026-08-30 when the
+    # wall became INT_2X4_RC (plan/storeys/second.py) — the resilient channel goes on the
+    # BED1 side. The box's back sits ON the face and the box is 2" deep, so the authored y is
+    # the face LESS 1": 17'-5 1/8" - 1" = 17'-4 1/8". It was 17'-4 5/8" against the old face.
     ElectricalDevice(uid="CED006K3AA", tag="ED-S-BED1-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(25, 11), ft(17, 4.625)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
+                     position=pt(ft(25, 11), ft(17, 4.125)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="CED007K1AA", tag="ED-S-BED2-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(25), ft(20, 6)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
@@ -303,8 +307,9 @@ SECOND_DEVICES = [
     ElectricalDevice(uid="CED007K2AA", tag="ED-S-BED2-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(22, 2.375), ft(22, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
+    # Same 1/2" as ED-S-BED1-RC1, on W-S-BD2's south face, for the same reason.
     ElectricalDevice(uid="CED007K3AA", tag="ED-S-BED2-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(25, 10), ft(26, 4.625)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
+                     position=pt(ft(25, 10), ft(26, 4.125)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="CED008K1AA", tag="ED-S-BED3-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(25), ft(29, 6)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",

@@ -58,12 +58,23 @@ a seasonal inconvenience beats a permanent illicit discharge.
 
 ## Freeze protection
 
-The hydrant's shutoff valve sits **6'-0" below grade** — `PR-G-HYDRANT-CW` runs at −6'-0"
-absolute for its whole 60'-0" length, from the house water entry at (5', 0') straight north
-to the hydrant. That is a different number from `_FROST` (42") in `params/foundations.py`, and the
-two are consistent rather than in conflict: 42" is the *footing* frost depth the ICF stem is
-set to, and 6'-0" is this fixture's own bury, 2'-6" below the stem bottom and well clear of
-the frost line.
+The hydrant's shutoff valve sits **6'-0" below grade** — `PR-G-HYDRANT-CW` runs at −8'-10"
+absolute (6'-0" under the −2'-10" grade) for its whole 24'-0" length, from the house's north
+foundation at (5', 35'-6") straight north to the hydrant. That is a different number from
+`_FROST` (42") in `params/foundations.py`, and the two are consistent rather than in conflict:
+42" is the *footing* frost depth the ICF stem is set to, and 6'-0" is this fixture's own bury,
+2'-6" below the stem bottom and well clear of the frost line.
+
+**It was 60'-0" long, and 36 feet of that was indoors (fixed 2026-08-30).** The run started
+at (5', 0') — the *south* basement wall — because `plan/site.py` put the water service
+entry on the rear of the lot, while that same file declares the street and the FRONT
+setback on the north. A municipal main does not run behind the house. The placeholder was
+simply on the wrong side, and everything downstream was built to accommodate it: two
+basement wall sleeves instead of one, and 36'-0" of 3/4" PEX at −8'-10" crossing
+RM-B-WORKSHOP and RM-B-FURNACE — which, with the basement slab topping out at −9'-1 7/16",
+was not buried at all but **lying 3 7/16" above the finished basement floor.** Moving the
+entry to the front deletes the crossing: the hydrant is now the first thing the service
+reaches, and the house taps the lateral where it arrives at the foundation.
 
 The run is deliberately **not** routed up into the garage and back down to the hydrant. A
 supply line freezes at its high point, not at its ends, so a run that surfaces anywhere along
@@ -114,12 +125,18 @@ and the binding constraint is the fixture's own bury, not its plan location: the
 is x ≥ 4'-8", y ≤ 60'-4", which is floor. So the hydrant stands free, as a yard hydrant is
 built to.
 
-x = 5'-0" rather than the 4'-8" minimum because it is the line the service already runs on —
-the buried leg comes north at x = 5'-0" through three basement wall sleeves and
-`SP-GF-S-HYD`, and standing the fixture on it makes the run dead straight. The 2026-07-29
-re-route had moved that leg to x = 5' for exactly this reason and then turned west at y = 61'
-to meet the hydrant, putting the last 4'-6" back inside the influence line it had just left.
-Moving the fixture deletes the jog instead of protecting it.
+x = 5'-0" rather than the 4'-8" minimum because it is the line the service runs on — the
+service enters the lot at x = 5'-0" and the lateral goes south from here to the house,
+through `SP-GF-S-HYD` under the garage footing and `SP-B-N3-HYD` through the basement's north
+wall, so standing the fixture on it makes the run dead straight. The 2026-07-29 re-route had
+moved that leg to x = 5' for exactly this reason and then turned west at y = 61' to meet the
+hydrant, putting the last 4'-6" back inside the influence line it had just left. Moving the
+fixture deletes the jog instead of protecting it.
+
+Since 2026-08-30 the hydrant stands **on the service entry itself**, not at the far end of a
+line drawn across the house. That is the ordinary arrangement for a yard hydrant, and it is
+what makes the "deliberately not routed up into the garage and back down" argument above
+cheap to honour: there is barely any run left to rise.
 
 y = 60'-0" leaves the stone pocket 41" clear of `FT-GF-N` against the 34" it needs.
 

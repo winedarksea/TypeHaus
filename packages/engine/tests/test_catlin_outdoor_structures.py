@@ -175,6 +175,70 @@ def test_the_deck_borne_pillars_stand_over_a_bearing_not_a_joist_tip(catlin_mode
     assert (column_y - br2_y) == pytest.approx(3 * INCH, abs=1e-9)
 
 
+def test_the_front_pillar_tops_are_roofed_by_the_beams_that_land_on_them(
+        catlin_model) -> None:
+    """The balcony's front posts sit half a post NORTH of the beam ends they carry.
+
+    BM-SG-BLW/BLC/BLE *terminate* on the front pillar line — those are their south nodes.
+    A beam stopped on its post's AXIS covers the north half of that post's top and leaves
+    the south 2 3/4", full width, open to the sky, with a re-entrant corner against the beam
+    face for water to sit in. Nobody frames it that way; the beam is pushed out flush with
+    the post's south face so the member roofs the end grain it bears on.
+
+    Modelled by moving the POSTS north rather than the beam ends south, because the beam
+    ends are also the deck edge, the fascia line, the drip and the gutter — and
+    ``BALCONY_FRONT_AXIS_Y_FT``, which raised_garden.py consumes. None of those should
+    shift for a bearing detail.
+
+    Only a post at a beam's END has the problem, which is why the REAR row is exempt and
+    asserted so here: at ``_y_rear_pillar`` the beams run 20" further north, so BR1/2/3 are
+    mid-span under a continuous member and already covered.
+    """
+    for tag in ("PT-SG-BF1", "PT-SG-BF2", "PT-SG-BF3"):
+        post = _solid(catlin_model, tag)
+        post_south = min(p[1] for p in post.outline)
+        beam = _solid(catlin_model, {"PT-SG-BF1": "BM-SG-BLW", "PT-SG-BF2": "BM-SG-BLC",
+                                     "PT-SG-BF3": "BM-SG-BLE"}[tag])
+        assert min(p[1] for p in beam.outline) == pytest.approx(post_south), tag
+    for tag, beam_tag in (("PT-SG-BR1", "BM-SG-BLW"), ("PT-SG-BR3", "BM-SG-BLE")):
+        post = _solid(catlin_model, tag)
+        beam = _solid(catlin_model, beam_tag)
+        assert min(p[1] for p in beam.outline) < min(p[1] for p in post.outline), tag
+
+    # The girts are the row, so they came north with it — a girt left on the old line would
+    # have been standing off the back of its own posts.
+    girt = _solid(catlin_model, "BM-SG-GIRT-FE")
+    bf2 = _solid(catlin_model, "PT-SG-BF2")
+    assert min(p[1] for p in bf2.outline) < min(p[1] for p in girt.outline)
+    assert max(p[1] for p in girt.outline) < max(p[1] for p in bf2.outline)
+
+
+def test_the_front_column_is_centred_on_the_span_its_top_has_to_reach(
+        catlin_model) -> None:
+    """PT-SG-FCOL's axis is solved, not authored to a round number.
+
+    Its top seats three members with two governing faces: BM-SG-FRW/FRE's NORTH face (2 1/4"
+    north of the porch beam axis) and PT-SG-BF2's SOUTH face (12" south of it, on the
+    balcony's beam line). That is 14 1/4" the pour has to span; a 20" tube centred on it
+    keeps 2 7/8" of cover past each.
+
+    It was 7 1/8" south of the beam axis until 2026-08-30 — solved when BF2's south face
+    was the pillar line itself — which left 5/8" of concrete north of the beam face against
+    2 3/8" south of the post. Same tube, same bearing, an edge distance a form crew could
+    lose to a half-inch of layout drift at one end and nothing gained at the other.
+    """
+    column = _solid(catlin_model, "PT-SG-FCOL")
+    north = max(p[1] for p in column.outline)
+    south = min(p[1] for p in column.outline)
+    assert north - south == pytest.approx(20 * INCH)
+
+    beam_north = max(p[1] for p in _solid(catlin_model, "BM-SG-FRW").outline)
+    post_south = min(p[1] for p in _solid(catlin_model, "PT-SG-BF2").outline)
+    assert beam_north - post_south == pytest.approx(14.25 * INCH)
+    assert north - beam_north == pytest.approx(2.875 * INCH)
+    assert post_south - south == pytest.approx(2.875 * INCH)
+
+
 def test_the_two_beam_on_column_ties_reach_concrete(catlin_model) -> None:
     """CN-SG-TIE-COL and CN-SG-TIE-FCOL hold two beam ends down to a cast column top.
 
@@ -292,8 +356,9 @@ def test_the_apron_north_limit_is_the_balcony_front_plane(catlin_model) -> None:
     ``PORCH_FRONT_AXIS_Y_FT`` meant both "porch front edge" and "balcony front edge" while
     the two planes were one; they are 12" apart now, and the apron closes against the
     balcony RAILING, so it follows the balcony. Read off that guard's own south run rather
-    than off the front column, which is on neither plane any more — it sits 7 1/8" south of
-    the porch's, sharing its top between the two beams and PT-SG-BF2.
+    than off the front column, which is on neither plane any more — it sits 4 7/8" south of
+    the porch's, centred on the 14 1/4" its top has to span between the two beams' north
+    face and PT-SG-BF2's south face.
     """
     guard = catlin_model.plan.by_tag("RL-SG-BALCONY")
     front_y = min(p.xy_m[1] for p in guard.path)

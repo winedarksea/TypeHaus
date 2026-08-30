@@ -700,12 +700,17 @@ SECOND_LIGHTING = [
                      controlled_by=("ED-S-HALL-SW", "ED-S-HALL-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True,
                                  elevation=ft(7, 10))),
+    # Both x's follow the hall face of W-S-BW1/BW2, which came 1/2" into the corridor on
+    # 2026-08-30 when those walls became INT_2X4_RC (plan/storeys/second.py) — the resilient
+    # channel faces the hall, because the hall is what the bedrooms are being protected from.
+    # Authored x is the face LESS 1" (box back on the face, 2" box): 21'-8 1/8" - 1" =
+    # 21'-7 1/8". It was 21'-7 5/8" against the old 4 1/2" partition.
     ElectricalDevice(uid="QTS0005AAA", tag="ED-S-HALL-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(21, 7.625), ft(10)), type_ref="ED-T-SWITCH-DIM",
+                     position=pt(ft(21, 7.125), ft(10)), type_ref="ED-T-SWITCH-DIM",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
     ElectricalDevice(uid="QTS0006AAA", tag="ED-S-HALL-SW2", kind=DeviceKind.SWITCH,
-                     position=pt(ft(21, 7.625), ft(26, 6)), type_ref="ED-T-SWITCH-DIM",
+                     position=pt(ft(21, 7.125), ft(26, 6)), type_ref="ED-T-SWITCH-DIM",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 

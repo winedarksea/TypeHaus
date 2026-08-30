@@ -786,24 +786,24 @@ OPENINGS = [
     # Pushed east to N-M-STRJ (2026-07-28, mudroom conversion): same 6" tee clearance as
     # D-M-ENTRY above it, off the bearing stair wall's jack studs. Renamed with the room.
     Door(uid="CMD204AAAA", tag="D-M-MUD", host="W-M-STOS2", type_ref="DT-INT-SWING32",
-         position=from_node("N-M-STRJ", ft(0, 6))),
+         position=from_node("N-M-STRJ", inch(8))),
     # 1'-2" off N-M-BA1, not the 1'-0" it read until 2026-08-29. The node moved 2" north
     # with the y=26'-6" line and a `from_node` offset is measured from it, so the leaf would
     # have slid north with it — the exact silent drift main.py's WIN-M-MUD-W note records.
     # The opening stays at y 23'-4"..25'-4": it is dimensioned by the hall side (the switch
     # ED-M-BATH1-SW sits 2 3/8" north of its RO) and BATH1 grew at the other end.
     Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT-SWING24",
-         position=from_node("N-M-BA1", ft(1, 2))),
+         position=from_node("N-M-BA1", ft(1))),
     # RM-M-MECH's hinged utility door (2026-07-28), not the mudroom closets' bypass style.
     # Pulled 2" west of its original 3'-2 15/16" (2026-07-29): at that offset the king stud
     # punched into W-M-MECH-E's corner stud pack. This clears it with margin to spare.
     Door(uid="CMD211AAAA", tag="D-M-MECH", host="W-M-MECH-S", type_ref="DT-INT-SWING30",
-         position=from_node("N-M-MECH1", ft(3, 0.9375)), flip_swing=True, flip_hinge=True),
+         position=from_node("N-M-MECH1", ft(2, 9)), flip_swing=True, flip_hinge=True),
     # RM-M-MUD-CLOSET's bypass slider, no swing to clear. Near jamb 1'-1" off N-M-MUDC1
     # centres the 50" RO in the partition's framed span, leaving both corner stud packs clear
     # (the D-M-MECH king-stud lesson).
     Door(uid="QBTZNWG6AG", tag="D-M-MUDC", host="W-M-MUDC-N", type_ref="DT-INT-BYPASS48",
-         position=from_node("N-M-MUDC1", ft(1, 1))),
+         position=from_node("N-M-MUDC1", inch(8))),
     # RM-M-PANTRY's bypass pair. W-M-PAN-S's framed span is 71 1/2" (W-M-C5B's stud face at
     # 18'-2 3/4" to W-M-PAN-E's at 24'-2 1/4"), so a 62" real RO at 18'-7 1/2"..23'-9 1/2"
     # leaves 4 3/4" of framing at EACH end and clears both corner stud packs by 1 3/4" —
@@ -827,8 +827,10 @@ OPENINGS = [
     #
     # `flip_hinge` stays: the hinge is still the EAST jamb, so the leaf parks along the
     # bedroom wall east of the opening rather than swinging back across the bedroom.
+    # ** `flip_swing` IS DELIBERATELY ABSENT AND HAS BEEN REMOVED TWICE. ** It is what makes
+    # the leaf swing IN, and re-adding it re-opens the 25 in2 conflict described above.
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING30",
-         position=from_node("N-M-W3", ft(2)), flip_hinge=True, flip_swing=True),
+         position=from_node("N-M-W3", ft(1, 5)), flip_hinge=True),
     # Pocket, not the 56" bifold it was (2026-08-21). The leaf parks east inside W-M-HS4,
     # which hosts nothing and now never may: `mep.pocket_occupancy` refuses a pipe, a
     # register or a wall-mounted device anywhere in the cavity, and nothing hangs on that
@@ -853,7 +855,7 @@ OPENINGS = [
     # bifold track needed (see plan/fixtures.py). The cost is ~9" of the utility tub's east
     # end sitting behind fixed wall — shifting the RO east only hides the stack instead.
     Door(uid="CMD207AAAA", tag="D-M-LAUN", host="W-M-HS3", type_ref="DT-POCKET-INT-48",
-         position=from_node("N-M-D1", ft(0, 4))),
+         position=from_node("N-M-D1", inch(8))),
     # Offset 6 11/16" off N-M-E4, not the 1'-2 11/16" it was: N-M-E4 moved north 8" with the
     # closet line (2026-08-03), and this offset moved the same 8" so the door itself did not
     # move. 6 11/16" clears the corner stud pack (the D-M-MECH margin); the wall is only
@@ -880,15 +882,15 @@ OPENINGS = [
     # `office` is not a sleeping occupancy, so there is no R310 exposure — and since the
     # 2026-08-29 `exterior_only` fix there could not be one anyway.
     Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT-SWING30-GLAZED",
-         position=from_node("N-M-E4", ft(0, 6.6875)), flip_swing=True),
+         position=from_node("N-M-E4", inch(9)), flip_swing=True),
     Door(uid="CMD210AAAA", tag="D-M-BED", host="W-M-BDN2", type_ref="DT-INT-SWING32",
-         position=from_node("N-M-D3", ft(5)), flip_hinge=False, flip_swing=True),
+         position=from_node("N-M-D3", ft(4, 8)), flip_hinge=False, flip_swing=True),
     # Second bedroom <-> living connection, straight through the centre bearing wall.
     # Trimless (drywall return jamb, no casing) so it reads as a slot in the wall from
     # both rooms. W-M-C1 is BEARING, so the solver's framing tables put a structural
     # header over the 2'-6" opening on their own — nothing extra to author here.
     Door(uid="CMD212AAAA", tag="D-M-BED2", host="W-M-C1", type_ref="DT-INT-SWING30-TRIMLESS",
-         position=from_node("N-M-S1", ft(5))),
+         position=from_node("N-M-S1", ft(5, 5))),
     # O-M-HALL (the old cased pass-through) retired 2026-07-28 with its host wall W-M-C4:
     # the full 4'-2" is open now. Sills raised 2'-0" -> 3'-0" (2026-07-30 facade pass) so
     # every main/second head on the west face lands on one shared 6'-0" line (27" units at

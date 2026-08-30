@@ -604,15 +604,21 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     from typehaus.server.model_json import model_to_dict
     from typehaus.takeoff import (conduit_takeoff, electrical_device_takeoff, panel_schedule,
                                   service_load_summary, solar_takeoff)
+    from typehaus.takeoff.runs import conduit_schedule
 
     payload = model_to_dict(catlin_model)["electrical"]
-    assert set(payload) == {"panel_schedule", "service_load", "conduit", "devices", "solar",
-                            "data",
+    # ``conduit_schedule`` since 2026-08-30: the per-RUN view beside the by-trade-size bill,
+    # from takeoff/runs.py. It covers power and comms together — neither ``conduit`` here nor
+    # ``data.raceways`` can answer "where does this raceway go" alone, because each skips the
+    # other's runs so no foot of pipe is ordered twice.
+    assert set(payload) == {"panel_schedule", "service_load", "conduit", "conduit_schedule",
+                            "devices", "solar", "data",
                             "backup_components", "backup_runtime", "lighting"}
     assert set(payload["lighting"]) == {"schedule", "controls", "runs", "connected_va"}
     assert payload["panel_schedule"] == panel_schedule(catlin_model)
     assert payload["service_load"] == service_load_summary(catlin_model)
     assert payload["conduit"] == conduit_takeoff(catlin_model)
+    assert payload["conduit_schedule"] == conduit_schedule(catlin_model)
     assert payload["devices"] == electrical_device_takeoff(catlin_model)
     assert payload["solar"] == solar_takeoff(catlin_model)
     # 36: the 36 that survived the 2026-08-02 microgrid refactor plus CKT-DISPOSAL

@@ -21,16 +21,19 @@ from typehaus import (
 # valve sitting on its pipe). Only devices off that line — a stub, a breaker at handle
 # height — author one.
 SUPPLY_DEVICES_BASEMENT = [
-    # P2903.9.1. The service (buried -8'-6", PR-G-HYDRANT-CW) tees off at (5', 1') and rises
-    # to the basement ceiling; this valve sits on that riser at 4'-0" — head height,
-    # reachable with one hand, which is what "accessible" means.
+    # P2903.9.1. The service (buried -8'-10", PR-G-HYDRANT-CW) tees off at (5', 35'-6") —
+    # SP-B-N3-HYD, the north wall crossing — and rises to the basement ceiling; this valve
+    # sits on that riser at 4'-0", head height, reachable with one hand, which is what
+    # "accessible" means. It moved with the tee on 2026-08-30, when the water service entry
+    # went from the rear of the lot to the front: the shutoff belongs where the water comes
+    # in, and the water now comes in on the north.
     #
     # The garage hydrant is deliberately upstream, on the service itself: routing the yard
     # line up to an indoor valve and back down would put a high point above frost mid-run —
     # exactly the failure `mep.hydrant_freeze_depth` catches.
     PipeAccessory(uid="N5PK9WQ2TB", tag="PA-B-MAIN-SHUTOFF",
                   kind=PipeAccessoryKind.MAIN_SHUTOFF, pipe_ref="PR-B-CW-TRUNK",
-                  position=pt(ft(5), ft(1)), elevation=ft(4), accessible=True,
+                  position=pt(ft(5), ft(35, 6)), elevation=ft(4), accessible=True,
                   room="RM-B-FURNACE",
                   model='1 1/4" full-port bronze ball valve, lever handle',
                   serves=("PR-B-CW-TRUNK",)),
@@ -213,10 +216,12 @@ SUPPLY_STOPS = [
                   serves=("EQ-B-WH",)),
 ]
 
-# The garage yard hydrant's two devices, on the service run (filed on ``main``). The seat
-# takes the run's elevation, its own buried valve at -8'-6" (the 72" bury
-# `mep.hydrant_freeze_depth` grades, measured from the -2'-6" grade); the vacuum breaker
-# screws onto the outlet, 2'-6" above the garage slab, which puts it at 0'-0".
+# The garage yard hydrant's two devices, on the service run (filed on ``main``). The hydrant
+# stands on the service ENTRY itself now (plan/site.py, 2026-08-30) — it is the first thing
+# the lateral reaches, not the last. The seat takes the run's elevation, its own buried valve
+# at -8'-10" (the 72" bury `mep.hydrant_freeze_depth` grades, measured from the -2'-10"
+# grade); the vacuum breaker screws onto the outlet, 2'-6" above the garage slab, which puts
+# it at 0'-0".
 SUPPLY_DEVICES_GARAGE = [
     PipeAccessory(uid="C9GW5PXV2R", tag="PA-G-HYD-SEAT", kind=PipeAccessoryKind.SHUTOFF,
                   pipe_ref="PR-G-HYDRANT-CW", position=pt(ft(5), ft(59, 6)),

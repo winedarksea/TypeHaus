@@ -513,24 +513,31 @@ COLUMN = Post(uid="SGP001AAAA", tag="PT-SG-COL",
 # below every floor member's underside.
 #
 # ** IT IS A SHARED BEARING SINCE 2026-08-29, AND THAT IS WHAT SETS ITS SIZE AND ITS AXIS. **
-# The balcony's front pillar row moved 12" south (`_y_balcony_front`), so one column has to
-# seat three things: BM-SG-FRW and BM-SG-FRE, whose axis is `_y_ax_front` (-9.5'), and
-# PT-SG-BF2, a 6x6 a foot south of it. Sizing, at a 3" minimum full-width beam seat and the
-# ~4 5/8" anchor edge distance an ABU66SS wants:
+# One column seats three things: BM-SG-FRW and BM-SG-FRE, whose axis is `_y_ax_front`
+# (-9.5'), and PT-SG-BF2, the centre pillar of the balcony's front row. Two faces bound the
+# pour, and everything below is measured south of the beam axis:
 #
-#     dia   overhang   worst margin   beam seat   anchor edge
-#     16"      12"     no solution        -            -
-#     18"      12"     no solution        -            -
-#     20"      12"       +0.49"         3.49"        5.12"
-#     22"      12"       +1.95"         4.96"        6.57"
-#     16"       8"       +0.38"         3.38"        5.00"
+#     beam north face   2 1/4" NORTH   (half of the 4 1/2" 3-2x12)
+#     BF2 south face      12"   SOUTH  (= `_y_balcony_front`; see `_y_front_pillar`)
+#     ------------------------------------------------------------------
+#     must span         14 1/4"
 #
-# 20" round centred 7 1/8" south of the beam axis, i.e. on -10.09375'. The +0.49" is a
-# CONSTRUCTABILITY margin, not a strength one: bearing runs ~30 psi under the two beam ends
-# (60.7 in^2 of seat) and ~56 psi under BF2, on 4,000 psi concrete. 20" is a standard
-# sonotube. The last row of the table is the trade the other way — if the balcony's 12"
-# overhang were ever relaxed to 8", the 16" tube would serve again; the two decisions are
-# coupled and neither is free.
+# Centring on that span puts the axis 4 7/8" south — `_y_front_col`, -9.90625' — and leaves
+# the slack split evenly. Sizing against a ~4 5/8" anchor edge distance for the ABU66SS at
+# BF2 (the anchor sits on the pillar axis, 9 1/4" south, so 4 3/8" off the column axis):
+#
+#     dia    edge cover    anchor edge    verdict
+#     16"      0.875"        3.625"       no — anchor 1" inside its edge distance
+#     18"      1.875"        4.625"       exactly at the ABU66SS minimum, no margin
+#     20"      2.875"        5.625"       chosen
+#     22"      3.875"        6.625"       more tube than the joint asks for
+#
+# Bearing is not what governs and never was: ~30 psi under the two beam ends and ~56 psi
+# under BF2, on 4,000 psi concrete. 20" is a standard sonotube, 18" is not stocked
+# everywhere, and the 18" row has no margin to spend on a form that drifts half an inch off
+# its layout — which fibre tubes do. Note that 18" only became feasible at all when the
+# front pillars came 2 3/4" north on 2026-08-30; before that the span was 17" and neither
+# 16" nor 18" had a solution. The two decisions are coupled and neither is free.
 #
 # ``size="20 round"``. Never a nominal form like "20x20": that matches ``_RE_NOMINAL`` in
 # resolve/framing/profiles.py, misses LUMBER_ACTUAL and silently resolves to 1.5x5.5. The
@@ -555,12 +562,15 @@ COLUMN = Post(uid="SGP001AAAA", tag="PT-SG-COL",
 # change deliberately foreclosed came back as a side effect of a decision made for other
 # reasons; plans/TODO.md's MPB66Z arithmetic is stale for it. See notes/uplift_load_path.md.
 _front_beam_depth_ft = _back_beam_depth_ft  # same member (SPEC.back_beam), same soffit drop
-# 7 1/8" south of the beam axis — the offset that makes one 20" round reach both the beam
-# line and the pillar 12" beyond it. NOT a SPEC field: it is a solved consequence of
-# `balcony_front_overhang_ft` and `front_column_size_in`, not an input either can be set
-# against.
-_front_column_south_offset_in = 7.125
-_y_front_col = _y_ax_front - _front_column_south_offset_in / 12.0  # -10.09375'
+# 4 7/8" south of the beam axis: the midpoint of the 14 1/4" the pour has to span, so the
+# 20" tube keeps 2 7/8" of cover past the beam's north face AND past BF2's south face
+# rather than 5/8" at one end and 2 3/8" at the other. It was 7 1/8" until 2026-08-30, when
+# the front pillar row came north by half a post (`_y_front_pillar`) and the south face
+# stopped being the binding constraint it had been. NOT a SPEC field: it is a solved
+# consequence of `balcony_front_overhang_ft`, `_pillar_face_ft` and `front_column_size_in`,
+# not an input any of them can be set against.
+_front_column_south_offset_in = 4.875
+_y_front_col = _y_ax_front - _front_column_south_offset_in / 12.0  # -9.90625'
 # Belled to frost depth on the same terms as PT-SG-COL, and the shaft grows by the same
 # ``_pier_shaft_extension_ft``. The authored height is IDENTICAL to PT-SG-COL's, and that is
 # now load-bearing rather than incidental: with the front beams unpinned (see FRONT_BEAMS)
@@ -974,8 +984,36 @@ _WALL_UNDER_PILLAR = {
 # further increase in the deck's joist span would drop the lookup to.
 _REAR_PILLAR_SOUTH_OF_COL_IN = 3.0
 _y_rear_pillar = _y_col - _REAR_PILLAR_SOUTH_OF_COL_IN / 12.0  # -2.5'
+_pillar_face_ft = 2.75 / 12.0  # half the 5.5" actual 6x6
+
+# The FRONT row stands 2 3/4" north of `_y_balcony_front`, and the rear row does not, and
+# the asymmetry is a weather detail rather than a structural one (2026-08-30).
+#
+# BM-SG-BLW/BLC/BLE END on the front pillar line — N-SGB-SW/SC/SE are the beams' south
+# nodes. A beam that stops on its post's AXIS covers the north half of that post's top and
+# leaves the south half, 2 3/4" of end grain across the full 5 1/2", open to the sky. That
+# is the classic exposed-post-top detail: water sits in the re-entrant corner against the
+# beam face, wicks down the end grain, and no amount of paint on a 6x6 keeps it out for
+# thirty years. Nobody frames it that way. The beam gets pushed out flush with the post's
+# south face, so the post top is roofed by the member it carries.
+#
+# Modelled the other way round — the beam ends stay put on `_y_balcony_front` (they are the
+# deck edge, the fascia line and the gutter line, none of which should move) and the POSTS
+# come north by half their own width. Same joint, and it keeps every dimension that a
+# drawing would carry off the deck edge.
+#
+# The rear row needs none of this: at `_y_rear_pillar` the beams run 20" further north to
+# `_y_in_n`, so PT-SG-BR1/2/3 are mid-span under a continuous member and their tops are
+# already covered. Only a post at a beam's END has this problem.
+#
+# What moves with the row, because it is the row: the four front GIRT_NODES, `_ROW_Y["F"]`
+# (the knee-brace origins), the ABU66SS bases, and PT-SG-FCOL's axis under BF2 (see
+# `_front_column_south_offset_in`, which is re-solved for the new pillar line). What does
+# NOT move: the beam ends themselves, `_DECK_OUTLINE`, the guard, fascia, drip and gutter
+# paths, and `BALCONY_FRONT_AXIS_Y_FT` — the published contract raised_garden.py reads.
+_y_front_pillar = _y_balcony_front + _pillar_face_ft  # -10.270833'
 _PILLAR_ROWS = (("R", _y_rear_pillar, inch(SPEC.rear_pillar_rise_in)),
-                ("F", _y_balcony_front, ft(0)))
+                ("F", _y_front_pillar, ft(0)))
 PILLARS = []
 PILLAR_BEARINGS = {}  # pillar tag -> (bearing tag, base elevation) — reused by the bases
 for _i, _x in enumerate(_PILLAR_X, start=1):
@@ -1082,7 +1120,6 @@ BALCONY_BEAMS = [
 # would have driven the girts 1/4" into the beams if left hardcoded
 # (`structural.member_interference` is what catches this class of bug).
 _beam_face_ft = cross_section(SPEC.balcony_beam).width_m / 2 / 0.3048
-_pillar_face_ft = 2.75 / 12.0  # half the 5.5" actual 6x6
 GIRT_NODES = [
     Node(uid="SGNG01AAAA", tag="N-SGG-RW1",
          position=pt(ft(_x_ax_w + _pillar_face_ft), ft(_y_rear_pillar))),
@@ -1093,13 +1130,13 @@ GIRT_NODES = [
     Node(uid="SGNG04AAAA", tag="N-SGG-RE2",
          position=pt(ft(_x_ax_e - _pillar_face_ft), ft(_y_rear_pillar))),
     Node(uid="SGNG05AAAA", tag="N-SGG-FW1",
-         position=pt(ft(_x_ax_w + _beam_face_ft), ft(_y_balcony_front))),
+         position=pt(ft(_x_ax_w + _beam_face_ft), ft(_y_front_pillar))),
     Node(uid="SGNG06AAAA", tag="N-SGG-FW2",
-         position=pt(ft(_cx - _beam_face_ft), ft(_y_balcony_front))),
+         position=pt(ft(_cx - _beam_face_ft), ft(_y_front_pillar))),
     Node(uid="SGNG07AAAA", tag="N-SGG-FE1",
-         position=pt(ft(_cx + _beam_face_ft), ft(_y_balcony_front))),
+         position=pt(ft(_cx + _beam_face_ft), ft(_y_front_pillar))),
     Node(uid="SGNG08AAAA", tag="N-SGG-FE2",
-         position=pt(ft(_x_ax_e - _beam_face_ft), ft(_y_balcony_front))),
+         position=pt(ft(_x_ax_e - _beam_face_ft), ft(_y_front_pillar))),
 ]
 # The two FRONT segments are white-painted (BEAM_WHITE_PAINT) and the two REAR ones are not:
 # the front pair stands over the garden beside the white pillars, the rear pair sits against
@@ -1513,7 +1550,7 @@ _NS_BRACE_UID = {("R", 1): "SGCK1RAAAA", ("R", 3): "SGCK3RAAAA",
                  ("F", 1): "SGCK1FAAAA", ("F", 3): "SGCK3FAAAA"}
 _EW_BRACE_UID = {("R", 1): "SGKX1RAAAA", ("R", 3): "SGKX3RAAAA",
                  ("F", 1): "SGKX1FAAAA", ("F", 3): "SGKX3FAAAA"}
-_ROW_Y = {"R": _y_rear_pillar, "F": _y_balcony_front}
+_ROW_Y = {"R": _y_rear_pillar, "F": _y_front_pillar}
 _NS_BEAM = {1: "BM-SG-BLW", 3: "BM-SG-BLE"}
 # The west pillar of each row braces east into its row's west girt segment; the east
 # pillar braces west into the east segment.

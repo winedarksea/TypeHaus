@@ -159,7 +159,31 @@ ATTIC_SHELVES = [
 # the 3/4" counter substrate. The shelf sits below the trap, which is why there is ONE and
 # not two — `shelf_count=2` is that shelf plus the case top, the convention `ShelfBay`
 # documents ("the number of HORIZONTAL BOARDS in the bay, the case top included").
+# ** THE FIVE OTHER BATHROOMS' VANITY SHELVES (2026-08-30). ** Same reasoning as
+# SB-M-BATH2-VAN above, applied to the cabinets that replaced this house's bare lavatories.
+# Each is the ONE adjustable shelf inside a sink base -- `shelf_count=2` is that shelf plus
+# the case top, per ShelfBay's own convention -- and each is why those vanities could be
+# bought as plain two-door boxes instead of drawer banks. A drawer base runs about 1.5x a
+# door base of the same width, and a full-depth shelf recovers most of the usable volume
+# for the price of a board the owner already owns.
+#
+# `depth` is authored on every one, and must be: the derivation for a placeable host runs
+# through `_carcass_depth_m`, which is keyed on FurnitureTypes, and every host here is a
+# FixtureType. The number is the carcass less a 3/4" back and a 1 3/4" scribe/trap set-off
+# -- 18 1/2" clear in a 21" cabinet, 15 1/2" in an 18" one. `width` is the carcass less
+# 1 1/2" of case sides. All 4/4 white oak, S4S: these carry towels and bottles.
+
 MAIN_SHELVES = [
+    ShelfBank(
+        uid="3EWQ9BGVH8", tag="SB-M-BATH1-VAN",
+        # 24" x 18" carcass, the smallest vanity in the house.
+        host="FX-M-BATH1-LAV",
+        material_ref="oak-shelf-4q",
+        thickness=inch(0.75),
+        depth=inch(15.5),
+        profile="S4S",
+        bays=(ShelfBay(width=inch(22.5), clear_height=inch(29.25), shelf_count=2),),
+    ),
     ShelfBank(
         uid="830F8WP640", tag="SB-M-BATH2-VAN",
         host="FX-M-BATH2-SINK",
@@ -210,7 +234,7 @@ MAIN_SHELVES = [
         material_ref="walnut-shelf-8q",
         thickness=inch(1.5),
         profile="S4S",
-        bays=(ShelfBay(width=inch(47), clear_height=inch(16.5), shelf_count=1),),
+        bays=(ShelfBay(width=inch(47), clear_height=inch(14.5), shelf_count=1),),
     ),
     ShelfBank(
         uid="AFXM3DJGX4", tag="SB-M-STUDY-DESK",
@@ -220,6 +244,44 @@ MAIN_SHELVES = [
         profile="S4S",
         bays=(ShelfBay(width=inch(29), clear_height=inch(28), shelf_count=1),),
     ),
+    # The fold-down leaf's board (2026-08-30). Same stock, same thickness, same lay-up as the
+    # desk it butts, out of the SAME FLITCH as SB-M-STUDY-DESK's two boards: the two tops meet
+    # in a 20" butt joint at eye level, and a colour jump there is the one defect nobody can
+    # unsee. Free to avoid at the rack, impossible to fix afterwards.
+    #
+    # ** READ THIS BEFORE ORDERING: `haus millwork` PRINTS THIS BOARD'S GRAIN THE WRONG WAY,
+    # AND THE MODEL HAS NO FIELD TO CORRECT IT. ** `takeoff/hardwood.py` runs grain along the
+    # LONGER plan dimension, which is right for every other shelf in the house and is wrong
+    # for the only piece here that is deeper (20") than it is wide (18"). It therefore bills a
+    # 2-board lay-up at 9" with the grain running front to back, and what has to be built is a
+    # 2-board lay-up at 10" — a 20 3/4" rough face, the desk's own lay-up — with the grain
+    # running EAST-WEST, continuous with the desk's.
+    #
+    # It is not an aesthetic preference. Walnut moves across the grain and not along it, so
+    # with the grain running east-west BOTH tops swell and shrink in DEPTH, together, and the
+    # butt joint between them stays the width it was cut. Turn the leaf's grain 90 degrees and
+    # the whole seasonal movement of an 18" board — call it 3/16" over a heating season — lands
+    # in that joint, opening and closing it all year. The end grain showing at the joint is the
+    # smaller half of the objection.
+    #
+    # Board feet are unaffected (same area, same thickness), so nothing downstream is wrong —
+    # only the cutting instruction is, and only for this one row.
+    #
+    # `clear_height` is the void under the deployed leaf, the same 28" as the desk. That is
+    # what the ADA 306 / OSHA knee envelope is measured against and it clears the 27" minimum
+    # with 1" to spare — but the number that actually decides it is the BRACKET, not the
+    # board. A Hebgo 287.43.419 is 7 1/16" tall; hung under the leaf at the wall it eats down
+    # to ~21" of clear at the back, which is fine over a knee and NOT fine if the arm reaches
+    # forward over one. Set the brackets tight to the wall and check the arm against a seated
+    # knee on the bench before the blocking goes in — it cannot be moved after.
+    ShelfBank(
+        uid="T0BJ1M256G", tag="SB-M-STUDY-LEAF",
+        host="FURN-M-STUDY-DESK-LEAF",
+        material_ref="walnut-shelf-8q",
+        thickness=inch(1.5),
+        profile="S4S",
+        bays=(ShelfBay(width=inch(18), clear_height=inch(28), shelf_count=1),),
+    ),
 ]
 
 # --- the theatre bookcases, FT-BOOKCASE-32-90 x4 ---------------------------------------
@@ -228,6 +290,16 @@ MAIN_SHELVES = [
 # Clear width is the 2'-8" carcass less two 3/4" sides. Six boards each — the type's
 # `shelving(shelves=5)` symbol plus the case top.
 BASEMENT_SHELVES = [
+    ShelfBank(
+        uid="6BNKG0ZT0K", tag="SB-B-BATH-VAN",
+        # 36" x 18" carcass; the depth is the door swing's, not a preference.
+        host="FX-B-BATH-LAV",
+        material_ref="oak-shelf-4q",
+        thickness=inch(0.75),
+        depth=inch(15.5),
+        profile="S4S",
+        bays=(ShelfBay(width=inch(34.5), clear_height=inch(29.25), shelf_count=2),),
+    ),
     ShelfBank(
         uid="ZJQHBYNFZ3", tag="SB-B-PLAY-BOOK-W1",
         host="FURN-B-PLAY-BOOK-W1",
@@ -275,6 +347,46 @@ BASEMENT_SHELVES = [
 # rough face and the supply is 18" — and that is a fact worth seeing on the schedule rather
 # than at the mill.
 SECOND_SHELVES = [
+    ShelfBank(
+        uid="FT01G11CY0", tag="SB-S-BATH1-VAN",
+        # The 30" SINK BASE half of the 48" vanity; the north 18" is a drawer
+        # bank and is not shelved. 21" carcass, so 18 1/2" clear.
+        host="FX-S-BATH1-LAV",
+        material_ref="oak-shelf-4q",
+        thickness=inch(0.75),
+        depth=inch(18.5),
+        profile="S4S",
+        bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
+    ),
+    ShelfBank(
+        uid="XT028WRQR2", tag="SB-S-SUITEBATH-VAN",
+        host="FX-S-SUITEBATH-LAV",
+        material_ref="oak-shelf-4q",
+        thickness=inch(0.75),
+        depth=inch(18.5),
+        profile="S4S",
+        bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
+    ),
+    ShelfBank(
+        uid="Q97KQAVZHT", tag="SB-S-VANITY-VAN1",
+        # The alcove's two 30" bases under one 61" double top: two cabinets,
+        # so two banks. 18" carcasses, so 15 1/2" clear.
+        host="FX-S-VANITY-LAV1",
+        material_ref="oak-shelf-4q",
+        thickness=inch(0.75),
+        depth=inch(15.5),
+        profile="S4S",
+        bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
+    ),
+    ShelfBank(
+        uid="BHTA4WVJDW", tag="SB-S-VANITY-VAN2",
+        host="FX-S-VANITY-LAV2",
+        material_ref="oak-shelf-4q",
+        thickness=inch(0.75),
+        depth=inch(15.5),
+        profile="S4S",
+        bays=(ShelfBay(width=inch(28.5), clear_height=inch(29.25), shelf_count=2),),
+    ),
     ShelfBank(
         uid="JBAEDPFV5Q", tag="SB-S-BATH1",
         host="FURN-S-BATH1-SHELF",

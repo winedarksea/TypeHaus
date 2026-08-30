@@ -149,14 +149,24 @@ BATH2_VANITY_54 = FixtureType(
 # storage is worth, so where a wall gave an awkward number the width was rounded DOWN to
 # the ladder rather than made to fit.
 #
-# ** FRONT CLEARANCE IS 21", AND IN MINNESOTA THAT NEEDS SAYING. ** Minnesota does not use
-# the IRC's plumbing chapters: MN Rules ch. 1309 adopts the 2018 IRC but omits Chapters
-# 25-33, and plumbing is ch. 4714, which incorporates the 2018 UPC. UPC 402.5's base rule is
-# 24" clear in front -- but it names only water closets and bidets, and its Exception 1 reads
-# "the clear space in front of a water closet, LAVATORY or bidet in dwelling units and
-# sleeping units shall be not less than 21 inches." This is a dwelling unit, so a lavatory
-# here is a 21" fixture and a water closet is a 24" one. The zones below are 21" and the
-# water closets were checked separately at 24".
+# ** THE 21" FRONT ZONE IS A DESIGN CONVENTION HERE, NOT A MINNESOTA CODE MINIMUM. **
+# Say it that way, because the obvious cite is wrong twice over. Minnesota does not use the
+# IRC's plumbing chapters at all -- Minn. R. 1309.0010 subp. 3.D deletes IRC chapters 25-33
+# and 1309.0307 sends fixtures to Minn. R. ch. 4714, which adopts the 2018 UPC -- so IRC
+# P2705.1's 21" has no force here. And UPC 402.5, which does, says "the clear space in front
+# of any water closet or BIDET shall be not less than 24 inches": it never mentions a
+# lavatory. (An earlier draft of this comment cited a UPC 402.5 "Exception 1" giving
+# lavatories 21" in dwelling units. That exception appears only in Washington's UPC insert
+# pages -- it is a Washington amendment, not base UPC, and it does not apply in Minnesota.
+# See plan/fixtures.py's RM-M-BATH1 header, which works the same chain the other way.)
+#
+# So under Minnesota's plumbing code a lavatory has NO front-clearance requirement, and 21"
+# is what this house chooses to hold anyway -- it is IRC's number, it is the floor NKBA's
+# Guideline 4 builds its recommended 30" on, and a vanity you cannot stand in front of is a
+# bad vanity whether or not an inspector says so. The WATER CLOSETS are a different matter:
+# theirs IS 24" and it is enforced, because the house sets `active_code_profile="MN/IRC"`
+# and `_water_closet_required_clearance` encodes 24". Every placement below was checked by
+# hand against those 24"/15" envelopes as well as against its own 21".
 #
 # ** THE ZONES RESOLVE AS *RECOMMENDED*, WHICH IS NOT WHAT A READER EXPECTS. **
 # ``front_zone`` builds a zone at the default policy, and that default is RECOMMENDED, so an

@@ -35,6 +35,10 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "coffee-table": slab(leg_inset_m=0.05, apron=False),
     "end-table": slab(leg_inset_m=0.04, apron=False),
     "desk": slab(leg_inset_m=0.06, apron=True, modesty_panel=True),
+    # A top the WALL carries — cleats, a ledger, or fold-down brackets. No legs and no
+    # modesty panel, because both would stand in the knee space a wall-hung desk exists to
+    # keep open, and a fold-down leaf cannot have either and still fold.
+    "wall-desk": slab(leg_inset_m=0.06, apron=True, modesty_panel=False, legs=False),
     # Casegoods, distinguished by their drawer grid.
     "dresser": case(rows=3, cols=2),
     "chest": case(rows=5, cols=1),

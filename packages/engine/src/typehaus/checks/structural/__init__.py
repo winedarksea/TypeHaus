@@ -5,6 +5,7 @@ from typehaus.checks.structural import (
     cantilever,  # noqa: F401 - registers checks
     checks,  # noqa: F401 - registers checks
     deck,  # noqa: F401 - registers checks
+    door_module,  # noqa: F401 - registers checks
     foundation,  # noqa: F401 - registers checks
     guards,  # noqa: F401 - registers checks
     interference,  # noqa: F401 - registers checks

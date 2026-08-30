@@ -181,7 +181,12 @@ def test_catlin_window_member_overlaps_pinned_at_three():
         if any(t.split(":")[-1].startswith(_OPENING_FRAMING_KEYS)
                for t in f.element_tags)
     ]
-    assert len(window_findings) == 3, sorted(
+    # ** 3 -> 1 on 2026-08-30. ** The door-module pass (structural.door_framing_module) moved
+    # twenty-two openings onto their host wall's stud grid, and two of the three overlaps this
+    # pinned went with them: an opening on the module puts its king where a module stud would
+    # have stood instead of beside it. LOWERED to the measured value, never widened — the
+    # point of the pin is that a regression shows up as a number going the wrong way.
+    assert len(window_findings) == 1, sorted(
         f.element_tags for f in window_findings)
 
 

@@ -16,13 +16,29 @@ from typehaus import (
 )
 from typehaus.model import m
 
-# --- Water supply: the house entry out to the garage hydrant ------------------------
+# --- Water supply: the service lateral, hydrant to house ---------------------------
 #
-# The project's first WATER_COLD run: from the water entry (5', 0') to the garage hydrant,
-# staying at the service's own 6' bury the whole way — a supply line that rises above frost
-# anywhere along its length freezes there. Filed on ``main`` (datum 0'-0") so the authored
-# elevations read straight off the drawing set; on ``basement`` (-9' datum) they would
-# resolve nine feet lower.
+# The project's first WATER_COLD run: the water service lateral, from the entry at the
+# garage yard hydrant (5', 59'-6") south to the house's north foundation, staying at the
+# service's own 6' bury the whole way — a supply line that rises above frost anywhere along
+# its length freezes there. Filed on ``main`` (datum 0'-0") so the authored elevations read
+# straight off the drawing set; on ``basement`` (-9' datum) they would resolve nine feet
+# lower.
+#
+# ** IT NO LONGER CROSSES THE HOUSE (2026-08-30). ** It ran (5', 0') -> (5', 59'-6"): the
+# full 59'-6" from the SOUTH basement wall, straight through RM-B-WORKSHOP and
+# RM-B-FURNACE, to the garage. That was not a routing choice — plan/site.py put the water
+# UtilityLine's entry on the rear of the lot while the same file declares the street on the
+# north, so the lateral had to traverse the building to reach the front. Worse, at -8'-10"
+# with the basement slab topping out at -9'-1 7/16", those 36 feet of 3/4" PEX were lying
+# 3 7/16" ABOVE the basement floor, in the room, not buried under it. Nothing graded it:
+# `mep.hydrant_freeze_depth` asks only that every vertex hold its bury below GRADE, and
+# grade over the basement is the same -2'-10" it is in the yard.
+#
+# With the entry at the front the lateral is 24'-0" of yard, the hydrant sits on the entry
+# itself, and the house taps the lateral where it reaches the foundation. PR-B-CW-TRUNK
+# tees off at (5', 35'-6") through SP-B-N3-HYD, which was already bored at exactly that
+# station and depth for the old crossing's *exit*.
 #
 # **The bury is 6' below *grade*, and grade is -2'-10" (2026-08-21), so the run sits at
 # -8'-10".** It dropped with the soil it is buried in, exactly as the garage foundation it
@@ -36,7 +52,7 @@ from typehaus.model import m
 # the full 72" bury; the terminal rise is the hydrant's own self-draining barrel and exempt.
 WATER_SUPPLY = [
     PipeRun(uid="CMP920AAAA", tag="PR-G-HYDRANT-CW", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(5), ft(0)), pt(ft(5), ft(59, 6)), pt(ft(5), ft(59, 6))),
+            path=(pt(ft(5), ft(35, 6)), pt(ft(5), ft(59, 6)), pt(ft(5), ft(59, 6))),
             diameter=inch(0.75), material="pex",
             elevations=(ft(-8, -10), ft(-8, -10), ft(-2, -5.2)),
             serves=("FX-G-HYDRANT",)),
@@ -44,7 +60,7 @@ WATER_SUPPLY = [
 
 # --- Domestic hot/cold distribution (2026-07-29 plumbing pass) -----------------------
 #
-# PEX home-run-lite: 1" cold trunk tees off the water service at (5', 1'), 1" hot trunk
+# PEX home-run-lite: 1" cold trunk tees off the water service at (5', 35'-6"), 1" hot trunk
 # leaves EQ-B-WH; both run the ceiling band south of the y=18' wall, cross the concrete
 # through their own WALL_SLEEVES, and rise to each wet-wall group through SUPPLY_SLEEVES.
 # `serves` on a trunk is the union of everything downstream, so `mep.pipe_sizing` sums the
@@ -54,12 +70,23 @@ WATER_SUPPLY = [
 # WSFU, taking it from 30 to 34 against the 32 a 1" branch carries (Table 610.4, 46-60 psi /
 # <100'). Hot trunk stays 1" at 21.5 WSFU; SP-B-CS2-CW (the trunk's cast crossing) grew with it.
 SUPPLY = [
+    # ** THE TRUNK NOW MEETS ITS SERVICE (2026-08-30). ** It started at (5', 1') at
+    # +2'-9 7/16" on this datum, i.e. -6'-2 9/16" absolute, and called that the tee off the
+    # service — but the service passed under that point at -8'-10". A 2'-7 1/2" vertical gap
+    # with nothing in it: the house's cold water was fed by a run that ended in mid-air. The
+    # 2026-08-21 grade drop took the service down and the trunk did not follow.
+    #
+    # With the entry at the front (plan/site.py) the tee belongs at the north wall, so the
+    # riser moves to (5', 35'-6") — SP-B-N3-HYD's station — and starts at +0'-2", which IS
+    # -8'-10" absolute, on the lateral. It then runs south down the RM-B-FURNACE ceiling
+    # band to y=16' and picks up its old route unchanged, crossing W-B-CW (framed, and a
+    # plumbing wall) with a bored hole rather than a sleeve.
     PipeRun(uid="CBPW30AAAA", tag="PR-B-CW-TRUNK", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(5), ft(1)), pt(ft(5), ft(1)), pt(ft(5), ft(16)),
+            path=(pt(ft(5), ft(35, 6)), pt(ft(5), ft(35, 6)), pt(ft(5), ft(16)),
                   pt(ft(8), ft(16)), pt(ft(29, 9.6), ft(16)),
                   pt(ft(29, 9.6), ft(34, 1.2)), pt(ft(29, 9.6), ft(34, 1.2))),
             diameter=inch(1.25), material="copper", finish="lacquered",
-            elevations=(ft(2, 9.4375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(12, 7.4375)),
+            elevations=(inch(2), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(12, 7.4375)),
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV", "FX-M-BATH2-WC",
                     "FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-SINK",
                     "FX-M-LAUNDRY", "FX-M-KITCH-SINK",

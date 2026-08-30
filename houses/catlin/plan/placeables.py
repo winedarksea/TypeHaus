@@ -685,6 +685,20 @@ MAIN_PLACEABLES = [
     Furniture(uid="90JCARB5PG", tag="FURN-M-STUDY-DESK", type_ref="FT-STUDY-DESK",
               room="RM-M-STUDY", position=pt(inch(179.25), inch(230.75)),
               rotation=deg(180)),
+    # The fold-down leaf (2026-08-30), filling the 18 1/8" entry pocket the desk deliberately
+    # stops short of, so 29" + 18" = the full 47" lined box when two people are in here.
+    # ** IT IS DRAWN DEPLOYED AND IT IS NORMALLY STOWED ** — the long argument is on
+    # FT-STUDY-DESK-LEAF in plan/furniture_types.py. Read it before moving this: the leaf's
+    # STOWED envelope (the south wall of the pocket, 8" to 28") is what evicted
+    # REG-M-RET-STUDY from that wall, and nothing in this file records that dependency.
+    #
+    # Centre off the same lined box the other two use: x 164 3/4 + 29 + 18/2 = 202 3/4";
+    # y 220 3/4 + 20/2 = 230 3/4", i.e. the desk's own y, because the two tops are coplanar
+    # and butt. deg(180) matches the desk so both backs land on the SOUTH wall. Its east end
+    # is at 211 3/4", 1/8" off the lined face and flush with FURN-M-STUDY-BENCH's east end.
+    Furniture(uid="SBR4CFX5EH", tag="FURN-M-STUDY-DESK-LEAF", type_ref="FT-STUDY-DESK-LEAF",
+              room="RM-M-STUDY", position=pt(inch(202.75), inch(230.75)),
+              rotation=deg(180)),
 
     # --- curtain rods (2026-08-07) -------------------------------------------
     # One head line for the whole storey: 7'-0", 4" above the tallest main-floor head (6'-8",

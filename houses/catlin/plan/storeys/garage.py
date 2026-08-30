@@ -337,6 +337,18 @@ BRICK_CAP_FLASHING = [
 # Published so params/foundations.py can gap the ICF stem under the overhead door instead
 # of repeating this offset/width: there is no 22"-above-grade stem wall under a vehicle
 # door (it would be a curb the car has to climb), so the stem drops to a grade beam there.
+# ** 4'-0" STAYS, unlike SERVICE_DOOR_OFFSET below (2026-08-30). ** The 16'-0" opening's
+# centre is at 12'-0", 8" off the module, and it cuts 13 stud lines where 12 would do —
+# `structural.door_framing_module` reports it and names 152" as the nearest legal centre.
+# It is not taken. This constant is not just the door's offset: params/foundations.py gaps
+# the ICF stem into a grade beam on it, and W-G-BRICK-S/N stand on the stem segments that
+# leaves, so the piers' JAMB-TO-CORNER span IS this number and their inboard ends ARE the
+# door jambs (houses/catlin/CLAUDE.md, and
+# test_garage_brick_wainscot_piers_are_the_door_jambs_and_cap_at_four_feet asserts it).
+# Moving the door 8" north makes the two piers flanking it 4'-8" and 3'-4" where they are
+# 4'-0" and 4'-0" today: a visibly asymmetric masonry wainscot on the garage's main facade,
+# bought with one stud. Recorded as a decided advisory in preferences.toml's `[checks]
+# suppress`, per element and with the reason beside it — not silenced, decided.
 OVERHEAD_DOOR_OFFSET = ft(4)
 OVERHEAD_DOOR_WIDTH = ft(16)  # DT-EXT-OVERHEAD192
 
@@ -345,7 +357,21 @@ OVERHEAD_DOOR_WIDTH = ft(16)  # DT-EXT-OVERHEAD192
 # the stem gaps to a grade beam here too. Previously stood 1'-10" above the slab and the
 # breezeway deck, a "known, deferred mismatch" that code.R311_3_exterior_landing eventually
 # failed outright.
-SERVICE_DOOR_OFFSET = ft(5)
+# ** 5'-0" -> 5'-10" ON 2026-08-30, AND NOT TO THE NEARER STATION. ** The 36" leaf's centre
+# was at 78", 6" off the 16" module, cutting three studs where two will do. The module offers
+# 24"/40"/56"/72"/88"/104"..., and only 88" — this offset — works:
+#
+#   72", 56", 104"  the threshold runs off the end of SL-BW-DECK and
+#                   `code.R311_3_exterior_landing` FAILs outright. That is the failure this
+#                   door already had once, for this reason, before 2026-08-01.
+#   88"             clean, once SP-GF-S-HYD is rehomed — see below.
+#
+# Moving this constant is never just moving a door: params/foundations.py gaps the ICF stem
+# into a grade beam on it, so FT-GF-S-DR travels east too, and the water service's protection
+# sleeve at x=5'-0" was left standing in the wrong pour. `integrity.sleeve_in_opening` caught
+# it as an ERROR the moment the constant moved; the sleeve now names FT-GF-S1, the stem
+# footing that is actually over it (plan/mep_sleeves.py). Nothing about the pipe changed.
+SERVICE_DOOR_OFFSET = ft(5, 10)
 SERVICE_DOOR_WIDTH = ft(3)  # DT-EXT-SWING36
 
 OPENINGS = [

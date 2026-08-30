@@ -344,14 +344,39 @@ REGISTERS_MAIN = [
     # inside the last courses of WP-M-STUDY-WAINSCOT: a grille cut into walnut is ordinary
     # joinery, and the same plate ED-M-STUDY-DATA1 already asks that wainscot for.
     #
-    # ** THE RISER IS 6" CLEAR OF ED-M-STUDY-RC1'S BOX AND THAT IS DELIBERATE. ** RC1 is at
-    # (17'-0", 32") on this wall, and the radial has to fall the full 8'-2" past its height
-    # to reach 12". W-M-CLN2 is INT_2X4_STAGGERED_DOUBLE_GWB, so the cavity is 5 1/2" deep
-    # and continuous, but a 2 1/8" device box and a 3" duct do not share one 3 1/2" leaf.
-    # 16'-6" puts the drop in the next bay. CD-B-DATA-STUDY rises at 16'-0" on the same wall
-    # and is 6" clear the other way.
+    # ** IT MOVED WEST FROM 16'-6" TO 14'-6" ON 2026-08-30, AND FURNITURE IS WHY. ** It sat one
+    # day in the entry pocket, on exactly the argument two paragraphs up: nobody stands there,
+    # so nothing blocks the grille. Then the pocket got FURN-M-STUDY-DESK-LEAF, and a leaf
+    # STOWS by hanging down the wall it is hinged to — 8" to 28" across the whole pocket, i.e.
+    # straight over a grille whose face is 8 1/2"..15 1/2". Folding it up instead would have
+    # buried ED-M-STUDY-RC1 at 32" and cut 12" above the wainscot cap; the grille was the
+    # cheaper thing to move. ** THE GENERAL LESSON, WHICH THIS HOUSE HAS NOW LEARNED TWICE: a
+    # placeable's STOWED envelope is load-bearing on the MEP, and the model holds no geometry
+    # for it at all. ** FT-STUDY-DESK-LEAF is drawn deployed (18" x 20" on the floor); the
+    # 18" x 20" of SOUTH WALL it covers when folded exists only in prose. Nothing here can
+    # fail. Re-read plan/furniture_types.py before putting anything back on that wall below 28".
+    #
+    # 14'-6" is not a retreat to a worse spot, and the reason is the diagonal. The supply is
+    # in the ceiling at (17'-2", 20'-8"); at 16'-6" the extract sat 2'-4" from directly under
+    # it, which is the short-circuit corner of the room. At 14'-6" the pair is corner to
+    # corner — nine feet of plan separation over eight feet of fall, so the sweep crosses the
+    # occupied zone instead of dropping down one end of it.
+    #
+    # ** WHAT IT COSTS: THE GRILLE IS NOW IN THE KNEE SPACE. ** 14'-6" is under the fixed
+    # desk's west half, so a shoe or a bag can sit in front of it in a way the pocket ruled
+    # out. At 10 cfm through a 7" face that is a throttle, not a blockage, and it is the price
+    # of the leaf. If it ever reads as a problem the fix is the west wall (W-M-LS, out of the
+    # foot zone entirely) — but that wall is the centre bearing line and a riser in it wants
+    # checking against the trusses before anyone tries.
+    #
+    # ** RISER CLEARANCES, RE-WALKED FOR THE NEW STATION. ** W-M-CLN2 is
+    # INT_2X4_STAGGERED_DOUBLE_GWB: 5 1/2" of cavity, continuous, but a 2 1/8" device box and
+    # a 3" duct still do not share one 3 1/2" leaf. At 14'-6" the drop is 1'-6" from
+    # ED-M-STUDY-DATA1 (16'-0") and 2'-6" from ED-M-STUDY-RC1 (17'-0") — both further off than
+    # the 6" the old station fought for — and CD-B-DATA-STUDY rises at 16'-0" on this same
+    # wall, now 1'-6" clear instead of 6". Every clearance on this wall got better.
     Register(uid="H6C6RD9NED", tag="REG-M-RET-STUDY", kind=DuctSystem.RETURN, room="RM-M-STUDY",
-            position=pt(ft(16, 6), ft(18, 4.5)), duct_ref="DU-M-ERV-R-LAUNDRY",
+            position=pt(ft(14, 6), ft(18, 4.5)), duct_ref="DU-M-ERV-R-LAUNDRY",
             type_ref="REG-T-ERV-EXH-WALL", design_cfm=10,
             mount=Mount(kind=MountKind.WALL, elevation=inch(12))),
     # The two baths are EXHAUST at 20 cfm each, like the second storey's — see the note over

@@ -369,6 +369,12 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # the rest of the stem did not. Collapses to one key at all four collinear nodes
         # where a ledged segment meets a plain one.
         "assembly_change:GARAGE_ICF_6|GARAGE_ICF_6_BRICKLEDGE",
+        # N-S-B1..B4 on the second storey, 2026-08-30: the five sleeping-side partitions went
+        # to INT_2X4_RC (STC 36 -> 48) and the walls they meet — W-S-SS1/SS2 in the hall,
+        # W-S-BW4 at the closet — did not. It is a real change of construction and a real
+        # detail: the resilient channel and its own leaf of board stop at these nodes, and a
+        # builder who carries them through has shorted the acoustic wall by one leaf.
+        "assembly_change:INT_2X4_PARTITION|INT_2X4_RC",
         "assembly_change:INT_2X4_PARTITION|INT_2X4_STAGGERED_DOUBLE_GWB",
         # N-B-STR, the y=18' line's surviving change: W-B-CW2's playroom partition against
         # W-B-CW3, which took W-B-CW's wet wall on 2026-08-25. This key read

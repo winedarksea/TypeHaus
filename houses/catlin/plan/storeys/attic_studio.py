@@ -165,7 +165,21 @@ NODES = [
 # cited here until 2026-08-29; the 6:12 rake retired both — see plan/storeys/attic.py's WALLS.)
 WALLS = [
     # VOID | POCKET. Stands on W-S-BA-E1B / W-S-BA-E and, over the 4'-0" hall stub, on BM-S-BATH-E.
-    Wall(uid="9WC345CCP1", tag="W-A-BA-E", start_node="N-A-H1", end_node="N-A-N3",
+    #
+    # ** THE NODES ARE THE OTHER WAY ROUND SINCE 2026-08-30, AND THAT IS THE WHOLE EDIT. **
+    # The framing solver lays a segment out from its START node, so which end that is decides
+    # the grid. N-A-H1 sits at y=22'-4", a residue of 12" mod 16", and this wall was laying
+    # out from there toward N-A-N3, which is on the grid — so every stud on it stood 12" off
+    # the studs below. Starting from N-A-N3 instead puts the whole run in phase: **9 orphaned
+    # studs down to 3.** No geometry moves, no check changes, and the BOM is identical — a
+    # `from_node` offset is direction-independent, this wall hosts no openings, and
+    # INT_2X4_PARTITION is symmetric, so reversing it is free in every sense.
+    #
+    # It is the highest-value edit in the stud-grid workstream and it is one line. The node
+    # MOVES that were considered instead were all rejected on evidence (see
+    # `haus explain module`): N-S-B1..B5 governs three walls that appear in no stack edge at
+    # all, and N-S-D1..D4 is W-S-DC2's drain wall one storey down.
+    Wall(uid="9WC345CCP1", tag="W-A-BA-E", start_node="N-A-N3", end_node="N-A-H1",
          assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING),
     # VOID | STUDIO (and, east of x=9'-7 1/2", void | bath).
@@ -248,7 +262,7 @@ OPENINGS = [
     # — walling off the pocket CANNOT make that rule fail — so the leaf size is a buildability
     # call, not a code one.
     Door(uid="Y3R3YMXFVJ", tag="D-A-POCKET", host="W-A-STU-N", type_ref="DT-INT-ACCESS24",
-         position=from_node("N-A-PK-W", ft(6, 4))),
+         position=from_node("N-A-PK-W", ft(7))),
     # Into the bath off the studio. `flip_hinge` parks the leaf against the wall, clear of the
     # shower's SW corner.
     #
@@ -276,7 +290,7 @@ OPENINGS = [
     # anyway: the fixtures went east into the tall half on the same pass (plan/fixtures.py),
     # so the door now opens onto them rather than into the low strip behind them.
     Door(uid="ENHDGC87MN", tag="D-A-STUBATH", host="W-A-BATH-S", type_ref="DT-INT-SWING30",
-         position=from_node("N-A-WW-S", ft(4, 2.5)), flip_hinge=False, flip_swing=True),
+         position=from_node("N-A-WW-S", ft(4, 1)), flip_hinge=False, flip_swing=True),
 ]
 
 # ============================== ROOMS =================================================

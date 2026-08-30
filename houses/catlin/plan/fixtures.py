@@ -44,8 +44,26 @@ BASEMENT_FIXTURES = (
     # of 2026-07-30 moved it here, so the IFC GlobalId follows the fixture rather than being
     # retired with the tag. `drain_position` puts the trap 6" off the east wall face, under the
     # basin's back where the tailpiece actually drops, over SP-B-BATH-LAV.
-    Fixture(uid="5BBZTZNBWN", tag="FX-B-BATH-LAV", type_ref="FX-LAV-24",
-            room="RM-B-BATH", position=pt(ft(16, 8), ft(20)), rotation=deg(-90),
+    # ** A 36" VANITY SINCE 2026-08-30, AND THE DEPTH IS SET BY THE DOOR. ** This was an
+    # FX-LAV-24 -- a bare 24" bowl on the east wall with nothing under it. The east wall is
+    # 39.61" of clear run (y 218.38"..257.99" between W-B-CW2's and W-B-BA-N's finish
+    # faces), which takes a 36" cabinet with 1.8" at each end.
+    #
+    # ** 18" DEEP, NOT 21", BECAUSE D-B-BATH'S SWING ARC REACHES THIS WALL. ** Tested
+    # against the real ``swing_clearance`` polygon rather than its bounding box: a 21"-deep
+    # cabinet is caught by the arc at EVERY position along the east wall, and an 18" one
+    # clears at every position. That is the whole reason this room gets the shallow type,
+    # and it is also the cheaper one -- see fixture_types.py on the big-box combo depth.
+    #
+    # Position is measured off the wall's own layer polygons, never off `Room.clear_face`.
+    # Back at x=210" (W-B-CN2's face), so x 192"..210"; centred on the wall run at
+    # y=238.19", so y 220.19"..256.19". The 21" front zone then reaches x=171", clear of
+    # FX-B-BATH-WC's 24" front envelope, which ends at x=178".
+    #
+    # `drain_position` is unchanged and still correct: (17'-0", 20'-0") falls inside the new
+    # carcass, 6" off the east wall face under the basin's back, over SP-B-BATH-LAV.
+    Fixture(uid="5BBZTZNBWN", tag="FX-B-BATH-LAV", type_ref="FX-VANITY-36-SHALLOW",
+            room="RM-B-BATH", position=pt(inch(201), inch(238.19)), rotation=deg(-90),
             wall_ref="W-B-BA-N", drain_position=pt(ft(17), ft(20))),
 )
 
@@ -133,8 +151,31 @@ MAIN_FIXTURES = (
     # y nudged +6" (2026-07-29, with N-M-W2/N-M-C2's north push for the BATH2 wall move):
     # the room's south face moved with it and the lavatory's old y left it poking through
     # into the hall (test_bath1_fixtures_sit_inside_the_room_and_clear_of_each_other).
-    Fixture(uid="CMQ802AAAA", tag="FX-M-BATH1-LAV", type_ref="FX-LAV-COMPACT", room="RM-M-BATH1",
-            position=pt(m(1.315138), m(7.00891)), wall_ref="W-M-BAE", rotation=deg(180)),
+    # ** A 24" VANITY SINCE 2026-08-30, AND IT USED TO SIT 2 1/2" INSIDE THE WALL. ** The
+    # old FX-LAV-COMPACT (18" x 14", no cabinet) was placed at y=268.94", which is north of
+    # W-M-HS1's finish face at y=271.39" -- it was authored off `Room.clear_face`, whose
+    # north edge reads 268.64" because rooms.py polygonises wall AXES. Same class of error
+    # as the one caught in RM-M-BATH2 on 2026-08-29; nothing checks a Fixture against a wall
+    # face, so it built and checked clean for months. Fixed here along with the retype.
+    #
+    # ** 24" IS EVERYTHING THIS ROOM HAS. ** The wall-hung water closet takes the west half
+    # of the north wall: its centreline is x=26.41", so its 15" side band ends at x=41.41",
+    # and W-M-BAE's finish face is x=68.62". 27.21" of run, so a 24" cabinet
+    # (x 41.5"..65.5") fits and a 30" one does not.
+    #
+    # ** 18" DEEP, THOUGH 21" WOULD NOW FIT. ** W-M-STOS moved 2" south on 2026-08-30, so
+    # the room is 44.23" deep and a 21" carcass would clear its own front zone by 2.2".
+    # It stays shallow because of the DOOR, not the clearance: D-M-BATH1's opening runs
+    # y 280"..304" in the east wall, so every inch of depth is an inch further across the
+    # doorway. At 18" this cabinet's south face is y=289.39" and overlaps the northern 9.4"
+    # of that opening at x<65.5"; at 21" it would overlap 12.4". The door swings OUT, so
+    # there is no swing conflict either way -- you simply enter through the southern ~15"
+    # of the opening. The bowl it replaces had the same geometry 4" less badly. In a
+    # 62" x 44" room with a water closet and a door there is no arrangement that avoids it,
+    # and the trade is the room's first storage of any kind.
+    Fixture(uid="CMQ802AAAA", tag="FX-M-BATH1-LAV", type_ref="FX-VANITY-24-SHALLOW",
+            room="RM-M-BATH1", position=pt(inch(53.5), inch(280.39)), wall_ref="W-M-BAE",
+            rotation=deg(180)),
     # 2026-08-29, the drop-in bath pass: this bowl finally backs onto a wall. It had stood
     # free in the middle of the floor with its tank 9 3/4" clear of anything since the
     # 2026-07-29 wall move, and `wall_ref` said W-M-BA2E — a wall it was 5'-5" away from.
@@ -354,8 +395,29 @@ MAIN_FIXTURES = (
 SECOND_FIXTURES = (
     Fixture(uid="CSQ801AAAA", tag="FX-S-BATH1-WC", type_ref="FX-TOILET-STD", room="RM-S-BATH1",
             position=pt(m(0.560313), m(9.2783)), rotation=deg(90), wall_ref="W-S-W1"),
-    Fixture(uid="CSQ802AAAA", tag="FX-S-BATH1-LAV", type_ref="FX-LAV-24", room="RM-S-BATH1",
-            position=pt(ft(9, 0.5), ft(31)), rotation=deg(90), wall_ref="W-S-BA-E1B"),
+    # ** A 48" VANITY SINCE 2026-08-30 -- THE BIGGEST IN THE HOUSE AFTER RM-M-BATH2'S. **
+    # It replaces a bare FX-LAV-24 that had also been 1.9" inside W-S-BA-E1B's finish face
+    # (x=116.62") and carried `rotation=deg(90)`, which points a fixture's back at -x. The
+    # bowl backs the EAST wall, so the correct rotation is -90; the old value was invisible
+    # only because FX-LAV-24 has no clearance zone to point the wrong way.
+    #
+    # ** 48" FITS ONLY AS A REAL ARC. ** The usable run is bounded north by D-S-BATH1's
+    # swing and south by FURN-S-BATH1-SHELF (the shower's return panel) at y=394.5". The
+    # swing's BOUNDING BOX reaches y=348", which would leave 46.5" and force a 42"
+    # special-order cabinet -- but the swing is a quarter-disc, and tested against the real
+    # polygon a 21"-deep carcass clears from y=345.88" on. So the cabinet runs
+    # y 345.88"..393.88": 48" of stock width, scribing to the shelf with 0.62" to spare,
+    # and the two read as one continuous run of millwork along the wall. ** Re-run that
+    # test if this door, this shelf or W-S-BD-N1B ever moves ** -- 0.62" is the whole
+    # margin, and the north wall already moved 2" south once, on 2026-08-30.
+    #
+    # 30" sink base at the SOUTH end (bowl centred on the vanity at y=369.88"), 18"
+    # three-drawer bank at the north. ED-S-BATH1-RC-MIRROR sits at y 370"..374" on this
+    # wall, so it is within inches of the basin's edge -- NEC 210.52(D) wants 36" to the
+    # sink's OUTSIDE EDGE and this is nowhere near the limit.
+    Fixture(uid="CSQ802AAAA", tag="FX-S-BATH1-LAV", type_ref="FX-VANITY-48-SINGLE",
+            room="RM-S-BATH1", position=pt(inch(106.12), inch(369.88)), rotation=deg(-90),
+            wall_ref="W-S-BA-E1B"),
     Fixture(uid="CSQ803AAAA", tag="FX-S-BATH1-SH", type_ref="FX-TUBSHOWER-60", room="RM-S-BATH1",
             position=pt(m(1.66988), m(10.4013)), wall_ref="W-S-BD-N"),
     # The suite's own bath (source: 46.01sf). Both drain walls are INT_2X6_PLUMBING
@@ -365,8 +427,22 @@ SECOND_FIXTURES = (
     # in the NE corner.
     Fixture(uid="CSQ804AAAA", tag="FX-S-SUITEBATH-WC", type_ref="FX-TOILET-STD",
             room="RM-S-SUITEBATH", position=pt(m(3.42422), m(6.34259)), wall_ref="W-S-DC2"),
-    Fixture(uid="CSQ805AAAA", tag="FX-S-SUITEBATH-LAV", type_ref="FX-LAV-24",
-            room="RM-S-SUITEBATH", position=pt(m(4.21659), m(6.46046)), wall_ref="W-S-SBS"),
+    # ** A 30" VANITY SINCE 2026-08-30. ** The south wall gives 31.76" between the water
+    # closet's 15" side band (its centreline is x=134.81", so the band ends at x=149.81")
+    # and the tub-shower's west face at x=181.57". 30" is the largest stock width that fits;
+    # this cabinet runs x 150.5"..180.5", clearing the WC band by 0.69" and scribing to the
+    # tub with 1.07". The room is 71" deep so this one keeps the standard 21" carcass, and
+    # the 21" front zone stops at y=223.63" with the north face 29" further on.
+    #
+    # `wall_ref` stays W-S-SBS, which is the WET wall this drains into and not the wall it
+    # physically backs (W-S-SN3, at y=265.63") -- the same convention the attic suite uses.
+    #
+    # ** THIS ROOM HAS NO RECEPTACLE. ** NEC 210.52(D) wants one within 36" of the basin's
+    # outside edge and RM-S-SUITEBATH has none at all. That predates this change; see
+    # plans/TODO.md.
+    Fixture(uid="CSQ805AAAA", tag="FX-S-SUITEBATH-LAV", type_ref="FX-VANITY-30-SINGLE",
+            room="RM-S-SUITEBATH", position=pt(inch(165.5), inch(255.13)),
+            wall_ref="W-S-SBS"),
     # Suite bath takes a tub-shower (not the old 36" pan): room's clear face is
     # 9'-8 1/8" x ~6'-4", and the east wall has 5'-0" of run for a 60"x30" alcove. Rotated
     # -90, back turns east onto W-S-C2C; footprint keeps the old pan's north/east edges,
@@ -389,10 +465,35 @@ SECOND_FIXTURES = (
     # (see RM-M-BATH1's note in this file), and a lavatory that BACKS a wall has to travel
     # with it or it stands off the wall by the amount the wall moved. Both mirror lights and
     # the switch above them moved the same 2" (plan/lighting.py).
-    Fixture(uid="CSQ807AAAA", tag="FX-S-VANITY-LAV1", type_ref="FX-LAV-24", room="RM-S-VANITY",
-            position=pt(ft(1, 9), ft(25, 4)), wall_ref="W-S-BD-N"),
-    Fixture(uid="CSQ808AAAA", tag="FX-S-VANITY-LAV2", type_ref="FX-LAV-24", room="RM-S-VANITY",
-            position=pt(ft(4), ft(25, 4)), wall_ref="W-S-BD-N"),
+    # ** A 60" DOUBLE VANITY SINCE 2026-08-30, BUILT AS TWO 30" CABINETS. ** Both bowls
+    # stay: this alcove exists so two people can use it at once, and it keeps both mirrors.
+    # It is authored as two FX-VANITY-30-SHALLOW instances rather than one 60" type because
+    # that is how a 60" double is actually bought and built -- two stock 30" bases under one
+    # 61" double top -- and because one 60" fixture would collapse two lavatories into one
+    # in the fixture schedule, halving the DFU this alcove contributes to the drain.
+    #
+    # ** 18" DEEP. ** W-S-BD-N moved 2" south on 2026-08-30, so the alcove is 42.62" deep
+    # (y 272.0"..314.62" between W-S-SN1's and W-S-BD-N's finish faces) and an 18" carcass
+    # clears its own 21" front zone by 3.62". A 21" one would now clear by 0.62", which is
+    # not enough margin to spend on a wall that has already moved once this week.
+    #
+    # ** THE BOWL SPACING IS THE CODE MINIMUM, EXACTLY. ** Centrelines at x=22.375" and
+    # x=52.375": 30.0" centre-to-centre (IRC P2705.1 / IPC 405.3.1 want 30" between adjacent
+    # fixtures) and 15.75" from each centreline to its side wall (they want 15"). NKBA
+    # Guideline 5 would rather have 20" to the wall and 36" between bowls -- i.e. a 72"-76"
+    # vanity -- and this alcove is 61.49" wide, so the recommendation cannot be met here.
+    # 60" is the smallest code-legal true double and this is it, with nothing to spare.
+    #
+    # ** THIS ROOM HAS NO RECEPTACLE, AND IT NEEDS ONE. ** NEC 210.52(D) wants an outlet
+    # within 36" of each sink's outside edge and there is not one anywhere in RM-S-VANITY.
+    # That predates this change -- the bare bowls had the same problem -- and the fix lands
+    # in plan/electrical.py. See plans/TODO.md.
+    Fixture(uid="CSQ807AAAA", tag="FX-S-VANITY-LAV1", type_ref="FX-VANITY-30-SHALLOW",
+            room="RM-S-VANITY", position=pt(inch(22.375), inch(305.62)),
+            wall_ref="W-S-BD-N"),
+    Fixture(uid="CSQ808AAAA", tag="FX-S-VANITY-LAV2", type_ref="FX-VANITY-30-SHALLOW",
+            room="RM-S-VANITY", position=pt(inch(52.375), inch(305.62)),
+            wall_ref="W-S-BD-N"),
 )
 
 

@@ -706,6 +706,33 @@ SECOND_DEVICES = [
                      position=pt(ft(6, 6), ft(26, 10.375)), type_ref="ED-T-FLOOR-STAT",
                      circuit="CKT-FH-BATH1", room="RM-S-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+    # ** RM-S-SUITEBATH AND RM-S-VANITY BOTH HAD NO RECEPTACLE AT ALL UNTIL 2026-08-30. **
+    # Same NEC 210.52(D) gap as RM-M-BATH1 above, and the same reason it went unnoticed: the
+    # engine encodes E3902's GFCI-location rule but nothing encodes E3901.6 / 210.52(D)'s
+    # "one within 36 in. of each sink", so a bathroom with zero outlets draws no finding.
+    #
+    # SUITEBATH sits on W-S-SN3 immediately WEST of the 30" vanity rather than beside its
+    # mirror: the mirror is 24" wide on a 30" cabinet, which leaves 3 1/2" and 2 1/2" of wall
+    # at the two ends and a device plate needs 4". About 12" to the basin's nearest edge. It
+    # is west of the water closet's 15" side band in plan, which does not matter -- at 44" AFF
+    # it is nowhere near that envelope's clear FLOOR space, and `_clearance_conflicts` tests
+    # bodies that stand in the zone, not things hung above it.
+    ElectricalDevice(uid="ZQBJ03VGYD", tag="ED-S-SUITEBATH-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(inch(148), inch(264.625)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     circuit="CKT-RC-SECOND", room="RM-S-SUITEBATH", rotation=deg(0),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(44))),
+    # ** ONE OUTLET SERVES BOTH BOWLS IN THE ALCOVE, AND THAT IS DELIBERATE. ** 210.52(D)
+    # asks for one within 36" of EACH sink, not one per sink. At x=5'-4 1/2", east of
+    # ED-S-VANITY-SW and past MIRROR2's end, it is 8.9" from the east bowl's edge and 33.2"
+    # from the west bowl's -- inside 36" for both, with 2.8" to spare on the far one. ** That
+    # margin is the thing to re-check if either cabinet moves **: the 60" run is already at
+    # the code minimum for bowl spacing, so there is no slack to absorb a shift. A second
+    # receptacle between the mirrors is the fallback, and it does not fit today (the gap
+    # there is 3" and a plate needs 4").
+    ElectricalDevice(uid="J9JPM7DWDS", tag="ED-S-VANITY-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(inch(64.5), inch(313.625)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     circuit="CKT-RC-SECOND", room="RM-S-VANITY", rotation=deg(0),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(44))),
 ]
 
 SECOND_EQUIPMENT = [
@@ -912,11 +939,26 @@ CONDUIT_TRUNKS = [
                path=(pt(ft(2), ft(29)), pt(ft(1, 6), ft(34, 6))),
                start_elevation=ft(-4), end_elevation=ft(20, 6),
                from_ref="ED-B-PANEL", to_ref="ED-A-PV-JB"),
-    # The over-and-up leg: east along the attic deck under the north rake to x=11'-0", then
-    # up the gable to ED-A-PV-JB at 25'-6". 6" above the deck for the flat part, which is
-    # what CD-A-DATA-NE does on the same storey and for the same reason.
+    # The over-and-up leg: east along the attic deck under the north rake, into the north
+    # gable wall, and up it to ED-A-PV-JB at 25'-6". 6" above the deck for the flat part,
+    # which is what CD-A-DATA-NE does on the same storey and for the same reason.
+    #
+    # ** THE LAST FOOT WAS OVER FO-A-HALL (fixed 2026-08-30). ** It ran straight east at
+    # y=34'-6" to x=11'-0" and stood up there — and FS-ATTIC's deck void is x 10'-0"..18'-0",
+    # so the last 12" of the flat leg AND the whole 5'-0" riser were in a 13'-deep open shaft
+    # with no deck under either. This is the same defect CD-A-DATA-NE was rerouted for on
+    # 2026-08-29, one bay west and missed at the time; `mep.run_over_void` is what found it.
+    #
+    # It turns north at x=9'-6", 6" clear of the void's west edge, and finishes inside the
+    # gable wall. y=35'-10" is 4" into W-A-N2/W-A-N2B's 5 1/2" stud cavity (which runs
+    # y 35'-6"..35'-11 1/2"), so the run straps to gable studs for its last 1'-6" and stands
+    # up between them, directly behind the box. There is no third option: FS-ATTIC's void
+    # stops at y=35'-5 3/8" and W-A-N2B's gwb face starts at y=35'-5 3/8" too, so between the
+    # hole and the wall there is nothing at all. It is 1 1/2" EMT in a 5 1/2" stud — a 2"
+    # bore, 36% of the depth, inside R502.8's 40% for a bored hole. **+1.33 LF.**
     ConduitRun(uid="XJR4KE400J", tag="CD-A-PV-EAST", trade_size=inch(1.5),
-               path=(pt(ft(1, 6), ft(34, 6)), pt(ft(11), ft(34, 6))),
+               path=(pt(ft(1, 6), ft(34, 6)), pt(ft(9, 6), ft(34, 6)),
+                     pt(ft(9, 6), ft(35, 10)), pt(ft(11), ft(35, 10))),
                start_elevation=ft(20, 6), end_elevation=ft(25, 6),
                from_ref="CD-B-ATTIC-RISER", to_ref="ED-A-PV-JB"),
     # --- the backup microgrid's three raceways (2026-08-02) --------------------------
@@ -1013,48 +1055,83 @@ DATA_TRUNKS = [
 ]
 
 MAIN_DATA_TRUNKS = [
-    # Out of the chase at the main ceiling plane and east across the FS-SECOND joist bay to
-    # the open kitchen/living ceiling. (19', 29') sits east of the FO-M-STAIR well
-    # (x 10'-6"..17'-6") and between the kitchen, the stair and RM-M-STUDY — one radio
-    # covering all three, which is what put it here rather than over the counter.
+    # ** BOTH RUNS CROSSED THE STAIRWELL, AND BOTH ARE OFF IT NOW (2026-08-30). **
+    # They left the chase at y=34'-6" and went straight east at +9'-2". At that height they
+    # are inside FS-S-WEST — the SECOND storey's floor, whose joists run 9'-0 1/8" to 10'-0"
+    # — and FS-S-WEST's deck void is x 10'-3 3/8"..17'-8 5/8", y 26'-0 3/8"..35'-5 3/8".
+    # KITCH spanned **7.27 ft** of that opening and PORCH **15.52 ft**, because PORCH's south
+    # leg then ran down x=17'-6", which is 2 5/8" INSIDE the second floor's trimmer even
+    # though it is exactly ON the main floor's — eight more feet of raceway over a two-storey
+    # stairwell with nothing to strap it to. Both figures are measured by `mep.run_over_void`
+    # (checks/mep/routing.py), which is the check this pair is the reason for; reading them
+    # by eye against FS-M-STAIR's slightly narrower opening under-counts both. Nothing graded
+    # it before: a ConduitRun carries no floor_ref, so it draws wherever it is authored, and
+    # `duct_joist_bay` only fires on JOIST_BAY routing.
+    #
+    # KITCH goes NORTH instead, into the first joist bay inboard of the north wall at
+    # y=35'-6" — 6" clear of the void's north edge, strapping to the rim and the joist ends
+    # the whole way. x 2'-0"..19'-0" of that wall carries one opening, D-M-ENTRY, whose head
+    # is at 6'-8"; at +9'-2" this run is above the plate line entirely, in the floor
+    # structure, so no header is in its way. **+2 LF.** (19', 29') is unchanged: it still
+    # sits east of the FO-M-STAIR well and between the kitchen, the stair and RM-M-STUDY —
+    # one radio covering all three, which is what put it there rather than over the counter.
     ConduitRun(uid="CDT010AAAA", tag="CD-M-DATA-KITCH", trade_size=inch(0.75),
                service=Service.DATA,
-               path=(pt(ft(2), ft(34, 6)), pt(ft(19), ft(34, 6)), pt(ft(19), ft(29))),
+               path=(pt(ft(2), ft(34, 6)), pt(ft(2), ft(35, 6)), pt(ft(19), ft(35, 6)),
+                     pt(ft(19), ft(29))),
                start_elevation=ft(9, 2), end_elevation=ft(9, 2),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-KITCH-AP"),
-    # South through the same joist bay and out under the balcony deck to the porch soffit,
-    # sharing SP-SG-PORCH-ELEC with the ceiling fan's supply — one hole, two raceways.
+    # PORCH goes SOUTH first and turns east at y=1'-0", well below the void, then out under
+    # the balcony deck to the porch soffit — still sharing SP-SG-PORCH-ELEC with the ceiling
+    # fan's supply, one hole and two raceways, because the exit point at x=17'-6" never
+    # moved — only the y at which the run reaches it did, from a line inside the stairwell to
+    # one twenty-five feet south of it. **The reroute is free**: 15'-6" + 39'-4" east-then-south is the same 54'-10" of
+    # plan run as 33'-6" + 15'-6" + 5'-10" south-then-east-then-south, so 55.33 LF developed
+    # either way, at identical cost. The long x=2'-0" leg rides FS-S-WEST, which is open-web:
+    # 3/4" EMT passes between the 8 7/8" chords without a hole in anything
+    # (resolve/framing/profiles.py).
     ConduitRun(uid="CDT011AAAA", tag="CD-M-DATA-PORCH", trade_size=inch(0.75),
                service=Service.DATA,
-               path=(pt(ft(2), ft(34, 6)), pt(ft(17, 6), ft(34, 6)),
+               path=(pt(ft(2), ft(34, 6)), pt(ft(2), ft(1)), pt(ft(17, 6), ft(1)),
                      pt(ft(17, 6), ft(-4.833))),
                start_elevation=ft(9, 2), end_elevation=ft(8, 8),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-PORCH-AP"),
 ]
 
 ATTIC_DATA_TRUNKS = [
-    # Along the attic floor to the NE corner, then up the gable to the access point.
+    # Into the north gable wall and east along it to the NE corner, then up to the access
+    # point.
     #
-    # ** REROUTED 2026-08-29: THE OLD LINE RAN ACROSS OPEN AIR. ** It went straight east on
-    # the deck at y=34'-6" from x=2'-0" to x=33'-0", and x 10'..18' of that is FO-A-HALL —
-    # 8'-0" of 3/4" conduit spanning a 13'-1" shaft with a 9'-0" drop under it and no deck
-    # to strap to. Nothing in the model would have said so: a ConduitRun carries no
-    # floor_ref, so it is drawn wherever it is authored.
+    # ** THE 2026-08-29 DETOUR IS RETIRED (2026-08-30). ** That pass found the run spanning
+    # 8'-0" of FO-A-HALL on the open deck and sent it 66 feet the long way round — south down
+    # x=2'-0" to y=20'-8", east across the studio, and back north up the east loft. The
+    # premise it rested on was "FO-A-HALL's north edge IS W-A-N2's inside gwb face, so the
+    # strip between the void and the wall is wall, not deck." Both halves are true and the
+    # conclusion does not follow: a conduit does not need DECK, it needs FRAMING TO STRAP TO,
+    # and a stud cavity is framing. DU-ERV-EA has run that same band all along.
     #
-    # There is no way round the north: FO-A-HALL's north edge IS W-A-N2's inside gwb face,
-    # so the strip between the void and the wall is wall, not deck. It goes south instead,
-    # down the same x=2'-0" line to y=20'-8", east across the studio and the centre line —
-    # the same crossing DU-A-ERV-R-BED3 now makes, and for exactly the same reason — then
-    # back north up the east loft to the NE corner and up the gable.
+    # So it turns north and finishes inside the gable. y=35'-7" is 1" into the 5 1/2" stud
+    # cavity (y 35'-6"..35'-11 1/2" on W-A-N2 / W-A-N2B / W-A-N1, which is one continuous
+    # line of studs across all three), so `mep.run_over_void` passes it on the wall
+    # exemption rather than on a technicality — the studs are the support. Thermally it is
+    # the right side too: CATLIN_EXT_2X6 puts air and vapour control on the exterior foam
+    # with mineral wool inboard, so a raceway in the cavity is on the warm side of both.
+    # **57.08 -> 29.58 LF, ratio 2.26 -> 1.19, four 90s down to three (270 deg of bend
+    # against NEC's 360 deg limit per pull, where the old route was AT the limit).**
     #
-    # It stays ON the deck for the whole run (`start_elevation` ft(20, 6) is 6" above it).
-    # Inside RM-A-STUDIO that means a surface conduit in a finished bedroom, so it runs the
-    # x=2'-0" line beside the ERV chase and is boxed in with it — see DU-A-ERV-R-ATTIC's
-    # note on the knee-wall bench. It is data, not power: no shared-cavity question.
+    # It turns north at x=6'-0" rather than x=2'-0", and that is the whole reason DU-ERV-EA
+    # does not have to move. The exhaust trunk climbs the 6:12 rake from +244" at x=1'-11"
+    # to +258" at x=8'-0", so west of x=4'-4" its 6" envelope is at this conduit's own
+    # +20'-6"; from x=6'-0" east it is 3 3/4" clear and climbing, and by x=10'-0" it is at
+    # +276" and 2'-6" overhead. Entering the band four feet further east costs nothing —
+    # 29.58 LF either way, because the leg lost on the deck is the leg gained in the wall —
+    # and it leaves a 6" insulated duct strapped to the gable where it belongs instead of
+    # hanging it 10" off the wall over the void. It also keeps 1 5/8" from CD-A-PV-EAST,
+    # which shares this cavity at y=35'-10" for its last 1'-6".
     ConduitRun(uid="CDT012AAAA", tag="CD-A-DATA-NE", trade_size=inch(0.75),
                service=Service.DATA,
-               path=(pt(ft(2), ft(34, 6)), pt(ft(2), ft(20, 8)), pt(ft(27), ft(20, 8)),
-                     pt(ft(27), ft(34, 6)), pt(ft(27), ft(35, 5))),
+               path=(pt(ft(2), ft(34, 6)), pt(ft(6), ft(34, 6)), pt(ft(6), ft(35, 7)),
+                     pt(ft(27), ft(35, 7))),
                start_elevation=ft(20, 6), end_elevation=ft(24),
                from_ref="ED-B-NET-PATCH", to_ref="ED-A-EAST-AP"),
 ]
@@ -1459,6 +1536,26 @@ NEC_FILL_MAIN = [
                      position=pt(inch(7.635), ft(15, 3)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN", room="RM-M-BATH2", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44))),
+    # ** RM-M-BATH1 HAD NO RECEPTACLE AT ALL UNTIL 2026-08-30. ** Not one too far away --
+    # none. NEC 210.52(D) requires at least one within 36" of the sink's outside edge, and
+    # (D)(2) requires it on a wall or partition ADJACENT to the sink, on the countertop, or
+    # on the cabinet itself. An outlet in the next room does not satisfy it however close it
+    # measures, which is why the two entries in plans/TODO.md that quoted 42.9" and 37.2" to
+    # receptacles in RM-S-SUITE were understating the problem rather than describing it.
+    #
+    # W-M-BAE, in the 8 5/8" of wall between the room's north-east corner (y=22'-7 3/8") and
+    # D-M-BATH1's opening (y 23'-4"..25'-4"). That strip is the only piece of wall in this
+    # 62" x 44" room that is not the water closet, the vanity, the mirror over it or the
+    # door: 1 1/8" east of the cabinet's end and about 4" from the basin's nearest edge.
+    # 44" AFF is the house's vanity-outlet height and is well inside (D)(2)'s "not more than
+    # 12 in. below the countertop" (the counter is 36").
+    #
+    # GFCI at the DEVICE on the storey circuit, which is this house's settled treatment for
+    # a bathroom outlet -- see ED-M-BATH2-RC1 above for why the breaker is the wrong place.
+    ElectricalDevice(uid="4KMFZPRJPX", tag="ED-M-BATH1-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(inch(67.625), inch(275.75)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     circuit="CKT-RC-MAIN", room="RM-M-BATH1", rotation=deg(-90),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(44))),
     # y flipped to W-M-STOS's north face (2026-07-28) when W-M-BAE's shift pushed the south
     # face into RM-M-BATH1. Inside RM-M-MUD-CLOSET since 2026-08-02, kept on purpose: NEC
     # 410.16 restricts closet luminaires, not receptacles, and RM-M-MUDROOM is
@@ -1468,8 +1565,18 @@ NEC_FILL_MAIN = [
                      position=pt(ft(4, 6.625), ft(26, 9.375)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    ElectricalDevice(uid="NEC068AAAA", tag="ED-M-LIVING-RC10", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(9, 6), ft(26, 2.625)), type_ref="ED-T-RECEPTACLE",
+    # ** GFCI SINCE 2026-08-30, FOR EXACTLY THE REASON RC9 ABOVE ALREADY IS. ** RM-M-BATH1's
+    # lavatory became a 24" vanity that day and its cabinet reaches 4'-9" further east than
+    # the 18" bowl did, so this receptacle fell inside E3902.10's 6'-0" sink reach — 4'-7"
+    # to the cabinet's nearest corner, measured through D-M-BATH1's open doorway rather than
+    # through a wall. `code.E3902_gfci_locations` FAILed it and is correct.
+    #
+    # A note for whoever reads that finding next: the check measures from the fixture's
+    # CENTROID (it reported 5.8'), but NEC 210.8 and E3902.10 both measure from the sink's
+    # OUTSIDE EDGE, which here is 4.6'. The check understates every distance by half a
+    # fixture, so it under-reports rather than over-reports — this one is real either way.
+    ElectricalDevice(uid="NEC068AAAA", tag="ED-M-LIVING-RC10", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(9, 6), ft(26, 2.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     # ED-M-LIVING-RC11 stood on the 10 3/16" pier at W-M-STRS's east end. That wall was
@@ -1644,6 +1751,18 @@ NEC_FILL_SECOND = [
                      position=pt(ft(22, 7.375), ft(9, 3.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    # RM-S-BED1's west wall, SOUTH of D-S-BED1 (2026-08-30). Moving that door 6" north onto
+    # its stud line stretched the run from the room's SW corner to the door's south jamb past
+    # NEC 210.52(A)(1)'s 6 ft — `electrical.receptacle_spacing` reported the gap at (22'-0",
+    # 14'-5") the moment the door moved. y=11'-0" is 2'-0" from the corner and 3'-5" from the
+    # jamb, so both halves of the run are covered, and it is station 24" on W-S-BW1's grid:
+    # a bay centre, clear of the module studs at 16" and 32" and of the corner pack.
+    # x is the east gypsum face plus 1", the same offset ED-S-BED2-RC5 uses on this wall —
+    # the box is 2" deep and its back goes on the face.
+    ElectricalDevice(uid="1M621JFX16", tag="ED-S-BED1-RC5", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(22, 2.375), ft(11)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-SECOND",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
     ElectricalDevice(uid="NEC034AAAA", tag="ED-S-BED2-RC2", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(35, 4.375), ft(26, 3.125)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
@@ -1660,7 +1779,10 @@ NEC_FILL_SECOND = [
     # y 21'-9 1/16" .. 24'-3 1/16" and breaks the wall line there; the space that reopens at
     # the north jamb ran 6'-2 5/8" round the NW corner to ED-S-BED2-RC1 before reaching a
     # receptacle, which is the 210.52(A)(1) 6' rule by 2 5/8" — the one FAIL the house
-    # carried. x=22'-1 3/8" is W-S-BW2's east gypsum face (axis 21'-11", 4 1/2" partition);
+    # carried. x=22'-1 3/8" is W-S-BW2's east gypsum face — unchanged by the 2026-08-30
+    # INT_2X4_RC retype, which added 1/2" of resilient channel to the HALL side only and
+    # re-datumed the wall on its studs, so this face is still 2 3/8" east of the 21'-11" axis
+    # (the wall is 5 1/4" now, not 4 1/2", and it is no longer symmetric about that axis);
     # y=25'-6" leaves 1'-2 15/16" of wall to the RO and 1'-2" to the corner, so the box lands
     # in a stud bay and not in a corner pack. x is the face PLUS 1" — the box is 2" deep and
     # its back goes on the face, which is the same offset ED-S-BED2-RC2 uses on the east

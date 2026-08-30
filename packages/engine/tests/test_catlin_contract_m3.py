@@ -2243,13 +2243,27 @@ def test_the_centreline_bearing_wall_is_one_stud_grid_on_every_storey(catlin_mod
         strays = [s for s in off if min(abs(s - b) for b in breaks) > inch(12).inches]
         assert not strays, f"{storey}: studs off the centreline grid at {strays}"
         module = [s for s in stations if s not in off]
-        assert len(module) >= 15, f"{storey}: only {len(module)} module studs"
+        # 15 -> 14 on 2026-08-30, and DOWN is the right direction here. D-S-PLANT moved onto a
+        # stud line on W-S-C1, which is what `structural.door_framing_module` asks for, and a
+        # door on a stud line replaces that module stud with its own king: one fewer station
+        # in this list, one fewer stud cut in the building. Lowered to the measured value
+        # rather than widened, so a real regression still shows.
+        floor = 14 if storey == "second" else 15
+        assert len(module) >= floor, f"{storey}: only {len(module)} module studs"
         shared = set(module) if shared is None else (shared & set(module))
 
-    # Not merely "each storey is on a 16" grid" — the same stations, storey to storey. Ten
+    # Not merely "each storey is on a 16" grid" — the same stations, storey to storey. Nine
     # of them run the full height of the house; the rest are where one storey has a door or
     # a segment the others do not.
-    assert shared is not None and len(shared) >= 10, sorted(shared or ())
+    #
+    # ** 10 -> 9 on 2026-08-30, and the tenth did not go anywhere. ** D-S-PLANT moved onto the
+    # module on W-S-C1, and a jamb pack that lands on the module lands ON a module stud: its
+    # king is at 30 3/4" and its jack at 32 1/4", straddling station 32 to within a quarter
+    # inch. The load path there is not weaker, it is doubled — what changed is that
+    # ``_facade_stations(..., "stud")`` counts members whose child_key starts with "stud",
+    # and a king is not one. Lowered to the measured value rather than widened; a real loss of
+    # a full-height line would take this below 9.
+    assert shared is not None and len(shared) >= 9, sorted(shared or ())
 
 
 def test_upper_storey_studs_stand_over_studs(catlin_model):
@@ -2276,34 +2290,15 @@ def test_upper_storey_studs_stand_over_studs(catlin_model):
     that stand on a trimmer pair rather than on a wall, and two second-storey walls entered
     the population for the first time because declaring them BEARING gave them a stack edge.
     """
-    walls = {w.tag: w for w in catlin_model.walls}
+    # The arithmetic itself lives in ``checks/structural/_stud_grid.orphan_studs`` since
+    # 2026-08-30, so this pin and ``haus explain module``'s report cannot disagree about what
+    # the number means — the report exists to tell somebody which grid to re-phase, and a
+    # report that counted differently from the pin would send them after the wrong wall.
+    from typehaus.checks.structural._stud_grid import orphan_studs
 
-    def studs(wall):
-        return [m for m in wall.members if m.category == "stud"]
-
-    carriers: dict[str, list[str]] = {}
-    for edge in catlin_model.stack_edges:
-        lower, upper = walls.get(edge.lower_wall), walls.get(edge.upper_wall)
-        if lower is None or upper is None or not frames_structure(lower):
-            continue
-        carriers.setdefault(edge.upper_wall, []).append(edge.lower_wall)
-
-    tol = inch(0.5).meters
-    total, orphans = 0, []
-    for upper_tag, lower_tags in sorted(carriers.items()):
-        upper = walls[upper_tag]
-        (ax, ay), (bx, by) = upper.axis
-        span = math.dist((ax, ay), (bx, by))
-        dx, dy = (bx - ax) / span, (by - ay) / span
-
-        def station(member, ax=ax, ay=ay, dx=dx, dy=dy):
-            return (member.p0[0] - ax) * dx + (member.p0[1] - ay) * dy
-
-        below = [station(b) for tag in lower_tags for b in studs(walls[tag])]
-        for stud in studs(upper):
-            total += 1
-            if not any(abs(station(stud) - b) <= tol for b in below):
-                orphans.append(f"{upper_tag}/{stud.child_key}")
+    total, per_wall = orphan_studs(catlin_model)
+    orphans = [f"{tag} x{count}" for tag, count in sorted(per_wall.items())]
+    orphan_count = sum(per_wall.values())
 
     assert total >= 220, f"fixture regression: only {total} stacked studs found"
     # **126/291 on 2026-08-29, and this one IS a real worsening: 36.2% -> 43.3%.** Say so
@@ -2325,6 +2320,15 @@ def test_upper_storey_studs_stand_over_studs(catlin_model):
     # moving six points is the kind of thing this pin exists to make somebody look at, so
     # the reason is written down instead of the number being quietly raised.
     # Both numbers re-pinned rather than one loosened, per the docstring.
-    assert len(orphans) <= 126, (
-        f"{len(orphans)}/{total} upper-storey studs stand over no stud below "
-        f"(was 126/291); first offenders {orphans[:12]}")
+    # **106/239 on 2026-08-30, and BOTH numbers moved for reasons worth stating.** The
+    # denominator fell 291 -> 239 with the 2026-08-29 attic redesign's walls; the numerator
+    # fell 126 -> 106 in the 2026-08-30 stud-grid pass, and 6 of that 20 is one line:
+    # W-A-BA-E's start/end nodes were swapped, so it lays out from the on-grid N-A-N3 instead
+    # of from N-A-H1's 12" residue (9 orphans -> 3). The rest is the door-module pass moving
+    # twenty-two openings onto their host walls' grids, which takes their jamb packs with
+    # them. Ratio 43.3% -> 44.4%: the RATIO went slightly the wrong way because the
+    # denominator shrank faster than the count, which is why both numbers are pinned and
+    # neither is loosened.
+    assert orphan_count <= 106, (
+        f"{orphan_count}/{total} upper-storey studs stand over no stud below "
+        f"(was 106/239); first offenders {orphans[:12]}")

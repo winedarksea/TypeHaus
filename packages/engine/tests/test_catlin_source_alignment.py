@@ -213,7 +213,15 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
     # and the swing bounds it west, whichever hand the leaf takes). The door went 8 15/16"
     # north instead, to 23'-0 1/16". That is a real deviation from the survey and is asserted
     # as one — put the door back on 24'-1" and `integrity.door_swing_conflict` returns.
-    for tag, y_ft in (("D-S-BED1", 15 + 2 / 12), ("D-S-BED2", 23 + 1 / 16 / 12),
+    #
+    # D-S-BED1 left it on 2026-08-30, and it is the second such departure with a reason
+    # rather than a loosened tolerance. Its centre was 15'-2", 6" off W-S-BW1's stud module,
+    # so it cut two stud lines where one would do and `structural.door_framing_module` named
+    # 15'-8" as the nearest legal station. The move was not free: at 15'-8" the west wall
+    # space between RM-S-BED1's SW corner and the door's south jamb runs past NEC
+    # 210.52(A)(1)'s 6 ft, so ED-S-BED1-RC5 goes in with it — exactly the trade ED-S-BED2-RC5
+    # records one bedroom north. Put the door back on 15'-2" and the stud comes back with it.
+    for tag, y_ft in (("D-S-BED1", 15 + 8 / 12), ("D-S-BED2", 23 + 1 / 16 / 12),
                       ("D-S-BED3", 28 + 7 / 12)):
         x, y = centres[tag]
         assert x == pytest.approx(ft(21, 11).meters, abs=TOL_M), tag

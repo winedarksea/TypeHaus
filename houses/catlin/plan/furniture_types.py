@@ -178,13 +178,30 @@ BATH1_SHELF_2030 = FurnitureType(
 # No `clearances` on either, per the casework rule BATH1_SHELF_2030 states: a built-in's
 # back is the wall, its ends are its neighbours, and the floor in front of it is the floor
 # you stand on to use it. A declared zone here would be the room.
+# ** THE SEAT DECK IS 16", NOT 18", AND THE 2" IS THE CUSHION. ** A bench is framed to a
+# height; a CHAIR is set to one. The 18" this was first drawn at is the right number for a
+# bare dining bench and the wrong one the moment a 3" foam cushion goes on it: high-resilience
+# foam settles ~1 1/2" under an adult, so an 18" deck seats you at ~19 1/2" and a 20" deck
+# would seat you at 21 1/2". The differential that matters is COMPRESSED SEAT to desk top, and
+# it wants to be 11"-12" (a 29" desk against the 17"-18" an office chair is actually used at).
+# 16" + 1 1/2" = 17 1/2", against FT-STUDY-DESK's 29 1/2" top, is 12". Exact.
+#
+# ** THIS IS WHY THE DESK DID NOT MOVE. ** The other way to close the same gap is to raise the
+# desk to 31", and that is the expensive way: 31" is above the 28"-30" band for seated laptop
+# work and it would shrug the shoulders of anyone using it, AND it buries ED-M-STUDY-RC1/-RC2
+# and ED-M-STUDY-DATA1, all three of which sit at 32" *because* they are 2 1/2" over a 29 1/2"
+# top. Framing the bench 2" lower costs nothing and touches no device. Lower the deck, never
+# raise the desk — and if the cushion is ever re-specced thicker than 3", this number is what
+# has to move, not the desk.
 STUDY_BENCH = FurnitureType(
     tag="FT-STUDY-BENCH", name='Study booth bench, 47" x 17"',
-    footprint=(inch(47), inch(17)), height=inch(18),
+    footprint=(inch(47), inch(17)), height=inch(16),
     storage=False, work_surface=False, plan_symbol="sauna-bench",
     source="Site-built walnut millwork scribed to RM-M-STUDY's NORTH wall, running "
            "east-west. 47\" of the 47 1/8\" between the wainscot's west and east returns "
-           "(1/16\" of scribe each end), 17\" deep, 18\" seat. ** ITS BACK IS NOT A "
+           "(1/16\" of scribe each end), 17\" deep, and a 16\" seat DECK that seats you at "
+           "17 1/2\" once a 3\" cushion takes an adult — see the note above; on a bench the "
+           "deck height is the cushion's business. ** ITS BACK IS NOT A "
            "PART: ** the 36\" walnut wainscot already on that wall is the back rail over "
            "an 18\" seat, which is why the bench runs the full length and the desk does "
            "not. In a booth, back support beats desk width. ** IT IS A FLOOR-STANDING "
@@ -192,14 +209,19 @@ STUDY_BENCH = FurnitureType(
            "carrying a stack edge, and nothing here asks it to hold a cantilever.",
 )
 
-# ``plan_symbol="desk"`` is exact, not an approximation: `furniture.py`'s desk is
-# ``slab(apron=True, modesty_panel=True)``, which is a fixed top with an apron and a panel
-# closing the knee space — literally what this is. It is NOT a table; there are no legs to
-# draw at the wall ends.
+# ** ``plan_symbol`` WAS "desk" AND WAS DRAWING TWO THINGS THAT ARE NOT BUILT. ** The text
+# below has always said this top is cantilevered off cleats with the knee space open to the
+# wall, and `furniture.py`'s "desk" is ``slab(apron=True, modesty_panel=True)`` — which plots
+# four corner legs AND a panel across the back of the knee space. The symbol and the source
+# note have disagreed since the piece was authored; the note was right. "wall-desk" (added to
+# the engine 2026-08-30, ``legs=False, modesty_panel=False``) is the same slab with an apron
+# and nothing standing on the floor, which is what a cleat-hung top is. FT-STUDY-DESK-LEAF
+# below needs the same symbol for a harder reason: a leaf with a leg or a modesty panel
+# cannot fold.
 STUDY_DESK = FurnitureType(
     tag="FT-STUDY-DESK", name='Study booth desk top, 29" x 20"',
     footprint=(inch(29), inch(20)), height=inch(29.5),
-    storage=False, work_surface=True, plan_symbol="desk",
+    storage=False, work_surface=True, plan_symbol="wall-desk",
     source="Site-built walnut millwork, fixed (not a fold-down leaf), scribed into "
            "RM-M-STUDY's SOUTH-WEST corner — the west wall's wainscot at one end, the "
            "south wall's behind it, 1/16\" of scribe at each. 20\" deep at 29 1/2\", "
@@ -209,6 +231,86 @@ STUDY_DESK = FurnitureType(
            "centred on the south wall, its east end stood in D-M-STUDY's opening and you "
            "entered past it. In the corner it stops 18 7/8\" short of the east wall, "
            "which is the pocket you step into.",
+)
+
+
+# ** THE FOLD-DOWN LEAF (2026-08-30). ONLY THE EXTRA LENGTH FOLDS, AND THAT IS THE DESIGN. **
+#
+# The ask was a desk long enough for two, that folds to the wall, and that still lets one
+# person get in and out easily. Those pull against each other only if the WHOLE desk folds:
+# a 47" top deployed leaves this room no standing floor at all (see the geometry below), so
+# a fold-everything desk would have to be folded and unfolded every single time anyone walked
+# in, for the 95% of days one person works here alone. Folding only the 18" the second person
+# needs keeps the daily room exactly as it is — a fixed 29" desk and the 18 7/8" pocket you
+# step into — and buys the two-person case on demand.
+#
+# ** 47" IS THE ROOM'S CEILING, AND IT IS BELOW EVERY PUBLISHED TWO-PERSON MINIMUM. ** 29"
+# fixed + 18" leaf = 47", the full lined box, 23 1/2" each. The trade literature wants 30"
+# per person (a comfortable two-person desk is 72" x 30"); 24" is where "elbows touch" starts.
+# So this is honestly a squeeze, and it is a squeeze for two people around ONE laptop, not for
+# two people each working. Nothing can fix that: 47 1/8" is the wall, and 20" of depth is
+# already under the 24"-30" a two-person setup wants. Do not read the leaf as a second
+# workstation.
+#
+# ** DEPLOYED, THIS ROOM HAS NO FLOOR, AND THAT IS FINE. ** Deployed the leaf holds
+# y 220 3/4"..240 3/4" across the pocket, leaving the same 7 1/8" slot between desk front and
+# bench front that exists at the fixed desk. You slide in from the bench, you do not walk in.
+# It is a diner booth, and the sequence is: both people sit, THEN the leaf comes down. The one
+# thing that makes this safe rather than a trap is that D-M-STUDY swings OUT of the booth
+# (`swing_clearance` resolves to x 216"..246", entirely east of the room) — so a deployed leaf
+# cannot block the door, and either occupant can lift the leaf one-handed from a seated
+# position. Check that swing again before anything here is re-hung.
+#
+# ** IT IS MODELLED DEPLOYED, WHICH IS THE STOWED-STATE LIE WORTH TELLING. ** A Furniture is a
+# footprint on the floor plus a height; there is no way to say "a 20" panel hanging on a wall
+# between 8" and 28"". Deployed is both the state a plan drawing shows and the WORST case for
+# every collision and clearance check, so the model tests the configuration that could fail.
+# Stowed it is a flat panel projecting ~3" from the south wall of the pocket, top edge at 28",
+# bottom at 8" — entirely inside WP-M-STUDY-WAINSCOT's 36" field, which is why it folds DOWN
+# and not up. Folded UP it would stand 28"..48", cutting 12" above the wainscot cap in the one
+# place you look as you walk in, and it would bury ED-M-STUDY-RC1 at 32". Down costs the
+# stale-air grille a move (plan/mep_registers.py); up would have cost an outlet and the
+# wainscot line. Down is cheaper and better looking.
+#
+# ** THE HARDWARE, AND WHY IT IS NOT A MURPHY-DESK KIT. ** There is no purchasable murphy-desk
+# mechanism rated for this: the Create-A-Bed kit (Rockler #78834) is the standard article and
+# it is rated 50 lb, which is a laptop and a notebook, not two adults leaning. Build it from
+# brackets: a pair of Hafele/Hebgo 287.43.419 heavy-duty folding table brackets — 18 7/8"
+# projection against this 20" leaf, 1100 lb/pair, auto-locking when raised and released by
+# light upward pressure on the locking arm, so one hand and one motion from a seated position.
+# NOT gas struts: Blum Aventos and Hafele Free Flap are specified by the weight of the flap
+# they LIFT and were never validated to carry load downward when open. If soft-close is wanted
+# it is a Sugatsune EBD damper added to a load-bearing bracket, never a flap fitting standing
+# in for one.
+#
+# ** RACKING IS THE FAILURE MODE, NOT CAPACITY, AND THE FIX IS CONTINUITY. ** Two brackets are
+# two pins in a line, and two pins in a line is a hinge that parallelograms sideways when
+# somebody leans on a corner. The bracket steel is never what gives. So: a continuous ledger
+# the full 18", a full-length piano hinge to it, and the leaf's west edge registering into
+# FT-STUDY-DESK's east end on bullet catches, which triangulates it against the one thing in
+# the room that cannot move. A 1 1/2" solid walnut leaf this short is stiff enough on its own;
+# no drop leg is needed, and a drop leg in the pocket would defeat the point of the pocket.
+#
+# ** AND THE LEDGER IS WHERE THIS WALL BITES BACK. ** W-M-CLN2 is INT_2X4_STAGGERED_DOUBLE_GWB
+# and it is STC 52 *because* no stud touches both faces. The received detail for a wall-hung
+# desk — a ledger lagged through the finish into every stud it crosses — would either miss
+# (there are 2" of double gypsum plus 3/4" of wainscot before a lag reaches wood) or, worse,
+# be through-bolted to the far-face studs and short the decoupling this booth was retyped for.
+# The detail is blocking LET IN AT FRAMING, laid FLAT: study-face studs occupy 0"..3 1/2" of
+# the 5 1/2" plate and the living-side studs 2"..5 1/2", so a 2x4 on the flat sits 0"..1 1/2"
+# and clears the far studs by 1/2". The bench already carries this note ("the blocking laid
+# into the staggered bays"); the leaf needs it too, and it has to be in before the rock goes on.
+FOLD_LEAF = FurnitureType(
+    tag="FT-STUDY-DESK-LEAF", name='Study booth desk leaf, 18" x 20", fold-down',
+    footprint=(inch(18), inch(20)), height=inch(29.5),
+    storage=False, work_surface=True, plan_symbol="wall-desk",
+    source="Site-built walnut fold-down leaf filling RM-M-STUDY's entry pocket, hinged to "
+           "let-in blocking on the south wall and carried by a pair of Hafele/Hebgo "
+           "287.43.419 folding table brackets (18 7/8\" projection, 1100 lb/pair, "
+           "auto-locking). Deployed it butts FT-STUDY-DESK's east end on bullet catches for "
+           "47\" of continuous top; stowed it hangs flat inside the wainscot field, 8\" to "
+           "28\", and the pocket is clear floor again. ** MODELLED DEPLOYED: ** that is the "
+           "worst case for collision and the state a plan draws.",
 )
 
 
@@ -530,4 +632,4 @@ FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, CURTAIN_ROD_OUTDOOR_114,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, BATH1_SHELF_2030,
                    MEDIA_SECTIONAL_U, THEATER_BOOKCASE, OVER_COLD_3278, MIXER_GARAGE_24,
                    PANTRY_SHELVES_70, DINING_8_OPEN_CORNERS,
-                   STUDY_BENCH, STUDY_DESK)
+                   STUDY_BENCH, STUDY_DESK, FOLD_LEAF)

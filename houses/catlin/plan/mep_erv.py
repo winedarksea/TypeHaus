@@ -297,14 +297,19 @@ DUCTS_ERV_RISERS = [
     # It leaves the chase on the deck now and stays there, taking its OWN y — the riser's own
     # y=33'-7 1/2" — east to x=8'-0" before turning north to the hood. Nothing crosses: it
     # meets DU-ERV-EA's line once, at (8'-0", 35'-6"), and passes 12" clear UNDER it because
-    # the exhaust trunk is still climbing there (see below). +4" is the same "6" duct lying on
-    # the attic deck" centreline the risers are dimensioned to, and it is what the rake allows:
-    # the underside is `20'-0" + 1 1/2" + x/2`, so a duct on the deck needs x >= 11 1/2" and
-    # this leg never goes west of 1'-11".
+    # the exhaust trunk is still climbing there (see below). +244" is the same "6" duct lying
+    # on the attic deck" centreline the risers are dimensioned to, and it is what the rake
+    # allows: the underside is `20'-0" + 1 1/2" + x/2`, so a duct on the deck needs x >= 11 1/2"
+    # and this leg never goes west of 1'-11".
+    # ** THE DECK LEG WAS 240" OUT OF DATUM (fixed 2026-08-30). ** It authored inch(4) — the
+    # deck-RELATIVE number — into a field these runs read project-absolute, because they are
+    # filed on `main` (plan/mep.py) and the main datum is 0'-0". The intake ran horizontally
+    # at ankle height over the main slab, then climbed 21'-6" through two floor systems in
+    # under 2'-0" of plan run. Deck-relative +4"/+18" are project-absolute +244"/+258".
     DuctRun(uid="MW0MY7GDME", tag="DU-ERV-OA", system=DuctSystem.OUTDOOR_AIR,
             path=(pt(ft(8), ft(36, 6)), pt(ft(8), ft(35, 6)), pt(ft(8), ft(33, 7.5)),
                   pt(ft(1, 11), ft(33, 7.5)), pt(ft(1, 11), ft(33, 7.5))),
-            elevations=(inch(276), inch(276), inch(4), inch(4), inch(-19.4375)),
+            elevations=(inch(276), inch(276), inch(244), inch(244), inch(-19.4375)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
             insulation="R-8 wrap, vapour-sealed", design_cfm=210),
     # Follows EQ-A-ERV-HOOD-EA from x=24'-0" to x=28'-0" — the mirror move, and the -4'-0"
@@ -317,19 +322,21 @@ DUCTS_ERV_RISERS = [
     # survived the 6:12 rake: at x=5" the roof underside is 4" above the deck, so a 6" duct
     # cannot surface there at all, and the high leg was 33" proud of the rafters until it
     # reached x=5'-7". It climbs with the rake instead — out of the chase on the deck at
-    # x=1'-11" (11 1/2" is the minimum a deck-laid 6" duct needs), up to +18" by the OA hood
+    # x=1'-11" (11 1/2" is the minimum a deck-laid 6" duct needs), up to +258" by the OA hood
     # and to full height at 10'-0", where the underside is 5'-1 1/2" and the trunk has a foot
     # to spare. From there east it is the run it always was: +276", 6" off the north gable, so
     # it straps to gable framing across FO-A-HALL rather than spanning open air.
     #
-    # +18" at x=8'-0" is not a rounding — it is what clears EQ-A-ERV-HOOD-OA. That hood is a
-    # 12" box centred on +276" at (8'-0", 35'-6"), i.e. it OCCUPIES this trunk's old line.
-    # Passing under it keeps both hoods at 3'-0" and so keeps the north gable's mirror about
-    # x=18'-0" (houses/catlin/CLAUDE.md), which dropping the OA hood instead would have broken.
+    # +258" (18" above the deck) at x=8'-0" is not a rounding — it is what clears
+    # EQ-A-ERV-HOOD-OA, a 12" box centred on +276" at (8'-0", 35'-6"), i.e. it OCCUPIES this
+    # trunk's old line. Passing under it keeps both hoods at 3'-0" and so keeps the north
+    # gable's mirror about x=18'-0" (houses/catlin/CLAUDE.md), which dropping the OA hood
+    # instead would have broken. Both climbing vertices carried the same 240" datum error
+    # DU-ERV-OA records above (inch(4)/inch(18) for +244"/+258"); fixed 2026-08-30.
     DuctRun(uid="BYAVBJKRS6", tag="DU-ERV-EA", system=DuctSystem.EXHAUST,
             path=(pt(ft(1, 11), ft(35, 6)), pt(ft(1, 11), ft(35, 6)), pt(ft(8), ft(35, 6)),
                   pt(ft(10), ft(35, 6)), pt(ft(28), ft(35, 6)), pt(ft(28), ft(36, 6))),
-            elevations=(inch(-19.4375), inch(4), inch(18), inch(276), inch(276), inch(276)),
+            elevations=(inch(-19.4375), inch(244), inch(258), inch(276), inch(276), inch(276)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
             insulation="R-8 wrap, vapour-sealed", design_cfm=210),
 ]
@@ -528,11 +535,21 @@ DUCTS_ERV_LEVEL2 = [
     # a pure riser into the wall. x=15'-0" for the crossing is 3'-0" clear of the trusses'
     # east bearing at W-M-C2/C3, well out of the end panels; -108" is storey-relative on the
     # `second` datum (+10'-0"), i.e. 12" above the main floor.
+    # ** THE EAST JOG IS GONE (2026-08-30) AND THE RUN IS ~2'-6" SHORTER. ** REG-M-RET-STUDY
+    # moved 16'-6" -> 14'-6" to get out from under FURN-M-STUDY-DESK-LEAF's stowed envelope
+    # (the argument is on the register), and the old path only ran east to x=15'-0" and then
+    # doglegged back to reach 16'-6". At 14'-6" the radial turns south once and drops: one
+    # corner instead of three, on a two-headed run whose whole risk is accumulated bend loss.
+    # The crossings are unchanged in kind — south from the 20'-8" bay still cuts the joists at
+    # 20'-0" and 18'-8", legal because FS-S-WEST is open-web with an 8 7/8" chord opening —
+    # and the drop is now 3'-6" further from those trusses' east bearing at W-M-C2/C3, not
+    # nearer. -108" is storey-relative on the `second` datum (+10'-0"), i.e. 12" above the
+    # main floor.
     DuctRun(uid="ANSKB7EGDH", tag="DU-M-ERV-R-LAUNDRY", system=DuctSystem.RETURN,
             path=(pt(ft(4, 8), ft(35)), pt(ft(4, 8), ft(35)), pt(ft(4, 8), ft(20, 8)),
-                  pt(ft(10, 6), ft(20, 8)), pt(ft(15), ft(20, 8)), pt(ft(15), ft(18)),
-                  pt(ft(16, 6), ft(18)), pt(ft(16, 6), ft(18))),
-            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z, _BAY_Z, _BAY_Z, _BAY_Z,
+                  pt(ft(10, 6), ft(20, 8)), pt(ft(14, 6), ft(20, 8)), pt(ft(14, 6), ft(18)),
+                  pt(ft(14, 6), ft(18))),
+            elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z, _BAY_Z, _BAY_Z,
                         inch(-108)),
             diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="semi_rigid", design_cfm=15),

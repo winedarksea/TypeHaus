@@ -371,7 +371,7 @@ OPENINGS = [
     # `flip_hinge` parks the leaf WEST against the centreline wall; hinged east it swings
     # out toward the well. See W-A-SN above for the hinge-side jamb this leaf's weight needs.
     Door(uid="CAD203AAAA", tag="D-A-STUDY", host="W-A-SN", type_ref="DT-INT-BOOKCASE30",
-         position=from_node("N-A-C2", ft(0, 8.875)), flip_hinge=True),  # x 19'-11 7/8"
+         position=from_node("N-A-C2", ft(1, 5)), flip_hinge=True),  # x 19'-11 7/8"
     # South gable, FOUR openings west→east: S2, JUL-W, JUL-E, S3 — mirror-symmetric about
     # the ridge (CLAUDE.md's "gables read symmetric" rule).
     #

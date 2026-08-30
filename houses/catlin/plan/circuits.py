@@ -156,8 +156,15 @@ CIRCUITS = (
             gfci=True, afci=True, load_va=696,
             description="Radiant floor heat — under the dining table (FH-M-DINING, 58.0 ft2)"),
     Circuit(uid="CKT033AAAA", tag="CKT-FH-BATH1", slot=33, panel_ref=_PANEL, breaker_amps=15, poles=1,
-            gfci=True, load_va=509,
-            description="Radiant floor heat — NW bathroom (FH-S-BATH1, 42.4 ft2)"),
+            # 338 VA, not 509: the zone lost its east lobe to RM-S-BATH1's 48" vanity on
+            # 2026-08-30 and the wattage is now a purchased nameplate (Schluter DHEHK12027,
+            # 26.7 ft2 / 338 W / 2.8 A) rather than a stale area times 12. The old 509 was
+            # doubly wrong — the polygon never enclosed the 42.4 ft2 it was derived from.
+            # NEC 220.51 counts fixed electric space heating at 100%, so this 171 VA comes
+            # straight off the service demand.
+            gfci=True, load_va=338,
+            description="Radiant floor heat — NW bathroom, sole heat source "
+                        "(FH-S-BATH1, 27.31 ft2, Schluter DHEHK12027)"),
     # 1,500W at 120V=12.5A, continuous: 12.5x1.25=15.6A fits a 20A breaker's 16A but not
     # a 15A one's 12A — why these two are 20A where the mats are 15A.
     #

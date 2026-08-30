@@ -197,16 +197,25 @@ _GLAZING_Y1 = _GLAZING_Y0 + _PANEL_FT
 # of the door it exists for ever since — the deck did not touch the entry's landing patch at
 # all, which is what code.R311_3_exterior_landing eventually reported.
 #
-# The two doors are 1'-6" apart in x (entry 8'-0", service 6'-6"), so their outer jambs span
-# 4'-6" and a 4'-0" enclosure cannot cover both to the last inch: each door's outer 3" of
-# leaf oversails the deck edge at one corner. The brief's literal 8x4x4 — three sheets, one
-# cut — is what this module is built to keep, so the 3" is accepted rather than paid for with
-# a wider (and two-cut) enclosure. Both doors clear R311.3's 36"-deep landing patch at 92%
-# coverage, and the walk line door-to-door is unaffected: it runs up the middle, where the
-# deck is full width.
-_GLAZING_CENTER_X = 7.25
-_GLAZING_X0 = _GLAZING_CENTER_X - _PANEL_FT / 2.0  # 2.5'
-_GLAZING_X1 = _GLAZING_CENTER_X + _PANEL_FT / 2.0  # 6.5'
+# The two doors are 8" apart in x (entry 8'-0", service 7'-4"), so their outer jambs span
+# 3'-8" and the 4'-0" enclosure covers both outright — see below.
+#
+# ** RE-CENTRED 7'-3" -> 7'-8" ON 2026-08-30, following D-G-SERVICE. ** The service door went
+# from a 5'-0" offset to 5'-10" to put its jambs on the stud module
+# (plan/storeys/garage.py::SERVICE_DOOR_OFFSET), which moved its centre 6'-6" -> 7'-4", and
+# this shelter is centred on the midpoint of the two doors it exists for. Nothing enforced
+# that until test_breezeway_stays_centred_between_the_two_doors_it_shelters was written after
+# the 2026-07-28 mudroom conversion left the enclosure standing 3'-6" west of the door it
+# shelters; this time the invariant reported the drift the same day.
+#
+# The move also RETIRES a consequence: at 1'-6" apart the two doors' outer jambs spanned
+# 4'-6", so a 4'-0" enclosure left each door's outer 3" of leaf oversailing the deck edge at
+# one corner — accepted, then, rather than paid for with a wider two-cut enclosure. At 8"
+# apart the span is 3'-8" and the accepted 3" is simply gone. The brief's literal 8x4x4 —
+# three sheets, one cut — is unchanged.
+_GLAZING_CENTER_X = 7.6667
+_GLAZING_X0 = _GLAZING_CENTER_X - _PANEL_FT / 2.0  # 5.6667'
+_GLAZING_X1 = _GLAZING_CENTER_X + _PANEL_FT / 2.0  # 9.6667'
 # The posts stand *inside* the glazing lines with the sheets on their outer faces, so the
 # 4'-0" is the glazed dimension and not a post-centre dimension. (It used to run the other
 # way — glazing derived from an 8'-0" post spread — which is why the enclosure was 7'-5 1/2".)

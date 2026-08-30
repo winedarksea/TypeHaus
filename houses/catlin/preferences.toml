@@ -138,3 +138,23 @@ origin_y_m = -8.0507
 width_m = 17.1345
 height_m = 25.7018
 opacity = 0.30
+
+# --- decided advisories -------------------------------------------------------------------
+#
+# `suppress` takes a bare `check.id` (silence the rule everywhere) or `check.id:ELEMENT-TAG`
+# (silence it on ONE element). Only the second form is used here, and it is used sparingly:
+# an entry means the finding is real, was measured, and was decided against for a reason the
+# model cannot carry. The reason goes here, beside the entry, and in the plan source at the
+# element itself.
+[checks]
+suppress = [
+  # D-G-OVERHEAD's centre is at 12'-0", 8" off the 16" module, and it cuts 13 stud lines
+  # where 12 would do. Every legal station was enumerated (104"/120"/136"/152"/168"/184")
+  # and every one of them moves OVERHEAD_DOOR_OFFSET, which is not just the door's offset:
+  # params/foundations.py gaps the ICF stem into a grade beam on it, and W-G-BRICK-S/N stand
+  # on the stem segments that leaves, so the piers' jamb-to-corner span IS that constant.
+  # Moving the door 8" makes the two brick piers flanking the garage door 4'-8" and 3'-4"
+  # where they are 4'-0" and 4'-0" today. A visibly asymmetric masonry wainscot on the
+  # garage's main facade is a worse building than one extra cut stud.
+  "structural.door_framing_module:D-G-OVERHEAD",
+]

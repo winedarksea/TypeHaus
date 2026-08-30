@@ -136,14 +136,18 @@ WALL_SLEEVES = [
                       position=pt(ft(3), ft(0)), pipe_diameter=inch(4),
                       sleeve_diameter=inch(6), axis="horizontal",
                       center_elevation=inch(-125.7055)),
-    # Both follow PR-G-HYDRANT-CW down to -8'-10" (2026-08-21): the run holds 6' under a
-    # grade that is now -2'-10", and a sleeve that stayed at -6'-0" would be a bore the pipe
-    # misses by 2'-10". They sit 6" above the basement walls' own bottom, which is as low as
-    # this crossing can go before it is in the footing instead.
-    SleevePenetration(uid="CBPW19AAAA", tag="SP-B-S1-HYD", host_ref="W-B-S1",
-                      position=pt(ft(5), ft(0, 6)), pipe_diameter=inch(0.75),
-                      sleeve_diameter=inch(1.5), axis="horizontal",
-                      purpose=Service.WATER_COLD, center_elevation=ft(-8, -10)),
+    # The water service's one wall crossing. It follows PR-G-HYDRANT-CW down to -8'-10"
+    # (2026-08-21): the run holds 6' under a grade that is now -2'-10", and a sleeve that
+    # stayed at -6'-0" would be a bore the pipe misses by 2'-10". It sits 6" above the
+    # basement walls' own bottom, which is as low as this crossing can go before it is in
+    # the footing instead.
+    #
+    # ** ITS TWIN IS GONE, AND ITS JOB CHANGED (2026-08-30). ** There were two, because the
+    # lateral entered on the south (SP-B-S1-HYD, W-B-S1 at (5', 0'-6")), crossed the whole
+    # basement and left again here. With the service entry moved to the front of the lot
+    # (plan/site.py) the lateral never enters the house at all: this is now the ENTRY, the
+    # only crossing, and the point PR-B-CW-TRUNK tees off at. Station and depth were already
+    # right — an entry sleeve and an exit sleeve on the same line are the same hole.
     SleevePenetration(uid="CBPW20AAAA", tag="SP-B-N3-HYD", host_ref="W-B-N4",
                       position=pt(ft(5), ft(35, 6)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
@@ -162,7 +166,15 @@ WALL_SLEEVES = [
 # checks/mep/plumbing_concrete.py). The real fix was moving the hydrant to (5'-0", 59'-6")
 # to remove the west-footing encroachment entirely — see params/foundations.py.
 GARAGE_SLEEVES = [
-    SleevePenetration(uid="CGPW01AAAA", tag="SP-GF-S-HYD", host_ref="FT-GF-S-DR",
+    # ** HOST CHANGED FT-GF-S-DR -> FT-GF-S1 ON 2026-08-30. ** Nothing about the pipe moved:
+    # it still crosses the garage's south foundation line at x=5'-0", at -8'-10", inside a 2"
+    # protection sleeve. What moved is the CONCRETE. D-G-SERVICE went from a 5'-0" offset to
+    # 5'-10" to get its jambs onto the stud module, and SERVICE_DOOR_OFFSET is what
+    # params/foundations.py gaps the ICF stem on — so FT-GF-S-DR, the grade beam under the
+    # door, went east with it and x=5'-0" is now under the ordinary stem footing beside it.
+    # `integrity.sleeve_in_opening` said so immediately, which is the check earning its keep:
+    # a sleeve naming a host it no longer sits in is a bore drawn in the wrong pour.
+    SleevePenetration(uid="CGPW01AAAA", tag="SP-GF-S-HYD", host_ref="FT-GF-S1",
                       position=pt(ft(5), ft(41, 0.875)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(2), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-8, -10)),

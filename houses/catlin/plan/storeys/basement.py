@@ -651,11 +651,11 @@ WALLS = [
 OPENINGS = [
     # Interior circulation
     Door(uid="CBD201AAAA", tag="D-B-FURN", host="W-B-CW", type_ref="DT-INT-SWING32",
-         position=from_node("N-B-W1", ft(3))),
+         position=from_node("N-B-W1", ft(3, 4))),
     # Solid-core pair since 2026-08-21 (was DT-INT-FRENCH60): the play room keeps the
     # 5'-0" double opening, but flush solid leaves instead of full glazing.
     Door(uid="CBD202AAAA", tag="D-B-PLAY", host="W-B-CE", type_ref="DT-INT-DOUBLE60",
-         position=from_node("N-B-C", ft(6))),
+         position=from_node("N-B-C", ft(6, 2))),
     # Centred in the 3'-4" aisle the sauna's north wall leaves against the center wall.
     # ``from_node`` offsets the opening's near *edge*, so 8" leaves ~4" of concrete jamb
     # at each end of the 4'-2" W-B-CS2 segment.
@@ -684,9 +684,9 @@ OPENINGS = [
     # leaf sits in the closet's south half and EQ-B-ESS-BATT, hung on the north concrete,
     # stands clear of the swing.
     Door(uid="CBD208AAAA", tag="D-B-ESS", host="W-B-ESS-W", type_ref="DT-INT-SWING24",
-         position=from_node("N-B-ESS-SW", inch(10))),
+         position=from_node("N-B-ESS-SW", ft(1, 4))),
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-SA-W", type_ref="DT-INT-SWING24",
-         position=from_node("N-B-S1", ft(10, 10.4375))),
+         position=from_node("N-B-S1", ft(11))),
     # Raise the exterior threshold above the basement floor to resist sunken-garden flooding.
     # Hosted on the framed wall since 2026-08-28, and `sill_height` went inch(7) -> inch(0)
     # in the same edit — NOT because the threshold dropped, but because the datum did. A
@@ -695,7 +695,7 @@ OPENINGS = [
     # quarter inch higher: the door now sits ON the curb rather than 7" up a pour with a
     # quarter inch of concrete still above it.
     Door(uid="CBD206AAAA", tag="D-B-PATIO", host="W-B-S3-FR", type_ref="DT-EXT-FRENCH60",
-         position=from_node("N-B-S2F", ft(1, 4)), sill_height=inch(0), flip_swing=True),
+         position=from_node("N-B-S2F", inch(10)), sill_height=inch(0), flip_swing=True),
     # WT-1424, down from WT-3660 (2026-07-30): a sauna wants a small window, less glass to
     # lose heat through. The 14" family's one appearance in a concrete wall, where the usual
     # 16" stud-module reason for that width doesn't apply — size is the point here. Retires

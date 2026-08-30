@@ -65,6 +65,21 @@ class PlumbingPreferences:
 
 
 @dataclass
+class MepPreferences:
+    """House allowances for the routing advisories — judgement, not code."""
+
+    #: ``mep.run_route_efficiency``'s line. A run whose developed length is more than this
+    #: many times the straight-line 3D distance between its own two ends is detouring, and
+    #: worth a look. 2.5 is not a standard; it is where catlin's own distribution sits with
+    #: margin (worst qualifying run 2.41), which is the only honest basis for a number nobody
+    #: publishes. Raise it deliberately and say why.
+    max_run_developed_over_straight: float = 2.5
+    #: Below this a run is too short for the ratio to mean anything — see
+    #: ``checks/mep/routing.py``.
+    min_graded_run_ft: float = 20.0
+
+
+@dataclass
 class StructuralPreferences:
     """House-level allowances the structural advisories grade against, not code minima."""
 
@@ -120,8 +135,24 @@ class Preferences:
     cooling_solar_gain_btu_per_hour_ft2: float = 164.0
     framing: FramingPreferences = field(default_factory=FramingPreferences)
     plumbing: PlumbingPreferences = field(default_factory=PlumbingPreferences)
+    mep: MepPreferences = field(default_factory=MepPreferences)
     structural: StructuralPreferences = field(default_factory=StructuralPreferences)
     underlays: tuple[ReferenceUnderlay, ...] = ()
+    #: ``[checks] suppress`` from the house's ``preferences.toml``. Two forms, and the second
+    #: is the one that makes the list usable without blinding a check:
+    #:
+    #: * ``"check.id"``            — drop every finding that check makes. A blunt instrument:
+    #:   it takes the check's UNKNOWNs and its PASSes with it, so a house that silences a rule
+    #:   this way stops being told anything by it at all.
+    #: * ``"check.id:ELEMENT-TAG"`` — drop that check's findings **on that one element**.
+    #:   For the case a check cannot see: a finding that is real, was looked at, and was
+    #:   decided against for a reason the model does not carry. ``D-G-OVERHEAD`` is off the
+    #:   stud module by 8" and moving it re-cuts the garage's brick wainscot into two unequal
+    #:   piers; that is a facade decision, and the right place to record it is beside the
+    #:   reason, in the house's own file.
+    #:
+    #: An entry of the second form never hides another element's finding, so the check goes on
+    #: grading the other twenty doors exactly as before.
     suppressed: frozenset[str] = frozenset()
     # `[project].jurisdiction` from preferences.toml: the house's own answer to "whose code
     # is this?". `None` means the house doesn't say, and the engine default applies.
@@ -184,6 +215,13 @@ class CheckReport:
         return not self.errors
 
 
+def _suppressed(finding: Finding, suppressed: frozenset[str]) -> bool:
+    """Whether the house has asked for this finding to be dropped — see ``Preferences``."""
+    if finding.check_id in suppressed:
+        return True
+    return any(f"{finding.check_id}:{tag}" in suppressed for tag in finding.element_tags)
+
+
 def run_checks(ctx: CheckContext, tier: Tier | None = None) -> CheckReport:
     """Run every registered check (of the given tier) plus resolve-time findings."""
     findings: list[Finding] = list(ctx.resolve_findings)
@@ -191,7 +229,7 @@ def run_checks(ctx: CheckContext, tier: Tier | None = None) -> CheckReport:
     for check_id, fn in registered(tier):
         ran.append(check_id)
         for finding in fn(ctx):
-            if finding.check_id in ctx.preferences.suppressed:
+            if _suppressed(finding, ctx.preferences.suppressed):
                 continue
             findings.append(finding)
     return CheckReport(findings=findings, ran=tuple(ran))

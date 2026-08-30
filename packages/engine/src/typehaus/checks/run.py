@@ -15,6 +15,7 @@ from typehaus.checks.registry import (
     CheckContext,
     CheckReport,
     FramingPreferences,
+    MepPreferences,
     PlumbingPreferences,
     Preferences,
     ReferenceUnderlay,
@@ -45,6 +46,7 @@ def load_preferences(house_dir: Path) -> Preferences:
         rotation_deg=float(item.get("rotation_deg", 0.0)),
         opacity=float(item.get("opacity", 0.25)),
     ) for item in data.get("underlay", ()))
+    mep = data.get("mep", {})
     suppressed = frozenset(data.get("checks", {}).get("suppress", []))
     return Preferences(
         wall_r=env.get("wall_r"), roof_r=env.get("roof_r"),
@@ -73,6 +75,11 @@ def load_preferences(house_dir: Path) -> Preferences:
             drain_stack_required_structure_in=plumbing.get("drain_stack_required_structure_in", 5.5),
             visible_basement_material=plumbing.get("visible_basement_material"),
             visible_basement_finish=plumbing.get("visible_basement_finish"),
+        ),
+        mep=MepPreferences(
+            max_run_developed_over_straight=mep.get(
+                "max_run_developed_over_straight", 2.5),
+            min_graded_run_ft=mep.get("min_graded_run_ft", 20.0),
         ),
         structural=StructuralPreferences(
             max_guard_dead_load_on_wood_plf=structural.get(

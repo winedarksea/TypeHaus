@@ -248,6 +248,31 @@ QUALIFIED_KEY_FIELD = {"concrete": "assembly", "timber": "assembly",
                        "ducts": "material"}
 
 
+def rate_for(prices: "Prices", section: str, key: object,
+             qualifier: object = None) -> tuple[str, Any]:
+    """The unit rate a BOM row prices at, and the price-table key it resolved to.
+
+    The one implementation of the ``[section] key`` / ``[section] key:qualifier`` join.
+    :func:`estimate_costs` uses it for every row of every section, and
+    :func:`typehaus.takeoff.runs.run_schedule` uses it to put a $ on a single run — and
+    they have to be the same lookup or the per-run cost and the estimate line it rolls into
+    will disagree. ``[ducts]`` is the case that forces the point: its key is qualified by
+    ``material`` (see :data:`QUALIFIED_KEY_FIELD`), so a second, hand-rolled
+    ``table.get(system)`` would price a 3" semi-rigid radial at the sheet-metal rate.
+
+    Returns ``(resolved_key, price_or_None)``. The key is returned because the caller needs
+    to *name* what it looked up — in ``unpriced``, in a CSV, in a schedule row.
+    """
+    table = getattr(prices, _PLAN_TABLE[section])
+    resolved = str(key)
+    qualifier_field = QUALIFIED_KEY_FIELD.get(section)
+    if qualifier_field and qualifier:
+        candidate = f"{resolved}:{qualifier}"
+        if table.get(candidate) is not None:
+            resolved = candidate
+    return resolved, table.get(resolved)
+
+
 #: Sections priced and reported but held out of the construction total. They stay in
 #: ``sections`` (with ``in_total: False``) and roll up into ``excluded_total`` /
 #: ``grand_total``, so nothing is hidden — only re-filed.
@@ -606,13 +631,9 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
                                     "section": name, "key": qualified,
                                     "quantity": round(quantity, 2), "unit": section_unit}))
                         continue
-            key = str(row.get(key_field))
             qualifier_field = QUALIFIED_KEY_FIELD.get(name)
-            if qualifier_field:
-                qualifier = row.get(qualifier_field)
-                if qualifier and table.get(f"{key}:{qualifier}") is not None:
-                    key = f"{key}:{qualifier}"
-            price = table.get(key)
+            key, price = rate_for(prices, name, row.get(key_field),
+                                  row.get(qualifier_field) if qualifier_field else None)
             # A row that names its own unit is read against a DIFFERENT field of the same BOM
             # row — see ``ALTERNATE_UNITS``. Resolved per row rather than per section, because
             # `sump` is priced each while `footing` beside it is still priced by the yard.

@@ -108,10 +108,12 @@ def test_knee_brace_resolves_to_a_raked_wood_member(catlin_model) -> None:
     # It lands on the beam soffit, and leaves from the post face rather than its centre —
     # an end buried in the column reads as a member clash.
     assert member.z1_end_m == pytest.approx(8.4583333 * FT)
-    # -10.5', not -9.5': the balcony's front pillar row moved 12" south on 2026-08-29 so
-    # PT-SG-BF2 could bear on PT-SG-FCOL instead of through a porch joist. The brace follows
-    # its post; the plane the porch's own beams sit on did not move.
-    post_centre_y = -10.5 * FT
+    # -10.270833', not -9.5': the balcony's front pillar row moved 12" south on 2026-08-29
+    # so PT-SG-BF2 could bear on PT-SG-FCOL instead of through a porch joist, then came 2
+    # 3/4" back north on 2026-08-30 so the beam ends — which stayed on -10.5' — roof the
+    # post tops instead of stopping on their axes. The brace follows its post; the plane the
+    # porch's own beams sit on never moved at all.
+    post_centre_y = (-10.5 + 2.75 / 12.0) * FT
     assert abs(member.p0[1] - post_centre_y) == pytest.approx(2.75 * 0.0254)
 
 

@@ -26,6 +26,9 @@ def takeoff(
     csv: Optional[Path] = typer.Option(
         None, "--csv", help="Also write the priced estimate as a CSV at this path "
                             "(the RSMeans / Craftsman / Buildertrend intake artifact)."),
+    runs: bool = typer.Option(False, "--runs",
+                              help="per-run routing schedule (pipe/duct/conduit): developed "
+                                   "vs straight length, ratio, elbows, cost — worst first"),
 ) -> None:
     """Report the resolved bill of materials: framing, solids, sheet goods, glazing,
     hardware, placeables, and radiant floor heat.
@@ -38,10 +41,11 @@ def takeoff(
     import json
 
     from typehaus.cli.prices import estimate_costs, load_prices
-    from typehaus.takeoff.product_labels import product_labels
     from typehaus.resolve import resolve
     from typehaus.source import load_plan
     from typehaus.takeoff import bill_of_materials
+    from typehaus.takeoff.product_labels import product_labels
+    from typehaus.takeoff.runs import run_schedule
 
     d = _resolve_house(house)
     loaded = load_plan(d)
@@ -122,6 +126,11 @@ def takeoff(
                "drainage": bom["drainage"],
                "edge_trim": bom["edge_trim"],
                "member_protection": bom["member_protection"]}
+    # Opt-in because it is a per-RUN view, not a bill: 111 rows that group into the dozen
+    # `pipe_runs`/`ducts`/`conduit` lines already in the payload. Carried in `--json` too
+    # when asked for, so the before/after diff a reroute is judged on is machine-readable.
+    if runs:
+        payload["runs"] = run_schedule(model, prices)
     if prices is not None:
         # $/sf needs a denominator, and the only honest ones are the space summary's:
         # conditioned area is what the energy code grades, gross is what a builder means
@@ -146,6 +155,9 @@ def takeoff(
         console.print(f"wrote {written} ({len(rows)} rows)", soft_wrap=True)
     if as_json:
         console.print_json(json.dumps(payload))
+        return
+    if runs:
+        _print_run_schedule(payload["runs"], console)
         return
     if summary:
         _print_takeoff_summary(payload, console)
@@ -352,6 +364,35 @@ def _print_driver_overlaps(estimate: dict, console: Console) -> None:
 # (`cost_estimate`, `space_summary`) get their own compact treatment below rather than a
 # meaningless "N keys" line.
 _SUMMARY_SKIP = {"cost_estimate", "space_summary"}
+
+
+def _print_run_schedule(rows: list, console: Console) -> None:
+    """The routing schedule, worst detour first.
+
+    Printed as one line per run rather than grouped, because the reader is looking for the
+    single run to go and look at. ``ratio`` is developed / straight-line-3D; a blank one is
+    a run whose endpoints are too close together to grade (see ``runs.MIN_STRAIGHT_FT``),
+    not a run that scored zero.
+    """
+    total = sum(float(row["developed_ft"]) for row in rows)
+    console.print(f"[bold]Run schedule[/bold]  ({len(rows)} runs / {total:,.0f} LF developed; "
+                  "developed · plan · rise · straight · ratio · elbows)")
+    console.print(f"  [dim]{'tag':<24}{'kind':<8}{'dev':>7}{'plan':>7}{'rise':>7}"
+                  f"{'strt':>7}{'ratio':>7}{'elb':>5}  cost[/dim]", soft_wrap=True)
+    for row in rows:
+        ratio = f"{row['ratio']:.2f}" if row["ratio"] is not None else "—"
+        low, high = row.get("cost_low"), row.get("cost_high")
+        if low is None:
+            key = row.get("price_key", "?")
+            cost = f"[dim]unpriced ({key})[/dim]" if "price_key" in row else ""
+        elif abs(high - low) < 0.005:
+            cost = f"${low:,.0f}"
+        else:
+            cost = f"${low:,.0f} – ${high:,.0f}"
+        console.print(f"  {row['tag']:<24}{row['kind']:<8}"
+                      f"{row['developed_ft']:>7.1f}{row['plan_ft']:>7.1f}"
+                      f"{row['rise_ft']:>7.1f}{row['straight_ft']:>7.1f}"
+                      f"{ratio:>7}{row['elbows']:>5}  {cost}", soft_wrap=True)
 
 
 def _print_takeoff_summary(payload: dict, console: Console) -> None:

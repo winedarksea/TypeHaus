@@ -265,6 +265,20 @@
 # row below. That is 2,432 LF of course + post, 571 LF of block-1 and 192 LF of head/sill
 # course on top of the 6,630 LF of ordinary framing.
 "2x4" = { material = { low = 0.55, high = 0.8 }, labour = { low = 0.65, high = 1.2 } }  # 10244 LF — SPF (6,490 framing + 3,754 of inner girt tier)
+# 2026-08-30, with the INT_2X4_RC retype of the five sleeping-side partitions
+# (plan/storeys/second.py). This is the SAME product [construction_returns] prices as
+# `resilient-channel` and it is deliberately the same number — single-leg RC-1 in 12' sticks,
+# $0.55-0.75/LF with screws and waste, 50-80 LF/hr to hang. The two rows exist because the
+# model resolves the channel two ways: a `CR-LIVING-CEIL-RC` construction return under a
+# ceiling, and, since the retype, a FramingSpec member inside a wall assembly, which lands in
+# `framing_by_size` keyed on its profile.
+#
+# ** Without this row the house gets CHEAPER by upgrading, and the saving is an artifact. **
+# 312 LF ordered / 42 pieces priced at $0 while the retype also moves 400 SF of cavity from
+# mineral wool to fiberglass — so the total FALLS about $480-680 and the report says the
+# acoustic upgrade paid for itself. Confirm it is not in `estimate["unpriced"]` after any
+# change here (`haus takeoff --json | jq '.cost_estimate.unpriced'`).
+"25 ga. resilient channel" = { material = { low = 0.55, high = 0.75 }, labour = { low = 0.8, high = 1.5 } }  # 312 LF
 # THE CATLIN TRUSS'S OUTER TIER (2026-08-26), and the single biggest cost lever in the wall.
 # 3,265 LF net of KDAT southern yellow pine 2x4, all of it laid FLAT: 2,432 LF of outer girt
 # course and outer jamb post, 641 LF of block-2, and 192 LF of outer head/sill course. It
@@ -1456,6 +1470,18 @@
 # NOT here — see `allowances.cabinet-study-booth-cushions`.
 "FT-STUDY-BENCH" = { material = { low = 350, high = 850 }, labour = { low = 300, high = 750 } }  # 1 ea
 "FT-STUDY-DESK" = { material = { low = 300, high = 700 }, labour = { low = 250, high = 650 } }  # 1 ea
+# The fold-down leaf (2026-08-30). Only 18" of board against the desk's 29", and yet the row
+# is nearly the desk's, because on a leaf the BOARD is the cheap half. Material carries a pair
+# of Hafele/Hebgo 287.43.419 folding table brackets (~$100 the pair at street), a full-length
+# piano hinge, the let-in ledger and blocking, and two bullet catches. Labour carries the part
+# that is actually expensive and that no bracket price shows: a leaf has to land coplanar with
+# a fixed top it butts, on a wall that is out of plumb like every wall in this house, and it
+# has to still be coplanar after a hundred cycles. That is fitting time, not joinery time.
+# ** THE BLOCKING IS NOT IN THIS ROW ** — flat 2x4 let into W-M-CLN2's staggered bays before
+# the rock, priced with the framing, and it has to be ORDERED WITH THE FRAMING TOO. Missed at
+# rough-in the whole detail reverts to lags through 2" of gypsum and 3/4" of walnut, which is
+# how a fold-down desk gets loose. See plan/furniture_types.py.
+"FT-STUDY-DESK-LEAF" = { material = { low = 260, high = 560 }, labour = { low = 250, high = 620 } }  # 1 ea
 "FT-CURTAIN-ROD-48" = { material = { low = 25, high = 90 }, labour = { low = 35, high = 90 } }  # 8 ea
 "FT-CURTAIN-ROD-84" = { material = { low = 40, high = 140 }, labour = { low = 35, high = 90 } }  # 1 ea
 "FT-CURTAIN-ROD-OUTDOOR-114" = { material = { low = 90, high = 260 }, labour = { low = 60, high = 150 } }  # 2 ea
@@ -1505,7 +1531,13 @@
 "FX-LAUNDRY-SINK-24" = { material = { low = 130, high = 450 }, labour = { low = 120, high = 290 } }  # 1 ea
 # Read as the lavatory AND its vanity: no CASE-* row covers the bathrooms, so if this were
 # the bowl alone the vanities would be missing from the estimate entirely.
-"FX-LAV-24" = { material = { low = 250, high = 950 }, labour = { low = 200, high = 460 } }  # 5 ea
+# ** ZERO INSTANCES SINCE 2026-08-30, AND THE ROW STAYS. ** All five FX-LAV-24 lavatories
+# became real vanity types that day (basement, hall bath, suite bath and the alcove pair),
+# so this row now prices nothing. It is kept for the same reason `glazed-green-brick` and
+# `CATLIN_EXT_2X6_SWINBURNE` are kept: reverting a fixture to the library's generic bowl
+# should be a one-word `type_ref` change, not a re-derivation of a price. The ordering
+# constraint above (FX-LAV-24 > FX-LAV-COMPACT) still has to hold if either is edited.
+"FX-LAV-24" = { material = { low = 250, high = 950 }, labour = { low = 200, high = 460 } }  # 0 ea
 "FX-LAV-COMPACT" = { material = { low = 110, high = 420 }, labour = { low = 150, high = 330 } }  # 1 ea
 # RM-M-BATH2's 54" vanity (2026-08-29). Read, like FX-LAV-24 above, as the whole assembly:
 # cabinet, counter, basin and faucet. That is the only reason the numbers are several times
@@ -1520,6 +1552,42 @@
 # is SB-M-BATH2-VAN and bills as owner-milled hardwood, so counting it again would be a
 # double-bill of the one part of this cabinet the owner is making.
 "FX-VANITY-54-SINGLE" = { material = { low = 950, high = 2900 }, labour = { low = 300, high = 720 } }  # 1 ea
+# ** THE OTHER FIVE BATHROOMS' VANITIES (2026-08-30). ** Same basis as the 54" row above and
+# as FX-LAV-24 before it: each row is the WHOLE assembly -- cabinet, counter, basin and
+# faucet -- because no CASE-* row covers a bathroom anywhere in this file, so a bowl-only
+# price would drop every vanity carcass out of the estimate.
+#
+# LOW is the big-box combo tier: an assembled vanity that arrives boxed WITH its cultured-
+# marble top and integral bowl already on it, plus a builder-grade faucet. That tier is real
+# and it is cheap -- Glacier Bay GB24P2-WH is a 25" cabinet-and-top at about $159 -- and it
+# is why the LOW numbers here are close to what the bare FX-LAV-24 bowl was priced at. It is
+# also why the shallow rows are not discounted against the 21"-deep ones: the combo tier is
+# 18.6"-18.75" deep to begin with, so 18" is the pallet depth, not a special order.
+#
+# HIGH is a builder cabinet line (Menards Quality One, Diamond NOW, Home Decorators) or a
+# semi-custom box, with a quartz top and a separate undermount basin, and a mid-range
+# widespread faucet. The spread is wide on purpose -- a 30" vanity genuinely spans $250 to
+# $1,400 depending only on which of those two ways you buy it.
+#
+# Widths are the stock ladder (24/30/36/48/60) and the prices step with it rather than
+# scaling linearly: 24-36" are the volume sizes, and 48" is where the per-inch price starts
+# to climb. The 48" row carries a drawer bank as well as a sink base, which is worth roughly
+# +50% on the 18" of carcass it occupies (Home Decorators 21" drawer base $818 against the
+# same-width sink base $552), and that is inside its band.
+#
+# ** THE OAK SHELVES ARE NOT IN ANY OF THESE ROWS. ** SB-B-BATH-VAN, SB-M-BATH1-VAN,
+# SB-S-BATH1-VAN, SB-S-SUITEBATH-VAN and SB-S-VANITY-VAN1/2 bill as owner-milled hardwood in
+# [hardwood]. Counting them here would double-bill the one part of each cabinet the owner is
+# making, exactly as the 54" row's note says.
+#
+# Sources: homedepot.com / lowes.com / menards.com 2026 in-stock vanity and vanity-top
+# listings, Home Decorators Cabinetry 2026 list prices for vanity sink bases against drawer
+# bases, and the homeguide 2026 sink-install labour band this section already uses.
+"FX-VANITY-24-SHALLOW" = { material = { low = 300, high = 1100 }, labour = { low = 200, high = 470 } }  # 1 ea
+"FX-VANITY-30-SHALLOW" = { material = { low = 380, high = 1350 }, labour = { low = 220, high = 510 } }  # 2 ea
+"FX-VANITY-30-SINGLE" = { material = { low = 400, high = 1400 }, labour = { low = 220, high = 510 } }  # 1 ea
+"FX-VANITY-36-SHALLOW" = { material = { low = 470, high = 1650 }, labour = { low = 240, high = 560 } }  # 1 ea
+"FX-VANITY-48-SINGLE" = { material = { low = 750, high = 2400 }, labour = { low = 280, high = 660 } }  # 1 ea
 # 36x36 curbed pan plus its three-wall surround panels, set on a mortar bed. The tiled
 # version of this wall is NOT here — see the basis note above.
 "FX-SHOWER-36" = { material = { low = 300, high = 1000 }, labour = { low = 200, high = 470 } }  # 2 ea
@@ -3353,7 +3421,19 @@ cabinet-study-bookcase-wall = { low = 1300, high = 2800 }
 # own trade by being named for it (`takeoff/cost_codes.py::KEY_PATTERNS`); a key matching no
 # prefix falls to the section default and gets SCHEDULED AS EARTHWORK. Upholstered casework
 # is 12 30 00, the same trade as the row above.
-# Basis: 3"-4" high-resilience foam wrapped and covered, made to size, plus three cushions —
+# ** THE FOAM IS 3", NOT "3-4 INCHES", SINCE 2026-08-30, AND IT IS NOW A DIMENSION. ** This
+# row used to offer a range because a cushion feels like an owner selection. It is not: the
+# bench deck was framed at 16" *on the arithmetic that 3" of HR foam settles ~1 1/2" under an
+# adult*, which seats you at 17 1/2" and 12" under FT-STUDY-DESK's top. 4" foam seats you at
+# ~18 1/2" and takes that to 11"; a soft 4" takes it further. The thickness is structural to
+# the ergonomics of a room that is built, so a thicker cushion is not a free upgrade — it is a
+# request to re-frame the bench. Say so before agreeing to one.
+# ** AND THE BACK PILLOWS ARE FOR LOUNGING, NOT FOR WORKING. ** The bench is 17" deep, which
+# is right for a fixed seat with no depth adjustment (BIFMA wants 2"-3" between the front edge
+# and the back of the knee). A 5" back pillow takes the effective depth to ~12" and turns the
+# bench into a perch. Three LOOSE pillows is the correct article precisely because they come
+# off before a call; do not let this become an upholstered back rail. The wainscot is the back.
+# Basis: 3" high-resilience foam wrapped and covered, made to size, plus three cushions —
 # $200-450 for a made-to-measure bench cushion this size in a mid-weight fabric, $50-350 for
 # the pillows. Owner selection sets where in the band it lands; nothing in the plan does.
 cabinet-study-booth-cushions = { low = 250, high = 800 }

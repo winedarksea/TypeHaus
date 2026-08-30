@@ -252,23 +252,67 @@ WALLS = [
     Wall(uid="CSW119AAAA", tag="W-S-PS2", start_node="N-S-D1", end_node="N-S-C1",
          assembly="PLANT_INT_2X4_HUMID", top=ft(9), interior_room="RM-S-PLANT",
          alignment=face("stud-ext", offset=inch(-1.75))),
+    # ** MEASURED AND NOT TAKEN (2026-08-30). ** W-S-SS1 lays out from N-S-C1, which is off
+    # the module, and D-S-STUDY2 — a bare RoughOpening in it — has no legal station at that
+    # phase at all: `structural.door_framing_module` reports UNKNOWN for it. An
+    # `INT_2X4_PARTITION_LINE` variant (same assembly, `layout_origin="line"`) was built and
+    # tried; it does what it was supposed to, opening a station at 24" with the node and
+    # every neighbour untouched. It was reverted anyway: at 24" the opening's king studs on
+    # BOTH sides land in CSF601's soffit bottom plate, taking
+    # `structural.member_interference` from one overlap to three. Two pieces of wood in the
+    # same place is a worse answer than one extra cut stud, so the UNKNOWN stands and says so.
     Wall(uid="CSW120AAAA", tag="W-S-SS1", start_node="N-S-C1", end_node="N-S-B1",
          assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CSW121AAAA", tag="W-S-SS2", start_node="N-S-B1", end_node="N-S-E1",
          assembly="INT_2X4_PARTITION", top=ft(9)),
     # --- east bedroom block ------------------------------------------------------
+    #
+    # ** THE FIVE SLEEPING-SIDE PARTITIONS ARE INT_2X4_RC (2026-08-30). ** They were
+    # INT_2X4_PARTITION at STC 36 — a bedroom-to-bedroom wall you can hold a conversation
+    # through, and three corridor walls between the stair head and every bedroom door.
+    # INT_2X4_RC is the same 2x4 stud and the same 5/8" board with 1/2" resilient channel on
+    # ONE face: STC 48, twelve points, and 12 points is the difference between "audible" and
+    # "not a nuisance" on every published scale. W-S-BW4 is NOT retyped — it faces
+    # RM-S-NCLOSET, a closet, and a closet does not need an acoustic wall.
+    #
+    # Two things have to be authored or the retype moves the framing.
+    #
+    # `alignment` — the assembly is ASYMMETRIC (0.625 gwb + 0.5 channel + 3.5 stud +
+    # 0.625 gwb = 5.25", against the partition's symmetric 4.75"), so the default centred
+    # alignment would put the axis at 2.625" from the channel face and the studs 0.25" off
+    # the node line. `face("stud-ext", offset=inch(-1.75))` puts the axis 2.875" in — the
+    # stud layer's own centre — so every stud stands exactly where it stood before and every
+    # stacking, opening and interference verdict on this block is unchanged.
+    #
+    # `interior_room` — layer 0 is the resilient-channel face, and which side gets it is an
+    # acoustic decision the geometry cannot make. The corridor is the noise source for
+    # BW1/2/3 (stair head, three doors, one landing), so the channel faces the hall; between
+    # two bedrooms the channel goes on the lower-numbered one, arbitrarily but consistently.
+    # It is a Room reference rather than a flip so that swapping the nodes cannot silently
+    # invert it.
+    #
+    # What moves: the channel-side face, by 1/2". Room AREAS do not change at all —
+    # `resolve/rooms.py` polygonises from wall AXES and insets only by lining, so wall
+    # thickness never enters and R303.1 / R304 / egress are untouched. Four wall-mounted
+    # devices follow the face (plan/electrical.py). The rooms lose 1/2" of real width the
+    # model does not record.
     Wall(uid="CSW122AAAA", tag="W-S-BW1", start_node="N-S-B1", end_node="N-S-B2",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_RC", interior_room="RM-S-HALL", top=ft(9),
+         alignment=face("stud-ext", offset=inch(-1.75))),
     Wall(uid="CSW123AAAA", tag="W-S-BW2", start_node="N-S-B2", end_node="N-S-B3",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_RC", interior_room="RM-S-HALL", top=ft(9),
+         alignment=face("stud-ext", offset=inch(-1.75))),
     Wall(uid="CSW124AAAA", tag="W-S-BW3", start_node="N-S-B3", end_node="N-S-B4",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_RC", interior_room="RM-S-HALL", top=ft(9),
+         alignment=face("stud-ext", offset=inch(-1.75))),
     Wall(uid="CSW125AAAA", tag="W-S-BW4", start_node="N-S-B4", end_node="N-S-B5",
          assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CSW126AAAA", tag="W-S-BD1", start_node="N-S-B2", end_node="N-S-E2",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_RC", interior_room="RM-S-BED1", top=ft(9),
+         alignment=face("stud-ext", offset=inch(-1.75))),
     Wall(uid="CSW127AAAA", tag="W-S-BD2", start_node="N-S-B3", end_node="N-S-E3",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_RC", interior_room="RM-S-BED2", top=ft(9),
+         alignment=face("stud-ext", offset=inch(-1.75))),
     # North-centre closet (source 30.853 / 21.898), off the hall's north end.
     Wall(uid="CSW141AAAA", tag="W-S-CLN-S", start_node="N-S-C3D", end_node="N-S-B4",
          assembly="INT_2X4_PARTITION", top=ft(9)),
@@ -389,8 +433,13 @@ OPENINGS = [
     # puts three 2'-7 1/2" gaps at y 15'-2", 24'-1", 28'-11"; hosting them on the cross
     # walls (as the port did) put D-S-BED1's centre at (22.67, 10.42), inside the attic
     # stair band rather than inside RM-S-BED1.
+    # 4'-11" -> 5'-5" on 2026-08-30: centre 6'-2" -> 6'-8", a stud line on W-S-BW1's own grid,
+    # and one fewer stud cut. It is the one nudge in this pass that was NOT free — at 6'-8"
+    # the wall space between the room's SW corner and the door's south jamb grows past NEC
+    # 210.52(A)(1)'s 6 ft, so ED-S-BED1-RC5 goes in with it (plan/electrical.py). Exactly the
+    # fix ED-S-BED2-RC5 records for the same wall one bedroom north, for the same reason.
     Door(uid="CSD201AAAA", tag="D-S-BED1", host="W-S-BW1", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-B1", ft(4, 11)), flip_swing=True),          # y 15'-2"
+         position=from_node("N-S-B1", ft(5, 5)), flip_swing=True),           # y 15'-8"
     # 8 15/16" north of the source gap (24'-1"), unlike its two neighbours, and the only
     # opening on this storey that leaves the survey: `flip_swing` on 2026-08-24 turned the
     # leaf toward FURN-S-BED2-WARD, and the wardrobe has nowhere to go — the bed's side zone
@@ -409,7 +458,7 @@ OPENINGS = [
     # Full-lite glass leaf admits daylight from the south-facing plant room into
     # RM-S-STUDY2 — this door opens on the study, not the hall (corrected 2026-08-18).
     Door(uid="CSD212AAAA", tag="D-S-PLANT", host="W-S-C1", type_ref="DT-INT-SWING30-GLAZED",
-         position=from_node("N-S-S1", ft(3, 2.5))),                      # y 4'-5 1/2"
+         position=from_node("N-S-S1", ft(2, 9))),                      # y 4'-5 1/2"
     Door(uid="CSD206AAAA", tag="D-S-SUITE", host="W-S-C2B", type_ref="DT-INT-SWING32",
          position=from_node("N-S-C2", ft(0, 4.875))),                    # y 14'-1 7/8"
     # O-S-HALLW (a 3'-0" cased opening at y 28'-7") is gone: the whole 8'-6" between
@@ -417,23 +466,30 @@ OPENINGS = [
     # West block
     # Bifold closet door, DT-INT-BIFOLD56 (4'-8"), replacing the former bare RoughOpening.
     Door(uid="CSD213AAAA", tag="O-S-CLOSET", host="W-S-CLN", type_ref="DT-INT-BIFOLD56",
-         position=from_node("N-S-D2", ft(1, 10))),                       # x 13'-9"
+         position=from_node("N-S-D2", ft(1, 8))),                       # x 13'-9"
     # The source's gap starts hard against the corner at x=9'-10 11/16"; ours starts 3"
     # further east so the leaf's king stud clears W-S-DC2's corner pack instead of
     # pinwheeling through it (test_wall_corner_and_opening_framing).
     Door(uid="CSD214AAAA", tag="D-S-SUITEBATH", host="W-S-SBS", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-D3", ft(0, 6.5)), flip_hinge=True),                      # x 11'-5"
+         position=from_node("N-S-D3", inch(9)), flip_hinge=True),                      # x 11'-5"
     # 4 5/8" off N-S-V1, not the authored 3": W-S-SN1/SN2 became the 8" staggered sound
     # wall on 2026-08-21, so the node square this wall starts past grew from 2 3/8" to 4",
     # and at 3" the void's first inch was cut inside the corner (the IFC self-diff read the
     # emitted opening 1" narrower than the authored 2'-8"). 4 5/8" restores the 5/8" the
     # opening always had between its jamb and the corner square.
     RoughOpening(uid="CSD215AAAA", tag="O-S-VANITY", host="W-S-VE",
-                 position=from_node("N-S-V1", ft(0, 4.625)), width=ft(2, 8),
+                 position=from_node("N-S-V1", inch(8)), width=ft(2, 8),
                  height=ft(6, 8)),                                       # y 24'-0 5/8"
     # Pulled 3" west of its original 1'-4.5" (2026-07-29): at that offset the door's own
     # king stud landed inside N-S-BA1's corner square and punched into W-S-BA-E1B's end
     # stud (the same class of overlap as N-M-MECH2 in test_wall_corner_and_opening_framing).
+    # ** IT STAYS AT 1'-1 1/2", AND `structural.door_framing_module` REPORTS IT. ** Centre
+    # 28 1/2" is 3 1/2" off the module and costs one extra stud. The only station on this wall
+    # that would fix it is 32", and 32" leaves the RO 2 1/2" from N-S-V2 — the king and jack
+    # on that side would be inside the corner pack, which is nine `member_interference`
+    # overlaps traded for one stud. (It also needs `flip_swing` there, because at 32" the old
+    # swing sweeps FX-S-BATH1-LAV; that part works, and is moot.) The wall is 5'-1" long and
+    # carries a 30" leaf: there is no station on it that clears both ends.
     Door(uid="CSD208AAAA", tag="D-S-BATH1", host="W-S-BD-N1B", type_ref="DT-INT-SWING30",
          position=from_node("N-S-V2", ft(1, 1.5))),                      # x 8'-3"
     Door(uid="CSD217AAAA", tag="D-S-NCLOSET", host="W-S-CLN-S", type_ref="DT-INT-SWING30",
@@ -747,15 +803,40 @@ FLOOR_HEAT = [
     FloorHeat(uid="CSH801AAAA", tag="FH-S-BATH1", room_ref="RM-S-BATH1",
               # South edge 26'-11", not the 26'-9" it read until 2026-08-29: W-S-BD-N moved
               # 2" north with the y=26'-6" line and at 26'-9" the mat would have run 3/8"
-              # under the wall's own bottom plate. The zone keeps its 1 5/8" standoff and
-              # its area is unchanged everywhere else, so the 42.4 ft2 / 510 W below still holds.
+              # under the wall's own bottom plate.
+              #
+              # ** THE EAST LOBE WAS CUT BACK ON 2026-08-30 FOR THE 48" VANITY. ** The
+              # cabinet stands x 95.62"..116.62", y 345.88"..393.88" and the mat used to run
+              # straight under it -- `advisory.floor_heat_fixture_keepout` FAILed the moment
+              # the vanity landed, and it is right to: heating cable under a closed-toe
+              # cabinet has no way to dump its heat, and Schluter's own instructions forbid
+              # it outright. The lobe now stops at y=343.88" and the middle at x=93.62",
+              # which is the manufacturer's ** 2" ** standoff from a fixed cabinet on both
+              # faces. 29.43 ft2 -> 27.31 ft2.
+              #
+              # ** THE 42.4 ft2 THIS COMMENT USED TO CLAIM WAS NEVER THE POLYGON'S AREA. **
+              # The eight points below enclosed 29.43 ft2, not 42.4, so the "42.4 x 12 W" that
+              # produced 510 W was wrong twice over -- wrong area, and `area x 12` is not a
+              # thing you can buy. See the wattage note below.
               zone=(pt(ft(0, 5), ft(26, 11)), pt(ft(9, 7), ft(26, 11)),
-                    pt(ft(9, 7), ft(29, 9)), pt(ft(7, 11), ft(29, 9)),
-                    pt(ft(7, 11), ft(31, 3)), pt(ft(3, 3), ft(31, 3)),
+                    pt(ft(9, 7), inch(343.88)), pt(inch(93.62), inch(343.88)),
+                    pt(inch(93.62), ft(31, 3)), pt(ft(3, 3), ft(31, 3)),
                     pt(ft(3, 3), ft(28, 6)), pt(ft(0, 5), ft(28, 6))),
-              system=RadiantSystem.ELECTRIC, spacing=inch(3), embed=in_slab(inch(0.5)),
-              # 42.4 ft2 at the 12 W/ft2 of plan/circuits.py -> 509 W, carried at 510.
-              watts=510,
+              system=RadiantSystem.ELECTRIC, spacing=inch(3.625), embed=in_slab(inch(0.5)),
+              # ** 338 W IS A PART NUMBER, NOT AN ARITHMETIC RESULT. ** Schluter
+              # DITRA-HEAT-E-HK cable is sold in fixed, UNCUTTABLE lengths, so this field is
+              # a purchased nameplate: DHEHK12027, 26.7 ft2 / 338 W / 2.8 A at 120 V, the
+              # largest unit that does not exceed the 27.31 ft2 zone. The surplus 0.61 ft2 is
+              # the buffer zone Schluter requires. `spacing` is 3 5/8" (3-stud), which is what
+              # puts 26.7 ft2 of cable at the 12.7 W/ft2 the ladder is rated at.
+              #
+              # ** RM-S-BATH1 HAS NO SUPPLY REGISTER EITHER. ** REG-S-EXH1 is ERV *exhaust*;
+              # there is no REG-S-HP-BATH1. So this mat, like RM-M-BATH2's, is the room's ONLY
+              # heat source. At Schluter's 18.6 BTU/h/ft2 delivered it puts out ~497 BTU/h.
+              # The room's design loss has NOT been computed here (RM-M-BATH2's was, and came
+              # to ~303 BTU/h over a room 15% smaller) -- so this one looks comfortable rather
+              # than proven, and it is worth an hour with the block load before the permit set.
+              watts=338,
               stat=pt(ft(1, 6), ft(32))),
 ]
 

@@ -38,23 +38,39 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   footnotes, which contain no bathtub or concentrated-floor-load provision; Minn. R.
   1309.0301, which amends only the climatic criteria and adopts R301.5 unchanged.
 
-- **Two lavatories have no receptacle within NEC 210.52(D)'s 36", and the engine has no
-  E3901 rule to catch a third (2026-08-29).** Found while moving RM-M-BATH2's vanity, whose
-  own outlet was 58" from the new basin and has been moved onto W-M-W3 beside it. Measured
-  from each basin's outside edge to the nearest receptacle:
-  - `FX-S-SUITEBATH-LAV` — **42.9"** to `ED-S-SUITE-RC6`.
-  - `FX-S-VANITY-LAV2` — **37.2"** to `ED-S-SUITE-RC5` (LAV1 is fine at 29.0").
-  Both are pre-existing and both are in rooms this pass had no business redesigning, so
-  they are written down rather than moved. The fix in each case is one receptacle, or
-  sliding an existing one along its wall — cheap while the walls are open, and a correction
-  an inspector writes up.
-  **Encoding the rule is the other half, and it is deliberately NOT done here**: a new CODE
-  check would put two FAILs into a house that `scripts/verify.sh` holds at zero, which is a
-  decision about those two bathrooms rather than about the check. Do them together.
-  One trap for whoever writes it: `ED-M-BATH2-TUB-RC` sits ~32" from RM-M-BATH2's basin and
-  would satisfy a naive distance test, but it is sealed inside `SL-M-TUBDK`'s deck box
-  behind an access panel and serves the bath's heater. A receptacle that cannot be reached
-  is not a receptacle for this rule.
+- ~~**Two lavatories have no receptacle within NEC 210.52(D)'s 36"** (2026-08-29)~~ —
+  **FIXED 2026-08-30, and the finding was worse than it was written up as.** The 2026-08-29
+  entry measured 42.9" from `FX-S-SUITEBATH-LAV` to `ED-S-SUITE-RC6` and 37.2" from
+  `FX-S-VANITY-LAV2` to `ED-S-SUITE-RC5` and read those as distance shortfalls. They were
+  not: both of those receptacles are in **RM-S-SUITE, a different room**, and 210.52(D)(2)
+  requires the outlet to be "on a wall or partition that is ADJACENT to the sink or sink
+  countertop, located on the countertop, or installed on the side or face of the sink
+  cabinet." An outlet in the next room does not satisfy the rule at any distance. The true
+  state was that **three bathrooms had no receptacle at all** — RM-M-BATH1, RM-S-SUITEBATH
+  and RM-S-VANITY — which is a straight violation rather than a near miss.
+  Three GFCI receptacles were added with the vanities: `ED-M-BATH1-RC1` (W-M-BAE, in the
+  8 5/8" of wall north of D-M-BATH1), `ED-S-SUITEBATH-RC1` (W-S-SN3, west of the vanity —
+  the mirror leaves under 4" at either end of the cabinet itself) and `ED-S-VANITY-RC1`
+  (W-S-BD-N, east of MIRROR2, serving BOTH alcove bowls at 8.9" and 30.1" to their outside
+  edges). All three are GFCI at the DEVICE on the storey circuit, the treatment
+  `ED-M-BATH2-RC1` documents. `ED-M-LIVING-RC10` also became GFCI, having fallen inside
+  E3902.10's 6' sink reach when RM-M-BATH1's cabinet grew east.
+  **Encoding E3901.6 / 210.52(D) as a check is still NOT done, and now it would pass** —
+  which makes it a much cheaper thing to add than it was yesterday. Two traps for whoever
+  writes it. `ED-M-BATH2-TUB-RC` sits ~32" from RM-M-BATH2's basin and would satisfy a naive
+  distance test, but it is sealed inside `SL-M-TUBDK`'s deck box behind an access panel and
+  serves the bath's heater — a receptacle that cannot be reached is not a receptacle for
+  this rule. And the (D)(2) adjacency half is the part that actually caught this: a check
+  that only measures distance would have called all three of these bathrooms compliant.
+
+- **`code.E3902_gfci_locations` measures from a fixture's CENTROID, not the sink's outside
+  edge (2026-08-30).** NEC 210.8 and IRC E3902.10 both say "within 6 ft of the outside edge
+  of the sink"; the check reports the centroid distance, which is half a fixture too long on
+  every finding. It surfaced on `ED-M-LIVING-RC10`, reported at 5.8' when the real edge
+  distance is 4.6'. The error is in the safe direction — it UNDER-reports, so it can miss a
+  violation but never invent one — which is exactly why it is easy to leave sitting. It
+  matters more now than it did: a bare `FX-LAV-24` was 24" across and a 48" vanity is twice
+  that, so the gap between centroid and edge doubled in five bathrooms on 2026-08-30.
 
 - **`Room.clear_face` is not the wall's finish face, and something should say so louder
   (2026-08-29).** It is inset from the wall AXIS by the room's lining, so on RM-M-BATH2's
@@ -171,6 +187,13 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     the four pillars that actually want an MPB66Z are the corner ones on 12" concrete wall
     tops, and they are still not covered. Re-do the side-cover arithmetic against 20"
     before quoting any number in this bullet.
+
+    **2026-08-30, one number to be careful with.** The 5.76" above is a plate centred on
+    the *column*. The one base that actually sits on `PT-SG-FCOL` is `CN-SG-BASE-F2`, under
+    `PT-SG-BF2`, and that post is 4 3/8" off the column axis — so its plate corners have
+    ~2.0" of cover, not 5.76". (It was ~1.6" before the front pillar row came 2 3/4" north
+    the same day.) An `ABU66SS` is a pinned base and asks for edge distance at the anchor,
+    which is 5 5/8" and fine. An `MPB66Z` there would not be, and never was.
   - **An engineer's lateral design.** The honest answer, and the same consultant the two
     side walls below already need.
 
@@ -755,10 +778,82 @@ building, which is why it belongs in a template and a rim-band flashing detail d
 
 Make sure the basement door keeps the 7" step threshold (reduces flood risk)
 
-## RM-M-STUDY, the call booth (decided and built 2026-08-29)
+## RM-M-STUDY, the call booth (built 2026-08-29, ventilated and seated 2026-08-30)
 
 The house's smallest habitable room and its only windowless one, finished as a booth for
 video calls and homework. Decisions, so they are not relitigated:
+
+- **THE DESK NOW FOLDS, AND ONLY THE HALF THAT NEEDS TO (2026-08-30).** The ask was three
+  things that pull against each other — long enough for two, folds to the wall, and one
+  person still gets in and out easily — and they only conflict if the WHOLE desk folds.
+  Deployed, a 47" top leaves this room **no standing floor at all**: desk across the south
+  side, bench across the north, and the same 7 1/8" slot between them that exists today. So a
+  fold-everything desk would be folded and unfolded on every entry and exit, for the 95% of
+  days one person works here alone. `FURN-M-STUDY-DESK` therefore did not move or change:
+  29" fixed in the SW corner, 20" deep, 29 1/2". `FURN-M-STUDY-DESK-LEAF` is new — 18" x 20",
+  filling the entry pocket, hinged to the south wall, **47" total when it is down**. Daily,
+  the room is exactly what it was.
+- **47" IS THE ROOM'S CEILING AND IT IS BELOW EVERY PUBLISHED TWO-PERSON MINIMUM.** 23 1/2"
+  each. The trade literature wants 30" per person and puts "elbows touch" at 24"; 20" of
+  depth is already under the 24"-30" a two-person setup wants. This is honestly two people
+  around ONE laptop, not two people each working, and nothing can fix it — 47 1/8" is the
+  wall. Do not let the leaf be read as a second workstation.
+- **IT FOLDS DOWN, NOT UP, AND THE STALE-AIR GRILLE PAID FOR IT.** Stowed, the leaf hangs
+  flat on the pocket's south wall from 8" to 28" — entirely inside `WP-M-STUDY-WAINSCOT`'s
+  36" field, so it reads as a wainscot panel. Folded UP it would stand 28"-48", cutting 12"
+  above the wainscot cap in the first thing you see walking in, and it would bury
+  `ED-M-STUDY-RC1` at 32". Down was cheaper and better looking, and its price was moving
+  `REG-M-RET-STUDY` (one day old) from 16'-6" to 14'-6". That move is not a retreat: the
+  ceiling supply is at (17'-2", 20'-8"), so 16'-6" was the short-circuit corner and 14'-6" is
+  corner-to-corner. It cost the grille its foot-free spot — it is in the knee space now.
+  **The general lesson, learned twice in this house: a placeable's STOWED envelope is
+  load-bearing on the MEP, and the model holds no geometry for it.** The leaf is drawn
+  deployed; the 18" x 20" of wall it covers when folded exists only in prose.
+- **THE BENCH DECK CAME DOWN 18" -> 16", AND THE DESK DID NOT MOVE.** A bench is framed to a
+  height; a chair is set to one. 3" of HR foam settles ~1 1/2" under an adult, so an 18" deck
+  seats you at ~19 1/2" against a 29 1/2" top — a 10" differential where 11"-12" is right.
+  16" seats you at 17 1/2" and makes it exactly 12". The other way to close it is a 31" desk,
+  and that is the expensive way: 31" is above the 28"-30" band for seated laptop work, and it
+  buries `ED-M-STUDY-RC1`/`-RC2`/`-DATA1`, all three of which sit at 32" *because* they are
+  2 1/2" over a 29 1/2" top. Lower the deck, never raise the desk. **The cushion is now 3",
+  not "3-4"** — it is a dimension the bench was framed against, so a thicker one is a request
+  to re-frame the bench, not a free upgrade. And the three back pillows are for LOUNGING: the
+  bench is 17" deep, which is right for a fixed seat, and a 5" back pillow takes the effective
+  depth to ~12" and turns it into a perch. They must stay loose. The wainscot is the back.
+- **THE HARDWARE IS BRACKETS, BECAUSE NO MURPHY-DESK KIT IS RATED FOR THIS.** The standard
+  article (Create-A-Bed, Rockler #78834) is rated **50 lb** — a laptop and a notebook, not two
+  adults leaning — and it is bed-dependent anyway. A pair of Hafele/Hebgo **287.43.419**
+  folding table brackets instead: 18 7/8" projection against a 20" leaf, 1100 lb/pair,
+  auto-locking when raised and released by light upward pressure, so one hand from a seated
+  position. **Not gas struts:** Blum Aventos and Hafele Free Flap are specified by the weight
+  of the flap they LIFT and were never validated to carry load downward when open. Soft-close,
+  if wanted, is a Sugatsune EBD damper added to a load-bearing bracket — never a flap fitting
+  standing in for one.
+- **RACKING IS THE FAILURE MODE, NOT CAPACITY, AND THIS WALL FIGHTS THE STANDARD FIX.** Two
+  brackets are two pins in a line, and two pins in a line parallelogram sideways when somebody
+  leans on a corner; the steel never gives. The received cure is a continuous ledger lagged
+  into every stud — and `W-M-CLN2` is `INT_2X4_STAGGERED_DOUBLE_GWB`, STC 52 *because* no stud
+  touches both faces. A lag would either miss (2" of double gypsum plus 3/4" of wainscot
+  before it reaches wood) or, worse, be through-bolted to the far-face studs and short the
+  decoupling this booth was retyped for. **The detail is flat 2x4 blocking LET IN AT FRAMING:**
+  study-face studs occupy 0"-3 1/2" of the 5 1/2" plate and the living-side studs 2"-5 1/2",
+  so a 2x4 on the flat sits 0"-1 1/2" and clears the far studs by 1/2". It must be ordered and
+  installed with the framing; missed at rough-in, the whole detail reverts to lags through
+  finish, which is how a fold-down desk gets loose. The leaf's west edge also registers into
+  the fixed desk's east end on bullet catches — the one thing in the room that cannot move.
+- **`haus millwork` PRINTS THE LEAF'S GRAIN THE WRONG WAY AND THE MODEL CANNOT SAY SO.**
+  `takeoff/hardwood.py` runs grain along the longer plan dimension, which is right for every
+  other shelf here and wrong for the only piece deeper (20") than it is wide (18"). Build it
+  as the desk's own lay-up — 2 boards at 10", a 20 3/4" rough face — with the grain running
+  EAST-WEST, continuous with the desk's. Both tops then swell and shrink in DEPTH together
+  and the butt joint holds its width; turn it 90 degrees and a board's whole seasonal
+  movement, ~3/16" over a heating season, lands in that joint. Board feet are unaffected.
+- **THE ENGINE GAINED A `wall-desk` SYMBOL, AND IT FIXED AN OLD LIE.** `slab()` takes
+  `legs=False`; `"wall-desk"` is the apron'd slab with no legs and no modesty panel. The leaf
+  needs it because a leaf with either cannot fold — but `FT-STUDY-DESK` took it too, and that
+  is the older half: its `source` has always said it is cantilevered off cleats with the knee
+  space open to the wall, while `plan_symbol="desk"` plotted four corner legs and a panel
+  across the back. The symbol and the note had disagreed since the piece was authored.
 
 - **THE LAYOUT TURNED 90 DEGREES ON THE OWNER'S REVIEW, THE SAME DAY IT WAS BUILT.** The
   first fit-out was an L — bench down the WEST wall, desk across the south, sit in the
@@ -822,24 +917,61 @@ video calls and homework. Decisions, so they are not relitigated:
   aimed across the bench and off the backdrop. Neither it nor `ED-M-STUDY-LT` may be
   deleted: the room passes `code.R303_1_light_and_ventilation` only on Exception 1's
   electric-light substitute.
-- **`REG-M-SUP4` came out of the ceiling onto the wall at 5'-0".** In a 148 cf sealed box
-  with one person in it CO2 is the whole ventilation problem, and 15 cfm dumped at 9'-0"
-  reaches the breathing zone last. Draft is not the objection it would be on a heating
-  register: 15 cfm through a 7x7 face is ~45 fpm, under ASHRAE 55's 50 fpm threshold before
-  the jet has moved a foot.
-  - **It is on the WEST wall, not the east one beside the sconce, and that WAS the ask.**
-    `W-M-C3` is BEARING, so a 3" riser through its doubled top plate is past R602.6.1's
-    half-width limit and wants a tie strap; worse, reaching the sliver means jogging 13"
-    north across `FS-S-WEST`'s joists **directly over that bearing line**, which is the one
-    place the hole chart forbids outright; and the sliver is 9 15/16" of clear bay already
-    holding the sconce and a switch. `W-M-LS` is non-bearing, has the 5 1/2" cavity, and the
-    duct's bay leg **already crosses over it at y=20'-8"** — so the riser drops straight down
-    with no jog, no new joist crossing, and the run gets 2'-4" **shorter**.
-  - **A register type cannot be reused across the two orientations.** `footprint` is a PLAN
-    rectangle: a ceiling grille authors `(face, face)` with `height` as its 1" thickness, a
-    wall grille authors `(face, DEPTH)` with `height` as the face. `REG-T-ERV-SUP-WALL` was
-    minted for this. Pointing a wall register at `REG-T-ERV-SUP` draws a 7x7 blob with 3" of
-    itself inside the studs — which is exactly the wart `REG-S-ERV-PLANT-EXH` still carries.
+- **THE BOOTH IS VENTILATED TOP-TO-BOTTOM (2026-08-30), AND THE TWO TERMINALS ARE ONE
+  DECISION.** `REG-M-SUP4` is a 15 cfm ceiling diffuser at (17'-2", 20'-8") over
+  `ED-M-STUDY-SPOT`; `REG-M-RET-STUDY` is a 10 cfm sidewall extract at **12" above the
+  floor**, south wall, east end. Read them together — separately they are each the wrong
+  answer, and each was the answer for one day.
+  - **The 2026-08-29 sidewall supply is reverted, and the argument for it was right about
+    the failure and wrong about the fix.** 15 cfm dumped at 9'-0" into a 148 cf sealed box
+    does mix into the room's top and reach the breathing zone last — *because the only way
+    out was `D-M-STUDY`'s undercut, four feet below it and across the room*. A LOW extract
+    makes the ceiling supply cross the whole occupied zone to reach it. **Do not re-derive
+    the sidewall from the CO2 argument alone**; it only holds while the room has one
+    terminal.
+  - **THE EAST WALL WAS ASKED FOR TWICE AND DOES NOT EXIST.** Measured off resolved layer
+    polygons, not off the plan's look: `W-M-C3`'s study face is 4'-1 5/8" long, `D-M-STUDY`'s
+    RO takes y 18'-2 3/8"..21'-0 11/16" of it, and `FURN-M-STUDY-BENCH` runs wall to wall
+    across the 12 15/16" sliver that is left, to within 3/4". **There is no low east wall to
+    cut a grille into.** Freeing one means shortening the 47" bench by 7" and opening a dead
+    pocket in the corner. The alternative was declined; it is on the table if it is ever
+    wanted.
+  - **The south wall's east end is the only low wall this room has left.** The desk holds
+    x 13'-8 3/4"..16'-1 3/4", the east wall is door, the north wall is bench, and the west
+    wall's one gap between the two is 7 1/8" wide. That leaves the 18 7/8" entry pocket — and
+    it is the better spot anyway, being the one piece of floor nobody sits at.
+  - **The supply is 9" south of directly-above the sconce, and the 9" is a JOIST LINE.**
+    `FS-S-WEST` bays centre on 8" + n*16", so 20'-8" is a bay and the sconce's 21'-5" is 1"
+    past the joist at 21'-4". Reaching that line means crossing a joist over `W-M-C3` — the
+    truss's bearing end, the one place the hole chart forbids outright, and the same
+    objection that kept the terminal off the east wall on 2026-08-29.
+  - **THE PORT BUDGET, NOT THE ROUTING, IS WHAT MADE THIS A TWO-HEADED RADIAL.**
+    `EQ-M-ERV-MAN-EXH` is a 10-port manifold with all 10 ports spoken for; there is no -12
+    in the catalog and no room in the closet bay for a second manifold. So `REG-M-RET-STUDY`
+    shares `DU-M-ERV-R-LAUNDRY` and `REG-M-RET3` becomes a **mid-run tap** — physically a
+    two-port grille plenum, the standard radial fitting. **Any further terminal on this
+    storey's extract side faces the same wall.**
+  - **Of the three runs that could have shared, the laundry is right for an ACOUSTIC
+    reason.** `DU-M-ERV-R-BATH2` dead-ends at (4'-0", 18'-0") and would have reached the
+    study along the 18'-0" bay with no jog at all — shorter and simpler, and wrong: a shared
+    duct is a crosstalk path both ways and the room at this end is a call booth.
+    `RM-M-LAUNDRY` is an unoccupied closet on a 5 cfm trickle, fifteen feet and four bends
+    away.
+  - **10 cfm, not 15, and the flow is what caps it.** 5 + 10 = 15 cfm on the shared length,
+    ~25 m3/h against a 75 mm tube's ~30. The booth runs **+5 cfm positive**, which is what a
+    call booth wants — nothing is drawn under the door from the hall. Headroom to go to a
+    balanced 15/15 is about 2 cfm, not 5.
+  - **"The smallest standard duct size" is what it already is.** Every radial in this house
+    is one 75 mm SKU. The step below (51 mm) would put 10 cfm at ~450 fpm in a tube ten
+    inches from a seated occupant's feet, against ~200 fpm at 75 mm. In the one room built
+    to be quiet, downsizing is the expensive direction.
+  - **`REG-T-ERV-SUP-WALL` was minted on 2026-08-29 and deleted on 2026-08-30** with its
+    `prices.toml` row, having had a user for one day. The finding it existed for stands and
+    is now stated on `REG-T-ERV-EXH-WALL`, the house's only wall-oriented ERV terminal type:
+    `footprint` is a PLAN rectangle, so a ceiling grille authors `(face, face)` with `height`
+    as its 1" thickness and a wall grille authors `(face, DEPTH)` with `height` as the face.
+    Point a wall register at a ceiling type and 3" of it draws inside the studs — the wart
+    `REG-S-ERV-PLANT-EXH` still carries.
 - **The laundry sink's supplies now reach the sink.** `PR-B-CW-WASH`/`PR-B-HW-WASH` have
   claimed `serves=(..., "FX-M-LAUNDRY-SINK")` since they were drawn and stopped at the
   **washer box** 3'-0" west of the basin. They now run riser top -> south in `W-M-BA2E` ->
@@ -850,9 +982,12 @@ video calls and homework. Decisions, so they are not relitigated:
   `W-M-CLN` starts, the two only touch, so no point is inside both and either claim is an
   ERROR. `FX-M-LAUNDRY-SINK.wall_ref` still says `W-M-BA2E`, which is the RISER's wall, not
   the wall its back is on.
-- **The door stays exactly as it is**, and its undercut is the room's only return path for
-  `REG-M-SUP4`'s 15 cfm. Gasketing it later for the last few STC points needs a transfer
-  grille to come with it. Noted at the register.
+- **The door stays exactly as it is**, and its undercut is still the relief path — for the
+  5 cfm the room does not extract, rather than for all 15. Gasketing it later for the last
+  few STC points still needs a transfer grille or a jump duct to come with it, **or** the
+  extract raised to a balanced 15 cfm, which is the cheap version of that conversation and
+  did not exist before 2026-08-30. It is not free: see the shared radial's ~2 cfm of
+  headroom above.
 - **The wainscot stays whole** on all four walls; ~20 sf lands behind the millwork on
   purpose. The box is lined first and the built-ins are set against the lining, which is how
   a shop builds it — and the north wall's 36" wainscot *is* the bench's back rail.
