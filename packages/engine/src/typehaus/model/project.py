@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import uuid
+from typing import Literal
 
 from typehaus.model.base import Element, HausModel
 from typehaus.model.refs import FaceRef, face
@@ -34,6 +35,21 @@ class Site(HausModel):
     # derived one). Minneapolis is 50 psf. The roof framing sheet prints the load case from
     # this; without it that sheet states no load case at all.
     ground_snow_load_psf: float | None = None
+    # Design wind, the same kind of fact as the snow load above: a jurisdictional figure and
+    # two site observations, not anything the model can derive.
+    #
+    # ``design_wind_speed_mph`` is V_ult, the ASCE 7 *basic* wind speed — a 3-second gust at
+    # 33 ft in Exposure C, strength-level. It is NOT an exposure-adjusted number: exposure
+    # enters later through K_z, which is why the two fields are independent and why a house
+    # may legitimately carry V_ult from a code table and an exposure read off its own
+    # surroundings.
+    design_wind_speed_mph: float | None = None
+    # ASCE 7-16 §26.7.3 surface-roughness exposure, determined per site (IRC R301.2.1.4
+    # defers to it). B = suburban/wooded, C = open terrain, D = open water.
+    wind_exposure: Literal["B", "C", "D"] | None = None
+    # ASCE 7-16 Table 1.5-1 / IBC Table 1604.5. A dwelling is II. The category selects which
+    # wind map is read (return period), so it belongs beside the speed, not apart from it.
+    risk_category: Literal["I", "II", "III", "IV"] | None = None
     # Monthly climate normals, January..December, for the seasonal-mean (ISO 13788-style)
     # condensation gate. Empty means the gate is not evaluable; the design-hour screen
     # still runs off design_temp_heating.

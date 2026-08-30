@@ -721,7 +721,7 @@ SECOND_DEVICES = [
     # it is nowhere near that envelope's clear FLOOR space, and `_clearance_conflicts` tests
     # bodies that stand in the zone, not things hung above it.
     ElectricalDevice(uid="ZQBJ03VGYD", tag="ED-S-SUITEBATH-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(inch(148), inch(264.625)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(inch(148), inch(263.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-SECOND", room="RM-S-SUITEBATH", rotation=deg(0),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44))),
     # ** ONE OUTLET SERVES BOTH BOWLS IN THE ALCOVE, AND THAT IS DELIBERATE. ** 210.52(D)
@@ -1936,14 +1936,19 @@ NEC_FILL_SECOND = [
                      position=pt(ft(9, 3.125), ft(20, 6.375)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
-    # RC8 (2026-08-30): W-S-SN3's retype to CATLIN_INT_2X6_BRG_PLUMBING (plan/storeys/
-    # second.py — the suite bath's lav and tub-shower actually back onto it) thickened the
-    # wall enough to move this room's boundary and open a >6' gap on the L-arm's south wall,
-    # W-S-SBS, near (11', 15'-11"). None of RC1-RC7 reaches it — RC1 is 4'-3" east on the
-    # same wall but stops short of the corner where the arm turns south past W-S-DC2. Plain
-    # RECEPTACLE, not GFCI: this stretch is not within 6' of a sink.
+    # RC8 (2026-08-30): W-S-SN3's retype to INT_2X6_STAGGERED_PLUMBING (plan/storeys/
+    # second.py — the suite bath's lav and WC actually back onto it) moved this room's
+    # boundary enough to open a >6' gap on the L-arm's south wall, W-S-SBS. None of RC1-RC7
+    # reaches it — RC1 is 4'-3" east on the same wall but stops short of the corner where the
+    # arm turns south past W-S-DC2. Plain RECEPTACLE, not GFCI: this stretch is not within
+    # 6' of a sink.
+    #
+    # y is 15'-7 5/8", not the 15'-6 5/8" first authored: W-S-SBS went the OTHER way in the
+    # same pass (INT_2X6_STAGGERED_PLUMBING -> INT_2X4_PARTITION, its wet-wall duty having
+    # moved to SN3), so its south face pulled back 1.000" and this box — and RC1 beside it —
+    # had to follow or hang in the room.
     ElectricalDevice(uid="N0F72WZE2H", tag="ED-S-SUITE-RC8", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(11), ft(15, 6.625)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(11), ft(15, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
 ]

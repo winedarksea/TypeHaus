@@ -29,6 +29,7 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import LayerFunction, StructuralRole
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
 from typehaus.resolve.model import ResolvedModel, ResolvedRoof
+from typehaus.wind import wind_basis
 
 # The primary structural members a roof *framing plan* keys. Sheathing, cladding, furring,
 # fascia and soffit are envelope layers: they belong to the roof plan and the S-103 bill of
@@ -173,6 +174,9 @@ def roof_framing_notes(model: ResolvedModel, roof: ResolvedRoof) -> list[str]:
     snow = _snow_load_note(model)
     if snow:
         notes.append(snow)
+    wind = _wind_load_note(model)
+    if wind:
+        notes.append(wind)
     notes.append("MEMBER SIZES ARE THE AUTHORED / SOLVER-GENERATED FRAMING AND ARE NOT AN "
                  "ENGINEERED DESIGN; TRUSSES ARE BY THE SUPPLIER'S SEALED DRAWINGS.")
     return notes
@@ -201,22 +205,60 @@ def _snow_load_note(model: ResolvedModel) -> str | None:
             f"COMPUTED HERE.")
 
 
+def _wind_load_note(model: ResolvedModel) -> str | None:
+    """The design wind basis, when the site carries one — the *speed*, not a pressure.
+
+    The snow note above prints a load (p_f), because p_f = 0.7 p_g is one multiplication the
+    sheet can honestly make at stated defaults. Wind has no equivalent one-liner: getting from
+    V_ult to a roof pressure needs a K_z at the mean roof height, an enclosure classification,
+    and the zone map of Fig. 30.3-2 — three decisions, not a factor. So this note states the
+    basis and says plainly that the pressures are not on this sheet, which is what a reviewer
+    needs in order to know whether to look elsewhere or to ask for them.
+    """
+    basis = wind_basis(model.plan.project.site)
+    if basis is None:
+        return None
+    return (f"ULTIMATE DESIGN WIND SPEED Vult = {basis.speed_mph:.0f} MPH (3-SEC GUST), "
+            f"EXPOSURE {basis.exposure}, RISK CATEGORY {basis.risk_category}, Kzt = 1.0. "
+            f"ZONE PRESSURES (MWFRS AND C&C) ARE NOT COMPUTED HERE.")
+
+
 def roof_framing_findings(model: ResolvedModel, roof: ResolvedRoof) -> list[Finding]:
     """Roof-framing datums a permit sheet needs that the model does not carry."""
-    if model.plan.project.site.ground_snow_load_psf is None:
+    site = model.plan.project.site
+    basis = wind_basis(site)
+    if site.ground_snow_load_psf is None and basis is None:
         findings = [Finding(
             severity=Severity.WARN, check_id="sheet.roof_framing.design_loads",
             message="design snow/wind loads are not carried by the model, so this sheet states "
                     "no load case", element_tags=(roof.tag,), result=Result.UNKNOWN,
             fix_hint="add design loads to the project/site record so the sheet can print them")]
-    else:
-        # The snow case now prints; wind still has no field to read, so the sheet is
-        # partially, not fully, sourced.
+    elif basis is None:
         findings = [Finding(
             severity=Severity.WARN, check_id="sheet.roof_framing.design_loads",
             message="design wind load is not carried by the model, so this sheet states the "
                     "snow load case only", element_tags=(roof.tag,), result=Result.UNKNOWN,
             fix_hint="add a design wind speed to the site record")]
+    elif site.ground_snow_load_psf is None:
+        findings = [Finding(
+            severity=Severity.WARN, check_id="sheet.roof_framing.design_loads",
+            message="design snow load is not carried by the model, so this sheet states the "
+                    "wind basis only", element_tags=(roof.tag,), result=Result.UNKNOWN,
+            fix_hint="add a ground snow load to the site record")]
+    else:
+        # Both bases print. The sheet is still not stating wind *pressures*: V_ult is a
+        # datum, and the zone map that turns it into psf is a design step nothing in this
+        # emitter performs. UNKNOWN, and the message says which half is missing so nobody
+        # reads the printed basis as a computed load case.
+        findings = [Finding(
+            severity=Severity.WARN, check_id="sheet.roof_framing.design_loads",
+            message=(f"this sheet states both design load bases (snow p_g "
+                     f"{site.ground_snow_load_psf:.0f} psf; wind {basis.describe()}), but the "
+                     f"wind basis is a speed, not a pressure — no MWFRS or C&C zone pressure "
+                     f"is computed for this roof"),
+            element_tags=(roof.tag,), result=Result.UNKNOWN,
+            fix_hint=("compute the roof's zone pressures from the site's wind basis, or carry "
+                      "them from an engineer's calculation"))]
     if not _has_uplift_connector(model, roof):
         findings.append(Finding(
             severity=Severity.WARN, check_id="sheet.roof_framing.uplift_restraint",

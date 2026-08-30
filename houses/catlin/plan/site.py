@@ -85,6 +85,36 @@ SITE = Site(
     # Flat-roof Pf = 0.7 x 50 = 35 psf at the fully-exposed heated defaults; the roof
     # framing sheet prints that load case from this number.
     ground_snow_load_psf=50.0,
+    # Design wind. **MN Rules 1309.0301**, the state's amendment to IRC Table R301.2(1),
+    # read 2026-08-30 at revisor.mn.gov: "ULTIMATE DESIGN WIND SPEED (mph) — 115",
+    # "TOPOGRAPHIC EFFECTS — YES (in accordance with Section R301.2.1.5)", and "Wind exposure
+    # category shall be determined on a site-specific basis in accordance with Section
+    # R301.2.1.4." The 115 is statewide, so unlike the snow load it survives a county
+    # correction without any lookup at all; it derives from IRC Figure R301.2(5)A, which is
+    # ASCE 7-16 Figure 26.5-1B (Risk Category II, 700-yr MRI). It is the same V_ult
+    # `notes/catlin_truss_engineering.md` §2 hand-carries, now sourced from the adopted rule
+    # rather than restated in a note.
+    #
+    # V_ult is a strength-level 3-s gust **at 33 ft in Exposure C by definition** — the
+    # exposure of the site does not change it, only the velocity-pressure coefficient K_z it
+    # is later multiplied by. So the two fields below do not contradict each other and no
+    # exposure correction belongs on the speed.
+    design_wind_speed_mph=115.0,
+    # Exposure **B** — R301.2.1.4's site-specific determination, and the site's actual
+    # condition: a suburban Ramsey County parcel with buildings and trees in every upwind
+    # sector for well past the 1,500' fetch §26.7.3 asks about. This is the **model-wide
+    # design basis** from 2026-08-30 forward.
+    #
+    # `notes/catlin_truss_engineering.md` §2 sizes the cladding stand-off on Exposure **C**
+    # instead, and that is deliberate and stays: it prints its own Exposure B number
+    # (q_h 20.1 psf vs C's 28.2) and states it is carrying the ~40 % higher C figure as
+    # margin on a screw-withdrawal check where the margin is nearly free. One assembly
+    # choosing to be conservative is not a second site record; when a calculation reads
+    # `wind_exposure` it gets B, and a note that wants C says so in its own arithmetic.
+    wind_exposure="B",
+    # A single-family dwelling: ASCE 7-16 Table 1.5-1 / IBC Table 1604.5 Risk Category II,
+    # which is the map V_ult above is read from.
+    risk_category="II",
     parcel=(pt(ft(-32), ft(-60)), pt(ft(68), ft(-60)), pt(ft(68), ft(105)),
             pt(ft(-32), ft(105))),
     setbacks=(

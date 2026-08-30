@@ -3,12 +3,34 @@
 Each item is the *published product family*, keyed by the condition (role) the resolved
 model derives, so a house never names a part number in its plan source. Sources cite the
 manufacturer system the record describes; no rating here is estimated.
+
+**Allowable loads, from 2026-08-30.** Some items now carry an ``AllowableLoads`` record
+transcribed from a named evaluation report. Three rules govern every one of them, and they
+are the reason the field exists at all rather than a "capacity" column somebody fills in:
+
+1. **A number is copied, never derived.** Nothing here is interpolated, converted, scaled
+   from a similar part, or reasoned to. If a report does not print it, the field is ``None``.
+2. **``None`` is a finding, not a blank.** Four parts below carry an ``AllowableLoads`` whose
+   every value is ``None``. Each one names the document that was read and says why it came
+   back empty — an unevaluated part number, a scope exclusion, a value that depends on an
+   input this model does not carry. That is a materially different statement from "nobody has
+   looked", which is what ``allowable=None`` (the default) means.
+3. **The species column is load-bearing.** Simpson tabulate against specific gravity. Catlin
+   frames in SPF (SG 0.42) and several of these reports publish only DF/SP (SG 0.50) values.
+   Where a report gives both, the SPF/HF figure is what is recorded; where it gives only the
+   0.50 value, that is recorded *and said so*, because using it for SPF is an unconservative
+   error that no amount of care downstream can detect.
+
+Every one of these was pulled from the report itself, not from a retailer listing. That
+distinction turned out to matter: several retailers cite ESR-1622 for the ABU66SS, and
+ESR-1622 does not cover it.
 """
 
 from __future__ import annotations
 
 from typehaus.takeoff.hardware_catalog import (
     ROLE_BEAM_HOLD_DOWN,
+    AllowableLoads,
     ROLE_BRACE_THROUGH_BOLT,
     ROLE_COIL_STRAP,
     ROLE_CONCRETE_FACE_MOUNT_HANGER,
@@ -125,6 +147,31 @@ APVKB_KNEE_BRACE = StructuralHardware(
     model="APVKB45-6",
     source="Simpson Strong-Tie Outdoor Accents Avant Collection APVKB knee brace "
            "(strongtie.com/apvkb) — 45-degree brace at a post/beam joint",
+    # **No published allowable load, and it is not for want of looking.** Traced 2026-08-30
+    # through the actual evaluation chain rather than a product page:
+    #   * IAPMO UES ER-102 (rev. 08/21/2026) is Simpson's stamped/welded connector
+    #     cross-reference index. Its "AP" series row enumerates every Outdoor Accents model
+    #     covered — APL/APVL, APT/APVT, APA/APVA, APB/APVB in all sizes, APDJT/APVDJT,
+    #     APLH, APHH — and points them at ER-280. **APVKB appears nowhere in that index.**
+    #   * ER-280 (rev. 04/28/2026), the report ER-102 points to, has no APVKB section, table
+    #     or figure. Its knee-brace product is the KBS1Z (§3.1.7, Table 7).
+    #   * Simpson's own Outdoor Accents literature tabulates allowable uplift and download
+    #     for the Avant post bases (APVB44 1,035/6,725 lbf, APVB66 1,260/11,450 lbf) and
+    #     prints no load row for the knee brace at all.
+    # So this connector is orderable, fastener-specified and — as far as any code report
+    # goes — unrated. That is a real constraint on the balcony's bracing, not a gap in
+    # this catalog, and `houses/catlin/notes/balcony_lateral_bracing_design.md` works it
+    # through. The 45-degree brace-angle interpolation Simpson publish belongs to the KBS1Z
+    # (ER-280 Table 7 footnote 3), not to this part.
+    allowable=AllowableLoads(
+        fasteners="(4) SDWS22312DBB structural wood screws through (4) STN22 hex-head "
+                  "washers, per Simpson's product literature",
+        citation=("IAPMO UES ER-102 rev. 08/21/2026 (AP-series index) and ER-280 rev. "
+                  "04/28/2026, both read 2026-08-30 — **neither covers APVKB45-4 or "
+                  "APVKB45-6**. Simpson's Outdoor Accents load tables publish uplift and "
+                  "download for the Avant POST BASES and no load row for the knee brace. "
+                  "No allowable load exists to record"),
+    ),
 )
 
 APVB_BRACE_BOLT = StructuralHardware(
@@ -135,6 +182,19 @@ APVB_BRACE_BOLT = StructuralHardware(
     model="APVB12-6",
     source="Simpson Strong-Tie Outdoor Accents hex-head structural bolt + washer "
            "(strongtie.com/outdooraccents) — through-bolts a 2x knee brace at each end",
+    # A 1/2 in bolt in double shear through wood is not a *product* with a published
+    # allowable — it is an NDS Chapter 12 calculation, and Simpson publish no connector
+    # table for it because there is no connector, only a fastener. That is a different kind
+    # of "None" from the APVKB above: the number is computable and this catalog is simply
+    # the wrong place for it. It is worked in `notes/balcony_lateral_bracing_design.md`
+    # §5 from NDS Table 12F, with the group-action factor of Table 11.3.6A.
+    allowable=AllowableLoads(
+        fasteners="1/2 in dia. HDG hex bolt, 6 in long, with washer, in double shear",
+        citation=("no connector evaluation report applies — a through-bolt's lateral "
+                  "capacity is NDS 2018 Ch. 12 yield-limit design (Table 12F reference "
+                  "values, Table 11.3.6A group action), not a tabulated product rating. "
+                  "Worked in houses/catlin/notes/balcony_lateral_bracing_design.md"),
+    ),
 )
 
 MASA_MUDSILL_ANCHOR = StructuralHardware(
@@ -145,6 +205,29 @@ MASA_MUDSILL_ANCHOR = StructuralHardware(
     model="MASA",
     source="Simpson Strong-Tie MASA mudsill anchor (strongtie.com/masa) — cast into the "
            "top of a concrete or ICF wall to anchor the sill plate",
+    # ESR-2555 Table 1, STANDARD INSTALLATION / 2x4, 2x6 / uncracked concrete / Wind and
+    # SDC A&B. Two choices in reading this table are worth stating:
+    #   * **Uncracked** is recorded (920 vs 750 lbf uplift cracked). A sill plate at the top
+    #     of a wall is in the compression zone and away from flexural cracking; if a reviewer
+    #     disagrees the cracked column is one line away in the same table.
+    #   * **Wind and SDC A&B**, not SDC C-F: Minnesota is SDC A/B.
+    # The species caveat below is the real one. §3.2.3 requires SG >= 0.50 lumber, and this
+    # house's sill plates are SPF (SG 0.42). The tabulated values therefore do NOT apply
+    # as-is here, which is exactly why `species` records what the report says rather than
+    # what the house builds.
+    allowable=AllowableLoads(
+        uplift_lb=920.0,
+        lateral_f1_lb=1475.0,
+        lateral_f2_lb=1095.0,
+        load_duration_factor=1.6,
+        species="DF/SP or better — §3.2.3 requires assigned SG >= 0.50; catlin's SPF "
+                "sill plates are SG 0.42 and these values do not apply to them unreduced",
+        fasteners="3 - 10d x 1.5 in each side leg + 6 - 10d x 1.5 in top, "
+                  "strap cast into the wet concrete",
+        citation=("ICC-ES ESR-2555 (MASA/MASAP foundation anchor straps) Table 1, standard "
+                  "installation, 2x4/2x6 sill, uncracked concrete, Wind and SDC A&B; §3.2.3 "
+                  "for the SG >= 0.50 requirement. Read 2026-08-30"),
+    ),
 )
 
 STHD_STRAP_HOLDOWN = StructuralHardware(
@@ -188,7 +271,32 @@ CS16_COIL_STRAP = StructuralHardware(
     unit="coil",
     source="Simpson Strong-Tie CS16 coiled strap (strongtie.com/cs) — 16 ga coiled "
            "strapping cut to length for wall-to-wall continuity across a floor band",
+    # **A ladder, not a number, and the model does not carry the rung.** ESR-2105 Table 4
+    # publishes the CS16 at 1,890 lbf with 20 - 10d x 2-1/2 in common nails, or 1,725 lbf
+    # with 22 - 8d common, against a steel strength of 1,705 lbf — and footnote 1 requires
+    # half the total in each member. The allowable is therefore a function of how many nails
+    # are actually driven, and `takeoff/anchors.py::coil_strap_rows` bills coils by LENGTH.
+    # Nothing in this model says how many nails go in a given strap.
+    #
+    # Recording 1,890 anyway would be the single most tempting error available in this file:
+    # it is a real published number, from the right report, for the right part, and it would
+    # be wrong for any strap nailed with fewer than 20 nails — which is to say, wrong for
+    # every strap in this house, because none of them has a nail count at all. So the load
+    # stays None and the citation carries the ladder for whoever adds nail counts later.
+    allowable=AllowableLoads(
+        fasteners="by nail count — 20 - 10d x 2-1/2 in common or 22 - 8d common, half in "
+                  "each connected member (ESR-2105 Table 4 footnote 1); the model carries "
+                  "no nail count for a coil strap",
+        citation=("ICC-ES ESR-2105 (CS/CMST coil straps) Table 4, read 2026-08-30: CS16 "
+                  "1,890 lbf at 20-10d x 2-1/2 common, 1,725 lbf at 22-8d common, steel "
+                  "strength 1,705 lbf, all at SG >= 0.50 (footnote 2). No single value is "
+                  "recorded because the allowable is selected by a nail count this model "
+                  "does not track, and the species basis is SG 0.50 against this house's SPF"),
+    ),
 )
+
+#: ICC-ES ESR-1622, the ABU family's evaluation report. Pulled and read 2026-08-30.
+_ESR_1622 = "ICC-ES ESR-1622 (Simpson Strong-Tie post base connectors), Table 2, read 2026-08-30"
 
 ABU_POST_BASE = StructuralHardware(
     tag="simpson-abu66-standoff-post-base",
@@ -199,6 +307,64 @@ ABU_POST_BASE = StructuralHardware(
     fits_nominal=("6x6",),
     source="Simpson Strong-Tie ABU adjustable standoff post base (strongtie.com/abu) — "
            "1 in standoff keeps the post end off the wet slab",
+    # ESR-1622 Table 2, ABU66 row, verbatim. Two uplift values are published and footnote 4
+    # says they "are not cumulative" — 2,475 lbf through the twelve 16d nails into the post,
+    # 2,190 lbf through the two 1/2 in bolts. **The lower one is recorded**: this house bolts
+    # its bases (the through-bolt is what a stainless stirrup at grade wants), and a base
+    # carrying the nailed number while installed with bolts is over-rated by 13 %.
+    #
+    # No F1/F2 row exists for the ABU family. ESR-1622 §2.0 says the products "are used to
+    # resist lateral and net induced uplift forces", and Table 2 then tabulates uplift and
+    # download only — the lateral values in this report belong to the CPTZ (Table 4), a
+    # different product. So the lateral fields stay None, and any lateral demand on an ABU is
+    # an unanswered question rather than a comparison against 2,190.
+    allowable=AllowableLoads(
+        uplift_lb=2190.0,
+        download_lb=18205.0,
+        load_duration_factor=1.6,   # uplift; the download is published at C_D 1.0/1.15/1.25
+        species=None,               # the report tabulates by connector, not by lumber species
+        fasteners="12-16d into the post, 2 - 1/2 in bolts through the post, "
+                  "1 - 5/8 in cast-in anchor bolt (anchor bolt by others)",
+        citation=(_ESR_1622 + "; uplift 2,475 lbf by nails / 2,190 lbf by bolts (footnote 4: "
+                  "not cumulative — the bolted value is recorded here), download 18,205 lbf. "
+                  "§5.6: the anchor bolt and footing design are outside the report's scope"),
+    ),
+)
+
+#: **The stainless ABU is not the galvanised ABU with a different finish, as far as any
+#: published number is concerned.** Retailers list the ABU66SS under "ICC Certification ABU -
+#: ESR 1622" and that citation does not survive reading the report: ESR-1622 §3.2.1 evaluates
+#: connectors "fabricated from galvanized steel in accordance with ASTM A653", and its Table 2
+#: lists ABU44/44R/46/46R/5-5/5-6/66/66R/88/88R/1010/1010R/1212/1212R — no SS model anywhere.
+#: 316L stainless has a lower yield than the A653 SS Grade 33/40 the tables are built on, so
+#: this is not a case where the galvanised number is obviously conservative either.
+#:
+#: This record exists so that ``allowable_for_model("ABU66SS")`` returns an explicit "read the
+#: report, it does not cover this part" rather than falling through to the ABU66's numbers by
+#: prefix match — which is precisely what ``hardware_by_model`` would do and why
+#: ``allowable_for_model`` is exact-match only. It is not in ``STRUCTURAL_HARDWARE``'s role
+#: dispatch at all — it lives in ``CAPACITY_ONLY_RECORDS`` at the foot of this file, not in
+#: ``STRUCTURAL_HARDWARE``, so no BOM line, role lookup or ``hardware_by_model`` result moves
+#: because of it. ``ABU_POST_BASE`` still serves ROLE_POST_BASE at 6x6, exactly as before.
+ABU66SS_POST_BASE = StructuralHardware(
+    tag="simpson-abu66ss-standoff-post-base",
+    name="ABU66SS standoff post base (6x6), 316L stainless",
+    role=ROLE_POST_BASE,
+    manufacturer=_SIMPSON,
+    model="ABU66SS",
+    fits_nominal=("6x6",),
+    source="Simpson Strong-Tie ABU66SS stainless adjustable post base "
+           "(strongtie.com/abu) — the stainless variant of the ABU66, specified here "
+           "because these ten bases stand at grade in a wet location",
+    allowable=AllowableLoads(
+        fasteners="12-16d into the post, 2 - 1/2 in bolts through the post, "
+                  "1 - 5/8 in cast-in anchor bolt (as for the galvanised ABU66)",
+        citation=(_ESR_1622 + " — **ABU66SS IS NOT IN IT**. §3.2.1 evaluates ASTM A653 "
+                  "galvanised steel and Table 2 lists no stainless model. Retailer listings "
+                  "citing ESR-1622 for this part are citing a report that does not cover it. "
+                  "No allowable load is recorded because none is published; a stainless "
+                  "allowable has to come from Simpson directly, not from the ABU66 row"),
+    ),
 )
 
 ABU44_POST_BASE = StructuralHardware(
@@ -239,6 +405,26 @@ POST_BASE_ANCHOR_BOLT = StructuralHardware(
            "(strongtie.com/abu) — the published uplift and lateral values are taken through "
            "a 5/8 in anchor bolt, which the base does not include; 304 stainless to match "
            "the ABU66SS stirrups it fastens at grade",
+    # **ESR-1622 §5.6, verbatim: "The design of anchor bolts and the concrete footings is
+    # outside the scope of this report."** Table 2 footnote 3 says the same thing from the
+    # other side — the bolt and footing "must be capable of resisting all loads and forces
+    # transferred from the post base connector". So the report that gives the ABU its 2,190
+    # lbf explicitly declines to say whether the bolt it is measured through can deliver it.
+    #
+    # That is not an oversight: a cast-in anchor's capacity is a concrete-breakout and
+    # pullout calculation under ACI 318 Ch. 17, and it depends on f'c, embedment, edge
+    # distance and whether the concrete is cracked — four facts about the FOOTING, none of
+    # them a property of the bolt. It is the one link in the post-base chain that cannot be
+    # answered by any product table, and leaving it None is the whole reason this record is
+    # here rather than absent.
+    allowable=AllowableLoads(
+        fasteners="5/8 in dia. x 10 in cast-in bolt with nut and plate washer, 304 stainless",
+        citation=("ICC-ES ESR-1622 §5.6 and Table 2 footnote 3, read 2026-08-30: anchor "
+                  "bolt and footing design are expressly OUTSIDE the report's scope. The "
+                  "capacity of this link is an ACI 318 Ch. 17 concrete-anchorage design "
+                  "(breakout and pullout, from f'c, embedment, edge distance and cracked/ "
+                  "uncracked state), not a product rating"),
+    ),
 )
 
 PC6Z_POST_CAP = StructuralHardware(
@@ -287,6 +473,33 @@ H25A_HURRICANE_TIE = StructuralHardware(
     model="H2.5A",
     source="Simpson Strong-Tie H2.5A tie (strongtie.com/h25a) — rafter/joist-to-plate "
            "uplift connection",
+    # ESR-2613 Table 1, H2.5A row. **The lateral values are the ones to notice: 110 lbf,
+    # against 700 lbf uplift.** A check that compared a lateral demand against "the H2.5A's
+    # 700 lb capacity" would pass a joint six times overloaded, which is precisely why
+    # AllowableLoads is a vector. Footnote 2 goes further and requires a unity equation
+    # across all three directions when a joint sees more than one at once.
+    #
+    # **These values are published for SG 0.50 lumber (DF-L, and 0.55 for southern pine) —
+    # footnote to Table 1 / §3 of the report — and this house frames in SPF at SG 0.42.**
+    # Simpson do not print an SPF column for the hurricane ties the way they do for the
+    # KBS1Z and the HGAM10, so there is no honest SPF number to record here and the species
+    # field says which lumber the numbers belong to instead. Using 700 lbf against an SPF
+    # plate is unconservative and nothing downstream can detect it, so it is stated here.
+    allowable=AllowableLoads(
+        uplift_lb=700.0,
+        lateral_f1_lb=110.0,
+        lateral_f2_lb=110.0,
+        load_duration_factor=1.6,
+        species="DF-L / SP (assigned SG 0.50 / 0.55) — **NOT SPF**; catlin frames SPF at "
+                "SG 0.42 and ESR-2613 publishes no SPF column for the hurricane ties",
+        fasteners="5 - 0.131 in x 2-1/2 in to the rafter and 5 - 0.131 in x 2-1/2 in to "
+                  "the plates (ESR-3096 Table publishes 625/450/110 lbf for the same tie "
+                  "with 5-SD9112 screws each side — a different fastener, different values)",
+        citation=("ICC-ES ESR-2613 (Simpson hurricane ties) Table 1, H2.5A row, read "
+                  "2026-08-30; footnote 2 requires a unity check across uplift + both "
+                  "lateral directions for simultaneous loading, footnote 5 states the uplift "
+                  "is already increased for wind with no further increase allowed"),
+    ),
 )
 
 HGAM10_MASONRY_GUSSET = StructuralHardware(
@@ -298,6 +511,36 @@ HGAM10_MASONRY_GUSSET = StructuralHardware(
     source="Simpson Strong-Tie HGAM masonry/concrete gusset angle (strongtie.com/hgam) — "
            "#14 screws into the wood leg, Titen Turbo concrete screws into the masonry leg; "
            "1-1/2 in minimum edge distance to the anchors",
+    # Florida product approval FL11473 Table 1, HGAM10 row — the SPF/HF column, which is what
+    # this house frames in and which is published here (unlike the hurricane ties above,
+    # Simpson do print both species for the masonry connectors).
+    #
+    # F2 is directional and the table says so in footnote 5: 795 lbf for force INTO the
+    # connector, 460 lbf away from it. **The lower, away-from figure is recorded**, because
+    # nothing in this model orients the two HGAM10s at the cast column tops against a load
+    # direction, and a value that only holds for one sign of the load is not a capacity a
+    # check can use. The 795 is in the citation for a reviewer who can establish the sign.
+    #
+    # This part is used here as a masonry gusset angle at a beam-on-cast-column joint — its
+    # actual published application ("anchor wood trusses, rafters, joists, or beams to
+    # masonry or concrete") — and NOT as a hurricane tie. See the 2026-08-28 rationale in
+    # `houses/catlin/params/sunken_garden.py`; it is deliberate and should not be "fixed".
+    allowable=AllowableLoads(
+        uplift_lb=585.0,
+        lateral_f1_lb=630.0,
+        lateral_f2_lb=460.0,
+        load_duration_factor=1.6,
+        species="SPF/HF — the column recorded; the DF/SP column is 810 / 875 / 640 lbf",
+        fasteners="(4) 1/4 in x 1-1/2 in SDS to the wood leg + (4) 1/4 in x 1-3/4 in "
+                  "Titen 2 (or Titen Turbo) into concrete, 1-1/2 in min. edge distance, "
+                  "min f'c 2,500 psi",
+        citation=("Simpson Strong-Tie Florida product approval FL11473 (masonry products), "
+                  "Table 1, HGAM10 row, sealed 2017-10-19, read 2026-08-30. SPF/HF column: "
+                  "uplift 585, F1 630, F2 795 lbf INTO the connector / 460 lbf away "
+                  "(footnote 5) — the 460 is recorded. Footnote 1: already increased 60 % "
+                  "for wind. Footnote 4: a min. 2-1/2 in member thickness is required where "
+                  "anchors are installed on each side. Footnote 8: min f'c 2,500 psi"),
+    ),
 )
 
 S5_SEAM_CLAMP = StructuralHardware(
@@ -393,6 +636,41 @@ KBS_BEAM_HOLD_DOWN = StructuralHardware(
     source="Simpson Strong-Tie KBS1Z strap (strongtie.com/kbs) — ZMAX galvanized strap "
            "tying a beam to the post it bears on; published for knee braces and for "
            "beam-to-post uplift, which is the joint it is used for here",
+    # IAPMO UES ER-280 Table 7 (rev. 04/28/2026), cross-read against Simpson's C-C-2019
+    # catalog page, which prints the same rows split by species where the report prints only
+    # the DF/SP figures. **The SPF/HF column is recorded**, because that is what this house
+    # frames in and it is 14 % below the DF/SP number the report leads with.
+    #
+    # The KBS1Z is the reason this record matters beyond its current use. It is the only
+    # knee-brace connector in the Simpson line with a code-report allowable at all (§3.1.7,
+    # Table 7, Figure 7), and its F1 values are published BY BRACE ANGLE with an explicit
+    # interpolation rule (footnote 3) — which is exactly the capacity the balcony's braces
+    # need and exactly what the APVKB45-6 above does not have.
+    #
+    # Which row: **connection type 1, two connectors per joint** — equal-width members, one
+    # KBS1Z each side of the brace, 12 - 8d each. That is the configuration a 2x brace into a
+    # 6x6 post is not (type 2, single connector, 630/510 DF-SP), so the type is recorded in
+    # `fasteners` rather than left to be assumed. The uplift/lateral rows below type 2 are
+    # the BEAM-to-post use (types 3 and 4) and are a different joint again; the 1,160/1,725
+    # pair is what `takeoff/uplift.py` derives this part for today.
+    allowable=AllowableLoads(
+        uplift_lb=1000.0,        # connection type 3, 4 connectors per joint, SPF/HF
+        lateral_f1_lb=1010.0,    # connection type 1, 2 connectors, brace angle 45 deg, SPF/HF
+        lateral_f2_lb=1480.0,    # "Lateral", connection type 3, 4 connectors, SPF/HF
+        load_duration_factor=1.6,
+        species="SPF/HF — the column recorded; DF/SP is 1,160 uplift / 1,175 F1 / 1,725 "
+                "lateral for the same rows",
+        fasteners="12 - 8d (0.131 x 2-1/2 in) per connector; F1 is connection type 1 "
+                  "(two connectors per joint, equal-width members) at a 45 deg brace angle; "
+                  "uplift/lateral are connection type 3 (continuous beam-to-post, four "
+                  "connectors). SD9x1-1/2 screws substitute with no load reduction "
+                  "(ER-280 Table 7 footnote 1)",
+        citation=("IAPMO UES ER-280 rev. 04/28/2026 §3.1.7 and Table 7, read 2026-08-30, "
+                  "cross-read against Simpson C-C-2019 for the SPF/HF split. F1 by brace "
+                  "angle: 1,010 lbf at 45 deg, 720 lbf at 30 or 60 deg (SPF/HF); footnote 3 "
+                  "permits interpolation between them for intermediate angles. Footnote 2: "
+                  "already increased for wind/earthquake at C_D 1.60, no further increase"),
+    ),
 )
 
 # The screw an exposed-fastener wall panel is hung on. Driven through the panel flat (not
@@ -580,4 +858,21 @@ STRUCTURAL_HARDWARE: tuple = (
     THROUGH_PANEL_PIPE_STRAP,
     POCKET_FRAME_KIT_1500PF,
     POCKET_FRAME_KIT_HEAVY,
+)
+
+
+#: Parts this catalog holds a **capacity record** for without billing them.
+#:
+#: ``STRUCTURAL_HARDWARE`` above is the BOM's catalog: every item in it is something the
+#: take-off can select and order, and adding to it changes what a house buys. This tuple is
+#: for the other case — a part number that appears in a house's plan source or in a
+#: published table and whose allowable load somebody needs to be able to look up, without it
+#: becoming a purchasable role. ``allowable_for_model`` searches both; nothing else does.
+#:
+#: The ABU66SS is here because ``hardware_by_model("ABU66SS")`` prefix-matches the galvanised
+#: ABU66, and a reader asking "what is this base rated for" must not be handed the wrong
+#: report's numbers. Keeping it out of ``STRUCTURAL_HARDWARE`` keeps every BOM line, role
+#: lookup and price row exactly where it was.
+CAPACITY_ONLY_RECORDS: tuple = (
+    ABU66SS_POST_BASE,
 )

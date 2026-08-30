@@ -19,13 +19,18 @@ An outdoor unit on a deck is three problems the rest of the model does not see:
    it reverses, over whatever is under the deck, in a climate that freezes it.
 
 ** THIS CHECK GRADES COVERAGE, NOT CAPACITY. ** It reports whether a joint has hardware and
-where that hardware lands. It never says the hardware is big enough, because nothing in this
-model carries a design wind speed — ``Site`` has ``ground_snow_load_psf`` and no wind field,
-and a restraint schedule without a load is a drawing, not a calculation. So a fully covered
-unit is reported UNKNOWN, exactly as ``checks/structural/uplift_path.py`` reports a covered
-link, and for the same reason: "there is an anchor here" is a different claim from "this
-anchor holds", and folding the first into a PASS would retire a question an engineer still
-has to answer.
+where that hardware lands. It never says the hardware is big enough. The original reason was
+that nothing in this model carried a design wind speed — ``Site`` had ``ground_snow_load_psf``
+and no wind field at all. Since 2026-08-30 it has one (``design_wind_speed_mph`` /
+``wind_exposure`` / ``risk_category``), and the reason narrowed without going away: this
+check derives no demand from it. Sizing an outdoor unit's restraint wants the cabinet's own
+projected area and an ASCE 7 §29.4 rooftop-equipment force coefficient, neither of which is
+in the model, and a restraint schedule without a load is still a drawing, not a calculation.
+``wind.py::capacity_caveat`` owns the wording so this file and
+``checks/structural/uplift_path.py`` cannot drift into two accounts of the same model. So a
+fully covered unit is reported UNKNOWN, exactly as that check reports a covered link, and for
+the same reason: "there is an anchor here" is a different claim from "this anchor holds", and
+folding the first into a PASS would retire a question an engineer still has to answer.
 
 An **uncovered** unit is a FAIL. No anchor at all is not a judgement call.
 """
@@ -38,6 +43,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.floors import FloorSystem
 from typehaus.model.mep import Equipment, PipeRun
+from typehaus.wind import capacity_caveat
 from typehaus.model.structure import Beam, Connector
 
 _CID = "mep.deck_equipment_support"
@@ -127,7 +133,8 @@ def deck_equipment_support(ctx: CheckContext) -> list[Finding]:
             if here is None:
                 continue  # not on a deck — this rule is not about it
             out.extend(_grade_unit(unit, here, connectors, runs, beams, nodes,
-                                   blocking.get(here, []), joists.get(here, [])))
+                                   blocking.get(here, []), joists.get(here, []),
+                                   ctx.plan.project.site))
     return out
 
 
@@ -200,7 +207,7 @@ def _on_a_beam(point: tuple[float, float], beams: list, nodes: dict) -> str | No
 
 
 def _grade_unit(unit, deck_tag: str, connectors, runs, beams, nodes, blocks,
-                joists) -> list[Finding]:
+                joists, site) -> list[Finding]:
     ux, uy = unit.position.xy_m
     reach = _ANCHOR_REACH_M + max(unit.footprint[0].meters, unit.footprint[1].meters)
     anchors = [c for c in connectors
@@ -255,8 +262,8 @@ def _grade_unit(unit, deck_tag: str, connectors, runs, beams, nodes, blocks,
             _CID,
             f"{unit.tag} on deck {deck_tag} is held by {len(anchors)} authored anchor(s), "
             f"every one of them landing in blocking rather than a joist or a beam, and its "
-            f"condensate is piped and freeze-protected; coverage only — this model carries "
-            f"no design wind speed, so the restraint's capacity is not evaluated",
+            f"condensate is piped and freeze-protected; coverage only — "
+            f"{capacity_caveat(site)}",
             (unit.tag, deck_tag)))
     return out
 

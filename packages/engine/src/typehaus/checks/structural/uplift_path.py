@@ -15,12 +15,17 @@ The chain this check walks, top down:
 6. post  -> what it stands on   — a base under every post
 
 **It grades coverage, not capacity.** A finding says a joint has hardware or has none; it
-never says the hardware is big enough, because nothing in this model carries a design wind
-speed (``emit/draw/roofframingplan.py`` reports that absence separately) and a connector
-schedule without a load is a drawing, not a calculation. So a covered link is reported
-UNKNOWN, not PASS, for the same reason ``cantilever.py`` refuses to pass a mitigated
-cantilever: "there is hardware here" is a different claim from "this joint is adequate", and
-folding the first into a PASS would retire a question an engineer still has to answer.
+never says the hardware is big enough. Until 2026-08-30 the reason was that nothing in this
+model carried a design wind speed at all; ``Site`` now carries one, and the reason has
+narrowed rather than gone away — *this* check still derives no demand from it. It knows no
+tributary area, no force coefficient, and no share of the storey shear for any joint it
+walks, and a connector schedule without a load is a drawing, not a calculation. ``wind.py``
+owns the wording, so the site's actual basis is quoted rather than a stale absence claim.
+So a covered link is reported UNKNOWN, not PASS, for the same reason ``cantilever.py``
+refuses to pass a mitigated cantilever: "there is hardware here" is a different claim from
+"this joint is adequate", and folding the first into a PASS would retire a question an
+engineer still has to answer. ``checks/structural/lateral_racking.py`` is the one place that
+does compute a wind demand, and it covers the balcony's braced bays only.
 
 An **uncovered** link is a FAIL. A joint with no connector at all is not a judgement call.
 
@@ -43,6 +48,7 @@ from typehaus.takeoff.anchors import coil_strap_rows, mudsill_anchor_rows
 from typehaus.takeoff.hangers import hung_connections
 from typehaus.takeoff.hardware_config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
 from typehaus.takeoff.uplift import bearing_connections, bearing_line_tags
+from typehaus.wind import capacity_caveat
 from typehaus.takeoff.uplift_joints import (
     authored_joints,
     catalogued_post_sizes,
@@ -81,7 +87,7 @@ class Link:
     not_evaluable: str | None = None
 
 
-def _finding(link: Link) -> Finding:
+def _finding(link: Link, site) -> Finding:
     """Covered -> UNKNOWN, uncovered -> FAIL, un-gradeable -> UNKNOWN. See the docstring."""
     if link.not_evaluable is not None:
         return Finding(
@@ -101,8 +107,7 @@ def _finding(link: Link) -> Finding:
     return Finding(
         severity=Severity.WARN, check_id=_CHECK_ID, result=Result.UNKNOWN,
         message=(f"[advisory, not engineering] {link.name} is connected by {link.hardware}; "
-                 "coverage only — this model carries no design wind speed, so the capacity "
-                 "of the connection is not evaluated"),
+                 f"coverage only — {capacity_caveat(site)}"),
         element_tags=link.tags)
 
 
@@ -317,7 +322,8 @@ def _post_links(ctx: CheckContext) -> list:
 @check(Tier.STRUCTURAL, _CHECK_ID)
 def uplift_load_path(ctx: CheckContext) -> list[Finding]:
     """Every joint in the roof-to-footing chain, covered or broken."""
-    return [_finding(link) for link in (
+    site = ctx.plan.project.site
+    return [_finding(link, site) for link in (
         *_seated_links(ctx),
         *_stack_and_sill_links(ctx),
         *_post_links(ctx),

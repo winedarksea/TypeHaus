@@ -90,17 +90,50 @@ VENT_BRANCHES_SECOND = [
             diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 4),
             serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
-    # The suite bath's own vent: takeoff on its west wet wall W-S-DC2 (x=9'-7 1/2"), north
-    # through the landing and the hall bath, then west along y=34'-6" to the shared
-    # radon/plumbing chase. It runs up the x=9'-7 1/2" line rather than joining the hall
-    # bath's run at x=1' so the two branches never share a leg.
+    # The suite bath's own vent. ** THE TAKEOFF IS ON W-S-SN3, THE NORTH WALL, SINCE
+    # 2026-08-30 — it used to dive diagonally across the room to W-S-DC2's axis and that was
+    # always wrong. ** All three of this room's fixtures stand against the north wall or the
+    # east one; NOT ONE of them touches W-S-DC2 (`plan/fixtures.py` — the WC's and the lav's
+    # `wall_ref` were pointed at DC2 purely for `advisory.wet_wall_depth`'s 5.5" allowance,
+    # which SN3 now carries itself). So the run is a header ALONG that wall, at y=21'-11" —
+    # 1 5/8" inboard of SN3's 264 5/8" face, in the bath's own ceiling, which is where a vent
+    # header is actually run — taking off at x=16'-4 1/2" directly over the tub-shower,
+    # picking up all three fixtures on its way west, and turning north at N-S-D4. Three
+    # things get better and nothing gets worse:
+    #   * every trap arm shortens, and the house's tightest one stops being tight: the
+    #     diagonal takeoff measured 66" to the tub-shower against Table 1002.2's 72" for 3",
+    #     6" of margin; the header measures 39". The lav's went 50" -> 0" (the header passes
+    #     straight over its basin) and the WC's 19" -> 17".
+    #   * the x=9'-7 1/2" riser gets SHORTER, y=20' -> 21'-11", so it bores fewer FS-ATTIC
+    #     joists on its way north (that leg crosses them; the header runs *along* a bay,
+    #     y=21'-11" sitting inside the 22'-0" bay, so it bores none).
+    #   * it no longer runs inside W-S-DC2 at all — the riser is entirely NORTH of that
+    #     wall, which ends at y=22'-4".
+    # ** THAT DOES NOT FREE W-S-DC2 TO BECOME A THIN WALL. ** It still carries the attic
+    # studio bath's own risers — PR-A-STUBATH-DRAIN drops 10'-0" inside it and
+    # PR-A-CW/HW-STUBATH rise through it into W-A-STU-W — so it stays a full-depth 5.5"
+    # cavity for their sake, not for this run's. See plan/fixtures.py.
     #
-    # The chase here is VR-M-RADON-VENT's, at (1', 34'-6") — now the *same* shaft as the
-    # 2'x2' mechanical chase in the hall bath's NW corner (W-S-CH-W/CH-S, moved there
-    # 2026-07-28 from the NE corner specifically so it could carry this riser; storeys/
-    # second.py).
+    # ** THE HEADER IS 1 5/8" OFF THE WALL RATHER THAN ON ITS AXIS, AND THAT IS D-M-LAUN'S
+    # POCKET REACHING UP A STOREY. ** The first cut of this reroute ran the header along
+    # y=22'-4" itself, which is the axis W-M-HS3/W-M-HS4 share ONE STOREY DOWN — and x
+    # 12'-4"..16'-5" of that line is D-M-LAUN's pocket, the cavity CLAUDE.md says nothing may
+    # ever enter. `mep.pocket_occupancy` FAILED it on both segments. The check is **purely
+    # 2D**: `_pocket_bands` buffers the pocket wall's axis in plan and tests every
+    # `PipeRun` segment against it with no storey and no elevation filter, so a vent sitting
+    # 9'-3" above the SECOND floor trips a pocket on the MAIN one. Physically there is no
+    # conflict whatever — but routing round it costs nothing and is the better line anyway
+    # (it is what takes the tub-shower's arm to 39"), so the house moved rather than the
+    # check. If that check is ever made storey-aware, this header may go back on the axis.
+    #
+    # It still turns north on the x=9'-7 1/2" line rather than joining the hall bath's run at
+    # x=1' so the two branches never share a leg — and at x=9'-7 1/2" that north leg is well
+    # clear of the pocket's x 12'-4"..16'-5" band. The chase is VR-M-RADON-VENT's, at
+    # (1', 34'-6") — the *same* shaft as the 2'x2' mechanical chase in the hall bath's NW
+    # corner (W-S-CH-W/CH-S, moved there 2026-07-28 from the NE corner specifically so it
+    # could carry this riser; storeys/second.py).
     PipeRun(uid="CSP902AAAA", tag="PR-S-SUITEBATH-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(13, 10), ft(16)), pt(ft(9, 7.5), ft(20)),
+            path=(pt(ft(16, 4.5), ft(21, 11)), pt(ft(9, 7.5), ft(21, 11)),
                   pt(ft(9, 7.5), ft(34, 6)), pt(ft(1), ft(34, 6))),
             diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 5),
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",

@@ -483,7 +483,20 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     # this whole list documents — the family exists for places a bigger unit will not fit,
     # and the attic stopped being such a place by losing the walls rather than by gaining
     # room.
-    assert len(framed) == 13, [o.tag for o in framed]
+    #
+    # ** 12 ON 2026-08-30: WIN-S-BATH-N CAME OUT, AND IT IS THE FIRST DELIBERATE DELETION IN
+    # THIS LIST. ** Every earlier subtraction lost its HOST — the four eave units and the
+    # gable corner pair had no wall left to sit in once the attic went 6:12 on a rafter
+    # plate. This one had a perfectly good wall: a WT-1424-T on W-S-N3 at a 4'-0" sill, the
+    # hall bath's north unit, removed because it was not wanted. RM-S-BATH1 keeps
+    # WIN-S-BATH-W — the same 14" tempered unit, on the west wall — so the room is still
+    # glazed and the house still checks 0 FAIL.
+    #
+    # Nothing about the RULE this test states changes, which is the point of re-pinning
+    # rather than loosening: a 14" RO still lands wholly inside a bay and still takes no
+    # header, no jacks and no kings. There is simply one fewer place in the house that needs
+    # a unit too small to break a stud.
+    assert len(framed) == 12, [o.tag for o in framed]
     for opening in framed:
         wall = walls[opening.host_wall]
         start, end = _framing_axis(wall)

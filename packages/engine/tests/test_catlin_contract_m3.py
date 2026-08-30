@@ -640,7 +640,11 @@ def test_opening_framing_registers_with_the_opening_it_frames(catlin_model):
                 continue
             assert member.z1_m - member.z0_m == pytest.approx(plate_h, abs=1e-9)
         checked += len(openings)
-    assert checked > 75, "the whole plan's openings, not a handful"
+    # 75 since WIN-S-BATH-N was deleted on 2026-08-30 (76 before, and this read `> 75`, so it
+    # sat exactly on the count). It is a coverage floor, not a census: it exists to catch the
+    # fixture silently collapsing to a handful of walls, so it tracks the real number rather
+    # than being loosened to a round one that would stop noticing.
+    assert checked >= 75, "the whole plan's openings, not a handful"
 
 
 def test_raked_gable_king_studs_match_roof_plane_at_own_station(catlin_model):
@@ -2329,6 +2333,17 @@ def test_upper_storey_studs_stand_over_studs(catlin_model):
     # them. Ratio 43.3% -> 44.4%: the RATIO went slightly the wrong way because the
     # denominator shrank faster than the count, which is why both numbers are pinned and
     # neither is loosened.
-    assert orphan_count <= 106, (
+    # **111/245 on 2026-08-30, and this one is ARITHMETIC, not drift.** W-S-SN3 became
+    # `INT_2X6_STAGGERED_PLUMBING` — it is the suite bath's real wet wall, the wall its WC and
+    # lavatory actually back onto (plan/storeys/second.py). A staggered partition puts its
+    # 2x4 studs on alternating faces of a 2x6 plate at 16" o.c. PER FACE, so the combined
+    # rhythm is 8", and over this wall's 100 1/2" run that is ~13 studs where the 4 3/4"
+    # partition it replaced had ~7. Every one of the six added stands at an 8" offset from
+    # the module, and W-M-HS3 below is a plain 16" o.c. partition — so five of the six CANNOT
+    # stand over a stud below, by construction. That is what a staggered wall IS: the two
+    # faces are deliberately decoupled, and asking the far face to stack is asking for the
+    # thing the assembly exists to prevent. +6 denominator, +5 numerator, ratio 44.4% ->
+    # 45.3%, and no grid anywhere can be re-phased to recover it.
+    assert orphan_count <= 111, (
         f"{orphan_count}/{total} upper-storey studs stand over no stud below "
-        f"(was 106/239); first offenders {orphans[:12]}")
+        f"(was 111/245); first offenders {orphans[:12]}")

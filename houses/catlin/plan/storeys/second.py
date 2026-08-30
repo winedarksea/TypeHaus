@@ -371,11 +371,21 @@ WALLS = [
     # is a framing call recorded here in prose, not something a check can verify either way.)
     #
     # Back to INT_2X6_STAGGERED_PLUMBING accordingly — the original ask, and valid again now
-    # that nothing requires continuous studs: `FX-S-SUITEBATH-LAV` backs onto this wall
-    # (10.5" south, at y=265.63") and `FX-S-SUITEBATH-TUBSH` closes against it too
-    # (`plan/fixtures.py`), so this is the suite bath's real wet wall, not W-S-SBS across the
-    # room. Total thickness is unchanged from the brief CATLIN_INT_2X6_BRG_PLUMBING
-    # interlude (both are 6.77"), so no face moved and nothing needs re-checking there.
+    # that nothing requires continuous studs: `FX-S-SUITEBATH-WC` and `FX-S-SUITEBATH-LAV`
+    # both back onto this wall and `PR-S-SUITEBATH-VENT` takes off on it
+    # (`plan/fixtures.py`, `plan/mep_venting.py`), so this is the suite bath's real wet wall,
+    # not W-S-SBS across the room — and SBS gave up its own staggered assembly in the same
+    # pass, because nothing was ever against it.
+    #
+    # ** THE WALL IS 2.02" THICKER THAN THE PARTITION IT REPLACED (4.75" -> 6.77"), SO BOTH
+    # FACES MOVED 1.000" AND EIGHT THINGS HAD TO FOLLOW. ** South (bath) face 265.625" ->
+    # 264.625": FX-S-SUITEBATH-LAV, ED-S-SUITEBATH-RC1, ED-S-SUITEBATH-MIRROR. North (hall)
+    # face 270.375" -> 271.375": ED-S-LANDING-SW, ED-S-STAIR-SW. Only the vanity is caught by
+    # a test; the four devices were found by
+    # `test_wall_mounted_devices_resolve_against_a_wall_face`, which grades the resolved body
+    # against the wall solid, and a fixture other than a vanity is graded by nothing at all —
+    # which is how FX-S-SUITEBATH-WC turned out to have been standing 1.92" off this wall
+    # since long before any of this. It is flush now.
     #
     # `stacks_on` still names W-M-HS3, but for an unrelated reason: `resolve/stacking.py`
     # derives a `storey_stack:rim` boundary condition for EVERY wall with a collinear overlap

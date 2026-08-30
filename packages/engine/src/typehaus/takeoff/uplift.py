@@ -325,8 +325,13 @@ def continuous_bearing_tie_rows(model: ResolvedModel, rules: UpliftTieRules) -> 
 
     An H2.5A is what the rest of this schedule buys and what a 3-1/2" beam on a 5-1/2" plate
     takes; the pitch is the house's own 4'. Both are commodity choices recorded in
-    ``houses/catlin/notes/ridge_beam_detail.md``, not an engineered uplift design — the model
-    still carries no design wind speed.
+    ``houses/catlin/notes/ridge_beam_detail.md``, not an engineered uplift design. The model
+    has carried a design wind speed since 2026-08-30 (``Site.design_wind_speed_mph``), and it
+    changes nothing here: this function derives a *schedule* — how many ties, at what pitch —
+    and no part of it reads a wind field, computes a tributary uplift, or compares one against
+    the tie's allowable. It bills the layout a builder would install. Turning V_ult into a
+    per-tie demand is ``checks/structural/`` work, and today only the balcony's braced bays
+    have it (``lateral_racking.py``).
     """
     pitch_m = max(rules.continuous_bearing_pitch_ft, 0.5) * FT_TO_M
     groups: dict = {}

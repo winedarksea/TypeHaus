@@ -38,8 +38,12 @@
 #   clamps to it would be belt over a belt. The 48 PV clamps up there (`params/solar.py`) are
 #   a different part doing a different job.
 #
-# ** THIS IS AN AUTHORED LAYOUT, NOT AN ENGINEERED ONE. ** Nobody has run a site wind speed
-# through ASCE 7 to get a design pressure, and no zone width has been calculated — the grid
+# ** THIS IS AN AUTHORED LAYOUT, NOT AN ENGINEERED ONE. ** The caveat narrowed on 2026-08-30
+# and did not go away. `plan/site.py` now carries a design wind speed (V_ult = 115 mph,
+# Exposure B, Risk Category II, MN Rules 1309.0301), so the *first* missing input is no longer
+# missing — but nobody has run it through ASCE 7 Ch. 30 to get a design pressure, and **no zone
+# width has been calculated**, which is the input this layout actually turns on. A clamp grid is
+# a map of corner/perimeter/field zones; having V without the zone map buys nothing. The grid
 # above is a reasonable builder's layout, and the count it produces (28) is what the estimate
 # bills. That caveat now covers the HOUSE WALLS TOO, in a different form: the screw schedule
 # that replaced the clamps there is a uniform field grid, so it carries no corner-zone

@@ -93,6 +93,20 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   **nothing should be until it is decided** — a number invented in the model is worse than an
   open question.
 
+  **2026-08-30: the model now carries a design wind speed, and this entry stays open.**
+  `plan/site.py` authors `design_wind_speed_mph=115.0`, `wind_exposure="B"`,
+  `risk_category="II"` — MN Rules 1309.0301's amendment to IRC Table R301.2(1), which is
+  statewide, plus a site-specific exposure per R301.2.1.4. That removes the input whose
+  absence every `structural.uplift_load_path` finding used to name, and it is the input a
+  demand calculation needs. It is **not** a lateral design and does not close anything below:
+  a speed is not a pressure, a pressure is not a storey shear, and a storey shear is not a
+  distribution to elements. What it does mean is that the "cheapest option" bullet's
+  parenthetical — that nobody can even check whether the two centre pillars need bracing — is
+  no longer true, and `structural.lateral_racking` now reports a computed demand-to-capacity
+  ratio per braced bay. Read that check's findings and
+  `houses/catlin/notes/balcony_lateral_bracing_design.md` before re-litigating any bullet
+  here; the doctrine at the head of this item is unchanged.
+
   **2026-08-30: the balcony's E-W COLLECTOR is decided; the engineered-lateral question
   below is not.** The four E-W girts (the horizontal members the corner knee braces rose
   into) are retired for two continuous 2x8 "brace rails," one per pillar row, face-bolted
@@ -423,10 +437,7 @@ the future.
 - Does balcony access have to pass through the plant room? `D-S-DECK-W` is a 60" exterior
   French door in a 70 %-RH room and its threshold will condense (raised 2026-08-18)
 - Floor drain in RM-S-PLANT — Answer: No floor drain necessary. Spilled water is mopped up as needed.
-- Make sure all desired access panels are in
-- Small windows on corners?
-- Improve the symmetry of the windows on the east and west side
-- Permit drawings
+- Make sure all desired access panels are in (deferred pending more design items settling)
 - Make sure the floor trusses (of the first to second floor) are modeled more accurately in 3d and make sure their measurements in the BOM are very exact for manufacturing
 - The house's own strip footings are eccentric under their walls, the same way the garage
   stem's were before 2026-08-15: `FT-B-*` is a 20" strip centred on the y=0 node line,
@@ -437,6 +448,7 @@ the future.
   fix it, but it is deliberately *not* authored there: the glazed-brick plinth's whole
   derivation (`params/foundations.py`, `FT-B-BRICK`) leans on that 10" toe being there
   to bear on. Correcting the footings means re-deriving the plinth with them.
+- Make the mudroom bench part of the oak millwork billing
 
 * **Is this enough glazing for light-feeling rooms (along with LED strips, etc)?** Still
   open, and deliberately: 8% is the code minimum, not an answer about how a room feels. But
@@ -631,30 +643,24 @@ Architectural lighting on facade (try to aim to be dark sky friendly)
 number, the pattern and the reasoning against every one of these; the rows with a MEASURED
 number are ready to move to `plans/cost-options.md` whenever the owner wants them):
 
-Drop the main-floor south sill 2'-8" -> 1'-6" as a line, all three units together, so the south
-face gains a vertical gradient and the oak stool becomes a bench ledge (222/180/202)
-Retype the east living row 27x48 -> 27x64, the type already exists (192) -- MEASURED +$269-562
-White-oak T&G wainscot at 3'-6" in the great room, off the family stock; the house has 52 SF of
-interior wood and all of it is in a 19 sf windowless office (250/249)
-Oak in the second-floor hall, so the oak stair stops landing on vinyl between two oak rooms
-(233) -- MEASURED +$1,943-2,695
-Unglazed quarry tile in the mudroom instead of the lab-grade sheet vinyl (248) -- MEASURED,
-effectively free at +$33-360
-A 10" soffit band over the dining table -- the ONLY lever for ceiling variety on main/second,
-because Room.ceiling as a Length produces no geometry there (190/182)
-Dimmers in the bedrooms and studies -- 99 of 128 luminaires are on a plain toggle (252/135)
+Implement now:
 Raise the electric fireplace to seated eye level, buy one that reads as fire at 11 feet, give it
-a dark surround, and turn the seats toward it (181/185)
-A built-in bench under a lowered mudroom window instead of the freestanding catalog piece (202)
-An entry court, a canopy hung off the GARAGE, a sitting wall and a bench (110/112/242/243)
+a dark surround, and turn the seats toward it (181/185). Likely a small section of oak, walnut, or cherry wainscot.
 An exterior stair off the porch -- the house currently has no route from a door to its own
 ground anywhere on the site (168/120)
+
+Deferred:
+Retype the east living row 27x48 -> 27x64, the type already exists (192) -- MEASURED +$269-562.  Note: deferred pending decision.
+Oak in the second-floor hall, so the oak stair stops landing on vinyl between two oak rooms
+(233) -- MEASURED +$1,943-2,695. Note: deferred pending decision.
+Unglazed quarry tile in the mudroom instead of the lab-grade sheet vinyl (248) -- MEASURED,
+effectively free at +$33-360. Note: deferred pending decision.
+A 10" soffit band over the dining table -- the ONLY lever for ceiling variety on main/second,
+because Room.ceiling as a Length produces no geometry there (190/182). Perhaps more oak. Note: deferred pending decision.
 Trees: one canopy tree north, two ironwood west, one serviceberry east -- and none within 25'
-of the sunken-garden walls (171)
-A freestanding trellis 4'-0" clear of any wall; a self-clinging vine on this cladding is a
-durability problem, not a decoration (246/174)
+of the sunken-garden walls (171). Note: deferred pending decision.
 Two lounge chairs on the porch -- it is roofed, fanned, lit, wired and curtained, and has
-nothing on it (241)
+nothing on it (241).
 
 ### Potential cost cutting (just ideas, not a TODO)
 Once an idea here has a number against it, it moves to `plans/cost-options.md` — the

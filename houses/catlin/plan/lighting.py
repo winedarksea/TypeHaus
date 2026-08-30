@@ -757,7 +757,7 @@ SECOND_LIGHTING = [
                      controlled_by=("ED-S-SUITEBATH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS000EAAA", tag="ED-S-SUITEBATH-MIRROR", kind=DeviceKind.LIGHT,
-                     position=pt(ft(13, 10), ft(22, 0.625)), type_ref="ED-T-LT-MIRROR",
+                     position=pt(ft(13, 10), ft(21, 11.625)), type_ref="ED-T-LT-MIRROR",
                      circuit="CKT-LT-UPPER", room="RM-S-SUITEBATH", rotation=deg(180),
                      controlled_by=("ED-S-SUITEBATH-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
@@ -978,7 +978,7 @@ SECOND_LIGHTING = [
     # throat is the well's west lane (x 10'-3 3/8"..13'-9 3/4"), and x=17' was a well's
     # width away from where you arrive.
     ElectricalDevice(uid="QTS001BAAA", tag="ED-S-STAIR-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(12), ft(22, 7.375)), type_ref="ED-T-SWITCH-DIM",
+                     position=pt(ft(12), ft(22, 8.375)), type_ref="ED-T-SWITCH-DIM",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 ]

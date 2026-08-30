@@ -116,6 +116,63 @@ ROLE_SNOW_RETENTION = "snow_retention"
 
 
 @dataclass(frozen=True)
+class AllowableLoads:
+    """One connector's published ASD allowable loads, as a vector and with its source.
+
+    **Every field is ``None`` when no public number exists, and that is the point.** A
+    connector catalog that carried a scalar "capacity" would have to invent something for the
+    parts whose reports do not publish one, and an invented allowable is the single most
+    dangerous number a model like this could hold — it looks exactly like a real one in a
+    calculation. Absence is a fact here, recorded deliberately, with ``citation`` saying which
+    document was read and came back empty.
+
+    It is a **vector** because a connector fails in more than one direction and the numbers
+    are wildly different: an H2.5A is published at 700 lbf uplift and 110 lbf lateral, and a
+    check that compared a lateral demand against "the H2.5A's 700 lb capacity" would pass a
+    joint that is over six times overloaded. ESR-2613 footnote 2 makes the coupling explicit
+    (a unity equation across all three), which is only expressible against separate fields.
+
+    ``citation`` and ``fasteners`` are the two invariants ``tests/test_hardware_allowables.py``
+    enforces on every record. Without the report, a number cannot be re-checked; without the
+    fastener schedule it is not even a number *about* anything, because every one of these
+    values is measured through a specific nail, screw or bolt count and drops — often by
+    half — when a different one is used.
+    """
+
+    #: Tension away from the supporting member, lbf. Simpson publish these already increased
+    #: for wind/earthquake (C_D = 1.6) with no further increase allowed.
+    uplift_lb: float | None = None
+    #: Lateral, F1 direction (as defined by the part's own report figure — for most of these
+    #: parallel to the supporting plate or along the brace).
+    lateral_f1_lb: float | None = None
+    #: Lateral, F2 direction (perpendicular to F1 in the same figure).
+    lateral_f2_lb: float | None = None
+    #: Bearing/compression, lbf. Published at a *lower* duration factor than uplift, and
+    #: Simpson state it may not be increased for short-term loading — so it is not comparable
+    #: to the uplift number without saying which C_D each carries, hence the field below.
+    download_lb: float | None = None
+    #: The NDS load-duration factor the tabulated values already include. ``None`` where the
+    #: record's values are all ``None`` or where the report tabulates several.
+    load_duration_factor: float | None = None
+    #: The lumber the values are published against, as the report states it. **Not
+    #: decoration**: Simpson tabulate against specific gravity, and a value published for
+    #: DF/SP (SG 0.50) does not apply to the SPF (SG 0.42) this house frames in. Where the
+    #: report gives both, the SPF/HF column is the one recorded, because that is what is
+    #: built here.
+    species: str | None = None
+    #: The exact fastener schedule the values are measured through, verbatim from the report.
+    fasteners: str = ""
+    #: The document, table and revision date read. Required, always.
+    citation: str = ""
+
+    @property
+    def is_empty(self) -> bool:
+        """True when the report was read and published no usable number for this part."""
+        return all(v is None for v in (self.uplift_lb, self.lateral_f1_lb,
+                                       self.lateral_f2_lb, self.download_lb))
+
+
+@dataclass(frozen=True)
 class StructuralHardware:
     """One catalog connector/fastener: a stable tag, a role, a part number, and a source."""
 
@@ -135,6 +192,12 @@ class StructuralHardware:
     # as orderable while being short every bracket: the CanDuit ring holds the pipe, but it
     # is the S-5! clamp under it that holds the ring to the roof.
     requires_role: str | None = None
+    #: The part's published ASD allowables, when a report has been pulled and transcribed for
+    #: it. ``None`` means nobody has looked yet — distinct from an ``AllowableLoads`` whose
+    #: every value is ``None``, which means somebody looked and the report published nothing.
+    #: **Deliberately absent from ``hardware_row``**: a BOM line orders a part, and putting a
+    #: capacity on it would invite reading the bill as a connection schedule.
+    allowable: AllowableLoads | None = None
 
     @property
     def available_lengths_in(self) -> tuple:
@@ -150,6 +213,18 @@ def structural_hardware_catalog() -> tuple:
     from library.hardware import STRUCTURAL_HARDWARE
 
     return STRUCTURAL_HARDWARE
+
+
+def hardware_capacity_records() -> tuple:
+    """Parts ``library/hardware.py`` holds an allowable for but does not bill.
+
+    Kept out of ``structural_hardware_catalog`` on purpose: everything in that tuple is
+    orderable and selectable by role, and a capacity record is neither. Only
+    ``allowable_for_model`` reads this.
+    """
+    from library.hardware import CAPACITY_ONLY_RECORDS
+
+    return CAPACITY_ONLY_RECORDS
 
 
 def hardware_for_role(role: str) -> StructuralHardware:
@@ -184,6 +259,23 @@ def hardware_by_model(model: str) -> StructuralHardware | None:
         return exact
     family = [item for item in catalog if model.startswith(item.model)]
     return max(family, key=lambda item: len(item.model)) if family else None
+
+
+def allowable_for_model(model: str) -> AllowableLoads | None:
+    """The published allowables for an EXACT part designation, or ``None``.
+
+    **Exact, and that is the whole reason this is not ``hardware_by_model(...).allowable``.**
+    ``hardware_by_model`` falls back to a family-prefix match so a plan may author "LUS210"
+    against a catalogued "LUS" — correct for finding a product, and catastrophic here, because
+    ``"ABU66SS".startswith("ABU66")`` is true and the stainless base would silently inherit the
+    galvanised ABU66's ESR-1622 numbers. It must not: ESR-1622 §3.2.1 evaluates ASTM A653
+    galvanised steel and its Table 2 lists no stainless model at all. A near-miss on a part
+    number is exactly how an unevaluated connector acquires a capacity.
+    """
+    for item in (*structural_hardware_catalog(), *hardware_capacity_records()):
+        if item.model == model:
+            return item.allowable
+    return None
 
 
 def hardware_row(item: StructuralHardware | None, *, scope: str, count: int, basis: str,

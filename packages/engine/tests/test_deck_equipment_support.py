@@ -82,7 +82,18 @@ def _block(x_ft: float) -> SimpleNamespace:
                            p1=(x_ft * _M_PER_FT, 4.5 * _M_PER_FT))
 
 
-def _ctx(elements, blocks=(), storey="second", joists=()) -> SimpleNamespace:
+#: A site with no wind fields at all — what the starter house and every synthetic fixture
+#: here carry. ``wind.wind_basis`` reads the three fields with ``getattr``, so this is a
+#: faithful stand-in for a ``Site`` that simply never authored them.
+_SILENT_SITE = SimpleNamespace(design_wind_speed_mph=None, wind_exposure=None,
+                               risk_category=None)
+#: Catlin's basis, MN Rules 1309.0301.
+_AUTHORED_SITE = SimpleNamespace(design_wind_speed_mph=115.0, wind_exposure="B",
+                                 risk_category="II")
+
+
+def _ctx(elements, blocks=(), storey="second", joists=(),
+         site=_SILENT_SITE) -> SimpleNamespace:
     beam_nodes = [Node(uid="TSTN001AAA", tag="N-T-BN", position=Point2D(x=ft(_BEAM_X), y=ft(0))),
                   Node(uid="TSTN002AAA", tag="N-T-BS", position=Point2D(x=ft(_BEAM_X), y=ft(9)))]
     beam = Beam(uid="TSTBM01AAA", tag="BM-T-DECK", start_node="N-T-BN", end_node="N-T-BS",
@@ -91,6 +102,7 @@ def _ctx(elements, blocks=(), storey="second", joists=()) -> SimpleNamespace:
     resolved = SimpleNamespace(tag="FS-T-DECK", members=[*blocks, *joists])
     return SimpleNamespace(
         plan=SimpleNamespace(
+            project=SimpleNamespace(site=site),
             storeys=[SimpleNamespace(tag=storey)],
             storey_elements=lambda tag: everything if tag == storey else [],
             all_elements=lambda: everything),
@@ -103,11 +115,29 @@ def _one(findings):
 
 
 def test_a_fully_covered_unit_is_unknown_not_pass():
-    """Coverage is not capacity. Nothing here carries a design wind speed."""
+    """Coverage is not capacity, and a silent site says so in the plainest terms."""
     ctx = _ctx([_deck(), _unit(), _anchor(_BLOCK_X), _run()], blocks=[_block(_BLOCK_X)])
     finding = _one(deck_equipment_support(ctx))
     assert finding.result is Result.UNKNOWN
     assert "no design wind speed" in finding.message
+
+
+def test_a_covered_unit_with_a_wind_basis_is_still_unknown():
+    """Carrying a wind speed is not computing a demand, and the message must say which.
+
+    This is the regression that matters after 2026-08-30: the easy mistake is to read
+    "the site now has a wind speed" as "the restraint is now checked". It is not — nothing
+    here derives the cabinet's projected area or an ASCE 7 §29.4 force coefficient — so the
+    verdict stays UNKNOWN and the sentence has to name the site's actual basis rather than
+    claim an absence that is no longer true.
+    """
+    ctx = _ctx([_deck(), _unit(), _anchor(_BLOCK_X), _run()], blocks=[_block(_BLOCK_X)],
+               site=_AUTHORED_SITE)
+    finding = _one(deck_equipment_support(ctx))
+    assert finding.result is Result.UNKNOWN
+    assert "no design wind speed" not in finding.message
+    assert "V_ult = 115 mph, Exposure B, Risk Category II" in finding.message
+    assert "derives no demand from it" in finding.message
 
 
 def test_an_unanchored_unit_fails():
@@ -214,6 +244,7 @@ def test_a_beam_on_another_storey_does_not_reach_this_deck():
     per_storey = {"second": [*here, *beam_nodes, beam], "main": below}
     ctx = SimpleNamespace(
         plan=SimpleNamespace(
+            project=SimpleNamespace(site=_SILENT_SITE),
             storeys=[SimpleNamespace(tag="second"), SimpleNamespace(tag="main")],
             storey_elements=lambda tag: per_storey.get(tag, []),
             all_elements=lambda: [*per_storey["second"], *per_storey["main"]]),

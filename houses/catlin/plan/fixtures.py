@@ -434,32 +434,46 @@ SECOND_FIXTURES = (
     # is horizontal — this WC physically backs SN3, same split the lav's `wall_ref` used to
     # carry (`FX-S-SUITEBATH-LAV`, above).
     #
-    # **W-S-DC2 still MUST stay a full-depth wet wall regardless of this fixture's
-    # `wall_ref`.** Its 5.5" cavity is not just this toilet's `advisory.wet_wall_depth`
-    # allowance — `PR-S-SUITEBATH-VENT` (plan/mep_venting.py) is a REAL 2" vent riser routed
-    # up the x=9'-7 1/2" line (W-S-DC2's own axis) from y=20' to y=34'-6", and the supply
-    # risers in plan/mep_supply.py share the same axis. Retyping DC2 to a 2x4 assembly (e.g.
-    # for resilient channel) would leave that riser with nowhere to run.
+    # It is also FLUSH to that wall now, which it never was: authored at y=249.71" it stood
+    # 1.92" off the old 4 3/4" partition's face and would still have stood 0.92" off the
+    # 6.77" wet wall that replaced it. Back = centre + 14" (the bowl's own 28" projection),
+    # so y=250.625" puts the tank against SN3's 264.625" gwb face. Nothing grades a WC
+    # against a wall face — `test_..._vanities` covers only vanities — so this was invisible.
+    #
+    # **W-S-DC2 still MUST stay a full-depth wet wall**, and after the 2026-08-30 vent
+    # reroute the reason is no longer anything in THIS room: `PR-S-SUITEBATH-VENT` takes off
+    # on SN3 now and its riser is entirely north of DC2. What still needs DC2's 5.5" cavity
+    # is the ATTIC studio bath one storey up — `PR-A-STUBATH-DRAIN` drops 10'-0" inside it
+    # and `PR-A-CW/HW-STUBATH` rise through it into W-A-STU-W. Retyping DC2 to a 2x4
+    # assembly (e.g. for resilient channel) would leave those with nowhere to run.
     Fixture(uid="CSQ804AAAA", tag="FX-S-SUITEBATH-WC", type_ref="FX-TOILET-STD",
-            room="RM-S-SUITEBATH", position=pt(m(3.42422), m(6.34259)), wall_ref="W-S-SN3"),
-    # ** A 30" VANITY SINCE 2026-08-30. ** The south wall gives 31.76" between the water
-    # closet's 15" side band (its centreline is x=134.81", so the band ends at x=149.81")
-    # and the tub-shower's west face at x=181.57". 30" is the largest stock width that fits;
-    # this cabinet runs x 150.5"..180.5", clearing the WC band by 0.69" and scribing to the
-    # tub with 1.07". The room is 71" deep so this one keeps the standard 21" carcass, and
-    # the 21" front zone stops at y=223.63" with the north face 29" further on.
+            room="RM-S-SUITEBATH", position=pt(inch(134.81), inch(250.625)),
+            wall_ref="W-S-SN3"),
+    # ** A 30" VANITY SINCE 2026-08-30. ** The NORTH wall (W-S-SN3 — this bullet said "south"
+    # while the cabinet's `wall_ref` still pointed at W-S-SBS across the room) gives 31.76"
+    # between the water closet's 15" side band (its centreline is x=134.81", so the band ends
+    # at x=149.81") and the tub-shower's west face at x=181.57". 30" is the largest stock
+    # width that fits; this cabinet runs x 150.5"..180.5", clearing the WC band by 0.69" and
+    # scribing to the tub with 1.07". The room is 71" deep so this one keeps the standard 21"
+    # carcass, and the 21" front zone stops at y=222.63", with W-S-SBS's face 29 1/4" further
+    # on. None of those x dimensions moved when the wall was retyped; only y did.
     #
     # `wall_ref` is W-S-SN3 (2026-08-30, was W-S-SBS) — the wall this vanity actually backs
-    # onto (at y=265.63") is now also the WET wall it drains into, so the split convention
-    # the attic suite still uses (`wall_ref` names the drain wall, not the physical back) no
-    # longer applies here: W-S-SN3 was retyped to CATLIN_INT_2X6_BRG_PLUMBING for exactly
-    # this fixture (`plan/storeys/second.py`), so the two now agree.
+    # onto is now also the WET wall it drains into, so the split convention the attic suite
+    # still uses (`wall_ref` names the drain wall, not the physical back) no longer applies
+    # here: W-S-SN3 is INT_2X6_STAGGERED_PLUMBING for exactly this fixture
+    # (`plan/storeys/second.py`), so the two now agree.
     #
-    # ** THIS ROOM HAS NO RECEPTACLE. ** NEC 210.52(D) wants one within 36" of the basin's
-    # outside edge and RM-S-SUITEBATH has none at all. That predates this change; see
-    # plans/TODO.md.
+    # ** THE BACK IS AT y=264.63", NOT 265.63". ** The retype took SN3 from a 4 3/4"
+    # partition to a 6.77" wet wall, which moved its south face 1.000" INTO this room, so
+    # every fixture and device on that face followed it by exactly 1.000" — this cabinet,
+    # ED-S-SUITEBATH-RC1 and ED-S-SUITEBATH-MIRROR. `test_each_vanity_backs_its_walls_finish_
+    # face_not_the_rooms_clear_face` is what catches this one; nothing catches the other two.
+    #
+    # NEC 210.52(D)'s receptacle is `ED-S-SUITEBATH-RC1` (plan/electrical.py) at x=148",
+    # 2 1/2" west of the cabinet's outside edge and far inside the 36" limit.
     Fixture(uid="CSQ805AAAA", tag="FX-S-SUITEBATH-LAV", type_ref="FX-VANITY-30-SINGLE",
-            room="RM-S-SUITEBATH", position=pt(inch(165.5), inch(255.13)),
+            room="RM-S-SUITEBATH", position=pt(inch(165.5), inch(254.13)),
             wall_ref="W-S-SN3"),
     # Suite bath takes a tub-shower (not the old 36" pan): room's clear face is
     # 9'-8 1/8" x ~6'-4", and the east wall has 5'-0" of run for a 60"x30" alcove. Rotated
