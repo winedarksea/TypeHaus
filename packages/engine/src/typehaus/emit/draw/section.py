@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from typehaus.emit.draw.palette import aia_layer, detail_hatch
 from typehaus.emit.draw.scene import Frame, Hatch, Polyline, Scene, SceneBuilder, Text
+from typehaus.emit.draw.section_annotate import annotate_building_section
 from typehaus.emit.draw.section_cavity import (
     emit_roof_cavity,
     emit_wall_cavity,
@@ -119,14 +120,23 @@ def build_section(model: ResolvedModel, view: Slice, joints=None,
 
 
 def build_center_section(model: ResolvedModel) -> Scene:
-    """Default north/south building section for headless rendering and A-301."""
+    """Default north/south building section for headless rendering and A-301.
+
+    This one is a *sheet*, and a sheet is annotated: level datums with the dimension
+    string between them, the ground line, and the name of every volume the cut passes
+    through (see :mod:`typehaus.emit.draw.section_annotate`). A ``Slice`` cut through
+    :func:`build_section` is not — an authored detail is a fragment of a building with no
+    storey ladder to hang off and no ground within a hundred feet of its crop.
+    """
     house_walls = [wall for wall in model.walls if wall.tag.startswith("W-")
                    and wall.storey in {"basement", "main", "second", "attic"}]
     stations = [coordinate for wall in house_walls for coordinate in (wall.axis[0][1], wall.axis[1][1])]
     station = (min(stations) + max(stations)) / 2.0 if stations else 0.0
     view = Slice(uid="RNDSEC00001", tag="SECTION-HOUSE-CENTER", kind=SliceKind.SECTION,
                  cut_origin=pt(m(0), m(station)), cut_direction="x")
-    return build_section(model, view)
+    scene = build_section(model, view)
+    return annotate_building_section(scene, model,
+                                     CutPlane(axis="x", station_m=station))
 
 
 def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,

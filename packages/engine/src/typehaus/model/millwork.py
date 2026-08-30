@@ -133,7 +133,7 @@ class MillworkStandard(Element):
     tread_stairs: tuple[str, ...] = ()
     # The widest board the supply can produce. An owner-supply fact, not an engine constant
     # and not a price, so it belongs in the house exactly as ``prices.toml`` numbers do
-    # (plans/01-decisions.md #28). ``takeoff/hardwood.py`` reads it for the ``glue_up`` flag:
+    # (plans/01-decisions.md #28). ``takeoff/hardwood.py`` reads it for the ``layup`` column:
     # a finished width past this cannot come off one board.
     max_board_width: Length
 

@@ -46,6 +46,8 @@ find in older docs. Pytest defaults are configured in `packages/engine/pyproject
 .venv/bin/haus takeoff houses/catlin      # BOM (+ costs when prices.toml exists)
 .venv/bin/haus takeoff houses/catlin --csv out/estimate.csv   # estimating-software intake
 .venv/bin/haus tasks houses/catlin --csv out/tasks.csv        # work packages for a PM tool
+.venv/bin/haus millwork houses/catlin                         # hardwood cut list for the mill
+.venv/bin/haus millwork houses/catlin --md out/milling.md --csv out/milling.csv
 .venv/bin/haus costs import out/estimate.csv --house houses/catlin   # actuals back in
 scripts/verify.sh --fast                  # tests + ruff + mypy, skipping builds/bench/npm
 ```

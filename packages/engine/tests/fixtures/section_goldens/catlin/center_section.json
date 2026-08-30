@@ -12161,6 +12161,991 @@
       "closed": false,
       "uid": "CARF01AAAA",
       "tag": "rafter-025/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -37.5833333464567,
+          -36.00000000000001
+        ],
+        [
+          -36.00000000000001,
+          -36.00000000000001
+        ],
+        [
+          -4.550000000000001,
+          -36.00000000000001
+        ]
+      ],
+      "layer": "L-SITE-GRAD",
+      "lineweight": 0.7,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -37.5833333464567,
+          -36.00000000000001
+        ],
+        [
+          -43.48884515748031,
+          -41.90551181102362
+        ]
+      ],
+      "layer": "L-SITE-GRAD",
+      "lineweight": 0.25,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -13.583333346456694,
+          -36.00000000000001
+        ],
+        [
+          -19.488845157480316,
+          -41.90551181102362
+        ]
+      ],
+      "layer": "L-SITE-GRAD",
+      "lineweight": 0.25,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          436.55,
+          -36.00000000000001
+        ],
+        [
+          468.0,
+          -36.00000000000001
+        ],
+        [
+          469.58333334645675,
+          -36.00000000000001
+        ]
+      ],
+      "layer": "L-SITE-GRAD",
+      "lineweight": 0.7,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          436.55,
+          -36.00000000000001
+        ],
+        [
+          430.64448818897637,
+          -41.90551181102362
+        ]
+      ],
+      "layer": "L-SITE-GRAD",
+      "lineweight": 0.25,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          460.55,
+          -36.00000000000001
+        ],
+        [
+          454.64448818897637,
+          -41.90551181102362
+        ]
+      ],
+      "layer": "L-SITE-GRAD",
+      "lineweight": 0.25,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        -37.5833333464567,
+        -42.22222222222223
+      ],
+      "content": "GRADE",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "L-SITE-GRAD",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "symbol",
+      "name": "level-marker",
+      "insert": [
+        481.58333334645675,
+        -109.4375
+      ],
+      "rotation": 0.0,
+      "scale": 1.0,
+      "layer": "A-ANNO-SYMB",
+      "params": {},
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          481.58333334645675,
+          -109.4375
+        ],
+        "name": "BASEMENT FLOOR"
+      },
+      "at": [
+        517.5833333464568,
+        -109.4375
+      ],
+      "to": [
+        481.58333334645675,
+        -109.4375
+      ],
+      "text": "BASEMENT FLOOR  EL. -9'-1\"",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "symbol",
+      "name": "level-marker",
+      "insert": [
+        481.58333334645675,
+        -34.0
+      ],
+      "rotation": 0.0,
+      "scale": 1.0,
+      "layer": "A-ANNO-SYMB",
+      "params": {},
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          481.58333334645675,
+          -34.0
+        ],
+        "name": "GRADE"
+      },
+      "at": [
+        517.5833333464568,
+        -47.76666666666665
+      ],
+      "to": [
+        481.58333334645675,
+        -34.0
+      ],
+      "text": "GRADE  EL. -2'-10\"",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "symbol",
+      "name": "level-marker",
+      "insert": [
+        481.58333334645675,
+        -12.000000000000005
+      ],
+      "rotation": 0.0,
+      "scale": 1.0,
+      "layer": "A-ANNO-SYMB",
+      "params": {},
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          481.58333334645675,
+          -12.000000000000005
+        ],
+        "name": "GARAGE FLOOR"
+      },
+      "at": [
+        517.5833333464568,
+        -29.844444444444434
+      ],
+      "to": [
+        481.58333334645675,
+        -12.000000000000005
+      ],
+      "text": "GARAGE FLOOR  EL. -1'-0\"",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "symbol",
+      "name": "level-marker",
+      "insert": [
+        481.58333334645675,
+        0.0
+      ],
+      "rotation": 0.0,
+      "scale": 1.0,
+      "layer": "A-ANNO-SYMB",
+      "params": {},
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          481.58333334645675,
+          0.0
+        ],
+        "name": "MAIN FLOOR"
+      },
+      "at": [
+        517.5833333464568,
+        -11.922222222222217
+      ],
+      "to": [
+        481.58333334645675,
+        0.0
+      ],
+      "text": "MAIN FLOOR  EL. 0'-0\"",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "symbol",
+      "name": "level-marker",
+      "insert": [
+        481.58333334645675,
+        6.000000000000001
+      ],
+      "rotation": 0.0,
+      "scale": 1.0,
+      "layer": "A-ANNO-SYMB",
+      "params": {},
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          481.58333334645675,
+          6.000000000000001
+        ],
+        "name": "BASEMENT T.O. PLATE"
+      },
+      "at": [
+        517.5833333464568,
+        6.000000000000001
+      ],
+      "to": [
+        481.58333334645675,
+        6.000000000000001
+      ],
+      "text": "BASEMENT T.O. PLATE  EL. 0'-6\"",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "symbol",
+      "name": "level-marker",
+      "insert": [
+        481.58333334645675,
+        88.0
+      ],
+      "rotation": 0.0,
+      "scale": 1.0,
+      "layer": "A-ANNO-SYMB",
+      "params": {},
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          481.58333334645675,
+          88.0
+        ],
+        "name": "GARAGE T.O. PLATE"
+      },
+      "at": [
+        517.5833333464568,
+        88.0
+      ],
+      "to": [
+        481.58333334645675,
+        88.0
+      ],
+      "text": "GARAGE T.O. PLATE  EL. 7'-4\"",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "symbol",
+      "name": "level-marker",
+      "insert": [
+        481.58333334645675,
+        120.0
+      ],
+      "rotation": 0.0,
+      "scale": 1.0,
+      "layer": "A-ANNO-SYMB",
+      "params": {},
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          481.58333334645675,
+          120.0
+        ],
+        "name": "MAIN T.O. PLATE"
+      },
+      "at": [
+        517.5833333464568,
+        120.0
+      ],
+      "to": [
+        481.58333334645675,
+        120.0
+      ],
+      "text": "MAIN T.O. PLATE / SECOND FLOOR  EL. 10'-0\"",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "symbol",
+      "name": "level-marker",
+      "insert": [
+        481.58333334645675,
+        240.0
+      ],
+      "rotation": 0.0,
+      "scale": 1.0,
+      "layer": "A-ANNO-SYMB",
+      "params": {},
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          481.58333334645675,
+          240.0
+        ],
+        "name": "ATTIC FLOOR"
+      },
+      "at": [
+        517.5833333464568,
+        222.82777777777778
+      ],
+      "to": [
+        481.58333334645675,
+        240.0
+      ],
+      "text": "ATTIC FLOOR  EL. 20'-0\"",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "symbol",
+      "name": "level-marker",
+      "insert": [
+        481.58333334645675,
+        240.75
+      ],
+      "rotation": 0.0,
+      "scale": 1.0,
+      "layer": "A-ANNO-SYMB",
+      "params": {},
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          481.58333334645675,
+          240.75
+        ],
+        "name": "SECOND T.O. PLATE"
+      },
+      "at": [
+        517.5833333464568,
+        240.75
+      ],
+      "to": [
+        481.58333334645675,
+        240.75
+      ],
+      "text": "SECOND T.O. PLATE  EL. 20'-1\"",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "symbol",
+      "name": "level-marker",
+      "insert": [
+        481.58333334645675,
+        363.0
+      ],
+      "rotation": 0.0,
+      "scale": 1.0,
+      "layer": "A-ANNO-SYMB",
+      "params": {},
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          481.58333334645675,
+          363.0
+        ],
+        "name": "ATTIC T.O. PLATE"
+      },
+      "at": [
+        517.5833333464568,
+        363.0
+      ],
+      "to": [
+        481.58333334645675,
+        363.0
+      ],
+      "text": "ATTIC T.O. PLATE / RIDGE  EL. 30'-3\"",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            481.58333334645675,
+            -109.4375
+          ],
+          "name": "BASEMENT FLOOR"
+        },
+        {
+          "kind": "point",
+          "xy": [
+            481.58333334645675,
+            -34.0
+          ],
+          "name": "GRADE"
+        }
+      ],
+      "p0": [
+        481.58333334645675,
+        -109.4375
+      ],
+      "p1": [
+        481.58333334645675,
+        -34.0
+      ],
+      "offset": 6.0,
+      "height_pt": 6.5,
+      "layer": "A-ANNO-DIMS",
+      "text": null,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            481.58333334645675,
+            -34.0
+          ],
+          "name": "GRADE"
+        },
+        {
+          "kind": "point",
+          "xy": [
+            481.58333334645675,
+            0.0
+          ],
+          "name": "MAIN FLOOR"
+        }
+      ],
+      "p0": [
+        481.58333334645675,
+        -34.0
+      ],
+      "p1": [
+        481.58333334645675,
+        0.0
+      ],
+      "offset": 6.0,
+      "height_pt": 6.5,
+      "layer": "A-ANNO-DIMS",
+      "text": null,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            481.58333334645675,
+            0.0
+          ],
+          "name": "MAIN FLOOR"
+        },
+        {
+          "kind": "point",
+          "xy": [
+            481.58333334645675,
+            88.0
+          ],
+          "name": "GARAGE T.O. PLATE"
+        }
+      ],
+      "p0": [
+        481.58333334645675,
+        0.0
+      ],
+      "p1": [
+        481.58333334645675,
+        88.0
+      ],
+      "offset": 6.0,
+      "height_pt": 6.5,
+      "layer": "A-ANNO-DIMS",
+      "text": null,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            481.58333334645675,
+            88.0
+          ],
+          "name": "GARAGE T.O. PLATE"
+        },
+        {
+          "kind": "point",
+          "xy": [
+            481.58333334645675,
+            120.0
+          ],
+          "name": "MAIN T.O. PLATE"
+        }
+      ],
+      "p0": [
+        481.58333334645675,
+        88.0
+      ],
+      "p1": [
+        481.58333334645675,
+        120.0
+      ],
+      "offset": 6.0,
+      "height_pt": 6.5,
+      "layer": "A-ANNO-DIMS",
+      "text": null,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            481.58333334645675,
+            120.0
+          ],
+          "name": "MAIN T.O. PLATE"
+        },
+        {
+          "kind": "point",
+          "xy": [
+            481.58333334645675,
+            240.0
+          ],
+          "name": "ATTIC FLOOR"
+        }
+      ],
+      "p0": [
+        481.58333334645675,
+        120.0
+      ],
+      "p1": [
+        481.58333334645675,
+        240.0
+      ],
+      "offset": 6.0,
+      "height_pt": 6.5,
+      "layer": "A-ANNO-DIMS",
+      "text": null,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            481.58333334645675,
+            240.0
+          ],
+          "name": "ATTIC FLOOR"
+        },
+        {
+          "kind": "point",
+          "xy": [
+            481.58333334645675,
+            363.0
+          ],
+          "name": "ATTIC T.O. PLATE"
+        }
+      ],
+      "p0": [
+        481.58333334645675,
+        240.0
+      ],
+      "p1": [
+        481.58333334645675,
+        363.0
+      ],
+      "offset": 6.0,
+      "height_pt": 6.5,
+      "layer": "A-ANNO-DIMS",
+      "text": null,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        108.00000000000001,
+        -85.4375
+      ],
+      "content": "WORKSHOP",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        324.00000000000006,
+        -85.4375
+      ],
+      "content": "GYM",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        324.00000000000006,
+        24.9375
+      ],
+      "content": "LIVING",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        48.00000000000001,
+        24.0
+      ],
+      "content": "BATH2",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        156.0,
+        24.0
+      ],
+      "content": "CLOSET",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        347.50000000000006,
+        144.0
+      ],
+      "content": "BED1",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        108.00000000000001,
+        144.0
+      ],
+      "content": "SUITE",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        239.50000000000003,
+        144.0
+      ],
+      "content": "HALL",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        324.00000000000006,
+        264.0
+      ],
+      "content": "EAST UNFIN",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        108.00000000000001,
+        264.0
+      ],
+      "content": "STUDIO",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          -8.500000157480315,
+          257.9076458964263
+        ],
+        "name": "CATLIN_ROOF"
+      },
+      "at": [
+        -25.583333346456694,
+        257.9076458964263
+      ],
+      "to": [
+        -8.500000157480315,
+        257.9076458964263
+      ],
+      "text": "CATLIN_ROOF",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          -7.250000000000001,
+          53.28125
+        ],
+        "name": "CATLIN_EXT_2X6"
+      },
+      "at": [
+        -25.583333346456694,
+        53.28125
+      ],
+      "to": [
+        -7.250000000000001,
+        53.28125
+      ],
+      "text": "CATLIN_EXT_2X6",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          -4.550000000000001,
+          -38.291666666666664
+        ],
+        "name": "CATLIN_BASEMENT_8"
+      },
+      "at": [
+        -25.583333346456694,
+        -60.144444444444446
+      ],
+      "to": [
+        -4.550000000000001,
+        -38.291666666666664
+      ],
+      "text": "CATLIN_BASEMENT_8",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
     }
   ],
   "notes": [],

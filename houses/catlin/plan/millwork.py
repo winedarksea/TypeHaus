@@ -26,7 +26,8 @@ from typehaus.model import MillworkStandard, ShelfBank, ShelfBay
 #
 # `max_board_width` is an owner-supply fact, not an engine constant and not a price, so it
 # belongs in the house the way prices.toml numbers do (plans/01-decisions.md #28). It is
-# what `takeoff/hardwood.py` reads for the glue_up column.
+# what `takeoff/hardwood.py` reads for the layup column: a finished face that cannot
+# come off one board of this width lays up as an edge-glued panel instead.
 MILLWORK = [
     MillworkStandard(
         uid="8YE8Y9SRFP", tag="MW-STANDARD",
@@ -72,7 +73,7 @@ MILLWORK = [
 # Widths are CLEAR between 3/4" partitions: 2'-8" pitch less 3/4" is 2'-7 1/4"; bay 5's
 # 2'-1 3/8" pitch less 3/4" is 2'-0 5/8".
 #
-# 8/4, and no glue-up: a 9 7/8" pocket takes a single board with room to spare against the
+# 8/4, and one board: a 9 7/8" pocket takes a single board with room to spare against the
 # 18" supply. 1 1/2" fixed shelves in dados need no stiffener and no edge banding at a
 # 2'-6" bay, which is the whole argument for owner stock here — a 3/4" shelf at this span
 # would want a face frame that nobody would then see the oak through.
@@ -118,12 +119,15 @@ ATTIC_SHELVES = [
 #    the 18" the supply can produce, so every shelf was a two-board edge glue-up; 18" is one
 #    hand-picked wide board. `depth` is still deliberately NOT authored here — the bank
 #    inherits the type's footprint, so the carcass and the shelf can never disagree.
-#    18" is the EDGE of the supply and the schedule says so: a finished 18" face needs an
-#    18 3/4" rough board once an edge is straight-lined and the other jointed, so
-#    `haus millwork` still raises the flag, now reading "needs a 18.75" rough board; the
-#    supply is 18.00"". That is the honest instruction — hand-pick the widest boards in the
-#    stack for this bank — and not the same statement as the 24" two-board glue-up it
-#    replaced.
+#    18" IS PAST THE EDGE OF THE SUPPLY, and the schedule says so rather than rounding it
+#    away: a finished 18" face needs an 18 3/4" rough board once an edge is straight-lined
+#    and the other jointed, and `max_board_width` is 18". So `haus millwork` lays each shelf
+#    up as `edge-glued panel x2`, 2 boards at 9". That is not a defeat — a solid 18" shelf
+#    is normally a glued panel anyway, because one 18" board that wide cups — and it is a
+#    far smaller statement than the 24" it replaced, which was a two-board panel with a
+#    wider, scarcer board in it. ** THE ONE-NUMBER LEVER: ** if the family stack really does
+#    hold boards past 18 3/4", raise `max_board_width` above and both panels in this house
+#    (here and SB-S-BATH1) become single boards with no other edit.
 #
 # Six boards per bay, the case top included, on the graduated pitch the type specifies —
 # ~20" bottom bay, 12"-14" middle, 8"-10" top — over the 7'-0" carcass.
@@ -190,8 +194,9 @@ BASEMENT_SHELVES = [
 # glue-up 18 1/2" wide rather than a 30" panel, which is two boards with one narrow rip
 # instead of a full-width layup. `takeoff/hardwood.py` derives that orientation rather than
 # taking it on faith — it mills every shelf with the grain on the longer plan dimension —
-# so nothing here authors it. It still carries the flag (18 1/2" finished wants a 19 1/4"
-# rough board), and that is a fact worth seeing on the schedule rather than at the mill.
+# so nothing here authors it. It still lays up as a panel — 18 1/2" finished wants a 19 1/4"
+# rough face and the supply is 18" — and that is a fact worth seeing on the schedule rather
+# than at the mill.
 SECOND_SHELVES = [
     ShelfBank(
         uid="JBAEDPFV5Q", tag="SB-S-BATH1",

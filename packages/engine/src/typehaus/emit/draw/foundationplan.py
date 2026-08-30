@@ -39,10 +39,10 @@ from typehaus.emit.draw.scene import (
 )
 from typehaus.emit.draw.schedule_block import (
     BlockMetrics,
-    block_origin_right_of,
+    NoteBlock,
+    ScheduleBlock,
+    emit_block_columns,
     emit_mark,
-    emit_note_block,
-    emit_schedule_table,
     metrics_for,
     wrap_leader_text,
 )
@@ -303,22 +303,32 @@ def _emit_footing_bedding_note(b: SceneBuilder, model: ResolvedModel) -> None:
         ))
 
 
+def _schedule_blocks(model: ResolvedModel,
+                     profile: JurisdictionProfile | None = None) -> list[ScheduleBlock]:
+    """The non-geometry half of the sheet, in reading order: keyed schedules, then the
+    general notes, then what the model could not supply."""
+    blocks: list[ScheduleBlock] = list(build_foundation_schedules(model))
+    blocks.append(NoteBlock(title="FOUNDATION NOTES",
+                            notes=tuple(foundation_general_notes(model, profile))))
+    blocks.append(NoteBlock(
+        title="NOT SHOWN — MISSING MODEL INPUTS",
+        notes=tuple(f"{finding.check_id}: {finding.message}"
+                    for finding in foundation_sheet_findings(model))))
+    return blocks
+
+
 def _emit_schedule_column(b: SceneBuilder, model: ResolvedModel,
                           plan_points: list[tuple[float, float]],
                           metrics: BlockMetrics,
                           profile: "JurisdictionProfile | None" = None) -> None:
-    """Stack the keyed schedules, the general notes, and the missing-input list beside
-    the plan — the half of a permit foundation sheet that is not geometry."""
-    cursor = block_origin_right_of(plan_points, metrics)
-    for table in build_foundation_schedules(model):
-        bottom = emit_schedule_table(b, table, cursor, metrics)
-        cursor = (cursor[0], bottom - metrics.block_gap)
-    bottom = emit_note_block(b, "FOUNDATION NOTES", foundation_general_notes(model, profile), cursor,
-                             metrics)
-    cursor = (cursor[0], bottom - metrics.block_gap)
-    missing = [f"{finding.check_id}: {finding.message}"
-               for finding in foundation_sheet_findings(model)]
-    emit_note_block(b, "NOT SHOWN — MISSING MODEL INPUTS", missing, cursor, metrics)
+    """Reflow the keyed schedules, the general notes and the missing-input list into
+    balanced columns beside the plan.
+
+    One tall column was the whole reason S-100 printed at 3/32" on a 24x36 sheet: the
+    stack ran to twice the plan's height, and it is the *scene* box the sheet is fitted
+    to, so the building paid for its own tables. ``emit_block_columns`` picks the split.
+    """
+    emit_block_columns(b, _schedule_blocks(model, profile), plan_points, metrics)
 
 
 __all__ = ["build_foundation_plan", "has_foundation_content"]

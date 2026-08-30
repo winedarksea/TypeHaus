@@ -50,7 +50,7 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
     note: "The layers that separate inside from out, and the holes through them.",
     title: "Envelope & openings",
     // `hardwood` sits directly after `wood_surfaces`: it is the same wood, re-presented as a
-    // cut list in ROUGH stock (finished T x W x L, nominal quarters, board feet, glue-up),
+    // cut list in ROUGH stock (finished T x W x L, nominal quarters, board feet, layup),
     // and reading the two side by side is what makes a mill order legible. It is a view —
     // its rows carry `also_in_*` where they mirror another section — so it adds nothing to
     // the estimate.

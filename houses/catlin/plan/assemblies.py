@@ -1968,11 +1968,15 @@ MATERIALS = [
     # thing in prose). Five laminations of a 1-1/2\" dressed board make the 6-1/8\" face,
     # and `takeoff/hardwood.py` derives that count from this field rather than scheduling
     # four timbers nobody can saw.
-    Material(tag="elm-timber", name="Elm timber 6-1/8\" square, S4S (glue-up from 8/4)",
+    # NO `nominal_quarters`: this is a SAWN TIMBER, cut 6-5/8" square out of an elm log and
+    # dressed back to 6-1/8", not a stack of board stock. Authoring 8/4 here read as "five
+    # laminations of 1-1/2"" on the milling schedule for part of 2026-08-29, which is a real
+    # way to make a post and is not how these four are made.
+    Material(tag="elm-timber", name="Elm timber 6-1/8\" square, S4S, sawn to section",
              r_per_inch=1.1,
              density=560.0, hatch="lumber", color="#b08d5e",
              finish="clear-satin-hardwax-oil", species="elm",
-             nominal_quarters=8, milling_profile="S4S",
+             milling_profile="S4S",
              source="plans/TODO.md — suite bedroom tudor posts, 10' sections cut to fit"),
     # --- owner-milled white-oak stock (2026-08-28) -----------------------------------
     #

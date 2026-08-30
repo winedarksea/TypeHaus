@@ -71,7 +71,8 @@ def build_floorplan(model: ResolvedModel, storey: str) -> Scene:
     # told where the other two already are. Its caption then goes back the other way: the
     # block is fixed by the time the alarm's SD/CO label picks a side.
     room_boxes = emit_room_blocks(b, model, storey,
-                                  avoid=mark_boxes + _alarm_glyph_boxes(model, storey))
+                                  avoid=mark_boxes + _alarm_glyph_boxes(model, storey),
+                                  prefer=_placeable_boxes(model, storey))
     # Floor heat is MECHANICAL and now lives in ``_shared.emit_floor_heat`` for the HVAC
     # plan to adopt; the smoke/CO alarms stay, because A-1xx is where a plan reviewer looks
     # for them and ``code.R314``/``R315`` reconcile against the same elements.
@@ -87,6 +88,27 @@ def build_floorplan(model: ResolvedModel, storey: str) -> Scene:
     emit_interior_dimension_chains(b, walls, offset=44.0)
     emit_bbox_dimension_chain(b, walls, offset=-76.0, reference="face")
     return b.build()
+
+
+def _placeable_boxes(model: ResolvedModel,
+                     storey: str) -> list[tuple[float, float, float, float]]:
+    """Plan boxes of everything ``emit_fixtures`` will draw on this sheet, in metres.
+
+    Handed to the room block as a *preference*, not a constraint — see
+    ``plan_labels._place_block``. The same ``ARCHITECTURAL_DOMAINS`` filter the drawing
+    itself uses, so the block is told about exactly what will be on the paper beside it and
+    nothing that will not.
+    """
+    boxes: list[tuple[float, float, float, float]] = []
+    for item in model.canvas_objects:
+        if item.storey != storey or item.domain not in ARCHITECTURAL_DOMAINS:
+            continue
+        if len(item.footprint) < 3:
+            continue
+        xs = [point[0] for point in item.footprint]
+        ys = [point[1] for point in item.footprint]
+        boxes.append((min(xs), min(ys), max(xs), max(ys)))
+    return boxes
 
 
 def _door_operation(model: ResolvedModel, type_ref: str | None) -> DoorOperation:

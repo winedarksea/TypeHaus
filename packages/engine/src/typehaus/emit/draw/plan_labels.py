@@ -237,6 +237,7 @@ _DODGE_STEPS = sorted(
 
 def _place_block(at: tuple[float, float], lines: list[tuple[str, float]], ring: Ring,
                  avoid: list[tuple[float, float, float, float]],
+                 prefer: list[tuple[float, float, float, float]] = (),
                  ) -> tuple[tuple[float, float], list[tuple[str, float]]]:
     """Where the block goes and which of its lines survive: inside the room, clear of ``avoid``.
 
@@ -258,21 +259,33 @@ def _place_block(at: tuple[float, float], lines: list[tuple[str, float]], ring: 
 
     Nothing is ever dropped to zero and no room goes unnamed: the last resort is the clamped
     anchor with whatever ``_fitted_lines`` allowed, overlap and all.
+
+    **``prefer`` is dodged for free and never paid for.** The drawn fixtures and furniture
+    are worth stepping around when there is somewhere to step — but they are not worth a
+    line. Measured on catlin: 21 blocks sit over a fixture, and treating those like the mark
+    bubbles would cost ten of them a line and leave the play room, the laundry and the attic
+    bath saying nothing but their name. A washer outline is drawn light on ``A-FURN`` and a
+    label reads perfectly well across it; a heavy mark bubble it does not. So each trial
+    tries the full obstacle set first and falls back to ``avoid`` alone at the SAME line
+    count, and only then shortens. Preference never causes shedding.
     """
     poly = Polygon(ring)
     step_y = BLOCK_LINE_PITCH_IN * M_PER_IN / 2.0
     for trial in (lines[:count] for count in range(len(lines), 0, -1)):
         step_x = _block_half_width(trial)
-        for dx, dy in _DODGE_STEPS:
-            anchor = _clamped_anchor((at[0] + dx * step_x, at[1] + dy * step_y), trial, ring)
-            extents = _block_box(anchor, trial)
-            if poly.contains(shapely_box(*extents)) and not _overlaps(extents, avoid):
-                return anchor, trial
+        for obstacles in ([*avoid, *prefer], avoid) if prefer else (avoid,):
+            for dx, dy in _DODGE_STEPS:
+                anchor = _clamped_anchor((at[0] + dx * step_x, at[1] + dy * step_y),
+                                         trial, ring)
+                extents = _block_box(anchor, trial)
+                if poly.contains(shapely_box(*extents)) and not _overlaps(extents, obstacles):
+                    return anchor, trial
     return _clamped_anchor(at, lines, ring), lines
 
 
 def emit_room_blocks(b: SceneBuilder, model: ResolvedModel, storey: str,
                      avoid: list[tuple[float, float, float, float]] = (),
+                     prefer: list[tuple[float, float, float, float]] = (),
                      ) -> list[tuple[float, float, float, float]]:
     """Name / area / ceiling height, stacked at a point inside each room on ``storey``.
 
@@ -301,7 +314,7 @@ def emit_room_blocks(b: SceneBuilder, model: ResolvedModel, storey: str,
         if len(noted) == 1:
             lines.append((noted[0][0], DIM_TEXT_PT))
         lines = _fitted_lines(lines, room.clear_face)
-        (cx, cy), lines = _place_block((cx, cy), lines, room.clear_face, avoid)
+        (cx, cy), lines = _place_block((cx, cy), lines, room.clear_face, avoid, prefer)
         for index, (content, height_pt) in enumerate(lines):
             b.add(Text(anchor=_in((cx, cy - index * BLOCK_LINE_PITCH_IN * M_PER_IN)),
                        content=content, height_pt=height_pt, layer=ROOM_LAYER,

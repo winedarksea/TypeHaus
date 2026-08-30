@@ -4453,6 +4453,368 @@
       "closed": false,
       "uid": "FSMNAAAAAA",
       "tag": "joist-0-018-0/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -28.22375,
+          0.0
+        ],
+        [
+          -4.22375,
+          0.0
+        ]
+      ],
+      "layer": "L-SITE-GRAD",
+      "lineweight": 0.7,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -28.22375,
+          0.0
+        ],
+        [
+          -34.129261811023625,
+          -5.905511811023622
+        ]
+      ],
+      "layer": "L-SITE-GRAD",
+      "lineweight": 0.25,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          292.22375,
+          0.0
+        ],
+        [
+          316.22375,
+          0.0
+        ]
+      ],
+      "layer": "L-SITE-GRAD",
+      "lineweight": 0.7,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          292.22375,
+          0.0
+        ],
+        [
+          286.31823818897635,
+          -5.905511811023622
+        ]
+      ],
+      "layer": "L-SITE-GRAD",
+      "lineweight": 0.25,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          316.22375,
+          0.0
+        ],
+        [
+          310.31823818897635,
+          -5.905511811023622
+        ]
+      ],
+      "layer": "L-SITE-GRAD",
+      "lineweight": 0.25,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        -28.22375,
+        -6.222222222222221
+      ],
+      "content": "GRADE",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "L-SITE-GRAD",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "symbol",
+      "name": "level-marker",
+      "insert": [
+        328.22375,
+        0.0
+      ],
+      "rotation": 0.0,
+      "scale": 1.0,
+      "layer": "A-ANNO-SYMB",
+      "params": {},
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          328.22375,
+          0.0
+        ],
+        "name": "GRADE"
+      },
+      "at": [
+        364.22375,
+        0.0
+      ],
+      "to": [
+        328.22375,
+        0.0
+      ],
+      "text": "GRADE / MAIN FLOOR  EL. 0'-0\"",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "symbol",
+      "name": "level-marker",
+      "insert": [
+        328.22375,
+        108.00000000000001
+      ],
+      "rotation": 0.0,
+      "scale": 1.0,
+      "layer": "A-ANNO-SYMB",
+      "params": {},
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          328.22375,
+          108.00000000000001
+        ],
+        "name": "MAIN T.O. PLATE"
+      },
+      "at": [
+        364.22375,
+        108.00000000000001
+      ],
+      "to": [
+        328.22375,
+        108.00000000000001
+      ],
+      "text": "MAIN T.O. PLATE / UPPER FLOOR  EL. 9'-0\"",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "symbol",
+      "name": "level-marker",
+      "insert": [
+        328.22375,
+        216.00000000000003
+      ],
+      "rotation": 0.0,
+      "scale": 1.0,
+      "layer": "A-ANNO-SYMB",
+      "params": {},
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          328.22375,
+          216.00000000000003
+        ],
+        "name": "UPPER T.O. PLATE"
+      },
+      "at": [
+        364.22375,
+        216.00000000000003
+      ],
+      "to": [
+        328.22375,
+        216.00000000000003
+      ],
+      "text": "UPPER T.O. PLATE  EL. 18'-0\"",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            328.22375,
+            0.0
+          ],
+          "name": "GRADE"
+        },
+        {
+          "kind": "point",
+          "xy": [
+            328.22375,
+            108.00000000000001
+          ],
+          "name": "MAIN T.O. PLATE"
+        }
+      ],
+      "p0": [
+        328.22375,
+        0.0
+      ],
+      "p1": [
+        328.22375,
+        108.00000000000001
+      ],
+      "offset": 6.0,
+      "height_pt": 6.5,
+      "layer": "A-ANNO-DIMS",
+      "text": null,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "dimension",
+      "kind": "linear",
+      "ends": [
+        {
+          "kind": "point",
+          "xy": [
+            328.22375,
+            108.00000000000001
+          ],
+          "name": "MAIN T.O. PLATE"
+        },
+        {
+          "kind": "point",
+          "xy": [
+            328.22375,
+            216.00000000000003
+          ],
+          "name": "UPPER T.O. PLATE"
+        }
+      ],
+      "p0": [
+        328.22375,
+        108.00000000000001
+      ],
+      "p1": [
+        328.22375,
+        216.00000000000003
+      ],
+      "offset": 6.0,
+      "height_pt": 6.5,
+      "layer": "A-ANNO-DIMS",
+      "text": null,
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        144.00000000000003,
+        24.0
+      ],
+      "content": "Main",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        144.00000000000003,
+        132.0
+      ],
+      "content": "Upper",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          -4.22375,
+          54.0
+        ],
+        "name": "HOUSE_WALL_2X6_WITH_ZIPR"
+      },
+      "at": [
+        -16.22375,
+        54.0
+      ],
+      "to": [
+        -4.22375,
+        54.0
+      ],
+      "text": "HOUSE_WALL_2X6_WITH_ZIPR",
+      "height": 6.222222222222221,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
     }
   ],
   "notes": [],

@@ -12,11 +12,24 @@ piece (T x W x L), the nominal stock it comes out of (4/4, 8/4), and the rough b
 *and* rough surface square feet the mill has to produce — both, because "$2 a square foot"
 is ambiguous between the two the moment stock is thicker than 4/4.
 
-The ``glue_up`` column is the flag that catches what the rest of the model cannot say: a
-piece whose finished width is past the widest board the supply can produce, or whose
-finished thickness is past the stock it is cut from. The first is a 24"-deep pantry shelf
-against 18" boards; the second is a 6-1/8" post out of 8/4 elm, which is how the reference
-house's tudor posts are really made.
+The ``layup`` column is what the rest of the model cannot say: **how a finished piece is
+made up**, which is a different question from what it measures. Four answers, and each is a
+different instruction and a different rough quantity:
+
+* ``one board`` — a stool, a shelf, a tread. The overwhelming majority.
+* ``edge-glued panel`` — a finished face wider than any board the supply can produce, so it
+  is jointed up from two or more. The count is on the row, not left to the reader.
+* ``boards`` — a *surface* rather than a piece: a stair landing is a field of boards laid
+  side by side over its framing, the way a floor is. There is no glue and there is no one
+  board; there are N of them, and the schedule says how many and how wide.
+* ``sawn timber`` — cut to its finished section from the log, not built up from board
+  stock. Its rough size is the finished section plus a dressing skim, and nothing else.
+
+That last one is why this column replaced a ``glue_up`` boolean on 2026-08-29. The boolean
+made every over-size piece a glue-up by construction, which put the tudor posts on a
+five-lamination stack they are not (they are milled 6-1/8" square out of an elm log) and
+made a 44-5/8" stair landing ask for a 45" board that has never existed. Both were the
+column's own shape, not the model's.
 """
 
 from __future__ import annotations
@@ -36,6 +49,20 @@ _SQIN_PER_BF_IN = 144.0  # board foot = T(in) x W(in) x L(in) / 144
 #: rough (1") planes to 3/4"; 8/4 (2") to 1-1/2". The loss is two faces of planer skim plus
 #: the cup a board dries with, and it is why a "1-inch" shelf is never an inch.
 _FINISHED_FROM_QUARTERS: dict[int, float] = {4: 0.75, 5: 1.0, 6: 1.25, 8: 1.5, 12: 2.5}
+
+#: How a finished piece is made up. Not a style — each is a different rough quantity and a
+#: different sentence to the mill. See the module docstring for why this replaced a
+#: ``glue_up`` boolean.
+_LAYUP_BOARD = "one board"
+_LAYUP_PANEL = "edge-glued panel"
+_LAYUP_FIELD = "boards"
+_LAYUP_TIMBER = "sawn timber"
+
+#: Oversize a timber is sawn to and then dressed back from, in inches, on each of its two
+#: cross-section dimensions. A timber leaves the log at its finished section plus a skim to
+#: take the saw marks off — it is NOT built up from boards, so none of the board-stock
+#: arithmetic (nominal quarters, jointed edges, laminations) applies to it at all.
+_TIMBER_DRESS_ALLOWANCE_IN = 0.5
 
 #: Width lost to straight-lining one edge and jointing the other, in inches. Rough-milled
 #: stock arrives with waney or sawn edges; a finished width is what survives both cuts.
@@ -111,33 +138,64 @@ def _as_tags(value: object) -> list[str]:
 def _piece_row(use: str, material_ref: str, materials: Mapping[str, object], pieces: int,
                thickness_in: float, width_in: float, length_in: float,
                max_board_width_in: float | None, tags: list[str],
-               also: Mapping[str, object], profile: str | None = None) -> dict[str, object]:
-    """A discrete board cut to a finished size: a stool, a shelf, a tread, a post.
+               also: Mapping[str, object], profile: str | None = None,
+               layup: str = _LAYUP_BOARD) -> dict[str, object]:
+    """A discrete piece cut to a finished size: a stool, a shelf, a tread, a post.
 
-    ``laminations`` is what makes a post out of board stock: a piece finishing thicker than
-    the stock it comes from is glued up from that many layers, and the rough quantity is
-    that many times the piece. It is 1 for everything that is really a board.
+    ``layup`` is the argument that decides the arithmetic, and callers state it rather than
+    letting width imply it. A *timber* is sawn to its section from the log; a *field* is a
+    surface made of however many boards it takes; a *board* is one board — unless it cannot
+    be, and that is the only case this function upgrades on its own, to a panel.
     """
     material = materials.get(material_ref)
     quarters = getattr(material, "nominal_quarters", None) if material else None
     milling = profile or (getattr(material, "milling_profile", None) if material else None)
-    rough_thickness_in = quarters / 4.0 if quarters else None
-    # What one board of that stock actually yields dressed — NOT its rough thickness. An
-    # 8/4 board is 2" in the rough and 1-1/2" out of the planer, so a 1-3/4" piece needs two
-    # of them however close 2" sounds.
-    yield_in = _FINISHED_FROM_QUARTERS.get(quarters, rough_thickness_in) if quarters else None
-    laminations = (max(1, math.ceil(thickness_in / yield_in - 1e-9)) if yield_in else 1)
-    rough_width_in = width_in + _WIDTH_LOSS_IN
+    note: str | None = None
+
+    if layup == _LAYUP_TIMBER:
+        # No board stock is involved, so no jointed edge and no nominal quarters: the rough
+        # section is the finished one plus the dressing skim, on both faces.
+        boards = 1
+        board_width_in = width_in
+        rough_width_in = width_in + _TIMBER_DRESS_ALLOWANCE_IN
+        rough_thickness_in: float | None = thickness_in + _TIMBER_DRESS_ALLOWANCE_IN
+        nominal_stock: str | None = "timber"
+        note = (f'sawn {rough_width_in:.2f}" x '
+                f'{thickness_in + _TIMBER_DRESS_ALLOWANCE_IN:.2f}" and dressed back')
+    else:
+        rough_thickness_in = quarters / 4.0 if quarters else None
+        nominal_stock = f"{quarters}/4" if quarters else None
+        # What one board of the supply yields FINISHED, after an edge is straight-lined and
+        # the other jointed. That, not the board's own width, is what a face has to fit in.
+        usable_in = (max_board_width_in - _WIDTH_LOSS_IN
+                     if max_board_width_in is not None else None)
+        if layup == _LAYUP_FIELD:
+            boards = (max(1, math.ceil(width_in / usable_in - 1e-9)) if usable_in else 1)
+            note = (f'a {width_in:.2f}" surface laid up as {boards} boards at '
+                    f'{width_in / boards:.2f}"')
+        elif usable_in is not None and width_in > usable_in + 1e-9:
+            boards = math.ceil(width_in / usable_in - 1e-9)
+            layup = _LAYUP_PANEL
+            note = (f'one board would need a {width_in + _WIDTH_LOSS_IN:.2f}" rough face and '
+                    f'the declared supply is {max_board_width_in:.2f}", so this is {boards} '
+                    f'boards at {width_in / boards:.2f}"')
+        else:
+            boards = 1
+        board_width_in = width_in / boards
+        rough_width_in = board_width_in + _WIDTH_LOSS_IN
+
+    # A piece finishing thicker than its own stock dresses to is an AUTHORING error, not a
+    # milling instruction — the material names the wrong nominal stock. It used to be
+    # silently absorbed as a lamination count, which is what put the tudor posts on a
+    # five-layer stack. Say it instead.
+    yield_in = _FINISHED_FROM_QUARTERS.get(quarters) if quarters else None
+    if yield_in is not None and thickness_in > yield_in + 1e-9:
+        note = (f'{thickness_in:.2f}" finished cannot come out of {quarters}/4, which '
+                f'dresses to {yield_in:.2f}" — check the material\'s nominal_quarters')
+
     rough_length_in = length_in * (1.0 + _LENGTH_ALLOWANCE)
-    rough_sf = pieces * laminations * rough_width_in * rough_length_in / _SQIN_PER_BF_IN
+    rough_sf = pieces * boards * rough_width_in * rough_length_in / _SQIN_PER_BF_IN
     rough_bf = rough_sf * rough_thickness_in if rough_thickness_in else None
-    # The flag tests the ROUGH width, not the finished one. What the mill has to find is a
-    # board it can straight-line and joint down to the finished face, so a 18" shelf out of
-    # an 18" supply is not a single board — it is 3/4" short of one, and reporting it as
-    # clear would send someone to the yard for stock that is not there.
-    over_width = (max_board_width_in is not None
-                  and rough_width_in > max_board_width_in + 1e-9)
-    over_thickness = yield_in is not None and thickness_in > yield_in + 1e-9
     row: dict[str, object] = {
         "use": use,
         "species": getattr(material, "species", None) if material else None,
@@ -150,18 +208,15 @@ def _piece_row(use: str, material_ref: str, materials: Mapping[str, object], pie
         "finished_board_feet": round(
             pieces * thickness_in * width_in * length_in / _SQIN_PER_BF_IN, 1),
         "nominal_quarters": quarters,
-        "nominal_stock": f"{quarters}/4" if quarters else None,
-        "laminations": laminations,
+        "nominal_stock": nominal_stock,
+        "layup": layup,
+        "boards_per_piece": boards,
+        "board_width_in": round(board_width_in, 3),
         "rough_width_in": round(rough_width_in, 3),
         "rough_surface_sqft": round(rough_sf, 1),
         "rough_board_feet": round(rough_bf, 1) if rough_bf is not None else None,
         "milling_profile": milling,
-        "glue_up": bool(over_width or over_thickness),
-        "glue_up_reason": (
-            f'needs a {rough_width_in:.2f}" rough board; the supply is '
-            f'{max_board_width_in:.2f}"' if over_width else
-            f'{thickness_in:.2f}" finished is {laminations} laminations of '
-            f'{yield_in:.2f}" stock' if over_thickness else None),
+        "stock_note": note,
         "tags": sorted(set(tags)),
     }
     row.update(also)
@@ -194,12 +249,16 @@ def _coverage_row(use: str, source: Mapping[str, object], materials: Mapping[str
         "net_coverage_sqft": source.get("net_area_sqft"),
         "nominal_quarters": quarters,
         "nominal_stock": f"{quarters}/4" if quarters else None,
-        "laminations": 1,
+        # A floor, a wainscot and a wall liner are all fields of boards laid side by side —
+        # tongued, lapped or butted. Never a panel, and never one board.
+        "layup": _LAYUP_FIELD,
+        "boards_per_piece": None,
+        "board_width_in": None,
+        "rough_width_in": None,
         "rough_surface_sqft": round(order_sqft * face_factor, 1),
         "rough_board_feet": source.get("board_feet"),
         "milling_profile": milling,
-        "glue_up": False,
-        "glue_up_reason": None,
+        "stock_note": None,
         "tags": _as_tags(source.get("tags")),
     }
     row.update(also)
@@ -296,8 +355,13 @@ def _stair_rows(model: ResolvedModel, materials: Mapping[str, object],
         rows.append(_piece_row("stair tread", material_ref, materials, count,
                                thickness, run, width, max_board_width_in, tags, also))
     for (thickness, depth, length), (count, tags) in deck_groups.items():
+        # A landing is a SURFACE, laid up out of however many boards its width takes, the
+        # same way the floor it walks onto is. It resolves as one member because that is
+        # what the framing pass needs; asking a mill for a 44-5/8" board is what happens
+        # when a schedule takes that member literally.
         rows.append(_piece_row("stair landing deck", material_ref, materials, count,
-                               thickness, depth, length, max_board_width_in, tags, also))
+                               thickness, depth, length, max_board_width_in, tags, also,
+                               layup=_LAYUP_FIELD))
     return rows
 
 
@@ -331,13 +395,13 @@ def _coverage_rows(model: ResolvedModel,
 
 def _timber_rows(model: ResolvedModel, materials: Mapping[str, object],
                  max_board_width_in: float | None) -> list[dict[str, object]]:
-    """Species posts, scheduled as the glue-up blanks they are.
+    """Species posts, scheduled as the sawn timbers they are.
 
-    ``wood_surfaces`` bills a timber as a section over an ordered length, which is the right
-    answer for an estimator and the wrong one for a mill: a clear 6" hardwood timber would
-    check badly drying, so it is laminated from board stock. ``_piece_row`` derives the
-    lamination count from the material's own nominal stock, so the schedule says "five
-    layers of 8/4" instead of "four timbers".
+    ``wood_surfaces`` bills a timber as a section over an ordered length, which is right for
+    an estimator and says nothing to a sawyer. What it needs to hear is the rough SECTION:
+    a 6-1/8" post is cut 6-5/8" square out of the log and dressed back, and the only waste
+    is that skim. Nothing about board stock applies — this used to report the post as five
+    laminations of 8/4, which is a real way to make a post and is not how these are made.
     """
     from typehaus.takeoff.wood_surfaces import wood_surfaces_takeoff
 
@@ -356,5 +420,6 @@ def _timber_rows(model: ResolvedModel, materials: Mapping[str, object],
             "timber post", str(source["material"]), materials, pieces,
             depth_in, width_in, length_in, max_board_width_in,
             _as_tags(source.get("tags")),
-            {"also_in_structural_solids": True, "also_in_wood_surfaces": True}))
+            {"also_in_structural_solids": True, "also_in_wood_surfaces": True},
+            layup=_LAYUP_TIMBER))
     return rows

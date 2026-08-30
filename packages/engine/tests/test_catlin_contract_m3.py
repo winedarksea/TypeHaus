@@ -126,18 +126,25 @@ def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables(
     # local grade found four house footings with 8" of cover (one with -2") and the
     # garden's own seven with 12"-21". Both groups are answered, by two different drawn
     # things: the house four by the IRC R403.3 wing insulation under the garden slab, the
-    # garden's seven by the 42" drained non-frost-susceptible aggregate section they bear
-    # on, whose thickness counts toward the frost depth under ASCE 32 (IRC R403.1.4.1).
-    # Pinning the citation, not just the verdict, is what keeps this from going green off
-    # a check that stopped measuring.
+    # garden's five RETAINING-WALL footings by the 42" drained non-frost-susceptible
+    # aggregate section they bear on, whose thickness counts toward the frost depth under
+    # ASCE 32 (IRC R403.1.4.1). Pinning the citation, not just the verdict, is what keeps
+    # this from going green off a check that stopped measuring.
+    #
+    # The garden's other two — the spread bells under the freestanding porch columns — were
+    # in that list until 2026-08-29, when the owner had them augered to frost depth instead
+    # of leaning on the section. They pass on plain cover now, which is why they are
+    # asserted separately and must NOT carry the citation.
     assert not [f for f in findings if f.result is Result.FAIL]
     assert not [f for f in findings if f.result is Result.UNKNOWN], \
         [f.message for f in findings if f.result is Result.UNKNOWN]
     by_tag = {tag: f for f in findings for tag in f.element_tags}
-    for tag in ("FT-SG-W1", "FT-SG-W2", "FT-SG-E1", "FT-SG-E2", "FT-SG-S",
-                "FT-SG-COL", "FT-SG-FCOL"):
+    for tag in ("FT-SG-W1", "FT-SG-W2", "FT-SG-E1", "FT-SG-E2", "FT-SG-S"):
         assert by_tag[tag].result is Result.PASS, tag
         assert "ASCE 32" in by_tag[tag].message, tag
+    for tag in ("FT-SG-COL", "FT-SG-FCOL"):
+        assert by_tag[tag].result is Result.PASS, tag
+        assert "ASCE 32" not in by_tag[tag].message, tag
 
 
 def test_catlin_sunken_garden_decks_are_graded_and_the_guard_rule_resolves():

@@ -336,12 +336,44 @@ def _lowest_adjacent_grade_notes(model: ResolvedModel, frost_depth_in: float) ->
             shallow.append((solid.tag, cover_in, source))
     if not shallow:
         return []
-    return ["THE LOWEST ADJACENT GRADE FOR " + ", ".join(
+    sections = _declared_sections(model, frost_depth_in)
+    replaced = [row for row in shallow if row[0] in sections]
+    insulated = [row for row in shallow if row[0] not in sections]
+    notes = ["THE LOWEST ADJACENT GRADE FOR " + ", ".join(
                 f"{tag} ({cover:.0f}\" COVER)" for tag, cover, _ in shallow)
-            + " IS THE FLOOR OF "
-            + ", ".join(sorted({source for _, _, source in shallow}))
-            + ", NOT THE SITE GRADE PLANE; FROST PROTECTION THERE IS PER IRC R403.3 "
-              "AND THE FOUNDATION DETAILS, NOT BY DEPTH."]
+             + " IS THE FLOOR OF "
+             + ", ".join(sorted({source for _, _, source in shallow}))
+             + ", NOT THE SITE GRADE PLANE."]
+    # Two different frost measures answer this condition and they carry different citations.
+    # The note used to put all of it under R403.3, which was true of the house strips on the
+    # wing insulation and false of the garden's, whose protection is the graded stone section
+    # beneath them — a wrong citation on the sheet an inspector reads off.
+    if insulated:
+        notes.append("FROST PROTECTION FOR "
+                     + ", ".join(tag for tag, _c, _s in insulated)
+                     + " IS PER IRC R403.3 AND THE FOUNDATION DETAILS, NOT BY DEPTH.")
+    if replaced:
+        notes.append("FROST PROTECTION FOR "
+                     + ", ".join(tag for tag, _c, _s in replaced)
+                     + " IS BY SOIL REPLACEMENT: EACH BEARS ON A DRAINED "
+                     "NON-FROST-SUSCEPTIBLE SECTION REACHING "
+                     f"{frost_depth_in:.0f}\" MIN BELOW THAT GRADE (ASCE 32, "
+                     "PER IRC R403.1.4.1). SECTION GRADATION PER THE FOUNDATION DETAILS.")
+    return notes
+
+
+def _declared_sections(model: ResolvedModel, frost_depth_in: float) -> set[str]:
+    """Footing tags protected by a declared, drained aggregate section reaching frost depth.
+
+    The three conditions are ``structural.frost_depth``'s, and that check is the authority —
+    this exists so the sheet can *name the right citation per footing*, which needs the same
+    split the check makes. Kept deliberately literal rather than clever so that a reader
+    comparing the two can see they ask the same question; if the check's rule changes, this
+    is the second place to change.
+    """
+    return {bed.host for bed in model.footing_beddings
+            if bed.non_frost_susceptible is True and bed.drain_tile
+            and (bed.z1_m - bed.z0_m) >= frost_depth_in * 0.0254 - 1e-9}
 
 
 def _bearing_tier_notes(model: ResolvedModel) -> list[str]:

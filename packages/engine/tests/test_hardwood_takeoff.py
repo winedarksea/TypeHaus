@@ -90,9 +90,10 @@ def test_a_stool_is_scheduled_at_its_rough_size_from_eight_quarter_stock(rows):
         assert row["nominal_stock"] == "8/4"
         assert row["nominal_quarters"] == 8
         assert row["milling_profile"] == "eased"
-        assert row["laminations"] == 1
+        assert row["layup"] == "one board"
+        assert row["boards_per_piece"] == 1
         assert row["finished_thickness_in"] == pytest.approx(1.5)
-        assert not row["glue_up"], "a 10\" stool comes off one 18\" board"
+        assert row["stock_note"] is None, "a 10\" stool comes off one 18\" board"
 
 
 def test_the_yield_arithmetic_is_the_documented_one(rows):
@@ -126,40 +127,57 @@ def test_the_oak_floor_finally_carries_board_feet(rows):
 
 # --- the glue-up flag -------------------------------------------------------------------
 
-def test_the_flag_tests_the_ROUGH_width_not_the_finished_one(rows):
-    """The distinction the whole flag turns on, and the one that is easy to get wrong.
+def test_a_panel_is_declared_only_when_no_ONE_BOARD_could_do_it(rows):
+    """The width test is on the ROUGH face, and the distinction is the whole flag.
 
     A mill has to find a board it can straight-line and joint DOWN to the finished face, so
-    the question is never "is the finished piece under 18-inch" — it is "is the rough piece".
-    The pantry is the case that proves it: 18" finished against an 18" supply reads clear on
-    the finished number and is 3/4" short on the real one.
+    the question is never "is the finished piece under 18-inch" — it is "is the rough
+    piece". The pantry is the case that proves it: 18" finished against an 18" supply reads
+    clear on the finished number and is 3/4" short on the real one, so it lays up as two
+    boards rather than one.
     """
     from typehaus.takeoff.hardwood import _WIDTH_LOSS_IN
 
-    pantry = next(row for row in _use(rows, "shelf")
-                  if "SB-M-PANTRY" in row["tags"])
+    pantry = next(row for row in _use(rows, "shelf") if "SB-M-PANTRY" in row["tags"])
     assert pantry["finished_width_in"] == pytest.approx(18.0)
-    assert pantry["rough_width_in"] == pytest.approx(18.0 + _WIDTH_LOSS_IN)
-    assert pantry["glue_up"], "18\" finished is not one 18\" board"
+    assert pantry["layup"] == "edge-glued panel"
+    assert pantry["boards_per_piece"] == 2
+    assert pantry["board_width_in"] == pytest.approx(9.0)
+    assert pantry["rough_width_in"] == pytest.approx(9.0 + _WIDTH_LOSS_IN)
+    # And the rule, over every piece row: a panel is declared when and only when one board
+    # of the declared supply could not yield the finished face.
     for row in rows:
-        if row.get("rough_width_in") is None:
+        if row["layup"] not in ("one board", "edge-glued panel"):
             continue
-        assert row["glue_up"] == (row["rough_width_in"] > 18.0
-                                  or row["laminations"] > 1)
+        too_wide = row["finished_width_in"] + _WIDTH_LOSS_IN > 18.0 + 1e-9
+        assert (row["layup"] == "edge-glued panel") == too_wide
 
 
-def test_a_flagged_piece_names_the_board_it_actually_needs(rows):
-    """A bare "too wide" tells a sawyer nothing; the shortfall is the actionable number."""
-    for row in rows:
-        if row["glue_up"] and row.get("rough_width_in", 0) > 18.0:
-            assert f'{row["rough_width_in"]:.2f}" rough board' in row["glue_up_reason"]
-            assert '18.00"' in row["glue_up_reason"]
+def test_a_panel_names_the_boards_it_is_actually_made_of(rows):
+    """A bare "too wide" tells a sawyer nothing; the split is the actionable number."""
+    panels = [row for row in rows if row["layup"] == "edge-glued panel"]
+    assert panels, "the reference house has two, both shelves"
+    for row in panels:
+        assert row["boards_per_piece"] >= 2
+        assert row["board_width_in"] * row["boards_per_piece"] == pytest.approx(
+            row["finished_width_in"], abs=0.01)
+        assert f'{row["boards_per_piece"]} boards' in row["stock_note"]
+        assert '18.00"' in row["stock_note"], "the note names the supply it is measured on"
 
 
-def test_a_shelf_inside_the_board_width_is_not_flagged(rows):
-    """The complement, and the assertion that keeps the flag from being vacuously true."""
-    narrow = [row for row in _use(rows, "shelf") if row["rough_width_in"] <= 18.0]
-    assert narrow and not any(row["glue_up"] for row in narrow)
+def test_a_shelf_inside_the_board_width_stays_one_board(rows):
+    """The complement, and the assertion that keeps the panel call from being vacuous.
+
+    Note the filter is on the FINISHED face plus the jointing loss, not on
+    ``rough_width_in`` — that column is per BOARD, so a panel's is small by construction and
+    filtering on it would quietly re-admit the panels this test exists to exclude.
+    """
+    from typehaus.takeoff.hardwood import _WIDTH_LOSS_IN
+
+    narrow = [row for row in _use(rows, "shelf")
+              if row["finished_width_in"] + _WIDTH_LOSS_IN <= 18.0]
+    assert narrow and all(row["layup"] == "one board" for row in narrow)
+    assert all(row["boards_per_piece"] == 1 for row in narrow)
 
 
 def test_a_shelf_deeper_than_it_is_wide_is_milled_front_to_back(rows):
@@ -175,22 +193,41 @@ def test_a_shelf_deeper_than_it_is_wide_is_milled_front_to_back(rows):
         assert row["finished_width_in"] <= row["finished_length_in"]
 
 
-def test_the_elm_posts_schedule_as_a_glue_up_not_as_four_timbers(rows):
-    """A clear 6" elm timber would check badly drying, so it is laminated from 8/4 stock.
+def test_the_elm_posts_are_sawn_to_section_not_laminated_from_boards(rows):
+    """The tudor posts are milled 6-1/8" square out of an elm log. They are not a stack.
 
-    ``wood_surfaces`` bills it as a section over an ordered length, which is right for an
-    estimator and unbuildable for a mill: five layers of a 1-1/2" dressed board is the
-    instruction, and the rough quantity is five times the piece.
+    This is a REGRESSION test with a date on it. For part of 2026-08-29 the schedule read
+    "5 laminations of 1-1/2" stock" here, because the row builder had one boolean for
+    "bigger than the stock" and turned every such piece into a glue-up. Laminating an 8/4
+    stack is a real way to make a post — it is simply not how these four are made, and the
+    difference is 93 rough board feet of elm.
     """
     post = next(row for row in _use(rows, "timber post"))
     assert post["material"] == "elm-timber" and post["pieces"] == 4
-    assert post["nominal_stock"] == "8/4"
-    assert post["laminations"] == 5
-    assert post["glue_up"] and "5 laminations" in post["glue_up_reason"]
-    # Five 1-1/2" laminae make 7-1/2" of stock for a 6-1/8" finished face, and the width
-    # loss and length allowance ride on top — so the rough order is comfortably more than
-    # the finished volume ``wood_surfaces`` reports, and that gap IS the glue-up.
-    assert post["rough_board_feet"] > post["finished_board_feet"] * 1.5
+    assert post["layup"] == "sawn timber"
+    assert post["boards_per_piece"] == 1
+    assert post["nominal_stock"] == "timber", "a timber has no nominal quarter stock"
+    assert post["nominal_quarters"] is None
+    # The only loss is the skim that takes the saw marks off, on both cross-section faces.
+    from typehaus.takeoff.hardwood import _TIMBER_DRESS_ALLOWANCE_IN
+
+    assert post["rough_width_in"] == pytest.approx(6.125 + _TIMBER_DRESS_ALLOWANCE_IN)
+    assert "sawn" in post["stock_note"] and "dressed back" in post["stock_note"]
+    # Still more rough than finished — but by the skim, not by a factor of five.
+    assert post["finished_board_feet"] < post["rough_board_feet"]
+    assert post["rough_board_feet"] < post["finished_board_feet"] * 1.5
+
+
+def test_the_elm_material_does_not_claim_to_be_board_stock(catlin_model_ro):
+    """The fix's other half, and the one that would otherwise drift back.
+
+    ``nominal_quarters`` on a timber is what let the schedule reach for a lamination count.
+    A sawn section has no nominal stock, and the material has to say so.
+    """
+    elm = next(m for m in catlin_model_ro.plan.library.materials
+               if m.tag == "elm-timber")
+    assert elm.nominal_quarters is None
+    assert elm.species == "elm"
 
 
 # --- stairs ------------------------------------------------------------------------------
@@ -216,4 +253,57 @@ def test_a_tread_is_scheduled_lying_flat(rows):
 def test_the_landing_decks_are_scheduled_and_flagged(rows):
     decks = _use(rows, "stair landing deck")
     assert sum(row["pieces"] for row in decks) == 2
-    assert all(row["glue_up"] for row in decks), "a 44\" deck is boards, not a board"
+    for row in decks:
+        # A landing resolves as ONE member because that is what the framing pass needs. A
+        # schedule that reads that literally asks a mill for a 45" board; it is a walking
+        # SURFACE, laid up out of boards exactly like the floor it steps onto.
+        assert row["layup"] == "boards"
+        assert row["boards_per_piece"] > 1
+        assert row["board_width_in"] <= 18.0
+        assert row["board_width_in"] * row["boards_per_piece"] == pytest.approx(
+            row["finished_width_in"], abs=0.01)
+
+
+def test_a_coverage_field_is_boards_and_never_a_panel(rows):
+    """A floor, a wainscot and a wall liner are tongued or lapped boards, full stop."""
+    for use in ("floor", "wainscot", "wall liner"):
+        for row in _use(rows, use):
+            assert row["layup"] == "boards"
+            assert row["stock_note"] is None
+
+
+# --- the exports --------------------------------------------------------------------------
+
+def test_the_csv_and_the_markdown_carry_the_same_rows_and_the_species(rows, tmp_path):
+    """Two files, one schedule. A mill gets emailed the Markdown and an estimator opens the
+    CSV, so a column that exists in one and not the other is a bug waiting to be argued
+    about — both are built from ``_flat_rows`` for exactly that reason.
+    """
+    import csv as csv_module
+
+    from typehaus.cli.cmd_millwork import MILLWORK_COLUMNS, _flat_rows, _markdown
+
+    assert "species" in MILLWORK_COLUMNS, "the mill sorts its pile by species first"
+    assert "layup" in MILLWORK_COLUMNS
+
+    flat = _flat_rows(rows)
+    assert len(flat) == len(rows)
+    assert all(set(entry) == set(MILLWORK_COLUMNS) for entry in flat)
+
+    path = tmp_path / "milling.csv"
+    with path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv_module.DictWriter(handle, fieldnames=list(MILLWORK_COLUMNS))
+        writer.writeheader()
+        writer.writerows(flat)
+    read_back = list(csv_module.DictReader(path.open(encoding="utf-8")))
+    assert [entry["species"] for entry in read_back] == [
+        str(entry["species"]) for entry in flat]
+
+    text = _markdown(rows)
+    # One table row per schedule row, plus the header and its rule.
+    body = [line for line in text.splitlines() if line.startswith("| ")]
+    assert len(body) >= len(rows) + 1
+    for species in {str(row["species"]) for row in rows}:
+        assert species in text
+    assert "Rough board feet by species" in text
+    assert "sawn timber" in text and "edge-glued panel" in text

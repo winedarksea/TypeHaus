@@ -18,7 +18,9 @@ beside the plan at plan scale rather than in paper space.
 from __future__ import annotations
 
 import textwrap
+from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
+from itertools import combinations
 
 from typehaus.emit.draw.scene import Polyline, SceneBuilder, Text
 from typehaus.emit.draw.typography import CHAR_ASPECT, LEADER_WRAP_COLUMNS
@@ -42,6 +44,16 @@ CHARACTER_WIDTH_RATIO = CHAR_ASPECT
 # Long notes wrap at a sheet-note measure rather than running off the drawing.
 NOTE_WRAP_COLUMNS = 96
 
+# Width / height of a permit-sheet drawing viewport, near enough. Both papers the set can
+# print on land close to this (35.30 x 22.25 on ARCH D, 16.30 x 9.25 on ledger), and the
+# column reflow only needs to know the *shape* of the hole it is filling, not the size:
+# ``select_scale`` takes the largest scale at which both spans fit, so the arrangement that
+# prints biggest is the one whose bounding box is closest to this proportion.
+SHEET_VIEWPORT_ASPECT = 1.6
+# A schedule stack reflowed past this many columns stops reading as a schedule and starts
+# reading as a wall of tables; it also bounds the split enumeration below.
+MAX_SCHEDULE_COLUMNS = 4
+
 # AIA annotation layers: the table rules are a table, the lettering is text.
 SCHEDULE_GRID_LAYER = "A-ANNO-TABL"
 SCHEDULE_TEXT_LAYER = "A-ANNO-TEXT"
@@ -55,6 +67,20 @@ class ScheduleTable:
     title: str
     columns: tuple[str, ...]
     rows: tuple[tuple[str, ...], ...]
+
+
+@dataclass(frozen=True)
+class NoteBlock:
+    """A titled, numbered list of sheet notes — the other thing a schedule column stacks."""
+
+    title: str
+    notes: tuple[str, ...]
+
+
+#: What a schedule column may contain. Both kinds measure and draw through the same pair
+#: (:func:`block_extent`, :func:`emit_block`), which is what lets the reflow treat a stack
+#: of mixed tables and notes as one sequence of boxes.
+ScheduleBlock = ScheduleTable | NoteBlock
 
 
 @dataclass(frozen=True)
@@ -125,13 +151,10 @@ def emit_note_block(b: SceneBuilder, title: str, notes: list[str],
     b.add(Text(anchor=(x0, y0), content=title, height=metrics.title_height,
                layer=SCHEDULE_TEXT_LAYER))
     row_y = y0 - metrics.title_pitch
-    for index, note in enumerate(notes, start=1):
-        lead = f"{index}. "
-        for line in textwrap.wrap(note, NOTE_WRAP_COLUMNS) or [""]:
-            b.add(Text(anchor=(x0, row_y), content=lead + line, height=metrics.text_height,
-                       layer=SCHEDULE_TEXT_LAYER))
-            lead = " " * len(lead)
-            row_y -= metrics.row_pitch
+    for line in _note_lines(notes):
+        b.add(Text(anchor=(x0, row_y), content=line, height=metrics.text_height,
+                   layer=SCHEDULE_TEXT_LAYER))
+        row_y -= metrics.row_pitch
     return row_y
 
 
@@ -153,6 +176,132 @@ def block_origin_right_of(points: list[tuple[float, float]],
     if not points:
         return (0.0, 0.0)
     return (max(p[0] for p in points) + metrics.block_gap * 2.0, max(p[1] for p in points))
+
+
+def emit_block(b: SceneBuilder, block: ScheduleBlock, origin: tuple[float, float],
+               metrics: BlockMetrics) -> float:
+    """Draw one schedule or note block at ``origin``; return its bottom y."""
+    if isinstance(block, ScheduleTable):
+        return emit_schedule_table(b, block, origin, metrics)
+    return emit_note_block(b, block.title, list(block.notes), origin, metrics)
+
+
+def block_extent(block: ScheduleBlock, metrics: BlockMetrics) -> tuple[float, float]:
+    """(width, height) in model inches of what :func:`emit_block` would draw.
+
+    Mirrors the emitters line for line rather than drawing-and-measuring, because the IR
+    carries no text metrics: a ``Text`` node is an anchor and a height, and how wide it
+    ends up is the writer's business. ``CHARACTER_WIDTH_RATIO`` is the same monospace
+    advance the table rules are already sized with, so a reserved width and a drawn rule
+    cannot disagree. ``(0.0, 0.0)`` for an empty block — the emitters draw nothing and
+    return the origin unmoved, and the reflow must not spend a column on it.
+
+    Pinned against the emitters by ``test_schedule_columns``: an emitter that changes its
+    rhythm without changing this drops blocks on top of each other.
+    """
+    if isinstance(block, ScheduleTable):
+        if not block.rows:
+            return (0.0, 0.0)
+        widths = _column_widths(block)
+        lines = [_pad_row(block.columns, widths)]
+        lines.extend(_pad_row(row, widths) for row in block.rows)
+        height = metrics.title_pitch + metrics.row_pitch * (len(block.rows) + 1)
+        return (_lettering_width(block.title, lines, metrics), height)
+    if not block.notes:
+        return (0.0, 0.0)
+    lines = _note_lines(block.notes)
+    return (_lettering_width(block.title, lines, metrics),
+            metrics.title_pitch + metrics.row_pitch * len(lines))
+
+
+def emit_block_columns(b: SceneBuilder, blocks: Sequence[ScheduleBlock],
+                       plan_points: list[tuple[float, float]], metrics: BlockMetrics,
+                       aspect: float = SHEET_VIEWPORT_ASPECT) -> None:
+    """Reflow a stack of schedule/note blocks into balanced columns beside the plan.
+
+    A single column is the obvious layout and the wrong one: the sheet is fitted to the
+    *scene* bounding box, so a stack twice the plan's height is what ``select_scale`` ends
+    up fitting, and the building is drawn small to make room for its own tables. S-100 on
+    ARCH D printed at 3/32" = 1'-0" — the bottom of the ladder, on the biggest paper —
+    with the sheet's lower third empty.
+
+    So the arrangement is chosen against the shape of the sheet: every contiguous split of
+    the stack (order preserved, never a table cut in half) is measured, and the one whose
+    overall bounding box is closest to ``aspect`` wins. Reading order stays top-to-bottom
+    within a column, then left to right — which contiguity is exactly what guarantees.
+    """
+    measured = [(block, block_extent(block, metrics)) for block in blocks]
+    drawable = [block for block, extent in measured if extent[1] > 0.0]
+    extents = [extent for _block, extent in measured if extent[1] > 0.0]
+    if not drawable:
+        return
+    origin = block_origin_right_of(plan_points, metrics)
+    if not plan_points:  # nothing to sit beside — one column at the origin
+        _emit_columns(b, drawable, (tuple(range(len(drawable))),), origin, extents, metrics)
+        return
+    plan_x0 = min(point[0] for point in plan_points)
+    plan_y0 = min(point[1] for point in plan_points)
+    splits = list(_column_splits(len(drawable), MAX_SCHEDULE_COLUMNS))
+    best = min(splits, key=lambda split: (
+        _split_score(split, extents, (plan_x0, plan_y0), origin, metrics, aspect),
+        len(split)))
+    _emit_columns(b, drawable, best, origin, extents, metrics)
+
+
+def _emit_columns(b: SceneBuilder, blocks: Sequence[ScheduleBlock],
+                  split: tuple[tuple[int, ...], ...], origin: tuple[float, float],
+                  extents: Sequence[tuple[float, float]], metrics: BlockMetrics) -> None:
+    x, top = origin
+    for column in split:
+        y = top
+        for index in column:
+            y = emit_block(b, blocks[index], (x, y), metrics) - metrics.block_gap
+        x += max(extents[i][0] for i in column) + metrics.block_gap
+
+
+def _column_splits(count: int, max_columns: int
+                   ) -> Iterator[tuple[tuple[int, ...], ...]]:
+    """Every way to cut ``count`` blocks into 1..``max_columns`` contiguous runs."""
+    for columns in range(1, min(max_columns, count) + 1):
+        for cuts in combinations(range(1, count), columns - 1):
+            bounds = (0, *cuts, count)
+            yield tuple(tuple(range(bounds[i], bounds[i + 1])) for i in range(columns))
+
+
+def _split_score(split: tuple[tuple[int, ...], ...], extents: Sequence[tuple[float, float]],
+                 plan_min: tuple[float, float], origin: tuple[float, float],
+                 metrics: BlockMetrics, aspect: float) -> float:
+    """How small this arrangement will print — lower is better.
+
+    ``max(span_u / aspect, span_z)`` is the span that binds ``select_scale``: on a viewport
+    of proportion ``aspect`` the scale is set by whichever of the two runs out first, so
+    minimising it maximises the printed scale of the whole sheet.
+    """
+    plan_x0, plan_y0 = plan_min
+    x, top = origin
+    widths = [max(extents[i][0] for i in column) for column in split]
+    heights = [sum(extents[i][1] for i in column)
+               + metrics.block_gap * (len(column) - 1) for column in split]
+    span_u = x + sum(widths) + metrics.block_gap * (len(split) - 1) - plan_x0
+    span_z = top - min(plan_y0, top - max(heights))
+    return max(span_u / aspect, span_z)
+
+
+def _note_lines(notes: Sequence[str]) -> list[str]:
+    """The numbered, wrapped lines ``emit_note_block`` draws for ``notes``."""
+    lines: list[str] = []
+    for index, note in enumerate(notes, start=1):
+        lead = f"{index}. "
+        for line in textwrap.wrap(note, NOTE_WRAP_COLUMNS) or [""]:
+            lines.append(lead + line)
+            lead = " " * len(lead)
+    return lines
+
+
+def _lettering_width(title: str, lines: Sequence[str], metrics: BlockMetrics) -> float:
+    """Widest of the title (drawn at title height) and the body lines, in model inches."""
+    body = max(len(line) for line in lines) * metrics.text_height
+    return max(len(title) * metrics.title_height, body) * CHARACTER_WIDTH_RATIO
 
 
 def _column_widths(table: ScheduleTable) -> list[int]:

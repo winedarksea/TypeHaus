@@ -178,8 +178,12 @@ def test_balcony_girts_sit_flush_with_the_beams(catlin_model) -> None:
 def test_catlin_dowels_and_foam_bridge_the_footing_joint(catlin_model) -> None:
     dowels = _solids(catlin_model, "dowel")
     foam = _solids(catlin_model, "thermal_break")
-    assert len(dowels) == 9  # 3 locations x 3 bars
-    assert len(foam) == 3
+    # Two locations x 3 bars. It was three until 2026-08-29: FT-SG-COL used to be doweled
+    # to the house footing across a foam block, and belling that pier to frost depth put its
+    # top 1'-10" BELOW FT-B-S2's underside. There is no longer a joint between the two pours
+    # for a bar to cross or for foam to break — the separation is the thermal break.
+    assert len(dowels) == 6
+    assert len(foam) == 2
     # Bars sit at mid-footing (~ -9.25') and span ~24" across the joint.
     for bar in dowels:
         assert bar.z0_m < -2.5 < bar.z1_m or abs((bar.z1_m + bar.z0_m) / 2 + 9.25 * FT) < 0.2
