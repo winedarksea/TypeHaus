@@ -121,6 +121,20 @@ MAIN_FIXTURES = (
     # where the deck receptacle for the Bask heated surface lives, behind the bath and
     # inside the 24" Kohler requires, reachable through FURN-M-BATH2-TUB-AP.
     #
+    # ** THE FLOOR UNDER IT IS THE ONE THING THIS PASS COULD NOT SETTLE. ** Kohler states a
+    # minimum floor load of 49.3 lb/ft2 and tells the installer to "verify the subfloor is
+    # adequately supported for" it "plus water and occupant". Filled, this bath is 72.017 gal
+    # = 601 lb of water on 91 lb of shell; with a 200 lb occupant that is 892 lb over its
+    # 14.8 ft2 plan area, or 60 psf — against the 40 psf live load an IRC residential floor
+    # is designed to, on FS-M-WEST's 11 7/8" I-joists at 16" o.c. spanning 18'-0", which
+    # `structural.ijoist_span` passes at 97% of its 18'-6" table limit.
+    #
+    # That is a LOCAL overload on a joist run already near its limit, and the engine has no
+    # check that would ever say so — `structural.ijoist_span` grades the span against a
+    # table, not the load standing on it. It is very likely fine (14.8 ft2 of a 18'-0" bay
+    # distributes), and it is exactly the kind of "very likely fine" that belongs in front of
+    # whoever stamps the drawings. NOT ANSWERED HERE. Recorded in plans/TODO.md.
+    #
     # `drain_position` stays at (7'-4", 19'-4.8"): the waste is CENTRE on this bath as it
     # was on the allowance, and that point is where PR-B-TUB2-DRAIN turns for the stack, not
     # the outlet itself. The run drops to 1 1/2" with this change (plan/mep_drainage.py) —
@@ -128,13 +142,38 @@ MAIN_FIXTURES = (
     Fixture(uid="CMQ806AAAA", tag="FX-M-BATH2-TUB", type_ref="FX-KOHLER-UNDERSCORE-6036",
             room="RM-M-BATH2", position=pt(ft(6, 2.56), ft(19, 4.77)), rotation=deg(90),
             wall_ref="W-M-BA2E", drain_position=pt(ft(7, 4), ft(19, 4.8))),
-    # RM-M-BATH2's double-basin sink uses the shared kitchen-sink catalog type rather than
-    # a house-local surrogate. Its 27" mount puts the library sink's deck at the intended
-    # lavatory height; rotation +90 turns the back of the symbol toward the west wall.
-    Fixture(uid="CMQ807AAAA", tag="FX-M-BATH2-SINK", type_ref="FX-KITCHEN-SINK-33",
-            room="RM-M-BATH2", position=pt(m(0.434228), m(5.02659)), rotation=deg(90),
-            wall_ref="W-M-W3", mount=Mount(kind=MountKind.WALL, elevation=inch(27)),
-            drain_position=pt(ft(1), ft(16, 6))),
+    # ** A 54" ONE-BASIN VANITY SINCE 2026-08-29, AND IT USED TO BE A KITCHEN SINK. ** The
+    # instance that stood here was ``FX-KITCHEN-SINK-33`` -- the library's DOUBLE-BOWL
+    # kitchen sink -- hung on a 27" wall mount to drag its deck down to lavatory height. It
+    # drew two bowls on the bathroom plan, billed as a kitchen sink in the fixture schedule,
+    # and modelled no cabinet whatsoever. The owner asked for one basin and as much drawer
+    # and shelf as the wall will hold, so it is now FX-VANITY-54-SINGLE (plan/fixture_types
+    # .py), which carries the cabinet, the single basin and the 36" comfort-height counter.
+    #
+    # ** NO ``mount``, AND THAT IS THE CHANGE THAT MATTERS. ** A vanity STANDS ON THE FLOOR.
+    # The old 27" wall mount was a workaround for a fixture type that models only a deck;
+    # leaving it in place would have floated a 54" cabinet 27" up the wall with its toe kick
+    # in mid-air. The type's own 41 1/2" height now puts the counter at 36" from the floor.
+    #
+    # Position is the cabinet's centre, hard into the room's south-west corner: x=11 5/32"
+    # is 21" of depth off W-M-W3's face at x=5/8", y=15'-3 5/8" is 54" of length off
+    # W-M-BDN1's face at y=13'-0 5/8". It runs NORTH from that corner and stops at
+    # y=17'-6 5/8", which is 5" short of where FX-M-BATH2-WC's 21" P2705.1 front clearance
+    # begins -- the one dimension to re-check if the water closet ever moves west or south.
+    # rotation +90 turns the 54" length north/south and puts the cabinet front (local -y)
+    # facing EAST into the room; the front clearance zone projects with it.
+    #
+    # WIN-M-BATH2 is not in the way and is worth saying so, because it nearly is: the window
+    # runs y 18'-6 1/2"..20'-9 1/2" with a 3'-0" sill, which is the SAME plane as this
+    # counter. It clears the cabinet's north end by 11 7/8" of bare wall.
+    #
+    # ``drain_position`` moves with the basin rather than staying on the old bowl: the basin
+    # sits over the 30" sink base at the NORTH end, so its centreline is y=16'-3 5/8" and
+    # the tailpiece drops behind it at the wall. PR-B-LAV2-DRAIN follows it there.
+    Fixture(uid="CMQ807AAAA", tag="FX-M-BATH2-SINK", type_ref="FX-VANITY-54-SINGLE",
+            room="RM-M-BATH2", position=pt(inch(11.14), inch(183.64)), rotation=deg(90),
+            wall_ref="W-M-W3",
+            drain_position=pt(inch(6), inch(195.64))),
     # --- RM-M-LAUNDRY (2026-07-31) -----------------------------------------------------
     # 62 3/4"x48 3/4" alcove behind D-M-LAUN (56" bifold spanning the north side) — a
     # closet, not a room you stand in: both appliances back onto the south wall (rotation

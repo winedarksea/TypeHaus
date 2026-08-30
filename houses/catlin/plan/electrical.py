@@ -535,10 +535,19 @@ MAIN_DEVICES = [
                      position=pt(ft(4), ft(36, 8.875)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     # FH-M-BATH2's thermostat: inside the room on its south wall (W-M-BDN1, interior face
-    # y=13'-0 11/16"), 8" east of D-M-BATH2's opening (x 1'-6 1/2"..4'-0 1/2") — the wall
-    # you reach as the door closes behind you. Floor sensor is FH-M-BATH2's `stat` point.
+    # y=13'-2 3/8"). Floor sensor is FH-M-BATH2's `stat` point.
+    #
+    # x moved from 4'-9" to 0'-11 3/4" — WEST of D-M-BATH2's opening (x 1'-6 1/2"..4'-0 1/2")
+    # rather than 8" east of it, so it is no longer the wall you reach as the door closes
+    # behind you but the return beside FX-M-BATH2-SINK. That x is kept as authored.
+    #
+    # y snapped back to 13'-3 3/8" (2026-08-29). The drag that set the x left y at 13'-2 15/16",
+    # which is 9/16" INSIDE W-M-BDN1's finish — `test_wall_mounted_devices_resolve_against_a_
+    # wall_face` grades the resolved body, not the authored point, and it caught this. 13'-3 3/8"
+    # is the value that puts the plate's back ON the face, and it is what the y was before
+    # the drag; only the x was ever meant to move.
     ElectricalDevice(uid="CEE021AAAA", tag="ED-M-BATH2-FH-STAT", kind=DeviceKind.SWITCH,
-                     position=pt(m(0.298408), m(4.03409)), type_ref="ED-T-FLOOR-STAT",
+                     position=pt(m(0.298408), ft(13, 3.375)), type_ref="ED-T-FLOOR-STAT",
                      circuit="CKT-FH-BATH2", room="RM-M-BATH2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     # FH-M-DINING's thermostat: zone is free-standing mid-room, so control goes on the

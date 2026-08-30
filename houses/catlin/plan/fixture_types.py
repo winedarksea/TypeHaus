@@ -18,6 +18,7 @@ contents duplicated the library; nothing here duplicates anything.
 
 from __future__ import annotations
 
+from library.placeables._zones import front_zone
 from typehaus.model import FixtureType, Service, inch
 
 # The Kohler K-5713-W1-0 Underscore, RM-M-BATH2 (plan/products.py carries brand + model).
@@ -57,4 +58,58 @@ KOHLER_UNDERSCORE_6036 = FixtureType(
            "circuit required, outlet behind the bath within 24 in. of the power supply.",
 )
 
-FIXTURE_TYPES = (KOHLER_UNDERSCORE_6036,)
+# RM-M-BATH2's vanity (2026-08-29), replacing the FX-KITCHEN-SINK-33 that stood in for it.
+#
+# ** THE THING IT REPLACES WAS A DOUBLE-BOWL KITCHEN SINK. ** Not a metaphor for one: the
+# instance carried ``type_ref="FX-KITCHEN-SINK-33"`` and a 27" wall mount to drag the
+# library's kitchen deck down to lavatory height. It billed as a kitchen sink, drew the
+# ``kitchen-sink`` symbol with TWO bowls on the bathroom plan, and gave the room no cabinet
+# at all -- 33" x 22" of counter with nothing under it. The owner wants one basin and as
+# much drawer and shelf as 54" can hold, so this is a vanity type rather than a sink type.
+#
+# 54" x 21" is set by the room, not by a catalogue: the west wall gives 59" of clear run
+# between W-M-BDN1's face (y=13'-0 5/8") and the start of FX-M-BATH2-WC's 21" P2705.1 front
+# clearance (y=17'-11 5/8"), and 54" leaves 5" of that rather than butting a cabinet into a
+# code envelope. 21" is the standard manufactured vanity depth (KraftMaid, and the 20"-23"
+# band every mass-market line sits in); the counter overhangs it to 22".
+#
+# ``height`` is 41 1/2" and that is NOT the counter -- this file's library twin explains
+# why: a fixture's height is OVERALL including the spout, and ``_deck_height`` subtracts a
+# fixed 0.14 m faucet band. 41.5" - 5.512" = 36.0" exactly, which is the comfort-height
+# counter the owner chose (the same plane as the kitchen, and inside NKBA Guideline 7's
+# 32"-43" band). Change this number and the counter moves; it is not a round one by accident.
+#
+# ** ONE BASIN, AND THE STORAGE IS THE POINT. ** 24" four-drawer bank at the SOUTH end,
+# 30" sink base at the NORTH end with the basin over it, so the counter runs unbroken from
+# the drawer bank to the basin rim rather than being cut in half by a second bowl. The
+# basin centreline lands at y=16'-3 5/8" -- 39" off W-M-BDN1's face, comfortably past
+# NKBA G5's recommended 20" to a sidewall. The sink base's interior shelf is authored as
+# SB-M-BATH2-VAN in plan/millwork.py, because a shelf the owner will stand things on is
+# worth billing; the drawer boxes are not modelled (the engine has no drawer vocabulary)
+# and live in the cabinet breakdown below and in prices.toml.
+#
+# The front clearance is the 21" IRC P2705.1 minimum, not NKBA's recommended 30". The room
+# gives 30 5/8" of aisle between this face and the tub deck's west face, so the
+# recommendation IS met in fact -- but authoring 30" as a REQUIRED zone would make a
+# guideline read as code in every clearance finding, which it is not.
+BATH2_VANITY_54 = FixtureType(
+    tag="FX-VANITY-54-SINGLE",
+    name='Vanity, 54" single basin with drawer bank',
+    footprint=(inch(54), inch(21)),
+    height=inch(41.5),
+    plan_symbol="vanity",
+    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
+    clearances=(front_zone(inch(54), inch(21), inch(21), "lavatory front clearance"),),
+    source="RM-M-BATH2 vanity, owner selection 2026-08-29; cabinetry by owner. 54 x 21 in. "
+           "carcass, 22 in. counter with a 1 in. overhang, finished counter 36 in. "
+           "(comfort height, NKBA Bathroom Planning Guideline 7 allows 32-43 in.). ONE "
+           "basin: a single rectangular undermount, model 20 x 15 1/2 in. overall with a "
+           "17 1/4 x 13 in. cutout and a 5 1/4 in. bowl (Kohler Verticyl K-2882 class). "
+           "Cabinet breakdown: 24 in. bank of four drawers at the south end (6/9/9/9 in. "
+           "fronts, 19 in. boxes) + 30 in. sink base at the north end with a pair of doors "
+           "and one interior shelf (SB-M-BATH2-VAN), the trap kept high and tight to the "
+           "wall so the base stays usable. Six drawers plus the shelf is the storage this "
+           "type exists for; a wider single-bowl unit will not fit the west wall.",
+)
+
+FIXTURE_TYPES = (KOHLER_UNDERSCORE_6036, BATH2_VANITY_54)

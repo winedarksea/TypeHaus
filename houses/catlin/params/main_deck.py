@@ -120,6 +120,7 @@ Sources: LiteDeck WRS installation manual, Sept 2020 (liteform.com), BuildDeck b
 from typehaus import (
     DeckLayer,
     FloorSystem,
+    JoistReinforcement,
     JoistSpec,
     Layer,
     LayerFunction,
@@ -279,6 +280,68 @@ _STR_X = ft(10)
 _TRANSITION_DOUBLE = inch(2.5)   # one I-joist flange width
 _MECH_Y_S = inch(_MECH_Y.inches - _TRANSITION_DOUBLE.inches)
 
+# --- RM-M-BATH2's drop-in bath: the answer to plans/TODO.md's 60 psf item ---------
+#
+# The Kohler K-5713-W1 holds 72.017 gal. Filled, with a 200 lb occupant, that is 892 lb
+# over its 14.83 ft2 plan area -- 60 psf, against the 40 psf an IRC residential floor is
+# designed to (R301.5 Table, adopted unamended by MN Rules 1309.0301; there is no bathtub
+# provision or concentrated-load footnote anywhere in it). Boise Cascade's Tech Note IJ-12
+# is the one manufacturer document on point and states the test plainly: "If a whirlpool
+# filled with water or any other object weighs more than the 40 psf uniform load placed
+# over its footprint, the floor joists or beams should be designed for the heavier load."
+# By that test this bath qualifies, so it is answered here rather than argued with.
+#
+# ** THE ARITHMETIC SAYS BLOCKING, NOT A BEAM, AND ORIENTATION IS WHY. ** The bath is
+# authored at rotation 90, so its 59 11/16" length runs NORTH-SOUTH and these joists run
+# EAST-WEST: the load crosses four joist lines (y=208", 224", 240", 256") instead of
+# bearing its length on two or three. Each line picks up 60.1 psf over a 16" strip for the
+# bath's 35 3/4" width -- 80.2 plf over 2.98 ft, or 239 lb -- where the parallel
+# orientation would have put 399 lb on one line. Against the 960 lb of live load the code
+# already assigns each 24 ft2 tributary strip, the filled bath with a bather generates
+# ~46% of the code live-load moment. It does not break the design assumption; it fits
+# inside it. The floor is not overloaded, and no beam, post or squash block is warranted
+# (a squash block would do nothing anyway -- it transfers bearing at a support, and this
+# load is at midspan).
+#
+# What IS worth buying, while the basement ceiling is still open, is load SHARING. Two
+# reinforcements, each blocking to the joist line on both sides, fill every bay the bath
+# sits in (y 192"..256") with full-depth blocking on the bath's own centre line. Blocking
+# is what makes four joists deflect together instead of the loaded one dishing between its
+# neighbours -- which is the actual risk here, since the governing number was never
+# strength. It is also what carries W-M-TUBDK-S, the deck's south knee wall, which runs
+# PARALLEL to the joists at y=196 5/8" and lands in a bay rather than on a line.
+#
+# ``plies=1`` is blocking with no sister (``resolve/floors.py`` runs ``range(plies - 1)``).
+# The third entry adds one sister ply at y=224" -- the line nearest the bath's centre of
+# mass -- which is the belt-and-braces an engineer would most likely add for a few hundred
+# dollars of I-joist and is cheap only while the ceiling is open. It is deliberately at
+# 224" and not 240": PR-B-TUB2-DRAIN drops at (7'-4", 19'-4 4/5") in the 224"..240" bay,
+# and a ply added on that line would land within a couple of inches of the drop.
+#
+# ** THE "97% OF ITS TABLE LIMIT" IN THE OLD TODO ENTRY WAS OVER-PRECISE, AND THAT IS
+# WORTH KNOWING BEFORE ANYONE SPENDS MONEY ON IT. ** ``_IJOIST_SPAN_FT`` in
+# ``checks/structural/checks.py`` is a simplified advisory table with ONE row per depth
+# and no dead-load column, no joist series and no deflection criterion -- its docstring
+# says "Simplified allowable joist spans (ft) at 16" o.c., residential floor (40 psf
+# live)". 18'-6" is not a Weyerhaeuser lookup, so "18'-0" of an 18'-6" limit" is not the
+# 97%-of-capacity reading it looks like. The real number wants ForteWEB with the actual
+# series and the actual dead load, and the one input most likely to move it is the deck
+# box's own weight: a 1 1/2" mortar bed plus platform and tile is roughly 450-500 lb of
+# PERMANENT load over ~23 ft2, which is the part that creeps for thirty years while the
+# 601 lb of water is there a few hours a week.
+_TUB_DECK_X = inch(74.56)          # FX-M-BATH2-TUB's centre, and the blocks' axis station
+_TUB_DECK_REINFORCEMENT = (
+    JoistReinforcement(at=pt(_TUB_DECK_X, inch(208)), plies=1, blocking=True,
+                       source="RM-M-BATH2 drop-in bath: full-depth blocking in the "
+                              "192\"..224\" bays under the bath and under W-M-TUBDK-S"),
+    JoistReinforcement(at=pt(_TUB_DECK_X, inch(240)), plies=1, blocking=True,
+                       source="RM-M-BATH2 drop-in bath: full-depth blocking in the "
+                              "224\"..256\" bays, completing the bath's four-line spread"),
+    JoistReinforcement(at=pt(_TUB_DECK_X, inch(224)), plies=2, blocking=False,
+                       source="RM-M-BATH2 drop-in bath: one sister ply on the line nearest "
+                              "the filled bath's centre of mass, clear of PR-B-TUB2-DRAIN"),
+)
+
 # South bay: full 18'-0" span, wall to centre line, y 0'-0" to the bathroom node line.
 WEST_FLOOR = FloorSystem(
     uid="CMFS01AAAA", tag="FS-M-WEST",
@@ -289,6 +352,7 @@ WEST_FLOOR = FloorSystem(
                      # boundary (integrity.floor_bearing_grid holds them there).
                      bearing_refs=("W-B-W2", "W-B-W1", "W-B-CS", "W-B-CS2", "W-B-CN2")),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
+    reinforcements=_TUB_DECK_REINFORCEMENT,
     # The basement's ceiling. R316.4 wants gypsum over the EPS in the concrete band; the
     # owner's decision was to drywall the whole ceiling rather than stop the board at the
     # boundary, which is also what retires the old "visible copper in the basement"

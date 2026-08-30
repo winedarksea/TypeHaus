@@ -132,26 +132,29 @@ def fixture_room_unassigned(ctx: CheckContext) -> list[Finding]:
 
 @check(Tier.ADVISORY, "advisory.floor_heat_fixture_keepout")
 def floor_heat_fixture_keepout(ctx: CheckContext) -> list[Finding]:
-    """Radiant wire zones must not run beneath a fixture's authored footprint."""
-    from shapely.geometry import Polygon, box
+    """Radiant wire zones must not run beneath a fixture's authored footprint.
 
-    types = {item.tag: item for item in ctx.plan.library.fixture_types}
-    fixtures = [
-        (storey.tag, element)
-        for storey in ctx.plan.storeys
-        for element in ctx.plan.storey_elements(storey.tag)
-        if element.element_kind == "Fixture"
-    ]
+    The footprint read here is the RESOLVED one, off the canvas object, and that is the
+    whole point of the indirection. Until 2026-08-29 this rebuilt a box from the type's
+    ``(width, depth)`` about the fixture's centre and never applied ``Fixture.rotation``,
+    so a bath authored at rotation 90 was graded as a 59"-wide east/west box where the
+    real one is 59" north/south. A zone drawn to the real fixture failed, and a zone drawn
+    to the phantom passed while running under the actual tub — wrong in both directions,
+    and the second is the dangerous one. ``canvas_objects`` carries the rotated polygon
+    the resolver already computed, so wall attachment and non-rectangular footprints come
+    along for free.
+    """
+    from shapely.geometry import Polygon
+
+    fixtures = [obj for obj in ctx.model.canvas_objects
+                if obj.kind == "Fixture" and len(obj.footprint) >= 3]
     out: list[Finding] = []
     for zone in ctx.model.floor_heat:
         zone_polygon = Polygon(zone.zone)
-        for storey, fixture in fixtures:
-            if storey != zone.storey or fixture.type_ref not in types:
+        for fixture in fixtures:
+            if fixture.storey != zone.storey:
                 continue
-            width, depth = (value.meters for value in types[fixture.type_ref].footprint)
-            x, y = fixture.position.xy_m
-            footprint = box(x - width / 2, y - depth / 2, x + width / 2, y + depth / 2)
-            if zone_polygon.intersects(footprint):
+            if zone_polygon.intersects(Polygon(fixture.footprint)):
                 out.append(_warn(
                     "advisory.floor_heat_fixture_keepout",
                     f"floor-heat zone {zone.tag} overlaps fixture {fixture.tag}; "

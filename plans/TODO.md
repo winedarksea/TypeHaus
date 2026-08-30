@@ -3,6 +3,22 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Needs your decision
 
+- **RM-M-BATH2's drop-in bath sits on a joist bay already at 97% of its span table
+  (2026-08-29).** The Kohler K-5713-W1 Underscore holds 72.017 gal — 601 lb of water on a
+  91 lb shell. With an occupant that is 892 lb over its 14.8 ft2 footprint, or **60 psf,
+  against the 40 psf live load an IRC residential floor is designed to.** It stands on
+  FS-M-WEST: 11 7/8" I-joists, 16" o.c., spanning 18'-0", which `structural.ijoist_span`
+  passes at 18'-0" of an 18'-6" table limit. Kohler's own install guide asks the installer
+  to "verify the subfloor is adequately supported" for its 49.3 lb/ft2 minimum "plus water
+  and occupant", so this is the manufacturer's question as much as ours.
+  **Nothing in the engine will ever raise this** — `structural.ijoist_span` grades the span
+  against a table and never the load standing on it, which is why it is written down here
+  rather than left to a check. It is probably fine: 14.8 ft2 of a 18'-0" bay distributes,
+  and the deck box's own knee walls bear across four or five joists. "Probably fine" on a
+  bay at 97% is a stamped-drawings question, and the cheap answers if it is not — doubling
+  the three or four joists under the deck, or dropping a squash block line — are cheap only
+  while the basement ceiling is open.
+
 - **Zoning height, after the lift — now 2'-10" (raised 2026-08-18, grew 2026-08-21).**
   Grade moved to -2'-6" so the house stands out of the ground, and to -2'-10" when the
   basement-ceiling overhaul put a 12 5/8" deck where a 9" slab had been and the house rose
