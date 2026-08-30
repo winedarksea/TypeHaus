@@ -1020,30 +1020,30 @@
 # -> material $300-800 and labour $200-500 over 0.01 cy.
 "column:EQUIP_STAND_ALUM" = { material = { low = 30000, high = 80000 }, labour = { low = 20000, high = 50000 } }  # 0.01 cy = 8 legs + 2 sets of cross-rails, $300-800 mat + $200-500 lab for the pair
 #
-# WHITE-PAINTED GARDEN FRAME — 56.5 LF over six members, 0.57 cy. Every stick of the garden's
-# frame that anybody actually sees: BM-SG-FRW/FRE (the porch's front pair, 3-2x12 at 10'-0"),
-# BM-SG-BLW/BLE (the balcony's west and east beams, 3-2x12 at 8'-8" — its two elevations in
-# profile), and BM-SG-GIRT-FW/FE (the two front E-W girts, 2x12 at 9'-7 1/2"). All six stand
-# in the plane of the six white 6x6 pillars and the white knee braces, so all six are painted
-# with them. Priced HERE and not in [timber] for the same reason the pillars above are:
-# `cli/prices.MATERIAL_ONLY` admits a solid to [timber] on its structure material, and
-# "post-paint-white" is not one of the three lumber tags it names — so the row prices by
-# QUALIFIED key, which is the documented escape hatch. It is not double-counted: a Beam bills
-# in no other table.
+# WHITE-PAINTED GARDEN FRAME — 37.3 LF over four members, 0.49 cy. Every stick of the garden's
+# frame that anybody actually sees: BM-SG-FRW/FRE (the porch's front pair, 3-2x12 at 10'-0")
+# and BM-SG-BLW/BLE (the balcony's west and east beams, 3-2x12 at 8'-8" — its two elevations
+# in profile). All four stand in the plane of the six white 6x6 pillars and the white knee
+# braces, so all four are painted with them. The two front E-W girts (BM-SG-GIRT-FW/FE, 2x12
+# at 9'-7 1/2") that used to stand here retired 2026-08-30 for two continuous brace rails —
+# the rails are BEAM_KDAT, unpainted (they run under the deck, invisible from either
+# elevation), so 19.2 LF and 38.4 SF of painted face drop out of this row. Priced HERE and
+# not in [timber] for the same reason the pillars above are: `cli/prices.MATERIAL_ONLY`
+# admits a solid to [timber] on its structure material, and "post-paint-white" is not one of
+# the three lumber tags it names — so the row prices by QUALIFIED key, which is the
+# documented escape hatch. It is not double-counted: a Beam bills in no other table.
 #
-# Same stock and the same sections as "beam:BEAM_KDAT" in [timber], which these six left on
-# 2026-08-27, so the lumber half is that row's own rates, member for member:
+# Same stock and the same sections as "beam:BEAM_KDAT" in [timber], member for member:
 #   37.3 LF  3-2x12 KDAT at $7.77-12.87 mat + $1.50-3.00 lab = $290-480 mat, $56-112 lab.
-#   19.2 LF  2x12 KDAT at $2.59-4.29 mat + $1.40-2.60 lab = $50-82 mat, $27-50 lab.
 # Then primer + 2 coats at $2.00-4.50/SF, the same paint the pillars carry, over the faces a
 # beam under a deck actually shows — two sides plus the soffit, the top being covered by the
-# joists: 2.25 SF/LF on the 4 1/2" members and 2.0 SF/LF on the 1 1/2" girts = 122 SF, i.e.
-# $245-551. Painting narrow faces with cut-in at every bearing is ~85% labour (the pillar
-# note above), so that splits $37-83 material and $208-468 labour.
-# -> material $376-645 and labour $291-630, i.e. $667-1,275 over 0.57 cy. The paint is more
-# than half the labour and a fifth of the material: a finish line item wearing a beam's
-# clothes.
-"beam:BEAM_WHITE_PAINT" = { material = { low = 660, high = 1132 }, labour = { low = 511, high = 1105 } }  # 0.57 cy = 56.5 LF
+# joists: 2.25 SF/LF on the 4 1/2" members = 83.9 SF, i.e. $168-378. Painting narrow faces
+# with cut-in at every bearing is ~85% labour (the pillar note above), so that splits $25-57
+# material and $143-321 labour.
+# -> material $315-537 and labour $199-433, i.e. $514-970 over 0.49 cy. The paint is still
+# most of the labour and roughly a tenth of the material: a finish line item wearing a
+# beam's clothes, now over four members instead of six.
+"beam:BEAM_WHITE_PAINT" = { material = { low = 648, high = 1105 }, labour = { low = 410, high = 891 } }  # 0.49 cy = 37.3 LF
 #
 # FRAMED DUCT SOFFITS — SF-S-DUCT and SF-S-SUITE, 4.38 cy of 2x framing with gypsum on three
 # sides, taped and finished to paint-ready. At a 14"x12" section that is 101.4 LF and 3.17 SF of
@@ -2268,35 +2268,47 @@
 # -> material $252-468 and labour $180-360, i.e. $432-828 over 0.19 cy.
 "beam:BEAM_LVL" = { material = { low = 1326, high = 2463 }, labour = { low = 947, high = 1895 } }  # 0.19 cy = 12.0 LF
 #
-# BEAM, KDAT — 74.0 LF over twelve members, 0.56 cy. The breezeway's whole frame, the
-# balcony's two REAR E-W girts, and three of the garden's seven beams. Six members left this
-# row on 2026-08-27 for "beam:BEAM_WHITE_PAINT" in [concrete] — everything in the garden's
-# frame that is SEEN, painted white with the six pillars. What is left is what nobody looks
-# at. Nothing about the framing changed with them: same stock, same sections, same lineal
-# feet, just paint and a row of its own.
+# BEAM, KDAT — 94.9 LF over twelve members, 0.59 cy. The breezeway's whole frame, the
+# balcony's two continuous E-W brace rails, and three of the garden's seven beams. Six
+# members left this row on 2026-08-27 for "beam:BEAM_WHITE_PAINT" in [concrete] —
+# everything in the garden's frame that is SEEN, painted white with the six pillars. What
+# is left is what nobody looks at. Nothing about the framing changed with them: same stock,
+# same sections, same lineal feet, just paint and a row of its own.
 # (The volume moved 1.04 -> 1.13 cy for the eighteen-member row on 2026-08-23, when the
 # balcony beams and the girts each went 2" deeper (2x10 -> 2x12) to clear IRC Table
 # R507.5(1) prescriptively — see params/sunken_garden.py::SPEC.balcony_beam.)
+#
+# The four E-W girts (2026-08-27 to 2026-08-30) are retired for two continuous E-W brace
+# rails, one per pillar row, face-bolted to the posts' inboard faces rather than seated on
+# their tops — see params/sunken_garden.py::SPEC.balcony_brace_rail. The rails carry no
+# gravity load either, same as the girts they replace; what changed is the section (2x12 ->
+# 2x8, no longer needing to match the beams' depth) and the length (each rail runs the full
+# 20'-0" through all three posts in its row, rather than stopping short as a pair of
+# half-row segments). Neither rail is painted — both run under the deck, invisible from
+# either elevation — so both are BEAM_KDAT rather than splitting one row to
+# "beam:BEAM_WHITE_PAINT" the way the old front girts did.
 #   14.2 LF  2-2x8, the four breezeway floor and roof beams at 3'-7". [framing] "2-2x8" is
 #            $2.20-3.10 mat + $1-2 lab; KDAT is $3.00-5.00 mat = $4.00-7.00/LF.
 #   12.0 LF  2x6, the three breezeway rafters at 4'-0". $1.20-1.90 mat + $0.90-1.60 lab.
-#   19.1 LF  2x12, the two REAR E-W balcony girts at 9'-6 1/2". [framing] "2x12" is
-#            $1.85-2.60 mat, so KDAT is $2.59-4.29 mat + $1.40-2.60 lab. (The two FRONT
-#            segments, 19.2 LF, are the painted row — 1" longer apiece, because the rear
-#            pair stops at the pillar faces and the front pair at the beam faces.)
+#   40.0 LF  2x8, BM-SG-RAIL-R/F — the two E-W brace rails at 20'-0" each. [framing] "2x8"
+#            is $1.10-1.55 mat + $1.30-2.40 lab, so KDAT is $1.54-2.56 mat + $1.30-2.40 lab
+#            (single-ply, so labour is the joist's own rate — same pattern the girts used).
 #   20.0 LF  3-2x12, the porch's BACK pair at 10'-0" each. Three plies of that same 2x12 are
 #            $5.55-7.80/LF in SPF and $7.77-12.87 in KDAT. (The front pair is painted.)
 #    8.7 LF  3-2x12, BM-SG-BLC alone — the balcony's CENTRE beam, the only one of the three
 #            with a joist bay either side of it. The west and east beams are the balcony's
 #            two elevations and are painted; this one reads as a shadow line from below.
 #
-# The KDAT premium used throughout these two built-up rows is the same one the girt line
-# above already carries: +40%/+65% on MATERIAL, labour unchanged. Labour on a built-up
-# beam is per LF of assembled member, not per ply — that is why [framing] prices "2-2x10"
-# labour at $1-2 while a single "2x10" joist is $1.30-2.40. A 3-ply is heavier to set than a
-# 2-ply, so it is carried at $1.50-3.00/LF; that step is a judgement, not a quote.
-# -> material $330-545 and labour $95-183, i.e. $425-728 over 0.56 cy.
-"beam:BEAM_KDAT" = { material = { low = 589, high = 973 }, labour = { low = 170, high = 327 } }  # 0.56 cy = 74.0 LF
+# The KDAT premium used throughout these built-up and single-ply rows alike is +40%/+65% on
+# MATERIAL, labour unchanged. Labour on a built-up beam is per LF of assembled member, not
+# per ply — that is why [framing] prices "2-2x10" labour at $1-2 while a single "2x10"
+# joist is $1.30-2.40. A 3-ply is heavier to set than a 2-ply, so it is carried at
+# $1.50-3.00/LF; that step is a judgement, not a quote.
+# -> material $342-565 and labour $120-229, i.e. $462-794 over 0.59 cy. Down from
+# $425-728 over 0.56 cy: the rails are thinner than the girts they replace (2x8 vs 2x12) but
+# run the full row instead of half of it, so the volume and the dollar range both move a
+# little, in opposite directions from what either fact alone would suggest.
+"beam:BEAM_KDAT" = { material = { low = 580, high = 958 }, labour = { low = 203, high = 388 } }  # 0.59 cy = 94.9 LF
 #
 # COLUMN, KDAT — the four breezeway 6x6 posts, 28.4 LF, 0.22 cy. [framing] "6x6" is $5-8.50
 # mat + $2.50-5 lab; these are GROUND-CONTACT rated (the brief) and stand on standoff bases

@@ -319,27 +319,41 @@ WALLS = [
     # --- west block: walk-in, suite, suite bath, vanity alcove ------------------
     Wall(uid="CSW129AAAA", tag="W-S-DC1", start_node="N-S-D1", end_node="N-S-D2",
          assembly="INT_2X4_PARTITION", top=ft(9)),
-    # RM-S-SUITEBATH's west + south walls carry its drain stack, so both are the
-    # staggered wet-wall assembly (2x4 studs on 2x6 plates, 5.5" continuous cavity):
+    # RM-S-SUITEBATH's west wall carries the WC's drain stack, so it is the staggered
+    # wet-wall assembly (2x4 studs on 2x6 plates, 5.5" continuous cavity):
     # `advisory.wet_wall_depth` reads preferences.toml's
-    # `drain_stack_required_structure_in = 5.5`, which a 2x4 partition cannot hold.
+    # `drain_stack_required_structure_in = 5.5`, which a 2x4 partition cannot hold. It stays
+    # this depth for a real reason beyond FX-S-SUITEBATH-WC's flange: `checks/mep/
+    # plumbing_dwv.py::wet_wall_depth` keys off `Fixture.wall_ref`, not off any actually
+    # modelled `PipeRun` — no `PipeRun.wall_refs` names DC2 or SBS at all, so this is planning
+    # allowance, not a real chase a 2x4-plus-resilient-channel retype could borrow room from.
     Wall(uid="CSW142AAAA", tag="W-S-DC2", start_node="N-S-D3", end_node="N-S-D4",
          assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
     Wall(uid="CSW143AAAA", tag="W-S-CLN", start_node="N-S-D2", end_node="N-S-C2",
          assembly="INT_2X4_PARTITION", top=ft(9)),
+    # South wall — plain 2x4 (2026-08-30). Nothing actually backs onto this wall: the lav
+    # that used to point its `wall_ref` here for the depth allowance stands against W-S-SN3
+    # instead (10.5" north of its centreline, `plan/fixtures.py`'s `FX-S-SUITEBATH-LAV`), and
+    # the `wall_ref` moved there with it, so `advisory.wet_wall_depth` no longer reads this
+    # wall at all.
     Wall(uid="CSW144AAAA", tag="W-S-SBS", start_node="N-S-D3", end_node="N-S-C2B",
-         assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
+         assembly="INT_2X4_PARTITION", top=ft(9)),
     # The suite's north wall: RM-S-SUITE (sleeping) on one face, the vanity alcove and the
-    # suite bath on the other. Both runs are the library's tested staggered-stud partition
-    # (2x4 studs alternating on 2x6 plates, 3.5" fiberglass, two 5/8" gypsum layers each
-    # face) rather than the house's default single-stud INT_2X4_PARTITION: STC 52 against
-    # 36 (#50 — the number is the transcribed lab value, never computed), because a wall
-    # whose far face carries a vanity and a bath is the one the sleeper hears through.
-    # It is 8" wide against the partition's 4.75", which the suite and the vanity split.
+    # suite bath on the other. Both runs are the library's staggered-stud partition (2x4
+    # studs alternating on 2x6 plates, 3.5" fiberglass) rather than the house's default
+    # single-stud INT_2X4_PARTITION, because a wall whose far face carries a vanity and a
+    # bath is the one the sleeper hears through — the staggered studs decouple the two
+    # faces even without a second gypsum layer (`library/assemblies.py`, no STC claimed,
+    # a comparable single-layer build lists around STC 48 against the partition's 36).
+    # Single 5/8" gypsum each face since 2026-08-30 (was two): the double layer only buys
+    # a few more points over the staggered studs' own decoupling, at a gypsum-heavy cost
+    # (`prices.toml`), so it was the more expensive half of the assembly to cut, not the
+    # fiberglass. It is 6.75" wide against the partition's 4.75", which the suite and the
+    # vanity split.
     Wall(uid="CSW145AAAA", tag="W-S-SN1", start_node="N-S-W2", end_node="N-S-V1",
-         assembly="INT_2X4_STAGGERED_DOUBLE_GWB", top=ft(9)),
+         assembly="INT_2X4_STAGGERED_GWB", top=ft(9)),
     Wall(uid="CSW146AAAA", tag="W-S-SN2", start_node="N-S-V1", end_node="N-S-D4",
-         assembly="INT_2X4_STAGGERED_DOUBLE_GWB", top=ft(9)),
+         assembly="INT_2X4_STAGGERED_GWB", top=ft(9)),
     # BEARING SINCE 2026-08-29, and for a POINT reaction, not a line load. FO-A-HALL
     # (plan/storeys/stair_hall_void.py) opens the attic deck over the stair hall, and the
     # attic partition W-A-HALL-S stands on the opening's doubled trimmer pair — which spans
@@ -349,9 +363,19 @@ WALLS = [
     # sits over W-M-HS4, which is D-M-LAUN's 4'-0" pocket and could not have taken a
     # continuous line load at all.
     #
-    # INT_2X4_PARTITION stays — continuous studs, so `structural.wet_wall_bearing` has no
-    # quarrel with it (unlike the three staggered walls on the x=10' line, which had to be
-    # retyped; see plan/assemblies.py's CATLIN_INT_2X6_BRG_PLUMBING).
+    # CATLIN_INT_2X6_BRG_PLUMBING since 2026-08-30 — plain INT_2X4_PARTITION until then, on
+    # the argument that `structural.wet_wall_bearing` has no quarrel with continuous studs.
+    # That argument still holds, but it missed what actually stands against this wall:
+    # `FX-S-SUITEBATH-LAV` backs onto it (10.5" south, at y=265.63") and `FX-S-SUITEBATH-
+    # TUBSH` closes against it too (`plan/fixtures.py`), so this is the suite bath's real
+    # wet wall, not W-S-SBS across the room. **Staggered studs are NOT the fix** —
+    # `structural.wet_wall_bearing` FAILs outright on a BEARING wall framed staggered
+    # (neither face's studs carry the plates' load); `CATLIN_INT_2X6_BRG_PLUMBING` is the
+    # x=10' line's own precedent for exactly this combination: continuous 2x6 studs plus the
+    # 5.5" fiberglass batt a staggered wall would have carried, so the wall gains the same
+    # `advisory.wet_wall_depth` allowance as W-S-DC2 without losing its load path. Total
+    # thickness grows 4.75" -> 6.77" (both faces move ~1" — check clearances at
+    # FX-S-SUITEBATH-LAV and FX-S-SUITEBATH-TUBSH after any further edit here).
     #
     # `stacks_on` names W-M-HS3 because the load path below has to be picked, not guessed:
     # the main storey carries an unbroken wall band on y=22'-4" from x=0 to x=18'
@@ -361,7 +385,7 @@ WALLS = [
     # to spare. W-M-HS4 is D-M-LAUN's 4'-0" pocket, which CLAUDE.md forbids putting
     # anything in.
     Wall(uid="CSW147AAAA", tag="W-S-SN3", start_node="N-S-D4", end_node="N-S-C2C",
-         assembly="INT_2X4_PARTITION", top=ft(9),
+         assembly="CATLIN_INT_2X6_BRG_PLUMBING", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-HS3"),
     Wall(uid="CSW148AAAA", tag="W-S-VE", start_node="N-S-V1", end_node="N-S-V2",
          assembly="INT_2X4_PARTITION", top=ft(9)),
@@ -390,17 +414,21 @@ WALLS = [
     # CATLIN_INT_2X6_BRG_PLUMBING is the same 6.77" total, so no face moves, no room area
     # changes, and FX-S-BATH1-LAV's `wall_ref` is untouched. Read that assembly's own note.
     #
-    # `stacks_on="W-M-STRW"` is MANDATORY, not decorative: both segments have two collinear
-    # candidates below — W-M-STRW (y 36'->26'-4") and W-M-STRW2 (y 26'-4"->25'-10") — and
-    # `resolve/stacking.py` raises `integrity.stack_ambiguous` as a hard ERROR without a
-    # tiebreaker. W-M-STRW is already BEARING, already a bearing ref of FO-S-STAIR, and
-    # already `stacks_on="W-B-STR"`, so the path runs footings -> W-B-STR -> W-M-STRW ->
-    # here -> attic joists, unbroken and already built. Its `alignment=face(...)` on a 6.75"
+    # `stacks_on="W-M-STRW"` is MANDATORY, not decorative: `resolve/stacking.py` walks each
+    # LOWER wall looking up for a collinear overlapping upper, and W-M-STRW (main, y
+    # 26'-6"..36') has TWO — both W-S-BA-E and W-S-BA-E1B sit on the same x=10' line above
+    # it, each overlapping it by more than the 2' minimum. That is what
+    # `integrity.stack_ambiguous` raises as a hard ERROR without a tiebreaker (W-M-STRW2,
+    # the short segment south of N-M-STRJ, is not a factor either way — at 5 3/8" it never
+    # clears that 2' minimum, above or below, so it never enters this resolution). W-M-STRW
+    # is already BEARING, already a bearing ref of FO-S-STAIR, and already
+    # `stacks_on="W-B-STR"`, so the path runs footings -> W-B-STR -> W-M-STRW -> here ->
+    # attic joists, unbroken and already built. Its `alignment=face(...)` on a 6.75"
     # assembly puts its axis on x=10'-0" exactly, inside `_axis_match`'s 1/2" tolerance.
     # ** ONLY ONE UPPER SEGMENT MAY CLAIM IT ** — the resolver links one upper wall per
     # lower wall (resolve/stacking.py) — so W-S-BA-E1B takes it and W-S-BA-E carries NO
     # `stacks_on` at all. That is a limit of the link, not a gap in the building: W-M-STRW
-    # runs the whole y 26'-4"..36'-0" line, so W-S-BA-E (y 33'-4"..36'-0") is standing on
+    # runs the whole y 26'-6"..36'-0" line, so W-S-BA-E (y 33'-4"..36'-0") is standing on
     # exactly the same wall its neighbour names. Do not "fix" it by pointing W-S-BA-E at
     # W-M-STRW too; that is the ambiguity the tiebreaker exists to resolve, from the other
     # side.
@@ -467,11 +495,17 @@ OPENINGS = [
     # Bifold closet door, DT-INT-BIFOLD56 (4'-8"), replacing the former bare RoughOpening.
     Door(uid="CSD213AAAA", tag="O-S-CLOSET", host="W-S-CLN", type_ref="DT-INT-BIFOLD56",
          position=from_node("N-S-D2", ft(1, 8))),                       # x 13'-9"
-    # The source's gap starts hard against the corner at x=9'-10 11/16"; ours starts 3"
+    # The source's gap starts hard against the corner at x=9'-10 11/16"; ours started 3"
     # further east so the leaf's king stud clears W-S-DC2's corner pack instead of
     # pinwheeling through it (test_wall_corner_and_opening_framing).
+    #
+    # +8" more since 2026-08-30: W-S-SBS retyped from INT_2X6_STAGGERED_PLUMBING to plain
+    # INT_2X4_PARTITION (the wet-wall duty moved to W-S-SN3), and the plain wall's module
+    # residue off N-S-D3 is 3.5", not the staggered wall's — `structural.door_framing_module`
+    # wanted this door's centre on 3.5" + n*16", and 9"-edge/24"-centre missed it, cutting an
+    # extra stud. 17" edge / 32" centre is the nearest legal station.
     Door(uid="CSD214AAAA", tag="D-S-SUITEBATH", host="W-S-SBS", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-D3", inch(9)), flip_hinge=True),                      # x 11'-5"
+         position=from_node("N-S-D3", inch(17)), flip_hinge=True),                     # x 12'-1"
     # 4 5/8" off N-S-V1, not the authored 3": W-S-SN1/SN2 became the 8" staggered sound
     # wall on 2026-08-21, so the node square this wall starts past grew from 2 3/8" to 4",
     # and at 3" the void's first inch was cut inside the corner (the IFC self-diff read the
@@ -656,21 +690,6 @@ OPENINGS = [
     # stud line instead of centering in the bay, breaking two studs and pulling in a
     # header/jacks a 14" RO should never need
     # (test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs).
-    Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3", type_ref="WT-1424-T",
-           position=from_node("N-S-CH2", ft(1, 4)), sill_height=ft(4)),
-    # Re-hosted off N-S-CH3 (2026-07-28) after the chase split W-S-W1 there. Centred
-    # y=31'-4" from then until 2026-08-21, when it columned with WIN-M-MUD — the same 14"
-    # unit at the same centre, and the west face's only true column before the 2026-08-15
-    # tee moves gave it two more.
-    #
-    # It is y=31'-0 7/8" now. The offset is still 1'-5" and that is the whole story: the
-    # chase's south corners went 3 1/8" south (see NODES), W-S-W1's stud grid went with
-    # them, and holding the offset lets the window ride south onto the SAME bay centre it
-    # always sat on. Holding the old y instead was tried and does not work — the window
-    # would then be 3.1" off a bay centre and break a stud, and structural.
-    # window_framing_module is explicit that no window move fixes an out-of-phase segment.
-    # So the column was spent rather than the framing. WIN-M-MUD did not follow it south:
-    # that one is centred on FURN-M-MUD-BENCH's aisle, which did not move.
     Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424-T",
            position=from_node("N-S-CH3", ft(1, 1.875)), sill_height=ft(4)),
     # Moved 29'-4" -> 28'-0" (2026-07-30 facade pass), then back to 29'-4" (2026-08-26)
@@ -900,15 +919,22 @@ FLOOR_OPENINGS = [
                           pt(ft(17, 8.625), ft(26, 0.375)),
                           pt(ft(17, 8.625), ft(35, 5.375)),
                           pt(ft(10, 3.375), ft(35, 5.375))),
-                 # Both long edges are carried by bearing wall, so neither needs a header:
-                 # W-M-STRW/STRW2 west, W-M-C5 east (which since 2026-07-28 starts at
-                 # N-M-C3 on the stair wall's line, so it still reaches this edge's south
-                 # end even though W-M-C4B under it is gone).
-                 # W-M-C5B joined the list 2026-08-24: the centre wall split at N-M-PAN1
+                 # East edge is carried by bearing wall, so it needs no header: W-M-C5
+                 # (which since 2026-07-28 starts at N-M-C3 on the stair wall's line, so it
+                 # still reaches this edge's south end even though W-M-C4B under it is gone),
+                 # plus W-M-C5B, joined 2026-08-24: the centre wall split at N-M-PAN1
                  # (y=32'-9") for RM-M-PANTRY, and this edge runs to y=35'-5 3/8", so the
                  # north 2'-8 3/8" of it is carried by the NEW segment. Named, not derived —
                  # without it structural.floor_opening_header emits a 9.4' LVL placeholder
                  # for an edge that is fully bearing-supported along its whole length.
+                 #
+                 # West edge: W-M-STRW covers 26'-6"..36'; W-M-STRW2, trimmed 2026-08-30 to
+                 # exactly the 5 3/8" between N-M-STRJ and this edge's own south end
+                 # (26'-0 3/8", fixed by the stair's tread count, not the wall grid), covers
+                 # the rest. Both are needed: drop either tag and this whole ~9'-4" edge
+                 # reads as unsupported, and structural.floor_opening_header emits a full
+                 # LVL header for it rather than the 5 3/8" that actually went missing — see
+                 # W-M-STRW2's comment in main.py.
                  bearing_refs=("W-M-STRW", "W-M-STRW2", "W-M-C5", "W-M-C5B")),
 ]
 
@@ -971,7 +997,8 @@ STAIR_GUARDS = [
 # ST-M2S handrails (R311.7.8): one wall-mounted rail per flight, graded by
 # code.R311_7_8_handrail via `serves_stair`, raked along each flight's nosing line
 # (`top_height` 34"-38"). Lower flight (east lane) rails on W-M-C5's stair face; upper
-# flight (west lane) rails on W-M-STRW2's face — each 2" off its wall (bracket standoff).
+# flight (west lane) rails on W-M-STRW's face (y 26'-10 3/8"..31'-10 3/8", well north of
+# W-M-STRW2's 5 3/8" stub) — each 2" off its wall (bracket standoff).
 # rail_count=1: a handrail, not a guard frame; role="handrail" keeps these out of the
 # R312.1.3 guard-infill census.
 STAIR_HANDRAILS = [

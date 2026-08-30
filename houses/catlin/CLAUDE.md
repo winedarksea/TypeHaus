@@ -281,12 +281,16 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   identical (6.77" both ways), so **no face moved, no room area changed, and
   `FX-S-BATH1-LAV`'s `wall_ref` is untouched.** The cost is real and is the honest price of
   the line: studs get bored where the hall bath's stack passes.
-  - `stacks_on` is MANDATORY on this line, not decorative. Both x=10' walls have two
-    collinear candidates below (`W-M-STRW` y 36'→26'-4" and `W-M-STRW2` y 26'-4"→25'-10")
-    and `integrity.stack_ambiguous` is a hard ERROR without a tiebreaker. `W-S-BA-E1B` names
-    `W-M-STRW`; **only one upper wall may claim one lower wall**, so `W-S-BA-E` carries none
-    at all and stands on the same wall regardless. Do not "fix" that by pointing it there too.
-  - Between y=22'-4" and 26'-4" the line has **no wall under it and can never have one** —
+  - `stacks_on` is MANDATORY on this line, not decorative. `W-M-STRW` (main, y 26'-6"→36')
+    has TWO collinear candidates above it — `W-S-BA-E` and `W-S-BA-E1B` both sit on the same
+    x=10' line — and `integrity.stack_ambiguous` is a hard ERROR without a tiebreaker.
+    `W-S-BA-E1B` names `W-M-STRW`; **only one upper wall may claim one lower wall**, so
+    `W-S-BA-E` carries none at all and stands on the same wall regardless. Do not "fix" that
+    by pointing it there too. (`W-M-STRW2`, the 5 3/8" stub south of `W-M-STRW` down to
+    `FO-S-STAIR`'s edge, is not part of this: it is too short to clear `resolve/stacking.py`'s
+    2' minimum overlap either as an upper or a lower candidate, so it never resolves a stack
+    edge — its `stacks_on="W-B-STR3"` is honest geometry, not a load path.)
+  - Between y=22'-4" and 26'-6" the line has **no wall under it and can never have one** —
     that 4'-0" gap is the mouth of the hall stub you stand in to open `D-S-BATH1`. `BM-S-BATH-E`
     is there instead: `3-1.75x11.875 LVL`, and **the ply count is a BEARING-WIDTH dimension,
     not a bending one.** The demand is ~600 lb; two plies carry it many times over but are
@@ -443,10 +447,13 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     face 4 1/2" short of that wall's end, so **`N-A-WW-N` carries `open_end=True`** rather than
     splitting off a stub nobody can build. `RB-HOUSE.bearing_refs` names all FIVE centreline
     segments and `test_ridge_beam_depth.py` asserts the exact tuple.
-  - **The ERV hoods MOVED, 12'/24' → 8'/28'.** `EQ-A-ERV-HOOD-OA` stood inside the void's plan
-    footprint with 2'-0" of 6" duct at +276" over a 10'-deep hole — the house's fresh-air
-    INTAKE, over an open well, unreachable. 8'/28' keeps the gable mirror (8+28=36), puts the
-    hood back over the pocket's deck, and takes M1602.2 separation from 12'-0" to 20'-0".
+  - **The ERV hoods LEFT THE GABLE ENTIRELY on 2026-08-30**, after two passes moving them
+    along it (12'/24' → 8'/28' on 2026-08-29, to get the INTAKE off `FO-A-HALL`'s open well).
+    The gable was never survivable: `DU-ERV-EA`'s 18'-0" leg at +23'-0" ran through the rough
+    openings of **both** north-gable windows, 8" above a 22'-0" sill in a 25'-0" head, across
+    2'-6" of each unit — and `CD-A-DATA-NE`, rerouted into the same band, crossed `WIN-A-N2`
+    too. They are now stacked on the **west face at the NW chase**, intake at +4'-0" on main
+    and discharge at +17'-0" on second. See `plan/mep_erv.py` and **Mechanical** below.
   - **`DU-A-ERV-R-BED3` and `CD-A-DATA-NE` both go SOUTH**, and there is no alternative: the
     void spans the full band to the north gable (`FO-A-HALL`'s maxy IS `W-A-N2`'s gwb face), so
     every west→east route north of the studio is severed. BED3 goes 32'-8" → ~53'-6" and
@@ -579,8 +586,11 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   - **It is ordered as three 12s, not one 36' stick.** A beam supported everywhere splices
     over any bearing point, so `FramedMember.continuously_supported` (derived from the refs
     actually reaching) sends it to the stock ladder — same lineal feet, no offcut at 36', and
-    a 92 lb ply instead of a 277 lb one (36' at the 7.7 lb/ft/ply this section runs; the
-    153 lb in `notes/ridge_beam_detail.md` is the 20-FOOTER, not the one-piece alternative).
+    a 106 lb ply instead of a 317 lb one (36' at 8.8 lb/ft/ply — this section's own weight,
+    not `notes/ridge_beam_detail.md`'s 7.7 lb/ft/ply, which was struck for the retired 14"
+    depth; scale by depth, width is unchanged. A 20' ply at the same rate is 176 lb).
+    Every piece here, at any depth this beam has been, is a two-framer carry — **no ply of
+    this beam has ever needed a crane, including the 36' one-piece alternative it avoids.**
     The cap is handling, not stock: `_MAX_SPLICE_PIECE_FT`
     in `takeoff/framing.py`. Stagger the plies (6+12+12+6 against 12+12+12).
     `structural.ridge_beam_depth` grades the depth; nothing did before.
@@ -945,13 +955,31 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     conduits: a row of three at y=33'-7 1/2" and a fourth at (5", 35'-6"), ~25% fill of a
     30 1/8" x 32 3/8" shaft. The arrangement is in `plan/mep_erv.py` and **nothing else
     should be added to that chase.**
-  - **The two outdoor hoods are on the north gable at x=12'-0" and x=24'-0", mirrored about
-    the ridge.** IRC M1602.2 wants 10 ft between an intake and a discharge and RM-M-MECH is
-    5'-11" x 2'-7", so no pair of hoods near the shaft can make the distance — the gable
-    costs ~30 ft of insulated riser each way and buys 12'-0" of separation, 25'-10" above
-    grade, and distance from both the garage and `EQ-M-HP3-OD`'s ground-level slot.
-    `mep.erv_outdoor_terminals` grades all three of those; the mirror about x=18'-0" is the
-    facade rule (see **Gables**) and nothing but this line enforces it.
+  - **The two outdoor hoods are STACKED on the west face at the NW chase** (2026-08-30):
+    `EQ-M-ERV-HOOD-OA` intake at (0'-0", 33'-11") +4'-0", `EQ-S-ERV-HOOD-EA` discharge at
+    (0'-0", 34'-8") +17'-0". 13'-0" apart, **exhaust over intake**, both south of
+    `TR-RF-LEADER-W` at y=35'-6", on a facade that is blank on both storeys.
+    - They were on the north gable at 8'/28' until then, and the argument for the gable did
+      not survive measurement. It said "RM-M-MECH is 5'-11" x 2'-7", so no pair of hoods near
+      the shaft can make ten feet" — the room is really **5'-3" x 1'-11"** (`resolve/rooms.py`
+      polygonizes from wall AXES and insets only by the lining, so an exterior-wall room reads
+      6" past its own interior face), and the conclusion was only ever true of a HORIZONTAL
+      pair. It also said the main storey was too low at "20"-34" above grade" — that is the
+      13 7/16" RIM BAND, not the 10'-0" wall; the interior band is 2'-10"..11'-10" above grade.
+    - **Vertical separation is what makes it legal, twice over.** `mep.erv_outdoor_terminals`
+      measures a 3-D distance, and 13'-0" of rise clears its 10'-0" alone. Independently, IRC
+      M1506.3 waives the ten feet outright "where the exhaust opening is located not less than
+      3 feet above the air intake opening" — the engine does not implement that exception and
+      does not need to here, but it is why the exhaust is the UPPER one and must stay so.
+    - Cost: **−52.6 LF** of R-8 wrapped 6" duct (`DU-ERV-OA` 32.3→8.3, `DU-ERV-EA` 49.6→21.0),
+      because both used to climb 24'-6" to the attic. It also empties the chase above the
+      second storey, where four ducts used to run and now two do.
+    - A 6" duct with R-8 wrap is ~8" OD against a 5 1/2" stud cavity, so **neither hood may
+      turn and travel inside the wall** — each is a straight through-wall penetration. That is
+      the one part of the old west-facade objection that stands, and it only bites a run that
+      travels ALONG the facade. Coming straight out of the chase, neither does.
+    - The gable mirror about x=18'-0" no longer applies to the hoods (it is a facade rule for
+      a gable, and they are not on one). `test_catlin_erv.py` now pins the stack order instead.
 - **A duct or a machine inside a modeled `Soffit` NAMES IT, and the clear section is
   DERIVED** (2026-08-25). `DuctRun.soffit_ref` and `Equipment.soffit_ref` mirror `floor_ref`;
   `mep.duct_soffit_occupancy` derives the cavity from the soffit's own drop, `FramingSpec`

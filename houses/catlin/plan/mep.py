@@ -52,6 +52,11 @@ MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
                  *mep_supply_devices.SUPPLY_DEVICES_GARAGE,
                  *mep_hvac.DUCTS_MAIN,
                  *mep_erv.EQUIPMENT_ERV_MAIN,
+                 # The outdoor-air INTAKE hood, on the west face of RM-M-MECH since
+                 # 2026-08-30. Both hoods used to be filed on `attic` together; they
+                 # are on different storeys now because they are stacked, which is
+                 # what makes the pair legal without ten feet of facade.
+                 *mep_erv.EQUIPMENT_ERV_HOODS_MAIN,
                  *mep_erv.DUCTS_ERV_RISERS,
                  *mep_registers.REGISTERS_MAIN]
 
@@ -78,6 +83,8 @@ BASEMENT_ELEMENTS = [*mep_drainage.DRAINS,
                      *mep_registers.REGISTERS_BASEMENT]
 SECOND_ELEMENTS = [*mep_hvac.DUCTS,
                    *mep_erv.EQUIPMENT_ERV_SECOND,
+                   # The stale-air DISCHARGE hood, 13 ft over the intake.
+                   *mep_erv.EQUIPMENT_ERV_HOODS_SECOND,
                    # Filed here, not on `main`, though their manifolds hang in RM-M-MECH one
                    # storey down: these run in FS-S-WEST's cavity and the bay check matches a
                    # segment against sibling floors ON THE DUCT'S OWN STOREY.
@@ -99,7 +106,6 @@ ATTIC_ELEMENTS = [*mep_venting.VENT_BRANCHES_ATTIC,
                   # two accessible stops, which really do stand on the attic deck, stay.
                   *mep_supply_devices.STUDIO_SUPPLY_DEVICES,
                   *mep_erv.EQUIPMENT_ERV_ATTIC,
-                  *mep_erv.EQUIPMENT_ERV_HOODS,
                   *mep_erv.DUCTS_ERV_ATTIC,
                   *mep_erv.DUCTS_ERV_MIX_FEED,
                   *mep_electrical.NEMA_BOX,

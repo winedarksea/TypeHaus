@@ -314,16 +314,15 @@ NODES = [
     # BM-M-HALL, not another wall, carries the centre line south of it.
     Node(uid="CMN014AAAA", tag="N-M-C3", position=pt(ft(18), ft(25, 10)), open_end=True),
     # Interior tees
-    # N-M-STR1 and N-M-C3B moved north from y=25'-0" to y=25'-10" with W-M-STRS (2026-07-28),
-    # and N-M-C3B then retired into N-M-C3: with the centre line open between them they were
-    # two names for the same point. It was the tee where the stair wall branched off
-    # W-M-STRW2; with W-M-STRS removed (2026-08-24) it is W-M-STRW2's free south end, hence
-    # `open_end` — one wall edge, and honestly so. The y stays at 25'-10" rather than pulling
-    # back to the well's south edge (26'-0 3/8"): the 2 3/8" of wall past the opening is the
-    # jamb return the stair face wants, and moving it would drag W-M-STRW2's alignment and
-    # the exposed-stud corner detail with it for no gain.
-    Node(uid="CMN015AAAA", tag="N-M-STR1", position=pt(ft(10), ft(25, 10)), open_end=True),
-    # W-M-STOS2's tee into the stair wall line, and therefore the W-M-STRW/W-M-STRW2 split.
+    # N-M-STR1 moved 25'-10" -> 26'-0 3/8" on 2026-08-30, onto FO-S-STAIR's own south edge
+    # exactly — the last of the wall past that edge was a jamb return with no bearing job,
+    # and `structural.floor_opening_header` doesn't care about trim, only about coverage.
+    # W-M-STRW2 (below) is now as short as the opening's own bearing sliver requires and no
+    # shorter; `open_end` stands for the same reason it always did — one wall edge, honestly.
+    Node(uid="CMN015AAAA", tag="N-M-STR1", position=pt(ft(10), ft(26, 0.375)), open_end=True),
+    # W-M-STOS2's tee into the stair wall line, and the W-M-STRW/W-M-STRW2 split:
+    # `resolve/topology.py` builds junctions from wall *endpoints* only, so the tee needs its
+    # own segment here regardless of how short W-M-STRW2 south of it gets.
     Node(uid="CMN024AAAA", tag="N-M-STRJ", position=pt(ft(10), ft(26, 6))),
     # W-M-BAE shifts 2' east (2026-07-28); the mudroom door remains at its existing
     # 6" tee clearance.
@@ -544,18 +543,27 @@ WALLS = [
          assembly="CATLIN_INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CN"),
     # --- stair / storage block --------------------------------------------------
-    # This wall line carries the cut second-floor joists and stacks over the basement
-    # concrete stair wall. Split at two tees, N-M-STRJ and N-M-STR1 (6" apart, = W-M-STRW2):
-    # `resolve/topology.py` builds junctions from wall *endpoints* only, so a tee needs its
-    # own segment or the branch gets no framing.
+    # W-M-STRW carries the cut second-floor joists and stacks over the basement concrete
+    # stair wall — footings -> W-B-STR -> W-M-STRW -> W-S-BA-E1B -> attic joists, one
+    # continuous bearing path (CLAUDE.md); W-M-STRW2 below is not part of that path (it
+    # stacks on W-B-STR3 instead, and nothing above claims it) and exists purely to close
+    # FO-S-STAIR's bearing coverage for the 5 3/8" its south edge (26'-0 3/8", fixed by the
+    # stair's own tread count) runs past this wall's end.
+    #
+    # Split at N-M-STRJ, not because the bearing PATH needs two pieces, but because
+    # `resolve/topology.py` builds junctions from wall *endpoints* only: W-M-STOS2 tees into
+    # this line at N-M-STRJ, so W-M-STRW has to end there for the tee to frame. W-M-STRW2
+    # picks the line back up south of it, trimmed 2026-08-30 to exactly the opening's edge —
+    # the 2 3/8" it used to run past that as a jamb return was pure trim, not bearing, and
+    # `structural.floor_opening_header` only cares about coverage. Shorten it further (or
+    # delete it) and the whole ~9'-4" west edge reads as unsupported and gets a full LVL
+    # header it does not need for 90% of its length — see FO-S-STAIR in second.py.
     #
     # Both segments are CATLIN_MUDROOM_INT_2X6_EXPOSED, appearance-grade DF studs open to the
     # mudroom (coat nooks) with 3/4" cabinet plywood on the stair face — `interior_room` picks
     # the mudroom side as layer 0. Until 2026-07-30 the mudroom segment was plain
     # CATLIN_INT_2X6_BRG (spf vs. df-select-s4s), which `integrity.junction_fallback` flagged
-    # at N-M-STRJ; it then flagged the mixed-assembly L at N-M-STR1, where the 2x4 partition
-    # W-M-STRS died into this wall's end stud. That L went with W-M-STRS on 2026-08-24 —
-    # N-M-STR1 is a free end now and the finding is gone with the junction.
+    # at N-M-STRJ.
     #
     # ALIGNMENT: this stack is 6 1/4" vs. CATLIN_INT_2X6_BRG's 6 3/4". The axis is pinned
     # 3 3/8" inboard of the plywood's stair face (not centred) because FO-S-STAIR's west edge
@@ -570,15 +578,16 @@ WALLS = [
          alignment=face("ply-stair-ext", offset=inch(-3.375)),
          interior_room="RM-M-MUDROOM",
          structural_role=StructuralRole.BEARING, stacks_on="W-B-STR"),
-    # This segment's west face used to show only 1 1/4" — between W-M-STOS2's south face and
-    # W-M-STRS's north face. W-M-STRS is gone (2026-08-24) and the face now runs a full 6" to
-    # the free end at N-M-STR1, in the open at the head of the stairs. The exposed
-    # appearance-grade studs still read as the mudroom wall's corner return turning into the
-    # stairwell, which is the reason this assembly runs the whole line. `interior_room`
-    # still names the mudroom: the field only picks which side layer 0 faces, and the
-    # mudroom seed is on the correct (west) side of this segment's midpoint too.
-    # stacks_on W-B-STR3 since 2026-08-23: W-B-STR was split at y=31'-0" for the ESS
-    # closet's south partition, and this 6" segment sits wholly south of that line.
+    # 5 3/8" — trimmed 2026-08-30 from the old 8" (freed end at 25'-10", a jamb return past
+    # FO-S-STAIR's edge with no bearing job). `interior_room` still names the mudroom: the
+    # field only picks which side layer 0 faces, and the mudroom seed is on the correct
+    # (west) side of this segment's midpoint too. stacks_on W-B-STR3 since 2026-08-23:
+    # W-B-STR was split at y=31'-0" for the ESS closet's south partition, and this segment
+    # sits wholly south of that line — though in practice `resolve/stacking.py` never
+    # resolves a stack edge for either end of this wall at all, upper or lower: at 5 3/8"
+    # it is well under the 2' minimum overlap the pass requires, so it was never part of
+    # the vertical load path either as W-M-STRW2 (this wall) or its predecessor. Its job is
+    # FO-S-STAIR's bearing_refs, not the stack.
     Wall(uid="CMW134AAAA", tag="W-M-STRW2", start_node="N-M-STRJ",
          end_node="N-M-STR1", assembly="CATLIN_MUDROOM_INT_2X6_EXPOSED", top=ft(9),
          alignment=face("ply-stair-ext", offset=inch(-3.375)),
@@ -646,11 +655,21 @@ WALLS = [
     Wall(uid="CMW127AAAA", tag="W-M-BA2E2", start_node="N-M-D2",
          end_node="N-M-D3", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
     # W-M-LS and W-M-CLN2 (below) are RM-M-STUDY's west and south walls, and the study is
-    # now a built-in call booth (FURN-M-STUDY-BENCH / -DESK). STAGGERED_DOUBLE_GWB, STC 52,
-    # not INT_2X4_RC_DOUBLE_GWB, which reaches STC 54 in 1 1/2" less room: a resilient wall
-    # you fasten millwork to is rigidly bridged back to no better than the bare STC 36, and
-    # FURN-M-STUDY-DESK's cleats are screwed THROUGH W-M-CLN2. Staggered studs take blocking
-    # and screws anywhere. Centred (`alignment=None`), so each face moves 1 5/8".
+    # now a built-in call booth (FURN-M-STUDY-BENCH / -DESK). STAGGERED, originally
+    # STAGGERED_DOUBLE_GWB at STC 52, not INT_2X4_RC_DOUBLE_GWB, which reaches STC 54 in
+    # 1 1/2" less room: a resilient wall you fasten millwork to is rigidly bridged back to
+    # no better than the bare STC 36, and FURN-M-STUDY-DESK's cleats are screwed THROUGH
+    # W-M-CLN2. Staggered studs take blocking and screws anywhere. Centred
+    # (`alignment=None`), so each face moved 1 5/8" off the bare-partition retype.
+    #
+    # ** RETYPED AGAIN, TO THE SINGLE-GWB INT_2X4_STAGGERED_GWB, 2026-08-30. ** Same
+    # staggered framing, same 3.5" fiberglass, one 5/8" gypsum layer per face instead of
+    # two: the double layer was the more expensive half of the assembly to cut for the
+    # material cost, not the insulation (`library/assemblies.py`). No STC is claimed for
+    # the single-layer build, but the staggered studs are most of what the double layer's
+    # STC 52 bought over the bare partition's 36 in the first place — see the library note.
+    # 8.0" -> 6.75", so each face moved back 0.625" toward its own room; RM-M-LAUNDRY and
+    # RM-M-CLOSET's numbers quoted below are the double-gwb figures, 0.625" shy of current.
     #
     # ** W-M-LS NO LONGER CARRIES ANY MILLWORK, AND THE RETYPE STILL STANDS. ** The owner
     # turned the booth 90 degrees the same day (plan/furniture_types.py): the bench moved off
@@ -661,7 +680,7 @@ WALLS = [
     # Since 2026-08-29 it also carries DU-M-ERV-R-STUDY's riser and REG-M-SUP4 in its 5 1/2"
     # cavity, which only a staggered or a 2x6 wall has room for.
     Wall(uid="CMW128AAAA", tag="W-M-LS", start_node="N-M-E2",
-         end_node="N-M-E3", assembly="INT_2X4_STAGGERED_DOUBLE_GWB", top=ft(9)),
+         end_node="N-M-E3", assembly="INT_2X4_STAGGERED_GWB", top=ft(9)),
     # The closet's north line, y=18'-0" since 2026-08-03 (was 17'-4"). See the NODES note
     # over N-M-D2: the 8" came out of RM-M-LAUNDRY and RM-M-STUDY, and the laundry's 40"
     # stacked pair is what says it could not be more.
@@ -687,14 +706,16 @@ WALLS = [
     #
     # Centred like CLN2, so both faces move 1 5/8" — RM-M-LAUNDRY goes 47 1/4" deep to
     # 45 5/8", and FX-M-LAUNDRY-SINK, ED-M-LAUNDRY-RC1/DR1 and FURN-M-LAUNDRY-RACK all
-    # followed it north. Nothing stood on the closet face.
+    # followed it north. Nothing stood on the closet face. (Both figures are the
+    # double-gwb retype; the single-gwb retype above gave 5/8" back — RM-M-LAUNDRY reads
+    # 46 1/4" deep today, and the closet boundary below reads 17'-8 5/8".)
     Wall(uid="CMW129AAAA", tag="W-M-CLN", start_node="N-M-D2",
-         end_node="N-M-E2", assembly="INT_2X4_STAGGERED_DOUBLE_GWB", top=ft(9),
+         end_node="N-M-E2", assembly="INT_2X4_STAGGERED_GWB", top=ft(9),
          stacks_on="W-B-CW2"),
     # Staggered per the W-M-LS note. `stacks_on` MUST stay: it is the tiebreaker on the
     # y=18' run and dropping it re-arms integrity.stack_ambiguous.
     Wall(uid="CMW130AAAA", tag="W-M-CLN2", start_node="N-M-E2",
-         end_node="N-M-E4", assembly="INT_2X4_STAGGERED_DOUBLE_GWB", top=ft(9),
+         end_node="N-M-E4", assembly="INT_2X4_STAGGERED_GWB", top=ft(9),
          stacks_on="W-B-CW2"),
     # --- RM-M-BATH2 drop-in tub deck knee walls (2026-08-29) ---------------------
     # The two framed sides of the box FX-M-BATH2-TUB drops into. 2x4 at 16" o.c. with

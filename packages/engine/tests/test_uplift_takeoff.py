@@ -269,11 +269,14 @@ def test_authored_post_beam_straps_are_not_derived_a_second_time(catlin_model_ro
     row = post_beam_strap_rows(catlin_model_ro, RULES)[0]
     for beam in AUTHORED_POST_BEAM_STRAPS:
         assert beam not in row["basis"], f"{beam} is authored a KBS1Z and was derived again"
-    # What is left is the sunken garden, which authors none (three balcony beams and four
-    # girts, each landing on two of the six pillars = 14), plus the breezeway's two FLOOR
-    # beams on four posts (4) — those share their posts with the strapped roof beams, which
-    # is exactly why the guard has to key on the tag PAIR and not on the post alone.
-    assert row["count"] == 18
+    # What is left is the sunken garden, which authors none (three balcony beams, each
+    # landing on two of the six pillars = 6 — the two E-W brace rails that used to add
+    # eight more of these dropped out 2026-08-30: they carry ``bearing_refs=()``, since the
+    # "collision" at the centre posts was a bookkeeping fiction and not real beam-on-post
+    # bearing), plus the breezeway's two FLOOR beams on four posts (4) — those share their
+    # posts with the strapped roof beams, which is exactly why the guard has to key on the
+    # tag PAIR and not on the post alone.
+    assert row["count"] == 10
     assert row["part_number"] == "KBS1Z"
 
 

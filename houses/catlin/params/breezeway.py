@@ -440,7 +440,7 @@ ROOF_BEAMS = [
 # Three 2x6 rafters at ~1'-9" o.c. across the 3'-7" between the beams, seated on top of
 # them. A Roof element cannot be used here: resolve/roof_geometry.py only accepts Wall
 # bearing refs, and a FloorSystem is pinned to its storey elevation — an absolute-elevation
-# Beam is the idiom for framing that belongs to no storey datum (cf. BM-SG-GIRT-R/F).
+# Beam is the idiom for framing that belongs to no storey datum (cf. BM-SG-RAIL-R/F).
 RAFTERS = [
     Beam(uid=f"BWRF0{i}AAAA", tag=f"BM-BW-R{i}", start_node=f"N-BW-R{i}W",
          end_node=f"N-BW-R{i}E", size="2x6", top_elevation=ft(_RAFTER_TOP),

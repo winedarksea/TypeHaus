@@ -1759,13 +1759,13 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     beams = {el.tag for el in elements if el.element_kind == "Beam" and el.tag.startswith("BM-SG-")}
     assert {"PT-SG-COL", "PT-SG-FCOL"} <= posts  # sonotube + front square column
     assert len([t for t in posts if t.startswith("PT-SG-B")]) == 6  # 6x6 pillars
-    # 2 LVL back beams + 2 LVL front beams + 3 double-2x10 N-S balcony beams + 4 E-W girt
-    # segments (two per pillar row, butting the beams; the girts give the freestanding
-    # balcony a member to brace against in its second principal direction).
-    assert len(beams) == 11
+    # 2 LVL back beams + 2 LVL front beams + 3 double-2x10 N-S balcony beams + 2 continuous
+    # E-W brace rails (one per pillar row, face-bolted to all three posts in it; the rails
+    # give the freestanding balcony a member to brace against in its second principal
+    # direction). The four E-W girts these replaced (2026-08-30) were two segments per row.
+    assert len(beams) == 9
     assert {"BM-SG-BKW", "BM-SG-BKE", "BM-SG-FRW", "BM-SG-FRE"} <= beams
-    assert {"BM-SG-GIRT-RW", "BM-SG-GIRT-RE",
-            "BM-SG-GIRT-FW", "BM-SG-GIRT-FE"} <= beams
+    assert {"BM-SG-RAIL-R", "BM-SG-RAIL-F"} <= beams
 
     # Both exterior decks carry their walking surface, and both do it the same way now: the
     # plank is the floor system's own deck sheet, so the surface follows the framing instead

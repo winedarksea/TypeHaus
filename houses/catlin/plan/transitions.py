@@ -75,7 +75,11 @@ TRANSITIONS = (
                    "storey_stack:rim:CATLIN_INT_2X6_BRG_PLUMBING|CATLIN_MUDROOM_INT_2X6_EXPOSED",
                    # W-S-BD-N1B over W-M-STOS2, the other half of the same retype.
                    "storey_stack:rim:CATLIN_INT_2X6_BRG_PLUMBING|INT_2X4_PARTITION",
-                   "storey_stack:rim:INT_2X4_PARTITION",
+                   # ...|INT_2X4_PARTITION alone (no pair) was here until 2026-08-30: it was
+                   # W-S-SN3 stacking on W-M-HS3, both then INT_2X4_PARTITION. SN3 retyped to
+                   # CATLIN_INT_2X6_BRG_PLUMBING for FX-S-SUITEBATH-LAV/-TUBSH's wet-wall
+                   # depth (plan/storeys/second.py), so that stack now derives the paired key
+                   # already unstarred just above.
                    "storey_stack:rim:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",
                    "storey_stack:rim:INT_2X4_PARTITION|INT_2X4_STAGGERED_DOUBLE_GWB",
                    # The plant room's two rim conditions are drawn by TR-CATLIN-PLANT-RIM

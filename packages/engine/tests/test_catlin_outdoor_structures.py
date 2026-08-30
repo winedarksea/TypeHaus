@@ -205,12 +205,35 @@ def test_the_front_pillar_tops_are_roofed_by_the_beams_that_land_on_them(
         beam = _solid(catlin_model, beam_tag)
         assert min(p[1] for p in beam.outline) < min(p[1] for p in post.outline), tag
 
-    # The girts are the row, so they came north with it — a girt left on the old line would
-    # have been standing off the back of its own posts.
-    girt = _solid(catlin_model, "BM-SG-GIRT-FE")
+    # The rail is face-bolted to the row's north face, not seated on the post tops the way
+    # the old girts were — so it is no longer CONTAINED within a post's own Y-footprint. It
+    # lies wholly north of (touching, not overlapping) the row's north face.
+    rail = _solid(catlin_model, "BM-SG-RAIL-F")
     bf2 = _solid(catlin_model, "PT-SG-BF2")
-    assert min(p[1] for p in bf2.outline) < min(p[1] for p in girt.outline)
-    assert max(p[1] for p in girt.outline) < max(p[1] for p in bf2.outline)
+    assert min(p[1] for p in rail.outline) == pytest.approx(max(p[1] for p in bf2.outline))
+
+
+def test_no_balcony_pillar_top_carries_more_than_one_member(catlin_model) -> None:
+    """Every balcony pillar top carries exactly one bearing member — its own N-S beam.
+
+    The retired E-W girts claimed a ``bearing_refs`` relationship with the pillars they
+    crossed that was mostly a bookkeeping fiction — the girt nodes butted the beam's SIDE
+    face, not the post — and it billed a KBS1Z strap at joints that were not real
+    beam-on-post bearing (``takeoff/uplift_joints.py::post_beam_strap_rows``). The two
+    brace rails that replaced them carry ``bearing_refs=()`` on purpose. This is the
+    durable regression guard for the whole redesign: no rail may ever claim a post, and no
+    post may ever gain a second bearing member.
+    """
+    pillar_tags = ("PT-SG-BR1", "PT-SG-BR2", "PT-SG-BR3",
+                   "PT-SG-BF1", "PT-SG-BF2", "PT-SG-BF3")
+    beams = [el for el in catlin_model.plan.all_elements()
+             if getattr(el, "tag", "").startswith("BM-SG-")]
+    for tag in pillar_tags:
+        bearing = [b.tag for b in beams if tag in getattr(b, "bearing_refs", ())]
+        assert len(bearing) == 1, (tag, bearing)
+    for beam in beams:
+        if beam.tag.startswith("BM-SG-RAIL-"):
+            assert beam.bearing_refs == (), beam.tag
 
 
 def test_the_front_column_is_centred_on_the_span_its_top_has_to_reach(

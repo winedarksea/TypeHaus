@@ -902,9 +902,32 @@ PV_JBOX = [
     # ** IT SITS ON W-A-N2B NOW, NOT W-A-N2 ** — the north gable split at x=10'-0" on
     # 2026-08-29 and 11'-0" is east of that. test_catlin_outdoor_structures.py names the
     # wall it must ride below; that assertion follows the box.
+    # ** MOVED AGAIN, 11'-0" -> 10'-2", ON 2026-08-30: x=11'-0" IS INSIDE A WINDOW. **
+    # The 2026-08-29 move solved the rake and walked into WIN-A-N1, whose rough opening is
+    # x 10'-9"..13'-3" (framing bumper 10'-7"..13'-5"), sill +22'-0", head +25'-0". At x=11'-0"
+    # this box hangs on the facade 3" inside that window's west jamb with its centre 6" over
+    # the head, and CD-A-PV-EAST's riser clipped the opening's top corner for 3" reaching it.
+    # `mep.run_through_opening` found the conduit; the box was found by looking at why.
+    #
+    # Both constraints are satisfiable at once and the band is narrow. The rake wants
+    # x >= 9'-1 1/4" (the gable plane is 20'-11 3/8" + x/2, and this box needs 25'-6"); the
+    # window wants x <= 10'-7" or x >= 13'-5". Those do not overlap at 25'-6": the ROOF
+    # UNDERSIDE (20'-1 1/2" + x/2, which is the plane `integrity.element_above_roof` reads,
+    # and is a foot below the cladding plane the 2026-08-29 note reasoned from) needs
+    # x >= 10'-10" to carry a 25'-6" riser, and the window starts at 10'-9". **So the box
+    # drops to 25'-0" as well as moving to 10'-2"**, where the underside is 25'-4" and there
+    # is 4" of clearance. On the facade it is then wholly west of the window rather than
+    # perched over its corner, which is the better elevation anyway.
+    #
+    # Going east instead (x >= 13'-7") clears the window at the original 25'-6" and costs
+    # 2'-6" of 1 1/2" EMT to reach a worse station: further from VR-M-RADON-VENT's riser,
+    # and out over the stair void's bay.
+    #
+    # Still on W-A-N2B, which spans x 18'-0"->10'-0" — 10'-2" is 2" east of that split, so
+    # test_catlin_outdoor_structures.py's wall assertion is unchanged.
     ElectricalDevice(uid="CEE014AAAA", tag="ED-A-PV-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(11), ft(36, 10.25)), type_ref="ED-T-PV-JB", circuit="CKT-ESS-GRID",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
+                     position=pt(ft(10, 2), ft(36, 10.25)), type_ref="ED-T-PV-JB", circuit="CKT-ESS-GRID",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
 ]
 # ** CN-A-PV-CLAMP is GONE (2026-08-26), for the same reason as CN-A-NEMA-CLAMP **
 # (plan/mep_electrical.py, which carries the full note). It was a plain S-5! seam clamp on
@@ -956,10 +979,13 @@ CONDUIT_TRUNKS = [
     # stops at y=35'-5 3/8" and W-A-N2B's gwb face starts at y=35'-5 3/8" too, so between the
     # hole and the wall there is nothing at all. It is 1 1/2" EMT in a 5 1/2" stud — a 2"
     # bore, 36% of the depth, inside R502.8's 40% for a bored hole. **+1.33 LF.**
+    #
+    # ** THE RISER WAS 3" INSIDE WIN-A-N1 (fixed 2026-08-30). ** It follows ED-A-PV-JB west
+    # to x=10'-2" and down to 25'-0"; the box's own note carries why that station. **-1'-0".**
     ConduitRun(uid="XJR4KE400J", tag="CD-A-PV-EAST", trade_size=inch(1.5),
                path=(pt(ft(1, 6), ft(34, 6)), pt(ft(9, 6), ft(34, 6)),
-                     pt(ft(9, 6), ft(35, 10)), pt(ft(11), ft(35, 10))),
-               start_elevation=ft(20, 6), end_elevation=ft(25, 6),
+                     pt(ft(9, 6), ft(35, 10)), pt(ft(10, 2), ft(35, 10))),
+               start_elevation=ft(20, 6), end_elevation=ft(25),
                from_ref="CD-B-ATTIC-RISER", to_ref="ED-A-PV-JB"),
     # --- the backup microgrid's three raceways (2026-08-02) --------------------------
     #
@@ -1128,12 +1154,30 @@ ATTIC_DATA_TRUNKS = [
     # and it leaves a 6" insulated duct strapped to the gable where it belongs instead of
     # hanging it 10" off the wall over the void. It also keeps 1 5/8" from CD-A-PV-EAST,
     # which shares this cavity at y=35'-10" for its last 1'-6".
+    # ** REROUTED 2026-08-30 WITH THE AP IT FEEDS — OFF THE GABLE, DOWN THE POCKET. **
+    # The gable route this replaced was itself a reroute, and it traded one defect for
+    # another: it left the FO-A-HALL detour behind and then ran 21'-0" through the north
+    # gable's stud cavity, climbing 20'-6" -> 24'-0", which put it inside WIN-A-N2's rough
+    # opening (x 22'-9"..25'-3", sill +22'-0", head +25'-0") at +23'-3". Nothing caught it,
+    # for the same reason nothing caught DU-ERV-EA in the same band: no check in the engine
+    # grades a run against an opening.
+    #
+    # It now goes south instead of east. Out of the chase at (2'-0", 34'-6") on the attic
+    # deck at +20'-6", straight down the RM-A-POCKET side of the wall line at x=2'-0" to
+    # y=22'-6", then into W-A-STU-N's sole plate and up its 3 1/2" cavity to the AP at
+    # +23'-0". **29.58 -> 20.0 LF, 3 elbows -> 1.**
+    #
+    # The x=2'-0" lane is clear of both FS-ATTIC deck voids (x 21'-2"..35'-5 3/8" / y 5'-9 5/8"
+    # ..8'-9 5/8", and x 10'-0"..18'-0" / y 22'-6 3/8"..35'-5 3/8"), and it parallels
+    # DU-A-ERV-R-ATTIC and -STUBATH, which take x=1'-0" at +20'-4" — 1'-0" of plan separation
+    # and 2" of elevation. A 3/4" EMT in a 2x4 stud is a 1" bore, 29% of depth, inside R602.6
+    # either way, and the cavity is mineral wool with no other service in it.
     ConduitRun(uid="CDT012AAAA", tag="CD-A-DATA-NE", trade_size=inch(0.75),
                service=Service.DATA,
-               path=(pt(ft(2), ft(34, 6)), pt(ft(6), ft(34, 6)), pt(ft(6), ft(35, 7)),
-                     pt(ft(27), ft(35, 7))),
-               start_elevation=ft(20, 6), end_elevation=ft(24),
-               from_ref="ED-B-NET-PATCH", to_ref="ED-A-EAST-AP"),
+               path=(pt(ft(2), ft(34, 6)), pt(ft(2), ft(22, 6)),
+                     pt(ft(6, 6), ft(22, 6))),
+               start_elevation=ft(20, 6), end_elevation=ft(23),
+               from_ref="ED-B-NET-PATCH", to_ref="ED-A-STUDIO-AP"),
 ]
 
 MAIN_DATA_DEVICES = [
@@ -1219,13 +1263,43 @@ BASEMENT_DATA_TRUNKS = [
                      pt(ft(27, 9), ft(35, 3))),
                start_elevation=ft(-1, -6), end_elevation=ft(-6, -10),
                from_ref="ED-B-NET-PATCH", to_ref="ED-B-PLAY-N-DATA1"),
-    # Study: up the x=2'-0" riser to the main floor structure, then east through the
-    # FS-M-WEST joist bays and up the study's south wall. Drilled bays, not a raceway
-    # penetration: FS-M-WEST is wood.
+    # Study: south and east strapped to the basement ceiling at -1'-0 1/2", then up the
+    # study's south wall to the jack.
+    #
+    # ** IT RAN AT -4'-0" UNTIL 2026-08-30, AND THAT IS 5'-1 7/16" ABOVE THE BASEMENT SLAB. **
+    # Not in a ceiling and not in a floor — in open room air at head height, for the whole
+    # 27'-9" of its plan run: 21'-2" across RM-B-FURNACE, 6'-0" across RM-B-BATH a foot from
+    # FX-B-BATH-WC, and its east leg at y=19'-0" passed 1'-0" in front of D-B-FURN's opening,
+    # square across the width of the leaf at forehead height. The basement mechanical room
+    # tolerates exposed conduit; a bathroom and a doorway do not.
+    #
+    # The comment this replaces described a route the model never had — "up the x=2'-0" riser
+    # to the main floor structure, then east through the FS-M-WEST joist bays. Drilled bays."
+    # A `ConduitRun` is flat at `start_elevation` and rises only at its LAST vertex
+    # (model/mep.py), so there was no riser at x=2'-0" and nothing ever entered FS-M-WEST.
+    # This is the largest comment-versus-model gap I found in the data cabling, and no check
+    # could have caught it: `mep.run_over_void` grades deck voids, not room volume, and a
+    # ConduitRun carries no `floor_ref` to grade against a floor in the first place.
+    #
+    # ** -1'-0 1/2" IS SWEPT, NOT PICKED. ** The basement ceiling is the busiest plane in the
+    # house and the obvious answers are all occupied: CD-B-DATA-MEDIA's -1'-6" line puts this
+    # run 3/8" INTO PR-B-SAUNA-VENT where that vent crosses (9'-0", 19'-0"), and -1'-4" puts
+    # it 7/8" into PR-B-HW-TRUNK. Sweeping the whole -3'-4"..-0'-11" band against every other
+    # run in the model, interpolating each neighbour's elevation at the actual crossing, the
+    # only lane that is both clear AND above D-B-FURN's head is the one tight to the joists.
+    #
+    # -1'-0 1/2" puts the raceway's top at -1'-0 1/8", a quarter inch under FS-M-WEST's joist
+    # bottoms at -0'-11 7/8" — strapped to the underside, which is what the trade does — with
+    # 1 1/4" to PR-B-CW-TRUNK, the nearest service. It is 1'-4 15/16" over D-B-FURN's head.
+    #
+    # Nothing in the engine grades run against run: `mep.run_proximity` was scoped in the
+    # 2026-08-30 plan and deliberately not built, because it surfaces a long tail across 111
+    # runs. So this clearance was measured by hand and is written down here, because the next
+    # person to move this line will not be told by anything.
     ConduitRun(uid="Z9TXYSYKWG", tag="CD-B-DATA-STUDY", trade_size=inch(0.75), service=Service.DATA,
                path=(pt(inch(10), ft(31)), pt(ft(2), ft(31)), pt(ft(2), ft(19)),
                      pt(ft(16), ft(19)), pt(ft(16), ft(18, 5))),
-               start_elevation=ft(-4), end_elevation=ft(2, 8),
+               start_elevation=inch(-12.5), end_elevation=ft(2, 8),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-STUDY-DATA1"),
 ]
 
@@ -1255,10 +1329,28 @@ ATTIC_DATA_DEVICES = [
     # easternmost bay that does, which keeps the AP where its coverage was wanted — over the
     # east loft — rather than dragging it to the ridge. CD-A-DATA-NE's last two vertices
     # follow it.
-    ElectricalDevice(uid="CND004AAAA", tag="ED-A-EAST-AP", kind=DeviceKind.DATA_OUTLET,
-                     position=pt(ft(27), ft(35, 1.375)), type_ref="ED-T-AP-CEILING",
-                     room="RM-A-EAST-UNFIN", wall_ref="W-A-N1",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
+    # ** MOVED OFF THE NORTH GABLE ONTO W-A-STU-N ON 2026-08-30, AND RETAGGED WITH IT. **
+    # The gable station was chosen to cover RM-A-EAST-UNFIN, which is unfinished storage; the
+    # two rooms in this attic that hold people are RM-A-STUDIO and RM-A-STUDY, and both are
+    # west of the stair void. The radio now sits between them instead of over the boxes.
+    #
+    # The move also empties the gable band. CD-A-DATA-NE had to climb that band to reach
+    # x=27'-0" and passed through WIN-A-N2's rough opening at +23'-3" doing it — the same
+    # 2'-6" of glass DU-ERV-EA was crossing, in the same band, for the same reason. Both are
+    # out of it now.
+    #
+    # x=6'-6" AT A 3'-0" MOUNT is set by the rake and was measured against
+    # `integrity.element_above_roof`, not derived: the ROOF UNDERSIDE here is 20'-1 1/2" + x/2,
+    # so a 4'-0" mount needs x >= 7'-9" — and x 7'-0"..9'-0" is D-A-POCKET's rough opening,
+    # x 9'-4 3/4"..9'-10 1/4" W-A-STU-W's tee studs. **There is no 4'-0" station on this wall.**
+    # 3'-0" at x=6'-6" leaves 4 1/2" under the rake and clears the door by 6". (Do not use the
+    # wall-top formula at attic_studio.py:241 here — a `ToRoof` top is not the rake underside
+    # and the two differ by about a foot.) y=22'-0 5/8" is 1" off the gwb face on the STUDIO
+    # side, the station ED-A-POCKET-SW already uses.
+    ElectricalDevice(uid="CND004AAAA", tag="ED-A-STUDIO-AP", kind=DeviceKind.DATA_OUTLET,
+                     position=pt(ft(6, 6), ft(22, 0.625)), type_ref="ED-T-AP-CEILING",
+                     room="RM-A-STUDIO", wall_ref="W-A-STU-N",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(3))),
 ]
 
 # No porch deck penetration, deliberately: everything on the porch (elev <=9'-2") is
@@ -1576,9 +1668,9 @@ NEC_FILL_MAIN = [
     # OUTSIDE EDGE, which here is 4.6'. The check understates every distance by half a
     # fixture, so it under-reports rather than over-reports — this one is real either way.
     ElectricalDevice(uid="NEC068AAAA", tag="ED-M-LIVING-RC10", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(9, 6), ft(26, 2.625)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(m(1.9388), m(7.91434)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), room="RM-M-LIVING", rotation=deg(0)),
     # ED-M-LIVING-RC11 stood on the 10 3/16" pier at W-M-STRS's east end. That wall was
     # removed with D-M-STAIR (2026-08-24, main.py WALLS) and the receptacle went with its
     # host — there is no wall on that face any more to mount it to.
@@ -1838,6 +1930,16 @@ NEC_FILL_SECOND = [
                      position=pt(ft(9, 3.125), ft(20, 6.375)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
+    # RC8 (2026-08-30): W-S-SN3's retype to CATLIN_INT_2X6_BRG_PLUMBING (plan/storeys/
+    # second.py — the suite bath's lav and tub-shower actually back onto it) thickened the
+    # wall enough to move this room's boundary and open a >6' gap on the L-arm's south wall,
+    # W-S-SBS, near (11', 15'-11"). None of RC1-RC7 reaches it — RC1 is 4'-3" east on the
+    # same wall but stops short of the corner where the arm turns south past W-S-DC2. Plain
+    # RECEPTACLE, not GFCI: this stretch is not within 6' of a sink.
+    ElectricalDevice(uid="N0F72WZE2H", tag="ED-S-SUITE-RC8", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(11), ft(15, 6.625)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-SECOND",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
 ]
 # Same treatment for the attic's lofts. RM-A-EAST-UNFIN and RM-A-POCKET are STORAGE,
 # outside `_HABITABLE`, so 210.52 spacing is not evaluated for them. (RM-A-DEN stood in

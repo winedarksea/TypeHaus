@@ -352,12 +352,46 @@ LAUNDRY_MAIN = [
 # water in normal use, which is the whole reason that receptor was chosen in the first place.
 # 0.3"/ft across both horizontal legs, the same grade as its neighbour and above IRC
 # P3005.3's 1/4"/ft minimum.
+#
+# ** THE NORTH-SOUTH LEG CROSSED D-B-FURN'S ROUGH OPENING UNTIL 2026-08-30. ** It ran at
+# x=3'-11", and where it passes through W-B-CW at y=18'-0" that wall carries the furnace
+# room's door: RO x 3'-4"..6'-0", head 6'-8". The pipe went through at 68" above the sill —
+# a 3/4" PVC line across the top of a doorway you walk through to reach the ERV, the water
+# heater and the panel, with nothing to hang it from and a header it cannot be bored into.
+#
+# ** THE FIX HAD TO BE HORIZONTAL, BECAUSE THIS LINE FALLS. ** The usual answer to a run in
+# an opening is to carry it over the head; the head is at 80" basement-relative and the run
+# STARTS at 72", at the Broan's condensate spigot. There is no gravity route over it, and
+# there is no re-levelling either — the whole point of the run is 0.3"/ft of continuous fall
+# to FX-B-SAUNA-FD, above IRC P3005.3's 1/4"/ft. So the leg moves west out of the opening
+# and everything else stays.
+#
+# ** x=2'-11" IS A MEASURED BAY, AND x=2'-9" — THE OBVIOUS GUESS — IS NOT. ** W-B-CW
+# resolves studs at x=0'-8 3/4", 1'-4", 2'-8" and 6'-9", with the door's king at 3'-1 3/4".
+# That leaves a 4 1/4" bay between the 2x8 stud's east face (2'-8 3/4") and the king's west
+# face (3'-1"), and a 14 1/2" bay west of it. 2'-9" lands 1/4" off the stud face, which a
+# 1.05"-OD 3/4" PVC pipe cannot clear — it would be bored half into the stud. 2'-11" sits
+# 1/8" north of the small bay's centre with 2 1/4" to the stud and 2" to the king, so the
+# hole is a hole in sheathing and gypsum and nothing else. The bigger western bay was
+# declined: it costs another 1'-11" of jog each way and puts the line into the lane
+# PR-B-WC2-DRAIN (x=2'-6") and the BATH2 supply pair (x=2'-3") already share.
+#
+# The one thing in the new lane is PR-B-MAIN-DRAIN, whose 4" trunk runs x=3'-0" between
+# y=16'-6" and y=15'-6". Their plan lanes overlap by about half an inch there and their
+# elevations do not: the trunk is at -2'-4.8" project and this line passes under it at
+# -3'-6.7", 13 7/8" of clear. Nothing else lies between y=13'-3" and y=30'-9" at x=2'-11"
+# — the only basement wall the leg crosses is W-B-CW itself.
+#
+# The jog off the spigot is 1'-0" long and takes its own 0.3" of fall, so the two legs below
+# it re-solve to 66.45" and 63.275" (it was 66.75"/63.88" over a 1'-0" shorter east leg).
+# Monotonic from 72" to 9", 0.3"/ft on every horizontal segment, unchanged in kind.
 ERV_CONDENSATE = [
     PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN,
-            path=(pt(ft(3, 11), ft(30, 9)), pt(ft(3, 11), ft(13, 3)),
+            path=(pt(ft(3, 11), ft(30, 9)), pt(ft(2, 11), ft(30, 9)),
+                  pt(ft(2, 11), ft(13, 3)),
                   pt(ft(13, 6), ft(13, 3)), pt(ft(13, 6), ft(13, 3))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(72), inch(66.75), inch(63.88), inch(9))),
+            elevations=(inch(72), inch(71.7), inch(66.45), inch(63.27), inch(9))),
 ]
 
 CONDENSATE = [

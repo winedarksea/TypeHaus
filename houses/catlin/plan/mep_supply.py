@@ -123,20 +123,82 @@ SUPPLY = [
             diameter=inch(1), material="copper", finish="lacquered",
             elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(3, 9.4375))),
     # Main-storey groups.
+    #
+    # ** THE BATH1 PAIR STOOD IN THE BATHROOM DOORWAY UNTIL 2026-08-30, AND IT IS THE ONE
+    # DEFECT NOTHING IN THIS FILE COULD SEE. ** The cold rose at (6'-0", 23'-7.2") and the
+    # hot at (6'-0", 24'-0"), both from the deck to 3'-6"; D-M-BATH1's rough opening in
+    # W-M-BAE runs y 23'-6"..25'-6", so both were 42" of copper standing in a 24" door with
+    # no stud within a foot of either and a 2-2x8 header overhead that cannot be bored.
+    # `mep.wet_wall_occupancy` passed them the whole time — a riser inside the wall's
+    # FOOTPRINT is inside the wall, and a hole in that footprint is still footprint.
+    # `mep.run_through_opening` is what found it.
+    #
+    # ** THEY LEFT W-M-BAE ALTOGETHER, AND THE BAY CENSUS IS WHY. ** Measured off the
+    # resolved wall, faces in project inches along y:
+    #   end stud 271.385"/272.885"  |  SOUTH BAY 4 3/8"  |  2x4 at 277.25"/278.75"
+    #   king 279"/280.5", jack 280.5"/282"  |  D-M-BATH1 RO 282"..306"  |  jack, king to 309"
+    #   2x4 at 309.25"/310.75"  |  NORTH BAY 6 1/2"  |  corner stud from 317.25"
+    # Two bays, one each side of the door, and the 1/4" slivers beside the jambs are not
+    # bays. The pair cannot be split across the door — hot and cold for one lavatory would
+    # then have to cross the head to meet, which is the defect moved up 3'-6" and left
+    # undrawn — so both have to fit the SAME bay, and neither bay takes them:
+    #   * SOUTH BAY. The nearer one, and not empty: PR-B-LAV1-DRAIN (plan/mep_drainage.py)
+    #     drops at y=275.94" and a 1 1/2" DWV pipe is 1.9" over the pipe, leaving 2 3/32"
+    #     between its south side and the end stud. A bare 3/4" copper fits that. The hot line
+    #     carries a 1" fiberglass sleeve — 2 7/8" over the pipe — and does not, at any
+    #     station and at any depth in the cavity: to pass the drain in x it would have to
+    #     centre outside the 5 1/2" stud space entirely.
+    #   * NORTH BAY. 6 1/2" and empty, and 2 7/8" + 7/8" of pipe in it pushes the second
+    #     riser past y=315.625", which is W-M-STOS's finish face. A stop valve half an inch
+    #     off a finished corner is not a stop anybody can turn. It is also the WRONG END of
+    #     the room: both fixtures are at the south end, so every branch off it would cross
+    #     the door head anyway.
+    #
+    # ** W-M-HS1 IS THE WALL BOTH FIXTURES ACTUALLY PLUMB INTO, AND IT HAS EIGHT BAYS. **
+    # FX-M-BATH1-WC's carrier stands in it and PR-B-WC1-DRAIN already drops through it at
+    # x=26.409"; FX-M-BATH1-LAV's 24" carcass backs onto its finish face at y=271.385",
+    # spanning x 41.5"..65.5". It is INT_2X6_STAGGERED_PLUMBING, nonbearing, 5 1/2" of
+    # continuous cavity, and it carries no opening at all — nothing to stand in. Its studs
+    # resolve on an 8" stagger at x = 7.385", 16", 24", 32", 40", 48", 56", 64", 72", so
+    # every bay is 6 1/2" clear and the two behind the vanity are x 48.75"..55.25" and
+    # x 56.75"..63.25". The pair takes those two: 8" apart on the wall's own module, both
+    # behind the lavatory, with the cold 2'-9 5/8" along the same cavity from the water
+    # closet's carrier at x=26.409", and no door between any of them.
     PipeRun(uid="CBPW33AAAA", tag="PR-B-CW-BATH1", system=PipeSystem.WATER_COLD,
+            # Riser at (5'-0", 22'-4") — the east bay of the pair, centred with 2.81" of
+            # clear to the 2x4 each side, on W-M-HS1's axis so a 7/8" pipe sits mid-cavity.
+            # The cold is the east one because of how it ARRIVES: the ceiling leg comes off
+            # the trunk in the south-east and the hot comes off the water heater in the
+            # west, so putting them this way round is what keeps the two feeds out of each
+            # other's lane below the deck.
+            #
+            # The old route ran the diagonal all the way to x=6'-0" and turned up there. It
+            # cannot now: PR-B-MAIN-DRAIN's 4" trunk occupies x=6'-0" from y=16'-6" to
+            # y=22'-7", and at y=22'-4" its crown is at -1'-2 1/4" against this run's
+            # -1'-2.8" — they would share the same 2". So the diagonal stops SHORT, at
+            # (5'-0", 21'-0"), and the last 1'-4" runs north to the wall. Where it does
+            # cross the 4" trunk's lane, at (6'-0", 20'-3"), the trunk has fallen to
+            # -1'-8.6" and there is 3.1" of clear between the two pipes' surfaces.
             path=(pt(ft(5), ft(16)), pt(ft(7, 4.8), ft(16, 9.6)),
-                  pt(ft(7, 4.8), ft(19, 2.4)), pt(ft(6), ft(23, 7.2)),
-                  pt(ft(6), ft(23, 7.2)), pt(ft(6), ft(23, 7.2))),
+                  pt(ft(7, 4.8), ft(19, 2.4)), pt(ft(5), ft(21)),
+                  pt(ft(5), ft(22, 4)), pt(ft(5), ft(22, 4)), pt(ft(5), ft(22, 4))),
             diameter=inch(0.75), material="copper", finish="lacquered",
-            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(9, 1.4375), ft(12, 7.4375)),
-            wall_refs=(None, None, None, None, "W-M-BAE"),
+            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375),
+                        ft(7, 10.6375), ft(9, 1.4375), ft(12, 7.4375)),
+            wall_refs=(None, None, None, None, None, "W-M-HS1"),
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV")),
     PipeRun(uid="CBPW34AAAA", tag="PR-B-HW-BATH1", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(5, 6), ft(24)), pt(ft(6), ft(24)), pt(ft(6), ft(24)),
-                  pt(ft(6), ft(24))),
+            # Riser at (4'-4", 22'-4") — the west bay, 1.81" of clear each side of the
+            # 2 7/8" jacket. Off the trunk's end at the water heater, west along y=24'-0"
+            # and then straight south to the wall: the leg passes over PR-B-WH-TPR's drop at
+            # (4'-4", 24'-0"), which starts 4'-3" lower, and clears PR-M-S-BATH1-DRAIN's
+            # diagonal by 4.1" where it crosses at y=24'-0" (x=4'-10.5", crown -1'-9.6"). Nothing here shares a lane with
+            # PR-B-CW-BATH1, which is why the two risers land in this order.
+            path=(pt(ft(5, 6), ft(24)), pt(ft(4, 4), ft(24)), pt(ft(4, 4), ft(22, 4)),
+                  pt(ft(4, 4), ft(22, 4)), pt(ft(4, 4), ft(22, 4))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(9, 1.4375), ft(12, 7.4375)),
-            wall_refs=(None, None, "W-M-BAE"),
+            elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(9, 1.4375), ft(12, 7.4375)),
+            wall_refs=(None, None, None, "W-M-HS1"),
             serves=("FX-M-BATH1-LAV",)),
     PipeRun(uid="CBPW35AAAA", tag="PR-B-CW-BATH2", system=PipeSystem.WATER_COLD,
             path=(pt(ft(5), ft(16)), pt(ft(2, 3), ft(16)),
@@ -338,8 +400,15 @@ HYDRANT_BRANCH_BASEMENT = [
 # x=6' drilled through their webs — 3/4" PEX in an 11 7/8" I-joist web is within every
 # manufacturer's hole chart, which is why this branch stays PEX rather than becoming copper.
 HYDRANT_BRANCH_MAIN = [
+    #
+    # ** THE EAST END CAME BACK TO x=12'-0" ON 2026-08-30. ** It ran to 16'-8" because that
+    # is where the balcony leg used to tee off, and the balcony leg has now followed its own
+    # hydrant west to x=7'-4" (see below). Everything east of the porch tee at 12'-0" fed
+    # nothing at all: 4'-8" of dead leg on a cold line, which is stagnant water on a branch
+    # that is used a handful of times a summer. Both tees are still ON this polyline —
+    # balcony at 7'-4", porch at 12'-0" — so nothing else about the branch changes.
     PipeRun(uid="R9TC5VZ1WQ", tag="PR-M-CW-HYD-DIST", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(6), ft(13)), pt(ft(6), ft(0, 9)), pt(ft(16, 8), ft(0, 9))),
+            path=(pt(ft(6), ft(13)), pt(ft(6), ft(0, 9)), pt(ft(12), ft(0, 9))),
             diameter=inch(0.75), material="pex",
             elevations=(ft(9, 3), ft(9, 3), ft(9, 3)),
             serves=("FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
@@ -355,9 +424,23 @@ HYDRANT_BRANCH_MAIN = [
     # second floor is between: below that line the pipe is crossing the deck and hosted by
     # nothing, above it it is inside W-S-S1's cavity (which starts at 10'-0"), and
     # `mep.wet_wall_occupancy` grades a declared segment against the wall's own z-extent.
+    #
+    # ** THE RISER NEVER FOLLOWED ITS HYDRANT, AND STOOD IN THE DECK DOOR FOR SIX DAYS. **
+    # FX-S-BALC-HYD moved 16'-8" -> 7'-4" on 2026-08-24, when D-S-DECK-W slid 1'-0" inward
+    # and its rough opening (x 12'-2"..17'-2") swallowed the old station — plan/fixtures.py
+    # says so in its own comment. The FIXTURE moved; this riser and PR-S-CW-BALC-HYD-CU did
+    # not, so 24" of pipe stood inside a 5'-0" deck door and the barrel pierced W-S-S1 in the
+    # middle of the same opening. Nothing graded it until `mep.run_through_opening`.
+    #
+    # x=7'-4" is the hydrant's own station and it is a real bay, not just a number copied
+    # across: W-S-S1 resolves king-1-r0 at x=5'-5 1/4" (face 5'-6") and king-2-l0 at
+    # x=7'-10 3/4" (face 7'-10") with ONE stud between them, at x=6'-8". That leaves two
+    # 13 1/4" bays, and 7'-4" is 7 1/4" off the stud's east face and 6" off the king's — the
+    # 16" module bay centre the fixture comment names. It is also 4'-8" clear of D-S-DECK-W's
+    # west jamb pack, which starts at x=11'-11".
     PipeRun(uid="V2FJ8LRY6P", tag="PR-M-CW-BALC-HYD", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(16, 8), ft(0, 9)), pt(ft(16, 8), ft(0, 3.25)),
-                  pt(ft(16, 8), ft(0, 3.25)), pt(ft(16, 8), ft(0, 3.25))),
+            path=(pt(ft(7, 4), ft(0, 9)), pt(ft(7, 4), ft(0, 3.25)),
+                  pt(ft(7, 4), ft(0, 3.25)), pt(ft(7, 4), ft(0, 3.25))),
             diameter=inch(0.75), material="pex",
             elevations=(ft(9, 3), ft(9, 3), ft(10), ft(12)),
             wall_refs=(None, None, "W-S-S1"),
@@ -431,9 +514,13 @@ KITCHEN_STUB_MAIN = [
 ]
 
 # The balcony hydrant's barrel, filed on ``second`` (datum 10'-0") with the wall it pierces.
+# ** MOVED 16'-8" -> 7'-4" ON 2026-08-30 WITH THE RISER IT SITS ON. ** The barrel is the
+# escutcheon-to-seat penetration, so its x IS the riser's x and is not independently chosen;
+# at 16'-8" it drove 8 1/4" of copper straight through D-S-DECK-W's rough opening, 24" above
+# the threshold. PA-S-BALC-HYD-SEAL (plan/mep_supply_devices.py) moved with it.
 HYDRANT_BRANCH_SECOND = [
     PipeRun(uid="G7YB4XN2SD", tag="PR-S-CW-BALC-HYD-CU", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(16, 8), ft(0, 3.25)), pt(ft(16, 8), inch(-5))),
+            path=(pt(ft(7, 4), ft(0, 3.25)), pt(ft(7, 4), inch(-5))),
             diameter=inch(0.75), material="copper",
             insulation='1/2" closed-cell elastomeric sleeve, foil-faced, over the barrel',
             elevations=(ft(2), ft(2)),

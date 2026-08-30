@@ -114,15 +114,23 @@ SUPPLY_DEVICES_BASEMENT = [
 # already arrives at (2'-6" to 3'-6" above the room's own floor). Authoring a number here
 # would only be a second, drift-prone copy of one the run already carries.
 SUPPLY_STOPS = [
-    # RM-M-BATH1 — the wall-hung WC and its lavatory. Cold carries both, hot the lav alone,
-    # which is why the two stops sit 4.8" apart rather than side by side.
+    # RM-M-BATH1 — the wall-hung WC and its lavatory. Cold carries both, hot the lav alone.
+    #
+    # ** BOTH MOVED OUT OF W-M-BAE AND ONTO W-M-HS1 ON 2026-08-30, 8" APART. ** They had sat
+    # 4.8" apart at (6'-0", 23'-7.2") and (6'-0", 24'-0"), which is inside D-M-BATH1's rough
+    # opening — the risers under them were standing in the doorway, and the stops came along
+    # for the ride. The argument for the new wall is on the BATH1 pair in plan/mep_supply.py
+    # and is not repeated here; what matters at this end is that the two stops are still AT
+    # THEIR OWN RISER HEADS, which is this file's rule, and that the heads are now on the
+    # wall the lavatory backs onto rather than the one its door is in. Both land behind
+    # FX-M-BATH1-LAV's carcass (x 41.5"..65.5"), reachable kneeling at the cabinet.
     PipeAccessory(uid="0RA7PE7K5N", tag="PA-M-BATH1-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-BATH1", position=pt(ft(6), ft(23, 7.2)),
+                  pipe_ref="PR-B-CW-BATH1", position=pt(ft(5), ft(22, 4)),
                   accessible=True, room="RM-M-BATH1",
                   model='3/4" quarter-turn ball valve, chrome, at the riser head',
                   serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV")),
     PipeAccessory(uid="1YCTZR50YR", tag="PA-M-BATH1-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-HW-BATH1", position=pt(ft(6), ft(24)),
+                  pipe_ref="PR-B-HW-BATH1", position=pt(ft(4, 4), ft(22, 4)),
                   accessible=True, room="RM-M-BATH1",
                   model='3/4" quarter-turn ball valve, chrome, at the riser head',
                   serves=("FX-M-BATH1-LAV",)),
@@ -302,15 +310,22 @@ SUPPLY_DEVICES_MAIN = [
 
 # The balcony hydrant's two, on ``second``. No PA-S-BALC-HYD-VB, same reason as the porch's
 # — see the note above SUPPLY_DEVICES_MAIN.
+#
+# ** BOTH MOVED 16'-8" -> 7'-4" ON 2026-08-30. ** Neither is an independent position: the
+# seat is the inboard end of the barrel and the seal is its escutcheon, so both are the
+# hydrant's own station. They had been left behind twice over — FX-S-BALC-HYD went west on
+# 2026-08-24 when D-S-DECK-W's rough opening (x 12'-2"..17'-2") swallowed 16'-8", and the
+# riser, the barrel and these two accessories all stayed put. `mep.run_through_opening`
+# caught the pipe; nothing was ever going to catch the accessories but the pipe they name.
 SUPPLY_DEVICES_SECOND = [
     PipeAccessory(uid="S6BN1JXV7Q", tag="PA-S-BALC-HYD-SEAT",
                   kind=PipeAccessoryKind.SHUTOFF, pipe_ref="PR-M-CW-BALC-HYD",
-                  position=pt(ft(16, 8), ft(0, 3.25)), room="RM-S-PLANT",
+                  position=pt(ft(7, 4), ft(0, 3.25)), room="RM-S-PLANT",
                   model="hydrant's own compression seat, inboard end of the barrel",
                   serves=("FX-S-BALC-HYD",)),
     PipeAccessory(uid="M4TQ8HRC1Z", tag="PA-S-BALC-HYD-SEAL",
                   kind=PipeAccessoryKind.PENETRATION_SEAL, pipe_ref="PR-S-CW-BALC-HYD-CU",
-                  position=pt(ft(16, 8), ft(0)),
+                  position=pt(ft(7, 4), ft(0)),
                   model="gasketed escutcheon over a foamed barrel penetration",
                   install_parts=("silicone gasket, hydrant escutcheon",
                                  "plastic mounting bracket, non-conductive",

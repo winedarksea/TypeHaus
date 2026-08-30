@@ -258,7 +258,26 @@ def _leader(side: str, index: int, eave_x, outward: float):
         clamp_refs=tuple(f"CN-A-LEADER-{side}{n}" for n in (1, 2, 3, 4)))
 
 
+# --- Rake drip edge (FORTIFIED Roof §4.5 wants one at every eave AND every rake) -----------
+# The corner trim (resolve/roof_trim.py::_corner_trim_members) already follows the roof
+# slope up the two gable rakes to the ridge; this module's authored ``Flashing`` has one
+# elevation per run and cannot re-derive a sloped member, so it is not trying to. What it
+# gives each rake instead is a short drip-edge return at the corner, at the same deck-plane
+# elevation the eave piece already bears at — a modeled part of record for FORTIFIED's rake
+# line item, coexisting with the sloped corner trim above it rather than replacing it.
+def _rake_drip(side: str, index: int, y):
+    outward = -1.0 if side == "S" else 1.0
+    back_side = "right" if outward < 0 else "left"
+    return Flashing(
+        uid=f"RTFR0{index}AAAA", tag=f"TR-RF-DRIP-{side}", kind=TrimKind.DRIP_FLASHING,
+        path=(pt(_EAVE_X_W, y), pt(_EAVE_X_E, y)),
+        top_elevation=_above_deck(_DRIP_TOP_IN), depth=_DRIP_DEPTH,
+        thickness=inch(_DRIP_THICK_IN), material=_CHAIN_MATERIAL,
+        host_ref="RF-HOUSE", back_side=back_side)
+
+
 ATTIC_ELEMENTS = [
     *_eave_water("W", 1, _EAVE_X_W, -1.0), *_eave_water("E", 2, _EAVE_X_E, 1.0),
     _leader("W", 1, _EAVE_X_W, -1.0), _leader("E", 2, _EAVE_X_E, 1.0),
+    _rake_drip("S", 1, _EAVE_Y0), _rake_drip("N", 2, _EAVE_Y1),
 ]

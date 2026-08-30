@@ -143,7 +143,34 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   prevent members from rotating about the base"*, and they are *"not recommended for
   non-top-supported installations (such as … guard rails)."* Nothing is authored for this and
   **nothing should be until it is decided** — a number invented in the model is worse than an
-  open question. The options, in ascending cost:
+  open question.
+
+  **2026-08-30: the balcony's E-W COLLECTOR is decided; the engineered-lateral question
+  below is not.** The four E-W girts (the horizontal members the corner knee braces rose
+  into) are retired for two continuous 2x8 "brace rails," one per pillar row, face-bolted
+  to the inboard face of all three posts in that row rather than seated on their tops
+  (`houses/catlin/params/sunken_garden.py::SPEC.balcony_brace_rail`). This is deliberately
+  **lateral-capacity-neutral** — same four corner posts braced, same two directions each,
+  same 2x6 `APVKB45-6` braces, same 3' leg; only what the E-W braces land on changed (a 2x8
+  rail instead of a 2x12 girt segment) — so it does not answer, and does not presume an
+  answer to, any option below. What it does do: it removes a bookkeeping fiction (a girt
+  claiming `bearing_refs` on the two centre pillars it only incidentally lapped 0.5"x1.5"
+  of, which billed 8 phantom `KBS1Z` uplift straps at joints that were not real beam-on-post
+  bearing), and it ties the two centre pillars into the braced end bays through the rail's
+  own continuity — which is what lets leaving them unbraced (Option 1 below) stay
+  defensible, on a narrower rationale than before: "the rail already reaches them," not
+  "thrust would hit `PT-SG-BR2`" (already false since 2026-08-28). What is genuinely still
+  open, narrower than before: what a licensed lateral design would actually spec for the
+  RAIL/BOLT connection itself — the 2 x 1/2" HDG through-bolts per post (12 total) are an
+  *assumed*, not an engineered, schedule, pending real numbers.
+
+  **The porch's own E-W bracing is a separate question and this change does not touch it.**
+  The porch bears directly on the two concrete side walls (`W-SG-W1`/`E1`) rather than on
+  post bases, so its E-W lateral path is a concrete/geotech question — wall reinforcement,
+  footing width, whatever a lateral design calls for there — not a framing-collector
+  question the way the balcony's was. It stays open, undiscussed by anything above.
+
+  The options, in ascending cost:
   - **Extend the knee-brace rule to the centre pillars.** DCA6-2015 p.10 wants a brace on any
     post over 2'-0"; `PT-SG-BR2`/`BF2` are deliberately left as leaning columns today
     (`params/sunken_garden.py`, KNEE_BRACES). **The stated reason for that is gone as of
@@ -194,8 +221,20 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     ~2.0" of cover, not 5.76". (It was ~1.6" before the front pillar row came 2 3/4" north
     the same day.) An `ABU66SS` is a pinned base and asks for edge distance at the anchor,
     which is 5 5/8" and fine. An `MPB66Z` there would not be, and never was.
+
+    **CLOSED 2026-08-30 — rejected, not merely stale.** No column in this structure has ever
+    carried the 5" of side cover an `MPB66Z` wants, at any of the three geometries it has
+    stood at, and the one post that actually sits on `PT-SG-FCOL` has ~2.0". This option is
+    off the list; do not re-open it without a different footing or column geometry to argue
+    from.
   - **An engineer's lateral design.** The honest answer, and the same consultant the two
-    side walls below already need.
+    side walls below already need. **Narrower since 2026-08-30**: with the MPB66Z option
+    closed and the balcony's E-W collector now a capacity-neutral construction detail (the
+    brace-rail redesign above), what specifically needs a licensed number is the rail/bolt
+    connection — the 2 x 1/2" HDG through-bolts per post assumed in
+    `params/sunken_garden.py` — plus whatever, if anything, the consultant wants at the two
+    still-unbraced centre pillars. The porch's own E-W path (see above) is a separate ask
+    to the same consultant, not folded into this one.
 
 - **Two porch/balcony span knife-edges, written down 2026-08-28.** Neither is a finding
   today and neither had been recorded anywhere before. `structural.deck_beam_span` looks IRC

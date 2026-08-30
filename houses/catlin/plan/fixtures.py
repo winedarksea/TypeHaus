@@ -420,13 +420,25 @@ SECOND_FIXTURES = (
             wall_ref="W-S-BA-E1B"),
     Fixture(uid="CSQ803AAAA", tag="FX-S-BATH1-SH", type_ref="FX-TUBSHOWER-60", room="RM-S-BATH1",
             position=pt(m(1.66988), m(10.4013)), wall_ref="W-S-BD-N"),
-    # The suite's own bath (source: 46.01sf). Both drain walls are INT_2X6_PLUMBING
-    # (W-S-DC2 west, W-S-SBS south) — satisfies advisory.wet_wall_depth's 5.5"
-    # requirement. D-S-SUITEBATH's 2'-6" leaf sweeps the room's SW quadrant clear, so WC
-    # sits north of the swing on the west wall, lav east of it on the south wall, shower
-    # in the NE corner.
+    # The suite's own bath (source: 46.01sf). D-S-SUITEBATH's 2'-6" leaf sweeps the room's SW
+    # quadrant clear, so WC sits north of the swing against the north wall, lav east of it
+    # also against the north wall, shower in the NE corner.
+    #
+    # `wall_ref` is W-S-SN3 (2026-08-30, was W-S-DC2) — no `rotation` is authored, and this
+    # house's own convention is that an un-rotated FX-TOILET-STD backs a HORIZONTAL wall
+    # (FX-M-BATH2-WC on W-M-HS1, rotation=0) while a VERTICAL one needs rotation=90
+    # (FX-S-BATH1-WC on W-S-W1, FX-A-STUBATH-WC on W-A-STU-W). W-S-DC2 is vertical; W-S-SN3
+    # is horizontal — this WC physically backs SN3, same split the lav's `wall_ref` used to
+    # carry (`FX-S-SUITEBATH-LAV`, above).
+    #
+    # **W-S-DC2 still MUST stay a full-depth wet wall regardless of this fixture's
+    # `wall_ref`.** Its 5.5" cavity is not just this toilet's `advisory.wet_wall_depth`
+    # allowance — `PR-S-SUITEBATH-VENT` (plan/mep_venting.py) is a REAL 2" vent riser routed
+    # up the x=9'-7 1/2" line (W-S-DC2's own axis) from y=20' to y=34'-6", and the supply
+    # risers in plan/mep_supply.py share the same axis. Retyping DC2 to a 2x4 assembly (e.g.
+    # for resilient channel) would leave that riser with nowhere to run.
     Fixture(uid="CSQ804AAAA", tag="FX-S-SUITEBATH-WC", type_ref="FX-TOILET-STD",
-            room="RM-S-SUITEBATH", position=pt(m(3.42422), m(6.34259)), wall_ref="W-S-DC2"),
+            room="RM-S-SUITEBATH", position=pt(m(3.42422), m(6.34259)), wall_ref="W-S-SN3"),
     # ** A 30" VANITY SINCE 2026-08-30. ** The south wall gives 31.76" between the water
     # closet's 15" side band (its centreline is x=134.81", so the band ends at x=149.81")
     # and the tub-shower's west face at x=181.57". 30" is the largest stock width that fits;
@@ -434,15 +446,18 @@ SECOND_FIXTURES = (
     # tub with 1.07". The room is 71" deep so this one keeps the standard 21" carcass, and
     # the 21" front zone stops at y=223.63" with the north face 29" further on.
     #
-    # `wall_ref` stays W-S-SBS, which is the WET wall this drains into and not the wall it
-    # physically backs (W-S-SN3, at y=265.63") -- the same convention the attic suite uses.
+    # `wall_ref` is W-S-SN3 (2026-08-30, was W-S-SBS) — the wall this vanity actually backs
+    # onto (at y=265.63") is now also the WET wall it drains into, so the split convention
+    # the attic suite still uses (`wall_ref` names the drain wall, not the physical back) no
+    # longer applies here: W-S-SN3 was retyped to CATLIN_INT_2X6_BRG_PLUMBING for exactly
+    # this fixture (`plan/storeys/second.py`), so the two now agree.
     #
     # ** THIS ROOM HAS NO RECEPTACLE. ** NEC 210.52(D) wants one within 36" of the basin's
     # outside edge and RM-S-SUITEBATH has none at all. That predates this change; see
     # plans/TODO.md.
     Fixture(uid="CSQ805AAAA", tag="FX-S-SUITEBATH-LAV", type_ref="FX-VANITY-30-SINGLE",
             room="RM-S-SUITEBATH", position=pt(inch(165.5), inch(255.13)),
-            wall_ref="W-S-SBS"),
+            wall_ref="W-S-SN3"),
     # Suite bath takes a tub-shower (not the old 36" pan): room's clear face is
     # 9'-8 1/8" x ~6'-4", and the east wall has 5'-0" of run for a 60"x30" alcove. Rotated
     # -90, back turns east onto W-S-C2C; footprint keeps the old pan's north/east edges,

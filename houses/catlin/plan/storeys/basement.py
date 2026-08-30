@@ -511,9 +511,13 @@ WALLS = [
     # Split again at N-B-ESS-SE (y=31'-0") on 2026-08-23, for the ESS closet's south
     # partition, exactly as it was split at N-B-BA-W for the bathroom. **Unlike the north
     # wall's split this one does NOT line up with the storey above**: W-M-STRW runs
-    # y 26'-4"..36'-0" and crosses from W-B-STR onto W-B-STR3 halfway along. It keeps
-    # naming W-B-STR — the segment its north two thirds bear on — and W-M-STRW2, which sits
-    # wholly south of the split, names W-B-STR3.
+    # y 26'-6"..36'-0" and crosses from W-B-STR onto W-B-STR3 halfway along. It keeps
+    # naming W-B-STR — `resolve/stacking.py` picks it as the sole candidate on both basement
+    # segments, since it is the only main-storey wall whose axis overlaps either by the 2'
+    # minimum. W-M-STRW2 (trimmed to 5 3/8" on 2026-08-30, south of the split, nominally
+    # `stacks_on="W-B-STR3"`) never actually resolves a stack edge either way — at 5 3/8" it
+    # cannot clear that 2' overlap test as upper or lower — so its `stacks_on` is honest
+    # geometry, not a load path; its real job is FO-S-STAIR's bearing coverage (second.py).
     #
     # **ALIGNMENT is the whole of it**, and the two failure modes below are why it is what
     # it is. Framing this line was tried and backed out on 2026-08-23, for one reason: that

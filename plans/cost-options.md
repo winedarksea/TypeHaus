@@ -1129,11 +1129,16 @@ check grades it — `_resolve_ridge_beam` emits `structural.ridge_support` only 
 rafter at 4:12 has a 12.52" plumb cut, so the current ridge is fractionally too shallow.
 `2-1.75x14` LVL is ~$460–800 back. **For the engineer to settle, not this file.**
 
-> **SETTLED 2026-08-28 — the section above is history.** `RB-HOUSE` is `2-1.75x14` LVL now,
-> not `3-1.75x11.875`: three plies answered no load and the depth they came with was 1.5"
-> short of the rafter's plumb cut. The full derivation, the hanger and strap schedule and the
-> three-piece splice are in `notes/ridge_beam_detail.md`. **Deeper is cheaper than wider**,
-> in fasteners as well as in LVL — the third ply would have wanted 5" screws from both faces.
+> **SETTLED 2026-08-28, then re-settled 2026-08-29 — the section above is history twice
+> over.** `RB-HOUSE` went `3-1.75x11.875` → `2-1.75x14` → **`2-1.75x16`**: three plies
+> answered no load, then the roof pitch moved 4:12 → 6:12 and the plumb cut that sets the
+> depth moved with it (14.15" now, not 13.10"), so 14" — which cleared the old target by
+> 0.90" — missed the new one by 0.15". The full derivation is in `CLAUDE.md`'s "Structural
+> ridge" bullet; `notes/ridge_beam_detail.md` carries the hanger/strap/fastener detail but is
+> flagged superseded at the top for the pitch change. **Deeper is cheaper than wider**, in
+> fasteners as well as in LVL — the third ply would have wanted 5" screws from both faces.
+> At the current 16" section a 12' ply is 106 lb (was 92 lb at 14"); the one-piece 36'
+> alternative would be 317 lb (was 277 lb) — still no crane at any depth this beam has held.
 
 ## The crane-free / heavy-lift audit — 2026-08-29
 
@@ -1142,13 +1147,22 @@ has an easy swap that takes real money out. Priced from the resolved model, the 
 market research; **nothing in this section is built** except the four price-file corrections
 recorded under *Refactors* below, which are estimate fixes and not design changes.
 
-**The crane question is settled, and it was never really open.** No piece in the resolved
-model exceeds about **340 lb**. The two heaviest objects in the project — the 1,656 lb
-sunken-garden column `PT-SG-FCOL` and the 932 lb pier — are cast in disposable fibre tubes
-and never lifted at all. The two elements that *would* have forced a pick were engineered
-out on purpose long before this audit, with the reasoning written down: `RB-HOUSE` buys its
-36' as three 12-footers (`notes/ridge_beam_detail.md` §4), and the column is a tube, not a
-precast.
+**The crane question is settled, and it was never really open.** **CHECKED AGAINST EVERY
+multi-ply LVL/PSL header and beam in the house, 2026-08-30, not only the ridge:** no framed
+member exceeds **258 lb** assembled (the garage overhead-door header — table below). The
+two heaviest OBJECTS in the project — the 1,656 lb sunken-garden column `PT-SG-FCOL` and the
+932 lb pier — are cast in disposable fibre tubes and never lifted at all. The two elements
+that *would* have forced a pick were engineered out on purpose long before this audit, with
+the reasoning written down: `RB-HOUSE` buys its 36' as three 12-footers
+(`notes/ridge_beam_detail.md` §4), and the column is a tube, not a precast.
+
+One item in the house *does* exceed 258 lb and is heavier than any single framing piece: the
+**LG WashTower** (`FX-M-LAUNDRY`, main floor) is a factory-integrated single unit — LG does
+not sell the washer and dryer separately — at **353 lb**
+(`plan/appliance_types.py`). Not a crane question (two people and an appliance dolly through
+a main-floor door), and not something a design pass can change, but the earlier draft of
+this audit's "no piece exceeds ~340 lb" line was wrong: the ceiling on *framing* is 258 lb;
+the ceiling on anything delivered to site is the WashTower's 353.
 
 **So crane-free is a tiebreaker, not a constraint, and it should stop driving decisions.** A
 30–40 ton metro boom truck is **$1,500–2,500** for a half or full day, operator and in-metro
@@ -1253,7 +1267,7 @@ own notes; they are recorded here so they do not get reopened a third time.
 | **Swap the ccSPF for rigid board** | Reclaimed polyiso looks like −$6,900/−$8,600. Then a WRB comes back (+$2,200/+$4,900), opening flashing gets harder, the ACH50 1.0 target loses the layer that made it nearly automatic (+$1,500/+$4,000), the wall drops R-2, and you either cut ~4,200 holes in rigid foam or go back to through-foam furring — which puts the wall **back under IRC R703.15 and its 4" foam limit**, the exact provision the current wood-to-wood detail was engineered to escape. Virgin polyiso is a wash |
 | **Outer girt KDAT → plain SPF** | $2,968–4,452, and already settled the other way in the engineering note's Risks. That girt is a 3-1/2" horizontal ledge inside the vent gap that will wet-cycle for the life of the wall |
 | **Buy a proprietary clip-and-rail standoff** | $14,700–29,300 over 3,665 SF for clip and rail *alone*, against $16,028–26,118 for the entire current standoff **including window bucks**. Costs more, and reintroduces a through-foam fastener |
-| **"Simplify" `RB-HOUSE` to one 36' stick** | The one place a well-meant simplification would actually put a crane on the job: **277 lb per ply** landing 11–12 ft above the attic deck at +32', against 92 lb as three 12-footers. Identical lineal feet, zero offcut — 36' divides three ways exactly |
+| **"Simplify" `RB-HOUSE` to one 36' stick** | The one place a well-meant simplification would actually put a crane on the job: **317 lb per ply** landing 11–12 ft above the attic deck at +32', against 106 lb as three 12-footers (16" section, re-struck 2026-08-30 for the pitch/depth change). Identical lineal feet, zero offcut — 36' divides three ways exactly |
 | **Precast the 16" garden column** | 1,656 lb. The disposable fibre tube is a wheelbarrow of concrete; precast is a crane pick and a delivery problem. Even an 18" or 20" tube revert stays crane-free. Precast is the only version of this element that does not |
 
 ### What the build actually needs — three things nothing in this file names
@@ -1277,11 +1291,28 @@ costs nothing to fix now and a lot to discover late.
   through a 5' French pair **before the balcony guard rail goes up**. The alternative is a
   machine reaching 13 ft over an open 9' excavation with fresh footings in it.
 
-**And one stubborn framing pick, for the record.** The garage overhead-door header —
-`2-ply 14" LVL` over the 16' opening, `plan/storeys/garage.py:366` — is 258 lb assembled and,
-unlike the ridge, **cannot be spliced, because it spans**. Not a crane job at a 7' lift, but
-it is the heaviest non-spliceable member on site. If it ever becomes awkward, two 8' doors
-halve it.
+### Every multi-ply framing member in the house, checked — 2026-08-30
+
+Asked directly: are any of the framed pieces themselves overweight? No. Every multi-ply
+LVL/PSL header and beam in the house, not only the ridge, per-piece as it would actually be
+lifted:
+
+| member | section | span / length | weight | spliceable? |
+|---|---|---|---|---|
+| Garage overhead-door header | 2-ply 14" LVL | 16' opening, `garage.py:366` | **258 lb** assembled, **129 lb/ply** | No — it spans, cannot lap over bearing |
+| `RB-HOUSE` ridge, as ordered | 2-1.75x16 LVL | three 12' sticks per ply | **106 lb/piece** | Yes — bears continuously the full 36' |
+| `BM-S-HALL` (2nd fl. hall opening) | 3-1.75x11.875 LVL | 8'-6" clear span | ~176 lb bundled, ~59 lb/ply | No — single span |
+| `BM-M-HALL` (main fl. hall opening) | 3-1.75x11.875 LVL | 4'-2" clear span | ~90 lb bundled, ~30 lb/ply | No — single span |
+| Sunken-garden / balcony beams | 3-2x12 sawn KDAT | ~8' span | ~70 lb bundled, ~23 lb/ply | No — sawn lumber, trivial regardless |
+
+**The garage header is the heaviest non-spliceable member on site, and it stays the answer —
+but per ply, every piece here is a one- or two-person carry.** `BM-S-HALL` and `BM-M-HALL`
+are *shorter* single-span headers than the garage door's, so despite being 3-ply against the
+garage's 2-ply, no single ply of either exceeds 60 lb. Not a crane job at a 7' lift for the
+garage header, and not one anywhere else in this table. If the garage header ever becomes
+awkward to set as a 2-ply unit, two 8' doors halve it; it does not need to be handled as one
+258 lb assembly if a crew prefers to nail the plies up individually and stitch them in place,
+same as the ridge and both hall beams already are.
 
 ### An engine finding — the order sheet asks for lumber that does not exist
 
@@ -1321,6 +1352,7 @@ open.
 | Garden footings priced as strips | The `footing` rate derives from a 16"x8" strip, then covers the garden's 84"-wide reinforced retaining bases — 20.9 of 33.25 cy | under ~$1,500–2,100 |
 | Garage slab may be thin | 3-1/2" carrying vehicle loads through MN freeze–thaw; 4"–5" is normal | +$343–1,810 |
 | Excavation is one lump | $24,000–55,000 with no quantity anywhere in the model, so no design change can ever demonstrate a saving against it. The sunken garden alone implies ~200–250 cy of extra cut | the weakest number in the file |
+| The published "≤340 lb" claim was wrong | The WashTower (353 lb, `FX-M-LAUNDRY`) is heavier than that. Corrected 2026-08-30 to: no framing piece exceeds 258 lb; no delivered item exceeds 353 lb — see the crane-verdict paragraph and the framing table above | none — not a cost item, an audit correction |
 
 ### Provenance
 

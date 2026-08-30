@@ -1,7 +1,27 @@
 # Ridge beam RB-HOUSE — section, hangers, straps (2026-08-28)
 
+> **SUPERSEDED IN PART, 2026-08-29 — the pitch and section below are one revision behind.**
+> The roof went from 4:12 to 6:12 and the ridge from `2-1.75x14 LVL` to **`2-1.75x16 LVL`**
+> (CLAUDE.md's "Structural ridge, not a rafter-tie roof" bullet is the current source of
+> truth on both). The plumb-cut arithmetic in §1 is worked at 4:12 and gives 14" as the
+> answer; at 6:12 the same method gives **14.15"**, which 14" misses by 0.15" and 16" clears
+> by 1.85" — the *shape* of the argument (depth is a hanger dimension, not a bending one) is
+> unchanged, only its 4:12 numbers are stale. **§4's weights are re-struck below** because
+> that scales cleanly with depth. §§2-3's fastener overlap, hanger/strap schedule and
+> stiffener geometry do NOT scale as cleanly — a 6:12 rafter meets the beam face at a
+> different angle than a 4:12 one did — and have not been re-derived here; treat them as
+> the right *shape* of check to run again, not as still-current numbers, until an engineer
+> re-runs them at 6:12.
+
 `2-1.75x14 LVL`, 36'-0", bearing continuously on `W-A-C1/C1B/C2`. Authored in
-`plan/storeys/attic.py`; graded by `structural.ridge_beam_depth`.
+`plan/storeys/attic.py`; graded by `structural.ridge_beam_depth`. **Section is stale — see
+the banner above; the beam is `2-1.75x16 LVL` as of 2026-08-29.**
+
+> **See also `notes/fortified_roof_cert.md`, 2026-08-30.** This beam's eliminate-the-thrust
+> argument below is exactly FORTIFIED Home's §2.5 "engineered alternative" to collar ties,
+> but it is documented here only as engineering narrative — the cert tracking note lists a
+> stamped PE letter citing §2.5/Appendix B1 as the open item that closes it. Nothing below
+> changes for that; this is a pointer, not a revision.
 
 It was `3-1.75x11.875 LVL` until this note was written, and that section was wrong in both
 directions at once: three plies answered no load, and the depth they came with was an inch
@@ -102,11 +122,15 @@ ladder rather than one over-length special order that needs a crane and a freigh
 the money — are identical either way. `FramedMember.continuously_supported` is derived from
 the bearing refs actually reaching, not from their being named.
 
-The cap is a **handling** number, not a stock one: 16' and 20' are both on the ladder. This
-section runs about 7.7 lb per foot per ply, so a 20' ply is 153 lb and a 12' ply is 92 lb —
-the difference between a lift and two framers. `_MAX_SPLICE_PIECE_FT` in
-`takeoff/framing.py` holds it, and splicing loses whenever it would order more feet than one
-stick, so the cap can never turn a one-foot overshoot into three feet of offcut.
+The cap is a **handling** number, not a stock one: 16' and 20' are both on the ladder.
+**RE-STRUCK 2026-08-29 for the 16" section** (was 7.7 lb/ft/ply at 14" — LVL weight scales
+with depth at a fixed 1.75" width, so 7.7 × 16/14 = 8.8 lb/ft/ply): a 20' ply is now **176
+lb** and a 12' ply is **106 lb** — still the difference between a lift and two framers, and
+still nowhere near a crane. Worth stating explicitly since it wasn't before: **even the 36'
+one-piece alternative this beam avoids would only be 317 lb** (8.8 × 36) — heavy enough to
+justify the three-piece order on handling and freight, but not on rigging. `_MAX_SPLICE_PIECE_FT`
+in `takeoff/framing.py` holds the cap, and splicing loses whenever it would order more feet
+than one stick, so the cap can never turn a one-foot overshoot into three feet of offcut.
 
 **Stagger the splices between plies.** Cut one of ply B's three sticks in half: ply B reads
 **6 + 12 + 12 + 6** against ply A's **12 + 12 + 12**, so the joints fall at 6'/18'/30' against

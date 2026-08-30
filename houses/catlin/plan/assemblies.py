@@ -27,6 +27,7 @@ from library import (
     INT_2X4_PARTITION,
     INT_2X4_RC,
     INT_2X4_STAGGERED_DOUBLE_GWB,
+    INT_2X4_STAGGERED_GWB,
     INT_2X6_PLUMBING,
     INT_2X6_STAGGERED_PLUMBING,
     STARTER_MATERIALS,
@@ -364,6 +365,11 @@ CATLIN_ROOF = Assembly(
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
         Layer(name="polyiso-2", material_ref="polyiso", thickness=inch(3.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+        # Seams taped with ASTM D1970 or AAMA 711 Level 3 tape (FORTIFIED Roof §4.2/Appendix
+        # B1's "other attachment method"/sealed-deck Method 1). The AC266/Zip factory-taped
+        # exemption only covers the panel directly UNDER the covering; the taped ZIP two
+        # layers below is this roof's inner air barrier, not that panel, so this outer deck
+        # needs its own taped seams rather than inheriting the ZIP's.
         Layer(name="top-deck", material_ref="osb", thickness=inch(0.625),
               function=LayerFunction.SHEATHING),
         Layer(name="underlayment", material_ref="roof-underlayment-synthetic", thickness=inch(0.06),
@@ -901,8 +907,9 @@ BEAM_LVL = Assembly(
 
 # Every treated sawn member in the house's outdoor frame. The breezeway (four 2-2x8 floor
 # and roof beams, three 2x6 rafters) is where it started; the balcony's four E-W girts
-# joined it, and on 2026-08-23 so did the sunken garden's seven beams, which had been on
-# BEAM_LVL claiming a treatment LVL is not sold in.
+# joined it (retired 2026-08-30 for two E-W brace rails, same assembly), and on 2026-08-23
+# so did the sunken garden's seven beams, which had been on BEAM_LVL claiming a treatment
+# LVL is not sold in.
 #
 # All of it stands in weather over open ground with no enclosure above it, so every stick is
 # treated — and KDAT rather than plain PT, because a wet-treated deck frame shrinks and cups
@@ -913,17 +920,18 @@ BEAM_KDAT = Assembly(
         Layer(name="kdat", material_ref="kdat", thickness=inch(1.5),
               function=LayerFunction.STRUCTURE),
     ),
-    source="catlin-house KDAT 2x framing — ply count per Beam.size: the breezeway frame (2-2x8 beams, single 2x6 rafters), the balcony's four E-W girts (2x10), and since 2026-08-23 the sunken garden's seven beams (3-2x12 porch, 3-2x10 balcony)",
+    source="catlin-house KDAT 2x framing — ply count per Beam.size: the breezeway frame (2-2x8 beams, single 2x6 rafters), the balcony's two E-W brace rails (2x8), and since 2026-08-23 the sunken garden's seven beams (3-2x12 porch, 3-2x10 balcony)",
 )
 
-# The six members of the garden's frame that read as trim rather than as structure
-# (2026-08-27): the porch's front beam pair BM-SG-FRW/FRE, the balcony's west and east beams
-# BM-SG-BLW/BLE, and the balcony's two front E-W girts BM-SG-GIRT-FW/FE. Same KDAT stock and
-# the same sections as BEAM_KDAT — nothing about the framing changes — but these six are the
-# sticks you see from the garden, in the same plane as the six white 6x6 pillars and their
-# knee braces, so they are painted the same white. What stays on BEAM_KDAT is what is hidden:
-# the rear girts and the back beam pair sit against the house behind the porch deck, and
-# BM-SG-BLC is the balcony's centre beam, inside the deck with a joist bay either side.
+# The four members of the garden's frame that read as trim rather than as structure
+# (2026-08-27): the porch's front beam pair BM-SG-FRW/FRE and the balcony's west and east
+# beams BM-SG-BLW/BLE. Same KDAT stock and the same sections as BEAM_KDAT — nothing about
+# the framing changes — but these four are the sticks you see from the garden, in the same
+# plane as the six white 6x6 pillars and their knee braces, so they are painted the same
+# white. What stays on BEAM_KDAT is what is hidden: the back beam pair sits against the
+# house behind the porch deck, BM-SG-BLC is the balcony's centre beam, inside the deck with
+# a joist bay either side, and both E-W brace rails (2026-08-30) are bolted to the pillars'
+# inboard faces rather than standing in the garden's own plane.
 #
 # A SEPARATE ASSEMBLY, not a `POST_WHITE_PAINT` reuse: that one's single 5.5" layer is the
 # 6x6 body, and `[timber]` prices it per cubic yard off a 6x6's lineal-foot rate. A beam's
@@ -935,7 +943,7 @@ BEAM_WHITE_PAINT = Assembly(
         Layer(name="beam-paint-white", material_ref="post-paint-white", thickness=inch(1.5),
               function=LayerFunction.STRUCTURE),
     ),
-    source="catlin-house sunken-garden exposed frame — KDAT 2x plies, white-painted to match the pillars: BM-SG-FRW/FRE and BM-SG-BLW/BLE (3-2x12), BM-SG-GIRT-FW/FE (2x12)",
+    source="catlin-house sunken-garden exposed frame — KDAT 2x plies, white-painted to match the pillars: BM-SG-FRW/FRE and BM-SG-BLW/BLE (3-2x12)",
 )
 
 # The breezeway's four 6x6 posts. NOT POST_WHITE_PAINT: that assembly is white-painted and
@@ -2168,7 +2176,7 @@ MATERIALS = [
     Material(tag="roof-underlayment-synthetic",
              name="Vapour-permeable synthetic roof underlayment",
              r_per_inch=0.0, vapor_permeance_perms=20.0, hatch="membrane", color="#3b3b3b",
-             source="published vapour-permeable synthetic roof underlayments (VaproShield SlopeShield, Cosella-Dorken DELTA-MAXX) ASTM E96 permeance 15-50 perm; low end of the published range — a sheet rating, not perm-in"),
+             source="published vapour-permeable synthetic roof underlayments (VaproShield SlopeShield, Cosella-Dorken DELTA-MAXX) ASTM E96 permeance 15-50 perm; low end of the published range — a sheet rating, not perm-in; ASTM D226 Type II / ICC-ES AC188 compliant, fastened with annular-ring/deformed-shank cap nails at 6\" o.c. laps / 12\" o.c. field (FORTIFIED Roof §4.4 sealed-deck citation)"),
     # The plant room's three materials — `pvc-panel`, `humid-room-membrane` and
     # `vinyl-sheet` — were authored here first and promoted to `library/materials.py`
     # (CONTRIBUTING §Promotion flow) on 2026-08-18: none of them carries a project
@@ -2721,7 +2729,11 @@ ASSEMBLIES = [
     INT_2X6_STAGGERED_PLUMBING,
     INT_2X4_PARTITION,
     INT_2X4_RC,
+    # Kept, referenced by nothing since 2026-08-30 — W-M-LS/CLN/CLN2 retyped to the
+    # single-gwb INT_2X4_STAGGERED_GWB below for the material cost, same convention
+    # glazed-green-brick is kept under.
     INT_2X4_STAGGERED_DOUBLE_GWB,
+    INT_2X4_STAGGERED_GWB,
     INT_ESS_CLOSET_STEEL,
     SAUNA_2X4,
     SAUNA_LINER_INT_2X6_BRG,

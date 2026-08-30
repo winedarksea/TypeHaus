@@ -83,7 +83,7 @@ def test_data_reachability_passes_and_catches_an_orphaned_access_point(catlin_mo
     model, _ = resolve(pruned)
     failures = [f for f in _findings(model, "electrical.data_reachability")
                 if f.result.value == "fail"]
-    assert any("ED-A-EAST-AP" in f.message for f in failures)
+    assert any("ED-A-STUDIO-AP" in f.message for f in failures)
 
 
 def test_conduit_crossings_of_concrete_are_sleeved(catlin_model):
@@ -121,7 +121,7 @@ def test_low_voltage_devices_export_as_communications_appliances(catlin_ifc_path
         "ED-B-NET-PATCH": "NETWORKHUB",
         "ED-M-KITCH-AP": "NETWORKAPPLIANCE",
         "ED-M-PORCH-AP": "NETWORKAPPLIANCE",
-        "ED-A-EAST-AP": "NETWORKAPPLIANCE",
+        "ED-A-STUDIO-AP": "NETWORKAPPLIANCE",
         # The three hardwired drops, 2026-08-22. They are the first instances of
         # ED-T-DATA-JACK: the catalog had an enclosure and two access points and no way to
         # say "a cable ends here at a plate", so a wall jack could not be modelled at all.
@@ -133,7 +133,7 @@ def test_low_voltage_devices_export_as_communications_appliances(catlin_ifc_path
     assert systems["Data"] == "COMMUNICATION"
     data = next(s for s in f.by_type("IfcDistributionSystem") if s.Name == "Data")
     members = {o.Name for o in data.IsGroupedBy[0].RelatedObjects}
-    assert "ED-A-EAST-AP" in members
+    assert "ED-A-STUDIO-AP" in members
     # The capped spare joins no system: an empty pipe distributes nothing, and a reader
     # should see it that way.
     assert not any(str(name).startswith("CD-B-SPARE") for name in members)

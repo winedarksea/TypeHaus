@@ -21,8 +21,10 @@ from typehaus.takeoff.member_protection import member_protection_takeoff
 #: Every sunken-garden beam that is three plies of 2x12, and so wants the wide roll.
 BUILT_UP_BEAMS = {"BM-SG-BKW", "BM-SG-BKE", "BM-SG-FRW", "BM-SG-FRE",
                   "BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE"}
-#: The single-ply 2x12 girts. Taped for an exposed top, not for a seam — narrow roll.
-GIRTS = {"BM-SG-GIRT-RW", "BM-SG-GIRT-RE", "BM-SG-GIRT-FW", "BM-SG-GIRT-FE"}
+#: The two single-ply 2x8 E-W brace rails. Taped for an exposed top, not for a seam —
+#: narrow roll, same as the 2x12 girts they replaced (a 2x8 on edge presents the same 1.5"
+#: top).
+RAILS = {"BM-SG-RAIL-R", "BM-SG-RAIL-F"}
 
 
 @pytest.fixture(scope="module")
@@ -33,16 +35,16 @@ def rows(catlin_model_ro):
 def test_only_authored_members_are_taped(rows):
     """The section derives nothing. Untaped framing — the whole house — must not appear."""
     taped = {tag for row in rows for tag in row["tags"]}
-    assert taped == BUILT_UP_BEAMS | GIRTS | {"FS-SG-PORCH", "FS-SG-DECK"}
+    assert taped == BUILT_UP_BEAMS | RAILS | {"FS-SG-PORCH", "FS-SG-DECK"}
 
 
 def test_built_up_beams_take_the_wide_roll(rows):
-    """The 4 1/2" beams and the 1 1/2" girts must not land on one row, or one order."""
+    """The 4 1/2" beams and the 1 1/2" rails must not land on one row, or one order."""
     by_tag = {tag: row for row in rows for tag in row["tags"]}
     for tag in BUILT_UP_BEAMS:
         assert by_tag[tag]["material"] == "butyl-tape-beam", tag
         assert by_tag[tag]["width_in"] == pytest.approx(4.5), tag
-    for tag in GIRTS:
+    for tag in RAILS:
         assert by_tag[tag]["material"] == "butyl-tape", tag
         assert by_tag[tag]["width_in"] == pytest.approx(1.5), tag
 

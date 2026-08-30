@@ -132,7 +132,14 @@ REGISTERS_HVAC_SECOND = [
     # had — so conditioned air still lands on the south glass and crosses the planting before it
     # is pulled out, rather than short-circuiting.
     Register(uid="C7LM4KAP2X", tag="REG-S-ERV-PLANT-EXH", kind=DuctSystem.EXHAUST,
-             room="RM-S-PLANT", position=pt(ft(17, 7), ft(4, 8)),
+             # ** MOVED y=4'-8" -> 7'-4" ON 2026-08-30, WITH ITS RISER AND FOR ITS SAKE. **
+             # y=4'-8" put the riser feeding this grille inside D-S-PLANT's rough opening —
+             # 78 1/2" of bare duct standing in the doorway and a bore through the 2-ply 2x8
+             # header (see mep_erv.py). There is no legal riser station in that opening, so
+             # the grille could not stay. y=7'-4" is the next bay north and is a truss bay
+             # centre and a stud bay centre at once. x is unchanged, and so is every reason
+             # this terminal is a high sidewall on W-S-C1 rather than a ceiling grille.
+             room="RM-S-PLANT", position=pt(ft(17, 7), ft(7, 4)),
              duct_ref="DU-M-ERV-R-PLANT",
              type_ref="REG-T-ERV-PLANT-EXH", design_cfm=25,
              mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
@@ -376,7 +383,7 @@ REGISTERS_MAIN = [
     # the 6" the old station fought for — and CD-B-DATA-STUDY rises at 16'-0" on this same
     # wall, now 1'-6" clear instead of 6". Every clearance on this wall got better.
     Register(uid="H6C6RD9NED", tag="REG-M-RET-STUDY", kind=DuctSystem.RETURN, room="RM-M-STUDY",
-            position=pt(ft(14, 6), ft(18, 4.5)), duct_ref="DU-M-ERV-R-LAUNDRY",
+            position=pt(m(4.27777), m(5.60336)), duct_ref="DU-M-ERV-R-LAUNDRY",
             type_ref="REG-T-ERV-EXH-WALL", design_cfm=10,
             mount=Mount(kind=MountKind.WALL, elevation=inch(12))),
     # The two baths are EXHAUST at 20 cfm each, like the second storey's — see the note over

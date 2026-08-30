@@ -219,8 +219,8 @@ class SunkenGardenSpec:
     # no longer carrying these as well.
     #
     # The 2" of extra depth is real and it moves things: `_balcony_beam_depth_ft` is
-    # derived from this string now, so the beam soffit, the pillar tops, the girts and both
-    # knee-brace families drop 2" with it. Clear height from the porch deck to the balcony
+    # derived from this string now, so the beam soffit, the pillar tops, the brace rails and
+    # both knee-brace families drop 2" with it. Clear height from the porch deck to the balcony
     # beam soffit goes 8'-7 1/2" -> 8'-5 1/2", and the walking surface at `balcony_level_ft`
     # has not moved.
     #
@@ -230,11 +230,14 @@ class SunkenGardenSpec:
     # the porch beams sit under GAPPED composite. That asymmetry is the real ESR-1387 5.3
     # exposure story, and it is why the two pairs were never the same problem.
     balcony_beam: str = "3-2x12"
-    # The four E-W girts share the beams' depth by construction: both ride ON the pillar
-    # tops, so a girt of any other depth would finish its top out of plane with the beam
-    # tops the deck joists cross. It followed `balcony_beam` from 2x10 to 2x12 for that
-    # reason, not for a span one — a girt carries no joists (see BALCONY_GIRTS).
-    balcony_girt: str = "2x12"
+    # Carries no gravity load — the deck's joists span E-W onto the three N-S beams only.
+    # This is the E-W lateral collector: the only E-W load path on a freestanding deck with
+    # pinned ABU66SS bases, and the strut the corner knee braces rise into. Also what ties
+    # the two unbraced centre pillars into the two braced end bays, which is why they can
+    # stay unbraced. 2x8 because it only wants face width for two 1/2" through-bolts per
+    # post (face-bolted, not seated — nothing bears on it, so it need not match the beam
+    # depth). See BALCONY_RAILS.
+    balcony_brace_rail: str = "2x8"
     balcony_joist: str = "2x8"
     balcony_joist_oc_in: float = 16.0
     balcony_deck_thickness_in: float = 1.5  # aluminum plank
@@ -313,7 +316,7 @@ _porch_walking_surface = inch(SPEC.porch_deck_thickness_in)
 _balcony = ft(SPEC.balcony_level_ft)
 
 # Self-adhered butyl over every framing top in this structure — both decks' joists, all
-# seven built-up beams, all four girts. One tag because it is one product and one order;
+# seven built-up beams, both brace rails. One tag because it is one product and one order;
 # the BOM splits it by member width, which is the number that decides which roll to buy.
 #
 # The reason it is here and not in a note: a site-built multi-ply beam has an open seam
@@ -908,17 +911,22 @@ _balcony_joist_depth_ft = 7.25 / 12.0  # 2x8 deck joist
 # (resolve/envelope.py::_bearing_stack_drops), so the wood doesn't actually land here (see
 # _balcony_beam_soffit below). Subtracting the joist depth here too would double-count it.
 _beam_soffit = ft(SPEC.balcony_level_ft - _balcony_beam_depth_ft)
-# The *resolved* soffit: the pillar-top plane the beams and E-W girts sit on, and the
-# plane both brace families rise to.
+# The *resolved* soffit: the pillar-top plane the beams sit on, and the plane the N-S brace
+# family rises to. The E-W family rises to the rail's own (lower) soffit instead — see
+# `_rail_soffit` below.
 _balcony_beam_soffit = ft(SPEC.balcony_level_ft - _balcony_joist_depth_ft
                           - _balcony_beam_depth_ft)  # 8.458'
-# Same depth as the beams by design (see SPEC.balcony_girt), so the tops finish flush.
-_girt_depth_ft = cross_section(SPEC.balcony_girt).depth_m / 0.3048
-# Girts ride ON the pillar tops (not bolted to the faces a girt-depth lower), so their
-# soffit IS the resolved pillar-top/beam-soffit plane — E-W and N-S knee braces land at the
-# same soffit.
-_girt_soffit = _balcony_beam_soffit  # 8.458'
-_girt_top = _balcony_beam_soffit + ft(_girt_depth_ft)  # 9.396' — flush with the beam tops
+# The rail's TOP is bolted to the pillar-top plane, not seated on it, so the rail hangs
+# below the beam soffit rather than riding flush with the beam tops the way the old girts
+# did.
+_rail_depth_ft = cross_section(SPEC.balcony_brace_rail).depth_m / 0.3048
+_rail_top = _balcony_beam_soffit  # 8.458' — the pillar-top plane
+_rail_soffit = _balcony_beam_soffit - ft(_rail_depth_ft)  # 7.854'
+# Both rails sit at the same top elevation even though the rear posts run 2" proud
+# (rear_pillar_rise_in) — face-bolted, not bearing, so the drainage crown doesn't need to
+# propagate, which is why all four E-W braces become geometrically identical and the old
+# rear-row hanger-saddle detail goes away.
+# _RAIL_FACE_OFFSET_FT is defined below, once _pillar_face_ft exists.
 _PILLAR_X = (_x_ax_w, _cx, _x_ax_e)
 # (row, x index) -> (the concrete wall top that pillar bears on, its elevation). Anything
 # not in the map bears on the porch decking instead.
@@ -963,7 +971,7 @@ _WALL_UNDER_PILLAR = {
 # an 87" back span is structurally indistinguishable and lets the check go silent honestly.
 # **Do not widen ``_EPS`` instead**; the offset is the statement, not a workaround.
 #
-# What moves with the row: GIRT_NODES' four rear nodes and ``_ROW_Y["R"]`` (the knee-brace
+# What moves with the row: RAIL_NODES' two rear nodes and ``_ROW_Y["R"]`` (the knee-brace
 # origins). What does NOT move: SECOND_NODES, the deck outline, guard, fascia, gutter and
 # rear counter-flashing, all keyed to ``_y_in_n``. So the three balcony beams keep their
 # full length and gain a north cantilever past the rear pillars:
@@ -985,6 +993,10 @@ _WALL_UNDER_PILLAR = {
 _REAR_PILLAR_SOUTH_OF_COL_IN = 3.0
 _y_rear_pillar = _y_col - _REAR_PILLAR_SOUTH_OF_COL_IN / 12.0  # -2.5'
 _pillar_face_ft = 2.75 / 12.0  # half the 5.5" actual 6x6
+# The rail's own centreline offset from the row's pillar axis: half the post plus half the
+# rail (2.75" + 0.75" = 3.5"). Used by both the rail nodes and the E-W knee brace positions.
+_RAIL_FACE_OFFSET_FT = (_pillar_face_ft
+                        + cross_section(SPEC.balcony_brace_rail).width_m / 2 / 0.3048)
 
 # The FRONT row stands 2 3/4" north of `_y_balcony_front`, and the rear row does not, and
 # the asymmetry is a weather detail rather than a structural one (2026-08-30).
@@ -1006,7 +1018,7 @@ _pillar_face_ft = 2.75 / 12.0  # half the 5.5" actual 6x6
 # `_y_in_n`, so PT-SG-BR1/2/3 are mid-span under a continuous member and their tops are
 # already covered. Only a post at a beam's END has this problem.
 #
-# What moves with the row, because it is the row: the four front GIRT_NODES, `_ROW_Y["F"]`
+# What moves with the row, because it is the row: the two front RAIL_NODES, `_ROW_Y["F"]`
 # (the knee-brace origins), the ABU66SS bases, and PT-SG-FCOL's axis under BF2 (see
 # `_front_column_south_offset_in`, which is re-solved for the new pillar line). What does
 # NOT move: the beam ends themselves, `_DECK_OUTLINE`, the guard, fascia, drip and gutter
@@ -1105,59 +1117,42 @@ BALCONY_BEAMS = [
          bearing_refs=("PT-SG-BR3", "PT-SG-BF3")),
 ]
 
-# E-W girts, up ON the pillar tops in the same band as the N-S beams — they carry no
-# joists (deck spans E-W onto the beams beside them) and exist purely so the balcony has a
-# lateral load path in its second direction: with standoff post bases pinned top and
-# bottom, an E-W knee brace needs an E-W member at the pillar tops to reach.
+# E-W brace rails, hung off the pillar tops in the same band as the N-S beams — they carry
+# zero gravity load (the deck's joists span E-W onto the three N-S beams only) and exist
+# purely so the balcony has a lateral load path in its second direction: this is a
+# freestanding structure on pinned ABU66SS bases with no other E-W load path, and an E-W
+# knee brace needs an E-W member at the pillar tops to rise into.
 #
-# Can't run the full 20' (would pass through the three N-S beams), so each row is two
-# segments: front row butts the beam faces directly; rear row's pillars run 2" proud
-# (drainage rise), so those segments stop at the pillar faces and a hanger saddle closes
-# the rest of the gap to the beam.
+# Each rail runs the full 20'-0" through all three posts in its row, on the post AXES (one
+# stocked stick, no splice) rather than butting the beam faces the old girts did — it is
+# face-bolted to the row's inboard face (2 x 1/2" HDG through-bolts per post), never
+# notched or seated, so a housing on an exposed post face is never a water trap. That also
+# ties the two centre pillars (PT-SG-BR2, PT-SG-BF2) into the two braced end bays, which is
+# what lets them stay unbraced today — the rationale changes from "thrust would hit BR2"
+# (false since PT-SG-BR2 moved onto the back-beam/column line) to "the rail already reaches
+# them". bearing_refs=() is deliberate: the rail doesn't bear, and an empty tuple keeps
+# takeoff/uplift_joints.py::post_beam_strap_rows from billing a strap at a joint that isn't
+# real beam-on-post bearing.
 #
-# Front-row half-width is read off ``SPEC.balcony_beam`` rather than hardcoded — it was a
-# literal 1.5" for a long-gone 3"-wide double-2x10, and the 2026-07-31 LVL swap (3 1/2")
-# would have driven the girts 1/4" into the beams if left hardcoded
-# (`structural.member_interference` is what catches this class of bug).
-_beam_face_ft = cross_section(SPEC.balcony_beam).width_m / 2 / 0.3048
-GIRT_NODES = [
-    Node(uid="SGNG01AAAA", tag="N-SGG-RW1",
-         position=pt(ft(_x_ax_w + _pillar_face_ft), ft(_y_rear_pillar))),
-    Node(uid="SGNG02AAAA", tag="N-SGG-RW2",
-         position=pt(ft(_cx - _pillar_face_ft), ft(_y_rear_pillar))),
-    Node(uid="SGNG03AAAA", tag="N-SGG-RE1",
-         position=pt(ft(_cx + _pillar_face_ft), ft(_y_rear_pillar))),
-    Node(uid="SGNG04AAAA", tag="N-SGG-RE2",
-         position=pt(ft(_x_ax_e - _pillar_face_ft), ft(_y_rear_pillar))),
-    Node(uid="SGNG05AAAA", tag="N-SGG-FW1",
-         position=pt(ft(_x_ax_w + _beam_face_ft), ft(_y_front_pillar))),
-    Node(uid="SGNG06AAAA", tag="N-SGG-FW2",
-         position=pt(ft(_cx - _beam_face_ft), ft(_y_front_pillar))),
-    Node(uid="SGNG07AAAA", tag="N-SGG-FE1",
-         position=pt(ft(_cx + _beam_face_ft), ft(_y_front_pillar))),
-    Node(uid="SGNG08AAAA", tag="N-SGG-FE2",
-         position=pt(ft(_x_ax_e - _beam_face_ft), ft(_y_front_pillar))),
+# Spent uids, not reused: SGBG01AAAA/SGBG02AAAA/SGBG03AAAA/SGBG04AAAA (the four girts) and
+# SGNG01..08AAAA (their eight nodes).
+RAIL_NODES = [
+    Node(uid="9VBVMD4AR6", tag="N-SGR-RW",
+         position=pt(ft(_x_ax_w), ft(_y_rear_pillar - _RAIL_FACE_OFFSET_FT))),
+    Node(uid="EQERKG45X9", tag="N-SGR-RE",
+         position=pt(ft(_x_ax_e), ft(_y_rear_pillar - _RAIL_FACE_OFFSET_FT))),
+    Node(uid="GMEZET9T9W", tag="N-SGR-FW",
+         position=pt(ft(_x_ax_w), ft(_y_front_pillar + _RAIL_FACE_OFFSET_FT))),
+    Node(uid="20Q9XQFSV9", tag="N-SGR-FE",
+         position=pt(ft(_x_ax_e), ft(_y_front_pillar + _RAIL_FACE_OFFSET_FT))),
 ]
-# The two FRONT segments are white-painted (BEAM_WHITE_PAINT) and the two REAR ones are not:
-# the front pair stands over the garden beside the white pillars, the rear pair sits against
-# the house behind the deck. Same stock and same section either way.
-BALCONY_GIRTS = [
-    Beam(uid="SGBG01AAAA", tag="BM-SG-GIRT-RW", start_node="N-SGG-RW1", end_node="N-SGG-RW2",
-         size=SPEC.balcony_girt, top_elevation=_girt_top, assembly="BEAM_KDAT",
-         top_protection=_BEAM_TAPE,
-         bearing_refs=("PT-SG-BR1", "PT-SG-BR2")),
-    Beam(uid="SGBG03AAAA", tag="BM-SG-GIRT-RE", start_node="N-SGG-RE1", end_node="N-SGG-RE2",
-         size=SPEC.balcony_girt, top_elevation=_girt_top, assembly="BEAM_KDAT",
-         top_protection=_BEAM_TAPE,
-         bearing_refs=("PT-SG-BR2", "PT-SG-BR3")),
-    Beam(uid="SGBG02AAAA", tag="BM-SG-GIRT-FW", start_node="N-SGG-FW1", end_node="N-SGG-FW2",
-         size=SPEC.balcony_girt, top_elevation=_girt_top, assembly="BEAM_WHITE_PAINT",
-         top_protection=_BEAM_TAPE,
-         bearing_refs=("PT-SG-BF1", "PT-SG-BF2")),
-    Beam(uid="SGBG04AAAA", tag="BM-SG-GIRT-FE", start_node="N-SGG-FE1", end_node="N-SGG-FE2",
-         size=SPEC.balcony_girt, top_elevation=_girt_top, assembly="BEAM_WHITE_PAINT",
-         top_protection=_BEAM_TAPE,
-         bearing_refs=("PT-SG-BF2", "PT-SG-BF3")),
+BALCONY_RAILS = [
+    Beam(uid="XYQFW1YGXG", tag="BM-SG-RAIL-R", start_node="N-SGR-RW", end_node="N-SGR-RE",
+         size=SPEC.balcony_brace_rail, top_elevation=_rail_top, assembly="BEAM_KDAT",
+         top_protection=_BEAM_TAPE, bearing_refs=()),
+    Beam(uid="VWWMCZ1TBG", tag="BM-SG-RAIL-F", start_node="N-SGR-FW", end_node="N-SGR-FE",
+         size=SPEC.balcony_brace_rail, top_elevation=_rail_top, assembly="BEAM_KDAT",
+         top_protection=_BEAM_TAPE, bearing_refs=()),
 ]
 
 # Aluminum decking walking surface (framing = 2x8 joists, E-W @ 16" o.c., on the 3 beams).
@@ -1362,7 +1357,7 @@ BALCONY_JOISTS = FloorSystem(
                      direction="x", cantilever=inch(SPEC.joist_cantilever_in),
                      # The two rim bands close the joist tips on the garden's front and rear
                      # faces, at eye level from the walk below and in the same plane as the
-                     # white pillars, girts and knee braces — so they are painted with them
+                     # white pillars and knee braces — so they are painted with them
                      # (2026-08-27). The joists behind them stay bare KDAT: nothing sees a
                      # joist once the band and the fascia are on.
                      rim_material="post-paint-white",
@@ -1531,12 +1526,14 @@ CONNECTORS += [
 # The four corner pillars are braced in both plan directions; the two centre pillars
 # (PT-SG-BR2/BF2) are deliberately left as leaning columns. This is a freestanding deck
 # on ABU66SS standoff bases (base + beam bearing both pins), so the braces are the only
-# lateral resistance and need both directions — hence the E-W girts, for the "x" braces to
-# reach. Bracing the outer bays each direction is enough with the deck as diaphragm; bracing
-# the centre pillars too would push thrust into PT-SG-BR2, the one pillar still bearing on
-# porch decking rather than on concrete — the worst place to load laterally. One brace per
-# pillar per direction: the second brace at a corner is the E-W one against the girt segment (now at
-# the same soffit as the beams) — the old "matched pair per joint" rule billed 12 unbuildable
+# lateral resistance and need both directions — hence the E-W brace rails, for the "x"
+# braces to reach. Bracing the outer bays each direction is enough with the deck as
+# diaphragm; leaving the centre pillars unbraced is defensible for a different reason than
+# it used to be — not because thrust would land on PT-SG-BR2 (that pillar bears on concrete
+# now, not porch decking), but because the rails run continuous through all six posts and
+# already tie the centre pillars into the two braced end bays. One brace per pillar per
+# direction: the second brace at a corner is the E-W one against the rail (now at its own
+# soffit, below the beams') — the old "matched pair per joint" rule billed 12 unbuildable
 # braces.
 # ============================================================================
 # (row, pillar index, N-S lean, E-W lean). Rear posts brace south toward the beam's midspan
@@ -1552,24 +1549,27 @@ _EW_BRACE_UID = {("R", 1): "SGKX1RAAAA", ("R", 3): "SGKX3RAAAA",
                  ("F", 1): "SGKX1FAAAA", ("F", 3): "SGKX3FAAAA"}
 _ROW_Y = {"R": _y_rear_pillar, "F": _y_front_pillar}
 _NS_BEAM = {1: "BM-SG-BLW", 3: "BM-SG-BLE"}
-# The west pillar of each row braces east into its row's west girt segment; the east
-# pillar braces west into the east segment.
-_EW_GIRT = {("R", 1): "BM-SG-GIRT-RW", ("R", 3): "BM-SG-GIRT-RE",
-            ("F", 1): "BM-SG-GIRT-FW", ("F", 3): "BM-SG-GIRT-FE"}
+# The rail is continuous, so both pillars in a row rise into the same member — keyed by
+# row only, not by pillar index the way the girts were.
+_EW_RAIL = {"R": "BM-SG-RAIL-R", "F": "BM-SG-RAIL-F"}
+# The E-W brace lands in the rail's own plane, off the post face — the rail sits
+# `_RAIL_FACE_OFFSET_FT` south of the rear row and north of the front row (see RAIL_NODES).
+_EW_ROW_Y = {"R": _y_rear_pillar - _RAIL_FACE_OFFSET_FT, "F": _y_front_pillar + _RAIL_FACE_OFFSET_FT}
 KNEE_BRACES = []
 for _row, _i, _ns, _ew in _BRACED_CORNERS:
     _post = f"PT-SG-B{_row}{_i}"
     _at = pt(ft(_PILLAR_X[_i - 1]), ft(_ROW_Y[_row]))
+    _ew_at = pt(ft(_PILLAR_X[_i - 1]), ft(_EW_ROW_Y[_row]))
     KNEE_BRACES.append(KneeBrace(
         uid=_NS_BRACE_UID[(_row, _i)], tag=f"KB-SG-{_row}{_i}-NS", position=_at,
         soffit_elevation=_balcony_beam_soffit, leg=_BRACE_LEG, axis="y", direction=_ns,
         member="2x6", post_size=SPEC.pillar_size, assembly="POST_WHITE_PAINT",
         connects=(_post, _NS_BEAM[_i])))
     KNEE_BRACES.append(KneeBrace(
-        uid=_EW_BRACE_UID[(_row, _i)], tag=f"KB-SG-{_row}{_i}-EW", position=_at,
-        soffit_elevation=_girt_soffit, leg=_BRACE_LEG, axis="x", direction=_ew,
+        uid=_EW_BRACE_UID[(_row, _i)], tag=f"KB-SG-{_row}{_i}-EW", position=_ew_at,
+        soffit_elevation=_rail_soffit, leg=_BRACE_LEG, axis="x", direction=_ew,
         member="2x6", post_size=SPEC.pillar_size, assembly="POST_WHITE_PAINT",
-        connects=(_post, _EW_GIRT[(_row, _i)])))
+        connects=(_post, _EW_RAIL[_row])))
 
 # ============================================================================
 # Balcony guard + edge trim. The metal fascia-mounted guardrail is a first-class Railing
@@ -1607,7 +1607,7 @@ _FRONT_PATH = (pt(ft(_deck_x_w), ft(_y_balcony_front)),
 # leader has to hang *outside* the structure. Its old position (`_deck_x_e - 0.5`, which is
 # the east beam axis) put a 3" pipe dead centre in two solids at once: the 6x6 pillar
 # PT-SG-BF3 stands on that axis, and W-SG-E1's 12" band (x 27.5-28.5) runs the whole drop
-# below it. There is no room inboard either — the front girt and the front beam both sit on
+# below it. There is no room inboard either — the front rail and the front beam both sit on
 # the trough line, and SL-SG-FLOOR stops at the wall's inner face. So the trough oversails
 # the deck edge and the pipe drops just clear of the wall's *outer* face, into the 6" slot
 # between that face and the raised garden's east return (raised_garden.py stands that leg
@@ -1703,7 +1703,9 @@ _balcony_cap_thickness = ft(_balcony_beam_width_ft) + inch(2 * _CAP_LAP_IN)
 # would float above the beam exactly the way the porch hangers did before 2026-08-25.
 _back_beam_top = _porch_top - ft(_porch_joist_depth_ft)   # joists bear on top
 _front_beam_top = _back_beam_top                          # joists bear on top (2026-08-29)
-_balcony_beam_top = _girt_top                             # = beam soffit + beam depth
+# Same numeric value as before (9.3958333'), just no longer derived from a member (the
+# girt) that no longer exists.
+_balcony_beam_top = _balcony_beam_soffit + ft(_balcony_beam_depth_ft)
 
 # (uid, tag, node pair, top, section width). The paths are the beams' own node coordinates,
 # so a cap cannot drift off the beam it caps.
@@ -1719,7 +1721,7 @@ _BEAM_CAP_AT = (
     # The balcony's three run N-S on the deck's own 2"-in-8'-8" southward fall (the rear
     # pillars are ``rear_pillar_rise_in`` taller), so each cap sheds to its south end — which
     # is the front edge, where TR-SG-GUTTER already hangs. The caps discharge into the
-    # trough rather than onto the pillar tops and the front girts below them.
+    # trough rather than onto the pillar tops and the front rail below them.
     ("SGCP05AAAA", "TR-SG-CAP-BLW", (_x_ax_w, _y_in_n), (_x_ax_w, _y_balcony_front),
      _balcony_beam_top, _balcony_cap_thickness, "BM-SG-BLW"),
     ("SGCP06AAAA", "TR-SG-CAP-BLC", (_cx, _y_in_n), (_cx, _y_balcony_front),
@@ -1794,7 +1796,7 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
 # tie), so main takes them whole; the knee braces are the only second-storey hardware.
 MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, *FRONT_BEAMS, PORCH_JOISTS, PORCH_GUARD,
                  *CONNECTORS, *PORCH_BEAM_CAPS]
-SECOND_ELEMENTS = [*SECOND_NODES, *GIRT_NODES, *BALCONY_BEAMS, *BALCONY_GIRTS, *PILLARS,
+SECOND_ELEMENTS = [*SECOND_NODES, *RAIL_NODES, *BALCONY_BEAMS, *BALCONY_RAILS, *PILLARS,
                    BALCONY_JOISTS, *KNEE_BRACES, BALCONY_GUARD, BALCONY_FASCIA,
                    BALCONY_GUTTER, BALCONY_LEADER, BALCONY_DRIP, BALCONY_REAR_FLASH,
                    *BALCONY_BEAM_CAPS, *HP_STAND_LEGS, *HP_STAND_ANCHORS]

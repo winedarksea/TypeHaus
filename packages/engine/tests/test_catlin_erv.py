@@ -143,22 +143,57 @@ def test_the_intake_is_its_own_duct_system(catlin_model) -> None:
 
 def test_the_hoods_clear_the_code_separations(catlin_plan, catlin_model) -> None:
     """IRC M1602.2 / ASHRAE 62.2 §6.8 want 10 ft intake-to-exhaust, 3 ft from a plumbing vent
-    or a dryer, and enough height to clear drifted snow. RM-M-MECH is 5'-11" x 2'-7", so no
-    pair of hoods near the shaft can make the ten feet; the north gable can."""
+    or a dryer, and enough height to clear drifted snow.
+
+    The pair made this on the north gable by horizontal separation until 2026-08-30 and makes
+    it at the NW chase by VERTICAL separation now. The old form of this docstring said "no
+    pair of hoods near the shaft can make the ten feet" and cited RM-M-MECH at 5'-11" x 2'-7";
+    the room is really 5'-3" x 1'-11" (``resolve/rooms.py`` polygonizes from wall axes, so an
+    exterior-wall room reads 6" past its own interior face), and the claim was only ever true
+    of a HORIZONTAL pair. ``erv_outdoor_terminals`` measures a 3-D distance."""
     findings = erv_outdoor_terminals(check_context(catlin_plan, catlin_model))
     assert findings
     assert not [f for f in findings if f.result is not Result.PASS], \
         [f.message for f in findings if f.result is not Result.PASS]
 
 
-def test_the_hoods_are_mirrored_about_the_ridge(catlin_plan) -> None:
-    """A gable reads symmetric about x=18'-0" before it answers to anything below it — the
-    facade rule in houses/catlin/CLAUDE.md, and nothing but this test enforces it for the
-    two hoods."""
-    hoods = {e.tag: e.position.xy_m[0] / _FT for e in catlin_plan.all_elements()
-             if e.tag in ("EQ-A-ERV-HOOD-OA", "EQ-A-ERV-HOOD-EA")}
-    assert len(hoods) == 2
-    assert sum(hoods.values()) == pytest.approx(36.0, abs=0.01)
+def test_the_hoods_are_stacked_with_the_discharge_on_top(catlin_plan) -> None:
+    """The rule that governs the pair since 2026-08-30, replacing the north-gable mirror.
+
+    This test used to assert ``x(OA) + x(EA) == 36.0`` — the gable's mirror about the ridge —
+    and its own docstring noted that nothing but this test enforced it. The hoods left the
+    gable because ``DU-ERV-EA``'s horizontal leg ran through the rough openings of both gable
+    windows; the mirror was a facade rule, not a code rule, and it does not apply to a pair
+    that is no longer on a gable.
+
+    What replaces it is the arrangement that makes the pair legal without ten feet of facade:
+    both on the west wall at the NW chase, EXHAUST ABOVE INTAKE. Two independent things want
+    that order. An exhaust plume rises, so an intake under it is the safe one. And IRC M1506.3
+    waives the 10 ft separation entirely "where the exhaust opening is located not less than
+    3 feet above the air intake opening" — the engine does not implement that exception, and
+    this pair does not need it (13'-0" of rise clears the 10 ft on 3-D distance alone), but
+    the ORDER is what the code blesses and reversing it would be wrong on both counts.
+
+    Both must also stay south of ``TR-RF-LEADER-W``, the roof leader on this facade at
+    y=35'-6", and clear of the second-storey chase notch's +19'-0" cap.
+    """
+    hoods = {e.tag: e for e in catlin_plan.all_elements()
+             if e.tag in ("EQ-M-ERV-HOOD-OA", "EQ-S-ERV-HOOD-EA")}
+    assert set(hoods) == {"EQ-M-ERV-HOOD-OA", "EQ-S-ERV-HOOD-EA"}
+
+    # Storey-relative mounts on datums 0'-0" and +10'-0": +4'-0" and +17'-0" absolute.
+    intake_z = hoods["EQ-M-ERV-HOOD-OA"].mount.elevation.meters / _FT
+    exhaust_z = 10.0 + hoods["EQ-S-ERV-HOOD-EA"].mount.elevation.meters / _FT
+    assert intake_z == pytest.approx(4.0, abs=0.01)
+    assert exhaust_z == pytest.approx(17.0, abs=0.01)
+    assert exhaust_z - intake_z >= 3.0, "IRC M1506.3 wants the exhaust >= 3 ft over the intake"
+
+    for tag, hood in hoods.items():
+        x, y = (v / _FT for v in hood.position.xy_m)
+        # The west facade at the chase, not the north gable: x is at the wall, y is in the
+        # chase band. If either drifts back onto the gable this reads it immediately.
+        assert x == pytest.approx(0.5, abs=0.01), tag
+        assert 33.0 < y < 35.5, f"{tag} must stay south of the roof leader at y=35'-6\""
 
 
 # --- the mixing box --------------------------------------------------------------------

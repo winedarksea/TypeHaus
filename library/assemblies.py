@@ -329,6 +329,36 @@ INT_2X4_STAGGERED_DOUBLE_GWB = Assembly(
             "assemblies/assembly-detail.30226.html"),
 )
 
+# Shares INT_2X4_STAGGERED_DOUBLE_GWB's framing geometry — 2x4 studs staggered on 2x6
+# plates, 16 in. o.c. per face, same USG/GA WP 5530 test — but carries a single 5/8 in.
+# gypsum layer per face rather than a double layer, the same relationship
+# INT_2X6_STAGGERED_PLUMBING already has to it below: the framing geometry is the tested
+# one, the single-layer gypsum face is not, so no stc= is claimed. Cheaper than dropping
+# the cavity fill instead — gwb runs $1.55-2.65/SF installed against fiberglass's
+# $0.90-1.75/SF (`prices.toml`), so a whole layer of gypsum is the more expensive half of
+# this assembly to cut, not the insulation.
+INT_2X4_STAGGERED_GWB = Assembly(
+    tag="INT_2X4_STAGGERED_GWB",
+    layers=(
+        Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        Layer(name="staggered-studs", material_ref="spf", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x4", spacing=inch(16), plate_member="2x6",
+                                  layout=PartitionLayout.STAGGERED,
+                                  stagger_gap=inch(1.5)),
+              cavity=CavityFill(material_ref="fiberglass", thickness=inch(3.5))),
+        Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+    ),
+    source=("2x4 studs staggered on 2x6 plates per USG/GA WP 5530 (16 in. o.c. per face, "
+            "8 in. combined), 3.5 in. fiberglass, single 5/8 in. gypsum layer each face; "
+            "the framing geometry is the tested one, the double-layer gypsum face is not, "
+            "so no STC is claimed — a comparable single-layer staggered-stud build is "
+            "commonly listed around STC 48, e.g. "
+            "https://commercial-acoustics.com/sound-advice/staggered-stud-wall-stc/"),
+)
+
 INT_2X4_DOUBLE_STUD_MINERAL_WOOL = Assembly(
     tag="INT_2X4_DOUBLE_STUD_MINERAL_WOOL",
     layers=(
@@ -424,6 +454,7 @@ ALL_ASSEMBLIES: tuple[Assembly, ...] = (
     INT_2X4_RC,
     INT_2X4_RC_DOUBLE_GWB,
     INT_2X4_STAGGERED_DOUBLE_GWB,
+    INT_2X4_STAGGERED_GWB,
     INT_2X4_DOUBLE_STUD_MINERAL_WOOL,
     INT_2X6_PLUMBING,
     INT_2X6_STAGGERED_PLUMBING,

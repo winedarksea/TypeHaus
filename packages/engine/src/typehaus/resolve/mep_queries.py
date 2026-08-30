@@ -24,7 +24,14 @@ from typehaus.resolve.model import (
     Ring,
 )
 
-_JOIST_BREADTH_M = inch(1.5).meters
+#: Fallback breadth for a bay boundary whose profile the section reader cannot parse. It is
+#: solid-sawn 2x, the narrowest thing a floor is ever framed in, so an unparsed profile errs
+#: toward a WIDER clear bay and a quieter check rather than a confident false conflict.
+_JOIST_BREADTH_FALLBACK_M = inch(1.5).meters
+#: What actually bounds a joist bay. ``blocking`` sits BETWEEN joists and ``rim``/``header``
+#: run around the perimeter, so none of the three is a bay edge; a ``trimmer`` or a
+#: ``sister_joist`` is one, because both are a doubled joist at an opening.
+_BAY_EDGE_CATEGORIES = ("joist", "trimmer", "sister_joist")
 #: The concrete a sleeve can be cast into, and the solids ``concrete_crossings`` walks.
 _CONCRETE_SOLID_CATEGORIES = ("slab", "footing")
 _PIPE_CAVITY_CLEARANCE_M = inch(0.25).meters  # boring/annular allowance inside a stud bay
@@ -393,15 +400,27 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
     on both sides of a bearing line) — they become a drawing note, never a conflict.
     """
     along_x = floor.direction == "x"
-    joist_lines = sorted({(m.p0[1] if along_x else m.p0[0]) for m in floor.members})
+    # Only the members that actually bound a bay. Reading every member manufactured phantom
+    # bay edges out of blocking (which sits mid-bay by definition) and out of the rim, and a
+    # phantom edge inside a bay is what turns a legal parallel run into a "straddles a joist
+    # line" conflict.
+    edges = [m for m in floor.members if m.category in _BAY_EDGE_CATEGORIES]
+    joist_lines = sorted({(m.p0[1] if along_x else m.p0[0]) for m in edges})
     member_depth = max((m.z1_m - m.z0_m for m in floor.members), default=depth_m)
     depth_ok = depth_m <= member_depth + 1e-9
-    opening_m = (open_web_opening_m(cross_section(floor.members[0].profile))
-                if floor.members else None)
+    # From a JOIST, not from ``members[0]``, which was whichever member the resolver happened
+    # to emit first — a rim board on most floors, and a rim board is never an open web.
+    opening_m = (open_web_opening_m(cross_section(edges[0].profile)) if edges else None)
 
     conflicts: list[str] = []
     crossings: list[tuple[float, float]] = []
-    clear_width_m = spacing_m - _JOIST_BREADTH_M
+    # ** THE BREADTH IS THE MEMBER'S, NOT A CONSTANT. ** This subtracted a hardcoded 1 1/2"
+    # until 2026-08-30 — solid-sawn 2x breadth, applied to every floor whatever it is framed
+    # in. An 11 7/8" floor truss has a 3 1/2" chord and an 11 7/8" I-joist a 2 1/2" flange, so
+    # on 16" centres the check was crediting 14 1/2" of clear bay where a truss leaves 12 1/2"
+    # and an I-joist 13 1/2". Two inches is the difference between a 12" duct fitting and not.
+    breadths = {cross_section(m.profile).width_m for m in edges}
+    clear_width_m = spacing_m - (max(breadths) if breadths else _JOIST_BREADTH_FALLBACK_M)
     for i in range(len(path) - 1):
         a, b = path[i], path[i + 1]
         pa, pb = (a[1], b[1]) if along_x else (a[0], b[0])

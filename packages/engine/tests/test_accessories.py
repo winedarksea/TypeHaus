@@ -119,7 +119,7 @@ def test_knee_brace_resolves_to_a_raked_wood_member(catlin_model) -> None:
 
 def test_knee_brace_hardware_resolves_as_a_band_at_each_end(catlin_model) -> None:
     """The APVKB kit is a pair of wrap-around straps, so the hardware reads at both
-    joints — a band hugging the member's z-band at the beam/girt end and another at the
+    joints — a band hugging the member's z-band at the beam/rail end and another at the
     post end — instead of the single floating marker box the old spelling drew."""
     member = next(b for b in catlin_model.braces if b.tag == "KB-SG-R1-NS").members[0]
     solids = {s.tag: s for s in catlin_model.solids}
@@ -137,16 +137,17 @@ def test_knee_brace_hardware_resolves_as_a_band_at_each_end(catlin_model) -> Non
 
 
 def test_balcony_braces_reach_the_shared_pillar_top_soffit(catlin_model) -> None:
-    """The girt segments ride the pillar tops beside the N-S beams now, so the two braces
-    at a corner are level at the resolved pillar-top plane. The brace still carries its own
-    soffit rather than deriving one from its storey — the members a post is braced to need
-    not share an elevation in general; since the girt third pass these two happen to."""
+    """The N-S brace rises to the beam soffit; the E-W brace now rises to the rail's own
+    (lower) soffit, since the rail hangs face-bolted below the pillar-top plane rather than
+    riding on it the way the old girt did. The two braces at a corner land on different
+    planes now, deliberately — the brace still carries its own soffit rather than deriving
+    one from its storey, and there is no longer a reason for the two to agree."""
     ns = next(b for b in catlin_model.braces if b.tag == "KB-SG-R1-NS").members[0]
     ew = next(b for b in catlin_model.braces if b.tag == "KB-SG-R1-EW").members[0]
     # 8.458', not the 8.625' this was until 2026-08-23: the beams went 3-2x10 -> 3-2x12 to
     # clear IRC Table R507.5(1), and the whole pillar-top band came down 2" with them.
     assert ns.z1_end_m == pytest.approx(8.4583333 * FT)  # N-S beam soffit
-    assert ew.z1_end_m == pytest.approx(8.4583333 * FT)  # girt soffit — the same plane now
+    assert ew.z1_end_m == pytest.approx(7.8541667 * FT)  # rail soffit — below the beams' now
     # Both feet stay well above the pillar base at the railing top (3.583').
     assert min(ns.z0_m, ew.z0_m) > 4.0 * FT
     # Every brace is in the framing cut list, so a framer orders the lumber.
@@ -154,28 +155,32 @@ def test_balcony_braces_reach_the_shared_pillar_top_soffit(catlin_model) -> None
     assert len(braced) == 8
 
 
-def test_balcony_girts_sit_flush_with_the_beams(catlin_model) -> None:
-    """``Beam.top_elevation`` places the girts, and perturbs nothing that derives its own.
+def test_the_balcony_brace_rails_hang_clear_of_the_pillar_tops(catlin_model) -> None:
+    """``Beam.top_elevation`` places the rails, and perturbs nothing that derives its own.
 
-    The N-S beams get their drop from the deck joists that bear on them; the girt segments
-    carry no joists, so without an authored top they would hang from the storey datum and
-    collide with the deck. Since the third pass they sit ON the pillar tops in the beams'
-    own band: soffit at the resolved pillar-top plane, tops flush with the beams.
-
-    The girts share the beams' depth by construction (SPEC.balcony_girt), so when the beams
-    went 3-2x10 -> 3-2x12 on 2026-08-23 the girts went 2x10 -> 2x12 with them. Flushness is
-    the invariant, and it is why the TOP plane below is unchanged from the 2x10 era while
-    the soffit dropped 2": depth +2", soffit -2".
+    The N-S beams get their drop from the deck joists that bear on them; the rails carry no
+    joists either, so without an authored top they would hang from the storey datum and
+    collide with the deck. Unlike the girts they replace, a rail does not ride ON the
+    pillar tops — it is face-bolted to the posts' inboard face, below the pillar-top plane,
+    so its plan outline is DISJOINT from every pillar's rather than overlapping it.
     """
     solids = {s.tag: s for s in catlin_model.solids}
-    for tag in ("BM-SG-GIRT-RW", "BM-SG-GIRT-RE", "BM-SG-GIRT-FW", "BM-SG-GIRT-FE"):
-        assert solids[tag].z1_m == pytest.approx(9.3958333 * FT)
-        assert solids[tag].z0_m == pytest.approx(8.4583333 * FT)  # 2x12 on the pillar tops
-    for tag in ("BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE"):
-        assert solids[tag].z0_m == pytest.approx(8.4583333 * FT)
-        assert solids[tag].z1_m == pytest.approx(9.3958333 * FT)
-    # The girts name their pillars for the schedule but carry no joists, so the pillars
-    # keep the heights the deck joists gave them (the rear row 2" high for drainage).
+    for tag in ("BM-SG-RAIL-R", "BM-SG-RAIL-F"):
+        assert solids[tag].z1_m == pytest.approx(8.4583333 * FT)  # bolted at the pillar tops
+        assert solids[tag].z0_m == pytest.approx(7.8541667 * FT)  # 2x8, hanging below them
+        xs = [p[0] for p in solids[tag].outline]
+        assert max(xs) - min(xs) == pytest.approx(20 * FT)  # one stocked stick, no splice
+    # Face-bolted, not seated: a rail's plan outline never overlaps any pillar's.
+    for pillar_tag in ("PT-SG-BR1", "PT-SG-BR2", "PT-SG-BR3"):
+        rail_ys = [p[1] for p in solids["BM-SG-RAIL-R"].outline]
+        pillar_ys = [p[1] for p in solids[pillar_tag].outline]
+        assert max(rail_ys) <= min(pillar_ys) + 1e-9
+    for pillar_tag in ("PT-SG-BF1", "PT-SG-BF2", "PT-SG-BF3"):
+        rail_ys = [p[1] for p in solids["BM-SG-RAIL-F"].outline]
+        pillar_ys = [p[1] for p in solids[pillar_tag].outline]
+        assert min(rail_ys) >= max(pillar_ys) - 1e-9
+    # The rails name no pillars for the schedule, so the pillars keep the heights the deck
+    # joists gave them (the rear row 2" high for drainage) — unchanged from the girt era.
     assert solids["PT-SG-BF1"].z1_m == pytest.approx(8.4583333 * FT)
     assert solids["PT-SG-BR1"].z1_m == pytest.approx(8.625 * FT)
 
