@@ -347,7 +347,10 @@ MAIN_FIXTURES = (
     # 2026-08-29: y +1 5/8" (5.82791 -> 5.86920 m) with W-M-CLN's laundry face, retyped to
     # INT_2X4_STAGGERED_DOUBLE_GWB (storeys/main.py). The basin backed onto that wall with
     # 9/16" to spare and the retype took 1 5/8", so it was 1 1/16" into the studs until it
-    # followed. ** `wall_ref` STILL SAYS W-M-BA2E AND THAT IS NOT THE WALL IT TOUCHES: **
+    # followed. (2026-08-30: W-M-CLN retyped again, to the single-gwb
+    # INT_2X4_STAGGERED_GWB — the face gave back 5/8", so the basin followed it south by
+    # the same amount. `wall_ref`-relative, so it tracked without a coordinate edit here.)
+    # ** `wall_ref` STILL SAYS W-M-BA2E AND THAT IS NOT THE WALL IT TOUCHES: **
     # W-M-BA2E is 3'-0" west and is where PR-B-CW-WASH/PR-B-HW-WASH rise; the basin's back
     # is on W-M-CLN. Left as authored because `wall_ref` is what the supply pair names as
     # its riser wall and repointing it would move the risers, not the sink.

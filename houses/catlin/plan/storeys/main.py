@@ -1526,7 +1526,7 @@ PANELING = [
     #   * together they break the N-S parallel pair, which is the flutter path.
     # The west wall stays walnut with FURN-M-STUDY-BENCH against it; the east wall is door.
     #
-    # `replaces_wall_finish=False`: INT_2X4_STAGGERED_DOUBLE_GWB and INT_2X4_PARTITION both
+    # `replaces_wall_finish=False`: INT_2X4_STAGGERED_GWB and INT_2X4_PARTITION both
     # carry their gypsum in `layers`, not in `default_lining`, so there is no lining to
     # replace — and both walls are interior, so there is no envelope or vapour consequence
     # either way. The band's 3D outline lands on the walls' resolved layer polygons

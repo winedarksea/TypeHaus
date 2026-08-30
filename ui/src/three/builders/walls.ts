@@ -211,7 +211,7 @@ export function buildWall(
   }
   const framingFirstIndex = tradeGroups.framing.children.length;
   const wallsSkinFirstIndex = tradeGroups.walls.children.length;
-  buildWallSkinMembers(tradeGroups, w.uid, w.members, center, mode, palette);
+  buildWallSkinMembers(tradeGroups, w.uid, w.members, center, mode, palette, materials);
   // A wall's studs are pickable as themselves; the wall body remains pickable through its
   // layer meshes above, so both "this wall" and "this stud" stay one click away.
   registerMemberPicks(tradeGroups.framing, framingFirstIndex, picks);
@@ -257,7 +257,7 @@ function memberTrade(member: Member, tradeGroups: Record<Trade, THREE.Group>,
 // mesh has one visibility flag for all of it.
 function buildWallSkinMembers(
   tradeGroups: Record<Trade, THREE.Group>, wallUid: string, members: Member[], center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, materials?: MaterialSpec[],
 ) {
   const lumber = members.filter((member) => !member.material);
   buildMembers(tradeGroups.framing, lumber, center, mode, palette, wallUid);
@@ -276,7 +276,7 @@ function buildWallSkinMembers(
   }
   for (const { parent, group, members: skin } of skinByBucket.values()) {
     const firstChildIndex = parent.children.length;
-    buildMembers(parent, skin, center, mode, palette, wallUid);
+    buildMembers(parent, skin, center, mode, palette, wallUid, materials);
     tagLayerGroup(parent, firstChildIndex, group);
   }
 }

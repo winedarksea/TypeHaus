@@ -81,7 +81,7 @@ TRANSITIONS = (
                    # depth (plan/storeys/second.py), so that stack now derives the paired key
                    # already unstarred just above.
                    "storey_stack:rim:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",
-                   "storey_stack:rim:INT_2X4_PARTITION|INT_2X4_STAGGERED_DOUBLE_GWB",
+                   "storey_stack:rim:INT_2X4_PARTITION|INT_2X4_STAGGERED_GWB",
                    # The plant room's two rim conditions are drawn by TR-CATLIN-PLANT-RIM
                    # below instead — same plane, a different detail (closed-cell foam
                    # carrying a Class I barrier across the joist ends, not an air seal).

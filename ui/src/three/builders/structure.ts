@@ -199,7 +199,8 @@ export function buildFootingBedding(parent: THREE.Group, bedding: FootingBedding
 
 export function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
-  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, framingGroup: THREE.Group) {
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, framingGroup: THREE.Group,
+  materials?: readonly MaterialAppearance[]) {
   const firstChildIndex = parent.children.length;
   if (floor.subfloor && floor.members.length) {
     const points = floor.members.flatMap((member) => [member.p0, member.p1]);
@@ -223,7 +224,7 @@ export function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter
   // Joists are framing, and belong under the framing toggle with every other stick in the
   // building — not hidden behind the floors toggle. Same split roof/wall framing use.
   const framingFirstChildIndex = framingGroup.children.length;
-  buildMembers(framingGroup, floor.members, center, mode, palette, floor.uid);
+  buildMembers(framingGroup, floor.members, center, mode, palette, floor.uid, materials);
   registerSelectable(framingGroup, framingFirstChildIndex, floor.uid, "floor", picks, byUid);
 }
 
@@ -450,13 +451,13 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
   }
   for (const [group, members] of skinByGroup) {
     const skinFirstIndex = parent.children.length;
-    buildMembers(parent, members, center, mode, palette, roof.uid);
+    buildMembers(parent, members, center, mode, palette, roof.uid, catalog?.materials);
     tagLayerGroup(parent, skinFirstIndex, group);
   }
   registerSelectable(parent, firstChildIndex, roof.uid, "roof", picks, byUid);
   if (framingGroup && framing.length) {
     const framingFirstIndex = framingGroup.children.length;
-    buildMembers(framingGroup, framing, center, mode, palette, roof.uid);
+    buildMembers(framingGroup, framing, center, mode, palette, roof.uid, catalog?.materials);
     registerSelectable(framingGroup, framingFirstIndex, roof.uid, "roof", picks, byUid);
   }
 }
@@ -465,14 +466,15 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
 // framing bucket is what a click has to land on.
 export function buildStair(parent: THREE.Group, stair: Stair, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
-  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>,
+  materials?: readonly MaterialAppearance[]) {
   const firstChildIndex = parent.children.length;
-  buildMembers(parent, stair.members, center, mode, palette, stair.uid);
+  buildMembers(parent, stair.members, center, mode, palette, stair.uid, materials);
   for (const member of stair.members) {
     if (!member.plan_outline || member.plan_outline.length < 3) continue;
     const geo = createPlanPrismGeometry(member.plan_outline, member.z0_m, member.z1_m, [], center);
     if (!geo) continue;
-    const mesh = new THREE.Mesh(geo, standardMaterial(memberColor(member, palette), mode));
+    const mesh = makeSurfaceMesh(geo, standardMaterial(memberColor(member, palette, materials), mode));
     mesh.userData.memberKey = member.key;
     parent.add(mesh);
   }
@@ -482,8 +484,9 @@ export function buildStair(parent: THREE.Group, stair: Stair, center: PlanCenter
 // Same shape as a stair: a brace is only its diagonal, so the member bucket is the click target.
 export function buildBrace(parent: THREE.Group, brace: Brace, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
-  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>,
+  materials?: readonly MaterialAppearance[]) {
   const firstChildIndex = parent.children.length;
-  buildMembers(parent, brace.members, center, mode, palette, brace.uid);
+  buildMembers(parent, brace.members, center, mode, palette, brace.uid, materials);
   registerSelectable(parent, firstChildIndex, brace.uid, "brace", picks, byUid);
 }

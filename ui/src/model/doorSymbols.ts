@@ -18,10 +18,20 @@ export const OVERHEAD_TRACK_DEPTH_PER_DOOR_HEIGHT = 1;
 // knuckle offset exact rather than an eyeballed chevron depth.
 export const BIFOLD_LEADING_EDGE_FRACTION = 0.6;
 
-// A surface-mounted slider hangs clear of the wall face on rollers instead of filling the
-// opening, so its panel draws *outside* the wall depth — half the host thickness plus this
-// hardware clearance (2", mirroring `SLIDING_PANEL_CLEARANCE_IN` on the engine side).
+// A surface-mounted bypass leaf hangs clear of the wall face on rollers instead of filling
+// the opening, so its panel draws *outside* the wall depth — half the host thickness plus
+// this hardware clearance (2", mirroring `SLIDING_PANEL_CLEARANCE_IN` on the engine side).
 export const SLIDING_PANEL_CLEARANCE_M = 0.0508;
+
+// The far leaf of a bypass pair rides its own roller track, set slightly deeper off the
+// wall than the near leaf's (1.5", mirroring `BYPASS_TRACK_SPACING_IN`) — that depth split
+// is what lets the plan read as two distinct panels instead of one line traced twice.
+export const BYPASS_TRACK_SPACING_M = 0.0381;
+
+// Real bypass leaves lap each other past centre rather than meeting edge to edge (2",
+// mirroring `BYPASS_OVERLAP_IN`), or the drawn panels would leave a sliver at the middle
+// with no leaf covering it.
+export const BYPASS_OVERLAP_M = 0.0508;
 
 export interface DoorSymbolStroke {
   points: Vec2[];
@@ -103,29 +113,29 @@ export function bifoldDoorStrokes(
 }
 
 /**
- * Bypass slider: the panel offset off the wall face, parking one leaf width past the jamb
- * it slides to. The parked panel is dashed — it lies behind the wall it slides over — and
- * the two short ticks close the travel so the standoff reads as track, not a second wall.
- * `parkJambSign` is the handed jamb (+1 along the wall), the same handing a hinge uses.
+ * Bypass pair: two overlapping leaves on parallel tracks, both solid. Each leaf runs from
+ * its own jamb to just past centre, lapping the other where they cross rather than meeting
+ * edge to edge with a gap. The far leaf sits at a slightly greater standoff than the near
+ * one — the two rollers' actual track depths — which is what reads as two independent
+ * panels instead of one line traced twice. Unlike a pocket door (or a single barn-door
+ * slider), neither leaf ever travels past a jamb, so there is nothing to draw dashed.
  */
 export function slidingDoorStrokes(
   center: Vec2,
   angleRadians: number,
   operatingSign: number,
-  parkJambSign: number,
   widthPx: number,
-  panelStandoffPx: number,
+  nearStandoffPx: number,
+  farStandoffPx: number,
+  overlapPx: number,
 ): DoorSymbolStroke[] {
   const at = (along: number, across: number) =>
     doorSymbolPoint(center, angleRadians, operatingSign, along, across);
   const half = widthPx / 2;
-  // The panel is its own travel: it parks one leaf width past the jamb it slides to.
-  const parkedEnd = parkJambSign * (half + widthPx);
+  const halfOverlap = overlapPx / 2;
   return [
-    { points: [at(-half, panelStandoffPx), at(half, panelStandoffPx)], dashed: false },
-    { points: [at(parkJambSign * half, panelStandoffPx), at(parkedEnd, panelStandoffPx)], dashed: true },
-    { points: [at(-parkJambSign * half, 0), at(-parkJambSign * half, panelStandoffPx)], dashed: true },
-    { points: [at(parkedEnd, 0), at(parkedEnd, panelStandoffPx)], dashed: true },
+    { points: [at(-half, nearStandoffPx), at(halfOverlap, nearStandoffPx)], dashed: false },
+    { points: [at(-halfOverlap, farStandoffPx), at(half, farStandoffPx)], dashed: false },
   ];
 }
 
@@ -195,9 +205,13 @@ export function doorStrokeGlyph(input: DoorGlyphInput): DoorSymbolStroke[] | nul
         input.heightM * OVERHEAD_TRACK_DEPTH_PER_DOOR_HEIGHT * input.pixelsPerMeter);
     case "bifold":
       return bifoldDoorStrokes(center, angleRadians, operatingSign, widthPx);
-    case "slide":
-      return slidingDoorStrokes(center, angleRadians, operatingSign, parkJambSign, widthPx,
-        halfWallPx + SLIDING_PANEL_CLEARANCE_M * input.pixelsPerMeter);
+    case "slide": {
+      const nearStandoffPx = halfWallPx + SLIDING_PANEL_CLEARANCE_M * input.pixelsPerMeter;
+      const farStandoffPx = nearStandoffPx + BYPASS_TRACK_SPACING_M * input.pixelsPerMeter;
+      const overlapPx = Math.min(BYPASS_OVERLAP_M * input.pixelsPerMeter, widthPx / 2);
+      return slidingDoorStrokes(center, angleRadians, operatingSign, widthPx, nearStandoffPx,
+        farStandoffPx, overlapPx);
+    }
     case "pocket":
       return pocketDoorStrokes(center, angleRadians, operatingSign, parkJambSign, widthPx,
         halfWallPx);

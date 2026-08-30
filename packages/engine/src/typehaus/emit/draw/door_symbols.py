@@ -44,11 +44,20 @@ OVERHEAD_TRACK_DEPTH_PER_DOOR_HEIGHT = 1.0
 # knuckle offset exact rather than a drawn approximation (see ``_bifold_fold_offset``).
 BIFOLD_LEADING_EDGE_FRACTION = 0.6
 
-# A surface-mounted slider hangs clear of the wall face on rollers instead of filling the
-# opening, so its panel is drawn *outside* the wall depth — half the host thickness plus
+# A surface-mounted bypass leaf hangs clear of the wall face on rollers instead of filling
+# the opening, so its panel is drawn *outside* the wall depth — half the host thickness plus
 # this hardware clearance. Drawn any nearer the axis it would land inside the wall and
 # read as a fixed panel rather than a bypassing leaf.
 SLIDING_PANEL_CLEARANCE_IN = 2.0
+
+# The far leaf of a bypass pair rides its own roller track, set slightly deeper off the
+# wall than the near leaf's — that depth split is what lets the plan read as two distinct
+# panels instead of one line traced twice.
+BYPASS_TRACK_SPACING_IN = 1.5
+
+# Real bypass leaves lap each other past centre rather than meeting edge to edge, or the
+# drawn panels would leave a sliver at the middle with no leaf covering it.
+BYPASS_OVERLAP_IN = 2.0
 
 # Every operation now has a dedicated glyph; a door authored with none falls back to the
 # hinged leaf, which is the only operation a bare ``DoorType`` can mean.
@@ -124,11 +133,12 @@ def door_symbol_params(name: str, width_in: float, height_in: float, swing_sign:
         params["leaf_run_in"] = leaf_run_in
         params["fold_offset_in"] = _bifold_fold_offset(width_in, leaf_run_in)
     elif name == DOOR_SLIDING:
-        params["park_jamb_sign"] = hinge_jamb_sign
-        # The panel is its own travel: it parks one leaf width past the jamb it slides to.
-        params["park_run_in"] = width_in
-        params["panel_standoff_in"] = (host_wall_thickness_in / 2.0
-                                       + SLIDING_PANEL_CLEARANCE_IN)
+        # A bypass pair has no hinge jamb — both leaves are symmetric about the opening
+        # centre, so hinge_jamb_sign plays no part here.
+        near_standoff_in = host_wall_thickness_in / 2.0 + SLIDING_PANEL_CLEARANCE_IN
+        params["near_standoff_in"] = near_standoff_in
+        params["far_standoff_in"] = near_standoff_in + BYPASS_TRACK_SPACING_IN
+        params["overlap_in"] = min(BYPASS_OVERLAP_IN, width_in / 2.0)
     elif name == DOOR_POCKET:
         params["park_jamb_sign"] = hinge_jamb_sign
         params["pocket_run_in"] = width_in
@@ -167,9 +177,9 @@ def door_symbol_geometry(node: Symbol) -> DoorSymbolGeometry:
         return _bifold(frame, width_in, float(node.params["leaf_run_in"]),
                        float(node.params["fold_offset_in"]))
     if node.name == DOOR_SLIDING:
-        return _sliding(frame, width_in, float(node.params["park_jamb_sign"]),
-                        float(node.params["park_run_in"]),
-                        float(node.params["panel_standoff_in"]))
+        return _sliding(frame, width_in, float(node.params["near_standoff_in"]),
+                        float(node.params["far_standoff_in"]),
+                        float(node.params["overlap_in"]))
     if node.name == DOOR_POCKET:
         return _pocket(frame, width_in, float(node.params["park_jamb_sign"]),
                        float(node.params["pocket_run_in"]),
@@ -264,26 +274,24 @@ def _overhead(frame: _SymbolFrame, width_in: float, track_depth_in: float) -> Do
     ))
 
 
-def _sliding(frame: _SymbolFrame, width_in: float, park_jamb_sign: float,
-             park_run_in: float, panel_standoff_in: float) -> DoorSymbolGeometry:
-    """A bypass slider: the panel offset off the wall face, parking past one jamb — no arc.
+def _sliding(frame: _SymbolFrame, width_in: float, near_standoff_in: float,
+             far_standoff_in: float, overlap_in: float) -> DoorSymbolGeometry:
+    """A bypass pair: two overlapping leaves on parallel tracks, both solid — no arc.
 
-    The closed panel is solid; the parked panel is dashed because it lies behind the wall
-    it slides over, and the two short ticks close the travel at each end so the standoff
-    reads as a track rather than as a second wall line.
+    Each leaf runs from its own jamb to just past centre, so the two panels lap each other
+    where they cross rather than meeting edge to edge with a gap. The far leaf sits at a
+    slightly greater standoff than the near one — the two rollers' actual track depths —
+    which is what reads as two independent panels instead of one line traced twice. Unlike
+    a pocket door (or a single barn-door slider), neither leaf ever travels past a jamb, so
+    there is nothing to draw dashed.
     """
     half = width_in / 2.0
-    parked_end = park_jamb_sign * (half + park_run_in)
+    half_overlap = overlap_in / 2.0
     return DoorSymbolGeometry(strokes=(
-        SymbolStroke(points=(frame.at(-half, panel_standoff_in),
-                             frame.at(half, panel_standoff_in))),
-        SymbolStroke(points=(frame.at(park_jamb_sign * half, panel_standoff_in),
-                             frame.at(parked_end, panel_standoff_in)), dashed=True),
-        SymbolStroke(points=(frame.at(-park_jamb_sign * half, 0.0),
-                             frame.at(-park_jamb_sign * half, panel_standoff_in)),
-                     dashed=True),
-        SymbolStroke(points=(frame.at(parked_end, 0.0),
-                             frame.at(parked_end, panel_standoff_in)), dashed=True),
+        SymbolStroke(points=(frame.at(-half, near_standoff_in),
+                             frame.at(half_overlap, near_standoff_in))),
+        SymbolStroke(points=(frame.at(-half_overlap, far_standoff_in),
+                             frame.at(half, far_standoff_in))),
     ))
 
 

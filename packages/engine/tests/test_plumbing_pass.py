@@ -48,9 +48,21 @@ def test_pipe_runs_emit_viewer_solids_by_system(catlin_model):
 # --- wet-wall occupancy ---------------------------------------------------------------
 
 def test_wet_wall_occupancy_passes_for_the_bath1_risers(code_report):
+    """The wall named here changed on 2026-08-30 and the assertion is kept, not deleted.
+
+    Both BATH1 risers used to declare ``W-M-BAE`` and both STOOD INSIDE ``D-M-BATH1``'s
+    rough opening while doing it -- ``mep.wet_wall_occupancy`` passed them throughout,
+    because a riser inside a wall's footprint is inside the wall and a doorway is still
+    footprint. ``mep.run_through_opening`` is what found them. W-M-BAE has exactly two stud
+    bays, one each side of that door, and neither takes the pair (the hot line's 1"
+    fiberglass sleeve does not fit the south bay beside PR-B-LAV1-DRAIN, and the north bay
+    puts a stop half an inch off a finished corner), so the pair moved to ``W-M-HS1`` -- the
+    wall the water closet's carrier stands in and the lavatory backs onto. See the BATH1
+    pair in ``houses/catlin/plan/mep_supply.py``.
+    """
     rows = [f for f in code_report.findings if f.check_id == "mep.wet_wall_occupancy"]
     assert rows and all(f.result.value == "pass" for f in rows)
-    assert any("W-M-BAE" in f.message for f in rows)
+    assert any("W-M-HS1" in f.message for f in rows)
 
 
 def test_wet_wall_occupancy_flags_a_pipe_too_fat_for_its_wall(catlin_model):

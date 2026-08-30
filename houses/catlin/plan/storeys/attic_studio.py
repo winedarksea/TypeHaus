@@ -64,9 +64,18 @@ SECOND_ELEMENTS = [
     # and its assemblies verbatim. (The ATTIC tees below DO need real splits; a junction solver is a
     # different consumer from a room polygonizer.)
     Node(uid="547NS6BXQJ", tag="N-S-BA-S", position=pt(ft(10), ft(22, 4))),
+    # bearing_refs names only the NORTH end (W-S-BD-N1B, W-S-BA-E1B — the x=10' bearing line's
+    # own two segments). The SOUTH end sits at N-S-BA-S, on W-S-SN3's run, but does not bear on
+    # it: this beam's own tiny reaction (~600 lb, and RM-A-POCKET above is STORAGE, not a
+    # habitable live load) is the ordinary case of a header hung by joist hanger into the
+    # doubled trimmer that already closes FO-A-HALL's south edge (see the FloorOpening below —
+    # that trimmer runs the whole 8' from x=10' to x=18' regardless of what this beam does), so
+    # it rides that joist to wherever IT bears rather than pushing a new point load down through
+    # W-S-SN3. W-S-SN3 was BEARING from 2026-08-29 to 2026-08-30 on the opposite read of this;
+    # see that wall's own comment in plan/storeys/second.py.
     Beam(uid="P77WQJ1MFM", tag="BM-S-BATH-E", start_node="N-S-BA-S", end_node="N-S-BA1",
          size="3-1.75x11.875 LVL",
-         bearing_refs=("W-S-SN3", "W-S-BD-N1B", "W-S-BA-E1B"),
+         bearing_refs=("W-S-BD-N1B", "W-S-BA-E1B"),
          assembly="BEAM_LVL", top_elevation=ft(20)),
 ]
 
@@ -94,7 +103,13 @@ SECOND_ELEMENTS = [
 # BM-S-BATH-E 22'-4"->26'-4", W-S-BA-E1B 26'-4"->33'-4", W-S-BA-E 33'-4"->36'; x=18' is BM-S-HALL
 # 22'-4"->30'-10", W-S-C4B 30'-10"->36'. (Naming a Beam here only began working on 2026-08-29 —
 # `_opening_edge_has_declared_bearing` used to look at `model.wall(tag)` alone and put a 13'-1"
-# header under a beam that plainly carries it.)
+# header under a beam that plainly carries it.) W-S-SN3 IN THIS TUPLE IS THE MINY EDGE, NOT A
+# THIRD NAME FOR THE X=10' EDGE — `_opening_edge_has_declared_bearing` is purely geometric (does
+# a ref's axis/footprint run along and cover the edge), so it does not care whether W-S-SN3 is
+# itself BEARING; the wall's footprint covers y=22'-6 3/8" regardless, closing the miny edge and
+# saving a redundant header there. Do not read this as the same claim as BM-S-BATH-E's — they
+# cover two different edges of the same opening, and BM-S-BATH-E's own bearing_refs (above) does
+# NOT include W-S-SN3.
 #
 # ** DO NOT ADD x=10' TO FS-ATTIC's joists.bearing_refs. ** That field is global to the deck:
 # resolve/floors.py builds ONE boundaries list and cuts EVERY joist line on the storey at every one
@@ -186,8 +201,14 @@ WALLS = [
     #
     # ** THIS IS NOT A LINE LOAD ON W-S-SN3, and it is what a reader will worry about. ** It stands
     # on the opening's doubled trimmer pair, which spans the 8'-0" from x=10' to x=18' and delivers
-    # the wall to TWO POINTS. That is fortunate: the east half of W-S-SN3 sits over W-M-HS4, which
-    # is D-M-LAUN's 4'-0" pocket and could not have taken a continuous line load at all.
+    # the wall to TWO POINTS — and, since 2026-08-30, neither of those two points reaches W-S-SN3 at
+    # all: the trimmer is an ordinary doubled joist in the x-direction, and both the x=10' point
+    # (BM-S-BATH-E, hung on it by joist hanger) and the x=18' point ride it to wherever the joist
+    # itself already bears, not down through whatever wall happens to sit under a point along its
+    # span. It remains true, and worth keeping, that the east half of W-S-SN3 sits over W-M-HS4 —
+    # D-M-LAUN's 4'-0" pocket, which could not have taken a continuous line load at all — so even
+    # the earlier (2026-08-29 to 2026-08-30) reading, which did send BM-S-BATH-E's reaction into
+    # W-S-SN3, was never going to land it over the pocket.
     #
     # A 42" RAILING-INT-STAIR-GUARD (the RL-A-STAIR product at base_elevation=ft(20)) was priced
     # here instead and rejected: it satisfies R312.1 identically, cuts the trimmer's load, and turns

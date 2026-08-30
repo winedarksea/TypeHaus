@@ -262,22 +262,44 @@ def _leader(side: str, index: int, eave_x, outward: float):
 # The corner trim (resolve/roof_trim.py::_corner_trim_members) already follows the roof
 # slope up the two gable rakes to the ridge; this module's authored ``Flashing`` has one
 # elevation per run and cannot re-derive a sloped member, so it is not trying to. What it
-# gives each rake instead is a short drip-edge return at the corner, at the same deck-plane
-# elevation the eave piece already bears at — a modeled part of record for FORTIFIED's rake
+# gives each rake instead is a short drip-edge return at EACH of its two corners — where the
+# rake meets the west eave and where it meets the east eave — at the same deck-plane
+# elevation the eave piece already bears at: a modeled part of record for FORTIFIED's rake
 # line item, coexisting with the sloped corner trim above it rather than replacing it.
-def _rake_drip(side: str, index: int, y):
+#
+# **A single run the full 36'+ width of the gable was tried first (2026-08-30 FORTIFIED
+# build-out) and was wrong twice over.** The whole span sits at the low eave elevation, so
+# past the two corners — under the rest of the rake, where the roof climbs to the ridge — it
+# reads as a bar cut straight across the middle of the triangular gable rather than a return
+# hugging its edge. And because it ran the full width, both of its ends sat exactly on top of
+# the west/east eave runs' own footprint, the same square inches of metal modeled twice at
+# all four house corners. Two short stubs, one per corner, fix both: short enough to read as
+# a return and not a rake run, long enough to lap onto the eave piece it meets.
+_RAKE_RETURN_IN = 12.0  # 1'-0" — a token corner return; the sloped corner trim already
+                        # carries the rake's real water-shedding job.
+
+
+def _rake_corner_drips(side: str, w_index: int, e_index: int, y):
     outward = -1.0 if side == "S" else 1.0
     back_side = "right" if outward < 0 else "left"
-    return Flashing(
-        uid=f"RTFR0{index}AAAA", tag=f"TR-RF-DRIP-{side}", kind=TrimKind.DRIP_FLASHING,
-        path=(pt(_EAVE_X_W, y), pt(_EAVE_X_E, y)),
-        top_elevation=_above_deck(_DRIP_TOP_IN), depth=_DRIP_DEPTH,
-        thickness=inch(_DRIP_THICK_IN), material=_CHAIN_MATERIAL,
-        host_ref="RF-HOUSE", back_side=back_side)
+    top_elevation = _above_deck(_DRIP_TOP_IN)
+    corners = (
+        (w_index, "", _EAVE_X_W, _EAVE_X_W + inch(_RAKE_RETURN_IN)),
+        (e_index, "-E", _EAVE_X_E - inch(_RAKE_RETURN_IN), _EAVE_X_E),
+    )
+    return [
+        Flashing(
+            uid=f"RTFR0{index}AAAA", tag=f"TR-RF-DRIP-{side}{suffix}",
+            kind=TrimKind.DRIP_FLASHING, path=(pt(x0, y), pt(x1, y)),
+            top_elevation=top_elevation, depth=_DRIP_DEPTH,
+            thickness=inch(_DRIP_THICK_IN), material=_CHAIN_MATERIAL,
+            host_ref="RF-HOUSE", back_side=back_side)
+        for index, suffix, x0, x1 in corners
+    ]
 
 
 ATTIC_ELEMENTS = [
     *_eave_water("W", 1, _EAVE_X_W, -1.0), *_eave_water("E", 2, _EAVE_X_E, 1.0),
     _leader("W", 1, _EAVE_X_W, -1.0), _leader("E", 2, _EAVE_X_E, 1.0),
-    _rake_drip("S", 1, _EAVE_Y0), _rake_drip("N", 2, _EAVE_Y1),
+    *_rake_corner_drips("S", 1, 3, _EAVE_Y0), *_rake_corner_drips("N", 2, 4, _EAVE_Y1),
 ]

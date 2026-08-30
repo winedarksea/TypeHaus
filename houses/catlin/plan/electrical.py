@@ -506,8 +506,11 @@ MAIN_DEVICES = [
     # CKT-DRYER stays a 30A/14-30R even though the LG DLHC5502V heat-pump dryer only needs
     # 830W/15A minimum branch: it still ships a 4-prong cord needing 30A, and the oversize
     # lets a future conventional vented dryer go in without repulling wire.
+    # 2026-08-30: y -5/8" (18'-2" -> 18'-1 3/8") with the follow-up retype to the
+    # single-gwb INT_2X4_STAGGERED_GWB (1 1/4" thinner) — the same reasoning in reverse,
+    # by half the distance. ED-M-LAUNDRY-RC1 below moved the same 5/8" the same way.
     ElectricalDevice(uid="CEE007AAAA", tag="ED-M-LAUNDRY-DR1", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(9, 6), ft(18, 2)), type_ref="ED-T-RECEPTACLE-1430",
+                     position=pt(ft(9, 6), ft(18, 1.375)), type_ref="ED-T-RECEPTACLE-1430",
                      circuit="CKT-DRYER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(43),
                                  recessed_into_host_surface=True)),
@@ -515,7 +518,7 @@ MAIN_DEVICES = [
     # is it: washer half of the stack, 8" east of the dryer box, same 43" band. NEC 210.52(F),
     # the room's only 120V outlet.
     ElectricalDevice(uid="QBSRR1MWVB", tag="ED-M-LAUNDRY-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(10, 2), ft(18, 3)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(10, 2), ft(18, 2.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-LAUNDRY",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(43),
                                  recessed_into_host_surface=True)),
@@ -1238,9 +1241,10 @@ MAIN_DATA_DEVICES_STUDY = [
     # the laptop. A plate cut into a wainscot is ordinary joinery. And y moved 1 5/8" north
     # with W-M-CLN2's face when that wall was retyped to INT_2X4_STAGGERED_DOUBLE_GWB: a
     # device position is a FACE position (top of this file), so a retype that moves a face
-    # buries every device on it.
+    # buries every device on it. 2026-08-30: y -5/8" (18'-5" -> 18'-4 3/8") south again with
+    # the follow-up retype to the single-gwb INT_2X4_STAGGERED_GWB.
     ElectricalDevice(uid="V51Z24K1AA", tag="ED-M-STUDY-DATA1", kind=DeviceKind.DATA_OUTLET,
-                     position=pt(ft(16), ft(18, 5)), type_ref="ED-T-DATA-JACK",
+                     position=pt(ft(16), ft(18, 4.375)), type_ref="ED-T-DATA-JACK",
                      room="RM-M-STUDY",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(32))),
 ]
@@ -1713,7 +1717,8 @@ NEC_FILL_MAIN = [
     # 2026-08-29, the call-booth fit-out: +1 5/8" north (W-M-CLN2 retyped to
     # INT_2X4_STAGGERED_DOUBLE_GWB, and a device position is a face position), and up from
     # 16" to 32" — 2 1/2" over FURN-M-STUDY-DESK's top, still well under NEC 210.52(A)'s
-    # 5'-6". Paired with ED-M-STUDY-DATA1 at the same height 1'-0" west.
+    # 5'-6". Paired with ED-M-STUDY-DATA1 at the same height 1'-0" west. 2026-08-30: y -5/8"
+    # (18'-5" -> 18'-4 3/8") south again, same follow-up retype to INT_2X4_STAGGERED_GWB.
     #
     # ** ED-M-STUDY-RC2 WAS DELETED HERE AND CAME BACK THE SAME DAY. READ WHY. ** It sat at
     # 16" on the west wall. The first booth layout ran FURN-M-STUDY-BENCH down that whole
@@ -1733,7 +1738,7 @@ NEC_FILL_MAIN = [
     # check. ** Moving furniture in this house can delete or create a code finding with no
     # device touched at all. `haus check` after a placeable move, every time.
     ElectricalDevice(uid="NEC019AAAA", tag="ED-M-STUDY-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(17), ft(18, 5)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(17), ft(18, 4.375)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(32))),
     # Fills the >6' gap electrical.receptacle_spacing flags on the centre bearing wall,
@@ -1743,9 +1748,10 @@ NEC_FILL_MAIN = [
     # whose top is 29 1/2" — so 32" puts the box 2 1/2" clear of the desk exactly as
     # ED-M-STUDY-RC1 does, and the two outlets a seated person reaches are at one height on
     # two walls. It is 4'-0" south of REG-M-SUP4's riser bay (y=20'-8"), so the box and the
-    # 3" duct in that cavity never meet.
+    # 3" duct in that cavity never meet. 2026-08-30: x -5/8" with the follow-up retype of
+    # W-M-LS to the single-gwb INT_2X4_STAGGERED_GWB — the study face gave back 5/8".
     ElectricalDevice(uid="NEC020AAAA", tag="ED-M-STUDY-RC2", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(inch(165), ft(19, 4)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(inch(164.375), ft(19, 4)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(32)), rotation=deg(90)),
     ElectricalDevice(uid="NEC065AAAA", tag="ED-M-STUDY-RC3", kind=DeviceKind.RECEPTACLE_GFCI,

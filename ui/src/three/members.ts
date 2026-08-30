@@ -17,9 +17,13 @@
 import * as THREE from "three";
 import type { Member } from "../model/types";
 import {
-  familyOf, materialColor, type ResolvedNordicPalette, statesOwnColor,
+  authoredAppearance, familyOf, finishBaseColor, materialColor, type MaterialAppearance,
+  type ResolvedNordicPalette, statesOwnColor,
 } from "../nordic/palette";
-import { createStandingSeamMaterial, isStandingSeam, SEAM_TILE_SIZE_M } from "./materials";
+import {
+  createStandingSeamMaterial, isStandingSeam, type MetalPanelProfile,
+  metalPanelProfileForFinish, SEAM_PROFILE, SEAM_TILE_SIZE_M,
+} from "./materials";
 import {
   composeCenteredBoxMatrix, composeMemberBoxMatrix, isRakedMember, isVerticalMember,
   MIN_EXTENT_M, pushBoxIndices, pushSweepIndices, rakedBoxVertices, seatedProfileVertices,
@@ -29,7 +33,7 @@ import {
   memberUidsFor, tagInstancedMemberIdentity, tagMergedMemberIdentity,
 } from "./memberPicking";
 import { projectPlanDirectionToScene, projectPointToScene, type PlanCenter } from "./planGeometry";
-import { standardMaterial } from "./surfaces";
+import { makeSurfaceMesh, markShadowCaster, standardMaterial } from "./surfaces";
 import vocabulary from "../generated/vocabulary.json";
 
 // Generated from emit/gltf/palette.py's `_PALETTE` (member-category keys; layer-function
@@ -92,9 +96,10 @@ export function isRoofFramingMember(m: Member): boolean {
 // category also puts this back in step with the .glb, whose member path
 // (emit/gltf/members.py -> _material_finish_color with authored=None) has always ended at
 // `_color(category)` for exactly the same refs.
-export function memberColor(m: Member, palette: ResolvedNordicPalette): THREE.ColorRepresentation {
-  return m.material && (statesOwnColor(m.material) || familyOf(m.material) !== null)
-    ? materialColor(m.material, palette)
+export function memberColor(m: Member, palette: ResolvedNordicPalette,
+  materials?: readonly MaterialAppearance[]): THREE.ColorRepresentation {
+  return m.material && (statesOwnColor(m.material, materials) || familyOf(m.material) !== null)
+    ? materialColor(m.material, palette, materials)
     : categoryColor(m.category);
 }
 
@@ -106,8 +111,21 @@ export function memberColor(m: Member, palette: ResolvedNordicPalette): THREE.Co
 // and reads dark grey against the white roof it sits on.
 const SEAM_TRIM_CATEGORIES = new Set(["cladding", "ridge_cap", "corner_trim", "gutter"]);
 
-export function isSeamMember(m: Member): boolean {
-  return SEAM_TRIM_CATEGORIES.has(m.category) && isStandingSeam(m.material);
+// The metal-panel profile a skin member finishes as, or null for a member that is neither a
+// seam nor a declared ribbed panel. A member carries the SAME material ref its host layer
+// does (roof_edge.py/roof_trim.py thread it straight off the wall's own layer), so it takes
+// the identical declared-finish-first dispatch `builders/walls.ts` uses for that layer:
+// `pbr-panel-26` has no "seam" in its tag on purpose, and without reading its authored
+// `finish: "ribbed-panel"` here a gable closure in that panel rendered flat grey next to the
+// wall cladding it continues.
+export function metalPanelProfileFor(m: Member,
+  materials?: readonly MaterialAppearance[]): MetalPanelProfile | null {
+  const declared = metalPanelProfileForFinish(authoredAppearance(m.material, materials)?.finish);
+  return declared ?? (isStandingSeam(m.material) ? SEAM_PROFILE : null);
+}
+
+export function isSeamMember(m: Member, materials?: readonly MaterialAppearance[]): boolean {
+  return SEAM_TRIM_CATEGORIES.has(m.category) && metalPanelProfileFor(m, materials) !== null;
 }
 
 const _m = new THREE.Matrix4();
@@ -129,12 +147,12 @@ interface Buckets {
   seam: Member[];
 }
 
-function bucket(members: Member[]): Buckets {
+function bucket(members: Member[], materials?: readonly MaterialAppearance[]): Buckets {
   const out: Buckets = { rect: [], raked: [], ijoist: [], seam: [] };
   for (const m of members) {
-    // Seam first: a standing-seam band needs its own textured material, so it can't share
-    // the vertex-coloured merge with the lumber around it.
-    if (isSeamMember(m) && !isVerticalMember(m)) out.seam.push(m);
+    // Seam first: a standing-seam or declared ribbed-panel band needs its own textured
+    // material, so it can't share the vertex-coloured merge with the lumber around it.
+    if (isSeamMember(m, materials) && !isVerticalMember(m)) out.seam.push(m);
     else if (m.shape === "i_joist") out.ijoist.push(m);
     else if (isRakedMember(m)) out.raked.push(m);
     else out.rect.push(m);
@@ -142,56 +160,80 @@ function bucket(members: Member[]): Buckets {
   return out;
 }
 
-// Standing-seam skin bands (gable closure cladding, roof-edge cladding) merged into one mesh
-// carrying the shared seam finish. Each band gets world-scaled UVs off its own run, matching
-// applyStandingSeamWallUv, so the 16" pan module stays at true scale and the seams line up
-// with the wall and roof panels the band meets.
-function buildSeamMesh(group: THREE.Group, members: Member[], center: PlanCenter,
-  mode: "nordic" | "schematic", ownerUid: string) {
-  if (!members.length) return;
-  const positions: number[] = [];
-  const indices: number[] = [];
-  const uvs: number[] = [];
-  const drawn: Member[] = [];
-  const triangleStarts: number[] = [0];
+// One merge target: every member sharing a metal-panel profile and paint gets one mesh, so a
+// batch of skin members drawn from several walls (a roof's closure family spans every wall
+// under it) doesn't force a ribbed PBR band and a standing-seam one into the same texture.
+function seamGroupsFor(members: Member[], materials?: readonly MaterialAppearance[]):
+  Map<string, { profile: MetalPanelProfile; paint: number; members: Member[] }> {
+  const groups = new Map<string, { profile: MetalPanelProfile; paint: number; members: Member[] }>();
   for (const m of members) {
-    const verts = rakedBoxVertices(m, center);
-    if (!verts) continue;
-    const base = positions.length / 3;
-    for (const v of verts) positions.push(v[0], v[1], v[2]);
-    pushBoxIndices(indices, base);
-    triangleStarts.push(triangleStarts[triangleStarts.length - 1] + TRIANGLES_PER_MEMBER_BOX);
-    drawn.push(m);
-    // Per-member UVs, not one shared axis: eave bands run one way and rake bands the other,
-    // so a single frame would smear the pans on half of them. u runs along the band (its two
-    // end faces are the only distinct values), v is elevation — the same world-scaled frame
-    // applyStandingSeamWallUv gives a wall, so bands and walls share one seam rhythm.
-    const length = Math.hypot(m.p1[0] - m.p0[0], m.p1[1] - m.p0[1]);
-    for (let index = 0; index < verts.length; index++) {
-      const atEnd = index === 1 || index === 2 || index === 5 || index === 6;
-      uvs.push((atEnd ? length : 0) / SEAM_TILE_SIZE_M, verts[index][1] / SEAM_TILE_SIZE_M);
-    }
+    const profile = metalPanelProfileFor(m, materials);
+    if (!profile) continue;
+    // The coil white default, exactly as builders/walls.ts resolves it: a paint named by the
+    // member's own authored finish wins, everything else keeps the standard 0xE8E8E2 coil.
+    const paintHex = finishBaseColor(authoredAppearance(m.material, materials)?.finish);
+    const paint = paintHex ? new THREE.Color(paintHex).getHex() : 0xE8E8E2;
+    const key = `${profile.key}|${paint}`;
+    const g = groups.get(key) ?? { profile, paint, members: [] };
+    g.members.push(m);
+    groups.set(key, g);
   }
-  if (!positions.length) return;
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-  geo.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
-  geo.setIndex(indices);
-  geo.computeVertexNormals();
-  const mesh = new THREE.Mesh(geo, createStandingSeamMaterial(mode, [1, 1], 0xE8E8E2, true));
-  tagMergedMemberIdentity(mesh, memberUidsFor(ownerUid, drawn), triangleStarts);
-  group.add(mesh);
+  return groups;
+}
+
+// Standing-seam / ribbed-panel skin bands (gable closure cladding, roof-edge cladding) merged
+// per finish group, each carrying its own procedural normal map. Each band gets world-scaled
+// UVs off its own run, matching applyStandingSeamWallUv, so the module stays at true scale and
+// the seams line up with the wall and roof panels the band meets.
+function buildSeamMesh(group: THREE.Group, members: Member[], center: PlanCenter,
+  mode: "nordic" | "schematic", ownerUid: string, materials?: readonly MaterialAppearance[]) {
+  if (!members.length) return;
+  for (const { profile, paint, members: groupMembers } of seamGroupsFor(members, materials).values()) {
+    const positions: number[] = [];
+    const indices: number[] = [];
+    const uvs: number[] = [];
+    const drawn: Member[] = [];
+    const triangleStarts: number[] = [0];
+    for (const m of groupMembers) {
+      const verts = rakedBoxVertices(m, center);
+      if (!verts) continue;
+      const base = positions.length / 3;
+      for (const v of verts) positions.push(v[0], v[1], v[2]);
+      pushBoxIndices(indices, base);
+      triangleStarts.push(triangleStarts[triangleStarts.length - 1] + TRIANGLES_PER_MEMBER_BOX);
+      drawn.push(m);
+      // Per-member UVs, not one shared axis: eave bands run one way and rake bands the other,
+      // so a single frame would smear the pans on half of them. u runs along the band (its two
+      // end faces are the only distinct values), v is elevation — the same world-scaled frame
+      // applyStandingSeamWallUv gives a wall, so bands and walls share one seam rhythm.
+      const length = Math.hypot(m.p1[0] - m.p0[0], m.p1[1] - m.p0[1]);
+      for (let index = 0; index < verts.length; index++) {
+        const atEnd = index === 1 || index === 2 || index === 5 || index === 6;
+        uvs.push((atEnd ? length : 0) / SEAM_TILE_SIZE_M, verts[index][1] / SEAM_TILE_SIZE_M);
+      }
+    }
+    if (!positions.length) continue;
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+    geo.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+    geo.setIndex(indices);
+    geo.computeVertexNormals();
+    const mesh = makeSurfaceMesh(geo, createStandingSeamMaterial(mode, [1, 1], paint, true, profile));
+    tagMergedMemberIdentity(mesh, memberUidsFor(ownerUid, drawn), triangleStarts);
+    group.add(mesh);
+  }
 }
 
 function buildRectInstances(group: THREE.Group, members: Member[], center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, ownerUid: string) {
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, ownerUid: string,
+  materials?: readonly MaterialAppearance[]) {
   if (!members.length) return;
   // No colour: every instance sets its own via `setColorAt`.
   const material = standardMaterial(undefined, mode);
-  const mesh = new THREE.InstancedMesh(UNIT_BOX, material, members.length);
+  const mesh = markShadowCaster(new THREE.InstancedMesh(UNIT_BOX, material, members.length));
   members.forEach((m, i) => {
     mesh.setMatrixAt(i, composeMemberBoxMatrix(_m, m, center));
-    mesh.setColorAt(i, _color.set(memberColor(m, palette)));
+    mesh.setColorAt(i, _color.set(memberColor(m, palette, materials)));
   });
   mesh.instanceMatrix.needsUpdate = true;
   if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
@@ -202,7 +244,8 @@ function buildRectInstances(group: THREE.Group, members: Member[], center: PlanC
 // Exact 8-vertex raked box: vertical ends, sloped top/bottom — mirrors
 // emit/gltf/emitter.py's add_member_box. One merged geometry (vertex colors) per trade.
 function buildRakedMesh(group: THREE.Group, members: Member[], center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, ownerUid: string) {
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, ownerUid: string,
+  materials?: readonly MaterialAppearance[]) {
   if (!members.length) return;
   const positions: number[] = [];
   const indices: number[] = [];
@@ -216,7 +259,7 @@ function buildRakedMesh(group: THREE.Group, members: Member[], center: PlanCente
     const verts = seated ?? rakedBoxVertices(m, center);
     if (!verts) continue;
     const base = positions.length / 3;
-    const col = new THREE.Color(memberColor(m, palette));
+    const col = new THREE.Color(memberColor(m, palette, materials));
     for (const v of verts) {
       positions.push(v[0], v[1], v[2]);
       colors.push(col.r, col.g, col.b);
@@ -234,7 +277,7 @@ function buildRakedMesh(group: THREE.Group, members: Member[], center: PlanCente
   geo.setIndex(indices);
   geo.computeVertexNormals();
   const material = standardMaterial(undefined, mode, { vertexColors: true });
-  const mesh = new THREE.Mesh(geo, material);
+  const mesh = makeSurfaceMesh(geo, material);
   tagMergedMemberIdentity(mesh, memberUidsFor(ownerUid, drawn), triangleStarts);
   group.add(mesh);
 }
@@ -243,7 +286,8 @@ function buildRakedMesh(group: THREE.Group, members: Member[], center: PlanCente
 // The run axis includes its resolved rise, so roof I-joists follow the roof plane instead
 // of appearing flat in the model.
 function buildIJoists(group: THREE.Group, members: Member[], center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, ownerUid: string) {
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, ownerUid: string,
+  materials?: readonly MaterialAppearance[]) {
   if (!members.length) return;
   const mkMesh = () => new THREE.InstancedMesh(
     UNIT_BOX,
@@ -266,7 +310,7 @@ function buildIJoists(group: THREE.Group, members: Member[], center: PlanCenter,
     const flangeT = m.flange_thickness_m ?? depth * 0.1;
     const flangeW = m.flange_width_m ?? m.width_m;
     const webT = m.web_thickness_m ?? Math.min(flangeW, 0.01);
-    const color = memberColor(m, palette);
+    const color = memberColor(m, palette, materials);
     const webDepth = Math.max(depth - 2 * flangeT, MIN_EXTENT_M);
     const slopedLength = Math.hypot(runLen, rise);
     // p0/z0 is the joist soffit at the near end; the three plies share that run centre and
@@ -287,6 +331,7 @@ function buildIJoists(group: THREE.Group, members: Member[], center: PlanCenter,
   for (const mesh of [top, bottom, web]) {
     mesh.instanceMatrix.needsUpdate = true;
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+    markShadowCaster(mesh);
     // All three plies share one instance index per member, so any of them picks the same stick.
     tagInstancedMemberIdentity(mesh, uids);
     group.add(mesh);
@@ -296,17 +341,21 @@ function buildIJoists(group: THREE.Group, members: Member[], center: PlanCenter,
 /**
  * Draw `members` into `group`. `ownerUid` is the uid of the wall / roof / floor / stair the
  * resolver framed them for — half of each member's identity (→ model/memberIdentity.ts), and
- * the reason every bucket can hand a picked index back as a stable member uid.
+ * the reason every bucket can hand a picked index back as a stable member uid. `materials` is
+ * the model's catalog, so a skin member (cladding closure, trim run) that carries its host
+ * layer's material ref gets the same declared-finish-first colour and metal-panel dispatch a
+ * wall layer gets in builders/walls.ts, instead of guessing from the ref alone.
  */
 export function buildMembers(group: THREE.Group, members: Member[], center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, ownerUid: string) {
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, ownerUid: string,
+  materials?: readonly MaterialAppearance[]) {
   const boxMembers = members.filter((member) => !member.plan_outline?.length);
   if (!boxMembers.length) return;
-  const buckets = bucket(boxMembers);
-  buildRectInstances(group, buckets.rect, center, mode, palette, ownerUid);
-  buildRakedMesh(group, buckets.raked, center, mode, palette, ownerUid);
-  buildIJoists(group, buckets.ijoist, center, mode, palette, ownerUid);
-  buildSeamMesh(group, buckets.seam, center, mode, ownerUid);
+  const buckets = bucket(boxMembers, materials);
+  buildRectInstances(group, buckets.rect, center, mode, palette, ownerUid, materials);
+  buildRakedMesh(group, buckets.raked, center, mode, palette, ownerUid, materials);
+  buildIJoists(group, buckets.ijoist, center, mode, palette, ownerUid, materials);
+  buildSeamMesh(group, buckets.seam, center, mode, ownerUid, materials);
 }
 
 export function disposeGroup(root: THREE.Object3D) {

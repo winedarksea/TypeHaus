@@ -18,6 +18,8 @@ import pytest
 from library import STARTER_DOOR_TYPES
 from typehaus.emit.draw import build_floorplan, write_dxf, write_raster
 from typehaus.emit.draw.door_symbols import (
+    BYPASS_OVERLAP_IN,
+    BYPASS_TRACK_SPACING_IN,
     DOOR_BIFOLD,
     DOOR_OVERHEAD,
     DOOR_POCKET,
@@ -191,33 +193,40 @@ def test_bifold_symbol_folds_real_length_leaves_without_an_arc():
         assert knuckle[1] > 0, "the knuckle folds toward the operating side"
 
 
-def test_sliding_symbol_bypasses_the_wall_toward_the_park_jamb():
+def test_sliding_symbol_draws_two_overlapping_leaves_within_the_opening():
     width_in = 60.0
     geometry = door_symbol_geometry(_symbol(DOOR_SLIDING, width_in))
-    assert not geometry.arcs, "a slider rides a track, it does not swing"
-    panel, parked, strike_tick, stop_tick = geometry.strokes
-    assert not panel.dashed
-    assert parked.dashed and strike_tick.dashed and stop_tick.dashed, \
-        "the parked panel lies behind the wall it slides over"
-    assert _distance(*panel.points) == pytest.approx(width_in)
-    assert _distance(*parked.points) == pytest.approx(width_in), \
-        "the panel is its own travel: it parks one leaf width past the jamb"
-    standoff = TEST_WALL_THICKNESS_IN / 2 + SLIDING_PANEL_CLEARANCE_IN
-    assert all(point[1] == pytest.approx(standoff) for point in panel.points), \
-        "the panel rides clear of the wall face, not inside the wall depth"
-    # Travel is handed, and stays on the handed operating side of the wall.
+    assert not geometry.arcs, "a bypass pair rides a track, it does not swing"
+    assert len(geometry.strokes) == 2, "a bypass pair is two leaves, not a leaf plus its travel"
+    near, far = geometry.strokes
+    assert not near.dashed and not far.dashed, \
+        "both bypass leaves stand in the opening; neither is concealed"
+    near_standoff = TEST_WALL_THICKNESS_IN / 2 + SLIDING_PANEL_CLEARANCE_IN
+    far_standoff = near_standoff + BYPASS_TRACK_SPACING_IN
+    assert all(point[1] == pytest.approx(near_standoff) for point in near.points), \
+        "the near leaf rides clear of the wall face, not inside the wall depth"
+    assert all(point[1] == pytest.approx(far_standoff) for point in far.points), \
+        "the far leaf rides its own track, deeper than the near leaf's"
+    half = width_in / 2
+    half_overlap = min(BYPASS_OVERLAP_IN, half) / 2
+    assert near.points[0][0] == pytest.approx(-half)
+    assert near.points[1][0] == pytest.approx(half_overlap)
+    assert far.points[0][0] == pytest.approx(-half_overlap)
+    assert far.points[1][0] == pytest.approx(half)
+    # Neither leaf ever travels past a jamb, unlike a pocket door's dashed run into the wall.
     points = [point for stroke in geometry.strokes for point in stroke.points]
-    assert max(point[0] for point in points) == pytest.approx(width_in / 2 + width_in)
-    assert min(point[0] for point in points) == pytest.approx(-width_in / 2)
-    assert all(0.0 <= point[1] <= standoff + 1e-9 for point in points)
+    assert max(point[0] for point in points) == pytest.approx(half)
+    assert min(point[0] for point in points) == pytest.approx(-half)
 
 
-def test_sliding_symbol_travel_mirrors_with_the_authored_handing():
+def test_sliding_symbol_is_unaffected_by_handing():
+    """Unlike a pocket door, a bypass pair has no hinge jamb: both leaves sit symmetric
+    about the opening centre, so authoring the wall's handing the other way must not
+    change the glyph."""
     width_in = 60.0
+    geometry = door_symbol_geometry(_symbol(DOOR_SLIDING, width_in))
     flipped = door_symbol_geometry(_symbol(DOOR_SLIDING, width_in, hinge_jamb_sign=-1.0))
-    points = [point for stroke in flipped.strokes for point in stroke.points]
-    assert min(point[0] for point in points) == pytest.approx(-(width_in / 2 + width_in))
-    assert max(point[0] for point in points) == pytest.approx(width_in / 2)
+    assert flipped.strokes == geometry.strokes
 
 
 def test_pocket_symbol_recedes_into_the_wall_without_standing_off_it():
@@ -368,7 +377,7 @@ def test_synthetic_slide_door_emits_the_sliding_symbol():
     assert symbol_name_for_operation(DoorOperation.SLIDE) == DOOR_SLIDING
     geometry = door_symbol_geometry(_symbol(DOOR_SLIDING, width_in))
     assert not geometry.arcs
-    assert len(geometry.strokes) == 4
+    assert len(geometry.strokes) == 2
 
 
 @pytest.mark.parametrize("storey", ["garage", "main"])

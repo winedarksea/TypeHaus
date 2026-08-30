@@ -377,7 +377,8 @@ REGISTERS_MAIN = [
     # checking against the trusses before anyone tries.
     #
     # ** RISER CLEARANCES, RE-WALKED FOR THE NEW STATION. ** W-M-CLN2 is
-    # INT_2X4_STAGGERED_DOUBLE_GWB: 5 1/2" of cavity, continuous, but a 2 1/8" device box and
+    # INT_2X4_STAGGERED_GWB (single-gwb since 2026-08-30, same framing): 5 1/2" of cavity,
+    # unchanged by the gypsum retype, continuous, but a 2 1/8" device box and
     # a 3" duct still do not share one 3 1/2" leaf. At 14'-6" the drop is 1'-6" from
     # ED-M-STUDY-DATA1 (16'-0") and 2'-6" from ED-M-STUDY-RC1 (17'-0") — both further off than
     # the 6" the old station fought for — and CD-B-DATA-STUDY rises at 16'-0" on this same

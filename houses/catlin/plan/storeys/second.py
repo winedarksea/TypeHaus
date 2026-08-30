@@ -354,39 +354,38 @@ WALLS = [
          assembly="INT_2X4_STAGGERED_GWB", top=ft(9)),
     Wall(uid="CSW146AAAA", tag="W-S-SN2", start_node="N-S-V1", end_node="N-S-D4",
          assembly="INT_2X4_STAGGERED_GWB", top=ft(9)),
-    # BEARING SINCE 2026-08-29, and for a POINT reaction, not a line load. FO-A-HALL
-    # (plan/storeys/stair_hall_void.py) opens the attic deck over the stair hall, and the
-    # attic partition W-A-HALL-S stands on the opening's doubled trimmer pair — which spans
-    # the 8'-0" from x=10' to x=18' and delivers that wall to TWO POINTS. This wall takes
-    # the one at x=10' (and plate contact under the trimmer), and it is also BM-S-BATH-E's
-    # south bearing. It is fortunate the load arrives that way: the east half of this wall
-    # sits over W-M-HS4, which is D-M-LAUN's 4'-0" pocket and could not have taken a
-    # continuous line load at all.
+    # NOT BEARING (reverted 2026-08-30; was BEARING from 2026-08-29 to 2026-08-30). The
+    # BEARING call was reasoned from FO-A-HALL's doubled trimmer pair delivering the attic
+    # floor opening's south edge to "two points" — one on BM-S-BATH-E, whose own south end
+    # sits at (10', 22'-4"), directly on this wall's run. But BM-S-BATH-E's ~600 lb reaction
+    # (RM-A-POCKET above it is STORAGE, not habitable, so its live load is the lighter
+    # storage rate, not a habitable one) does not need a dedicated wall-bearing load path at
+    # all: the floor opening's own south edge is closed by a doubled trimmer joist running
+    # the full 8' from x=10' to x=18' (the "south trimmer pair" the FloorOpening comment
+    # already names), and BM-S-BATH-E's south end is the ordinary case of a header hung by
+    # joist hanger into that trimmer, exactly the way its own north end already lands on a
+    # real bearing wall (W-S-BD-N1B) rather than needing one at both ends. A hung header
+    # does not push its reaction down through the wall under it — it rides the trimmer to
+    # wherever THAT joist actually bears, which is not this wall. (The model has no field
+    # for "hung on a trimmer" — `Beam.bearing_refs` only resolves Wall/Beam tags — so this
+    # is a framing call recorded here in prose, not something a check can verify either way.)
     #
-    # CATLIN_INT_2X6_BRG_PLUMBING since 2026-08-30 — plain INT_2X4_PARTITION until then, on
-    # the argument that `structural.wet_wall_bearing` has no quarrel with continuous studs.
-    # That argument still holds, but it missed what actually stands against this wall:
-    # `FX-S-SUITEBATH-LAV` backs onto it (10.5" south, at y=265.63") and `FX-S-SUITEBATH-
-    # TUBSH` closes against it too (`plan/fixtures.py`), so this is the suite bath's real
-    # wet wall, not W-S-SBS across the room. **Staggered studs are NOT the fix** —
-    # `structural.wet_wall_bearing` FAILs outright on a BEARING wall framed staggered
-    # (neither face's studs carry the plates' load); `CATLIN_INT_2X6_BRG_PLUMBING` is the
-    # x=10' line's own precedent for exactly this combination: continuous 2x6 studs plus the
-    # 5.5" fiberglass batt a staggered wall would have carried, so the wall gains the same
-    # `advisory.wet_wall_depth` allowance as W-S-DC2 without losing its load path. Total
-    # thickness grows 4.75" -> 6.77" (both faces move ~1" — check clearances at
-    # FX-S-SUITEBATH-LAV and FX-S-SUITEBATH-TUBSH after any further edit here).
+    # Back to INT_2X6_STAGGERED_PLUMBING accordingly — the original ask, and valid again now
+    # that nothing requires continuous studs: `FX-S-SUITEBATH-LAV` backs onto this wall
+    # (10.5" south, at y=265.63") and `FX-S-SUITEBATH-TUBSH` closes against it too
+    # (`plan/fixtures.py`), so this is the suite bath's real wet wall, not W-S-SBS across the
+    # room. Total thickness is unchanged from the brief CATLIN_INT_2X6_BRG_PLUMBING
+    # interlude (both are 6.77"), so no face moved and nothing needs re-checking there.
     #
-    # `stacks_on` names W-M-HS3 because the load path below has to be picked, not guessed:
-    # the main storey carries an unbroken wall band on y=22'-4" from x=0 to x=18'
-    # (W-M-HS1/HS2/HS3/HS4), so this wall has two collinear candidates under it and
-    # `resolve/stacking.py` raises `integrity.stack_ambiguous` — a hard ERROR — without a
-    # tiebreaker. W-M-HS3 runs x 8'-0"..13'-4", which brackets the x=10' reaction with 2'
-    # to spare. W-M-HS4 is D-M-LAUN's 4'-0" pocket, which CLAUDE.md forbids putting
-    # anything in.
+    # `stacks_on` still names W-M-HS3, but for an unrelated reason: `resolve/stacking.py`
+    # derives a `storey_stack:rim` boundary condition for EVERY wall with a collinear overlap
+    # below it, bearing or not, and this wall overlaps both W-M-HS3 and W-M-HS4 on the main
+    # storey's unbroken y=22'-4" band — `integrity.stack_ambiguous` is a hard ERROR on that
+    # overlap without a tiebreaker regardless of structural_role. W-M-HS3 runs x
+    # 8'-0"..13'-4", which is also where W-M-HS4 (D-M-LAUN's 4'-0" pocket, off-limits per
+    # CLAUDE.md) would otherwise have been the only other candidate.
     Wall(uid="CSW147AAAA", tag="W-S-SN3", start_node="N-S-D4", end_node="N-S-C2C",
-         assembly="CATLIN_INT_2X6_BRG_PLUMBING", top=ft(9),
-         structural_role=StructuralRole.BEARING, stacks_on="W-M-HS3"),
+         assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9), stacks_on="W-M-HS3"),
     Wall(uid="CSW148AAAA", tag="W-S-VE", start_node="N-S-V1", end_node="N-S-V2",
          assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CSW132AAAA", tag="W-S-BD-N", start_node="N-S-W1", end_node="N-S-V2",

@@ -136,14 +136,24 @@ def test_ratio_ranking_reproduces_the_run_the_hand_analysis_named(by_tag):
     assert by_tag["DU-A-ERV-R-BED3"]["developed_ft"] == pytest.approx(56.2, abs=0.2)
 
 
-def test_the_gable_reroute_is_visible_in_the_schedule(by_tag):
-    """``CD-A-DATA-NE`` is what this module was built to make arguable. It scored 57.08 LF at
-    ratio 2.26 — a 66-foot dogleg south across the studio and back — because the 2026-08-29
-    pass read "the strip between the void and the wall is wall, not deck" as a prohibition
-    when a conduit wants framing, not deck. Through the gable's stud cavity it is 29.58 LF at
-    1.17, which is very nearly the straight line between its two ends."""
-    assert by_tag["CD-A-DATA-NE"]["developed_ft"] == pytest.approx(29.58, abs=0.2)
-    assert by_tag["CD-A-DATA-NE"]["ratio"] == pytest.approx(1.17, abs=0.03)
+def test_the_reroute_is_visible_in_the_schedule(by_tag):
+    """``CD-A-DATA-NE`` is what this module was built to make arguable, and it has now been
+    rerouted twice — which is the point worth pinning, because the SECOND reroute is the one
+    the schedule could not have told you to make.
+
+    It scored 57.08 LF at ratio 2.26 as a 66-foot dogleg south across the studio and back.
+    The 2026-08-29 pass took it through the north gable's stud cavity: 29.58 LF at 1.17, very
+    nearly the straight line between its two ends, and by every number in this schedule the
+    right answer. It also put the raceway through ``WIN-A-N2``'s rough opening at +23'-3", in
+    the same band ``DU-ERV-EA`` was crossing both gable windows in. **A good ratio is not a
+    buildable route**, and nothing here grades one; ``mep.run_through_opening`` does.
+
+    On 2026-08-30 it went south down the pocket instead, to an AP wall-mounted on
+    ``W-A-STU-N`` — 19.0 LF at 1.46. Shorter than either predecessor and a WORSE ratio than
+    the route it replaced, which is exactly why this test asserts both numbers: if someone
+    optimises the ratio back down, they are on their way to the gable again."""
+    assert by_tag["CD-A-DATA-NE"]["developed_ft"] == pytest.approx(19.0, abs=0.2)
+    assert by_tag["CD-A-DATA-NE"]["ratio"] == pytest.approx(1.46, abs=0.03)
 
 
 # --- the shared price join -----------------------------------------------------------------

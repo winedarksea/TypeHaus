@@ -649,8 +649,13 @@ MAIN_PLACEABLES = [
     # SOUTH end was the thing in the way, 1 7/16" inside the closet wall's new laundry face.
     # One object, two retypes, two different axes — sweep both faces of every wall you
     # thicken, not just the room you are working in.
+    #
+    # 2026-08-30: both walls retyped again, DOUBLE_GWB -> single-gwb INT_2X4_STAGGERED_GWB
+    # (storeys/main.py) — 1 1/4" thinner, so each face gave back 5/8". Reversed by the same
+    # 5/8" per axis so the rack stays flush rather than floating off the new faces:
+    # x +5/8" (3.896525 -> 3.9124), y -5/8" (5.89789 -> 5.882015).
     Furniture(uid="XJSV712BWZ", tag="FURN-M-LAUNDRY-RACK", type_ref="FURN-WALL-RACK-24", room="RM-M-LAUNDRY",
-              position=pt(m(3.896525), m(5.89789)), rotation=deg(90),
+              position=pt(m(3.9124), m(5.882015)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
 
     # --- RM-M-STUDY, the call booth (2026-08-29) --------------------------------------

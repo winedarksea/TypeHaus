@@ -54,6 +54,19 @@ export function standardMaterial(
 }
 
 /**
+ * Stamp the cast+receive pair every solid piece of the building carries, on any object that
+ * has the two flags — `THREE.Mesh` and `THREE.InstancedMesh` alike, so an instanced framing
+ * bucket (studs, joists, skin bands) can opt in the same way a merged `Mesh` does.
+ */
+export function markShadowCaster<T extends { castShadow: boolean; receiveShadow: boolean }>(
+  object: T,
+): T {
+  object.castShadow = true;
+  object.receiveShadow = true;
+  return object;
+}
+
+/**
  * A mesh that both casts and receives the sun. Every solid piece of the building does, and the
  * pair was written out at eight call sites; missing one is invisible until a shadow is absent
  * from a render nobody is looking at.
@@ -61,8 +74,5 @@ export function standardMaterial(
 export function makeSurfaceMesh(
   geometry: THREE.BufferGeometry, material: THREE.Material | THREE.Material[],
 ): THREE.Mesh {
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  return mesh;
+  return markShadowCaster(new THREE.Mesh(geometry, material));
 }

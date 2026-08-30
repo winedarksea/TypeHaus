@@ -1,5 +1,7 @@
 import {
   BIFOLD_LEADING_EDGE_FRACTION,
+  BYPASS_OVERLAP_M,
+  BYPASS_TRACK_SPACING_M,
   SLIDING_PANEL_CLEARANCE_M,
   bifoldDoorStrokes,
   bifoldFoldOffset,
@@ -66,48 +68,50 @@ export function runDoorSymbolTests() {
     throw new Error("A bifold pair draws one folded run per half of the opening");
   }
 
-  checkSlidingPanelBypassesTheWall(width);
+  checkBypassLeavesOverlapWithinTheOpening(width);
   checkPocketPanelRecedesIntoTheWall(width);
   checkStrokeGlyphDispatch();
   checkHostWallThickness();
 }
 
 /**
- * A slider is a panel standing off the wall face that parks a leaf width past one jamb.
- * Both facts are load-bearing: without the standoff it reads as a fixed panel, and without
- * the handed travel it reads as a pocket door.
+ * A bypass pair is two overlapping leaves on parallel tracks, both solid and both entirely
+ * within the opening. Unlike a pocket door (or a single barn-door slider), neither leaf
+ * ever travels past a jamb, and the far leaf must ride a deeper track than the near one so
+ * the two panels read as distinct rather than as one line traced twice.
  */
-function checkSlidingPanelBypassesTheWall(width: number) {
-  const standoff = 8;
-  const strokes = slidingDoorStrokes(CENTER, 0, 1, 1, width, standoff);
-  const [panel, parked, strikeTick, stopTick] = strokes;
-  if (strokes.length !== 4 || panel.dashed) {
-    throw new Error("A slider draws a solid closed panel plus its dashed travel and ticks");
+function checkBypassLeavesOverlapWithinTheOpening(width: number) {
+  const nearStandoff = 8;
+  const farStandoff = 11;
+  const overlap = 4;
+  const strokes = slidingDoorStrokes(CENTER, 0, 1, width, nearStandoff, farStandoff, overlap);
+  const [near, far] = strokes;
+  if (strokes.length !== 2 || near.dashed || far.dashed) {
+    throw new Error("A bypass pair draws two solid leaves, neither concealed");
   }
-  if (!parked.dashed || !strikeTick.dashed || !stopTick.dashed) {
-    throw new Error("The parked panel lies behind the wall it slides over and must be dashed");
+  if (near.points.some(([, y]) => Math.abs(y - (CENTER[1] - nearStandoff)) > TOLERANCE)) {
+    throw new Error("The near leaf must ride at its own standoff off the wall face");
   }
-  if (Math.abs(distance(panel.points[0], panel.points[1]) - width) > TOLERANCE) {
-    throw new Error("The closed sliding panel must span the full rough opening");
+  if (far.points.some(([, y]) => Math.abs(y - (CENTER[1] - farStandoff)) > TOLERANCE)) {
+    throw new Error("The far leaf must ride its own, deeper track");
   }
-  if (panel.points.some(([, y]) => Math.abs(y - (CENTER[1] - standoff)) > TOLERANCE)) {
-    throw new Error("The sliding panel must ride at its standoff off the wall face");
+  const halfOverlap = overlap / 2;
+  if (Math.abs(near.points[0][0] - (CENTER[0] - width / 2)) > TOLERANCE
+    || Math.abs(near.points[1][0] - (CENTER[0] + halfOverlap)) > TOLERANCE) {
+    throw new Error("The near leaf must run from its own jamb to just past centre");
   }
-  if (Math.abs(distance(parked.points[0], parked.points[1]) - width) > TOLERANCE) {
-    throw new Error("A slider parks one leaf width past its jamb");
+  if (Math.abs(far.points[0][0] - (CENTER[0] - halfOverlap)) > TOLERANCE
+    || Math.abs(far.points[1][0] - (CENTER[0] + width / 2)) > TOLERANCE) {
+    throw new Error("The far leaf must run from just before centre to its own jamb");
   }
-  // Travel is handed: it must run past one jamb only, and mirror when the handing flips.
-  const travelEnd = Math.max(...strokes.flatMap((stroke) => stroke.points.map(([x]) => x)));
-  if (Math.abs(travelEnd - (CENTER[0] + width / 2 + width)) > TOLERANCE) {
-    throw new Error("The slider's travel must end a leaf width past the park jamb");
-  }
-  const flipped = slidingDoorStrokes(CENTER, 0, 1, -1, width, standoff);
-  const flippedEnd = Math.min(...flipped.flatMap((stroke) => stroke.points.map(([x]) => x)));
-  if (Math.abs(flippedEnd - (CENTER[0] - width / 2 - width)) > TOLERANCE) {
-    throw new Error("Flipping the park jamb must mirror the slider's travel");
+  // Neither leaf ever travels past a jamb, unlike a pocket door's dashed run into the wall.
+  const xs = strokes.flatMap((stroke) => stroke.points.map(([x]) => x));
+  if (Math.max(...xs) - CENTER[0] > width / 2 + TOLERANCE
+    || CENTER[0] - Math.min(...xs) > width / 2 + TOLERANCE) {
+    throw new Error("A bypass leaf must never travel past a jamb");
   }
   if (strokes.some((stroke) => stroke.points.some(([, y]) => y > CENTER[1] + TOLERANCE))) {
-    throw new Error("A slider must stay on its handed operating side of the wall");
+    throw new Error("A bypass pair must stay on its handed operating side of the wall");
   }
 }
 
@@ -151,19 +155,29 @@ function checkStrokeGlyphDispatch() {
     throw new Error("Hinged operations draw a leaf and an arc, not a stroke glyph");
   }
   const counts: [DoorOperation, number][] =
-    [["overhead", 4], ["bifold", 2], ["slide", 4], ["pocket", 3]];
+    [["overhead", 4], ["bifold", 2], ["slide", 2], ["pocket", 3]];
   for (const [operation, expected] of counts) {
     if (glyph(operation)?.length !== expected) {
       throw new Error(`${operation} must resolve to ${expected} strokes`);
     }
   }
-  // Both absolute sizes come from the wall, not the opening: a slider hangs clear of the
-  // wall face, and the pocket stop spans the cavity the panel hides in.
+  // Both absolute sizes come from the wall, not the opening: a bypass leaf hangs clear of
+  // the wall face, and the pocket stop spans the cavity the panel hides in.
   const halfWallPx = (hostWallThicknessM / 2) * pixelsPerMeter;
-  const [slidingPanel] = glyph("slide")!;
-  const standoffPx = CENTER[1] - slidingPanel.points[0][1];
-  if (Math.abs(standoffPx - (halfWallPx + SLIDING_PANEL_CLEARANCE_M * pixelsPerMeter)) > TOLERANCE) {
-    throw new Error("The sliding panel must stand clear of the wall face, not inside it");
+  const [nearLeaf, farLeaf] = glyph("slide")!;
+  const nearStandoffPx = CENTER[1] - nearLeaf.points[0][1];
+  const expectedNearStandoffPx = halfWallPx + SLIDING_PANEL_CLEARANCE_M * pixelsPerMeter;
+  if (Math.abs(nearStandoffPx - expectedNearStandoffPx) > TOLERANCE) {
+    throw new Error("The near bypass leaf must stand clear of the wall face, not inside it");
+  }
+  const farStandoffPx = CENTER[1] - farLeaf.points[0][1];
+  const expectedFarStandoffPx = expectedNearStandoffPx + BYPASS_TRACK_SPACING_M * pixelsPerMeter;
+  if (Math.abs(farStandoffPx - expectedFarStandoffPx) > TOLERANCE) {
+    throw new Error("The far bypass leaf must ride a deeper track than the near leaf");
+  }
+  const overlapPx = Math.min(BYPASS_OVERLAP_M * pixelsPerMeter, (1.5 * pixelsPerMeter) / 2);
+  if (Math.abs(nearLeaf.points[1][0] - (CENTER[0] + overlapPx / 2)) > TOLERANCE) {
+    throw new Error("The near bypass leaf must overlap the far leaf by the published amount");
   }
   const stop = glyph("pocket")![2];
   if (Math.abs(distance(stop.points[0], stop.points[1]) - 2 * halfWallPx) > TOLERANCE) {

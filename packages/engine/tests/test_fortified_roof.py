@@ -91,11 +91,17 @@ def test_the_house_roof_has_a_drip_edge_on_every_footprint_edge(drip_edge) -> No
 
 def test_removing_a_rake_flashing_fails_that_edge_only(ctx) -> None:
     """The branch must still bite. Strip catlin's south rake flashing back off and the
-    check reports exactly that edge broken, not the whole roof."""
+    check reports exactly that edge broken, not the whole roof.
+
+    The south rake is two short corner returns (params/roof_trim.py::_rake_corner_drips,
+    ``TR-RF-DRIP-S`` at the west corner and ``TR-RF-DRIP-S-E`` at the east), so both have to
+    go — leaving either one behind still covers the S side, which is the point of authoring
+    two of them."""
     from typehaus.model.trim import Flashing
 
     by_tag = {e.tag: e for e in ctx.plan.all_elements()}
     del by_tag["TR-RF-DRIP-S"]
+    del by_tag["TR-RF-DRIP-S-E"]
 
     class _Plan:
         def __init__(self, real):

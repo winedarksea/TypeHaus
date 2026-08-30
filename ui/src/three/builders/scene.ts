@@ -161,7 +161,7 @@ export function populateScene(options: PopulateSceneOptions) {
   }
   for (const floor of model.floors ?? []) {
     buildFloor(tradeGroups.floors, floor, center, mode, palette, registry.picks, registry.byUid,
-      tradeGroups.framing);
+      tradeGroups.framing, model.catalog?.materials);
   }
   // Room finishes go over the decks, so they build after every floor is in. Deck openings are
   // per storey, not per floor system, so they are gathered once and cut out of each finish —
@@ -185,10 +185,12 @@ export function populateScene(options: PopulateSceneOptions) {
     buildLightRun(tradeGroups.electrical, run, center, mode, registry.picks, registry.byUid);
   }
   for (const stair of model.stairs ?? []) {
-    buildStair(tradeGroups.stairs, stair, center, mode, palette, registry.picks, registry.byUid);
+    buildStair(tradeGroups.stairs, stair, center, mode, palette, registry.picks, registry.byUid,
+      model.catalog?.materials);
   }
   for (const brace of model.braces ?? []) {
-    buildBrace(tradeGroups.framing, brace, center, mode, palette, registry.picks, registry.byUid);
+    buildBrace(tradeGroups.framing, brace, center, mode, palette, registry.picks, registry.byUid,
+      model.catalog?.materials);
   }
 
   const types = new Map((model.catalog?.canvas_object_types ?? []).map((type) => [type.tag, type]));

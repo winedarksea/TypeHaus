@@ -289,13 +289,24 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
 
     A ninth arrived with the same 2026-08-21 batch and is the reason the list is nine now:
     the suite's north wall line runs W-S-SN1 -> W-S-SN2 -> W-S-SN3 straight through from
-    x=0' to x=18' at y=22'-4", and the first two took the 8" INT_2X4_STAGGERED_DOUBLE_GWB
-    sound wall while W-S-SN3 stayed on the 4 3/4" INT_2X4_PARTITION. They meet collinear at
-    N-S-D4, so the collinearity gate does not drop it, and staggered 2x4s on 2x6 plates with
-    doubled gypsum against single studs with one layer is a different material sequence, not
-    a thickness-only variant, so the layer-equivalence gate does not either. A builder
-    framing that line has to be told where the sound wall stops — which is the definition
-    this test exists to hold. TR-CATLIN-ASSEMBLY-JOG binds and suppresses it like the rest.
+    x=0' to x=18' at y=22'-4", and the first two took the staggered sound wall while W-S-SN3
+    carried a different assembly. They meet collinear at N-S-D4, so the collinearity gate
+    does not drop it. **The key's own text has moved twice since, and is now
+    `INT_2X4_STAGGERED_GWB|INT_2X6_STAGGERED_PLUMBING`, not a `INT_2X4_PARTITION` pair at
+    all** — W-S-SN3 became a wet wall for the suite bath's fixtures (`INT_2X6_STAGGERED_PLUMBING`,
+    `plan/storeys/second.py`) independent of the north wall's own 2026-08-30 gypsum retype
+    (`INT_2X4_STAGGERED_DOUBLE_GWB` -> `INT_2X4_STAGGERED_GWB`, `library/assemblies.py`). Two
+    staggered assemblies differing by a paint/finish layer stay a real key regardless of gwb
+    layer count, so `_layers_equivalent` (`resolve/pipeline.py`) does not drop this one — but
+    it WOULD now drop `INT_2X4_PARTITION|INT_2X4_STAGGERED_GWB` at a node where the single-gwb
+    wall meets a plain `INT_2X4_PARTITION`, because that gate's signature is
+    `(material_ref, function)` per layer only — it does not see `FramingSpec.layout`, so a
+    staggered gwb/structure/gwb sequence and a continuous gwb/structure/gwb sequence now read
+    as the same "thickness-only" construction. That is exactly what happened at N-M-E3
+    (W-M-HS3 `INT_2X4_PARTITION` meeting W-M-LS): it dropped out of this list entirely on
+    2026-08-30, and TR-CATLIN-ASSEMBLY-JOG no longer details that jog. A builder still needs
+    telling where the staggered studs start; the gate no longer tells them there. Known gap,
+    not fixed here — the double-gypsum retype masked it by keeping the layer counts different.
 
     A tenth arrived on 2026-08-24, when W-B-STR/W-B-STR3 were framed: the two segments
     differ by the ESS closet's 5/8" Type X leaf, they meet collinear at N-B-ESS-SE, and one
@@ -375,10 +386,14 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # detail: the resilient channel and its own leaf of board stop at these nodes, and a
         # builder who carries them through has shorted the acoustic wall by one leaf.
         "assembly_change:INT_2X4_PARTITION|INT_2X4_RC",
-        "assembly_change:INT_2X4_PARTITION|INT_2X4_STAGGERED_DOUBLE_GWB",
         # N-B-STR, the y=18' line's surviving change: W-B-CW2's playroom partition against
         # W-B-CW3, which took W-B-CW's wet wall on 2026-08-25. This key read
         # ...|INT_ESS_CLOSET_STEEL while W-B-CW3 still carried the departed closet's studs.
         "assembly_change:INT_2X4_PARTITION|INT_2X6_PLUMBING",
         "assembly_change:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",
+        # N-S-D4, W-S-SN2 -> W-S-SN3 (see the docstring's "ninth" paragraph): a wet wall
+        # meeting a staggered sound wall, the one node where this key still fires now that
+        # the north wall's own gypsum retype (2026-08-30) would otherwise have made it a
+        # dropped thickness-only variant against a plain INT_2X4_PARTITION neighbour.
+        "assembly_change:INT_2X4_STAGGERED_GWB|INT_2X6_STAGGERED_PLUMBING",
     ]

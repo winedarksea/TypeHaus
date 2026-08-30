@@ -162,7 +162,14 @@ BATH1_SHELF_2030 = FurnitureType(
 # ** EVERY DIMENSION BELOW IS DERIVED FROM out/model.json, NOT FROM A DOCUMENT. ** After
 # W-M-LS and W-M-CLN2 were retyped to INT_2X4_STAGGERED_DOUBLE_GWB (storeys/main.py), the
 # room's four resolved gypsum faces are x 13'-8" .. 17'-8 5/8" and y 18'-4" .. 22'-1 5/8" —
-# a 48 5/8" x 45 5/8" clear box, about 15.4 sf. ** DO NOT MEASURE OFF `Room.clear_face`: **
+# a 48 5/8" x 45 5/8" clear box, about 15.4 sf. ** STALE AS OF 2026-08-30: ** both walls
+# retyped again to the single-gwb INT_2X4_STAGGERED_GWB (1 1/4" thinner), which should
+# open this box by about 5/8" on each of the two retyped faces (~49 1/4" x 46 1/4") — but
+# that number is asserted here, not re-derived from a rebuild, and the STUDY_BENCH
+# footprint, its wainscot-return scribe and the seat-length math below are still cut to
+# the OLD box. Re-derive from a fresh `out/model.json` (never `Room.clear_face`, see below)
+# before this casework is actually built.
+# ** DO NOT MEASURE OFF `Room.clear_face`: **
 # `resolve/rooms.py::_lining_inset` insets a claimed face by one uniform 0.635" whatever the
 # wall actually is, so it still reports the 4'-8" x 4'-4" axis box and the published 19.3 sf
 # (plans/TODO.md, the RM-S-PLANT write-up). The sauna benches in plan/placeables.py are
@@ -291,11 +298,13 @@ STUDY_DESK = FurnitureType(
 # the room that cannot move. A 1 1/2" solid walnut leaf this short is stiff enough on its own;
 # no drop leg is needed, and a drop leg in the pocket would defeat the point of the pocket.
 #
-# ** AND THE LEDGER IS WHERE THIS WALL BITES BACK. ** W-M-CLN2 is INT_2X4_STAGGERED_DOUBLE_GWB
-# and it is STC 52 *because* no stud touches both faces. The received detail for a wall-hung
-# desk — a ledger lagged through the finish into every stud it crosses — would either miss
-# (there are 2" of double gypsum plus 3/4" of wainscot before a lag reaches wood) or, worse,
-# be through-bolted to the far-face studs and short the decoupling this booth was retyped for.
+# ** AND THE LEDGER IS WHERE THIS WALL BITES BACK. ** W-M-CLN2 is INT_2X4_STAGGERED_GWB
+# (single-gwb since 2026-08-30, was STAGGERED_DOUBLE_GWB at STC 52) and it decouples the two
+# faces *because* no stud touches both, staggered-studs geometry the retype did not touch.
+# The received detail for a wall-hung desk — a ledger lagged through the finish into every
+# stud it crosses — would either miss (there are 1 3/8" of single gypsum plus 3/4" of
+# wainscot before a lag reaches wood, was 2" with the double layer) or, worse, be
+# through-bolted to the far-face studs and short the decoupling this booth was retyped for.
 # The detail is blocking LET IN AT FRAMING, laid FLAT: study-face studs occupy 0"..3 1/2" of
 # the 5 1/2" plate and the living-side studs 2"..5 1/2", so a 2x4 on the flat sits 0"..1 1/2"
 # and clears the far studs by 1/2". The bench already carries this note ("the blocking laid
