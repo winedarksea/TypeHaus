@@ -69,27 +69,65 @@ MAIN_FIXTURES = (
     # into the hall (test_bath1_fixtures_sit_inside_the_room_and_clear_of_each_other).
     Fixture(uid="CMQ802AAAA", tag="FX-M-BATH1-LAV", type_ref="FX-LAV-COMPACT", room="RM-M-BATH1",
             position=pt(m(1.315138), m(7.00891)), wall_ref="W-M-BAE", rotation=deg(180)),
-    # Backs east onto W-M-BA2E (its wet wall); rotation 90 turns its back onto the wall,
-    # centred so the tank edge sits on the room's east clear face. The `drain_position`
-    # override (removed 2026-07-29) used to hold SP-M-WC2's old corner-fitting position
-    # to keep the pre-pour sleeve contract during the WC's move to this wall; the plumbing
-    # pass re-pointed the sleeve/PR-B-WC2-DRAIN to the real closet flange, so the convention
-    # (under the bowl) is correct on its own now.
+    # 2026-08-29, the drop-in bath pass: this bowl finally backs onto a wall. It had stood
+    # free in the middle of the floor with its tank 9 3/4" clear of anything since the
+    # 2026-07-29 wall move, and `wall_ref` said W-M-BA2E — a wall it was 5'-5" away from.
+    # Both are fixed here: it backs W-M-HS1 (retyped to the plumbing assembly for it, see
+    # storeys/main.py) at rotation 0, which is the rotation that puts the tank on +y.
+    #
+    # x=2'-6" is bounded on BOTH sides and there is not much room between them. P2705.1
+    # wants 15" clear each side of the centreline: west of 1'-9 5/8" the envelope runs into
+    # W-M-W3's face, east of 3'-1" it runs into the tub deck's west face at x=4'-4". 2'-6"
+    # sits near the middle of that 1'-3 3/8" band, 7" clear of the deck.
+    # y=20'-10 5/8" is the bowl centre with its tank on the wall's new face (22'-0 5/8"
+    # less the type's 14" half-depth). The 21" front clearance then reaches to y=17'-11 5/8"
+    # and clears FX-M-BATH2-SINK's south end by 1 1/4" — the tightest dimension in the room
+    # and the one to re-check if that sink ever moves north.
+    #
+    # No `drain_position`: the convention (under the bowl) is correct, and PR-B-WC2-DRAIN
+    # follows the bowl to its new flange rather than the reverse.
     Fixture(uid="CMQ803AAAA", tag="FX-M-BATH2-WC", type_ref="FX-TOILET-STD", room="RM-M-BATH2",
-            position=pt(m(0.686504), m(6.14439)), rotation=deg(0), wall_ref="W-M-BA2E"),
-    # BATH2 has separate bathing fixtures: the 36" shower sits north of the door swing,
-    # while the 60" tub runs north/south along the east plumbing wall. They are intentionally
-    # separate instances/types rather than a tub-shower combination, so the permit schedule
-    # and future owner selections can treat them independently.
+            position=pt(ft(2, 6), ft(20, 10.615)), rotation=deg(0), wall_ref="W-M-HS1"),
+    # BATH2 has separate bathing fixtures: the 36" shower at the south end of the east
+    # plumbing wall, the bath north of it. They are intentionally separate instances/types
+    # rather than a tub-shower combination, so the permit schedule and future owner
+    # selections can treat them independently — and since 2026-08-29 the bath is a drop-in,
+    # which a combination unit could not be.
+    #
+    # The shower moved 4 1/4" SOUTH on 2026-08-29, hard against W-M-BDN1's face at
+    # y=13'-2 3/8", and that 4 1/4" is the whole integration: the shower's north face and
+    # the tub deck's south face are now the SAME LINE (y=16'-2 3/8"), so W-M-TUBDK-S is one
+    # framed 2x4 run doing both jobs — the deck's south knee wall on its north side, the
+    # shower's north wall on its south. The two wet fixtures read as one built element
+    # down the east wall instead of two boxes with a 4" slot of dead floor between them.
+    # The room's depth is spent exactly: 36" of shower + 70 1/4" of deck = 106 1/4" clear.
+    #
+    # `drain_position` is unchanged and is NOT the pan's centre — it never was; it is where
+    # PR-B-SH2-DRAIN picks the waste up on its way to the stack. Left alone deliberately:
+    # the pan moved 4 1/4", which does not move a trap that is already offset.
     Fixture(uid="CMQ805AAAA", tag="FX-M-BATH2-SH", type_ref="FX-SHOWER-36", room="RM-M-BATH2",
-            position=pt(m(1.88387), m(4.58801)), wall_ref="W-M-BA2E",
+            position=pt(ft(6, 2.615), ft(14, 8.375)), wall_ref="W-M-BA2E",
             drain_position=pt(ft(1, 9), ft(17, 3))),
-    # Shifted 6" north (2026-07-29) with the W-M-HS1..4 wall move that gave BATH2 8" more
-    # depth: the old position overlapped FX-M-BATH2-SH by ~1.3" (`advisory.fixture_overlap`);
-    # this clears it with a 4.7" gap and still leaves 4" to the room's new north face.
-    Fixture(uid="CMQ806AAAA", tag="FX-M-BATH2-TUB", type_ref="FX-TUB-60", room="RM-M-BATH2",
-            position=pt(m(1.96436), m(5.91312)), rotation=deg(90), wall_ref="W-M-BA2E",
-            drain_position=pt(ft(7, 4), ft(19, 4.8))),
+    # ** THE KOHLER K-5713-W1-0 UNDERSCORE, AND IT IS A DROP-IN. ** (2026-08-29, replacing
+    # the FX-TUB-60 alcove allowance that stood here from the M3 fixture pass.) The bath has
+    # no skirt: it drops through SL-M-TUBDK and sits on a 1"-2" mortar bed on the subfloor,
+    # and Kohler is explicit that the rim carries no load. So this Fixture is the RIM, and
+    # the thing that occupies the room is the framed deck box in storeys/main.py.
+    #
+    # Position is the centre of the deck's 36 1/8" x 65 3/4" bay with the bath pushed north:
+    # 2" of tiled deck at the head (x 4'-8 11/16"..7'-8 7/16", y 16'-10 15/16"..21'-10 5/8"),
+    # 4" at the foot, and 3/16" a side — comfortably inside Kohler's 1/8"-gap rule once the
+    # tiling-in bead and the silicone joint take up. The 4" at the foot is not slack: it is
+    # where the deck receptacle for the Bask heated surface lives, behind the bath and
+    # inside the 24" Kohler requires, reachable through FURN-M-BATH2-TUB-AP.
+    #
+    # `drain_position` stays at (7'-4", 19'-4.8"): the waste is CENTRE on this bath as it
+    # was on the allowance, and that point is where PR-B-TUB2-DRAIN turns for the stack, not
+    # the outlet itself. The run drops to 1 1/2" with this change (plan/mep_drainage.py) —
+    # K-7272's tee, not the 2" the allowance was drawn at.
+    Fixture(uid="CMQ806AAAA", tag="FX-M-BATH2-TUB", type_ref="FX-KOHLER-UNDERSCORE-6036",
+            room="RM-M-BATH2", position=pt(ft(6, 2.56), ft(19, 4.77)), rotation=deg(90),
+            wall_ref="W-M-BA2E", drain_position=pt(ft(7, 4), ft(19, 4.8))),
     # RM-M-BATH2's double-basin sink uses the shared kitchen-sink catalog type rather than
     # a house-local surrogate. Its 27" mount puts the library sink's deck at the intended
     # lavatory height; rotation +90 turns the back of the symbol toward the west wall.

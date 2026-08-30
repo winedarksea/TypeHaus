@@ -14,12 +14,33 @@ east sides, topping out level with the retaining wall and running 3' down. The s
 retains is the yard, not a planting bed.
 
 **The apron is fully above grade since 2026-08-18, and this is what the house was lifted
-for.** Its base sits at -2'-6", and -2'-6" is now finished grade: the house came out of the
-ground by moving grade down to the apron's own footing line, so all three 6"-course feet of
-it stand proud of the soil instead of two and a half of them being buried. Which also
-reverses what it retains. It used to hold the yard back off the sunken garden; the yard is
-now *below* its base, and what it holds is the 3'-0" raised terrace between it and the
-sunken-garden walls — the same 3 feet, retained from the other side.
+for.** Its base sits at -2'-6": the house came out of the ground by moving grade down to
+the apron's own footing line, so all three 6"-course feet of it stand proud of the soil
+instead of two and a half of them being buried. Which also reverses what it retains. It
+used to hold the yard back off the sunken garden; the yard is now *below* its base, and
+what it holds is the 3'-0" raised terrace between it and the sunken-garden walls — the same
+3 feet, retained from the other side.
+
+** THE BASE COURSE HAS NEGATIVE EMBEDMENT, AND THIS PARAGRAPH USED TO DENY IT. ** It read
+"-2'-6" is now finished grade", which was true for exactly three days. Grade went to
+**-2'-10"** on 2026-08-21 with the basement-ceiling overhaul (`plan/site.py`,
+`params/foundations.py::SITE_GRADE`) and **the apron did not follow it down** — nothing ties
+`BASE` here to `SITE_GRADE`, and nothing checks the two against each other. So the base
+course of a dry-stacked SRW retaining 3'-0" of fill stands **4" clear of finished grade**,
+with its 6" levelling pad (``undercut``, below) two-thirds exposed.
+
+That is a real defect, not a drafting slip. A segmental retaining wall is a *flexible*
+system and is correctly designed here to ride 42" of frost without a frost footing — but it
+depends absolutely on base-course embedment to resist sliding, and on a buried levelling pad
+to resist erosion and frost lensing at the toe. `unbalanced_fill` below still states 3'-0",
+so the model believes this wall retains three feet and knows nothing holds its toe.
+
+**It is deliberately not fixed here**, because the fix is an owner's choice between two
+different jobs and the cheaper one is not a change to this module at all: either raise
+finished grade against the outboard face by 10"-12" over a ~4' bench (new `SpotElevation`s
+in the editable `plan/site.py`, ~$700-1,500, and free if the real survey reshapes this yard
+anyway), or drop the apron 4" and add a 6" course (~245 sf of face re-set, $7,350-14,700 at
+this house's own `prices.toml` `RETAINING_BLOCK_12` rate). See `plans/pattern_language_review.md`.
 
 Section, at a side leg, west (yard) to east (sunken garden):
 
@@ -27,7 +48,8 @@ Section, at a side leg, west (yard) to east (sunken garden):
              |    | terrace  |    |
              | SRW|##########| SG |   <- the 3'-0" of fill the apron now retains, inboard
              |    |          |wall|
-    -2'-6"   +----+-- grade -|    |   <- apron base *at* finished grade; yard falls away
+    -2'-6"   +----+          |    |   <- apron base, and its levelling pad below it
+             . . . -- grade -. . . .   <- -2'-10" since 2026-08-21: FOUR INCHES LOWER
         (yard)                     |
 
 Plan — a U whose north corners return three feet to the balcony railing:

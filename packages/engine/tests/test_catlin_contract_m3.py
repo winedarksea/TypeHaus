@@ -747,6 +747,34 @@ def test_bedroom_egress_is_associated_with_its_own_bounding_wall():
     assert all("WIN-B-SAUNA" not in finding.message for finding in findings)
 
 
+def test_every_credited_egress_window_is_in_an_exterior_wall():
+    """R310.1's opening must reach "a public way, yard or court" — never the next room.
+
+    The house-side half of the ``exterior_only`` fix (2026-08-29); the two-sided synthetic
+    pair lives in ``test_code_coverage_expansion.py``. This one is the standing guard: it
+    re-derives, from the resolved model rather than from a tag prefix, that each of the six
+    windows ``code.R310_egress`` credits is on a wall with modeled space on one side only.
+    Author a borrowed-light sash into a bedroom partition and the *other* file's test proves
+    the rule rejects it; this one proves nobody quietly re-pointed a real bedroom at one.
+    """
+    from typehaus.checks import build_context
+    from typehaus.checks.code.mn_residential._common import _rooms_by_storey, _wall_is_exterior
+
+    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
+    findings = [f for f in run(ctx.plan, CATLIN_DIR, tier=None).findings
+                if f.check_id == "code.R310_egress"]
+    credited = {word for finding in findings for word in finding.message.split()
+                if word.startswith("WIN-")}
+    assert len(credited) == 6, sorted(credited)
+    rooms_by_storey = _rooms_by_storey(ctx)
+    for tag in sorted(credited):
+        opening = next(o for o in ctx.model.openings if o.tag == tag)
+        wall = ctx.model.wall(opening.host_wall)
+        assert _wall_is_exterior(ctx, wall, rooms_by_storey), (
+            f"{tag} is credited for egress but its host wall {wall.tag} has modeled "
+            "space on both sides")
+
+
 def test_catlin_window_openings_follow_their_walls_framing_module():
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
     findings = [finding for finding in report.findings

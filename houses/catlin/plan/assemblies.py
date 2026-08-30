@@ -2478,6 +2478,85 @@ PLANT_INT_2X4_HUMID = Assembly(
     source="notes/plant_room.md — plant room north partitions; humid liner one face, painted gypsum the other",
 )
 
+# --- RM-M-BATH2 drop-in tub deck (2026-08-29) ------------------------------------------
+# The knee-wall box and its plywood cap under FX-M-BATH2-TUB, the Kohler K-5713-W1
+# Underscore drop-in with the Bask heated surface (plan/products.py).
+#
+# ** THE MINERAL WOOL IN THIS CAVITY IS NOT INTERCHANGEABLE WITH FIBERGLASS. ** It is the
+# one cavity in the house whose insulation choice is a MOISTURE decision rather than a
+# thermal one: it sits under the rim of a 72-gallon bath, permanently inside a sealed box
+# that can only be reached through a 14x14 panel, in the wettest room in the house. Mineral
+# wool is hydrophobic, non-capillary and dimensionally stable when it does get wet;
+# fiberglass in this box would slump into the bottom of the bay and stay damp. If the
+# reinsulation pass ever sweeps `mineral-wool` -> `fiberglass` across the house, THIS
+# ASSEMBLY IS AN EXPLICIT EXCEPTION and must be skipped. `library/materials.py` carries
+# both materials; the swap is a material_ref edit, so nothing but this note stops it.
+#
+# The batt is not there for an energy code — both faces are inside the thermal envelope and
+# `mn_energy` never grades it (the tag carries the `INT` token, whole `_`-delimited, so the
+# R-21 exterior grade does not apply). It is there for two things the code has no opinion
+# about: the acoustics of 72 gallons falling into an acrylic shell over a 18'-0" I-joist
+# span, and holding the heat of a Bask-warmed surface in the tub rather than in the box.
+#
+# Symmetric on purpose — 1/2" exterior-grade plywood BOTH faces, not ply inside and gypsum
+# out. Two reasons. (1) The box is a freestanding component in the storey wall graph: its
+# two knee walls close no loop, so `resolve/orientation.py` cannot recover a winding and
+# falls back to `outward_sign = +1`. A symmetric stack makes that fallback unobservable —
+# an asymmetric one would build inside-out on a sign flip and nothing would say so.
+# (2) Exterior-grade ply is the right board on the room face too: it is the substrate the
+# deck's tile and the tub's silicone joint land on, 4" from a shower.
+#
+# Tile is NOT a layer here. The deck top and the knee-wall faces are tiled with the room's
+# floor tile, which is a finish-schedule fact about RM-M-BATH2 (`Room.floor_finish`), and
+# the 1/2" of tile + thinset is the difference between the cap's 21 1/2" top and the tub
+# rim's 22" — see the elevation arithmetic on SL-M-TUBDK in plan/storeys/main.py.
+CATLIN_TUBDECK_INT_2X4 = Assembly(
+    tag="CATLIN_TUBDECK_INT_2X4",
+    layers=(
+        Layer(name="ply-room", material_ref="struct-1-plywood", thickness=inch(0.5),
+              function=LayerFunction.SHEATHING),
+        Layer(name="stud", material_ref="spf", thickness=inch(3.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x4", spacing=inch(16)),
+              cavity=CavityFill(material_ref="mineral-wool")),
+        Layer(name="ply-bay", material_ref="struct-1-plywood", thickness=inch(0.5),
+              function=LayerFunction.SHEATHING),
+    ),
+    interfaces=(_STUD_BEARING,),
+    source="Kohler Installation and Care Guide 1196030-2 (Bath with Heated Surface): 2x4 or 2x6 stud framing, maximum 1/8 in. gap between the bath rim and the framing/deck. Mineral wool cavity is a moisture decision, not an energy one - see the note above; do not substitute fiberglass",
+)
+
+# The cap: flat 2x4 blocking at 16" o.c. with 3/4" exterior-grade plywood over it. TWO
+# layers rather than PORCH_DECK_COMPOSITE's one, and both of them earn their place.
+#
+# The blocking is real construction, not bookkeeping - 3/4" plywood does not span the bay's
+# 36" on its own with someone sitting on the ledge, so the sheet lands on flat 2x4s bearing
+# on the knee walls' top plates and on ledgers against W-M-BA2E and W-M-HS1/HS2.
+#
+# It is also what gets the plywood BILLED. `takeoff/framing.py` sends a slab's STRUCTURE
+# layer to the structural-solids row as a cubic-yard volume (the long-standing complaint on
+# `params/sunken_garden.py`'s SL-SG decks: a laid deck priced like a pour), while every
+# non-STRUCTURE layer bills by the square foot in `takeoff/envelope.py`. Putting the
+# blocking on STRUCTURE and the sheet on SHEATHING lands each where it belongs: lumber in
+# the volume row, plywood as area. A `Slab` must have a STRUCTURE layer -
+# `integrity.assembly_layers` is an ERROR without one - so a plywood-only cap is not an
+# option anyway.
+#
+# The tub does not bear on any of this. Kohler is explicit that the rim carries no load and
+# the bath sits on a 1"-2" mortar bed on the subfloor, so the cap carries only itself, its
+# tile, and whoever sits on the deck.
+CATLIN_TUBDECK_INT_PLY_CAP = Assembly(
+    tag="CATLIN_TUBDECK_INT_PLY_CAP",
+    layers=(
+        Layer(name="deck-block", material_ref="spf", thickness=inch(1.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x4", spacing=inch(16))),
+        Layer(name="deck-ply", material_ref="struct-1-plywood", thickness=inch(0.75),
+              function=LayerFunction.SHEATHING),
+    ),
+    source="Kohler Installation and Care Guide 1196030-2 - drop-in deck surround; flat 2x4 blocking at 16 in. o.c. under 3/4 in. exterior-grade plywood, tiled, rim on max 1/8 in. spacers",
+)
+
 # --- construction rules: pre-resolve returns at mixed-assembly junctions (#45) ----------
 # Typed declarations of the physical returns the junction solver leaves for framing/takeoff
 # (documented via a Transition overlay, never drawn; none mutate construction geometry):
@@ -2626,4 +2705,6 @@ ASSEMBLIES = [
     CATLIN_MUDROOM_INT_2X6_EXPOSED,
     CATLIN_STAIRWALL_INT_2X6_BRG,
     CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX,
+    CATLIN_TUBDECK_INT_2X4,
+    CATLIN_TUBDECK_INT_PLY_CAP,
 ]

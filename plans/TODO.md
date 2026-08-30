@@ -897,6 +897,35 @@ Dark panel along the panel of the corner most panels
 Standing seam clamps to anchor decorative elements, possibly at gable peak, or lightning rod
 Architectural lighting on facade (try to aim to be dark sky friendly)
 
+**From the pattern-language review, 2026-08-29** (`plans/pattern_language_review.md` has the
+number, the pattern and the reasoning against every one of these; the rows with a MEASURED
+number are ready to move to `plans/cost-options.md` whenever the owner wants them):
+
+Drop the main-floor south sill 2'-8" -> 1'-6" as a line, all three units together, so the south
+face gains a vertical gradient and the oak stool becomes a bench ledge (222/180/202)
+Retype the east living row 27x48 -> 27x64, the type already exists (192) -- MEASURED +$269-562
+White-oak T&G wainscot at 3'-6" in the great room, off the family stock; the house has 52 SF of
+interior wood and all of it is in a 19 sf windowless office (250/249)
+Oak in the second-floor hall, so the oak stair stops landing on vinyl between two oak rooms
+(233) -- MEASURED +$1,943-2,695
+Unglazed quarry tile in the mudroom instead of the lab-grade sheet vinyl (248) -- MEASURED,
+effectively free at +$33-360
+A 10" soffit band over the dining table -- the ONLY lever for ceiling variety on main/second,
+because Room.ceiling as a Length produces no geometry there (190/182)
+Dimmers in the bedrooms and studies -- 99 of 128 luminaires are on a plain toggle (252/135)
+Raise the electric fireplace to seated eye level, buy one that reads as fire at 11 feet, give it
+a dark surround, and turn the seats toward it (181/185)
+A built-in bench under a lowered mudroom window instead of the freestanding catalog piece (202)
+An entry court, a canopy hung off the GARAGE, a sitting wall and a bench (110/112/242/243)
+An exterior stair off the porch -- the house currently has no route from a door to its own
+ground anywhere on the site (168/120)
+Trees: one canopy tree north, two ironwood west, one serviceberry east -- and none within 25'
+of the sunken-garden walls (171)
+A freestanding trellis 4'-0" clear of any wall; a self-clinging vine on this cladding is a
+durability problem, not a decoration (246/174)
+Two lounge chairs on the porch -- it is roofed, fanned, lit, wired and curtained, and has
+nothing on it (241)
+
 ### Potential cost cutting (just ideas, not a TODO)
 ~~Remove the attic level and switch to truss/blown in insulation~~ — PRICED 2026-08-24 at
 $89,000-160,000 off the bid total, and moved to `plans/cost-options.md` per the rule below,

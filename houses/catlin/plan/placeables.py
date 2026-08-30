@@ -703,6 +703,26 @@ MAIN_PLACEABLES = [
     Furniture(uid="TEBYP46W7Y", tag="FURN-M-BATH2-TUB-AP", type_ref="FT-ACCESS-PANEL-1414", room="RM-M-LAUNDRY",
               position=pt(ft(8, 3.375), ft(19, 4.8)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=ft(0, 6))),
+    # The SECOND panel into the same bath (2026-08-29), and it is a different bath now: the
+    # Kohler K-5713-W1 is a drop-in sitting in the framed box W-M-TUBDK-W/-S make, and its
+    # install guide asks for access "for future servicing of the power supply or heater
+    # components" — the Bask heated surface's board and the outlet ED-M-BATH2-TUB-RC feeding
+    # it (plan/electrical.py). The panel above cannot serve them: it opens off RM-M-LAUNDRY
+    # into W-M-BA2E's cavity for the trap and the waste-and-overflow, on the far side of a
+    # bath that fills its bay to within 3/16".
+    #
+    # So this one opens the box itself, from inside RM-M-BATH2, through the deck's west knee
+    # wall. Centred at y=16'-10" it lands opposite ED-M-BATH2-TUB-RC in the box's foot bay —
+    # the 4" of open box south of the bath, which is the only part of the enclosure a hand
+    # can work in. The 14" opening runs y 16'-3"..17'-5", clearing the knee wall's own south
+    # end at 16'-2 3/8" by 5/8"; base 3" puts it at 3"..17" in a wall whose framing runs
+    # 3/4"..20", so it clears top and bottom too. It cannot move much further south.
+    #
+    # Kohler specifies neither a size nor a location for it, so 14x14 is this house's own
+    # answer — the same type as the trap panel, which is the size a hand and a meter need.
+    Furniture(uid="1AQVMB4JJD", tag="FURN-M-BATH2-TUBDK-AP", type_ref="FT-ACCESS-PANEL-1414",
+              room="RM-M-BATH2", position=pt(ft(4, 3.5), ft(16, 10)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(3))),
 
     # --- porch curtain rods (2026-08-07) --------------------------------------
     # Two outdoor rods across the sunken garden's front pillar bays (PT-SG-BF1..BF2,

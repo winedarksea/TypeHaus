@@ -468,8 +468,12 @@ MAIN_LIGHTING = [
                      controlled_by=("ED-M-BATH1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # y nudged +6" (2026-07-29), matching FX-M-BATH1-LAV's move for the BATH2 wall push.
+    # y nudged +1 1/16" again (2026-08-29): the wall this hangs on is W-M-HS1, and RM-M-BATH2
+    # on its far side retyped it to the 6 3/4" wet wall for its water closet. BATH1's face
+    # went 22'-6 3/8" -> 22'-7 3/8" and the fitting has to follow it or it resolves inside
+    # the studs. Nothing about BATH1 changed; it is the other room's wall.
     ElectricalDevice(uid="QTM000KAAA", tag="ED-M-BATH1-MIRROR", kind=DeviceKind.LIGHT,
-                     position=pt(m(1.36284), m(6.89162)), type_ref="ED-T-LT-MIRROR",
+                     position=pt(m(1.36284), ft(22, 8.385)), type_ref="ED-T-LT-MIRROR",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH1", rotation=deg(-180),
                      controlled_by=("ED-M-BATH1-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
@@ -499,8 +503,8 @@ MAIN_LIGHTING = [
                      controlled_by=("ED-M-BATH2-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
     ElectricalDevice(uid="QTM000RAAA", tag="ED-M-BATH2-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(7, 7.625), ft(14)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-MAIN", room="RM-M-BATH2", rotation=deg(-90),
+                     position=pt(m(0.500866), m(4.04922)), type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-MAIN", room="RM-M-BATH2", rotation=deg(0),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
     # RM-M-LAUNDRY / RM-M-CLOSET / RM-M-MUDROOM: 3" cans. Small rooms want a small
@@ -567,8 +571,12 @@ MAIN_LIGHTING = [
     # y 23'-4"..25'-4", the only piece of wall a plate fits on). Moved here 2026-07-31 from
     # x=4'-5", which was 1'-7" inside RM-M-BATH1 (wall at x=6'-0") — `integrity.
     # placeable_room_mismatch` had been reporting it. rotation 90 faces east into the hall.
+    # y +1" on 2026-08-29 for the same reason as ED-M-BATH1-MIRROR above: W-M-HS2 retyped to
+    # the 6 3/4" wet wall with W-M-HS1, so the hall's south face came 1" north and the plate's
+    # bottom 3/8" was left standing in it. At 22'-10" the plate runs y 22'-8"..23'-0" and is
+    # still 4" clear of D-M-BATH1's opening at 23'-4" — that door is what bounds it north.
     ElectricalDevice(uid="QTM0013AAA", tag="ED-M-HALL-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(6, 4.375), ft(22, 9)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(6, 4.375), ft(22, 10)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
     ElectricalDevice(uid="QTM0014AAA", tag="ED-M-HALL-SW2", kind=DeviceKind.SWITCH,

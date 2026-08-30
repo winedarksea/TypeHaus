@@ -74,16 +74,25 @@ def slabs_on_grade(model: ResolvedModel) -> list[ResolvedSolid]:
     """Slabs that bear on grade, so they belong on the foundation sheet.
 
     A slab is excluded when the model shows something carrying it: a joisted deck at the
-    same plane (composite porch decking over ``FS-SG-PORCH``) or a room on a lower storey
-    inside its footprint (the main deck over the basement). Both are structural decks and
-    are drawn on the framing sheets instead.
+    same plane (composite porch decking over ``FS-SG-PORCH``), a room on a lower storey
+    inside its footprint (the main deck over the basement), or WALLS whose plates top out at
+    the slab's own underside (RM-M-BATH2's tub-deck cap on its knee walls). All three are
+    structural decks and are drawn on the framing sheets instead.
+
+    The wall case joined the other two on 2026-08-29 and is the same argument each time:
+    ``Slab`` is the model's only horizontal-sheet element that can leave its storey datum, so
+    it carries laid decking and framed platforms as well as flatwork, and this sheet must
+    print only what actually bears on the ground. Elevation alone will not separate them —
+    SL-G-STEP-0 is a real 6" pour 6" above its datum — so the test is "does the model show
+    something under it", which is what the other two clauses already ask.
     """
     storey_elevation = {storey.tag: storey.elevation.meters for storey in model.plan.storeys}
     out: list[ResolvedSolid] = []
     for solid in model.solids:
         if solid.category != "slab":
             continue
-        if _carried_by_deck(model, solid) or _room_below(model, solid, storey_elevation):
+        if (_carried_by_deck(model, solid) or _carried_by_walls(model, solid)
+                or _room_below(model, solid, storey_elevation)):
             continue
         out.append(solid)
     return sorted(out, key=lambda s: s.tag)
@@ -99,6 +108,37 @@ def _carried_by_deck(model: ResolvedModel, slab: ResolvedSolid) -> bool:
         if abs(deck_top - slab.z0_m) > DECK_COINCIDENCE_TOLERANCE_M:
             continue
         if bboxes_overlap(slab_box, outline_bbox(points)):
+            return True
+    return False
+
+
+def _carried_by_walls(model: ResolvedModel, slab: ResolvedSolid) -> bool:
+    """Whether walls on the slab's own storey top out at its underside and stand under it.
+
+    The framed-platform case: a knee-wall box with a sheet capping it. Every clause is load
+    bearing here, and the first two exist because SL-B-FLOOR flunked the naive version.
+
+      * NOT a foundation wall. A slab-on-grade meets the stems around it at its own
+        underside all day long; that is abutment, not support.
+      * The wall's plate is ABOVE its storey datum. A platform stands on the floor and
+        carries something over it. Anything topping out at or below the datum is part of
+        the substructure the slab is poured against.
+      * Plates at the slab's underside AND a footprint under it. Plenty of walls top out at
+        20" somewhere in a house and plenty stand under a given outline at some other
+        height; only a wall doing both is carrying anything.
+    """
+    slab_box = outline_bbox(slab.outline)
+    datum = next((storey.elevation.meters for storey in model.plan.storeys
+                  if storey.tag == slab.storey), 0.0)
+    for wall in model.walls:
+        if wall.storey != slab.storey or wall.is_foundation:
+            continue
+        if wall.z1_m <= datum + DECK_COINCIDENCE_TOLERANCE_M:
+            continue
+        if abs(wall.z1_m - slab.z0_m) > DECK_COINCIDENCE_TOLERANCE_M:
+            continue
+        points = [point for layer in wall.layers for point in layer.polygon]
+        if points and bboxes_overlap(slab_box, outline_bbox(points)):
             return True
     return False
 

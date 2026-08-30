@@ -1074,6 +1074,19 @@
 # NOTE if hidden clips are used rather than flush-mount face screws: add 25-40% to lay time.
 "slab:PORCH_DECK_COMPOSITE" = { material = { low = 1320, high = 3300 }, labour = { low = 3000, high = 7000 } }  # 0.05 cy = 16.5 SF; $66-165 mat + $150-350 lab
 
+# RM-M-BATH2's tub-deck cap (2026-08-29). Same shape of row as the porch deck above and the
+# same warning applies twice over: THIS IS NOT CONCRETE. It is the flat 2x4 blocking under
+# SL-M-TUBDK's plywood, billed by the cubic yard only because `takeoff/framing.py` sends
+# every slab's STRUCTURE layer to the structural-solids row. 0.04 cy of 2x4 laid flat is
+# about 26 board feet, which is $25-60 of SPF at the [framing] section's own basis.
+# The labour is the hourly one that matters: cutting and hanging ~11 short flat blocks and
+# two ledgers inside a 40" x 70" box, around a 57 11/16" x 33 3/4" hole that has to land on
+# the bath's template — a fussy half day for one carpenter, not a deck lay.
+# The 3/4" plywood over it is NOT here. It bills by the square foot as struct-1-plywood in
+# [envelope_layers] (6.3 SF net of the tub cutout); pricing it again here would double-bill
+# the sheet. Nor is the tile: that is [floor_finishes].
+"slab:CATLIN_TUBDECK_INT_PLY_CAP" = { material = { low = 625, high = 1500 }, labour = { low = 2000, high = 5000 } }  # 0.04 cy = ~26 bf; $25-60 mat + $80-200 lab
+
 # Mirrors and markers — billed in their own sections, or in no section at all:
 # "conduit_data" =    # 0.02 cy
 # "conduit_power" =    # 0.06 cy   # "connector" =    # 0.3 cy
@@ -1458,6 +1471,32 @@
 # and the carrier is set during framing rather than at trim-out.
 "FX-TOILET-WH" = { material = { low = 650, high = 1900 }, labour = { low = 360, high = 820 } }  # 1 ea
 "FX-TUB-60" = { material = { low = 400, high = 1600 }, labour = { low = 330, high = 800 } }  # 1 ea
+# THE CHOSEN BATH — Kohler K-5713-W1-0 Underscore with the Bask heated surface, RM-M-BATH2
+# (plan/products.py, plan/fixture_types.py). This row is a real product, not a class
+# allowance, so it sits above FX-TUB-60 on both halves by a wide margin and that ordering is
+# structural rather than a coincidence to preserve: a named 72-gallon acrylic drop-in with an
+# electric heated shell against a generic 60x30 alcove unit.
+#
+# ** THE MATERIAL RANGE IS THE WEAKEST NUMBER IN THIS FILE AND IS NOT FIRMLY SOURCED. **
+# kohler.com would not load when this was priced (2026-08-29); $3,058 MSRP and a $2,220-2,300
+# street price come from search snippets alone. CONFIRM WITH A SUPPLIER BEFORE THIS ESTIMATE
+# GOES ANYWHERE. The low carries the street figure, the high the list.
+#
+# Labour is the set-and-connect this section's basis defines, and a drop-in's set is not an
+# alcove tub's: float and level a 1"-2" mortar bed, lower a 91 lb shell through the deck
+# opening onto it without loading the rim, shim, set the K-7272 Clearflo waste and overflow,
+# silicone the rim to the tile, and plug the Bask supply into
+# ED-M-BATH2-TUB-RC. Hence ~30% over FX-TUB-60's, which nails a flange to three studs.
+# ** THE K-7272 CLEARFLO IS IN THE MATERIAL RANGE, because nothing else can carry it. ** It
+# is a required separate purchase (PROD-KOHLER-7272, ~$100-200) and the model has no element
+# for a waste-and-overflow — no fixture, no PipeAccessory kind — so there is no row to give
+# it. Folded into the high end here rather than dropped; do not also add it to
+# [plumbing_specialties] or it is billed twice.
+# NOT in this row, and each is billed elsewhere: the deck box's framing and insulation
+# ([framing], [envelope_layers], via CATLIN_TUBDECK_INT_2X4), the plywood cap
+# ("slab:CATLIN_TUBDECK_INT_PLY_CAP" and [envelope_layers]), the deck tile ([floor_finishes]),
+# the dedicated circuit and its outlet, and the two access panels.
+"FX-KOHLER-UNDERSCORE-6036" = { material = { low = 2200, high = 3100 }, labour = { low = 430, high = 1050 } }  # 1 ea
 # 60x30 acrylic or gelcoat one-piece unit, or the 3-piece kit a finished second floor takes
 # because a one-piece will not go up the stair. Labour is the set: level the base in mortar,
 # nail the flange to three walls, hang the walls, set the valve and riser, connect the waste

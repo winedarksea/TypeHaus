@@ -52,7 +52,14 @@ VENT_BRANCHES_MAIN = [
             # 60" for 2". The washer itself needs no entry — an Appliance declares no
             # Service.VENT — but its standpipe (PR-M-WASH-STANDPIPE) is the physical riser
             # this tee sits beside.
-            serves=("FX-M-BATH2-WC", "FX-M-BATH1-WC", "FX-M-BATH2-SH",
+            # FX-M-BATH2-WC LEFT THIS RUN on 2026-08-29 and did not need replacing. It had
+            # to be here while the bowl stood free in the middle of RM-M-BATH2's floor with
+            # no wall to rise in; backing it onto W-M-HS1 gave it one, and W-S-SN1 stacks
+            # directly over that wall on the storey above, so the vent now goes up in-wall
+            # for two storeys instead of jogging into this chase. `mep.vent_reachability`
+            # says so in as many words ("wall W-M-HS1 continues up for the vent"). Leaving
+            # the tag here would have recorded a chase the bowl no longer uses.
+            serves=("FX-M-BATH1-WC", "FX-M-BATH2-SH",
                     "FX-M-BATH2-TUB", "FX-M-BATH1-LAV", "FX-M-LAUNDRY-SINK")),
     # Kitchen sink. Re-routed 2026-07-30 with the sink's move to the north wall: W-M-N1
     # *does* continue to the storey above at this x (W-S-N1 stacks on it, into RM-S-BED3's

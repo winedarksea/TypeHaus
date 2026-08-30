@@ -538,7 +538,7 @@ MAIN_DEVICES = [
     # y=13'-0 11/16"), 8" east of D-M-BATH2's opening (x 1'-6 1/2"..4'-0 1/2") — the wall
     # you reach as the door closes behind you. Floor sensor is FH-M-BATH2's `stat` point.
     ElectricalDevice(uid="CEE021AAAA", tag="ED-M-BATH2-FH-STAT", kind=DeviceKind.SWITCH,
-                     position=pt(ft(4, 9), ft(13, 3.375)), type_ref="ED-T-FLOOR-STAT",
+                     position=pt(m(0.298408), m(4.03409)), type_ref="ED-T-FLOOR-STAT",
                      circuit="CKT-FH-BATH2", room="RM-M-BATH2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     # FH-M-DINING's thermostat: zone is free-standing mid-room, so control goes on the
@@ -546,6 +546,46 @@ MAIN_DEVICES = [
     # 35'-11 3/8", which sat in the studs; CATLIN_EXT_2X6's inside face is 6 5/8" in from the
     # 36' sheathing plane). Sits in the 5'-1" clear stretch between WIN-M-LIV-E2 and
     # WIN-M-DIN-E2, 10" clear of ED-M-LIVING-RC3 at y=16'-11".
+    # FX-M-BATH2-TUB's Bask outlet (2026-08-29). Kohler: "A qualified electrician must
+    # install a GFCI-protected, 120 V, 15 A, grounded outlet. Locate the outlet BEHIND THE
+    # BATH and WITHIN 24 in. of the power supply." The bath ships cord-and-plug with its
+    # supply factory-wired to a board on the shell, so this is the whole electrical scope —
+    # there is no hardwired junction box to place, and CKT-BATH2-TUB is the dedicated
+    # circuit the spec sheet requires.
+    #
+    # Inside SL-M-TUBDK's deck box, on W-M-TUBDK-W's bay face (x=4'-8 1/2") at y=16'-8.9",
+    # facing east, 8" up off the subfloor — above any water that ever finds the box.
+    #
+    # x=4'-9 1/2" puts the box's BACK on that face, not its centre — ED-T-RECEPTACLE-GFCI
+    # is a 4" x 2" body and half of it authored at the face resolves inside the studs
+    # (`test_wall_mounted_devices_resolve_against_a_wall_face`, which is how this was
+    # caught). The 4" reads along y here because the type has no way to say the box is hung
+    # with its long axis vertical, which is how it is actually mounted; the foot bay is
+    # 4 1/16" and would not take a horizontal one.
+    #
+    # ** y IS IN THE FOOT BAY, SOUTH OF THE BATH, AND THAT IS THE POINT. ** The obvious spot
+    # is further north, on the same face beside the shell — and it does not work: the bath
+    # sits 3/16" off that face, so a receptacle there would have the acrylic hard against
+    # its cover and nowhere for a plug to project. South of the bath's foot (16'-10 15/16")
+    # the bay is 4 1/16" x 36" of open box, and the cord plugs in facing EAST down the 36",
+    # not north into the 4" — which is why this wall and not the south knee wall.
+    # FURN-M-BATH2-TUBDK-AP is directly outside it in the same wall (plan/placeables.py);
+    # the existing FURN-M-BATH2-TUB-AP in W-M-BA2E's laundry face reaches the trap, not this.
+    #
+    # ** THE 24" IS THE ONE DIMENSION HERE THAT IS NOT VERIFIED. ** Kohler publishes neither
+    # the cord length nor where on the shell the power supply sits, and this bath is 5'-0"
+    # long: this outlet is within 24" of a board at the foot and is not within 24" of one at
+    # the head. Measure it against the delivered bath before the knee wall is
+    # closed. Moving the box is a 15-minute job while the bay is open and a demolition
+    # afterwards.
+    #
+    # RECEPTACLE, not RECEPTACLE_GFCI: the protection is at the breaker (CKT-BATH2-TUB's
+    # `gfci=True`), which is what the house does everywhere and is the only thing that works
+    # here — a GFCI device sealed inside a knee-wall box cannot be tested or reset.
+    ElectricalDevice(uid="CEE041AAAA", tag="ED-M-BATH2-TUB-RC", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(4, 9.5), ft(16, 8.9)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     circuit="CKT-BATH2-TUB", room="RM-M-BATH2", rotation=deg(90),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(8))),
     ElectricalDevice(uid="CEE024AAAA", tag="ED-M-DINING-FH-STAT", kind=DeviceKind.SWITCH,
                      position=pt(ft(35, 4.375), ft(17, 9)), type_ref="ED-T-FLOOR-STAT",
                      circuit="CKT-FH-DINING", room="RM-M-LIVING",
@@ -1344,9 +1384,45 @@ NEC_FILL_MAIN = [
     #
     # y flipped to W-M-HS1's south face (2026-07-28): W-M-BAE's 2' east shift put the north
     # face inside RM-M-BATH1 at this x.
+    #
+    # ** THIS OUTLET WAS DOING TWO JOBS AND ON 2026-08-29 IT BECAME TWO OUTLETS. **
+    # Until then it sat at (5'-4 3/4", 22'-0 5/8") — physically INSIDE RM-M-BATH2, on
+    # W-M-HS1's south face, close enough to FX-M-BATH2-SINK to be that room's vanity outlet,
+    # while `electrical.receptacle_spacing` still counted it for RM-M-LIVING because the hall
+    # band is part of that room and the box was within the wall's own thickness of its ring.
+    # One device, one wall, two rooms' worth of duty.
+    #
+    # SL-M-TUBDK's deck box ended that: at x=5'-4 3/4" the box now stands sealed behind the
+    # bath, between the plywood and the mineral wool, on a face that no longer faces a room.
+    # It could go west to the piece of W-M-HS1 still open in the bathroom, or east to the
+    # hall — and only the second keeps RM-M-LIVING's 6' rule, which FAILed the moment it
+    # went west. It cannot do both any more, so it does one and ED-M-BATH2-RC1 below does
+    # the other.
+    #
+    # This one takes the hall. x=6'-10" is on W-M-HS2 (6'-0"..8'-0"), whose NORTH face is
+    # hall — W-M-HS1's north face is inside RM-M-BATH1 at the old x, which is what drove the
+    # 2026-07-28 flip to the south face in the first place. y=22'-8 3/8" is that face after
+    # its retype. It clears ED-M-HALL-SW's plate (x 6'-3 3/8"..6'-5 3/8") by 2 5/8".
     ElectricalDevice(uid="NEC066AAAA", tag="ED-M-LIVING-RC8", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(5, 4.75), ft(22, 0.625)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(6, 10), ft(22, 8.385)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    # RM-M-BATH2's vanity outlet, and the room's only one — the other half of the split
+    # above. W-M-HS1's south face at x=1'-1": the piece of that wall the bathroom still has,
+    # west of FX-M-BATH2-WC (which starts at 1'-8") by 5" and 3'-3" west of the tub deck.
+    # ** THE ENGINE HAS NO E3901 RULE ** (see CKT-BATH-ATTIC in plan/circuits.py), so nothing
+    # would have reported RM-M-BATH2 losing its last receptacle; this is authored because the
+    # room needs one, not because a check asked.
+    #
+    # GFCI at the DEVICE, not the breaker, which is the exception this house makes in exactly
+    # this location: CKT-RC-MAIN spans the whole storey, and E3902.10 puts this box inside
+    # 6' of FX-M-BATH2-SINK (4'-1" to its nearest edge). The same reasoning as the other
+    # seven storey-circuit GFCI devices in the note above — one splashed bathroom outlet must
+    # not take the floor down with it. Contrast ED-M-BATH2-TUB-RC, which is breaker-protected
+    # because it is sealed inside the deck box and could never be reset.
+    ElectricalDevice(uid="N7TTYA9RV6", tag="ED-M-BATH2-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(1, 1), ft(21, 11.615)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     circuit="CKT-RC-MAIN", room="RM-M-BATH2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     # y flipped to W-M-STOS's north face (2026-07-28) when W-M-BAE's shift pushed the south
     # face into RM-M-BATH1. Inside RM-M-MUD-CLOSET since 2026-08-02, kept on purpose: NEC

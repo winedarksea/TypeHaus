@@ -58,8 +58,30 @@ def _room_storey(ctx: CheckContext, room_tag: str):
     return None
 
 
-def _room_windows(ctx: CheckContext, room, point_type, polygon_type) -> list:
-    """Find windows on the room's bounding wall, not any window in the building."""
+def _room_windows(ctx: CheckContext, room, point_type, polygon_type, *,
+                  exterior_only: bool = False) -> list:
+    """Find windows on the room's bounding wall, not any window in the building.
+
+    ``exterior_only`` decides whether an *interior* window counts, and the two callers of
+    this helper genuinely want different answers — which is why it is a flag rather than a
+    behaviour change.
+
+    **R310 passes it True, and that is a safety fix, not a refinement.** The band below
+    selects on proximity to the room boundary and nothing else, so before this flag existed
+    an interior transom or a borrowed-light sash of adequate size was credited to a sleeping
+    room as its *emergency escape opening*. R310.1's subject is an opening "opening directly
+    into a public way, yard or court"; a window into the next room reaches none of those, and
+    a false pass there is the one class of false pass this engine cannot afford. The exterior
+    test is ``_wall_is_exterior`` — derived from what has modeled space on each side, never a
+    tag prefix (see its own docstring).
+
+    **R303.1 leaves it False, deliberately.** Borrowed light through an interior opening is
+    not what R303.1's 8% is measured on either, but that rule already adjudicates its own
+    Exception 1 and reports the shortfall in the finding text, so the conservative default
+    there is to keep counting what the room can see and let the exception do the arguing. The
+    day this house authors real borrowed-light glazing, that choice is worth revisiting on
+    its own evidence — it is recorded here rather than left to be rediscovered.
+    """
     if room is None or not room.clear_face:
         return []
     face = polygon_type(room.clear_face)
@@ -67,12 +89,17 @@ def _room_windows(ctx: CheckContext, room, point_type, polygon_type) -> list:
     # reaches the wall's exterior centerline without accidentally claiming a window in a
     # neighboring room separated by an interior partition.
     boundary_band = face.boundary.buffer(inch(12).meters)
+    # Built once per call, not once per opening: `_wall_is_exterior` rebuilds every room
+    # polygon in the house when it is handed no index, and this loop asks it 80 times.
+    rooms_by_storey = _rooms_by_storey(ctx) if exterior_only else None
     windows = []
     for opening in ctx.model.openings:
         if opening.is_door or opening.type_ref is None:
             continue
         wall = ctx.model.wall(opening.host_wall)
         if wall is None or wall.storey != room.storey:
+            continue
+        if exterior_only and not _wall_is_exterior(ctx, wall, rooms_by_storey):
             continue
         point = opening_center(wall, opening)
         if point is None:

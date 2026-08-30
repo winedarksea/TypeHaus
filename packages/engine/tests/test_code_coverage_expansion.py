@@ -34,6 +34,7 @@ from typehaus.checks.code.mn_residential.alarms import (
 from typehaus.checks.code.mn_residential.egress import (
     basement_storey_egress,
     egress_door_height,
+    egress_windows,
     exterior_door_landing,
     window_well,
 )
@@ -876,3 +877,58 @@ def test_r305_is_unknown_for_a_non_subject_room_when_the_site_states_no_grade():
     findings = ceiling_height(ctx)
     assert _results(findings) == [Result.UNKNOWN]
     assert "no grade datum" in findings[0].message
+
+
+# --- R310.1: an escape opening has to be on an EXTERIOR wall -------------------------------
+#
+# The bug this pair guards was live until 2026-08-29. `_room_windows` selected windows by
+# proximity to the room's clear-face boundary and nothing else, so a borrowed-light sash of
+# adequate size in a bedroom's *interior* partition was credited as that bedroom's emergency
+# escape opening. R310.1's subject is an opening "opening directly into a public way, yard or
+# court"; a window into the hallway reaches none of them. One field moves between these two
+# tests — whether the second room sits on the far side of the window's host wall — and the
+# verdict flips, which is what proves the rule reads it.
+
+def _sleeping_room_egress_ctx(*, room_on_the_far_side: bool):
+    """A 4m x 3m bedroom with one 36" x 30" casement in its north wall.
+
+    7.5 sf net clear, 36" wide, 30" tall, sill 0.9 m — comfortably past R310.2.1 on every
+    dimension, so the ONLY thing that can decide this rule is whether that wall is the
+    envelope or a partition.
+    """
+    bedroom_ring = [(0.0, 0.0), (4.0, 0.0), (4.0, 3.0), (0.0, 3.0)]
+    # Directly north of the bedroom, sharing the y = 3.0 wall. Present only in the
+    # partition case; in the exterior case the far side of that wall is outdoors.
+    neighbour_ring = [(0.0, 3.0), (4.0, 3.0), (4.0, 6.0), (0.0, 6.0)]
+
+    plan_room = SimpleNamespace(element_kind="Room", tag="RM-BED",
+                                occupancy=Occupancy.BEDROOM)
+    bedroom = SimpleNamespace(tag="RM-BED", storey="main", occupancy="bedroom",
+                              clear_face=bedroom_ring)
+    rooms = [bedroom]
+    if room_on_the_far_side:
+        rooms.append(SimpleNamespace(tag="RM-HALL", storey="main", occupancy="hallway",
+                                     clear_face=neighbour_ring))
+    wall = SimpleNamespace(tag="W-N", storey="main", is_foundation=False,
+                           thickness_m=0.14, axis=((0.0, 3.0), (4.0, 3.0)),
+                           assembly="A-WALL")
+    opening = SimpleNamespace(tag="WIN-BED", host_wall="W-N", is_door=False, type_ref="WT",
+                              width_m=0.914, height_m=0.762, sill_m=0.9,
+                              center_along_m=2.0)
+    plan = SimpleNamespace(all_elements=lambda: [plan_room])
+    model = SimpleNamespace(rooms=rooms, openings=[opening], walls=[wall],
+                            wall=lambda tag: wall if tag == "W-N" else None)
+    return SimpleNamespace(plan=plan, model=model)
+
+
+def test_sleeping_room_egress_passes_on_a_window_in_an_exterior_wall():
+    findings = egress_windows(_sleeping_room_egress_ctx(room_on_the_far_side=False))
+    assert _results(findings) == [Result.PASS]
+    assert "WIN-BED" in findings[0].message
+
+
+def test_sleeping_room_egress_does_not_credit_a_window_in_an_interior_partition():
+    """The same 7.5 sf opening, with a room put on the far side of its host wall."""
+    findings = egress_windows(_sleeping_room_egress_ctx(room_on_the_far_side=True))
+    assert _results(findings) == [Result.FAIL]
+    assert "exterior wall" in findings[0].message

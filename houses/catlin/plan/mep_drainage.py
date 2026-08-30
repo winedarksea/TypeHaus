@@ -92,9 +92,14 @@ DRAINS = [
             elevations=(ft(9, 2.375), ft(7, 9.9375), ft(7, 5.1875), ft(6, 11.25)),
             serves=("FX-M-KITCH-SINK",)),
     # BATH2's WC, at its re-pointed flange on the wet wall (→ SP-M-WC2).
+    # Re-pointed 2026-08-29: FX-M-BATH2-WC moved off the middle of the floor onto W-M-HS1
+    # (x 2'-3" -> 2'-6", y 20'-1 3/4" -> 20'-10 5/8"), and the flange goes where the bowl
+    # goes — the run's first two points ARE the fixture's drain convention, under the bowl.
+    # The turn at y=16'-6" and the tie at x=3'-0" are unchanged; only the leg above the
+    # turn got 9" longer.
     PipeRun(uid="CBPD01AAAA", tag="PR-B-WC2-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(m(0.686504), m(6.14439)), pt(m(0.686504), m(6.14439)),
-                  pt(m(0.686504), ft(16, 6)), pt(ft(3), ft(16, 6))),
+            path=(pt(ft(2, 6), ft(20, 10.615)), pt(ft(2, 6), ft(20, 10.615)),
+                  pt(ft(2, 6), ft(16, 6)), pt(ft(3), ft(16, 6))),
             diameter=inch(3), material="pvc",
             elevations=(ft(9, 1.4375), ft(7, 9.4375), ft(6, 11.4375), ft(6, 9.4375)),
             serves=("FX-M-BATH2-WC",)),
@@ -103,10 +108,17 @@ DRAINS = [
             diameter=inch(1.5), material="pvc",
             elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(7, 9.6375)),
             serves=("FX-M-BATH1-LAV",)),
+    # 1 1/2", not the 2" this ran at until 2026-08-29. The change is the FIXTURE, not a
+    # re-sizing: FX-M-BATH2-TUB became the Kohler K-5713-W1 (plan/fixtures.py), whose spec
+    # drawing labels a 1 1/2" bath drain and whose required waste-and-overflow — K-7272
+    # Clearflo, PROD-KOHLER-7272 — is a 1 1/2" PVC tee. The 2" was inherited from the
+    # FX-TUB-60 planning allowance and described a trap this bath does not have.
+    # Still one bathtub at 2 DFU, and 1 1/2" is the trap size the code tables give a
+    # bathtub, so nothing about the sizing moves; only the pipe that gets ordered.
     PipeRun(uid="CBPD03AAAA", tag="PR-B-TUB2-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(7, 4), ft(19, 4.8)), pt(ft(7, 4), ft(19, 4.8)),
                   pt(ft(6), ft(19, 4.8))),
-            diameter=inch(2), material="pvc",
+            diameter=inch(1.5), material="pvc",
             elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(7, 4.6375)),
             serves=("FX-M-BATH2-TUB",)),
     PipeRun(uid="CBPD04AAAA", tag="PR-B-SH2-DRAIN", system=PipeSystem.DRAIN,

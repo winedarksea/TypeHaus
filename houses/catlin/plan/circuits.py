@@ -300,6 +300,29 @@ CIRCUITS = (
     Circuit(tag="CKT-BATH-ATTIC", slot=41, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, afci=True, load_va=0,
             description="Attic guest bath receptacle"),
+    # FX-M-BATH2-TUB's Bask heated surface (2026-08-29). Kohler's spec sheet lists the
+    # REQUIRED service as a dedicated 120 V / 15 A circuit on a Class A GFCI, and that is
+    # what this is — not a judgement call the way CKT-BATH-ATTIC above was. The bath is
+    # cord-and-plug and factory-wired; the electrician owes it a GFCI-protected 15 A
+    # grounded outlet behind the bath (ED-M-BATH2-TUB-RC), nothing more.
+    #
+    # ** 15 A IS THE MANUFACTURER'S NUMBER, NOT THE LOAD. ** The heater draws 1.1 A / 65 W —
+    # less than a light bulb. `load_va` is that 65, because the 220.82 summary has to see
+    # what the house actually draws, and sizing it at the breaker would invent 1,735 VA of
+    # demand out of a required circuit rating. `electrical.service_load` has 7.9 A of margin
+    # against the 200 A service and 65 VA is 0.3 A of it.
+    #
+    # GFCI AT THE BREAKER, not a GFCI device, and here that is not just the house convention
+    # (plans/TODO.md): the outlet this circuit feeds is sealed inside SL-M-TUBDK's deck box
+    # behind the bath. A GFCI receptacle there could not be tested or reset without pulling
+    # a panel off the knee wall, which is the exact failure mode the breaker convention
+    # exists to avoid. No AFCI: 210.12 exempts bathrooms.
+    #
+    # Slot 27 is one of the ten spare 1-pole spaces; count from the loaded plan
+    # (`electrical.panel_spaces`), never by hand.
+    Circuit(tag="CKT-BATH2-TUB", slot=27, panel_ref=_PANEL, breaker_amps=15, poles=1,
+            gfci=True, load_va=65,
+            description="Bask heated surface — RM-M-BATH2 drop-in bath (FX-M-BATH2-TUB)"),
 )
 
 # --- Load management (NEC 625.42 / 220.82) ---------------------------------------------

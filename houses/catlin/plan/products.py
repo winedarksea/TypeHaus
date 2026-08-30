@@ -121,10 +121,53 @@ MURPHY_BOOKCASE_30 = Product(
            "what the order has to match (see that assembly's note for the fallback).",
 )
 
+# --- RM-M-BATH2's drop-in bath (2026-08-29) ----------------------------------------------
+#
+# The owner's selection, replacing the FX-TUB-60 planning allowance that stood here since
+# the M3 fixture pass. It is a MODEL choice and not just a brand one in three ways that the
+# plan has to answer, which is exactly why it earns a Product record:
+#
+#   * it is a DROP-IN, so it needs a framed deck (CATLIN_TUBDECK_INT_2X4) rather than the
+#     three-sided alcove FX-TUB-60 assumed;
+#   * the "-W1" suffix IS the Bask heated surface, and that is a 120 V / 15 A dedicated
+#     GFCI circuit (CKT-BATH2-TUB) with a receptacle behind the bath - a plain K-5713 has
+#     no electrical requirement at all;
+#   * the "-0" suffix is White. Kohler sells this shell in several finishes and the letter
+#     that ends the SKU is a real distinction, the same reasoning as LG_WASHTOWER above.
+#
+# 59 11/16" is the drawing dimension; Kohler's marketing name says 59 3/4". The drawing
+# governs the deck opening.
+KOHLER_UNDERSCORE_5713_W1 = Product(
+    tag="PROD-KOHLER-5713-W1-0", brand="Kohler", model="K-5713-W1-0",
+    name="Underscore 59-11/16\" x 35-3/4\" drop-in bath with Bask heated surface, White",
+    source="Kohler specification sheet K-5713-W1_spec_US-CA rev. 2-28-2024 and Installation "
+           "and Care Guide 1196030-2-E, read 2026-08-29. 59 11/16 x 35 3/4 x 21 in., "
+           "acrylic, 91 lb empty, 72.017 gal, 16 5/16 in. water depth, min. floor load "
+           "49.3 lb/ft2. Electrical component 120 V / 1.1 A / 65 W; REQUIRED service is a "
+           "dedicated 120 V 15 A Class A GFCI circuit with the outlet behind the bath and "
+           "within 24 in. of the power supply. Kohler publishes NO numeric deck cutout - "
+           "drop-in template 1268438-7 (included) governs, and FO-M-TUBDK's outline is a "
+           "provisional rim-less-1-in. figure until that template is measured.",
+)
+# The waste-and-overflow the bath requires, sold separately - PVC rather than the K-7271
+# brass because PR-B-TUB2-DRAIN is PVC to the stack and the tee is buried in a knee-wall
+# box behind a 14x14 panel where nobody will ever see it. This is what sets the branch at
+# 1 1/2": the spec sheet's drawing labels a 1 1/2 in. bath drain, and the run was authored
+# at 2" against the FX-TUB-60 allowance.
+KOHLER_CLEARFLO_7272 = Product(
+    tag="PROD-KOHLER-7272", brand="Kohler", model="K-7272",
+    name="Clearflo slotted overflow bath drain, PVC",
+    source="Kohler specification sheet K-7272_spec_US-CA, read 2026-08-29 - 1 1/2 in. PVC "
+           "tee with 18 in. supply pipes cut to fit. Listed by K-5713-W1's spec sheet as a "
+           "required product (K-7271 brass is the alternate). Below-bath clearance at the "
+           "drain end is 3 15/16 in. / 3 3/8 in., unchanged by this drain.",
+)
+
 
 PRODUCTS = (
     LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER,
     FRIGIDAIRE_ALL_REFRIGERATOR, FRIGIDAIRE_ALL_FREEZER,
     RHEEM_PROTERRA_80, EG4_12KPV, EG4_POWERPRO_WALLMOUNT,
     BROAN_B210E75RT, MURPHY_BOOKCASE_30,
+    KOHLER_UNDERSCORE_5713_W1, KOHLER_CLEARFLO_7272,
 )

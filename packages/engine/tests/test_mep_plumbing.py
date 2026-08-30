@@ -463,13 +463,21 @@ def test_catlin_fixtures_all_reach_a_vent_chase(catlin_model):
     assert matched
     unvented = [(f.message) for f in matched if f.result.value != "pass"]
     assert not unvented, unvented
-    # The two whose wet wall stops at its own ceiling must say so, not silently pass.
-    # (FX-S-BATH1-WC used to be the third: since the ensuite de-overlap pass it backs
-    # onto the exterior W-S-W1, which continues up, so it vents in-wall.)
+    # The one whose wet wall stops at its own ceiling must say so, not silently pass.
+    #
+    # FX-M-BATH1-WC is the last of the three. FX-S-BATH1-WC left on the ensuite de-overlap
+    # pass (it backs onto the exterior W-S-W1, which continues up). FX-M-BATH2-WC left on
+    # 2026-08-29, and by the same mechanism rather than by anyone editing plumbing: the
+    # drop-in bath pass took that bowl off the middle of RM-M-BATH2's floor and backed it
+    # onto W-M-HS1, which W-S-SN1 stacks directly over, so it vents in-wall through two
+    # storeys and no longer needs PR-M-WC-VENT's jog at all. Its tag came off that run's
+    # `serves` with the move.
     offset_vented = [f for f in matched if "chase" in f.message]
-    assert {"FX-M-BATH1-WC", "FX-M-BATH2-WC"} <= {
-        tag for f in offset_vented for tag in f.element_tags
-    }
+    chase_tags = {tag for f in offset_vented for tag in f.element_tags}
+    assert "FX-M-BATH1-WC" in chase_tags
+    assert "FX-M-BATH2-WC" not in chase_tags, (
+        "FX-M-BATH2-WC vents in-wall since it backs W-M-HS1; it should not need a chase"
+    )
 
 
 def test_authored_vent_branches_carry_their_fixtures_into_the_ir(catlin_model):
@@ -477,7 +485,9 @@ def test_authored_vent_branches_carry_their_fixtures_into_the_ir(catlin_model):
     in the resolver would make every offset vent invisible to the check."""
     runs = {run.tag: run for run in catlin_model.pipe_runs if run.system == "vent"}
     assert "FX-M-BATH1-WC" in runs["PR-M-WC-VENT"].serves
-    assert "FX-M-BATH2-WC" in runs["PR-M-WC-VENT"].serves
+    # FX-M-BATH2-WC was here until 2026-08-29 and is deliberately not any more — it backs
+    # W-M-HS1 now and vents in-wall. See test_catlin_fixtures_all_reach_a_vent_chase.
+    assert "FX-M-BATH2-WC" not in runs["PR-M-WC-VENT"].serves
     # The hall-bath branch vents the whole group, not just the water closet: the plumbing
     # pass added the lavatories and the tub-shower whose trap arms tie into the same leg.
     assert runs["PR-S-BATH1-VENT"].serves == (
@@ -569,7 +579,10 @@ def test_vent_reachability_fails_a_water_closet_with_no_vent_path(catlin_model):
     report = run_from_model(model, [], tier=Tier.ADVISORY)
     failed = {tag for f in report.findings if f.check_id == "mep.vent_reachability"
               and f.result.value == "fail" for tag in f.element_tags}
-    assert {"FX-M-BATH1-WC", "FX-M-BATH2-WC"} <= failed
+    # FX-M-BATH1-WC alone since 2026-08-29: FX-M-BATH2-WC now backs W-M-HS1 and vents
+    # in-wall, so deleting this branch cannot fail it — the wet wall really does carry it,
+    # which is the one case this test is NOT trying to catch.
+    assert "FX-M-BATH1-WC" in failed
 
 
 def test_missing_sleeve_over_slab_fails():

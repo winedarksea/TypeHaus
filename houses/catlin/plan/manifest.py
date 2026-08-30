@@ -27,8 +27,9 @@ from library import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES, STARTER_DO
 from params import (breezeway, foundations, main_deck, raised_garden, roof_trim,
                     second_deck, solar, sunken_garden)
 from plan import (appliance_types, assemblies, circuits, electrical, electrical_attic,
-                  fixtures, furniture_types, lighting, lighting_attic, lighting_types, mep,
-                  millwork, placeables, products, site, transitions, views, wind_clamps)
+                  fixture_types, fixtures, furniture_types, lighting, lighting_attic,
+                  lighting_types, mep, millwork, placeables, products, site, transitions,
+                  views, wind_clamps)
 from plan.storeys import attic, attic_studio, basement, garage, main, second
 
 format_version = 1
@@ -54,7 +55,11 @@ _library = Library(
     furniture_types=(*STARTER_FURNITURE_TYPES, *STARTER_CASEWORK_TYPES,
                      *furniture_types.FURNITURE_TYPES),
     railing_types=STARTER_RAILING_TYPES,
-    fixture_types=STARTER_FIXTURE_TYPES,
+    # The library's plumbing catalog is a planning ALLOWANCE (its own header says final
+    # selection is the owner's). `plan/fixture_types.py` is that selection where one has
+    # been made — so far the RM-M-BATH2 drop-in bath alone — and rides beside the
+    # allowances rather than replacing them, the same split `appliance_types` uses.
+    fixture_types=(*STARTER_FIXTURE_TYPES, *fixture_types.FIXTURE_TYPES),
     # The library's appliance catalog is a planning ALLOWANCE — its own header says final
     # selection is the owner's. `plan/appliance_types.py` is that selection, and rides
     # beside the allowances rather than replacing them: the disposer and the recirculating

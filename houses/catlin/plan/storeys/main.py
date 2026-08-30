@@ -20,6 +20,7 @@ from typehaus import (
     FinishZone,
     FloorHeat,
     FloorOpening,
+    FloorOpeningPurpose,
     Node,
     Occupancy,
     Post,
@@ -27,6 +28,7 @@ from typehaus import (
     Railing,
     RailingKind,
     Room,
+    Slab,
     Stair,
     StructuralRole,
     Wall,
@@ -382,6 +384,32 @@ NODES = [
     Node(uid="BVTKY7EE89", tag="N-M-PAN1", position=pt(ft(18), ft(33, 1))),
     Node(uid="4B6ND7KATA", tag="N-M-PAN2", position=pt(ft(24, 4), ft(33, 1))),
     Node(uid="HTWHAAG4SF", tag="N-M-PAN3", position=pt(ft(24, 4), ft(36))),
+    # --- RM-M-BATH2 drop-in tub deck (2026-08-29) -------------------------------
+    # Three nodes, two walls, an L in RM-M-BATH2's north-east corner. They carry the knee
+    # walls of the box FX-M-BATH2-TUB drops into; the box's other two sides are the room's
+    # own walls (W-M-BA2E east, W-M-HS1/HS2 north), so nothing here closes a loop.
+    #
+    # ** BOTH FREE ENDS ARE `open_end=True` AND THEY HAVE TO BE. ** `integrity.wall_loop_open`
+    # is an ERROR on any node with exactly one wall edge, and these two genuinely die into a
+    # finished wall face rather than tee into another wall. The positions ARE those faces —
+    # y=22'-0 5/8" is W-M-HS1's room side after its retype, x=7'-8 5/8" is W-M-BA2E's — so
+    # the knee walls butt them with no gap to caulk.
+    #
+    # The consequence to know about: an unclosed component has no recoverable winding, so
+    # `resolve/orientation.py` falls back to `outward_sign = +1` for both of these walls.
+    # CATLIN_TUBDECK_INT_2X4 is symmetric (1/2" ply both faces) precisely so that fallback
+    # is unobservable — see its note in plan/assemblies.py before making that stack
+    # asymmetric.
+    #
+    # These axes are CENTRELINES of a 4 1/2" symmetric wall, so each sits 2 1/4" inboard of
+    # the deck's outer face: x=4'-6 1/4" for the 4'-4" west face, y=16'-4 5/8" for the
+    # 16'-2 3/8" south face. That south face is also FX-M-BATH2-SH's north face — one line,
+    # one wall, both jobs.
+    Node(uid="YJ36WFQV9C", tag="N-M-TUBDK-N", position=pt(ft(4, 6.25), ft(22, 0.615)),
+         open_end=True),
+    Node(uid="JJJGMEWYJD", tag="N-M-TUBDK-C", position=pt(ft(4, 6.25), ft(16, 4.625))),
+    Node(uid="QSFPKZQV7C", tag="N-M-TUBDK-E", position=pt(ft(7, 8.615), ft(16, 4.625)),
+         open_end=True),
 ]
 
 WALLS = [
@@ -558,10 +586,40 @@ WALLS = [
     Wall(uid="CMW121AAAA", tag="W-M-BAE", start_node="N-M-BA1",
          end_node="N-M-BA2", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
     # --- hallway south wall band ------------------------------------------------
+    # W-M-HS1 is a wet wall since 2026-08-29, not the 2x4 partition it was: the RM-M-BATH2
+    # drop-in bath pass moved FX-M-BATH2-WC off the middle of the floor and backed it onto
+    # this wall, and `advisory.wet_wall_depth` is a house preference for a 5 1/2" cavity
+    # behind a served fixture. Nothing here needs the depth for CODE — the WC is floor
+    # mounted, its 3" waste drops through the deck to PR-B-WC2-DRAIN and the wall carries
+    # only a 1/2" cold stub and the stop — so this is the preference being met, not a
+    # requirement.
+    #
+    # W-M-HS2 (x 6'-0"..8'-0") is the segment the brief named and is deliberately NOT the
+    # one retyped. A water closet needs 15" clear each side of its centreline (P2705.1), so
+    # a bowl centred anywhere on HS2 lands at most 10" off W-M-BA2E's face — a clearance
+    # FAIL at every position on that wall. The bowl's centreline has to come west of
+    # x=3'-1" to clear the tub deck as well, which puts the whole fixture on HS1.
+    #
+    # COST, and it is real: the assembly goes 4 3/4" -> 6 3/4", so the wall thickens 1" onto
+    # each side. RM-M-BATH2's north clear face moves 22'-1 5/8" -> 22'-0 5/8" and the hall
+    # north of it goes 3'-6" -> 3'-5" (R311.6 wants 36"; still clear by 5"). Every dimension
+    # in the BATH2 pass below is struck off the NEW face, and the shower + tub deck together
+    # use the room's full remaining depth with nothing spare — moving this wall again means
+    # redrawing both.
     Wall(uid="CMW122AAAA", tag="W-M-HS1", start_node="N-M-W2",
-         end_node="N-M-BA2", assembly="INT_2X4_PARTITION", top=ft(9)),
+         end_node="N-M-BA2", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
+    # W-M-HS2 follows W-M-HS1 to the same wet-wall assembly (2026-08-29) and the reason is
+    # GEOMETRY, not plumbing: retyping HS1 alone put a 1" step in RM-M-BATH2's north face at
+    # x=6'-0", and the tub deck straddles that line (x 4'-4"..7'-8 5/8"). The deck's head
+    # would have had to be a stepped polygon returning 1" behind the bath for no reason
+    # anyone could see. One plane at y=22'-0 5/8" costs one assembly swap.
+    #
+    # It earns the depth on its own terms too: the bath's filler and valve land in this
+    # segment, directly behind FX-M-BATH2-TUB's head, and the 5 1/2" staggered cavity is
+    # what a tub filler wants. The hall's south face moves 1" north over these 2'-0" with
+    # it, matching HS1 — the band reads as one wall, which it always did.
     Wall(uid="CMW123AAAA", tag="W-M-HS2", start_node="N-M-BA2",
-         end_node="N-M-D1", assembly="INT_2X4_PARTITION", top=ft(9)),
+         end_node="N-M-D1", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
     Wall(uid="CMW124AAAA", tag="W-M-HS3", start_node="N-M-D1",
          end_node="N-M-E3", assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CMW125AAAA", tag="W-M-HS4", start_node="N-M-E3",
@@ -583,6 +641,46 @@ WALLS = [
          end_node="N-M-E2", assembly="INT_2X4_PARTITION", top=ft(9), stacks_on="W-B-CW2"),
     Wall(uid="CMW130AAAA", tag="W-M-CLN2", start_node="N-M-E2",
          end_node="N-M-E4", assembly="INT_2X4_PARTITION", top=ft(9), stacks_on="W-B-CW2"),
+    # --- RM-M-BATH2 drop-in tub deck knee walls (2026-08-29) ---------------------
+    # The two framed sides of the box FX-M-BATH2-TUB drops into. 2x4 at 16" o.c. with
+    # exterior-grade ply both faces and a mineral wool cavity — and that cavity is the one
+    # in this house that must NEVER be swapped to fiberglass; the reasoning is on
+    # CATLIN_TUBDECK_INT_2X4 in plan/assemblies.py and is a moisture argument, not a
+    # thermal one.
+    #
+    # ELEVATION ARITHMETIC, which is the whole of the detail:
+    #   0"        main storey datum (top of FS-M-WEST's joists)
+    #   3/4"      top of subfloor  = `base_elevation`; the box is framed ON the deck, and
+    #             the bath's mortar bed sits on this same sheet, not on the box
+    #   20"       top of the 2x4 framing  = base + `top` (19 1/4"); the cap's flat 2x4
+    #             blocking bears here and on ledgers against W-M-BA2E / W-M-HS1
+    #   21 1/2"   top of that blocking (1 1/2" laid flat)
+    #   22 1/4"   top of SL-M-TUBDK's 3/4" ply  = its `top_elevation`, its 2 1/4" stack
+    #             hanging below
+    #   22 3/4"   finished deck, once 1/2" of tile and thinset lands on the cap
+    #   22 3/4"   THE BATH RIM: 21" of bath on a 1" mortar bed on the 3/4" subfloor.
+    # The last two lines are the same number on purpose. Kohler holds the finish 1/8" back
+    # from the bath edge for the silicone joint and sets the rim on max 1/8" spacers, so the
+    # rim is level with the tile and carries nothing — the bed does.
+    #
+    # NONBEARING and 20 3/4" tall: `integrity.wall_shorter_than_plates` only warns below the
+    # 4 1/2" sole+double-top stack, so this frames as an ordinary wall with real studs,
+    # plates and corners in the takeoff. Nothing bears on it and nothing checks that it
+    # bears on anything.
+    #
+    # A note on the room: these axes stop at the room's finished faces and so never touch
+    # W-M-BA2E's or W-M-HS1's own axes. That is deliberate — `resolve/rooms.py` polygonizes
+    # wall AXES, so a box that reached the axes would close a face and carve RM-M-BATH2 in
+    # two, taking 19.8 ft2 out of its area. As drawn, these are dangles inside the room's
+    # face and the room still reads 72.8 ft2.
+    Wall(uid="TD5N23A4SZ", tag="W-M-TUBDK-W", start_node="N-M-TUBDK-N",
+         end_node="N-M-TUBDK-C", assembly="CATLIN_TUBDECK_INT_2X4",
+         base_elevation=inch(0.75), top=inch(19.25),
+         structural_role=StructuralRole.NONBEARING),
+    Wall(uid="9HX5HSKNWD", tag="W-M-TUBDK-S", start_node="N-M-TUBDK-C",
+         end_node="N-M-TUBDK-E", assembly="CATLIN_TUBDECK_INT_2X4",
+         base_elevation=inch(0.75), top=inch(19.25),
+         structural_role=StructuralRole.NONBEARING),
     # --- bedroom north wall ------------------------------------------------------
     Wall(uid="CMW131AAAA", tag="W-M-BDN1", start_node="N-M-W3",
          end_node="N-M-D3", assembly="INT_2X4_PARTITION", top=ft(9)),
@@ -684,7 +782,28 @@ OPENINGS = [
     # closet line (2026-08-03), and this offset moved the same 8" so the door itself did not
     # move. 6 11/16" clears the corner stud pack (the D-M-MECH margin); the wall is only
     # 4'-2" long now, so the door cannot move further south.
-    Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT-SWING30",
+    #
+    # **Glazed since 2026-08-29, for borrowed light.** RM-M-STUDY is 19.3 sf of `office`
+    # occupancy with NO window at all — the only habitable room in the house with none — and
+    # it clears R303.1 solely on Exception 1's electric-light substitute (1500 lm over 19 sf
+    # = 37 fc). W-M-C3 is the centre bearing wall and its far side is RM-M-LIVING, whose east
+    # row is three 27x48 units; a glazed leaf is the one way daylight reaches this room
+    # without cutting an opening in a bearing wall or the envelope.
+    #
+    # A RETYPE, not a move: DT-INT-SWING30-GLAZED is the same 2'-6" x 6'-8" leaf on the same
+    # RO, so the jamb pack, the bearing header W-M-C3's framing tables put over it, the swing
+    # and the uid are all unchanged. D-S-PLANT is the precedent — the same type, hung for the
+    # same reason, into RM-S-PLANT. The type already carries `tempered=True`, which R308.4.1
+    # requires of glazing in a door as a property of the product rather than of its location.
+    #
+    # This buys the ROOM daylight; it does not buy the CHECK anything. `_room_windows` skips
+    # doors, so `code.R303_1_light_and_ventilation` still reports 0.0 sf of glazing here and
+    # still passes RM-M-STUDY on Exception 1. That is the honest accounting: R303.1's 8% is
+    # measured on glazing to the outdoors, and a borrowed-light leaf is not that.
+    #
+    # `office` is not a sleeping occupancy, so there is no R310 exposure — and since the
+    # 2026-08-29 `exterior_only` fix there could not be one anyway.
+    Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT-SWING30-GLAZED",
          position=from_node("N-M-E4", ft(0, 6.6875)), flip_swing=True),
     Door(uid="CMD210AAAA", tag="D-M-BED", host="W-M-BDN2", type_ref="DT-INT-SWING32",
          position=from_node("N-M-D3", ft(5)), flip_hinge=False, flip_swing=True),
@@ -983,17 +1102,36 @@ FLOOR_HEAT = [
     #
     # RM-M-BATH2's floor: an L around WC/shower/tub with >=1" clearance at each fixture
     # footprint, so `advisory.floor_heat_fixture_keepout` can verify the actual loop
-    # geometry. Polygon tightened 2026-07-29 with the BATH2 wall move — the old one ran
-    # under FX-M-BATH2-SH's whole footprint and clipped FX-M-BATH2-SINK's.
+    # geometry. Redrawn 2026-08-29 for the drop-in bath: SL-M-TUBDK's box takes the east
+    # 3'-4 5/8" of the room from y=16'-2 3/8" north, FX-M-BATH2-WC came off the middle of
+    # the floor onto W-M-HS1, and the old polygon's north leg ran through both. What is
+    # left is the west strip — the floor you stand on at the sink and step onto out of the
+    # bath, which is the floor this zone was for.
+    #
+    # ** THE KEEPOUT CHECK IS ROTATION-BLIND AND THIS POLYGON IS DRAWN AROUND THAT. **
+    # `advisory.floor_heat_fixture_keepout` builds each fixture's box from the TYPE's
+    # (width, depth) about its centre and never applies `Fixture.rotation`, so the bath —
+    # 59 11/16" long, authored at rotation 90 running north/south — is graded as a
+    # 59 11/16"-WIDE east/west box spanning x 3'-8 3/4"..8'-8 3/8". The leg's east edge is
+    # at 3'-7" to clear that phantom, not the real bath, which is 13" further east. Same
+    # for FX-M-BATH2-SINK, whose unrotated box reaches x=2'-9 5/8" where the real one stops
+    # at 2'-4 1/8"; the leg starts at 2'-11". Widen either and the check fails on geometry
+    # that is not there.
+    #
+    # ** `watts` AND CKT-FH-BATH2's `load_va` ARE DELIBERATELY NOT TOUCHED, AND THEY ARE
+    # BOTH WRONG. ** The comment they carried claimed 41.5 ft2; the polygon it described
+    # was already only 9.3 ft2 when this pass found it, so the 498 W was ~5x the mat this
+    # zone has ever drawn. This polygon is 6.7 ft2 (80 W at the 12 W/ft2 of plan/
+    # circuits.py). Correcting it means moving a load in `electrical.service_load`, which
+    # has 7.9 A of margin against the 200 A service and is not a thing to nudge inside a
+    # bathtub change. Left as found, said out loud, and owed a pass of its own.
     FloorHeat(uid="CMH801AAAA", tag="FH-M-BATH2", room_ref="RM-M-BATH2",
-              zone=(pt(ft(0, 5), ft(13, 9)), pt(ft(4, 7.2), ft(13, 9)),
-                    pt(ft(4, 7.2), ft(15, 6)), pt(ft(3, 10), ft(15, 6)),
-                    pt(ft(3, 10), ft(21, 5)), pt(ft(3, 6), ft(21, 5)),
-                    pt(ft(3, 6), ft(15, 6)), pt(ft(0, 5), ft(15, 6))),
+              zone=(pt(ft(0, 11), ft(13, 7)), pt(ft(3, 7), ft(13, 7)),
+                    pt(ft(3, 7), ft(19, 4)), pt(ft(2, 11), ft(19, 4)),
+                    pt(ft(2, 11), ft(15, 0)), pt(ft(0, 11), ft(15, 0))),
               system=RadiantSystem.ELECTRIC, spacing=inch(3), embed=in_slab(inch(0.5)),
-              # 41.5 ft2 at the 12 W/ft2 of plan/circuits.py -> 498 W, carried at 500.
               watts=500,
-              stat=pt(ft(2), ft(17, 6))),
+              stat=pt(ft(2), ft(14, 4))),
     # Under the dining table. FURN-M-DINING covers x 22'-11"..30'-11", y 15'-7"..19'-1"; the
     # zone takes the table's exact width and runs y 13'-9"..21'-0" so it reaches under both
     # chair rows (FURN-M-CHAIR-S* at y=14'-6", -N* at y=20'-2") — feet, not the table legs,
@@ -1057,6 +1195,50 @@ FLOOR_OPENINGS = [
                  # `_opening_edge_has_declared_bearing` reads the named walls' full layer
                  # footprints either way, and the west edge moved with them.
                  bearing_refs=("W-B-STR", "W-B-STR3", "W-B-CN")),
+    # The hole FX-M-BATH2-TUB drops through, in SL-M-TUBDK's ply cap (2026-08-29). Not a
+    # hole in a floor at all — no `bearing_refs`, nothing spans it, and the bath does not
+    # hang in it: it passes through and lands on a 1"-2" mortar bed on the subfloor, with
+    # its rim on max 1/8" spacers over the cap. `purpose=CHASE` is the closest fit in a
+    # closed enum of STAIR|CHASE|HATCH; it is a fixture penetration, and STAIR and HATCH are
+    # both further away than "a hole for something to pass through".
+    #
+    # ** THIS OUTLINE IS PROVISIONAL AND KOHLER IS THE REASON. ** The spec sheet publishes no
+    # numeric cutout for the K-5713-W1 and says instead "measure your actual product" —
+    # drop-in template 1268438-7 ships in the carton and governs. What is drawn here is the
+    # rim less 1" all round (57 11/16" x 33 3/4", centred on the bath), which is a
+    # deliberately conservative stand-in: it is right for the ply the cap orders and the
+    # tile it carries, and it must be re-struck off the template before anyone cuts. The
+    # basin top (55 9/16" x 28 3/8") is NOT the cutout and must not be used as one — it is
+    # the water, not the shell.
+    FloorOpening(uid="KXX3WKN3R7", tag="FO-M-TUBDK", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(ft(4, 9.685), ft(16, 11.926)),
+                          pt(ft(7, 7.435), ft(16, 11.926)),
+                          pt(ft(7, 7.435), ft(21, 9.614)),
+                          pt(ft(4, 9.685), ft(21, 9.614)))),
+]
+
+# The tub deck's cap: 3/4" exterior-grade plywood over W-M-TUBDK-W/-S and the two room walls
+# they die into, with FO-M-TUBDK cut out of it for the bath. A Slab because Slab is the only
+# element in the model that can hold a horizontal sheet OFF the storey datum — a FloorSystem
+# is hard-pinned to it (`resolve/floors.py`) and could not be raised 22", and millwork has no
+# top element at all. The single STRUCTURE layer IS the sheet, the same pattern
+# PORCH_DECK_COMPOSITE uses for a walking surface; the 2x4 flat blocking that carries it
+# between the knee walls is framing rather than a layer.
+#
+# `top_elevation` wins outright over the storey datum and `datum` (model/floors.py), which is
+# exactly what is wanted: 22 1/4" absolute puts the cap's underside on the knee walls' 21 1/2"
+# framing top with nothing left over. The full elevation ladder, and why 22 3/4" of finished
+# deck equals the bath rim, is on W-M-TUBDK-W above.
+#
+# No `floor_finish`. This cap is a substrate waiting for tile, not a finished top — setting
+# it would emit a ResolvedFinishZone and bill the deck as its own floor area inside a room
+# whose field finish already IS tile.
+SLABS = [
+    Slab(uid="W92SX7DVJ0", tag="SL-M-TUBDK",
+         outline=(pt(ft(4, 4), ft(16, 2.375)), pt(ft(7, 8.615), ft(16, 2.375)),
+                  pt(ft(7, 8.615), ft(22, 0.615)), pt(ft(4, 4), ft(22, 0.615))),
+         thickness=inch(2.25), assembly="CATLIN_TUBDECK_INT_PLY_CAP",
+         top_elevation=inch(22.25), openings=("FO-M-TUBDK",)),
 ]
 
 # 7'-2 5/8" well = 3'-5 1/16" + 4 1/2" well partition + 3'-5 1/16", each flight clearing
@@ -1300,5 +1482,5 @@ POSTS = [
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT,
-            *FLOOR_OPENINGS, *STAIRS, *STAIR_GUARDS, *STAIR_HANDRAILS, *BEAMS, *PANELING,
+            *FLOOR_OPENINGS, *SLABS, *STAIRS, *STAIR_GUARDS, *STAIR_HANDRAILS, *BEAMS, *PANELING,
             *POSTS, *CONNECTORS]

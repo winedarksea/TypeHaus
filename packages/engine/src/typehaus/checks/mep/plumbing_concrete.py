@@ -20,6 +20,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import Service
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.model import ResolvedSolid
 
 _ALIGNMENT_TOLERANCE_M = 0.0127  # 1/2"
 _UNDER_SLAB_COVER_M = 0.0254  # pipe crown clears the slab underside by >= 1" bedding
@@ -63,6 +64,31 @@ def sleeve_alignment(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+def _is_non_concrete_slab(ctx: CheckContext, solid: ResolvedSolid) -> bool:
+    """A ``Slab`` whose assembly is demonstrably not concrete — a deck, not a pour.
+
+    ``Slab`` is the model's only horizontal-sheet element that can sit off its storey datum,
+    so it carries laid decking as well as concrete: the porch and breezeway composite decks
+    and, since 2026-08-29, RM-M-BATH2's 3/4" plywood tub-deck cap. A **cast-in sleeve is a
+    concrete concept** — the whole point of this family is that a sleeve more than 1/2" out
+    moves *before the pour*, and there is no pour in a sheet of plywood. Grading a fixture
+    over one as needing a sleeve is a FAIL that can only be silenced by authoring a sleeve
+    through decking, which would be a lie in the model.
+
+    Deliberately conservative on the unknown case: a slab with **no** authored assembly
+    stays in scope. ``SL-SG-FLOOR`` and ``SL-G-STEP-0`` are both like that today, and an
+    unassembled slab is far more likely to be an undescribed pour than an undescribed deck.
+    """
+    if not solid.assembly:
+        return False
+    assembly = next((a for a in ctx.plan.library.assemblies
+                     if a.tag == solid.assembly), None)
+    if assembly is None:
+        return False
+    stack = list(assembly.default_lining) + list(assembly.layers)
+    return not any(layer.material_ref == "concrete" for layer in stack)
+
+
 def _missing_sleeve_findings(ctx: CheckContext) -> list[Finding]:
     """A storey tag alone isn't enough: multiple freestanding structures can share one
     (catlin's sunken-garden balcony slab is also tagged "second") — a fixture only needs a
@@ -70,7 +96,8 @@ def _missing_sleeve_findings(ctx: CheckContext) -> list[Finding]:
     from shapely.geometry import Point, Polygon
 
     out: list[Finding] = []
-    slabs = [solid for solid in ctx.model.solids if solid.category == "slab"]
+    slabs = [solid for solid in ctx.model.solids
+             if solid.category == "slab" and not _is_non_concrete_slab(ctx, solid)]
     served = {(sleeve.serves_fixture, sleeve.host_slab) for sleeve in ctx.model.sleeves
              if sleeve.serves_fixture is not None}
     types = {t.tag: t for t in ctx.plan.library.fixture_types}

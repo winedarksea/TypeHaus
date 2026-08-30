@@ -54,15 +54,19 @@ def egress_windows(ctx: CheckContext) -> list[Finding]:
         if room.element_kind != "Room" or room.occupancy not in SLEEPING_OCCUPANCIES:
             continue
         resolved_room = next((item for item in ctx.model.rooms if item.tag == room.tag), None)
-        wins = _room_windows(ctx, resolved_room, Point, Polygon)
+        # `exterior_only=True` — R310.1's opening has to reach "a public way, yard or court".
+        # An interior transom into the next room reaches none of them, and without this the
+        # selector, which bands on proximity to the room boundary alone, would credit one as
+        # this bedroom's way out of a fire. See `_room_windows`.
+        wins = _room_windows(ctx, resolved_room, Point, Polygon, exterior_only=True)
         best = next((op for op in wins if _meets_r310_2_1(op, grade_floor=False)), None)
         if best is not None:
             out.append(_pass("code.R310_egress",
                              f"{room.tag} has egress window {best.tag}", "R310.1"))
         elif not wins:
             out.append(_fail("code.R310_egress",
-                             f"sleeping room {room.tag} has no egress window", (room.tag,),
-                             "R310.1"))
+                             f"sleeping room {room.tag} has no window on an exterior wall to "
+                             "escape through", (room.tag,), "R310.1"))
         else:
             out.append(_fail("code.R310_egress",
                              f"sleeping room {room.tag} window fails egress dimensions",
@@ -350,7 +354,10 @@ def _required_escape_openings(ctx: CheckContext) -> list:
         if room.element_kind != "Room" or room.occupancy not in SLEEPING_OCCUPANCIES:
             continue
         resolved_room = next((item for item in ctx.model.rooms if item.tag == room.tag), None)
-        for opening in _room_windows(ctx, resolved_room, Point, Polygon):
+        # Same `exterior_only=True` as `egress_windows` above, and it has to be: this list is
+        # "the openings R310.1 makes this house depend on", so a window the escape rule cannot
+        # credit is not one R310.2.3 should be sizing a well for either.
+        for opening in _room_windows(ctx, resolved_room, Point, Polygon, exterior_only=True):
             if _meets_r310_2_1(opening, grade_floor=False) and opening.tag not in seen:
                 seen.add(opening.tag)
                 credited.append(opening)
