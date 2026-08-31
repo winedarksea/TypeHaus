@@ -310,16 +310,14 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   only panel members left on an exterior wall are the 176 window **bucks** (`6x0.375 panel`,
   560 LF ordered). The item stands, but it is now a ~$300 line, not a ~$1,200 one.
 
-- **The girt bands have no RAKE NAILER at an attic gable.** `furring.course_elevations` runs
-  the horizontal courses up a raked wall and they thin out toward the high end — correct as
-  far as it goes — but nothing runs *along* the rake, so the top foot or so of cladding on a
-  gable end has a nailer only where the last full course reaches it. On the Swinburne wall
-  the vertical outriggers ran to the raked top and this did not arise. What it wants is one
-  raked `strapping-{band}-rake` member per band from the topmost full course to the peak
-  (`FramedMember`'s `z0_end_m`/`z1_end_m` already carry a raked member), with blocks at the
-  module along it. Deferred out of the 2026-08-26 girt work deliberately: it is its own step,
-  it touches only the four attic gables, and it is a construction note today rather than a
-  hole in the model.
+- ~~**The girt bands have no RAKE NAILER at an attic gable.**~~ **DONE 2026-08-30.** One
+  raked `strapping-{band}-rake-{i}` member per band along each gable's raked top, on
+  `FramedMember`'s `z0_end_m`/`z1_end_m`, cut around any opening it crosses, with its own
+  blocks on the stud module (`GirtFrame.rake_blocks` — its own branch, because the field
+  pass pairs the two tiers by a single `z0_m` and a rake has an elevation per station). 12
+  nailers, 160 LF, 114 blocks. The field is held one full board clear of it, which is the
+  same rule that holds a course clear of an opening's head course and which retired the
+  short raked stub the `snap` `bounds` argument existed to paper over.
 
 **Deliberately not done, and why:**
 
@@ -569,7 +567,7 @@ the future.
  - Make sure 7" threshold to basement from sunken garden
  - Basement under the stairs storage closet
  - For the breezeway sonotubes, something like https://www.homedepot.com/p/Bigfoot-20-in-Pier-Footing-Form-489-20-BF/300325004 for a "single pour footing". However right now it looks like those footings bisect the house and garage foundation walls. Perhaps the beams should be slightly cantilever to push them further out? Or we could link it in straight to the garage footings as one level?
- - Improve the framing logic of the girts/outriggers holding the insulation and cladding of the catlin house. Especialy on the gable ends, it seems the spacing of these isn't always correct and optimal. Perhaps also increase the spacing (I believe and earlier review concluded 32" OC was sufficient)
+ - ~~Improve the framing logic of the girts/outriggers holding the insulation and cladding of the catlin house. Especialy on the gable ends, it seems the spacing of these isn't always correct and optimal. Perhaps also increase the spacing (I believe and earlier review concluded 32" OC was sufficient)~~ **DONE 2026-08-30.** All three parts. The gable ends were genuinely wrong: a forced course at the lower top re-phased the whole rake band 11-1/2" off the module of the wall below it, and one wall carried a doubled course mid-run. There is now ONE module from the wall base through the rake. The spacing went to 32" o.c. (2x the stud module, so no block moved), and the module was re-phased onto the datum the window sills are measured from. See `houses/catlin/notes/outie_window_truss_detail.md` and `plans/cost-options.md` — the saving is real but small ($466-742), because the same change also nails two places that had no backing at all: the rake, and the cladding lap over the floor rim band.
 
 - **The R312.1.1 guard on the garage stair's 34" landing.** An owner decision with a cost
   and a look to it, flagged in `plan/storeys/garage.py`. It comes with an engine gap worth

@@ -633,6 +633,17 @@ COLUMN = Post(uid="SGP001AAAA", tag="PT-SG-COL",
               height=ft(SPEC.basement_depth_ft - _back_beam_depth_ft
                         + _pier_shaft_extension_ft),
               assembly="PIER_CONCRETE_12",
+              # ** THE CAGE IS THE MINIMUM ACI PERMITS, AND IT IS NOT OPTIONAL. **
+              # A_g = 113.10 in2, so §10.6.1.1's 1% floor is 1.131 in2; (4) #5 = 1.24 in2
+              # (rho 1.096%) clears it by 9.6% and is the Code's own four-bar minimum for a
+              # circular tie (§10.7.3.1(b) — SIX is the spiral case, not this one). The only
+              # other cage that clears is 6-#4 at 1.20 in2: a nickel less steel and two more
+              # bars to cut, bend and tie. Ties are #3 (§25.7.2.1, verticals #10 or smaller)
+              # at the §25.7.2.2 maximum, the least of 16db = 10.0", 48dt = 18.0", h = 12.0".
+              # The column is at d/c 0.04 and NONE of that is why these bars are here — the
+              # 1% floor is a creep/shrinkage/accidental-moment rule, indifferent to load.
+              # See notes/sunken_garden_piers.md §4. Do not thin it to "save concrete".
+              vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
               supported_by="FT-SG-COL")
 
 # The front column: a 20" round cast-concrete pier on its own belled footing, replacing the
@@ -715,6 +726,14 @@ FRONT_COLUMN = Post(uid="SGP002AAAA", tag="PT-SG-FCOL",
                     height=ft(SPEC.basement_depth_ft - _front_beam_depth_ft
                               + _pier_shaft_extension_ft),
                     supported_by="FT-SG-FCOL",
+                    # A_g = 314.16 in2, so the 1% floor is 3.142 in2; (8) #6 = 3.52 in2
+                    # (rho 1.120%). Ties #3 at the §25.7.2.2 maximum, least of 16db = 12.0",
+                    # 48dt = 18.0", h = 20.0". **Two lighter cages were rejected, and one of
+                    # them is a trap:** 4-#8 = 3.16 in2 clears the floor by 0.6% and puts four
+                    # bars 11" apart in a 20" circle — no room for a re-rounded area or a
+                    # revised load; and 6-#6 = 2.64 in2 LOOKS reasonable for a 20" round and
+                    # is 16% SHORT of legal. Check any substitution against 3.142 in2.
+                    vertical_reinforcement='(8) #6 vertical, #3 ties @ 12" o.c.',
                     assembly="SUNKEN_GARDEN_COLUMN_20")
 
 # Wall footing uids are a literal map keyed on the wall tag, not ``enumerate(WALLS)``.

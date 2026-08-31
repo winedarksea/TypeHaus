@@ -260,6 +260,21 @@ class Post(Element):
     # framing and no other. Authored, never guessed (same doctrine as flush-framed beams):
     # a post that merely crashes into a wall it never named is still reported.
     within_wall: str | None = None
+    # The reinforcing cage in a CAST post, verbatim — e.g. '(4) #5 vertical, #3 ties @ 10"
+    # o.c.'. Same contract as FoundationWall.vertical_reinforcement (records what the member
+    # HAS, so a check can compare it against what the code requires), but **the spec shape is
+    # different and deliberately so**: a wall's bars are stated as a SPACING because the wall
+    # is billed per foot of length, while a column's are stated as a COUNT because the cage
+    # is a discrete thing that either has four bars in it or does not. ACI 318-19 §10.6.1.1
+    # bounds the count (0.01Ag to 0.08Ag) and §10.7.3.1 sets its floor at four within
+    # circular ties, and neither question can be asked of a spacing.
+    #
+    # Left None on a wood post, where it means nothing, and on a plain cast PEDESTAL, which
+    # ACI 318-19 §14.1.3(d) permits to have no steel at all. Left None on a cast COLUMN it is
+    # not a silence the engine may fill: §14.1.5 does not permit a plain concrete column at
+    # any stress, so ``engineering/deck_post.py`` reports INCOMPLETE naming this field rather
+    # than assuming a sonotube "probably" has bars in it.
+    vertical_reinforcement: str | None = None
 
 
 @register_element

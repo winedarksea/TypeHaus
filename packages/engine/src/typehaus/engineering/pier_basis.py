@@ -51,6 +51,10 @@ class _Pier:
     footing_tag: str | None
     footing_width_in: float
     footing_depth_in: float
+    #: ``Post.vertical_reinforcement`` verbatim, or None for a plain section. Parsed by
+    #: ``deck_post.parse_cage``; a string that will not parse is read as NO steel, which is
+    #: the conservative direction and one the record names rather than swallows.
+    vertical_reinforcement: str | None = None
 
     @property
     def gross_area_in2(self) -> float:
@@ -215,5 +219,6 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
             footing_tag=footing.tag,
             footing_width_in=footing.width.inches,
             footing_depth_in=footing.depth.inches,
+            vertical_reinforcement=getattr(post, "vertical_reinforcement", None),
         ))
     return sorted(out, key=lambda pier: pier.tag)

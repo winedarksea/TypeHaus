@@ -19,9 +19,9 @@ Four 1-1/2" layers outboard of the 1/2" plywood sheathing, all 2x stock, all hor
 | band | depth off sheathing | what | material |
 |---|---|---|---|
 | A | 0 – 1-1/2" | ccSPF, crossed by **block-1** (3-1/2" along the wall × 3-1/2" tall × 1-1/2" thick) at every stud station under every girt course | SPF |
-| B | 1-1/2 – 3" | **inner girt** — 2x4 laid flat, horizontal, 24" o.c.; one 5" SDWS per block-1 through girt + block + sheathing into the stud | SPF |
+| B | 1-1/2 – 3" | **inner girt** — 2x4 laid flat, horizontal, 32" o.c.; one 5" SDWS per block-1 through girt + block + sheathing into the stud | SPF |
 | C | 3 – 4-1/2" | 1" ccSPF + 1/2" vented gap, crossed by **block-2** at MID-BAY stations, 8" off the block-1 line, bearing on the inner girt | KDAT |
-| D | 4-1/2 – 6" | **outer girt** — 2x4 flat, same 24" courses at the SAME elevations; one 5" SDWS per block-2 into the inner girt; the cladding nailer and the window mount plane | KDAT |
+| D | 4-1/2 – 6" | **outer girt** — 2x4 flat, same 32" courses at the SAME elevations; one 5" SDWS per block-2 into the inner girt; the cladding nailer and the window mount plane | KDAT |
 
 Foam total 4" (band A + band B fill + the inner 1" of band C). Cladding face 6-1/2" proud of
 the sheathing. Windows are OUTIE: the mount plane is the outer face of the outer girt.
@@ -40,9 +40,26 @@ continuous lateral support** — girt → block → sheathing → stud, or girt 
 No fastener bears on foam or cantilevers through it, which is the failure mode IRC Table
 R703.15.1 tabulates and the reason that table's geometry does not describe this wall.
 
-As built by the model: **1,957 block-1** and **2,197 block-2** across the house, one 5" SDWS
-each — 4,154 screws total. The two counts differ because the two tiers' stations are offset
-half a bay, so the module lands differently against course ends and rough openings.
+As built by the model: **1,562 block-1** and **1,742 block-2** across the house, one 5" SDWS
+each — 3,304 screws total. The two counts differ because the two tiers' stations are offset
+half a bay, so the module lands differently against course ends and rough openings. (At the
+24" courses this wall carried until 2026-08-30 the counts were 1,957 / 2,197 / 4,154.)
+
+**Two courses are not on the field module**, and both are new with the 32" spacing:
+
+- a **starter** at the bottom of each band. On a main-storey wall the band runs 13-7/16"
+  below the sole plate, over the floor rim board, because that is where the cladding laps;
+  the starter is the nailer for it. Its blocks bear on the **rim board**, not on a stud —
+  1-1/2" of thread penetration into a 1-1/2" rim, the same penetration §3 designs to, into
+  the same SPF. That is the one place in the wall where the screw does not reach a stud, and
+  it is the reason `test_truss_girt_geometry.py` excludes those blocks from its stud-lap
+  measurement rather than failing on them;
+- a **rake nailer** along each gable's raked top, one per band, with its own blocks on the
+  same stud module (114 of them, over 12 nailers). It closes the cladding's raked edge, which
+  the courses below could only reach to within one board of. Its blocks bear on the raked
+  studs and on the raked top plate; they are drawn square and are cut on the rake on the job.
+  Tributary on a rake block is bounded by the field's own 16" × 32" — the nailer is the top
+  edge of the band, so it collects from one side only.
 
 ---
 
@@ -89,18 +106,19 @@ field is 19 % lower.
 
 ### Tributary per block
 
-Blocks at 16" o.c. horizontally (the stud module), girt courses at 24" o.c. vertically:
+Blocks at 16" o.c. horizontally (the stud module), girt courses at 32" o.c. vertically:
 
 ```
-A = 16" × 24" = 384 in² = 2.67 ft²
+A = 16" × 32" = 512 in² = 3.56 ft²
 
-suction  = 26.7 psf × 2.67 ft² = 71 lb   (withdrawal on the screw)
-pressure = 20.0 psf × 2.67 ft² = 53 lb   (bearing, block on girt / block on sheathing)
-gravity  ≈ 1.2 psf × 2.67 ft² + a share of the girt's 1.3 plf ≈ 5–7 lb
+suction  = 26.7 psf × 3.56 ft² = 95 lb   (withdrawal on the screw)
+pressure = 20.0 psf × 3.56 ft² = 71 lb   (bearing, block on girt / block on sheathing)
+gravity  ≈ 1.2 psf × 3.56 ft² + a share of the girt's 1.3 plf ≈ 6–9 lb
 ```
 
 Both tiers see the same numbers, and so does a jamb-post block: the posts are on the same
-16"/24" grid geometry with the same panel behind them.
+16"/32" grid geometry with the same panel behind them. The tributary is **33 % larger than
+the 2.67 ft² this note carried before 2026-08-30**, and every number below moves with it.
 
 ---
 
@@ -123,7 +141,7 @@ has more available):
 W_ref = 110.6 × 1.5 = 166 lb
 W_ASD = 166 × C_D(1.6, wind) = 265 lb
 
-utilisation = 71 / 265 = 27 %
+utilisation = 95 / 265 = 36 %
 ```
 
 **Block-1 screw:** 1-1/2" girt + 1-1/2" block + 1/2" sheathing = 3-1/2" through, then 1-1/2"
@@ -131,7 +149,7 @@ into the stud = **5.0" required**.
 **Block-2 screw:** 1-1/2" girt + 1-1/2" block = 3" through, then 1-1/2" into the flat inner
 girt = **4.5" required**. Same 5" part, same G = 0.42, same 265 lb.
 
-Both are 27 % utilised at the corner-zone suction, 22 % in the field.
+Both are **36 %** utilised at the corner-zone suction, 29 % in the field (−21.6 psf).
 
 > **For the reviewer.** Substitute the ESR-2236 tabulated withdrawal value for the SDWS in
 > place of the NDS general equation if you prefer; it is the same order of magnitude and the
@@ -152,27 +170,27 @@ Block-2 lands mid-bay, i.e. at the middle of a 16" span between two block-1s. Tr
 girt as a simple beam over 16":
 
 ```
-M = P·L/4 = 71 × 16 / 4 = 284 in-lb
+M = P·L/4 = 95 × 16 / 4 = 380 in-lb
 S = b·d²/6 = 3.5 × 1.5² / 6 = 1.31 in³      (2x4 laid FLAT: b = 3.5", d = 1.5")
-f_b = 284 / 1.31 = 216 psi
+f_b = 380 / 1.31 = 290 psi
 
-F_b' = 875 (No.2 SPF) × C_D 1.6 × C_F 1.5 = 2,100 psi     →  10 % utilised
+F_b' = 875 (No.2 SPF) × C_D 1.6 × C_F 1.5 = 2,100 psi     →  14 % utilised
 ```
 
 Deflection, E = 1.4 × 10⁶ psi, I = b·d³/12 = 3.5 × 1.5³ / 12 = 0.98 in⁴:
 
 ```
-δ = P·L³ / (48·E·I) = 71 × 4,096 / (48 × 1.4e6 × 0.98) = 0.004"
+δ = P·L³ / (48·E·I) = 95 × 4,096 / (48 × 1.4e6 × 0.98) = 0.006"
 ```
 
 ### Outer girt — uniform suction from the cladding, 16" span
 
-Cladding tributary on one course is 24" of wall height:
+Cladding tributary on one course is 32" of wall height:
 
 ```
-w = 26.7 psf × (24/12) ft = 53.4 plf = 4.45 lb/in
-M = w·L²/8 = 4.45 × 256 / 8 = 142 in-lb
-f_b = 142 / 1.31 = 108 psi                                →   5 % utilised
+w = 26.7 psf × (32/12) ft = 71.2 plf = 5.93 lb/in
+M = w·L²/8 = 5.93 × 256 / 8 = 190 in-lb
+f_b = 190 / 1.31 = 145 psi                                →   7 % utilised
 ```
 
 ### Block bearing perpendicular to grain
@@ -180,15 +198,16 @@ f_b = 142 / 1.31 = 108 psi                                →   5 % utilised
 The block bears on 3-1/2" × 3-1/2" = 12.25 in² of face:
 
 ```
-F_c⊥ = 425 psi (SPF)  →  capacity 425 × 12.25 = 5,200 lb   vs 53 lb   →  1 % utilised
+F_c⊥ = 425 psi (SPF)  →  capacity 425 × 12.25 = 5,200 lb   vs 71 lb   →  1.4 % utilised
 ```
 
 ### Gravity shear on the screw
 
 5–7 lb per block against a lateral design value in the hundreds of pounds. Not close.
 
-**Nothing in the wood is above 10 % utilised.** The design is governed by the screw
-withdrawal at 27 %, and that is where a reviewer's attention belongs.
+**Nothing in the wood is above 14 % utilised.** The design is governed by the screw
+withdrawal at 36 %, and that is where a reviewer's attention belongs. Both numbers rose by a
+third on 2026-08-30 with the course spacing, and both are still under half.
 
 ---
 
@@ -198,23 +217,32 @@ Shown for completeness; the panel manufacturer's schedule governs the panel-to-g
 connection, and both options below have margin against it.
 
 **Exposed-fastener ribbed panel** (#12 gasketed screw, D = 0.216", 1-1/4" thread in the
-1-1/2" outer girt, at 12" o.c. across a 24" course spacing):
+1-1/2" outer girt, at 12" o.c. across a 32" course spacing):
 
 ```
 W    = 2,850 × 0.42² × 0.216 = 108.6 lb/in
 W_ASD = 108.6 × 1.25 × 1.6 = 217 lb
-demand = 26.7 psf × (12" × 24" = 2.0 ft²) = 53 lb          →  25 % utilised
+demand = 26.7 psf × (12" × 32" = 2.67 ft²) = 71 lb          →  33 % utilised
 ```
 
 **Snap-lock clip** (#10 × 1" screw, D = 0.190", ~0.9" effective thread, two screws per clip,
-clips at 24" o.c. on a 16" seam spacing):
+clips at 32" o.c. on a 16" seam spacing):
 
 ```
 W    = 2,850 × 0.42² × 0.190 = 95.5 lb/in
 W_ASD = 95.5 × 0.9 × 1.6 = 137 lb per screw
-demand per clip = 26.7 psf × (16" × 24" = 2.67 ft²) = 71 lb, over 2 screws = 36 lb each
-                                                            →  26 % utilised
+demand per clip = 26.7 psf × (16" × 32" = 3.56 ft²) = 95 lb, over 2 screws = 48 lb each
+                                                            →  35 % utilised
 ```
+
+> **For the reviewer — the one open citation on this page.** The withdrawal arithmetic above
+> is the fastener into the girt. What it does **not** cover is the **panel's own span**: a 26
+> ga PBR panel spanning 32" between purlins at −26.7 psf. Every panel maker publishes a
+> purlin-span table for exactly that, and **no such table is cited anywhere in this repo**.
+> `plans/cost-options.md` named it as a gate on going from 24" to 32" and it is still open:
+> the 32" spacing is not confirmed against the panel until the table for the panel actually
+> bought is read at this pressure. It is a substitution question, not a framing one — the
+> girts are sized above — but it is the reason this section is not finished.
 
 **Coating.** Block-2's screw passes through KDAT into SPF, so the SDWS's DB coating (rated
 for treated lumber) is the specification, not an upgrade. The cladding fasteners land in the
@@ -254,23 +282,28 @@ KDAT ≈ R-1.25/in and R-0.95/in respectively.
 | band | make-up | framing fraction | R |
 |---|---|---|---|
 | A | 1-1/2" ccSPF (R 9.75), crossed by 1-1/2" SPF block-1 (R 1.88) | 3.2 % | **8.6** |
-| B | 1-1/2" ccSPF (R 9.75), crossed by 3-1/2" of flat SPF girt per 24" course (R 1.88) | 14.6 % | **6.0** |
+| B | 1-1/2" ccSPF (R 9.75), crossed by 3-1/2" of flat SPF girt per 32" course (R 1.88) | 10.9 % | **6.7** |
 | C | 1" ccSPF + 1/2" vented gap (R 6.5), crossed by 1-1/2" KDAT block-2 (R 1.43) | 3.2 % | **5.8** |
 | D | outer girt, outboard of the vent gap | — | **0** |
 
 ```
 band A:  1/R = 0.968/9.75 + 0.032/1.88 = 0.0993 + 0.0170 = 0.1163  →  R 8.6
-band B:  1/R = 0.854/9.75 + 0.146/1.88 = 0.0876 + 0.0779 = 0.1655  →  R 6.0
+band B:  1/R = 0.891/9.75 + 0.109/1.88 = 0.0914 + 0.0580 = 0.1494  →  R 6.7
 band C:  1/R = 0.968/6.50 + 0.032/1.43 = 0.1489 + 0.0224 = 0.1714  →  R 5.8
 
-foam zone total = 8.6 + 6.0 + 5.8 = 20.4     (against 26.0 for 4" of unbroken ccSPF)
+foam zone total = 8.6 + 6.7 + 5.8 = 21.1     (against 26.0 for 4" of unbroken ccSPF)
 ```
 
-**Whole wall, honest: ≈ R-37.5.** Everything inboard of the foam zone — gypsum, the 2x6 stud
-bay with its mineral wool at 23 % framing, the sheathing, and the air films — sums to about
-R-17.1, and 17.1 + 20.4 = 37.5.
+The 32" course spacing of 2026-08-30 is worth **+R-0.7** here, all of it in band B: 3-1/2" of
+flat girt per 32" course is a 10.9 % framing fraction where the same board per 24" course was
+14.6 %. It is the second half of that change's case — the first is the lumber — and it is
+why the band's `CavityFill.framing_factor` had to move with the spacing.
 
-**The model's own card reads R-40.7, and that is 3.2 points optimistic.** Two reasons, both
+**Whole wall, honest: ≈ R-38.2.** Everything inboard of the foam zone — gypsum, the 2x6 stud
+bay with its mineral wool at 23 % framing, the sheathing, and the air films — sums to about
+R-17.1, and 17.1 + 21.1 = 38.2.
+
+**The model's own card reads R-41.4, and that is 3.2 points optimistic.** Two reasons, both
 worth knowing:
 
 1. The blocks are framed by the resolver, not authored as a `CavityFill`, so bands A and C
@@ -278,7 +311,8 @@ worth knowing:
 2. The outer girt is a solid layer with no fill, so the card credits its R-1.4 — but it
    stands outboard of a vented gap and is thermally outside the envelope.
 
-**`preferences.toml` sets `wall_r = 40`. This wall does not meet it, at R-37.5.** The card
+**`preferences.toml` sets `wall_r = 40`. This wall does not meet it, at R-38.2** — 1.8
+points short, where the 24" courses left it 2.5 short. The card
 says otherwise and the card is wrong. State it plainly rather than reading the target as met.
 
 **The 2-D truth is better than the 1-D number, and 1-D cannot credit it.** The buried inner
@@ -359,7 +393,7 @@ opening's own frame — a jamb post on each side with its inner face on the RO e
 and sill courses spanning the opening. There is no 60" unsupported head course: the head
 course is blocked back to the cripples at every stud station, so its span is 16".
 
-**Window elevations and course breaks.** Every window taller than 24" necessarily interrupts
+**Window elevations and course breaks.** Every window taller than 32" necessarily interrupts
 some field courses; that is inherent to a horizontal girt and is not a defect. What *is*
 avoidable is a near-miss — a head or sill landing an inch or two off a course line, which
 turns one clean junction into two pieces of framing inches apart. Where a window's head

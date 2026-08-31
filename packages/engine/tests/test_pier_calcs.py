@@ -23,25 +23,62 @@ import pytest
 
 from typehaus.engineering.item import Status
 
+# The two cages, as `params/sunken_garden.py` authors them (§4c of the note).
+_COL_CAGE = '(4) #5 vertical, #3 ties @ 10" o.c.'
+_FCOL_CAGE = '(8) #6 vertical, #3 ties @ 12" o.c.'
+_COL_CAGE_SOURCE = "vertical_reinforcement='" + _COL_CAGE + "',"
+_FCOL_CAGE_SOURCE = "vertical_reinforcement='" + _FCOL_CAGE + "',"
+_UNREADABLE_CAGE_SOURCE = "vertical_reinforcement='rebar per engineer',"
+_FCOL_SHORT_CAGE_SOURCE = (
+    "vertical_reinforcement='" + _FCOL_CAGE.replace("(8)", "(6)") + "',")
+
 # §2 and §3c of the note.
 _ORACLE = {
     "PT-SG-COL": {
         "tributary_ft2": 82.33, "dead_lb": 2082.0, "live_lb": 3293.0,
         "service_lb": 5375.0, "factored_lb": 7768.0,
         "bell_area_ft2": 4.909, "bearing_psf": 1245.0,
-        "gross_in2": 113.1, "plain_capacity_lb": 81_400.0, "h_over_d": 10.7,
-        "min_steel_in2": 1.13,
+        "gross_in2": 113.1, "h_over_d": 10.7, "min_steel_in2": 1.131,
+        # §4c / §4d / §4e of the note.
+        "cage": _COL_CAGE, "bars": 4, "steel_in2": 1.24,
+        "capacity_lb": 187_011.0, "tie_spacing_in": 10.0,
+        "slenderness": 42.7, "delta_ns": 1.018, "e_magnified_in": 0.978, "e_capped_in": 1.20,
     },
     "PT-SG-FCOL": {
         "tributary_ft2": 116.17, "dead_lb": 4735.0, "live_lb": 4647.0,
         "service_lb": 9382.0, "factored_lb": 13_117.0,
         "bell_area_ft2": 7.069, "bearing_psf": 1477.0,
-        "gross_in2": 314.2, "plain_capacity_lb": 244_300.0, "h_over_d": 6.4,
-        "min_steel_in2": 3.14,
+        "gross_in2": 314.2, "h_over_d": 6.4, "min_steel_in2": 3.142,
+        "cage": _FCOL_CAGE, "bars": 8, "steel_in2": 3.52,
+        "capacity_lb": 521_732.0, "tie_spacing_in": 12.0,
+        "slenderness": 25.6, "delta_ns": 1.004, "e_magnified_in": 1.205, "e_capped_in": 2.00,
     },
 }
 
 _PRESUMPTIVE_ALLOWABLE_PSF = 2000.0
+
+
+def _mutated(tmp_path, replacements):
+    """A copy of catlin with `params/sunken_garden.py` edited — the same free-pass harness
+    `test_retaining_court.py` uses, and for the same reason: a limit state nobody can break
+    on purpose is not being tested."""
+    from pathlib import Path
+
+    from _helpers import copy_house
+
+    from typehaus.source import load_plan
+
+    catlin = Path(__file__).resolve().parents[3] / "houses" / "catlin"
+    house = copy_house(catlin, tmp_path / "house")
+    source = house / "params" / "sunken_garden.py"
+    text = source.read_text()
+    for old, replacement in replacements:
+        assert old in text, old
+        text = text.replace(old, replacement)
+    source.write_text(text)
+    result = load_plan(house)
+    assert result.plan is not None, [f.message for f in result.findings]
+    return result.plan
 
 
 @pytest.fixture(scope="module")
@@ -138,26 +175,154 @@ def test_bearing_checks_out_on_the_sites_own_soil(tag, results) -> None:
 
 
 @pytest.mark.parametrize("tag", sorted(_ORACLE))
-def test_a_plain_cast_column_is_incomplete_and_says_why(tag, results) -> None:
-    """§4 — and the INCOMPLETE is about REINFORCEMENT, never about the section.
+def test_the_cage_reproduces_the_hand_worked_design(tag, results, piers) -> None:
+    """§4c and §4d — the cage the house authors, and the capacity it buys."""
+    want = _ORACLE[tag]
+    assert piers[tag].vertical_reinforcement == want["cage"]
 
-    The section is at d/c 0.095 and 0.054. If a future edit makes this OK by growing the
-    column, something has gone wrong: a column may not be plain concrete at any stress, and
-    `Post` has no field in which the bars could be recorded.
+    record = results[f"deck_post/{tag}"]
+    assert record.status is Status.OK, record.summary
+    assert not record.missing
+
+    state = next(s for s in record.limit_states if s.name == "axial, tied column")
+    assert state.demand == pytest.approx(want["factored_lb"], abs=5.0)
+    assert state.capacity == pytest.approx(want["capacity_lb"], rel=0.002)
+    # The section is enormous for the load; the cage is NOT there for strength.
+    assert state.demand / state.capacity < 0.05
+
+
+@pytest.mark.parametrize("tag", sorted(_ORACLE))
+def test_the_cage_sits_at_the_code_minimum_and_not_below_it(tag, results) -> None:
+    """§4b/§4c — the 1% floor is what sizes these cages, and both clear it by ~10%.
+
+    **This is the assertion that stops a well-meant "save concrete" edit.** The columns run
+    at d/c 0.04; nothing about the load justifies less steel, because ACI 318-19 §10.6.1.1's
+    floor covers creep, shrinkage and the accidental moment and is indifferent to loading.
     """
     want = _ORACLE[tag]
     record = results[f"deck_post/{tag}"]
-    assert record.status is Status.INCOMPLETE, record.summary
-    assert record.missing, "an INCOMPLETE that names nothing is a shrug"
-    assert any("reinforcement" in m for m in record.missing), record.missing
-    assert any(f"{want['min_steel_in2']:.2f} in2" in m for m in record.missing), record.missing
 
-    state = next(s for s in record.limit_states if s.name == "axial, gross section")
-    assert state.demand == pytest.approx(want["factored_lb"], abs=5.0)
-    assert state.capacity == pytest.approx(want["plain_capacity_lb"], rel=0.002)
-    # The section is enormous for the load, and the record must not read as if it were tight.
-    assert state.demand / state.capacity < 0.12
+    steel = next(s for s in record.limit_states if s.name == "longitudinal steel")
+    assert steel.demand == pytest.approx(want["min_steel_in2"], abs=0.002)  # 0.01 Ag
+    assert steel.capacity == pytest.approx(want["steel_in2"], abs=0.005)
+    assert steel.ok, "the authored cage is BELOW the ACI minimum"
+    # Clears the floor, but by a builder's margin rather than a designer's.
+    assert 1.0 < want["steel_in2"] / want["min_steel_in2"] < 1.15
+
+    ceiling = next(s for s in record.limit_states if s.name == "steel ratio ceiling")
+    assert ceiling.ok and ceiling.ratio < 0.2  # nowhere near 0.08 Ag
+
+    count = next(s for s in record.limit_states if s.name == "bar count")
+    assert count.demand == 4.0, "§10.7.3.1(b) is FOUR within circular ties, not six"
+    assert count.capacity == float(want["bars"])
+    assert count.ok
+
+
+@pytest.mark.parametrize("tag", sorted(_ORACLE))
+def test_the_ties_are_at_the_25_7_2_2_maximum(tag, results) -> None:
+    """§4b — least of 16db, 48dt and the column's own least dimension."""
+    want = _ORACLE[tag]
+    record = results[f"deck_post/{tag}"]
+    spacing = next(s for s in record.limit_states if s.name == "tie spacing")
+    assert spacing.demand == pytest.approx(want["tie_spacing_in"])
+    assert spacing.capacity == pytest.approx(want["tie_spacing_in"]), (
+        "the authored spacing IS the code maximum for this cage — if this drifts, the "
+        "house got cheaper than the code allows")
+    assert spacing.ok
+    assert next(s for s in record.limit_states if s.name == "tie size").ok
+
+
+@pytest.mark.parametrize("tag", sorted(_ORACLE))
+def test_slenderness_is_carried_and_the_minimum_eccentricity_is_covered(tag, results) -> None:
+    """§4e — the argument that lets one axial comparison be the whole check.
+
+    The 12" column is past §6.2.5's non-sway floor of 34 and the 20" is not, but both end in
+    the same place: the magnified minimum eccentricity is INSIDE the 0.10h that R22.4.2 says
+    the 0.80 axial cap already carries, so no interaction diagram is needed.
+    """
+    want = _ORACLE[tag]
+    record = results[f"deck_post/{tag}"]
+    state = next(s for s in record.limit_states if s.name == "minimum eccentricity")
+    assert state.demand == pytest.approx(want["e_magnified_in"], abs=0.005)
+    assert state.capacity == pytest.approx(want["e_capped_in"], abs=0.005)
     assert state.ok
+    assert f"{want['delta_ns']:.3f}" in state.citation
+    slender = next(n for n in record.notes if n.startswith("SLENDERNESS"))
+    assert f"{want['slenderness']:.1f}" in slender
+    expected = "NOT neglectable" if want["slenderness"] > 34.0 else "neglectable outright"
+    assert expected in slender
+
+
+def test_a_column_with_no_cage_is_incomplete_and_names_the_field(tmp_path) -> None:
+    """**The free pass this whole field exists to refuse.**
+
+    Strip the reinforcement and the record must go back to INCOMPLETE naming
+    `Post.vertical_reinforcement` — never to an OK earned by the section alone, which is at
+    d/c 0.04 and would sail through anything that graded only strength.
+    """
+    from typehaus.engineering import EngineeringContext, EngineeringResults
+    from typehaus.resolve import resolve
+
+    plan = _mutated(tmp_path, [(_COL_CAGE_SOURCE, "")])
+    model, _ = resolve(plan)
+    results = EngineeringResults(EngineeringContext(plan=plan, model=model, soil_class="GM"))
+
+    record = results["deck_post/PT-SG-COL"]
+    assert record.status is Status.INCOMPLETE, record.summary
+    assert any("vertical_reinforcement" in m for m in record.missing), record.missing
+    assert any("14.1.5" in m for m in record.missing), record.missing
+    # The other pier still has its cage, so this is the field and not a global break.
+    assert results["deck_post/PT-SG-FCOL"].status is Status.OK
+
+
+def test_a_cage_that_does_not_parse_reads_as_no_steel(tmp_path) -> None:
+    """Same contract as `retaining_basis.parse_reinforcement`: unreadable is NOT a pass."""
+    from typehaus.engineering import EngineeringContext, EngineeringResults
+    from typehaus.resolve import resolve
+
+    plan = _mutated(tmp_path, [(_COL_CAGE_SOURCE, _UNREADABLE_CAGE_SOURCE)])
+    model, _ = resolve(plan)
+    results = EngineeringResults(EngineeringContext(plan=plan, model=model, soil_class="GM"))
+    assert results["deck_post/PT-SG-COL"].status is Status.INCOMPLETE
+
+
+def test_an_under_minimum_cage_is_over_not_ok(tmp_path) -> None:
+    """6-#6 in the 20" column: 2.64 in2 against a 3.142 in2 floor — the §4c trap, which
+    looks like a sensible cage and is 16% short of legal."""
+    from typehaus.engineering import EngineeringContext, EngineeringResults
+    from typehaus.resolve import resolve
+
+    plan = _mutated(tmp_path, [(_FCOL_CAGE_SOURCE, _FCOL_SHORT_CAGE_SOURCE)])
+    model, _ = resolve(plan)
+    results = EngineeringResults(EngineeringContext(plan=plan, model=model, soil_class="GM"))
+
+    record = results["deck_post/PT-SG-FCOL"]
+    assert record.status is Status.OVER, record.summary
+    steel = next(s for s in record.limit_states if s.name == "longitudinal steel")
+    assert not steel.ok
+    assert steel.capacity == pytest.approx(2.64, abs=0.005)
+
+
+@pytest.mark.parametrize("spec,expected", [
+    (_COL_CAGE, (4, 5, 3, 10.0)),
+    (_FCOL_CAGE, (8, 6, 3, 12.0)),
+    ("8-#6 vertical with #3 ties @ 12 in. o.c.", (8, 6, 3, 12.0)),
+    ("4 #5 verticals, #4 TIES @ 9.5 in o.c.", (4, 5, 4, 9.5)),
+    ("rebar per engineer", None),
+    ("#3 ties @ 10 in o.c.", None),        # ties alone are not a cage
+    ("(4) #5 vertical", None),             # verticals alone are not a cage
+    ("", None),
+    (None, None),
+])
+def test_parse_cage(spec, expected) -> None:
+    """A count and a spacing are different specs, and only one of them is a column's."""
+    from typehaus.engineering.deck_post import parse_cage
+
+    cage = parse_cage(spec)
+    if expected is None:
+        assert cage is None
+        return
+    assert (cage.count, cage.bar, cage.tie_bar, cage.tie_spacing_in) == expected
 
 
 def test_both_piers_are_columns_and_not_pedestals(piers) -> None:

@@ -771,12 +771,21 @@
 # Same shaft, same itemised basis, RE-STRUCK PER FOOT rather than escalated per yard — the
 # volume goes up 56% but the form and the labour do not. A 20" round is 2.182 sf: form
 # $6.25-15/LF (circumference, +25% on the 16"), ready-mix $16.16-25.86/LF (volume, at
-# $200-320/cy), the same #4 cage with ties $4-8/LF -> material $26.40-48.90/LF. Labour
+# $200-320/cy), and the CAGE $9-17/LF. Material $31.35-58.06/LF. Labour
 # $21-47/LF; the operations are unchanged and a bigger tube is only heavier to brace.
+#
+# ** 2026-08-30: THE CAGE LINE TRIPLED, AND IT IS A CODE MINIMUM, NOT AN UPGRADE. **
+# This row carried "the same #4 cage with ties $4-8/LF" from the day the column went round —
+# a 4-bar #4 cage is 4.41 lb/LF here. **It was never legal.** ACI 318-19 §10.6.1.1 wants at
+# least 0.01 A_g in a column, which on a 20" round (314.16 in2) is 3.142 in2; four #4 bars
+# are 0.80 in2, a QUARTER of it. The authored cage is (8) #6 with #3 ties at 12" (3.52 in2,
+# rho 1.120%) = 13.76 lb/LF, so the line goes $4-8 -> $9-17/LF: **+94 lb of steel, +$61-118
+# on this column.** See notes/sunken_garden_piers.md §4 and `Post.vertical_reinforcement`.
+# Nothing about the POUR changed — same tube, same volume, same labour; only the bar list.
 #
 # The shaft is 10.08 LF, not the 8.06 the old comment carried — it grew 2'-6" on 2026-08-29
 # when the bell was augered to frost depth, and that note was not restruck at the time. So
-# material $266-493 and labour $212-474, $478-967 installed against $393-815 for the 16" at
+# material $316-585 and labour $212-474, $528-1,059 installed against $393-815 for the 16" at
 # the same length: the ~$85-150 step. The rates below are $/cy because that is what the
 # [concrete] table pays in, so they are those totals over the 0.79 cy the BOM resolves (the
 # faceted circle bills a hair under the true 0.0808 cy/LF).
@@ -784,15 +793,23 @@
 # The side cover comes back as a side effect: a 20" round leaves 5.76" at a centred 6"
 # plate's corners, MORE than the 16" square had. plans/TODO.md's MPB66Z arithmetic for this
 # column is stale for it. See plan/assemblies.py and notes/uplift_load_path.md.
-"column:SUNKEN_GARDEN_COLUMN_20" = { material = { low = 337, high = 624 }, labour = { low = 268, high = 600 } }  # 0.79 cy = 10.08 LF — PT-SG-FCOL
+"column:SUNKEN_GARDEN_COLUMN_20" = { material = { low = 400, high = 741 }, labour = { low = 268, high = 600 } }  # 0.79 cy = 10.08 LF — PT-SG-FCOL; material re-struck 2026-08-30 for the (8) #6 cage
 # The five 12" round sonotube piers: PR-BW-1..4 under the breezeway posts and PT-SG-COL at
 # the garden back-beam midspan, 25.9 LF between them. A round pier is cheaper per yard than
 # the square column above because the form is a disposable tube rather than built panels and
 # there is no chamfer, no wash and no rubbing after strip. $31-62/LF installed: fibre tube
-# $4-9/LF, ready-mix $5.80-9.30/LF (a 12" round is 0.0291 cy/LF at $200-320/cy), a 4-bar #4
-# cage with ties $3-6/LF, then $18-38/LF to lay out, set and brace the tube plumb, place and
+# $4-9/LF, ready-mix $5.80-9.30/LF (a 12" round is 0.0291 cy/LF at $200-320/cy), a 4-bar cage
+# with ties $3-7/LF, then $18-38/LF to lay out, set and brace the tube plumb, place and
 # vibrate, and strip. Labour-dominated, like every small-volume pour in this table.
-"column:PIER_CONCRETE_12" = { material = { low = 462, high = 852 }, labour = { low = 638, high = 1348 } }  # 0.73 cy = 25.9 LF; $/cy, so the line is $803-1,606
+#
+# 2026-08-30: PT-SG-COL's cage went #4 -> #5 — 0.01 A_g on a 12" round (113.10 in2) is
+# 1.131 in2 and four #4 bars are 0.80 in2, so the priced cage was 29% short of ACI 318-19
+# §10.6.1.1. Four #5 is 1.24 in2 and the Code's own four-bar floor for a circular tie
+# (§10.7.3.1(b)). Over PT-SG-COL's 10.68 LF that is **+16 lb of steel, +$10-20** — the whole
+# move, because the other 15.2 LF in this row are the four breezeway piers and THEY ARE NOT
+# FIXED: see plans/TODO.md, they are 12" round plain columns at h/d 4.3-4.7 with no cage
+# authored and no engineered item reaching them. When they are, this row moves again.
+"column:PIER_CONCRETE_12" = { material = { low = 476, high = 879 }, labour = { low = 638, high = 1348 } }  # 0.73 cy = 25.9 LF; $/cy, so the line is $817-1,633
 # ** THE LARGEST PROPORTIONAL ERROR IN THE 2026-08-08 FILE, ~5x. ** The old $240-400/cy came
 # out at $0.99-1.66 per LF over the ~800 LF this volume represents, which is roughly the bare
 # pipe and not even all of it. New-construction installed exterior footing drain, open trench,

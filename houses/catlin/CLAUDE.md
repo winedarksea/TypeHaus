@@ -183,7 +183,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
 - **It is a CATLIN TRUSS WALL outboard of that sheathing (2026-08-26).** 4" of 2 lb
   closed-cell spray foam around **two tiers of flat horizontal 2x4 girts**, each course
   bearing on 3-1/2" blocks at the stud module: band A foam over block-1 (SPF), the inner
-  girt (SPF, 24" o.c., buried), band C foam + a 1/2" vent gap over block-2 (KDAT), the outer
+  girt (SPF, 32" o.c., buried), band C foam + a 1/2" vent gap over block-2 (KDAT), the outer
   girt (KDAT, same courses at the same elevations), then the standing seam. It replaced the
   **Swinburne truss** of 2026-08-23 — a chiral block + plywood tab + KDAT outrigger *on edge*
   at 16" o.c. — which had in turn replaced a sheet WRB + 2" polyiso + 2" EPS + 1/2" furring on
@@ -199,11 +199,23 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     ledge behind the cladding that wet-cycles for the life of the wall. The two blocks are two
     BOM rows because of it.
   - **The blocks are on the STUD module; block-2 is offset half a bay.** Girts climb their own
-    24" elevation module from the wall base; the blocks land on 16" stud stations, and block-2
-    on those stations plus 8". No screw passes through both tiers, so every fastener is
-    wood-to-wood with continuous lateral support and nothing bears on foam — which is why
+    32" elevation module (24" until 2026-08-30); the blocks land on 16" stud stations, and
+    block-2 on those stations plus 8". No screw passes through both tiers, so every fastener
+    is wood-to-wood with continuous lateral support and nothing bears on foam — which is why
     IRC R703.15's through-foam furring table is not the applicable provision. See
     `notes/catlin_truss_engineering.md`.
+  - **The course module counts from the SILLS' datum, not the wall base (2026-08-30).**
+    `course_datum="framing-base"` + `course_offset=inch(-3.5)` on all four girt bands: the
+    module is registered so a course TOP lands on the finished floor line, which is what a
+    sill height is measured from. On a main-storey wall the two datums are 13-7/16" apart
+    (`platform.py` extends the wall down over the floor rim band), and that mismatch is what
+    used to leave a field course a half inch from an opening's own head or sill course. One
+    module now runs unbroken from the wall base **through the gable rake**; three edges break
+    it and only three — a starter at the band bottom, a top course on a level wall, and a
+    **rake nailer** along each gable's raked top with the field held one board clear of it.
+    Design rule for a new opening: **sill on the 32" module above the floor (32/64/96"), or
+    head 3-1/2" below one.** `notes/outie_window_truss_detail.md` has the swept derivation,
+    `structural.girt_course_spacing` holds the bays to the authored spacing.
   - **Windows are OUTIE**, in the mount plane **6"** out from the sheathing (was 5"), flanges
     bearing on the jamb posts and the head/sill courses. Derived, never authored — the mount
     plane is the outermost FURRING layer's outer face, which is why not one window moved when
@@ -224,7 +236,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     predicate (`laid="edge"` + vertical), the girt frame is a sibling selected by
     `standoff="block"`, and the old layer tuple is kept verbatim as `CATLIN_EXT_2X6_SWINBURNE`,
     referenced by nothing. `notes/outie_window_truss_detail.md` has the three-edit revert.
-  **The card reads R-40.7 and the honest number is ≈R-37.5** — the blocks are framed rather
+  **The card reads R-41.4 and the honest number is ≈R-38.2** — the blocks are framed rather
   than authored as a `CavityFill`, and the outer girt is credited its own R although it stands
   outboard of the vent gap. `wall_r = 40` is NOT met. See the engineering note §7.
   See `notes/outie_window_truss_detail.md` and `notes/catlin_truss_engineering.md`.

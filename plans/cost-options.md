@@ -524,7 +524,8 @@ $951,336–1,992,450 → **$945,604–1,984,213**, **−$5,600 / −$8,000**.
   (1-1/2" band A, the inner girt's own 1-1/2" fill, and 1" of band C in front of it), so the
   same move is now "drop `foam-vent` to zero and the inner girt's fill to 1-1/2"" — mostly
   the same foam, spelled in a different place. The R numbers above are stale for the same
-  reason: the baseline is R-40.7 on the card and ≈R-37.5 honest, not R-38.7.
+  reason: the baseline is R-41.4 on the card and ≈R-38.2 honest (R-40.7 / ≈R-37.5 before the
+  32" girt respacing of 2026-08-30), not R-38.7.
 - **RE-PRICE IT AGAIN AFTER 2026-08-29.** Band C (`foam-vent`, the 1" this row proposes to
   delete) was **not being billed at all** when the −$5,600/−$8,000 above was measured — it
   matched no price key. It is priced now, so this row's saving is *larger* than the figure
@@ -1199,17 +1200,18 @@ thermally positive and one is free.
 | **Roof: standing seam → exposed-fastener PBR** | $7,400–14,500 | The PV mounting — **see the warning below** |
 | **Single-tier girt on 5.5" blocks** (deletes the inner SPF tier) | $6,400–10,300 | A new failure mode and an engineer's fee |
 | **Exterior-wall cavity mineral wool → fiberglass** | $4,900–7,200 | ~0.8 whole-wall R; verify the row split first |
-| **Girt courses 24" → 32" o.c.** | $4,100–6,900 | Two re-checks — and it is worth **+R-0.8** |
+| ~~**Girt courses 24" → 32" o.c.**~~ **TAKEN 2026-08-30** | **$466–742**, not the $4,100–6,900 estimated | Nothing — but read why the saving is a tenth of the estimate |
 | **Engineer the garden footing base and stone bed** | $3,200–8,000 | Nothing, if it stamps |
 | **Refrigerator columns → one 36" side-by-side** | $3,000–4,500 | All-fridge/all-freezer capacity and a 21" of layout |
 | **Garage stem → frost-protected shallow foundation** | $2,000–3,900 | The option of ever leaving the garage unheated |
 | **Drop the interior vapour-retarder allowance on the truss walls** | $1,500–9,600 | Arguably nothing |
 | French doors → sliders where the swing isn't needed | ~15–25% of $7,000–15,800 | Double-leaf swing. **Unpriced — needs a quote** |
 
-**These do not add up either.** The 32" girt row and the single-tier girt row are mutually
-exclusive. Court-shortening and footing engineering overlap. The girt rows and the
-mineral-wool row all shrink if the attic goes (sweep row 1). Taking only the independent
-ones — court, 32" girts, vapour retarder, refrigerators — is roughly **$18,000–37,000**.
+**These do not add up either.** The 32" girt row is now built, and the single-tier girt row
+was mutually exclusive with it. Court-shortening and footing engineering overlap. The girt
+rows and the mineral-wool row all shrink if the attic goes (sweep row 1). Taking only the
+independent ones that are left — court, vapour retarder, refrigerators — is roughly
+**$14,000–30,000**.
 
 **Shortening the court is the highest-value item on the list, and it is not "delete the
 garden."** The sunken garden is a third of the entire cast-concrete package: 29.2 cy of 10'
@@ -1220,16 +1222,38 @@ gives a 19x16 = 304 sf court, and cuts roughly 60 cy of excavation on top of the
 exterior openings in the entire basement, and without the court the theatre, gym, sauna and
 shop are all windowless with no direct exit.
 
-**The girt respacing is the best value-to-risk row here and the only one that pays twice.**
-32" is exactly 2x the 16" stud module, so every block stays where it is and only the course
-count drops 25% — about 941 LF of SPF, 928 LF of KDAT and 1,049 structural screws. Re-running
-`notes/catlin_truss_engineering.md`'s own arithmetic at the larger tributary puts screw
-withdrawal at 36% (was 27%) and girt bending under 14%; nothing crosses half. It is also
-thermally **positive**, worth roughly +R-0.8 whole-wall, in a wall that currently misses its
-target. Two things to re-check before spending it: the 26 ga PBR panel's published purlin-span
-table at −26.7 psf, and every window head and sill against the new course phase (see
-`notes/` on girt courses vs. window elevations — no window has to move at 24", and that has
-to be re-established at 32").
+**The girt respacing is TAKEN (2026-08-30), and the money in it was a tenth of this
+estimate.** 32" is exactly 2x the 16" stud module, so every block stayed where it was, and
+the engineering re-ran as predicted: screw withdrawal 36% (was 27%), girt bending 14%,
+nothing over half (`notes/catlin_truss_engineering.md`, reworked at the 16" × 32" tributary).
+It is thermally positive as claimed — **+R-0.7** whole-wall, card R-40.7 → R-41.4, honest
+≈R-37.5 → ≈R-38.2 — and no window had to move.
+
+**What was wrong here was the quantity.** Measured by ablation (`git worktree` at HEAD with
+only the change applied, `haus takeoff --csv` both sides):
+
+| | before | after |
+|---|---|---|
+| girt FIELD courses | 3,575 LF / 609 pieces | 3,310 LF / 513 pieces |
+| rake nailers (new) | — | 160 LF / 12 pieces |
+| 2x4 KDAT (girt + blocks) | 3,138 LF | 3,018 LF |
+| 2x4 SPF | 9,856 LF | 9,760 LF |
+| SDWS 5" screws | 3,524 | 3,304 |
+| **bid total** | | **−$466 / −$742** |
+
+The course count did drop as expected — 212 courses to 186, −12% — but **−12% of the courses
+is −7% of the lumber, and two pieces of new work inside the same change give most of that
+back.** The 24" layout stopped at the framing top, leaving the ~12" of cladding that laps the
+floor rim band with no nailer behind it; the 32" layout adds a starter course there on every
+level wall, and those are full-length courses, while most of the courses deleted were short
+ones on the gables. The rake nailer (`plans/TODO.md`'s open hole, closed in the same change)
+adds another 160 LF. Both are backing that did not exist, not overhead: the saving is what is
+left after buying them.
+
+**One gate is still open** and it is not a framing question: the 26 ga PBR panel's published
+purlin-span table at −26.7 psf over a 32" span. No such citation exists anywhere in this
+repo, at 24" either. It belongs to whichever panel is actually bought — see
+`notes/catlin_truss_engineering.md` §5.
 
 **The roof swap is the largest single lever and the worst trade in the file.** The flush
 zero-overhang edge survives it — `pbr-panel-26` already declares the same `skin_family` — but
