@@ -21,6 +21,7 @@ from dataclasses import dataclass
 
 from typehaus.checks._authoring import engineered as _engineered
 from typehaus.checks._authoring import structural_advisory as _advisory
+from typehaus.checks._authoring import not_applicable
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.checks.structural.deck_tables import (
@@ -414,6 +415,111 @@ def deck_post_size(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+#: How far a ``supported_by`` chain is followed before it is treated as a loop. A post on a
+#: post on a post is already unusual; anything past this is authored in error.
+_BEARING_CHAIN_LIMIT = 6
+
+
+def _bearing_of(ctx: CheckContext, post: Post) -> tuple[object, tuple[str, ...]]:
+    """Walk ``supported_by`` to whatever finally carries this post, and how it got there.
+
+    It used to follow **exactly one** ``Post -> Post`` link and know about nothing but
+    ``Pad``, so ``PT-SG-BF2 -> PT-SG-FCOL -> FT-SG-FCOL`` (a post on a column on a bell) and
+    ``PT-SG-BR1 -> W-SG-W1`` (a pillar on a foundation wall with its own strip footing) both
+    came out as "does not bear on a resolvable Pad" — a sentence about the CHECK's reach
+    dressed up as a fact about the model. The model says exactly what those posts bear on.
+
+    Returns the last element in the chain and the tags it passed through, so the finding can
+    quote the evidence rather than assert a conclusion.
+    """
+    seen: list[str] = []
+    current: object = post
+    for _ in range(_BEARING_CHAIN_LIMIT):
+        ref = getattr(current, "supported_by", None)
+        if not ref or ref in seen:
+            break
+        seen.append(ref)
+        nxt = ctx.plan.by_tag(ref)
+        if nxt is None:
+            break
+        current = nxt
+        if not isinstance(current, Post):
+            break
+    return (current if current is not post else None), tuple(seen)
+
+
+def _not_a_pad(ctx: CheckContext, deck, post: Post, bearing: object,
+               chain: tuple[str, ...]) -> Finding:
+    """The verdict for a post that does not land on a ``Pad``. Three different verdicts.
+
+    **N/A is earned here from positive evidence of absence, never from the check running
+    out of road.** ``Result.NOT_APPLICABLE`` means "the condition this rule governs does not
+    exist in this building", and IRC R507.3.1 governs a deck post bearing on its own spread
+    footing over soil. A post that lands on a foundation wall, or on a floor system, or on
+    another post, is not that condition — the load leaves through something with its own
+    footing, checked by its own rule. Saying so is a verdict.
+
+    A post on a ``Footing`` IS the governed condition and is not N/A: it bears on soil like
+    any deck post. R507.3's table just has no row for a 30"/36" belled pier, so it stays an
+    engineered item — which is the branch this function was written for and the only one
+    that survives from the original.
+    """
+    from typehaus.model.structure import Footing, FoundationWall
+
+    where = " -> ".join(chain) if chain else "nothing"
+    # A post standing on ANOTHER POST hands its load over at that joint, and the item that
+    # covers the bearing is the other post's. Minting `spread_footing/PT-SG-BF2` would name a
+    # spread footing that does not exist and ask a consultant to design it twice — once under
+    # the pillar and again under the column it actually shares. The tell is the FIRST hop:
+    # what this post is authored to stand on, before the chain is followed any further.
+    first = ctx.plan.by_tag(chain[0]) if chain else None
+    if isinstance(first, Post):
+        return not_applicable(
+            "structural.deck_footing_size",
+            f"post {post.tag} bears on {first.tag}, another post ({where}) — its load leaves "
+            f"through that column, so IRC R507.3.1 has no separate footing to size here. "
+            f"What carries both is spread_footing/{first.tag}, and that item's bearing "
+            f"design has to include this post's share",
+            (deck.tag, post.tag, first.tag), code="IRC R507.3")
+    if isinstance(bearing, FoundationWall):
+        return not_applicable(
+            "structural.deck_footing_size",
+            f"post {post.tag} bears on {bearing.tag}, a foundation wall with its own strip "
+            f"footing ({where}) — IRC R507.3.1 sizes a deck post's own spread footing over "
+            f"soil, and this load path has none. The wall's footing is graded by "
+            f"structural.foundation_unbalanced_fill and structural.frost_depth",
+            (deck.tag, post.tag, bearing.tag), code="IRC R507.3")
+    if isinstance(bearing, FloorSystem):
+        return not_applicable(
+            "structural.deck_footing_size",
+            f"post {post.tag} bears on {bearing.tag}, a floor system ({where}) — it is a "
+            f"post on a deck, not a post on the ground, so IRC R507.3.1 has no footing to "
+            f"size. What carries it is graded by structural.cantilever_point_load and by "
+            f"the joist span checks",
+            (deck.tag, post.tag, bearing.tag), code="IRC R507.3")
+    if isinstance(bearing, Footing):
+        return _engineered(
+            ctx, "structural.deck_footing_size",
+            item_id("spread_footing", post.tag),
+            f"post {post.tag} bears on {bearing.tag}, a {bearing.width.inches:.0f}\" "
+            f"Footing rather than a Pad ({where}) — a belled pier, which IRC Table R507.3.1's "
+            f"flat-pad rows do not publish. Its bearing is a design against the site's own "
+            f"allowable pressure, not a lookup",
+            (deck.tag, post.tag, bearing.tag), code="IRC R507.3")
+    if bearing is None:
+        return _unknown(
+            "structural.deck_footing_size",
+            f"post {post.tag} declares no supported_by, so nothing says what carries it — "
+            f"author it before IRC R507.3.1 can size anything",
+            (deck.tag, post.tag))
+    return _engineered(
+        ctx, "structural.deck_footing_size",
+        item_id("spread_footing", post.tag),
+        f"post {post.tag} bears on {getattr(bearing, 'tag', where)}, which is neither a Pad "
+        f"nor anything this check knows how to grade ({where})",
+        (deck.tag, post.tag), code="IRC R507.3")
+
+
 @check(Tier.STRUCTURAL, "structural.deck_footing_size")
 def deck_footing_size(ctx: CheckContext) -> list[Finding]:
     """Deck footing bearing area vs. IRC R507.3.1 — tributary load over soil bearing value."""
@@ -438,21 +544,11 @@ def deck_footing_size(ctx: CheckContext) -> list[Finding]:
         minimum = (MIN_DECK_FOOTING_SIDE_IN / 12.0) ** 2
         required = max(required, minimum)
         for post in posts:
-            pad = ctx.plan.by_tag(post.supported_by) if post.supported_by else None
-            # A post may stand on a concrete pier that in turn stands on the pad; follow one
-            # link so the bearing chain post -> pier -> pad resolves like post -> pad.
-            if isinstance(pad, Post) and pad.supported_by:
-                pad = ctx.plan.by_tag(pad.supported_by)
-            if not isinstance(pad, Pad):
-                # No Pad under it because there is no pad: these bear on grouted CMU and
-                # belled piers, which R507.3's flat-pad table has no row for. A bearing
-                # design against the site's own allowable pressure, not a lookup.
-                out.append(_engineered(
-                    ctx, "structural.deck_footing_size",
-                    item_id("spread_footing", post.tag),
-                    f"post {post.tag} does not bear on a resolvable Pad",
-                    (deck.tag, post.tag), code="IRC R507.3"))
+            bearing, chain = _bearing_of(ctx, post)
+            if not isinstance(bearing, Pad):
+                out.append(_not_a_pad(ctx, deck, post, bearing, chain))
                 continue
+            pad = bearing
             area_ft2 = abs(_shoelace([p.xy_m for p in pad.outline])) / (_M_PER_FT ** 2)
             thickness_in = pad.thickness.inches
             if area_ft2 + 1e-9 < required:

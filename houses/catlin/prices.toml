@@ -712,8 +712,11 @@
 # bulk, and `structural_solids` is the only table that bills them at all, so a $/cy here
 # is the only way they reach the estimate. Each is converted from its real trade unit:
 #   drain_tile  4" perforated corrugated HDPE with sock at $1.00-1.60/LF. The solid is
-#               modeled as a 4x4 section = 0.111 cf/LF, so $/cy = $/LF x 243. The 804 LF
-#               that implies matches the 803 LF `footing_bedding` reports independently.
+#               modeled as a 4x4 section = 0.111 cf/LF, so $/cy = $/LF x 243. The 744.4 LF
+#               `footing_bedding` reports independently (296.0 to DRW-SG-MAIN + 448.4 to
+#               daylight, re-measured 2026-08-30) is what the $/cy is carrying; the "804 LF
+#               matches 803 LF" reconciliation this line used to quote had gone stale on
+#               both sides.
 #   drywell     the `drainage` rows say the drywells ARE #57 washed stone (4.83 cy of it),
 #               so this is the [footing_bedding] stone rate plus the chamber and fabric.
 #   sump        one radon sump pit at 0.19 cy. $/cy looks absurd because the unit is
@@ -2265,7 +2268,11 @@
 # faces, its own footing, and site-access constraints. Third-largest wall line in the house.
 # SPLIT 2026-08-27: same ready-mix anchor, and the widest labour half in the section — two
 # exposed architectural faces, its own footing and constrained site access are all wage.
-"SUNKEN_GARDEN_WALL" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # 28.91 CY — was merged $500-900
+# 30.20 CY since 2026-08-30, from 28.91: W-SG-ARCH is back on the sunken garden's retired
+# node pair as a BURIED 12" x 17 1/2" grade beam (~1.08 cy). Not the 16" arched cross-wall
+# and not the 42" masonry parapet over it — neither returns, and the $5,395-$11,257 that
+# retiring them saved is not being given back. See `plans/cost-options.md`.
+"SUNKEN_GARDEN_WALL" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # 30.20 CY — was merged $500-900
 
 [timber]
 # NEW 2026-08-22 — [low, high] $/cy, by solid category, qualified by assembly. This is the
@@ -2576,7 +2583,13 @@
 # NOT IN THIS RATE: spreading, levelling and compacting, which is $8-15/cy on top (~$800-1,450)
 # and sits in the excavator's number, which this file does not carry at all.
 # Trend: Coarse Filter Aggregate is up 26% 2022-2025 ($64.59 -> $81.24). Escalate if the pour slips.
-"ASTM C33 #57 washed crushed stone" = { low = 50, high = 75 }  # 97.07 cy = ~135 tons
+# QUANTITY, 2026-08-30: 89.82 cy across three rows (0.10 + 82.73 + 6.99), not the 97.07
+# this line carried. The 97.07 was already stale before the sunken-garden court work — that
+# work ADDED 12.5 cy (the three retaining footings went 7'-0" -> 8'-0" and W-SG-ARCH's own
+# bed is new), so the pre-existing figure was overstated by ~20 cy. **The full-truckload
+# argument above still holds at 90 cy / 126 tons**; it would stop holding somewhere under
+# ~40 cy, which nothing here approaches.
+"ASTM C33 #57 washed crushed stone" = { low = 50, high = 75 }  # 89.82 cy = ~126 tons
 # 2026-08-20 — the placeholder is RESEARCHED NOW, and it was right. MnDOT 2025 Average Bid
 # Prices: Aggregate Base (CV) Class 5 = $32.01/CY across 37 contracts and 236,174 CY, in place.
 # The multi-year series is flat: 2022 $32.46, 2023 $33.46, 2024 $44.63 (a mix-of-projects
