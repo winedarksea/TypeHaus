@@ -21,6 +21,14 @@ report their verdict with `Authority.ENGINEERED` and name an **item id**:
 `haus engineering` lists every item in the house. This file records the professional
 signoffs over them.
 
+**The element tag is always a real element, including when the item is about a GROUP.**
+`retaining_system/W-SG-ARCH` grades a four-wall court as one free body, and it is keyed on
+the cross-member whose presence closes the loop and whose removal breaks it — the element a
+seal is really being taken over, and the edit that should stale that seal. A group key like
+`retaining_system/SG-COURT` would invent a name the model does not contain, and an item id
+that names nothing cannot be pointed at, cannot be diffed, and cannot go stale. The other
+members ride in `element_tags`, so the finding still lights up the whole court.
+
 ## Grammar
 
 ```toml

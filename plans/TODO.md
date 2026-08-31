@@ -3,38 +3,38 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Needs your decision
 
-- **The sunken-garden retaining walls FAIL sliding, and the fix is not expressible in the
-  model (2026-08-30).** `typehaus/engineering/retaining_wall.py` computes the IRC R404.4
-  screening `notes/sunken_garden_retaining_screening.md` worked by hand, reproduces all
-  twelve of its published numbers, and reaches **FS 0.80 against sliding where the code
-  requires 1.5** on `W-SG-E2`, `W-SG-S` and `W-SG-W2`. `haus check houses/catlin` exits 1
-  and `verify.sh`'s 0-FAIL contract on catlin is broken.
-  - **Nothing about the house changed.** The deficiency was already documented in that note;
-    the register moved it from prose nobody's CI reads into the gate.
-  - 0.58 (the note) → 0.80 is a real correctness fix, not a credit: base friction is the
-    **interface the footing bears on** — 42" of ASTM C33 #57 washed stone, IBC Table 1806.2
-    class 3, mu 0.35 — not the retained silty gravel behind the stem. It is still 1.87x
-    short, so more arithmetic will not close it.
-  - **What closes it, at the corrected friction** (per lineal foot, conservative 110 pcf):
+- **RESOLVED 2026-08-30 — the sunken-garden retaining walls check, and the lever table this
+  entry used to carry is now history.** This item stood **twice** on this list (at FS 0.80
+  and, staler, at FS 0.57) saying the same thing: `W-SG-E2`/`S`/`W2` reached FS 0.73-0.80
+  against sliding where IRC R404.4 requires 1.5, `haus check` exited 1, and `verify.sh`'s
+  0-FAIL contract on catlin was broken. Both copies are collapsed here.
+  - **The fix was the free body, not the base.** Every option the old table priced —
+    rebalance the toe, widen to 9'-0", add a 2'-0" shear key, widen to 11'-0" — was arithmetic
+    on the wrong drawing. These are not three cantilevers; they are three sides of a closed
+    loop, and `W-SG-W2` and `W-SG-E2` face each other across a 19'-0" court and cancel. What
+    was missing was the fourth side. `W-SG-ARCH` is back as a buried 12" x 17 1/2" grade beam
+    — not the retired arch, not its parapet — and `engineering/retaining_system.py` sums the
+    court as ONE free body: **FS 1.58 against 1.50**, graded at at-rest.
+  - **The blocking finding this entry named is fixed, and differently.** It said an eccentric
+    footing was "inexpressible" and a shear key had no field. `Footing.offset` expresses the
+    first; the shear key turned out **unnecessary**. What eccentricity needed was 12" of toe,
+    and it had to go INBOARD because the raised garden's apron measures its 3'-0" clear off
+    these footings' outboard edges — the owner's figure, from the brief. Toe 4'-0" / heel
+    3'-0", outboard edges unmoved to four figures, +2.10 CY.
+  - **And the section, which neither entry had noticed.** The stems were plain concrete at
+    465 psi — which ACI 318 R22.6.3 does not cover *at all* for a wall unsupported at the
+    top. `#6 @ 10" o.c.` now, sized in the note. Fixing sliding alone would have turned the
+    report green over a louder uncomputed failure.
+  - `notes/sunken_garden_court_free_body.md` is the hand-worked oracle. It supersedes the
+    screening note's CONCLUSION and not its arithmetic.
+  - **What is NOT resolved:** §6 of the screening note still holds — `engineering_spec` is
+    unset and these items are **unsealed**. 1.58 against 1.50 is a screening on presumptive
+    values, with no geotechnical report, a soil class from a survey for the wrong county, and
+    **a design that depends on the washed-stone bed being built as specified — 1.13 without
+    it.** MN Rules 1309.0402 also amends IRC Table R402.2 with a **5,000 psi FOOTINGS row**
+    this model states no mix design against; that wants checking before anyone orders.
 
-    | option | FS sliding | q max | e vs B/6 | cy/lf |
-    |---|---|---|---|---|
-    | as built, 7'-0" symmetric | 0.80 | 1,059 | 0.39 / 1.17 | 0.26 |
-    | 7'-0", 1'-0" toe (rebalance only) | 1.10 | 1,824 | 0.79 / 1.17 | 0.26 |
-    | 9'-0", 1'-0" toe | 1.44 | 1,505 | 0.54 / 1.50 | 0.33 |
-    | **9'-0", 1'-0" toe + 2'-0" shear key** | **1.77** | 1,505 | 0.54 / 1.50 | **0.33** |
-    | 11'-0" symmetric + 2'-0" shear key | 1.52 | 394 | 0.86 / 1.83 | 0.41 |
-
-  - **Neither passing option can be authored today, and that is the blocking finding.**
-    `Footing.center_on` is `"axis" | "wall"` — both symmetric — so an eccentric footing
-    (toe ≠ heel), which is the *standard* shape for a cantilever retaining wall, is
-    inexpressible; and there is no shear-key field at all. A symmetric footing with no key
-    needs to reach **14'-3"** to make 1.5, which is 0.53 cy/lf for a 10' wall and is the
-    model gaming itself rather than a design.
-  - **The decision:** add `Footing` eccentricity + a shear key and author the 9'-0"/1'-0"-toe
-    option, or accept catlin's red until a consultant designs the base. Per §6 of the
-    screening note, `engineering_spec` must **not** be authored to silence it — that
-    converts an honest open question into a fabricated PASS.- **`EQ-S-HP1-AH.zone_rooms` names `RM-A-STUDIO-BATH`, a tag that names no room — and two
+- **`EQ-S-HP1-AH.zone_rooms` names `RM-A-STUDIO-BATH`, a tag that names no room — and two
   parts of the repo disagree about whether that is a typo (2026-08-30).** The attic guest
   bath is `RM-A-STUBATH`.
   - `plan/electrical.py`'s comment above that list (2026-08-29) says all three of the split
@@ -49,24 +49,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     Whichever way it goes, the dead tag should stop being a dead tag. Fixing it silences one
     of `mep.heating_capacity`'s four unclaimed rooms; the other three (`RM-B-ESS`,
     `RM-M-MUD-CLOSET`, `RM-M-PANTRY`) are documented as intentional and should stay.
-
-- **The sunken-garden retaining walls now FAIL, and that is the engineering register working
-  (2026-08-30).** `typehaus/engineering/retaining_wall.py` computes the IRC R404.4 screening
-  `notes/sunken_garden_retaining_screening.md` worked by hand, reproduces all twelve of its
-  published numbers, and reaches **FS 0.57 against sliding where the code requires 1.5** on
-  `W-SG-E2`, `W-SG-S` and `W-SG-W2`. Those three were UNKNOWN — engineered before the calc
-  existed; they are now FAIL — engineered, and `haus check houses/catlin` exits 1.
-  - **Nothing about the house changed.** The deficiency was already documented in prose in
-    that note; the register moved it from a file nobody's CI reads into the gate.
-  - `haus permit-check` and `haus print` still pass, because the new
-    "Retaining walls outside the prescriptive path" permit line is in the non-gating lane
-    (`MAX_UNSEALED_ITEMS`) — an engineered item leaves that lane when a licensed
-    professional signs, not when this repo learns something.
-  - **The decision:** whether `scripts/verify.sh`'s "catlin holds a clean report, 0 FAIL"
-    contract should stand while a documented structural deficiency is open. The options are
-    to accept the red until the walls are designed, to suppress the three findings in
-    `preferences.toml` with the note as the reason, or to hold the calc back. Note
-    §6 of the screening: `engineering_spec` must **not** be authored to silence it.
 
   - **The entry's "and now it would pass" was wrong.** `RM-A-STUBATH` FAILED: its only
     125 V receptacle, `ED-A-STUBATH-GFCI`, was 44.4" from the lavatory carcass — right room,
@@ -110,7 +92,15 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   and the 4:12 ridge, not the lift.
 
 - **What braces the porch and balcony east-west, now that the arch is gone?**
-  (raised 2026-08-18, and the one item on this list that the arch swap *created*.) Removing
+  (raised 2026-08-18, and the one item on this list that the arch swap *created*.)
+  **HALF-CLOSED 2026-08-30, and read which half.** `W-SG-ARCH` is back on the same node pair
+  as a buried grade beam, so the FOUNDATION has an E-W element again and the retaining walls'
+  loop is closed — that is what took catlin back to 0 FAIL. But the beam is entirely **below
+  the garden floor**: it braces the concrete box, and it does nothing for the porch deck or
+  the balcony one and two storeys above it, which is what this item was actually about. The
+  masonry the pillars were grouted into is still gone and still is not coming back. Everything
+  below stays live for the structure above -9'-1 7/16".
+  Removing
   `W-SG-ARCH` and the three `W-SG-RAIL-*` parapets removed the structure's only E-W shear
   element: the two side walls run N-S and brace that direction only, and the masonry the
   balcony pillars were grouted into was the de facto fixity for five of the six. Simpson say
@@ -554,6 +544,17 @@ the future.
   closing that is an owner's decision**: a stamped design, a geometry change from the note's
   lever table, or a deliberate decision to carry these three reds the way `houses/starter`
   carries its own. Do not close it by authoring `engineering_spec`.
+  **(d) CLOSED 2026-08-30 by a fourth wall, not by any of (c)'s three options.** The lever
+  table in (b) priced four ways to fix a base that was never the problem: these are three
+  sides of a closed loop, not three cantilevers, and `W-SG-W2`/`E2` cancel across the court.
+  `W-SG-ARCH` returns as a buried grade beam, `engineering/retaining_system.py` sums the
+  court as one free body, and it reaches **FS 1.58 against 1.50** at at-rest. `engineering_spec`
+  is still unset and these items are still unsealed, exactly as (b) requires — the engine
+  computes a draft verdict, and a stamp is a different thing.
+  **The 0.58 in (b) and the 0.57 in (c) are both a foot short**, incidentally: both read
+  -9'-10 7/16" as the footing's underside when it is its top, so H was 10.37' where the
+  stability free body wants 11.37'. Corrected, the isolated wall is 0.73, not 0.80.
+  See `notes/sunken_garden_court_free_body.md` §0.
 
 - **`FT-SG-*`'s frost cover**, 12"-21" below the sunken garden's own floor against 42".
   `structural.frost_depth` routes all seven to UNKNOWN — a structure retaining the
@@ -563,6 +564,12 @@ the future.
   and `test_catlin_contract_m3.py` pins exactly that so nothing else can regress behind it.
 
 - Make sure the basement door keeps the 7" step threshold (reduces flood risk)
+  — **it does, and it is 7 1/4" (`W-B-S2`/`W-B-S3`, top -102 3/16" over the garden floor at
+  -109 7/16"). Re-verified byte-for-byte 2026-08-30** across the sunken-garden court work,
+  along with `SL-SG-FLOOR`'s datum and every `FT-SG-*`/`FT-B-*` underside, because that work
+  moved concrete inside the court. `test_retaining_court.py` now asserts the 7 1/4" directly
+  so it cannot drift out silently. Still worth a check nobody has written: nothing in the
+  engine *enforces* the step, and the curb's height is a literal on two walls.
 - The french drains can likely be a type of form-a-drain product (a drain that doubles as footing form). We also can probably have fewer drains slightly.
 - The frost protection and the thermal breaks are wrong around the brick footing FT-B-BRICK. Brick is cold, so thermal breaks need to be on the inward side of it (possible this footing uses ICF)
 - I am reasonably certain that FX-S-BATH1-LAV is in the way of the door swing for the bathroom.

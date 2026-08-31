@@ -200,6 +200,10 @@ Sub-slices, each measured on its own: **balcony** (`FS-SG-DECK`, `RL-SG-BALCONY`
 Not included and not modelled: the E–W lateral bracing the arch removal left open
 (`plans/TODO.md`), and the seven `FT-SG-*` footings that `structural.frost_depth` routes to
 UNKNOWN. Both go to the same engineer, and neither is free.
+*(2026-08-30: the frost question closed on 2026-08-29 via ASCE 32 soil replacement, and the
+FOUNDATION half of the E-W question closed with `W-SG-ARCH`'s return as a grade beam — see
+"Sunken-garden arch → column, beams, metal railing" under **Taken**. The deck-and-balcony
+half above the garden floor is still open and still goes to the same engineer.)*
 
 ### PV array + battery backup — $38,000–73,000
 
@@ -1465,6 +1469,36 @@ depends entirely on Zip-R's taped face being detailed right.
 Bought back: `RL-SG-PORCH` (36.3 LF fascia-mount guard, matches the balcony), a footed
 column, two beams, and ~17 LF of extra 6x6 (5 of 6 balcony pillars now start lower). Curved
 formwork was the expensive part, as predicted — the concrete itself was always cheap.
+
+**PARTIALLY REVERSED 2026-08-30, for $2,456–4,191 of the $5,395–11,257.** Retiring the arch
+also retired the sunken garden's only E-W element, and with it the closed loop that let
+`W-SG-W2` and `W-SG-E2` cancel each other's soil thrust. Graded as three isolated
+cantilevers the retaining walls reached FS 0.73 against IRC R404.4's 1.5 and catlin went off
+0 FAIL. What comes back is **not the arch**: `W-SG-ARCH` is a buried 12" x 17 1/2" grade beam
+below the garden floor, invisible, and the two semicircular arches, the 42" masonry parapet
+and the three pillars grouted into it all stay retired. The court reaches **FS 1.58**.
+
+| line | reversal |
+|---|---|
+| `wall_structure` (`SUNKEN_GARDEN_WALL` 29.1 → 30.20 cy) | +$540 to +972 |
+| `concrete` (footings 31.56 → 33.66 cy, the toe widening) | +$588 to +945 |
+| `footing_bedding` (washed stone 70.2 → 82.7 cy) | +$627 to +940 |
+| the rest (fabric, tile, incidentals) | +$701 to +1,334 |
+| **bid total** | **$939,199–1,951,568 → $941,655–1,955,759** |
+
+**Checked, because it is exactly the shape of an artefact:** an unpriced type is silently
+dropped from the BOM and the total FALLS, so a "saving" here would have been the missing row
+rather than the design. The total ROSE, every new key is priced, and the three quantity
+comments this file's `prices.toml` neighbours carried (97.07 cy of stone, 803/804 LF of tile,
+28.91 CY of garden wall) were re-measured in the same pass — two of them had been stale
+before this work started.
+
+**The cheap part is that the concrete went where the ground already is.** The eccentricity
+fix needed 12" more footing, and putting it on the heel side would have walked the outboard
+edge under the raised garden's apron, whose 3'-0" clear is the owner's own figure from the
+brief. Put on the toe side instead it is +2.10 CY under the garden floor, no new excavation
+outboard, and the apron does not move at all. `Footing.offset` is the field that made that
+expressible; before it, the only shape the model could state was symmetric.
 
 ## Upgrades (money out)
 
