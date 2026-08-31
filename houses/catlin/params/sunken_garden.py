@@ -1522,8 +1522,14 @@ PORCH_JOISTS = FloorSystem(
 # pattern per capacity, and it is not adjustable in the depth direction — the cast foot's
 # obround slot runs the WIDTH way, so width has about 1/4" of travel and depth has none:
 #
-#   EQ-M-HP1-OD  VIR24HP230V1R32AO   feet 22 7/16" (width) x 14 39/64" (depth)   92.6 lb
+#   EQ-M-HP1-OD  FXU24HP230V1R32AO   feet 29 3/4"  (width) x 15 9/16"  (depth)  187.4 lb
 #   EQ-M-HP2-OD  MUL30HP230V1R32AO   feet 25"      (width) x 15 19/32" (depth)  145.5 lb
+#
+# ** HP1'S ROW CHANGED ON 2026-08-31 WITH THE FLEXX ULTRA RETYPE, AND BOTH COLUMNS MOVED. **
+# It was VIR24HP230V1R32AO, feet 22 7/16 x 14 39/64, 92.6 lb. The width pitch grows 7 5/16"
+# and the weight roughly DOUBLES. The depth pitch is what the legs follow (see below), so
+# ``_HP_STAND_LEG_X["A"]`` goes 14" -> 15 9/16"; the width pitch is what the frame's rails
+# have to reach, and it does not fit the deck's grid at all.
 #
 # The legs below are on NEITHER of those patterns, and that is correct rather than sloppy:
 # leg positions are decided by the deck (bay centres, beam clearance) and foot positions by
@@ -1532,8 +1538,17 @@ PORCH_JOISTS = FloorSystem(
 # reach the feet and land on the legs, and each frame's real size is recorded on
 # ``EQUIP_STAND_ALUM`` in plan/assemblies.py:
 #
-#   HP1 frame 14 5/8" (depth) x 22 7/16" (width) — legs 14" x 16", feet essentially over them
-#   HP2 frame 24"     (depth) x 25"      (width) — legs 24" x 16", feet inboard of the legs
+#   HP1 frame 15 9/16" (depth) x 29 3/4" (width) — legs 15 9/16" x 16", feet 6 7/8" outboard
+#   HP2 frame 24"      (depth) x 25"     (width) — legs 24" x 16", feet inboard of the legs
+#
+# ** WHY THE Y SPACING STAYS 16" WHEN HP1'S FEET WENT TO 29 3/4". ** ``_HP_STAND_LEG_Y`` is
+# not a free number: the legs land at the centres of the two bays either side of the
+# y = -2'-10" joist line, which at 16" o.c. joists puts them 16" apart and nowhere else. The
+# only other pair symmetric about the units' centreline is -0'-6"/-4'-6", 48" apart, wider
+# than either cabinet. So HP1's feet now sit 6 7/8" OUTBOARD of its legs where they used to
+# sit 3 1/4" outboard, and the frame's width rails carry that overhang. That is the one
+# number on this stand that got worse with the retype, and it is written down rather than
+# absorbed.
 #
 # A 12" leg spacing, which is what this file carried first, is SHORTER than either foot
 # pattern: HP2's feet would have missed a 12"-spaced pair of rails outright.
@@ -1541,7 +1556,16 @@ PORCH_JOISTS = FloorSystem(
 # Both units moved to centre their own mass over their legs (2026-08-28). HP1 went 6" east
 # and both went 3" south; the alternative was a frame 4" eccentric under a bolted-down
 # cabinet, and moving a condenser on an open balcony costs nothing.
-_HP_STAND_LEG_X = {"A": (103.0 / 12.0, 117.0 / 12.0),   # EQ-M-HP1-OD, centred on x = 9'-2"
+#
+# ** THE WIND CALC IS NOT RE-DERIVED HERE, AND THAT IS DELIBERATE. ** HP1's outdoor unit goes
+# 92.6 -> 187.4 lb while its projected area grows ~50% (980 -> 1,475 in^2) with the centroid
+# about 12" higher. Both sides of the overturning and sliding check in
+# notes/heat_pump_deck_mounting.md move, in opposite directions — more weight resisting, more
+# sail area driving. That note is already UNSEALED (`equipment_anchorage/EQ-M-HP1-OD` in the
+# engineering register is UNKNOWN), so this change does not turn a sealed number into a wrong
+# one; it does mean the note's arithmetic is now stale as well as unsealed. Flagged, not
+# guessed.
+_HP_STAND_LEG_X = {"A": (102.21875 / 12.0, 117.78125 / 12.0),  # EQ-M-HP1-OD, on x = 9'-2"
                    "B": (198.0 / 12.0, 222.0 / 12.0)}   # EQ-M-HP2-OD, centred on x = 17'-6"
 # Bay centres, 8" clear of the joist lines either side, symmetric about y = -2'-6" — which
 # is both the units' own centreline and the joist line the reinforcements sit on.

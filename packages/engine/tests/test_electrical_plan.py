@@ -175,7 +175,10 @@ def test_outdoor_heat_pumps_have_distinct_3d_symbol_geometry(catlin_model):
     from typehaus.model.placeable_symbols import model_parts
 
     types = {product.tag: product for product in catlin_model.plan.library.equipment_types}
-    for type_tag in ("EQ-T-GREE-VIREO-GEN3", "EQ-T-GREE-MULTI-U30",
+    # EQ-T-GREE-VIREO-GEN3 -> EQ-T-GREE-FLEXX-ULTRA-24-OD on 2026-08-31 with the System 1
+    # retype. A new outdoor type that forgets `plan_symbol` draws as an anonymous massing box
+    # in 3D and nothing else complains, which is what this list is here to prevent.
+    for type_tag in ("EQ-T-GREE-FLEXX-ULTRA-24-OD", "EQ-T-GREE-MULTI-U30",
                      "EQ-T-GREE-SAPPHIRE-9-OD"):
         product = types[type_tag]
         assert product.plan_symbol == "heat-pump-outdoor"

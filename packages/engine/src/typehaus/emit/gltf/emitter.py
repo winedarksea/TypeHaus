@@ -234,6 +234,28 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             _add_member(mb, member)
         scene.add_object(mb, trade="framing", kind="brace", uid=brace.uid)
 
+    # Soffit ladder framing. ``ResolvedModel.all_members()`` has collected these since the
+    # soffit generator landed, so they are in the BOM and in
+    # ``checks/structural/interference.py`` — but neither emitter walked them, so a Soffit
+    # rendered as one solid prism with its lumber nowhere in the 3D view.
+    #
+    # ``trade="framing"``, not ``"floors"``, for the same reason floor joists are framing
+    # above: a stick belongs with every other stick in the building, not behind the floors
+    # toggle. ``emit/trades.py``'s "soffit" -> "floors" entry is a SOLID-category map — it
+    # routes the finished box, which is a different node.
+    #
+    # ``kind="solid"`` reusing the soffit's own uid, not a new "soffit" kind: the finished
+    # box already emits as ``kind="solid"`` on this uid, so the framing node becomes its
+    # exact sibling — the way a wall's studs are the sibling of its layers — and no new
+    # member is needed in ``_SELECTION_KINDS`` or the UI's ``SelectionKind``.
+    for soffit in sorted(model.soffits, key=lambda item: item.uid):
+        if not soffit.members:
+            continue
+        mb = _MeshBuilder()
+        for member in soffit.members:
+            _add_member(mb, member)
+        scene.add_object(mb, trade="framing", kind="solid", uid=soffit.uid)
+
     _add_canvas_objects(scene, model)
 
     earth = _MeshBuilder()

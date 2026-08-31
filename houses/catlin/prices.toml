@@ -1134,14 +1134,31 @@
 # beam's clothes, now over four members instead of six.
 "beam:BEAM_WHITE_PAINT" = { material = { low = 648, high = 1105 }, labour = { low = 410, high = 891 } }  # 0.49 cy = 37.3 LF
 #
-# FRAMED DUCT SOFFITS — SF-S-DUCT and SF-S-SUITE, 4.38 cy of 2x framing with gypsum on three
-# sides, taped and finished to paint-ready. At a 14"x12" section that is 101.4 LF and 3.17 SF of
-# board per LF. $28-60/LF: framing $15-34 (homewyse "cost to frame soffit" is $19.50-34.40/LF for
-# exactly this article), board $4-7, and corner bead + tape + 3-coat + sand $9-19 — soffits are
-# labour-dominated because they are three narrow planes with two outside corners per foot, and
-# finishers charge a premium over flat wall work. DISTINCT from the 101.1 LF of PVC ROOF soffit
-# in [edge_trim]; the two are unrelated articles that share a word.
-"soffit" = { material = { low = 185, high = 370 }, labour = { low = 463, high = 1019 } }  # 4.38 cy = ~101 LF
+# FRAMED DUCT SOFFITS — THREE of them now, and the basis moved from LF to SF of board on
+# 2026-08-31 because a cubic-yard rate calibrated on one section shape stops meaning anything
+# once the shapes differ by 4x in area.
+#
+#   SF-S-DUCT   35" x 14" over 26.5 LF   5.25 SF/LF   139.1 SF   3.34 cy
+#   SF-S-SUITE  36" x 14" over  6.5 LF   5.33 SF/LF    34.9 SF   0.85 cy
+#   SF-S-HP1    77" x 21" over  6.7 LF   9.92 SF/LF    66.1 SF   2.77 cy
+#                                                      240.1 SF  6.96 cy
+#
+# The comment here read "SF-S-DUCT and SF-S-SUITE, 4.38 cy ... 101.4 LF" — stale twice over.
+# SF-S-HP1 joined on 2026-08-30 and went from a 17" drop to 21" on 2026-08-31 for the FLEXX
+# Ultra cabinet, and the "101.4 LF" was never a run length: it was 4.38 cy divided by a
+# nominal 14"x12" section. The three boxes run 39.7 LF between them.
+#
+# The unit rate is unchanged in substance — $28-60/LF at 3.17 SF/LF is $8.83-18.93 per SF of
+# finished board (framing $15-34/LF, homewyse "cost to frame soffit" is $19.50-34.40/LF for
+# exactly this article; board $4-7; corner bead + tape + 3-coat + sand $9-19). Soffits are
+# labour-dominated — three narrow planes with two outside corners per foot, and finishers
+# charge a premium over flat wall work — so the 28.5% material split carries over.
+# -> 240.1 SF x $8.83-18.93 = $2,120-4,545, i.e. $305-653 per cy over 6.96 cy.
+#
+# NOTE what a per-cy rate now over-bills if left alone: SF-S-HP1 is 40% of the volume and 28%
+# of the board, because a wide box is mostly air. That is the whole reason this moved to SF.
+# DISTINCT from the 101.1 LF of PVC ROOF soffit in [edge_trim]; unrelated articles, one word.
+"soffit" = { material = { low = 87, high = 186 }, labour = { low = 218, high = 467 } }  # 6.96 cy = 240.1 SF of board over 39.7 LF, three boxes
 #
 # BUG SCREEN / RAINSCREEN VENT STRIP — 240 LF of Cor-A-Vent SV-3 class corrugated strip closing
 # the top and bottom of the rainscreen cavity, split 144 LF house / 96 LF garage. $2.00-4.50/LF
@@ -1176,7 +1193,7 @@
 # The wall took a 7/8" corrugated panel that day, and the corrugation itself is the drainage
 # and vent cavity — but it is not a modelled LAYER, so `rainscreen_cavity_m` finds nothing
 # and this row's driver stays at zero. The real inside/outside closure strips the profile
-# needs are priced as `[allowances] garage-corrugated-closure-strips` instead. Do not
+# needs are priced as `[allowances] envelope-garage-corrugated-closure-strips` instead. Do not
 # "activate" this row by authoring a 7/8" airgap layer: that would add 7/8" to the stack on
 # top of the 7/8" cladding and move both wall faces.
 "bug_screen:GARAGE_WALL_2X6" = { unit = "SF", material = { low = 26, high = 64 }, labour = { low = 38, high = 80 } }  # 0 SF (was 3.0 SF = 96 LF)
@@ -1459,21 +1476,23 @@
 # 2026-08-20 — NEW, and it was unpriced in BOTH [placeables] and [furnishings]. A duct heater
 # is not furniture, so it belongs here and nowhere else.
 # The modelled 16"x10"x10" envelope with an integral airflow interlock and high limit is a
-# PACKAGED open-coil duct heater, not a bare slip-in element: TPI 7PD21281 (door-interlock
-# disconnect, auto-reset primary limit, secondary over-temp, magnetic contactor, differential-
-# pressure fan interlock, 24V control transformer) is $1,233.64-1,475; a Stelpro SDHR06020002
-# 2000W 240V round-duct unit with integral controls is $590.40 on a 30-45 day lead. Labour is
-# sheet metal 1.5-3 hr (cut the plenum, fabricate the frame, seal, support) plus electrical
-# 1-2 hr (land the 240V feed, bond, verify the pressure switch and limit, commission the
-# second-stage call). The BRANCH CIRCUIT is NOT in this line — a 15A two-pole breaker, 40-60 ft
-# of 12/2 and 2-4 hr to pull and terminate is a further $230-650, and plan/electrical.py says
-# the panel slot and circuit CKT-HP1-STRIP already exist.
-# ** WORTH QUESTIONING BEFORE BUYING: ** if this is only second-stage tempering downstream of
-# the heat-pump air handler, an OEM heat-strip kit inside the air handler (Goodman HKR-05
-# class) is the conventional path at a couple of hundred dollars with a plug-in harness and no
-# sheet-metal work. If the plenum heater is deliberate this stands; if it is a modelling
-# default it is roughly $1,000 of overspend.
-"EQ-T-DUCT-HEATER-2KW" = { material = { low = 600, high = 1300 }, labour = { low = 250, high = 600 } }  # 1 ea
+# ** EQ-T-DUCT-HEATER-2KW IS GONE (2026-08-31), AND THE ROW ABOVE IT PREDICTED THIS. ** Its
+# note said out loud: "if this is only second-stage tempering downstream of the heat-pump air
+# handler, an OEM heat-strip kit inside the air handler is the conventional path at a couple of
+# hundred dollars with a plug-in harness and no sheet-metal work ... if it is a modelling
+# default it is roughly $1,000 of overspend." It was a modelling default, and worse — the
+# EQ-T-GREE-DUC24 it was drawn against had no aux-heat terminal to stage it from. The FLEXX
+# Ultra retype takes the OEM path.
+#
+# FLEXA2LHTR05KWD, the factory 5 kW (4.6 kW at 230 V) heat kit for the FLEXX Ultra air
+# handler: it slides into the cabinet, lands on a plug-in harness and a factory knockout, and
+# needs NO sheet metal at all — no plenum cut, no fabricated frame, no separate pressure
+# switch or limit to commission. Material is the OEM kit at list; labour is the electrical end
+# only (0.5-1 hr to set the kit and land the elements) plus commissioning the outdoor-thermostat
+# lockout LM-HP1-AUX depends on. The BRANCH CIRCUIT is NOT in this line and there no longer is
+# one: CKT-HP1-STRIP is deleted and the kit rides CKT-HP1-AH, whose breaker goes 15A -> 35A —
+# a breaker swap and a conductor upsize on an existing home run, not a new circuit.
+"EQ-T-GREE-FLEXX-HEATKIT-46KW" = { material = { low = 260, high = 520 }, labour = { low = 120, high = 300 } }  # 1 ea — FLEXA2LHTR05KWD, 4.6 kW at 230V, MCA 29.9 A
 # The ventilator, 2026-08-25. EQ-T-ERV was a placeholder row for a placeholder machine; the
 # unit is a Broan B210E75RT now and the row is a named product's street price rather than a
 # class bracket. Labour is unchanged in shape — hanging the case, four 6" collars, the
@@ -1504,14 +1523,27 @@
 "EQ-T-GREE-MULTI-U30" = { material = { low = 2100, high = 3000 }, labour = { low = 620, high = 1350 } }  # 1 ea — MUL30HP230V1R32AO $2,956 sale / $3,640 list
 "EQ-T-GREE-SAPPHIRE-9" = { material = { low = 500, high = 800 }, labour = { low = 400, high = 950 } }  # 1 ea — SAP09HP230V1R32AH $977
 "EQ-T-GREE-SAPPHIRE-9-OD" = { material = { low = 900, high = 1250 }, labour = { low = 420, high = 1000 } }  # 1 ea — SAP09HP230V1R32AO $1,955
-# EQ-T-GREE-SLIM24 is gone (2026-08-30) and so is its $928 DUCT24HP230V1BD quote: the type
-# was a REPRESENTATIVE PLACEHOLDER and the only real cabinet matching its 43" width was the
-# discontinued low-static DUCT24HP230V1AD, which cannot move this system's 750 cfm. The
-# replacement is a bigger, higher-static machine and it costs more — dearer material, and
-# dearer labour because a 92.6 lb case on threaded rod with neoprene isolators, canvas
-# connectors both ends and a 1% condensate slope is a two-person hang.
-"EQ-T-GREE-DUC24" = { material = { low = 1450, high = 2100 }, labour = { low = 1050, high = 2250 } }  # 1 ea — DUC24HP230V1R32AH, 0.8 in. w.c. ESP, 577-1030 cfm
-"EQ-T-GREE-VIREO-GEN3" = { material = { low = 1600, high = 2300 }, labour = { low = 420, high = 1000 } }  # 1 ea — VIR24HP230V1R32AO $2,290
+# SYSTEM 1'S MACHINE, third row in this file's history and the first one that is neither a
+# placeholder nor short at design temperature. EQ-T-GREE-SLIM24 went on 2026-08-30 (a
+# REPRESENTATIVE PLACEHOLDER whose only real 43"-wide match was the discontinued low-static
+# DUCT24HP230V1AD, which cannot move 750 cfm); EQ-T-GREE-DUC24 / EQ-T-GREE-VIREO-GEN3 went on
+# 2026-08-31 for the reason the type comments in plan/electrical.py set out — 736 cfm not the
+# 1030 claimed, 89% of the zone's design-day load, and NO aux-heat terminal.
+#
+# ** BOTH OLD ROWS ARE DELETED, NOT LEFT LYING. ** cli/price_file.py has no unused-key check,
+# so a stale row sits here forever, costing nothing and telling the next reader the house still
+# buys a machine it does not. And a type minted with NO row is not billed at $0 — it lands in
+# estimate["unpriced"] (cli/prices.py) and the takeoff TOTAL QUIETLY FALLS, which reads as a
+# saving. Retyping is therefore always a two-file edit.
+#
+# The FLEXX Ultra is dearer than the DUC24/VIR24 pair, and the two reasons are separable:
+# it is a cold-climate machine (21,000 Btu/h read at -15 F against 14,606) and it is a heavier
+# hang — 135.6 lb of cabinet on threaded rod with neoprene isolators, canvas connectors both
+# ends and a 1% condensate slope is a two-person lift, and 18 1/8" deep in a 18 1/4" cavity
+# leaves no room to work off-square. The outdoor unit doubles in weight (92.6 -> 187.4 lb),
+# which is the labour line there: it is a two-person set onto a balcony stand at +10'.
+"EQ-T-GREE-FLEXX-ULTRA-24-AH" = { material = { low = 1750, high = 2500 }, labour = { low = 1150, high = 2400 } }  # 1 ea — FXU24HP230V1R32AH, 1.0 in. w.c. ESP, 760 cfm, 135.6 lb
+"EQ-T-GREE-FLEXX-ULTRA-24-OD" = { material = { low = 2100, high = 3000 }, labour = { low = 560, high = 1250 } }  # 1 ea — FXU24HP230V1R32AO, 187.4 lb, MCA 21 / MOCP 25
 "EQ-T-SAUNA-HEATER" = { material = { low = 700, high = 2200 }, labour = { low = 630, high = 1370 } }  # 1 ea
 # One tank, not two (2026-08-15, replacing the two-row entry the old two-tank model
 # carried) — Rheem ProTerra 80gal PROPH80/XE80T10HS45U0 class, retail-listed $900-$1,300.
@@ -2119,7 +2151,7 @@
 # part, the same 316 stainless gasketed screw the house's PBR takes, which is what
 # `Material.exposed_fastener` exists to enable. Folding them back in here would double-bill
 # 640 screws. The inside/outside CLOSURE STRIPS are not in it either: see
-# `[allowances] garage-corrugated-closure-strips`.
+# `[allowances] envelope-garage-corrugated-closure-strips`.
 "corrugated-panel-26" = { material = { low = 1.6, high = 2.6 }, labour = { low = 2.6, high = 4.75 } }
 # The roof's two membranes, and they are NOT interchangeable — see plan/assemblies.py. The
 # deck barrier is the vapour control (0.04 perm, self-adhered to the ZIP under the foam);
@@ -3852,7 +3884,7 @@ envelope-exterior-hoods-and-flashing = { low = 200, high = 500 }
 # profile-matched closure (foam or EPDM, cut to the 2-2/3" pitch) sits at the top of that
 # band where a straight Cor-A-Vent section sits at the bottom, which is why this row does
 # not go below it. 192 LF x $2.00-4.50 = $384-864.
-garage-corrugated-closure-strips = { low = 384, high = 864 }
+envelope-garage-corrugated-closure-strips = { low = 384, high = 864 }
 
 # --- MEP ------------------------------------------------------------------------------------
 # REMOVED 2026-08-27: electrical-pv-array-modules-and-racking, $24,000-46,000. The money went

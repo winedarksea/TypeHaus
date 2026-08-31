@@ -200,8 +200,10 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # the two-tank water heater became one, plus CKT-BATH2-TUB (2026-08-29) — the
     # dedicated 120 V 15 A GFCI circuit Kohler's spec sheet REQUIRES for the drop-in
     # bath's Bask heated surface, which is the first circuit in this house a plumbing
-    # fixture has ever asked for.
-    assert len(rows) == 38
+    # fixture has ever asked for. Then MINUS CKT-HP1-STRIP (2026-08-31): System 1's 2 kW
+    # inline duct heater became a factory heat kit inside the air handler's cabinet, fed and
+    # staged from the unit, so it rides CKT-HP1-AH and the panel gets its spare 2-pole back.
+    assert len(rows) == 37
     # Each radiant floor zone is its own 120V circuit with breaker-level GFCI, controlled
     # by one thermostat (NEC 424.44(G) — heating cable in a bathroom or kitchen floor; the
     # dining zone takes the same protection because every mat maker asks for it).
@@ -253,14 +255,27 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     assert load["floor_area_ft2"] > 4000
     assert load["demand_amps"] > 100  # a real number, not a stub
     assert load["panel_rating_amps"] == 225 and load["service_amps"] == 200
-    # 220.82(C) selects, it does not sum: six separately controlled resistance heaters
-    # (three mats, the fireplace, the garage heater, and since 2026-08-15 EQ-S-HP1-STRIP's
-    # 2 kW supply-plenum duct heater) are taken at 40% and lose to the three heat-pump
-    # systems at 100%, so the heating term is the heat pumps' and the resistance heat costs
-    # the service nothing. The heat-pump circuits are identified by the typed Equipment on
-    # them, not by a word in the description (takeoff/electrical._is_heat_pump).
-    assert load["resistance_heat_units"] == 6 and load["resistance_heat_factor"] == 0.40
+    # 220.82(C) selects, it does not sum: five separately controlled resistance heaters
+    # (three mats, the fireplace and the garage heater) are taken at 40% and lose to the three
+    # heat-pump systems at 100%, so the heating term is the heat pumps' and the resistance
+    # heat costs the service nothing. The heat-pump circuits are identified by the typed
+    # Equipment on them, not by a word in the description (takeoff/electrical._is_heat_pump).
+    #
+    # ** SIX -> FIVE ON 2026-08-31, AND THE SIXTH DID NOT LEAVE THE HOUSE. ** EQ-S-HP1-STRIP
+    # is still a SPACE_HEATER Equipment; what went is its own circuit. As a factory heat kit
+    # inside the FLEXX Ultra's cabinet it rides CKT-HP1-AH, and that circuit also carries a
+    # DUCTED_AIR_HANDLER — so `_bucket` files the pair as heat_pump, not resistance_heat.
+    # This is the right answer and not a lost load: the kit's 4,600 W is counted at 100% in
+    # the heat-pump term instead of at 40% in the resistance one.
+    assert load["resistance_heat_units"] == 5 and load["resistance_heat_factor"] == 0.40
     assert load["hvac_va"] == load["heat_pump_va"] > load["resistance_heat_va"] * 0.40
+    # And the aux-heat lockout is what keeps that 100% inside a 200 A service: LM-HP1-AUX
+    # (plan/circuits.py) is an outdoor thermostat enabling the elements only below the
+    # compressor's -22 F cut-out, so the two are non-coincident (NEC 220.60). Without it the
+    # house estimates 210.6 A.
+    assert any(credit["tag"] == "LM-HP1-AUX" and credit["excess_va"] == 4600
+               for credit in load["load_management"])
+    assert load["demand_amps"] < 200
 
 
 def test_catlin_receptacle_spacing_passes_after_fill(catlin_model):
@@ -494,9 +509,10 @@ def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
     main = spaces("ED-B-PANEL", "ED-T-PANEL")
     backup = spaces("ED-B-BACKUP-PANEL", "ED-T-BACKUP-PANEL")
     assert main[0] <= main[1] and backup[0] <= backup[1]
-    # CKT-DISPOSAL spent one, CKT-WH-240's move to backup freed two, and CKT-BATH2-TUB
-    # (2026-08-29) spent one more for the drop-in bath's heated surface. Nine spare.
-    assert main == (45, 54)
+    # CKT-DISPOSAL spent one, CKT-WH-240's move to backup freed two, CKT-BATH2-TUB
+    # (2026-08-29) spent one more for the drop-in bath's heated surface, and CKT-HP1-STRIP's
+    # deletion (2026-08-31) gave a 2-pole back. Eleven spare.
+    assert main == (43, 54)
     assert backup == (8, 12)
     required = sum(circuit.poles for circuit in circuits)
     declared = main[1]
@@ -624,7 +640,7 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     # 36: the 36 that survived the 2026-08-02 microgrid refactor plus CKT-DISPOSAL
     # (2026-08-07), minus CKT-WH-HP folded into CKT-WH-240 (2026-08-15), plus
     # CKT-BATH2-TUB (2026-08-29) for the drop-in bath's Bask heated surface.
-    assert len(payload["panel_schedule"]) == 38
+    assert len(payload["panel_schedule"]) == 37
 
 
 def test_model_json_canvas_objects_carry_their_circuit(catlin_model):

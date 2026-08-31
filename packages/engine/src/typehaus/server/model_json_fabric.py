@@ -246,6 +246,20 @@ def framing_json(model: ResolvedModel, provenance: Provenance | None) -> dict[st
              "members": [_member_json(member) for member in brace.members]}
             for brace in sorted(model.braces, key=lambda item: item.uid)
         ],
+        # Soffit ladder framing, on the brace shape exactly. It reached `all_members()` — so
+        # the BOM and structural.member_interference saw it — but no emitter walked it, so a
+        # Soffit was one solid prism in the viewer with its lumber invisible. A soffit that
+        # authored no FramingSpec frames nothing and is skipped rather than emitting an empty
+        # host. The UI files these under the FRAMING trade, not floors: the finished box is a
+        # separate solid node on the same uid, and only the box belongs behind the floors
+        # toggle (see emit/gltf/emitter.py, which makes the same split).
+        "soffits": [
+            {"uid": soffit.uid, "tag": soffit.tag, "storey": soffit.storey,
+             "provenance": _provenance(provenance, soffit.tag),
+             "members": [_member_json(member) for member in soffit.members]}
+            for soffit in sorted(model.soffits, key=lambda item: item.uid)
+            if soffit.members
+        ],
         "floor_heat": [
             {"uid": zone.uid, "tag": zone.tag, "storey": zone.storey, "system": zone.system,
              "zone": [list(point) for point in zone.zone], "spacing_m": zone.spacing_m,

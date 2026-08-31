@@ -1027,9 +1027,21 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     `EQ-T-GREE-DUC24` (44 1/2 x 29 11/16 x 11 13/16, 0.8" ESP) needed a new box, `SF-S-HP1`
     in `RM-S-STUDY2`'s ceiling; it needs no `rotation`, because the type now states the
     cabinet the way it is installed.
+  - **AND THE VERIFIED TYPE WAS ITSELF WRONG — `EQ-T-GREE-FLEXX-ULTRA-24-AH`/`-OD` since
+    2026-08-31.** The DUC24/VIR24 record's own `source=` claimed 577-1030 cfm; the pair's
+    real ceiling is 736 at 0.8" w.c., under the 750 this duct system is sized to. Its 13,500
+    Btu/h at design was an interpolation (the read value is 14,606) and either way sat UNDER
+    the zone's 15,164 Btu/h block load — `mep.heating_capacity` passed only by crediting a
+    strip heater the DUC24 **has no aux-heat terminal to interlock with**. Gree's FLEXX Ultra
+    answers all three: 760 cfm at 1.0" w.c., 21,000 Btu/h read at -15 F (137% of load,
+    unaided), 24 VAC control with a factory heat kit, HSPF2 9.0 -> 10.0, and ENERGY STAR Cold
+    Climate (AHRI 215213329) where the Vireo is not. It costs depth — 18 1/8" against
+    11 13/16" — which is what took `SF-S-HP1` from a 17" drop to 21" and its underside to
+    7'-3". **The generalisation of the generalisation: a verified datasheet number is only as
+    good as the column it was read from, and three of these were read from the wrong one.**
   - **`SF-S-HP1` runs UNDER `ST-S2A`'s flight, and that is allowed but bounded.** The stair
     climbs west along `W-S-SS2`, so over the box's north-east corner its underside is at or
-    above the box's own 7'-7" face and the two finish as one plane. What may NOT be lapped
+    above the box's own 7'-3" face and the two finish as one plane. What may NOT be lapped
     is `ledger-W-S-SS2-stringer-1`, the 2x10 on the wall at y 104 1/8"..105 5/8":
     `structural.member_interference` excuses treads and stringers over a soffit and does not
     excuse that. It is why the `SF-S-DUCT`/`SF-S-HP1` seam is at y=7'-6" and not at the
@@ -1124,7 +1136,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     flute behind every sheet, more free area than the 3/8" 1x4 the wall carried before
     2026-08-20. What makes that drain rather than pond is the closures, ~192 LF of them,
     vented at the base and solid at the head. They are priced as
-    `[allowances] garage-corrugated-closure-strips` and **not** through
+    `[allowances] envelope-garage-corrugated-closure-strips` and **not** through
     `bug_screen:GARAGE_WALL_2X6`, which reads a rainscreen cavity depth out of the layer
     stack and therefore reads 0 SF. Do not "activate" that row by authoring a 7/8" airgap
     layer — it would add 7/8" on top of the 7/8" cladding and move both wall faces.

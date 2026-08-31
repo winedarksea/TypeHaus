@@ -13,6 +13,7 @@ from typehaus.checks.structural import (
     lateral_racking,  # noqa: F401 - registers checks
     ridge,  # noqa: F401 - registers checks
     snow,  # noqa: F401 - registers checks
+    soffit,  # noqa: F401 - registers checks
     stairs,  # noqa: F401 - registers checks
     truss_wall,  # noqa: F401 - registers checks
     uplift_path,  # noqa: F401 - registers checks

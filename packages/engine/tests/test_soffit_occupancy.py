@@ -76,20 +76,28 @@ def test_the_air_handler_is_the_real_cabinet_and_the_lanes_beside_it_are_real_to
     a lane for anything, which is exactly why DU-S-HP-SOUTH had no riser and plans/TODO.md
     stayed open.
 
-    The real cabinet is 44 1/2" wide, it lives in SF-S-HP1, and the point of that box is
+    The real cabinet is 43 1/2" wide, it lives in SF-S-HP1, and the point of that box is
     that the two things which have to pass the machine — the 10x6 south-branch riser lane
     and the 6" ERV mixing-box feed — fit BESIDE it with the hanger gap, not instead of it.
     So the assertion is no longer a pair of symmetric margins; it is that the machine is the
-    catalogued cabinet and that the box still has lanes left over."""
+    catalogued cabinet and that the box still has lanes left over.
+
+    ** 44.47 -> 43.5 ON 2026-08-31 **, with the FLEXX Ultra retype (EQ-T-GREE-DUC24 ->
+    EQ-T-GREE-FLEXX-ULTRA-24-AH). The DUC24 was short at design temperature, moved 736 cfm
+    against a 750-cfm duct system, and had no aux-heat terminal. The graded axis here is the
+    only axis that gained anything from the swap, and it gained an inch — the cabinet's other
+    dimension went 29 11/16" -> 21 1/4", but that runs ALONG the box where there is 78 3/4"
+    and no pressure. What the depth really bought is 8 7/16" of clear box north of the
+    discharge, which the riser take-off leg and the heat kit now occupy."""
     _, section = _section(catlin_model, "SF-S-HP1")
     handler = next(o for o in catlin_model.canvas_objects if o.tag == "EQ-S-HP1-AH")
     xs = [x for x, _ in handler.footprint]
-    assert (max(xs) - min(xs)) / M_PER_IN == pytest.approx(44.47, abs=1e-6)
+    assert (max(xs) - min(xs)) / M_PER_IN == pytest.approx(43.5, abs=1e-6)
     west = (min(xs) - section.across[0]) / M_PER_IN
     east = (section.across[1] - max(xs)) / M_PER_IN
     assert west > 0.0, "the case must be inside its own cavity"
     # Everything the machine does not take is lane: 10 branch + 2 gap + 6 ERV + 2 gap.
-    assert west + east == pytest.approx(section.width_m / M_PER_IN - 44.47, abs=1e-6)
+    assert west + east == pytest.approx(section.width_m / M_PER_IN - 43.5, abs=1e-6)
     assert east >= 10 + 6 + 2 * (HANGER_GAP_M / M_PER_IN)
 
 
@@ -141,11 +149,17 @@ def test_the_air_handler_hangs_inside_the_soffit_not_at_the_storey_ceiling(catli
     ``storey.default_ceiling_height``, so both EQ-S-HP1-AH and EQ-S-HP1-STRIP resolved at
     9'-0" — fourteen inches above the box every comment in the plan says they live in.
 
-    Each machine is checked against ITS OWN box since 2026-08-30, and the split is the
-    point: the air handler and the mixing box are in SF-S-HP1 (17" drop, underside 7'-7"),
-    the duct heater stayed in SF-S-DUCT (14", 7'-10") because it heats the trunk. A single
-    shared section would have hidden a machine hung against the wrong soffit's underside."""
-    homes = {"EQ-S-HP1-AH": "SF-S-HP1", "EQ-S-HP1-STRIP": "SF-S-DUCT",
+    Each machine is checked against ITS OWN box, and the split is still the point even
+    though all three now name the same one: a single shared section would hide a machine hung
+    against the wrong soffit's underside, so the mapping is authored here rather than derived.
+
+    ** EQ-S-HP1-STRIP MOVED SF-S-DUCT -> SF-S-HP1 ON 2026-08-31. ** It was the 2 kW inline
+    duct heater and it lived in the trunk because it heated the trunk. It is a FACTORY heat
+    kit now (EQ-T-GREE-FLEXX-HEATKIT-46KW), staged off the air handler's own 24 VAC board and
+    sitting in its discharge — which the DUC24 it used to be drawn against could not do at
+    all, having no aux-heat terminal. SF-S-HP1's drop went 17" -> 21" for the deeper cabinet,
+    so its underside is 7'-3"; SF-S-DUCT is unchanged at 14" and 7'-10"."""
+    homes = {"EQ-S-HP1-AH": "SF-S-HP1", "EQ-S-HP1-STRIP": "SF-S-HP1",
              "EQ-S-ERV-MIX": "SF-S-HP1"}
     for tag, soffit_tag in homes.items():
         _, section = _section(catlin_model, soffit_tag)

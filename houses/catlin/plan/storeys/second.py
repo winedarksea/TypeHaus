@@ -879,7 +879,7 @@ FLOOR_HEAT = [
 # exist: an explicit "REPRESENTATIVE PLACEHOLDER … TODO verify datasheet" whose only real
 # 43 3/8"-wide match, Gree's discontinued low-static DUCT24HP230V1AD, tops out at 589 cfm
 # against the 750 this whole duct system is sized to. The real machine (see
-# plan/electrical.py::EQ-T-GREE-DUC24) is 44 1/2 x 29 11/16, which no 35" box holds, and
+# plan/electrical.py::EQ-T-GREE-FLEXX-ULTRA-24-AH) is 43 1/2" wide, which no 35" box holds, and
 # the placeholder's 21" case is what plugged the lane and kept plans/TODO.md's south-branch
 # riser open for weeks. The hall box is now a pure trunk run and nothing else: it costs the
 # hall nothing, the cove and ED-S-HALL-CAN1/2/3 are untouched, and the machine moved into a
@@ -898,7 +898,7 @@ FLOOR_HEAT = [
 # The arithmetic used to be written out here and was nobody's to re-run; since 2026-08-25
 # `mep.duct_soffit_occupancy` derives the clear section from THIS soffit's own drop, member
 # and lining and measures both trunks, EQ-S-HP1-AH and EQ-S-HP1-STRIP against it. Read the
-# check, not a comment — and if the 2x2 ever becomes a 2x3, the check moves and this note
+# check, not a comment — and if the 2x2 ever becomes a 2x4, the check moves and this note
 # does not. Face elevation unchanged at 7'-10"; ED-S-HALL-CAN1/2/3 set into it.
 SOFFITS = [
     Soffit(uid="CSF601AAAA", tag="SF-S-DUCT",
@@ -916,14 +916,14 @@ SOFFITS = [
     #
     # WHY IT IS IN THE STUDY AND NOT THE HALL, THE STAIR WELL OR THE LOFT: the hall is
     # 40 3/4" clear wall to wall (36 1/2" once a box gives up its lining and both ladders,
-    # against a 44 1/2" cabinet) and LR-S-HALL-GAP's cove sits on the soffit's flanks;
+    # against a 43 1/2" cabinet) and LR-S-HALL-GAP's cove sits on the soffit's flanks;
     # ST-S2A's WELL is 3'-0" wide with no service face, and enclosing it pulls in
     # code.R302_7_under_stair_protection; the attic loft is the fallback, not the answer,
     # because it puts the machine outside the thermal envelope it serves.
     #
     # ** IT RUNS UNDER ST-S2A'S FLIGHT AND THAT IS DELIBERATE. ** The stair climbs west
     # along W-S-SS2 from x=32'-5 3/8" to the attic at x=22'-5 3/8", so its underside over
-    # this box's north-east corner is at or above the box's own 7'-7" face — the two finish
+    # this box's north-east corner is at or above the box's own 7'-3" face — the two finish
     # as one plane, and the 3.8 sf of box that laps the flight is ceiling the stair was going
     # to soffit anyway. What the box may NOT touch is `ledger-W-S-SS2-stringer-1`, the 2x10
     # carrying that stringer on the wall at y 104 1/8"..105 5/8": that is a real member and
@@ -939,14 +939,39 @@ SOFFITS = [
     # compared to it at all. 80" in y against 77" in x; that ordering is load-bearing.
     #
     # SECTION, all derived by the check and none of it restated as arithmetic here: 77"
-    # finished x 17" drop gives 72 3/4" clear x 14 1/4" clear. It carries, side by side, the
-    # 44 1/2 x 29 11/16 x 11 13/16 cabinet, the 10x6 south-branch riser lane, the 6" ERV
-    # mixing-box feed and the mixing box itself, with 2" of hanger gap between every pair —
-    # HANGER_GAP_M, not a preference. Underside 7'-7", which clears IRC R305.1's 7'-0" by
-    # seven inches; the end-connected AHU alternatives (Gree GMV-ND24A, FLEXX ECO) are
-    # 18 1/8" deep and would have left one.
+    # finished x 21" drop gives 72 3/4" clear x 18 1/4" clear. It carries, side by side, the
+    # 43 1/2 x 21 1/4 x 18 1/8 cabinet, the 10x6 south-branch riser and its take-off leg, the
+    # 4.6 kW heat kit in the discharge plenum, the 6" ERV mixing-box feed and the mixing box
+    # itself, with 2" of hanger gap between every pair — HANGER_GAP_M, not a preference.
     #
-    # THE PRICE, STATED PLAINLY: 43 sf of RM-S-STUDY2's 160 sf ceiling drops to 7'-7", in
+    # ** THE DROP WENT 17" -> 21" ON THE FLEXX ULTRA RETYPE. ** The machine that replaced
+    # EQ-T-GREE-DUC24 is 18 1/8" deep where the DUC24 was 11 13/16"; 21" of drop derives
+    # 18 1/4" of clear cavity, which holds it with 1/8" to spare. Note what the deeper box
+    # does NOT buy: the graded axis here is x (the box is 80" in y against 77" in x, so
+    # `soffit_clear_section` measures every occupant ACROSS x), and the cabinet's long
+    # dimension is what competes for that 72 3/4". It comes down 44 1/2" -> 43 1/2" — about
+    # an inch of relief, not eight. The 21 1/4" runs ALONG the box, where there is 78 3/4"
+    # and no pressure. What the shallower plan depth really bought is 8 7/16" of clear box
+    # north of the discharge, and DU-S-HP-SOUTH-RISE's take-off leg and the heat kit are
+    # what went into it (plan/electrical.py, plan/mep_hvac.py).
+    #
+    # Underside 7'-3", which still clears IRC R305.1's 7'-0" — graded by
+    # `code.R305_ceiling_height` off the room's minimum underside, not off
+    # `Storey.default_ceiling_height`. A 36k FLEXX Ultra was rejected partly here: its
+    # smallest cabinet dimension is 21 1/4", needing a 24" drop, which lands the underside
+    # exactly ON the 7'-0" floor with nothing in hand.
+    #
+    # `framing` is a LADDER WITH TWO STOCKS, and that is the 2026-08-31 fix, not a taste
+    # call. `_frame_one` used to lay rails and rungs out of one profile; the rungs here span
+    # the full 72 3/4" clear width laid flat, and a 2x2 rung deflects L/212 under 5 psf of
+    # ceiling dead load — short of IRC R301.7's L/360, which `structural.soffit_rung_span`
+    # now says out loud. `plate_member="2x2"` holds the RAILS at the size that sets this
+    # cavity — so `across` is still 72 3/4" and z[0] does not move, which is what keeps
+    # DU-S-HP-RET's 14" duct in its cavity — while `member="2x4"` gives the rungs I = 0.984
+    # in^4 and L/495. Upsizing one shared profile would have widened the rails instead and
+    # evicted EQ-S-ERV-MIX from the box.
+    #
+    # THE PRICE, STATED PLAINLY: 43 sf of RM-S-STUDY2's 160 sf ceiling drops to 7'-3", in
     # the room's north-west quadrant, of which ~4 sf was already under the old SF-S-DUCT and
     # ~4 sf is under ST-S2A. The study keeps its whole south and east glazing wall, its
     # table and its chairs at full 9'-0" height. That is the cost of keeping the machine
@@ -954,8 +979,8 @@ SOFFITS = [
     Soffit(uid="6DAADXAD7P", tag="SF-S-HP1",
            outline=(pt(ft(18, 4), ft(0, 10)), pt(ft(24, 9), ft(0, 10)),
                     pt(ft(24, 9), ft(7, 6)), pt(ft(18, 4), ft(7, 6))),
-           drop=inch(17),
-           framing=FramingSpec(member="2x2", spacing=inch(16))),
+           drop=inch(21),
+           framing=FramingSpec(member="2x4", plate_member="2x2", spacing=inch(16))),
     # The west branch to the suite (DU-S-HP-SUITE) — rerouted 2026-07-30 onto the short
     # straight line over D-S-SUITE and the suite's entry arm, instead of a 2026-07-29 detour
     # crossing RM-S-SUITEBATH's fixtures. The duct passes through W-S-C2B in the cripple

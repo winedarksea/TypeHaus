@@ -119,7 +119,9 @@ def test_a_fixable_door_fails_and_is_told_where_to_go(findings):
     fails = [f for f in findings if f.result is Result.FAIL]
     assert fails
     overhead = next(f for f in fails if "D-G-OVERHEAD" in f.element_tags)
-    assert "152" in overhead.fix_hint  # the nearest legal centre, in inches along the wall
+    # 156" (13'-0") since GARAGE_WALL_2X6 went to 24" o.c. on 2026-08-31 — it was 152" on
+    # the 16" grid.
+    assert "156" in overhead.fix_hint  # the nearest legal centre, in inches along the wall
     # ...and the offset a plan author actually types, because `from_node` is to the near EDGE.
     assert "near EDGE" in overhead.fix_hint
 

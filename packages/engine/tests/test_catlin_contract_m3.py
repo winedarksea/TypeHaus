@@ -1342,11 +1342,13 @@ def test_catlin_is_all_electric_with_no_gas_appliance(catlin_model):
     # manifold and the gable hoods carry stale and outdoor air, so they declare RETURN_AIR
     # and OUTDOOR_AIR instead and are not in this set.) None of the five burns anything,
     # which is what this assertion is actually about.
-    # EQ-T-GREE-SLIM24 -> EQ-T-GREE-DUC24 on 2026-08-30: the slim-duct type was a
-    # REPRESENTATIVE PLACEHOLDER, and the real DUC24HP230V1R32AH replaced it. The set is
-    # still five products and still nothing that burns, which is what is being asserted.
-    assert air == {"EQ-T-BROAN-B210E75RT", "EQ-T-GREE-DUC24", "EQ-T-ERV-MANIFOLD-6",
-                   "EQ-T-ERV-MIXING-BOX"}
+    # EQ-T-GREE-SLIM24 -> EQ-T-GREE-DUC24 on 2026-08-30 (the slim-duct type was a
+    # REPRESENTATIVE PLACEHOLDER), then -> EQ-T-GREE-FLEXX-ULTRA-24-AH on 2026-08-31, when
+    # the DUC24 was found to be short at design temperature, to move 736 cfm rather than the
+    # 1030 its record claimed, and to carry no aux-heat terminal at all. The set is still
+    # four products and still nothing that burns, which is what is being asserted.
+    assert air == {"EQ-T-BROAN-B210E75RT", "EQ-T-GREE-FLEXX-ULTRA-24-AH",
+                   "EQ-T-ERV-MANIFOLD-6", "EQ-T-ERV-MIXING-BOX"}
 
 
 _PERIMETER_ASSEMBLIES = ("CATLIN_BASEMENT_12", "CATLIN_BASEMENT_8",
@@ -1531,7 +1533,9 @@ def test_garage_overhead_door_opens_from_the_slab_at_grade(catlin_model):
                    if m.parent_uid == wall.uid and m.child_key.startswith("trackbacking-"))
     cripples = [m for m in catlin_model.all_members()
                 if m.parent_uid == wall.uid and m.child_key.startswith("cripple-head-")]
-    assert len(cripples) > 8, "16'-9\" of header at 16\" o.c. is a dozen stations"
+    # 16'-9" of header at 24" o.c. (W-G-E went to 24" with GARAGE_WALL_2X6 on 2026-08-31,
+    # down from a dozen 16" stations) is still several field cripples, not one.
+    assert len(cripples) > 5, "16'-9\" of header at 24\" o.c. is still several stations"
     for cripple in cripples:
         assert cripple.z0_m == pytest.approx(backing.z1_m)
 

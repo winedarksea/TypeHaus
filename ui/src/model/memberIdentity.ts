@@ -11,13 +11,13 @@
 //
 // Members are *derived* geometry, like solids and floors: pickable and inspectable, never
 // directly editable. The edit lives on the wall / roof / floor / stair that generated them.
-import type { Floor, Member, Model, Roof, Stair, Wall } from "./types";
+import type { Floor, Member, Model, Roof, SoffitFraming, Stair, Wall } from "./types";
 
 // ":" cannot appear in a minted uid (base32-ish) and the resolver never puts one in a child
 // key, so this separator can never be ambiguous with the parts it joins.
 export const MEMBER_UID_SEPARATOR = "::";
 
-export type MemberOwnerKind = "wall" | "roof" | "floor" | "stair";
+export type MemberOwnerKind = "wall" | "roof" | "floor" | "stair" | "soffit";
 
 export function memberUid(ownerUid: string, memberKey: string): string {
   return `${ownerUid}${MEMBER_UID_SEPARATOR}${memberKey}`;
@@ -44,12 +44,15 @@ export interface LocatedMember {
   storey: string | null;
 }
 
-function ownerPools(model: Model): [MemberOwnerKind, (Wall | Roof | Floor | Stair)[]][] {
+function ownerPools(model: Model): [MemberOwnerKind, (Wall | Roof | Floor | Stair | SoffitFraming)[]][] {
   return [
     ["wall", model.walls ?? []],
     ["roof", model.roofs ?? []],
     ["floor", model.floors ?? []],
     ["stair", model.stairs ?? []],
+    // Without this a picked soffit rung resolves to null: the uid parses, no pool owns it,
+    // and the 3D Inspector shows nothing for a member the viewer just drew.
+    ["soffit", model.soffits ?? []],
   ];
 }
 

@@ -39,6 +39,12 @@ from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedSoffit
 # lumber does not poke through its own skin.
 SOFFIT_LINING_THICKNESS = inch(0.625)
 
+#: The ``FramedMember.key`` prefix every ladder rung carries. Exported because
+#: ``checks/structural/soffit.py`` grades exactly these members and nothing else — the
+#: rails do not span, they are screwed to the deck — and a check that re-derived the
+#: rung set from geometry could drift from what this generator actually builds.
+SOFFIT_RUNG_KEY_PREFIX = "soffit-rung-"
+
 # Plan tolerance for "this outline is an axis-aligned rectangle" (metres). Authored
 # corners come from foot/inch quantities, so they land on the box exactly; this only
 # absorbs float round-trip noise.
@@ -90,21 +96,23 @@ def soffit_clear_section(soffit: ResolvedSoffit) -> SoffitClearSection | None:
     box = _rectangle(soffit.outline)
     if box is None:
         return None
-    thickness, depth = _stock_actual_m(getattr(soffit.framing, "member", "2x4"))
+    rail_profile, rung_profile = _ladder_stock(soffit.framing)
+    rail_thickness, rail_depth = _stock_actual_m(rail_profile)
+    rung_thickness, _rung_depth = _stock_actual_m(rung_profile)
     lining = SOFFIT_LINING_THICKNESS.meters
     minx, miny, maxx, maxy = box
     x0, x1 = minx + lining, maxx - lining
     y0, y1 = miny + lining, maxy - lining
     z_bottom, z_top = soffit.z0_m + lining, soffit.z1_m - lining
-    if x1 <= x0 or y1 <= y0 or z_top - z_bottom <= 2 * thickness:
+    if x1 <= x0 or y1 <= y0 or z_top - z_bottom <= rail_thickness + rung_thickness:
         return None
     long_is_x = (x1 - x0) >= (y1 - y0)
     along_raw = (x0, x1) if long_is_x else (y0, y1)
     across_raw = (y0, y1) if long_is_x else (x0, x1)
     # The two ladders eat a full stock *depth* off each long side; the end blocking closes
     # each end with a piece of stock *thickness*.
-    across = (across_raw[0] + depth, across_raw[1] - depth)
-    along = (along_raw[0] + thickness, along_raw[1] - thickness)
+    across = (across_raw[0] + rail_depth, across_raw[1] - rail_depth)
+    along = (along_raw[0] + rail_thickness, along_raw[1] - rail_thickness)
     if across[1] <= across[0] or along[1] <= along[0]:
         return None
     # Vertically the cavity runs from the top of the bottom rungs — the only members that
@@ -115,7 +123,7 @@ def soffit_clear_section(soffit: ResolvedSoffit) -> SoffitClearSection | None:
     # difference between EQ-S-HP1-AH's 11" case fitting SF-S-DUCT and not.
     return SoffitClearSection(
         long_axis="x" if long_is_x else "y", along=along, across=across,
-        z=(z_bottom + thickness, z_top),
+        z=(z_bottom + rung_thickness, z_top),
     )
 
 
@@ -129,6 +137,30 @@ def frame_soffits(model: ResolvedModel) -> list[Finding]:
         soffit.members = members
         findings.extend(soffit_findings)
     return findings
+
+
+def _ladder_stock(spec: object) -> tuple[str, str]:
+    """``(rail_profile, rung_profile)`` for one ``FramingSpec``.
+
+    A soffit ladder is two sticks doing two jobs, and framing them out of one profile —
+    which this module did until 2026-08-31 — makes both jobs worse. The RAIL is a plate:
+    it is screwed to the deck above, it carries nothing between supports, and its *depth*
+    is what sets the cavity width the ducts and machines have to fit in. The RUNG spans
+    the box: it is the member deflection is about, and it is the nailer the underside
+    gypsum hangs on.
+
+    So they take the two fields ``FramingSpec`` already has. ``plate_member`` is documented
+    as "the plate size when it differs from ``member``" and the rails are already emitted
+    with category ``"plate"``; ``member`` stays the rung. Defaulting ``plate_member`` to
+    ``member`` leaves every soffit that does not set it framed byte-identically.
+
+    This is what lets SF-S-HP1's rungs go to 2x4 for L/495 while its rails stay 2x2 — the
+    72 3/4" clear cavity and the cavity floor both unmoved, which a single-profile upsize
+    could not do (it takes one stock depth off each long side and evicts the mixing box).
+    """
+    member = getattr(spec, "member", "2x4") or "2x4"
+    rail = getattr(spec, "plate_member", None) or member
+    return rail, member
 
 
 def _stock_actual_m(nominal: str) -> tuple[float, float]:
@@ -176,8 +208,9 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
             fix_hint="split the soffit into rectangular segments, or drop its FramingSpec",
         )]
     spec = soffit.framing
-    profile = getattr(spec, "member", "2x4")
-    thickness, depth = _stock_actual_m(profile)
+    rail_profile, rung_profile = _ladder_stock(spec)
+    thickness, depth = _stock_actual_m(rail_profile)
+    rung_thickness, _rung_depth = _stock_actual_m(rung_profile)
     spacing_q = getattr(spec, "spacing", None) or DEFAULT_SPACING
     spacing = spacing_q.meters
 
@@ -187,11 +220,11 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
     x0, x1 = minx + lining, maxx - lining
     y0, y1 = miny + lining, maxy - lining
     z_bottom, z_top = soffit.z0_m + lining, soffit.z1_m - lining
-    if x1 - x0 <= 0 or y1 - y0 <= 0 or z_top - z_bottom <= 2 * thickness:
+    if x1 - x0 <= 0 or y1 - y0 <= 0 or z_top - z_bottom <= thickness + rung_thickness:
         return [], [Finding(
             severity=Severity.WARN, check_id="framing.soffit_shape",
-            message=(f"soffit {soffit.tag} is too small to frame in {profile}: its lined "
-                     "interior does not clear the ladder rails"),
+            message=(f"soffit {soffit.tag} is too small to frame in {rail_profile}: its "
+                     "lined interior does not clear the ladder rails"),
             element_tags=(soffit.tag,), result=Result.UNKNOWN,
         )]
 
@@ -227,7 +260,7 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
         start, end = point(0.0, across), point(run_length, across)
         for name, rail_z0 in (("top", z_top - thickness), ("bottom", z_bottom)):
             members.append(FramedMember(
-                soffit.uid, f"soffit-plate-{name}-{side_key}", "plate", profile,
+                soffit.uid, f"soffit-plate-{name}-{side_key}", "plate", rail_profile,
                 start, end, rail_z0, rail_z0 + thickness, run_length,
             ))
 
@@ -237,7 +270,7 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
         for side_key, across in zip(side_keys, (side_low, side_high), strict=True):
             at = point(station, across)
             members.append(FramedMember(
-                soffit.uid, f"soffit-stud-{index:03d}-{side_key}", "stud", profile,
+                soffit.uid, f"soffit-stud-{index:03d}-{side_key}", "stud", rail_profile,
                 at, at, stud_z0, stud_z1, stud_z1 - stud_z0, orient=run_direction,
             ))
 
@@ -249,15 +282,15 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
         if any(abs(station - end) <= _RECT_TOLERANCE_M for end in end_stations):
             continue
         members.append(FramedMember(
-            soffit.uid, f"soffit-rung-{index:03d}", "blocking", profile,
+            soffit.uid, f"{SOFFIT_RUNG_KEY_PREFIX}{index:03d}", "blocking", rung_profile,
             point(station, span_low), point(station, span_high),
-            z_bottom, z_bottom + thickness, rung_length,
+            z_bottom, z_bottom + rung_thickness, rung_length,
         ))
 
     # --- end blocking: the full-depth piece closing each end of the box ---------
     for end_key, station in zip(end_keys, end_stations, strict=True):
         members.append(FramedMember(
-            soffit.uid, f"soffit-end-{end_key}", "blocking", profile,
+            soffit.uid, f"soffit-end-{end_key}", "blocking", rail_profile,
             point(station, span_low), point(station, span_high),
             stud_z0, stud_z1, rung_length,
         ))

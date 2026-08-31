@@ -111,7 +111,9 @@ export function locateUid(model: Model, uid: string): LocatedElement | null {
 const RESOLVED = new Set(["pass", "not_applicable"]);
 
 export function visibleFindings(findings: Finding[]): Finding[] {
-  return findings.filter((f) => !RESOLVED.has(f.result));
+  // `result` is optional on the wire (Finding is permissive by design), and an absent one is
+  // NOT resolved — it falls through to "" and stays visible.
+  return findings.filter((f) => !RESOLVED.has(f.result ?? ""));
 }
 
 export function findingsFor(model: Model | null, uid: string | null): Finding[] {

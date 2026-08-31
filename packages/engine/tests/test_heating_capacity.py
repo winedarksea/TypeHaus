@@ -345,13 +345,17 @@ def test_catlin_zone_loads_do_not_exceed_the_whole_house_load(catlin_model) -> N
     # kitchen's air through a 60" bypass that is open whenever anyone is in there.
     # RM-A-DEN was in this set until 2026-08-27; the room was deleted and its space is
     # inside what is now RM-A-STUDIO, which EQ-S-HP1-AH's zone_rooms names.
-    # RM-A-STUBATH joined 2026-08-29 for the third variant of the same reason: the attic guest
-    # bath is a 50 sf room off a conditioned bedroom with no supply of its own, deliberately.
-    # It has an EXHAUST terminal (REG-A-STUBATH-EXH, 20 cfm continuous, R303.3) and takes its
-    # make-up air under the door — which is what that extract is FOR. A supply boot as well
-    # would short-circuit the bath's own exhaust. "Unclaimed" here means served by no zone,
-    # which is the true statement rather than a gap to fill.
-    assert set(unclaimed) == {"RM-B-ESS", "RM-M-MUD-CLOSET", "RM-M-PANTRY", "RM-A-STUBATH"}
+    # ** RM-A-STUBATH LEFT THIS SET ON 2026-08-31, AND IT LEFT BECAUSE OF A TYPO. **
+    # EQ-S-HP1-AH's zone_rooms named "RM-A-STUDIO-BATH"; the room is RM-A-STUBATH. A
+    # zone_rooms entry naming no room is silently ignored, so the zone lost a room it was
+    # authored to hold and this test recorded the loss as a deliberate design decision — the
+    # paragraph that used to stand here argued, at length, that the attic guest bath takes its
+    # make-up air under the door and wants no supply. That argument is still true about AIR:
+    # the bath has an EXHAUST terminal (REG-A-STUBATH-EXH, 20 cfm continuous, R303.3) and no
+    # supply boot, deliberately. It was never true about the HEATING ZONE, which is what this
+    # set is: a 50 sf conditioned room off a conditioned bedroom is inside System 1's zone
+    # whether or not it has a boot of its own, and its load belongs in that zone's block load.
+    assert set(unclaimed) == {"RM-B-ESS", "RM-M-MUD-CLOSET", "RM-M-PANTRY"}
 
 
 # --- supplemental resistance heat ------------------------------------------------------

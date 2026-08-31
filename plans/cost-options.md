@@ -46,6 +46,24 @@ that are not — air sealing at $0.15–0.45/SF over the ~1,363 gross sf that wo
 window flashing and stool rows — move the premium by well under $1,000, inside its own
 precision. **Rebuilding that sandbox is the one outstanding measurement in this file.**
 
+**The garage wall was rebuilt the same day the baseline above was printed, and the baseline
+predates it.** `GARAGE_WALL_2X6` went 2x6 @16" o.c. / empty bays / 1.5" Zip-R / 26 ga
+concealed nail-strip → **2x6 @24" o.c. / 2" ccSPF / 5/8" CDX / 7/8" corrugated
+exposed-fastener panel** (`houses/catlin/CLAUDE.md`), and the trusses went to 24" o.c. with
+it. It is `built` in the fullest sense — not a sandbox copy, the reference house itself —
+confirmed at 0 FAIL. Diffing `haus takeoff` immediately either side of that one commit
+(759850a vs. the redesign) puts it at **−$2,916–$5,359** off the bid total, ahead of the
+plan's own arithmetic estimate of ≈−$1,700–$3,500: the ccSPF spends back roughly a third of
+what the cladding and 24" spacing save, in exchange for a real air seal and roughly double
+the wall's honest R-value (R-7–8 → R-13.2 card, up from a dishonestly-read R-14.3 that was
+billing the empty bay as solid framing). **The single baseline above is therefore stale by
+that amount** — it is the PRE-rebuild total, not the current one — and every unre-measured
+row's "read it 3% low" guidance does not cover this; the true current baseline is
+$914,813–$1,889,645. The two menu rows this rebuild superseded (Garage cladding → PBR
+direct on the Zip-R; Garage roof trusses → 24" o.c.) are gone from *Cost cutting* below —
+their premise, a wall that still has Zip-R and 16" o.c. trusses to change FROM, no longer
+exists in the model, and both are now inside the baseline rather than options against it.
+
 **"Delete the eight attic windows" is now FIVE, and not for the reason the old row gave.**
 Four of the eight — `WIN-A-W-N`, `WIN-A-W-S`, `WIN-A-E-N`, `WIN-A-E-S`, the knee-wall pairs —
 were **already deleted on 2026-08-29** with the knee walls themselves; their hosts are 1-1/2"
@@ -119,8 +137,6 @@ Every live scope or spec change, one row each. **These do not add up** — see *
 | Garage stem → frost-protected shallow foundation | $2,000–3,900 | arithmetic | no | — | The option of ever leaving the garage unheated |
 | Elm tudor posts → paint/stain-grade species | $1,300–4,500 | `[timber]` | no | — | 6-1/8" S4S elm is not a purchasable article. **Get a quote first** — the low end is only $2,006 |
 | Trimless interior door → standard cased prehung | $915–2,045 | `[openings]` | no | trim simplification | A 3-trade sequencing item; the frame is set before drywall, so it cannot be reversed later |
-| Garage cladding → PBR direct on the Zip-R | $736–2,391 | built | no | — | **One phone call:** get the supplier to accept 7/16" substrate in writing. The incumbent nail-strip has the same gap |
-| Garage roof trusses → 24" o.c. | $681–1,136 | built | no | — | None. 24" o.c. is the residential default; 16" is the anomaly |
 | Fabricated box gutter → seamless K-style | $600–1,400 | `[edge_trim]` | no | — | Plus $150–400/ea for the conductor heads a box gutter needs, which are not in the estimate |
 
 ⏳ **Deferrable to a later contract** — outside the weather envelope, not trapped behind

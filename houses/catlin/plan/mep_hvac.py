@@ -290,16 +290,25 @@ DUCTS_HVAC_SECOND = [
     # (19'-4", 11'-4") is still squarely over the trunk (x 18'-9"..20'-3"), so its floor boot
     # still rises straight.
     #
-    # It begins at (19'-6", 5'-3"), the north face of the air handler's supply plenum inside
-    # SF-S-HP1, and crosses the y=7'-6" seam into SF-S-DUCT. `soffit_ref` names the hall box
-    # because that is where 27 of its 29 feet run; the check clips a run's extent to the box
-    # it names, which is the same idiom DU-S-HP-SUITE uses where SF-S-SUITE abuts. The 2'-3"
-    # inside SF-S-HP1 is therefore not graded there — it is the plenum's own neck, and it
-    # runs in the west third of that box, well clear of ST-S2A's flight at x>=22'-5 3/8".
+    # It begins ON the air handler's discharge face at (19'-6", 4'-3 3/8") inside SF-S-HP1 and
+    # crosses the y=7'-6" seam into SF-S-DUCT. `soffit_ref` names the hall box because that is
+    # where 27 of its 29 feet run; the check clips a run's extent to the box it names, which is
+    # the same idiom DU-S-HP-SUITE uses where SF-S-SUITE abuts. The 3'-2 5/8" inside SF-S-HP1
+    # is therefore not graded there — it is the plenum's own neck, and it runs in the west
+    # third of that box, well clear of ST-S2A's flight at x>=22'-5 3/8".
+    #
+    # ** 750 -> 500 cfm, 2026-08-31, AND IT IS AN ARITHMETIC FIX NOT A RESIZING. ** This trunk
+    # carried 750 and DU-S-HP-SOUTH-RISE carried 250 while joining nothing, so System 1's
+    # drawn supply summed to 1,000 cfm against a machine that moves 760. The discharge is 750:
+    # 500 north up this trunk and 250 east into the riser take-off, which now leaves the same
+    # discharge face 19" further east. 18x8 at 500 cfm is 500 fpm — further under Manual D's
+    # 900 fpm ceiling than the 750 fpm it was sized for, and the section stays 18x8 because
+    # 18" is what carries the ERV mixing-box feed past it in the hall box, not what carries
+    # the air.
     DuctRun(uid="CSDH01AAAA", tag="DU-S-HP-SUP", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), ft(5, 3)), pt(ft(19, 6), ft(33))),
+            path=(pt(ft(19, 6), ft(4, 3.375)), pt(ft(19, 6), ft(33))),
             width=inch(18), depth=inch(8), routing=DuctRouting.SOFFIT,
-            soffit_ref="SF-S-DUCT", design_cfm=750),
+            soffit_ref="SF-S-DUCT", design_cfm=500),
     # The return-plenum stub, rebuilt in SF-S-HP1 on 2026-08-30 and now carrying the return
     # the right way round. It used to run (20'-8", 9'-8") -> (20'-8", 9'-2") in the hall box:
     # REG-S-HP-RET sat 1" NORTH of the air handler's case, which is the same face the supply
@@ -326,12 +335,14 @@ DUCTS_HVAC_SECOND = [
     # (This used to carry "an 8"-deep duct on the 14" soffit drop clears it". It does, but
     # that is now `mep.duct_soffit_occupancy`'s answer against SF-S-SUITE's derived cavity,
     # not a number in a comment that nothing re-runs when the FramingSpec changes.)
-    # 250 cfm (not 150): feeds two terminals — REG-S-HP-SUITE and REG-A-HP-WEST, a floor
-    # boot up through FS-ATTIC directly above. ~450 fpm through 10x8, still quiet.
+    # 175 cfm: feeds two terminals — REG-S-HP-SUITE (100) and REG-A-HP-WEST (75), a floor
+    # boot up through FS-ATTIC directly above. 315 fpm through 10x8, quieter still. It read
+    # 250 until 2026-08-31, when every supply register on System 1 was given a `design_cfm`
+    # and the branch flows were made to sum to the 750 the machine actually moves.
     DuctRun(uid="CSDH03AAAA", tag="DU-S-HP-SUITE", system=DuctSystem.SUPPLY,
             path=(pt(ft(19, 4), ft(14, 1.875)), pt(ft(12, 6), ft(14, 1.875))),
             width=inch(10), depth=inch(8), routing=DuctRouting.SOFFIT,
-            soffit_ref="SF-S-SUITE", design_cfm=250),
+            soffit_ref="SF-S-SUITE", design_cfm=175),
     # The two south rooms' branch (2026-08-16). RM-S-PLANT and RM-S-STUDY2 were the only
     # conditioned rooms on this storey with no drawn terminal, which was always the odd
     # reading: EQ-S-HP1-AH hangs in RM-S-STUDY2's own ceiling.
@@ -390,22 +401,47 @@ DUCTS_HVAC_SECOND = [
     # under `mep.duct_soffit_occupancy`, the branch is in an FS-ATTIC bay under
     # `mep.duct_joist_bay`, and a run carries one `routing` and one `soffit_ref`.
     #
-    # x=23'-0 1/2" is the box's middle lane: 2 1/4" east of the air handler's case and 2 1/2"
-    # west of EQ-S-ERV-MIX, both more than the 2" hanger gap. It leaves the supply plenum at
-    # y=5'-1" — the plenum is fabricated out to x=23'-5 1/2" to catch this take-off, which is
-    # what a plenum is for — runs south past the machine, and stands up at y=3'-4", the
-    # FS-ATTIC bay centreline (8" + 2 x 16"), 15" of rise from the soffit cavity into the bay.
-    # Every foot of it is south of y=5'-9", so none of it is under ST-S2A.
+    # ** IT NOW STARTS ON THE MACHINE, 2026-08-31. ** From 2026-08-30 it began at
+    # (23'-0 1/2", 5'-1") — a plan point 7 1/4" east of the air handler's case, in mid-air.
+    # The comment here asserted that "the plenum is fabricated out to x=23'-5 1/2" to catch
+    # this take-off", and nothing in the model said otherwise: no check validates that a
+    # DuctRun endpoint reaches equipment or another run, so a branch feeding three registers
+    # hung off a sentence. It has a take-off leg now, and the leg exists because the FLEXX
+    # Ultra retype made room for it — the cabinet is 8 7/16" shallower than the DUC24, all of
+    # it taken off the north end, so there is clear box between the discharge face at
+    # y=4'-3 3/8" and the ERV feed's east jog at y=5'-5 1/2".
     #
-    # 96 1/8" is a 6"-deep duct on SF-S-HP1's clear underside; 111 1/8" is the same duct's
-    # centreline on FS-ATTIC's bottom chord, the elevation DU-S-HP-SOUTH derives for itself
-    # from the joists. Both storey-relative to `second`, whose datum is 10'-0 1/8" — the same
-    # convention every PipeRun on this storey uses, and the reason those two numbers are not
-    # the -8 7/8" the attic-filed runs carry for the same bay.
+    # THE TAKE-OFF LEG runs east from (21'-1", 4'-8 3/8") to (23'-0 1/2", 4'-8 3/8"). Its
+    # south edge is flush on the discharge face and its west end sits over the cabinet, so it
+    # is a collar on the discharge, not a duct that happens to end nearby. It shares its band
+    # with EQ-S-HP1-STRIP, the 4.6 kW heat kit, which is exactly right: the kit is in the
+    # discharge, the leg's centreline runs through its plate, and `mep.duct_soffit_occupancy`
+    # reads the two as one assembly. DU-S-HP-SUP's take-off is the other side of the same
+    # discharge, 10" west, and the two split it 250/500.
+    #
+    # It clears the ERV feed's jog by 1 1/8" along the box rather than the 2" hanger gap —
+    # the check does not compare a pair that does not overlap ALONG the box, so this one is
+    # said out loud here: the two are at different elevations, the leg's z 209 1/4"..215 1/4"
+    # against the feed's 212 1/8"..218 1/8", and 1 1/8" of plan clearance is a hand's width
+    # short. It is the tightest joint in the box and the reason the jog may not move south.
+    #
+    # x=23'-0 1/2" is then the box's middle lane: 2 3/4" east of the case and 2 1/2" west of
+    # EQ-S-ERV-MIX, both more than the 2" hanger gap. It runs south past the machine and
+    # stands up at y=3'-4", the FS-ATTIC bay centreline (8" + 2 x 16"), 19" of rise from the
+    # soffit cavity into the bay. Every foot of it is south of y=5'-9", so none of it is
+    # under ST-S2A.
+    #
+    # 92 1/8" is a 6"-deep duct on SF-S-HP1's clear underside — it was 96 1/8" until the box
+    # went from a 17" drop to 21" for the deeper cabinet, and the cavity floor came down with
+    # it; 111 1/8" is the same duct's centreline on FS-ATTIC's bottom chord, the elevation
+    # DU-S-HP-SOUTH derives for itself from the joists and which the soffit does not move.
+    # Both storey-relative to `second`, whose datum is 10'-0 1/8" — the same convention every
+    # PipeRun on this storey uses, and the reason those two numbers are not the -8 7/8" the
+    # attic-filed runs carry for the same bay.
     DuctRun(uid="27B8FKNDPB", tag="DU-S-HP-SOUTH-RISE", system=DuctSystem.SUPPLY,
-            path=(pt(ft(23, 0.5), ft(5, 1)), pt(ft(23, 0.5), ft(3, 4)),
-                  pt(ft(23, 0.5), ft(3, 4))),
-            elevations=(inch(96.125), inch(96.125), inch(111.125)),
+            path=(pt(ft(21, 1), ft(4, 8.375)), pt(ft(23, 0.5), ft(4, 8.375)),
+                  pt(ft(23, 0.5), ft(3, 4)), pt(ft(23, 0.5), ft(3, 4))),
+            elevations=(inch(92.125), inch(92.125), inch(92.125), inch(111.125)),
             width=inch(10), depth=inch(6), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-HP1", design_cfm=250),
     # DU-S-ERV-HP-FEED moved to plan/mep_erv.py (2026-08-25). It kept its tag and its uid

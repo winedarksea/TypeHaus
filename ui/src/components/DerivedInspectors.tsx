@@ -8,7 +8,8 @@ import type {
   FootingBedding, Floor, LightRun, Model, Roof, Solid, SolarPanel, Vec2,
 } from "../model/types";
 import { formatFtIn } from "../model/geometry";
-import type { LocatedMember } from "../model/memberIdentity";
+import type { LocatedMember, MemberOwnerKind } from "../model/memberIdentity";
+import type { SelectionKind } from "../state/vocabulary";
 import { solidCategoryLabel } from "../model/solidLabels";
 import { useStore } from "../state/store";
 import { Provenance } from "./Provenance";
@@ -168,6 +169,13 @@ function sectionSummary(located: LocatedMember): string {
 // three/memberPicking.ts). It is the most derived thing the UI can select: the resolver frames
 // it from the wall/roof/floor/stair's assembly, so there is nothing here to edit — the answer
 // to "make this stud different" is always the parent's assembly or spacing rule.
+// A member's owner kind is not always the kind its owner SELECTS as. A soffit's ladder
+// framing hangs off the soffit's own uid, but the soffit itself is emitted as a solid — so
+// "select the soffit" has to ask for the solid, or the click resolves to nothing.
+const OWNER_SELECTION_KIND: Record<MemberOwnerKind, SelectionKind> = {
+  wall: "wall", roof: "roof", floor: "floor", stair: "stair", soffit: "solid",
+};
+
 export function MemberInspector({ located }: { located: LocatedMember }) {
   const select = useStore((s) => s.select);
   const model = useStore((s) => s.model);
@@ -193,7 +201,7 @@ export function MemberInspector({ located }: { located: LocatedMember }) {
     </div>
     {/* A stair (and a roof's framing) is nothing but members, so a click in 3D can only land
         on a stick. This is how you get back up to the thing that is actually editable. */}
-    <button className="btn" style={{ marginTop: 8 }} onClick={() => select(ownerKind, ownerUid)}>
+    <button className="btn" style={{ marginTop: 8 }} onClick={() => select(OWNER_SELECTION_KIND[ownerKind], ownerUid)}>
       Select the {ownerKind} ({ownerTag})
     </button>
     <DerivedNote source={`the ${ownerKind} ${ownerTag} it frames`} />

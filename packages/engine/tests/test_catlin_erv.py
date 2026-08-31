@@ -229,7 +229,10 @@ def test_the_fresh_feed_drops_into_the_soffit(catlin_model) -> None:
     that no longer exists, and its rise was undrawn because ``DuctRun`` had no elevation."""
     feed = next(d for d in catlin_model.ducts if d.tag == "DU-S-ERV-HP-FEED")
     assert feed.uid == "CSDV02AAAA"
-    # Two drawn drops, 24 7/8" in total: the attic deck down into the FS-ATTIC bay, and the
-    # bay down through the second-storey ceiling onto EQ-S-ERV-MIX inside SF-S-DUCT.
+    # Two drawn drops, 28 7/8" in total: the attic deck down into the FS-ATTIC bay, and the
+    # bay down through the second-storey ceiling onto EQ-S-ERV-MIX inside SF-S-HP1.
+    # 24 7/8" until 2026-08-31 — the second drop got 4" longer when SF-S-HP1 went from a 17"
+    # drop to 21" for the FLEXX Ultra cabinet and its cavity floor came down with it. The tail
+    # still sits 6" above that floor, which is the invariant; the fall is the consequence.
     fall_in = (max(feed.z_m) - min(feed.z_m)) / M_PER_IN
-    assert fall_in == pytest.approx(24.875, abs=0.01)
+    assert fall_in == pytest.approx(28.875, abs=0.01)

@@ -1277,6 +1277,20 @@ export interface Brace {
   members: Member[];
 }
 
+// A soffit's LADDER FRAMING — the rails, ladder studs, rungs and end blocking the resolver
+// generates from its FramingSpec. Identical in shape to Brace, and hosted the same way, but
+// the soffit differs in one respect worth knowing about: the finished box is ALSO emitted, as
+// a solid on this same uid, so the framing node is that solid's sibling rather than a node of
+// its own kind — exactly how a wall's studs sit beside its layers. A soffit that authored no
+// FramingSpec frames nothing and does not appear here at all.
+export interface SoffitFraming {
+  uid: string;
+  tag: string;
+  storey: string;
+  provenance: Provenance | null;
+  members: Member[];
+}
+
 // A stair's scalar inputs are authored, while its risers, treads, and framing members are
 // resolver output. Keeping both in this contract lets the designer preview its next valid
 // solve without treating client-side arithmetic as the source of truth.
@@ -1379,6 +1393,7 @@ export interface Model {
   floors?: Floor[];
   stairs?: Stair[];
   braces?: Brace[];
+  soffits?: SoffitFraming[];
   fixtures?: Fixture[];
   furniture?: Furniture[];
   alarms?: Alarm[];

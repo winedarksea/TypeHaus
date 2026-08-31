@@ -1022,9 +1022,12 @@ GARAGE_LIGHTING = [
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     # On W-G-S's INTERIOR face, so it followed the wall 1" north on 2026-08-26 with the
-    # catlin truss (plan/storeys/garage.py::GARAGE_Y_SOUTH), as it did 1/2" on 2026-08-23.
+    # catlin truss (plan/storeys/garage.py::GARAGE_Y_SOUTH), as it did 1/2" on 2026-08-23,
+    # and 1/2" SOUTH on 2026-08-31 when GARAGE_WALL_2X6's interior face receded 7/8" (the
+    # Zip-R -> CDX sheathing swap) against only 3/8" of node-line move the other way — see
+    # plan/electrical.py's GARAGE_DEVICES comment for the full arithmetic.
     ElectricalDevice(uid="QTG0003AAA", tag="ED-G-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(8, 6), ft(41, 4.875)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(8, 6), ft(41, 4.375)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
@@ -1037,8 +1040,11 @@ GARAGE_LIGHTING = [
     ElectricalDevice(uid="QTG0004AAA", tag="ED-G-EXT-LT", kind=DeviceKind.LIGHT,
                      # 2026-08-20: was 24'-3 3/8". The garage wall lost its 3/8" rainscreen
                      # furring that day, so the cladding face — which is what a surface-mounted
-                     # sconce screws to — came in 3/8" with it.
-                     position=pt(ft(24, 3), ft(43)), type_ref="ED-T-LT-SCONCE-EXT",
+                     # sconce screws to — came in 3/8" with it. Then 2026-08-31: +3/8" again,
+                     # the opposite direction — GARAGE_WALL_2X6's cladding went 1/2" nail
+                     # strip -> 7/8" corrugated, so the face it screws to stands 3/8" further
+                     # proud of W-G-E's unmoved node line.
+                     position=pt(ft(24, 3.375), ft(43)), type_ref="ED-T-LT-SCONCE-EXT",
                      circuit="CKT-LT-MAIN", rotation=deg(90),
                      controlled_by=("ED-G-EXT-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
@@ -1046,7 +1052,7 @@ GARAGE_LIGHTING = [
     # jamb is at 6'-6"; the shop-light switch sits at 8'-6", this one 6" west of it) —
     # walk in, one reach turns on the shop lights and the apron light both.
     ElectricalDevice(uid="QTG0005AAA", tag="ED-G-EXT-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(8), ft(41, 4.875)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(8), ft(41, 4.375)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 ]

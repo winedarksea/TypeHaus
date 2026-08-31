@@ -34,21 +34,23 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     it.** MN Rules 1309.0402 also amends IRC Table R402.2 with a **5,000 psi FOOTINGS row**
     this model states no mix design against; that wants checking before anyone orders.
 
-- **`EQ-S-HP1-AH.zone_rooms` names `RM-A-STUDIO-BATH`, a tag that names no room — and two
-  parts of the repo disagree about whether that is a typo (2026-08-30).** The attic guest
-  bath is `RM-A-STUBATH`.
-  - `plan/electrical.py`'s comment above that list (2026-08-29) says all three of the split
-    west loft's rooms are named there because one boot conditions the whole footprint, and
-    that "dropping either from this list would report them as unheated rather than as what
-    they are". The typo does exactly that, silently.
-  - `tests/test_heating_capacity.py::test_catlin_zone_loads_do_not_exceed_the_whole_house_load`
-    (also 2026-08-29) pins `RM-A-STUBATH` as **deliberately** unclaimed, with a physical
-    argument: it is exhaust-only (`REG-A-STUBATH-EXH`, 20 cfm continuous) and takes make-up
-    air under the door, so a supply boot would short-circuit its own extract.
-  - Both cannot be right, and the difference is a real HVAC decision, not bookkeeping.
-    Whichever way it goes, the dead tag should stop being a dead tag. Fixing it silences one
-    of `mep.heating_capacity`'s four unclaimed rooms; the other three (`RM-B-ESS`,
-    `RM-M-MUD-CLOSET`, `RM-M-PANTRY`) are documented as intentional and should stay.
+- **`EQ-S-HP1-AH.zone_rooms` named `RM-A-STUDIO-BATH`, a tag that names no room — RESOLVED
+  2026-08-31 as a typo.** The attic guest bath is `RM-A-STUBATH`, and it is in the zone now.
+  - The two parts of the repo that disagreed: `plan/electrical.py`'s comment above that list
+    (2026-08-29) said all three of the split west loft's rooms are named there because one
+    boot conditions the whole footprint, and that "dropping either from this list would
+    report them as unheated rather than as what they are" — which the typo did, silently.
+    Against it, `tests/test_heating_capacity.py` pinned `RM-A-STUBATH` as **deliberately**
+    unclaimed, arguing it is exhaust-only (`REG-A-STUBATH-EXH`, 20 cfm continuous) and takes
+    make-up air under the door, so a supply boot would short-circuit its own extract.
+  - **The comment won, and the test's argument was about the wrong thing.** It is a true
+    statement about AIR — the bath still has no supply boot and still should not have one —
+    and a false one about the HEATING ZONE, which is what `zone_rooms` is. A 50 sf
+    conditioned room off a conditioned bedroom is inside System 1's zone whether or not it
+    has a terminal of its own, and its load belongs in that zone's block load. The test now
+    says so where it used to argue the opposite.
+  - Three unclaimed rooms left (`RM-B-ESS`, `RM-M-MUD-CLOSET`, `RM-M-PANTRY`), all documented
+    as intentional.
 
   - **The entry's "and now it would pass" was wrong.** `RM-A-STUBATH` FAILED: its only
     125 V receptacle, `ED-A-STUBATH-GFCI`, was 44.4" from the lavatory carcass — right room,
@@ -407,6 +409,20 @@ two elevations, which is exactly how a drain drop has always been written.
   that box's cavity into the `FS-ATTIC` bay at (23'-0 1/2", 3'-4"). **The lesson generalises:
   a `# TODO verify datasheet` on a type is not a documentation debt — every clearance, lane
   and velocity downstream of it is provisional.**
+  - **AND THE RISER STILL DID NOT TOUCH THE MACHINE — closed properly 2026-08-31.** Both its
+    ends sat at x=276.5" while the cabinet's east face was at 269.235": a 7 1/4" gap, in
+    mid-air, with a comment here and in `plan/mep_hvac.py` asserting that "the plenum is
+    fabricated out to x=23'-5 1/2" to catch this take-off". Nothing in the engine can catch
+    that — no check validates that a `DuctRun` endpoint reaches equipment or another run, and
+    `Register.duct_ref` is an unvalidated string — so a branch feeding three registers hung
+    off a sentence for a day. It has a real take-off leg now, running east from the air
+    handler's discharge face. **The same lesson, one level up: closing a TODO about a missing
+    vertical is not the same as closing the connection, and only one of the two was checked.**
+  - Closed with it, the airflow: the trunk carried 750 cfm and this riser 250, and because
+    they joined nothing they SUMMED — 1,000 cfm against a machine that moves 760. The
+    discharge is 750 now, split 500 north up the trunk and 250 east into the riser, and all
+    ten of System 1's supply registers carry a `design_cfm` that sums to it. Nine of the ten
+    had none at all.
   - Closed with it: `DU-A-HP-STUDY`, which was orphaned, straddled the joist at y=32",
     overlapped `DU-S-HP-SOUTH` by 4" in a 13 1/2" bay, and ran 6'-8" of bare duct across
     `RM-A-STUDY`'s finished floor. `REG-A-HP-STUDY` is a straight boot off the branch now.

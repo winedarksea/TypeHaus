@@ -205,63 +205,89 @@ EQUIPMENT_TYPES = (
     # OUTDOOR_AIR/EXHAUST_AIR member." `Service` has both now, so the machine has four
     # ports, and an ERV with an intake and a discharge is finally a modeled ERV.
     # --- The three Gree heat-pump systems (plans/TODO.md §HVAC) ----------------------
-    # Outdoor units carry real Gree datasheet capacities (model # in each `source`), not
-    # placeholders. `heating_capacity_at_design_btuh` linearly interpolates the datasheet
-    # chart points bracketing the site's -15F design temp (plan/site.py) — the model does no
-    # curve interpolation itself, so this field is the authored derate mep.heating_capacity
-    # sizes each zone against. Indoor heads keep `# TODO verify datasheet` on purpose: they
-    # carry no heating rating by design (a multi's heads share one compressor).
+    # Every unit below carries a real Gree model number and real submittal geometry — the
+    # last three REPRESENTATIVE PLACEHOLDERs (the two Multi R32 heads and the Sapphire head)
+    # went on 2026-08-31, so there is no `TODO verify datasheet` left in this file.
+    #
+    # `heating_capacity_at_design_btuh` is the number `mep.heating_capacity` sizes each zone
+    # against, and IT IS NOW A READ VALUE ON ALL THREE SYSTEMS. It used to be a linear
+    # interpolation between the datasheet chart points bracketing the site's -15F design temp
+    # (plan/site.py), which is a guess dressed as data — the engine does no curve
+    # interpolation itself, so whatever is authored here IS the machine as far as every check
+    # is concerned. System 1 reads Gree's Extended Ratings at -15F (21,000). System 2 reads
+    # them too (23,687, replacing an interpolated 23,500). System 3 reads AHRI/NEEP's -22F
+    # figure (7,400) unadjusted, because Gree's own -22F column for it is not physically
+    # plausible — see EQ-T-GREE-SAPPHIRE-9-OD, which says so in full.
+    #
+    # Indoor heads still carry NO heating rating, by design: a multi's heads share one
+    # compressor, and three head ratings summed would size a zone against capacity that
+    # compressor cannot deliver simultaneously.
     #
     # System 1 — the concealed ducted air handler in RM-S-STUDY2's ceiling bulkhead
     # (SF-S-HP1) feeding the hallway trunk to the bedrooms plus the south branch and two
-    # attic boots; Vireo R32 outdoor unit. One 24k system covers the whole upstairs.
+    # attic boots; FLEXX Ultra R32 outdoor unit. One 24k system covers the whole upstairs.
     #
-    # ** IT REPLACED EQ-T-GREE-SLIM24 ON 2026-08-30, AND THE PLACEHOLDER WAS LOAD-BEARING. **
-    # That type was an explicit "REPRESENTATIVE PLACEHOLDER … TODO verify datasheet": 43 x
-    # 21 x 11, 750 cfm on the trunk, no model number, no ESP, and all three ports at
-    # (0, 0, 11") so no connection face was modelled at all. 43 3/8" wide is Gree's
-    # DISCONTINUED low-static DUCT24HP230V1AD, which tops out at 589 cfm at 0.04" w.c. — it
-    # cannot deliver the 750 cfm every duct in this house is sized to. The placeholder was
-    # therefore not merely unverified; it invalidated the airflow, and its 21" case is what
-    # made a 30 3/4" hall box look like it could hold a machine and a branch lane at once.
+    # ** IT REPLACED EQ-T-GREE-DUC24 / EQ-T-GREE-VIREO-GEN3, AND THAT PAIRING WAS SHORT. **
+    # The DUC24/VIR24 record was wrong in three ways at once, all of them found by checking
+    # it back against Gree's own submittals and Extended Ratings rather than against itself:
+    #
+    #  * AIRFLOW. `source=` claimed 577-1030 cfm. The real ceiling for the DUC24/VIR24 pair
+    #    is 736 cfm at 0.8 in. w.c. — under the 750 cfm this duct system is sized to.
+    #  * CAPACITY AT DESIGN. 13,500 Btu/h was a linear interpolation between two chart
+    #    points; the read value at -15 F is 14,606. Either way the zone's 15,164 Btu/h block
+    #    load was ABOVE it: 89% of load, and `mep.heating_capacity` only passed because
+    #    EQ-S-HP1-STRIP's 6,800 Btu/h was being credited to the zone.
+    #  * AUX HEAT. The DUC24 HAS NO AUX-HEAT TERMINAL. The strip heater the shortfall was
+    #    covered with could not be interlocked with the heat pump at all, so the credit the
+    #    check was granting described a machine that cannot be built.
+    #
+    # The FLEXX Ultra answers all three — 760 cfm at 1.0 in. w.c., 21,000 Btu/h read at
+    # -15 F (138% of the load, unaided), 24 VAC control with a factory heat kit — and is
+    # ENERGY STAR Cold Climate certified where the Vireo is not. HSPF2 goes 9.0 -> 10.0.
     #
     # WHY THIS UNIT AND NOT A SHALLOWER ONE. Connection geometry decides where a machine can
     # live: every concealed slim duct — Gree, LG, Samsung — puts supply on one long face and
     # return on the opposite long face, so air crosses the short depth and the long dimension
-    # sits ACROSS the duct axis. Only a multi-position AHU connects on its ends, and the two
-    # end-connected Gree AHUs (GMV-ND24A/B-T(U), FLEXX ECO R32) are both out on climate — the
-    # first needs a GMV VRF outdoor unit whose floor is about -4 F, the second's heating range
-    # stops at 5 F, against a -15 F design day. LG's KNUJB241A/LHN248HV1 is by far the best
-    # FIT — 9 21/32" tall would have sat in the existing 14" drop — and is the one real loss
-    # here: its matched KUSXA241A publishes 21,600 Btu/h at -13 F, but its published heating
-    # range FLOOR is -13 F, two degrees short of this site's design temperature. Worth
-    # revisiting only if LG publishes a lower floor.
-    EquipmentType(tag="EQ-T-GREE-DUC24",
-                  name="Gree concealed ducted air handler, 24k, R32",
-                  footprint=(inch(44.47), inch(29.69)), height=inch(11.81),
+    # sits ACROSS the duct axis. The FLEXX Ultra keeps that geometry; what it costs is depth,
+    # 18 1/8 in against the DUC24's 11 13/16, which is what drives SF-S-HP1 from a 17 in drop
+    # to 21 in (storeys/second.py). It buys back nearly an inch of the box's GRADED axis in
+    # exchange — 43 1/2 in wide against 44 1/2 — because `soffit_clear_section` measures every
+    # occupant across the box's shorter plan dimension, and depth is not that dimension.
+    #
+    # A 36k FLEXX Ultra was REJECTED: its cabinet's smallest dimension is 21 1/4 in, needing a
+    # 24 in drop, landing the soffit's underside exactly on IRC R305.1's 7'-0" floor, with
+    # 3.5x cooling oversizing against a 10,145 Btu/h load and 1,000 cfm into 750-cfm ducts.
+    # There is no 30k in the line (24 / 36 / 48 / 60 only).
+    #
+    # LG's KNUJB241A/LHN248HV1 remains the one real loss on FIT — 9 21/32 in tall would have
+    # sat in the original 14 in drop — but its published heating range FLOOR is -13 F, two
+    # degrees short of this site's design temperature. Worth revisiting only if LG publishes
+    # a lower floor.
+    EquipmentType(tag="EQ-T-GREE-FLEXX-ULTRA-24-AH",
+                  name="Gree FLEXX Ultra R32 concealed ducted air handler, 24k",
+                  footprint=(inch(43.5), inch(21.25)), height=inch(18.125),
                   cooling_capacity_btuh=24000,
-                  source="Gree DUC24HP230V1R32AH concealed-duct air handler (R32). Cabinet 44 31/64 x 29 11/16 x 11 13/16 in, net weight 92.6 lb, airflow 577-1030 cfm over eight fan-speed notches, external static pressure 0.8 in. w.c. maximum. Paired with EQ-T-GREE-VIREO-GEN3 (VIR24HP230V1R32AO) outdoor: ~14,200 Btu/h at -13 F, minimum operating temperature -22 F, so the system's envelope brackets the site's -15 F design day. The indoor unit carries no heating rating of its own on purpose — the outdoor unit is what has to make heat at design temp, and mep.heating_capacity sizes the zone against the outdoor type. THIS REPLACED EQ-T-GREE-SLIM24, a REPRESENTATIVE PLACEHOLDER whose 43 in width matched only the discontinued low-static DUCT24HP230V1AD (589 cfm at 0.04 in. w.c.), which cannot move the 750 cfm this duct system is sized to.",
-                  # Real face positions, replacing three ports stacked at (0, 0, 11"). The
-                  # long dimension is x, so supply and return are on the two 44 1/2 x 11 13/16
-                  # faces: supply out the north face (+y), return in the south face (-y), both
-                  # on the cabinet's own centre height. Power enters at the north-east corner
-                  # where the whip lands. This is what makes "supply north / return south, in
-                  # line" a modelled fact rather than a sentence in a comment.
+                  source="Gree FLEXX Ultra R32 air handler FXU24HP230V1R32AH, matched to EQ-T-GREE-FLEXX-ULTRA-24-OD. Cabinet 18 1/8 x 21 1/4 x 43 1/2 in (W x D x H as shipped), net weight 135.6 lb, laid horizontally for ceiling mount with the 18 1/8 in face vertical — the orientation that minimises soffit depth, so `height` is 18 1/8 in and the 43 1/2 in dimension is the plan long axis. Airflow to 760 cfm against an external static pressure of 1.0 in. w.c., which is what lets it drive the 750 cfm this duct system is sized to with margin; the DUC24 it replaced claimed 1030 cfm in prose and really topped out at 736 at 0.8 in. w.c. HSPF2 10.0 / SEER2 18.0, ENERGY STAR Cold Climate (AHRI 215213329). 24 VAC thermostat terminals and a factory electric heat kit (4.6 / 5.5 / 9.2 kW) — the DUC24 had NEITHER, so EQ-S-HP1-STRIP could not physically be interlocked with the heat pump at all, which is the defect this retype closes. The indoor unit carries no heating rating of its own on purpose: the outdoor unit is what has to make heat at design temp, and mep.heating_capacity sizes the zone against the outdoor type.",
+                  # Real face positions, on the same convention EQ-T-GREE-DUC24 established:
+                  # the long dimension is x, so supply and return are on the two 43 1/2 x
+                  # 18 1/8 faces — supply out the north face (+y), return in the south face
+                  # (-y), both on the cabinet's own centre height. Power enters at the
+                  # north-east corner where the whip lands.
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
-                                     position=(inch(22.235), inch(14.845), inch(11.81))),
+                                     position=(inch(21.75), inch(10.625), inch(18.125))),
                          ServicePort(tag="supply", service=Service.SUPPLY_AIR,
-                                     position=(ft(0), inch(14.845), inch(5.905))),
+                                     position=(ft(0), inch(10.625), inch(9.0625))),
                          ServicePort(tag="return", service=Service.RETURN_AIR,
-                                     position=(ft(0), inch(-14.845), inch(5.905))))),
-    EquipmentType(tag="EQ-T-GREE-VIREO-GEN3",
-                  name="Gree Vireo R32 outdoor unit, 24k",
-                  footprint=(inch(37.72), inch(15.83)), height=inch(26.0),
+                                     position=(ft(0), inch(-10.625), inch(9.0625))))),
+    EquipmentType(tag="EQ-T-GREE-FLEXX-ULTRA-24-OD",
+                  name="Gree FLEXX Ultra R32 outdoor unit, 24k (-22F, cold climate)",
+                  footprint=(inch(39), inch(14.5625)), height=inch(37.8125),
                   plan_symbol="heat-pump-outdoor",
-                  heating_capacity_btuh=27000,
-                  heating_capacity_at_design_btuh=13500,
-                  cooling_capacity_btuh=22000,
+                  heating_capacity_btuh=24000,
+                  heating_capacity_at_design_btuh=21000,
+                  cooling_capacity_btuh=24000,
                   min_operating_temp_f=-22.0,
-                  source="Gree VIR24HP230V1R32AO (R32 refrigerant). OUTLINE AND FEET, from the Gree Vireo R32 Service Manual §3 outline diagram p.19 (the sheet is headed with this exact part number, shared with VIR18HP230V1R32AO): 37 23/32 x 25 63/64 x 15 53/64 in overall, foot holes 22 7/16 in apart across the width and 14 39/64 in across the depth, net weight 92.6 lb. This is the Vireo *R32* line and NOT the Vireo GEN3 (R410A), which is a different cabinet with a different foot pattern and a slot running the other way — the record read GEN3 and 38 x 16 x 32 in until 2026-08-28, and the height was wrong by 6 in. Datasheet chart: 27,000 Btu/h at 47F (the 47F rating holds despite the smaller at-design number below because this outdoor unit is paired with the EQ-T-GREE-DUC24 slim-duct air handler, not a wall head), ~16,100-16,500 Btu/h at 5F, ~14,200 Btu/h at -13F, ~12,000 Btu/h at -22F. -15F at-design (13,500 Btu/h) is linearly interpolated between the -13F and -22F chart points and additionally derated for slim-duct static-pressure loss. Cooling is the conservative end of the published 22,000-24,000 Btu/h range. min_operating_temp_f -22F per datasheet operating envelope.",
+                  source="Gree FXU24HP230V1R32AO (FLEXX Ultra, R32). 39 x 37 13/16 x 14 9/16 in overall (W x H x D), foot pattern 29 3/4 in across the width by 15 9/16 in across the depth, net weight 187.4 lb. Electrical MCA 21 A / MOCP 25 A at 208-230 V, single phase. LOW-TEMPERATURE HEATING, read from Gree's FLEXX Ultra Extended Ratings at 70 F return — not interpolated, unlike the VIR24 record this replaced: -22 F 18,000 Btu/h at COP 1.49; -20 F 19,500 at 1.53; -15 F 21,000 at 1.57; and a flat 24,000 Btu/h from -5 F all the way to 47 F. NOTE that this document's COP column is TRUE COP (W/W), unlike the All-Match Extended Ratings whose column is Btu/h per watt. HSPF2 10.0 / SEER2 18.0, ENERGY STAR Cold Climate certified (AHRI 215213329). min_operating_temp_f -22 F per the operating envelope. heating_capacity_at_design_btuh is the -15 F read value, so the unit covers its whole operating range unaided: at -22 F it still makes 18,000 Btu/h against a ~16,400 Btu/h load, which is what demotes EQ-S-HP1-STRIP from a design-condition necessity to true sub-lockout backup.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
     # System 2 — Gree Multi Ultra, one 3-port outdoor unit driving three wall-mount heads
@@ -272,43 +298,43 @@ EQUIPMENT_TYPES = (
                   footprint=(inch(40.16), inch(16.81)), height=inch(32.52),
                   plan_symbol="heat-pump-outdoor",
                   heating_capacity_btuh=30000,
-                  heating_capacity_at_design_btuh=23500,
+                  heating_capacity_at_design_btuh=23687,
                   cooling_capacity_btuh=28400,
                   min_operating_temp_f=-22.0,
-                  source="Gree MUL30HP230V1R32AO. OUTLINE AND FEET, from the Gree Multi R32 Installation & Service Manual §3 outline diagram p.31 (the 30k has its own sheet; the 18/24k share a smaller one): 40 5/32 x 32 33/64 x 16 13/16 in overall, foot holes 25 in apart across the width and 15 19/32 in across the depth, net weight 145.5 lb. The record read 37 x 16 in until 2026-08-28 — 37 1/8 in is the width of the cabinet TOP, which is narrower than its base, and the 3 in of missing width put the unit within an inch of the balcony rim. Datasheet chart: 30,000 Btu/h at 47F, 27,000 Btu/h at 5F, ~24,500 Btu/h at -13F, ~21,500 Btu/h at -22F. -15F at-design (23,500 Btu/h) is linearly interpolated between the -13F and -22F chart points. Cooling 28,400 Btu/h and min_operating_temp_f -22F per datasheet.",
+                  source="Gree MUL30HP230V1R32AO. OUTLINE AND FEET, from the Gree Multi R32 Installation & Service Manual S3 outline diagram p.31 (the 30k has its own sheet; the 18/24k share a smaller one): 40 5/32 x 32 33/64 x 16 13/16 in overall, foot holes 25 in apart across the width and 15 19/32 in across the depth, net weight 145.5 lb. The record read 37 x 16 in until 2026-08-28 — 37 1/8 in is the width of the cabinet TOP, which is narrower than its base, and the 3 in of missing width put the unit within an inch of the balcony rim. RATINGS, from the 30 MBH submittal (AHRI 215218915 non-ducted): SEER2 21, EER2 13.6, HSPF2 10.0, MCA 23 A / MOCP 30 A, heating range -22 F to 75 F. Datasheet chart: 30,000 Btu/h at 47F, 27,000 Btu/h at 5F, ~24,500 Btu/h at -13F, ~21,500 Btu/h at -22F. ** -15F AT-DESIGN IS A READ VALUE SINCE 2026-08-31, NOT AN INTERPOLATION: 23,687 Btu/h from the Extended Ratings, replacing a 23,500 that was linearly interpolated between the -13F and -22F chart points. ** Cooling 28,400 Btu/h per datasheet. ** THE HARDWARE IS NOT CHANGING, and that was researched rather than assumed: no Gree single-zone below -22 F exists at 9-12k at any size, and the only real -31 F multi is R-410A — MULTIU36 makes 25,910 Btu/h at -22 F on 5.57 kW where this unit makes 22,600 on 3.70 kW, i.e. 50% more power for 15% more heat, while giving up HSPF2 10.0 -> 8.6 and SEER2 21 -> 16. This system already runs to -22 F, below the -20 F hard floor. **",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
     # No heating rating by design: three head ratings summed would size a zone against
     # capacity the shared compressor can't deliver simultaneously. Cooling capacity is kept
     # since it's what distinguishes the 9k from the 12k on a schedule.
-    EquipmentType(tag="EQ-T-GREE-HEAD-9", name="Gree wall-mount head, 9k",
-                  footprint=(inch(32), inch(8)), height=inch(12),
-                  cooling_capacity_btuh=9000,  # TODO verify datasheet
-                  source="REPRESENTATIVE PLACEHOLDER — 9k wall-mount head on EQ-T-GREE-MULTI-U30. TODO verify datasheet.",
+    EquipmentType(tag="EQ-T-GREE-HEAD-9", name="Gree Multi R32 wall-mount head, 9k",
+                  footprint=(inch(32.875), inch(7.875)), height=inch(10.828125),
+                  cooling_capacity_btuh=9000,
+                  source="Gree GWH09ATCXB-D6DNA3C/I, the Multi R32 9k wall-mounted indoor unit, from Gree's 'Wall Mounted Indoor Unit 09KBTU R32' submittal: 32 56/64 x 10 53/64 x 7 56/64 in (W x H x D), net weight 19.8 lb. The 9k and the 12k share ONE cabinet — see EQ-T-GREE-HEAD-12 — so nothing on a wall elevation distinguishes them and the cooling rating is what does. This replaced a REPRESENTATIVE PLACEHOLDER (32 x 8 x 12, 'TODO verify datasheet') on 2026-08-31. No heating rating BY DESIGN: three head ratings summed would size a zone against capacity the shared MUL30 compressor cannot deliver simultaneously.",
                   ports=()),
-    EquipmentType(tag="EQ-T-GREE-HEAD-12", name="Gree wall-mount head, 12k",
-                  footprint=(inch(35), inch(9)), height=inch(12),
-                  cooling_capacity_btuh=12000,  # TODO verify datasheet
-                  source="REPRESENTATIVE PLACEHOLDER — 12k wall-mount head on EQ-T-GREE-MULTI-U30. TODO verify datasheet.",
+    EquipmentType(tag="EQ-T-GREE-HEAD-12", name="Gree Multi R32 wall-mount head, 12k",
+                  footprint=(inch(32.875), inch(7.875)), height=inch(10.828125),
+                  cooling_capacity_btuh=12000,
+                  source="Gree GWH12ATCXB-D6DNA3A/I, the Multi R32 12k wall-mounted indoor unit, from Gree's 'Wall Mounted Indoor Unit 12KBTU R32' submittal: 32 7/8 x 10 53/64 x 7 7/8 in (W x H x D), net weight 19.8 lb — the SAME cabinet and the same weight as the 9k (EQ-T-GREE-HEAD-9), to within the 1/64 in the two sheets round to differently. That is a real fact about this line and not a copy-paste: Gree fits both capacities in one shell. This replaced a REPRESENTATIVE PLACEHOLDER (35 x 9 x 12, 'TODO verify datasheet') on 2026-08-31, and the placeholder had it 2 in wider than the 9k, which it is not.",
                   ports=()),
     # System 3 — Gree Sapphire R32, the high-efficiency unit over the stairs. True VFD
     # inverter: the soft start is why this is the one system on the backup battery circuit
     # (a hard-starting compressor is what a battery inverter cannot carry).
     EquipmentType(tag="EQ-T-GREE-SAPPHIRE-9",
                   name="Gree Sapphire R32 wall-mount head, 9.1k (VFD soft start)",
-                  footprint=(inch(33), inch(8)), height=inch(12),
-                  cooling_capacity_btuh=9100,  # TODO verify datasheet
-                  source="REPRESENTATIVE PLACEHOLDER — Sapphire-class 9,100 Btu/h head with a true VFD inverter (soft start, hence the backup-battery circuit). Heating is rated on EQ-T-GREE-SAPPHIRE-9-OD. TODO verify datasheet.",
+                  footprint=(inch(38.1875), inch(10.125)), height=inch(13.65625),
+                  cooling_capacity_btuh=9100,
+                  source="Gree SAP09HP230V1R32AH, the Sapphire R32 9k wall-mounted indoor unit, from the Sapphire R32 9 MBH 230 V submittal (AHRI 214802444): 38 3/16 x 13 21/32 x 10 1/8 in (W x H x D), net weight 33.1 lb. It is a MUCH bigger head than the Multi R32 pair — 5 3/8 in wider, 2 7/8 in taller and 2 1/4 in deeper than EQ-T-GREE-HEAD-9 — which is what a SEER2 30 / HSPF2 11.2 coil costs in volume, and it matters here because this head hangs over the stair. This replaced a REPRESENTATIVE PLACEHOLDER (33 x 8 x 12, 'TODO verify datasheet') on 2026-08-31. True VFD inverter: the soft start is why this is the one system on the backup battery circuit. Heating is rated on EQ-T-GREE-SAPPHIRE-9-OD.",
                   ports=()),
     EquipmentType(tag="EQ-T-GREE-SAPPHIRE-9-OD",
                   name="Gree Sapphire R32 outdoor unit, 9.1k (-22F)",
-                  footprint=(inch(31), inch(13)), height=inch(23),
+                  footprint=(inch(34.375), inch(14.796875)), height=inch(21.859375),
                   plan_symbol="heat-pump-outdoor",
                   heating_capacity_btuh=10600,
-                  heating_capacity_at_design_btuh=9300,
+                  heating_capacity_at_design_btuh=7400,
                   cooling_capacity_btuh=9100,
                   min_operating_temp_f=-22.0,
-                  source="Gree SAP09HP230V1R32AO. Datasheet chart: 10,600 Btu/h at 47F, ~11,500-13,000 Btu/h at 5F, ~10,000 Btu/h at -13F, ~8,200 Btu/h at -22F. -15F at-design (9,300 Btu/h) is linearly interpolated between the -13F and -22F chart points. Cooling 9,100 Btu/h and min_operating_temp_f -22F per datasheet.",
+                  source="Gree SAP09HP230V1R32AO, from the Sapphire R32 9 MBH 230 V submittal (AHRI 214802444): 34 3/8 x 21 27/32 x 14 51/64 in (W x H x D), net weight 78.3 lb, MCA 11 A / MOCP 15 A, SEER2 30.0, HSPF2 11.2, heating range -22 F to 86 F. The outline was 31 x 23 x 13 in until 2026-08-31 — 3 3/8 in narrow and 1 13/16 in shallow. PUBLISHED HEATING, read: 10,600 Btu/h at 47 F, 11,500 at 5 F, 8,900 at 17 F. That 17 F figure is the one the old record got worst: it carried '~11,500-13,000 Btu/h at 5F' and nothing at 17 F, which read as a machine making 12,000 in the middle of its range. It makes 8,900. ** WHICH NUMBER GOVERNS AT DESIGN, AND WHY IT IS NOT GREE'S. ** Gree's own low-ambient table gives ~9,130 Btu/h at -22 F at a 70 F return, at an implied COP of 2.62. A COP of 2.62 at -22 F is not physically plausible for a single-stage residential air-source machine — the best cold-climate units published anywhere are near 1.5 there — and the 8,200 the previous record carried was that table's 90 F-return column, which is a different measurement again. AHRI/NEEP's cold-climate listing says 7,400 Btu/h at 1.32 kW, COP 1.64, at -22 F. THIS DESIGN USES NEEP. heating_capacity_at_design_btuh is 7,400 — the -22 F read value, deliberately used unadjusted at the -15 F design temperature rather than interpolated upward, because the zone is 926 Btu/h and buying margin by interpolation would be spending credibility to gain nothing. min_operating_temp_f -22 F per the operating envelope.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
     # 1,500W/120V = 12.5A; x1.25 continuous = 15.6A needs a 20A breaker (not 15A). Hard-wired
@@ -321,19 +347,29 @@ EQUIPMENT_TYPES = (
                   supplemental_heat=True,
                   ports=(ServicePort(tag="power", service=Service.POWER_120,
                                      position=(ft(0), ft(0), ft(0))),)),
-    # Supplemental duct heater in System 1's supply plenum (2026-08-15): EQ-T-GREE-VIREO-GEN3's
-    # zone had a 16,309 Btu/h block load at -15F design against 13,500 Btu/h at-design output
-    # + FH-S-BATH1's mat, a -1,069 Btu/h shortfall `mep.heating_capacity` was failing on. This
-    # is the standard fix — resistance heat downstream of the coil for the few design hours
-    # the compressor can't reach the load. 2kW x 3.412 = 6,800 Btu/h, no cold-weather derate.
-    # `supplemental_heat` like the fireplace: counts toward its room's zone, opens none of
-    # its own.
-    EquipmentType(tag="EQ-T-DUCT-HEATER-2KW",
-                  name="Inline duct heater, 2 kW, 240V (supply plenum)",
+    # System 1's electric heat kit (retyped from EQ-T-DUCT-HEATER-2KW, and it is a different
+    # part doing a different job). The 2 kW inline element existed because the VIR24 made
+    # 13,500 Btu/h at design against a 16,309 Btu/h block load — a shortfall
+    # `mep.heating_capacity` was failing on. Two things were wrong with that answer: the
+    # DUC24 has no aux-heat terminal, so nothing could stage the element with the compressor;
+    # and covering a design-day deficit with resistance heat is a workaround, not a system.
+    # The FLEXX Ultra covers its own load, and this kit is the factory part that stages off
+    # its 24 VAC board for defrost recovery and for hours below the -22 F lockout.
+    EquipmentType(tag="EQ-T-GREE-FLEXX-HEATKIT-46KW",
+                  name="Gree FLEXX Ultra electric heat kit, 4.6 kW, 240V",
                   footprint=(inch(16), inch(10)), height=inch(10),
-                  heating_capacity_btuh=6800, heating_capacity_at_design_btuh=6800,
+                  # ** AT-DESIGN IS ZERO, AND THAT IS THE POINT OF THE LOCKOUT. ** 15,695
+                  # Btu/h is the nameplate. At this site's -15 F design temperature the kit
+                  # delivers NONE of it: LM-HP1-AUX (plan/circuits.py) is an outdoor
+                  # thermostat that enables the elements only below the compressor's -22 F
+                  # cut-out, which is what makes the elements and the compressor
+                  # non-coincident loads and keeps the house inside its 200 A service. So
+                  # `mep.heating_capacity` must NOT credit it against the design-day block
+                  # load — the margin it reports for System 1 is the machine's own, unaided,
+                  # which is the honest reading and the whole case for the retype.
+                  heating_capacity_btuh=15695, heating_capacity_at_design_btuh=0,
                   supplemental_heat=True,
-                  source="Generic 2 kW / 240 V single-stage open-coil duct heater with integral airflow and high-limit interlock, mounted in the supply plenum downstream of the air handler and enabled only on a second-stage call. Sized to cover the zone design-temperature shortfall with margin, not to carry the house.",
+                  source="Gree FLEXA2LHTR05KWD factory electric heat kit for the FLEXX Ultra air handler: 4.6 kW at 240 V (4.6 x 3,412 = 15,695 Btu/h, no cold-weather derate), MCA 29.9 A, maximum overcurrent device 35 A. It mounts INSIDE the EQ-T-GREE-FLEXX-ULTRA-24-AH cabinet on the discharge side of the coil and is staged by the air handler's own 24 VAC control, which is the whole point of the retype: the EQ-T-DUCT-HEATER-2KW it replaces was a generic inline element in the supply plenum, and the DUC24 it was drawn against had no aux-heat terminal to interlock it with. Its job also changed. It is no longer covering a design-temperature shortfall — the outdoor unit makes 21,000 Btu/h at -15 F against a 15,164 Btu/h zone load unaided — but is true backup for defrost recovery and for the hours below the -22 F compressor lockout. `supplemental_heat` like the fireplace: it counts toward its room's zone and opens none of its own.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
     # Garage infrared heater lamp — same 1,500 W / 120V / 20A arithmetic as the fireplace.
@@ -808,10 +844,10 @@ SECOND_EQUIPMENT = [
     # deck it sheets 8'-8" of bare aluminium to the drip edge and refreezes on the way, on a
     # surface two doors open onto, then ices the box gutter and plugs the 3" leader.
     Equipment(uid="CEE017AAAA", tag="EQ-M-HP1-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(9, 2), ft(-2, -6)), footprint=(inch(37.72), inch(15.83)),
+              position=pt(ft(9, 2), ft(-2, -6)), footprint=(inch(39), inch(14.5625)),
               rotation=deg(90), mount=Mount(kind=MountKind.FLOOR, elevation=inch(13.5)),
               drain_pan=True, pan_drain_ref="PR-S-HP1-COND",
-              type_ref="EQ-T-GREE-VIREO-GEN3", circuit="CKT-HP1", room=None),
+              type_ref="EQ-T-GREE-FLEXX-ULTRA-24-OD", circuit="CKT-HP1", room=None),
     Equipment(uid="CEE018AAAA", tag="EQ-M-HP2-OD", kind=EquipmentKind.HEAT_PUMP,
               position=pt(ft(17, 6), ft(-2, -6)), footprint=(inch(40.16), inch(16.81)),
               rotation=deg(90), mount=Mount(kind=MountKind.FLOOR, elevation=inch(13.5)),
@@ -825,7 +861,7 @@ SECOND_EQUIPMENT = [
     # unit lived at the hall box's south end from 2026-07-30, and every layout decision on
     # this storey was built around a 21"-wide case leaving ~4 7/8" either side of a 30 3/4"
     # cavity. That case was EQ-T-GREE-SLIM24, a REPRESENTATIVE PLACEHOLDER (see the type
-    # above): the real machine is 44 1/2 x 29 11/16 and no 35" box holds it. The 4 7/8"
+    # above): the real machine is 43 1/2" wide and no 35" box holds it. The 4 7/8"
     # slivers were never a lane for a branch either, which is exactly why DU-S-HP-SOUTH had
     # no riser and plans/TODO.md stayed open — the packing problem was an artifact of a
     # placeholder, not a fact about the house.
@@ -836,18 +872,24 @@ SECOND_EQUIPMENT = [
     #
     # `rotation` is GONE with the placeholder. It existed because `EquipmentType.footprint`
     # wins over the element's and the old type stated (43, 21) — the long dimension the wrong
-    # way round for a case that runs across the hall. EQ-T-GREE-DUC24 states (44.47, 29.69),
-    # which is the cabinet as installed: 44 1/2" across x, 29 11/16" along the airflow, supply
-    # out the north face into the trunk and return in the south face out of the return
-    # chamber. Nothing to rotate, and `footprint` here now agrees with the type rather than
-    # fighting it.
+    # way round for a case that runs across the hall. EQ-T-GREE-FLEXX-ULTRA-24-AH states
+    # (43.5, 21.25), which is the cabinet as installed: 43 1/2" across x, 21 1/4" along the
+    # airflow, supply out the north face into the discharge plenum and return in the south
+    # face out of the return chamber. Nothing to rotate, and `footprint` here agrees with the
+    # type rather than fighting it.
     #
-    # (20'-7", 3'-9") puts the case at x 224 3/4"..269 1/4" and y 30 1/8"..59 7/8": 2 5/8"
-    # inside SF-S-HP1's west cavity face, clear of both lanes that pass it by more than the
-    # 2" hanger gap, and — the part that is geometry rather than tidiness — with its north
-    # face 9 3/4" south of ST-S2A's lowest stringer face, so the supply plenum, the branch
-    # take-off and the ERV's east jog all sit south of the stair rather than under it. The
-    # check prints the clearances; do not restate them here.
+    # ** THE CASE MOVED 5 1/4" SOUTH WHEN IT GOT SHALLOWER, AND THE SOUTH FACE IS WHY. **
+    # (20'-7", 3'-4 3/4") puts it at x 225 1/4"..268 3/4" and y 30 1/8"..51 3/8". The FLEXX
+    # Ultra is 8 7/16" shallower than the DUC24, and every one of those inches was taken off
+    # the NORTH end deliberately: y=30 1/8" is where the DUC24's return face was, so
+    # DU-S-HP-RET's 25x14 stub and its 3 1/8" collar reach the machine exactly as before and
+    # the return chamber, REG-S-HP-RET and EQ-S-ERV-MIX are all untouched. What the move buys
+    # is 8 7/16" of clear box NORTH of the discharge — which is what DU-S-HP-SOUTH-RISE's
+    # take-off leg and the heat kit now occupy, between the discharge face and the ERV feed's
+    # east jog at y=5'-5 1/2". Splitting the gain between both ends would have fitted neither.
+    #
+    # It is still 2 5/8" inside SF-S-HP1's west cavity face and clear of the east lanes by
+    # more than the 2" hanger gap; the check prints the clearances, so they are not restated.
     #
     # zone_rooms covers the whole conditioned second storey plus RM-A-STUDY/RM-A-EAST-UNFIN (short
     # attic branches) and RM-A-WEST-UNFIN (suite branch's REG-A-HP-WEST boot, 2026-07-30).
@@ -862,58 +904,67 @@ SECOND_EQUIPMENT = [
     # The old gap in the zone closed by itself; the TODO entry it pointed at is moot.
     Equipment(uid="CEE032AAAA", tag="EQ-S-HP1-AH",
               kind=EquipmentKind.DUCTED_AIR_HANDLER,
-              position=pt(ft(20, 7), ft(3, 9)), footprint=(inch(44.47), inch(29.69)),
-              room="RM-S-STUDY2", type_ref="EQ-T-GREE-DUC24",
+              position=pt(ft(20, 7), ft(3, 4.75)), footprint=(inch(43.5), inch(21.25)),
+              room="RM-S-STUDY2", type_ref="EQ-T-GREE-FLEXX-ULTRA-24-AH",
               outdoor_ref="EQ-M-HP1-OD", circuit="CKT-HP1-AH",
               mount=Mount(kind=MountKind.CEILING), soffit_ref="SF-S-HP1",
               zone_rooms=("RM-S-STUDY2", "RM-S-PLANT", "RM-S-BED1", "RM-S-BED2",
                           "RM-S-BED3", "RM-S-SUITE", "RM-S-SUITEBATH", "RM-S-VANITY",
                           "RM-S-BATH1", "RM-S-HALL", "RM-S-CLOSET", "RM-S-NCLOSET",
                           "RM-A-EAST-UNFIN", "RM-A-STUDY", "RM-A-STUDIO",
-                          "RM-A-STUDIO-BATH", "RM-A-POCKET")),
-    # The duct heater above, downstream of the coil in the supply trunk — inside SF-S-DUCT,
-    # 17" north of the y=8'-9 5/8" seam SF-S-HP1 hands the trunk over on, so it heats every
-    # branch the trunk feeds rather than one room's boot.
+                          "RM-A-STUBATH", "RM-A-POCKET")),
+    # System 1's heat kit, INSIDE the air handler's discharge plenum in SF-S-HP1 — not in
+    # the trunk in SF-S-DUCT, where it sat from 2026-08-15 to today.
     #
-    # ** RE-CENTRED ON THE DUCT IT HEATS, 2026-08-30. ** It sat at x=19'-10" against a trunk
-    # centred on 19'-4" — six inches off the duct it is plumbed into, an existing defect that
-    # nothing had reported, because `mep.duct_soffit_occupancy` reads a duct running THROUGH
-    # a machine as plumbed to it and stops there. x=19'-6" is the 18x8 trunk's new centreline.
+    # ** IT MOVED BECAUSE THE MACHINE IT SERVES CHANGED, AND THE OLD ARRANGEMENT COULD NOT
+    # BE BUILT. ** EQ-T-GREE-DUC24 had no aux-heat terminal: a generic inline element in the
+    # supply trunk had nothing to interlock with, so the second-stage call the old comment
+    # describes did not exist. The FLEXX Ultra's 24 VAC board stages this kit itself, and the
+    # kit is a factory part that lands in the cabinet's discharge — hence `soffit_ref` is
+    # SF-S-HP1, and the plate sits at (21'-1", 4'-8 3/8"): its south edge flush on the
+    # cabinet's discharge face at y=4'-3 3/8", inside DU-S-HP-SOUTH-RISE's take-off leg and
+    # 2" clear of DU-S-HP-SUP's take-off the other side of the same discharge. `mep.duct_soffit_occupancy` reads that leg's
+    # centreline running through the plate and reports the two as one assembly, the same way
+    # it read DU-S-HP-SUP through the old inline element.
     #
-    # `room` is RM-S-HALL, not RM-S-STUDY2 where the air handler is filed: the study's clear
-    # face stops at y=8'-11", the trunk soffit runs the hall, and this sits in the trunk.
-    # (`integrity.placeable_room_mismatch` said so at the first attempt.) It changes nothing
-    # about the credit — `supplemental_heat_by_room` keys on the room, and RM-S-HALL is in
-    # the same EQ-S-HP1-AH zone_rooms list as RM-S-STUDY2 — and it is where the part is.
+    # `room` follows the box: RM-S-STUDY2, which is the room SF-S-HP1 hangs in and the room
+    # the air handler is already filed under. It changes nothing about the credit —
+    # `supplemental_heat_by_room` keys on the room and both rooms are in the same
+    # EQ-S-HP1-AH zone_rooms list — and it is where the part is.
     #
-    # It takes CKT-SPARE-240, the 2-pole the panel has been holding since 2026-07-25 for
-    # "future 240V" — this is that load, and the breaker comes down 30A -> 15A with it
-    # (2,000 W / 240 V = 8.3 A, x125% continuous = 10.4 A). The panel therefore gains no
-    # slot and loses its last spare pair; see plans/TODO.md.
+    # ITS JOB CHANGED TOO, and that is the more important half. It is no longer covering a
+    # design-temperature shortfall: EQ-M-HP1-OD makes 21,000 Btu/h at -15 F against a
+    # 15,164 Btu/h zone load, unaided. This is defrost-recovery and sub-lockout backup.
+    #
+    # CKT-HP1-STRIP IS GONE. A factory kit inside the cabinet is fed from the air handler's
+    # own circuit, so CKT-HP1-AH goes 15A -> 35A (the kit's MCA 29.9 A / max OCPD 35 A) and
+    # the panel gets its spare 2-pole back at slot 18 (plan/circuits.py).
     Equipment(uid="CEE033AAAA", tag="EQ-S-HP1-STRIP", kind=EquipmentKind.SPACE_HEATER,
-              position=pt(ft(19, 6), ft(10, 3)), footprint=(inch(16), inch(10)),
-              room="RM-S-HALL", type_ref="EQ-T-DUCT-HEATER-2KW",
-              circuit="CKT-HP1-STRIP", mount=Mount(kind=MountKind.CEILING),
-              # Same 2026-08-25 correction as the air handler above: without `soffit_ref`
-              # this hung at the 9'-0" storey ceiling instead of inside the box it is
-              # plumbed into. Its 16"x10" plate is measured against SF-S-DUCT's derived
-              # cavity by `mep.duct_soffit_occupancy`, and DU-S-HP-SUP's centreline runs
-              # through it, which is what tells the check the two are one assembly rather
-              # than two things fighting for the same lane.
-              soffit_ref="SF-S-DUCT"),
+              position=pt(ft(21, 1), ft(4, 8.375)), footprint=(inch(16), inch(10)),
+              room="RM-S-STUDY2", type_ref="EQ-T-GREE-FLEXX-HEATKIT-46KW",
+              circuit="CKT-HP1-AH", mount=Mount(kind=MountKind.CEILING),
+              soffit_ref="SF-S-HP1"),
 ]
 
-# --- Garage: both EV receptacles on the south wall, east of the service door ----------
+# --- Garage: EV receptacles on the west and south walls ----------
 # ED-G-EV-1450 is on W-G-S's INTERIOR face, so it followed the wall 1" north on 2026-08-26
 # when the catlin truss pushed the house's cladding out and the whole 24'x24' garage moved
 # with it (plan/storeys/garage.py::GARAGE_Y_SOUTH). Same move as ED-G-SW and ED-G-EXT-SW in
 # plan/lighting.py, and the same 1/2" move all three made on 2026-08-23.
+#
+# ** BOTH MOVED AGAIN ON 2026-08-31, and this time it is the WALL that got thinner, not the
+# node line. ** GARAGE_WALL_2X6's sheathing went 1.5" Zip-R -> 5/8" CDX (-7/8" of depth) and
+# its cladding went 1/2" nail strip -> 7/8" corrugated (+3/8" of depth), so the INTERIOR
+# (gwb) face receded 7/8" toward the sheathing while the whole wall also carried the 3/8"
+# node-line move (`GARAGE_Y_SOUTH`) that kept the breezeway slot. Net, on W-G-S's interior
+# face: +3/8" (node) - 7/8" (thinner wall) = -1/2". `ED-G-EV-620` is on W-G-W, which has no
+# node-line move, so its interior face just receded the full 7/8".
 GARAGE_DEVICES = [
     ElectricalDevice(uid="CEE008AAAA", tag="ED-G-EV-620", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(0, 9.625), ft(56, 0.75)), type_ref="ED-T-EV-620", circuit="CKT-EV-620",
+                     position=pt(ft(0, 8.75), ft(56, 0.75)), type_ref="ED-T-EV-620", circuit="CKT-EV-620",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE", rotation=deg(90)),
     ElectricalDevice(uid="CEE009AAAA", tag="ED-G-EV-1450", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(19, 11.375), ft(41, 5.875)), type_ref="ED-T-EV-1450", circuit="CKT-EV-1450",
+                     position=pt(ft(19, 11.375), ft(41, 5.375)), type_ref="ED-T-EV-1450", circuit="CKT-EV-1450",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE"),
 ]
 

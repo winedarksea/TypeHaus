@@ -29,7 +29,9 @@ def test_the_garage_is_one_assembly_in_one_colour(catlin_model) -> None:
     for tag in ("W-G-S", "W-G-E", "W-G-N", "W-G-W"):
         assert walls[tag].assembly == "GARAGE_WALL_2X6", (
             f"{tag} must not need its own assembly to carry a colour")
-        assert _cladding(catlin_model, tag).material_ref == "standing-seam-nailstrip-26", (
+        # `corrugated-panel-26` since 2026-08-31 (the rebuild off Zip-R/nail-strip); still
+        # the house white, still one tag for all four walls.
+        assert _cladding(catlin_model, tag).material_ref == "corrugated-panel-26", (
             f"{tag} is white; the garage green was reverted on 2026-08-26")
 
 
@@ -74,7 +76,7 @@ def test_an_override_substitutes_the_material_and_nothing_else(tmp_path) -> None
     source = garage.read_text()
     plain_wall = ('    Wall(uid="CGW102AAAA", tag="W-G-E", start_node="N-G-SE", '
                   'end_node="N-G-NE",\n'
-                  '         assembly="GARAGE_WALL_2X6", alignment=face("zip-r-ext"), '
+                  '         assembly="GARAGE_WALL_2X6", alignment=face("cdx-ext"), '
                   'top=ft(8, 4),\n'
                   '         structural_role=StructuralRole.NONBEARING),')
     assert plain_wall in source, "W-G-E is no longer the plain wall this test overrides"
@@ -93,7 +95,7 @@ def test_an_override_substitutes_the_material_and_nothing_else(tmp_path) -> None
     overridden = _cladding(model, "W-G-E")
     plain = _cladding(model, "W-G-N")
     assert overridden.material_ref == "standing-seam-nailstrip-26-green"
-    assert plain.material_ref == "standing-seam-nailstrip-26", (
+    assert plain.material_ref == "corrugated-panel-26", (
         "the override must touch only the wall that authored it")
     assert overridden.thickness_m == pytest.approx(plain.thickness_m)
     assert overridden.function == plain.function == "cladding"

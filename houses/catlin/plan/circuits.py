@@ -76,14 +76,26 @@ CIRCUITS = (
     # The three Gree heat-pump systems (plan/electrical.py). A multi's indoor heads are fed
     # from the outdoor unit, so System 2's three heads add no circuits; System 1's ducted
     # air handler does get its own, because a ducted blower is fed at the unit.
+    # 25A is unchanged and still correct: the FXU24HP230V1R32AO's MCA is 21 A and its maximum
+    # overcurrent device is 25 A, the same pair of numbers the VIR24 carried. `load_va` is
+    # MCA x 240 V (21 x 240 = 5,040), which is the conservative reading — MCA already carries
+    # the 125% on the compressor, so this over-states the running load rather than under-stating
+    # it in the 220.82 summary. Nothing in checks/ compares breaker_amps to load_va; this
+    # arithmetic is held correct by hand, and saying so is part of keeping it that way.
     Circuit(uid="CKT009AAAA", tag="CKT-HP1", slot=6, panel_ref=_PANEL, breaker_amps=25, poles=2,
-            load_va=4800, description="Heat pump 1 outdoor, Vireo GEN3 (EQ-M-HP1-OD)"),
+            load_va=5040, description="Heat pump 1 outdoor, FLEXX Ultra 24k (EQ-M-HP1-OD)"),
     # uids CKT036/037, not CKT031/032: those were already spent on the radiant-floor
     # circuits below (a duplicate found 2026-08-01). Devices name the tag, not the uid,
     # so renumbering this pair was the whole fix.
-    Circuit(uid="CKT036AAAA", tag="CKT-HP1-AH", slot=50, panel_ref=_PANEL, breaker_amps=15, poles=2,
-            load_va=1000,
-            description="Heat pump 1 indoor, concealed ducted air handler (EQ-S-HP1-AH)"),
+    # ** 15A -> 35A ON THE FLEXX ULTRA RETYPE, AND IT ABSORBED CKT-HP1-STRIP. ** The air
+    # handler now carries the 4.6 kW factory heat kit (EQ-S-HP1-STRIP, FLEXA2LHTR05KWD) inside
+    # its own cabinet, staged off its own 24 VAC board, so the kit is fed from the unit and not
+    # from a circuit of its own. 4,600 W / 240 V = 19.2 A for the elements plus ~3 A of blower
+    # = 22.2 A, x125% continuous = 27.7 A; the kit's published MCA is 29.9 A and its maximum
+    # overcurrent device 35 A, which is the breaker. load_va 5,300 = 4,600 + ~700 of blower.
+    Circuit(uid="CKT036AAAA", tag="CKT-HP1-AH", slot=50, panel_ref=_PANEL, breaker_amps=35, poles=2,
+            load_va=5300,
+            description="Heat pump 1 indoor, ducted air handler + 4.6 kW heat kit (EQ-S-HP1-AH, EQ-S-HP1-STRIP)"),
     Circuit(uid="CKT037AAAA", tag="CKT-HP2", slot=49, panel_ref=_PANEL, breaker_amps=30, poles=2,
             load_va=6000,
             description="Heat pump 2 outdoor, Multi Ultra 3-port (EQ-M-HP2-OD; feeds its 3 heads)"),
@@ -111,13 +123,13 @@ CIRCUITS = (
     Circuit(uid="CKT012AAAA", tag="CKT-ESS-GRID", slot=40, panel_ref=_PANEL, breaker_amps=50,
             poles=2, source=True, load_va=0,
             description="EG4 12kPV grid port — PV + battery interconnection (EQ-B-ESS-INV)"),
-    # Was the panel's spare 2-pole ("conduit stubbed for future 240V"). Claimed 2026-08-15
-    # by EQ-S-HP1-STRIP, the 2 kW duct heater answering System 1's design-temperature
-    # shortfall. 2,000W/240V=8.3A, x1.25 continuous=10.4A, so the breaker comes down to
-    # 15A — a 30A breaker protects nothing this conductor needs. Panel now holds no spare
-    # 2-pole (plans/TODO.md).
-    Circuit(uid="CKT013AAAA", tag="CKT-HP1-STRIP", slot=18, panel_ref=_PANEL, breaker_amps=15, poles=2,
-            load_va=2000, description="System 1 supplemental duct heater (EQ-S-HP1-STRIP)"),
+    # CKT-HP1-STRIP IS DELETED, AND SLOT 18 IS A SPARE 2-POLE AGAIN. It existed from
+    # 2026-08-15 to today to feed a generic 2 kW inline duct heater — a part that answered a
+    # design-temperature shortfall the FLEXX Ultra retype removes, and that could never have
+    # been interlocked with the EQ-T-GREE-DUC24 it was drawn against, because that machine had
+    # no aux-heat terminal. The replacement is a FACTORY kit inside the air handler's cabinet,
+    # fed and staged from the unit, so it rides CKT-HP1-AH above. The panel gets back the
+    # spare 2-pole it lost on 2026-08-15.
 
     # --- electric space heating (2026-07-25) -----------------------------------------
     # Supplemental only — the three heat-pump systems do the heating work, these five
@@ -392,6 +404,34 @@ LOAD_MANAGEMENTS = (
     # EQ-T-WATER-HEATER's note in plan/mep.py); 4,500VA nameplate is what the breaker and
     # 220.82 base case assume otherwise. A single-circuit "group" is correct here — one
     # appliance governing its own two internal loads, not a simplification of two tanks.
+    # System 1's aux heat against System 1's compressor — an OUTDOOR THERMOSTAT LOCKOUT, and
+    # the reason the 4.6 kW kit does not need a service upgrade to sit in this panel.
+    #
+    # ** THE 220.82(C) ARITHMETIC IS WHY THIS EXISTS. ** The kit is 4,600 W. Dropped into the
+    # heat-pump term at 100% alongside the outdoor unit it lands the house at 210.6 A against
+    # a 200 A service — `electrical.service_load` says so, and it is right to. But the two are
+    # NON-COINCIDENT loads (NEC 220.60): the FLEXX Ultra covers its zone unaided to its -22 F
+    # lockout (EQ-T-GREE-FLEXX-ULTRA-24-OD makes 21,000 Btu/h at -15 F against a 15,164 Btu/h
+    # block load), so the kit is backup for the hours BELOW that lockout — the hours the
+    # compressor is off. An outdoor thermostat enabling the elements only under the
+    # compressor's own cut-out is the control that makes that a fact rather than an intention.
+    #
+    # 5,740 VA is the larger of the two states, not the larger of the two circuits: the blower
+    # runs in both. Compressor 5,040 + blower ~700 = 5,740; elements 4,600 + blower ~700 =
+    # 5,300. So the group's connected 10,340 VA never all arrives, and 4,600 of it — exactly
+    # the elements — is what the credit removes.
+    #
+    # WHAT IT COSTS, said plainly: the kit is locked out during defrost too, so the discharge
+    # runs cool for the two to four minutes of a defrost cycle rather than being tempered by
+    # resistance heat. That is the trade for not upsizing the service, and it is the standard
+    # cold-climate arrangement, not a compromise invented here.
+    LoadManagement(uid="EMSHP0AAAA", tag="LM-HP1-AUX",
+                   managed_circuits=("CKT-HP1", "CKT-HP1-AH"),
+                   max_simultaneous_va=5740, strategy="interlock",
+                   source="Outdoor-thermostat lockout on the FLEXX Ultra's 24 VAC aux-heat "
+                          "output: the 4.6 kW heat kit is enabled only below the -22 F "
+                          "compressor lockout, so elements and compressor are non-coincident "
+                          "loads (NEC 220.60)"),
     LoadManagement(uid="EMSWH0AAAA", tag="LM-WH",
                    managed_circuits=("CKT-WH-240",),
                    max_simultaneous_va=500, strategy="ems",

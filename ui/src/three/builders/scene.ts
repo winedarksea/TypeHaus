@@ -22,7 +22,8 @@ import { buildCanvasObject, buildEarth } from "./site";
 import { buildOpening, buildWall } from "./walls";
 import {
   buildBrace, buildFloor, buildFootingBedding, buildLightRun, buildRoof, buildRoomFloor,
-  buildPaneling, buildSolarPanel, buildSolid, buildStair, storeyFloorTopM,
+  buildPaneling, buildSoffitFraming, buildSolarPanel, buildSolid, buildStair,
+  storeyFloorTopM,
 } from "./structure";
 
 /** What a click can land on, and which materials the highlight pass drives per uid. */
@@ -188,6 +189,11 @@ export function populateScene(options: PopulateSceneOptions) {
     buildStair(tradeGroups.stairs, stair, center, mode, palette, registry.picks, registry.byUid,
       model.catalog?.materials);
   }
+  for (const soffit of model.soffits ?? []) {
+    buildSoffitFraming(tradeGroups.framing, soffit, center, mode, palette, registry.picks,
+      registry.byUid, model.catalog?.materials);
+  }
+
   for (const brace of model.braces ?? []) {
     buildBrace(tradeGroups.framing, brace, center, mode, palette, registry.picks, registry.byUid,
       model.catalog?.materials);

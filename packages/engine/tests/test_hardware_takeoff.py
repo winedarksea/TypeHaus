@@ -647,12 +647,17 @@ def test_the_canduit_ring_is_still_the_one_part_serving_the_pipe_clamp_role() ->
     assert ring.tag != strap.tag
 
 
-def test_catlin_bills_panel_screws_on_the_house_walls_only(catlin_model) -> None:
-    """The house is PBR; the garage stays nail strip, and nail strip's fixings are in its rate.
+def test_catlin_bills_panel_screws_on_the_house_and_garage_walls(catlin_model) -> None:
+    """The house is PBR and the garage is 7/8" corrugated (since 2026-08-31) — both are
+    exposed-fastener, both land on this one SKU, and both must appear here.
 
-    This is the same guard as the unit test above, asserted against the real model: if the
-    garage's ``standing-seam-nailstrip-26`` ever leaked into this rule it would bill ~600
-    screws that the garage's $/SF row has already paid for.
+    Until 2026-08-31 the garage was nail strip and this test asserted the opposite: that
+    ``garage`` never appeared in ``by_storey``, because nail strip's fixings are inside its
+    $/SF rate. ``GARAGE_WALL_2X6`` dropped nail strip that day for ``corrugated-panel-26``,
+    which *is* exposed-fastener, so the garage's ~640 screws (prices.toml's count) belong on
+    these rows now — the double-billing guard this test polices is that a CONCEALED-fastener
+    material (``standing-seam-nailstrip-26``, still worn by the garage roof) must never
+    appear, not that any particular storey must not.
     """
     rows = [row for row in hardware_takeoff(catlin_model)
             if row["role"] == ROLE_EXPOSED_FASTENER_PANEL_SCREW]
@@ -661,11 +666,17 @@ def test_catlin_bills_panel_screws_on_the_house_walls_only(catlin_model) -> None
     for row in rows:
         assert row["part_number"] == "T09150HWAM" and row["size"] == "1.5 in"
         assert row["count"] == sum(row["by_storey"].values()) > 0
-        # The garage is one storey and is not PBR, so it must not appear on either row.
-        assert "garage" not in row["by_storey"], row["by_storey"]
+        # Every storey with an exposed-fastener wall skin bills here, garage included.
+        assert set(row["by_storey"]) == {"attic", "garage", "main", "second"}, row["by_storey"]
     field = next(r for r in rows if r["scope"].endswith("field"))
     sidelap = next(r for r in rows if r["scope"].endswith("sidelap"))
     assert "12 in o.c." in field["basis"] and "24 in o.c." in field["basis"]
     assert "openings not deducted" in field["basis"]
     assert "36 in panel coverage" in sidelap["basis"]
     assert field["count"] > sidelap["count"] > 0
+    # 2,599 field / 664 sidelap: 2,099/524 house PBR + 500/140 garage corrugated. The garage
+    # count is a known approximation — ``ExposedFastenerCladdingRules`` hard-codes PBR's 12"
+    # rib pitch and 36" coverage rather than corrugated's 2-2/3"/32" (prices.toml, `S-5-N`
+    # row) — recorded there rather than fixed for one building.
+    assert field["count"] == 2599 and field["by_storey"]["garage"] == 500
+    assert sidelap["count"] == 664 and sidelap["by_storey"]["garage"] == 140

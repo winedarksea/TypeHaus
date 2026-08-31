@@ -7,7 +7,7 @@
 import * as THREE from "three";
 import type {
   Brace, Catalog, FootingBedding, Floor, LightRun, Member, Paneling, Roof, Room, Solid,
-  SolarPanel, Stair, Vec2,
+  SoffitFraming, SolarPanel, Stair, Vec2,
 } from "../../model/types";
 import { layerVisibilityGroupOf, type LayerVisibilityGroup } from "../../model/visibility";
 import {
@@ -33,6 +33,7 @@ import {
 import { createSolidMaterial } from "../solidMaterials";
 import { createSweepGeometry } from "../tubeGeometry";
 import { makeSurfaceMesh, NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
+import type { SelectionKind } from "../../state/vocabulary";
 import { registerSelectable, tagLayerGroup } from "./registry";
 
 // A resolved solid: a plan prism, or — when it carries a `sweep` — the mitred tube of a run.
@@ -482,11 +483,31 @@ export function buildStair(parent: THREE.Group, stair: Stair, center: PlanCenter
 }
 
 // Same shape as a stair: a brace is only its diagonal, so the member bucket is the click target.
-export function buildBrace(parent: THREE.Group, brace: Brace, center: PlanCenter,
+// A host that is nothing but its own sticks: a brace, a soffit's ladder framing. Both were
+// the same six lines, and this file is against AGENTS.md's 500-line limit, so they share one.
+// `kind` is what differs and it is not cosmetic — a brace selects as "brace", while a
+// soffit's framing selects as "solid" on the soffit's own uid, so picking a rung highlights
+// the finished box with it, the way picking a stud highlights its wall.
+function buildFramedHost(parent: THREE.Group, host: { uid: string; members: Member[] },
+  kind: SelectionKind, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>,
   materials?: readonly MaterialAppearance[]) {
   const firstChildIndex = parent.children.length;
-  buildMembers(parent, brace.members, center, mode, palette, brace.uid, materials);
-  registerSelectable(parent, firstChildIndex, brace.uid, "brace", picks, byUid);
+  buildMembers(parent, host.members, center, mode, palette, host.uid, materials);
+  registerSelectable(parent, firstChildIndex, host.uid, kind, picks, byUid);
+}
+
+export function buildBrace(parent: THREE.Group, brace: Brace, center: PlanCenter,
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>,
+  materials?: readonly MaterialAppearance[]) {
+  buildFramedHost(parent, brace, "brace", center, mode, palette, picks, byUid, materials);
+}
+
+export function buildSoffitFraming(parent: THREE.Group, soffit: SoffitFraming,
+  center: PlanCenter, mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>,
+  materials?: readonly MaterialAppearance[]) {
+  buildFramedHost(parent, soffit, "solid", center, mode, palette, picks, byUid, materials);
 }

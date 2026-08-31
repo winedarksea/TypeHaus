@@ -110,12 +110,14 @@ def test_skin_members_carry_a_material_and_lumber_does_not(catlin_payload):
     garage = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-GARAGE")
     # The garage's gable closure carries the GARAGE WALL's own metal, not the house's. Since
     # 2026-08-20 the catlin skin is four material tags in one `skin_family` (mechanically
-    # seamed house roof, snap-lock house walls, 24 ga nail-strip garage roof, 26 ga nail-strip
-    # garage walls), so what this asserts is the closure naming a real seam material rather
-    # than a specific one — name the tag and this test breaks every time a gauge changes.
+    # seamed house roof, snap-lock house walls, 24 ga nail-strip garage roof, and — since
+    # 2026-08-31, replacing 26 ga nail-strip — 7/8" corrugated garage walls), so what this
+    # asserts is the closure naming a real skin material rather than a specific one — name
+    # the tag and this test breaks every time a gauge or profile changes.
     gable = [m for m in garage["members"]
              if "W-G-E-closure-" in m["key"] and m["category"] == "cladding"]
-    assert gable and all(m["material"].startswith("standing-seam") for m in gable)
+    assert gable and all(m["material"].startswith(("standing-seam", "corrugated"))
+                          for m in gable)
     # **The garage's cap is Copper Penny since 2026-08-27, not the roofing's own stock.**
     # RF-GARAGE authors `edge_trim_material` now, so its vented ridge cap takes the same
     # PVDF metallic coil as its six fascia pieces — the one place on the site that does not

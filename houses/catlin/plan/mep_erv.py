@@ -868,17 +868,25 @@ DUCTS_ERV_MIX_FEED = [
             # same 6" run to the same point. What is new is the 12'-2" that continues from
             # there: south inside SF-S-DUCT beside the 18x8 trunk (18 + 2 hanger gap + 6 = 26
             # against 30 3/4" clear, which is the whole reason the trunk went to 18x8 and not
-            # 20x8), across the y=7'-6" seam into SF-S-HP1, east at y=5'-5 1/2" — in the 5"
-            # of clear cavity between the air handler's north face and ST-S2A's lowest
-            # stringer, which is the only band in the box where a 6" duct may cross all three
+            # 20x8), across the y=7'-6" seam into SF-S-HP1, east at y=5'-5 1/2" — the
+            # band between the air handler's discharge plenum and ST-S2A's lowest stringer,
+            # which is the only place in the box where a 6" duct may cross all three
             # lanes — and south down the east lane onto EQ-S-ERV-MIX at (24'-1", 1'-9").
-            # It cannot pass the machine on the west: the cabinet is 44 1/2" wide in a
-            # 72 1/4" cavity, so x=20'-8" runs straight through it, and only the east third
+            # It cannot pass the machine on the west: the cabinet is 43 1/2" wide in a
+            # 72 3/4" cavity, so x=20'-8" runs straight through it, and only the east third
             # of the box is a lane. Nothing rides RM-A-STUDY's finished floor.
             #
-            # One elevation the whole way, -20 7/8" (219 1/8" absolute): a 6" duct on
-            # SF-S-DUCT's clear underside, which in SF-S-HP1's deeper cavity sits 3" up off
-            # the floor of the box rather than on it. A step would buy nothing.
+            # ** THE JOG MAY NOT MOVE SOUTH. ** Since 2026-08-31 it clears the north edge of
+            # DU-S-HP-SOUTH-RISE's take-off leg and EQ-S-HP1-STRIP's plate by 1 1/8" — the
+            # tightest joint in this box, and one `mep.duct_soffit_occupancy` will not
+            # report, because it compares a pair's clearance ACROSS the box and this one is
+            # separated ALONG it. North it may go if something ever needs the room; south it
+            # may not.
+            #
+            # One elevation the whole way, -24 7/8" (215 1/8" absolute): 6" above SF-S-HP1's
+            # cavity floor, which came down 4" when the box went from a 17" drop to 21" for
+            # the FLEXX Ultra cabinet. It was -20 7/8" against the old floor for the same 6".
+            # A step would buy nothing.
             path=(pt(ft(0, 5), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)),
                   pt(ft(1), ft(22)),
                   pt(ft(1), ft(22)), pt(ft(20, 8), ft(22)),
@@ -889,8 +897,8 @@ DUCTS_ERV_MIX_FEED = [
                   pt(ft(24, 1), ft(1, 9))),
             elevations=(inch(-8.875), inch(-8.875), inch(4), inch(4),
                         inch(-8.875), inch(-8.875),
-                        inch(4), inch(4), inch(-20.875),
-                        inch(-20.875), inch(-20.875), inch(-20.875)),
+                        inch(4), inch(4), inch(-24.875),
+                        inch(-24.875), inch(-24.875), inch(-24.875)),
             # `routing` stays CHASE: the legs above are a boxed floor chase and a run on an
             # unfinished deck, and CHASE keeps its honest meaning for a shaft that is not a
             # modeled Soffit. `soffit_ref` names SF-S-HP1 so the tail's two segments in that
