@@ -322,9 +322,19 @@ MN_2024 = JurisdictionProfile(
         # day the framework landed, which is precisely what `engineered()`'s NO_CALC branch
         # is written to avoid. Each flips to blocking in the commit that registers its
         # calculation — `haus engineering` is the worklist.
+        # **FLIPPED TO BLOCKING 2026-08-30, which is what the paragraph above promised.**
+        # `engineering/retaining_wall` and `engineering/retaining_system` are both registered
+        # now and this line reports PASS on 11 results, so the flip costs nothing today. What
+        # it buys is that a regression on `structural.foundation_unbalanced_fill` stops the
+        # permit set instead of passing quietly in the non-gating lane — which is exactly the
+        # condition that went unnoticed for the hours catlin sat at FS 0.73.
+        #
+        # It moves the DRAFT gate only. `--sealed` is untouched: these items carry no
+        # professional signoff and `PermitChecklistItem.sealed` still says so, which is the
+        # honest reading of a screening on presumptive values with no geotechnical report.
         PermitItemSpec("Retaining walls outside the prescriptive path",
                        ("structural.foundation_unbalanced_fill",),
-                       ("IRC R404.1.1", "IRC R404.4"), blocking=False),
+                       ("IRC R404.1.1", "IRC R404.4")),
         PermitItemSpec("Engineered headers over wide openings",
                        ("structural.header_prescriptive",),
                        ("IRC R602.7",), blocking=False),
