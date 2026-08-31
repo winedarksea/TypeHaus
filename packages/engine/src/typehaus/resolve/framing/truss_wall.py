@@ -483,9 +483,19 @@ def frame_wall_girts(plan: PlanModel, wall: ResolvedWall, openings: list[Resolve
     if frame is None:
         return (), []
 
-    field = {tier: [member for member in wall.members
-                    if member.child_key.startswith(f"strapping-{name}-")]
-             for tier, name in ((INNER, inner.name), (OUTER, outer.name))}
+    # A band's members are its field courses AND, on a raked wall, the one nailer along the
+    # rake. They are separated here rather than inside the frame because the difference is
+    # not a property of the block pass: a field course has one elevation and pairs with its
+    # partner in the other band at that elevation, and a rake has an elevation per station.
+    # Read as a course, a rake would pair against whatever shares its ``p0`` elevation.
+    field: dict[str, list[FramedMember]] = {}
+    rakes: dict[str, list[FramedMember]] = {}
+    for tier, name in ((INNER, inner.name), (OUTER, outer.name)):
+        prefix = f"strapping-{name}-"
+        members_of = [m for m in wall.members if m.child_key.startswith(prefix)]
+        rake = f"{prefix}rake-"
+        field[tier] = [m for m in members_of if not m.child_key.startswith(rake)]
+        rakes[tier] = [m for m in members_of if m.child_key.startswith(rake)]
     voids = [(op.center_along_m - op.width_m / 2.0,
               op.center_along_m + op.width_m / 2.0,
               wall.base_ref_z_m + op.sill_m,
@@ -505,6 +515,7 @@ def frame_wall_girts(plan: PlanModel, wall: ResolvedWall, openings: list[Resolve
         (frame.station_of(member), member.z0_m, member.z1_m)
         for member in wall.members if member.category in STUDLIKE)
     members, findings = frame.blocks(field, voids, butts, verticals)
+    members.extend(frame.rake_blocks(rakes, voids, verticals))
     elevations = course_elevations(wall, bands[1].framing, frame.stock_face)
     for index, opening in enumerate(openings):
         members.extend(frame.opening_frame(opening, index, elevations))

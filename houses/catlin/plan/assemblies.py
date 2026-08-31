@@ -161,7 +161,7 @@ CATLIN_EXT_2X6 = Assembly(
               function=LayerFunction.INSULATION,
               control={ControlLayer.AIR, ControlLayer.WATER,
                        ControlLayer.VAPOR, ControlLayer.THERMAL}),
-        # BAND B, 1.5 - 3.0". The INNER GIRT: plain SPF 2x4 laid flat, horizontal, 24" o.c.,
+        # BAND B, 1.5 - 3.0". The INNER GIRT: plain SPF 2x4 laid flat, horizontal, 32" o.c.,
         # buried in the second foam lift and never wet. One 5" SDWS per block-1 through
         # girt + block + sheathing into the stud. `standoff="block"` is the whole selector
         # for `resolve/framing/truss_girts.py`; `layout_origin="line"` puts its blocks on
@@ -172,17 +172,20 @@ CATLIN_EXT_2X6 = Assembly(
         # foam over 100% of the area and hide both girt tiers entirely. Split,
         # `analysis._layer_rsi` parallel-paths each band exactly as it already does a stud
         # bay, and the take-off bills the fills as `insulation (cavity)`.
-        # ff 0.146 is 3.5" of flat girt per 24" course. The band A/C BLOCKS (3.2% each) are
-        # modelled by the pass and are deliberately NOT authored as a fill — a plain
-        # INSULATION layer carries no framing factor — so the card reads a little high and
-        # notes/catlin_truss_engineering.md states the honest number.
+        # ff 0.109 is 3.5" of flat girt per 32" course; it was 0.146 per 24" course until
+        # 2026-08-30, and the two have to move together or the wall is credited for foam it
+        # does not have. The band A/C BLOCKS (3.2% each) are modelled by the pass and are
+        # deliberately NOT authored as a fill — a plain INSULATION layer carries no framing
+        # factor — so the card reads a little high and notes/catlin_truss_engineering.md
+        # states the honest number.
         Layer(name="inner-girt", material_ref="spf", thickness=inch(1.5),
               function=LayerFunction.FURRING,
               framing=FramingSpec(member="2x4", direction="horizontal", laid="flat",
-                                  spacing=inch(24), layout_origin="line",
+                                  spacing=inch(32), layout_origin="line",
+                                  course_datum="framing-base", course_offset=inch(-3.5),
                                   standoff="block"),
               cavity=CavityFill(material_ref="closed-cell-spray-foam",
-                                thickness=inch(1.5), framing_factor=0.146,
+                                thickness=inch(1.5), framing_factor=0.109,
                                 control={ControlLayer.AIR, ControlLayer.WATER,
                                          ControlLayer.VAPOR, ControlLayer.THERMAL})),
         # BAND C, 3.0 - 4.5", authored as its two halves. The last 1" of the 4" foam total,
@@ -198,7 +201,7 @@ CATLIN_EXT_2X6 = Assembly(
               function=LayerFunction.AIRGAP),
         # BAND D, 4.5 - 6.0". The OUTER GIRT: the cladding nailer, the window mount plane,
         # and the one treated layer in the wall — block-2 inherits its material, which is
-        # what puts the two block tiers on two BOM rows. Same 24" courses at the SAME
+        # what puts the two block tiers on two BOM rows. Same 32" courses at the SAME
         # elevations as the inner girt; one 5" SDWS per block-2 into the inner girt. It is
         # a 3-1/2"-deep horizontal ledge behind the cladding that will wet-cycle for the
         # life of the wall, which is why KDAT and not the vent alone carries it. No fill:
@@ -206,7 +209,8 @@ CATLIN_EXT_2X6 = Assembly(
         Layer(name="outer-girt", material_ref="kdat", thickness=inch(1.5),
               function=LayerFunction.FURRING,
               framing=FramingSpec(member="2x4", direction="horizontal", laid="flat",
-                                  spacing=inch(24), layout_origin="line",
+                                  spacing=inch(32), layout_origin="line",
+                                  course_datum="framing-base", course_offset=inch(-3.5),
                                   standoff="block")),
         Layer(name="cladding", material_ref="pbr-panel-26", thickness=inch(1.25),
               function=LayerFunction.CLADDING),
@@ -2121,7 +2125,7 @@ MATERIALS = [
     # coverage with 1-1/4" major ribs at 12" o.c., screwed through its face into the girts.
     #
     # It is here because the 2026-08-26 truss-girt work built the substrate for it — flat
-    # horizontal 2x4 girts at 24" o.c. are exactly what a PBR panel wants and are the
+    # horizontal 2x4 girts (32" o.c. since 2026-08-30) are what a PBR panel wants and are the
     # reason this stops at the house: GARAGE_WALL_2X6 has no furring at all (cladding
     # straight on Zip-R), so PBR there would need a whole new girt layer, and that cost
     # cancels the saving over 631 SF. The garage stays on `standing-seam-nailstrip-26`.
@@ -2438,7 +2442,7 @@ PLANT_EXT_2X6_HUMID = Assembly(
               function=LayerFunction.INSULATION,
               control={ControlLayer.AIR, ControlLayer.WATER,
                        ControlLayer.VAPOR, ControlLayer.THERMAL}),
-        # BAND B, 1.5 - 3.0". The INNER GIRT: plain SPF 2x4 laid flat, horizontal, 24" o.c.,
+        # BAND B, 1.5 - 3.0". The INNER GIRT: plain SPF 2x4 laid flat, horizontal, 32" o.c.,
         # buried in the second foam lift and never wet. One 5" SDWS per block-1 through
         # girt + block + sheathing into the stud. `standoff="block"` is the whole selector
         # for `resolve/framing/truss_girts.py`; `layout_origin="line"` puts its blocks on
@@ -2449,17 +2453,20 @@ PLANT_EXT_2X6_HUMID = Assembly(
         # foam over 100% of the area and hide both girt tiers entirely. Split,
         # `analysis._layer_rsi` parallel-paths each band exactly as it already does a stud
         # bay, and the take-off bills the fills as `insulation (cavity)`.
-        # ff 0.146 is 3.5" of flat girt per 24" course. The band A/C BLOCKS (3.2% each) are
-        # modelled by the pass and are deliberately NOT authored as a fill — a plain
-        # INSULATION layer carries no framing factor — so the card reads a little high and
-        # notes/catlin_truss_engineering.md states the honest number.
+        # ff 0.109 is 3.5" of flat girt per 32" course; it was 0.146 per 24" course until
+        # 2026-08-30, and the two have to move together or the wall is credited for foam it
+        # does not have. The band A/C BLOCKS (3.2% each) are modelled by the pass and are
+        # deliberately NOT authored as a fill — a plain INSULATION layer carries no framing
+        # factor — so the card reads a little high and notes/catlin_truss_engineering.md
+        # states the honest number.
         Layer(name="inner-girt", material_ref="spf", thickness=inch(1.5),
               function=LayerFunction.FURRING,
               framing=FramingSpec(member="2x4", direction="horizontal", laid="flat",
-                                  spacing=inch(24), layout_origin="line",
+                                  spacing=inch(32), layout_origin="line",
+                                  course_datum="framing-base", course_offset=inch(-3.5),
                                   standoff="block"),
               cavity=CavityFill(material_ref="closed-cell-spray-foam",
-                                thickness=inch(1.5), framing_factor=0.146,
+                                thickness=inch(1.5), framing_factor=0.109,
                                 control={ControlLayer.AIR, ControlLayer.WATER,
                                          ControlLayer.VAPOR, ControlLayer.THERMAL})),
         # BAND C, 3.0 - 4.5", authored as its two halves. The last 1" of the 4" foam total,
@@ -2475,7 +2482,7 @@ PLANT_EXT_2X6_HUMID = Assembly(
               function=LayerFunction.AIRGAP),
         # BAND D, 4.5 - 6.0". The OUTER GIRT: the cladding nailer, the window mount plane,
         # and the one treated layer in the wall — block-2 inherits its material, which is
-        # what puts the two block tiers on two BOM rows. Same 24" courses at the SAME
+        # what puts the two block tiers on two BOM rows. Same 32" courses at the SAME
         # elevations as the inner girt; one 5" SDWS per block-2 into the inner girt. It is
         # a 3-1/2"-deep horizontal ledge behind the cladding that will wet-cycle for the
         # life of the wall, which is why KDAT and not the vent alone carries it. No fill:
@@ -2483,7 +2490,8 @@ PLANT_EXT_2X6_HUMID = Assembly(
         Layer(name="outer-girt", material_ref="kdat", thickness=inch(1.5),
               function=LayerFunction.FURRING,
               framing=FramingSpec(member="2x4", direction="horizontal", laid="flat",
-                                  spacing=inch(24), layout_origin="line",
+                                  spacing=inch(32), layout_origin="line",
+                                  course_datum="framing-base", course_offset=inch(-3.5),
                                   standoff="block")),
         Layer(name="cladding", material_ref="pbr-panel-26", thickness=inch(1.25),
               function=LayerFunction.CLADDING),

@@ -271,6 +271,42 @@ def opening_margin(spec: Any) -> float:
     return OPENING_MARGIN_IN * 0.0254
 
 
+def band_tops(rw: ResolvedWall) -> tuple[float, float]:
+    """Where a horizontal band's COURSES top out at each end of the wall.
+
+    Deliberately not ``solver._wall_top_elevations``, and the difference is one thing: on a
+    level wall the framing tops out at the double top plate and the *band* does not. A
+    platform wall's stacking extension carries the layer band up over the floor rim above
+    it — that is the lap the cladding needs and the reason the band is drawn there — so the
+    plate top leaves the topmost 12" of cladding with no nailer anywhere behind it.
+
+    On a raked wall the two agree exactly: ``top_z0_m``/``top_z1_m`` are the rake, and the
+    rake is the top of everything.
+    """
+    default = rw.z1_m
+    return (rw.top_z0_m if rw.top_z0_m is not None else default,
+            rw.top_z1_m if rw.top_z1_m is not None else default)
+
+
+def course_phase(rw: ResolvedWall, spec: Any) -> float:
+    """The elevation the course module counts from — ``phase + k*spacing``, for all k.
+
+    Derived from ``(rw, spec)`` alone, which is what lets every consumer of the courses ask
+    for them without being handed the phase: ``framing/truss_girts.py`` reads the same
+    module through :func:`course_elevations` and gets the same answer by construction.
+
+    The phase is unbounded in both directions and is NOT itself a course — it is the
+    datum-plus-offset the ladder is registered to, and the band's own bottom decides which
+    rungs exist. That is why ``course_offset`` may be negative: on catlin it is −2", which
+    puts the module 2" below the floor line so that no field course lands in the shadow of
+    an opening's own head or sill course (``notes/outie_window_truss_detail.md``).
+    """
+    datum = getattr(spec, "course_datum", "wall-base")
+    base = rw.base_ref_z_m if datum == "framing-base" else rw.z0_m
+    offset = getattr(spec, "course_offset", None)
+    return base + (offset.meters if offset is not None else 0.0)
+
+
 def course_elevations(rw: ResolvedWall, spec: Any, face: float) -> list[float]:
     """The BOTTOM elevation of every course of a horizontal band on one wall.
 
@@ -280,19 +316,62 @@ def course_elevations(rw: ResolvedWall, spec: Any, face: float) -> list[float]:
     elevation. A block half an inch below the girt it carries is not a tolerance, it is a
     block bearing on nothing, so the two readings cannot be allowed to be two readings.
 
-    A raked wall carries a course only where its top is above it, and the courses thin out
-    toward the high end: below the *lower* of the two tops every course is full length, and
-    above it only the raked part of the wall is still there to nail to.
+    **One module over the whole band.** Every course is at ``course_phase + k*spacing``, from
+    the band's bottom to its highest top, and a raked wall is not a different regime: it
+    carries the same courses the wall below it does and simply runs out of wall for them
+    (``_course_span`` clips each to the part of the run that is still there). Until
+    2026-08-30 the raked region was re-phased off a forced course at the LOWER top, which
+    put the whole gable band 11-1/2" off the module of the wall it sits on.
+
+    Three edges break the module, and only these three:
+
+    * a **starter** at the band's own bottom — the cladding's bottom edge, and at a storey
+      line the backing on the low side of the panel joint. Dropped where a module course
+      already lands within one board face of it, since that is the same piece of wood;
+    * a **top course** at ``top_low - face`` on a LEVEL wall, so the band's top edge is
+      nailed. Where it would crowd the module course below it, that course is dropped and
+      this one replaces it: two nailers 5" apart is one nailer and one waste;
+    * **nothing at the top of a raked wall** — the rake nailer runs there instead
+      (``_layout_horizontal``), and the field is held one board clear of it.
     """
     spacing = (spec.spacing or DEFAULT_SPACING).meters
-    top_start, top_end = _wall_top_elevations(rw)
+    top_start, top_end = band_tops(rw)
     top_low, top_high = min(top_start, top_end), max(top_start, top_end)
-    elevations = _module_stations(rw.z0_m, top_low - face, spacing, face)
-    elevation = elevations[-1] + spacing if elevations else rw.z0_m
-    while elevation + face <= top_high + 1e-9:
-        elevations.append(elevation)
-        elevation += spacing
+    raked = abs(top_start - top_end) > 1e-9
+    phase = course_phase(rw, spec)
+
+    elevations = [rw.z0_m] if rw.z0_m + face <= top_high + 1e-9 else []
+    if spacing > 0.0:
+        index = math.ceil((rw.z0_m - phase) / spacing)
+        station = phase + index * spacing
+        while station + face <= top_high + 1e-9:
+            if elevations and station - elevations[-1] < face - 1e-9:
+                # The starter and this course are the same board; keep the module's.
+                elevations.pop()
+            elevations.append(station)
+            index += 1
+            station = phase + index * spacing
+    if raked:
+        return elevations
+    top = top_low - face
+    while elevations and top - elevations[-1] < face - 1e-9:
+        elevations.pop()
+    if top >= rw.z0_m - 1e-9 and (not elevations or top - elevations[-1] > 1e-9):
+        elevations.append(top)
     return elevations
+
+
+def rake_nailer(rw: ResolvedWall) -> bool:
+    """Whether this band closes its raked top with a nailer along the rake.
+
+    Every horizontal band on a raked wall: the courses stop where the wall runs out from
+    under them, which leaves the cladding's own raked edge — the most exposed cut on the
+    building — with its last few inches lapping nothing. One member along the rake is the
+    whole fix, and it is why :func:`course_elevations` frames no forced top course on a
+    raked wall.
+    """
+    top_start, top_end = band_tops(rw)
+    return abs(top_start - top_end) > 1e-9
 
 
 def _layout_horizontal(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpening],
@@ -335,13 +414,23 @@ def _layout_horizontal(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpe
         first = first + plan_face / 2.0
     if not end_cont:
         last = last - plan_face / 2.0
-    top_start, top_end = _wall_top_elevations(rw)
+    top_start, top_end = band_tops(rw)
     margin = opening_margin(spec)
+    # A field course under a rake nailer stands one full board clear of it, exactly as it
+    # stands clear of an opening's head course (``OPENING_MARGIN_IN``): the nailer occupies
+    # the top ``face`` of the band, and a course that ran up to it would be the second half
+    # of a 7" slab of wood in a wall whose whole point is that it is mostly foam. Asking for
+    # ``2 * face`` of wall above a course is what holds it back, and it retires the short
+    # raked stub at an attic gable — a 4" triangle of girt carrying a block that hung out
+    # past its end (``truss_girts.GirtFrame.snap``'s ``bounds``). The largest gap it can
+    # open is one ``spacing``, by construction: it removes at most the topmost course.
+    raked = rake_nailer(rw)
+    clearance = 2.0 * face if raked else face
 
     out: list[FramedMember] = []
     index = 0
     for z in course_elevations(rw, spec, face):
-        lo, hi = _course_span(z + face, top_start, top_end, axis_len, first, last)
+        lo, hi = _course_span(z + clearance, top_start, top_end, axis_len, first, last)
         if hi - lo <= face:
             continue
         # ``margin`` widens the void to the opening's own FRAME — the jamb posts beside the
@@ -362,6 +451,71 @@ def _layout_horizontal(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpe
                 spec.member, a, b, z, z + face, length(sub(b, a)),
                 material=layer.material_ref))
             index += 1
+    if raked:
+        out.extend(_rake_nailers(rw, layer, spec, p0, direction, first, last, axis_len,
+                                 face, top_start, top_end, openings, margin))
+    return out
+
+
+def _rake_nailers(rw: ResolvedWall, layer, spec, p0, direction, first: float, last: float,
+                  axis_len: float, face: float, top_start: float, top_end: float,
+                  openings: list[ResolvedOpening], margin: float) -> list[FramedMember]:
+    """One member per band along a raked top, its upper face on the rake itself.
+
+    The hole this closes is at the most exposed cut on the building: a gable's raked
+    cladding edge, whose last few inches lap the courses that stop under it and nothing
+    else. It is one stick — the courses below already carry the field — and it is raked, so
+    it is the one member in this module that uses ``FramedMember``'s two-ended z extent.
+
+    It is cut around a rough opening exactly as a field course is, and it has to be: a
+    gable's Juliet door reaches within a foot of the rake, and a nailer run straight through
+    would be a 2x4 across the top of the glass. The cut is a plan interval because the rake
+    is linear — the band ``[top(s) - face, top(s)]`` crosses an opening's elevation band over
+    one contiguous stretch of stations, and that stretch intersected with the opening's own
+    width (plus the same jamb-post ``margin`` the field is held clear by) is the void.
+
+    ``length_m`` is the SLOPED length, not the plan run: this member is cut on the rake and
+    a 6:12 gable would otherwise be billed 10% short. Every other consumer reads the
+    geometry off ``p0``/``p1`` and the z ends, which are exact.
+    """
+    if axis_len <= 0.0 or last - first <= face:
+        return []
+    rise = top_end - top_start
+
+    def top_at(station: float) -> float:
+        return top_start + rise * (station / axis_len)
+
+    def band_crossing(z_lo: float, z_hi: float) -> tuple[float, float]:
+        """Stations over which ``[top(s) - face, top(s)]`` overlaps ``[z_lo, z_hi]``."""
+        if abs(rise) < 1e-9:
+            return (first, last) if top_start > z_lo and top_start - face < z_hi \
+                else (0.0, 0.0)
+        # top(s) > z_lo  and  top(s) - face < z_hi, each a half-line in s.
+        lo = (z_lo - top_start) / rise * axis_len
+        hi = (z_hi + face - top_start) / rise * axis_len
+        return (min(lo, hi), max(lo, hi))
+
+    cuts: list[tuple[float, float]] = []
+    for op in openings:
+        z_sill = rw.base_ref_z_m + op.sill_m
+        cut_lo, cut_hi = band_crossing(z_sill - margin,
+                                       z_sill + op.height_m + margin)
+        lo = max(cut_lo, op.center_along_m - op.width_m / 2.0 - margin)
+        hi = min(cut_hi, op.center_along_m + op.width_m / 2.0 + margin)
+        if hi > lo:
+            cuts.append((lo, hi))
+
+    out: list[FramedMember] = []
+    for index, (seg_lo, seg_hi) in enumerate(_subtract_spans(first, last, cuts)):
+        if seg_hi - seg_lo <= face:
+            continue
+        a, b = add(p0, scale(direction, seg_lo)), add(p0, scale(direction, seg_hi))
+        z_a, z_b = top_at(seg_lo), top_at(seg_hi)
+        out.append(FramedMember(
+            rw.uid, f"strapping-{layer.name}-rake-{index:03d}", STRAPPING_CATEGORY,
+            spec.member, a, b, z_a - face, z_a,
+            math.hypot(length(sub(b, a)), z_b - z_a),
+            z0_end_m=z_b - face, z1_end_m=z_b, material=layer.material_ref))
     return out
 
 

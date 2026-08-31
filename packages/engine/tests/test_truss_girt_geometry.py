@@ -9,7 +9,7 @@ retired frame on a synthetic fixture (`conftest.swinburne_model`).
 
 Five claims, each of which is a build fact somebody would otherwise find on site:
 
-* **a block is under a stud.** The girt courses climb their own 24" elevation module, but the
+* **a block is under a stud.** The girt courses climb their own 32" elevation module, but the
   blocks that carry them back to the framing land on the 16" STUD module — and block-2 on
   that module plus half a bay, which is the offset scheme the whole fastening story rests on
   (`notes/catlin_truss_engineering.md` §3);
@@ -43,7 +43,7 @@ from typehaus.resolve.geometry import sub, unit
 IN = 0.0254
 _STOCK_FACE = 3.5 * IN     # a course's height, a post's width, a block's face
 _STUD_SPACING = 16.0 * IN
-_COURSE_SPACING = 24.0 * IN
+_COURSE_SPACING = 32.0 * IN
 
 #: Everything the framing solver emits as a vertical stick on (or beside) the stud module.
 #: A block screwed "over a stud" may equally land on a king, a jack or a cripple — the same
@@ -95,21 +95,55 @@ def _tier(member) -> str | None:
     return girt_block_tier(member.child_key)
 
 
-def _courses(wall, band_name):
-    """Field course segments of one band, as ``(z0, lo_station, hi_station, member)``."""
+def _station_of(wall):
     direction = unit(sub(wall.axis[1], wall.axis[0]))
 
     def station(point):
         offset = sub(point, wall.axis[0])
         return offset[0] * direction[0] + offset[1] * direction[1]
 
+    return station
+
+
+def _courses(wall, band_name):
+    """FIELD course segments of one band, as ``(z0, lo_station, hi_station, member)``.
+
+    The rake nailer carries the same prefix and is deliberately not here: it has an
+    elevation per station rather than one, so every consumer below — which pairs the two
+    tiers by ``z0_m`` and asks whether a course is on the module — would read it as a
+    course at whatever elevation its ``p0`` end happens to be. ``_rakes`` is its reader.
+    """
+    station = _station_of(wall)
     out = []
     for member in wall.members:
         if not member.child_key.startswith(f"strapping-{band_name}-"):
             continue
+        if member.child_key.startswith(f"strapping-{band_name}-rake-"):
+            continue
         lo, hi = sorted((station(member.p0), station(member.p1)))
         out.append((member.z0_m, lo, hi, member))
     return sorted(out)
+
+
+def _rakes(wall, band_name):
+    """The rake nailer segment(s) of one band, in station order."""
+    station = _station_of(wall)
+    return sorted((m for m in wall.members
+                   if m.child_key.startswith(f"strapping-{band_name}-rake-")),
+                  key=lambda m: station(m.p0))
+
+
+def _raked(wall) -> bool:
+    return wall.top_z0_m is not None and wall.top_z1_m is not None \
+        and abs(wall.top_z0_m - wall.top_z1_m) > 1e-9
+
+
+def _z_at(member, fraction: float) -> tuple[float, float]:
+    """A member's ``(bottom, top)`` a given fraction along it, raked or not."""
+    z0_end = member.z0_m if member.z0_end_m is None else member.z0_end_m
+    z1_end = member.z1_m if member.z1_end_m is None else member.z1_end_m
+    return (member.z0_m + (z0_end - member.z0_m) * fraction,
+            member.z1_m + (z1_end - member.z1_m) * fraction)
 
 
 def _openings(model, wall):
@@ -212,7 +246,10 @@ def test_block_one_lands_on_the_stud_it_is_screwed_to(catlin_model):
             laps.append(overlap)
             if overlap < 0.75 * IN - 1e-6:
                 thin.append((wall.tag, round(centre / IN, 2), round(overlap / IN, 3)))
-    assert len(laps) > 700, "the field of the wall is what this measures"
+    # 650 rather than the 700 this read at 24" o.c.: the 32" module of 2026-08-30 frames
+    # a quarter fewer courses and therefore a quarter fewer blocks. It is a vacuity guard,
+    # not a target — what it is here to catch is the walk finding nothing at all.
+    assert len(laps) > 650, "the field of the wall is what this measures"
     assert not thin, (
         f"block-1s lapping under half a stud: {thin[:6]} — the block grid has drifted off "
         "the 16 in stud module")
@@ -361,7 +398,7 @@ def test_every_course_segment_is_carried(catlin_model):
                 for a, b in zip(on_it, on_it[1:], strict=False):
                     if b - a > _STUD_SPACING + _STOCK_FACE + 1e-6:
                         long_bays.append((wall.tag, member.child_key, (b - a) / IN))
-    assert measured > 500, "vacuity guard: the house's girt courses"
+    assert measured > 450, "vacuity guard: the house's girt courses"
     assert not orphans, (
         f"girt course segments with no block and no post to bear on: {orphans[:6]}")
     assert not unsupported, f"girt course ends running past a module: {unsupported[:6]}"
@@ -414,10 +451,20 @@ def test_course_elevations_are_the_authored_module_and_the_frame_agrees(catlin_m
         # (A wall WITH an opening legitimately loses the courses the opening's own frame
         # replaces — W-M-N3 is a 4'-0" wall almost entirely filled by D-M-ENTRY, and its
         # girts run below the sill and above the head and nowhere between.)
+        #
+        # A RAKED wall legitimately loses courses off the TOP and only off the top: the
+        # field is held one board clear of the rake nailer (``furring._layout_horizontal``),
+        # so the highest elevation or two have too little wall left above them to frame. It
+        # is still one module — what is framed is a prefix of what is named.
         if not _openings(catlin_model, wall):
-            assert len(framed) == len(expected), (
-                f"{wall.tag}: {len(framed)} courses framed of {len(expected)} elevations, "
-                "on a wall with no opening to explain the difference")
+            if _raked(wall):
+                assert framed == pytest.approx(sorted(expected)[:len(framed)], abs=1e-9), (
+                    f"{wall.tag}: a raked wall's courses are the LOW end of the module, "
+                    "not a re-phased set of its own")
+            else:
+                assert len(framed) == len(expected), (
+                    f"{wall.tag}: {len(framed)} courses framed of {len(expected)} "
+                    "elevations, on a wall with no opening to explain the difference")
         _ = inner_band
         checked += 1
     assert checked >= 30
@@ -578,14 +625,28 @@ def test_no_girt_member_stands_inside_a_rough_opening(catlin_model):
             for member in wall.members:
                 if member.category not in categories or member.category == "buck":
                     continue
-                if member.z1_m <= z0 + 1e-9 or member.z0_m >= z1 - 1e-9:
-                    continue
                 ring, _mz0, _mz1 = member_footprint(member)
                 stations = [(x - wall.axis[0][0]) * direction[0]
                             + (y - wall.axis[0][1]) * direction[1] for x, y in ring]
                 overlap = min(max(stations), hi) - max(min(stations), lo)
-                if overlap > 1e-6:
-                    intrusions.append((wall.tag, member.child_key, overlap / IN))
+                if overlap <= 1e-6:
+                    continue
+                # A RAKE NAILER is the one member here whose elevation is a function of
+                # where you stand on it, so its z band has to be read over the stations that
+                # lap the opening rather than at its ``p0`` end. Read the old way, the rake
+                # over W-A-S2's gable — which clears the Juliet door's head by two feet —
+                # measures its own low end, twenty inches below the head, and reports a 2x4
+                # across the glass that is not there.
+                near, far = min(stations), max(stations)
+                span = far - near
+                fractions = [0.0, 1.0] if span <= 1e-9 else [
+                    (max(near, lo) - near) / span, (min(far, hi) - near) / span]
+                bands = [_z_at(member, f) for f in fractions]
+                mz0 = min(b[0] for b in bands)
+                mz1 = max(b[1] for b in bands)
+                if mz1 <= z0 + 1e-9 or mz0 >= z1 - 1e-9:
+                    continue
+                intrusions.append((wall.tag, member.child_key, overlap / IN))
                 _ = Polygon
     assert not intrusions, f"girt members standing in the glass: {intrusions[:8]}"
 

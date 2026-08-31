@@ -160,7 +160,7 @@ EQUIPMENT_ERV_ATTIC = [
 # THE MIXING BOX — now inside SF-S-HP1, in the return chamber at the air handler's return
 # face, which is the one place in this loop where fresh air may legally arrive.
 #
-# ** IT MOVED FROM (20'-8", 11'-4") TO (24'-2 1/2", 3'-6") ON 2026-08-30, AND THE OLD SPOT
+# ** IT MOVED FROM (20'-8", 11'-4") TO (24'-1", 1'-9") ON 2026-08-30, AND THE OLD SPOT
 # WAS A REAL DEFECT. ** Reading south to north inside SF-S-DUCT the order used to be: air
 # handler y 6'-0"..9'-7", trunk head 9'-7", return grille 9'-8", strip heater 9'-10"..10'-8",
 # mixing box 11'-4". So 100 cfm of -15 F design outdoor air — half the house's fresh air —
@@ -190,13 +190,16 @@ EQUIPMENT_ERV_ATTIC = [
 #     203 required.
 # Keeping it costs the second lane past the machine, which SF-S-HP1's width already carries.
 #
-# x=24'-2 1/2" is the box's east lane, shared with DU-S-ERV-HP-FEED's tail: the 10" case
-# stands 2 1/2" clear of the 10x6 south-branch riser and 1 3/8" inside the cavity's east face.
-# y=3'-6" is level with REG-S-HP-RET at the far side of the same chamber, so the fresh air
-# crosses the returning room air before either reaches the coil.
+# x=24'-1" is the box's east lane, shared with DU-S-ERV-HP-FEED's tail: the 10" case stands
+# 7/8" inside the cavity's east face and clear of the 10x6 south-branch riser lane. y=1'-9"
+# puts it IN the return chamber — the 19" of SF-S-HP1 south of the cabinet — level with
+# REG-S-HP-RET at the far side of it, 22" west. So the fresh air enters at one end of the
+# chamber, the room air at the other, and the two mix across its width before they turn
+# north into the machine's return face. Nothing about that is packing: everything upstream
+# of the coil is upstream of the strip heater too, which is the whole reversal.
 EQUIPMENT_ERV_SECOND = [
     Equipment(uid="8PE9E87JX5", tag="EQ-S-ERV-MIX", kind=EquipmentKind.MIXING_BOX,
-              position=pt(ft(24, 2.5), ft(3, 6)), footprint=(inch(10), inch(12)),
+              position=pt(ft(24, 1), ft(1, 9)), footprint=(inch(10), inch(12)),
               room="RM-S-STUDY2", type_ref="EQ-T-ERV-MIXING-BOX",
               soffit_ref="SF-S-HP1",
               mount=Mount(kind=MountKind.CEILING)),
@@ -865,9 +868,10 @@ DUCTS_ERV_MIX_FEED = [
             # same 6" run to the same point. What is new is the 12'-2" that continues from
             # there: south inside SF-S-DUCT beside the 18x8 trunk (18 + 2 hanger gap + 6 = 26
             # against 30 3/4" clear, which is the whole reason the trunk went to 18x8 and not
-            # 20x8), across the y=8'-9 5/8" seam into SF-S-HP1, east across that box's north
-            # strip at y=7'-11" — north of the air handler's supply plenum and clear of it —
-            # and south down the box's east lane onto EQ-S-ERV-MIX at (24'-2 1/2", 3'-6").
+            # 20x8), across the y=7'-6" seam into SF-S-HP1, east at y=5'-5 1/2" — in the 5"
+            # of clear cavity between the air handler's north face and ST-S2A's lowest
+            # stringer, which is the only band in the box where a 6" duct may cross all three
+            # lanes — and south down the east lane onto EQ-S-ERV-MIX at (24'-1", 1'-9").
             # It cannot pass the machine on the west: the cabinet is 44 1/2" wide in a
             # 72 1/4" cavity, so x=20'-8" runs straight through it, and only the east third
             # of the box is a lane. Nothing rides RM-A-STUDY's finished floor.
@@ -880,9 +884,9 @@ DUCTS_ERV_MIX_FEED = [
                   pt(ft(1), ft(22)), pt(ft(20, 8), ft(22)),
                   pt(ft(20, 8), ft(22)), pt(ft(20, 8), ft(11, 4)),
                   pt(ft(20, 8), ft(11, 4)),
-                  pt(ft(20, 8), ft(7, 11)),
-                  pt(ft(24, 2.5), ft(7, 11)),
-                  pt(ft(24, 2.5), ft(3, 6))),
+                  pt(ft(20, 8), ft(5, 5.5)),
+                  pt(ft(24, 1), ft(5, 5.5)),
+                  pt(ft(24, 1), ft(1, 9))),
             elevations=(inch(-8.875), inch(-8.875), inch(4), inch(4),
                         inch(-8.875), inch(-8.875),
                         inch(4), inch(4), inch(-20.875),

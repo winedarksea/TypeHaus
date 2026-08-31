@@ -150,7 +150,7 @@ REGISTERS_HVAC_SECOND = [
     # return grille 9'-8", strip heater 9'-10"..10'-8", mixing box 11'-4". A return grille at
     # the discharge end is a short circuit drawn as a plenum, and nothing graded it.
     #
-    # It is now a filter-back grille in SF-S-HP1's underside at (20'-8", 3'-6"), in the return
+    # It is now a filter-back grille in SF-S-HP1's underside at (20'-7", 1'-9"), in the return
     # chamber at the box's south end, upstream of the coil, the strip heater and the machine's
     # own filter — with EQ-S-ERV-MIX at the far side of the same chamber, which is what puts
     # 100 cfm of -15 F design outdoor air UPSTREAM of the heat rather than downstream of it.
@@ -164,7 +164,7 @@ REGISTERS_HVAC_SECOND = [
     # Elevation 7'-7", SF-S-HP1's finished underside, not SF-S-DUCT's 7'-10".
     Register(uid="CSRH05AAAA", tag="REG-S-HP-RET", kind=DuctSystem.RETURN,
              room="RM-S-STUDY2",
-             position=pt(ft(20, 8), ft(3, 6)), duct_ref="DU-S-HP-RET",
+             position=pt(ft(20, 7), ft(1, 9)), duct_ref="DU-S-HP-RET",
              type_ref="REG-T-HP-RET", design_cfm=750,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 7))),
 ]

@@ -198,14 +198,30 @@ def test_the_hoods_are_stacked_with_the_discharge_on_top(catlin_plan) -> None:
 
 # --- the mixing box --------------------------------------------------------------------
 
-def test_the_mixing_box_is_in_the_soffit_and_north_of_the_strip_heater(catlin_model) -> None:
-    """The plan wanted it directly behind REG-S-HP-RET at (20'-8", 9'-8"). It does not go
-    there: reading south to north, SF-S-DUCT's cavity is the air handler's case to 9'-7" and
-    the strip heater's plate to 10'-8". `mep.duct_soffit_occupancy` is what decided this,
-    which is the whole reason the check was built before the ERV was authored."""
+def test_the_mixing_box_is_upstream_of_the_coil_and_the_strip_heater(catlin_model) -> None:
+    """** THIS TEST ASSERTED THE DEFECT UNTIL 2026-08-30, AND THE REVERSAL IS THE POINT. **
+
+    It used to require the mixing box NORTH of the strip heater, because that is where
+    `mep.duct_soffit_occupancy` had pushed it: reading south to north, SF-S-DUCT's cavity
+    was the air handler's case to 9'-7", the return grille at 9'-8", the strip heater's
+    plate to 10'-8", and the box at 11'-4". That is a packing outcome, and packing is not
+    an airflow argument — it put 100 cfm of -15 F design outdoor air, half the house's
+    fresh air, DOWNSTREAM of both the coil and the 2 kW strip heater, where it reaches the
+    rooms untempered.
+
+    With the machine in SF-S-HP1 the return is a real chamber at the box's south end, and
+    the mixing box sits in it: south of the cabinet, therefore south of the coil and of the
+    strip heater in the supply trunk beyond it, and upstream of the unit's own filter."""
     box = next(o for o in catlin_model.canvas_objects if o.tag == "EQ-S-ERV-MIX")
+    handler = next(o for o in catlin_model.canvas_objects if o.tag == "EQ-S-HP1-AH")
     strip = next(o for o in catlin_model.canvas_objects if o.tag == "EQ-S-HP1-STRIP")
-    assert min(y for _, y in box.footprint) >= max(y for _, y in strip.footprint)
+    # South-to-north is the airflow direction: mixing box, then cabinet, then duct heater.
+    assert max(y for _, y in box.footprint) <= min(y for _, y in handler.footprint)
+    assert max(y for _, y in handler.footprint) <= min(y for _, y in strip.footprint)
+    # And it is in the box the machine is in, not the trunk's.
+    plan_refs = {el.tag: getattr(el, "soffit_ref", None)
+                 for el in catlin_model.plan.all_elements()}
+    assert plan_refs["EQ-S-ERV-MIX"] == "SF-S-HP1"
 
 
 def test_the_fresh_feed_drops_into_the_soffit(catlin_model) -> None:

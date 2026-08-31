@@ -842,9 +842,12 @@ SECOND_EQUIPMENT = [
     # chamber. Nothing to rotate, and `footprint` here now agrees with the type rather than
     # fighting it.
     #
-    # (20'-8", 6'-0") puts the case at x 225 3/4"..270 1/4" — 1 1/8" inside SF-S-HP1's west
-    # cavity face, and clear by more than the 2" hanger gap of both lanes that pass it. The
-    # check prints those clearances; do not restate them here.
+    # (20'-7", 3'-9") puts the case at x 224 3/4"..269 1/4" and y 30 1/8"..59 7/8": 2 5/8"
+    # inside SF-S-HP1's west cavity face, clear of both lanes that pass it by more than the
+    # 2" hanger gap, and — the part that is geometry rather than tidiness — with its north
+    # face 9 3/4" south of ST-S2A's lowest stringer face, so the supply plenum, the branch
+    # take-off and the ERV's east jog all sit south of the stair rather than under it. The
+    # check prints the clearances; do not restate them here.
     #
     # zone_rooms covers the whole conditioned second storey plus RM-A-STUDY/RM-A-EAST-UNFIN (short
     # attic branches) and RM-A-WEST-UNFIN (suite branch's REG-A-HP-WEST boot, 2026-07-30).
@@ -859,7 +862,7 @@ SECOND_EQUIPMENT = [
     # The old gap in the zone closed by itself; the TODO entry it pointed at is moot.
     Equipment(uid="CEE032AAAA", tag="EQ-S-HP1-AH",
               kind=EquipmentKind.DUCTED_AIR_HANDLER,
-              position=pt(ft(20, 8), ft(6)), footprint=(inch(44.47), inch(29.69)),
+              position=pt(ft(20, 7), ft(3, 9)), footprint=(inch(44.47), inch(29.69)),
               room="RM-S-STUDY2", type_ref="EQ-T-GREE-DUC24",
               outdoor_ref="EQ-M-HP1-OD", circuit="CKT-HP1-AH",
               mount=Mount(kind=MountKind.CEILING), soffit_ref="SF-S-HP1",

@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from typehaus.checks._authoring import advisory
+from typehaus.checks.integrity.furring_spec import furring_spec_findings
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.assembly import Layer, LayerExtent
@@ -72,7 +73,7 @@ def assembly_layer_sanity(ctx: CheckContext) -> list[Finding]:
                                 f"assembly {asm.tag} layer {layer.name} has thickness <= 0",
                                 (asm.tag,)))
             out.extend(_layer_extent_findings(asm.tag, layer))
-            out.extend(_standoff_findings(asm.tag, layer))
+            out.extend(furring_spec_findings(asm.tag, layer))
         out.extend(_overlapping_band_findings(asm.tag, resolved.layers))
         out.extend(_slot_findings(asm.tag, resolved.layers))
         # A "band" is a buried single-purpose layer of the ground — an FPSF wing, a
@@ -113,29 +114,6 @@ def _layer_extent_findings(assembly_tag: str, layer: Layer) -> list[Finding]:
                  f"({extent.top.offset.inches:+.1f}\") off the same "
                  f"{extent.bottom.datum.value} datum", (assembly_tag,),
                  "put the lower elevation in `bottom`")]
-
-
-def _standoff_findings(assembly_tag: str, layer: Layer) -> list[Finding]:
-    """A furring band cannot be both a girt course and a Swinburne outrigger.
-
-    ``standoff="block"`` says the band bears on 3-1/2" blocks at the framing module and
-    takes one long screw per block (the catlin truss girt, ``framing/truss_girts.py``);
-    ``laid="edge"`` stands the stick up in the band, which is the Swinburne outrigger and
-    frames on a plywood tab (``framing/truss_frame.py``). Two different frames read the two
-    fields, and a layer carrying both is claimed by neither — so it silently frames as an
-    ordinary batten and the whole standoff, blocks, screws and all, disappears.
-    """
-    spec = layer.framing
-    if spec is None or getattr(spec, "standoff", "none") != "block":
-        return []
-    if spec.laid != "edge":
-        return []
-    return [_err("integrity.assembly_layers",
-                 f"assembly {assembly_tag} layer {layer.name} sets standoff=\"block\" and "
-                 "laid=\"edge\" together; a girt course is laid flat on its blocks and an "
-                 "outrigger stands on edge on a tab — one layer cannot be both",
-                 (assembly_tag,),
-                 'drop laid="edge" for a girt band, or standoff="block" for an outrigger')]
 
 
 def _overlapping_band_findings(assembly_tag: str,

@@ -69,6 +69,24 @@ class FramingSpec(HausModel):
     # the bearing-stud one). In-line framing is an APA Advanced Framing technique, not a
     # code mandate, which is exactly why it is an opt-in field rather than an inference.
     layout_origin: Literal["wall-start", "line"] = "wall-start"
+    # FURRING + ``direction="horizontal"`` only: what the COURSE module counts from.
+    # "wall-base" — the default, and every band written before this field existed — is
+    # ``rw.z0_m``, the bottom of the band itself. "framing-base" is ``rw.base_ref_z_m``,
+    # the datum every opening's sill height is measured from, which on a wall extended
+    # down over a floor rim band is 13-7/16" higher.
+    #
+    # The two are the same elevation on a wall that starts at its own storey datum, and
+    # they are not on a main-storey platform wall — which is the whole reason this exists.
+    # Courses phased off the bottom of the cladding lap and sills phased off the floor put
+    # a field course a fraction of an inch from an opening's own head or sill course: two
+    # nailers inside one board's width, one of them redundant, thirteen times over on
+    # catlin (``notes/outie_window_truss_detail.md``).
+    course_datum: Literal["wall-base", "framing-base"] = "wall-base"
+    #: Added to that datum before the module counts from it. ``None`` is 0. It is the phase
+    #: knob: with the datum fixed by the sills, this is what slides the whole field clear
+    #: of them. May be negative — the module is unbounded below and the band's own bottom
+    #: is where the courses actually start.
+    course_offset: Length | None = None
     stagger_gap: Length | None = None  # for STAGGERED/DOUBLE partition layouts
     direction: str | None = None  # FURRING only: "vertical" | "horizontal"
     # FURRING only: which way the stick is turned in the band. "flat" (the default, and

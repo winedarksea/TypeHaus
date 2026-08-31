@@ -138,17 +138,17 @@ REGISTER_TYPES = (
     # 280 in2 gross, and 750 cfm through it is 386 fpm face velocity. Manual D SS4-10 wants
     # 350 fpm at a plain return grille and 300 at one carrying the filter, which is what this
     # one is: with the machine hung in SF-S-HP1 there is no filter cabinet anywhere else in
-    # the system, and the grille is the only serviceable face a person can reach. 500 in2
-    # gross is 216 fpm, comfortably under both.
+    # the system, and the grille is the only serviceable face a person can reach. 480 in2
+    # gross is 225 fpm, comfortably under both.
     #
-    # The footprint runs 25" in x and 20" in y because the grille lies in the box's UNDERSIDE
-    # and the box's clear cavity is 72 1/4" across x by 73 3/8" along y: the long way round
-    # fits either way, and 25" across keeps the filter's pull-down clear of both ladder rails.
+    # 30" in x and 16" in y, not a square-ish 25x20, because the return chamber it opens into
+    # is the 19" of SF-S-HP1 south of the cabinet: width is the free dimension there and
+    # depth is not. It still leaves 21 3/8" of the box's 72 3/4" clear width either side.
     # (Nothing in the model records a filter or an access panel anywhere — see plans/TODO.md.)
-    RegisterType(tag="REG-T-HP-RET", name="Heat-pump return grille, 25x20, filter-back",
-                 footprint=(inch(25), inch(20)), height=inch(1),
+    RegisterType(tag="REG-T-HP-RET", name="Heat-pump return grille, 30x16, filter-back",
+                 footprint=(inch(30), inch(16)), height=inch(1),
                  plan_symbol="register",
-                 source="Filter-back return grille, 25 x 20 nominal (500 in2 gross), hinged face, MERV 13 1\" filter behind it. Sized to Manual D SS4-10's 300 fpm figure for a filter grille at System 1's 750 cfm, which is 216 fpm here; the 20x14 it replaced was 386 fpm and carried no filter.",
+                 source="Filter-back return grille, 30 x 16 nominal (480 in2 gross), hinged face, MERV 13 1\" filter behind it. Sized to Manual D SS4-10's 300 fpm figure for a filter grille at System 1's 750 cfm, which is 225 fpm here; the 20x14 it replaced was 386 fpm and carried no filter.",
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
     # Third family: a passive transfer louver — no duct/fan/system, just a hole with a
@@ -290,14 +290,14 @@ DUCTS_HVAC_SECOND = [
     # (19'-4", 11'-4") is still squarely over the trunk (x 18'-9"..20'-3"), so its floor boot
     # still rises straight.
     #
-    # It begins at (19'-6", 7'-6"), the north face of the air handler's supply plenum inside
-    # SF-S-HP1, and crosses the y=8'-9 5/8" seam into SF-S-DUCT. `soffit_ref` names the hall
-    # box because that is where 24 of its 25 feet run; the check clips a run's extent to the
-    # box it names, which is the same idiom DU-S-HP-SUITE uses where SF-S-SUITE abuts. The
-    # 15 5/8" inside SF-S-HP1 is therefore not graded there — it is the plenum's own neck,
-    # and it runs in the empty west third of that box with the machine under it.
+    # It begins at (19'-6", 5'-3"), the north face of the air handler's supply plenum inside
+    # SF-S-HP1, and crosses the y=7'-6" seam into SF-S-DUCT. `soffit_ref` names the hall box
+    # because that is where 27 of its 29 feet run; the check clips a run's extent to the box
+    # it names, which is the same idiom DU-S-HP-SUITE uses where SF-S-SUITE abuts. The 2'-3"
+    # inside SF-S-HP1 is therefore not graded there — it is the plenum's own neck, and it
+    # runs in the west third of that box, well clear of ST-S2A's flight at x>=22'-5 3/8".
     DuctRun(uid="CSDH01AAAA", tag="DU-S-HP-SUP", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), ft(7, 6)), pt(ft(19, 6), ft(33))),
+            path=(pt(ft(19, 6), ft(5, 3)), pt(ft(19, 6), ft(33))),
             width=inch(18), depth=inch(8), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-DUCT", design_cfm=750),
     # The return-plenum stub, rebuilt in SF-S-HP1 on 2026-08-30 and now carrying the return
@@ -306,8 +306,8 @@ DUCTS_HVAC_SECOND = [
     # leaves from. A return grille at the discharge end is a short circuit drawn as a plenum.
     #
     # The machine's return is its south face, so the grille and this stub are south of it:
-    # 25x14 from REG-S-HP-RET's filter-back grille at (20'-8", 3'-6") north to (20'-8", 4'-7"),
-    # where the case's collar and flex connector pick it up 2 1/8" further on. 750 cfm through
+    # 25x14 from REG-S-HP-RET's filter-back grille at (20'-7", 1'-9") north to (20'-7", 2'-3"),
+    # where the case's collar and flex connector pick it up 3 1/8" further on. 750 cfm through
     # 25x14 is 309 fpm — a return velocity, not a supply one; the old 14x8 stub was 965.
     #
     # Rooms still do NOT return to the AH — the only extract is the ERV's stale pickups, and
@@ -316,7 +316,7 @@ DUCTS_HVAC_SECOND = [
     # opening longer. ERV balance is still set by its own terminals, and the AH recirculates
     # whatever DU-S-ERV-HP-FEED injects through EQ-S-ERV-MIX at the far side of this chamber.
     DuctRun(uid="CSDH02AAAA", tag="DU-S-HP-RET", system=DuctSystem.RETURN,
-            path=(pt(ft(20, 8), ft(3, 6)), pt(ft(20, 8), ft(4, 7))),
+            path=(pt(ft(20, 7), ft(1, 9)), pt(ft(20, 7), ft(2, 3))),
             width=inch(25), depth=inch(14), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-HP1", design_cfm=750),
     # West branch to RM-S-SUITE, rerouted 2026-07-30: tees off DU-S-HP-SUP at D-S-SUITE's
@@ -370,7 +370,7 @@ DUCTS_HVAC_SECOND = [
     # 180 fpm in the west arm (75 cfm to REG-S-HP-PLANT). 10" fits the 13 1/2" clear bay with
     # 1 3/4" to spare and 6" fits the 11 7/8" I-joist depth.
     #
-    # The riser lands at x=23'-2", which is 2'-10" west of REG-S-HP-STUDY2 and 3'-4" east of
+    # The riser lands at x=23'-0 1/2", which is 3'-1 1/2" west of REG-S-HP-STUDY2 and east of
     # the room's midpoint — a short arm east to the study and the attic study, a long one west
     # to the plant room. Manual D App. A13 calls a take-off this close to a supply plenum a
     # noise defect; it is mitigated by turning vanes at the riser, a lined plenum and first
@@ -381,20 +381,21 @@ DUCTS_HVAC_SECOND = [
             width=inch(10), depth=inch(6), routing=DuctRouting.JOIST_BAY,
             floor_ref="FS-ATTIC", design_cfm=250),
     # THE RISER — the vertical plans/TODO.md held open, and the last of System 1's three.
-    # A repeated plan point at two elevations IS the vertical leg, the idiom DU-A-HP-STUDY
-    # and DU-S-ERV-HP-FEED already use; all `DuctRun` ever lacked was somewhere to put the
-    # second number, and it has had that since 2026-08-25.
+    # A repeated plan point at two elevations IS the vertical leg, the idiom
+    # DU-S-ERV-HP-FEED's drop already uses; all `DuctRun` ever lacked was somewhere to put
+    # the second number, and it has had that since 2026-08-25.
     #
     # It is a separate run from DU-S-HP-SOUTH and not a fourth vertex on it, because the two
     # live in different cavities and are graded by different checks: this leg is in SF-S-HP1
     # under `mep.duct_soffit_occupancy`, the branch is in an FS-ATTIC bay under
     # `mep.duct_joist_bay`, and a run carries one `routing` and one `soffit_ref`.
     #
-    # x=23'-2" is the box's middle lane: 2 3/4" east of the air handler's case and 4 1/2" west
-    # of the ERV feed's, both more than the 2" hanger gap. It leaves the supply plenum at
-    # y=7'-4" — the plenum is fabricated out to x=23'-7" to catch this take-off, which is what
-    # a plenum is for — runs south past the machine, and stands up at y=3'-4", the FS-ATTIC bay
-    # centreline (8" + 2 x 16"), 15" of rise from the soffit cavity into the bay.
+    # x=23'-0 1/2" is the box's middle lane: 2 1/4" east of the air handler's case and 2 1/2"
+    # west of EQ-S-ERV-MIX, both more than the 2" hanger gap. It leaves the supply plenum at
+    # y=5'-1" — the plenum is fabricated out to x=23'-5 1/2" to catch this take-off, which is
+    # what a plenum is for — runs south past the machine, and stands up at y=3'-4", the
+    # FS-ATTIC bay centreline (8" + 2 x 16"), 15" of rise from the soffit cavity into the bay.
+    # Every foot of it is south of y=5'-9", so none of it is under ST-S2A.
     #
     # 96 1/8" is a 6"-deep duct on SF-S-HP1's clear underside; 111 1/8" is the same duct's
     # centreline on FS-ATTIC's bottom chord, the elevation DU-S-HP-SOUTH derives for itself
@@ -402,7 +403,8 @@ DUCTS_HVAC_SECOND = [
     # convention every PipeRun on this storey uses, and the reason those two numbers are not
     # the -8 7/8" the attic-filed runs carry for the same bay.
     DuctRun(uid="27B8FKNDPB", tag="DU-S-HP-SOUTH-RISE", system=DuctSystem.SUPPLY,
-            path=(pt(ft(23, 2), ft(7, 4)), pt(ft(23, 2), ft(3, 4)), pt(ft(23, 2), ft(3, 4))),
+            path=(pt(ft(23, 0.5), ft(5, 1)), pt(ft(23, 0.5), ft(3, 4)),
+                  pt(ft(23, 0.5), ft(3, 4))),
             elevations=(inch(96.125), inch(96.125), inch(111.125)),
             width=inch(10), depth=inch(6), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-HP1", design_cfm=250),

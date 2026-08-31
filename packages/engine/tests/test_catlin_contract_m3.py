@@ -1326,7 +1326,10 @@ def test_catlin_is_all_electric_with_no_gas_appliance(catlin_model):
     # manifold and the gable hoods carry stale and outdoor air, so they declare RETURN_AIR
     # and OUTDOOR_AIR instead and are not in this set.) None of the five burns anything,
     # which is what this assertion is actually about.
-    assert air == {"EQ-T-BROAN-B210E75RT", "EQ-T-GREE-SLIM24", "EQ-T-ERV-MANIFOLD-6",
+    # EQ-T-GREE-SLIM24 -> EQ-T-GREE-DUC24 on 2026-08-30: the slim-duct type was a
+    # REPRESENTATIVE PLACEHOLDER, and the real DUC24HP230V1R32AH replaced it. The set is
+    # still five products and still nothing that burns, which is what is being asserted.
+    assert air == {"EQ-T-BROAN-B210E75RT", "EQ-T-GREE-DUC24", "EQ-T-ERV-MANIFOLD-6",
                    "EQ-T-ERV-MIXING-BOX"}
 
 

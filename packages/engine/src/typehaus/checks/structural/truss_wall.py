@@ -13,7 +13,13 @@ from __future__ import annotations
 
 from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result
+from typehaus.findings import Finding, Result, not_applicable
+from typehaus.resolve.framing.tables import DEFAULT_SPACING
+
+#: A girt course's height on the wall — a 2x4 laid flat. The same 3-1/2" ``GirtFrame``
+#: derives from the member's own cross-section; named here so this module does not have to
+#: build a frame to ask where the courses are.
+_GIRT_FACE_M = 3.5 * 0.0254
 
 
 @check(Tier.STRUCTURAL, "structural.truss_wall_opening_support")
@@ -82,6 +88,64 @@ def truss_wall_opening_support(ctx: CheckContext) -> list[Finding]:
             f"outrigger within {FLANGE_BEARING.inches:.2f}\"",
             tuple(sorted(supported)), Result.PASS,
         ))
+    return out
+
+
+@check(Tier.STRUCTURAL, "structural.girt_course_spacing")
+def girt_course_spacing(ctx: CheckContext) -> list[Finding]:
+    """No realised gap between two girt courses may exceed the band's own authored spacing.
+
+    Pure internal consistency, and that is exactly why it is worth having: the courses are
+    not a list somebody typed, they are a module plus three edge rules
+    (``resolve/framing/furring.course_elevations``), and an edge rule is where a layout
+    silently opens a bay. The 32" module went in with a +3" phase candidate that left one
+    35" bay on one wall, in a band authored at 32" — nothing in the model would have said
+    so, because every course was where the algorithm meant to put it.
+
+    Read off the RESOLVED courses, not re-derived from the spec, so it grades what was
+    framed. The cladding fastener schedule is what cares: a PBR panel is screwed to these
+    courses and its purlin-span table is read at the band's authored spacing.
+
+    Advisory, like the rest of this module: a nailer spacing is a fastening detail against a
+    manufacturer's table, not an engineered connection.
+    """
+    from typehaus.resolve.framing.furring import course_elevations
+    from typehaus.resolve.framing.truss_wall import truss_girt_bands
+
+    out: list[Finding] = []
+    graded: list[str] = []
+    for wall in ctx.model.walls:
+        bands = truss_girt_bands(ctx.plan, wall.assembly)
+        if bands is None:
+            continue
+        spec = bands[1].framing
+        spacing = (spec.spacing or DEFAULT_SPACING).meters
+        elevations = course_elevations(wall, spec, _GIRT_FACE_M)
+        worst = max(((b - a, a) for a, b in zip(elevations, elevations[1:], strict=False)),
+                    default=(0.0, 0.0))
+        if worst[0] > spacing + 1e-6:
+            out.append(_advisory(
+                "structural.girt_course_spacing",
+                f"girt wall {wall.tag}: {worst[0] / 0.0254:.2f}\" between the course at "
+                f"{(worst[1] - wall.z0_m) / 0.0254:.2f}\" above the wall base and the one "
+                f"over it, in a band authored at {spacing / 0.0254:.0f}\" o.c.",
+                (wall.tag,), Result.FAIL,
+                fix_hint=("adjust the band's course_offset — an edge rule (the starter, the "
+                          "top course, the rake clearance) has opened a bay wider than the "
+                          "module")))
+        else:
+            graded.append(wall.tag)
+    if not graded and not out:
+        return [not_applicable(
+            "structural.girt_course_spacing",
+            "no wall in the plan carries a girt band (a pair of FURRING layers with "
+            'standoff="block"), so there are no nailer courses to space')]
+    if graded:
+        out.append(_advisory(
+            "structural.girt_course_spacing",
+            f"{len(graded)} girt wall(s): every course-to-course gap is within the band's "
+            "own authored spacing",
+            tuple(sorted(graded)), Result.PASS))
     return out
 
 

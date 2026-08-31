@@ -986,7 +986,13 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   member and 5/8" lining and measures everything claiming it side by side with a 2" hanger
   gap. **Never author a clear width** — it is a second source of truth for a number the
   framing already states, and it drifts the first time a 2x2 becomes a 2x3. `SF-S-DUCT`
-  derives 30 3/4" clear x 11 1/4" drop; `SF-S-SUITE` 31 3/4" x 11 1/4".
+  derives 30 3/4" clear x 11 1/4" drop; `SF-S-SUITE` 31 3/4" x 11 1/4"; `SF-S-HP1`
+  72 3/4" x 14 1/4".
+  - **A box's LONG plan dimension is its axis, and every occupant is measured ACROSS the
+    other one.** `SF-S-HP1` is 80" in y against 77" in x for exactly that reason: turn it
+    the other way and the check grades the trunk's whole travel as its "width" and never
+    compares the two lanes to the machine at all. Whenever a soffit is near-square, the
+    ordering is a design decision, not an accident of drawing.
   - `CHASE` routing keeps its honest meaning — a framed shaft that is NOT modeled as a
     `Soffit` — and is a *declared* unchecked case. It used to be the flag that turned the
     joist-bay check off, which is why four hand-arithmetic clearance comments lived in the
@@ -995,7 +1001,25 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     resolving at the 9'-0" storey ceiling (a CEILING mount with no elevation fell back to
     `default_ceiling_height`, which is now soffit-aware), and its case resolved 43" across
     the hall instead of 21" along it, because `EquipmentType.footprint` wins over the
-    element's and `EQ-T-GREE-SLIM24` states (43, 21). It needed `rotation=deg(90)`.
+    element's and `EQ-T-GREE-SLIM24` stated (43, 21). It needed `rotation=deg(90)`.
+  - **And then the case itself turned out to be fiction (2026-08-30).** `EQ-T-GREE-SLIM24`
+    was an explicit "REPRESENTATIVE PLACEHOLDER … TODO verify datasheet"; the only real
+    43 3/8" cabinet matching it was Gree's discontinued low-static `DUCT24HP230V1AD`, which
+    tops out at 589 cfm against the 750 cfm this whole duct system is sized to. So the
+    packing this check so carefully graded was a fit for a machine that does not exist, and
+    the 4 7/8" slivers it left either side were what kept `DU-S-HP-SOUTH` riserless for a
+    fortnight. **A `# TODO verify datasheet` on a type is not documentation debt — every
+    clearance, lane and velocity downstream of it is provisional.** The real
+    `EQ-T-GREE-DUC24` (44 1/2 x 29 11/16 x 11 13/16, 0.8" ESP) needed a new box, `SF-S-HP1`
+    in `RM-S-STUDY2`'s ceiling; it needs no `rotation`, because the type now states the
+    cabinet the way it is installed.
+  - **`SF-S-HP1` runs UNDER `ST-S2A`'s flight, and that is allowed but bounded.** The stair
+    climbs west along `W-S-SS2`, so over the box's north-east corner its underside is at or
+    above the box's own 7'-7" face and the two finish as one plane. What may NOT be lapped
+    is `ledger-W-S-SS2-stringer-1`, the 2x10 on the wall at y 104 1/8"..105 5/8":
+    `structural.member_interference` excuses treads and stringers over a soffit and does not
+    excuse that. It is why the `SF-S-DUCT`/`SF-S-HP1` seam is at y=7'-6" and not at the
+    wall face 14" further north.
 - **`W-M-HS4` is a pocket, and is therefore spoken for.** `D-M-LAUN` became a 4'-0" pocket
   door on 2026-08-21 (was a 56" bifold); its leaf parks east inside `W-M-HS4`, crossing
   node `N-M-E3` where `W-M-LS` tees in. **Nothing may ever go in that wall again** — no

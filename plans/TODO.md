@@ -371,14 +371,51 @@ billed plan length. It carries per-vertex elevations now, the same field set `Pi
 had since MEP Phase 2 and solved by the same solver — a riser is a repeated plan point at
 two elevations, which is exactly how a drain drop has always been written.
 
-- **`DU-S-HP-SOUTH`'s rise — STILL OPEN, and now for a reason rather than for want of a
-  field.** Every comment in `plan/mep_hvac.py` calls it "the riser out of the trunk head at
-  x=19'-4"", and the trunk head is at (19'-4", 9'-7") — but `SF-S-DUCT` stops at y=6'-0" and
-  the branch drops into its bay at (19'-4", 3'-4"). Nothing connects those two points without
-  either crossing five FS-ATTIC I-joists in a bay (illegal) or running along the attic floor
-  through a habitable room. Both are route decisions rather than draughting, and the
-  2026-08-25 pass was explicitly forbidden from moving a System 1 trunk. Decide the route,
-  then draw it: the field is there and waiting.
+- **`DU-S-HP-SOUTH`'s rise — CLOSED 2026-08-30, and the reason it stayed open for weeks is
+  worth keeping.** The blocker was never the route: it was that `SF-S-DUCT`'s south end had
+  no lane a branch could leave through, because a 21"-wide air handler filled a 30 3/4" box.
+  That air handler did not exist. `EQ-T-GREE-SLIM24` was an explicit "REPRESENTATIVE
+  PLACEHOLDER … TODO verify datasheet", and the only real 43 3/8" cabinet matching it, Gree's
+  discontinued low-static `DUCT24HP230V1AD`, tops out at 589 cfm against the 750 cfm this
+  whole duct system is sized to — so the packing problem, and the airflow the packing was
+  arranged around, were both artifacts of an unverified type. The real machine
+  (`EQ-T-GREE-DUC24`, 44 1/2 x 29 11/16 x 11 13/16) went into a new wide bulkhead in
+  `RM-S-STUDY2`'s ceiling, `SF-S-HP1`, and `DU-S-HP-SOUTH-RISE` is the vertical: 15" from
+  that box's cavity into the `FS-ATTIC` bay at (23'-0 1/2", 3'-4"). **The lesson generalises:
+  a `# TODO verify datasheet` on a type is not a documentation debt — every clearance, lane
+  and velocity downstream of it is provisional.**
+  - Closed with it: `DU-A-HP-STUDY`, which was orphaned, straddled the joist at y=32",
+    overlapped `DU-S-HP-SOUTH` by 4" in a 13 1/2" bay, and ran 6'-8" of bare duct across
+    `RM-A-STUDY`'s finished floor. `REG-A-HP-STUDY` is a straight boot off the branch now.
+  - Closed with it: the return grille sat 1" north of the case, on the same face the supply
+    left from, and `EQ-S-ERV-MIX` injected 100 cfm of -15 F outdoor air downstream of both
+    the coil and the strip heater. Both are on the return side now.
+
+### Found in passing, 2026-08-30 (System 1's south branch)
+
+- **Nothing validates that a duct actually connects to anything.** No check tests that a
+  `DuctRun` endpoint reaches equipment or another run, and `Register.duct_ref` is an
+  unvalidated string. The whole `DU-S-HP-SOUTH`/`DU-A-HP-STUDY` tree was joined to nothing
+  for a fortnight and every check passed. The only duct-to-equipment geometry in the
+  codebase, `resolve/mep_soffit.py::_pair_is_plumbed`, exists to *suppress* a clash — the
+  same predicate run the other way round is the check that was missing.
+- **The AH/ERV blower interlock has nowhere to live in the schema.** With the ERV running
+  and the air handler off, 100 cfm enters a still return chamber and leaves through
+  `REG-S-HP-RET` into `RM-S-STUDY2`, the only low-resistance path; distribution to the rest
+  of the house needs the blower turning (continuously, or on ERV call). That is a controls
+  fact, no `Equipment` field holds it, and it matters because
+  `code.N1103_6_whole_house_ventilation` is already tight at 210 cfm provided / 203 required.
+- **No `Equipment` field records a filter or an access panel anywhere in the model.**
+  `REG-T-HP-RET` is a filter-back grille and the only serviceable face on System 1; the
+  model knows it as a rectangle with a `RETURN_AIR` port.
+- **`mep.duct_soffit_occupancy` cannot grade a vertical leg entering a soffit.** It bands a
+  segment as `z_mid ± depth/2`, which for a riser is halfway through the deck, and it takes
+  a vertical leg's plan footprint as `width x width`.
+- **`code.R305_ceiling_height` derives from `FloorSystem`/`Slab` and cannot see a `Soffit`.**
+  `RM-S-HALL` reports 8'-11 1/2" against a 7'-10" box, and `RM-S-STUDY2` now reports the same
+  against a 7'-7" one. Both clear R305.1 by inspection; neither is measured.
+- **`ED-S-STUDY2-STAIR-SC1` at (25'-0", 8'-7 5/8"), z 15'-0", sits 3'-1" below its own tread**
+  and 2'-0" under the stringer soffit — it is under `ST-S2A`, not beside it.
 
 ### ERV residuals (2026-08-25)
 

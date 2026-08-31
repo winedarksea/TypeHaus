@@ -1432,7 +1432,13 @@
 "EQ-T-GREE-MULTI-U30" = { material = { low = 2100, high = 3000 }, labour = { low = 620, high = 1350 } }  # 1 ea — MUL30HP230V1R32AO $2,956 sale / $3,640 list
 "EQ-T-GREE-SAPPHIRE-9" = { material = { low = 500, high = 800 }, labour = { low = 400, high = 950 } }  # 1 ea — SAP09HP230V1R32AH $977
 "EQ-T-GREE-SAPPHIRE-9-OD" = { material = { low = 900, high = 1250 }, labour = { low = 420, high = 1000 } }  # 1 ea — SAP09HP230V1R32AO $1,955
-"EQ-T-GREE-SLIM24" = { material = { low = 850, high = 1250 }, labour = { low = 850, high = 1900 } }  # 1 ea — DUCT24HP230V1BD $928
+# EQ-T-GREE-SLIM24 is gone (2026-08-30) and so is its $928 DUCT24HP230V1BD quote: the type
+# was a REPRESENTATIVE PLACEHOLDER and the only real cabinet matching its 43" width was the
+# discontinued low-static DUCT24HP230V1AD, which cannot move this system's 750 cfm. The
+# replacement is a bigger, higher-static machine and it costs more — dearer material, and
+# dearer labour because a 92.6 lb case on threaded rod with neoprene isolators, canvas
+# connectors both ends and a 1% condensate slope is a two-person hang.
+"EQ-T-GREE-DUC24" = { material = { low = 1450, high = 2100 }, labour = { low = 1050, high = 2250 } }  # 1 ea — DUC24HP230V1R32AH, 0.8 in. w.c. ESP, 577-1030 cfm
 "EQ-T-GREE-VIREO-GEN3" = { material = { low = 1600, high = 2300 }, labour = { low = 420, high = 1000 } }  # 1 ea — VIR24HP230V1R32AO $2,290
 "EQ-T-SAUNA-HEATER" = { material = { low = 700, high = 2200 }, labour = { low = 630, high = 1370 } }  # 1 ea
 # One tank, not two (2026-08-15, replacing the two-row entry the old two-tank model
@@ -2768,7 +2774,9 @@
 # $ each, keyed as ordered
 "elbow-90-3in" = { low = 3, high = 8 }             # 42 ea — 75 mm semi-rigid bend
 "elbow-90-6in" = { low = 9, high = 22 }            # 9 ea — 6" insulated riser elbow
-"elbow-90-8in" = { low = 12, high = 28 }           # 1 ea — DU-A-HP-STUDY's drawn rise
+# elbow-90-8in retired 2026-08-30 with DU-A-HP-STUDY, the run whose rise it turned. The one
+# vertical System 1 has now is DU-S-HP-SOUTH-RISE's, and that branch is 10x6.
+"elbow-90-10in" = { low = 16, high = 36 }          # 1 ea — DU-S-HP-SOUTH-RISE's drawn rise
 
 [duct_insulation]
 # NEW 2026-08-25, the air-side mirror of [pipe_insulation]. Billed off the host run's

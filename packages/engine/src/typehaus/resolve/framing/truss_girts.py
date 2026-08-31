@@ -275,6 +275,54 @@ class GirtFrame(BandFrame):
                         count += 1
         return out, findings
 
+    def rake_blocks(self, rakes: dict[str, list[FramedMember]],
+                    voids: list[tuple[float, float, float, float]],
+                    verticals: tuple[tuple[float, float, float], ...] = (),
+                    ) -> list[FramedMember]:
+        """Blocks under a RAKED nailer, on the same module the field courses use.
+
+        Its own branch rather than a case inside :meth:`blocks`, because everything that
+        method does turns on a course having ONE elevation: it pairs the two tiers by
+        ``z0_m`` and hands the pair's segments to ``_by_elevation``. A rake has an
+        elevation per station, so a rake member read as a course pairs against whatever
+        else happens to start at the same number, and the pairing finding fires on a
+        mismatch that is not one.
+
+        What does carry over is the module: block-1 on the stud, block-2 half a bay off it,
+        each block's own ``z0`` read off the rake at its own station. The block is drawn
+        square, as every other block is; it is cut on the rake on the job, and the 3-1/2"
+        it is wide puts its two upper corners within an inch of the nailer's underside on
+        catlin's 6:12 gables.
+        """
+        out: list[FramedMember] = []
+        for tier in (INNER, OUTER):
+            for index, member in enumerate(rakes.get(tier, ())):
+                seg_lo = self.station_of(member)
+                seg_hi = seg_lo + length(sub(member.p1, member.p0))
+                if seg_hi - seg_lo <= _TOL:
+                    continue
+                z_lo = member.z0_m
+                z_hi = member.z0_end_m if member.z0_end_m is not None else member.z0_m
+                half = self.stock_face / 2.0
+                phase = self.phase if tier == INNER else self.phase + self.spacing / 2.0
+                stations = _module_stations(
+                    seg_lo + half, seg_hi - half, self.spacing, self.stock_face,
+                    module=True, phase=phase % self.spacing,
+                    continuations=self._segment_continuations(seg_lo, seg_hi),
+                    seams=(0.0, self.run))
+                count = 0
+                for station in stations:
+                    z0 = z_lo + (z_hi - z_lo) * (station - seg_lo) / (seg_hi - seg_lo)
+                    z0 -= self.stock_face
+                    if self._in_void(station, z0, voids):
+                        continue
+                    station = self.snap(station, z0, verticals, voids, (seg_lo, seg_hi))
+                    out.append(self._block(
+                        tier, station, z0,
+                        f"block-{tier}-rake-{index:03d}-{count:02d}"))
+                    count += 1
+        return out
+
     def _in_void(self, station: float, z0: float,
                  voids: list[tuple[float, float, float, float]]) -> bool:
         """Whether a block at ``station``/``z0`` would stand in a rough opening.

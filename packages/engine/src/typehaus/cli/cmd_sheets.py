@@ -96,14 +96,11 @@ def render(
     if result.plan is None:
         _print_findings(result.findings)
         raise typer.Exit(1)
-    if sealed and not checklist.sealed:
-        console.print("[red]permit print blocked: --sealed, and engineered requirements "
-                      "carry no fresh professional seal[/red]")
-        for item in checklist.unsealed:
-            state = item.seal.value if item.seal else "unsealed"
-            console.print(f"  {item.label} [{state}]: "
-                          f"{', '.join(item.engineering_items)}")
-        raise typer.Exit(1)
+    # (A copy of `haus print`'s --sealed gate stood here and referenced `sealed` and
+    # `checklist`, neither of which this command has: every `haus render` raised NameError
+    # from 2026-08-2x until 2026-08-30. It does not belong here either way — `haus print`
+    # is the submittal gate, `haus render` is the look-at-it loop, and gating the loop on a
+    # professional seal would make the drawings unreadable exactly when they are needed.)
     model, _ = resolve(result.plan)
     # A forced scale is meaningless without a sheet to print it on — the frameless path has
     # no viewport to hold the drawing to — so asking for one asks for the default sheet.

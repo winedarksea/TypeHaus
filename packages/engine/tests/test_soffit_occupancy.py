@@ -65,18 +65,32 @@ def test_a_fourteen_inch_drop_clears_an_eight_inch_duct(catlin_model) -> None:
     assert section.drop_m > 8 * M_PER_IN
 
 
-def test_the_air_handler_leaves_about_five_inches_either_side(catlin_model) -> None:
-    """The 21" case centred in a 30 3/4" cavity. The comment said "~5" either side" and was
-    describing a fit the model did not have: without ``rotation`` the case resolved 43"
-    across a 30 3/4" box, six inches of air handler outside its own soffit."""
-    _, section = _section(catlin_model, "SF-S-DUCT")
+def test_the_air_handler_is_the_real_cabinet_and_the_lanes_beside_it_are_real_too(
+        catlin_model) -> None:
+    """This test used to read "the 21" case leaves ~4 7/8" either side of SF-S-DUCT", and
+    both halves of that were fiction.
+
+    The 21" came from EQ-T-GREE-SLIM24, an explicit REPRESENTATIVE PLACEHOLDER whose only
+    43 3/8"-wide match was Gree's discontinued low-static DUCT24HP230V1AD (589 cfm at 0.04"
+    w.c., against the 750 cfm this duct system is sized to). And 4 7/8" of sliver was never
+    a lane for anything, which is exactly why DU-S-HP-SOUTH had no riser and plans/TODO.md
+    stayed open.
+
+    The real cabinet is 44 1/2" wide, it lives in SF-S-HP1, and the point of that box is
+    that the two things which have to pass the machine — the 10x6 south-branch riser lane
+    and the 6" ERV mixing-box feed — fit BESIDE it with the hanger gap, not instead of it.
+    So the assertion is no longer a pair of symmetric margins; it is that the machine is the
+    catalogued cabinet and that the box still has lanes left over."""
+    _, section = _section(catlin_model, "SF-S-HP1")
     handler = next(o for o in catlin_model.canvas_objects if o.tag == "EQ-S-HP1-AH")
     xs = [x for x, _ in handler.footprint]
-    assert (max(xs) - min(xs)) / M_PER_IN == pytest.approx(21.0, abs=1e-6)
+    assert (max(xs) - min(xs)) / M_PER_IN == pytest.approx(44.47, abs=1e-6)
     west = (min(xs) - section.across[0]) / M_PER_IN
     east = (section.across[1] - max(xs)) / M_PER_IN
-    assert west == pytest.approx(4.875, abs=0.01)
-    assert east == pytest.approx(4.875, abs=0.01)
+    assert west > 0.0, "the case must be inside its own cavity"
+    # Everything the machine does not take is lane: 10 branch + 2 gap + 6 ERV + 2 gap.
+    assert west + east == pytest.approx(section.width_m / M_PER_IN - 44.47, abs=1e-6)
+    assert east >= 10 + 6 + 2 * (HANGER_GAP_M / M_PER_IN)
 
 
 # --- the occupancy rule itself -----------------------------------------------------------
@@ -117,13 +131,23 @@ def test_both_soffits_are_actually_graded(soffit_findings) -> None:
     graded = {tuple(f.element_tags): f.result for f in soffit_findings}
     assert graded.get(("SF-S-DUCT",)) is Result.PASS
     assert graded.get(("SF-S-SUITE",)) is Result.PASS
+    # SF-S-HP1 joined them on 2026-08-30 and is the one that has to be graded: it is the
+    # only box in the house holding a machine and two lanes side by side.
+    assert graded.get(("SF-S-HP1",)) is Result.PASS
 
 
 def test_the_air_handler_hangs_inside_the_soffit_not_at_the_storey_ceiling(catlin_model) -> None:
     """The bug ``soffit_ref`` fixed. A CEILING mount with no stated elevation fell back to
     ``storey.default_ceiling_height``, so both EQ-S-HP1-AH and EQ-S-HP1-STRIP resolved at
-    9'-0" — fourteen inches above the box every comment in the plan says they live in."""
-    _, section = _section(catlin_model, "SF-S-DUCT")
-    for tag in ("EQ-S-HP1-AH", "EQ-S-HP1-STRIP", "EQ-S-ERV-MIX"):
+    9'-0" — fourteen inches above the box every comment in the plan says they live in.
+
+    Each machine is checked against ITS OWN box since 2026-08-30, and the split is the
+    point: the air handler and the mixing box are in SF-S-HP1 (17" drop, underside 7'-7"),
+    the duct heater stayed in SF-S-DUCT (14", 7'-10") because it heats the trunk. A single
+    shared section would have hidden a machine hung against the wrong soffit's underside."""
+    homes = {"EQ-S-HP1-AH": "SF-S-HP1", "EQ-S-HP1-STRIP": "SF-S-DUCT",
+             "EQ-S-ERV-MIX": "SF-S-HP1"}
+    for tag, soffit_tag in homes.items():
+        _, section = _section(catlin_model, soffit_tag)
         obj = next(o for o in catlin_model.canvas_objects if o.tag == tag)
         assert obj.z_m == pytest.approx(section.z[0]), tag
