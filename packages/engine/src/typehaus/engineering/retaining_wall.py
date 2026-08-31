@@ -17,26 +17,13 @@ question is opened. What it does do is answer the question IRC R404.4 actually a
 the base reach a safety factor of 1.5 against sliding and overturning — and answer it in
 numbers a reviewer can disagree with term by term.
 
-Conventions, so that a reader comparing rows compares like with like:
-
-* moments are taken about the **toe**, per lineal foot of wall;
-* a safety factor is carried as ``required / achieved`` so that, like every strength ratio
-  beside it, **> 1 is over**;
-* **passive resistance on the toe is neglected** unless the model can establish the toe's
-  embedment. It is the standard conservative treatment and it barely matters here — on the
-  catlin walls the toe is buried 6 1/2" and contributes under 1% of the resistance;
-* **the wall stands ON its footing.** ``FoundationWall.bottom_elevation`` is the wall's own
-  underside, which ``resolve/envelope.py::_resolve_footing`` makes the footing's TOP. So the
-  stem is the wall's full height, and ``H`` for the free body is that height **plus** the
-  footing depth — soil bears on the back of the heel as well as the back of the stem, and
-  the surface being slid along is the footing's underside. Corrected 2026-08-30
-  (BASIS_VERSION 2); both halves of the old convention were off by one footing depth in
-  opposite, non-cancelling directions.
+The free body itself — geometry, one load case, the limit states — is
+`engineering/retaining_basis.py`, which `engineering/retaining_system.py` shares. This
+module is the per-wall RECORD: which walls are in scope, and what a reader of one wall's
+row is told. `_Geometry` and `analyse` are re-exported here under their old names.
 """
 
 from __future__ import annotations
-
-from dataclasses import dataclass
 
 from typehaus.engineering.item import (
     EngineeringRecord,
@@ -46,14 +33,29 @@ from typehaus.engineering.item import (
     item_id,
 )
 from typehaus.engineering.registry import EngineeringContext, calc, keys
+from typehaus.engineering.retaining_basis import (
+    BASIS,
+    REQUIRED_FS,
+    _base_interface,
+    _Case,
+    _Geometry,
+    _geometry,
+    _limit_states,
+    analyse,
+)
+from typehaus.engineering.retaining_system import KIND as SYSTEM_KIND
+from typehaus.engineering.retaining_system import _loops, system_factors
 from typehaus.engineering.soil import (
     CONCRETE_UNIT_WEIGHT_PCF,
     SOIL_UNIT_WEIGHT_BAND_PCF,
-    PresumptiveSoil,
-    aggregate_bed,
     presumptive,
 )
-from typehaus.model.enums import LayerFunction
+
+#: Re-exported at their old names on purpose. ``tests/test_retaining_wall_calc.py`` imports
+#: ``_Geometry`` and ``analyse`` from here and its ORACLE is the frozen hand pass; the split
+#: that moved them to ``retaining_basis`` must not be visible to it.
+__all__ = ["KIND", "BASIS", "BASIS_VERSION", "REQUIRED_FS", "_Case", "_Geometry", "analyse",
+           "compute", "enumerate_walls"]
 
 KIND = "retaining_wall"
 
@@ -62,146 +64,30 @@ KIND = "retaining_wall"
 #:
 #: 1 -> 2 (2026-08-30): the stem/footing elevation convention, per the module docstring. The
 #: stem was a footing depth short and ``H`` a footing depth short with it.
-BASIS_VERSION = "2"
-BASIS = "IRC R404.4; IBC 1610.1 / 1806.2 presumptive values"
-
-#: IRC R404.4's own requirement, and the only number here that is not a lookup.
-REQUIRED_FS = 1.5
-
-_M_PER_FT = 0.3048
-
-
-@dataclass(frozen=True)
-class _Geometry:
-    """One wall's stem and footing, in feet, per lineal foot of wall."""
-
-    tag: str
-    stem_thickness_ft: float
-    stem_height_ft: float
-    footing_width_ft: float
-    footing_depth_ft: float
-    toe_ft: float
-    heel_ft: float
-    retained_height_ft: float
-    #: Depth of soil in front of the toe, where the model establishes one. Neglected (0.0)
-    #: otherwise — see the module docstring.
-    toe_embedment_ft: float = 0.0
-
-
-@dataclass(frozen=True)
-class _Case:
-    """One load case's results — a lateral pressure and a soil unit weight."""
-
-    label: str
-    efp_psf_per_ft: float
-    soil_pcf: float
-    thrust_plf: float
-    weight_plf: float
-    resistance_plf: float
-    resisting_moment: float
-    overturning_moment: float
-    bearing_psf: float
-    eccentricity_ft: float
-
-    @property
-    def fs_sliding(self) -> float:
-        return self.resistance_plf / self.thrust_plf if self.thrust_plf else float("inf")
-
-    @property
-    def fs_overturning(self) -> float:
-        return (self.resisting_moment / self.overturning_moment
-                if self.overturning_moment else float("inf"))
-
-
-def analyse(geometry: _Geometry, soil: PresumptiveSoil, *, at_rest: bool = False,
-            soil_pcf: float = SOIL_UNIT_WEIGHT_BAND_PCF[0],
-            base: PresumptiveSoil | None = None) -> _Case:
-    """One load case, per lineal foot, moments about the toe.
-
-    ``soil`` is the **retained** material — it sets the pressure on the stem. ``base`` is
-    what the footing actually **bears on**, and it sets the friction, the passive term and
-    the allowable bearing. They are usually the same and here they are not: these footings
-    sit on 42" of replacement stone, and sliding happens at that interface, not against the
-    silty gravel behind the wall. Defaults to ``soil`` so a wall bearing on its own subgrade
-    needs no second argument.
-
-    Kept a free function taking plain numbers so the oracle test can drive it straight from
-    the hand calc's own table without building a model.
-    """
-    base = base or soil
-    efp = soil.at_rest_efp_psf_per_ft if at_rest else soil.active_efp_psf_per_ft
-    height = geometry.retained_height_ft
-
-    # Triangular active (or at-rest) thrust, resultant at H/3 above the base.
-    thrust = 0.5 * efp * height * height
-    overturning = thrust * height / 3.0
-
-    # Dead load only. IBC Table 1806.2 footnote a applies the friction coefficient to the
-    # dead load, and nothing here is anything else.
-    stem = geometry.stem_thickness_ft * geometry.stem_height_ft * CONCRETE_UNIT_WEIGHT_PCF
-    footing = (geometry.footing_width_ft * geometry.footing_depth_ft
-               * CONCRETE_UNIT_WEIGHT_PCF)
-    # The column of soil standing on the heel — the term the heel exists for, and the one a
-    # footing centred on its stem throws away half of.
-    on_heel = geometry.heel_ft * geometry.stem_height_ft * soil_pcf
-    weight = stem + footing + on_heel
-
-    passive = 0.5 * base.lateral_bearing_psf_per_ft * geometry.toe_embedment_ft ** 2
-    resistance = base.friction_coefficient * weight + passive
-
-    resisting = (footing * geometry.footing_width_ft / 2.0
-                 + stem * (geometry.toe_ft + geometry.stem_thickness_ft / 2.0)
-                 + on_heel * (geometry.footing_width_ft - geometry.heel_ft / 2.0))
-
-    # Resultant location, eccentricity from the footing's centre, and the trapezoidal
-    # bearing pressure at the toe.
-    arm = (resisting - overturning) / weight if weight else 0.0
-    eccentricity = geometry.footing_width_ft / 2.0 - arm
-    bearing = (weight / geometry.footing_width_ft
-               * (1.0 + 6.0 * eccentricity / geometry.footing_width_ft))
-
-    return _Case(
-        label=("at-rest" if at_rest else "active") + f" {efp:.0f} psf/ft, soil {soil_pcf:.0f} pcf",
-        efp_psf_per_ft=efp, soil_pcf=soil_pcf,
-        thrust_plf=thrust, weight_plf=weight, resistance_plf=resistance,
-        resisting_moment=resisting, overturning_moment=overturning,
-        bearing_psf=bearing, eccentricity_ft=eccentricity,
-    )
-
-
-def _limit_states(case: _Case, geometry: _Geometry, soil: PresumptiveSoil,
-                  base: PresumptiveSoil | None = None) -> tuple[LimitState, ...]:
-    """The four comparisons, all in the demand/capacity convention (> 1 is over)."""
-    base = base or soil
-    return (
-        LimitState("sliding", REQUIRED_FS, case.fs_sliding, "", "IRC R404.4",
-                   is_safety_factor=True),
-        LimitState("overturning", REQUIRED_FS, case.fs_overturning, "", "IRC R404.4",
-                   is_safety_factor=True),
-        LimitState("bearing", case.bearing_psf, base.allowable_bearing_psf, "psf",
-                   f"IBC Table 1806.2 class {base.ibc_class}"),
-        # Outside the middle third the heel lifts and the trapezoid above stops describing
-        # the real pressure distribution, so this is a validity check on the row above it as
-        # much as a limit state of its own.
-        LimitState("eccentricity", abs(case.eccentricity_ft),
-                   geometry.footing_width_ft / 6.0, "ft", "kern of the base (B/6)"),
-    )
+#: 2 -> 3 (2026-08-30): a ``lateral_support="base"`` branch graded at at-rest against the
+#: court's own free body, and a ``stem flexure`` limit state on every branch.
+BASIS_VERSION = "3"
 
 
 def _retaining_walls(ctx: EngineeringContext) -> list:
     """Free retaining walls — the ones IRC R404.4 sends to an engineered design.
 
-    Scoped to ``lateral_support == "unsupported"``: a wall braced top and bottom is a
-    basement wall and the prescriptive table answers it. This deliberately does *not*
-    re-implement `foundation_unbalanced_fill`'s other handoff branches (an off-table
-    thickness, a DR cell); those walls still reach the register through the check that
-    delegates them, and get a NO_CALC record until someone widens this module's scope.
+    Scoped to ``lateral_support in ("unsupported", "base")``: a wall braced top and bottom is
+    a basement wall and the prescriptive table answers it. **``"base"`` has to be in this set
+    or a restrained wall LEAVES the suite** — the register would go quiet on exactly the
+    walls the restraint was authored to explain, and a wall that stops being computed reads
+    the same as a wall that has no problem.
+
+    This deliberately does *not* re-implement `foundation_unbalanced_fill`'s other handoff
+    branches (an off-table thickness, a DR cell); those walls still reach the register
+    through the check that delegates them, and get a NO_CALC record until someone widens
+    this module's scope.
     """
     from typehaus.model.structure import FoundationWall
 
     return [w for w in ctx.plan.all_elements()
             if isinstance(w, FoundationWall)
-            and getattr(w, "lateral_support", None) == "unsupported"]
+            and getattr(w, "lateral_support", None) in ("unsupported", "base")]
 
 
 @keys(KIND)
@@ -211,15 +97,65 @@ def enumerate_walls(ctx: EngineeringContext) -> list[str]:
 
 @calc(KIND)
 def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
-    records: list[EngineeringRecord] = []
-    for wall in _retaining_walls(ctx):
-        records.append(_one(ctx, wall))
-    return records
+    """Every wall in scope, with the court's free body resolved **once** and threaded in.
+
+    ``EngineeringResults._run`` calls this once per kind, which is the only reason the loop
+    can be solved here rather than per wall: three walls each re-tracing the same wall graph
+    and re-analysing the same three members would be the same answer computed nine times.
+    """
+    systems: dict[str, tuple[float, float, float, str]] = {}
+    for ref, members in _loops(ctx).items():
+        factors = system_factors(ctx, ref, members)
+        if factors is None:
+            continue
+        demand, capacity = factors[f"{SOIL_UNIT_WEIGHT_BAND_PCF[0]:.0f}"]
+        for member in members:
+            systems[member.tag] = (capacity / demand if demand else float("inf"),
+                                   demand, capacity, item_id(SYSTEM_KIND, ref))
+    return [_one(ctx, wall, systems.get(wall.tag)) for wall in _retaining_walls(ctx)]
 
 
-def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no-untyped-def]
+
+def _restate(states: tuple, system: tuple[float, float, float, str] | None) -> tuple:
+    """Swap ``sliding`` for ``base restraint`` where the wall stands in a verified loop.
+
+    **Per-wall sliding is not a meaningful number once the free body is wrong.** Grading
+    ``W-SG-E2`` as an isolated cantilever asks whether its own footing's friction resists its
+    own thrust, and the answer is no and always will be — while the wall it faces across the
+    court pushes back with an equal and opposite thrust through the concrete between them.
+    Reporting 0.66 there would be reporting the arithmetic of a wall nobody built.
+
+    The other three rows are NOT swapped. Overturning, bearing and eccentricity stay on the
+    isolated free body, which is conservative twice over: the restraint's own restoring
+    moment is neglected, and so is the horizontal spanning that carries much of the thrust to
+    the corners. A conservative row that passes needs no apology.
+    """
+    if system is None:
+        return states
+    fs, _demand, _capacity, item = system
+    return tuple(
+        LimitState("base restraint", REQUIRED_FS, fs, "", f"IRC R404.4 via {item}",
+                   is_safety_factor=True)
+        if state.name == "sliding" else state
+        for state in states)
+
+
+def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
+         system: tuple[float, float, float, str] | None = None) -> EngineeringRecord:
     tag = wall.tag
     missing: list[str] = []
+    # **The restrained branch is graded at AT-REST and the free one at active, and the
+    # difference is not a preference.** A free cantilever is normally designed active and
+    # may be; a wall whose base is held by a permanent strut is not free to move enough to
+    # mobilise the active wedge, and citing the strut in the resistance term concedes it.
+    # ``retaining_system``'s module docstring works the deflection argument.
+    restrained = getattr(wall, "lateral_support", None) == "base"
+    if restrained and system is None:
+        missing.append(f"a verified base restraint for {tag} — it declares "
+                       f"lateral_support=\"base\" and names "
+                       f"{getattr(wall, 'base_restraint_ref', None) or 'nothing'}, and the "
+                       f"court that restraint belongs to does not check out "
+                       f"(see the retaining_system record)")
 
     soil = presumptive(getattr(ctx, "soil_class", None))
     if soil is None:
@@ -228,7 +164,7 @@ def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no
     geometry, geometry_missing = _geometry(ctx, wall)
     missing.extend(geometry_missing)
 
-    if soil is None or geometry is None:
+    if soil is None or geometry is None or missing:
         return EngineeringRecord(
             item_id=item_id(KIND, tag), kind=KIND, key=tag,
             basis_version=BASIS_VERSION, basis=BASIS, status=Status.INCOMPLETE,
@@ -243,10 +179,10 @@ def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no
     # record says so instead of choosing.
     base = _base_interface(ctx, wall) or soil
     low, high = SOIL_UNIT_WEIGHT_BAND_PCF
-    lower = analyse(geometry, soil, soil_pcf=low, base=base)
-    upper = analyse(geometry, soil, soil_pcf=high, base=base)
-    states_low = _limit_states(lower, geometry, soil, base)
-    states_high = _limit_states(upper, geometry, soil, base)
+    lower = analyse(geometry, soil, at_rest=restrained, soil_pcf=low, base=base)
+    upper = analyse(geometry, soil, at_rest=restrained, soil_pcf=high, base=base)
+    states_low = _restate(_limit_states(lower, geometry, soil, base), system)
+    states_high = _restate(_limit_states(upper, geometry, soil, base), system)
     over_low = any(not state.ok for state in states_low)
     over_high = any(not state.ok for state in states_high)
 
@@ -263,7 +199,13 @@ def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no
         Quantity("friction_coefficient", base.friction_coefficient, "", 0.01),
         Quantity("allowable_bearing", base.allowable_bearing_psf, "psf", 1.0),
         Quantity("concrete_unit_weight", CONCRETE_UNIT_WEIGHT_PCF, "pcf", 1.0),
-    )
+    ) + ((
+        # What makes moving the cross-member, or moving the wall on the FAR side of the
+        # court, stale THIS wall's seal. Without these two the fingerprint would cover only
+        # the wall's own geometry, and the number it reports would depend on three walls.
+        Quantity("system_demand", system[1], "lb", 1.0),
+        Quantity("system_capacity", system[2], "lb", 1.0),
+    ) if system is not None else ())
     notes = (
         "SCREENING on presumptive code values, not a design: "
         f"{soil.citation}. No geotechnical report is on file for this site.",
@@ -277,7 +219,15 @@ def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no
         f"Soil unit weight is a band, not a value ({low:.0f}-{high:.0f} pcf): no code table "
         f"publishes one. Both ends are run; sliding moves by "
         f"{abs(upper.fs_sliding - lower.fs_sliding):.2f} across it.",
-    )
+    ) + ((
+        f"BASE RESTRAINT: this wall does not resist sliding alone. Its base is held in a "
+        f"closed loop of cast concrete and the whole court is graded as one free body by "
+        f"{system[3]} — which is why this row's number depends on walls other than this one, "
+        f"and why editing any of them stales this record.",
+        "Graded at AT-REST (60 psf/ft), not active, because the restraint is credited. The "
+        "free-cantilever branch of this same module grades at active; the two are not "
+        "comparable row for row.",
+    ) if system is not None else ())
 
     if over_low != over_high:
         return EngineeringRecord(
@@ -308,109 +258,3 @@ def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no
                  f"{tag}: {governing.name} governs"),
         inputs=inputs, limit_states=states_low, notes=notes, element_tags=(tag,),
     )
-
-
-def _base_interface(ctx: EngineeringContext, wall) -> PresumptiveSoil | None:  # type: ignore[no-untyped-def]
-    """What the footing under this wall actually bears on.
-
-    Sliding happens at the base, so the friction coefficient describes the interface there —
-    not the backfill behind the stem. Where a ``FootingBedding`` replaces the subgrade with a
-    compacted washed-stone section, that stone is the bearing material and IBC Table 1806.2's
-    gravel row is the right one.
-
-    The gradation claim is not inferred from the ``aggregate`` free-text string, which would
-    be reading a soil classification out of a substring — the same guess ``FootingBedding``'s
-    own docstring refuses. It is taken from ``non_frost_susceptible``, which is an authored
-    ASTM D422 claim (<6% passing the #200 sieve) about that very stone, and a bed that makes
-    it is by that claim a clean open-graded gravel. A bedding that does not declare it falls
-    back to the site's own class, which is the conservative direction.
-    """
-    from typehaus.model.structure import Footing, FootingBedding
-
-    footing = next((f for f in ctx.plan.all_elements()
-                    if isinstance(f, Footing) and f.under == wall.tag), None)
-    hosts = {wall.tag} | ({footing.tag} if footing is not None else set())
-    for bedding in ctx.plan.all_elements():
-        if (isinstance(bedding, FootingBedding) and bedding.host_ref in hosts
-                and getattr(bedding, "non_frost_susceptible", None) is True):
-            return aggregate_bed()
-    return None
-
-
-def _geometry(ctx: EngineeringContext, wall) -> tuple[_Geometry | None, list[str]]:  # type: ignore[no-untyped-def]
-    """The stem and footing dimensions, or the names of what the model does not carry."""
-    from typehaus.model.structure import Footing
-
-    tag = wall.tag
-    missing: list[str] = []
-
-    thickness_in = _structure_thickness_in(ctx, wall.assembly)
-    if thickness_in is None:
-        missing.append(f"a concrete STRUCTURE layer on assembly {wall.assembly}")
-
-    if wall.top_elevation is None or wall.bottom_elevation is None:
-        missing.append(f"top_elevation/bottom_elevation on {tag}")
-        wall_height = None
-    else:
-        wall_height = (wall.top_elevation.meters - wall.bottom_elevation.meters) / _M_PER_FT
-
-    footing = next((f for f in ctx.plan.all_elements()
-                    if isinstance(f, Footing) and f.under == tag), None)
-    if footing is None:
-        missing.append(f"a Footing under {tag}")
-
-    if wall.unbalanced_fill is None:
-        # Deliberately not derived from Site.grade here. The check's proxy measures to a
-        # single global grade plane, and a wall with a terrace against it — which is exactly
-        # the condition that sends a wall to R404.4 — is what a plane cannot describe. A
-        # retaining-wall design against an understated height is worse than none.
-        missing.append(f"an authored unbalanced_fill on {tag} (the grade-plane proxy is not "
-                       f"a safe input for a retaining-wall design)")
-
-    if missing:
-        return None, missing
-
-    width_ft = footing.width.meters / _M_PER_FT
-    depth_ft = footing.depth.meters / _M_PER_FT
-    # **The wall stands ON the footing, and this used to say the opposite.**
-    # ``resolve/envelope.py::_resolve_footing`` puts a wall-hosted footing at
-    # ``z1 = wall.z0_m`` — footing TOP = wall BOTTOM, the footing entirely below the wall.
-    # W-SG-E2 resolves z0 -118.4375" / z1 +6.0" and FT-SG-E2 z0 -130.4375" / z1 -118.4375",
-    # which is that convention measured. Until 2026-08-30 the comment here claimed
-    # ``bottom_elevation`` was the footing *underside* and the arithmetic followed the
-    # comment, subtracting ``depth_ft`` from a height that never contained it: the stem, and
-    # the column of soil standing on the heel beside it, were both counted a foot short.
-    stem_ft = wall_height
-    thickness_ft = thickness_in / 12.0
-    # ``center_on="axis"`` is a footing centred on the stem: toe and heel are equal, and
-    # half the width sits on the side that does nothing for sliding.
-    side = (width_ft - thickness_ft) / 2.0
-    return _Geometry(
-        tag=tag,
-        stem_thickness_ft=thickness_ft,
-        stem_height_ft=stem_ft,
-        footing_width_ft=width_ft,
-        footing_depth_ft=depth_ft,
-        toe_ft=side,
-        heel_ft=side,
-        # **Two different heights, and conflating them was the other half of the same slip.**
-        # ``unbalanced_fill`` is the IRC quantity — fill against the wall, measured to the
-        # base of the wall — and it is what R404.1.1's 48" threshold and Table R404.1.2(8)'s
-        # rows are read against. ``H`` for a *stability* free body runs from the top of the
-        # retained soil to the **underside of the footing**, because soil bears on the back
-        # of the stem and on the back of the heel alike, and the base being slid along is the
-        # footing's underside. On these walls that is 10.37' against 11.37', and the thrust
-        # between them differs by 20%.
-        retained_height_ft=wall.unbalanced_fill.meters / _M_PER_FT + depth_ft,
-    ), []
-
-
-def _structure_thickness_in(ctx: EngineeringContext, assembly_tag: str) -> float | None:
-    """The concrete STRUCTURE layer's nominal thickness. The foam over it retains nothing."""
-    assembly = next((a for a in ctx.plan.library.assemblies if a.tag == assembly_tag), None)
-    if assembly is None:
-        return None
-    for layer in assembly.layers:
-        if layer.function is LayerFunction.STRUCTURE:
-            return round(layer.thickness.inches * 2.0) / 2.0
-    return None

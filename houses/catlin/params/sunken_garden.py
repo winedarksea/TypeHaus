@@ -314,6 +314,23 @@ _ret_top = ft(SPEC.retaining_top_ft)
 # elevation. See the long note in WALLS below; this is `_ret_top - _wall_bottom` written so it
 # cannot drift from either.
 _ret_unbalanced_fill = ft(SPEC.retaining_top_ft + SPEC.basement_depth_ft + 0.75)
+# W-SG-ARCH, the buried grade beam closing the court's north end. Both ends are DERIVED so
+# the beam cannot drift off the two planes that define it: its top is the garden floor's
+# underside (so it is never underfoot and SL-SG-FLOOR is untouched), its underside is the
+# retaining footings' underside (so the excavation has one bottom and the strut engages
+# them). 17 1/2" deep, which is what those two planes leave.
+_grade_beam_top = ft(-SPEC.basement_depth_ft) - inch(SPEC.slab_thickness_in)
+_grade_beam_bottom = _wall_bottom - inch(SPEC.footing_thickness_in)
+# Vertical steel on the three retaining walls' stems, on the RETAINED face — that is
+# where a cantilever puts its tension, and getting it on the wrong face is the classic
+# way a correctly-sized wall falls over. Sized in
+# `notes/sunken_garden_court_free_body.md` §6: Mu = 1.6 x 11,151 = 17,841 ft-lb/ft at
+# at-rest against phi-Mn 21,639 at #6 @ 10" (d/c 0.82). #6 @ 12" is the arithmetic
+# minimum at d/c 0.98 and is too thin a margin for a screening; the `#6 @ 38"` the
+# braced porch walls carry is nowhere near. 2" cover per ACI 318-19 Table 20.5.1.3.1
+# (earth and weather, #6 and larger), which is also IRC Table R404.1.2(8) footnote i's
+# outside-face figure for bars larger than #5.
+_RET_REBAR = '#6 @ 10" o.c.'
 # Top of the composite boards laid over FS-SG-PORCH: the joist tops are the 0' storey datum
 # and the plank sits on them. This is the surface underfoot — what RL-SG-PORCH's 42" is
 # measured from, and what the two centre balcony pillars bear on.
@@ -405,6 +422,47 @@ WALLS = [
                    top_elevation=_porch_top, bottom_elevation=_porch_wall_bottom,
                    lateral_support="top_and_bottom",
                    vertical_reinforcement='#6 @ 38" o.c.'),
+    # ============================================================================
+    # W-SG-ARCH IS BACK, AND IT IS A BURIED GRADE BEAM — NOT THE ARCH (2026-08-30).
+    # ============================================================================
+    # `a160812` retired a 16" cast cross-wall with two semicircular arches carrying a 42"
+    # masonry parapet and three balcony pillars — "the heaviest and most expensive element
+    # of the structure". **None of that comes back.** What comes back is a strut on the same
+    # node pair, 12" x 17 1/2", entirely below the garden floor, invisible, doing one job:
+    # closing the loop that makes W-SG-W2 and W-SG-E2 face each other instead of standing as
+    # two free cantilevers. It reuses the retired uid, which is exactly what the
+    # `_WALL_FOOTING_UID` literal-map pattern below was built for.
+    #
+    # **Why a beam and not the garden slab.** A slab strut is cheaper and does not work:
+    # the walls would stand as free cantilevers at FS 0.73 until the floor cures, and
+    # BACKFILL IS WHAT LOADS THEM. Table R404.1.2(8) footnote g says the same thing about
+    # its own walls — "laterally supported at the top and bottom BEFORE backfilling". This
+    # beam is cast with the walls, so the loop is closed before any soil goes in. It also
+    # needs no control joints, closes no shrinkage gap, does not bear on the compressible
+    # FPSF wing foam, and leaves SL-SG-FLOOR free to be saw-cut for ever.
+    #
+    # **No Footing under it, deliberately.** It carries its own weight (219 plf) over 12" of
+    # bearing — 219 psf against 3,000 allowable — so a strip footing would be concrete spent
+    # on nothing. `FootingBedding.host_ref` takes a FoundationWall directly (the five
+    # `W-RG-*` beds are the precedent), and `structural.frost_depth` iterates footing and pad
+    # SOLIDS, so a `FT-SG-ARCH` would land inside the excavation and reopen the frost
+    # question that ASCE 32 soil replacement closed on 2026-08-29. FB-SG-ARCH below carries
+    # the same 42" undercut, the same NFS claim and the same tile to DRW-SG-MAIN.
+    #
+    # **The underside is flush with the retaining footings' at -10'-10 7/16"**, which is one
+    # excavation level and one stone plane rather than two, and lets the strut engage those
+    # footings directly instead of hanging above them. The top is the garden floor's
+    # UNDERSIDE, so nothing of it is ever underfoot and SL-SG-FLOOR does not move.
+    #
+    # `unbalanced_fill=inch(0)` is authored and is not a formality: without it
+    # `_unbalanced_fill_ft`'s grade-plane proxy invents a retained height for a wall buried
+    # inside the excavation, and this beam retains nothing — the court is on one side of it
+    # and the porch box on the other, both at the same level.
+    FoundationWall(uid="SGW102AAAA", tag="W-SG-ARCH", start_node="N-SG-MW",
+                   end_node="N-SG-ME", assembly="SUNKEN_GARDEN_WALL",
+                   top_elevation=_grade_beam_top, bottom_elevation=_grade_beam_bottom,
+                   unbalanced_fill=inch(0),
+                   lateral_support="top_and_bottom"),
     # Garden retaining run (to just above grade), the U south of the porch.
     #
     # ** THE FILL AGAINST THESE THREE IS AUTHORED, AND IT IS A CORRECTNESS FIX (2026-08-30). **
@@ -431,29 +489,68 @@ WALLS = [
     # engineer is asked to design for by nearly half again, which is the whole point.
     # `notes/sunken_garden_retaining_screening.md` works the consequences.
     #
-    # `lateral_support="unsupported"` is the honest statement of what these three are: free
-    # retaining walls, open to the sky along their whole top, holding 9'-9" of fill with
-    # nothing bracing the head. That is IRC R404.4's case exactly — a retaining wall not
-    # laterally supported at the top holding more than 48" of unbalanced fill — so it wants
-    # an engineered design to a 1.5 safety factor against sliding and overturning, and Table
-    # R404.1.2(8) (a *basement* wall table, presuming bracing top and bottom) must not be
-    # read against them. The check reports them UNKNOWN — engineered, which is the true
-    # reading and the one that keeps an invented rebar schedule out of the permit set.
+    # ** `lateral_support="base"`, NOT "unsupported" (2026-08-30). ** This block argued the
+    # opposite in detail until the court was closed, and the old argument was right about
+    # every wall EXCEPT the free body it drew around them.
+    #
+    # What it said: these three are free retaining walls, open to the sky along their whole
+    # top, holding 10'-4" of fill with nothing bracing the head — IRC R404.4's case exactly.
+    # All of that is still true, and `"base"` still routes to the same R404.4 engineered
+    # handoff (`checks/structural/foundation.py::_grade_one`); Table R404.1.2(8), a
+    # *basement* wall table whose footnote g presumes bracing top AND bottom, still must not
+    # be read against them.
+    #
+    # What was wrong: they were graded as three ISOLATED cantilevers, each resisting by its
+    # own base friction, and reached FS 0.73 against 1.5. That is the arithmetic of a wall
+    # nobody built. W-SG-W2 (axis x=8'-0") and W-SG-E2 (axis x=28'-0") face each other across
+    # a 19'-0" court, same height, same 18'-4" length, cast into W-SG-S at their south ends
+    # through monolithic corners — **their thrusts cancel through the concrete between
+    # them.** Only the 20'-0" south wall is unopposed. The U was open at its NORTH end and
+    # that was the real defect; W-SG-ARCH above closes it, and
+    # `engineering/retaining_system.py` sums the whole court as ONE free body.
+    #
+    # The price of citing the restraint is that these are graded at AT-REST (60 psf/ft)
+    # rather than active (45): you cannot hold a wall's base with a permanent strut and also
+    # claim it moves enough to shed to the active wedge. Worked in
+    # `notes/sunken_garden_court_free_body.md`, which supersedes the screening note's
+    # CONCLUSION and not its arithmetic.
+    #
+    # `base_restraint_ref` is authored and never derived, and naming it GRANTS nothing:
+    # `retaining_system._verify` goes and checks that W-SG-ARCH is a real FoundationWall, on
+    # a real cycle of the wall graph, on the SAME cycle as this wall, cast in concrete, and
+    # with a section that carries the strut force. Break any one and the record is
+    # INCOMPLETE, never PASS.
+    #
+    # `vertical_reinforcement` is NEW and it is the other half of the fix. The stem was plain
+    # concrete and always had been: 465 psi of flexural tension at at-rest, on a section ACI
+    # 318 R22.6.3 does not even COVER as plain concrete ("the Code does not cover walls
+    # without horizontal support ... such walls are to be designed as reinforced concrete
+    # members"). A base restraint acts inches from the stem's base and relieves NONE of it,
+    # so fixing sliding alone would have turned the report green over a louder uncomputed
+    # failure. The schedule is sized in the note, not invented here.
+    #
+    # `engineering_spec` is STILL deliberately unset. The screening note's §6 reasoning is
+    # unchanged: an authored spec says "an engineer designed this wall", and none has. What
+    # changed is that the engine now computes a court that checks out — a draft verdict,
+    # not a stamp.
     FoundationWall(uid="SGW105AAAA", tag="W-SG-W2", start_node="N-SG-MW",
                    end_node="N-SG-SW", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom,
                    unbalanced_fill=_ret_unbalanced_fill,
-                   lateral_support="unsupported"),
+                   vertical_reinforcement=_RET_REBAR,
+                   lateral_support="base", base_restraint_ref="W-SG-ARCH"),
     FoundationWall(uid="SGW106AAAA", tag="W-SG-E2", start_node="N-SG-SE",
                    end_node="N-SG-ME", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom,
                    unbalanced_fill=_ret_unbalanced_fill,
-                   lateral_support="unsupported"),
+                   vertical_reinforcement=_RET_REBAR,
+                   lateral_support="base", base_restraint_ref="W-SG-ARCH"),
     FoundationWall(uid="SGW107AAAA", tag="W-SG-S", start_node="N-SG-SW",
                    end_node="N-SG-SE", assembly="SUNKEN_GARDEN_WALL",
                    unbalanced_fill=_ret_unbalanced_fill,
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom,
-                   lateral_support="unsupported"),
+                   vertical_reinforcement=_RET_REBAR,
+                   lateral_support="base", base_restraint_ref="W-SG-ARCH"),
 ]
 
 # --- public geometry for structures that build on this one ------------------------------
@@ -635,11 +732,48 @@ _WALL_FOOTING_UID = {"W-SG-W1": "SGF102AAAA", "W-SG-E1": "SGF103AAAA",
 # under SL-SG-FLOOR is sized against. Thickening instead of raising keeps every underside,
 # every bedding undercut and every cover figure where the frost design left them.
 _PORCH_FOOTING_THICKNESS_IN = {"W-SG-W1": 13.0, "W-SG-E1": 13.0}
+# ============================================================================
+# THE THREE RETAINING FOOTINGS GROW INBOARD ONLY: 7'-0" -> 8'-0", OFFSET 6" (2026-08-30).
+# ============================================================================
+# At at-rest the resultant on a 7'-0" base falls OUTSIDE the middle third — e = 1.30' against
+# a kern of 1.17' — so the heel lifts and the trapezoidal bearing distribution the record
+# reports stops describing anything. That is a real limit state and it is the one thing the
+# grade beam does not fix: closing the loop answers sliding, and eccentricity is a moment
+# question about one wall's own footing.
+#
+# **Widening symmetrically is what you would reach for and it is the one thing that does not
+# fit.** `params/raised_garden.py` measures its apron's 3'-0" clear offset — the owner's own
+# figure, from the brief — so the legs' inner faces land EXACTLY on these footings' outboard
+# edges at x = 4.5 / 31.5 and y = -32.833. Tangent, no overlap, and
+# `test_catlin_outdoor_structures.py` asserts it. Any symmetric widening walks the outboard
+# edge under the apron and moves a wall the brief pins.
+#
+# The court side is free, so the concrete goes there instead. `Footing.offset` slides the
+# strip 6" toward the toe, which leaves the OUTBOARD edge exactly where the 7'-0" strip left
+# it — 4.0' + 0.5' half-stem + 3.0' heel = 4.5 on the west, and the mirror east and south —
+# and puts the extra 12" of width entirely under the garden floor where nothing is. Toe
+# 4'-0" / heel 3'-0". The apron does not move, its assertion does not change, and the heel —
+# the term that carries the stabilising column of soil — is untouched at 3'-0".
+#
+# +2.10 CY over the three runs. FT-SG-W1/E1 keep the shared 84": they are braced top and
+# bottom, the prescriptive table answers them, and neither has an eccentricity question.
+_RETAINING = ("W-SG-W2", "W-SG-E2", "W-SG-S")
+_RETAINING_FOOTING_WIDTH_IN = 96.0
+# Positive along the LEFT-hand normal of each wall's own start->end direction, which is the
+# frame `resolve/geometry.rect_between` lays the strip out in. All three wind the same way
+# around the court (W2 runs MW->SW, E2 runs SE->ME, S runs SW->SE), so +6" is "into the
+# court" for every one of them — checked, not assumed: see the footing-edge assertions in
+# `test_retaining_court.py`.
+_RETAINING_FOOTING_OFFSET_IN = 6.0
 FOOTINGS = [
     Footing(uid=_WALL_FOOTING_UID[w.tag], tag=f"FT-{w.tag[2:]}", under=w.tag,
-            width=inch(SPEC.footing_width_in),
+            width=inch(_RETAINING_FOOTING_WIDTH_IN if w.tag in _RETAINING
+                       else SPEC.footing_width_in),
+            offset=inch(_RETAINING_FOOTING_OFFSET_IN) if w.tag in _RETAINING else None,
             depth=inch(_PORCH_FOOTING_THICKNESS_IN.get(w.tag, SPEC.footing_thickness_in)))
-    for w in WALLS
+    # W-SG-ARCH is deliberately absent: the buried grade beam carries 219 plf over its own
+    # 12" of bearing and bears straight on FB-SG-ARCH. See its own block in WALLS.
+    for w in WALLS if w.tag in _WALL_FOOTING_UID
 ]
 # The two porch piers' BELLS. FT-SG-COL keeps SGF199AAAA; the front column's is appended
 # after it, so nothing already in the IFC moves.
@@ -742,6 +876,29 @@ FOOTING_BEDDING = [
     )
     for f in FOOTINGS
 ]
+# W-SG-ARCH's bed, appended rather than swept up by the comprehension above because it is
+# hosted on the WALL and not on a Footing — the grade beam has none (see WALLS). Same 42"
+# undercut, same NFS claim about the same stone, same 4" sock-wrapped tile to DRW-SG-MAIN,
+# so it joins the existing takeoff group rather than starting a second one. It is NOT
+# `cast_foam_in_aggregate`: that is for the house-adjacent footings' thermal break, and this
+# beam is 11'-0" south of the house with unconditioned court on both faces.
+#
+# `width` is authored because a wall-hosted bed defaults to the wall's own thickness, and a
+# 12" trench is not something anyone can dig, compact or lay tile in. 24" is the beam plus 6"
+# of working room each side.
+#
+# `GARDEN_DRYWELL.inlet_refs` derives from FOOTING_BEDDING wholesale, so the well picks this
+# bed up with nothing authored for it, and the well's top already sits on the wall beds'
+# underside — which is this bed's underside too, the beam being flush with them.
+FOOTING_BEDDING.append(
+    FootingBedding(
+        uid="SGB009AAAA", tag="FB-SG-ARCH", host_ref="W-SG-ARCH",
+        width=inch(24),
+        undercut=inch(SPEC.aggregate_bedding_depth_in),
+        non_frost_susceptible=True,
+        drain_tile_spec=DrainTile(diameter=inch(4), sock=True, discharge="DRW-SG-MAIN"),
+    )
+)
 
 # The sunken garden's own soakaway — a hole dug to take water and give it to the soil,
 # below (not part of) the 42" bearing bed. The garden floor sits 9' down with no downhill

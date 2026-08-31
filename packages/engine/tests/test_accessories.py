@@ -153,8 +153,14 @@ def test_balcony_braces_reach_the_shared_pillar_top_soffit(catlin_model) -> None
     # clear IRC Table R507.5(1), and the whole pillar-top band came down 2" with them.
     assert ns.z1_end_m == pytest.approx(8.4583333 * FT)  # N-S beam soffit
     assert ew.z1_end_m == pytest.approx(7.8541667 * FT)  # rail soffit — below the beams' now
-    # Both feet stay well above the pillar base at the railing top (3.583').
-    assert min(ns.z0_m, ew.z0_m) > 4.0 * FT
+    # Both feet stay above the pillar base and clear of the porch railing top (3.583'). The
+    # E-W foot sits lower than the N-S one by 1'-0 3/4" and both parts of that gap are
+    # deliberate: 7 1/4" because it rises to a rail soffit a rail depth below the beams', and
+    # 5 1/2" more because its foot LAPS the pillar face rather than butting it
+    # (KneeBrace.foot_lap — the brace is in the rail's plane and has no pillar in front of
+    # its end to bear on). At 45 degrees a longer run is a lower foot.
+    assert ew.z0_m == pytest.approx(ns.z0_m - (7.25 + 5.5) / 12 * FT)
+    assert min(ns.z0_m, ew.z0_m) > 3.583 * FT
     # Every brace is in the framing cut list, so a framer orders the lumber.
     braced = [m for m in catlin_model.all_members() if m.category == "brace"]
     assert len(braced) == 8

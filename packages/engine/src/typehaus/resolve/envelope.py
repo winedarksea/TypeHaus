@@ -319,8 +319,12 @@ def _resolve_footing(model: ResolvedModel, footing: Footing, storey: str) -> Res
             # when the wall carries an ``alignment=face(...)``. Same correction the
             # framing solver makes to put studs inside the structure layer.
             axis = band_axis(axis, [point for layer in wall.layers for point in layer.polygon])
-        outline = rect_between(axis[0], axis[1], -footing.width.meters / 2,
-                               footing.width.meters / 2)
+        # ``Footing.offset`` slides the strip square to the wall — see its own docstring.
+        # Both edges move together, so an offset changes where the strip sits and never
+        # how wide it is.
+        off = footing.offset.meters if footing.offset is not None else 0.0
+        outline = rect_between(axis[0], axis[1], off - footing.width.meters / 2,
+                               off + footing.width.meters / 2)
         z1 = wall.z0_m
         return ResolvedSolid(footing.uid, footing.tag, storey, "footing", outline,
                              z1 - footing.depth.meters, z1, assembly=footing.assembly)

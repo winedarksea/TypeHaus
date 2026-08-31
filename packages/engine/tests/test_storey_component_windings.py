@@ -130,10 +130,23 @@ def test_catlin_basement_structures_resolve_independently(catlin_model) -> None:
     # The house is a closed loop, authored clockwise-in-plan, and traces to -1 on its own
     # outer ring rather than borrowing anyone's scalar.
     assert windings.sign_for_wall(house) == -1.0
-    # The sunken garden has no closed loop to trace since 2026-08-18: retiring the arched
-    # cross-wall left its five walls as one open chain (NW→MW→SW→SE→ME→NE) whose signed area
-    # is zero, so it takes the fallback. That is latent *here* — every SUNKEN_GARDEN_WALL is
-    # one centred concrete layer, so the sign only reverses two layer polygons' vertex order
-    # and moves no face — and would stop being latent the moment one of them took a second
-    # layer, which is what the retired masonry parapet above them was.
-    assert windings.sign_for_wall(sunken_garden) == UNRECOVERABLE_WINDING_OUTWARD_SIGN
+    # **The sunken garden traces a real winding again as of 2026-08-30**, and it is -1.
+    #
+    # It could not between 2026-08-18 and then: retiring the arched cross-wall left its five
+    # walls as one open chain (NW→MW→SW→SE→ME→NE) whose signed area is zero, so
+    # ``sign_for_component`` fell back to ``UNRECOVERABLE_WINDING_OUTWARD_SIGN`` (+1). That
+    # fallback was recorded as latent — every SUNKEN_GARDEN_WALL is one centred concrete
+    # layer, so the sign only reverses two layer polygons' vertex order and moves no face.
+    #
+    # ``W-SG-ARCH`` closes MW→SW→SE→ME→MW, so there is an outer ring to trace and it traces
+    # to -1, the same sense as the house. The prediction that the flip was latent was
+    # checked in BOTH directions on the day: the resolved model was diffed before and after
+    # and no face moved. It is still latent, and still would stop being so the moment one of
+    # these walls took a second layer.
+    #
+    # It matters beyond tidiness now. ``engineering/retaining_basis._heelward_offset`` reads
+    # this sign to decide which side of an off-centre footing is the HEEL, and refuses
+    # (INCOMPLETE) rather than guess when the winding is unrecoverable — so the three
+    # retaining walls' eccentricity depends on this assertion holding.
+    assert windings.sign_for_wall(sunken_garden) == -1.0
+    assert UNRECOVERABLE_WINDING_OUTWARD_SIGN == 1.0  # the fallback it no longer takes

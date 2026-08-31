@@ -106,12 +106,27 @@ def test_a_wall_with_no_declared_soil_class_is_incomplete_not_guessed() -> None:
     assert presumptive("XX") is None
 
 
-def test_catlin_reports_the_three_free_walls_as_over(catlin_plan) -> None:
+def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
+        catlin_plan) -> None:
     """End to end, through the registry, on the landed house.
 
-    The three sunken-garden walls are the case the whole engineering register was built
-    around: two checks delegate to one item id, and the item computes a real answer. The
-    answer is that they do not check, which is what the note found by hand.
+    **This test used to assert these three walls were OVER, and that was right at the time.**
+    They were graded as three ISOLATED free cantilevers, each resisting by its own base
+    friction, and reached FS 0.73 against the 1.5 IRC R404.4 requires. What changed on
+    2026-08-30 is not the code's requirement and not the walls' section — it is the free
+    body. ``W-SG-ARCH``, a buried 12" x 17 1/2" grade beam, closes the court's north end, so
+    ``W-SG-W2`` and ``W-SG-E2`` face each other across 19'-0" of cast concrete and their
+    thrusts cancel. ``engineering/retaining_system`` sums all three as one rigid body.
+
+    Two things keep this from being the check being talked out of its finding:
+
+    * the per-wall row is not deleted, it is REPLACED by ``base restraint``, which carries
+      the court's own number and cites the item it came from; and
+    * the demand went UP, not down. Crediting a permanent restraint concedes that the wall
+      cannot move enough to shed to the active wedge, so these are graded at at-rest
+      (60 psf/ft) where the free-cantilever branch grades at active (45).
+
+    ``tests/test_retaining_court.py`` holds the oracle and the free-pass battery.
     """
     from typehaus.engineering import EngineeringContext, EngineeringResults
     from typehaus.resolve import resolve
@@ -122,26 +137,21 @@ def test_catlin_reports_the_three_free_walls_as_over(catlin_plan) -> None:
 
     for tag in ("W-SG-E2", "W-SG-S", "W-SG-W2"):
         record = results[f"{KIND}/{tag}"]
-        assert record.status is Status.OVER, record.summary
-        assert record.governing is not None and record.governing.name == "sliding"
-        # 0.725, and it moved twice from the note's 0.58 for two unrelated reasons.
-        #
-        # UP, to 0.80: the engine reads the base interface off the model's own FootingBedding
-        # (42" of washed stone, mu 0.35) where the note used the site's silty gravel (0.25).
-        # A 40% gain and a correctness fix.
-        #
-        # DOWN, to 0.725 (2026-08-30, BASIS_VERSION 2): the stem/footing elevation convention.
-        # The wall stands ON its footing, so H runs to the footing's UNDERSIDE — 11.37', not
-        # the 10.37' of authored unbalanced fill — and the thrust is 20% larger than the old
-        # arithmetic thought. The stem grew a foot too, which is why the two do not cancel.
-        #
-        # Either way it is short of the 1.5 IRC R404.4 requires by a factor of two, which is
-        # the finding that matters and the one this assertion exists to pin.
-        assert record.ratio == pytest.approx(1.5 / 0.725, abs=0.05)
-        # Overturning and bearing are comfortable; a reviewer's attention belongs at the
-        # base, and the record has to say which limit state governs for that to be visible.
+        assert record.status is Status.OK, record.summary
+        assert record.governing is not None
+        assert record.governing.name == "base restraint", record.summary
+        # 1.58 against 1.50. Carried as required/achieved, so the ratio is under 1.
+        assert record.ratio == pytest.approx(1.5 / 1.58, abs=0.02)
         by_name = {state.name: state for state in record.limit_states}
-        assert by_name["overturning"].ok and by_name["bearing"].ok
+        # Per-wall sliding is not a meaningful number once the free body is wrong, so it is
+        # gone rather than reported alongside a contradicting one.
+        assert "sliding" not in by_name
+        # Everything else stays on the wall's OWN conservative free body and still clears —
+        # including the section check, which a base restraint does nothing for and which
+        # nothing in this engine computed before that day.
+        for name in ("overturning", "bearing", "eccentricity", "stem flexure"):
+            assert by_name[name].ok, (tag, name, by_name[name])
+        assert record.basis_version == "3"
 
     # Every wall the register computes is one a signoff can cover, one at a time.
     assert sorted(results[f"{KIND}/{t}"].item_id for t in ("W-SG-E2",)) == [

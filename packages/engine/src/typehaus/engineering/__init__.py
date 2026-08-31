@@ -23,6 +23,7 @@ from __future__ import annotations
 # gate, exactly as an unimported ``cmd_*`` module vanishes from ``haus --help``. Each one
 # imports ``engineering.item``/``engineering.registry`` directly rather than this package,
 # so the order here is free — but the presence of the line is not.
+from typehaus.engineering import retaining_system  # noqa: F401  (registration)
 from typehaus.engineering import retaining_wall  # noqa: F401  (registration)
 from typehaus.engineering.fingerprint import Freshness, fingerprint
 from typehaus.engineering.item import (
@@ -54,5 +55,5 @@ __all__ = [
     "Freshness", "LimitState", "NO_ENGINEERING", "Quantity", "REGISTER_FILENAME",
     "Signoff", "Status",
     "calc", "fingerprint", "item_id", "keys", "load_register", "no_calc", "records_of",
-    "registered_kinds", "retaining_wall",
+    "registered_kinds", "retaining_system", "retaining_wall",
 ]

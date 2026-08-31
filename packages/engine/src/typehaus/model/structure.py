@@ -41,7 +41,27 @@ class FoundationWall(Wall):
     # R404.1.1 sends a wall retaining more than 48" WITHOUT it to an engineered design, as
     # R404.4 does for a free-standing retaining wall. Unauthored, a wall retaining 4' or more
     # is UNKNOWN rather than assumed braced — the assumption is the unsafe direction.
-    lateral_support: Literal["top_and_bottom", "unsupported"] | None = None
+    #
+    # ``"base"`` is a THIRD state and not a flavour of ``"unsupported"``: restrained against
+    # translation at the base, free at the top. It is what a retaining wall standing in a
+    # closed loop of cast concrete has — the sunken garden's court, where the two side walls
+    # face each other across a strut and their thrusts cancel through it. It must NEVER reach
+    # Table R404.1.2(8): footnote g's presumption is bracing top *and* bottom, and a
+    # base-only wall falling through to the table would collect a prescriptive PASS with no
+    # engineering behind it at all. ``checks/structural/foundation.py::_grade_one`` routes it
+    # to the R404.4 handoff beside ``"unsupported"``, and it stays in
+    # ``engineering/retaining_wall``'s suite.
+    lateral_support: Literal["top_and_bottom", "unsupported", "base"] | None = None
+    # The tag of the element that closes the base restraint — for ``lateral_support="base"``,
+    # the cross-member whose presence makes the loop a loop and whose removal breaks it.
+    #
+    # **Authored, never derived** (``*_ref`` is the repo convention), and the pair is checked
+    # both ways: a ``"base"`` wall without this ref, or this ref without ``"base"``, is a
+    # half-authored claim, and a half-authored claim is the shape a free pass arrives in.
+    # Naming it does not GRANT the restraint either — ``engineering/retaining_system`` goes
+    # and verifies that the named element is a real member of the same closed structural loop
+    # and reports INCOMPLETE when it is not.
+    base_restraint_ref: str | None = None
 
 
 @register_element
@@ -66,6 +86,26 @@ class Footing(Element):
     # centres on the midline of the *resolved* layer band instead, which is the wall the
     # concrete is actually poured as, giving a symmetric toe either side.
     center_on: Literal["axis", "wall"] = "axis"
+    #: Signed displacement of the footing's centre off the line ``center_on`` picks, square
+    #: to the wall, **in the resolver's own frame**: positive along the LEFT-hand normal of
+    #: the wall's ``start_node`` -> ``end_node`` direction, which is the same ``left``/
+    #: ``right`` frame ``resolve/geometry.rect_between`` already lays the strip out in.
+    #:
+    #: **What it is for.** A retaining wall's footing is not a bearing footing: the toe and
+    #: the heel do different jobs, and the width that fixes one is rarely the width that
+    #: fixes the other. A centred strip is the wrong shape for both and the only shape this
+    #: model could state — so the sunken garden's court could buy eccentricity margin only
+    #: by growing its footings symmetrically, which walks the OUTBOARD edge into the raised
+    #: garden's apron. With an offset the same concrete goes where it is free: 6" toward the
+    #: court, toe 4'-0" / heel 3'-0", outboard edge exactly where the 7'-0" strip left it.
+    #:
+    #: Ignored for a post-hosted footing, which has no axis to be square to.
+    #:
+    #: The frame is geometric and deliberately not structural: it says which way, not which
+    #: side is the toe. ``engineering/retaining_basis._geometry`` resolves toe from heel with
+    #: ``resolve/orientation.wall_outward_sign``, and refuses (INCOMPLETE) rather than guess
+    #: where an offset is authored and the storey's winding is unrecoverable.
+    offset: Length | None = None
     # Where the underside bears, for a footing that does NOT hang off the thing above it.
     # A strip footing's top follows its wall's bottom and a post-hosted spread footing's
     # top was pinned to the storey datum, which is right for a pad poured in the same lift

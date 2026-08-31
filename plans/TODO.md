@@ -512,7 +512,7 @@ the future.
     daylight one.
   - **RM-M-STUDY's 19 sf** is a nook, not a room. Ignore the 0%.
 
- - Sunken garden slab (is it needed above footing) and make sure 7" threshold to basement from sunken garden
+ - Make sure 7" threshold to basement from sunken garden
  - Basement under the stairs storage closet
  - For the breezeway sonotubes, something like https://www.homedepot.com/p/Bigfoot-20-in-Pier-Footing-Form-489-20-BF/300325004 for a "single pour footing". However right now it looks like those footings bisect the house and garage foundation walls. Perhaps the beams should be slightly cantilever to push them further out? Or we could link it in straight to the garage footings as one level?
  - Improve the framing logic of the girts/outriggers holding the insulation and cladding of the catlin house. Especialy on the gable ends, it seems the spacing of these isn't always correct and optimal. Perhaps also increase the spacing (I believe and earlier review concluded 32" OC was sufficient)

@@ -1741,9 +1741,23 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     the north edge has carried all along — with RL-SG-PORCH in place of the parapet.
     """
     walls = [w for w in catlin_model.walls if w.tag.startswith("W-SG-")]
-    # 5 concrete: two porch side walls (W1/E1) + the retaining U (W2/E2/S). No north wall,
-    # no front wall, and no masonry railing over any of them.
-    assert {w.tag for w in walls} == {"W-SG-W1", "W-SG-E1", "W-SG-W2", "W-SG-E2", "W-SG-S"}
+    # 6 concrete: two porch side walls (W1/E1), the retaining U (W2/E2/S), and W-SG-ARCH.
+    # No north wall, no front wall, and no masonry railing over any of them.
+    #
+    # **W-SG-ARCH is back and it is NOT the arch** (2026-08-30). The 16" cast cross-wall with
+    # two semicircular arches, its 42" masonry parapet and its three balcony pillars are all
+    # still retired and none of them comes back. What carries the tag now is a 12" x 17 1/2"
+    # grade beam on the same node pair, entirely below the garden floor, whose only job is to
+    # close the loop that lets W-SG-W2 and W-SG-E2 cancel each other's thrust instead of
+    # standing as two free cantilevers at FS 0.73. It reuses the retired uid deliberately.
+    # See `engineering/retaining_system.py` and `notes/sunken_garden_court_free_body.md`.
+    assert {w.tag for w in walls} == {"W-SG-W1", "W-SG-E1", "W-SG-W2", "W-SG-E2", "W-SG-S",
+                                      "W-SG-ARCH"}
+    # And it is BURIED — the porch reads exactly as it did, because nothing of the beam is
+    # visible above the garden floor.
+    beam = next(w for w in walls if w.tag == "W-SG-ARCH")
+    floor = next(s for s in catlin_model.solids if s.tag == "SL-SG-FLOOR")
+    assert beam.z1_m <= floor.z0_m + 1e-9
     assert all(w.is_foundation for w in walls)
     assert all(w.assembly == "SUNKEN_GARDEN_WALL" for w in walls)
     assert not any(w.tag.startswith("W-SG-RAIL-") for w in walls)

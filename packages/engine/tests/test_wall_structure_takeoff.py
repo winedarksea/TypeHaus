@@ -48,7 +48,12 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # half could author its own backfill, which put one back. W-B-S2 and W-B-S3 are 7 1/4"
     # curbs under a framed walkout rather than full-height walls, but a curb is still a
     # pour and still counted here — the yardage moved, the tag count did not.
-    assert len({tag for row in rows for tag in row["tags"]}) == 40
+    # **41 since 2026-08-30**: W-SG-ARCH is back on the sunken garden's retired node pair as
+    # a 12" x 17 1/2" BURIED GRADE BEAM — not the 16" arched cross-wall and not its masonry
+    # parapet, neither of which returns. It is one more `SUNKEN_GARDEN_WALL` tag and ~1.08 cy
+    # of the same pour, and it is what closes the court's structural loop so its two side
+    # walls cancel each other's soil thrust (`engineering/retaining_system.py`).
+    assert len({tag for row in rows for tag in row["tags"]}) == 41
     # `off-white-brick` since 2026-08-26, not `black-brick`: the garage wainscot is the
     # Columbia colourway of the same Glen-Gery Roman Maximus unit, and it wore Black for
     # part of that day. Same body, same size, same Grade SW Type FBA — a colourway swap, so

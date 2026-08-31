@@ -197,6 +197,8 @@ _NO_PUBLISHED_LOAD = {
     "ABU66SS": "ESR-1622 evaluates galvanised A653 steel; no stainless model is in Table 2",
     "APVKB45-6": "IAPMO ER-102's AP-series index does not list APVKB; ER-280 has no table",
     "APVB12-6": "a through-bolt is an NDS Ch. 12 calculation, not a product rating",
+    "BOLT-12X8-HDG": "a bolt through a lapped wood joint has no product rating either — "
+                     "same NDS Ch. 12, 2\" more length (a lapped foot crosses the whole post)",
     "AB-058-10-SS": "ESR-1622 §5.6 puts anchor bolt and footing design outside its scope",
     "CS16": "ESR-2105 publishes a by-nail-count ladder; the model tracks no nail count",
 }

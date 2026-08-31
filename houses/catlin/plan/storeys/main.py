@@ -1001,14 +1001,14 @@ OPENINGS = [
     # run, and the row now carries one head line where it carried two.
     Window(uid="CMX309AAAA", tag="WIN-M-LIV-E1", host="W-M-E1",
            type_ref="WT-2748", position=from_node("N-M-SE", ft(2, 10.5)),
-           sill_height=ft(2, 6)),
+           sill_height=ft(2, 8)),
     # E2 moved one stud line north 2026-08-27, 12'-0" -> 13'-4" centre: it now stacks under
     # WIN-S-BED1. The row's within-storey beat goes 4'-0"/12'-0" -> 4'-0"/13'-4" (8'-0" ->
     # 9'-4" apart), which is the trade the 2026-07-30 note above priced the other way — a
     # two-storey column is worth more here now that E1 columns with WIN-S-STUDY3.
     Window(uid="CMX310AAAA", tag="WIN-M-LIV-E2", host="W-M-E1",
            type_ref="WT-2748", position=from_node("N-M-SE", ft(12, 2.5)),
-           sill_height=ft(2, 6)),
+           sill_height=ft(2, 8)),
     # WIN-M-LIV-E2 (old, 12'-0") and WIN-M-DIN-E2 (19'-4") retired 2026-08-24, replaced by
     # one WT-3048 unit centred as close as the 16" module allows to y=18'-0" — the exact
     # midpoint between WIN-S-BED1 (13'-0") and WIN-S-BED2 (23'-0") above. True centre falls
@@ -1033,7 +1033,7 @@ OPENINGS = [
     # a nominal 59.8 sf, short either way, and the exception is what carries it.
     Window(uid="QPNDT7TF6G", tag="WIN-M-EAST-MID", host="W-M-E1",
            type_ref="WT-2748", position=from_node("N-M-SE", ft(17, 6.5)),
-           sill_height=ft(2, 6)),
+           sill_height=ft(2, 8)),
     # Moved to the north wall 2026-07-30 with the sink (plan/placeables.py's kitchen header).
     # The north three-storey column moved 28'-0" -> 29'-4" (2026-08-26) so the window could
     # land dead-centre on FURN-M-KIT-SINKBASE: the counter run was exactly full and had no

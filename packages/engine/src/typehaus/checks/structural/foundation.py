@@ -240,6 +240,20 @@ def _grade_one(ctx, cid: str, where: str, tags: tuple[str, ...], thickness: floa
             f"{single} is not laterally supported top and bottom, so IRC R404.1.1 and "
             f"R404.4 require an engineered design (safety factor 1.5 against sliding and "
             f"overturning) rather than Table R404.1.2(8)")
+    # **"base" must reach the SAME handoff, and this branch is the whole reason it is a
+    # third state rather than a flavour of "top_and_bottom".** A wall restrained at the base
+    # and free at the top is still a wall unsupported at its top, which is the condition
+    # R404.4 turns on; and footnote g's presumption — "where walls will retain 4 feet or more
+    # of unbalanced backfill, they shall be laterally supported at the top and bottom before
+    # backfilling" — is exactly the thing it does not satisfy. Falling through to the table
+    # would collect a prescriptive PASS on a wall with no engineering behind it at all, which
+    # is the worst outcome available here: worse than the FAIL it replaces, because a FAIL is
+    # visible.
+    if support == "base":
+        return _handoff_here(
+            f"{single} is restrained at its base and free at its top, so Table R404.1.2(8) "
+            f"(footnote g presumes bracing top AND bottom) does not answer it and IRC R404.4 "
+            f"requires an engineered design to a safety factor of 1.5")
     if support is None:
         return [_unknown(
             cid, f"{where}: the wall does not declare whether it is permanently braced top "
