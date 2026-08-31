@@ -95,8 +95,8 @@ def test_the_no_stone_sensitivity_is_the_designs_real_dependency(catlin_plan) ->
     (``FootingBedding.non_frost_susceptible``) about how something gets built. The note says
     so out loud; this says so in the suite, so that nobody later reads 1.58 as robust.
     """
-    from typehaus.engineering.retaining_system import _free_body, _loops, _members
     from typehaus.engineering.registry import EngineeringContext
+    from typehaus.engineering.retaining_system import _free_body, _loops, _members
     from typehaus.engineering.soil import presumptive
     from typehaus.resolve import resolve
 
@@ -241,6 +241,7 @@ def _mutated(tmp_path, replacements):
     from pathlib import Path
 
     from _helpers import copy_house
+
     from typehaus.source import load_plan
 
     catlin = Path(__file__).resolve().parents[3] / "houses" / "catlin"
@@ -346,6 +347,7 @@ def test_a_base_restrained_wall_never_reaches_the_prescriptive_table(catlin_plan
     R404.4 handoff beside ``"unsupported"``.
     """
     from _helpers import check_context
+
     from typehaus.checks.structural.foundation import foundation_unbalanced_fill
     from typehaus.findings import Authority, Result
 

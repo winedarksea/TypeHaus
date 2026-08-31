@@ -471,6 +471,9 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
                      "court's answer depends on it)",),
             notes=notes, element_tags=tags)
 
+    # Named in the summary rather than left for the reader to find, because which row governs
+    # is the whole reading of the record: sliding governing says the answer is at the ground,
+    # and `strut compression` governing would say the cross-member is the thing to look at.
     governing = max(states, key=lambda state: state.ratio)
     return EngineeringRecord(
         item_id=item_id(KIND, ref), kind=KIND, key=ref,
@@ -478,5 +481,6 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
         status=Status.OVER if over_low else Status.OK,
         summary=(f"{ref} closes a {len(members)}-wall court: {demand:,.0f} lb of resultant "
                  f"thrust against {capacity:,.0f} lb of base friction, "
-                 f"FS {capacity / demand:.2f} against the 1.50 IRC R404.4 requires"),
+                 f"FS {capacity / demand:.2f} against the 1.50 IRC R404.4 requires "
+                 f"({governing.name} governs)"),
         inputs=inputs, limit_states=states, notes=notes, element_tags=tags)

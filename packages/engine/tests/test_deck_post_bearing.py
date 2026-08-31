@@ -43,6 +43,7 @@ _EXPECTED = {
 @pytest.fixture(scope="module")
 def findings(catlin_plan):
     from _helpers import check_context
+
     from typehaus.checks.structural.deck import deck_footing_size
 
     return deck_footing_size(check_context(plan=catlin_plan))

@@ -20,8 +20,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from typehaus.checks._authoring import engineered as _engineered
-from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks._authoring import not_applicable
+from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.checks.structural.deck_tables import (
