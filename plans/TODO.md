@@ -323,12 +323,39 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 **Deliberately not done, and why:**
 
-- **Deck post/footing UNKNOWNs (2026-07-26, by design).** Both sunken-garden decks are now
-  `service="deck"`: `deck_post_size` has no R507.4 row for the 12" round column PT-SG-COL,
-  and PT-SG-COL plus the six balcony pillars bear on non-Pad chains (grouted CMU / bell
-  footing) so `deck_footing_size` can't resolve. (`deck_beam_span` itself is fully green:
-  two genuine R507.5(1) overspans closed 2026-07-31 by going engineered, and the balcony
-  three closed 2026-08-23 prescriptively — see the second-pass entry above.)
+- **Deck post/footing UNKNOWNs (2026-07-26, by design) — MOSTLY CLOSED 2026-08-30, and the
+  "by design" half of this entry was half true.** It read: `deck_post_size` has no R507.4 row
+  for the 12" round column PT-SG-COL, and PT-SG-COL plus the six balcony pillars bear on
+  non-Pad chains so `deck_footing_size` "can't resolve". The first clause is right and
+  permanent — R507.4 tabulates SAWN LUMBER posts and a round cast column will never have a
+  row. **The second was a check bug wearing a design rationale.** The model says exactly what
+  every one of those posts bears on; the check followed one `Post -> Post` link and knew about
+  `Pad` and nothing else, so it reported "does not bear on a resolvable Pad" — a sentence
+  about its own reach — and minted `spread_footing/<post>` items for footings that do not
+  exist. Now:
+  - **six earned N/A** — four balcony pillars on `W-SG-W1`/`E1` (foundation walls with their
+    own strip footings), `PT-SG-BR2` on `FS-SG-PORCH` (a post on a deck is not a post on the
+    ground), `PT-SG-BF2` on `PT-SG-FCOL` (its load leaves through that column, and that
+    column's own item picks up the share);
+  - **two PASS** — `spread_footing/PT-SG-COL` and `/PT-SG-FCOL` compute bearing on the belled
+    piers: 1,245 and 1,477 psf against IBC Table 1806.2's presumptive 2,000 for this site's
+    GM. `engineering/spread_footing.py`, oracled by `notes/sunken_garden_piers.md`;
+  - **two still UNKNOWN, for a NEW and better reason.** `deck_post/PT-SG-COL` and `/PT-SG-FCOL`
+    now compute the axial demand and find the sections at d/c 0.095 and 0.054 — a factor of
+    ten and nineteen spare. What they cannot do is grade a column ACI 318 does not permit to
+    be plain concrete, because **`Post` carries no `vertical_reinforcement` field** and this
+    model therefore cannot state a bar schedule even if one existed. Both are COLUMNS and not
+    pedestals (h/d 10.7 and 6.4 against a pedestal's 3). See the decision below.
+  (`deck_beam_span` itself is fully green: two genuine R507.5(1) overspans closed 2026-07-31
+  by going engineered, and the balcony three closed 2026-08-23 prescriptively.)
+
+- **DECISION: should `Post` grow a `vertical_reinforcement` field?** (raised 2026-08-30 by the
+  two piers above.) `FoundationWall` has one and it is what let the sunken-garden retaining
+  stems be graded properly the same day. Without it on `Post`, `deck_post/*` can never report
+  anything but INCOMPLETE for a cast column, however well designed — the engine has nowhere
+  to put the answer. The alternative is to close both items in `engineering.toml` with the
+  engineer's cage schedule and leave the model silent, which works and leaves the drawings
+  unable to say what the columns contain. Not decided here.
 - **Windows: 4 residual member-interference overlaps** — now **pinned** by
   `test_catlin_window_member_overlaps_pinned_at_four` (junction clear disabled — the
   honest metric). Measured composition drifted from this file's memory of 4+4: it is 2 at
