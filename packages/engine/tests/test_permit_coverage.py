@@ -280,3 +280,47 @@ def test_every_engineered_finding_names_an_item_a_signoff_could_cover(profile, h
                  if finding.engineering_item
                  and finding.engineering_item.count("/") != 1]
     assert not malformed, malformed
+
+
+def test_a_fresh_seal_over_a_failing_item_does_not_open_the_final_gate() -> None:
+    """``freshness()`` answers a question about the fingerprint, not about the answer.
+
+    A signoff pinned to the model as it stands is FRESH whatever the calculation found —
+    ``register.freshness()`` never reads ``record.status``. So without the ``Result.FAIL``
+    clause in :attr:`PermitChecklistItem.sealed`, an owner who stamps a wall this engine
+    computes at FS 0.80 against the 1.5 IRC R404.4 requires opens ``haus print --sealed``
+    over it. That is the same lie the screening note's §6 refuses to author into
+    ``FoundationWall.engineering_spec``, relocated into ``engineering.toml``.
+
+    A FAIL is not sealable by anyone. An engineer's stamp covers a calculation this engine
+    *cannot* do; it does not overrule one this engine did and failed.
+    """
+    from typehaus.checks.permit import PermitChecklist, PermitChecklistItem
+    from typehaus.engineering.fingerprint import Freshness
+    from typehaus.findings import Authority, Result
+
+    def line(result: Result) -> PermitChecklistItem:
+        return PermitChecklistItem(
+            label="Foundation walls", result=result, detail="",
+            check_ids=("structural.foundation_unbalanced_fill",),
+            authority=Authority.ENGINEERED,
+            engineering_items=("retaining_wall/W-SG-E2",),
+            seal=Freshness.FRESH,
+        )
+
+    assert line(Result.PASS).sealed
+    assert not line(Result.FAIL).sealed
+    # And the whole gate follows the line, so the FAIL cannot be stamped past.
+    assert not PermitChecklist(profile_name="mn-2024", items=(line(Result.FAIL),)).sealed
+    assert PermitChecklist(profile_name="mn-2024", items=(line(Result.PASS),)).sealed
+
+
+def test_a_prescriptive_failure_is_not_sealed_either() -> None:
+    """The clause is on ``result``, not on ``authority`` — a red line is a red line."""
+    from typehaus.checks.permit import PermitChecklistItem
+    from typehaus.findings import Authority, Result
+
+    item = PermitChecklistItem(
+        label="Header spans", result=Result.FAIL, detail="", check_ids=("x",),
+        authority=Authority.PRESCRIPTIVE)
+    assert not item.sealed

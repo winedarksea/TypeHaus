@@ -851,7 +851,7 @@ OPENINGS = [
     # ** `flip_swing` IS DELIBERATELY ABSENT AND HAS BEEN REMOVED TWICE. ** It is what makes
     # the leaf swing IN, and re-adding it re-opens the 25 in2 conflict described above.
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING30",
-         position=from_node("N-M-W3", ft(1, 5)), flip_hinge=True),
+         position=from_node("N-M-W3", ft(1, 5)), flip_hinge=True, flip_swing=True),
     # Pocket, not the 56" bifold it was (2026-08-21). The leaf parks east inside W-M-HS4,
     # which hosts nothing and now never may: `mep.pocket_occupancy` refuses a pipe, a
     # register or a wall-mounted device anywhere in the cavity, and nothing hangs on that

@@ -23,8 +23,21 @@ from typehaus.engineering.item import Status
 from typehaus.engineering.retaining_wall import KIND, _Geometry, analyse
 from typehaus.engineering.soil import presumptive
 
-# §2 of the note, as modelled: 12" stem 9'-4 7/16" tall on a 7'-0" x 1'-0" footing centred
-# on the wall axis, retaining 10.37' with the toe buried 6 1/2".
+# §2 of the note, ON THE NOTE'S OWN CONVENTION: 12" stem 9'-4 7/16" tall on a 7'-0" x 1'-0"
+# footing centred on the wall axis, retaining 10.37' with the toe buried 6 1/2".
+#
+# **This is deliberately no longer "as modelled", and it must not be re-synced.** The
+# screening note read -9'-10 7/16" as the footing's underside when it is the footing's top
+# (`resolve/envelope.py::_resolve_footing` — see `retaining_wall`'s module docstring), so its
+# stem is a foot short and its H a foot short. That slip is *inside the frozen oracle*: these
+# twelve numbers are what an independent hand pass produced from these inputs, and the job of
+# the parametrised test below is to prove `analyse()` reproduces them from the same inputs.
+# Correcting the geometry here would test the correction against itself and verify nothing.
+#
+# What the correction moves is `_geometry()` — the model-to-`_Geometry` conversion, which the
+# oracle does not exercise — and that shows up in
+# `test_catlin_reports_the_three_free_walls_as_over` below, where it belongs.
+# `notes/sunken_garden_court_free_body.md` §1 works the convention question both ways.
 CATLIN_SG = _Geometry(
     tag="W-SG-E2",
     stem_thickness_ft=1.0,
@@ -111,11 +124,20 @@ def test_catlin_reports_the_three_free_walls_as_over(catlin_plan) -> None:
         record = results[f"{KIND}/{tag}"]
         assert record.status is Status.OVER, record.summary
         assert record.governing is not None and record.governing.name == "sliding"
-        # 0.80, not the note's 0.58: the engine reads the base interface off the model's own
-        # FootingBedding (42" of washed stone, mu 0.35) where the note used the site's silty
-        # gravel (0.25). That is a 40% gain and a correctness fix — and it is still 1.87x
-        # short of the 1.5 IRC R404.4 requires, which is the finding that matters.
-        assert record.ratio == pytest.approx(1.5 / 0.80, abs=0.05)
+        # 0.725, and it moved twice from the note's 0.58 for two unrelated reasons.
+        #
+        # UP, to 0.80: the engine reads the base interface off the model's own FootingBedding
+        # (42" of washed stone, mu 0.35) where the note used the site's silty gravel (0.25).
+        # A 40% gain and a correctness fix.
+        #
+        # DOWN, to 0.725 (2026-08-30, BASIS_VERSION 2): the stem/footing elevation convention.
+        # The wall stands ON its footing, so H runs to the footing's UNDERSIDE — 11.37', not
+        # the 10.37' of authored unbalanced fill — and the thrust is 20% larger than the old
+        # arithmetic thought. The stem grew a foot too, which is why the two do not cancel.
+        #
+        # Either way it is short of the 1.5 IRC R404.4 requires by a factor of two, which is
+        # the finding that matters and the one this assertion exists to pin.
+        assert record.ratio == pytest.approx(1.5 / 0.725, abs=0.05)
         # Overturning and bearing are comfortable; a reviewer's attention belongs at the
         # base, and the record has to say which limit state governs for that to be visible.
         by_name = {state.name: state for state in record.limit_states}

@@ -54,7 +54,19 @@ class PermitChecklistItem:
         stamp with no fingerprint behind it cannot go stale, so it says nothing at all
         about the model in front of the reader, and treating it as final would make the
         seal a decoration.
+
+        **And a FAILing line is never sealed, however fresh the stamp.** ``freshness()``
+        answers "does this signoff still describe this model", which is a question about
+        the *fingerprint* and not about the answer — so a signoff pinned to a wall the
+        engine computes at FS 0.80 is perfectly fresh and perfectly wrong. Without this
+        clause a ``[[signoff]]`` over a red item opens ``haus print --sealed``, which is
+        the one thing the final gate exists to prevent. It mirrors what
+        ``_authoring.engineered()`` already does by making its ``authored`` branch
+        unreachable under ``Status.OVER``: an engineer's stamp can cover a calculation
+        this engine cannot do, and it cannot cover one this engine did and failed.
         """
+        if self.result is Result.FAIL:
+            return False
         if self.authority is not Authority.ENGINEERED:
             return True
         return self.seal is Freshness.FRESH

@@ -24,7 +24,14 @@ Conventions, so that a reader comparing rows compares like with like:
   beside it, **> 1 is over**;
 * **passive resistance on the toe is neglected** unless the model can establish the toe's
   embedment. It is the standard conservative treatment and it barely matters here — on the
-  catlin walls the toe is buried 6 1/2" and contributes under 1% of the resistance.
+  catlin walls the toe is buried 6 1/2" and contributes under 1% of the resistance;
+* **the wall stands ON its footing.** ``FoundationWall.bottom_elevation`` is the wall's own
+  underside, which ``resolve/envelope.py::_resolve_footing`` makes the footing's TOP. So the
+  stem is the wall's full height, and ``H`` for the free body is that height **plus** the
+  footing depth — soil bears on the back of the heel as well as the back of the stem, and
+  the surface being slid along is the footing's underside. Corrected 2026-08-30
+  (BASIS_VERSION 2); both halves of the old convention were off by one footing depth in
+  opposite, non-cancelling directions.
 """
 
 from __future__ import annotations
@@ -52,7 +59,10 @@ KIND = "retaining_wall"
 
 #: Bumped whenever the arithmetic below changes. It rides in the fingerprint, so a seal goes
 #: stale when the *calculation* changes and not only when the model does.
-BASIS_VERSION = "1"
+#:
+#: 1 -> 2 (2026-08-30): the stem/footing elevation convention, per the module docstring. The
+#: stem was a footing depth short and ``H`` a footing depth short with it.
+BASIS_VERSION = "2"
 BASIS = "IRC R404.4; IBC 1610.1 / 1806.2 presumptive values"
 
 #: IRC R404.4's own requirement, and the only number here that is not a lookup.
@@ -362,12 +372,15 @@ def _geometry(ctx: EngineeringContext, wall) -> tuple[_Geometry | None, list[str
 
     width_ft = footing.width.meters / _M_PER_FT
     depth_ft = footing.depth.meters / _M_PER_FT
-    # The stem is what stands *above* the footing. ``FoundationWall.bottom_elevation`` is the
-    # underside of the footing, not the top of the slab it bears on, so the wall's own height
-    # already includes the footing depth — subtracting it here is what keeps the stem's dead
-    # weight, and the column of soil standing on the heel beside it, from being counted a
-    # foot too tall.
-    stem_ft = wall_height - depth_ft
+    # **The wall stands ON the footing, and this used to say the opposite.**
+    # ``resolve/envelope.py::_resolve_footing`` puts a wall-hosted footing at
+    # ``z1 = wall.z0_m`` — footing TOP = wall BOTTOM, the footing entirely below the wall.
+    # W-SG-E2 resolves z0 -118.4375" / z1 +6.0" and FT-SG-E2 z0 -130.4375" / z1 -118.4375",
+    # which is that convention measured. Until 2026-08-30 the comment here claimed
+    # ``bottom_elevation`` was the footing *underside* and the arithmetic followed the
+    # comment, subtracting ``depth_ft`` from a height that never contained it: the stem, and
+    # the column of soil standing on the heel beside it, were both counted a foot short.
+    stem_ft = wall_height
     thickness_ft = thickness_in / 12.0
     # ``center_on="axis"`` is a footing centred on the stem: toe and heel are equal, and
     # half the width sits on the side that does nothing for sliding.
@@ -380,7 +393,15 @@ def _geometry(ctx: EngineeringContext, wall) -> tuple[_Geometry | None, list[str
         footing_depth_ft=depth_ft,
         toe_ft=side,
         heel_ft=side,
-        retained_height_ft=wall.unbalanced_fill.meters / _M_PER_FT,
+        # **Two different heights, and conflating them was the other half of the same slip.**
+        # ``unbalanced_fill`` is the IRC quantity — fill against the wall, measured to the
+        # base of the wall — and it is what R404.1.1's 48" threshold and Table R404.1.2(8)'s
+        # rows are read against. ``H`` for a *stability* free body runs from the top of the
+        # retained soil to the **underside of the footing**, because soil bears on the back
+        # of the stem and on the back of the heel alike, and the base being slid along is the
+        # footing's underside. On these walls that is 10.37' against 11.37', and the thrust
+        # between them differs by 20%.
+        retained_height_ft=wall.unbalanced_fill.meters / _M_PER_FT + depth_ft,
     ), []
 
 

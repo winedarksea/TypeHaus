@@ -563,7 +563,10 @@ the future.
   and `test_catlin_contract_m3.py` pins exactly that so nothing else can regress behind it.
 
 - Make sure the basement door keeps the 7" step threshold (reduces flood risk)
-
+- The french drains can likely be a type of form-a-drain product (a drain that doubles as footing form). We also can probably have fewer drains slightly.
+- The frost protection and the thermal breaks are wrong around the brick footing FT-B-BRICK. Brick is cold, so thermal breaks need to be on the inward side of it (possible this footing uses ICF)
+- I am reasonably certain that FX-S-BATH1-LAV is in the way of the door swing for the bathroom.
+- Sink FX-A-STUDIO-BAR-SINK is floating off the floor and doesn't appear to have a plumbing connection, nor do the bathroom fixtures for that attic bathroom.
 
 ## Found while doing the 2026-08-23 batch — recorded so they are not rediscovered
 
@@ -688,6 +691,7 @@ of the sunken-garden walls (171). Note: deferred pending decision.
 Two lounge chairs on the porch -- it is roofed, fanned, lit, wired and curtained, and has
 nothing on it (241).
 
-### Potential cost cutting (just ideas, not a TODO)
-Once an idea here has a number against it, it moves to `plans/cost-options.md` — the
-priced upgrade/downgrade menu (started 2026-08-08).
+
+## What I am unhappy with
+- The price (cost-options.md is missing some of the style details as 'optional' and it needs to be slimmed down to be more concise)
+- The concrete deck of the basement (either size up for completeness or down for cost savings)

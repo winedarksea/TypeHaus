@@ -847,7 +847,7 @@ MAIN_PLACEABLES = [
     # RM-M-MUD-CLOSET: 63" of clear wall between x 6 5/8" and 5'-9 5/8", north wall
     # (W-M-MUDC-N, face y 29'-5 1/8"). A 60" run centres in it with 1 1/2" either side.
     Furniture(uid="1HYRGFZMA0", tag="FURN-M-MUDC-SHELF", type_ref="FT-CLOSET-SHELFROD-60",
-              room="RM-M-MUD-CLOSET", position=pt(inch(38.125), inch(345.125)),
+              room="RM-M-MUD-CLOSET", position=pt(m(0.96118), m(8.36092)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
     # RM-M-CLOSET: 113 1/4" of clear wall on the north side (W-M-CLN/W-M-CLN2, face
     # y 17'-8 5/8"). A 96" run leaves 8 5/8" either end — the walk-in's turn-in space.

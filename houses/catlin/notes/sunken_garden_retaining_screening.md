@@ -50,8 +50,30 @@ are set from. The apron therefore holds a terrace of soil at **+0'-6"**, standin
 of the surrounding grade, **against the outer face of all three walls.**
 
 ```
-retained height = wall top (+0'-6") − footing underside (−9'-10 7/16")   = 10.37 ft
+unbalanced fill = wall top (+0'-6") − footing TOP (−9'-10 7/16")   = 10.37 ft
 ```
+
+> **CORRECTION, 2026-08-30 (second pass).** The line above originally called −9'-10 7/16"
+> the *footing underside*. It is the footing **top**: `resolve/envelope.py::_resolve_footing`
+> resolves a wall-hosted footing at `z1 = wall.z0_m`, so the footing hangs entirely below the
+> wall and `FT-SG-E2` runs −10'-10 7/16" to −9'-10 7/16". **10.37' is still the right number
+> for what this line computes** — `unbalanced_fill` is the IRC quantity, fill against the
+> wall measured to the wall's base, and that is what R404.1.1's 48" threshold and Table
+> R404.1.2(8)'s rows are read against. Nothing authored in `params/sunken_garden.py` moves.
+>
+> What the slip did move is **§4**, which took 10.37' as `H` for a *stability* free body.
+> There `H` runs to the **underside of the footing** — soil bears on the back of the heel as
+> well as the back of the stem, and the plane being slid along is the footing's underside —
+> so `H` = **11.37'** and the thrust is 20% larger. The engine made the identical slip in
+> `engineering/retaining_wall._geometry()`, in a comment that asserted the opposite
+> convention and arithmetic that followed the comment, and both are corrected under
+> `BASIS_VERSION` 2.
+>
+> **§4's table below is NOT restated.** It is the frozen oracle for `analyse()` and
+> `tests/test_retaining_wall_calc.py::ORACLE` reproduces it verbatim; re-deriving it here
+> would test the correction against itself. §4 remains a correct hand pass *on its stated
+> inputs*, and those inputs are a foot short. The corrected free body — and the resolution of
+> the deficiency §4 found — is `notes/sunken_garden_court_free_body.md`.
 
 `unbalanced_fill` is now authored on all three from `SPEC.retaining_top_ft +
 SPEC.basement_depth_ft + 0.75`, the same arithmetic `_ret_top` and `_wall_bottom` are built
