@@ -1062,7 +1062,7 @@ SECOND_PLACEABLES = [
     # RM-S-CLOSET: 94 3/4" of clear wall on the north side (W-S-CLN, face y 12'-2 5/8");
     # an 84" run leaves 5 3/8" either end clear of W-S-DC1's jamb.
     Furniture(uid="CMWJ7Q6Y7H", tag="FURN-S-CLOSET-SHELF", type_ref="FT-CLOSET-SHELFROD-84",
-              room="RM-S-CLOSET", position=pt(inch(165.25), inch(138.625)),
+              room="RM-S-CLOSET", position=pt(m(4.20401), m(3.01808)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
     # RM-S-NCLOSET is the odd one: 40 3/4" wide, so a 16" shelf plus a hang rod would leave
     # under 2' of standing room in front of it. It takes the 12"-deep LINEN shelf instead,

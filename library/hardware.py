@@ -41,6 +41,7 @@ from typehaus.takeoff.hardware_catalog import (
     ROLE_GLAZING_PANEL_FASTENER,
     ROLE_HURRICANE_TIE,
     ROLE_KNEE_BRACE,
+    ROLE_LAPPED_BRACE_BOLT,
     ROLE_LATERAL_TIE_PLATE,
     ROLE_MASONRY_GUSSET_ANGLE,
     ROLE_MUDSILL_ANCHOR,
@@ -205,6 +206,37 @@ APVB_BRACE_BOLT = StructuralHardware(
                   "capacity is NDS 2018 Ch. 12 yield-limit design (Table 12F reference "
                   "values, Table 11.3.6A group action), not a tabulated product rating. "
                   "Worked in houses/catlin/notes/balcony_lateral_bracing_design.md"),
+    ),
+)
+
+LAPPED_BRACE_BOLT = StructuralHardware(
+    tag="hex-bolt-half-by-eight-hdg",
+    name='1/2 in x 8 in HDG hex bolt with nut and two washers',
+    role=ROLE_LAPPED_BRACE_BOLT,
+    manufacturer="generic",
+    model="BOLT-12X8-HDG",
+    source="generic hot-dip galvanised structural hex bolt to ASTM A307 with an F436 washer "
+           "each side — not a proprietary connector, and no manufacturer publishes a "
+           "connector rating for one",
+    # Why a separate part from APVB12-6 above, which is also a 1/2 in bolt: LENGTH, and it is
+    # a dimension the model states rather than a preference. A face-lapped brace foot
+    # (KneeBrace.foot_lap) is bolted through the 1 1/2 in brace AND the 5 1/2 in post behind
+    # it — 7 in of wood, plus washers and a nut. The Outdoor Accents bolt is 6 in and does not
+    # come out the far side. Substituting it would produce a BOM that orders, and a joint that
+    # cannot be built.
+    #
+    # Galvanised rather than the stainless the ABU66SS bases take: this bolt is 4 ft up a
+    # painted pillar under a deck, not standing in run-off at grade, and it is not in contact
+    # with a stainless part it could drive the corrosion of. The reasoning is the same one
+    # POST_BASE_ANCHOR_BOLT records, reaching the opposite answer for a different exposure.
+    allowable=AllowableLoads(
+        fasteners="1/2 in dia. HDG hex bolt, 8 in long, nut and two F436 washers, through "
+                  "a 1 1/2 in lapped brace into a 5 1/2 in post",
+        citation=("no connector evaluation report applies — a bolt through a lapped wood "
+                  "joint has no product rating, only NDS 2018 Ch. 12 yield-limit design "
+                  "(Table 12E for a 1-1/2 in side member, Table 11.3.6A group action) and "
+                  "the end/edge/spacing rules of Table 12.5.1. Worked in "
+                  "houses/catlin/notes/balcony_lateral_bracing_design.md"),
     ),
 )
 
@@ -899,6 +931,7 @@ STRUCTURAL_HARDWARE: tuple = (
     S5_COLORGARD_SNOW_RETENTION,
     KBS_BEAM_HOLD_DOWN,
     KBS1Z_KNEE_BRACE,
+    LAPPED_BRACE_BOLT,
     POLY_PANEL_FASTENER,
     DECK_EQUIPMENT_ANCHOR,
     EXPOSED_FASTENER_PANEL_SCREW,

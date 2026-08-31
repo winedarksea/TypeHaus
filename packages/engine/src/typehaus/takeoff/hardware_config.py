@@ -155,9 +155,18 @@ class KneeBraceRules:
     # It is a property of the hardware family, which is why it lives here beside the bolt
     # count rather than on the element: every brace in every house takes whatever the
     # catalogued part for ROLE_KNEE_BRACE takes.
+    #
+    # Two is also what a FACE-LAPPED brace (``KneeBrace.foot_lap``) takes, by a different
+    # route and to the same number: its foot is bolted rather than strapped, and its head
+    # butts an equal-width member, which is ER-280's connection type 1 — "install (2) KBS1Z
+    # on each end of brace", both of them at that one end. The count does not move, so this
+    # stays one rule; what moves is the BOLT part, and ``anchors.brace_bolt_rows`` splits on
+    # it there.
     braces_per_location: int = 2
     # A 2x diagonal is through-bolted at each end — one 1/2" bolt per end. A second bolt per
-    # end would split the 2x rather than strengthen the joint, so this is 2, not 4.
+    # end would split the 2x rather than strengthen the joint, so this is 2, not 4. A lapped
+    # brace spends the same two at its foot, where the lap gives them the end distance
+    # NDS Table 12.5.1 asks for.
     bolts_per_brace: int = 2
 
 

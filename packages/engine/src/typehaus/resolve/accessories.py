@@ -443,16 +443,31 @@ def _resolve_knee_brace(model: ResolvedModel, el: KneeBrace, storey: str) -> Non
     stick of lumber it is. ``ResolvedSolid`` only extrudes a plan outline vertically, so a
     diagonal would otherwise have to be faked as a stack of bands — and the solids take-off
     would then count each band as its own piece of structure.
+
+    ``KneeBrace.foot_lap`` runs the foot back *past* the post face instead of stopping at it,
+    for a brace that is not in its post's own plane and so has nothing to bear on there. The
+    run and the rise both grow by the lap, because the member stays at 45 degrees: the head
+    does not move, the foot drops. ``leg`` therefore keeps meaning what the free body in
+    ``checks/structural/lateral_racking`` reads it as — the distance below the soffit at
+    which the brace meets the post — and reads it conservatively, since the bolt group that
+    actually delivers the force sits half a lap lower again.
     """
     cx, cy = el.position.xy_m
     ux, uy = (el.direction, 0.0) if el.axis == "x" else (0.0, el.direction)
+    # The brace's own plane, square to its run: zero for an in-plane brace, and the rail's
+    # face offset for one coplanar with a face-bolted member (see KneeBrace.plane_offset).
+    if el.plane_offset is not None:
+        cx, cy = (cx, cy + el.plane_offset.meters) if el.axis == "x" \
+            else (cx + el.plane_offset.meters, cy)
     # Start at the post *face*: a brace end buried in the column overlaps it in plan by more
     # than the interference check's tolerance, and the butt-joint exemption does not reach an
     # endpoint that far inside the column's centroid.
     offset = nominal_actual_m(el.post_size) / 2.0
-    p0 = (cx + ux * offset, cy + uy * offset)
+    lap = el.foot_lap.meters if el.foot_lap is not None else 0.0
+    p0 = (cx + ux * (offset - lap), cy + uy * (offset - lap))
     leg = el.leg.meters
-    p1 = (p0[0] + ux * leg, p0[1] + uy * leg)
+    run = leg + lap
+    p1 = (p0[0] + ux * run, p0[1] + uy * run)
     # At 45 degrees the member's own depth, measured square to its axis, opens up to
     # ``depth / cos(45)`` when read vertically — the cut a carpenter sees on the end grain.
     thickness_z = cross_section(el.member).depth_m * math.sqrt(2.0)
@@ -462,8 +477,8 @@ def _resolve_knee_brace(model: ResolvedModel, el: KneeBrace, storey: str) -> Non
         members=(FramedMember(
             parent_uid=el.uid or el.tag, child_key="brace", category="brace",
             profile=el.member, p0=p0, p1=p1,
-            z0_m=soffit - leg - thickness_z, z1_m=soffit - leg,
-            length_m=leg * math.sqrt(2.0),
+            z0_m=soffit - run - thickness_z, z1_m=soffit - run,
+            length_m=run * math.sqrt(2.0),
             z0_end_m=soffit - thickness_z, z1_end_m=soffit,
             connection=f"kneebrace:{el.connector}",
             # An authored finish assembly (POST_WHITE_PAINT on the balcony braces) reduces
@@ -473,19 +488,25 @@ def _resolve_knee_brace(model: ResolvedModel, el: KneeBrace, storey: str) -> Non
             material=assembly_structure_material(model.plan, el.assembly),
         ),),
     ))
-    # The hardware as what it is: an APVKB-style knee-brace kit is a pair of wrap-around
-    # straps — one band at each end of the diagonal. The top band ties the brace to the
-    # beam/girt soffit it rises to; the bottom band ties it to the post face it leaves
-    # from. Each band hugs the member's own plan run and the z-band the wood occupies at
-    # that end, so the hardware reads at both joints instead of as one floating marker box
-    # at the top. Billing still comes from the element (takeoff/anchors.py::
-    # knee_brace_rows), never off these solids.
+    # The hardware as what it is: a knee-brace stabiliser is a wrap-around strap — one band
+    # at each end of the diagonal. The top band ties the brace to the beam/rail soffit it
+    # rises to; the bottom band ties it to the post face it leaves from. Each band hugs the
+    # member's own plan run and the z-band the wood occupies at that end, so the hardware
+    # reads at both joints instead of as one floating marker box at the top. Billing still
+    # comes from the element (takeoff/anchors.py::knee_brace_rows), never off these solids.
+    #
+    # A LAPPED foot has no bottom band, and that is the point rather than an omission: the
+    # brace does not butt anything there, it lies on the post's face and is bolted through
+    # it. There is no strap to draw, and drawing one would put a wrap band around a joint
+    # nobody is going to install one at.
     band_run = inch(3).meters  # strap width, measured along the brace's plan run
     band_half = cross_section(el.member).width_m / 2.0 + inch(0.25).meters  # wrap clearance
     uid_base = el.uid or el.tag
-    for end, (near, far), band_top in (
-            ("BOT", (p0, (p0[0] + ux * band_run, p0[1] + uy * band_run)), soffit - leg),
-            ("TOP", ((p1[0] - ux * band_run, p1[1] - uy * band_run), p1), soffit)):
+    ends = [("TOP", ((p1[0] - ux * band_run, p1[1] - uy * band_run), p1), soffit)]
+    if el.foot_lap is None:
+        ends.insert(0, ("BOT", (p0, (p0[0] + ux * band_run, p0[1] + uy * band_run)),
+                        soffit - run))
+    for end, (near, far), band_top in ends:
         model.solids.append(ResolvedSolid(
             uid=f"{uid_base}-band-{end.lower()}", tag=f"{el.tag}-{el.connector}-{end}",
             storey=storey, category="connector",

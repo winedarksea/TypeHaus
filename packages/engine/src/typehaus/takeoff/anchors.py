@@ -19,6 +19,7 @@ from typehaus.takeoff.hardware_catalog import (
     ROLE_COIL_STRAP,
     ROLE_EMBEDDED_STRAP_HOLDOWN,
     ROLE_KNEE_BRACE,
+    ROLE_LAPPED_BRACE_BOLT,
     ROLE_MUDSILL_ANCHOR,
     ROLE_STUD_PLATE_TIE,
     hardware_by_model,
@@ -265,20 +266,38 @@ def brace_bolt_rows(model: ResolvedModel, rules: KneeBraceRules) -> list:
 
     A brace authored as bare hardware has no 2x to bolt, so it contributes no bolts: the
     quantity follows the member the model actually carries.
+
+    **Two rows, because a lapped foot takes a different bolt.** A brace that butts its post
+    is bolted at each end through the strap and the 2x — 6 in reaches. A brace with
+    ``KneeBrace.foot_lap`` lies flat on the post face and is bolted through the brace and the
+    whole post behind it, so its bolts cross 7 in of wood and both of them land at that one
+    end (the head is strapped, not bolted). Same count per brace; different part, and the
+    part is the thing an order gets wrong.
     """
     braces = [(storey, element) for storey, element in _authored_knee_braces(model)
               if isinstance(element, KneeBrace)]
     if not braces:
         return []
-    by_storey: Counter = Counter()
-    for storey, _ in braces:
-        by_storey[storey] += rules.bolts_per_brace
-    item = hardware_for_role(ROLE_BRACE_THROUGH_BOLT)
-    return [hardware_row(
-        item, scope="knee-brace end", count=len(braces) * rules.bolts_per_brace,
-        by_storey=dict(sorted(by_storey.items())),
-        basis=(f"{rules.bolts_per_brace} per brace (one each end) x {len(braces)} "
-               f"modeled {braces[0][1].member} knee braces"))]
+    groups = {
+        (ROLE_BRACE_THROUGH_BOLT, "knee-brace end", "one each end"):
+            [b for b in braces if b[1].foot_lap is None],
+        (ROLE_LAPPED_BRACE_BOLT, "lapped knee-brace foot", "both at the lapped foot"):
+            [b for b in braces if b[1].foot_lap is not None],
+    }
+    rows = []
+    for (role, scope, where), group in groups.items():
+        if not group:
+            continue
+        by_storey: Counter = Counter()
+        for storey, _ in group:
+            by_storey[storey] += rules.bolts_per_brace
+        rows.append(hardware_row(
+            hardware_for_role(role), scope=scope,
+            count=len(group) * rules.bolts_per_brace,
+            by_storey=dict(sorted(by_storey.items())),
+            basis=(f"{rules.bolts_per_brace} per brace ({where}) x {len(group)} "
+                   f"modeled {group[0][1].member} knee braces")))
+    return rows
 
 
 def authored_connector_rows(model: ResolvedModel) -> list:

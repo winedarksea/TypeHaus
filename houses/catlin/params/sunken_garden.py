@@ -1574,8 +1574,15 @@ CONNECTORS += [
 #
 # `structural.lateral_racking` computes the demand these have to carry and reports the
 # margin; the full worked chain, and what the swap costs, is in
-# `notes/balcony_lateral_bracing_design.md`. The 2x6 diagonal, its 3' leg, its geometry and
-# its 1/2" through-bolts are all unchanged — only the steel at the ends moved.
+# `notes/balcony_lateral_bracing_design.md`.
+#
+# ** THE FOUR E-W BRACE FEET ARE LAPS, NOT BUTT JOINTS (2026-08-30, second pass). ** The
+# connector swap left the geometry alone, and the geometry was wrong: a brace coplanar with
+# a face-bolted rail has no pillar in front of its end, and the four E-W feet were resolving
+# onto the pillars' corners with zero contact area. They now lap the pillar face and bolt
+# through it. The block above `_EW_PLANE_OFFSET` below carries the reasoning; what changes
+# here is that only their HEADS are connector joints, and their bolts are 8" rather than the
+# Outdoor Accents 6" (7" of wood to cross). The four N-S braces are untouched.
 #
 # The four corner pillars are braced in both plan directions; the two centre pillars
 # (PT-SG-BR2/BF2) are deliberately left as leaning columns. This is a freestanding deck
@@ -1586,9 +1593,9 @@ CONNECTORS += [
 # it used to be — not because thrust would land on PT-SG-BR2 (that pillar bears on concrete
 # now, not porch decking), but because the rails run continuous through all six posts and
 # already tie the centre pillars into the two braced end bays. One brace per pillar per
-# direction: the second brace at a corner is the E-W one against the rail (now at its own
-# soffit, below the beams') — the old "matched pair per joint" rule billed 12 unbuildable
-# braces.
+# direction: the second brace at a corner is the E-W one against the rail (at its own
+# soffit, a rail depth below the beams', and in the rail's own plane rather than the
+# pillar's) — the old "matched pair per joint" rule billed 12 unbuildable braces.
 # ============================================================================
 # (row, pillar index, N-S lean, E-W lean). Rear posts brace south toward the beam's midspan
 # and front posts brace north; the west pillar of each row braces east, the east one west.
@@ -1610,22 +1617,48 @@ _NS_BEAM = {1: "BM-SG-BLW", 3: "BM-SG-BLE"}
 # The rail is continuous, so both pillars in a row rise into the same member — keyed by
 # row only, not by pillar index the way the girts were.
 _EW_RAIL = {"R": "BM-SG-RAIL-R", "F": "BM-SG-RAIL-F"}
-# The E-W brace lands in the rail's own plane, off the post face — the rail sits
-# `_RAIL_FACE_OFFSET_FT` south of the rear row and north of the front row (see RAIL_NODES).
-_EW_ROW_Y = {"R": _y_rear_pillar - _RAIL_FACE_OFFSET_FT, "F": _y_front_pillar + _RAIL_FACE_OFFSET_FT}
+# ---------------------------------------------------------------------------
+# THE E-W BRACE PLANE, and why it laps rather than bears (2026-08-30, second pass).
+#
+# The rail is face-bolted to the row's inboard face, so its plane is `_RAIL_FACE_OFFSET_FT`
+# = 3 1/2" off the pillar axis. A brace can be COPLANAR with that rail or it can BEAR on the
+# pillar's east/west face, and it cannot be both: reaching from one plane to the other means
+# a brace skewed 3 1/2" over its 3'-0" run — 5.6 degrees crooked in plan, compound cuts at
+# both ends, and a KBS1Z is a flat factory-formed 45-degree strap with one permitted field
+# bend that cannot wrap a skewed joint.
+#
+# Coplanar wins, for a structural reason and not just a buildable one: the brace's thrust
+# then lands IN the rail's plane, bending it about its 7 1/4" strong axis with no
+# eccentricity, where a brace offset from that plane would twist a member that
+# notes/balcony_lateral_bracing_design.md §6 already reports at l_e/d 80 about its weak one.
+#
+# The cost of coplanar is the foot: 3 1/2" off the axis there is no pillar in front of the
+# brace end to bear on. Until this fix the geometry said the brace started at the pillar's
+# east/west FACE anyway, which put its end on the pillar's corner with a plan overlap of
+# exactly one line — zero contact area, nothing to bear on and nothing to bolt through. The
+# brace floated. `foot_lap` is the fix: the foot runs the pillar's full 5 1/2" back across
+# its inboard face and through-bolts there, which is the same connection the rail itself
+# makes at all six posts. The head is unchanged and gains from being read honestly — a 2x6
+# butting a 2x8 soffit is EQUAL WIDTH, ER-280 connection type 1 (two KBS1Z, one each side,
+# 1,010 lbf SPF), not the type 2 the N-S braces take.
+_EW_PLANE_OFFSET = {"R": ft(-_RAIL_FACE_OFFSET_FT), "F": ft(_RAIL_FACE_OFFSET_FT)}
+# Lap the whole pillar face. Anything less is bolt-spacing arithmetic — NDS 12.5.1 wants
+# 7D = 3 1/2" of end distance behind a 1/2" bolt in tension — and the full width is what
+# leaves room for it without inventing a schedule this model has no standing to set.
+_EW_FOOT_LAP = inch(5.5)
 KNEE_BRACES = []
 for _row, _i, _ns, _ew in _BRACED_CORNERS:
     _post = f"PT-SG-B{_row}{_i}"
     _at = pt(ft(_PILLAR_X[_i - 1]), ft(_ROW_Y[_row]))
-    _ew_at = pt(ft(_PILLAR_X[_i - 1]), ft(_EW_ROW_Y[_row]))
     KNEE_BRACES.append(KneeBrace(
         uid=_NS_BRACE_UID[(_row, _i)], tag=f"KB-SG-{_row}{_i}-NS", position=_at,
         soffit_elevation=_balcony_beam_soffit, leg=_BRACE_LEG, axis="y", direction=_ns,
         member="2x6", post_size=SPEC.pillar_size, assembly="POST_WHITE_PAINT",
         connector=_BRACE_CONNECTOR, connects=(_post, _NS_BEAM[_i])))
     KNEE_BRACES.append(KneeBrace(
-        uid=_EW_BRACE_UID[(_row, _i)], tag=f"KB-SG-{_row}{_i}-EW", position=_ew_at,
+        uid=_EW_BRACE_UID[(_row, _i)], tag=f"KB-SG-{_row}{_i}-EW", position=_at,
         soffit_elevation=_rail_soffit, leg=_BRACE_LEG, axis="x", direction=_ew,
+        plane_offset=_EW_PLANE_OFFSET[_row], foot_lap=_EW_FOOT_LAP,
         member="2x6", post_size=SPEC.pillar_size, assembly="POST_WHITE_PAINT",
         connector=_BRACE_CONNECTOR, connects=(_post, _EW_RAIL[_row])))
 

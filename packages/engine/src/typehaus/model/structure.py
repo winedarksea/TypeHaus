@@ -302,8 +302,15 @@ class KneeBrace(Element):
     (never its centre — an embedded end reads as a member clash) and runs ``leg`` out along
     ``axis``/``direction`` while rising the same ``leg`` to ``soffit_elevation``. That soffit
     is authored rather than derived because the members a post is braced to need not share
-    an elevation: the balcony's N-S braces land on the beam soffit and its E-W braces a girt
+    an elevation: the balcony's N-S braces land on the beam soffit and its E-W braces a rail
     depth lower.
+
+    ``position`` is the **braced post's plan centre**. A brace that does not run in its
+    post's own plane says so with ``plane_offset`` + ``foot_lap``, never by moving
+    ``position`` off the post — author the offset point instead and the geometry still
+    resolves, the section still looks right, and the foot quietly leaves the post with
+    nothing to bear on. That is exactly what happened to this balcony's E-W braces between
+    2026-08-30 and the fix; see ``plane_offset``.
     """
 
     position: Point2D  # braced post's plan centre
@@ -316,6 +323,34 @@ class KneeBrace(Element):
     connector: str = "APVKB45-6"  # hardware model at the joint
     assembly: str | None = None  # optional finish assembly (paint), same contract as Post.assembly
     connects: tuple[str, ...] = ()  # post + beam/girt tags the brace joins
+    #: The brace's own plane, offset from the post's centre and measured **square to**
+    #: ``axis`` — signed along +y for an ``axis="x"`` brace, along +x for an ``axis="y"`` one.
+    #:
+    #: A brace is not always in its post's plane. The balcony's E-W braces rise into
+    #: ``BM-SG-RAIL-R/F``, which are face-bolted to the *inboard* face of each pillar row —
+    #: half a post plus half a rail, 3 1/2", off the post axis. A brace can be coplanar with
+    #: that rail, or it can bear on the post's side face, and it cannot be both. Reaching
+    #: across would skew it in plan, and no flat 45-degree stabiliser strap wraps a skewed
+    #: joint. **Coplanar wins**: the thrust then lands in the rail's own plane, bending it
+    #: about its strong axis with no eccentricity, where a brace offset from that plane would
+    #: twist a member already at l_e/d 80 about its weak one.
+    #:
+    #: Offsetting the plane costs the foot its bearing, so it comes with ``foot_lap``.
+    plane_offset: Length | None = None
+    #: A **face-lapped** foot: instead of butting the post face, the foot runs this far back
+    #: past it, lying flat on the post's adjacent face and through-bolted there. It is the
+    #: other half of ``plane_offset`` — an offset brace has no post material in front of its
+    #: end to bear on, so it laps the post and the bolts carry the joint.
+    #:
+    #: Set it to the post's own width to lap the full face (the balcony's case: 5 1/2" of 2x6
+    #: lying diagonally across a 6x6's inboard face, ~7 3/4" of brace length over it).
+    #: ``None`` keeps the bearing contract in the class docstring, which is what an in-plane
+    #: brace — every N-S one here — actually does.
+    #:
+    #: It moves geometry only. The bolt schedule the lap implies is
+    #: ``takeoff/hardware_config.KneeBraceRules``' business and the capacity is NDS Ch. 12's,
+    #: neither of which this field decides.
+    foot_lap: Length | None = None
     #: A licensed engineer's lateral design for this brace, cited. Verbatim the contract
     #: ``FoundationWall.engineering_spec`` carries and for the same reason: an authored,
     #: external, stamped design IS the design, and ``structural.lateral_racking`` stands down

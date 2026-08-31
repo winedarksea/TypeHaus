@@ -68,9 +68,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     `preferences.toml` with the note as the reason, or to hold the calc back. Note
     §6 of the screening: `engineering_spec` must **not** be authored to silence it.
 
- - ~~**Encoding E3901.6 / 210.52(D) as a check**~~ — DONE 2026-08-30,
-  `code.E3901_6_bathroom_receptacle` in `checks/mep/electrical_receptacles.py`, with a
-  blocking `PermitItemSpec` and an amended `coverage_statement`.
   - **The entry's "and now it would pass" was wrong.** `RM-A-STUBATH` FAILED: its only
     125 V receptacle, `ED-A-STUBATH-GFCI`, was 44.4" from the lavatory carcass — right room,
     right height, right circuit, wrong wall. It moved to `W-A-HALL-S`'s south face in the
@@ -86,13 +83,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     reason — it is bounded 12" below the countertop and `FixtureType.height` is the whole
     assembly, not the deck.
 
-- ~~**`code.E3902_gfci_locations` measures from a fixture's CENTROID**~~ — FIXED 2026-08-30.
-  `_sink_points` returns the resolved `ResolvedCanvasObject.footprint` POLYGON per draining
-  fixture instead of `Point(fixture.position)`, so `point.distance(sink)` is edge distance
-  for free; `_pierces_a_wall` takes the segment to the polygon's `nearest_points`.
-  Distances only shrink, so the fix could only pull devices INTO the 6' circle — it caught
-  one, `ED-S-SUITE-RC8` at 4'-4" from the suite bath's vanity, now a GFCI device.
-
 - **`Room.clear_face` is not the wall's finish face, and something should say so louder
   (2026-08-29).** It is inset from the wall AXIS by the room's lining, so on RM-M-BATH2's
   13 7/8" exterior wall it reports x=5/8" where the paint is at x=6 5/8". A 54" vanity was
@@ -102,12 +92,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   `test_catlin_contract_m3.py::test_wall_mounted_devices_resolve_against_a_wall_face` grades
   a device. The floor-heat polygon beside it went into the wall the same way, and that has
   no face check either.
-  - **The cheap half is DONE (2026-08-30):**
-    `test_wall_referenced_fixtures_stand_against_a_finish_face_not_inside_the_studs` and
-    `test_floor_heat_zones_do_not_run_under_the_walls_that_bound_them`, both in
-    `test_catlin_contract_m3.py` beside the device test they share `_wall_bodies_by_storey`
-    with. The fixture one keys on `attachment_wall`, NOT on `mount.kind` — a vanity is
-    `MountKind.FLOOR`, which is exactly why the device test never saw it.
   - **STILL OPEN, and it is what actually removes the trap:** give `ResolvedRoom` a second
     polygon that IS the finish face, so the honest number is available to author from. Note
     that `resolve/floor_heat.py` falls back to `room.clear_face` when no zone is authored,
@@ -124,44 +108,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   this is a note rather than a check, but it is a real 2'-10" against whatever the local
   limit for this district is. If a limit is close, the levers are the attic's 11' ceiling
   and the 4:12 ridge, not the lift.
-
-  **JURISDICTION CORRECTION, 2026-08-22 — the site is most likely SAINT PAUL, not
-  Minneapolis, and "Minneapolis" in this repo has meant the metro generally.** That matters
-  because the two cities measure height from different data, so the number this note is
-  worried about is not the number `building_height_summary` computes:
-  - **St Paul §520.160 measures from NATURAL GRADE at the curb**, or at a point 10 ft from
-    the front lot line's centre — not from average grade around the building.
-    `peak_above_grade_m` uses average grade, which is the datum every other check in this
-    model shares. On a lot that falls away from the street the two disagree by the whole
-    fall, and in either direction.
-  - So **no `height_limit` and no check is being authored here.** Encoding a limit measured
-    from a datum the model does not carry would produce a confident wrong answer, which is
-    worse than the note. The item stays ON HOLD pending two facts only a survey and a
-    parcel lookup can supply: the zoning district, and the natural grade at the curb.
-  - **Two knock-ons of the correction, FLAGGED AND DELIBERATELY NOT CHANGED**, because both
-    want confirming against Ramsey County rather than swapping on a guess:
-    - ~~`plan/site.py:73` authors the ground snow load as "Hennepin County / Minneapolis".~~
-      **DONE 2026-08-23, and the number did not move.** The citation is now **MN Rules
-      1303.1700**, which is the document that actually sets it: 50 psf in every Minnesota
-      county EXCEPT twenty-nine named northern ones, and neither Ramsey nor Hennepin is
-      among them. So `ground_snow_load_psf=50.0` is right either way, and the citation now
-      names the rule and its exception list rather than a county and a blank IRC table —
-      which is what makes it survive the parcel lookup instead of needing to be redone
-      after it.
-    - `prices.toml [tax]` uses suburban Hennepin's **8.525%**. **HELD ENTIRELY, owner
-      decision 2026-08-23 — the rate and its note are untouched**, because changing it before
-      the parcel is confirmed would replace one sourced-but-possibly-wrong number with
-      another. The research is done, though, so whoever picks this up is not starting cold:
-      - **Suburban Ramsey is 8.375%** (6.875 state + 1.5 metro; Ramsey County levies no local
-        sales tax of its own).
-      - **The City of Saint Paul is 9.875%** (+1.5% city, since 2024-04-01).
-      - MN taxes materials **where they are RECEIVED**: a job-site delivery takes the site's
-        rate and a contractor-yard pickup takes the yard's, so a single house can legitimately
-        carry two.
-      Against the current 8.525%, suburban Ramsey is 0.15 points LOWER (~$450-900 on
-      $300-600k of taxable material) and Saint Paul 1.35 points higher (~$4,000-8,100). The
-      spread between the two candidate answers is what makes this worth the parcel lookup and
-      not worth a guess.
 
 - **What braces the porch and balcony east-west, now that the arch is gone?**
   (raised 2026-08-18, and the one item on this list that the arch swap *created*.) Removing
@@ -273,6 +219,16 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     `params/sunken_garden.py` — plus whatever, if anything, the consultant wants at the two
     still-unbraced centre pillars. The porch's own E-W path (see above) is a separate ask
     to the same consultant, not folded into this one.
+
+    **2026-08-30, second pass: the bolt question got bigger, not smaller.** The four E-W
+    braces' feet were re-read and found unbuildable — coplanar with the rail, they had been
+    detailed as if they butted the pillar, and resolved onto the pillar's *corner* with zero
+    contact area. They are face laps now (`KneeBrace.plane_offset` / `.foot_lap`), lapping
+    5 1/2" across the pillar's inboard face on two 1/2" x 8" HDG bolts. So the assumed bolt
+    schedule this bullet already flags is no longer only the rail's: on those four braces it
+    is the **entire connection at that end**, with no strap beside it and no bearing behind
+    it. `notes/balcony_lateral_bracing_design.md` §4a records the geometry and §5 the two
+    NDS yield modes it works and the four it does not. Nothing about the demand moved.
 
 - **Two porch/balcony span knife-edges, written down 2026-08-28.** Neither is a finding
   today and neither had been recorded anywhere before. `structural.deck_beam_span` looks IRC
@@ -409,13 +365,6 @@ two elevations, which is exactly how a drain drop has always been written.
 
 ### ERV residuals (2026-08-25)
 
-- ~~**`[ducts]` is priced on a blend.**~~ DONE 2026-08-27. `ducts` joined
-  `cli/prices.QUALIFIED_KEY_FIELD` on `material`, so `"supply:semi_rigid"` prices the radial
-  and a bare `"supply"` prices the galvanized trunk (whose `material` the model leaves empty,
-  which is falsy, so it falls through to the bare key unchanged). The blended rates were
-  sheet-metal rates carried over the radial pass, so the section FELL by ~$3k rather than
-  rose. **Still blended: diameter.** 3" and 6" radial share one rate, because a section may
-  qualify on one field and `material` was the larger of the two differences.
 - **The ERV's condensate shares FX-B-SAUNA-FD rather than tying into `PR-B-COND`.** The
   arithmetic is in `plan/mep_drainage.py`: the condensate main is at 85"-and-change where it
   passes x=13'-6", and the highest a 21.6" case can put its spigot under an 8'-0 15/16"
@@ -529,7 +478,6 @@ the future.
   fix it, but it is deliberately *not* authored there: the glazed-brick plinth's whole
   derivation (`params/foundations.py`, `FT-B-BRICK`) leans on that 10" toe being there
   to bear on. Correcting the footings means re-deriving the plinth with them.
-- ~~Make the mudroom bench part of the oak millwork billing~~ — DONE 2026-08-30. `SB-M-MUD-BENCH` in `plan/millwork.py`, a `ShelfBank` hosted on `FURN-M-MUD-BENCH` with `shelf_count=1` and no `depth` (the FurnitureType's 18" is inherited), the idiom `SB-M-STUDY-BENCH` documents. `haus millwork` now bills the seat as an 11.0 bf edge-glued oak panel. No dollar: the bench's money is already in its `[placeables]` row, and a `"shelf"` row may reference no other priced section.
 
 * **Is this enough glazing for light-feeling rooms (along with LED strips, etc)?** Still
   open, and deliberately: 8% is the code minimum, not an answer about how a room feels. But
@@ -566,16 +514,7 @@ the future.
 
  - Sunken garden slab (is it needed above footing) and make sure 7" threshold to basement from sunken garden
  - Basement under the stairs storage closet
- - Wall W-B-CS is likely worth making a wood stud wall (if the load bearing math works and the cost is noticeably lower)
- - ~~PLATE-BOTTOM in the garage runs right through the overhead door~~ — FIXED 2026-08-30. `framing/openings.sole_plate_breaks` + `_plate_segments` in `solver.py`; `_append_plates` now takes the wall's openings. **The predicate is `sill_m < 0`, not "at or below the plate top":** `D-G-OVERHEAD` at -0.5588 m is the only negative sill in the plan — `D-G-SERVICE` is +0.3048 m (12" of cripple wall under it) and every other door is exactly 0.0 — so the looser reading would have re-framed ~40 doors house-wide. `W-G-E` now emits `plate-bottom-0`/`-1` cutting exactly at the RO edges; every other wall in the house keeps the single member keyed `plate-bottom`, so there is no id churn and exactly one section golden moved.
  - For the breezeway sonotubes, something like https://www.homedepot.com/p/Bigfoot-20-in-Pier-Footing-Form-489-20-BF/300325004 for a "single pour footing". However right now it looks like those footings bisect the house and garage foundation walls. Perhaps the beams should be slightly cantilever to push them further out? Or we could link it in straight to the garage footings as one level?
- - ~~Add some wire shelves and racks to the dedicated closets~~ — DONE 2026-08-30. All four: `FURN-M-MUDC-SHELF` (60"), `FURN-M-CLOSET-SHELF` (96"), `FURN-S-CLOSET-SHELF` (84") and `FURN-S-NCLOSET-SHELF` (a 36" x 12" linen shelf — that closet is 40 3/4" wide and a 16" shelf plus a rod would leave under 2' of standing room). Four house-local `FurnitureType`s in `plan/furniture_types.py`, priced in `[placeables]`.
-   - **NOT `ShelfBank`s, which is what a first pass would reach for.** A ShelfBank feeds exactly one consumer, `takeoff/hardwood.py`, whose whole subject is boards out of the family's own stock — it never reaches the BOM. An epoxy-coated steel shelf has no species and no cut list, so as a ShelfBank it would have billed nowhere and asked the mill to saw a ventilated shelf. As a placeable it bills in `[placeables]` and draws in the closet it fills.
-   - Each run is set 8" off its wall's own LAYER POLYGON face, not off `Room.clear_face` — see the clear_face item above; the clear face would have buried each unit ~3" in the studs.
- - ~~Access panel FURN-M-BATH1-AP is in the wrong spot~~ — **already done, and the follow-on suspicion was wrong too (checked 2026-08-30).** `FURN-M-BATH1-AP` moved to `W-M-HS1` on 2026-08-29 and its geometry checks out (`plan/placeables.py`, panel body flush behind the 22'-7 3/8" face).
-   - The obvious next suspect was `FX-M-BATH1-WC`'s `wall_ref="W-M-BAE"` in `plan/fixtures.py`: W-M-BAE is a *vertical* wall on the x = 6'-0" line, while that bowl stands at x 1'-6.9"..2'-9.9" and backs onto W-M-HS1, which its own `drain_position` names. **It is not a typo, and it was changed and changed back.** `Fixture.wall_ref` is the fixture's WET WALL for venting — `checks/mep/plumbing_dwv.vent_reachability` reads nothing else — not a backing wall the body touches. W-M-BAE stops at its own ceiling, so this WC takes the offset path through `PR-M-WC-VENT`, whose x = 6' leg *is* W-M-BAE's own stud bay (`plan/mep_venting.py` names both WC wet walls).
-   - **The trap worth recording:** pointing it at W-M-HS1 does not fail. W-S-SN1 stacks over HS1, so `vent_reachability` reports the in-wall path and PASSES, silently orphaning PR-M-WC-VENT's bath1 leg. Only `test_catlin_fixtures_all_reach_a_vent_chase`, which asserts this fixture is in the CHASE-vented set specifically, catches it. If `wall_ref` is ever split into "wet wall" and "backing wall", this is the fixture that shows why.
- - Perhaps switch the garage to 24" oc spacing (fewer trusses) if code allows? We might also consider switching the garage to PBR exposed fastener siding, but earlier it seemed that might not be much cheaper (as it requires longer structural screws and another girt framing layer, rather than nailbase into the zip-r)
  - Improve the framing logic of the girts/outriggers holding the insulation and cladding of the catlin house. Especialy on the gable ends, it seems the spacing of these isn't always correct and optimal. Perhaps also increase the spacing (I believe and earlier review concluded 32" OC was sufficient)
 
 - **The R312.1.1 guard on the garage stair's 34" landing.** An owner decision with a cost
@@ -583,11 +522,6 @@ the future.
   its own item: `code.R312_1_guard_height` censuses `FloorSystem`s and `code.R312_1_guard`
   censuses `FloorOpening`s, so `SL-G-STEP-0` — a `Slab` — is in neither census and its 34"
   drop is graded by nothing. A rule that walks slab edges would close it.
-- ~~**`ED-B-GYM-RC3`/`RC4`** are on the wrong side of `W-B-CE`'s finish face~~ — FIXED
-  2026-08-30. Both moved to y 17'-7.615" (the GYM face less the 1" body setback this file uses
-  everywhere), with `rotation=deg(180)` and an authored `room="RM-B-GYM"` so the two rooms
-  can never trade one box between them again. Re-running the gym's NEC fill turned out to
-  be a no-op — neither room opens a 210.52(A) gap at the new y.
 - **`W-SG-W2`/`E2`/`S` are screened and DO NOT reach R404.4's 1.5 against sliding**
   (2026-08-30). Two things landed that day, and the first is why the second matters.
   **(a) The retained height was understated by 3'-4".** `structural.foundation_unbalanced_fill`
@@ -647,15 +581,6 @@ the future.
   `node` + `pyodide` run reproduces it in about 90 seconds) or bump Pyodide — 0.28.x ships a
   newer GEOS. Until one of those, `pytest` passing proves nothing about the published app's
   geometry.
-- ~~**The offline PWA's `costs_json` is broken**~~ — FIXED 2026-08-30. `typehaus/cli/__init__.py`
-  resolves `app`/`main` through a module `__getattr__` now, so importing any `typehaus.cli.*`
-  submodule no longer executes the app. `import typehaus.cli.prices` leaves `typer` out of
-  `sys.modules` entirely, which is the exact condition that raised in the browser. Four
-  callers are un-tainted at once (`server/costs_api.py`, `server/tasks_api.py`,
-  `cli/variants.py`, the offline engine) and `from typehaus.cli import app` still works.
-  Note for whoever writes the lazy `__getattr__` next: it must use
-  `importlib.import_module("typehaus.cli.app")`, because `from typehaus.cli import app`
-  re-enters the same `__getattr__` and recurses until the stack goes.
 - **There is no trap-primer element, field or `PipeAccessoryKind` member.** This is what
   blocks the `RM-S-PLANT` floor drain: `library/placeables/fixtures.py:108-110` says the
   existing `FX-FLOOR-DRAIN` type is for wet-room floors and *"a floor drain in a room that
@@ -666,16 +591,6 @@ the future.
 - **Four `AlarmKind` members only** (SMOKE / CO / COMBO / HEAT). No leak or freeze kind, and
   `emit/draw/floorplan.py:316-317` is a hard index that `KeyError`s the whole plan sheet on a
   new member without a label — so adding one is a two-file change, not a one-line enum edit.
-- ~~**`profile.py` cites the *Hennepin County* soil survey** for `soil_class="GM"`~~ —
-  FIXED 2026-08-30. `Site` carries `soil_class` and `soil_bearing_psf` now, beside
-  `ground_snow_load_psf` and `design_wind_speed_mph`, which are the same kind of fact.
-  `checks/soil.py` is the one resolver — site first, profile fallback — and its three
-  consumers (`structural/foundation.py`, `mn_residential/foundation_protection.py`,
-  `emit/draw/schedules/architectural.py`) all read it; A-000's soil rows now SAY whether the
-  value is this parcel's or a presumption. `plan/site.py` states `soil_class="GM"` with a
-  **Ramsey County** basis, and the engine profile's comment is reworded to "Twin Cities
-  metro glacial till, presumptive where no soils report exists" rather than naming one
-  county's survey. The number does not move; a house can correct it now.
 - **The HPWH has no combustion/air-volume provision.** An 80-gal Rheem ProTerra in a 160 sf
   mechanical room has a manufacturer air-volume requirement, and no `DuctRun`, `Register` or
   louvre is authored for it. Nothing in `haus check` grades it. The room got 7.7 sf smaller
@@ -714,38 +629,6 @@ the future.
   `W-B-S1`→`W-M-S1` and the eight garage `W-GF-*`→`W-G-*`. All 13 are pours under framed
   walls, which frame no studs, so nothing reads the difference today — which is exactly why
   it will be a surprise when something does.
-
-- ~~**`solver.py`'s staggered face-parity rule breaks at a non-zero phase**~~ — FIXED 2026-08-30.
-  Parity is taken from the module ORDINAL, `round((station - module_phase) / module_spacing)`,
-  not from the bare station. The ordinal survives a station dropped under an opening, which
-  is the property the original comment was protecting and which a loop index would lose.
-  Still cannot fire on catlin (every staggered assembly is `layout_origin="wall-start"`), so
-  this remains a trap fix and moves no geometry.
-- ~~**`platform._platform_above` uses one number for two jobs**~~ — FIXED 2026-08-30. Split into
-  `_axis_tolerance(a, b)` and a module-level `_MIN_OVERLAP_M`; `_foundation_below` had the
-  identical construct and got the same treatment.
-  - **The off-axis number is half the SUM of the two thicknesses, not half the lower wall's.**
-    An axis is a centreline, so that sum is exactly where two parallel walls stop sharing any
-    footprint. Half-of-one-wall was tried first and dropped four real stacks — catlin stacks
-    walls a full wall off their neighbour's line (`W-B-BA-N` under `W-M-HS3`, 6 5/8" apart at
-    6 3/4" thick).
-  - One wall changed: `W-B-BA-N` no longer lifts to the main-floor datum. That is the fix
-    working — it is 6 5/8" off `W-M-HS3`/`HS4`'s line and those are 4 3/4" walls, so the two
-    bodies miss each other by 0.865" and there is nothing above it. The old tolerance let it
-    through only because the LOWER wall happened to be thick.
-- ~~**`platform`'s rake guards are effectively dead**~~ — FIXED 2026-08-30 via a `_is_raked` helper
-  that tests the AUTHORED `ToRoof` top, the same predicate `apply_to_roof_wall_tops` itself
-  dispatches on. (The line numbers in the old entry were stale: the roof stage is
-  `pipeline.py:99-100` and the lift is `:81`.)
-- ~~**`roof_geometry.py` drops `plate_top_z_m`** when it rebuilds a `ToRoof` wall~~ — FIXED
-  2026-08-30: `replace(wall, ...)` instead of a fresh `ResolvedWall(...)`, which was silently
-  reverting every field it did not list. `plate_base_z_m` was the one that mattered —
-  `extend_walls_to_foundation` runs earlier and writes it, and framing, anchors and uplift
-  all read it.
-- ~~**Neither `plate_top_z_m` nor `plate_base_z_m` is serialized**~~ — FIXED 2026-08-30.
-  `plate_base_z_m` was already emitted; `plate_top_z_m` is now, with the matching
-  `number | null` in `ui/src/model/types.ts` and the four UI fixtures that build a full wall
-  literal. No viewer behaviour change yet — the number is merely reachable.
 - **`_append_track_jamb_legs` bottoms its track jambs on a plate that is no longer there.**
   `framing/openings.py` puts `trackjamb-0-l`/`-r` inside `D-G-OVERHEAD`'s rough opening,
   standing on the sole plate that 2026-08-30's `sole_plate_breaks` correctly removes. They were

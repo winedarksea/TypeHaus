@@ -1371,6 +1371,67 @@ provisionally being cut to ~24.8%. The basis has shifted toward wood since these
 struck.
 
 
+## The garage sweep — PRICED 2026-08-30
+
+Two ideas from TODO.md, both measured as **bid-total** deltas (the 2026-08-24 convention)
+against a same-day baseline of **$939,199–$1,951,568**. Method: sandbox copy of catlin
+inside the repo, one `Layer`/`FramingSpec` edited, `haus takeoff` re-run. Both are small —
+this whole section is 0.07%–0.18% of the job.
+
+| change | bid-total delta | verdict |
+|---|---:|---|
+| `GARAGE_ROOF` truss layer to `spacing=inch(24)` | **−$681 / −$1,136** | **TAKE** |
+| `GARAGE_WALL_2X6` cladding → `pbr-panel-26`, direct on the Zip-R | **−$736 / −$2,391** | conditional — one phone call |
+| …same, but adding a 2x4 girt layer to carry it | +$1,298 / +$1,493 (see caveat) | **no** |
+| both taken together | **−$1,417 / −$3,527** | |
+
+**24" o.c. trusses — take it; nothing else changes.** The saving is 488 LF off the `"2x4"`
+row (`prices.toml:267`, $1.20–2.00/LF) — 6 fewer trusses — plus 12 fewer `H2.5A` ties.
+`haus check --only all` moves **no verdict**; truss capacity is already the unsealed
+engineered item `rafter/RF-GARAGE`, so the engine never had an opinion on spacing either
+way. What the literature settles that the engine cannot: Alpine's span table (struck at
+24" o.c.) gives 2x4/2x4 chords **41 ft** at 4/12 and 55 psf total / 40 psf snow, against a
+24 ft span; **IRC Table R802.11** — whose conditions name 115 mph, Exposure B, span ≤32 ft
+and *trusses at not more than 24" o.c.* — asks **178 lb** per tie at 24 ft / pitch <5:12,
+against the H2.5A's 260 lb at reduced nailing; and R702.3.5's 5/8" ceiling board at 24" o.c.
+is already in `default_lining`. Industry pricing corroborates the number: $90–175/truss
+material + $5–10 to set × 6 = $570–1,110. 24" o.c. is the residential default; 16" is the
+anomaly in this plan.
+
+**PBR — not a savings question, a substrate question.** 663 SF swaps off
+`"standing-seam-nailstrip-26"` ($6.00–11.00/SF installed, `prices.toml:1991`) onto
+`"pbr-panel-26"` ($4.50–7.25, `prices.toml:1978`), less 640 more `T09150HWAM` gasketed
+screws that `takeoff.fasteners` bills because the material carries `exposed_fastener=True`.
+The `pbr-panel-26` comment in `plan/assemblies.py` says PBR here "would need a whole new
+girt layer, and that cost cancels the saving" — **both halves are wrong.** Metal Sales'
+manual puts PBR over "open structural framing **or** solid substrate" with a plain #10-14
+woodscrew, no framing penetration; Huber says ZIP-R's outer 7/16" panel "can be used as a
+nailbase for finished exterior cladding that does not require direct attachment to
+structural framing." The longer-screw problem is `CATLIN_EXT_2X6`'s 4" of exterior foam and
+does not transfer. The one real gap is thickness — Metal Sales wants **5/8"** substrate,
+Zip-R gives **7/16"** — and **the incumbent has the same gap**: nail-strip is also a
+solid-substrate panel and the same guidance calls for 5/8"–3/4", so the garage as drawn
+already fastens into 7/16" OSB. So: get the supplier to accept 7/16" Zip-R in writing (and
+get the same answer for the nail-strip already specified while on the phone). Yes → take it.
+No → leave the cladding alone; girts make it a wash and buy an exposed-fastener look nobody
+asked for.
+
+**Caveat on the girt row — a stale price, not a real cost.** $774–$1,742 of that +$1,298/
++$1,493 is one line: `"bug_screen:GARAGE_WALL_2X6"` (`prices.toml:1096`), a $/SF proxy struck
+against a 3/8" cavity (3.0 SF = 96 LF) and retired at 0 SF on 2026-08-20. A 1.5" girt reports
+12.1 SF and the proxy quadruples — the exact failure `bug_screen:CATLIN_EXT_2X6`'s own comment
+warns about. At the researched $2.00–4.50/LF × 96 LF, PBR-plus-girt is roughly a **wash**
+(≈ +$25 to +$550). **Re-strike that rate before anyone reads the girt option off this table.**
+
+**Cost of the cut:** none on the trusses. On PBR, exposed fasteners across 663 SF against a
+garage roof that stays nail-strip — the garage would read mixed, as the house already does.
+
+**One engine gap found:** nothing checks R702.3.5, so at 24" o.c. the 5/8" garage ceiling
+board becomes load-bearing on a spacing the engine does not enforce. A later "drop to 1/2"
+to save money" would go through clean. (And `CavityFill(framing_factor=0.09)` is documented
+as 1.5/16; at 24" o.c. it is 1.5/24 ≈ 0.0625.)
+
+
 ## Taken
 
 ### Metal skin: one rate to four, garage rainscreen dropped — 2026-08-20

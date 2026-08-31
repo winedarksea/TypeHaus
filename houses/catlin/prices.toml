@@ -462,7 +462,18 @@
 # prose, so the derived rule can see the joint. The third 4x4, P-M-STRLAND-SE, is a
 # 13 7/16" squash block and takes no base (UpliftTieRules.blocking_max_height_ft).
 "ABU44" = { low = 22, high = 40 }  # 2 ea
-"APVB12-6" = { low = 4, high = 9 }  # 16 ea — Outdoor Accents 1/2"x6" hex through-bolt + washer
+# 16 ea -> 8 on 2026-08-30 (second pass). The four E-W braces' feet became FACE LAPS rather
+# than butt joints — see the KneeBrace.foot_lap block in params/sunken_garden.py — and a
+# lapped foot is bolted through the 1 1/2" brace and the whole 5 1/2" pillar behind it. That
+# is 7" of wood; this bolt is 6" and does not come out the far side. The four N-S braces are
+# unchanged and keep it, two each.
+"APVB12-6" = { low = 4, high = 9 }  # 8 ea — Outdoor Accents 1/2"x6" hex through-bolt + washer
+# The bolt the four lapped feet take instead, two each. GENERIC FASTENER BAND, NOT A VERIFIED
+# SKU: a 1/2"-13 x 8" HDG hex bolt is $3-6 single-piece retail and the nut and two F436
+# washers add $0.50-1.50, so this is the same $4-9 the Outdoor Accents bolt above carries and
+# should be replaced with a quoted number when this table is next refreshed against a
+# supplier list. Material only, like every row here; driving it is inside the framing rate.
+"BOLT-12X8-HDG" = { low = 4, high = 9 }  # 8 ea — 1/2"x8" HDG hex bolt, nut + 2 washers
 # **0 ea since 2026-08-30 — the eight balcony knee braces changed connector.** The APVKB45-6
 # has no published allowable load (IAPMO UES ER-102's AP-series index does not list it, and
 # ER-280 has no table for it), and those eight braces are the whole lateral system of a

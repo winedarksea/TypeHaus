@@ -24,6 +24,14 @@ ROLE_FACE_MOUNT_JOIST_HANGER = "face_mount_joist_hanger"
 ROLE_CONCRETE_FACE_MOUNT_HANGER = "concrete_face_mount_hanger"
 ROLE_KNEE_BRACE = "knee_brace"
 ROLE_BRACE_THROUGH_BOLT = "brace_through_bolt"
+# The bolt a FACE-LAPPED brace foot takes, and its own role for one dimensional reason:
+# a lapped foot is bolted through the brace AND the whole post behind it, so the wood it
+# crosses is the brace thickness plus the post's full section — 7" for a 2x on a 6x6 —
+# where a butting end's bolt only ever crosses the strap and the brace. The 6 in bolt
+# ROLE_BRACE_THROUGH_BOLT carries does not reach, and a BOM that lists it for both joints
+# is short by the only dimension that decides whether the part fits. See
+# ``model/structure.KneeBrace.foot_lap`` and ``takeoff/anchors.brace_bolt_rows``.
+ROLE_LAPPED_BRACE_BOLT = "lapped_brace_bolt"
 ROLE_MUDSILL_ANCHOR = "mudsill_anchor"
 ROLE_EMBEDDED_STRAP_HOLDOWN = "embedded_strap_holdown"
 ROLE_STUD_PLATE_TIE = "stud_plate_tie"

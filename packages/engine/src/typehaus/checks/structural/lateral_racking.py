@@ -370,13 +370,15 @@ def _grade_brace(brace: KneeBrace, demand: Demand, axis_name: str, band_text: st
               f"equally by {n_braces} brace(s); {brace.tag} on a {post_h:.2f}' post with a "
               f"{_ft(brace.leg):.1f}' leg carries {ratio:.2f} lb axial per lb of storey shear")
 
+    lap_text = _lapped_foot_text(brace)
+
     if capacity is None:
         why = (allowable.citation if allowable is not None
                else f"no allowable-load record exists for {brace.connector}")
         return structural_advisory(
             _CID,
             f"{common}. **The connector has no published lateral capacity**, so no ratio can "
-            f"be formed: {why}",
+            f"be formed: {why}{lap_text}",
             tags, Result.UNKNOWN,
             "substitute a connector with a published brace-angle rating (the KBS1Z is the "
             "only one in this catalog: IAPMO UES ER-280 Table 7), or author "
@@ -404,10 +406,35 @@ def _grade_brace(brace: KneeBrace, demand: Demand, axis_name: str, band_text: st
     return structural_advisory(
         _CID,
         f"{common}. Connector {brace.connector} allowable F1 {capacity:.0f} lbf "
-        f"({species}); {verdict}{lookup}. Screening only — a stamped design is "
+        f"({species}); {verdict}{lookup}{lap_text}. Screening only — a stamped design is "
         f"what turns this into a PASS",
         tags, Result.UNKNOWN,
         "author KneeBrace.engineering_spec with a licensed engineer's lateral design")
+
+
+def _lapped_foot_text(brace: KneeBrace) -> str:
+    """What the connector allowable does and does not cover on a face-lapped brace.
+
+    A lapped brace has two different joints at its two ends, and one published number cannot
+    describe both. The HEAD still butts and is strapped, so the catalogued F1 is its number.
+    The FOOT lies flat on the post face and is bolted through it — no connector, no product
+    rating, an NDS Ch. 12 bolt-group calculation instead. Reporting the strap value alone
+    would name the end that is *not* in question, which is the failure mode this whole check
+    exists to avoid, so the text says which end each number belongs to.
+    """
+    if brace.foot_lap is None:
+        return ""
+    return (
+        f". **Only the head is a connector joint.** The foot laps the post face for "
+        f"{_ft(brace.foot_lap) * 12:.1f}\" and is through-bolted, because the brace's plane "
+        f"is offset from the post's (KneeBrace.plane_offset) and no post material stands in "
+        f"front of the end to bear on; its capacity is an NDS Ch. 12 bolt-group calculation "
+        f"that no product rating covers. Two things make the number above conservative "
+        f"rather than optimistic even so: the head butts an EQUAL-WIDTH member, which reads "
+        f"ER-280's connection type 1 row and not the type 2 recorded here, and the free body "
+        f"takes the brace as meeting the post at the face when the bolt group that delivers "
+        f"the force sits half a lap lower, on a longer lever"
+    )
 
 
 def _table_ratios(demand: Demand) -> tuple[float, float]:
