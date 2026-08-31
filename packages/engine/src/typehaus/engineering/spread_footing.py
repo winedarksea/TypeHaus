@@ -104,8 +104,14 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
         "Bearing is taken on the SITE's own class, not on the washed-stone value the "
         "retaining footings earn: these bells were augered to frost depth to bear on "
         "undisturbed soil, and their 7\" levelling course is not a soil replacement.",
-        "Not checked: settlement, group effect, uplift, lateral load on the shaft, and any "
-        "increase IBC 1806.3 might allow for depth or width. All would need a boring.",
+        "Not checked: settlement, group effect, uplift, lateral load on the shaft.",
+        "AND THERE IS NO DEPTH OR WIDTH BONUS TO CLAIM. IBC 1806.3.3's 'increase for depth' "
+        "raises LATERAL bearing only, and 1806.3 is scoped to resistance to lateral loads; "
+        "2018 IBC has no provision raising presumptive VERTICAL pressure for a deeper or "
+        "wider footing. (The +20%/ft, 3x cap some references remember is 1997 UBC Table "
+        "18-I-A and did not carry into the IBC.) The only sanctioned escalators are 1806.1's "
+        "one-third with the alternative wind/seismic combinations, and 1806.2's 'data to "
+        "substantiate the use of higher values' — which means a boring, not a table.",
     )
     if pier.carried_dead_lb or pier.tributary_ft2 <= 0.0:
         notes = notes + (

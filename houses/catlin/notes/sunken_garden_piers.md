@@ -132,9 +132,14 @@ second post, so any growth in the balcony's loading lands here first.
 
 ### 4a. Both are COLUMNS, not pedestals, and the ratio is the whole question
 
-ACI 318 distinguishes a **pedestal** — a member whose unsupported height is not more than
-**three times** its average least lateral dimension — from a **column**. It matters because
-plain concrete pedestals are permitted and plain concrete columns are not.
+ACI 318-19 §2.3 defines a **pedestal** as a member whose height-to-least-lateral-dimension
+ratio is **not more than 3**, and §14.3.3.1 restates it as a design limit ("ratio of
+unsupported height to average least lateral dimension shall not exceed 3"). It matters
+because §14.1.3(d) permits a plain concrete **pedestal** and **§14.1.5 does not permit a
+plain concrete COLUMN** — *"plain concrete shall not be permitted for columns and pile
+caps"*. R14.1.5 gives the reason: a column lacks the ductility it should have, and a random
+crack in an unreinforced one endangers its structural integrity. (ACI 318-11 carries the same
+prohibition in §22.2.1's closing sentence.)
 
 ```
 PT-SG-COL    128.1875 / 12  =  10.7          }  both far past 3.
@@ -163,9 +168,14 @@ might be too small" — they are enormous for what they carry, and the front one
 
 ### 4c. What is actually missing
 
-A column may not be plain concrete, whatever its stress. A 12" round column takes at least
-**1.13 in²** of longitudinal steel and a 20" round at least **3.14 in²** (1% of gross), plus
-ties. **`Post` has no field to record any of it**, so this model cannot state a bar schedule
+A column may not be plain concrete, whatever its stress. Per **ACI 318-19 §10.6.1.1** a
+12" round column takes at least **1.13 in²** of longitudinal steel and a 20" round at least
+**3.14 in²** (0.01 A_g, and not more than 0.08 A_g), plus ties.
+
+**One escape a reviewer will reach for, and it does not reach.** §14.1.2 excludes
+*"cast-in-place piles and piers embedded in ground"* from Chapter 14 altogether, and these
+are augered piers. But only the **bell** is embedded: the shaft stands free in an open court
+for its whole 10'-8", which is the condition §14.1.2 is not describing. **`Post` has no field to record any of it**, so this model cannot state a bar schedule
 even if the owner had one — and the calculation refuses to assume that an augered sonotube
 "probably" has bars in it. That is #32's rule: a check that cannot evaluate reports UNKNOWN
 naming the missing datum, and never a pass.
@@ -191,8 +201,14 @@ Two ways to close it, and they are different sizes of job:
 - **No uplift.** `notes/uplift_load_path.md` covers what holds the beams down; nothing here
   checks the pier against net uplift, and a belled shaft is good at resisting it — an
   argument nobody has made in numbers.
-- **No settlement, no group effect, no depth/width bearing increase.** All would need the
-  boring that this site does not have.
+- **No settlement and no group effect.** Both would need the boring this site does not have.
+- **And there is no depth or width bearing bonus to claim.** IBC §1806.3.3's "increase for
+  depth" raises **lateral** bearing only, and all of §1806.3 is scoped to resistance to
+  lateral loads; the 2018 IBC has no provision raising presumptive **vertical** pressure for
+  a deeper or wider footing. (The +20% per foot to a 3× cap that some references remember is
+  1997 UBC Table 18-I-A and did not carry forward.) The only sanctioned escalators are
+  §1806.1's one-third with the alternative wind/seismic combinations and §1806.2's *"data to
+  substantiate the use of higher values"* — which means a boring, not a table adjustment.
 - **No frost check** — `structural.frost_depth` owns that and passes both bells on 42" of
   true cover since 2026-08-29.
 - **The tributary rule is a division, not an analysis.** Deck area over post count is exact
