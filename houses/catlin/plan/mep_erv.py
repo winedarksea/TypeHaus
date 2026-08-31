@@ -157,21 +157,48 @@ EQUIPMENT_ERV_ATTIC = [
               mount=Mount(kind=MountKind.FLOOR)),
 ]
 
-# THE MIXING BOX — inside SF-S-DUCT, and where it sits was decided by
-# `mep.duct_soffit_occupancy` rather than by arithmetic in a comment.
+# THE MIXING BOX — now inside SF-S-HP1, in the return chamber at the air handler's return
+# face, which is the one place in this loop where fresh air may legally arrive.
 #
-# The plan wanted it directly behind REG-S-HP-RET at (20'-8", 9'-8"). It does not go there.
-# The box's clear cavity is 30 3/4" wide and, reading south to north, y 6'-0"..9'-7" is
-# EQ-S-HP1-AH's 21" case, y 9'-10"..10'-8" is EQ-S-HP1-STRIP's 16" plate, and DU-S-HP-SUP
-# holds x 18'-9"..19'-11" for the length of the box. What is left for a 10"-wide box is
-# x 20'-1"..21'-3 3/8" (2" clear of the trunk, inside the cavity's east face) at any y north
-# of the strip heater's 10'-8". So it sits at (20'-8", 11'-4"), eighteen inches north of
-# where the plan put it, and the check prints the clearances instead of this comment.
+# ** IT MOVED FROM (20'-8", 11'-4") TO (24'-2 1/2", 3'-6") ON 2026-08-30, AND THE OLD SPOT
+# WAS A REAL DEFECT. ** Reading south to north inside SF-S-DUCT the order used to be: air
+# handler y 6'-0"..9'-7", trunk head 9'-7", return grille 9'-8", strip heater 9'-10"..10'-8",
+# mixing box 11'-4". So 100 cfm of -15 F design outdoor air — half the house's fresh air —
+# was injected DOWNSTREAM of both the coil and the 2 kW strip heater and reached the rooms
+# untempered. It landed there because `mep.duct_soffit_occupancy` pushed it 18" north of
+# where the plan wanted it: a packing outcome in a box the placeholder air handler had
+# already filled, not intent. With the machine in SF-S-HP1 the return chamber is a real
+# chamber, and the box sits in it, upstream of the coil, the strip heater and the unit's own
+# filter-back grille.
+#
+# ** IT WAS ALSO NEARLY DELETED, AND THE BACKDRAFT DAMPER IS WHY IT IS STILL HERE. ** The
+# element looks like a fitting once the return is a proper plenum, and a wye would do. It
+# would not. `plan/mep_registers.py` has said since 2026-07-30 that the ERV enters the return
+# "not a hard-coupled duct … so either machine can run alone", and this box is where that
+# damper lives:
+#   * AIR HANDLER RUNNING, ERV OFF — the return chamber is at negative pressure. With no
+#     damper the blower pulls backwards through the 6" feed, through the attic sub-manifold
+#     and out through a stopped, therefore non-recovering, ERV core and its outdoor intake.
+#     A stopped ERV is not airtight. That is unrecovered -15 F air straight into the return,
+#     plus depressurisation of the ERV's own ductwork.
+#   * ERV RUNNING, AIR HANDLER OFF — 100 cfm enters a still chamber and leaves through
+#     REG-S-HP-RET into the study, the only low-resistance path. The house still ventilates;
+#     distribution to the other rooms depends on the AH fan turning. That was true of the old
+#     design too and it wants a CONTROLS INTERLOCK (blower continuous, or on ERV call), which
+#     the schema has no field for — so it is written here and in plans/TODO.md. It matters
+#     because code.N1103_6_whole_house_ventilation is already tight, 210 cfm provided against
+#     203 required.
+# Keeping it costs the second lane past the machine, which SF-S-HP1's width already carries.
+#
+# x=24'-2 1/2" is the box's east lane, shared with DU-S-ERV-HP-FEED's tail: the 10" case
+# stands 2 1/2" clear of the 10x6 south-branch riser and 1 3/8" inside the cavity's east face.
+# y=3'-6" is level with REG-S-HP-RET at the far side of the same chamber, so the fresh air
+# crosses the returning room air before either reaches the coil.
 EQUIPMENT_ERV_SECOND = [
     Equipment(uid="8PE9E87JX5", tag="EQ-S-ERV-MIX", kind=EquipmentKind.MIXING_BOX,
-              position=pt(ft(20, 8), ft(11, 4)), footprint=(inch(10), inch(12)),
-              room="RM-S-HALL", type_ref="EQ-T-ERV-MIXING-BOX",
-              soffit_ref="SF-S-DUCT",
+              position=pt(ft(24, 2.5), ft(3, 6)), footprint=(inch(10), inch(12)),
+              room="RM-S-STUDY2", type_ref="EQ-T-ERV-MIXING-BOX",
+              soffit_ref="SF-S-HP1",
               mount=Mount(kind=MountKind.CEILING)),
 ]
 
@@ -833,14 +860,40 @@ DUCTS_ERV_MIX_FEED = [
             # and a bare 6" duct on the deck clears by 1/2". The 7" east is ALONG a bay —
             # FS-ATTIC's I-joists span x — so nothing is bored; the north-south leg that
             # follows stays on the deck for exactly that reason, as it always has.
+            # ** THE TAIL FOLLOWED THE MIXING BOX SOUTH ON 2026-08-30. ** Every attic leg
+            # above, and the drop at (20'-8", 11'-4"), are UNCHANGED — the machine sees the
+            # same 6" run to the same point. What is new is the 12'-2" that continues from
+            # there: south inside SF-S-DUCT beside the 18x8 trunk (18 + 2 hanger gap + 6 = 26
+            # against 30 3/4" clear, which is the whole reason the trunk went to 18x8 and not
+            # 20x8), across the y=8'-9 5/8" seam into SF-S-HP1, east across that box's north
+            # strip at y=7'-11" — north of the air handler's supply plenum and clear of it —
+            # and south down the box's east lane onto EQ-S-ERV-MIX at (24'-2 1/2", 3'-6").
+            # It cannot pass the machine on the west: the cabinet is 44 1/2" wide in a
+            # 72 1/4" cavity, so x=20'-8" runs straight through it, and only the east third
+            # of the box is a lane. Nothing rides RM-A-STUDY's finished floor.
+            #
+            # One elevation the whole way, -20 7/8" (219 1/8" absolute): a 6" duct on
+            # SF-S-DUCT's clear underside, which in SF-S-HP1's deeper cavity sits 3" up off
+            # the floor of the box rather than on it. A step would buy nothing.
             path=(pt(ft(0, 5), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)),
                   pt(ft(1), ft(22)),
                   pt(ft(1), ft(22)), pt(ft(20, 8), ft(22)),
                   pt(ft(20, 8), ft(22)), pt(ft(20, 8), ft(11, 4)),
-                  pt(ft(20, 8), ft(11, 4))),
+                  pt(ft(20, 8), ft(11, 4)),
+                  pt(ft(20, 8), ft(7, 11)),
+                  pt(ft(24, 2.5), ft(7, 11)),
+                  pt(ft(24, 2.5), ft(3, 6))),
             elevations=(inch(-8.875), inch(-8.875), inch(4), inch(4),
                         inch(-8.875), inch(-8.875),
-                        inch(4), inch(4), inch(-20.875)),
+                        inch(4), inch(4), inch(-20.875),
+                        inch(-20.875), inch(-20.875), inch(-20.875)),
+            # `routing` stays CHASE: the legs above are a boxed floor chase and a run on an
+            # unfinished deck, and CHASE keeps its honest meaning for a shaft that is not a
+            # modeled Soffit. `soffit_ref` names SF-S-HP1 so the tail's two segments in that
+            # box ARE graded by `mep.duct_soffit_occupancy` against the derived cavity, beside
+            # the machine, the south-branch riser and the mixing box. The check clips a run to
+            # the box it names, so every attic leg clips away and only the tail is measured.
+            soffit_ref="SF-S-HP1",
             diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
             design_cfm=100),
 ]

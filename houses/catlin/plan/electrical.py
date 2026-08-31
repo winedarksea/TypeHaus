@@ -212,20 +212,47 @@ EQUIPMENT_TYPES = (
     # sizes each zone against. Indoor heads keep `# TODO verify datasheet` on purpose: they
     # carry no heating rating by design (a multi's heads share one compressor).
     #
-    # System 1 — Gree Slim concealed ducted unit in RM-S-STUDY2 feeding the dropped hallway
-    # chase to bedrooms + two attic branches; Vireo GEN3 outdoor unit. One 24k head covers
-    # the whole upstairs via a straight low-flow duct run.
-    EquipmentType(tag="EQ-T-GREE-SLIM24",
-                  name="Gree Slim concealed ducted air handler, 24k",
-                  footprint=(inch(43), inch(21)), height=inch(11),
-                  cooling_capacity_btuh=24000,  # TODO verify datasheet
-                  source="REPRESENTATIVE PLACEHOLDER — 2-ton concealed-ducted class. The indoor unit carries no heating rating here on purpose: the outdoor unit is what has to make heat at design temp, and mep.heating_capacity sizes the zone against EQ-T-GREE-VIREO-GEN3. TODO verify datasheet.",
+    # System 1 — the concealed ducted air handler in RM-S-STUDY2's ceiling bulkhead
+    # (SF-S-HP1) feeding the hallway trunk to the bedrooms plus the south branch and two
+    # attic boots; Vireo R32 outdoor unit. One 24k system covers the whole upstairs.
+    #
+    # ** IT REPLACED EQ-T-GREE-SLIM24 ON 2026-08-30, AND THE PLACEHOLDER WAS LOAD-BEARING. **
+    # That type was an explicit "REPRESENTATIVE PLACEHOLDER … TODO verify datasheet": 43 x
+    # 21 x 11, 750 cfm on the trunk, no model number, no ESP, and all three ports at
+    # (0, 0, 11") so no connection face was modelled at all. 43 3/8" wide is Gree's
+    # DISCONTINUED low-static DUCT24HP230V1AD, which tops out at 589 cfm at 0.04" w.c. — it
+    # cannot deliver the 750 cfm every duct in this house is sized to. The placeholder was
+    # therefore not merely unverified; it invalidated the airflow, and its 21" case is what
+    # made a 30 3/4" hall box look like it could hold a machine and a branch lane at once.
+    #
+    # WHY THIS UNIT AND NOT A SHALLOWER ONE. Connection geometry decides where a machine can
+    # live: every concealed slim duct — Gree, LG, Samsung — puts supply on one long face and
+    # return on the opposite long face, so air crosses the short depth and the long dimension
+    # sits ACROSS the duct axis. Only a multi-position AHU connects on its ends, and the two
+    # end-connected Gree AHUs (GMV-ND24A/B-T(U), FLEXX ECO R32) are both out on climate — the
+    # first needs a GMV VRF outdoor unit whose floor is about -4 F, the second's heating range
+    # stops at 5 F, against a -15 F design day. LG's KNUJB241A/LHN248HV1 is by far the best
+    # FIT — 9 21/32" tall would have sat in the existing 14" drop — and is the one real loss
+    # here: its matched KUSXA241A publishes 21,600 Btu/h at -13 F, but its published heating
+    # range FLOOR is -13 F, two degrees short of this site's design temperature. Worth
+    # revisiting only if LG publishes a lower floor.
+    EquipmentType(tag="EQ-T-GREE-DUC24",
+                  name="Gree concealed ducted air handler, 24k, R32",
+                  footprint=(inch(44.47), inch(29.69)), height=inch(11.81),
+                  cooling_capacity_btuh=24000,
+                  source="Gree DUC24HP230V1R32AH concealed-duct air handler (R32). Cabinet 44 31/64 x 29 11/16 x 11 13/16 in, net weight 92.6 lb, airflow 577-1030 cfm over eight fan-speed notches, external static pressure 0.8 in. w.c. maximum. Paired with EQ-T-GREE-VIREO-GEN3 (VIR24HP230V1R32AO) outdoor: ~14,200 Btu/h at -13 F, minimum operating temperature -22 F, so the system's envelope brackets the site's -15 F design day. The indoor unit carries no heating rating of its own on purpose — the outdoor unit is what has to make heat at design temp, and mep.heating_capacity sizes the zone against the outdoor type. THIS REPLACED EQ-T-GREE-SLIM24, a REPRESENTATIVE PLACEHOLDER whose 43 in width matched only the discontinued low-static DUCT24HP230V1AD (589 cfm at 0.04 in. w.c.), which cannot move the 750 cfm this duct system is sized to.",
+                  # Real face positions, replacing three ports stacked at (0, 0, 11"). The
+                  # long dimension is x, so supply and return are on the two 44 1/2 x 11 13/16
+                  # faces: supply out the north face (+y), return in the south face (-y), both
+                  # on the cabinet's own centre height. Power enters at the north-east corner
+                  # where the whip lands. This is what makes "supply north / return south, in
+                  # line" a modelled fact rather than a sentence in a comment.
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
-                                     position=(ft(0), ft(0), ft(0))),
+                                     position=(inch(22.235), inch(14.845), inch(11.81))),
                          ServicePort(tag="supply", service=Service.SUPPLY_AIR,
-                                     position=(ft(0), ft(0), inch(11))),
+                                     position=(ft(0), inch(14.845), inch(5.905))),
                          ServicePort(tag="return", service=Service.RETURN_AIR,
-                                     position=(ft(0), ft(0), inch(11))))),
+                                     position=(ft(0), inch(-14.845), inch(5.905))))),
     EquipmentType(tag="EQ-T-GREE-VIREO-GEN3",
                   name="Gree Vireo R32 outdoor unit, 24k",
                   footprint=(inch(37.72), inch(15.83)), height=inch(26.0),
@@ -234,7 +261,7 @@ EQUIPMENT_TYPES = (
                   heating_capacity_at_design_btuh=13500,
                   cooling_capacity_btuh=22000,
                   min_operating_temp_f=-22.0,
-                  source="Gree VIR24HP230V1R32AO (R32 refrigerant). OUTLINE AND FEET, from the Gree Vireo R32 Service Manual §3 outline diagram p.19 (the sheet is headed with this exact part number, shared with VIR18HP230V1R32AO): 37 23/32 x 25 63/64 x 15 53/64 in overall, foot holes 22 7/16 in apart across the width and 14 39/64 in across the depth, net weight 92.6 lb. This is the Vireo *R32* line and NOT the Vireo GEN3 (R410A), which is a different cabinet with a different foot pattern and a slot running the other way — the record read GEN3 and 38 x 16 x 32 in until 2026-08-28, and the height was wrong by 6 in. Datasheet chart: 27,000 Btu/h at 47F (the 47F rating holds despite the smaller at-design number below because this outdoor unit is paired with the EQ-T-GREE-SLIM24 slim-duct air handler, not a wall head), ~16,100-16,500 Btu/h at 5F, ~14,200 Btu/h at -13F, ~12,000 Btu/h at -22F. -15F at-design (13,500 Btu/h) is linearly interpolated between the -13F and -22F chart points and additionally derated for slim-duct static-pressure loss. Cooling is the conservative end of the published 22,000-24,000 Btu/h range. min_operating_temp_f -22F per datasheet operating envelope.",
+                  source="Gree VIR24HP230V1R32AO (R32 refrigerant). OUTLINE AND FEET, from the Gree Vireo R32 Service Manual §3 outline diagram p.19 (the sheet is headed with this exact part number, shared with VIR18HP230V1R32AO): 37 23/32 x 25 63/64 x 15 53/64 in overall, foot holes 22 7/16 in apart across the width and 14 39/64 in across the depth, net weight 92.6 lb. This is the Vireo *R32* line and NOT the Vireo GEN3 (R410A), which is a different cabinet with a different foot pattern and a slot running the other way — the record read GEN3 and 38 x 16 x 32 in until 2026-08-28, and the height was wrong by 6 in. Datasheet chart: 27,000 Btu/h at 47F (the 47F rating holds despite the smaller at-design number below because this outdoor unit is paired with the EQ-T-GREE-DUC24 slim-duct air handler, not a wall head), ~16,100-16,500 Btu/h at 5F, ~14,200 Btu/h at -13F, ~12,000 Btu/h at -22F. -15F at-design (13,500 Btu/h) is linearly interpolated between the -13F and -22F chart points and additionally derated for slim-duct static-pressure loss. Cooling is the conservative end of the published 22,000-24,000 Btu/h range. min_operating_temp_f -22F per datasheet operating envelope.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
     # System 2 — Gree Multi Ultra, one 3-port outdoor unit driving three wall-mount heads
@@ -790,24 +817,34 @@ SECOND_EQUIPMENT = [
               rotation=deg(90), mount=Mount(kind=MountKind.FLOOR, elevation=inch(13.5)),
               drain_pan=True, pan_drain_ref="PR-S-HP2-COND",
               type_ref="EQ-T-GREE-MULTI-U30", circuit="CKT-HP2", room=None),
-    # System 1's concealed ducted AH, inside SF-S-DUCT's dropped box at the south end of the
-    # hallway trunk (2026-07-30). Can't sit in the floor structure — 21"x11" case vs. ~14 1/2"
-    # clear in an 11 7/8" I-joist bay — and the old (21', 7') spot hung 18" into FO-A-STAIR's
-    # framed opening. The soffit box is the one cavity that holds it; the case runs the hall
-    # 43" north-south by 21" across, discharge north into DU-S-HP-SUP, return through
-    # REG-S-HP-RET's plenum stub. Own branch circuit (CKT-HP1-AH) since a ducted unit's
+    # System 1's concealed ducted AH — inside SF-S-HP1, the wide bulkhead in RM-S-STUDY2's
+    # ceiling (plan/storeys/second.py). Own branch circuit (CKT-HP1-AH) since a ducted unit's
     # blower is fed at the unit, unlike a multi's heads.
     #
-    # `soffit_ref` + `rotation` are the 2026-08-25 correction, and both were real errors the
-    # new `mep.duct_soffit_occupancy` found on its first run:
-    #   * WITHOUT `soffit_ref` a CEILING mount with no stated elevation hung off
-    #     `storey.default_ceiling_height` (resolve/placeables.py) — this unit was resolving at
-    #     9'-0", fourteen inches ABOVE the box every comment here says it lives in.
-    #   * WITHOUT `rotation` the case resolved 43" across the hall and 21" along it, because
-    #     `EquipmentType.footprint` wins over the element's and EQ-T-GREE-SLIM24 states
-    #     (43, 21). 43" across a 30 3/4" cavity is 6" of air handler outside its own soffit.
-    # x moved 19'-10" -> 20'-0", the box's own centreline, so the 21" case sits central with
-    # ~4 7/8" either side. The check prints those clearances now; do not restate them here.
+    # ** IT CAME OUT OF SF-S-DUCT ON 2026-08-30, WITH THE PLACEHOLDER THAT FIT THERE. ** The
+    # unit lived at the hall box's south end from 2026-07-30, and every layout decision on
+    # this storey was built around a 21"-wide case leaving ~4 7/8" either side of a 30 3/4"
+    # cavity. That case was EQ-T-GREE-SLIM24, a REPRESENTATIVE PLACEHOLDER (see the type
+    # above): the real machine is 44 1/2 x 29 11/16 and no 35" box holds it. The 4 7/8"
+    # slivers were never a lane for a branch either, which is exactly why DU-S-HP-SOUTH had
+    # no riser and plans/TODO.md stayed open — the packing problem was an artifact of a
+    # placeholder, not a fact about the house.
+    #
+    # `soffit_ref` is the 2026-08-25 correction and still load-bearing: WITHOUT it a CEILING
+    # mount with no stated elevation hangs off `storey.default_ceiling_height`
+    # (resolve/placeables.py), which put this unit at 9'-0", above the box it lives in.
+    #
+    # `rotation` is GONE with the placeholder. It existed because `EquipmentType.footprint`
+    # wins over the element's and the old type stated (43, 21) — the long dimension the wrong
+    # way round for a case that runs across the hall. EQ-T-GREE-DUC24 states (44.47, 29.69),
+    # which is the cabinet as installed: 44 1/2" across x, 29 11/16" along the airflow, supply
+    # out the north face into the trunk and return in the south face out of the return
+    # chamber. Nothing to rotate, and `footprint` here now agrees with the type rather than
+    # fighting it.
+    #
+    # (20'-8", 6'-0") puts the case at x 225 3/4"..270 1/4" — 1 1/8" inside SF-S-HP1's west
+    # cavity face, and clear by more than the 2" hanger gap of both lanes that pass it. The
+    # check prints those clearances; do not restate them here.
     #
     # zone_rooms covers the whole conditioned second storey plus RM-A-STUDY/RM-A-EAST-UNFIN (short
     # attic branches) and RM-A-WEST-UNFIN (suite branch's REG-A-HP-WEST boot, 2026-07-30).
@@ -822,19 +859,23 @@ SECOND_EQUIPMENT = [
     # The old gap in the zone closed by itself; the TODO entry it pointed at is moot.
     Equipment(uid="CEE032AAAA", tag="EQ-S-HP1-AH",
               kind=EquipmentKind.DUCTED_AIR_HANDLER,
-              position=pt(ft(20), ft(7, 9.5)), footprint=(inch(21), inch(43)),
-              rotation=deg(90),
-              room="RM-S-STUDY2", type_ref="EQ-T-GREE-SLIM24",
+              position=pt(ft(20, 8), ft(6)), footprint=(inch(44.47), inch(29.69)),
+              room="RM-S-STUDY2", type_ref="EQ-T-GREE-DUC24",
               outdoor_ref="EQ-M-HP1-OD", circuit="CKT-HP1-AH",
-              mount=Mount(kind=MountKind.CEILING), soffit_ref="SF-S-DUCT",
+              mount=Mount(kind=MountKind.CEILING), soffit_ref="SF-S-HP1",
               zone_rooms=("RM-S-STUDY2", "RM-S-PLANT", "RM-S-BED1", "RM-S-BED2",
                           "RM-S-BED3", "RM-S-SUITE", "RM-S-SUITEBATH", "RM-S-VANITY",
                           "RM-S-BATH1", "RM-S-HALL", "RM-S-CLOSET", "RM-S-NCLOSET",
                           "RM-A-EAST-UNFIN", "RM-A-STUDY", "RM-A-STUDIO",
                           "RM-A-STUDIO-BATH", "RM-A-POCKET")),
-    # The duct heater above, in the supply plenum immediately north of the air handler's
-    # discharge — inside SF-S-DUCT's soffit box, 8" past the y=9'-7" line DU-S-HP-SUP leaves
-    # from, so it heats every branch the trunk feeds rather than one room's boot.
+    # The duct heater above, downstream of the coil in the supply trunk — inside SF-S-DUCT,
+    # 17" north of the y=8'-9 5/8" seam SF-S-HP1 hands the trunk over on, so it heats every
+    # branch the trunk feeds rather than one room's boot.
+    #
+    # ** RE-CENTRED ON THE DUCT IT HEATS, 2026-08-30. ** It sat at x=19'-10" against a trunk
+    # centred on 19'-4" — six inches off the duct it is plumbed into, an existing defect that
+    # nothing had reported, because `mep.duct_soffit_occupancy` reads a duct running THROUGH
+    # a machine as plumbed to it and stops there. x=19'-6" is the 18x8 trunk's new centreline.
     #
     # `room` is RM-S-HALL, not RM-S-STUDY2 where the air handler is filed: the study's clear
     # face stops at y=8'-11", the trunk soffit runs the hall, and this sits in the trunk.
@@ -847,7 +888,7 @@ SECOND_EQUIPMENT = [
     # (2,000 W / 240 V = 8.3 A, x125% continuous = 10.4 A). The panel therefore gains no
     # slot and loses its last spare pair; see plans/TODO.md.
     Equipment(uid="CEE033AAAA", tag="EQ-S-HP1-STRIP", kind=EquipmentKind.SPACE_HEATER,
-              position=pt(ft(19, 10), ft(10, 3)), footprint=(inch(16), inch(10)),
+              position=pt(ft(19, 6), ft(10, 3)), footprint=(inch(16), inch(10)),
               room="RM-S-HALL", type_ref="EQ-T-DUCT-HEATER-2KW",
               circuit="CKT-HP1-STRIP", mount=Mount(kind=MountKind.CEILING),
               # Same 2026-08-25 correction as the air handler above: without `soffit_ref`

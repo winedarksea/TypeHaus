@@ -143,20 +143,43 @@ REGISTERS_HVAC_SECOND = [
              duct_ref="DU-M-ERV-R-PLANT",
              type_ref="REG-T-ERV-PLANT-EXH", design_cfm=25,
              mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
-    # The one return, at the hall's south end right AT EQ-S-HP1-AH (2026-07-30), 1" north
-    # of the unit's rear face, feeding its bottom-return through DU-S-HP-RET's plenum stub.
-    # DU-S-ERV-HP-FEED's wye injects the ERV's fresh air into this return plenum (not a
-    # hard-coupled duct) behind the grille, so either machine can run alone.
-    Register(uid="CSRH05AAAA", tag="REG-S-HP-RET", kind=DuctSystem.RETURN, room="RM-S-HALL",
-             position=pt(ft(20, 8), ft(9, 8)), duct_ref="DU-S-HP-RET",
-             type_ref="REG-T-HP-RET",
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 10))),
+    # The one return. ** IT MOVED TO THE MACHINE'S RETURN FACE ON 2026-08-30, AND WHERE IT
+    # WAS IS THE POINT. ** From 2026-07-30 it sat at (20'-8", 9'-8") — one inch north of
+    # EQ-S-HP1-AH's case, which is the same face the supply leaves from. Reading south to
+    # north inside SF-S-DUCT the order was: air handler y 6'-0"..9'-7", trunk head 9'-7",
+    # return grille 9'-8", strip heater 9'-10"..10'-8", mixing box 11'-4". A return grille at
+    # the discharge end is a short circuit drawn as a plenum, and nothing graded it.
+    #
+    # It is now a filter-back grille in SF-S-HP1's underside at (20'-8", 3'-6"), in the return
+    # chamber at the box's south end, upstream of the coil, the strip heater and the machine's
+    # own filter — with EQ-S-ERV-MIX at the far side of the same chamber, which is what puts
+    # 100 cfm of -15 F design outdoor air UPSTREAM of the heat rather than downstream of it.
+    # DU-S-HP-RET is 25x14 from here to the case's collar.
+    #
+    # `room` is RM-S-STUDY2 rather than RM-S-HALL because that is the room the chamber is in.
+    # The AH therefore draws through the study: hall -> D-S-STUDY2 (a 2'-6" cased opening, no
+    # leaf) -> return. That is one opening longer than the old path and no tighter — the
+    # deliberate loose coupling the branch's comment describes is unchanged.
+    #
+    # Elevation 7'-7", SF-S-HP1's finished underside, not SF-S-DUCT's 7'-10".
+    Register(uid="CSRH05AAAA", tag="REG-S-HP-RET", kind=DuctSystem.RETURN,
+             room="RM-S-STUDY2",
+             position=pt(ft(20, 8), ft(3, 6)), duct_ref="DU-S-HP-RET",
+             type_ref="REG-T-HP-RET", design_cfm=750,
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 7))),
 ]
 
 REGISTERS_HVAC_ATTIC = [
+    # ** MOVED 4" NORTH ONTO THE BAY CENTRELINE, 2026-08-30, AND ITS DUCT IS GONE. ** It was
+    # at (26'-0", 3'-0") on DU-A-HP-STUDY, an 8x6 that left the FS-ATTIC bay at (19'-4", 3'-0"),
+    # rose to +3" and ran 6'-8" east ON this room's finished floor to reach it. y=3'-4" is the
+    # bay's own centreline (8" + 2 x 16"), so the boot now drops straight down out of
+    # DU-S-HP-SOUTH, which passes directly under this point — the same straight-boot pattern as
+    # REG-A-HP-EAST and REG-A-HP-WEST, and the same retirement DU-A-HP-EAST took on 2026-07-30.
+    # 100 cfm, the east arm's larger share; see DU-S-HP-SOUTH for why that branch grew to 10x6.
     Register(uid="CARH01AAAA", tag="REG-A-HP-STUDY", kind=DuctSystem.SUPPLY,
-             room="RM-A-STUDY", position=pt(ft(26), ft(3)), duct_ref="DU-A-HP-STUDY",
-             type_ref="REG-T-HP-SUP",
+             room="RM-A-STUDY", position=pt(ft(26), ft(3, 4)), duct_ref="DU-S-HP-SOUTH",
+             type_ref="REG-T-HP-SUP", design_cfm=100,
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # Directly above the hall soffit (2026-07-30): the boot rises straight through
     # FS-ATTIC off the x=19'-4" trunk below, no attic duct run needed.
