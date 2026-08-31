@@ -164,10 +164,12 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   `test_catlin_contract_m3.py::test_garage_overhead_door_opens_from_the_slab_at_grade`.
 - **The garage's ICF stem and its wood wall are coplanar on the outside.** The 24'x24'
   node line (`GARAGE_Y_SOUTH`/`NORTH` in `plan/storeys/garage.py`) is the wood wall's
-  zip-R plane *and* the stem's exterior EPS face: the walls carry
-  `alignment=face("zip-r-ext")` and the stem carries
-  `alignment=face("concrete-ext", offset=GARAGE_ICF_EPS)`. Only the 7/8" of rainscreen +
-  standing seam projects past, so it drips clear. Until 2026-08-15 the stem was unaligned
+  SHEATHING plane *and* the stem's exterior EPS face: the walls carry
+  `alignment=face("cdx-ext")` (it was `face("zip-r-ext")` until 2026-08-31 — the layer NAME
+  is the alignment key, so a sheathing swap is also an alignment edit or the wall silently
+  misplaces) and the stem carries
+  `alignment=face("concrete-ext", offset=GARAGE_ICF_EPS)`. Only the 7/8" of corrugated
+  panel projects past, so it drips clear. Until 2026-08-15 the stem was unaligned
   and straddled the line, standing 5 5/8" proud of the cladding — a horizontal shelf right
   round the garage. Fixing it moved both wall lines 5 5/8" south (the breezeway's uncut 4'
   panel is measured off the *cladding* now) and took the core from 8" to 6". Do not "fix"
@@ -1098,6 +1100,62 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   either FAILS `code.R311_3_exterior_landing` on both doors or lays a joist through
   `PT-BW-1..4`. It was tried and reverted on 2026-08-22; the reasoning is in
   `params/breezeway.py`.
+- **THE GARAGE WALL WAS REBUILT ON 2026-08-31, and four decisions moved at once.**
+  `GARAGE_WALL_2X6` was 2x6 @16" o.c. with **empty bays** and 1.5" Zip-R doing the whole
+  thermal job (owner, 2026-08-20), clad in a 26 ga concealed **nail strip**. It is now
+  **2x6 @24" o.c. / 2" ccSPF in the bays / 5/8" CDX / 7/8" corrugated exposed-fastener
+  panel**, and the trusses went to 24" o.c. with the studs (`GARAGE_ROOF`, ff 0.09 ->
+  0.0625 = 1.5/24, and the two must move together or the R-38 blow is under-credited).
+  Everything here is an owner choice, not a code minimum: `RM-GARAGE` is
+  `conditioned=False`, so it is exempt from `code.energy_prescriptive`,
+  `building_science.condensation` and the MN prescriptive table alike.
+  - **The card read R-14.3 and was lying.** With no `CavityFill`, `analysis._layer_rsi`
+    bills the 5.5" STRUCTURE layer as SOLID SPF over the full area; the honest whole-wall
+    was R-7-8. It reads **R-13.2** now, which is *lower* on the card and roughly double in
+    the building. That is the shape of this whole change: the ccSPF spends about a third of
+    what the cladding and spacing save, and what it buys is a real air seal.
+  - **There is NO WRB**, and that is a decision (IRC R703.2's exception for an
+    unconditioned detached accessory building). The ccSPF is the air, water and vapour
+    plane — `TR-CATLIN-GARAGE-OPENING` names `stud-cavity` for all four controls, not the
+    house's `sheathing-ext`/`spray-foam-ext` tuple — so **bucks before foam**, as on the
+    house. The CDX carries no `control` set for exactly this reason: bare sheathing that
+    claimed those layers would be a WRB nobody is buying.
+  - **There is no furring, and the corrugation IS the rainscreen** — 7/8" of continuous open
+    flute behind every sheet, more free area than the 3/8" 1x4 the wall carried before
+    2026-08-20. What makes that drain rather than pond is the closures, ~192 LF of them,
+    vented at the base and solid at the head. They are priced as
+    `[allowances] garage-corrugated-closure-strips` and **not** through
+    `bug_screen:GARAGE_WALL_2X6`, which reads a rainscreen cavity depth out of the layer
+    stack and therefore reads 0 SF. Do not "activate" that row by authoring a 7/8" airgap
+    layer — it would add 7/8" on top of the 7/8" cladding and move both wall faces.
+  - **The whole 24'x24' moved 3/8" north again**, `GARAGE_GAP_FT` 4.6875 -> 4.71875, for the
+    fifth time and always for one reason: 3/8" more panel standing proud of the node line is
+    3/8" less breezeway slot. The uncut 4'-0" polycarbonate panel keeps its 1/2" reveal. The
+    Zip-R -> CDX swap moves nothing in that chain — the wall's `alignment` puts whichever
+    sheathing it carries on the node line — so **do not recess the sheathing to hold the
+    cladding face still**, which re-opens the 2026-08-15 rain shelf.
+  - **NO 16" ZONE AT THE OVERHEAD DOOR, and it was investigated.** `W-G-E` is NONBEARING
+    (the ridge runs E-W; the trusses bear on `W-G-S`/`W-G-N`) and the 16'-0" opening is
+    carried by its own 2-ply 14" LVL on jamb packs the solver sizes from the opening. Field
+    studs beside a nonbearing opening carry nothing extra. It would also not be a local
+    override: `FramingSpec.spacing` lives on the ASSEMBLY, so a closer-spaced zone is a
+    second assembly tag, a second `prices.toml` row, a second `condition_gates` key and
+    fresh section goldens.
+  - **Three openings re-stationed onto the 24" grid, and one deliberately did not.**
+    `WIN-G-N1` 1'-5" -> 2'-5" and `WIN-G-S1` 21'-5" -> 20'-5" (a 14" RO wants a BAY CENTRE,
+    12 + 24n along `W-G-W`); `SERVICE_DOOR_OFFSET` 5'-10" -> 6'-6", which puts that leaf's
+    centre on 8'-0" — the same station as `D-M-ENTRY`, so the two doors the breezeway spans
+    are finally CONCENTRIC and `_GLAZING_CENTER_X` is simply their shared centre.
+    `D-G-OVERHEAD` stays at 4'-0" and its advisory stays suppressed: every legal station
+    moves the ICF grade beam and makes the two brick piers 5'-0" and 3'-0".
+  - **The 16 garage-wall `S-5-N` seam clamps are gone** (`plan/wind_clamps.py`), the exact
+    precedent of the 48 house-wall `S-5-S` clamps on 2026-08-26 — an N clamp closes on a
+    nail strip's bulb, and a corrugated panel has no seam. Corner uplift is carried by the
+    panel's own 640 face screws. The `S-5-N` price row STAYS: the garage ROOF is still nail
+    strip and still carries 12.
+  - **`GARAGE_WALL_WIND_CLAMPS` survives as an empty list**, and `standing-seam-nailstrip-26`
+    and `zip-r` keep their price rows at 0 — the `glazed-green-brick` convention. The revert
+    is layer material refs plus re-authoring sixteen constructors.
 - **The garage's east elevation carries a 4'-0" off-white brick wainscot, wrapped 4'-0" further
   around each of the SE/NE corners onto the south and north walls (2026-08-26), and the cap
   flashing is the part not to value-engineer away.** The two 4'-0" strips of wall flanking
@@ -1134,11 +1192,16 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     module. The shelf sits one course *above* finish grade rather than at it: the cheapest
     durability move available, lifting the base course clear of the worst splash and
     snow-contact zone.
-  - **The backing changes mid-wainscot and so do the ties.** The garage storey datum is
-    -1'-0", so ~19 3/8" of brick backs onto the ICF stem and ~24 5/8" onto the wood wall
-    above it. Corrugated ties are valid only where the brick back is within 1" of framing,
-    and across the zip-R it is not: **screw-on adjustable two-piece ties into studs above
-    the datum** (IRC R703.8.4), ICF ties below. Easiest thing on this wall to get wrong.
+  - **The backing changes mid-wainscot and so do the ties — and it got CHEAPER on
+    2026-08-31.** The garage storey datum is -1'-0", so ~19 3/8" of brick backs onto the ICF
+    stem and ~24 5/8" onto the wood wall above it. Corrugated ties are valid only where the
+    brick back is within 1" of framing. Across the 1.5" Zip-R that stood there until
+    2026-08-31 it was not, so the wall wanted screw-on adjustable two-piece ties into studs
+    above the datum; behind the **5/8" CDX** that replaced it the back **is** within 1", so
+    the cheap corrugated tie is valid above the datum after all. The spacing is unchanged and
+    is the part to get right: IRC R703.8.4 wants one tie per 2.67 sf, which at **24" o.c.
+    studs** (also 2026-08-31) means **16" vertically**, not the 24" the old 16" grid allowed.
+    ICF ties below the datum, unchanged. Easiest thing on this wall to get wrong.
   - **The cap is the durability crux.** A wainscot that stops mid-wall is a horizontal
     termination, and that is where these details fail here. Through-wall flashing + weeps
     at 33" o.c. max at the base course on the ledge (IRC R703.8 — a weep near each end at
@@ -1177,7 +1240,11 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
 - **The garage is white again, and the machinery that briefly made its east wall green is
   worth keeping.** `W-G-E` carried Western States Metal Roofing **"Classic Green"**
   (westernstatesmetalroofing.com/classic-green) nail-strip for part of 2026-08-26 and was
-  reverted the same day; all four garage walls are `GARAGE_WALL_2X6` in white today.
+  reverted the same day; all four garage walls are `GARAGE_WALL_2X6` in white today — and
+  since the 2026-08-31 rebuild that white is `corrugated-panel-26`, not the nail strip this
+  paragraph's machinery was built for. The machinery is unchanged and still works; the green
+  revert would now be a `corrugated-panel-26`-based colourway, or a return to nail strip
+  first.
   `standing-seam-nailstrip-26-green` is still in the catalog, **referenced by nothing** —
   the same convention `glazed-green-brick` is kept under, so going green again is a one-line
   `layer_materials=` change rather than a re-derivation. Two things were built to make it

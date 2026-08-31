@@ -142,6 +142,11 @@ const FINISH_BASE: Readonly<Record<string, string>> = {
   // The exposed-fastener PBR panel: the same white as the seamed skin (0xE8E8E2), which is
   // what createStandingSeamMaterial paints it. Mirrors _FINISH_BASE in emit/gltf/palette.py.
   "ribbed-panel": "#e8e8e2",
+  // The garage's 7/8" corrugated panel (2026-08-31): the same coil white again — one paint,
+  // now in three profiles across the site. Its own row rather than a shared key, because
+  // this table is matched exactly and a finish with no row falls to the "metal" family's
+  // blue-grey. Mirrors _FINISH_BASE in emit/gltf/palette.py.
+  "corrugated": "#e8e8e2",
   // Cellular PVC trim (the garage SOFFIT; its fascia went to formed metal on 2026-08-26)
   // is factory-white, not the "siding" family's blue-grey the substring guess falls to.
   // Mirrors _FINISH_BASE in emit/gltf/palette.py.

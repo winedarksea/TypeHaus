@@ -1253,31 +1253,78 @@ FOOTING_FPSF_20 = Assembly(
 GARAGE_WALL_2X6 = Assembly(
     tag="GARAGE_WALL_2X6",
     layers=(
-        # NO CAVITY INSULATION, and that is a decision rather than an omission (owner,
-        # 2026-08-20). The garage is detached and unheated; the 1.5" Zip-R's continuous
-        # R-6.6 is all the thermal layer the walls get, and the empty 2x6 bays are left
-        # open. Walls only: the garage ceiling is insulated separately and is untouched
-        # by this.
+        # ** REBUILT 2026-08-31: Zip-R out, CDX + 2" ccSPF in, nail strip out, corrugated in.
+        # ** Three decisions in one move, and each undoes a 2026-08-20 one, so the comments
+        # below say the opposite of what stood here until this date. Read them as the
+        # current design, not as a history.
+        #
+        # 24" o.c., not the solver's 16" default. W-G-E is NONBEARING (the ridge runs E-W
+        # and the trusses bear on W-G-S/W-G-N), the 16'-0" overhead door is carried by its
+        # own 2-ply 14" LVL on jamb packs the solver sizes from the opening, and field studs
+        # beside a nonbearing opening carry nothing extra — so there is no 16" zone at the
+        # door. There could not cheaply be one anyway: `FramingSpec.spacing` lives on the
+        # ASSEMBLY and a Wall names one assembly, so a closer-spaced zone means a second
+        # assembly tag, a second prices.toml row and a second condition_gates key to say
+        # "same wall, closer studs". The trusses above went to 24" with it (GARAGE_ROOF).
+        #
+        # THE BAYS ARE INSULATED NOW. They were deliberately empty from 2026-08-20, with
+        # 1.5" Zip-R's continuous R-6.6 doing the whole thermal job — and the assembly card
+        # lied about it, because with no CavityFill `analysis._layer_rsi` bills the 5.5"
+        # STRUCTURE layer as SOLID SPF over the full area and read R-14.3 for a wall whose
+        # honest whole-wall was R-7-8. 2" of ccSPF in the bay is a real air seal and roughly
+        # doubles the true whole-wall R for about a third of what the cladding and spacing
+        # changes save. The crew is already mobilised for the house's exterior bands.
+        #
+        # ff 0.20 is the honest 24" o.c. figure including plates, corners and jamb packs;
+        # the field default of 0.23 is the 16" number and would under-credit the foam here.
+        # RM-GARAGE is `conditioned=False`, so none of this is a code minimum — it is
+        # exempt from code.energy_prescriptive, building_science.condensation and the MN
+        # prescriptive table alike. Every envelope number in this assembly is an owner
+        # choice. Walls only: the garage ceiling is insulated separately (GARAGE_ROOF).
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625))),
-        Layer(name="zip-r", material_ref="zip-r", thickness=inch(1.5),
-              function=LayerFunction.SHEATHING,
-              control={ControlLayer.AIR, ControlLayer.WATER, ControlLayer.THERMAL}),
+              framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625),
+                                  spacing=inch(24)),
+              cavity=CavityFill(material_ref="closed-cell-spray-foam", thickness=inch(2.0),
+                                framing_factor=0.20,
+                                control={ControlLayer.AIR, ControlLayer.WATER,
+                                         ControlLayer.VAPOR, ControlLayer.THERMAL})),
+        # Ordinary 5/8" CDX, NOT the house's shear-rated `struct-1-plywood` (see that
+        # material's comment). It carries NO `control` set on purpose: the ccSPF behind it
+        # is the air, water and vapour plane, exactly the division CATLIN_EXT_2X6 draws, and
+        # a bare sheathing panel that claimed those layers would be a WRB nobody is buying.
+        #
+        # NO WRB, and that is a decision rather than an omission (owner, 2026-08-31). IRC
+        # R703.2's exception releases an unconditioned detached accessory building from the
+        # water-resistive barrier, and this is one. The corrugated skin over an open crown
+        # cavity is the drainage plane, closed top and bottom by strips (prices.toml) — a
+        # vented closure at the base and a solid one at the head, which is what makes the
+        # profile self-draining rather than a trough.
+        Layer(name="cdx", material_ref="cdx-plywood", thickness=inch(0.625),
+              function=LayerFunction.SHEATHING),
         # NO RAINSCREEN FURRING, and that is a decision rather than an omission
-        # (owner, 2026-08-20). Nail strip is face-fastened through an integral flange, and
-        # Zip-R's integrated WRB is a taped, drainable face rated for direct cladding
-        # attachment — so the panel goes straight onto the sheathing and the 3/8" 1x4
-        # vertical furring that used to sit here is gone. Taken 2026-08-20 as part of the
-        # metal-skin re-rate; plans/cost-options.md no longer carries it as an option,
-        # because a row that has been taken is in the baseline. It is a GARAGE-only move:
-        # CATLIN_EXT_2X6 keeps its furring, because there the cladding has to be held off
-        # 4" of exterior foam and has no sheathing face to bear on.
-        Layer(name="cladding", material_ref="standing-seam-nailstrip-26", thickness=inch(0.5),
+        # (owner, 2026-08-20, and it survives the rebuild). Corrugated is face-fastened
+        # through its crowns straight into the studs, and the corrugation itself IS the
+        # drainage and vent cavity — 7/8" of continuous open flute behind every sheet, which
+        # is more free area than the 3/8" 1x4 vertical furring this once carried ever gave
+        # it. It is a GARAGE-only move: CATLIN_EXT_2X6 keeps its girts, because there the
+        # cladding has to be held off 4" of exterior foam and has no sheathing face to bear
+        # on.
+        #
+        # 7/8" CORRUGATED, not the 26 ga. concealed nail strip that stood here from
+        # 2026-08-20. Same 26 ga., same coil white, same `skin_family` so the wall and the
+        # garage roof still read as one continuous skin at the flush edge — but exposed
+        # fasteners instead of concealed ones, at $6.00-11.00/SF less the seam hardware.
+        # `plans/pbr-cladding-savings-report.md` excluded the garage from the house's
+        # 2026-08-26 move to PBR solely because PBR over Zip-R needed a girt layer whose
+        # cost cancelled the saving. Removing the Zip-R removed that objection. It is
+        # corrugated rather than the house's PBR because this is a secondary building and
+        # the profile is allowed to differ; the white does not.
+        Layer(name="cladding", material_ref="corrugated-panel-26", thickness=inch(0.875),
               function=LayerFunction.CLADDING),
     ),
     default_lining=_GWB_LINING,
-    source="catlin-house ifcplot/assemblies.py GARAGE_WALL; rainscreen furring dropped and cavity batts dropped 2026-08-20 (Zip-R is the whole wall thermal layer)",
+    source="catlin-house ifcplot/assemblies.py GARAGE_WALL; rainscreen furring dropped 2026-08-20; rebuilt 2026-08-31 — 24\" o.c. studs, 2\" ccSPF in the bays, 5/8\" CDX for the 1.5\" Zip-R, and 7/8\" corrugated exposed-fastener panel for the 26 ga. nail strip. No WRB (IRC R703.2 exception, unconditioned detached accessory building)",
 )
 
 # Garage slab-on-grade. It now carries the same 3" of below-slab XPS as CATLIN_SLAB_FLOOR —
@@ -1328,16 +1375,23 @@ GARAGE_ROOF = Assembly(
         # Nothing moves geometrically: a CavityFill adds no thickness to the stack
         # (→ CavityFill), it is a parallel thermal path with the chords, not a series one.
         # The attic above it is the vent void the PVC soffit feeds (ROOFS in
-        # storeys/garage.py). framing_factor is the 2x4 bottom chord at the solver's 16"
-        # o.c. (1.5/16); the blow buries the chords, so this is the conservative reading
-        # of the bridge.
+        # storeys/garage.py). framing_factor is the 2x4 bottom chord at this assembly's
+        # authored 24" o.c. (1.5/24); the blow buries the chords, so this is the
+        # conservative reading of the bridge.
+        #
+        # ** 24" o.c. SINCE 2026-08-31, and ff 0.09 -> 0.0625 WITH IT. ** A 24'-span 2x4
+        # fink is an essentially unchanged truss at either spacing, so this buys ~33% fewer
+        # trusses of the same design. The two numbers have to move together: 0.0625 is
+        # 1.5/24, and leaving 0.09 standing would silently under-credit the R-38 blow by
+        # crediting bottom chord over 9% of a ceiling that is only 6.25% chord.
         Layer(name="truss", material_ref="spf", thickness=inch(11.875),
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member="2x4", roof_frame="truss",
+                                  spacing=inch(24),
                                   heel_height=inch(9.25),
                                   chord_member="2x4", web_member="2x4"),
               cavity=CavityFill(material_ref="blown-fiberglass", thickness=inch(14.5),
-                                framing_factor=0.09)),
+                                framing_factor=0.0625)),
         Layer(name="deck", material_ref="struct-1-plywood", thickness=inch(0.75),
               function=LayerFunction.SHEATHING),
         Layer(name="membrane", material_ref="air-barrier", thickness=inch(0.02),
@@ -1935,6 +1989,28 @@ MATERIALS = [
              r_per_inch=1.25, density=610.0, perm_rating=0.30, hatch="lumber",
              color="#c8a97a", finish="clear-satin-hardwax-oil",
              source="plans/TODO.md — mudroom wall's stair face; 3/4\" is structural backing so coat hooks screw directly into it (a 1/2\" panel would need blocking); permeability per the plywood series used for struct-1-plywood"),
+    # GARAGE_WALL_2X6's sheathing since 2026-08-31, replacing the 1.5" Zip-R.
+    #
+    # A SEPARATE TAG FROM `struct-1-plywood`, and deliberately. Structural 1 is a premium
+    # shear-rated grade — a specific veneer layup ordered where a braced-wall line is being
+    # engineered for it — and the garage is not that wall. Billing this sheet at Structural
+    # 1's rate would overstate the sheathing on every square foot of a 24'x24' building and
+    # would quietly re-spec what the yard delivers. CDX is the ordinary sheathing panel:
+    # C-face, D-back, exterior glue.
+    #
+    # 5/8" and not 1/2": the studs are at 24" o.c. here (2026-08-31), and 5/8" is the panel
+    # that spans it comfortably and takes a face-fastened screw without dishing between the
+    # crowns of the corrugated skin over it.
+    #
+    # Thermal/vapour numbers are the plywood series' — this is the same veneer panel as
+    # `struct-1-plywood` and `plywood-subfloor`, and nothing hygric moves with the grade.
+    # It carries NO `control` set in the assembly: the ccSPF in the bays behind it is the
+    # air/water plane now, exactly as CATLIN_EXT_2X6 does it, and a bare CDX sheet is not
+    # a WRB and must not be authored as one.
+    Material(tag="cdx-plywood", name="5/8\" CDX sheathing plywood",
+             r_per_inch=1.25, density=600.0, perm_rating=0.30, hatch="osb",
+             color="#c9a86a",
+             source="APA Rated Sheathing, CDX (C-face/D-back, exterior glue) — the ordinary sheathing grade, NOT the shear-rated Structural 1 the house walls carry; 5/8\" Performance Category spans the garage's 24\" o.c. studs. Thermal/vapour fields per the plywood series used for struct-1-plywood and plywood-subfloor"),
     # FS-ATTIC's deck sheet, and only FS-ATTIC's (2026-08-27). The two unfinished lofts
     # RM-A-WEST-UNFIN / RM-A-EAST-UNFIN take no floor covering at all, so this panel IS the
     # walking surface — it is walked on, swept and stacked on with nothing over it. A

@@ -20,13 +20,14 @@
 # uninstallable. What resisted corner uplift through those clamps is now resisted by the
 # panel's own face-fastened screws, which pass through the panel into the girt at every
 # rib flat and every course: `takeoff.fasteners.exposed_fastener_cladding_screw_rows`
-# bills 3,098 of them, and they are already denser at a corner than the 8"/4'-0" grid
-# below ever was.
+# bills 2,623 of them on the house walls (the count was 3,098 until the 2026-08-29 attic
+# redesign deleted ~572 sf of wall), and they are already denser at a corner than the
+# 8"/4'-0" grid below ever was.
 #
 # **The layout that remains, and what it assumes.**
-#   garage walls   4 corners x 2 faces x 2 levels = 16 clamps, `S-5-N`. The garage wall is
-#                  26 ga nail strip, a bulb-and-lip profile that takes the N clamp, not the S.
-#                  Only two levels because the wall is 8'-0" tall.
+#   garage walls   NONE since 2026-08-31 — see the paragraph above the list below. It was
+#                  4 corners x 2 faces x 2 levels = 16 `S-5-N`, back when the wall was 26 ga
+#                  nail strip; a corrugated panel has no seam to clamp.
 #   garage roof    4 eave corners x 3 seams = 12 clamps, `S-5-N`, on the first three seams in
 #                  from each rake, at the eave. The garage roof is nail strip, which has no
 #                  concealed clips at all — uplift is resisted by the face-fastened flange
@@ -44,12 +45,13 @@
 # missing — but nobody has run it through ASCE 7 Ch. 30 to get a design pressure, and **no zone
 # width has been calculated**, which is the input this layout actually turns on. A clamp grid is
 # a map of corner/perimeter/field zones; having V without the zone map buys nothing. The grid
-# above is a reasonable builder's layout, and the count it produces (28) is what the estimate
-# bills. That caveat now covers the HOUSE WALLS TOO, in a different form: the screw schedule
+# above is a reasonable builder's layout, and the count it produces (12, all of them on the
+# garage ROOF since 2026-08-31) is what the estimate bills. That caveat now covers the HOUSE WALLS TOO, in a different form: the screw schedule
 # that replaced the clamps there is a uniform field grid, so it carries no corner-zone
 # densification at all. **That densification is the lever** if a wind analysis is ever run —
 # tightening the screw pitch in the corner zone, not re-authoring clamps onto a panel that
-# cannot take them. If one is done, S-5! runs a project configurator and a load test database
+# cannot take them. Since 2026-08-31 that reading covers the GARAGE walls as well, on the
+# same terms. If one is done, S-5! runs a project configurator and a load test database
 # at calculators.s-5.com, and the corner/perimeter zone widths come out of ASCE 7 and FM
 # DS 1-28, not out of this file. Expect the count to move.
 #
@@ -61,40 +63,18 @@
 
 from typehaus import Connector, ConnectorKind, ft, pt
 
-GARAGE_WALL_WIND_CLAMPS = [
-    Connector(uid="ZMXXXTTBSF", tag="CN-G-WIND-SWS-2_5", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(0, 8), ft(40, 6.875)), elevation=ft(2, 6), size="S-5-N"),
-    Connector(uid="ZPYEZKF2DG", tag="CN-G-WIND-SWW-2_5", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(0), ft(41, 2.875)), elevation=ft(2, 6), size="S-5-N"),
-    Connector(uid="BVTX087BDT", tag="CN-G-WIND-SWS-6_0", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(0, 8), ft(40, 6.875)), elevation=ft(6), size="S-5-N"),
-    Connector(uid="88QT3J6KG5", tag="CN-G-WIND-SWW-6_0", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(0), ft(41, 2.875)), elevation=ft(6), size="S-5-N"),
-    Connector(uid="BJEDJZK5XC", tag="CN-G-WIND-SES-2_5", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(23, 4), ft(40, 6.875)), elevation=ft(2, 6), size="S-5-N"),
-    Connector(uid="N6WR6E6WXR", tag="CN-G-WIND-SEE-2_5", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(24), ft(41, 2.875)), elevation=ft(2, 6), size="S-5-N"),
-    Connector(uid="NS69RY1MST", tag="CN-G-WIND-SES-6_0", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(23, 4), ft(40, 6.875)), elevation=ft(6), size="S-5-N"),
-    Connector(uid="V1XFQPPM5R", tag="CN-G-WIND-SEE-6_0", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(24), ft(41, 2.875)), elevation=ft(6), size="S-5-N"),
-    Connector(uid="0MAMBGRPN5", tag="CN-G-WIND-NEN-2_5", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(23, 4), ft(64, 6.875)), elevation=ft(2, 6), size="S-5-N"),
-    Connector(uid="6R71B28N71", tag="CN-G-WIND-NEE-2_5", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(24), ft(63, 10.875)), elevation=ft(2, 6), size="S-5-N"),
-    Connector(uid="FZ9TS47AFQ", tag="CN-G-WIND-NEN-6_0", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(23, 4), ft(64, 6.875)), elevation=ft(6), size="S-5-N"),
-    Connector(uid="3Y6N8DPYB3", tag="CN-G-WIND-NEE-6_0", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(24), ft(63, 10.875)), elevation=ft(6), size="S-5-N"),
-    Connector(uid="HADQW5MENK", tag="CN-G-WIND-NWN-2_5", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(0, 8), ft(64, 6.875)), elevation=ft(2, 6), size="S-5-N"),
-    Connector(uid="F6ZR7QMZR1", tag="CN-G-WIND-NWW-2_5", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(0), ft(63, 10.875)), elevation=ft(2, 6), size="S-5-N"),
-    Connector(uid="1Z32Z8B879", tag="CN-G-WIND-NWN-6_0", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(0, 8), ft(64, 6.875)), elevation=ft(6), size="S-5-N"),
-    Connector(uid="J1AARSTCX4", tag="CN-G-WIND-NWW-6_0", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(0), ft(63, 10.875)), elevation=ft(6), size="S-5-N"),
-]
+# ** THE 16 GARAGE-WALL CLAMPS ARE GONE TOO (2026-08-31), for the same reason and by the
+# same argument. ** They were `S-5-N`, and an N clamp closes on a nail strip's bulb-and-lip
+# seam. GARAGE_WALL_2X6 is `corrugated-panel-26` now — a 7/8" corrugated exposed-fastener
+# panel with no seam of any kind — so the part is uninstallable there, not merely unneeded.
+# What resisted corner uplift through them is resisted by the panel's own face screws:
+# `exposed_fastener_cladding_screw_rows` bills 640 over the four garage walls (500 field +
+# 140 sidelap), where the retired grid was 16 clamps at two levels. The NAME survives as an
+# empty list rather than being deleted: `plan/manifest.py` splices it, and the swap back —
+# `CATLIN_EXT_2X6_SWINBURNE`'s convention — is then re-authoring the sixteen constructors
+# here and nothing else. The `S-5-N` PRICE ROW stays too, because the garage ROOF is still
+# nail strip and still carries 12 of them.
+GARAGE_WALL_WIND_CLAMPS = []
 
 GARAGE_ROOF_WIND_CLAMPS = [
     Connector(uid="M2BE9KCQQ7", tag="CN-G-WIND-RFSW-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,

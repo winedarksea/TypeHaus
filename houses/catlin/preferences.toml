@@ -148,13 +148,18 @@ opacity = 0.30
 # element itself.
 [checks]
 suppress = [
-  # D-G-OVERHEAD's centre is at 12'-0", 8" off the 16" module, and it cuts 13 stud lines
-  # where 12 would do. Every legal station was enumerated (104"/120"/136"/152"/168"/184")
-  # and every one of them moves OVERHEAD_DOOR_OFFSET, which is not just the door's offset:
+  # D-G-OVERHEAD's centre is at 12'-0", 12" off the 24" module, and it cuts 9 stud lines
+  # where 8 would do. The decision is unchanged from the 16"-module reading it was first
+  # taken against (2026-08-26) and the arithmetic under it got WORSE, which is the reason to
+  # re-state it rather than carry it: at 16" o.c. the miss was 8" and every legal station
+  # was 8" away (104"/120"/136"/152"/168"/184"); at 24" o.c. — GARAGE_WALL_2X6, 2026-08-31 —
+  # the miss is 12" and the nearest legal centres are 11'-0" and 13'-0".
+  # Every one of them moves OVERHEAD_DOOR_OFFSET, which is not just the door's offset:
   # params/foundations.py gaps the ICF stem into a grade beam on it, and W-G-BRICK-S/N stand
   # on the stem segments that leaves, so the piers' jamb-to-corner span IS that constant.
-  # Moving the door 8" makes the two brick piers flanking the garage door 4'-8" and 3'-4"
-  # where they are 4'-0" and 4'-0" today. A visibly asymmetric masonry wainscot on the
-  # garage's main facade is a worse building than one extra cut stud.
+  # Moving the door 12" makes the two brick piers flanking the garage door 5'-0" and 3'-0"
+  # where they are 4'-0" and 4'-0" today — a wider asymmetry than the 4'-8"/3'-4" the 16"
+  # grid would have bought. A visibly asymmetric masonry wainscot on the garage's main
+  # facade is a worse building than one extra cut stud.
   "structural.door_framing_module:D-G-OVERHEAD",
 ]

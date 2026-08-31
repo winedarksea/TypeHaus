@@ -24,7 +24,15 @@ source:
 
 - Slab: minimum 3.5" thick, ≥3,500 psi per IRC R506.1. Slab must be sloped (typically toward overhead door).
 
-- Wood wall: 2×6 studs @16" o.c., Zip-R (or similar) 1.5" (R-6.6) continuous sheathing (Method CS-G), gable end triangles may use cheaper uninsulated OSB + OSB strips to make up thickness, optional rainscreen mesh, metal siding. Goal is to use only a 8' height of Zip-R sheathing. Interior finish: 5/8" drywall.
+- Wood wall (REBUILT 2026-08-31; what stood here before that date was 2×6 @16" o.c. with 1.5" Zip-R continuous sheathing, Method CS-G, and empty bays): 2×6 studs **@24" o.c.**, **5/8" CDX** sheathing, **2" of 2 lb closed-cell spray foam in the bays**, **7/8" corrugated 26 ga PVDF exposed-fastener steel panel** in the house white, screwed through its crowns into the studs with #9 × 1-1/2" 316 stainless gasketed panel screws. Interior finish: 5/8" drywall. Whole-wall R-13.2 (`haus explain GARAGE_WALL_2X6 --card`), roughly double the honest R-7–8 the empty-bay Zip-R wall carried — the R-14.3 that assembly's card used to read was an artifact of billing an uninsulated 5.5" stud bay as solid SPF.
+
+- **No WRB, and that is a decision rather than an omission.** IRC R703.2's exception releases an unconditioned detached accessory building from the water-resistive barrier, and this is one (`RM-GARAGE` is `conditioned=False`). The ccSPF is the air, water and vapour plane; the CDX is structure and nailbase only. Build order follows from that, exactly as it does on the house: **bucks before foam.**
+
+- **The corrugation is the rainscreen.** There is no furring layer. A 7/8" corrugated sheet screwed to a flat face leaves a continuous open flute behind every panel — more free area than the 3/8" 1×4 vertical furring this wall carried before 2026-08-20 ever gave it. What makes it work rather than making it a trough is the closures: a **vented (inside) closure strip at the base**, so the cavity drains and vents while nothing insect-sized gets in, and a **solid (outside) closure under the head and the rake**, so wind-driven rain and snow do not enter over the top. ~192 LF, both courses. Neither is optional.
+
+- **24" o.c. is deliberate, and there is no 16" zone at the overhead door.** W-G-E is nonbearing — the ridge runs E–W and the trusses bear on W-G-S/W-G-N — and the 16'-0" opening is carried by its own 2-ply 14" LVL on jamb packs sized from the opening, not from field spacing. Field studs beside a nonbearing opening carry nothing extra. The garage's window pair and its service door were re-stationed onto the 24" grid the same day; D-G-OVERHEAD stays where it is and its off-module advisory is a recorded decision (`preferences.toml [checks] suppress`), because every legal station moves the ICF grade beam and makes the two brick piers 5'-0" and 3'-0".
+
+- **Brick ties get cheaper above the datum.** Corrugated ties are valid only where the brick back is within 1" of framing. Across the old 1.5" Zip-R it was not, so the wainscot wanted screw-on adjustable two-piece ties into studs (IRC R703.8.4). Behind 5/8" CDX the back **is** within 1", so the cheaper corrugated tie is valid above the garage datum. Spacing still has to satisfy R703.8.4's 2.67 sf per tie, which at 24" studs means **16" vertically**. ICF ties below the datum, unchanged.
 
 - Sill: pressure treated sill board over sill gasket and capillary break; provide code-required anchor bolts detailed per IRC R403.1.6 (3"x3" plate washers). Sealed with sealant.
 
@@ -32,11 +40,11 @@ source:
 
 - Provide Z-flashing / drip edge at base of exterior wall (liquid flashing recommended) to direct water out over the foundation / protective coating.
 
-- Stem and framing are flush on the outside: the wood wall's Zip-R face and the ICF's exterior EPS face are the same plane, so the only thing standing proud at the base of the wall is the 7/8" of rainscreen + metal siding, which drips clear. The stem must NOT stand out past the sheathing — a 6" core (11" section) is what makes the two reconcile while keeping 4 1/2" of the 5 1/2" PT sill plate bearing on concrete. The leftover 3 3/8" of section shows up on the *inside* as a curb below the drywall, which is where a curb belongs in a garage.
+- Stem and framing are flush on the outside: the wood wall's SHEATHING face (5/8" CDX since 2026-08-31, 1.5" Zip-R before it — the wall's own `alignment` puts whichever it carries on the node line) and the ICF's exterior EPS face are the same plane, so the only thing standing proud at the base of the wall is the 7/8" of corrugated panel, which drips clear. The stem must NOT stand out past the sheathing — a 6" core (11" section) is what makes the two reconcile while keeping 4 1/2" of the 5 1/2" PT sill plate bearing on concrete. The leftover 3 3/8" of section shows up on the *inside* as a curb below the drywall, which is where a curb belongs in a garage.
 
 - Cap the curb: an up-turned metal flashing tucked behind the wood wall's interior drywall, sloped back into the room, with a drip at the inboard edge. Water running down the stud wall's interior face (splash, a hosed-down wall, condensation) is diverted out onto the curb top and into the garage instead of tracking down behind the drywall and into the ICF's board joint below.
 
-- Roof: gable trusses @16" o.c. with drip edge, fascia board + trim and vented soffit (coated aluminum recommended). OSB sheathing + underlayment (e.g., synthetic or self-adhering) + metal roofing (optional rainscreen mesh). Metal roofing shown with 16" o.c. support spacing per manufacturer system. Vented ridge not shown.
+- Roof: gable trusses **@24" o.c.** (16" until 2026-08-31 — a 24'-span 2×4 fink is an essentially unchanged truss at either spacing, so this is ~33% fewer trusses of the same design) with drip edge, fascia board + trim and vented soffit (coated aluminum recommended). OSB sheathing + underlayment (e.g., synthetic or self-adhering) + metal roofing (optional rainscreen mesh). Metal roofing shown with 16" o.c. support spacing per manufacturer system. Vented ridge not shown.
 
 - ICF brick ledge forms may be used per manufacturer guidelines for heavy sidings.
 

@@ -126,6 +126,16 @@ Every live scope or spec change, one row each. **These do not add up** — see *
 ⏳ **Deferrable to a later contract** — outside the weather envelope, not trapped behind
 finished work. Deferring both is **$26,700–61,400** out of the first build, and it comes back.
 
+**Narrow the house, 36'x36' → 30'x36'** (a 40' lot). **$51,000–97,000**, band
+$40,000–130,000 — `arithmetic`, every takeoff section split area / perimeter / fixed and
+scaled by 0.833 / 0.917. **Not built.** It is not a cost row, it is a lot-fit row: it takes
+16.7% of the floor (5,001 → 4,168 conditioned sf) to buy 5% of the money, and **$/sf goes UP
+13–14%**, $159–330 → $180–376. Perimeter falls half as fast as area (wall per floor sf
++10%), and `placeables`, `allowances`, `openings` and `wall_structure` barely move — the
+house is one of four structures and only it shrinks. Not counted: 18' clear spans become
+~14', so the 3,556 LF of 11-7/8" I-joist could drop a depth. **The garage (24' wide) and the
+sunken garden (~21' outer) already fit a 30' band** — only the house has to move.
+
 **Unpriced, therefore not a row:** French doors → sliders where the swing is not needed
 (~15–25% of $7,000–15,800, needs a quote). It lives in `plans/TODO.md` until it has a number.
 

@@ -9,6 +9,8 @@ import {
   masonryTileSizeM,
   MASONRY_TILE_SIZE_M,
   metalPanelProfileForFinish,
+  CORRUGATED_PROFILE,
+  CORRUGATED_PITCH_M,
   panelTileSizeM,
   isStandingSeam,
   RIBBED_PANEL_PROFILE,
@@ -135,6 +137,32 @@ export function runMaterialGeometryTests() {
     "The ribbed tile spans the same 4 modules, so a tighter module means a smaller tile");
   assert(Math.abs(panelTileSizeM() - SEAM_TILE_SIZE_M) < 1e-9,
     "Called with no profile it still answers for the seam, so old call sites are unchanged");
+
+  // ── The corrugated profile (2026-08-31) ──────────────────────────────────────────────
+  // The garage walls went from a concealed 26 ga nail strip to a 7/8" corrugated
+  // exposed-fastener panel. `corrugated-panel-26` contains neither "seam" nor "standing",
+  // so like `pbr-panel-26` it reaches the metal treatment ONLY through its authored finish.
+  assert(!isStandingSeam("corrugated-panel-26"),
+    "The substring test cannot reach the corrugated panel either — the finish dispatch does");
+  assert(metalPanelProfileForFinish("corrugated") === CORRUGATED_PROFILE,
+    "An authored finish of 'corrugated' selects the corrugated profile");
+  assert(Math.abs(CORRUGATED_PROFILE.moduleM - CORRUGATED_PITCH_M) < 1e-9,
+    "The corrugation pitch is 2-2/3in, the tightest module of the three");
+  assert(CORRUGATED_PROFILE.moduleM < RIBBED_PANEL_PROFILE.moduleM,
+    "A corrugation is a far tighter module than a PBR major rib");
+  // This is the assertion that stops corrugated rendering as PBR with a tighter pitch.
+  // Corrugated has NO FLAT: the whole module is the rib, so its half-width is half the
+  // module, where a seam (0.08) and a PBR rib (0.14) are narrow upstands on wide flats.
+  assert(Math.abs(CORRUGATED_PROFILE.ribHalfWidth - 0.5) < 1e-9
+    && CORRUGATED_PROFILE.ribHalfWidth > RIBBED_PANEL_PROFILE.ribHalfWidth,
+    "A corrugation is half its own module wide — it has no flat to stand a rib on");
+  assert(CORRUGATED_PROFILE.squareness === 0
+    && CORRUGATED_PROFILE.squareness < RIBBED_PANEL_PROFILE.squareness,
+    "A corrugation is a true sine; a PBR crown is roll-formed flat");
+  assert(CORRUGATED_PROFILE.striations === 0,
+    "Anti-oil-canning striations are rolled into FLATS, and a corrugation has none");
+  assert(CORRUGATED_PROFILE.oilCanning < RIBBED_PANEL_PROFILE.oilCanning,
+    "Continuous corrugation stiffens the sheet, so it wanders less than a wide flat pan");
 
   // The Ishtar scheme (2026-08-20): three more brick faces on the sunken garden's wythe.
   // Every one of them is a tag substring inference CANNOT reach — "glazed-lapis-brick" and

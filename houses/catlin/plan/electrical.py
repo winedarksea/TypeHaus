@@ -1435,8 +1435,17 @@ CONDUIT_SLEEVES = [
     # 2'-6" on 2026-08-18 the garage foundation went down with the soil: FT-GF-S2 now bears
     # at -6'-8" and its top is -6'-0", two feet clear below this crossing, while W-GF-S2
     # spans -6'-0" to -0'-8" and is what the conduit actually passes through.
+    #
+    # ** 40'-10 7/8" -> 41'-2 1/8" ON 2026-08-31, AND ONTO THE CORE'S MIDDLE. **
+    # `integrity.sleeve_in_opening` tests the centre against the STRUCTURE layer — the 6"
+    # concrete core, not the 11" stem — and the core's south face is GARAGE_Y_SOUTH + 2 1/2"
+    # of EPS. The old station sat 1/8" inside that face, so the 3/8" the garage moved north
+    # with the corrugated cladding put it 1/4" OUTSIDE and the check failed, correctly. The
+    # run crosses the whole stem, so the y here was always free; it is on the core's
+    # mid-depth now — 3" of concrete either side — and no future move of the wall line at
+    # this scale can reach it.
     SleevePenetration(uid="CNS009AAAA", tag="SP-GF-CD-GAR", host_ref="W-GF-S2",
-                      position=pt(ft(16), ft(40, 10.875)), pipe_diameter=inch(1.25),
+                      position=pt(ft(16), ft(41, 2.125)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(2), purpose=Service.POWER_240,
                       axis="horizontal", center_elevation=ft(-4)),
     # The stub-up, 3 3/8" north of the stem's inside face. It stood at 41'-6" until

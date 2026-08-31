@@ -141,23 +141,29 @@ from plan.storeys.garage import GARAGE_STEM_REVEAL, GARAGE_Y_SOUTH
 _HOUSE_CLADDING_Y = 36.0 + 7.25 / 12.0  # 36.6042'
 
 # South face of the garage's ICF stem: the wall line itself. The 11" section is aligned so
-# its exterior EPS face lands on the node line, coplanar with the zip-R of the wood wall
-# above (params/foundations.py), so the stem is no longer the proud face here — the
+# its exterior EPS face lands on the node line, coplanar with the SHEATHING face of the wood
+# wall above (params/foundations.py), so the stem is no longer the proud face here — the
 # cladding is, 7/8" south of it. It keeps its own name because the deck still butts *this*
 # plane, tucked under that 7/8" of overhang.
-_GARAGE_STEM_Y = GARAGE_Y_SOUTH.feet  # 40.57292'
-# South face of the garage's wood wall above the stem: nail-strip panel straight on the
-# zip-R plane. That is the obstruction now, at deck level and at roof level both, so it is
-# what sets the clear gap.
+_GARAGE_STEM_Y = GARAGE_Y_SOUTH.feet  # 40.71875'
+# South face of the garage's wood wall above the stem: the corrugated panel straight on the
+# sheathing plane. That is the obstruction now, at deck level and at roof level both, so it
+# is what sets the clear gap.
 #
 # **This carried a 3/8" rainscreen furring that does not exist.** GARAGE_WALL_2X6 dropped
-# it on 2026-08-20 — the stack is stud / zip-R / cladding and nothing between — so the
+# it on 2026-08-20 — the stack is stud / sheathing / cladding and nothing between — so the
 # garage face was modelled 3/8" further south than it stands for six days, and the clear
 # gap below was 3/8" optimistic the whole time. Corrected 2026-08-26 rather than carried
 # forward into the PBR arithmetic, because recomputing off a known-wrong expression is how
-# an error stops being visible. It is why the garage moved only 3/8" this time and not the
+# an error stops being visible. It is why the garage moved only 3/8" that time and not the
 # full 3/4" the house face moved.
-_GARAGE_CLADDING_Y = GARAGE_Y_SOUTH.feet - 0.5 / 12.0  # 40.6458'
+#
+# **0.5" -> 0.875" on 2026-08-31**, when GARAGE_WALL_2X6 went to a 7/8" corrugated
+# exposed-fastener panel from the 1/2" nail strip (and its Zip-R to 5/8" CDX, which moves
+# nothing — the wall's `alignment` puts whichever sheathing it carries on the node line).
+# The garage's two wall lines went 3/8" north in the same edit, which is what keeps
+# _CLEAR_GAP_FT and the reveal below at exactly the numbers they have always been.
+_GARAGE_CLADDING_Y = GARAGE_Y_SOUTH.feet - 0.875 / 12.0  # 40.6458'
 
 _CLEAR_GAP_FT = _GARAGE_CLADDING_Y - _HOUSE_CLADDING_Y  # 4.04167' = 4'-0 1/2"
 _PANEL_FT = 4.0  # one 4'x8' sheet, UNCUT in the N-S direction
@@ -213,7 +219,14 @@ _GLAZING_Y1 = _GLAZING_Y0 + _PANEL_FT
 # one corner — accepted, then, rather than paid for with a wider two-cut enclosure. At 8"
 # apart the span is 3'-8" and the accepted 3" is simply gone. The brief's literal 8x4x4 —
 # three sheets, one cut — is unchanged.
-_GLAZING_CENTER_X = 7.6667
+#
+# ** RE-CENTRED AGAIN 7'-8" -> 8'-0" ON 2026-08-31, following D-G-SERVICE a second time. **
+# The garage walls went to 24" o.c., which retired the 88" station the 2026-08-30 move had
+# just found, and the service door's centre went 7'-4" -> 8'-0". `D-M-ENTRY` is on 8'-0"
+# already, so the two doors are now CONCENTRIC and this midpoint is simply their shared
+# centre. The 8" offset the paragraph above describes is gone, and with it the last reason
+# the enclosure had to be centred on anything but a door.
+_GLAZING_CENTER_X = 8.0
 _GLAZING_X0 = _GLAZING_CENTER_X - _PANEL_FT / 2.0  # 5.6667'
 _GLAZING_X1 = _GLAZING_CENTER_X + _PANEL_FT / 2.0  # 9.6667'
 # The posts stand *inside* the glazing lines with the sheets on their outer faces, so the

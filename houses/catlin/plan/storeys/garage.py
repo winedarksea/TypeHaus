@@ -37,9 +37,9 @@ from typehaus import (
 # The garage's two N-S wall lines, published so the ICF stem (params/foundations.py), the
 # slab, and the breezeway (params/breezeway.py) all derive from one number.
 #
-# 40'-8 1/4" is set by the breezeway off the *cladding*, not the stem: the stem's exterior
-# EPS face is coplanar with the wood wall's zip-R face (both land on this line), so the
-# most-proud plane is the 1/2" nail-strip panel at y = 40'-7 3/4" — what the breezeway
+# 40'-8 5/8" is set by the breezeway off the *cladding*, not the stem: the stem's exterior
+# EPS face is coplanar with the wood wall's SHEATHING face (both land on this line), so the
+# most-proud plane is the 7/8" corrugated panel at y = 40'-7 3/4" — what the breezeway
 # deck/glazing butt against, 4'-0 1/2" north of the house's cladding face
 # (y = 36'-7 1/4"): one UNCUT 4'-0" polycarbonate panel with a 1/2" reveal.
 #
@@ -48,27 +48,40 @@ from typehaus import (
 # alone) keeps the breezeway slot and its uncut panel unchanged — see CLAUDE.md's ICF
 # stem/wood-wall coplanarity note; do not move these nodes independently of the stem.
 #
-# ** MOVED 1/2" NORTH ON 2026-08-23, A FURTHER 1" ON 2026-08-26, AND 3/8" MORE THE SAME
-# DAY, and the whole 24'x24' went with it every time. ** The Swinburne truss wall put the
-# house's cladding face 1/2" further out (5.02" -> 5.5" proud of the y=36' sheathing
-# plane); the catlin truss then put it another 1" out (5.5" -> 6.5"), the four flat girt
-# layers standing where the 3 1/2" outrigger band did; then the 1 1/4" exposed-fastener PBR
-# panel replaced the 1/2" snap-lock seam and took it to 7.25".
+# ** MOVED 1/2" NORTH ON 2026-08-23, A FURTHER 1" ON 2026-08-26, 3/8" MORE THE SAME DAY,
+# AND 3/8" AGAIN ON 2026-08-31, and the whole 24'x24' went with it every time. ** The
+# Swinburne truss wall put the house's cladding face 1/2" further out (5.02" -> 5.5" proud
+# of the y=36' sheathing plane); the catlin truss then put it another 1" out (5.5" -> 6.5"),
+# the four flat girt layers standing where the 3 1/2" outrigger band did; then the 1 1/4"
+# exposed-fastener PBR panel replaced the 1/2" snap-lock seam and took it to 7.25".
 #
-# That last move is 3/4" at the house and only 3/8" here, and the difference is a
+# That third move was 3/4" at the house and only 3/8" here, and the difference was a
 # correction rather than a rounding: params/breezeway.py carried a 3/8" rainscreen furring
 # on the GARAGE face that GARAGE_WALL_2X6 dropped on 2026-08-20. Fixing that gave back
-# exactly half the move. Each move spends the breezeway's reveal exactly: the slot closes to
-# 4'-0" on the nose and an uncut 4'-0" sheet cannot be glazed into an opening it exactly
-# fills. Ripping the sheet was the detail-scale answer and is retired; this is the
-# site-scale one, and it is the better trade because the reveal is the only thing in the
-# slot that was ever free.
+# exactly half the move.
+#
+# ** THE FOURTH MOVE IS THIS BUILDING'S OWN, AND IT COMES FROM THE GARAGE END OF THE SLOT.
+# ** GARAGE_WALL_2X6 went to a 7/8" corrugated exposed-fastener panel on 2026-08-31 where a
+# 1/2" nail strip stood (and the Zip-R behind it became 5/8" CDX, which moves nothing: both
+# the old zip-R face and the new sheathing face land on this node line by the wall's own
+# `alignment`). 3/8" more panel standing proud of an unmoved node line is 3/8" less clear
+# slot, so the node line goes 3/8" north to give it back.
+#
+# Each move spends the breezeway's reveal exactly: the slot closes to 4'-0" on the nose and
+# an uncut 4'-0" sheet cannot be glazed into an opening it exactly fills. Ripping the sheet
+# was the detail-scale answer and is retired; this is the site-scale one, and it is the
+# better trade because the reveal is the only thing in the slot that was ever free.
+#
+# ** DO NOT INSTEAD RECESS THE SHEATHING BEHIND THE NODE LINE to hold the cladding face
+# still. ** That re-opens the 2026-08-15 rain-shelf defect the stem alignment was built to
+# fix: the stem's exterior EPS face would then stand proud of the wall above it, and the
+# ledge that leaves is exactly the shelf water sits on.
 # BOTH lines move together — the garage stays 24'-0" square, the stem, footings, slab and
 # breezeway all derive from these two numbers, and nothing north of the house is dimensioned
 # to a property line closer than 40'. Do NOT move the stem alone: CLAUDE.md's 1/2"
 # ``_axis_match`` tolerance means the whole foundation follows via ``Footing.center_on``.
-GARAGE_Y_SOUTH = ft(40, 8.25)
-GARAGE_Y_NORTH = ft(64, 8.25)
+GARAGE_Y_SOUTH = ft(40, 8.625)
+GARAGE_Y_NORTH = ft(64, 8.625)
 
 # ICF stem height above grade == this storey's elevation (wood walls sit on the stem top).
 # Published so the storey table, the stem (params/foundations.py) and the overhead door's
@@ -91,7 +104,7 @@ NODES = [
 # interior clear height is unchanged.
 WALLS = [
     Wall(uid="CGW101AAAA", tag="W-G-S", start_node="N-G-SW", end_node="N-G-SE",
-         assembly="GARAGE_WALL_2X6", alignment=face("zip-r-ext"), top=ft(8, 4),
+         assembly="GARAGE_WALL_2X6", alignment=face("cdx-ext"), top=ft(8, 4),
          structural_role=StructuralRole.BEARING),
     # The overhead-door wall carried Western States "Classic Green" nail-strip for part of
     # 2026-08-26 and is back to the house white. The revert is one line: drop the
@@ -100,13 +113,13 @@ WALLS = [
     # the same convention `glazed-green-brick` is kept under, so going green again is a
     # one-line change rather than a re-derivation.
     Wall(uid="CGW102AAAA", tag="W-G-E", start_node="N-G-SE", end_node="N-G-NE",
-         assembly="GARAGE_WALL_2X6", alignment=face("zip-r-ext"), top=ft(8, 4),
+         assembly="GARAGE_WALL_2X6", alignment=face("cdx-ext"), top=ft(8, 4),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="CGW103AAAA", tag="W-G-N", start_node="N-G-NE", end_node="N-G-NW",
-         assembly="GARAGE_WALL_2X6", alignment=face("zip-r-ext"), top=ft(8, 4),
+         assembly="GARAGE_WALL_2X6", alignment=face("cdx-ext"), top=ft(8, 4),
          structural_role=StructuralRole.BEARING),
     Wall(uid="CGW104AAAA", tag="W-G-W", start_node="N-G-NW", end_node="N-G-SW",
-         assembly="GARAGE_WALL_2X6", alignment=face("zip-r-ext"), top=ft(8, 4),
+         assembly="GARAGE_WALL_2X6", alignment=face("cdx-ext"), top=ft(8, 4),
          structural_role=StructuralRole.NONBEARING),
 ]
 
@@ -177,16 +190,16 @@ WALLS = [
 # west tip.
 BRICK_NODES = [
     Node(uid="9XGFXC1W6Y", tag="N-G-BRICK-S-S",
-         position=pt(ft(24, 4.625), ft(40, 3.625))),
-    Node(uid="1AVRM4GDPB", tag="N-G-BRICK-S-N", position=pt(ft(24, 4.625), ft(44, 8.25)),
+         position=pt(ft(24, 4.625), ft(40, 4))),
+    Node(uid="1AVRM4GDPB", tag="N-G-BRICK-S-N", position=pt(ft(24, 4.625), ft(44, 8.625)),
          open_end=True),
-    Node(uid="SDYMFBKVJ6", tag="N-G-BRICK-N-S", position=pt(ft(24, 4.625), ft(60, 8.25)),
+    Node(uid="SDYMFBKVJ6", tag="N-G-BRICK-N-S", position=pt(ft(24, 4.625), ft(60, 8.625)),
          open_end=True),
     Node(uid="ESY1X83CXW", tag="N-G-BRICK-N-N",
-         position=pt(ft(24, 4.625), ft(65, 0.875))),
-    Node(uid="H4KBZK98W6", tag="N-G-BRICK-SRET-W", position=pt(ft(20, 4.625), ft(40, 3.625)),
+         position=pt(ft(24, 4.625), ft(65, 1.25))),
+    Node(uid="H4KBZK98W6", tag="N-G-BRICK-SRET-W", position=pt(ft(20, 4.625), ft(40, 4)),
          open_end=True),
-    Node(uid="K3JVR3JJF1", tag="N-G-BRICK-NRET-W", position=pt(ft(20, 4.625), ft(65, 0.875)),
+    Node(uid="K3JVR3JJF1", tag="N-G-BRICK-NRET-W", position=pt(ft(20, 4.625), ft(65, 1.25)),
          open_end=True),
 ]
 
@@ -317,19 +330,19 @@ BRICK_WALLS = [
 # span (24' corner to 20' tip) rather than the piers' envelope y-run.
 BRICK_CAP_FLASHING = [
     Flashing(uid="91QT40BPXE", tag="TR-G-BRICK-CAP-S", kind=TrimKind.DRIP_FLASHING,
-             path=(pt(ft(24, 2.8125), ft(44, 8.25)), pt(ft(24, 2.8125), ft(40, 8.25))),
+             path=(pt(ft(24, 2.8125), ft(44, 8.625)), pt(ft(24, 2.8125), ft(40, 8.625))),
              top_elevation=WAINSCOT_CAP_TOP, depth=inch(2.0), thickness=inch(5.625),
              material="metal-dark-exterior", back_side="right"),
     Flashing(uid="HJEFTKKFG6", tag="TR-G-BRICK-CAP-N", kind=TrimKind.DRIP_FLASHING,
-             path=(pt(ft(24, 2.8125), ft(64, 8.25)), pt(ft(24, 2.8125), ft(60, 8.25))),
+             path=(pt(ft(24, 2.8125), ft(64, 8.625)), pt(ft(24, 2.8125), ft(60, 8.625))),
              top_elevation=WAINSCOT_CAP_TOP, depth=inch(2.0), thickness=inch(5.625),
              material="metal-dark-exterior", back_side="right"),
     Flashing(uid="Z91V9H686X", tag="TR-G-BRICK-CAP-SRET", kind=TrimKind.DRIP_FLASHING,
-             path=(pt(ft(24), ft(40, 5.4375)), pt(ft(20), ft(40, 5.4375))),
+             path=(pt(ft(24), ft(40, 5.8125)), pt(ft(20), ft(40, 5.8125))),
              top_elevation=WAINSCOT_CAP_TOP, depth=inch(2.0), thickness=inch(5.625),
              material="metal-dark-exterior", back_side="right"),
     Flashing(uid="YRF9848XRM", tag="TR-G-BRICK-CAP-NRET", kind=TrimKind.DRIP_FLASHING,
-             path=(pt(ft(20), ft(64, 11.0625)), pt(ft(24), ft(64, 11.0625))),
+             path=(pt(ft(20), ft(64, 11.4375)), pt(ft(24), ft(64, 11.4375))),
              top_elevation=WAINSCOT_CAP_TOP, depth=inch(2.0), thickness=inch(5.625),
              material="metal-dark-exterior", back_side="right"),
 ]
@@ -337,15 +350,17 @@ BRICK_CAP_FLASHING = [
 # Published so params/foundations.py can gap the ICF stem under the overhead door instead
 # of repeating this offset/width: there is no 22"-above-grade stem wall under a vehicle
 # door (it would be a curb the car has to climb), so the stem drops to a grade beam there.
-# ** 4'-0" STAYS, unlike SERVICE_DOOR_OFFSET below (2026-08-30). ** The 16'-0" opening's
-# centre is at 12'-0", 8" off the module, and it cuts 13 stud lines where 12 would do —
-# `structural.door_framing_module` reports it and names 152" as the nearest legal centre.
+# ** 4'-0" STAYS, unlike SERVICE_DOOR_OFFSET below (2026-08-30, and again 2026-08-31). **
+# The 16'-0" opening's centre is at 12'-0", 12" off the 24" module, and it cuts 9 stud lines
+# where 8 would do — `structural.door_framing_module` reports it and names 11'-0"/13'-0" as
+# the nearest legal centres. It was 8" off the old 16" module, cutting 13 where 12 would do;
+# the miss got bigger with the wider spacing and the answer did not change.
 # It is not taken. This constant is not just the door's offset: params/foundations.py gaps
 # the ICF stem into a grade beam on it, and W-G-BRICK-S/N stand on the stem segments that
 # leaves, so the piers' JAMB-TO-CORNER span IS this number and their inboard ends ARE the
 # door jambs (houses/catlin/CLAUDE.md, and
 # test_garage_brick_wainscot_piers_are_the_door_jambs_and_cap_at_four_feet asserts it).
-# Moving the door 8" north makes the two piers flanking it 4'-8" and 3'-4" where they are
+# Moving the door 12" north makes the two piers flanking it 5'-0" and 3'-0" where they are
 # 4'-0" and 4'-0" today: a visibly asymmetric masonry wainscot on the garage's main facade,
 # bought with one stud. Recorded as a decided advisory in preferences.toml's `[checks]
 # suppress`, per element and with the reason beside it — not silenced, decided.
@@ -358,20 +373,31 @@ OVERHEAD_DOOR_WIDTH = ft(16)  # DT-EXT-OVERHEAD192
 # breezeway deck, a "known, deferred mismatch" that code.R311_3_exterior_landing eventually
 # failed outright.
 # ** 5'-0" -> 5'-10" ON 2026-08-30, AND NOT TO THE NEARER STATION. ** The 36" leaf's centre
-# was at 78", 6" off the 16" module, cutting three studs where two will do. The module offers
-# 24"/40"/56"/72"/88"/104"..., and only 88" — this offset — works:
+# was at 78", 6" off the 16" module, cutting three studs where two will do. The module offered
+# 24"/40"/56"/72"/88"/104"..., and only 88" worked:
 #
 #   72", 56", 104"  the threshold runs off the end of SL-BW-DECK and
 #                   `code.R311_3_exterior_landing` FAILs outright. That is the failure this
 #                   door already had once, for this reason, before 2026-08-01.
 #   88"             clean, once SP-GF-S-HYD is rehomed — see below.
 #
+# ** 5'-10" -> 6'-6" ON 2026-08-31, AND THE 88" STATION IS GONE WITH THE 16" MODULE. **
+# GARAGE_WALL_2X6 is 24" o.c. now, so W-G-S frames stud lines at 24n along the wall and a
+# 36" RO must centre on one of them; 88" is 8" off, cutting two studs where one will do.
+# 96" is the nearest, and it is also the BETTER station rather than merely the legal one:
+# `D-M-ENTRY` is centred on x = 8'-0" too, so the two doors this breezeway spans are finally
+# concentric. `params/breezeway.py::_GLAZING_CENTER_X` — the midpoint of the two — goes
+# 7'-8" -> 8'-0" with it, taking SL-BW-DECK to x 6'-0"..10'-0" and leaving this 36" leaf's
+# jambs (7'-6"/9'-6") a foot of landing clear at each side.
+#
 # Moving this constant is never just moving a door: params/foundations.py gaps the ICF stem
 # into a grade beam on it, so FT-GF-S-DR travels east too, and the water service's protection
 # sleeve at x=5'-0" was left standing in the wrong pour. `integrity.sleeve_in_opening` caught
 # it as an ERROR the moment the constant moved; the sleeve now names FT-GF-S1, the stem
-# footing that is actually over it (plan/mep_sleeves.py). Nothing about the pipe changed.
-SERVICE_DOOR_OFFSET = ft(5, 10)
+# footing that is actually over it (plan/mep_sleeves.py). Nothing about the pipe changed —
+# and FT-GF-S1 only grows westward-to-eastward as this offset climbs, so x=5'-0" stays over
+# it.
+SERVICE_DOOR_OFFSET = ft(6, 6)
 SERVICE_DOOR_WIDTH = ft(3)  # DT-EXT-SWING36
 
 OPENINGS = [
@@ -417,14 +443,22 @@ OPENINGS = [
     # at 1'-4 5/8" the RO missed the bay centre by 3/8", enough to break two studs and pull
     # in a header a 14" RO should never need
     # (test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs).
+    #
+    # ** RE-STATIONED 1'-5" -> 2'-5" ON 2026-08-31, and it is the GRID that moved, not the
+    # window. ** GARAGE_WALL_2X6 went to 24" o.c., so W-G-W's stud lines are at 24n along
+    # the wall and its bay centres at 12 + 24n. The old 2'-0" centre was a 16"-grid bay
+    # centre and is a 24"-grid STUD LINE — `structural.window_framing_module` reported it
+    # 12" off, breaking one stud and pulling in the header a 14" RO exists to avoid. 3'-0"
+    # (position 2'-5" + half of the 14" RO) is the nearest bay centre on the new grid.
     Window(uid="CGX301AAAA", tag="WIN-G-N1", host="W-G-W", type_ref="WT-1424",
-           position=from_node("N-G-NW", ft(1, 5)), sill_height=ft(3, 6)),
-    # WIN-G-N1's mirror at the south end (2026-07-30): 22'-0" off N-G-NW is the exact mirror
-    # of N1's 2'-0", and also a bay centre (8" + 16"x16 on W-G-W's grid), so the pair stays
-    # symmetric and both keep the unbroken stud bay a 14" RO exists to get. Same 3'-6" sill
-    # (above a workbench).
+           position=from_node("N-G-NW", ft(2, 5)), sill_height=ft(3, 6)),
+    # WIN-G-N1's mirror at the south end (2026-07-30): 21'-0" off N-G-NW is the exact mirror
+    # of N1's 3'-0" about the wall's 12'-0" midpoint, and also a bay centre (12" + 24"x10 on
+    # W-G-W's grid), so the pair stays symmetric and both keep the unbroken stud bay a 14" RO
+    # exists to get. Same 3'-6" sill (above a workbench). It moved 22'-0" -> 21'-0" with its
+    # mirror on 2026-08-31, for the reason written on WIN-G-N1 above.
     Window(uid="CGX302AAAA", tag="WIN-G-S1", host="W-G-W", type_ref="WT-1424",
-           position=from_node("N-G-NW", ft(21, 5)), sill_height=ft(3, 6)),
+           position=from_node("N-G-NW", ft(20, 5)), sill_height=ft(3, 6)),
 ]
 
 ROOMS = [
@@ -477,7 +511,7 @@ _GARAGE_EAVE_TRIM = EaveTrim(
 # moves the trough fails there instead of leaving a leader hanging beside it.
 _GARAGE_LEADER = Downspout(
     uid="CGDS01AAAA", tag="TR-G-LEADER-E",
-    position=pt(ft(25), ft(39, 5)),     # east end of the trough, on its centreline
+    position=pt(ft(25), ft(39, 5.375)),     # east end of the trough, on its centreline
     # Both absolute, and both dropped 2'-6" on 2026-08-18 when grade did and the garage
     # went down with it. The trough they bracket is derived from the roof plane, so it moved
     # on its own; these are the two numbers that had to follow it by hand.
@@ -516,7 +550,7 @@ ROOFS = [
 # 2026-08-18, when the garage followed grade down and the roof it clamps to went with it —
 # an absolute elevation on a structure that moved.)
 # Written out, not generated: the editable dialect allows no comprehensions.
-_SNOW_GUARD_Y = ft(39, 6.875)
+_SNOW_GUARD_Y = ft(39, 7.25)
 _SNOW_GUARD_Z = ft(8, 1)
 _SNOW_GUARD_SIZE = "S-5! ColorGard"
 SNOW_GUARDS = [
@@ -585,7 +619,7 @@ STAIRS = [
     Stair(uid="X99TD38ZS3", tag="ST-G-SERVICE",
           from_storey="garage", to_storey="garage",
           base_elevation=ft(-2, -10), top_elevation=ft(0),
-          width=ft(3), start=pt(ft(5), ft(47, 2.875)),
+          width=ft(3), start=pt(ft(5), ft(47, 3.25)),
           run_direction="y", run_reversed=True,
           tread_depth=inch(11), nosing_depth=inch(0),
           material="kdat"),
@@ -612,7 +646,7 @@ STAIRS = [
 # walks slab edges and belongs with the guard rules, not with this stair.
 RAILINGS = [
     Railing(uid="CX7KN0MZE0", tag="RL-G-SERVICE",
-            path=(pt(ft(5), ft(47, 2.875)), pt(ft(5), ft(43, 6.875))),
+            path=(pt(ft(5), ft(47, 3.25)), pt(ft(5), ft(43, 7.25))),
             kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
             base_elevation=ft(-2, -10), post_spacing=inch(36), post_size="2x2",
             rail_count=1, mount="surface", assembly="RAILING_DARK_METAL",

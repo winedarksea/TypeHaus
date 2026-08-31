@@ -209,6 +209,39 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              source=f"{_UAF}: metal foil at 0.001\" reads 0 perm; continuous sheet steel is "
                     "vapour-impermeable. Normally installed over a vented rainscreen, which "
                     "truncates the Glaser walk before it"),
+    # 7/8" corrugated, the third profile in the site's one white steel skin (2026-08-31),
+    # and the detached garage's wall panel — GARAGE_WALL_2X6 over 5/8" CDX, replacing the
+    # 26 ga. concealed nail-strip over Zip-R. A sinusoidal exposed-fastener sheet: 7/8"
+    # deep on a 2-2/3" pitch, 32" net coverage, screwed through the crowns into the studs.
+    #
+    # `finish="corrugated"` is the whole dispatch. `isStandingSeam` (ui materials.ts) and
+    # `_is_standing_seam` (emit/gltf/palette.py) are substring tests, and this tag carries
+    # neither "seam" nor "standing" — so the metal treatment is reached ONLY through the
+    # authored finish, exactly as `pbr-panel-26` does it. That is the documented design,
+    # not a workaround; a material that says what it is beats a tag that hints at it.
+    #
+    # `skin_family="standing-seam"` keeps the garage's wall and its nail-strip roof reading
+    # as one continuous skin at the flush roof edge (`continuous_skin_cladding`), which is
+    # the one thing tag equality gets wrong about a building wearing one white in three
+    # specifications. It changes no quantity and no building-science number.
+    #
+    # `exposed_fastener=True` is the double-billing guard: it is what lets
+    # `takeoff.fasteners` bill the panel screws as a counted part instead of leaving them
+    # inside a $/SF rate. Without it the screws simply vanish from the bill.
+    Material(tag="corrugated-panel-26", name="7/8\" corrugated exposed-fastener steel panel, 26 ga.",
+             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
+             color="#6b7076", finish="corrugated",
+             skin_family="standing-seam", exposed_fastener=True,
+             source=f"{_UAF}: continuous sheet steel is vapour-impermeable, as `standing-seam` "
+                    "above. 26 ga. PVDF-coated steel, 7/8\" corrugation depth on a 2-2/3\" "
+                    "pitch, 32\" net coverage, face-fastened with gasketed screws through the "
+                    "crowns. TWO KNOWN APPROXIMATIONS, recorded here rather than fixed: "
+                    "takeoff/hardware_config.py::ExposedFastenerCladdingRules is one frozen "
+                    "dataclass with PBR geometry hard-coded (12\" rib pitch, 36\" coverage), so "
+                    "the field screw count is a fair proxy but the sidelap count runs slightly "
+                    "low on 36\" vs this panel's 32\"; and its support_embedment_in=1.4\" is "
+                    "satisfied by no sheathing thickness at all — the rule presumes penetration "
+                    "into framing, which is what these screws do"),
     # The vent strip that closes a rainscreen cavity's base: a corrugated polypropylene
     # section whose flutes run *across* the cavity, so the cavity keeps draining and
     # venting while nothing insect-sized gets in. It is a spaced section, not a skin — the

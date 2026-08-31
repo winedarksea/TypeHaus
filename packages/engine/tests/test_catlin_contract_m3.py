@@ -44,7 +44,7 @@ RIDGE_OVER_ATTIC_FT = 9.0
 ATTIC_ELEV_FT = 20.0
 GARAGE_SIZE_FT = 24.0
 # House sheathing plane to garage wall line. The finished gap is tighter: the house's 7 1/4"
-# of outsulation + cladding and the garage's own 1/2" of cladding leave 4'-0 1/2" of clear
+# of outsulation + cladding and the garage's own 7/8" of cladding leave 4'-0 1/2" of clear
 # slot, which is what the breezeway's 4'-0" polycarbonate panels are sized to.
 #
 # 4.57292' (4'-6 7/8"), not the 5'-0" it was until 2026-08-15. The garage's ICF stem used to
@@ -63,11 +63,27 @@ GARAGE_SIZE_FT = 24.0
 # moved with it and the slot — and the panel's 1/2" reveal — are again exactly what they
 # were. Both wall lines moved each time; the garage is still 24'-0" square.
 #
-# The last move is only 3/8" against the house's 3/4", and the difference is a CORRECTION:
+# That third move was only 3/8" against the house's 3/4", and the difference is a CORRECTION:
 # ``params/breezeway.py`` carried a 3/8" rainscreen furring on the garage face that
 # ``GARAGE_WALL_2X6`` dropped on 2026-08-20, so the modelled garage face had been 3/8" south
 # of where it stands for six days. Fixing that gave back exactly half the move.
-GARAGE_GAP_FT = 4.6875
+#
+# ** IT GREW 3/8" AGAIN ON 2026-08-31, and this one comes from the GARAGE end of the slot.
+# ** ``GARAGE_WALL_2X6`` went to a 7/8" corrugated exposed-fastener panel where a 1/2" nail
+# strip stood, so the garage's own proud face moved 3/8" INTO the slot with the wall line
+# standing still. Both wall lines went 3/8" north to give it back. The arithmetic below is
+# the current one:
+#
+#     56.625"  house sheathing plane -> garage wall line (this constant, 4.71875')
+#   -  7.25"   house outsulation + PBR panel, proud of y = 36'
+#   -  0.875"  garage corrugated panel, proud of the garage wall line
+#   = 48.5"    = 4'-0 1/2" clear, an uncut 4'-0" panel with a 1/2" reveal — unchanged for
+#               the fifth time running.
+#
+# (The Zip-R -> 5/8" CDX swap in the same edit moves NOTHING here: the wall's ``alignment``
+# puts whichever sheathing it carries on the node line, so only the cladding's own thickness
+# is in this chain.)
+GARAGE_GAP_FT = 4.71875
 GARAGE_OVERHANG_IN = 16.0
 # eave_z_m is the rafter-top (deck) plane: the 11.875" I-joist rises above the RAFTER PLATE
 # by its depth less the seat drop across the plate (5.5" depth x 6:12 pitch = 2.75" — the

@@ -458,7 +458,12 @@
 # Plain ZIP (not ZIP-R) — the roof's structural deck and air-barrier plane. Cheaper than the
 # ZIP-R row below by the whole cost of the foam laminated to it, which this roof buys loose.
 "zip-sheathing" = { material = { low = 36, high = 58 }, labour = { low = 22, high = 44 } }  # 45 sheets
-"zip-r" = { material = { low = 78, high = 105 }, labour = { low = 25, high = 50 } }  # 20 sheets
+"zip-r" = { material = { low = 78, high = 105 }, labour = { low = 25, high = 50 } }  # 0 sheets (was 20) — retired 2026-08-31, kept for the rate
+# 5/8" CDX, GARAGE_WALL_2X6's sheathing since 2026-08-31, replacing the ZIP-R row above.
+# $30-52 the 4x8 sheet is the ordinary-sheathing shelf price a grade below the sanded
+# underlayment row and a thickness above the 1/2" the struct-1-plywood row is basised on;
+# labour is that row's, unchanged, because hanging a sheet is hanging a sheet.
+"cdx-plywood" = { material = { low = 30, high = 52 }, labour = { low = 16, high = 34 } }  # 20 sheets
 
 [hardware]
 # RESEARCHED 2026-08-08 — [low, high] $ each, material only. Basis: single-piece and
@@ -656,12 +661,34 @@
 # QA: S-5! requires a DIAL-calibrated torque wrench (explicitly not a clicking one) to verify
 # the setscrews where published load values are relied on, and nothing in this file pays for
 # that pass.
-"S-5-N" = { low = 6, high = 10 }  # 28 ea — garage roof and garage walls, nail strip
+# ** THE 16 GARAGE-WALL CLAMPS WENT ON 2026-08-31, and 12 garage-ROOF clamps remain. **
+# GARAGE_WALL_2X6 is a 7/8" corrugated exposed-fastener panel now, with no seam of any kind
+# for an N clamp to close on — the same swap, and the same argument, as the 48 S-5-S house-
+# wall clamps that went on 2026-08-26. The row is NOT deleted the way the S-5-S row was,
+# because the garage ROOF is still nail strip and still carries its twelve.
+"S-5-N" = { low = 6, high = 10 }  # 12 ea — garage roof only, nail strip (was 28 with the walls)
 # 2026-08-26 — the exposed-fastener wall panel's own screws (takeoff/fasteners.py
-# `exposed_fastener_cladding_screw_rows`). 3,098 ea over two BOM rows: 2,473 field (one per
-# rib flat at every 24" girt course) + 625 sidelap stitch (one line per panel-to-panel
+# `exposed_fastener_cladding_screw_rows`). 3,263 ea over two BOM rows: 2,599 field (one per
+# rib flat at every 24" support crossing) + 664 sidelap stitch (one line per panel-to-panel
 # JOINT, which is one fewer than the panel count on each run). Openings are NOT deducted, following the furring-screw convention — trim,
 # closures and jamb returns take those screws back.
+#
+# ** TWO PANELS ON ONE SKU SINCE 2026-08-31. ** 2,623 of these are the house's PBR
+# (CATLIN_EXT_2X6 / PLANT_EXT_2X6_HUMID) and 640 are the garage's 7/8" corrugated
+# (GARAGE_WALL_2X6, 500 field + 140 sidelap). It is genuinely one part: the SKU is chosen
+# by `screw_for_required_length` off panel thickness + support embedment, both panels are
+# 26 ga on wood, and both want the same 316 stainless gasketed washer head. The house count
+# was quoted as 3,098 here until this date, which was stale — the 2026-08-29 attic redesign
+# deleted ~572 sf of wall and nobody re-read the row.
+#
+# ** TWO KNOWN APPROXIMATIONS IN THE GARAGE'S 640, recorded rather than fixed. **
+# `takeoff/hardware_config.py::ExposedFastenerCladdingRules` is a single frozen dataclass
+# with PBR geometry hard-coded — 12" rib pitch, 36" coverage — and corrugated is a 2-2/3"
+# pitch at 32" coverage. The screws-per-SF land about the same (a corrugated panel is not
+# screwed at every corrugation), so the FIELD count is a fair proxy; the SIDELAP count runs
+# slightly low, because 32" coverage makes more joints per run than 36" does. And
+# `support_embedment_in = 1.4"` is satisfied by no sheathing thickness at all — the rule
+# presumes penetration into framing, which is what these screws do, into a 24" o.c. stud.
 #
 # $579/1,000 is the quoted carton price, so this is $0.579 each and the row is authored at
 # that number rather than a range: it is a purchase price for a stocked SKU, not an
@@ -1144,6 +1171,14 @@
 # RETIRED 2026-08-20, kept for the rate. The garage lost its 3/8" rainscreen furring that
 # day, so GARAGE_WALL_2X6 has no vented cavity and bills no screen; the row is left because
 # the number was researched and the wall could get its cavity back. It reads 0 SF today.
+#
+# ** IT STILL READS 0 SF AFTER 2026-08-31, AND THAT IS NOT THE SAME AS "NO CLOSURES". **
+# The wall took a 7/8" corrugated panel that day, and the corrugation itself is the drainage
+# and vent cavity — but it is not a modelled LAYER, so `rainscreen_cavity_m` finds nothing
+# and this row's driver stays at zero. The real inside/outside closure strips the profile
+# needs are priced as `[allowances] garage-corrugated-closure-strips` instead. Do not
+# "activate" this row by authoring a 7/8" airgap layer: that would add 7/8" to the stack on
+# top of the 7/8" cladding and move both wall faces.
 "bug_screen:GARAGE_WALL_2X6" = { unit = "SF", material = { low = 26, high = 64 }, labour = { low = 38, high = 80 } }  # 0 SF (was 3.0 SF = 96 LF)
 
 # PORCH DECK, COMPOSITE — the breezeway deck. PRICED 2026-08-20, after the "10x discrepancy"
@@ -1857,6 +1892,15 @@
 # the same two the rim row cites; the board-feet are this assembly's own geometry.
 "closed-cell-spray-foam:1.5" = { material = { low = 0.6, high = 0.95 }, labour = { low = 0.9, high = 1.3 } }  # 3092.6 SF twice — pass 1 (band A) and the girt fill that opens pass 2 (band B)
 "closed-cell-spray-foam:1.0" = { material = { low = 0.4, high = 0.6 }, labour = { low = 0.6, high = 0.9 } }  # 3092.6 SF — the rest of pass 2 (band C). NOT a third lift
+# 2026-08-31 — GARAGE_WALL_2X6's stud-bay fill, 631.3 SF at 2". A DIFFERENT BUILDING and a
+# different visit from the three rows above: the garage is detached, and its bays are
+# sprayed from inside between the studs rather than in bands over a truss wall's sheathing.
+# The board-foot ladder is the same and is linear — 2 bd-ft/SF at the $1.00-1.50/bd-ft
+# every row here uses = $2.00-3.00/SF installed, split 40/60 material/labour. It rides the
+# house's mobilisation (the crew is on site for the truss wall's two passes anyway), which
+# is the whole reason the owner took it; if the garage is ever built on its own visit, add
+# a set-up the way the note above adds one for pass 2.
+"closed-cell-spray-foam:2.0" = { material = { low = 0.8, high = 1.2 }, labour = { low = 1.2, high = 1.8 } }  # 631.3 SF — GARAGE_WALL_2X6's bays
 "closed-cell-spray-foam:2.5" = { material = { low = 1.0, high = 1.55 }, labour = { low = 1.5, high = 2.2 } }  # DEAD — pass 2 as one row; kept as the cross-check on :1.5 + :1.0
 # RESEARCHED 2026-08-20 — GARAGE_ROOF's attic fill, 576 SF at 14.5" settled (R-38). A
 # separate key from "fiberglass" above because that row is a 5.5" stud-bay BATT and this is
@@ -2047,6 +2091,36 @@
 # with one overhead door, one service door and one window is the least trim-heavy elevation
 # on the property.
 "standing-seam-nailstrip-26" = { material = { low = 2.5, high = 4.5 }, labour = { low = 3.5, high = 6.5 } }
+# NOT TAKEN as of 2026-08-31 — 0 SF, kept as the revert rate exactly as the snap-lock row
+# above is. GARAGE_WALL_2X6 went to 7/8" corrugated on that date; nothing references this
+# tag now but `standing-seam-nailstrip-26-green`, which is itself kept for the revert. The
+# rate was researched and the wall could take nail strip again with a one-word change.
+#
+# 631.3 SF — GARAGE_WALL_2X6, the four garage walls, from 2026-08-31. Installed
+# $4.20-7.35/SF against the $6.00-11.00 of the 26 ga NAIL STRIP it replaces, and both
+# halves are below that row for reasons that are separate:
+#
+# MATERIAL $1.60-2.60/SF. 7/8" corrugated is the cheapest painted steel wall panel there
+# is — a stocked agricultural/architectural profile with no clips, no bulb and no hidden
+# flange. Against a bare panel nearer $1.10-1.60/SF this is lifted for the PVDF coil (not
+# the cheaper SMP the profile is usually stocked in) and for a trim load, but a much
+# smaller one than the house's: three openings on this building against 45 on that one.
+# It is lifted a little where PBR is not, for one reason worth naming — 32" net coverage
+# against PBR's 36" is ~12% more panel, more sidelap and more stitch line per square foot.
+#
+# LABOUR $2.60-4.75/SF. Set on the studs and screwed off: no clips to lay out, no seaming
+# pass, no seamer rental, and no hidden flange to nail the way the nail strip had. It is
+# under the PBR wall rate's high end only because this is a four-wall box with three
+# openings; it does not go below PBR's low end, because 631 SF is a
+# minimum-mobilisation job for any metal crew and a small job carries its set-up whatever
+# the $/SF arithmetic says.
+#
+# ** The fixings are NOT in this rate ** — they are the counted `[hardware]` "T09150HWAM"
+# part, the same 316 stainless gasketed screw the house's PBR takes, which is what
+# `Material.exposed_fastener` exists to enable. Folding them back in here would double-bill
+# 640 screws. The inside/outside CLOSURE STRIPS are not in it either: see
+# `[allowances] garage-corrugated-closure-strips`.
+"corrugated-panel-26" = { material = { low = 1.6, high = 2.6 }, labour = { low = 2.6, high = 4.75 } }
 # The roof's two membranes, and they are NOT interchangeable — see plan/assemblies.py. The
 # deck barrier is the vapour control (0.04 perm, self-adhered to the ZIP under the foam);
 # the field underlayment above the top deck must stay vapour-OPEN (20 perm) or the foam is
@@ -2067,7 +2141,18 @@
 "white-brick" = { material = { low = 6, high = 12 }, labour = { low = 15, high = 26 } }  # 133.8 SF — labour is really a $2,000-3,500 minimum-mobilisation lump
 "xps" = { material = { low = 0.9, high = 1.8 }, labour = { low = 0.75, high = 1.45 } }  # 4182.2 SF — comment was stale at 2520.7 (+66%) until 2026-08-29; a $/SF rate against a $/cy-keyed section re-prices silently when geometry moves
 "zip-sheathing" = { material = { low = 1.1, high = 1.85 }, labour = { low = 1.0, high = 1.9 } }  # 1430.3 SF — 1/2" plain ZIP, taped; the roof's air-barrier plane
-"zip-r" = { material = { low = 2.2, high = 4.2 }, labour = { low = 1.3, high = 2.4 } }  # 631.3 SF
+# NOT TAKEN as of 2026-08-31 — 0 SF. GARAGE_WALL_2X6 was the only Zip-R in the house and
+# its sheathing is 5/8" CDX now, with 2" of ccSPF in the bays doing the thermal and air
+# work the panel's laminated polyiso used to. Kept for the rate, like every other retired
+# row in this file.
+"zip-r" = { material = { low = 2.2, high = 4.2 }, labour = { low = 1.3, high = 2.4 } }  # 0 SF (was 631.3)
+# GARAGE_WALL_2X6's sheathing since 2026-08-31, 631.3 SF. Ordinary 5/8" CDX and NOT the
+# house's shear-rated `struct-1-plywood` — see that Material's comment in
+# plan/assemblies.py; billing a garage box at Structural 1's rate overstates every square
+# foot of it. Material $1.10-1.90/SF is 5/8" CDX at $30-52 the 32 SF sheet, which is the
+# same basis the [sheet_goods] row below carries. Labour is a touch under the Structural 1
+# row's: it is the same hang-and-nail operation, on a one-storey box, off a 6' ladder.
+"cdx-plywood" = { material = { low = 1.1, high = 1.9 }, labour = { low = 0.95, high = 1.8 } }  # 631.3 SF
 
 [wall_structure]
 # RESEARCHED 2026-08-08 — [low, high] $/cy PLACED, by wall assembly. Keyed on assembly, not
@@ -3749,6 +3834,25 @@ site-scaffolding-and-lift-rental = { low = 3000, high = 8000 }
 # the two ERV hoods, the exterior hose bibs and the dryer-less wall — which is a detail and a
 # tube of sealant per opening, not a hood purchase.
 envelope-exterior-hoods-and-flashing = { low = 200, high = 500 }
+# NEW 2026-08-31 — the garage's corrugated closure strips, and they are NOT optional trim.
+# A 7/8" corrugated panel over a flat sheathing face leaves an open flute at every top and
+# bottom termination: a VENTED (inside) closure at the base, so the cavity drains and vents
+# while nothing insect-sized gets in, and a SOLID (outside) closure under the head and the
+# rake, so wind-driven rain and snow do not enter over the top. Together they are what makes
+# the profile self-draining rather than a trough with 108 open mouths in it.
+#
+# 192 LF, undriven: 96 LF of base (the garage's four 24'-0" walls) plus 96 LF of head, and
+# openings are not deducted — a door or window head takes its own closure back. There is no
+# BOM field to drive this off. `bug_screen:GARAGE_WALL_2X6` in [openings] looks like the
+# right home and is not: it reads a rainscreen cavity DEPTH out of the layer stack, and the
+# corrugation is not a modelled layer, so that row is 0 SF and stays 0 SF (see its note).
+#
+# $2.00-4.50/LF installed is the same band [openings] `bug_screen:CATLIN_EXT_2X6` derives —
+# material $0.80-2.00, labour $1.20-2.50 at 40-60 LF/hr, set as the cladding goes on. A
+# profile-matched closure (foam or EPDM, cut to the 2-2/3" pitch) sits at the top of that
+# band where a straight Cor-A-Vent section sits at the bottom, which is why this row does
+# not go below it. 192 LF x $2.00-4.50 = $384-864.
+garage-corrugated-closure-strips = { low = 384, high = 864 }
 
 # --- MEP ------------------------------------------------------------------------------------
 # REMOVED 2026-08-27: electrical-pv-array-modules-and-racking, $24,000-46,000. The money went

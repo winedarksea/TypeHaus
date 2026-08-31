@@ -57,6 +57,11 @@ from typehaus.resolve.model import ResolvedModel
 #: Side-lap spacing of a face-fastened profiled panel — PBR/R-panel covers 36" net.
 _PANEL_LAP_M = 0.9144  # 36"
 
+#: Side-lap spacing of a 7/8" corrugated panel, which covers 32" net and not PBR's 36".
+#: A side lap drawn every 36" on a 32" sheet is not a rounding — it is a line where no
+#: joint is, on every elevation the garage appears in.
+_CORRUGATED_LAP_M = 0.8128  # 32"
+
 #: Seam spacing of a clipped or mechanically-seamed panel. 16" is the common architectural
 #: pan width and the one the viewer's seam recipe draws.
 _SEAM_PITCH_M = 0.4064  # 16"
@@ -137,6 +142,12 @@ def _recipe_for(material: Material | None, material_ref: str | None,
     """
     if material is not None:
         if getattr(material, "exposed_fastener", False):
+            # The *finish* is asked before the flag, because ``exposed_fastener`` says only
+            # "screwed through its face" and every face-fastened profile covers a different
+            # width. Falling straight to ``_PANEL_LAP_M`` is PBR's 36" for all of them, which
+            # draws the garage's 32" corrugated side laps in the wrong place.
+            if getattr(material, "finish", None) == "corrugated":
+                return ("vertical", _CORRUGATED_LAP_M)
             return ("vertical", _PANEL_LAP_M)
         if getattr(material, "skin_family", None) is not None:
             return ("vertical", _SEAM_PITCH_M)

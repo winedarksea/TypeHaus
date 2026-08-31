@@ -147,9 +147,25 @@ TRANSITIONS = (
                condition_pattern="opening_perimeter:CATLIN_GARDEN_FRAMED_2X6",
                notes="notes/basement_to_framed_wall_detail.md",
                overlay="window-head-jamb-sill", continuity=AIR_WATER_THERMAL),
+    # ** IT DECLARES ITS OWN CONTINUITY SINCE 2026-08-31, and it is not AIR_WATER_THERMAL. **
+    # GARAGE_WALL_2X6 was rebuilt that day with no WRB at all — IRC R703.2's exception for
+    # an unconditioned detached accessory building — so there is no `spray-foam-ext` band
+    # and no taped Zip-R face for the house's tuple to name. What carries all four controls
+    # here is the 2" of ccSPF IN THE BAYS (`stud-cavity`), which is why the build order on
+    # notes/garage_wall_detail_side.md is bucks before foam, exactly as it is on the house.
+    # The air plane is the foam too, not the sheathing: bare CDX is not taped and is not an
+    # air barrier, which is the whole difference from the house's `sheathing-ext` row.
     Transition(uid="CATR009AAAA", tag="TR-CATLIN-GARAGE-OPENING",
                condition_pattern="opening_perimeter:GARAGE_WALL_2X6",
                notes="notes/garage_wall_detail_side.md", overlay="garage-opening",
+               continuity=(Continuity(control="air", from_face="stud-cavity",
+                                      to_face="stud-cavity"),
+                           Continuity(control="water", from_face="stud-cavity",
+                                      to_face="stud-cavity"),
+                           Continuity(control="vapor", from_face="stud-cavity",
+                                      to_face="stud-cavity"),
+                           Continuity(control="thermal", from_face="stud-cavity",
+                                      to_face="stud-cavity")),
                star=True),
     Transition(uid="CATR010AAAA", tag="TR-CATLIN-INTERIOR-OPENING",
                condition_pattern="opening_perimeter:INT_*", overlay="interior-opening"),

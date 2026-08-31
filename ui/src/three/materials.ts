@@ -16,6 +16,8 @@ import { familyOf } from "../nordic/palette";
 export const SEAM_PAN_WIDTH_M = 0.4064; // 16"
 /** Major-rib pitch of a PBR exposed-fastener panel. */
 export const RIBBED_PANEL_PITCH_M = 0.3048; // 12"
+/** Corrugation pitch of a 7/8" corrugated exposed-fastener panel. */
+export const CORRUGATED_PITCH_M = 0.0677; // 2-2/3"
 
 // 128 px per pan. At 256 (64 px/pan) the seam ridge was only ~4 px wide and mip generation
 // ate it unevenly, so the module survived at some distances and not others.
@@ -27,10 +29,11 @@ export const SEAM_TILE_SIZE_M = SEAM_PAN_WIDTH_M * PANS_PER_TILE;
 /**
  * One metal-panel profile: the module across the sheet and the shape standing on it.
  *
- * Two recipes share this because they share everything but the cross-section — same Kynar
+ * Three recipes share this because they share everything but the cross-section — same Kynar
  * paint, same procedural approach, same band-limiting discipline. What separates a folded
- * seam from a rolled rib is `ribHalfWidth` (a seam is a narrow upstand at the pan edge; a
- * PBR major rib is a wide trapezoid) and how much the pan between them wanders.
+ * seam from a rolled rib from a corrugation is `ribHalfWidth` (a seam is a narrow upstand at
+ * the pan edge; a PBR major rib is a wide trapezoid; a corrugation is half its own module,
+ * because it has no flat at all) and how much the sheet between them wanders.
  */
 export interface MetalPanelProfile {
   readonly key: string;
@@ -65,6 +68,25 @@ export const RIBBED_PANEL_PROFILE: MetalPanelProfile = {
   striations: 0.05, oilCanning: 0.018,
 };
 
+/**
+ * 7/8" corrugated exposed-fastener panel: a continuous sinusoid at 2-2/3", screwed through
+ * its crowns. The garage walls.
+ *
+ * Every term differs from PBR for a reason, and getting them wrong is what would make this
+ * render as PBR with a tighter pitch rather than as corrugated:
+ *  - `ribHalfWidth: 0.5` — corrugated has no flat. The whole module IS the rib, so the half
+ *    width is half the module; a seam (0.08) and a PBR rib (0.14) are narrow upstands
+ *    standing on wide flats.
+ *  - `squareness: 0` — a true sine, where PBR's crown is roll-formed flat (0.65).
+ *  - `striations: 0` — anti-oil-canning striations are rolled into FLATS, and there are none.
+ *  - `oilCanning: 0.010` — below PBR's 0.018: continuous corrugation stiffens the sheet, so
+ *    it wanders less between fasteners than a wide flat pan does.
+ */
+export const CORRUGATED_PROFILE: MetalPanelProfile = {
+  key: "corrugated", moduleM: CORRUGATED_PITCH_M, ribHalfWidth: 0.5, squareness: 0,
+  striations: 0, oilCanning: 0.010,
+};
+
 /** Tile size in meters for a profile, i.e. `PANS_PER_TILE` modules of it. */
 export function panelTileSizeM(profile: MetalPanelProfile = SEAM_PROFILE): number {
   return profile.moduleM * PANS_PER_TILE;
@@ -92,6 +114,7 @@ export function metalPanelProfileForFinish(
   finish: string | null | undefined,
 ): MetalPanelProfile | null {
   if (finish === "ribbed-panel") return RIBBED_PANEL_PROFILE;
+  if (finish === "corrugated") return CORRUGATED_PROFILE;
   if (finish === "standing-seam") return SEAM_PROFILE;
   return null;
 }
