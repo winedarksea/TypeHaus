@@ -172,8 +172,6 @@ def test_the_overlay_hangs_off_the_cladding_head_not_the_structural_deck(catlin_
     scene, _ = build_detail(catlin_model, _eave(catlin_model))
     apron = next(n for n in scene.nodes
                  if isinstance(n, Polyline) and n.tag == "detail-component:apron-flashing")
-    screen = next(n for n in scene.nodes
-                  if isinstance(n, Polyline) and n.tag == "detail-component:insect-screen")
     # The cladding's own head, straight off the band the section drew for it.
     cladding = next(n for n in scene.nodes if isinstance(n, Polyline)
                     and (n.tag or "").endswith("closure-0-cladding"))
@@ -184,9 +182,11 @@ def test_the_overlay_hangs_off_the_cladding_head_not_the_structural_deck(catlin_
         f"the apron caps the cladding head at {head:.2f}, not {top:.2f}"
     assert min(z for (_u, z) in apron.points) < head, "and it laps DOWN over that head"
 
-    # The screen sits on the vent mat, the one air gap in the stack — which is above the
-    # cladding head's own plane only by the roofing that laps it.
-    assert min(z for (_u, z) in screen.points) > head - 1.0
+    # The vent screen used to be tested here beside the apron, as the miniature version of
+    # the same disease — its band offsets are perpendicular to the plane and were being read
+    # as vertical. It is gone with the vent mat it sat on (2026-08-31): CATLIN_ROOF has no
+    # air gap above the deck any more, so there is nothing at the eave to screen. The apron
+    # is the whole of this test now, and it is the piece the bug was actually about.
 
 
 def test_garage_foundation_draws_slab_thermal_break(catlin_model):

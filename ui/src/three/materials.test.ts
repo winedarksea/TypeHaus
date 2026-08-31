@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import {
   applyMasonryWallUv,
+  applyStandingSeamWallUv,
   BRICK_UNIT_M,
   CMU_UNIT_M,
   isCmu,
@@ -22,7 +23,9 @@ import {
 import {
   authoredAppearance, familyOf, materialColor, RESOLVED_NORDIC_PALETTE, statesOwnColor,
 } from "../nordic/palette";
-import { CATEGORY_FALLBACK, categoryColor, isSeamMember, memberColor } from "./members";
+import {
+  buildMembers, CATEGORY_FALLBACK, categoryColor, isSeamMember, memberColor, skinUvSpanM,
+} from "./members";
 import type { Member } from "../model/types";
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -328,4 +331,97 @@ export function runMemberColorTests() {
   assert(!isSeamMember(member("stud", "spf")), "Lumber never takes the seam finish");
   assert(!isSeamMember(member("fascia", "standing-seam")),
     "Only the metal-trim categories opt in — a fascia nailer is framing by trade");
+}
+
+// ── Skin-band UVs (the wall→roof closure) ───────────────────────────────────────────────
+//
+// A closure band is not trim hung near the wall: it IS the wall's own sheet carried up past
+// the top plate to the roof (resolve/roof_edge.py). Two things follow, and both were wrong
+// until 2026-08-31 — the garage gable's corrugated closures were the visible symptom.
+//
+//  1. Its module is its OWN profile's. The UV divisor was `SEAM_TILE_SIZE_M` for every band,
+//     so a 2-2/3" corrugation was drawn on a 16" pan's frame and stretched 6x, and the house's
+//     12" PBR rib 1.33x.
+//  2. Its phase is the wall's. `u` ran from the band's own `p0`, which is the MITRED corner —
+//     a layer-thickness past the wall axis — and restarts at the ridge where a gable closure
+//     splits in two. Both put a jog in the ribs at a joint that is one continuous sheet.
+export function runSkinBandUvTests() {
+  const materials = [{ tag: "corrugated-panel-26", color: "#6b7076", finish: "corrugated" }];
+  // W-G-E's gable closure, eave→ridge: the garage's east wall axis runs y 12.4111→19.7263,
+  // and the cladding band overhangs its start by the layer's own 22 mm outside-corner mitre.
+  // Its facade datum is the layout line 7.4" inboard of the axis, on the same y origin.
+  const wallAxis = { axis: [[7.3152, 12.4111], [7.3152, 19.7263]],
+    datum: [[7.2405, 12.4111], [7.2405, 13.4111]] } as const;
+  // The garage's brick screen wall stands 4 5/8" OUTBOARD of that wall and parallel to it, and
+  // its layout line is nearer the closure band than W-G-E's own layout line is. Matching on the
+  // layout line handed the gable band this datum and a phase 1.7 corrugations off the wall it
+  // continues; matching on the wall AXIS puts it back where the sheet is.
+  const brick = { axis: [[7.4327, 13.6303], [7.4327, 12.2936]],
+    datum: [[7.3739, 12.2936], [7.3739, 13.2936]] } as const;
+  const band = {
+    key: "W-G-E-closure-0-cladding", category: "cladding", material: "corrugated-panel-26",
+    profile: "0.875x0.875 panel", shape: "rect", width_m: 0.0222, depth_m: 0.0222, plies: 1,
+    p0: [7.326, 12.389], p1: [7.326, 16.069],
+    z0_m: 2.2352, z1_m: 2.4627, z0_end_m: 2.2352, z1_end_m: 3.6894,
+    length_m: 3.68, orient: null, connection: "roof:wall-top-closure",
+  } as unknown as Member;
+
+  const group = new THREE.Group();
+  // Schematic mode: the UVs are the subject here, and the nordic finish would want a canvas
+  // to generate its normal map on, which this runner has no DOM for.
+  buildMembers(group, [band], [0, 0], "schematic", RESOLVED_NORDIC_PALETTE.light, "RF-GARAGE",
+    materials, [brick, wallAxis]);
+  const mesh = group.children[0] as THREE.Mesh;
+  const uv = mesh.geometry.getAttribute("uv");
+  assert(uv, "A corrugated closure band is drawn on the metal-panel path, with its own UVs");
+
+  // Vertices 0/3/4/7 sit at p0, 1/2/5/6 at p1 (memberBox.rakedBoxVertices).
+  const runU = Math.abs(uv.getX(1) - uv.getX(0));
+  const runM = Math.hypot(band.p1[0] - band.p0[0], band.p1[1] - band.p0[1]);
+  assert(Math.abs(runU - runM / panelTileSizeM(CORRUGATED_PROFILE)) < 1e-6,
+    "The band spans its run in CORRUGATED tiles — not the 16\" seam pan it used to borrow");
+  assert(Math.abs(runU - runM / SEAM_TILE_SIZE_M) > 1,
+    "…and that is a different number from the seam frame, by six corrugations here");
+  const heightU = Math.abs(uv.getY(4) - uv.getY(0));
+  assert(Math.abs(heightU - (band.z1_m - band.z0_m) / panelTileSizeM(CORRUGATED_PROFILE)) < 1e-6,
+    "v is elevation on the same tile, so the corrugation stays square");
+
+  // Phase: u=0 is the WALL's start, so the band's mitred overhang reads as a negative u and
+  // the ribs land where the wall's ribs land. skinUvSpanM answers this for the geometry.
+  const [startM] = skinUvSpanM(band, [brick, wallAxis]);
+  assert(Math.abs(startM - (band.p0[1] - wallAxis.datum[0][1])) < 1e-9 && startM < 0,
+    "The band starts one mitre BEFORE its facade's origin, which is where its sheet does");
+  assert(Math.abs(startM - skinUvSpanM(band, [brick])[0]) > 0.1,
+    "…and that is NOT the brick screen wall's datum, which is nearer but not this band's wall");
+  assert(Math.abs(uv.getX(0) - startM / panelTileSizeM(CORRUGATED_PROFILE)) < 1e-6,
+    "That datum is what the drawn geometry carries");
+
+  // The joint itself, which is the whole point: run the WALL's own UV frame over the top of the
+  // wall cladding at the two plan points the band starts and ends at, and the band's u has to be
+  // the same number. If it is not, the ribs jog where one continuous sheet crosses the plate.
+  const wallTop = new THREE.BufferGeometry();
+  wallTop.setAttribute("position", new THREE.Float32BufferAttribute(
+    // Scene coords: x, elevation, -y (→ planGeometry.projectPointToScene).
+    [band.p0[0], band.z0_m, -band.p0[1], band.p1[0], band.z0_m, -band.p1[1]], 3));
+  applyStandingSeamWallUv(wallTop, wallAxis.datum, [0, 0], CORRUGATED_PROFILE);
+  const wallUv = wallTop.getAttribute("uv");
+  assert(Math.abs(wallUv.getX(0) - uv.getX(0)) < 1e-6
+    && Math.abs(wallUv.getX(1) - uv.getX(1)) < 1e-6,
+    "The corrugation crosses the wall→roof joint unbroken: same u, both sides of the plate");
+
+  // The upper half of the same gable, past the ridge split, has to continue the count rather
+  // than restart at zero — the ridge is a fraction the resolver chose, not a corner.
+  const upper = { ...band, key: "W-G-E-closure-1-cladding",
+    p0: [7.326, 16.069], p1: [7.326, 19.748] } as unknown as Member;
+  const [upperStart] = skinUvSpanM(upper, [brick, wallAxis]);
+  assert(Math.abs(upperStart - (16.069 - wallAxis.datum[0][1])) < 1e-9,
+    "The second gable segment picks the module up where the first left it");
+
+  // A rake fascia hung off the roof edge stands on no wall line and keeps its own run: there
+  // is no wall panel under it to line up with, and the nearest facade may be metres away.
+  const trim = { ...band, key: "RF-GARAGE-rake-cladding",
+    p0: [9.0, 12.4], p1: [9.0, 19.7] } as unknown as Member;
+  const [trimStart, trimEnd] = skinUvSpanM(trim, [brick, wallAxis]);
+  assert(trimStart === 0 && Math.abs(trimEnd - 7.3) < 1e-9,
+    "An off-line trim run falls back to its own p0, not to a facade it does not touch");
 }

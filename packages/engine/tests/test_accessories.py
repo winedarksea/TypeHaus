@@ -559,8 +559,16 @@ def test_catlin_house_roof_eave_trim_closes_the_eave(catlin_model) -> None:
     # Six runs (two eaves + four rake halves), each a formed section of cleat / face / hem.
     assert len(corner_trim) == 18
     assert {m.child_key.rsplit("-", 1)[1] for m in corner_trim} == {"cleat", "face", "hem"}
-    for member in corner_trim:
-        assert member.z1_m > eave
+    # ** THE HEM REACHES BELOW THE DECK PLANE SINCE 2026-08-31, AND THAT IS THE DETAIL. **
+    # Every piece stood above `eave` while eight inches of stack sat on the deck; with the
+    # outsulation deleted the roofing underside is 0.74" above it and the trim's 4" leg —
+    # which doubles as the barge board at the rake — necessarily hangs 3.26" BELOW, lapping
+    # down over the wall panel heads. What is invariant is the closure: the trim brackets
+    # the roof stack, its top at or above the roofing and its hem below the deck, so there
+    # is no open joint between the two runs of metal.
+    tops = {round(m.z1_m, 6) for m in corner_trim}
+    assert max(tops) > eave, (max(tops), eave)
+    assert min(m.z0_m for m in corner_trim) < eave
     # No hand-authored fascia solids — that would double the derived band.
     assert not [s for s in catlin_model.solids if s.tag.startswith("TR-RF-FASCIA")]
     for side in ("W", "E"):

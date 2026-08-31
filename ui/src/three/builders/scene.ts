@@ -12,7 +12,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import type { Model } from "../../model/types";
 import type { ResolvedNordicPalette } from "../../nordic/palette";
-import { disposeGroup } from "../members";
+import { disposeGroup, type SkinLine } from "../members";
 import { solidTrade } from "../solidMaterials";
 import {
   projectPlanRotationToSceneRadians, projectPointToScene, type PlanCenter,
@@ -175,9 +175,15 @@ export function populateScene(options: PopulateSceneOptions) {
     buildRoomFloor(tradeGroups.floors, room, top, openings, center, mode, palette,
       model.catalog?.materials, registry.picks, registry.byUid);
   }
+  // The facade datums every wall's cladding is framed on (builders/walls.ts uses the same
+  // `layout_axis ?? axis`), handed to the roofs so a wall→roof closure band's panel module
+  // continues the wall's instead of restarting at the band (→ members.ts skinUvSpanM).
+  const skinLines: SkinLine[] = (model.walls ?? []).map((wall) => ({
+    axis: wall.axis, datum: wall.layout_axis ?? wall.axis,
+  }));
   for (const roof of model.roofs ?? []) {
     buildRoof(tradeGroups.roof, roof, center, mode, palette, model.catalog, registry.picks,
-      registry.byUid, tradeGroups.framing);
+      registry.byUid, tradeGroups.framing, skinLines);
   }
   for (const panel of model.solar_panels ?? []) {
     buildSolarPanel(tradeGroups.electrical, panel, center, mode, registry.picks, registry.byUid);

@@ -185,6 +185,15 @@ MN_2024 = JurisdictionProfile(
                        blocking=False),
         PermitItemSpec("Attic ventilation", ("code.R806_2_attic_ventilation",),
                        ("IRC R806.2",), blocking=False),
+        # The other half of R806, and the half catlin actually builds to. R806.2's ratio
+        # scope-passes on an unvented roof by naming this section; until 2026-08-31 nothing
+        # then graded what the unvented roof DID have to satisfy — insulation placement,
+        # the Table R806.5 condensation-control R-value and the two vapour-retarder rules.
+        # BLOCKING: a hot roof that misses this is a rotting deck, not a paperwork gap, and
+        # the reference house's own condensation gate defers to it.
+        PermitItemSpec("Unvented roof insulation and vapour retarders",
+                       ("code.R806_5_unvented_roof",),
+                       ("IRC R806.5", "IRC Table R806.5")),
         PermitItemSpec("GFCI receptacle locations", ("code.E3902_gfci_locations",),
                        ("IRC E3902",), blocking=False),
         # Blocking, unlike the two beside it: the staging lane exists for a rule the

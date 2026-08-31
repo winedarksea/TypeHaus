@@ -50,21 +50,28 @@ def _layer_rsi(layer, library: Library, unknown: list[str]) -> float:
         return 0.0
     framing_rsi = r_us(mat.r_per_inch * layer.thickness.inches).rsi
 
-    fill = getattr(layer, "cavity", None)
-    if fill is None:
+    fills = getattr(layer, "cavity_fills", ())
+    if not fills:
         return framing_rsi
 
-    fill_mat = library.material(fill.material_ref)
-    if fill_mat is None or fill_mat.r_per_inch is None:
-        unknown.append(f"{layer.name}-cavity({fill.material_ref})")
-        return 0.0
-    fill_thickness = fill.thickness if fill.thickness is not None else layer.thickness
-    fill_rsi = r_us(fill_mat.r_per_inch * fill_thickness.inches).rsi
+    # Several fills in one bay (flash-and-batt) are in SERIES with each other and in
+    # PARALLEL with the framing, which runs past all of them: 5" of ccSPF plus 6-7/8" of
+    # batt is one 11-7/8" bay path, not two bays. Summing their R and then parallel-pathing
+    # once against the full-depth framing is the only reading that keeps the joist a single
+    # thermal bridge instead of counting it twice.
+    fill_rsi = 0.0
+    for fill in fills:
+        fill_mat = library.material(fill.material_ref)
+        if fill_mat is None or fill_mat.r_per_inch is None:
+            unknown.append(f"{layer.name}-cavity({fill.material_ref})")
+            return 0.0
+        fill_thickness = layer.cavity_thickness(fill)
+        fill_rsi += r_us(fill_mat.r_per_inch * fill_thickness.inches).rsi
     # A shallower fill leaves still air in the rest of the bay; count only the fill so the
     # result stays conservative rather than crediting an unsealed void.
     if framing_rsi <= 0.0 or fill_rsi <= 0.0:
         return max(framing_rsi, 0.0)
-    ff = min(max(fill.framing_factor, 0.0), 1.0)
+    ff = layer.cavity_framing_factor
     u_eff = ff / framing_rsi + (1.0 - ff) / fill_rsi
     return 1.0 / u_eff if u_eff > 0.0 else framing_rsi
 

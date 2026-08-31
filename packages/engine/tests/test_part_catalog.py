@@ -26,7 +26,10 @@ def test_wall_layers_carry_their_raw_material_ref(catlin_model):
     assert {"closed-cell-spray-foam", "struct-1-plywood", "kdat"} <= wall_refs
     roof_refs = {part.catalog.material_ref for (_e, part) in _parts(catlin_model, "roof")
                  if part.catalog is not None and part.catalog.material_ref}
-    assert {"polyiso", "struct-1-plywood"} <= roof_refs
+    # Two different rigid materials in one roof stack, restated 2026-08-31: it was the
+    # 6" of polyiso against the ZIP deck; the outsulation is deleted and the pair that
+    # tests the same property now is the CDX deck against the adhered butyl membrane.
+    assert {"roof-adhered-butyl-ht", "struct-1-plywood"} <= roof_refs
     assert layer_material_key("polyiso", "insulation") == \
            layer_material_key("eps", "insulation")
 

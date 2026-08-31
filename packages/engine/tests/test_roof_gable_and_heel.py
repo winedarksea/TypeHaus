@@ -13,7 +13,8 @@ import math
 import uuid
 
 import pytest
-from shapely.geometry import Point, Polygon
+from shapely.geometry import LineString, Point, Polygon
+from shapely.ops import unary_union
 
 from typehaus.model import (
     Assembly, Building, EaveGutter, EaveSoffit, EaveTrim, Fascia, FasciaBoard, FramingSpec,
@@ -451,44 +452,53 @@ def test_flush_gable_rake_carries_the_skin_above_the_deck_plane(flush):
     assert _closures(flush, "W-E1")
 
 
-def test_closure_bands_wrap_the_buildings_outside_corners(flush):
-    """No (skin depth)² column is left open where two clad walls meet under a flush roof.
+def test_closure_bands_tile_the_buildings_outside_corners(flush):
+    """The mitre square at every outside corner is covered exactly once — no gap, no double.
 
-    The bands used to run the wall's raw axis while the prism under them was already mitred
-    into the corner, so every outside corner had a square column of stack height claimed by
-    neither wall — and the wall's exterior foam showed its end grain in it (a gold square at
-    each lower gable corner in any 3D view of the catlin house). Checked as coverage rather
-    than as an offset, so the assertion survives whatever the mitre convention becomes.
+    Two failures live at this corner and they are opposites, so the test states the invariant
+    rather than a convention. The bands used to run the wall's raw axis while the prism under
+    them was already mitred, leaving a (skin depth)² column of stack height claimed by neither
+    wall — the exterior foam showed its end grain in it (a gold square at each lower gable
+    corner in any 3D view of the catlin house). Reading the span off the polygon closed the
+    gap but opened the other side of it: a band is a box and the layer under it is a
+    trapezoid, so BOTH walls then claimed the square and their faces landed coplanar, 7/8"
+    wide and the height of the band, z-fighting on the garage's corrugated gables.
+    ``_laps_the_corner`` laps one over the other instead, which is how the boards go on.
+
+    Checked as plan area, so it survives whichever wall is the one that laps.
     """
     roof = _roof(flush)
     walls = {w.tag: w for w in flush.walls}
     bands = [m for m in roof.members if "-closure-" in m.child_key]
     assert bands
-    for tag, wall in walls.items():
-        own = [m for m in bands if m.child_key.startswith(f"{tag}-closure-")]
-        if not own:
-            continue
-        (ax, ay), (bx, by) = wall.axis
-        axis_len2 = (bx - ax) ** 2 + (by - ay) ** 2
 
-        def along_axis(x, y):
-            return ((x - ax) * (bx - ax) + (y - ay) * (by - ay)) / axis_len2
+    def box(member):
+        half = cross_section(member.profile).width_m / 2.0
+        return LineString([member.p0, member.p1]).buffer(half, cap_style=2, join_style=2)
 
-        for layer in wall.depth_layers():
-            # A gable wall is split at the ridge, so one layer can own several segments —
-            # what has to cover the polygon is their union, not any one of them.
-            segments = [m for m in own if m.child_key.endswith(f"-{layer.name}")]
-            if not segments:
+    by_layer: dict[str, list] = {}
+    for member in bands:
+        by_layer.setdefault(member.child_key.rsplit("-", 1)[1], []).append(member)
+
+    for layer_name, members in by_layer.items():
+        boxes = [box(m) for m in members]
+        # No double occupancy: two bands may share an edge (a gable splits at the ridge) but
+        # never an area.
+        for i, first in enumerate(boxes):
+            for second in boxes[i + 1:]:
+                assert first.intersection(second).area < 1e-12, (layer_name, "overlap")
+        covered = unary_union(boxes)
+        # And no gap: every layer prism a band was emitted for is covered corner to corner,
+        # including the mitre the neighbouring wall laps over.
+        for tag, wall in walls.items():
+            if not any(m.child_key.startswith(f"{tag}-closure-") for m in members):
                 continue
-            ends = [along_axis(*point) for m in segments for point in (m.p0, m.p1)]
-            along = [along_axis(x, y) for x, y in layer.polygon]
-            # The bands must reach at least as far along the axis as their own layer
-            # polygon — i.e. all the way into the mitre — at both ends.
-            assert min(ends) <= min(along) + 1e-9, (tag, layer.name, min(ends), min(along))
-            assert max(ends) >= max(along) - 1e-9, (tag, layer.name, max(ends), max(along))
+            layer = next((ly for ly in wall.depth_layers() if ly.name == layer_name), None)
+            if layer is None:
+                continue
+            missed = Polygon(layer.polygon).difference(covered).area
+            assert missed < 1e-9, (tag, layer_name, missed)
 
-
-# --- 8. mitred rake corners ----------------------------------------------------------------
 
 def _plan_polygon(member):
     """A trim member's plan footprint, the way every emitter builds it."""
@@ -672,11 +682,30 @@ def test_the_ridge_cap_rides_on_top_of_the_layer_stack(stacked):
     assert {m.material for m in caps} == {"standing-seam"}
 
 
-def test_an_unvented_roof_gets_no_ridge_cap():
-    """No vented soffit and no over-deck vent channel means no slot to cap."""
+def test_an_unvented_but_clad_roof_gets_a_closed_ridge_cap():
+    """No vented soffit and no over-deck vent channel means no slot to VENT — and the two
+    slopes still meet in an open joint that a covering has to be closed over.
+
+    The cap is the same piece either way; what changes is ``connection``. This test asserted
+    ``== []`` until 2026-08-31, and the day CATLIN_ROOF's vent mat was deleted that reading
+    took 37 LF of ridge cap off a standing-seam roof with nothing reporting it.
+    """
     unvented = EaveTrim(
         fascia=(FasciaBoard(material="spf", thickness=inch(1.5), depth=inch(5.5)),))
     model, _ = resolve(_plan(eave_trim=unvented, roof_layers=_STACK_LAYERS))
+    cap, = _members(model, "ridge_cap")
+    assert cap.category == "ridge_cap" and cap.connection == "ridge:closed-cap"
+    assert cap.material == "standing-seam"
+
+
+def test_an_unvented_uncovered_roof_gets_no_ridge_cap():
+    """The one case that still gets nothing, and it is earned: no slot to vent AND no
+    covering to close over. A cap on a bare deck is trim on a roof nobody has finished."""
+    unvented = EaveTrim(
+        fascia=(FasciaBoard(material="spf", thickness=inch(1.5), depth=inch(5.5)),))
+    bare = tuple(layer for layer in _STACK_LAYERS
+                 if layer.function is not LayerFunction.CLADDING)
+    model, _ = resolve(_plan(eave_trim=unvented, roof_layers=bare))
     assert _members(model, "ridge_cap") == []
 
 

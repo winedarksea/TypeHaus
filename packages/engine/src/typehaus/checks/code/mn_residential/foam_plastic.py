@@ -179,17 +179,35 @@ def foam_plastic_thermal_barrier(ctx: CheckContext) -> list[Finding]:
         layers = list(assembly.default_lining) + layers
         # Walk out from the room. The FIRST foam layer is the one R316.4 is about — foam
         # behind it is already covered by whatever covers this one.
+        #
+        # **A layer's CAVITY FILL is foam too, and for years none of it was graded.** Spray
+        # foam in a stud or rafter bay is the textbook R316.4 case — the section's own
+        # commentary is about foam behind gypsum — and this walk read only ``material_ref``,
+        # so every ccSPF bay in the house (the truss wall's, the garage's, and since
+        # 2026-08-31 the roof's 5" flash) was invisible to it. A fill sits at its host
+        # layer's depth position, so the barrier span is the same ``layers[:index]``: what
+        # protects the joist protects what is packed between the joists.
         for index, layer in enumerate(layers):
-            material = _material(ctx, layer.material_ref)
-            if material is None or not getattr(material, "foam_plastic", False):
+            candidates = [(layer.material_ref, layer.name, layer.thickness)] + [
+                (fill.material_ref, f"{layer.name} cavity",
+                 layer.cavity_thickness(fill)) for fill in layer.cavity_fills
+            ]
+            foam = next(
+                ((mat, label, thickness) for ref, label, thickness in candidates
+                 if (mat := _material(ctx, ref)) is not None
+                 and getattr(mat, "foam_plastic", False)),
+                None,
+            )
+            if foam is None:
                 continue
+            material, label, thickness = foam
             verdict, phrase = _barrier_verdict(ctx, list(reversed(layers[:index])))
             if verdict == "pass":
-                out.append(_pass(_CID, f"{tag}: {layer.thickness.fmt()} of "
+                out.append(_pass(_CID, f"{tag}: {thickness.fmt()} of "
                                        f"{material.tag} is behind {phrase}", _CODE))
             elif verdict == "fail":
-                out.append(_fail(_CID, f"{tag} puts {layer.thickness.fmt()} of "
-                                       f"{material.tag} ('{layer.name}') toward the "
+                out.append(_fail(_CID, f"{tag} puts {thickness.fmt()} of "
+                                       f"{material.tag} ('{label}') toward the "
                                        f"interior with {phrase}; R316.4 requires 1/2\" "
                                        "gypsum, 5/8\" wood structural panel or an NFPA "
                                        "275 barrier", (tag,), _CODE))

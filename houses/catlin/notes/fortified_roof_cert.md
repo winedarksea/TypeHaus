@@ -49,36 +49,58 @@ letter.
 **Fix:** procurement — a PE letter citing §2.5/Appendix B1, covering the ridge-beam
 alternative.
 
-## Deck attachment — §4.2.2
+## Deck attachment — §4.2.2 — **RESOLVED BY DELETION, 2026-08-31**
 
-**Gap:** the outer 5/8" OSB deck is **screwed** (10" SDWH191000DB through the foam into
-the rafters), not nailed — RSRS-01 ring-shank nailing at 4" o.c. max does not apply to a
-screwed nailbase assembly. This is exactly the standard's "other attachment method"
-branch, not a deviation from it.
+**The gap was:** the outer 5/8" OSB deck was **screwed** (10" SDWH191000DB through 6" of
+foam into the rafters), not nailed — RSRS-01 ring-shank nailing at 4" o.c. max does not
+apply to a screwed nailbase assembly. It was the standard's "other attachment method"
+branch rather than a deviation from it, and it wanted a PE letter to say so.
 
-**Fix:** procurement — a PE letter per §2.5/Appendix B1 covering the screwed-nailbase
-attachment as an alternative to RSRS-01 nailing. Not a modeled field: nothing else in this
-model would consume an authored `nail_spacing_in`, and "this deck is screwed and needs a
-PE letter" is the whole honest answer.
+**It closes by ceasing to exist.** The roof redesign deletes the nailbase and the foam it
+was screwed through (`plan/assemblies.py::CATLIN_ROOF`, `notes/roof_flash_and_batt.md`).
+There is now ONE deck — 5/8" CDX plywood nailed straight to the TJI rafters — which is the
+ordinary condition §4.2.2 is written for, and RSRS-01 ring-shank nailing at 4" o.c. applies
+to it directly with nothing to explain. **No PE letter is needed for this item.** Item 1
+(§2.5, the structural ridge beam) is untouched and still open.
+
+Two consequences worth stating so this is not re-opened by mistake:
+
+- **The 24" o.c. framing is not a problem here.** RSRS-01's schedule is stated per support,
+  so a wider rafter spacing changes the number of rows and not the spacing within one.
+- **`takeoff/hardware_config.py`'s `strip_spacing_in = 16.0` is a hard-coded constant**, not
+  read from the roof's `FramingSpec`. Had the nailbase survived the move to 24" o.c., its
+  screw grid would silently have stayed on 16 x 24 and nothing would have reported it.
+  Deleting the nailbase steps around that landmine rather than onto it; the constant is
+  still there and still wrong for any future roof that does screw through foam.
 
 ## Sealed roof deck — §4.4
 
-**Gap (closed by spec, 2026-08-30):** the taped layer is the *inner* ZIP nailbase; the
-*outer* OSB deck (the one actually under the covering) had an untaped-seam generic
-synthetic underlayment with no ASTM/ICC citation or fastening schedule stated.
+**Gap (closed by spec 2026-08-30; closed OUTRIGHT by construction 2026-08-31):** the taped
+layer was the *inner* ZIP nailbase; the *outer* OSB deck (the one actually under the
+covering) had an untaped-seam generic synthetic underlayment with no ASTM/ICC citation or
+fastening schedule stated. The 2026-08-30 fix taped the OSB seams (Method 1) and cited ASTM
+D226 Type II / ICC-ES AC188 on the synthetic.
 
-**Fix, applied:**
-- `plan/assemblies.py`'s `CATLIN_ROOF` top-deck layer now notes OSB seams taped with ASTM
-  D1970 or AAMA 711 Level 3 tape — Method 1, since the AC266/Zip factory-taped exemption
-  only covers the panel directly under the covering, and the taped ZIP here is an inner
-  air-barrier layer, not that panel.
-- The `roof-underlayment-synthetic` material's `source` now cites ASTM D226 Type II /
-  ICC-ES AC188 compliance and a 6" o.c. lap / 12" o.c. field cap-nail fastening schedule.
-- `structural.fortified_roof_sealed_deck` grades presence of a MEMBRANE layer with a WATER
-  control on any conditioned-envelope roof at 2:12 or steeper; catlin's roof carries one
-  (`underlayment`), so the check reports UNKNOWN — presence, not inspected compliance.
+**What stands now is the strongest form of the requirement, not a specification of the
+weakest.** The roof carries a **fully-adhered high-temp butyl membrane over the whole deck**
+(`roof-adhered-butyl-ht`, ASTM D1970 compliant, >= 240 F). A sealed roof deck IS a
+fully-adhered membrane; the taped-seam and lapped-underlayment routes in §4.4 are the
+alternatives available when you do not have one. There are no seams to tape and no cap-nail
+schedule to state, because there are no cap nails: the sheet is self-adhered and it self-
+seals around every one of the ~1,160 standing-seam clip screws that pass through it.
 
-Documentation/spec only: no layer thickness, assembly R-value, or geometry changed.
+`structural.fortified_roof_sealed_deck_present` grades presence of a MEMBRANE layer with a
+WATER control on any conditioned-envelope roof at 2:12 or steeper; catlin's roof carries one
+(`membrane`), so the check reports presence — ASTM/ICC compliance and the installer's
+schedule remain documentation facts this model does not carry.
+
+**The upgrade arithmetic inverted, and `prices.toml` records it.** Full-deck peel-and-stick
+was carried as a $12,400-27,300 UPGRADE the assembly *could not take* — at 0.05 perm it
+sealed the polyiso against the 0.04-perm deck barrier below it and failed the condensation
+gate. With the foam moved into the joist bay there is nothing to seal on two faces, the
+upgrade is the base scope, and it costs $3,560-6,346 rather than $17,400-38,300 because it
+is one membrane instead of a membrane on top of a synthetic, a mat, a nailbase and two
+courses of foam.
 
 ## Drip edge / flashing — §4.5, §4.6
 
@@ -137,8 +159,8 @@ path than the ones `uplift_path.py` walks.
 | # | Section | Item | Status | Owner |
 |---|---|---|---|---|
 | 1 | §2.5 | PE letter: structural ridge beam vs. collar ties | open | procurement |
-| 2 | §4.2.2 | PE letter: screwed-nailbase deck attachment vs. RSRS-01 | open | procurement |
-| 3 | §4.4 | Sealed deck spec (tape + underlayment citation) | **closed 2026-08-30** | spec |
+| 2 | §4.2.2 | PE letter: screwed-nailbase deck attachment vs. RSRS-01 | **closed 2026-08-31** — the nailbase is deleted; one nailed CDX deck, RSRS-01 applies directly | design |
+| 3 | §4.4 | Sealed deck spec (tape + underlayment citation) | **closed 2026-08-30**, superseded 2026-08-31 by a fully-adhered deck membrane | spec |
 | 4 | §4.5/4.6 | Drip edge at eaves AND rakes | **closed 2026-08-30** | spec |
 | 5 | §4.7.3 | Manufacturer UL 580/1897 DP test report | open | procurement |
 | 6 | §7.2.3 | Manufacturer UL 2218 Class 4 hail letter | open | procurement |

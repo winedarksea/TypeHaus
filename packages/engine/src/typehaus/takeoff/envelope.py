@@ -170,9 +170,13 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             # all: every rafter batt and every blown attic in the model reached no order.
             # Billed on the ceiling plane, not the deck, and with the wall path's exact
             # ``insulation (cavity)`` function so one material reads the same in both.
-            fill = roof_layer.cavity
-            if fill is not None and ceiling_m2 is not None:
-                depth = fill.thickness if fill.thickness is not None else roof_layer.thickness
+            # Every fill in the bay, not just the first: a flash-and-batt roof orders the
+            # foam and the batt as two rows over the SAME ceiling plane, each at its own
+            # depth, because they are two products from two trades filling one joist bay.
+            for fill in roof_layer.cavity_fills:
+                if ceiling_m2 is None:
+                    break
+                depth = roof_layer.cavity_thickness(fill)
                 areas[("roof ceiling", "insulation (cavity)", fill.material_ref,
                        depth.meters)] += ceiling_m2
         # ``default_lining`` is the ceiling: the gypsum under the chords, and whatever
@@ -229,9 +233,8 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             if slab_layer.function in _BILLABLE:
                 areas[(scope, slab_layer.function.value, slab_layer.material_ref,
                        slab_layer.thickness.meters)] += net_m2
-            fill = slab_layer.cavity
-            if fill is not None:
-                depth = fill.thickness if fill.thickness is not None else slab_layer.thickness
+            for fill in slab_layer.cavity_fills:
+                depth = slab_layer.cavity_thickness(fill)
                 areas[(scope, "insulation (cavity)", fill.material_ref,
                        depth.meters)] += net_m2
         for lining_layer in assembly.default_lining:

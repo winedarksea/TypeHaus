@@ -160,15 +160,20 @@ def test_a_plain_section_shows_the_roof_as_its_real_stack(catlin_model):
 
 
 def test_the_bay_fill_still_draws_under_the_rafters(catlin_model):
-    """The batt shares the bay's depth, so the IR gives it no solid — and a roof that reads
-    as 11-7/8" of solid timber is not what the section is cut to show."""
+    """The fills share the bay's depth, so the IR gives them no solid — and a roof that reads
+    as 11-7/8" of solid timber is not what the section is cut to show.
+
+    BOTH of them, since 2026-08-31: CATLIN_ROOF is flash-and-batt, and drawing only the
+    first fill would put the batt on the section and leave the 5" of ccSPF bonded to the
+    deck — the layer the whole R806.5 argument rests on — invisible.
+    """
     from typehaus.emit.draw.details import build_detail, derive_detail_slices
 
     derived = next(d for d in derive_detail_slices(catlin_model)
                    if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
     scene, _findings = build_detail(catlin_model, derived)
-    assert [node for node in scene.nodes
-            if isinstance(node, Hatch) and node.material == "fiberglass-r19"]
+    drawn = {node.material for node in scene.nodes if isinstance(node, Hatch)}
+    assert {"fiberglass-r30c", "closed-cell-spray-foam"} <= drawn
 
 
 def test_a_roof_off_the_sheet_does_not_label_its_layers(catlin_model):

@@ -219,7 +219,14 @@ def test_no_detail_component_is_ever_a_symbol(catlin_model):
     ("wall_roof:GARAGE_ROOF", "box-gutter"),
     ("wall_roof:GARAGE_ROOF", "drip-edge"),
     ("wall_roof:CATLIN_EXT_2X6", "apron-flashing"),
-    ("wall_roof:CATLIN_EXT_2X6", "insect-screen"),
+    # ``insect-screen`` was here until 2026-08-31 and is NOT REPLACED, which is a coverage
+    # loss worth stating rather than quietly dropping. The screen closes the eave end of an
+    # OVER-DECK VENT CHANNEL, and no assembly in this house has one any more: CATLIN_ROOF's
+    # 1/4" vent mat went with the outsulation, and the garage is vented through its soffits
+    # into a truss space, not through a channel over its deck. The vocabulary itself is
+    # untouched and still fires for any stack with an AIRGAP or FURRING band above the deck
+    # — this parametrization simply has no such stack left to point at. Restore the row the
+    # moment one exists again.
     ("wall_foundation:CATLIN_BASEMENT_12", "z-flashing"),
     ("wall_foundation:CATLIN_BASEMENT_12", "l-flashing"),
     ("wall_foundation:CATLIN_BASEMENT_12", "sealant-bead"),

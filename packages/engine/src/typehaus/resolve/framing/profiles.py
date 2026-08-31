@@ -64,6 +64,27 @@ _RE_LSL = re.compile(
 # ``width_m`` is the platform width (so it renders full-width, not as a 1.5" strip).
 _RE_DECK = re.compile(r"^deck\s+(?P<width>\d+(?:\.\d+)?)x(?P<depth>\d+(?:\.\d+)?)$")
 _RE_IJOIST = re.compile(r"^(?P<depth>\d+(?:\.\d+)?)\s+I-joist$")
+# A *named series* I-joist: "11.875 TJI 230". Worth its own pattern for two reasons that
+# have nothing to do with drawing. The generic spelling above guesses a flange width from
+# the depth alone, because a bare "I-joist" says nothing more; a series says exactly what
+# the flange is, and the flange is what a bearing stiffener, a hanger seat and a nailed-on
+# ledger all measure against. And the BOM keys off this string, so naming the series is what
+# lets a roof on a heavier joist carry its own price row instead of dragging every floor
+# joist in the house up to it. WITHOUT this pattern the string falls through to the
+# rectangular FALLBACK and silently resolves 1 1/2" x 5 1/2" — the same trap ``_RE_LSL``
+# above was added for.
+_RE_TJI = re.compile(r"^(?P<depth>\d+(?:\.\d+)?)\s+TJI\s+(?P<series>\d+)$")
+#: Trus Joist TJI flange and web geometry by series: (flange width, flange thickness, web
+#: thickness) in inches, from the TJ-4000 Specifier's Guide section properties. An unlisted
+#: series falls back to the generic depth-keyed I-joist below rather than to a rectangle —
+#: a joist of the wrong flange is a drawing error, a 1.5x5.5 stick is a quantity error.
+_TJI_SERIES_IN: dict[str, tuple[float, float, float]] = {
+    "110": (1.75, 1.375, 0.375),
+    "210": (2.3125, 1.375, 0.375),
+    "230": (2.3125, 1.5, 0.375),
+    "360": (2.3125, 2.3125, 0.4375),
+    "560": (3.5, 2.3125, 0.4375),
+}
 # Open-web trimmable floor truss, fabricated to depth: "11.875 floor truss".
 _RE_FLOOR_TRUSS = re.compile(r"^(?P<depth>\d+(?:\.\d+)?)\s+floor truss$")
 _RE_MULTI_NOMINAL = re.compile(r"^(?P<plies>\d+)-(?P<nominal>\d+x\d+)$")
@@ -181,6 +202,16 @@ def cross_section(profile: str) -> CrossSection:
 
     if match := _RE_DECK.match(text):
         return _rect(float(match["width"]), float(match["depth"]))
+
+    if match := _RE_TJI.match(text):
+        depth_in = float(match["depth"])
+        flange_w, flange_t, web_t = _TJI_SERIES_IN.get(
+            match["series"], (3.5 if depth_in >= 14.0 else 2.5, 1.375, 0.375))
+        return CrossSection(
+            shape="i_joist", width_m=inch(flange_w).meters,
+            depth_m=inch(depth_in).meters, flange_width_m=inch(flange_w).meters,
+            flange_thickness_m=inch(flange_t).meters, web_thickness_m=inch(web_t).meters,
+        )
 
     if match := _RE_IJOIST.match(text):
         depth_in = float(match["depth"])

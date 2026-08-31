@@ -211,7 +211,19 @@
 "1x1 panel" = { material = { low = 0.16, high = 0.27 }, labour = { low = 0.5, high = 1 } }  # 158 LF — girt-wall eave return
 # "1.5x5.5 panel" =    # 112 LF — SPF fascia, billed in [edge_trim]
 "1.5x6 rim" = { material = { low = 0.95, high = 1.55 }, labour = { low = 0.9, high = 1.7 } }  # 80 LF
-"11.875 I-joist" = { material = { low = 3.5, high = 5.5 }, labour = { low = 0.9, high = 1.9 } }  # 4580 LF — grew ~756 LF on 2026-08-21 with FS-M-WEST/FS-M-EAST
+"11.875 I-joist" = { material = { low = 3.5, high = 5.5 }, labour = { low = 0.9, high = 1.9 } }  # 2436 LF — floors only since 2026-08-31 (the roof's 1,115 LF of rafter moved to the TJI 230 row below); the comment read 4580 for weeks against an ordered 3,556
+# THE ROOF'S RAFTERS, AND A SEPARATE ROW ON PURPOSE (2026-08-31). Going to 24" o.c. traded
+# 358 LF of joist for a heavier series: at 16" the cheapest TJI in the line carried the
+# 18'-0" HORIZONTAL span at Ps = 35 psf, at 24" the first one that does with margin is the
+# 230 (19'-3" allowable). The upcharge is real and it is ~20% on material, which is exactly
+# why this is not folded into the row above: that row carries 2,436 LF of FLOOR joist that
+# has no reason to be dragged up to the roof's rate. Naming the series is also what lets a
+# quote be asked for — "11.875 I-joist" cannot be ordered from anybody.
+# CONFIDENCE: MEDIUM. The upcharge is a catalogue-step estimate, not a lumberyard quote, and
+# the SPACING IS NOT FINAL: the printed TJ-4000 table assumes bearing at the high end while
+# these joists hang off the ridge on LSSR hangers, so ForteWEB owns the last word. The
+# fallback if it says no is a TJI 210 at 19.2" o.c. (2'-6" of margin, ~200 LF saved).
+"11.875 TJI 230" = { material = { low = 4.2, high = 6.6 }, labour = { low = 0.9, high = 1.9 } }  # 760 LF — RF-HOUSE rafters, 38 pc x 20'
 # PLACEHOLDER, 2026-08-21 — no fabricator quote yet, confirm before treating the takeoff
 # delta as meaningful. FS-S-WEST's open-web trimmable trusses, same 11 7/8" depth as the
 # I-joist row above. Material above the I-joist's $3.50-5.50 (fabricated open-web at this
@@ -453,11 +465,18 @@
 # The nailbase top deck (CATLIN_ROOF). Labour is well above the plywood row below it and
 # that is not padding: every sheet is set on 6" of foam with nothing under it but the screw
 # being driven, so it is a two-man lay-and-hold operation with a 10" screw on a 16 x 24 grid.
-"osb" = { material = { low = 24, high = 38 }, labour = { low = 30, high = 58 } }  # 45 sheets
-"struct-1-plywood" = { material = { low = 27, high = 42 }, labour = { low = 16, high = 34 } }  # 179 sheets
+# NOT TAKEN as of 2026-08-31 — 0 sheets. The nailbase and the foam it was screwed through
+# are both deleted (plan/assemblies.py CATLIN_ROOF). Kept for the rate, like every other
+# retired row in this file — and the lay-and-hold labour above is the number to restore if a
+# nailbase ever comes back, because it is the part a plain plywood rate does not carry.
+"osb" = { material = { low = 24, high = 38 }, labour = { low = 30, high = 58 } }  # 0 sheets (was 45)
+"struct-1-plywood" = { material = { low = 27, high = 42 }, labour = { low = 16, high = 34 } }  # 174 sheets — +49 for the roof deck, -54 as the ZIP and OSB roof decks left, 2026-08-31
 # Plain ZIP (not ZIP-R) — the roof's structural deck and air-barrier plane. Cheaper than the
 # ZIP-R row below by the whole cost of the foam laminated to it, which this roof buys loose.
-"zip-sheathing" = { material = { low = 36, high = 58 }, labour = { low = 22, high = 44 } }  # 45 sheets
+# NOT TAKEN as of 2026-08-31 — 0 sheets. The roof deck is 5/8" CDX now and the air barrier
+# moved off the taped panel onto the ccSPF bonded to its underside (R806.5 item 5.3), so
+# there is no ZIP left in the house. Kept for the rate.
+"zip-sheathing" = { material = { low = 36, high = 58 }, labour = { low = 22, high = 44 } }  # 0 sheets (was 45)
 "zip-r" = { material = { low = 78, high = 105 }, labour = { low = 25, high = 50 } }  # 0 sheets (was 20) — retired 2026-08-31, kept for the rate
 # 5/8" CDX, GARAGE_WALL_2X6's sheathing since 2026-08-31, replacing the ZIP-R row above.
 # $30-52 the 4x8 sheet is the ordinary-sheathing shelf price a grade below the sanded
@@ -723,7 +742,10 @@
 # [member_protection] "butyl-tape-beam" and would be a second bill for one product.
 "SS316-LAG-38x4-EPDM" = { low = 4, high = 8 }  # 8 ea
 "SS316-STANDOFF-STRAP #13" = { low = 3, high = 5.5 }  # 8 ea — roof leaders
-"SDWH191000DB" = { low = 1.05, high = 1.95 }  # 539 ea — the ROOF's 10" screws through 6" of polyiso
+# NOT TAKEN as of 2026-08-31 — 0 ea, and it falls out on its own: `takeoff/fasteners.py`
+# derives the length and the count from the stack, and there is no longer a nailbase to screw
+# through. Kept for the rate.
+"SDWH191000DB" = { low = 1.05, high = 1.95 }  # 0 ea (was 581) — the ROOF's 10" screws through 6" of polyiso
 # 2026-08-26, the catlin truss's block screws — ONE per block, two rows, both landing on the
 # same 5" part. Derived from the resolved members rather than from a grid
 # (takeoff/fasteners.truss_wall_block_screw_rows):
@@ -1934,6 +1956,21 @@
 # a set-up the way the note above adds one for pass 2.
 "closed-cell-spray-foam:2.0" = { material = { low = 0.8, high = 1.2 }, labour = { low = 1.2, high = 1.8 } }  # 631.3 SF — GARAGE_WALL_2X6's bays
 "closed-cell-spray-foam:2.5" = { material = { low = 1.0, high = 1.55 }, labour = { low = 1.5, high = 2.2 } }  # DEAD — pass 2 as one row; kept as the cross-check on :1.5 + :1.0
+# 2026-08-31 — CATLIN_ROOF's FLASH, 1,449.0 SF at 5" against the deck underside. The single
+# largest ccSPF line in the house at 7,245 board-feet, and the one the whole roof redesign
+# turns on: it is the air barrier, the vapour retarder and the R806.5 item 5.3 condensation
+# control in one bonded application, and it is what let nine layers of outsulation go away.
+#
+# ** THE BOARD-FOOT RATE IS HIGHER HERE THAN IN THE WALL ROWS ABOVE, AND THAT IS DELIBERATE. **
+# The wall rows sit at $1.00-1.50/bd-ft. This one is $1.10-1.75. Overhead spraying into a
+# joist bay is slower and wastes more than spraying down a flat sheathing plane, the lifts
+# are thicker (5" is three passes, not one), and the applicator has to reach past the flange
+# pockets and lap onto the ridge beam's side faces and over 76 hanger flanges in the same
+# pass — the air-seal detail most likely to be skipped, and free only if it is specified.
+# The LOW end already assumes the crew is mobilised for the wall's two passes; a roof sprayed
+# on its own visit adds a set-up the way the note above adds one for pass 2.
+# 5 bd-ft/SF x $1.10-1.75 = $5.50-8.75/SF installed, split 40/60 material/labour as above.
+"closed-cell-spray-foam:5.0" = { material = { low = 2.2, high = 3.5 }, labour = { low = 3.3, high = 5.25 } }  # 1449.0 SF — CATLIN_ROOF's flash, 7,245 bd-ft
 # RESEARCHED 2026-08-20 — GARAGE_ROOF's attic fill, 576 SF at 14.5" settled (R-38). A
 # separate key from "fiberglass" above because that row is a 5.5" stud-bay BATT and this is
 # loose fill three times as deep: same fibre, different product, different trade, and this
@@ -1974,7 +2011,21 @@
 "fiberglass" = { material = { low = 0.45, high = 0.9 }, labour = { low = 0.45, high = 0.85 } }  # 438.8 SF — fastest batt to install, bottom of the $0.50-1.30 band
 # The roof cavity batt. Dearer per SF than the wall row above only because it is thicker
 # (6-1/4" against 3-1/2"); it is the same product at the same rate per inch.
-"fiberglass-r19" = { material = { low = 0.6, high = 1.15 }, labour = { low = 0.5, high = 0.95 } }  # 1430.3 SF — R-19, 6-1/4" in an 11-7/8" bay
+# NOT TAKEN as of 2026-08-31 — 0 SF. The roof bay is flash-and-batt now and its air-permeable
+# half is the R-30C row below. Kept for the rate.
+"fiberglass-r19" = { material = { low = 0.6, high = 1.15 }, labour = { low = 0.5, high = 0.95 } }  # 0 SF (was 1449.0) — R-19, 6-1/4" in an 11-7/8" bay
+# 2026-08-31 — CATLIN_ROOF's air-permeable half, 1,449.0 SF of R-30C cathedral batt (8-1/4"
+# nominal) COMPRESSED into the 6-7/8" the 5" flash leaves. Above the R-19 row it replaces:
+# a cathedral batt is an unfaced high-density product and costs more per SF than a standard
+# R-19, and it arrives oversized on purpose so it friction-fits the flange pockets. Labour is
+# barely different — one batt per bay either way — which is the whole argument for batts over
+# blown here: no netting, no rig, no separate mobilisation.
+# ** THE UPGRADE ON THE TABLE IS ROCKWOOL R-30 ** at roughly +$0.40/SF (+$580 over this
+# roof), which takes the assembly from R-53.2 to about R-55: dimensionally stable, will not
+# slump over a 20' run of 6:12, hydrophobic. It is the best long-term-value line in the
+# redesign and it is NOT taken here — this row is the fibreglass base case.
+# Sources: published R-30C cathedral batt retail $/SF 2026, uplifted ~15% over the R-19 row.
+"fiberglass-r30c" = { material = { low = 0.7, high = 1.25 }, labour = { low = 0.6, high = 1.05 } }  # 1449.0 SF — R-30C compressed to 6-7/8" in the 11-7/8" bay
 "foundation-protection-panel" = { material = { low = 3.5, high = 7.5 }, labour = { low = 1.5, high = 3 } }  # 324 SF
 # 2026-08-18: the above-grade foundation band on the N/E/W basement walls, 324 SF
 # (108 LF of perimeter x the 3'-0" the panel runs, 6" of it below grade). Aluminium-faced
@@ -2026,10 +2077,14 @@
 "latex-paint-accent" = { material = { low = 0.45, high = 1.1 }, labour = { low = 1.4, high = 2.6 } }  # 80 SF
 "mineral-wool" = { material = { low = 1.5, high = 2.3 }, labour = { low = 0.6, high = 1.15 } }  # 6316.6 SF
 # The nailbase top deck, by the SF. Same panels as the [sheet_goods] "osb" row.
-"osb" = { material = { low = 0.75, high = 1.2 }, labour = { low = 0.95, high = 1.85 } }  # 1430.3 SF — 5/8", screwed through 6" of foam
+# NOT TAKEN as of 2026-08-31 — 0 SF. Kept for the rate.
+"osb" = { material = { low = 0.75, high = 1.2 }, labour = { low = 0.95, high = 1.85 } }  # 0 SF (was 1547.9) — 5/8", screwed through 6" of foam
 # RE-SCOPED 2026-08-23: 2,072 SF of this was CATLIN_EXT_2X6's inner 2" of wall CI, now spray
-# foam. What is left is the ROOF's two 3" courses, which are untouched by the truss wall.
-"polyiso" = { material = { low = 1.5, high = 2.3 }, labour = { low = 1.1, high = 2.1 } }  # 2873.1 SF — roof CI only, ~2x the labour of cavity batt
+# foam. What was left was the ROOF's two 3" courses — and those are gone too as of
+# 2026-08-31, so this row is NOT TAKEN at 0 SF. It was the single biggest deletion in the
+# roof redesign ($8,000-13,600 across 3,095.7 SF of two staggered courses). Kept for the
+# rate; `polyiso-foil` below is a different product on a different scope and is still live.
+"polyiso" = { material = { low = 1.5, high = 2.3 }, labour = { low = 1.1, high = 2.1 } }  # 0 SF (was 3095.7) — was roof CI only, ~2x the labour of cavity batt
 "polyiso-foil" = { material = { low = 1.3, high = 2.4 }, labour = { low = 1.3, high = 2.3 } }  # 297.4 SF
 "sauna-shiplap" = { material = { low = 4.5, high = 9 }, labour = { low = 6, high = 11 } }  # 297.4 SF — retagged from `sauna-tg` 2026-08-28 (T&G -> shiplap). Same species, same 5/4 stock, same $/SF band: the profile changes the mill's face-width yield, not the installed rate
 # ** THE BIGGEST LINE IN THE HOUSE, and as of 2026-08-20 it is FOUR lines. ** One
@@ -2153,15 +2208,35 @@
 # 640 screws. The inside/outside CLOSURE STRIPS are not in it either: see
 # `[allowances] envelope-garage-corrugated-closure-strips`.
 "corrugated-panel-26" = { material = { low = 1.6, high = 2.6 }, labour = { low = 2.6, high = 4.75 } }
-# The roof's two membranes, and they are NOT interchangeable — see plan/assemblies.py. The
-# deck barrier is the vapour control (0.04 perm, self-adhered to the ZIP under the foam);
-# the field underlayment above the top deck must stay vapour-OPEN (20 perm) or the foam is
-# sealed on both faces and the condensation gate fails. Do not substitute peel-and-stick
-# into the field row to save the price difference — it is the cheaper product AND the one
-# that breaks the assembly.
-"roof-deck-vapor-barrier" = { material = { low = 1.1, high = 2.2 }, labour = { low = 0.8, high = 1.6 } }  # 1430.3 SF — self-adhered, under the polyiso
-"roof-underlayment-synthetic" = { material = { low = 0.4, high = 0.95 }, labour = { low = 0.45, high = 0.95 } }  # 1430.3 SF — vapour-permeable synthetic, field only
-"struct-1-plywood" = { material = { low = 0.9, high = 1.7 }, labour = { low = 1, high = 1.9 } }  # 5695.6 SF
+# The roof's two membranes, and they were NOT interchangeable — the deck barrier was the
+# vapour control (0.04 perm, self-adhered to the ZIP under the foam) and the field
+# underlayment above the top deck had to stay vapour-OPEN (20 perm) or the foam was sealed
+# on both faces and the condensation gate failed.
+#
+# ** BOTH NOT TAKEN as of 2026-08-31 — 0 SF, and the warning above no longer applies. ** The
+# sandwich they were controlling is gone: there is no foam above the deck to seal on two
+# faces. What replaced them is ONE row, `roof-adhered-butyl-ht` below, and the argument
+# inverted — peel-and-stick in the field used to be the choice that broke the assembly, and
+# is now the choice that makes it, because there is no drying path to protect and ~1,160
+# clip screws to seal. Kept for the rates.
+"roof-deck-vapor-barrier" = { material = { low = 1.1, high = 2.2 }, labour = { low = 0.8, high = 1.6 } }  # 0 SF (was 1547.9) — self-adhered, under the polyiso
+"roof-underlayment-synthetic" = { material = { low = 0.4, high = 0.95 }, labour = { low = 0.45, high = 0.95 } }  # 0 SF (was 1547.9) — vapour-permeable synthetic, field only
+# ** THE ROOF'S ONE MEMBRANE SINCE 2026-08-31 **, over the whole deck. High-temp self-adhered
+# BUTYL (Grace Ultra / Henry Blueskin PE200HT class), >= 240 F.
+#
+# ** THIS IS ALSO WHY `roof-ice-and-water-barrier-code-minimum` NO LONGER DRIVES OFF THIS
+# ROOF. ** That allowance is a code-minimum eave-and-valley BAND; a fully-adhered deck is a
+# superset of it, and leaving both against RF-HOUSE would bill the eaves twice. The allowance
+# is retargeted to the garage plane only — see [allowances].
+# Sources: published high-temp self-adhered underlayment $/SF (roofing-supply retail 2026) —
+# $1.30-2.30/SF material for a 40 mil butyl at roll pricing, against $0.55-1.10 for the
+# ordinary SBS ice-barrier the allowance carries. Labour is a full-deck roll-and-roller pass
+# on a smooth plywood substrate, cheaper per SF than the band's because there is no cutting
+# to a line and no lap into a field sheet: $1.00-1.80/SF.
+# CONFIDENCE: MEDIUM-HIGH on material, MEDIUM on labour (6:12 is a walkable pitch but the
+# rate assumes no staging).
+"roof-adhered-butyl-ht" = { material = { low = 1.3, high = 2.3 }, labour = { low = 1.0, high = 1.8 } }  # 1547.9 SF — the sloped deck plane, out to the fascia; it laps the girt oversail
+"struct-1-plywood" = { material = { low = 0.9, high = 1.7 }, labour = { low = 1, high = 1.9 } }  # 5554.7 SF — +1547.9 on 2026-08-31 as the roof deck came here from the ZIP row below
 # 2026-08-20: the MATERIAL rate was an installed rate that had crept into the material column.
 # A parge/skim coat is $0.60-1.50/SF in material; 3-coat stucco over lath is $1.50-2.50/SF.
 # This band spans both readings because the assembly does not yet say which it is — resolve
@@ -2172,7 +2247,10 @@
 # replaced 2026-08-18 by `foundation-protection-panel` over the exposed band only)
 "white-brick" = { material = { low = 6, high = 12 }, labour = { low = 15, high = 26 } }  # 133.8 SF — labour is really a $2,000-3,500 minimum-mobilisation lump
 "xps" = { material = { low = 0.9, high = 1.8 }, labour = { low = 0.75, high = 1.45 } }  # 4182.2 SF — comment was stale at 2520.7 (+66%) until 2026-08-29; a $/SF rate against a $/cy-keyed section re-prices silently when geometry moves
-"zip-sheathing" = { material = { low = 1.1, high = 1.85 }, labour = { low = 1.0, high = 1.9 } }  # 1430.3 SF — 1/2" plain ZIP, taped; the roof's air-barrier plane
+# NOT TAKEN as of 2026-08-31 — 0 SF. The roof deck is 5/8" CDX now; see the
+# `struct-1-plywood` row above, which is $0.20-0.15/SF cheaper for a thicker, smoother,
+# faster-drying panel. Kept for the rate.
+"zip-sheathing" = { material = { low = 1.1, high = 1.85 }, labour = { low = 1.0, high = 1.9 } }  # 0 SF (was 1547.9) — 1/2" plain ZIP, taped; was the roof's air-barrier plane
 # NOT TAKEN as of 2026-08-31 — 0 SF. GARAGE_WALL_2X6 was the only Zip-R in the house and
 # its sheathing is 5/8" CDX now, with 2" of ccSPF in the bays doing the thermal and air
 # work the panel's laminated polyiso used to. Kept for the rate, like every other retired
@@ -3658,9 +3736,19 @@ site-survey-staking-and-erosion-control = { low = 2000, high = 6000 }
 # from, so the line total barely moves. What moved is that it now FOLLOWS THE ROOF: shrink the
 # main roof and this shrinks with it, which the lump never did.
 # `standing-seam` matches only the house roof — the garage is `standing-seam-nailstrip` and
-# the walls are `standing-seam-nailstrip-26` — and that is correct: CATLIN_ROOF carries the
+# the walls are `standing-seam-nailstrip-26` — and that is correct: CATLIN_ROOF carried the
 # vent mat, RF-GARAGE does not.
-roof-ventilated-underlayment-mat = { low = 1.00, high = 1.85, unit = "SF", driver = "envelope_layers.net_area_sqft[material=standing-seam]" }
+#
+# ** RETIRED 2026-08-31 — SET TO ZERO, NOT DELETED. ** There is no mat. It and the vapour-
+# permeable synthetic under it were one decision, not two: above the underlayment sits a
+# 0-perm metal panel, so the only thing a 20-perm sheet could dry into was the gap the mat
+# made, and deleting either one strands the other. The roof takes IRC R806.5 item 5.3
+# instead — air-impermeable insulation bonded to the deck underside at the Table R806.5
+# R-value IS the condensation control, and outward drying is not required — so the sentence
+# above ("without it the condensation gate cannot pass at any foam thickness") is still true
+# of a DRYING argument and is no longer the argument this roof makes. The driver is left
+# wired up so restoring the mat is a rate and not a re-derivation.
+roof-ventilated-underlayment-mat = { low = 0, high = 0, unit = "SF", driver = "envelope_layers.net_area_sqft[material=standing-seam]" }
 # --- millwork -------------------------------------------------------------------------------
 # THE STUDY BOOKCASE WALL's casework (W-A-SN, CATLIN_INT_2X4_BOOKCASE_12). Same shape of
 # problem as the vent mat above: the wall IS modelled, but what the BOM legitimately sees is
@@ -3783,7 +3871,25 @@ finish-studio-floor-sealer = { low = 350, high = 900 }
 # full-deck alternative is $17,400-38,300 gross, carried in plans/cost-options.md as a
 # $12,400-27,300 upgrade DELTA over this row,
 # and the note below still explains why this roof does not take it.
-roof-ice-and-water-barrier-code-minimum = { low = 1.20, high = 2.60, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=roof,function=cladding]" }
+#
+# ** RE-TARGETED TO THE GARAGE PLANE ONLY, 2026-08-31 — 749.6 SF, not 2,297.5. ** RF-HOUSE
+# now carries a fully-adhered high-temp butyl membrane over its whole deck
+# (`envelope_layers."roof-adhered-butyl-ht"`), which is a SUPERSET of the eave-and-valley
+# band this row buys; leaving both against that plane would bill the eaves twice, and it is
+# exactly the "confirm each is a MEASUREMENT, not a second bill" case the takeoff prints this
+# section's driven allowances for. The third filter is the retarget: `standing-seam-nailstrip`
+# is RF-GARAGE's panel and nothing else in the house wears it.
+#
+# The whole paragraph above about the field underlayment and the full-deck upgrade is now
+# HISTORY for the house roof: the "$12,400-27,300 upgrade the assembly CANNOT take" was true
+# only while 6" of polyiso sat between a 0.04-perm deck barrier and the field sheet. With the
+# foam moved into the bay there is nothing to seal on two faces, the upgrade became the base
+# scope, and it costs $3,560-6,346 rather than $17,400-38,300 because it is one membrane
+# instead of a membrane ON TOP OF a synthetic, a mat, a nailbase and two courses of foam.
+# What still stands unchanged is the primary defence: a highly insulated assembly under a
+# low-friction standing seam is what stops an ice dam FORMING, and it is what is being paid
+# for on both planes.
+roof-ice-and-water-barrier-code-minimum = { low = 1.20, high = 2.60, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=roof,function=cladding,material=standing-seam-nailstrip]" }
 # ** REDUCED 2026-08-30. "Partly overlaps [edge_trim]" was the row's own words and nobody had
 # ever quantified the overlap; the number stood at a figure that assumed almost none. **
 # [edge_trim] is a real, modelled section — drip edge, rake and eave trim, valley and ridge

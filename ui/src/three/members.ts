@@ -22,7 +22,7 @@ import {
 } from "../nordic/palette";
 import {
   createStandingSeamMaterial, isStandingSeam, type MetalPanelProfile,
-  metalPanelProfileForFinish, SEAM_PROFILE, SEAM_TILE_SIZE_M,
+  metalPanelProfileForFinish, panelTileSizeM, SEAM_PROFILE,
 } from "./materials";
 import {
   composeCenteredBoxMatrix, composeMemberBoxMatrix, isRakedMember, isVerticalMember,
@@ -128,6 +128,77 @@ export function isSeamMember(m: Member, materials?: readonly MaterialAppearance[
   return SEAM_TRIM_CATEGORIES.has(m.category) && metalPanelProfileFor(m, materials) !== null;
 }
 
+/** A plan line as `[origin, a point along it]`. */
+export type SkinAxis = readonly [readonly [number, number], readonly [number, number]];
+
+/**
+ * One wall, as far as a skin band is concerned: the axis a band is *matched* to, and the
+ * facade datum its panel module is *measured* from.
+ *
+ * The two are not the same line and the difference is the whole point. A band belongs to the
+ * wall whose layer stack it caps, which is a question about proximity to that wall's own axis;
+ * but the panel module belongs to the facade, so it is measured from the wall's `layout_axis`
+ * (→ resolve/layout_lines.py), exactly as `builders/walls.ts` measures the wall's own cladding.
+ */
+export interface SkinLine {
+  readonly axis: SkinAxis;
+  readonly datum: SkinAxis;
+}
+
+// How far off a wall's axis a band may sit and still be that wall's. A closure band is offset
+// from the axis by its own layer's place in the stack — half a wall thickness at most, so a
+// tenth of a metre on this house — and the nearest wall wins, never the first: the garage's
+// brick screen walls stand 4 5/8" outboard of W-G-E and run parallel to it, and their layout
+// line is nearer to the closure band than W-G-E's own is. Matching on the LAYOUT line rather
+// than the axis is what handed the gable band the brick's datum, and with it a phase 1.7
+// corrugations off the wall it continues — the residue left after the tile-size fix below.
+const SKIN_LINE_TOLERANCE_M = 0.5;
+
+/**
+ * Where a band's two ends sit along its facade, in metres from that facade's origin.
+ *
+ * This is the band's `u` datum, and it exists because the panel module has to be continuous
+ * across the wall→roof joint: the closure band IS the wall's own sheet carried up past the top
+ * plate, so its ribs have to land where the wall's ribs land. Measuring `u` from the band's own
+ * `p0` (what this did) restarts the module at every band — a layer thickness off at the mitred
+ * corner where the band overhangs the wall axis, and a fresh arbitrary phase for the second
+ * half of a gable, which splits at the ridge. Both read as a jog in the ribs at the joint.
+ *
+ * Falls back to the band's own run for a trim piece that stands on no wall (an eave fascia or a
+ * rake band hung off the roof edge), which has no wall panel under it to line up with.
+ */
+export function skinUvSpanM(m: Member, lines?: readonly SkinLine[]): [number, number] {
+  const dx = m.p1[0] - m.p0[0];
+  const dy = m.p1[1] - m.p0[1];
+  const run = Math.hypot(dx, dy);
+  if (!lines?.length || run < 1e-9) return [0, run];
+  const ux = dx / run;
+  const uy = dy / run;
+  let best: SkinAxis | null = null;
+  let bestOffset = SKIN_LINE_TOLERANCE_M;
+  for (const line of lines) {
+    const [[ox, oy], [px, py]] = line.axis;
+    const len = Math.hypot(px - ox, py - oy);
+    if (len < 1e-9) continue;
+    const vx = (px - ox) / len;
+    const vy = (py - oy) / len;
+    if (Math.abs(vx * uy - vy * ux) > 1e-6) continue;   // not this wall's direction
+    const offset = Math.abs((m.p0[1] - oy) * vx - (m.p0[0] - ox) * vy);
+    if (offset >= bestOffset) continue;                 // a nearer wall already claimed it
+    bestOffset = offset;
+    best = line.datum;
+  }
+  if (!best) return [0, run];
+  const [[ox, oy], [px, py]] = best;
+  const len = Math.hypot(px - ox, py - oy) || 1;
+  const vx = (px - ox) / len;
+  const vy = (py - oy) / len;
+  // The datum may run the other way down the same facade (W-G-N's axis runs -x, its layout
+  // line +x), so the band's far end is its near end plus a SIGNED run.
+  const start = (m.p0[0] - ox) * vx + (m.p0[1] - oy) * vy;
+  return [start, start + run * (ux * vx + uy * vy)];
+}
+
 const _m = new THREE.Matrix4();
 const _color = new THREE.Color();
 
@@ -186,9 +257,16 @@ function seamGroupsFor(members: Member[], materials?: readonly MaterialAppearanc
 // UVs off its own run, matching applyStandingSeamWallUv, so the module stays at true scale and
 // the seams line up with the wall and roof panels the band meets.
 function buildSeamMesh(group: THREE.Group, members: Member[], center: PlanCenter,
-  mode: "nordic" | "schematic", ownerUid: string, materials?: readonly MaterialAppearance[]) {
+  mode: "nordic" | "schematic", ownerUid: string, materials?: readonly MaterialAppearance[],
+  lines?: readonly SkinLine[]) {
   if (!members.length) return;
   for (const { profile, paint, members: groupMembers } of seamGroupsFor(members, materials).values()) {
+    // The band's OWN module, not the seam pan's. `SEAM_TILE_SIZE_M` (16" pans) stood here for
+    // every profile, so a band finished in something else was drawn at the seam's scale and
+    // stretched by the ratio between them — 1.33x for the house's 12" PBR rib, and 6x for the
+    // garage's 2-2/3" corrugation, which is what made those closures read as smeared metal
+    // beside the wall they continue.
+    const tileM = panelTileSizeM(profile);
     const positions: number[] = [];
     const indices: number[] = [];
     const uvs: number[] = [];
@@ -203,13 +281,14 @@ function buildSeamMesh(group: THREE.Group, members: Member[], center: PlanCenter
       triangleStarts.push(triangleStarts[triangleStarts.length - 1] + TRIANGLES_PER_MEMBER_BOX);
       drawn.push(m);
       // Per-member UVs, not one shared axis: eave bands run one way and rake bands the other,
-      // so a single frame would smear the pans on half of them. u runs along the band (its two
-      // end faces are the only distinct values), v is elevation — the same world-scaled frame
-      // applyStandingSeamWallUv gives a wall, so bands and walls share one seam rhythm.
-      const length = Math.hypot(m.p1[0] - m.p0[0], m.p1[1] - m.p0[1]);
+      // so a single frame would smear the pans on half of them. u runs along the band's facade
+      // from that facade's own origin (→ skinUvSpanM), v is elevation — the same world-scaled
+      // frame applyStandingSeamWallUv gives a wall, so bands and walls share one seam rhythm
+      // and one phase.
+      const [startM, endM] = skinUvSpanM(m, lines);
       for (let index = 0; index < verts.length; index++) {
         const atEnd = index === 1 || index === 2 || index === 5 || index === 6;
-        uvs.push((atEnd ? length : 0) / SEAM_TILE_SIZE_M, verts[index][1] / SEAM_TILE_SIZE_M);
+        uvs.push((atEnd ? endM : startM) / tileM, verts[index][1] / tileM);
       }
     }
     if (!positions.length) continue;
@@ -344,18 +423,20 @@ function buildIJoists(group: THREE.Group, members: Member[], center: PlanCenter,
  * the reason every bucket can hand a picked index back as a stable member uid. `materials` is
  * the model's catalog, so a skin member (cladding closure, trim run) that carries its host
  * layer's material ref gets the same declared-finish-first colour and metal-panel dispatch a
- * wall layer gets in builders/walls.ts, instead of guessing from the ref alone.
+ * wall layer gets in builders/walls.ts, instead of guessing from the ref alone. `lines` is the
+ * facade datums the model's walls are laid out on, which is what a metal-panel skin band takes
+ * its module phase from so the ribs run through the wall→roof joint unbroken (→ skinUvSpanM).
  */
 export function buildMembers(group: THREE.Group, members: Member[], center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, ownerUid: string,
-  materials?: readonly MaterialAppearance[]) {
+  materials?: readonly MaterialAppearance[], lines?: readonly SkinLine[]) {
   const boxMembers = members.filter((member) => !member.plan_outline?.length);
   if (!boxMembers.length) return;
   const buckets = bucket(boxMembers, materials);
   buildRectInstances(group, buckets.rect, center, mode, palette, ownerUid, materials);
   buildRakedMesh(group, buckets.raked, center, mode, palette, ownerUid, materials);
   buildIJoists(group, buckets.ijoist, center, mode, palette, ownerUid, materials);
-  buildSeamMesh(group, buckets.seam, center, mode, ownerUid, materials);
+  buildSeamMesh(group, buckets.seam, center, mode, ownerUid, materials, lines);
 }
 
 export function disposeGroup(root: THREE.Object3D) {

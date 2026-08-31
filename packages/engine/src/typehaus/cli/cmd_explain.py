@@ -121,9 +121,10 @@ def explain(
                       + (f"  STC {asm.stc}" if asm.stc else ""))
         for layer in list(asm.default_lining) + list(asm.layers):
             console.print(f"  {layer.function.value:9} {layer.name:12} {layer.thickness.fmt()}")
-            if layer.cavity is not None:
-                fill = layer.cavity
-                thk = fill.thickness if fill.thickness is not None else layer.thickness
+            # One line per fill: a flash-and-batt bay is two materials in series through one
+            # joist depth, and printing only the first would name the batt and hide the foam.
+            for fill in layer.cavity_fills:
+                thk = layer.cavity_thickness(fill)
                 console.print(f"  {'  ↳ cavity':9} {fill.material_ref:12} {thk.fmt()}"
                               f"  (ff {fill.framing_factor:.0%}, in bays — adds no depth)")
         if card or out:

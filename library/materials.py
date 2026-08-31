@@ -79,7 +79,7 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              source="Huber ZIP System sheathing published ASTM E96 Procedure A (dry cup) "
                     "panel permeance 2-3 perm at 7/16-1/2\"; low end of the published range"),
     Material(tag="polyiso", name="Polyisocyanurate CI", r_per_inch=5.6, perm_rating=1.0,
-             hatch="rigid", color="#e8d64f", foam_plastic=True,
+             hatch="rigid", color="#e8d64f", foam_plastic=True, air_impermeable=True,
              source=f"{_UAF}: 'Expanded polyurethane, R-11, board stock' 0.4-1.6 perm-in; "
                     "midpoint of the published range"),
     Material(tag="fiberglass", name="Fiberglass batt", r_per_inch=3.7, perm_rating=116.0,
@@ -119,7 +119,7 @@ STARTER_MATERIALS: tuple[Material, ...] = (
     # with no seam to fail. `resolve/construction_rim.py` bills it by the lineal foot of rim.
     Material(tag="closed-cell-spray-foam", name="Closed-cell spray polyurethane foam (2 lb)",
              r_per_inch=6.5, density=32.0, perm_rating=1.6, hatch="batt", color="#e8d9b5",
-             foam_plastic=True,
+             foam_plastic=True, air_impermeable=True,
              source="published ccSPF range R-5.9 to R-7.0 per inch and ASTM E96 permeance "
                     "1.2-2.0 perm at 1 in.; midpoints of the published ranges, per this "
                     "file's convention"),

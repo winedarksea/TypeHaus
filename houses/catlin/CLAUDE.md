@@ -542,31 +542,70 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   uid and IFC GlobalId. Its `trimless=True` means a millwork case, **not** the drywall
   return jamb it means everywhere else in this house; do not price it off the
   `DT-INT-SWING30-TRIMLESS` row.
-- **The roof is a screwed nailbase, and three of its layers exist only because the
-  condensation gate says so** (2026-08-20; it was a vented batten roof before). Stack above
-  the rafters: 1/2" taped ZIP -> self-adhered deck vapour barrier -> 3" + 3" polyiso
-  (staggered seams) -> 5/8" OSB top deck on 10" SDWH screws -> vapour-PERMEABLE synthetic
-  underlayment -> 1/4" ventilated mat -> 24 ga standing seam. R-55.1, and that is the honest
-  number, not the R-60 the brief asks for: the library de-rates polyiso to 5.6/in and the
-  cavity is an R-19 batt. **The interior is paint and nothing else** — every control layer
-  is outboard of the structure, which is the whole point of the arrangement.
-  Three things will silently break it, and each has cost a rebuild already:
-  - **The field underlayment must stay vapour-open.** High-temp peel-and-stick over the
-    whole deck is the obvious spec and it fails the gate at 1.50 — at 0.05 perm it is as
-    tight as the deck barrier under the foam, so the polyiso and the OSB are sealed on both
-    faces with no way to dry either direction. Self-adhered ice barrier at the eaves and
-    valleys only; that band is priced as an allowance, not modelled.
-  - **The vent mat is not optional and is not a furring strip.** It is the assembly's only
-    drying path. Without it the Glaser walk runs to the standing seam, which is rated 0
-    perm, so every plane sits at interior vapour pressure and **no unvented stack under a
-    metal roof can pass at any foam thickness**. It is an AIRGAP layer, so the envelope
-    takeoff skips it — it is carried in `prices.toml [allowances]` instead.
-  - **The taped ZIP is the air barrier, not the vapour barrier.** At 2 perm it is Class III.
-    It was survivable while the layer outboard of the foam was a 54-perm membrane and
-    stopped being survivable when the nailbase deck went on, because 5/8" OSB is 0.64 perm —
-    three times tighter than the ZIP under it, so vapour entered the foam more easily than
-    it left. Thinning the OSB is not the lever it looks like (7/16" only reaches 1.21, and
-    APA has 1/2" at 0.70 perm against 5/8" at 0.72). The deck vapour barrier is.
+- **THE ROOF IS FLASH-AND-BATT IN THE JOIST BAY, AND ALL NINE OUTSULATION LAYERS ARE GONE
+  (2026-08-31).** It was a vented batten roof until 2026-08-20 and a screwed nailbase after
+  it: 1/2" taped ZIP -> self-adhered deck vapour barrier -> 3" + 3" polyiso -> 5/8" OSB top
+  deck on 539 ten-inch SDWH screws -> vapour-permeable synthetic underlayment -> 1/4"
+  ventilated mat -> metal. R-55.1 at 19.9" deep, to clear a code minimum of R-49.
+
+  It is now **four layers and two bay fills**, R-53.2 at 13.1", 6.81" (perpendicular)
+  thinner: **11-7/8" TJI 230 @ 24" o.c.** holding **5" of ccSPF against the deck underside
+  with an R-30C batt compressed into the remaining 6-7/8"**, then **5/8" CDX plywood**, a
+  **high-temp self-adhered butyl membrane over the whole deck**, and the same 24 ga
+  mechanically-seamed standing seam. **The interior is still paint and nothing else.**
+  `notes/roof_flash_and_batt.md` is the hand-worked oracle — R-value arithmetic, the deck-
+  face dewpoint, the span reading and the site hold points — and is where to start.
+
+  Five things to know before touching it, each of which reverses a rule this section used
+  to state:
+
+  - **It is legal with ZERO above-deck foam, by IRC/MSRC R806.5 item 5.3**: air-impermeable
+    insulation in direct contact with the sheathing at the Table R806.5 R-value, with the
+    air-permeable insulation directly under it. 5" of ccSPF is R-32.5 against R-25 (zone 6)
+    and R-30 (zone 7), so the zone reading cannot go wrong. `code.R806_5_unvented_roof`
+    grades it — a check that did not exist before, and one that PASSES the old stack too
+    (via item 5.1, the 6" of polyiso above the deck), so it was not written to rescue this
+    design.
+  - **NO INTERIOR CLASS I VAPOUR RETARDER, EVER.** Paint on gypsum and nothing else. That
+    was a design preference under the old stack; under R806.5 item 2 it is a code
+    prohibition, and adding a ceiling poly or a vapour-barrier primer FAILS the check.
+  - **The condensation gate now reports NOT_APPLICABLE on this roof, and that is the
+    verdict, not a hole.** A steady-state Glaser walk cannot grade a stack sealed on its
+    cold side by a 0-perm metal panel: with no outward flux it equilibrates every plane to
+    interior vapour pressure by construction and reads ~100% RH at the deck for ANY unvented
+    metal roof, however designed. The old stack bought its margin by leaving 5.6" of the bay
+    deliberately unfilled as a drying path; this one fills the bay and changes the
+    criterion. `condensation._r806_5_deferral` defers ONLY where the code check passes — an
+    assembly whose foam is below the table, or is not Class II, keeps the Glaser gate and
+    its FAIL.
+  - **The vent mat and the permeable underlayment were ONE decision, and both are gone.**
+    Above the underlayment sits an impermeable panel, so the only thing a 20-perm sheet
+    could dry into was the gap the mat made; delete either and the other stops earning its
+    cost. The membrane that replaced them is **butyl**, chosen for self-sealing around the
+    ~1,160 standing-seam clip screws — which is this roof's real water risk. **Do not
+    "restore" a permeable synthetic to save the difference**: it is a mechanically-fastened,
+    non-self-sealing water layer under every one of those screws, with no drying path to
+    show for it.
+  - **24" o.c. forces the heavier joist, and the spacing is NOT FINAL.** At 16" the cheapest
+    TJI in the line carries the 18'-0" HORIZONTAL span at Ps = 35 psf; at 24" the first that
+    does with margin is the 230. `structural.rafter_span` is UNKNOWN/engineered at BOTH
+    spacings and no sheathing-span or gypsum-ceiling rule reads the spacing at all, so the
+    5/8" deck and the 5/8" ceiling board at 24" o.c. are on the PE, not on `haus check`. The
+    printed TJ-4000 table also assumes bearing at the high end where these joists HANG off
+    the ridge on 38 LSSR hangers — confirm in ForteWEB. Fallback: TJI 210 at 19.2" o.c.
+    ** Budget for upsizing the eave uplift ties (H10A or equivalent) ** rather than banking
+    the H2.5A count falling 378 -> 360: `H2.5A` is published at 700 lbf for SG 0.50 lumber
+    and catlin frames SPF at SG 0.42, and the tributary rose 1.5x with the spacing.
+  - **The deck OVERSAILS the last rafter and spans the wall girts.** It clips at the
+    cladding's back face, not at the wall sheathing plane — with no foam or nailbase out
+    there, the plywood is what the panel clips land on. That cantilever is graded by nothing
+    in the engine.
+
+  Cost: **-$12,200 to -$24,500** on the construction subtotal, of which $3,400-6,000 is a
+  known phantom (roof sheathing is billed twice, in `envelope_layers` and again in
+  `sheet_goods`; `also_in_sheet_goods` exists and `cli/prices.py::estimate_costs` never
+  reads it). The honest saving is **$8,800-18,500**.
+
   The stack depth is transcribed by hand into `params/roof_trim.py` (`_DRIP_CEILING_IN`,
   `_CLADDING_HEAD_IN`) and into `test_catlin_eave_water.py`; move a layer and those move.
 - **Structural ridge, not a rafter-tie roof.** `RB-HOUSE` bears continuously on the

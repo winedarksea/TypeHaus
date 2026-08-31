@@ -370,15 +370,28 @@ def _corner_trim_members(
 # --- vented ridge cap --------------------------------------------------------------------
 
 def _ridge_vent_members(model: ResolvedModel, roof: ResolvedRoof) -> tuple[FramedMember, ...]:
-    """A vented ridge cap along a gable's ridge, when the roof breathes through it.
+    """The ridge cap along a gable's ridge — vented where the roof breathes through it.
 
-    Two constructions call for one, and both appear on catlin: a vented attic (the garage —
-    its vented soffits feed the truss space, which exhausts through a slot cut at the ridge),
-    and an over-deck vent channel (the house — the furring/batten gap between the foam and
-    the standing seam runs eave to ridge and exhausts at the top). Either way the cap is a
-    formed metal member riding the roofing surface, centred on the ridge line. A truss roof
-    has no ridge beam, so everything keys off ``ResolvedRoof.ridge_z_m`` — the plane's own
-    peak — never off a framing member.
+    **Every gable with a covering gets one.** Two slopes meet at the peak in an open joint
+    and something has to close it; whether that closure also VENTS is a separate question,
+    answered by ``connection`` (``ridge:vented-cap`` against ``ridge:closed-cap``) and not by
+    whether the piece exists. This used to return nothing at all for an unvented roof, and
+    the day CATLIN_ROOF's vent mat was deleted (2026-08-31) the house's 37 LF of ridge cap
+    silently left the model and the bill with it — an open ridge on a standing-seam roof,
+    reported by nothing.
+
+    Vented is still the common case and the two constructions that reach it both appear on
+    catlin: a vented attic (the garage — its vented soffits feed the truss space, which
+    exhausts through a slot cut at the ridge), and an over-deck vent channel (the house until
+    2026-08-31 — the furring/batten gap between the foam and the standing seam ran eave to
+    ridge and exhausted at the top). Either way the cap is a formed metal member riding the
+    roofing surface, centred on the ridge line. A truss roof has no ridge beam, so everything
+    keys off ``ResolvedRoof.ridge_z_m`` — the plane's own peak — never off a framing member.
+
+    A roof that is neither vented NOR clad is the one case that still returns nothing, and it
+    is earned rather than assumed: there is no slot to vent and no covering for a cap to
+    close over, and a "ridge cap" on a bare deck would be trim on a roof nobody has finished.
+    So this is strictly additive to what a vented roof always got.
 
     "Formed" is composed rather than swept: see ``_RIDGE_CAP_BANDS``. Every band keeps the
     ``ridge_cap`` category, the ``ridge:vented-cap`` connection and the roofing's own
@@ -395,14 +408,14 @@ def _ridge_vent_members(model: ResolvedModel, roof: ResolvedRoof) -> tuple[Frame
     vented_attic = trim is not None and trim.soffit_vented
     vented_over_deck = any(
         layer.function in (LayerFunction.AIRGAP, LayerFunction.FURRING) for layer in layers)
-    if not (vented_attic or vented_over_deck):
+    cladding = next((layer for layer in reversed(layers)
+                     if layer.function is LayerFunction.CLADDING), None)
+    if not (vented_attic or vented_over_deck or cladding is not None):
         return ()
     # The cap sits on the roofing's top surface at the peak: the stack is offset
     # perpendicular to the slope, so its vertical height over the ridge is slope-corrected.
     slope_factor = math.hypot(1.0, roof_slope(roof))
     stack = sum(layer.thickness.meters for layer in layers) * slope_factor
-    cladding = next((layer for layer in reversed(layers)
-                     if layer.function is LayerFunction.CLADDING), None)
     z0 = ridge.z_m + stack
     slope = abs(roof_slope(roof))
     length = math.hypot(ridge.p1[0] - ridge.p0[0], ridge.p1[1] - ridge.p0[1])
@@ -418,5 +431,7 @@ def _ridge_vent_members(model: ResolvedModel, roof: ResolvedRoof) -> tuple[Frame
         parent_uid=roof.uid, child_key="ridge-vent-cap", category="ridge_cap",
         profile=panel_profile(2.0 * _RIDGE_CAP_HALF_WIDTH_IN, (top - bottom) / M_PER_IN),
         p0=ridge.p0, p1=ridge.p1, z0_m=bottom, z1_m=top, length_m=length,
-        connection="ridge:vented-cap", material=material,
+        connection=("ridge:vented-cap" if vented_attic or vented_over_deck
+                    else "ridge:closed-cap"),
+        material=material,
     ),)

@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from typehaus.quantities import inch
 from typehaus.resolve import resolve
 from typehaus.resolve.roof_geometry import roof_height_at
 
@@ -31,19 +32,29 @@ def test_panels_ride_the_roof_plane(catlin_model):
     """Every corner sits a clamp-standoff off the 6:12 plane, and the module's slope
     edge measures its true 44.6" while its plan projection is foreshortened.
 
-    The band is 0.18..0.32 m rather than 0.20..0.32: the standoff is measured PERPENDICULAR
-    to the roof and this compares vertical distances, so a steeper plane reads a SMALLER
-    vertical figure for the same clamp. 6:12 pulls the same 3" standoff from ~0.21 m of
-    vertical to ~0.187 m.
+    **The bounds are DERIVED from the roof's own stack, not transcribed.** They were a
+    literal 0.18..0.32 m band until 2026-08-31, and the day CATLIN_ROOF's six inches of
+    outsulation were deleted the modules came down with the roof and the band failed —
+    correctly reporting a change that was not a defect. What is actually invariant is the
+    sandwich: ``roof_height_at`` is the DECK plane, the module rides the above-structure
+    stack plus a clamp above it, and the figure compared here is the VERTICAL projection of
+    a perpendicular offset, so it lands strictly between the stack's own vertical thickness
+    (the module is above the metal, not in it) and the full perpendicular stack-plus-clamp.
     """
+    from typehaus.resolve.roof_layer_setbacks import above_structure_layers
+
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
+    assembly = catlin_model.plan.library.resolve_assembly(roof.assembly)
+    skin_m = sum(layer.thickness.meters for layer in above_structure_layers(assembly))
+    cos_slope = 1.0 / math.hypot(1.0, 6.0 / 12.0)
+    clamp_m = inch(3).meters  # SolarPanel.standoff's default: clamp + rail off the plane
+    seen: set[float] = set()
     for panel in catlin_model.solar_panels:
         for (x, y, z) in panel.corners_bottom:
             standoff = z - roof_height_at(roof, (x, y))
-            # roof_height_at is the deck plane; the module sits above the same
-            # above-structure layer stack the roof shell draws, plus the 3" clamp
-            # standoff (perpendicular, so the vertical figure is slightly larger).
-            assert 0.18 < standoff < 0.32, (panel.tag, standoff)
+            seen.add(round(standoff, 9))
+            assert skin_m * cos_slope < standoff < skin_m + clamp_m, \
+                (panel.tag, standoff, skin_m)
         # Slope-edge length in 3D vs plan (corners 0->3 span the down-slope edge).
         a, b = panel.corners_bottom[0], panel.corners_bottom[3]
         edge_3d = math.dist(a, b)
@@ -55,6 +66,8 @@ def test_panels_ride_the_roof_plane(catlin_model):
         alt_3d = math.dist(a, c)
         assert (abs(edge_3d - expected) < 0.002 or abs(alt_3d - expected) < 0.002)
         assert edge_plan <= edge_3d + 1e-9
+    # One plane, one clamp height: every corner of every module reads the same standoff.
+    assert len(seen) == 1, sorted(seen)
 
 
 def test_panels_stay_clear_of_ridge_and_eaves(catlin_model):

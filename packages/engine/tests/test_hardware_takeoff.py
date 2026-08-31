@@ -133,8 +133,16 @@ def test_a_vented_mat_over_a_nailbase_deck_does_not_steal_the_screw() -> None:
     assert (length_in, part_number) == (10.0, "SDWH191000DB")
 
 
-def test_catlin_bills_wall_and_roof_screws_as_separate_longer_line(catlin_model) -> None:
-    """The roof still takes the 10" screw through 6" of foam. The WALL no longer takes one.
+def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> None:
+    """NEITHER the wall nor the roof takes a through-foam screw any more.
+
+    The roof took the 10" SDWH through 6" of polyiso until 2026-08-31 — 581 of them, on a
+    16 x 24 grid — and the outsulation and its nailbase are both deleted. That matters
+    beyond the money: ``takeoff/hardware_config.py``'s ``strip_spacing_in = 16.0`` is a
+    HARD-CODED constant, not read from the roof's ``FramingSpec``, so the same roof at
+    24" o.c. would have kept ordering its screws on a 16 x 24 grid and nothing would have
+    said so. Deleting the nailbase removes that landmine rather than stepping on it, and
+    this assertion is what confirms the fastener module has no roof consumer left.
 
     Until 2026-08-23 catlin's walls were the textbook screwed-strip condition: 1/2" furring
     held off the studs through 4" of rigid board, 537 eight-inch SDWS on a 16 x 24 grid. The
@@ -153,13 +161,8 @@ def test_catlin_bills_wall_and_roof_screws_as_separate_longer_line(catlin_model)
             if row["role"] == ROLE_EXTERIOR_INSULATION_SCREW]
     assert not [row for row in rows if row["scope"] == "exterior wall furring"], \
         "a truss wall has no screwed furring strip — see takeoff/fasteners.py"
-    roof = next(row for row in rows if row["scope"] == "roof top deck")
-
-    # The roof: 0.625 + 6 + 0.54 = 7.165 in of penetration + 1.5 in of embedment = 8.665 in,
-    # so the 8 in SDWS is short and only the 10 in SDWH reaches. An under-length structural
-    # screw here is the whole roof hanging on 1 in less thread than it was designed for.
-    assert roof["size"] == "10 in" and roof["part_number"] == "SDWH191000DB"
-    assert "16 in o.c." in roof["basis"] and "24 in o.c." in roof["basis"]
+    assert not [row for row in rows if row["scope"] == "roof top deck"], \
+        "the nailbase and the 6 in of polyiso it was screwed through are both gone"
 
     # The wall is TWO rows since the catlin truss (2026-08-26), because the two girt tiers
     # land in different things and each is billed at what it actually passes through:
@@ -171,7 +174,6 @@ def test_catlin_bills_wall_and_roof_screws_as_separate_longer_line(catlin_model)
              "2": next(r for r in rows if r["scope"] == "girt wall block-2")}
     for tier, row in tiers.items():
         assert row["size"] == "5 in" and row["part_number"] == "SDWS22500DB"
-        assert row["part_number"] != roof["part_number"]
         # ONE screw per block, not two: the girt lying across the block is continuous and
         # screwed at every block along its run, so there is no rotation for a second to
         # resist. And the two tiers are OFFSET half a bay, never through-screwed.
@@ -191,7 +193,9 @@ def test_catlin_bills_wall_and_roof_screws_as_separate_longer_line(catlin_model)
                      if m.category == "truss_block"
                      and girt_block_tier(m.child_key) == tier)
         assert row["count"] == blocks > 0, tier
-    assert sum(row["count"] for row in tiers.values()) > roof["count"] > 0
+    # The wall's two tiers are now the ONLY structural screws this role bills anywhere in
+    # the house — the roof's 581 came out with the nailbase.
+    assert sum(row["count"] for row in tiers.values()) == sum(r["count"] for r in rows) > 0
 
 
 # --- hangers -------------------------------------------------------------------------

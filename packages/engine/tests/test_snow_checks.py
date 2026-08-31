@@ -199,7 +199,10 @@ def test_rafter_span_reports_unknown_rather_than_borrowing_a_row(catlin_model) -
     # is that the outstanding work has an id a professional seal can cover.
     assert all(f.authority is Authority.ENGINEERED for f in findings)
     assert {f.engineering_item for f in findings} == {"rafter/RF-HOUSE", "rafter/RF-GARAGE"}
-    assert any("I-joist" in f.message for f in findings)
+    # "11.875 TJI 230" since 2026-08-31 — the roof names its series so the price row and
+    # the PE scope both key off something orderable. Either spelling is an engineered
+    # profile the sawn table does not publish, which is the point being asserted.
+    assert any("TJI" in f.message or "I-joist" in f.message for f in findings)
     # The trussed garage roof is the case the two-gate split exists for: this engine will
     # never compute it, so the item can never reach draft and correctly blocks a *sealed*
     # submittal without pretending anything was computed.

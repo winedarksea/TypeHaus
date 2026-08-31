@@ -25,10 +25,13 @@ from typehaus.resolve.framing.profiles import cross_section
 # 4:12. Roof-stack offsets are perpendicular to the slope; elevations are vertical.
 # 6:12 since 2026-08-29 (params/roof_trim.py hand-copies these; they move together).
 SLOPE_FACTOR = math.hypot(1.0, 6.0 / 12.0)
-#: Top-deck surface — the plane the drip flashing lies on and the underlayment laps over.
-DRIP_CEILING_IN = 7.165 * SLOPE_FACTOR
-#: Roofing underside == the head of the wall cladding on a continuous-skin edge.
-CLADDING_HEAD_IN = 7.475 * SLOPE_FACTOR
+#: Structural deck surface — the plane the drip flashing lies on and the membrane laps over.
+#: 0.625" of CDX plywood since 2026-08-31; it was 7.165" while a 5/8" nailbase sat on top of
+#: 6" of polyiso, and the roof edge came down 6.81" perpendicular when that stack was deleted.
+DRIP_CEILING_IN = 0.625 * SLOPE_FACTOR
+#: Roofing underside == the head of the wall cladding on a continuous-skin edge. The deck
+#: plus the 0.04" adhered butyl membrane, and nothing else.
+CLADDING_HEAD_IN = 0.665 * SLOPE_FACTOR
 
 
 @pytest.fixture(scope="module")

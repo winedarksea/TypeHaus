@@ -387,11 +387,19 @@ def test_roof_matches_old_pitch_knee_and_ridge(catlin_model):
     rise_over_run = (roof.ridge_z_m - roof.eave_z_m) / ((max(xs) - min(xs)) / 2)
     assert rise_over_run == pytest.approx(6.0 / 12.0)
     rafters = [member for member in roof.members if member.category == "rafter"]
-    # 28 station lines at 16" o.c. over two gable planes: stations span the bearing walls'
+    # 19 station lines at 24" o.c. over two gable planes: stations span the bearing walls'
     # 36' extent (not the cladding-lapped footprint), with the end stations inset half a
     # member width so end rafters sit fully inside the gable wall planes.
-    assert len(rafters) == 56
-    flange_half = cross_section("11.875 I-joist").width_m / 2.0
+    #
+    # It was 28 lines / 56 rafters at 16" o.c. until 2026-08-31. Going to 24" traded 358 LF
+    # of joist for a heavier series — the cheapest TJI in the line carries the 18'-0"
+    # HORIZONTAL span at 16" and does not at 24", so the roof is a TJI 230 now — and it is
+    # the FLANGE that this test's end-inset reads, which is why the profile string matters
+    # here and is not decoration: a bare "11.875 I-joist" guesses a 2 1/2" flange from the
+    # depth alone, and a named series states its real 2 5/16".
+    assert len(rafters) == 38
+    assert {member.profile for member in rafters} == {"11.875 TJI 230"}
+    flange_half = cross_section("11.875 TJI 230").width_m / 2.0
     stations = sorted({round(member.p0[1], 6) for member in rafters})
     assert stations[0] == pytest.approx(flange_half, abs=1e-6)
     assert stations[-1] == pytest.approx(ft(HOUSE_SIZE_FT).meters - flange_half, abs=1e-6)
@@ -478,71 +486,77 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
         assert heel_height == pytest.approx(inch(2.875).meters, abs=1e-3)
 
     setbacks = {entry["layer"]: entry for entry in roof.layer_edge_setbacks}
-    assert set(setbacks) == {"zip", "deck-vb", "polyiso-1", "polyiso-2",
-                             "top-deck", "underlayment", "vent-mat", "roofing"}
+    # THREE layers above the deck since 2026-08-31, not eight: the deck, one adhered
+    # membrane on it and the panel. The eight were `zip`, `deck-vb`, `polyiso-1/-2`,
+    # `top-deck`, `underlayment`, `vent-mat`, `roofing`.
+    assert set(setbacks) == {"sheathing", "membrane", "roofing"}
     for edge in ("west", "east", "south", "north"):
-        deck, foam = setbacks["zip"][edge], setbacks["polyiso-1"][edge]
-        batten, metal = setbacks["top-deck"][edge], setbacks["roofing"][edge]
-        assert deck >= foam >= batten >= metal
+        deck, metal = setbacks["sheathing"][edge], setbacks["roofing"][edge]
+        assert deck >= metal
         # Wall stack per the reference: the deck clips at the wall-sheathing face (the whole
         # catlin-truss stand-off plus the cladding), metal runs 0.6" proud of the mount
         # plane. 0.02 + 2 + 2 + 0.5 + 0.5 = 5.02" for the rigid-CI stack, 5.5" for the
         # Swinburne truss, 6.5" when the catlin truss laid four flat layers where the
         # outrigger band was, and 7.25" since the 1 1/4" exposed-fastener PBR panel replaced
         # the 1/2" snap-lock seam (2026-08-26).
-        assert deck == pytest.approx(inch(1.5 + 1.5 + 1.0 + 0.5 + 1.5 + 1.25).meters)
-        # The cladding + the 2" vented cavity the roof's foam clears. It was 1/2" + 1/2" of
-        # furring under the rigid-CI stack, and 1/2" + a 1" vent under the Swinburne truss
-        # (whose 3-1/2" band was 2-1/2" packed with foam). The catlin truss's cavity is the
-        # 1/2" gap PLUS the 1-1/2" between girt courses — ``accessories.rainscreen_band``
-        # reads both, and this is the number that follows it. The cladding term grew 3/4"
-        # with the panel, and the cavity behind it did not move.
-        assert foam == pytest.approx(inch(3.25).meters)
-        # The batten/top-deck plane clips at the CLADDING face, so it is the cladding
-        # thickness and nothing else — 1/2" while the wall wore a snap-lock pan, 1-1/4"
-        # since the PBR panel (2026-08-26). It moves with the panel and never with the
-        # stand-off behind it.
-        assert batten == pytest.approx(inch(1.25).meters)
-        # ``metal`` is ``batten - _METAL_PROUD_M``: the roofing is clipped 0.6" proud of
-        # the FURRING, which is a roof-side dimension and does not know how thick the wall
-        # panel is. So a thicker panel does not push the roofing out — it leaves the wall
-        # standing proud of it. 1/2" of snap-lock pan put the roofing 0.1" OUTSIDE the
-        # cladding face (a negative setback, shedding outward); 1-1/4" of PBR leaves the
-        # panel 0.65" proud of the roofing instead.
-        #
-        # That is honest geometry rather than a regression, and it is a DETAILING note for
-        # the zero-overhang edge: the corner trim now covers a 0.65" step rather than
-        # overhanging the wall by 0.1", so its lower leg has to kick out over the panel.
+        # ** THE DECK CLIPS AT THE CLADDING NOW, NOT AT THE WALL SHEATHING (2026-08-31). **
+        # It was `inch(1.5 + 1.5 + 1.0 + 0.5 + 1.5 + 1.25)` = 7.25" — the whole catlin-truss
+        # stand-off — while 6" of foam and a nailbase ran out over the girts and carried the
+        # metal. With no above-deck insulation left, the deck IS that plane: it oversails the
+        # last rafter, spans the girts and the panel clips straight to it. Anything else
+        # cantilevers the roofing 6.6" over open air, which is what the old rule did the day
+        # the foam left. `roof_layer_setbacks.layer_edge_setbacks` carries the promotion.
+        assert deck == pytest.approx(inch(1.25).meters)
+        # ``metal`` is ``batten - _METAL_PROUD_M``: the roofing is clipped 0.6" proud of the
+        # plane it is fixed to, which is a roof-side dimension and does not know how thick
+        # the wall panel is. 1-1/4" of PBR leaves the wall panel 0.65" proud of the roofing,
+        # which is a DETAILING note for the zero-overhang edge — the corner trim covers a
+        # 0.65" step rather than overhanging the wall by 0.1", so its lower leg kicks out
+        # over the panel.
         assert metal == pytest.approx(inch(0.65).meters)
-        # The nailbase deck is the case that made _layer_group position-aware (2026-08-20).
-        # It is a SHEATHING layer like the ZIP below the foam, but it stands where a vented
-        # roof's battens stood, so it must clip with the battens and not inherit the deck's
-        # 5.02" — which would leave the top deck standing proud of its own roofing.
-        assert setbacks["top-deck"][edge] == setbacks["vent-mat"][edge]
-        assert setbacks["top-deck"][edge] < setbacks["zip"][edge]
-        # Both foam courses are one plane: they are two layers to say the seams stagger,
-        # not two positions.
-        assert setbacks["polyiso-1"][edge] == setbacks["polyiso-2"][edge]
-        # The deck vapour barrier is under the foam, so it rides the ZIP, not the top deck.
-        assert setbacks["deck-vb"][edge] == setbacks["zip"][edge]
+        # The membrane is bonded to the deck, so it rides the deck and not the panel.
+        assert setbacks["membrane"][edge] == setbacks["sheathing"][edge]
     # The garage/truss roof is deferred: no setbacks, geometry unchanged.
     garage = next(r for r in catlin_model.roofs if r.tag == "RF-GARAGE")
     assert garage.layer_edge_setbacks == ()
 
 
-def test_catlin_roof_passes_the_monthly_condensation_gate_with_margin():
-    """The hot roof must clear the monthly (ISO 13788-style) condensation gate — the
-    pass/fail verdict, not just the cold-snap screen — and carry a whole-assembly
-    R >= 50, both read off the resolved model rather than pinned to authored numbers."""
+def test_catlin_roof_answers_its_condensation_criterion_and_carries_the_r():
+    """The hot roof must have an ANSWER on condensation — and since 2026-08-31 the answer is
+    a code criterion rather than a Glaser walk — and carry a whole-assembly R >= 50, both
+    read off the resolved model rather than pinned to authored numbers.
+
+    **This test asserted a PASS on the monthly gate until the flash-and-batt rebuild, and
+    the change is the substance of that rebuild, not a relaxation.** A steady-state Glaser
+    walk cannot grade a stack sealed on its cold side by a 0-perm metal panel: with no
+    outward flux it equilibrates every plane to interior vapour pressure by construction and
+    reports ~100% RH at the deck for ANY unvented metal roof, however designed. The old
+    stack bought its margin by leaving 5.6" of the joist bay deliberately unfilled as a
+    drying path; this one fills the bay and takes IRC R806.5 item 5.3 instead, where
+    air-impermeable insulation bonded to the sheathing at the Table R806.5 R-value IS the
+    condensation control and outward drying is not required.
+
+    So the gate must report NOT_APPLICABLE *naming the check that owns the verdict*, and
+    that check must PASS. Either half alone would be a hole: an N/A with nothing behind it
+    is a silent pass, and the guard in ``condensation._r806_5_deferral`` is that it defers
+    ONLY where the code check itself passes.
+    """
     from typehaus.analysis import assembly_r_value
     from typehaus.checks.building_science.condensation import CHECK_ID
+    from typehaus.checks.code.unvented_roof import CHECK_ID as R806_5_CHECK_ID
 
     plan = load_plan(CATLIN_DIR).plan
     report = run(plan, CATLIN_DIR, tier=None)
     gate = [f for f in report.findings
             if f.check_id == CHECK_ID and "CATLIN_ROOF" in f.element_tags]
     assert gate, "the condensation gate never evaluated CATLIN_ROOF"
-    assert all(f.result is Result.PASS for f in gate), [f.message for f in gate]
+    assert all(f.result is Result.NOT_APPLICABLE for f in gate), [f.message for f in gate]
+    assert all(R806_5_CHECK_ID in f.message for f in gate), [f.message for f in gate]
+
+    coded = [f for f in report.findings
+             if f.check_id == R806_5_CHECK_ID and "CATLIN_ROOF" in f.message]
+    assert coded, "nothing graded R806.5 on the assembly the gate handed to it"
+    assert all(f.result is Result.PASS for f in coded), [f.message for f in coded]
 
     r = assembly_r_value(plan.library.resolve_assembly("CATLIN_ROOF"), plan.library)
     assert r.value is not None and not r.unknown_materials

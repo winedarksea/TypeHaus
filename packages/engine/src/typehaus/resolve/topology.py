@@ -293,17 +293,23 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                 board_run=_board_run(stack, index),
             )
         )
-        fill = getattr(layer, "cavity", None)
-        if fill is not None:
-            fill_t = fill.thickness.meters if fill.thickness is not None else \
-                layer.thickness.meters
+        # One resolved layer per fill. A bay may hold several in series (flash-and-batt),
+        # and they are laid out from the bay's INTERIOR face outward in authored order —
+        # the same direction the stack itself runs — so the second fill starts where the
+        # first one stops instead of the two overlapping at the same depth. Names have to
+        # stay unique: ``_synchronize_cavity_polygons`` indexes the stack by name.
+        fill_offset = 0.0
+        for fill_index, fill in enumerate(getattr(layer, "cavity_fills", ())):
+            fill_t = (fill.thickness.meters if fill.thickness is not None
+                      else layer.thickness.meters)
+            suffix = "" if fill_index == 0 else f"-{fill_index + 1}"
             layers.append(
                 ResolvedLayer(
-                    name=f"{layer.name}-cavity",
+                    name=f"{layer.name}-cavity{suffix}",
                     material_ref=fill.material_ref,
                     function=LayerFunction.INSULATION.value,
                     thickness_m=fill_t,
-                    polygon=_ring(span_in, span_in + fill_t),
+                    polygon=_ring(span_in + fill_offset, span_in + fill_offset + fill_t),
                     control=frozenset(c.value for c in fill.control),
                     is_cavity=True,
                     cavity_host=layer.name,
@@ -312,6 +318,7 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                     band_spec=spec,
                 )
             )
+            fill_offset += fill_t
 
     return ResolvedWall(
         uid=wall.uid, tag=wall.tag, storey=storey_tag, assembly=wall.assembly,

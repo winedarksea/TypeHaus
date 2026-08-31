@@ -16,7 +16,7 @@ import {
   createStandingSeamMaterial, isMasonry, isStandingSeam, masonryStyleFor, masonryTileSizeM,
   metalPanelProfileForFinish, SEAM_PROFILE,
 } from "../materials";
-import { buildMembers, categoryColor, isSkinMember } from "../members";
+import { buildMembers, categoryColor, isSkinMember, type SkinLine } from "../members";
 import {
   applyPlankWallUv, createPlankMaterial, isWoodPlank, plankStyleFor, plankTileSizeM,
 } from "../plankMaterial";
@@ -211,7 +211,8 @@ export function buildWall(
   }
   const framingFirstIndex = tradeGroups.framing.children.length;
   const wallsSkinFirstIndex = tradeGroups.walls.children.length;
-  buildWallSkinMembers(tradeGroups, w.uid, w.members, center, mode, palette, materials);
+  buildWallSkinMembers(tradeGroups, w.uid, w.members, center, mode, palette, materials,
+    [{ axis: w.axis, datum: w.layout_axis ?? w.axis }]);
   // A wall's studs are pickable as themselves; the wall body remains pickable through its
   // layer meshes above, so both "this wall" and "this stud" stay one click away.
   registerMemberPicks(tradeGroups.framing, framingFirstIndex, picks);
@@ -258,6 +259,7 @@ function memberTrade(member: Member, tradeGroups: Record<Trade, THREE.Group>,
 function buildWallSkinMembers(
   tradeGroups: Record<Trade, THREE.Group>, wallUid: string, members: Member[], center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, materials?: MaterialSpec[],
+  lines?: readonly SkinLine[],
 ) {
   const lumber = members.filter((member) => !member.material);
   buildMembers(tradeGroups.framing, lumber, center, mode, palette, wallUid);
@@ -276,7 +278,7 @@ function buildWallSkinMembers(
   }
   for (const { parent, group, members: skin } of skinByBucket.values()) {
     const firstChildIndex = parent.children.length;
-    buildMembers(parent, skin, center, mode, palette, wallUid, materials);
+    buildMembers(parent, skin, center, mode, palette, wallUid, materials, lines);
     tagLayerGroup(parent, firstChildIndex, group);
   }
 }

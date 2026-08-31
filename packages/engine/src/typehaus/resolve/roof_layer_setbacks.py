@@ -178,6 +178,10 @@ def _layer_group(function: LayerFunction, previous: str | None) -> str | None:
     a sheathing layer that appears once the stack has already reached the foam clips as a
     batten, not as a deck — without that it would inherit the deck's much larger setback and
     the top deck would stand proud of its own roofing at every edge.
+
+    :func:`layer_edge_setbacks` applies a second, whole-stack half of the same rule that
+    this per-layer walk cannot see: a deck with NO foam and NO batten anywhere above it *is*
+    the batten, because the covering is fixed straight to it. See the note there.
     """
     if function is LayerFunction.SHEATHING:
         return "batten" if previous in ("foam", "batten") else "deck"
@@ -265,10 +269,24 @@ def layer_edge_setbacks(model, roof) -> tuple[dict, ...]:
         wall = _skinned(model, _edge_wall(model, roof, edge, bearing_walls))
         clips[edge] = (_wall_clip_setbacks(wall) if wall is not None
                        else {"deck": 0.0, "foam": 0.0, "batten": 0.0, "metal": 0.0})
-    entries: list[dict] = []
+    groups: list[str | None] = []
     group: str | None = None
     for layer in layers:
         group = _layer_group(layer.function, group)
+        groups.append(group)
+    # **A deck with nothing above it but membranes and the covering IS the batten.** The
+    # "deck" clip stops a layer at the WALL SHEATHING face, which is right while foam and a
+    # nailbase run out over the wall's stand-off band and carry the metal — and wrong the
+    # moment they do not. On a zero-overhang continuous-skin edge with no above-deck
+    # insulation (CATLIN_ROOF since 2026-08-31) that rule left the structural deck stopping
+    # at the wall sheathing plane, 6.6" short of the roofing clipped to it: the panel
+    # cantilevered over the girts with nothing under it, and the take-off meanwhile bought
+    # deck for the whole sloped footprint. The deck really does oversail the last rafter and
+    # span the girts, and this is the line that says so.
+    if not any(g in ("foam", "batten") for g in groups):
+        groups = ["batten" if g == "deck" else g for g in groups]
+    entries: list[dict] = []
+    for layer, group in zip(layers, groups, strict=True):
         entries.append({
             "layer": layer.name,
             **{edge: (clips[edge][group] if group is not None else 0.0)

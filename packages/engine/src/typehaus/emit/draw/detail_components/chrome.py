@@ -32,8 +32,14 @@ def _participating_layers(model, derived):
     out: list[tuple[str, float, str]] = []
     for wall in condition_walls(model, derived.condition):
         for layer in wall.layers:
-            if layer.is_cavity:
-                continue
+            # **Cavity fills included, since 2026-08-31.** They used to be skipped, and the
+            # result was a legend that named the studs and not the batt between them: a
+            # cavity IS drawn in the cut (``section_cavity`` emits it from the assembly
+            # precisely because the IR gives it no solid), so leaving it out broke this
+            # module's own rule that the strip names what the cut is made of. It surfaced on
+            # the flash-and-batt roof, where the two bay fills are the assembly, but the
+            # wall's stud batt had been drawn-and-unnamed the whole time. Nothing here can
+            # over-name: ``_paper_legend`` intersects this list with what the scene drew.
             out.append((layer.material_ref, layer.thickness_m / M_PER_IN, layer.function))
     tags = derived.condition.element_tags
     for roof in model.roofs:
@@ -50,6 +56,13 @@ def _participating_layers(model, derived):
         for layer in asm.layers:
             out.append((layer.material_ref, layer.thickness.meters / M_PER_IN,
                         layer.function))
+            # A roof's fills reach no ``ResolvedLayer`` at all — the wall loop above gets
+            # them for free, this one has to ask the assembly — and on a flash-and-batt roof
+            # they are the two thickest things in the drawing.
+            for fill in layer.cavity_fills:
+                out.append((fill.material_ref,
+                            layer.cavity_thickness(fill).meters / M_PER_IN,
+                            layer.function))
     return out
 
 

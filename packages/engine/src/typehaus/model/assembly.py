@@ -158,6 +158,16 @@ class CavityFill(HausModel):
 
     ``thickness`` defaults to the host layer's thickness (a full-depth bay); a shallower
     fill (R-13 batt in a 2x6 bay) states its own, and the remainder is treated as still air.
+
+    A bay may hold MORE THAN ONE fill in series — ``Layer.cavity`` takes a tuple, and
+    flash-and-batt is what it is for: closed-cell foam sprayed against the deck with a batt
+    packed in front of it is two materials at two thicknesses through one joist depth, and
+    the framing is still the single parallel path across the whole of it. The tuple is
+    ordered the way the layer list is, **interior -> exterior**, so the batt is authored
+    first and the flash against the sheathing last. Every member of one tuple must carry the
+    same ``framing_factor``: it describes the bay's geometry, not the fill's, and two fills
+    in one bay that disagree about how much of the plane is wood are describing two
+    different bays (``integrity.assembly_layers`` rejects it).
     """
 
     material_ref: str
@@ -206,7 +216,11 @@ class Layer(HausModel):
     # (``resolve/topology.py``), bills as ``insulation (cavity)`` and parallel-paths against
     # the sticks in ``analysis._layer_rsi`` exactly as a stud bay does. That is what lets a
     # truss wall's foam be authored band by band instead of as one slab that hides the wood.
-    cavity: CavityFill | None = None
+    # A tuple is flash-and-batt: several fills in series through one bay depth, ordered
+    # interior -> exterior like the layer list itself. Read it through ``cavity_fills``,
+    # never by attribute — a consumer that says ``layer.cavity.material_ref`` sees the
+    # foam or the batt depending on how the bay happened to be authored.
+    cavity: CavityFill | tuple[CavityFill, ...] | None = None
     # Vertical extent, when this layer does not run the wall's full height — a protection
     # panel above grade, a splash course at the base, a water table. ``None`` is full height,
     # and is what the whole catalog said before this field existed. A banded layer with no
@@ -228,6 +242,43 @@ class Layer(HausModel):
     # siblings), and no two members' bands overlap. Elevations not claimed by any member
     # are simply not built — a row may have a gap, and that is what a reveal is.
     slot: str | None = None
+
+    @property
+    def cavity_fills(self) -> tuple[CavityFill, ...]:
+        """Every fill in this layer's bay, interior -> exterior; empty for an open bay.
+
+        The single accessor for ``cavity``, which is one of three things: ``None``, one
+        ``CavityFill``, or a tuple of them (flash-and-batt). Consumers walk this instead of
+        the field so that "is there insulation in this bay", "what does the bay cost" and
+        "what is the bay worth thermally" cannot disagree about a two-material bay.
+        """
+        if self.cavity is None:
+            return ()
+        if isinstance(self.cavity, CavityFill):
+            return (self.cavity,)
+        return tuple(self.cavity)
+
+    @property
+    def cavity_framing_factor(self) -> float:
+        """The bay's framing fraction, clamped to 0..1 — 0.0 when the bay carries no fill.
+
+        One number for the whole bay by construction: ``integrity.assembly_layers`` rejects
+        a tuple whose members disagree, so reading the first is reading all of them.
+        """
+        fills = self.cavity_fills
+        if not fills:
+            return 0.0
+        return min(max(fills[0].framing_factor, 0.0), 1.0)
+
+    def cavity_thickness(self, fill: CavityFill) -> Length:
+        """``fill``'s depth, defaulted to this layer's own — a bay packed solid."""
+        return fill.thickness if fill.thickness is not None else self.thickness
+
+    @property
+    def cavity_filled_thickness(self) -> Length:
+        """Total depth of bay this layer's fills occupy; the rest of it is still air."""
+        return inch(sum(self.cavity_thickness(fill).inches
+                        for fill in self.cavity_fills))
 
 
 class AssemblyInterface(HausModel):

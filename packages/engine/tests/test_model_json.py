@@ -179,7 +179,14 @@ def test_stud_carries_orient(catlin_payload):
 def test_roofs_carry_bearing_datum_and_layer_edge_setbacks(catlin_payload):
     """model.json contract: every roof serializes ``bearing_z_m`` and
     ``layer_edge_setbacks``; the rafter-framed house roof's deck plane rides ~0.2318 m
-    above the plate (11.875" I-joist less the 5.5" 2x6 seat drop at 6:12) and its setbacks step monotonically deck >= foam >= batten >= metal."""
+    above the plate (11.875" TJI less the 5.5" 2x6 seat drop at 6:12) and its setbacks step
+    monotonically outward through the stack, whatever the stack happens to be.
+
+    The layer NAMES are read off the assembly rather than typed in — they were
+    ``zip``/``polyiso-1``/``top-deck``/``roofing`` until 2026-08-31 and are
+    ``sheathing``/``membrane``/``roofing`` now, and the property being asserted (each layer
+    sets back no further than the one under it, so no layer oversails the one it lands on)
+    is the same one either way and is what a hard-coded name list was hiding."""
     from typehaus.quantities import inch
 
     for roof in catlin_payload["roofs"]:
@@ -188,11 +195,11 @@ def test_roofs_carry_bearing_datum_and_layer_edge_setbacks(catlin_payload):
     house = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-HOUSE")
     assert house["eave_z_m"] - house["bearing_z_m"] == pytest.approx(
         inch(11.875 - 5.5 / 2.0).meters)
-    entries = {entry["layer"]: entry for entry in house["layer_edge_setbacks"]}
-    assert entries
+    entries = house["layer_edge_setbacks"]
+    assert len(entries) >= 2, entries
     for edge in ("west", "east", "south", "north"):
-        assert (entries["zip"][edge] >= entries["polyiso-1"][edge]
-                >= entries["top-deck"][edge] >= entries["roofing"][edge])
+        steps = [entry[edge] for entry in entries]
+        assert steps == sorted(steps, reverse=True), (edge, entries)
     garage = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-GARAGE")
     assert garage["layer_edge_setbacks"] == []  # truss roof deferred
 

@@ -52,20 +52,34 @@ Geometry facts this module derives from (see plan/storeys/attic.py + plan/assemb
   1 1/2" of 2x6 laid flat — there is no knee wall any more, see plan/assemblies.py's
   CATLIN_RAFTER_PLATE); deck plane (eave_z_m) rides the I-joist rise above it:
   11.875" - 5.5" x 6/12 seat drop = 9.125", so eave_z is 20'-11 3/8";
-- roof stack above the deck (perpendicular): zip 0.5" + deck vapour barrier 0.04" -> foam
-  3" + 3" -> top deck 0.625" (top-deck surface at 7.165") -> underlayment 0.06" -> vent mat
-  0.25" -> metal 0.5"; the 6:12 slope factor turns those perpendicular offsets into the
-  vertical ones an authored elevation is measured in;
+- roof stack above the deck (perpendicular), REBUILT 2026-08-31: 5/8" CDX plywood (deck
+  surface at 0.625") -> 0.04" adhered butyl membrane -> metal 0.5". That is the whole of
+  it. The 6:12 slope factor turns those perpendicular offsets into the vertical ones an
+  authored elevation is measured in;
 - the wall cladding's head lands at the roofing's own underside (MatingFaces with a
-  continuous skin), 7.475" perpendicular above the deck plane.
+  continuous skin), 0.665" perpendicular above the deck plane.
 
-**The batten cavity is gone; a 1/4" vent mat replaced it** (2026-08-20). The roof was a
-vented batten roof and the drip edge's ceiling used to be the batten cavity's underside —
-the chain existed partly to avoid damming that slot. The metal now clips through a thin
-ventilated mat to a top deck screwed straight through the foam, and the ceiling is the top
-deck's own surface instead: the drip flashing lies ON that deck and the underlayment laps
-OVER it, so nothing *else* in the chain may reach that plane — a second thing under the
-underlayment is what lifts it off the deck it has to bond to. Same chain, a different plane.
+**The outsulation is gone, and with it 6.81" of the stack** (2026-08-31). The roof was a
+vented batten roof until 2026-08-20, then a 1/4" vent mat over a nailbase screwed through 6"
+of polyiso; it is now 5/8" plywood straight on the I-joists with a fully-adhered butyl
+membrane on it and the panel clipped to that (plan/assemblies.py CATLIN_ROOF, flash-and-batt
+in the bay under IRC R806.5 item 5.3).
+
+**The chain itself does not change — only the plane it hangs from.** The drip flashing still
+lies ON the structural deck and the membrane still laps OVER it, so nothing else in the chain
+may reach that plane; what moves is that the plane is 0.625" above the deck rather than
+7.165". Every piece below rides that number down, which is the point of deriving each from
+the one above it: the eave got 6.81" (perpendicular; 7.61" vertical) thinner and no elevation
+in this module had to be re-invented to follow it. Two consequences worth stating, because
+both look wrong at a glance and are not:
+
+- the corner trim's bottom edge and the gutter's rim are now BELOW the deck plane
+  (``_TRIM_BOTTOM_IN`` is negative). That is correct and always was: the trim's 4" leg laps
+  DOWN over the wall panel heads, and with only 0.67" of roof stack left above the deck there
+  is nowhere else for 4" of leg to go;
+- the drip edge's turn-down is unchanged at 5.5" and now reaches much further past the
+  trough's rim than it used to, because the flange it hangs from came down with the deck. It
+  still lands inside the trough and well clear of its floor, which is all the piece has to do.
 """
 
 from __future__ import annotations
@@ -107,8 +121,11 @@ _SLOPE_FACTOR = math.hypot(1.0, 6.0 / 12.0)  # 6:12 -> 1.1180
 # The top deck's upper surface: the drip flashing lies on it and the underlayment laps over
 # the flashing, so nothing in the chain may stand above this plane or the underlayment
 # cannot bond to the deck it is sealing.
-_DRIP_CEILING_IN = 7.165 * _SLOPE_FACTOR     # 8.01" — top-deck surface, vertical
-_CLADDING_HEAD_IN = 7.475 * _SLOPE_FACTOR    # 8.36" — roofing underside == wall panel heads
+#: The values these two have had, kept beside them so the revert is a line and not a
+#: re-derivation: 7.165 / 7.475 under the screwed nailbase over 6" of polyiso (2026-08-20 to
+#: 2026-08-31), and 0.5 / 4.25 under the vented batten roof before it.
+_DRIP_CEILING_IN = 0.625 * _SLOPE_FACTOR     # 0.70" — plywood deck surface, vertical
+_CLADDING_HEAD_IN = 0.665 * _SLOPE_FACTOR    # 0.74" — roofing underside == wall panel heads
 
 # The derived corner trim (resolve/roof_trim.py::_corner_trim_members): a formed angle 1.25"
 # deep in plan, hung outboard of the footprint edge, with a leg down over the wall panel
@@ -127,7 +144,9 @@ _TRIM_LEG_IN = 4.0                           # resolve/roof_trim.py::_CORNER_TRI
 #: The formed face's own thickness — ``trim_bands``' shell rule, which at a 4" leg is only
 #: ever bounded by the plan depth.
 _TRIM_SHEET_IN = min(0.5, _TRIM_FACE_IN / 3.0)          # 0.42"
-_TRIM_BOTTOM_IN = _CLADDING_HEAD_IN - _TRIM_LEG_IN      # 3.88" above the deck plane
+#: NEGATIVE since 2026-08-31, and correctly so: a 4" leg hung from a roofing underside only
+#: 0.74" above the deck reaches 3.26" BELOW it, lapping down over the wall panel heads.
+_TRIM_BOTTOM_IN = _CLADDING_HEAD_IN - _TRIM_LEG_IN      # -3.26" (was +3.88")
 
 #: The coil the whole chain is ordered in (2026-08-01). The derived corner trim above it is
 #: already `RF-HOUSE.edge_trim_material` — the house's one exterior dark — and the gutter hangs
@@ -153,7 +172,7 @@ _GUTTER_DEPTH = inch(5)                      # channel height
 #: Inner face of the back sheet. A lap *behind* the trim's face means behind the face's own
 #: sheet, not behind the plan depth that sheet hangs at the end of.
 _GUTTER_BACK_IN = _TRIM_FACE_IN - _TRIM_SHEET_IN - _LAP_IN   # 0.33"
-_GUTTER_RIM_IN = _TRIM_BOTTOM_IN + _LAP_IN                   # 4.38" above the deck plane
+_GUTTER_RIM_IN = _TRIM_BOTTOM_IN + _LAP_IN                   # -2.76" (was +4.38")
 
 #: Mid-width of the trough — where a drip wants to land, being the furthest it can be from
 #: both the back sheet and the front lip. The shell closes a half-shell at each side.

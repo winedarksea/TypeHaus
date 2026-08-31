@@ -18,7 +18,7 @@ import {
   applyDeckBoardUv, createDeckBoardMaterial, createStandingSeamMaterial,
   isAluminumDeckBoard, isStandingSeam,
 } from "../materials";
-import { buildMembers, isRoofFramingMember, memberColor } from "../members";
+import { buildMembers, isRoofFramingMember, memberColor, type SkinLine } from "../members";
 import {
   applyPlankPlaneUv, applyPlankWallUv, createPlankMaterial, isWoodPlank, planLongAxis,
   plankStyleFor, plankTileSizeM,
@@ -392,7 +392,8 @@ function bandAxis(outline: readonly Vec2[]): [Vec2, Vec2] {
 // roof's own members (rafters, ridge beam).
 export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, catalog: Catalog | undefined,
-  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, framingGroup?: THREE.Group) {
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, framingGroup?: THREE.Group,
+  skinLines?: readonly SkinLine[]) {
   const firstChildIndex = parent.children.length;
   const triangles = roofPlaneTriangles(roof);
   const offsetAt = roofOffsetter(triangles);
@@ -452,7 +453,10 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
   }
   for (const [group, members] of skinByGroup) {
     const skinFirstIndex = parent.children.length;
-    buildMembers(parent, members, center, mode, palette, roof.uid, catalog?.materials);
+    // `skinLines` reaches only here: a roof's closure bands are the walls' own panels carried
+    // up past the top plate, and they take their module phase from the facade the wall was laid
+    // out on so the ribs cross the joint unbroken.
+    buildMembers(parent, members, center, mode, palette, roof.uid, catalog?.materials, skinLines);
     tagLayerGroup(parent, skinFirstIndex, group);
   }
   registerSelectable(parent, firstChildIndex, roof.uid, "roof", picks, byUid);

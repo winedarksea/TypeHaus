@@ -73,6 +73,7 @@ def assembly_layer_sanity(ctx: CheckContext) -> list[Finding]:
                                 f"assembly {asm.tag} layer {layer.name} has thickness <= 0",
                                 (asm.tag,)))
             out.extend(_layer_extent_findings(asm.tag, layer))
+            out.extend(_cavity_fill_findings(asm.tag, layer))
             out.extend(furring_spec_findings(asm.tag, layer))
         out.extend(_overlapping_band_findings(asm.tag, resolved.layers))
         out.extend(_slot_findings(asm.tag, resolved.layers))
@@ -88,6 +89,43 @@ def assembly_layer_sanity(ctx: CheckContext) -> list[Finding]:
                             f"assembly {asm.tag} declares role=\"band\" but carries a "
                             "STRUCTURE layer; a band is a buried layer of the ground, not a "
                             "thing that holds anything up", (asm.tag,)))
+    return out
+
+
+def _cavity_fill_findings(assembly_tag: str, layer: Layer) -> list[Finding]:
+    """A bay's fills must fit in it, and must agree about how much of it is framing.
+
+    ``Layer.cavity`` takes a tuple — flash-and-batt is two materials in series through one
+    joist depth — and two things then have to hold that a single fill could not get wrong.
+
+    The fills must not sum past the bay: a 5" flash plus an 8-1/4" batt in an 11-7/8" joist
+    is not a deeper assembly, it is a batt that has to be compressed, and authoring the
+    uncompressed thickness would credit R the bay cannot hold while the stack's own depth
+    stays put. And every member must carry the same ``framing_factor``, because that number
+    describes the BAY (how much of the plane is wood), not the fill; two fills disagreeing
+    about it are describing two different bays, and every consumer reads the first one.
+    """
+    fills = layer.cavity_fills
+    if len(fills) < 2:
+        return []
+    out: list[Finding] = []
+    filled = layer.cavity_filled_thickness.inches
+    if filled > layer.thickness.inches + 1e-6:
+        out.append(_err("integrity.assembly_layers",
+                        f"assembly {assembly_tag} layer {layer.name} has "
+                        f"{filled:.3f}\" of cavity fill in a {layer.thickness.inches:.3f}\" "
+                        "bay", (assembly_tag,),
+                        "state each fill at its INSTALLED depth — a batt compressed into "
+                        "the remaining bay is authored at the depth it occupies, and its "
+                        "material carries the compressed R per inch"))
+    factors = {round(fill.framing_factor, 6) for fill in fills}
+    if len(factors) > 1:
+        out.append(_err("integrity.assembly_layers",
+                        f"assembly {assembly_tag} layer {layer.name} has cavity fills "
+                        f"disagreeing about framing_factor ({sorted(factors)})",
+                        (assembly_tag,),
+                        "framing_factor is a property of the bay, not of the fill — give "
+                        "every fill in one bay the same value"))
     return out
 
 

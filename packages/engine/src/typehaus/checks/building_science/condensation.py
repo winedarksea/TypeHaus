@@ -20,9 +20,11 @@ from typehaus.checks.building_science.glaser import (  # re-exported: card/CLI/s
     analyze_layers,
     analyze_layers_monthly,
     glaser_layers,
+    layer_permeance_perms,
 )
+from typehaus.checks.code.unvented_roof import r806_5_compliance
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, Result, Severity, not_applicable
 from typehaus.model.assembly import Assembly, Layer
 from typehaus.model.enums import ControlLayer, LayerFunction, Occupancy
 from typehaus.model.spatial import Room
@@ -56,7 +58,7 @@ def _carries_thermal_control(assembly: Assembly) -> bool:
     layers = list(assembly.default_lining) + list(assembly.layers)
     return any(layer.function == LayerFunction.INSULATION
                or ControlLayer.THERMAL in layer.control
-               or layer.cavity is not None  # a filled stud/joist bay is the insulation
+               or bool(layer.cavity_fills)  # a filled stud/joist bay is the insulation
                for layer in layers)
 
 
@@ -81,6 +83,9 @@ class EnvelopeSurface:
     layers: tuple[Layer, ...]
     room_tag: str | None
     interior_relative_humidity: float | None
+    #: A roof surface, as against a wall. Only a roof can take the R806.5 path below, and
+    #: only a roof carries a metal panel with nothing but the panel outboard of the deck.
+    is_roof: bool = False
 
 
 def _room_design_rh(room: Room) -> float | None:
@@ -222,7 +227,7 @@ def conditioned_envelope_surfaces(ctx: CheckContext) -> list[EnvelopeSurface]:
     seen: set[tuple[Any, ...]] = set()
 
     def _add(tag: str | None, room: Room | None = None,
-             wall_tag: str | None = None) -> None:
+             wall_tag: str | None = None, *, is_roof: bool = False) -> None:
         if tag is None:
             return
         assembly = ctx.plan.library.resolve_assembly(tag)
@@ -239,7 +244,7 @@ def conditioned_envelope_surfaces(ctx: CheckContext) -> list[EnvelopeSurface]:
         if key in seen:
             return
         seen.add(key)
-        surfaces.append(EnvelopeSurface(tag, label, layers, room_tag, rh))
+        surfaces.append(EnvelopeSurface(tag, label, layers, room_tag, rh, is_roof))
 
     for wall in ctx.model.walls:
         if wall.storey not in conditioned:
@@ -256,7 +261,7 @@ def conditioned_envelope_surfaces(ctx: CheckContext) -> list[EnvelopeSurface]:
             _add(wall.assembly, room, wall.tag)
     for roof in ctx.model.roofs:
         if getattr(roof, "storey", None) in conditioned:
-            _add(roof.assembly)
+            _add(roof.assembly, is_roof=True)
     return surfaces
 
 
@@ -369,6 +374,66 @@ def _screen_finding(analysis: CondensationAnalysis, boundary: str) -> Finding:
     )
 
 
+def _r806_5_deferral(ctx: CheckContext, surface: EnvelopeSurface) -> Finding | None:
+    """The gate finding for a roof R806.5 hands to a code criterion instead — or None.
+
+    **A steady-state Glaser walk cannot grade an assembly sealed on its cold side.** Under a
+    standing-seam panel (0 perm) :func:`~...glaser._vapor_fractions` finds the outermost
+    resistance infinite and puts every plane inboard of it at the full *interior* vapour
+    pressure, because at steady state with no outward flux the stack equilibrates to the
+    warm side. That is the correct limit of the method and a useless verdict: it reports
+    100% RH at the deck for every unvented metal roof, at any foam thickness, however it is
+    designed. ``houses/catlin/CLAUDE.md`` recorded exactly that, and the old assembly bought
+    its margin by leaving 5.6" of bay unfilled so the walk found a drying path.
+
+    R806.5 items 5.2 and 5.3 replace the criterion rather than relax it. Air-impermeable
+    insulation bonded to the sheathing underside, at the Table R806.5 R-value and itself a
+    Class II retarder, IS the condensation control: the table is a dew-point calculation for
+    the zone, holding the first condensing surface — the foam's own outer face, which is the
+    deck — above the interior dew point, and outward drying is then not required. So the
+    honest reading is not a FAIL and not a silent pass: the section this engine now grades
+    (``code.R806_5_unvented_roof``) owns the verdict, and this gate reports NOT_APPLICABLE
+    naming it.
+
+    The deferral is earned, not assumed, and it is guarded twice. It applies only where the
+    code check itself PASSES — an assembly whose foam is below the table, or is not Class
+    II, or which carries a ceiling-side Class I retarder, keeps the Glaser gate and its FAIL.
+    And it applies only to a roof whose stack really has no drying path: a vented mat or a
+    permeable underlayment over the deck leaves the walk something to say, and ``layers``
+    (already truncated by :func:`glaser_layers`) ending at a vent plane is the evidence of it.
+    """
+    if not surface.is_roof:
+        return None
+    assembly = ctx.plan.library.resolve_assembly(surface.assembly_tag)
+    if assembly is None:
+        return None
+    result = r806_5_compliance(assembly, ctx.plan.library)
+    if not (result.deck_contact_insulation and result.complies):
+        return None
+    # A stack the Glaser walk can still finish — one truncated at a vented cavity, or whose
+    # outermost layer is not a vapour barrier — is graded on its own terms. The deferral is
+    # for the sealed case, which is the only one the method cannot answer.
+    truncated = glaser_layers(list(surface.layers))
+    outermost = truncated[-1] if truncated else None
+    if outermost is None or len(truncated) < len(surface.layers):
+        return None
+    permeance = layer_permeance_perms(outermost, ctx.plan.library)
+    if permeance is None or permeance > 0.0:
+        return None
+    assert result.deck_contact_r is not None
+    return not_applicable(
+        CHECK_ID,
+        f"monthly gate (ISO 13788-style): the stack is sealed on its cold side by "
+        f"{outermost.name} (0 perm), so a steady-state Glaser walk has no outward flux to "
+        f"grade and reads every plane at interior vapour pressure by construction. "
+        f"R806.5 item {result.item} replaces that criterion: R-{result.deck_contact_r:.1f} "
+        f"of air-impermeable, Class {result.air_impermeable_class} insulation bonded to the "
+        f"sheathing underside is the condensation control, and outward drying is not "
+        f"required. Graded by code.R806_5_unvented_roof",
+        (surface.assembly_tag,), code="R806.5",
+    )
+
+
 @check(Tier.BUILDING_SCIENCE, CHECK_ID)
 def condensation_risk(ctx: CheckContext) -> list[Finding]:
     """Per envelope surface: the monthly gate (pass/fail) plus the cold-snap screen.
@@ -399,13 +464,18 @@ def condensation_risk(ctx: CheckContext) -> list[Finding]:
         # against the design temperature and interior humidity that produced it.
         boundary = (f"{temperature_f:.0f} F design / {screen_rh:.0%} interior RH"
                     if temperature_f is not None else "the design heating temperature")
-        assessment = analyze_layers_monthly(
-            surface.label, layers, ctx.plan.library,
-            monthly_normals=site.monthly_normals,
-            interior_setpoint_f=ctx.preferences.interior_setpoint_f,
-            interior_relative_humidity=gate_rh,
-        )
-        findings.append(_gate_finding(assessment, surface.label))
+        assessment: MonthlyAssessment | None = None
+        deferral = _r806_5_deferral(ctx, surface)
+        if deferral is not None:
+            findings.append(deferral)
+        else:
+            assessment = analyze_layers_monthly(
+                surface.label, layers, ctx.plan.library,
+                monthly_normals=site.monthly_normals,
+                interior_setpoint_f=ctx.preferences.interior_setpoint_f,
+                interior_relative_humidity=gate_rh,
+            )
+            findings.append(_gate_finding(assessment, surface.label))
         screen = analyze_layers(
             surface.label, layers, ctx.plan.library,
             heating_design_temp_f=temperature_f,
@@ -415,8 +485,9 @@ def condensation_risk(ctx: CheckContext) -> list[Finding]:
         )
         if not screen.known:
             # The gate already named these inputs unless it ran on complete data (or was
-            # itself missing its normals while the screen misses the design temperature).
-            if assessment is None or assessment.analysis.known:
+            # itself missing its normals while the screen misses the design temperature) —
+            # or it deferred to R806.5 and named nothing at all.
+            if deferral is not None or assessment is None or assessment.analysis.known:
                 findings.append(_unknown_finding(screen, "cold-snap screen",
                                                  SCREEN_CHECK_ID))
             continue

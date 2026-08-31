@@ -88,6 +88,15 @@ class Material(HausModel):
     # False — R316 does not reach them, and marking them would demand a thermal barrier
     # over every batt in the house.
     foam_plastic: bool = False
+    # "Air-impermeable insulation" as IRC R806.5 / R202 uses the phrase: an insulation
+    # tested at <= 0.02 L/s.m2 at 75 Pa by ASTM E2178 or E283. Closed-cell spray foam and
+    # rigid board qualify; every fibre insulation does not, at any density. It is authored
+    # rather than inferred because no other number in this file implies it — vapour
+    # permeance is a different transport property, and a 0.3-perm fibreglass batt does not
+    # exist while a 116-perm one that is also air-impermeable would not either. The one
+    # consumer is ``code.R806_5_unvented_roof``, where the phrase decides whether a fill may
+    # be the condensation control against a sealed deck.
+    air_impermeable: bool = False
     # Wood species ("basswood", "oak", "walnut", "elm", ...) where the material *is* a wood
     # product an estimator orders by species. Authoring it is what admits the material into
     # the species-split ``wood_surfaces`` takeoff; a wood-ish tag without it stays out —

@@ -109,8 +109,35 @@ def _layer_offset_m(wall: ResolvedWall, layer) -> float:
     return (cx - ax) * normal[0] + (cy - ay) * normal[1]
 
 
-def _layer_axis_fractions(wall: ResolvedWall, layer) -> tuple[float, float]:
-    """The along-axis fractions the layer's own plan polygon spans (a mitre reaches past 0/1).
+def _laps_the_corner(wall: ResolvedWall) -> bool:
+    """Which of the two walls meeting at an outside corner carries its band through it.
+
+    A band is a *box*: one plan segment and one width. The layer under it is not — it is
+    already mitred, a trapezoid whose outboard edge runs past its inboard one. So a band can
+    take the long edge or the short one, and it cannot take both. If both walls at a corner
+    take the long edge they double-occupy the mitre square and their faces land coplanar
+    (7/8" wide on the garage, the height of the band, z-fighting in every 3D view); if both
+    take the short edge the square is left open, which is the gold-square bug
+    :func:`_layer_axis_fractions` was written to close. One long and one short tiles it
+    exactly — a lapped corner, which is also how the boards themselves go on.
+
+    The pick has to come out *different* for the two walls at a corner, so it is made on the
+    wall's own plan direction: the wall running more north-south laps, the one running more
+    east-west butts into it. That is exact for every orthogonal corner. At a non-orthogonal
+    corner both walls can land on the same side of the test and the overlap comes back — no
+    worse than what this replaced, and the case does not arise on this house.
+
+    Only consulted where the neighbour actually caps the same layer; :func:`_lap_flags` is
+    where that question is asked, and it laps unconditionally when nobody else will.
+    """
+    (ax, ay), (bx, by) = wall.axis
+    return abs(by - ay) >= abs(bx - ax)
+
+
+def _layer_axis_fractions(
+    wall: ResolvedWall, layer, laps: tuple[bool, bool]
+) -> tuple[float, float]:
+    """The along-axis fractions the closure band spans over ``layer`` (a mitre passes 0/1).
 
     A wall's layers are already mitred into the building's outside corners by the time they
     resolve: on the catlin attic's SW corner W-A-S1's cladding polygon runs x -0.128..3.048
@@ -119,9 +146,14 @@ def _layer_axis_fractions(wall: ResolvedWall, layer) -> tuple[float, float]:
     outside corner a (skin depth)² column — 4 3/4" square on this house, the full height of
     the wall→roof stack — was claimed by neither wall's band, and the wall's exterior foam
     showed its end grain there. (Visible as a gold square at both lower gable corners in any
-    3D view.) Taking the span from the polygon makes the band inherit whatever mitre the
-    layer beneath it already has, including its convention at every other junction kind, so
-    this cannot drift from the prism it caps.
+    3D view.) Reading the span off the polygon is what closed that.
+
+    ``lap`` then says which end of the mitre this wall takes (→ :func:`_laps_the_corner`),
+    because a rectangular band cannot inherit a trapezoid: the lapping wall runs to the
+    polygon's furthest corner and the butting wall stops at its nearest, so the two tile the
+    mitre square instead of both claiming it. Taken per END rather than per edge, so a wall
+    that turns an outside corner at one end and an inside corner at the other is right at
+    both.
     """
     (ax, ay), (bx, by) = wall.axis
     dx, dy = bx - ax, by - ay
@@ -129,7 +161,20 @@ def _layer_axis_fractions(wall: ResolvedWall, layer) -> tuple[float, float]:
     if run <= 1e-9:
         return (0.0, 1.0)
     along = [((x - ax) * dx + (y - ay) * dy) / (run * run) for x, y in layer.polygon]
-    return (min(along), max(along))
+    if laps[0] and laps[1]:
+        return (min(along), max(along))
+    # The two long edges of the layer prism, split on which side of the axis they lie. A
+    # butting end stops where the SHORTER of them does; the two ends are independent, so a
+    # wall that turns an outside corner at one end and butts at the other is right at both.
+    normal = (-dy / run, dx / run)
+    across = [(x - ax) * normal[0] + (y - ay) * normal[1] for x, y in layer.polygon]
+    mid = (min(across) + max(across)) / 2.0
+    near = [along[i] for i in range(len(along)) if across[i] <= mid]
+    far = [along[i] for i in range(len(along)) if across[i] > mid]
+    if not near or not far:
+        return (min(along), max(along))
+    return (min(along) if laps[0] else max(min(near), min(far)),
+            max(along) if laps[1] else min(max(near), max(far)))
 
 
 def _offset_point(wall: ResolvedWall, fraction: float, offset: float) -> tuple[float, float]:
@@ -162,6 +207,39 @@ def _ridge_crossing_fraction(roof: ResolvedRoof, wall: ResolvedWall) -> float | 
 
 # --- wall → roof closure -----------------------------------------------------------------
 
+def _neighbour_at(
+    wall: ResolvedWall, point: tuple[float, float], walls: tuple[ResolvedWall, ...]
+) -> ResolvedWall | None:
+    """The other wall under this roof that ends where ``wall`` does, if any."""
+    for other in walls:
+        if other.tag == wall.tag:
+            continue
+        if any(math.dist(end, point) <= CLOSURE_TOLERANCE_M for end in other.axis):
+            return other
+    return None
+
+
+def _lap_flags(
+    wall: ResolvedWall, walls: tuple[ResolvedWall, ...], capped: frozenset[tuple[str, str]],
+    layer_name: str,
+) -> tuple[bool, bool]:
+    """Whether this wall's band runs through the mitre at each of its two ends.
+
+    Laps unless the wall on the other side of that corner is going to cap the same layer and
+    :func:`_laps_the_corner` gives that one the mitre. "Unless" is the important half: a
+    ``ToRoof`` gable already rakes to the deck plane and emits no sheathing band at all, so a
+    corner where it meets a flat wall has nobody but the flat wall to close it — butting there
+    would reopen the gold square this whole mitre exists to close.
+    """
+    out: list[bool] = []
+    for end in wall.axis:
+        other = _neighbour_at(wall, end, walls)
+        out.append(True if other is None or (other.tag, layer_name) not in capped
+                   else _laps_the_corner(wall))
+    return (out[0], out[1])
+
+
+
 def _closure_members(
     model: ResolvedModel, roof: ResolvedRoof, walls: tuple[ResolvedWall, ...]
 ) -> tuple[FramedMember, ...]:
@@ -183,28 +261,41 @@ def _closure_members(
     # piece over the joint instead).
     continuous = mating is not None and continuous_skin_cladding(model, roof, walls)
     slope_factor = math.hypot(1.0, roof_slope(roof))
-    members: list[FramedMember] = []
-    for wall in walls:
-        crossing = _ridge_crossing_fraction(roof, wall)
-        spans = ((0.0, 1.0),) if crossing is None else ((0.0, crossing), (crossing, 1.0))
-        for index, (t0, t1) in enumerate(spans):
-            members.extend(_closure_segment(roof, wall, t0, t1, index, structure_depth,
-                                            mating, slope_factor, continuous))
-    return tuple(members)
+
+    def pass_over(capped: frozenset[tuple[str, str]]) -> list[FramedMember]:
+        out: list[FramedMember] = []
+        for wall in walls:
+            crossing = _ridge_crossing_fraction(roof, wall)
+            spans = ((0.0, 1.0),) if crossing is None else ((0.0, crossing), (crossing, 1.0))
+            for index, (t0, t1) in enumerate(spans):
+                out.extend(_closure_segment(roof, wall, t0, t1, index, structure_depth,
+                                            mating, slope_factor, continuous, walls, capped))
+        return out
+
+    # Two passes, because whether a wall laps a corner depends on whether its neighbour caps
+    # the same layer there, and that is only known once the bands exist. The probe pass laps
+    # everywhere — the old behaviour — and is read only for *which* (wall, layer) pairs
+    # produce a band; the mitre it hands them is then corrected in the second.
+    probe = pass_over(frozenset())
+    capped = frozenset((m.child_key.split("-closure-")[0], m.child_key.rsplit("-", 1)[1])
+                       for m in probe)
+    return tuple(pass_over(capped))
 
 
 def _closure_segment(
     roof: ResolvedRoof, wall: ResolvedWall, t0: float, t1: float,
     segment: int, structure_depth: float,
     mating: MatingFaces | None, slope_factor: float, continuous: bool = False,
+    walls: tuple[ResolvedWall, ...] = (), capped: frozenset[tuple[str, str]] = frozenset(),
 ) -> tuple[FramedMember, ...]:
     members: list[FramedMember] = []
     for layer in skin_layers(wall):
+        laps = _lap_flags(wall, walls, capped, layer.name)
         offset = _layer_offset_m(wall, layer)
         # Run the band over the layer polygon's own span, so it inherits the outside-corner
         # mitre the prism below it already has. Only the *ends* of the wall stretch: an
         # interior split (the ridge crossing) is a fraction we chose, not a corner.
-        mitre0, mitre1 = _layer_axis_fractions(wall, layer)
+        mitre0, mitre1 = _layer_axis_fractions(wall, layer, laps)
         f0 = min(t0, mitre0) if t0 <= 1e-9 else t0
         f1 = max(t1, mitre1) if t1 >= 1.0 - 1e-9 else t1
         tops = (_wall_top_at(wall, f0), _wall_top_at(wall, f1))

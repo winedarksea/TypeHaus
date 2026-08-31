@@ -154,9 +154,9 @@ def glaser_layers(layers: list[Layer]) -> list[Layer]:
         # of a fill — without this guard a service chase stuffed with batt would truncate the
         # walk at its own outer face and hide every layer beyond it, which is the exact trap
         # the paragraph above claims to avoid.
-        if layer.cavity is None:
+        if not layer.cavity_fills:
             return layers[:index]
-        if (layer.cavity.thickness or layer.thickness).meters < layer.thickness.meters - 1e-9:
+        if layer.cavity_filled_thickness.meters < layer.thickness.meters - 1e-9:
             return layers[:index + 1]
         continue
     return layers
@@ -296,20 +296,37 @@ def _layer_path(layer: Layer, library: Library) -> tuple[_LayerPath | None, list
     not disagree about what a 2x6 wall's stud layer is worth. A batt between studs is the
     *other* path through the same depth, not a layer in series: U and permeance are both
     conductances, so both area-weight the same way, ``ff·framing + (1-ff)·fill``.
+
+    Several fills in one bay (flash-and-batt) are in SERIES with each other before that
+    weighting: R adds, and vapour resistance — the reciprocal of permeance — adds too, so
+    5" of 0.32-perm foam behind a 116-perm batt is a 0.32-perm bay path and not an average
+    of the two. The framing stays ONE path across the whole depth, because the joist does
+    not care where the foam stops. This is why the bay is graded at its outboard face: on a
+    flash-and-batt roof that face is the deck underside, which is the plane the whole
+    R806.5 argument is about.
     """
     missing: list[str] = []
     framing = _material_path(layer.material_ref, layer.thickness.inches, library, missing)
-    fill_spec = layer.cavity
-    fill = None
-    if fill_spec is not None:
-        fill_thickness = (fill_spec.thickness or layer.thickness).inches
-        fill = _material_path(fill_spec.material_ref, fill_thickness, library, missing)
+    fill: _MaterialPath | None = None
+    fill_r_us = 0.0
+    fill_vapor_rep = 0.0
+    for spec in layer.cavity_fills:
+        part = _material_path(spec.material_ref, layer.cavity_thickness(spec).inches,
+                              library, missing)
+        if part is None:
+            continue
+        fill_r_us += part.r_us
+        fill_vapor_rep = (math.inf if math.isinf(fill_vapor_rep) or part.permeance_perms <= 0.0
+                          else fill_vapor_rep + 1.0 / part.permeance_perms)
+        fill = _MaterialPath(
+            fill_r_us, 0.0 if math.isinf(fill_vapor_rep) else (
+                math.inf if fill_vapor_rep <= 0.0 else 1.0 / fill_vapor_rep))
     if missing or framing is None:
         return None, missing
 
     r_us, permeance = framing.r_us, framing.permeance_perms
     if fill is not None:
-        framing_factor = min(max(fill_spec.framing_factor, 0.0), 1.0)
+        framing_factor = layer.cavity_framing_factor
         permeance = (framing_factor * framing.permeance_perms
                      + (1.0 - framing_factor) * fill.permeance_perms)
         # A zero-R layer has infinite conductance, which would swamp the weighting; the

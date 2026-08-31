@@ -129,15 +129,23 @@ def roof_cavity_bands(asm):
     timber and one that reads as a batt between rafters, which is what the section is cut to
     show, so it is drawn here from the assembly. Held to the ceiling side: the remaining bay
     depth stays open.
+
+    **A bay may hold several fills** (flash-and-batt), and they stack outward from the
+    ceiling side in authored order — which is why the walk carries its own cursor rather
+    than measuring every band off ``c0``. Drawing only the first would put the batt on the
+    section and leave the 5" of foam against the deck invisible, on the one drawing whose
+    whole job is to show what is in the bay.
     """
     datum = structure_datum_m(asm)
     bands = []
     for (layer, c0, c1) in assembly_layer_spans(asm):
-        cavity = getattr(layer, "cavity", None)
-        if cavity is None:
-            continue
-        fill = cavity.thickness.meters if cavity.thickness is not None else c1 - c0
-        bands.append((_CavityBand(layer, cavity), datum - (c0 + fill), datum - c0))
+        fills = getattr(layer, "cavity_fills", ())
+        cursor = c0
+        for fill in fills:
+            depth = (fill.thickness.meters if fill.thickness is not None else c1 - c0)
+            bands.append((_CavityBand(layer, fill, len(fills) > 1),
+                          datum - (cursor + depth), datum - cursor))
+            cursor += depth
     return bands
 
 
@@ -150,8 +158,13 @@ class _CavityBand:
 
     __slots__ = ("name", "material_ref", "function", "_cavity")
 
-    def __init__(self, host, cavity) -> None:
-        self.name = f"{host.name} fill"
+    def __init__(self, host, cavity, named=False) -> None:
+        # One fill borrows the bay's name ("rafter fill") because there is nothing to tell
+        # it apart from; where a bay holds SEVERAL, the material is the only thing that
+        # distinguishes two bands drawn one above the other, so it goes in the label — the
+        # section's ladder would otherwise print "rafter fill" twice and name neither.
+        self.name = f"{host.name} fill ({cavity.material_ref})" if named else \
+            f"{host.name} fill"
         self.material_ref = cavity.material_ref
         self.function = host.function
         self._cavity = cavity

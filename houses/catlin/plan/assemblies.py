@@ -144,10 +144,23 @@ CATLIN_EXT_2X6 = Assembly(
         # against a solid corner post does not apply here — the primary insulation is the
         # continuous exterior closed-cell foam OUTBOARD of this layer, so the post itself
         # does not need an insulable void. See houses/catlin/CLAUDE.md's corner section.
+        # `double_top_plate=True` is the FramingSpec DEFAULT and is stated anyway, because
+        # since 2026-08-31 something depends on it. The roof went to 24" o.c. and the second
+        # storey's studs stayed at 16", so half the rafters land 8" off a stud — and an
+        # off-stud rafter at 24" delivers ~900 lb into the plate rather than ~600. IRC
+        # R602.3.2's 5"-of-a-stud bearing rule does not bite here (its trigger is framing
+        # over 16" o.c. *and* bearing studs at 24" o.c.; these are at 16"), and with a double
+        # top plate no alignment is required at all — this becomes the ordinary
+        # trusses-at-24-over-studs-at-16 condition, which catlin's own garage already builds.
+        # The plate that matters is THIS one, under CATLIN_RAFTER_PLATE's flat 2x6: a 2x6
+        # laid flat has little bending capacity of its own and does not distribute an
+        # off-stud reaction; the doubled plate below it does. Defaulting it left the whole
+        # argument invisible in the source, which is why it is written down.
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625),
-                                  layout_origin="line", corner_style="4-stud"),
+                                  layout_origin="line", corner_style="4-stud",
+                                  double_top_plate=True),
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
@@ -236,6 +249,13 @@ CATLIN_EXT_2X6 = Assembly(
 #
 # `wall_frame="plate"` is what stops the framing solver treating 1 1/2" of wall as a stud
 # wall and framing a top plate inside the bottom plate with negative-length studs between.
+#
+# **`double_top_plate=False` here is NOT the double plate the 24" o.c. roof needs** — that
+# one belongs to the stud wall underneath (CATLIN_EXT_2X6, where it is now stated rather
+# than defaulted, with the reasoning). This element is a single flat 2x6 bearing plate lying
+# on the attic subfloor; doubling *it* would raise the deck plane, the ridge and every PV
+# clamp by 1 1/2" and answer a question nobody asked. The load path is rafter -> this plate
+# -> 3/4" subfloor -> the second storey's DOUBLE top plate -> studs at 16" o.c.
 CATLIN_RAFTER_PLATE = Assembly(
     tag="CATLIN_RAFTER_PLATE",
     layers=(
@@ -309,37 +329,69 @@ CATLIN_EXT_2X6_SWINBURNE = Assembly(
     source="the 2026-08-23 CATLIN_EXT_2X6 outrigger stack, retired 2026-08-26 in favour of the catlin truss; kept unreferenced so the revert is a swap",
 )
 
-# --- hot roof (unvented; no batten framing grows — → 30 §WP3.11) --------------
+# --- hot roof (unvented; flash-and-batt in the bay — → 30 §WP3.11) ------------
 #
-# **A screwed-down nailbase, not a vented batten roof** (2026-08-20). Until this date the
-# metal landed on a 3/4" batten air gap over the foam. It now lands on a second structural
-# deck screwed straight through the foam into the rafters, and there is no vent channel at
-# all. Three consequences worth stating, because each is load-bearing somewhere else:
+# **All nine layers of outsulation deleted, 2026-08-31.** From 2026-08-20 this was a
+# nine-layer roof: an R-19 batt loose in an 11 7/8" bay, 1/2" taped ZIP, a 0.04-perm
+# self-adhered deck vapour barrier, TWO staggered 3" polyiso courses, a 5/8" OSB nailbase
+# screwed through the foam on 539 x 10" SDWH screws, a permeable synthetic underlayment and
+# a 1/4" nylon vent mat under the metal. R-55.1 at 19.9" deep, to clear a code minimum of
+# R-49. It is now four: the bay, one deck, one membrane, the panel.
 #
-#   1. ONE sheathing layer became TWO, on opposite sides of the insulation. The lower
-#      (1/2" ZIP, taped) is the air/vapour/water control plane and replaces the old
-#      plywood-plus-WRB pair — one taped panel doing what two layers did. The upper
-#      (5/8" OSB) is a fastening substrate: it exists so the standing seam's concealed
-#      floating clips have something to bite that is not foam.
-#   2. The polyiso is authored as TWO 3" layers rather than one 6". That is not bookkeeping
-#      — it is the spec. The seams of the two courses are staggered and each course taped,
-#      so no joint runs unbroken from deck to deck and there is no straight air or thermal
-#      path through 6" of foam. One 6" layer cannot say that.
-#   3. The screws through the whole sandwich are 0.625 + 6.0 + 0.54 = 7.165" of penetration
-#      plus 1.5" of embedment = 8.665", which is why they are the 10" SDWH and not the 8"
-#      SDWS. `takeoff/fasteners.py` derives that from this stack; do not hand-size it.
+# The move is flash-and-batt — 5" of closed-cell foam sprayed against the deck underside
+# with an R-30C batt compressed in front of it — and the three things that make it work are
+# each recorded where they are decided, not here:
 #
-# Two layers here exist only because the monthly condensation gate said so, and both are
-# cheap answers to expensive problems — see their materials below for the full argument:
+#   1. **It is legal with zero above-deck foam.** IRC/MSRC R806.5 item 5.3: air-impermeable
+#      insulation in direct contact with the sheathing underside at the Table R806.5 minimum
+#      (R-25 in zone 6, R-30 in zone 7), with the air-permeable insulation directly under it.
+#      5" of ccSPF is R-32.5 and clears BOTH rows, so the zone reading cannot go wrong.
+#      Item 2's other condition is already met and is why the lining below is paint and
+#      nothing else: NO INTERIOR CLASS I VAPOUR RETARDER, ever, on this ceiling.
+#      `checks/code/unvented_roof.py` grades all of it.
+#   2. **The condensation gate had to change, not be dodged.** No unvented stack under a
+#      0-perm metal panel can pass a steady-state Glaser walk at any foam thickness — with
+#      no outward flux the method equilibrates every plane to interior vapour pressure by
+#      construction. The old stack bought its margin by leaving 5.6" of the bay deliberately
+#      UNFILLED as a drying path; this one fills the bay, and the honest answer is that the
+#      criterion changed: R806.5 item 5.3 makes the foam's own outer face the condensing
+#      surface and holds it warm, and outward drying is not required.
+#      `checks/building_science/condensation.py::_r806_5_deferral` says so in the report.
+#   3. **The air barrier moved from tape to foam.** The taped ZIP was the air/water control
+#      plane; the ccSPF is now the air and vapour plane (bonded, seamless, ~0.32 perm at 5"
+#      = Class II) and the adhered membrane is the water plane. That is a more reliable
+#      pair than a taped panel, and it is what R806.5 item 5.3 contemplates.
 #
-#   * `deck-vb`, the self-adhered vapour barrier over the taped ZIP. ZIP is an air and water
-#     barrier but only Class III for vapour, and the nailbase deck above is three times
-#     tighter than it. The control layers all still live outboard of the structure, which is
-#     the point: THE INTERIOR IS PAINT AND NOTHING ELSE, no ceiling poly, no smart membrane.
-#   * `vent-mat`, the 1/4" ventilated underlayment mat under the metal. Not a furring strip
-#     and not framing — the clips screw through it into the top deck. It is the only outward
-#     drying path this roof has, and a roof under 0-perm metal with no drying path cannot
-#     pass the gate at any foam thickness.
+# **The vent mat and the permeable underlayment went together, because they were one
+# decision.** Above the underlayment sits an impermeable metal panel: the only thing a
+# 20-perm underlayment can dry into is the vented gap the mat made. Delete the mat and the
+# permeable sheet is drying into a sealed panel underside — it buys nothing while still
+# being a mechanically-fastened, non-self-sealing water layer under ~1,160 clip screws. So
+# it is mat + permeable sheet, or adhered membrane + nothing. The second wins on labour, on
+# oil canning, and on water control, and the membrane's butyl self-seals around every one of
+# those screws — which is the actual water risk on a roof with no field penetrations
+# (the 48 PV mounts are non-penetrating S-5! seam clamps).
+#
+# **5/8" CDX plywood, not 1/2" ZIP and not a grooved panel.** Smooth (the best bed an
+# adhered membrane and an oil-canning-prone pan can have), span-rated 40/20 so 24" o.c. is
+# well inside it, holds clip screws uniformly, and dries several times faster than OSB while
+# recovering strength after wetting. **It oversails the last joist at each eave, spanning the
+# wall girts** — which is why the deck, the membrane and the panel bill on the roof's sloped
+# `surface_area_m2` (1,547.9 SF) while the bay fills bill on `roof_ceiling_area_m2`
+# (1,449.0 SF); those are two different planes and `takeoff/envelope.py` keeps them apart.
+# That cantilever is not graded by anything in the engine and belongs in the PE scope.
+#
+# **24" o.c. forces the heavier joist, and that is the deal.** At 16" a TJI 110 carries the
+# 18'-0" HORIZONTAL span at Ps = 35 psf (Pg 50, Hennepin); at 24" it does not, and the 230 is
+# the first series that does with margin (19'-3" allowable, 15" spare). Net of the upcharge
+# the framing still comes down, and the better half is thermal: the framing factor falls from
+# 0.07 to 0.05 at no cost. Two things this engine will NOT tell you, recorded so they are not
+# mistaken for silence: `structural.rafter_span` is UNKNOWN/engineered at BOTH spacings (an
+# engineered profile is deliberately absent from the IRC R802.4.1 table), and no sheathing-
+# span or gypsum-ceiling rule reads the spacing at all. Both are fine — 5/8" board is rated
+# for a 24" o.c. ceiling where 1/2" is not — and neither is verified here. The printed TJ-4000
+# table also assumes bearing at the high end, where these joists HANG off the ridge on LSSR
+# hangers: confirm in ForteWEB, and see notes/roof_flash_and_batt.md.
 #
 # The metal itself is unchanged: 24 ga mechanically field-seamed, hidden floating clips.
 CATLIN_ROOF = Assembly(
@@ -347,39 +399,37 @@ CATLIN_ROOF = Assembly(
     layers=(
         Layer(name="rafter", material_ref="spf", thickness=inch(11.875),
               function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="11.875 I-joist", spacing=inch(16)),
-              # ~R-55 whole-assembly, carried mostly by the 6" continuous exterior polyiso,
-              # not the cavity batt. This is honestly R-55 and not the R-60 the target names:
-              # the library rates polyiso at 5.6/in (a de-rated cold-climate value, not the
-              # 6.0 on the label) and an R-19 batt is thinner and weaker than the 5.5"
-              # mineral wool it replaced. Accepted on 2026-08-20 rather than papered over by
-              # bumping the batt or re-rating the foam — the number that governs here is the
-              # CI-to-total RATIO, and that went UP, which is what keeps the deck above dew
-              # point. The 6.25" batt tight to the ceiling side leaves ~5.6" unfilled against
-              # the ZIP deliberately: that unfilled depth is the condensation margin.
-              cavity=CavityFill(material_ref="fiberglass-r19", thickness=inch(6.25),
-                                framing_factor=0.07)),
-        Layer(name="zip", material_ref="zip-sheathing", thickness=inch(0.5),
-              function=LayerFunction.SHEATHING,
-              control={ControlLayer.AIR, ControlLayer.WATER}),
-        Layer(name="deck-vb", material_ref="roof-deck-vapor-barrier", thickness=inch(0.04),
-              function=LayerFunction.MEMBRANE,
-              control={ControlLayer.AIR, ControlLayer.VAPOR}),
-        Layer(name="polyiso-1", material_ref="polyiso", thickness=inch(3.0),
-              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        Layer(name="polyiso-2", material_ref="polyiso", thickness=inch(3.0),
-              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        # Seams taped with ASTM D1970 or AAMA 711 Level 3 tape (FORTIFIED Roof §4.2/Appendix
-        # B1's "other attachment method"/sealed-deck Method 1). The AC266/Zip factory-taped
-        # exemption only covers the panel directly UNDER the covering; the taped ZIP two
-        # layers below is this roof's inner air barrier, not that panel, so this outer deck
-        # needs its own taped seams rather than inheriting the ZIP's.
-        Layer(name="top-deck", material_ref="osb", thickness=inch(0.625),
+              framing=FramingSpec(member="11.875 TJI 230", spacing=inch(24)),
+              # ~R-53 whole-assembly on a 0.05 framing factor, and every point of it now
+              # lives INSIDE the joist depth. The bay is authored interior -> exterior, the
+              # way the layer list is: the batt first, the foam that touches the deck last.
+              # `Layer.cavity_fills` is what reads it — the two are in SERIES with each other
+              # and in PARALLEL with the joist, which runs past both.
+              #
+              # The batt is an R-30C cathedral batt (8 1/4" nominal) COMPRESSED into the
+              # 6 7/8" the foam leaves, which is why it is authored at 6.875" against a
+              # material whose R/inch is the compressed value — it arrives oversized on
+              # purpose, friction-fits the flange pockets and is held tight by the drywall,
+              # so there is no sag void over a 20' run of 6:12 slope.
+              cavity=(
+                  CavityFill(material_ref="fiberglass-r30c", thickness=inch(6.875),
+                             framing_factor=0.05),
+                  CavityFill(material_ref="closed-cell-spray-foam", thickness=inch(5.0),
+                             framing_factor=0.05,
+                             control={ControlLayer.AIR, ControlLayer.VAPOR,
+                                      ControlLayer.THERMAL}),
+              )),
+        # 5/8" CDX. The structural deck, the clip substrate and the oil-canning bed, in one
+        # panel — and no longer any part of the air barrier: that moved to the foam under it.
+        Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.625),
               function=LayerFunction.SHEATHING),
-        Layer(name="underlayment", material_ref="roof-underlayment-synthetic", thickness=inch(0.06),
-              function=LayerFunction.MEMBRANE, control={ControlLayer.WATER}),
-        Layer(name="vent-mat", material_ref="roof-vent-mat", thickness=inch(0.25),
-              function=LayerFunction.AIRGAP),
+        # High-temp self-adhered butyl over the WHOLE deck, not an eave band. This is also
+        # the strongest form of the FORTIFIED sealed-roof-deck requirement, and it retires
+        # the open "screwed nailbase vs RSRS-01" item in notes/fortified_roof_cert.md §4.2.2
+        # by deleting the nailbase that raised it.
+        Layer(name="membrane", material_ref="roof-adhered-butyl-ht", thickness=inch(0.04),
+              function=LayerFunction.MEMBRANE,
+              control={ControlLayer.AIR, ControlLayer.WATER}),
         Layer(name="roofing", material_ref="standing-seam", thickness=inch(0.5),
               function=LayerFunction.CLADDING),
     ),
@@ -388,7 +438,7 @@ CATLIN_ROOF = Assembly(
         Layer(name="gwb-ceil", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
     ),
-    source="catlin-house ifcplot/assemblies.py HOUSE_ROOF (hot roof, 4:12); vented batten cavity replaced by a screwed-down 5/8\" OSB top deck over two staggered 3\" polyiso courses 2026-08-20",
+    source="catlin-house ifcplot/assemblies.py HOUSE_ROOF (hot roof); the screwed nailbase over two 3\" polyiso courses (2026-08-20) deleted 2026-08-31 for 5\" ccSPF flash-and-batt in the bay under an adhered butyl membrane, IRC R806.5 item 5.3",
 )
 
 # --- concrete family -----------------------------------------------------------
@@ -1972,6 +2022,27 @@ MATERIALS = [
     Material(tag="roof-vent-mat", name="Ventilated underlayment mat (nylon matrix)",
              r_per_inch=0.0, perm_rating=120.0, hatch="membrane", color="#8a8f94",
              source="the vapour path through an open nylon-matrix mat is the air in it, so it is rated as `resilient-channel` above is: UAF 'Air, still' 120 perm-in"),
+    # **The membrane that replaced all three of them on 2026-08-31** — the deck vapour
+    # barrier above, the vent mat above it and the permeable synthetic below are all
+    # UNREFERENCED as of that date, kept here so the nine-layer stack is a revert and not a
+    # re-derivation (see CATLIN_ROOF).
+    #
+    # High-temp self-adhered BUTYL, rated >= 240 F, over the whole deck rather than as an
+    # eave band (Grace Ultra / Henry Blueskin PE200HT class). Butyl rather than SBS for one
+    # reason that outranks every other property here: it self-seals around a fastener, and
+    # ~1,160 standing-seam clip screws through the field are this roof's actual water risk —
+    # not pipes, not curbs, and not the 48 non-penetrating S-5! PV clamps.
+    #
+    # Its 0.05 perm is NOT a hedge to be argued with. Under a 0-perm metal panel there is no
+    # outward drying path at any permeance, which is exactly why the assembly takes the
+    # R806.5 item 5.3 route instead of a drying one; a vapour-open self-adhered sheet (SIGA
+    # Majvest SA, Pro Clima SOLITEX MENTO 3000 Connect, ~34-38 perms) would give permeability
+    # with nowhere to go, and would give up the self-sealing that is the point. Named here so
+    # the option is on the record and was rejected on purpose.
+    Material(tag="roof-adhered-butyl-ht",
+             name="High-temp self-adhered butyl roof membrane",
+             r_per_inch=0.0, vapor_permeance_perms=0.05, hatch="membrane", color="#2f3134",
+             source="published high-temperature self-adhered butyl roofing underlayments (GCP Grace Ultra, Henry Blueskin PE200HT) ASTM E96 permeance 0.03-0.05 perm and >= 240 F service temperature; high end of the published permeance range - a sheet rating, not perm-in. ASTM D1970 compliant, which is also the FORTIFIED Roof sealed-roof-deck Method 1 citation the full-deck application satisfies outright"),
     # --- mudroom exposed-stud wall ---------------------------------------------
     # Appearance-grade framing, because in W-M-STRW the studs ARE the finish. Select
     # Structural S4S with eased corners: the grade buys straightness and a clean face, the
@@ -2241,6 +2312,25 @@ MATERIALS = [
     Material(tag="fiberglass-r19", name="Fiberglass batt, R-19 (6-1/4\")", r_per_inch=3.04,
              perm_rating=116.0, hatch="batt", color="#f3c6d0",
              source="R-19 nominal over the 6.25\" lofted thickness the rating is declared at = 3.04/in. Permeance as library `fiberglass` — glass wool is air-permeable at any density"),
+    # The roof cavity batt since 2026-08-31, in front of the 5" ccSPF flash. An R-30C
+    # CATHEDRAL batt — 8 1/4" nominal, the unfaced high-density product made for a rafter bay
+    # — deliberately COMPRESSED into the 6 7/8" the foam leaves.
+    #
+    # **The R/inch here is the compressed value and not the label's.** Compressing glass wool
+    # raises its density and lowers its R per inch while raising the R per *bay*: R-30 at
+    # 8.25" is 3.64/in, and the same batt squeezed to 6.875" delivers about R-26, i.e.
+    # 3.78/in. Reusing the label's number over the shorter depth would read R-25 and
+    # understate it; reusing the `fiberglass` library tag's 3.7/in — a high-density value for
+    # an R-21 in 5.5" — would read R-25.4 for a different reason. Neither is this product at
+    # this depth, which is why the tag is its own. House-local until a second house wants it
+    # (CONTRIBUTING §Promotion flow).
+    #
+    # Not air-impermeable, at any density: it is the *air-permeable* half of R806.5 item 5.3,
+    # and the ccSPF outboard of it is the half the table governs.
+    Material(tag="fiberglass-r30c",
+             name="Fiberglass cathedral batt, R-30C compressed to 6-7/8\"",
+             r_per_inch=3.78, perm_rating=116.0, hatch="batt", color="#f3c6d0",
+             source="manufacturer compressed-batt R-value charts (Owens Corning / CertainTeed) for an R-30 8-1/4\" batt: R-27 at 7-1/4\" and R-25 at 6-1/4\", so R-26 at 6-7/8\" = 3.78/in. Permeance as library `fiberglass` — glass wool is air-permeable at any density"),
     # The roof's field underlayment (CATLIN_ROOF), over the nailbase top deck.
     #
     # **Vapour-PERMEABLE synthetic, and that is not a preference.** High-temp peel-and-stick

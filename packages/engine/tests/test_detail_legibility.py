@@ -120,11 +120,18 @@ def test_a_coloured_board_is_drawn_by_its_colour_and_not_by_a_pattern():
 
 
 def test_a_bare_board_still_reaches_the_page_as_a_filled_band(catlin_model):
-    """The eave's two 3" polyiso courses are the widest bands in it. They must be there."""
+    """The widest band in the eave must be there, whatever the widest band happens to be.
+
+    It was the roof's two 3" polyiso courses until 2026-08-31; the outsulation is deleted
+    and the widest thing in that detail is now the 5" of ccSPF in the joist bay — a CAVITY
+    fill rather than a layer, which makes the assertion stronger rather than weaker: it is
+    drawn from the assembly by ``section_cavity``, not from the IR, so it is exactly the
+    band most likely to go missing.
+    """
     scene = _eave(catlin_model)
-    polyiso = [n for n in scene.nodes if isinstance(n, Hatch) and n.material == "polyiso"]
-    assert polyiso, "the roof's foam must still be emitted as Hatch bands"
-    assert all(n.pattern == "none" for n in polyiso)
+    foam = [n for n in scene.nodes
+            if isinstance(n, Hatch) and n.material == "closed-cell-spray-foam"]
+    assert foam, "the roof's foam must still be emitted as Hatch bands"
 
 
 # --- a band's outline may never be wider than the band ----------------------------------
@@ -197,8 +204,13 @@ def test_the_eave_legend_names_the_roof_it_is_mostly_made_of(catlin_model):
     scene = _eave(catlin_model)
     legended = {t.content.rsplit("  ", 1)[0] for t in scene.nodes
                 if isinstance(t, Text) and t.space == "paper" and '"' in t.content}
-    for material in ("osb", "roof-underlayment-synthetic", "roof-vent-mat",
-                     "roof-deck-vapor-barrier", "zip-sheathing", "standing-seam"):
+    # The nine-layer stack's own six — osb, roof-underlayment-synthetic, roof-vent-mat,
+    # roof-deck-vapor-barrier, zip-sheathing, standing-seam — until 2026-08-31. Five of
+    # those layers are deleted; what is left is the deck, the membrane on it, the panel,
+    # and the two BAY FILLS, which are the point of the redesign and would be the easiest
+    # things in the drawing to leave unnamed.
+    for material in ("struct-1-plywood", "roof-adhered-butyl-ht", "standing-seam",
+                     "closed-cell-spray-foam", "fiberglass-r30c"):
         assert material in legended, f"{material} is drawn but not legended"
 
 
@@ -232,7 +244,11 @@ def test_the_roof_ladder_steps_the_same_way_the_roof_stacks(catlin_model):
     rungs = [(n.at[1], n.anchor.xy[1]) for n in scene.nodes
              if isinstance(n, Leader) and n.layer == "A-ANNO-TEXT"
              and rung_text.match(n.text) and abs(n.at[1] - n.anchor.xy[1]) > 1e-9]
-    assert len(rungs) >= 8, f"the eave should ladder its whole roof stack, got {len(rungs)}"
+    # >= 5, not the >= 8 a nine-layer stack carried: CATLIN_ROOF is four layers and two bay
+    # fills since 2026-08-31. The property under test is the ORDER of the rungs, not how
+    # many there are, and a floor that tracked the stack's length was only ever a guard
+    # against the ladder collapsing to nothing.
+    assert len(rungs) >= 5, f"the eave should ladder its whole roof stack, got {len(rungs)}"
     rungs.sort(key=lambda pair: -pair[0])          # top rung down
     targets = [target for (_rung, target) in rungs]
     assert targets == sorted(targets, reverse=True), (

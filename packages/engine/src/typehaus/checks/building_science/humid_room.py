@@ -144,7 +144,7 @@ def _room_side_span(layers: tuple[Layer, ...]) -> tuple[Layer, ...]:
     already does the right thing.
     """
     for index, layer in enumerate(layers):
-        if layer.function in _CORE or layer.cavity is not None:
+        if layer.function in _CORE or layer.cavity_fills:
             return layers[:index + 1]
     return layers
 
