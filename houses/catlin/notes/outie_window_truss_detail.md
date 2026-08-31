@@ -168,7 +168,10 @@ resume.
 
 This is the one thing a horizontal stand-off asks of a facade that a vertical one does not,
 and it was checked rather than assumed. Re-derived on 2026-08-30, when the band went to
-**32" o.c.** and its module was re-phased (`plans/cost-options.md`, the 24"→32" row).
+**32" o.c.** and its module was re-phased. (That swap is TAKEN and is therefore no longer a
+row in `plans/cost-options.md`; the measurement — −$466 / −$742, a tenth of the estimate,
+because the same change buys backing at the rake and the floor-rim lap that never existed —
+is in git history and in `plans/TODO.md`.)
 
 **The finding: no window needs to move.** Measured on the built model, the largest clear gap
 between two adjacent nailer courses anywhere beside an opening — above a head or below a

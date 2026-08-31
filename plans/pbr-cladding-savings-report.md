@@ -47,8 +47,10 @@ waste applies to material and to merged lines but **never** to declared labour, 
 line above moves on the material half only — which is why waste falls by roughly 12% of the
 material saving rather than by 10% of all of it.
 
-**Sanity check.** `plans/cost-options.md` §3 independently pre-estimated −$15,600 / −$29,000
-for this exact move. The realised low end lands just under that and the high end runs past
+**Sanity check.** `plans/cost-options.md` independently pre-estimated −$15,600 / −$29,000
+for this exact move. (That file was rewritten on 2026-08-31 and no longer has numbered
+sections; the swap is now the "House-wall cladding → PBR" entry under **Do not reopen**,
+where it sits because it is TAKEN and is in the baseline.) The realised low end lands just under that and the high end runs past
 it, for a reason that is arithmetic rather than a modelling surprise: the pre-flight was
 written against 3,512 SF and the resolved area is 3,672 SF.
 

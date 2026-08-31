@@ -1268,8 +1268,9 @@ GARAGE_WALL_2X6 = Assembly(
         # (owner, 2026-08-20). Nail strip is face-fastened through an integral flange, and
         # Zip-R's integrated WRB is a taped, drainable face rated for direct cladding
         # attachment — so the panel goes straight onto the sheathing and the 3/8" 1x4
-        # vertical furring that used to sit here is gone. This is the cost-options
-        # "Garage: rainscreen-drop downgrade" entry, taken. It is a GARAGE-only move:
+        # vertical furring that used to sit here is gone. Taken 2026-08-20 as part of the
+        # metal-skin re-rate; plans/cost-options.md no longer carries it as an option,
+        # because a row that has been taken is in the baseline. It is a GARAGE-only move:
         # CATLIN_EXT_2X6 keeps its furring, because there the cladding has to be held off
         # 4" of exterior foam and has no sheathing face to bear on.
         Layer(name="cladding", material_ref="standing-seam-nailstrip-26", thickness=inch(0.5),

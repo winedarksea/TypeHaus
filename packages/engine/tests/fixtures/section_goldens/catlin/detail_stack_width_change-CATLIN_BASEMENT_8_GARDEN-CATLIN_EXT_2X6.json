@@ -1263,6 +1263,62 @@
       "node": "polyline",
       "points": [
         [
+          -3.0000000000000004,
+          -3.5
+        ],
+        [
+          -1.5000000000000002,
+          -3.5
+        ],
+        [
+          -1.5000000000000002,
+          0.0
+        ],
+        [
+          -3.0000000000000004,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW101AAAA",
+      "tag": "strapping-inner-girt-001"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -3.0000000000000004,
+          -3.5
+        ],
+        [
+          -1.5000000000000002,
+          -3.5
+        ],
+        [
+          -1.5000000000000002,
+          0.0
+        ],
+        [
+          -3.0000000000000004,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           -6.000000000000001,
           -13.437499999999998
         ],
@@ -1305,6 +1361,62 @@
         [
           -6.000000000000001,
           -9.9375
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -6.000000000000001,
+          -3.5
+        ],
+        [
+          -4.5,
+          -3.5
+        ],
+        [
+          -4.5,
+          0.0
+        ],
+        [
+          -6.000000000000001,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW101AAAA",
+      "tag": "strapping-outer-girt-001"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -6.000000000000001,
+          -3.5
+        ],
+        [
+          -4.5,
+          -3.5
+        ],
+        [
+          -4.5,
+          0.0
+        ],
+        [
+          -6.000000000000001,
+          0.0
         ]
       ],
       "pattern": "lumber",

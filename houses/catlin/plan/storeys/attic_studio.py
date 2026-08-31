@@ -10,7 +10,10 @@
 #
 # ** THE STUDIO. ** The rest of the west loft was 598 sf that nothing used, and
 # plans/cost-options.md records why finishing it is worth doing: the attic is the cheapest square
-# footage in the building, $69-125/sf against $138-289/sf house-wide. It becomes a guest suite —
+# footage in the building. Re-measured 2026-08-29 against a modelled trussed cold attic, the
+# premium is $69,100-133,900 over 1,170.9 conditioned sf = $59-114/sf, against $159-331 per
+# conditioned sf and $132-273 per gross sf for the house as a whole (2026-08-31 baseline).
+# It becomes a guest suite —
 # bedroom, bathroom, wet bar — specified as cheaply as the code allows. NOT an apartment: THERE IS
 # NO COOKING APPLIANCE, deliberately, and that is the whole IRC R302.3 argument (see the wet bar in
 # plan/fixtures.py). The engine has no R302.3 rule at all, so that argument lives in comments and in

@@ -457,7 +457,8 @@ def _layout_horizontal(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpe
     return out
 
 
-def _rake_nailers(rw: ResolvedWall, layer, spec, p0, direction, first: float, last: float,
+def _rake_nailers(rw: ResolvedWall, layer: Any, spec: Any, p0: tuple[float, float],
+                  direction: tuple[float, float], first: float, last: float,
                   axis_len: float, face: float, top_start: float, top_end: float,
                   openings: list[ResolvedOpening], margin: float) -> list[FramedMember]:
     """One member per band along a raked top, its upper face on the rake itself.

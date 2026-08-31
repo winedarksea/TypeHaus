@@ -239,7 +239,9 @@ demand per clip = 26.7 psf × (16" × 32" = 3.56 ft²) = 95 lb, over 2 screws = 
 > is the fastener into the girt. What it does **not** cover is the **panel's own span**: a 26
 > ga PBR panel spanning 32" between purlins at −26.7 psf. Every panel maker publishes a
 > purlin-span table for exactly that, and **no such table is cited anywhere in this repo**.
-> `plans/cost-options.md` named it as a gate on going from 24" to 32" and it is still open:
+> It was named as a gate on going from 24" to 32" when that swap was priced, and it is still
+> open (the swap is TAKEN and so is out of `plans/cost-options.md`, which keeps live options
+> only since 2026-08-31 — the gate is not):
 > the 32" spacing is not confirmed against the panel until the table for the panel actually
 > bought is read at this pressure. It is a substitution question, not a framing one — the
 > girts are sized above — but it is the reason this section is not finished.
@@ -311,9 +313,9 @@ worth knowing:
 2. The outer girt is a solid layer with no fill, so the card credits its R-1.4 — but it
    stands outboard of a vented gap and is thermally outside the envelope.
 
-**`preferences.toml` sets `wall_r = 40`. This wall does not meet it, at R-38.2** — 1.8
-points short, where the 24" courses left it 2.5 short. The card
-says otherwise and the card is wrong. State it plainly rather than reading the target as met.
+**`preferences.toml` sets `wall_r = 40`. This wall does not meet it, at R-38.2** — 1.8 points
+short, where the 24" courses left it 2.5 short. The card says otherwise and the card is
+wrong. State it plainly rather than reading the target as met.
 
 **The 2-D truth is better than the 1-D number, and 1-D cannot credit it.** The buried inner
 girt is a fin connecting a block-1 and a block-2 that are 8" apart along the wall, not

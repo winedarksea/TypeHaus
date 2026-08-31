@@ -119,6 +119,8 @@ def girt_course_spacing(ctx: CheckContext) -> list[Finding]:
         if bands is None:
             continue
         spec = bands[1].framing
+        if spec is None:  # unreachable: truss_girt_bands reads the spec to select the band
+            continue
         spacing = (spec.spacing or DEFAULT_SPACING).meters
         elevations = course_elevations(wall, spec, _GIRT_FACE_M)
         worst = max(((b - a, a) for a, b in zip(elevations, elevations[1:], strict=False)),

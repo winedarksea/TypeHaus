@@ -338,22 +338,47 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   - **two PASS** — `spread_footing/PT-SG-COL` and `/PT-SG-FCOL` compute bearing on the belled
     piers: 1,245 and 1,477 psf against IBC Table 1806.2's presumptive 2,000 for this site's
     GM. `engineering/spread_footing.py`, oracled by `notes/sunken_garden_piers.md`;
-  - **two still UNKNOWN, for a NEW and better reason.** `deck_post/PT-SG-COL` and `/PT-SG-FCOL`
-    now compute the axial demand and find the sections at d/c 0.095 and 0.054 — a factor of
-    ten and nineteen spare. What they cannot do is grade a column ACI 318 does not permit to
-    be plain concrete, because **`Post` carries no `vertical_reinforcement` field** and this
-    model therefore cannot state a bar schedule even if one existed. Both are COLUMNS and not
-    pedestals (h/d 10.7 and 6.4 against a pedestal's 3). See the decision below.
+  - **two more PASS, as of 2026-08-30** — `deck_post/PT-SG-COL` and `/PT-SG-FCOL`. They were
+    UNKNOWN because ACI 318-19 §14.1.5 does not permit a plain concrete COLUMN at any stress
+    and `Post` had no field to state a cage in. **It has one now** (`vertical_reinforcement`,
+    the decision below, answered YES), the two piers author `(4) #5` and `(8) #6` with #3
+    ties, and the record grades seven limit states: the §22.4.2 axial cap, §10.6.1.1's 1%
+    floor and 8% ceiling, §10.7.3.1(b)'s four-bar minimum, §25.7.2's tie size and spacing,
+    and the §6.6.4.5.4 minimum eccentricity magnified per §6.6.4.5.2. **The cages are the
+    Code minimum and the axial d/c is 0.042 and 0.025** — the steel is there for creep,
+    shrinkage and the accidental moment, not for strength, which is exactly why it cannot be
+    value-engineered out. `notes/sunken_garden_piers.md` §4 is the oracle.
   (`deck_beam_span` itself is fully green: two genuine R507.5(1) overspans closed 2026-07-31
   by going engineered, and the balcony three closed 2026-08-23 prescriptively.)
 
-- **DECISION: should `Post` grow a `vertical_reinforcement` field?** (raised 2026-08-30 by the
-  two piers above.) `FoundationWall` has one and it is what let the sunken-garden retaining
-  stems be graded properly the same day. Without it on `Post`, `deck_post/*` can never report
-  anything but INCOMPLETE for a cast column, however well designed — the engine has nowhere
-  to put the answer. The alternative is to close both items in `engineering.toml` with the
-  engineer's cage schedule and leave the model silent, which works and leaves the drawings
-  unable to say what the columns contain. Not decided here.
+- **DECIDED 2026-08-30: `Post` grew a `vertical_reinforcement` field.** (Raised the same day
+  by the two piers above, and answered the same day.) The alternative — closing both items in
+  `engineering.toml` with the engineer's cage schedule and leaving the model silent — works
+  for the permit and leaves the DRAWINGS unable to say what the columns contain, which is the
+  wrong trade for a field that costs one line. The spec shape deliberately differs from
+  `FoundationWall`'s: a wall's bars are a **spacing** because a wall is billed per foot, a
+  column's are a **count** because ACI bounds the cage by `0.01Ag` and by four bars, and
+  neither question can be asked of a spacing. `deck_post.parse_cage` reads it, and an
+  unreadable string is NO steel, the same conservative contract
+  `retaining_basis.parse_reinforcement` keeps.
+- **FOUND OUT OF SCOPE 2026-08-30: the four breezeway piers are the same defect, unfixed.**
+  `PR-BW-1..4` are 12" round **plain concrete columns** at h/d 4.73, 4.73, 4.33, 4.33 — past
+  a pedestal's 3, so ACI 318-19 §14.1.5 does not permit them to be unreinforced any more than
+  it permitted `PT-SG-COL`. **Nothing currently grades them**: `engineering/pier_basis.cast_piers`
+  is scoped to a post on a `Footing`, and these bear on `Pad`s (`PD-BW-1..4`), so they are
+  graded by IRC Table R507.3.1's prescriptive pad rows and the COLUMN above the pad is never
+  looked at. Two pieces of work, and the second is the reason this was not just done:
+  1. widen the column check to any cast-concrete post regardless of what it bears on (keeping
+     `spread_footing` scoped to `Footing`s, since a `Pad` **is** an R507.3.1 row) — needs a
+     real concrete test, `resolve.construction_assemblies._is_concrete`, not "round means
+     concrete";
+  2. **give them a load.** `_deck_tributaries` only walks `service="deck"` FloorSystems and
+     these carry the breezeway ROOF through `PT-BW-*`, so today they would be graded at a
+     demand of self-weight alone. Publishing an understated demand is worse than publishing
+     none. The detailing limits (steel ratio, bar count, tie spacing) are load-independent and
+     could be graded first, with the axial state reported INCOMPLETE.
+  Cost when fixed: ~+16 lb of steel per pier, tens of dollars. `houses/catlin/prices.toml`'s
+  `column:PIER_CONCRETE_12` row says so and says it is not yet counted.
 - **Windows: 4 residual member-interference overlaps** — now **pinned** by
   `test_catlin_window_member_overlaps_pinned_at_four` (junction clear disabled — the
   honest metric). Measured composition drifted from this file's memory of 4+4: it is 2 at
@@ -567,7 +592,7 @@ the future.
  - Make sure 7" threshold to basement from sunken garden
  - Basement under the stairs storage closet
  - For the breezeway sonotubes, something like https://www.homedepot.com/p/Bigfoot-20-in-Pier-Footing-Form-489-20-BF/300325004 for a "single pour footing". However right now it looks like those footings bisect the house and garage foundation walls. Perhaps the beams should be slightly cantilever to push them further out? Or we could link it in straight to the garage footings as one level?
- - ~~Improve the framing logic of the girts/outriggers holding the insulation and cladding of the catlin house. Especialy on the gable ends, it seems the spacing of these isn't always correct and optimal. Perhaps also increase the spacing (I believe and earlier review concluded 32" OC was sufficient)~~ **DONE 2026-08-30.** All three parts. The gable ends were genuinely wrong: a forced course at the lower top re-phased the whole rake band 11-1/2" off the module of the wall below it, and one wall carried a doubled course mid-run. There is now ONE module from the wall base through the rake. The spacing went to 32" o.c. (2x the stud module, so no block moved), and the module was re-phased onto the datum the window sills are measured from. See `houses/catlin/notes/outie_window_truss_detail.md` and `plans/cost-options.md` — the saving is real but small ($466-742), because the same change also nails two places that had no backing at all: the rake, and the cladding lap over the floor rim band.
+ - ~~Improve the framing logic of the girts/outriggers holding the insulation and cladding of the catlin house. Especialy on the gable ends, it seems the spacing of these isn't always correct and optimal. Perhaps also increase the spacing (I believe and earlier review concluded 32" OC was sufficient)~~ **DONE 2026-08-30.** All three parts. The gable ends were genuinely wrong: a forced course at the lower top re-phased the whole rake band 11-1/2" off the module of the wall below it, and one wall carried a doubled course mid-run. There is now ONE module from the wall base through the rake. The spacing went to 32" o.c. (2x the stud module, so no block moved), and the module was re-phased onto the datum the window sills are measured from. See `houses/catlin/notes/outie_window_truss_detail.md` — the saving is real but small ($466-742), because the same change also nails two places that had no backing at all: the rake, and the cladding lap over the floor rim band.
 
 - **The R312.1.1 guard on the garage stair's 34" landing.** An owner decision with a cost
   and a look to it, flagged in `plan/storeys/garage.py`. It comes with an engine gap worth
@@ -761,6 +786,49 @@ Two lounge chairs on the porch -- it is roofed, fanned, lit, wired and curtained
 nothing on it (241).
 
 
+## Takeoff and price-model gaps found by the 2026-08-30 allowance audit
+
+All five were handled **price-side** in `houses/catlin/prices.toml` — the rate was corrected
+for the true quantity and the row's comment says so. Each is really a takeoff-code fix, and a
+takeoff change alters quantities for **every** house, so each deserves its own commit with its
+own test rather than riding inside a documentation restructure.
+
+- **Exhaust ducts carry no "terminates at a room" flag.** `[allowances]
+  hvac-exhaust-boot-transitions` has to filter `ducts.runs[system=exhaust,diameter_in=3.0]`
+  to exclude `DU-ERV-RISER-EXH` and `DU-ERV-EA`, which are trunks. Diameter is a proxy for the
+  real predicate and it will break silently the day a 4" radial is drawn. A `terminal` (or
+  `serves_room`) field on the duct row converts the driver in a line.
+- **`stair_finish` bills nosings on a stair in unconditioned space.** `ST-G-SERVICE` is a
+  four-riser KDAT service stair in the garage with no finish flooring meeting it at either
+  end; it contributes 12.0 of the 143.4 tread LF that
+  `[allowances] finish-transitions-and-stair-nosings` is driven off.
+  `takeoff/stairs.py` should skip a stair whose storey/room is unconditioned.
+- **`openings` has no "takes door hardware" predicate.** `finish-door-hardware` is driven off
+  all 37 doors, of which the overhead door (its operator is its own row) and the pocket door
+  (its hardware ships with the frame kit) take none. The rate carries a 35/37 correction that
+  drifts the moment a door is added.
+- **`opening_takeoff` does not report the host wall's assembly**, so nothing in the BOM can say
+  an opening lands in a CONCRETE wall — which is what
+  `concrete-window-bucks-and-blockouts` wants to be driven off.
+- **No fabricated ROOF-truss profile exists.** `resolve/framing/profiles.py` has exactly one
+  fabricated-member shape, `_RE_FLOOR_TRUSS` (`"<depth> floor truss"`). A trussed roof
+  therefore resolves its chords as plain `2x4` sticks and bills at stick rates — which is why
+  the 2026-08-29 trussed-cold-attic measurement had to be corrected by hand and made the
+  framing swap look like a wash. `prices.toml` now carries a **dormant** `"36 roof truss"` row
+  that starts working the day the profile lands.
+
+Two pricing decisions that are correct today and become double bills the moment anything moves:
+
+- **Rebar, ~5 tons, $10,000–18,000, is deliberately inside the `[concrete]` $/cy rates** and
+  documented at both ends. It is the strongest "could be authored as real elements" candidate
+  in the file. **If it is ever authored, cut the `[concrete]` rates the same day** — nothing
+  enforces that, and nothing can.
+- **`CATLIN_BASEMENT_12`'s all-in $/cy note says its rate absorbs damp-proofing** on the
+  argument that damp-proofing is "not in the model at all". It is now: `damp-proof`
+  (`library/assemblies.py:170`) bills in `[envelope_layers]` as `air-barrier`. Either the
+  concrete rate should come down ~$7–18/LF or that note should be rewritten. Not touched in
+  the 2026-08-30 pass because it is a rate re-derivation, not a defect fix.
+
 ## What I am unhappy with
-- The price (cost-options.md is missing some of the style details as 'optional' and it needs to be slimmed down to be more concise)
+- ~~The price (cost-options.md is missing some of the style details as 'optional' and it needs to be slimmed down to be more concise)~~ — **DONE 2026-08-31**, decision #66. `plans/cost-options.md` is 325 lines: three tables (cost cutting, self-perform, upgrades) plus a premium-feature table, an imports table, an anti-summation map, a *Do not reopen* list and an *upward exposures* list, every row against one stated baseline. The narrative, the superseded pricings and the duplicate allowance register are gone to git history.
 - The concrete deck of the basement (either size up for completeness or down for cost savings)

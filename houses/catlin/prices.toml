@@ -218,6 +218,26 @@
 # depth costs more per foot); labour *below* it (no web-hole layout on site, faster to
 # hang than an I-joist that still needs blocking/hole-boring for services).
 "11.875 floor truss" = { material = { low = 6.0, high = 9.0 }, labour = { low = 0.8, high = 1.6 } }
+# ** SHOP-FABRICATED ROOF TRUSS, ADDED 2026-08-30. DORMANT BY DESIGN — read this before
+# using it. ** The trussed-cold-attic alternative in plans/cost-options.md has now had to
+# hand-source a roof-truss rate TWICE, because this file had none. It has one now.
+#
+# The number is $5.00-9.00 per SF OF ROOF FOOTPRINT, delivered and set: $90-175 per 36'-0"
+# 4:12 energy-heel truss plus $5-10 to set one, at 24" o.c. over a 36' x 36' plan. That is
+# the axis a truss plant quotes on, and it is NOT the axis this section bills on — [framing]
+# is $/LF of member. The rate below is therefore the same money expressed per lineal foot of
+# truss lumber (2,368 LF over a 1,296 SF footprint = 1.83 LF/SF), so the two agree.
+#
+# ** NOTHING MATCHES THIS KEY TODAY AND NOTHING CAN. ** This house is rafter-framed; and even
+# a house that were not could not reach this row, because `resolve/framing/profiles.py` has
+# exactly one fabricated-member profile — `_RE_FLOOR_TRUSS`, `"<depth> floor truss"` — and no
+# roof-truss shape at all. A `CATLIN_TRUSS_ROOF` authored today resolves its chords as plain
+# `"2x4"` sticks and bills at $1.20-2.00/LF, which is why the 2026-08-29 attic measurement
+# had to be corrected by hand: it billed 36'-0" shop trusses as stick lumber and made the
+# framing swap look like a wash.
+# So this row is a RECORDED PRICE, not a live one. The profile shape is the engine gap and
+# it is logged in plans/TODO.md; the day it lands, this row starts working with no edit.
+"36 roof truss" = { material = { low = 2.20, high = 3.90 }, labour = { low = 0.55, high = 1.05 } }  # 0 LF — dormant, see above
 # "12x4 panel" =    # 66 LF — ridge_cap, billed in [edge_trim]
 # "13.625x0.5 panel" =    # 112 LF — PVC soffit, billed in [edge_trim]
 # 1x4 furring/strapping is not in the 2026-08-07 sweep above — it had no members to
@@ -906,7 +926,7 @@
 # homeguide.com structural engineer cost 2026.
 # **Retired 2026-08-21 with the deck it priced.** ``slab:CATLIN_DECK_9_INT`` was
 # $930-1,760/cy on 34.26 cy — $32,000-60,000, the single largest line in the model, and
-# ``plans/cost-options.md`` recorded that its low end was commercially unobtainable because a
+# it was recorded on 2026-08-21 that its low end was commercially unobtainable because a
 # shoring sub will not mobilise for less than $25-40k. The build-up above is kept as written
 # because it is the comparison the replacement is judged against, not because anything
 # still bills at it.
@@ -1871,8 +1891,9 @@
 # RETIRED 2026-08-23, kept as a row rather than deleted. The 3,515.7 SF was the outer 2" of
 # CATLIN_EXT_2X6's rigid-CI stack, which the truss wall replaced with spray foam; EPS is now
 # used nowhere in this house, so the row bills nothing. It stays because the rate is
-# researched and because `plans/cost-options.md` weighs a return to boards — a deleted row
-# would have to be researched again to have that argument.
+# researched: a rate deleted here would have to be researched again the day anyone weighs a
+# return to rigid boards. (`plans/cost-options.md` kills that swap under *Do not reopen*, on
+# the R703.15 4"-foam-limit argument, not on price.)
 "eps" = { material = { low = 0.7, high = 1.4 }, labour = { low = 0.7, high = 1.35 } }  # 0 SF — was 3515.7 SF of wall CI until the truss wall
 "fiberglass" = { material = { low = 0.45, high = 0.9 }, labour = { low = 0.45, high = 0.85 } }  # 438.8 SF — fastest batt to install, bottom of the $0.50-1.30 band
 # The roof cavity batt. Dearer per SF than the wall row above only because it is thicker
@@ -2117,8 +2138,8 @@
 # NET vs. the one-colour wall: roughly a wash. The plinth saves a few hundred dollars and the
 # gold gives most of it back. The plinth's argument is compositional first — an unglazed clay
 # body under a fired glaze is what makes the glaze read as glaze — and economic second. The
-# line that actually holds money here is still plans/cost-options.md "Basement brick veneer:
-# delete".
+# line that actually holds money here is still plans/cost-options.md's "Ishtar-gate glazed
+# brick veneer → plain brick, or delete", $3,300-7,100.
 #
 # Ties, flashing, weeps and the shelf angle are in all three rates; the concrete backup is the
 # wall this veneers, priced on its own row.
@@ -2136,8 +2157,14 @@
 # more. That gives $135-225/LF = $405-675/cy.
 # Back out rebar (~$16-27/LF) and damp-proofing (~$7-18/LF) and you land near the old number —
 # which is why $320-600 was defensible ONLY IF those were modelled separately. THEY ARE NOT IN
-# THE MODEL AT ALL, so the all-in rate is the honest one. See plans/cost-options.md for the
-# rebar question, which is the largest single thing this file still does not name.
+# THE MODEL AT ALL, so the all-in rate is the honest one. The rebar question is under
+# "Not in the estimate" in plans/cost-options.md and in plans/TODO.md, with the standing
+# condition attached: if rebar is ever authored as elements, cut these rates the same day.
+# ** DAMP-PROOFING IS NO LONGER OUTSIDE THE MODEL. ** `damp-proof` (library/assemblies.py:170)
+# bills in [envelope_layers] as `air-barrier`, so the "not modelled separately" half of the
+# argument above is stale for that item and this rate may now be ~$7-18/LF high. Logged in
+# plans/TODO.md; not re-derived in the 2026-08-30 allowance pass, because it is a rate
+# re-derivation and not a defect fix.
 # SPLIT 2026-08-27 on the same pre-tax ready-mix anchor as [concrete]: $180-200/cy plus the
 # rebar this all-in rate absorbs. Forming, bracing, placing and stripping are the residual and
 # are most of the number, which is exactly the paragraph above's point about thickness.
@@ -2294,7 +2321,8 @@
 # 30.20 CY since 2026-08-30, from 28.91: W-SG-ARCH is back on the sunken garden's retired
 # node pair as a BURIED 12" x 17 1/2" grade beam (~1.08 cy). Not the 16" arched cross-wall
 # and not the 42" masonry parapet over it — neither returns, and the $5,395-$11,257 that
-# retiring them saved is not being given back. See `plans/cost-options.md`.
+# retiring them saved is not being given back. (That measurement is in git history; the
+# 2026-08-31 rewrite of plans/cost-options.md keeps live options only.)
 "SUNKEN_GARDEN_WALL" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # 30.20 CY — was merged $500-900
 
 [timber]
@@ -3326,6 +3354,9 @@
 # ==========================================================================================
 # NEW SECTION 2026-08-20 — [low, high] LUMP SUMS. Owner decision: author the whole
 # missing-scope register from plans/cost-options.md into the estimate.
+# ** THIS TABLE IS NOW THE ONLY COPY OF THAT REGISTER (2026-08-31, decision #66). ** The
+# duplicate in plans/cost-options.md was deleted in that file's rewrite, because two copies of
+# 49 lump sums drift and the copy without a loader behind it is the one that drifts silently.
 # ==========================================================================================
 # THE ONE TABLE IN THIS FILE WITH NO QUANTITY BEHIND IT. Every other section is a $/unit rate
 # joined to something the model resolved; these are flat dollars for scope the model does not
@@ -3347,7 +3378,7 @@
 # which is exactly right: the two facts an allowance carries are separable. "Nobody has quoted
 # this scope" is still true, so it keeps an allowance's range, an allowance's cost code and an
 # allowance's place in the work package. "The model cannot measure it" is no longer true, so
-# the line moves when the house moves. 17 of these rows are driven and 30 are not.
+# the line moves when the house moves. 15 of these rows are driven and 33 are not.
 #
 # Grammar is "<bom_table>.<field>" with an optional [<field>=<value>,...] filter; the two
 # addressable scalars are space_summary.conditioned_sf and space_summary.gross_sf; and the
@@ -3404,9 +3435,17 @@ site-excavation-backfill-grading = { material = { low = 3600, high = 11000 }, la
 # Driveway and the city walk are usually a separate contract let months after closing.
 # Split: ready-mix and base course against placing and finishing.
 concrete-driveway-apron-and-walks = { material = { low = 7200, high = 17600 }, labour = { low = 10800, high = 26400 } }
-# The `drain_tile` row in [concrete] now covers the pipe; this is the rest — the rock envelope
-# beyond the footing bedding, the trench labour, the sump pit and the daylight outlet.
-site-drain-tile-labour-and-outlet = { low = 9000, high = 19000 }
+# ** REDUCED 2026-08-30. Three of the four items it named are priced elsewhere. ** The old
+# scope was "the rock envelope beyond the footing bedding, the trench labour, the sump pit and
+# the daylight outlet", and:
+#   trench labour  — inside [concrete] `drain_tile`, whose $6-14/LF is explicitly a
+#                    NEW-CONSTRUCTION INSTALLED, OPEN-TRENCH rate (see its note). 761.4 LF.
+#   rock envelope  — billed by the yard in [footing_bedding], which the drain_tile note also
+#                    says in as many words.
+#   sump pit       — [concrete] `sump`, 1 ea at $400-1,200: basin, sealed lid, riser, patch.
+# The DAYLIGHT OUTLET is the residual and is real: the solid run out to daylight on the sunken
+# garden's low side, its rodent grate, the headwall and the splash pad. Nothing else buys it.
+site-drain-tile-daylight-outlet = { low = 1500, high = 4000 }
 # ** THE SINGLE MOST-FORGOTTEN LINE IN RESIDENTIAL CONCRETE. ** Ready-mix suppliers never
 # include it and flatwork subs quote "pump by others". Two live 2026 rate sheets agree at
 # $200-225/hr + $4/cy on a 4-hour minimum.
@@ -3423,30 +3462,54 @@ site-drain-tile-labour-and-outlet = { low = 9000, high = 19000 }
 # which is maybe $200-450 of hours and yardage off the top of this range. Left in — it is
 # well inside the spread, and the pour count did not change.
 concrete-pumping = { low = 4600, high = 7800 }
-# MN code minimum is DAMP-proofing only (IRC R406.1) at $1,200-3,200; +dimple board is
-# $3,500-7,000; a full membrane is $8,000-16,000. The range spans all three deliberately —
-# this is a decision nobody has made yet, not an uncertainty in a price.
-# DRIVEN 2026-08-27 off the foundation wall's own air-barrier area — 1,116.3 SF, the below-
-# grade face this is applied to. $1.08-14.33/SF, and the width of that is not uncertainty in a
-# price: it is three different products. Damp-proofing alone is ~$1.00-1.75/SF, +dimple board
-# ~$3.00-6.00, a full membrane ~$7.00-14.00. THE DECISION IS STILL UNMADE — what the driver
-# changed is only that the number now follows the wall.
-foundation-damp-or-waterproofing = { low = 1.08, high = 14.33, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=foundation wall,material=air-barrier]" }
+# ** RE-RATED 2026-08-30 TO THE UPGRADE DELTA ONLY — the old band double-billed the base
+# coat. ** CATLIN_BASEMENT_*'s `damp-proof` layer (library/assemblies.py:170) is MODELLED, and
+# it bills in [envelope_layers] under its material ref `air-barrier` at $0.60-1.35/SF over
+# 2,057.9 SF. The code minimum (IRC R406.1) is therefore already bought. This row was carrying
+# $1.08-14.33/SF on the same face, so its bottom ~$1.08/SF was the same damp-proofing a second
+# time.
+# What is left, and all this row may now hold, is the UPGRADE nobody has chosen:
+#   damp-proofing only, IRC R406.1 minimum   -> $0.00/SF here; already a modelled layer
+#   + dimple drainage board                  -> ~$2.00-5.00/SF over the base coat
+#   full adhered/spray membrane              -> ~$6.00-12.50/SF over the base coat
+# So $0.00-12.50/SF, and the LOW END OF ZERO IS THE POINT: take the code minimum and this row
+# is correctly nothing, because the money is already in [envelope_layers]. THE DECISION IS
+# STILL UNMADE; what changed is only that choosing "minimum" no longer costs twice.
+# Driver unchanged — the below-grade face, 1,010.2 SF today — so it still follows the wall.
+# (The 1,116.3 SF this comment used to claim was itself two passes out of date.)
+foundation-damp-or-waterproofing = { low = 0.0, high = 12.50, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=foundation wall,material=air-barrier]" }
 # NOT DRIVEN, and the missing quantity is named rather than proxied (2026-08-27): nothing in
 # the BOM says an opening lands in a CONCRETE wall. `openings` reports kind, operation and
 # size; the wall's assembly is not on the row. `openings.count[kind=rough_opening]` is 4 and
 # looks right until you read the tags — two are brick (AO-B-BRICK-*) and two are interior
 # cased openings. Give `opening_takeoff` the host wall's assembly and this converts in a line.
-concrete-window-bucks-and-blockouts = { low = 1500, high = 4500 }
-# Minnesota has required radon-resistant new construction since June 2009. The [concrete]
-# `sump` row is the basin only; this is the sub-slab mat, the stack and the window wells.
-# DRIVEN 2026-08-27 off sub-slab area — 1,783.7 SF of capillary-break stone, which is exactly
-# the mat a passive radon system is laid in. $1.91-5.72/SF is the retired lump over that area.
-# ** THE WINDOW WELLS RIDE INSIDE THAT RATE and they are a COUNT, not an area. ** Left that way
-# on purpose rather than split: the model has no egress-well element to count, so splitting
-# would mean inventing one quantity to make the other honest. If wells are ever placed, take
-# them out of this rate the same day.
-radon-roughin-and-egress-window-wells = { low = 1.91, high = 5.72, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=slab,material=capillary-break-stone]" }
+# ** REDUCED 2026-08-30 to the two openings that actually exist. ** The row was sized for a
+# wall full of bucked openings. There are two: the sunken garden's patio door and the sauna
+# window, both in the basement's daylight wall. Every other penetration of a concrete wall in
+# this house is a SLEEVE, and sleeves are the modelled [sleeves] section — pipe, duct and
+# conduit blockouts bill there by the each, not here. $250-600 per buck is a formed, braced
+# and stripped box in a 12" pour.
+concrete-window-bucks-and-blockouts = { low = 500, high = 1200 }
+# ** SPLIT AND RE-SCOPED 2026-08-30, renamed from `radon-roughin-and-egress-window-wells`.
+# Two defects, one row. ** Minnesota has required radon-resistant new construction since
+# June 2009 and this house needs the system; what it did not need was to buy it twice.
+#
+#   THE MAT WAS DOUBLE-BILLED. The driver read `capillary-break-stone`, 1,783.7 SF — and that
+#   stone is a MODELLED sub-slab layer, priced in [envelope_layers] at $0.90-1.75/SF. A
+#   passive radon system is laid in the same open-graded course, so measuring off it looked
+#   right; billing $1.91-5.72/SF on top of it bought the course a second time.
+#
+#   THERE ARE NO EGRESS WINDOW WELLS. The basement has NO BEDROOM — the R310 emergency escape
+#   trigger never fires — and its daylight side is the sunken garden, which is a walk-out:
+#   D-B-PATIO and WIN-B-SAUNA open directly onto grade. A well is scope this house does not
+#   have, and the old comment's "they ride inside the rate" was carrying it anyway.
+#
+# What survives is the PIPE AND STACK the model genuinely does not resolve: the perforated
+# loop in the stone, the 4" riser from slab to roof, its penetration and sealing, and the
+# labelling. Back to an undriven lump because that scope is a stack, not an area — one riser
+# whatever the slab does. The fan, monitor and commissioning are already the
+# `electrical-radon-fan-smoke-co-surge-and-commissioning` row below and are NOT here.
+radon-passive-pipe-and-stack = { low = 900, high = 2200 }
 # ** ANSWERED 2026-08-20: SUMMER POUR, so this is ZERO. ** Foundation and suspended deck go in
 # May-Oct. The row is kept at zero rather than deleted, because it is the reminder of what a
 # schedule slip costs: if the pour lands Nov-Apr instead, this is 10-25% of the whole concrete
@@ -3584,8 +3647,8 @@ finish-studio-floor-sealer = { low = 350, high = 900 }
 # stops an ice dam FORMING — little heat reaching the deck to melt snow, and a slick surface
 # that sheds what does melt. Full-deck membrane is insurance against a dam that has already
 # formed; the assembly is the primary defence and it is the one being paid for.
-# The full-deck high-temp alternative is $17,400-38,300 and stays an UPGRADE entry in
-# plans/cost-options.md — and note it is now an upgrade this assembly CANNOT TAKE in the
+# The full-deck high-temp alternative is $17,400-38,300 gross — a $12,400-27,300 UPGRADE over
+# this row, which is how plans/cost-options.md carries it — and note it is now an upgrade this assembly CANNOT TAKE in the
 # field: high-temp peel-and-stick over the whole deck is 0.05 perm, which seals the polyiso
 # against the 0.04-perm deck barrier below it and fails the condensation gate at 1.50. The
 # eave and valley band stays self-adhered; the field cannot.
@@ -3600,12 +3663,18 @@ finish-studio-floor-sealer = { low = 350, high = 900 }
 # adhered membrane is $0.55-1.10/SF of COVERED area with $0.70-1.40 of labour on it, and a
 # code-minimum band on a simple gable pair is 35-45% of the plane. $1.20-2.60 per SF of roof
 # is that arithmetic. ** THE OLD NUMBER WAS A FULL-DECK PRICE ON A BAND'S SCOPE ** — the
-# full-deck alternative is a separate $17,400-38,300 UPGRADE entry in plans/cost-options.md,
+# full-deck alternative is $17,400-38,300 gross, carried in plans/cost-options.md as a
+# $12,400-27,300 upgrade DELTA over this row,
 # and the note below still explains why this roof does not take it.
 roof-ice-and-water-barrier-code-minimum = { low = 1.20, high = 2.60, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=roof,function=cladding]" }
-# Partly overlaps [edge_trim]; this is the balance — valley metal, boots, custom flashings
-# and snow retention over a walking surface.
-roof-flashings-boots-and-snow-retention = { low = 6000, high = 14000 }
+# ** REDUCED 2026-08-30. "Partly overlaps [edge_trim]" was the row's own words and nobody had
+# ever quantified the overlap; the number stood at a figure that assumed almost none. **
+# [edge_trim] is a real, modelled section — drip edge, rake and eave trim, valley and ridge
+# closures by the foot — and it is priced. The snow retention is likewise modelled: the
+# `snow_guard` rows in [placeables]. What is genuinely left over is the CUSTOM sheet-metal a
+# linear trim schedule cannot carry: the pipe and duct boots, the kick-outs, the chimney-style
+# saddle at the ERV riser and the counter-flashing where the roof dies into a wall.
+roof-flashings-boots-and-custom-sheet-metal = { low = 3000, high = 8000 }
 # RETIRED 2026-08-23 with the truss wall. This was the allowance for attaching cladding
 # through 4" of rigid board — the long screws, the shimming, the two-layer board install.
 # Every part of it is now a modelled member with a modelled rate: the outriggers price in
@@ -3621,19 +3690,33 @@ roof-flashings-boots-and-snow-retention = { low = 6000, high = 14000 }
 # takes to detail one, and it holds.
 envelope-opening-flashing-and-sill-pans = { low = 113, high = 262, unit = "ea", driver = "openings.count[kind=window]" }
 # MN limits to 3.0 ACH50, so the second blower-door test is not optional.
-# DRIVEN 2026-08-27 off gross floor area — 6,098 SF, one of the two addressable scalars. Air
-# sealing is priced per SF of house in every published guide, and the second blower-door test
-# is a fixed fee inside that. $0.50-1.20/SF reproduces the retired $3,100-7,200 almost exactly
-# and now scales when the house does.
-envelope-air-sealing-and-blower-door = { low = 0.50, high = 1.20, unit = "SF", driver = "space_summary.gross_sf" }
-# Poly at the low end, a smart membrane at the high — see the upgrade entry in cost-options.
+# DRIVEN 2026-08-27 off gross floor area — 6,098 SF, one of the two addressable scalars.
+# ** RE-RATED 2026-08-30. The published $/SF air-sealing guides this rate came from assume a
+# BATT-AND-CAULK house, where sealing is its own trade and its own visit. ** This envelope is
+# sealed by the foam: 3,094.9 SF of closed-cell spray foam in the wall and roof cavities, with
+# its APPLICATION LABOUR already priced in [envelope_layers] — a sprayed cavity arrives air-
+# sealed, and the sprayer's own hours are what seal it. Carrying the full per-SF guide rate on
+# top of that buys the same trade twice.
+# What survives is the scope the foam does not cover and no other line holds: the two blower-
+# door tests (a fixed $500-900 apiece in this market), the targeted sealing at penetrations,
+# top plates and the rim the foam does not reach, and the sealant it consumes.
+# $0.15-0.45/SF is that residual over the same 6,098 SF.
+envelope-air-sealing-and-blower-door = { low = 0.15, high = 0.45, unit = "SF", driver = "space_summary.gross_sf" }
 # DRIVEN 2026-08-27 off exterior wall area — 4,328.0 SF, read as the SHEATHING rows because
 # sheathing is the one layer every exterior wall has exactly one of. (Cavity insulation would
 # have caught the interior sound batts; cladding would have missed nothing here but will the
 # moment a wall is clad in two products.) The 0.35-2.20/SF range is the retired lump's own
 # span, still deliberate: poly at the low end, a smart membrane at the high, and nobody has
-# decided which. See the upgrade entry in cost-options.
-envelope-interior-vapour-retarder = { low = 0.35, high = 2.20, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=wall,function=sheathing]" }
+# decided which.
+# DELETED 2026-08-30: envelope-interior-vapour-retarder, $0.35-2.20/SF over 4,328.0 SF
+# ($1,515-9,522). ** IT BOUGHT A LAYER THIS WALL MUST NOT HAVE. ** CATLIN_EXT_2X6's vapour
+# control is the interior PAINT — a Class III retarder, stated as such at
+# plan/assemblies.py:44-47 — precisely because the cavity is sprayed with 4" of closed-cell
+# foam. ccSPF at that thickness IS the vapour retarder, on the OUTBOARD side of the cavity.
+# Adding poly or a smart membrane inboard of it puts a second low-perm layer on the warm side
+# and traps the stud bay between two barriers with no drying path in either direction. That is
+# not an upgrade with a price; it is an assembly failure. The row is deleted rather than
+# zeroed because unlike the cold-weather row there is no schedule slip that turns it back on.
 # REMOVED 2026-08-20: envelope-attic-blown-insulation, $2,700-4,700. It existed because
 # "the batt quantities in [envelope_layers] read as WALLS ONLY; the attic is blown and is in
 # no key today" — a true statement about a takeoff bug, not about this house. The roof loop
@@ -3654,8 +3737,18 @@ envelope-exterior-sealants-and-caulking = { low = 0.42, high = 1.04, unit = "SF"
 # also only ever covered the basement: 1,296 SF at its own implied $0.97-2.13/SF. The area
 # rows cover the garage slab as well, which is why the section total goes up.)
 site-scaffolding-and-lift-rental = { low = 3000, high = 8000 }
-# Dryer, range, HRV and the hose bibs, with their flashing.
-envelope-exterior-hoods-and-flashing = { low = 800, high = 2000 }
+# ** REDUCED 2026-08-30: three of the four items this row named do not exist or are already
+# bought. ** The old comment was "dryer, range, HRV and the hose bibs, with their flashing",
+# written against a house that has since changed under it:
+#   dryer  — there is no dryer vent. The laundry is a VENTLESS heat-pump WashTower
+#            (plan/appliance_types.py, APPL-WASHTOWER), which has no exterior penetration.
+#   range  — the hood RECIRCULATES (APPL-HOOD-RECIRC, induction range). No wall cap, no duct.
+#   HRV    — the two ERV wall hoods are modelled and priced: EQ-T-ERV-HOOD-6, 2 ea in
+#            [placeables] at $175-415 each. Buying "the HRV hood" here bills them twice.
+# What is left is the FLASHING AND AIR-SEALING RESIDUAL at the penetrations that do exist —
+# the two ERV hoods, the exterior hose bibs and the dryer-less wall — which is a detail and a
+# tube of sealant per opening, not a hood purchase.
+envelope-exterior-hoods-and-flashing = { low = 200, high = 500 }
 
 # --- MEP ------------------------------------------------------------------------------------
 # REMOVED 2026-08-27: electrical-pv-array-modules-and-racking, $24,000-46,000. The money went
@@ -3690,8 +3783,15 @@ plumbing-water-softener-and-filtration = { low = 2500, high = 6000 }
 # and this number will rise the moment the jacks are placed. $200-450 per drop is a Cat 6A home
 # run, box, termination and test.
 electrical-structured-low-voltage-drops = { low = 200, high = 450, unit = "ea", driver = "data_devices.rows" }
-# Not optional on a tight all-electric house — MN code makeup air follows the hood.
-hvac-range-hood-and-makeup-air = { low = 1500, high = 4500 }
+# ** RE-SCOPED 2026-08-30, renamed from `hvac-range-hood-and-makeup-air`. There is no makeup
+# air to buy and the hood is already bought. ** The old comment — "MN code makeup air follows
+# the hood" — is true and does not apply: makeup air is triggered by a DUCTED exhaust hood, and
+# this kitchen has an induction range under APPL-HOOD-RECIRC, a RECIRCULATING hood
+# (plan/appliance_types.py). Nothing is exhausted, so nothing has to be made up. The hood
+# itself is priced 1 ea in [placeables] at $250-900.
+# What genuinely is not priced anywhere is the recirculating hood's consumable: the charcoal
+# filter cartridges and the first replacement set. That is the whole row now.
+hvac-range-hood-recirculation-filters = { low = 150, high = 450 }
 # DRIVEN 2026-08-27 off the panel schedule — 36 circuits, counted with the `rows` pseudo-field
 # because a schedule is one row per circuit and carries no count column. A "load centre" price
 # is the can and the main only; every branch breaker in a 2026 MN dwelling is AFCI, GFCI or
@@ -3704,11 +3804,24 @@ hvac-controls-and-zoning = { low = 1200, high = 3000 }
 # foot — this row is the mastic, the sealing and the MN energy-code test, and must not grow to
 # cover wrap.
 hvac-duct-insulation-mastic-and-test = { low = 1.28, high = 3.19, unit = "LF", driver = "ducts.length_ft" }
-# DRIVEN 2026-08-27 off the exhaust runs — 10, each of which terminates at a grille and a fan
-# or an ERV pickup that no section buys. $75-240 per termination is the retired $750-2,400 over
-# the same 10. (The row's old comment said "20.7 LF of exhaust duct"; the 2026-08-25 radial
-# pass took that to 246.4 LF over 10 runs, which is the kind of drift a lump cannot follow.)
-hvac-bath-exhaust-fans = { low = 75, high = 240, unit = "ea", driver = "ducts.runs[system=exhaust]" }
+# ** RENAMED AND RE-SCOPED 2026-08-30, from `hvac-bath-exhaust-fans`. THIS HOUSE HAS NO BATH
+# FANS. ** Every wet room is served by ERV radial extract (plan/mep_erv.py) — there is no
+# fan to buy in any of them, and the row was pricing $825-2,640 of hardware that the design
+# deliberately does not contain. The extract GRILLES are modelled and priced 13 ea in
+# [placeables]; the duct is in [ducts]; the ERV itself is a placeable.
+# The driver was also over-counting. `ducts.runs[system=exhaust]` is 11, but two of those are
+# DU-ERV-RISER-EXH and DU-ERV-EA — the 6" riser and the exhaust-air run to the wall hood. They
+# are TRUNKS, not terminations: nothing lands on them. Filtering to the 3" radials leaves the
+# 9 runs that actually terminate at a room, which is the count this scope follows.
+# What is left is the boot transition at each of those 9: the 75 mm semi-rigid to the grille
+# collar, the adapter, the strap and the seal. $20-50 apiece, so $180-450 against the old
+# $825-2,640. (The 6" trunks' own terminations are the two EQ-T-ERV-HOOD-6 wall hoods, priced
+# in [placeables].)
+# ** A DIAMETER FILTER IS THE WRONG AXIS AND IS DELIBERATE. ** The real predicate is "does this
+# run terminate at a room", which the ducts table does not report; 3" happens to select exactly
+# those runs today. If a 4" radial is ever drawn it will silently drop out. The takeoff-side fix
+# — a terminal flag on the duct row — is logged in plans/TODO.md.
+hvac-exhaust-boot-transitions = { low = 20, high = 50, unit = "ea", driver = "ducts.runs[system=exhaust,diameter_in=3.0]" }
 # NOT DRIVEN (2026-08-27), same gap as the line sets above: no condensate system in
 # `pipe_runs`, and the count that would otherwise drive it — air handlers and the ERV — is
 # spread across [placeables] types rather than reported as a coil count.
@@ -3736,7 +3849,13 @@ paint-trim-and-doors = { material = { low = 1600, high = 3600 }, labour = { low 
 # $35,000 straight off the estimate's high end — the largest single narrowing of the range that
 # any decision on this file produced. If it is ever reconsidered, the laminate number is
 # { low = 12000, high = 40000 } and it belongs in plans/cost-options.md as an UPGRADE first.
-cabinet-closet-shelving-and-rod = { low = 3000, high = 5000 }
+# ** REDUCED 2026-08-30: the shelving is now MODELLED. ** Five units are placeables with their
+# own prices — FT-CLOSET-SHELFROD-60/-84/-96, FT-CLOSET-SHELF-36 and FT-BATH1-SHELF-2030,
+# $662-1,990 the set. When this lump was written none of them existed. What is left is the
+# closets and utility walls that carry no placeable: the mechanical room, the basement storage
+# and the garage, plus the standards, brackets and end caps the placeable prices treat as part
+# of a unit rather than as stock.
+cabinet-closet-shelving-and-rod = { low = 600, high = 1500 }
 # DRIVEN 2026-08-27 off CONDITIONED area — 5,113 SF, not gross: the garage slab is the finish
 # and takes no prep under one. $0.88-2.29/SF is the retired lump over that area.
 finish-floor-prep-and-self-levelling = { low = 0.88, high = 2.29, unit = "SF", driver = "space_summary.conditioned_sf" }
@@ -3747,10 +3866,20 @@ finish-floor-prep-and-self-levelling = { low = 0.88, high = 2.29, unit = "SF", d
 # implicitly re-scope the row to floors, which is worse than a lump. The lump stands until a
 # shower surround is a layer.
 finish-tile-backer-and-waterproofing = { low = 4000, high = 8000 }
-# DRIVEN 2026-08-27 off the door count — 36. [openings] prices the leaf and its install, not
+# DRIVEN 2026-08-27 off the door count — 37 today, 36 when this was written. [openings]
+# prices the leaf and its install, not
 # the lockset, the hinges or the stop. $84-306 each spans a builder-grade passage set and a
 # solid-brass privacy set on a solid-core door, which is why the range is 3.6x.
-finish-door-hardware = { low = 84, high = 306, unit = "ea", driver = "openings.count[kind=door]" }
+# ** RE-RATED 2026-08-30: TWO OF THE 37 TAKE NO DOOR HARDWARE. ** D-G-OVERHEAD is the sectional
+# garage door — it has no lockset and no butt hinges, and its operator is the
+# `finish-garage-door-opener` row below. D-M-LAUN is a pocket door: its hardware is the track,
+# jamb kit and edge pull that come with DT-POCKET-INT-48, not a passage set on hinges. The true
+# count is 35. The driver CANNOT express that — an `openings` filter matches, it does not
+# exclude, and there is no field that separates these two from the rest — so the correction is
+# taken in the RATE: $84-306 x 35/37 = $79-289, which bills 35 sets against a driver of 37.
+# The moment a door is added or removed this drifts; a `takes_hardware` predicate on the
+# openings row is the real fix and is logged in plans/TODO.md.
+finish-door-hardware = { low = 79, high = 289, unit = "ea", driver = "openings.count[kind=door]" }
 # DRIVEN 2026-08-27 off the window count — 45 (the "41 windows" this comment used to claim was
 # already four out of date, which is the point). It was $73-164 per window covering stool
 # STOCK, apron, jamb extension and the carpenter's hour.
@@ -3770,7 +3899,14 @@ finish-window-stools-and-aprons = { low = 55, high = 125, unit = "ea", driver = 
 # riser STOCK bills in [framing], and this is the nosing on its edge. $7-21/LF; the seven
 # finishes meeting each other ride inside the rate, because a threshold is a count the model
 # does not carry and inventing one to make the other honest is worse than saying so.
-finish-transitions-and-stair-nosings = { low = 7, high = 21, unit = "LF", driver = "stair_finish.tread_lf" }
+# ** RE-RATED 2026-08-30: 12.0 OF THOSE 143.4 LF ARE ST-G-SERVICE. ** That is the four-riser
+# service stair in the UNCONDITIONED GARAGE — KDAT stringers and treads, no finish flooring
+# meeting it at either end, and nothing to nose. The finished tread length is 131.4 LF
+# (ST-B2M 41.1 + ST-M2S 45.9 + ST-S2A 44.4). The driver cannot exclude a stair by name, so the
+# correction is again in the rate: $7-21 x 131.4/143.4 = $6.41-19.24. The takeoff-side fix —
+# `stair_finish` skipping a stair in unconditioned space — is logged in plans/TODO.md, and it
+# is a takeoff change that moves every house, which is why it is not in this commit.
+finish-transitions-and-stair-nosings = { low = 6.41, high = 19.24, unit = "LF", driver = "stair_finish.tread_lf" }
 # DRIVEN 2026-08-27 off the overhead-door count — 1. The smallest conversion in the file and
 # the clearest: the number was already per-door, it just had no door behind it. A second
 # overhead door now doubles the line by itself.
@@ -3872,7 +4008,7 @@ drainage             = 0.05
 # the right number rather than the 15-20% a schematic-design estimate needs. What it covers is
 # the scope this file provably cannot see at the line level — the fastener nobody counted, the
 # detail that gets built twice, the subgrade that comes up wetter than the boring said.
-# It does NOT cover the missing scope register in plans/cost-options.md; that is [allowances].
+# It does NOT cover missing scope; that is [allowances], directly above.
 rate = 0.10
 
 [markup]

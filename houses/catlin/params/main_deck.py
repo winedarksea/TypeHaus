@@ -17,9 +17,10 @@ Concrete then goes only where it is actually wanted.
 their rim resolved z -11 7/8"..0'-0" against basement walls that topped out at 0'-0" — the
 whole wood floor inside the top foot of the pour, with nothing between it and the concrete,
 while the only sill return in the model sat *above* the joist tops under the framed wall.
-The plate was never missing from the design (``plan/storeys/basement.py``'s WALLS header and
-``plans/cost-options.md`` both say the I-joists share the framed wall's 2x6 mudsill, and
-``pt-sill-plate`` bills the LF), only from the geometry. The fix is not more plate: it is
+The plate was never missing from the design — ``plan/storeys/basement.py``'s WALLS header
+says the I-joists share the framed wall's 2x6 mudsill, and ``pt-sill-plate`` bills the LF —
+only from the geometry. (A price menu used to be cited as the second source for that; it is
+a design fact and belongs here and in the basement source, not in a cost table.) The fix is not more plate: it is
 one flat seat all the way round at ``BEARING_SEAT``, reached by deepening the EPS deck until
 its soffit lands on the same plane the mudsill sits on. No stepping in the forms, and the
 basement wall comes out at exactly 8'-0".

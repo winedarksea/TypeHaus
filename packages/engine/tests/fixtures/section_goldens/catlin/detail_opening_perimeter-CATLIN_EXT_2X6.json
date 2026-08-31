@@ -2387,6 +2387,62 @@
       "node": "polyline",
       "points": [
         [
+          433.5,
+          92.49999999999999
+        ],
+        [
+          435.0,
+          92.49999999999999
+        ],
+        [
+          435.0,
+          95.99999999999999
+        ],
+        [
+          433.5,
+          95.99999999999999
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW107AAAA",
+      "tag": "strapping-inner-girt-001"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          433.5,
+          92.49999999999999
+        ],
+        [
+          435.0,
+          92.49999999999999
+        ],
+        [
+          435.0,
+          95.99999999999999
+        ],
+        [
+          433.5,
+          95.99999999999999
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           436.5,
           -13.437499999999998
         ],
@@ -2429,6 +2485,62 @@
         [
           436.5,
           -9.9375
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          436.5,
+          92.49999999999999
+        ],
+        [
+          438.0,
+          92.49999999999999
+        ],
+        [
+          438.0,
+          95.99999999999999
+        ],
+        [
+          436.5,
+          95.99999999999999
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW107AAAA",
+      "tag": "strapping-outer-girt-001"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          436.5,
+          92.49999999999999
+        ],
+        [
+          438.0,
+          92.49999999999999
+        ],
+        [
+          438.0,
+          95.99999999999999
+        ],
+        [
+          436.5,
+          95.99999999999999
         ]
       ],
       "pattern": "lumber",
@@ -4325,9 +4437,9 @@
     "| piece | what it is | where |",
     "|---|---|---|",
     "| block-1 | SPF 2x4 offcut, 3-1/2\" along the wall × 3-1/2\" tall × 1-1/2\" thick | on the sheathing over a stud, under every girt course, 0 → 1-1/2\" |",
-    "| inner girt | **SPF** 2x4 flat, horizontal, 24\" o.c. | on the block-1s, 1-1/2\" → 3\", buried in foam |",
+    "| inner girt | **SPF** 2x4 flat, horizontal, 32\" o.c. | on the block-1s, 1-1/2\" → 3\", buried in foam |",
     "| block-2 | **KDAT** 2x4 offcut, same piece | on the inner girt, MID-BAY (8\" off block-1), 3\" → 4-1/2\" |",
-    "| outer girt | **KDAT** 2x4 flat, same 24\" courses at the SAME elevations | on the block-2s, 4-1/2\" → 6\"; the cladding nailer and the window mount plane |",
+    "| outer girt | **KDAT** 2x4 flat, same 32\" courses at the SAME elevations | on the block-2s, 4-1/2\" → 6\"; the cladding nailer and the window mount plane |",
     "| jamb post | 2x4 flat, vertical, one per band | at every RO edge, inner face ON the edge |",
     "| head/sill course | 2x4 flat, one per band | spanning the RO between the two posts |",
     "| cladding | snap-lock standing seam | clipped to the outer girts, 6\" → 6-1/2\" |",
@@ -4347,8 +4459,9 @@
     "block-1's shank already is. **Drive that pair with an inch of vertical stagger inside the",
     "block's 3-1/2\" height.** It is a construction note and not geometry: everywhere else on the",
     "wall the half-bay offset keeps the two apart on its own, and this is the one place it cannot.",
-    "**The blocks are on the STUD module, the girts on their own.** A girt course climbs a 24\"",
-    "elevation module measured from the wall base; the blocks under it are what carry it back to",
+    "**The blocks are on the STUD module, the girts on their own.** A girt course climbs a 32\"",
+    "elevation module measured from the storey's floor datum (see the phase below); the blocks",
+    "under it are what carry it back to",
     "the framing, so they land at whole multiples of the 16\" stud spacing from the wall's layout",
     "line — the same phase the studs take. **Block-2 takes that same module shifted half a bay**,",
     "so the two tiers' screws are offset 8\" rather than stacked. That is not a detail: it is what",
@@ -4432,46 +4545,54 @@
     "the plan a jamb post or a head course already occupies. Beyond that margin the courses simply",
     "resume.",
     "This is the one thing a horizontal stand-off asks of a facade that a vertical one does not,",
-    "and it was checked rather than assumed.",
+    "and it was checked rather than assumed. Re-derived on 2026-08-30, when the band went to",
+    "**32\" o.c.** and its module was re-phased (`plans/cost-options.md`, the 24\"→32\" row).",
     "**The finding: no window needs to move.** Measured on the built model, the largest clear gap",
-    "between two adjacent nailer courses anywhere beside an opening — above a head or below a sill",
-    "— is **23\"**, against the field's own 20-1/2\" clear (24\" o.c. less the 3-1/2\" board). The",
-    "median is 18-1/2\". The girt field around every opening in the house is as regular as the field",
-    "away from it. Any window taller than 24\" necessarily interrupts some courses; that is inherent",
-    "to a horizontal girt and is not a defect, because the courses it interrupts are replaced by the",
-    "opening's own head and sill courses at the same job.",
-    "**15 of 44 openings already land a head or a sill exactly on a course line**, which is the",
-    "best case: the opening's head or sill course *is* the field course and nothing extra is cut.",
-    "Every second-storey and attic opening whose sill is a whole number of feet above its wall base",
-    "does this for free.",
-    "**14 openings leave a sliver** — a field course ending 0.4\" to 2.5\" short of the opening's own",
-    "head or sill course, i.e. two nailers within a board's width of each other, one of them",
-    "redundant. They are:",
-    "| sliver | openings |",
-    "|---|---|",
-    "| 0.4\" below the sill | WIN-M-KITCH, WIN-M-KITCH-N, WIN-M-KIT-E |",
-    "| 1.0\" below the sill | WIN-S-PLANT1/2, WIN-S-STUDY1/2, WIN-A-S-JUL-E/W, WIN-A-S2, WIN-A-S3 |",
-    "| 1.1\" above the head | WIN-M-KITCH, WIN-M-EAST-MID |",
-    "| 2.5\" above the head | WIN-S-BED1, WIN-S-BED2 |",
-    "**Why they are not being nudged away.** The obvious fix is to move each window down (or up) by",
-    "its own sliver so the two courses abut. For the second-storey and attic group that is a clean",
-    "1\" and it would work. For the main-storey group it is **7/16\"**, and 7/16\" is not a coincidence",
-    "— it is the offset between the main storey's finished floor and its wall base. The sills are",
-    "authored at round heights *above the floor*; the courses run at round heights *above the wall",
-    "base*. Chasing the sliver would trade a clean authored dimension for a clean framing",
-    "coincidence, on a facade whose composition is documented and deliberate",
-    "(`houses/catlin/CLAUDE.md`, Facade rules — 20 windows were moved once already to put the whole",
-    "house on one horizontal module, and that grid is not free to disturb).",
-    "If the owner ever does want them gone, **the better lever is the course origin, not the",
-    "windows.** `furring.course_elevations` counts from `rw.z0_m`, the wall base. Phasing it off the",
-    "storey's finished floor instead would put the whole main storey on the sills' own datum and",
-    "close all four main-storey slivers at once, without moving anything. That is a one-function",
-    "change and it is deliberately not being made today: it would move every course in the house by",
-    "7/16\" to fix a 7/16\" problem in four of them.",
+    "between two adjacent nailer courses anywhere beside an opening — above a head or below a",
+    "sill — is **29\"**, against the field's own 28-1/2\" (32\" o.c. less the 3-1/2\" board). The",
+    "median beside an opening is 12-1/2\". The girt field around every opening in the house is as",
+    "regular as the field away from it. Any window taller than 32\" necessarily interrupts some",
+    "courses; that is inherent to a horizontal girt and is not a defect, because the courses it",
+    "interrupts are replaced by the opening's own head and sill courses at the same job.",
+    "Two fields on the band's `FramingSpec` say where the module counts from",
+    "(`resolve/framing/furring.course_phase`):",
+    "```python",
+    "spacing=inch(32), course_datum=\"framing-base\", course_offset=inch(-3.5),",
+    "```",
+    "`course_datum=\"framing-base\"` is `rw.base_ref_z_m` — **the datum a sill height is measured",
+    "from**. It is not the wall base: `platform.py` extends a main-storey wall 13-7/16\" down over",
+    "the floor rim band, and until this change the courses counted from the bottom of that lap",
+    "while every sill in the same wall counted from the floor. `course_offset=inch(-3.5)` is one",
+    "board face, which registers the module so that **a course TOP lands on the sill datum** —",
+    "course bands run `[d − 3.5 + 32k, d + 32k]` above the finished floor.",
+    "That phase was chosen by sweeping every offset at 1/8\" against all 39 openings on girt walls",
+    "and counting **conflicts**: a field course whose bottom is within 7\" of an opening's own head",
+    "or sill course bottom, which is two nailers inside one board face — either half-lapped in",
+    "elevation, or separated by a gap too narrow to be worth a board. Landing exactly on the line",
+    "is the best case and is not a conflict: there the field course *is* the head or sill course.",
+    "| module | conflicts | edges landing exactly on a course | courses | widest bay |",
+    "|---|---|---|---|---|",
+    "| 24\" from the wall base (until 2026-08-30) | 38 | 8 | 212 | 24\" |",
+    "| 32\", framing-base, **−3-1/2\"** | **19** | **16** | **186** | 32\" |",
+    "| 32\", framing-base, +8\" | 15 | 13 | 206 | 32\" |",
+    "| 32\", every other offset | 21–43 | | | |",
+    "**−3-1/2\" is the choice, and +8\" is the one it was chosen over.** +8\" buys four fewer",
+    "conflicts for twenty more courses — it drops the module to 8\" above each upper-storey wall",
+    "base, so the mandatory starter at the base and the first module course end up 4-1/2\" clear of",
+    "each other on thirty walls, which is a redundant board at every one of them. −3-1/2\" carries",
+    "the most exact hits, the fewest courses, and a minimum bay of 6-7/16\" that occurs once (the",
+    "main storey's starter under the rim band).",
+    "**Zero is not reachable, and the plan that asked for it was wrong about that.** The second",
+    "storey carries sills at 152\" and at 156\" — 4\" apart, on different walls but on one module.",
+    "Any phase that lands exactly on one group is 4\" off the other, and 4\" is inside the 7\"",
+    "window. The residual 19 are: eleven at 1/2\" clear (the 156\" sill group), two at 2\", two at",
+    "3\", two overlapping a gable head by 3\", and two door sill courses at a wall base, which is an",
+    "artifact of a door whose sill IS the floor and not something a phase can move.",
     "**What a designer should do with a NEW opening**, stated once so it does not have to be",
-    "re-derived: land the **head** on a course line, or the **sill** 3-1/2\" above one. Either makes",
-    "that opening's head or sill course the field course. `haus build` then shows it, and nothing",
-    "about the rule needs enforcing — a miss costs a redundant board, not a defect.",
+    "re-derived: land the **sill on the 32\" module above the finished floor** (32\", 64\", 96\"), or",
+    "the **head 3-1/2\" below one** (28-1/2\", 60-1/2\", 92-1/2\"). Either makes that opening's own",
+    "sill or head course the field course. `haus build` then shows it, and",
+    "`test_truss_girt_courses.py` counts it; a miss costs a redundant board, not a defect.",
     "Drawn by the `outie-window-truss` recipe",
     "(`emit/draw/detail_components/opening.py::outie_window_truss`), which is a sibling of the",
     "innie `window-head-jamb-sill` rather than a variant of it — the innie measures both pieces",
@@ -4492,7 +4613,9 @@
     "linework. They are resolved members, so the cut carries them as the solids they are; drawing",
     "them again would be a second, disagreeing picture of the same wood.",
     "**Not R-value, and the model's own card overstates it.** `haus explain CATLIN_EXT_2X6 --card`",
-    "reads **R-40.7**; the honest number is **≈ R-37.5**, and the difference is two modelling",
+    "reads **R-41.4**; the honest number is **≈ R-38.2** (R-40.7 / ≈R-37.5 at the 24\" courses this",
+    "wall carried until 2026-08-30 — the 32\" spacing thins the girt fraction in band B from 14.6 %",
+    "to 10.9 % and is worth +R-0.7), and the difference is two modelling",
     "artifacts, both stated in `notes/catlin_truss_engineering.md` §7: the blocks are framed by the",
     "resolver rather than authored as a `CavityFill`, so bands A and C read as unbroken foam; and",
     "the outer girt is credited its own R-1.4 although it stands outboard of a vented gap and is",
@@ -4511,10 +4634,11 @@
     "• **No tab, no chirality, no corner box, no jamb filler.** Three of the four special cases in",
     "`truss_frame.py` do not arise. Every piece is the same 2x4 turned one of four ways.",
     "• **A simpler fastener story.** One screw per block instead of two, and every screw",
-    "wood-to-wood with continuous lateral support. 4,154 five-inch SDWS against the Swinburne's",
+    "wood-to-wood with continuous lateral support. 3,304 five-inch SDWS against the Swinburne's",
     "2,570 four-inch ones — the count is up because a girt wall blocks every course at every stud",
-    "station (16\" × 24\") where an outrigger wall blocked every outrigger every 40\", and one screw",
-    "instead of two takes half of that back.",
+    "station (16\" × 32\") where an outrigger wall blocked every outrigger every 40\", and one screw",
+    "instead of two takes half of that back. (4,154 at the 24\" courses this wall carried until",
+    "2026-08-30.)",
     "• **The KDAT question is settled, and settled both ways.** The Swinburne note left it open",
     "whether the outrigger needed to be treated at all. On the girt wall the answer splits: the",
     "inner tier is buried in foam and is plain SPF (the saving, taken — about 3,600 LF of it),",
