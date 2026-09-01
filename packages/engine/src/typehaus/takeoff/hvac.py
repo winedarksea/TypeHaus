@@ -297,12 +297,19 @@ def duct_schedule(model: ResolvedModel) -> list[dict[str, object]]:
     ``diameter_in`` and the two host refs are what a reader needs to find a run on site: a
     6" semi-rigid radial and a 6x6 rectangular branch are not the same duct, and "which
     cavity is it in" is answered by the bay or the soffit it names.
+
+    ``terminal`` mirrors ``takeoff/mep.py::duct_takeoff``'s column and is derived the same
+    way — some ``Register`` names this run — so the schedule a reader checks and the bill an
+    estimator prices cannot disagree about which runs terminate at a room.
     """
+    registered = {register.duct_ref for register in model.plan.all_elements()
+                  if register.element_kind == "Register" and register.duct_ref is not None}
     rows: list[dict[str, object]] = []
     for duct in model.ducts:
         rows.append({
             "tag": duct.tag, "uid": duct.uid, "storey": duct.storey,
             "system": duct.system, "routing": duct.routing,
+            "terminal": duct.tag in registered,
             "length_ft": round(duct.length_m * _M_TO_FT, 1),
             "width_in": round(duct.width_m / M_PER_IN, 2),
             "depth_in": round(duct.depth_m / M_PER_IN, 2),

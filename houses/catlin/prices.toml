@@ -1627,6 +1627,18 @@
 # no stepped top, no counter, no hardware to line up. High end is a cabinet shop spraying
 # it; low end is the carpenter who is already hanging the gypsum.
 "FT-BATH2-CAB-4506" = { material = { low = 175, high = 450 }, labour = { low = 275, high = 800 } }  # 1 ea
+# RM-A-STUDIO's wet-bar base (2026-09-01), the cabinet FX-A-STUDIO-BAR-SINK's Mount(WALL, 27")
+# always implied and never had. House-local rather than CASE-B* because it is 18" deep, not the
+# catalog's 24": D-A-STUBATH's swing arc is 0.42" off its front face and a 24" box puts 52 in^2
+# inside it (see plan/furniture_types.py for the depth sweep).
+# Priced BETWEEN the two catalog bases it sits between on width and under on depth —
+# CASE-B15 $130-330 and CASE-B24 $170-420 — because it is 24" wide like the B24 but carries
+# 25% less carcass, and like CASE-SINK-BASE-36 it has no drawer box (the bowl and trap take
+# the space), which is material out, not in. Labour is the same $90-220 every base in this
+# file carries: setting and scribing a base is the same half-hour whatever its depth. The
+# solid-surface top and the bowl cut-out are NOT here — the top bills with the other counter
+# material and the bowl is the fixture.
+"FT-STUDIO-BAR-BASE-2418" = { material = { low = 150, high = 380 }, labour = { low = 90, high = 220 } }  # 1 ea
 # The four closet shelf-and-rod runs (2026-08-30). Ventilated epoxy-coated steel on wall
 # standards — the ordinary reach-in fit-out, and the exact article the pantry note above
 # says CANNOT be substituted there. Material is per-foot shelf, rod, standards, brackets
@@ -3869,18 +3881,25 @@ concrete-pumping = { low = 4600, high = 7800 }
 # Driver unchanged — the below-grade face, 1,010.2 SF today — so it still follows the wall.
 # (The 1,116.3 SF this comment used to claim was itself two passes out of date.)
 foundation-damp-or-waterproofing = { low = 0.0, high = 12.50, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=foundation wall,material=air-barrier]" }
-# NOT DRIVEN, and the missing quantity is named rather than proxied (2026-08-27): nothing in
-# the BOM says an opening lands in a CONCRETE wall. `openings` reports kind, operation and
-# size; the wall's assembly is not on the row. `openings.count[kind=rough_opening]` is 4 and
-# looks right until you read the tags — two are brick (AO-B-BRICK-*) and two are interior
-# cased openings. Give `opening_takeoff` the host wall's assembly and this converts in a line.
-# ** REDUCED 2026-08-30 to the two openings that actually exist. ** The row was sized for a
-# wall full of bucked openings. There are two: the sunken garden's patio door and the sauna
-# window, both in the basement's daylight wall. Every other penetration of a concrete wall in
-# this house is a SLEEVE, and sleeves are the modelled [sleeves] section — pipe, duct and
-# conduit blockouts bill there by the each, not here. $250-600 per buck is a formed, braced
-# and stripped box in a 12" pour.
-concrete-window-bucks-and-blockouts = { low = 500, high = 1200 }
+# ** DRIVEN 2026-09-01, AND THE TWO OPENINGS ARE NOT THE ONES THIS ROW NAMED. **
+# `opening_takeoff` now carries `host_assembly` and a coarse `host_structure` off the host
+# wall's STRUCTURE layer — the same `material_ref` `wall_structure` groups its pours by — so
+# "does this opening land in a concrete wall" is finally a question the BOM answers. It was
+# never answerable before: `openings` reported kind, operation and size and nothing about the
+# wall, and `openings.count[kind=rough_opening]` was 4 and looked right until you read the
+# tags (two brick, two interior cased openings).
+# Driven, the answer is 2 — but they are **D-B-GYM and D-B-NE**, two doors through
+# FOUNDATION_WALL_12_INT. The 2026-08-30 comment named "the sunken garden's patio door and the
+# sauna window, both in the basement's daylight wall", and the model disagrees: D-B-PATIO is
+# hosted by W-B-S3-FR (CATLIN_GARDEN_FRAMED_2X6) and WIN-B-SAUNA by W-B-S2-FR
+# (SAUNA_LINER_ON_GARDEN_FRAMED). Both are FRAMED walls standing in front of the pour, not
+# openings through it — they need a rough opening, not a buck. The count happened to be right
+# for the wrong reason.
+# The rate stands: a door buck in a 12" interior pour is the same formed, braced and stripped
+# box as one in an exterior wall, $250-600 apiece. Every other penetration of a concrete wall
+# in this house is a SLEEVE, and sleeves are the modelled [sleeves] section — pipe, duct and
+# conduit blockouts bill there by the each, not here.
+concrete-window-bucks-and-blockouts = { low = 250, high = 600, unit = "ea", driver = "openings.count[host_structure=concrete]" }
 # ** SPLIT AND RE-SCOPED 2026-08-30, renamed from `radon-roughin-and-egress-window-wells`.
 # Two defects, one row. ** Minnesota has required radon-resistant new construction since
 # June 2009 and this house needs the system; what it did not need was to buy it twice.
@@ -4249,17 +4268,20 @@ hvac-duct-insulation-mastic-and-test = { low = 1.28, high = 3.19, unit = "LF", d
 # [placeables]; the duct is in [ducts]; the ERV itself is a placeable.
 # The driver was also over-counting. `ducts.runs[system=exhaust]` is 11, but two of those are
 # DU-ERV-RISER-EXH and DU-ERV-EA — the 6" riser and the exhaust-air run to the wall hood. They
-# are TRUNKS, not terminations: nothing lands on them. Filtering to the 3" radials leaves the
-# 9 runs that actually terminate at a room, which is the count this scope follows.
+# are TRUNKS, not terminations: nothing lands on them. The 9 runs that actually terminate at a
+# room are the count this scope follows.
 # What is left is the boot transition at each of those 9: the 75 mm semi-rigid to the grille
 # collar, the adapter, the strap and the seal. $20-50 apiece, so $180-450 against the old
 # $825-2,640. (The 6" trunks' own terminations are the two EQ-T-ERV-HOOD-6 wall hoods, priced
 # in [placeables].)
-# ** A DIAMETER FILTER IS THE WRONG AXIS AND IS DELIBERATE. ** The real predicate is "does this
-# run terminate at a room", which the ducts table does not report; 3" happens to select exactly
-# those runs today. If a 4" radial is ever drawn it will silently drop out. The takeoff-side fix
-# — a terminal flag on the duct row — is logged in plans/TODO.md.
-hvac-exhaust-boot-transitions = { low = 20, high = 50, unit = "ea", driver = "ducts.runs[system=exhaust,diameter_in=3.0]" }
+# ** NOW ON THE RIGHT AXIS (2026-09-01). ** This filter was `diameter_in=3.0`, which selected
+# the nine terminating runs by coincidence — this house's radials are 3" and its trunks 6" —
+# and a 4" radial would have silently dropped out of the bill. `takeoff/mep.py::duct_takeoff`
+# now derives a `terminal` column (some Register names the run in `duct_ref`), which is the
+# predicate this scope was always asking for: the boot is incurred per termination, not per
+# diameter. Same 9 runs today, for the right reason. `duct_schedule` carries the same column
+# so the schedule and the bill cannot disagree about it.
+hvac-exhaust-boot-transitions = { low = 20, high = 50, unit = "ea", driver = "ducts.runs[system=exhaust,terminal=True]" }
 # NOT DRIVEN (2026-08-27), same gap as the line sets above: no condensate system in
 # `pipe_runs`, and the count that would otherwise drive it — air handlers and the ERV — is
 # spread across [placeables] types rather than reported as a coil count.
@@ -4327,16 +4349,18 @@ finish-tile-backer-and-waterproofing = { low = 4000, high = 8000 }
 # prices the leaf and its install, not
 # the lockset, the hinges or the stop. $84-306 each spans a builder-grade passage set and a
 # solid-brass privacy set on a solid-core door, which is why the range is 3.6x.
-# ** RE-RATED 2026-08-30: TWO OF THE 37 TAKE NO DOOR HARDWARE. ** D-G-OVERHEAD is the sectional
-# garage door — it has no lockset and no butt hinges, and its operator is the
-# `finish-garage-door-opener` row below. D-M-LAUN is a pocket door: its hardware is the track,
-# jamb kit and edge pull that come with DT-POCKET-INT-48, not a passage set on hinges. The true
-# count is 35. The driver CANNOT express that — an `openings` filter matches, it does not
-# exclude, and there is no field that separates these two from the rest — so the correction is
-# taken in the RATE: $84-306 x 35/37 = $79-289, which bills 35 sets against a driver of 37.
-# The moment a door is added or removed this drifts; a `takes_hardware` predicate on the
-# openings row is the real fix and is logged in plans/TODO.md.
-finish-door-hardware = { low = 79, high = 289, unit = "ea", driver = "openings.count[kind=door]" }
+# ** TWO OF THE 37 TAKE NO DOOR HARDWARE. ** D-G-OVERHEAD is the sectional garage door — it has
+# no lockset and no butt hinges, and its operator is the `finish-garage-door-opener` row below.
+# D-M-LAUN is a pocket door: its hardware is the track, jamb kit and edge pull that come with
+# DT-POCKET-INT-48 (and `takeoff/doors.py`'s pocket frame kit bills that), not a passage set on
+# hinges. The true count is 35.
+# ** THE RATE IS BACK TO ITS RESEARCHED $84-306 (2026-09-01). ** From 2026-08-30 this row read
+# $79-289, which is $84-306 x 35/37 — two doors scaled out of a rate because the driver could
+# not exclude them. `opening_takeoff` now reports `takes_hardware` (kind is door AND the
+# operation is neither overhead nor pocket), so the exclusion is a predicate on the row and the
+# rate is a rate again. Same 35 sets, same money — and adding or removing a door no longer
+# silently drifts the line, which the ratio did every time.
+finish-door-hardware = { low = 84, high = 306, unit = "ea", driver = "openings.count[takes_hardware=True]" }
 # DRIVEN 2026-08-27 off the window count — 45 (the "41 windows" this comment used to claim was
 # already four out of date, which is the point). It was $73-164 per window covering stool
 # STOCK, apron, jamb extension and the carpenter's hour.
@@ -4356,14 +4380,20 @@ finish-window-stools-and-aprons = { low = 55, high = 125, unit = "ea", driver = 
 # riser STOCK bills in [framing], and this is the nosing on its edge. $7-21/LF; the seven
 # finishes meeting each other ride inside the rate, because a threshold is a count the model
 # does not carry and inventing one to make the other honest is worse than saying so.
-# ** RE-RATED 2026-08-30: 12.0 OF THOSE 143.4 LF ARE ST-G-SERVICE. ** That is the four-riser
-# service stair in the UNCONDITIONED GARAGE — KDAT stringers and treads, no finish flooring
-# meeting it at either end, and nothing to nose. The finished tread length is 131.4 LF
-# (ST-B2M 41.1 + ST-M2S 45.9 + ST-S2A 44.4). The driver cannot exclude a stair by name, so the
-# correction is again in the rate: $7-21 x 131.4/143.4 = $6.41-19.24. The takeoff-side fix —
-# `stair_finish` skipping a stair in unconditioned space — is logged in plans/TODO.md, and it
-# is a takeoff change that moves every house, which is why it is not in this commit.
-finish-transitions-and-stair-nosings = { low = 6.41, high = 19.24, unit = "LF", driver = "stair_finish.tread_lf" }
+# ** 12.0 OF THOSE 143.4 LF ARE ST-G-SERVICE. ** That is the four-riser service stair in the
+# UNCONDITIONED GARAGE — KDAT stringers and treads, no finish flooring meeting it at either
+# end, and nothing to nose. The finished tread length is 131.4 LF (ST-B2M 41.1 + ST-M2S 45.9
+# + ST-S2A 44.4).
+# ** THE RATE IS BACK TO ITS RESEARCHED $7-21 (2026-09-01). ** From 2026-08-30 this row read
+# $6.41-19.24, which is $7-21 x 131.4/143.4 — the garage stair scaled out of a rate because
+# the driver could not exclude it. `stair_finish` now reports a `conditioned` column
+# (takeoff/stairs.py), derived by testing the stair outline's centroid against the
+# `clear_face` of the rooms on its storey, so the exclusion is expressed where it belongs and
+# the rate is a rate again. Same 131.4 LF, same money, but a fifth stair in a cold space now
+# takes itself out instead of quietly inflating the line.
+# The row is NOT dropped from `stair_finish` — ST-G-SERVICE still buys treads, risers and
+# stringers and still appears in the schedule; only this nosing scope excludes it.
+finish-transitions-and-stair-nosings = { low = 7, high = 21, unit = "LF", driver = "stair_finish.tread_lf[conditioned=True]" }
 # DRIVEN 2026-08-27 off the overhead-door count — 1. The smallest conversion in the file and
 # the clearest: the number was already per-door, it just had no door behind it. A second
 # overhead door now doubles the line by itself.

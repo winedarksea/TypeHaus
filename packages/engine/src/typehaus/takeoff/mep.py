@@ -122,13 +122,24 @@ def duct_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     joist-bay run and an exposed one are fabricated and hung differently at the same size,
     and ``material`` because 75 mm semi-rigid by the coil and galvanized by the joint are
     not the same purchase at all.
+
+    ``terminal`` answers "does this run end at a room" — true when some ``Register`` names
+    the run in ``duct_ref``. It is the honest axis for every scope that is incurred *per
+    termination*: the boot, the collar adapter, the strap and the seal at the grille. Before
+    it existed the only way to select those runs was a diameter filter, which selected them
+    by coincidence: it happened that this house's radials are 3" and its trunks 6", so
+    ``diameter_in=3.0`` picked out the nine terminating runs and a 4" radial would have
+    silently dropped out of the bill. Diameter is a purchase axis; termination is a labour
+    one, and they are only accidentally the same list.
     """
-    runs: dict[tuple[str, float, float, float, str, str], dict[str, object]] = {}
+    registered = {register.duct_ref for register in model.plan.all_elements()
+                  if register.element_kind == "Register" and register.duct_ref is not None}
+    runs: dict[tuple[str, float, float, float, str, str, bool], dict[str, object]] = {}
     for duct in model.ducts:
         key = (duct.system,
                round(duct.diameter_m / M_PER_IN, 2) if duct.diameter_m is not None else 0.0,
                round(duct.width_m / M_PER_IN, 2), round(duct.depth_m / M_PER_IN, 2),
-               duct.routing, duct.material or "")
+               duct.routing, duct.material or "", duct.tag in registered)
         entry = runs.setdefault(key, {"length_m": 0.0, "count": 0, "tags": []})
         entry["length_m"] = float(entry["length_m"]) + duct.length_m
         entry["count"] = int(entry["count"]) + 1
@@ -137,10 +148,12 @@ def duct_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         tags.append(duct.tag)
     return [
         {"system": system, "diameter_in": diameter, "width_in": width, "depth_in": depth,
-         "routing": routing, "material": material, "runs": int(entry["count"]),
+         "routing": routing, "material": material, "terminal": terminal,
+         "runs": int(entry["count"]),
          "length_ft": round(float(entry["length_m"]) * _M_TO_FT, 1),
          "tags": sorted(entry["tags"])}
-        for (system, diameter, width, depth, routing, material), entry in sorted(runs.items())
+        for (system, diameter, width, depth, routing, material, terminal), entry
+        in sorted(runs.items())
     ]
 
 
