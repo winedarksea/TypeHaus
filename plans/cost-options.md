@@ -240,7 +240,7 @@ inland to the Twin Cities; production is 25–35 days and the sailing 30–45 mo
 | Plumbing fixtures | `[placeables]` `FX-*` material | $10,290–30,960 | $3,100–13,900 | 3–5 months | **cUPC/IAPMO listing is mandatory in MN.** Unlisted fixtures fail plumbing inspection |
 | Flooring | `[floor_finishes]` goods material | $8,054–19,621 | $1,600–6,900 | 3–5 months | CARB Phase 2 / TSCA Title VI formaldehyde certification; Lacey Act declaration on wood |
 | Cabinets | `[placeables]` `CASE-*` material | $5,005–13,040 | $1,500–6,500 | 4–6 months | TSCA Title VI. Published builder savings are 30–50%; this is the strongest row on the table |
-| Hinges and handles | `[allowances] finish-door-hardware` | $2,923–10,693 *(merged)* | $1,000–5,300 | 3–4 months | None material, but the line is **merged** — the saving is on the hardware, not the hanging, and the split is a judgement not a number. Buy 15% spare |
+| Hinges and handles | `[allowances] finish-door-hardware` | $2,940–10,710 *(merged)* | $1,000–5,300 | 3–4 months | None material, but the line is **merged** — the saving is on the hardware, not the hanging, and the split is a judgement not a number. Buy 15% spare |
 | Lighting | — | **nothing to save** | **$0** | — | The estimate carries no luminaire price rows at all; 306 fixtures move `placeables` by $285–695. **The money is in `[conductors]`, which no fixture decision touches** |
 | **total, if all seven** | | | **$14,600–62,400** | | |
 
