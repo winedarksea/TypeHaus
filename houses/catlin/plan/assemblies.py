@@ -161,7 +161,12 @@ CATLIN_EXT_2X6 = Assembly(
               framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625),
                                   layout_origin="line", corner_style="4-stud",
                                   double_top_plate=True),
-              cavity=CavityFill(material_ref="mineral-wool")),
+              # FIBREGLASS, not mineral wool, since 2026-08-31 (owner). See the batt note
+              # under CATLIN_EXT_2X6_SWINBURNE below for the whole argument; the short form
+              # is that the library `fiberglass` tag's 3.7/in IS the high-density R-21 batt
+              # value for a 5-1/2" bay (see the `fiberglass-r19` material comment), so this
+              # is the correct 2x6 SKU and not a downgrade to a lofted R-19.
+              cavity=CavityFill(material_ref="fiberglass")),
         Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
         # BAND A, 0 - 1.5" off the sheathing. Continuous ccSPF, crossed only by the
@@ -286,6 +291,45 @@ CATLIN_RAFTER_PLATE = Assembly(
 # the 2026-08-23 rows in prices.toml. `resolve/framing/truss_frame.py` and its branch of the
 # pass never went anywhere: they are selected by `laid="edge"` + vertical, which is exactly
 # what this tuple says.
+# --- THE STUD-BAY BATT IS FIBREGLASS, NOT MINERAL WOOL (2026-08-31) -----------
+#
+# An owner cost review swept `mineral-wool` -> `fiberglass` across the house. Mineral wool
+# runs 2x fibreglass or more installed ($1.50-2.30 + $0.60-1.15 against $0.45-0.90 +
+# $0.45-0.85 per SF), and the two reasons usually given for paying it do not hold in a
+# cavity:
+#
+# 1. **Acoustics.** A cavity batt's job in a stud wall is to damp the cavity resonance, and
+#    glass wool and stone wool do that within a point or two of each other at the same
+#    thickness. Published STC tables separate assemblies by MASS and DECOUPLING (layer
+#    count, resilient channel, staggered or double studs), not by which wool is in the bay.
+# 2. **Vapour.** Both materials read 116 perm-in in `library/materials.py`. Identical. The
+#    swap has no Glaser consequence anywhere in this house.
+#
+# **Where mineral wool IS kept, and why** — every one of these is a damp, hot or wet case
+# the owner accepted on 2026-08-31, not an oversight the next sweep should finish:
+#   * `CATLIN_TUBDECK_INT_2X4` — the tub deck box. The long-standing documented exception.
+#   * `SAUNA_2X4`, `SAUNA_LINER_INT_2X6_BRG`, `SAUNA_LINER_ON_GARDEN_FRAMED` — non-
+#     combustible and dimensionally stable beside a 10.5 kW heater through repeated
+#     180 F / loyly humidity cycling.
+#   * `PLANT_EXT_2X6_HUMID`, `PLANT_INT_2X6_BRG_HUMID`, `PLANT_INT_2X4_HUMID` — 75 F / 70 %
+#     RH against -15 F. The 0.05-perm liner is the control layer and the bay is dry BY
+#     DESIGN; the hydrophobic, non-slumping batt is the insurance if that liner is ever
+#     breached. ~446 SF, under $1k, and the owner bought it deliberately.
+#   * `_GARDEN_FRAMED_STUD` — SHARED by CATLIN_GARDEN_FRAMED_2X6 and
+#     SAUNA_LINER_ON_GARDEN_FRAMED. The sauna half must stay mineral wool per the line
+#     above, and forking one Layer constant into two so the walkout half could save
+#     $80-112 would put two halves of ONE framed run on two sources of truth. It is also a
+#     below-grade court face, which is a damp case in its own right. Kept whole.
+#
+# **What the swap costs thermally: about 1 point of whole-wall R, and the target was
+# already missed.** The library `fiberglass` tag is 3.7/in, which the `fiberglass-r19`
+# material comment records as a HIGH-DENSITY value — the R-21-in-5-1/2" batt, i.e. the
+# correct SKU for a 2x6 bay, not the lofted R-19 that only reaches its label at 6-1/4".
+# So the bay goes R-23.1 -> R-20.4 and the whole wall, at 23 % framing, R-14.97 -> R-14.03.
+# The CARD moves R-41.4 -> R-40.4. **The honest number moves R-38.2 -> R-37.3**, and
+# `preferences.toml`'s `wall_r = 40` was ALREADY unmet at 38.2 for reasons that have
+# nothing to do with the batt — see notes/catlin_truss_engineering.md section 7, which is
+# the number to quote. Do not read the card's R-40.4 as "still on target".
 CATLIN_EXT_2X6_SWINBURNE = Assembly(
     tag="CATLIN_EXT_2X6_SWINBURNE",
     layers=(
@@ -293,7 +337,10 @@ CATLIN_EXT_2X6_SWINBURNE = Assembly(
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625),
                                   layout_origin="line", corner_style="4-stud"),
-              cavity=CavityFill(material_ref="mineral-wool")),
+              # Kept in step with CATLIN_EXT_2X6 above, which is the whole point of this
+              # assembly: a revert that silently reintroduced mineral wool would undo the
+              # 2026-08-31 batt sweep the day anyone took it.
+              cavity=CavityFill(material_ref="fiberglass")),
         Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
         # The band behind the outrigger: continuous, crossed by nothing but the blocks and
@@ -553,8 +600,23 @@ CATLIN_BASEMENT_8_GARDEN = Assembly(
     source="library FOUNDATION_WALL_8_XPS4 + the house's full-height parge over the sunken garden (catlin basement south)",
 )
 
-# Basement slab-on-grade: 3" XPS below the slab (R-15 @ 40 psi compressive — rated for
+# Basement slab-on-grade: 2" XPS below the slab (R-10 @ 25 psi compressive — rated for
 # slab loading, not the lighter foundation-wall grade) breaks direct slab-to-clay contact.
+#
+# **3" -> 2" on 2026-08-31, an owner target call, not a code one.** The R-10 slab target is
+# the owner's; 3" read R-16.1 whole-assembly against it, six points of over-spec on the
+# lowest-value surface in the envelope (a conditioned basement floor loses to 50 F soil, not
+# to -15 F air). 2" lands the assembly at about R-11 and still clears MN Zone 6's R-10
+# prescriptive slab row, which is what `code.energy_prescriptive` grades.
+#
+# **25 psi, and the grade is now stated per use rather than assumed house-wide.** 40 psi
+# (Foamular 400 / Styrofoam Highload 40) is the frost-wing and footing-bearing grade and
+# stays on those assemblies, where a strip footing imposes 10-14 psi on the board. A
+# residential basement floor imposes far less, and 25 psi (Foamular 250, the standard
+# under-slab board) carries it with the same margin. NOTE: `library/materials.py` has ONE
+# `xps` tag with no compressive field, and prices.toml keys XPS on THICKNESS only — so the
+# psi grade lives in this `source=` line and is NOT priced. A 25 psi board is genuinely
+# cheaper than a 40 psi one; the estimate does not yet see that.
 #
 # The **poly and the stone under it were not modeled at all** until 2026-08-22, and their
 # absence had exactly one voice anywhere in the toolchain: `sheet.foundation.vapour_retarder`
@@ -573,14 +635,14 @@ CATLIN_SLAB_FLOOR = Assembly(
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(3.5),
               function=LayerFunction.STRUCTURE),
-        Layer(name="xps-below", material_ref="xps", thickness=inch(3.0),
+        Layer(name="xps-below", material_ref="xps", thickness=inch(2.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
         Layer(name="vapour-retarder", material_ref="polyethylene", thickness=inch(0.01),
               function=LayerFunction.MEMBRANE, control={ControlLayer.VAPOR}),
         Layer(name="capillary-break", material_ref="capillary-break-stone", thickness=inch(4.0),
               function=LayerFunction.SHEATHING),
     ),
-    source="catlin-house basement slab: 3\" below-slab XPS, R-15 @ 40 psi compressive, over a 10-mil ASTM E1745 Class A vapour retarder on a 4\" open-graded capillary break (IRC R506.2.2/R506.2.3)",
+    source="catlin-house basement slab: 2\" below-slab XPS, R-10 @ >=25 psi compressive (ASTM C578 Type IV), over a 10-mil ASTM E1745 Class A vapour retarder on a 4\" open-graded capillary break (IRC R506.2.2/R506.2.3); 3\" @ 40 psi until 2026-08-31",
 )
 
 # Main-floor structural deck: an EPS stay-in-place form with a cast concrete cap, over the
@@ -1377,28 +1439,44 @@ GARAGE_WALL_2X6 = Assembly(
     source="catlin-house ifcplot/assemblies.py GARAGE_WALL; rainscreen furring dropped 2026-08-20; rebuilt 2026-08-31 — 24\" o.c. studs, 2\" ccSPF in the bays, 5/8\" CDX for the 1.5\" Zip-R, and 7/8\" corrugated exposed-fastener panel for the 26 ga. nail strip. No WRB (IRC R703.2 exception, unconditioned detached accessory building)",
 )
 
-# Garage slab-on-grade. It now carries the same 3" of below-slab XPS as CATLIN_SLAB_FLOOR —
-# the owner wants the garage floor insulated even though the structure is detached and
-# unheated, so the choice is authored here rather than inferred from "is it conditioned".
+# Garage slab-on-grade. It carries 1" of below-slab XPS — the owner wants the garage floor
+# insulated even though the structure is detached and unheated, so the choice is authored
+# here rather than inferred from "is it conditioned".
 # Still a separate assembly from the basement slab: this one keeps the 1" perimeter thermal
 # break at the slab edge, and the two are ordered and poured as different scopes.
+#
+# **3" -> 1" on 2026-08-31 (owner).** This is an UNHEATED, detached, unconditioned building:
+# `RM-GARAGE` is `conditioned=False`, so no code check grades this slab and every number in
+# it is an owner choice. 3" was buying R-15 under a box with no heat in it. 1" keeps what
+# the foam is actually here for — a capillary and thermal break so the slab is not in
+# direct contact with clay, and a floor that does not read as bare ground underfoot — and
+# leaves the option open if the garage is ever heated.
+#
+# **40 psi here, where the basement takes 25.** This is the one slab in the house that
+# carries VEHICLE wheel loads, and a loaded wheel is a small contact patch, not a
+# distributed floor load. 40 psi (ASTM C578 Type VI, e.g. Foamular 400) is the same
+# slab-bearing grade SG_FROST_WING_XPS1/2 and FOOTING_FPSF_20 carry, so it is a grade
+# already on the order. See CATLIN_SLAB_FLOOR above for why the psi lives in `source=`:
+# there is one `xps` material tag with no compressive field, and prices.toml keys XPS on
+# THICKNESS alone — so a 40 psi board and a 25 psi board cost the same in this estimate and
+# do not in the yard.
 GARAGE_SLAB_ON_GRADE = Assembly(
     tag="GARAGE_SLAB_ON_GRADE",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(3.5),
               function=LayerFunction.STRUCTURE),
-        Layer(name="xps-below", material_ref="xps", thickness=inch(3.0),
+        Layer(name="xps-below", material_ref="xps", thickness=inch(1.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
         # Same stack, same reasoning, as CATLIN_SLAB_FLOOR above. R506.2.3 exempts a garage
         # from the vapour retarder; the foam does not care and the stone under it is
-        # required either way, and a garage floor with 3" of XPS under it is being asked to
-        # stay dry for the same reason a basement floor is.
+        # required either way, and an insulated garage floor is being asked to stay dry for
+        # the same reason a basement floor is.
         Layer(name="vapour-retarder", material_ref="polyethylene", thickness=inch(0.01),
               function=LayerFunction.MEMBRANE, control={ControlLayer.VAPOR}),
         Layer(name="capillary-break", material_ref="capillary-break-stone", thickness=inch(4.0),
               function=LayerFunction.SHEATHING),
     ),
-    source="catlin-house detached garage floor — 3\" below-slab XPS over a 10-mil ASTM E1745 Class A vapour retarder on a 4\" open-graded capillary break (IRC R506.2.2)",
+    source="catlin-house detached garage floor — 1\" below-slab XPS at 40 psi (ASTM C578 Type VI; vehicle wheel loads) over a 10-mil ASTM E1745 Class A vapour retarder on a 4\" open-graded capillary break (IRC R506.2.2); 3\" until 2026-08-31",
 )
 
 # REMOVED 2026-08-22: GARAGE_STEP_CONCRETE, 6" plain concrete on compacted base. It was the

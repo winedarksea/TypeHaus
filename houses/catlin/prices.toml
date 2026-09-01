@@ -2020,7 +2020,34 @@
 # return to rigid boards. (`plans/cost-options.md` kills that swap under *Do not reopen*, on
 # the R703.15 4"-foam-limit argument, not on price.)
 "eps" = { material = { low = 0.7, high = 1.4 }, labour = { low = 0.7, high = 1.35 } }  # 0 SF — was 3515.7 SF of wall CI until the truss wall
-"fiberglass" = { material = { low = 0.45, high = 0.9 }, labour = { low = 0.45, high = 0.85 } }  # 438.8 SF — fastest batt to install, bottom of the $0.50-1.30 band
+# ** THE BARE KEY IS A 3-1/2" RATE, AND THE 5-1/2" BAYS NEEDED THEIR OWN ROW (2026-08-31). **
+# The mineral-wool sweep of that date moved 2,884 SF of CATLIN_EXT_2X6 stud bay onto this
+# material, and those bays are 5-1/2". Left on the bare key they would have billed a
+# 2x6 R-21 batt at a 2x4 R-13 rate and OVERSTATED the saving by roughly $500-700. The
+# house already had the pattern (`fiberglass-r19` / `fiberglass-r30c` are separate keys by
+# thickness); this is the same move, and `envelope_layers` qualifies on `thickness_in`.
+# The 3-1/2" row landed at 1,346.4 SF after two moves on 2026-08-31: `INT_2X4_PARTITION`
+# (28 catlin walls, ~1,215 SF) first went from mineral wool to fibreglass, then lost its
+# cavity ENTIRELY — the owner's call, on the ground that none of those walls is somewhere
+# sound isolation is worth buying and that where it is, the house uses `INT_2X4_RC`. One
+# wall took exactly that route the same day: `W-S-SS2` (RM-S-BED1 to RM-S-STUDY2) is
+# INT_2X4_RC now, which is where ~140 SF of this row comes back. The library assembly kept
+# its
+# stc on an equivalence argument spelled out there. Superseded the same day: the preset's
+# cavity was EMPTIED outright (owner — where sound isolation matters the house uses
+# INT_2X4_RC), so those ~1,215 SF now bill no batt at all and its stc is the uninsulated,
+# USG-tested 34 (UL U305/U314 at 16" o.c.).
+"fiberglass" = { material = { low = 0.45, high = 0.9 }, labour = { low = 0.45, high = 0.85 } }  # 1346.4 SF @ 3-1/2" — fastest batt to install, bottom of the $0.50-1.30 band. Was commented 438.8 SF, stale since the 2026-08-30 INT_2X4_RC retype; briefly 2420.4 on 2026-08-31 before INT_2X4_PARTITION's cavity was emptied.
+# 2026-08-31 — the 5-1/2" stud bay, i.e. an R-21 batt. **This is the correct SKU for a 2x6
+# bay, not an upgrade**: the library `fiberglass` tag is 3.7/in, which the `fiberglass-r19`
+# material comment records as the HIGH-DENSITY value for an R-21 squeezed into 5-1/2" —
+# a standard R-19 is a 6-1/4" batt that only reaches its label by lofting, and reaches
+# about R-18 when stuffed in a 2x6 bay. So it sits just ABOVE the R-19 row (high-density
+# glass wool costs more per SF than standard) and just below the R-30C cathedral batt.
+# Labour is barely over the 3-1/2" row — one batt per bay either way, a heavier batt to
+# handle. Sources: the same published batt $/SF band the rows above are taken from,
+# interpolated on thickness and density between the `fiberglass` and `fiberglass-r19` rows.
+"fiberglass:5.5" = { material = { low = 0.65, high = 1.25 }, labour = { low = 0.5, high = 0.95 } }  # 2999.9 SF — R-21 in the 5-1/2" bay (CATLIN_EXT_2X6 + the plant/sauna liners' cold side)
 # The roof cavity batt. Dearer per SF than the wall row above only because it is thicker
 # (6-1/4" against 3-1/2"); it is the same product at the same rate per inch.
 # NOT TAKEN as of 2026-08-31 — 0 SF. The roof bay is flash-and-batt now and its air-permeable
@@ -2087,7 +2114,17 @@
 # the coverage per gallon is worse, so it sits a step over the `latex-paint` row.
 # homeguide.com 2026: $15-50/gal at 350-400 SF per gallon per coat.
 "latex-paint-accent" = { material = { low = 0.45, high = 1.1 }, labour = { low = 1.4, high = 2.6 } }  # 80 SF
-"mineral-wool" = { material = { low = 1.5, high = 2.3 }, labour = { low = 0.6, high = 1.15 } }  # 6316.6 SF
+# ** SCOPED BACK HARD ON 2026-08-31 (owner). ** 4,972 SF -> 873 SF. Mineral wool is 2x
+# fibreglass or more installed and buys nothing in a stud CAVITY that fibreglass does not:
+# both read 116 perm-in (no vapour difference at all), and published STC tables separate
+# assemblies by mass and decoupling, not by which wool is in the bay. What is LEFT is every
+# damp, hot or wet case, and each is deliberate — see the batt note in plan/assemblies.py
+# above CATLIN_EXT_2X6_SWINBURNE for the full list and the reasoning:
+#   3-1/2": PLANT_INT_2X4_HUMID, SAUNA_2X4, CATLIN_TUBDECK_INT_2X4
+#   5-1/2": the plant room, the sauna liners, and the shared _GARDEN_FRAMED_STUD
+# The old comment read 6,316.6 SF and had been stale since the INT_2X4_RC retype; the real
+# figure the day before this change was 4,972.2.
+"mineral-wool" = { material = { low = 1.5, high = 2.3 }, labour = { low = 0.6, high = 1.15 } }  # 872.9 SF — 335.4 @ 3-1/2" + 537.5 @ 5-1/2"
 # The nailbase top deck, by the SF. Same panels as the [sheet_goods] "osb" row.
 # NOT TAKEN as of 2026-08-31 — 0 SF. Kept for the rate.
 "osb" = { material = { low = 0.75, high = 1.2 }, labour = { low = 0.95, high = 1.85 } }  # 0 SF (was 1547.9) — 5/8", screwed through 6" of foam
@@ -2326,7 +2363,36 @@
 "stucco" = { material = { low = 0.9, high = 2 }, labour = { low = 3.5, high = 7 } }  # 422.1 SF (was 1394.1 SF: the N/E/W walls' parge was
 # replaced 2026-08-18 by `foundation-protection-panel` over the exposed band only)
 "white-brick" = { material = { low = 6, high = 12 }, labour = { low = 15, high = 26 } }  # 133.8 SF — labour is really a $2,000-3,500 minimum-mobilisation lump
-"xps" = { material = { low = 0.9, high = 1.8 }, labour = { low = 0.75, high = 1.45 } }  # 4182.2 SF — comment was stale at 2520.7 (+66%) until 2026-08-29; a $/SF rate against a $/cy-keyed section re-prices silently when geometry moves
+# ** XPS IS THICKNESS-QUALIFIED SINCE 2026-08-31, AND IT HAD TO BE. ** `envelope_layers`
+# qualifies its price key on `thickness_in` (cli/prices.py QUALIFIED_KEY_FIELD), and this
+# file carried only the bare key — so 1", 2" and 3" boards all priced at ONE $/SF blend.
+# A $/SF rate for a board sold by the inch is wrong in a specific, silent way: it makes any
+# change of foam THICKNESS cost exactly zero in the estimate. The 2026-08-31 slab review
+# (basement 3" -> 2", garage 3" -> 1") would have reported a $0 saving on a real 22%
+# reduction in XPS volume, which is how a cost model stops being decision-useful.
+#
+# DERIVED, NOT INDEPENDENTLY RESEARCHED, and that distinction is the honest part. The bare
+# row below is researched and stays; its $0.90-1.80 was a blend over a mix averaging 2.42"
+# per SF (24.7 SF @ 1" + 2373.8 @ 2" + 1783.7 @ 3" = 10,123 inch-SF over 4,182 SF), so
+# material per inch-SF is $0.372-0.744 and each row below is that times its own thickness.
+# The per-inch figure is consistent with published XPS retail (~$0.45-0.75 per inch-SF).
+#
+# LABOUR IS FLAT ACROSS THE THICKNESSES, deliberately and conservatively. Placing a board
+# is placing a board: below 4" the crew handles the same SF of face, the same seams and the
+# same tape whether it is 1" or 3" stock. So a thinner slab board buys a MATERIAL saving
+# only, and the estimate does not credit it with a labour one it may not earn.
+#
+# NOT PRICED, AND WORTH KNOWING: the COMPRESSIVE GRADE. `library/materials.py` has one
+# `xps` tag with no psi field, and this key qualifies on thickness alone — so the garage
+# slab's 40 psi board (vehicle wheel loads) and the basement's 25 psi board carry the same
+# rate here, and they do not carry the same rate in the yard. 40 psi runs roughly 20-35%
+# over 25 psi. Fixing it properly means a psi-bearing material tag, not another key.
+"xps:1.0" = { material = { low = 0.37, high = 0.74 }, labour = { low = 0.75, high = 1.45 } }  # 512.3 SF — garage slab (1", 40 psi) + the 24.7 SF slab-edge thermal break
+"xps:2.0" = { material = { low = 0.74, high = 1.49 }, labour = { low = 0.75, high = 1.45 } }  # 3669.8 SF — foundation walls (2 x 2" staggered), basement slab (2", 25 psi), footing, wall
+"xps:3.0" = { material = { low = 1.12, high = 2.23 }, labour = { low = 0.75, high = 1.45 } }  # 0 SF — was 1783.7 (basement + garage slabs) until the 2026-08-31 slab review. Kept for the rate.
+# The blended fallback. Any thickness without a row above lands here. Researched; the three
+# qualified rows are derived FROM it, so re-researching this row should re-derive those.
+"xps" = { material = { low = 0.9, high = 1.8 }, labour = { low = 0.75, high = 1.45 } }  # 0 SF billed here now — every XPS thickness in the model has its own row above
 # NOT TAKEN as of 2026-08-31 — 0 SF. The roof deck is 5/8" CDX now; see the
 # `struct-1-plywood` row above, which is $0.20-0.15/SF cheaper for a thicker, smoother,
 # faster-drying panel. Kept for the rate.

@@ -505,7 +505,6 @@ the future.
 
 ## Questions:
 - Do we want floor drains in kitchen/laundry room (deferred 2026-07-30: neither, for now)
-- Pantry (deferred by decision 2026-08-02)
 - **The showers are still unclassified.** Same axis, same rules, same question to answer
     first: what is actually behind the tile. The sauna is the worked example of what
     answering it costs — a liner variant on the wall that turned out not to have one.
@@ -571,6 +570,26 @@ the future.
   fix it, but it is deliberately *not* authored there: the glazed-brick plinth's whole
   derivation (`params/foundations.py`, `FT-B-BRICK`) leans on that 10" toe being there
   to bear on. Correcting the footings means re-deriving the plinth with them.
+- **Wall-hung WC — the cost half is answered: NO (2026-08-31).** Making `FX-TOILET-STD`
+  wall-hung to save slab penetrations does not pay, on four counts:
+  1. **The premise reaches one fixture.** Only `FX-B-BATH-WC` (RM-B-BATH) sits on a slab;
+     the other four WCs are over framed decks, where a "slab penetration" is not a cost.
+  2. **A carrier on a slab still penetrates the slab.** The 3" drop moves inside the wall.
+     It relocates a penetration; it removes none.
+  3. **That one fixture is already a recorded owner decision (2026-07-30)**, on other
+     grounds: the west end of RM-B-BATH is 12" cast concrete and a carrier would cost
+     6 1/2" of furring (`houses/catlin/plan/fixtures.py`). The attic WC carries the same
+     decision for the same reason.
+  4. **`prices.toml` puts the wall-hung unit at ~3x the floor unit** and records that
+     ordering as an invariant. Nothing in (1)-(3) offsets it.
+
+  If a hard number is ever wanted, price it by ablation (filter the resolved model and
+  re-run the BOM) — never by editing the house.
+
+  The modelling half is **done (2026-08-31)**: `FX-TOILET-WH` draws and models as a
+  tankless wall-hung bowl (`toilet-wall-hung` symbol), its carrier is a first-class framing
+  keepout with its own flanking studs and blocking, the type states its own wall-drainage
+  so no instance override is needed, and `advisory.carrier_bay` grades the host wall.
 
 * **Is this enough glazing for light-feeling rooms (along with LED strips, etc)?** Still
   open, and deliberately: 8% is the code minimum, not an answer about how a room feels. But

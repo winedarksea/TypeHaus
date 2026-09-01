@@ -238,9 +238,45 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     predicate (`laid="edge"` + vertical), the girt frame is a sibling selected by
     `standoff="block"`, and the old layer tuple is kept verbatim as `CATLIN_EXT_2X6_SWINBURNE`,
     referenced by nothing. `notes/outie_window_truss_detail.md` has the three-edit revert.
-  **The card reads R-41.4 and the honest number is ≈R-38.2** — the blocks are framed rather
+  **The card reads R-40.4 and the honest number is ≈R-37.3** — the blocks are framed rather
   than authored as a `CavityFill`, and the outer girt is credited its own R although it stands
   outboard of the vent gap. `wall_r = 40` is NOT met. See the engineering note §7.
+  **The stud bay is FIBREGLASS, not mineral wool, since 2026-08-31** (the card read 41.4 and
+  the honest number 38.2 until then). An owner cost review swept mineral wool out of every
+  cavity in the house that is not damp, hot or wet: it costs 2x installed, reads the SAME
+  116 perm-in, and published STC tables separate assemblies by mass and decoupling, not by
+  which wool is in the bay. **The batt is not the lever on `wall_r`** — it is worth 0.9 of
+  the 2.7-point shortfall for $4,500-6,300, and the other 1.8 was never in the bay at all.
+  **Where mineral wool is KEPT and must not be swept next time:** the tub deck, all three
+  sauna assemblies, all three plant-room assemblies, and the shared `_GARDEN_FRAMED_STUD`.
+  That list and its reasoning live in `plan/assemblies.py` above `CATLIN_EXT_2X6_SWINBURNE`.
+- **`INT_2X4_PARTITION` HAS NO INSULATION AT ALL SINCE 2026-08-31, AND ONE WALL LEFT IT.**
+  The owner's reasoning: none of the 27 walls still on the preset is somewhere sound
+  isolation is worth buying, and where it IS, the answer is `INT_2X4_RC` (STC 48, resilient
+  channel, a real published test) rather than a batt. `W-S-SS2` took exactly that route the
+  same day — the one bedroom-facing wall left on the preset.
+  - **Its rating is the USG-tested STC 34, and the SPACING is why.** SA924 / UL U305/U314
+    publishes this exact 4-3/4" build at **34 at 16" o.c.**, 37 at 24" o.c., and 46 at 24"
+    with 3" SAFB. Catlin frames at 16". **Do not difference 34 against the old insulated 36
+    and conclude a batt is worth a point** — the two are different test series, and on USG's
+    own 24" rows the batt is worth NINE.
+  - **The card over-reports it and cannot say so.** With no `CavityFill`,
+    `analysis._layer_rsi` bills the 3-1/2" stud layer as SOLID SPF over 100% of the area:
+    the card reads **R-6.4** where the honest whole-assembly value is nearer R-2.5-3. Same
+    trap `GARAGE_WALL_2X6` documents. Harmless only because the `INT` token takes an
+    interior partition out of `mn_energy` entirely — never quote the card for this one.
+  - **KNOWINGLY ACCEPTED, so nobody re-opens it as a defect:** four walls left uninsulated
+    are places a designer would normally put a batt — `W-S-SBS` (primary bath to primary
+    suite), `W-M-BDN1` (ensuite to bedroom), `W-A-BATH-S` (guest bath to guest bed) and
+    `W-M-HS3` (living to LAUNDRY — note `W-M-LS` protects the study from that same laundry,
+    and nothing protects the living room). The fix, if any is ever wanted, is a retype to
+    `INT_2X4_RC`, not a batt put back in the preset.
+  - **On `W-S-SS2` the channel is on the NORTH face and must stay there.** The south face
+    carries ST-S2A's flight, its 2x10 stringer ledger, its handrail, and a void boundary
+    `attic.py` defines as "W-S-SS2's south gwb face". The channel-side face moves outboard
+    1/2"; on the south that is into a stair well cut to EXACTLY 3'-0", leaving 35 1/2"
+    against R311.7.1's 36". It would also mean lag-screwing a stringer through resilient
+    channel, which shorts the channel out.
   See `notes/outie_window_truss_detail.md` and `notes/catlin_truss_engineering.md`.
 - **THE HOUSE WEARS TWO PANELS SINCE 2026-08-31: BOARD & BATTEN NORTH AND SOUTH, PBR EAST
   AND WEST.** 1,678.3 SF of `board-batten-24` (24 ga concealed-fastener PVDF, 20" net
@@ -1149,6 +1185,26 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   the widest leaf that fits: the pack closing the cavity must clear `N-M-C2`, where the
   BEARING `W-M-C3` corners in and `BM-M-HALL` starts. Full detail, including the 1"
   fastener limit, in `notes/pocket_door_at_laundry.md`.
+- **THE SLABS WERE THINNED ON 2026-08-31, and the psi grade is now stated per use.** The
+  basement slab went 3" -> 2" XPS at **>=25 psi** (R-16.1 -> R-11.1 whole-assembly, against
+  an owner target of R-10; still PASSes `code.energy_prescriptive`'s R-10 slab row), and the
+  detached garage slab 3" -> **1" at 40 psi** — 40 because that is the one slab in the house
+  carrying VEHICLE wheel loads, and a loaded wheel is a contact patch, not a distributed
+  floor load. `RM-GARAGE` is `conditioned=False`, so nothing grades it and every number
+  there is an owner choice. Three things follow:
+  - **The psi grade is NOT PRICED.** `library/materials.py` has one `xps` tag with no
+    compressive field, and `prices.toml` keys XPS on THICKNESS alone — so the 40 psi board
+    and the 25 psi board carry one rate here and do not in the yard (40 psi runs ~20-35%
+    over). Fixing that properly means a psi-bearing material tag, not another price key.
+  - **XPS IS THICKNESS-QUALIFIED IN `prices.toml` NOW, AND IT HAD TO BE.**
+    `envelope_layers` qualifies its price key on `thickness_in` (`cli/prices.py`), and the
+    file carried only the bare `"xps"` key — so 1", 2" and 3" board all priced at one $/SF
+    blend, which made any change of foam THICKNESS cost exactly $0 in the estimate. A cost
+    model that cannot see a design decision is not decision-useful. The three qualified rows
+    are DERIVED from the researched blend ($0.372-0.744 per inch-SF) with labour held flat
+    across thicknesses, which is the conservative reading.
+  - The basement's return to 2" retired a `DECLARED_DIVERGENCES` entry in
+    `test_catlin_reference_parity.py` — catlin and the reference detail agree again.
 - **Four basement assemblies, and every split is a condition, not a preference.** Two
   independent axes cross here: what covers the exterior XPS, and how thick the pour is.
   All four compose off `library/`'s `FOUNDATION_WALL_{8,12}_XPS4_CORE` plus a house-local

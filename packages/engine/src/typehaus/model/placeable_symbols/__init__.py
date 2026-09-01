@@ -69,7 +69,11 @@ SYMBOL_NAMES = frozenset({
     # its glyph is the riser's own diameter with a handle bar and an outlet nipple rather
     # than a basin. "floor-drain" is the other one: it is the opening itself, so its glyph is
     # a strainer flange with a grate, and it is the only plumbing symbol with no supply side.
-    "toilet", "lavatory", "vanity", "tub", "tub-shower", "shower", "kitchen-sink",
+    # "toilet-wall-hung" is a THIRD odd one out: no tank, so the china takes the whole
+    # footprint and the only in-wall part that shows is the actuator plate. Its carrier is
+    # framing, not a glyph — see ``resolve/framing/carriers.py``.
+    "toilet", "toilet-wall-hung", "lavatory", "vanity", "tub", "tub-shower", "shower",
+    "kitchen-sink",
     "hydrant", "floor-drain", "laundry-sink",
     # luminaires — one name per LuminaireForm that has a point instance. STRIP has none:
     # a cove strip is a LightRun polyline, drawn by the lighting plan, not a placeable.

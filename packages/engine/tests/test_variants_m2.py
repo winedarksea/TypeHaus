@@ -140,7 +140,12 @@ def test_assembly_delta_compare_reads_r_thickness_layers_and_stc(starter_dir: Pa
     # STC is a lab test, never computed: unknown on both sides stays an unknown delta.
     assert deltas["stc"].delta is None
     partition = {item.metric: item for item in comparison.deltas["INT_2X4_PARTITION"]}
-    assert partition["stc"].candidate == 36.0
+    # 36.0 until 2026-08-31, when the preset's cavity was emptied (owner: where sound
+    # isolation matters the house uses INT_2X4_RC, not a batt) and its rating went to the
+    # uninsulated, USG-tested 34 — STC 34 is the 16"-o.c. row of UL U305/U314; the same
+    # build is 37 at 24" o.c. What this line pins is that a LAB VALUE reaches the compare
+    # at all, not the number itself.
+    assert partition["stc"].candidate == 34.0
 
     payload = comparison.as_dict()
     assert set(payload) == {"baseline", "assemblies", "deltas"}

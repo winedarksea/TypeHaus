@@ -231,13 +231,17 @@ DRAINS = [
             diameter=inch(1.5), material="pvc",
             elevations=(ft(1, 6), ft(-0.52), ft(-0.653)),
             serves=("FX-B-BATH-LAV",)),
-    # The sauna group: curbed pan's drop, south to the floor drain at (13'-6", 12'-9"), west
-    # under the workshop to the main. One 2" branch carries both (4 DFU vs. the 6 a 2" branch
+    # The sauna group: curbed pan's drop, west to the floor drain at (13'-6", 12'-0 3/16"),
+    # north to y=12'-9" and west under the workshop to the main. The drain moved onto the
+    # pan's own centre line 2026-08-31 (it was at y=12'-9", on the long leg); the branch
+    # keeps that leg exactly where it was and reaches the drain with a 8 13/16" jog instead,
+    # so the total plan run — and every authored invert on it — is unchanged at 13'-5 5/16".
+    # One 2" branch carries both (4 DFU vs. the 6 a 2" branch
     # takes) and crosses no footing — W-B-SA-W is a framed partition, and the run stops 1'-8"
     # short of FT-B-W2, outside its 45° influence line.
     PipeRun(uid="CBPD08AAAA", tag="PR-B-SAUNA-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(15, 8.5), ft(12, 0.1875)), pt(ft(15, 8.5), ft(12, 0.1875)),
-                  pt(ft(15, 8.5), ft(12, 9)), pt(ft(13, 6), ft(12, 9)),
+                  pt(ft(13, 6), ft(12, 0.1875)), pt(ft(13, 6), ft(12, 9)),
                   pt(ft(3), ft(12, 9))),
             diameter=inch(2), material="pvc",
             # As PR-B-BATH-DRAIN: the grade is authored and the intermediate inverts follow
@@ -250,9 +254,9 @@ DRAINS = [
     # separately (not as a vertex on the branch) so `mep.sleeve_coverage` sees a run actually
     # passing through the cast stub rather than a stale or mis-routed sleeve.
     PipeRun(uid="CBPD10AAAA", tag="PR-B-SAUNA-FD-DROP", system=PipeSystem.DRAIN,
-            path=(pt(ft(13, 6), ft(12, 9)), pt(ft(13, 6), ft(12, 9))),
+            path=(pt(ft(13, 6), ft(12, 0.1875)), pt(ft(13, 6), ft(12, 0.1875))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(0), ft(-0.788)),
+            elevations=(ft(0), ft(-0.770)),
             serves=("FX-B-SAUNA-FD",)),
 ]
 
@@ -328,11 +332,15 @@ LAUNDRY_MAIN = [
 # a shower floor drain is and a finished lavatory is not.
 #
 # Route is unchanged west across the sauna's hung drop ceiling (SP-B-CS-COND crossing
-# re-levelled to the new centreline); what's new is the last leg north to y=12'-9" then
-# straight down in a boxed chase against W-B-SA-N — the floor drain sits 12" off that wall
-# rather than mid-floor because an exposed drop in a tiled wet room isn't buildable. Air gap
-# is 9" above finish floor, falling 0.3"/ft (above IRC P3005.3's 1/4"/ft `mep.drain_slope`
-# minimum) across all three legs.
+# re-levelled to the new centreline); what's new is the last leg north to the drain then
+# straight down in a boxed chase. Air gap is 9" above finish floor, falling 0.3"/ft (above
+# IRC P3005.3's 1/4"/ft `mep.drain_slope` minimum) across all three legs.
+#
+# 2026-08-31: the drain moved 8 13/16" south onto FX-B-SAUNA-SH's centre line, and the drop
+# followed it — an indirect waste has to discharge over its receptor, so the drop point is
+# the drain's position and not a fixed distance off W-B-SA-N. The chase is now boxed 1'-9"
+# off that wall rather than 12", one box the full depth instead of a shallow one; the north
+# leg is that much shorter and path[3]'s invert re-solves to 7'-0 3/8" (was 7'-0 5/32").
 # --- the ERV's condensate (2026-08-25) -------------------------------------------------
 #
 # A cold-climate ERV core makes water — on the order of a gallon or two a day at this flow
@@ -347,8 +355,8 @@ LAUNDRY_MAIN = [
 # the alternative the plan floated (the mechanical-room sink) still has no drain of its own,
 # which is the same plans/TODO.md open item it predicted this would land on.
 #
-# So it runs its own line to the same receptor, dropping in the same boxed chase against
-# W-B-SA-N 6" north of PR-B-COND's drop: two air gaps over one trapped floor drain that sees
+# So it runs its own line to the same receptor, dropping in the same boxed chase 6" north of
+# PR-B-COND's drop: two air gaps over one trapped floor drain that sees
 # water in normal use, which is the whole reason that receptor was chosen in the first place.
 # 0.3"/ft across both horizontal legs, the same grade as its neighbour and above IRC
 # P3005.3's 1/4"/ft minimum.
@@ -385,25 +393,40 @@ LAUNDRY_MAIN = [
 # The jog off the spigot is 1'-0" long and takes its own 0.3" of fall, so the two legs below
 # it re-solve to 66.45" and 63.275" (it was 66.75"/63.88" over a 1'-0" shorter east leg).
 # Monotonic from 72" to 9", 0.3"/ft on every horizontal segment, unchanged in kind.
+#
+# ** THE DROP FOLLOWED THE DRAIN ON 2026-08-31, AND IT MOVED IN x, NOT y. ** FX-B-SAUNA-FD
+# went to y=12'-0 3/16" (FX-B-SAUNA-SH's centre line), so this line stops the east leg 6"
+# short at x=13'-0" and jogs 1'-2 13/16" south to the drain's own horizontal instead of
+# dropping at the old fixed y=13'-3". The 6" separation from PR-B-COND's drop is unchanged
+# — it is just west of it now rather than north — and both air gaps are over the grate.
+#
+# The 6" is taken in x deliberately: a drop at (13'-6", 12'-6 3/16") would land its last
+# vertex ON PR-B-SAUNA-DRAIN's new north jog in plan and above its invert, which is exactly
+# what `resolve/mep_queries.drain_tie_ins` reads as a connection. An air gap that resolves
+# as a tie-in is no longer an air gap (test_plumbing_pass::test_drain_loads_roll_up...).
+# The long leg at x=2'-11" stays in the lane vetted above and crosses nothing new; 0.3"/ft
+# throughout puts the two intermediate inverts at 63.42" and 63.05".
 ERV_CONDENSATE = [
     PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN,
             path=(pt(ft(3, 11), ft(30, 9)), pt(ft(2, 11), ft(30, 9)),
                   pt(ft(2, 11), ft(13, 3)),
-                  pt(ft(13, 6), ft(13, 3)), pt(ft(13, 6), ft(13, 3))),
+                  pt(ft(13), ft(13, 3)), pt(ft(13), ft(12, 0.1875)),
+                  pt(ft(13), ft(12, 0.1875))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(72), inch(71.7), inch(66.45), inch(63.27), inch(9))),
+            elevations=(inch(72), inch(71.7), inch(66.45), inch(63.42), inch(63.05),
+                        inch(9))),
 ]
 
 CONDENSATE = [
     PipeRun(uid="CBPC01AAAA", tag="PR-B-COND", system=PipeSystem.DRAIN,
             path=(pt(ft(27), ft(9)), pt(ft(18), ft(9)), pt(ft(13, 6), ft(9)),
-                  pt(ft(13, 6), ft(12, 9)), pt(ft(13, 6), ft(12, 9))),
+                  pt(ft(13, 6), ft(12, 0.1875)), pt(ft(13, 6), ft(12, 0.1875))),
             diameter=inch(0.75), material="pvc",
             # The 0.3"/ft the comment above states, authored as the grade it is: the two
             # intermediate inverts solve to exactly the numbers that were hand-written here.
             # path[3] is the top of the boxed chase's drop and stays authored — a vertical
             # leg has no plan run to fall over.
-            elevations=(ft(7, 5.3375), None, None, ft(7, 0.1625), ft(0, 9)),
+            elevations=(ft(7, 5.3375), None, None, ft(7, 0.3828), ft(0, 9)),
             slope_in_per_ft=0.3),
 ]
 

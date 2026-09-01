@@ -385,13 +385,22 @@ function buildIJoists(group: THREE.Group, members: Member[], center: PlanCenter,
     const run = projectPlanDirectionToScene([dx, dz]).setY(rise).normalize();
     const across = new THREE.Vector3(-horizontalRun.z, 0, horizontalRun.x);
     const normal = new THREE.Vector3().crossVectors(across, run).normalize();
-    const depth = m.z1_m - m.z0_m;
+    const slopedLength = Math.hypot(runLen, rise);
+    // `z0_m`/`z1_m` bound a member VERTICALLY — the same convention `rakedBoxVertices` draws
+    // a raked 2x to (vertical ends, sloped top and bottom faces), and the one the engine
+    // sizes a rafter in: `z1_m` IS the deck plane, and the assembly's sheathing/membrane/
+    // roofing stack starts there. The three plies below are stacked PERPENDICULAR to the run,
+    // so that vertical extent has to be foreshortened by cos(theta) before it can be spent as
+    // a section depth. Without this the roof redesign's 11-7/8" I-joist rafters stood 1-3/8"
+    // proud of their own `z1_m` on this 6:12 roof and pushed their top flange up through the
+    // sheathing, the membrane and the standing seam above them (2026-08-31).
+    const cosTheta = slopedLength > 1e-9 ? runLen / slopedLength : 1;
+    const depth = (m.z1_m - m.z0_m) * cosTheta;
     const flangeT = m.flange_thickness_m ?? depth * 0.1;
     const flangeW = m.flange_width_m ?? m.width_m;
     const webT = m.web_thickness_m ?? Math.min(flangeW, 0.01);
     const color = memberColor(m, palette, materials);
     const webDepth = Math.max(depth - 2 * flangeT, MIN_EXTENT_M);
-    const slopedLength = Math.hypot(runLen, rise);
     // p0/z0 is the joist soffit at the near end; the three plies share that run centre and
     // differ only in how far their own mid-thickness sits up the section from the soffit.
     const runCenter = projectPointToScene(m.p0, m.z0_m, center)

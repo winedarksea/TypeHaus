@@ -234,22 +234,68 @@ HOUSE_ROOF = Assembly(
 # layer to a stack whose whole value is that it matches a specific tested build is how the
 # cited STC stops describing what is drawn. These walls are painted in reality; the paint is
 # a finish-schedule fact about the rooms either side, not part of the rated assembly.
+# ** THE CAVITY IS EMPTY (2026-08-31), AND THAT IS A DELIBERATE OWNER DECISION. **
+#
+# This bay held mineral wool until 2026-08-31, then fibreglass for part of the same day,
+# and now holds nothing. The owner's reasoning, and it is sound: none of the walls this
+# preset carries is somewhere sound isolation is worth paying for, and where it IS worth
+# paying for, the answer is `INT_2X4_RC` below — the same studs and the same board with a
+# resilient channel, STC 48 on a real published test, twelve points clear of anything a
+# batt in this cavity can buy. A batt is the wrong lever; decoupling is the right one.
+#
+# **WHAT THIS COSTS, STATED PLAINLY, BECAUSE IT IS NOT NOTHING.** In catlin the walls left
+# on this preset include three bathroom-to-bedroom partitions (`W-S-SBS` primary bath to
+# primary suite, `W-M-BDN1` ensuite to bedroom, `W-A-BATH-S` guest bath to guest bed) and
+# `W-M-HS3`, living room to laundry. Those were flagged to the owner and accepted. If any
+# of them is ever regretted, the fix is a retype to `INT_2X4_RC`, not a batt put back here.
+#
+# ** THE R-VALUE THIS ASSEMBLY REPORTS IS OPTIMISTIC AND THE CARD CANNOT SAY SO. ** With no
+# `CavityFill`, `analysis._layer_rsi` bills the 3-1/2" STRUCTURE layer as SOLID SPF over
+# 100 % of the area, so the card reads R-6.4 for a wall whose honest whole-assembly value
+# is nearer R-2.5-3 (an empty vertical cavity is an air space worth about R-1 in total, not
+# 3-1/2" of wood). This is the same trap `GARAGE_WALL_2X6` documents in
+# `houses/catlin/plan/assemblies.py`, where an unfilled bay read R-14.3 against an honest
+# R-7-8. It is harmless HERE only because nothing grades an interior partition's R — the
+# `INT` token takes it out of `mn_energy` entirely. Do not quote the card for this one.
+#
+# ** THE stc IS 34, AND THE SPACING IS WHY IT IS NOT 35 OR 37. ** USG's SA924 catalogue
+# publishes this exact 4-3/4" build — 2x4 at 16 OR 24 o.c., one layer of 5/8" FIRECODE
+# gypsum each side, no insulation, UL Des U305/U314 — as THREE separate tested numbers,
+# and the stud spacing picks which one applies:
+#
+#   * **STC 34** at **16" o.c.** (test USG-30-FT-G&H)  <- this assembly: FramingSpec
+#     defaults to 16" and every catlin wall on this preset frames at 16".
+#   * STC 37 at 24" o.c. (test USG-860807) — fewer, more flexible connections between the
+#     leaves is worth three points on the same materials.
+#   * STC 46 at 24" o.c. with 3" SAFB (test BBN-700725).
+#
+# **That last pair is the honest measure of what emptying this cavity costs: NINE points,
+# not one.** An owner estimate of 35 was the starting point for this row and is superseded
+# by the tested 34; more importantly, the assembly's former insulated rating of 36 (a
+# ROCKWOOL blog figure, different test series) must NOT be differenced against it to
+# conclude that insulation is worth a point. On USG's own 24" rows the batt is worth nine.
+# The decision to empty the cavity stands on the argument at the top of this block — that
+# decoupling, not absorption, is the right lever, and INT_2X4_RC is where it lives — and
+# not on the batt being worth little.
 INT_2X4_PARTITION = Assembly(
     tag="INT_2X4_PARTITION",
     layers=(
         Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
         Layer(name="stud", material_ref="spf", thickness=inch(3.5),
-              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x4"),
-              cavity=CavityFill(material_ref="mineral-wool")),
+              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x4")),
         Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
     ),
-    stc=36,
-    source=("ROCKWOOL, How to Soundproof a Room: 2x4 wood studs at 16 in. o.c., "
-            "3.5 in. Comfortbatt, 5/8 in. gypsum both sides, STC 36; "
-            "https://www.rockwool.com/north-america/advice-and-inspiration/blog/"
-            "using-acoustic-insulation-to-soundproof-a-room/"),
+    stc=34,
+    source=("USG SA924 Drywall/Wood Framed Systems: wood stud partition, 2x4 at 16 in. "
+            "o.c., one layer 5/8 in. SHEETROCK FIRECODE gypsum each side, uninsulated, "
+            "UL Des U305/U314 - STC 34 at 16 in. spacing (test USG-30-FT-G&H); the same "
+            "build is STC 37 at 24 in. o.c. and STC 46 at 24 in. o.c. with 3 in. SAFB; "
+            "https://www.usg.com/content/dam/USG/pdpmovedocuments/"
+            "drywall-wood-framed-systems-SA924.pdf . Cavity intentionally empty "
+            "(2026-08-31): where sound isolation matters the house uses INT_2X4_RC "
+            "(STC 48), not a batt in this bay."),
 )
 
 INT_2X4_RC = Assembly(

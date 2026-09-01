@@ -18,7 +18,7 @@ source:
 
 - Room size: 12'×8'. Shower is the 4' end (4'×8'). Primary entry door is on the shower from the long (12') side wall (not shown in section).
 
-- **Revised 2026-07-30 — curbed pan plus a floor drain, not one curbless recess.** The 4' shower end is now two things: a 36"×36" *curbed* shower pan in the north-east corner (`FX-B-SAUNA-SH`, its two closed sides on the north liner at y=13'-6 3/16" and the east liner at x=17'-2 1/2"), and a floor drain at (13'-6", 12'-9") (`FX-B-SAUNA-FD`) taking the rest of the wet floor. The three bullets below are superseded where they conflict; the wall, glass, electrical, lighting and ventilation notes still stand.
+- **Revised 2026-07-30 — curbed pan plus a floor drain, not one curbless recess.** The 4' shower end is now two things: a 36"×36" *curbed* shower pan in the north-east corner (`FX-B-SAUNA-SH`, its two closed sides on the north liner at y=13'-6 3/16" and the east liner at x=17'-2 1/2"), and a floor drain at (13'-6", 12'-0 3/16") (`FX-B-SAUNA-FD`) taking the rest of the wet floor. *(Moved 2026-08-31 from (13'-6", 12'-9") onto the pan's own centre line, 5 1/2" clear west of the curb; `PR-B-SAUNA-DRAIN`, both condensate air gaps and `SP-B-SAUNA-FD` moved with it.)* The three bullets below are superseded where they conflict; the wall, glass, electrical, lighting and ventilation notes still stand.
 
 - Slabs: both sauna and shower are slab-on-grade over vapor barrier and foam, with a thermal break around the perimeter of the combined room. **The 4" recess is dropped:** with a curb around the pan and a floor drain outside it, the slab stays flat across the whole room and the pan is built up on top of it. That also removes the step at the sauna/shower line the old scheme needed a threshold detail for.
 

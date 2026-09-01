@@ -301,11 +301,23 @@ flat girt per 32" course is a 10.9 % framing fraction where the same board per 2
 14.6 %. It is the second half of that change's case — the first is the lumber — and it is
 why the band's `CavityFill.framing_factor` had to move with the spacing.
 
-**Whole wall, honest: ≈ R-38.2.** Everything inboard of the foam zone — gypsum, the 2x6 stud
-bay with its mineral wool at 23 % framing, the sheathing, and the air films — sums to about
-R-17.1, and 17.1 + 21.1 = 38.2.
+**Whole wall, honest: ≈ R-37.3.** Everything inboard of the foam zone — gypsum, the 2x6 stud
+bay with its FIBREGLASS batt at 23 % framing, the sheathing, and the air films — sums to about
+R-16.2, and 16.2 + 21.1 = 37.3.
 
-**The model's own card reads R-41.4, and that is 3.2 points optimistic.** Two reasons, both
+**The batt changed on 2026-08-31 and this number moved 0.9 with it (was R-38.2).** An owner
+cost review swept `mineral-wool` out of every cavity in the house that is not damp, hot or
+wet; the reasoning is in `plan/assemblies.py` above `CATLIN_EXT_2X6_SWINBURNE`. The bay goes
+R-23.1 -> R-20.4 (mineral wool 4.2/in against the library `fiberglass` tag's 3.7/in, which is
+the high-density R-21-in-5-1/2" value and so the CORRECT SKU for a 2x6 bay, not a lofted
+R-19), and at 23 % framing the parallel path goes R-14.97 -> R-14.03:
+
+```
+mineral wool: 1/R = 0.77/23.1  + 0.23/6.875 = 0.03333 + 0.03345 = 0.06678  →  R 14.97
+fibreglass:   1/R = 0.77/20.35 + 0.23/6.875 = 0.03784 + 0.03345 = 0.07129  →  R 14.03
+```
+
+**The model's own card reads R-40.4, and that is 3.1 points optimistic.** Two reasons, both
 worth knowing:
 
 1. The blocks are framed by the resolver, not authored as a `CavityFill`, so bands A and C
@@ -313,9 +325,13 @@ worth knowing:
 2. The outer girt is a solid layer with no fill, so the card credits its R-1.4 — but it
    stands outboard of a vented gap and is thermally outside the envelope.
 
-**`preferences.toml` sets `wall_r = 40`. This wall does not meet it, at R-38.2** — 1.8 points
-short, where the 24" courses left it 2.5 short. The card says otherwise and the card is
-wrong. State it plainly rather than reading the target as met.
+**`preferences.toml` sets `wall_r = 40`. This wall does not meet it, at R-37.3** — 2.7 points
+short, where the 24" courses left it 2.5 short and mineral wool left it 1.8. The card says
+otherwise and the card is wrong. State it plainly rather than reading the target as met.
+The batt is NOT the lever that closes this: going back to mineral wool buys 0.9 of the 2.7
+for about $4,500-6,300, and the other 1.8 was never in the bay at all — it is the two block
+tiers the resolver frames without a `CavityFill` and the outer girt credited outboard of a
+vented gap. Closing it honestly means more foam or fewer thermal bridges in the foam zone.
 
 **The 2-D truth is better than the 1-D number, and 1-D cannot credit it.** The buried inner
 girt is a fin connecting a block-1 and a block-2 that are 8" apart along the wall, not

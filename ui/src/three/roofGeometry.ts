@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import type { AssemblySpec, Roof, RoofLayerSetback } from "../model/types";
-import type { ProjectVertex } from "./planGeometry";
+import { panelTileSizeM, SEAM_PROFILE, type MetalPanelProfile } from "./materials";
+import { projectScenePointToPlan, type PlanCenter, type ProjectVertex } from "./planGeometry";
 
 // The roof surface as geometry: the sloped planes from footprint/eave_z/ridge_z (mirroring
 // emit/gltf/emitter.py's _add_roof), plus what is needed to thicken them into the authored
@@ -162,3 +163,55 @@ export function aboveStructureLayers(assembly: AssemblySpec | undefined) {
   return assembly.layers.slice(last + 1);
 }
 
+
+/**
+ * Give a roof plane's metal-panel map an architectural coordinate frame, the way
+ * `applyStandingSeamWallUv` gives a wall one.
+ *
+ * A roof plane is built by `createProjectedSurfaceGeometry`, which sets position and normal
+ * and NOTHING ELSE — no `uv` attribute at all. A normal map on a geometry with no UVs samples
+ * one texel forever, so every roof in the model rendered as flat paint: the seam was there in
+ * the material and had nothing to sample against. (`createStandingSeamMaterial`'s
+ * `worldSizeM` repeat could not save it either — a repeat multiplies a UV that does not
+ * exist.) Fixed 2026-08-31.
+ *
+ * The frame is the one a roofer works in, not the one the footprint is authored in:
+ *  - `u` runs ALONG THE RIDGE, because that is the axis the pans are counted across. Pans run
+ *    up the slope, eave to ridge, so the seams have to be constant in the fall line and step
+ *    every 16" sideways.
+ *  - `v` is TRUE SLOPE DISTANCE from the ridge, not the plan run. A 6:12 plane is 11.8%
+ *    longer than its footprint, and measuring `v` in plan would shorten the pan by exactly
+ *    that much — visible where a rake band drawn at true length meets it.
+ * Both are divided by the profile's tile size, so the module lands at true scale and matches
+ * the wall panel and the closure bands that continue it.
+ */
+export function applyStandingSeamRoofUv(
+  geometry: THREE.BufferGeometry,
+  roof: Roof,
+  center: PlanCenter,
+  profile: MetalPanelProfile = SEAM_PROFILE,
+): void {
+  const tileM = panelTileSizeM(profile);
+  const xs = roof.footprint.map((p) => p[0]);
+  const ys = roof.footprint.map((p) => p[1]);
+  const alongRidgeIsX = roof.ridge_direction === "x";
+  const low = alongRidgeIsX ? Math.min(...ys) : Math.min(...xs);
+  const high = alongRidgeIsX ? Math.max(...ys) : Math.max(...xs);
+  // A shed's high edge is its "ridge"; a gable's is the midline. Either way `v` is measured
+  // from there, so the two planes of a gable mirror each other and their pans meet at the
+  // ridge instead of running past it out of phase.
+  const ridgeCoordinate = roof.form === "shed" ? high : (low + high) / 2;
+  const positions = geometry.getAttribute("position");
+  const uv = new Float32Array(positions.count * 2);
+  for (let index = 0; index < positions.count; index++) {
+    const [planX, planY] = projectScenePointToPlan(
+      positions.getX(index), positions.getZ(index), center,
+    );
+    const elevation = positions.getY(index);
+    const alongRidge = alongRidgeIsX ? planX : planY;
+    const downSlope = (alongRidgeIsX ? planY : planX) - ridgeCoordinate;
+    uv[index * 2] = alongRidge / tileM;
+    uv[index * 2 + 1] = Math.hypot(downSlope, elevation - roof.ridge_z_m) / tileM;
+  }
+  geometry.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
+}

@@ -41,10 +41,12 @@ DECLARED_DIVERGENCES = {
         "reference 5/8\" Struct 1; Catlin uses 1/2\" Struct 1 — thinner sheathing over "
         "4\" of exterior CI, where the sheathing is a nailbase rather than the thermal layer"
     ),
-    "slab/xps_under_in": (
-        "reference 2\"; Catlin uses 3\" (R-15) at 40 psi under the slab — rated for slab "
-        "loading rather than the lighter foundation-wall grade"
-    ),
+    # "slab/xps_under_in" was a declared divergence (Catlin 3" at 40 psi against the
+    # reference's 2") until 2026-08-31, when an insulation review took the basement slab
+    # back to 2" — the owner's slab target is R-10 and 3" was reading R-16.1 whole-assembly.
+    # Catlin and the reference agree again, so the entry is gone and the parity assertion
+    # above now holds it. The GARAGE slab is 1" and is not covered here: the reference
+    # fixes the basement slab only.
     "wall/polyiso_in": (
         "reference 2\" polyiso as the inner course of a 4\" rigid-CI stack; Catlin sprays "
         "1-1/2\" of closed-cell foam there instead (2026-08-23 truss wall). The 4\" of "

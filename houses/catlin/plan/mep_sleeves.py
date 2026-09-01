@@ -77,7 +77,7 @@ SLAB_STUBS = [
                       position=pt(ft(15, 8.5), ft(12, 0.1875)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-B-SAUNA-SH"),
     SleevePenetration(uid="CBP906AAAA", tag="SP-B-SAUNA-FD", host_ref="SL-B-FLOOR",
-                      position=pt(ft(13, 6), ft(12, 9)), pipe_diameter=inch(2),
+                      position=pt(ft(13, 6), ft(12, 0.1875)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-B-SAUNA-FD"),
     # Where the ceiling collector turns down to become the under-slab building drain; 4"
     # since the 2026-07-31 building-drain upsize. `mep.sleeve_coverage` holds the crossing.

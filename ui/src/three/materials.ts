@@ -179,9 +179,19 @@ function metalPanelNormalMap(profile: MetalPanelProfile = SEAM_PROFILE): THREE.T
   // and a step is exactly what mip filtering could not carry when the seam was a linear ramp.
   const ribSlope = (u: number): number => {
     const round = Math.sin(u * Math.PI);
+    // A plateau, not a bump: zero at the crown (u→0) and at the toe (u→1), and a constant
+    // slope over the flank between them. That IS the trapezoid this is blending toward.
+    //
+    // This carried a `* Math.sign(0.5 - u) * -1` factor until 2026-08-31, which flipped the
+    // slope halfway up each flank. A flank that rises and then falls back inside its own
+    // width nets out to a CREASE, not a rib: the batten got a highlight and a shadow within
+    // the 2" it occupies rather than one lit face and one shaded one, and half its relief
+    // cancelled (a board & batten batten integrated to 1.9 of a possible 4.2, a PBR rib to
+    // 6.4 of 11.8). It was survivable on the wide 12" PBR rib, which is why it stood; on the
+    // board & batten batten — a tenth of its module — it is the whole difference between an
+    // applied board and a scratch, which is how the house's north and south walls read.
     const square = Math.sin(Math.min(1, u * 2.2) * Math.PI * 0.5)
-      * Math.sin(Math.min(1, (1 - u) * 2.2) * Math.PI * 0.5)
-      * Math.sign(0.5 - u) * -1;
+      * Math.sin(Math.min(1, (1 - u) * 2.2) * Math.PI * 0.5);
     return round * (1 - profile.squareness) + square * profile.squareness;
   };
 

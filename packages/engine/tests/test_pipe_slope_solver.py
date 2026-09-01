@@ -145,13 +145,20 @@ def test_a_solved_endpoint_does_not_argue_with_the_field_it_came_from() -> None:
 
 #: Inverts as they resolve after the conversion, in PROJECT-FRAME feet (the resolved IR
 #: carries absolute elevations; the source authors them storey-relative). PR-B-COND
-#: reproduces its hand-authored numbers exactly; the two slab branches move by 0.004"-0.010",
+#: reproduced its hand-authored numbers exactly; the two slab branches move by 0.004"-0.010",
 #: which is the rounding that was in the old hand-computed numbers rather than a change of
 #: grade — the comments on all three already declared the uniform 0.3"/ft this now solves at.
+#:
+#: Two of them moved on 2026-08-31, when FX-B-SAUNA-FD moved onto FX-B-SAUNA-SH's centre
+#: line (y 12'-9" -> 12'-0 3/16"). PR-B-SAUNA-DRAIN reaches the drain by a jog now instead
+#: of on the long leg, so index 2 is the drain rather than the corner — the total plan run,
+#: and therefore every other invert on the run, is unchanged. PR-B-COND's north leg is
+#: 8 13/16" shorter because its air gap followed the receptor, which lifts index 3 (the head
+#: of the boxed chase's drop) by 0.22".
 _PINNED_FT = {
-    "PR-B-COND": [-1.675, -1.9, -2.0125, -2.10625, -8.36979],
+    "PR-B-COND": [-1.675, -1.9, -2.0125, -2.08789, -8.36979],
     "PR-B-BATH-DRAIN": [-9.11979, -9.87779, -9.99446, -10.10696, -10.20779],
-    "PR-B-SAUNA-DRAIN": [-8.95312, -9.83479, -9.85315, -9.90836, -10.17079],
+    "PR-B-SAUNA-DRAIN": [-8.95312, -9.83479, -9.89, -9.90836, -10.17079],
 }
 
 

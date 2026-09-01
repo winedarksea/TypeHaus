@@ -28,7 +28,8 @@ BASEMENT_FIXTURES = (
             room="RM-B-SAUNA", position=pt(ft(15, 8.5), ft(12, 0.1875)),
             wall_ref="W-B-CS"),
     Fixture(uid="CBQ803AAAA", tag="FX-B-SAUNA-FD", type_ref="FX-FLOOR-DRAIN",
-            room="RM-B-SAUNA", position=pt(ft(13, 6), ft(12, 9)), wall_ref="W-B-CS"),
+            room="RM-B-SAUNA", position=pt(ft(13, 6), ft(12, 0.1875)),
+            wall_ref="W-B-CS"),
     # RM-B-BATH (stair-foot bath, 3'-0" deep): each fixture backs an end wall so depth runs
     # along the 7'-0" length. WC is floor-mounted (owner's call, 2026-07-30), not wall-hung,
     # since the west end is 12" cast concrete and a wall-hung carrier would cost 6 1/2" of

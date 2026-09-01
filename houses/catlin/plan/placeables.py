@@ -622,7 +622,7 @@ MAIN_PLACEABLES = [
     # one off ED-M-BED-RC1; y=9'-3" holds the foot zone clear of that same pair. This is the
     # one bedroom where the queen keeps all three zones whole with room left over.
     Furniture(uid="CMB701AAAA", tag="FURN-M-BED", type_ref="FURN-BED-KING", room="RM-M-BED",
-              position=pt(m(2.5945), m(2.89975))),
+              position=pt(m(2.58782), m(2.80531))),
 
     # --- mudroom (RM-M-MUDROOM), converted from storage 2026-07-28 --------------------
     # Both mudroom closets are now framed rooms, not furniture (RM-M-MECH 2026-07-28,

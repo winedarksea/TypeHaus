@@ -11,12 +11,12 @@ import type {
 } from "../../model/types";
 import { layerVisibilityGroupOf, type LayerVisibilityGroup } from "../../model/visibility";
 import {
-  authoredAppearance, floorSurface, materialColor, type MaterialAppearance,
+  authoredAppearance, finishBaseColor, floorSurface, materialColor, type MaterialAppearance,
   type ResolvedNordicPalette,
 } from "../../nordic/palette";
 import {
   applyDeckBoardUv, createDeckBoardMaterial, createStandingSeamMaterial,
-  isAluminumDeckBoard, isStandingSeam,
+  isAluminumDeckBoard, isStandingSeam, metalPanelProfileForFinish, SEAM_PROFILE,
 } from "../materials";
 import { buildMembers, isRoofFramingMember, memberColor, type SkinLine } from "../members";
 import {
@@ -28,7 +28,8 @@ import {
   type ProjectVertex,
 } from "../planGeometry";
 import {
-  aboveStructureLayers, boundaryEdges, layerInsetRect, roofOffsetter, roofPlaneTriangles,
+  aboveStructureLayers, applyStandingSeamRoofUv, boundaryEdges, layerInsetRect, roofOffsetter,
+  roofPlaneTriangles,
 } from "../roofGeometry";
 import { createSolidMaterial } from "../solidMaterials";
 import { createSweepGeometry } from "../tubeGeometry";
@@ -428,19 +429,29 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
       faces.push([layerOffsetAt(a, base), layerOffsetAt(b, top), layerOffsetAt(a, top)]);
     }
     const geo = createProjectedSurfaceGeometry(faces, center);
-    // KNOWN GAP, recorded rather than fixed (2026-08-31): a ROOF plane is dispatched on the
-    // `isStandingSeam` SUBSTRING test alone and never consults the material's declared
-    // `finish`, which is what `metalPanelProfileForFinish` exists for and what every WALL
-    // panel goes through. It costs nothing today — every roof in this model is tagged
-    // "standing-seam" and the substring finds it — and it would silently draw a seam recipe
-    // on the day a roof wears a ribbed, corrugated or board & batten profile.
-    const seam = layer.function === "cladding" && isStandingSeam(layer.material);
+    // The same declared-finish-first dispatch every WALL panel goes through (→
+    // builders/walls.ts): the material's authored `finish` names the profile, and only one
+    // that declares nothing falls back to the `isStandingSeam` substring test. This was a
+    // recorded gap until 2026-08-31 — it cost nothing while every roof was tagged
+    // "standing-seam", and it would have drawn a seam recipe on a ribbed or corrugated roof.
+    const roofAppearance = authoredAppearance(layer.material, catalog?.materials);
+    const seamProfile = layer.function === "cladding"
+      ? (metalPanelProfileForFinish(roofAppearance?.finish)
+        ?? (isStandingSeam(layer.material) ? SEAM_PROFILE : null))
+      : null;
+    const seam = seamProfile !== null;
+    const roofPaint = finishBaseColor(roofAppearance?.finish);
+    // World-scaled UVs, applied to the geometry below: a roof plane carries none of its own
+    // (`createProjectedSurfaceGeometry` sets position and normal only), which is why the
+    // seam had nothing to sample and every roof read as flat paint.
     const mat = seam
-      ? createStandingSeamMaterial(mode, [Math.sqrt(roof.surface_area_m2), Math.sqrt(roof.surface_area_m2)])
+      ? createStandingSeamMaterial(mode, [1, 1],
+        roofPaint ? new THREE.Color(roofPaint).getHex() : 0xE8E8E2, true, seamProfile)
       : standardMaterial(new THREE.Color(materialColor(layer.material, palette)), mode, {
         roughness: mode === "nordic" ? NORDIC_ROUGHNESS.matte : 1,
         side: THREE.DoubleSide,
       });
+    if (seam) applyStandingSeamRoofUv(geo, roof, center, seamProfile);
     const mesh = makeSurfaceMesh(geo, mat);
     mesh.userData.layerGroup = layerVisibilityGroupOf(layer.function);
     parent.add(mesh);

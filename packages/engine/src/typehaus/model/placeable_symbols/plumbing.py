@@ -62,6 +62,41 @@ def toilet() -> Builder:
     return build
 
 
+def toilet_wall_hung() -> Builder:
+    """A tankless wall-hung bowl: ovoid china over the FULL depth, seat ring, actuator plate.
+
+    Deliberately not ``toilet()`` with the tank deleted. A wall-hung WC has no tank — the
+    cistern is in the wall — so the bowl gets the whole footprint and the only thing that
+    shows in the finished wall is the actuator plate, a narrow band at ``+y``.
+
+    The carrier frame is **not drawn here**, and must not be: it stands behind the finish
+    face, outside the type's declared W x D x H box that every symbol is held inside. The
+    frame is framing, and ``resolve/framing/carriers.py`` emits it as real members.
+    """
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        # The plate is a fraction of the depth with an absolute floor, so it stays a legible
+        # band at a 4" register's scale and does not swell into a tank at a sectional's.
+        plate_d = min(max(depth * 0.06, 0.010), depth * 0.2)
+        plate_cy = depth / 2 - plate_d / 2
+        bowl_ry = (depth - plate_d) / 2
+        bowl_cy = -depth / 2 + bowl_ry
+        bowl_rx = width * 0.42
+        strokes = [ellipse(0, bowl_cy, bowl_rx, bowl_ry, fill="porcelain"),
+                   ellipse(0, bowl_cy, bowl_rx * 0.68, bowl_ry * 0.74, weight=DETAIL_WEIGHT),
+                   rect(0, plate_cy, width * 0.55, plate_d, fill="metal")]
+        seat_t = min(0.03, height * 0.15)
+        plate_h = min(0.06, height * 0.35)
+        parts = [box(0, bowl_cy, 0.0, height - seat_t, bowl_rx * 1.85, bowl_ry * 1.85,
+                     "porcelain"),
+                 box(0, bowl_cy, height - seat_t, height, bowl_rx * 2, bowl_ry * 2,
+                     "porcelain"),
+                 box(0, plate_cy, height - plate_h, height, width * 0.55, plate_d, "metal")]
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
 # A fixture's catalog height is its overall height — spout included — so the deck plane sits
 # this far below it. Keeping the faucet inside the type's box is what lets the bbox invariant
 # hold for every symbol without special cases.
@@ -429,6 +464,7 @@ PLUMBING_SYMBOLS: dict[str, Builder] = {
     "hydrant": hydrant(),
     "laundry-sink": laundry_tub(),
     "toilet": toilet(),
+    "toilet-wall-hung": toilet_wall_hung(),
     "lavatory": lavatory(pedestal=True),
     "vanity": vanity(),
     "tub": tub(),

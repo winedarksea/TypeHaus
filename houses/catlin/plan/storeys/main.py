@@ -689,7 +689,8 @@ WALLS = [
     # now a built-in call booth (FURN-M-STUDY-BENCH / -DESK). STAGGERED, originally
     # STAGGERED_DOUBLE_GWB at STC 52, not INT_2X4_RC_DOUBLE_GWB, which reaches STC 54 in
     # 1 1/2" less room: a resilient wall you fasten millwork to is rigidly bridged back to
-    # no better than the bare STC 36, and FURN-M-STUDY-DESK's cleats are screwed THROUGH
+    # no better than the bare partition (STC 36 then; that preset is uninsulated and STC 34
+    # since 2026-08-31), and FURN-M-STUDY-DESK's cleats are screwed THROUGH
     # W-M-CLN2. Staggered studs take blocking and screws anywhere. Centred
     # (`alignment=None`), so each face moved 1 5/8" off the bare-partition retype.
     #
@@ -699,6 +700,8 @@ WALLS = [
     # material cost, not the insulation (`library/assemblies.py`). No STC is claimed for
     # the single-layer build, but the staggered studs are most of what the double layer's
     # STC 52 bought over the bare partition's 36 in the first place — see the library note.
+    # (That bare partition is UNINSULATED and STC 34 since 2026-08-31, so the gap this wall
+    # opens over it is wider now, not narrower.)
     # 8.0" -> 6.75", so each face moved back 0.625" toward its own room; RM-M-LAUNDRY and
     # RM-M-CLOSET's numbers quoted below are the double-gwb figures, 0.625" shy of current.
     #
@@ -708,6 +711,9 @@ WALLS = [
     # the thing it was always worth most for and the millwork argument was merely added to —
     # RM-M-LAUNDRY is on the far side, and a washer and a dryer are the loudest neighbours
     # any room in this house has. STC 36 to a spin cycle is what a call booth cannot have.
+    # ** NOTE THE LAUNDRY'S OTHER WALL. ** W-M-HS3, laundry to RM-M-LIVING, is still on the
+    # plain preset and has been UNINSULATED since 2026-08-31 (owner, knowingly). This wall
+    # protects the STUDY from the spin cycle; nothing protects the living room from it.
     # Since 2026-08-29 it also carries DU-M-ERV-R-STUDY's riser and REG-M-SUP4 in its 5 1/2"
     # cavity, which only a staggered or a 2x6 wall has room for.
     Wall(uid="CMW128AAAA", tag="W-M-LS", start_node="N-M-E2",

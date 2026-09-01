@@ -273,13 +273,39 @@ WALLS = [
     # same place is a worse answer than one extra cut stud, so the UNKNOWN stands and says so.
     Wall(uid="CSW120AAAA", tag="W-S-SS1", start_node="N-S-C1", end_node="N-S-B1",
          assembly="INT_2X4_PARTITION", top=ft(9)),
+    # ** W-S-SS2 IS INT_2X4_RC (2026-08-31), AND THE CHANNEL IS ON THE NORTH FACE. **
+    # RM-S-BED1 (sleeping) on the north, RM-S-STUDY2 (office) on the south — the one
+    # bedroom-facing partition left on the plain preset when INT_2X4_PARTITION lost its
+    # cavity that day. Same retype the five walls below took on 2026-08-30, same two
+    # authored fields, same reasoning; read that block for why `alignment` is not optional.
+    #
+    # ** WHICH FACE GETS THE CHANNEL IS NOT A COIN FLIP HERE — IT IS THE STAIR. ** Everything
+    # on this wall's SOUTH face is spoken for: ST-S2A's flight runs along it (its north face
+    # IS this wall), `ledger-W-S-SS2-stringer-1` is a 2x10 lag-fastened to it, the R311.7.8
+    # handrail is mounted on it, and `plan/storeys/attic.py` defines a void boundary as
+    # literally "W-S-SS2's south gwb face". Two things follow, and either alone settles it:
+    #   1. The channel-side face moves outboard 1/2". On the south that is INTO a stair well
+    #      cut to EXACTLY 3'-0", which would leave 35 1/2" against R311.7.1's 36" minimum —
+    #      a code FAIL bought for nothing.
+    #   2. A stringer ledger and a handrail lag-screwed THROUGH resilient channel short it
+    #      out. A channel bridged by fasteners is a channel that has stopped working, and it
+    #      is also the wrong way to hang a stair.
+    # So the channel faces RM-S-BED1. Acoustically that is a free choice — decoupling one
+    # leaf works whichever leaf it is — and the 1/2" comes out of BED1's real width, which
+    # `resolve/rooms.py` does not record (it polygonises from AXES and the axis does not
+    # move under this alignment, so no area, glazing or egress verdict changes).
+    # Nothing is hosted on either face: no device, fixture, luminaire or MEP run names this
+    # wall, so unlike the 2026-08-30 block there is nothing to follow the face.
     Wall(uid="CSW121AAAA", tag="W-S-SS2", start_node="N-S-B1", end_node="N-S-E1",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_RC", interior_room="RM-S-BED1", top=ft(9),
+         alignment=face("stud-ext", offset=inch(-1.75))),
     # --- east bedroom block ------------------------------------------------------
     #
     # ** THE FIVE SLEEPING-SIDE PARTITIONS ARE INT_2X4_RC (2026-08-30). ** They were
-    # INT_2X4_PARTITION at STC 36 — a bedroom-to-bedroom wall you can hold a conversation
-    # through, and three corridor walls between the stair head and every bedroom door.
+    # INT_2X4_PARTITION, then at STC 36 with a batt in it — a bedroom-to-bedroom wall you
+    # can hold a conversation through, and three corridor walls between the stair head and
+    # every bedroom door. (That preset is UNINSULATED and STC 34 since 2026-08-31, which
+    # only sharpens the argument for this retype: there is no batt left to fall back on.)
     # INT_2X4_RC is the same 2x4 stud and the same 5/8" board with 1/2" resilient channel on
     # ONE face: STC 48, twelve points, and 12 points is the difference between "audible" and
     # "not a nuisance" on every published scale. W-S-BW4 is NOT retyped — it faces
@@ -354,7 +380,7 @@ WALLS = [
     # single-stud INT_2X4_PARTITION, because a wall whose far face carries a vanity and a
     # bath is the one the sleeper hears through — the staggered studs decouple the two
     # faces even without a second gypsum layer (`library/assemblies.py`, no STC claimed,
-    # a comparable single-layer build lists around STC 48 against the partition's 36).
+    # a comparable single-layer build lists around STC 48 against the partition's 34).
     # Single 5/8" gypsum each face since 2026-08-30 (was two): the double layer only buys
     # a few more points over the staggered studs' own decoupling, at a gypsum-heavy cost
     # (`prices.toml`), so it was the more expensive half of the assembly to cut, not the
