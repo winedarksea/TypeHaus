@@ -447,14 +447,6 @@ two elevations, which is exactly how a drain drop has always been written.
 - **No `Equipment` field records a filter or an access panel anywhere in the model.**
   `REG-T-HP-RET` is a filter-back grille and the only serviceable face on System 1; the
   model knows it as a rectangle with a `RETURN_AIR` port.
-- **`mep.duct_soffit_occupancy` cannot grade a vertical leg entering a soffit.** It bands a
-  segment as `z_mid ± depth/2`, which for a riser is halfway through the deck, and it takes
-  a vertical leg's plan footprint as `width x width`.
-- **`code.R305_ceiling_height` derives from `FloorSystem`/`Slab` and cannot see a `Soffit`.**
-  `RM-S-HALL` reports 8'-11 1/2" against a 7'-10" box, and `RM-S-STUDY2` now reports the same
-  against a 7'-7" one. Both clear R305.1 by inspection; neither is measured.
-- **`ED-S-STUDY2-STAIR-SC1` at (25'-0", 8'-7 5/8"), z 15'-0", sits 3'-1" below its own tread**
-  and 2'-0" under the stringer soffit — it is under `ST-S2A`, not beside it.
 
 ### ERV residuals (2026-08-25)
 
@@ -475,7 +467,10 @@ two elevations, which is exactly how a drain drop has always been written.
   committed to; there is no airflow solver here and there will not be one. **Check it against
   0.4" w.g., not 0.2":** HVI certifies the B210E75RT at 206 cfm net supply at 0.4" (HVI ID
   2004940), and the 0.2"/210 cfm figure several comments quote is the model-name point off
-  the manufacturer's fan curve, not the rating point. Those comments want correcting.
+  the manufacturer's fan curve, not the rating point. **The comments were corrected
+  2026-09-01** at 9 sites; `ventilation_cfm=210` is deliberately still authored (moving it to
+  206 takes N1103.6 from 210/203 to 206/203 and breaks `test_catlin_erv`), so the pressure-drop
+  check itself is what is left here.
 
 ## Phase 2 — Complete Catlin junctions (deferred by decision 2026-08-02 — construction-rule authoring)
 
@@ -698,8 +693,78 @@ the future.
   engine *enforces* the step, and the curb's height is a literal on two walls.
 - The french drains can likely be a type of form-a-drain product (a drain that doubles as footing form). We also can probably have fewer drains slightly.
 - The frost protection and the thermal breaks are wrong around the brick footing FT-B-BRICK. Brick is cold, so thermal breaks need to be on the inward side of it (possible this footing uses ICF)
-- I am reasonably certain that FX-S-BATH1-LAV is in the way of the door swing for the bathroom.
-- Sink FX-A-STUDIO-BAR-SINK is floating off the floor and doesn't appear to have a plumbing connection, nor do the bathroom fixtures for that attic bathroom.
+- ~~FX-S-BATH1-LAV is in the way of the bathroom door swing.~~ **NOT A CONFLICT — measured
+  and struck 2026-09-01.** Against the resolved quarter-disc `swing_clearance` polygon (not
+  the bbox): vanity x 95.62..116.62, y 345.88..393.88; `D-S-BATH1`'s swing x 84..114,
+  y 318..348. **Intersection area 0.0 sf, minimum distance 0.21".** The BOUNDING BOXES
+  overlap 2.12" in y, which is exactly why it reads wrong on a plan sheet, and
+  `integrity.door_swing_conflict` tests the arc and is correctly silent. Recorded in
+  `plan/fixtures.py` — including that 0.21" is now the tighter of the two margins on that
+  cabinet, ahead of the 0.62" shelf scribe.
+- ~~FX-A-STUDIO-BAR-SINK is floating and unplumbed, and so are the attic bath fixtures.~~
+  **HALF FALSE, AND THE REAL DEFECT WAS DIFFERENT — 2026-09-01.** The plumbing is complete:
+  `PR-A-BAR-DRAIN` (2" PVC, 10.5 LF, 1.0 DFU against 1.25" required), supply at
+  `plan/mep_supply.py:576,583`, vent at `plan/mep_venting.py:191-197`. The attic bath
+  fixtures are neither floating nor unserved — `FX-A-STUBATH-WC/LAV/SH` carry no `mount=` so
+  they default to FLOOR on the attic deck, and `PR-A-STUBATH-DRAIN` names all three. That
+  clause was simply wrong.
+  The real defect: the bar sink is `Mount(WALL, elevation=27")` with **no casework under
+  it** — the same mount `FX-M-KITCH-SINK` survives only because a sink base stands under it.
+  Fixed with `FT-STUDIO-BAR-BASE-2418` + one `Furniture` row. It is 18" deep, not the
+  catalog's 24": measured against `D-A-STUBATH`'s arc, 24" puts 52 in^2 inside it, 21" puts
+  15 in^2, and 18" clears by 0.42".
+
+## Found while doing the 2026-09-01 batch — recorded so they are not rediscovered
+
+- **`mep.duct_connectivity` is WRITTEN AND NOT REGISTERED, pending one authoring decision.**
+  The check lives at `checks/mep/duct_connectivity.py`; its line in `checks/mep/__init__.py`
+  is deliberately absent. It grades every duct end against four honest terminations — another
+  duct (matched in plan AND elevation), a machine footprint, a register naming this run within
+  a 36" boot reach, or outdoors — and on catlin it reports **64 PASS and 2 FAIL of 66
+  endpoints**. The two are real:
+
+      DU-ERV-OA  end   at (1'-11", 33'-7 1/2"), z -19 7/16"
+      DU-ERV-EA  start at (1'-11", 34'-8"),     z -19 7/16"
+
+  Both drop the NW chase to the basement manifolds' port level and then stop. Nothing carries
+  either to `EQ-B-ERV` (x 35..60, y 355..377) or to `EQ-B-ERV-MAN-SUP`/`-EXH` (x 66..90). The
+  file's own comment says each is "a riser out of the basement manifold", so the intent is
+  clear and the geometry does not implement it.
+  **This is a stop-and-ask, not an invention.** It is not the "author a leg" the batch plan
+  assumed — that plan predicted five orphans and named a different five; a correct
+  implementation finds these two, and the other candidates land on a duct, a machine or a
+  legitimate boot. Closing these needs the ERV's port faces and a route through a basement
+  that is already crowded, which is a design decision. Register the check in the same commit
+  that authors the two runs; registering it first puts catlin at 2 FAIL.
+
+- **A plan-only proximity test is not a duct joint.** The first draft of the above matched
+  duct ends in plan alone and reported a basement riser as connected to a SECOND-STOREY run
+  231" above it, because two runs on different floors share a plan point constantly. The
+  elevations must not be required to be *equal* either — a riser is one plan point spanning a
+  z range. The rule that works is: the end's z falls within the other run's own z extent,
+  widened by the joint tolerance. Same trap applies to the equipment probe.
+
+- **`concrete-window-bucks-and-blockouts` named the wrong two openings.** Its comment claimed
+  "the sunken garden's patio door and the sauna window, both in the basement's daylight wall".
+  Driven off the new `openings.host_structure`, the two openings that actually pierce a
+  concrete wall are **D-B-GYM and D-B-NE**, through `FOUNDATION_WALL_12_INT`. `D-B-PATIO` is
+  hosted by `W-B-S3-FR` (`CATLIN_GARDEN_FRAMED_2X6`) and `WIN-B-SAUNA` by `W-B-S2-FR`
+  (`SAUNA_LINER_ON_GARDEN_FRAMED`) — framed walls standing in FRONT of the pour, which need a
+  rough opening, not a buck. The count was right for the wrong reason.
+
+- **No check is elevation-aware about a luminaire and the stair it lights.**
+  `ED-S-STUDY2-STAIR-SC1` sat 2'-11 1/2" BELOW its own tread and 2'-0" under the stringer
+  soffit, with its plan point inside the stair outline, and `haus check` was silent:
+  `code.R303_7_stairway_illumination` counts luminaires serving the flight (nine for ST-S2A),
+  `electrical.room_lighting` counts by room, and the fc advisory is planar. Nothing compares a
+  wall-mount elevation against the stair. Worth a check.
+
+- **A rate corrected by a ratio is a defect, not a workaround.** Four price rows carried
+  hand-applied corrections (`x 35/37`, `x 131.4/143.4`) because the takeoff had no field to
+  filter on. Every one drifts silently the moment the model changes — which is the actual
+  failure mode, not the arithmetic. All four are now driven off a real predicate with the
+  researched rate restored. **When a driver cannot express a scope, add the field; do not
+  take the correction in the rate.**
 
 ## Found while doing the 2026-08-23 batch — recorded so they are not rediscovered
 
@@ -721,12 +786,6 @@ the future.
   blocks the `RM-S-PLANT` floor drain: `library/placeables/fixtures.py:108-110` says the
   existing `FX-FLOOR-DRAIN` type is for wet-room floors and *"a floor drain in a room that
   stays dry for months wants a primer line, which would be a different type."*
-- **`ResolvedRoom` carries neither clear height nor glazing ratio** (`resolve/model.py`).
-  Every consumer re-derives them and neither reaches `model.json` — which is why the glazing
-  table above had to be scraped out of check messages rather than read off the model.
-- **Four `AlarmKind` members only** (SMOKE / CO / COMBO / HEAT). No leak or freeze kind, and
-  `emit/draw/floorplan.py:316-317` is a hard index that `KeyError`s the whole plan sheet on a
-  new member without a label — so adding one is a two-file change, not a one-line enum edit.
 - **The HPWH has no combustion/air-volume provision.** An 80-gal Rheem ProTerra in a 160 sf
   mechanical room has a manufacturer air-volume requirement, and no `DuctRun`, `Register` or
   louvre is authored for it. Nothing in `haus check` grades it. The room got 7.7 sf smaller
@@ -832,23 +891,6 @@ for the true quantity and the row's comment says so. Each is really a takeoff-co
 takeoff change alters quantities for **every** house, so each deserves its own commit with its
 own test rather than riding inside a documentation restructure.
 
-- **Exhaust ducts carry no "terminates at a room" flag.** `[allowances]
-  hvac-exhaust-boot-transitions` has to filter `ducts.runs[system=exhaust,diameter_in=3.0]`
-  to exclude `DU-ERV-RISER-EXH` and `DU-ERV-EA`, which are trunks. Diameter is a proxy for the
-  real predicate and it will break silently the day a 4" radial is drawn. A `terminal` (or
-  `serves_room`) field on the duct row converts the driver in a line.
-- **`stair_finish` bills nosings on a stair in unconditioned space.** `ST-G-SERVICE` is a
-  four-riser KDAT service stair in the garage with no finish flooring meeting it at either
-  end; it contributes 12.0 of the 143.4 tread LF that
-  `[allowances] finish-transitions-and-stair-nosings` is driven off.
-  `takeoff/stairs.py` should skip a stair whose storey/room is unconditioned.
-- **`openings` has no "takes door hardware" predicate.** `finish-door-hardware` is driven off
-  all 37 doors, of which the overhead door (its operator is its own row) and the pocket door
-  (its hardware ships with the frame kit) take none. The rate carries a 35/37 correction that
-  drifts the moment a door is added.
-- **`opening_takeoff` does not report the host wall's assembly**, so nothing in the BOM can say
-  an opening lands in a CONCRETE wall — which is what
-  `concrete-window-bucks-and-blockouts` wants to be driven off.
 - **No fabricated ROOF-truss profile exists.** `resolve/framing/profiles.py` has exactly one
   fabricated-member shape, `_RE_FLOOR_TRUSS` (`"<depth> floor truss"`). A trussed roof
   therefore resolves its chords as plain `2x4` sticks and bills at stick rates — which is why
