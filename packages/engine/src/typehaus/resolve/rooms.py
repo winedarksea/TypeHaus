@@ -3,12 +3,15 @@ derive the finish tier, and assert space-boundary zero-gap closure (#41)."""
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 from shapely.geometry import LineString, Point, Polygon
 from shapely.ops import polygonize, unary_union
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.model import ResolvedFinishZone, ResolvedModel, ResolvedRoom
+from typehaus.resolve.room_openings import room_glazing_areas
 
 
 def _storey_faces(plan: PlanModel, storey_tag: str) -> list[Polygon]:
@@ -149,15 +152,66 @@ def resolve_rooms(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             if clear.is_empty or clear.geom_type != "Polygon":
                 clear = face
             ring = [(x, y) for x, y in clear.exterior.coords[:-1]]
-            model.rooms.append(
-                ResolvedRoom(
-                    uid=room.uid, tag=room.tag, storey=storey.tag,
-                    occupancy=room.occupancy.value, conditioned=room.conditioned,
-                    clear_face=ring, area_m2=clear.area, floor_finish=room.floor_finish,
-                    finish_zones=_finish_zones(plan, storey.tag, room, clear),
-                )
+            head, soffit_m2 = _clear_head(plan, model, storey, clear)
+            resolved = ResolvedRoom(
+                uid=room.uid, tag=room.tag, storey=storey.tag,
+                occupancy=room.occupancy.value, conditioned=room.conditioned,
+                clear_face=ring, area_m2=clear.area, floor_finish=room.floor_finish,
+                finish_zones=_finish_zones(plan, storey.tag, room, clear),
+                clear_height_m=head, soffit_area_m2=soffit_m2,
             )
+            glazing = room_glazing_areas(plan, model, resolved)
+            if glazing is not None:
+                resolved = replace(resolved, glazed_area_m2=glazing[0],
+                                   operable_glazed_area_m2=glazing[1])
+            model.rooms.append(resolved)
     return findings
+
+
+def _clear_head(plan: PlanModel, model, storey, clear: Polygon) -> tuple[float | None, float]:
+    """``(clear height above this storey's datum, soffited area)`` for a room face.
+
+    **The soffit is the point.** ``ceiling_over._is_ceiling_deck`` admits a ``FloorSystem``
+    and a non-walking ``Slab`` and nothing else, which is exactly why a dropped duct box was
+    invisible to every question about head height in this engine: R305 measured the deck two
+    feet above the box and passed a room you cannot stand up in half of. ``ResolvedSoffit``
+    has carried ``z0_m`` — the finished underside — all along, so nothing had to be derived,
+    only looked at.
+
+    The height returned is the LOWEST underside over any part of the room, so it is the
+    number a "can you stand here" question wants at its worst point. ``soffit_area_m2`` is
+    what that low head actually covers, which is what keeps the answer usable: SF-S-HP1
+    covers 43 sf of RM-S-STUDY2's 160, and a room is not disqualified by a duct box in one
+    corner. A consumer that needs to grade the two areas separately has both numbers; one
+    that only needs "how low does it get" has the height.
+
+    Height is measured from the storey datum, which omits the subfloor sheet standing on the
+    joists — the same known gap ``resolve.rooms.room_floor_elevation`` carries, so the
+    derived height reads 3/4" GENEROUS on a joisted floor. Recorded so nobody reads it as
+    exact.
+    """
+    from typehaus.resolve.ceiling_over import ceiling_decks_over, ceiling_underside_m
+
+    datum = storey.elevation.meters
+    undersides = [value for value in
+                  (ceiling_underside_m(deck_storey, deck)
+                   for deck_storey, deck in ceiling_decks_over(plan, storey.tag, clear))
+                  if value is not None]
+    soffit_m2 = 0.0
+    for soffit in getattr(model, "soffits", ()):
+        if soffit.storey != storey.tag or len(soffit.outline) < 3:
+            continue
+        box = Polygon(soffit.outline)
+        if not box.is_valid:
+            continue
+        covered = box.intersection(clear).area
+        if covered <= 1e-9:
+            continue
+        soffit_m2 += covered
+        undersides.append(soffit.z0_m)
+    if not undersides:
+        return None, soffit_m2
+    return min(undersides) - datum, soffit_m2
 
 
 def _finish_zones(plan: PlanModel, storey_tag: str, room,

@@ -16,8 +16,7 @@ from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.registry import CheckContext
 from typehaus.findings import Finding
 from typehaus.model.enums import Occupancy
-from typehaus.quantities import inch
-from typehaus.resolve.geometry import opening_center
+from typehaus.resolve.room_openings import room_windows, rooms_by_storey, wall_is_exterior
 
 #: R202's definition of habitable space — "a space in a building for living, sleeping, eating
 #: or cooking" — whose very next sentence excludes bathrooms, toilet rooms, closets, halls,
@@ -64,54 +63,23 @@ def _room_storey(ctx: CheckContext, room_tag: str):
 
 def _room_windows(ctx: CheckContext, room, point_type, polygon_type, *,
                   exterior_only: bool = False) -> list:
-    """Find windows on the room's bounding wall, not any window in the building.
+    """Re-export of ``resolve.room_openings.room_windows`` — see there for the reasoning.
 
-    ``exterior_only`` decides whether an *interior* window counts, and the two callers of
-    this helper genuinely want different answers — which is why it is a flag rather than a
-    behaviour change.
-
-    **R310 passes it True, and that is a safety fix, not a refinement.** The band below
-    selects on proximity to the room boundary and nothing else, so before this flag existed
-    an interior transom or a borrowed-light sash of adequate size was credited to a sleeping
-    room as its *emergency escape opening*. R310.1's subject is an opening "opening directly
-    into a public way, yard or court"; a window into the next room reaches none of those, and
-    a false pass there is the one class of false pass this engine cannot afford. The exterior
-    test is ``_wall_is_exterior`` — derived from what has modeled space on each side, never a
-    tag prefix (see its own docstring).
-
-    **R303.1 leaves it False, deliberately.** Borrowed light through an interior opening is
-    not what R303.1's 8% is measured on either, but that rule already adjudicates its own
-    Exception 1 and reports the shortfall in the finding text, so the conservative default
-    there is to keep counting what the room can see and let the exception do the arguing. The
-    day this house authors real borrowed-light glazing, that choice is worth revisiting on
-    its own evidence — it is recorded here rather than left to be rediscovered.
+    It moved down into ``resolve`` on 2026-09-01 because ``resolve_rooms`` needs it to total
+    a room's glazing, and checks import resolve, never the reverse. The old signature is kept
+    here so the R310 and R303.1 callers read unchanged; ``point_type`` and ``polygon_type``
+    were only ever a way of deferring the shapely import and are now ignored.
     """
-    if room is None or not room.clear_face:
-        return []
-    face = polygon_type(room.clear_face)
-    # Wall axes normally lie just beyond the clear-face polygon.  The generous 12" band
-    # reaches the wall's exterior centerline without accidentally claiming a window in a
-    # neighboring room separated by an interior partition.
-    boundary_band = face.boundary.buffer(inch(12).meters)
-    # Built once per call, not once per opening: `_wall_is_exterior` rebuilds every room
-    # polygon in the house when it is handed no index, and this loop asks it 80 times.
-    rooms_by_storey = _rooms_by_storey(ctx) if exterior_only else None
-    windows = []
-    for opening in ctx.model.openings:
-        if opening.is_door or opening.type_ref is None:
-            continue
-        wall = ctx.model.wall(opening.host_wall)
-        if wall is None or wall.storey != room.storey:
-            continue
-        if exterior_only and not _wall_is_exterior(ctx, wall, rooms_by_storey):
-            continue
-        point = opening_center(wall, opening)
-        if point is None:
-            continue
-        center = point_type(*point)
-        if boundary_band.covers(center):
-            windows.append(opening)
-    return windows
+    del point_type, polygon_type
+    return room_windows(ctx.model, room, exterior_only=exterior_only)
+
+
+def _rooms_by_storey(ctx: CheckContext) -> dict[str, list]:
+    return rooms_by_storey(ctx.model)
+
+
+def _wall_is_exterior(ctx: CheckContext, wall, rooms_by_storey_index=None) -> bool:
+    return wall_is_exterior(ctx.model, wall, rooms_by_storey_index)
 
 
 def _foundation_footprint(ctx: CheckContext):
@@ -149,54 +117,6 @@ def _storey_is_below_grade(ctx: CheckContext, storey) -> bool | None:
     if grade is None:
         return None
     return storey.elevation.meters + _BELOW_GRADE_MARGIN_M <= grade.meters
-
-
-# How far past a wall's own face to probe for a room on that side. Generous enough to clear
-# lining and junction resolution, tight enough not to reach across a closet.
-_WALL_SIDE_PROBE_M = 0.15
-
-
-def _rooms_by_storey(ctx: CheckContext) -> dict[str, list]:
-    from shapely.geometry import Polygon
-
-    out: dict[str, list] = {}
-    for room in ctx.model.rooms:
-        if len(room.clear_face) >= 3:
-            out.setdefault(room.storey, []).append((room, Polygon(room.clear_face)))
-    return out
-
-
-def _wall_is_exterior(ctx: CheckContext, wall, rooms_by_storey=None) -> bool:
-    """Does this wall have modeled space on one side only?
-
-    Derived, never named: there is no ``Assembly.exterior`` flag, and a tag-prefix list is
-    the exact mistake the energy check had to unwind — one house's naming convention
-    compiled into the engine. A wall with a room on both sides is a partition; a wall with a
-    room on one side is the envelope. Foundation walls count as exterior outright: what is
-    on the other side of them is earth.
-    """
-    from shapely.geometry import Point
-
-    if wall.is_foundation:
-        return True
-    rooms = (rooms_by_storey if rooms_by_storey is not None
-             else _rooms_by_storey(ctx)).get(wall.storey, ())
-    if not rooms:
-        return False
-    (sx, sy), (ex, ey) = wall.axis
-    run = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5
-    if run <= 1e-9:
-        return False
-    nx, ny = -(ey - sy) / run, (ex - sx) / run  # unit normal
-    reach = wall.thickness_m / 2.0 + _WALL_SIDE_PROBE_M
-    sides = [False, False]
-    for t in (0.25, 0.5, 0.75):
-        mx, my = sx + (ex - sx) * t, sy + (ey - sy) * t
-        for index, sign in enumerate((1.0, -1.0)):
-            probe = Point(mx + nx * reach * sign, my + ny * reach * sign)
-            if any(poly.covers(probe) for _room, poly in rooms):
-                sides[index] = True
-    return sides[0] != sides[1]
 
 
 def _min_clear_width(ring, *, ceiling_m: float = 4.0) -> float | None:

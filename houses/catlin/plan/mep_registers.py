@@ -11,7 +11,8 @@
 # plan/mep_hvac.py.
 #
 # ** THE ERV WAS 55 CFM OUT OF BALANCE UNTIL 2026-08-31, ON THE EXTRACT SIDE. ** EQ-B-ERV is
-# a BALANCED machine rated 210 cfm (plan/mep_erv_types.py::EQ-T-BROAN-B210E75RT), and the
+# a BALANCED machine authored at 210 cfm and HVI-certified at 206 at 0.4" w.g.
+# (plan/mep_erv_types.py::EQ-T-BROAN-B210E75RT explains which number is which), and the
 # supply side was authored to exactly that: 110 cfm across the six REG-*-SUP* terminals plus
 # the 100 cfm DU-S-ERV-HP-FEED puts into EQ-S-ERV-MIX. The extract side summed to 265. That
 # is not a rounding error — it is 55 cfm of continuous depressurisation in a house tight

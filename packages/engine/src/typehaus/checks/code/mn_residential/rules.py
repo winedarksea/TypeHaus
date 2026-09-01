@@ -162,33 +162,64 @@ def _derived_clear_height(ctx: CheckContext,
                           room: Any) -> tuple[Length | None, str]:
     """``(clear height, source phrase)`` for a room with no authored ceiling.
 
-    The height is measured from the room's FLOOR LEVEL, which is taken as its storey datum.
-    That omits the subfloor sheet standing on the joists — a known and deliberate gap
+    **A field read since 2026-09-01, and that is the fix.** This used to walk
+    ``ceiling_decks_over`` here, which meant R305 measured to the underside of the DECK and
+    nothing else — and ``ceiling_over._is_ceiling_deck`` admits a ``FloorSystem`` and a
+    non-walking ``Slab`` only, so a ``Soffit`` was invisible to it. A room with a dropped
+    duct box was graded against the deck two feet above that box. ``resolve.rooms`` now
+    derives the height once, over decks AND soffits, and every consumer reads the same
+    number: see ``ResolvedRoom.clear_height_m``.
+
+    The height is measured from the room's FLOOR LEVEL, taken as its storey datum. That
+    omits the subfloor sheet standing on the joists — a known and deliberate gap
     (``resolve.rooms.room_floor_elevation`` shares it, and closing it moves every placeable
     in every wood-floored room), so the derived height reads 3/4" GENEROUS on a joisted
-    floor. Against a 7'-0" minimum on rooms clearing it by more than a foot, that is not the
-    error worth stopping this pass for; it is recorded here so nobody reads the number as
-    exact.
+    floor. Recorded so nobody reads the number as exact.
+
+    ** THE SOFFITED AREA IS DELIBERATELY NOT A SEPARATE MINIMUM, AND THIS IS THE DECISION. **
+    A flat "lowest point in the room must clear 7'-0"" would be wrong, not merely strict:
+    SF-S-HP1 covers 47 sf of RM-S-STUDY2's 159 sf, and R305.1 has never asked that every
+    square foot of a room be full height — R305.1's own sloped-ceiling exception and R304.3
+    both say the opposite, that floor under a low head simply does not count toward the
+    required area. The honest reading of a duct box is the same one
+    ``_follow_roof_ceiling_finding`` applies to a rake: grade the required floor area, and
+    let the room spend its surplus on the low bit. So a room whose UN-SOFFITED area still
+    makes R304.1's 70 sf is graded on the deck height, and only a room that cannot is
+    graded on the soffit. ``ResolvedRoom.soffit_area_m2`` is what makes that decidable, and
+    catlin's two subjects (RM-S-HALL under SF-S-DUCT, RM-S-STUDY2 under SF-S-HP1) both keep
+    well over 70 sf clear of their boxes.
     """
-    from shapely.geometry import Polygon
-
-    from typehaus.resolve.ceiling_over import ceiling_decks_over, ceiling_underside_m
-
     storey = _room_storey(ctx, room.tag)
     resolved = next((item for item in ctx.model.rooms if item.tag == room.tag), None)
     if storey is None or resolved is None or len(resolved.clear_face) < 3:
         return None, "room does not resolve a clear face"
-    face = Polygon([tuple(point) for point in resolved.clear_face])
-    decks = ceiling_decks_over(ctx.plan, storey.tag, face)
-    if not decks:
+    if resolved.clear_height_m is None:
         return None, "no ceiling element over the room"
+    unsoffited = resolved.area_m2 - resolved.soffit_area_m2
+    if resolved.soffit_area_m2 > 1e-9 and unsoffited + 1e-9 >= _MIN_HABITABLE_AREA_M2:
+        deck = _deck_only_clear_height(ctx, storey, resolved)
+        if deck is not None:
+            return m(deck), (
+                f"clear under the deck; {unsoffited * SF_PER_M2:.0f} sf clear of "
+                f"{resolved.soffit_area_m2 * SF_PER_M2:.0f} sf of soffit, which leaves more "
+                f"than R304.1's required floor area at full height")
+    return m(resolved.clear_height_m), "clear under the lowest ceiling element, soffits included"
+
+
+def _deck_only_clear_height(ctx: CheckContext, storey: Any, resolved: Any) -> float | None:
+    """Height to the deck alone, ignoring soffits — the surplus-area case above."""
+    from shapely.geometry import Polygon
+
+    from typehaus.resolve.ceiling_over import ceiling_decks_over, ceiling_underside_m
+
+    face = Polygon([tuple(point) for point in resolved.clear_face])
     undersides = [value for value in
-                  (ceiling_underside_m(deck_storey, deck) for deck_storey, deck in decks)
+                  (ceiling_underside_m(deck_storey, deck)
+                   for deck_storey, deck in ceiling_decks_over(ctx.plan, storey.tag, face))
                   if value is not None]
     if not undersides:
-        return None, "ceiling element over the room has no derivable underside"
-    tags = ", ".join(sorted({deck.tag for _storey, deck in decks}))
-    return m(min(undersides) - storey.elevation.meters), f"clear under {tags}"
+        return None
+    return min(undersides) - storey.elevation.meters
 
 
 def _follow_roof_ceiling_finding(ctx: CheckContext, room, minimum: Length) -> Finding:

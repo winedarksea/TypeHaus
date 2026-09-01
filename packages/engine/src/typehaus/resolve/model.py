@@ -730,6 +730,27 @@ class ResolvedRoom:
     # reached no viewer, emitter or takeoff. ``area_m2`` is the zone clipped to the room, so
     # a takeoff can subtract it from the room's field finish without re-intersecting.
     finish_zones: tuple[ResolvedFinishZone, ...] = ()
+    # --- derived head and glazing (2026-09-01) -------------------------------------------
+    # Three facts about the room that every consumer used to re-derive for itself, most of
+    # them only inside a check where nothing else could reach them.
+    #
+    # ``clear_height_m`` is floor to the LOWEST thing over the room — deck, slab, or SOFFIT.
+    # The soffit is the part that was missing everywhere: ``ceiling_over._is_ceiling_deck``
+    # admits a FloorSystem and a non-walking Slab and nothing else, so a dropped duct box
+    # was invisible to every question about head height. ``None`` where nothing derivable is
+    # overhead — a room under a roof rather than a deck answers through
+    # ``roof_headroom_areas`` instead, which is an area question, not a single height.
+    #
+    # ``glazed_area_m2`` / ``operable_glazed_area_m2`` are the room's glass and the part of
+    # it that opens — **two areas, not a ratio, and neither pre-multiplied by a code
+    # factor**. R303.1 states two independent tests (8% glazed, 4% openable with operable
+    # units at half) and both must stay expressible; the halving is the check's, not the
+    # model's. ``None`` means a window type did not resolve, which is not the same fact as
+    # zero glazing and must not be flattened into it.
+    clear_height_m: float | None = None
+    soffit_area_m2: float = 0.0
+    glazed_area_m2: float | None = None
+    operable_glazed_area_m2: float | None = None
 
 
 @dataclass(frozen=True)

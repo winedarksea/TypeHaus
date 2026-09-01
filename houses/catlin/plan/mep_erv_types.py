@@ -25,8 +25,22 @@ EQUIPMENT_TYPES_ERV = (
     # OUTDOOR_AIR/EXHAUST_AIR are new `Service` members (2026-08-25). Until they existed the
     # outdoor side of this machine could not be spelled at all, and plan/electrical.py said
     # so in a comment — an ERV with no intake and no discharge is not modeled.
+    # ** 210 IS THE MODEL-NAME NUMBER; 206 AT 0.4" W.G. IS THE CERTIFIED ONE. **
+    # HVI certifies this machine at 206 cfm net supply at 0.4" w.g. (HVI ID 2004940). The
+    # "210 CFM at 0.2 in. w.g." this file and plan/mep_erv.py used to quote as the rating
+    # point is a point on the fan curve — the one the model number is named for — and taking
+    # it as the rating point understated the static budget by about half.
+    #
+    # ** `ventilation_cfm` IS DELIBERATELY LEFT AT 210 (2026-09-01). ** It is not an
+    # oversight and it is not a rounding choice. Moving it to 206 moves a LIVE VERDICT:
+    # code.N1103_6_whole_house_ventilation reads 210 provided against 203 required, and at
+    # 206 it reads 206 against 203 — still passing, but on a 3 cfm margin instead of 7 — and
+    # tests/test_catlin_erv.py:30-33 asserts the current figure. Changing it is a ventilation
+    # decision with a test and a code verdict behind it, which is a different pass from
+    # correcting the prose. The name and the source string below carry the real number so
+    # nobody re-derives 0.2" from this row.
     EquipmentType(tag="EQ-T-BROAN-B210E75RT",
-                  name="Broan B210E75RT ERV, 210 CFM, 6\" top ports",
+                  name="Broan B210E75RT ERV, 206 CFM at 0.4\" w.g., 6\" top ports",
                   footprint=(inch(24.8), inch(21)), height=inch(21.6),
                   plan_symbol="erv",
                   product_ref="PROD-BROAN-B210E75RT",
@@ -36,7 +50,7 @@ EQUIPMENT_TYPES_ERV = (
                   # credit the ventilation term with heat the core does not recover on the
                   # day that sizes the equipment.
                   sensible_recovery_effectiveness=0.65,
-                  source="Broan B210E75RT published specifications: 210 CFM at 0.2 in. w.g., six-inch round top ports, 24.8 in. W x 21.6 in. H x 21 in. D, MERV 8 filtration standard (MERV 13 optional), SRE 81% at 32 F and 65% at -13 F. The -13 F figure is the one authored above; see the note there.",
+                  source="Broan B210E75RT. HVI-certified 206 CFM net supply at 0.4 in. w.g. (HVI ID 2004940) — that is the rating point. The manufacturer's '210 CFM at 0.2 in. w.g.' is the model-name point off the fan curve and is NOT the certified rating; quoting it as one halves the apparent static budget. Six-inch round top ports, 24.8 in. W x 21.6 in. H x 21 in. D, MERV 8 filtration standard (MERV 13 optional), SRE 81% at 32 F and 65% at -13 F. The -13 F figure is the one authored above; see the note there.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),
                          ServicePort(tag="supply", service=Service.SUPPLY_AIR,

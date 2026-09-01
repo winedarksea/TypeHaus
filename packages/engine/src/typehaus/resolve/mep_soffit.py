@@ -39,6 +39,13 @@ class SoffitOccupant:
     ``along`` is its extent down the box, ``across`` the band it takes up of the cavity's
     width, ``z`` its vertical band — all absolute, all project-frame, so two occupants can
     be compared directly instead of through a shared notion of "centre".
+
+    ``vertical`` marks a riser — a leg whose travel is up, not along. Its ``z`` is its own
+    two endpoints rather than a section depth about a mid-height, and it is *expected* to
+    leave the box through the top or bottom, which is the whole point of a riser. The depth
+    and z-band tests below are the ones that must not be applied to it; the width tests
+    still are, because a riser too wide for the cavity is as real a fault as a branch too
+    wide for it.
     """
 
     tag: str
@@ -46,6 +53,7 @@ class SoffitOccupant:
     along: tuple[float, float]
     across: tuple[float, float]
     z: tuple[float, float]
+    vertical: bool = False
 
     @property
     def across_width_m(self) -> float:
@@ -62,8 +70,9 @@ def _overlap(a: tuple[float, float], b: tuple[float, float]) -> float:
     return min(a[1], b[1]) - max(a[0], b[0])
 
 
-def _segment_band(a: tuple[float, float], b: tuple[float, float],
-                  width_m: float) -> tuple[tuple[float, float], tuple[float, float]] | None:
+def _segment_band(a: tuple[float, float], b: tuple[float, float], width_m: float,
+                  depth_m: float, riser_width_axis: str | None = None
+                  ) -> tuple[tuple[float, float], tuple[float, float]] | None:
     """The plan rectangle one duct segment sweeps, as ``((x0, x1), (y0, y1))``.
 
     Width lies perpendicular to travel, which is the whole reason this is per-segment: the
@@ -71,17 +80,59 @@ def _segment_band(a: tuple[float, float], b: tuple[float, float],
     north. An oblique segment is not a case this house has, and squaring its bounding box
     would over-claim the cavity, so it returns None and the caller reports it rather than
     grading it on a made-up footprint.
+
+    **A vertical leg needs both plan dimensions, and it used to get one.** For a horizontal
+    segment ``depth_m`` is the section's *vertical* height, so the plan band only ever needs
+    ``width_m``. Turn the duct up through an elbow and both dimensions become plan
+    dimensions: the 10 stays where it was and the 6 rotates out of vertical into the
+    direction the run was travelling. This returned ``width x width`` for that case, which
+    is exactly right for a round duct — ``mep_ducts`` reports a diameter as *both* plan
+    dimensions — and over-claims a rectangular riser by the difference, 10x10 for a 10x6.
+
+    ``riser_width_axis`` names the plan axis the width lies along, inherited from the
+    adjacent horizontal leg (see the caller). With no such leg to inherit from — a run that
+    is *only* a riser, going nowhere — the section's orientation is genuinely unknown, so
+    the fallback is a square of the larger dimension: over-claiming is the safe direction
+    for a clearance test, and it is the behaviour this function already had.
     """
     dx, dy = abs(b[0] - a[0]), abs(b[1] - a[1])
     half = width_m / 2.0
     if dx <= 1e-9 and dy <= 1e-9:
         # A vertical leg: one plan point repeated at two elevations. Its plan footprint is
         # the section itself, and it competes for the box exactly as a horizontal leg does.
-        return ((a[0] - half, a[0] + half), (a[1] - half, a[1] + half))
+        if riser_width_axis == "x":
+            return ((a[0] - half, a[0] + half),
+                    (a[1] - depth_m / 2.0, a[1] + depth_m / 2.0))
+        if riser_width_axis == "y":
+            return ((a[0] - depth_m / 2.0, a[0] + depth_m / 2.0),
+                    (a[1] - half, a[1] + half))
+        square = max(width_m, depth_m) / 2.0
+        return ((a[0] - square, a[0] + square), (a[1] - square, a[1] + square))
     if dy <= 1e-9:  # runs east-west
         return ((min(a[0], b[0]), max(a[0], b[0])), (a[1] - half, a[1] + half))
     if dx <= 1e-9:  # runs north-south
         return ((a[0] - half, a[0] + half), (min(a[1], b[1]), max(a[1], b[1])))
+    return None
+
+
+def _riser_width_axis(path: list[tuple[float, float]], index: int) -> str | None:
+    """Which plan axis a riser's *width* lies along, inherited from its neighbours.
+
+    An elbow does not twist the duct: the dimension that was perpendicular to travel stays
+    where it is, and the one that was vertical rotates into the old direction of travel. So
+    a riser off an east-west leg is ``width`` in y, and one off a north-south leg is
+    ``width`` in x. The leg before is checked first, then the leg after; ``None`` means
+    there is no horizontal leg to inherit from.
+    """
+    for other in (index - 1, index + 1):
+        if other < 0 or other + 1 >= len(path):
+            continue
+        p, q = path[other], path[other + 1]
+        dx, dy = abs(q[0] - p[0]), abs(q[1] - p[1])
+        if dx > 1e-9 and dy <= 1e-9:      # neighbour runs east-west -> width lies in y
+            return "y"
+        if dy > 1e-9 and dx <= 1e-9:      # neighbour runs north-south -> width lies in x
+            return "x"
     return None
 
 
@@ -114,7 +165,9 @@ def duct_occupants(model: ResolvedModel, soffit: ResolvedSoffit,
             continue
         for index in range(len(duct.path) - 1):
             a, b = duct.path[index], duct.path[index + 1]
-            band = _segment_band(a, b, duct.width_m)
+            vertical = (abs(b[0] - a[0]) <= 1e-9 and abs(b[1] - a[1]) <= 1e-9)
+            band = _segment_band(a, b, duct.width_m, duct.depth_m,
+                                 _riser_width_axis(duct.path, index) if vertical else None)
             if band is None:
                 if abs(b[0] - a[0]) > 1e-9 and abs(b[1] - a[1]) > 1e-9:
                     problems.append(
@@ -125,10 +178,20 @@ def duct_occupants(model: ResolvedModel, soffit: ResolvedSoffit,
             clipped = (max(along[0], section.along[0]), min(along[1], section.along[1]))
             if clipped[1] - clipped[0] <= 1e-9:
                 continue  # this leg is outside the box entirely
-            z_mid = (duct.z_m[index] + duct.z_m[index + 1]) / 2.0
+            # A horizontal leg's z-band is its section about its own mid-height. A RISER's
+            # is its two endpoints: it is travelling vertically, and `depth_m` describes a
+            # plan dimension for it, not a vertical one. Banding a riser as `z_mid +/-
+            # depth/2` put a 19" rise into a 6" band halfway up itself — halfway through the
+            # deck for DU-S-HP-SOUTH-RISE, and nowhere near either end it actually reaches.
+            z0, z1 = duct.z_m[index], duct.z_m[index + 1]
+            if vertical:
+                z_band = (min(z0, z1), max(z0, z1))
+            else:
+                z_mid = (z0 + z1) / 2.0
+                z_band = (z_mid - duct.depth_m / 2.0, z_mid + duct.depth_m / 2.0)
             occupants.append(SoffitOccupant(
                 tag=duct.tag, kind="duct", along=clipped, across=across,
-                z=(z_mid - duct.depth_m / 2.0, z_mid + duct.depth_m / 2.0)))
+                z=z_band, vertical=vertical))
     return occupants, problems
 
 
@@ -165,9 +228,15 @@ def equipment_occupants(model: ResolvedModel, soffit: ResolvedSoffit,
     return occupants
 
 
-def _connected(model: ResolvedModel, machine: SoffitOccupant,
-               duct_tag: str) -> bool:
+def connected(model: ResolvedModel, machine: SoffitOccupant,
+              duct_tag: str) -> bool:
     """Whether a duct runs *into* a machine rather than competing with it for the box.
+
+    Public — with ``segment_meets_box`` below — because ``checks/mep/duct_connectivity.py``
+    asks the same geometric question in the other direction. Here it *suppresses* a soffit
+    clash ("these two overlap because they are plumbed together"); there it *requires* the
+    connection ("this duct end lands on nothing"). One predicate, so the two can never
+    disagree about what "connected" means.
 
     A return plenum stub lands in the air handler's bottom opening and a 2 kW duct heater
     sits in the supply plenum: both overlap the case they belong to, and both would be
@@ -182,12 +251,12 @@ def _connected(model: ResolvedModel, machine: SoffitOccupant,
     if obj is None or not obj.footprint:
         return False
     box = _plan_ring_bbox(obj.footprint)
-    return any(_segment_meets_box(a, b, box)
+    return any(segment_meets_box(a, b, box)
                for a, b in zip(duct.path[:-1], duct.path[1:], strict=False))
 
 
-def _segment_meets_box(a: tuple[float, float], b: tuple[float, float],
-                       box: tuple[tuple[float, float], tuple[float, float]]) -> bool:
+def segment_meets_box(a: tuple[float, float], b: tuple[float, float],
+                      box: tuple[tuple[float, float], tuple[float, float]]) -> bool:
     """Whether the segment ``a``->``b`` enters the axis-aligned box. Liang-Barsky.
 
     Endpoints alone are not enough and the midpoint is not either: DU-S-HP-SUP is one
@@ -237,7 +306,19 @@ def soffit_occupancy(model: ResolvedModel, soffit: ResolvedSoffit
                 f"{item.kind} {item.tag} sits at {item.across[0]:.3f}..{item.across[1]:.3f}m "
                 f"across soffit {soffit.tag}, outside its "
                 f"{section.across[0]:.3f}..{section.across[1]:.3f}m clear cavity")
-        if item.depth_m > section.drop_m + 1e-9:
+        if item.vertical:
+            # A RISER IS NOT A DEPTH FAULT. It travels vertically, so it occupies the full
+            # drop by construction and leaves through the top or the bottom on purpose —
+            # that is what a riser is for. Grading it against the clear drop would report
+            # every riser in the house, and grading its z-band against the cavity would
+            # report every one that actually goes somewhere. What IS worth saying is a riser
+            # that never reaches the cavity at all: it names this soffit and misses it.
+            if item.z[1] < section.z[0] - 1e-9 or item.z[0] > section.z[1] + 1e-9:
+                conflicts.append(
+                    f"{item.kind} {item.tag} rises {item.z[0]:.3f}..{item.z[1]:.3f}m but "
+                    f"soffit {soffit.tag}'s cavity is {section.z[0]:.3f}..{section.z[1]:.3f}m "
+                    "— the riser names this soffit and never enters it")
+        elif item.depth_m > section.drop_m + 1e-9:
             conflicts.append(
                 f"{item.kind} {item.tag} is {item.depth_m / M_PER_IN:.2f}\" deep, more than "
                 f"soffit {soffit.tag}'s {section.drop_m / M_PER_IN:.2f}\" clear drop")
@@ -269,7 +350,7 @@ def _pair_is_plumbed(model: ResolvedModel, first: SoffitOccupant,
                      second: SoffitOccupant) -> bool:
     """Whether the pair is one connected assembly rather than two things sharing a box."""
     if first.kind == "equipment" and second.kind == "duct":
-        return _connected(model, first, second.tag)
+        return connected(model, first, second.tag)
     if second.kind == "equipment" and first.kind == "duct":
-        return _connected(model, second, first.tag)
+        return connected(model, second, first.tag)
     return False

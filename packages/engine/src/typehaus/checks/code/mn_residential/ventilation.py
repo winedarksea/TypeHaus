@@ -191,19 +191,21 @@ def habitable_light_and_ventilation(ctx: CheckContext) -> list[Finding]:
         if room.area_m2 <= 1e-9:
             out.append(_unknown(cid, f"{room.tag} resolved no floor area", (room.tag,), code))
             continue
-        windows = _room_windows(ctx, room, Point, Polygon)
+        # Read off the model, not re-derived here (2026-09-01). ``resolve.rooms`` totals
+        # both areas once and every consumer sees the same numbers — which is what lets the
+        # server put a glazing table in front of a reader instead of scraping it back out of
+        # these messages. ``None`` means a window type did not resolve, which is the same
+        # UNKNOWN this check has always reported and is NOT the same fact as no glazing.
         area_sf = room.area_m2 * _SF_PER_M2
-        glazed_sf = sum(w.width_m * w.height_m for w in windows) * _SF_PER_M2
-        operability = [_openable(ctx, w) for w in windows]
-        if any(state is None for state in operability):
+        if room.glazed_area_m2 is None or room.operable_glazed_area_m2 is None:
             out.append(_unknown(cid, f"{room.tag} has a window whose type does not resolve, "
                                 "so openable area cannot be totalled", (room.tag,), code))
             continue
-        # ``operability`` is built one entry per window just above, so the two are the
-        # same length by construction.
-        openable_sf = sum(w.width_m * w.height_m
-                          for w, state in zip(windows, operability, strict=True)
-                          if state) * _SF_PER_M2 / 2.0
+        glazed_sf = room.glazed_area_m2 * _SF_PER_M2
+        # The halving is R303.1's, not the model's: an operable unit is credited at half its
+        # area. ``resolve`` stores the whole area of the operable glass and leaves the code
+        # rule here, where it can be cited.
+        openable_sf = room.operable_glazed_area_m2 * _SF_PER_M2 / 2.0
         need_glazed = area_sf * _MIN_GLAZING_FRACTION
         need_openable = area_sf * _MIN_OPENABLE_FRACTION
         if glazed_sf + 1e-6 < need_glazed or openable_sf + 1e-6 < need_openable:

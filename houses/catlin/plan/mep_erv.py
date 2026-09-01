@@ -10,9 +10,19 @@
 # =============================== WHAT CHANGED, AND WHY ================================
 #
 # **The machine is real now.** EQ-T-ERV was `24x24x30, 210 cfm, SRE 0.75` with two
-# `# TODO verify datasheet` markers against it. It is a **Broan B210E75RT**: 210 CFM at
-# 0.2" w.g., 6" round top ports, 24.8"W x 21.6"H x 21"D, MERV 8 filter, 81% SRE at 32 F and
-# **65% SRE at -13 F**. EQ-B-ERV keeps its uid (IFC GlobalId stability) and its position.
+# `# TODO verify datasheet` markers against it. It is a **Broan B210E75RT**: 6" round top
+# ports, 24.8"W x 21.6"H x 21"D, MERV 8 filter, 81% SRE at 32 F and **65% SRE at -13 F**.
+# EQ-B-ERV keeps its uid (IFC GlobalId stability) and its position.
+#
+# ** THE RATING POINT IS 206 CFM AT 0.4" W.G., NOT 210 AT 0.2" (corrected 2026-09-01). **
+# HVI certifies this machine at 206 cfm net supply at 0.4" w.g. (B210E75RT, HVI ID 2004940)
+# — see the note at DU-S-ERV-R-PLANT below, which had it right. "210 CFM at 0.2 in. w.g." is
+# the model-name point off the fan curve; it is where the number in the model number comes
+# from, not where the machine is certified. Every comment in this file that treated 0.2" as
+# the rating point was therefore assuming HALF the static budget the design actually has,
+# which is the direction that hides a problem rather than inventing one.
+# `ventilation_cfm=210` stays authored — see plan/mep_erv_types.py for why moving it is a
+# separate decision with a live verdict behind it.
 #
 # The SRE goes 0.75 -> 0.65 and that is a *worse* number on purpose: -15 F is this site's
 # heating design temperature (plan/site.py), so the -13 F certified figure is the honest one
@@ -145,7 +155,7 @@ EQUIPMENT_ERV_MAIN = [
 # the far side of a 30" working space, so a person can crawl to it and kneel at it. The four
 # radials below each gained 2'-6" of run to the x=1'-0" chase head and nothing else changed. Extract only: the level's fresh-air duty is the mixing-box feed,
 # which stays a full-size 6" branch off the supply riser rather than a radial, because it
-# carries ~100 of the machine's 210 cfm on its own.
+# carries ~100 of the machine's 210 authored cfm on its own (206 certified — see the header).
 EQUIPMENT_ERV_ATTIC = [
     Equipment(uid="3QT1F3F01A", tag="EQ-A-ERV-MAN-EXH", kind=EquipmentKind.DUCT_MANIFOLD,
               position=pt(ft(5), ft(34, 6)), footprint=(inch(24), inch(8)),
@@ -187,7 +197,9 @@ EQUIPMENT_ERV_ATTIC = [
 #     design too and it wants a CONTROLS INTERLOCK (blower continuous, or on ERV call), which
 #     the schema has no field for — so it is written here and in plans/TODO.md. It matters
 #     because code.N1103_6_whole_house_ventilation is already tight, 210 cfm provided against
-#     203 required.
+#     203 required. (At the 206 cfm HVI actually certifies, tighter still: 206 against 203.
+#     That is the live verdict `ventilation_cfm` moves, and why the field is left at 210
+#     pending a deliberate decision — see plan/mep_erv_types.py.)
 # Keeping it costs the second lane past the machine, which SF-S-HP1's width already carries.
 #
 # x=24'-1" is the box's east lane, shared with DU-S-ERV-HP-FEED's tail: the 10" case stands
@@ -835,8 +847,9 @@ DUCTS_ERV_ATTIC = [
 # east, and **drops into SF-S-DUCT** onto the mixing box — a drop that is drawn, swept, and
 # billed at its developed length.
 #
-# 6" and not a 75 mm radial: ~100 of the machine's 210 cfm goes through here, which is half
-# the house's fresh air arriving in one place, and a radial would run it at ~5,000 fpm.
+# 6" and not a 75 mm radial: ~100 of the machine's 210 authored cfm goes through here (206
+# certified — see the header), which is half the house's fresh air arriving in one place, and
+# a radial would run it at ~5,000 fpm.
 # -8 7/8" is a 6" duct on FS-ATTIC's bottom chord; -20 7/8" is a 6" duct on SF-S-DUCT's clear
 # underside at 216 1/8".
 #

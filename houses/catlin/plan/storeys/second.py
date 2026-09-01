@@ -659,7 +659,8 @@ OPENINGS = [
     # that note's arithmetic still holds: 27x48 = 9.00 sf against 9.6 sf required for BED1
     # and 9.9 sf for BED2, so both rooms are short on GLAZED AREA again. Neither fails.
     # Both are carried by R303.1 Exception 1 — 3600 lm gives 14.4 / 13.9 fc and the ERV
-    # delivers 210 cfm of outdoor air — the same exception RM-M-LIVING has always leaned
+    # delivers 210 cfm of outdoor air (206 certified; either clears the exception's
+    # 15 cfm/person) — the same exception RM-M-LIVING has always leaned
     # on. What the 54" bought was compliance without the exception; that is what is spent
     # here, not compliance itself. R310 egress is unaffected (9.00 sf > 5.7 net).
     # Head drops 7'-6" -> 7'-0"; width, sill, centres and the mirror about the house

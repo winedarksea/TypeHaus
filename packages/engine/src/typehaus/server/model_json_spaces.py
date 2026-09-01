@@ -40,7 +40,25 @@ def spaces_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str
                   "material_ref": z.material_ref, "area_m2": z.area_m2,
                   "source_ref": z.source_ref}
                  for z in r.finish_zones
-             ]}
+             ],
+             # Derived head and glazing (2026-09-01). These existed only inside
+             # code.R305_ceiling_height and code.R303_1_light_and_ventilation, which meant
+             # the only way to read a room's clear height or its glazing table was to parse
+             # it back out of a check's message string. They are facts about the room, so
+             # they ride on the room.
+             #
+             # ``clear_height_m`` is to the lowest thing overhead INCLUDING soffits, and
+             # ``soffit_area_m2`` says how much of the room that low head actually covers —
+             # the two are only useful together, since a duct box over 47 of 159 sf is not
+             # the same building as a 7'-3" ceiling. ``glazed_area_m2`` and
+             # ``operable_glazed_area_m2`` are raw areas, NOT R303.1's 8%/4% ratios and not
+             # pre-halved: a reader totalling them against a floor area must apply the code
+             # rule themselves, the same way the check does. null means a window type did
+             # not resolve — not that the room has no glass.
+             "clear_height_m": r.clear_height_m,
+             "soffit_area_m2": r.soffit_area_m2,
+             "glazed_area_m2": r.glazed_area_m2,
+             "operable_glazed_area_m2": r.operable_glazed_area_m2}
             for r in model.rooms
         ],
         "space_summary": build_space_summary(model),

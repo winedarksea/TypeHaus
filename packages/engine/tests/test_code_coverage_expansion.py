@@ -230,14 +230,22 @@ def test_co_alarm_passes_outside_the_sleeping_area_and_fails_inside_it():
 
 def _light_ctx(glazed_w: float, glazed_h: float, *, operation: str = "casement",
                area_m2: float = 20.0, lumens: float | None = None, supply: bool = False,
-               erv_cfm: float | None = None):
+               erv_cfm: float | None = None, window_type_resolves: bool = True):
     """A room with one window, and optionally the three things R303.1 Exception 1 needs.
 
     The exception's inputs default to absent, which is the state that matters most: a room
     short of glazing and with no artificial light stated has no lawful path and must FAIL.
     Pass ``lumens``/``supply``/``erv_cfm`` to build the room that does.
+
+    The room's glazing totals are computed here with ``resolve.room_openings``, the same
+    call ``resolve_rooms`` makes, rather than being hand-set: the check reads the totals off
+    the room now, so a fixture that made them up would stop exercising the geometry that
+    produces them. ``window_type_resolves=False`` is the unresolvable-type case, and it has
+    to be set BEFORE the totals are taken, exactly as it would be in a real model — emptying
+    the library afterwards would leave a room that had already been given its numbers.
     """
     from typehaus.model.enums import DeviceKind, DuctSystem, EquipmentKind
+    from typehaus.resolve.room_openings import room_glazing_areas
 
     ring = ((0.0, 0.0), (5.0, 0.0), (5.0, area_m2 / 5.0), (0.0, area_m2 / 5.0))
     room = SimpleNamespace(tag="RM-BED", storey="main", occupancy="bedroom",
@@ -264,15 +272,17 @@ def _light_ctx(glazed_w: float, glazed_h: float, *, operation: str = "casement",
         equipment_types.append(SimpleNamespace(tag="ERV-T", ventilation_cfm=erv_cfm))
         elements.append(SimpleNamespace(element_kind="Equipment", tag="EQ-ERV",
                                         kind=EquipmentKind.ERV, type_ref="ERV-T"))
-    return SimpleNamespace(
-        plan=SimpleNamespace(
-            library=SimpleNamespace(window_types=[window_type],
-                                    electrical_device_types=device_types,
-                                    equipment_types=equipment_types),
-            all_elements=lambda: elements),
-        model=SimpleNamespace(rooms=[room], openings=[opening],
-                              wall=lambda tag: wall if tag == "W-S" else None),
-    )
+    plan = SimpleNamespace(
+        library=SimpleNamespace(window_types=[window_type] if window_type_resolves else [],
+                                electrical_device_types=device_types,
+                                equipment_types=equipment_types),
+        all_elements=lambda: elements)
+    model = SimpleNamespace(rooms=[room], openings=[opening],
+                            wall=lambda tag: wall if tag == "W-S" else None)
+    glazing = room_glazing_areas(plan, model, room)
+    room.glazed_area_m2 = glazing[0] if glazing else None
+    room.operable_glazed_area_m2 = glazing[1] if glazing else None
+    return SimpleNamespace(plan=plan, model=model)
 
 
 def test_habitable_light_passes_with_eight_percent_glazing():
@@ -334,8 +344,13 @@ def test_r303_exception_1_is_unknown_when_a_fixture_states_no_lumens():
 
 
 def test_habitable_light_is_unknown_when_a_window_type_does_not_resolve():
-    ctx = _light_ctx(1.5, 1.5)
-    ctx.plan.library.window_types = []
+    """A room whose glazing cannot be totalled is not a room with no glazing.
+
+    The flag is passed to the fixture rather than the library being emptied afterwards,
+    because the totals are taken at resolve now: a room built with a resolvable type and
+    then robbed of it would carry the numbers it was already given, which is not a state a
+    real model can be in."""
+    ctx = _light_ctx(1.5, 1.5, window_type_resolves=False)
     assert _results(habitable_light_and_ventilation(ctx)) == [Result.UNKNOWN]
 
 
