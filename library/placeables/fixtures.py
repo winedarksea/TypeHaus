@@ -190,9 +190,16 @@ FLOOR_DRAIN = FixtureType(
 TOILET_WALL_HUNG = FixtureType(
     tag="FX-TOILET-WH", name="Wall-hung water closet (compact)",
     footprint=(inch(15), inch(19.3)), height=inch(13.625),
-    plan_symbol="toilet", needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
+    plan_symbol="toilet-wall-hung",
+    needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(_water_closet_required_clearance(inch(19.3)),),
     mount=Mount(kind=MountKind.WALL, elevation=inch(1.375)),
+    # Geberit's Duofix element is 500 mm (19 11/16") wide across the frame's uprights, and
+    # TOTO's DuoFit is within an eighth of it, so the clear bay between the flanking studs
+    # is the real constraint on where this fixture can go — not the china's 15" footprint.
+    # 19.75" rounds Geberit's 500 mm up to the nearest sixteenth. ``framing/carriers.py``
+    # turns this into a stud keepout and frames the bay; nothing else in the catalog sets it.
+    carrier_bay_width=inch(19.75),
     # Local product frame: the bowl faces -y (the clearance zone above is drawn that way),
     # so +y is into the wall and the back of the china is at +9.65" (half of 19.3"). The
     # waste and vent are both a further 2 1/4" back — 1/2" of gypsum plus the frame's own

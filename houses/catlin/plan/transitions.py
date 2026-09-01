@@ -67,7 +67,11 @@ TRANSITIONS = (
                    "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|CATLIN_STAIRWALL_INT_2X6_BRG",
                    "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX",
                    "storey_stack:rim:CATLIN_INT_2X6_BRG",
-                   "storey_stack:rim:CATLIN_INT_2X6_BRG|SAUNA_LINER_INT_2X6_BRG",
+                   # W-M-C1 on W-B-CS, and the left half moved on 2026-08-31 when W-M-C1
+                   # alone took CATLIN_INT_2X6_BRG_RC (channel + batt on the bedroom face).
+                   # This pair IS that one stack, so the old key stopped deriving entirely
+                   # and `integrity.condition_star_override` said so the same build.
+                   "storey_stack:rim:CATLIN_INT_2X6_BRG_RC|SAUNA_LINER_INT_2X6_BRG",
                    # Was ...|INT_2X6_STAGGERED_PLUMBING until 2026-08-29, when W-S-BA-E1B
                    # was retyped to carry FO-A-HALL's cut attic joists. Same stack, same
                    # rim, same reason to leave it off the primary set — a different
@@ -190,6 +194,17 @@ TRANSITIONS = (
     # carrying an attic joist field are the point of the sheet.
     Transition(uid="KNP02ZZ5WC", tag="TR-CATLIN-WETWALL-OPENING",
                condition_pattern="opening_perimeter:CATLIN_INT_2X6_BRG_PLUMBING",
+               overlay="bearing-partition-opening"),
+    # D-M-BED2's opening in W-M-C1, the bedroom segment of the centreline (2026-08-31), and
+    # the FOURTH time this file has had to say the same thing: the tag starts "CATLIN_", so
+    # TR-CATLIN-INTERIOR-OPENING's `INT_*` glob never sees it. An exact binding rather than
+    # widening TR-CATLIN-CENTER-OPENING to `CATLIN_INT_2X6_BRG*`, because that glob would
+    # also swallow CATLIN_INT_2X6_BRG_PLUMBING above and put two transitions on one
+    # condition. Same `bearing-partition-opening` overlay as the plain centreline: the
+    # jack/king pack at this door is the sheet's subject and the resilient channel does not
+    # change it — a channel dies into the opening's return and carries no load.
+    Transition(uid="2M8HCPVAXB", tag="TR-CATLIN-CENTER-RC-OPENING",
+               condition_pattern="opening_perimeter:CATLIN_INT_2X6_BRG_RC",
                overlay="bearing-partition-opening"),
     # Two legitimate in-plan assembly changes survive the resolver's derivation gates
     # (the sauna liner starting along the interior concrete run, and the masonry railing

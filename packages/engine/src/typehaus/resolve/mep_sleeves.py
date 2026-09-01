@@ -19,8 +19,10 @@ import math
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import Service
 from typehaus.model.mep import SleevePenetration
+from typehaus.model.placeables import MountKind
 from typehaus.model.spatial import Appliance, Fixture
 from typehaus.resolve.geometry import circle_outline, length, sub
+from typehaus.resolve.framing.carriers import backing_wall
 from typehaus.resolve.mep_queries import _CONCRETE_SOLID_CATEGORIES
 from typehaus.resolve.model import (
     ResolvedModel,
@@ -333,6 +335,29 @@ def _expected_drain_point(model: ResolvedModel,
                          if t.tag == fixture.type_ref), None)
     if fixture_type is None:
         return None
+    # A fixture whose type MOUNTS ON THE WALL and drains does not drop under its own
+    # footprint: the waste turns down inside the wall, behind the body, in the carrier's
+    # bay. The type says where — its DRAIN ``ServicePort`` is stated in the product's own
+    # local frame — so read that and rotate it into the plan rather than making a human
+    # restate it as a ``drain_position`` on every instance.
+    #
+    # This branch has to come FIRST. A wall-hung water closet has no hot connection either,
+    # so the "no WATER_HOT" heuristic below would otherwise claim it and put the drop a
+    # foot in front of where the pipe actually is.
+    if fixture_type.mount.kind is MountKind.WALL:
+        port = next((p for p in fixture_type.ports if p.service is Service.DRAIN), None)
+        backing = backing_wall(model.plan, model, fixture, fixture_type)
+        if port is not None:
+            local = (port.position[0].meters, port.position[1].meters)
+            point = _rotate_into_plan(fixture, local)
+            # The port's set-back is a PRODUCT nominal, measured off the frame's own face:
+            # "1 3/4" behind the frame" says nothing about how thick the gypsum in front of
+            # it is, and the type cannot know. What is actually true of the pipe is that it
+            # runs down the middle of the bay it stands in, so the nominal is projected onto
+            # the host wall's axis — the same wall ``framing/carriers`` frames the bay in.
+            # At catlin that is the difference between a 3" (3.5" OD) drop centred in a
+            # 5 1/2" cavity and one poking an eighth of an inch out through the drywall.
+            return point if backing is None else _project_onto_line(point, backing[0].axis)
     # A water closet is the only common fixture with no hot-water connection — the one
     # reliable signal in this schema that a fixture is floor-drained (drain at its own
     # footprint) rather than wall-drained (trap arm back to a wet-wall stack).
@@ -344,6 +369,24 @@ def _expected_drain_point(model: ResolvedModel,
     if wall is None:
         return None
     return _project_onto_line(fixture.position.xy_m, wall.axis)
+
+
+def _rotate_into_plan(fixture, local: tuple[float, float]) -> tuple[float, float]:
+    """A point in the product's local frame, placed at the fixture's position/rotation.
+
+    The same frame every placeable symbol is drawn in (``model/placeable_symbols/_frame``):
+    origin at the footprint centre, ``+y`` toward the object's back.
+    """
+    radians = math.radians(_fixture_degrees(fixture))
+    cos, sin = math.cos(radians), math.sin(radians)
+    x, y = local
+    px, py = fixture.position.xy_m
+    return (px + x * cos - y * sin, py + x * sin + y * cos)
+
+
+def _fixture_degrees(fixture) -> float:
+    degrees = getattr(getattr(fixture, "rotation", None), "degrees", None)
+    return float(degrees) if degrees is not None else 0.0
 
 
 def _project_onto_line(

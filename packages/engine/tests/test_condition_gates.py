@@ -353,6 +353,13 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # so both are real changes of construction and each wants telling once.
         "assembly_change:CATLIN_GARDEN_CURB_6|SAUNA_LINER_ON_GARDEN_CURB",
         "assembly_change:CATLIN_GARDEN_FRAMED_2X6|SAUNA_LINER_ON_GARDEN_FRAMED",
+        # N-M-C1, 2026-08-31: W-M-C1 alone took CATLIN_INT_2X6_BRG_RC — a resilient channel
+        # and a batt on the RM-M-BED face — and W-M-C2 east of the node did not. Exactly the
+        # same kind of key as INT_2X4_PARTITION|INT_2X4_RC below, and it earns its sheet for
+        # the same reason: the channel and its own leaf of board STOP at this node, and a
+        # builder who runs them through to W-M-C2 has shorted the acoustic wall by a leaf
+        # while gaining 1/2" of wall the drawings do not show.
+        "assembly_change:CATLIN_INT_2X6_BRG|CATLIN_INT_2X6_BRG_RC",
         ("assembly_change:CATLIN_INT_2X6_BRG|INT_2X4_PARTITION|"
          "PLANT_INT_2X4_HUMID|PLANT_INT_2X6_BRG_HUMID"),
         # N-B-ESS-SE. The stair wall's own split, and a real change of construction: W-B-STR

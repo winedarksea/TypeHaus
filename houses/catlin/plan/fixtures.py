@@ -126,20 +126,50 @@ BASEMENT_FIXTURES = (
 # home for one — and its 3" waste drops through the deck in that wall's own bay. From there
 # PR-B-WC1-DRAIN runs to the W-M-BAE stack, which is where the vent takeoff
 # (PR-M-WC-VENT, 49.8" away against Table 1002.2's 72" for 3") and the supply riser already
-# are. Both walls are 5.5" of structure, so `advisory.wet_wall_depth` is satisfied either way.
+# are. Both walls are 5.5" of structure, so `advisory.wet_wall_depth` is satisfied either way
+# — and since 2026-08-31 that is no longer a coincidence anyone has to notice: the HOST wall
+# is graded on its own by `advisory.carrier_bay_depth`, which reads the wall the body backs
+# onto rather than `wall_ref`, and reports W-M-HS1's 5 1/2" against the 5 1/2" a Duofix-class
+# frame wants.
 #
-# ** `drain_position` IS UNDER THE BOWL NOW, NOT 3'-10" AWAY FROM IT. ** It read
-# (6'-0", 22'-7") — a point on W-M-BAE's axis, at the far corner of the room, with the china
-# 46" west of the waste it was supposedly bolted to. A wall-hung bowl cannot be anywhere but
-# on its carrier, so the two are one point: the bowl's own centreline, in W-M-HS1's bay.
-# y=22'-4" is that wall's axis, which centres a 3.5"-OD pipe in the 5.5" cavity with 1" of
-# cover each side; the manufacturers' nominal is 1 3/4" behind the frame face
-# (library/placeables/fixtures.py), and 1" of that is spent on the frame's own set-back.
+# ** THE CARRIER BAY AND FX-M-BATH2-WC SHARE 16.3" OF THIS WALL, AND THAT IS THE DETAIL, NOT
+# A DEFECT (measured 2026-08-31). ** The frame's clear bay runs x 16.53"..36.28" (19 3/4",
+# Geberit's 500 mm element, centred on the bowl at x=26.41"), with its flanking studs out to
+# x 15.03" and 37.78". FX-M-BATH2-WC backs the SOUTH face of the same wall at x=2'-6", so
+# its 20"-wide body spans x 20"..40" and its 1/2" cold stub lands squarely inside the band.
+# `advisory.carrier_bay_conflict` reports it every run.
 #
-# The override is still required, and the reason is in the type: `_expected_drain_point`
-# reads "no WATER_HOT" as "floor-drained, waste under the footprint", which is true of every
-# other WC in this house and false of this one — the waste is a foot behind the china,
-# inside the wall.
+# ** NO NUDGE FIXES IT, AND THE ARITHMETIC IS WHY. ** To clear a 22 3/4" carrier band on a
+# 72" wall, BATH2's body has to sit either east of x=47.78" (centre) or west of x=5.03";
+# fixtures.py's own bounds put it between 1'-9 5/8" and 3'-1", boxed by W-M-W3's face west
+# and the tub deck east. Moving the CARRIER instead needs its centre at or under x=8.63",
+# which throws P2705.1's 15" side clearance through the west wall, or at or over x=51.38",
+# which is inside the vanity at x 41.5"..65.5". Every arrangement of these two fixtures on
+# this wall overlaps.
+#
+# ** WHICH IS FINE, BECAUSE THE WALL IS 5 1/2" AND NOT 3 1/2". ** A Duofix 2x4 element is
+# built to fit a 3 1/2" cavity, so in this one it leaves ~2" of clear depth behind the
+# cistern — which is exactly what a 1/2" supply crossing the bay needs, and exactly what the
+# type's `source` means by "wants a 5 1/2" bay". It is a rough-in note for the plumber, and
+# the check prints it as one: PASS, with the crossing spelled out. In a 3 1/2" wall the same
+# geometry would be a FAIL, because there would be nothing to cross through.
+#
+# ** THERE IS NO `drain_position` HERE ANY MORE, AND ITS ABSENCE IS THE POINT (2026-08-31).
+# ** It read (6'-0", 22'-7") until 2026-08-29 — a point on W-M-BAE's axis, at the far corner
+# of the room, with the china 46" west of the waste it was supposedly bolted to — and then
+# (26.41", 22'-4"), which was right. Both were a human restating something the model can
+# now derive: `resolve/mep_sleeves._expected_drain_point` branches on `mount.kind == WALL`
+# before it reaches the "no WATER_HOT ⇒ floor-drained" heuristic, reads the type's own DRAIN
+# `ServicePort`, and projects it onto the wall the body backs onto — W-M-HS1, found
+# geometrically by `resolve/framing/carriers.backing_wall`, NOT by `wall_ref`.
+#
+# That projection is not a rounding: the type's 11.9" set-back is a PRODUCT nominal measured
+# off the frame's face, and the type cannot know how thick the gypsum in front of it is. On
+# W-M-HS1 the nominal alone would land the drop at y=269.135", where a 3.5"-OD pipe pokes an
+# eighth of an inch out through the drywall. The wall's own axis at y=22'-4" is where it
+# actually runs: centred in the 5 1/2" cavity, 1" of cover each side. The derived point
+# equals the deleted override to four decimal places, which is how the deletion was proved
+# safe before it was made.
 #
 # y nudged +2" (2026-08-15), same reason as the lavatory's +6" nudge (2026-07-29):
 # N-M-W2/N-M-C2 pushed north onto the west facade's 16" column module, dragging the
@@ -161,8 +191,7 @@ BASEMENT_FIXTURES = (
 MAIN_FIXTURES = (
     Fixture(uid="CMQ801AAAA", tag="FX-M-BATH1-WC", type_ref="FX-TOILET-WH", room="RM-M-BATH1",
             position=pt(m(0.670778), m(7.138289)), rotation=deg(180), wall_ref="W-M-BAE",
-            mount=Mount(kind=MountKind.WALL, elevation=inch(1.375)),
-            drain_position=pt(m(0.670778), ft(22, 4))),
+            mount=Mount(kind=MountKind.WALL, elevation=inch(1.375))),
     # y nudged +6" (2026-07-29, with N-M-W2/N-M-C2's north push for the BATH2 wall move):
     # the room's south face moved with it and the lavatory's old y left it poking through
     # into the hall (test_bath1_fixtures_sit_inside_the_room_and_clear_of_each_other).

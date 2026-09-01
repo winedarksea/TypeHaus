@@ -197,6 +197,14 @@ class FixtureType(HausModel):
     # plan from also authoring a redundant accessory for the same device, which would bill
     # a part the fixture's own price already includes.
     integral_vacuum_breaker: bool = False
+    # Clear framing bay a concealed in-wall carrier needs, between the flanking studs, for a
+    # fixture whose ``mount.kind`` is WALL. ``None`` — the default, and true of every
+    # fixture that simply hangs off a finished wall — means "no frame in the wall", and the
+    # framing solver lays its module out as usual. A value makes the bay a first-class
+    # keepout: ``resolve/framing/carriers.py`` parts the module studs around it and frames
+    # it. Declared rather than inferred, same reason as ``integral_vacuum_breaker``:
+    # nothing in a bowl's footprint says whether there is a frame behind it.
+    carrier_bay_width: Length | None = None
 
 
 class ApplianceType(FurnitureType):

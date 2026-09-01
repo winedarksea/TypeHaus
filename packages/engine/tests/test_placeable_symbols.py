@@ -121,3 +121,30 @@ def test_place_local_matches_the_resolvers_own_footprint_transform() -> None:
     # And it is a rigid motion: lengths survive.
     (ax, ay), (bx, by) = place_local([(0.0, 0.0), (1.0, 0.0)], (2.0, 2.0), 45.0)
     assert math.hypot(bx - ax, by - ay) == pytest.approx(1.0)
+
+
+def test_wall_hung_toilet_has_no_tank_and_uses_the_whole_depth() -> None:
+    """The whole point of the glyph: a wall-hung WC's cistern is in the wall, not on the bowl.
+
+    ``toilet`` draws a tank rectangle across the back ~28% of its footprint. Drawing that on
+    a wall-hung fixture puts an object on the sheet and in the viewer that does not exist,
+    squashed into the china's 13 5/8" of height. What stands at ``+y`` here instead is the
+    actuator plate, which is the only thing a finished wall shows.
+    """
+    width, depth, height = 0.381, 0.49022, 0.346  # FX-TOILET-WH: 15" x 19.3" x 13 5/8"
+    strokes = plan_symbol_strokes("toilet-wall-hung", width, depth)
+    bowl, seat, plate = strokes
+
+    # The bowl reaches the front edge and stops only at the plate — no tank band behind it.
+    assert min(y for _, y in bowl["points"]) == pytest.approx(-depth / 2)
+    plate_depth = depth - (max(y for _, y in bowl["points"]) - min(y for _, y in bowl["points"]))
+    assert plate_depth < depth * 0.21, "the plate has swollen into a tank"
+    assert max(y for _, y in plate["points"]) == pytest.approx(depth / 2)
+    assert min(y for _, y in plate["points"]) == pytest.approx(depth / 2 - plate_depth)
+    assert bowl["fill"] == "porcelain" and plate["fill"] == "metal"
+    assert seat["fill"] is None  # the seat ring is a detail line, not a filled shape
+
+    # ``toilet``'s tank is a full-height box at the wall; this one's plate is a thin band.
+    tank = model_parts("toilet", width, depth, height)[0]
+    plate_part = model_parts("toilet-wall-hung", width, depth, height)[2]
+    assert tank["size"][1] > plate_part["size"][1] * 3

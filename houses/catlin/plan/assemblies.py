@@ -1634,6 +1634,72 @@ CATLIN_INT_2X6_BRG = Assembly(
 # face is millwork — the CATLIN_MUDROOM_INT_2X6_EXPOSED precedent above), and no `stc=`:
 # STC in this house is a transcribed lab test, never a computed number.
 # The "INT" token is load-bearing as everywhere else (`_is_interior_assembly` in
+# --- the bedroom half of the centreline (2026-08-31) --------------------------
+#
+# ** W-M-C1 ONLY, AND IT IS THE SAME BEARING WALL. ** RM-M-BED on the west, RM-M-LIVING on
+# the east, and a living room on the other side of a sleeping wall is the one place on the
+# x=18'-0" centreline where the plain `CATLIN_INT_2X6_BRG` is not enough. Two additions and
+# nothing else: a resilient channel on the BEDROOM face, and the fibreglass this family has
+# never carried. `W-M-C2`..`C5B` above and below stay on the plain assembly — this is a
+# portion of the line, not a retype of it.
+#
+# **Still 2x6, still BEARING, still `layout_origin="line"`, and all three are load-bearing
+# facts rather than tidiness.** The centreline is what carries `RB-HOUSE` continuously to
+# the footings and it is the one grid in the house that must run basement-to-attic on one
+# module (see houses/catlin/CLAUDE.md, ONE GRID PER FACADE / the interior round). A channel
+# is a FINISH furring screwed to the studs; it carries no vertical load and changes no span,
+# so the wall bears exactly as it did. Two second-storey BEARING walls stack on this one.
+#
+# ** `alignment` IS NOT OPTIONAL, FOR THE SAME REASON INT_2X4_RC's IS NOT. ** Adding the
+# channel makes the stack ASYMMETRIC — 0.01 paint + 0.625 gwb + 0.5 channel + 5.5 stud +
+# 0.625 gwb + 0.01 paint = 7.27", against the plain wall's symmetric 6.77" — so a default
+# centred alignment would put the axis 0.25" off the stud centre and slide every stud on
+# this segment off the line. `face("stud-ext", offset=inch(-2.75))` is half the 2x6 stud,
+# putting the axis at the stud's own centre: the studs stay at x 213.250-218.750 and the
+# axis stays at x=216.000 exactly where the symmetric wall already had it. That matters
+# beyond framing — `resolve/stacking.py::_axis_match` works to 1/2" and W-S-C1/W-S-C1B both
+# name this wall in `stacks_on`, so an axis that moved could silently drop the stack.
+#
+# ** WHAT MOVES: the bedroom face, 1/2" west, and nothing else. ** The living-room face
+# stays at x=219.385". RM-M-BED loses 1/2" of real width that the model does not record
+# (`resolve/rooms.py` polygonises from wall AXES and insets by lining only), so no area,
+# glazing or egress verdict changes. `D-M-BED2` is `DT-INT-SWING30-TRIMLESS` — a drywall
+# return jamb, no casing — so its reveal simply gets 1/2" deeper on the bedroom side; there
+# is no casing to re-cut and nothing else is hosted on either face.
+#
+# ** NO `stc` IS CLAIMED, DELIBERATELY. ** Same rule the library's presets are held to and
+# `INT_2X4_STAGGERED_GWB` already follows here: a rating is a published test result, never
+# an estimate, and no test of THIS build — 2x6 studs, channel one side, insulated — could be
+# sourced. For scale, the library's `INT_2X4_RC` (2x4, channel one side, fibreglass, one
+# 5/8" layer each face) is a tested STC 48 against the uninsulated partition's 34, and a 2x6
+# bay is a deeper cavity than that test had, not a shallower one. Treat 48 as the floor of
+# what this build is worth and do not write a number into the model without a test.
+#
+# The batt is FIBREGLASS, per the 2026-08-31 sweep (see the note above
+# CATLIN_EXT_2X6_SWINBURNE): nothing about this cavity is damp, and the acoustic work here
+# is done by the channel's decoupling, not by which wool sits behind it.
+CATLIN_INT_2X6_BRG_RC = Assembly(
+    tag="CATLIN_INT_2X6_BRG_RC",
+    layers=(
+        _PAINT_FINISH_A,
+        Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        Layer(name="resilient-channel", material_ref="resilient-channel",
+              thickness=inch(0.5), function=LayerFunction.FURRING,
+              framing=FramingSpec(member="25 ga. resilient channel", spacing=inch(24),
+                                  direction="horizontal")),
+        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x6", layout_origin="line"),
+              cavity=CavityFill(material_ref="fiberglass")),
+        Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        _PAINT_FINISH_B,
+    ),
+    interfaces=(_STUD_BEARING,),
+    source="catlin-house centreline bearing wall at RM-M-BED (W-M-C1), 2026-08-31: CATLIN_INT_2X6_BRG with 1/2 in. resilient channel at 24 in. o.c. on the bedroom face and 5-1/2 in. fibreglass in the bay; same 2x6 studs, same bearing role, same layout line",
+)
+
 # mn_energy.py splits the tag on "_") — without it an uninsulated bay grades against R-21.
 CATLIN_INT_2X4_BOOKCASE_12 = Assembly(
     tag="CATLIN_INT_2X4_BOOKCASE_12",
@@ -3066,6 +3132,7 @@ ASSEMBLIES = [
     FOOTING_FPSF_20,
     GARAGE_ROOF,
     CATLIN_INT_2X6_BRG,
+    CATLIN_INT_2X6_BRG_RC,
     CATLIN_INT_2X6_BRG_PLUMBING,
     CATLIN_INT_2X4_BOOKCASE_12,
     INT_2X6_PLUMBING,

@@ -546,8 +546,18 @@ WALLS = [
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-W2"),
     # --- center bearing wall (2x6), stacks on the basement concrete line ------
+    # W-M-C1 is the ONE segment of the centreline on CATLIN_INT_2X6_BRG_RC (2026-08-31):
+    # RM-M-BED west, RM-M-LIVING east, so it gets a resilient channel on the BEDROOM face
+    # and fibreglass in the bay. Still 2x6, still BEARING, still on the line's stud module.
+    # `interior_room` is what puts the channel on the bedroom side — layer 0 is the
+    # channel face, and naming the Room (rather than relying on node order) is what stops a
+    # later node swap silently building the channel into the living room. `alignment` holds
+    # the studs on x=216.000" against the assembly's new 7.27" asymmetry; without it the
+    # axis slides 1/4" and W-S-C1's `stacks_on` is inside `_axis_match`'s tolerance of
+    # dropping. Both are explained in full at the assembly (plan/assemblies.py).
     Wall(uid="CMW112AAAA", tag="W-M-C1", start_node="N-M-S1", end_node="N-M-C1",
-         assembly="CATLIN_INT_2X6_BRG", top=ft(9),
+         assembly="CATLIN_INT_2X6_BRG_RC", interior_room="RM-M-BED", top=ft(9),
+         alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CS"),
     Wall(uid="CMW113AAAA", tag="W-M-C2", start_node="N-M-C1", end_node="N-M-E4",
          assembly="CATLIN_INT_2X6_BRG", top=ft(9),

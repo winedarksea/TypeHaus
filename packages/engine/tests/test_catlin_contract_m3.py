@@ -319,8 +319,14 @@ def test_centerline_bearing_wall_runs_full_length_on_both_framed_storeys(catlin_
             # PLANT_INT_2X6_BRG_HUMID is the same 2x6 bearing line with the plant room's
             # humid liner on its west face (2026-08-18) — a finish decision on one segment,
             # not a break in the stack, so it counts toward the run like any other segment.
+            # CATLIN_INT_2X6_BRG_RC (2026-08-31, W-M-C1 only) is the identical case one
+            # storey down: the same 2x6 studs on the same layout line, with a resilient
+            # channel and a batt added on the RM-M-BED face. A channel is finish furring
+            # carrying nothing, and the wall's `alignment` holds its studs on x=18'-0"
+            # exactly where the plain assembly had them, so the run is unbroken.
             if w.storey == storey
-            and w.assembly in ("CATLIN_INT_2X6_BRG", "PLANT_INT_2X6_BRG_HUMID")
+            and w.assembly in ("CATLIN_INT_2X6_BRG", "PLANT_INT_2X6_BRG_HUMID",
+                               "CATLIN_INT_2X6_BRG_RC")
             and abs(w.axis[0][0] - center_x) < 1e-6 and abs(w.axis[1][0] - center_x) < 1e-6
         ]
         assert segments, storey

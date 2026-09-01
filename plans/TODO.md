@@ -505,6 +505,7 @@ the future.
 
 ## Questions:
 - Do we want floor drains in kitchen/laundry room (deferred 2026-07-30: neither, for now)
+- Rename all the wall assemblies to just their type (no need for "CATLIN" in them) and make sure they are in the library
 - **The showers are still unclassified.** Same axis, same rules, same question to answer
     first: what is actually behind the tile. The sauna is the worked example of what
     answering it costs — a liner variant on the wall that turned out not to have one.
@@ -589,7 +590,10 @@ the future.
   The modelling half is **done (2026-08-31)**: `FX-TOILET-WH` draws and models as a
   tankless wall-hung bowl (`toilet-wall-hung` symbol), its carrier is a first-class framing
   keepout with its own flanking studs and blocking, the type states its own wall-drainage
-  so no instance override is needed, and `advisory.carrier_bay` grades the host wall.
+  so no instance override is needed, and `advisory.carrier_bay_depth` /
+  `advisory.carrier_bay_conflict` grade the host wall and what else is in it. The carrier
+  is also its own price line now (`plumbing-wall-hung-wc-carrier`), split out of the
+  `FX-TOILET-WH` fixture row so the framing-stage cost is billed where it is incurred.
 
 * **Is this enough glazing for light-feeling rooms (along with LED strips, etc)?** Still
   open, and deliberately: 8% is the code minimum, not an answer about how a room feels. But

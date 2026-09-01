@@ -15,6 +15,11 @@ from typehaus.model.elements import Door, Wall
 from typehaus.model.enums import LayerFunction, PartitionLayout
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.framing.backing import append_blocking_rows, append_tee_backing
+from typehaus.resolve.framing.carriers import (
+    append_carrier_framing,
+    carrier_bands,
+    carrier_keepouts,
+)
 from typehaus.resolve.framing.corners import (
     CORNER_ROLE_BUTTING,
     CORNER_ROLE_OWNER,
@@ -72,6 +77,7 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
                neighbour_insets_start: tuple[float, float] | None = None,
                neighbour_insets_end: tuple[float, float] | None = None,
                stud_keepouts: tuple[tuple[float, float], ...] = (),
+               carrier_bays: tuple[tuple[float, float], ...] = (),
                continuation_start: str | None = None,
                continuation_end: str | None = None,
                line: object | None = None) \
@@ -88,6 +94,12 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     segmentation at a tee is an authoring convention — the two walls are one plane, one
     assembly and one set of plates — so the leaf really does travel through here, and a
     module stud in its path is a door that will not open. See ``_pocket_keepouts``.
+
+    ``carrier_bays`` are the (centre, half-CLEAR-width) bands of any in-wall fixture
+    carrier standing in this wall. They arrive in ``stud_keepouts`` as well — the
+    module has to part around them for the same reason — but a carrier bay, unlike a
+    pocket cavity, is framed rather than merely left alone, so it is passed again
+    here for ``append_carrier_framing`` to put its flanking studs and blocking in.
 
     ``continuation_start``/``continuation_end`` mark an end where this wall simply *carries
     on* into a collinear neighbour that shares its grid — the two halves of one real wall,
@@ -283,6 +295,12 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     # --- in-line blocking courses (fire/backing blocking) ---------------------
     append_blocking_rows(members, rw, spec, member, d, p0, stud_z0, module_spacing,
                          stud_stations, top_at)
+
+    # --- in-wall fixture carriers --------------------------------------------
+    # After the module, because the bay's flanking studs replace the module studs the
+    # keepout removed; before nothing, because nothing else reads them.
+    append_carrier_framing(members, rw, frame_member, d, p0, stud_z0, axis_len, top_at,
+                           carrier_bays)
     return tuple(members)
 
 
@@ -559,6 +577,11 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             pocket_sign=op.pocket_sign,
         ))
     keepouts = pocket_keepouts(plan, model)
+    # Two producers, one seam. A carrier bay and a pocket cavity are the same instruction to
+    # the module — "no stud here" — so they merge before ``frame_wall`` sees either.
+    bays_by_wall = carrier_bands(plan, model)
+    for wall_tag, bands in carrier_keepouts(plan, model).items():
+        keepouts.setdefault(wall_tag, []).extend(bands)
     authored_walls = {element.tag: element for element in plan.all_elements()
                       if isinstance(element, Wall)}
     # Pure topology (owner/butting/neighbour), shared with ``truss_wall.frame_truss_walls``'s
@@ -706,6 +729,7 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                                  rw, "end", framing_start, framing_direction,
                                  framing_len),
                              stud_keepouts=tuple(keepouts.get(rw.tag, ())),
+                             carrier_bays=tuple(bays_by_wall.get(rw.tag, ())),
                              continuation_start=continuations.get((rw.tag, "start")),
                              continuation_end=continuations.get((rw.tag, "end")),
                              line=lines_for_wall.get(rw.tag))

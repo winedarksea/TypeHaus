@@ -1689,7 +1689,10 @@
 # buy or less to set than the bare tub. Three orderings are now enforced and are the first
 # thing to re-check if any of these rows is edited:
 #   FX-TUBSHOWER-60 > FX-TUB-60   (the combo contains the tub)
-#   FX-TOILET-WH    > FX-TOILET-STD  (a carrier and an in-wall tank are most of the price)
+#   FX-TOILET-WH    > FX-TOILET-STD  (bowl against bowl since 2026-08-31 — the carrier and
+#                                     the in-wall tank, which used to BE most of this
+#                                     margin, are now `plumbing-wall-hung-wc-carrier` in
+#                                     [allowances]; see the row's own note below)
 #   FX-LAV-24       > FX-LAV-COMPACT (a 24" lav with its vanity against an 18" powder bowl)
 # The basis is the section's, unchanged: unit price PLUS SET-AND-CONNECT LABOUR ONLY. Rough-
 # in is billed by the foot in [pipe_runs]; the tub and shower surrounds are tile in
@@ -1773,9 +1776,33 @@
 # version of this wall is NOT here — see the basis note above.
 "FX-SHOWER-36" = { material = { low = 300, high = 1000 }, labour = { low = 200, high = 470 } }  # 2 ea
 "FX-TOILET-STD" = { material = { low = 180, high = 700 }, labour = { low = 110, high = 260 } }  # 4 ea
-# Wall-hung: the carrier and in-wall tank are most of the price, hence ~3x the floor unit,
-# and the carrier is set during framing rather than at trim-out.
-"FX-TOILET-WH" = { material = { low = 650, high = 1900 }, labour = { low = 360, high = 820 } }  # 1 ea
+# ** THE CARRIER CAME OUT OF THIS ROW ON 2026-08-31 AND IS NOW ITS OWN LINE. ** This row's
+# own comment had said for months that "the carrier is set during framing rather than at
+# trim-out", and then billed it here anyway, in a section whose basis is SET-AND-CONNECT
+# LABOUR ONLY at trim-out. A frame that a carpenter has to have standing before the drywall
+# goes on was hidden inside a plumbing-trim line, so nothing about the framing-stage cost
+# was visible where it is actually incurred.
+#
+# What is left here is the trim-out half and only that: the china, the seat and the hour of
+# setting it on a frame somebody else already plumbed. The frame, the concealed tank and the
+# actuator plate moved to `plumbing-wall-hung-wc-carrier` in [allowances], driven off this
+# same fixture count.
+#
+# ** THE SPLIT PRESERVES THE 2026-08-21 BAND EXACTLY, ON BOTH HALVES ** — this is a
+# re-partition of a researched number, not a re-pricing of it:
+#     material  650-1900  =  230-1000 (bowl + seat, here)  +  420-900 (carrier, allowance)
+#     labour    360-820   =  210-500  (set and connect)    +  150-320 (set the frame)
+# The bowl half is a wall-hung china against a floor-mount close-coupled unit: TOTO/Duravit/
+# Kohler wall-hung bowls run above their floor-mount siblings on the same street listings,
+# which is why the ordering below still holds after the carrier leaves.
+#
+# ** THE `FX-TOILET-WH > FX-TOILET-STD` INVARIANT AT THE TOP OF THIS SECTION STILL HOLDS, AND
+# IT NOW MEANS SOMETHING NARROWER: ** bowl against bowl, 230-1000 vs 180-700 on material and
+# 210-500 vs 110-260 on labour. It is a thinner margin than the old ~3x, and that is honest —
+# most of the ~3x WAS the carrier, and the carrier is no longer in this comparison. Read the
+# two lines together (this row + the allowance) before concluding anything about what a
+# wall-hung WC costs.
+"FX-TOILET-WH" = { material = { low = 230, high = 1000 }, labour = { low = 210, high = 500 } }  # 1 ea
 "FX-TUB-60" = { material = { low = 400, high = 1600 }, labour = { low = 330, high = 800 } }  # 1 ea
 # THE CHOSEN BATH — Kohler K-5713-W1-0 Underscore with the Bask heated surface, RM-M-BATH2
 # (plan/products.py, plan/fixture_types.py). This row is a real product, not a class
@@ -4228,6 +4255,25 @@ hvac-exhaust-boot-transitions = { low = 20, high = 50, unit = "ea", driver = "du
 # `pipe_runs`, and the count that would otherwise drive it — air handlers and the ERV — is
 # spread across [placeables] types rather than reported as a coil count.
 plumbing-condensate-drains-and-pumps = { low = 600, high = 1600 }
+# NEW 2026-08-31, and it is a MOVE, not an addition: the frame, the concealed tank and the
+# actuator plate came out of [placeables]"FX-TOILET-WH" (see that row) so the framing-stage
+# half of a wall-hung WC is billed where it is incurred. Nothing else prices this scope —
+# the flanking studs and the head/base blocking the bay needs ARE separately billed, as
+# lumber, through [framing], which is right: they are sticks, and this row is the frame.
+# $420-900 is a Geberit Duofix element with a Sigma concealed tank ($350-600) plus an
+# actuator plate ($70-300, a Sigma01 at the low end and a designer plate at the high), and
+# $150-320 is standing, levelling, anchoring and roughing it before the drywall.
+# DRIVEN off the wall-hung fixture count — 1. `haus takeoff` lists this among the driven
+# allowances measured off rows another section prices; it is a MEASUREMENT (how many frames
+# are there), not a second bill, because the carrier is exactly what [placeables] no longer
+# carries. A second wall-hung WC adds a second frame by itself.
+# SPLIT material/labour rather than a lump, deliberately: an allowance's default is a
+# MERGED price, and [tax] cannot reach the material half of a merged line, so moving $420-900
+# of china-shop material into a lump would have quietly untaxed it. The split keeps the whole
+# ladder — waste, contingency, markup and tax — identical to what the un-split fixture row
+# produced. Splitting is legal here because the two halves ARE separately known; this is not
+# the forbidden move of dividing a merged installed price.
+plumbing-wall-hung-wc-carrier = { material = { low = 420, high = 900 }, labour = { low = 150, high = 320 }, unit = "ea", driver = "placeables.count[type=FX-TOILET-WH]" }
 electrical-radon-fan-smoke-co-surge-and-commissioning = { low = 2450, high = 8000 }
 # Separate from the building permit, which is in the soft-cost row below.
 permits-mep = { low = 1500, high = 4000 }
