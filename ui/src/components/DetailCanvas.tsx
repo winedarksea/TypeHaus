@@ -130,6 +130,10 @@ const DETAIL_FILL: Record<string, string> = {
   // identically to a mechanically seamed pan. Mirrors emit/draw/palette.py DETAIL_FILL.
   "standing-seam-snaplock": "#2f2f2f", "standing-seam-nailstrip": "#2f2f2f",
   "standing-seam-nailstrip-26": "#2f2f2f", "pbr-panel-26": "#2f2f2f",
+  // Six metal skins now: the north/south board & batten panel (2026-08-31) draws the same
+  // detail ink again. Mirrors emit/draw/palette.py DETAIL_FILL — test_detail_fill_parity.py
+  // fails if this table and that one disagree.
+  "board-batten-24": "#2f2f2f",
   "fiber-cement": "#e6e6e6",
   "cedar-tg": "#c8a26a", "sauna-shiplap": "#e6d4ae", "resilient-channel": "#91979d",
   aggregate: "#7f7f7f", "river-rock": "#a9a9a9", soil: "#d2b48c",

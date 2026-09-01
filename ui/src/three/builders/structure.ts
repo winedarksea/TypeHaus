@@ -428,6 +428,12 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
       faces.push([layerOffsetAt(a, base), layerOffsetAt(b, top), layerOffsetAt(a, top)]);
     }
     const geo = createProjectedSurfaceGeometry(faces, center);
+    // KNOWN GAP, recorded rather than fixed (2026-08-31): a ROOF plane is dispatched on the
+    // `isStandingSeam` SUBSTRING test alone and never consults the material's declared
+    // `finish`, which is what `metalPanelProfileForFinish` exists for and what every WALL
+    // panel goes through. It costs nothing today — every roof in this model is tagged
+    // "standing-seam" and the substring finds it — and it would silently draw a seam recipe
+    // on the day a roof wears a ribbed, corrugated or board & batten profile.
     const seam = layer.function === "cladding" && isStandingSeam(layer.material);
     const mat = seam
       ? createStandingSeamMaterial(mode, [Math.sqrt(roof.surface_area_m2), Math.sqrt(roof.surface_area_m2)])

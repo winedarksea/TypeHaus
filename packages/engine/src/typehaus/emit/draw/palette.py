@@ -133,6 +133,10 @@ DETAIL_FILL: dict[str, str] = {
     # needle in `_FAMILY_NEEDLES` ("clad"/"metal"/"seam" are all absent from it), so without
     # this row it would draw as the near-white fallback with no hatch.
     "pbr-panel-26": "#2f2f2f",
+    # The north/south board & batten panel (2026-08-31) draws as the same metal ink for the
+    # reason given just above: a section shows a metal skin. Listed explicitly because these
+    # tables match by TAG — `board-batten-24` hits no `_FAMILY_NEEDLES` needle either.
+    "board-batten-24": "#2f2f2f",
     "fiber-cement": "#e6e6e6",
     "cedar-tg": "#c8a26a",
     "sauna-shiplap": "#e6d4ae",
@@ -221,6 +225,7 @@ DETAIL_HATCH: dict[str, str] = {
     "standing-seam-nailstrip": "metal",
     "standing-seam-nailstrip-26": "metal",
     "pbr-panel-26": "metal",
+    "board-batten-24": "metal",
     "metal-dark-exterior": "metal",
     "kdat": "lumber",
     "aggregate": "gravel",

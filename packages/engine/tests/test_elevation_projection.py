@@ -218,6 +218,29 @@ def test_the_cladding_texture_reaches_the_face_fastened_panel(catlin_model):
     assert masonry, "the retaining wall's masonry courses should run horizontally"
 
 
+def test_the_board_and_batten_wall_draws_battens_and_not_seam_pitch(catlin_model):
+    """The north/south panel is CONCEALED-fastened and declares ``skin_family``, so on the
+    two flags alone ``_recipe_for`` would fall through to ``_SEAM_PITCH_M`` and draw a 16"
+    seam rhythm on a wall whose battens stand at 20". The finish is asked FIRST, ahead of
+    the ``exposed_fastener`` gate, which is what this pins.
+
+    Measured as the modal gap between adjacent module lines rather than as any one pair: the
+    lines are clipped to what is visible, so a run beside an opening is a stub.
+    """
+    from typehaus.emit.draw.elevation_finish import _BATTEN_PITCH_M, _SEAM_PITCH_M
+
+    scene = build_elevation(catlin_model, "south")
+    stations = sorted({round(node.points[0][0], 4)
+                       for node in _polylines(scene, "A-WALL-FINI")
+                       if node.tag and node.tag.startswith("W-M-S")
+                       and abs(node.points[0][0] - node.points[-1][0]) < 1e-6})
+    assert len(stations) > 5, "the main south facade drew no cladding module at all"
+    gaps = [round(b - a, 3) for a, b in zip(stations[:-1], stations[1:], strict=True)]
+    pitch_in = max(set(gaps), key=gaps.count)
+    assert pitch_in == pytest.approx(_BATTEN_PITCH_M / M_PER_IN, abs=0.01)
+    assert pitch_in != pytest.approx(_SEAM_PITCH_M / M_PER_IN, abs=0.01)
+
+
 def test_cladding_texture_stays_inside_the_visible_facade(catlin_model):
     scene = build_elevation(catlin_model, "south")
     walls = _polylines(scene, "A-WALL")

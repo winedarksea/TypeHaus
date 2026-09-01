@@ -2293,6 +2293,74 @@ MATERIALS = [
              color="#6b7076", finish="ribbed-panel",
              skin_family="standing-seam", exposed_fastener=True,
              source="26 ga. PVDF-coated steel PBR (purlin-bearing rib) wall panel, 36\" net coverage, 1-1/4\" major ribs at 12\" o.c., face-fastened with gasketed screws; same white paint and the same vapour-impermeable sheet steel as the four skins above"),
+    # `board-batten-24` (2026-08-31) — 24 ga CONCEALED-FASTENER board & batten at 20" net
+    # coverage, on the NORTH AND SOUTH elevations only. The sixth metal skin. The east and
+    # west walls stay on `pbr-panel-26` above, which is why that row is still here: this is
+    # a per-wall `layer_materials=` swap on twenty walls, not an assembly change.
+    #
+    # 24 ga, not 26: PVDF is generally only offered on 24 ga board & batten, so 26 ga in
+    # this coating system may not be a purchasable combination at all. The gauge step is not
+    # optional and it is most of the material premium.
+    #
+    # 20" net coverage, not 16": Western States names 12" and 20" as their cost-effective
+    # widths and 16" carries an unpublished upcharge. 20" is also 1.8x PBR's panel count
+    # where 16" would have been 2.25x, which is why the labour uplift is at the low end of
+    # the researched band.
+    #
+    # Standard white PVDF and not the wood-grain print: "white wood" is CERAM-A-STAR SMP, a
+    # different coating system and warranty from the PVDF on the rest of the envelope, costs
+    # about as much again as the switch itself, and is not quoted below a $3,000 job minimum.
+    #
+    # ** The 32" girts constrain the SUPPLIER, and that has to survive a substitution. **
+    # Board & batten is not a purlin-bearing profile: PBR at 32" o.c. carries ~160 psf
+    # negative under ICC-ES ESR-4729, board & batten is ~51 psf (24 ga, interpolated from
+    # Metal Sales' table, the only one published) and appears nowhere in ESR-4729. Against
+    # the -20 to -35 psf corner-zone demand it still passes, but the margin drops from ~4.5x
+    # to ~1.5x. Of eight manufacturers surveyed only Western States ("most details in this
+    # guide are shown with panels attached to open framing") and Metal Sales permit open
+    # girts — McElroy lists solid deck only, Lyon caps furring at 18", Best Buy Metals says
+    # solid decking. Substituting any of those forces a second girt course or a continuous
+    # OSB layer, which costs more than the panel switch itself. The governing limit state
+    # becomes concealed-leg screw withdrawal, which nobody publishes at any spacing; see
+    # houses/catlin/notes/board_batten_girt_span.md and the `wall_panel/W-*` engineering
+    # items — this panel is ENGINEERED where PBR was PRESCRIPTIVE.
+    #
+    # ** `exposed_fastener` is deliberately ABSENT (defaults False). ** A concealed-leg
+    # panel's pancake screws are inside the $/SF rate, and leaving the flag on would bill
+    # them a second time as a counted part. This is what drops the house's face-screw count
+    # to the garage's corrugated share plus the E/W walls'.
+    #
+    # ** `skin_family="standing-seam"` is load-bearing for the ROOF EDGE, exactly as it is
+    # on `pbr-panel-26`. ** `resolve.roof_edge_geometry.continuous_skin_cladding` returns
+    # True only when every wall under a roof reads as ONE skin, and in the mixed case that
+    # is precisely what this field buys: two materials both declaring it collapse to
+    # {"standing-seam"} and the flush zero-overhang edge survives on all four edges. Omit it
+    # and the edge silently reverts to fascia-and-drip-edge, including on the PBR walls.
+    #
+    # ** Thickness stays 1-1/4", and that is not a rounding. ** The cladding face is
+    # hand-transcribed into house constants that feed the north/south faces this material
+    # lands on: `params/roof_trim.py` `_WALL_OUTBOARD_IN`, `params/breezeway.py`
+    # `_HOUSE_CLADDING_Y`, `params/sunken_garden.py` `gap_to_house_in`, and the exterior
+    # devices in `plan/electrical.py`. The roof footprint re-derives from the bearing walls'
+    # outermost layer polygons and those constants do not, so any thickness change makes
+    # derived geometry and authored constants silently disagree at the rake ends. Steel
+    # board & batten is commonly 1"-1-1/4", so specifying 1-1/4" makes that problem vanish.
+    # `panel_allowable_psf` / `panel_allowable_span_in` are the manufacturer's published
+    # ALLOWABLE (ASD) uniform negative load and the span it was read at, and they are here
+    # rather than in the engine because they are a product fact. 51 psf at 32" is
+    # INTERPOLATED from Metal Sales' 24 ga board & batten table — the only span table any of
+    # the eight manufacturers surveyed publishes for this profile — and Western States, the
+    # assumed supplier, publishes none at all. **Treat it as the weakest number in this
+    # material.** `engineering/wall_panel.py` compares it against the ASCE 7-16 corner-zone
+    # suction and reports the item INCOMPLETE whatever the ratio, because the limit state
+    # that actually governs a concealed panel is withdrawal of the hidden leg's screws and
+    # nobody publishes that at any spacing.
+    Material(tag="board-batten-24", name="Board & batten concealed-fastener steel panel, 24 ga.",
+             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
+             color="#6b7076", finish="board-and-batten",
+             skin_family="standing-seam",
+             panel_allowable_psf=51.0, panel_allowable_span_in=32.0,
+             source="24 ga. PVDF-coated steel board & batten wall panel, 20\" net coverage, ~2\" applied batten, concealed-leg pancake screws over open girts (Western States Metal Roofing / Metal Sales are the two manufacturers permitting open framing); same white paint and the same vapour-impermeable sheet steel as the five skins above"),
     Material(tag="polyiso-foil", name="Foil-faced polyisocyanurate", r_per_inch=6.0,
              perm_rating=0.03, hatch="rigid", color="#d9d2a8", foam_plastic=True,
              source="foil facer is the sauna's vapour retarder as well as its CI"),

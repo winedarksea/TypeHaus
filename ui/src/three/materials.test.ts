@@ -12,6 +12,8 @@ import {
   metalPanelProfileForFinish,
   CORRUGATED_PROFILE,
   CORRUGATED_PITCH_M,
+  BOARD_BATTEN_PROFILE,
+  BATTEN_PITCH_M,
   panelTileSizeM,
   isStandingSeam,
   RIBBED_PANEL_PROFILE,
@@ -166,6 +168,36 @@ export function runMaterialGeometryTests() {
     "Anti-oil-canning striations are rolled into FLATS, and a corrugation has none");
   assert(CORRUGATED_PROFILE.oilCanning < RIBBED_PANEL_PROFILE.oilCanning,
     "Continuous corrugation stiffens the sheet, so it wanders less than a wide flat pan");
+
+  // ── The board & batten profile (2026-08-31) ──────────────────────────────────────────
+  // The house's NORTH AND SOUTH walls went to 24 ga concealed-fastener board & batten at
+  // 20" net coverage; east and west stay on PBR. `board-batten-24` contains neither "seam"
+  // nor "standing" either, so it too reaches the metal treatment only through its finish —
+  // and unlike the other two it DOES declare `skin_family="standing-seam"`, for the roof
+  // edge's sake, which is a field the viewer never consults.
+  assert(!isStandingSeam("board-batten-24"),
+    "The substring test cannot reach board & batten either — the finish dispatch does");
+  assert(metalPanelProfileForFinish("board-and-batten") === BOARD_BATTEN_PROFILE,
+    "An authored finish of 'board-and-batten' selects the board & batten profile");
+  assert(Math.abs(BOARD_BATTEN_PROFILE.moduleM - BATTEN_PITCH_M) < 1e-9,
+    "The batten pitch is the panel's 20in net coverage, the widest module of the four");
+  assert(BOARD_BATTEN_PROFILE.moduleM > SEAM_PROFILE.moduleM
+    && BOARD_BATTEN_PROFILE.moduleM > RIBBED_PANEL_PROFILE.moduleM,
+    "20in is wider than a 16in seam pan and far wider than a 12in PBR rib pitch");
+  // These three are what stop board & batten rendering as PBR with a wider pitch.
+  assert(BOARD_BATTEN_PROFILE.ribHalfWidth < RIBBED_PANEL_PROFILE.ribHalfWidth,
+    "A batten is NARROW relative to its module where a PBR rib is not");
+  assert(BOARD_BATTEN_PROFILE.squareness > RIBBED_PANEL_PROFILE.squareness,
+    "A batten is a square applied cap; a PBR crown is roll-formed and a seam is folded");
+  assert(BOARD_BATTEN_PROFILE.striations === 0,
+    "A 20in pan is smooth — striations are rolled into narrow flats");
+  assert(BOARD_BATTEN_PROFILE.oilCanning > RIBBED_PANEL_PROFILE.oilCanning,
+    "A concealed panel floats between its legs instead of being screwed tight every 24in, "
+    + "and a wider pan wanders more — this is the term that says board & batten");
+  // A ~2in cap on a 20in module: `ribHalfWidth` is the HALF width, so the drawn batten is
+  // 2 x 0.05 x 20in. Pinned because copying PBR's fraction would draw a 5-1/2in one.
+  assert(Math.abs(2 * BOARD_BATTEN_PROFILE.ribHalfWidth * BATTEN_PITCH_M - 0.0508) < 1e-4,
+    "The batten draws about 2in wide, the wide end of the profile's real range");
 
   // The Ishtar scheme (2026-08-20): three more brick faces on the sunken garden's wythe.
   // Every one of them is a tag substring inference CANNOT reach — "glazed-lapis-brick" and

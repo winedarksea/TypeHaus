@@ -28,6 +28,7 @@ from typehaus.engineering import (
     retaining_system,  # noqa: F401  (registration)
     retaining_wall,  # noqa: F401  (registration)
     spread_footing,  # noqa: F401  (registration)
+    wall_panel,  # noqa: F401  (registration)
 )
 from typehaus.engineering.fingerprint import Freshness, fingerprint
 from typehaus.engineering.item import (
@@ -60,5 +61,5 @@ __all__ = [
     "Signoff", "Status",
     "calc", "fingerprint", "item_id", "keys", "load_register", "no_calc", "records_of",
     "deck_post", "registered_kinds", "retaining_system", "retaining_wall",
-    "spread_footing",
+    "spread_footing", "wall_panel",
 ]

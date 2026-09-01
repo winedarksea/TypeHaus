@@ -137,6 +137,10 @@ export function familyOf(materialRef: string | null | undefined): string | null 
 // Mirrors _FINISH_BASE in packages/engine/src/typehaus/emit/gltf/palette.py — the .glb and the
 // viewer must agree, and the family guess is wrong for finish variants (a charcoal trim coil
 // is "metal" by family, which would paint it the palette's blue-grey).
+// KNOWN GAP (2026-08-31): NOTHING TESTS THAT THIS TABLE AND ITS PYTHON MIRROR AGREE.
+// `test_detail_fill_parity.py` does that job for DETAIL_FILL and there is no equivalent for
+// the finish bases, so the two are kept in step by this comment convention alone. A row
+// added here and forgotten there is a .glb that disagrees with the viewer, silently.
 const FINISH_BASE: Readonly<Record<string, string>> = {
   "metal-dark-exterior": "#1c1f24",
   // The exposed-fastener PBR panel: the same white as the seamed skin (0xE8E8E2), which is
@@ -147,6 +151,11 @@ const FINISH_BASE: Readonly<Record<string, string>> = {
   // this table is matched exactly and a finish with no row falls to the "metal" family's
   // blue-grey. Mirrors _FINISH_BASE in emit/gltf/palette.py.
   "corrugated": "#e8e8e2",
+  // The house's north/south board & batten panel (2026-08-31): the same coil white a FOURTH
+  // time — one paint, four profiles across the site. Its own row rather than a shared key,
+  // because this table is matched exactly and a finish with no row falls to the "metal"
+  // family's blue-grey. Mirrors _FINISH_BASE in emit/gltf/palette.py.
+  "board-and-batten": "#e8e8e2",
   // Cellular PVC trim (the garage SOFFIT; its fascia went to formed metal on 2026-08-26)
   // is factory-white, not the "siding" family's blue-grey the substring guess falls to.
   // Mirrors _FINISH_BASE in emit/gltf/palette.py.

@@ -491,6 +491,17 @@ class TrimKind(Enum):
     # screened. The closure is a lineal run, not a piece of hardware, so it lives here with
     # the other edge runs rather than in ``ConnectorKind``.
     BUG_SCREEN = "bug_screen"            # vented insect closure at a rainscreen cavity base
+    # The vertical closure where two wall cladding runs meet at a building corner. The
+    # engine models no wall-to-wall corner trim of its own: ``corner_trim`` in
+    # ``takeoff/edge_trim.py`` is exclusively the ROOF-edge piece derived by
+    # ``resolve/roof_trim.py`` from the ROOF's cladding, and it never consults wall
+    # materials — so a corner where two different wall panels meet did not error and did not
+    # pick wrong, it simply billed nothing. Its own kind rather than ``DRIP_FLASHING`` for
+    # two reasons: the price key IS the category, so it would otherwise disappear into the
+    # roof's drip-edge row; and ``DRIP_FLASHING`` is a BANDED section (a bent angle with a
+    # turn-down, ``_BANDED_SECTIONS`` in resolve/accessories.py), which is not the section a
+    # corner closure has. Authored with ``Flashing(vertical=True)``.
+    WALL_CORNER = "wall_corner"
 
 
 class UtilityKind(Enum):

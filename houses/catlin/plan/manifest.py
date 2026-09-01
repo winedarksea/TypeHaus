@@ -158,6 +158,10 @@ PLAN = (
         [*main.ELEMENTS, *fixtures.MAIN_FIXTURES, *fixtures.PORCH_HYDRANT,
          *sunken_garden.MAIN_ELEMENTS,
          *breezeway.MAIN_ELEMENTS, *main_deck.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS,
+         # The four wall corners where the north/south board & batten meets the east/west
+         # PBR. Filed on `main` (the run starts below the main datum) though the module
+         # that derives them is the roof eave's — it owns the cladding-face constant.
+         *roof_trim.MAIN_ELEMENTS,
          *electrical.MAIN_ELEMENTS, *lighting.MAIN_LIGHTING,
          *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES,
          *millwork.MILLWORK, *millwork.MAIN_SHELVES],

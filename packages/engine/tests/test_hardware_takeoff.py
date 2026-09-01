@@ -671,16 +671,26 @@ def test_catlin_bills_panel_screws_on_the_house_and_garage_walls(catlin_model) -
         assert row["part_number"] == "T09150HWAM" and row["size"] == "1.5 in"
         assert row["count"] == sum(row["by_storey"].values()) > 0
         # Every storey with an exposed-fastener wall skin bills here, garage included.
-        assert set(row["by_storey"]) == {"attic", "garage", "main", "second"}, row["by_storey"]
+        #
+        # ** AND THE ATTIC IS NOT ONE, SINCE 2026-08-31. ** The house's north and south
+        # elevations went to `board-batten-24`, a CONCEALED-fastener panel, and the attic
+        # storey is nothing BUT gable — both its wall lines face north and south, so it has
+        # no face-fastened skin left at all. `main` and `second` still bill their east and
+        # west PBR. That is this test's own guard from the other direction: a storey drops
+        # off these rows when its last exposed-fastener panel goes, and the attic coming
+        # back would mean a concealed panel was being screw-counted.
+        assert set(row["by_storey"]) == {"garage", "main", "second"}, row["by_storey"]
     field = next(r for r in rows if r["scope"].endswith("field"))
     sidelap = next(r for r in rows if r["scope"].endswith("sidelap"))
     assert "12 in o.c." in field["basis"] and "24 in o.c." in field["basis"]
     assert "openings not deducted" in field["basis"]
     assert "36 in panel coverage" in sidelap["basis"]
     assert field["count"] > sidelap["count"] > 0
-    # 2,599 field / 664 sidelap: 2,099/524 house PBR + 500/140 garage corrugated. The garage
-    # count is a known approximation — ``ExposedFastenerCladdingRules`` hard-codes PBR's 12"
-    # rib pitch and 36" coverage rather than corrugated's 2-2/3"/32" (prices.toml, `S-5-N`
-    # row) — recorded there rather than fixed for one building.
-    assert field["count"] == 2599 and field["by_storey"]["garage"] == 500
-    assert sidelap["count"] == 664 and sidelap["by_storey"]["garage"] == 140
+    # 1,430 field / 374 sidelap: 930/234 house PBR (EAST AND WEST ONLY since 2026-08-31 —
+    # the north and south elevations are concealed-fastener board & batten) + 500/140 garage
+    # corrugated. It was 2,599/664 while the whole house was PBR. The garage count is a
+    # known approximation — ``ExposedFastenerCladdingRules`` hard-codes PBR's 12" rib pitch
+    # and 36" coverage rather than corrugated's 2-2/3"/32" (prices.toml, `S-5-N` row) —
+    # recorded there rather than fixed for one building.
+    assert field["count"] == 1430 and field["by_storey"]["garage"] == 500
+    assert sidelap["count"] == 374 and sidelap["by_storey"]["garage"] == 140

@@ -242,6 +242,56 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   than authored as a `CavityFill`, and the outer girt is credited its own R although it stands
   outboard of the vent gap. `wall_r = 40` is NOT met. See the engineering note §7.
   See `notes/outie_window_truss_detail.md` and `notes/catlin_truss_engineering.md`.
+- **THE HOUSE WEARS TWO PANELS SINCE 2026-08-31: BOARD & BATTEN NORTH AND SOUTH, PBR EAST
+  AND WEST.** 1,678.3 SF of `board-batten-24` (24 ga concealed-fastener PVDF, 20" net
+  coverage) on the twenty walls whose faces run east-west; 1,416.6 SF of `pbr-panel-26`
+  stays on the other line. It is a per-wall `Wall.layer_materials` override on those twenty
+  and **nothing else** — no sibling assembly, no moved geometry, no new detail keys.
+  - **A sibling assembly was the obvious move and is the wrong one.** It would strip the oak
+    window stools from every window in a B&B wall (`plan/millwork.py` scopes them to
+    `("CATLIN_EXT_2X6",)`), mint new `opening_perimeter:` / `wall_roof:` / `wall_foundation:`
+    keys and goldens, break the exact-key star overrides in `plan/transitions.py`, and add a
+    key to every table keyed by assembly. `W-S-S1` is `PLANT_EXT_2X6_HUMID` while `W-S-W4` on
+    the other line is too — the plant room straddles the split, and the override handles it
+    without forking either assembly.
+  - **THICKNESS STAYS 1-1/4", AND THAT IS LOAD BEARING.** Four consumers hand-transcribe the
+    cladding face and all four feed the *north/south* faces this panel lands on:
+    `params/roof_trim.py::_WALL_OUTBOARD_IN`, `params/breezeway.py::_HOUSE_CLADDING_Y`,
+    `params/sunken_garden.py`'s `gap_to_house_in`, and the exterior devices in
+    `plan/electrical.py`. The roof footprint re-derives itself and those constants do not.
+  - **`skin_family="standing-seam"` is on BOTH panels and must stay.**
+    `continuous_skin_cladding` wants every wall under a roof to read as one skin; two
+    materials declaring it collapse to one key and the flush zero-overhang edge survives the
+    mixed case. Drop it and the edge reverts to fascia-and-drip-edge on **all four** edges,
+    PBR included.
+  - **`exposed_fastener` is deliberately ABSENT on it**, which is what dropped `T09150HWAM`
+    from 3,263 to 1,804 (640 garage + 1,164 E/W PBR) and folds the concealed pancake screws
+    into the $/SF rate. The `attic` storey vanished from those hardware rows entirely — it is
+    all gable, so it has no face-fastened skin left.
+  - **The appearance is TEN registrations, each of which falls through silently if missed** —
+    `BOARD_BATTEN_PROFILE` + the `metalPanelProfileForFinish` branch (`ui/src/three/materials.ts`),
+    `FINISH_BASE` (`ui/src/nordic/palette.ts`), `_FINISH_BASE` and `_METAL_PANEL_FINISHES`
+    (`emit/gltf/palette.py`), `DETAIL_FILL` + `DETAIL_HATCH` (`emit/draw/palette.py`), the
+    mirrored `DETAIL_FILL` (`ui/src/components/DetailCanvas.tsx`), and `_BATTEN_PITCH_M`
+    with a **finish-first** branch in `emit/draw/elevation_finish.py`. That last one is the
+    subtle one: this panel is concealed-fastened AND declares `skin_family`, so on the flags
+    alone it would draw 16" seam pitch, not 20" battens.
+  - **Four wall corners now bill, and did not before.** The engine models NO wall-to-wall
+    corner trim: `corner_trim` is exclusively the roof-edge piece. `TrimKind.WALL_CORNER` +
+    `Flashing.vertical` (mirroring `GlazingTrim.vertical`) close it — 89.5 LF over the four
+    corners, derived in `params/roof_trim.py` off `_WALL_OUTBOARD_IN` rather than
+    hand-transcribed a fifth time. Without `vertical` a 22'-4" corner bills as 1-1/4" of
+    metal, because `_EdgeRun.path` is a *plan* polyline.
+  - **It is ENGINEERED, not prescriptive (decision #65).** ESR-4729 covers PBR at 32" girts;
+    board & batten appears in no report, and the limit state that governs it — concealed-leg
+    screw withdrawal — is published by nobody. `wall_panel/<wall tag>` x 20 in
+    `haus engineering`, `INCOMPLETE` **even though bending passes at d/c 0.36**, oracled by
+    `notes/board_batten_girt_span.md`. **Only Western States and Metal Sales permit open
+    girts** of eight surveyed; substituting another forces a second girt course or a
+    continuous deck, which costs more than the panel switch.
+  - **The revert is deleting twenty `layer_materials=` lines.** `pbr-panel-26` and its
+    `prices.toml` row are still live on the other elevations. Delivered cost of the switch:
+    **+$2,200 to +$5,600** measured line-to-line against the day before.
 - **Every exterior corner is construction-correct, 4-stud, with a plywood box outboard of
   it (2026-08-25 audit).** Three findings and their fix:
   - **The grid is struck from the building's outside sheathing corner.** All four facade

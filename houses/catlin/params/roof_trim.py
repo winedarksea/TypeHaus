@@ -322,3 +322,65 @@ ATTIC_ELEMENTS = [
     _leader("W", 1, _EAVE_X_W, -1.0), _leader("E", 2, _EAVE_X_E, 1.0),
     *_rake_corner_drips("S", 1, 3, _EAVE_Y0), *_rake_corner_drips("N", 2, 4, _EAVE_Y1),
 ]
+
+
+# --- the four wall corners, where board & batten meets PBR (2026-08-31) -------------------
+#
+# ** THE ENGINE MODELS NO WALL-TO-WALL CORNER TRIM AT ALL. ** ``corner_trim`` in
+# ``takeoff/edge_trim.py`` is exclusively the ROOF-edge piece, the one this module's
+# docstring describes, derived by ``resolve/roof_trim.py`` from the ROOF's cladding — it
+# never consults a wall material. So the PBR-to-board-&-batten corner did not error and did
+# not pick the wrong metal: it simply billed nothing. That gap is closed here.
+#
+# ** WHY THIS IS IN ``params/`` AND NOT AN EDITABLE PLAN FILE. ** Every offset below is
+# measured off ``_WALL_OUTBOARD_IN``, the one constant the cladding face is measured by, and
+# the whole hazard this house already carries is that four *other* consumers of that face
+# hand-transcribe it (breezeway, sunken garden, the exterior devices, and this module's own
+# eave lines). The editable dialect forbids arithmetic, so authoring these in ``plan/`` would
+# mean transcribing 7 1/4" a fifth time. Derived here they move with the face; the cost is
+# that they are read-only in the UI, which is right for a piece that has no position of its
+# own — it is wherever the corner is.
+#
+# The SOLID needs no special case and gets none: a ``Flashing`` resolves as a vertical band
+# of height ``depth`` swept along its plan path, which for these is 8" of developed coil
+# swept the full height of the corner. The TAKE-OFF did need one — ``_EdgeRun.path`` is a
+# PLAN polyline and ``edge_trim_takeoff`` measured every run along it, so billed that way
+# these four came to 2.7 LF between them instead of 89.5. ``Flashing.vertical`` swaps which
+# axis is the run and which is the cross-section, mirroring ``GlazingTrim.vertical``, which
+# has carried exactly this fix for a jamb channel since it existed.
+_CORNER_LEG_IN = 4.0
+#: 21'-3" — the attic wall's top at every corner. All four land on the EAVE line and none on
+#: a gable rake (the ridge runs north-south), so the four runs are the same length.
+_CORNER_TOP = inch(255.0)
+#: Down to the resolved wall base, -1'-1 7/16" — the bottom of the cladding, not the datum.
+_CORNER_RUN = inch(255.0 + 13.4375)
+
+
+def _wall_corner(name: str, index: int, x, y, x_sign: float, y_sign: float):
+    """One formed outside corner: a 4" leg onto each face, meeting at the cladding corner.
+
+    8" of developed coil, one bend either side — the cheapest piece in either manufacturer's
+    wall-trim kit, and the same 4" leg the derived roof corner uses (``_TRIM_LEG_IN``).
+    """
+    return Flashing(
+        # `haus fmt` never visits `params/*.py`, so `uid=""` here would stay empty and
+        # collide every GlobalId — the uids are authored on the same structured pattern the
+        # eave chain above uses, and `integrity.duplicate_uid` is a hard load-time ERROR if
+        # one of them is ever reused.
+        uid=f"RTWC0{index}AAAA", tag=f"TR-H-CORNER-{name}",
+        kind=TrimKind.WALL_CORNER, vertical=True,
+        path=(pt(inch(x.inches + x_sign * _CORNER_LEG_IN), y),
+              pt(x, y),
+              pt(x, inch(y.inches + y_sign * _CORNER_LEG_IN))),
+        top_elevation=_CORNER_TOP, depth=_CORNER_RUN, thickness=inch(_TRIM_FACE_IN),
+        material="board-batten-24")
+
+
+#: Filed on ``main`` rather than ``attic``: the run starts below the main datum and the
+#: storey is a container, not a height.
+MAIN_ELEMENTS = [
+    _wall_corner("SW", 1, _EAVE_X_W, _EAVE_Y0, 1.0, 1.0),
+    _wall_corner("SE", 2, _EAVE_X_E, _EAVE_Y0, -1.0, 1.0),
+    _wall_corner("NE", 3, _EAVE_X_E, _EAVE_Y1, -1.0, -1.0),
+    _wall_corner("NW", 4, _EAVE_X_W, _EAVE_Y1, 1.0, -1.0),
+]

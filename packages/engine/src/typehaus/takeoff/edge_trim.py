@@ -98,10 +98,23 @@ def edge_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         for element in model.plan.storey_elements(storey.tag):
             if not isinstance(element, (Fascia, EaveSoffit, Flashing)):
                 continue
+            # A vertical run stands up the wall, so its length is its depth and its plan
+            # path spans only the material's thickness. Billing the path either way would
+            # charge a 25'-0" corner closure as 1-1/4" of formed metal. Mirrors
+            # ``takeoff/glazing.py``'s handling of ``GlazingTrim.vertical``.
+            path_m = _path_length_m([p.xy_m for p in element.path])
+            if getattr(element, "vertical", False):
+                # ...and the two axes swap in the cross-section too: what the shop brakes
+                # is the girth the plan path traces across the corner, by the material's
+                # thickness. Reading ``depth`` as the face would print the whole 25' run as
+                # the section.
+                length_m, face_m = element.depth.meters, path_m
+            else:
+                length_m, face_m = path_m, element.depth.meters
             rows.add(element.kind.value,
-                     _section_profile(element.depth.meters, element.thickness.meters),
+                     _section_profile(face_m, element.thickness.meters),
                      element.material or "", tag=element.tag,
-                     length_m=_path_length_m([p.xy_m for p in element.path]),
+                     length_m=length_m,
                      mirror="structural_solids")
     _add_derived_roof_trim(model, rows)
     return rows.finish()

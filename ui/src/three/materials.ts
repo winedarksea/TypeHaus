@@ -18,6 +18,8 @@ export const SEAM_PAN_WIDTH_M = 0.4064; // 16"
 export const RIBBED_PANEL_PITCH_M = 0.3048; // 12"
 /** Corrugation pitch of a 7/8" corrugated exposed-fastener panel. */
 export const CORRUGATED_PITCH_M = 0.0677; // 2-2/3"
+/** Batten pitch of a concealed-fastener board & batten panel: its 20" net coverage. */
+export const BATTEN_PITCH_M = 0.508; // 20"
 
 // 128 px per pan. At 256 (64 px/pan) the seam ridge was only ~4 px wide and mip generation
 // ate it unevenly, so the module survived at some distances and not others.
@@ -87,6 +89,35 @@ export const CORRUGATED_PROFILE: MetalPanelProfile = {
   striations: 0, oilCanning: 0.010,
 };
 
+/**
+ * Board & batten concealed-fastener panel: a flat 20" pan with a ~1-1/2" applied batten
+ * standing at each edge, screwed through a hidden leg. The house's north and south walls.
+ *
+ * The terms that separate it from "PBR with a wider module", which is exactly what it would
+ * read as if they were copied:
+ *  - `moduleM` = 20", the net coverage. Two and a half times a PBR rib pitch — the batten
+ *    rhythm is the thing you identify this panel by from across the street.
+ *  - `ribHalfWidth: 0.05` — a 2" batten on a 20" module (`ribHalfWidth` is the HALF width,
+ *    so the drawn cap spans `2 x 0.05 x 20"`). A batten is NARROW relative to its module in
+ *    a way no other profile here is, and copying PBR's 0.14 would draw a 5-1/2" one. 2" is
+ *    the wide end of the 1-1/2"-2" the profile is made in, chosen deliberately: the shared
+ *    512 px / 4-module canvas gives this cap only 6.4 px, and the module docstring records
+ *    that a ridge near 4 px is where mip generation starts eating it unevenly and the
+ *    rhythm survives at some distances and not others.
+ *  - `squareness: 0.9` — a batten is a square applied cap with parallel sides, squarer than
+ *    PBR's roll-formed crown (0.65) and far from a folded seam's point (0).
+ *  - `striations: 0` — anti-oil-canning striations are rolled into NARROW flats. A 20" pan
+ *    is smooth, which is half the reason it oil-cans as much as it does.
+ *  - `oilCanning: 0.028` — ABOVE PBR's 0.018 and near the seam profile's 0.03, and this is
+ *    the term that makes it read as board & batten rather than as wide PBR. A concealed
+ *    panel floats between its legs instead of being pulled tight to a girt every 24", and
+ *    a wider pan wanders more over the same span.
+ */
+export const BOARD_BATTEN_PROFILE: MetalPanelProfile = {
+  key: "board-and-batten", moduleM: BATTEN_PITCH_M, ribHalfWidth: 0.05, squareness: 0.9,
+  striations: 0, oilCanning: 0.028,
+};
+
 /** Tile size in meters for a profile, i.e. `PANS_PER_TILE` modules of it. */
 export function panelTileSizeM(profile: MetalPanelProfile = SEAM_PROFILE): number {
   return profile.moduleM * PANS_PER_TILE;
@@ -115,6 +146,7 @@ export function metalPanelProfileForFinish(
 ): MetalPanelProfile | null {
   if (finish === "ribbed-panel") return RIBBED_PANEL_PROFILE;
   if (finish === "corrugated") return CORRUGATED_PROFILE;
+  if (finish === "board-and-batten") return BOARD_BATTEN_PROFILE;
   if (finish === "standing-seam") return SEAM_PROFILE;
   return null;
 }

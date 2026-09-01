@@ -122,6 +122,12 @@ class Flashing(_EdgeRun):
     """
 
     kind: TrimKind = TrimKind.DRIP_FLASHING
+    # A VERTICAL run — a wall-to-wall corner closure, say — stands up the wall rather than
+    # along it, so its ``path`` spans only the cladding thickness and its ``depth`` is the
+    # run. Exactly the case ``GlazingTrim.vertical`` below records for a jamb channel, and
+    # honoured the same way in ``takeoff/edge_trim.py``: without it a 25' corner piece bills
+    # as 1-1/4" of formed metal, because ``_EdgeRun.path`` is a *plan* polyline.
+    vertical: bool = False
 
 
 class FasciaBoard(HausModel):

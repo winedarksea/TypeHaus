@@ -15,6 +15,7 @@ from typehaus import (
     JoistSpec,
     Layer,
     LayerFunction,
+    LayerMaterial,
     Node,
     Occupancy,
     Pitch,
@@ -100,13 +101,17 @@ NODES = [
          open_end=True),
 ]
 
+# North/south walls below carry the board & batten `layer_materials=` override — see the
+# note above WALLS in plan/storeys/main.py, and the Material in plan/assemblies.py.
 WALLS = [
     # Gable ends (south/north) — raked studs, sloped plates via ToRoof (WP3.11).
     Wall(uid="CAW101AAAA", tag="W-A-S1", start_node="N-A-SW", end_node="N-A-S1",
+         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-S1"),
     Wall(uid="CAW102AAAA", tag="W-A-S2", start_node="N-A-S1", end_node="N-A-S2",
+         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-S1"),
@@ -119,10 +124,12 @@ WALLS = [
     # centre either way. The merge is what gives WIN-A-S3 the wall it needs — a 14" RO at
     # 23'-4" needs 2" of edge distance and the old 18'..22'-8" piece had none to give.
     Wall(uid="CAW103AAAA", tag="W-A-S3", start_node="N-A-S2", end_node="N-A-SE",
+         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-S2"),
     Wall(uid="CAW104AAAA", tag="W-A-N1", start_node="N-A-NE", end_node="N-A-N1",
+         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-N1"),
@@ -137,10 +144,12 @@ WALLS = [
     # Its `stacks_on` had to move with the split: W-S-N2 is now under W-A-N2B, and the
     # west piece spans W-S-N3 and W-S-N3B, so it names W-S-N3 to break the tie.
     Wall(uid="CAW105AAAA", tag="W-A-N2", start_node="N-A-N3", end_node="N-A-NW",
+         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-N3"),
     Wall(uid="03GPR9ZAA5", tag="W-A-N2B", start_node="N-A-N1", end_node="N-A-N3",
+         layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-N2"),

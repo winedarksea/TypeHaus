@@ -65,6 +65,19 @@ class Material(HausModel):
     # default is False and only a panel that really is face-fastened opts in — the flag is
     # the double-billing guard, not a description of the profile.
     exposed_fastener: bool = False
+    # The published ALLOWABLE (ASD) uniform negative load this cladding panel carries, and
+    # the support spacing the manufacturer published it at. Both or neither: a psf with no
+    # span is not a capacity, it is a number, and `engineering/wall_panel.py` reports
+    # INCOMPLETE rather than guessing which row of a span table it came from. The engine
+    # ships no such value for any material — it is a product fact a house declares beside
+    # its own panel, with the source, exactly as `prices.toml` holds its own dollars.
+    #
+    # There is nothing to declare for a panel whose span is covered by an evaluation report
+    # the prescriptive path already reads (ICC-ES ESR-4729 covers PBR at these spacings);
+    # this exists for the concealed-fastener profiles that appear in no report, where the
+    # only published table is the manufacturer's own.
+    panel_allowable_psf: float | None = None
+    panel_allowable_span_in: float | None = None
     # Gypsum board grade, where the material *is* gypsum board. Not a general fire-rating
     # field: residential construction has exactly two rated assemblies (the garage/dwelling
     # separation and a dwelling-unit separation), and putting a fire-resistance rating on

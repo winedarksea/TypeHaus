@@ -687,14 +687,20 @@
 # because the garage ROOF is still nail strip and still carries its twelve.
 "S-5-N" = { low = 6, high = 10 }  # 12 ea — garage roof only, nail strip (was 28 with the walls)
 # 2026-08-26 — the exposed-fastener wall panel's own screws (takeoff/fasteners.py
-# `exposed_fastener_cladding_screw_rows`). 3,263 ea over two BOM rows: 2,599 field (one per
-# rib flat at every 24" support crossing) + 664 sidelap stitch (one line per panel-to-panel
+# `exposed_fastener_cladding_screw_rows`). 1,804 ea over two BOM rows: 1,430 field (one per
+# rib flat at every 24" support crossing) + 374 sidelap stitch (one line per panel-to-panel
 # JOINT, which is one fewer than the panel count on each run). Openings are NOT deducted, following the furring-screw convention — trim,
 # closures and jamb returns take those screws back.
 #
-# ** TWO PANELS ON ONE SKU SINCE 2026-08-31. ** 2,623 of these are the house's PBR
-# (CATLIN_EXT_2X6 / PLANT_EXT_2X6_HUMID) and 640 are the garage's 7/8" corrugated
-# (GARAGE_WALL_2X6, 500 field + 140 sidelap). It is genuinely one part: the SKU is chosen
+# ** IT FELL FROM 3,263 THE SAME DAY, and the drop is not a saving — it is the board & batten
+# switch. ** The north and south elevations went to `board-batten-24`, a CONCEALED-fastener
+# panel that deliberately does not set `Material.exposed_fastener`, so its pancake screws are
+# inside its own [envelope_layers] $/SF rate and are not counted here. What is left is the
+# east/west PBR and the garage.
+#
+# ** TWO PANELS ON ONE SKU SINCE 2026-08-31. ** 1,164 of these are the house's remaining
+# EAST/WEST PBR (CATLIN_EXT_2X6 / PLANT_EXT_2X6_HUMID) and 640 are the garage's 7/8"
+# corrugated (GARAGE_WALL_2X6, 500 field + 140 sidelap). It is genuinely one part: the SKU is chosen
 # by `screw_for_required_length` off panel thickness + support embedment, both panels are
 # 26 ga on wood, and both want the same 316 stainless gasketed washer head. The house count
 # was quoted as 3,098 here until this date, which was stale — the 2026-08-29 attic redesign
@@ -720,7 +726,7 @@
 # [basis_notes]. Labour is NOT here: driving them is inside the "pbr-panel-26" labour rate,
 # which is where the care they need (land in the flat, drive to gasket compression and no
 # further) is actually priced.
-"T09150HWAM" = { low = 0.579, high = 0.725 }  # 3,098 ea — 2,473 field + 625 sidelap
+"T09150HWAM" = { low = 0.579, high = 0.725 }  # 1,804 ea — 1,430 field + 374 sidelap
 # The through-panel pipe straps that replaced the CanDuit rings on the two roof leaders (#13,
 # 4.0" OD) and the north-gable vent riser (#11, 3.5" OD). A commodity 316 stainless two-hole
 # strap on a moulded standoff block, ~$2-4 the pair of holes; the range is per POINT and
@@ -729,7 +735,9 @@
 #
 # Roughly a fifth of the $15-22/point the ring-plus-clamp assembly cost. That saving is the
 # consequence of the cladding change, not its justification: on a wall already penetrated
-# 3,098 times, a non-penetrating fixing has nothing left to protect.
+# 1,164 times (3,098 when this was written; the north and south elevations went concealed on
+# 2026-08-31), a non-penetrating fixing has nothing left to protect. Both strapped runs are
+# on PBR walls and neither moved.
 "SS316-STANDOFF-STRAP #11" = { low = 2.5, high = 4.5 }  # 3 ea — vent riser
 # RESEARCHED 2026-08-28 — the eight through-deck anchors under the two balcony heat-pump
 # stands (params/sunken_garden.py::HP_STAND_ANCHORS). A 3/8" x 4" 316 stainless hex lag with a
@@ -1206,6 +1214,10 @@
 # 40-60 LF/hr — for a corrugated vent strip set as the cladding goes on. A 1" section is a
 # Cor-A-Vent SV-5 rather than the 3/4" SV-3, a few cents a foot dearer, and that is inside
 # this band. 144 LF x $2.00-4.50 = **$288-648**, which is what the line prints again.
+# ** UNCHANGED BY THE 2026-08-31 BOARD & BATTEN SWITCH, and worth saying so. ** The screen is
+# keyed on the ASSEMBLY's rainscreen cavity, and `layer_materials=` swapped a material and
+# nothing else — same 1/2" vent gap, same 1" section, same 144 LF, same 12.2 SF on the same
+# fourteen walls. The panel above it is board & batten on ten of them and PBR on four.
 "bug_screen:CATLIN_EXT_2X6" = { unit = "SF", material = { low = 9.5, high = 23.5 }, labour = { low = 14, high = 29.5 } }  # 12.2 SF = 144 LF
 # RETIRED 2026-08-20, kept for the rate. The garage lost its 3/8" rainscreen furring that
 # day, so GARAGE_WALL_2X6 has no vented cavity and bills no screen; the row is left because
@@ -2140,7 +2152,11 @@
 # cheaper profile, and that is the wall trim load: 20-35% on top of field panel is normal on
 # a concealed-fastener wall, and this wall has 45 openings.
 "standing-seam-snaplock" = { material = { low = 3.75, high = 7 }, labour = { low = 5, high = 9 } }
-# 3,670.7 SF — the house walls, CATLIN_EXT_2X6 and PLANT_EXT_2X6_HUMID, from 2026-08-26.
+# 1,416.6 SF — the house's EAST AND WEST walls only since 2026-08-31 (it was 3,670.7 SF, the
+# whole of CATLIN_EXT_2X6 + PLANT_EXT_2X6_HUMID, from 2026-08-26 until then). The north and
+# south elevations' 1,678.3 SF went to `board-batten-24` below via a per-wall
+# `layer_materials=` override; this row is 45.8% of the wall area, still live, and IS THE
+# REVERT — delete those twenty overrides and it takes the whole envelope back.
 # Installed $4.50-7.25/SF, and BOTH halves are below the snap-lock row above for reasons
 # that are separate and should not be collapsed into one "it's cheaper" line.
 #
@@ -2156,15 +2172,79 @@
 # seamer rental — the panel is set on the girts and screwed off. That puts it materially
 # below the concealed-fastener rate and below the 26 ga NAIL-STRIP garage rate too, which
 # still has a lapped leg to engage and a hidden flange to nail. It is not a trivial job:
-# 3,098 face screws each have to land in the flat and be driven to gasket compression and
+# 1,164 face screws each have to land in the flat and be driven to gasket compression and
 # no further, and an overdriven screw is a leak. That is a rate for a crew that has done it
 # before, and the low end assumes one.
 #
 # ** The fixings are NOT in this rate. ** They are billed as a counted part
 # (`[hardware]` "T09150HWAM"), which is what `Material.exposed_fastener` exists to enable.
-# See [basis_notes] — this is the one wall panel where that split applies, and folding the
-# screws back into $/SF here would double-bill them.
+# See [basis_notes] — this and the garage's corrugated are the wall panels where that split
+# applies, and folding the screws back into $/SF here would double-bill them. The board &
+# batten row below is the other way round: concealed fixings, inside its $/SF.
 "pbr-panel-26" = { material = { low = 1.75, high = 2.75 }, labour = { low = 2.75, high = 4.5 } }
+# 1,678.3 SF — the NORTH AND SOUTH elevations of the house walls (CATLIN_EXT_2X6 and
+# PLANT_EXT_2X6_HUMID), from 2026-08-31, via a per-wall `layer_materials=` override on twenty
+# walls. The east and west walls' 1,416.6 SF stay on the PBR row above; the split is 54.2% /
+# 45.8%. 24 ga concealed-fastener board & batten at 20" net coverage, standard white PVDF.
+# Installed $6.00-10.60/SF against PBR's $4.50-7.25.
+#
+# MATERIAL $2.30-4.05/SF. Most of the rise over PBR is the MANDATORY 26 ga -> 24 ga step:
+# PVDF is generally only offered on 24 ga board & batten, so 26 ga in this coating system may
+# not be a purchasable combination at all. This row carries the same trim uplift the PBR row
+# carries (46-72% over bare panel; 45 openings), for the same reason.
+#
+# LABOUR $3.70-6.55/SF, +35-50% on PBR, at the LOW end of the researched band because 20"
+# coverage is 1.8x PBR's panel count where 16" would have been 2.25x. The concealed pancake
+# screws fold in at ~$0.03/SF — at 32" girts only ~696 of them land on wood.
+#
+# ** THE FIXINGS ARE INSIDE THIS RATE, unlike the PBR row. ** `board-batten-24` deliberately
+# does NOT set `Material.exposed_fastener`, so `takeoff.fasteners` bills no counted screw for
+# these walls (the T09150HWAM row fell from 3,263 to 1,804 the day this landed: 640 garage
+# corrugated + 1,164 on the E/W PBR). Setting that flag AND leaving the screws in this $/SF
+# would double-bill them.
+#
+# ** THE 32" GIRTS CONSTRAIN THE SUPPLIER, AND A PURCHASING SUBSTITUTION MUST NOT HAPPEN
+# QUIETLY. ** Board & batten is not a purlin-bearing profile. PBR at 32" o.c. carries ~160 psf
+# negative under ICC-ES ESR-4729; board & batten is ~51 psf (24 ga, interpolated from Metal
+# Sales' table, the only one published) and appears NOWHERE in ESR-4729. Against the -20 to
+# -35 psf corner-zone demand it still passes, but the margin falls from ~4.5x to ~1.5x. Of
+# eight manufacturers surveyed only WESTERN STATES ("most details in this guide are shown with
+# panels attached to open framing") and METAL SALES permit open girts: McElroy lists solid deck
+# only, Lyon caps furring at 18", Best Buy Metals says solid decking. Substituting any of those
+# forces a second girt course or a continuous OSB layer, which costs MORE THAN THE PANEL SWITCH
+# ITSELF. Western States is the assumed supplier and that is load-bearing, not a preference.
+#
+# ** NOT TAKEN, and priced so the choice stays open: ALL FOUR ELEVATIONS. ** Extending the
+# override to the E/W walls' 1,416.6 SF is a `layer_materials` sweep and no rate change:
+# +$3,700-10,000 delivered against this option's +$2,000-5,400. Also not taken: the wood-grain
+# "white wood" print, which is CERAM-A-STAR SMP — a different coating system and warranty from
+# the PVDF on the rest of the envelope, about as much again as the switch itself, and not
+# quoted below a $3,000 job minimum.
+#
+# ** THE REVERT IS THE `pbr-panel-26` ROW ABOVE, which is why it is still here with its count
+# updated rather than deleted. ** Reverting is deleting twenty `layer_materials=` lines; it
+# restores ESR-4729 coverage and the 4.5x uplift margin, because the girts were sized for PBR.
+#
+# ** TRIM IS PARITY, and an earlier 2-3x figure was WRONG. ** A first pass priced board &
+# batten trim at 2-3x PBR's and put the all-four-elevations premium at +$7.5k-12k. That band
+# came from a blog snippet whose own concealed-panel taxonomy is flush-wall / reveal / wave —
+# board & batten is never priced on that page, so applying it was category inheritance and not
+# measurement. The actual install guide's trim kit is outside corner, inside corner, J-channel,
+# base cap, rat guard, drip cap, F-channel: all brake-formed flat stock, all 1/2" hems, no
+# cleats, no Z-closures, no closure strips. Only two pieces are B&B-specific — the band board
+# (a wainscot/transition piece, NOT NEEDED HERE, panels run full height) and utility trim (a
+# 2 1/2" flat strip, one bend and a hem, the cheapest profile in the set). Generic trim confirms
+# it: Steeldash sells ONE "Universal" line with no profile-specific SKUs and no B&B-vs-R-panel
+# differential — J-channel $2.62-3.41/LF, outside corner $5.24-6.82/LF in 24 ga, for either
+# system. Cost tracks developed width and bend count, which is profile-independent. And
+# CLOSURES RUN THE OTHER WAY: PBR is ribbed, so every horizontal termination needs a die-cut
+# foam closure matched to the rib ($0.45-0.72/LF published, plus butyl bedding); board &
+# batten's guide calls for zero closures.
+#
+# Sources: Western States Metal Roofing (board & batten install guide, panel widths, metal
+# siding cost, 24 vs 26 gauge), Metal Sales published span table, ICC-ES ESR-4729, Steeldash
+# published trim list. CONFIDENCE: MEDIUM on material, MEDIUM-LOW on the labour uplift.
+"board-batten-24" = { material = { low = 2.3, high = 4.05 }, labour = { low = 3.7, high = 6.55 } }
 # 749.6 SF — RF-GARAGE. Installed $7.00-13.00/SF against Sheffield's $5-11 for nail strip,
 # lifted for the Twin Cities and for a 749 SF roof being a minimum-mobilisation job for any
 # metal crew. Expect a floor of roughly $4,000-6,000 whatever the $/SF arithmetic says.
@@ -3213,6 +3293,20 @@
 # $/LF, by trim category (fascia, soffit, flashings, formed roof trim)
 "beam_cap" = { material = { low = 1.50, high = 4 }, labour = { low = 2, high = 4.50 } }  # 66.0 LF — formed aluminium cap over all seven built-up 3-2x12 beams (sunken garden). ~8" of coil girth: a 5.5" top plus two 1.5" turn-downs, so material sits just above `drip_flashing`'s narrower bend. Labour is the dear half and it is a SEQUENCING cost, not a fabrication one — five of the seven beams carry joists on top, so their caps go on before the deck frames and a cap missed at that moment costs a torn-out joist field, not a return trip. See params/sunken_garden.py::_BEAM_CAP_AT
 "corner_trim" = { material = { low = 3, high = 8 }, labour = { low = 2.5, high = 5 } }  # 147.8 LF — corner boards are the easy trim. MAY NOT BE A LINE AT ALL if the siding sub carries them in their $/SF
+# NEW 2026-08-31, and a category the engine could not measure before. `corner_trim` above is
+# exclusively the ROOF-edge piece derived from the ROOF's cladding; `wall_corner` is the
+# WALL-to-WALL closure at the four building corners, where the north/south board & batten meets
+# the east/west PBR. It billed nothing at all until `TrimKind.WALL_CORNER` and
+# `Flashing.vertical` existed (params/roof_trim.py, takeoff/edge_trim.py) — a genuine gap in
+# the BOM, not a modelling nicety: the transition needs a real piece of formed metal.
+#
+# 8" of developed coil (a 4" leg onto each face, one bend either side) in 24 ga white PVDF, the
+# panel's own coil. Material is a shade under `corner_trim`'s because that row's blend carries
+# the sloped rake pieces; Steeldash's published 24 ga outside corner is $5.24-6.82/LF for a
+# wider girth than this. Labour is the same easy trim `corner_trim` records — except that these
+# four are 22'-4" tall each, so they are a staging job rather than a ladder job, which is where
+# the high end goes.
+"wall_corner" = { material = { low = 3, high = 7 }, labour = { low = 2.5, high = 5 } }  # 89.5 LF — 4 pieces, 22.37' each, at the four house corners. The PBR<->board & batten transition
 "drip_flashing" = { material = { low = 1, high = 3 }, labour = { low = 1, high = 2 } }  # 94.7 LF — $1-2/LF on a NEW roof (retrofit is $3-7). Material is high for mill aluminium and right for the prefinished dark Kynar this house uses. Commonly inside the roofer's price — check for a double count against any roofing bid
 "edge_cladding" = { material = { low = 3, high = 8 }, labour = { low = 3.5, high = 7 } }  # 243.9 LF — add $2-4/LF if it is site-brake-formed rather than shop stock
 "fascia" = { material = { low = 3, high = 9 }, labour = { low = 4, high = 8 } }  # 251.5 LF — material low raised from $2.50, which only buys primed pine or coil-wrap; this run is PVC (sunken garden) and formed PVDF metallic (garage "Copper Penny", metal since 2026-08-26) over SPF
@@ -4407,5 +4501,5 @@ drainage        = "material plus installed labour, BLENDED over two products tha
 floor_heat      = "material plus installed labour, backed out of published $/SF-of-floor prices. The 3 floor sensors are not in it"
 floor_finishes  = "material plus installed labour on the ORDER quantity. carpet-pad carries labour = 0 on purpose: laying the pad is inside the carpet rate"
 placeables      = "unit price plus INSTALL labour. Rough-in is billed by the foot in [pipe_runs], [ducts] and [conduit]; branch-circuit conductors are in neither and are the largest single omission in the file"
-envelope_layers = "material plus installed labour, $/SF net. Labour is ~60% of this section — standing-seam roofing, drywall finishing and painting are all labour-dominated trades. The metal skin is FIVE rows keyed on fixing method, seam profile and gauge, not one: mechanical seam, snap lock, nail strip, 26 ga nail strip and 26 ga exposed-fastener PBR differ by up to $4.50/SF of LABOUR and must never be re-merged. PBR is the odd one out and the split matters beyond labour: it is the only wall panel whose FIXINGS are billed as a separate counted part ([hardware] T09150HWAM, 3,098 screws), because a face-fastened panel opts in via Material.exposed_fastener. Every other row has its clips and fixings inside its $/SF rate. Folding the PBR screws back into this section, or adding a screw count against any of the other four, double-bills them"
+envelope_layers = "material plus installed labour, $/SF net. Labour is ~60% of this section — standing-seam roofing, drywall finishing and painting are all labour-dominated trades. The metal skin is SEVEN rows keyed on fixing method, seam profile and gauge, not one: mechanical seam, snap lock, nail strip, 26 ga nail strip, 26 ga exposed-fastener PBR, 7/8 in corrugated and 24 ga concealed-fastener board & batten differ by up to $4.50/SF of LABOUR and must never be re-merged. The two EXPOSED-fastener rows are the odd ones out and the split matters beyond labour: PBR and corrugated are the wall panels whose FIXINGS are billed as a separate counted part ([hardware] T09150HWAM, 1,804 screws), because a face-fastened panel opts in via Material.exposed_fastener. Every other row, board & batten included, has its clips and fixings inside its $/SF rate. Folding those screws back into this section, or adding a screw count against any of the concealed rows, double-bills them"
 framing         = "material plus installed labour, $/LF of ordered stock. Add 10-15% for framing general conditions (mobilisation, bracing, layout, hardware, punch-out), which no per-unit rate captures"

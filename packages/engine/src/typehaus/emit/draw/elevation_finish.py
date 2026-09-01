@@ -16,6 +16,10 @@ that still identifies the material:
   panel that is the sheet side-lap, :data:`_PANEL_LAP_M`; on a clipped or folded panel it is
   the seam itself, :data:`_SEAM_PITCH_M`. ``Material.exposed_fastener`` already states which,
   and it is the same flag ``takeoff.fasteners`` uses, so there is no second source of truth.
+  A named ``finish`` outranks both flags, because coverage is a property of the profile and
+  not of how it is fixed: the garage's corrugated covers 32" and not PBR's 36", and the
+  north/south board & batten's line is the batten itself at :data:`_BATTEN_PITCH_M`, which
+  on the flags alone would come out at seam pitch.
 * **Masonry** — horizontal course bands at :data:`_MASONRY_BAND_M`, **not** the unit's own
   coursing. This house lays 2" Roman at the garage wainscot and 2-2/3" modular in the sunken
   garden's veneer; at a quarter-inch scale either is twenty-five lines to the foot and prints
@@ -61,6 +65,10 @@ _PANEL_LAP_M = 0.9144  # 36"
 #: A side lap drawn every 36" on a 32" sheet is not a rounding — it is a line where no
 #: joint is, on every elevation the garage appears in.
 _CORRUGATED_LAP_M = 0.8128  # 32"
+
+#: Batten spacing of a concealed-fastener board & batten panel, which covers 20" net. Not a
+#: side lap: on this panel the line you read from the street is the batten itself.
+_BATTEN_PITCH_M = 0.508  # 20"
 
 #: Seam spacing of a clipped or mechanically-seamed panel. 16" is the common architectural
 #: pan width and the one the viewer's seam recipe draws.
@@ -141,6 +149,13 @@ def _recipe_for(material: Material | None, material_ref: str | None,
     facade came out blank while the garage's ``standing-seam-nailstrip-26`` was textured.
     """
     if material is not None:
+        # The *finish* is asked before either flag. Board & batten is concealed-fastened
+        # (``exposed_fastener`` False) and declares ``skin_family="standing-seam"`` for the
+        # roof edge's sake, so on the flags alone it falls to ``_SEAM_PITCH_M`` and draws a
+        # 16" seam rhythm on a panel whose battens stand at 20". Same failure the corrugated
+        # branch below fixes for the garage, one gate earlier.
+        if getattr(material, "finish", None) == "board-and-batten":
+            return ("vertical", _BATTEN_PITCH_M)
         if getattr(material, "exposed_fastener", False):
             # The *finish* is asked before the flag, because ``exposed_fastener`` says only
             # "screwed through its face" and every face-fastened profile covers a different

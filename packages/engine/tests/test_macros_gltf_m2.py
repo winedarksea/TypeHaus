@@ -602,7 +602,7 @@ def test_material_finish_colour_mirrors_viewer_families():
 
 
 def test_a_metal_wall_skin_exports_the_coil_white_not_its_hatch_tone():
-    """Every one of the house's five metal wall skins reaches the .glb as the same white the
+    """Every one of the house's metal wall skins reaches the .glb as the same white the
     viewer paints it (`createStandingSeamMaterial`, 0xE8E8E2) — including the exposed-fastener
     PBR panel, which declares ``finish="ribbed-panel"`` and deliberately keeps "seam" out of
     its tag so the substring guess cannot see it.
@@ -622,19 +622,28 @@ def test_a_metal_wall_skin_exports_the_coil_white_not_its_hatch_tone():
     authored = {
         "standing-seam-snaplock": _Authored("metal", hatch_tone),
         "standing-seam-nailstrip-26": _Authored("metal", hatch_tone),
-        # The one that cannot be guessed: no "seam" in the tag, so only the declaration finds it.
+        # The three that cannot be guessed: no "seam" in the tag, so only the declaration
+        # finds them. `board-batten-24` is the 2026-08-31 north/south wall panel — it DOES
+        # declare skin_family="standing-seam" for the roof edge's sake, and this path never
+        # reads that field, so its own `_FINISH_BASE` row is the only thing between it and
+        # the "metal" family's blue-grey.
         "pbr-panel-26": _Authored("metal", hatch_tone, "ribbed-panel"),
+        "corrugated-panel-26": _Authored("metal", hatch_tone, "corrugated"),
+        "board-batten-24": _Authored("metal", hatch_tone, "board-and-batten"),
         # Two CMU specs that author DIFFERENT greys on purpose. A finish-wins rule would
         # collapse both onto _CMU_BASE; the authored colour has to keep winning for them.
         "cmu-8": _Authored("concrete", "#b8b3ab", "cmu"),
         "cmu-12": _Authored("concrete", "#a8a49c", "cmu"),
     }
-    for skin in ("standing-seam-snaplock", "standing-seam-nailstrip-26", "pbr-panel-26"):
+    for skin in ("standing-seam-snaplock", "standing-seam-nailstrip-26", "pbr-panel-26",
+                 "corrugated-panel-26", "board-batten-24"):
         assert _material_finish_color(skin, "cladding", authored) == _hex_rgba(_SEAM_BASE), skin
 
     # Scoped to a cladding layer: the same ref naming a structural layer keeps its own colour,
     # and so does a material whose finish states a real colour of its own.
     assert _material_finish_color("pbr-panel-26", "structure", authored) == _hex_rgba(hatch_tone)
+    assert (_material_finish_color("board-batten-24", "structure", authored)
+            == _hex_rgba(hatch_tone))
     assert _material_finish_color("cmu-8", "structure", authored) == _hex_rgba("#b8b3ab")
     assert _material_finish_color("cmu-12", "structure", authored) == _hex_rgba("#a8a49c")
 

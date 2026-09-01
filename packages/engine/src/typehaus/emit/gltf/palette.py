@@ -294,6 +294,9 @@ _FINISH_BASE: dict[str, str] = {
     # The garage's 7/8" corrugated panel (2026-08-31) — the same coil white a third time, on
     # a third profile. Mirrors FINISH_BASE in ui/src/nordic/palette.ts.
     "corrugated": _SEAM_BASE,
+    # The house's north/south board & batten panel (2026-08-31) — the same coil white a
+    # fourth time, on a fourth profile. Mirrors FINISH_BASE in ui/src/nordic/palette.ts.
+    "board-and-batten": _SEAM_BASE,
     "cmu": _CMU_BASE,
     "white-brick": _WHITE_BRICK_BASE,
     "glazed-green-brick": _GLAZED_GREEN_BRICK_BASE,
@@ -324,7 +327,8 @@ _FINISH_BASE: dict[str, str] = {
 
 # The `Material.finish` values that mean "one of the house's white steel wall skins". The
 # declaration side of `_is_standing_seam` below, which can only guess from a tag.
-_METAL_PANEL_FINISHES = frozenset({"standing-seam", "ribbed-panel", "corrugated"})
+_METAL_PANEL_FINISHES = frozenset(
+    {"standing-seam", "ribbed-panel", "corrugated", "board-and-batten"})
 
 
 def _is_standing_seam(material_ref: str | None) -> bool:

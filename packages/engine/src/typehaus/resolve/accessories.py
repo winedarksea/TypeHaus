@@ -66,6 +66,10 @@ _TRIM_CATEGORY = {
     "drip_flashing": "flashing",
     "wrb_counterflashing": "flashing",
     "beam_cap": "flashing",
+    # A wall corner closure is formed metal like the rest of the flashing family; the solid
+    # category is a LABEL the 3D inspector prints and never an element family, so it shares
+    # theirs rather than minting a name for one element.
+    "wall_corner": "flashing",
     # The glazing extrusions share the edge-run shape but not the flashing category: they
     # are an aluminium order billed by the lineal foot, and the take-off groups on this.
     "glazing_channel": "glazing_trim",
