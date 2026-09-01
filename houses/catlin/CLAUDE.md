@@ -93,6 +93,15 @@ proposing any design change.
   modelling no cabinet — until the owner asked for one basin and real storage. Borrowing a
   type is free only while the borrowed type's footprint, symbol and schedule line are all
   still true of the thing in the room.
+  **RM-M-BATH2 got the rest of that storage above the toilet on 2026-08-31**:
+  `FURN-M-BATH2-CAB` / `FT-BATH2-CAB-4506`, a 45" x 6" x 60" flush-fronted box on the room's
+  only free wall (W-M-HS1's bath face), bottom at 4'-0" AFF — which is a **code line, not a
+  comfort choice**: below `FX-TOILET-STD`'s own 30" top the wall face would move 6" south and
+  take the bowl's front clearance 2.8" into the vanity. It is also why
+  `resolve/placeables.py::_mounted_over_the_fixture` exists (→ `plans/01-decisions.md` #67,
+  `notes/bath2_over_toilet_cabinet.md`): the engine was calling a 6"-deep cabinet 4' up an
+  ERROR against UPC 402.5, whose 15" is elbow room for a *seated* person and not a column of
+  air.
 - `params/sunken_garden.py` — the freestanding arched porch/garden structure (math OK here).
 - `params/foundations.py` — house footings, garage ICF stem + slab.
 - `params/breezeway.py` — the enclosed breezeway: pads, piers, posts, deck, roof, glazing.

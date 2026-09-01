@@ -235,16 +235,21 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     # Except where the end is not an end: at a continuation the wall runs on into a collinear
     # neighbour on the same grid, so the module carries through and neither half plants a
     # stud at the seam.
-    stud_stations = sorted(
-        station for station in _module_stations(
-            axis_len, module_spacing, thickness,
-            (start_end.end_stud_station_m, far_end.end_stud_station_m),
-            (max((start_end.end_stud_station_m, *corner_stations["start"])),
-             min((far_end.end_stud_station_m, *corner_stations["end"]))),
-            phase=module_phase,
-            continuations=(continuation_start, continuation_end))
-        if not in_exclusion(station, stud_zones)
-    )
+    module_stations = sorted(_module_stations(
+        axis_len, module_spacing, thickness,
+        (start_end.end_stud_station_m, far_end.end_stud_station_m),
+        (max((start_end.end_stud_station_m, *corner_stations["start"])),
+         min((far_end.end_stud_station_m, *corner_stations["end"]))),
+        phase=module_phase,
+        continuations=(continuation_start, continuation_end)))
+    stud_stations = [station for station in module_stations
+                     if not in_exclusion(station, stud_zones)]
+    # The module the exclusions took away, kept rather than discarded: over a CARRIER bay
+    # (unlike a pocket cavity, which is empty to the plates by definition) the module is
+    # restored above the frame's head as cripples, so a wall stacking on this one still has
+    # a stud line to stand on. See ``framing/carriers.append_carrier_framing``.
+    dropped_stations = tuple(station for station in module_stations
+                             if in_exclusion(station, stud_zones))
     perpendicular = normal(d)
     end_stations = {start_end.end_stud_station_m, far_end.end_stud_station_m}
     for index, station in enumerate(stud_stations):
@@ -300,7 +305,7 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     # After the module, because the bay's flanking studs replace the module studs the
     # keepout removed; before nothing, because nothing else reads them.
     append_carrier_framing(members, rw, frame_member, d, p0, stud_z0, axis_len, top_at,
-                           carrier_bays)
+                           carrier_bays, dropped_stations)
     return tuple(members)
 
 

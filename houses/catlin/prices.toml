@@ -1618,6 +1618,15 @@
 # is a fraction of this and CANNOT be substituted — it is not standable.
 "FT-KIT-PANTRY-SHELVES-70" = { material = { low = 160, high = 420 }, labour = { low = 400, high = 1050 } }  # 1 ea
 "FT-BATH1-SHELF-2030" = { material = { low = 200, high = 750 }, labour = { low = 150, high = 450 } }  # 1 ea
+# RM-M-BATH2's over-toilet cabinet (2026-08-31). [placeables], not [furnishings] — it is
+# screwed to W-M-HS1's studs and cannot be carried out of the room. Basis: ~2 sheets (3/4"
+# paint-grade ply carcass + 5/8" MDF for three flush doors), 6 concealed hinges, 3 push
+# latches, 4 adjustable shelves and a paint-grade finish in a wet room, plus shop time and
+# the set. It lands just UNDER the $175-350/LF custom built-in band FT-STUDY-* implies
+# (3.75 LF -> $656-1,313) because this is a flat box: no scribe beyond 3/8", no face frame,
+# no stepped top, no counter, no hardware to line up. High end is a cabinet shop spraying
+# it; low end is the carpenter who is already hanging the gypsum.
+"FT-BATH2-CAB-4506" = { material = { low = 175, high = 450 }, labour = { low = 275, high = 800 } }  # 1 ea
 # The four closet shelf-and-rod runs (2026-08-30). Ventilated epoxy-coated steel on wall
 # standards — the ordinary reach-in fit-out, and the exact article the pantry note above
 # says CANNOT be substituted there. Material is per-foot shelf, rod, standards, brackets

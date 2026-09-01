@@ -148,13 +148,24 @@ def carrier_keepouts(plan: PlanModel,
 
 def append_carrier_framing(members: list[FramedMember], rw: ResolvedWall, member: str,
                            direction, wall_start, stud_bottom: float, axis_len: float,
-                           top_at, bays: tuple[tuple[float, float], ...]) -> None:
-    """Frame each carrier bay: a stud at both edges, blocking at the frame's base and head.
+                           top_at, bays: tuple[tuple[float, float], ...],
+                           dropped_stations: tuple[float, ...] = ()) -> None:
+    """Frame each carrier bay: flanking studs, a course at its base and head, cripples over.
 
-    The blocking is what makes the bay a bay rather than a hole. The base course is the
+    A frame standing full-depth from the floor to 44" is a hole in the stud field, and the
+    conventional way to frame a hole is not to leave it empty. The base course is the
     frame's own anchor line — a Duofix's feet bolt down through it — and the head course
-    closes the cavity above the frame, catches the drywall over it and gives the actuator
-    plate's opening an edge to be cut against.
+    closes the cavity above the frame, catches the drywall over it, and carries the cripples
+    that put the module back.
+
+    **The cripples are the load path.** ``W-S-SN1`` stacks on catlin's ``W-M-HS1``, and
+    without them the wall above bears on plate alone across the whole 19 3/4" the bay
+    displaced. ``dropped_stations`` is exactly the module ``frame_wall``'s exclusions
+    removed, so the line restored above the head is the wall's own rhythm rather than a
+    second one invented here. It does not restore the *metric*
+    (``_stud_grid.orphan_studs`` counts category "stud" and a cripple is not one, by
+    design — the same way a window's cripples are not), which is why the pin in
+    ``test_upper_storey_studs_stand_over_studs`` moved with a reason written beside it.
     """
     thickness = member_actual(member)[0] * M_PER_IN
     for index, (center, half) in enumerate(sorted(bays)):
@@ -175,12 +186,36 @@ def append_carrier_framing(members: list[FramedMember], rw: ResolvedWall, member
         clear = stations[1] - stations[0] - thickness
         if clear <= 0.0:
             continue
-        for course, base in enumerate((stud_bottom, stud_bottom + CARRIER_FRAME_HEIGHT_M)):
-            if min(top_at(stations[0]), top_at(stations[1])) < base + thickness:
+        head = stud_bottom + CARRIER_FRAME_HEIGHT_M
+        bay_top = min(top_at(stations[0]), top_at(stations[1]))
+        # Both courses are category "blocking", not "header", and the head one deliberately
+        # so: ``test_opening_framing_registers_with_the_opening_it_frames`` holds every
+        # member categorised "header" to the head of a real ``ResolvedOpening``, and a
+        # carrier bay is not an opening in the wall — nothing passes through it. What it is
+        # is a flat 2x course at the frame's head, which is what "blocking" means here.
+        for course, base, key in ((0, stud_bottom, "block"), (1, head, "head")):
+            if bay_top < base + thickness:
                 continue  # a raking bay whose studs stop below this course
             members.append(FramedMember(
-                rw.uid, f"carrier-{index}-block-{course}", "blocking", member, a, b,
+                rw.uid, f"carrier-{index}-{key}-{course}", "blocking", member, a, b,
                 base, base + thickness, clear))
+        cripple_bottom = head + thickness
+        if bay_top <= cripple_bottom:
+            continue  # the frame's head is at the top plate: no cripple bay to fill
+        # A dropped station within a stud face of a flanking stud is not a bay to fill: at
+        # catlin the 16" module lands 0.22" from the jamb at 15.78", and a cripple there
+        # interpenetrates it (``structural.member_interference`` catches exactly this). The
+        # jamb is already the full-height member on that line, so the module loses nothing.
+        inside = [s for s in sorted(dropped_stations)
+                  if stations[0] + thickness <= s <= stations[1] - thickness]
+        for ordinal, station in enumerate(inside):
+            point = add(wall_start, scale(direction, station))
+            top = top_at(station)
+            if top <= cripple_bottom:
+                continue
+            members.append(FramedMember(
+                rw.uid, f"carrier-{index}-cripple-{ordinal:03d}", "cripple", member,
+                point, point, cripple_bottom, top, top - cripple_bottom, orient=direction))
 
 
 def backing_wall(plan: PlanModel, model: ResolvedModel, fixture: Fixture,

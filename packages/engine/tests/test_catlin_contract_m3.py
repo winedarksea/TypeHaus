@@ -2519,6 +2519,22 @@ def test_upper_storey_studs_stand_over_studs(catlin_model):
     # faces are deliberately decoupled, and asking the far face to stack is asking for the
     # thing the assembly exists to prevent. +6 denominator, +5 numerator, ratio 44.4% ->
     # 45.3%, and no grid anywhere can be re-phased to recover it.
-    assert orphan_count <= 111, (
+    # **113/245 on 2026-09-01, +2 numerator with the denominator UNCHANGED, and it is the
+    # same class of thing as a window.** ``FX-M-BATH1-WC``'s in-wall carrier reserved a
+    # 19 3/4" bay in W-M-HS1 (``resolve/framing/carriers.py``), which displaced the three
+    # module studs at 16"/24"/32" — and W-S-SN1 stacks on that wall. Two of its studs now
+    # stand over nothing.
+    #
+    # ** THE BAY IS NOT UNFRAMED, AND THE CRIPPLES DO NOT COUNT ON PURPOSE. ** The carrier
+    # gets flanking studs, a base and head course, and cripples above the head on the wall's
+    # own module — so the line above the frame is restored in lumber. ``orphan_studs``
+    # counts category "stud" and a cripple is not one, exactly as a window's cripples are
+    # not, and that is the right reading: what stands over a cripple stands over a header,
+    # not over a full-height stud. This is the metric working, not drifting.
+    #
+    # Re-phasing recovers nothing here: the bay's centre is the bowl's centre, and the bowl
+    # is boxed in (houses/catlin/plan/fixtures.py). Both numbers re-pinned per the docstring;
+    # the denominator did not move, which is itself the evidence that nothing else changed.
+    assert orphan_count <= 113, (
         f"{orphan_count}/{total} upper-storey studs stand over no stud below "
-        f"(was 111/245); first offenders {orphans[:12]}")
+        f"(was 113/245); first offenders {orphans[:12]}")

@@ -792,6 +792,23 @@ MAIN_PLACEABLES = [
               room="RM-M-BATH2", position=pt(ft(4, 3.5), ft(16, 10)), rotation=deg(-90),
               mount=Mount(kind=MountKind.WALL, elevation=inch(3))),
 
+    # --- RM-M-BATH2 over-toilet cabinet (2026-08-31) --------------------------
+    # The room's only wall storage, on the only free wall left: W-M-HS1's bathroom face,
+    # x 6 5/8" (W-M-W3's finish face, which FX-M-BATH2-SINK is also struck off) to 4'-4"
+    # (W-M-TUBDK-W's west face). 45 3/8" of free run, a 45" carcass, 3/16" of scribe each
+    # end. Faces are struck off W-M-HS1's own layer polygons, never Room.clear_face — that
+    # is inset from the wall AXIS and would bury the box ~3" in the studs.
+    #
+    # `Mount.elevation` is the BOTTOM of the body (as for FURN-M-KIT-OVER-FRIDGE), so
+    # 48 + 60 = 108" = the ceiling. 48" is a code line, not taste: below FX-TOILET-STD's own
+    # 30" top the box would be elbow room and the bowl would have to move south with the wall
+    # face, landing its front clearance inside the vanity. See plan/furniture_types.py and
+    # notes/bath2_over_toilet_cabinet.md.
+    Furniture(uid="N688X4AYJ4", tag="FURN-M-BATH2-CAB", type_ref="FT-BATH2-CAB-4506",
+              room="RM-M-BATH2",
+              position=pt(inch(29.3175), inch(261.615)), rotation=deg(0),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+
     # --- porch curtain rods (2026-08-07) --------------------------------------
     # Two outdoor rods across the sunken garden's front pillar bays (PT-SG-BF1..BF2,
     # BF2..BF3), front row at y=-9'-6" on 10'-0" centres: 9'-6 1/2" clear between 6x6 faces,

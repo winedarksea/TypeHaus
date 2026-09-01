@@ -688,6 +688,44 @@ CLOSET_SHELF_36 = FurnitureType(
 )
 
 
+# --- RM-M-BATH2, the over-toilet cabinet (2026-08-31) ------------------------------------
+#
+# The room's only storage above the vanity drawers, and the only wall left to put it on:
+# the vanity runs the south half of the west wall, the shower and the tub deck take the whole
+# east wall, and W-M-HS1's bathroom face x 6 5/8"..4'-4" is what remains. 45" is not a
+# rounding -- it is exactly three 15" flush doors, and the east end stops on W-M-TUBDK-W's
+# west face (x = 52"), a plane already in the room, with 3/8" of scribe taken across the run.
+#
+# ** SURFACE-MOUNTED, NOT RECESSED, AND THAT IS FORCED. ** W-M-HS1 is
+# INT_2X6_STAGGERED_PLUMBING: every bath-face bay has a hall-face stud 2" back at its
+# midpoint, so a continuous recess means cutting and heading the bath-face studs -- and
+# FX-M-BATH2-WC's vent rises in that wall directly above the bowl. 5" net after gypsum, for
+# all of that, when the ask was 6". W-M-W3 is the thermal envelope and is not a candidate.
+#
+# ** THE 4'-0" BOTTOM IS THE COMPLIANCE LINE, NOT A COMFORT CHOICE. ** FX-TOILET-STD is 30"
+# tall. A carcass coming down to tank level would push the wall face 6" south, the bowl would
+# move with it, and its front clearance would land 2.8" inside FX-M-BATH2-SINK -- which clears
+# by 3 1/4" today. Above 30" nothing else in the room is redrawn, and 48" leaves 18" of clear
+# air over the tank lid. The engine grades this: see notes/bath2_over_toilet_cabinet.md and
+# ``resolve/placeables.py::_mounted_over_the_fixture``.
+#
+# No ``clearances``, per the casework rule: a built-in's back is the wall and the floor in
+# front of it is the floor you already stand on. ``work_surface=False`` is correct and inert --
+# ``_fixed_cabinet_intervals`` only breaks an NEC 210.52 ring for cabinets within 6" of the
+# floor, and a bathroom is not a graded room.
+BATH2_CAB_4506 = FurnitureType(
+    tag="FT-BATH2-CAB-4506", name='Bath 2 over-toilet cabinet, 45" x 6"',
+    footprint=(inch(45), inch(6)), height=inch(60),
+    storage=True, work_surface=False, plan_symbol="wall-cabinet",
+    source="Site-built millwork, not a catalogue unit: a 3/4\" paint-grade plywood carcass "
+           "screwed to W-M-HS1's studs (a staggered wall gives a fastening point every 8\") "
+           "and faced with three 15\" x 60\" flush 5/8\" MDF slabs on push-to-open touch "
+           "latches, painted out in the wall colour -- no pulls, hairline reveals only, so it "
+           "reads as a shallow paneled wall rather than a box over the toilet. 4 adjustable "
+           "shelves, ~22 linear feet. Bottom at 4'-0\" AFF, top at 9'-0\" = the ceiling.",
+)
+
+
 FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, CURTAIN_ROD_OUTDOOR_114,
                    CURTAIN_ROD_OUTDOOR_98,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, BATH1_SHELF_2030,
@@ -695,4 +733,4 @@ FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, CURTAIN_ROD_OUTDOOR_114,
                    PANTRY_SHELVES_70, DINING_8_OPEN_CORNERS,
                    STUDY_BENCH, STUDY_DESK, FOLD_LEAF,
                    CLOSET_SHELF_ROD_60, CLOSET_SHELF_ROD_84, CLOSET_SHELF_ROD_96,
-                   CLOSET_SHELF_36)
+                   CLOSET_SHELF_36, BATH2_CAB_4506)

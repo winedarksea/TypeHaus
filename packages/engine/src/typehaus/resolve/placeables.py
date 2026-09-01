@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import math
 
+# ``shapely`` ships no ``py.typed``. The ``shapely.geometry`` line below does not trip the
+# same check, so the ignore is scoped to this one import rather than to the module.
+from shapely import get_coordinates  # type: ignore[import-untyped]
 from shapely.geometry import Point, Polygon
 
 from typehaus.findings import Finding, Result, Severity, advisory
@@ -41,6 +44,10 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     # Whether each body actually stands in a clear floor space, keyed by uid. Built here
     # because it needs the product type, which the resolved record deliberately does not carry.
     obstruction_by_uid: dict[str, ClearFloorSpaceObstruction] = {}
+    # The profile the verdict above was computed from, kept rather than discarded: the
+    # over-the-fixture exemption in ``_clearance_conflicts`` needs a *pair* of bodies, and
+    # ``ClearFloorSpaceObstruction`` is a per-body answer with the numbers already spent.
+    profiles_by_uid: dict[str, PlaceableBodyProfile] = {}
     # ``room_floor_elevation`` walks every wall and slab, so the answer is memoised per room
     # tag — a hundred placeables in the same room ask the same question.
     floor_by_room: dict[str, float] = {}
@@ -84,8 +91,9 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             mount_elevation = resolved_mount_elevation(
                 storey, item, floor_m=floor,
                 soffit_underside_m=_soffit_underside(model, item))
-            obstruction_by_uid[item.uid] = clear_floor_space_obstruction(
-                _body_profile(product_type, item, floor, mount_elevation, local_footprint))
+            profile = _body_profile(product_type, item, floor, mount_elevation, local_footprint)
+            profiles_by_uid[item.uid] = profile
+            obstruction_by_uid[item.uid] = clear_floor_space_obstruction(profile)
             if (explicit_room is not None and explicit_room != resolved_room
                     and not _set_into_room_wall(item, explicit_room, center, model, room_shapes)):
                 findings.append(_finding("integrity.placeable_room_mismatch", item.tag,
@@ -117,7 +125,7 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     # One shape per placed object, shared by both conflict passes: each was building its own
     # copy of the same ~300 footprints, and the per-pair rebuild inside them was ~800 more.
     footprints = {obj.uid: Polygon(obj.footprint) for obj in model.canvas_objects}
-    findings.extend(_clearance_conflicts(model, obstruction_by_uid, footprints))
+    findings.extend(_clearance_conflicts(model, obstruction_by_uid, footprints, profiles_by_uid))
     findings.extend(_door_swing_conflicts(model, obstruction_by_uid, footprints))
     return findings
 
@@ -368,9 +376,66 @@ def _resolved_clearance_zones(product_type: object | None, center: tuple[float, 
     ]
 
 
+def _local_y_values(geometry: object, center: tuple[float, float],
+                    rotation: float) -> list[float]:
+    """Every vertex of ``geometry`` expressed as a depth in the owner's own frame.
+
+    The inverse of the rotation ``_transformed_polygon`` applies, taking only the component
+    that matters here: ``+y`` runs toward the object's back (the frame convention documented
+    at resolve/mep_sleeves.py). Minimising a linear functional over a polygon is attained at a
+    vertex, so reading the coordinates is exact — and ``shapely.get_coordinates`` walks the
+    multipart geometry that ``zone − owner footprint`` routinely produces.
+    """
+    radians = math.radians(rotation)
+    cos, sin = math.cos(radians), math.sin(radians)
+    return [-(px - center[0]) * sin + (py - center[1]) * cos
+            for px, py in get_coordinates(geometry)]
+
+
+def _mounted_over_the_fixture(item: ResolvedCanvasObject, peer: ResolvedCanvasObject,
+                              overlap: object, own_footprint: Polygon,
+                              profiles: dict[str, PlaceableBodyProfile]) -> bool:
+    """A body hung above a fixture, beside or behind it, takes none of its use space.
+
+    UPC 402.5's 15 in is elbow room for someone SEATED on the fixture and its 24 in is
+    standing room in front of it. Both are measured through a person, not up to the ceiling,
+    so a body whose lowest edge is above the fixture's own can reduce neither — which is why
+    stock over-toilet storage is 24-30 in wide and 8-12 in DEEP and is built without comment.
+    The A117.1 protrusion allowance the obstruction test offers instead is an accessibility
+    limit, and Minn. R. 1341 does not reach a detached one- or two-family dwelling. A117.1
+    §604.3.2 says the same thing positively: grab bars, dispensers, coat hooks and *shelves*
+    are permitted to overlap the clearance around a water closet.
+
+    The last condition is what keeps the check honest: a cabinet on the wall someone FACES
+    from the fixture is in front of it, is walked into, and still reports.
+
+    ``item.kind == "Fixture"`` is a **proxy**, and an acknowledged one — the obstruction test
+    it sits beside promises to be about geometry, never about domain. It is the only axis
+    available: ``ResolvedCanvasObject`` carries ``required_clearances`` as bare rings, having
+    dropped ``policy``, ``code_profile`` and ``purpose``. The honest model is a
+    ``ClearanceZone`` field separating body space from keep-out; scoping to fixtures leaves
+    the catalogue's other required zone — ``EQ-T-ESS-BATT``'s separation band, which is about
+    heat and fire spread, not use space — graded exactly as before.
+    """
+    own = profiles.get(item.uid)
+    hung = profiles.get(peer.uid)
+    if own is None or hung is None:
+        return False
+    if hung.horizontal_projection_from_wall_m is None:
+        return False  # not wall-mounted: it stands on the floor the fixture's user needs
+    if own.body_height_m is None:
+        return False  # an unknown body is never assumed short enough
+    own_top_m = own.base_above_storey_floor_m + own.body_height_m
+    if hung.base_above_storey_floor_m < own_top_m - 1e-9:
+        return False
+    front_m = min(_local_y_values(own_footprint, item.position, item.rotation_degrees))
+    return min(_local_y_values(overlap, item.position, item.rotation_degrees)) >= front_m - 1e-9
+
+
 def _clearance_conflicts(model: ResolvedModel,
                          obstruction_by_uid: dict[str, ClearFloorSpaceObstruction],
-                         footprints: dict[str, Polygon]) -> list[Finding]:
+                         footprints: dict[str, Polygon],
+                         profiles_by_uid: dict[str, PlaceableBodyProfile]) -> list[Finding]:
     """Report use-space encroachments without rejecting the drag that created one.
 
     A clearance is an occupied planning zone, so compare it against other physical
@@ -391,7 +456,9 @@ def _clearance_conflicts(model: ResolvedModel,
     footprint is subtracted before comparing, and a pendant hung over the table it lights
     stops reading as an encroachment on that table's chair-use margin. And it does not reach
     through a partition: a zone drawn past a wall into the next room is already stopped by the
-    wall, so a peer standing in a different room is not encroaching on it.
+    wall, so a peer standing in a different room is not encroaching on it. And a third: a
+    zone is not a column of air — a body hung on the wall above a fixture, beside or behind
+    it, takes none of that fixture's use space (→ ``_mounted_over_the_fixture``).
     """
     findings: list[Finding] = []
     peers_by_key = _obstructing_peers_by_key(model, obstruction_by_uid)
@@ -407,6 +474,7 @@ def _clearance_conflicts(model: ResolvedModel,
             (item.recommended_clearances, Severity.WARN, "recommended"),
         ):
             group_exempt = severity is Severity.WARN and item.placement_group is not None
+            over_fixture_exempt = severity is Severity.ERROR and item.kind == "Fixture"
             for zone in zones:
                 zone_shape = Polygon(zone)
                 if zone_shape.is_valid and own_footprint.is_valid:
@@ -426,6 +494,9 @@ def _clearance_conflicts(model: ResolvedModel,
                         continue
                     overlap = zone_shape.intersection(peer_shape)
                     if overlap.area <= 1e-8:
+                        continue
+                    if over_fixture_exempt and _mounted_over_the_fixture(
+                            item, peer, overlap, own_footprint, profiles_by_uid):
                         continue
                     findings.append(Finding(
                         severity=severity,

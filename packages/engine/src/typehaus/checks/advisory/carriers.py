@@ -146,10 +146,11 @@ def carrier_bay_conflict(ctx: CheckContext) -> list[Finding]:
                 f"they cross BEHIND the frame; say so on the rough-in drawing",
                 tags, Result.PASS))
         else:
+            depth_in = 0.0 if structure is None else structure.thickness_m / M_PER_IN
             out.append(advisory(
                 "advisory.carrier_bay_conflict",
-                f"{message}, and at {0.0 if structure is None else structure.thickness_m / M_PER_IN:.1f}\" "
-                f"of structure the frame fills it — there is nothing to cross through",
+                f"{message}, and at {depth_in:.1f}\" of structure the frame fills it — "
+                f"there is nothing to cross through",
                 tags, Result.FAIL,
                 fix="move one centreline clear of the bay, deepen the wall, or serve the "
                     "other fixture from a different wall"))

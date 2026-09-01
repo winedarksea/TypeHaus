@@ -9,12 +9,19 @@ limits — and must keep reporting the things that genuinely stand in the way.
 from __future__ import annotations
 
 import pytest
+from library.placeables.fixtures import TOILET, TOILET_WALL_HUNG
 
 from typehaus.model import (
     Building,
+    ClearancePolicy,
     ClearanceZone,
     ElectricalDevice,
     ElectricalDeviceType,
+    Equipment,
+    EquipmentKind,
+    EquipmentType,
+    Fixture,
+    FixtureType,
     Footprint2D,
     Furniture,
     FurnitureType,
@@ -176,7 +183,12 @@ def test_a_low_console_table_in_the_zone_still_reports() -> None:
 
 
 def test_a_wall_cabinet_projecting_past_the_protrusion_limit_still_reports() -> None:
-    """12" off the wall at 40" AFF is three times what A117.1 307.2 allows."""
+    """12" off the wall at 40" AFF is three times what A117.1 307.2 allows.
+
+    This is also the guard that the over-the-fixture exemption below never leaks onto a
+    furniture zone: a bed's side-access zone is floor you stand on, and hanging the cabinet
+    above the mattress does not give it back.
+    """
     cabinet = FurnitureType(tag="F-CABINET", name="Wall cabinet",
                             footprint=(inch(24), inch(12)), height=inch(30))
     plan = _bedroom_plan(
@@ -258,3 +270,130 @@ def test_a_receptacle_at_outlet_height_leaves_the_floor_clear() -> None:
     _, findings = resolve(plan)
 
     assert _conflicts(findings) == []
+
+
+# --- a zone is not a column of air: storage hung above a fixture ---------------------------
+#
+# UPC 402.5's 15" is elbow room for someone *seated* on the bowl and its 24" is standing room
+# in front of it; neither is measured up to the ceiling. Stock over-toilet storage is 24-30"
+# wide and 8-12" deep and is built and inspected routinely, and A117.1 §604.3.2 permits grab
+# bars, dispensers, hooks and *shelves* to overlap a water closet's clearance outright.
+
+_REQUIRED_CONFLICT_CHECK_ID = "integrity.placeable_required_clearance_conflict"
+
+_CABINET_TYPE_TAG = "F-OT-CABINET"
+
+
+def _required_conflicts(findings) -> list[tuple[str, ...]]:
+    return [finding.element_tags for finding in findings
+            if finding.check_id == _REQUIRED_CONFLICT_CHECK_ID]
+
+
+def _over_toilet_cabinet_type() -> FurnitureType:
+    """The catlin box: 45" wide, 6" deep, hung on the wall the bowl backs onto."""
+    return FurnitureType(tag=_CABINET_TYPE_TAG, name="Over-toilet cabinet",
+                         footprint=(inch(45), inch(6)), height=inch(60), storage=True)
+
+
+def _water_closet_plan(fixture_type: FixtureType, cabinet_y_in: float,
+                       cabinet_elevation_in: float) -> PlanModel:
+    """One bowl at the origin facing local -y, with a wall cabinet ``cabinet_y_in`` behind it.
+
+    ``active_code_profile`` is not decoration: the water-closet envelope is authored with
+    ``code_profile="MN/IRC"``, so without it ``_resolved_clearance_zones`` drops the zone and
+    every assertion below passes vacuously.
+    """
+    return PlanModel(
+        project=Project(name="test", project_uuid="00000000-0000-0000-0000-000000000092",
+                        building=Building(name="test"),
+                        site=Site(lat=0, lon=0, elevation=m(0)),
+                        active_code_profile="MN/IRC"),
+        storeys=(Storey(tag="upper", elevation=m(3), default_ceiling_height=m(2.6)),),
+        library=Library(fixture_types=(fixture_type,),
+                        furniture_types=(_over_toilet_cabinet_type(),)),
+        elements={"upper": (
+            # The element's own ``Mount`` is the height contract — ``resolved_mount_elevation``
+            # never reads the type's — so the wall-hung bowl's 1 3/8" lift has to be authored
+            # here, exactly as the catlin plan authors it.
+            Fixture(uid="wc-1", tag="WC", type_ref=fixture_type.tag, position=pt(m(0), m(0)),
+                    mount=fixture_type.mount),
+            Furniture(uid="cab-1", tag="CABINET", type_ref=_CABINET_TYPE_TAG,
+                      position=pt(inch(0), inch(cabinet_y_in)),
+                      mount=Mount(kind=MountKind.WALL, elevation=inch(cabinet_elevation_in))),
+        )},
+    )
+
+
+def _behind_the_bowl_in(fixture_type: FixtureType) -> float:
+    """Cabinet centre such that its 6" body straddles the back face of the bowl's footprint."""
+    return fixture_type.footprint[1].inches / 2
+
+
+# ``base + height``, not height alone: TOILET stands on the floor and tops out at 30", while
+# TOILET_WALL_HUNG hangs 1 3/8" clear with a 13 5/8" body and tops out at 15". The catalogue
+# already contains the case that distinguishes the two.
+_ABOVE_THE_BOWL = [(TOILET, 48.0), (TOILET_WALL_HUNG, 15.0)]
+_BESIDE_THE_BOWL = [(TOILET, 24.0), (TOILET_WALL_HUNG, 14.0)]
+
+
+@pytest.mark.parametrize("fixture_type, elevation_in", _ABOVE_THE_BOWL)
+def test_a_cabinet_hung_above_the_bowl_takes_none_of_its_use_space(
+        fixture_type, elevation_in) -> None:
+    _, findings = resolve(_water_closet_plan(
+        fixture_type, _behind_the_bowl_in(fixture_type), elevation_in))
+
+    assert _required_conflicts(findings) == []
+
+
+@pytest.mark.parametrize("fixture_type, elevation_in", _BESIDE_THE_BOWL)
+def test_a_cabinet_hung_below_the_bowls_own_top_still_reports(
+        fixture_type, elevation_in) -> None:
+    """Down at tank level the box is beside the person, not above them — real elbow room."""
+    _, findings = resolve(_water_closet_plan(
+        fixture_type, _behind_the_bowl_in(fixture_type), elevation_in))
+
+    assert _required_conflicts(findings) == [("WC", "CABINET")]
+
+
+def test_a_cabinet_on_the_wall_the_bowl_faces_still_reports() -> None:
+    """The condition that keeps the exemption honest: in front of you is walked into."""
+    _, findings = resolve(_water_closet_plan(
+        TOILET, -_behind_the_bowl_in(TOILET) - 3, 48.0))
+
+    assert _required_conflicts(findings) == [("WC", "CABINET")]
+
+
+def test_a_cabinet_above_an_equipment_separation_band_still_reports() -> None:
+    """The exemption is scoped to ``kind == "Fixture"`` for a reason.
+
+    The catalogue's other REQUIRED zone is ``EQ-T-ESS-BATT``'s 3'-0" band, whose own comment
+    insists it is not a working space — it is a separation rule about heat and fire spread
+    between devices. A body hung above a battery still has to keep away from it.
+    """
+    battery_type = EquipmentType(
+        tag="EQ-T-BATT", name="Battery", footprint=(inch(30), inch(12)), height=inch(48),
+        clearances=(ClearanceZone(footprint=Footprint2D(points=(
+            pt(inch(-33), inch(-6)), pt(inch(33), inch(-6)),
+            pt(inch(33), inch(6)), pt(inch(-33), inch(6)))),
+            purpose="equipment separation", policy=ClearancePolicy.REQUIRED),),
+    )
+    plan = PlanModel(
+        project=Project(name="test", project_uuid="00000000-0000-0000-0000-000000000093",
+                        building=Building(name="test"),
+                        site=Site(lat=0, lon=0, elevation=m(0)),
+                        active_code_profile="MN/IRC"),
+        storeys=(Storey(tag="upper", elevation=m(3), default_ceiling_height=m(2.6)),),
+        library=Library(equipment_types=(battery_type,),
+                        furniture_types=(_over_toilet_cabinet_type(),)),
+        elements={"upper": (
+            Equipment(uid="batt-1", tag="BATTERY", kind=EquipmentKind.BATTERY,
+                      type_ref="EQ-T-BATT", footprint=(inch(30), inch(12)),
+                      position=pt(m(0), m(0))),
+            Furniture(uid="cab-1", tag="CABINET", type_ref=_CABINET_TYPE_TAG,
+                      position=pt(inch(0), inch(3)),
+                      mount=Mount(kind=MountKind.WALL, elevation=inch(60))),
+        )},
+    )
+    _, findings = resolve(plan)
+
+    assert _required_conflicts(findings) == [("BATTERY", "CABINET")]

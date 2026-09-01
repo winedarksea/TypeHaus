@@ -21,8 +21,8 @@ from typehaus.model.enums import Service
 from typehaus.model.mep import SleevePenetration
 from typehaus.model.placeables import MountKind
 from typehaus.model.spatial import Appliance, Fixture
-from typehaus.resolve.geometry import circle_outline, length, sub
 from typehaus.resolve.framing.carriers import backing_wall
+from typehaus.resolve.geometry import circle_outline, length, sub
 from typehaus.resolve.mep_queries import _CONCRETE_SOLID_CATEGORIES
 from typehaus.resolve.model import (
     ResolvedModel,

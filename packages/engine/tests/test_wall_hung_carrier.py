@@ -96,12 +96,13 @@ def test_module_studs_part_around_the_bay_and_only_around_it(catlin_model_ro, ba
 
 
 def test_the_bay_is_framed_rather_than_merely_empty(catlin_model_ro, bay):
-    """Flanking studs on the bay's edges, blocking at the frame's base and head."""
+    """Studs on the bay's edges, a course at its base and head, cripples over the head."""
     wall = catlin_model_ro.wall(CARRIER_WALL)
     carrier = {member.child_key: member for member in wall.members
                if member.child_key.startswith("carrier-")}
     assert set(carrier) == {"carrier-0-stud-0", "carrier-0-stud-1",
-                            "carrier-0-block-0", "carrier-0-block-1"}
+                            "carrier-0-block-0", "carrier-0-head-1",
+                            "carrier-0-cripple-000", "carrier-0-cripple-001"}
     x0 = wall.axis[0][0]
     studs = sorted((carrier[k].p0[0] - x0) / IN for k in ("carrier-0-stud-0", "carrier-0-stud-1"))
     # Stud centres sit half a stud outboard of the clear bay, so their inner faces ARE it.
@@ -109,10 +110,35 @@ def test_the_bay_is_framed_rather_than_merely_empty(catlin_model_ro, bay):
     for key in ("carrier-0-stud-0", "carrier-0-stud-1"):
         assert carrier[key].category == "stud"
         assert carrier[key].profile == "2x6"  # full plate depth, not a staggered half-bay
-    base, head = carrier["carrier-0-block-0"], carrier["carrier-0-block-1"]
-    assert base.category == head.category == "blocking"
+    base, head = carrier["carrier-0-block-0"], carrier["carrier-0-head-1"]
+    # Both courses are "blocking", not "header": a header registers against a real opening
+    # (test_opening_framing_registers_with_the_opening_it_frames), and nothing passes
+    # through a carrier bay.
+    assert (base.category, head.category) == ("blocking", "blocking")
     assert base.length_m / IN == pytest.approx(19.75)
     assert (head.z0_m - base.z0_m) == pytest.approx(CARRIER_FRAME_HEIGHT_M)
+
+
+def test_cripples_put_the_module_back_above_the_head_course(catlin_model_ro):
+    """``W-S-SN1`` stacks on this wall, so the three displaced studs have to reappear.
+
+    Not a new rhythm: the cripples stand on the wall's OWN 8" staggered module, at exactly
+    the stations the keepout removed. They restore the load path, not the metric —
+    ``_stud_grid.orphan_studs`` counts category "stud", and a cripple is not one, by the
+    same design that excludes a window's cripples.
+    """
+    wall = catlin_model_ro.wall(CARRIER_WALL)
+    x0 = wall.axis[0][0]
+    head = next(m for m in wall.members if m.child_key == "carrier-0-head-1")
+    cripples = [m for m in wall.members if m.category == "cripple"
+                and m.child_key.startswith("carrier-")]
+    # 24" and 32", not 16": the 16" module lands 0.22" from the jamb stud at 15.78", and a
+    # cripple there would interpenetrate it. The jamb IS the full-height member on that line.
+    assert sorted((m.p0[0] - x0) / IN for m in cripples) == pytest.approx([24.0, 32.0])
+    assert all(m.z0_m == pytest.approx(head.z1_m) for m in cripples)
+    # They run to the wall's own framing top, like the module studs they replace.
+    module_top = max(m.z1_m for m in wall.members if m.category == "stud")
+    assert all(m.z1_m == pytest.approx(module_top) for m in cripples)
 
 
 def test_the_drain_point_is_derived_from_the_type_and_the_host_wall(catlin_plan,
