@@ -726,6 +726,47 @@ BATH2_CAB_4506 = FurnitureType(
 )
 
 
+# --- RM-A-STUDIO's wet-bar base (2026-09-01) --------------------------------------------
+#
+# FX-A-STUDIO-BAR-SINK is ``Mount(WALL, elevation=27")``, the identical mount to
+# FX-M-KITCH-SINK -- and that mount only describes a real thing because a run of casework
+# stands under the kitchen sink. Under the bar sink there was nothing: the studio block's
+# comments describe a counter that existed as prose only, and the sink hung on the wall.
+#
+# ** 18" DEEP, AND THE CATALOG HAS NO SUCH BASE. ** Every ``library.placeables.casework``
+# base is ``_BASE_DEPTH`` = 24". Measured against D-A-STUBATH's real swing polygon, from
+# W-A-STU-W's west face at x 17'-8 5/8":
+#     24" deep -> 52.4 in^2 inside the arc
+#     21" deep -> 15.4 in^2 inside the arc
+#     18" deep -> clear, by 0.42"
+# The bath door has nowhere else to swing (see storeys/attic_studio.py's OPENINGS) -- it is
+# the same arc that pushed APPL-A-STUDIO-FRIDGE south to y 13'-6" -- so the cabinet is what
+# yields, and 18" is the deepest that fits. That is not a compromise dimension: an 18"
+# vanity/bar base under an 18" x 14" bowl is a stock depth, and the bowl is only 14" deep,
+# so nothing is lost off the back.
+#
+# House-local rather than a catalog addition because the depth is set by ONE door's arc in
+# ONE room. A generic 18" base would be a reasonable ``casework.py`` entry on its own
+# merits, but promoting it belongs in CONTRIBUTING's review, not in this fix.
+#
+# 24" wide in y, north face flush with the sink's at y 17'-1" (the same 5/8" scribe to
+# W-A-BATH-S the sink takes), leaving 7" of open floor to the fridge -- the run stays the
+# "sink, gap, fridge" the studio block already describes, now with the sink standing on
+# something. It steps 6" shallower than the 24" fridge beside it, which is what an 18" base
+# next to a 24" appliance looks like anywhere.
+#
+# No ``clearances``, per the casework rule. ``work_surface=True``: it is the bar counter.
+STUDIO_BAR_BASE_2418 = FurnitureType(
+    tag="FT-STUDIO-BAR-BASE-2418", name='Studio wet-bar base, 24" x 18"',
+    footprint=(inch(24), inch(18)), height=ft(3),
+    storage=True, work_surface=True, plan_symbol="sink-base",
+    source="Stock 18\"-deep frameless vanity/bar base with two doors, no drawer box (the "
+           "bowl and its trap take the space), on a site-scribed toe kick, with a 24\" x "
+           "18\" solid-surface top cut for FX-A-STUDIO-BAR-SINK's 18\" x 14\" bowl. 36\" "
+           "finished height, matching the 27\" bowl mount the fixture already carries.",
+)
+
+
 FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, CURTAIN_ROD_OUTDOOR_114,
                    CURTAIN_ROD_OUTDOOR_98,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, BATH1_SHELF_2030,
@@ -733,4 +774,4 @@ FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, CURTAIN_ROD_OUTDOOR_114,
                    PANTRY_SHELVES_70, DINING_8_OPEN_CORNERS,
                    STUDY_BENCH, STUDY_DESK, FOLD_LEAF,
                    CLOSET_SHELF_ROD_60, CLOSET_SHELF_ROD_84, CLOSET_SHELF_ROD_96,
-                   CLOSET_SHELF_36, BATH2_CAB_4506)
+                   CLOSET_SHELF_36, BATH2_CAB_4506, STUDIO_BAR_BASE_2418)

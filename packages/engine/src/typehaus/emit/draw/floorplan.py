@@ -489,7 +489,8 @@ def _emit_alarms(b: SceneBuilder, model: ResolvedModel, storey: str,
             continue
         # Every AlarmKind must appear here — this is a hard index, so a new member without a
         # label KeyErrors the whole plan sheet rather than drawing an unlabelled symbol.
-        label = {"smoke": "SD", "co": "CO", "combo": "SD/CO", "heat": "HD"}[alarm.kind.value]
+        label = {"smoke": "SD", "co": "CO", "combo": "SD/CO", "heat": "HD",
+                 "leak": "WD", "freeze": "FD"}[alarm.kind.value]
         # The room stays the host (it is what the check rules reconcile against); the seed is
         # only the default *drawing* point, so an alarm that names its own position draws
         # there — e.g. a hall lobe of a big open room rather than that room's centroid.

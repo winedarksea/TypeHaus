@@ -195,12 +195,20 @@ class AlarmKind(Enum):
     keyed to a room, and ``DeviceKind``'s docstring argues for keeping that enum flat and
     differentiating by ``type_ref``. R314's bedroom rule filters on (SMOKE, COMBO), so a HEAT
     detector is correctly invisible to it.
+
+    ``LEAK`` (water sensor) and ``FREEZE`` (low-temperature sensor) are property-protection
+    devices, not life safety. They are members here because they are the same *thing* — a
+    detector keyed to a room, drawn on the plan sheet, and scheduled — and because R314/R315
+    both filter on explicit tuples of (SMOKE, CO, COMBO), so neither becomes a phantom
+    life-safety device by being added.
     """
 
     SMOKE = "smoke"
     CO = "co"
     COMBO = "combo"
     HEAT = "heat"
+    LEAK = "leak"
+    FREEZE = "freeze"
 
 
 class StructuralRole(Enum):

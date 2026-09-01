@@ -1156,4 +1156,20 @@ ATTIC_PLACEABLES = [
     # it — but they do read it.
     Appliance(uid="7B10E5QBCF", tag="APPL-A-STUDIO-FRIDGE", type_ref="APPL-BAR-FRIDGE-24",
               room="RM-A-STUDIO", position=pt(ft(16, 8.625), ft(13, 6)), rotation=deg(90)),
+    # ** THE THIRD PIECE OF THE BAR, AND THE ONE THAT WAS MISSING (2026-09-01). **
+    # FX-A-STUDIO-BAR-SINK carries `Mount(WALL, elevation=27")` -- the identical mount to
+    # FX-M-KITCH-SINK -- and that only describes a buildable thing because FURN-M-KIT-SINKBASE
+    # stands under the kitchen sink. Here the counter this block's comments keep referring to
+    # was prose: the sink hung on W-A-STU-W with open floor under it.
+    #
+    # 18" deep, not the catalog's 24": D-A-STUBATH's arc reaches x 16'-2 1/2" and a 24" box
+    # off the 17'-8 5/8" face puts 52 in^2 inside it (21" puts 15 in^2; 18" clears by 0.42").
+    # The whole derivation is on FT-STUDIO-BAR-BASE-2418 in plan/furniture_types.py -- read it
+    # before making this deeper. Same arc that pinned the fridge to y 13'-6".
+    #
+    # c/l (16'-11 5/8", 16'-1"): the wall face less half the 18" depth, and 24" of width whose
+    # NORTH face lands on the sink's at y 17'-1", taking the same 5/8" scribe to W-A-BATH-S.
+    # The sink (y 15'-7"..17'-1") sits fully over it; 7" of open floor is left to the fridge.
+    Furniture(uid="4GVQGBXMS3", tag="FURN-A-STUDIO-BAR-BASE", type_ref="FT-STUDIO-BAR-BASE-2418",
+              room="RM-A-STUDIO", position=pt(ft(16, 11.625), ft(16, 1)), rotation=deg(90)),
 ]

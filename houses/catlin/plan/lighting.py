@@ -883,11 +883,29 @@ SECOND_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-S-STUDY2", rotation=deg(180),
                      controlled_by=("ED-S-STUDY2-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
+    # Moved down the flight 2026-09-01, from x 25'-0" / z 5'-0" to x 29'-0" / z 7'-6".
+    # ST-S2A climbs westward at 7 1/2" per 10" of run, so the further west the sconce sat the
+    # deeper it was buried in the flight it was meant to light. Measured at the old station,
+    # x=25'-0": the stringer soffit is z 17'-0 1/4" and the tread top z 17'-11 1/2" (both
+    # project-absolute), against a mount at z 15'-0" -- 2'-0" under the soffit and 2'-11 1/2"
+    # BELOW its own tread, with the plan point inside the stair outline. There is no correct
+    # elevation at x=25': the tread is at 95 1/2" storey-relative and this storey is only
+    # 10'-0" floor to floor, so an 8" fixture has no band left.
+    #
+    # At x=29'-0" the tread top is 59 1/2" storey-relative, so ft(7,6) sits 30 1/2" above the
+    # tread with the fixture topping out at 98" -- clear of the deck over, and the same
+    # relationship SC2 keeps at x=32' (45 1/2" over a 32 1/2" tread). y is unchanged: both
+    # sconces stay on the north wall run.
+    #
+    # ** NO CHECK CAUGHT THIS. ** `code.R303_7_stairway_illumination` counts luminaires
+    # serving the flight (nine for ST-S2A, so it never depended on SC1),
+    # `electrical.room_lighting` counts by room, and the fc advisory is planar. Nothing in
+    # the engine compares a wall-mount elevation against the stair it lights.
     ElectricalDevice(uid="QTS000WAAA", tag="ED-S-STUDY2-STAIR-SC1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(25), ft(8, 7.625)), type_ref="ED-T-LT-SCONCE-STAIR",
+                     position=pt(ft(29), ft(8, 7.625)), type_ref="ED-T-LT-SCONCE-STAIR",
                      circuit="CKT-LT-UPPER", room="RM-S-STUDY2", rotation=deg(0),
                      controlled_by=("ED-S-STUDY2-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(7, 6))),
     ElectricalDevice(uid="QTS000XAAA", tag="ED-S-STUDY2-STAIR-SC2", kind=DeviceKind.LIGHT,
                      position=pt(ft(32), ft(8, 7.625)), type_ref="ED-T-LT-SCONCE-STAIR",
                      circuit="CKT-LT-UPPER", room="RM-S-STUDY2", rotation=deg(0),

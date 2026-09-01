@@ -458,6 +458,15 @@ SECOND_FIXTURES = (
     # test if this door, this shelf or W-S-BD-N1B ever moves ** -- 0.62" is the whole
     # margin, and the north wall already moved 2" south once, on 2026-08-30.
     #
+    # Re-measured 2026-09-01 against the resolved arc, closing a TODO that read "the lav is
+    # in the way of the door swing": swing bounds x 84..114, y 318..348; carcass bounds
+    # x 95.62..116.62, y 345.88..393.88. Intersection area **0.0 sf**, minimum distance
+    # **0.21"**. The BOUNDING BOXES overlap 2.12" in y, which is the whole reason it reads
+    # as a conflict on a plan sheet -- and `integrity.door_swing_conflict`
+    # (resolve/placeables.py) tests the quarter-disc, not the box, which is why it is
+    # correctly silent. Not a defect. 0.21" is thinner than the 0.62" scribe margin above,
+    # so it is the *tighter* of the two: re-measure both, not just the shelf.
+    #
     # 30" sink base at the SOUTH end (bowl centred on the vanity at y=369.88"), 18"
     # three-drawer bank at the north. ED-S-BATH1-RC-MIRROR sits at y 370"..374" on this
     # wall, so it is within inches of the basin's edge -- NEC 210.52(D) wants 36" to the
