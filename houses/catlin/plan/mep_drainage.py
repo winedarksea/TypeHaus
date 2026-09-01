@@ -413,7 +413,12 @@ ERV_CONDENSATE = [
                   pt(ft(13), ft(13, 3)), pt(ft(13), ft(12, 0.1875)),
                   pt(ft(13), ft(12, 0.1875))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(72), inch(71.7), inch(66.45), inch(63.42), inch(63.05),
+            # Starts at 4'-6", not 6'-0", since EQ-B-ERV came down 18" on 2026-09-01 (its
+            # four ports are on top and had 3 5/16" of ceiling above them — see
+            # plan/electrical.py). The pan is the run's high point and it moved with the
+            # machine; the fall is untouched at 0.3"/ft the whole way, so every invert below
+            # simply drops the same 18" and the 9" tie-in at FX-B-SAUNA-FD is unchanged.
+            elevations=(inch(54), inch(53.7), inch(48.45), inch(45.42), inch(45.05),
                         inch(9))),
 ]
 

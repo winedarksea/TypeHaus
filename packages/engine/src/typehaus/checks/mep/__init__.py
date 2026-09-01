@@ -6,6 +6,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     data,
     deck_equipment,
     drainage,
+    duct_connectivity,
     electrical,
     electrical_code,
     electrical_receptacles,

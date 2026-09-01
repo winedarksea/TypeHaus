@@ -305,8 +305,14 @@ DUCTS_HVAC_SECOND = [
     # 900 fpm ceiling than the 750 fpm it was sized for, and the section stays 18x8 because
     # 18" is what carries the ERV mixing-box feed past it in the hall box, not what carries
     # the air.
+    # ** IT STOPPED 18" PAST ITS LAST TAKE-OFF UNTIL 2026-09-01. ** y=33'-0" was a foot and a
+    # half of 18x8 trunk north of REG-S-HP-BED3's boot at y=31'-6", serving nothing and
+    # capped. Trimming it to the boot station is 1'-6" of 18x8 off the BOM and puts the cap
+    # where the last collar is, which is where a trunk ends. The end is a cap either way —
+    # `mep.duct_connectivity` earns that from the four `duct_ref` take-offs on this run, not
+    # from its length — so this is a material saving, not a fix for a finding.
     DuctRun(uid="CSDH01AAAA", tag="DU-S-HP-SUP", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), ft(4, 3.375)), pt(ft(19, 6), ft(33))),
+            path=(pt(ft(19, 6), ft(4, 3.375)), pt(ft(19, 6), ft(31, 6))),
             width=inch(18), depth=inch(8), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-DUCT", design_cfm=500),
     # The return-plenum stub, rebuilt in SF-S-HP1 on 2026-08-30 and now carrying the return

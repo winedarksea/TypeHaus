@@ -341,14 +341,44 @@ DUCTS_ERV_RISERS = [
     # Moving the column east instead was the other option and it is not available: the chase's
     # measured clear is 24" (see the note above — it is not the 30 1/8" this used to cite)
     # and the three-in-a-row at x=5"/14"/23" already over-fills it by an inch.
+    # ** BOTH RISERS NOW REACH THE MANIFOLD THEY WERE ALWAYS DESCRIBED AS SERVING
+    # (2026-09-01). ** Until this pass each stopped dead at -19 7/16" in the chase — the
+    # basement manifolds' port level, and nothing else about the point — while this file's
+    # own note above said "basement manifolds to attic manifold". The manifolds are at
+    # x 5'-6"..7'-6", 61" and 73" of plan away, and the horizontal leg between was never
+    # drawn. `mep.duct_connectivity` is the check that says so out loud now; it could not
+    # have, before its equipment test grew an elevation band, because both ends "landed on"
+    # EQ-M-ERV-HOOD-OA — the gable hood 67" above them, sharing a plan point the way anything
+    # in one chase does.
+    #
+    # THE SUPPLY LEG GOES ROUND THE NORTH of EQ-B-ERV: east at y=31'-8", which is 3 1/2"
+    # clear of the machine's north face (y=376 1/2") and stops at x=5'-10", 2" short of
+    # RM-B-ESS's x=6'-0" wall, then south into EQ-B-ERV-MAN-SUP's west end. The room's other
+    # two through-routes are both taken — x=6'-6" is DU-B-ERV-R-GYM and -SAUNA-SUP's shared
+    # lane for the whole depth of the basement, and y=30'-6" east of the manifold is
+    # DU-B-ERV-R-PLAY's.
+    #
+    # THE EXTRACT LEG DROPS TO -27" FIRST, and that is the only reason these two do not
+    # collide: it has to cross the supply leg's y=31'-8" lane to get south, and 6" ducts on
+    # 7 9/16" centres do not share a crossing. -27" puts 1 5/8" between the two envelopes,
+    # keeps 79 3/8" of headroom under it — over R305.1.1's 76" basement projection floor —
+    # and rises back to the port level over the 46" of its east run, a 9 degree rake, rather
+    # than jogging at the manifold. It reaches EQ-B-ERV-MAN-EXH from the NORTH at x=5'-10"
+    # because the manifold's own west approach along y=28'-6" is DU-B-ERV-R-BENCH's.
     DuctRun(uid="1BMFGSMKJY", tag="DU-ERV-RISER-SUP", system=DuctSystem.SUPPLY,
-            path=(pt(ft(0, 5), ft(33, 7.5)), pt(ft(0, 5), ft(33, 7.5))),
-            elevations=(inch(-19.4375), inch(231.875)),
+            path=(pt(ft(5, 10), ft(30, 6)), pt(ft(5, 10), ft(31, 8)),
+                  pt(ft(0, 5), ft(31, 8)), pt(ft(0, 5), ft(33, 7.5)),
+                  pt(ft(0, 5), ft(33, 7.5))),
+            elevations=(inch(-19.4375), inch(-19.4375), inch(-19.4375),
+                        inch(-19.4375), inch(231.875)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
             insulation="R-8 wrap", design_cfm=210),
     DuctRun(uid="GFTW5CBARX", tag="DU-ERV-RISER-EXH", system=DuctSystem.EXHAUST,
-            path=(pt(ft(1, 2), ft(33, 7.5)), pt(ft(1, 2), ft(33, 7.5))),
-            elevations=(inch(244), inch(-19.4375)),
+            path=(pt(ft(1, 2), ft(33, 7.5)), pt(ft(1, 2), ft(33, 7.5)),
+                  pt(ft(1, 2), ft(29, 3)), pt(ft(5, 0), ft(29, 3)),
+                  pt(ft(5, 10), ft(29, 3)), pt(ft(5, 10), ft(28, 8))),
+            elevations=(inch(244), inch(-27), inch(-27), inch(-19.4375),
+                        inch(-19.4375), inch(-19.4375)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
             insulation="R-8 wrap", design_cfm=210),
     # The outdoor side, which did not exist at all before this pass. Both legs carry
@@ -380,8 +410,11 @@ DUCTS_ERV_RISERS = [
             # wall-hung manifolds at +8'-0", so it crosses nothing in a 5'-3" x 1'-11" room.
             path=(pt(inch(-6), ft(33, 11)), pt(inch(6), ft(33, 11)),
                   pt(ft(1, 11), ft(33, 11)), pt(ft(1, 11), ft(33, 7.5)),
-                  pt(ft(1, 11), ft(33, 7.5))),
-            elevations=(inch(48), inch(48), inch(48), inch(48), inch(-19.4375)),
+                  pt(ft(1, 11), ft(33, 7.5)), pt(ft(1, 11), ft(32, 6)),
+                  pt(ft(3, 8), ft(32, 6)), pt(ft(3, 8), ft(31, 1)),
+                  pt(ft(3, 8), ft(31, 1))),
+            elevations=(inch(48), inch(48), inch(48), inch(48), inch(-27),
+                        inch(-27), inch(-27), inch(-27), inch(-33.8375)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
             insulation="R-8 wrap, vapour-sealed", design_cfm=210),
     DuctRun(uid="BYAVBJKRS6", tag="DU-ERV-EA", system=DuctSystem.EXHAUST,
@@ -394,9 +427,11 @@ DUCTS_ERV_RISERS = [
             # 6" of exterior-wall stud as shaft on each measured face. At y=35'-6" this
             # riser's 8" envelope stood 4 5/8" inside W-M-N3B / W-S-N3B's stud cavity for its
             # whole height. y=34'-8" is 9" clear of the shaft's north face.
-            path=(pt(ft(1, 11), ft(34, 8)), pt(ft(1, 11), ft(34, 8)),
-                  pt(inch(-6), ft(34, 8))),
-            elevations=(inch(-19.4375), inch(204), inch(204)),
+            path=(pt(ft(4, 7), ft(31, 1)), pt(ft(4, 7), ft(31, 1)),
+                  pt(ft(4, 7), ft(34, 8)), pt(ft(1, 11), ft(34, 8)),
+                  pt(ft(1, 11), ft(34, 8)), pt(inch(-6), ft(34, 8))),
+            elevations=(inch(-33.8375), inch(-27), inch(-27), inch(-27),
+                        inch(204), inch(204)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
             insulation="R-8 wrap, vapour-sealed", design_cfm=210),
 ]
@@ -413,6 +448,36 @@ DUCTS_ERV_RISERS = [
 # eight feet of exposed duct off the old (27', 27') position. It still throws away from
 # FURN-B-PLAY-TV on the east wall.
 DUCTS_ERV_BASEMENT = [
+    # ** THE MACHINE'S OWN TWO TRUNKS, DRAWN 2026-09-01. ** EQ-B-ERV had no duct to either
+    # manifold — the six radials below started at boxes that nothing fed. No check could say
+    # so: `mep.duct_connectivity` grades duct ENDS, and a manifold with nothing arriving at it
+    # has no end to orphan. Both are 6", the machine's full 210 cfm, and both leave its top.
+    #
+    # THE SUPPLY TRUNK IS THE SIMPLE ONE: straight up 14 3/8" off the port to the radial
+    # layer at 7'-6", then 19" east into EQ-B-ERV-MAN-SUP's west half at y=30'-4". It stays
+    # 2" south of the manifold's own y=30'-6" centre so DU-B-ERV-R-PLAY's lane east of
+    # x=6'-6" is untouched.
+    #
+    # THE RETURN TRUNK CANNOT GO STRAIGHT, and the reason is DU-B-ERV-R-BENCH: that radial
+    # runs the whole width of the room at y=28'-6", which fences EQ-B-ERV-MAN-EXH off from
+    # the machine at the 7'-6" layer. It leaves the manifold's east end at x=7'-0", drops to
+    # 6'-10 7/16", crosses UNDER the x=6'-6" radial lane — the one DU-B-ERV-R-GYM and
+    # -SAUNA-SUP share for the depth of the basement — and comes back west at y=29'-9",
+    # 1 5/8" clear of the layer above it and 6 13/16" over the machine's case.
+    DuctRun(uid="225MZ1YDWB", tag="DU-B-ERV-SUP-TRUNK", system=DuctSystem.SUPPLY,
+            path=(pt(ft(4, 9), ft(30, 4)), pt(ft(4, 9), ft(30, 4)),
+                  pt(ft(6, 4), ft(30, 4))),
+            elevations=(inch(75.6), inch(90), inch(90)),
+            diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
+            design_cfm=210),
+    DuctRun(uid="6BTCWW2S1V", tag="DU-B-ERV-RET-TRUNK", system=DuctSystem.RETURN,
+            path=(pt(ft(7), ft(28, 8)), pt(ft(7), ft(28, 8)),
+                  pt(ft(7), ft(29, 9)), pt(ft(3, 8), ft(29, 9)),
+                  pt(ft(3, 8), ft(29, 9))),
+            elevations=(inch(90), inch(82.4375), inch(82.4375), inch(82.4375),
+                        inch(75.6)),
+            diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
+            design_cfm=210),
     DuctRun(uid="CND5TE40W0", tag="DU-B-ERV-R-GYM", system=DuctSystem.SUPPLY,
             path=(pt(ft(6, 6), ft(30, 6)), pt(ft(6, 6), ft(10, 6.6)), pt(ft(18, 10.4), ft(10, 6.6))),
             start_elevation=ft(7, 6), end_elevation=ft(7, 6),

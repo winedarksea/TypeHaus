@@ -128,13 +128,18 @@ def test_catlin_ducts_are_swept_solids(catlin_model) -> None:
 
 
 def test_a_drawn_riser_bills_more_than_its_plan_projection(catlin_model) -> None:
-    """``DU-ERV-RISER-SUP`` is one plan point at two elevations: its plan length is zero and
-    its developed length is the whole basement-to-attic rise. Billing the former is exactly
-    what ``duct_takeoff`` did before this."""
+    """``DU-ERV-RISER-SUP``'s last two vertices are one plan point at two elevations — the
+    whole basement-to-attic rise — so its developed length exceeds its plan projection by
+    that much. Billing the projection is exactly what ``duct_takeoff`` did before this.
+
+    This asserted ``plan == 0`` while the run *was* the bare vertical. It stopped being one
+    on 2026-09-01, when the basement leg into ``EQ-B-ERV-MAN-SUP`` that this file's own
+    comment had always described was finally drawn (`mep.duct_connectivity`), so the
+    property under test is now the difference rather than the total."""
     riser = next(d for d in catlin_model.ducts if d.tag == "DU-ERV-RISER-SUP")
     plan = sum(math.dist(a, b) for a, b in zip(riser.path, riser.path[1:], strict=False))
-    assert plan == pytest.approx(0.0, abs=1e-9)
-    assert riser.length_m > 6.0  # ~21'-11" of rise
+    assert riser.path[-1] == pytest.approx(riser.path[-2])  # the rise: one plan point twice
+    assert riser.length_m - plan > 6.0  # ~20'-11" of rise on top of the basement leg
 
 
 def test_every_catlin_duct_solid_is_a_declared_routed_run_category(catlin_model) -> None:

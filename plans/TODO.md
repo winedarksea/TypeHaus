@@ -716,33 +716,62 @@ the future.
 
 ## Found while doing the 2026-09-01 batch — recorded so they are not rediscovered
 
-- **`mep.duct_connectivity` is WRITTEN AND NOT REGISTERED, pending one authoring decision.**
-  The check lives at `checks/mep/duct_connectivity.py`; its line in `checks/mep/__init__.py`
-  is deliberately absent. It grades every duct end against four honest terminations — another
-  duct (matched in plan AND elevation), a machine footprint, a register naming this run within
-  a 36" boot reach, or outdoors — and on catlin it reports **64 PASS and 2 FAIL of 66
-  endpoints**. The two are real:
+- **`mep.duct_connectivity` IS REGISTERED, AND THE ERV WAS PLUMBED TO NOTHING (closed
+  2026-09-01).** The check grades every duct end against four honest terminations — another
+  duct (matched in plan AND elevation, against a *segment* rather than a vertex), a machine
+  footprint at the height of its case, a register naming this run within a 36" boot reach, or
+  a cap past the last take-off on a served trunk — plus the outdoor-hood exemption. catlin is
+  0 FAIL with it on.
 
-      DU-ERV-OA  end   at (1'-11", 33'-7 1/2"), z -19 7/16"
-      DU-ERV-EA  start at (1'-11", 34'-8"),     z -19 7/16"
+  The batch plan predicted five orphans and named five; the unregistered draft found two; the
+  registered check finds **four**, and the difference is the elevation band on the equipment
+  probe. Without it `DU-ERV-RISER-SUP`'s basement end "landed on" `EQ-M-ERV-HOOD-OA` 67"
+  above it and `DU-S-HP-SUP`'s cap "landed on" the fridge 220" below — the same coincidence
+  the draft had already fixed for duct-to-duct and never applied to machines. The four:
 
-  Both drop the NW chase to the basement manifolds' port level and then stop. Nothing carries
-  either to `EQ-B-ERV` (x 35..60, y 355..377) or to `EQ-B-ERV-MAN-SUP`/`-EXH` (x 66..90). The
-  file's own comment says each is "a riser out of the basement manifold", so the intent is
-  clear and the geometry does not implement it.
-  **This is a stop-and-ask, not an invention.** It is not the "author a leg" the batch plan
-  assumed — that plan predicted five orphans and named a different five; a correct
-  implementation finds these two, and the other candidates land on a duct, a machine or a
-  legitimate boot. Closing these needs the ERV's port faces and a route through a basement
-  that is already crowded, which is a design decision. Register the check in the same commit
-  that authors the two runs; registering it first puts catlin at 2 FAIL.
+      DU-ERV-OA        end   at (1'-11", 33'-7 1/2")   -> EQ-B-ERV
+      DU-ERV-EA        start at (1'-11", 34'-8")       -> EQ-B-ERV
+      DU-ERV-RISER-SUP start at (0'-5",  33'-7 1/2")   -> EQ-B-ERV-MAN-SUP
+      DU-ERV-RISER-EXH end   at (1'-2",  33'-7 1/2")   -> EQ-B-ERV-MAN-EXH
 
-- **A plan-only proximity test is not a duct joint.** The first draft of the above matched
-  duct ends in plan alone and reported a basement riser as connected to a SECOND-STOREY run
-  231" above it, because two runs on different floors share a plan point constantly. The
-  elevations must not be required to be *equal* either — a riser is one plan point spanning a
-  z range. The rule that works is: the end's z falls within the other run's own z extent,
-  widened by the joint tolerance. Same trap applies to the equipment probe.
+  **And a fifth thing nothing could report: `EQ-B-ERV` had no duct to either manifold.** The
+  six basement radials started at boxes that nothing fed. No check says so — this one grades
+  duct ENDS, and a manifold with nothing arriving at it has no end to orphan. A machine-side
+  rule ("every equipment port that names a service is reached by a run of that service") is
+  the missing companion and is not written.
+
+  **The machine had to come down 18" before any of it could be drawn.**
+  `EQ-T-BROAN-B210E75RT`'s four air ports are all 6" round on its TOP face. Hung at 6'-0" the
+  21.6" case topped out at 7'-9 5/8" under a 8'-0 15/16" ceiling — 3 5/16" for four collars,
+  which is not an installation, and is why nothing had ever been drawn to it. It hangs at
+  4'-6" now (case top 6'-3 5/8"), which opens the 6'-10 7/16" crossing band the outdoor legs
+  and the return trunk use: 1 5/8" under the 7'-6" radial layer, 6 13/16" over the case,
+  6'-7 3/8" of headroom beneath. `PR-B-ERV-COND`'s inverts came down the same 18" at the same
+  0.3"/ft.
+
+- **`DU-ERV-RISER-EXH`'s top passes 2" from `DU-A-ERV-R-BATH1` at the same elevation.** The
+  connectivity check reads that as its joint — correctly, by its own rule — but the riser is
+  46" short of `EQ-A-ERV-MAN-EXH`, which is what it is described as reaching, and two ducts
+  2" apart on centre at one elevation is an interference, not a tee. Worth a look; the same
+  is true of `DU-S-ERV-HP-FEED` passing the same point.
+
+- **`REG-S-HP-PLANT` was NOT moved east, and the reason is the short circuit.** Trimming
+  `DU-S-HP-SOUTH` back to the plant room's door would save about 10'-4" of 10x6, but
+  `REG-S-ERV-PLANT-EXH` is at (17'-7", 7'-4") and the supply at (6'-8", 3'-4") — an 11'-7 1/2"
+  throw across an 18' x 9' room that `plan/mep_registers.py` argues for explicitly: the air
+  lands on the south glass and crosses the planting before it is pulled out. Both terminals
+  within a foot of the east wall leaves the west 14 feet of a 70%-RH room unswept, and that
+  extract is its only moisture removal path. A middle station (x ~12'-6") would take about
+  half the duct and keep a 5'-0" throw, if the saving is wanted.
+
+- **A plan-only proximity test is not a duct joint, and neither is a vertex-only one.** The
+  first draft of the check matched ends in plan alone and read a basement riser as connected
+  to a SECOND-STOREY run 231" above it. The elevations must not be required to be *equal*
+  either — a riser is one plan point spanning a z range — so the rule is that the end's z
+  falls in the matched *segment's* z range, widened by the joint tolerance. Segment, because
+  a branch tees into the side of a trunk: `DU-S-HP-SUITE` leaves `DU-S-HP-SUP` 118" from
+  either end of its only segment, and a vertex-only test called it an orphan while crediting
+  it to a register 39" away.
 
 - **`concrete-window-bucks-and-blockouts` named the wrong two openings.** Its comment claimed
   "the sunken garden's patio door and the sauna window, both in the basement's daylight wall".

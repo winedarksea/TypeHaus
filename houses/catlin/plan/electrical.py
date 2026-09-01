@@ -533,7 +533,23 @@ BASEMENT_EQUIPMENT = [
               # basement's other end, and a spigot at slab level has nowhere to fall to. At
               # a 6'-0" base the 21.6" case tops out at 7'-9 5/8", three inches under the
               # basement's 8'-0 15/16" clear.
-              mount=Mount(kind=MountKind.CEILING, elevation=ft(6)),
+              # ** LOWERED 6'-0" -> 4'-6" ON 2026-09-01, BECAUSE THE PORTS ARE ON TOP. **
+              # All four air ports on this machine are 6" round on its TOP face
+              # (EQ-T-BROAN-B210E75RT, plan/mep_erv_types.py). At a 6'-0" base the 21.6" case
+              # topped out at 7'-9 5/8" and RM-B-FURNACE's clear is 8'-0 15/16" — 3 5/16" of
+              # air above four 6" collars, which is not an installation. Nothing was ever
+              # drawn to this machine and that is why; `mep.duct_connectivity` is the check
+              # that finally said the ERV was plumbed to nothing at all.
+              #
+              # 4'-6" puts the case top at 6'-3 5/8" and gives the two outdoor legs and the
+              # two manifold trunks (plan/mep_erv.py) a 6'-10 7/16" crossing band: 1 5/8"
+              # under the 7'-6" radial layer, 6 13/16" over this case, and 6'-7 3/8" of
+              # headroom beneath — over R305.1.1's 6'-4" basement projection floor. Gravity
+              # drainage is unaffected and better: PR-B-ERV-COND (plan/mep_drainage.py) still
+              # falls 0.3"/ft from the pan to FX-B-SAUNA-FD, now from 4'-6" rather than 6'-0".
+              # Nothing moves in plan, so the EQ-B-ESS-BATT separation zone and
+              # ED-B-BACKUP-ENCL's 110.26 working space are untouched.
+              mount=Mount(kind=MountKind.CEILING, elevation=ft(4, 6)),
               pan_drain_ref="PR-B-ERV-COND"),
     # Sauna heater: NW corner of the *heated* zone (south 8'-6" of RM-B-SAUNA — the north 4'
     # is the shower per notes/sauna_shower_basement_detail.md), back to the west liner face,

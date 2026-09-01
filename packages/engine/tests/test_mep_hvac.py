@@ -115,3 +115,55 @@ def test_depth_exceeding_joist_depth_fails(second_floor):
         routing=DuctRouting.JOIST_BAY, floor=second_floor, bearing_walls=[], spacing_m=0.4064,
     )
     assert not depth_ok
+
+
+# --- mep.duct_connectivity ------------------------------------------------------------
+#
+# The rule is "no duct ends in mid-air", and every one of these guards a way the first
+# drafts of it got a wrong answer confidently. Two runs sharing a plan point on different
+# floors is the recurring one, and it is silent in both directions: it hid four real
+# orphans behind coincidences, and it would have reported a legitimate tee as one.
+
+
+def _connectivity(model):
+    report = run_from_model(model, [], tier=Tier.INTEGRITY)
+    return [f for f in report.findings if f.check_id == "mep.duct_connectivity"]
+
+
+def test_no_duct_in_catlin_ends_on_nothing(catlin_model):
+    findings = _connectivity(catlin_model)
+    assert findings
+    orphans = [f.message for f in findings if f.result.value == "fail"]
+    assert not orphans, orphans
+
+
+def test_a_branch_tees_into_the_side_of_a_trunk(catlin_model):
+    """Against a *segment*, not a vertex. DU-S-HP-SUITE leaves DU-S-HP-SUP 118" from either
+    end of the trunk's only leg, which is where a take-off normally lands."""
+    landed = [f.message for f in _connectivity(catlin_model)
+              if "DU-S-HP-SUITE start" in f.message]
+    assert landed == ["duct DU-S-HP-SUITE start lands on DU-S-HP-SUP"]
+
+
+def test_a_served_trunk_may_be_capped(catlin_model):
+    """DU-S-HP-SUP stops past its last bedroom boot. A capped trunk end lands on nothing and
+    never will, and that is how a trunk ends — earned from the take-offs on its final leg."""
+    capped = [f for f in _connectivity(catlin_model) if "DU-S-HP-SUP end" in f.message]
+    assert len(capped) == 1
+    assert capped[0].result.value == "pass"
+    assert "cap past" in capped[0].message
+
+
+def test_a_machine_67_inches_above_the_end_is_not_a_joint(catlin_model):
+    """The elevation band on the equipment probe. Drop DU-ERV-OA's last vertex to the floor
+    and it is no longer in EQ-B-ERV's case, however squarely it still sits in its footprint —
+    which is exactly how both ERV chase risers passed a plan-only test while ending 67" under
+    the gable hood they were credited to."""
+    import dataclasses
+
+    index, duct = next((i, d) for i, d in enumerate(catlin_model.ducts)
+                       if d.tag == "DU-ERV-OA")
+    catlin_model.ducts[index] = dataclasses.replace(
+        duct, z_m=(*duct.z_m[:-1], duct.z_m[-1] - 2.0))  # 6'-7" lower: below the case
+    orphans = [f.message for f in _connectivity(catlin_model) if f.result.value == "fail"]
+    assert any("DU-ERV-OA end" in message for message in orphans), orphans
