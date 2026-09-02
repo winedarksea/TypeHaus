@@ -1,11 +1,10 @@
-"""`retype_placeable` — type swap that keeps the wall-mounted face seated (2026-07-31).
+"""`retype_placeable` — type swap that keeps the wall-mounted face seated.
 
-The 2026-07-30 shower→tub-shower hand edit showed what a bare type_ref PATCH misses:
-position is the footprint *center*, so a footprint change un-seats a wall-backed unit,
-and every authored reference to the tag (serves lists, sleeves, slices) was sized
-against the old type. The macro re-anchors the back face and surfaces the references
-as warnings. Out of scope, deliberately: tag renames, catalog edits, rewriting
-dependent diameters, alcove re-centring.
+A bare type_ref PATCH misses that position is the footprint *center*, so a footprint
+change un-seats a wall-backed unit, and every authored reference to the tag (serves
+lists, sleeves, slices) was sized against the old type. The macro re-anchors the back
+face and surfaces the references as warnings. Out of scope, deliberately: tag renames,
+catalog edits, rewriting dependent diameters, alcove re-centring.
 """
 
 from __future__ import annotations
@@ -62,12 +61,10 @@ def test_retype_round_trips_through_source_and_reseats_the_back_face(tmp_path):
     swapped = _fixture(reloaded.plan, "FX-M-BATH2-SH")
     assert swapped.type_ref == "FX-TUBSHOWER-60"
     new_x, new_y = swapped.position.xy_m
-    # Both axes carry the 1/16" grid-snap tolerance. x used to be asserted at 1e-6 and that
-    # was luck, not a stronger contract: FX-M-BATH2-SH's old x happened to land on the grid,
-    # and the drop-in bath pass (2026-08-29) moved the pan to x=6'-2 5/8" against the deck's
-    # bay, which does not. The macro snaps what it writes; the claim being made here is that
-    # the ACROSS-the-wall coordinate does not move, and 1/16" is the resolution that claim
-    # can be made at.
+    # Both axes carry the 1/16" grid-snap tolerance rather than 1e-6: FX-M-BATH2-SH's x
+    # coordinate (6'-2 5/8" against the deck's bay) does not land exactly on the grid. The
+    # macro snaps what it writes; the claim being made here is that the ACROSS-the-wall
+    # coordinate does not move, and 1/16" is the resolution that claim can be made at.
     assert new_x == pytest.approx(x, abs=2e-4)
     assert new_y + 0.762 / 2.0 == pytest.approx(old_back_y, abs=2e-4)  # 1/16" grid snap
 
@@ -84,9 +81,9 @@ def test_retype_warns_about_every_authored_reference(catlin_plan):
 
 def test_retype_warns_about_the_cast_sleeve_that_serves_the_fixture(catlin_plan):
     """A ``serves_fixture`` sleeve is a hole set before a pour: resize the fixture and the
-    hole is a decision, not a detail. Read on a *basement* shower since 2026-08-21 — the
-    main floor's cast sleeves went with the deck overhaul (its ceiling is I-joists over two
-    thirds of the floor now), so FX-M-BATH2-SH no longer has one to warn about."""
+    hole is a decision, not a detail. Read on a *basement* shower — the main floor's cast
+    sleeves went with the deck overhaul (its ceiling is I-joists over two thirds of the
+    floor now), so FX-M-BATH2-SH has none to warn about."""
     result = retype_placeable(catlin_plan, "basement", tag="FX-B-SAUNA-SH",
                               type_ref="FX-TUBSHOWER-60")
     text = "\n".join(result.warnings)
@@ -94,14 +91,7 @@ def test_retype_warns_about_the_cast_sleeve_that_serves_the_fixture(catlin_plan)
 
 
 def test_same_footprint_retype_moves_nothing(catlin_plan):
-    """FX-TUB-60 and FX-TUBSHOWER-60 share a 5' x 2'-6" footprint: no re-anchor.
-
-    Read on FX-S-BATH1-SH since 2026-08-29. This used to retype FX-M-BATH2-TUB, which was
-    the house's last FX-TUB-60 until the Kohler K-5713-W1 drop-in took its place — and that
-    bath is 59 11/16" x 35 3/4", so retyping it to the 60x30 insert re-anchors, which is the
-    opposite of what this test is for. The pair being exercised is the same pair; only the
-    direction and the instance changed.
-    """
+    """FX-TUB-60 and FX-TUBSHOWER-60 share a 5' x 2'-6" footprint: no re-anchor."""
     result = retype_placeable(catlin_plan, "second", tag="FX-S-BATH1-SH",
                               type_ref="FX-TUB-60")
     (op,) = result.ops

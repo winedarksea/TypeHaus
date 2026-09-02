@@ -1,10 +1,9 @@
 """The chosen-product catalog: identity as data, and the guards that keep a ref honest.
 
-A product used to be prose — ``name="LG WashTower WKHC252HBA (washer + heat-pump dryer)"``
-with the model number buried again in a paragraph of ``source``. Nothing could read it: not
-the inspector sidebar, not a schedule, not an estimator joining a line to what was bought.
-``Product`` (model/product.py) makes brand and model structured, and these are the four
-things that have to stay true about it.
+``Product`` (model/product.py) makes brand and model structured data instead of prose
+buried in a paragraph of ``source`` — readable by the inspector sidebar, a schedule, and
+an estimator joining a line to what was bought. These are the four things that have to
+stay true about it.
 """
 
 from __future__ import annotations

@@ -122,7 +122,7 @@ def test_grouping_never_silences_a_required_clearance() -> None:
 
 
 def test_every_clearance_zone_is_compared_not_just_the_first() -> None:
-    """The peer scan used to be a generator, so an object's 2nd..Nth zone checked nothing."""
+    """Regression: the peer scan must compare every clearance zone, not just the first."""
     two_zone_type = FurnitureType(
         tag="F-BED", name="Bed", footprint=(m(1.5), m(2)), height=m(0.6),
         clearances=(

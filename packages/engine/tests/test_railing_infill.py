@@ -261,10 +261,9 @@ def test_a_bay_can_no_longer_run_over_the_authored_post_spacing():
     invisibly — they re-space to the bay they are given — but a 9' glass lite does not
     exist, and ``geometry.railing_bay_oversize`` existed to say so.
 
-    Fixed at the source on 2026-08-22: bays are divided evenly, ``ceil(seg / spacing)`` of
-    them, so ``spacing`` is a maximum and this warning has nothing left to report on a run
-    laid out by that function. It stays as the backstop for a caller that lays out its own
-    stations.
+    Bays now divide evenly, ``ceil(seg / spacing)`` of them, so ``spacing`` is a maximum
+    and this warning has nothing left to report on a run laid out by that function. It
+    stays as the backstop for a caller that lays out its own stations.
     """
     # 5'-11" at 3'-0" o.c.: ``int(5.917 // 3)`` was 1, so the whole run came out as ONE bay
     # of 5'-11" rather than the two a ``ceil`` places — just under 2x the authored spacing.

@@ -1,10 +1,8 @@
 """The cost model: what a price *includes*, and the ladder from net to bid.
 
-Every number in ``prices.toml`` used to be material-only-by-convention, stated in four
-paragraphs of prose at the top of the file that no consumer could read. Two sections
-actually carried labour and said so only in a comment. So an estimate could not tell a
-homeowner's shopping list from a contractor's number, and sales tax — material-only in MN —
-had nothing to apply itself to.
+Every number in ``prices.toml`` declares whether it is material-only or installed, so an
+estimate can split a homeowner's shopping list from a contractor's number, and sales tax —
+material-only in MN — has something to apply itself to.
 
 The rules being pinned here, in order of how much damage breaking them does:
 

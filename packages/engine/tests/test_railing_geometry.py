@@ -44,11 +44,8 @@ def _rails(model, tag: str):
 def _stations(model, tag: str, step_m: float = 0.25):
     """``(plan point, centreline z)`` resampled along the top rail's own swept path.
 
-    These tests used to walk the *bands* a raking rail was chopped into — one per 1-1/2" of
-    fall, times the round section's facet bands — because that stack was all the prism IR
-    could say. The rail is one solid with one polyline now (→ resolve/sweep.py), so the
-    stations are sampled off it rather than recovered from a pile of pieces. Same
-    measurement, one source.
+    The rail is one solid with one polyline (→ resolve/sweep.py); stations are sampled off
+    its swept path rather than recovered from a pile of pieces.
     """
     rails = [s for s in _rails(model, tag) if s.sweep is not None]
     assert rails, f"{tag} draws no swept rail"
@@ -87,9 +84,8 @@ def test_a_raking_handrail_has_no_vertical_gaps(catlin_model, tag):
 def test_a_rail_authored_round_is_drawn_round(catlin_model):
     """A round section is a faceted circle profile on the sweep — not a square one.
 
-    It used to be readable only from the drawn bands (a stack whose plan widths differ), the
-    prism IR having no way to say "circle". The sweep carries the section itself, so the
-    question is answered where it is asked.
+    The sweep carries the section itself, so a round profile is answered directly rather
+    than inferred from a stack of drawn bands.
     """
     from typehaus.resolve.sweep import is_round_profile, profile_radius_m
 
@@ -145,12 +141,10 @@ def test_a_bracket_reaches_the_wall_face_it_lands_on(catlin_model):
 def test_the_rake_takes_its_elevation_from_the_flight_it_runs_along(catlin_model):
     """Consecutive stations of one rail climb by one station's worth, not by three of them.
 
-    The first band of RL-A-HANDRAIL sat 0.40 m from the straight flight it rakes along and
-    0.28 m from the last nosing of the winder fan below it. Ranking on clamped distance gave
-    it the winder's elevation and a 0.416 m step against its neighbours' 0.176 m. The
-    sampling that fed that ranking is still there — it is what the sweep's path is built
-    from — so the measurement still has to hold; it is now read off the one solid the rail
-    became instead of off the pile of bands it used to be.
+    Ranking on clamped distance once matched a band to the nearest flight rather than the
+    one it runs along, giving a rail beside the straight run the winder fan's elevation
+    below it — now read off the one solid the rail became (→ resolve/sweep.py) instead of
+    a pile of bands.
     """
     zs = [z for _point, z in _stations(catlin_model, "RL-A-HANDRAIL")]
     # The *second* difference, not the first: a rail climbing a flight steps by a riser at

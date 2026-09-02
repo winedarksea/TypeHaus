@@ -110,13 +110,11 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         catlin_plan) -> None:
     """End to end, through the registry, on the landed house.
 
-    **This test used to assert these three walls were OVER, and that was right at the time.**
-    They were graded as three ISOLATED free cantilevers, each resisting by its own base
-    friction, and reached FS 0.73 against the 1.5 IRC R404.4 requires. What changed on
-    2026-08-30 is not the code's requirement and not the walls' section — it is the free
-    body. ``W-SG-ARCH``, a buried 12" x 17 1/2" grade beam, closes the court's north end, so
-    ``W-SG-W2`` and ``W-SG-E2`` face each other across 19'-0" of cast concrete and their
-    thrusts cancel. ``engineering/retaining_system`` sums all three as one rigid body.
+    Graded as three ISOLATED free cantilevers, each resisting by its own base friction,
+    these walls reach FS 0.73 against the 1.5 IRC R404.4 requires. ``W-SG-ARCH``, a buried
+    12" x 17 1/2" grade beam, closes the court's north end, so ``W-SG-W2`` and ``W-SG-E2``
+    face each other across 19'-0" of cast concrete and their thrusts cancel —
+    ``engineering/retaining_system`` sums all three as one rigid body instead.
 
     Two things keep this from being the check being talked out of its finding:
 
@@ -148,7 +146,7 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         assert "sliding" not in by_name
         # Everything else stays on the wall's OWN conservative free body and still clears —
         # including the section check, which a base restraint does nothing for and which
-        # nothing in this engine computed before that day.
+        # the free-cantilever branch never computed.
         for name in ("overturning", "bearing", "eccentricity", "stem flexure"):
             assert by_name[name].ok, (tag, name, by_name[name])
         assert record.basis_version == "3"

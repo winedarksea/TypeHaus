@@ -455,14 +455,12 @@ def test_flush_gable_rake_carries_the_skin_above_the_deck_plane(flush):
 def test_closure_bands_tile_the_buildings_outside_corners(flush):
     """The mitre square at every outside corner is covered exactly once — no gap, no double.
 
-    Two failures live at this corner and they are opposites, so the test states the invariant
-    rather than a convention. The bands used to run the wall's raw axis while the prism under
-    them was already mitred, leaving a (skin depth)² column of stack height claimed by neither
-    wall — the exterior foam showed its end grain in it (a gold square at each lower gable
-    corner in any 3D view of the catlin house). Reading the span off the polygon closed the
-    gap but opened the other side of it: a band is a box and the layer under it is a
-    trapezoid, so BOTH walls then claimed the square and their faces landed coplanar, 7/8"
-    wide and the height of the band, z-fighting on the garage's corrugated gables.
+    Running the wall's raw axis under an already-mitred prism leaves a (skin depth)² column
+    of stack height claimed by neither wall — visible as exterior foam's end grain, a gold
+    square at each lower gable corner. Reading the span off the polygon instead closes that
+    gap but opens the other side of it: a band is a box and the layer under it is a
+    trapezoid, so BOTH walls then claim the square and their faces land coplanar, 7/8" wide
+    and the height of the band, z-fighting on the garage's corrugated gables.
     ``_laps_the_corner`` laps one over the other instead, which is how the boards go on.
 
     Checked as plan area, so it survives whichever wall is the one that laps.
@@ -686,9 +684,9 @@ def test_an_unvented_but_clad_roof_gets_a_closed_ridge_cap():
     """No vented soffit and no over-deck vent channel means no slot to VENT — and the two
     slopes still meet in an open joint that a covering has to be closed over.
 
-    The cap is the same piece either way; what changes is ``connection``. This test asserted
-    ``== []`` until 2026-08-31, and the day CATLIN_ROOF's vent mat was deleted that reading
-    took 37 LF of ridge cap off a standing-seam roof with nothing reporting it.
+    The cap is the same piece either way; what changes is ``connection``. Deleting
+    CATLIN_ROOF's vent mat once silently took 37 LF of ridge cap off a standing-seam roof
+    with nothing reporting it — the mistake this pins.
     """
     unvented = EaveTrim(
         fascia=(FasciaBoard(material="spf", thickness=inch(1.5), depth=inch(5.5)),))
@@ -874,8 +872,8 @@ def test_the_corner_trim_caps_the_roofing_edge(wrapped):
         assert max(m.z1_m for m in bands) == pytest.approx(roof.eave_z_m + top, abs=1e-9)
         # 4" of leg, not the 2" this piece started with. On a zero-overhang roof this trim is
         # the only thing standing at the rake, so the leg is what a barge board would be —
-        # deepened 2026-08-01 so the edge reads as a band rather than a pinstripe. Pinned to
-        # the authored number rather than to _CORNER_TRIM_LEG_M: the depth is a design
+        # deepened so the edge reads as a band rather than a pinstripe. Pinned to the
+        # authored number rather than to _CORNER_TRIM_LEG_M: the depth is a design
         # decision, and a test that reads the constant back cannot notice it changing.
         assert min(m.z0_m for m in bands) == pytest.approx(
             roof.eave_z_m + under - inch(4).meters, abs=1e-9)

@@ -1,5 +1,5 @@
-"""The 2026-07-29 plumbing pass: routed 3D runs, wet-wall occupancy, concrete coverage,
-staggered-stud framing, fixture-unit tables, and the plumbing takeoff block."""
+"""Routed 3D runs, wet-wall occupancy, concrete coverage, staggered-stud framing,
+fixture-unit tables, and the plumbing takeoff block."""
 
 from __future__ import annotations
 
@@ -48,17 +48,14 @@ def test_pipe_runs_emit_viewer_solids_by_system(catlin_model):
 # --- wet-wall occupancy ---------------------------------------------------------------
 
 def test_wet_wall_occupancy_passes_for_the_bath1_risers(code_report):
-    """The wall named here changed on 2026-08-30 and the assertion is kept, not deleted.
-
-    Both BATH1 risers used to declare ``W-M-BAE`` and both STOOD INSIDE ``D-M-BATH1``'s
-    rough opening while doing it -- ``mep.wet_wall_occupancy`` passed them throughout,
-    because a riser inside a wall's footprint is inside the wall and a doorway is still
-    footprint. ``mep.run_through_opening`` is what found them. W-M-BAE has exactly two stud
-    bays, one each side of that door, and neither takes the pair (the hot line's 1"
-    fiberglass sleeve does not fit the south bay beside PR-B-LAV1-DRAIN, and the north bay
-    puts a stop half an inch off a finished corner), so the pair moved to ``W-M-HS1`` -- the
-    wall the water closet's carrier stands in and the lavatory backs onto. See the BATH1
-    pair in ``houses/catlin/plan/mep_supply.py``.
+    """Both BATH1 risers stand inside ``D-M-BATH1``'s rough opening; ``mep.wet_wall_
+    occupancy`` passes them because a riser inside a wall's footprint is inside the wall
+    and a doorway is still footprint — ``mep.run_through_opening`` is what actually checks
+    them. ``W-M-BAE``'s two stud bays, one each side of the door, don't take the pair (the
+    hot line's 1" fiberglass sleeve doesn't fit the south bay beside PR-B-LAV1-DRAIN, and
+    the north bay puts a stop half an inch off a finished corner), so the pair lives in
+    ``W-M-HS1`` -- the wall the water closet's carrier stands in and the lavatory backs
+    onto. See the BATH1 pair in ``houses/catlin/plan/mep_supply.py``.
     """
     rows = [f for f in code_report.findings if f.check_id == "mep.wet_wall_occupancy"]
     assert rows and all(f.result.value == "pass" for f in rows)
@@ -134,13 +131,10 @@ def test_building_drain_leaves_under_the_footing_not_through_the_wall(catlin_mod
 
 
 def test_the_basement_slab_fixtures_drain_by_gravity(catlin_model):
-    """The basement's slab fixtures are what the under-slab main exists to make possible:
-    they stand *on* the slab, so they can only drain if the main is below them. Before the
-    re-route the main hung 6'-6" overhead and none of these runs could be authored at all.
-
-    Written for FX-1, the mechanical room's utility sink and the only such fixture until
-    2026-07-30; it now covers the two branches that replaced it — the stair-foot bathroom's
-    and the sauna shower end's.
+    """The basement's slab fixtures stand *on* the slab, so they can only drain if the main
+    runs below them; before the re-route the main hung 6'-6" overhead and none of these
+    runs could be authored at all. Covers the stair-foot bathroom's branch and the sauna
+    shower end's.
     """
     slab = next(s for s in catlin_model.solids if s.tag == "SL-B-FLOOR")
     main = next(r for r in catlin_model.pipe_runs if r.tag == "PR-B-MAIN-DRAIN")
@@ -163,9 +157,8 @@ def test_the_basement_slab_fixtures_drain_by_gravity(catlin_model):
         assert set(fixtures) <= set(vent.serves), vent_tag
 
 
-# These started life as private copies here; the 2026-07-31 DFU rollup promoted them into
-# the engine (they are what `drain_tie_ins`/`accumulated_serves` derive the topology
-# with), so the tests import the one source of truth rather than cross-checking a fork.
+# `drain_tie_ins`/`accumulated_serves` derive the topology with this; import the one
+# source of truth rather than cross-checking a fork.
 from typehaus.resolve.mep import on_pipe_segment as _on_segment  # noqa: E402
 
 
@@ -177,26 +170,23 @@ def _invert_at(run, point):
     return z
 
 
-# --- drain-load topology (2026-07-31 rollup) -------------------------------------------
+# --- drain-load topology ----------------------------------------------------------------
 
 def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
     """The building drain grades on the union of every run that discharges into it —
     the FX-1 serves convention (slab branches not re-listed on the main) can no longer
-    hide load. 34 authored + 8 slab-branch DFU = 42, which is what forced the 4" main.
+    hide load. 34 authored + 8 slab-branch DFU = 42, which is what forced the 4" main;
+    the attic guest studio's water closet, lavatory, shower and wet-bar sink discharge
+    into the same stack without moving that number — IPC Table 710.1(2) gives a 4"
+    building drain 180 DFU at 1/8"/ft, so there is headroom either way.
 
-    49 since 2026-08-29: the attic guest studio added a water closet, a lavatory, a shower and
-    a wet-bar sink on PR-A-STUBATH-DRAIN and PR-A-BAR-DRAIN, both of which discharge into the
-    same stack. The 4" main is unaffected and not close — IPC Table 710.1(2) gives a 4" building
-    drain 180 DFU at 1/8"/ft — but the rollup is the thing being tested, and a new branch
-    that did NOT move this number would mean the union had stopped seeing it.
-
-    ** 48 LATER THE SAME DAY, AND THE 1 DFU CAME OFF AS A CORRECTION. ** FX-M-BATH2-SINK
-    was typed FX-KITCHEN-SINK-33 — a stand-in for a fixture nobody had chosen yet — and
-    ``_DFU`` is keyed on ``plan_symbol``, where ``kitchen-sink`` is 2.0 DFU (it carries the
-    grinder and dishwasher branch) against ``vanity``/``lavatory`` at 1.0. So the bathroom
-    lavatory had been loading the building drain as a kitchen sink. Retyping it to the real
-    54" vanity took the house to its correct 48. This number going UP by one without a
-    fixture being added would mean that stand-in has crept back somewhere."""
+    The correct total is 48, not 49: ``_DFU`` is keyed on ``plan_symbol``, where
+    ``kitchen-sink`` is 2.0 DFU (it carries the grinder and dishwasher branch) against
+    ``vanity``/``lavatory`` at 1.0, and FX-M-BATH2-SINK's stand-in type
+    ``FX-KITCHEN-SINK-33`` had been loading the bathroom lavatory as a kitchen sink.
+    Retyping it to the real 54" vanity took the house to its correct 48. This number
+    going up by one without a fixture being added would mean that stand-in has crept
+    back somewhere."""
     from typehaus.resolve.mep import accumulated_serves, drain_tie_ins
     from typehaus.takeoff.plumbing_calc import branch_load, fixture_units
 
@@ -217,19 +207,19 @@ def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
     # to be piped into a drain at all. A new run silently missing its tie-in would show up
     # here as an extra terminal, understating every load downstream of it.
     #
-    # PR-B-ERV-COND joined the list on 2026-08-25 and is an air gap for the same reason
-    # PR-B-COND beside it is: the ERV's core makes water, the condensate main it would
-    # otherwise tie into runs 10" above the highest a hung 21.6" case can put its spigot
-    # under an 8'-0 15/16" basement ceiling, and there is no gravity connection to be made
-    # (plan/mep_drainage.py). Both air-gap over FX-B-SAUNA-FD.
+    # PR-B-ERV-COND is an air gap for the same reason PR-B-COND beside it is: the ERV's
+    # core makes water, the condensate main it would otherwise tie into runs 10" above the
+    # highest a hung 21.6" case can put its spigot under an 8'-0 15/16" basement ceiling,
+    # and there is no gravity connection to be made (plan/mep_drainage.py). Both air-gap
+    # over FX-B-SAUNA-FD.
     ties = drain_tie_ins(drains)
     terminals = {r.tag for r in drains} - set(ties)
     #
-    # PR-S-HP1-COND / PR-S-HP2-COND joined on 2026-08-28, and they are the most literal air
-    # gaps on the list: the two balcony condensers' defrost lines run south across FS-SG-DECK
-    # and discharge OVER the rim of TR-SG-GUTTER, 1" above it. There is nothing to tie into —
-    # the trough is a `Gutter`, not a `PipeRun`, and stormwater is not a drain the DWV system
-    # may be connected to in any case.
+    # PR-S-HP1-COND / PR-S-HP2-COND are the most literal air gaps on the list: the two
+    # balcony condensers' defrost lines run south across FS-SG-DECK and discharge OVER the
+    # rim of TR-SG-GUTTER, 1" above it. There is nothing to tie into — the trough is a
+    # `Gutter`, not a `PipeRun`, and stormwater is not a drain the DWV system may be
+    # connected to in any case.
     assert terminals == {"PR-B-MAIN-DRAIN", "PR-M-DRYER-COND", "PR-B-WH-TPR",
                          "PR-B-ERV-COND", "PR-S-HP1-COND", "PR-S-HP2-COND"}
 

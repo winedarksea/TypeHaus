@@ -137,20 +137,14 @@ def test_ratio_ranking_reproduces_the_run_the_hand_analysis_named(by_tag):
 
 
 def test_the_reroute_is_visible_in_the_schedule(by_tag):
-    """``CD-A-DATA-NE`` is what this module was built to make arguable, and it has now been
-    rerouted twice — which is the point worth pinning, because the SECOND reroute is the one
-    the schedule could not have told you to make.
-
-    It scored 57.08 LF at ratio 2.26 as a 66-foot dogleg south across the studio and back.
-    The 2026-08-29 pass took it through the north gable's stud cavity: 29.58 LF at 1.17, very
-    nearly the straight line between its two ends, and by every number in this schedule the
-    right answer. It also put the raceway through ``WIN-A-N2``'s rough opening at +23'-3", in
-    the same band ``DU-ERV-EA`` was crossing both gable windows in. **A good ratio is not a
-    buildable route**, and nothing here grades one; ``mep.run_through_opening`` does.
-
-    On 2026-08-30 it went south down the pocket instead, to an AP wall-mounted on
-    ``W-A-STU-N`` — 19.0 LF at 1.46. Shorter than either predecessor and a WORSE ratio than
-    the route it replaced, which is exactly why this test asserts both numbers: if someone
+    """``CD-A-DATA-NE`` is what this module was built to make arguable, and it has been
+    rerouted more than once — worth pinning, because a good ratio is not by itself a
+    buildable route; nothing here grades that, ``mep.run_through_opening`` does. An earlier
+    route through the north gable's stud cavity scored a better ratio (1.17, very nearly
+    the straight line between its two ends) but put the raceway through ``WIN-A-N2``'s
+    rough opening. The current route runs south down the pocket instead, to an AP
+    wall-mounted on ``W-A-STU-N`` at 19.0 LF / 1.46 — shorter but a WORSE ratio than the
+    route it replaced, which is exactly why this test asserts both numbers: if someone
     optimises the ratio back down, they are on their way to the gable again."""
     assert by_tag["CD-A-DATA-NE"]["developed_ft"] == pytest.approx(19.0, abs=0.2)
     assert by_tag["CD-A-DATA-NE"]["ratio"] == pytest.approx(1.46, abs=0.03)

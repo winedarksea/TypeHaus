@@ -1,8 +1,7 @@
 """WP2.12/WP3.1 — `haus new` scaffolds a buildable house by copying a shipped one (#22).
 
-The scaffolder used to write an inline "minimal" plan out of string constants, a third copy
-of the starter house that drifted from it. It now copies ``houses/starter`` (default) or
-``houses/catlin``, so a scaffolded house is by construction one the test suite already builds.
+`haus new` copies ``houses/starter`` (default) or ``houses/catlin``, so a scaffolded house
+is by construction one the test suite already builds.
 """
 
 from __future__ import annotations
@@ -31,8 +30,8 @@ def test_default_scaffold_builds_and_resolves(tmp_path: Path):
 
 
 def test_default_scaffold_is_the_starter_house_verbatim(tmp_path: Path):
-    """The one property the deleted inline template could not hold: no drift is possible,
-    because the scaffold *is* the starter source (bar the minted project identity)."""
+    """No drift is possible, because the scaffold *is* the starter source (bar the minted
+    project identity)."""
     house = tmp_path / "copy"
     scaffold_house(house, "My House")
     for source in sorted(STARTER.joinpath("plan").rglob("*.py")):

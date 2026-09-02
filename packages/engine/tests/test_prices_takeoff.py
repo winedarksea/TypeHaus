@@ -147,11 +147,10 @@ def test_cli_variants_compare_still_works_without_prices(starter_dir: Path) -> N
 
 
 # --- every BOM table is priced, declared a view, or listed unpriced -------------------------
-# The estimate refuses to price a rate with nothing to multiply. The mirror of that rule is
-# what `unpriced` reports — and until 2026-08-21 it could only report a miss inside a table
-# some ESTIMATE_PLAN already read, so a table no plan named at all fell through both. That is
-# how catlin's LED run materials came to be resolved, exported and invisible to every cost
-# surface. These three pin the sweep that closed it.
+# The estimate refuses to price a rate with nothing to multiply; the mirror of that rule is
+# what `unpriced` reports — a table no plan named at all must still surface, or it resolves,
+# exports and stays invisible to every cost surface (as catlin's LED run materials once did).
+# These three pin the sweep that closed it.
 
 def test_a_bom_table_no_plan_reads_surfaces_as_unpriced(tmp_path) -> None:
     """The hole itself: an undeclared table is listed, summed by (key, unit)."""
@@ -233,11 +232,11 @@ def test_every_catlin_hardware_part_reaches_a_price(catlin_model) -> None:
         f"in houses/catlin/prices.toml: {missing}")
 
 
-# --- 2026-08-27: three tables the model resolved and nothing priced ---------------------------
+# --- three tables the model resolves fully but nothing prices without a price section -------
 #
-# ``UNPRICED_VIEWS`` used to say of ``conductors`` that "the model resolves the route but not
-# the wire", and an allowance stood in for each of these three. It resolves both; what was
-# missing was a price section, not a quantity.
+# The model resolves both the route and the wire for ``conductors`` (and the equivalent for
+# ``solar_modules`` and ``data_raceways``); what's missing without a price section is the
+# price, not the quantity.
 
 def test_the_three_new_electrical_sections_join_their_tables(tmp_path) -> None:
     (tmp_path / "prices.toml").write_text("""

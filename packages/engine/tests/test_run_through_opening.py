@@ -5,8 +5,8 @@ to strap to, the leaf swings through it, and in a window it stands in front of t
 also the easiest defect in the model to author, because a plan drawing shows a run crossing a
 wall and says nothing about whether it crossed at the header or at the opening.
 
-Written 2026-08-30 against six live defects on catlin, every one of which had been passing
-every check in the registry:
+Found against six live defects on catlin, every one of which had been passing every check
+in the registry:
 
 * ``DU-ERV-EA`` crossed BOTH north-gable windows — 2'-6" of each 30x36 unit, at +23'-0" in a
   22'-0"..25'-0" opening, dead centre of the glass. The plan comment beside it argued the run

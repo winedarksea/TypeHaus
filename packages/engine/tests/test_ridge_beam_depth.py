@@ -51,16 +51,16 @@ def test_the_house_as_built_passes_with_the_margin_stated(catlin_model_ro) -> No
     assert len(found) == 1
     assert found[0].result is Result.PASS
     assert "RB-HOUSE" in found[0].element_tags
-    # 2026-08-29, at 6:12: 13.28" plumb cut + 1.75" of half-width down the plane (0.875")
-    # = 14.15" needed against the 16" bought. It was 13.10" against 14" at 4:12, and 14"
-    # FAILS the new number by 0.15" — which is why the beam went to 16" with the pitch.
+    # At 6:12: 13.28" plumb cut + 1.75" of half-width down the plane (0.875") = 14.15"
+    # needed against the 16" bought. It was 13.10" against 14" at 4:12, and 14" FAILS the
+    # new number by 0.15" — which is why the beam went to 16" with the pitch.
     assert "14.15\" needed" in found[0].message
 
 
 @pytest.mark.parametrize("profile", ["3-1.75x11.875 LVL", "2-1.75x11.875 LVL"])
 def test_11_875_fails_at_any_width_which_is_why_narrowing_was_not_the_lever(
         catlin_model_ro, profile: str) -> None:
-    """3-1.75x11.875 LVL is the ridge as authored until 2026-08-28. Both widths fail.
+    """3-1.75x11.875 LVL is the ridge as originally authored. Both widths fail.
 
     Worth parametrizing rather than pinning the one historical section: the tempting cheap
     fix when this was found was to drop a ply, and the reason that does not work is that
@@ -86,7 +86,7 @@ def test_the_shortfall_it_reports_is_the_hand_arithmetic(catlin_model_ro) -> Non
     beam = next(m for m in roof.members if m.category == "ridge_beam")
     rafter = next(m for m in roof.members if m.category == "rafter")
 
-    slope_factor = math.hypot(1.0, 6.0 / 12.0)   # 6:12 since 2026-08-29
+    slope_factor = math.hypot(1.0, 6.0 / 12.0)   # 6:12
     plumb_m = cross_section(rafter.profile).depth_m * slope_factor
     shortfall_in = (beam.z0_m - (rafter.z1_end_m - plumb_m)) / M_PER_IN
 
@@ -145,11 +145,11 @@ def test_continuous_support_is_measured_not_taken_on_trust(catlin_model_ro) -> N
     start, end = (5.4864, 0.0), (5.4864, 10.9728)  # x=18', y 0'->36'
 
     assert _continuously_supported(catlin_model_ro, beam, start, end)
-    # Five segments since 2026-08-29, three before it: W-A-C2 split twice when the guest
-    # studio's bath corner (N-A-B2, y=15'-11") and the stair void's south partition
-    # (N-A-C3, y=22'-4") both landed on this line and needed shared endpoints. The centreline
-    # itself did not move an inch — the beam still bears on it continuously — which is the
-    # whole point of asserting the refs rather than the geometry.
+    # Five segments: W-A-C2 split twice when the guest studio's bath corner (N-A-B2,
+    # y=15'-11") and the stair void's south partition (N-A-C3, y=22'-4") both landed on
+    # this line and needed shared endpoints. The centreline itself did not move an inch —
+    # the beam still bears on it continuously — which is the whole point of asserting the
+    # refs rather than the geometry.
     assert beam.bearing_refs == ("W-A-C1", "W-A-C1B", "W-A-C2", "W-A-C2M", "W-A-C2B")
 
     gapped = beam.model_copy(update={"bearing_refs": ("W-A-C1", "W-A-C2")})

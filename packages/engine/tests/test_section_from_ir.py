@@ -163,9 +163,9 @@ def test_the_bay_fill_still_draws_under_the_rafters(catlin_model):
     """The fills share the bay's depth, so the IR gives them no solid — and a roof that reads
     as 11-7/8" of solid timber is not what the section is cut to show.
 
-    BOTH of them, since 2026-08-31: CATLIN_ROOF is flash-and-batt, and drawing only the
-    first fill would put the batt on the section and leave the 5" of ccSPF bonded to the
-    deck — the layer the whole R806.5 argument rests on — invisible.
+    BOTH of them: CATLIN_ROOF is flash-and-batt, and drawing only the first fill would put
+    the batt on the section and leave the 5" of ccSPF bonded to the deck — the layer the
+    whole R806.5 argument rests on — invisible.
     """
     from typehaus.emit.draw.details import build_detail, derive_detail_slices
 
@@ -219,9 +219,9 @@ def test_a_cut_member_shows_its_real_section_face(catlin_model):
     # Keyed by (host uid, child_key): the child_key naming scheme ("joist-0-005-0") is
     # shared across every floor system, so a bare child_key collides once two decks split
     # from one storey (FS-M-WEST/FS-M-EAST, FS-S-WEST/FS-S-EAST) — a lookup that ignored
-    # the host uid could silently grab the wrong deck's member (and, since 2026-08-21,
-    # the wrong deck's *profile*: a floor truss's chord is a different width than an
-    # I-joist's flange at the same depth).
+    # the host uid could silently grab the wrong deck's member (and the wrong deck's
+    # *profile*: a floor truss's chord is a different width than an I-joist's flange at
+    # the same depth).
     by_key = {(m.parent_uid, m.child_key): m
              for floor in catlin_model.floors for m in floor.members}
     checked = 0
@@ -278,10 +278,10 @@ def test_the_spray_foam_wedge_sits_in_the_foam_mismatch(catlin_model):
               if isinstance(node, Polyline) and node.tag == "spray-foam-wedge"]
     assert wedges, "no wedge at the eave"
 
-    # ``condition_walls`` rather than element_tags: since 2026-08-29 the attic eave's
-    # condition NAMES the rafter plate (the element that terminates at the roof) but is
-    # KEYED on CATLIN_EXT_2X6 (the stack that meets it, one storey down). A plate has no
-    # insulation layer at all, so reading element_tags here found a wall with no CI.
+    # ``condition_walls`` rather than element_tags: the attic eave's condition NAMES the
+    # rafter plate (the element that terminates at the roof) but is KEYED on
+    # CATLIN_EXT_2X6 (the stack that meets it, one storey down). A plate has no insulation
+    # layer at all, so reading element_tags here found a wall with no CI.
     from typehaus.emit.draw.detail_components.geometry import condition_walls
 
     wall = condition_walls(catlin_model, derived.condition)[0]
