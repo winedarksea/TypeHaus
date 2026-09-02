@@ -2,7 +2,7 @@
 must agree on, replacing five "author twice, test-scrape the TypeScript to catch drift"
 pairs with one authored (Python) source and one generated (JSON) artifact.
 
-The five tables, and what they used to be mirrored by:
+The five tables:
 
 * ``emit/gltf/palette.py`` ``_PALETTE`` (member-category colours) <-> ``ui/src/three/members.ts``
   ``CATEGORY_COLOR``.
@@ -21,12 +21,10 @@ The five tables, and what they used to be mirrored by:
 
 This module imports each of those from its *owning* module — nothing here is restated data —
 and assembles them into one JSON-serializable dict. Colours: the Python side stores linear
-0..1 RGBA tuples (comments in ``palette.py`` say so); the TypeScript tables it used to feed
-stored 8-bit sRGB hex ints with no alpha channel (opacity is a separate, per-material path on
-the ``ui/`` side, not part of either colour table). The manifest picks the TypeScript
-representation — ``0xRRGGBB`` packed into a JSON int — and does the conversion exactly once,
-here, with the same "round each channel to the nearest 8-bit step" rule the old parity test
-asserted, rather than leaving each language to round independently.
+0..1 RGBA tuples (comments in ``palette.py`` say so); the manifest converts to TypeScript's
+representation — ``0xRRGGBB`` packed into a JSON int, alpha dropped (opacity is a separate,
+per-material path on the ``ui/`` side) — rounding each channel to the nearest 8-bit step
+exactly once, here, rather than leaving each language to round independently.
 
 Checked in vs. regenerated: ``ui/src/generated/vocabulary.json`` is checked into git. There is
 no existing "generated-and-gitignored" convention for source the ``ui/`` build itself needs to
@@ -64,9 +62,7 @@ from typehaus.emit.trades import SOLID_CATEGORY_TRADE
 def _to_hex(rgba: tuple[float, float, float, float]) -> int:
     """Linear 0..1 RGBA -> packed ``0xRRGGBB`` int, alpha dropped.
 
-    Each channel rounds to the nearest 8-bit step — the same rule
-    ``test_solid_palette_parity.py`` used to assert against the hand-authored TypeScript
-    literal, now the one place the rounding actually happens.
+    Each channel rounds to the nearest 8-bit step.
     """
     red, green, blue, _alpha = rgba
     return (round(red * 255) << 16) | (round(green * 255) << 8) | round(blue * 255)

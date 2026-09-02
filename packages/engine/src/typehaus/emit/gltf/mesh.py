@@ -152,7 +152,7 @@ class _MeshBuilder:
 
         Any number of holes is subtracted, one after another, because the site earth sheet
         is one outline cut by *every* excavated slab — not the single stair well a floor
-        slab has. One hole reduces to exactly the four bands this used to emit.
+        slab has. One hole reduces to exactly four bands.
         """
         xs, ys = {p[0] for p in ring}, {p[1] for p in ring}
         if len(xs) != 2 or len(ys) != 2 or not voids:
@@ -203,8 +203,8 @@ class _MeshBuilder:
         """Add an IR hexahedron: two corresponding rings, bottom and top.
 
         This is the generic primitive the geometry IR emits — a member, a solar module and a
-        tapered closure band are all the same eight corners, so the exporter no longer needs
-        one code path per shape (and no longer re-derives any of them).
+        tapered closure band are all the same eight corners, so one code path serves all of
+        them without re-deriving any.
         """
         positions, indices = self._bucket(color)
         base = len(positions)

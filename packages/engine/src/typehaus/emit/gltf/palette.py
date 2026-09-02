@@ -23,8 +23,6 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "membrane": (0.30, 0.45, 0.55, 1.0),
     # ``LayerFunction.AIRGAP`` spells itself "airgap"; "air_gap" beside it has never matched
     # anything and is kept only so a caller reaching for the old key still gets a colour.
-    # Nothing exercised the difference until the catlin truss (2026-08-26) made the vent gap
-    # a layer of its own and ``roof_edge.py`` emitted the first ``airgap`` closure band.
     # Translucent, because a gap is air: it should read as the void it is behind the girts.
     "airgap": (0.80, 0.85, 0.90, 0.35),
     "air_gap": (0.80, 0.85, 0.90, 0.35),
@@ -86,10 +84,8 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "buck": (0.788, 0.694, 0.549, 1.0),           # 0xc9b18c
     "ridge_beam": (0.55, 0.38, 0.22, 1.0),
     "brace": (0.639, 0.463, 0.247, 1.0),         # 0xa3763f — as blocking
-    # Stick-framed roof lumber + the blocking that fills between it. These had no entry at
-    # all, so ~260 members rendered as the neutral gray fallback in *both* renderers (the
-    # "garage truss should visualize as wood" report). Values chosen to round-trip exactly
-    # to the hex literals in ui/src/three/members.ts CATEGORY_COLOR.
+    # Stick-framed roof lumber + the blocking that fills between it. Values chosen to
+    # round-trip exactly to the hex literals in ui/src/three/members.ts CATEGORY_COLOR.
     "rafter": (0.678, 0.498, 0.310, 1.0),        # 0xad7f4f
     "blocking": (0.639, 0.463, 0.247, 1.0),      # 0xa3763f
     "outlooker": (0.722, 0.549, 0.361, 1.0),     # 0xb88c5c
@@ -234,11 +230,9 @@ def _hex_rgba(hex_str: str) -> tuple[float, float, float, float]:
     # Fed straight into baseColorFactor like the existing _solid_color path; no sRGB→linear
     # conversion, matching the emitter's other palette values which are authored directly.
     #
-    # ``#RRGGBBAA`` is how a material declares that it is see-through. The whole alpha path
-    # was already built — ``emit/gltf/scene.py`` switches a material below 1.0 to
-    # ``alphaMode: BLEND`` and makes it double-sided, and ``air_gap``/``glass`` use it — but
-    # it was unreachable from an authored ``Material``, because this pinned alpha to 1.0. A
-    # sheet of polycarbonate that renders opaque is not a glazed breezeway, it is a shed.
+    # ``#RRGGBBAA`` is how a material declares that it is see-through: ``emit/gltf/scene.py``
+    # switches a material below 1.0 to ``alphaMode: BLEND`` and makes it double-sided. A sheet
+    # of polycarbonate that renders opaque is not a glazed breezeway, it is a shed.
     h = hex_str.lstrip("#")
     if len(h) in (6, 8):
         alpha = int(h[6:8], 16) / 255 if len(h) == 8 else 1.0
@@ -260,25 +254,24 @@ _SEAM_BASE = "#e8e8e2"          # Panel3D.tsx createStandingSeamMaterial base (0
 _CMU_BASE = "#9c988f"           # materials.ts CMU_STYLE.base
 _WHITE_BRICK_BASE = "#e9e6df"   # materials.ts WHITE_BRICK_STYLE.base
 _GLAZED_GREEN_BRICK_BASE = "#1b4332"  # materials.ts GLAZED_GREEN_BRICK_STYLE.base
-# The Ishtar scheme on the sunken garden's veneer (2026-08-20) — materials.ts
+# The Ishtar scheme on the sunken garden's veneer — materials.ts
 # GLAZED_LAPIS_BRICK_STYLE / GLAZED_GOLD_BRICK_STYLE / BROWN_BRICK_STYLE .base.
 _GLAZED_LAPIS_BRICK_BASE = "#10386a"
 _GLAZED_GOLD_BRICK_BASE = "#c08a12"
-_BROWN_BRICK_BASE = "#a07c5c"  # lightened + de-jittered 2026-08-21; see materials.ts
-# The garage wainscot's Glen-Gery Columbia Roman Maximus brick (2026-08-26) — materials.ts
+_BROWN_BRICK_BASE = "#a07c5c"  # lightened + de-jittered; see materials.ts
+# The garage wainscot's Glen-Gery Columbia Roman Maximus brick — materials.ts
 # ROMAN_MAXIMUS_BRICK_STYLE.base. The off-white colourway of the Roman Maximus unit; the
 # `finish` key names the UNIT GEOMETRY, so a colour swap moves this value and nothing else.
 _ROMAN_MAXIMUS_BRICK_BASE = "#e4ddc9"
-# The garage's east (overhead-door) wall accent coil (2026-08-26) — Western States Metal
+# The garage's east (overhead-door) wall accent coil — Western States Metal
 # Roofing "Classic Green", materials.ts CLASSIC_GREEN_SEAM_BASE. A second colourway of the
 # same 26 ga. nail-strip panel, so it keeps the seam profile and only the paint differs.
 _CLASSIC_GREEN_SEAM_BASE = "#2f5233"
-# The garage's formed-trim accent coil (2026-08-27): "Copper Penny" PVDF metallic on BOTH the
-# vented ridge cap and the six fascia pieces. Mirrored by FINISH_BASE in
-# ui/src/nordic/palette.ts.
+# The garage's formed-trim accent coil: "Copper Penny" PVDF metallic on BOTH the vented
+# ridge cap and the six fascia pieces. Mirrored by FINISH_BASE in ui/src/nordic/palette.ts.
 _COPPER_PENNY_METAL_BASE = "#8a4f2a"
-# Referenced by nothing since 2026-08-27 — the fascia wore Regal Blue for a day. Kept so the
-# swap back is one word; see the Material comment in houses/catlin/plan/assemblies.py.
+# Unreferenced — kept so the swap back is one word; see the Material comment in
+# houses/catlin/plan/assemblies.py.
 _REGAL_BLUE_METAL_BASE = "#1e3a5c"
 _DECK_BOARD_BASE = "#b9bcc0"    # materials.ts ALUMINUM_DECK_BASE_COLOR (0xb9bcc0)
 
@@ -291,11 +284,11 @@ _FINISH_BASE: dict[str, str] = {
     # entry rather than a shared key, because this table is matched exactly and a finish
     # with no row falls to the "metal" family blue-grey.
     "ribbed-panel": _SEAM_BASE,
-    # The garage's 7/8" corrugated panel (2026-08-31) — the same coil white a third time, on
-    # a third profile. Mirrors FINISH_BASE in ui/src/nordic/palette.ts.
+    # The garage's 7/8" corrugated panel — the same coil white a third time, on a third
+    # profile. Mirrors FINISH_BASE in ui/src/nordic/palette.ts.
     "corrugated": _SEAM_BASE,
-    # The house's north/south board & batten panel (2026-08-31) — the same coil white a
-    # fourth time, on a fourth profile. Mirrors FINISH_BASE in ui/src/nordic/palette.ts.
+    # The house's north/south board & batten panel — the same coil white a fourth time,
+    # on a fourth profile. Mirrors FINISH_BASE in ui/src/nordic/palette.ts.
     "board-and-batten": _SEAM_BASE,
     "cmu": _CMU_BASE,
     "white-brick": _WHITE_BRICK_BASE,
@@ -317,7 +310,7 @@ _FINISH_BASE: dict[str, str] = {
     # to the bare "brace" category lumber while the pillars it braces render white.
     # Value = the material's authored colour in houses/catlin/plan/assemblies.py.
     "post-paint-white": "#f4f2ee",
-    # Cellular PVC trim (the garage SOFFIT; its fascia went to formed metal on 2026-08-26)
+    # Cellular PVC trim (the garage SOFFIT; its fascia went to formed metal)
     # is factory-white, not the "siding" family's
     # blue-grey the substring guess falls to. Same white as post-paint-white — both are
     # painted trim, just different substrates.
@@ -400,18 +393,14 @@ def _material_finish_color(material_ref: str | None,
     # substring test below cannot see it.
     #
     # **The DECLARED finish is consulted HERE, inside the skin branch, and not before it.**
-    # It named the colour unconditionally for a day (2026-08-26), which is how a second coil
-    # colour of an existing panel — a green nail-strip beside the white one — first got to
-    # state its own paint, and it took two things with it. It broke the parity it was added
-    # to serve: `walls.ts` reads `finishBaseColor(appearance.finish)` only on the `seam`
-    # branch and every other layer goes through `materialColor`, which consults the ref and
-    # the authored colour and never the finish. And a finish is a SPEC, not a colourway, so
-    # a rule that lets it win collapses every material sharing one — `cmu-8`, `cmu-12` and
-    # `retaining-block` all declare `finish="cmu"` and author three different greys, and all
-    # three came out of the exporter as one. Scoped here, `pbr-panel-26` still gets the coil
-    # white on a cladding layer (its finish is in `_METAL_PANEL_FINISHES`), the green coil
-    # still gets its green (its tag carries "seam", and the lookup below finds
-    # "classic-green-seam"), and everything else keeps what it authored.
+    # `walls.ts` reads `finishBaseColor(appearance.finish)` only on the `seam` branch; every
+    # other layer goes through `materialColor` (ref + authored colour, never the finish). A
+    # finish is a SPEC, not a colourway: checking it outside this branch would collapse every
+    # material sharing one — `cmu-8`, `cmu-12` and `retaining-block` all declare
+    # `finish="cmu"` but author three different greys. Scoped here, `pbr-panel-26` still gets
+    # the coil white on a cladding layer (its finish is in `_METAL_PANEL_FINISHES`), the green
+    # coil still gets its green (its tag carries "seam", matching "classic-green-seam"), and
+    # everything else keeps what it authored.
     declared_skin = declared in _METAL_PANEL_FINISHES
     if function == "cladding" and (declared_skin or _is_standing_seam(material_ref)):
         return _hex_rgba(_FINISH_BASE.get(declared, _SEAM_BASE))
@@ -441,9 +430,7 @@ def _room_floor_color(model: ResolvedModel,
                       floor_finish: str | None) -> tuple[float, float, float, float]:
     """The colour a room's floor finish reads in, or the neutral floor tone when unfinished.
 
-    Every room used to export as one flat ``_color("floor")`` grey, so carpet, oak and tile
-    were indistinguishable in the .glb even though the finish was resolved and exported. The
-    lookup is exact — the finish string *is* the material tag — and it resolves through the
+    The lookup is exact — the finish string *is* the material tag — and it resolves through the
     material's authored ``color``/``hatch``, which is the same path
     ``ui/src/nordic/palette.ts::materialColor`` takes in the live viewer, so the two agree
     (→ ``glb-emitter-parity``). An unrecognised finish string falls back rather than raising:

@@ -1,8 +1,7 @@
 """glTF's own geometry concern: the axis swizzle.
 
-Everything else this module used to hold was plan-frame math with no glTF in it, and the IR
-producer needs the same functions, so it moved to ``resolve/geometry_prims.py``. The names are
-re-exported here because the emitter modules import them from this path.
+The plan-frame math lives in ``resolve/geometry_prims.py``, shared with the IR producer. The
+names are re-exported here because the emitter modules import them from this path.
 """
 
 from __future__ import annotations

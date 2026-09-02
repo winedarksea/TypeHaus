@@ -112,10 +112,9 @@ def add_arched_opening_prism(f: Any, body_ctx: Any, *, center_m: tuple[float, fl
     """Extrude a rectangular-jamb, circular-head opening through a wall.
 
     The head is the circular *segment* through both springlines and the crown, so a shallow
-    ``arch_rise_m`` gives a segmental arch and ``arch_rise_m == width / 2`` gives the
-    semicircle this used to assume unconditionally. That assumption made the void taller than
-    the opening it voided whenever the rise was smaller — the head went to springline + width/2
-    however low the crown was authored — which showed up as an IFC self-diff "move".
+    ``arch_rise_m`` gives a segmental arch and ``arch_rise_m == width / 2`` gives a semicircle.
+    Assuming a semicircle unconditionally makes the void taller than the opening whenever the
+    rise is smaller, which shows up as an IFC self-diff "move".
 
     The profile lies in the opening's vertical plane: its local x-axis follows the wall and
     its local y-axis is vertical.  The swept local z-axis points through the wall, avoiding

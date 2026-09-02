@@ -196,15 +196,9 @@ def _emit_pipe_system(f: Any, building: Any, system_key: str, elements: list) ->
 
 def _emit_pipe_run(f: Any, body: Any, run: Any, storeys: dict[str, Any],
                    project_uuid: Any) -> list:
-    """One ``IfcPipeSegment`` per path segment, each a real ``IfcSweptDiskSolid``.
-
-    This used to be "a plan rectangle of width ``diameter_m`` around the centerline, extruded
-    ``diameter_m`` tall at the segment's interpolated invert (a boxy placeholder profile, not
-    a true cylindrical sweep)". The run now knows its own invert at every vertex, and IFC4
-    has the idiom for exactly this shape, so a segment arrives as the pipe it is — including
-    the vertical drops, which were a square prism and are now simply a directrix pointing
-    down. ``_interpolated_invert`` survives only for a legacy run that authored two
-    elevations and no ``z_m``.
+    """One ``IfcPipeSegment`` per path segment, each a real ``IfcSweptDiskSolid`` following
+    the run's own invert at every vertex. ``_interpolated_invert`` survives only for a legacy
+    run that authored two elevations and no ``z_m``.
 
     Returns the segments, so the caller can group a run's pieces into the
     ``IfcDistributionSystem`` its system belongs to."""
@@ -287,13 +281,9 @@ def _emit_duct_run(f: Any, body: Any, duct: Any, storeys: dict[str, Any],
                    project_uuid: Any) -> None:
     """One ``IfcDuctSegment`` per path segment — a swept disk for round, a prism for rect.
 
-    This used to be a width x depth box at a z the emitter derived *here*, from the duct's
-    joist bay or its storey: the only vertical information a duct had anywhere in the
-    engine, which is why no other consumer could draw one and why every riser in the house
-    was undrawn. The resolver owns that derivation now (→ resolve/mep_ducts.py) and hands
-    over ``z_m`` per vertex, so a vertical leg exports as the vertical leg it is rather than
-    as a zero-length box, and a round run exports as ``IfcSweptDiskSolid`` the way a pipe
-    does instead of as a square prism pretending to be a pipe.
+    ``z_m`` per vertex comes from the resolver (→ resolve/mep_ducts.py), so a vertical leg
+    exports as the vertical leg it is, and a round run exports as ``IfcSweptDiskSolid`` the
+    way a pipe does instead of as a square prism pretending to be a pipe.
     """
     z_m = getattr(duct, "z_m", None) or ()
     for index in range(len(duct.path) - 1):

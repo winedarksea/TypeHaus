@@ -157,8 +157,7 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
 
     for solid in sorted(model.solids, key=lambda item: item.uid):
         # A run — handrail, drain, raceway — is one mitred tube per leg rather than a plan
-        # prism (→ resolve/sweep.py). One ``add_object`` either way, so a rail that used to
-        # arrive as 292 nodes arrives as one.
+        # prism (→ resolve/sweep.py). One ``add_object`` either way.
         legs = sweep_legs(solid.sweep) if solid.sweep is not None else []
         if legs:
             mb = _MeshBuilder()
@@ -176,9 +175,8 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             scene.add_object(mb, trade=solid_trade(solid.category), kind="solid",
                              uid=solid.uid)
 
-    # WallPaneling bands. A band is an applied surface on the room side of a wall, and until
-    # 2026-08-25 it billed without ever being exported — a wainscot on the order and nowhere in
-    # the .glb. Its colour resolves through the catalog material, the same path the viewer's
+    # WallPaneling bands. A band is an applied surface on the room side of a wall. Its
+    # colour resolves through the catalog material, the same path the viewer's
     # `materialColor` takes, so the two agree (→ glb-emitter-parity).
     for band in sorted(model.panelings, key=lambda item: (item.uid, item.wall_tag)):
         if not band.outline or band.z0_m is None or band.z1_m is None:
@@ -229,7 +227,6 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         scene.add_object(framing, trade="framing", kind="floor", uid=floor.uid)
         # The subfloor sheet over those joists — its own node, the way a wall's body is
         # separate from its studs, so the deck can be hidden without hiding the framing.
-        # Neither export drew a deck before the IR produced one; joists hung in space.
         deck = _MeshBuilder()
         _add_deck(deck, model, floor)
         if not deck.is_empty():

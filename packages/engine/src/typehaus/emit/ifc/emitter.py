@@ -175,9 +175,9 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
     # insulation requirement and a mixing valve belong to one and not the other), and the
     # waste side splits the same way (a cleanout schedule is sanitary; an air-admittance
     # question is vent). Every authored run lands in a system: ``system_elements`` covers
-    # the whole ``PipeSystem`` enum via ``_PIPE_SYSTEM_TYPES``, so the old failure mode —
-    # ``.get(run.system, [])`` silently discarding any system the dict lacked, which kept
-    # every drain and vent run unsystemed — cannot recur. An accessory without a host
+    # the whole ``PipeSystem`` enum via ``_PIPE_SYSTEM_TYPES``, so a ``.get(run.system, [])``
+    # lookup cannot silently discard a system the dict lacks and leave a run unsystemed.
+    # An accessory without a host
     # system (``accessory.system`` empty) stays ungrouped deliberately: inventing a system
     # for it would file a device under plumbing that nobody authored onto a run.
     system_elements: dict[str, list] = {key: [] for key in _PIPE_SYSTEM_TYPES}

@@ -1,9 +1,8 @@
 """Wall bodies: the glTF serialization of the wall solids the IR produces.
 
 The geometry itself — layer prisms, jamb splitting around openings, the raked top, the arched
-head — moved to ``resolve/geometry_walls.py``, because this module was one of four places that
-computed it. What is left here is the emitter's own job: pick the colour, hand the solids to
-the mesh builder.
+head — lives in ``resolve/geometry_walls.py``. What is left here is the emitter's own job:
+pick the colour, hand the solids to the mesh builder.
 """
 
 from __future__ import annotations

@@ -126,9 +126,7 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
     "drywell": "drainage",
 
     # A dropped soffit is framed and finished like the ceiling it hangs under, so it rides the
-    # floors trade instead of appearing in a concrete take-off it has no business in. This was
-    # the geometry IR's one pre-existing exception; the glTF emitter disagreed and sent it to
-    # concrete with everything else. The table settles it.
+    # floors trade instead of appearing in a concrete take-off it has no business in.
     "soffit": "floors",
     # A room's own ceiling plane (``resolve/ceilings.py``) rides the same toggle for the same
     # reason: it is the flooring trade's overhead surface, not a wall or a roof deck.
@@ -147,17 +145,15 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
     # are stair-well guards or stair handrails. The one deck guard (RL-SG-BALCONY) rides along,
     # which is the accepted cost of one toggle per guard.
     #
-    # These were on the concrete fallback for a long time, with the fallback holding the 2D and
-    # 3D toggles in agreement: ``ui/src/components/Canvas2D.tsx`` gated the plan's railing
-    # outlines on ``visibleTrades.concrete`` *because* that is where the 3D viewer put them.
-    # That gate moved to ``stairs`` in the same change as these rows — the two have to move
-    # together or a railing appears in one viewer and not the other.
+    # ``ui/src/components/Canvas2D.tsx`` gates the plan's railing outlines on
+    # ``visibleTrades.stairs`` to match — the two have to move together or a railing
+    # appears in one viewer and not the other.
     "railing": "stairs",
     "railing_infill": "stairs",
     "railing_glass": "stairs",
 
-    # Connection hardware, routed by *what kind of connection it is* rather than by the one
-    # "connector" category it used to share. Structural hardware — the hangers, ties, post
+    # Connection hardware, routed by *what kind of connection it is* rather than lumped into
+    # one "connector" category. Structural hardware — the hangers, ties, post
     # bases, hold-downs and knee-brace straps — is the carpenter's work and rides with the
     # members it joins. A post base is anchored into a pour and is still framing hardware:
     # what makes a solid concrete is being a pour, not touching one.

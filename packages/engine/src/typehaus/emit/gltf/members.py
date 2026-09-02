@@ -41,10 +41,7 @@ def member_color(member: FramedMember) -> tuple[float, float, float, float]:
 def _add_member(mb: _MeshBuilder, member: FramedMember) -> None:
     """Emit one member from the shared IR box.
 
-    This used to build its own geometry with ``width_m / 2`` as *every* half-extent, which
-    ignored both ``orient`` and ``depth_m``: an upright 2x6 stud exported as a 5.5" square
-    post, and its section did not follow the wall it stood in. ``member_box`` is the IFC
-    implementation — the one that was right — so the two exports now agree by construction
+    ``member_box`` is the IFC implementation, so the two exports agree by construction
     rather than by review.
     """
     color = member_color(member)

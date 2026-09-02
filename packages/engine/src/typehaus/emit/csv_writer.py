@@ -1,9 +1,7 @@
 """Deterministic RFC 4180 CSV — the engine's one comma-separated exit.
 
-There was no CSV writer anywhere in the engine before this, which is the whole reason
-nothing Type:Haus computes could reach an estimating package: RSMeans Online, Craftsman
-Cloud, Buildertrend, Trello, Asana and QuickBooks all accept CSV or Excel, and every one of
-them was one file format away.
+This is what lets anything Type:Haus computes reach an estimating package: RSMeans Online,
+Craftsman Cloud, Buildertrend, Trello, Asana and QuickBooks all accept CSV or Excel.
 
 Written by hand rather than via :mod:`csv` for one reason: **determinism**. ``csv.writer``
 emits ``\\r\\n`` on some platforms and ``\\n`` on others, quotes at its own discretion, and

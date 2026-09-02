@@ -1,10 +1,9 @@
 """Roof shells: the IR's layer bands serialized, plus the skin members that trim the edge.
 
 The geometry — the sloped planes, the perpendicular offset with its mitered ridge, the
-eave-drift-compensated per-layer setbacks and the closed eave/rake perimeter — moved to
-``resolve/geometry_roofs.py``. It was the third of four copies of that math, and the one the
-plan blesses as canonical. What is left here is the emitter's own job: pick each band's
-colour and hand its mesh to the mesh builder.
+eave-drift-compensated per-layer setbacks and the closed eave/rake perimeter — lives in
+``resolve/geometry_roofs.py``, the canonical implementation the plan blesses. What is left
+here is the emitter's own job: pick each band's colour and hand its mesh to the mesh builder.
 
 Colour still comes from the *layer* rather than from the part's ``material_key``, the same
 split walls use: the IR names what a surface is (``metal``, ``membrane``), and the exporter
