@@ -21,13 +21,10 @@ export const MIN_EXTENT_M = 1e-4;
 // A unit box centred on its local origin in ALL THREE axes — every rect/i-joist instance is
 // this geometry, scaled + rotated + translated per instance.
 //
-// The symmetry is the point. This box used to be base-at-origin on local Y only, which made
-// the three axis slots of the matrix composer non-interchangeable: passing world-up into one
-// of the two centred slots silently drew a member spanning z0 ± depth/2 instead of z0 → z1,
-// i.e. half its own depth too low. That is exactly what happened to every horizontal member
-// (11.875" rim bands ~6" low; the stair well partition plunging through the foundation).
-// With every axis centred there is no special slot to get wrong: the caller states the box
-// centre once, and each axis is a symmetric ±extent/2.
+// The symmetry is the point: with every axis centred there is no special slot in the matrix
+// composer to get wrong — a base-at-origin axis would make world-up in one of the centred
+// slots draw a member spanning z0 ± depth/2 instead of z0 → z1, half its own depth too low.
+// The caller states the box centre once, and each axis is a symmetric ±extent/2.
 export const UNIT_BOX = new THREE.BoxGeometry(1, 1, 1);
 
 const UP = new THREE.Vector3(0, 1, 0);

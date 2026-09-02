@@ -38,11 +38,10 @@ const BANDS: { name: string; z0: number; z1: number }[] = [
 /**
  * Nothing may be drawn across an opening at a band's own edge.
  *
- * This is the whole point of builders/wallBandShape.ts. Building a band as a rectangle with a
- * *hole* clamped into it lays the hole's head (or sill) exactly on the band edge whenever the
- * opening runs past it, and ExtrudeGeometry sweeps that clamped edge as a lit strip hanging in
- * the void — the thin bright band that used to cross both reveals at every colour change.
- * A triangle lying flat at a band edge, inside an opening's width, is that strip.
+ * Building a band as a rectangle with a *hole* clamped into it lays the hole's head (or sill)
+ * exactly on the band edge whenever the opening runs past it, and ExtrudeGeometry sweeps that
+ * clamped edge as a lit strip hanging in the void across the opening. A triangle lying flat at
+ * a band edge, inside an opening's width, is that strip.
  */
 function assertNoStripHangsInAnOpening(): void {
   for (const band of BANDS) {

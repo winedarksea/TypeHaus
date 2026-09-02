@@ -1,21 +1,11 @@
 // The 2D outline of one wall layer band — the rectangle its extrusion sweeps, with the
 // openings taken out of it — and the arch soffits that outline carries.
 //
-// Split out of builders/walls.ts on 2026-08-21 to fix the thin bright band that ran across
-// every opening at a brick colour change. The band used to be built as one rectangle with a
-// THREE.Path *hole* per opening, each hole clamped into the band. That is right only while an
-// opening sits strictly inside the band. The instant it reaches an edge — which it does at
-// every band a tall opening passes through, and W-B-BRICK's door passes through four — the
-// clamp lays the hole's head (or sill) exactly on the band's own edge, and ExtrudeGeometry
-// sweeps it: a lit, normal-bearing strip spanning the opening, back to back with the band
-// cap it is coincident with, and with the neighbouring band's clamped edge as well. Two or
-// three surfaces fighting for the same pixels, most visible where nothing else is behind
-// them — across the openings.
-//
-// So a clamped edge is not a hole here. An opening that reaches the band's bottom or top is a
-// NOTCH in the outer ring; one that spans the band's full height SPLITS it into separate
-// shapes; only an opening strictly inside the band stays a hole. Nothing is then coincident
-// with anything, because nothing is drawn at the clamp line at all.
+// A clamped opening edge is not a hole here: a THREE.Path hole clamped onto a band's own edge
+// makes ExtrudeGeometry sweep a lit, normal-bearing strip across the opening, coincident with
+// the band cap and the neighbouring band's clamped edge. So an opening that reaches the band's
+// bottom or top is a NOTCH in the outer ring; one that spans the band's full height SPLITS it
+// into separate shapes; only an opening strictly inside the band stays a hole.
 import * as THREE from "three";
 import type { Opening, Wall } from "../../model/types";
 import { archSoffitCircle, archSoffitSample, archSoffitSegmentCount, baseRefZ } from "./wallFrame";

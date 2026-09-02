@@ -4,11 +4,10 @@
 // is the authority; this file must not diverge from it, and `tubeGeometry.test.ts` pins the
 // two against a shared fixture so it cannot silently.
 //
-// Why the run is one thing: `ResolvedSolid` used to be a plan ring extruded straight up in Z,
-// so anything that raked or sloped had to be faked as a stack of level pieces — a straight
-// 13-ft handrail came out as 292 solids, and railings were 40% of the reference house's
-// geometry. A `sweep` on the solid says "I am a section carried along a 3D polyline", and
-// this builds the mitred tube that describes.
+// Why the run is one thing: a plan ring extruded straight up in Z cannot rake or slope, so
+// without a sweep a raked or sloped run has to be faked as a stack of level pieces. A `sweep`
+// on the solid says "I am a section carried along a 3D polyline", and this builds the mitred
+// tube that describes.
 //
 // FRAME CONVENTION (must match sweep.py's docstring exactly): a leg's local "up" is world +Z
 // projected perpendicular to the leg axis, so a rectangular rail's flat face stays level on a

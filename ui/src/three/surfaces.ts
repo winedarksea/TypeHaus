@@ -1,12 +1,7 @@
-// One place that knows how a plain lit surface is built, for the ~15 builder sites that used to
-// spell out `new THREE.MeshStandardMaterial({ ..., roughness: mode === "nordic" ? X : 1,
-// flatShading: mode === "schematic" })` by hand.
-//
-// The value of collecting them is not line count, it is that the two mode rules were being
-// re-derived per site and had drifted: `X` was 0.85 in eleven places, 0.82 in two, 0.9 in two
-// and 0.95 in one, with nothing saying whether the differences meant anything. Now they are
-// four named surface classes, and a site that genuinely differs (glass, a mill-finish
-// extrusion, faceted gravel) overrides and says so.
+// One place that knows how a plain lit surface is built. The two mode rules (nordic
+// roughness, schematic flat shading) are collected into four named surface classes below,
+// and a site that genuinely differs (glass, a mill-finish extrusion, faceted gravel)
+// overrides and says so.
 import * as THREE from "three";
 
 export type ShadingMode = "nordic" | "schematic";

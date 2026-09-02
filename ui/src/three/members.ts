@@ -265,11 +265,10 @@ function buildSeamMesh(group: THREE.Group, members: Member[], center: PlanCenter
   lines?: readonly SkinLine[]) {
   if (!members.length) return;
   for (const { profile, paint, members: groupMembers } of seamGroupsFor(members, materials).values()) {
-    // The band's OWN module, not the seam pan's. `SEAM_TILE_SIZE_M` (16" pans) stood here for
-    // every profile, so a band finished in something else was drawn at the seam's scale and
-    // stretched by the ratio between them — 1.33x for the house's 12" PBR rib, and 6x for the
-    // garage's 2-2/3" corrugation, which is what made those closures read as smeared metal
-    // beside the wall they continue.
+    // The band's OWN module, not the seam pan's: `SEAM_TILE_SIZE_M` (16" pans) for every
+    // profile would draw a band finished in something else at the seam's scale, stretched by
+    // the ratio between them — 1.33x for the house's 12" PBR rib, 6x for the garage's
+    // 2-2/3" corrugation.
     const tileM = panelTileSizeM(profile);
     const positions: number[] = [];
     const indices: number[] = [];
@@ -397,7 +396,7 @@ function buildIJoists(group: THREE.Group, members: Member[], center: PlanCenter,
     // so that vertical extent has to be foreshortened by cos(theta) before it can be spent as
     // a section depth. Without this the roof redesign's 11-7/8" I-joist rafters stood 1-3/8"
     // proud of their own `z1_m` on this 6:12 roof and pushed their top flange up through the
-    // sheathing, the membrane and the standing seam above them (2026-08-31).
+    // sheathing, the membrane and the standing seam above them.
     const cosTheta = slopedLength > 1e-9 ? runLen / slopedLength : 1;
     const depth = (m.z1_m - m.z0_m) * cosTheta;
     const flangeT = m.flange_thickness_m ?? depth * 0.1;

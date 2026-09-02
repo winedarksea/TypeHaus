@@ -133,11 +133,10 @@ export function runPlanGeometryTests() {
   checkDoorSwingArcsPivotOnHinge();
 }
 
-// Horizontal members (rims, joists, plates, headers, the U-stair well partition) used to be
-// drawn centred on z0 instead of spanning z0→z1, so each one hung half its own depth too low
-// — an 11⅞" rim band read ~6" below the subfloor and a 9'-tall stair partition dropped
-// 4'6" through the basement slab. The original framing assertions only covered plan (x/z)
-// bounds, which is exactly why it shipped; every case below asserts the vertical extent.
+// Horizontal members (rims, joists, plates, headers, the U-stair well partition) must span
+// z0→z1, not sit centred on z0 — otherwise each one hangs half its own depth too low, e.g. an
+// 11⅞" rim band ~6" below the subfloor or a 9'-tall stair partition dropped 4'6" into the
+// basement slab. Every case below asserts the vertical extent, not just plan bounds.
 function checkMemberVerticalExtents() {
   const center: [number, number] = [10, 20];
   const bandDepth = 0.3016; // 11⅞" floor band
@@ -175,7 +174,7 @@ function checkMemberVerticalExtents() {
   }
 
   // I-joist plies: bottom flange, web, top flange must tile the section soffit-to-top with
-  // no gaps. Each was previously centred on its own offset, delaminating the section.
+  // no gaps.
   const flangeThickness = 0.0349;
   const webDepth = bandDepth - 2 * flangeThickness;
   const ijoist = new THREE.Group();
@@ -217,9 +216,9 @@ function checkMemberVerticalExtents() {
     }
   }
 
-  // A member that names a material is skin, and is coloured by that material — a
-  // standing-seam closure band read as the grey category fallback before, which is what made
-  // the garage gable look like unwanted fill instead of white metal.
+  // A member that names a material is skin, and is coloured by that material, not the
+  // category fallback — that is what keeps a standing-seam closure band reading as white
+  // metal rather than grey fill.
   const seamBand = member({
     key: "rake-lo-0-edge-cladding", category: "cladding", material: "standing-seam",
     p0: [0, 0], p1: [4, 0], z0_m: 3, z1_m: 3.2, z0_end_m: 4, z1_end_m: 4.2,

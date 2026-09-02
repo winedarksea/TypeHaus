@@ -170,10 +170,9 @@ export function aboveStructureLayers(assembly: AssemblySpec | undefined) {
  *
  * A roof plane is built by `createProjectedSurfaceGeometry`, which sets position and normal
  * and NOTHING ELSE — no `uv` attribute at all. A normal map on a geometry with no UVs samples
- * one texel forever, so every roof in the model rendered as flat paint: the seam was there in
- * the material and had nothing to sample against. (`createStandingSeamMaterial`'s
- * `worldSizeM` repeat could not save it either — a repeat multiplies a UV that does not
- * exist.) Fixed 2026-08-31.
+ * one texel, so a roof plane with no UVs renders as flat paint: the seam is there in the
+ * material with nothing to sample against. (`createStandingSeamMaterial`'s `worldSizeM`
+ * repeat cannot save it either — a repeat multiplies a UV that does not exist.)
  *
  * The frame is the one a roofer works in, not the one the footprint is authored in:
  *  - `u` runs ALONG THE RIDGE, because that is the axis the pans are counted across. Pans run

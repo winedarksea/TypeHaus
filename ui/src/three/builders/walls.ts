@@ -111,7 +111,7 @@ export function buildWall(
     // (resolve/topology.py `_board_run`), so the boards land the way they are fastened.
     const plankStyle = !seam && !masonryStyle && isWoodPlank(ly.material)
       ? plankStyleFor(ly.material, appearance?.finish) : null;
-    // The coil white is the DEFAULT, not the only option (2026-08-26). A metal panel that
+    // The coil white is the DEFAULT, not the only option. A metal panel that
     // declares a finish naming its own paint gets that paint; everything else keeps
     // 0xE8E8E2, which is what all five of the house's white skins author (their catalog
     // `color` is the drawing hatch tone, not the paint, so it must not be read here).
@@ -137,8 +137,8 @@ export function buildWall(
     // it does unchanged and simply trims the result; the swept path takes the band itself,
     // because its outline is built from the wall's own z-range and would otherwise hand back
     // a full-height solid per region — five coincident wythes z-fighting for the same face,
-    // which is what the sunken garden's Ishtar wall showed until 2026-08-20. Its arched door
-    // and window are what put it on the swept path in the first place.
+    // as on the sunken garden's Ishtar wall, whose arched door and window put it on the swept
+    // path in the first place.
     const smoothArchGeometry = createSmoothArchedWallLayerGeometry(w, ly.polygon, openings, center, ly);
     const geometries: (THREE.BufferGeometry | null)[] = smoothArchGeometry
       ? [smoothArchGeometry]
@@ -227,21 +227,18 @@ export function buildWall(
 // closure band running up to the roof reads as framing while the wall's own cladding prism
 // below it reads as walls.
 //
-// The catlin truss (2026-08-26) put THREE furring closure bands on a wall where the Swinburne
-// outrigger put one — the inner girt, the outer girt and, beside them, foam and vent-gap bands
-// that are NOT furring and correctly stay on Walls. The rule did not have to change for that,
-// which is the point of routing on the layer group rather than on a wall type.
+// The catlin truss puts THREE furring closure bands on a wall where the Swinburne outrigger
+// put one — the inner girt, the outer girt and, beside them, foam and vent-gap bands that are
+// NOT furring and correctly stay on Walls. Routing on the layer group rather than the wall
+// type handles both without the rule changing.
 const FRAMING_SKIN_GROUPS = new Set<LayerVisibilityGroup>(["furring"]);
 
 /** Which trade draws one wall member: the stick trade, or the envelope the member continues.
  *
- * `isSkinMember` asks the member's *category*, and that is the whole of it. Naming a material
- * is not the test and never was: every piece of either truss pack names one — the Swinburne
- * block is spf, its outrigger and ladder blocking are kdat, its tab and buck are
- * struct-1-plywood; the catlin truss's block-1 and inner girt are spf, its block-2 and outer
- * girt are kdat — and all of them are lumber. Routing on `member.material` sent the entire
- * truss wall to the Walls trade under the "Other" layer group, which took it out of the
- * framing view: present in the model and in 2D, gone from 3D.
+ * `isSkinMember` asks the member's *category*, not whether it names a material — every piece
+ * of either truss pack (Swinburne, catlin) names one, block through girt, and all of them are
+ * lumber. Routing on `member.material` instead would send the entire truss wall to the Walls
+ * trade under the "Other" layer group, dropping it from the framing view in 3D.
  */
 function memberTrade(member: Member, tradeGroups: Record<Trade, THREE.Group>,
   group: LayerVisibilityGroup): THREE.Group {

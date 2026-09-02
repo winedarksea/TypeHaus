@@ -1,9 +1,5 @@
-// The wall's own local frame, and the arch-head circle math that rides in it.
-//
-// Split out of builders/walls.ts on 2026-08-21, when the voussoir arch rings in
-// builders/archRing.ts needed the same frame and the same soffit circle. Keeping these in
-// walls.ts would have made the two modules import each other; walls.ts re-exports the arch
-// helpers so callers and tests that already knew them there still find them.
+// The wall's own local frame, and the arch-head circle math that rides in it. walls.ts
+// re-exports these so callers that already knew them there still find them.
 //
 // "Local" here means the frame ExtrudeGeometry works in and `wallLocalToSceneMatrix` maps
 // out of: x runs ALONG the wall axis from its start node, y is absolute elevation, and z is
@@ -137,12 +133,8 @@ export function archSoffitSegmentCount(radiusM: number, halfAngleRad = Math.PI /
 
 // The circle through both springlines and the crown of an arch of half-span `halfSpanM` rising
 // `riseM` above them: [radius, half-angle, how far the centre sits below the springline].
-//
-// This is what makes a *segmental* arch possible. The soffit used to be hard-wired to a
-// half-circle of width/2, so `arch_rise_m` only chose where the springline sat and every head
-// came out semicircular however shallow the rise said it was. A rise at or above the half-span
-// is the semicircle and is clamped to it. Mirrors `arch_soffit_circle` in the engine
-// (resolve/geometry_prims.py) — keep the two in step.
+// A rise at or above the half-span is the semicircle and is clamped to it. Mirrors
+// `arch_soffit_circle` in the engine (resolve/geometry_prims.py) — keep the two in step.
 export function archSoffitCircle(
   halfSpanM: number, riseM: number,
 ): { radiusM: number; halfAngleRad: number; depthM: number } {

@@ -1,18 +1,16 @@
 // ── Wood planks (T&G paneling / strip flooring) ───────────────────────────────────────
-// The sauna's basswood liner, the study's walnut wainscot and the two oak floors all used to
-// paint as one flat fill, so a lined sauna read as tan drywall and a strip-oak floor read as
-// a sheet of MDF. Same trick as the masonry section of `materials.ts`: the board module, the
-// joint and the per-board tone variation ride shared procedural maps (colour + normal),
-// world-scaled so boards sit at true size. No external texture, so the offline PWA still
-// renders it, and — like brick — no per-board geometry (plans/01-decisions.md #23 keeps
-// placed members wood-framing-only).
+// Same trick as the masonry section of `materials.ts`: the board module, the joint and the
+// per-board tone variation ride shared procedural maps (colour + normal), world-scaled so
+// boards sit at true size. No external texture, so the offline PWA still renders it, and —
+// like brick — no per-board geometry (plans/01-decisions.md #23 keeps placed members
+// wood-framing-only).
 //
 // Two recipes, because a paneling board and a floor strip are not the same product:
 //   • `tg-board` — 3½" exposed face, a V-groove at each joint, continuous runs. The sauna
 //     liner is 7'-6" and the wainscot 3', so neither has end joints worth drawing.
 //   • `shiplap` — 5½" exposed face, a wider reveal at each joint, continuous runs. The sauna
-//     liner became shiplap on 2026-08-28 and would otherwise have gone on rendering as T&G
-//     forever: the `*-tg` ref inference below cannot see a profile change that renames the tag.
+//     liner is shiplap, not T&G, so the `*-tg` ref inference below cannot see it — a profile
+//     change that renames the tag needs its own needle.
 //   • `strip-floor` — 2¼" strip with butt end joints on a hashed stagger, and the highest
 //     tone jitter in the house: strip oak is genuinely that variegated.
 //
@@ -164,8 +162,7 @@ function lum(value: number): number {
  * lines in the canvas) and `v` runs ALONG them; `applyPlank*Uv` maps that onto the world.
  *
  * Returns null where there is no 2D canvas — SSR and the headless geometry tests, which build
- * real scenes in Node. The caller falls back to a flat material in the board's own colour,
- * which is exactly what this surface looked like before this module existed.
+ * real scenes in Node. The caller falls back to a flat material in the board's own colour.
  */
 function buildPlankMaps(
   style: PlankStyle,
@@ -266,9 +263,8 @@ export function createPlankMaterial(
     });
   }
   const maps = buildPlankMaps(style);
-  // No 2D canvas (SSR, the headless geometry tests): a flat fill in the board's own colour,
-  // which is what this surface was before the boards existed. Never a throw — a missing
-  // texture is a degraded picture, not a broken scene.
+  // No 2D canvas (SSR, the headless geometry tests): a flat fill in the board's own colour.
+  // Never a throw — a missing texture is a degraded picture, not a broken scene.
   if (!maps) return new THREE.MeshStandardMaterial({ color, roughness, metalness: 0 });
   return new THREE.MeshStandardMaterial({
     // The species colour, TINTED onto a neutral luminance map. Keeping it here rather than

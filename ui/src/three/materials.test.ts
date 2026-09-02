@@ -103,11 +103,10 @@ export function runMaterialGeometryTests() {
     && authoredAppearance("missing", catalog) === undefined,
     "authoredAppearance finds a catalog entry by tag and reports absence as undefined");
 
-  // ── Metal panel profiles (2026-08-26) ────────────────────────────────────────────────
-  // The house walls went from a snap-lock seam to an exposed-fastener PBR panel, and the
-  // dispatch had to stop being a substring test to survive it. `pbr-panel-26` has no "seam"
-  // in its tag ON PURPOSE, so `isStandingSeam` cannot see it — this is exactly the case that
-  // Material.finish exists for, the same argument the Ishtar bricks below make.
+  // ── Metal panel profiles ────────────────────────────────────────────────────────────
+  // `pbr-panel-26` has no "seam" in its tag ON PURPOSE, so `isStandingSeam` cannot see it —
+  // this is exactly the case that Material.finish exists for, the same argument the Ishtar
+  // bricks below make.
   assert(!isStandingSeam("pbr-panel-26"),
     "The substring test cannot reach the PBR panel — which is why the finish dispatch exists");
   assert(isStandingSeam("standing-seam-snaplock") && isStandingSeam("standing-seam-nailstrip-26"),
@@ -143,10 +142,9 @@ export function runMaterialGeometryTests() {
   assert(Math.abs(panelTileSizeM() - SEAM_TILE_SIZE_M) < 1e-9,
     "Called with no profile it still answers for the seam, so old call sites are unchanged");
 
-  // ── The corrugated profile (2026-08-31) ──────────────────────────────────────────────
-  // The garage walls went from a concealed 26 ga nail strip to a 7/8" corrugated
-  // exposed-fastener panel. `corrugated-panel-26` contains neither "seam" nor "standing",
-  // so like `pbr-panel-26` it reaches the metal treatment ONLY through its authored finish.
+  // ── The corrugated profile ──────────────────────────────────────────────────────────
+  // `corrugated-panel-26` contains neither "seam" nor "standing", so like `pbr-panel-26` it
+  // reaches the metal treatment ONLY through its authored finish.
   assert(!isStandingSeam("corrugated-panel-26"),
     "The substring test cannot reach the corrugated panel either — the finish dispatch does");
   assert(metalPanelProfileForFinish("corrugated") === CORRUGATED_PROFILE,
@@ -169,12 +167,12 @@ export function runMaterialGeometryTests() {
   assert(CORRUGATED_PROFILE.oilCanning < RIBBED_PANEL_PROFILE.oilCanning,
     "Continuous corrugation stiffens the sheet, so it wanders less than a wide flat pan");
 
-  // ── The board & batten profile (2026-08-31) ──────────────────────────────────────────
-  // The house's NORTH AND SOUTH walls went to 24 ga concealed-fastener board & batten at
-  // 20" net coverage; east and west stay on PBR. `board-batten-24` contains neither "seam"
-  // nor "standing" either, so it too reaches the metal treatment only through its finish —
-  // and unlike the other two it DOES declare `skin_family="standing-seam"`, for the roof
-  // edge's sake, which is a field the viewer never consults.
+  // ── The board & batten profile ──────────────────────────────────────────────────────
+  // The house's north and south walls are 24 ga concealed-fastener board & batten at 20" net
+  // coverage; east and west stay on PBR. `board-batten-24` contains neither "seam" nor
+  // "standing" either, so it too reaches the metal treatment only through its finish — and
+  // unlike the other two it DOES declare `skin_family="standing-seam"`, for the roof edge's
+  // sake, which is a field the viewer never consults.
   assert(!isStandingSeam("board-batten-24"),
     "The substring test cannot reach board & batten either — the finish dispatch does");
   assert(metalPanelProfileForFinish("board-and-batten") === BOARD_BATTEN_PROFILE,
@@ -199,11 +197,11 @@ export function runMaterialGeometryTests() {
   assert(Math.abs(2 * BOARD_BATTEN_PROFILE.ribHalfWidth * BATTEN_PITCH_M - 0.0508) < 1e-4,
     "The batten draws about 2in wide, the wide end of the profile's real range");
 
-  // The Ishtar scheme (2026-08-20): three more brick faces on the sunken garden's wythe.
-  // Every one of them is a tag substring inference CANNOT reach — "glazed-lapis-brick" and
-  // "brown-brick" say nothing the old CMU/white/red ladder recognises, so all three would
-  // fall through to red brick without their authored finish. That is the whole case for
-  // Material.finish and it is what these pin.
+  // The Ishtar scheme: three more brick faces on the sunken garden's wythe. Every one of
+  // them is a tag substring inference CANNOT reach — "glazed-lapis-brick" and "brown-brick"
+  // say nothing the CMU/white/red ladder recognises, so all three would fall through to red
+  // brick without their authored finish. That is the whole case for Material.finish and it
+  // is what these pin.
   const lapis = masonryStyleFor("glazed-lapis-brick", "glazed-lapis-brick");
   const gold = masonryStyleFor("glazed-gold-brick", "glazed-gold-brick");
   const brown = masonryStyleFor("brown-brick", "brown-brick");
@@ -215,11 +213,9 @@ export function runMaterialGeometryTests() {
     "The gold registers sit inside the lapis field, so they share its joint colour");
   assert(brown.mortar === defaultBrick.mortar,
     "The unglazed plinth keeps the tan mortar of ordinary brick");
-  // The plinth is specified as ONE light brick, not a blend (2026-08-21). It was authored the
-  // other way — full red-brick jitter, on the argument that variegation is what makes the
-  // glaze above it read as a glaze — and on the wall that came out as mixed pallets with
-  // near-black units through it. This pins the correction, since the jitter is invisible in
-  // any test that only checks the base colour.
+  // The plinth is specified as ONE light brick, not a blend: full red-brick jitter reads as
+  // mixed pallets with near-black units, not clay variegation, at this wall's scale. This
+  // pins that, since the jitter is invisible in any test that only checks the base colour.
   assert(brown.jitterHSL.every((amount, index) => amount <= defaultBrick.jitterHSL[index] / 3),
     "The plinth is one light brick: nowhere near the red brick's blend");
   assert(brown.jitterHSL[2] <= 0.05,
@@ -242,9 +238,9 @@ function member(category: string, material: string | null = null): Member {
 }
 
 // A brick wall is laid from the bottom up: the bricklayer starts on a full course at the base
-// and only ever cuts at the top. The UV course line used to be measured from project zero, so
-// every wall in the house started mid-brick — the sunken garden veneer, founded at -101",
-// rendered its bottom course as a third of a brick and cut every register band above it too.
+// and only ever cuts at the top, so the UV course line measures from the wall's own base, not
+// project zero — the sunken garden veneer, founded at -101", is the case that would show a
+// bottom course cut to a third of a brick and every register band above it cut too.
 function assertCoursingStartsAtTheWallBase() {
   const tile = masonryTileSizeM(masonryStyleFor("brick-red"));
   const baseZ = -2.5654; // -101", the Ishtar wall's base: deliberately NOT a whole tile.
@@ -368,15 +364,14 @@ export function runMemberColorTests() {
 // ── Skin-band UVs (the wall→roof closure) ───────────────────────────────────────────────
 //
 // A closure band is not trim hung near the wall: it IS the wall's own sheet carried up past
-// the top plate to the roof (resolve/roof_edge.py). Two things follow, and both were wrong
-// until 2026-08-31 — the garage gable's corrugated closures were the visible symptom.
+// the top plate to the roof (resolve/roof_edge.py). Two invariants follow:
 //
-//  1. Its module is its OWN profile's. The UV divisor was `SEAM_TILE_SIZE_M` for every band,
-//     so a 2-2/3" corrugation was drawn on a 16" pan's frame and stretched 6x, and the house's
-//     12" PBR rib 1.33x.
-//  2. Its phase is the wall's. `u` ran from the band's own `p0`, which is the MITRED corner —
-//     a layer-thickness past the wall axis — and restarts at the ridge where a gable closure
-//     splits in two. Both put a jog in the ribs at a joint that is one continuous sheet.
+//  1. Its module is its OWN profile's, not a fixed `SEAM_TILE_SIZE_M` — a 2-2/3" corrugation
+//     drawn on a 16" pan's frame would stretch 6x, and the house's 12" PBR rib 1.33x.
+//  2. Its phase is the wall's. `u` runs from the band's own `p0`, which is the MITRED
+//     corner — a layer-thickness past the wall axis — and continues (not restarts) at the
+//     ridge where a gable closure splits in two, so the ribs never jog at a joint that is one
+//     continuous sheet.
 export function runSkinBandUvTests() {
   const materials = [{ tag: "corrugated-panel-26", color: "#6b7076", finish: "corrugated" }];
   // W-G-E's gable closure, eave→ridge: the garage's east wall axis runs y 12.4111→19.7263,

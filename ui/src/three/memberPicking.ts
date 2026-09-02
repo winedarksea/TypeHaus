@@ -9,11 +9,11 @@
 //   • InstancedMesh  → `memberUidByInstance[intersection.instanceId]`
 //   • merged mesh    → `memberUidByBox[upperBound(triangleStarts, faceIndex) - 1]`
 //
-// The merged lookup used to divide by a constant 12 triangles per box, which silently assumed
-// every member in a merge is a box. A birdsmouthed rafter is not (its profile has six points,
-// so its solid has more faces), and neither is a winder tread — which is why members.ts had to
-// filter treads out of the merge entirely. A prefix-sum table costs one array and a binary
-// search and holds for any mix of shapes.
+// A constant 12 triangles per box would assume every member in a merge is a box. A
+// birdsmouthed rafter is not (its profile has six points, so its solid has more faces), and
+// neither is a winder tread — which is why members.ts filters treads out of the merge
+// entirely. A prefix-sum table costs one array and a binary search and holds for any mix of
+// shapes.
 //
 // Both are recorded at build time by the builders in three/members.ts, so the index a raycast
 // hands back resolves to an engine-authored `<owner uid>::<child key>` identity (→

@@ -180,16 +180,8 @@ function metalPanelNormalMap(profile: MetalPanelProfile = SEAM_PROFILE): THREE.T
   const ribSlope = (u: number): number => {
     const round = Math.sin(u * Math.PI);
     // A plateau, not a bump: zero at the crown (u→0) and at the toe (u→1), and a constant
-    // slope over the flank between them. That IS the trapezoid this is blending toward.
-    //
-    // This carried a `* Math.sign(0.5 - u) * -1` factor until 2026-08-31, which flipped the
-    // slope halfway up each flank. A flank that rises and then falls back inside its own
-    // width nets out to a CREASE, not a rib: the batten got a highlight and a shadow within
-    // the 2" it occupies rather than one lit face and one shaded one, and half its relief
-    // cancelled (a board & batten batten integrated to 1.9 of a possible 4.2, a PBR rib to
-    // 6.4 of 11.8). It was survivable on the wide 12" PBR rib, which is why it stood; on the
-    // board & batten batten — a tenth of its module — it is the whole difference between an
-    // applied board and a scratch, which is how the house's north and south walls read.
+    // slope over the flank between them. That IS the trapezoid this is blending toward — one
+    // lit face and one shaded one, not a highlight-and-shadow crease within the flank.
     const square = Math.sin(Math.min(1, u * 2.2) * Math.PI * 0.5)
       * Math.sin(Math.min(1, (1 - u) * 2.2) * Math.PI * 0.5);
     return round * (1 - profile.squareness) + square * profile.squareness;
@@ -201,9 +193,7 @@ function metalPanelNormalMap(profile: MetalPanelProfile = SEAM_PROFILE): THREE.T
       // dx is the surface slope across the panel: the rib stands off the module boundary,
       // everything else is millimetre-scale waviness. The rib's slope is one full period
       // straddling that boundary — a lit face and a shaded face, meeting the flat at zero
-      // slope on both sides. The old profile was a linear ramp that stepped by a full unit
-      // where it met the pan; that discontinuity is what mip filtering could not carry, so
-      // the module survived in patches and read as streaks.
+      // slope on both sides, so mip filtering carries no discontinuity across it.
       let dx = 0;
       if (withinPan < seamPx) dx = -ribSlope(withinPan / seamPx);
       else if (withinPan > panPx - seamPx) dx = ribSlope((panPx - withinPan) / seamPx);
@@ -305,10 +295,9 @@ export function disposeStandingSeamTextures(): void {
 }
 
 // ── Masonry (brick / CMU / stone veneer) ──────────────────────────────────────────────
-// The old path painted masonry as one flat fill, so a brick veneer read as drywall. Like
-// the standing-seam finish above, the coursing + recessed mortar + per-unit colour variation
-// are carried by shared procedural maps (colour + normal), world-scaled so units sit at true
-// size. No external texture, so the offline PWA still renders it.
+// Like the standing-seam finish above, the coursing + recessed mortar + per-unit colour
+// variation are carried by shared procedural maps (colour + normal), world-scaled so units
+// sit at true size. No external texture, so the offline PWA still renders it.
 //
 // A masonry layer is finished according to a MasonryStyle named by the material's authored
 // `finish` (catalog), or inferred from its ref when the material declares none:
@@ -323,7 +312,7 @@ export const BRICK_UNIT_M: readonly [number, number] = [0.2032, 0.0679]; // [len
 /** Nominal CMU face module including joints: a standard block is 16" × 8" with ⅜" joints. */
 export const CMU_UNIT_M: readonly [number, number] = [0.4064, 0.2032]; // [length, course]
 /** Glen-Gery Roman Maximus including joints: 23⅝" × 1⅝" unit + ⅜" joints both ways
- * (garage wainscot, 2026-08-26) — a 24" × 2" module, long and low next to modular's 8" × 2⅔". */
+ * (garage wainscot) — a 24" × 2" module, long and low next to modular's 8" × 2⅔". */
 export const ROMAN_MAXIMUS_UNIT_M: readonly [number, number] = [0.6096, 0.0508]; // [length, course]
 const MASONRY_TEX_PX = 512;
 
@@ -365,7 +354,7 @@ const GLAZED_GREEN_BRICK_STYLE: MasonryStyle = {
   jointFraction: 0.06, halfLap: 0.5, mortar: "#4a4f49", base: "#1b4332",
   jitterHSL: [0.004, 0.015, 0.04],
 };
-// The Ishtar scheme on the sunken garden's veneer (2026-08-20). Lapis field and gold
+// The Ishtar scheme on the sunken garden's veneer. Lapis field and gold
 // registers are the same fired glaze as the green above, so they take the same near-zero
 // jitter and a dark mortar; they differ only in the unit colour, which is fixed for the same
 // reason the green's is — a ceramic glaze is not a clay body and must not take the
@@ -382,25 +371,20 @@ const GLAZED_GOLD_BRICK_STYLE: MasonryStyle = {
   jointFraction: 0.06, halfLap: 0.5, mortar: "#3c4756", base: "#c08a12",
   jitterHSL: [0.004, 0.015, 0.04],
 };
-// The plinth under them: a light, uniform brown over tan mortar. It was authored at the red
-// brick's FULL jitter on 2026-08-20, on the argument that an unglazed body next to a fired
-// glaze is what makes the glaze read as a glaze — but at this wall's scale that jitter did not
-// read as clay variegation, it read as a plinth laid from mixed pallets, with near-black units
-// scattered through it. A single light body is the specification (2026-08-21), so the jitter
-// drops to the glazes' near-zero and the base lightens: the plinth now reads as one brick,
-// and the glaze/no-glaze contrast is carried by the sheen and the tan mortar joint instead.
+// The plinth under them: a light, uniform brown over tan mortar, near-zero jitter like the
+// glazes above it. Full red-brick jitter at this wall's scale reads as mixed pallets rather
+// than clay variegation, so the glaze/no-glaze contrast is carried by the sheen and the tan
+// mortar joint instead.
 const BROWN_BRICK_STYLE: MasonryStyle = {
   key: "brown-brick", unitM: BRICK_UNIT_M, unitsPerTile: 3, coursesPerTile: 6,
   jointFraction: 0.05, halfLap: 0.5, mortar: "#cfc8ba", base: "#a07c5c",
   jitterHSL: [0.004, 0.015, 0.04],
 };
-// The garage wainscot (2026-08-26; Roman Maximus 2026-08-26, recoloured Columbia the same
-// day): Glen-Gery Columbia Roman Maximus, ASTM C216 Grade SW Type FBA, THROUGH-BODY and a
-// single body rather than a blend — so it takes the brown plinth's unglazed recipe retinted, not the glazes'
-// low-jitter one. Same near-zero jitter for the same reason the plinth has it: at a 4'
-// wainscot's scale a wide jitter reads as mixed pallets, not as clay. `unitsPerTile: 1`
-// because the Maximus unit is itself 24" long — modular's 3-per-tile grouping is how a
-// short 8" unit fills the same repeat, and a long unit does not need it.
+// The garage wainscot: Glen-Gery Columbia Roman Maximus, ASTM C216 Grade SW Type FBA,
+// THROUGH-BODY — takes the brown plinth's unglazed recipe retinted, not the glazes' low-jitter
+// one; near-zero jitter for the same reason the plinth has it, since a wide jitter at a 4'
+// wainscot's scale reads as mixed pallets, not clay. `unitsPerTile: 1` because the Maximus
+// unit is itself 24" long, unlike modular's 3-per-tile 8" unit.
 // Kept in step with _FINISH_BASE in packages/engine/src/typehaus/emit/gltf/palette.py BY
 // HAND — the two tables mirror each other and nothing enforces it.
 const ROMAN_MAXIMUS_BRICK_STYLE: MasonryStyle = {
@@ -582,15 +566,13 @@ export function createMasonryMaterial(
  * run true-length along it, so the bond stays put as walls change direction (same coordinate
  * frame idea as the standing-seam wall UV). `tileSizeM` is the chosen style's repeat extent.
  *
- * `baseZM` is the elevation the coursing is laid FROM, and it matters more than it looks.
- * Until 2026-08-21 the course line was `elevation / tileHeight` — measured from project zero,
- * which no wall in the house is founded on. Every masonry wall therefore started mid-brick:
- * the sunken garden's veneer sits with its base at -101", six and a third tiles below zero, so
- * its bottom course rendered as a third of a brick and every band above it was cut too. A
+ * `baseZM` is the elevation the coursing is laid FROM, and it matters more than it looks: a
  * bricklayer starts at the bottom and only cuts at the top, so this measures from the wall's
- * own `z0_m`. The reference house's register bands are all whole multiples of the 2⅔" course
- * off `WALL_BASE`, so once the wall courses from its base every band lands on a bed joint by
- * construction — nothing else had to move.
+ * own `z0_m`, not project zero — the sunken garden's veneer sits with its base at -101", so
+ * measuring from zero would render its bottom course as a third of a brick and cut every band
+ * above it too. The reference house's register bands are all whole multiples of the 2⅔"
+ * course off `WALL_BASE`, so once the wall courses from its base every band lands on a bed
+ * joint by construction.
  */
 export function applyMasonryWallUv(
   geometry: THREE.BufferGeometry,
@@ -630,12 +612,11 @@ export function disposeMasonryTextures(): void {
 }
 
 // ── Aluminum deck boards (Wahoo AridDeck-style) ───────────────────────────────────────
-// The balcony walking surface used to render as one flat 1.5" plate, so a plank deck read
-// as a poured slab. Same trick as the standing seam above — one shared procedural normal
-// map, world-scaled UVs, no external texture — but the module is a 5½" plank and the
-// modulation is a *recessed* drainage gap between planks rather than a raised seam. An
-// extruded aluminum plank is far stiffer than roll-formed sheet, so there is deliberately
-// no oil canning here; only a faint lengthwise mill/brush grain.
+// Same trick as the standing seam above — one shared procedural normal map, world-scaled
+// UVs, no external texture — but the module is a 5½" plank and the modulation is a
+// *recessed* drainage gap between planks rather than a raised seam. An extruded aluminum
+// plank is far stiffer than roll-formed sheet, so there is deliberately no oil canning
+// here; only a faint lengthwise mill/brush grain.
 
 /** Nominal face width of one aluminum deck plank. */
 export const DECK_BOARD_WIDTH_M = 0.1397; // 5½"
