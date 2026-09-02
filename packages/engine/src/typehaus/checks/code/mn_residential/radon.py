@@ -2,9 +2,8 @@
 
 This is a *Minnesota* rule with no IRC parent: MN Rules 1303.2400-.2402 make a passive
 soil-gas system mandatory in every new residential structure in the state, and a plan
-reviewer looks for it on the foundation and plumbing sheets. Nothing in the engine graded
-it, even though this house has modeled the whole system — sealed sump, shared radon/vent
-riser, exterior junction box for a future fan — since long before the rule was encoded.
+reviewer looks for it on the foundation and plumbing sheets. This house models the whole
+system — sealed sump, shared radon/vent riser, exterior junction box for a future fan.
 
 What is gradeable from the model, and what is not:
 
@@ -61,12 +60,11 @@ def _exterior_riser_point(vent: VentRun) -> tuple[float, float]:
     up the cladding. Measuring separation from the chase would answer a question about a
     pipe nobody can smell.
 
-    This DELEGATES rather than re-deriving. It used to compute ``chase_position +
-    exit_offset`` itself, which was the same arithmetic the resolver does — and it stopped
-    being the same the moment ``VentRun`` grew ``chase_offset``: a riser that jogs inside
-    before it rises leaves the wall somewhere the chase point does not predict, and this
-    check would have gone on grading the separation of a pipe that is not there. One
-    derivation, one place: :func:`typehaus.resolve.vent_termination.exterior_riser_point`.
+    This DELEGATES rather than re-deriving: computing ``chase_position + exit_offset``
+    locally would silently diverge from the resolver the moment a riser jogs inside before
+    it rises (``VentRun.chase_offset``), leaving the wall somewhere the chase point does not
+    predict. One derivation, one place:
+    :func:`typehaus.resolve.vent_termination.exterior_riser_point`.
     """
     return exterior_riser_point(vent)
 
@@ -204,11 +202,10 @@ def _fan_power_finding(ctx: CheckContext, riser: VentRun) -> Finding:
                      _CODE)
     # The fan sits in a 3 ft length of the riser, so its box is beside the riser — on the
     # storey the pipe leaves the building on. The reach test alone is PLAN-ONLY and this
-    # house is four storeys tall, so on its own it collects junction boxes anywhere in the
-    # section: moving VR-M-RADON-VENT 2'-10" west on 2026-08-30 pulled RM-S-BATH1's LED
-    # driver, two floors down, inside 8'-0" of the riser and reported a *bathroom niche
-    # transformer* as the radon fan's box. The room search below then named a BASEMENT room
-    # for a second-storey device, because it too ranges over every storey at once.
+    # house is four storeys tall, so on its own it can collect junction boxes anywhere in
+    # the section — a device two floors away can fall inside the plan-only radius and get
+    # reported as the radon fan's box. The room search below can likewise name a room on
+    # the wrong storey, since it too ranges over every storey at once.
     #
     # A box that declares no room is kept whatever storey it is on: ED-A-PV-JB is outside
     # the building entirely, which is exactly where subpart 6 wants this one, and it has no

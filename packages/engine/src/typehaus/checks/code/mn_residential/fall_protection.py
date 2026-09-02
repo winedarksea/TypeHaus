@@ -451,13 +451,11 @@ def guard_opening_limit(ctx: CheckContext) -> list[Finding]:
 
     The verdict is then **cross-checked against the resolved geometry**: the largest clear
     gap between adjacent infill solids, measured bay by bay, both along the run and up it.
-    That is what closes the defect this rule shipped with — it used to pass ``RL-SG-BALCONY``
-    on the authored field alone while the 3D view showed a 42" guard with two bars and a
-    wide-open 40" gap between them, because the infill had never been drawn. A guard whose
-    drawn opening and whose authored opening disagree is a resolver bug, and saying so here
-    is worth more than either half alone: ``panel`` now passes because a lite is *drawn*
-    edge to edge rather than on a claim, and ``mesh``/``cable`` are graded on what the model
-    actually shows.
+    An authored field can disagree with the drawn geometry — a guard whose drawn opening and
+    whose authored opening disagree is a resolver bug, worth surfacing here rather than
+    trusting either half alone: ``panel`` passes only because a lite is *drawn* edge to edge
+    rather than on a claim, and ``mesh``/``cable`` are graded on what the model actually
+    shows.
 
     Guard *walls* (a masonry parapet, ``Wall.guard``) are censused too and pass by
     construction — solid masonry admits nothing, the same reasoning ``infill == "panel"``

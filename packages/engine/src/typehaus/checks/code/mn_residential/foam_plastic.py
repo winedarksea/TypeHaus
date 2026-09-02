@@ -180,13 +180,11 @@ def foam_plastic_thermal_barrier(ctx: CheckContext) -> list[Finding]:
         # Walk out from the room. The FIRST foam layer is the one R316.4 is about — foam
         # behind it is already covered by whatever covers this one.
         #
-        # **A layer's CAVITY FILL is foam too, and for years none of it was graded.** Spray
-        # foam in a stud or rafter bay is the textbook R316.4 case — the section's own
-        # commentary is about foam behind gypsum — and this walk read only ``material_ref``,
-        # so every ccSPF bay in the house (the truss wall's, the garage's, and since
-        # 2026-08-31 the roof's 5" flash) was invisible to it. A fill sits at its host
-        # layer's depth position, so the barrier span is the same ``layers[:index]``: what
-        # protects the joist protects what is packed between the joists.
+        # A layer's CAVITY FILL is foam too: spray foam in a stud or rafter bay is the
+        # textbook R316.4 case — the section's own commentary is about foam behind gypsum.
+        # A fill sits at its host layer's depth position, so the barrier span is the same
+        # ``layers[:index]``: what protects the joist protects what is packed between the
+        # joists.
         for index, layer in enumerate(layers):
             candidates = [(layer.material_ref, layer.name, layer.thickness)] + [
                 (fill.material_ref, f"{layer.name} cavity",

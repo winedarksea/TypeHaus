@@ -18,10 +18,9 @@ a site condition, not a room property.
 
 Every check reports NOT_APPLICABLE when no ESS is placed: a house with no battery is not a
 house failing the battery rules — and it is not a house that *could not be evaluated* for
-them either. It used to return nothing at all, which is worse than it sounds: a permit item
-with no matched findings resolves to UNKNOWN, so "there is no battery here" and "nobody
-looked" were the same answer, and the R327 line sat in the non-gating staging lane purely
-because of it. An explicit N/A lets the item gate.
+them either. A permit item with no matched findings resolves to UNKNOWN, so returning
+nothing would make "there is no battery here" and "nobody looked" the same answer and leave
+the R327 line stuck in the non-gating staging lane; an explicit N/A lets the item gate.
 """
 
 from __future__ import annotations

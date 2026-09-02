@@ -4,10 +4,8 @@ Profile rigor (#32): declares edition, effective date, amendment history vs. IRC
 and a coverage statement; every rule carries a citation; results are tri-state; output
 wording never says "code compliant".
 
-The profile also *owns* its permit checklist and its climate table. Both used to live
-elsewhere — the checklist hand-written in ``checks/permit.py``, the envelope table under a
-Minnesota-specific name in ``checks/code/mn_energy.py`` — which made adding a jurisdiction a
-code change across three modules instead of a new profile here.
+The profile also *owns* its permit checklist and its climate table, so adding a jurisdiction
+is a new profile here rather than a code change across several modules.
 """
 
 from __future__ import annotations
@@ -87,12 +85,8 @@ MN_2024 = JurisdictionProfile(
     # columns. Like soil_bearing_psf above this is the PRESUMPTIVE value where no soils
     # report exists, and a real geotechnical report supersedes it.
     #
-    # ** IT NO LONGER CITES ONE COUNTY'S SOIL SURVEY (2026-08-30). ** It used to name
-    # Hennepin County's, which is the same class of wrong-source citation as the ground snow
-    # load fixed on 2026-08-23 — except that a profile is shared by every house that names
-    # it, so no house could correct it from where it stood. A parcel states its own soil on
-    # ``Site.soil_class`` now and that wins; this stays as the regional presumption for a
-    # house that has no soils report (→ ``checks/soil.py``).
+    # A parcel states its own soil on ``Site.soil_class``, which wins; this stays as the
+    # regional presumption for a house with no soils report (→ ``checks/soil.py``).
     soil_class="GM",
     climate=MN_ZONE_6,
     permit_items=(
@@ -186,9 +180,9 @@ MN_2024 = JurisdictionProfile(
         PermitItemSpec("Attic ventilation", ("code.R806_2_attic_ventilation",),
                        ("IRC R806.2",), blocking=False),
         # The other half of R806, and the half catlin actually builds to. R806.2's ratio
-        # scope-passes on an unvented roof by naming this section; until 2026-08-31 nothing
-        # then graded what the unvented roof DID have to satisfy — insulation placement,
-        # the Table R806.5 condensation-control R-value and the two vapour-retarder rules.
+        # scope-passes on an unvented roof by naming this section, so this item grades what
+        # the unvented roof has to satisfy — insulation placement, the Table R806.5
+        # condensation-control R-value and the two vapour-retarder rules.
         # BLOCKING: a hot roof that misses this is a rotting deck, not a paperwork gap, and
         # the reference house's own condensation gate defers to it.
         PermitItemSpec("Unvented roof insulation and vapour retarders",
@@ -292,53 +286,42 @@ MN_2024 = JurisdictionProfile(
                        ("IRC P2902", "IRC P2903.5", "IRC P2903.9.1")),
         PermitItemSpec("Hot-water pipe insulation", ("mep.hot_water_insulation",),
                        ("IRC N1103.4.2",)),
-        # A balanced ventilator's outdoor-side terminations (2026-08-25). A plan reviewer
+        # A balanced ventilator's outdoor-side terminations. A plan reviewer
         # does look at these — an intake within ten feet of a discharge short-circuits the
         # machine, and one within three feet of a plumbing vent draws sewer gas into every
         # room the supply side feeds — and both are distances measured off the elevation
         # rather than judgment. Non-blocking: the third thing the check grades, hood height
         # above drifted snow, is a cold-climate rule of thumb with no section behind it.
-        # Gating since 2026-08-30. These four items sat in the staging lane for a
-        # structural reason, not a "not yet" one: their checks no-op'd (or answered
-        # UNKNOWN) for a house that simply has no battery / no PV / no ventilator / no
-        # glass guard, and an item with no matched findings resolves to UNKNOWN. That is
-        # the reason Result.NOT_APPLICABLE now exists — the checks say "this house has
-        # none" out loud, the item resolves N/A, and the line can gate without failing
-        # every house that does not own the equipment.
+        # These four items gate only because Result.NOT_APPLICABLE exists: a house with no
+        # battery / PV / ventilator / glass guard has its checks resolve N/A rather than
+        # UNKNOWN, so the line can gate without failing a house that owns none of the
+        # equipment.
         PermitItemSpec("ERV outdoor-air intake and exhaust terminations",
                        ("mep.erv_outdoor_terminals",),
                        ("IRC M1602.2",)),
 
-        # --- Engineered design (2026-08-30) -------------------------------------------
+        # --- Engineered design ----------------------------------------------------------
         #
-        # Five requirements this house's geometry puts *outside* the prescriptive tables.
-        # They were on no permit line at all until now, which is the thing worth fixing:
-        # a reviewer reading the checklist could not see that a 10' cantilever retaining
-        # wall, two round columns on belled piers, an I-joist rafter and a trussed garage
-        # roof were carrying the submittal, because coverage was scoped to Tier.CODE and
-        # these are STRUCTURAL. `test_permit_coverage.py` now enforces that any finding
-        # carrying `Authority.ENGINEERED` is on one of these lines or explicitly excluded,
-        # so this set cannot silently fall behind the registry again.
+        # Five requirements this house's geometry puts *outside* the prescriptive tables: a
+        # 10' cantilever retaining wall, two round columns on belled piers, an I-joist rafter
+        # and a trussed garage roof are all STRUCTURAL, so coverage scoped to Tier.CODE alone
+        # would miss them. `test_permit_coverage.py` enforces that any finding carrying
+        # `Authority.ENGINEERED` is on one of these lines or explicitly excluded.
         #
         # Whether a given house's version of one of these is engineered at all is decided
         # by the house, not by the profile — 10 feet of unbalanced fill here, 3 feet next
         # door — which is why PermitItemSpec carries no `engineered` flag and
         # PermitChecklistItem.authority is derived from the matched findings instead.
         #
-        # NON-BLOCKING, and for a stated reason rather than a shrug: with no calculation
-        # registered for these kinds every one of them is UNKNOWN, exactly as it was before
-        # the engineering register existed. Gating them today would move the gate on the
-        # day the framework landed, which is precisely what `engineered()`'s NO_CALC branch
-        # is written to avoid. Each flips to blocking in the commit that registers its
-        # calculation — `haus engineering` is the worklist.
-        # **FLIPPED TO BLOCKING 2026-08-30, which is what the paragraph above promised.**
-        # `engineering/retaining_wall` and `engineering/retaining_system` are both registered
-        # now and this line reports PASS on 11 results, so the flip costs nothing today. What
-        # it buys is that a regression on `structural.foundation_unbalanced_fill` stops the
-        # permit set instead of passing quietly in the non-gating lane — which is exactly the
-        # condition that went unnoticed for the hours catlin sat at FS 0.73.
+        # With no calculation registered for a kind, every one of its findings is UNKNOWN —
+        # `engineered()`'s NO_CALC branch — so an item stays non-blocking until the commit
+        # that registers its calculation flips it to blocking; `haus engineering` is the
+        # worklist. Retaining walls are BLOCKING: `engineering/retaining_wall` and
+        # `engineering/retaining_system` are registered, so a regression on
+        # `structural.foundation_unbalanced_fill` now stops the permit set instead of passing
+        # quietly in a non-gating lane.
         #
-        # It moves the DRAFT gate only. `--sealed` is untouched: these items carry no
+        # This moves the DRAFT gate only. `--sealed` is untouched: these items carry no
         # professional signoff and `PermitChecklistItem.sealed` still says so, which is the
         # honest reading of a screening on presumptive values with no geotechnical report.
         PermitItemSpec("Retaining walls outside the prescriptive path",
@@ -353,11 +336,11 @@ MN_2024 = JurisdictionProfile(
         PermitItemSpec("Roof framing outside the rafter span table",
                        ("structural.rafter_span",),
                        ("IRC R802.4",), blocking=False),
-        # The uplift and anchorage CAPACITY questions, hoisted out of 61 coverage-only
-        # UNKNOWNs on 2026-08-30 (decision #64's refinement). The coverage rules —
-        # `structural.uplift_path_coverage`, `mep.deck_equipment_support_coverage` — now
-        # PASS honestly under names that say what they grade, and what an engineer still
-        # owes is these two lines instead of a disclaimer at the end of every passing row.
+        # The uplift and anchorage CAPACITY questions, hoisted out of coverage-only UNKNOWNs
+        # (decision #64's refinement). The coverage rules — `structural.uplift_path_coverage`,
+        # `mep.deck_equipment_support_coverage` — now PASS honestly under names that say what
+        # they grade, and what an engineer still owes is these two lines instead of a
+        # disclaimer at the end of every passing row.
         PermitItemSpec("Uplift connection capacity",
                        ("structural.uplift_capacity",),
                        ("IRC R802.11", "ASCE 7-16 §26-30"), blocking=False),
@@ -390,8 +373,8 @@ class UnknownProfile(KeyError):
 def get_profile(name: str) -> JurisdictionProfile:
     """Look up a profile by name, refusing names this build does not define.
 
-    This was ``PROFILES.get(name, MN_2024)``: ``--profile wi-2024`` silently evaluated a
-    Wisconsin house against Minnesota's code, and nothing in the output said so.
+    A silent fallback would let ``--profile wi-2024`` evaluate a Wisconsin house against
+    Minnesota's code with nothing in the output saying so.
     """
     try:
         return PROFILES[name]

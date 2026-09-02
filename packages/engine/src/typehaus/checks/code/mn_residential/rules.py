@@ -3,10 +3,9 @@
 Every rule is tri-state (#32): a rule that cannot evaluate reports UNKNOWN with the reason
 and is counted separately, never as a pass.
 
-This module used to hold every MN residential rule — nine hundred lines across seven
-unrelated articles. The rest now live in topic modules beside it (``egress``, ``stairs``,
-``fall_protection``, ``alarms``, ``circulation``, ``fire_separation``, ``ventilation``,
-``attic``), all sharing :mod:`._common`.
+The rest of the MN residential rules live in topic modules beside it (``egress``,
+``stairs``, ``fall_protection``, ``alarms``, ``circulation``, ``fire_separation``,
+``ventilation``, ``attic``), all sharing :mod:`._common`.
 """
 
 from __future__ import annotations
@@ -58,9 +57,9 @@ _MIN_SLOPED_CEILING_FRACTION = 0.5
 #: read "the *required* floor area", not "the room", and R304.3 says outright that floor
 #: under 5'-0" "shall not be considered as contributing to the minimum required habitable
 #: area". A 356 sf attic room has to find 70 good square feet inside itself; the other 286
-#: may be any height at all, including none. Grading both clauses against the whole room —
-#: as this check did until now — makes a story-and-a-half impossible to draw, and that is a
-#: check bug, not a design constraint. It is the reason catlin carried 5'-0" knee walls.
+#: may be any height at all, including none. Grading both clauses against the whole room
+#: would make a story-and-a-half impossible to draw, which is a check bug, not a design
+#: constraint. It is the reason catlin carried 5'-0" knee walls.
 _MIN_HABITABLE_AREA_M2 = 70.0 / SF_PER_M2
 
 # R401.3 lot drainage: grade must fall away from the foundation within the first 10'. Pervious
@@ -77,7 +76,7 @@ _SLOPE_EPS = 1e-3
 def ceiling_height(ctx: CheckContext) -> list[Finding]:
     """R305.1 clear height, measured to the structure that is actually overhead.
 
-    ``Storey.default_ceiling_height`` used to answer this, and it is not a measurement — it
+    ``Storey.default_ceiling_height`` is not a measurement — it
     is a convenience number the plan author types once per storey and nothing reconciles
     against the decks. Catlin's basement authors 9'-0" while the joisted halves and the EPS
     deck band over it leave 8'-3 1/2" and 8'-4 1/8" — the storey default runs eight inches
@@ -162,13 +161,10 @@ def _derived_clear_height(ctx: CheckContext,
                           room: Any) -> tuple[Length | None, str]:
     """``(clear height, source phrase)`` for a room with no authored ceiling.
 
-    **A field read since 2026-09-01, and that is the fix.** This used to walk
-    ``ceiling_decks_over`` here, which meant R305 measured to the underside of the DECK and
-    nothing else — and ``ceiling_over._is_ceiling_deck`` admits a ``FloorSystem`` and a
-    non-walking ``Slab`` only, so a ``Soffit`` was invisible to it. A room with a dropped
-    duct box was graded against the deck two feet above that box. ``resolve.rooms`` now
-    derives the height once, over decks AND soffits, and every consumer reads the same
-    number: see ``ResolvedRoom.clear_height_m``.
+    ``resolve.rooms`` derives the height once, over decks AND soffits — a walk that stopped
+    at ``ceiling_over._is_ceiling_deck``, which admits a ``FloorSystem`` and a non-walking
+    ``Slab`` only, would leave a ``Soffit`` invisible to it — and every consumer reads the
+    same number: see ``ResolvedRoom.clear_height_m``.
 
     The height is measured from the room's FLOOR LEVEL, taken as its storey datum. That
     omits the subfloor sheet standing on the joists — a known and deliberate gap

@@ -191,7 +191,7 @@ def habitable_light_and_ventilation(ctx: CheckContext) -> list[Finding]:
         if room.area_m2 <= 1e-9:
             out.append(_unknown(cid, f"{room.tag} resolved no floor area", (room.tag,), code))
             continue
-        # Read off the model, not re-derived here (2026-09-01). ``resolve.rooms`` totals
+        # Read off the model, not re-derived here. ``resolve.rooms`` totals
         # both areas once and every consumer sees the same numbers — which is what lets the
         # server put a glazing table in front of a reader instead of scraping it back out of
         # these messages. ``None`` means a window type did not resolve, which is the same

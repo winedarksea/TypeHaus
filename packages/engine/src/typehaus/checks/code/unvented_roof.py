@@ -1,11 +1,10 @@
 """IRC / MSRC R806.5 — unvented attic and unvented enclosed rafter assemblies.
 
-The section every "hot roof" is built under, and the one this engine had no reading of at
-all. Its subject is the assembly with **no ventilated airspace between the insulation and
-the roof sheathing**: the condition R806.2's 1/150 net-free-area ratio explicitly does not
-govern (``code.R806_2_attic_ventilation`` scope-passes naming this section by number), so
-until now an unvented roof crossed the attic-ventilation rule by being out of its scope and
-then met nothing that graded what it *did* have to satisfy.
+The section every "hot roof" is built under. Its subject is the assembly with **no
+ventilated airspace between the insulation and the roof sheathing**: the condition R806.2's
+1/150 net-free-area ratio explicitly does not govern
+(``code.R806_2_attic_ventilation`` scope-passes naming this section by number), so this
+module grades what R806.5 itself requires.
 
 What R806.5 actually asks, and what this module grades:
 
@@ -162,9 +161,9 @@ def r806_5_compliance(assembly: Assembly, library: Library,
     ``layers`` are authored in. "Direct contact with the underside of the structural roof
     sheathing" is read literally: the bay's fills must reach the top of the bay, because a
     partly-filled bay leaves an air space between the last fill and the deck and the phrase
-    then describes something the assembly does not have. That is not a technicality — the
-    unfilled remainder is exactly where the old CATLIN_ROOF put its condensation margin, and
-    calling that "direct contact" would credit the same depth twice.
+    then describes something the assembly does not have. That is not a technicality —
+    crediting an unfilled remainder as "direct contact" would double-count the same depth as
+    both insulation and condensation margin.
     """
     missing: list[str] = []
     required = TABLE_R806_5.get(zone, TABLE_R806_5[CLIMATE_ZONE])

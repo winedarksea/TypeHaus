@@ -3,8 +3,8 @@
 ``code.R312_1_guard`` grades the four edges of a stair well against the deck that hosts it,
 and ``code.R312_1_guard_height`` grades the ring of every floor deck. A flight's own side is
 neither: it is a sloped walking surface that climbs out of one floor without belonging to
-any deck ring, and until this module it was the one raised walking surface in the model no
-rule looked at. Catlin's ST-S2A stood 30"-120" over the study it climbs out of, open on the
+any deck ring — the one raised walking surface in the model this module covers.
+Catlin's ST-S2A stood 30"-120" over the study it climbs out of, open on the
 south side for 10'-0", at a clean 0-FAIL report.
 
 The two rules divide on one line, and it is the stair's own ``outline`` — the well. Inside

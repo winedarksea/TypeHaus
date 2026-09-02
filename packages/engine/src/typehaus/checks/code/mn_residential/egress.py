@@ -351,8 +351,7 @@ def _required_escape_openings(ctx: CheckContext) -> list:
     the one serving each sleeping room, and the one serving a basement holding habitable
     space. Screening every opening in the model on the R310.2.1 dimensions instead reads the
     rule backwards — a 5'-wide arch in a freestanding garden wall and a segmental arch in a
-    brick veneer both clear 5.7 sf, and neither is anybody's way out of a bedroom. This
-    house produced three such false subjects until the screen moved here (2026-08-15).
+    brick veneer both clear 5.7 sf, and neither is anybody's way out of a bedroom.
     """
     credited: list = []
     seen: set[str] = set()

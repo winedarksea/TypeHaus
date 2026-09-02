@@ -126,9 +126,9 @@ def _walk_samples(stations):
 def stair_headroom(ctx: CheckContext) -> list[Finding]:
     """Measure the plumb clearance from the sloped nosing line to the structure above.
 
-    This is the measurement ``code.R311_7_stair_geometry`` used to *claim*: it reported
-    the arrival storey's nominal ceiling height, which is not headroom over any tread.
-    Here every flight's nosing line is sampled and probed plumb against the resolved
+    A storey's nominal ceiling height is not headroom over any tread, so
+    ``code.R311_7_stair_geometry`` does not answer this. Here every flight's nosing line is
+    sampled and probed plumb against the resolved
     overhead structure: floor decks (outside their stair-well voids) down to their
     deepest framing, roof planes at their structural underside, and soffit faces.
     Structure only — ceiling finishes, freestanding beams and ducts are not modeled

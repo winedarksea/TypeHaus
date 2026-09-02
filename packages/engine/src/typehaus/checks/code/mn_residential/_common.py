@@ -1,8 +1,6 @@
 """Shared constructors and geometry helpers for the MN residential rules.
 
-``rules.py`` grew to nine hundred lines covering seven unrelated articles, and every helper
-in it was reachable only by importing the module that also registered thirteen checks. The
-rules now live in topic modules (``egress``, ``stairs``, ``fall_protection``, ``alarms``,
+The rules live in topic modules (``egress``, ``stairs``, ``fall_protection``, ``alarms``,
 ``circulation``, ``fire_separation``, ``ventilation``, ``attic``); what they share lands
 here.
 
@@ -65,10 +63,10 @@ def _room_windows(ctx: CheckContext, room, point_type, polygon_type, *,
                   exterior_only: bool = False) -> list:
     """Re-export of ``resolve.room_openings.room_windows`` — see there for the reasoning.
 
-    It moved down into ``resolve`` on 2026-09-01 because ``resolve_rooms`` needs it to total
-    a room's glazing, and checks import resolve, never the reverse. The old signature is kept
-    here so the R310 and R303.1 callers read unchanged; ``point_type`` and ``polygon_type``
-    were only ever a way of deferring the shapely import and are now ignored.
+    Lives in ``resolve`` because ``resolve_rooms`` needs it to total a room's glazing, and
+    ``checks`` imports ``resolve``, never the reverse. The signature matches the R310 and
+    R303.1 callers; ``point_type`` and ``polygon_type`` were only ever a way of deferring the
+    shapely import and are now ignored.
     """
     del point_type, polygon_type
     return room_windows(ctx.model, room, exterior_only=exterior_only)
