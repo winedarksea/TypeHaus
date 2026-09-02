@@ -1,4 +1,4 @@
-"""Transition.star — authored curation of the primary detail set (2026-07-31).
+"""Transition.star — authored curation of the primary detail set.
 
 `star` marks the derived details a builder actually opens: `detail_index` serves it to
 the UI, `build_sheet_index(details="primary")` composes only starred (plus authored)

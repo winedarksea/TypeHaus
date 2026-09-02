@@ -60,8 +60,8 @@ def _rungs(scene):
 
 #: How far outside a band an arrow tip may land and still count as inside it: 1/64", the
 #: finest line a builder can resolve on a printed detail. It exists because a tip can land
-#: exactly ON a band's own boundary — the 2026-08-29 stack-width detail at the attic's
-#: rafter plate puts the deck-vb arrow on that band's outboard corner, 0.003" out — and a
+#: exactly ON a band's own boundary — the attic's rafter plate stack-width detail puts the
+#: deck-vb arrow on that band's outboard corner, 0.003" out — and a
 #: strict even-odd test calls a point on the edge of the band it names "outside" it. The
 #: bug this test was written for is a whole band's width of error (5.4% of the stack per
 #: layer, cumulative), not three thousandths.
@@ -122,11 +122,10 @@ def test_a_coloured_board_is_drawn_by_its_colour_and_not_by_a_pattern():
 def test_a_bare_board_still_reaches_the_page_as_a_filled_band(catlin_model):
     """The widest band in the eave must be there, whatever the widest band happens to be.
 
-    It was the roof's two 3" polyiso courses until 2026-08-31; the outsulation is deleted
-    and the widest thing in that detail is now the 5" of ccSPF in the joist bay — a CAVITY
-    fill rather than a layer, which makes the assertion stronger rather than weaker: it is
-    drawn from the assembly by ``section_cavity``, not from the IR, so it is exactly the
-    band most likely to go missing.
+    The widest thing in that detail is the 5" of ccSPF in the joist bay — a CAVITY fill
+    rather than a layer, which makes the assertion stronger rather than weaker: it is drawn
+    from the assembly by ``section_cavity``, not from the IR, so it is exactly the band most
+    likely to go missing.
     """
     scene = _eave(catlin_model)
     foam = [n for n in scene.nodes
@@ -204,11 +203,8 @@ def test_the_eave_legend_names_the_roof_it_is_mostly_made_of(catlin_model):
     scene = _eave(catlin_model)
     legended = {t.content.rsplit("  ", 1)[0] for t in scene.nodes
                 if isinstance(t, Text) and t.space == "paper" and '"' in t.content}
-    # The nine-layer stack's own six — osb, roof-underlayment-synthetic, roof-vent-mat,
-    # roof-deck-vapor-barrier, zip-sheathing, standing-seam — until 2026-08-31. Five of
-    # those layers are deleted; what is left is the deck, the membrane on it, the panel,
-    # and the two BAY FILLS, which are the point of the redesign and would be the easiest
-    # things in the drawing to leave unnamed.
+    # What is legended is the deck, the membrane on it, the panel, and the two BAY FILLS —
+    # the point of the roof's design and the easiest things in the drawing to leave unnamed.
     for material in ("struct-1-plywood", "roof-adhered-butyl-ht", "standing-seam",
                      "closed-cell-spray-foam", "fiberglass-r30c"):
         assert material in legended, f"{material} is drawn but not legended"
@@ -244,10 +240,9 @@ def test_the_roof_ladder_steps_the_same_way_the_roof_stacks(catlin_model):
     rungs = [(n.at[1], n.anchor.xy[1]) for n in scene.nodes
              if isinstance(n, Leader) and n.layer == "A-ANNO-TEXT"
              and rung_text.match(n.text) and abs(n.at[1] - n.anchor.xy[1]) > 1e-9]
-    # >= 5, not the >= 8 a nine-layer stack carried: CATLIN_ROOF is four layers and two bay
-    # fills since 2026-08-31. The property under test is the ORDER of the rungs, not how
-    # many there are, and a floor that tracked the stack's length was only ever a guard
-    # against the ladder collapsing to nothing.
+    # CATLIN_ROOF is four layers and two bay fills. The property under test is the ORDER of
+    # the rungs, not how many there are; the >= 5 floor only guards against the ladder
+    # collapsing to nothing.
     assert len(rungs) >= 5, f"the eave should ladder its whole roof stack, got {len(rungs)}"
     rungs.sort(key=lambda pair: -pair[0])          # top rung down
     targets = [target for (_rung, target) in rungs]
@@ -259,7 +254,7 @@ def test_the_roof_ladder_steps_the_same_way_the_roof_stacks(catlin_model):
 def test_every_roof_label_lands_inside_the_band_it_names(catlin_model):
     """The arrow end is *measured* off the band, so this is exact, not approximate.
 
-    The ladder used to walk the assembly's own layer spans and step down from the roof
+    The ladder must not walk the assembly's own layer spans and step down from the roof
     plane by each layer's thickness — spending a perpendicular offset as a vertical one. On
     catlin's roof the two differ by 5.4%, which is invisible per layer and cumulative down
     the stack: the roofing pointed at the vent mat, the vent mat and the underlayment both

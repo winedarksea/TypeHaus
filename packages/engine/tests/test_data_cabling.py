@@ -122,9 +122,8 @@ def test_low_voltage_devices_export_as_communications_appliances(catlin_ifc_path
         "ED-M-KITCH-AP": "NETWORKAPPLIANCE",
         "ED-M-PORCH-AP": "NETWORKAPPLIANCE",
         "ED-A-STUDIO-AP": "NETWORKAPPLIANCE",
-        # The three hardwired drops, 2026-08-22. They are the first instances of
-        # ED-T-DATA-JACK: the catalog had an enclosure and two access points and no way to
-        # say "a cable ends here at a plate", so a wall jack could not be modelled at all.
+        # The three hardwired drops are ED-T-DATA-JACK instances: the catalog needs a type
+        # that says "a cable ends here at a plate", distinct from an enclosure or an AP.
         "ED-B-WORKSHOP-DATA1": "NETWORKAPPLIANCE",
         "ED-M-STUDY-DATA1": "NETWORKAPPLIANCE",
         "ED-B-PLAY-N-DATA1": "NETWORKAPPLIANCE",

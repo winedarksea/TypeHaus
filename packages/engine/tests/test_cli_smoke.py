@@ -57,8 +57,8 @@ def test_version_prints_the_engine_version() -> None:
 
 
 def test_check_reports_loader_findings_on_a_successful_import(tmp_path: Path) -> None:
-    """A movable element in a non-editable file imports fine, so `check` used to print
-    nothing about it — the error only reached the console when the import itself failed."""
+    """A movable element in a non-editable file imports fine; `check` must still report it —
+    not only fail loudly when the import itself fails."""
     catlin = Path(__file__).resolve().parents[3] / "houses" / "catlin"
     dst = tmp_path / "catlin"
     copy_house(catlin, dst)

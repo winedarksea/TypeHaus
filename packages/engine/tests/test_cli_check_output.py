@@ -83,12 +83,9 @@ def test_check_hides_passing_findings_by_default() -> None:
 def test_check_exits_1_on_a_fail() -> None:
     """The gate half of the contract, on a house that actually fails.
 
-    This used to ride on catlin's four accepted advisory FAILs. Two of those were the
-    ventilation rooms (drawn 2026-08-16) and two were a bug in
-    ``structural.foundation_unbalanced_fill`` (fixed the same day), so catlin exits 0 now and
-    can no longer prove an exit code it does not produce. starter is unfinished by design —
-    it carries real advisory FAILs at WARN severity, which is exactly the case the default
-    gate exists to catch.
+    catlin exits 0 clean, so it cannot prove an exit code it does not produce. starter is
+    unfinished by design — it carries real advisory FAILs at WARN severity, which is exactly
+    the case the default gate exists to catch.
     """
     result = runner.invoke(app, ["check", str(STARTER), "--plain"])
     assert result.exit_code == 1
@@ -99,9 +96,8 @@ def test_check_exits_1_on_a_fail() -> None:
 def test_exit_on_error_is_the_looser_gate() -> None:
     """`scripts/verify.sh` uses this one. It is looser than the default by construction: an
     advisory FAIL is ``severity=WARN``, so ERROR-only lets it through where the default
-    stops. starter is now the house that shows the gap — it carries advisory FAILs and, since
-    it grew its passive radon system (2026-08-16), no ERROR-severity finding at all, so the
-    default gate closes on it and ERROR-only opens. catlin shows both open."""
+    stops. starter shows the gap — it carries advisory FAILs and no ERROR-severity finding
+    at all, so the default gate closes on it and ERROR-only opens. catlin shows both open."""
     assert runner.invoke(app, ["check", str(STARTER), "--plain"]).exit_code == 1
     assert runner.invoke(
         app, ["check", str(STARTER), "--exit-on", ExitOn.error.value]).exit_code == 0
@@ -115,27 +111,13 @@ def test_catlin_carries_no_failures(catlin_model) -> None:
     Asserted through the JSON surface rather than the exit code so the failure message
     names the offending finding instead of just saying 1 != 0.
 
-    Between 2026-08-16 and 2026-08-23 this was `test_catlin_carries_only_its_accepted_
-    failures`, pinning three `structural.deck_beam_span` advisories on BM-SG-BLW/BLC/BLE
-    by (check_id, tags). They came from reading IRC Table R507.5(1) at its 12' joist-span
-    row, which was the wrong row: the balcony joists span 10'-0" and then overhang the
-    outer beams 6", and `structural.deck_joist_span` was counting that cantilever as span.
-    The check reads the back span now (R507.6.1 bounds the overhang separately, in
-    `structural.deck_joist_cantilever`), and the beams are three-ply KDAT 2x12, so all
-    three PASS on their merits. Deleting the allow-list is the point — do not re-add one
-    without an owner decision written down beside it.
-
-    THE ONE ENTRY BELOW IS SUCH A DECISION, taken 2026-08-24. The attic juliet pair widened
-    18" -> 24" at the owner's direction, and it could only grow OUTWARD — the 14" bearing
-    pier under the ridge pins the inboard jambs — so each RO centre landed 3" off its stud
-    line and `structural.window_framing_module` (an advisory, not an engineering gate)
-    reports both. It is the price of the width, not an oversight: with the pier fixed, no
-    outward-only width between 19" and the 30" non-bearing RO cap puts a centre back on a
-    legal station, and each RO still breaks exactly one stud. The design record is in
-    `houses/catlin/CLAUDE.md` and in
-    `test_catlin_contract_m3.py::test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_height`.
-    Narrow the pair back to 18", or move it out a bay to x 15'-4"/20'-8", and this entry
-    goes with it.
+    `accepted` below is the allow-list for a real, owner-decided advisory FAIL — never add
+    one without a design-record citation beside it. (`structural.deck_joist_span` reads the
+    back span per IRC Table R507.5(1); R507.6.1 bounds the overhang separately in
+    `structural.deck_joist_cantilever` — do not conflate the two when reasoning about an
+    entry here.) See `houses/catlin/CLAUDE.md` and
+    `test_catlin_contract_m3.py::test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_height`
+    for the kind of decision that earns an entry).
     """
     import json
 
@@ -145,10 +127,8 @@ def test_catlin_carries_no_failures(catlin_model) -> None:
         (f["check_id"], tuple(sorted(f["element_tags"] or ())))
         for f in payload["findings"] if f["result"] == "fail"
     ]
-    # **Empty on purpose (2026-08-25).** It held the attic juliet pair, 3" off its stud line
-    # since the 2026-08-24 one-sided widening, until catlin's exterior assemblies took their
-    # stud module from the layout line and 16'-0"/20'-0" became stud lines. Taking the entry
-    # out rather than leaving it stale is what the message below asks of the next person.
+    # **Empty on purpose.** Take an entry out rather than leaving it stale — that is what
+    # the assertion message below asks of the next person.
     accepted: set[tuple[str, tuple[str, ...]]] = set()
     assert accepted <= set(failures), (
         "an accepted advisory stopped firing — delete it from `accepted` rather than "

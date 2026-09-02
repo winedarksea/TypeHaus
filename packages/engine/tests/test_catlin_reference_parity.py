@@ -41,12 +41,9 @@ DECLARED_DIVERGENCES = {
         "reference 5/8\" Struct 1; Catlin uses 1/2\" Struct 1 — thinner sheathing over "
         "4\" of exterior CI, where the sheathing is a nailbase rather than the thermal layer"
     ),
-    # "slab/xps_under_in" was a declared divergence (Catlin 3" at 40 psi against the
-    # reference's 2") until 2026-08-31, when an insulation review took the basement slab
-    # back to 2" — the owner's slab target is R-10 and 3" was reading R-16.1 whole-assembly.
-    # Catlin and the reference agree again, so the entry is gone and the parity assertion
-    # above now holds it. The GARAGE slab is 1" and is not covered here: the reference
-    # fixes the basement slab only.
+    # "slab/xps_under_in" is not a divergence: Catlin's basement slab matches the reference
+    # at 2" (owner's target R-10). The GARAGE slab is 1" and is not covered here — the
+    # reference fixes the basement slab only.
     "wall/polyiso_in": (
         "reference 2\" polyiso as the inner course of a 4\" rigid-CI stack; Catlin sprays "
         "1-1/2\" of closed-cell foam there instead (2026-08-23 truss wall). The 4\" of "
@@ -133,14 +130,12 @@ def test_basement_exterior_insulation_matches_the_reference(catlin_model):
 
 
 def test_basement_wall_layers_run_interior_to_exterior(catlin_model):
-    # The XPS used to be the wall's outermost material, which meant bare foam was the finish
-    # wherever the wall was not backfilled. A fifth layer closed that on 2026-08-01 (a
-    # full-height parge), split in two on 2026-08-18, and came back to one on 2026-09-02:
-    # the parge was retired house-wide, and the two south segments whose foam is genuinely
-    # exposed took the same GRADE-banded protection panel N/E/W carry. It is last in the
-    # stack because it is outboard of everything, and it is 1/2", the same as the parge, so
-    # nothing moved (these walls align on face("concrete-ext")). The court walls carry no
-    # fifth layer at all and are not perimeter-pour assemblies — see test_layer_extent.py.
+    # A fifth layer keeps bare foam from being the finish wherever the wall is not
+    # backfilled: the two south segments whose foam is genuinely exposed take the same
+    # GRADE-banded protection panel N/E/W carry. It is last in the stack because it is
+    # outboard of everything, 1/2" (these walls align on face("concrete-ext")). The court
+    # walls carry no fifth layer at all and are not perimeter-pour assemblies — see
+    # test_layer_extent.py.
     for tag, outermost in (("CATLIN_BASEMENT_12", "protection-panel"),
                            ("CATLIN_BASEMENT_8", "protection-panel")):
         asm = catlin_model.plan.library.resolve_assembly(tag)
@@ -176,14 +171,13 @@ def test_framing_matches_the_reference(catlin_model):
             assert (member.z1_m - member.z0_m) * 39.37007874015748 == pytest.approx(
                 joist_depth, abs=0.01)
 
-    # ** THE PITCH DELIBERATELY NO LONGER MATCHES THE REFERENCE (2026-08-29). ** The old
-    # model is 4:12 because the attic was designed around 5'-0" knee walls, which came from
-    # a misreading of R305 (Minn. R. 1309.0305 Exception 1 and IRC R304.1/R304.3 scope the
-    # sloped-ceiling rule to the REQUIRED floor area, not the whole room). With the knee
-    # walls deleted the pitch is free, and 6:12 is the shallowest standard pitch that
-    # carries the attic rooms. So this asserts the DIVERGENCE rather than deleting the
-    # check: the reference's number is still read, and the house is held to being steeper
-    # than it — a silent revert to 4:12 would fail here as loudly as drift ever did.
+    # ** THE PITCH DELIBERATELY DOES NOT MATCH THE REFERENCE. ** The reference's 4:12 was
+    # designed around 5'-0" knee walls, from a misreading of R305 (Minn. R. 1309.0305
+    # Exception 1 and IRC R304.1/R304.3 scope the sloped-ceiling rule to the REQUIRED floor
+    # area, not the whole room). With the knee walls deleted the pitch is free, and 6:12 is
+    # the shallowest standard pitch that carries the attic rooms. This asserts the
+    # DIVERGENCE rather than deleting the check: the house is held to being steeper than the
+    # reference — a silent revert to 4:12 would fail here as loudly as drift ever did.
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
     reference_pitch = float(params["roof_joists"]["pitch_rise_over_run"])
     xs = [p[0] for p in roof.footprint]
@@ -305,10 +299,10 @@ def test_every_reference_fixture_is_reachable():
 def test_the_wall_still_carries_four_inches_of_exterior_insulation(catlin_model):
     """The reference fixes 4" of CI outboard of the sheathing. The truss wall keeps it.
 
-    The 2026-08-23 change replaced 2" polyiso + 2" EPS with 1-1/2" of closed-cell spray foam
-    plus a 2-1/2" band of the same foam packed into the outrigger layer. Two of those three
-    numbers are declared divergences above, and this is what stops the pair of them from
-    quietly adding up to something else: the depth is the fact, the layer names are not.
+    The truss wall's 1-1/2" of closed-cell spray foam plus a 2-1/2" band of the same foam
+    packed into the outrigger layer replace the reference's 2" polyiso + 2" EPS. Two of
+    those numbers are declared divergences above, and this is what stops the pair of them
+    from quietly adding up to something else: the depth is the fact, the layer names are not.
     """
     assembly = catlin_model.plan.library.resolve_assembly("CATLIN_EXT_2X6")
     sheathing = next(index for index, layer in enumerate(assembly.layers)

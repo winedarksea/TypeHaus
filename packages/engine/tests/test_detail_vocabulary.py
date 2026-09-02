@@ -78,8 +78,8 @@ def _component_nodes(scene, name: str):
 
 # A minimal two-storey stack that genuinely steps out: 12" of concrete under a 6 1/2"
 # framed wall on its sheathing plane, so 5 1/2" of the stem is exposed weather ledge.
-# Catlin has no such stack any more (the garage ICF was aligned flush on 2026-08-15), and
-# the shelf recipe still has to be covered, so this is the model it is covered against.
+# Catlin has no such stack (the garage ICF is aligned flush), and the shelf recipe still
+# has to be covered, so this is the model it is covered against.
 _STEP_MATERIALS = (
     Material(tag="concrete", name="Concrete", r_per_inch=0.08, perm_rating=3.2),
     Material(tag="spf", name="SPF", r_per_inch=1.25, perm_rating=20.0),
@@ -184,8 +184,6 @@ def test_suppressed_transitions_scaffold_no_detail_sheets(catlin_model):
     ``TR-CATLIN-ASSEMBLY-JOG`` and ``TR-CATLIN-VENEER-OPENING`` bind their conditions (so
     ``integrity.condition_coverage`` stays clean) but record that the derived cut cannot
     show the junction — so nothing derives, rather than a sheet that lies by omission.
-    (``TR-CATLIN-GARDEN-ARCH`` was the third until 2026-08-18, when the sunken garden's
-    arched cross-wall it suppressed the perimeter of became a column and two beams.)
     """
     keys = {d.key for d in derive_detail_slices(catlin_model)}
     assert not {k for k in keys if k.startswith("assembly_change:")}
@@ -219,14 +217,13 @@ def test_no_detail_component_is_ever_a_symbol(catlin_model):
     ("wall_roof:GARAGE_ROOF", "box-gutter"),
     ("wall_roof:GARAGE_ROOF", "drip-edge"),
     ("wall_roof:CATLIN_EXT_2X6", "apron-flashing"),
-    # ``insect-screen`` was here until 2026-08-31 and is NOT REPLACED, which is a coverage
-    # loss worth stating rather than quietly dropping. The screen closes the eave end of an
-    # OVER-DECK VENT CHANNEL, and no assembly in this house has one any more: CATLIN_ROOF's
-    # 1/4" vent mat went with the outsulation, and the garage is vented through its soffits
-    # into a truss space, not through a channel over its deck. The vocabulary itself is
-    # untouched and still fires for any stack with an AIRGAP or FURRING band above the deck
-    # — this parametrization simply has no such stack left to point at. Restore the row the
-    # moment one exists again.
+    # There is no ``insect-screen`` row here, which is a coverage loss worth stating rather
+    # than quietly dropping. The screen closes the eave end of an OVER-DECK VENT CHANNEL,
+    # and no assembly in this house has one: CATLIN_ROOF has no vent mat, and the garage is
+    # vented through its soffits into a truss space, not through a channel over its deck.
+    # The vocabulary itself is untouched and still fires for any stack with an AIRGAP or
+    # FURRING band above the deck — this parametrization simply has no such stack left to
+    # point at. Restore the row the moment one exists again.
     ("wall_foundation:CATLIN_BASEMENT_12", "z-flashing"),
     ("wall_foundation:CATLIN_BASEMENT_12", "l-flashing"),
     ("wall_foundation:CATLIN_BASEMENT_12", "sealant-bead"),
@@ -285,8 +282,7 @@ def test_interior_partition_rim_gets_no_air_seal(catlin_model):
 def test_stepped_wall_leaves_a_flashed_shelf(stepped_model):
     """A framed wall stepping in over a wider concrete stem leaves a weather ledge.
 
-    On a synthetic stack rather than catlin: the garage used to be the house's one
-    genuinely stepped stack, and since 2026-08-15 its ICF is aligned flush with the wood
+    On a synthetic stack rather than catlin: the garage's ICF is aligned flush with the wood
     wall's sheathing plane precisely so there is no ledge to flash
     (``test_the_garage_stem_no_longer_steps_out`` below). The component is still correct
     and still has to be covered, so it gets a model that actually steps.
@@ -359,32 +355,27 @@ def test_protection_board_starts_at_grade(catlin_model):
 def test_buried_foundation_foam_gets_no_protection_board(catlin_model):
     """Buried foam gets no board — the backfill protects it.
 
-    REPOINTED 2026-09-02. This used to name ``CATLIN_BASEMENT_8_GARDEN``, whose full-height
-    parge left no banded panel for the component to draw; that assembly has no instance since
-    the stucco retirement and the condition key no longer exists. The case that documents the
-    same rule now is the sunken garden's curb, and it documents it through a different door:
-    ``foam_protection_board`` DOES fall to its derived branch here (there is no covering layer
-    to short it out), but the curb's top is at -102 3/16", 5'-8" below site grade, so the
-    derived ``height_in`` comes out negative — below ``min_exposed_height_in`` — and the
-    component returns nothing.
+    The case that documents this rule is the sunken garden's curb, through a particular
+    door: ``foam_protection_board`` DOES fall to its derived branch here (there is no
+    covering layer to short it out), but the curb's top is at -102 3/16", 5'-8" below site
+    grade, so the derived ``height_in`` comes out negative — below
+    ``min_exposed_height_in`` — and the component returns nothing.
 
-    That is a thinner guarantee than the old one and worth saying out loud: it rests on the
-    negative-height gate rather than on the foam being covered, and ``site.grade`` is a single
-    house-wide number that knows nothing about the excavation. If that dispatch ever changes,
-    this wall would draw protection board on a face inside a brick cavity.
+    That is a thinner guarantee worth saying out loud: it rests on the negative-height gate
+    rather than on the foam being covered, and ``site.grade`` is a single house-wide number
+    that knows nothing about the excavation. If that dispatch ever changes, this wall would
+    draw protection board on a face inside a brick cavity.
 
-    (Until the 2026-08-18 lift the *whole* basement was this case, because the wall topped
-    out at grade. The perimeter now stands 2'-6" out of the ground — see the test below.)"""
+    (The perimeter stands 2'-6" out of the ground — see the test below.)"""
     _derived, scene = _exact_detail_scene(
         catlin_model, "wall_foundation:CATLIN_EXT_2X6|CATLIN_GARDEN_CURB_6")
     assert "foam-protection-board" not in _component_tags(scene)
 
 
 def test_the_exposed_basement_band_draws_the_layer_the_order_bills(catlin_model):
-    """The N/E/W basement walls stand 2'-6" above grade since the lift, and the protection
-    panel over that band is an authored layer with a ``Layer.extent`` rather than something
-    the detail component derives beside it. Two derivations of one detail diverge: the sheet
-    used to draw 2'-6" of trim while the order billed a parge coat over all nine feet."""
+    """The N/E/W basement walls stand 2'-6" above grade, and the protection panel over that
+    band is an authored layer with a ``Layer.extent`` rather than something the detail
+    component derives beside it — the two derivations of one detail must not diverge."""
     from typehaus.quantities import M_PER_IN
 
     _derived, scene = _exact_detail_scene(
@@ -396,10 +387,9 @@ def test_the_exposed_basement_band_draws_the_layer_the_order_bills(catlin_model)
     # under it; how much of that the sheet shows is the detail crop's business, not the
     # layer's — test_layer_extent.py holds the band itself).
     #
-    # "The top of the wall" is not 0'-0" any more. Since 2026-08-23 the basement pour stops
-    # at the bearing seat, -13 7/16", and the framed wall above it still starts at the storey
-    # datum — so this reads the concrete rather than the datum, which is exactly the fix
-    # ``detail_components/wall_base.py`` needed on the same date.
+    # "The top of the wall" is not 0'-0": the basement pour stops at the bearing seat,
+    # -13 7/16", while the framed wall above it still starts at the storey datum — so this
+    # must read the concrete rather than the datum (``detail_components/wall_base.py``).
     wall_top = catlin_model.wall("W-B-E1").z1_m / M_PER_IN
     assert max(z for _u, z in board.points) == pytest.approx(wall_top, abs=0.5)
     assert min(z for _u, z in board.points) <= grade_in + 0.5
@@ -455,11 +445,10 @@ def test_slab_on_grade_is_read_from_rooms_below_not_the_assembly_name(catlin_mod
 def test_sill_gasket_is_the_compressed_sixteenth(catlin_model):
     """The drawn gasket is the joint as built, not the roll it came off.
 
-    The source detail's ``sill/gasket_in`` is 1/4" — the uncompressed thickness — and that
-    is what both the config default and ``FramingSpec.sill_gasket`` stated until
-    2026-08-24. Nothing wanted it: the one consumer draws the bolted-down joint, and the
-    bearing seat is derived from the same compressed dimension (``params/main_deck.py``),
-    which is why catlin was hard-coding 1/16" beside the field rather than reading it.
+    The source detail's ``sill/gasket_in`` is 1/4" — the uncompressed thickness. Both the
+    config default and ``FramingSpec.sill_gasket`` state the compressed 1/16": the one
+    consumer draws the bolted-down joint, and the bearing seat is derived from the same
+    compressed dimension (``params/main_deck.py``).
     """
     from typehaus.emit.draw.detail_components import BASEMENT_TO_FRAMED_WALL
 
@@ -568,8 +557,8 @@ def test_opening_and_ridge_conditions_scaffold_detail_slices(catlin_model):
     keys = {d.key for d in derive_detail_slices(catlin_model)}
     assert "opening_perimeter:CATLIN_EXT_2X6" in keys
     # The south wall's openings (D-B-PATIO, WIN-B-SAUNA) are all in the sunken-garden face,
-    # and that face is FRAMED since 2026-08-28 — so the key moved with the assembly. The
-    # door's perimeter is bound by TR-CATLIN-GARDEN-FRAMED-OPENING (an innie opening in a
+    # a FRAMED assembly, so the key follows it. The door's perimeter is bound by
+    # TR-CATLIN-GARDEN-FRAMED-OPENING (an innie opening in a
     # 2x6 wall, `window-head-jamb-sill`); the sauna window's is still
     # TR-CATLIN-SAUNA-OPENING, whose `SAUNA_*` pattern reaches the framed variant unchanged.
     assert "opening_perimeter:CATLIN_GARDEN_FRAMED_2X6" in keys
@@ -843,11 +832,9 @@ def test_thermal_break_spec_reads_the_slab_source(catlin_model):
     slabs-on-grade (basement + garage) author the 1" XPS edge break; a slab that authors
     none keeps the pinned fallback.
 
-    The negative case used to be SL-SG-DECK, a walking-surface deck slab. Every exterior
-    deck became a FloorSystem subfloor on 2026-08-22, so the standing example of "a slab
-    with no authored edge break" is now the garden slab — cast against the retaining walls
-    at the bottom of an open well, with nothing conditioned on the other side of its edge
-    to insulate from."""
+    The negative case, "a slab with no authored edge break", is the garden slab — cast
+    against the retaining walls at the bottom of an open well, with nothing conditioned on
+    the other side of its edge to insulate from."""
     from typehaus.emit.draw.detail_components.wall_base import thermal_break_spec
 
     slabs = {s.tag: s for s in catlin_model.solids if s.category == "slab"}

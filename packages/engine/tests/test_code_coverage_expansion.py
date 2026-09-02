@@ -815,9 +815,9 @@ def test_catlin_exterior_doors_clear_the_height_bar(catlin_ctx):
 #
 # Minn. R. 1309.0305 Exception 1 measures BOTH clauses against "the required floor area" —
 # R304.1's 70 sf — and R304.3 says floor under 5'-0" "shall not be considered as contributing
-# to the minimum required habitable area for that room". The check used to read both clauses
-# against the whole room, which fails any room whose ceiling reaches the floor at the eave.
-# That is a story-and-a-half, and it is legal; the misreading is what put 5'-0" knee walls in
+# to the minimum required habitable area for that room". Both clauses must read against the
+# required floor area, not the whole room — a room whose ceiling reaches the floor at the
+# eave (a story-and-a-half) is legal, and misreading this is what put 5'-0" knee walls in
 # catlin. These pin the corrected predicate so it cannot quietly regress.
 
 def _sloped_ctx(*, room_wide_ft: float, room_deep_ft: float, eave_ft: float, ridge_ft: float,
@@ -896,12 +896,12 @@ def test_r305_is_unknown_for_a_non_subject_room_when_the_site_states_no_grade():
 
 # --- R310.1: an escape opening has to be on an EXTERIOR wall -------------------------------
 #
-# The bug this pair guards was live until 2026-08-29. `_room_windows` selected windows by
-# proximity to the room's clear-face boundary and nothing else, so a borrowed-light sash of
-# adequate size in a bedroom's *interior* partition was credited as that bedroom's emergency
-# escape opening. R310.1's subject is an opening "opening directly into a public way, yard or
-# court"; a window into the hallway reaches none of them. One field moves between these two
-# tests — whether the second room sits on the far side of the window's host wall — and the
+# `_room_windows` must not select windows by proximity to the room's clear-face boundary
+# alone, or a borrowed-light sash of adequate size in a bedroom's *interior* partition gets
+# credited as that bedroom's emergency escape opening. R310.1's subject is an opening
+# "opening directly into a public way, yard or court"; a window into the hallway reaches
+# none of them. One field moves between these two tests — whether the second room sits on
+# the far side of the window's host wall — and the
 # verdict flips, which is what proves the rule reads it.
 
 def _sleeping_room_egress_ctx(*, room_on_the_far_side: bool):

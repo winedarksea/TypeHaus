@@ -14,23 +14,16 @@ from typehaus.resolve.placeables import resolved_mount_elevation
 FT = 0.3048
 INCH = 0.0254
 
-# Pillar -> the concrete wall top it bears on. Until 2026-08-18 five of the six were
-# grouted into a 42"-tall masonry parapet; retiring that guard dropped each of them onto
-# whatever concrete it was standing over. That left the two front outer pillars on the
-# retaining walls' +0'-6" step — but only because the W1/W2 junction node sat on their own
-# axis, so each of them straddled the joint and the bearing map had to pick a side. Since
-# 2026-08-21 `SunkenGardenSpec.side_wall_south_extension_in` runs the two porch side walls
-# 6" past the front pillar line, so all four outer pillars bear on those two walls, at one
-# elevation. What is left over is the *pair* of centre pillars, which miss every wall and
-# bear on the decking.
+# Pillar -> the concrete wall top it bears on. `SunkenGardenSpec.side_wall_south_extension_in`
+# runs the two porch side walls 6" past the front pillar line, so all four outer pillars bear
+# on those two walls, at one elevation. The *pair* of centre pillars miss every wall and bear
+# on the decking instead.
 PILLAR_BEARING_WALL = {"PT-SG-BR1": "W-SG-W1", "PT-SG-BR3": "W-SG-E1",
                        "PT-SG-BF1": "W-SG-W1", "PT-SG-BF3": "W-SG-E1"}
-# ONE centre pillar names the porch deck since 2026-08-29. PT-SG-BF2 left this set: the
-# balcony's front row moved 12" south so that pillar bears on PT-SG-FCOL's top outright,
-# on concrete (~105 psi) instead of through a single 2x8 ply (~315 psi at the base, ~385
-# where that joist crosses the beam, against an Fc-perp of 425 psi). PT-SG-BR2 cannot
-# follow it — PT-SG-COL's top is 3" north of it with the back beams in between — so it is
-# still deck-borne and takes squash blocks instead.
+# PT-SG-BF2 bears on PT-SG-FCOL's top outright, on concrete (~105 psi) instead of through a
+# single 2x8 ply (~315 psi at the base, ~385 where that joist crosses the beam, against an
+# Fc-perp of 425 psi). PT-SG-BR2 cannot follow it — PT-SG-COL's top is 3" north of it with the
+# back beams in between — so it is still deck-borne and takes squash blocks instead.
 DECK_BORNE_PILLAR_TAGS = ("PT-SG-BR2",)
 #: The one pillar that stands on another post rather than on a wall or the deck.
 COLUMN_BORNE_PILLAR = {"PT-SG-BF2": "PT-SG-FCOL"}
@@ -68,10 +61,8 @@ def test_pillars_start_at_the_top_of_the_wall_they_bear_on(catlin_model) -> None
         wall_top = _wall(catlin_model, wall_tag).z1_m
         assert abs(_solid(catlin_model, tag).z0_m - wall_top) < 1e-9, tag
     # One wall top, not two: every outer pillar lands on a porch side wall at the porch
-    # floor. The +0'-6" retaining step still exists — it is what W-SG-W2/E2 stand at — but
-    # it now begins 6" south of the front pillar line rather than under it, so the guard
-    # runs out over the side walls' own tops at the front corners instead of returning
-    # against a curb there.
+    # floor. The +0'-6" retaining step is what W-SG-W2/E2 stand at, begins 6" south of the
+    # front pillar line, and runs out over the side walls' own tops at the front corners.
     tops = {round(_wall(catlin_model, w).z1_m, 9) for w in PILLAR_BEARING_WALL.values()}
     assert tops == {0.0}
     step = {round(_wall(catlin_model, w).z1_m, 9) for w in ("W-SG-W2", "W-SG-E2")}
@@ -91,9 +82,8 @@ def test_the_side_walls_run_past_the_front_pillars_they_carry(catlin_model) -> N
         pillar_y = [p[1] for p in _solid(catlin_model, pillar_tag).outline]
         assert min(wall_y) < min(pillar_y), wall_tag
         # The extension past a 5 1/2" post centred on the pillar line leaves >3" of concrete
-        # beyond its face — the side cover a square post base wants. It went 6" -> 18" on
-        # 2026-08-29 to follow the front row's own 12" move south; without that these two
-        # pillars would have run off W1/E1 onto the unbraced R404.4 retaining walls.
+        # beyond its face — the side cover a square post base wants — 18" total, or these two
+        # pillars would run off W1/E1 onto the unbraced R404.4 retaining walls.
         assert min(pillar_y) - min(wall_y) > 3 * INCH, wall_tag
 
 
@@ -109,8 +99,7 @@ def test_every_pillar_top_lands_on_the_same_beam_soffit(catlin_model) -> None:
     """The invariant that survived retiring the masonry guard, and the real contract here.
 
     ``height`` is authored as ``beam_soffit - base (+ drainage rise)``, so lowering a base
-    lengthens the post and leaves its top exactly where it was. Five of the six pillars
-    dropped between 37" and 42" on 2026-08-18 and not one balcony elevation moved with them.
+    lengthens the post and leaves its top exactly where it was.
     """
     rear = {t: _solid(catlin_model, t) for t in ("PT-SG-BR1", "PT-SG-BR2", "PT-SG-BR3")}
     front = {t: _solid(catlin_model, t) for t in ("PT-SG-BF1", "PT-SG-BF2", "PT-SG-BF3")}
@@ -137,19 +126,13 @@ def test_post_bases_are_abu66ss_at_each_pillar_base(catlin_model) -> None:
 
 
 def test_the_deck_borne_pillars_stand_over_a_bearing_not_a_joist_tip(catlin_model) -> None:
-    """The 2026-08-28 durability move, asserted as the load path it created.
+    """The load path PT-SG-BR2 actually stands on, asserted directly.
 
-    PT-SG-BR2 used to stand on the *cantilevered* tip of the porch joists — a 6x6 carrying
-    a third of the balcony on the free end of one PT 2x8 — and that was mitigated with a
-    3-ply sistered cluster, solid blocking and an uplift tie rather than deleted. Moving the
-    rear pillar row onto the back-beam line deletes the CANTILEVER: the pillar sits south of
-    the deck's north edge, over the beams that run to their cast columns.
-
-    What it does not delete, and what 2026-08-29 put back, is CROSS-GRAIN BEARING: a 6x6 on
-    one 1 1/2" ply is ~315 psi against an Fc-perp of 425. So the squash blocks are here
-    again — but with ``plies=1``, which lays ``range(plies - 1)`` sisters, i.e. NONE.
-    Blocking without sistering is the whole distinction, and it is what keeps
-    ``test_no_catlin_deck_sisters_a_joist`` green.
+    The rear pillar row sits on the back-beam line, south of the deck's north edge, over the
+    beams that run to their cast columns — no cantilever. It still bears CROSS-GRAIN: a 6x6 on
+    one 1 1/2" ply is ~315 psi against an Fc-perp of 425, so squash blocks are here — but with
+    ``plies=1``, which lays ``range(plies - 1)`` sisters, i.e. NONE. Blocking without sistering
+    is the whole distinction, and it is what keeps ``test_no_catlin_deck_sisters_a_joist`` green.
     """
     floor = _floor(catlin_model, "FS-SG-PORCH")
     assert [m for m in floor.members if m.category == "sister_joist"] == []
@@ -161,9 +144,9 @@ def test_the_deck_borne_pillars_stand_over_a_bearing_not_a_joist_tip(catlin_mode
     for tag in DECK_BORNE_PILLAR_TAGS:
         post_y = catlin_model.plan.by_tag(tag).position.xy_m[1]
         assert post_y < back_beam_y < joist_tip, tag
-    # PT-SG-BF2 is not in that set any more: it bears on the front column's top, 19 1/2"
-    # below the walking surface a deck-borne pillar starts on. Post on post, not post on
-    # deck — a supported path (envelope.py republishes each resolved top as it goes).
+    # PT-SG-BF2 bears on the front column's top, 19 1/2" below the walking surface a
+    # deck-borne pillar starts on. Post on post, not post on deck — a supported path
+    # (envelope.py republishes each resolved top as it goes).
     bf2, fcol = _solid(catlin_model, "PT-SG-BF2"), _solid(catlin_model, "PT-SG-FCOL")
     assert bf2.z0_m == pytest.approx(fcol.z1_m)
     assert bf2.z0_m == pytest.approx(-18.5 * INCH)
@@ -186,8 +169,8 @@ def test_the_front_pillar_tops_are_roofed_by_the_beams_that_land_on_them(
     the post's south face so the member roofs the end grain it bears on.
 
     Modelled by moving the POSTS north rather than the beam ends south, because the beam
-    ends are also the deck edge, the fascia line, the drip and the gutter — and
-    ``BALCONY_FRONT_AXIS_Y_FT``, which raised_garden.py consumes. None of those should
+    ends are also the deck edge, the fascia line, the drip, the gutter, and
+    ``BALCONY_FRONT_AXIS_Y_FT``, which raised_garden.py consumes — none of those should
     shift for a bearing detail.
 
     Only a post at a beam's END has the problem, which is why the REAR row is exempt and
@@ -205,9 +188,9 @@ def test_the_front_pillar_tops_are_roofed_by_the_beams_that_land_on_them(
         beam = _solid(catlin_model, beam_tag)
         assert min(p[1] for p in beam.outline) < min(p[1] for p in post.outline), tag
 
-    # The rail is face-bolted to the row's north face, not seated on the post tops the way
-    # the old girts were — so it is no longer CONTAINED within a post's own Y-footprint. It
-    # lies wholly north of (touching, not overlapping) the row's north face.
+    # The rail is face-bolted to the row's north face, not seated on the post tops, so it is
+    # not CONTAINED within a post's own Y-footprint: it lies wholly north of (touching, not
+    # overlapping) the row's north face.
     rail = _solid(catlin_model, "BM-SG-RAIL-F")
     bf2 = _solid(catlin_model, "PT-SG-BF2")
     assert min(p[1] for p in rail.outline) == pytest.approx(max(p[1] for p in bf2.outline))
@@ -216,13 +199,10 @@ def test_the_front_pillar_tops_are_roofed_by_the_beams_that_land_on_them(
 def test_no_balcony_pillar_top_carries_more_than_one_member(catlin_model) -> None:
     """Every balcony pillar top carries exactly one bearing member — its own N-S beam.
 
-    The retired E-W girts claimed a ``bearing_refs`` relationship with the pillars they
-    crossed that was mostly a bookkeeping fiction — the girt nodes butted the beam's SIDE
-    face, not the post — and it billed a KBS1Z strap at joints that were not real
-    beam-on-post bearing (``takeoff/uplift_joints.py::post_beam_strap_rows``). The two
-    brace rails that replaced them carry ``bearing_refs=()`` on purpose. This is the
-    durable regression guard for the whole redesign: no rail may ever claim a post, and no
-    post may ever gain a second bearing member.
+    The two brace rails carry ``bearing_refs=()`` on purpose — a rail claiming a post would
+    bill a KBS1Z strap at a joint that is not real beam-on-post bearing
+    (``takeoff/uplift_joints.py::post_beam_strap_rows``). This is the durable regression
+    guard: no rail may ever claim a post, and no post may ever gain a second bearing member.
     """
     pillar_tags = ("PT-SG-BR1", "PT-SG-BR2", "PT-SG-BR3",
                    "PT-SG-BF1", "PT-SG-BF2", "PT-SG-BF3")
@@ -244,11 +224,6 @@ def test_the_front_column_is_centred_on_the_span_its_top_has_to_reach(
     north of the porch beam axis) and PT-SG-BF2's SOUTH face (12" south of it, on the
     balcony's beam line). That is 14 1/4" the pour has to span; a 20" tube centred on it
     keeps 2 7/8" of cover past each.
-
-    It was 7 1/8" south of the beam axis until 2026-08-30 — solved when BF2's south face
-    was the pillar line itself — which left 5/8" of concrete north of the beam face against
-    2 3/8" south of the post. Same tube, same bearing, an edge distance a form crew could
-    lose to a half-inch of layout drift at one end and nothing gained at the other.
     """
     column = _solid(catlin_model, "PT-SG-FCOL")
     north = max(p[1] for p in column.outline)
@@ -265,16 +240,12 @@ def test_the_front_column_is_centred_on_the_span_its_top_has_to_reach(
 def test_the_two_beam_on_column_ties_reach_concrete(catlin_model) -> None:
     """CN-SG-TIE-COL and CN-SG-TIE-FCOL hold two beam ends down to a cast column top.
 
-    They were authored ``H2.5A`` — a wood-to-wood part whose published values are nails into
-    lumber on BOTH legs — so as drawn each spliced its two beam ends across the pour instead
-    of holding either down to it. Both are HGAM10 masonry gusset angles since 2026-08-28:
-    #14 screws into the wood leg, Titen Turbo into the concrete. The ``ConnectorKind`` is
-    unchanged on purpose — ``takeoff/uplift.py`` keys the beam-to-post link on the kind and
-    never on the size, so this moves the BOM and no finding.
-
-    CN-SG-TIE-BR2, the third authored tie, was retired in the same change: it held the back-
-    span bearing of PT-SG-BR2's joist line down against a cantilever tip that no longer
-    exists. No authored H2.5A is left in the house.
+    Both are HGAM10 masonry gusset angles: #14 screws into the wood leg, Titen Turbo into
+    the concrete — an H2.5A's published values are nails into lumber on BOTH legs, which
+    would splice the two beam ends across the pour instead of holding either down to it.
+    The ``ConnectorKind`` is unchanged on purpose — ``takeoff/uplift.py`` keys the
+    beam-to-post link on the kind and never on the size, so this moves the BOM and no
+    finding. No authored H2.5A is left in the house.
     """
     for tag, column in (("CN-SG-TIE-COL", "PT-SG-COL"), ("CN-SG-TIE-FCOL", "PT-SG-FCOL")):
         tie = catlin_model.plan.by_tag(tag)
@@ -298,7 +269,7 @@ def test_nema_box_sits_with_the_vent_clamps_not_at_eye_level(catlin_model) -> No
                if c.element_kind == "Connector" and c.tag.startswith("CN-M-VENT-CLAMP")]
     assert clamp_z, "no vent clamps to place the box against"
     assert min(abs(box_z - z) for z in clamp_z) < 6 * INCH
-    assert box_z > 20 * FT  # up on the gable, not on the main-storey wall it used to ride
+    assert box_z > 20 * FT  # up on the gable, not the main-storey wall
 
 
 def test_the_gable_enclosures_carry_no_seam_clamp_on_an_exposed_fastener_wall(
@@ -306,15 +277,10 @@ def test_the_gable_enclosures_carry_no_seam_clamp_on_an_exposed_fastener_wall(
 ) -> None:
     """The NEMA box and the PV junction box keep their gable perch; their clamps do not.
 
-    Until the 2026-08-26 cladding swap each was fixed with an `S-5!` seam clamp, and this
-    test pinned the clamp to the box: same wall, same xy, same elevation. An S-5! closes on
-    a standing-seam leg, and `pbr-panel-26` has no leg — the fixing is uninstallable on the
-    wall it was authored against, so both clamps were deleted rather than re-sized.
-
-    Neither box sits on the roof: the 4:12 rake at x=4' and x=9' is well above their ~25'-6"
-    elevation, so this really is wall and the seam really is gone. What still has to hold is
-    the part the clamp was never responsible for — that the boxes ride W-A-N2's gable, below
-    its rake — so that is what is asserted now.
+    An S-5! seam clamp closes on a standing-seam leg, and `pbr-panel-26` has no leg — the
+    fixing is uninstallable on this wall, so neither clamp exists. Neither box sits on the
+    roof: the 4:12 rake at x=4' and x=9' is well above their ~25'-6" elevation, so what has
+    to hold is that the boxes ride W-A-N2's gable, below its rake.
     """
     attic = next(s for s in catlin_model.plan.storeys if s.tag == "attic")
     gable = _wall(catlin_model, "W-A-N2")
@@ -330,11 +296,8 @@ def test_the_gable_enclosures_carry_no_seam_clamp_on_an_exposed_fastener_wall(
 
 # --- raised garden ------------------------------------------------------------
 #
-# Rewritten 2026-07-25 with the structure itself. Until then the raised garden was a 36"
-# planter bed: two parallel cheeks (a cast W-RG-INNER continuing W-SG-S upward, and the SRW
-# W-RG-BLOCK south of it) holding soil between them, standing 3'-6" proud of grade. It is now
-# a retaining apron wrapping the sunken garden on three sides, level with the retaining wall
-# top and running 3' down. W-RG-INNER is deleted — W-SG-W2/E2/S are the apron's inner face.
+# A retaining apron wrapping the sunken garden on three sides, level with the retaining wall
+# top and running 3' down. W-SG-W2/E2/S are the apron's inner face; there is no W-RG-INNER.
 _APRON_TAGS = ("W-RG-BLOCK", "W-RG-WEST", "W-RG-EAST",
                "W-RG-WEST-BALCONY", "W-RG-EAST-BALCONY")
 
@@ -347,12 +310,11 @@ def test_the_raised_garden_wraps_the_sunken_garden_as_a_u(catlin_model) -> None:
     assert {w.assembly for w in walls.values()} == {"RETAINING_BLOCK_12"}
 
     south, west, east = (walls[t] for t in _APRON_TAGS[:3])
-    # The south leg runs corner to corner — 28', not the 20' it spanned as a bed cheek.
+    # The south leg runs corner to corner, 28'.
     assert abs(south.axis[1][0] - south.axis[0][0]) == pytest.approx(28 * FT, abs=1e-9)
     assert {round(y / FT, 4) for _, y in south.axis} == {-33.3333}
-    # The legs run north from those corners to the arch wall's own axis plane.
-    # -10.5, not -9.5: the apron closes against RL-SG-BALCONY, and that plane moved 12"
-    # south on 2026-08-29 (``BALCONY_FRONT_AXIS_Y_FT``). Both legs are 12" longer.
+    # The legs run north from those corners to the arch wall's own axis plane, at -10.5: the
+    # apron closes against RL-SG-BALCONY (``BALCONY_FRONT_AXIS_Y_FT``), not -9.5.
     for leg in (west, east):
         assert {round(y / FT, 4) for _, y in leg.axis} == {-10.5, -33.3333}
     assert {round(x / FT, 4) for _, x in ((0, west.axis[0][0]), (0, west.axis[1][0]))} == {4.0}
@@ -375,13 +337,11 @@ def test_the_raised_garden_returns_three_feet_to_the_balcony(catlin_model) -> No
 def test_the_apron_north_limit_is_the_balcony_front_plane(catlin_model) -> None:
     """Consumed from sunken_garden.py's exported ``BALCONY_FRONT_AXIS_Y_FT``, not re-derived.
 
-    That constant is new on 2026-08-29 and the split is the point of this test.
-    ``PORCH_FRONT_AXIS_Y_FT`` meant both "porch front edge" and "balcony front edge" while
-    the two planes were one; they are 12" apart now, and the apron closes against the
-    balcony RAILING, so it follows the balcony. Read off that guard's own south run rather
-    than off the front column, which is on neither plane any more — it sits 4 7/8" south of
-    the porch's, centred on the 14 1/4" its top has to span between the two beams' north
-    face and PT-SG-BF2's south face.
+    ``PORCH_FRONT_AXIS_Y_FT`` and ``BALCONY_FRONT_AXIS_Y_FT`` are 12" apart, and the apron
+    closes against the balcony RAILING, so it follows the balcony. Read off that guard's own
+    south run rather than off the front column, which is on neither plane — it sits 4 7/8"
+    south of the porch's, centred on the 14 1/4" its top has to span between the two beams'
+    north face and PT-SG-BF2's south face.
     """
     guard = catlin_model.plan.by_tag("RL-SG-BALCONY")
     front_y = min(p.xy_m[1] for p in guard.path)
@@ -396,11 +356,9 @@ def test_the_apron_tops_out_level_with_the_wall_it_wraps_and_runs_three_feet_dow
         leg = _wall(catlin_model, tag)
         assert abs(leg.z1_m - retaining.z1_m) < 1e-9, f"{tag} must cap level with W-SG-S"
         assert abs((leg.z1_m - leg.z0_m) - 3 * FT) < 1e-9, tag
-        # Whole courses: a dry-stacked wall cannot end mid-unit. (Kept from the bed's own
-        # test — it holds for the apron for exactly the same reason.)
+        # Whole courses: a dry-stacked wall cannot end mid-unit.
         assert abs((leg.z1_m - leg.z0_m) % (6 * INCH)) < 1e-9, tag
-        # Mostly below grade, which the user accepted explicitly. (Also kept.)
-        assert leg.z0_m < 0.0, tag
+        assert leg.z0_m < 0.0, tag  # mostly below grade, user-accepted
 
 
 def test_the_apron_clears_the_sunken_gardens_strip_footings(catlin_model) -> None:
@@ -475,8 +433,7 @@ def test_raised_garden_is_not_part_of_the_thermal_envelope(catlin_model) -> None
 
     components = {row.component for row in evaluate_envelope(catlin_model, catlin_model.plan)}
     assert "RETAINING_BLOCK_12" not in components
-    # The sunken garden's own cast section stays out too — it always did, and deleting
-    # W-RG-INNER must not have been the only thing keeping it out.
+    # The sunken garden's own cast section stays out too.
     assert "SUNKEN_GARDEN_WALL" not in components
 
 
@@ -490,12 +447,9 @@ def test_sonotube_column_and_bell_tuck_south_of_the_house_gap(catlin_model) -> N
     read off the model — the offset itself included — so the assertion tracks
     ``SPEC.column_south_offset_in`` instead of restating it.
 
-    That 2" used to BE the 40 psi XPS block DW-SG-COL's bars crossed, and the test read it
-    off the dowel. The dowel retired on 2026-08-29 when the bell was augered to frost
-    depth: the two footings no longer meet at one elevation, so there is no joint to dowel
-    and no bridge to break. The clearance survives its reason — 17" of column offset less
-    the bell's own 15" reach — and the plan geometry is unchanged, which is the thing worth
-    asserting either way.
+    The bell is augered to frost depth, so the two footings do not meet at one elevation and
+    there is no joint to dowel or bridge to break. The 2" clearance is 17" of column offset
+    less the bell's own 15" reach.
     """
     deck_edge_y = max(y for _, y in _porch_outline(catlin_model))
     column = _solid(catlin_model, "PT-SG-COL")
@@ -511,15 +465,12 @@ def test_sonotube_column_and_bell_tuck_south_of_the_house_gap(catlin_model) -> N
     bell_north = max(p[1] for p in bell.outline)
     assert bell_north < house_footing_s, "the bell stops short of the house's own footing"
     assert house_footing_s - bell_north == pytest.approx(2 * INCH)
-    # And the joint it used to be doweled across is gone with the dowel, not merely unused.
     assert catlin_model.plan.by_tag("DW-SG-COL") is None
     assert {d.tag for d in catlin_model.plan.all_elements()
             if d.element_kind == "Dowel"} == {"DW-SG-W1", "DW-SG-E1"}
     # The back-beam line (and its midspan node) re-anchors to the same offset, collinear.
-    # The tolerance IS the beam's own half-width, and it is READ off the member rather than
-    # written out: the pair went from a 3 1/2" two-ply LVL to a 4 1/2" three-ply KDAT 2x12
-    # on 2026-08-23, and a hardcoded 2" quietly became a quarter-inch too tight for a beam
-    # that had not moved at all.
+    # The tolerance IS the beam's own half-width, READ off the member (a 4 1/2" three-ply
+    # KDAT 2x12) rather than written out as a hardcoded number.
     from typehaus.resolve.framing.profiles import cross_section
 
     half_width = cross_section(catlin_model.plan.by_tag("BM-SG-BKW").size).width_m / 2
@@ -531,7 +482,7 @@ def test_sonotube_column_and_bell_tuck_south_of_the_house_gap(catlin_model) -> N
 
 def test_the_two_porch_piers_are_belled_to_frost_depth_without_moving_a_beam_soffit(
         catlin_model) -> None:
-    """The bell moved DOWN to frost depth and the shaft grew to suit — 2026-08-29.
+    """The bell sits at frost depth and the shaft grew to suit.
 
     The owner's call was to auger these two to 42" rather than lean on the aggregate
     section the wall footings lean on ("bell bottom piers as part of the sonotube
@@ -561,15 +512,14 @@ def test_the_two_porch_piers_are_belled_to_frost_depth_without_moving_a_beam_sof
         assert bell.z1_m - bell.z0_m == pytest.approx(12 * INCH), "12\" bell, not 42\""
         # The shaft picks up exactly where the bell stops...
         assert post.z0_m == pytest.approx(bell.z1_m)
-        # ...and still dies on its beam's soffit. Both porch beam pairs carry a joist drop
-        # since 2026-08-29, so there is ONE soffit now and the whole porch frame hangs off
-        # -1'-6 1/2". Nothing here is free to slide.
+        # ...and still dies on its beam's soffit. Both porch beam pairs carry a joist drop,
+        # so there is ONE soffit and the whole porch frame hangs off -1'-6 1/2". Nothing
+        # here is free to slide.
         assert post.z1_m == pytest.approx(beam.z0_m)
 
     assert _solid(catlin_model, "PT-SG-COL").z1_m == pytest.approx(-18.5 * INCH)
-    # -0'-11 1/4" until 2026-08-29. Unpinning BM-SG-FRW/FRE let ``_bearing_stack_drops``
-    # propagate the joists' 7 1/4" through to this post, which is what puts PT-SG-BF2 on
-    # concrete. The authored height did not change and must not be "corrected" to match.
+    # ``_bearing_stack_drops`` propagates the joists' 7 1/4" through to this post, which is
+    # what puts PT-SG-BF2 on concrete. The authored height must not be "corrected" to match.
     assert _solid(catlin_model, "PT-SG-FCOL").z1_m == pytest.approx(-18.5 * INCH)
 
     # A bell bearing on undisturbed soil at frost depth takes a levelling course, not a

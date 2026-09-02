@@ -212,9 +212,9 @@ def test_payload_per_sf_needs_areas(bom, tmp_path):
     assert with_areas["areas"] == areas
     assert with_areas["per_sf"]["total"]["conditioned"]["high"] > 0
     # And absent — never zero — when the caller has no honest denominator. Read against a
-    # minimal price file rather than catlin's since 2026-08-27: the reference house drives
-    # two allowances off ``space_summary.*``, so calling it without areas is now an error
-    # (asserted below) rather than a payload with one key fewer.
+    # minimal price file rather than catlin's: the reference house drives two allowances
+    # off ``space_summary.*``, so calling it without areas is an error (asserted below)
+    # rather than a payload with one key fewer.
     from typehaus.cli.prices import load_prices as _load
 
     (tmp_path / "prices.toml").write_text('[framing]\n"2x6" = 1.0\n')

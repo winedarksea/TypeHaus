@@ -115,9 +115,7 @@ def _one(findings):
 
 
 def test_a_fully_covered_unit_passes_and_names_where_capacity_went():
-    """Inverted on 2026-08-30 along with ``structural.uplift_path_coverage``.
-
-    This asserted UNKNOWN so that "the anchors are all in blocking" could not be read as
+    """This asserted UNKNOWN so that "the anchors are all in blocking" could not be read as
     "the anchorage is adequate". Right concern, wrong instrument: the rule is now named
     ``mep.deck_equipment_support_coverage``, so a covered unit is an honest PASS of the rule
     that ran, and the capacity question is a named item a seal has to cover rather than a
@@ -146,8 +144,8 @@ def test_the_capacity_question_is_a_named_item_not_a_retired_one():
 def test_a_covered_unit_with_a_wind_basis_still_names_the_ungraded_capacity():
     """Carrying a wind speed is not computing a demand, and the message must say which.
 
-    This is the regression that matters after 2026-08-30: the easy mistake is to read
-    "the site now has a wind speed" as "the restraint is now checked". It is not — nothing
+    The easy mistake is to read "the site now has a wind speed" as "the restraint is now
+    checked". It is not — nothing
     here derives the cabinet's projected area or an ASCE 7 §29.4 force coefficient — so the
     sentence has to name the site's actual basis rather than claim an absence that is no
     longer true, and the capacity itself belongs to the engineering item, not to this PASS.

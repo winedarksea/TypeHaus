@@ -177,11 +177,10 @@ def test_a_deck_opening_is_not_ceilinged_over(catlin_model) -> None:
     """A hole in the deck is a hole in the ceiling hung under it.
 
     `FO-S-STAIR` is open through the second floor over `RM-M-LIVING`, and `FO-A-STAIR`
-    through the attic deck over `RM-S-STUDY2`. Before 2026-08-29 both rooms resolved a
-    gypsum plane straight across the shaft: `resolve/ceilings.py` substituted the room's
-    whole clear face whenever its ceiling came back as a single plane. The take-off was
-    always right (`takeoff/framing.py` bills ``gross - openings``); the geometry was not,
-    so every section cut through a stair well showed a board across it.
+    through the attic deck over `RM-S-STUDY2`. `resolve/ceilings.py` must not substitute the
+    room's whole clear face when its ceiling comes back as a single plane — the take-off is
+    always right (`takeoff/framing.py` bills ``gross - openings``), but the geometry must
+    show the well as open, or every section cut through a stair well shows a board across it.
     """
     for room_tag, opening_tag in (("RM-S-STUDY2", "FO-A-STAIR"),
                                   ("RM-M-LIVING", "FO-S-STAIR")):
@@ -198,11 +197,9 @@ def test_a_sloped_follow_roof_ceiling_resolves_layers_but_no_flat_solid(catlin_m
     — there is no single flat plane to draw, so the layer stack resolves for the BOM/checks
     but no ``ResolvedSolid`` is emitted for it.
 
-    This case was ``RM-A-DEN`` until 2026-08-27, when that room was deleted and its space
-    folded into ``RM-A-WEST-UNFIN``; that loft was in turn retyped and renamed in place to
-    ``RM-A-STUDIO`` on 2026-08-29 when it became a guest bedroom. Three room tags, one uid
-    (``CAR401AAAA``), same roof, same ``FollowRoof``, same branch — which is most of the
-    argument for retyping in place rather than authoring a new room."""
+    ``RM-A-STUDIO`` carries uid ``CAR401AAAA`` across its retypes — retyping in place rather
+    than authoring a new room keeps the same roof, the same ``FollowRoof``, the same branch.
+    """
     ceiling = _ceiling(catlin_model, "RM-A-STUDIO")
     assert ceiling is not None
     assert ceiling.layers  # RF-HOUSE's default_lining (paint + gwb)

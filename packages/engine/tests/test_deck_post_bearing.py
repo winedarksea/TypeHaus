@@ -1,9 +1,9 @@
 """``structural.deck_footing_size`` reads what a post actually bears on.
 
-Until 2026-08-30 the check followed **one** ``Post -> Post`` link and knew about ``Pad`` and
-nothing else, so eight of catlin's ten sunken-garden posts came out as *"post X does not bear
-on a resolvable Pad"* — a sentence about the check's own reach, dressed up as a fact about
-the model, and carrying an ENGINEERED handoff that asked a consultant to design footings for
+The check must follow more than one ``Post -> Post`` link and know about more than ``Pad``,
+or eight of catlin's ten sunken-garden posts come out as *"post X does not bear on a
+resolvable Pad"* — a sentence about the check's own reach, dressed up as a fact about the
+model, and carrying an ENGINEERED handoff that asks a consultant to design footings for
 posts that have none.
 
 The model says exactly what every one of them bears on. Six of the eight are therefore not

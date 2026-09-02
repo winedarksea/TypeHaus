@@ -2,14 +2,14 @@
 
 The four Catlin returns (CR-CONC-TO-FRAMED-SILL, CR-SAUNA-LINER-RETURN,
 CR-FOUNDATION-FOAM-RETURN, CR-PORCH-MASONRY-RETURN) are authored on
-``PlanModel.construction_rules`` and were, before this pass, consumed by nothing. These
-tests assert each now emits a resolved return and a take-off row, and carries the overlay
-metadata a detail recipe binds to — without touching framing members.
+``PlanModel.construction_rules``. These tests assert each emits a resolved return and a
+take-off row, and carries the overlay metadata a detail recipe binds to — without touching
+framing members.
 
 A return is documentation + take-off, *not* render geometry: a correctly-placed return
-duplicates the mitred layer polygon its host wall already draws, so the pass emits no
-``ResolvedSolid``. (It used to, and those prisms rendered as gray fins floating off the
-house in 3D and as phantom concrete rectangles in every building section.)
+duplicates the mitred layer polygon its host wall already draws, so the pass must emit no
+``ResolvedSolid`` — one would render as a gray fin floating off the house in 3D and as a
+phantom concrete rectangle in every building section.
 """
 
 from __future__ import annotations
@@ -85,18 +85,17 @@ def test_sill_plate_is_pt_bearing_and_carries_overlay_metadata(catlin_model) -> 
 
     Two cases share the rule and the plate. A wall on a *wall* also carries the
     ``wall_foundation:`` boundary condition the detail sheet binds to; a wall on a *slab*
-    (every basement partition, and five more of them since the 2026-08-21 deck overhaul)
-    carries none, because a slab-to-partition junction is not a wall stack and the condition
-    deriver has nothing to name. It is still the same IRC R317.1 plate and still has to be
-    ordered."""
+    (every basement partition, and several more of them) carries none, because a
+    slab-to-partition junction is not a wall stack and the condition deriver has nothing to
+    name. It is still the same IRC R317.1 plate and still has to be ordered."""
     sills = [r for r in catlin_model.construction_returns
              if r.tag == "CR-CONC-TO-FRAMED-SILL"]
     assert sills
     for sill in sills:
         assert sill.kind == "bearing_plate"
-        # kdat, not spf (2026-08-24): this return's own category is ``pt-sill-plate`` and
-        # its rule cites IRC R317.1, so the record has to say treated. The rate does not
-        # follow it — ``construction_returns`` prices on the category, not the material.
+        # kdat, not spf: this return's own category is ``pt-sill-plate`` and its rule cites
+        # IRC R317.1, so the record has to say treated. The rate does not follow it —
+        # ``construction_returns`` prices on the category, not the material.
         assert sill.material_ref == "kdat"
         assert sill.lap_m > 0.0
         assert sill.sealant is not None
@@ -105,11 +104,11 @@ def test_sill_plate_is_pt_bearing_and_carries_overlay_metadata(catlin_model) -> 
     on_slabs = [s for s in sills if s.condition_key is None]
     assert on_walls and on_slabs, "both cases are live on this house"
     assert all(s.condition_key.startswith("wall_foundation:") for s in on_walls)
-    # SL-M-DECK joined SL-B-FLOOR on 2026-08-24 with RM-M-PANTRY: W-M-PAN-S and W-M-PAN-E
-    # are the first framed partitions in the house to stand on the MAIN storey's cast deck
-    # rather than on the basement slab. Same rule, same R317.1 plate, same reason there is no
-    # `wall_foundation:` condition to name — a slab-to-partition junction is not a wall
-    # stack — and it is a real ordering item: those two walls need treated sill stock too.
+    # W-M-PAN-S and W-M-PAN-E (RM-M-PANTRY) are framed partitions standing on the MAIN
+    # storey's cast deck (SL-M-DECK) rather than on the basement slab. Same rule, same
+    # R317.1 plate, same reason there is no `wall_foundation:` condition to name — a
+    # slab-to-partition junction is not a wall stack — and it is a real ordering item:
+    # those two walls need treated sill stock too.
     assert {s.element_tags[0] for s in on_slabs} == {"SL-B-FLOOR", "SL-M-DECK"}
 
 
@@ -133,17 +132,10 @@ def test_foundation_foam_return_is_thermal(catlin_model) -> None:
 
 
 # --- floor system landing on a concrete wall ----------------------------------
-# ``CR-DECK-ON-CONCRETE-SILL`` and the two tests that measured it were retired 2026-08-18
-# with the rule's only host, on the reading that "no FloorSystem in the plan names a
-# FoundationWall in its ``joists.bearing_refs``". **That reading was made false three days
-# later** by the 2026-08-21 basement-ceiling overhaul, which put FS-M-WEST and FS-M-EAST on
-# the basement's concrete walls, and nothing noticed until 2026-08-23 — the joists resolved
-# bearing on bare pour for two days.
-#
-# The answer was not to re-author the rule. A framed wall and the joists beside it land on
-# ONE board, so two rules over the same run is a double-bill; ``floor:on_concrete_wall`` and
-# its finder are gone from the engine and ``wall:framed_on_concrete`` takes the union of the
-# two runs instead (``resolve/construction_sills.py``). The test below is what measures it.
+# There is no ``CR-DECK-ON-CONCRETE-SILL`` rule: a framed wall and the joists beside it land
+# on ONE board, so two rules over the same run would be a double-bill. There is no
+# ``floor:on_concrete_wall`` finder — ``wall:framed_on_concrete`` takes the union of the two
+# runs instead (``resolve/construction_sills.py``). The test below is what measures it.
 
 
 def test_the_wall_sills_bill_as_pt_sill_plate(catlin_model) -> None:
@@ -154,31 +146,27 @@ def test_the_wall_sills_bill_as_pt_sill_plate(catlin_model) -> None:
 
 
 def test_the_basement_mudsill_covers_every_bearing_wall_end_to_end(catlin_model) -> None:
-    """One board per pour, and it runs the whole pour — the 2026-08-23 union.
+    """One board per pour, and it runs the whole pour — union across both.
 
-    W-B-CN carried 14.22 LF of wall against 10.17 LF of plate before it, and W-B-CS 13.83
-    against 13.00: the bare remainder was the stretch where a floor bore and no framed wall
-    stacked. Both are full-length now, and each return names the floor systems on it as well
-    as the wall above, so a second rule cannot be added over the same run without the
+    W-B-CN carries 14.22 LF of wall against 10.17 LF of plate before it, and W-B-CS 13.83
+    against 13.00: the bare remainder is the stretch where a floor bears and no framed wall
+    stacks. Both are full-length, and each return names the floor systems on it as well as
+    the wall above, so a second rule cannot be added over the same run without the
     double-bill being obvious.
     """
     plate = {r.element_tags[0]: r for r in catlin_model.construction_returns
              if r.tag == "CR-CONC-TO-FRAMED-SILL"}
-    # W-B-STR was the fourth until 2026-08-24, when it was framed: it is a 2x6 bearing wall
-    # on a footing now, so its plate is a ``_framed_on_slab`` return keyed on SL-B-FLOOR
-    # rather than a wall stack. W-B-E1 replaces it as the east wall's floor-bearing pour.
-    # **W-B-CS left the same way on 2026-08-28**, for the same reason and by the same route,
-    # which is why the docstring above still names it and this loop no longer does: there is
-    # no pour left under it to carry a mudsill. Its 0.83 LF was the stretch prices.toml
-    # named as under-billed under the pt-sill-plate note, and framing it closed that gap.
+    # W-B-STR is a 2x6 bearing wall on a footing, so its plate is a ``_framed_on_slab``
+    # return keyed on SL-B-FLOOR rather than a wall stack. W-B-E1 is the east wall's
+    # floor-bearing pour instead. W-B-CS has no pour left under it to carry a mudsill by the
+    # same route, which is why this loop does not name either.
     for tag in ("W-B-CN", "W-B-W1", "W-B-E1"):
         wall = catlin_model.wall(tag)
         assert tag in plate, f"{tag} bears a floor and carries no mudsill"
         run = ((wall.axis[1][0] - wall.axis[0][0]) ** 2
                + (wall.axis[1][1] - wall.axis[0][1]) ** 2) ** 0.5
         assert abs(plate[tag].length_m - run) < 0.05, f"{tag} has a bare stretch"
-        # On the pour, not at the framed wall's base — 13 7/16" apart since 2026-08-23.
-        assert abs(plate[tag].z0_m - wall.z1_m) < 1e-6
+        assert abs(plate[tag].z0_m - wall.z1_m) < 1e-6  # on the pour, not the framed base
     assert "FS-M-STAIR" in plate["W-B-CN"].element_tags
 
 
@@ -246,14 +234,8 @@ def test_the_ceiling_channel_length_is_its_field_over_the_spacing(catlin_model) 
     room = Polygon(_living_room(catlin_model).clear_face)
     field = room.difference(_stair_hole(catlin_model))
     assert rc.length_m == pytest.approx(field.area / _RC_SPACING_M)
-    # 524 LF until 2026-08-24, when RM-M-PANTRY was framed out of the living room's NW
-    # corner. The channel field is the room's clear face less the stair hole, so the room
-    # losing ~20 sf takes ~17 LF of channel with it — derived from the field above, and
-    # pinned here so the number cannot drift without someone reading why.
-    #
-    # 506.5 -> 508.7 on 2026-08-29: W-M-STOS2 moved 2" north with the whole y=26'-6" line
-    # (houses/catlin/plan/fixtures.py has the reason), so the hall band along the living
-    # room's north edge got 2" deeper and the room gained ~2.9 sf of field.
+    # The channel field is the room's clear face less the stair hole, derived from the
+    # field above and pinned here so the number cannot drift without someone reading why.
     assert rc.length_m / 0.3048 == pytest.approx(508.7, abs=2.0)
 
 
@@ -314,7 +296,7 @@ def test_an_unscoped_ceiling_channel_rule_needs_an_authored_deck_outline(catlin_
         "FS-M-EAST", "FS-M-WEST", "FS-S-EAST", "FS-S-WEST"]
 
 
-# --- the sill seal under those plates (2026-08-24) ----------------------------
+# --- the sill seal under those plates ------------------------------------------
 
 
 def test_the_sill_seal_picks_its_product_from_the_wall(catlin_model) -> None:
@@ -341,8 +323,8 @@ def test_the_sill_seal_picks_its_product_from_the_wall(catlin_model) -> None:
     # Exterior: the main-storey walls stacked on the perimeter pour.
     assert by_wall["W-M-W1B"] == SILL_GASKET_PEEL_STICK
     assert by_wall["W-M-E1"] == SILL_GASKET_PEEL_STICK
-    # Interior: the centre bearing line, and the two stair walls framed on 2026-08-24 —
-    # neither is on the air barrier, and neither should be bought the expensive product.
+    # Interior: the centre bearing line and the two stair walls — neither is on the air
+    # barrier, and neither should be bought the expensive product.
     assert by_wall["W-M-C5"] == SILL_GASKET_FOAM
     assert by_wall["W-B-STR"] == SILL_GASKET_FOAM
     assert by_wall["W-B-STR3"] == SILL_GASKET_FOAM
