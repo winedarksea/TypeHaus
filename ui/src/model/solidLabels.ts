@@ -5,12 +5,11 @@
 // on the 2D side, where importing the material module dragged all of three.js into the entry
 // bundle for the sake of a string lookup.
 
-// Solid category → what a person calls it. The Inspector used to print the raw category as
-// its heading, which reads fine for `slab` and badly for everything with an underscore in
-// it — and worst of all for a family name: "pipe accessory" is true of a shutoff, a backflow
-// preventer and a can of foam alike, so it told a reader nothing about the thing they had
-// just clicked. Categories are now per-device (see SOLID_CATEGORY_TRADE above); this map
-// gives the rest of them sentence case too.
+// Solid category → what a person calls it. The raw category reads fine for `slab` and badly
+// for anything with an underscore — worst of all for a family name: "pipe accessory" is true
+// of a shutoff, a backflow preventer and a can of foam alike, telling a reader nothing about
+// the thing they just clicked. Categories are per-device (see SOLID_CATEGORY_TRADE above);
+// this map gives the rest of them sentence case too.
 //
 // Anything absent falls back to the category with its underscores opened out, so a new
 // category is readable on the day it lands and gets a proper name when someone has one.

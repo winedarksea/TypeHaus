@@ -52,10 +52,10 @@ export const ALL_TRADES: Trade[] = [
 // checkbox still turns the sheet off outright, which is a different question.
 export const DEFAULT_EARTH_OPACITY = 0.28;
 
-// The work surfaces that replaced the old DESIGN/ANALYZE topbar buttons: the assembly /
-// transition reader, the whole-model bill of parts, the panel schedule, and the luminaire
-// schedule. Only one is up at a time — they are full-width readers, not inspectors, so
-// stacking them would just hide the model. "circuits" and "lighting" are deliberately two
+// The work surfaces: the assembly / transition reader, the whole-model bill of parts, the
+// panel schedule, and the luminaire schedule. Only one is up at a time — they are full-width
+// readers, not inspectors, so stacking them would just hide the model. "circuits" and
+// "lighting" are deliberately two
 // readers over one `electrical` payload: an electrician sizing a breaker and a designer
 // choosing a colour temperature are not looking for the same page.
 // "data" is a fourth reader over the same `electrical` payload, beside "circuits" and

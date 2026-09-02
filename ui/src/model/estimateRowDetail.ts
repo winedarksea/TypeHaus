@@ -3,9 +3,7 @@
 // The Estimate table answers "what moves the number". This answers the next question, the one
 // an estimator asks of a single line: how is it split, what waste is in it, has tax already
 // been paid on it, and which account does it book to. Every fact here was already in the
-// `/costs` payload and rendered nowhere; `haus takeoff --csv` has carried all of them since
-// the cost-code pass, so until this module the spreadsheet was a strictly better breakdown
-// than the page.
+// `/costs` payload and rendered nowhere.
 //
 // Pure and flat by design (the sibling of engineEstimate.ts): a list of labelled facts the
 // component renders without deciding anything, so the decisions are testable without a DOM.

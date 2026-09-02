@@ -40,9 +40,8 @@ import { registerSelectable, tagLayerGroup } from "./registry";
 // A resolved solid: a plan prism, or — when it carries a `sweep` — the mitred tube of a run.
 //
 // Still ONE mesh and ONE registerSelectable either way, which is the whole point: a handrail
-// that used to arrive as 292 separate solids (and 292 pick targets, and 292 Inspector rows)
-// is one click, one highlight, one name. Picking, highlighting, SolidInspector and
-// solidCategoryLabel are untouched below the fork.
+// is one click, one pick target, one Inspector row — not one per solid. Picking, highlighting,
+// SolidInspector and solidCategoryLabel are untouched below the fork.
 export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, catalog: Catalog | undefined,
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>,
@@ -450,9 +449,8 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
     const geo = createProjectedSurfaceGeometry(faces, center);
     // The same declared-finish-first dispatch every WALL panel goes through (→
     // builders/walls.ts): the material's authored `finish` names the profile, and only one
-    // that declares nothing falls back to the `isStandingSeam` substring test. This was a
-    // recorded gap until 2026-08-31 — it cost nothing while every roof was tagged
-    // "standing-seam", and it would have drawn a seam recipe on a ribbed or corrugated roof.
+    // that declares nothing falls back to the `isStandingSeam` substring test, which would
+    // draw a seam recipe on a ribbed or corrugated roof left untagged.
     const roofAppearance = authoredAppearance(layer.material, catalog?.materials);
     const seamProfile = layer.function === "cladding"
       ? (metalPanelProfileForFinish(roofAppearance?.finish)

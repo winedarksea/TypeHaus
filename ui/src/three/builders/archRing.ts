@@ -3,9 +3,9 @@
 // hole cut through running bond.
 //
 // Masonry in this viewer is a texture, not per-brick geometry (plans/01-decisions.md #23 keeps
-// placed members wood-framing-only), so the arch head used to be a curve sliced out of a
-// planar-projected running-bond tile: the courses ran straight through it and stopped dead at
-// the soffit. The fix here does NOT model bricks either. It builds one annular ring mesh per
+// placed members wood-framing-only), so a naive arch head is a curve sliced out of a
+// planar-projected running-bond tile: the courses run straight through it and stop dead at
+// the soffit. This does NOT model bricks either. It builds one annular ring mesh per
 // arch and gives it *polar* UVs into the masonry tile that already exists — radius maps to the
 // tile's unit-length axis, arc length to its course axis — so the tile's rectangular bricks
 // come out as wedges in world space, and the mortar joints, the recessed-joint normal map and
@@ -14,7 +14,7 @@
 // The ring is laid as a rowlock header ring: one brick deep radially, each voussoir showing
 // its 2⅔" course module along the arc, an odd count so a keystone lands on the crown.
 //
-// VIEWER-ONLY, deliberately (2026-08-21). The engine models an arch as the single scalar
+// VIEWER-ONLY, deliberately. The engine models an arch as the single scalar
 // `arch_rise_m` and knows nothing of rings; the glTF emitter has no textures at all and paints
 // each masonry finish one flat colour, so an exported .glb still shows the plain spandrel.
 // Adding voussoirs there — or to the BOM, or to the 2D elevation — was explicitly out of scope.

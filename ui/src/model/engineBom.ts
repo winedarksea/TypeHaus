@@ -1,7 +1,5 @@
 // Presentation for the engine's bill of materials — the *only* BOM implementation (→ TODO
-// item 2). The browser used to compute its own in `model/bom.ts`: it billed footing beddings
-// the engine did not, missed families the engine had, and nothing tested that the two agreed.
-// That file is gone; this one only arranges what `takeoff/bom.py::bill_of_materials` returns.
+// item 2). This arranges what `takeoff/bom.py::bill_of_materials` returns.
 //
 // The payload is a dict of sections — mostly `list[dict]` row sets, plus a few scalar/dict
 // summaries (service_load, lighting_load). Nothing here knows what a row *means*: columns are

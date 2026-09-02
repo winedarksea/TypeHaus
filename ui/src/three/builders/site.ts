@@ -39,11 +39,11 @@ export function earthElevation(model: Model): number {
 // every slab finishing at or below grade, unioned into disjoint outer boundaries — three for
 // Catlin: house, garage, sunken garden.
 //
-// This used to be derived here from `model.rooms` on the lowest storey, which is structurally
-// incapable of seeing more than one storey of one structure: a detached garage and an open-air
-// sunken garden share no storey, no room set and no wall loop with the house, so the sheet
-// kept cutting through them. Deriving it once engine-side also means the viewer, the IFC lot
-// slab, and any future earth emitter cut exactly the same rings.
+// Deriving this from `model.rooms` on the lowest storey would be structurally incapable of
+// seeing more than one storey of one structure: a detached garage and an open-air sunken
+// garden share no storey, no room set and no wall loop with the house. Deriving it once
+// engine-side also means the viewer, the IFC lot slab, and any future earth emitter cut
+// exactly the same rings.
 export function earthVoids(model: Model): [number, number][][] {
   return (model.site?.earth_voids ?? [])
     .filter((ring) => ring.length >= 3)

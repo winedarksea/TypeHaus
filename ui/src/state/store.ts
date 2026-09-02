@@ -3,7 +3,7 @@
 // go out through the client and come back as a fresh model on the next push (→ 21 editing
 // loop: render → edit → patch → rebuild → WebSocket push → re-render).
 //
-// Three neighbours carry what this file used to: state/vocabulary.ts holds the enumerations and
+// Three neighbours carry pieces of this: state/vocabulary.ts holds the enumerations and
 // small records (Tool, Trade, SelectionKind, Selection, Toast…), state/locate.ts the pure
 // uid → element lookup and the finding filters, and state/mutations.ts every action that
 // writes through the EngineClient. The first two are importable without pulling in an
@@ -289,8 +289,8 @@ export const useStore = create<StoreState>((set, get) => ({
   pushRecentCommand: (id) =>
     set((s) => ({ recentCommands: [id, ...s.recentCommands.filter((c) => c !== id)].slice(0, 6) })),
   setActiveWorkspace: (activeWorkspace) => set({ activeWorkspace }),
-  // Representation generalizes the old showFraming boolean: detailed/fabrication show framing,
-  // conceptual/schematic show wall fills only.
+  // Representation generalizes showFraming: detailed/fabrication show framing, conceptual/
+  // schematic show wall fills only.
   setRepresentation: (representation) =>
     set({ representation, showFraming: representation === "detailed" || representation === "fabrication" }),
   setWorkbench: (workbench) => set({ workbench }),

@@ -1,11 +1,9 @@
 // The room-floor builder: `Room.floor_finish` made visible.
 //
-// The finish resolved and exported since M1 and nothing drew it — buildFloor renders
-// `floor.subfloor` and stops, so a house of carpet, oak, LVP and tile read as bare subfloor
-// everywhere. What these tests pin is the part that is easy to get silently wrong: the finish
-// string is a *material tag*, so its colour has to come off the catalog rather than off a
-// second table that can drift; and four flat fills of similar value are hard to tell apart
-// under one light, so the surface has to differ too.
+// What these tests pin is the part that is easy to get silently wrong: the finish string is a
+// *material tag*, so its colour has to come off the catalog rather than off a second table
+// that can drift; and four flat fills of similar value are hard to tell apart under one
+// light, so the surface has to differ too.
 import * as THREE from "three";
 import type { FinishZone, Floor, Member, Room, Vec2 } from "../../model/types";
 import {

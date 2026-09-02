@@ -28,10 +28,9 @@ export const FLAT_LAID_TOLERANCE_M = 1e-4;
 // across instead. For a vertical member this is also its thin plan dimension — the one a
 // level-of-detail switch has to measure, because it is the first to fall below a pixel.
 //
-// The member's own vertical extent states which way it was laid, so read that. Naming flat
-// *categories* instead — the rule this replaced — missed every flat category nobody
-// remembered to list, drawing 204 blocking members and 42 rough sills as 1.5" ribbons down
-// the middle of a 5.5" wall, and it went stale again each time the solver grew a category.
+// The member's own vertical extent states which way it was laid, so read that — naming flat
+// *categories* instead misses any flat category nobody remembered to list, and drifts again
+// each time the solver grows a category.
 // The Python twin is plan_cross_section_m in resolve/framing/profiles.py.
 export function crossWidth(m: Member): number {
   // z0_m..z1_m is the extent at one station, not the rise of a raked member end to end: a

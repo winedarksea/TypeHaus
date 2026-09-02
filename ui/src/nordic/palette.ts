@@ -137,7 +137,7 @@ export function familyOf(materialRef: string | null | undefined): string | null 
 // Mirrors _FINISH_BASE in packages/engine/src/typehaus/emit/gltf/palette.py — the .glb and the
 // viewer must agree, and the family guess is wrong for finish variants (a charcoal trim coil
 // is "metal" by family, which would paint it the palette's blue-grey).
-// KNOWN GAP (2026-08-31): NOTHING TESTS THAT THIS TABLE AND ITS PYTHON MIRROR AGREE.
+// KNOWN GAP: NOTHING TESTS THAT THIS TABLE AND ITS PYTHON MIRROR AGREE.
 // `test_detail_fill_parity.py` does that job for DETAIL_FILL and there is no equivalent for
 // the finish bases, so the two are kept in step by this comment convention alone. A row
 // added here and forgotten there is a .glb that disagrees with the viewer, silently.
@@ -146,37 +146,35 @@ const FINISH_BASE: Readonly<Record<string, string>> = {
   // The exposed-fastener PBR panel: the same white as the seamed skin (0xE8E8E2), which is
   // what createStandingSeamMaterial paints it. Mirrors _FINISH_BASE in emit/gltf/palette.py.
   "ribbed-panel": "#e8e8e2",
-  // The garage's 7/8" corrugated panel (2026-08-31): the same coil white again — one paint,
-  // now in three profiles across the site. Its own row rather than a shared key, because
-  // this table is matched exactly and a finish with no row falls to the "metal" family's
-  // blue-grey. Mirrors _FINISH_BASE in emit/gltf/palette.py.
+  // The garage's 7/8" corrugated panel: the same coil white as the other panel profiles.
+  // Its own row rather than a shared key, because this table is matched exactly and a
+  // finish with no row falls to the "metal" family's blue-grey. Mirrors _FINISH_BASE in
+  // emit/gltf/palette.py.
   "corrugated": "#e8e8e2",
-  // The house's north/south board & batten panel (2026-08-31): the same coil white a FOURTH
-  // time — one paint, four profiles across the site. Its own row rather than a shared key,
-  // because this table is matched exactly and a finish with no row falls to the "metal"
-  // family's blue-grey. Mirrors _FINISH_BASE in emit/gltf/palette.py.
+  // The house's north/south board & batten panel: the same coil white as the other panel
+  // profiles. Its own row rather than a shared key, because this table is matched exactly
+  // and a finish with no row falls to the "metal" family's blue-grey. Mirrors _FINISH_BASE
+  // in emit/gltf/palette.py.
   "board-and-batten": "#e8e8e2",
-  // Cellular PVC trim (the garage SOFFIT; its fascia went to formed metal on 2026-08-26)
-  // is factory-white, not the "siding" family's blue-grey the substring guess falls to.
-  // Mirrors _FINISH_BASE in emit/gltf/palette.py.
+  // Cellular PVC trim (the garage soffit) is factory-white, not the "siding" family's
+  // blue-grey the substring guess falls to. Mirrors _FINISH_BASE in emit/gltf/palette.py.
   "pvc-cellular": "#f4f2ee",
   // White-painted exterior lumber: POST_WHITE_PAINT's structure layer, the knee-brace
-  // diagonals that carry it as a FramedMember material, the balcony rim band, and (since
-  // 2026-08-27) the four white beams of the garden's front frame. No familyOf needle
-  // matches the ref, so without an entry the member path painted a brace its bare "brace"
-  // category lumber while the .glb — which HAS had this row for months — drew it white.
-  // Mirrors _FINISH_BASE in emit/gltf/palette.py.
+  // diagonals (as a FramedMember material), the balcony rim band, and the garden's
+  // front-frame beams. No familyOf needle matches the ref, so without this row the member
+  // path paints a brace by its bare "brace" category lumber while the .glb draws it white —
+  // the two would disagree. Mirrors _FINISH_BASE in emit/gltf/palette.py.
   "post-paint-white": "#f4f2ee",
   // A second coil colour of the same 26 ga. nail-strip panel: Western States "Classic Green"
   // on the garage's east (overhead-door) wall only. It keeps "seam" in its tag so it still
   // gets the seam normal map, and declares this finish so the coil-white default in
   // builders/walls.ts does not paint over it. Mirrors _FINISH_BASE in emit/gltf/palette.py.
   "classic-green-seam": "#2f5233",
-  // The garage's formed-trim accent coil (2026-08-27): "Copper Penny" PVDF metallic on BOTH
-  // the vented ridge cap and the six fascia pieces. Not named "*seam*" — this is flat
-  // brake-formed stock, not ribbed panel. Mirrors _FINISH_BASE in emit/gltf/palette.py.
+  // The garage's formed-trim accent coil: "Copper Penny" PVDF metallic on BOTH the vented
+  // ridge cap and the six fascia pieces. Not named "*seam*" — this is flat brake-formed
+  // stock, not ribbed panel. Mirrors _FINISH_BASE in emit/gltf/palette.py.
   "metal-copper-penny": "#8a4f2a",
-  // Referenced by nothing since 2026-08-27 — the fascia wore Regal Blue for a day.
+  // Unreferenced by any current ref.
   "metal-fascia-regal-blue": "#1e3a5c",
 };
 
