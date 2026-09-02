@@ -1,6 +1,8 @@
 # CATLIN_ROOF — flash-and-batt, worked by hand (2026-08-31)
 
-**Why this note exists.** `AGENTS.md` and the repo guide both say it: *a calc that only
+## Why this note exists
+
+`AGENTS.md` and the repo guide both say it: *a calc that only
 agrees with itself is not verified.* The engine now reports R-53.2 for this assembly and
 NOT_APPLICABLE on its condensation gate, deferring to `code.R806_5_unvented_roof`. Both of
 those are new code paths written in the same commit as the assembly they grade, which is
