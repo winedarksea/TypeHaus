@@ -1,7 +1,6 @@
 # haus: editable
-# Catlin electrical — the ATTIC storey's NEC 210.52 fill, split out of plan/electrical.py on
-# 2026-08-29. That file was 1,700 lines against AGENTS.md's 500 before the guest studio added
-# ten devices to it.
+# Catlin electrical — the ATTIC storey's NEC 210.52 fill, split out of plan/electrical.py
+# (that file ran past AGENTS.md's 500-line cap).
 #
 # ** AN EDITABLE FILE CANNOT `from plan import ...` **, so this module imports only from
 # `typehaus` and plan/manifest.py composes the two lists. The rest of the attic's electrical —
@@ -36,7 +35,7 @@ NEC_FILL_ATTIC = [
                      position=pt(ft(29, 11.25), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    # ** THE SEVEN EAVE-LINE RECEPTACLES ARE FLOOR BOXES SINCE 2026-08-29. ** Every one of
+    # ** THE SEVEN EAVE-LINE RECEPTACLES ARE FLOOR BOXES. ** Every one of
     # them — ED-A-STUDIO-RC8/RC9 on the west line, ED-A-EAST-RC5/RC6/RC7 and ED-A-STUDY-RC2
     # on the east, ED-A-POCKET-RC1 in the pocket, plus ED-A-STUDY-RC3 in the south gable's
     # low east corner — was a box at 16" on a 5'-0" knee wall. There is no knee wall: those
@@ -66,18 +65,16 @@ NEC_FILL_ATTIC = [
                      position=pt(ft(34, 4.375), ft(10, 3.75)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.FLOOR), rotation=deg(270)),
-    # y 9'-3 3/8" -> 9'-11 3/8" (2026-08-27): W-A-SN thickened to 12 3/4" for the study's
-    # bookcase wall, and at the old y this device sat INSIDE the wall. Nothing checks that,
-    # which is why it is written down. 9'-11 3/8" is the same 3/8" off the new north face
-    # that 9'-3 3/8" was off the old one, so it is still a face-mounted receptacle in
-    # RM-A-EAST-UNFIN looking south.
+    # y=9'-11 3/8" is 3/8" off W-A-SN's north face — the wall thickened to 12 3/4" for the
+    # study's bookcase, so a stale y would sit INSIDE the wall. Nothing checks that, which
+    # is why it is written down: still a face-mounted receptacle in RM-A-EAST-UNFIN looking
+    # south.
     ElectricalDevice(uid="NEC055AAAA", tag="ED-A-EAST-RC8", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(26, 6.375), ft(9, 11.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    # RC1/RC2 moved 2026-07-31: both used to sit over the FO-A-STAIR well (1 3/4"/6 5/8" of
-    # deck, a 9' drop to reach). RC1 -> south wall between RC4/RC3; RC2 -> east wall south of
-    # the well, closing the 7'-10" run from RC3 round the corner.
+    # RC1 sits on the south wall between RC4/RC3; RC2 on the east wall south of the well,
+    # closing the 7'-10" run from RC3 round the corner.
     ElectricalDevice(uid="NEC056AAAA", tag="ED-A-STUDY-RC1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(29), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
@@ -109,21 +106,17 @@ NEC_FILL_ATTIC = [
     # ends of that and caught four of these at 1.38" buried on the first pass. The 1" is half
     # the box depth and is the offset every other device in this file carries.
     #
-    # ** THE WEST EAVE LINE CARRIES A RECEPTACLE AGAIN (ED-A-STUDIO-RC8, below). ** It was a
-    # 5'-0" knee wall when this was written and it is a flat rafter plate now, but the 210.52
-    # wall line the check unrolls is the same line either way. It briefly carried nothing:
-    # the x=1'-0" chase used to carry DU-S-ERV-HP-FEED's 6" beside a 3", a box roughly
-    # 12" wide by 8-9" tall for the wall's whole length, and the answer to that was a 21'-8"
-    # bench (FURN-A-STUDIO-PLINTH) whose `work_surface=False` broke the 210.52 wall line the way
-    # a doorway does. The 6" was rerouted out of this room on 2026-08-29 (plan/mep_erv.py), the
-    # bench went with it, and what is left is ONE 75 mm duct whose west face stands 3 7/8" clear
-    # of the gwb at ankle height. A box at 16" passes a foot over it. No cabinet, no break — and
-    # so the wall is back in the 210.52 test on its own merits, which is the honest place for it.
+    # ** THE WEST EAVE LINE CARRIES A RECEPTACLE AGAIN (ED-A-STUDIO-RC8, below). ** The
+    # 210.52 wall line the check unrolls is the same whether the host is a knee wall or a
+    # rafter plate. What crosses this wall today is ONE 75 mm duct (plan/mep_erv.py) whose
+    # west face stands 3 7/8" clear of the gwb at ankle height. A box at 16" passes a foot
+    # over it. No cabinet, no break — so the wall is back in the 210.52 test on its own
+    # merits, which is the honest place for it.
     # It takes TWO boxes, not one: RC1 and RC7 carry the corners in from the south and north
     # ends, and a single mid-wall device left the check reporting gaps at both ends of its 12'
     # reach. RC8 at 6'-0" and RC9 at 16'-0" close them with 2'-0" of overlap in the middle.
-    # ** RC1 AND RC7 ARE FLOOR BOXES TOO (2026-08-29), for the reason in the eave-line note
-    # above and one wall further round. ** Both stand at x=3'-0" — RC1 in the south gable,
+    # ** RC1 AND RC7 ARE FLOOR BOXES TOO, for the reason in the eave-line note above and
+    # one wall further round. ** Both stand at x=3'-0" — RC1 in the south gable,
     # RC7 in W-A-STU-N — and both those walls are `ToRoof`, so at x=3'-0" they are 19 1/2"
     # tall. A 16" box in a 19 1/2" wall puts its top 1" through the raked plate. They keep
     # their stations and their place in the 210.52 line; only the mounting moved.
@@ -144,7 +137,7 @@ NEC_FILL_ATTIC = [
                      position=pt(ft(17, 7.625), ft(3)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
-    # ** RC5 BECAME A GFCI DEVICE ON 2026-08-29 ** — not because it moved, but because the
+    # ** RC5 IS A GFCI DEVICE ** — not because it moved, but because the
     # wet bar did: FX-A-STUDIO-BAR-SINK is on this same wall at y 16'-8" now, 4'-8" north of
     # this box, and `_sink_points` projects E3902.10's 6'-0" radius from every Service.DRAIN
     # fixture. CKT-RC-ATTIC stays `gfci=False` and the protection rides the device, which is
@@ -157,13 +150,12 @@ NEC_FILL_ATTIC = [
     # EVERY fixture whose type declares Service.DRAIN, not just from sinks. ** That is
     # `_sink_points`' actual behaviour and it is wider than it sounds: the shower and the water
     # closet project circles too. RC6 lands 3'-8" from FX-A-STUBATH-SH through the bath wall, so
-    # it is a GFCI device whatever it is called. ** RC7 IS GFCI BY CHOICE NOW, NOT BY RULE
-    # (2026-08-29). ** It used to sit 5'-11" from the bar sink; the bar moved east to
-    # (17'-0", 16'-8") and the nearest Service.DRAIN fixture to RC7's (3'-0", 21'-0 5/8") is
-    # the water closet at 10'-6", so E3902.10 no longer reaches it. The device stays GFCI:
-    # it is a FLOOR box in a room with a wet bar, and dropping protection off an in-deck
-    # receptacle to save a few dollars is the wrong trade. Over-protection is never a
-    # violation; the comment is what had to be corrected, not the part.
+    # it is a GFCI device whatever it is called. ** RC7 IS GFCI BY CHOICE, NOT BY RULE. **
+    # The bar sink is at (17'-0", 16'-8") and the nearest Service.DRAIN fixture to RC7's
+    # (3'-0", 21'-0 5/8") is the water closet at 10'-6", so E3902.10 does not reach it. The
+    # device stays GFCI: it is a FLOOR box in a room with a wet bar, and dropping protection
+    # off an in-deck receptacle to save a few dollars is the wrong trade. Over-protection is
+    # never a violation.
     # The west eave line's pair. x=1'-7 5/8" is the floor-box station described in the
     # eave-line note above, 8 1/8" clear of the rafter plate; deg(90) turns them east into
     # the room, mirroring RC4/RC5's deg(270) on the centre wall opposite. Plain, not GFCI:
@@ -177,14 +169,13 @@ NEC_FILL_ATTIC = [
                      position=pt(inch(19.625), ft(16)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.FLOOR), rotation=deg(90)),
-    # ** RC10, NEW 2026-08-30, BECAUSE ED-A-STUBATH-GFCI STOPPED COVERING FOR IT. **
-    # W-A-STU-W is the bath's west wall and the studio's east wall at once. The bathroom
-    # receptacle used to stand on its bath face at x 9'-11 7/8", 5" from the studio's own
-    # finish plane — and `electrical.receptacle_spacing` accepts any device within 0.5 m of
-    # a room's boundary, so one box was silently answering 210.52(A) for BOTH rooms through
-    # 6 3/4" of staggered partition. Moving it to serve E3901.6 exposed the studio's real
-    # gap: 5'-0" of wall from the jog at (9'-7 1/2", 17'-3 3/8") north to W-A-HALL-S with
-    # nothing on it.
+    # ** RC10 EXISTS BECAUSE ED-A-STUBATH-GFCI STOPPED COVERING FOR IT. **
+    # W-A-STU-W is the bath's west wall and the studio's east wall at once, only 6 3/4" of
+    # staggered partition apart — `electrical.receptacle_spacing` accepts any device within
+    # 0.5 m of a room's boundary, so the bathroom receptacle used to silently answer
+    # 210.52(A) for both rooms. Moved to serve E3901.6 instead, it exposed the studio's
+    # real gap: 5'-0" of wall from the jog at (9'-7 1/2", 17'-3 3/8") north to W-A-HALL-S
+    # with nothing on it.
     # x 9'-3 1/8" is one inch proud of that face (the wall's layers band x 112.115"..
     # 118.885"), y 18'-6" is centred in the run so 6'-0" each way reaches both ends and
     # turns the north corner. Plain, not GFCI: the nearest Service.DRAIN fixture is the bar
@@ -208,14 +199,12 @@ NEC_FILL_ATTIC = [
     # and it is a lavatory here. CKT-RC-ATTIC is `gfci=False` deliberately (circuits.py: "the
     # handful in an E3902 location … are GFCI devices instead"), so this follows the house rule
     # and is a GFCI DEVICE rather than a re-typed circuit.
-    # Follows the bar to W-A-C2's west face on 2026-08-29 (see plan/fixtures.py), onto the
+    # Follows the bar to W-A-C2's west face (see plan/fixtures.py), onto the
     # same x 17'-7 5/8" line RC4/RC5 already stand on and turned west into the room the same
     # way. `test_wall_mounted_devices_resolve_against_a_wall_face` is what settles that
     # number — authored an inch further west it resolved floating 1" clear of the finish.
-    # ** y 16'-8" -> 15'-0 1/2" ON 2026-08-30. ** The sink was straightened onto the wall face
-    # and its bowl now spans y 15'-7"..17'-1" (plan/fixtures.py), so 16'-8" stopped being
-    # beside the bowl and became directly behind the faucet. 15'-0 1/2" is the middle of the
-    # 1'-1" gap between the sink's south edge and APPL-A-STUDIO-FRIDGE's 14'-6" north face:
+    # y=15'-0 1/2" is the middle of the 1'-1" gap between the sink's south edge (bowl spans
+    # y 15'-7"..17'-1", plan/fixtures.py) and APPL-A-STUDIO-FRIDGE's 14'-6" north face:
     # beside both, reachable by both, and `code.E3902_gfci_locations` measures it at 1.4'
     # against E3902.10's 6'-0".
     ElectricalDevice(uid="K9XVXZ9XZ3", tag="ED-A-STUDIO-BAR-GFCI", kind=DeviceKind.RECEPTACLE_GFCI,
@@ -224,10 +213,8 @@ NEC_FILL_ATTIC = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)), rotation=deg(270)),
     # The bath's own, GFCI under E3902.1 — every 125V receptacle in a bathroom, sink or no
     # sink — and on the new CKT-BATH-ATTIC rather than the general attic circuit.
-    # ** MOVED 2026-08-30, FROM (9'-11 7/8", 18'-6") ON THE WEST WALL. ** It was the only
-    # 125V receptacle in this bathroom and it stood 44.4" from FX-A-STUBATH-LAV's carcass,
-    # so the new `code.E3901_6_bathroom_receptacle` (IRC E3901.6 / NEC 210.52(D), one
-    # receptacle within 36" of each lavatory basin) failed the room. Right room, right
+    # Its prior station failed `code.E3901_6_bathroom_receptacle` (IRC E3901.6 / NEC
+    # 210.52(D): one receptacle within 36" of each lavatory basin) — right room, right
     # height, right circuit, wrong wall.
     # It goes on W-A-HALL-S's south face instead, in the 6 1/8" of clear wall between
     # FX-A-STUBATH-WC (ends x 146 7/8") and the lavatory (starts x 153"): x 150" centres a
@@ -242,9 +229,9 @@ NEC_FILL_ATTIC = [
     # At the ERV, in the pocket. IRC M1305.1.3 wants a receptacle (and a light — see
     # ED-A-POCKET-LT1) at the appliance; the pocket is STORAGE so 210.52 spacing never asks
     # for one, which is exactly why it has to be authored deliberately.
-    # ** MOVED TO THE MANIFOLD AND MADE A FLOOR BOX, 2026-08-29. ** M1305.1.3's receptacle
-    # has to be AT the appliance, and the appliance moved east to x 7'-0" where a person can
-    # reach it (see EQ-A-ERV-MAN-EXH). At its old x 7 5/8" the roof underside is 5 1/4".
+    # ** THE RECEPTACLE IS A FLOOR BOX AT THE MANIFOLD. ** M1305.1.3's receptacle has to be
+    # AT the appliance, which sits at x 7'-0" where a person can reach it (see
+    # EQ-A-ERV-MAN-EXH).
     ElectricalDevice(uid="E6RNBJBD76", tag="ED-A-POCKET-RC1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(8, 6), ft(33)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",

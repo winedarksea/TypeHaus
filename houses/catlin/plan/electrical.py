@@ -11,7 +11,7 @@
 #             EQ-M-HP2-LIVING.
 #   System 3  EQ-M-HP3-OD (Sapphire R32, VFD soft start, backup battery circuit) ->
 #             EQ-M-HP3-STAIR, stair well NW corner on W-M-N2. Mudroom reached via
-#             REG-M-XFER-MUD, a passive louver in W-M-STRW (moved off that wall 2026-08-15).
+#             REG-M-XFER-MUD, a passive louver in W-M-STRW.
 # EQ-B-ERV moves *ventilation* air only — its "supply" is fresh air, not heat.
 #
 # Condensate: each head/AH drains via a collected air-gap line to the mech-room sink —
@@ -21,16 +21,15 @@
 # plan/circuits.py; `circuit=` strings here are the join keys. Uids avoid I/L/O/U
 # (Crockford base32, model/ids.py).
 #
-# A device position is a *face* position (2026-08-03): the point sits half the device's
+# A device position is a *face* position: the point sits half the device's
 # depth off the finish plane (back on the plane, plate proud of it), `rotation` turns the
 # plate along the wall. Nothing in the resolver pulls a device onto its wall, so a box
 # authored on the wall axis buries in the studs and one authored a few feet in floats in
-# mid-air — both were widespread until this convention. Enforced by
+# mid-air. Enforced by
 # `test_catlin_contract_m3.py::test_wall_mounted_devices_resolve_against_a_wall_face`,
 # except ED-M-LIVING-KGF4 (mounts on the island, not a Wall) and ED-M-PORCH-FLOOD (a
 # pillar). CATLIN_EXT_2X6's inside face is 6 5/8" in from the sheathing datum, cladding
-# face 6 1/2" outboard of that (5" until the 2026-08-23 Swinburne truss, 5 1/2" until
-# the 2026-08-26 catlin truss laid four flat girt layers where the outrigger band was).
+# face 6 1/2" outboard of that.
 #
 # Positions worth knowing (project-north frame, house sheathing SW corner at 0,0):
 # - Meter: exterior face of west wall (W-M-W1), outside ED-B-PANEL at (2', 29') in the
@@ -40,9 +39,9 @@
 # - Sunken-garden porch: west wall W-SG-W1 axis x=8', inner face x=8.5', north end
 #   y=-0.833'. Hot tub disconnect 7' south of that, under the deck — basement storey, so
 #   Mount elevation 5' is -4' absolute.
-# - PV junction box on the north gable (W-A-N2B since 2026-08-29) beside the radon riser
+# - PV junction box on the north gable (W-A-N2B) beside the radon riser
 #   clamp cluster; at x=11' the 6:12 rake carries siding to 26'-5 3/8", so 25'-6" absolute
-#   has cladding to grip. It was at x=9' under a 4:12 rake reaching 28'.
+#   has cladding to grip.
 
 from typehaus import (
     ConduitRun,
@@ -383,12 +382,10 @@ EQUIPMENT_TYPES = (
 
 # --- Service entrance + backup enclosure ---------------------------------------------
 SERVICE_DEVICES = [
-    # Exterior west wall at y=29', 7" outside the sheathing plane. Moved out 1/2"
-    # on 2026-08-23 with the Swinburne truss (cladding face 5.02" -> 5.5" proud) and a
-    # further 1" on 2026-08-26 with the catlin truss (5.5" -> 6.5"); each time the meter's
-    # back was left inside the cladding it is surface-mounted on.
+    # Exterior west wall at y=29', 7" outside the sheathing plane — the meter's back is
+    # left inside the cladding it is surface-mounted on.
     #
-    # Height (2026-08-27): the elevation is the *base* of the 16" socket and the project
+    # Height: the elevation is the *base* of the 16" socket and the project
     # datum is the main floor, so the authored 5'-0" put the glass 8'-6" above SITE_GRADE
     # (-2'-10") — a ladder job, not a meter. 1'-6" here is grade + 4'-4" to the base and so
     # grade + 5'-0" to the register centre, mid-band of the utility's 4'-0"..6'-0" window.
@@ -603,20 +600,15 @@ MAIN_DEVICES = [
                                  recessed_into_host_surface=True)),
     # Freezer beside the fridge (KRF1 at (18'-4 3/8", 31'-4 5/8")) on the centre wall's east
     # face; fridge + freezer + PoE WiFi share the backup kitchen circuit.
-    # y 29'-10" -> 29'-5 1/4" -> 29'-9 1/4" (both 2026-08-24). It went south when the pantry
-    # room's partition took the north end of the run, then came back north with the whole
-    # cold run when W-M-PAN-S moved 4" (storeys/main.py). This box stays behind its own
-    # appliance (freezer now y 27'-4 7/8"..30'-1 3/4") — the same constraint that decided
-    # which end of the old 72" bay the retired filler went to.
+    # This box stays behind its own appliance (freezer y 27'-4 7/8"..30'-1 3/4") — the
+    # same constraint that decided which end of the bay the retired filler went to.
     ElectricalDevice(uid="CEE006AAAA", tag="ED-M-LIVING-KFZ1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(18, 4.375), ft(29, 9.25)), type_ref="ED-T-RECEPTACLE", circuit="CKT-FRIDGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
     # System 3 (Sapphire, backup battery circuit): its outdoor unit stands on the north
     # side beside the mudroom door, so the disconnect goes on W-M-N2's exterior face west
     # of the breezeway — clear of ED-M-HP1-DISC's condenser gap.
-    # Moved out 1/2" on 2026-08-23 with the Swinburne truss's cladding face, 3/8" back in
-    # on 2026-08-25 with the can's true 3 1/4" depth (see ED-M-HP1-DISC), and out 1" again
-    # on 2026-08-26 with the catlin truss (5.5" -> 6.5" proud).
+    # Offset per the can's true 3 1/4" depth (see ED-M-HP1-DISC's note on this convention).
     ElectricalDevice(uid="CEE026AAAA", tag="ED-M-HP3-DISC", kind=DeviceKind.DISCONNECT,
                      position=pt(ft(4), ft(36, 8.875)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
@@ -752,28 +744,20 @@ MAIN_EQUIPMENT = [
 
 # --- Second storey: the NW bathroom's floor-heat control -------------------------------
 SECOND_DEVICES = [
-    # NEC 440.14 disconnects for the two balcony condensers, second-storey south wall within
-    # sight of their units. Moved 2026-07-31 off D-S-DECK-W's rough opening onto clear wall
-    # with 110.26 working space clear of any condenser: HP1's box between the plant windows,
-    # HP2's east of D-S-DECK-E (its unit sits 7' away in plain sight — 440.14 needs sight,
-    # not reach). Both on the wall's exterior face (y=-7 1/2"), corrected 2026-08-03 from
-    # y=+6" which put a 3R disconnect on the interior side of the wall from its condenser,
-    # and moved out a further 1/2" on 2026-08-23 when the Swinburne truss took the cladding
-    # face from 5.02" to 5.5" proud of the sheathing plane, and 1" more on 2026-08-26 when
-    # the catlin truss took it to 6.5". Pulled 3/8" back in on 2026-08-25:
-    # ED-T-DISCONNECT-3R is a 3 1/4"-deep can, so its centre belongs 1 5/8" off the cladding
-    # face, and the 2" these were authored with dates from the type's old placeholder 4"
-    # depth. Same correction on ED-M-HP3-DISC and ED-B-SPA-DISC.
+    # NEC 440.14 disconnects for the two balcony condensers, second-storey south wall
+    # within sight of their units, clear of any condenser's 110.26 working space: HP1's
+    # box between the plant windows, HP2's east of D-S-DECK-E (its unit sits 7' away in
+    # plain sight — 440.14 needs sight, not reach). Both on the wall's exterior face.
     #
-    # **Both slid east/west 2026-08-27 to stand beside the units they kill**, which is what
-    # NEC 440.14 asks of them and what neither did before: HP1's box was 24" west of
-    # EQ-M-HP1-OD (x 96"..112") and HP2's was 88" *east* of EQ-M-HP2-OD (x 202"..218"),
-    # around a corner from it. They now sit 7 1/4" off HP1-OD's west edge and on HP2-OD's
-    # east edge respectively. y stays at -8 7/8": that is the 3 1/4" case's back edge exactly
-    # on W-S-S1/W-S-S2's cladding face at y=-7 1/4", and the drag that moved the x had left
-    # both boxes floating 3/8" proud of it (`test_wall_mounted_devices_resolve_against_a_wall_face`).
-    # ED-M-HP2-DISC straddles the W-S-S1/W-S-S2 break at x=18'-0" — collinear walls with the
-    # W-S-C1 tee's framing behind the joint, so the backing is there.
+    # ED-T-DISCONNECT-3R is a 3 1/4"-deep can, so its centre belongs 1 5/8" off the
+    # cladding face. Same correction on ED-M-HP3-DISC and ED-B-SPA-DISC.
+    #
+    # **Both stand beside the units they kill**, which is what NEC 440.14 asks of them:
+    # they sit 7 1/4" off HP1-OD's west edge and on HP2-OD's east edge respectively. y
+    # stays at -8 7/8": that is the 3 1/4" case's back edge exactly on W-S-S1/W-S-S2's
+    # cladding face at y=-7 1/4" (`test_wall_mounted_devices_resolve_against_a_wall_face`).
+    # ED-M-HP2-DISC straddles the W-S-S1/W-S-S2 break at x=18'-0" — collinear walls with
+    # the W-S-C1 tee's framing behind the joint, so the backing is there.
     ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
                      position=pt(ft(7, 1.5), ft(0, -8.875)), type_ref="ED-T-DISCONNECT-3R",
                      circuit="CKT-HP1", mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room=None),
@@ -1002,52 +986,34 @@ GARAGE_EQUIPMENT = [
 
 # --- Attic: PV junction box beside the radon riser -----------------------------------
 PV_JBOX = [
-    # Moved out 1/2" on 2026-08-23 with the Swinburne truss's cladding face, 3/8" back in
-    # on 2026-08-25 with the can's true 3 1/4" depth (see ED-M-HP1-DISC), and out 1" again
-    # on 2026-08-26 with the catlin truss (5.5" -> 6.5" proud).
+    # Offset per the can's true 3 1/4" depth (see ED-M-HP1-DISC's note on this convention).
     #
-    # ** MOVED x 9'-0" -> 11'-0" ON 2026-08-29, and it had to. ** The gable's rake follows
-    # the roof, and at 6:12 off a 20'-11 3/8" eave the plane stands at 25'-5 3/8" at x=9'-0"
-    # — 1/2" BELOW this box's own 25'-6", i.e. the enclosure was on the roofing rather than
-    # the siding. At x=11'-0" the plane is 26'-5 3/8" and the box hangs with 11" of cladding
-    # over it. It follows VR-M-RADON-VENT's riser east on the same pass (mep_venting.py) and
-    # is still beside it: the riser jogs to x 9'-7 1/2", so the box is 1'-4 1/2" east of it.
+    # ** THE STATION HAS TO CLEAR BOTH THE RAKE AND A WINDOW, AND THE BAND IS NARROW. **
+    # The rake wants x >= 9'-1 1/4" (the gable plane is 20'-11 3/8" + x/2, and this box
+    # needs 25'-6" of cladding to grip); WIN-A-N1's rough opening (x 10'-9"..13'-3",
+    # framing bumper 10'-7"..13'-5", sill +22'-0", head +25'-0") wants x <= 10'-7" or
+    # x >= 13'-5". Those do not overlap at 25'-6": the ROOF UNDERSIDE (20'-1 1/2" + x/2,
+    # the plane `integrity.element_above_roof` reads, a foot below the cladding plane)
+    # needs x >= 10'-10" to carry a 25'-6" riser, and the window starts at 10'-9". So the
+    # box sits at x=10'-2", elevation 25'-0", where the underside is 25'-4" and there is
+    # 4" of clearance — wholly west of the window on the facade, which is the better
+    # elevation anyway.
     #
-    # ** IT SITS ON W-A-N2B NOW, NOT W-A-N2 ** — the north gable split at x=10'-0" on
-    # 2026-08-29 and 11'-0" is east of that. test_catlin_outdoor_structures.py names the
-    # wall it must ride below; that assertion follows the box.
-    # ** MOVED AGAIN, 11'-0" -> 10'-2", ON 2026-08-30: x=11'-0" IS INSIDE A WINDOW. **
-    # The 2026-08-29 move solved the rake and walked into WIN-A-N1, whose rough opening is
-    # x 10'-9"..13'-3" (framing bumper 10'-7"..13'-5"), sill +22'-0", head +25'-0". At x=11'-0"
-    # this box hangs on the facade 3" inside that window's west jamb with its centre 6" over
-    # the head, and CD-A-PV-EAST's riser clipped the opening's top corner for 3" reaching it.
-    # `mep.run_through_opening` found the conduit; the box was found by looking at why.
+    # Going east instead (x >= 13'-7") clears the window at 25'-6" and costs 2'-6" of
+    # 1 1/2" EMT to reach a worse station: further from VR-M-RADON-VENT's riser, and out
+    # over the stair void's bay.
     #
-    # Both constraints are satisfiable at once and the band is narrow. The rake wants
-    # x >= 9'-1 1/4" (the gable plane is 20'-11 3/8" + x/2, and this box needs 25'-6"); the
-    # window wants x <= 10'-7" or x >= 13'-5". Those do not overlap at 25'-6": the ROOF
-    # UNDERSIDE (20'-1 1/2" + x/2, which is the plane `integrity.element_above_roof` reads,
-    # and is a foot below the cladding plane the 2026-08-29 note reasoned from) needs
-    # x >= 10'-10" to carry a 25'-6" riser, and the window starts at 10'-9". **So the box
-    # drops to 25'-0" as well as moving to 10'-2"**, where the underside is 25'-4" and there
-    # is 4" of clearance. On the facade it is then wholly west of the window rather than
-    # perched over its corner, which is the better elevation anyway.
-    #
-    # Going east instead (x >= 13'-7") clears the window at the original 25'-6" and costs
-    # 2'-6" of 1 1/2" EMT to reach a worse station: further from VR-M-RADON-VENT's riser,
-    # and out over the stair void's bay.
-    #
-    # Still on W-A-N2B, which spans x 18'-0"->10'-0" — 10'-2" is 2" east of that split, so
-    # test_catlin_outdoor_structures.py's wall assertion is unchanged.
+    # ** IT SITS ON W-A-N2B, NOT W-A-N2 ** — the north gable splits at x=10'-0", and
+    # 10'-2" is 2" east of that. test_catlin_outdoor_structures.py names the wall it must
+    # ride below; that assertion follows the box.
     ElectricalDevice(uid="CEE014AAAA", tag="ED-A-PV-JB", kind=DeviceKind.JUNCTION_BOX,
                      position=pt(ft(10, 2), ft(36, 10.25)), type_ref="ED-T-PV-JB", circuit="CKT-ESS-GRID",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
 ]
-# ** CN-A-PV-CLAMP is GONE (2026-08-26), for the same reason as CN-A-NEMA-CLAMP **
-# (plan/mep_electrical.py, which carries the full note). It was a plain S-5! seam clamp on
-# W-A-N2, and W-A-N2 wears `pbr-panel-26` now — an exposed-fastener panel with no seam. At
-# x=9' the rake is well above the box's 25'-6", so this was wall and not roof, and a seam
-# clamp there is not merely unnecessary but uninstallable. The box is screwed through the
+# ** THERE IS NO CN-A-PV-CLAMP, for the same reason as CN-A-NEMA-CLAMP **
+# (plan/mep_electrical.py, which carries the full note): W-A-N2 wears `pbr-panel-26`, an
+# exposed-fastener panel with no seam, so a seam clamp there is uninstallable. The box is
+# screwed through the
 # panel into the girt with the same gasketed T09150HWAM the panel is hung on, and those are
 # inside the field-grid screw count.
 #
@@ -1195,18 +1161,17 @@ DATA_TRUNKS = [
 ]
 
 MAIN_DATA_TRUNKS = [
-    # ** BOTH RUNS CROSSED THE STAIRWELL, AND BOTH ARE OFF IT NOW (2026-08-30). **
-    # They left the chase at y=34'-6" and went straight east at +9'-2". At that height they
-    # are inside FS-S-WEST — the SECOND storey's floor, whose joists run 9'-0 1/8" to 10'-0"
-    # — and FS-S-WEST's deck void is x 10'-3 3/8"..17'-8 5/8", y 26'-0 3/8"..35'-5 3/8".
-    # KITCH spanned **7.27 ft** of that opening and PORCH **15.52 ft**, because PORCH's south
-    # leg then ran down x=17'-6", which is 2 5/8" INSIDE the second floor's trimmer even
-    # though it is exactly ON the main floor's — eight more feet of raceway over a two-storey
-    # stairwell with nothing to strap it to. Both figures are measured by `mep.run_over_void`
-    # (checks/mep/routing.py), which is the check this pair is the reason for; reading them
-    # by eye against FS-M-STAIR's slightly narrower opening under-counts both. Nothing graded
-    # it before: a ConduitRun carries no floor_ref, so it draws wherever it is authored, and
-    # `duct_joist_bay` only fires on JOIST_BAY routing.
+    # ** NEITHER RUN CROSSES THE STAIRWELL. ** Routed straight east at +9'-2" from the
+    # chase at y=34'-6", they would be inside FS-S-WEST — the SECOND storey's floor, whose
+    # joists run 9'-0 1/8" to 10'-0" — and FS-S-WEST's deck void is x 10'-3 3/8"..17'-8 5/8",
+    # y 26'-0 3/8"..35'-5 3/8". KITCH would span **7.27 ft** of that opening and PORCH
+    # **15.52 ft**, because PORCH's south leg would run down x=17'-6", which is 2 5/8"
+    # INSIDE the second floor's trimmer even though it is exactly ON the main floor's —
+    # eight more feet of raceway over a two-storey stairwell with nothing to strap it to.
+    # Both figures are measured by `mep.run_over_void` (checks/mep/routing.py); reading
+    # them by eye against FS-M-STAIR's slightly narrower opening under-counts both. A
+    # ConduitRun carries no floor_ref, so nothing else grades it, and `duct_joist_bay`
+    # only fires on JOIST_BAY routing.
     #
     # KITCH goes NORTH instead, into the first joist bay inboard of the north wall at
     # y=35'-6" — 6" clear of the void's north edge, strapping to the rim and the joist ends
@@ -1223,11 +1188,11 @@ MAIN_DATA_TRUNKS = [
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-KITCH-AP"),
     # PORCH goes SOUTH first and turns east at y=1'-0", well below the void, then out under
     # the balcony deck to the porch soffit — still sharing SP-SG-PORCH-ELEC with the ceiling
-    # fan's supply, one hole and two raceways, because the exit point at x=17'-6" never
-    # moved — only the y at which the run reaches it did, from a line inside the stairwell to
-    # one twenty-five feet south of it. **The reroute is free**: 15'-6" + 39'-4" east-then-south is the same 54'-10" of
-    # plan run as 33'-6" + 15'-6" + 5'-10" south-then-east-then-south, so 55.33 LF developed
-    # either way, at identical cost. The long x=2'-0" leg rides FS-S-WEST, which is open-web:
+    # fan's supply, one hole and two raceways, at the same exit point x=17'-6". **This costs
+    # nothing extra**: 33'-6" + 15'-6" + 5'-10" south-then-east-then-south is the same
+    # 54'-10" of plan run as the void-crossing alternative's 15'-6" + 39'-4", so 55.33 LF
+    # developed either way, at identical cost. The long x=2'-0" leg rides FS-S-WEST, which
+    # is open-web:
     # 3/4" EMT passes between the 8 7/8" chords without a hole in anything
     # (resolve/framing/profiles.py).
     ConduitRun(uid="CDT011AAAA", tag="CD-M-DATA-PORCH", trade_size=inch(0.75),

@@ -25,9 +25,9 @@ Conventions:
   down the right, and a 2-pole breaker takes ``slot`` and ``slot + 2`` (same column).
   The ESS grid port backfeeds at the bottom of the bus (40/42), opposite the main (120%
   rule); ``code.NEC_705_12_interconnection`` grades that arithmetic.
-  As of 2026-08-07 (CKT-DISPOSAL split): ED-B-PANEL carries 14 two-pole + 17 one-pole =
-  45 of ED-T-PANEL's 54 spaces (nine spare); ED-B-BACKUP-PANEL carries 1 two-pole +
-  5 one-pole = 7 of its 12. ``electrical.panel_spaces`` reconciles both against
+  ED-B-PANEL carries 14 two-pole + 17 one-pole = 45 of ED-T-PANEL's 54 spaces (nine
+  spare); ED-B-BACKUP-PANEL carries 1 two-pole + 5 one-pole = 7 of its 12.
+  ``electrical.panel_spaces`` reconciles both against
   ``test_catlin_panel_spaces_fits_the_54_space_enclosure``. Count from the loaded plan,
   not by hand — a hand count has been wrong here before.
 """
@@ -64,13 +64,12 @@ CIRCUITS = (
             description="EV charging, NEMA 6-20 (garage) — Emporia Vue managed"),
     Circuit(uid="CKT005AAAA", tag="CKT-SPA", slot=17, panel_ref=_PANEL, breaker_amps=50, poles=2,
             gfci=True, load_va=11500, description="Hot tub (sunken garden)"),
-    # 50A/2p GFCI per notes/sauna_shower_basement_detail.md (max 10.5 kW). Was 30A (only
-    # ~5.5 kW continuous, half what the 513 cf sauna needs); EQ-B-SAUNA-HTR is 9 kW =
-    # 37.5A, 46.9A at the 125% continuous factor, so 50A is the breaker.
+    # 50A/2p GFCI per notes/sauna_shower_basement_detail.md (max 10.5 kW). EQ-B-SAUNA-HTR
+    # is 9 kW = 37.5A, 46.9A at the 125% continuous factor, so 50A is the breaker.
     Circuit(uid="CKT006AAAA", tag="CKT-SAUNA", slot=21, panel_ref=_PANEL, breaker_amps=50, poles=2,
             gfci=True, load_va=9000, description="Sauna heater (EQ-B-SAUNA-HTR)"),
-    # CKT-WH-240 moved to the backup subpanel 2026-08-15 — see the SHED tier below. Slot 25
-    # is a spare on the main panel now.
+    # CKT-WH-240 moved to the backup subpanel — see the SHED tier below. Slot 25 is a
+    # spare on the main panel now.
     Circuit(uid="CKT008AAAA", tag="CKT-ERV", slot=2, panel_ref=_PANEL, breaker_amps=15, poles=2,
             load_va=200, description="ERV"),
     # The three Gree heat-pump systems (plan/electrical.py). A multi's indoor heads are fed
@@ -85,8 +84,8 @@ CIRCUITS = (
     Circuit(uid="CKT009AAAA", tag="CKT-HP1", slot=6, panel_ref=_PANEL, breaker_amps=25, poles=2,
             load_va=5040, description="Heat pump 1 outdoor, FLEXX Ultra 24k (EQ-M-HP1-OD)"),
     # uids CKT036/037, not CKT031/032: those were already spent on the radiant-floor
-    # circuits below (a duplicate found 2026-08-01). Devices name the tag, not the uid,
-    # so renumbering this pair was the whole fix.
+    # circuits below. Devices name the tag, not the uid, so renumbering this pair was
+    # the whole fix.
     # ** 15A -> 35A ON THE FLEXX ULTRA RETYPE, AND IT ABSORBED CKT-HP1-STRIP. ** The air
     # handler now carries the 4.6 kW factory heat kit (EQ-S-HP1-STRIP, FLEXA2LHTR05KWD) inside
     # its own cabinet, staged off its own 24 VAC board, so the kit is fed from the unit and not
@@ -101,7 +100,7 @@ CIRCUITS = (
             description="Heat pump 2 outdoor, Multi Ultra 3-port (EQ-M-HP2-OD; feeds its 3 heads)"),
     # System 3 (below, backup microgrid) is a true-VFD compressor that soft-starts, which
     # is what makes it carryable by the battery inverter at all.
-    # GFCI at the breaker (2026-08-01, code.E3902_gfci_locations): ED-M-LIVING-KET1 sits
+    # GFCI at the breaker (code.E3902_gfci_locations): ED-M-LIVING-KET1 sits
     # 3.2' from the kitchen sink. E3902.10 reaches it despite being 240V (it covers 125V
     # through 250V receptacles at 50A or less), and a 2-pole GFCI breaker is the only
     # place to protect a 6-20R.
@@ -114,8 +113,8 @@ CIRCUITS = (
     # (EQ-B-ESS-INV) rather than backfeeding on its own.
     #
     # 50A: 8,000 W continuous at 240V = 33.3A, x125% = 41.7A, next standard size up
-    # (datasheet 2026-08-02; the 80A grid-passthrough rating is pass-through capability,
-    # not backfeed). The 705.12 ceiling on this bus is 225x1.2-200=70A, so 50A leaves 20A
+    # (the 80A grid-passthrough rating is pass-through capability, not backfeed). The
+    # 705.12 ceiling on this bus is 225x1.2-200=70A, so 50A leaves 20A
     # for a future second source (V2H).
     #
     # source=True excludes it from the 220.82 load summary and includes it in the 705.12
@@ -123,15 +122,11 @@ CIRCUITS = (
     Circuit(uid="CKT012AAAA", tag="CKT-ESS-GRID", slot=40, panel_ref=_PANEL, breaker_amps=50,
             poles=2, source=True, load_va=0,
             description="EG4 12kPV grid port — PV + battery interconnection (EQ-B-ESS-INV)"),
-    # CKT-HP1-STRIP IS DELETED, AND SLOT 18 IS A SPARE 2-POLE AGAIN. It existed from
-    # 2026-08-15 to today to feed a generic 2 kW inline duct heater — a part that answered a
-    # design-temperature shortfall the FLEXX Ultra retype removes, and that could never have
-    # been interlocked with the EQ-T-GREE-DUC24 it was drawn against, because that machine had
-    # no aux-heat terminal. The replacement is a FACTORY kit inside the air handler's cabinet,
-    # fed and staged from the unit, so it rides CKT-HP1-AH above. The panel gets back the
-    # spare 2-pole it lost on 2026-08-15.
+    # CKT-HP1-STRIP IS DELETED, AND SLOT 18 IS A SPARE 2-POLE AGAIN: the aux heat is now a
+    # FACTORY kit inside the air handler's cabinet, fed and staged from the unit, so it
+    # rides CKT-HP1-AH above rather than a circuit of its own.
 
-    # --- electric space heating (2026-07-25) -----------------------------------------
+    # --- electric space heating --------------------------------------------------------
     # Supplemental only — the three heat-pump systems do the heating work, these five
     # take the chill off specific surfaces. The three floor zones are 120V mat at
     # 12 W/ft2 over polygons in storeys/main.py and storeys/second.py, so each circuit's
@@ -142,17 +137,13 @@ CIRCUITS = (
     # (CKT-FH-BATH2/BATH1 outright); the dining zone (RM-M-LIVING) is outside the letter
     # of that rule but mat manufacturers require Class A protection regardless.
     #
-    # Was CKT-FH-SAUNA until 2026-07-25 — RM-B-SAUNA has no floor heat (storeys/
-    # basement.py), so that zone, circuit and stat are all gone.
-    # 203 VA, not the 498 this carried until 2026-08-29, and NOT because the zone shrank —
-    # it grew. 498 described a "41.5 ft2" zone that had not existed for some time (the
-    # polygon was 6.7 ft2 when the drop-in bath pass found it), so the panel was carrying a
-    # load two and a half times the mat's. FH-M-BATH2 is now 17.85 ft2 of authored zone
-    # heated by one Schluter DHEHK12016 cable — 16.0 ft2, 120 V, 203 W, 1.7 A as purchased —
-    # and this is that nameplate rather than `area x 12`, because heating cable is sold in
-    # fixed lengths and cannot be cut. NEC 220.51 counts fixed electric space heating at
-    # 100% of connected load, so VA = W here. ** The 295 VA this gives back is real
-    # capacity: the service was at 7.9 A of margin. ** 15 A stays despite a 1.7 A load — the
+    # RM-B-SAUNA has no floor heat (storeys/basement.py), so that zone, circuit and stat
+    # are all gone.
+    # FH-M-BATH2 is 17.85 ft2 of authored zone heated by one Schluter DHEHK12016 cable —
+    # 16.0 ft2, 120 V, 203 W, 1.7 A as purchased — and this is that nameplate rather than
+    # `area x 12`, because heating cable is sold in fixed lengths and cannot be cut. NEC
+    # 220.51 counts fixed electric space heating at 100% of connected load, so VA = W
+    # here. 15 A stays despite a 1.7 A load — the
     # thermostat is a 15 A device with an integral Class A GFCI and its own box, and a
     # dedicated home run is what Schluter recommends. NEC 424.44(G) is what makes the GFCI
     # mandatory; this mat is the ONLY heat in RM-M-BATH2 (no supply register), so the
@@ -161,19 +152,16 @@ CIRCUITS = (
             gfci=True, load_va=203,
             description="Radiant floor heat — main bath, sole heat source "
                         "(FH-M-BATH2, 17.85 ft2, Schluter DHEHK12016)"),
-    # AFCI too (2026-08-01): this mat is in RM-M-LIVING, and E3902.16 covers the 120V 15/20A
+    # AFCI too: this mat is in RM-M-LIVING, and E3902.16 covers the 120V 15/20A
     # circuits *supplying outlets or devices* in a living room — a heating mat is a device.
     # The two bath mats are not: E3902.16's room list stops at the bathroom door.
     Circuit(uid="CKT032AAAA", tag="CKT-FH-DINING", slot=31, panel_ref=_PANEL, breaker_amps=15, poles=1,
             gfci=True, afci=True, load_va=696,
             description="Radiant floor heat — under the dining table (FH-M-DINING, 58.0 ft2)"),
     Circuit(uid="CKT033AAAA", tag="CKT-FH-BATH1", slot=33, panel_ref=_PANEL, breaker_amps=15, poles=1,
-            # 338 VA, not 509: the zone lost its east lobe to RM-S-BATH1's 48" vanity on
-            # 2026-08-30 and the wattage is now a purchased nameplate (Schluter DHEHK12027,
-            # 26.7 ft2 / 338 W / 2.8 A) rather than a stale area times 12. The old 509 was
-            # doubly wrong — the polygon never enclosed the 42.4 ft2 it was derived from.
-            # NEC 220.51 counts fixed electric space heating at 100%, so this 171 VA comes
-            # straight off the service demand.
+            # 338 VA: the wattage is a purchased nameplate (Schluter DHEHK12027, 26.7 ft2 /
+            # 338 W / 2.8 A) rather than a stale area times 12. NEC 220.51 counts fixed
+            # electric space heating at 100%, so this comes straight off the service demand.
             gfci=True, load_va=338,
             description="Radiant floor heat — NW bathroom, sole heat source "
                         "(FH-S-BATH1, 27.31 ft2, Schluter DHEHK12027)"),

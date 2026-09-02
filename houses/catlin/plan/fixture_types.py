@@ -10,10 +10,7 @@ header says "final fixture selection by owner." This file is that selection, and
 beside the allowances rather than replacing them — the lavatory, the water closets and the
 shower are all still correctly generic. Tags are disjoint (``FX-KOHLER-*`` against the
 library's ``FX-TUB-*``/``FX-SHOWER-*``), which ``integrity.duplicate_catalog_tag`` proves.
-
-This file was reintroduced on 2026-08-29 for the drop-in bath. An earlier
-``plan/fixture_types.py`` existed and was deleted in the ``3d3973a`` dedupe when its
-contents duplicated the library; nothing here duplicates anything.
+Nothing here duplicates the library.
 """
 
 from __future__ import annotations
@@ -22,7 +19,6 @@ from library.placeables._zones import front_zone
 from typehaus.model import FixtureType, Service, inch
 
 # The Kohler K-5713-W1-0 Underscore, RM-M-BATH2 (plan/products.py carries brand + model).
-#
 # ** THIS IS A DROP-IN, AND THAT IS THE WHOLE REASON IT IS NOT FX-TUB-60. ** The library's
 # allowance is a three-sided *alcove* tub — a 60x30 box whose own skirt is the finished
 # face. This bath has no skirt. It drops through a hole in a framed deck and sits on a
@@ -58,14 +54,10 @@ KOHLER_UNDERSCORE_6036 = FixtureType(
            "circuit required, outlet behind the bath within 24 in. of the power supply.",
 )
 
-# RM-M-BATH2's vanity (2026-08-29), replacing the FX-KITCHEN-SINK-33 that stood in for it.
-#
-# ** THE THING IT REPLACES WAS A DOUBLE-BOWL KITCHEN SINK. ** Not a metaphor for one: the
-# instance carried ``type_ref="FX-KITCHEN-SINK-33"`` and a 27" wall mount to drag the
-# library's kitchen deck down to lavatory height. It billed as a kitchen sink, drew the
-# ``kitchen-sink`` symbol with TWO bowls on the bathroom plan, and gave the room no cabinet
-# at all -- 33" x 22" of counter with nothing under it. The owner wants one basin and as
-# much drawer and shelf as 54" can hold, so this is a vanity type rather than a sink type.
+# RM-M-BATH2's vanity, replacing a borrowed FX-KITCHEN-SINK-33 that billed as a kitchen
+# sink, drew a two-bowl symbol on the bathroom plan, and gave the room no cabinet at all.
+# The owner wants one basin and as much drawer and shelf as 54" can hold, so this is a
+# vanity type rather than a sink type.
 #
 # 54" x 21" is set by the room, not by a catalogue: the west wall gives ** 57 1/4" ** of
 # clear run between W-M-BDN1's finish face (y=13'-2 3/8") and the start of FX-M-BATH2-WC's
