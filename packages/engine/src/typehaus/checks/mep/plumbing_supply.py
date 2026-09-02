@@ -97,14 +97,9 @@ def hydrant_freeze_depth(ctx: CheckContext) -> list[Finding]:
                 # final plan point rising through the slab) is the hydrant's own barrel,
                 # which self-drains to the buried shutoff: it is exempt by design.
                 #
-                # Exactly one vertex, which is why this is an `if` and not the `while` it
-                # was until 2026-08-15. The condition tests fixed indices — `run.path[-1]`
-                # and `[-2]` — so a loop never advances past the standpipe it is meant to
-                # drop; it just keeps eating whatever rising tail the run has, exempting
-                # the very high point rule 2 exists to catch. It went unnoticed while
-                # PR-G-HYDRANT-CW had four buried vertices to hide behind. Straightening
-                # that run to (entry → hydrant → rise) left the tail one vertex long and
-                # the bug graded a run surfacing to -1'-0" as frost-protected.
+                # Exactly one vertex: this is an `if`, not a `while`. The condition tests
+                # fixed indices — `run.path[-1]` and `[-2]` — so it exempts only the single
+                # standpipe vertex, never a longer rising tail that rule 2 exists to catch.
                 elevations = list(run.z_m)
                 if (len(elevations) >= 2 and len(run.path) >= 2
                         and run.path[-1] == run.path[-2]
@@ -147,11 +142,9 @@ def hydrant_freeze_depth(ctx: CheckContext) -> list[Finding]:
         else:
             out.append(_pass(cid, f"{hydrant.tag} rises through {sleeves[0].tag}",
                              (hydrant.tag, sleeves[0].tag)))
-        # Was an UNKNOWN reading "the model has no valve or backflow-preventer element, so
-        # neither can be evaluated here". It has one now, so this reports what is actually
-        # authored: a hydrant with both devices passes, and one missing either is named.
-        # (The vacuum breaker's own code question is `mep.backflow_prevention`'s; what this
-        # line answers is the pair the fixture type's `source` used to carry in prose.)
+        # Reports what is actually authored: a hydrant with both devices passes, and one
+        # missing either is named. (The vacuum breaker's own code question is
+        # `mep.backflow_prevention`'s.)
         shutoffs = [a for a in _hydrant_accessories(ctx, hydrant.tag)
                     if a.kind in (PipeAccessoryKind.SHUTOFF.value,
                                   PipeAccessoryKind.MAIN_SHUTOFF.value)]

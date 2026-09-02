@@ -69,7 +69,7 @@ def _is_non_concrete_slab(ctx: CheckContext, solid: ResolvedSolid) -> bool:
 
     ``Slab`` is the model's only horizontal-sheet element that can sit off its storey datum,
     so it carries laid decking as well as concrete: the porch and breezeway composite decks
-    and, since 2026-08-29, RM-M-BATH2's 3/4" plywood tub-deck cap. A **cast-in sleeve is a
+    and RM-M-BATH2's 3/4" plywood tub-deck cap. A **cast-in sleeve is a
     concrete concept** — the whole point of this family is that a sleeve more than 1/2" out
     moves *before the pour*, and there is no pour in a sheet of plywood. Grading a fixture
     over one as needing a sleeve is a FAIL that can only be silenced by authoring a sleeve
@@ -290,11 +290,9 @@ def _threading_sleeve(ctx: CheckContext, footing, run, index: int, seg):
     """The protection sleeve `run`'s segment `index` actually passes through, or None.
 
     A sleeve is the hole a pipe goes through, so "protected" has to mean *this* pipe is in
-    *that* hole — in plan and in section both. Proximity alone is not the test and used to
-    be: the check asked only that some sleeve on the pour sit within 0.3 m of the segment,
-    which let SP-GF-W-HYD grade a PASS for a run that never came nearer than 8" to it and
-    ran parallel to the footing rather than across it. The bore it drew went through
-    concrete with nothing in it (→ houses/catlin/plan/mep.py, deleted 2026-08-15).
+    *that* hole — in plan and in section both. Proximity alone is not the test: a sleeve
+    within 0.3 m of a segment let SP-GF-W-HYD grade a PASS for a run that never came nearer
+    than 8" to it and ran parallel to the footing rather than across it.
 
     Two conditions, both cheap:
 

@@ -19,11 +19,9 @@ An outdoor unit on a deck is three problems the rest of the model does not see:
    it reverses, over whatever is under the deck, in a climate that freezes it.
 
 ** THIS CHECK GRADES COVERAGE, NOT CAPACITY. ** It reports whether a joint has hardware and
-where that hardware lands. It never says the hardware is big enough. The original reason was
-that nothing in this model carried a design wind speed — ``Site`` had ``ground_snow_load_psf``
-and no wind field at all. Since 2026-08-30 it has one (``design_wind_speed_mph`` /
-``wind_exposure`` / ``risk_category``), and the reason narrowed without going away: this
-check derives no demand from it. Sizing an outdoor unit's restraint wants the cabinet's own
+where that hardware lands, never whether the hardware is big enough: this check derives no
+demand from Site's wind fields (``design_wind_speed_mph`` / ``wind_exposure`` /
+``risk_category``). Sizing an outdoor unit's restraint wants the cabinet's own
 projected area and an ASCE 7 §29.4 rooftop-equipment force coefficient, neither of which is
 in the model, and a restraint schedule without a load is still a drawing, not a calculation.
 ``wind.py::capacity_caveat`` owns the wording so this file and
@@ -47,12 +45,10 @@ from typehaus.model.mep import Equipment, PipeRun
 from typehaus.model.structure import Beam, Connector
 from typehaus.wind import capacity_caveat
 
-#: Renamed 2026-08-30 for the reason `structural.uplift_path_coverage` was: this rule
-#: grades whether the anchorage is COVERED — every anchor in blocking rather than a joist
-#: or a beam, condensate piped and traced — and says out loud that it does not grade the
-#: connection's capacity. Under the old name a PASS would have claimed the support was
-#: adequate. The capacity question now has a home instead of a disclaimer: one
-#: `equipment_anchorage/<unit>` item per unit in the engineering register.
+#: Named for what this rule grades: whether the anchorage is COVERED — every anchor in
+#: blocking rather than a joist or beam, condensate piped and traced — not the connection's
+#: capacity, which lives at one `equipment_anchorage/<unit>` item per unit in the
+#: engineering register.
 _CID = "mep.deck_equipment_support_coverage"
 _ANCHORAGE_KIND = "equipment_anchorage"
 

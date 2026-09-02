@@ -1,10 +1,7 @@
 """Supply-side protection: the shutoff, the backflow devices, the arrestors.
 
-Everything here was previously unanswerable. ``mep.hydrant_freeze_depth`` said so in its
-own output — it emitted an UNKNOWN reading "the model has no valve or backflow-preventer
-element, so neither can be evaluated here" — and the rest was prose in ``plans/TODO.md``:
-a backflow preventer on the basement fixtures, arrestors at the washer, a main shutoff that
-is accessible. ``PipeAccessory`` is the element that makes all three real questions, and
+``PipeAccessory`` is the element that makes all three real questions — a backflow preventer
+on the basement fixtures, arrestors at the washer, a main shutoff that is accessible — and
 these are the three checks that ask them.
 
 CODE tier, all three. None of them is a preference: P2903.9.1 requires the main shutoff and

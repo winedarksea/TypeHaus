@@ -175,8 +175,8 @@ def _why_gfci_required(ctx, device, room, point, sinks, below_grade, barrier) ->
 def _pierces_a_wall(point: Any, sink: Any, barrier: Any) -> bool:
     """True when a cord run straight from receptacle to sink would go THROUGH a wall.
 
-    ** E3902.10's 6 ft is a CORD PATH, not a plan-frame straight line, and until 2026-08-29
-    this check measured the straight line. ** NEC 210.8, which E3902 mirrors, is explicit:
+    ** E3902.10's 6 ft is a CORD PATH, not a plan-frame straight line. ** NEC 210.8, which
+    E3902 mirrors, is explicit:
     the distance "shall be measured as the shortest path the supply cord of an appliance
     connected to the receptacle would follow WITHOUT PIERCING a floor, wall, ceiling, or
     fixed barrier." A receptacle in a bedroom 5'-4" from a vanity on the far side of the
@@ -257,13 +257,9 @@ def _sink_points(ctx: CheckContext) -> dict[str, list]:
     Keyed by storey for the same reason the room lookup is: the 6' reach of E3902.10 is a
     reach across a countertop, not through a floor assembly.
 
-    Polygons, not points. Until 2026-08-30 this returned ``Point(fixture.position)`` — the
-    fixture's insertion centroid — so a 48" vanity was measured to a spot 24" inside
-    itself and every distance in the rule came back long by up to half a fixture. E3902.10
-    is measured to the *outside edge* of the sink, which is what the resolved footprint
-    gives directly: ``point.distance(polygon)`` is edge distance for free. The bug
-    under-reported in the safe direction, which is why it survived; it moved five
-    bathrooms when fixed.
+    Polygons, not points: E3902.10 is measured to the *outside edge* of the sink, which is
+    what the resolved footprint gives directly — ``point.distance(polygon)`` is edge
+    distance for free. A centroid point understates distance by up to half a fixture.
     """
     from shapely.geometry import Polygon
 
