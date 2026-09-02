@@ -4,8 +4,8 @@ There is exactly one way this feature can do real harm: a number that looks publ
 is not. Every test here exists against that failure mode rather than against a bug.
 
 The enumeration at the foot is version-controlled on purpose. "Which parts in this house's
-load path have no published capacity" is a *finding* of the 2026-08-30 research pass, and a
-finding that lives only in somebody's memory gets rediscovered, or worse, quietly filled in.
+load path have no published capacity" is a *finding*, and a finding that lives only in
+somebody's memory gets rediscovered, or worse, quietly filled in.
 """
 
 import pytest
@@ -174,11 +174,11 @@ def test_one_part_number_two_joints_two_rows():
 
 
 def test_the_knee_brace_role_serves_a_part_with_a_published_capacity():
-    """The 2026-08-30 substitution, pinned at the level that matters: the role, not the house.
+    """The rated substitution, pinned at the level that matters: the role, not the house.
 
-    Any house authoring a knee brace gets whatever this role resolves to, and before the swap
-    that was a connector with no allowable load in any code report. Putting an unrated part
-    back on this role would silently un-brace every deck in the world that uses it.
+    Any house authoring a knee brace gets whatever this role resolves to. Putting an
+    unrated part back on this role would silently un-brace every deck in the world that
+    uses it.
     """
     from typehaus.takeoff.hardware_catalog import ROLE_KNEE_BRACE, hardware_for_role
 
@@ -190,9 +190,9 @@ def test_the_knee_brace_role_serves_a_part_with_a_published_capacity():
 # --- the enumeration ---------------------------------------------------------------------
 
 
-#: Every part researched on 2026-08-30 that came back with no publishable number, and the
-#: one-line reason. Changing this dict is a claim that a report changed or a new one was
-#: found — which is exactly the moment it should be hard to do silently.
+#: Every part with no publishable capacity, and the one-line reason. Changing this dict is
+#: a claim that a report changed or a new one was found — which is exactly the moment it
+#: should be hard to do silently.
 _NO_PUBLISHED_LOAD = {
     "ABU66SS": "ESR-1622 evaluates galvanised A653 steel; no stainless model is in Table 2",
     "APVKB45-6": "IAPMO ER-102's AP-series index does not list APVKB; ER-280 has no table",

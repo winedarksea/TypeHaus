@@ -90,9 +90,8 @@ def test_rough_opening_emits_only_the_wall_void(catlin_model, tmp_path):
 
 
 def test_arched_voids_use_vertical_curved_profiles(catlin_model, catlin_ifc):
-    """The brick veneer's two segmental reveals. They took this over from the sunken garden's
-    AO-ARCH-G1/G2 when its arched cross-wall was retired (2026-08-18); a segmental arch is the
-    stricter case, because its circle centre sits below the springline rather than on it."""
+    """The brick veneer's two segmental reveals — the stricter case, because its circle
+    centre sits below the springline rather than on it."""
     import ifcopenshell
 
     f = ifcopenshell.open(str(catlin_ifc))

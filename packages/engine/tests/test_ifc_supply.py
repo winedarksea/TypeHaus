@@ -79,10 +79,10 @@ def test_each_system_owns_exactly_its_own_temperature(catlin_model_ro, catlin_if
 
 
 def test_the_waste_side_is_systems_now_sanitary_vent_and_radon(catlin_model_ro, catlin_ifc):
-    """The deferral this test used to pin is closed: every drain run belongs to a SEWAGE
-    system (IFC4's sanitary drainage — the enum has no SANITARY member), every vent run to
-    a VENT system, and the radon riser to its own USERDEFINED/RADON system rather than
-    being folded into the plumbing vents it must never connect to."""
+    """Every drain run belongs to a SEWAGE system (IFC4's sanitary drainage — the enum has
+    no SANITARY member), every vent run to a VENT system, and the radon riser to its own
+    USERDEFINED/RADON system rather than being folded into the plumbing vents it must
+    never connect to."""
     for predefined, key in (("SEWAGE", "drain"), ("VENT", "vent")):
         system = _system(catlin_ifc, predefined)
         members = _members(catlin_ifc, system)
@@ -112,9 +112,8 @@ def test_the_waste_side_is_systems_now_sanitary_vent_and_radon(catlin_model_ro, 
 
 
 def test_every_authored_pipe_run_lands_in_exactly_one_system(catlin_model_ro, catlin_ifc):
-    """The grouping loop used to ``.get(run.system, []).extend(...)`` — a silent discard
-    that kept 26 of catlin's runs unsystemed. Every emitted segment must now belong to
-    exactly one distribution system."""
+    """A grouping loop that does ``.get(run.system, []).extend(...)`` is a silent discard:
+    every emitted segment must belong to exactly one distribution system."""
     systems = [s for s in catlin_ifc.by_type("IfcDistributionSystem")]
     owner_count: dict = {}
     for system in systems:

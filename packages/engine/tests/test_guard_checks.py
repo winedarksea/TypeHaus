@@ -7,14 +7,13 @@
 * ``code.R308_4_4_glass_guard`` — glass used *as* the guard, which R308.4's location test
   never reaches.
 
-Catlin used to carry the motivating case: the porch guard was three ``FoundationWall``s with
-a stucco/CMU/air/brick stack, and what that cost was a load path nobody was asking about — a
+The motivating case: a masonry-parapet guard is a load path nobody was asking about — a
 42" grouted-CMU-and-brick parapet runs about 420 plf, and a wood deck rim designed to R507's
-40 psf live + 10 psf dead cannot carry it. Those three walls were replaced by RL-SG-PORCH, a
-metal fascia-mount railing, on 2026-08-18, so the house now has no ``Wall.guard`` at all and
-the rule reports one UNKNOWN saying so. The arithmetic it was written for is exercised
-against synthetic walls below, where the catalog densities can be stated and varied — a
-stack the catalog cannot weigh must report UNKNOWN rather than a comfortable pass.
+40 psf live + 10 psf dead cannot carry it. Catlin's own porch guard is now RL-SG-PORCH, a
+metal fascia-mount railing, so the house has no ``Wall.guard`` and the rule reports one
+UNKNOWN saying so. The arithmetic it was written for is exercised against synthetic walls
+below, where the catalog densities can be stated and varied — a stack the catalog cannot
+weigh must report UNKNOWN rather than a comfortable pass.
 """
 
 from __future__ import annotations
@@ -53,13 +52,12 @@ def test_catlin_has_no_masonry_guard_left_to_grade(catlin_ctx):
     """One NOT_APPLICABLE, and it says why rather than silently returning nothing.
 
     A rule that emits no findings is indistinguishable from a rule that never ran, which is
-    the failure mode this asserts against: the house has no ``Wall.guard`` since 2026-08-18
-    and the check has to say so, and to name the two rules that do grade the stick guard
-    that replaced it.
+    the failure mode this asserts against: the house has no ``Wall.guard`` and the check has
+    to say so, and to name the two rules that do grade the stick guard that replaced it.
 
-    The verdict is N/A rather than UNKNOWN since 2026-08-30, and the distinction is the
-    point: nothing here is missing from the model or waiting on an author. Every wall was
-    read, and none of them is a guard.
+    The verdict is N/A rather than UNKNOWN, and the distinction is the point: nothing here
+    is missing from the model or waiting on an author. Every wall was read, and none of them
+    is a guard.
     """
     findings = masonry_guard_bearing(catlin_ctx)
     assert len(findings) == 1, [f.message for f in findings]
@@ -181,9 +179,8 @@ def test_a_house_with_no_guard_wall_reports_not_applicable():
 
 
 def test_the_deck_guard_rule_counts_a_masonry_parapet_as_a_guard(catlin_ctx):
-    """``structural.deck_guard`` used to look only for a ``Railing`` at the deck elevation,
-    so a deck guarded by a masonry parapet failed for having no element of the one class it
-    knew about."""
+    """``structural.deck_guard`` must count a masonry parapet as a guard, not just a
+    ``Railing`` at the deck elevation."""
     from typehaus.checks.structural.deck import deck_guard
 
     findings = deck_guard(catlin_ctx)
@@ -239,7 +236,7 @@ def test_a_house_with_no_cable_guard_reports_not_applicable(catlin_ctx):
     """Never a pass by absence: this rule has nothing to say about a picket guard, and
     saying "fine" about a thing it never looked at is how an advisory stops being read.
 
-    N/A rather than UNKNOWN since 2026-08-30, and the distinction is not cosmetic: the
+    N/A rather than UNKNOWN, and the distinction is not cosmetic: the
     check *did* look. It read every Railing in the plan and found none cable-filled, which
     is a verdict about the building, not a confession that an input is missing. A PASS
     would still be the wrong answer, and still is not what this returns.

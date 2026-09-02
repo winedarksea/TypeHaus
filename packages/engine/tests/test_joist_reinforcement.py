@@ -4,12 +4,10 @@ The feature: a ``JoistReinforcement`` on a FloorSystem makes the resolver sister
 line nearest an authored load point up to the ply count and block it out to the lines either
 side.
 
-It was built for ``PT-SG-BR2``, the balcony pillar that bore on the *cantilevered* north tip
-of catlin's porch deck — a 6x6 on the free end of a single PT 2x8. **No house drives it as
-of 2026-08-28**: moving the rear pillar row onto the back-beam line put that post over a
-bearing and the reinforcement was deleted with the condition. The synthetic fixtures below
-are the whole coverage now, and the catlin test at the bottom pins the absence so the
-feature cannot quietly come back unnoticed.
+It was built for a cantilevered balcony pillar bearing on the free end of a single joist —
+a condition catlin no longer has. **No house drives it.** The synthetic fixtures below are
+the whole coverage, and the catlin test at the bottom pins the absence so the feature
+cannot quietly come back unnoticed.
 
 These lock the three things the geometry has to get right, because each one is a way the
 reinforcement can look present and do nothing:
@@ -183,22 +181,14 @@ def test_a_deck_with_no_reinforcement_emits_nothing() -> None:
 
 # --- the catlin decks, end to end -----------------------------------------------------
 def test_no_catlin_deck_sisters_a_joist(catlin_model):
-    """No deck in this house stiffens a joist any more — and that survived a second use.
+    """No deck in this house stiffens a joist.
 
-    ``FS-SG-PORCH`` carried a 3-ply + solid-blocking cluster under ``PT-SG-BR2`` while that
-    pillar stood on the deck's 17" north overhang. On 2026-08-28 the rear balcony pillar row
-    moved onto the back-beam line, 3" south of the bearing, so the post is over a support and
-    the mitigation had nothing left to mitigate. It came out with the condition — 2 sister
-    2x8s, 2 blocks and the CN-SG-TIE-BR2 uplift tie.
-
-    ``FS-SG-DECK`` then took the feature up again on 2026-08-28 for a completely different
-    reason (the heat-pump anchors below), so "no catlin deck authors a reinforcement" is no
-    longer the thing to pin. **The sister ply is.** Every DECK reinforcement in this house is
-    ``plies=1`` — a fastener host, not a stiffened joist — and a stray ``plies=3`` would
+    Every DECK reinforcement in this house is ``plies=1`` — a fastener host for the
+    heat-pump anchors (see below), not a stiffened joist — and a stray ``plies=3`` would
     quietly add sixteen sisters and their lumber to the BOM. That is what this catches.
 
-    ** ONE SISTER EXISTS NOW, AND IT IS NOT ON A DECK (2026-08-29). ** ``FS-M-WEST`` carries
-    a single full-span ply under RM-M-BATH2's drop-in bath, which is the built half of
+    ** ONE SISTER EXISTS, AND IT IS NOT ON A DECK. ** ``FS-M-WEST`` carries a single
+    full-span ply under RM-M-BATH2's drop-in bath, which is the built half of
     plans/TODO.md's 60 psf item. It is an INTERIOR floor answering a real concentrated load,
     which is the case ``JoistReinforcement`` was written for; the decks are still the case
     this test was written for. Pinning the count at one keeps both readings true — a second
@@ -231,15 +221,14 @@ def test_the_balcony_blocking_hosts_the_heat_pump_anchors(catlin_model):
 
     **Eight blocks for eight anchors, from FOUR reinforcements — not eight.** Each
     reinforcement sits ON a joist line and lays one block in the bay either side, so one of
-    them serves two anchors. Authoring one per anchor instead (which this house did until
-    2026-08-28) needs eight, and where two of those straddle a single bay it emits that bay's
-    block twice at the same x — double lumber, double butyl, two coincident solids. Sixteen
-    blocks here is that bug, which is why the count is asserted and not merely bounded.
+    them serves two anchors. Authoring one per anchor instead needs eight, and where two of
+    those straddle a single bay it emits that bay's block twice at the same x — double
+    lumber, double butyl, two coincident solids. Sixteen blocks here is that bug, which is
+    why the count is asserted and not merely bounded.
 
-    ``FS-SG-PORCH`` carries exactly TWO since 2026-08-29 — the squash blocks under
-    PT-SG-BR2, which is the one balcony pillar still bearing through a porch joist. Same
-    ``plies=1`` idiom, and for a related reason: what that joint needs is a bearing host,
-    not a stiffened joist.
+    ``FS-SG-PORCH`` carries exactly TWO — the squash blocks under PT-SG-BR2, the one
+    balcony pillar still bearing through a porch joist. Same ``plies=1`` idiom, and for a
+    related reason: what that joint needs is a bearing host, not a stiffened joist.
     """
     by_tag = {floor.tag: floor for floor in catlin_model.floors}
     deck_blocks = [m for m in by_tag["FS-SG-DECK"].members if m.category == "blocking"]

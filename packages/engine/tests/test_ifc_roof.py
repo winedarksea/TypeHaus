@@ -55,9 +55,8 @@ def _children(ifc_file, product) -> dict:
 def test_the_roof_is_a_pitched_layer_stack_not_a_flat_plate(catlin_model_ro, ifc_file):
     """One closed polyhedron per above-structure layer, spanning the pitch.
 
-    It used to be one per (layer x roof plane): the shell was built plane by plane with
-    vertical sides, so the two halves of a gable met at a vertical joint. The IR mitres the
-    ridge instead — one band crosses it — which is why the count is now per layer.
+    The IR mitres the ridge — one band crosses it, not one shell per (layer x roof plane)
+    with a vertical joint where the two halves of a gable meet.
     """
     roof = next(item for item in catlin_model_ro.roofs if item.tag == _ROOF_TAG)
     assembly = catlin_model_ro.plan.library.resolve_assembly(roof.assembly)
@@ -66,21 +65,20 @@ def test_the_roof_is_a_pitched_layer_stack_not_a_flat_plate(catlin_model_ro, ifc
     solids = _brep_solids(_roof_product(ifc_file))
     assert len(solids) == len(layers)
     zs = [point[2] for solid in solids for point in _solid_points(solid)]
-    # The old flat plate was a 1" prism at the eave; this one climbs the whole pitch and
-    # finishes above the ridge, because the stack sits on top of the plane.
+    # Climbs the whole pitch and finishes above the ridge, because the stack sits on top
+    # of the plane — not a flat 1" prism at the eave.
     assert min(zs) >= roof.eave_z_m - 1e-6
     assert max(zs) > roof.ridge_z_m
     assert max(zs) - min(zs) > (roof.ridge_z_m - roof.eave_z_m) * 0.9
 
 
 def test_each_layer_clips_at_its_own_serialized_plan_setback(catlin_model_ro, ifc_file):
-    """The clip faces the glTF export and the viewer honor, which IFC used to ignore.
+    """The clip faces the glTF export and the viewer honor.
 
-    A band's edge is no longer a vertical face at the authored plan position: the layer is
+    A band's edge is not a vertical face at the authored plan position: the layer is
     offset perpendicular to the slope, so its *bottom* lands on the setback and its top
-    drifts down-slope by the layer's own thickness x sin(theta). That is the blessed change
-    — IFC used to build vertical sides here and disagree with both other views of the roof —
-    so the clip is checked as the band between those two, with the bottom edge exact.
+    drifts down-slope by the layer's own thickness x sin(theta). So the clip is checked as
+    the band between those two, with the bottom edge exact.
     """
     roof = next(item for item in catlin_model_ro.roofs if item.tag == _ROOF_TAG)
     setbacks = {entry["layer"]: entry for entry in roof.layer_edge_setbacks}
@@ -106,7 +104,7 @@ def test_each_layer_clips_at_its_own_serialized_plan_setback(catlin_model_ro, if
 # --- the members ---------------------------------------------------------------------------
 
 def test_every_roof_member_carries_a_swept_solid(catlin_model_ro, ifc_file):
-    """They used to aggregate as identities with no geometry — invisible in any viewer."""
+    """A member with no geometry aggregates as an identity — invisible in any viewer."""
     roof = next(item for item in catlin_model_ro.roofs if item.tag == _ROOF_TAG)
     children = _children(ifc_file, _roof_product(ifc_file))
     assert len(children) == len(roof.members) > 0

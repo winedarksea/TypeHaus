@@ -134,9 +134,8 @@ def test_box_width_matches_the_parsed_section_for_level_members(model) -> None:
     """Width is measured across the run — the IFC sweep's `width_m`.
 
     *Which* section face lands across the run is the member's own business: one lying flat
-    shows the wide `depth_m` there and stands only `width_m` tall. This used to assert
-    `width_m` for every level member, which pinned the bug — a plate came out a 1.5" square
-    rod running along the wall instead of a 1.5" x 5.5" board lying on it.
+    shows the wide `depth_m` there and stands only `width_m` tall — a plate must not come
+    out a 1.5" square rod running along the wall instead of a 1.5" x 5.5" board lying on it.
     """
     for member in _boxable_members(model):
         if member.p0 == member.p1:
@@ -476,7 +475,7 @@ def test_every_roof_layer_is_a_closed_band(model, geometry) -> None:
 # --- floor decks and earth (blessed diffs: nothing drew either) --------------------------
 
 def test_a_floor_with_a_subfloor_gains_a_deck(model, geometry) -> None:
-    """Blessed diff 3. Joists used to hang in space in both exports."""
+    """Blessed diff 3: joists must not hang in space in either export."""
     from typehaus.model.floors import FloorSystem
     from typehaus.resolve.geometry_ir import GPrism
 
@@ -540,17 +539,14 @@ def test_earth_is_cut_by_every_excavated_slab(model, geometry) -> None:
     assert len(prism.voids) == len(expected)
 
 
-# --- the rest of the glTF switch-over (D4) ----------------------------------------------
-# `emit/gltf` no longer derives *any* geometry: openings and roof bands are serialized from
-# the IR (byte-for-byte identical GLBs, verified at the switch), and the two solids nothing
-# used to draw — the subfloor deck and the site earth — now reach the export.
+# --- floor decks and the site earth in the glTF export -----------------------------------
+# `emit/gltf` derives no geometry of its own: openings and roof bands are serialized from
+# the IR, including the subfloor deck and the site earth.
 
 def test_the_glb_opening_product_is_the_ir_product(model, geometry) -> None:
     """The emitter draws exactly the boxes `opening_parts` produced, and no others.
 
-    This was the cross-language mirrored pair: eleven constants maintained by hand in
-    `emit/gltf/openings.py` and in the viewer's `buildOpening`. One copy is gone; a
-    regression here means the emitter grew geometry of its own again.
+    A regression here means the emitter grew geometry of its own again.
     """
     from typehaus.emit.gltf.mesh import _MeshBuilder
     from typehaus.emit.gltf.openings import _add_opening_filling
@@ -604,7 +600,7 @@ def _emitted_box_corners(builder) -> list[list[tuple[float, float, float]]]:
 
 def test_the_glb_ships_the_subfloor_deck_and_the_site_earth(model) -> None:
     """Blessed diffs 3 and 4, at the export boundary: a floor node whose deck is drawn, and
-    an `earth` node that used to be empty in every GLB this project has ever written."""
+    a non-empty `earth` node."""
     from typehaus.emit.gltf.emitter import emit_gltf_dict
 
     gltf, _blob = emit_gltf_dict(model, "core")

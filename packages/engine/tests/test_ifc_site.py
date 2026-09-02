@@ -38,10 +38,10 @@ def test_ifc_has_utility_proxies(catlin_model_ro, catlin_ifc_path: Path):
 
 def test_the_site_sheet_hangs_below_grade_rather_than_standing_on_it(catlin_model_ro,
                                                                     catlin_ifc_path: Path):
-    """The IFC switch-over's blessed diff: soil is what is *under* the grade plane.
+    """Soil is what is *under* the grade plane.
 
-    The pad used to be extruded 5cm upward from grade, so the ground Revit received sat 5cm
-    above the ground the viewer drew and every slab-on-grade stood proud of its own site.
+    A pad extruded upward from grade would put the ground Revit receives above the ground
+    the viewer draws, so every slab-on-grade would stand proud of its own site.
     """
     ifcopenshell = pytest.importorskip("ifcopenshell")
     from typehaus.resolve.geometry_build import EARTH_SHEET_THICKNESS_M

@@ -147,11 +147,10 @@ def test_no_spec_anywhere_keeps_the_table_header():
 
 
 # ------------------------------------------------------------------ head cripples
-# Doors used to get none of these at all: ``_append_opening_cripples`` was called from
-# inside the ``if not opening.is_door:`` branch that emits the rough sill, so the garage
-# overhead door carried 18" of empty wall — and 16 ft of unbacked double top plate —
-# above its header. The head family depends only on the arithmetic gap between the header
-# top and the plate underside, never on the operation.
+# Doors must get head cripples too: a garage overhead door needs its 18" of wall — and
+# 16 ft of double top plate — backed above the header. The head family depends only on
+# the arithmetic gap between the header top and the plate underside, never on the
+# operation.
 def _head_cripples(members):
     return sorted((m for m in members if m.child_key.startswith("cripple-head-")),
                   key=lambda m: m.child_key)

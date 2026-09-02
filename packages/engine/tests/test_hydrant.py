@@ -1,9 +1,8 @@
 """The garage frost-free hydrant — the project's first water-supply run.
 
-`grep PipeSystem.WATER_COLD` across the repo returned nothing before this: every authored
-run was DRAIN or VENT. So this file pins more than one fixture. It pins that a supply run
-resolves at the elevation it was authored at, that a fixture needing no DRAIN does not trip
-the drain-sleeve rule, and that the freeze-depth rule can actually fail.
+This file pins more than one fixture. It pins that a supply run resolves at the elevation
+it was authored at, that a fixture needing no DRAIN does not trip the drain-sleeve rule,
+and that the freeze-depth rule can actually fail.
 """
 
 from __future__ import annotations
@@ -98,12 +97,10 @@ def test_the_hydrant_is_on_the_garage_storey_at_the_authored_spot(catlin_model):
 def test_the_hydrant_stands_clear_of_everything_else_in_the_garage(catlin_model):
     """A working annulus around the handle, graded on the resolved bodies.
 
-    This read `abs(heater.y - hydrant.y) > 10 ft` until 2026-08-22 — a y-only proxy from the
-    days when the heater and its workbench sat at y≈48' and the hydrant alone held the NW
-    corner. The 2026-08-21 pass moved that pair into the corner deliberately, and the proxy
-    called it a conflict when the two are 3'-8" apart across the room in x. What the hydrant
-    actually needs is plan clearance in both axes: room to swing a hose onto the spout and to
-    get a hand on the handle, from whatever else the corner is asked to hold.
+    A y-only proxy is wrong here: the heater and workbench share the NW corner with the
+    hydrant and can sit close in y while still 3'-8" apart in x. What the hydrant actually
+    needs is plan clearance in both axes: room to swing a hose onto the spout and to get a
+    hand on the handle, from whatever else the corner is asked to hold.
 
     12" is the number, and FURN-G-WORKBENCH at 17 1/2" is the one that binds it — the bench
     is 30" deep off the west wall and the hydrant stands 4'-9" out from the same wall.
@@ -125,8 +122,8 @@ def test_the_hydrant_stands_clear_of_everything_else_in_the_garage(catlin_model)
 # --- 3. the supply run --------------------------------------------------------------------
 
 def test_the_supply_run_carries_the_hydrant(catlin_model):
-    """No longer the project's *only* cold run — the 2026-07-29 plumbing pass authored the
-    whole domestic distribution — but the hydrant's own feed must still exist and serve it."""
+    """Not the project's *only* cold run — the whole domestic distribution is authored too —
+    but the hydrant's own feed must still exist and serve it."""
     runs = [r for r in catlin_model.pipe_runs if r.system == PipeSystem.WATER_COLD.value]
     hydrant = [r for r in runs if r.tag == "PR-G-HYDRANT-CW"]
     assert len(hydrant) == 1
@@ -155,10 +152,9 @@ def test_the_supply_sleeve_is_a_water_penetration_on_the_slabs_own_storey(catlin
     """The sleeve's purpose defaults to DRAIN, which this is not — say it or the takeoff and
     every purpose-scoped check read it as waste.
 
-    The sleeve is filed on `garage`, with SL-G-FLOOR and with the fixture it serves. That
-    became possible when ``Slab.top_elevation`` did: the slab used to be filed on `main`
-    (the only storey standing at grade) with the sleeve dragged along behind it, and the
-    storey tags of the three said nothing about the structure they belong to."""
+    The sleeve is filed on `garage`, with SL-G-FLOOR and with the fixture it serves, via
+    ``Slab.top_elevation`` — the storey tags of the three must agree with the structure
+    they belong to."""
     sleeve = catlin_model.plan.by_tag("SP-G-HYDRANT")
     assert sleeve.purpose is Service.WATER_COLD
     assert sleeve.host_ref == "SL-G-FLOOR"
@@ -212,7 +208,7 @@ def test_the_whole_garage_stands_on_its_floor_not_on_the_stem_top(catlin_model):
 
 
 def test_the_pedestal_and_its_block_out_are_gone(catlin_model):
-    """Retired 2026-08-03 (notes/garage_hydrant.md): the hydrant uses the garage's own slab.
+    """The hydrant uses the garage's own slab, not a separate pedestal (notes/garage_hydrant.md).
     Both pieces went together — a block-out sleeve whose host no longer exists is an orphan
     reference, not a leftover detail."""
     assert catlin_model.plan.by_tag("SL-G-HYDRANT-PED") is None
@@ -237,12 +233,9 @@ def test_the_gravel_pit_is_the_only_drainage_path(catlin_model):
     assert x_ft == pytest.approx(5.0, abs=1e-6)
     assert y_ft == pytest.approx(59.5, abs=1e-6)
     # Stone from 5'-6" to 7'-0" *below grade*: the 6' shutoff sits 6" below the top of it
-    # with a foot of stone under the weep. It was 2' across x 4' deep until 2026-08-15 —
-    # 12.6 cu ft for a weep that discharges quarts, and deep enough that no position in the
-    # garage could stand it off the footings. → test_the_hydrant_assembly_clears_the_footings.
-    # Depths are read from grade, not from the house datum: on 2026-08-18 grade went to
-    # -2'-6" and the whole buried garage assembly went down with the soil, so the absolute
-    # elevations are -8'-0" / -9'-6" and the bury is unchanged.
+    # with a foot of stone under the weep. → test_the_hydrant_assembly_clears_the_footings.
+    # Depths are read from grade, not from the house datum: grade is at -2'-6", so the
+    # absolute elevations are -8'-0" / -9'-6" and the bury above is unchanged.
     grade_ft = catlin_model.plan.project.site.grade.meters * _M_TO_FT
     solid = next(s for s in catlin_model.solids if s.tag == "DRW-G-HYDRANT")
     assert solid.category == "drywell"
@@ -300,13 +293,11 @@ def test_the_hydrant_assembly_clears_the_footings(catlin_model):
 # --- 4. the check -------------------------------------------------------------------------
 
 def test_the_freeze_depth_rule_passes_on_the_house_as_built(catlin_model):
-    """Three findings for this hydrant now, and none of them UNKNOWN.
+    """Three findings for this hydrant, and none of them UNKNOWN.
 
-    It used to be two PASSes and one UNKNOWN, the UNKNOWN reading "the model has no valve
-    or backflow-preventer element, so neither can be evaluated here". ``PipeAccessory``
-    (2026-08-01) is that element, and `PA-G-HYD-SEAT`/`PA-G-HYD-VB` are what the third
-    finding now grades — the shutoff and the vacuum breaker this file's §5 used to record
-    only as a sentence on the fixture type's ``source``.
+    ``PipeAccessory`` is the element that lets the shutoff and vacuum breaker be graded
+    instead of merely UNKNOWN: `PA-G-HYD-SEAT`/`PA-G-HYD-VB` are what the third finding
+    grades.
     """
     from typehaus.checks.mep.plumbing import hydrant_freeze_depth
 
@@ -378,9 +369,9 @@ def test_the_yard_hydrant_and_the_wall_hydrants_are_graded_differently(catlin_mo
 
 def test_a_shallow_supply_run_fails_the_freeze_depth_rule(catlin_model):
     """A rule that only ever passes proves nothing. Raise the run to 3' below grade and it
-    must fail. *Below grade* — the depth the rule grades is bury, and since 2026-08-18 grade
-    is 2'-6" under the datum, so a bare ft(-3) here would be a 6" bury and the message would
-    quote a number this test never meant."""
+    must fail. *Below grade* — the depth the rule grades is bury, and grade is 2'-6" under
+    the datum, so a bare ft(-3) here would be a 6" bury and the message would quote a
+    number this test never meant."""
     from typehaus.checks.mep.plumbing import hydrant_freeze_depth
     from typehaus.model import ft
 
@@ -414,10 +405,9 @@ def test_a_run_that_surfaces_mid_way_fails_even_with_deep_ends(catlin_model):
     # Raise the last *buried* vertex to -1' while the entry stays deep: the run now surfaces
     # before it reaches the hydrant, which is where a supply line freezes.
     #
-    # This is the run's second-to-last vertex, and it is the case the standpipe exemption
-    # used to swallow — it popped every rising vertex off the tail rather than the one
-    # terminal barrel, so a run climbing to -1'-0" graded PASS. The run is only three
-    # vertices long now, so there is nothing left to hide that behind.
+    # This is the run's second-to-last vertex: the standpipe exemption must pop only the
+    # one terminal barrel, not every rising vertex off the tail, or a run climbing to
+    # -1'-0" here would grade PASS.
     rising = run.model_copy(update={"elevations": tuple(
         ft(-1) if i == len(run.elevations) - 2 else e
         for i, e in enumerate(run.elevations))})

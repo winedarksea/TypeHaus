@@ -73,8 +73,8 @@ def test_every_alarm_names_an_unswitched_circuit(catlin_model):
 
 
 def test_the_alarms_reconcile_against_the_panel_schedule(catlin_model):
-    """``electrical.circuit_refs`` used to walk devices, equipment and registers only, so an
-    alarm naming a circuit that does not exist was not a finding. It is now."""
+    """``electrical.circuit_refs`` walks alarms too: an alarm naming a nonexistent circuit
+    is a finding."""
     from typehaus.checks.mep.electrical import circuit_refs
 
     findings = circuit_refs(_context(catlin_model))
@@ -151,12 +151,9 @@ def test_the_detector_draws_as_HD_at_the_room_seed(catlin_model):
     assert len(labels) == 1
     garage = catlin_model.plan.by_tag("RM-GARAGE")
     seed_x, seed_y = garage.seed.xy_m
-    # Drawn beside the glyph, which is at the seed. The label used to be pinned here to an
-    # exact ``+0.08, +0.08`` — but a room's seed and its label block are both derived from
-    # the room, so on a small room the caption printed straight through the block ("SD/CO"
-    # over "CLOSET / 48 SF"). It now takes the first side of the glyph that clears every
-    # block, so WHICH side is a layout outcome and only the distance is the contract: the
-    # caption stays attached to its symbol.
+    # Drawn beside the glyph, which is at the seed. The label takes the first side of the
+    # glyph that clears every block, so WHICH side is a layout outcome and only the
+    # distance is the contract: the caption stays attached to its symbol.
     seed = _in((seed_x, seed_y))
     assert abs(labels[0].anchor[0] - seed[0]) < 12.0, "HD label drifted off its glyph"
     assert abs(labels[0].anchor[1] - seed[1]) < 12.0, "HD label drifted off its glyph"

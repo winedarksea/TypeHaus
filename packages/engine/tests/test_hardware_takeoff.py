@@ -136,24 +136,21 @@ def test_a_vented_mat_over_a_nailbase_deck_does_not_steal_the_screw() -> None:
 def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> None:
     """NEITHER the wall nor the roof takes a through-foam screw any more.
 
-    The roof took the 10" SDWH through 6" of polyiso until 2026-08-31 — 581 of them, on a
-    16 x 24 grid — and the outsulation and its nailbase are both deleted. That matters
-    beyond the money: ``takeoff/hardware_config.py``'s ``strip_spacing_in = 16.0`` is a
-    HARD-CODED constant, not read from the roof's ``FramingSpec``, so the same roof at
-    24" o.c. would have kept ordering its screws on a 16 x 24 grid and nothing would have
-    said so. Deleting the nailbase removes that landmine rather than stepping on it, and
-    this assertion is what confirms the fastener module has no roof consumer left.
+    The roof has no outsulation or nailbase to screw through. That matters beyond the
+    money: ``takeoff/hardware_config.py``'s ``strip_spacing_in = 16.0`` is a HARD-CODED
+    constant, not read from the roof's ``FramingSpec``, so a roof at 24" o.c. would keep
+    ordering its screws on a 16 x 24 grid and nothing would say so. Deleting the nailbase
+    removes that landmine rather than stepping on it, and this assertion is what confirms
+    the fastener module has no roof consumer left.
 
-    Until 2026-08-23 catlin's walls were the textbook screwed-strip condition: 1/2" furring
-    held off the studs through 4" of rigid board, 537 eight-inch SDWS on a 16 x 24 grid. The
-    truss wall has no such screw anywhere in it. The outrigger is lap-screwed to a plywood
-    tab, the tab to a block, and only the BLOCK is fastened back to the framing — through
-    1-1/2" of wood and the sheathing, with no foam in the path, because the foam is sprayed
-    around the truss afterwards.
+    The truss wall has no screwed-strip condition anywhere in it. The outrigger is
+    lap-screwed to a plywood tab, the tab to a block, and only the BLOCK is fastened back
+    to the framing — through 1-1/2" of wood and the sheathing, with no foam in the path,
+    because the foam is sprayed around the truss afterwards.
 
     So the wall line is billed off the resolved BLOCKS rather than off a grid, and this is
     what stops the grid walk from silently re-finding a screwed strip in the stack and
-    ordering 537 eight-inch screws for a wall that needs none.
+    ordering screws for a wall that needs none.
     """
     from typehaus.resolve.framing.truss_wall import girt_block_tier
 
@@ -164,12 +161,9 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     assert not [row for row in rows if row["scope"] == "roof top deck"], \
         "the nailbase and the 6 in of polyiso it was screwed through are both gone"
 
-    # ONE row since 2026-09-01, where the two-tier wall had two. The screw goes through
-    # everything in one pass and lands in the stud:
+    # ONE row: the screw goes through everything in one pass and lands in the stud:
     #   1.5 girt + 4.5 block (3 plies) + 0.5 sheathing + 1.5 into the stud       = 8.00 in
-    # It is back at the 8" length the rigid-CI wall's furring screws were, and it is not the
-    # same fastener: this one is wood-to-wood the whole way with continuous lateral support,
-    # where that one cantilevered through 4" of compressible board.
+    # Wood-to-wood the whole way with continuous lateral support.
     row = next(r for r in rows if r["scope"] == "girt wall blocks")
     assert row["size"] == "8 in" and row["part_number"] == "SDWS22800DB"
     assert not [r for r in rows if r["scope"].startswith("girt wall block-")], \
@@ -247,11 +241,11 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
     #    second-storey centre wall, and BM-M-HALL, which replaced 4'-2" of the main-storey
     #    one under it. Both are flush so their storey keeps its 9' ceiling, which is exactly
     #    what makes the joists hang rather than bear;
-    #  - the porch deck's joists at their *south* end (2026-08-18), where BM-SG-FRW/FRE
-    #    replaced the 16" arched cross-wall. Those two are flush so PT-SG-FCOL can top out at
+    #  - the porch deck's joists at their *south* end, where BM-SG-FRW/FRE replaced the
+    #    16" arched cross-wall. Those two are flush so PT-SG-FCOL can top out at
     #    their soffit and stay clear of the 16"-o.c. joist band — a column reaching the deck
     #    datum cannot miss it. The same joists still bear on BM-SG-BKW/BKE at their north end;
-    #  - the four FS-ATTIC joists over BM-S-BATH-E (2026-08-29), which is the same case as
+    #  - the four FS-ATTIC joists over BM-S-BATH-E, which is the same case as
     #    BM-S-HALL one line up. It carries FO-A-HALL's west edge across the 4'-0" hall stub
     #    by the vanity, where the x=10'-0" bearing line has no wall under it and can never
     #    have one — a partition there would seal the hall bath off from the landing. Flush
@@ -264,10 +258,9 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
     breezeway_joists = {f"{m.parent_uid}:{m.child_key}" for m in breezeway.members
                         if m.category == "joist"}
     assert breezeway_joists <= hung_keys, "flush-framed deck joists must be billed hangers"
-    # BM-SG-FRW/FRE left this list on 2026-08-29. The porch's front beams were flush-framed
-    # — their ``top_elevation`` pinned at the 0' datum with the joists hung into their north
-    # face — until dropping them was what put PT-SG-FCOL's top, and PT-SG-BF2 with it, on
-    # concrete. Those 18 hangers are 32 derived uplift ties now; the joists bear on top.
+    # BM-SG-FRW/FRE are not flush-framed: dropping them put PT-SG-FCOL's top, and
+    # PT-SG-BF2 with it, on concrete. Those 18 hangers are 32 derived uplift ties now; the
+    # joists bear on top.
     flush_beams = ("BM-S-HALL", "BM-M-HALL", "BM-S-BATH-E")
     flush_beam_keys = {item.member_key for item in connections
                        if item.carrier_tag in flush_beams}
@@ -360,17 +353,16 @@ def test_exterior_door_jambs_are_strapped_to_the_foundation(catlin_model) -> Non
 def test_each_modeled_knee_brace_takes_two_connectors_one_per_end(catlin_model) -> None:
     """Two KBS1Z per brace the plan models — no per-JOINT multiplier the plan cannot see.
 
-    The rule used to bill a matched pair per braced *joint*, which only holds where a beam
-    runs past its post. Every balcony pillar is a beam end, so the pair rule billed twice
-    the braces that fit. The multiplier is now a property of the HARDWARE instead: Simpson's
-    KBS1Z installation is one connector at each end of the brace, and the F1 the code report
-    publishes is measured through that pair, so billing one would order half the connection
-    the capacity assumes.
+    The multiplier is a property of the HARDWARE, not of the braced *joint*: Simpson's
+    KBS1Z installation is one connector at each end of the brace, and the F1 the code
+    report publishes is measured through that pair, so billing one would order half the
+    connection the capacity assumes. Every balcony pillar is a beam end, so a per-joint
+    rule would double-bill.
 
-    The part changed on 2026-08-30. It was `APVKB45-6`, Simpson's Outdoor Accents Avant
-    decorative knee brace, which has no published allowable load in any code report — IAPMO
-    UES ER-102's AP-series index does not list it and ER-280 has no table for it. On catlin
-    those braces are the entire lateral system of a freestanding deck at storey height."""
+    `APVKB45-6`, Simpson's Outdoor Accents Avant decorative knee brace, has no published
+    allowable load in any code report — IAPMO UES ER-102's AP-series index does not list
+    it and ER-280 has no table for it. On catlin those braces are the entire lateral
+    system of a freestanding deck at storey height."""
     from typehaus.model.structure import KneeBrace
 
     braces = [element for storey in catlin_model.plan.storeys
@@ -413,7 +405,7 @@ def test_the_balcony_is_braced_at_its_four_corners_in_both_directions(catlin_mod
     assert {b.axis for b in braces.values() if b.tag.endswith("-NS")} == {"y"}
     assert {b.axis for b in braces.values() if b.tag.endswith("-EW")} == {"x"}
     # Every brace names the post it stiffens *and* the member it reaches, so the connector
-    # schedule can key the joint. The old records named only the post.
+    # schedule can key the joint.
     assert all(len(b.connects) == 2 for b in braces.values())
     # Two KBS1Z per brace, one at each end — see the test above.
     assert knee_brace_rows(catlin_model, CONFIG.knee_braces)[0]["count"] == 16
@@ -440,15 +432,15 @@ def test_pipe_fixings_bill_by_size_not_as_a_bare_family(catlin_model) -> None:
     """Every fixing holding a round pipe bills the sized part, on its own line.
 
     The bug this pins is a silent one. ``hardware_by_model`` falls back to a family-prefix
-    match, so an authored size suffix used to collapse into the bare family and print as it
+    match, so an authored size suffix could collapse into the bare family and print as it
     — a BOM that looked complete, priced fine, and would have arrived on site as brackets
     with nothing to hold the leaders in.
 
-    The part changed on 2026-08-26 and the rule did not. The house walls are an
-    exposed-fastener panel now, so the leaders and the vent riser ride through-panel straps
-    rather than CanDuit rings on seam clamps; the ring is still catalogued and still serves
-    ROLE_PIPE_CLAMP for a seam-clad house (see the role test below), which is why this asks
-    the model what it contains rather than asserting a part number the cladding decides.
+    The house walls are an exposed-fastener panel, so the leaders and the vent riser ride
+    through-panel straps rather than CanDuit rings on seam clamps; the ring is still
+    catalogued and still serves ROLE_PIPE_CLAMP for a seam-clad house (see the role test
+    below), which is why this asks the model what it contains rather than asserting a part
+    number the cladding decides.
     """
     rows = [row for row in hardware_takeoff(catlin_model)
             if row["role"] == "through_panel_pipe_strap"]
@@ -457,10 +449,9 @@ def test_pipe_fixings_bill_by_size_not_as_a_bare_family(catlin_model) -> None:
                for row in rows)
     # Selected on the pipe's OD, so the size suffix is the part number and must reach the BOM.
     by_part = {row["part_number"]: row["count"] for row in rows}
-    # Six #13, not eight, since 2026-08-29: the roof leaders lost their top strap at each
-    # end (CN-A-LEADER-W4/E4 at 23'-0") when the eave came down to 20'-11 3/8" and the knee
-    # walls they were fixed to became rafter plates. Three per leader at 5'/11'/17' still
-    # holds the ~6' spacing on a leader that is 4'-11" shorter.
+    # Six #13, not eight: CN-A-LEADER-W4/E4 lose their top strap at 23'-0" since the eave
+    # is at 20'-11 3/8" and the knee walls they were fixed to are rafter plates. Three per
+    # leader at 5'/11'/17' still holds the ~6' spacing.
     assert by_part == {"SS316-STANDOFF-STRAP #11": 3, "SS316-STANDOFF-STRAP #13": 6}
     # And the strap reaches the wall by itself: nothing is carried under it.
     assert not [row for row in hardware_takeoff(catlin_model)
@@ -476,14 +467,12 @@ def test_a_part_that_mounts_on_another_also_bills_that_carrier(catlin_model) -> 
     rail and the clamps it mounts on stay one modeled ``Connector`` — this split only
     affects how the BOM itemizes the same hardware, not the geometry.
 
-    The CanDuit ring exercised this rule too, until the 2026-08-26 cladding swap took the
-    house's pipe fixings off the seam. ColorGard is now the only ``requires_role`` part the
-    model contains, and it pins the rule the same way.
+    ColorGard is the only ``requires_role`` part the model contains, and it pins the rule.
 
-    That swap also emptied the *modeled* side of the split: an S-5! closes on a seam, and the
-    only seam left in the house is the roof's, where nothing is authored as a bare clamp. So
-    the carried row is now the whole S-5! story, and this test asserts that rather than
-    comparing two rows — see test_solar.py for the same fact from the count's side.
+    The *modeled* side of the split is empty: an S-5! closes on a seam, and the only seam
+    left in the house is the roof's, where nothing is authored as a bare clamp. So the
+    carried row is the whole S-5! story, and this test asserts that rather than comparing
+    two rows — see test_solar.py for the same fact from the count's side.
     """
     rows = hardware_takeoff(catlin_model)
     rails = sum(row["count"] for row in rows if row["role"] == "snow_retention")
@@ -514,7 +503,7 @@ def test_library_hardware_tags_are_stable_and_sourced() -> None:
     assert all(item.source and item.manufacturer and item.model for item in catalog)
 
 
-# --- exposed-fastener panel screws (2026-08-26) --------------------------------------
+# --- exposed-fastener panel screws ----------------------------------------------------
 
 
 PANEL = CONFIG.exposed_fastener_cladding
@@ -649,16 +638,12 @@ def test_the_canduit_ring_is_still_the_one_part_serving_the_pipe_clamp_role() ->
 
 
 def test_catlin_bills_panel_screws_on_the_house_and_garage_walls(catlin_model) -> None:
-    """The house is PBR and the garage is 7/8" corrugated (since 2026-08-31) — both are
-    exposed-fastener, both land on this one SKU, and both must appear here.
+    """The house is PBR and the garage is 7/8" corrugated — both are exposed-fastener, both
+    land on this one SKU, and both must appear here.
 
-    Until 2026-08-31 the garage was nail strip and this test asserted the opposite: that
-    ``garage`` never appeared in ``by_storey``, because nail strip's fixings are inside its
-    $/SF rate. ``GARAGE_WALL_2X6`` dropped nail strip that day for ``corrugated-panel-26``,
-    which *is* exposed-fastener, so the garage's ~640 screws (prices.toml's count) belong on
-    these rows now — the double-billing guard this test polices is that a CONCEALED-fastener
-    material (``standing-seam-nailstrip-26``, still worn by the garage roof) must never
-    appear, not that any particular storey must not.
+    The double-billing guard this test polices is that a CONCEALED-fastener material
+    (``standing-seam-nailstrip-26``, still worn by the garage roof) must never appear here,
+    not that any particular storey must not — nail strip's fixings are inside its $/SF rate.
     """
     rows = [row for row in hardware_takeoff(catlin_model)
             if row["role"] == ROLE_EXPOSED_FASTENER_PANEL_SCREW]
@@ -669,13 +654,13 @@ def test_catlin_bills_panel_screws_on_the_house_and_garage_walls(catlin_model) -
         assert row["count"] == sum(row["by_storey"].values()) > 0
         # Every storey with an exposed-fastener wall skin bills here, garage included.
         #
-        # ** AND THE ATTIC IS NOT ONE, SINCE 2026-08-31. ** The house's north and south
-        # elevations went to `board-batten-24`, a CONCEALED-fastener panel, and the attic
-        # storey is nothing BUT gable — both its wall lines face north and south, so it has
-        # no face-fastened skin left at all. `main` and `second` still bill their east and
-        # west PBR. That is this test's own guard from the other direction: a storey drops
-        # off these rows when its last exposed-fastener panel goes, and the attic coming
-        # back would mean a concealed panel was being screw-counted.
+        # ** AND THE ATTIC IS NOT ONE. ** The house's north and south elevations are
+        # `board-batten-24`, a CONCEALED-fastener panel, and the attic storey is nothing
+        # BUT gable — both its wall lines face north and south, so it has no face-fastened
+        # skin left at all. `main` and `second` still bill their east and west PBR. That is
+        # this test's own guard from the other direction: a storey drops off these rows
+        # when its last exposed-fastener panel goes, and the attic coming back would mean a
+        # concealed panel was being screw-counted.
         assert set(row["by_storey"]) == {"garage", "main", "second"}, row["by_storey"]
     field = next(r for r in rows if r["scope"].endswith("field"))
     sidelap = next(r for r in rows if r["scope"].endswith("sidelap"))
@@ -683,11 +668,10 @@ def test_catlin_bills_panel_screws_on_the_house_and_garage_walls(catlin_model) -
     assert "openings not deducted" in field["basis"]
     assert "36 in panel coverage" in sidelap["basis"]
     assert field["count"] > sidelap["count"] > 0
-    # 1,430 field / 374 sidelap: 930/234 house PBR (EAST AND WEST ONLY since 2026-08-31 —
-    # the north and south elevations are concealed-fastener board & batten) + 500/140 garage
-    # corrugated. It was 2,599/664 while the whole house was PBR. The garage count is a
-    # known approximation — ``ExposedFastenerCladdingRules`` hard-codes PBR's 12" rib pitch
-    # and 36" coverage rather than corrugated's 2-2/3"/32" (prices.toml, `S-5-N` row) —
-    # recorded there rather than fixed for one building.
+    # 1,430 field / 374 sidelap: 930/234 house PBR (EAST AND WEST ONLY — the north and
+    # south elevations are concealed-fastener board & batten) + 500/140 garage corrugated.
+    # The garage count is a known approximation — ``ExposedFastenerCladdingRules``
+    # hard-codes PBR's 12" rib pitch and 36" coverage rather than corrugated's 2-2/3"/32"
+    # (prices.toml, `S-5-N` row) — recorded there rather than fixed for one building.
     assert field["count"] == 1430 and field["by_storey"]["garage"] == 500
     assert sidelap["count"] == 374 and sidelap["by_storey"]["garage"] == 140

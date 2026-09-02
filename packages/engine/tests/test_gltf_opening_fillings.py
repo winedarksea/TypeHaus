@@ -337,7 +337,7 @@ def test_the_balcony_door_ships_the_french_door_solid_shape(catlin_model):
 
 
 def test_the_laundry_pocket_ships_one_leaf_on_a_head_track(catlin_model):
-    """D-M-LAUN became a pocket on 2026-08-21 (was a 56" bifold, four coplanar leaves).
+    """D-M-LAUN is a pocket door.
 
     A pocket is drawn closed and coplanar on the same principle the slider below uses: the
     wall over the cavity is drywalled on both faces and genuinely reads solid, so the leaf
@@ -355,15 +355,13 @@ def test_the_laundry_pocket_ships_one_leaf_on_a_head_track(catlin_model):
     gltf, blob = emit_gltf_dict(catlin_model)
     solids = _solids_of_node(gltf, blob, _opening_node(gltf, pocket.uid))
     leaves = [solid for solid in solids if solid.has_thickness(_DOOR_LEAF_THICKNESS_M)]
-    # One leaf and one track, where the bifold shipped four leaves and no track.
-    assert len(solids) == _FRAME_PIECE_COUNT + 2
+    assert len(solids) == _FRAME_PIECE_COUNT + 2  # one leaf, one track
     assert len(leaves) == 1, "a closed pocket door is a single coplanar leaf"
 
 
 def test_a_synthetic_slider_ships_a_stile_track_and_two_panels():
-    """The slider-panel assertions used to ride on D-M-BALC, which is now a French door (see
-    above), so they move onto a synthetic opening: a closed slider still stays coplanar,
-    with two glazed panels meeting at a narrow stile over a low track.
+    """A synthetic opening, since D-M-BALC is a French door: a closed slider stays
+    coplanar, with two glazed panels meeting at a narrow stile over a low track.
     """
     parts = opening_parts(_synthetic_wall(), _synthetic_opening("door"),
                           DoorOperation.SLIDE, is_glazed=True)

@@ -121,7 +121,7 @@ def test_no_object_is_aggregated_under_two_parents(ifc_file):
 def test_one_containment_relation_per_container(ifc_file):
     """The batching the direct write buys: appending to one relation per container rather
     than minting a fresh ``IfcRelContainedInSpatialStructure`` per element. A file with one
-    relation per *element* is legal but is what the slow path used to produce downstream."""
+    relation per *element* is legal IFC but is a much slower write."""
     containers = [rel.RelatingStructure.id()
                   for rel in ifc_file.by_type("IfcRelContainedInSpatialStructure")]
     assert len(containers) == len(set(containers))

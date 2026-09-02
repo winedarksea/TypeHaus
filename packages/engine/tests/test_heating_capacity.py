@@ -325,36 +325,27 @@ def test_catlin_zone_loads_do_not_exceed_the_whole_house_load(catlin_model) -> N
         catlin_model, preferences).heating_load_btu_per_hour
     parts = sum(zone.heating_load_btu_per_hour for zone in zones)
     assert 0 < parts <= whole * 1.05
-    # Catlin's attic den is deliberately served by nothing yet. RM-A-WEST-UNFIN left this set
-    # on 2026-07-30: REG-A-HP-WEST (a floor boot off DU-S-HP-SUITE) put it in System 1's
-    # zone.
+    # RM-B-ESS: the battery closet is a 12 sf cabinet carved out of RM-B-FURNACE, and it
+    # gets no terminal of its own on purpose. It is enclosed on every side by conditioned
+    # space, its own occupant is a heat *source*, and a supply boot into a sealed Type X
+    # box is the last thing that enclosure wants. Unclaimed here means "served by no zone",
+    # which is the true statement, not a gap to fill.
     #
-    # RM-B-ESS joined it 2026-08-02 and stays: the battery closet is a 12 sf cabinet carved
-    # out of RM-B-FURNACE, and it gets no terminal of its own on purpose. It is enclosed on
-    # every side by conditioned space, its own occupant is a heat *source*, and a supply
-    # boot into a sealed Type X box is the last thing that enclosure wants. Unclaimed here
-    # means "served by no zone", which is the true statement, not a gap to fill.
+    # RM-M-MUD-CLOSET: a framed reach-in that was never zoned, and its 48" bypass slider
+    # onto the conditioned mudroom is wide open air transfer, not a sealed enclosure — a
+    # dedicated supply register would be serving a storage closet through its own open
+    # door.
+    # RM-M-PANTRY is the same case: a framed reach-in off a conditioned room, with no
+    # register and no need of one — it borrows the kitchen's air through a 60" bypass that
+    # is open whenever anyone is in there.
     #
-    # RM-M-MUD-CLOSET joined the same day, for the mundane version of the same reason:
-    # it replaced the furniture closet FURN-M-MUD-CLOSET-S sat in (never a room, never
-    # zoned), and its 48" bypass slider onto the conditioned mudroom is wide open air
-    # transfer, not a sealed enclosure — a dedicated supply register would be serving a
-    # storage closet through its own open door.
-    # RM-M-PANTRY joined them 2026-08-24 for exactly RM-M-MUD-CLOSET's reason: a framed
-    # reach-in off a conditioned room, with no register and no need of one — it borrows the
-    # kitchen's air through a 60" bypass that is open whenever anyone is in there.
-    # RM-A-DEN was in this set until 2026-08-27; the room was deleted and its space is
-    # inside what is now RM-A-STUDIO, which EQ-S-HP1-AH's zone_rooms names.
-    # ** RM-A-STUBATH LEFT THIS SET ON 2026-08-31, AND IT LEFT BECAUSE OF A TYPO. **
-    # EQ-S-HP1-AH's zone_rooms named "RM-A-STUDIO-BATH"; the room is RM-A-STUBATH. A
-    # zone_rooms entry naming no room is silently ignored, so the zone lost a room it was
-    # authored to hold and this test recorded the loss as a deliberate design decision — the
-    # paragraph that used to stand here argued, at length, that the attic guest bath takes its
-    # make-up air under the door and wants no supply. That argument is still true about AIR:
-    # the bath has an EXHAUST terminal (REG-A-STUBATH-EXH, 20 cfm continuous, R303.3) and no
-    # supply boot, deliberately. It was never true about the HEATING ZONE, which is what this
-    # set is: a 50 sf conditioned room off a conditioned bedroom is inside System 1's zone
-    # whether or not it has a boot of its own, and its load belongs in that zone's block load.
+    # RM-A-STUBATH is claimed despite EQ-S-HP1-AH's zone_rooms naming
+    # "RM-A-STUDIO-BATH" (a typo — the room is RM-A-STUBATH; a zone_rooms entry naming no
+    # room is silently ignored). The bath has an EXHAUST terminal (REG-A-STUBATH-EXH,
+    # 20 cfm continuous, R303.3) and no supply boot, deliberately, taking its make-up air
+    # under the door. That is true about AIR, not about the HEATING ZONE: a 50 sf
+    # conditioned room off a conditioned bedroom is inside System 1's zone whether or not
+    # it has a boot of its own, and its load belongs in that zone's block load.
     assert set(unclaimed) == {"RM-B-ESS", "RM-M-MUD-CLOSET", "RM-M-PANTRY"}
 
 

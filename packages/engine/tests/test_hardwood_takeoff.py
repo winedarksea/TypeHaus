@@ -83,8 +83,8 @@ def test_rough_stock_always_exceeds_the_finished_piece(rows):
 
 def test_a_stool_is_scheduled_at_its_rough_size_from_eight_quarter_stock(rows):
     stools = _use(rows, "window stool")
-    # 33 since 2026-08-29 — see test_millwork.py for which six windows left with the attic
-    # knee walls and the south gable's corner pair.
+    # See test_millwork.py for which windows have no stool (attic knee walls and the south
+    # gable's corner pair).
     assert stools and sum(row["pieces"] for row in stools) == 33
     for row in stools:
         assert row["nominal_stock"] == "8/4"
@@ -196,11 +196,10 @@ def test_a_shelf_deeper_than_it_is_wide_is_milled_front_to_back(rows):
 def test_the_elm_posts_are_sawn_to_section_not_laminated_from_boards(rows):
     """The tudor posts are milled 6-1/8" square out of an elm log. They are not a stack.
 
-    This is a REGRESSION test with a date on it. For part of 2026-08-29 the schedule read
-    "5 laminations of 1-1/2" stock" here, because the row builder had one boolean for
-    "bigger than the stock" and turned every such piece into a glue-up. Laminating an 8/4
-    stack is a real way to make a post — it is simply not how these four are made, and the
-    difference is 93 rough board feet of elm.
+    Regression: the row builder had one boolean for "bigger than the stock" and could turn
+    a sawn piece into a glue-up. Laminating an 8/4 stack is a real way to make a post — it
+    is simply not how these four are made, and the difference is 93 rough board feet of
+    elm.
     """
     post = next(row for row in _use(rows, "timber post"))
     assert post["material"] == "elm-timber" and post["pieces"] == 4

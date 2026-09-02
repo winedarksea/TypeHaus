@@ -1,10 +1,10 @@
 """Drainage in IFC: real entity classes, and one stormwater system that owns them.
 
-Every drainage solid used to export as an ``IfcBuildingElementProxy`` — or worse, as the
-``IfcFooting`` fallback for any category the emitter's table had forgotten — so a gutter, the
-leader under it, the perimeter tile and the sump pit arrived in Revit as four unrelated
-objects that happened to sit near each other. IFC4 has homes for all of them, and a
-``IfcDistributionSystem`` with ``PredefinedType=STORMWATER`` is what a BIM tool reads as a
+A drainage solid exporting as an ``IfcBuildingElementProxy`` — or worse, as the
+``IfcFooting`` fallback for any category the emitter's table had forgotten — would make a
+gutter, the leader under it, the perimeter tile and the sump pit arrive in Revit as four
+unrelated objects that happened to sit near each other. IFC4 has homes for all of them, and
+a ``IfcDistributionSystem`` with ``PredefinedType=STORMWATER`` is what a BIM tool reads as a
 system rather than as a naming convention.
 """
 
