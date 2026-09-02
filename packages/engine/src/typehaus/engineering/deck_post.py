@@ -45,7 +45,7 @@ from typehaus.engineering.retaining_basis import (
 KIND = "deck_post"
 
 #: Bumped whenever the arithmetic below changes — it rides in the fingerprint. Bumped to "2"
-#: on 2026-08-30, when ``Post.vertical_reinforcement`` arrived and this module stopped
+#: when ``Post.vertical_reinforcement`` arrived and this module stopped
 #: reporting a bare INCOMPLETE and started grading a reinforced column.
 BASIS_VERSION = "2"
 BASIS = "IRC R507.4 (no row); ACI 318-19 Ch. 10, 22.4, 25.7 (reinforced) / 14.5 (plain)"

@@ -1,7 +1,6 @@
 """Shared plumbing-fixture catalog.
 
-Tags are unique across the merged catalogs — ``integrity.duplicate_catalog_tag`` now
-enforces what this docstring used to only assert.
+Tags are unique across the merged catalogs, enforced by ``integrity.duplicate_catalog_tag``.
 
 A fixture's ``height`` is its **overall** height including the spout, because the generated
 symbol keeps every part inside the declared box. That is why a lavatory is 40" and not 36" —
@@ -34,7 +33,7 @@ REFERENCE = "Residential planning allowance; final fixture selection by owner."
 # envelope is the fixture's size.
 #
 # ** THE FRONT DIMENSION IS 24", NOT IRC P2705.1's 21", AND IN MINNESOTA THAT IS NOT A
-# CHOICE. ** It read 21" until 2026-08-29. The chain: Minn. R. 1309.0010 subp. 3.D deletes
+# CHOICE. ** The chain: Minn. R. 1309.0010 subp. 3.D deletes
 # IRC chapters 25-33 outright (P2904 is the only survivor), and Minn. R. 1309.0307 replaces
 # R307.1 with one sentence — "Plumbing fixtures shall be installed in accordance with
 # Minnesota Rules, chapter 4714". 4714.0050 adopts the 2018 UPC, and chapter 4714 contains

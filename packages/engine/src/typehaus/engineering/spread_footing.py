@@ -65,8 +65,8 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
     # **The bell bears on the SITE's own soil, not on a replacement section, and that is the
     # one judgement in this module.** The retaining footings sit on 42" of washed stone and
     # `retaining_basis._base_interface` reads IBC class 3 off it for exactly that reason.
-    # These two do not: `params/sunken_garden.py` augered both bells to frost depth in
-    # 2026-08-29 precisely so they would bear on undisturbed soil, and what they carry is a
+    # These two do not: `params/sunken_garden.py` augered both bells to frost depth
+    # precisely so they would bear on undisturbed soil, and what they carry is a
     # 7" LEVELLING course (`SPEC.pier_levelling_bedding_in`), not a soil replacement. A
     # 7" course spreads load into the native soil within inches of the bell, so crediting
     # the stone's 3,000 psf here would be reading a 42" section's allowable off a bedding

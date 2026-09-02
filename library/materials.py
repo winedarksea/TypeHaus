@@ -209,10 +209,10 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              source=f"{_UAF}: metal foil at 0.001\" reads 0 perm; continuous sheet steel is "
                     "vapour-impermeable. Normally installed over a vented rainscreen, which "
                     "truncates the Glaser walk before it"),
-    # 7/8" corrugated, the third profile in the site's one white steel skin (2026-08-31),
-    # and the detached garage's wall panel — GARAGE_WALL_2X6 over 5/8" CDX, replacing the
-    # 26 ga. concealed nail-strip over Zip-R. A sinusoidal exposed-fastener sheet: 7/8"
-    # deep on a 2-2/3" pitch, 32" net coverage, screwed through the crowns into the studs.
+    # 7/8" corrugated, the third profile in the site's one white steel skin, and the
+    # detached garage's wall panel — GARAGE_WALL_2X6 over 5/8" CDX. A sinusoidal
+    # exposed-fastener sheet: 7/8" deep on a 2-2/3" pitch, 32" net coverage, screwed
+    # through the crowns into the studs.
     #
     # `finish="corrugated"` is the whole dispatch. `isStandingSeam` (ui materials.ts) and
     # `_is_standing_seam` (emit/gltf/palette.py) are substring tests, and this tag carries
@@ -358,14 +358,11 @@ STARTER_MATERIALS: tuple[Material, ...] = (
     # `finish` picks the 3D board recipe: strip flooring is 2 1/4" boards with staggered butt
     # joints, not the 3 1/2" tongue-and-groove paneling the `*-tg` refs infer by default.
     # That inference is a TAG reading, so a profile change that renames the tag escapes it —
-    # the sauna liner's 2026-08-28 T&G -> shiplap retag is why `sauna-shiplap` authors
+    # the sauna liner's T&G -> shiplap retag is why `sauna-shiplap` authors
     # `finish="shiplap"` outright rather than relying on it (ui/src/three/plankMaterial.ts).
     # `stock_bf_per_sqft` 1.0: 3/4" finished strip flooring is 4/4 stock, so a square foot
-    # of floor is a board foot of order. It was unset until 2026-08-28, which is why the
-    # oak floor was the one `wood_surfaces` row printing no board feet at all — the section
-    # omits the column rather than inventing a thickness (#32), and here the thickness was
-    # never in doubt. `milling_profile` is T&G because strip flooring is: the tongue is face
-    # width the mill saws and the floor never sees.
+    # of floor is a board foot of order. `milling_profile` is T&G because strip flooring is:
+    # the tongue is face width the mill saws and the floor never sees.
     Material(tag="oak", name="3/4\" white-oak strip flooring", hatch="lumber", color="#c69c6d",
              species="oak", finish="strip-floor", stock_bf_per_sqft=1.0,
              nominal_quarters=4, milling_profile="T&G",

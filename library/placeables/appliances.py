@@ -1,8 +1,4 @@
-"""Starter appliance catalog.
-
-``APPL-WASHER`` used to live only in ``houses/catlin/plan/fixture_types.py`` — a shared
-appliance kept house-local, so this catalog shipped a dryer with no washer beside it.
-"""
+"""Starter appliance catalog."""
 
 from __future__ import annotations
 
@@ -76,8 +72,6 @@ HOOD_RECIRC = ApplianceType(
     ports=(ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),),
 )
 
-# The library shipped a dryer but no washer, so every house had to author its own — the
-# one asymmetry in this catalog.
 WASHER = ApplianceType(
     tag="APPL-WASHER", name="Clothes washer", footprint=(ft(2, 3), ft(2, 6)), height=ft(3),
     plan_symbol="washer", source=REFERENCE,
@@ -102,7 +96,7 @@ WASHER_DRYER_STACKED = ApplianceType(
     tag="APPL-WASHER-DRYER-STACKED", name="Stacked washer / heat-pump dryer",
     footprint=(inch(28), inch(40)), height=inch(80),
     plan_symbol="washer-dryer-stacked", source=REFERENCE,
-    # The paragraph above, said in a field the code check can read (2026-08-01). ``needs``
+    # The paragraph above, said in a field the code check can read. ``needs``
     # could only be silent about the exhaust, and silence is indistinguishable from an
     # oversight — code.M1502_dryer_exhaust read this product as a vented dryer missing its
     # duct. ``ductless=True`` is M1502.1's exemption stated outright.

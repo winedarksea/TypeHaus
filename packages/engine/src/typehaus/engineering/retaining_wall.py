@@ -62,9 +62,9 @@ KIND = "retaining_wall"
 #: Bumped whenever the arithmetic below changes. It rides in the fingerprint, so a seal goes
 #: stale when the *calculation* changes and not only when the model does.
 #:
-#: 1 -> 2 (2026-08-30): the stem/footing elevation convention, per the module docstring. The
+#: 1 -> 2: the stem/footing elevation convention, per the module docstring. The
 #: stem was a footing depth short and ``H`` a footing depth short with it.
-#: 2 -> 3 (2026-08-30): a ``lateral_support="base"`` branch graded at at-rest against the
+#: 2 -> 3: a ``lateral_support="base"`` branch graded at at-rest against the
 #: court's own free body, and a ``stem flexure`` limit state on every branch.
 BASIS_VERSION = "3"
 

@@ -4,7 +4,7 @@ Each item is the *published product family*, keyed by the condition (role) the r
 model derives, so a house never names a part number in its plan source. Sources cite the
 manufacturer system the record describes; no rating here is estimated.
 
-**Allowable loads, from 2026-08-30.** Some items now carry an ``AllowableLoads`` record
+**Allowable loads.** Some items carry an ``AllowableLoads`` record
 transcribed from a named evaluation report. Three rules govern every one of them, and they
 are the reason the field exists at all rather than a "capacity" column somebody fills in:
 
@@ -140,10 +140,9 @@ HUCQ_CONCRETE_HANGER = StructuralHardware(
            "published for wood members hung on concrete or masonry",
 )
 
-# **Retired from the knee-brace role on 2026-08-30, and kept as a capacity record.** It
-# served ROLE_KNEE_BRACE from the day the balcony was framed, and the 2026-08-30 research
-# pass established that it has no published allowable load of any kind (the citation below
-# traces the whole chain). The balcony's knee braces are its *entire* lateral system —
+# **Retired from the knee-brace role, and kept as a capacity record.** It has no published
+# allowable load of any kind (the citation below traces the whole chain). The balcony's
+# knee braces are its *entire* lateral system —
 # `checks/structural/lateral_racking.py` computes the demand — so an unrated connector there
 # is not a documentation gap, it is a hole in the load path.
 #
@@ -159,7 +158,7 @@ APVKB_KNEE_BRACE = StructuralHardware(
     model="APVKB45-6",
     source="Simpson Strong-Tie Outdoor Accents Avant Collection APVKB knee brace "
            "(strongtie.com/apvkb) — 45-degree brace at a post/beam joint",
-    # **No published allowable load, and it is not for want of looking.** Traced 2026-08-30
+    # **No published allowable load, and it is not for want of looking.** Traced
     # through the actual evaluation chain rather than a product page:
     #   * IAPMO UES ER-102 (rev. 08/21/2026) is Simpson's stamped/welded connector
     #     cross-reference index. Its "AP" series row enumerates every Outdoor Accents model
@@ -338,7 +337,7 @@ CS16_COIL_STRAP = StructuralHardware(
     ),
 )
 
-#: ICC-ES ESR-1622, the ABU family's evaluation report. Pulled and read 2026-08-30.
+#: ICC-ES ESR-1622, the ABU family's evaluation report.
 _ESR_1622 = "ICC-ES ESR-1622 (Simpson Strong-Tie post base connectors), Table 2, read 2026-08-30"
 
 ABU_POST_BASE = StructuralHardware(
@@ -566,7 +565,7 @@ HGAM10_MASONRY_GUSSET = StructuralHardware(
     #
     # This part is used here as a masonry gusset angle at a beam-on-cast-column joint — its
     # actual published application ("anchor wood trusses, rafters, joists, or beams to
-    # masonry or concrete") — and NOT as a hurricane tie. See the 2026-08-28 rationale in
+    # masonry or concrete") — and NOT as a hurricane tie. See the rationale in
     # `houses/catlin/params/sunken_garden.py`; it is deliberate and should not be "fixed".
     allowable=AllowableLoads(
         uplift_lb=585.0,
@@ -596,7 +595,7 @@ S5_SEAM_CLAMP = StructuralHardware(
            "a standing-seam panel rib without piercing the panel",
 )
 
-# --- wind mitigation (2026-08-20) --------------------------------------------------------
+# --- wind mitigation -----------------------------------------------------------------------
 # A seam clamp set on the seam purely to resist UPLIFT, rather than to carry an accessory.
 # S-5! is explicit that "any of our seam clamps will improve wind resistance of the roof and
 # can be used for that purpose"; the dedicated WindClamp line (DL/UD/2X) fits commercial
@@ -810,7 +809,7 @@ POLY_PANEL_FASTENER = StructuralHardware(
            "system is specified, so this record is deliberately generic",
 )
 
-# The balcony heat-pump stands' hold-down (2026-08-28). THIS IS THE ONE FASTENER IN THIS
+# The balcony heat-pump stands' hold-down. THIS IS THE ONE FASTENER IN THIS
 # FILE THAT IS MEANT TO PIERCE A WATERPROOF PLANE, and every part of the spec is about that:
 #
 # * **3/8" x 4", so it reaches.** Wahoo's own AridDek guardrail detail is a 3/8" lag through

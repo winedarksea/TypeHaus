@@ -234,11 +234,10 @@ HOUSE_ROOF = Assembly(
 # layer to a stack whose whole value is that it matches a specific tested build is how the
 # cited STC stops describing what is drawn. These walls are painted in reality; the paint is
 # a finish-schedule fact about the rooms either side, not part of the rated assembly.
-# ** THE CAVITY IS EMPTY (2026-08-31), AND THAT IS A DELIBERATE OWNER DECISION. **
+# ** THE CAVITY IS EMPTY, AND THAT IS A DELIBERATE OWNER DECISION. **
 #
-# This bay held mineral wool until 2026-08-31, then fibreglass for part of the same day,
-# and now holds nothing. The owner's reasoning, and it is sound: none of the walls this
-# preset carries is somewhere sound isolation is worth paying for, and where it IS worth
+# None of the walls this preset carries is somewhere sound isolation is worth paying for,
+# and where it IS worth
 # paying for, the answer is `INT_2X4_RC` below — the same studs and the same board with a
 # resilient channel, STC 48 on a real published test, twelve points clear of anything a
 # batt in this cavity can buy. A batt is the wrong lever; decoupling is the right one.
@@ -270,10 +269,7 @@ HOUSE_ROOF = Assembly(
 #   * STC 46 at 24" o.c. with 3" SAFB (test BBN-700725).
 #
 # **That last pair is the honest measure of what emptying this cavity costs: NINE points,
-# not one.** An owner estimate of 35 was the starting point for this row and is superseded
-# by the tested 34; more importantly, the assembly's former insulated rating of 36 (a
-# ROCKWOOL blog figure, different test series) must NOT be differenced against it to
-# conclude that insulation is worth a point. On USG's own 24" rows the batt is worth nine.
+# not one.** On USG's own 24" rows the batt is worth nine.
 # The decision to empty the cavity stands on the argument at the top of this block — that
 # decoupling, not absorption, is the right lever, and INT_2X4_RC is where it lives — and
 # not on the batt being worth little.
