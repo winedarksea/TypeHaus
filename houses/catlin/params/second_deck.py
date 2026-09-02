@@ -1,13 +1,11 @@
 """The second floor's deck, split at the centre bearing line: trusses west, joists east.
 
-Until 2026-08-21 ``FS-SECOND`` was one FloorSystem of 11 7/8" I-joists spanning the full
-36' east-west. Every second-floor service that had to cross the joist run — the plumbing
-stacks and supply risers serving ``RM-S-PLANT``/the suite bath cluster, the radon/plumbing
-chase, the hydrant distribution, the data conduits — is west of x=18', so that half is
-where open-web trimmable floor trusses pay for themselves: services cross *through* the
-webs (8 7/8" clear chord-to-chord) instead of being bored, soffited or chased. The east
-half is bedrooms and a study with only incidental crossings, so it keeps the cheaper
-I-joist.
+Every second-floor service that has to cross the joist run — the plumbing stacks and
+supply risers serving ``RM-S-PLANT``/the suite bath cluster, the radon/plumbing chase, the
+hydrant distribution, the data conduits — is west of x=18', so that half is where open-web
+trimmable floor trusses pay for themselves: services cross *through* the webs (8 7/8" clear
+chord-to-chord) instead of being bored, soffited or chased. The east half is bedrooms and a
+study with only incidental crossings, so it keeps the cheaper I-joist.
 
 Both members are the same 11 7/8" depth, deliberately — the deck plane, the finished floor
 and the ceiling below all stay flat across the split, exactly as the wood/wood halves of
@@ -55,10 +53,8 @@ _OC = inch(16)
 _SUBFLOOR = inch(0.75)
 
 # The main floor's ceiling below both halves — 5/8" gypsum board, room side (and only
-# layer). Migrated from a single ``DeckLayer`` to a one-``Layer`` tuple with the
-# generalized ``ceiling_below`` field; the living room's resilient channel
-# (``CR-LIVING-CEIL-RC`` in ``plan/assemblies.py``) still bills separately as a
-# ``ConstructionRule`` return, unaffected by this shape change.
+# layer). The living room's resilient channel (``CR-LIVING-CEIL-RC`` in
+# ``plan/assemblies.py``) still bills separately as a ``ConstructionRule`` return.
 _CEILING_GWB = (Layer(name="gwb-ceil", material_ref="gwb", thickness=inch(0.625),
                       function=LayerFunction.FINISH),)
 _CENTRE_X = ft(18)
@@ -85,8 +81,8 @@ WEST_FLOOR = FloorSystem(
            "plumbing/HVAC crossings this half carries",
 )
 
-# East half: unchanged specification from the old whole-floor FS-SECOND, so it keeps that
-# element's uid — the half whose IFC GlobalId should survive (decision #16).
+# East half: keeps FS-SECOND's original specification and uid — the half whose IFC
+# GlobalId should survive (decision #16).
 EAST_FLOOR = FloorSystem(
     uid="CSF603AAAA", tag="FS-S-EAST",
     joists=JoistSpec(member=_JOIST, spacing=_OC, direction="x",

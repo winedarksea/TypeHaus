@@ -6,28 +6,21 @@ than the sunken garden wall … it starts at the same height as the top of the s
 wall, and goes down 3' from there (that puts it mostly below grade, which is fine for now),
 with this change meaning W-RG-INNER can likely be deleted (W-SG-* replace it effectively)."*
 
-**This is not the 36" planter it used to be.** Until that change the module built a bed:
-two parallel cheeks — a cast inner one continuing ``W-SG-S`` up above its top, and an SRW
-block outer one — holding 36" of soil between them, standing 3'-6" proud of grade. What it
-builds now is a *retaining apron*: one SRW run wrapping the sunken garden's west, south and
+**It is a *retaining apron***: one SRW run wrapping the sunken garden's west, south and
 east sides, topping out level with the retaining wall and running 3' down. The soil it
 retains is the yard, not a planting bed.
 
-**The apron is fully above grade since 2026-08-18, and this is what the house was lifted
-for.** Its base sits at -2'-6": the house came out of the ground by moving grade down to
-the apron's own footing line, so all three 6"-course feet of it stand proud of the soil
-instead of two and a half of them being buried. Which also reverses what it retains. It
-used to hold the yard back off the sunken garden; the yard is now *below* its base, and
-what it holds is the 3'-0" raised terrace between it and the sunken-garden walls — the same
-3 feet, retained from the other side.
+**The apron is fully above grade, which is what the house was lifted for.** Its base sits
+at -2'-6": the house came out of the ground by moving grade down to the apron's own footing
+line, so all three 6"-course feet of it stand proud of the soil instead of two and a half of
+them being buried. What it holds is the 3'-0" raised terrace between it and the
+sunken-garden walls.
 
-** THE BASE COURSE HAS NEGATIVE EMBEDMENT, AND THIS PARAGRAPH USED TO DENY IT. ** It read
-"-2'-6" is now finished grade", which was true for exactly three days. Grade went to
-**-2'-10"** on 2026-08-21 with the basement-ceiling overhaul (`plan/site.py`,
-`params/foundations.py::SITE_GRADE`) and **the apron did not follow it down** — nothing ties
-`BASE` here to `SITE_GRADE`, and nothing checks the two against each other. So the base
-course of a dry-stacked SRW retaining 3'-0" of fill stands **4" clear of finished grade**,
-with its 6" levelling pad (``undercut``, below) two-thirds exposed.
+** THE BASE COURSE HAS NEGATIVE EMBEDMENT. ** Grade is **-2'-10"**
+(`plan/site.py`, `params/foundations.py::SITE_GRADE`) and **the apron does not follow it
+down** — nothing ties `BASE` here to `SITE_GRADE`, and nothing checks the two against each
+other. So the base course of a dry-stacked SRW retaining 3'-0" of fill stands **4" clear of
+finished grade**, with its 6" levelling pad (``undercut``, below) two-thirds exposed.
 
 That is a real defect, not a drafting slip. A segmental retaining wall is a *flexible*
 system and is correctly designed here to ride 42" of frost without a frost footing — but it
@@ -49,7 +42,7 @@ Section, at a side leg, west (yard) to east (sunken garden):
              | SRW|##########| SG |   <- the 3'-0" of fill the apron now retains, inboard
              |    |          |wall|
     -2'-6"   +----+          |    |   <- apron base, and its levelling pad below it
-             . . . -- grade -. . . .   <- -2'-10" since 2026-08-21: FOUR INCHES LOWER
+             . . . -- grade -. . . .   <- -2'-10": FOUR INCHES LOWER than the base course
         (yard)                     |
 
 Plan — a U whose north corners return three feet to the balcony railing:
@@ -70,10 +63,9 @@ Plan — a U whose north corners return three feet to the balcony railing:
   tangent to those footings, no overlap.
 - **North limit** is ``BALCONY_FRONT_AXIS_Y_FT`` (-10.5'), the plane ``RL-SG-BALCONY``
   sits on. Consumed from ``params/sunken_garden.py``'s exported contract rather than
-  re-derived — two derivations silently diverge the next time a dimension moves. It was
-  ``PORCH_FRONT_AXIS_Y_FT`` until 2026-08-29, when that one constant split into two: the
-  porch's beam plane stayed on -9.5' and the balcony's moved 12" south. The apron closes
-  against the balcony RAILING, so it follows the balcony; both legs shorten 12".
+  re-derived — two derivations silently diverge the next time a dimension moves. The apron
+  closes against the balcony RAILING, so it follows the balcony, not the porch's beam plane
+  (``PORCH_FRONT_AXIS_Y_FT``, -9.5').
 - **The U's north corners close back to the balcony.** ``W-RG-WEST-BALCONY`` and
   ``W-RG-EAST-BALCONY`` are 3' SRW runs on that same plane. Their block faces meet the
   balcony's side railing faces, closing the two open ends.
@@ -88,11 +80,11 @@ sunken-garden structure (absolute elevations, same as the masonry railing walls)
 house's own main/second wall loops must contain only house walls or storey-orientation
 detection traces this structure by mistake.
 
-**The levelling pad is modelled now** (2026-08-15), as a ``FootingBedding`` hosted on each
-wall rather than on a footing — ``host_ref`` accepts either since this change, because the
-excavation and the order of stone are the same whether concrete or a base course sits on
-it. A ``Pad`` still does not fit (its top is pinned to the basement's -9' datum) and a
-``Footing`` would put fictional concrete under a dry-stacked landscape wall.
+**The levelling pad is modelled** as a ``FootingBedding`` hosted on each wall rather than on
+a footing — ``host_ref`` accepts either, because the excavation and the order of stone are
+the same whether concrete or a base course sits on it. A ``Pad`` still does not fit (its top
+is pinned to the basement's -9' datum) and a ``Footing`` would put fictional concrete under
+a dry-stacked landscape wall.
 
 Not modelled: the SRW cap unit, and the drainage aggregate + filter fabric behind the
 block. The growing medium is not on this list because there is no longer a bed to fill.

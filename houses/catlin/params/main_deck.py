@@ -1,29 +1,17 @@
 """The basement's ceiling — the main floor's structure, mixed wood and concrete.
 
-Until 2026-08-21 this was one element: ``SL-M-DECK``, a 1,233 SF x 9" cast suspended
-concrete deck. It was the most expensive line in the model (34.26 cy on shored plywood
-formwork, whose commercial shoring mobilisation floor alone is $25-40k — see
-``plans/cost-options.md``), and it forced eight interior 12" concrete cross walls with
-strip footings and drain tile under them, because it was designed to span between them.
-
-Two facts change that. Wood I-joists already cross the same 18' bays on both storeys above
+Two facts drive the mix. Wood I-joists already cross the same 18' bays on both storeys above
 (``FS-SECOND``, ``FS-ATTIC``), and EPS stay-in-place deck forms — LiteDeck, BuildDeck,
 Insul-Deck — span 18' one-way with far less concrete. Tune the EPS deck so it lands on the
 same bearing plane as the wood floor's mudsill and the two become interchangeable bay by
 bay: same seat, same soffit-to-datum arithmetic, same 18' span to the x=18' bearing line.
 Concrete then goes only where it is actually wanted.
 
-**One flat bearing seat, one shared mudsill (2026-08-23).** Until that date the joists and
-their rim resolved z -11 7/8"..0'-0" against basement walls that topped out at 0'-0" — the
-whole wood floor inside the top foot of the pour, with nothing between it and the concrete,
-while the only sill return in the model sat *above* the joist tops under the framed wall.
-The plate was never missing from the design — ``plan/storeys/basement.py``'s WALLS header
-says the I-joists share the framed wall's 2x6 mudsill, and ``pt-sill-plate`` bills the LF —
-only from the geometry. (A price menu used to be cited as the second source for that; it is
-a design fact and belongs here and in the basement source, not in a cost table.) The fix is not more plate: it is
-one flat seat all the way round at ``BEARING_SEAT``, reached by deepening the EPS deck until
-its soffit lands on the same plane the mudsill sits on. No stepping in the forms, and the
-basement wall comes out at exactly 8'-0".
+**One flat bearing seat, one shared mudsill.** ``plan/storeys/basement.py``'s WALLS header
+says the I-joists share the framed wall's 2x6 mudsill, and ``pt-sill-plate`` bills the LF.
+The fix: one flat seat all the way round at ``BEARING_SEAT``, reached by deepening the EPS
+deck until its soffit lands on the same plane the mudsill sits on. No stepping in the forms,
+and the basement wall comes out at exactly 8'-0".
 
 ::
 
@@ -89,15 +77,13 @@ the full 36' of the house, straight through the concrete band. So the west half'
 bay, its mechanical-room bay and its stair bay are separate systems, each naming only the
 lines it actually bears on — see the split at ``_MECH_Y`` below.
 
-**Bearing refs are a bearing statement, not an axis proxy.** They used to be the latter:
-``FS-M-EAST`` named ``W-B-CS2`` (y 13'-10"..18') against a deck outlined y 0..13' that it
-never touches. Every system below now names the walls its joists actually land on, all of
-them, including the ones on the same grid line — a duplicate boundary is a degenerate span
-and ``resolve/floors.py`` drops it, so listing the truth costs nothing.
-``integrity.floor_bearing_grid`` is what catches the remaining trap: ``W-B-CS`` carries
-``alignment=face("concrete-ext", offset=inch(-6))``, a hardcoded HALF of its thickness, and
-an alignment offset that stopped matching would slide its axis off x=18' and inject a bay of
-stub joists. It resolves to 18.000 exactly today; the check is what keeps it there.
+**Bearing refs are a bearing statement, not an axis proxy.** Every system below names the
+walls its joists actually land on, all of them, including duplicates on one grid line — a
+duplicate boundary is a degenerate span and ``resolve/floors.py`` drops it, so listing the
+truth costs nothing. ``integrity.floor_bearing_grid`` catches the remaining trap: ``W-B-CS``
+carries ``alignment=face("concrete-ext", offset=inch(-6))``, a hardcoded HALF of its
+thickness; an alignment offset that stopped matching would slide its axis off x=18' and
+inject a bay of stub joists. It resolves to 18.000 exactly today.
 
 Quantities, from the manufacturers' published tables:
 
@@ -108,11 +94,10 @@ Quantities, from the manufacturers' published tables:
 * The LiteDeck WRS manual's consumption table reads 58 SF/cy for the 10" beam at a 4" cover
   and 52 SF/cy at 4 1/2", so 4 3/8" interpolates to ~53.5 SF/cy = 0.01869 cy/SF. The 414 SF
   band is 7.74 cy — against 34.26 cy for the whole 9" slab it replaced.
-* **It needs shoring.** The same manual requires continuous temporary shoring at 6' o.c. for
-  any span over 5', held until 75% design strength / 21 days. This module claimed "no shored
-  formwork at all" until 2026-08-23 and that was simply wrong. It does not flip the decision
-  — adjustable posts at 6' o.c. under a 414 SF band are a rental line, not the 9" slab's
-  commercial plywood-and-mobilisation package — but the line is in ``prices.toml`` now.
+* **It needs shoring.** The manual requires continuous temporary shoring at 6' o.c. for any
+  span over 5', held until 75% design strength / 21 days. Adjustable posts at 6' o.c. under
+  a 414 SF band are a rental line, not the 9" slab's commercial plywood-and-mobilisation
+  package — the line is in ``prices.toml``.
 
 Sources: LiteDeck WRS installation manual, Sept 2020 (liteform.com), BuildDeck brochure
 (buildblock.com), Insul-Deck technical summary, ICF Builder's foam-decking comparison.
@@ -138,15 +123,13 @@ from params.second_deck import _SUBFLOOR
 # --- the wood bay this deck has to match, top and bottom --------------------------
 #
 # The second floor's build-up, repeated on this storey. The depth and subfloor thickness
-# are imported from ``params/second_deck.py`` rather than restated: since 2026-08-21 that
-# deck is split truss/I-joist at x=18', and both members share this one depth precisely so
-# the concrete band below can keep matching a single number instead of two. Everything
-# below derives from them rather than restating them.
+# are imported from ``params/second_deck.py`` rather than restated: that deck is split
+# truss/I-joist at x=18', and both members share this one depth precisely so the concrete
+# band below can keep matching a single number instead of two.
 _JOIST = "11.875 I-joist"
 _JOIST_OC = inch(16)
 
-# The basement's ceiling — 5/8" gypsum board, room side (and only layer). Migrated from a
-# single ``DeckLayer`` to a one-``Layer`` tuple with the generalized ``ceiling_below`` field.
+# The basement's ceiling — 5/8" gypsum board, room side (and only layer).
 _CEILING_GWB = (Layer(name="gwb-ceil", material_ref="gwb", thickness=inch(0.625),
                       function=LayerFunction.FINISH),)
 
@@ -180,25 +163,18 @@ MAIN_FINISHED_FLOOR_LVP = inch(MAIN_FINISHED_FLOOR.inches + _LVP.inches)
 # and the joists beside it, which is why the sill return is authored over the *union* of the
 # two runs rather than as two rules that would double-bill the same plate.
 # The same number ``FramingSpec.sill_gasket`` states on CATLIN_EXT_2X6 (and the same one
-# ``BasementToFramedWallConfig.sill_gasket_in`` falls back to). It is stated twice on
-# purpose: the seat is derived here, and the field is what the wall-base detail draws. It
-# used to be stated twice *differently* — the field carried the uncompressed 1/4" roll until
-# 2026-08-24, which is why this line existed at all.
+# ``BasementToFramedWallConfig.sill_gasket_in`` falls back to) — the seat is derived here,
+# and the field is what the wall-base detail draws.
 _SILL_GASKET_COMPRESSED = inch(0.0625)   # EPDM sill seal, compressed thickness
 _MUDSILL = inch(1.5)                     # the framed wall's 2x6 sill plate, laid flat
 BEARING_SEAT = inch(-(_SILL_GASKET_COMPRESSED.inches + _MUDSILL.inches
                       + _JOIST_DEPTH.inches))
 
-# **The deck's depth is what reaches that seat**, not a copy of the wood bay's depth. It was
-# the latter until 2026-08-23 (11 7/8" + 3/4" = 12 5/8"), which matched the two *finished*
-# planes and left the deck's soffit 1 9/16" above the plane the mudsill sits on — i.e. the
-# joists bearing on bare concrete while the deck bore somewhere else entirely.
+# **The deck's depth is what reaches that seat**, not a copy of the wood bay's depth.
 #
-# The split into stay-in-place form and cast cover is the LiteDeck section, stated as the
-# modularity it is rather than as a threshold rule: the form is an 8" base panel plus a
-# 2"/4"/6" top hat, giving a 10", 12" or 14" beam, and the cover over it is specified
-# separately. This is the 10" beam under a 4 3/8" cover. The old "at 13" or more take the
-# 10" form" rule is satisfied by construction now and said nothing the section does not.
+# The split into stay-in-place form and cast cover is the LiteDeck section: the form is an
+# 8" base panel plus a 2"/4"/6" top hat, giving a 10", 12" or 14" beam, and the cover over it
+# is specified separately. This is the 10" beam under a 4 3/8" cover.
 #
 # Two constraints this arithmetic does NOT enforce, and a human must:
 #   * The manufacturer's span table governs the cover, not the seat: a thinner cover to hit
@@ -250,20 +226,16 @@ def _rect(x0: object, y0: object, x1: object, y1: object) -> tuple[Point2D, ...]
 
 # --- the west half, in three bays -------------------------------------------------
 #
-# One system spanning 18'-0" wall to centre line was the whole west half until 2026-08-23,
-# and its bearing refs were an axis proxy: ``W-B-W2`` (y 0..18') standing in for a run that
-# went to y=36'. Two things are true now instead. Each system names every wall its joists
-# actually land on — duplicates on one grid line are a degenerate span and ``resolve/floors.py``
-# drops them — and the x=10' line north of ``_MECH_Y`` is declared as bearing, which is what
-# ``W-B-STR3`` was 12" of pour for until 2026-08-24. It is 2x6 bearing studs now (see its
-# note in plan/storeys/basement.py): what these joists need from it is 1 1/2" of structure
-# either side of the NODE axis, which the studs give at 2 7/8" / 2 5/8" — the pour was
-# never the point, the bearing was.
+# Each system names every wall its joists actually land on — duplicates on one grid line
+# are a degenerate span and ``resolve/floors.py`` drops them — and the x=10' line north of
+# ``_MECH_Y`` is declared as bearing. ``W-B-STR3`` is 2x6 bearing studs (see its note in
+# plan/storeys/basement.py): what these joists need from it is 1 1/2" of structure either
+# side of the NODE axis, which the studs give at 2 7/8" / 2 5/8".
 #
 # ``_MECH_Y`` is the N-B-BA-W / N-B-BA-E node line: the southernmost y at which x=10' is a
 # bearing wall for its whole remaining run (W-B-STR3 to y=31', then W-B-STR to y=36' —
-# one continuous wall, two tags). South of it x=10' is W-B-STR2, a non-bearing steel-stud stub, so the south bay
-# keeps the full 18'-0" span.
+# one continuous wall, two tags). South of it x=10' is W-B-STR2, a non-bearing steel-stud
+# stub, so the south bay keeps the full 18'-0" span.
 #
 # Joist depth does NOT follow the shorter spans. It is set by the deck match — the seat and
 # the datum are one plane each, house-wide — so the 10' and 8' bays simply carry reserve.
@@ -363,8 +335,7 @@ WEST_FLOOR = FloorSystem(
     reinforcements=_TUB_DECK_REINFORCEMENT,
     # The basement's ceiling. R316.4 wants gypsum over the EPS in the concrete band; the
     # owner's decision was to drywall the whole ceiling rather than stop the board at the
-    # boundary, which is also what retires the old "visible copper in the basement"
-    # preference (houses/catlin/preferences.toml).
+    # boundary (houses/catlin/preferences.toml).
     ceiling_below=_CEILING_GWB,
     outline=_rect(_ZERO, _ZERO, _CENTRE_X, _MECH_Y_S),
     source="catlin main floor, west half south of the bathroom node line — 11 7/8\" "
@@ -387,10 +358,10 @@ MECH_FLOOR = FloorSystem(
 # Stair bay: 8'-0" from the x=10' line to the centre line, carrying FO-M-STAIR. Its west
 # edge is a bearing edge, which is why W-B-STR3 has to stay a declared bearing ref —
 # ``structural.floor_opening_header`` reads FO-M-STAIR's own refs and would otherwise size
-# that edge a 9'-0" engineered header. Since 2026-08-24 that edge sits on the framed wall's
-# plywood face at x=10'-3 3/8" rather than the pour's at 10'-6"; the refs did not change,
-# because ``_opening_edge_has_declared_bearing`` reads the named walls' full layer
-# footprints and this one reaches exactly that face.
+# that edge a 9'-0" engineered header. That edge sits on the framed wall's plywood face at
+# x=10'-3 3/8" rather than the pour's at 10'-6"; the refs did not change, because
+# ``_opening_edge_has_declared_bearing`` reads the named walls' full layer footprints and
+# this one reaches exactly that face.
 STAIR_FLOOR = FloorSystem(
     uid="CMFS04AAAA", tag="FS-M-STAIR",
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
@@ -407,9 +378,8 @@ STAIR_FLOOR = FloorSystem(
 EAST_FLOOR = FloorSystem(
     uid="CMFS02AAAA", tag="FS-M-EAST",
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
-                     # This bay is south of y=13'-10", so its west bearing is
-                     # W-B-CS, not the W-B-CS2 it named until 2026-08-23 — that
-                     # segment runs y 13'-10"..18' and this deck never touches it.
+                     # This bay is south of y=13'-10", so its west bearing is W-B-CS —
+                     # W-B-CS2 runs y 13'-10"..18' and this deck never touches it.
                      bearing_refs=("W-B-CS", "W-B-E1")),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     ceiling_below=_CEILING_GWB,

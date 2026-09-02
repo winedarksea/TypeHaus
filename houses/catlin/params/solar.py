@@ -30,7 +30,7 @@ PANEL_T_IN = 1.2
 PANEL_WATTS = 440.0
 PRODUCT = "Aptos 440 W module, 69.4 x 44.6 x 1.2 in"
 
-# --- module electrical identity (2026-08-02) ---------------------------------------
+# --- module electrical identity -----------------------------------------------------
 # Aptos 440 W: Voc 39.03 V, Vmp 33.48 V, temperature coefficients -0.30%/degC on Pmax,
 # -0.25%/degC on Voc, +0.046%/degC on Isc (owner-supplied datasheet figures).
 PANEL_VOC = 39.03
@@ -59,13 +59,10 @@ PANEL_VOC_COLD = PANEL_VOC * (1.0 + VOC_TEMP_COEFF_PER_C * (DESIGN_LOW_C - STC_C
 PANEL_RSD = True
 RIDGE_CLEARANCE_FT = 1.0  # plan gap between the ridge line and the modules' top edge
 CLAMPS_PER_PANEL = 4
-# 2026-08-29: the attic went 6:12 on a rafter plate, so the eave dropped 25'-10.1" ->
-# 20'-11 3/8" and the plane doubled its rise. The panel rows run ALONG the ridge in y and
-# their layout does not change; what changes is every z this module derives. A 6:12 plane is
-# also a better winter-sun angle at 45 degrees north than 4:12 was — the array's tilt is now
-# 26.6 degrees rather than 18.4, closer to latitude, so the December yield improves while the
-# June yield gives a little back. Net annual is a wash to slightly positive; the reason for
-# the pitch was headroom, and this is a side effect worth recording rather than claiming.
+# The panel rows run ALONG the ridge in y; only the z each row sits at derives from the roof
+# pitch. At 6:12 the array's tilt is 26.6 degrees — closer to the 45-degrees-north latitude
+# optimum, so December yield is favoured over June; net annual is a wash to slightly
+# positive, a side effect of the pitch (chosen for headroom) rather than its reason.
 PLANE_Z_AT_X0_FT = 20.948  # resolved RF-HOUSE deck plane at the footprint edge (eave_z)
 PITCH = 6.0 / 12.0
 

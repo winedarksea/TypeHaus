@@ -48,38 +48,34 @@ Geometry facts this module derives from (see plan/storeys/attic.py + plan/assemb
   wrb 0.02" + polyiso 2" + eps 2" + furring 0.5" + cladding 0.5" = 5.02" (cladding face
   == roof footprint edge, where eave_z_m is defined) — and the footprint runs to that same
   face in **y** as well, which is how far the eave runs have to reach to close the corner;
-- RAFTER-PLATE top at 20'-2 1/4" (2026-08-29: attic datum 20'-0" + 3/4" subfloor +
-  1 1/2" of 2x6 laid flat — there is no knee wall any more, see plan/assemblies.py's
-  CATLIN_RAFTER_PLATE); deck plane (eave_z_m) rides the I-joist rise above it:
-  11.875" - 5.5" x 6/12 seat drop = 9.125", so eave_z is 20'-11 3/8";
-- roof stack above the deck (perpendicular), REBUILT 2026-08-31: 5/8" CDX plywood (deck
-  surface at 0.625") -> 0.04" adhered butyl membrane -> metal 0.5". That is the whole of
-  it. The 6:12 slope factor turns those perpendicular offsets into the vertical ones an
-  authored elevation is measured in;
+- RAFTER-PLATE top at 20'-2 1/4" (attic datum 20'-0" + 3/4" subfloor + 1 1/2" of 2x6 laid
+  flat, no knee wall — see plan/assemblies.py's CATLIN_RAFTER_PLATE); deck plane (eave_z_m)
+  rides the I-joist rise above it: 11.875" - 5.5" x 6/12 seat drop = 9.125", so eave_z is
+  20'-11 3/8";
+- roof stack above the deck (perpendicular): 5/8" CDX plywood (deck surface at 0.625") ->
+  0.04" adhered butyl membrane -> metal 0.5". That is the whole of it. The 6:12 slope factor
+  turns those perpendicular offsets into the vertical ones an authored elevation is
+  measured in;
 - the wall cladding's head lands at the roofing's own underside (MatingFaces with a
   continuous skin), 0.665" perpendicular above the deck plane.
 
-**The outsulation is gone, and with it 6.81" of the stack** (2026-08-31). The roof was a
-vented batten roof until 2026-08-20, then a 1/4" vent mat over a nailbase screwed through 6"
-of polyiso; it is now 5/8" plywood straight on the I-joists with a fully-adhered butyl
-membrane on it and the panel clipped to that (plan/assemblies.py CATLIN_ROOF, flash-and-batt
-in the bay under IRC R806.5 item 5.3).
+The roof is 5/8" plywood straight on the I-joists with a fully-adhered butyl membrane on it
+and the panel clipped to that (plan/assemblies.py CATLIN_ROOF, flash-and-batt in the bay
+under IRC R806.5 item 5.3).
 
-**The chain itself does not change — only the plane it hangs from.** The drip flashing still
-lies ON the structural deck and the membrane still laps OVER it, so nothing else in the chain
-may reach that plane; what moves is that the plane is 0.625" above the deck rather than
-7.165". Every piece below rides that number down, which is the point of deriving each from
-the one above it: the eave got 6.81" (perpendicular; 7.61" vertical) thinner and no elevation
-in this module had to be re-invented to follow it. Two consequences worth stating, because
-both look wrong at a glance and are not:
+**The chain itself does not change — only the plane it hangs from.** The drip flashing lies
+ON the structural deck and the membrane laps OVER it, so nothing else in the chain may reach
+that plane; the plane is 0.625" above the deck. Every piece below rides that number down,
+which is the point of deriving each from the one above it. Two consequences worth stating,
+because both look wrong at a glance and are not:
 
-- the corner trim's bottom edge and the gutter's rim are now BELOW the deck plane
-  (``_TRIM_BOTTOM_IN`` is negative). That is correct and always was: the trim's 4" leg laps
-  DOWN over the wall panel heads, and with only 0.67" of roof stack left above the deck there
-  is nowhere else for 4" of leg to go;
-- the drip edge's turn-down is unchanged at 5.5" and now reaches much further past the
-  trough's rim than it used to, because the flange it hangs from came down with the deck. It
-  still lands inside the trough and well clear of its floor, which is all the piece has to do.
+- the corner trim's bottom edge and the gutter's rim are BELOW the deck plane
+  (``_TRIM_BOTTOM_IN`` is negative). That is correct: the trim's 4" leg laps DOWN over the
+  wall panel heads, and with only 0.67" of roof stack left above the deck there is nowhere
+  else for 4" of leg to go;
+- the drip edge's turn-down is 5.5" and reaches well past the trough's rim, because the
+  flange it hangs from is set by the deck plane. It lands inside the trough and well clear
+  of its floor, which is all the piece has to do.
 """
 
 from __future__ import annotations
@@ -94,24 +90,21 @@ _HOUSE_FT = 36.0
 #
 # **The one constant the cladding face is measured by**, and deliberately spelled as the
 # stack it is: 1 1/2" band A foam + 1 1/2" inner girt + 1" band C foam + 1/2" vent gap +
-# 1 1/2" outer girt + 1 1/4" PBR panel (plan/assemblies.py CATLIN_EXT_2X6). The catlin
-# truss moved it out one full inch on 2026-08-26, and the exposed-fastener panel that
-# replaced the snap-lock seam the same day moved it a further 3/4" — a ribbed panel stands
-# off by its rib height, where a snap-lock pan stands off by its pan. Every param in this
-# house that measures off the cladding moved with it.
+# 1 1/2" outer girt + 1 1/4" PBR panel (plan/assemblies.py CATLIN_EXT_2X6). A ribbed panel
+# stands off by its rib height, where a snap-lock pan stands off by its pan. Every param in
+# this house that measures off the cladding moves with it.
 #
 # The values it has had, kept beside it so the revert is a line and not a re-derivation:
-#   6.5"  — the girts under 1/2" snap-lock seam (2026-08-26, earlier the same day)
-#   5.5"  — the Swinburne truss (2026-08-23): 1.5 foam + 3.5 outrigger band + 0.5 seam
+#   6.5"  — the girts under 1/2" snap-lock seam
+#   5.5"  — the Swinburne truss: 1.5 foam + 3.5 outrigger band + 0.5 seam
 #   5.02" — the CI boards before it: 0.02 WRB + 2" polyiso + 2" EPS + 0.5 furring + 0.5 seam
 _WALL_OUTBOARD_IN = 1.5 + 1.5 + 1.0 + 0.5 + 1.5 + 1.25  # 7.25"
 _EAVE_X_W = ft(0) - inch(_WALL_OUTBOARD_IN)
 _EAVE_X_E = ft(_HOUSE_FT) + inch(_WALL_OUTBOARD_IN)
 
-# ** 20'-2 1/4", NOT 25'-0", SINCE 2026-08-29. ** The eave was a 5'-0" knee wall on the attic
-# deck; it is a 2x6 laid FLAT on the deck now (CATLIN_RAFTER_PLATE), so the plate top is the
-# attic datum plus 3/4" of subfloor plus 1 1/2" of plate. Everything in this module hangs off
-# it, which is why the building came down 1'-9 1/2" at the ridge while the roof grew 86 sf.
+# ** 20'-2 1/4", NOT 25'-0". ** The eave is a 2x6 laid FLAT on the attic deck
+# (CATLIN_RAFTER_PLATE, no knee wall), so the plate top is the attic datum plus 3/4" of
+# subfloor plus 1 1/2" of plate. Everything in this module hangs off it.
 _PLATE_TOP = ft(20, 2.25)
 _DECK_RISE_IN = 11.875 - 5.5 * (6.0 / 12.0)  # I-joist depth - 2x6 seat drop = 9.125"
 _EAVE_DECK = _PLATE_TOP + inch(_DECK_RISE_IN)  # deck plane at the eave edge (eave_z_m)
@@ -122,8 +115,8 @@ _SLOPE_FACTOR = math.hypot(1.0, 6.0 / 12.0)  # 6:12 -> 1.1180
 # the flashing, so nothing in the chain may stand above this plane or the underlayment
 # cannot bond to the deck it is sealing.
 #: The values these two have had, kept beside them so the revert is a line and not a
-#: re-derivation: 7.165 / 7.475 under the screwed nailbase over 6" of polyiso (2026-08-20 to
-#: 2026-08-31), and 0.5 / 4.25 under the vented batten roof before it.
+#: re-derivation: 7.165 / 7.475 under the screwed nailbase over 6" of polyiso, and
+#: 0.5 / 4.25 under the vented batten roof before it.
 _DRIP_CEILING_IN = 0.625 * _SLOPE_FACTOR     # 0.70" — plywood deck surface, vertical
 _CLADDING_HEAD_IN = 0.665 * _SLOPE_FACTOR    # 0.74" — roofing underside == wall panel heads
 
@@ -144,11 +137,11 @@ _TRIM_LEG_IN = 4.0                           # resolve/roof_trim.py::_CORNER_TRI
 #: The formed face's own thickness — ``trim_bands``' shell rule, which at a 4" leg is only
 #: ever bounded by the plan depth.
 _TRIM_SHEET_IN = min(0.5, _TRIM_FACE_IN / 3.0)          # 0.42"
-#: NEGATIVE since 2026-08-31, and correctly so: a 4" leg hung from a roofing underside only
-#: 0.74" above the deck reaches 3.26" BELOW it, lapping down over the wall panel heads.
+#: NEGATIVE, and correctly so: a 4" leg hung from a roofing underside only 0.74" above the
+#: deck reaches 3.26" BELOW it, lapping down over the wall panel heads.
 _TRIM_BOTTOM_IN = _CLADDING_HEAD_IN - _TRIM_LEG_IN      # -3.26" (was +3.88")
 
-#: The coil the whole chain is ordered in (2026-08-01). The derived corner trim above it is
+#: The coil the whole chain is ordered in. The derived corner trim above it is
 #: already `RF-HOUSE.edge_trim_material` — the house's one exterior dark — and the gutter hangs
 #: directly under it on the eaves, 6" of it, so leaving the trough in mill aluminium put a pale
 #: grey band along the two edges where the dark outline is supposed to be continuous: the rakes
@@ -182,12 +175,10 @@ _TROUGH_MID_IN = _GUTTER_BACK_IN + _LAP_IN + (_GUTTER_THICK_IN - 2.0 * _LAP_IN) 
 # A bent angle (resolve/trim_bands.py::drip_edge_bands): a flat leg lying **on the top deck**
 # and running out over the trough, with a turn-down at its outboard end.
 #
-# It used to be derived upward from the gutter's rim — a lap above it — which put a drip edge
-# in mid-air 0.7" clear of the roof it drains, its inboard end a whole inch *outboard* of the
-# deck's own edge. That is backwards. A drip edge is a roof-plane piece: it is nailed to the
-# deck, the field underlayment is lapped over its flange, and only then does its turn-down
-# reach down into the trough. So the flange lands on ``_DRIP_CEILING_IN`` and everything else
-# follows from where the deck is, not from where the gutter ended up.
+# A drip edge is a roof-plane piece: it is nailed to the deck, the field underlayment is
+# lapped over its flange, and only then does its turn-down reach down into the trough. So
+# the flange lands on ``_DRIP_CEILING_IN`` and everything else follows from where the deck
+# is, not from where the gutter ends up.
 #: How far the flange runs back onto the deck from the roof edge — ordinary drip-edge stock.
 _DRIP_DECK_BEARING_IN = 1.5
 _DRIP_INNER_IN = -_DRIP_DECK_BEARING_IN
@@ -286,14 +277,14 @@ def _leader(side: str, index: int, eave_x, outward: float):
 # elevation the eave piece already bears at: a modeled part of record for FORTIFIED's rake
 # line item, coexisting with the sloped corner trim above it rather than replacing it.
 #
-# **A single run the full 36'+ width of the gable was tried first (2026-08-30 FORTIFIED
-# build-out) and was wrong twice over.** The whole span sits at the low eave elevation, so
-# past the two corners — under the rest of the rake, where the roof climbs to the ridge — it
-# reads as a bar cut straight across the middle of the triangular gable rather than a return
-# hugging its edge. And because it ran the full width, both of its ends sat exactly on top of
-# the west/east eave runs' own footprint, the same square inches of metal modeled twice at
-# all four house corners. Two short stubs, one per corner, fix both: short enough to read as
-# a return and not a rake run, long enough to lap onto the eave piece it meets.
+# **A single run the full 36'+ width of the gable would be wrong twice over.** The whole
+# span sits at the low eave elevation, so past the two corners — under the rest of the rake,
+# where the roof climbs to the ridge — it would read as a bar cut straight across the middle
+# of the triangular gable rather than a return hugging its edge. And running the full width
+# would sit both ends exactly on top of the west/east eave runs' own footprint, the same
+# square inches of metal modeled twice at all four house corners. Two short stubs, one per
+# corner, fix both: short enough to read as a return and not a rake run, long enough to lap
+# onto the eave piece it meets.
 _RAKE_RETURN_IN = 12.0  # 1'-0" — a token corner return; the sloped corner trim already
                         # carries the rake's real water-shedding job.
 
@@ -324,7 +315,7 @@ ATTIC_ELEMENTS = [
 ]
 
 
-# --- the four wall corners, where board & batten meets PBR (2026-08-31) -------------------
+# --- the four wall corners, where board & batten meets PBR ---------------------------------
 #
 # ** THE ENGINE MODELS NO WALL-TO-WALL CORNER TRIM AT ALL. ** ``corner_trim`` in
 # ``takeoff/edge_trim.py`` is exclusively the ROOF-edge piece, the one this module's
