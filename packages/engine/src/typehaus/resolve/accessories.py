@@ -140,10 +140,10 @@ def rainscreen_band(
     vents nothing, and is no more a rainscreen than a stud bay is: ``None``, not zero, or the
     take-off ships a run of 0"-deep insect strip and the resolver draws the whole band.
 
-    **An AIRGAP layer immediately inboard of the band belongs to the same cavity**, and this
-    is where the catlin truss (2026-08-26) parts company with the outrigger it replaced. Its
-    outer girt band is 1-1/2" of solid KDAT — nothing vents inside it — with the 1/2" vent
-    gap authored as its own layer behind it. Read band-only, that wall would report a 1-1/2"
+    **An AIRGAP layer immediately inboard of the band belongs to the same cavity.** The
+    catlin truss's outer girt band is 1-1/2" of solid KDAT — nothing vents inside it — with
+    the 1/2" vent gap authored as its own layer behind it. Read band-only, that wall would
+    report a 1-1/2"
     cavity that is actually wood, and no cavity at all where the air is. Read together they
     are the 2" of drained, vented, insect-screened space the wall really has, open to the
     outside between the girt courses: 1/2" behind the girts plus the 1-1/2" between them.
@@ -624,8 +624,8 @@ def _resolve_edge_run(model: ResolvedModel, el, storey: str) -> None:
 
 
 #: Which edge-run kinds resolve as a composed section rather than as one extruded band.
-#: A gutter is an open-top U — the single bar it used to get read as a solid billet of
-#: aluminium, nothing rain could fall *into*. A drip edge is a bent angle: a flat leg lapped
+#: A gutter is an open-top U, not the solid billet of aluminium a single bar would draw —
+#: nothing rain could fall *into*. A drip edge is a bent angle: a flat leg lapped
 #: under the roofing and a turn-down that throws the water clear. Both are the same recipes
 #: the roof's *derived* trim uses, so an authored run and a derived one cannot drift into
 #: different-looking metal on the same house.

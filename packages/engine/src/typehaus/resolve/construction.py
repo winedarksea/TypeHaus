@@ -7,8 +7,7 @@ land on concrete, the sauna liner wrapping onto the centre concrete wall, the ex
 foundation foam turning a corner for thermal continuity, the masonry guard's corner
 return) — or, where a rule names no junction at all, a *field* of material a resolved
 element leaves for the trades (the resilient channel one room's ceiling membrane hangs
-on). They are *authored* on
-``PlanModel.construction_rules`` and, until this pass existed, emitted nothing.
+on). They are *authored* on ``PlanModel.construction_rules``.
 
 This pass runs once, after the envelope is resolved and **before final framing** (so the
 returns are construction geometry, not documentation), and for each rule:

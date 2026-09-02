@@ -1,10 +1,8 @@
 """Roof shells as IR solids: one closed band per above-structure assembly layer.
 
-Moved out of ``emit/gltf/roofs.py`` (itself a port of ``ui/src/three/roofGeometry.ts``), which
-was the third copy of this math — and the one that disagreed with IFC, whose ``ifc/roof.py``
-built vertical-sided layer prisms with no eave-drift compensation. The plan blessed *this*
-interpretation as canonical; ``ifc/roof.py`` now reads these bands too, so its roof layers
-changed shape slightly and the exported assembly matches what the viewer draws.
+Shared by the glTF and IFC emitters (mirrored from ``ui/src/three/roofGeometry.ts``) so a
+roof layer draws the same shape everywhere: ``ifc/roof.py`` reads these bands rather than
+building its own vertical-sided layer prisms with no eave-drift compensation.
 
 The rules, stated once:
 

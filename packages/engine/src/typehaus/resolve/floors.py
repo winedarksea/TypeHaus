@@ -1,7 +1,7 @@
 """Floor deck framing: FloorSystem JoistSpec -> joist FramedMembers (→ 30 WP3.4/3.7).
 
-Semantics match the old catlin builder: one joist line per spacing position across the
-deck's perpendicular extent (both ends included), split into spans at each bearing line.
+One joist line per spacing position across the deck's perpendicular extent (both ends
+included), split into spans at each bearing line.
 Rim boards, opening headers/trimmers are future refinements — quantities and the S-101
 sheets consume these members as-is.
 """

@@ -13,10 +13,9 @@ Why it lives in ``resolve/`` rather than ``emit/draw/``
 * ``emit/draw/`` already imports shapely (``siteplan``, ``detail_components/wall_base``), so
   a kernel there would be one careless import from breaking Pyodide with no test to catch it.
   **This module imports ``math``, ``dataclasses`` and ``resolve.*`` — nothing else.**
-* It breaks the ``detail_components/* → section.py`` import cycle: seven modules used to
-  import ``ring_cut_intervals`` from ``section``, which made the biggest file in the engine
-  an import hub for the whole detail package. They import :func:`ring_intervals` from here
-  now, and ``section`` is a consumer like any other.
+* It breaks the ``detail_components/* → section.py`` import cycle: those modules import
+  :func:`ring_intervals` from here rather than from ``section``, so ``section`` is a
+  consumer like any other rather than an import hub for the whole detail package.
 
 Section coordinates
 -------------------
@@ -72,11 +71,11 @@ def _crosses_edge(a0: float, a1: float, station: float) -> bool:
     """The **half-open** crossing rule: ``a0 <= s < a1`` on a rising edge, mirrored.
 
     This is what makes the crossing count provably even — a vertex sitting exactly on the
-    plane belongs to exactly one of its two edges. The older strict-sign test counted such a
-    vertex twice, which could yield an odd count that even-odd pairing then silently dropped
-    a span from. Callers slicing IR solids never meet the case (``CutPlane.nudged`` has
-    already moved the station off every vertex), but the rule is what makes the kernel
-    correct without the nudge too.
+    plane belongs to exactly one of its two edges, so it is never double-counted the way a
+    strict-sign test would be, which can yield an odd count that even-odd pairing then
+    silently drops a span from. Callers slicing IR solids never meet the case
+    (``CutPlane.nudged`` has already moved the station off every vertex), but the rule is
+    what makes the kernel correct without the nudge too.
     """
     return a0 <= station < a1 or a1 <= station < a0
 
@@ -124,8 +123,7 @@ def _prism_profiles(solid: GPrism, plane: CutPlane) -> list[SectionProfile]:
         return []
     tops = _crossing_tops(solid, crossings)
     # Voids run the full height by definition (they are opening holes), so they *split* the
-    # span rather than perforating the face. The old section cut ignored them entirely and
-    # drew a slab straight across a stair well.
+    # span rather than perforating the face.
     cuts = [(lo, hi) for void in solid.voids for (lo, hi) in ring_intervals(void, plane)]
     profiles: list[SectionProfile] = []
     for index in range(0, len(crossings) - 1, 2):
@@ -254,12 +252,6 @@ def _cells(key: tuple[int, int]) -> tuple[tuple[int, int], ...]:
     of cells around one makes the weld a *distance* again. It strictly widens what welds —
     two points in one cell were already up to a cell diagonal apart — so no chain that closed
     before stops closing.
-
-    The case that found it: catlin's garage-roof membrane is 0.02" thick, its eave edge
-    carries two z values 7.4e-7 m apart, the segment between them is dropped as degenerate
-    (rightly — it is below ``WELD_M``), and the two chain ends it left behind quantized one
-    cell apart. Four open chains on a mesh whose deck and roofing siblings, cut on the same
-    plane, closed cleanly.
     """
     x, y = key
     return ((x, y),

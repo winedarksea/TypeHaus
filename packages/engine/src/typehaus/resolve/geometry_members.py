@@ -34,7 +34,7 @@ def _unit_normal(dx: float, dy: float, run: float) -> tuple[float, float]:
 def member_box(member: FramedMember) -> GBox | None:
     """The member as eight corners, or ``None`` if it is too degenerate to draw.
 
-    Handles the three cases that used to need three code paths:
+    Handles three cases:
 
     * **upright** (``p0 == p1``): a stud, post or king. Its section is placed across
       ``orient`` — the wall direction it stands in — which is exactly what the glTF path
@@ -87,8 +87,7 @@ def member_box(member: FramedMember) -> GBox | None:
     # Ring order matches the IFC faceted box: start-left, end-left, end-right, start-right,
     # so bottom and top correspond vertex for vertex. Written out rather than zipped from a
     # packed (x, y, low, high) tuple: this function runs 15,160 times per resolve of
-    # houses/catlin, and the two generator expressions that used to unpack it were 43,300
-    # frame setups each.
+    # houses/catlin, and unpacking on every call adds real overhead on that hot path.
     slx, sly = ax - half_x, ay - half_y
     elx, ely = bx - half_x, by - half_y
     erx, ery = bx + half_x, by + half_y

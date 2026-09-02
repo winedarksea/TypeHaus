@@ -49,16 +49,15 @@ def arch_soffit_circle(half_span_m: float, rise_m: float) -> tuple[float, float,
     """``(radius, half_angle, springline_depth)`` of the circle through both springlines and
     the crown of an arch of half-span ``half_span_m`` rising ``rise_m`` above them.
 
-    This is what makes a *segmental* arch possible. The soffit used to be hard-wired to a
-    half-circle of ``width / 2``, so ``Arch.rise`` only chose where the springline sat and
-    every head came out semicircular however shallow the rise said it was — a 2" rise on a
-    14" opening still drew a 7" half-round. Solving the circle from both numbers instead
-    makes the crown land exactly on the authored head.
+    This is what makes a *segmental* arch possible: solving the circle from both the span and
+    the rise makes the crown land exactly on the authored head, rather than a half-circle of
+    ``width / 2`` where a shallow rise (2" on a 14" opening) would otherwise still draw a
+    7" half-round.
 
     ``springline_depth`` is how far the circle's centre sits *below* the springline
-    (``radius - rise``); a semicircle has none, which is why nothing needed it before.
-    A rise at or above the half-span is the semicircle, and is clamped to it — a "rise"
-    taller than that is a horseshoe arch, which no wall here can build.
+    (``radius - rise``); a semicircle has none. A rise at or above the half-span is the
+    semicircle, and is clamped to it — a "rise" taller than that is a horseshoe arch, which no
+    wall here can build.
     """
     span = max(half_span_m, 1e-9)
     rise = min(max(rise_m, 1e-9), span)
@@ -71,8 +70,8 @@ def _arch_soffit_segment_count(radius_m: float,
                                half_angle_rad: float = math.pi / 2.0) -> int:
     """Segments for a soffit arc sampled at even angular steps. One step's mid-chord sagitta
     is ``r * (1 - cos(theta / 2n))``, so inverting it ties tessellation to the arch's actual
-    size instead of a flat guess. ``half_angle_rad`` defaults to the half-circle this used to
-    assume. Mirrors ``archSoffitSegmentCount`` in ui/src/three/builders/walls.ts."""
+    size instead of a flat guess. ``half_angle_rad`` defaults to a half-circle.
+    Mirrors ``archSoffitSegmentCount`` in ui/src/three/builders/walls.ts."""
     if radius_m <= _ARCH_SOFFIT_CHORD_TOLERANCE_M:
         return _ARCH_SOFFIT_MIN_SEGMENTS
     half_step = math.acos(max(-1.0, 1.0 - _ARCH_SOFFIT_CHORD_TOLERANCE_M / radius_m))

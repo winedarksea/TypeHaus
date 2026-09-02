@@ -2,15 +2,11 @@
 
 **One plate, one finder.** A framed wall stacked on a concrete wall gets a PT sill with sill
 seal and a capillary break under it, and a ``FloorSystem`` bearing on the same
-``FoundationWall`` bears on that same board. There were two finders and two predicates until
-2026-08-23 — ``wall:framed_on_concrete`` and ``floor:on_concrete_wall`` — which is a
-double-bill wherever both are true, and a coverage gap wherever only the floor is: the
-second predicate was never authored in any house, it was retired from the catlin plan on
-2026-08-18 on the reading that "no FloorSystem names a FoundationWall in its
-``joists.bearing_refs``", and the 2026-08-21 deck overhaul made that false three days later
-without anything noticing. It is gone now; ``_find_framed_on_concrete`` takes the **union**
-of the two runs. ``_framed_on_slab`` is the third case and stays separate — a partition
-standing on a slab shares the materials but not the run.
+``FoundationWall`` bears on that same board. Two separate predicates here — one per element —
+would double-bill wherever both fire and leave a coverage gap wherever only the floor bears,
+so ``_find_framed_on_concrete`` takes the **union** of the two runs. ``_framed_on_slab`` is
+the third case and stays separate — a partition standing on a slab shares the materials but
+not the run.
 """
 
 from __future__ import annotations
@@ -99,20 +95,19 @@ def _find_framed_on_concrete(model: ResolvedModel, rule: ConstructionRule) \
         -> Iterator[ResolvedConstructionReturn]:
     """PT sill on top of a concrete wall — for the framed wall AND for the joists.
 
-    **One board, one return.** Since the 2026-08-23 flat-bearing-seat rework the framed wall
-    above and the floor beside it land on the same plate: the wall's own 2x6 mudsill runs the
-    length of the pour and the I-joists and their rim bear on it too. Two rules — one per
-    element — would bill that plate twice over every run where both are present, which is
-    most of this basement, so the run is the **union** of the framed-wall stack runs and the
-    floor systems' bearing runs on the same wall.
+    **One board, one return.** The framed wall above and the floor beside it land on the same
+    plate: the wall's own 2x6 mudsill runs the length of the pour and the I-joists and their
+    rim bear on it too. Two rules — one per element — would bill that plate twice over every
+    run where both are present, which is most of this basement, so the run is the **union**
+    of the framed-wall stack runs and the floor systems' bearing runs on the same wall.
 
-    It also fixes a real coverage gap the two-rule reading had. W-B-CN carried 14.22 LF of
-    wall against 10.17 LF of plate and W-B-CS 13.83 against 13.00 — the bare remainder was
-    the stretch where a floor bore and no framed wall stacked, and it ordered no plate at all.
+    Without the union there is a real coverage gap: W-B-CN carries 14.22 LF of wall against
+    only 10.17 LF of plate, and W-B-CS 13.83 against 13.00 — the remainder is the stretch
+    where a floor bears and no framed wall stacks, which would order no plate at all.
 
-    The plate sits **on the concrete**, at ``lower.z1_m``, not at the framed wall's own base:
-    the two were the same elevation while the pour ran to the storey datum and they are
-    13 7/16" apart now.
+    The plate sits **on the concrete**, at ``lower.z1_m``, not at the framed wall's own base
+    — a flat-bearing-seat wall's base sits well above the pour, and the plate is what bridges
+    the gap between them.
     """
     lap = rule.dimension.meters if rule.dimension is not None else 0.0381  # 1.5"
     by_storey = _walls_by_storey(model)
@@ -245,8 +240,8 @@ def _find_framed_on_concrete(model: ResolvedModel, rule: ConstructionRule) \
                 material_ref="kdat",
                 element_tags=element_tags,
                 outline=_strip(anchor, direction, run, lo, hi),
-                # On the pour, not at the framed wall's base — since 2026-08-23 those are
-                # 13 7/16" apart and the plate is what bridges them.
+                # On the pour, not at the framed wall's base — a flat-bearing-seat wall's
+                # base sits well above it, and the plate is what bridges them.
                 z0_m=lower.z1_m, z1_m=lower.z1_m + lap, thickness_m=width, length_m=run,
                 lap_m=lap, thermal_continuity=False, sealant="sill-gasket",
                 flashing="capillary-break", returning_layer=returning,
@@ -262,12 +257,8 @@ def _framed_on_slab(model: ResolvedModel, rule: ConstructionRule,
 
     IRC R317.1(2)/(3) does not care which pour it is: wood in direct contact with concrete
     or resting on a slab in contact with the ground is preservative-treated, over a sill
-    gasket, over a capillary break. Every basement partition in a house with a slab floor is
-    this detail, and until 2026-08-21 the finder above looked only for a framed wall
-    *stacked on a concrete wall* — so catlin's sauna, ESS-closet and bathroom partitions
-    stood on 3 1/2" of slab and ordered no treated plate at all. The 2026-08-21 deck
-    overhaul framed five more walls on that slab, and its plan predicted the return would
-    grow with them; it did not, which is what surfaced this.
+    gasket, over a capillary break. Every basement partition in a house with a slab floor
+    needs this detail — catlin's sauna, ESS-closet and bathroom partitions among them.
 
     Matched geometrically, not by tag: the wall's base sits at the slab's top face within a
     plate's thickness, and its axis midpoint falls inside the slab's outline. Nothing here

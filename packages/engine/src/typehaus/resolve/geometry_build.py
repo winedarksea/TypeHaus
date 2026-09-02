@@ -4,18 +4,17 @@ This is where geometry stops being re-derived per emitter. Each stage below turn
 of resolved records into :class:`ElementGeometry`, applying the shape math *once*; the IFC,
 glTF, model.json and 2D-section consumers then read the result.
 
-Landed in sequence (→ the vision-alignment plan, D3–D5): members, solids and solar panels
-first, then walls, then openings, roofs, floor decks and the site earth — each with a
-shadow-parity test proving the IR reproduces what the emitters drew, except where the plan
-blesses a diff. Both Python emitters now read this instead of deriving anything: ``emit/gltf``
-end to end, and ``emit/ifc`` for the roof shell, the site earth sheet and the floor deck (it
-keeps its own swept solids for members and its opening/void idiom for walls, which are proper
-IFC, and which the IR's member solid was ported *from*).
+Members, solids and solar panels; then walls, then openings, roofs, floor decks and the site
+earth — each proven against the emitters it replaces by a shadow-parity test, except where the
+plan blesses a diff (→ the vision-alignment plan, D3–D5). Both Python emitters read this:
+``emit/gltf`` end to end, and ``emit/ifc`` for the roof shell, the site earth sheet and the
+floor deck (it keeps its own swept solids for members and its opening/void idiom for walls,
+which are proper IFC, and which the IR's member solid was ported *from*).
 
-The four blessed diffs, all landed: the glTF member box gains its true section; IFC's roof
-layers gain the perpendicular offset and eave-drift compensation the viewer already had; a
-floor gains a real deck (no emitter drew one); and the earth becomes geometry — the glTF
-``earth`` trade was empty, and IFC's pad stood 5cm *above* grade rather than under it.
+Four diffs from the legacy emitters are accepted: the glTF member box gains its true section;
+IFC's roof layers gain the perpendicular offset and eave-drift compensation the viewer already
+had; a floor gains a real deck (no emitter drew one); and the earth becomes geometry — the
+glTF ``earth`` trade was empty, and IFC's pad stood 5cm *above* grade rather than under it.
 
 The viewer's three.js builders are deliberately *not* on this path: that render path stays
 (→ ``WHOLE_HOUSE_GLB_PRIMARY``), so the vocabularies it shares with the emitters are pinned by
@@ -129,9 +128,10 @@ def _solid_geometry(solid: ResolvedSolid, plan) -> ElementGeometry:
 
     A solid carrying a :class:`~typehaus.resolve.model.SolidSweep` is a *run* instead — a
     handrail, a drain, a raceway — and becomes one mitred ``GBox`` per leg. That is the whole
-    reason the sweep exists: a prism cannot rake, so a raking rail used to be a stack of
-    level bands. Every downstream reader of the IR (glTF, IFC, the section slice kernel)
-    already speaks ``GBox``, so they get real swept geometry with no further change.
+    reason the sweep exists: a prism cannot rake, and a raking rail needs continuous slope,
+    not a stack of level bands. Every downstream reader of the IR (glTF, IFC, the section
+    slice kernel) already speaks ``GBox``, so they get real swept geometry with no further
+    change.
     """
     if solid.sweep is not None:
         boxes = tuple(GBox(corners_bottom=start, corners_top=end)

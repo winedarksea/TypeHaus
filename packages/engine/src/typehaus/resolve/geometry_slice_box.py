@@ -1,10 +1,9 @@
 """Cutting a hexahedron — the upright test, the convexity test, and the hull cut.
 
-Split out of :mod:`typehaus.resolve.geometry_slice` (AGENTS.md's 500-line rule) along the
-line the sweep kernel drew through it: a ``GBox`` used to mean one thing, an extruded plan
-footprint, and now means two, because a swept run's leg is a box whose rings are separated
-along an arbitrary 3D axis (→ :mod:`typehaus.resolve.sweep`). Telling those apart, and
-cutting the second kind, is a subject of its own.
+Split out of :mod:`typehaus.resolve.geometry_slice` (AGENTS.md's 500-line rule): a ``GBox``
+means two different things — an upright extruded plan footprint, and a swept run's leg,
+whose rings are separated along an arbitrary 3D axis (→ :mod:`typehaus.resolve.sweep`).
+Telling those apart, and cutting the second kind, is a subject of its own.
 
 ``geometry_slice._box_profiles`` is the caller and stays there, because *choosing* between
 the fast path and this one is the dispatch, not the geometry.

@@ -1,6 +1,6 @@
 """What forms the ceiling over a room, and how low its underside hangs.
 
-Two very different consumers ask the same question and used to answer it separately:
+Two very different consumers ask the same question, each deriving its own answer:
 
 * ``resolve/construction_ceiling.py`` bills resilient channel across the joist soffit of
   "the deck above this room", and derived that privately;
@@ -60,9 +60,8 @@ def _is_ceiling_deck(element: Any) -> bool:
     """Could this element be somebody's ceiling?
 
     A ``walking_surface`` Slab is explicitly not: it rides on TOP of a floor system's
-    joists, so its underside is that deck's top, not a room's head. (All three of catlin's
-    were converted to floor-system subfloors on 2026-08-22 and none is left, but the rule
-    is the model's, not the house's.)
+    joists, so its underside is that deck's top, not a room's head. The rule is the
+    model's, not any particular house's.
     """
     if isinstance(element, FloorSystem):
         return True
@@ -224,10 +223,10 @@ def polygon_parts(geometry: Any) -> list[Polygon]:
 def deck_void_face(plan: PlanModel, storey_tag: str, deck: Any) -> Polygon | None:
     """The union of the ``FloorOpening`` faces this deck carries, or None if it carries none.
 
-    A hole in the deck is a hole in the ceiling hung under it. The take-off has always
-    known this — :mod:`typehaus.takeoff.framing` bills ``gross - openings`` — but the
-    geometry did not, so a room under a stair well resolved a gypsum plane straight across
-    the shaft, in the 3D model and in every section cut through it.
+    A hole in the deck is a hole in the ceiling hung under it — the same ``gross -
+    openings`` the take-off already bills (:mod:`typehaus.takeoff.framing`). Without it, a
+    room under a stair well resolves a gypsum plane straight across the shaft, in the 3D
+    model and in every section cut through it.
     """
     faces = []
     for tag in getattr(deck, "openings", ()):

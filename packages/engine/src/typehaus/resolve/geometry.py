@@ -38,12 +38,9 @@ def normal(direction: Vec) -> Vec:
 def wall_frame(wall) -> tuple[Vec, Vec, Vec, float]:  # noqa: ANN001 — avoids an import cycle
     """``(origin, tangent, normal, axis_length)`` for a wall's axis.
 
-    Twelve call sites hand-unpacked ``wall.axis``, computed the tangent/length, and each
-    guarded the degenerate (zero-length axis) case differently — ``or 1.0``, ``<= 1e-9``,
-    ``== 0`` — a silent inconsistency, not just repetition. This is the one answer: a
-    degenerate axis returns a zero tangent/normal and ``axis_length == 0.0``; callers already
-    have to branch on a suspiciously-short wall for other reasons, so check ``axis_length``
-    rather than trust the direction vectors when it is near zero.
+    The one answer for every caller: a degenerate (zero-length) axis returns a zero
+    tangent/normal and ``axis_length == 0.0``, so check ``axis_length`` rather than trust
+    the direction vectors when it is near zero.
     """
     origin, end = wall.axis
     tangent_vec = sub(end, origin)

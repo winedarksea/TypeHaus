@@ -9,8 +9,8 @@ between joist ends. In an ordinary room that is an air-sealing problem, and the
 In a room deliberately run wet it is a vapour problem as well, and the only product that is
 simultaneously the air barrier, the vapour retarder and the insulation in a cavity that shape
 is closed-cell spray foam: bonded, monolithic, no seams. That is material somebody buys, and
-until this finder existed the model *drew* it (``TR-CATLIN-PLANT-RIM``) and billed nobody for
-it — a Transition documents and cannot put a quantity in a takeoff (#45).
+a bare Transition (``TR-CATLIN-PLANT-RIM``) can document it but cannot put a quantity in a
+takeoff (#45).
 
 Everything here reads the **plan**, not the resolved rooms and floors, because construction
 rules run pre-framing: at that point ``model.walls`` exists but ``model.rooms`` and

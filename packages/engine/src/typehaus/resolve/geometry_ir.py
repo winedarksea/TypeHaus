@@ -59,10 +59,9 @@ class GBox:
     """An eight-corner hexahedron: matching bottom and top rings, vertex for vertex.
 
     Generalized from :class:`ResolvedSolarPanel`, which already carried exactly this pair.
-    One shape covers what used to need three code paths — an upright member with an
-    ``orient``ed section, a raked member whose ends sit at different elevations, and a
-    tapered band that grows from heel to ridge — because all three are just different
-    corners.
+    One shape covers three different needs — an upright member with an ``orient``ed section,
+    a raked member whose ends sit at different elevations, and a tapered band that grows from
+    heel to ridge — because all three are just different corners.
     """
 
     corners_bottom: Ring3
@@ -223,9 +222,9 @@ class GeometryModel:
     def part(self, uid: str, key: str) -> GPart | None:
         """One named part of one element, or ``None`` if either is absent.
 
-        Both emitters walked ``geometry -> by_uid -> part-by-key`` themselves, each with its
-        own copy of the "is there geometry at all" guard — ``resolve_preview`` skips the
-        geometry stage on purpose, so a caller can hand an emitter a model with no IR.
+        Shared so a caller need not duplicate the "is there geometry at all" guard —
+        ``resolve_preview`` skips the geometry stage on purpose, so a caller can hand an
+        emitter a model with no IR.
         """
         element = self.by_uid(uid)
         if element is None:

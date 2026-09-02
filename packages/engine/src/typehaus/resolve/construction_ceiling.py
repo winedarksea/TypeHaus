@@ -129,12 +129,11 @@ def _find_ceiling_channel(model: ResolvedModel, rule: ConstructionRule) \
             # of the deck boundary above it), so every system the room's polygon actually
             # overlaps contributes its openings as holes and its tag to the one return.
             # A candidate with no authored outline can't be tested against the room and is
-            # kept as the fallback, matching the single-deck-per-storey behaviour this
-            # replaces (safe only when it is the storey's one deck).
+            # kept as the fallback — safe only when it is the storey's one deck.
             candidates = [(storey, system) for storey, system in decks
                          if storey.tag == lowest_storey.tag]
             # Shared with ``code.R305_ceiling_height``, which asks the same question about
-            # the same decks and used to not ask it at all — see resolve/ceiling_over.py.
+            # the same decks — see resolve/ceiling_over.py.
             overlapping = decks_covering(face, candidates)
             if overlapping:
                 combined_field = face

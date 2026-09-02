@@ -29,12 +29,11 @@ def assembly_structure_material(plan, assembly_tag: str | None) -> str | None:
 def solid_material_ref(plan, solid) -> str:
     """What a resolved solid is *made of* — its own ref, its assembly's, else a default.
 
-    ``emit/draw/section.py::_solid_material`` was this walk, with a docstring admitting it
-    duplicated ``emit/gltf/palette.py::_solid_color``. Hatching a detail and colouring the
-    GLB are different questions with the same answer underneath, and they disagreed: every
-    solid hatched as concrete in section, which is right for a footing and wrong for a
-    composite deck, an aluminium extrusion or a glass baluster panel — all of which a detail
-    exists to tell apart.
+    Shared with ``emit/draw/section.py::_solid_material`` and
+    ``emit/gltf/palette.py::_solid_color`` — hatching a detail and colouring the GLB are
+    different questions with the same answer, and defaulting to concrete is right for a
+    footing and wrong for a composite deck, an aluminium extrusion or a glass baluster
+    panel — all of which a detail exists to tell apart.
 
     The direct ref is read first because the assembly cannot answer for a solid that has no
     business having one: a guard's glass lite and its aluminium posts share one
@@ -43,8 +42,7 @@ def solid_material_ref(plan, solid) -> str:
 
     Without either, the fallback reads the member's own *section*, because that is what
     actually says what it is made of: a "6x6" or a "2-2x8" is dressed lumber, a "12 round" is
-    a sonotube-cast concrete pier. Slabs, footings and pads stay concrete — the case the old
-    blanket rule was right about.
+    a sonotube-cast concrete pier. Slabs, footings and pads stay concrete.
     """
     if solid.material:
         return solid.material

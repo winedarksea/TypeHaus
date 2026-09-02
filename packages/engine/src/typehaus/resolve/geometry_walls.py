@@ -1,8 +1,7 @@
 """Wall bodies as IR solids: one prism per depth-bearing layer, jamb-split around openings.
 
-Moved verbatim (in behaviour, not in shape of code) out of ``emit/gltf/walls.py``, which was
-one of the four places this math lived. The rules it encodes are load-bearing and easy to get
-subtly wrong, so they are stated once here:
+The rules this module encodes are load-bearing and easy to get subtly wrong, so they are
+stated once here:
 
 * one solid per **depth-bearing** layer — cavity fill shares the structure layer's polygon, so
   extruding it too would only z-fight;
@@ -96,8 +95,7 @@ def _arch_spandrel_mesh(edges, opening_start: float, opening_end: float, z1: flo
         positions.extend(((front[0], front[1], soffit), (back[0], back[1], soffit),
                           (front[0], front[1], z1), (back[0], back[1], z1)))
         # The outward radial direction at this sample. ``height`` is measured off the
-        # springline, so the circle's centre is ``depth`` below it — zero for a semicircle,
-        # which is why this read ``height / radius`` while every arch was one.
+        # springline, so the circle's centre is ``depth`` below it — zero for a semicircle.
         analytic = (offset / radius * ux, offset / radius * uy, (height + depth) / radius)
         # Only the two soffit corners lie on the cylinder; the top corners are on the flat
         # top. A sample clipped by the wall top has left the circle, so it is not curved
@@ -131,8 +129,8 @@ def layer_solids(wall: ResolvedWall, polygon, openings,
 
     ``band`` is the layer's own absolute (z0, z1) when its assembly gives it one
     (``Layer.extent`` — a protection panel above grade, a splash course at the base);
-    ``None`` means the layer runs the wall's full height, which is what every layer did
-    before banding existed. Every renderer and exporter of a wall body comes through here,
+    ``None`` means the layer runs the wall's full height. Every renderer and exporter of a
+    wall body comes through here,
     so clamping in this one function is what makes a banded layer real in glTF, in IFC and
     in ``geometry_build`` at once.
 
