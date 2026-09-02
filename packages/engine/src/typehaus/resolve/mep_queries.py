@@ -414,10 +414,10 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
 
     conflicts: list[str] = []
     crossings: list[tuple[float, float]] = []
-    # ** THE BREADTH IS THE MEMBER'S, NOT A CONSTANT. ** This subtracted a hardcoded 1 1/2"
-    # until 2026-08-30 — solid-sawn 2x breadth, applied to every floor whatever it is framed
-    # in. An 11 7/8" floor truss has a 3 1/2" chord and an 11 7/8" I-joist a 2 1/2" flange, so
-    # on 16" centres the check was crediting 14 1/2" of clear bay where a truss leaves 12 1/2"
+    # ** THE BREADTH IS THE MEMBER'S, NOT A CONSTANT. ** A hardcoded 1 1/2" (solid-sawn 2x)
+    # applied to every floor whatever it is framed in undercounts a truss or I-joist: an
+    # 11 7/8" floor truss has a 3 1/2" chord and an 11 7/8" I-joist a 2 1/2" flange, so on 16"
+    # centres a hardcoded breadth credits 14 1/2" of clear bay where a truss leaves 12 1/2"
     # and an I-joist 13 1/2". Two inches is the difference between a 12" duct fitting and not.
     breadths = {cross_section(m.profile).width_m for m in edges}
     clear_width_m = spacing_m - (max(breadths) if breadths else _JOIST_BREADTH_FALLBACK_M)

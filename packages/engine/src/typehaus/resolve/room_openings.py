@@ -6,8 +6,8 @@ to grade R303.1; the server needs it to put a glazing table in front of a reader
 scraping numbers back out of a check message. Checks import resolve and never the reverse,
 so the moment a second consumer appeared this had to come down out of ``checks/``.
 
-It used to be ``checks/code/mn_residential/_common.py::_room_windows``, and that module
-still re-exports it under the old name so the callers there read unchanged.
+``checks/code/mn_residential/_common.py`` re-exports this as ``_room_windows`` so its own
+callers keep reading unchanged.
 """
 
 from __future__ import annotations
@@ -78,8 +78,8 @@ def room_windows(model: Any, room, *, exterior_only: bool = False) -> list:
     change.
 
     **R310 passes it True, and that is a safety fix, not a refinement.** The band below
-    selects on proximity to the room boundary and nothing else, so before this flag existed
-    an interior transom or a borrowed-light sash of adequate size was credited to a sleeping
+    selects on proximity to the room boundary and nothing else, so without this flag an
+    interior transom or a borrowed-light sash of adequate size gets credited to a sleeping
     room as its *emergency escape opening*. R310.1's subject is an opening "opening directly
     into a public way, yard or court"; a window into the next room reaches none of those, and
     a false pass there is the one class of false pass this engine cannot afford.

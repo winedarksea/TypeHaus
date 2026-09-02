@@ -41,11 +41,10 @@ def wall_lining_overrides(plan: PlanModel,
                           storey_tag: str) -> tuple[dict[str, tuple], list[Finding]]:
     """Per-wall lining overrides authored on the storey's Rooms, plus their findings.
 
-    ``Room.wall_lining`` / ``wall_lining_exceptions`` existed in the schema (and set the
-    clear-face inset via :func:`_lining_inset`) but never reached wall geometry: the
-    resolver always stacked ``assembly.default_lining``. This is the missing map — wall tag
-    → lining layer tuple — computed from plan inputs only (the same seed-claimed faces
-    :func:`resolve_rooms` uses) so :func:`~typehaus.resolve.topology.resolve_storey_walls`
+    ``Room.wall_lining`` / ``wall_lining_exceptions`` set the clear-face inset via
+    :func:`_lining_inset` but do not reach wall geometry on their own. This is the map —
+    wall tag → lining layer tuple — computed from plan inputs only (the same seed-claimed
+    faces :func:`resolve_rooms` uses) so :func:`~typehaus.resolve.topology.resolve_storey_walls`
     can consume it before any wall resolves.
 
     Rules: a room's override reaches every wall whose axis midpoint lies on its claimed
@@ -218,11 +217,8 @@ def _finish_zones(plan: PlanModel, storey_tag: str, room,
                   clear: Polygon) -> tuple[ResolvedFinishZone, ...]:
     """In-room finish overrides — authored on the room, then derived from the floor under it.
 
-    ``Room.finish_zones`` used to stop here: ``ResolvedRoom`` had no field for it, so a
-    ``FinishZone`` written in plan source was accepted by the loader and then silently
-    dropped, reaching no viewer, emitter or takeoff. Clipping is what makes the areas
-    subtractable — a hearth pad drawn a little proud of the wall must not bill more tile
-    than the room has floor.
+    Clipping is what makes the areas subtractable — a hearth pad drawn a little proud of
+    the wall must not bill more tile than the room has floor.
 
     The derived half answers a room that spans two structures. ``Room.floor_finish`` is one
     string, so a room half over a joisted deck and half over a slab whose cap *is* the

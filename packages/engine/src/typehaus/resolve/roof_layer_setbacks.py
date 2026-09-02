@@ -31,12 +31,9 @@ from typehaus.model.enums import LayerFunction
 from typehaus.quantities import inch
 
 # Reference bearing-plate DEPTH for the birdsmouth when the bearing wall's own structure
-# layer cannot be read — a nominal 2x4 laid flat. It was written as `inch(1.17)`, which is
-# this depth times a 4:12 pitch: the PITCH WAS FUSED INTO THE CONSTANT, so a roof at any
-# other pitch whose bearing wall did not resolve got a 4:12 seat cut and nothing said so.
-# The two only ever agreed by the accident of this repo having had one roof pitch. Every
-# roof here resolves a STRUCTURE layer, so splitting them changes no result today — it
-# stops the fallback from being silently wrong the first time one does not.
+# layer cannot be read — a nominal 2x4 laid flat. Pitch is applied separately at the call
+# site and must never be fused into this constant, or a roof at any other pitch whose
+# bearing wall does not resolve gets a silently wrong seat cut.
 _BIRDSMOUTH_FALLBACK_PLATE_M = inch(3.5).meters
 # The metal roofing runs 0.6" past the wall furring's outer face (reference drip lap).
 _METAL_PROUD_M = inch(0.6).meters
@@ -61,10 +58,10 @@ def assembly_layer_spans(assembly) -> list[tuple[object, float, float]]:
     """``(layer, c0_m, c1_m)`` for every layer, cumulative depth interior → exterior.
 
     The companion to :func:`above_structure_layers`: where that answers *which* layers the
-    sky sees, this answers *where each one is*. Four modules ran their own cumulative walk
-    over ``assembly.layers`` — the section cut, the joint plan, the eave detail's band
-    finder and the vent intake — and each one then re-derived the structure datum from it
-    with its own sign convention. Three of the four disagreed at some point in their life.
+    sky sees, this answers *where each one is*. Single source of truth for the cumulative
+    walk over ``assembly.layers`` shared by the section cut, the joint plan, the eave
+    detail's band finder and the vent intake, so they cannot re-derive the structure datum
+    with different sign conventions.
     """
     if assembly is None:
         return []
@@ -104,8 +101,7 @@ def deck_rise_m(roof_assembly, bearing_wall_assembly, pitch) -> float | None:
                       and layer.framing is not None), None)
     if structure is None or structure.framing.roof_frame == "truss" or pitch is None:
         # No pitch, no seat cut: the birdsmouth IS the plate depth times the slope, so a
-        # missing pitch cannot be defaulted without inventing one. Falling back to 4:12
-        # here is the same fusion this module just removed from the plate constant.
+        # missing pitch cannot be defaulted without inventing one.
         return None
     slope = pitch.rise / pitch.run
     depth = _BIRDSMOUTH_FALLBACK_PLATE_M
@@ -276,13 +272,10 @@ def layer_edge_setbacks(model, roof) -> tuple[dict, ...]:
         groups.append(group)
     # **A deck with nothing above it but membranes and the covering IS the batten.** The
     # "deck" clip stops a layer at the WALL SHEATHING face, which is right while foam and a
-    # nailbase run out over the wall's stand-off band and carry the metal — and wrong the
-    # moment they do not. On a zero-overhang continuous-skin edge with no above-deck
-    # insulation (CATLIN_ROOF since 2026-08-31) that rule left the structural deck stopping
-    # at the wall sheathing plane, 6.6" short of the roofing clipped to it: the panel
-    # cantilevered over the girts with nothing under it, and the take-off meanwhile bought
-    # deck for the whole sloped footprint. The deck really does oversail the last rafter and
-    # span the girts, and this is the line that says so.
+    # nailbase run out over the wall's stand-off band and carry the metal — and wrong on a
+    # zero-overhang continuous-skin edge with no above-deck insulation: there the structural
+    # deck really does oversail the last rafter and span the girts, and this is the line that
+    # says so.
     if not any(g in ("foam", "batten") for g in groups):
         groups = ["batten" if g == "deck" else g for g in groups]
     entries: list[dict] = []

@@ -4,17 +4,10 @@ Split out of :mod:`typehaus.resolve.mep` when ``DuctRun`` gained the pipe stack,
 reason AGENTS.md gives — that module was already at its page budget, and this is the same
 seam ``mep_slope`` and ``mep_sleeves`` were cut along.
 
-**What changed and why it mattered.** A ``DuctRun`` had no elevation field at all, so a
-four-storey ERV existed only as plan polylines that teleported between floors: no vertical
-leg was drawn anywhere, ducts emitted no 3D solids, and the take-off billed plan length —
-a riser measured as the zero length it projects to. The one z anybody derived lived inside
-the IFC emitter, which is why no other consumer could draw a duct.
-
 Everything here is the pipe machinery, reused rather than re-written: the same elevation
 solver (``mep_slope``, now with the check-id prefix as a parameter), the same mitred sweep
-kernel (``sweep.py`` — whose ``rect_profile`` had been sitting unused since it was written),
-the same one-swept-solid-per-run emitter. A vertical riser needs no new concept: it is a
-repeated plan point at two elevations, exactly as a drain drop is.
+kernel (``sweep.py``), the same one-swept-solid-per-run emitter. A vertical riser needs no
+new concept: it is a repeated plan point at two elevations, exactly as a drain drop is.
 """
 
 from __future__ import annotations

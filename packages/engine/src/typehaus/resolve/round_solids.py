@@ -6,12 +6,11 @@ the circle. The band boundaries land on the *same* regular-polygon vertex elevat
 vertical risers are faceted at, so a jog reads as the identical n-gon section rather than as
 a few square bands: an n-gon spans n/2 bands top to bottom.
 
-Sloped runs no longer come through here at all. ``sloped_run_bands`` stair-stepped one into
-at most three level stacks and its own docstring called that "an accepted approximation";
-:mod:`typehaus.resolve.sweep` now carries a run as the single mitred tube it is, and
-``resolve/mep.py`` builds one ``SolidSweep`` per pipe or raceway. What is left is the
-callers whose geometry genuinely is level and axis-aligned — sleeve bores, drain tile,
-drywell bores, vent risers — for which a band stack is exact and a sweep would be ceremony.
+Sloped runs no longer come through here: :mod:`typehaus.resolve.sweep` carries a run as a
+single mitred tube, and ``resolve/mep.py`` builds one ``SolidSweep`` per pipe or raceway.
+What is left is the callers whose geometry genuinely is level and axis-aligned — sleeve
+bores, drain tile, drywell bores, vent risers — for which a band stack is exact and a sweep
+would be ceremony.
 
 Checks never read these solids — slope/burial/clearance math runs on the true 3D polyline —
 the bands are viewer/IFC presentation only.

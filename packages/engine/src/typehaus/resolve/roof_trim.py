@@ -375,23 +375,20 @@ def _ridge_vent_members(model: ResolvedModel, roof: ResolvedRoof) -> tuple[Frame
     **Every gable with a covering gets one.** Two slopes meet at the peak in an open joint
     and something has to close it; whether that closure also VENTS is a separate question,
     answered by ``connection`` (``ridge:vented-cap`` against ``ridge:closed-cap``) and not by
-    whether the piece exists. This used to return nothing at all for an unvented roof, and
-    the day CATLIN_ROOF's vent mat was deleted (2026-08-31) the house's 37 LF of ridge cap
-    silently left the model and the bill with it — an open ridge on a standing-seam roof,
-    reported by nothing.
+    whether the piece exists — an unvented ridge must still get a cap, or an open ridge on a
+    standing-seam roof goes unreported in the model and the bill.
 
     Vented is still the common case and the two constructions that reach it both appear on
     catlin: a vented attic (the garage — its vented soffits feed the truss space, which
-    exhausts through a slot cut at the ridge), and an over-deck vent channel (the house until
-    2026-08-31 — the furring/batten gap between the foam and the standing seam ran eave to
-    ridge and exhausted at the top). Either way the cap is a formed metal member riding the
-    roofing surface, centred on the ridge line. A truss roof has no ridge beam, so everything
-    keys off ``ResolvedRoof.ridge_z_m`` — the plane's own peak — never off a framing member.
+    exhausts through a slot cut at the ridge), and an over-deck vent channel (the furring/
+    batten gap between the foam and the standing seam runs eave to ridge and exhausts at the
+    top). Either way the cap is a formed metal member riding the roofing surface, centred on
+    the ridge line. A truss roof has no ridge beam, so everything keys off
+    ``ResolvedRoof.ridge_z_m`` — the plane's own peak — never off a framing member.
 
     A roof that is neither vented NOR clad is the one case that still returns nothing, and it
     is earned rather than assumed: there is no slot to vent and no covering for a cap to
     close over, and a "ridge cap" on a bare deck would be trim on a roof nobody has finished.
-    So this is strictly additive to what a vented roof always got.
 
     "Formed" is composed rather than swept: see ``_RIDGE_CAP_BANDS``. Every band keeps the
     ``ridge_cap`` category, the ``ridge:vented-cap`` connection and the roofing's own

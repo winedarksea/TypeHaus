@@ -42,9 +42,8 @@ def _pipe_vertex_z(run: _SlopedRun, path: list[tuple[float, float]],
     Authored ``elevations`` win; a ``None`` among them is *solved* at
     ``slope_in_per_ft`` over the developed plan length from the last authored invert
     (see :func:`_solve_slope`). Otherwise interpolate linearly between
-    ``start_elevation``/``end_elevation`` over developed plan length — exactly the old
-    two-invert behaviour, so legacy runs resolve unchanged. Both absent → None (no
-    vertical information at all, matching the old None/None endpoints)."""
+    ``start_elevation``/``end_elevation`` over developed plan length. Both absent → None
+    (no vertical information at all)."""
     if run.elevations is not None:
         if len(run.elevations) != len(path):
             return None, [Finding(

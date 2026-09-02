@@ -310,19 +310,13 @@ def _vertical_merge(groups: list[list[_Seg]], _plan: PlanModel) -> list[list[_Se
 
 def _stacks(lower: list[_Seg], upper: list[_Seg]) -> bool:
     """Collinear and overlapping, or authored as a stack. Deliberately *not* vertical
-    adjacency.
+    adjacency: platform framing always leaves a floor between a wall's top plate and the
+    base of the wall above, so a z-extent-touching gate never fires on a real house — only
+    an explicit ``Wall.stacks_on`` would catch the merge.
 
-    This used to gate on the two walls' z-extents touching within ``_TOL``. Platform framing
-    puts a floor between a wall's top plate and the base of the wall above — 13 3/8" at
-    catlin's basement band, 12" above it — so that arm never fired on a real house, and a
-    pair merged only when the author had written ``Wall.stacks_on`` by hand. catlin carries
-    it on 52 walls, all exterior or centreline; every interior wall fell through, landing 22
-    of the house's 75 stack edges on two different layout lines and making
-    ``layout_origin="line"`` a no-op for them no matter what the assembly asked for.
-
-    Dropping the gate is what makes this function ask ``stacking._axis_match``'s question and
-    no other. A setback wall is still a line of its own — that is ``_MIN_OVERLAP``'s job, and
-    it is unchanged.
+    Asking ``stacking._axis_match``'s question and no other is what lets this find every
+    real stack. A setback wall is still a line of its own — that is ``_MIN_OVERLAP``'s job,
+    and it is unchanged.
     """
     for a in lower:
         for b in upper:

@@ -1,24 +1,19 @@
 """Platform framing: exterior/bearing walls span floor-to-floor (#43).
 
 Revit and SketchUp both expect a wall to run from its base level to the level above, with
-the floor system butting into it. TypeHaus used to stop every wall at its own ceiling
-height and patch the leftover joist band with a separate ``ResolvedEnvelopeBand`` proxy
-object — which left a stud-depth void inboard of the sheathing and handed importers a
-non-wall object at every storey line.
+the floor system butting into it.
 
 Here the lower wall simply grows to meet the wall stacked on it. Its *framing* does not:
 ``plate_top_z_m`` keeps the double top plate at the original ceiling height, so the band
 above the plate is rim board and joists, which is what platform framing actually is.
 
-The same band exists at the *bottom* of the lowest framed storey, and for a while nothing
-covered it. A framed wall starts at its storey datum; the foundation it lands on tops out a
-mudsill, a gasket and a rim board below that (13 7/16" on catlin since the bearing seat
-rework), and both loops here skip foundation walls, so the gap was left open — roughly 270 SF
-of cladding, CI, WRB and trim missing from the order at ~240 LF of envelope, billed per wall
-by ``envelope_layer_takeoff`` and therefore a real quantity shortfall rather than a render
-artifact. ``extend_walls_to_foundation`` closes it the other way round: the *upper* (framed)
-wall grows **down** over the mudsill and rim to lap the foundation's protection panel, which
-is the detail as drawn (``notes/basement_to_framed_wall_detail.md``,
+The same band exists at the *bottom* of the lowest framed storey. A framed wall starts at
+its storey datum; the foundation it lands on tops out a mudsill, a gasket and a rim board
+below that, and both loops here skip foundation walls, which leaves the gap open — a real
+quantity shortfall (billed per wall by ``envelope_layer_takeoff``), not a render artifact.
+``extend_walls_to_foundation`` closes it the other way round: the *upper* (framed) wall
+grows **down** over the mudsill and rim to lap the foundation's protection panel, which is
+the detail as drawn (``notes/basement_to_framed_wall_detail.md``,
 ``detail_components/wall_base.py``). Its framing stays put, at ``plate_base_z_m``.
 """
 
@@ -40,17 +35,14 @@ from typehaus.resolve.topology import site_grade_elevation_m_from_plan
 _MAX_BAND_M = inch(24).meters
 
 # Two walls are on the same wall line when their bodies overlap in plan *and* they share a
-# real run. These are separate questions and want separate numbers; until 2026-08-30 one
-# number answered both, and it was the lower wall's own thickness — which told a 6" wall
-# that 6" off the line was on it, and that 6" of shared run was enough to lift a whole
-# wall. They are now split:
+# real run. These are separate questions with separate numbers:
 #
 # * off-axis: half the sum of the two thicknesses. An axis is a centreline, so that sum is
 #   exactly the distance at which two parallel walls stop sharing any footprint at all —
-#   the honest geometric test, and not the same figure for every pair the way one wall's
-#   thickness was. Catlin stacks walls a full wall off their neighbour's line (W-B-BA-N
-#   under W-M-HS3, 6 5/8" apart at 6 3/4" thick), so this is not academic: a tighter
-#   reading drops four real stacks and re-opens the joist band under each.
+#   the honest geometric test, and not the same figure for every pair. Catlin stacks walls
+#   a full wall off their neighbour's line (W-B-BA-N under W-M-HS3, 6 5/8" apart at 6 3/4"
+#   thick), so this is not academic: a tighter reading drops four real stacks and re-opens
+#   the joist band under each.
 # * shared run: this constant, deliberately independent of how thick the walls happen to
 #   be. A wall lifted through its joist band on 6" of shared run is a coincidence, not a
 #   stack.
@@ -65,8 +57,8 @@ def _axis_tolerance(a: Any, b: Any) -> float:
 def extend_walls_to_platform(model: ResolvedModel) -> None:
     """Grow each stacked lower wall up to the underside of the wall above it.
 
-    The stack is the authored ``Wall.stacks_on`` graph — the same signal the old envelope
-    band used — so this never guesses at which walls belong to one wall line.
+    The stack is the authored ``Wall.stacks_on`` graph, so this never guesses at which
+    walls belong to one wall line.
     """
     lines = lines_by_wall(model.layout_lines)
     lifted: set[str] = set()
@@ -117,10 +109,9 @@ def extend_walls_to_foundation(model: ResolvedModel) -> None:
     And only a wall with a cladding layer moves. This is the one place the mirror is not
     symmetric, because the band is not: *above* a wall, an interior partition really does run
     to the underside of the floor above. *Below* one, the band is the joist bay over the
-    basement, and an interior bearing wall has no skin that could lap anything — extending
-    catlin's five ``CATLIN_INT_2X6_BRG`` walls billed 73 SF of gypsum and paint down both
-    faces of a floor system. The reason this pass exists is the lap onto the foundation's
-    protection panel, and that is an envelope detail.
+    basement, and an interior bearing wall has no skin that could lap anything. The reason
+    this pass exists is the lap onto the foundation's protection panel, and that is an
+    envelope detail.
     """
     grade_m = site_grade_elevation_m_from_plan(model.plan)
     lines = lines_by_wall(model.layout_lines)

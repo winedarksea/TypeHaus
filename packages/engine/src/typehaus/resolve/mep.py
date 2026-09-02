@@ -212,10 +212,7 @@ def _emit_run_solids(model: ResolvedModel, run_uid: str, run_tag: str, storey_ta
                      profile: tuple[tuple[float, float], ...], category: str) -> None:
     """One swept solid for the whole routed run — the tube it actually is.
 
-    A run used to be chopped up twice over: a vertical drop was a faceted circle prism, a
-    horizontal leg a stack of chord bands in Z, and a *sloping* leg a stair-step of at most
-    three of those stacks — an approximation ``round_solids.sloped_run_bands`` said so in its
-    own docstring. Now the polyline and its per-vertex inverts go straight into a
+    The polyline and its per-vertex inverts go straight into a
     :class:`~typehaus.resolve.model.SolidSweep`, which mitres itself (→ resolve/sweep.py):
     a vertical drop is just a leg whose direction happens to be down, so the repeated-plan-
     point special case has nothing left to special-case.
@@ -225,12 +222,10 @@ def _emit_run_solids(model: ResolvedModel, run_uid: str, run_tag: str, storey_ta
     raceway is per-service (``conduit_power``/``conduit_data``). The sweep is identical — a
     round section along a polyline with per-vertex elevations — and the only thing that
     differs is the label the viewer and the glTF export colour-code by, so the label is the
-    argument. (It used to be ``system: str`` with ``f"pipe_{system}"`` baked in, which is why
-    conduit had no geometry at all: there was nowhere for a raceway to say what it was.)
+    argument.
 
     ``profile`` is passed in for the same reason, one trade later: a duct is round *or*
-    rectangular, and ``rect_profile`` has been sitting in ``sweep.py`` unused since the
-    kernel was written. A radius argument could only ever have described half of HVAC."""
+    rectangular, and a radius argument could only ever have described half of HVAC."""
     from typehaus.resolve.model import ResolvedSolid
 
     # ``clean_path`` rather than the raw vertices: an authored elbow repeats its plan point

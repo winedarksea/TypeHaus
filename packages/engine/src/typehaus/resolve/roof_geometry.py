@@ -228,10 +228,9 @@ def truss_heel_lift_m(model: ResolvedModel, roof: ResolvedRoof) -> float:
 def apply_truss_heel_lift(model: ResolvedModel) -> None:
     """Raise every truss roof plane by its heel lift, during the *envelope* stage.
 
-    Framing used to do this, two stages after ``apply_to_roof_wall_tops`` — so a ``ToRoof``
-    wall raked to the pre-lift plane and stopped a heel-plus-chord short of the roof it was
-    supposed to meet. Establishing the final plane here keeps one source of truth for every
-    downstream consumer (raked wall tops, ``FollowRoof`` ceilings, headroom, framing).
+    Established here, before ``apply_to_roof_wall_tops``, so every downstream consumer —
+    raked wall tops, ``FollowRoof`` ceilings, headroom, framing — reads the same final plane
+    rather than a ``ToRoof`` wall raking to a pre-lift plane and falling short.
     """
     model.roofs = [
         roof if (lift := truss_heel_lift_m(model, roof)) <= 0.0

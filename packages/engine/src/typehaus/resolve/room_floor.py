@@ -8,9 +8,9 @@ and filed on "main", while its wood walls — and so the room — sit on the "ga
 
 It lives in ``resolve`` rather than ``emit`` because ``resolve/placeables.py`` needs it too,
 and needs it *before* either emitter runs: a placeable's mount elevation is measured off the
-floor it stands on, not off its storey datum. While this was an emit-only helper, everything
-standing in the garage — the hydrant, the workbench, every receptacle and switch — resolved
-22" above the floor the viewer drew under it.
+floor it stands on, not off its storey datum, or everything standing in the garage — the
+hydrant, the workbench, every receptacle and switch — resolves 22" above the floor the
+viewer draws under it.
 """
 
 from __future__ import annotations

@@ -1,11 +1,9 @@
 """Does everything claiming this soffit actually fit inside it?
 
-``JOIST_BAY`` routing has had a real validator since MEP Phase 3 — ``duct_bay_occupancy``
-measures bay straddle, clear width, chord opening and bearing crossings. ``SOFFIT`` and
-``CHASE`` had **nothing**: they were the flag that turned the joist check *off*
-(``if crossed and routing not in (SOFFIT, CHASE)``), so declaring one stopped the checking
-and nothing checked anything in return. Every clearance claim about a duct box in this
-house therefore lived in a plan comment as hand arithmetic, unchecked and un-rerunnable.
+``JOIST_BAY`` routing is graded by ``duct_bay_occupancy`` (bay straddle, clear width, chord
+opening, bearing crossings). ``SOFFIT`` and ``CHASE`` only suppress that check
+(``if crossed and routing not in (SOFFIT, CHASE)``), so declaring one turns the joist check
+off with nothing checking anything in return.
 
 This module is the other half. A run or a machine that names a modeled
 :class:`~typehaus.model.floors.Soffit` is measured against that soffit's **derived** clear
@@ -81,13 +79,13 @@ def _segment_band(a: tuple[float, float], b: tuple[float, float], width_m: float
     would over-claim the cavity, so it returns None and the caller reports it rather than
     grading it on a made-up footprint.
 
-    **A vertical leg needs both plan dimensions, and it used to get one.** For a horizontal
-    segment ``depth_m`` is the section's *vertical* height, so the plan band only ever needs
-    ``width_m``. Turn the duct up through an elbow and both dimensions become plan
-    dimensions: the 10 stays where it was and the 6 rotates out of vertical into the
-    direction the run was travelling. This returned ``width x width`` for that case, which
-    is exactly right for a round duct — ``mep_ducts`` reports a diameter as *both* plan
-    dimensions — and over-claims a rectangular riser by the difference, 10x10 for a 10x6.
+    A vertical leg needs both plan dimensions. For a horizontal segment ``depth_m`` is the
+    section's *vertical* height, so the plan band only ever needs ``width_m``. Turn the duct
+    up through an elbow and both dimensions become plan dimensions: the 10 stays where it
+    was and the 6 rotates out of vertical into the direction the run was travelling. A square
+    of ``width x width`` is exactly right for a round duct — ``mep_ducts`` reports a diameter
+    as *both* plan dimensions — and over-claims a rectangular riser by the difference, 10x10
+    for a 10x6.
 
     ``riser_width_axis`` names the plan axis the width lies along, inherited from the
     adjacent horizontal leg (see the caller). With no such leg to inherit from — a run that

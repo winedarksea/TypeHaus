@@ -52,9 +52,9 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     # tag — a hundred placeables in the same room ask the same question.
     floor_by_room: dict[str, float] = {}
     for storey in plan.storeys:
-        # One shape per room, not one per (room, placeable): this was rebuilding every room's
-        # polygon for every placeable on the storey (~1,700 GEOS polygon builds per resolve).
-        # The bounds ride along so the common far-away case never reaches ``covers``.
+        # One shape per room, not one per (room, placeable): a per-placeable rebuild costs
+        # ~1,700 GEOS polygon builds per resolve. The bounds ride along so the common
+        # far-away case never reaches ``covers``.
         room_shapes: list[tuple[str, Polygon, _Bounds]] = []
         for room in model.rooms:
             if room.storey == storey.tag:
@@ -122,8 +122,8 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                                          occupant_types=frozenset(zone.occupant_types))
                 for zone, ring in zones if zone.occupant_types and not _is_required(zone))
     model.canvas_objects.extend(assign_placement_groups(resolved_objects, anchor_zones))
-    # One shape per placed object, shared by both conflict passes: each was building its own
-    # copy of the same ~300 footprints, and the per-pair rebuild inside them was ~800 more.
+    # One shape per placed object, shared by both conflict passes: separately, each pass
+    # rebuilds the same ~300 footprints, plus ~800 more per-pair rebuilds inside them.
     footprints = {obj.uid: Polygon(obj.footprint) for obj in model.canvas_objects}
     findings.extend(_clearance_conflicts(model, obstruction_by_uid, footprints, profiles_by_uid))
     findings.extend(_door_swing_conflicts(model, obstruction_by_uid, footprints))
@@ -224,23 +224,16 @@ def resolved_mount_elevation(storey: object, item: object,
     stated 8' must stay at 8' whatever the storey's default ceiling height is. Only a
     ceiling mount with no stated elevation falls back to hanging off the ceiling plane.
 
-    ``floor_m`` is the plane those heights are measured from. It defaults to the storey
-    datum, which is the same thing for every room whose slab is filed on its own storey;
-    ``resolve_placeables`` passes the room's actual floor instead (→ resolve/room_floor.py),
-    which is what keeps the Catlin garage's contents on the slab at grade rather than 22"
-    up in the air on the ICF stem top the storey datum sits at. Callers holding an element
-    that is not in a room — a PipeRun, an unplaced device — keep the storey default, which
-    is what their authored elevations have always meant.
+    ``floor_m`` is the plane those heights are measured from: the storey datum by default,
+    or (from ``resolve_placeables``) the room's actual floor when its slab is filed on
+    another storey (→ resolve/room_floor.py). Callers holding an element that is not in a
+    room — a PipeRun, an unplaced device — keep the storey default.
 
-    ``soffit_underside_m`` is the *other* plane a ceiling mount can hang from, and it exists
-    because the fallback above was wrong for everything installed in a dropped box: an air
-    handler concealed inside a 14" duct soffit was resolving at the 9'-0" storey ceiling,
-    fourteen inches above the box every comment in the plan says it lives in — and the strip
-    heater in the same soffit with it. ``resolve_placeables`` passes it whenever the item
-    names a modeled ``Soffit`` through ``soffit_ref``. This is the second time
-    ``default_ceiling_height`` has been the wrong plane for a consumer that had no way to say
-    so (→ resolve/ceiling_over.py, which fixed it for the room-height side and for that
-    consumer only); it is fixed here for placeables, in the one function they all go through.
+    ``soffit_underside_m`` is the *other* plane a ceiling mount can hang from: a device
+    installed in a dropped ``Soffit`` box hangs off its clear underside, not the storey
+    ceiling plane, the same fix ``resolve/ceiling_over.py`` makes for room height.
+    ``resolve_placeables`` passes it whenever the item names a modeled ``Soffit`` through
+    ``soffit_ref``.
     """
     mount = getattr(item, "mount", None)
     floor = storey.elevation.meters if floor_m is None else floor_m

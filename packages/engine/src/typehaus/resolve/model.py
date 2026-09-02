@@ -123,12 +123,6 @@ class ResolvedJunction:
 class SeatCut:
     """A birdsmouth: where a rafter's underside is cut flat to bear on a plate.
 
-    Replaces the string carrier ``"eave:birdsmouth-1.17in"``, which the 2D section had to
-    re-parse, and the separate ``seat_cut`` member, which occupied the same volume a second
-    time — the reason ``checks/structural/interference.py`` needed a clause to excuse a block
-    overlapping its own rafter, and the reason the takeoff carried 56 pieces of 11-7/8"
-    I-joist at 3.5" that nobody ever buys.
-
     ``heel`` is the plan point of the plumb heel cut; the seat runs ``seat_run_m`` from there
     toward the member's nearer end, flat at ``plate_top_z_m``. The notch depth is not a field
     because it is not independent: it is ``seat_run_m`` times the rafter's slope, which is
@@ -230,11 +224,9 @@ class ResolvedWall:
     # The mirror image, and for the mirror-image reason (#43): a framed wall's *body* —
     # sheathing, CI, WRB, cladding — runs down over the mudsill and rim board and laps the
     # foundation's protection panel, which is what is built (notes/basement_to_framed_wall
-    # _detail.md) and what left ~270 SF of the basement-to-main line unclad while every
-    # ``W-M-*`` started at the storey datum and the pour stopped 13 7/16" below it. Its
-    # *framing* does not move: bottom plate, studs and opening sills stay on the storey
-    # datum, which is the elevation kept here. ``None`` means the wall was not extended
-    # down and its base is ``z0_m`` as before.
+    # _detail.md). Its *framing* does not move: bottom plate, studs and opening sills stay
+    # on the storey datum, which is the elevation kept here. ``None`` means the wall was not
+    # extended down and its base is ``z0_m`` as before.
     plate_base_z_m: float | None = None
 
     @property
@@ -258,10 +250,7 @@ class ResolvedWall:
 
         A cavity layer sits inside its host's bays. The second and later regions of a
         ``Layer.slot`` sit at a different *elevation* in a slice the first region already
-        holds — a brown plinth and a lapis field are one 3 5/8" wythe, not two. Counting
-        them was worth 19" of brick veneer where 3 5/8" stands, which reached far enough
-        past the basement wall for ``code.energy_prescriptive`` to grade the garden's
-        veneer as though it enclosed the sauna.
+        holds — a brown plinth and a lapis field are one 3 5/8" wythe, not two.
         """
         seen: set[str] = set()
         out: list[ResolvedLayer] = []
@@ -279,8 +268,7 @@ class ResolvedWall:
         The sibling of :meth:`depth_layers`, and the distinction matters. *Depth* counts a
         ``Layer.slot``'s regions once, because a brown plinth and a lapis field are one
         3 5/8" wythe. *Bodies* counts them all, because they sit at different elevations and
-        each is a real course of brick: dropping them left the plinth standing alone with
-        nothing above it, in the GLB, in IFC and in every section.
+        each is a real course of brick.
 
         Cavity fill is excluded from both — it shares its host's polygon, so a solid there
         would only z-fight (→ ``geometry_walls.layer_solids``).
@@ -540,19 +528,17 @@ class ResolvedStair:
 class ResolvedFloor:
     """A framed floor deck: joists generated from a FloorSystem's JoistSpec (M3).
 
-    Matches the old catlin builder's semantics: one joist line per spacing position
-    across the deck, split into spans at each bearing line."""
+    One joist line per spacing position across the deck, split into spans at each
+    bearing line."""
 
     uid: str
     tag: str
     storey: str
     direction: str  # joist span direction: "x" | "y"
     members: tuple[FramedMember, ...]
-    # The subfloor sheet riding on top of the joists — the surface people actually stand on,
-    # and until now the one part of a floor no consumer had: glTF drew joists in mid-air and
-    # IFC emitted beams with nothing spanning them. Empty when the FloorSystem declares no
-    # ``subfloor`` layer. ``deck_voids`` are its floor openings (stair wells), which the deck
-    # is cut by and the joists were already clipped to.
+    # The subfloor sheet riding on top of the joists — the surface people actually stand on.
+    # Empty when the FloorSystem declares no ``subfloor`` layer. ``deck_voids`` are its floor
+    # openings (stair wells), which the deck is cut by and the joists were already clipped to.
     deck_outline: Ring = ()
     deck_voids: tuple[Ring, ...] = ()
     deck_z0_m: float = 0.0   # = the storey datum: joists top out there, decking rides on it
@@ -633,8 +619,7 @@ class ResolvedPaneling:
     # The layout line the band belongs to, or ``None`` for the room-scoped path.
     layout_line: str | None = None
     # The band as drawable geometry: a plan rectangle on the wall's room-side face, plus the
-    # absolute elevations it spans. Until 2026-08-25 this record carried area and nothing
-    # else, so a wainscot billed but never appeared — in the viewer, the .glb or IFC.
+    # absolute elevations it spans.
     #
     # ``outline`` is empty and the elevations ``None`` only where the band could not be placed
     # (a wall whose axis is degenerate). Consumers must treat that as "no geometry", never as
@@ -730,10 +715,7 @@ class ResolvedRoom:
     # reached no viewer, emitter or takeoff. ``area_m2`` is the zone clipped to the room, so
     # a takeoff can subtract it from the room's field finish without re-intersecting.
     finish_zones: tuple[ResolvedFinishZone, ...] = ()
-    # --- derived head and glazing (2026-09-01) -------------------------------------------
-    # Three facts about the room that every consumer used to re-derive for itself, most of
-    # them only inside a check where nothing else could reach them.
-    #
+    # --- derived head and glazing ----------------------------------------------------------
     # ``clear_height_m`` is floor to the LOWEST thing over the room — deck, slab, or SOFFIT.
     # The soffit is the part that was missing everywhere: ``ceiling_over._is_ceiling_deck``
     # admits a FloorSystem and a non-walking Slab and nothing else, so a dropped duct box
@@ -985,8 +967,7 @@ class ResolvedDuct:
     # Absolute project-frame centreline elevation per path vertex, mirroring
     # ``ResolvedPipeRun.z_m``. Never None: where the run authors nothing the resolver
     # derives one z from its joist bay, its soffit or the storey datum, so a consumer never
-    # has to re-derive it (and never has to re-derive it *differently* — this used to live
-    # in the IFC emitter alone, which is why nothing else could draw a duct).
+    # has to re-derive it.
     z_m: tuple[float, ...] = ()
     # Developed length — plan run plus every rise. The BOM bills this; the plan-only sum it
     # replaced billed a four-storey riser as the zero length it projects to.
