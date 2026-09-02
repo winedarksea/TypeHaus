@@ -130,12 +130,17 @@ manufacturer/gauge is selected, retag the roofing layer's `material_ref` off the
 `metal-fascia-regal-blue` cites a manufacturer page today. **Not done yet** — this is
 procurement-gated and the retag should not happen before the SKU is chosen.
 
-## Hail Supplement — §7.2.3
+## Hail Supplement — §7.2.3, §7.5
 
-**Gap:** no UL 2218 Class 4 documentation on file for the chosen panel.
+**Roof panel (§7.2.3) gap:** no UL 2218 Class 4 documentation on file for the chosen panel.
 
 **Fix:** procurement — the manufacturer's UL 2218 Class 4 letter. Commonly already true for
 24ga steel panels; confirm against the specific SKU rather than assuming it.
+
+**PV module (§7.5) gap:** the Aptos 440W modules' FM 4478/UL 1703 hail rating is not
+confirmed.
+
+**Fix:** procurement — pull the manufacturer's spec sheet.
 
 ## PV load path — §4.10
 
@@ -145,12 +150,6 @@ resists the site's C&C wind loads.
 **Fix:** procurement — a PE letter. `structural.fortified_roof_load_path` covers the
 roof's own bearing chain but does not reach the PV attachment, which is a different load
 path than the ones `uplift_path.py` walks.
-
-## Hail Supplement, PV — §7.5
-
-**Gap:** the Aptos 440W modules' FM 4478/UL 1703 hail rating is not confirmed.
-
-**Fix:** procurement — pull the manufacturer's spec sheet.
 
 ## Open items
 

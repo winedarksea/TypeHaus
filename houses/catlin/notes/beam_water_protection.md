@@ -131,12 +131,11 @@ decision #64. **Anything that moves a stand leg has to re-check that.**
   A 1" margin is thin enough that it has to be re-checked by hand if either the rear pillar
   row or the porch depth ever moves again.
 
-## Two span knife-edges
-
-Both found while checking whether a longer beam was possible. Neither is a
-finding today; both are one dimension change away from a red suite. `structural.deck_beam_span` looks IRC Table R507.5(1) up on the
-**joist** span the beam carries, and the table's rows are 6/8/10/12/14/16/18', so the lookup
-steps down in cliffs rather than sliding.
+**Two span knife-edges**, both found while checking whether a longer beam was possible. Neither
+is a finding today; both are one dimension change away from a red suite.
+`structural.deck_beam_span` looks IRC Table R507.5(1) up on the **joist** span the beam carries,
+and the table's rows are 6/8/10/12/14/16/18', so the lookup steps down in cliffs rather than
+sliding.
 
 - **Porch — 9" of joist-span headroom.** `FS-SG-PORCH`'s joists span 7.25', which reads the
   8' row → a 10.25' limit against the four porch beams' 10.00' span. At a joist span of
