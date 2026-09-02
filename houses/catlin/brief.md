@@ -16,12 +16,11 @@ post-mounted breezeway between house and garage.
   - 14" RO fits between studs without breaking a stud line (tight but doable).
   - 30" RO max on non-load-bearing walls (one stud broken).
   - 27" RO max on load-bearing walls (one stud broken, jacks added).
-- **Envelope (REWRITTEN 2026-08-29 — this bullet had drifted from the model on three
-  counts, and none of the abandoned specs was ever cheaper):** 2x6 **throughout**, main
+- **Envelope:** 2x6 **throughout**, main
   and upper, + **4" of exterior closed-cell spray foam in two passes** carried on a
   two-tier flat-girt standoff (`notes/catlin_truss_engineering.md`) — not polyiso+EPS,
   and there is no sheet WRB above it because the foam is the water plane. House walls are
-  clad in **exposed-fastener PBR panel** (26 ga), taken 2026-08-26; standing seam stays on
+  clad in **exposed-fastener PBR panel** (26 ga); standing seam stays on
   both roofs and on the garage walls. Hot roof (4:12, zero overhang) with 6" exterior
   polyiso over a taped ZIP deck. Basement is **8" west/north, 12" east** where the deck
   bears, with 4" exterior XPS. PGH-class targets in `preferences.toml`.

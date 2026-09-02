@@ -54,10 +54,8 @@ scripts/verify.sh --fast                  # tests + ruff + mypy, skipping builds
 
 `haus check` exits 1 on any FAIL, not only on an ERROR — `--exit-on error` is the older,
 looser gate, and `scripts/verify.sh` does **not** use it on catlin: the reference house is
-held to a clean report, 0 FAIL. (It ran on the looser gate for part of 2026-08-23, while
-three `structural.deck_beam_span` advisories stood against the sunken garden's balcony
-beams. Those are fixed, not accepted — see `houses/starter/CLAUDE.md` for the one house
-that *does* carry deliberate reds, and why a template is the right place for them.)
+held to a clean report, 0 FAIL. See `houses/starter/CLAUDE.md` for the one house that
+*does* carry deliberate reds, and why a template is the right place for them.
 
 ## Engineering, and the two gates
 
