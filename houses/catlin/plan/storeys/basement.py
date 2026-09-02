@@ -106,30 +106,25 @@ NODES = [
     # INT_2X6_STAGGERED_PLUMBING's 6 3/4" thickness.
     Node(uid="CBN015AAAA", tag="N-B-BA-W", position=pt(ft(10), ft(21, 9.375))),
     Node(uid="CBN016AAAA", tag="N-B-BA-E", position=pt(ft(18), ft(21, 9.375))),
-    # W-B-CW's east end. Named N-B-ESS-S until 2026-08-23, when the ESS closet left the SE
-    # corner for the NE one: the split it was minted for is still real (W-B-CW3 carries a
-    # different assembly from W-B-CW here) but it has nothing to do with the battery any
-    # more, and a node tagged for a room it no longer touches is how a plan starts lying.
-    # The uid is unchanged, so nothing in the IFC moved.
+    # W-B-CW's east end. The split here is real (W-B-CW3 carries a different assembly from
+    # W-B-CW) though the room it was minted for has since moved off this corner; uid
+    # unchanged.
     Node(uid="CBN017AAAA", tag="N-B-CW-E", position=pt(ft(6, 9), ft(18))),
-    # ESS closet, NE corner of the furnace room (2026-08-23; was the SE corner, 2026-08-02).
-    # Two sides come free here as they did there — W-B-N3 on the north (concrete, inner
-    # face y=35'-4") and W-B-STR on the east (inner face x=9'-8 1/2" since 2026-08-24,
-    # when that wall was framed and took the Type X leaf the closet needs) — so it is
-    # still two framed partitions, not four. x=6'-0" and y=31'-0" leave 3'-6 1/8" x
-    # 4'-1 5/8" clear (3'-3 5/8" while the east side was the pour's face at x=9'-6"; the
-    # Type X leaf lands 2 1/2" further east), more than the 2'-8 1/4" cabinet it replaces,
-    # and clear of everything already on this side: SP-B-N3-HYD (x=5'-0" through the north
-    # wall) and ED-B-SUMP-RC (x=4'-6"). SP-B-STR-CD-DATA was the third of those; it went
-    # with the pour (electrical.py).
+    # ESS closet, NE corner of the furnace room. Two sides come free here — W-B-N3 on the
+    # north (concrete, inner face y=35'-4") and W-B-STR on the east (inner face
+    # x=9'-8 1/2", the framed wall's Type X leaf) — so it is two framed partitions, not
+    # four. x=6'-0" and y=31'-0" leave 3'-6 1/8" x 4'-1 5/8" clear, more than the 2'-8 1/4"
+    # cabinet it replaces, and clear of everything already on this side: SP-B-N3-HYD
+    # (x=5'-0" through the north wall) and ED-B-SUMP-RC (x=4'-6"). SP-B-STR-CD-DATA was the
+    # third of those; it went with the pour (electrical.py).
     #
     # **x=6'-0" is not a round number chosen for tidiness.** Neither concrete side of this
     # corner was split before, so both had to be, and a basement split that does not line up
     # with the storey above puts one wall over two. N-M-MECH3 already splits the main
-    # storey's north wall line at exactly x=6'-0" (RM-M-MECH's shaft closet, 2026-07-28), so
-    # splitting W-B-N3 there makes W-M-N3 sit over W-B-N3 and W-M-N3B over W-B-N4, one to
-    # one. The east wall has no such gift — W-M-STRW runs y 26'-4"..36'-0" straight across
-    # W-B-STR's new y=31'-0" split — and that is called out on W-B-STR below.
+    # storey's north wall line at exactly x=6'-0" (RM-M-MECH's shaft closet), so splitting
+    # W-B-N3 there makes W-M-N3 sit over W-B-N3 and W-M-N3B over W-B-N4, one to one. The
+    # east wall has no such gift — W-M-STRW runs y 26'-4"..36'-0" straight across W-B-STR's
+    # y=31'-0" split — and that is called out on W-B-STR below.
     #
     # The corner is only available because EQ-B-WH left it — see plan/mep_hvac.py.
     Node(uid="CBN018AAAA", tag="N-B-ESS-N", position=pt(ft(6), ft(36))),
@@ -141,17 +136,15 @@ NODES = [
     # to 28'-0" (params/sunken_garden.py's ``_x_ax_e``, where grade comes back up).
     # y is NOT 0'-0": the south walls' node line is the concrete face, and the south stack
     # carries 4.05" outboard of it (0.05" damp-proofing + 2x 2" XPS) — a tail that is
-    # independent of the pour, which is why thinning the wall to 8" in 2026-08-21 did not
-    # move this number; the veneer stands off that finished face, hence the -4.55".
+    # independent of the pour thickness; the veneer stands off that finished face, hence
+    # the -4.55".
     #
     # The stand-off is 4.55" and NOT 4.05" because it was struck against the parge coat the
-    # south wall carried until 2026-09-02, when the stucco was deleted house-wide (it was
-    # 273.7 SF of finish of which ~29 SF was ever visible; see plan/assemblies.py). The node
-    # is deliberately left where it is: moving the veneer 1/2" inboard would move its two
-    # arched reveals, its own footing and every garage-relative literal downstream of it, to
-    # buy nothing. What the deletion changes is the cavity, which opens from 1" to 1-1/2" —
-    # still over IRC R703.8.4's 1" minimum, and better-draining. Wall aligns on
-    # face("air-gap-int"), which now begins on bare XPS.
+    # south wall used to carry (see plan/assemblies.py). The node is deliberately left where
+    # it is: moving the veneer 1/2" inboard would move its two arched reveals, its own
+    # footing and every garage-relative literal downstream of it, to buy nothing. Without
+    # the parge the cavity is 1-1/2" instead of 1" — still over IRC R703.8.4's 1" minimum,
+    # and better-draining. Wall aligns on face("air-gap-int"), which now begins on bare XPS.
     Node(uid="CBN019AAAA", tag="N-B-BRICK-W", position=pt(ft(8, 10), inch(-4.55)),
          open_end=True),
     Node(uid="CBN020AAAA", tag="N-B-BRICK-E", position=pt(ft(28), inch(-4.55)),
@@ -169,9 +162,9 @@ WALLS = [
     # direction. (Horizontal steel is a separate table, R404.1.2(1) — one #4 within 12" of
     # the top and one at third points above 8' — not screened here.)
     #
-    # **The row, spelled out.** GM soil is 45 psf/ft (mn-2024 profile). Since 2026-08-23 the
-    # wall runs -13 7/16" (the bearing seat) to -9'-1 7/16" (the slab), so it is **exactly
-    # 8'-0"** of pour -> the 8' row, not the 10' row a 9'-4" wall rounded up to. Grade is at
+    # **The row, spelled out.** GM soil is 45 psf/ft (mn-2024 profile). The wall runs
+    # -13 7/16" (the bearing seat) to -9'-1 7/16" (the slab), so it is **exactly 8'-0"** of
+    # pour -> the 8' row, not the 10' row a 9'-4" wall rounds up to. Grade is at
     # -2'-10" (params/site.py), so 6.29' of unbalanced fill -> the 7' row. Footnote f forbids
     # interpolating, so both round UP. At (45, 8', 7'): 12" reads NR, 10" reads NR, 8" reads
     # **#5 @ 41" o.c.**, which is where the nine 8" segments below sit. It was `#6 @ 48"` on
@@ -188,19 +181,14 @@ WALLS = [
     # ``integrity.slab_thickness`` guards the deck's build-up. Do not edit one without the
     # other.
     #
-    # **Which wall gets which thickness.** It used to be one physical rule — "12" is earned
-    # only where a cast concrete deck lands on the wall top beside the sill plate" — and
-    # that rule is **obsolete as of 2026-08-23.** It described a wall top where a cast deck
-    # and a mudsill competed for width: the deck needed its own seat *inboard* of the plate,
-    # so the wall had to be wide enough for both. There is one flat seat now, at
-    # -13 7/16" all the way round, and the deck's soffit lands on the same plane the mudsill
-    # sits on. Nothing competes, and no wall needs extra width for bearing at all: the 12"
-    # segments carry SL-M-DECK on 12" because they always did, and an 8" wall would carry it
-    # just as well.
+    # **Which wall gets which thickness.** There is one flat bearing seat now, at -13 7/16"
+    # all the way round, and the deck's soffit lands on the same plane the mudsill sits on.
+    # Nothing competes for width there, and no wall needs extra width for bearing at all:
+    # the 12" segments carry SL-M-DECK on 12" because they always did, and an 8" wall would
+    # carry it just as well.
     #
     # So the three that stay 12" stay for reasons that are no longer about bearing width,
-    # and each is worth stating. (It was four until 2026-08-28: W-B-CS, the one this list
-    # already admitted "COULD go to 8"", is a 2x6 bearing stud wall now — see its own note.)
+    # and each is worth stating.
     #
     #   W-B-E1/E2 — the east perimeter. SL-M-DECK is a 414 SF cast slab and its east edge
     #     lands here; 12" is not needed for the seat, but this is the one perimeter run with
@@ -210,8 +198,8 @@ WALLS = [
     #     rather than a derivation, so it is the first candidate the next time this line is
     #     opened.
     #   W-B-CS2, W-B-CN2, W-B-CN — the centre line under the cast band, same reading.
-    #   W-B-CS — FRAMED since 2026-08-28, and no longer on this list at all. It carried
-    #     wood on both faces, so what it actually needed was a bearing wall and not a pour.
+    #   W-B-CS — FRAMED, and no longer on this list at all. It carried wood on both faces,
+    #     so what it actually needed was a bearing wall and not a pour.
     #     The alignment trap that guarded it while it was concrete is still live and moved
     #     with it: the offset is a hardcoded HALF of the structure thickness, now
     #     `face("stud-ext", offset=inch(-2.75))`. `integrity.floor_bearing_grid` FAILs if
@@ -236,9 +224,9 @@ WALLS = [
     # 2" inboard toe. The footings follow the slab up 2 9/16" (params/foundations.py) but do
     # not move in plan — the brick plinth FT-B-BRICK is dimensioned off the strip's -10" edge.
     # **The south wall retains four different amounts of soil, and now says so.**
-    # None of these segments authored ``unbalanced_fill`` until 2026-08-28, so
-    # ``structural.foundation_unbalanced_fill`` fell back to its documented proxy —
-    # grade (-2'-10") minus the wall bottom (-9'-1 7/16") = 6.29' on every one of them,
+    # Without an authored ``unbalanced_fill``, ``structural.foundation_unbalanced_fill``
+    # falls back to its documented proxy — grade (-2'-10") minus the wall bottom
+    # (-9'-1 7/16") = 6.29' on every one of them,
     # rounded up to the table's 7' row. Its own docstring warns about exactly this
     # ("it over-reports a walkout wall whose exterior grade falls away ... author
     # ``unbalanced_fill`` where it matters"), and this is the walkout side: the sunken
@@ -255,9 +243,8 @@ WALLS = [
     # and the two buried segments keep ``#5 @ 41" o.c.`` The two zero-fill segments drop
     # the bar with the load — see W-B-S2 below.
     #
-    # **W-B-S1 and W-B-S4 joined CATLIN_BASEMENT_8 on 2026-09-02**, off the
-    # CATLIN_BASEMENT_8_GARDEN they had carried since the south wall was split. That is the
-    # same fill table read a second way: these two segments are the only south run whose
+    # **W-B-S1 and W-B-S4 carry CATLIN_BASEMENT_8**, not CATLIN_BASEMENT_8_GARDEN. That is
+    # the same fill table read a second way: these two segments are the only south run whose
     # exposure is an ordinary grade line — 6'-4" of backfill with 2'-2 9/16" of wall standing
     # out of it — which is exactly the condition _PROTECTION_PANEL's GRADE-banded extent was
     # written for, and nothing like the nine feet of open court in between. So they buy about
@@ -273,9 +260,9 @@ WALLS = [
                    vertical_reinforcement='#5 @ 41" o.c.'),
     # The sauna's south side. W-B-S1 takes the buried wall's own stack and W-B-S3 the bare
     # curb — they bound the workshop and the patio side — but this one segment is a room face
-    # in a WET room, so it carries the liner variant of the curb (SAUNA_LINER_ON_GARDEN_CURB,
-    # SAUNA_LINER_ON_BASEMENT_8_GARDEN before the 2026-08-28 curb split): the vapour control
-    # has to be continuous on all four faces or it is not vapour control. The liner grows 3 1/2" inward and mitres to
+    # in a WET room, so it carries the liner variant of the curb (SAUNA_LINER_ON_GARDEN_CURB):
+    # the vapour control has to be continuous on all four faces or it is not vapour control.
+    # The liner grows 3 1/2" inward and mitres to
     # W-B-CS's at N-B-S2 — same assembly family, so no derived return there.
     # Alignment stays `face("concrete-ext")` with NO offset, unlike W-B-CS's inch(-6):
     # `_face_offset_from_interior` falls through the three liner layers (no name match) and
@@ -289,7 +276,7 @@ WALLS = [
     # and the other interior cross walls bare. No dollars move with it: prices.toml notes
     # vertical steel has no line of its own, it is inside the $/cy rate.
     #
-    # **W-B-S2 and W-B-S3 are 7 1/4" CURBS since 2026-08-28**, not full-height walls. The
+    # **W-B-S2 and W-B-S3 are 7 1/4" CURBS**, not full-height walls. The
     # 8'-0" of pour above them is a 2x6 framed wall — W-B-S2-FR and W-B-S3-FR below — for
     # the reason this comment block already gives twice over: they hold back nothing. Both
     # keep their tag, their uid and their footing, which is the whole point of putting the
@@ -298,8 +285,8 @@ WALLS = [
     # dimensions all still name a piece of concrete on a footing, and none of them moved.
     #
     # **Why the curb is kept and why it is 7 1/4".** The sunken garden is a court whose
-    # floor is FLUSH with the basement slab (both -9'-1 7/16" since 2026-08-23) with no way
-    # out but a drain; heavy rain can stand in it. A concrete curb runs under the whole framed run so standing water
+    # floor is FLUSH with the basement slab (both -9'-1 7/16") with no way out but a drain;
+    # heavy rain can stand in it. A concrete curb runs under the whole framed run so standing water
     # reaches concrete and not a bottom plate. 7 1/4" is the actual width of a 2x8, so the
     # curb is one board deep and the framed plate lands on it flat. It is also exactly
     # D-B-PATIO's old raised threshold — the door used to carry `sill_height=inch(7)` off
@@ -328,11 +315,8 @@ WALLS = [
     # `face("sheathing-ext")` is the deliberate mirror of the pour's `face("concrete-ext")`:
     # it pins the sheathing's outboard face on the node line, so the damp-proofing and the 4"
     # of XPS continue on exactly the plane they occupy on W-B-S1 and W-B-S4 either side, and
-    # W-B-BRICK's 4.55" stand-off and its two arched reveals do not move. (The parge used to
-    # be third on that list; it was deleted house-wide on 2026-09-02, and W-B-S1/S4 now carry
-    # a GRADE-banded protection panel that stops well below this run. The plane the veneer
-    # was struck against is 1/2" thinner everywhere, which is a wider cavity and not a
-    # moved face — see N-B-BRICK-W above.)
+    # W-B-BRICK's 4.55" stand-off and its two arched reveals do not move (see N-B-BRICK-W
+    # above).
     # The tie hardware does change in reality — corrugated ties into framing instead of
     # anchors into concrete — which is ordinary for veneer over wood, and is said out loud
     # here because the model cannot say it.
@@ -352,7 +336,7 @@ WALLS = [
          interior_room="RM-B-GYM",
          base_elevation=inch(-102.1875), top=inch(88.75),
          structural_role=StructuralRole.BEARING),
-    # The east 8'-0" of the old W-B-S3, split off at the excavation edge on 2026-08-28.
+    # The east 8'-0" of the old W-B-S3, split off at the excavation edge.
     # Buried like W-B-S1, so it keeps the 7'-row bar — and it must join
     # ``params/foundations._FROST_FORMED`` with it, or FT-B-S4 loses the insulated
     # FOOTING_FPSF_20 form the garden floor's low adjacent grade is the reason for.
@@ -423,13 +407,13 @@ WALLS = [
     # 12" for the reasons set out in the WALLS header above, none of which is bearing width
     # any more.
     #
-    # **W-B-CS is framed since 2026-08-28** — the last of the four 12" segments this header
-    # defends, and the one it already admitted "carries wood on both faces and COULD go to
-    # 8"". It could go to nothing: FS-M-WEST and FS-M-EAST land on it and W-M-C1 stacks on
-    # it, which is a 2x6 bearing wall's job on every storey above. ~4.6 cy out, the same
-    # trade W-B-STR/W-B-STR3 made on 2026-08-24. Keeps its tag and uid, so the IFC
-    # GlobalId does not move (decision #16). FT-B-CS and its bedding need no edit, for the
-    # reason spelled out on W-B-STR3 below.
+    # **W-B-CS is framed** — the last of the four 12" segments this header defends, and the
+    # one it already admitted "carries wood on both faces and COULD go to 8"". It could go
+    # to nothing: FS-M-WEST and FS-M-EAST land on it and W-M-C1 stacks on it, which is a
+    # 2x6 bearing wall's job on every storey above. ~4.6 cy out, the same trade
+    # W-B-STR/W-B-STR3 made. Keeps its tag and uid, so the IFC GlobalId does not move
+    # (decision #16). FT-B-CS and its bedding need no edit, for the reason spelled out on
+    # W-B-STR3 below.
     #
     # **The alignment offset is a hand-written HALF of the structure thickness and it had
     # to move in the same edit.** It was `face("concrete-ext", offset=inch(-6))` — six
@@ -447,9 +431,8 @@ WALLS = [
     # solver has no interface rule for that. It is a real detail and not a modelling
     # artefact: a stud wall landing in line against the end of a 12" pour wants a bearing
     # plate and dowels drawn, which is exactly what the UNKNOWN is asking for. The house
-    # answered the same finding at N-B-CW-E in 2026-08-25 by running ONE wall type down
-    # the whole line; that answer is not available here, because W-B-CS2 carries
-    # SL-M-DECK and stays a pour.
+    # answered the same finding at N-B-CW-E by running ONE wall type down the whole line;
+    # that answer is not available here, because W-B-CS2 carries SL-M-DECK and stays a pour.
     Wall(uid="CBW111AAAA", tag="W-B-CS", start_node="N-B-C1",
          end_node="N-B-S2", assembly="SAUNA_LINER_INT_2X6_BRG", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.75)),
@@ -458,7 +441,7 @@ WALLS = [
     FoundationWall(uid="CBW112AAAA", tag="W-B-CS2", start_node="N-B-C1",
                    end_node="N-B-C", assembly="FOUNDATION_WALL_12_INT", unbalanced_fill=ft(0),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375)),
-    # Split at N-B-BA-E (2026-07-30) so the bathroom's north partition tees onto a shared
+    # Split at N-B-BA-E so the bathroom's north partition tees onto a shared
     # node — else `integrity.wall_loop_open` reads it as a free end. W-B-CN keeps the tag,
     # uid, and the north 14'-2 5/8" that W-M-C5 stacks on, so the bearing stack is untouched.
     FoundationWall(uid="CBW113AAAA", tag="W-B-CN", start_node="N-B-BA-E",
@@ -467,7 +450,7 @@ WALLS = [
     FoundationWall(uid="CBW121AAAA", tag="W-B-CN2", start_node="N-B-C",
                    end_node="N-B-BA-E", assembly="FOUNDATION_WALL_12_INT", unbalanced_fill=ft(0),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375)),
-    # **The y=18' cross line is framed now (2026-08-21).** All four of these were 12" cast
+    # **The y=18' cross line is framed now.** All four of these were 12" cast
     # concrete for one reason: the 9" suspended deck over the basement was designed to span
     # between them. The deck is joists and an EPS-formed band since the basement-ceiling
     # overhaul, spanning 18'-0" east-west to the x=18' line like every storey above, so
@@ -480,7 +463,7 @@ WALLS = [
     # Centrelines stay on the node lines, so each room gains symmetrically — 2 5/8" a side
     # off the 2x6 walls, 3 5/8" a side off the 2x4 and steel ones.
     #
-    # Tops are 8'-0" — **the bearing seat**, since 2026-08-23. Everything in this basement
+    # Tops are 8'-0" — **the bearing seat**. Everything in this basement
     # stops on one plane now: the concrete tops there, the deck's soffit lands there, the
     # mudsill sits there, and a framed partition's double top plate reaches it and no
     # further. It is the lower of the two ceiling planes, so a partition under a joisted bay
@@ -491,7 +474,7 @@ WALLS = [
     # up to meet it and leaves the double top plate here, which is what platform framing is.
     #
     # Split at the stair shaft's west wall so the shaft is a real tee, not a wall end. Also
-    # split at N-B-ESS-S (2026-08-02) for the ESS closet's west partition, the same move
+    # split at N-B-ESS-S for the ESS closet's west partition, the same move
     # W-B-STR made for the bathroom. W-B-CW keeps tag/uid and the west 6'-9" (D-B-FURN
     # unchanged); W-B-CW3 is the 3'-3" stub forming the closet's south wall.
     #
@@ -499,9 +482,9 @@ WALLS = [
     # the wet-wall 2x6 rather than a 2x4.
     Wall(uid="CBW114AAAA", tag="W-B-CW", start_node="N-B-W1",
          end_node="N-B-CW-E", assembly="INT_2X6_PLUMBING", top=ft(8)),
-    # Steel studs and Type X until 2026-08-25, because this was the ESS closet's south wall
-    # until the closet moved to the NE corner on 2026-08-23. Now simply W-B-CW continued:
-    # same INT_2X6_PLUMBING, one wall type down the whole furnace-room south line.
+    # This was the ESS closet's south wall until the closet moved to the NE corner; it is
+    # now simply W-B-CW continued: same INT_2X6_PLUMBING, one wall type down the whole
+    # furnace-room south line.
     #
     # What forced it was `integrity.junction_fallback`. A steel stud and a wood stud are two
     # different bearing materials, so N-B-CW-E (this stub against W-B-CW) and N-B-STR (this
@@ -521,27 +504,27 @@ WALLS = [
     Wall(uid="CBW115AAAA", tag="W-B-CE", start_node="N-B-C",
          end_node="N-B-E1", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(8)),
     # Stair shaft's west wall — 2x6 bearing studs on x=10', full north-row depth
-    # (reference: "Stairway 7' x 16' 6 1/2""). Framed, not poured, since 2026-08-24: it
+    # (reference: "Stairway 7' x 16' 6 1/2""). Framed, not poured: it
     # holds back no earth (`unbalanced_fill` was ft(0) the whole time it was concrete), and
     # what it actually does is carry FS-M-MECH/FS-M-STAIR's short joists — the stubs the
     # stair well leaves — and stack W-M-STRW/W-M-STRW2 above. That is a stud-wall job on a
     # footing, not a pour: ~9.8 cy of concrete out, and RM-B-FURNACE gains 3 1/8".
-    # Split at N-B-BA-W (2026-07-30): W-B-STR keeps tag/uid and the north 14'-2 5/8" that
+    # Split at N-B-BA-W: W-B-STR keeps tag/uid and the north 14'-2 5/8" that
     # W-M-STRW/W-M-STRW2 stack on; W-B-STR2 is the 3'-9 3/8" stub alongside the bathroom,
     # carrying its three ceiling-level service crossings (plan/mep.py's WALL_SLEEVES).
-    # Split again at N-B-ESS-SE (y=31'-0") on 2026-08-23, for the ESS closet's south
+    # Split again at N-B-ESS-SE (y=31'-0"), for the ESS closet's south
     # partition, exactly as it was split at N-B-BA-W for the bathroom. **Unlike the north
     # wall's split this one does NOT line up with the storey above**: W-M-STRW runs
     # y 26'-6"..36'-0" and crosses from W-B-STR onto W-B-STR3 halfway along. It keeps
     # naming W-B-STR — `resolve/stacking.py` picks it as the sole candidate on both basement
     # segments, since it is the only main-storey wall whose axis overlaps either by the 2'
-    # minimum. W-M-STRW2 (trimmed to 5 3/8" on 2026-08-30, south of the split, nominally
+    # minimum. W-M-STRW2 (trimmed to 5 3/8", south of the split, nominally
     # `stacks_on="W-B-STR3"`) never actually resolves a stack edge either way — at 5 3/8" it
     # cannot clear that 2' overlap test as upper or lower — so its `stacks_on` is honest
     # geometry, not a load path; its real job is FO-S-STAIR's bearing coverage (second.py).
     #
     # **ALIGNMENT is the whole of it**, and the two failure modes below are why it is what
-    # it is. Framing this line was tried and backed out on 2026-08-23, for one reason: that
+    # it is. Framing this line was tried and backed out once, for one reason: that
     # attempt pinned the wall's EAST face on x=10'-6" to preserve the stair dimensions.
     #
     #   * `resolve/floors.py` bounds a floor system's span at the bearing wall's NODE axis,
@@ -584,9 +567,9 @@ WALLS = [
          interior_room="RM-B-FURNACE",
          structural_role=StructuralRole.BEARING),
     # The stub south of it: RM-B-BATH's west enclosure, nothing bearing on it, nothing
-    # dimensioned off it. It carried the ESS closet's steel-stud Type X box until 2026-08-25
-    # — it was the closet's east wall before the closet moved to the NE corner on 2026-08-23
-    # — and like W-B-CW3 above it is now just its neighbour continued: W-B-STR3's assembly,
+    # dimensioned off it. It carried the ESS closet's steel-stud Type X box before the
+    # closet moved to the NE corner, and like W-B-CW3 above it is now just its neighbour
+    # continued: W-B-STR3's assembly,
     # W-B-STR3's `alignment`, W-B-STR3's `interior_room`, so the studs stand in the same
     # 9'-9 1/8"..10'-2 5/8" band the whole line does and W-M-STRW is plumb over all of it.
     # `structural_role` is deliberately NOT copied: the wall type is shared, the load is not.
@@ -607,14 +590,14 @@ WALLS = [
     Wall(uid="CBW117AAAA", tag="W-B-SA-W", start_node="N-B-S1",
          end_node="N-B-SA1", assembly="SAUNA_2X4", top=ft(7, 6),
          interior_room="RM-B-SAUNA"),
-    # Topped out at the deck instead of its authored 7'-6" until 2026-08-15: W-M-BDN1 at
-    # y=13'-4" was within `resolve/platform.py`'s same-wall-line tolerance of this axis
-    # (SAUNA_2X4's own depth), a false read. Moving that partition to 13'-0" fixed it; bills
-    # ~13.7 sf less basswood (test_wood_surfaces).
+    # W-M-BDN1 at y=13'-4" was within `resolve/platform.py`'s same-wall-line tolerance of
+    # this axis (SAUNA_2X4's own depth), a false read that topped this wall out at the deck
+    # instead of its authored 7'-6". Moving that partition to 13'-0" fixed it
+    # (test_wood_surfaces).
     Wall(uid="CBW118AAAA", tag="W-B-SA-N", start_node="N-B-SA1",
          end_node="N-B-C1", assembly="SAUNA_2X4", top=ft(7, 6),
          interior_room="RM-B-SAUNA"),
-    # The stair-foot bathroom's only framed wall (2026-07-30); the other three sides are
+    # The stair-foot bathroom's only framed wall; the other three sides are
     # already cast concrete. INT_2X6_STAGGERED_PLUMBING (non-bearing, not a 2x4) because
     # this is the room's *only* stud cavity: the lavatory's and WC's shared 1 1/2" vent rises
     # here before turning west (PR-B-BATH-VENT) — `advisory.wet_wall_depth` needs 5 1/2",
@@ -625,8 +608,8 @@ WALLS = [
     Wall(uid="CBW120AAAA", tag="W-B-BA-N", start_node="N-B-BA-W",
          end_node="N-B-BA-E", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(8),
          interior_room="RM-B-BATH"),
-    # ESS closet's two framed walls (2026-08-02; moved to the NE corner 2026-08-23, same
-    # uids, so the enclosure is the same two walls relocated rather than a new pair).
+    # ESS closet's two framed walls (moved to the NE corner, same uids, so the enclosure is
+    # the same two walls relocated rather than a new pair).
     # INT_ESS_CLOSET_STEEL (steel studs, 5/8" Type X both faces) is an owner standard, not a
     # code-rated assembly, hence `advisory.ess_enclosure` being advisory (see
     # plan/assemblies.py). `interior_room` on both keeps the Type X face unambiguous; the
@@ -655,10 +638,6 @@ WALLS = [
     # The plinth runs -9'-2" to -8'-9" and shows **7"** above the garden slab (-9'-4") as a
     # concrete water table.
     #
-    # (Both numbers were stale, corrected 2026-08-22 against the resolved model: this read
-    # "-8'-5"" and "3.5" above the garden slab (-8'-8.5")". The garden floor is at -9'-4",
-    # not -8'-8.5" — it went down with the soil on 2026-08-21 and this comment did not.)
-    #
     # Authored EAST->WEST — opposite W-B-S2/W-B-S3 — deliberately: this wythe is its own
     # wall-graph component (two open ends, no loop), so resolve/orientation.py hands it
     # outward sign +1 instead of the perimeter's -1. Reversing the direction is what keeps
@@ -677,8 +656,8 @@ OPENINGS = [
     # Interior circulation
     Door(uid="CBD201AAAA", tag="D-B-FURN", host="W-B-CW", type_ref="DT-INT-SWING32",
          position=from_node("N-B-W1", ft(3, 4))),
-    # Solid-core pair since 2026-08-21 (was DT-INT-FRENCH60): the play room keeps the
-    # 5'-0" double opening, but flush solid leaves instead of full glazing.
+    # Solid-core pair: the play room keeps the 5'-0" double opening, with flush solid
+    # leaves instead of full glazing.
     Door(uid="CBD202AAAA", tag="D-B-PLAY", host="W-B-CE", type_ref="DT-INT-DOUBLE60",
          position=from_node("N-B-C", ft(6, 2))),
     # Centred in the 3'-4" aisle the sauna's north wall leaves against the center wall.
@@ -686,7 +665,7 @@ OPENINGS = [
     # at each end of the 4'-2" W-B-CS2 segment.
     Door(uid="CBD203AAAA", tag="D-B-GYM", host="W-B-CS2", type_ref="DT-INT-SWING32",
          position=from_node("N-B-C1", inch(8)), flip_swing=False, flip_hinge=False),
-    # Pushed 6" north on 2026-07-30 (was ft(4), a near edge at y=22'-0"): the stair-foot
+    # Pushed 6" north of a naive near edge at y=22'-0": the stair-foot
     # bathroom's north partition resolves to a 22'-0 3/4" north face, which would have landed
     # 3/4" inside this opening's south jamb. At 22'-6" the door keeps 5 1/4" of concrete jamb
     # south of it, and the flight it faces still springs 1'-4" further north at 26'-0 3/8".
@@ -713,30 +692,26 @@ OPENINGS = [
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-SA-W", type_ref="DT-INT-SWING24",
          position=from_node("N-B-S1", ft(11))),
     # Raise the exterior threshold above the basement floor to resist sunken-garden flooding.
-    # Hosted on the framed wall since 2026-08-28, and `sill_height` went inch(7) -> inch(0)
-    # in the same edit — NOT because the threshold dropped, but because the datum did. A
-    # sill is measured from the host wall's own base, and W-B-S3-FR's base is the top of
-    # the 7 1/4" curb. The threshold is at the same absolute elevation it always was, a
-    # quarter inch higher: the door now sits ON the curb rather than 7" up a pour with a
-    # quarter inch of concrete still above it.
+    # Hosted on the framed wall, and `sill_height` is inch(0) — NOT because the threshold
+    # dropped, but because the datum did. A sill is measured from the host wall's own base,
+    # and W-B-S3-FR's base is the top of the 7 1/4" curb. The threshold is at the same
+    # absolute elevation it always was, a quarter inch higher: the door now sits ON the curb
+    # rather than 7" up a pour with a quarter inch of concrete still above it.
     Door(uid="CBD206AAAA", tag="D-B-PATIO", host="W-B-S3-FR", type_ref="DT-EXT-FRENCH60",
          position=from_node("N-B-S2F", inch(10)), sill_height=inch(0), flip_swing=True),
-    # WT-1424, down from WT-3660 (2026-07-30): a sauna wants a small window, less glass to
-    # lose heat through. The 14" family's one appearance in a concrete wall, where the usual
-    # 16" stud-module reason for that width doesn't apply — size is the point here. Retires
-    # the last WT-3660 instance; the type and WT-3660-FIX stay in the catalog.
-    # Sill 3'-8" (head 5'-8") as of 2026-08-21, up three 2 2/3" brick courses from 3'-0":
-    # the veneer in front of it grew its cheap brown plinth from 9 courses to 12
-    # (assemblies.py BASEMENT_BRICK_VENEER), and the window goes up with its reveal rather
-    # than let the register band cut across the glass. Still well above the 18" bench top
-    # (placeables.py).
-    # Host and datum both moved 2026-08-28 with the framed walkout: W-B-S2-FR's base is
-    # the curb top, 7 1/4" above the slab this sill used to be measured from, so ft(3, 8)
-    # becomes inch(36.75). The glass does not move — the head stays where AO-B-BRICK-WIN's
-    # arched reveal in front of it expects it, and that reveal is datumed off W-B-BRICK's
-    # own base and needed no edit.
-    # It also moved 9" east, 2'-6" -> 3'-3" off the corner, and that is the framed wall
-    # asking rather than the design changing: a hole in a pour lands where you form it,
+    # WT-1424: a sauna wants a small window, less glass to lose heat through. The 14"
+    # family's one appearance in a concrete wall, where the usual 16" stud-module reason for
+    # that width doesn't apply — size is the point here. The retired WT-3660 type and
+    # WT-3660-FIX stay in the catalog.
+    # Sill 3'-8" (head 5'-8"), up three 2 2/3" brick courses from 3'-0": the veneer in front
+    # of it grew its cheap brown plinth from 9 courses to 12 (assemblies.py
+    # BASEMENT_BRICK_VENEER), and the window goes up with its reveal rather than let the
+    # register band cut across the glass. Still well above the 18" bench top (placeables.py).
+    # Host and datum are the framed walkout: W-B-S2-FR's base is the curb top, 7 1/4" above
+    # the slab this sill used to be measured from, so ft(3, 8) becomes inch(36.75). The
+    # glass does not move — the head stays where AO-B-BRICK-WIN's arched reveal in front of
+    # it expects it, and that reveal is datumed off W-B-BRICK's own base and needed no edit.
+    # It sits 3'-3" off the corner: a hole in a pour lands where you form it,
     # while a 14" RO in a stud wall wants a BAY CENTRE, where the bay's own two studs carry
     # the rough sill and head nailer and it needs no header, no jacks and no kings at all
     # (preferences.toml's `max_window_ro_unbroken_in`). W-B-S2-FR lays out from layout line
@@ -754,19 +729,17 @@ OPENINGS = [
     # rise is ~1/7 of clear width, and ``height`` includes it, so the springline is
     # ``height - rise``. ``sill_height`` is re-datumed off W-B-BRICK's own base
     # (-8'-5", not -9'): the window's 3'-8" becomes 3'-1", the door's 7" threshold becomes 0.
-    # 3'-3" since 2026-08-28, following WIN-B-SAUNA onto its stud bay centre. The reveal
-    # and the window it reveals must stay concentric; only the offset moved, and the
-    # elevations did not (both sills still land at -65 7/16").
+    # 3'-3" follows WIN-B-SAUNA onto its stud bay centre. The reveal and the window it
+    # reveals must stay concentric; only the offset moved, and the elevations did not (both
+    # sills still land at -65 7/16").
     RoughOpening(uid="CBO601AAAA", tag="AO-B-BRICK-WIN", host="W-B-BRICK",
                  position=from_node("N-B-BRICK-W", ft(3, 3)),
                  width=inch(14), height=inch(20), sill_height=inch(37),
                  arch=Arch(rise=inch(2))),
-    # Both reveals were taken down 6" at the head on 2026-08-21, on the eye rather than on a
-    # rule: the door read 88" -> 84" -> 78", the window 26" -> 20". At 88" the door's crown
-    # landed exactly on the gold register and its springline exactly on D-B-PATIO's 80 1/4"
-    # head, so the arch had no brick above it and no haunch below it and read as one someone
-    # had sawn off. 78" leaves 10" — nearly four courses — of lapis between crown and
-    # register, and springs the arch at 70".
+    # Both reveals are set on the eye rather than on a rule: at a full-height door crown the
+    # arch would land exactly on the gold register with no brick above it and no haunch
+    # below it, reading as one someone had sawn off. 78" leaves 10" — nearly four courses —
+    # of lapis between crown and register, and springs the arch at 70".
     #
     # Both reveals are therefore now SHORTER than the openings they front, and that is the
     # point, not a defect: a masonry reveal in front of a rectangular hole is meant to overlap
@@ -787,15 +760,15 @@ ROOMS = [
     # space instead of dumping arrivals into the mechanical room.
     Room(uid="CBR406AAAA", tag="RM-B-STAIR", seed=pt(ft(14), ft(30)),
          occupancy=Occupancy.STAIR, floor_finish="sealed-concrete"),
-    # Stair-foot bathroom (2026-07-30): the shaft's south 3'-0", below the flight (ST-B2M's
+    # Stair-foot bathroom: the shaft's south 3'-0", below the flight (ST-B2M's
     # bottom riser is at y=26'-0 3/8"). Clear face 7'-0" x 3'-0" (21 sf). Fixtures run
     # east-west, not facing the long wall: 3'-0" of depth can't fit a WC facing N/S (needs
     # 40"+ for bowl + IRC P2705.1 clearance), but fits one sideways in 36" — hence WC west,
     # lavatory east (plan/fixtures.py).
     #
-    # Sheet vinyl, not tile (2026-09-02), joining the house's washable spine — RM-M-BATH1
-    # and RM-M-LAUNDRY took the same move on 2026-08-25, RM-2-BATH on the second storey and
-    # the attic studio's before that. 30.2 sf with no radiant zone under it, which is the
+    # Sheet vinyl, not tile, joining the house's washable spine — RM-M-BATH1 and
+    # RM-M-LAUNDRY, RM-2-BATH on the second storey and the attic studio's bath took the
+    # same move. 30.2 sf with no radiant zone under it, which is the
     # whole test: tile earns its cost where it is the emitter's mass (RM-M-BATH2 keeps its
     # tile for exactly that reason, at 98% of FH-M-BATH2's load). Here it buys grout to
     # keep, a backer board, a membrane and a threshold at the door, for a floor three feet
@@ -807,10 +780,10 @@ ROOMS = [
     Room(uid="CBR402AAAA", tag="RM-B-WORKSHOP", seed=pt(ft(5), ft(8)),
          occupancy=Occupancy.UTILITY, floor_finish="sealed-concrete"),
     # No wall_lining override: the liner is part of SAUNA_2X4 / SAUNA_LINER_INT_2X6_BRG /
-    # SAUNA_LINER_ON_GARDEN_FRAMED / SAUNA_LINER_ON_GARDEN_CURB. WET as of 2026-08-18, once
-    # the south wall got the liner variant and the vapour control became continuous on all
-    # four faces; it stayed continuous through the 2026-08-28 framing of the east and south
-    # walls, which is why the curb under the south run carries the liner too.
+    # SAUNA_LINER_ON_GARDEN_FRAMED / SAUNA_LINER_ON_GARDEN_CURB. WET since the south wall got
+    # the liner variant and the vapour control became continuous on all four faces; it stays
+    # continuous through the east and south framing, which is why the curb under the south
+    # run carries the liner too.
     # `design_temperature_f` stays unset on purpose — it defaults to the 70 F setpoint, which
     # is what HumidityClass prescribes: a Glaser walk screens the daily mean, not the löyly
     # peak, and authoring 175 F would turn four passing rules into noise.
@@ -819,7 +792,7 @@ ROOMS = [
     # frame runs 5-8 F colder than that, so the frame does condense at design. That is an
     # accepted condition over a sealed, drained slab in a room that dries between sessions,
     # not a hidden failure.
-    # The floor is SEALED CONCRETE, not tile (2026-08-25). SL-B-FLOOR already runs flat and
+    # The floor is SEALED CONCRETE, not tile. SL-B-FLOOR already runs flat and
     # sloped 1/8"/ft to FX-B-SAUNA-FD under the whole room, and FX-B-SAUNA-SH is a curbed
     # liner pan — the pan brings its own waterproof floor, so nothing outside it needs a
     # tile bed. `integrity.concrete_finish_needs_concrete_deck` is satisfied by SL-B-FLOOR.
@@ -845,7 +818,7 @@ ROOMS = [
          occupancy=Occupancy.MEDIA, floor_finish="carpet"),
     Room(uid="CBR405AAAA", tag="RM-B-GYM", seed=pt(ft(27), ft(9)),
          occupancy=Occupancy.LIVING, floor_finish="rubber"),
-    # ESS closet (2026-08-02): MECHANICAL like the room it's carved from — STORAGE would
+    # ESS closet: MECHANICAL like the room it's carved from — STORAGE would
     # trigger habitability rules a battery cabinet has no use for. R327.4 permits an ESS in
     # a utility closet, which is exactly what this is.
     Room(uid="CBR408AAAA", tag="RM-B-ESS", seed=pt(ft(8), ft(33, 6)),
@@ -866,9 +839,8 @@ ALARMS = [
           circuit="CKT-LT-BACKUP"),
 ]
 
-# No radiant floor in the basement. RM-B-SAUNA had FH-B-SAUNA until 2026-07-25: a heated
-# floor under a room that already runs at 190 °F is heat with nowhere to go, and its stat
-# had no honest place to read from (see the note that used to sit on ED-B-SAUNA-FH-STAT).
+# No radiant floor in the basement. A heated floor under RM-B-SAUNA, which already runs at
+# 190 °F, would be heat with nowhere to go and a stat with no honest place to read from.
 # The electric radiant zones are all on the storeys above — main.py and second.py.
 
 SLABS = [
