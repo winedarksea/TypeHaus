@@ -6,7 +6,7 @@ centred on x = 5'-0"). It touches neither building: four 6x6 ground-contact post
 isolated piers and frost-depth pads carry the whole thing, and the glazing is *snug* to the
 house and garage cladding without lapping into either one's flashing.
 
-**"8 x 4 x 4" is the brief, and this module means it literally (2026-07-27).** The glazed
+**"8 x 4 x 4" is the brief, and this module means it literally.** The glazed
 enclosure is 8'-0" tall x 4'-0" N-S x 4'-0" E-W. The three dimensions are measured on the
 *enclosure*: the foundations below the floor-beam soffit are excluded (they are ground work,
 not room), and so is the ~1" wedge bulge that crowns the roof for drainage.
@@ -19,19 +19,15 @@ That reading falls straight out of the sheet:
   above it.
 * The E-W extent is 4'-0" glazing line to glazing line, centred on x = 4'-6" — midway
   between the house entry (x = 4'-0") and the garage service door (x = 5'-0") — so the
-  glazing runs x = 2'-6" to 6'-6". It used to be 7'-5 1/2", which was a corridor rather than
-  a vestibule and cost a third more of everything.
+  glazing runs x = 2'-6" to 6'-6".
 * The roof is **one** 4'-0" x 4'-0" sheet: half of an 8'x4', cut once.
 
 The bill is therefore three sheets for the enclosure itself, and only one cut among them:
-two 8'x4' sheets standing whole, one 8'x4' halved for the roof. (The "10' stock" era — when
-the standing sheet ran 9'-10 3/4" — is retired; it existed only because the enclosure was
-8'-0" clear *above the decking* rather than 8'-0" of sheet.) Three sheets is the whole bill:
-the gap the 2026-08-18 lift opened under the deck is left open rather than skirted.
+two 8'x4' sheets standing whole, one 8'x4' halved for the roof. Three sheets is the whole
+bill: the gap under the deck is left open rather than skirted.
 
 The two sheets meet, so one ``profile="H"`` channel per side receives both — the wall sheet
-in its lower slot, the roof sheet in its upper — replacing the eave U and the wall F-head
-that used to stand 3 1/4" apart in plan with 14 1/2" of open elevation between them.
+in its lower slot, the roof sheet in its upper — replacing the eave U and the wall F-head.
 
 **What that costs, stated rather than left implicit:**
 
@@ -43,9 +39,8 @@ that used to stand 3 1/4" apart in plan with 14 1/2" of open elevation between t
   the walk-line, which runs door to door (N-S) up the middle of the 4'-0" width, so a person
   passes between them and not under them. Anyone reaching for the west or east glazing ducks.
   This is a deliberate consequence of measuring the 8' on the sheet.
-* The garage-eave clearance note is now trivial rather than tight: the garage's south fascia
-  underside is at +9'-11.4" and this roof tops out around +7'-5 1/2", so ~2'-6" of air
-  instead of the old 7 1/4".
+* The garage-eave clearance: the garage's south fascia underside is at +9'-11.4" and this
+  roof tops out around +7'-5 1/2", so ~2'-6" of air.
 
 Framing directions (the brief's "opposite rotation"):
 
@@ -58,13 +53,12 @@ Framing directions (the brief's "opposite rotation"):
      house      E-W joists @ 16"            house    (wedges on every rafter)
                 deck boards N-S
 
-**What the 2026-08-18 lift did to it.** Grade dropped 2'-6" to bring the house out of the
-ground. The breezeway's *foundations* went with the soil — the pads still bear at 42" below
-grade, so the piers grew 2'-6" — and nothing above ``_FLOOR_BEAM_TOP`` moved at all, because
-this is a bridge between two doors and both thresholds are still at 0'-0". Two consequences:
+**Grade and the frost pads.** The breezeway's *foundations* are pinned to the soil — the
+pads bear at 42" below grade, so the piers carry that full depth — and nothing above
+``_FLOOR_BEAM_TOP`` follows grade at all, because this is a bridge between two doors and
+both thresholds are at 0'-0". Two consequences:
 
-* **The 1'-10 3/4" that opened up under the deck stays open.** A half-sheet skirt in the
-  same multiwall stood there briefly and is retired (2026-08-21): the deck is a bridge
+* **The 1'-10 3/4" that opened up under the deck stays open.** The deck is a bridge
   between two doors, nothing under it is enclosed space, and everything down there —
   ground-contact posts on isolated piers, PT beams and joists — is detailed to be exposed
   and to dry. The enclosure is the 8'-0" of sheet above the deck; below it is open air.
@@ -92,7 +86,7 @@ Three places this deviates from the brief or from the plan it was built to, each
    E-W are already a sloping element on every rafter, so they carry the N-S fall too — one
    sloping part instead of a slope the structure cannot hold.
 
-The 22" step at the garage door is resolved as of 2026-08-01, and not here: ``D-G-SERVICE``
+The 22" step at the garage door is resolved elsewhere, not here: ``D-G-SERVICE``
 now carries the same negative ``sill_height`` ``D-G-OVERHEAD`` always did, so it opens off
 the garage slab at 0'-0" like this deck does, and ``params/foundations.py`` gaps the ICF stem
 to a grade beam under it the same way it does under the vehicle door. The deck's +1" walking
@@ -129,15 +123,8 @@ from plan.storeys.garage import GARAGE_STEM_REVEAL, GARAGE_Y_SOUTH
 # catlin-truss stack — 1 1/2" band A foam, the 1 1/2" inner girt, 1" of band C foam, the
 # 1/2" vent gap, the 1 1/2" outer girt and 1 1/4" of PBR panel (plan/assemblies.py
 # CATLIN_EXT_2X6, and params/roof_trim.py::_WALL_OUTBOARD_IN, which is the same number).
-# This is what the breezeway's south end butts.
-#
-# It has moved north three times. On 2026-08-23 by 0.48", when the Swinburne truss (5.5"
-# proud) replaced the WRB + 2" polyiso + 2" EPS + 1/2" furring stack (5.02"), and the
-# garage moved 1/2" north the same day so the slot below did not lose its reveal. On
-# 2026-08-26 by a further 1", when the girts replaced the outriggers and the stack went to
-# 6.5" — garage 1" north again, identical reason. And on 2026-08-26 by 3/4" more, when the
-# 1 1/4" exposed-fastener PBR panel replaced the 1/2" snap-lock seam and the stack went to
-# 7.25" (plan/storeys/garage.py).
+# This is what the breezeway's south end butts. When this stack's thickness changes, the
+# garage moves with it (plan/storeys/garage.py) so the slot below does not lose its reveal.
 _HOUSE_CLADDING_Y = 36.0 + 7.25 / 12.0  # 36.6042'
 
 # South face of the garage's ICF stem: the wall line itself. The 11" section is aligned so
@@ -148,21 +135,10 @@ _HOUSE_CLADDING_Y = 36.0 + 7.25 / 12.0  # 36.6042'
 _GARAGE_STEM_Y = GARAGE_Y_SOUTH.feet  # 40.71875'
 # South face of the garage's wood wall above the stem: the corrugated panel straight on the
 # sheathing plane. That is the obstruction now, at deck level and at roof level both, so it
-# is what sets the clear gap.
-#
-# **This carried a 3/8" rainscreen furring that does not exist.** GARAGE_WALL_2X6 dropped
-# it on 2026-08-20 — the stack is stud / sheathing / cladding and nothing between — so the
-# garage face was modelled 3/8" further south than it stands for six days, and the clear
-# gap below was 3/8" optimistic the whole time. Corrected 2026-08-26 rather than carried
-# forward into the PBR arithmetic, because recomputing off a known-wrong expression is how
-# an error stops being visible. It is why the garage moved only 3/8" that time and not the
-# full 3/4" the house face moved.
-#
-# **0.5" -> 0.875" on 2026-08-31**, when GARAGE_WALL_2X6 went to a 7/8" corrugated
-# exposed-fastener panel from the 1/2" nail strip (and its Zip-R to 5/8" CDX, which moves
-# nothing — the wall's `alignment` puts whichever sheathing it carries on the node line).
-# The garage's two wall lines went 3/8" north in the same edit, which is what keeps
-# _CLEAR_GAP_FT and the reveal below at exactly the numbers they have always been.
+# is what sets the clear gap. 0.875" is GARAGE_WALL_2X6's 7/8" corrugated exposed-fastener
+# panel; the wall's `alignment` puts whichever sheathing it carries on the node line, so a
+# cladding-thickness change here has to move with a matching edit to the garage's wall
+# lines to keep _CLEAR_GAP_FT and the reveal below correct.
 _GARAGE_CLADDING_Y = GARAGE_Y_SOUTH.feet - 0.875 / 12.0  # 40.6458'
 
 _CLEAR_GAP_FT = _GARAGE_CLADDING_Y - _HOUSE_CLADDING_Y  # 4.04167' = 4'-0 1/2"
@@ -174,12 +150,9 @@ _PANEL_FT = 4.0  # one 4'x8' sheet, UNCUT in the N-S direction
 #: authors it, which is the point — it is a leftover, and if it ever goes to zero the sheet
 #: stops being glazeable and this line goes negative rather than lying about it.
 #:
-#: It was spent once, for a few hours on 2026-08-23: the truss wall moved the house cladding
-#: 0.48" north and closed the slot to 4'-0" on the nose. The detail-scale answer was to rip
-#: the sheet 1/2"; the site-scale answer — moving the garage's two wall lines 1/2" north —
-#: is the one that was taken, because the reveal is the only free thing in the slot and a
-#: 24'x24' garage on open ground 40' from any setback does not care where it stands to the
-#: half inch. See plan/storeys/garage.py::GARAGE_Y_SOUTH.
+#: If the slot ever closes, spend it by moving the garage's two wall lines rather than
+#: ripping the sheet — a 24'x24' garage on open ground 40' from any setback does not care
+#: where it stands to the half inch. See plan/storeys/garage.py::GARAGE_Y_SOUTH.
 _REVEAL_FT = _CLEAR_GAP_FT - _PANEL_FT  # 0.04167' = 1/2"
 
 # N-S: post outer faces snug to the house cladding and the garage cladding — the
@@ -195,49 +168,21 @@ _POST_Y1 = _GARAGE_CLADDING_Y - _POST_HALF_FT  # 40.3542'
 _GLAZING_Y0 = _HOUSE_CLADDING_Y
 _GLAZING_Y1 = _GLAZING_Y0 + _PANEL_FT
 
-# E-W: exactly 4'-0", centred midway between the two doors it shelters. That centre moved
-# from x = 4'-6" to x = 7'-3" on 2026-08-01, and the reason is a coordination miss rather
-# than a design change: this module was written on 2026-07-27 against a house entry at
-# x = 4'-0" and a service door at x = 5'-0", and the 2026-07-28 mudroom conversion pushed
-# D-M-ENTRY east to x = 8'-0" without the shelter following. It has been standing 3'-6" west
-# of the door it exists for ever since — the deck did not touch the entry's landing patch at
-# all, which is what code.R311_3_exterior_landing eventually reported.
-#
-# The two doors are 8" apart in x (entry 8'-0", service 7'-4"), so their outer jambs span
-# 3'-8" and the 4'-0" enclosure covers both outright — see below.
-#
-# ** RE-CENTRED 7'-3" -> 7'-8" ON 2026-08-30, following D-G-SERVICE. ** The service door went
-# from a 5'-0" offset to 5'-10" to put its jambs on the stud module
-# (plan/storeys/garage.py::SERVICE_DOOR_OFFSET), which moved its centre 6'-6" -> 7'-4", and
-# this shelter is centred on the midpoint of the two doors it exists for. Nothing enforced
-# that until test_breezeway_stays_centred_between_the_two_doors_it_shelters was written after
-# the 2026-07-28 mudroom conversion left the enclosure standing 3'-6" west of the door it
-# shelters; this time the invariant reported the drift the same day.
-#
-# The move also RETIRES a consequence: at 1'-6" apart the two doors' outer jambs spanned
-# 4'-6", so a 4'-0" enclosure left each door's outer 3" of leaf oversailing the deck edge at
-# one corner — accepted, then, rather than paid for with a wider two-cut enclosure. At 8"
-# apart the span is 3'-8" and the accepted 3" is simply gone. The brief's literal 8x4x4 —
-# three sheets, one cut — is unchanged.
-#
-# ** RE-CENTRED AGAIN 7'-8" -> 8'-0" ON 2026-08-31, following D-G-SERVICE a second time. **
-# The garage walls went to 24" o.c., which retired the 88" station the 2026-08-30 move had
-# just found, and the service door's centre went 7'-4" -> 8'-0". `D-M-ENTRY` is on 8'-0"
-# already, so the two doors are now CONCENTRIC and this midpoint is simply their shared
-# centre. The 8" offset the paragraph above describes is gone, and with it the last reason
-# the enclosure had to be centred on anything but a door.
+# E-W: exactly 4'-0", centred midway between the two doors it shelters. `D-M-ENTRY` and
+# `D-G-SERVICE` are now CONCENTRIC at x = 8'-0", so this midpoint is simply their shared
+# centre. This centre must track both doors — nothing else in the plan enforces that but
+# `test_breezeway_stays_centred_between_the_two_doors_it_shelters`, after the enclosure once
+# stood 3'-6" off its own door with nothing catching the drift until
+# `code.R311_3_exterior_landing` reported it.
 _GLAZING_CENTER_X = 8.0
 _GLAZING_X0 = _GLAZING_CENTER_X - _PANEL_FT / 2.0  # 5.6667'
 _GLAZING_X1 = _GLAZING_CENTER_X + _PANEL_FT / 2.0  # 9.6667'
 # The posts stand *inside* the glazing lines with the sheets on their outer faces, so the
-# 4'-0" is the glazed dimension and not a post-centre dimension. (It used to run the other
-# way — glazing derived from an 8'-0" post spread — which is why the enclosure was 7'-5 1/2".)
+# 4'-0" is the glazed dimension and not a post-centre dimension.
 _POST_X0 = _GLAZING_X0 + _POST_HALF_FT  # 2.7292' — west post centre
 _POST_X1 = _GLAZING_X1 - _POST_HALF_FT  # 6.2708' — east post centre
 # The roof glazing runs to the same E/W lines as the standing sheets, so the two meet in one
-# channel. It used to oversail them by 3 1/4" as a drip edge; retiring that is the cost of
-# the shared channel (see the module docstring), and the sill U-channel's weep holes are now
-# the only drainage path.
+# channel — see the module docstring for the drainage consequence.
 _ROOF_X0, _ROOF_X1 = _GLAZING_X0, _GLAZING_X1
 
 _POST_XY = [(_POST_X0, _POST_Y0), (_POST_X1, _POST_Y0),
@@ -253,10 +198,9 @@ DETAIL_CUT_Y_FT = _POST_Y0
 # ============================================================================
 # Vertical stack (project-frame absolute; +Z up, 0'-0" is the main-floor datum).
 # ============================================================================
-# Frost depth is measured from soil, and the soil is 2'-6" below the main floor. The pads
-# are the only part of this structure pinned to the ground rather than to the two doors it
-# joins: when grade dropped on 2026-08-18 they went down with it and the piers grew 2'-6",
-# while _FLOOR_BEAM_TOP and everything derived from it below stayed exactly where it was.
+# Frost depth is measured from soil. The pads are the only part of this structure pinned to
+# the ground rather than to the two doors it joins: they follow grade, while _FLOOR_BEAM_TOP
+# and everything derived from it below stay exactly where the two door thresholds are.
 _GRADE_FT = SITE_GRADE.feet
 _FROST_FT = 42.0 / 12.0  # MN profile frost depth *below grade*; the pads bear at or below it
 _PAD_THICKNESS_FT = 1.0
@@ -296,8 +240,8 @@ _ROOF_BEAM_TOP = _RAFTER_TOP - _RAFTER_DEPTH_FT  # 6.8958' = +6'-10 3/4"
 _POST_TOP = _ROOF_BEAM_TOP - _JOIST_DEPTH_FT  # 6.2917' = +6'-3 1/2", the roof-beam soffit
 # Clear under the rafters is ~7'-3 1/4"; under the two N-S roof beams it is +6'-3 1/2", below
 # a 6'-8" door head. They run at x = 2'-8 3/4"/6'-3 1/4", at the walk-line edges — see the
-# module docstring. The garage's south fascia underside is at +9'-11.4", so the old 7 1/4"
-# eave clearance is now ~2'-6" and no longer a constraint worth checking.
+# module docstring. The garage's south fascia underside is at +9'-11.4", so clearance is
+# ~2'-6" and not a binding constraint.
 
 # ============================================================================
 # Foundations: pad -> concrete pier -> 6x6 post.
@@ -318,11 +262,10 @@ PADS = [
 #
 # The two garage-end piers stop one course lower, at the ICF stem top, and their posts run
 # down to meet them. A 12" round is 6 1/2" fatter than the 5 1/2" post it carries, so it
-# spills 3 1/4" past the post's north face — which was harmless while the garage's wood wall
-# started 1'-10" *above* the datum, and stopped being harmless on 2026-08-18 when grade
-# dropped and the whole garage went down with it: W-G-S's bottom plate now sits at -0'-8",
-# three quarters of an inch under the -0'-7 1/4" floor-beam soffit these piers top out at,
-# and concrete and plate wanted the same band (structural.member_interference). The post is
+# spills 3 1/4" past the post's north face — harmless while clear of the garage's wood wall,
+# and not harmless now: W-G-S's bottom plate sits at -0'-8", three quarters of an inch under
+# the -0'-7 1/4" floor-beam soffit these piers top out at, and concrete and plate wanted the
+# same band (structural.member_interference). The post is
 # exactly as wide as the cladding is proud of the stem, so it passes where the pier cannot.
 # Nothing in plan moves: the enclosure, the deck and the uncut sheets are all measured off
 # the post lines, and the post lines are untouched.
@@ -405,18 +348,14 @@ FLOOR = FloorSystem(
 # faces on all four sides at the house end, and past them at the garage end: the deck
 # runs on to the stem face, tucking 7/8" under the cladding that oversails it.
 #
-# ** THIS ONE STAYS A SLAB, AND IT IS THE ONLY DECK IN THE HOUSE THAT DOES. ** The garden's
-# two plank decks became their floor systems' `subfloor` (SL-SG-PORCH in 3bf2f48,
-# SL-SG-DECK on 2026-08-22), which is the right model: a plank over joists is a surface
-# layer, not a slab, and as a Slab it bills by the cubic yard out of a table named
-# [concrete]. This deck was converted with them on 2026-08-22 and converted back the same
-# day, because it is the one case the model cannot express.
-#
-# `resolve/floors.py` draws a subfloor bearing-line to bearing-line by the OUTLINE'S
-# perpendicular extent, so a floor system's sheet is exactly its joist field. The plank here
-# is not: it oversails the rim 2 3/4" at each end to land on the house cladding and the
-# garage stem, which is what a deck board does and what these two doors open onto. Two ways
-# to say it and both fail —
+# ** THIS ONE STAYS A SLAB, AND IT IS THE ONLY DECK IN THE HOUSE THAT DOES. ** A plank over
+# joists is normally a floor system's `subfloor` (the garden's two decks and the balcony are
+# all modelled that way), which bills by the square foot instead of the cubic yard out of
+# [concrete]. This one can't be: `resolve/floors.py` draws a subfloor bearing-line to
+# bearing-line by the OUTLINE'S perpendicular extent, so a floor system's sheet is exactly
+# its joist field. The plank here oversails the rim 2 3/4" at each end to land on the house
+# cladding and the garage stem, which is what a deck board does and what these two doors
+# open onto. Two ways to say it and both fail —
 #   * keep the outline at the post box, and the sheet stops 2 3/4" short of each threshold:
 #     `code.R311_3_exterior_landing` FAILS D-M-ENTRY and D-G-SERVICE, correctly, because
 #     nothing at threshold height covers the 36" patch outside them;
@@ -424,10 +363,10 @@ FLOOR = FloorSystem(
 #     straight through PT-BW-1..4 and into its own neighbour, five
 #     `structural.member_interference` FAILs. These joists are HUNG FLUSH between the beams
 #     and cannot cantilever (the `cantilever` fields run along the joist axis, x, not y).
-# The balcony converted term for term because its joists genuinely do cantilever 6" and its
-# slab outline was that cantilever. This one would have to invent framing to keep a plank
-# where it is. Left as a Slab, priced by qualified key in [concrete], and re-examined when
-# a floor system can carry a sheet wider than its joists.
+# The balcony's joists genuinely do cantilever 6" and its slab outline was that cantilever.
+# This one would have to invent framing to keep a plank where it is. Left as a Slab, priced
+# by qualified key in [concrete], and re-examined when a floor system can carry a sheet
+# wider than its joists.
 DECK = Slab(
     uid="BWSL01AAAA", tag="SL-BW-DECK",
     outline=(pt(ft(_GLAZING_X0), ft(_HOUSE_CLADDING_Y)),
@@ -503,17 +442,15 @@ _CHANNEL_DEPTH = inch(1.5)   # how far the extrusion laps the sheet face
 _CHANNEL_THICK = inch(1.0)   # its section across the sheet
 _ROOF_EAVE_TOP = _RAFTER_TOP + _GLAZING_THICKNESS_IN / 12.0  # wedge is 0 at the eave
 # The north F-channel spans from the roof panel's edge back to the garage cladding, so its
-# run sits on the midline of that reach rather than on the panel edge. That reach is now
-# just the 1/2" reveal the uncut panel leaves at this end; it used to be 6 1/8", because the
-# cladding stood that far behind a proud stem.
+# run sits on the midline of that reach rather than on the panel edge — 1/2", the reveal the
+# uncut panel leaves at this end.
 _FCH_N_Y = (_GLAZING_Y1 + _GARAGE_CLADDING_Y) / 2.0
 
-# The shared H channel — the piece the roof eave U and the wall head used to be. An H
-# receives a sheet in each of its two slots, which is exactly the joint here now that the
+# The shared H channel — the piece that carries both the roof eave and the wall head. An H
+# receives a sheet in each of its two slots, which is exactly the joint here since the
 # standing sheet's head and the roof sheet's edge land on the same line: the wall sheet
 # enters from below, the roof sheet from the side, and the web between them is the only
-# thing crossing the joint. Before, those were two unrelated extrusions 3 1/4" apart in plan
-# and 13.4" apart vertically, with 14 1/2" of open elevation between the sheets they held.
+# thing crossing the joint.
 #
 # "H" is already in GlazingTrim's documented profile vocabulary and was unused; this is the
 # joint it is the word for.
@@ -559,9 +496,9 @@ for _i, (_tag, _x, _ref) in enumerate(
         (("W", _GLAZING_X0, "GL-BW-WALL-W"), ("E", _GLAZING_X1, "GL-BW-WALL-E")), start=1):
     _run = (pt(ft(_x), ft(_GLAZING_Y0)), pt(ft(_x), ft(_GLAZING_Y1)))
     WALL_TRIM += [
-        # The sill is at the deck surface, which the sheet now passes rather than starts
-        # at — it runs 8 1/4" further down to the floor-beam soffit, covering the beam band
-        # and the deck edge that used to show below it.
+        # The sill is at the deck surface, which the sheet passes rather than starts at —
+        # it runs 8 1/4" further down to the floor-beam soffit, covering the beam band and
+        # the deck edge.
         GlazingTrim(uid=f"BWGT1{_i}AAAA", tag=f"TR-BW-SILL-{_tag}",
                     kind=TrimKind.GLAZING_CHANNEL, profile="U", weep_holes=True,
                     glazing_ref=_ref, path=_run,
@@ -578,9 +515,8 @@ for _i, (_tag, _x, _ref) in enumerate(
             kind=TrimKind.GLAZING_CHANNEL, profile="F", glazing_ref=_ref,
             vertical=True,
             path=(pt(ft(_x - _half), ft(_y)), pt(ft(_x + _half), ft(_y))),
-            # A jamb runs the sheet's full height, so its top moved up with the sheet's:
-            # leaving it at _POST_TOP while _WALL_PANEL_HEIGHT grew pushed its foot 1'-9 3/4"
-            # below the sheet, into the pier.
+            # A jamb runs the sheet's full height, so its top must track the sheet's top
+            # (_ROOF_GLAZING_UNDER), not _POST_TOP.
             top_elevation=ft(_ROOF_GLAZING_UNDER), depth=_WALL_PANEL_HEIGHT,
             thickness=_CHANNEL_THICK, material="aluminum-extrusion"))
 

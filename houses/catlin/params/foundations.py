@@ -6,8 +6,7 @@
 - House footings additionally get a bedding-prep record (undercut, geotextile, drain
   tile, compacted washed-stone bed, perimeter foam) — see ``HOUSE_FOOTING_BEDDING``.
 
-The breezeway's pads/piers/posts used to live here as a roofless stub; they now belong to
-the whole structure in ``params/breezeway.py``.
+The breezeway's pads/piers/posts belong to the whole structure in ``params/breezeway.py``.
 """
 
 from __future__ import annotations
@@ -50,20 +49,15 @@ from plan.storeys.garage import (
 # --- the site datum ---------------------------------------------------------------
 #
 # Finished grade, in the project frame. The vertical datum of this model is the main floor
-# (FFE = 0'-0"), so "raising the house 2'-10" out of the ground" is authored the way a
-# drawing set states it: the floor stays at 0'-0" and grade goes down. Everything pinned to
-# soil rather than to the house — the garage that is still driven into at grade, its stem
-# reveal, the breezeway's frost pads, the hydrant's bury — derives from here.
+# (FFE = 0'-0"), so "raising the house out of the ground" is authored the way a drawing set
+# states it: the floor stays at 0'-0" and grade goes down. Everything pinned to soil rather
+# than to the house — the garage that is driven into at grade, its stem reveal, the
+# breezeway's frost pads, the hydrant's bury — derives from here.
 #
-# 2'-6" on 2026-08-18, then 2'-10" on 2026-08-21: the mixed I-joist / EPS-formed deck over
-# the basement is deeper than the 9" cast slab it replaced, so the house rose 4" and the
-# basement floor stayed where it was rather than surrendering the headroom.
-#
-# **It did NOT move again on 2026-08-23.** The flat-bearing-seat rework deepened that deck
-# to 14 3/8" and took the basement slab UP 2 9/16" to meet it. The house does not rise; the
-# basement floor does. Grade, the garage, the breezeway pads and the hydrant's bury are all
-# pinned to soil and none of them moved — which is the whole reason this constant is
-# authored as a distance from the datum rather than derived from the basement.
+# Grade, the garage, the breezeway pads and the hydrant's bury are all pinned to soil; the
+# basement floor is not — it is authored separately and can move without grade moving,
+# which is the whole reason this constant is authored as a distance from the datum rather
+# than derived from the basement.
 #
 # ``plan/site.py`` is ``# haus: editable`` and may hold only literals, so it repeats this
 # number as ``Site.grade``. ``plan/manifest.py`` asserts the two agree; do not edit one
@@ -79,44 +73,38 @@ SITE_GRADE = ft(-2, -10)
 # Add a footing with the next unused index; retire one by deleting its row and never
 # reusing the number.
 #
-# 15, 16, 18 and 19 are retired (2026-08-21). W-B-CW, W-B-CE, W-B-STR2 and W-B-CW3 became
-# framed partitions in the basement-ceiling overhaul — a stud wall on the slab needs no
-# 20"x8" strip, no bedding and no drain tile, and those four runs of tile had nothing to
-# collect. FT-B-STR stays: W-B-STR is still a bearing wall, framed or not.
+# 15, 16, 18 and 19 are retired. W-B-CW, W-B-CE, W-B-STR2 and W-B-CW3 became framed
+# partitions in the basement-ceiling overhaul — a stud wall on the slab needs no 20"x8"
+# strip, no bedding and no drain tile, and those four runs of tile had nothing to collect.
+# FT-B-STR stays: W-B-STR is still a bearing wall, framed or not.
 _HOUSE_WALL_TAGS = (
     (1, "W-B-S1"), (2, "W-B-S2"), (3, "W-B-S3"), (4, "W-B-E1"), (5, "W-B-E2"),
     (6, "W-B-N1"), (7, "W-B-N2"), (8, "W-B-N3"), (9, "W-B-W1"), (10, "W-B-W2"),
     (11, "W-B-CS"), (12, "W-B-CS2"), (13, "W-B-CN"), (14, "W-B-CN2"),
     (17, "W-B-STR"),
-    # 20/21 are the halves the 2026-08-23 ESS-closet relocation split off: W-B-N4 is the
-    # west 6'-0" of the old W-B-N3 and W-B-STR3 the south 9'-2 5/8" of the old W-B-STR.
-    # Each keeps its own strip because each is still a wall on the same footing line — the
-    # split is where a partition tees in, not where the pour stops.
+    # 20/21 are the halves the ESS-closet relocation split off: W-B-N4 is the west 6'-0" of
+    # the old W-B-N3 and W-B-STR3 the south 9'-2 5/8" of the old W-B-STR. Each keeps its own
+    # strip because each is still a wall on the same footing line — the split is where a
+    # partition tees in, not where the pour stops.
     (20, "W-B-N4"), (21, "W-B-STR3"),
     # 22 is the east 8'-0" of the old W-B-S3, split off at the excavation edge (x=28'-0")
-    # on 2026-08-28 so each half could author the backfill it actually retains.
+    # so each half could author the backfill it actually retains.
     (22, "W-B-S4"),
 )
 
 # The three south strips are formed in an insulated footing form, the rest are poured
 # against the bedding as before. They are the strips the sunken garden runs along: the
-# garden floor is at -9'-1 7/16" and they bottom out at -9'-9 7/16" — both rose 2 9/16" on
-# 2026-08-23 with the basement slab, so the cover between them is unchanged at **8" of frost
-# cover** against MN Rules 1303.1600's 42" for Ramsey County — measured, as IRC R403.1.4.1
-# says to, from the lowest adjacent grade, which beside them is the garden floor and not the
-# -2'-10" site plane six and a half feet overhead.
+# garden floor is at -9'-1 7/16" and they bottom out at -9'-9 7/16", **8" of frost cover**
+# against MN Rules 1303.1600's 42" for Ramsey County — measured, as IRC R403.1.4.1 says to,
+# from the lowest adjacent grade, which beside them is the garden floor and not the -2'-10"
+# site plane six and a half feet overhead.
 #
-# Nothing said so until 2026-08-22: ``structural.frost_depth`` compared every footing to one
-# global scalar and passed all 35. It derives a local grade per footing now, and the answer
-# to what it found is IRC R403.3 — the horizontal wings under the garden slab
+# ``structural.frost_depth`` derives a local grade per footing; the answer to what it finds
+# here is IRC R403.3 — the horizontal wings under the garden slab
 # (``params/sunken_garden.FROST_WINGS``) plus this form, which keeps the concrete off the
-# soil on both faces. Deepening the strips is the alternative and it is not available:
-# FT-B-BRICK's derivation leans on FT-B-S2/S3's 10" south toe being there to bear on, so
-# re-centring the strips and re-footing the brick wall are one change and not this one.
-#
-# ``Footing`` had no assembly field at all before that date — no material, no reinforcement —
-# so every footing in every house priced and scheduled as plain cast concrete out of a
-# hardcoded category row, and this detail was not expressible.
+# soil on both faces. Deepening the strips is not an available alternative: FT-B-BRICK's
+# derivation leans on FT-B-S2/S3's 10" south toe being there to bear on, so re-centring the
+# strips and re-footing the brick wall are one change and not this one.
 _FROST_FORMED = {"W-B-S1", "W-B-S2", "W-B-S3", "W-B-S4"}
 
 HOUSE_FOOTINGS = [
@@ -154,7 +142,7 @@ HOUSE_FOOTING_BEDDING = [
 # Stops at x=28' on the sunken garden's east wall axis, where FT-SG-E1 already breaks
 # thermally from the house footing — no third break needed, no collision (FT-SG-E1 sits
 # 1'-5" below this plinth).
-# On the same insulated form as the strips it bears on (2026-08-22): its bottom is at
+# On the same insulated form as the strips it bears on: its bottom is at
 # -9'-2", which is 2" **above** the garden floor beside it, so of the four footings the
 # sunken garden reaches this is the one with negative frost cover. The R403.3 wings under
 # the garden slab are what answer it; the form is what keeps this pour from being a
@@ -176,9 +164,8 @@ VENEER_PLINTH_BEDDING = [
 # --- garage ICF stem (basement storey; absolute elevations) -----------------------
 #
 # Every elevation in this block is measured from ``SITE_GRADE``, not from the project datum.
-# The garage is driven into at grade and stays there; when grade moved 2'-6" down — and
-# again 4" on 2026-08-21 — the whole garage foundation went with it, while the house it
-# stands beside did not move at all.
+# The garage is driven into at grade and stays there; when grade moves, the whole garage
+# foundation moves with it, while the house it stands beside does not move at all.
 _GRADE_FT = SITE_GRADE.feet
 _FROST = 42.0 / 12.0  # frost depth below grade
 # Exposed above grade, and the garage storey datum besides — ``GARAGE_STEM_REVEAL`` is the
@@ -212,8 +199,8 @@ GARAGE_STEM_NODES = [
     Node(uid="CGF008AAAA", tag="N-GF-S-DRE",
          position=pt(SERVICE_DOOR_OFFSET + SERVICE_DOOR_WIDTH + _SERVICE_GAP_MARGIN,
                      GARAGE_Y_SOUTH)),
-    # The SE/NE brick-ledge corner returns (garage.py's W-G-BRICK-SRET/NRET, 2026-08-26)
-    # need 4'-0" of widened, brick-ledged stem under them too, same as the east piers. These
+    # The SE/NE brick-ledge corner returns (garage.py's W-G-BRICK-SRET/NRET) need 4'-0" of
+    # widened, brick-ledged stem under them too, same as the east piers. These
     # split the last 4'-0" off the corner end of W-GF-S2/W-GF-N.
     Node(uid="CGF009AAAA", tag="N-GF-S-BRICK", position=pt(ft(20), GARAGE_Y_SOUTH)),
     Node(uid="CGF010AAAA", tag="N-GF-N-BRICK", position=pt(ft(20), GARAGE_Y_NORTH)),
@@ -248,14 +235,14 @@ _GRADE_BEAM = dict(assembly="GARAGE_ICF_6", alignment=_ALIGN,
                    bottom_elevation=ft(_GRADE_FT - _FROST))
 
 GARAGE_STEM_WALLS = [
-    # South stem, split three ways at the service door on 2026-08-01 — the east wall's
-    # pattern exactly. W-GF-S1 keeps the original uid as the remnant of the single wall;
+    # South stem, split three ways at the service door — the east wall's pattern exactly.
+    # W-GF-S1 keeps the original uid as the remnant of the single wall;
     # the grade beam and the far segment are new.
     FoundationWall(uid="CGF101AAAA", tag="W-GF-S1", start_node="N-GF-SW",
                    end_node="N-GF-S-DRW", **_STEM),
     FoundationWall(uid="CGF107AAAA", tag="W-GF-S-DR", start_node="N-GF-S-DRW",
                    end_node="N-GF-S-DRE", **_GRADE_BEAM),
-    # W-GF-S2 split again (2026-08-26): its corner-adjacent 4'-0" now carries the SE brick
+    # W-GF-S2 split again: its corner-adjacent 4'-0" now carries the SE brick
     # return, so it needs the brick-ledge stem too. W-GF-S2 keeps its uid on the remnant
     # (SERVICE_DOOR side); W-GF-S3 is the new corner piece.
     FoundationWall(uid="CGF108AAAA", tag="W-GF-S2", start_node="N-GF-S-DRE",
@@ -268,7 +255,7 @@ GARAGE_STEM_WALLS = [
                    end_node="N-GF-E-DRN", **_GRADE_BEAM),
     FoundationWall(uid="CGF106AAAA", tag="W-GF-E2", start_node="N-GF-E-DRN",
                    end_node="N-GF-NE", **_STEM_BRICKLEDGE),
-    # W-GF-N split (2026-08-26) the same way, for the NE brick return: W-GF-N keeps its uid
+    # W-GF-N split the same way, for the NE brick return: W-GF-N keeps its uid
     # on the remnant (west side); W-GF-N2 is the new corner piece.
     FoundationWall(uid="CGF103AAAA", tag="W-GF-N", start_node="N-GF-N-BRICK",
                    end_node="N-GF-NW", **_STEM),
@@ -319,8 +306,8 @@ GARAGE_FOOTINGS = [
 # Filed on "garage", where it belongs, with an absolute ``top_elevation``: the garage storey
 # datum is the ICF stem top, but this slab pours at grade, and ``Slab.top_elevation`` is how
 # a slab says so without being re-filed onto whichever storey happens to sit at its
-# elevation. (It lived on "main" until 2026-08-18 precisely because that override did not
-# exist and "main" was at 0'-0".) Inset from the wall lines = the 11" stem section + the
+# elevation. (It lived on "main" before this override existed, when "main" was at 0'-0".)
+# Inset from the wall lines = the 11" stem section + the
 # usual 1/2" gap to the stem's interior face, keeping the pour inside the stem.
 _SLAB_GAP = inch(0.5)
 _SLAB_INSET = GARAGE_ICF_CORE + GARAGE_ICF_EPS + GARAGE_ICF_EPS + _SLAB_GAP
@@ -337,19 +324,13 @@ GARAGE_SLAB = Slab(
 # --- garage service-door landing ---------------------------------------------------
 #
 # D-G-SERVICE's threshold is at 0'-0", level with the breezeway deck outside it (that pairing
-# is a house rule — see houses/catlin/CLAUDE.md). The garage slab is at grade, -2'-10". So
-# from 2026-08-18 there are five risers between the two, inside the garage.
+# is a house rule — see houses/catlin/CLAUDE.md). The garage slab is at grade, -2'-10", so
+# there are five risers between the two, inside the garage.
 #
-# **This used to be five concrete `Slab`s, SL-G-STEP-0..4, and four of them are now a
-# `Stair`** (ST-G-SERVICE, in plan/storeys/garage.py — a UI-movable element has to live in an
-# editable file). The comment that stood here explained why a `Stair` was impossible —
-# "`Stair` takes its rise from a pair of storey elevations through a FloorOpening in the
-# storey above, and this run is a step-down *within* one storey with no floor to open" — and
-# it was true until 2026-08-22, when `Stair.floor_opening` became optional and
-# `base_elevation`/`top_elevation` were added for exactly this case. It also claimed
-# "`structural.stair_riser_uniformity` grades the result", which was **not** true: that check
-# and `code.R311_7_8_handrail` both iterate `model.stairs`, so a five-riser flight with no
-# handrail drew no finding of any kind. Both grade it now, which is the point of the change.
+# Four of those risers are `ST-G-SERVICE`, a `Stair` (in plan/storeys/garage.py — a
+# UI-movable element has to live in an editable file), using `Stair.floor_opening=None`
+# with `base_elevation`/`top_elevation` to state the rise directly for a step-down within
+# one storey. `structural.stair_riser_uniformity` and `code.R311_7_8_handrail` both grade it.
 #
 # What stays here is the **landing**: a 3'-0" x 3'-0" pad at the threshold, poured with the
 # slab, R311.7.6's "a landing at least as deep as the stair is wide". A landing is a floor,
@@ -379,11 +360,9 @@ GARAGE_STEPS = [
 # number — its own shutoff-valve depth, 2'-6" below the ICF stem bottom, consistent but not
 # the same thing.
 #
-# Position (2026-08-15): the hydrant is freestanding, not wall-mounted, because nowhere on
-# a wall clears the footings' 45° bearing-influence line at this bury depth. The old NW
-# corner spot (1'-6", 62') had the weep-stone pocket overlapping FT-GF-W outright — only
-# passing footing_clearance because of a sleeve that bore concrete the pipe never touched
-# (deleted). The clear zone is x >= 4'-10 1/2", y <= 59'-7 7/8", floor not wall — no wall
+# The hydrant is freestanding, not wall-mounted: nowhere on a wall clears the footings'
+# 45° bearing-influence line at this bury depth. The clear zone is x >= 4'-10 1/2",
+# y <= 59'-7 7/8", floor not wall — no wall
 # position works here, so it stands free like a yard hydrant should (Y34 barrel, unlike the
 # two wall hydrants in plan/fixtures.py).
 #
@@ -399,7 +378,7 @@ HYDRANT_Y_FT = 59.5         # north bay, clear of FT-GF-N's influence line
 HYDRANT_BURY_FT = 6.0       # shutoff depth below grade — the code number for this fixture
 
 # A 4" topping pedestal (SL-G-HYDRANT-PED) that lifted the slab penetration above the
-# salt-slush wet line was retired 2026-08-03 by owner decision. Replaced by spec, not
+# salt-slush wet line was retired by owner decision. Replaced by spec, not
 # geometry — a flexible chloride-tolerant sealant at the penetration instead (see
 # notes/garage_hydrant.md). Bury, sleeve, and drywell below grade are unchanged.
 
@@ -425,7 +404,7 @@ GARAGE_HYDRANT_SLEEVE = SleevePenetration(
 # deepest excavation in the assembly, is what the 45° influence line grades hardest, so it
 # (not the pipe) sets how far out the fixture stands. See HYDRANT_X_FT above.
 #
-# Re-sized 2026-08-15 from 2'x4' deep (12.6 cu ft, bottom -9'-0", overlapped FT-GF-W by 4"
+# Re-sized from 2'x4' deep (12.6 cu ft, bottom -9'-0", overlapped FT-GF-W by 4"
 # in plan — nothing was grading it, since `mep.footing_clearance` only walks pipe runs) down
 # to 1'-6"x1'-6" deep, top -5'-6", ~2.6 cu ft. Bottom -7'-0" is 34" below bearing; the
 # stone's edge stands 35 1/2" off FT-GF-W and 35 7/8" off FT-GF-N — no slack left in either.
