@@ -305,12 +305,15 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
     INT_2X6_PLUMBING: the playroom partition meeting the furnace room's wet wall is a real
     4 3/4"-to-6 3/4" jog on one line whatever the studs on either side are made of.
 
-    Garage east stem: W-GF-E1/E2 (the ICF segments flanking the overhead door) take the
-    mid-stack brick-ledge form (`GARAGE_ICF_6_BRICKLEDGE`) to carry the brick wainscot,
-    while the rest of the stem stays plain `GARAGE_ICF_6`. Real change of construction — the
-    ledged segments bear a full 3 5/8" wythe the plain ones do not — at the nodes where they
-    meet their un-ledged neighbours (N-GF-SE, N-GF-E-DRS, N-GF-E-DRN, N-GF-NE), all
-    collapsing to the one key.
+    **The garage east stem no longer contributes a key at all, and losing one is the
+    point.** W-GF-E1/E2/S3/N2 took a mid-stack brick-ledge form (`GARAGE_ICF_6_BRICKLEDGE`)
+    to carry the brick wainscot's 3 5/8" wythe, so four collinear nodes (N-GF-SE,
+    N-GF-E-DRS, N-GF-E-DRN, N-GF-NE) were real changes of construction and collapsed to one
+    key. The wainscot became hung aluminium sheet on 2026-09-02 and bears on nothing, so
+    every stem segment is plain `GARAGE_ICF_6` and the whole run is ONE construction end to
+    end. That is a detail the drawings no longer have to carry, not a gate going quiet by
+    accident — if this key ever comes back without the brick coming back with it, something
+    has re-ledged a stem for no load.
     """
     keys = sorted({c.key for c in catlin_model.conditions
                    if c.key.startswith("assembly_change:")})
@@ -362,11 +365,6 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # than one pour against another. `integrity.junction_fallback` reports the same
         # node UNKNOWN for exactly that reason, and this key is the drawing that answers it.
         "assembly_change:FOUNDATION_WALL_12_INT|SAUNA_LINER_INT_2X6_BRG",
-        # The garage east stem: W-GF-E1/E2 took the brick-ledge form to carry the wainscot's
-        # wythe, W-GF-E-DR (the grade beam under the overhead door) and the rest of the
-        # stem did not. Collapses to one key at all four collinear nodes where a ledged
-        # segment meets a plain one.
-        "assembly_change:GARAGE_ICF_6|GARAGE_ICF_6_BRICKLEDGE",
         # N-S-B1..B4 on the second storey: the five sleeping-side partitions carry
         # INT_2X4_RC (STC 36 -> 48) and the walls they meet — W-S-SS1/SS2 in the hall,
         # W-S-BW4 at the closet — do not. It is a real change of construction and a real

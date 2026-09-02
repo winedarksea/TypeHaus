@@ -834,6 +834,15 @@
 # exterior and preservative-treated wood applications." Stainless stays where it is cheap
 # and exposed: the 1-1/2" cladding fasteners below.
 "SDWS22800DB" = { low = 1.15, high = 1.75 }  # 1128 ea — the catlin truss's one girt screw
+# The garage ICF stem's exterior protection band, 224 ea at 5". DERIVED, and the part is a
+# PROXY rather than a purchase instruction: `exterior_insulation_fastening` reads the band's
+# 1/4" vented standoff over 2.5" of `eps-ext` as screwed-furring-through-foam, which is the
+# right GEOMETRY (the sheet really is held 2.75" off the concrete by foam) but a rule written
+# for furring into WOOD STUDS. An ICF has no stud — you fasten to the plastic webs or with a
+# stainless masonry anchor into the core — and the engine has no masonry-anchor concept.
+# Priced at the girt screw's rate less the length: quantity and length are usable, the SKU is
+# not. In a salted splash zone the anchor that actually gets bought is STAINLESS.
+"SDWS22500DB" = { low = 0.85, high = 1.35 }
 "SP6" = { low = 1.5, high = 2.75 }  # 424 ea
 "SS-GASKET-12" = { low = 0.35, high = 0.9 }  # 32 ea — generic 304 SS #12 screw, bonded EPDM washer
 "STHD" = { low = 18, high = 32 }  # 41 ea
@@ -2194,6 +2203,16 @@
 # Sources: published R-30C cathedral batt retail $/SF 2026, uplifted ~15% over the R-19 row.
 "fiberglass-r30c" = { material = { low = 0.7, high = 1.25 }, labour = { low = 0.6, high = 1.05 } }  # 1449.0 SF — R-30C compressed to 6-7/8" in the 11-7/8" bay
 "foundation-protection-panel" = { material = { low = 3.5, high = 7.5 }, labour = { low = 1.5, high = 3 } }  # 276.3 SF
+# The garage ICF stem's exterior protection band, 2" below grade to the stem top — the
+# outside half of a both-faces requirement that was only ever half-built (`gwb-stem` was the
+# inside half). Same job as `foundation-protection-panel` above, which is why it sits here,
+# but a thin brake-formed sheet on furring rather than a 1/2" laminated board, so it is
+# cheaper per SF in material and dearer in labour. ALUMINIUM: do not read this off any of
+# the painted-STEEL panel rows in this file (see the GARAGE_METAL_WAINSCOT note in
+# [wall_structure]). Covers the sheet, the KDAT furring, the 316 stainless gasketed fixings
+# into the ICF webs, and the hemmed edges. Placeholder pending a quote, struck off the
+# protection-panel row it replaces in function.
+"aluminum-flat-pvdf" = { material = { low = 2.5, high = 5 }, labour = { low = 2.5, high = 5 } }
 # 2026-08-18: the above-grade foundation band on the basement walls, authored as a
 # `Layer.extent` off the GRADE datum rather than as a number here, so the 2026-08-21 deck
 # overhaul and the 2026-08-23 bearing-seat rework moved it without an edit. The `# 324 SF`
@@ -2735,7 +2754,32 @@
 # The 2026-08-26 swap from the Black colourway to Columbia does NOT move this rate: same
 # unit, same size, same ASTM grade, same handmade FBA body, off-white instead of black.
 # A colourway is not a cost driver here; the special-order handling already in the rate is.
-"GARAGE_BRICK_WAINSCOT" = { low = 31, high = 55, unit = "SF" }  # 67.1 SF of face
+"GARAGE_BRICK_WAINSCOT" = { low = 31, high = 55, unit = "SF" }  # 0 SF — UNREFERENCED since 2026-09-02 (metal wainscot). Kept at rate, the `glazed-green-brick` convention.
+# The metal wainscot that replaced it. PRICED PER SF OF FACE, like the brick row above and
+# for the same reason — the wythe/sheet is the assembly's STRUCTURE layer, so it bills
+# through `[wall_structure]` on the assembly tag rather than through `[envelope_layers]`.
+#
+# ** THIS RATE IS A PLACEHOLDER PENDING A REAL QUOTE, AND IT IS THE ONE NUMBER IN THE SWAP
+# THAT A SUPPLIER SHOULD GOVERN. ** No other panel rate in this file can be borrowed for it:
+# `board-batten-24`, `corrugated-panel-26`, `pbr-panel-26` and the whole standing-seam family
+# are painted STEEL, and painted aluminium coil runs well above painted steel per SF. Reading
+# an aluminium wainscot off a steel row is the same class of error the `[envelope_layers]`
+# note at the foot of this file warns about, one key deeper: fixing method + profile + gauge
+# + METAL.
+#
+# The build the rate has to cover: 0.040-0.050" PVDF-painted aluminium flat sheet (stock
+# 48" x 120", ~2.5 sheets), brake-formed with a bent outside corner and hemmed top and
+# bottom, on 1-1/2" vertical KDAT furring at 12-16" o.c. with concealed cleats and a #9 316
+# stainless gasketed perimeter fixing. Material is the small half and BRAKE TIME IS THE BIG
+# ONE — this is a shop-formed part, not a stocked profile. Furring, cleats, fixings and the
+# aluminium Z-flash at the corrugated transition are all in this rate; the CAP FLASHING IS
+# NOT (TR-G-WAIN-CAP-S/N/SRET/NRET bill by length through `[edge_trim]`), and neither are
+# the base/head closures (an `[allowances]` lump, with the garage's other closures).
+#
+# What the swap DELETED and is no longer billed anywhere: the ICF brick-ledge block, ~4 cy
+# of the widened footing section on four segments, the ties, the weeps, both through-wall
+# flashings and the ~8 lf per pier of flat 2x6 tie blocking.
+"GARAGE_METAL_WAINSCOT" = { low = 22, high = 42, unit = "SF" }
 # HISTORY, so the number can be re-struck rather than re-guessed. 2026-08-20: $480-1,000/cy
 # was $8.89-18.52/SF and its LOW sat on the absolute floor of the cheapest published number
 # anywhere; it went to $756-1,296 = $14-24/SF against a $13-25/SF typical installed market.

@@ -342,14 +342,23 @@ def test_exposed_foundation_foam_is_protected(catlin_model):
     assert isinstance(board, Polyline) and board.closed
 
 
-def test_protection_board_starts_at_grade(catlin_model):
-    """It protects the *exposed* height only — below grade the backfill does that job."""
+def test_protection_board_starts_two_inches_below_grade(catlin_model):
+    """It protects the *exposed* height, plus 2" of bury to seal its own termination.
+
+    It started exactly AT grade until 2026-09-02, when `GARAGE_ICF_6` gained a real exterior
+    protection band (`coil-gap` + `coil-ext`, PVDF aluminium on a vented standoff) and this
+    derived board began following that layer's `extent` instead. The 2" is a design decision
+    and not a rounding: a skin that stops precisely on the grade line leaves a horizontal lip
+    for water to stand on and freeze in, and burying the bottom edge an inch or two is the
+    cheapest termination detail there is. Below THAT the backfill still does the job — this
+    is a termination, not a damp-proofing course, and the band does not run to the footing.
+    """
     from typehaus.quantities import M_PER_IN
 
     _derived, scene = _detail_scene(catlin_model, "wall_foundation:GARAGE_ICF_6")
     board = _component_nodes(scene, "foam-protection-board")[0]
     grade_in = catlin_model.plan.project.site.grade.meters / M_PER_IN
-    assert min(z for _u, z in board.points) == pytest.approx(grade_in, abs=0.5)
+    assert min(z for _u, z in board.points) == pytest.approx(grade_in - 2.0, abs=0.5)
 
 
 def test_buried_foundation_foam_gets_no_protection_board(catlin_model):

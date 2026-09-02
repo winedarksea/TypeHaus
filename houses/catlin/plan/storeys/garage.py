@@ -109,18 +109,28 @@ WALLS = [
          structural_role=StructuralRole.NONBEARING),
 ]
 
-# --- east brick wainscot (2026-08-26) ----------------------------------------------------
+# --- east metal wainscot (2026-09-02, was brick 2026-08-26) ------------------------------
 #
-# A short off-white-brick wainscot on the two 4'-0" strips of east wall flanking the
-# overhead door, wrapped 4'-0" further around each of the SE/NE corners onto the south and
-# north walls (2026-08-26) — the most-seen, most-abused surface on the building. Modelled as
-# its own short veneer wall standing in front of the existing wall, exactly W-B-BRICK's
-# precedent (storeys/basement.py), because a full 3 5/8" wythe on a 1" cavity is not
-# something a WallPaneling band can carry. Assemblies, the coursing table and the ledge
-# form: plan/assemblies.py's GARAGE_BRICK_WAINSCOT / GARAGE_ICF_6_BRICKLEDGE. Brick unit:
-# Glen-Gery Columbia Roman Maximus (glengery.com/brick-catalog/columbia-roman-maximus),
-# swapped 2026-08-26 for the black colourway of the same unit — see assemblies.py's
-# off-white-brick Material comment.
+# A short wainscot on the two 4'-0" strips of east wall flanking the overhead door, wrapped
+# 4'-0" further around each of the SE/NE corners onto the south and north walls — the
+# most-abused surface on the building. It was 4'-4" of off-white Glen-Gery soldier brick on
+# an ICF brick-ledge shelf; it is now PVDF-painted aluminium flat sheet on a 1-1/2" drained
+# cavity. plan/assemblies.py's GARAGE_METAL_WAINSCOT carries the specification and the
+# reasoning; GARAGE_BRICK_WAINSCOT and GARAGE_ICF_6_BRICKLEDGE are kept there unreferenced
+# for the revert.
+#
+# WHY IT MOVED: the driveway apron is plowed and salted, and brick is the ABSORPTIVE choice
+# in the one place chloride slush is thrown at the wall. Painted aluminium takes none of it
+# in. What went with the brick: the ledge block, the 20" -> 24" footing widening on four
+# stem segments, base and cap through-wall flashing with weeps, corrugated ties in three bed
+# joints at a 16" o.c. horizontal spacing the wall's 24" studs could not give, and the ~8 lf
+# per pier of flat 2x6 blocking bought to reach it. None of that exists now.
+#
+# STILL MODELLED AS ITS OWN SHORT WALL IN FRONT OF THE EXISTING ONE, W-B-BRICK's precedent
+# (storeys/basement.py), and the carrier is deliberately still a `FoundationWall`: its
+# elevations are ABSOLUTE, which is what lets this band cross the garage datum at -1'-0".
+# A `WallPaneling` derives its plane from ONE host wall's layer polygons and could not span
+# the ICF FoundationWall below the datum and the wood Wall above it.
 #
 # ** FILED ON THE GARAGE STOREY, NEVER ON `basement`, and that is load bearing. **
 # `_storey_is_conditioned` (checks/building_science/energy_scope.py) returns False for the
@@ -148,7 +158,7 @@ WALLS = [
 # are 4'-0" flush with the door jambs BECAUSE the door offset is 4'-0"; they are not a free
 # choice, and test_catlin_contract_m3.py pins them.
 #
-# ** x is the BRICK FACE, ft(24, 4.625), not the east node line, and that is deliberate. **
+# ** x is the PANEL FACE, ft(24, 1.55), not the east node line, and that is deliberate. **
 # The obvious authoring — nodes on x = 24'-0" with `alignment=face("air-gap-int")`, so the
 # 1" cavity begins exactly on the plane where the wood wall's zip-R face and the stem's
 # exterior EPS face already land (they are deliberately coplanar) — is geometrically right
@@ -158,65 +168,78 @@ WALLS = [
 # ERROR. W-B-BRICK never hits this only because its own node line happens to sit 4.55" off
 # the wall it stands against.
 #
-# Aligning on `face("brick-ext")` off a node line at the brick face says the same thing from
-# the other end and puts the layout line 4 5/8" clear of the tolerance. Back of brick still
-# lands at 24'-1" and the cavity still starts on 24'-0". Nothing in the 40'-7 7/8"
+# Aligning on `face("panel-ext")` off a node line at the panel face says the same thing from
+# the other end and puts the layout line 1.55" clear of the tolerance. Back of sheet lands
+# at 24'-1 1/2" and the cavity starts on 24'-0". THE 1-1/2" CAVITY IS PART OF THIS: at a 1"
+# cavity the stack is 1.05" thick and the margin over `_axis_match` is five hundredths of an
+# inch. The brick had 4 5/8" of clearance and could not have cared. Nothing in the 40'-7 7/8"
 # breezeway chain is touched — that is a y-axis constraint and this projects on x.
 #
 # ** THE CORNER RETURNS PUSH TWO OF THESE NODES PAST THE ENVELOPE LINE, ON PURPOSE. ** The
-# SE/NE corner returns (BRICK_WALLS below) are their own perpendicular veneer walls running
-# along the south/north faces, each on its own `face("brick-ext")` node line offset 4 5/8"
+# SE/NE corner returns (WAINSCOT_WALLS below) are their own perpendicular walls running
+# along the south/north faces, each on its own `face("panel-ext")` node line offset 1.55"
 # off ITS OWN envelope line (GARAGE_Y_SOUTH/GARAGE_Y_NORTH) — the same idiom as the east
 # piers, rotated 90 degrees. For the two wythes to actually meet at a real outside corner
 # instead of leaving a gap, the east pier's corner-adjacent node has to sit at the return's
 # offset line too, not at the building's y = GARAGE_Y_SOUTH/GARAGE_Y_NORTH the un-wrapped
-# pier used. N-G-BRICK-S-S and N-G-BRICK-N-N are therefore shared endpoints: the corner of
+# pier used. N-G-WAIN-S-S and N-G-WAIN-N-N are therefore shared endpoints: the corner of
 # the pier AND the corner of its return. Neither is `open_end` any more — a corner joining
 # two wall segments is not a dead end, and the two true dead ends left are each return's own
 # west tip.
-BRICK_NODES = [
-    Node(uid="9XGFXC1W6Y", tag="N-G-BRICK-S-S",
-         position=pt(ft(24, 4.625), ft(40, 4))),
-    Node(uid="1AVRM4GDPB", tag="N-G-BRICK-S-N", position=pt(ft(24, 4.625), ft(44, 8.625)),
+WAINSCOT_NODES = [
+    Node(uid="9XGFXC1W6Y", tag="N-G-WAIN-S-S",
+         position=pt(ft(24, 1.55), ft(40, 7.075))),
+    Node(uid="1AVRM4GDPB", tag="N-G-WAIN-S-N", position=pt(ft(24, 1.55), ft(44, 8.625)),
          open_end=True),
-    Node(uid="SDYMFBKVJ6", tag="N-G-BRICK-N-S", position=pt(ft(24, 4.625), ft(60, 8.625)),
+    Node(uid="SDYMFBKVJ6", tag="N-G-WAIN-N-S", position=pt(ft(24, 1.55), ft(60, 8.625)),
          open_end=True),
-    Node(uid="ESY1X83CXW", tag="N-G-BRICK-N-N",
-         position=pt(ft(24, 4.625), ft(65, 1.25))),
-    Node(uid="H4KBZK98W6", tag="N-G-BRICK-SRET-W", position=pt(ft(20, 4.625), ft(40, 4)),
+    Node(uid="ESY1X83CXW", tag="N-G-WAIN-N-N",
+         position=pt(ft(24, 1.55), ft(64, 10.175))),
+    Node(uid="H4KBZK98W6", tag="N-G-WAIN-SRET-W", position=pt(ft(20, 1.55), ft(40, 7.075)),
          open_end=True),
-    Node(uid="K3JVR3JJF1", tag="N-G-BRICK-NRET-W", position=pt(ft(20, 4.625), ft(65, 1.25)),
+    Node(uid="K3JVR3JJF1", tag="N-G-WAIN-NRET-W", position=pt(ft(20, 1.55), ft(64, 10.175)),
          open_end=True),
 ]
 
-# Absolute elevations, off a garage grade of -2'-10". THE UNITS STAND ON END — Glen-Gery
-# Columbia Roman Maximus set as a SOLDIER, so the 23 5/8" length is the vertical dimension
-# and the 1 5/8" width is the face width. The 3 5/8" bed depth is still the wythe, so
-# nothing outboard of the stem moves (see plan/assemblies.py's GARAGE_BRICK_LEDGE_RISE).
-# The vertical module is 23 5/8" + 3/8" joint == 24", and the horizontal one is 1 5/8" +
-# 3/8" == 2" — exactly the old course module, rotated.
+# Absolute elevations, off a garage grade of -2'-10". ONE UNCUT 48" SHEET IS THE WHOLE
+# DIMENSIONAL ARGUMENT, in both directions:
 #
-#     -2'-8"  shelf / brick-ledge top    tie row 1 (ICF), through-wall flashing + weeps
-#             3/8" setting bed + 23 5/8" soldier
-#     -0'-8"  bed joint                  tie row 2 (wood backing — needs blocking)
-#             3/8" bed + 23 5/8" soldier
-#     +1'-4"  top of brick               tie row 3 (wood backing), second through-wall flash
+#   HEIGHT — stock flat sheet is 48" x 120". Bottom hem 2" BELOW grade, top of sheet 46"
+#   above it: 48" of material, ~2" of it going into the top and bottom hems that are what
+#   keep a smooth sheet flat. The cap then tops out at a round 4'-0" above grade.
+#
+#   GIRTH — a pier's face is 49 9/16" (the 4'-0" door offset plus the 1.55" stretch out to
+#   the corner point where its return meets it) and its return is 48", so the developed
+#   girth around the corner is 97 9/16" plus end hems, inside the 120" length with ~20" of
+#   drop. It was 100 5/8" under the brick, whose 4 5/8" wythe made a longer pier face; the
+#   thinner assembly bought margin here rather than spending it. ONE SHEET PER PIER,
+#   BRAKE-BENT AT THE CORNER, NO CORNER JOINT. That is the reason this detail is worth
+#   building and it is the first thing to protect if any dimension here is ever revisited.
+#
+#     -3'-0"  hemmed bottom drip, 2" below grade — the buried inch seals the termination
+#             instead of leaving a lip for water to stand on
+#     -1'-0"  garage storey datum: ~22" of sheet stands off the ICF stem below this line
+#             and ~24" off the wood wall above it. The BACKING changes here and the sheet
+#             does not care — unlike the brick, which needed a different tie either side.
+#     +1'-0"  top of sheet, 46" above grade
 #             2" metal cap flashing
-#     +1'-6"  top of cap == 4'-4" above grade
+#     +1'-2"  top of cap == a round 4'-0" above grade
 #
-# TWO WHOLE UNITS AND NO CUT COURSE IS WHY THE CAP MOVED OFF 4'-0". Only 44" of the old 4'-0"
-# was brick and only 40" of that was field, so a 48" pair of soldiers does not fit under a
-# 4'-0" cap: holding the old anchor would have meant sawing one course to 15 5/8" in a
-# special-order handmade unit. The sloped rowlock cap went with it — a rowlock is itself a
-# horizontal on-edge course and reads as a stripe across an all-vertical field, and the
-# formed metal cap already provides the wash. The shelf did NOT move: it is still one unit
-# bed height (2") above finish grade.
+# THE BRICK CAPPED AT 4'-4" AND THIS CAPS AT 4'-0", WHICH IS NOT A LOSS OF COVERAGE. The
+# brick started 2" ABOVE grade on its shelf (48" of brick, grade+2" to grade+50"); this
+# starts 2" BELOW it. Wetted height is 48" either way and the vulnerable bottom edge is now
+# under the splash line rather than sitting in it.
 #
-# The shelf sits above finish grade rather than at it — the cheapest durability move there
-# is, lifting the base of the brick clear of the worst splash and snow-contact zone.
-WAINSCOT_LEDGE_TOP = inch(-32.0)       # -2'-8": the shelf, and the base of the soldiers
-WAINSCOT_BRICK_TOP = inch(16.0)        # +1'-4": top of the second soldier course
-WAINSCOT_CAP_TOP = inch(18.0)          # +1'-6" == 4'-4" above grade
+# THE STEM STAYS AT 22" AND MUST NOT BE RAISED TO CARRY THIS. `GARAGE_STEM_REVEAL` IS the
+# garage storey datum — the wood walls bear on the stem top — so raising it lifts the
+# plates, the trusses, the ridge, the window sills and the service door's step count, and
+# breaks test_garage_overhead_door_opens_from_the_slab_at_grade. The 22" is not an
+# unreinforced-concrete rule either: IRC Table R404.1.4.2 caps ICF stem height at 8'-0" and
+# R403 sets a 6" MINIMUM exposure, and 22" is an owner goal inside that window. A hung metal
+# sheet needs no bearing at all, so nothing here wants a taller stem.
+WAINSCOT_BASE = inch(-36.0)            # -3'-0" == 2" BELOW grade: the hemmed bottom drip
+WAINSCOT_PANEL_TOP = inch(12.0)        # +1'-0" == 46" above grade: top of sheet
+WAINSCOT_CAP_TOP = inch(14.0)          # +1'-2" == a round 4'-0" above grade
 
 # ** AUTHORED NORTH NODE -> SOUTH NODE, and nothing will catch a flip. ** A lone component
 # with no closed loop gets UNRECOVERABLE_WINDING_OUTWARD_SIGN = 1.0
@@ -233,18 +256,14 @@ WAINSCOT_CAP_TOP = inch(18.0)          # +1'-6" == 4'-4" above grade
 # FoundationWall elevations are ABSOLUTE and replace the storey z entirely
 # (resolve/topology.py), which is exactly what lets the wainscot cross the garage datum at
 # -1'-0" — ~19 3/8" of it backs onto the ICF stem and ~28 5/8" onto the wood wall above.
-# THE BACKING CHANGES AND SO DO THE TIES, AND THE SOLDIER COURSING IS WHAT MAKES THE TIES
-# HARD: bed joints exist ONLY at -2'-8", -0'-8" and +1'-4", so the vertical tie spacing is
-# fixed at 24" — IRC R703.8.4's maximum — and 2.67 sf per tie then forces 16" HORIZONTAL,
-# which 24" o.c. studs cannot give. Flat 2x6 blocking in the stud bays at the two joints
-# above the datum buys that spacing without restudding the wall; below the datum the ICF's
-# webs already allow any horizontal station. Corrugated ties throughout (the brick back is
-# within 1" of framing behind the 5/8" CDX), ICF ties at the shelf. `unbalanced_fill=ft(0)` keeps
-# `structural.foundation_unbalanced_fill` quiet, as W-B-BRICK does — this wythe retains no
-# soil.
+# The backing changes across it — ~22" of sheet stands off the ICF stem and ~24" off the
+# wood wall — and unlike the brick, WHICH NEEDED A DIFFERENT TIE EITHER SIDE OF THAT LINE,
+# a hung sheet does not care: the KDAT furring spans the joint and the fixing schedule is
+# one schedule. `unbalanced_fill=ft(0)` keeps `structural.foundation_unbalanced_fill` quiet,
+# as W-B-BRICK does — this band retains no soil.
 #
 # THE RETURNS ARE THEIR OWN SEGMENTS, JOINED AT A SHARED NODE, NOT A CONTINUOUS CHAIN
-# THROUGH THE CORNER. Each return has its own `face("brick-ext")` alignment off its own
+# THROUGH THE CORNER. Each return has its own `face("panel-ext")` alignment off its own
 # envelope line, exactly like the piers — a wall's `alignment` answers "which face lands on
 # MY node line," and a single wall cannot carry two different answers for two different
 # faces meeting at a right angle. The resolver does not attempt an outside-corner miter
@@ -253,7 +272,7 @@ WAINSCOT_CAP_TOP = inch(18.0)          # +1'-6" == 4'-4" above grade
 # why). What SHARING the node buys is only that both wythes terminate at the same point in
 # space rather than leaving a gap; a hairline reveal or a slightly proud corner at the miter
 # is the honest result of two independently-extruded prisms meeting there, the same class of
-# simplification as BRICK_CAP_FLASHING's one-turn-down limitation below. Confirm the corner
+# simplification as WAINSCOT_CAP_FLASHING's one-turn-down limitation below. Confirm the corner
 # reads acceptably in the viewer; do not chase sub-inch miter perfection into the resolver.
 #
 # Direction picks the interior side exactly as the piers' own note explains
@@ -265,35 +284,35 @@ WAINSCOT_CAP_TOP = inch(18.0)          # +1'-6" == 4'-4" above grade
 # by the same solve, d = (1, 0), i.e. west -> corner (west to east) — the OPPOSITE order
 # from the south return, because the corner node is now the wall's END rather than its
 # START. Both are internally consistent; do not "fix" them to match each other.
-BRICK_WALLS = [
-    FoundationWall(uid="7X5HA9829P", tag="W-G-BRICK-S", start_node="N-G-BRICK-S-N",
-                   end_node="N-G-BRICK-S-S", assembly="GARAGE_BRICK_WAINSCOT",
-                   alignment=face("brick-ext"), unbalanced_fill=ft(0),
-                   top_elevation=WAINSCOT_BRICK_TOP,
-                   bottom_elevation=WAINSCOT_LEDGE_TOP),
-    FoundationWall(uid="SG7W4PEBAJ", tag="W-G-BRICK-N", start_node="N-G-BRICK-N-N",
-                   end_node="N-G-BRICK-N-S", assembly="GARAGE_BRICK_WAINSCOT",
-                   alignment=face("brick-ext"), unbalanced_fill=ft(0),
-                   top_elevation=WAINSCOT_BRICK_TOP,
-                   bottom_elevation=WAINSCOT_LEDGE_TOP),
-    FoundationWall(uid="K6G7Q6B2AN", tag="W-G-BRICK-SRET", start_node="N-G-BRICK-S-S",
-                   end_node="N-G-BRICK-SRET-W", assembly="GARAGE_BRICK_WAINSCOT",
-                   alignment=face("brick-ext"), unbalanced_fill=ft(0),
-                   top_elevation=WAINSCOT_BRICK_TOP,
-                   bottom_elevation=WAINSCOT_LEDGE_TOP),
-    FoundationWall(uid="TS0TKQF3BM", tag="W-G-BRICK-NRET", start_node="N-G-BRICK-NRET-W",
-                   end_node="N-G-BRICK-N-N", assembly="GARAGE_BRICK_WAINSCOT",
-                   alignment=face("brick-ext"), unbalanced_fill=ft(0),
-                   top_elevation=WAINSCOT_BRICK_TOP,
-                   bottom_elevation=WAINSCOT_LEDGE_TOP),
+WAINSCOT_WALLS = [
+    FoundationWall(uid="7X5HA9829P", tag="W-G-WAIN-S", start_node="N-G-WAIN-S-N",
+                   end_node="N-G-WAIN-S-S", assembly="GARAGE_METAL_WAINSCOT",
+                   alignment=face("panel-ext"), unbalanced_fill=ft(0),
+                   top_elevation=WAINSCOT_PANEL_TOP,
+                   bottom_elevation=WAINSCOT_BASE),
+    FoundationWall(uid="SG7W4PEBAJ", tag="W-G-WAIN-N", start_node="N-G-WAIN-N-N",
+                   end_node="N-G-WAIN-N-S", assembly="GARAGE_METAL_WAINSCOT",
+                   alignment=face("panel-ext"), unbalanced_fill=ft(0),
+                   top_elevation=WAINSCOT_PANEL_TOP,
+                   bottom_elevation=WAINSCOT_BASE),
+    FoundationWall(uid="K6G7Q6B2AN", tag="W-G-WAIN-SRET", start_node="N-G-WAIN-S-S",
+                   end_node="N-G-WAIN-SRET-W", assembly="GARAGE_METAL_WAINSCOT",
+                   alignment=face("panel-ext"), unbalanced_fill=ft(0),
+                   top_elevation=WAINSCOT_PANEL_TOP,
+                   bottom_elevation=WAINSCOT_BASE),
+    FoundationWall(uid="TS0TKQF3BM", tag="W-G-WAIN-NRET", start_node="N-G-WAIN-NRET-W",
+                   end_node="N-G-WAIN-N-N", assembly="GARAGE_METAL_WAINSCOT",
+                   alignment=face("panel-ext"), unbalanced_fill=ft(0),
+                   top_elevation=WAINSCOT_PANEL_TOP,
+                   bottom_elevation=WAINSCOT_BASE),
 ]
 
 # The cap is the durability crux and the thing not to value-engineer away: a 4' wainscot
 # that stops mid-wall is a HORIZONTAL TERMINATION, and that is where these details fail in a
 # freeze-thaw climate. Formed metal cap flashing with a drip edge straight onto the flat top
-# of the soldier field (there is no rowlock course under it any more — see
-# WAINSCOT_BRICK_TOP), in the house's one exterior dark (#1c1f24), which every other
-# envelope metal shares.
+# of the hemmed top of the
+# sheet, in the house's one exterior dark (#1c1f24) — which the sheet itself now also wears,
+# so cap and field are one colour and one metal.
 #
 # `DRIP_FLASHING` resolves as a bent angle — a flat leg with a turn-down at the outboard end
 # — which is precisely this. `thickness` is the projection out from the edge (over the
@@ -307,26 +326,32 @@ BRICK_WALLS = [
 # invent a new TrimKind for it.
 #
 # The paths run north->south to match their walls. `thickness` is the flat leg's full
-# width and it is CENTRED ON THE PATH, so the path is NOT the brick face: it is the
-# mid-line of what the cap has to cover, which is the whole 4 5/8" of cavity + wythe
-# (24'-0" to 24'-4 5/8") plus about 1" of throw past the face — 5 5/8" spanning 24'-0" to
-# 24'-5 5/8", whose middle is 24'-2 13/16". Run on the brick face instead, the cap would
-# hang 2 3/4" out in the air and leave the cavity's back open.
-# `Flashing` carries no `source=` field, so the rest of the specification lives here: a
-# second through-wall flashing under the cap, and through-wall flashing + weeps at 33" o.c.
-# max at the BASE course on the ledge (IRC R703.8) — with only 4'-0" of wall each side that
-# is a weep near each end. Both are also recorded in the house CLAUDE.md.
+# width and it is CENTRED ON THE PATH, so the path is NOT the panel face: it is the
+# mid-line of what the cap has to cover, which is the whole 1.55" of cavity + sheet
+# (24'-0" to 24'-1.55") plus about 1" of throw past the face — 2.55" spanning 24'-0" to
+# 24'-2.55", whose middle is 24'-1 9/32" (ft(24, 1.275)). Run on the panel face instead,
+# the cap would hang out in the air and leave the cavity's back open. Both numbers came
+# down with the wythe: 5 5/8" and 24'-2 13/16" were the brick's.
+#
+# `Flashing` carries no `source=` field, so the rest of the specification lives here, and
+# ONE ITEM OF IT IS A CORROSION RULE RATHER THAN A WATER ONE: the corrugated panel above is
+# 26 ga PVDF-coated STEEL and this wainscot is ALUMINIUM, so the cap and the Z-flash behind
+# it must both be ALUMINIUM, and the two panels must never lap metal-to-metal — sealant or
+# EPDM between, the Z's upper leg behind the corrugated. In a salted splash zone that
+# contact line is where the detail fails. Nothing in the engine grades dissimilar metals.
+# The brick's base and cap through-wall flashings and its weeps are gone with the wythe;
+# what replaces them is a vented closure at the sheet's bottom hem and a solid closure under
+# the cap, priced with the garage's other closures as an allowance.
 #
 # `back_side="right"`: the paths run north->south, d = (0, -1), so the LEFT-hand normal
 # `normal(d) = (-dy, dx)` points EAST. The building is west of these runs, so the back is
 # the right-hand side and the drip's turn-down hangs off the east (outboard) end, throwing
-# water clear of the brick instead of back at it.
+# water clear of the wainscot instead of back at it.
 #
-# `depth=inch(2.0)`: the gap between the top of brick and the flashing's own top elevation,
-# i.e. the height of the cap's visible face. It survived the move to soldier coursing
-# unchanged — both WAINSCOT_BRICK_TOP and WAINSCOT_CAP_TOP rose 4" together (see their
-# comments) — but it is still a metal detail sized to close the budget above the brick, not
-# a fixed manufactured dimension.
+# `depth=inch(2.0)`: the gap between the top of sheet and the flashing's own top elevation,
+# i.e. the height of the cap's visible face. It has survived the soldier coursing and now
+# the metal swap unchanged, but it is still a metal detail sized to close the budget above
+# the wainscot, not a fixed manufactured dimension.
 #
 # The returns get the same cap, run along their own walls (east-west, not north-south), so
 # their centreline and back_side derivations mirror the piers' from the OTHER axis: the
@@ -337,22 +362,22 @@ BRICK_WALLS = [
 # each return's own envelope line (GARAGE_Y_SOUTH/GARAGE_Y_NORTH), projected outward
 # (south/north) instead of the piers' east, and the path's x-run is the return's envelope
 # span (24' corner to 20' tip) rather than the piers' envelope y-run.
-BRICK_CAP_FLASHING = [
-    Flashing(uid="91QT40BPXE", tag="TR-G-BRICK-CAP-S", kind=TrimKind.DRIP_FLASHING,
-             path=(pt(ft(24, 2.8125), ft(44, 8.625)), pt(ft(24, 2.8125), ft(40, 8.625))),
-             top_elevation=WAINSCOT_CAP_TOP, depth=inch(2.0), thickness=inch(5.625),
+WAINSCOT_CAP_FLASHING = [
+    Flashing(uid="91QT40BPXE", tag="TR-G-WAIN-CAP-S", kind=TrimKind.DRIP_FLASHING,
+             path=(pt(ft(24, 1.275), ft(44, 8.625)), pt(ft(24, 1.275), ft(40, 8.625))),
+             top_elevation=WAINSCOT_CAP_TOP, depth=inch(2.0), thickness=inch(2.55),
              material="metal-dark-exterior", back_side="right"),
-    Flashing(uid="HJEFTKKFG6", tag="TR-G-BRICK-CAP-N", kind=TrimKind.DRIP_FLASHING,
-             path=(pt(ft(24, 2.8125), ft(64, 8.625)), pt(ft(24, 2.8125), ft(60, 8.625))),
-             top_elevation=WAINSCOT_CAP_TOP, depth=inch(2.0), thickness=inch(5.625),
+    Flashing(uid="HJEFTKKFG6", tag="TR-G-WAIN-CAP-N", kind=TrimKind.DRIP_FLASHING,
+             path=(pt(ft(24, 1.275), ft(64, 8.625)), pt(ft(24, 1.275), ft(60, 8.625))),
+             top_elevation=WAINSCOT_CAP_TOP, depth=inch(2.0), thickness=inch(2.55),
              material="metal-dark-exterior", back_side="right"),
-    Flashing(uid="Z91V9H686X", tag="TR-G-BRICK-CAP-SRET", kind=TrimKind.DRIP_FLASHING,
-             path=(pt(ft(24), ft(40, 5.8125)), pt(ft(20), ft(40, 5.8125))),
-             top_elevation=WAINSCOT_CAP_TOP, depth=inch(2.0), thickness=inch(5.625),
+    Flashing(uid="Z91V9H686X", tag="TR-G-WAIN-CAP-SRET", kind=TrimKind.DRIP_FLASHING,
+             path=(pt(ft(24), ft(40, 7.35)), pt(ft(20), ft(40, 7.35))),
+             top_elevation=WAINSCOT_CAP_TOP, depth=inch(2.0), thickness=inch(2.55),
              material="metal-dark-exterior", back_side="right"),
-    Flashing(uid="YRF9848XRM", tag="TR-G-BRICK-CAP-NRET", kind=TrimKind.DRIP_FLASHING,
-             path=(pt(ft(20), ft(64, 11.4375)), pt(ft(24), ft(64, 11.4375))),
-             top_elevation=WAINSCOT_CAP_TOP, depth=inch(2.0), thickness=inch(5.625),
+    Flashing(uid="YRF9848XRM", tag="TR-G-WAIN-CAP-NRET", kind=TrimKind.DRIP_FLASHING,
+             path=(pt(ft(20), ft(64, 9.9)), pt(ft(24), ft(64, 9.9))),
+             top_elevation=WAINSCOT_CAP_TOP, depth=inch(2.0), thickness=inch(2.55),
              material="metal-dark-exterior", back_side="right"),
 ]
 
@@ -363,10 +388,10 @@ BRICK_CAP_FLASHING = [
 # it cuts 9 stud lines where 8 would do — `structural.door_framing_module` reports it and
 # names 11'-0"/13'-0" as the nearest legal centres.
 # It is not taken. This constant is not just the door's offset: params/foundations.py gaps
-# the ICF stem into a grade beam on it, and W-G-BRICK-S/N stand on the stem segments that
+# the ICF stem into a grade beam on it, and W-G-WAIN-S/N stand on the stem segments that
 # leaves, so the piers' JAMB-TO-CORNER span IS this number and their inboard ends ARE the
 # door jambs (houses/catlin/CLAUDE.md, and
-# test_garage_brick_wainscot_piers_are_the_door_jambs_and_cap_at_four_feet asserts it).
+# test_garage_wainscot_piers_are_the_door_jambs_and_cap_at_four_feet asserts it).
 # Moving the door 12" north makes the two piers flanking it 5'-0" and 3'-0" where they are
 # 4'-0" and 4'-0" today: a visibly asymmetric masonry wainscot on the garage's main facade,
 # bought with one stud. Recorded as a decided advisory in preferences.toml's `[checks]
@@ -636,6 +661,6 @@ RAILINGS = [
             graspable_profile="1.5in round — Type I"),
 ]
 
-ELEMENTS = [*NODES, *BRICK_NODES, *WALLS, *BRICK_WALLS, *OPENINGS, *ROOMS, *ROOFS,
+ELEMENTS = [*NODES, *WAINSCOT_NODES, *WALLS, *WAINSCOT_WALLS, *OPENINGS, *ROOMS, *ROOFS,
             _GARAGE_LEADER, *SNOW_GUARDS, *ALARMS, *STAIRS, *RAILINGS,
-            *BRICK_CAP_FLASHING]
+            *WAINSCOT_CAP_FLASHING]

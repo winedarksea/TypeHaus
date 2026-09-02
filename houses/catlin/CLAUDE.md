@@ -1341,112 +1341,118 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   - **`GARAGE_WALL_WIND_CLAMPS` survives as an empty list**, and `standing-seam-nailstrip-26`
     and `zip-r` keep their price rows at 0 — the `glazed-green-brick` convention. The revert
     is layer material refs plus re-authoring sixteen constructors.
-- **The garage's east elevation carries a 4'-4" off-white brick wainscot laid SOLDIER — units
-  on end — wrapped 4'-0" further
-  around each of the SE/NE corners onto the south and north walls, and the cap
-  flashing is the part not to value-engineer away.** The two 4'-0" strips of wall flanking
-  the 16' overhead door — plus the two corner returns — are the most-abused surface on the
-  building — apron splash, snow piled off the drive, trimmers, car doors — so they get full
-  3 5/8" face brick: Glen-Gery **Columbia Roman Maximus**
-  (glengery.com/brick-catalog/columbia-roman-maximus), 3 5/8" x 1 5/8" x 23 5/8", ASTM C216
-  **Grade SW Type FBA**, through-body single body; a chip exposes the same colour, and
-  Grade SW is not optional at 40+ freeze-thaw cycles a year. It was the **Black** colourway
-  of the same unit before; Columbia is off-white/ivory and is the same body,
-  size and grade, so the swap moved three things and nothing else — the `Material`'s
-  `color`, the `MasonryStyle.base` in ui/src/three/materials.ts, and the `_FINISH_BASE` entry
-  in emit/gltf/palette.py. The `finish` key names the UNIT GEOMETRY, not a colourway, so it
-  did not move for the colour swap; the mortar in the viewer's recipe did, because a tan
-  joint is invisible against an off-white brick. It DID move when the units stood up
-  (2026-09-02) — "roman-maximus-brick" to **"roman-maximus-soldier"**, a new
-  `MasonryStyle`/`_FINISH_BASE` pair sharing the same colour. Not thin brick, so real
-  bearing: `W-GF-E1`/`W-GF-E2`/`W-GF-S3`/`W-GF-N2` are formed with a mid-stack ICF
-  brick-ledge block (`GARAGE_ICF_6_BRICKLEDGE`), and the veneer itself is its own short
-  wall per side (`W-G-BRICK-S`/`-N`/`-SRET`/`-NRET`, `GARAGE_BRICK_WAINSCOT`) standing in
-  front of the existing one, exactly `W-B-BRICK`'s precedent.
-  - **The 4'-0" pier widths are not a free choice.** The two EAST stem segments exist only
+- **The garage's east elevation carries a 4'-0" charcoal-dark aluminium wainscot, ONE UNCUT
+  SHEET PER CORNER, and the sheet size is the design.** The two 4'-0" strips of wall
+  flanking the 16' overhead door, wrapped 4'-0" further around each of the SE/NE corners
+  onto the south and north walls, are the most-abused surface on the building — apron
+  splash, snow piled off the drive, trimmers, car doors. **It was 4'-4" of Glen-Gery
+  Columbia Roman Maximus soldier brick until 2026-09-02.**
+  - **WHY IT LEFT BRICK, and it is not cost.** The driveway apron is plowed and salted, and
+    brick is the ABSORPTIVE choice in the one place on the site chloride slush is thrown at
+    the wall. Grade SW Type FBA survives the freeze-thaw, but salt enters the mortar and the
+    base course by capillarity and returns as subflorescence, and a wainscot's own base is
+    the classic place that shows. Painted aluminium takes none of it in and its oxide film
+    re-forms in chloride. Measured line-to-line the whole change is a WASH — **-$213 to
+    +$21** on the construction subtotal — because the brick's saving pays for the ICF
+    protection band below, which was new scope. Do not re-open this as a cost decision in
+    either direction.
+  - **What the swap DELETED is most of the argument**, and none of it is billed anywhere
+    now: the mid-stack ICF brick-ledge form (`GARAGE_ICF_6_BRICKLEDGE`, 2.42 cy), the
+    20" -> 24" footing widening on four stem segments, through-wall flashing and weeps at
+    the base, a second through-wall flashing under the cap, corrugated ties in three bed
+    joints at a 16" o.c. horizontal spacing the wall's 24" o.c. studs could not give, and
+    the ~8 lf per pier of flat 2x6 tie blocking bought to reach that spacing. It also
+    deleted a `condition_gates` key: the stem is ONE construction end to end again, so
+    `assembly_change:GARAGE_ICF_6|GARAGE_ICF_6_BRICKLEDGE` is gone from
+    `test_condition_gates.py` and three detail goldens went with it.
+  - **THE STOCK SHEET IS 48" x 120" AND BOTH DIMENSIONS ARE LOAD-BEARING.** Vertically the
+    band is 48": a hemmed drip **2" BELOW grade** to a top 46" above it, capped at a round
+    **4'-0"**. Horizontally the developed girth is the pier face (49 9/16" — the 4'-0" door
+    offset plus the 1.55" stretch to the corner point) plus its 48" return = **97 9/16"**,
+    inside 120" with ~20" for end hems. **That is ONE SHEET PER PIER, BRAKE-BENT AT THE
+    CORNER, WITH NO CORNER JOINT**, and it is the thing to protect if any dimension here is
+    revisited. `test_catlin_contract_m3.py::test_garage_wainscot_piers_are_the_door_jambs_and_cap_at_four_feet`
+    pins both directions, girth included.
+  - **The brick capped at 4'-4" and this caps at 4'-0", which is NOT less coverage.** The
+    brick stood on a shelf 2" ABOVE grade (48" of brick, grade+2" to grade+50"); this starts
+    2" BELOW it. Wetted height is 48" either way and the vulnerable bottom edge is now under
+    the splash line instead of sitting in it.
+  - **THE STEM STAYS AT 22" AND IS NOT THE LEVER.** `GARAGE_STEM_REVEAL` IS the garage
+    storey datum, so raising it lifts plates, trusses, ridge, window sills and the service
+    door's step count and breaks
+    `test_garage_overhead_door_opens_from_the_slab_at_grade`; raising it only at the piers
+    puts a 48" concrete curb inside the garage and splits `W-G-E` three ways. The 22" is not
+    an unreinforced-concrete rule either — IRC Table R404.1.4.2 is an 8'-0" MAXIMUM and R403
+    a 6" MINIMUM, and 22" is an owner goal inside that window. A veneer needs a LEDGE, not a
+    stem, and hung sheet needs neither.
+  - **1.5" OF CAVITY, AND 1" WOULD NOT DO.** `GARAGE_METAL_WAINSCOT` is `air-gap` 1.5" +
+    `panel` 0.05" = **1.55"**, on vertical KDAT furring (12" o.c. through the lower band,
+    16" above), concealed cleats, hemmed top and bottom, #9 316 stainless gasketed perimeter
+    fixing. The wainscot stands in front of the stem as its own wall, so its layout line has
+    to clear the stem's and the wood wall's by more than `resolve/stacking.py::_axis_match`'s
+    1/2" tolerance or `integrity.stack_ambiguous` is a hard ERROR. At a 1" cavity the stack
+    is 1.05" and the margin is five hundredths of an inch. The brick had 4 5/8" and could
+    not have cared.
+  - **THERE IS NO BACKER SHEET AND THAT WAS DECIDED, NOT FORGOTTEN.** The stem's exterior
+    EPS face and the wood wall's CDX face are coplanar, so this band stands off one flat
+    plane — which is what makes a SMOOTH sheet buildable at all. The lower ~22" of that
+    plane is soft bead foam in the shovel zone, so a rigid board over it is the first
+    instinct. Wrong lever: the sheet spans the furring and never touches the foam, so dent
+    resistance is GAUGE and FURRING SPACING. 0.040" min / **0.050" preferred**, never 0.019"
+    trim coil, which takes a permanent dimple from a shovel corner.
+  - **THE ONE NEW RULE IS A CORROSION RULE, AND NO CHECK GRADES IT.** `corrugated-panel-26`
+    above this band is 26 ga PVDF-coated **steel**; this is **aluminium**. The cap flashing
+    and the Z-flash behind it must BOTH be aluminium, and the two panels must never lap
+    metal-to-metal — sealant or EPDM between, the Z's upper leg behind the corrugated. In a
+    salted splash zone that contact line is where the detail fails. Separately: **aluminium
+    must never touch concrete or fresh mortar**, because alkali strips its oxide film.
+  - **`STRUCTURE`, not `CLADDING`, on the panel layer**, the brick wythe's own reasoning:
+    the sheet has nothing behind it IN THIS ASSEMBLY (the backer is a different wall), so it
+    has to be the structure layer or `integrity.assembly_layers` finds none. That is also
+    what keeps it pricing on a `[wall_structure]` key by assembly tag, where the brick
+    priced, instead of migrating into `[envelope_layers]` mid-swap.
+  - **`aluminum-flat-pvdf` SHARES `metal-dark-exterior`'s `#1c1f24` and declares NO
+    `finish`.** A distinct charcoal gray costs a new `Material` plus ~5 hand-kept renderer
+    registrations, each of which falls through silently if missed (the `board-batten-24`
+    precedent). Near-black is the house's one exterior dark and is already what this
+    wainscot's own cap flashings wear, so cap and field are one colour and one metal.
+    Charcoal Gray is a stock colour at the supplier and stays a one-word swap.
+  - **NO ALUMINIUM ITEM MAY BORROW A STEEL PRICE ROW.** Every panel rate in `prices.toml`
+    — `board-batten-24`, `corrugated-panel-26`, `pbr-panel-26`, the whole standing-seam
+    family — is painted STEEL, and painted aluminium runs well above it per SF. Both new
+    rows (`GARAGE_METAL_WAINSCOT` in `[wall_structure]`, `aluminum-flat-pvdf` in
+    `[envelope_layers]`) are **placeholders pending a real quote** and are the one number in
+    this change a supplier should govern. Brake time, not material, is the big half.
+  - **The two outside corners (SE, NE) are two independently-extruded prisms meeting at a
+    shared node, not a mitred solid.** Each pier's corner-adjacent node sits on its return's
+    own offset line so the two physically meet rather than gapping, and the shared node is
+    not `open_end` (a corner is not a dead end — the true dead ends are each return's west
+    tip). The resolver has no outside-corner miter for two open-ended `FoundationWall`s
+    sharing an endpoint (that exists for closed LOOPS only, and this component is
+    deliberately open). A hairline reveal is the honest model result; **the BUILT corner is
+    a brake bend and has no joint at all**, which is the one place model and building
+    deliberately disagree. Confirm it reads acceptably in the viewer rather than chasing
+    sub-inch miter perfection into the resolver.
+  - **The 4'-0" pier widths are not a free choice.** The two east stem segments exist only
     because the stem drops to a grade beam under the door, so their width IS
-    `OVERHEAD_DOOR_OFFSET` and their inboard ends ARE the door jambs. Moving the door
-    moves the brick. Held by
-    `test_catlin_contract_m3.py::test_garage_brick_wainscot_piers_are_the_door_jambs_and_cap_at_four_four`.
-    The two corner returns ARE a free choice (4'-0" was simply the requested return length)
-    and carry no such constraint.
-  - **The units stand on END: a SOLDIER field, two whole courses, no cut brick.** The
-    23 5/8" length is vertical and the 1 5/8" width is the face width, so the wall reads as a
-    fine vertical pinstripe on a **2" horizontal module** — the old course module, rotated —
-    with a **24" vertical module** (23 5/8" + 3/8" joint). Off grade at -2'-10": shelf top 2"
-    (-2'-8"), soldier course 24" (-0'-8"), soldier course 24" (+1'-4"), metal cap flashing
-    2" — **top of cap 4'-4" above grade**, 48" of brick on a 48" stack.
-  - **SOLDIER, NOT SAILOR, AND THAT IS A CODE LINE.** Tipping the unit onto its 1 5/8" face
-    to show the broad 3 5/8" face is the more obvious reading of "on edge" and it is not
-    available: it leaves a **1 5/8" wythe**, under IRC R703.8.2's 2 5/8" minimum for anchored
-    masonry veneer and too thin for corrugated-tie embedment (~1 1/2" embedment plus 5/8"
-    mortar cover wants 2 1/8"). **No check in the engine grades veneer thickness**, so it
-    would have shipped at 0 FAIL. On end instead, the 3 5/8" bed depth is still the wythe and
-    NOTHING outboard of the stem moves: the 4 5/8" ledge, the 1" cavity, `BRICK_NODES` at
-    24'-4 5/8", the cap flashing's 5 5/8" thickness and the $/SF basis all hold.
-  - **Why the cap left 4'-0".** Only 44" of the old 4'-0" was brick and only 40" of that was
-    field, so a 48" pair of soldiers does not fit under a 4'-0" cap; holding that anchor
-    would have meant sawing one course to 15 5/8" in a special-order handmade unit. The
-    sloped rowlock cap went in the same move — a rowlock is itself a horizontal on-edge
-    course and reads as a stripe across an all-vertical field, and the formed metal cap
-    already gives the wash it was there for. The shelf did NOT move: it still sits 2" *above*
-    finish grade, which is now just one unit bed height of splash clearance rather than "one
-    course" of anything — the cheapest durability move available, lifting the base of the
-    brick clear of the worst splash and snow-contact zone.
-  - **Horizontal fit.** The 2" module divides each 4'-0" return exactly (24 units). Each
-    pier's brick face is 52 5/8", i.e. 26 units plus 5/8" — take that up across the 26 head
-    joints (~0.024" apiece, invisible), NOT as a sliver cut at a door jamb.
-  - **THE TIES ARE THE HARD PART OF THE SOLDIER SCHEME, AND THE EASIEST THING ON THIS WALL
-    TO GET WRONG.** A tie has to land in a horizontal bed joint, and a soldier field has bed
-    joints ONLY at -2'-8", -0'-8" and +1'-4". That fixes the vertical spacing at 24", which
-    is IRC R703.8.4's maximum rather than a choice, and 2.67 sf per tie then forces **16"
-    o.c. HORIZONTAL** — which the wall's 24" o.c. studs cannot give (24 x 24 = 4.0 sf, 50%
-    over). The old 2" coursing had a bed joint every 2" and bought the same 2.67 sf at
-    16" v x 24" h; that option is gone. **Buy the 16" horizontal with flat 2x6 blocking in
-    the stud bays at the two joints above the datum**, not by restudding the wall — the
-    blocking is 8 lf a pier and the tie can then land anywhere along it. Below the datum the
-    backing is ICF and its webs already allow any horizontal station.
-    The garage storey datum is -1'-0", so ~19 3/8" of brick backs onto the ICF
-    stem and ~28 5/8" onto the wood wall above it. Corrugated ties throughout: they are valid
-    only where the brick back is within 1" of framing, which across the 1.5" Zip-R that used
-    to stand here it was not, but behind the **5/8" CDX** that replaced it it is.
-    ICF ties at the shelf. And the tie row in the TOP bed joint is mandatory, not optional —
-    without it the upper 24" of soldier is a cantilever off the mid-height row.
-  - **The cap is the durability crux.** A wainscot that stops mid-wall is a horizontal
-    termination, and that is where these details fail here. Through-wall flashing + weeps
-    at 33" o.c. max at the base course on the ledge (IRC R703.8 — a weep near each end at
-    this length), a second through-wall flashing under the cap, and a formed metal cap
-    flashing with a **drip edge** in the house's `#1c1f24`, kicked out over the rainscreen
-    above so water leaves the wall instead of tracking behind the cladding. The cap is a
-    modelled `Flashing` per wall (`TR-G-BRICK-CAP-S/N/SRET/NRET`, `TrimKind.DRIP_FLASHING`);
-    the inboard kick-out is not — `DRIP_FLASHING` has only the one outboard turn-down and
-    `TrimKind` has no coping kind. Do not invent one.
-  - **The two outside corners (SE, NE) are two independently-extruded wythes meeting at a
-    shared node, not a mitred solid.** Each pier's corner-adjacent node was moved off the
-    building's envelope line to its return's own offset line so the two wythes physically
-    meet rather than gapping, and the shared node is no longer `open_end` (a corner is not
-    a dead end — the true dead ends are each return's west tip). The resolver has no
-    outside-corner miter treatment for two open-ended `FoundationWall`s sharing an endpoint
-    (that exists for closed wall LOOPS only, and this component is deliberately open — see
-    below). A hairline reveal or a slightly proud corner where the two prisms meet is the
-    honest result; confirm it reads acceptably in the viewer rather than chasing sub-inch
-    miter perfection into the resolver.
-  - The veneer is filed on the **garage** storey, never `basement`. `RM-GARAGE` is
-    unconditioned, so it drops out of the block load cleanly; on `basement` it would read
-    as an envelope foundation wall and silently inflate `building_science.energy_load` and
+    `OVERHEAD_DOOR_OFFSET` and their inboard ends ARE the door jambs. Moving the door moves
+    the wainscot. The two corner returns ARE a free choice (4'-0" was simply the requested
+    return length) and carry no such constraint.
+  - It is filed on the **garage** storey, never `basement`. `RM-GARAGE` is unconditioned, so
+    it drops out of the block load cleanly; on `basement` it would read as an envelope
+    foundation wall and silently inflate `building_science.energy_load` and
     `mep.heating_capacity` instead of erroring. Its nodes are new, local, and mostly
     `open_end=True` (the two shared corner nodes are the exception) — node lookup is
-    storey-scoped and the stem's nodes are filed on `basement`, so a `N-GF-*` reference
+    storey-scoped and the stem's nodes are filed on `basement`, so an `N-GF-*` reference
     would resolve to nothing with no finding at all.
-  - Its layout line runs on the **brick face**, not the node line, and `face("brick-ext")`
-    is why: on the raw envelope line it would sit on top of the stem's and the wood wall's
-    layout lines, inside `_axis_match`'s 1/2" tolerance, and `integrity.stack_ambiguous` is
-    a hard ERROR. Each return uses the same idiom off its OWN envelope line
-    (`GARAGE_Y_SOUTH`/`GARAGE_Y_NORTH`), rotated 90 degrees.
-  - `FT-GF-E1`/`FT-GF-E2`/`FT-GF-S3`/`FT-GF-N2` widened 20" -> 24" and sit **2" outboard**
-    of their un-ledged neighbours: `center_on="wall"` re-centres on the stepped section,
-    ledge band included. Correct, but nothing downstream may be dimensioned off their
-    edges.
+  - Its layout line runs on the **panel face**, not the node line, and `face("panel-ext")`
+    is why — see the 1.5" cavity note above. Each return uses the same idiom off its OWN
+    envelope line (`GARAGE_Y_SOUTH`/`GARAGE_Y_NORTH`), rotated 90 degrees.
+  - **`GARAGE_BRICK_WAINSCOT`, `GARAGE_ICF_6_BRICKLEDGE`, `off-white-brick` and both
+    `_BRICKLEDGE` dicts in `params/foundations.py` are all kept UNREFERENCED** on the
+    `glazed-green-brick` convention. The revert is four `assembly=` edits in
+    `plan/storeys/garage.py` plus its node and elevation constants, four `**_STEM` /
+    `**_GARAGE_FOOTING` swaps in `params/foundations.py`, and re-blessing three goldens.
 - **The garage is white again, and the machinery that briefly made its east wall green is
   worth keeping.** `W-G-E` briefly carried Western States Metal Roofing **"Classic Green"**
   (westernstatesmetalroofing.com/classic-green) nail-strip and was
@@ -1523,13 +1529,33 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     States "Regal Blue". Same product, same substrate, so going blue
     again is a one-word `material=` swap on the FasciaBoard — the same convention
     `glazed-green-brick` and `standing-seam-nailstrip-26-green` are kept under.
-- **The garage ICF stem is boarded above grade, and `code.R316_4` is why.** `GARAGE_ICF_6`
-  carries a 5/8" gypsum layer on its INSIDE face, banded from the `GRADE` datum up — the
-  2.5" of interior EPS stood bare from the slab to the stem top, ~176 SF of foam plastic
-  facing an occupied space. It continues the board `GARAGE_WALL_2X6` already lines with, so
-  it is the same detail, not a new one. Banded, not full height: below grade there is no
-  interior to separate anything from, and a full-height layer would bill board into the
-  soil.
+- **The garage ICF stem is covered on BOTH faces above grade, and the second face was
+  missing until 2026-09-02.** `notes/garage_wall_detail_side.md` has always asked for
+  protective covering on both sides of the exposed EPS; only the inside was built.
+  - INSIDE, `code.R316_4`: a 5/8" gypsum layer banded from the `GRADE` datum up — the 2.5"
+    of interior EPS stood bare from the slab to the stem top, ~176 SF of foam plastic facing
+    an occupied space. It continues the board `GARAGE_WALL_2X6` already lines with, so it is
+    the same detail, not a new one.
+  - OUTSIDE, new: `coil-gap` + `coil-ext`, a PVDF-painted aluminium band (the wainscot's own
+    `aluminum-flat-pvdf`) from **2" below grade** to the stem top, on a **1/4" vented
+    standoff**, fixed with 316 stainless gasketed screws into the ICF webs. 156.2 SF,
+    $781-1,562 — the new scope the wainscot's saving pays for.
+  - **THE STANDOFF IS NOT OPTIONAL AND IT IS NOT ABOUT DRAINAGE.** A painted sheet is
+    **0 perms**. Laid flat on `eps-ext` it is a Class I retarder on the COLD side of the
+    stem, and `building_science.condensation` immediately found a January dew point at the
+    concrete — a crossing against a monthly MEAN, i.e. a plane that runs wet for weeks. That
+    was a real FAIL on the first build of this change, not a modelling artifact. The 1/4"
+    gap restores the outward drying path. Delete it and the FAIL comes straight back.
+  - **It runs BEHIND the east wainscot too**, deliberately: that wainscot is a vented,
+    drained rainscreen open at its base, so water reaches the foam behind it by design and
+    that foam needs the same continuous protection as the foam beside it. The wainscot is a
+    wear layer over this band, not a substitute for it.
+  - Both bands are banded, not full height: below grade there is no interior to separate
+    anything from, and the exterior band's 2" of bury seals its own termination rather than
+    leaving a lip for water to stand on. The band pushes the stem's exterior face 0.30"
+    east, which nicks the "stem and wood wall are coplanar on the outside" promise — inside
+    `_axis_match`'s 1/2" and physically true. **Do not recess the EPS to hold the face
+    still**; that re-opens the old rain shelf.
 - **One exterior dark, `#1c1f24`**, carried by every dark metal element on the
   envelope so they read at one weight: the opening casings, the roof's rake/eave/ridge trim
   coil, the eave water chain (drip edge, box gutter, downspouts), and the guards.

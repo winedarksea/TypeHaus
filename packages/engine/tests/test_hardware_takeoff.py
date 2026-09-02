@@ -151,13 +151,43 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     So the wall line is billed off the resolved BLOCKS rather than off a grid, and this is
     what stops the grid walk from silently re-finding a screwed strip in the stack and
     ordering screws for a wall that needs none.
+
+    **THE GARAGE ICF STEM IS THE ONE EXCEPTION SINCE 2026-09-02, AND IT IS DELIBERATE.**
+    `GARAGE_ICF_6` gained an exterior protection band — a PVDF aluminium sheet on a 1/4"
+    vented standoff over the stem's 2.5" of `eps-ext` — and an AIRGAP outboard of continuous
+    insulation is exactly the signature `exterior_insulation_fastening` reads. The geometry
+    is right and the row should exist: that sheet really is held 2.75" off the concrete by
+    foam and really does need a long anchor. The PART is a proxy, and this is the place that
+    fact is written down — the rule was authored for furring into WOOD STUDS
+    (`minimum_structural_embedment_in = 1.5`), and an ICF has no stud: you fasten to the
+    plastic webs or with a stainless masonry anchor into the core. The engine has no
+    masonry-anchor concept, so quantity and length are usable and the part number is not a
+    purchase instruction.
+
+    The assertion therefore scopes to the WALL AND ROOF THIS TEST IS ABOUT — the truss wall
+    and RF-HOUSE — rather than to the whole model, because "no through-foam screw anywhere"
+    stopped being the true statement and quietly asserting it would have meant either
+    deleting the garage's band or never noticing it had been billed.
     """
     from typehaus.resolve.framing.truss_wall import girt_block_tier
 
     rows = [row for row in hardware_takeoff(catlin_model)
             if row["role"] == ROLE_EXTERIOR_INSULATION_SCREW]
-    assert not [row for row in rows if row["scope"] == "exterior wall furring"], \
+    # ONE "exterior wall furring" row, and it is the garage ICF stem's protection band.
+    # `GARAGE_ICF_6`'s stem walls are filed on the `basement` storey
+    # (params/foundations.py), which is what separates them from the house's truss-wall
+    # storeys — so a row reaching `main`, `second` or `attic` means the truss wall has grown
+    # a screwed strip through foam that nobody designed, which is the thing this test has
+    # always been for.
+    furring = [row for row in rows if row["scope"] == "exterior wall furring"]
+    assert len(furring) == 1, \
+        "only the garage ICF stem's protection band takes a through-foam screw"
+    assert set(furring[0]["by_storey"]) == {"basement"}, \
         "a truss wall has no screwed furring strip — see takeoff/fasteners.py"
+    # 5 in, not the girt wall's 8 in: 2.5 in of eps-ext + a 0.25 in vented standoff + 1.5 in
+    # of embedment = 4.25 in required. The embedment is the rule's WOOD-STUD figure and the
+    # stem has no stud — see this test's docstring on why the part number is a proxy.
+    assert furring[0]["part_number"] == "SDWS22500DB" and furring[0]["size"] == "5 in"
     assert not [row for row in rows if row["scope"] == "roof top deck"], \
         "the nailbase and the 6 in of polyiso it was screwed through are both gone"
 
@@ -184,9 +214,11 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     blocks = sum(1 for w in catlin_model.walls for m in w.members
                  if m.category == "truss_block" and girt_block_tier(m.child_key) is not None)
     assert row["count"] == blocks > 0
-    # And it is the ONLY structural screw this role bills anywhere in the house — the roof's
-    # 581 came out with the nailbase, and the inner tier's took the second wall row with it.
-    assert row["count"] == sum(r["count"] for r in rows) > 0
+    # It is the only structural screw this role bills ON THE HOUSE — the roof's 581 came out
+    # with the nailbase, and the inner tier's took the second wall row with it. The other 224
+    # are the garage ICF stem's protection band (see above), which is a different building.
+    assert row["count"] + furring[0]["count"] == sum(r["count"] for r in rows) > 0
+    assert row["count"] == 1118 and furring[0]["count"] == 224
 
 
 # --- hangers -------------------------------------------------------------------------

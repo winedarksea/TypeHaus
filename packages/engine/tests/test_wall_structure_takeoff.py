@@ -54,12 +54,16 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # of the same pour, and it is what closes the court's structural loop so its two side
     # walls cancel each other's soil thrust (`engineering/retaining_system.py`).
     assert len({tag for row in rows for tag in row["tags"]}) == 41
-    # `off-white-brick` since 2026-08-26, not `black-brick`: the garage wainscot is the
-    # Columbia colourway of the same Glen-Gery Roman Maximus unit, and it wore Black for
-    # part of that day. Same body, same size, same Grade SW Type FBA — a colourway swap, so
-    # the row it bills on moves and its quantity does not.
+    # **`off-white-brick` is GONE since 2026-09-02 and `aluminum-flat-pvdf` is here in its
+    # place.** The garage wainscot was the Columbia colourway of a Glen-Gery Roman Maximus
+    # unit (and wore Black for part of 2026-08-26 before that); it is PVDF-painted aluminium
+    # flat sheet now, because the driveway apron is salted and brick is the absorptive
+    # choice in a chloride splash zone. It is still a MONOLITHIC wall in this table's sense
+    # — a freestanding skin whose panel is the assembly's STRUCTURE layer, exactly as the
+    # wythe was — which is why the swap changes the material here and not the row count.
+    # `off-white-brick` and GARAGE_BRICK_WAINSCOT are both kept unreferenced for the revert.
     assert {row["material"] for row in rows} == {
-        "concrete", "retaining-block", "brown-brick", "off-white-brick",
+        "concrete", "retaining-block", "brown-brick", "aluminum-flat-pvdf",
         "glazed-lapis-brick", "glazed-gold-brick"}
     # Bigger than the entire priced concrete order (footings + slab) the estimate used to
     # know about, which is the measure of what was missing. It was >100 cy until 2026-08-23:
