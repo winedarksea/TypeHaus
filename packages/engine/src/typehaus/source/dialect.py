@@ -109,9 +109,7 @@ class _DialectVisitor(cst.CSTVisitor):
         elif isinstance(expr, cst.ConcatenatedString):
             # Two adjacent string literals are implicit concatenation, which the writeback
             # CST has no way to reproduce — so a long `source=` citation split across lines
-            # to satisfy the line-length limit is rejected. The message used to be the
-            # generic "disallowed expression ConcatenatedString", which names the node type
-            # and not the fix.
+            # to satisfy the line-length limit is rejected.
             self._err(
                 expr,
                 "adjacent string literals (implicit concatenation) are not allowed",

@@ -291,8 +291,7 @@ def retype_placeable(plan: PlanModel, storey: str, *, tag: str,
 
     A bare ``type_ref`` PATCH grows/shrinks the footprint about the authored *center*
     (position is the footprint centroid, ``resolve/placeables.py::_local_footprint``),
-    which un-seats a wall-backed unit: the 2026-07-30 shower→tub-shower hand edit had to
-    recompute position by hand. This macro does that arithmetic: when both types carry a
+    which un-seats a wall-backed unit. This macro does that arithmetic: when both types carry a
     rectangular footprint and the item names a ``wall_ref``, the position shifts by
     ``(d_old − d_new)/2`` along the *back* direction (local +y under the item's rotation
     — ``resolve/placeables.py`` defines local −y as the room-facing front), so the

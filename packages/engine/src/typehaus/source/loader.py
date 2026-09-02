@@ -535,12 +535,10 @@ def _noneditable_authored(house_dir: Path, kind: str, tag: str) -> bool:
 def _identity_check(authored: list, findings: list[Finding]) -> None:
     """uid and tag uniqueness, enforced at load time as hard errors.
 
-    `haus build` never runs the checks tier, so `integrity.uid_unique` — until now the only
-    uniqueness rule in the engine — was invisible on the build path: a hand-minted colliding
-    uid built green and shipped two elements sharing one derived IFC GlobalId. Tags had no
-    rule at all; the dict comprehension below this call silently kept the last of a
-    duplicate pair, so half the collision simply vanished from every downstream view.
-    Both are ERROR here, and the checks-tier rule stays as the mirror.
+    `haus build` never runs the checks tier, so a hand-minted colliding uid or a duplicate
+    tag must be caught here or it ships silently (two elements sharing one derived IFC
+    GlobalId; a duplicate tag simply vanishing from every downstream view). Both are ERROR
+    here, and the checks-tier rule (`integrity.uid_unique`) stays as the mirror.
     """
     by_uid: dict[str, list[str]] = {}
     by_tag: dict[str, int] = {}

@@ -9,14 +9,13 @@ lives here (the "server owns all geometry" rule, → 21b) — the client only se
 :class:`~typehaus.model.plan.PlanModel`; new coordinates are emitted as :class:`RawExpr`
 ``pt(...)`` so no re-encoding round-trip can lose precision.
 
-The implementations now live in four sibling modules, split along the band comments this file
-used to carry: :mod:`~typehaus.source.macros_common` (error type, tolerances, lookup and
-coordinate helpers), :mod:`~typehaus.source.macros_geometry` (pure plan-frame primitives),
-:mod:`~typehaus.source.macros_openings` (hosted placement — openings, rooms, stairs),
-:mod:`~typehaus.source.macros_placeables` (placeable editing + coupled drain followers), and
-:mod:`~typehaus.source.macros_walls` (draw, stretch, split, heal). This module stays the one
-public door: ``typehaus.source.macros`` keeps exactly the surface it exported before, so the
-server's macro dispatch (``server/macros_api.py``) and every caller import untouched.
+Implementations live in four sibling modules: :mod:`~typehaus.source.macros_common` (error
+type, tolerances, lookup and coordinate helpers), :mod:`~typehaus.source.macros_geometry`
+(pure plan-frame primitives), :mod:`~typehaus.source.macros_openings` (hosted placement —
+openings, rooms, stairs), :mod:`~typehaus.source.macros_placeables` (placeable editing +
+coupled drain followers), and :mod:`~typehaus.source.macros_walls` (draw, stretch, split,
+heal). This module is the one public door: the server's macro dispatch
+(``server/macros_api.py``) and every other caller import from ``typehaus.source.macros``.
 """
 
 from __future__ import annotations
@@ -94,10 +93,9 @@ from typehaus.source.macros_walls import (
     split_wall,
 )
 
-# The whole surface ``typehaus.source.macros`` exported before the split, re-exported
-# verbatim. The underscore-prefixed helpers are here because callers outside this package
-# already import them by that name (the canvas tests reach for
-# ``_rooms_with_moved_boundaries``); they are not an invitation to reach for more.
+# The underscore-prefixed helpers are here because callers outside this package already
+# import them by that name (the canvas tests reach for ``_rooms_with_moved_boundaries``);
+# they are not an invitation to reach for more.
 __all__ = [
     "COLLINEAR_TOL", "MacroError", "ROOM_BOUNDARY_NODE_TOLERANCE_M", "ROTATION_SNAP_DEGREES",
     "SNAP_M", "XY", "assign_placeable_room", "attach_placeable", "detach_placeable",
