@@ -73,9 +73,7 @@ def _best_host_wall(model: ResolvedModel, stair: Stair, p0: tuple[float, float],
     3. **Shared run** — they overlap by more than ``_MIN_SHARED_RUN_M``.
 
     Survivors rank by foundation first (concrete beats framing under the same member),
-    then by the longest shared run, then by the closest axis — the old first-match-wins
-    ``next()`` picked whichever wall happened to be declared first, which on catlin meant
-    a 4" clip of ``W-M-C4B`` beat 5'-8" of ``W-M-C5``.
+    then by the longest shared run, then by the closest axis — never by authoring order.
 
     Returns ``(wall, shared_interval)`` so the caller can tell which member endpoints the
     host actually reaches.
@@ -118,9 +116,8 @@ def _face_line(host, member: FramedMember, board_width: float, lo: float,
     into the studs on one side (and floats outside the building on the other).
 
     Both host kinds go through here. A framed wall gets a lagged ledger board; concrete
-    gets the hanger band let into the pour — but neither is fastened along the *stringer's*
-    own centreline, which for a flight clipped to its subfloor made the band a byte-for-byte
-    duplicate of the member it carries.
+    gets the hanger band let into the pour — neither is fastened along the *stringer's*
+    own centreline, or the band would duplicate the member it carries.
     """
     # 0 → the member runs in x (cross coordinate is y); 1 → it runs in y (cross is x).
     run_axis = 1 if abs(member.p1[0] - member.p0[0]) < 1e-6 else 0

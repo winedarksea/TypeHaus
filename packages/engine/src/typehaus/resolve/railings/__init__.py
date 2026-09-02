@@ -1,9 +1,7 @@
 """Guard and handrail geometry: posts, rails and infill along an authored plan path.
 
-Split out of ``resolve/accessories.py``, which was already over the ~500-line file policy
-before infill was written, following the ``resolve/stairs/`` precedent. The split is by
-*part*, not by style: :mod:`.spans` owns what the walking surface does, :mod:`.parts` owns
-what each part is made of and how big it is, :mod:`.frame` owns posts and rails, and
+Split by *part*, not by style: :mod:`.spans` owns what the walking surface does, :mod:`.parts`
+owns what each part is made of and how big it is, :mod:`.frame` owns posts and rails, and
 :mod:`.infill` owns what fills the bays.
 
 The flat/raking fork is one line here and one object (:class:`~.spans.RailingSurface`)

@@ -26,8 +26,8 @@ VENT_TERMINATION_CLEARANCE_M = inch(12).meters
 def chase_top_point(vent: VentRun) -> tuple[float, float]:
     """Plan location the riser rises at above its optional in-building jog.
 
-    The chase itself when there is no jog, which is every riser written before ``chase_offset``
-    existed; the jogged station when there is one. Everything above the jog — the wall exit,
+    The chase itself when there is no jog; the jogged station when there is one. Everything
+    above the jog — the wall exit,
     the exterior riser, the termination and its separation from openings — is measured from
     here rather than from the chase, because that is where the pipe actually is.
     """

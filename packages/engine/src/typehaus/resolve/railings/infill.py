@@ -1,10 +1,9 @@
 """What fills the guard between its posts and rails — the part R312.1.3 is actually about.
 
-A ``Railing`` used to resolve to posts + N horizontal rails and nothing else, so a 42" guard
-authored with ``infill="balusters", baluster_spacing=4"`` *drew* two bars with a wide-open
-40" gap between them while the code check passed on the authored field alone. The model
-asserted a compliance it did not depict. This module is the geometry catching up to the
-vocabulary the data model already had.
+Without this module a guard authored with ``infill="balusters", baluster_spacing=4"`` would
+draw only posts + N horizontal rails, leaving a wide-open gap between them while the code
+check passed on the authored field alone — the model would assert a compliance it did not
+depict.
 
 Nothing here is a new authored field. The count of pickets, the count of cables and the
 panel's reveal are all *derived* — a count field would let the drawn guard and the code

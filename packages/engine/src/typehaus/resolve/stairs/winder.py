@@ -125,9 +125,9 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
                                 math.hypot(tread, riser) * straight_treads,
                                 z0_end_m=arrival_notch - stringer_depth,
                                 z1_end_m=arrival_notch))
-    # The inside ends deliberately do not converge at the newel.  Three 6" offsets around
-    # the inside corner are the minimum code-sized narrow path; the earlier radial fan put
-    # all three on a 6x6 post face, delivering only ~1.3" between them.
+    # The inside ends deliberately do not converge at the newel: three 6" offsets around
+    # the inside corner are the minimum code-sized narrow path, which a 6x6 post face
+    # converging them all onto would leave only ~1.3" between.
     narrow_going = inch(6).meters
     fan: list[_FanLine] = []
     for index in range(stair.winder_count):
@@ -218,10 +218,8 @@ def _winder_box_framing(stair: Stair, z0: float, riser: float, fan: list[_FanLin
                         orient: tuple[float, float]) -> list[FramedMember]:
     """Frame the quarter-turn as a tiered corner box — Larry Haun's winder assembly.
 
-    Rather than cut a continuous compound-angle carriage through the turn (which the
-    previous two raked "winder carriages" and their header stood in for, and which no
-    framer builds), each winder step is its own platform box, stacked one riser above the
-    last:
+    Rather than cut a continuous compound-angle carriage through the turn — which no framer
+    builds — each winder step is its own platform box, stacked one riser above the last:
 
     - **A box per step, bounded by its *leading* fan line.** Box ``k`` covers everything
       ahead of fan line ``k-1`` (the riser face a walker steps up at onto its deck; the

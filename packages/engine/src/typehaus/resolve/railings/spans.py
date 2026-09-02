@@ -1,9 +1,8 @@
 """What the walking surface does under a railing — the one difference between flat and raking.
 
-The flat and the raking railing resolvers used to be two whole function bodies that differed
-in exactly one thing: what elevation the walking surface is at under a point, and whether it
-varies along a run. Everything else — post stations, rails, and now three styles of infill —
-was written twice. This module captures that one difference so the rest is written once.
+This module captures that one difference — what elevation the walking surface is at under a
+point, and whether it varies along a run — so post stations, rails and infill are each
+written once regardless of which surface they're drawn against.
 
 A :class:`RailingSurface` answers two questions:
 
@@ -63,12 +62,8 @@ class RailingSurface:
     #: ``rail_bands(a, b, max_rise)`` — the run broken finely enough that no band climbs
     #: more than ``max_rise``. Separate from ``spans`` because the two want opposite things:
     #: infill wants the *bay*, one flat band per picket row, and a rail wants as many bands
-    #: as it takes for the drawn bar to be continuous. Sharing one step is what left a
-    #: raking handrail as a row of disconnected floating cubes — each band is 1-1/2" tall
-    #: over 0.25 m of plan, which on a 7.5/11 flight is 0.163 m of rise against 0.038 m of
-    #: bar: a 5" vertical gap between every consecutive piece. That was written for the
-    #: *guard* case, where a picket stands in the gap and hides it; a bare ``rail_count=1``
-    #: handrail has nothing to hide it with.
+    #: as it takes for the drawn bar to be continuous — the guard case has a picket in each
+    #: gap to hide a coarse band, but a bare ``rail_count=1`` handrail has nothing to hide it.
     rail_bands: RailBandFn
 
 

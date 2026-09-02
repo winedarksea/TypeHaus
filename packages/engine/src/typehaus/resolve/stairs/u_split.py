@@ -32,9 +32,9 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     apart by the well partition rather than butting against each other.
 
     ``stair.turn_direction`` picks the hand of the 180° turn. The well itself is symmetric,
-    so handedness is purely *which lane each flight occupies*: ``"right"`` (the default, and
-    the only behaviour before it was authorable) springs from the lane at the ``start``
-    corner and arrives in the far one; ``"left"`` swaps them. Nothing else moves — the
+    so handedness is purely *which lane each flight occupies*: ``"right"`` (the default)
+    springs from the lane at the ``start`` corner and arrives in the far one; ``"left"``
+    swaps them. Nothing else moves — the
     partition stays on the well centreline and the landing zone stays at the far end of the
     run — so mirroring a stair never changes the opening it needs.
     """
@@ -44,11 +44,8 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     upper_treads = flight_treads - lower_treads
     sign = -1 if stair.run_reversed else 1
     along_x = stair.run_direction == "x"
-    # The authored origin, exactly as ``straight.py`` and ``winder.py`` read it. This layout
-    # used to take the opening bbox's corner unconditionally and never look at
-    # ``stair.start`` — so an authored origin was silently ignored here while
-    # ``_stair_fits_opening`` validated against it, and generation and validation ran on two
-    # different origins.
+    # The authored origin, exactly as ``straight.py`` and ``winder.py`` read it — and exactly
+    # what ``_stair_fits_opening`` validates against, so generation and validation agree.
     start_x, start_y = stair.start.xy_m if stair.start is not None else (minx, miny)
     start = start_x if along_x else start_y
     lane0 = start_y if along_x else start_x

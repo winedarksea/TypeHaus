@@ -54,16 +54,10 @@ def railing_post_stations(path: list[Vec], spacing: float) -> list[Vec]:
     property the infill relies on: one walk of this list yields the bays, and a bay is
     always straight.
 
-    Bays are **evenly divided**, at ``ceil(segment / spacing)`` of them. The old
-    ``int(seg // spacing)`` left the whole remainder in the last bay, which could take it to
-    nearly twice the authored spacing — RL-A-STAIR came out with bays of 5'-0" and 9'-3" on
-    a guard authored at 5'-0" o.c. Balusters absorbed that invisibly, because they re-space
-    to whatever bay they are handed; a glass lite became an unmanufacturable 9'-3" panel,
-    which is why :func:`~typehaus.resolve.railings.infill.emit_infill` warns on one.
-    Dividing evenly rather than laying out at exactly ``spacing`` from the start is both
-    what a builder does and what avoids the other failure of a bare ``ceil``: a segment a
-    millimetre over a whole number of bays would otherwise end in a millimetre-wide bay.
-    ``spacing`` is a maximum, and no bay now exceeds it.
+    Bays are **evenly divided**, at ``ceil(segment / spacing)`` of them, so no bay exceeds
+    ``spacing`` and none ends up a millimetre wide from rounding. An oversize bay is a
+    manufacturing problem for a sheet product — see
+    :func:`~typehaus.resolve.railings.infill.emit_infill`'s bay-oversize warning.
     """
     placed: list[Vec] = []
     for a, b in zip(path[:-1], path[1:], strict=True):
@@ -158,11 +152,6 @@ def emit_rails(model: ResolvedModel, el: Railing, storey: str, path: list[Vec],
     :data:`~typehaus.resolve.railings.spans.RAIL_BAND_STEP_M` along the authored path — and
     then simplified, so a straight flight comes back as the two points it really has and a
     winder keeps its curve.
-
-    That is the whole difference from what this used to do: ``RL-A-HANDRAIL``, one straight
-    13-ft bar, was 292 solids (one band per 1-1/2" of fall, times the round section's four
-    facet bands), and railings were 1,149 of the reference house's 2,857 solids. Each was a
-    separate glTF node, a separate ``IfcRailing`` and a separate polyline on the plan sheet.
 
     A rail whose product profile names a *round* section gets a faceted circle; anything else
     gets its square stock section, whose flat face stays level on a rake because of the

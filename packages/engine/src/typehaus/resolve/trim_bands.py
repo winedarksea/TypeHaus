@@ -68,10 +68,9 @@ def formed_edge_bands(thickness_m: float, depth_m: float) -> tuple[Band, Band, B
     """A formed edge trim ``thickness_m`` deep in plan, ``depth_m`` tall: cleat, face, hem.
 
     The piece capping a wrapped (continuous standing-seam) roof edge. Drawn as one solid box
-    it is a billet of aluminium as wide as the joint is deep — the same misreading the gutter
-    had before it became a channel. Sheet metal is a *surface*: what the eye reads at this
-    edge is a cleat lying on the roof plane, a face turning down over the joint, and the hem
-    the fabricator folds back under that face's bottom edge.
+    it is a billet of aluminium as wide as the joint is deep. Sheet metal is a *surface*: what
+    the eye reads at this edge is a cleat lying on the roof plane, a face turning down over the
+    joint, and the hem the fabricator folds back under that face's bottom edge.
 
     That hem is not decoration. A raw cut edge of sheet metal is sharp, it oil-cans, and it
     holds a bead of water against the wall by surface tension; folding it back stiffens the

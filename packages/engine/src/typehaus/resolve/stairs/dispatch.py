@@ -83,10 +83,9 @@ def _resolve_stair(
                                  "opening on its destination storey", stair.tag)]
         # The destination deck (wood FloorSystem or concrete Slab) must own the opening.
         # Asked of *any* deck on that storey, not of the first one found: a storey may carry
-        # several — catlin's main floor is two I-joist bays and a concrete band since
-        # 2026-08-21, and its breezeway deck is filed there too — and "the first element
-        # that is a FloorSystem or a Slab" then depends on authoring order rather than on
-        # which deck the hole is in.
+        # several (catlin's main floor is two I-joist bays and a concrete band, plus its
+        # breezeway deck), and "the first element that is a FloorSystem or a Slab" would
+        # depend on authoring order rather than on which deck the hole is in.
         if not any(isinstance(element, (FloorSystem, Slab))
                    and opening.tag in element.openings
                    for element in model.plan.storey_elements(stair.to_storey)):
@@ -150,10 +149,9 @@ def _resolve_stair(
     risers = math.ceil(rise / _MAX_RISER_M)
     treads = max(0, risers - 1)
     straight_treads = treads - stair.winder_count
-    # Turn-landing depth (in the run direction) for the U-stair. Unset reproduces the
-    # historical "reserve one stair width" behaviour; an authored value is honoured down to
-    # the IRC R311.7.6 direction-of-travel minimum (see ``_MIN_LANDING_DEPTH_M``), which is
-    # 36" and *not* the stair width.
+    # Turn-landing depth (in the run direction) for the U-stair. Unset reserves one stair
+    # width; an authored value is honoured down to the IRC R311.7.6 direction-of-travel
+    # minimum (see ``_MIN_LANDING_DEPTH_M``), which is 36" and *not* the stair width.
     landing_depth_m = (max(stair.landing_depth.meters, _MIN_LANDING_DEPTH_M)
                        if stair.landing_depth is not None else stair.width.meters)
     # A winder turn consumes a square whose side is the stair width. The remaining treads
@@ -231,9 +229,9 @@ def _flight_footprint(stair: Stair, going_m: float, risers: int) -> list[tuple[f
     """The plan rectangle a flight with no floor opening occupies.
 
     Every consumer of ``ResolvedStair.outline`` — the plan drawing, the room-area deduction,
-    the UI's stair pick — reads the *opening* outline, because until a flight could exist
-    without one that was the only footprint there was. A within-storey run bounds itself
-    instead: ``start``, the authored width across, and ``going x treads`` along the run.
+    the UI's stair pick — reads the *opening* outline where one exists. A within-storey run
+    bounds itself instead: ``start``, the authored width across, and ``going x treads``
+    along the run.
     """
     assert stair.start is not None  # only reached for a flight that authored one
     start_x, start_y = stair.start.xy_m

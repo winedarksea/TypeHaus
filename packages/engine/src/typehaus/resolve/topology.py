@@ -70,11 +70,11 @@ def _board_run(layers: list, index: int) -> str | None:
 
 
 def _cavity_host(layers: list, index: int) -> int | None:
-    """Index of the STRUCTURE layer a legacy sibling batt fills, or None.
+    """Index of the STRUCTURE layer a sibling INSULATION layer fills, or None.
 
-    Back-compat only: assemblies used to spell cavity insulation as its own INSULATION
-    layer next to the studs, at the same thickness. Those add no depth and share the
-    structure layer's polygon — the modern spelling is ``Layer.cavity`` (:class:`CavityFill`).
+    A cavity fill authored as its own INSULATION layer next to the studs, at the same
+    thickness, adds no depth and shares the structure layer's polygon — the alternative
+    spelling to ``Layer.cavity`` (:class:`CavityFill`).
     """
     layer = layers[index]
     if layer.function is not LayerFunction.INSULATION:

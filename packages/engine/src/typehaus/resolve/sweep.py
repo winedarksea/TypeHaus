@@ -1,10 +1,7 @@
 """Swept runs: one section carried along a 3D polyline — the shared kernel.
 
-``ResolvedSolid`` was a plan ring extruded straight up in Z, which is the only shape a
-prism can speak. Anything that rakes or slopes therefore had to be *faked* by chopping it
-into level pieces: a raking handrail became one band per 1-1/2" of fall (a straight 13-ft
-bar came out as 292 solids), and a sloping drain was stair-stepped into at most three level
-stacks its own docstring called "an accepted approximation".
+``ResolvedSolid`` is a plan ring extruded straight up in Z, which is the only shape a prism
+can speak — anything that rakes or slopes cannot be one prism.
 
 A run is one thing, so it is one solid. :class:`~typehaus.resolve.model.SolidSweep` says
 "I am a section carried along a 3D polyline", and this module is the geometry behind that

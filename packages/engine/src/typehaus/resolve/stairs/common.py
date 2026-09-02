@@ -29,10 +29,10 @@ _MIN_MEMBER_PITCH_M = inch(1.5).meters
 # Below this a stair member only clips a wall's end; it does not bear on it.
 _MIN_SHARED_RUN_M = 0.10
 # A U-stair's well partition is real construction between the two flights — 2x4 studs
-# finished both faces — so it consumes cross-run space. Budgeting nothing for it (the
-# lanes used to butt at ``lane0 + width``) put the partition studs straight through both
-# inner stringers and made "the well is N wide" mean two different things depending on
-# whether you measured the flights or the finished faces.
+# finished both faces — so it consumes cross-run space. Without a budget for it, the
+# partition studs would run straight through both inner stringers, and "the well is N
+# wide" would mean two different things depending on whether you measured the flights
+# or the finished faces.
 _WELL_PARTITION_STUD_IN = 3.5
 _WELL_PARTITION_FINISH_IN = 0.5  # gwb, each face
 _WELL_PARTITION_THICKNESS_M = inch(
@@ -48,12 +48,10 @@ def _notch_z(surface_m: float) -> float:
     Efficient Carpenter*): the bottom of a stringer's notching is cut down by the tread
     thickness so every finished riser stays identical.
 
-    Sitting the board *on* that elevation instead — the convention this replaces —
-    stretched a stair's first riser by the board thickness and shortened its last by the
-    same amount, because the springing floor and the arrival deck are finished surfaces
-    already. On catlin's 7.5" design riser that was a 9" step onto the flight and a 6"
-    step off it: a 3" spread against the 3/8" IRC R311.7.5.1 allows, now measured by
-    ``structural.stair_riser_uniformity``.
+    Sitting the board *on* that elevation instead stretches a stair's first riser by the
+    board thickness and shortens its last by the same amount, because the springing floor
+    and the arrival deck are already finished surfaces — checked against IRC R311.7.5.1's
+    3/8" tolerance by ``structural.stair_riser_uniformity``.
     """
     return surface_m - _TREAD_THICKNESS_M
 
@@ -71,9 +69,6 @@ def _tread_board_profile(tread_depth_m: float) -> str:
 
 def _grid_positions(span: float, spacing: float) -> list[float]:
     """Deduplicated on-center positions ``{0, s, 2s, …, span}`` including both edges.
-
-    Replaces the old ``ceil``/``range``/``min``-clamp pattern whose last two positions
-    were coincident whenever ``span`` was an exact multiple of ``spacing``.
 
     Members are deduplicated at ``_MIN_MEMBER_PITCH_M``, not at floating-point equality:
     a closing edge landing an inch short of the last on-center position is the *same*
