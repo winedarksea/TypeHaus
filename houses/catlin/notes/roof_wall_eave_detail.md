@@ -16,10 +16,13 @@ source:
 
 # Notes
 
-**Flash-and-batt.** What follows is the current stack. `notes/roof_flash_and_batt.md` §Why has
-the arithmetic and the code path behind it. **Read that note before changing anything here** —
-several of the rules it retired look like rules you would want to reinstate, and each of them
-was load-bearing only for the stack it belonged to.
+**REBUILT 2026-08-31 — FLASH-AND-BATT, AND EVERY OUTSULATION LAYER DELETED.** What follows
+is the current stack. The nine-layer version this note described (taped ZIP -> self-adhered
+deck vapour barrier -> 3" + 3" polyiso -> 5/8" OSB nailbase on 10" SDWH screws -> permeable
+synthetic underlayment -> 1/4" vent mat) is recorded in `notes/roof_flash_and_batt.md` §Why,
+along with the arithmetic and the code path that replaced it. **Read that note before
+changing anything here** — several of the rules it retired look like rules you would want to
+reinstate, and each of them was load-bearing only for the stack it belonged to.
 
 - Roof framing: 11-7/8" **TJI 230 at 24" o.c.** on the double top plate (was an unspecified
   11-7/8" I-joist at 16" o.c.); birdsmouth seat cut with beveled bearing stiffeners (APA D710
@@ -75,15 +78,15 @@ was load-bearing only for the stack it belonged to.
 
 - Roofing: 24 ga architectural standing seam, mechanically field-seamed, concealed floating clips.
 
-- Eave bay blocking: close every rafter bay over the top plate with rigid foam blocking set in the plane of the wall sheathing, sealed to the joist webs and the plate with canned foam. This is what carries the air barrier across the eave from the wall sheathing up to the ROOF BAY'S OWN FOAM. With a paint-only interior there is no second line of defence inboard of it, and an unblocked bay now vents the ceiling into the joist bay itself.
+- Eave bay blocking: close every rafter bay over the top plate with rigid foam blocking set in the plane of the wall sheathing, sealed to the joist webs and the plate with canned foam. This is what carries the air barrier across the eave from the wall sheathing up to the ROOF BAY'S OWN FOAM — the plane it hands off to changed on 2026-08-31, the job did not. With a paint-only interior there is no second line of defence inboard of it, and an unblocked bay now vents the ceiling into the joist bay itself.
 
-- Wall: 2x6 studs (LSL on the main storey), 1/2" sheathing, then **4" of closed-cell spray foam around an intermittent 2x4 truss** — a flat block on the sheathing, a 1/2" plywood tab, a KDAT 2x4 outrigger on edge at 16" o.c. — and standing-seam cladding clipped to the outriggers. Class III interior paint on drywall. **No WRB:** the foam is the water plane. The cladding face is 5-1/2" proud of the sheathing, not 5.02", which is what `params/roof_trim.py::_WALL_OUTBOARD_IN` carries and what moved the whole eave water chain out with it.
+- Wall: 2x6 studs (LSL on the main storey), 1/2" sheathing, then **4" of closed-cell spray foam around an intermittent 2x4 truss** — a flat block on the sheathing, a 1/2" plywood tab, a KDAT 2x4 outrigger on edge at 16" o.c. — and standing-seam cladding clipped to the outriggers. Class III interior paint on drywall. **No WRB:** the foam is the water plane (2026-08-23; was a liquid membrane over the sheathing under 2" polyiso + 2" EPS and 1/2" furring). The cladding face is 5-1/2" proud of the sheathing, not 5.02", which is what `params/roof_trim.py::_WALL_OUTBOARD_IN` carries and what moved the whole eave water chain out with it.
 
 - Foam interface: leave the angled mismatch between roof foam and wall foam; fill with closed-cell spray polyurethane foam. Avoid high-expansion foams — they lift the roof foam off the deck barrier.
 
-- Drip edge: its flange lies ON the structural deck (underside at 0.70" vertical above the deck datum), running 1-1/2" back onto the deck from the roof edge, with the adhered membrane lapped OVER it. Nothing ELSE in the eave chain may reach that plane — the underlayment has to ride over exactly one thing to bond to the deck. The turn-down hangs at the trough mid-width, throwing runoff into the middle of the gutter rather than down the wall behind it.
+- Drip edge: its flange lies ON the structural deck (underside at 0.70" vertical above the deck datum since 2026-08-31, was 7.55" over the nailbase), running 1-1/2" back onto the deck from the roof edge, with the adhered membrane lapped OVER it. Nothing ELSE in the eave chain may reach that plane — the underlayment has to ride over exactly one thing to bond to the deck. The turn-down hangs at the trough mid-width, throwing runoff into the middle of the gutter rather than down the wall behind it.
 
-- Gutter: 6" box gutter, back sheet tucked a lap BEHIND the corner trim's formed face — behind the sheet itself, not merely inboard of the 1.25" of plan depth it hangs at the end of. Rim 2.76" BELOW the deck datum, because the 4" trim leg it laps under now hangs 3.26" below a roofing underside only 0.74" up, a lap under the trim's lower edge (the trim's leg is 4", not the 2" this chain was first derived from). Downspout steadied with conduit pipe clamps (not primary support).
+- Gutter: 6" box gutter, back sheet tucked a lap BEHIND the corner trim's formed face — behind the sheet itself, not merely inboard of the 1.25" of plan depth it hangs at the end of. Rim 2.76" BELOW the deck datum since 2026-08-31 (it was 4.38" above it), because the 4" trim leg it laps under now hangs 3.26" below a roofing underside only 0.74" up, a lap under the trim's lower edge (the trim's leg is 4", not the 2" this chain was first derived from). Downspout steadied with conduit pipe clamps (not primary support).
 
 - No fascia and no soffit: roof and wall are one continuous standing-seam skin over a flush zero-overhang edge, so the resolver draws a corner trim angle instead. Every eave offset is measured off that trim's face.
 
