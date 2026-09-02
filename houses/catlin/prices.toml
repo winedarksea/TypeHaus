@@ -2714,26 +2714,37 @@
 # here, and it must not be escalated with a concrete index. The gross-wall-volume basis this
 # section's header documents (units not deducted) applies to the $/cy rows; this one is $/SF.
 #
-# 61.5 SF of face — the two 4'-0" east piers PLUS a 4'-0" return around each of the SE/NE
-# corners onto the south/north walls (2026-08-26), four short wall segments in all. Glen-Gery
+# 67.1 SF of face — the two 4'-0" east piers PLUS a 4'-0" return around each of the SE/NE
+# corners onto the south/north walls (2026-08-26), four short wall segments in all, now 4'-0"
+# of brick tall apiece rather than 3'-8" (2026-09-02, see below). Glen-Gery
 # Columbia Roman Maximus, ASTM C216 Grade SW Type FBA — a special-order handmade unit, not the
 # stock buff body this wythe originally specified, which is why this now prices ABOVE the
 # glazed rows rather than at the brown plinth's basis: special-order unit cost plus a
 # handmade FBA body's wider dimensional tolerance (more mason time per unit fitting the joint).
 #
-# Still a mobilisation-dominated job at 61.5 SF, and now with FOUR corners/terminations
+# Still a mobilisation-dominated job at 67.1 SF, and now with FOUR corners/terminations
 # instead of two straight run-ends: two mitred outside corners (SE, NE) in addition to the
 # two horizontal terminations at the door jambs. A mason sets up, lays four short wall
-# segments with a sloped rowlock cap and through-wall flashing throughout, and leaves. Ties,
-# weeps, all four flashing runs and the rowlock are in this rate. The cap flashing itself is
+# segments with through-wall flashing throughout, and leaves. Ties, weeps and all four
+# flashing runs are in this rate. The cap flashing itself is
 # NOT — it is modelled as TR-G-BRICK-CAP-S/N/SRET/NRET and bills by length through
 # [edge_trim]. The ICF brick ledge that carries the wythe is not here either: it is concrete
-# in the GARAGE_ICF_6_BRICKLEDGE stem.
+# in the GARAGE_ICF_6_BRICKLEDGE stem. Neither is the flat 2x6 tie blocking in the stud bays
+# behind it: that is carpentry, and it is small enough to sit inside the wall's framing rate.
+#
+# ** RAISED 2026-09-02 FOR SOLDIER SETTING, $24-42 -> $31-55. ** The units now stand on end
+# (plan/assemblies.py GARAGE_BRICK_LEDGE_RISE), and a 23 5/8" unit set as a soldier bears on
+# ~5.9 sq in of bed with two full-height head joints doing the stabilising: it wants a stiff
+# mortar, wants the run strung and braced while it is green, and cannot be laid at anything
+# like a stretcher's pace. Material does not move — same unit, same count per SF — so this is
+# a labour-only premium on a rate whose labour half is the larger one; ~30% overall. It is
+# NOT offset by the rowlock cap coming off (a 4" course over 16.8 LF is under a
+# day-of-the-week's worth of the mobilisation this row is really paying for).
 #
 # The 2026-08-26 swap from the Black colourway to Columbia does NOT move this rate: same
 # unit, same size, same ASTM grade, same handmade FBA body, off-white instead of black.
 # A colourway is not a cost driver here; the special-order handling already in the rate is.
-"GARAGE_BRICK_WAINSCOT" = { low = 24, high = 42, unit = "SF" }  # 61.5 SF of face
+"GARAGE_BRICK_WAINSCOT" = { low = 31, high = 55, unit = "SF" }  # 67.1 SF of face
 # HISTORY, so the number can be re-struck rather than re-guessed. 2026-08-20: $480-1,000/cy
 # was $8.89-18.52/SF and its LOW sat on the absolute floor of the cheapest published number
 # anywhere; it went to $756-1,296 = $14-24/SF against a $13-25/SF typical installed market.

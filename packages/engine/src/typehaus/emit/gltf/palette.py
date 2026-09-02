@@ -260,8 +260,10 @@ _GLAZED_LAPIS_BRICK_BASE = "#10386a"
 _GLAZED_GOLD_BRICK_BASE = "#c08a12"
 _BROWN_BRICK_BASE = "#a07c5c"  # lightened + de-jittered; see materials.ts
 # The garage wainscot's Glen-Gery Columbia Roman Maximus brick — materials.ts
-# ROMAN_MAXIMUS_BRICK_STYLE.base. The off-white colourway of the Roman Maximus unit; the
-# `finish` key names the UNIT GEOMETRY, so a colour swap moves this value and nothing else.
+# ROMAN_MAXIMUS_BRICK_STYLE.base and ROMAN_MAXIMUS_SOLDIER_STYLE.base. The off-white
+# colourway of the Roman Maximus unit; the `finish` key names the UNIT GEOMETRY, so a colour
+# swap moves this value and nothing else — and standing the units on end moved the key
+# ("roman-maximus-soldier") without moving the colour, which is why both keys share it.
 _ROMAN_MAXIMUS_BRICK_BASE = "#e4ddc9"
 # The garage's east (overhead-door) wall accent coil — Western States Metal
 # Roofing "Classic Green", materials.ts CLASSIC_GREEN_SEAM_BASE. A second colourway of the
@@ -297,6 +299,7 @@ _FINISH_BASE: dict[str, str] = {
     "glazed-gold-brick": _GLAZED_GOLD_BRICK_BASE,
     "brown-brick": _BROWN_BRICK_BASE,
     "roman-maximus-brick": _ROMAN_MAXIMUS_BRICK_BASE,
+    "roman-maximus-soldier": _ROMAN_MAXIMUS_BRICK_BASE,
     "classic-green-seam": _CLASSIC_GREEN_SEAM_BASE,
     "metal-copper-penny": _COPPER_PENNY_METAL_BASE,
     "metal-fascia-regal-blue": _REGAL_BLUE_METAL_BASE,

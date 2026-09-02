@@ -1178,31 +1178,46 @@ GARAGE_ICF_6 = Assembly(
 # wood-surfaces rollup only bills materials with a `species`, so a brick band would produce
 # no BOM line at all).
 #
-# Glen-Gery "Columbia Roman Maximus" (glengery.com/brick-catalog/columbia-roman-maximus),
-# swapped in for the black colourway of the same unit: 3 5/8" x 1 5/8" x 23 5/8", ASTM
-# C216 Grade SW Type FBA. The bed depth (3 5/8") is the same as a modular unit, so the
-# wythe thickness, air gap, ledge width and every tie/flashing dimension below are
-# UNCHANGED from the original buff-modular spec — only the coursing (unit height 1 5/8" +
-# 3/8" joint = 2" per course, not 2 2/3") and the unit length/color change. Columbia and
-# Black are the same body/size/ASTM grade, an off-white vs. black glaze only, so nothing
-# below this comment (ledge rise, ledge depth, or the coursing table) moves for the swap —
-# only the Material's `color`/`source` and the renderer's `finish` recipe. `finish=
-# "roman-maximus-brick"` on the Material tells the renderer's masonry recipe about the unit
-# geometry (an elongated unit); the colourway itself lives in the style's `base` colour
-# (ui/src/three/materials.ts) and the palette's `_FINISH_BASE` entry (emit/gltf/palette.py).
+# Glen-Gery "Columbia Roman Maximus" (glengery.com/brick-catalog/columbia-roman-maximus):
+# 3 5/8" x 1 5/8" x 23 5/8", ASTM C216 Grade SW Type FBA. The bed depth (3 5/8") is the same
+# as a modular unit, so the wythe thickness, air gap and ledge width below are UNCHANGED
+# from the original buff-modular spec.
 #
-# Coursing, Roman 2", working up from grade (-2'-10"):
+# ** THE UNITS STAND ON END. ** This is a SOLDIER field, not a running bond: the 23 5/8"
+# length is vertical and the 1 5/8" width is the exposed face width, so the wall reads as a
+# fine vertical pinstripe on a 2" horizontal module — the old course module, rotated.
+#
+# SOLDIER, NOT SAILOR, AND THAT IS A CODE LINE RATHER THAN A PREFERENCE. Tipping the unit
+# onto its 1 5/8" face to show the broad 3 5/8" face would leave a 1 5/8" wythe, under IRC
+# R703.8.2's 2 5/8" minimum for anchored masonry veneer and too thin for corrugated-tie
+# embedment (~1 1/2" embedment plus 5/8" mortar cover wants 2 1/8" of wythe). NOTHING IN THE
+# ENGINE WOULD CATCH IT — there is no veneer-thickness check — so it would ship at 0 FAIL.
+# Standing the unit on end instead keeps the 3 5/8" bed depth as the wythe and every
+# dimension outboard of the stem holds.
+#
+# Coursing, working up from grade (-2'-10"). The vertical module is 23 5/8" + 3/8" joint
+# = 24"; the horizontal one is 1 5/8" + 3/8" = 2":
 #     ledge/shelf top   2" above grade       (-2'-8")
-#     20 courses field  40"                  (+0'-8")
-#     rowlock cap       4" (unit bed depth, unaffected by the coursing change)
-#     metal cap flash   2"                   (+1'-2" == 4'-0" above grade, on the nose)
-# The shelf sits one course module ABOVE finish grade rather than at it — the cheapest
-# durability move available in a 40+ freeze-thaw-cycle climate, lifting the base course
-# clear of the worst splash and snow-contact zone. The wall height (ledge top to brick top,
-# 44") and the cap top (4'-0" above grade, on the nose) are both unchanged from the original
-# modular scheme — only the internal course count and the cap flashing's face height moved,
-# to keep both anchors exact with a 2" module instead of a 2 2/3" one.
-GARAGE_BRICK_LEDGE_RISE = inch(2.0)  # one Roman course; shelf top above grade
+#     soldier course 1  24"                  (-0'-8")
+#     soldier course 2  24"                  (+1'-4")
+#     metal cap flash   2"                   (+1'-6" == 4'-4" above grade)
+# TWO WHOLE UNITS IS WHY THE CAP LEFT 4'-0", and the rowlock cap went with it. Only 44" of
+# the old 4'-0" was brick and only 40" of that was field, so a 48" pair of soldiers does not
+# fit under a 4'-0" cap: holding that anchor would have meant sawing one course to 15 5/8"
+# in a special-order handmade unit. A rowlock is itself a horizontal on-edge course and
+# reads as a stripe across an all-vertical field; the formed metal cap already gives the
+# wash it was there for. The shelf did not move.
+#
+# `finish="roman-maximus-soldier"` on the Material tells the renderer's masonry recipe about
+# the unit geometry — that key names the GEOMETRY, and the geometry is what changed here.
+# The colourway lives in the style's `base` colour (ui/src/three/materials.ts) and the
+# palette's `_FINISH_BASE` entry (emit/gltf/palette.py).
+#
+# The shelf sits one unit bed height ABOVE finish grade rather than at it — the cheapest
+# durability move available in a 40+ freeze-thaw-cycle climate, lifting the base of the
+# brick clear of the worst splash and snow-contact zone. It is no longer "one course" of
+# anything now that the courses run 24", just 2" of splash clearance.
+GARAGE_BRICK_LEDGE_RISE = inch(2.0)  # one unit bed height of splash clearance above grade
 # 1" air space (IRC R703.8 minimum) + a 3 5/8" wythe: how far east of the node line the
 # bearing shelf has to project. Below the shelf the concrete section widens from 11" to
 # ~15 5/8" — all of it below grade and backfilled, so none of it is visible.
@@ -1256,7 +1271,7 @@ GARAGE_ICF_6_BRICKLEDGE = Assembly(
 # The wainscot itself: a short veneer wall standing in front of the existing stem/wood wall,
 # exactly W-B-BRICK's precedent (plan/storeys/basement.py). ONE flat field, no `slot`-banded
 # courses — BASEMENT_BRICK_VENEER's banding exists to serve the Ishtar scheme; this wall is
-# one brick, and the rowlock cap is a separate element, not a band.
+# one brick, laid soldier, and the metal cap is a separate element, not a band.
 #
 # STRUCTURE, not CLADDING, on the wythe — the same reason BASEMENT_BRICK_VENEER gives, and
 # RETAINING_BLOCK_12's precedent: this wythe has nothing behind it IN THIS ASSEMBLY (the
@@ -1266,10 +1281,12 @@ GARAGE_ICF_6_BRICKLEDGE = Assembly(
 # The detailing that keeps this alive is in the veneer wall's own notes and the house
 # CLAUDE.md: through-wall flashing + weeps at the base course on the ledge, a second
 # through-wall flashing under the cap, and ties that DIFFER BY BACKING — the storey datum is
-# -1'-0", so ~19 3/8" of brick backs onto the ICF stem and ~24 5/8" onto the wood wall above
-# it. Corrugated ties are only valid where the brick back is within 1" of framing, and
-# across the zip-R it is not: screw-on adjustable two-piece ties above the datum
-# (IRC R703.8.4).
+# -1'-0", so ~19 3/8" of brick backs onto the ICF stem and ~28 5/8" onto the wood wall above
+# it. The soldier coursing is what makes the ties hard: bed joints exist only at the shelf,
+# at -0'-8" and at +1'-4", fixing the vertical tie spacing at IRC R703.8.4's 24" maximum,
+# and 2.67 sf per tie then forces 16" HORIZONTAL — which 24" o.c. studs cannot give. Flat
+# 2x6 blocking in the bays at the two joints above the datum buys it; the ICF's webs below
+# already allow any horizontal station.
 GARAGE_BRICK_WAINSCOT = Assembly(
     tag="GARAGE_BRICK_WAINSCOT",
     layers=(
@@ -1278,7 +1295,7 @@ GARAGE_BRICK_WAINSCOT = Assembly(
         Layer(name="brick", material_ref="off-white-brick", thickness=inch(3.625),
               function=LayerFunction.STRUCTURE),
     ),
-    source="garage east wainscot flanking the overhead door, wrapped 4' around each of the SE/NE corners onto the south and north walls — full-wythe Glen-Gery Columbia Roman Maximus face brick (3 5/8\" bed, ASTM C216 Grade SW Type FBA) on a 1\" drained cavity (IRC R703.8), borne on GARAGE_ICF_6_BRICKLEDGE's shelf; through-wall flashing + weeps at 33\" o.c. max at the base course and again under the cap; two-piece adjustable ties into studs above the storey datum, ICF ties below",
+    source="garage east wainscot flanking the overhead door, wrapped 4' around each of the SE/NE corners onto the south and north walls — full-wythe Glen-Gery Columbia Roman Maximus face brick (3 5/8\" bed, ASTM C216 Grade SW Type FBA) SET AS A SOLDIER, units on end so the 23 5/8\" length is vertical and the exposed face is 1 5/8\" wide, stack bond, two whole courses on a 24\" vertical module; on a 1\" drained cavity (IRC R703.8), borne on GARAGE_ICF_6_BRICKLEDGE's shelf; through-wall flashing + weeps at 33\" o.c. max at the base and again under the cap; corrugated ties at 16\" o.c. horizontal in all three bed joints (24\" vertical is R703.8.4's maximum and the only spacing the coursing offers), on flat 2x6 blocking in the stud bays at the two joints above the storey datum, ICF ties at the shelf",
 )
 
 # --- frost-protected shallow foundation, sunken-garden side -----------------------------
@@ -2634,19 +2651,19 @@ MATERIALS = [
     # fields from `r_per_inch`/`density`. The unit itself is 3 5/8" x 1 5/8" x 23 5/8"
     # (glengery.com/brick-catalog/columbia-roman-maximus): the bed depth matches a modular
     # unit exactly (this material drops into the same 3 5/8" `brick` layer unchanged), but
-    # it is a handmade Type FBA unit — coursing runs on its 1 5/8" + 3/8" joint = 2" module,
-    # not modular's 2 2/3", and the 23 5/8" length reads as long, widely-spaced vertical
-    # joints rather than a standard running bond. See GARAGE_BRICK_LEDGE_RISE above for the
-    # recomputed coursing this drives — unchanged by this colour swap.
+    # it is a handmade Type FBA unit, and IT IS LAID ON END — a soldier field, so the
+    # 23 5/8" length is the course height and the 1 5/8" width is the exposed face width, a
+    # 24" vertical by 2" horizontal module. See GARAGE_BRICK_LEDGE_RISE above for the
+    # coursing this drives and for why soldier rather than sailor.
     #
-    # `finish` stays "roman-maximus-brick": that key names the UNIT GEOMETRY recipe (the
-    # 23 5/8" elongated unit and its coursing), not a colourway, so the black-to-Columbia
-    # swap only touches `color`/`source` here and the style's `base` colour in
-    # ui/src/three/materials.ts / emit/gltf/palette.py — nothing about the masonry recipe
-    # itself changes.
+    # `finish` is "roman-maximus-soldier": that key names the UNIT GEOMETRY recipe, not a
+    # colourway, so it moved when the units stood up and did NOT move for the earlier
+    # black-to-Columbia colour swap. The colour itself lives in the style's `base` in
+    # ui/src/three/materials.ts and in emit/gltf/palette.py's `_FINISH_BASE`, which mirror
+    # each other by hand.
     Material(tag="off-white-brick", name="Columbia Roman Maximus face brick (ASTM C216 Grade SW)",
              r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
-             color="#e4ddc9", finish="roman-maximus-brick",
+             color="#e4ddc9", finish="roman-maximus-soldier",
              source="garage wainscot — Glen-Gery Columbia Roman Maximus, ASTM C216 Grade SW Type FBA (severe weathering; Type FBA rather than FBS because the handmade process gives it intentional dimensional variation), an off-white/ivory through-body colour, a SINGLE body and not a blend: a chip or a trimmer scar exposes the same colour rather than a red core, and Grade SW is not optional at 40+ freeze-thaw cycles a year"),
     # cmu, grout (porch railing wythe/balcony post bases) were promoted to
     # library/materials.py (CONTRIBUTING §Promotion flow); they arrive here

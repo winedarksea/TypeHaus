@@ -311,9 +311,13 @@ export function disposeStandingSeamTextures(): void {
 export const BRICK_UNIT_M: readonly [number, number] = [0.2032, 0.0679]; // [length, course]
 /** Nominal CMU face module including joints: a standard block is 16" × 8" with ⅜" joints. */
 export const CMU_UNIT_M: readonly [number, number] = [0.4064, 0.2032]; // [length, course]
-/** Glen-Gery Roman Maximus including joints: 23⅝" × 1⅝" unit + ⅜" joints both ways
- * (garage wainscot) — a 24" × 2" module, long and low next to modular's 8" × 2⅔". */
+/** Glen-Gery Roman Maximus laid flat, including joints: 23⅝" × 1⅝" unit + ⅜" joints both
+ * ways — a 24" × 2" module, long and low next to modular's 8" × 2⅔". */
 export const ROMAN_MAXIMUS_UNIT_M: readonly [number, number] = [0.6096, 0.0508]; // [length, course]
+/** The same unit STOOD ON END — the garage wainscot's soldier field. The 23⅝" length is now
+ * the course height and the 1⅝" width the face width, so the module is the flat one's,
+ * transposed: 2" wide × 24" tall. */
+export const ROMAN_MAXIMUS_SOLDIER_M: readonly [number, number] = [0.0508, 0.6096]; // [length, course]
 const MASONRY_TEX_PX = 512;
 
 /**
@@ -380,16 +384,36 @@ const BROWN_BRICK_STYLE: MasonryStyle = {
   jointFraction: 0.05, halfLap: 0.5, mortar: "#cfc8ba", base: "#a07c5c",
   jitterHSL: [0.004, 0.015, 0.04],
 };
-// The garage wainscot: Glen-Gery Columbia Roman Maximus, ASTM C216 Grade SW Type FBA,
-// THROUGH-BODY — takes the brown plinth's unglazed recipe retinted, not the glazes' low-jitter
-// one; near-zero jitter for the same reason the plinth has it, since a wide jitter at a 4'
-// wainscot's scale reads as mixed pallets, not clay. `unitsPerTile: 1` because the Maximus
-// unit is itself 24" long, unlike modular's 3-per-tile 8" unit.
+// Glen-Gery Columbia Roman Maximus laid FLAT, in running bond. Nothing in the house uses it
+// today — the garage wainscot stood its units up (see the soldier style below) — but it is
+// the recipe any future Maximus field laid the ordinary way wants, and it is what the
+// soldier style is derived from. THROUGH-BODY: takes the brown plinth's unglazed recipe
+// retinted, not the glazes' low-jitter one; near-zero jitter for the same reason the plinth
+// has it, since a wide jitter at a 4' wainscot's scale reads as mixed pallets, not clay.
+// `unitsPerTile: 1` because the Maximus unit is itself 24" long, unlike modular's 3-per-tile
+// 8" unit.
 // Kept in step with _FINISH_BASE in packages/engine/src/typehaus/emit/gltf/palette.py BY
 // HAND — the two tables mirror each other and nothing enforces it.
 const ROMAN_MAXIMUS_BRICK_STYLE: MasonryStyle = {
   key: "roman-maximus-brick", unitM: ROMAN_MAXIMUS_UNIT_M, unitsPerTile: 1, coursesPerTile: 8,
   jointFraction: 0.016, halfLap: 0.5, mortar: "#b9b2a2", base: "#e4ddc9",
+  jitterHSL: [0.004, 0.015, 0.04],
+};
+// THE GARAGE WAINSCOT: the same unit on end, a SOLDIER field — 1⅝" of face width and 23⅝" of
+// height per unit, so the wall reads as a fine vertical pinstripe on a 2" module. Same clay,
+// same mortar, same jitter as the flat recipe; only the module and the bond differ.
+//
+// STACK BOND, hence `halfLap: 0` — soldiers are set with their head joints aligned, and with
+// `coursesPerTile: 1` the tile repeat would enforce that anyway. A deliberate 1" stagger on
+// alternate courses would be `coursesPerTile: 2, halfLap: 0.5`; only two courses are ever
+// built here, so it would be a single visible offset rather than a bond pattern.
+//
+// `jointFraction` is joint ÷ unit LENGTH and the resulting pixel width is applied on BOTH
+// axes, so ⅜" ÷ 2" = 0.1875 draws a true ⅜" head joint and a slightly fat bed joint. That is
+// the right trade here: the field has 26 head joints per pier and only two bed joints.
+const ROMAN_MAXIMUS_SOLDIER_STYLE: MasonryStyle = {
+  key: "roman-maximus-soldier", unitM: ROMAN_MAXIMUS_SOLDIER_M, unitsPerTile: 8,
+  coursesPerTile: 1, jointFraction: 0.1875, halfLap: 0, mortar: "#b9b2a2", base: "#e4ddc9",
   jitterHSL: [0.004, 0.015, 0.04],
 };
 // Concrete block: the large face module, a fixed neutral grey, tighter joints and very low
@@ -430,6 +454,7 @@ export const MASONRY_STYLES: Readonly<Record<string, MasonryStyle>> = {
   "glazed-gold-brick": GLAZED_GOLD_BRICK_STYLE,
   "brown-brick": BROWN_BRICK_STYLE,
   "roman-maximus-brick": ROMAN_MAXIMUS_BRICK_STYLE,
+  "roman-maximus-soldier": ROMAN_MAXIMUS_SOLDIER_STYLE,
   cmu: CMU_STYLE,
 };
 

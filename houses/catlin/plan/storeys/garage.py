@@ -189,18 +189,34 @@ BRICK_NODES = [
          open_end=True),
 ]
 
-# Absolute elevations, off a garage grade of -2'-10". Coursing is Glen-Gery Black Roman
-# Maximus, 1 5/8" + 3/8" joint == a 2" module (not modular's 2 2/3" — see
-# plan/assemblies.py's GARAGE_BRICK_LEDGE_RISE). The shelf sits one course (2") ABOVE finish
-# grade — the cheapest durability move there is, lifting the base course clear of the worst
-# splash and snow-contact zone. 20 courses of field brick (40") then a sloped rowlock cap
-# (4", the unit's 3 5/8" bed depth on edge — unaffected by the coursing change) land the top
-# of brick at +1'-0" on the nose, and 2" of metal cap flashing over it puts the top of cap
-# at 4'-0" above grade, ALSO on the nose: both anchors are unchanged from the original
-# modular scheme, only the interior split moved.
-WAINSCOT_LEDGE_TOP = inch(-32.0)       # -2'-8": the shelf, and the base course on it
-WAINSCOT_BRICK_TOP = inch(12.0)        # +1'-0": top of the sloped rowlock
-WAINSCOT_CAP_TOP = inch(14.0)          # +1'-2" == 4'-0" above grade
+# Absolute elevations, off a garage grade of -2'-10". THE UNITS STAND ON END — Glen-Gery
+# Columbia Roman Maximus set as a SOLDIER, so the 23 5/8" length is the vertical dimension
+# and the 1 5/8" width is the face width. The 3 5/8" bed depth is still the wythe, so
+# nothing outboard of the stem moves (see plan/assemblies.py's GARAGE_BRICK_LEDGE_RISE).
+# The vertical module is 23 5/8" + 3/8" joint == 24", and the horizontal one is 1 5/8" +
+# 3/8" == 2" — exactly the old course module, rotated.
+#
+#     -2'-8"  shelf / brick-ledge top    tie row 1 (ICF), through-wall flashing + weeps
+#             3/8" setting bed + 23 5/8" soldier
+#     -0'-8"  bed joint                  tie row 2 (wood backing — needs blocking)
+#             3/8" bed + 23 5/8" soldier
+#     +1'-4"  top of brick               tie row 3 (wood backing), second through-wall flash
+#             2" metal cap flashing
+#     +1'-6"  top of cap == 4'-4" above grade
+#
+# TWO WHOLE UNITS AND NO CUT COURSE IS WHY THE CAP MOVED OFF 4'-0". Only 44" of the old 4'-0"
+# was brick and only 40" of that was field, so a 48" pair of soldiers does not fit under a
+# 4'-0" cap: holding the old anchor would have meant sawing one course to 15 5/8" in a
+# special-order handmade unit. The sloped rowlock cap went with it — a rowlock is itself a
+# horizontal on-edge course and reads as a stripe across an all-vertical field, and the
+# formed metal cap already provides the wash. The shelf did NOT move: it is still one unit
+# bed height (2") above finish grade.
+#
+# The shelf sits above finish grade rather than at it — the cheapest durability move there
+# is, lifting the base of the brick clear of the worst splash and snow-contact zone.
+WAINSCOT_LEDGE_TOP = inch(-32.0)       # -2'-8": the shelf, and the base of the soldiers
+WAINSCOT_BRICK_TOP = inch(16.0)        # +1'-4": top of the second soldier course
+WAINSCOT_CAP_TOP = inch(18.0)          # +1'-6" == 4'-4" above grade
 
 # ** AUTHORED NORTH NODE -> SOUTH NODE, and nothing will catch a flip. ** A lone component
 # with no closed loop gets UNRECOVERABLE_WINDING_OUTWARD_SIGN = 1.0
@@ -216,10 +232,14 @@ WAINSCOT_CAP_TOP = inch(14.0)          # +1'-2" == 4'-0" above grade
 #
 # FoundationWall elevations are ABSOLUTE and replace the storey z entirely
 # (resolve/topology.py), which is exactly what lets the wainscot cross the garage datum at
-# -1'-0" — ~19 3/8" of it backs onto the ICF stem and ~24 5/8" onto the wood wall above.
-# THE BACKING CHANGES AND SO DO THE TIES: two-piece adjustable screw-on ties into studs
-# above the datum (corrugated ties are only valid where the brick back is within 1" of
-# framing, and across the zip-R it is not), ICF ties below. `unbalanced_fill=ft(0)` keeps
+# -1'-0" — ~19 3/8" of it backs onto the ICF stem and ~28 5/8" onto the wood wall above.
+# THE BACKING CHANGES AND SO DO THE TIES, AND THE SOLDIER COURSING IS WHAT MAKES THE TIES
+# HARD: bed joints exist ONLY at -2'-8", -0'-8" and +1'-4", so the vertical tie spacing is
+# fixed at 24" — IRC R703.8.4's maximum — and 2.67 sf per tie then forces 16" HORIZONTAL,
+# which 24" o.c. studs cannot give. Flat 2x6 blocking in the stud bays at the two joints
+# above the datum buys that spacing without restudding the wall; below the datum the ICF's
+# webs already allow any horizontal station. Corrugated ties throughout (the brick back is
+# within 1" of framing behind the 5/8" CDX), ICF ties at the shelf. `unbalanced_fill=ft(0)` keeps
 # `structural.foundation_unbalanced_fill` quiet, as W-B-BRICK does — this wythe retains no
 # soil.
 #
@@ -270,8 +290,10 @@ BRICK_WALLS = [
 
 # The cap is the durability crux and the thing not to value-engineer away: a 4' wainscot
 # that stops mid-wall is a HORIZONTAL TERMINATION, and that is where these details fail in a
-# freeze-thaw climate. Formed metal cap flashing with a drip edge over the sloped rowlock,
-# in the house's one exterior dark (#1c1f24), which every other envelope metal shares.
+# freeze-thaw climate. Formed metal cap flashing with a drip edge straight onto the flat top
+# of the soldier field (there is no rowlock course under it any more — see
+# WAINSCOT_BRICK_TOP), in the house's one exterior dark (#1c1f24), which every other
+# envelope metal shares.
 #
 # `DRIP_FLASHING` resolves as a bent angle — a flat leg with a turn-down at the outboard end
 # — which is precisely this. `thickness` is the projection out from the edge (over the
@@ -300,10 +322,11 @@ BRICK_WALLS = [
 # the right-hand side and the drip's turn-down hangs off the east (outboard) end, throwing
 # water clear of the brick instead of back at it.
 #
-# `depth=inch(2.0)`, not the pre-Roman-coursing 1 1/3": this is the gap between the top of
-# the sloped rowlock and the flashing's own top elevation, and it moved with the coursing
-# recompute above (see WAINSCOT_CAP_TOP's comment) — a metal detail sized to close the
-# course budget exactly, not a fixed manufactured dimension.
+# `depth=inch(2.0)`: the gap between the top of brick and the flashing's own top elevation,
+# i.e. the height of the cap's visible face. It survived the move to soldier coursing
+# unchanged — both WAINSCOT_BRICK_TOP and WAINSCOT_CAP_TOP rose 4" together (see their
+# comments) — but it is still a metal detail sized to close the budget above the brick, not
+# a fixed manufactured dimension.
 #
 # The returns get the same cap, run along their own walls (east-west, not north-south), so
 # their centreline and back_side derivations mirror the piers' from the OTHER axis: the

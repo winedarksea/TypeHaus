@@ -1341,7 +1341,8 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   - **`GARAGE_WALL_WIND_CLAMPS` survives as an empty list**, and `standing-seam-nailstrip-26`
     and `zip-r` keep their price rows at 0 — the `glazed-green-brick` convention. The revert
     is layer material refs plus re-authoring sixteen constructors.
-- **The garage's east elevation carries a 4'-0" off-white brick wainscot, wrapped 4'-0" further
+- **The garage's east elevation carries a 4'-4" off-white brick wainscot laid SOLDIER — units
+  on end — wrapped 4'-0" further
   around each of the SE/NE corners onto the south and north walls, and the cap
   flashing is the part not to value-engineer away.** The two 4'-0" strips of wall flanking
   the 16' overhead door — plus the two corner returns — are the most-abused surface on the
@@ -1353,9 +1354,11 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   of the same unit before; Columbia is off-white/ivory and is the same body,
   size and grade, so the swap moved three things and nothing else — the `Material`'s
   `color`, the `MasonryStyle.base` in ui/src/three/materials.ts, and the `_FINISH_BASE` entry
-  in emit/gltf/palette.py. The `finish` key ("roman-maximus-brick") names the UNIT GEOMETRY,
-  not a colourway, so it did not move; the mortar in the viewer's recipe did, because a tan
-  joint is invisible against an off-white brick. Not thin brick, so real
+  in emit/gltf/palette.py. The `finish` key names the UNIT GEOMETRY, not a colourway, so it
+  did not move for the colour swap; the mortar in the viewer's recipe did, because a tan
+  joint is invisible against an off-white brick. It DID move when the units stood up
+  (2026-09-02) — "roman-maximus-brick" to **"roman-maximus-soldier"**, a new
+  `MasonryStyle`/`_FINISH_BASE` pair sharing the same colour. Not thin brick, so real
   bearing: `W-GF-E1`/`W-GF-E2`/`W-GF-S3`/`W-GF-N2` are formed with a mid-stack ICF
   brick-ledge block (`GARAGE_ICF_6_BRICKLEDGE`), and the veneer itself is its own short
   wall per side (`W-G-BRICK-S`/`-N`/`-SRET`/`-NRET`, `GARAGE_BRICK_WAINSCOT`) standing in
@@ -1364,28 +1367,51 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     because the stem drops to a grade beam under the door, so their width IS
     `OVERHEAD_DOOR_OFFSET` and their inboard ends ARE the door jambs. Moving the door
     moves the brick. Held by
-    `test_catlin_contract_m3.py::test_garage_brick_wainscot_piers_are_the_door_jambs_and_cap_at_four_feet`.
+    `test_catlin_contract_m3.py::test_garage_brick_wainscot_piers_are_the_door_jambs_and_cap_at_four_four`.
     The two corner returns ARE a free choice (4'-0" was simply the requested return length)
     and carry no such constraint.
-  - **Coursing is Roman, 2" (1 5/8" unit + 3/8" joint), not modular's 2 2/3".** Off grade at -2'-10": shelf top 2" (-2'-8"), 20
-    courses of field brick 40" (+0'-8"), sloped rowlock cap 4" (unit bed depth on edge,
-    unaffected by the coursing change; +1'-0"), metal cap flashing 2" — **top of cap 4'-0"
-    above grade on the nose**, every field course a whole module. Both anchors (44" wall
-    height, 48" total above grade) are unchanged from the original modular scheme; only the
-    interior split and the cap flashing's own face height moved to keep them exact on a 2"
-    module. The shelf sits one course *above* finish grade rather than at it: the cheapest
-    durability move available, lifting the base course clear of the worst splash and
-    snow-contact zone.
-  - **The backing changes mid-wainscot and so do the ties — and it got CHEAPER.**
+  - **The units stand on END: a SOLDIER field, two whole courses, no cut brick.** The
+    23 5/8" length is vertical and the 1 5/8" width is the face width, so the wall reads as a
+    fine vertical pinstripe on a **2" horizontal module** — the old course module, rotated —
+    with a **24" vertical module** (23 5/8" + 3/8" joint). Off grade at -2'-10": shelf top 2"
+    (-2'-8"), soldier course 24" (-0'-8"), soldier course 24" (+1'-4"), metal cap flashing
+    2" — **top of cap 4'-4" above grade**, 48" of brick on a 48" stack.
+  - **SOLDIER, NOT SAILOR, AND THAT IS A CODE LINE.** Tipping the unit onto its 1 5/8" face
+    to show the broad 3 5/8" face is the more obvious reading of "on edge" and it is not
+    available: it leaves a **1 5/8" wythe**, under IRC R703.8.2's 2 5/8" minimum for anchored
+    masonry veneer and too thin for corrugated-tie embedment (~1 1/2" embedment plus 5/8"
+    mortar cover wants 2 1/8"). **No check in the engine grades veneer thickness**, so it
+    would have shipped at 0 FAIL. On end instead, the 3 5/8" bed depth is still the wythe and
+    NOTHING outboard of the stem moves: the 4 5/8" ledge, the 1" cavity, `BRICK_NODES` at
+    24'-4 5/8", the cap flashing's 5 5/8" thickness and the $/SF basis all hold.
+  - **Why the cap left 4'-0".** Only 44" of the old 4'-0" was brick and only 40" of that was
+    field, so a 48" pair of soldiers does not fit under a 4'-0" cap; holding that anchor
+    would have meant sawing one course to 15 5/8" in a special-order handmade unit. The
+    sloped rowlock cap went in the same move — a rowlock is itself a horizontal on-edge
+    course and reads as a stripe across an all-vertical field, and the formed metal cap
+    already gives the wash it was there for. The shelf did NOT move: it still sits 2" *above*
+    finish grade, which is now just one unit bed height of splash clearance rather than "one
+    course" of anything — the cheapest durability move available, lifting the base of the
+    brick clear of the worst splash and snow-contact zone.
+  - **Horizontal fit.** The 2" module divides each 4'-0" return exactly (24 units). Each
+    pier's brick face is 52 5/8", i.e. 26 units plus 5/8" — take that up across the 26 head
+    joints (~0.024" apiece, invisible), NOT as a sliver cut at a door jamb.
+  - **THE TIES ARE THE HARD PART OF THE SOLDIER SCHEME, AND THE EASIEST THING ON THIS WALL
+    TO GET WRONG.** A tie has to land in a horizontal bed joint, and a soldier field has bed
+    joints ONLY at -2'-8", -0'-8" and +1'-4". That fixes the vertical spacing at 24", which
+    is IRC R703.8.4's maximum rather than a choice, and 2.67 sf per tie then forces **16"
+    o.c. HORIZONTAL** — which the wall's 24" o.c. studs cannot give (24 x 24 = 4.0 sf, 50%
+    over). The old 2" coursing had a bed joint every 2" and bought the same 2.67 sf at
+    16" v x 24" h; that option is gone. **Buy the 16" horizontal with flat 2x6 blocking in
+    the stud bays at the two joints above the datum**, not by restudding the wall — the
+    blocking is 8 lf a pier and the tie can then land anywhere along it. Below the datum the
+    backing is ICF and its webs already allow any horizontal station.
     The garage storey datum is -1'-0", so ~19 3/8" of brick backs onto the ICF
-    stem and ~24 5/8" onto the wood wall above it. Corrugated ties are valid only where the
-    brick back is within 1" of framing. Across the 1.5" Zip-R that used to stand there
-    it was not, so the wall wanted screw-on adjustable two-piece ties into studs
-    above the datum; behind the **5/8" CDX** that replaced it the back **is** within 1", so
-    the cheap corrugated tie is valid above the datum after all. The spacing is unchanged and
-    is the part to get right: IRC R703.8.4 wants one tie per 2.67 sf, which at **24" o.c.
-    studs** means **16" vertically**, not the 24" the old 16" grid allowed.
-    ICF ties below the datum, unchanged. Easiest thing on this wall to get wrong.
+    stem and ~28 5/8" onto the wood wall above it. Corrugated ties throughout: they are valid
+    only where the brick back is within 1" of framing, which across the 1.5" Zip-R that used
+    to stand here it was not, but behind the **5/8" CDX** that replaced it it is.
+    ICF ties at the shelf. And the tie row in the TOP bed joint is mandatory, not optional —
+    without it the upper 24" of soldier is a cantilever off the mid-height row.
   - **The cap is the durability crux.** A wainscot that stops mid-wall is a horizontal
     termination, and that is where these details fail here. Through-wall flashing + weeps
     at 33" o.c. max at the base course on the ledge (IRC R703.8 — a weep near each end at

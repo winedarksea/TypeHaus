@@ -1448,7 +1448,7 @@ def test_garage_overhead_door_opens_from_the_slab_at_grade(catlin_model):
     # change (plans/TODO.md).
 
 
-def test_garage_brick_wainscot_piers_are_the_door_jambs_and_cap_at_four_feet(catlin_model):
+def test_garage_brick_wainscot_piers_are_the_door_jambs_and_cap_at_four_four(catlin_model):
     """The things about the east brick wainscot (plus its SE/NE corner returns) a future
     edit could silently break.
 
@@ -1465,12 +1465,15 @@ def test_garage_brick_wainscot_piers_are_the_door_jambs_and_cap_at_four_feet(cat
     **The returns are a clean 4'-0" run apiece**, and terminate at the SAME point in space
     as their pier's corner end — a shared node, not just a coincidentally equal coordinate.
 
-    **Top of cap is 4'-0" above grade on the nose**, and every course below it is a whole
-    2" Roman module (Glen-Gery Black Roman Maximus, 1 5/8" unit + 3/8" joint): shelf at
-    grade + 1 course, 20 courses of field brick, a 4" rowlock (the unit's bed depth on
-    edge), then 2" of cap flashing. Read off ``site.grade`` for the same reason the stem
-    test does — the wainscot is a property of the ground, and the house datum is not the
-    ground.
+    **The brick is TWO WHOLE SOLDIERS and nothing is cut**, which is what put the top of cap
+    at 4'-4" above grade rather than the 4'-0" this test used to pin. The units stand on end
+    (Glen-Gery Columbia Roman Maximus, 23 5/8" length + 3/8" joint = a 24" vertical module),
+    so the stack is: shelf 2" above grade, 24", 24", then 2" of cap flashing. Holding 4'-0"
+    would have meant sawing one course to 15 5/8" in a special-order handmade unit; the
+    sloped rowlock cap came off in the same move. THE SHELF DID NOT MOVE — it is still one
+    unit bed height above grade, and that is the durability number, not a coursing one.
+    Read off ``site.grade`` for the same reason the stem test does — the wainscot is a
+    property of the ground, and the house datum is not the ground.
 
     Neither fact has a check behind it. A veneer wall whose node fails to resolve comes back
     ``None`` silently — no geometry and no finding — so the first assertion here is simply
@@ -1516,18 +1519,18 @@ def test_garage_brick_wainscot_piers_are_the_door_jambs_and_cap_at_four_feet(cat
     nret_corner = max(nret.axis, key=lambda p: p[0])
     assert north_corner == pytest.approx(nret_corner)
 
-    # Whole Roman modules all the way up, and the cap 4'-0" over grade, on every segment.
-    course = inch(2.0).meters
+    # Two whole soldier courses, and the cap 4'-4" over grade, on every segment.
+    bed_height = inch(2.0).meters  # the unit laid flat: the shelf's splash clearance
     for wall in (south, north, sret, nret):
-        assert wall.z0_m == pytest.approx(grade_m + course), "base course one module up"
-        assert wall.z1_m - wall.z0_m == pytest.approx(inch(44.0).meters)  # 20 courses + rowlock
+        assert wall.z0_m == pytest.approx(grade_m + bed_height), "shelf one bed height up"
+        assert wall.z1_m - wall.z0_m == pytest.approx(inch(48.0).meters)  # 2 x (23 5/8 + 3/8)
     # Each Flashing element resolves to a "-DRIP" solid plus a "-LAP" seam solid, so four
     # wall segments' worth of cap is 8 solids, not 4 — count the "-DRIP" ones (one per
     # element) to check "all four wall segments get their own cap run".
     caps = [s for s in catlin_model.solids if str(s.tag).startswith("TR-G-BRICK-CAP-")]
     drips = [c for c in caps if str(c.tag).endswith("-DRIP")]
     assert len(drips) == 4, "all four wall segments get their own cap run"
-    assert max(c.z1_m for c in caps) == pytest.approx(grade_m + ft(4.0).meters)
+    assert max(c.z1_m for c in caps) == pytest.approx(grade_m + inch(52.0).meters)
 
 
 def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_model):
