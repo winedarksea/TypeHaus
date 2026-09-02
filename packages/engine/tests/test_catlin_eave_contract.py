@@ -20,8 +20,9 @@ import math
 import pytest
 
 from typehaus.emit.draw.details import build_detail, derive_detail_slices
-from typehaus.emit.gltf import emit_gltf_dict
 from typehaus.emit.draw.scene import Polyline
+from typehaus.emit.gltf.emitter import _members_by_owner
+from typehaus.emit.gltf.members import owned_elsewhere
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry_members import member_solid
 from typehaus.resolve.roof_edge_geometry import (
@@ -202,29 +203,23 @@ def test_a_closure_band_belongs_to_its_wall_not_to_the_roof(eave):
     """Ownership, and the visibility toggle that follows it.
 
     The roof *resolves* the closure bands — only the roof planes say how high each layer
-    climbs — but every one of them is a wall's own layer stack carried past the top plate,
-    and ``parent_uid`` has always said so. Both exporters used to file a roof member by its
-    container instead, which put W-S-N1B's and W-S-N3B's whole raking gable faces (five
-    layers, over ten feet of wall each, not a 12" eave strip) behind the roof toggle and made
-    them select as the roof. So: no closure band claims the roof as its parent, and the
-    glTF's walls trade carries a second node for each wall that has one.
+    climbs — but every one of them is a wall's own layer stack carried past the top plate, and
+    ``parent_uid`` has always said so. Both exporters used to file a roof member by its
+    container instead, which put W-S-N1B's and W-S-N3B's whole raking gable faces (five layers,
+    over ten feet of wall each, not a 12" eave strip) behind the roof toggle and made them
+    select as the roof. So: no closure band claims the roof, and the .glb hands every one of
+    them to the wall's own node (``test_emitter_band_parity`` counts the colours that adds).
     """
     walls = {wall.uid: wall.tag for wall in eave.model.walls}
-    closures = [m for roof in eave.model.roofs for m in roof.members
+    closures = [(roof, m) for roof in eave.model.roofs for m in roof.members
                 if "-closure-" in m.child_key]
     assert closures, "the reference house's walls all close to a roof"
-    orphans = [m.child_key for m in closures if m.parent_uid not in walls]
+    orphans = [m.child_key for _roof, m in closures if m.parent_uid not in walls]
     assert orphans == [], "a closure band's parent is the wall whose skin it continues"
+    kept = [m.child_key for roof, m in closures if not owned_elsewhere(m, roof.uid)]
+    assert kept == [], "the roof draws only the skin it owns; the bands go out with the walls"
 
-    gltf, _blob = emit_gltf_dict(eave.model)
-    nodes = [n["extras"] for n in gltf["nodes"]]
-    for member in closures:
-        assert not any(n["trade"] == "roof" and n.get("uid") == member.parent_uid
-                       for n in nodes), "a wall never lands in the roof trade"
-    banded = {m.parent_uid for m in closures}
-    for uid in banded:
-        count = sum(1 for n in nodes
-                    if n["trade"] == "walls" and n.get("kind") == "wall"
-                    and n.get("uid") == uid)
-        assert count == 2, (
-            f"{walls[uid]} needs its body node and its closure-band node, both on walls")
+    by_owner = _members_by_owner(eave.model, set(walls))
+    assert sum(len(members) for members in by_owner.values()) == len(closures)
+    assert {walls[uid] for uid in by_owner} >= {"W-S-N1B", "W-S-N3B"}, (
+        "the two raking gable ends are the case this exists for")

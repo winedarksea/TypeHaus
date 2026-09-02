@@ -58,6 +58,10 @@ export function categoryColor(category: string): number {
 // it finishes. Fascia is trim by category but framing by trade (a nailer on the rafter tails),
 // so it counts as framing here. Mirrors ROOF_SKIN_CATEGORIES in emit/gltf/members.py — keep
 // the two in step.
+//
+// This says *what* a member is, never *whose* it is. A closure band is skin by this test and
+// still belongs to the wall it continues, not to the roof that resolved it — ownership is
+// `Member.parent_uid`, and builders/structure.ts routes on it.
 const ROOF_SKIN_CATEGORIES = new Set([
   "sheathing", "membrane", "insulation", "furring", "cladding", "airgap", "air_gap",
   "lining", "finish", "soffit", "gutter", "ridge_cap", "corner_trim",

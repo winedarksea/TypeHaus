@@ -82,6 +82,7 @@ def test_the_glb_draws_every_body_layer_of_every_wall(catlin_model_ro):
     here cost the node two of its four buckets.
     """
     from typehaus.emit.gltf import emit_gltf_dict
+    from typehaus.emit.gltf.members import member_color
     from typehaus.emit.gltf.palette import _layer_color, authored_colors
 
     gltf, _blob = emit_gltf_dict(catlin_model_ro)
@@ -91,6 +92,15 @@ def test_the_glb_draws_every_body_layer_of_every_wall(catlin_model_ro):
     nodes = {n["extras"]["uid"]: n for n in gltf["nodes"]
              if n.get("extras", {}).get("kind") == "wall"
              and n["extras"].get("trade") == "walls"}
+    # The body node also carries the wall's closure bands: the roof resolves them (only the
+    # roof planes say how high each layer climbs) but they are this wall's own skin carried
+    # past the top plate, and they draw with the wall so the walls toggle keeps them. Their
+    # colours join the expected set — a standing-seam band is white metal, not a layer colour.
+    closures: dict[str, list] = {}
+    for roof in catlin_model_ro.roofs:
+        for member in roof.members:
+            if member.parent_uid != roof.uid:
+                closures.setdefault(member.parent_uid, []).append(member)
 
     mismatches = []
     for wall in catlin_model_ro.walls:
@@ -98,6 +108,7 @@ def test_the_glb_draws_every_body_layer_of_every_wall(catlin_model_ro):
         if node is None or "mesh" not in node:
             continue
         expected = {_layer_color(ly, authored) for ly in wall.body_layers() if ly.polygon}
+        expected |= {member_color(m) for m in closures.get(wall.uid, ())}
         actual = len(gltf["meshes"][node["mesh"]]["primitives"])
         if actual != len(expected):
             mismatches.append((wall.tag, len(expected), actual))

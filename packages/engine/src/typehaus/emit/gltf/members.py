@@ -27,6 +27,17 @@ def is_roof_framing_member(member: FramedMember) -> bool:
     return member.category.lower() not in ROOF_SKIN_CATEGORIES
 
 
+def member_color(member: FramedMember) -> tuple[float, float, float, float]:
+    """The colour one member draws in.
+
+    A member that names a material is a *skin* band (wall→roof closure, derived trim, roof
+    edge cladding), not lumber: colour it the way the wall and roof layer stacks colour the
+    same material, so a standing-seam closure reads as white metal rather than category grey.
+    """
+    return (_material_finish_color(member.material, member.category)
+            if member.material else _color(member.category))
+
+
 def _add_member(mb: _MeshBuilder, member: FramedMember) -> None:
     """Emit one member from the shared IR box.
 
@@ -36,11 +47,7 @@ def _add_member(mb: _MeshBuilder, member: FramedMember) -> None:
     implementation — the one that was right — so the two exports now agree by construction
     rather than by review.
     """
-    # A member that names a material is a *skin* band (wall→roof closure, derived trim, roof
-    # edge cladding), not lumber: colour it the way the wall and roof layer stacks colour the
-    # same material, so a standing-seam closure reads as white metal rather than category grey.
-    color = (_material_finish_color(member.material, member.category)
-             if member.material else _color(member.category))
+    color = member_color(member)
     if member.plan_outline is not None:
         mb.add_prism(member.plan_outline, member.z0_m, member.z1_m, color)
         return

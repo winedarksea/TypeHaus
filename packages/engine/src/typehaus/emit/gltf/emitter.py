@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import json
 import struct
-from collections.abc import Container, Sequence
+from collections.abc import Container
 from pathlib import Path
 
 # Re-exported for callers that reach past the entry point (tests pinning palette parity, the
@@ -98,12 +98,19 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
     # materialColor); this is the .glb's half of that parity.
     authored = authored_colors(model)
 
-    wall_uids = {wall.uid for wall in model.walls}
+    # Skin a roof resolved but does not own: the wall→roof closure bands, which are the walls'
+    # own layer stacks carried past the top plate (``roof_edge.py``, which stamps the wall's uid
+    # on them). They draw into that wall's own node, so the walls toggle takes them and a click
+    # lands on the wall — a gable end's closure is most of that wall's visible face, five layers
+    # of real wall, not roof trim.
+    closures = _members_by_owner(model, {wall.uid for wall in model.walls})
     for wall in sorted(model.walls, key=lambda w: w.uid):
         # Wall layer prisms are the selectable "walls" body; its framing members are their own
         # "framing" node so the framing visibility toggle reaches the studs.
         body = _MeshBuilder()
         _add_wall_body(body, wall, lod, openings_by_wall.get(wall.tag, ()), authored)
+        for member in closures.get(wall.uid, ()):
+            _add_member(body, member)
         scene.add_object(body, trade="walls", kind="wall", uid=wall.uid)
         if wall.members:
             framing = _MeshBuilder()
@@ -202,15 +209,6 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             if is_roof_framing_member(member):
                 _add_member(framing, member)
         scene.add_object(framing, trade="framing", kind="roof", uid=roof.uid)
-        # Skin the roof resolved but does not own: the wall→roof closure bands, which are the
-        # walls' own layer stacks carried past the top plate. They go out under the wall that
-        # owns them, so the walls trade takes them and a click lands on the wall — a gable
-        # end's closure is most of that wall's visible face, not roof trim.
-        for owner, members in _members_by_owner(roof.members, roof.uid, wall_uids).items():
-            mb = _MeshBuilder()
-            for member in members:
-                _add_member(mb, member)
-            scene.add_object(mb, trade="walls", kind="wall", uid=owner)
 
     for panel in sorted(model.solar_panels, key=lambda item: item.uid):
         mb = _MeshBuilder()
@@ -287,22 +285,22 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
     return scene.build()
 
 
-def _members_by_owner(members: Sequence[FramedMember], container_uid: str,
+def _members_by_owner(model: ResolvedModel,
                       owners: Container[str]) -> dict[str, list[FramedMember]]:
-    """Group the skin members a container resolved but does not own, by their owner.
+    """The skin members the roofs resolved but do not own, grouped by the element that does.
 
-    Only owners the caller recognises (``owners``) are split out — an unknown parent_uid
-    would produce a node addressing nothing, and staying with the container is the safer
-    answer there.
+    Only owners the caller recognises are split out: an unknown ``parent_uid`` would address
+    nothing, and leaving the member with the roof that resolved it is the safer answer.
     """
     out: dict[str, list[FramedMember]] = {}
-    for member in members:
-        if is_roof_framing_member(member) or not owned_elsewhere(member, container_uid):
-            continue
-        if member.parent_uid not in owners:
-            continue
-        out.setdefault(member.parent_uid, []).append(member)
-    return dict(sorted(out.items()))
+    for roof in model.roofs:
+        for member in roof.members:
+            if is_roof_framing_member(member) or not owned_elsewhere(member, roof.uid):
+                continue
+            if member.parent_uid not in owners:
+                continue
+            out.setdefault(member.parent_uid, []).append(member)
+    return out
 
 
 def _is_coating(model: ResolvedModel, material_ref: str) -> bool:
